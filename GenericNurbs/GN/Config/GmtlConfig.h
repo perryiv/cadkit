@@ -39,7 +39,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-//#define GN_USE_VIRTUAL_PROTECTED_DESTRUCTORS
+#ifdef _GN_USE_VIRTUAL_DESTRUCTORS
+# define GN_DESTRUCTOR_TYPE virtual
+#else
+# define GN_DESTRUCTOR_TYPE
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -49,8 +53,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace GN {
-namespace Config {
-namespace GmtlDetail {
+namespace gmtl {
+namespace Detail {
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -68,36 +72,6 @@ template < class T > struct FloatTester
     #else
     return ( 0 != ::finite ( double ( v ) ) );
     #endif
-  }
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Class for calculating the square root.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class T > struct SquareRoot
-{
-  static T calculate ( const T &v )
-  {
-    return ::sqrt ( v );
-  }
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Class for calculating the power.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class T > struct Power
-{
-  static T calculate ( const T &value, const T &power )
-  {
-    return ::pow ( value, power );
   }
 };
 
@@ -161,15 +135,13 @@ template < class Matrix44, class Vec4, class Vec3 > struct Multiply
 
 struct ThrowingPolicy
 {
-  ThrowingPolicy ( const char *filename, unsigned int line, bool state, const char *message = 0x0 )
+  ThrowingPolicy ( const char *filename, unsigned int line, bool state )
   {
     if ( !state )
     {
-      std::ostringstream out;
-      out << "Error!\n\tLine: " << line << "\n\tFile: " << filename;
-      if ( message )
-        out << "\n\tMessage: " << message;
-      throw std::runtime_error ( out.str() );
+      std::ostringstream message;
+      message << "Error!\n\tLine: " << line << "\n\tFile: " << filename;
+      throw std::runtime_error ( message.str() );
     }
   }
 };
@@ -177,7 +149,7 @@ struct ThrowingPolicy
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  End of namespace GmtlDetail.
+//  End of namespace Detail.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -192,48 +164,40 @@ struct ThrowingPolicy
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template
-<
-  class IndependentType_, 
-  class DependentType_ = IndependentType_,
-  class SizeType_ = unsigned int
->
-class GmtlConfig
+template < class RealType_ > class Config
 {
 public:
 
-  typedef GmtlDetail::ThrowingPolicy      ErrorCheckerType;
-  typedef GN::Config::Base::StringData    BaseClassType;
+  typedef Detail::ThrowingPolicy        ErrorCheckerType;
+  typedef GN::Config::Base::StringData  BaseClassType;
 
-  typedef IndependentType_  IndependentType;
-  typedef DependentType_    DependentType;
-  typedef SizeType_         SizeType;
+  typedef unsigned int UIntType;
+  typedef RealType_    KnotType;
+  typedef RealType_    ControlPointType;
 
 private:
 
-  typedef std::vector<IndependentType>  IndependentSequence;
-  typedef std::vector<DependentType>    DependentSequence;
+  typedef std::vector<KnotType>         OneKnotVector;
+  typedef std::vector<ControlPointType> OneCtrPtCoord;
 
 public:
 
-  typedef std::vector<SizeType>             SizeContainer;
-  typedef std::vector<IndependentSequence>  IndependentContainer;
-  typedef std::vector<DependentSequence>    DependentContainer;
+  typedef std::vector<UIntType>      UIntContainer;
+  typedef std::vector<OneKnotVector> KnotContainer;
+  typedef std::vector<OneCtrPtCoord> ControlPointContainer;
 
-  typedef std::vector<DependentType> Vector;
+  typedef std::vector<ControlPointType> Vector;
 
-  typedef ::gmtl::Vec<DependentType,2>       Vec2;
-  typedef ::gmtl::Vec<DependentType,3>       Vec3;
-  typedef ::gmtl::Vec<DependentType,4>       Vec4;
-  typedef ::gmtl::Matrix<DependentType,4,4>  Matrix44;
+  typedef ::gmtl::Vec<ControlPointType,2>       Vec2;
+  typedef ::gmtl::Vec<ControlPointType,3>       Vec3;
+  typedef ::gmtl::Vec<ControlPointType,4>       Vec4;
+  typedef ::gmtl::Matrix<ControlPointType,4,4>  Matrix44;
 
-  typedef GmtlDetail::FloatTester<IndependentType> IndependentTester;
-  typedef GmtlDetail::FloatTester<DependentType>   DependentTester;
-  typedef GmtlDetail::Translation<Matrix44,Vec3>   Translation;
-  typedef GmtlDetail::Scale<Matrix44,Vec3>         Scale;
-  typedef GmtlDetail::Multiply<Matrix44,Vec4,Vec3> Multiply;
-  typedef GmtlDetail::SquareRoot<DependentType>    SquareRoot;
-  typedef GmtlDetail::Power<DependentType>         Power;
+  typedef Detail::FloatTester<KnotType>           KnotTester;
+  typedef Detail::FloatTester<ControlPointType>   ControlPointTester;
+  typedef Detail::Translation<Matrix44,Vec3>      Translation;
+  typedef Detail::Scale<Matrix44,Vec3>            Scale;
+  typedef Detail::Multiply<Matrix44,Vec4,Vec3>    Multiply;
 };
 
 
@@ -243,7 +207,7 @@ public:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-}; // namespace Config
+}; // namespace gmtl
 }; // namespace GN
 
 

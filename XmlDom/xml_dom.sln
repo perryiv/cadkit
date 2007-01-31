@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xml_dom", "xml_dom.vcproj", "{26A3F9B3-4457-4E57-964F-3AC3959402FA}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{26A3F9B3-4457-4E57-964F-3AC3959402FA}.Debug.ActiveCfg = Debug|Win32
+		{26A3F9B3-4457-4E57-964F-3AC3959402FA}.Debug.Build.0 = Debug|Win32
+		{26A3F9B3-4457-4E57-964F-3AC3959402FA}.Release.ActiveCfg = Release|Win32
+		{26A3F9B3-4457-4E57-964F-3AC3959402FA}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

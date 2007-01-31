@@ -47,6 +47,7 @@ public:
   typedef typename set_type::const_iterator const_iterator;
   typedef typename set_type::reverse_iterator reverse_iterator;
   typedef typename set_type::const_reverse_iterator const_reverse_iterator;
+  typedef typename set_type::size_type size_type;
   typedef typename set_type::difference_type difference_type;
   typedef typename set_type::allocator_type allocator_type;
 

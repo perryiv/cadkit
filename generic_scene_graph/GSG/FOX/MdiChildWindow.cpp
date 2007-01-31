@@ -97,51 +97,30 @@ MdiChildWindow::MdiChildWindow (
   INITIALIZER_LIST
 {
   // Should be true.
-  ErrorChecker ( 0x0 != _root.get() );
+  ErrorChecker ( _root.valid() );
   ErrorChecker ( 0x0 != this->getApp() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Destructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-MdiChildWindow::~MdiChildWindow()
-{
-  // Nothing to delete.
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MdiChildWindow::create()
-{
-  // Should be true.
-  ErrorChecker ( 0x0 != _root.get() );
-  ErrorChecker ( 0x0 != this->getApp() );
-  ErrorChecker ( 0x0 != this->getParent()->id() );
-
-  // Call the base class's function.
-  BaseClass::create();
 
   // The first time we create the visual.
-  if ( 0x0 == _visual.get() )
+  if ( false == _visual.valid() )
   {
     _visual = FXGLVisualPtr ( new FXGLVisual ( this->getApp(), FX::VISUAL_DOUBLEBUFFER ) );
-    ErrorChecker ( 0x0 != _visual.get() );
+    ErrorChecker ( _visual.valid() );
     _visual->create();
   }
 
   // View.
   _view = ViewPtr ( new View ( this, _visual.get() ) );
-  ErrorChecker ( 0x0 != _view.get() );
-  _view->create();
+  ErrorChecker ( _view.valid() );
+
+  // See if you should create too.
+  if ( parent->id() )
+  {
+    // Create this instance.
+    BaseClass::create();
+
+    // Now we can create the view.
+    _view->create();
+  }
 
   // Make the viewer and set it.
   Viewer::ValidPtr viewer ( new Viewer );
@@ -175,6 +154,18 @@ void MdiChildWindow::create()
 
   // Set the viewer's camera.
   viewer->camera ( camera );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MdiChildWindow::~MdiChildWindow()
+{
+  // Nothing to delete.
 }
 
 

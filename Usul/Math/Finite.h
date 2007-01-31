@@ -29,8 +29,6 @@
   #define _USUL_THROW
 #elif __CYGWIN__
   #define _USUL_THROW
-#elif __APPLE__
-  #define _USUL_THROW
 #else
   #define _USUL_THROW throw()
 #endif
@@ -48,10 +46,10 @@
 
 extern "C"
 {
-#ifdef _MSC_VER
-  _CRTIMP int __cdecl _finite ( double );
+#ifdef _WIN32
+  int _finite  ( double ) _USUL_THROW;
 #else
-  int finite ( double ) _USUL_THROW;
+  int  finite  ( double ) _USUL_THROW;
 #endif
 };
 
@@ -78,9 +76,9 @@ namespace Math {
 inline bool finite ( long double v )
 {
 #ifdef _WIN32
-  return ( 0 != ::_finite ( USUL_UNSAFE_CAST ( double, v ) ) );
+  return ( 0 != ::_finite ( USUL_CAST ( double, v ) ) );
 #else
-  return ( 0 !=  ::finite ( USUL_UNSAFE_CAST ( double, v ) ) );
+  return ( 0 !=  ::finite ( USUL_CAST ( double, v ) ) );
 #endif
 }
 
@@ -110,9 +108,9 @@ inline bool finite ( double v )
 inline bool finite ( float v )
 {
 #ifdef _WIN32
-  return ( 0 != ::_finite ( USUL_UNSAFE_CAST ( double, v ) ) );
+  return ( 0 != ::_finite ( USUL_CAST ( float, v ) ) );
 #else
-  return ( 0 !=  ::finite ( USUL_UNSAFE_CAST ( double, v ) ) );
+  return ( 0 !=  ::finite ( USUL_CAST ( float, v ) ) );
 #endif
 }
 

@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="plug: SAL Performer"
+	Name="plug: performer_sal"
 	ProjectGUID="{831E93A8-CD22-419E-95C6-7BCBE586AE64}"
 	SccProjectName=""
 	SccLocalPath="">

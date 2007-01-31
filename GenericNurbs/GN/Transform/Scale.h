@@ -32,23 +32,23 @@ template < class SplineType_ > inline void scale (
   const typename SplineType_::Vec4 &s )
 {
   typedef SplineType_ SplineType;
-  typedef typename SplineType::SizeType SizeType;
-  typedef typename SplineType::DependentType DependentType;
+  typedef typename SplineType::UIntType UIntType;
+  typedef typename SplineType::ControlPointType ControlPointType;
 
   // Caller needs to make sure the spline is at least 3D.
   typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
   GN_ERROR_CHECK ( spline.dimension() >= 3 );
 
   // Needed below.
-  SizeType totalNumCtrPts ( spline.totalNumControlPoints() );
+  UIntType totalNumCtrPts ( spline.totalNumControlPoints() );
 
   // If it is rational...
   if ( spline.rational() )
   {
-    DependentType x0, x1, x2, x3, w, iw;
+    ControlPointType x0, x1, x2, x3, w, iw;
 
     // Loop through the control points.
-    for ( SizeType i = 0; i < totalNumCtrPts; ++i )
+    for ( UIntType i = 0; i < totalNumCtrPts; ++i )
     {
       // Divide out the weight and scale.
       w = spline.weight ( i );
@@ -70,7 +70,7 @@ template < class SplineType_ > inline void scale (
   else
   {
     // Loop through the control points.
-    for ( SizeType i = 0; i < totalNumCtrPts; ++i )
+    for ( UIntType i = 0; i < totalNumCtrPts; ++i )
     {
       // Scale the control point.
       spline.controlPoint(0,i) *= s[0]; // x0
@@ -93,23 +93,23 @@ template < class SplineType_ > inline void scale (
   const typename SplineType_::Vec3 &s )
 {
   typedef SplineType_ SplineType;
-  typedef typename SplineType::SizeType SizeType;
-  typedef typename SplineType::DependentType DependentType;
+  typedef typename SplineType::UIntType UIntType;
+  typedef typename SplineType::ControlPointType ControlPointType;
 
   // Caller needs to make sure the spline is at least 3D.
   typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
   GN_ERROR_CHECK ( spline.dimension() >= 3 );
 
   // Needed below.
-  SizeType totalNumCtrPts ( spline.totalNumControlPoints() );
+  UIntType totalNumCtrPts ( spline.totalNumControlPoints() );
 
   // If it is rational...
   if ( spline.rational() )
   {
-    DependentType x, y, z, w, iw;
+    ControlPointType x, y, z, w, iw;
 
     // Loop through the control points.
-    for ( SizeType i = 0; i < totalNumCtrPts; ++i )
+    for ( UIntType i = 0; i < totalNumCtrPts; ++i )
     {
       // Divide out the weight and translate.
       w = spline.weight ( i );
@@ -129,7 +129,7 @@ template < class SplineType_ > inline void scale (
   else
   {
     // Loop through the control points.
-    for ( SizeType i = 0; i < totalNumCtrPts; ++i )
+    for ( UIntType i = 0; i < totalNumCtrPts; ++i )
     {
       // Scale the control point.
       spline.controlPoint(0,i) *= s[0]; // x
@@ -151,23 +151,23 @@ template < class SplineType_ > inline void scale (
   const typename SplineType_::Vec2 &s )
 {
   typedef SplineType_ SplineType;
-  typedef typename SplineType::SizeType SizeType;
-  typedef typename SplineType::DependentType DependentType;
+  typedef typename SplineType::UIntType UIntType;
+  typedef typename SplineType::ControlPointType ControlPointType;
 
   // Caller needs to make sure the spline is at least 2D.
   typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
   GN_ERROR_CHECK ( spline.dimension() >= 2 );
 
   // Needed below.
-  SizeType totalNumCtrPts ( spline.totalNumControlPoints() );
+  UIntType totalNumCtrPts ( spline.totalNumControlPoints() );
 
   // If it is rational...
   if ( spline.rational() )
   {
-    DependentType x, y, w, iw;
+    ControlPointType x, y, w, iw;
 
     // Loop through the control points.
-    for ( SizeType i = 0; i < totalNumCtrPts; ++i )
+    for ( UIntType i = 0; i < totalNumCtrPts; ++i )
     {
       // Divide out the weight and translate.
       w = spline.weight ( i );
@@ -185,7 +185,7 @@ template < class SplineType_ > inline void scale (
   else
   {
     // Loop through the control points.
-    for ( SizeType i = 0; i < totalNumCtrPts; ++i )
+    for ( UIntType i = 0; i < totalNumCtrPts; ++i )
     {
       // Scale the control point.
       spline.controlPoint(0,i) *= s[0]; // x
@@ -203,26 +203,26 @@ template < class SplineType_ > inline void scale (
 
 template < class SplineType_ > inline void scale ( 
   SplineType_ &spline, 
-  const typename SplineType_::DependentType &s )
+  const typename SplineType_::ControlPointType &s )
 {
   typedef SplineType_ SplineType;
-  typedef typename SplineType::SizeType SizeType;
-  typedef typename SplineType::DependentType DependentType;
+  typedef typename SplineType::UIntType UIntType;
+  typedef typename SplineType::ControlPointType ControlPointType;
 
   // Caller needs to make sure the spline is at least 1D.
   typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
   GN_ERROR_CHECK ( spline.dimension() >= 1 );
 
   // Needed below.
-  SizeType totalNumCtrPts ( spline.totalNumControlPoints() );
+  UIntType totalNumCtrPts ( spline.totalNumControlPoints() );
 
   // If it is rational...
   if ( spline.rational() )
   {
-    DependentType x, w;
+    ControlPointType x, w;
 
     // Loop through the control points.
-    for ( SizeType i = 0; i < totalNumCtrPts; ++i )
+    for ( UIntType i = 0; i < totalNumCtrPts; ++i )
     {
       // Divide out the weight and translate.
       w = spline.weight ( i );
@@ -237,7 +237,7 @@ template < class SplineType_ > inline void scale (
   else
   {
     // Loop through the control points.
-    for ( SizeType i = 0; i < totalNumCtrPts; ++i )
+    for ( UIntType i = 0; i < totalNumCtrPts; ++i )
     {
       // Scale the control point.
       spline.controlPoint(0,i) *= s[0]; // x

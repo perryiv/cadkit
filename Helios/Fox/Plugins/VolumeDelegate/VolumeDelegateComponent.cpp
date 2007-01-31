@@ -16,15 +16,15 @@
 #include "VolumeDelegateComponent.h"
 #include "SettingsDialog.h"
 
-#include "Helios/Fox/Views/Canvas.h"
-#include "Helios/Fox/Views/TFView.h"
+#include "OsgFox/Views/Canvas.h"
+#include "OsgFox/Views/TFView.h"
 
 #include "FoxTools/Windows/MdiChildWindow.h"
 #include "FoxTools/Functions/GLVisual.h"
 #include "FoxTools/Headers/MDIButton.h"
 
-#include "Usul/Interfaces/Fox/IFoxClientArea.h"
-#include "Usul/Interfaces/Fox/IFoxMDIMenu.h"
+#include "Usul/Interfaces/IFoxClientArea.h"
+#include "Usul/Interfaces/IFoxMDIMenu.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IOpenGLState.h"
 
@@ -123,7 +123,7 @@ void VolumeDelegateComponent::createDefaultGUI ( Usul::Documents::Document *docu
   Usul::Documents::Document::Options options ( document->options() );
 
   // Make the view
-  Helios::Views::Canvas* canvas ( new Helios::Views::Canvas ( doc, child.get(), FoxTools::Functions::visual() ) );
+  OsgFox::Views::Canvas* canvas ( new OsgFox::Views::Canvas ( doc, child.get(), FoxTools::Functions::visual() ) );
 
   // Get pointer to viewer
   Usul::Interfaces::IViewer::ValidQueryPtr viewer ( canvas->viewer() );
@@ -158,7 +158,7 @@ void VolumeDelegateComponent::createDefaultGUI ( Usul::Documents::Document *docu
     LocalChildPtr child ( new ChildWindow ( document, clientArea, "Untitled", 0x0, (FX::FXMenuPane * ) mdiMenu, 0 ) ); 
 
     // Make the view
-    Helios::Views::TFView* view ( new Helios::Views::TFView ( doc, child.get(), FoxTools::Functions::visual() ) );
+    OsgFox::Views::TFView* view ( new OsgFox::Views::TFView ( doc, child.get(), FoxTools::Functions::visual() ) );
 
     // Get pointer to viewer
     Usul::Interfaces::IViewer::ValidQueryPtr viewer ( view );
@@ -188,11 +188,11 @@ void VolumeDelegateComponent::createDefaultGUI ( Usul::Documents::Document *docu
 
 void VolumeDelegateComponent::refreshView  ( Usul::Documents::Document *document, Usul::Interfaces::IViewer *viewer )
 {
-  Usul::Interfaces::IHeliosView::QueryPtr HeliosView ( viewer );
+  Usul::Interfaces::IOsgFoxView::QueryPtr osgFoxView ( viewer );
 
-  if( HeliosView.valid() )
+  if( osgFoxView.valid() )
   {
-    OsgTools::Render::Viewer* canvas ( HeliosView->HeliosView() );
+    OsgTools::Render::Viewer* canvas ( osgFoxView->osgFoxView() );
 
     Usul::Interfaces::IBuildScene::QueryPtr buildScene ( document );
 

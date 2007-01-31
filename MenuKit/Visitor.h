@@ -32,7 +32,7 @@ public:
   MENUKIT_DECLARE_POINTER ( Visitor );
 
   // Possible modes.
-  enum Mode { NONE, EXPANDED, ALL };
+  enum Mode { NONE, ALL };
 
   // Apply this visitor to the items.
   virtual void        apply ( Menu &m );

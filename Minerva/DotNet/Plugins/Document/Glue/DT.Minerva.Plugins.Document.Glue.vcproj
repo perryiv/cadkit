@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_ROOT_DIR)/Minerva/Native/include&quot;;&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PQXX_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(OSSIM_PLANET_INC_DIR)&quot;;&quot;$(OSG_EPHEMERIS_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR)/Minerva/Native/include;$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(PQXX_INC_DIR);$(BOOST_ROOT_DIR);"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
@@ -59,9 +59,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgGAd.lib osgDBd.lib libpqxxd.lib ossimd.lib ossimPlanetd.lib OpenThreadsWin32d.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib libpqxxd.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;;&quot;$(OSSIM_PLANET_LIB_DIR)&quot;;&quot;$(OPENTHREADS_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(PQXX_LIB_DIR);$(BOOST_LIB_DIR)"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				TargetMachine="1"
@@ -117,7 +117,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_ROOT_DIR)/Minerva/Native/include&quot;;&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PQXX_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(OSSIM_PLANET_INC_DIR)&quot;;&quot;$(OSG_EPHEMERIS_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR)/Minerva/Native/include;$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(PQXX_INC_DIR);$(BOOST_ROOT_DIR);"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -135,9 +135,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgGA.lib osgDB.lib libpqxx.lib ossim.lib ossimPlanet.lib OpenThreadsWin32.lib"
+				AdditionalDependencies="osg.lib  libpqxx.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;;&quot;$(OSSIM_PLANET_LIB_DIR)&quot;;&quot;$(OPENTHREADS_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(PQXX_LIB_DIR);$(BOOST_LIB_DIR)"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -183,30 +183,25 @@
 		<ProjectReference
 			ReferencedProjectIdentifier="{74E03074-1991-4E02-B5F2-B9D98FAD14D0}"
 			UseDependenciesInBuild="false"
-			RelativePathToProject="..\Viewer\Glue\Cadkit.Viewer.Glue.vcproj"
+			RelativePathToProject="..\DotNet\Viewer\Glue\Cadkit.Viewer.Glue.vcproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{35375870-CDDF-431E-B366-782D431BF6F6}"
-			RelativePathToProject="..\..\Minerva\DotNet\Interfaces\DT.Minerva.Interfaces.csproj"
+			RelativePathToProject="..\Minerva\DotNet\Interfaces\DT.Minerva.Interfaces.csproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{A27CF288-D89D-4184-A413-011D6E4AD9F6}"
 			UseDependenciesInBuild="false"
-			RelativePathToProject="..\Threads\Jobs\CadKit.Threads.Jobs.csproj"
+			RelativePathToProject="..\DotNet\Threads\Jobs\CadKit.Threads.Jobs.csproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}"
 			UseDependenciesInBuild="false"
-			RelativePathToProject="..\Referenced\CadKit.Referenced.csproj"
+			RelativePathToProject="..\DotNet\Referenced\CadKit.Referenced.csproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{233305C0-C997-440A-9AA2-BAFEF0D15156}"
-			RelativePathToProject="..\Interfaces\CadKit.Interfaces.csproj"
-		/>
-		<ProjectReference
-			ReferencedProjectIdentifier="{5D7C06E0-F0B8-4EF0-953A-E25283F58435}"
-			UseDependenciesInBuild="false"
-			RelativePathToProject="..\Plugins\Documents\OSSIMPlanetDocument\Glue\OssimPlanet.vcproj"
+			RelativePathToProject="..\DotNet\Interfaces\CadKit.Interfaces.csproj"
 		/>
 	</References>
 	<Files>

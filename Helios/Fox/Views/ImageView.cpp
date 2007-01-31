@@ -27,7 +27,7 @@
 #include "osg/Matrix"
 #include "osg/MatrixTransform"
 
-using namespace Helios::Views;
+using namespace OsgFox::Views;
 
 ///////////////////////////////////////////////////////////////////////////////
 //

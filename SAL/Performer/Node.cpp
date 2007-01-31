@@ -163,7 +163,7 @@ void Node::boundingSphereRadius ( float &r ) const
 {
   SAL::Interfaces::IPerformer::ValidQueryPtr iperf ( unknown );
   Node::ValidPfMemoryPtr mp ( iperf->getPfMemory() );
-  Node::ValidPfNodePtr node ( ( mp->isOfType ( ::pfNode::getClassType() ) ) ? USUL_UNSAFE_CAST ( ::pfNode *, mp.get() ) : 0x0 );
+  Node::ValidPfNodePtr node ( ( mp->isOfType ( ::pfNode::getClassType() ) ) ? USUL_CAST ( ::pfNode *, mp.get() ) : 0x0 );
   return node.get();
 }
 

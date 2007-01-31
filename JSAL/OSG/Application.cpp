@@ -86,7 +86,7 @@ void Application::init()
   _source = new osg::LightSource;
   _light = new osg::Light;
   _source->setLight ( _light );
-  _source->setReferenceFrame ( osg::LightSource::RELATIVE_RF );
+  _source->setReferenceFrame ( osg::LightSource::RELATIVE_TO_ABSOLUTE );
   _source->setLocalStateSetModes ( osg::StateAttribute::ON );
 
   // Try to notify the parent.

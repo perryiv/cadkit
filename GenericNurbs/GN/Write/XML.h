@@ -17,10 +17,6 @@
 #define _GENERIC_NURBS_LIBRARY_WRITE_XML_H_
 
 #include "GN/Config/BaseClass.h"
-#include "GN/Macros/FormatString.h"
-
-#include <limits>
-#include <sstream>
 
 
 namespace GN {
@@ -96,42 +92,22 @@ template < class SplineType > struct XML
   typedef typename SplineType::SplineClass SplineClass;
   typedef typename SplineClass::TypeTag TypeTag;
   typedef typename SplineClass::BaseClass BaseClass;
-  typedef typename SplineType::SizeType SizeType;
-  typedef typename SplineType::IndependentType IndependentType;
-  typedef typename SplineType::DependentType DependentType;
+  typedef typename SplineType::UIntType UIntType;
+  typedef typename SplineType::KnotType KnotType;
+  typedef typename SplineType::ControlPointType ControlPointType;
 
   template < class OutType, class StringType >
   static void write ( const SplineClass &s, const StringType &indent, OutType &out )
   {
-    const std::size_t bufSize ( 1023 );
-    char buffer[bufSize+1];
-
-    // Determine format string for maximum precision.
-    std::pair<std::string,std::string> format;
-    {
-      {
-        const int precision ( std::numeric_limits<IndependentType>::digits10 );
-        std::ostringstream out;
-        out << " %25." << precision << "f ";
-        format.first = out.str();
-      }
-      {
-        const int precision ( std::numeric_limits<DependentType>::digits10 );
-        std::ostringstream out;
-        out << " %25." << precision << "f ";
-        format.second = out.str();
-      }
-    }
-
     // Start the spline.
     out << indent << "<spline>\n";
 
     // Needed below.
-    SizeType numIndepVars ( s.numIndepVars() );
-    SizeType numDepVars ( s.numDepVars() );
-    SizeType dimension ( s.dimension() );
-    SizeType totalCtrPts ( s.totalNumControlPoints() );
-    SizeType totalKnots ( s.totalNumKnots() );
+    UIntType numIndepVars ( s.numIndepVars() );
+    UIntType numDepVars ( s.numDepVars() );
+    UIntType dimension ( s.dimension() );
+    UIntType totalCtrPts ( s.totalNumControlPoints() );
+    UIntType totalKnots ( s.totalNumKnots() );
     StringType indent2 ( indent + indent );
     StringType indent3 ( indent + indent2 );
     StringType indent4 ( indent + indent3 );
@@ -150,19 +126,19 @@ template < class SplineType > struct XML
     out << indent2 << "<rational>" << ( ( s.rational() ) ? "true" : "false" ) << "</rational>\n";
     out << indent3 << "<control_points>\n";
     out << indent4 << "<num>" << totalCtrPts << "</num>\n";
-    out << indent4 << "<bytes>" << ( sizeof ( DependentType ) ) << "</bytes>\n";
+    out << indent4 << "<bytes>" << ( sizeof ( ControlPointType ) ) << "</bytes>\n";
     out << indent3 << "</control_points>\n";
     out << indent3 << "<knots>\n";
     out << indent4 << "<num>" << totalKnots << "</num>\n";
-    out << indent4 << "<bytes>" << ( sizeof ( IndependentType ) ) << "</bytes>\n";
+    out << indent4 << "<bytes>" << ( sizeof ( KnotType ) ) << "</bytes>\n";
     out << indent3 << "</knots>\n";
 
     // For each independent variable...
     {
-      for ( SizeType i = 0; i < numIndepVars; ++i )
+      for ( UIntType i = 0; i < numIndepVars; ++i )
       {
         // Data for this iteration.
-        SizeType numKnots ( s.numKnots ( i ) );
+        UIntType numKnots ( s.numKnots ( i ) );
 
         out << indent2 << "<independent which=\"" << i << "\">\n";
         out << indent3 << "<order>" << s.order ( i ) << "</order>\n";
@@ -170,12 +146,9 @@ template < class SplineType > struct XML
         out << indent3 << "<knots count=\"" << numKnots << "\">\n";
 
         // Write all the knots.
-        for ( SizeType j = 0; j < numKnots; ++j )
+        for ( UIntType j = 0; j < numKnots; ++j )
         {
-          out << indent4 << "<knot i=\"" << j << "\">";
-          snprintf ( buffer, bufSize, format.first.c_str(), s.knot(i,j) );
-          out << buffer;
-          out << "</knot>\n";
+          out << indent4 << "<knot i=\"" << j << "\">" << s.knot(i,j) << "</knot>\n";
         }
 
         out << indent3 << "</knots>\n";
@@ -186,17 +159,18 @@ template < class SplineType > struct XML
     // Write the control points...
     {
       out << indent2 << "<control_points>\n";
+      char buffer[1024];
 
       // For each control point...
-      for ( SizeType j = 0; j < totalCtrPts; ++j )
+      for ( UIntType j = 0; j < totalCtrPts; ++j )
       {
         out << indent3 << "<point i=\"" << j << "\">";
 
         // Write all of the dependent variables.
-        for ( SizeType i = 0; i < numDepVars; ++i )
+        for ( UIntType i = 0; i < numDepVars; ++i )
         {
           // Note: Linux and Cygwin cannot print long double.
-          snprintf ( buffer, bufSize, format.second.c_str(), s.controlPoint(i,j) );
+          ::sprintf ( buffer, "%20.15f", double ( s.controlPoint(i,j) ) );
           out << buffer;
         }
 

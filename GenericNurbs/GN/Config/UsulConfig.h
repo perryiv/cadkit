@@ -40,7 +40,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-//#define GN_USE_VIRTUAL_PROTECTED_DESTRUCTORS
+#ifdef _GN_USE_VIRTUAL_DESTRUCTORS
+# define GN_DESTRUCTOR_TYPE virtual
+#else
+# define GN_DESTRUCTOR_TYPE
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -50,8 +54,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace GN {
-namespace Config {
-namespace UsulDetail {
+namespace Usul {
+namespace Detail {
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -65,36 +69,6 @@ template < class T > struct FloatTester
   static bool finite ( const T &v )
   {
     return ::Usul::Math::finite ( v );
-  }
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Class for calculating the square root.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class T > struct SquareRoot
-{
-  static T calculate ( const T &v )
-  {
-    return ::Usul::Math::sqrt ( v );
-  }
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Class for calculating the power.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class T > struct Power
-{
-  static T calculate ( const T &value, const T &power )
-  {
-    return ::Usul::Math::pow ( value, power );
   }
 };
 
@@ -195,7 +169,7 @@ ErrorCheckerPrintAndThrow;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  End of namespace UsulDetail.
+//  End of namespace Detail.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -210,55 +184,47 @@ ErrorCheckerPrintAndThrow;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template
-<
-  class IndependentType_, 
-  class DependentType_ = IndependentType_,
-  class SizeType_ = unsigned int
->
-class UsulConfig
+template < class RealType_ > class Config
 {
 public:
 
-  typedef UsulDetail::ErrorCheckerType    ErrorCheckerType;
-  typedef GN::Config::Base::StringData    BaseClassType;
+  typedef Detail::ErrorCheckerType      ErrorCheckerType;
+  typedef GN::Config::Base::StringData  BaseClassType;
 
-  typedef IndependentType_  IndependentType;
-  typedef DependentType_    DependentType;
-  typedef SizeType_         SizeType;
+  typedef unsigned int UIntType;
+  typedef RealType_    KnotType;
+  typedef RealType_    ControlPointType;
 
 private:
 
-  typedef std::vector<SizeType>         SizeContainerInner;
-  typedef std::vector<IndependentType>  OneIndependentInner;
-  typedef std::vector<DependentType>    OneDependentInner;
+  typedef std::vector<UIntType>         UIntContainerInner;
+  typedef std::vector<KnotType>         OneKnotVectorInner;
+  typedef std::vector<ControlPointType> OneCtrPtCoordInner;
 
-  typedef ::Usul::Containers::Vector<OneIndependentInner,ErrorCheckerType> OneIndependentOuter;
-  typedef ::Usul::Containers::Vector<OneDependentInner,  ErrorCheckerType> OneDependentOuter;
+  typedef ::Usul::Containers::Vector<OneKnotVectorInner,ErrorCheckerType> OneKnotVectorOuter;
+  typedef ::Usul::Containers::Vector<OneCtrPtCoordInner,ErrorCheckerType> OneCtrPtCoordOuter;
 
-  typedef std::vector<OneIndependentOuter> MultipleIndependentInner;
-  typedef std::vector<OneDependentOuter>   MultipleDependentInner;
+  typedef std::vector<OneKnotVectorOuter> AllKnotVectorsInner;
+  typedef std::vector<OneCtrPtCoordOuter> AllCtrPtsCoordInner;
 
 public:
 
-  typedef ::Usul::Containers::Vector<SizeContainerInner,      ErrorCheckerType> SizeContainer;
-  typedef ::Usul::Containers::Vector<MultipleIndependentInner,ErrorCheckerType> IndependentContainer;
-  typedef ::Usul::Containers::Vector<MultipleDependentInner,  ErrorCheckerType> DependentContainer;
+  typedef ::Usul::Containers::Vector<UIntContainerInner, ErrorCheckerType> UIntContainer;
+  typedef ::Usul::Containers::Vector<AllKnotVectorsInner,ErrorCheckerType> KnotContainer;
+  typedef ::Usul::Containers::Vector<AllCtrPtsCoordInner,ErrorCheckerType> ControlPointContainer;
 
-  typedef std::vector<DependentType> Vector;
+  typedef std::vector<ControlPointType> Vector;
 
-  typedef ::Usul::Math::Vector2<DependentType>  Vec2;
-  typedef ::Usul::Math::Vector3<DependentType>  Vec3;
-  typedef ::Usul::Math::Vector4<DependentType>  Vec4;
-  typedef ::Usul::Math::Matrix44<DependentType> Matrix44;
+  typedef ::Usul::Math::Vector2<ControlPointType>  Vec2;
+  typedef ::Usul::Math::Vector3<ControlPointType>  Vec3;
+  typedef ::Usul::Math::Vector4<ControlPointType>  Vec4;
+  typedef ::Usul::Math::Matrix44<ControlPointType> Matrix44;
 
-  typedef UsulDetail::FloatTester<IndependentType> IndependentTester;
-  typedef UsulDetail::FloatTester<DependentType>   DependentTester;
-  typedef UsulDetail::Translation<Matrix44,Vec3>   Translation;
-  typedef UsulDetail::Scale<Matrix44,Vec3>         Scale;
-  typedef UsulDetail::Multiply<Matrix44,Vec4,Vec3> Multiply;
-  typedef UsulDetail::SquareRoot<DependentType>    SquareRoot;
-  typedef UsulDetail::Power<DependentType>         Power;
+  typedef Detail::FloatTester<KnotType>           KnotTester;
+  typedef Detail::FloatTester<ControlPointType>   ControlPointTester;
+  typedef Detail::Translation<Matrix44,Vec3>      Translation;
+  typedef Detail::Scale<Matrix44,Vec3>            Scale;
+  typedef Detail::Multiply<Matrix44,Vec4,Vec3>    Multiply;
 };
 
 
@@ -268,7 +234,7 @@ public:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-}; // namespace Config
+}; // namespace Usul
 }; // namespace GN
 
 

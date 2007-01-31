@@ -16,7 +16,7 @@
 #ifndef _USUL_TEMPLATE_4D_VECTOR_CLASS_H_
 #define _USUL_TEMPLATE_4D_VECTOR_CLASS_H_
 
-#include "Usul/Math/UMath.h"
+#include "Usul/Math/Math.h"
 #include "Usul/Errors/AssertPolicy.h"
 
 
@@ -215,7 +215,7 @@ public:
 
   Vector4 &operator /= ( T value )
   {
-    T reciprocal = static_cast < T > ( 1 ) / value;
+    T reciprocal = static_cast < T > ( 1 ) / s;
     _v[0] *= reciprocal;
     _v[1] *= reciprocal;
     _v[2] *= reciprocal;
@@ -232,26 +232,10 @@ public:
 
   Vector4 &operator += ( T s )
   {
-    _v[0] += s;
-    _v[1] += s;
-    _v[2] += s;
-    _v[3] += s;
-    return *this;
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Addition operator.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  Vector4 &operator += ( const Vector4 &v )
-  {
-    _v[0] += v[0];
-    _v[1] += v[1];
-    _v[2] += v[2];
-    _v[3] += v[3];
+    v[0] += s;
+    v[1] += s;
+    v[2] += s;
+    v[3] += s;
     return *this;
   }
 
@@ -264,10 +248,10 @@ public:
 
   Vector4 &operator -= ( T s )
   {
-    _v[0] -= s;
-    _v[1] -= s;
-    _v[2] -= s;
-    _v[3] -= s;
+    v[0] -= s;
+    v[1] -= s;
+    v[2] -= s;
+    v[3] -= s;
     return *this;
   }
 

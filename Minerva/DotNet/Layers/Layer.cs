@@ -263,7 +263,7 @@ namespace DT.Minerva.Layers.Controls
     /// 
     /// </summary>
     [
-    System.ComponentModel.Category("Label"),
+    System.ComponentModel.Category("Display"),
     System.ComponentModel.Description("Should a label be shown?"),
     System.ComponentModel.Browsable(true),
     ]
@@ -271,32 +271,6 @@ namespace DT.Minerva.Layers.Controls
     {
       get { lock (this.Mutex) { return _layer.ShowLabel; } }
       set { lock (this.Mutex) { _layer.ShowLabel = value; } }
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [
-    System.ComponentModel.Category("Label")
-    ]
-    public float LabelZOffset
-    {
-      get { lock (this.Mutex) { return _layer.LabelZOffset; } }
-      set { lock (this.Mutex) { _layer.LabelZOffset = value; } }
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [
-    System.ComponentModel.Category("Label")
-    ]
-    public System.Drawing.Color LabelColor
-    {
-      get { lock (this.Mutex) { return (System.Drawing.Color) _layer.LabelColor; } }
-      set { lock (this.Mutex) { _layer.LabelColor = value; } }
     }
 
 
@@ -402,9 +376,6 @@ namespace DT.Minerva.Layers.Controls
     /// <summary>
     /// 
     /// </summary>
-    [
-    System.ComponentModel.Browsable(false)
-    ]
     public virtual string Number
     {
       get { return "NA"; }
@@ -414,9 +385,6 @@ namespace DT.Minerva.Layers.Controls
     /// <summary>
     /// 
     /// </summary>
-    [
-    System.ComponentModel.Browsable(false)
-    ]
     public virtual string Min
     {
       get { return "NA"; }
@@ -426,9 +394,6 @@ namespace DT.Minerva.Layers.Controls
     /// <summary>
     /// 
     /// </summary>
-    [
-    System.ComponentModel.Browsable(false)
-    ]
     public virtual string Max
     {
       get { return "NA"; }
@@ -485,15 +450,6 @@ namespace DT.Minerva.Layers.Controls
     {
       this.Shown = true;
       this.setLayerProperties();
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    void CadKit.Interfaces.ILayer.addToFavorites()
-    {
-      Factory.Instance.addType(this.Name, this);
     }
 
 

@@ -270,7 +270,7 @@ private:
   ValidAccessTransform _grid;
   ValidAccessTransform _cursor;
   ValidAccessGroup _auxiliary;
-  Usul::Threads::Variable<ValidAccessGroup> _loaded;
+  Usul::Threads::Variable<ValidAccessGroup,Mutex> _loaded;
   USUL_VALID_REF_POINTER(vrjGA::ButtonGroup) _buttons;
   USUL_VALID_REF_POINTER(vrjGA::TrackerDevice) _tracker;
   USUL_VALID_REF_POINTER(vrjGA::JoystickDevice) _joystick;

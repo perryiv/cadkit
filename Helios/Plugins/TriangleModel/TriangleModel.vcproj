@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgDB.lib foxdll-1.6.lib"
+				AdditionalDependencies="osg.lib osgDB.lib foxdll-1.4.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/TriangleModel.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

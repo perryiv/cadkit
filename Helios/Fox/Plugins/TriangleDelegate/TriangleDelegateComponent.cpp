@@ -17,7 +17,7 @@
 
 #include "Usul/Documents/Document.h"
 
-#include "Helios/Fox/Views/Canvas.h"
+#include "OsgFox/Views/Canvas.h"
 
 #include "OsgTools/Triangles/Loop.h"
 
@@ -41,16 +41,16 @@
 #include "FoxTools/Dialogs/Message.h"
 #include "FoxTools/Functions/MainWindow.h"
 
-#include "Usul/Interfaces/Fox/IFoxClientArea.h"
-#include "Usul/Interfaces/Fox/IFoxMDIMenu.h"
-#include "Usul/Interfaces/Fox/IFoxTabItem.h"
-#include "Usul/Interfaces/Fox/IFoxTabBook.h"
+#include "Usul/Interfaces/IFoxClientArea.h"
+#include "Usul/Interfaces/IFoxMDIMenu.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IGetDocument.h"
 #include "Usul/Interfaces/IDocument.h"
-#include "Usul/Interfaces/GUI/ICancelButton.h"
-#include "Usul/Interfaces/GUI/IFlushEvents.h"
+#include "Usul/Interfaces/ICancelButton.h"
+#include "Usul/Interfaces/IFlushEvents.h"
 #include "Usul/Interfaces/IActiveView.h"
+#include "Usul/Interfaces/IFoxTabItem.h"
+#include "Usul/Interfaces/IFoxTabBook.h"
 #include "Usul/Interfaces/IAnimate.h"
 #include "Usul/Interfaces/IGroup.h"
 #include "Usul/Interfaces/IAddTriangle.h"
@@ -61,7 +61,7 @@
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Interfaces/IGroupPrimitives.h"
-#include "Usul/Interfaces/ISceneElement.h"
+#include "Usul/Interfaces/IPrimitiveGroup.h"
 
 #include "Usul/Registry/Constants.h"
 #include "Usul/Properties/Attribute.h"
@@ -92,7 +92,7 @@
 
 // for now
 #include "Usul/Resources/MenuBar.h"
-#include "Usul/Interfaces/Fox/IMenuBar.h"
+#include "Usul/Interfaces/IMenuBar.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -111,23 +111,21 @@ FXDEFMAP ( TriangleDelegateComponent ) MessageMap[] =
   FXMAPFUNC ( FX::SEL_UPDATE,  TriangleDelegateComponent::ID_BOUNDING_BOX,          TriangleDelegateComponent::onUpdateBoundingBox          ),
   FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_GLASS_BOUNDING_BOX,    TriangleDelegateComponent::onCommandGlassBoundingBox    ),
   FXMAPFUNC ( FX::SEL_UPDATE,  TriangleDelegateComponent::ID_GLASS_BOUNDING_BOX,    TriangleDelegateComponent::onUpdateGlassBoundingBox     ),
-  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_GOTO_LOOP,             TriangleDelegateComponent::onCommandGotoLoop            ),
-  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_GOTO_SUCCEEDED_LOOP,   TriangleDelegateComponent::onCommandGotoSucceededLoop   ),
-  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_TRIANGULATE,           TriangleDelegateComponent::onCommandTriangulate         ),
-  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_TRIANGULATE_ALL,       TriangleDelegateComponent::onCommandTriangulateAll      ),
-  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_LOOP_DONE,             TriangleDelegateComponent::onCommandLoopDone            ),
-  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_SHOW_ALL,              TriangleDelegateComponent::onCommandShowAll             ),
-  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_HIDE_ALL,              TriangleDelegateComponent::onCommandHideAll             ),
-  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_CLIP_BOX,              TriangleDelegateComponent::onCommandClipBox             ),
-  FXMAPFUNC ( FX::SEL_UPDATE,  TriangleDelegateComponent::ID_CLIP_BOX,              TriangleDelegateComponent::onUpdateClipBox              ),
-  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_TOGGLE_GROUP,          TriangleDelegateComponent::onCommandToggleGroup         ),
-  FXMAPFUNC ( FX::SEL_UPDATE,  TriangleDelegateComponent::ID_TOGGLE_GROUP,          TriangleDelegateComponent::onUpdateToggleGroup          ),
-  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_HIDE_ALL_GROUPS,       TriangleDelegateComponent::onCommandHideAllGroups       ),
-  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_SHOW_ALL_GROUPS,       TriangleDelegateComponent::onCommandShowAllGroups       ),
-  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_HIDE_GROUPS,           TriangleDelegateComponent::onCommandHideGroups          ),
-  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_SHOW_GROUPS,           TriangleDelegateComponent::onCommandShowGroups          ),
-  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_GROUP_TRANSPARENCY,    TriangleDelegateComponent::onCommandGroupTransparency   ),
-  FXMAPFUNC ( FX::SEL_UPDATE,  TriangleDelegateComponent::ID_GROUP_TRANSPARENCY,    TriangleDelegateComponent::onUpdateGroupTransparency    ),
+  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_GOTO_LOOP,             TriangleDelegateComponent::onCommandGotoLoop           ),
+  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_GOTO_SUCCEEDED_LOOP,   TriangleDelegateComponent::onCommandGotoSucceededLoop  ),
+  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_TRIANGULATE,           TriangleDelegateComponent::onCommandTriangulate        ),
+  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_TRIANGULATE_ALL,       TriangleDelegateComponent::onCommandTriangulateAll     ),
+  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_LOOP_DONE,             TriangleDelegateComponent::onCommandLoopDone           ),
+  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_SHOW_ALL,              TriangleDelegateComponent::onCommandShowAll            ),
+  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_HIDE_ALL,              TriangleDelegateComponent::onCommandHideAll            ),
+  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_CLIP_BOX,              TriangleDelegateComponent::onCommandClipBox            ),
+  FXMAPFUNC ( FX::SEL_UPDATE,  TriangleDelegateComponent::ID_CLIP_BOX,              TriangleDelegateComponent::onUpdateClipBox             ),
+  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_TOGGLE_GROUP,          TriangleDelegateComponent::onCommandToggleGroup        ),
+  FXMAPFUNC ( FX::SEL_UPDATE,  TriangleDelegateComponent::ID_TOGGLE_GROUP,          TriangleDelegateComponent::onUpdateToggleGroup         ),
+  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_HIDE_GROUPS,           TriangleDelegateComponent::onCommandHideGroups         ),
+  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_SHOW_GROUPS,           TriangleDelegateComponent::onCommandShowGroups         ),
+  FXMAPFUNC ( FX::SEL_COMMAND, TriangleDelegateComponent::ID_GROUP_TRANSPARENCY,    TriangleDelegateComponent::onCommandGroupTransparency  ),
+  FXMAPFUNC ( FX::SEL_UPDATE,  TriangleDelegateComponent::ID_GROUP_TRANSPARENCY,    TriangleDelegateComponent::onUpdateGroupTransparency   ),
 };
 
 FOX_TOOLS_IMPLEMENT ( TriangleDelegateComponent, FX::FXObject, MessageMap, ARRAYNUMBER ( MessageMap ) );
@@ -263,7 +261,7 @@ void TriangleDelegateComponent::createDefaultGUI ( Usul::Documents::Document *do
   LocalChildPtr child ( new ChildWindow ( document, clientArea, "Untitled", 0x0, mdiMenu, 0 ) ); 
 
   // Make the view
-  Helios::Views::Canvas* canvas ( new Helios::Views::Canvas ( doc, child.get(), FoxTools::Functions::visual() ) );
+  OsgFox::Views::Canvas* canvas ( new OsgFox::Views::Canvas ( doc, child.get(), FoxTools::Functions::visual() ) );
 
   // Get pointer to viewer
   Usul::Interfaces::IViewer::ValidQueryPtr viewer ( canvas->viewer() );
@@ -298,11 +296,11 @@ void TriangleDelegateComponent::createDefaultGUI ( Usul::Documents::Document *do
 
 void TriangleDelegateComponent::refreshView ( Usul::Documents::Document *document, Usul::Interfaces::IViewer *viewer )
 {
-  Usul::Interfaces::IHeliosView::QueryPtr HeliosView ( viewer );
+  Usul::Interfaces::IOsgFoxView::QueryPtr osgFoxView ( viewer );
 
-  if ( HeliosView.valid() )
+  if ( osgFoxView.valid() )
   {
-    OsgTools::Render::Viewer* canvas ( HeliosView->HeliosView() );
+    OsgTools::Render::Viewer* canvas ( osgFoxView->osgFoxView() );
 
     Usul::Interfaces::IBuildScene::QueryPtr build ( document );
 
@@ -1542,18 +1540,15 @@ void TriangleDelegateComponent::_buildGroupTab ( Usul::Interfaces::IUnknown* cal
       os << "Group " << i;
       _groupList->appendItem( os.str().c_str() );
 
-      //Usul::Interfaces::ISceneElement::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
+      Usul::Interfaces::IPrimitiveGroup::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
 
-      //if( primitiveGroup.valid() )
-        //_groupList->getItem(i)->setSelected( primitiveGroup->getVisibility() );
+      if( primitiveGroup.valid() )
+        _groupList->getItem(i)->setSelected( primitiveGroup->getVisibility() );
     }
 
 
-    new FX::FXButton ( _groupFrame, "Hide all groups", 0x0, this, TriangleDelegateComponent::ID_HIDE_ALL_GROUPS );
-    new FX::FXButton ( _groupFrame, "Show all groups", 0x0, this, TriangleDelegateComponent::ID_SHOW_ALL_GROUPS );
-
-    new FX::FXButton ( _groupFrame, "Hide", 0x0, this, TriangleDelegateComponent::ID_HIDE_GROUPS );
-    new FX::FXButton ( _groupFrame, "Show", 0x0, this, TriangleDelegateComponent::ID_SHOW_GROUPS );
+    new FX::FXButton ( _groupFrame, "Hide all groups", 0x0, this, TriangleDelegateComponent::ID_HIDE_GROUPS );
+    new FX::FXButton ( _groupFrame, "Show all groups", 0x0, this, TriangleDelegateComponent::ID_SHOW_GROUPS );
 
     //FX::FXHorizontalFrame *transFrame ( new FX::FXHorizontalFrame ( vframe2, FX::LAYOUT_FILL_X ) );
     new FX::FXLabel ( _groupFrame, "Transparency: " );
@@ -1574,7 +1569,6 @@ void TriangleDelegateComponent::_buildGroupTab ( Usul::Interfaces::IUnknown* cal
 
 long TriangleDelegateComponent::onCommandToggleGroup ( FX::FXObject *object, FX::FXSelector, void *data )
 {
-#if 0
   // Get needed interfaces
   Usul::Interfaces::IDocument::ValidQueryPtr document       ( Usul::Documents::Manager::instance().active() );
   Usul::Interfaces::ISendMessage::ValidQueryPtr sendMessage ( document );
@@ -1584,7 +1578,7 @@ long TriangleDelegateComponent::onCommandToggleGroup ( FX::FXObject *object, FX:
 
   for ( unsigned int i = 0; i < numItems; ++i )
   {
-    Usul::Interfaces::ISceneElement::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
+    Usul::Interfaces::IPrimitiveGroup::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
 
     // If we have a valid pointer...
     if( primitiveGroup.valid() )
@@ -1602,7 +1596,7 @@ long TriangleDelegateComponent::onCommandToggleGroup ( FX::FXObject *object, FX:
   }
 
   sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_RENDER_SCENE );
-#endif
+
   return 1;
 }
 
@@ -1615,7 +1609,6 @@ long TriangleDelegateComponent::onCommandToggleGroup ( FX::FXObject *object, FX:
 
 long TriangleDelegateComponent::onUpdateToggleGroup ( FX::FXObject *object, FX::FXSelector, void * )
 {
-#if 0
   // Get needed interfaces
   Usul::Interfaces::IDocument::ValidQueryPtr document       ( Usul::Documents::Manager::instance().active() );
   Usul::Interfaces::IGroupPrimitives::ValidQueryPtr groups  ( document );
@@ -1629,7 +1622,7 @@ long TriangleDelegateComponent::onUpdateToggleGroup ( FX::FXObject *object, FX::
 
   for ( unsigned int i = 0; i < numItems; ++i )
   {
-    Usul::Interfaces::ISceneElement::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
+    Usul::Interfaces::IPrimitiveGroup::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
 
     // If we have a valid pointer...
     if( primitiveGroup.valid() )
@@ -1644,7 +1637,7 @@ long TriangleDelegateComponent::onUpdateToggleGroup ( FX::FXObject *object, FX::
       }
     }
   }
-#endif
+
   return 1;
 }
 
@@ -1655,7 +1648,7 @@ long TriangleDelegateComponent::onUpdateToggleGroup ( FX::FXObject *object, FX::
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-long TriangleDelegateComponent::onCommandHideAllGroups ( FX::FXObject *object, FX::FXSelector, void * )
+long TriangleDelegateComponent::onCommandHideGroups ( FX::FXObject *object, FX::FXSelector, void * )
 {
   // Get needed interfaces
   Usul::Interfaces::IDocument::ValidQueryPtr document       ( Usul::Documents::Manager::instance().active() );
@@ -1664,7 +1657,7 @@ long TriangleDelegateComponent::onCommandHideAllGroups ( FX::FXObject *object, F
 
   for ( unsigned int i = 0; i < groups->groupsNumber(); ++i )
   {
-    Usul::Interfaces::ISceneElement::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
+    Usul::Interfaces::IPrimitiveGroup::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
 
     // If we have a valid pointer...
     if( primitiveGroup.valid() )
@@ -1673,11 +1666,11 @@ long TriangleDelegateComponent::onCommandHideAllGroups ( FX::FXObject *object, F
     }
   }
 
-  /*this->onUpdateToggleGroup( 0x0, 0, 0x0 );
+  this->onUpdateToggleGroup( 0x0, 0, 0x0 );
   _groupList->repaint();
   _groupList->forceRefresh();
   _groupList->update();
-  FoxTools::Functions::application()->flush();*/
+  FoxTools::Functions::application()->flush();
 
   sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_RENDER_SCENE );
 
@@ -1691,7 +1684,7 @@ long TriangleDelegateComponent::onCommandHideAllGroups ( FX::FXObject *object, F
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-long TriangleDelegateComponent::onCommandShowAllGroups ( FX::FXObject *object, FX::FXSelector, void * )
+long TriangleDelegateComponent::onCommandShowGroups ( FX::FXObject *object, FX::FXSelector, void * )
 {
   // Get needed interfaces
   Usul::Interfaces::IDocument::ValidQueryPtr document       ( Usul::Documents::Manager::instance().active() );
@@ -1700,7 +1693,7 @@ long TriangleDelegateComponent::onCommandShowAllGroups ( FX::FXObject *object, F
 
   for ( unsigned int i = 0; i < groups->groupsNumber(); ++i )
   {
-    Usul::Interfaces::ISceneElement::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
+    Usul::Interfaces::IPrimitiveGroup::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
 
     // If we have a valid pointer...
     if( primitiveGroup.valid() )
@@ -1709,11 +1702,11 @@ long TriangleDelegateComponent::onCommandShowAllGroups ( FX::FXObject *object, F
     }
   }
 
-  //this->onUpdateToggleGroup( 0x0, 0, 0x0 );
-  //_groupList->repaint();
-  //_groupList->forceRefresh();
-  //_groupList->update();
-  //FoxTools::Functions::application()->flush();
+  this->onUpdateToggleGroup( 0x0, 0, 0x0 );
+  _groupList->repaint();
+  _groupList->forceRefresh();
+  _groupList->update();
+  FoxTools::Functions::application()->flush();
 
   sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_RENDER_SCENE );
 
@@ -1740,7 +1733,7 @@ long TriangleDelegateComponent::onCommandGroupTransparency ( FX::FXObject *objec
 
   for ( unsigned int i = 0; i < numItems; ++i )
   {
-    Usul::Interfaces::ISceneElement::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
+    Usul::Interfaces::IPrimitiveGroup::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
 
     // If we have a valid pointer...
     if( primitiveGroup.valid() )
@@ -1778,73 +1771,5 @@ long TriangleDelegateComponent::onUpdateGroupTransparency  ( FX::FXObject *objec
     spinner->setValue ( t );
   }
 #endif
-  return 1;
-}
-
-
-long TriangleDelegateComponent::onCommandHideGroups ( FX::FXObject *object, FX::FXSelector, void * )
-{
-  // Get needed interfaces
-  Usul::Interfaces::IDocument::ValidQueryPtr document       ( Usul::Documents::Manager::instance().active() );
-  Usul::Interfaces::IGroupPrimitives::ValidQueryPtr groups  ( document );
-  Usul::Interfaces::ISendMessage::ValidQueryPtr sendMessage ( document );
-
-  unsigned int numItems ( _groupList->getNumItems() );
-
-  if ( numItems != groups->groupsNumber() )
-  {
-    return 0;
-  }
-
-  for ( unsigned int i = 0; i < numItems; ++i )
-  {
-    Usul::Interfaces::ISceneElement::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
-
-    // If we have a valid pointer...
-    if( primitiveGroup.valid() )
-    {
-      if( _groupList->isItemSelected( i ) )
-      {
-        primitiveGroup->setVisibility( false );
-      }
-    }
-  }
-
-  sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_RENDER_SCENE );
-
-  return 1;
-}
-
-
-long TriangleDelegateComponent::onCommandShowGroups ( FX::FXObject *object, FX::FXSelector, void * )
-{
-  // Get needed interfaces
-  Usul::Interfaces::IDocument::ValidQueryPtr document       ( Usul::Documents::Manager::instance().active() );
-  Usul::Interfaces::IGroupPrimitives::ValidQueryPtr groups  ( document );
-  Usul::Interfaces::ISendMessage::ValidQueryPtr sendMessage ( document );
-
-  unsigned int numItems ( _groupList->getNumItems() );
-
-  if ( numItems != groups->groupsNumber() )
-  {
-    return 0;
-  }
-
-  for ( unsigned int i = 0; i < numItems; ++i )
-  {
-    Usul::Interfaces::ISceneElement::QueryPtr primitiveGroup ( groups->getPrimitiveGroup( i ) );
-
-    // If we have a valid pointer...
-    if( primitiveGroup.valid() )
-    {
-      if( _groupList->isItemSelected( i ) )
-      {
-        primitiveGroup->setVisibility( true );
-      }
-    }
-  }
-
-  sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_RENDER_SCENE );
-
   return 1;
 }

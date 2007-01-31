@@ -46,14 +46,9 @@ protected:
   void                  _read ( const std::string &filename );
 
   // Callbacks for the xml-reader.
-  void                  _addGrid           ( const std::string & );
-  void                  _setNumGridBlocks  ( const std::string & );
+  void                  _setNumGridBloaks  ( const std::string & );
   void                  _setGridScale      ( const std::string & );
   void                  _setGridColor      ( const std::string & );
-  void                  _setGridFillColor      ( const std::string & );
-  void                  _setGridRotationAngleRad ( const std::string & );
-  void                  _setGridRotationVector   ( const std::string & );
-  void                  _offsetGrid        ( const std::string & );
   void                  _setNearClip       ( const std::string & );
   void                  _setViewAllScale   ( const std::string & );
   void                  _setLightAmbient   ( const std::string & );
@@ -63,7 +58,6 @@ protected:
   void                  _setLightPosition  ( const std::string & );
   void                  _setBackground     ( const std::string & );
   void                  _setWriter         ( const std::string & );
-  void                  _setHeadNode       ( const std::string & );
   void                  _setNormGlobal     ( const std::string & );
   void                  _setNormModels     ( const std::string & );
   void                  _translateMenu     ( const std::string & );
@@ -81,23 +75,6 @@ protected:
   void                  _setTransSpeed     ( const std::string & );
   void                  _setRotSpeed       ( const std::string & );
   void                  _setScaleSpeed     ( const std::string & );
-  void                  _setSinterServer   ( const std::string & );
-  void                  _setSinterWriter   ( const std::string & );
-  void                  _setSinterTmpFile  ( const std::string & );
-  void                  _setScribeColor    ( const std::string & );
-  void                  _setScribeWidth    ( const std::string & );
-  void                  _setAutoPlacement  ( const std::string & );
-  void                  _setAutoPlaceCenter ( const std::string & );
-  void                  _setAutoPlaceRadius ( const std::string & );
-  void                  _setNavInvertRotation ( const std::string & );
-  void                  _setNavNewRotation    ( const std::string & );
-  void                  _setNavAcceleration   ( const std::string & );
-  void                  _setNavIconColor      ( const std::string & );
-  void                  _setNavIconSize       ( const std::string & );
-  void                  _setAutoRotationAngle ( const std::string & );
-  void                  _setAutoRotationVector( const std::string & );
-  void                  _setUserName          ( const std::string & );
-  void                  _setAvatarWaitFrames  ( const std::string & );
 
 private:
 

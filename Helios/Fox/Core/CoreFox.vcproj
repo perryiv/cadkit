@@ -4,7 +4,6 @@
 	Version="8.00"
 	Name="lib: Helios Fox Core"
 	ProjectGUID="{DE06D290-6744-4FC5-BBC6-E28271369ACA}"
-	RootNamespace="lib: Helios Fox Core"
 	>
 	<Platforms>
 		<Platform
@@ -77,8 +76,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenThreadsWin32d.lib opengl32.lib foxdlld-1.6.lib shell32.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosCored.dll"
+				AdditionalDependencies="OpenThreadsWin32d.lib opengl32.lib foxdlld-1.4.lib shell32.lib"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/OsgFoxCored.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(FOX_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(OPENTHREADS_LIB_DIR)&quot;;"
@@ -176,8 +175,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenThreadsWin32.lib opengl32.lib foxdll-1.6.lib shell32.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosCore.dll"
+				AdditionalDependencies="OpenThreadsWin32.lib opengl32.lib foxdll-1.4.lib shell32.lib"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/OsgFoxCore.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(FOX_LIB_DIR);$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR)"
@@ -258,7 +257,7 @@
 			Name="Notes"
 			>
 			<File
-				RelativePath="..\..\TODO.htm"
+				RelativePath="..\TODO.htm"
 				DeploymentContent="true"
 				>
 			</File>

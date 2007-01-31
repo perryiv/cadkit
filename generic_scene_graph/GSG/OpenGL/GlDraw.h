@@ -27,7 +27,7 @@ namespace GSG {
 class Shape;
 class Primitive;
 class GlContext;
-class PrimitiveSetElement;
+class PrimitiveElement;
 class TransformElement;
 class MaterialElement;
 class ColorElement;
@@ -37,7 +37,7 @@ class GSG_OPENGL_EXPORT GlDraw : public Draw
 {
 public:
 
-  GSG_DECLARE_REFERENCED ( GlDraw );
+  GSG_DECLARE_CLONE ( GlDraw );
   GSG_DECLARE_LOCAL_TYPEDEFS ( GlDraw, Draw );
 
   // Constructors.
@@ -65,23 +65,14 @@ protected:
 
   typedef unsigned int gl_enum;
 
-  enum // Server state.
+  enum
   {
     COLOR_MATERIAL = 0x00000001,
-    LIGHTING       = 0x00000002
+    LIGHTING       = 0x00000002,
   };
 
-  enum // Client state.
-  {
-    VERTEX_ARRAY   = 0x00000001,
-    NORMAL_ARRAY   = 0x00000002,
-    COLOR_ARRAY    = 0x00000004
-  };
-
-  void                  _enableServerState  ( UnsignedInteger f, gl_enum g );
-  void                  _enableClientState  ( UnsignedInteger f, gl_enum g );
-  void                  _disableServerState ( UnsignedInteger f, gl_enum g );
-  void                  _disableClientState ( UnsignedInteger f, gl_enum g );
+  void                  _enable  ( UnsignedInteger f, gl_enum g );
+  void                  _disable ( UnsignedInteger f, gl_enum g );
 
   virtual void          _makeContextCurrent() const;
 
@@ -96,8 +87,7 @@ protected:
 private:
 
   mutable Pointer < GlContext > _context;
-  UnsignedInteger _serverState;
-  UnsignedInteger _clientState;
+  UnsignedInteger _stateBits;
 };
 
 

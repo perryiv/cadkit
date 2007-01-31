@@ -7,17 +7,17 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Fox/Views/FoxCanvas.h"
-#include "Helios/Fox/Views/FoxContext.h"
-#include "Helios/Fox/Views/Registry.h"
+#include "OsgFox/Views/FoxCanvas.h"
+#include "OsgFox/Views/FoxContext.h"
+#include "OsgFox/Views/Registry.h"
 
 #include "Usul/Errors/Checker.h"
 #include "Usul/Registry/Constants.h"
-#include "Usul/Interfaces/Fox/ISetCursor.h"
+#include "Usul/Interfaces/ISetCursor.h"
 
 #include "OsgTools/Render/Defaults.h"
 
-using namespace Helios::Views;
+using namespace OsgFox::Views;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -115,7 +115,7 @@ void FoxCanvas::create()
     _viewer->create();
 
     // Get the background color from the registry
-    _viewer->backgroundColor ( Helios::Registry::read ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, OsgTools::Render::Defaults::CLEAR_COLOR ) );
+    _viewer->backgroundColor ( OsgFox::Registry::read ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, OsgTools::Render::Defaults::CLEAR_COLOR ) );
   }
 
   // Create the cursors.
@@ -294,7 +294,7 @@ void FoxCanvas::unref ( bool )
 void FoxCanvas::startAnimation ( double timeout )
 {
   // Use the callback to animate.
-  this->getApp()->addTimeout ( this, ID_ANIMATION_TIMEOUT, static_cast < unsigned int > ( timeout ) );
+  this->getApp()->addTimeout ( this, ID_ANIMATION_TIMEOUT, timeout );
   _timeouts[ ID_ANIMATION_TIMEOUT ] = timeout;
 }
 
@@ -311,7 +311,7 @@ long FoxCanvas::onTimeoutAnimation ( FX::FXObject *, FX::FXSelector, void * )
   {
     // Set the matrix and see if we should continue.
     if ( this->viewer()->timeoutAnimate () ) 
-      this->getApp()->addTimeout ( this, ID_ANIMATION_TIMEOUT, static_cast < unsigned int > ( _timeouts[ ID_ANIMATION_TIMEOUT ] ) );
+      this->getApp()->addTimeout ( this, ID_ANIMATION_TIMEOUT, _timeouts[ ID_ANIMATION_TIMEOUT ] );
   }
   
   return 1;
@@ -331,7 +331,7 @@ long FoxCanvas::onTimeoutSpin ( FX::FXObject *object, FX::FXSelector selector, v
     this->viewer()->timeoutSpin();
 
     // Set a new timeout event.
-    this->getApp()->addTimeout ( this, ID_SPIN_TIMEOUT, static_cast < unsigned int > ( _timeouts[ ID_SPIN_TIMEOUT ] ) );
+    this->getApp()->addTimeout ( this, ID_SPIN_TIMEOUT, _timeouts[ ID_SPIN_TIMEOUT ] );
   }
 
   // Message handled.
@@ -364,7 +364,7 @@ void FoxCanvas::stopSpin ( )
 
 void FoxCanvas::startSpin ( double timeout )
 {
-  this->getApp()->addTimeout ( this, ID_SPIN_TIMEOUT, static_cast < unsigned int > ( timeout ) );
+  this->getApp()->addTimeout ( this, ID_SPIN_TIMEOUT, timeout );
   _timeouts[ ID_SPIN_TIMEOUT ] = timeout;
 }
 

@@ -10,11 +10,6 @@
 #include "Group.h"
 
 #include "Usul/Adaptors/Random.h"
-#include "Usul/Interfaces/IDecimateTriangles.h"
-#include "Usul/Interfaces/ISmoothTriangles.h"
-#include "Usul/Interfaces/ISubdivideTriangles.h"
-
-#include "OsgTools/HasOption.h"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Group, Group::BaseClass );
 
@@ -25,10 +20,9 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Group, Group::BaseClass );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Group::Group( Vertices *vertices, Normals *normalsT, Normals *normalsV, Elements *indices ) :
+Group::Group( Vertices *vertices, Normals *normalsT, Elements *indices ) :
 _vertices ( vertices ),
 _normalsT ( normalsT ),
-_normalsV ( normalsV ),
 _indices ( indices ),
 _group ( new osg::Group ),
 _mt ( new osg::MatrixTransform ),
@@ -49,7 +43,6 @@ _material ( new osg::Material )
 Group::Group() :
 _vertices ( new Vertices ),
 _normalsT ( new Normals ),
-_normalsV ( new Normals ),
 _indices ( new Elements ),
 _group ( new osg::Group ),
 _mt ( new osg::MatrixTransform ),
@@ -83,8 +76,8 @@ Usul::Interfaces::IUnknown *Group::queryInterface ( unsigned long iid )
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::ISceneElement::IID:
-    return static_cast < Usul::Interfaces::ISceneElement* > ( this );
+  case Usul::Interfaces::IPrimitiveGroup::IID:
+    return static_cast < Usul::Interfaces::IPrimitiveGroup* > ( this );
   default:
     return 0x0;
   }
@@ -101,11 +94,8 @@ void Group::_init()
 {
   _geometry->setVertexArray ( _vertices.get() );
 
-  /*_geometry->setNormalArray ( _normalsT.get() );
-  _geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );*/
-
-  _geometry->setNormalArray ( _normalsV.get() );
-  _geometry->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
+  _geometry->setNormalArray ( _normalsT.get() );
+  _geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
 
   _geometry->addPrimitiveSet ( _indices.get() );
 
@@ -157,18 +147,6 @@ void Group::_init()
 
 osg::Node* Group::buildScene ( const Options &options, Unknown *caller )
 {
-  // Set the correct normal-vectors.
-  if ( OsgTools::Options::has ( options, "normals", "per-vertex" ) )
-  {
-    _geometry->setNormalArray ( _normalsV.get() );
-    _geometry->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
-  }
-  else
-  {
-    _geometry->setNormalArray ( _normalsT.get() );
-    _geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
-  }
-
   return _group.get();
 }
 
@@ -376,47 +354,3 @@ float Group::getTransparency () const
   return td;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Decimate the model.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Group::decimate ( Usul::Interfaces::IDecimateTriangles* decimate, float reduction )
-{
-  decimate->decimateTriangles( _vertices.get(), _indices.get(), _normalsT.get(), _normalsV.get(), reduction );
-
-  _geometry->dirtyDisplayList();
-  _geometry->dirtyBound();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Smooth the model.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Group::smooth ( Usul::Interfaces::ISmoothTriangles *smooth, unsigned int numIterations )
-{
-  smooth->smoothTriangles ( _vertices.get(), _indices.get(), _normalsT.get(), _normalsV.get(), numIterations );
-
-  _geometry->dirtyDisplayList();
-  _geometry->dirtyBound();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Subdivide the model.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Group::subdivide ( Usul::Interfaces::ISubdivideTriangles *subdivide, unsigned int numIterations )
-{
-  subdivide->subdivideTriangles ( _vertices.get(), _indices.get(), _normalsT.get(), _normalsV.get(), numIterations );
-
-  _geometry->dirtyDisplayList();
-  _geometry->dirtyBound();
-}

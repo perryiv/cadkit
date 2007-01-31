@@ -99,9 +99,6 @@ namespace DT.Minerva.Layers.Controls
     /// <summary>
     /// 
     /// </summary>
-    [
-    System.ComponentModel.Browsable(false)
-    ]
     public override string Number
     {
       get

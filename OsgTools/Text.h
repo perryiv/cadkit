@@ -20,7 +20,6 @@
 #include "OsgTools/Declarations.h"
 
 #include "osg/Vec4"
-#include "osg/Vec3"
 
 #include <string>
 

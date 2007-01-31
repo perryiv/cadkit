@@ -18,10 +18,10 @@
 #pragma warning ( disable : 4996 )
 #endif
 
-#include "Helios/Fox/Views/Precompiled.h"
-#include "Helios/Fox/Views/Canvas.h"
-#include "Helios/Fox/Views/Registry.h"
-#include "Helios/Fox/Views/FoxContext.h"
+#include "OsgFox/Views/Precompiled.h"
+#include "OsgFox/Views/Canvas.h"
+#include "OsgFox/Views/Registry.h"
+#include "OsgFox/Views/FoxContext.h"
 
 #include "OsgTools/Draggers/Dragger.h"
 #include "OsgTools/Render/Defaults.h"
@@ -42,8 +42,13 @@
 #include "Usul/Bits/Bits.h"
 #include "Usul/System/LastError.h"
 #include "Usul/Registry/Constants.h"
+#include "Usul/Interfaces/IUpdateTreeControls.h"
+#include "Usul/Interfaces/IStatusBar.h"
+#include "Usul/Interfaces/IReportErrors.h"
 #include "Usul/Interfaces/ISendMessage.h"
+#include "Usul/Interfaces/IMaterialEditor.h"
 #include "Usul/Interfaces/ICleanUp.h"
+#include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/ReportErrors.h"
 #include "Usul/Resources/TextWindow.h"
@@ -59,7 +64,7 @@
 
 #include <limits>
 
-using namespace Helios::Views;
+using namespace OsgFox::Views;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -107,8 +112,6 @@ FXDEFMAP ( Canvas ) CanvasMap[] =
   FXMAPFUNC ( FX::SEL_UPDATE,          Canvas::ID_BOUNDING_SPHERE,                              Canvas::onUpdateBoundingSphere        ),
   FXMAPFUNC ( FX::SEL_COMMAND,         Canvas::ID_NUM_RENDER_PASSES,                            Canvas::onCommandNumRenderPasses      ),
   FXMAPFUNC ( FX::SEL_UPDATE,          Canvas::ID_NUM_RENDER_PASSES,                            Canvas::onUpdateNumRenderPasses       ),
-  FXMAPFUNC ( FX::SEL_COMMAND,         Canvas::ID_SCATTER_SCALE,                                Canvas::onCommandScatterScale         ),
-  FXMAPFUNC ( FX::SEL_UPDATE,          Canvas::ID_SCATTER_SCALE,                                Canvas::onUpdateScatterScale          ),
   FXMAPFUNC ( FX::SEL_COMMAND,         Canvas::ID_SORT_BACK_TO_FRONT,                           Canvas::onCommandSortBackToFront      ),
   FXMAPFUNC ( FX::SEL_UPDATE,          Canvas::ID_SORT_BACK_TO_FRONT,                           Canvas::onUpdateSortBackToFront       ),
   FXMAPFUNC ( FX::SEL_COMMAND,         Canvas::ID_SEMI_TRANSPARENT,                             Canvas::onCommandSemiTransparent      ),
@@ -193,10 +196,6 @@ void Canvas::defaultBackground()
   if ( this->viewer() )
   {
     this->viewer()->backgroundColor ( OsgTools::Render::Defaults::CLEAR_COLOR );
-    
-    // Write it to the registry.
-    Helios::Registry::write ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, this->viewer()->backgroundColor() );
-    
     this->viewer()->render();
   }
 }
@@ -226,7 +225,7 @@ long Canvas::onFocusIn ( FX::FXObject *object, FX::FXSelector selector, void *ca
 {
 #if 0
   // Update the tree control.
-  MainWindow *main ( Helios::mainWindow ( this->getParent() ) );
+  MainWindow *main ( OsgFox::mainWindow ( this->getParent() ) );
   Usul::Interfaces::IUpdateTreeControls::QueryPtr update ( main->queryInterface( Usul::Interfaces::IUpdateTreeControls::IID ) );
   if( update.valid() )  
     update->updateTreeControls ( this->scene() );
@@ -250,7 +249,7 @@ void Canvas::backgroundColor ( const osg::Vec4 &color )
     this->viewer()->backgroundColor ( color );
 
   // Write it to the registry.
-  Helios::Registry::write ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, color ); // TODO, put this in preference class?
+  OsgFox::Registry::write ( Usul::Registry::Sections::OPEN_GL_CANVAS, Usul::Registry::Keys::CLEAR_COLOR, color ); // TODO, put this in preference class?
 }
 
 
@@ -539,52 +538,20 @@ void Canvas::buildDefaultMenu ( FX::FXWindow *owner, MenuPanes &menus )
   {
     // Rendering passes submenu. Each button's user-data points to an integer 
     // indicating how many passes.
+    FX::FXMenuPane *renderPassesMenu = new FX::FXMenuPane ( owner );
+    new FX::FXMenuCascade ( menu, "Rendering Passes", 0x0, renderPassesMenu );
+    FX::FXMenuRadio *radio ( new FX::FXMenuRadio ( renderPassesMenu, "1-Pass", this, Canvas::ID_NUM_RENDER_PASSES ) );
+    radio->setUserData ( USUL_UNSAFE_CAST ( void *, 1 ) );
+    OsgTools::Jitter::Available passes ( OsgTools::Jitter::instance().available() );
+    for ( OsgTools::Jitter::Available::const_iterator i = passes.begin(); i != passes.end(); ++i )
     {
-      FX::FXMenuPane *renderPassesMenu = new FX::FXMenuPane ( owner );
-      new FX::FXMenuCascade ( menu, "Rendering Passes", 0x0, renderPassesMenu );
-      FX::FXMenuRadio *radio ( new FX::FXMenuRadio ( renderPassesMenu, "1-Pass", this, Canvas::ID_NUM_RENDER_PASSES ) );
-      radio->setUserData ( USUL_UNSAFE_CAST ( void *, 1 ) );
-      OsgTools::Jitter::Available passes ( OsgTools::Jitter::instance().available() );
-      for ( OsgTools::Jitter::Available::const_iterator i = passes.begin(); i != passes.end(); ++i )
-      {
-        radio = new FX::FXMenuRadio ( renderPassesMenu, i->second.c_str(), this, Canvas::ID_NUM_RENDER_PASSES );
-        radio->setUserData ( USUL_UNSAFE_CAST ( void *, i->first ) );
-      }
-      menus.push_back ( renderPassesMenu );
+      radio = new FX::FXMenuRadio ( renderPassesMenu, i->second.c_str(), this, Canvas::ID_NUM_RENDER_PASSES );
+      radio->setUserData ( USUL_UNSAFE_CAST ( void *, i->first ) );
     }
-
-    // Scatter-scale is how how much to scale the hard-coded jitter values.
-    {
-      FX::FXMenuPane *scatterScaleMenu = new FX::FXMenuPane ( owner );
-      new FX::FXMenuCascade ( menu, "Scatter Scale", 0x0, scatterScaleMenu );
-      typedef std::pair<float,std::string> ScalePair;
-      typedef std::vector<ScalePair> ScalePairs;
-      ScalePairs scales;
-      scales.push_back ( ScalePair ( 32.0,   "32"    ) );
-      scales.push_back ( ScalePair ( 16.0,   "16"    ) );
-      scales.push_back ( ScalePair (  8.0,    "8"    ) );
-      scales.push_back ( ScalePair (  4.0,    "4"    ) );
-      scales.push_back ( ScalePair (  2.0,    "2"    ) );
-      scales.push_back ( ScalePair (  1.0,    "1"    ) );
-      scales.push_back ( ScalePair (  1.0/2,  "1/2"  ) );
-      scales.push_back ( ScalePair (  1.0/4,  "1/4"  ) );
-      scales.push_back ( ScalePair (  1.0/8,  "1/8"  ) );
-      scales.push_back ( ScalePair (  1.0/16, "1/16" ) );
-      scales.push_back ( ScalePair (  1.0/32, "1/32" ) );
-      for ( ScalePairs::const_iterator i = scales.begin(); i != scales.end(); ++i )
-      {
-        USUL_STATIC_ASSERT ( sizeof ( float ) == sizeof ( void * ) );
-        FX::FXMenuRadio *radio ( new FX::FXMenuRadio ( scatterScaleMenu, i->second.c_str(), this, Canvas::ID_SCATTER_SCALE ) );
-
-        // Interpret the float's bits as unsigned int and save as a void pointer.
-        const unsigned int value ( *( reinterpret_cast < const unsigned int * > ( &( i->first ) ) ) );
-        radio->setUserData ( USUL_UNSAFE_CAST ( void *, value ) );
-      }
-      menus.push_back ( scatterScaleMenu );
-    }
+    menus.push_back ( renderPassesMenu );
   }
   new FX::FXMenuCheck ( menu, "Sort Back to Front\t\tSet/Unset back to front sorting.", this, Canvas::ID_SORT_BACK_TO_FRONT );
-
+  
   FX::FXMenuPane *transparencyMenu = new FX::FXMenuPane ( owner );
   new FX::FXMenuCascade ( menu, "Transparency", 0x0, transparencyMenu );
   new FX::FXMenuCommand ( transparencyMenu, "0.05\t\t", 0x0, this, Canvas::ID_SEMI_TRANSPARENT );
@@ -1112,34 +1079,10 @@ long Canvas::onCommandNumRenderPasses ( FX::FXObject *object, FX::FXSelector, vo
   // Get the number of passes.
   FX::FXWindow *window ( SAFE_CAST_FOX ( FX::FXWindow, object ) );
   const void *data ( ( window ) ? window->getUserData() : 0x0 );
-  const unsigned int numPasses ( USUL_UNSAFE_CAST ( unsigned int, data ) );
+  unsigned int numPasses ( USUL_UNSAFE_CAST ( unsigned int, data ) );
 
   // Set the number of passes.
   this->viewer()->numRenderPasses ( ( numPasses > 0 ) ? numPasses : this->viewer()->numRenderPasses() );
-
-  // Handled.
-  return 1;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called when the "Scatter Scale" button is picked.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-long Canvas::onCommandScatterScale ( FX::FXObject *object, FX::FXSelector, void * )
-{
-  // The user-data is a void pointer, which is a value. We interpret it's 
-  // bits as a float. This requires first interpreting the address of the 
-  // local variable as a float pointer.
-  FX::FXWindow *window ( SAFE_CAST_FOX ( FX::FXWindow, object ) );
-  const void *data ( ( window ) ? window->getUserData() : 0x0 );
-  const unsigned int temp ( reinterpret_cast < unsigned int > ( data ) );
-  const float scale ( *( reinterpret_cast < const float * > ( &temp ) ) );
-
-  // Set the scale.
-  this->viewer()->scatterScale ( scale );
 
   // Handled.
   return 1;
@@ -1157,34 +1100,10 @@ long Canvas::onUpdateNumRenderPasses ( FX::FXObject *object, FX::FXSelector, voi
   // Get the number of passes.
   FX::FXWindow *window ( SAFE_CAST_FOX ( FX::FXWindow, object ) );
   const void *data ( ( window ) ? window->getUserData() : 0x0 );
-  const unsigned int numPasses ( USUL_UNSAFE_CAST ( unsigned int, data ) );
+  unsigned int numPasses ( USUL_UNSAFE_CAST ( unsigned int, data ) );
 
   // Set the check if the number of passes matches.
   FoxTools::Functions::check ( this->viewer() && numPasses == this->viewer()->numRenderPasses(), object );
-
-  // Handled.
-  return 1;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called when the "Scatter Scale" button is updated.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-long Canvas::onUpdateScatterScale ( FX::FXObject *object, FX::FXSelector, void * )
-{
-  // The user-data is a void pointer, which is a value. We interpret it's 
-  // bits as a float. This requires first interpreting the address of the 
-  // local variable as a float pointer.
-  FX::FXWindow *window ( SAFE_CAST_FOX ( FX::FXWindow, object ) );
-  const void *data ( ( window ) ? window->getUserData() : 0x0 );
-  const unsigned int temp ( reinterpret_cast < unsigned int > ( data ) );
-  const float scale ( *( reinterpret_cast < const float * > ( &temp ) ) );
-
-  // Set the check if the scale matches.
-  FoxTools::Functions::check ( this->viewer() && scale == this->viewer()->scatterScale(), object );
 
   // Handled.
   return 1;
@@ -1215,7 +1134,7 @@ long Canvas::onCommandSortBackToFront ( FX::FXObject *, FX::FXSelector, void * )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-long Canvas::onUpdateSortBackToFront ( FX::FXObject *object, FX::FXSelector, void * )
+long Canvas::onUpdateSortBackToFront    ( FX::FXObject *object, FX::FXSelector, void * )
 {
   FoxTools::Functions::check ( this->viewer() && this->viewer()->sortBackToFront(), object );
   return 1;

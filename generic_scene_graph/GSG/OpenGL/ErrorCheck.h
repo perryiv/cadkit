@@ -36,7 +36,7 @@ void checkOpenGlErrorState();
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < bool check_ > struct ErrorCheck
+template < bool check_ > class ErrorCheck
 {
   static void check(){}
 };
@@ -48,7 +48,7 @@ template < bool check_ > struct ErrorCheck
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template <> struct ErrorCheck < true >
+template <> class ErrorCheck < true >
 {
 public:
 

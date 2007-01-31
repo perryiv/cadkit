@@ -16,9 +16,8 @@
 #ifndef _USUL_TEMPLATE_3D_VECTOR_CLASS_H_
 #define _USUL_TEMPLATE_3D_VECTOR_CLASS_H_
 
-#include "Usul/Math/UMath.h"
+#include "Usul/Math/Math.h"
 #include "Usul/Errors/AssertPolicy.h"
-#include "Usul/Types/Types.h"
 
 
 namespace Usul {
@@ -113,7 +112,7 @@ public:
     return _v;
   }
 
-  
+
   /////////////////////////////////////////////////////////////////////////////
   //
   //  Set the value.
@@ -211,7 +210,7 @@ public:
 
   Vector3 &operator /= ( T value )
   {
-    T reciprocal = static_cast < T > ( 1 ) / value;
+    T reciprocal = static_cast < T > ( 1 ) / s;
     _v[0] *= reciprocal;
     _v[1] *= reciprocal;
     _v[2] *= reciprocal;
@@ -323,37 +322,6 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Return the cross-product.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  Vector3 cross ( const Vector3 &v ) const
-  {
-    return Vector3 ( 
-      _v[1] * v[2] - _v[2] * v[1],
-      _v[2] * v[0] - _v[0] * v[2],
-      _v[0] * v[1] - _v[1] * v[0] );
-  }
-
-
-  ///////////////////////////////////////////////////////////////////////////////
-  //
-  //  Return the angle between the two vectors.
-  //
-  ///////////////////////////////////////////////////////////////////////////////
-
-  T angle ( const Vector3 &v ) const
-  {
-    // This is: theta = acosf ( A dot B / |A||B| ).
-    T AdotB ( this->dot ( v ) );
-    T lengthA ( this->length() );
-    T lengthB ( v.length() );
-    return Usul::Math::acos ( AdotB / ( lengthA * lengthB ) );
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
   //  Return the length.
   //
   /////////////////////////////////////////////////////////////////////////////
@@ -399,8 +367,8 @@ public:
 
   T normalize()
   {
-    T l ( this->length() );
-    T il ( static_cast < T > ( 1 ) / l );
+    T l = this->length();
+    T il = 1 / l;
 
     _v[0] *= il;
     _v[1] *= il;

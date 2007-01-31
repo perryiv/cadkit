@@ -16,8 +16,8 @@
 #ifndef _OPEN_SCENE_GRAPH_FOX_BINDING_CANVAS_H_
 #define _OPEN_SCENE_GRAPH_FOX_BINDING_CANVAS_H_
 
-#include "Helios/Fox/Views/Export.h"
-#include "Helios/Fox/Views/FoxCanvas.h"
+#include "OsgFox/Views/Export.h"
+#include "OsgFox/Views/FoxCanvas.h"
 
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Threads/Guard.h"
@@ -26,7 +26,7 @@
 #include "Usul/Bits/Bits.h"
 #include "Usul/Devices/IDevice.h"
 
-#include "Usul/Interfaces/Fox/IFoxWindow.h"
+#include "Usul/Interfaces/IFoxWindow.h"
 #include "Usul/Interfaces/IBackground.h"
 #include "Usul/Interfaces/IHandleMessage.h"
 #include "Usul/Devices/IKeyListener.h"
@@ -42,7 +42,7 @@
 namespace FX { class FXMenuPane; }
 
 
-namespace Helios {
+namespace OsgFox {
 namespace Views {
 
 class OSG_FOX_VIEWS_EXPORT Canvas : public FoxCanvas,
@@ -97,7 +97,6 @@ public:
     ID_BOUNDING_BOX,
     ID_BOUNDING_SPHERE,
     ID_NUM_RENDER_PASSES,
-    ID_SCATTER_SCALE,
     ID_SORT_BACK_TO_FRONT,
     ID_SEMI_TRANSPARENT,
     ID_FOV,
@@ -160,7 +159,6 @@ public:
   long                  onCommandBoundingBox       ( FX::FXObject *, FX::FXSelector, void * );
   long                  onCommandBoundingSphere    ( FX::FXObject *, FX::FXSelector, void * );
   long                  onCommandNumRenderPasses   ( FX::FXObject *, FX::FXSelector, void * );
-  long                  onCommandScatterScale      ( FX::FXObject *, FX::FXSelector, void * );
   long                  onCommandSortBackToFront   ( FX::FXObject *, FX::FXSelector, void * );
   long                  onCommandSemiTransparent   ( FX::FXObject *, FX::FXSelector, void * );
   long                  onCommandFOV               ( FX::FXObject *, FX::FXSelector, void * );
@@ -181,7 +179,6 @@ public:
   long                  onUpdateBoundingBox        ( FX::FXObject *, FX::FXSelector, void * );
   long                  onUpdateBoundingSphere     ( FX::FXObject *, FX::FXSelector, void * );
   long                  onUpdateNumRenderPasses    ( FX::FXObject *, FX::FXSelector, void * );
-  long                  onUpdateScatterScale       ( FX::FXObject *, FX::FXSelector, void * );
   long                  onUpdateSortBackToFront    ( FX::FXObject *, FX::FXSelector, void * );
   long                  onUpdateFOV                ( FX::FXObject *, FX::FXSelector, void * );
 
@@ -246,7 +243,7 @@ private:
 };
 
 } // namespace Views
-} // namespace Helios
+} // namespace OsgFox
 
 
 #endif // _OPEN_SCENE_GRAPH_FOX_BINDING_CANVAS_H_

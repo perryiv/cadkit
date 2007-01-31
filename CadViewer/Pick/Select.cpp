@@ -32,8 +32,7 @@
 #include "osg/LOD"
 #include "osg/MatrixTransform"
 
-#include "boost/mpl/assert.hpp"
-#include "boost/type_traits/is_same.hpp"
+#include "boost/mpl/assert_is_same.hpp"
 
 #include <algorithm>
 
@@ -56,8 +55,8 @@ Select::Select (
   _material ( 0x0 )
 {
   // You assume this when you use the algorithms.
-  BOOST_MPL_ASSERT (( boost::is_same < osg::Node *, osg::NodePath::value_type > ));
-  BOOST_MPL_ASSERT (( boost::is_same < osg::Node *, BaseClass::Path::value_type > ));
+  BOOST_MPL_ASSERT_IS_SAME ( osg::Node *, osg::NodePath::value_type );
+  BOOST_MPL_ASSERT_IS_SAME ( osg::Node *, BaseClass::Path::value_type );
 }
 
 

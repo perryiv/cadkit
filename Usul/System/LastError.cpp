@@ -15,8 +15,6 @@
 
 #include "Usul/System/LastError.h"
 #include "Usul/MPL/SameType.h"
-#include "Usul/Strings/Trim.h"
-#include "Usul/Errors/Assert.h"
 
 #ifdef _WIN32
 # include <windows.h> // For GetLastError()
@@ -26,7 +24,6 @@
 
 #include <errno.h>   // For errno
 #include <string.h>  // For strerror()
-#include <algorithm>
 
 using namespace Usul;
 using namespace Usul::System;
@@ -54,8 +51,6 @@ void LastError::init()
   ::dlerror();
 
 #endif
-
-  USUL_ASSERT ( false == LastError::has() );
 }
 
 
@@ -69,20 +64,12 @@ LastError::Number LastError::number()
 {
 #ifdef _WIN32
 
-  USUL_ASSERT_SAME_TYPE ( DWORD, unsigned long );
-  USUL_ASSERT_SAME_TYPE ( DWORD, LastError::Number );
-
-  // Getting also initializes, so we have to immediately set again.
-  const DWORD error ( ::GetLastError() );
-  ::SetLastError ( error );
-
-  // Return error.
-  return error;
+  USUL_ASSERT_SAME_TYPE ( unsigned long, DWORD );
+  return ::GetLastError();
 
 #else
 
   USUL_ASSERT_SAME_TYPE ( int, LastError::Number );
-  USUL_STATIC_ASSERT ( sizeof ( int ) == sizeof ( LastError::Number ) );
   return errno;
 
 #endif
@@ -115,16 +102,10 @@ std::string LastError::message()
     NULL );
 
   // Copy the message.
-  std::string message ( buffer ? reinterpret_cast<LPCTSTR> ( buffer ) : "" );
+  std::string message ( reinterpret_cast<LPCTSTR> ( buffer ) );
 
   // Free the buffer.
   ::LocalFree ( buffer );
-
-  // Remove all carriage-return characters.
-  message.erase ( std::remove ( message.begin(), message.end(), '\r' ), message.end() );
-
-  // Remove all trailing new-line characters.
-  Usul::Strings::trimRightAll ( message, '\n' );
 
   // Return the message.
   return message;
@@ -145,53 +126,4 @@ std::string LastError::message()
   return std::string ( ( buf ) ? buf : "" );
 
 #endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is there an error?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool LastError::has()
-{
-#ifdef _WIN32
-
-  const DWORD error ( LastError::number() );
-  return ( ERROR_SUCCESS != error );
-
-#else
-
-  return ( 0 != errno ); // Is this right? TODO
-
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Internal class that asserts in it's constructor and destructor 
-//  if there is a system error.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  inline void checkLastError()
-  {
-    if ( true == Usul::System::LastError::has() )
-    {
-      USUL_ASSERT ( false );
-      const std::string error ( Usul::System::LastError::message() );
-    }
-  }
-}
-LastError::Assert::Assert()
-{
-  Detail::checkLastError();
-}
-LastError::Assert::~Assert()
-{
-  Detail::checkLastError();
 }

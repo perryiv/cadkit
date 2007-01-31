@@ -30,9 +30,6 @@ public:
   ChildWindow();
   virtual ~ChildWindow();
 
-  // Create.
-  virtual void        create();
-
   FXDECLARE ( ChildWindow );
 };
 

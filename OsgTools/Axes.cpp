@@ -14,10 +14,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OsgTools/Axes.h"
+#include "OsgTools/ErrorChecker.h"
 #include "OsgTools/Torus.h"
 #include "OsgTools/Box.h"
-
-#include "Usul/Errors/Checker.h"
 
 #include "osg/Group"
 #include "osg/Geode"
@@ -29,8 +28,6 @@
 #include "Usul/Bits/Bits.h"
 
 using namespace OsgTools;
-
-typedef Usul::Errors::Checker ErrorChecker;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -46,7 +43,7 @@ Axes::Axes() :
   _colorBox ( 1, 1, 1, 1 ),
   _length ( 0.5f ),
   _width ( 0.05f ),
-  _state ( POSITIVE_X | POSITIVE_Y | POSITIVE_Z )
+  _state( 0 )
 {
 }
 
@@ -59,8 +56,7 @@ Axes::Axes() :
 
 osg::Node* Axes::operator()() const
 {
-  osg::Group* group = new osg::Group();  // place it all under a group
-  group->setName("OsgTools_Axes_group");
+  osg::ref_ptr<osg::Group> group = new osg::Group;  // place it all under a group
 
   if( Usul::Bits::has(_state,POSITIVE_X) )
   {
@@ -68,6 +64,7 @@ osg::Node* Axes::operator()() const
     double amount(osg::inDegrees(90.0));
     osg::ref_ptr<osg::Group> axis = cartesian_graphic(_colorX,osg::Quat(amount,about));
     group->addChild( axis.get() );
+    //std::cout << "Axes: added: X" << std::endl;
   }
 
   if( Usul::Bits::has(_state,POSITIVE_Y) )
@@ -76,12 +73,14 @@ osg::Node* Axes::operator()() const
     double amount(osg::inDegrees(270.0));
     osg::ref_ptr<osg::Group> axis = cartesian_graphic(_colorY,osg::Quat(amount,about));
     group->addChild( axis.get() );
+    //std::cout << "Axes: added: Y" << std::endl;
   }
 
   if( Usul::Bits::has(_state,POSITIVE_Z) )
   {
     osg::ref_ptr<osg::Group> axis = cartesian_graphic(_colorZ);
     group->addChild( axis.get() );
+    //std::cout << "Axes: added: Z" << std::endl;
   }
 
   if( Usul::Bits::has(_state,NEGATIVE_X) )
@@ -90,6 +89,7 @@ osg::Node* Axes::operator()() const
     double amount(osg::inDegrees(270.0));           // -90.0 degrees
     osg::ref_ptr<osg::Group> axis = cartesian_graphic(_colorX,osg::Quat(amount,about));
     group->addChild( axis.get() );
+    //std::cout << "Axes: added: -X" << std::endl;
   }
 
   if( Usul::Bits::has(_state,NEGATIVE_Y) )
@@ -98,6 +98,7 @@ osg::Node* Axes::operator()() const
     double amount(osg::inDegrees(90.0));
     osg::ref_ptr<osg::Group> axis = cartesian_graphic(_colorY,osg::Quat(amount,about));
     group->addChild( axis.get() );
+    //std::cout << "Axes: added: -Y" << std::endl;
   }
 
   if( Usul::Bits::has(_state,NEGATIVE_Z) )
@@ -106,6 +107,7 @@ osg::Node* Axes::operator()() const
     double amount(osg::inDegrees(180.0));
     osg::ref_ptr<osg::Group> axis = cartesian_graphic(_colorZ,osg::Quat(amount,about));
     group->addChild( axis.get() );
+    //std::cout << "Axes: added: -Z" << std::endl;
   }
 
   if( Usul::Bits::has(_state,ROTATE_X) )
@@ -114,6 +116,7 @@ osg::Node* Axes::operator()() const
     double amount(osg::inDegrees(90.0));         // 90.0 degrees
     osg::ref_ptr<osg::Group> torus = torus_graphic(_colorX,osg::Quat(amount,about));
     group->addChild( torus.get() );
+    //std::cout << "Axes: added: rotate along X" << std::endl;
   }
 
   if( Usul::Bits::has(_state,ROTATE_Y) )
@@ -122,27 +125,29 @@ osg::Node* Axes::operator()() const
     double amount(osg::inDegrees(270.0));        // -90.0 degrees
     osg::ref_ptr<osg::Group> torus = torus_graphic(_colorY,osg::Quat(amount,about));
     group->addChild( torus.get() );
+    //std::cout << "Axes: added: rotate along Y" << std::endl;
   }
 
   if( Usul::Bits::has(_state,ROTATE_Z) )
   {
     osg::ref_ptr<osg::Group> torus = torus_graphic(_colorZ);
     group->addChild( torus.get() );
+    //std::cout << "Axes: added: rotate along Z" << std::endl;
   }
 
   // Create a box at the origin
   if( Usul::Bits::has(_state,ORIGIN_CUBE) )
   {
-    osg::ref_ptr<osg::Node> box = box_graphic(_colorBox);
+    osg::ref_ptr<osg::Geode> box = box_graphic(_colorBox);
     group->addChild(box.get());
   }
 
   group->setDataVariance(osg::Object::STATIC);
 
   osgUtil::Optimizer mizer;
-  mizer.optimize( group, osgUtil::Optimizer::ALL_OPTIMIZATIONS );
+  mizer.optimize( group.get(), osgUtil::Optimizer::ALL_OPTIMIZATIONS );
 
-  return( group );
+  return( group.release() );
 }
 
 // returns a Geode that looks like an arrow
@@ -153,9 +158,7 @@ osg::Group* Axes::cartesian_graphic(const osg::Vec4& color,const osg::Quat& quat
   ErrorChecker ( 1068242098, _width > 0 );
 
   osg::ref_ptr<osg::Geode> base ( new osg::Geode );
-  base->setName("OsgTools_Axes_cartesian_graphic_base");
   osg::ref_ptr<osg::Geode> top ( new osg::Geode );
-  top->setName("OsgTools_Axes_cartesian_graphic_top");
 
   osg::Vec3 center(0.0,0.0,0.5*_length);  // useful vector
 
@@ -183,12 +186,10 @@ osg::Group* Axes::cartesian_graphic(const osg::Vec4& color,const osg::Quat& quat
   osg::Vec3 distance(center[0],center[1],center[2]+0.525*_length);
   top_trans.makeTranslate( distance );
   osg::ref_ptr<osg::MatrixTransform> top_xform = new osg::MatrixTransform;
-  top_xform->setName("OsgTools_Axes_cartesian_graphic_top_xform");
   top_xform->setMatrix( top_trans );
   top_xform->addChild( top.get() );
 
-  osg::Group* group = new osg::Group();
-  group->setName("OsgTools_Axes_cartesian_graphic_group");
+  osg::ref_ptr<osg::Group> group = new osg::Group;
 
   // rotate geomtery if necessary
   if( !quat.zeroRotation() )
@@ -197,7 +198,6 @@ osg::Group* Axes::cartesian_graphic(const osg::Vec4& color,const osg::Quat& quat
       rotate.makeRotate( quat );
 
       osg::ref_ptr<osg::MatrixTransform> base_xform = new osg::MatrixTransform;
-      base_xform->setName("OsgTools_Axes_cartesian_graphic_base_xfrom");
       base_xform->setMatrix( rotate );
       base_xform->addChild( base.get() );
       base_xform->addChild( top_xform.get() );
@@ -211,8 +211,8 @@ osg::Group* Axes::cartesian_graphic(const osg::Vec4& color,const osg::Quat& quat
       group->addChild( base.get() );
     }
 
-  /// TODO: group->setDataVariance(osg::Object::STATIC);
-  return( group );
+  // group->setDataVariance(osg::Object::STATIC);
+  return( group.release() );
 }
 
 osg::Group* Axes::torus_graphic(const osg::Vec4& color, const osg::Quat& quat) const
@@ -228,9 +228,7 @@ osg::Group* Axes::torus_graphic(const osg::Vec4& color, const osg::Quat& quat) c
   cone->set(osg::Vec3(0.0f,0.0f,0.0f), _width*1.4, _length*0.1);
   osg::ref_ptr<osg::ShapeDrawable> sd = new osg::ShapeDrawable(cone.get());
   sd->setColor( color );
-
   osg::ref_ptr<osg::Geode> cone_geode = new osg::Geode;
-  cone_geode->setName("OsgTools_Axes_torus_graphic_cone_geode");
   cone_geode->addDrawable( sd.get() );
 
   // position the cone
@@ -238,14 +236,12 @@ osg::Group* Axes::torus_graphic(const osg::Vec4& color, const osg::Quat& quat) c
   osg::Vec3 move_it(0.0,-(radi+_width),0.0);
   osg::Matrix move;   move.makeTranslate( move_it );
   osg::ref_ptr<osg::MatrixTransform> coneXform = new osg::MatrixTransform;
-  coneXform->setName("OsgTools_Axes_torus_graphic_coneXform");
   coneXform->addChild( cone_geode.get() );
   coneXform->setMatrix( osg::Matrix(turn_it) );
   coneXform->preMult( move );
 
   // group the graphics together
-  osg::MatrixTransform* group = new osg::MatrixTransform();
-  group->setName("OsgTools_Axes_torus_graphic_group");
+  osg::ref_ptr<osg::MatrixTransform> group = new osg::MatrixTransform;
   group->addChild( torus_gfx.get() );
   group->addChild( coneXform.get() );
 
@@ -258,26 +254,28 @@ osg::Group* Axes::torus_graphic(const osg::Vec4& color, const osg::Quat& quat) c
   if( quat.zeroRotation() )
     {
       //group->preMult( translate );
-      return( group );
+      return( group.release() );
     }
 
   else
     {
+      //std::cout << "rotating torus" << std::endl;
       osg::Matrix rotate;
       rotate.makeRotate( quat );
       //group->preMult( translate*rotate );
       group->preMult( rotate );
     }
 
-  return( group );
+  return( group.release() );
 }
 
-osg::Node* Axes::box_graphic(const osg::Vec4& color) const
+osg::Geode* Axes::box_graphic(const osg::Vec4& color) const
 {
   float size = _width*2.3;
-  ColorBox box(size,size,size);
+  Box box(size,size,size);
+  box.setColor( color );
 
-  osg::ref_ptr<osg::Node> node( box() );
+  osg::ref_ptr<osg::Geode> geode = box();
 
-  return( node.release() );
+  return( geode.release() );
 }

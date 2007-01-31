@@ -56,10 +56,6 @@
       <Project>{A8BBFA78-45B8-4F79-8AB7-AED482BCAB67}</Project>
       <Name>WeifenLuo.WinFormsUI.Docking</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\DotNet\Documents\CadKit.Documents.csproj">
-      <Project>{53DF6058-FBE2-4D41-8CE7-DF8ED0436EAE}</Project>
-      <Name>CadKit.Documents</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\DotNet\Interfaces\CadKit.Interfaces.csproj">
       <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
       <Name>CadKit.Interfaces</Name>
@@ -67,6 +63,14 @@
     <ProjectReference Include="..\..\..\..\DotNet\Tools\CadKit.Tools.csproj">
       <Project>{01EAAF17-D9EB-4303-A5BD-BE061F8E58F7}</Project>
       <Name>CadKit.Tools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lib\DT.Minerva.Lib.csproj">
+      <Project>{CE9EFD28-1B9B-4B0D-AF5B-19DC98AAF8D8}</Project>
+      <Name>DT.Minerva.Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interfaces\DT.Minerva.Interfaces.csproj">
+      <Project>{35375870-CDDF-431E-B366-782D431BF6F6}</Project>
+      <Name>DT.Minerva.Interfaces</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

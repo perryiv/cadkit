@@ -20,8 +20,8 @@
 #include "VRV/Interfaces/IModelAdd.h"
 
 #include "SAL/Interfaces/INode.h"
-#include "SAL/Interfaces/IRead.h"
 
+#include "Usul/Interfaces/IRead.h"
 #include "Usul/Components/Object.h"
 
 using namespace VRV;
@@ -65,12 +65,12 @@ ReadModel::~ReadModel()
 void ReadModel::_run()
 {
   // Create a component for reading the model.
-  SAL::Interfaces::IRead::ValidQueryPtr reader 
+  Usul::Interfaces::IRead::ValidQueryPtr reader 
     ( Usul::Components::Object::create 
-      ( SAL::Interfaces::IRead::IID, VRV::SCENE_ABSTRACTION_LAYER, true, true ) );
+      ( Usul::Interfaces::IRead::IID, VRV::SCENE_ABSTRACTION_LAYER, true, true ) );
 
   // Read the model.
-  SAL::Interfaces::INode::ValidQueryPtr node ( reader->readNodeFile ( _filename ) );
+  SAL::Interfaces::INode::ValidQueryPtr node ( reader->read ( _filename, 0x0 ) );
 
   // Get the interface we need.
   VRV::Interfaces::IModelAdd::ValidQueryPtr add ( _caller );

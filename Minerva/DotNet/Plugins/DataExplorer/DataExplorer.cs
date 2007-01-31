@@ -27,7 +27,7 @@ namespace DT.Minerva.Plugins.DataExplorer
       this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockLeft;
       this.HideOnClose = true;
 
-      DT.Minerva.DB.Connections.Instance.ConnectionAdded += this._addConnection;
+      DT.Minerva.Lib.Controller.Instance.DataSourceAdded += new DT.Minerva.Lib.Controller.DataSourceAddedDelegate(_addConnection);
     }
 
 

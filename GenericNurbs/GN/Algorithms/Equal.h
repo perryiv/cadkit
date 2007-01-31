@@ -16,8 +16,6 @@
 #ifndef _GENERIC_NURBS_LIBRARY_EQUALITY_ALGORITHMS_CLASS_H_
 #define _GENERIC_NURBS_LIBRARY_EQUALITY_ALGORITHMS_CLASS_H_
 
-#include <algorithm>
-
 
 namespace GN {
 namespace Algorithms {
@@ -36,7 +34,7 @@ namespace Equal {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class CT, class Pred > inline
+template < class CT, class Pred > 
 bool nestedContainers ( const CT &c1, const CT &c2, Pred pred )
 {
   typedef typename CT::size_type size_type;

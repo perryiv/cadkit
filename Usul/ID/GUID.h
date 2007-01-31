@@ -38,12 +38,6 @@ struct GUID
   // Compare.
   bool equal ( const GUID & ) const;
 
-  // Get the parts.
-  Types::Uint32 data0() const { return _data0; }
-  Types::Uint32 data1() const { return _data1; }
-  Types::Uint32 data2() const { return _data2; }
-  Types::Uint32 data3() const { return _data3; }
-
 private:
 
   Types::Uint32 _data0;

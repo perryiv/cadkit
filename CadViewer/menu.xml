@@ -178,7 +178,7 @@
           <info>Jump to the top view</info>
         </button>
         <button>
-          <text>Bottom</text>
+          <text>Botton</text>
           <id>goto_bottom_view</id>
           <info>Jump to the bottom view</info>
         </button>
@@ -238,11 +238,6 @@
           <text>Points</text>
           <info>Draw polygons with points at the vertices</info>
           <id>polygons_points</id>
-        </radio>
-        <radio>
-          <text>Scribe</text>
-          <info>Draw polygons with scribe effect</info>
-          <id>polygons_scribe</id>
         </radio>
       </menu>
     </menu>
@@ -507,16 +502,6 @@
     </menu>
     <menu>
       <text>World</text>
-      <button>
-        <text>Toggle Animations</text>
-        <info>Start/Stop Animations</info>
-        <id>toggle_animations</id>
-      </button>
-      <button>
-        <text>Step Animation</text>
-        <info>Increment animation by one step</info>
-        <id>animation_step_fwd</id>
-      </button>
     </menu>
     <menu>
       <text>Help</text>

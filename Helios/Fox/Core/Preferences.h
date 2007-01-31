@@ -10,18 +10,18 @@
 #ifndef __OSG_FOX_PREFERENCES_H__
 #define __OSG_FOX_PREFERENCES_H__
 
-#include "Helios/Fox/Core/Export.h"
+#include "OsgFox/Core/Export.h"
 
 #include "FoxTools/Headers/DialogBox.h"
 
-#include "Usul/Interfaces/Fox/IFoxTabItem.h"
-#include "Usul/Interfaces/Fox/IFoxTabBook.h"
+#include "Usul/Interfaces/IFoxTabItem.h"
+#include "Usul/Interfaces/IFoxTabBook.h"
 
 #include <string>
 #include <map>
 #include <vector>
 
-namespace Helios {
+namespace OsgFox {
 namespace Core {
 
 class OSG_FOX_CORE_EXPORT Preferences : public FX::FXDialogBox,
@@ -111,7 +111,7 @@ private:
 };
 
 } // namespace Core
-} // namespace Helios
+} // namespace OsgFox
 
 
 #endif //__OSG_FOX_PREFERENCES_H__

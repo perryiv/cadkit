@@ -35,6 +35,8 @@
 # include "fx3d.h"
 # include "FXCURCursor.h"
 
+# include "boost/scoped_ptr.hpp"
+
 # include "GSG/OpenGL/GlDraw.h"
 
 # include "GSG/Core/Camera.h"

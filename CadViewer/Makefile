@@ -1,8 +1,3 @@
-INV3RSION_NAV = NO
-SINTERPOINT = NO
-AVATAR = NO
-#NO/YES
-
 SOURCE = \
 	Application.cpp \
 	AppCallbacks.cpp \
@@ -36,8 +31,8 @@ SOURCE = \
 OS := $(shell uname)
 COMPILER        = c++
 DEBUG_FLAGS     = -g -D_DEBUG -D_DEBUG_PRINT
-COMPILER_FLAGS  = 
-LINKER_FLAGS    = 
+#COMPILER_FLAGS  = -I/usr/include/glib-1.2 -I/usr/lib/glib/include/ -DHAVE_GLIB
+#LINKER_FLAGS    = -lglib
 JUGGLER_LIB_DIR = ${VJ_BASE_DIR}/lib
 
 # Change some settings when on irix.
@@ -54,19 +49,21 @@ COMPILER_FLAGS = -I$(NSPR_ROOT)/include
 COMPILER = g++
 endif
 
+COMPILE_COMMAND = $(COMPILER) $(DEBUG_FLAGS) $(COMPILER_FLAGS)
+LINK_COMMAND		= $(COMPILER) $(DEBUG_FLAGS) $(LINKER_FLAGS)
+
 BIN_DIR = ../bin
 
 INCLUDES = \
 	-I./ \
 	-I../ \
 	-I${VJ_BASE_DIR}/include \
-	-I${OSG_INC_DIR} \
-	-I${OPENTHREADS_INC_DIR}
+	-I${OSG_INC_DIR}
 
 LOCAL_LIBS = \
 	-L$(BIN_DIR) \
 	-lOsgTools_s \
-	-lUsul \
+	-lUsul_s \
 	-losgVRJ \
 	-lvrjGA \
 	-lMenuKit \
@@ -75,8 +72,8 @@ LOCAL_LIBS = \
 
 JUGGLER_LIBS = \
 	-L${JUGGLER_LIB_DIR} \
-	-lvrj \
-	-lvrj_ogl \
+	-lJuggler \
+	-lJuggler_ogl \
 	-lsonix \
 	-lvpr \
 	-lgadget \
@@ -86,9 +83,7 @@ OSG_LIBS = \
 	-L${OSG_LIB_DIR} \
 	-losgText \
 	-losgUtil \
-	-losgFX \
-	-losgDB \
-	-losg 
+	-losgDB -losg
 
 OPEN_THREADS_LIBS = \
 	-L${OPENTHREADS_LIB_DIR} \
@@ -97,29 +92,6 @@ OPEN_THREADS_LIBS = \
 STANDARD_LIBS = \
 	-lGL \
 	-lm
-
-# Add sinterpoint if requested
-ifeq "$(SINTERPOINT)" "YES"
-COMPILER_FLAGS	+= -DUSE_SINTERPOINT 
-INCLUDES		+= -I$(SINTERPOINT_BASE_DIR)/include
-LOCAL_LIBS		+= -L$(SINTERPOINT_BASE_DIR)/lib -lsinter
-endif
-
-# Add Inv3rsion navigation if requested
-ifeq "$(INV3RSION_NAV)" "YES"
-COMPILER_FLAGS	+= -DINV3RSION_NAV 
-INCLUDES	+= -I$(INVR_BASE_DIR)/include
-endif
-
-# Add vjAvatar via SinterPoint if requested
-ifeq "$(AVATAR)" "YES"
-COMPILER_FLAGS	+= -DUSE_AVATAR 
-INCLUDES	+= -I$(AVATAR_BASE_DIR)/include -I$(CAL3D_BASE_DIR)/include
-LOCAL_LIBS	+= -L$(AVATAR_BASE_DIR)/lib -lavatar -L$(CAL3D_BASE_DIR)/lib -lcal3d
-endif
-
-COMPILE_COMMAND	= $(COMPILER) $(DEBUG_FLAGS) $(COMPILER_FLAGS)
-LINK_COMMAND	= $(COMPILER) $(DEBUG_FLAGS) $(LINKER_FLAGS)
 
 LIBS = $(LOCAL_LIBS) $(JUGGLER_LIBS) $(OSG_LIBS) $(OPEN_THREADS_LIBS) $(STANDARD_LIBS)
 

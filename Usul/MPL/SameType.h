@@ -32,7 +32,7 @@ namespace MPL {
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#if defined ( _MSC_VER ) && _MSC_VER < 1300
+#ifdef _MSC_VER
 
 
 template < class T, class U > class IsSameType

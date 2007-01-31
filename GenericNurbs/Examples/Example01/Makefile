@@ -25,11 +25,9 @@ LINK_COMMAND		= $(COMPILER) $(DEBUG_FLAGS) $(LINKER_FLAGS)
 INCLUDES = -I../../ -I${USUL_INC_DIR}
 LIBS =
 
-BIN_DIR = ../../../bin
-TARGET  = gn_example_01
+BIN_DIR = ../bin
+TARGET  = example01
 OBJECTS = $(SOURCE:.cpp=.o)
-
-all : default 
 
 default : $(TARGET)
 

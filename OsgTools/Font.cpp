@@ -13,14 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Font.h"
-#include "osgText/Font"
-#include "osgDB/Registry"
-#include "osgDB/FileUtils"
-#include <osgDB/ReadFile>
-
-
-#include <fstream>
+#include "OsgTools/Font.h"
 
 using namespace OsgTools;
 
@@ -31,50 +24,11 @@ using namespace OsgTools;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Font::fontfile ( const std::string &name )
+std::string Font::filename ( const std::string &name )
 {
 #ifdef _WIN32
   return name + ".ttf";
-#elif __APPLE__
-  return std::string ( "/Library/Fonts/" ) + name + std::string ( ".ttf" ); 
 #else
   return std::string ( "fonts/" ) + name + std::string ( ".ttf" );
 #endif
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the default font for the platform.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osgText::Font* Font::defaultFont() 
-{
-  #ifdef _WIN32
-
-     return osgText::readFontFile( "arial.ttf" );
-
-  #elif __APPLE__
-    // get the existing high level path list
-    osgDB::FilePathList wFilePathList = osgDB::Registry::instance()->getDataFilePathList();
-    
-    // add additional paths of interest to the path list
-    wFilePathList.push_back( "/Library/Fonts" ); //Look in the Global Fonts
-    wFilePathList.push_back( "./fonts" ); //Look for a "fonts" Folder in the working directory
-    wFilePathList.push_back( "/System/Library/Fonts" ); //Look in the System Fonts
-    
-    // re-assign the expanded path list
-    osgDB::Registry::instance()->setDataFilePathList( wFilePathList );
-
-    return osgText::readFontFile( "fudd.ttf" );
-
-  #else
-
-    return osgText::readFontFile( "/usr/share/fonts/TrueType/ttf-bitstream/Ver/Vera.ttf" );
-
-  #endif
-}
-
-
-

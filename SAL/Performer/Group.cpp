@@ -98,7 +98,7 @@ SAL::Interfaces::INode *Group::childNode ( unsigned long i )
   const unsigned long numKids ( this->numChildren() );
 
   // Make sure the index is in range.
-  if ( ( i >= numKids ) && ( i < ( USUL_UNSAFE_CAST ( unsigned int, std::numeric_limits<int>::max() ) ) ) )
+  if ( ( i >= numKids ) && ( i < ( USUL_CAST ( unsigned int, std::numeric_limits<int>::max() ) ) ) )
   {
     Usul::Exceptions::Thrower<SAL::Exceptions::IndexOutOfRange>
       ( "Error 1418914482, child index is out of range.",
@@ -108,7 +108,7 @@ SAL::Interfaces::INode *Group::childNode ( unsigned long i )
 
   // Get the pfNode.
   typedef USUL_VALID_REF_POINTER ( ::pfNode ) ValidPfNodePtr;
-  ValidPfNodePtr perfNode ( _group->getChild ( USUL_UNSAFE_CAST ( int, i ) ) );
+  ValidPfNodePtr perfNode ( _group->getChild ( USUL_CAST ( int, i ) ) );
 
   // Try to create the node.
   SAL::Interfaces::INode::QueryPtr node ( Factory::create ( perfNode ) );

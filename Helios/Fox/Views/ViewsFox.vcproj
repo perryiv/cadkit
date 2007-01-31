@@ -4,7 +4,6 @@
 	Version="8.00"
 	Name="lib: Helios Fox Views"
 	ProjectGUID="{276F7F09-5F65-477E-88E0-E8C819CF72CC}"
-	RootNamespace="lib: Helios Fox Views"
 	>
 	<Platforms>
 		<Platform
@@ -47,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR),$(CADKIT_ROOT_DIR),$(FOX_INC_DIR),$(OSG_INC_DIR),$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR),$(FOX_INC_DIR),$(OSG_INC_DIR),$(OPENTHREADS_INC_DIR)"
 				PreprocessorDefinitions="_COMPILING_OSG_FOX_VIEWS;FOXDLL;_USRDLL;WIN32;_DEBUG;_WINDOWS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -77,8 +76,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenThreadsWin32d.lib opengl32.lib foxdlld-1.6.lib osgd.lib osgUtild.lib osgGAd.lib osgDBd.lib osgTextd.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosViewsd.dll"
+				AdditionalDependencies="OpenThreadsWin32d.lib opengl32.lib foxdlld-1.4.lib osgd.lib osgUtild.lib osgGAd.lib osgDBd.lib osgTextd.lib"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/OsgFoxViewsd.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(FOX_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(OPENTHREADS_LIB_DIR)&quot;;"
@@ -146,7 +145,7 @@
 				AdditionalOptions="/Zm200 "
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR),$(CADKIT_ROOT_DIR),$(FOX_INC_DIR),$(OSG_INC_DIR),$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR),$(FOX_INC_DIR),$(OSG_INC_DIR),$(OPENTHREADS_INC_DIR)"
 				PreprocessorDefinitions="_COMPILING_OSG_FOX_VIEWS;FOXDLL;_USRDLL;NDEBUG;WIN32;_WINDOWS"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -176,8 +175,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenThreadsWin32.lib opengl32.lib foxdll-1.6.lib osg.lib osgUtil.lib osgGA.lib osgDB.lib osgText.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosViews.dll"
+				AdditionalDependencies="OpenThreadsWin32.lib opengl32.lib foxdll-1.4.lib osg.lib osgUtil.lib osgGA.lib osgDB.lib osgText.lib"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/OsgFoxViews.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(FOX_LIB_DIR);$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR)"

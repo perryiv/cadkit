@@ -28,27 +28,27 @@ template < class Exception_ > struct ThrowingPolicy
   ThrowingPolicy ( const char *filename, unsigned int line, bool state )
   {
     if ( !state )
-      Usul::Exceptions::Thrower < Exception_ > ( "Error Line: ", line, ", File: ", filename );
+      Usul::Exceptions::Thrower < Exception_ > ( "Error!\n\tLine: ", line, "\n\tFile: ", filename );
   }
-  ThrowingPolicy ( unsigned int num, bool state )
+  ThrowingPolicy ( unsigned int id, bool state )
   {
     if ( !state )
-      Usul::Exceptions::Thrower < Exception_ > ( "Error ", num );
+      Usul::Exceptions::Thrower < Exception_ > ( "Error = ", id );
   }
-  template < class Arg_ > ThrowingPolicy ( unsigned int num, bool state, const Arg_ &arg )
+  template < class Arg_ > ThrowingPolicy ( unsigned int id, bool state, const Arg_ &arg )
   {
     if ( !state )
-      Usul::Exceptions::Thrower < Exception_ > ( "Error ", num, ": ", arg );
+      Usul::Exceptions::Thrower < Exception_ > ( "Error = ", id, "\n\t", arg );
   }
   template < class Arg_ > ThrowingPolicy ( const char *filename, unsigned int line, bool state, const Arg_ &arg )
   {
     if ( !state )
-      Usul::Exceptions::Thrower < Exception_ > ( "Error Line: ", line, ", File: ", filename, ", ", arg );
+      Usul::Exceptions::Thrower < Exception_ > ( "Error!\n\tLine: ", line, "\n\tFile: ", filename, "\n\t", arg );
   }
-  template < class Int_ > static void bounds ( unsigned int num, Int_ size, Int_ index )
+  template < class Int_ > static void bounds ( unsigned int id, Int_ size, Int_ index )
   {
     if ( index < 0 || index >= size )
-      Usul::Exceptions::Thrower < Exception_ > ( "Error ", num, ": Index out of range" );
+      Usul::Exceptions::Thrower < Exception_ > ( "Index bounds error = ", id );
   }
 };
 

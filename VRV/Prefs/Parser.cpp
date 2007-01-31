@@ -116,14 +116,9 @@ void Parser::_read ( const std::string &filename )
   typedef XML::Reader < MemFun, XML::ValueCB, ErrorPolicy > XmlReader;
 
   // Make some member function adaptors.
-  MemFun addGrid           ( this, &Parser::_addGrid           );
-  MemFun setNumGridBlocks  ( this, &Parser::_setNumGridBlocks  );
+  MemFun setNumGridBloaks  ( this, &Parser::_setNumGridBloaks  );
   MemFun setGridScale      ( this, &Parser::_setGridScale      );
   MemFun setGridColor      ( this, &Parser::_setGridColor      );
-  MemFun setGridFillColor      ( this, &Parser::_setGridFillColor      );
-  MemFun setGridRotationAngleRad ( this, &Parser::_setGridRotationAngleRad );
-  MemFun setGridRotationVector   ( this, &Parser::_setGridRotationVector   );
-  MemFun offsetGrid        ( this, &Parser::_offsetGrid        );
   MemFun setNearClip       ( this, &Parser::_setNearClip       );
   MemFun setViewAllScale   ( this, &Parser::_setViewAllScale   );
   MemFun setLightAmbient   ( this, &Parser::_setLightAmbient   );
@@ -133,7 +128,6 @@ void Parser::_read ( const std::string &filename )
   MemFun setLightPosition  ( this, &Parser::_setLightPosition  );
   MemFun setBackground     ( this, &Parser::_setBackground     );
   MemFun setWriter         ( this, &Parser::_setWriter         );
-  MemFun setHeadNode       ( this, &Parser::_setHeadNode       );
   MemFun setNormGlobal     ( this, &Parser::_setNormGlobal     );
   MemFun setNormModels     ( this, &Parser::_setNormModels     );
   MemFun translateMenu     ( this, &Parser::_translateMenu     );
@@ -151,35 +145,13 @@ void Parser::_read ( const std::string &filename )
   MemFun setTransSpeed     ( this, &Parser::_setTransSpeed     );
   MemFun setRotSpeed       ( this, &Parser::_setRotSpeed       );
   MemFun setScaleSpeed     ( this, &Parser::_setScaleSpeed     );
-  MemFun setSinterServer   ( this, &Parser::_setSinterServer   );
-  MemFun setSinterWriter   ( this, &Parser::_setSinterWriter   );
-  MemFun setSinterTmpFile  ( this, &Parser::_setSinterTmpFile  );
-  MemFun setScribeColor    ( this, &Parser::_setScribeColor  );
-  MemFun setScribeWidth    ( this, &Parser::_setScribeWidth  );
-  MemFun setAutoPlacement  ( this, &Parser::_setAutoPlacement  );
-  MemFun setAutoPlaceCenter  ( this, &Parser::_setAutoPlaceCenter  );
-  MemFun setAutoPlaceRadius  ( this, &Parser::_setAutoPlaceRadius  );
-  MemFun setNavInvertRotation  ( this, &Parser::_setNavInvertRotation  );
-  MemFun setNavNewRotation  ( this, &Parser::_setNavNewRotation  );
-  MemFun setNavAcceleration  ( this, &Parser::_setNavAcceleration  );
-  MemFun setNavIconColor  ( this, &Parser::_setNavIconColor  );
-  MemFun setNavIconSize   ( this, &Parser::_setNavIconSize   );
-  MemFun setAutoRotationAngle  ( this, &Parser::_setAutoRotationAngle  );
-  MemFun setAutoRotationVector ( this, &Parser::_setAutoRotationVector );
-  MemFun setUserName           ( this, &Parser::_setUserName );
-  MemFun setAvatarWaitFrames   ( this, &Parser::_setAvatarWaitFrames );
-  
+
   // Declare the reader and add the callbacks.
   XmlReader reader;
   XmlReader::WhichCallback start ( XmlReader::NODE_START );
-  Helper::add ( reader, start, "grid/add_grid",            addGrid           );
-  Helper::add ( reader, start, "grid/num_blocks",          setNumGridBlocks  );
+  Helper::add ( reader, start, "grid/num_blocks",          setNumGridBloaks  );
   Helper::add ( reader, start, "grid/scale",               setGridScale      );
   Helper::add ( reader, start, "grid/color",               setGridColor      );
-  Helper::add ( reader, start, "grid/fill_color",          setGridFillColor  );
-  Helper::add ( reader, start, "grid/rotation_angle_rad",  setGridRotationAngleRad );
-  Helper::add ( reader, start, "grid/rotation_vector",     setGridRotationVector   );
-  Helper::add ( reader, start, "grid/offset",              offsetGrid        );
   Helper::add ( reader, start, "clipping_plane/near",      setNearClip       );
   Helper::add ( reader, start, "view_all/scale",           setViewAllScale   );
   Helper::add ( reader, start, "light/ambient",            setLightAmbient   );
@@ -189,17 +161,16 @@ void Parser::_read ( const std::string &filename )
   Helper::add ( reader, start, "light/position",           setLightPosition  );
   Helper::add ( reader, start, "background/color",         setBackground     );
   Helper::add ( reader, start, "machine/writer",           setWriter         );
-  Helper::add ( reader, start, "machine/head",             setHeadNode       );
   Helper::add ( reader, start, "normals/normalize/global", setNormGlobal     );
   Helper::add ( reader, start, "normals/normalize/models", setNormModels     );
   Helper::add ( reader, start, "menu/translate",           translateMenu     );
   Helper::add ( reader, start, "menu/scale",               scaleMenu         );
-  Helper::add ( reader, start, "menu/color/bg_norm",       setMenuBgColorNorm   );
-  Helper::add ( reader, start, "menu/color/bg_highlight",  setMenuBgColorHLght  );
-  Helper::add ( reader, start, "menu/color/bg_disabled",   setMenuBgColorDsabl  );
-  Helper::add ( reader, start, "menu/color/txt_norm",      setMenuTxtColorNorm  );
-  Helper::add ( reader, start, "menu/color/txt_highlight", setMenuTxtColorHLght );
-  Helper::add ( reader, start, "menu/color/txt_disabled",  setMenuTxtColorDsabl );
+  Helper::add ( reader, start, "menu_color/bg_norm",       setMenuBgColorNorm   );
+  Helper::add ( reader, start, "menu_color/bg_highlight",  setMenuBgColorHLght  );
+  Helper::add ( reader, start, "menu_color/bg_disabled",   setMenuBgColorDsabl  );
+  Helper::add ( reader, start, "menu_color/txt_norm",      setMenuTxtColorNorm  );
+  Helper::add ( reader, start, "menu_color/txt_highlight", setMenuTxtColorHLght );
+  Helper::add ( reader, start, "menu_color/txt_disabled",  setMenuTxtColorDsabl );
   Helper::add ( reader, start, "status_bar/translate",     translateStatus   );
   Helper::add ( reader, start, "status_bar/scale",         scaleStatus       );
   Helper::add ( reader, start, "status_bar/visible",       setStatusVisible  );
@@ -207,24 +178,7 @@ void Parser::_read ( const std::string &filename )
   Helper::add ( reader, start, "speed/translate",          setTransSpeed     );
   Helper::add ( reader, start, "speed/rotate",             setRotSpeed       );
   Helper::add ( reader, start, "speed/scale",              setScaleSpeed     );
-  Helper::add ( reader, start, "sinterpoint/server",       setSinterServer   );
-  Helper::add ( reader, start, "sinterpoint/writer",       setSinterWriter   );
-  Helper::add ( reader, start, "sinterpoint/tmp_file",     setSinterTmpFile  );
-  Helper::add ( reader, start, "display/scribe_color",     setScribeColor    );
-  Helper::add ( reader, start, "display/scribe_width",     setScribeWidth    );
-  Helper::add ( reader, start, "auto_placement/enable",    setAutoPlacement  );
-  Helper::add ( reader, start, "auto_placement/center",    setAutoPlaceCenter );
-  Helper::add ( reader, start, "auto_placement/radius",    setAutoPlaceRadius );
-  Helper::add ( reader, start, "auto_placement/auto_rotation_angle_rad",    setAutoRotationAngle );
-  Helper::add ( reader, start, "auto_placement/auto_rotation_vector",      setAutoRotationVector );
-  Helper::add ( reader, start, "invr_nav/invert_rotation",    setNavInvertRotation );
-  Helper::add ( reader, start, "invr_nav/new_rotation_style", setNavNewRotation    );
-  Helper::add ( reader, start, "invr_nav/acceleration",       setNavAcceleration   );
-  Helper::add ( reader, start, "invr_nav/icon_color",         setNavIconColor      );
-  Helper::add ( reader, start, "invr_nav/icon_size",          setNavIconSize      );
-  Helper::add ( reader, start, "user/name",                   setUserName         );
-  Helper::add ( reader, start, "avatar/wait_frames",          setAvatarWaitFrames );
-  
+
   // Read the file.
   try
   {
@@ -283,10 +237,10 @@ namespace Helper
         // Make sure there is one in the chamber.
         if ( in.fail() || in.eof() )
           {
-// TODO: fix
-//            Usul::Exceptions::Thrower<std::runtime_error>("Error 1083884154, corrupt vector in file.",
-//                                                          "\n\tExpected Size: ", Vec::SIZE,
-//                                                          "\n\tVector Read:   ", s );
+            Usul::Exceptions::Thrower<std::runtime_error>
+              ( "Error 1083884154, corrupt vector in file.",
+                "\n\tExpected Size: ", Vec::SIZE,
+                "\n\tVector Read:   ", s );
           }
 
         // Read the value.
@@ -302,24 +256,11 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the number of grids
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_addGrid ( const std::string &s )
-{
-  ErrorChecker ( 1083817592u, !s.empty() );
-  _settings->addGrid();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the number of grid blocks.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Parser::_setNumGridBlocks ( const std::string &s )
+void Parser::_setNumGridBloaks ( const std::string &s )
 {
   ErrorChecker ( 1083817587u, !s.empty() );
   _settings->numGridBlocks ( Helper::ToVec<Settings::Vec2ui>::convert ( s ) );
@@ -354,62 +295,6 @@ void Parser::_setGridColor ( const std::string &s )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the grid fill color.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setGridFillColor ( const std::string &s )
-{
-  ErrorChecker ( 1083817590u, !s.empty() );
-  _settings->gridFillColor ( Helper::ToVec<Settings::Color>::convert ( s ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set grid rotation angle in radians
-//  
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setGridRotationAngleRad ( const std::string &s )
-{
-  ErrorChecker ( 1083817593u, !s.empty() );
-  _settings->gridRotationAngleRad ( float ( ::atof ( s.c_str() ) ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set grid rotation vector
-//    
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setGridRotationVector ( const std::string &s )
-{
-  ErrorChecker ( 108381759u, !s.empty() );
-  _settings->gridRotationVector ( Helper::ToVec<Settings::Vec3f>::convert ( s ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set grid rotation vector
-//    
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_offsetGrid ( const std::string &s )
-{
-  ErrorChecker ( 1083817594u, !s.empty() );
-  std::string f = "false";
-  if(s==f)
-    _settings->offsetGrid ( false );
-  else
-    _settings->offsetGrid ( true );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the near clipping plane.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -417,7 +302,7 @@ void Parser::_offsetGrid ( const std::string &s )
 void Parser::_setNearClip ( const std::string &s )
 {
   ErrorChecker ( 1083817590u, !s.empty() );
-  _settings->nearClippingDistance ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+  _settings->nearClippingDistance ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -430,7 +315,7 @@ void Parser::_setNearClip ( const std::string &s )
 void Parser::_setViewAllScale ( const std::string &s )
 {
   ErrorChecker ( 1083817591u, !s.empty() );
-  _settings->viewAllScaleZ ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+  _settings->viewAllScaleZ ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -522,19 +407,6 @@ void Parser::_setWriter ( const std::string &s )
 {
   ErrorChecker ( 3769331235u, !s.empty() );
   _settings->fileWriterMachineName ( s );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the machine that is the head node.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setHeadNode ( const std::string &s )
-{
-  ErrorChecker ( 2612572960u, !s.empty() );
-  _settings->headNodeMachineName ( s );
 }
 
 
@@ -734,7 +606,7 @@ void Parser::_scaleStatus ( const std::string &s )
 void Parser::_setTransSpeed ( const std::string &s )
 {
   ErrorChecker ( 1083817590u, !s.empty() );
-  _settings->translationSpeed ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+  _settings->translationSpeed ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -747,7 +619,7 @@ void Parser::_setTransSpeed ( const std::string &s )
 void Parser::_setRotSpeed ( const std::string &s )
 {
   ErrorChecker ( 1083817590u, !s.empty() );
-  _settings->rotationSpeed ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+  _settings->rotationSpeed ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
 }
 
 
@@ -760,225 +632,5 @@ void Parser::_setRotSpeed ( const std::string &s )
 void Parser::_setScaleSpeed ( const std::string &s )
 {
   ErrorChecker ( 2973371103u, !s.empty() );
-  _settings->scaleSpeed ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the SinterPoint server
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setSinterServer ( const std::string &s )
-{
-  ErrorChecker ( 2973371104u, !s.empty() );
-  _settings->sinterPointServer( s );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the SinterPoint writer
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setSinterWriter ( const std::string &s )
-{
-  ErrorChecker ( 2973371105u, !s.empty() );
-  _settings->sinterPointWriter( s );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the SinterPoint tmp file
-//
-///////////////////////////////////////////////////////////////////////////////
-void Parser::_setSinterTmpFile ( const std::string &s )
-{
-  ErrorChecker ( 2973371106u, !s.empty() );
-  _settings->sinterPointTmpFile( s );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the scribe color.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setScribeColor ( const std::string &s )
-{
-  ErrorChecker ( 2973371107u, !s.empty() );
-  _settings->scribeColor ( Helper::ToVec<Settings::Color>::convert ( s ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the scribe line width
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setScribeWidth ( const std::string &s )
-{
-  ErrorChecker ( 2973371108u, !s.empty() );
-  _settings->scribeWidth ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set auto placement
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setAutoPlacement ( const std::string &s )
-{
-  ErrorChecker ( 3652665668u, !s.empty() );
-  _settings->autoPlacement ( Helper::toBool ( s ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set auto placement center
-//    
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setAutoPlaceCenter ( const std::string &s )
-{
-  ErrorChecker ( 108381759u, !s.empty() );
-  _settings->autoPlaceCenter ( Helper::ToVec<Settings::Vec3f>::convert ( s ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set auto placement radius
-//    
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setAutoPlaceRadius ( const std::string &s )
-{
-  ErrorChecker ( 108381759u, !s.empty() );
-  _settings->autoPlaceRadius ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set rotation inversion
-//    
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setNavInvertRotation ( const std::string &s )
-{
-  ErrorChecker ( 108381759u, !s.empty() );
-  _settings->invertRotation ( Helper::toBool ( s ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set new rotation style
-//    
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setNavNewRotation ( const std::string &s )
-{
-  ErrorChecker ( 108381759u, !s.empty() );
-  _settings->newRotation ( Helper::toBool ( s ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set accleration factor
-//    
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setNavAcceleration ( const std::string &s )
-{
-  ErrorChecker ( 108381759u, !s.empty() );
-  _settings->acceleration ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set navigation icon color
-//    
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setNavIconColor ( const std::string &s )
-{
-  ErrorChecker ( 108381759u, !s.empty() );
-  _settings->iconColor ( Helper::ToVec<Settings::Vec4f>::convert ( s ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set navigation icon size
-//    
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setNavIconSize ( const std::string &s )
-{
-  ErrorChecker ( 108381759u, !s.empty() );
-  _settings->iconSize ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set auto rotation angle
-//    
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setAutoRotationAngle ( const std::string &s )
-{
-  ErrorChecker ( 108381759u, !s.empty() );
-  _settings->autoRotationAngle ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set auto rotation vector
-//    
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setAutoRotationVector ( const std::string &s )
-{
-  ErrorChecker ( 108381759u, !s.empty() );
-  _settings->autoRotationVector ( Helper::ToVec<Settings::Vec3f>::convert ( s ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the user's name
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setUserName ( const std::string &s )
-{
-  ErrorChecker ( 108381759u, !s.empty() );
-  _settings->userName( s );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the number of frames to wait between avatar updates
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Parser::_setAvatarWaitFrames ( const std::string &s )
-{
-  ErrorChecker ( 108381759u, !s.empty() );
-  _settings->avatarWaitFrames ( int ( Usul::Math::absolute ( ::atoi ( s.c_str() ) ) ) );
+  _settings->scaleSpeed ( float ( Usul::Math::abs ( ::atof ( s.c_str() ) ) ) );
 }

@@ -31,7 +31,6 @@ class USUL_EXPORT Referenced : public Typed
 {
 public:
 
-  typedef Typed BaseClass;
   USUL_DECLARE_TYPE_ID ( Referenced );
 
   /// Reference the instance.
@@ -45,6 +44,8 @@ public:
 
 protected:
 
+  typedef Usul::Threads::Mutex Mutex;
+
   explicit Referenced();
   Referenced ( const Referenced &r );
   Referenced &operator = ( const Referenced &r );
@@ -53,7 +54,7 @@ protected:
 private:
 
   unsigned long _refCount;
-  Usul::Threads::Mutex *_rcMutex;
+  Mutex *_rcMutex;
 };
 
 

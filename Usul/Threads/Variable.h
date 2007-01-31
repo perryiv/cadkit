@@ -17,14 +17,12 @@
 #ifndef _USUL_THREADS_VARIABLE_WITH_MUTEX_CLASS_H_
 #define _USUL_THREADS_VARIABLE_WITH_MUTEX_CLASS_H_
 
-#include "Usul/Threads/Mutex.h"
-
 
 namespace Usul {
 namespace Threads {
 
 
-template < class ValueType > struct Variable
+template < class ValueType, class MutexType > struct Variable
 {
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -33,7 +31,7 @@ template < class ValueType > struct Variable
   /////////////////////////////////////////////////////////////////////////////
 
   typedef ValueType value_type;
-  typedef Usul::Threads::Mutex MutexType;
+  typedef MutexType mutex_type;
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -42,26 +40,14 @@ template < class ValueType > struct Variable
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Variable() : _value(), _mutex ( 0x0 )
+  Variable() : _value(), _mutex()
   {
   }
-  Variable ( const ValueType &v ) : _value ( v ), _mutex ( 0x0 )
+  Variable ( const ValueType &v ) : _value ( v ), _mutex()
   {
   }
-  Variable ( const Variable &v ) : _value ( v._value ), _mutex ( 0x0 )
+  Variable ( const Variable &v ) : _value ( v._value ), _mutex()
   {
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Destructor
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  ~Variable()
-  {
-    delete _mutex;
   }
 
 
@@ -109,37 +95,20 @@ template < class ValueType > struct Variable
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Access to the mutex. Delayed creation.
+  //  Access to the mutex.
   //
   /////////////////////////////////////////////////////////////////////////////
 
   MutexType &mutex() const
   {
-    if ( 0x0 == _mutex )
-      _mutex = MutexType::create();
-    return *_mutex;
+    return _mutex;
   }
 
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Typecast operator.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  operator ValueType &()
-  {
-    return this->value();
-  }
-  operator const ValueType &() const
-  {
-    return this->value();
-  }
 
 private:
 
   ValueType _value;
-  mutable MutexType *_mutex;
+  mutable MutexType _mutex;
 };
 
 

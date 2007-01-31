@@ -13,7 +13,7 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 
-#include "Usul/Interfaces/ISceneElement.h"
+#include "Usul/Interfaces/IPrimitiveGroup.h"
 
 #include "osg/Array"
 #include "osg/ref_ptr"
@@ -25,18 +25,8 @@
 
 #include <map>
 
-namespace Usul 
-{ 
-  namespace Interfaces 
-  { 
-    struct IDecimateTriangles; 
-    struct ISmoothTriangles; 
-    struct ISubdivideTriangles; 
-  } 
-}
-
 class Group : public Usul::Base::Referenced,
-              public Usul::Interfaces::ISceneElement
+              public Usul::Interfaces::IPrimitiveGroup
 {
 public:
   /// Typedefs
@@ -64,20 +54,11 @@ public:
   /// Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  Group ( Vertices *vertices, Normals *normalsT, Normals *normalsV, Elements *indices );
+  Group ( Vertices *vertices, Normals *normalsT, Elements *indices );
 
   osg::Node* buildScene ( const Options &options = Options(), Unknown *caller = 0x0 );
 
-  /// Decimate
-  void                         decimate ( Usul::Interfaces::IDecimateTriangles* decimate, float reduction );
-
-  /// Smooth
-  void                         smooth ( Usul::Interfaces::ISmoothTriangles *smooth, unsigned int numIterations );
-
-  /// Subdivide
-  void                         subdivide ( Usul::Interfaces::ISubdivideTriangles *subdivide, unsigned int numIterations );
-
-  /// Usul::Interfaces::ISceneElement
+  /// Usul::Interfaces::IPrimitiveGroup
 
   /// Set the visiblity flag.
   virtual void                 setVisibility ( bool b );
@@ -134,7 +115,6 @@ private:
 
   VerticesPtr   _vertices;
   NormalsPtr    _normalsT;
-  NormalsPtr    _normalsV;
   ElementsPtr   _indices;
   GroupPtr      _group;
   TransformPtr  _mt;

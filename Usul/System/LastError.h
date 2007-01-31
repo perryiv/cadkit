@@ -37,22 +37,11 @@ struct USUL_EXPORT LastError
   // Initialize the last error.
   static void             init();
 
-  // Is there an error?
-  static bool             has();
-
   // Get the last error message.
   static std::string      message();
 
   // Get the number of the last error.
   static Number           number();
-
-  // Internal class that asserts in it's constructor and destructor 
-  // if there is a system error.
-  struct USUL_EXPORT Assert
-  {
-    Assert();
-    ~Assert();
-  };
 };
 
 

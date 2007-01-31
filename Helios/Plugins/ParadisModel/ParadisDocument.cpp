@@ -18,9 +18,9 @@
 
 #include "Usul/Interfaces/IActiveView.h"
 #include "Usul/Interfaces/IRedraw.h"
-#include "Usul/Interfaces/GUI/ICancelButton.h"
-#include "Usul/Interfaces/GUI/IStatusBar.h"
-#include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/ICancelButton.h"
+#include "Usul/Interfaces/IStatusBar.h"
+#include "Usul/Interfaces/IProgressBar.h"
 #include "Usul/Interfaces/ISmoothTriangles.h"
 #include "Usul/Interfaces/IDecimateTriangles.h"
 #include "Usul/Interfaces/ISubdivideTriangles.h"
@@ -357,14 +357,16 @@ Usul::Interfaces::IUnknown* ParadisDocument::getPrimitiveGroup ( unsigned int i 
 
 void ParadisDocument::smoothModel ( )
 {
+#if 0
   Usul::Interfaces::IUnknown *unknown ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::ISmoothTriangles::IID ) );
   Usul::Interfaces::ISmoothTriangles::QueryPtr plugin ( unknown );
 
   if ( plugin.valid() )
   {
-    _triangles->smooth ( plugin.get(), 20 );
+    plugin->smoothTriangles( _triangles.get() );
     this->modified( true );
   }
+#endif
 }
 
 
@@ -376,14 +378,16 @@ void ParadisDocument::smoothModel ( )
 
 void ParadisDocument::decimateModel ( )
 {
+#if 0
   Usul::Interfaces::IUnknown *unknown ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::IDecimateTriangles::IID ) );
   Usul::Interfaces::IDecimateTriangles::QueryPtr plugin ( unknown );
 
   if ( plugin.valid() )
   {
-    _triangles->decimate( plugin.get(), 0.50 );
+    plugin->decimateTriangles( _triangles.get() );
     this->modified( true );
   }
+#endif
 }
 
 
@@ -395,14 +399,16 @@ void ParadisDocument::decimateModel ( )
 
 void ParadisDocument::subdivideModel ( unsigned int numSubdivisions )
 {
+#if 0
   Usul::Interfaces::IUnknown *unknown ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::ISubdivideTriangles::IID ) );
   Usul::Interfaces::ISubdivideTriangles::QueryPtr plugin ( unknown );
 
   if ( plugin.valid() )
   {
-    _triangles->subdivide ( plugin.get(), numSubdivisions );
+    plugin->subdivideTriangles( _triangles.get(), numSubdivisions );
     this->modified( true );
   }
+#endif
 }
 
 

@@ -18,7 +18,7 @@
 #include "Bits.h"
 #include "Errors.h"
 
-///\todo TODO: fix this! //#include "boost/mpl/assert_is_same.hpp"
+#include "boost/mpl/assert_is_same.hpp"
 
 #include <algorithm>
 #include <sstream>
@@ -199,7 +199,7 @@ namespace Detail
 
 void Item::removeAll ( Callback::Ptr c )
 {
-  ///\todo TODO: this call was not in boost version 1_32: //BOOST_MPL_ASSERT_IS_SAME ( Callbacks::mapped_type, Callback::Ptr );
+  BOOST_MPL_ASSERT_IS_SAME ( Callbacks::mapped_type, Callback::Ptr );
 
   // Initialize.
   bool loop ( true );
@@ -411,32 +411,4 @@ void Item::expanded ( bool e )
     this->flags ( Bits::add    ( this->flags(), Item::EXPANDED ) );
   else
     this->flags ( Bits::remove ( this->flags(), Item::EXPANDED ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the marked state.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Item::marked() const
-{
-  return Bits<unsigned int>::has ( this->flags(), Item::MARKED );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the marked state.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Item::marked ( bool e )
-{
-  typedef MenuKit::Bits<unsigned int> Bits;
-  if ( e )
-    this->flags ( Bits::add    ( this->flags(), Item::MARKED ) );
-  else
-    this->flags ( Bits::remove ( this->flags(), Item::MARKED ) );
 }

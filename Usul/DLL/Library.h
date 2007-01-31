@@ -22,30 +22,18 @@
 
 #include <string>
 
-namespace Usul { namespace DLL { class Listener; } }
-
 
 namespace Usul {
 namespace DLL {
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Class that represents a dynamically loaded library.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 class USUL_EXPORT Library : public Base::Referenced
 {
 public:
 
-  // Typedefs.
-  typedef Usul::Base::Referenced BaseClass;
+  USUL_DECLARE_REF_POINTERS ( Library );
   typedef void* Function;
   typedef void* ModuleHandle;
-
-  // Smart pointers.
-  USUL_DECLARE_REF_POINTERS ( Library );
 
   // Construction.
   Library ( const std::string &filename );
@@ -55,13 +43,6 @@ public:
 
   // Get the library's filename.
   const std::string &   filename() const { return _filename; }
-
-  // Append/remove notification listener function.
-  static void           append ( Listener * );
-  static bool           remove ( Listener * );
-
-  // Call the listeners of this class.
-  static void           callListeners ( const std::string & );
 
 protected:
 

@@ -13,7 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Fox/Core/MdiMainWindow.h"
+#include "OsgFox/Core/MdiMainWindow.h"
 
 #include "Usul/Documents/Manager.h"
 #include "Usul/Cast/Cast.h"
@@ -39,7 +39,7 @@
 #include "FoxTools/Menu/Button.h"
 #include "FoxTools/Menu/Separator.h"
 
-using namespace Helios::Core;
+using namespace OsgFox::Core;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -141,6 +141,34 @@ MdiMainWindow::MdiMainWindow (
 MdiMainWindow::~MdiMainWindow()
 {
   // Nothing to delete. FOX deletes all child windows.
+}
+
+bool MdiMainWindow::_exiting()
+{
+#if 0
+  //1230476366
+  //Tryinig to re-work closing so that the main window doesn't close all but one window before prompting "Yes|No|Cancel" for saving.
+  //I think the code below fixes the above problem, but it copies the documents and then the MDIChildWindow's destructor is called and it still has references to it.
+  //The document manager may need to handle this to avoid copying
+
+  typedef Usul::Documents::Manager DocManager;
+  typedef DocManager::Documents      Documents;
+  
+  //Get the documents
+  Documents &documents ( DocManager::instance().documents() );
+
+  //Loop through each document
+  for( Documents::iterator i = documents.begin(); i != documents.end(); ++i )
+  {
+    //Ask this document to close
+    if( !(*i)->closeWindows( this->asUnknown() ) )
+      return false;
+  }
+#else
+  if ( 0 == _clientArea->forallWindows ( this, FXSEL( FX::SEL_COMMAND, FXMDIChild::ID_MDI_CLOSE ), 0x0 ) )
+    return false;
+#endif
+  return BaseClass::_exiting();
 }
 
 

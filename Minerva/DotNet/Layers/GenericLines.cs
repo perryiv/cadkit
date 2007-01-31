@@ -100,9 +100,6 @@ namespace DT.Minerva.Layers.Controls
     /// <summary>
     /// 
     /// </summary>
-    [
-    System.ComponentModel.Browsable(false)
-    ]
     public override string Number
     {
       get
@@ -152,7 +149,7 @@ namespace DT.Minerva.Layers.Controls
     {
       get
       {
-        string query = "SELECT id, srid(geom) as srid, asBinary(geom) as geom FROM " + this.DataTable;
+        string query = "SELECT id FROM " + this.DataTable;
 
         if (null != this.Where && this.Where.Length > 0)
           query += System.String.Format(" WHERE {0}", this.Where);

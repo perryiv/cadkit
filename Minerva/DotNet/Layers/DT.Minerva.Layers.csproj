@@ -76,6 +76,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\sdk\zedgraph\zedgraph_src_5.0.2\source\ZedGraph.csproj">
+      <Project>{2541686B-1673-43BF-AF89-3163945DB009}</Project>
+      <Name>ZedGraph</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DotNet\Graph\CadKit.Graph.csproj">
+      <Project>{305DD8CA-A729-489F-A6E7-DA4A1DF88F9A}</Project>
+      <Name>CadKit.Graph</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\DotNet\Interfaces\CadKit.Interfaces.csproj">
       <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
       <Name>CadKit.Interfaces</Name>
@@ -84,9 +92,13 @@
       <Project>{35375870-CDDF-431E-B366-782D431BF6F6}</Project>
       <Name>DT.Minerva.Interfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\WNV\GUI\DT.Minerva.Forms\DT.Minerva.Forms.csproj">
+      <Project>{41E9C1AE-06B5-46E7-83BB-243D2B657D6C}</Project>
+      <Name>DT.Minerva.Forms</Name>
+    </ProjectReference>
     <ProjectReference Include="Glue\DT.Minerva.Layers.Glue.vcproj">
       <Project>{1CA9FE49-DA3F-42D7-878C-126B71CD3F8B}</Project>
-      <Name>DT.Minerva.Layers.Glue</Name>
+      <Name>DT.Minerva.Glue</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

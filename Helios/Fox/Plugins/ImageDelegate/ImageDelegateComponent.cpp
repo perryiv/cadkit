@@ -24,15 +24,15 @@
 #include "FoxTools/Menu/Group.h"
 #include "FoxTools/Menu/Button.h"
 
-#include "Usul/Interfaces/Fox/IFoxClientArea.h"
-#include "Usul/Interfaces/Fox/IFoxMDIMenu.h"
+#include "Usul/Interfaces/IFoxClientArea.h"
+#include "Usul/Interfaces/IFoxMDIMenu.h"
 #include "Usul/Interfaces/IImageView.h"
 #include "Usul/Interfaces/IImage.h"
 #include "Usul/Interfaces/ISendMessage.h"
-#include "Usul/Interfaces/Fox/IMenuBar.h"
+#include "Usul/Interfaces/IMenuBar.h"
 #include "Usul/Resources/MenuBar.h"
 
-#include "Helios/Fox/Views/ImageView.h"
+#include "OsgFox/Views/ImageView.h"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ImageDelegateComponent , ImageDelegateComponent::BaseClass );
 
@@ -121,7 +121,7 @@ void ImageDelegateComponent::createDefaultGUI ( Usul::Documents::Document *docum
   LocalChildPtr child ( new ChildWindow ( document, clientArea, "Untitled", 0x0, (FX::FXMenuPane * ) mdiMenu, 0 ) ); 
 
   // Create the view
-  Helios::Views::ImageView* view ( new Helios::Views::ImageView ( doc, child.get(), FoxTools::Functions::visual() ) );
+  OsgFox::Views::ImageView* view ( new OsgFox::Views::ImageView ( doc, child.get(), FoxTools::Functions::visual() ) );
 
   // Get pointer to viewer
   Usul::Interfaces::IViewer::ValidQueryPtr viewer ( view );
@@ -153,7 +153,7 @@ void ImageDelegateComponent::refreshView  ( Usul::Documents::Document *document,
 
   if( getImageView.valid() )
   {
-    Helios::Views::ImageView *imageView ( getImageView->imageView() );
+    OsgFox::Views::ImageView *imageView ( getImageView->imageView() );
     
     Usul::Interfaces::IImage::QueryPtr getImage ( document );
 

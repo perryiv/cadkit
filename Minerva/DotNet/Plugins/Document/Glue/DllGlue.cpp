@@ -13,15 +13,11 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Threads/OpenThreads/Mutex.h"
 #include "Usul/Threads/Mutex.h"
-#include "Usul/Strings/ManagedToNative.h"
 
 #include "Minerva/Layers/Layer.h"
 #include "Minerva/postGIS/Geometry.h"
 
 #include "osgDB/ReadFile"
-
-#include "ossimPlanet/ossimPlanetDatabasePager.h"
-#include "ossimPlanet/ossimPlanetManipulator.h"
 
 #include <string>
 
@@ -106,19 +102,14 @@ DllGlue::!DllGlue()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DllGlue::removeLayer( CadKit::Interfaces::ILayer ^layer )
+void DllGlue::removeLayer( DT::Minerva::Interfaces::ILayer ^layer )
 {
   try
   {
-    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
-
-    if( nullptr != layerPtr )
-    {
-      ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
-      _sceneManager->removeLayer( base->layerID() );
-      _sceneManager->dirty ( true );
-      _sceneManager->buildScene();
-    }
+    ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layer->layerPtr().ToPointer() ) );
+    _sceneManager->removeLayer( base->layerID() );
+    _sceneManager->dirty ( true );
+    _sceneManager->buildScene();
   }
   catch ( System::Exception ^e )
   {
@@ -148,20 +139,15 @@ void DllGlue::dirtyScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DllGlue::modifyLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progress )
+void DllGlue::modifyLayer( DT::Minerva::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progress )
 {
   try
   {
-    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
-
-    if( nullptr != layerPtr )
-    {
-      ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
-      Progress p ( progress );
-      base->modify( p.unmanagedProgress() );
-      _sceneManager->dirty( true );
-      _sceneManager->buildScene();
-    }
+    Progress p ( progress );
+    ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layer->layerPtr().ToPointer() ) );
+    base->modify( p.unmanagedProgress() );
+    _sceneManager->dirty( true );
+    _sceneManager->buildScene();
   }
   catch ( System::Exception ^e )
   {
@@ -248,11 +234,6 @@ void DllGlue::viewer( CadKit::Viewer::Glue::Viewer ^viewer )
 
     if( _viewer )
     {
-      _viewer->navManip( new ossimPlanetManipulator );
-      _viewer->databasePager( new ossimPlanetDatabasePager );
-
-      _viewer->computeNearFar( false );
-
       _viewer->scene( _sceneManager->root() );
       _viewer->sceneUpdate( _sceneManager );
     }
@@ -305,21 +286,16 @@ void DllGlue::resize( int w, int h )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DllGlue::showLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progress )
+void DllGlue::showLayer( DT::Minerva::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progress )
 {
   try
   {
-    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
+    ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layer->layerPtr().ToPointer() ) );
 
-    if( nullptr != layerPtr )
-    {
-      ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
-
-      // Managed/Unmanged progress interop class.
-      Progress p ( progress );
-      base->buildDataObjects( p.unmanagedProgress() );
-      _sceneManager->addLayer( base.get() );
-    }
+    // Managed/Unmanged progress interop class.
+    Progress p ( progress );
+    base->buildDataObjects( p.unmanagedProgress() );
+    _sceneManager->addLayer( base.get() );
   }
   catch ( System::Exception ^e )
   {
@@ -333,131 +309,4 @@ void DllGlue::showLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Job
   {
     System::Console::WriteLine( "Error 1050340542: Unknown exception caught." );
   }
-}
-
-
-void DllGlue::addKeyWordList( System::String^ kwl )
-{
-  try
-  {
-    _sceneManager->addKeyWordList( Usul::Strings::convert ( kwl ).c_str() );
-  }
-  catch ( System::Exception ^e )
-  {
-    System::Console::WriteLine( "Error 1935115428:" + e->Message );
-  }
-  catch ( const std::exception &e )
-  {
-    System::Console::WriteLine( "Error 1962615428:" + gcnew System::String ( e.what() ) );
-  }
-  catch ( ... )
-  {
-    System::Console::WriteLine( "Error 1994334178: Unknown exception caught." );
-  }
-}
-
-
-void DllGlue::addLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer )
-{
-  if( nullptr != layer )
-  {
-    // Add layer to group.
-    osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( layer->intPtr().ToPointer() ) );
-
-    if( texture.valid() )
-      _sceneManager->addImage( texture.get() );
-  }
-}
-
-void DllGlue::removeLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer )
-{
-  if( nullptr != layer )
-  {
-    osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( layer->intPtr().ToPointer() ) );
-
-    if( texture.valid() )
-      _sceneManager->removeImage( texture.get() );
-  }
-}
-
-
-bool DllGlue::elevationEnabled()
-{
-  return _sceneManager->elevationEnabled();
-}
-
-void DllGlue::elevationEnabled( bool val )
-{
-  _sceneManager->elevationEnabled( val );
-}
-
-bool DllGlue::hudEnabled()
-{
-  return _sceneManager->hudEnabled();
-}
-
-void DllGlue::hudEnabled( bool val )
-{
-  _sceneManager->hudEnabled( val );
-}
-
-
-bool DllGlue::ephemerisFlag()
-{
-  return _sceneManager->ephemerisFlag();
-}
-
-void DllGlue::ephemerisFlag( bool val )
-{
-  _sceneManager->ephemerisFlag( val );
-}
-
-float DllGlue::elevationExag()
-{
-  return _sceneManager->elevationExag();
-}
-
-void DllGlue::elevationExag( float exag )
-{
-  _sceneManager->elevationExag( exag );
-}
-
-int DllGlue::elevationPatchSize()
-{
-  return _sceneManager->elevationPatchSize();
-}
-
-void DllGlue::elevationPatchSize( float patchSize )
-{
-  _sceneManager->elevationPatchSize( patchSize );
-}
-
-int DllGlue::levelDetail()
-{
-  return _sceneManager->levelDetail();
-}
-
-void DllGlue::levelDetail( float levelDetail )
-{
-  _sceneManager->levelDetail( levelDetail );
-}
-
-System::String^ DllGlue::elevationCacheDir()
-{
-  return gcnew System::String( _sceneManager->elevationCacheDir().c_str() );
-}
-
-void DllGlue::elevationCacheDir( System::String^ directory )
-{
-  _sceneManager->elevationCacheDir( Usul::Strings::convert( directory ) );
-}
-
-void DllGlue::showLegend( bool b )
-{
-  _sceneManager->showLegend( b );
-}
-
-bool DllGlue::showLegend()
-{
-  return _sceneManager->showLegend();
 }

@@ -16,11 +16,6 @@
 #ifndef _USUL_POINTERS_SMART_POINTER_H_
 #define _USUL_POINTERS_SMART_POINTER_H_
 
-// We need to undefine "check" when compiling against Carbon on OS X.
-#ifdef __OBJC__
-#undef check
-#endif
-
 
 namespace Usul {
 namespace Pointers {
@@ -273,44 +268,6 @@ struct SmartPointer
     return saved;
   }
 
-  
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Predicate to determine if another smart pointer is equal to this
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  struct IsEqual
-  {
-    IsEqual ( const element_type *p ) : _p ( p )
-    {
-    }
-    template < class PointerType > bool operator() ( const PointerType &t ) const
-    {
-      return _p == t.get();
-    }
-  private:
-    IsEqual();
-    const element_type *_p;
-  };
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Predicate to determine if two smart pointers are equal.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  struct IsEqualBinary
-  {
-    IsEqualBinary ( )
-    {
-    }
-    template < class PointerType > bool operator() ( const PointerType &lhs, const PointerType &rhs ) const
-    {
-      return lhs.get() == rhs.get();
-    }
-  };
 
 protected:
 

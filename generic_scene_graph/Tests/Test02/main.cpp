@@ -26,7 +26,7 @@ int main ( int argc, char **argv )
   GSG::Factory::Ptr factory ( new GSG::Factory );
 
   trans->prepend ( lod );
-  lod->append ( factory->sphere ( ( argc > 0 ) ? ::atoi ( argv[1] ) : 0 ) );
+  lod->append ( factory->cube() );
   lod->append ( factory->sphere() );
 
   return 0;

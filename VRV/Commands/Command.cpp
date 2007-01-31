@@ -70,7 +70,7 @@ Usul::Interfaces::IUnknown *Command::queryInterface ( unsigned long iid )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Command::execute ( Usul::Interfaces::IUnknown *caller )
+void Command::execute()
 {
   this->_execute();
 }

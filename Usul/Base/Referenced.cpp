@@ -14,22 +14,24 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Base/Referenced.h"
-#include "Usul/Base/InstanceManager.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Guard.h"
-#include "Usul/Components/Exceptions.h"
+#include "Usul/Threads/Set.h"
+
+#include <set>
+#include <string>
+#include <stdexcept>
 
 using namespace Usul;
 using namespace Usul::Base;
 
 USUL_IMPLEMENT_TYPE_ID ( Referenced );
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Local typedefs.
+//  I do not want these in the header file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -39,19 +41,25 @@ namespace Usul
   {
     typedef Usul::Threads::Mutex Mutex;
     typedef Usul::Threads::Guard<Mutex> Guard;
-  }
-}
 
+    #ifdef _DEBUG
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Variables with file scope.
-//
-///////////////////////////////////////////////////////////////////////////////
+      typedef std::set<Referenced*> InstanceContainer;
+      USUL_DECLARE_SET_CONFIG ( InstanceMapConfig, Mutex, Guard, InstanceContainer );
+      typedef Usul::Threads::Set<InstanceMapConfig> InstanceSet;
+  
+      InstanceSet *_instanceSet()
+      {
+        // This cannot be declared before the mutex factory-function is set.
+        static InstanceSet *set = 0x0;
+        if ( 0x0 == set )
+          set = new InstanceSet;
+        return set;
+      }
 
-#ifdef _DEBUG
-namespace Detail { Usul::Base::InstanceManager im; }
-#endif
+    #endif
+  };
+};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -60,13 +68,15 @@ namespace Detail { Usul::Base::InstanceManager im; }
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Referenced::Referenced() : BaseClass(),
+Referenced::Referenced() : Typed(),
   _refCount ( 0 ),
   _rcMutex ( Mutex::create() )
 {
 #if _DEBUG
-  Detail::im.add ( this );
-  //USUL_ASSERT ( 0x08E52F48 != reinterpret_cast < unsigned int > ( this ) );
+  // Make sure this address is not already in our set, and insert it.
+  std::pair<InstanceSet::iterator,bool> result = _instanceSet()->insert ( this );
+  USUL_ASSERT ( true == result.second );
+  USUL_ASSERT ( this == *(result.first) );
 #endif
 }
 
@@ -77,12 +87,15 @@ Referenced::Referenced() : BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Referenced::Referenced ( const Referenced &r ) : BaseClass ( r ),
+Referenced::Referenced ( const Referenced &r ) : Typed ( r ),
   _refCount ( 0 ),
   _rcMutex ( Mutex::create() )
 {
 #if _DEBUG
-  Detail::im.add ( this );
+  // Make sure this address is not already in our set, and insert it.
+  std::pair<InstanceSet::iterator,bool> result = _instanceSet()->insert ( this );
+  USUL_ASSERT ( true == result.second );
+  USUL_ASSERT ( this == *(result.first) );
 #endif
 }
 
@@ -95,13 +108,12 @@ Referenced::Referenced ( const Referenced &r ) : BaseClass ( r ),
 
 Referenced::~Referenced()
 {
-#if _DEBUG
-  Detail::im.remove ( this );
-#endif
+  // Remove this address from the set. Should be one occurance.
+  USUL_ASSERT ( 1 == _instanceSet()->erase ( this ) );
 
   // Should be true.
   USUL_ASSERT ( 0 == _refCount );
-  USUL_ASSERT ( 0x0 != _rcMutex );
+  USUL_ASSERT ( _rcMutex );
 
   delete _rcMutex;
 }
@@ -130,17 +142,7 @@ Referenced &Referenced::operator = ( const Referenced &r )
 
 void Referenced::ref()
 {
-  // One thread at a time.
   Guard guard ( *_rcMutex );
-
-#ifdef _DEBUG
-  // If this is the first time, update the entry in the instange-manager. 
-  // When the entry is first made in the constructor, the virtual table 
-  // is not fully constructed.
-  if ( 0 == _refCount )
-    Detail::im.update ( this );
-#endif
-
   ++_refCount;
 }
 
@@ -177,7 +179,7 @@ void Referenced::unref ( bool allowDeletion )
   {
     #ifdef _DEBUG
 
-      const std::string name ( this->typeId().name() );
+      std::string name ( this->typeId().name() );
 
       try
       {

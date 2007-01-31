@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Forward declarations.
+//  Declarations: Forward declarations.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -23,27 +23,12 @@ namespace osg
   class Group;
   class Geode;
   class StateSet;
-  class LOD;
-  class PrimitiveSet;
-  class Transform;
-  class Viewport;
-  class Matrixf;
-  class Matrixd;
-  class Vec4f;
-  class MatrixTransform;
-  class Geometry;
 };
 
 namespace osgText
 {
   class Text;
 };
-
-namespace osgDB 
-{
-  class Input; 
-  class Output;
-}
 
 
 #endif // _OSG_TOOLS_FORWARD_DECLARATIONS_H_

@@ -1,8 +1,0 @@
-<plugins>
-  <plugin>
-    <file>WxGui.plug</file>
-  </plugin>
-  <plugin>
-    <file>MessageWindows.plug</file>
-  </plugin>
-</plugins>

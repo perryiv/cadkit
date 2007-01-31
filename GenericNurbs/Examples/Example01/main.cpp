@@ -13,9 +13,9 @@
 int main ( int, char ** )
 {
   // Usul-based configuration types.
-  typedef GN::Config::UsulConfig<long double> UsulConfigld;
-  typedef GN::Config::UsulConfig<double>      UsulConfigd;
-  typedef GN::Config::UsulConfig<float>       UsulConfigf;
+  typedef GN::Usul::Config<long double> UsulConfigld;
+  typedef GN::Usul::Config<double>      UsulConfigd;
+  typedef GN::Usul::Config<float>       UsulConfigf;
 
   try
   {

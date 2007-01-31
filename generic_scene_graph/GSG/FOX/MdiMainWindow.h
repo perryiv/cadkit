@@ -69,8 +69,8 @@ protected:
 
 private:
 
-  typedef std::auto_ptr < FXMDIClient > FXMDIClientPtr;
-  typedef std::auto_ptr < FXMDIMenu   > FXMDIMenuPtr;
+  typedef Pointer < FXMDIClient, NullOkPolicy, std::auto_ptr < FXMDIClient > > FXMDIClientPtr;
+  typedef Pointer < FXMDIMenu,   NullOkPolicy, std::auto_ptr < FXMDIMenu >   > FXMDIMenuPtr;
 
   FXMDIClientPtr _clientArea;
   FXMDIMenuPtr _mdiMenu;

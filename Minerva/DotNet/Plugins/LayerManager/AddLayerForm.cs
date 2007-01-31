@@ -9,9 +9,8 @@
 
 namespace DT.Minerva.Plugins.LayerManager
 {
-  public partial class AddLayerForm : System.Windows.Forms.UserControl
+  public partial class AddLayerForm : System.Windows.Forms.Form
   {
-    private CadKit.Interfaces.IOptionsPage _page;
     private CadKit.Interfaces.ILayer _currentLayer = null;
     private static int _lastIndexUsed = -1;
 
@@ -31,17 +30,11 @@ namespace DT.Minerva.Plugins.LayerManager
     /// <summary>
     /// Constructor.
     /// </summary>
-    public AddLayerForm(CadKit.Interfaces.IOptionsPage page)
+    public AddLayerForm()
     {
       InitializeComponent();
 
-      this.Load += this._load;
-
-      _page = page;
-      if (null != _page)
-        _page.Apply += this._apply;
-
-      foreach (DT.Minerva.Interfaces.IDatabaseConnection dataConnection in DT.Minerva.DB.Connections.Instance.OpenConnections)
+      foreach (DT.Minerva.Interfaces.IDatabaseConnection dataConnection in DT.Minerva.Lib.Controller.Instance.DataSources)
       {
         _connections.Items.Add(dataConnection.Database + " on " + dataConnection.Hostname);
       }
@@ -57,47 +50,11 @@ namespace DT.Minerva.Plugins.LayerManager
 
       _listBox.SelectedIndexChanged += new System.EventHandler(_listBox_SelectedIndexChanged);
 
+      _okButton.Click += new System.EventHandler(_okButton_Click);
+      _cancelButton.Click += new System.EventHandler(_cancelButton_Click);
+
       if (_lastIndexUsed >= 0 && _lastIndexUsed < _connections.Items.Count)
         _connections.SelectedIndex = _lastIndexUsed;
-    }
-
-
-    /// <summary>
-    /// Called when the form is loaded.
-    /// </summary>
-    void _load(object sender, System.EventArgs e)
-    {
-      System.Windows.Forms.Form parent = this.FindForm();
-      if (null != parent)
-        parent.FormClosing += this._formClosing;
-    }
-
-
-    /// <summary>
-    /// Called when the parent form is closing.
-    /// </summary>
-    private void _formClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
-    {
-      System.Windows.Forms.Form parent = this.FindForm();
-      if (null != parent)
-        parent.FormClosing -= this._formClosing;
-
-      if (null != _page)
-        _page.Apply -= this._apply;
-    }
-
-
-    /// <summary>
-    /// Called when the apply (or ok) button is pressed.
-    /// </summary>
-    private void _apply(CadKit.Interfaces.IOptionsForm form, CadKit.Interfaces.IOptionsPage page)
-    {
-      CadKit.Interfaces.ILayerList layerList = CadKit.Documents.Manager.Instance.ActiveDocument as CadKit.Interfaces.ILayerList;
-
-      if (null != layerList && null != this.Layer)
-      {
-        layerList.addLayer(this.Layer, this);
-      }
     }
 
 
@@ -109,7 +66,7 @@ namespace DT.Minerva.Plugins.LayerManager
       string layerType = _listBox.SelectedItem as string;
       _lastIndexUsed = _connections.SelectedIndex;
 
-      DT.Minerva.Interfaces.IDataSource dataSource = DT.Minerva.DB.Connections.Instance.OpenConnections[_lastIndexUsed] as DT.Minerva.Interfaces.IDataSource;
+      DT.Minerva.Interfaces.IDataSource dataSource = DT.Minerva.Lib.Controller.Instance.DataSources[_lastIndexUsed] as DT.Minerva.Interfaces.IDataSource;
       _currentLayer = DT.Minerva.Layers.Controls.Factory.Instance.create(layerType, dataSource);
 
       if(_currentLayer is CadKit.Interfaces.IPropertyGridObject)
@@ -125,6 +82,26 @@ namespace DT.Minerva.Plugins.LayerManager
     void _connections_SelectedValueChanged(object sender, System.EventArgs e)
     {
       _listBox.Enabled = true;
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    void _cancelButton_Click(object sender, System.EventArgs e)
+    {
+      this.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+      this.Close();
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    void _okButton_Click(object sender, System.EventArgs e)
+    {
+      this.DialogResult = System.Windows.Forms.DialogResult.OK;
+      this.Close();
     }
 
 
@@ -147,7 +124,7 @@ namespace DT.Minerva.Plugins.LayerManager
           connection.Password = connect.Password;
           connection.connect();
 
-          DT.Minerva.DB.Connections.Instance.addConnection(connection);
+          DT.Minerva.Lib.Controller.Instance.addDataSource(connection);
 
           int index = _connections.Items.Add(connection.Database + " on " + connection.Hostname);
           _connections.SelectedIndex = index;

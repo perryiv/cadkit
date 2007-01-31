@@ -32,32 +32,13 @@ namespace Base {
 
 struct StringData
 {
-  StringData() : _string()
-  {
-  }
-  StringData ( const std::string &s ) : _string ( s )
-  {
-  }
-  StringData ( const StringData &b ) : _string ( b._string )
-  {
-  }
-  const std::string &getStringData() const
-  {
-    return _string;
-  }
-  void setStringData ( const std::string &s )
-  {
-    _string = s;
-  }
-  void set ( const StringData &s )
-  {
-    this->setStringData ( s._string );
-  }
-  StringData &operator = ( const StringData &b )
-  {
-    this->set ( b );
-    return *this;
-  }
+  StringData() : _string(){}
+  StringData ( const std::string &s ) : _string ( s ){}
+  StringData ( const StringData &b ) : _string ( b._string ){}
+  StringData &operator = ( const StringData &b ) { this->set ( b ); return *this; }
+  void                  set ( const StringData &b ) { _string = b._string; }
+  const std::string &   getStringData() const { return _string; }
+  void                  setStringData ( const std::string &s ) { _string = s; }
 private:
   std::string _string;
 };

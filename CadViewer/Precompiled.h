@@ -25,7 +25,6 @@
 # define NOMINMAX                   // Do not define min and max as macros.
 
 # include <windows.h>
-# include <direct.h>
 
 # include "osg/Geode"
 # include "osg/Matrix"
@@ -56,7 +55,7 @@
 # include "cppdom/cppdom.h"
 # include "cppdom/shared_ptr.h"
 
-# include "boost/mpl/assert.hpp"
+# include "boost/mpl/assert_is_same.hpp"
 # include "boost/static_assert.hpp"
 
 # include <algorithm>

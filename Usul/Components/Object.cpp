@@ -147,7 +147,7 @@ Usul::DLL::Library::Function _getFunction ( const std::string &name, Usul::DLL::
   {
     Usul::Exceptions::Thrower<Usul::Components::Exceptions::FailedToFindFunction>
       ( "Error: 1028502101, failed to find function.",
-        " Name: ", name, " in Library: ", lib->filename() );
+        "Name: ", name, "Library: ", lib->filename() );
   }
 
   // Return the function pointer.
@@ -214,10 +214,10 @@ inline void copy ( const SourceContainer &source, TargetContainer &target, Mutex
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Interfaces::IUnknown *Object::create ( unsigned long iid, const StringList &path, const std::string &filename )
+Interfaces::IUnknown *Object::create ( unsigned long iid, const Path &path, const std::string &filename )
 {
   // Loop through the path.
-  for ( StringList::const_iterator i = path.begin(); i != path.end(); ++i )
+  for ( Path::const_iterator i = path.begin(); i != path.end(); ++i )
   {
     // Get the directory.
     const std::string &dir = *i;
@@ -237,7 +237,7 @@ Interfaces::IUnknown *Object::create ( unsigned long iid, const StringList &path
 
   // If we get to here then we failed. Turn the path into a readable string.
   std::string libPath;
-  for ( StringList::const_iterator i = path.begin(); i != path.end(); ++i )
+  for ( Path::const_iterator i = path.begin(); i != path.end(); ++i )
   {
     libPath += "\n\t";
     libPath += *i;
@@ -288,7 +288,7 @@ Interfaces::IUnknown *Object::create ( unsigned long iid, const std::string &dir
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Object::CreateResult Object::_create ( unsigned long iid, const std::string &name )
+Interfaces::IUnknown *Object::create ( unsigned long iid, const std::string &name )
 {
   // Initialize the filename.
   std::string filename ( name );
@@ -311,43 +311,11 @@ Object::CreateResult Object::_create ( unsigned long iid, const std::string &nam
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Load the library and create the component.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Interfaces::IUnknown *Object::create ( unsigned long iid, const std::string &name )
-{
-  // Call the other one.
-  Object::CreateResult result ( Object::_create ( iid, name ) );
-
-  // Return the component.
-  return result.second.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the class factory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Interfaces::IClassFactory *Object::factory ( const std::string &name )
-{
-  // Call the other one.
-  Object::CreateResult result ( Object::_create ( Factory::IID, name ) );
-
-  // Return the factory.
-  return result.first.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Create the component from the given library.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Object::CreateResult Object::_create ( unsigned long iid, Library *ptr )
+Interfaces::IUnknown *Object::_create ( unsigned long iid, Library *ptr )
 {
   // The constructor will throw if the pointer is null.
   Usul::DLL::Library::ValidRefPtr lib ( ptr );
@@ -360,15 +328,17 @@ Object::CreateResult Object::_create ( unsigned long iid, Library *ptr )
   Detail::_checkBuildModes ( Detail::_isDebug(), df(), ptr );
 
   // Get the factory function.
-  typedef Usul::Interfaces::IClassFactory IClassFactory;
-  typedef IClassFactory * (*FactoryFunction)();
+  typedef Usul::Interfaces::IClassFactory * (*FactoryFunction)();
   FactoryFunction ff = (FactoryFunction) Detail::_getFunction ( "usul_get_class_factory", lib );
 
   // Get the class factory.
-  IClassFactory::ValidRefPtr factory ( ff() );
+  Interfaces::IClassFactory::ValidRefPtr factory ( ff() );
 
-  // Return the factory and the component.
-  return Object::CreateResult ( factory.get(), factory->createInstance ( iid ) );
+  // Create the requested instance.
+  Interfaces::IUnknown::ValidRefPtr unknown ( factory->createInstance ( iid ) );
+
+  // Return the unknown pointer.
+  return unknown.release();
 }
 
 

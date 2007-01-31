@@ -66,12 +66,6 @@ namespace DT
         /// Get/Set show layer.
         PROPERTY_GET_SET( ShowLayer, bool );
 
-        /// Get/Set label color.
-        PROPERTY_GET_SET( LabelColor, System::Drawing::Color^ );
-
-        /// Get/Set label z offset
-        PROPERTY_GET_SET( LabelZOffset, float );
-
         /// Get the layer.
         virtual ::Minerva::Layers::Layer* layer() = 0;
         virtual System::IntPtr      layerPtr();

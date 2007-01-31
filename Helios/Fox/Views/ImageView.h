@@ -24,7 +24,7 @@
 
 #include "osgUtil/SceneView"
 
-namespace Helios {
+namespace OsgFox {
 namespace Views {
 
 class OSG_FOX_VIEWS_EXPORT ImageView : public FX::FXGLCanvas,
@@ -71,8 +71,8 @@ protected:
   virtual void            handleMessage ( unsigned short message );
 
   /// Usul::Interfaces::IImageView
-  virtual Helios::Views::ImageView*       imageView()       { return this; }
-  virtual const Helios::Views::ImageView* imageView() const { return this; }
+  virtual OsgFox::Views::ImageView*       imageView()       { return this; }
+  virtual const OsgFox::Views::ImageView* imageView() const { return this; }
 
   /// Usul::Interfaces::IBackground
   virtual void            editBackground();

@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR)"
+				AdditionalIncludeDirectories="../"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_IMAGES"
 				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
@@ -47,13 +47,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				OutputFile="../bin/Imagesd.dll"
+				AdditionalDependencies=""
+				OutputFile="$(USUL_LIB_DIR)/Imagesd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/Imagesd.pdb"
-				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/Imagesd.lib"/>
+				ImportLibrary="$(USUL_LIB_DIR)/Imagesd.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
@@ -115,12 +116,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				OutputFile="../bin/Images.dll"
+				AdditionalDependencies=""
+				OutputFile="$(USUL_LIB_DIR)/Images.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories=""
 				ProgramDatabaseFile=".\Release/Images.pdb"
-				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/Images.lib"/>
+				ImportLibrary="$(USUL_LIB_DIR)/Images.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"
@@ -155,71 +157,42 @@
 		<Filter
 			Name="Source"
 			Filter="">
-			<Filter
-				Name="Core"
-				Filter="">
-				<File
-					RelativePath=".\Core\BaseImage.cpp">
-				</File>
-				<File
-					RelativePath=".\Core\BaseImage.h">
-				</File>
-				<File
-					RelativePath=".\Core\Export.h">
-				</File>
-				<File
-					RelativePath=".\Core\Factory.cpp">
-				</File>
-				<File
-					RelativePath=".\Core\Factory.h">
-				</File>
-				<File
-					RelativePath=".\Core\Image.cpp">
-				</File>
-				<File
-					RelativePath=".\Core\Image.h">
-				</File>
-				<File
-					RelativePath=".\Core\ImageImpl.h">
-				</File>
-				<File
-					RelativePath=".\Core\Iterator.h">
-				</File>
-				<File
-					RelativePath=".\Core\TypeTraits.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="Algorithms"
-				Filter="">
-				<File
-					RelativePath=".\Algorithms\Alpha.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Contours.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Grayscale.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Histogram.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Invert.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Morphology.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\RedGreenBlue.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Scale.h">
-				</File>
-				<File
-					RelativePath=".\Algorithms\Threshold.h">
-				</File>
-			</Filter>
+			<File
+				RelativePath=".\Contours.h">
+			</File>
+			<File
+				RelativePath=".\Enum.h">
+			</File>
+			<File
+				RelativePath=".\Grayscale.h">
+			</File>
+			<File
+				RelativePath=".\Histogram.h">
+			</File>
+			<File
+				RelativePath=".\Image.h">
+			</File>
+			<File
+				RelativePath=".\ImageBase.h">
+			</File>
+			<File
+				RelativePath=".\Invert.h">
+			</File>
+			<File
+				RelativePath=".\Matrix.h">
+			</File>
+			<File
+				RelativePath=".\Morphology.h">
+			</File>
+			<File
+				RelativePath=".\Policies.h">
+			</File>
+			<File
+				RelativePath=".\Scale.h">
+			</File>
+			<File
+				RelativePath=".\Threshold.h">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

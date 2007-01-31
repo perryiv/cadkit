@@ -195,17 +195,12 @@ DistributedGlue::Strings^ DistributedGlue::getAvailableSessions()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DistributedGlue::removeLayer( CadKit::Interfaces::ILayer ^ layer )
+void DistributedGlue::removeLayer( DT::Minerva::Interfaces::ILayer ^ layer )
 {
   try
   {
-    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
-
-    if( nullptr != layerPtr )
-    {
-      ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
-      _controller->removeLayer( base->layerID() );
-    }
+    ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layer->layerPtr().ToPointer() ) );
+    _controller->removeLayer( base->layerID() );
   }
   catch ( const std::exception &e )
   {
@@ -226,17 +221,12 @@ void DistributedGlue::removeLayer( CadKit::Interfaces::ILayer ^ layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DistributedGlue::modifyLayer( CadKit::Interfaces::ILayer ^layer )
+void DistributedGlue::modifyLayer( DT::Minerva::Interfaces::ILayer ^layer )
 {
   try
   {
-    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
-
-    if( nullptr != layerPtr )
-    {
-      ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
-      _controller->modifyLayer( base.get() );  
-    }
+    ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layer->layerPtr().ToPointer() ) );
+    _controller->modifyLayer( base.get() );  
   }
   catch ( const std::exception &e )
   {
@@ -302,17 +292,12 @@ void DistributedGlue::stopAnimation()
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void DistributedGlue::showLayer ( CadKit::Interfaces::ILayer ^ layer )
+void DistributedGlue::showLayer ( DT::Minerva::Interfaces::ILayer ^ layer )
 {
   try
   {
-    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
-
-    if( nullptr != layerPtr )
-    {
-      ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
-      _controller->showLayer( base.get() );
-    }
+    ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layer->layerPtr().ToPointer() ) );
+    _controller->showLayer( base.get() );
   }
   catch ( const std::exception &e )
   {

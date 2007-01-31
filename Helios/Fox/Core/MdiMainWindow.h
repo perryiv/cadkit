@@ -16,16 +16,16 @@
 #ifndef _OPEN_SCENE_GRAPH_FOX_BINDING_MAIN_MDI_WINDOW_H_
 #define _OPEN_SCENE_GRAPH_FOX_BINDING_MAIN_MDI_WINDOW_H_
 
-#include "Helios/Fox/Core/MainWindow.h"
+#include "OsgFox/Core/MainWindow.h"
 
 namespace FX { class FXMDIClient; class FXMDIMenu; }
 
-#include "Usul/Interfaces/Fox/IFoxClientArea.h"
-#include "Usul/Interfaces/Fox/IFoxMDIMenu.h"
+#include "Usul/Interfaces/IFoxClientArea.h"
+#include "Usul/Interfaces/IFoxMDIMenu.h"
 
 namespace FoxTools { namespace Windows { class MdiChildWindow; } }
 
-namespace Helios {
+namespace OsgFox {
 
 namespace Documents { class Document; }
 
@@ -73,6 +73,8 @@ protected:
   MdiMainWindow();
   virtual ~MdiMainWindow();
 
+  virtual bool                          _exiting();
+
   virtual void                          _fullScreenStart();
   virtual void                          _fullScreenEnd();
 
@@ -89,7 +91,7 @@ private:
 };
 
 } // namespace Core
-} // namespace Helios
+} // namespace OsgFox
 
 
 #endif //_OPEN_SCENE_GRAPH_FOX_BINDING_MAIN_MDI_WINDOW_H_

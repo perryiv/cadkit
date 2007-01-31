@@ -18,30 +18,11 @@
 
 
 #ifdef _MSC_VER
-# ifdef __CLR_VER
-#  define USUL_ASSERT System::Diagnostics::Debug::Assert
-# else
-#  if 1                          // Use this to turn on/off standard assert.
-#   include <crtdbg.h>
-#   define USUL_ASSERT _ASSERT
-#  else
-#   include <assert.h>
-#   define USUL_ASSERT assert
-#  endif
-# endif
+# include <crtdbg.h>
+# define USUL_ASSERT _ASSERT
 #elif __sgi
 # include <assert.h>
 # define USUL_ASSERT assert
-#elif __APPLE__
-#include <stdlib.h>
-#include <stdio.h>
-#undef assert
-#undef __assert
-#define assert(e)  \
-    ((void) ((e) ? 0 : __assert (#e, __FILE__, __LINE__)))
-#define __assert(e, file, line) \
-    (printf ("%s:%u: failed assertion `%s'\n", file, line, e), abort (), 0)
-#define USUL_ASSERT assert
 #else
 # include <cassert>
 # define USUL_ASSERT assert

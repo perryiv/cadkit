@@ -16,34 +16,30 @@
 #ifndef _OPEN_SCENE_GRAPH_FOX_BINDING_MAIN_WINDOW_H_
 #define _OPEN_SCENE_GRAPH_FOX_BINDING_MAIN_WINDOW_H_
 
-#include "Helios/Fox/Core/Export.h"
+#include "OsgFox/Core/Export.h"
 
 #include "Usul/Errors/Stack.h"
-#include "Usul/Components/Manager.h"
-
 #include "Usul/Interfaces/IClassFactory.h"
 #include "Usul/Interfaces/INotify.h"
+#include "Usul/Interfaces/IProgressBar.h"
+#include "Usul/Interfaces/IStatusBar.h"
 #include "Usul/Interfaces/IActiveView.h"
+#include "Usul/Interfaces/IFoxMenuPane.h"
+#include "Usul/Interfaces/ISaveFileDialog.h"
+#include "Usul/Interfaces/ILoadFileDialog.h"
+#include "Usul/Interfaces/ICancelButton.h"
+#include "Usul/Interfaces/IReportErrors.h"
+#include "Usul/Interfaces/IFoxTabItem.h"
+#include "Usul/Interfaces/IPreferencesManager.h"
+#include "Usul/Interfaces/IFlushEvents.h"
+#include "Usul/Interfaces/IUpdateTextWindow.h"
+#include "Usul/Interfaces/IFoxTabBook.h"
 #include "Usul/Interfaces/IActiveDocument.h"
+#include "Usul/Interfaces/IQuestion.h"
+#include "Usul/Interfaces/IMenuBar.h"
 #include "Usul/Interfaces/IShadeModel.h"
 #include "Usul/Interfaces/IPolygonMode.h"
-#include "Usul/Interfaces/IDocumentSelect.h"
-
-#include "Usul/Interfaces/GUI/IProgressBar.h"
-#include "Usul/Interfaces/GUI/IStatusBar.h"
-#include "Usul/Interfaces/GUI/ICancelButton.h"
-#include "Usul/Interfaces/GUI/IFlushEvents.h"
-#include "Usul/Interfaces/GUI/ISaveFileDialog.h"
-#include "Usul/Interfaces/GUI/ILoadFileDialog.h"
-#include "Usul/Interfaces/GUI/IReportErrors.h"
-#include "Usul/Interfaces/GUI/IPreferencesManager.h"
-#include "Usul/Interfaces/GUI/IUpdateTextWindow.h"
-#include "Usul/Interfaces/GUI/IQuestion.h"
-
-#include "Usul/Interfaces/Fox/IFoxMenuPane.h"
-#include "Usul/Interfaces/Fox/IFoxTabBook.h"
-#include "Usul/Interfaces/Fox/IFoxTabItem.h"
-#include "Usul/Interfaces/Fox/IMenuBar.h"
+#include "Usul/Components/Manager.h"
 
 #include "FoxTools/Headers/MainWindow.h"
 #include "FoxTools/Headers/StatusBar.h"
@@ -81,7 +77,7 @@ namespace Usul
   namespace Documents  { class Document; }
 }
 
-namespace Helios {
+namespace OsgFox {
 namespace Core {
 
 class OSG_FOX_CORE_EXPORT MainWindow : public FX::FXMainWindow,
@@ -100,8 +96,7 @@ class OSG_FOX_CORE_EXPORT MainWindow : public FX::FXMainWindow,
                                        public Usul::Interfaces::IFoxTabBook,
                                        public Usul::Interfaces::IActiveDocument,
                                        public Usul::Interfaces::IQuestion,
-                                       public Usul::Interfaces::IMenuBar,
-                                       public Usul::Interfaces::IDocumentSelect
+                                       public Usul::Interfaces::IMenuBar
 {
 public:
 
@@ -186,7 +181,6 @@ public:
     ID_EYE_DISTANCE,
     ID_LIGHTS,
     ID_SCENE_STAGE,
-    ID_CENTEROFROTATION,
     ID_LAST
   };
 
@@ -286,7 +280,6 @@ public:
   long                                  onCommandEyeDistance       ( FX::FXObject *, FX::FXSelector, void * );
   long                                  onCommandLights            ( FX::FXObject *, FX::FXSelector, void * );
   long                                  onCommandSceneStage        ( FX::FXObject *, FX::FXSelector, void * );
-  long                                  onCommandCenterOfRotation  ( FX::FXObject *, FX::FXSelector, void * );
 
   // Update messages.
   long                                  onUpdateNotBusy            ( FX::FXObject *, FX::FXSelector, void * );
@@ -325,7 +318,6 @@ public:
   long                                  onUpdateEyeDistance        ( FX::FXObject *, FX::FXSelector, void * );
   long                                  onUpdateLights             ( FX::FXObject *, FX::FXSelector, void * );
   long                                  onUpdateSceneStage         ( FX::FXObject *, FX::FXSelector, void * );
-  long                                  onUpdateCenterOfRotation   ( FX::FXObject *, FX::FXSelector, void * );
 
   void                                  outputFile ( const std::string &of ) { _output = of; }
   const std::string &                   outputFile() const { return _output; }
@@ -497,9 +489,6 @@ protected:
   /// Usul::Interfaces::IMenuBar
   virtual FoxTools::Menu::Bar*          getMenuBar ();
 
-  /// Usul::Interfaces::IDocumentSelect
-  virtual Usul::Documents::Document*            selectDocument ( const Documents& );
-
 private:
 
   typedef std::map < std::string, FX::FXWindow * >        Windows;
@@ -535,7 +524,7 @@ private:
 };
 
 } // namespace Core
-} // namespace Helios
+} // namespace OsgFox
 
 
 #endif //_OPEN_SCENE_GRAPH_FOX_BINDING_MAIN_WINDOW_H_

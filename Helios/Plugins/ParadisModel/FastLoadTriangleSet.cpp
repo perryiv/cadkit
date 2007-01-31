@@ -46,9 +46,9 @@ FastLoadTriangleSet::~FastLoadTriangleSet()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FastLoadTriangleSet::addGroup ( osg::Vec3Array *vertices, osg::Vec3Array *normalsT, osg::Vec3Array *normalsV, osg::DrawElementsUInt *indices )
+void FastLoadTriangleSet::addGroup ( osg::Vec3Array *vertices, osg::Vec3Array *normals, osg::DrawElementsUInt *indices )
 {
-  _groups.push_back ( new Group ( vertices, normalsT, normalsV, indices ) );
+  _groups.push_back ( new Group ( vertices, normals, indices ) );
 }
 
 
@@ -72,7 +72,7 @@ unsigned int FastLoadTriangleSet::numberOfGroups () const
 
 Usul::Interfaces::IUnknown* FastLoadTriangleSet::getPrimitiveGroup ( unsigned int i )
 {
-  return _groups.at( i )->queryInterface ( Usul::Interfaces::ISceneElement::IID );
+  return _groups.at( i )->queryInterface ( Usul::Interfaces::IPrimitiveGroup::IID );
 }
 
 
@@ -128,49 +128,4 @@ bool FastLoadTriangleSet::empty() const
 void FastLoadTriangleSet::updateBounds ( const osg::Vec3& vertex )
 {
   _bb.expandBy ( vertex );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Decimate the triangle set.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void FastLoadTriangleSet::decimate ( Usul::Interfaces::IDecimateTriangles* decimate, float reduction )
-{
-  for ( Groups::iterator iter = _groups.begin(); iter != _groups.end(); ++iter )
-  {
-    (*iter)->decimate( decimate, reduction );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Smooth the triangle set.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void FastLoadTriangleSet::smooth ( Usul::Interfaces::ISmoothTriangles *smooth, unsigned int numIterations )
-{
-  for ( Groups::iterator iter = _groups.begin(); iter != _groups.end(); ++iter )
-  {
-    (*iter)->smooth( smooth, numIterations );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Subdivide the triangle set.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void FastLoadTriangleSet::subdivide ( Usul::Interfaces::ISubdivideTriangles *subdivide, unsigned int numIterations )
-{
-  for ( Groups::iterator iter = _groups.begin(); iter != _groups.end(); ++iter )
-  {
-    (*iter)->subdivide( subdivide, numIterations );
-  }
 }

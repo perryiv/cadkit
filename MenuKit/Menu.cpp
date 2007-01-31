@@ -40,6 +40,20 @@ Menu::Menu(): BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+Menu::Menu ( const std::string &name, const std::string &icon_file, Layout layout, Callback *cb, MenuKit::Message m ) :
+  BaseClass ( name, icon_file, cb, m ),
+  _items      (), 
+  _layout     ( layout )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 Menu::Menu ( const std::string &name, const std::string &icon_file, Layout layout ) :
   BaseClass ( name, icon_file ),
   _items  (), 
@@ -153,22 +167,6 @@ void Menu::accept ( Visitor &v )
 
 void Menu::traverse ( Visitor &v )
 {
-  switch( v.mode() )
-  {
-  case Visitor::NONE: {} break;
-  case Visitor::ALL:
-    {
-      for ( Menu::iterator iter = _items.begin(); iter != _items.end(); ++iter )
-        (*iter)->accept ( v );
-    } break;
-  case Visitor::EXPANDED:
-  default:
-    {
-      if( this->expanded() )
-      {
-        for ( Menu::iterator iter = _items.begin(); iter != _items.end(); ++iter )
-          (*iter)->accept ( v );
-      }
-    } break;
-  }
+  for ( Menu::iterator iter = _items.begin(); iter != _items.end(); ++iter )
+    (*iter)->accept ( v );
 }

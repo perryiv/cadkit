@@ -27,8 +27,7 @@ OBJS = \
 	$(BUILD)/GFX.o \
 	$(BUILD)/BaseMenu.o \
 	$(BUILD)/Font.o \
-	$(BUILD)/Menu.o \
-	$(BUILD)/BackgroundBox.o
+	$(BUILD)/Menu.o
 
 shared_lib: $(OBJS)
 	$(CXX) -shared -g $(OBJS) -o $(BUILD)/$(libname) $(libs)

@@ -9,7 +9,7 @@
 
 namespace DT.Minerva.Lib
 {
-  public class Controller
+  public class Controller : DT.Minerva.Interfaces.IApplicationConnection
   {
     /// <summary>
     /// Local types.
@@ -19,6 +19,11 @@ namespace DT.Minerva.Lib
     /// <summary>
     /// Delegates.
     /// </summary>
+    public delegate void RemoveLayerDelegate(DT.Minerva.Interfaces.ILayer layer);
+    public delegate void ShowLayerDelegate(DT.Minerva.Interfaces.ILayer layer);
+    public delegate void ModifyLayerDelegate(DT.Minerva.Interfaces.ILayer layer);
+    public delegate void StartAnimationDelegate(float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays);
+    public delegate void StopAnimationDelegate();
     public delegate void DataSourceAddedDelegate(DT.Minerva.Interfaces.IDatabaseConnection item);
 
     private static Controller _instance = null;
@@ -68,6 +73,59 @@ namespace DT.Minerva.Lib
       if(null!= this.DataSourceAdded)
         this.DataSourceAdded(item);
     }
+
+
+    /// Remove layer with given id.
+    public void removeLayer(DT.Minerva.Interfaces.ILayer layer)
+    {
+      if (null != this.RemoveLayer)
+        this.RemoveLayer(layer);
+    }
+
+    /// <summary>
+    ///  Show a layer.
+    /// </summary>
+    public void showLayer(DT.Minerva.Interfaces.ILayer layer)
+    {
+      if (null != this.ShowLayer)
+        this.ShowLayer(layer);
+    }
+
+    /// Modify polygon data.
+    public void modifyLayer(DT.Minerva.Interfaces.ILayer layer)
+    {
+      if (null != this.ModifyLayer)
+        this.ModifyLayer(layer);
+    }
+
+    /// Start animation.
+    public void startAnimation(float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays)
+    {
+      if (null != this.StartAnimation)
+        this.StartAnimation(speed, accumulate, dateTimeStep, timeWindow, numDays);
+    }
+
+    /// Stop Animation.
+    public void stopAnimation()
+    {
+      if (null != this.StopAnimation)
+        this.StopAnimation();
+    }
+
+
+    /// <summary>
+    /// Layer events.
+    /// </summary>
+    public event RemoveLayerDelegate RemoveLayer;
+    public event ShowLayerDelegate ShowLayer;
+    public event ModifyLayerDelegate ModifyLayer;
+    
+
+    /// <summary>
+    /// Animation events.
+    /// </summary>
+    public event StartAnimationDelegate StartAnimation;
+    public event StopAnimationDelegate StopAnimation;
 
 
     /// <summary>

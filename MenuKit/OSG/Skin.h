@@ -1,8 +1,8 @@
 #ifndef _menukit_osg_skin_
 #define _menukit_osg_skin_
 
-#include "Export.h"
-#include "../Menu.h"
+#include "MenuKit/OSG/Export.h"
+#include "MenuKit/Menu.h"
 
 #include "osg/Vec4"
 #include "osgText/Font"

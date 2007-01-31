@@ -1,11 +1,7 @@
 #include "Skin.h"
 
-#include "DrawableFunctor.h"
-#include "BackgroundBox.h"
-#include "Word.h"
-
-#include "../Menu.h"
-#include "../Button.h"
+#include "MenuKit/Menu.h"
+#include "MenuKit/Button.h"
 
 #include "osg/MatrixTransform"
 #include "osg/Group"
@@ -107,6 +103,69 @@ const osg::Vec4 &Skin::_properBackgroundColor()
 }
 
 
+//--- helper classes ---//
+class DrawableFunctor
+{
+public:
+  DrawableFunctor(float h=1.0): _color(1.0,0.0,0.0,1.0), _height(h) {}
+  ~DrawableFunctor() {}
+
+  void color(const osg::Vec4& c) { _color = c; }
+  const osg::Vec4& color() const { return _color; }
+
+  void height(float h) { _height = h; }
+  float height() const { return _height; }
+
+  virtual osg::Drawable* operator() ()=0;
+
+private:
+  float _height;
+  osg::Vec4 _color;
+};
+
+class Word : public DrawableFunctor
+{
+public:
+  Word(const std::string& t,osgText::Font* f): DrawableFunctor(),
+                                               _text(t), _font(f) {}
+  ~Word() {}
+
+  virtual osg::Drawable* operator() ();
+
+  void font(osgText::Font* f) { _font = f; }
+  osgText::Font* font() { return _font.get(); }
+  const osgText::Font* font() const { return _font.get(); }
+
+  void text(const std::string& s) { _text = s; }
+  const std::string& text() const { return _text; }
+
+private:
+  std::string _text;
+  osg::ref_ptr<osgText::Font> _font;
+};
+
+class Box : public DrawableFunctor
+{
+public:
+  Box(float h, float w, float d=-0.001f, osg::PrimitiveSet::Mode m=osg::PrimitiveSet::QUADS):
+    DrawableFunctor(h), _width(w), _depth(d), _drawmode(m) {}
+  ~Box() {}
+
+  void width(float w) { _width = w; }
+  float width() const { return _width; }
+
+  void depth(float w) { _depth = w; }
+  float depth() const { return _depth; }
+
+  void mode(osg::PrimitiveSet::Mode m) { _drawmode = m; }
+  osg::PrimitiveSet::Mode move() const { return _drawmode; }
+
+  virtual osg::Drawable* operator() ();
+
+private:
+  float _width, _depth;
+  osg::PrimitiveSet::Mode _drawmode;
+};
 
 class Arrow: public DrawableFunctor
 {
@@ -179,7 +238,7 @@ osg::Node* Skin::create_menu(const Menu* menu)
   osg::ref_ptr<osg::Geode> geode2 = new osg::Geode;
   geode2->addDrawable( word() );
 
-  BackgroundBox box(_height,_width,-0.001,osg::PrimitiveSet::Mode(_bg_draw_mode));
+  Box box(_height,_width,-0.001,osg::PrimitiveSet::Mode(_bg_draw_mode));
   box.color ( this->_properBackgroundColor() );
 
   osg::ref_ptr<osg::Geode> geode1 = new osg::Geode;
@@ -238,7 +297,7 @@ osg::Node* Skin::create_button(const Button* button)
   osg::ref_ptr<osg::Geode> geode2 = new osg::Geode;
   geode2->addDrawable( word() );
 
-  BackgroundBox box(_height,_width,-0.001,osg::PrimitiveSet::Mode(_bg_draw_mode));
+  Box box(_height,_width,-0.001,osg::PrimitiveSet::Mode(_bg_draw_mode));
   box.color ( this->_properBackgroundColor() );
 
   osg::ref_ptr<osg::Geode> geode1 = new osg::Geode;
@@ -262,12 +321,12 @@ osg::Node* Skin::create_button(const Button* button)
 
     if( button->checked() )
     {
-      BackgroundBox fillbox(0.75*0.5*_icon_space,0.75*0.5*_icon_space,0.001,osg::PrimitiveSet::QUADS);
+      Box fillbox(0.75*0.5*_icon_space,0.75*0.5*_icon_space,0.001,osg::PrimitiveSet::QUADS);
       fillbox.color(this->_properTextColor());
       checkbox->addDrawable( fillbox() );
     }
 
-    BackgroundBox hallowbox(0.5*_icon_space,0.5*_icon_space,0.0,osg::PrimitiveSet::LINE_LOOP);
+    Box hallowbox(0.5*_icon_space,0.5*_icon_space,0.0,osg::PrimitiveSet::LINE_LOOP);
     hallowbox.color( (this->_properTextColor()) );
     checkbox->addDrawable( hallowbox() );
 
@@ -307,10 +366,10 @@ osg::Node* Skin::create_button(const Button* button)
 
 osg::Node* Skin::create_separator(const MenuKit::Button* button)
 {
-  BackgroundBox box(0.1*(this->height()),(this->width()));
+  Box box(0.1*(this->height()),(this->width()));
   box.color( (this->_properBackgroundColor()) );
 
-  BackgroundBox line(1.0*box.height(),0.95*box.width(),0.0);
+  Box line(1.0*box.height(),0.95*box.width(),0.0);
   line.color( (this->_properTextColor()) );
 
   osg::ref_ptr<osg::Geode> geode = new osg::Geode();
@@ -362,7 +421,7 @@ float Skin::graphic_width(const Item* item)
   else  // should never happen
     total_width = (wbox.xMax()-wbox.xMin())+2.0*_icon_space+2.0*_margin;
 
-  BackgroundBox box(_height,total_width);
+  Box box(_height,total_width);
   osg::ref_ptr<osg::Drawable> drawable = box();
   osg::BoundingBox bbox = drawable->getBound();
 
@@ -375,6 +434,48 @@ float Skin::find_max_width(const Menu::Items& items)
   Menu::const_iterator iter = std::max_element( items.begin(), items.end(), pred );
 
   return ( ( items.end() == iter ) ? 0.0f : graphic_width ( iter->get() ) );
+}
+
+//--- helper implementation ---//
+osg::Drawable* Word::operator() ()
+{
+  osg::ref_ptr<osgText::Text> text = new osgText::Text;
+  text->setDrawMode(osgText::Text::TEXT);
+  text->setAlignment( osgText::Text::LEFT_BASE_LINE );
+  text->setText( _text );
+  text->setFont( _font.get() );
+  text->setColor( color() );
+  text->setCharacterSize( height(),1.0 );
+  return( text.release() );
+}
+
+osg::Drawable* Box::operator() ()
+{
+  float width_2  = 0.5f * width();
+  float height_2 = 0.5f * height();
+
+  osg::Vec3Array* vertices = new osg::Vec3Array;
+  vertices->push_back ( osg::Vec3 (  width_2,  height_2, _depth ) );
+  vertices->push_back ( osg::Vec3 ( -width_2,  height_2, _depth ) );
+  vertices->push_back ( osg::Vec3 ( -width_2, -height_2, _depth ) );
+  vertices->push_back ( osg::Vec3 (  width_2, -height_2, _depth ) );
+
+  osg::Vec3Array* normals = new osg::Vec3Array;
+  normals->push_back( osg::Vec3(0.0,0.0,1.0) );
+
+  osg::Vec4Array* colors = new osg::Vec4Array;
+  colors->push_back( color() );
+
+  osg::ref_ptr<osg::Geometry> patch = new osg::Geometry;
+  patch->setVertexArray( vertices );
+  patch->setNormalArray( normals );
+  patch->setNormalBinding( osg::Geometry::BIND_OVERALL );
+  patch->setColorArray( colors );
+  patch->setColorBinding( osg::Geometry::BIND_OVERALL );
+  patch->addPrimitiveSet( new osg::DrawArrays(_drawmode,
+                                              0,vertices->size()) );
+
+  return( patch.release() );
 }
 
 osg::Drawable* Arrow::operator () ()

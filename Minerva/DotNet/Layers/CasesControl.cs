@@ -292,9 +292,6 @@ namespace DT.Minerva.Layers.Controls
     /// <summary>
     /// Get the number in the current query?
     /// </summary>
-    [
-    System.ComponentModel.Browsable(false)
-    ]
     public override string Number
     {
       get

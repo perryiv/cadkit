@@ -42,7 +42,6 @@
 #include "Collision/Interfaces/ICollider.h"
 
 #include "Usul/Pointers/Pointers.h"
-#include "Usul/CommandLine/Parser.h"
 
 #include "osgVRJ/Application.h"
 
@@ -53,75 +52,12 @@
 #include "OsgTools/Grid.h"
 
 #include <string>
-#include <vector>
 #include <list>
-#include <fstream>
-#include <sstream>
 
-#if defined (USE_SINTERPOINT)
-#include "SinterAppData.h"
-#include "sys/time.h"
-#endif
-
-#if defined (INV3RSION_NAV)
-#include "invr/Nav.h"
-#endif
-
-#if defined (INV3RSION_COLLABORATE)
-#include "invr/Draw.h"
-#include <vjAvatarFactory.h>
-
-#include <cal3d/quaternion.h>
-inline CalQuaternion getCalQuat( const gmtl::Quatf gmtl_quat ) 
-{
-   //Convert to Cal3D coordinates and make a new CalQuaternion
-   return CalQuaternion( gmtl_quat[0],
-                        -gmtl_quat[2],
-                         gmtl_quat[1],
-                         gmtl_quat[3] ) ;
-}
-
-class AvatarData
-{
-public:
-  AvatarData(const std::string &n, vjAvatar *a)
-  {
-    name = n;
-    avatar = a;
-    bodyPos.set(0.0, 0.0, 0.0);
-    handQuat.set(0.0, 0.0, 0.0, 1.0);
-    headQuat.set(0.0, 0.0, 0.0, 1.0);
-    bodyYaw = 0.0;
-    visible = true;
-  }
-  ~AvatarData() { ; }
-  
-  // public data members
-  vjAvatar *avatar;
-  std::string name;
-  gmtl::Vec3f bodyPos;
-  gmtl::Quatf handQuat;
-  gmtl::Quatf headQuat;
-  float bodyYaw;
-  bool visible;
-};
-
-#endif
 
 namespace CV {
 
 
-// Used to match nodes scene for replacement
-class Matcher
-{
-  public:
-    osg::Node *node;
-    osg::Group *parent;
-    int modelNum;
-};
-
-	
-// The CadViewer application
 class Application : public osgVRJ::Application,
                     public CV::Interfaces::IApplication,
                     public CV::Interfaces::IAuxiliaryScene,
@@ -295,10 +231,6 @@ public:
 
 protected:
 
-  // Typedefs needed below.
-  typedef Usul::CommandLine::Parser                     Parser;
-  typedef Parser::Args                                  ParserArgs;
-
   // Joystick callbacks.
   struct JoystickCB : public vrjGA::Callback
   {
@@ -322,17 +254,6 @@ protected:
 
   // Destructor.
   virtual ~Application();
-  
-  // draw function
-  virtual void draw();
-  
-#if defined (INV3RSION_NAV)
-  // set INVR nav to current nav matrix
-  void _syncInvrNav();
-#endif
-
-  // Is this the head node?
-  bool                          _isHeadNode() const;
 
   // Calculate the frame-rate.
   double                        _calculateFrameRate() const;
@@ -342,6 +263,12 @@ protected:
 
   // get the color that corresponds to the string
   const osg::Vec4&              _getColor ( const std::string& s ) const;
+
+  // Get the elapsed time since the program started (in seconds).
+  double                        _getElapsedTime() const;
+
+  // Get the duration of the last frame in seconds.
+  double                        _getFrameTime() const;
 
   // Initialize.
   void                          _initGrid ( osg::Node *node );
@@ -356,10 +283,6 @@ protected:
   // Handle the events, if any.
   bool                          _handleMenuEvent();
   bool                          _handleIntersectionEvent();
-  bool                          _handleNavigationEvent( const unsigned long event_request = 0 );
-  bool                          _handleToolEvent();
-  bool                          _handleCancelEvent();
-  void                          _removeCursorChildren();
 
   // Called by the kernel to initialize this instance.
   virtual void                  init();
@@ -371,14 +294,14 @@ protected:
   // Load the file(s).
   void                          _loadModelFile   ( const std::string &filename );
   void                          _loadRestartFile ( const std::string &filename );
-  void                          _loadConfigFiles ( const ParserArgs &configs );
+  void                          _loadConfigFiles ( const std::list<std::string> &configs );
   void                          _loadSimConfigs  ( std::string dir );
   void                          _loadSimConfigs();
 
   // Navigate if we are supposed to.
   void                          _navigate();
 
-    // Get the number of selected
+  // Get the number of selected
   unsigned int                 _numSelected();
 
   // Parse the command-line arguments.
@@ -390,7 +313,6 @@ protected:
   // Called by the kernel before the frame.
   virtual void                  preFrame();
   void                          _preFrame();
-  
 
   // Process the button states.
   void                          _processButtons();
@@ -401,14 +323,9 @@ protected:
   // Called by the kernel after the frame.
   virtual void                  postFrame();
   void                          _postFrame();
-  
-  // return a MatrixTransform belonging to a Group
-  osg::MatrixTransform* Application::_getGroupMatrixTransform( osg::Group *grp );
-  
+
   // Read the model and position it using the matrix.
   void                          _readModel ( const std::string &filename, const Matrix44f &matrix );
-  void                          _streamModel ( std::stringstream &modelstream, const std::string &name);
-  void                          _replaceNode( osg::ref_ptr<osg::Node> node, const std::string &name );
 
   // Read the user's preferences.
   void                          _readUserPreferences();
@@ -427,8 +344,8 @@ protected:
   void                          _selected ( CV::Functors::Tool::Transforms &vt );
 
   // Set the cursor and its matrix functor.
-  //void                          _setCursor ( unsigned int );
-  //void                          _setCursorMatrixFunctor ( CV::Functors::MatrixFunctor * );
+  void                          _setCursor ( unsigned int );
+  void                          _setCursorMatrixFunctor ( CV::Functors::MatrixFunctor * );
 
   // Set the current "camera" position as "home".
   void                          _setHome();
@@ -446,6 +363,7 @@ protected:
   void                          _update ( OsgTools::Text &, const std::string & );
 
   // Update.
+  void                          _updateFrameTime();
   void                          _updateFrameRateDisplay();
   void                          _updateAnalogText();
   void                          _updateCursor();
@@ -457,33 +375,7 @@ protected:
 
   // Write the scene to file.
   void                          _writeScene ( const std::string &filename, const osg::Node *node ) const;
-  
-  // Compare incoming & existing node names
-  bool                          _matchNodeNames( const std::string &new_name, const std::string &old_name );
-  
-  // Find similarly named model nodes
-  bool                          _recursiveMatchNodeName ( const std::string &name , osg::Node *model, Matcher *match );
 
-  // Clear out all models in scene
-  void                          _deleteScene();
-  
-  // Create & clear out temporary directory
-  void                          _initTmpDir();
-
-  // Patch node file with diff
-  bool                          _patchNodeWithDiff ( const std::string &nodeName, std::stringstream &nodeDiff );
-
-  // Turn animations on/off
-  void							_animationsOnOff ( bool onOff, osg::Node *model );
-  
-  // Step Animation by num frames
-  void							_animStep ( int num, osg::Node *model );
-  
-  // Perform Auto Placement of model
-  void                          _doAutoPlacement( const bool replace_matrix );
-  
-  void _dumpStreamToFile();
-  
   // Button callbacks.
   void                          _defaultCallback  ( MenuKit::Message m, MenuKit::Item *item );
   void                          _hideSelected     ( MenuKit::Message m, MenuKit::Item *item );
@@ -518,7 +410,6 @@ protected:
   void                          _polysFlat        ( MenuKit::Message m, MenuKit::Item *item );
   void                          _polysWireframe   ( MenuKit::Message m, MenuKit::Item *item );
   void                          _polysPoints      ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _polysScribe      ( MenuKit::Message m, MenuKit::Item *item );
   void                          _polysTexture     ( MenuKit::Message m, MenuKit::Item *item );
   void                          _setAnalogTrim    ( MenuKit::Message m, MenuKit::Item *item );
   void                          _viewHome         ( MenuKit::Message m, MenuKit::Item *item );
@@ -543,15 +434,13 @@ protected:
   void                          _gotoViewLeft     ( MenuKit::Message m, MenuKit::Item *item );
   void                          _rotateWorld      ( MenuKit::Message m, MenuKit::Item *item );
   void                          _dropToFloor      ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _toggleAnimations ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _animStepFwd      ( MenuKit::Message m, MenuKit::Item *item );
 
   // For readability.
   typedef unsigned long                                 ThreadId;
+  typedef Usul::CommandLine::Parser                     Parser;
   typedef std::auto_ptr<Parser>                         ParserPtr;
   typedef osg::ref_ptr<osg::MatrixTransform>            MatTransPtr;
   typedef osg::ref_ptr<osg::Group>                      GroupPtr;
-  typedef osg::ref_ptr<osg::Node>                       NodePtr;
   typedef osg::ref_ptr<osg::Projection>                 ProjectPtr;
   typedef CV::Functors::BaseFunctor::RefPtr             FunctorPtr;
   typedef USUL_VALID_REF_POINTER(vrjGA::ButtonGroup)    ButtonsPtr;
@@ -579,19 +468,6 @@ protected:
   MatTransPtr       _models;
   MatTransPtr       _gridBranch;
   MatTransPtr       _cursor;
-  MatTransPtr       _cursorActiveWithRot;
-  MatTransPtr       _cursorRedWithRot;
-  MatTransPtr       _cursorYellowWithRot;
-  MatTransPtr       _cursorGreenWithRot;
-  MatTransPtr       _cursorBlueWithRot;
-  MatTransPtr       _cursorTriggerWithRot;
-  MatTransPtr       _cursorActiveNoRot;
-  MatTransPtr       _cursorRedNoRot;
-  MatTransPtr       _cursorYellowNoRot;
-  MatTransPtr       _cursorGreenNoRot;
-  MatTransPtr       _cursorBlueNoRot;
-  MatTransPtr       _cursorTriggerNoRot;
-  NodePtr           _cursor_zoom;
   MatTransPtr       _menuBranch;
   MatTransPtr       _statusBranch;
   GroupPtr          _origin;
@@ -613,6 +489,7 @@ protected:
   Usul::Math::Vec4i _vp;
   unsigned int      _flags;
   Usul::Math::Vec3f _wandOffset;
+  double            _frameTime;
   MatrixFunctorPtr  _cursorMatrix;
   vpr::Mutex        _sceneMutex;
   IVisibilityPtr    _iVisibility;
@@ -626,125 +503,8 @@ protected:
   PrefsPtr          _prefs;
   osg::Matrixf      _home;
   ColorMap          _colorMap;
-  std::vector<OsgTools::Grid*> _gridFunctors;
+  OsgTools::Grid    _gridFunctor;
   bool              _textures;
-  MatTransPtr       _scribeBranch;
-  bool              _autoPlacement;
-  bool              _animations;
-  int               _anim_steps;
-  osg::Node         *_animModel;
-  std::string       _tmpDirName;
-  double            _nextFrameTime;
-
-#if defined (INV3RSION_NAV)
-  invr::nav::CAD    *_invrNav;
-# if defined (USE_SINTERPOINT)
-  void            _sinterSendNavUpdate(const float *matrix, const bool cached);
-  void            _requestNavControl();
-#endif
-#endif 
-
-#if defined (USE_SINTERPOINT)
-  // SinterPoint variables
-  sinter::Receiver*                   _sinterReceiver;
-  int                                 _sinterStreamSize;
-  int                                 _sinterDataSize;
-  cluster::UserData< SinterAppData >  _sinterAppData;
-  SinterState                         _sinterState;
-  bool                                _sinterDiffFlag;
-  std::string                         _sinterTmpString;
-  std::stringstream                   _sinterStream;
-  std::string                         _sinterNodeName;
-  std::string                         _sinterFileType;
-
-
-  // Functions used for networked file loading with SinterPoint, if enabled
-  void            _sinterPointInit();
-  void            _sinterReceiveData();
-  void            _sinterProcessData();
-  
-
-  // Used to time sinterpoint loading
-  double _getClockTime(){
-    struct timeval t;
-    gettimeofday(&t,NULL);
-    return((double)t.tv_sec + (double)t.tv_usec * 0.000001);
-  }
-  double _sinterTime1, _sinterTime2;
-
-  // Used to strip values out of sinterpoint string commands based on "=" sign
-  std::string _getCmdValue ( std::string cmd )
-  {
-    std::string whitespace = "\t\n\r ";
-    int eq = cmd.find ( "=" );
-    if ( eq != std::string::npos )
-    {
-      std::string res = cmd.substr ( eq+1 );
-      int beg = res.find_first_not_of ( whitespace );
-      int end = res.find_last_not_of ( whitespace );
-      return res.substr ( beg, end+1 ); 
-    }
-    return "";
-  }
-  
-  // separate string into tokens
-  std::string _getCmdToken ( const std::string cmd, const std::string token, int &pos )
-  {
-    std::string res = cmd.substr ( pos, cmd.size() - pos );
-    int end = res.find_first_of ( token );
-    if( end != std::string::npos )
-    {
-      pos += end + 1;  // increment to next non-token position
-      return res.substr ( 0, end );
-    }
-    return res;
-  }
-
-#endif
-
-#if defined (INV3RSION_COLLABORATE)
-
-#ifndef USE_SINTERPOINT
-#error "Collaboration only available with SinterPoint compile"
-#endif
-
-   // avatar methods
-   void _registerAvatar   ( const std::string &filename );
-   void _addAvatar ( const std::string &filename, const std::string &name);
-   void _updateAvatars();
-   void _updateLocalAvatar();
-   int _getAvatarIndexByName(std::string &name);
-   
-   //
-   TrackerPtr                             _headTracker;
-   
-   // Avatar variables
-   vjAvatarFactory*                     _avatarFactory;
-   std::vector<AvatarData*>                   _avatars;
-   AvatarData*                            _localAvatar;
-   std::string 			      _localAvatarName;
-   std::string 			  _localAvatarFileName;
-   AvatarData*                          _controlAvatar;
-   double                                  _avatarTime;
-   float _bodyMaxYawRate;
-   int _avatarWaitCount;
-   float                                  _prevHeadYaw;
-   float                                  _headYawOffset;
-   
-   // SinterPoint methods
-   void _sinterSendCommand(std::string &cmd, bool cached);
-   void _sinterCollabInit();
-   void _sinterCollabReceiveData();
-   void _sinterProcessCollabData();
-   void _sendAddAvatarCommand( const std::string &filename, const std::string &name );
-
-   
-   // SinterPoint variables
-   sinter::Sender*                       _sinterCollabSender;
-   sinter::Receiver*                     _sinterCollabReceiver;
-   cluster::UserData< SinterAppData >    _sinterCollabData;
-#endif
-
 };
 
 

@@ -21,9 +21,7 @@
 #include "GSG/Core/Renderer.h"
 #include "GSG/Core/Update.h"
 #include "GSG/Core/FrustumCull.h"
-#include "GSG/Core/Material.h"
 #include "GSG/Core/Sort.h"
-#include "GSG/Core/AttributeSet.h"
 
 #include "GSG/OpenGL/GlDraw.h"
 
@@ -38,7 +36,7 @@ using namespace GSG;
 
 struct MyUpdateCallback : public GSG::Visitor::Callback
 {
-  GSG_DECLARE_REFERENCED ( MyUpdateCallback );
+  GSG_DECLARE_CLONE ( MyUpdateCallback );
   GSG_DECLARE_LOCAL_TYPEDEFS ( MyUpdateCallback, GSG::Visitor::Callback );
   virtual void operator () ( Visitor &v, Node &n );
 };
@@ -46,7 +44,7 @@ struct MyUpdateCallback : public GSG::Visitor::Callback
 
 void MyUpdateCallback::operator () ( Visitor &v, Node &n )
 {
-  GSG_ASSERT ( dynamic_cast < Update * > ( &v ) );
+  assert ( dynamic_cast < Update * > ( &v ) );
   std::cout << "Updating node: " << &n 
             << ", name: " << n.first 
             << ", data = " << n.second 
@@ -54,13 +52,7 @@ void MyUpdateCallback::operator () ( Visitor &v, Node &n )
 }
 
 
-void MyUpdateCallback::setFrom ( const MyUpdateCallback &p )
-{
-  BaseClass::setFrom ( p );
-}
-
-
-GSG_IMPLEMENT_REFERENCED ( MyUpdateCallback );
+GSG_IMPLEMENT_CLONE ( MyUpdateCallback );
 
 
 Group::Ptr buildScene ( Factory *f )
@@ -78,28 +70,25 @@ Group::Ptr buildScene ( Factory *f )
   group->first += name.str();
 
   Color color ( 1.0f, 0.0f, 0.0f, 1.0f );
-  Material::Ptr material ( new Material );
-  material->ambient ( color );
-  material->diffuse ( color );
-  material->side ( Material::FRONT );
-
-  AttributeSet::Ptr attributes ( new AttributeSet );
-  attributes->set ( material );
+  Material material;
+  material.ambient() = color;
+  material.diffuse() = color;
 
   Shape::Ptr cube ( factory->cube() );
   cube->first = "Shape ";
   cube->first += name.str();
-  cube->attributes ( attributes );
+  cube->setAttributes ( new Attributes );
+  cube->getAttributes()->getMaterial() = material;
 
   color.set ( 0.0f, 0.0f, 1.0f, 1.0f );
-  material = new Material;
-  material->ambient ( color );
-  material->diffuse ( color );
+  material.ambient() = color;
+  material.diffuse() = color;
 
   Shape::Ptr sphere ( factory->sphere() );
   sphere->first = "Shape ";
   sphere->first += name.str();
-  sphere->attributes ( attributes );
+  sphere->setAttributes ( new Attributes );
+  sphere->getAttributes()->getMaterial() = material;
 
   group->append ( cube );
   group->append ( sphere );
@@ -121,8 +110,11 @@ void test()
   for ( i = 0; i < num; ++i )
     root->append ( buildScene ( 0x0 ) );
 
-  // Make a factory.
+  // Make a factory and set its pools.
   Factory::Ptr factory ( new Factory );
+  factory->setVertexPool ( new VertexPool );
+  factory->setNormalPool ( new NormalPool );
+  factory->setColorPool ( new ColorPool );
 
   // Build the scene again, this time passing the factory.
   for ( i = 0; i < num; ++i )
@@ -132,14 +124,14 @@ void test()
   typedef SelectFirst < Node > Select;
   typedef std::equal_to < Select::Type > Comparison;
   typedef Compare < Node, Select, Comparison > FindNode;
-  Group::Nodes::iterator a = GSG::recursive_find_first ( root->begin(), root->end(), FindNode ( "Shape 4" ) );
-  Group::Nodes::iterator b = GSG::recursive_find_first ( root->begin(), root->end(), FindNode ( "Shape 5" ) );
-  Group::Nodes::iterator c = GSG::recursive_find_first ( root->begin(), root->end(), FindNode ( "Group 6" ) );
+  Nodes::iterator a = GSG::recursive_find_first ( root->begin(), root->end(), FindNode ( "Shape 4" ) );
+  Nodes::iterator b = GSG::recursive_find_first ( root->begin(), root->end(), FindNode ( "Shape 5" ) );
+  Nodes::iterator c = GSG::recursive_find_first ( root->begin(), root->end(), FindNode ( "Group 6" ) );
 
   // Make sure we found a node.
-  GSG_ASSERT ( a->valid() );
-  GSG_ASSERT ( b->valid() );
-  GSG_ASSERT ( c->valid() );
+  assert ( a->valid() );
+  assert ( b->valid() );
+  assert ( c->valid() );
 
   // Print the names.
   std::cout << "Found node: " << Select () ( *(*a) ) << std::endl;

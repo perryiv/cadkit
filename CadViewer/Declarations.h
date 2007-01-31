@@ -25,10 +25,8 @@ namespace osg
   class Node;
   class Group;
   class MatrixTransform;
-  class Vec3f;
-  class Vec4f;
-  class Vec3d;
-  class Vec4d;
+  class Vec3;
+  class Vec4;
   class Material;
   class StateSet;
   class Drawable;

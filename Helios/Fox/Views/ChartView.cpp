@@ -9,8 +9,8 @@
 
 #define NOMINMAX
 
-#include "Helios/Fox/Views/ChartView.h"
-#include "Helios/Fox/Views/FoxContext.h"
+#include "OsgFox/Views/ChartView.h"
+#include "OsgFox/Views/FoxContext.h"
 
 #include "Usul/Errors/Checker.h"
 #include "Usul/Math/MinMax.h"
@@ -30,7 +30,7 @@
 
 #include <limits>
 
-using namespace Helios::Views;
+using namespace OsgFox::Views;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -244,7 +244,7 @@ void ChartView::addPlot( const Plot& plot, const ColorArray& colors )
 void ChartView::_resize ( unsigned int width, unsigned int height )
 {
   this->viewer()->resize ( width, height );
-  this->_rebuildScene ( *this->viewer()->sceneManager()->projectionGroupGet ( "2D_PLOT" ), width, height );
+  this->_rebuildScene ( *this->viewer()->getGroupProjection ( "2D_PLOT" ), width, height );
 }
 
 
@@ -286,7 +286,7 @@ void ChartView::_rebuildScene ( osg::Group& group, unsigned int width, unsigned 
   if ( heightMax < 0.0f )
     heightMax *= -1.0;
 
-  const float heightNorm ( ( (float) height * _graphPercent ) / heightMax );  
+  const float heightNorm ( ( (float) height * _graphPercent ) / heightMax );
   const float widthNorm  ( ( (float) width  * _graphPercent ) / widthMax );
   
   // Add each plot to geode.

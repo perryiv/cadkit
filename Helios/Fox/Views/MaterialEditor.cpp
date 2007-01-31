@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Fox/Views/MaterialEditor.h"
+#include "OsgFox/Views/MaterialEditor.h"
 
 #include "Usul/Cast/Cast.h"
 
@@ -24,12 +24,12 @@
 
 #include "FoxTools/Widgets/SliderTextField.h"
 
-//#include "Helios/Fox/Views/Canvas.h"
+//#include "OsgFox/Views/Canvas.h"
 
 #include "osg/Geode"
 #include "osg/ShapeDrawable"
 
-using namespace Helios::Views;
+using namespace OsgFox::Views;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ void MaterialEditor::show (  )
 #if 0
 
   // Make a canvas for showing the material
-  std::auto_ptr < Helios::Views::Canvas > canvas ( new Helios::Views::Canvas ( 0x0, hframe, FoxTools::Functions::visual() ) );
+  std::auto_ptr < OsgFox::Views::Canvas > canvas ( new OsgFox::Views::Canvas ( 0x0, hframe, FoxTools::Functions::visual() ) );
 
   // Set the scene
   //canvas->scene( document->buildScene() );

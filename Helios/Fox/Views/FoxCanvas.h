@@ -10,7 +10,7 @@
 #ifndef _OSG_TOOLS_VIEWER_FOX_BINDING_CANVAS_H_
 #define _OSG_TOOLS_VIEWER_FOX_BINDING_CANVAS_H_
 
-#include "Helios/Fox/Views/Export.h"
+#include "OsgFox/Views/Export.h"
 
 #include "Usul/Interfaces/IDocument.h"
 
@@ -19,7 +19,7 @@
 
 #include "OsgTools/Render/Viewer.h"
 
-namespace Helios {
+namespace OsgFox {
 namespace Views {
 
 class OSG_FOX_VIEWS_EXPORT FoxCanvas : public FX::FXGLCanvas,

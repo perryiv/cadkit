@@ -7,21 +7,21 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace CadKit.Tools
+namespace CadKit
 {
-  public static class Control
+  namespace Tools
   {
-    /// <summary>
-    /// Make the given control be the last child of the forms's control list.
-    /// </summary>
-    public static void last(System.Windows.Forms.Form form, System.Windows.Forms.Control control)
+    public static class Control
     {
-      lock ("CadKit.Tools.Control.last")
+      /// <summary>
+      /// Make the given control be the last child of the forms's control list.
+      /// </summary>
+      public static void last( System.Windows.Forms.Form form, System.Windows.Forms.Control control )
       {
-        if (null != form && null != form.Controls && null != control)
+        if ( null != form && null != form.Controls && null != control )
         {
-          form.Controls.Remove(control);
-          form.Controls.Add(control);
+          form.Controls.Remove( control );
+          form.Controls.Add( control );
         }
       }
     }

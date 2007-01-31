@@ -11,7 +11,7 @@
 #define _CPP_CMATH 1
 #endif
 
-#include "Helios/Fox/Core/Preferences.h"
+#include "OsgFox/Core/Preferences.h"
 
 #include "Usul/Registry/Constants.h"
 
@@ -33,7 +33,7 @@
 #include "Usul/Cast/Cast.h"
 #include "Usul/Shared/Preferences.h"
 
-using namespace Helios::Core;
+using namespace OsgFox::Core;
 
 FXDEFMAP ( Preferences ) PreferencesMap[] =
 {
@@ -151,7 +151,7 @@ Preferences::~Preferences()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace Helios
+namespace OsgFox
 {
   namespace Core
   {

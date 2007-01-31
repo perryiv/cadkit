@@ -25,7 +25,7 @@ namespace Errors {
 
 struct AssertPolicy
 {
-  AssertPolicy ( const char *filename, unsigned int line, bool state )
+  AssertPolicy ( const char *, unsigned int, bool state )
   {
     USUL_ASSERT ( state );
   }
@@ -37,14 +37,14 @@ struct AssertPolicy
   {
     USUL_ASSERT ( state );
   }
-  template < class Arg_ > AssertPolicy ( const char *filename, unsigned int line, bool state, const Arg_ & )
+  template < class Arg_ > AssertPolicy ( const char *, unsigned int, bool state, const Arg_ & )
   {
     USUL_ASSERT ( state );
   }
-  template < class Int_ > static void bounds ( unsigned int num, Int_ size, Int_ index )
+  template < class Int_ > static void bounds ( unsigned int id, Int_ size, Int_ index )
   {
-    // Put the num in the assert statement.
-    USUL_ASSERT ( 0 != num && index >= 0 && index < size );
+    // Put the id in the assert statement.
+    USUL_ASSERT ( 0 != id && index >= 0 && index < size );
   }
 };
 

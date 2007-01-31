@@ -34,9 +34,9 @@ public:
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Interfaces::IUnknown Unknown;
 
-  // Return/set the id.
+  // Return/Set the id.
   unsigned int          id() const { return _id; }
-  void                  id ( unsigned int n ) { _id = n; }
+  void          id(unsigned int n) { _id = n; }
 
   // Exact functionality determined by inheriting class.
   virtual void          operator()() = 0;

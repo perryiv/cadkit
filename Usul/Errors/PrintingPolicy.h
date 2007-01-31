@@ -30,25 +30,25 @@ struct PrintingPolicy
     if ( !state )
       std::cerr << "Error!\n\tLine: " << line << "\n\tFile: " << filename << std::endl;
   }
-  PrintingPolicy ( unsigned int num, bool state )
+  PrintingPolicy ( unsigned int id, bool state )
   {
     if ( !state )
-      std::cerr << "Error = " << num << std::endl;
+      std::cerr << "Error = " << id << std::endl;
   }
-  template < class Arg_ > PrintingPolicy ( unsigned int num, bool state, const Arg_ &arg )
+  template < class Arg_ > PrintingPolicy ( unsigned int id, bool state, const Arg_ &arg )
   {
     if ( !state )
-      std::cerr << "Error = " << num << "\n\t" << arg << std::endl;
+      std::cerr << "Error = " << id << "\n\t" << arg << std::endl;
   }
   template < class Arg_ > PrintingPolicy ( const char *filename, unsigned int line, bool state, const Arg_ &arg )
   {
     if ( !state )
       std::cerr << "Error!\n\tLine: " << line << "\n\tFile: " << filename << "\n\t" << arg << std::endl;
   }
-  template < class Int_ > static void bounds ( unsigned int num, Int_ size, Int_ index )
+  template < class Int_ > static void bounds ( unsigned int id, Int_ size, Int_ index )
   {
     if ( index < 0 || index >= size )
-      std::cerr << "Index bounds error = " << num << std::endl;
+      std::cerr << "Index bounds error = " << id << std::endl;
   }
 };
 

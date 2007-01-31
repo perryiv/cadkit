@@ -33,6 +33,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IApplicationConnection.cs" />
     <Compile Include="IColumnNames.cs" />
     <Compile Include="IDatabaseConnection.cs" />
     <Compile Include="IDataSource.cs" />

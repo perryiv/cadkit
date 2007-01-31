@@ -16,15 +16,6 @@
 #ifndef _XML_ERROR_POLICY_CLASSES_H_
 #define _XML_ERROR_POLICY_CLASSES_H_
 
-#include <sstream>
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Macro for assert.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 #ifdef _WIN32
 # include <crtdbg.h>
 # define XML_ASSERT_MACRO _ASSERT
@@ -35,7 +26,7 @@
 
 
 namespace XML {
-namespace Config {
+namespace Error {
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -44,13 +35,27 @@ namespace Config {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-struct Assert
+template < bool doit > struct Assert;
+template <> struct Assert < true >
 {
-  void operator () ( unsigned int id, bool state ) const
+  void operator () ( bool state ) const
   {
     XML_ASSERT_MACRO ( state );
   }
 };
+template <> struct Assert < false >
+{
+  void operator () ( bool state ) const {}
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Exception class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct Exception{};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -59,41 +64,61 @@ struct Assert
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class Exception > struct Thrower
+template < bool doit > struct Thrower;
+template <> struct Thrower < true >
 {
-  void operator () ( unsigned int id, bool state ) const
+  void operator () ( bool state ) const
   {
     if ( !state )
     {
-      std::ostringstream message;
-      message << "XML Error: " << id;
-      throw Exception ( message.str() );
+      throw Exception();
     }
   }
 };
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Callback policy.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class Functor > struct Callback
+template <> struct Thrower < false >
 {
-  Callback() : _f(){}
-  Callback ( const Callback &cb ) : _f ( cb._f ){}
-  void operator () ( unsigned int id, bool state ) const
+  void operator () ( bool state ) const {}
+};
+
+
+#if 0 // ( _MSC_VER > 1200 ) // More recent than VC++ 6.0 SP 5
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Callback policy. Uses partial template specialization. 
+//  Won't work with VC6.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Function, class Data, bool doit > struct Callback;
+template < class Function, class Data > struct Callback < Function, Data, true >
+{
+  Callback<true> : _function ( 0 ), _data ( 0 ){}
+  void operator () ( bool state ) const
   {
-    _f ( id, state );
+    if ( !state && _function )
+    {
+      _function ( _data );
+    }
   }
-  void functor ( Functor f )
+  void setCallback ( Function function, const Data &data )
   {
-    _f = f;
+    _function = function;
+    _data = data;
   }
 protected:
-  Functor _f;
+  Function _function;
+  Data _data;
 };
+template < class Function, class Data > struct Callback < Function, Data, false >
+{
+  void operator () ( bool state ) const {}
+  void setCallback ( Function function, const Data &data ){}
+};
+
+
+#endif // _MSC_VER
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -104,26 +129,20 @@ protected:
 
 template < class PolicyA, class PolicyB > struct Pair
 {
-  void operator () ( unsigned int id, bool state ) const
+  void operator () ( bool state ) const
   {
     if ( !state )
     {
-      PolicyA() ( id, state );
-      PolicyB() ( id, state );
+      PolicyA() ( state );
+      PolicyB() ( state );
     }
   }
 };
 
 
-}; // namespace Config
+}; // namespace Error
 }; // namespace XML
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Cleanup
-//
-///////////////////////////////////////////////////////////////////////////////
 
 #undef XML_ASSERT_MACRO
 

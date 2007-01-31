@@ -50,7 +50,7 @@ struct NoRttiCast
   template < class SceneBaseType, class SceneNodeType > static void cast ( SceneBaseType *base, SceneNodeType *&node )
   {
     if ( base->isOfType ( SceneNodeType::getClassType() ) )
-      node = USUL_UNSAFE_CAST ( SceneNodeType *, base );
+      node = USUL_CAST ( SceneNodeType *, base );
     else
       node = 0x0;
   }

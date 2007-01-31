@@ -38,9 +38,9 @@ template < class ConfigType > struct OsgTest
 int main ( int, char ** )
 {
   // GMTL-based configuration types.
-  typedef GN::Config::OsgConfig<long double> OsgConfigld;
-  typedef GN::Config::OsgConfig<double>      OsgConfigd;
-  typedef GN::Config::OsgConfig<float>       OsgConfigf;
+  typedef GN::osg::Config<long double> OsgConfigld;
+  typedef GN::osg::Config<double>      OsgConfigd;
+  typedef GN::osg::Config<float>       OsgConfigf;
 
   try
   {

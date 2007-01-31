@@ -19,17 +19,10 @@
 #include "GN/Algorithms/FindSpan.h"
 #include "GN/Algorithms/InsertKnot.h"
 #include "GN/Algorithms/BasisFunctions.h"
-#include "GN/Algorithms/Parameterize.h"
-#include "GN/Algorithms/KnotVector.h"
-#include "GN/Algorithms/Copy.h"
 #include "GN/Evaluate/Point.h"
-#include "GN/Tessellate/Bisect.h"
-#include "GN/Interpolate/Global.h"
 
 #include <iostream>
 #include <iomanip>
-#include <list>
-#include <limits>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -38,7 +31,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool global_output_flag ( true );
+bool global_output_flag ( false );
 #define OUTPUT if ( ::global_output_flag ) std::cout
 
 
@@ -68,7 +61,7 @@ template < class SplineType > void inline confirm ( const SplineType &s )
 
 template < class SplineType > void inline testCircle ( SplineType &s )
 {
-  typedef typename SplineType::DependentType DependentType;
+  typedef typename SplineType::ControlPointType ControlPointType;
   typedef typename SplineType::Vec3 Vec3;
   typedef typename SplineType::Vec2 Vec2;
 
@@ -76,7 +69,7 @@ template < class SplineType > void inline testCircle ( SplineType &s )
 
   Vec3 center3D ( 1, 2, 3 );
   Vec2 center2D ( 1, 2 );
-  DependentType radius ( 10 );
+  ControlPointType radius ( 10 );
 
   GN::Create::circle ( s, center3D, radius );
   ::confirm ( s );
@@ -154,13 +147,13 @@ template < class SplineType > void inline testTransform ( SplineType &s )
 
 template < class SplineType > void inline testSphere ( SplineType &s )
 {
-  typedef typename SplineType::DependentType DependentType;
+  typedef typename SplineType::ControlPointType ControlPointType;
   typedef typename SplineType::Vec3 Vec3;
 
   OUTPUT << "<testSphere>\n";
 
   Vec3 center ( 1, 2, 3 );
-  DependentType radius ( 10 );
+  ControlPointType radius ( 10 );
 
   GN::Create::sphere ( s, center, radius );
   ::confirm ( s );
@@ -175,31 +168,30 @@ template < class SplineType > void inline testSphere ( SplineType &s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline testBasisFunctions ( const SplineType &s )
+template < class SplineType > void inline testBasisFunctions ( SplineType &s )
 {
-  typedef typename SplineType::SizeType SizeType;
-  typedef typename SplineType::IndependentType IndependentType;
+  typedef typename SplineType::UIntType UIntType;
+  typedef typename SplineType::KnotType Parameter;
   typedef typename SplineType::WorkSpace BasisFunctions;
 
   OUTPUT << "<testBasisFunctions>\n";
 
-  SizeType numIndepVars ( s.numIndepVars() );
-  SizeType numParams ( 100 );
+  UIntType numIndepVars ( s.numIndepVars() );
+  UIntType numParams ( 100 );
+  BasisFunctions &N = s.work().basis;
 
-  for ( SizeType i = 0; i < numIndepVars; ++i )
+  for ( UIntType i = 0; i < numIndepVars; ++i )
   {
-    BasisFunctions &N = s.work ( i ).basis;
-    SizeType order ( s.order ( i ) );
+    UIntType order ( s.order ( i ) );
     N.accommodate ( order );
-    OUTPUT << "order = " << order << ", num knots = " << s.numKnots ( i ) << '\n';
-    for ( SizeType j = 0; j < numParams; ++j )
+    for ( UIntType j = 0; j < numParams; ++j )
     {
-      IndependentType u ( IndependentType ( j ) / IndependentType ( numParams - 1 ) );
-      SizeType span ( GN::Algorithms::findKnotSpan ( s, i, u ) );
+      Parameter u ( Parameter ( j ) / Parameter ( numParams - 1 ) );
+      UIntType span ( GN::Algorithms::findKnotSpan ( s, i, u ) );
       GN::Algorithms::basisFunctions ( s, i, span, u, N );
 
-      OUTPUT << "indep = " << i << ", u = " << u << ", span = " << span;
-      for ( SizeType k = 0; k < order; ++k )
+      OUTPUT << "indep = " << i << ", u = " << u;
+      for ( UIntType k = 0; k < order; ++k )
       {
         OUTPUT << ", N[" << k << "] = " << N[k];
       }
@@ -217,30 +209,28 @@ template < class SplineType > void inline testBasisFunctions ( const SplineType 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline testCurvePoint ( const SplineType &s )
+template < class SplineType > void inline testCurvePoint ( SplineType &s )
 {
-  typedef typename SplineType::SizeType SizeType;
-  typedef typename SplineType::IndependentType IndependentType;
+  typedef typename SplineType::UIntType UIntType;
+  typedef typename SplineType::KnotType Parameter;
   typedef typename SplineType::Vector Point;
-  typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
   GN_CAN_BE_CURVE ( SplineType );
 
   OUTPUT << "<testCurvePoint>\n";
 
-  const SizeType numIndepVars ( s.numIndepVars() );
-  GN_ERROR_CHECK ( 1 == numIndepVars );
-  const SizeType numPoints ( 100 );
-  const SizeType dimension ( s.dimension() );
+  UIntType numIndepVars ( s.numIndepVars() );
+  UIntType numPoints ( 100 );
+  UIntType dimension ( s.dimension() );
   Point pt;
   pt.resize ( dimension );
 
-  for ( SizeType i = 0; i < numPoints; ++i )
+  for ( UIntType i = 0; i < numPoints; ++i )
   {
-    IndependentType u ( IndependentType ( i ) / IndependentType ( numPoints - 1 ) );
+    Parameter u ( Parameter ( i ) / Parameter ( numPoints - 1 ) );
     GN::Evaluate::point ( s, u, pt );
 
     OUTPUT << "u = " << u;
-    for ( SizeType d = 0; d < dimension; ++d )
+    for ( UIntType d = 0; d < dimension; ++d )
     {
       OUTPUT << ", pt[" << d << "] = " << pt[d];
     }
@@ -253,107 +243,12 @@ template < class SplineType > void inline testCurvePoint ( const SplineType &s )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Test tessellating a curve.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class SplineType > void inline testTessellation ( const SplineType &s )
-{
-  typedef typename SplineType::IndependentType IndependentType;
-  typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
-  typedef typename SplineType::DependentArgument DependentArgument;
-
-  GN_CAN_BE_CURVE ( SplineType );
-
-  OUTPUT << "<testTessellation>\n";
-
-  DependentArgument tolerance ( 0.0001f );
-
-  ::confirm ( s );
-  std::list<IndependentType> u1;
-  GN::Tessellate::bisect ( s, tolerance, u1 );
-
-  ::confirm ( s );
-  std::vector<IndependentType> u2;
-  GN::Tessellate::bisect ( s, tolerance, u2 );
-
-  GN_ERROR_CHECK ( !u1.empty() );
-  GN_ERROR_CHECK ( !u2.empty() );
-  GN_ERROR_CHECK ( u1.size() == u2.size() );
-  GN_ERROR_CHECK ( std::equal ( u1.begin(), u1.end(), u2.begin() ) );
-
-  OUTPUT << "</testTessellation>\n";
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Test evaluating surface points.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline testSurfacePoint ( const SplineType &s )
+template < class SplineType > void inline testSurfacePoint ( SplineType &s )
 {
-  typedef typename SplineType::SizeType SizeType;
-  typedef typename SplineType::IndependentType IndependentType;
-  typedef typename SplineType::Vector Point;
-  GN_CAN_BE_SURFACE ( SplineType );
-
-  const std::size_t bufSize ( 1023 );
-  char buffer[bufSize+1];
-
-  // Determine format string for maximum precision.
-  std::pair<std::string,std::string> format;
-  {
-    {
-      const int precision ( std::numeric_limits<IndependentType>::digits10 );
-      std::ostringstream out;
-      out << "u = %0." << precision << "f, v = %0." << precision << "f";
-      format.first = out.str();
-    }
-    {
-      typedef typename SplineType::DependentType DependentType;
-      const int precision ( std::numeric_limits<DependentType>::digits10 );
-      std::ostringstream out;
-      out << ", pt[%d] = %0." << precision << "f";
-      format.second = out.str();
-    }
-  }
-
-  OUTPUT << "<testSurfacePoint>\n";
-
-  SizeType numIndepVars ( s.numIndepVars() );
-  if ( 2 == numIndepVars )
-  {
-    SizeType numPointsU ( 20 );
-    SizeType numPointsV ( 20 );
-    SizeType dimension ( s.dimension() );
-    Point pt;
-    pt.resize ( dimension );
-
-    for ( SizeType i = 0; i < numPointsU; ++i )
-    {
-      IndependentType u ( IndependentType ( i ) / IndependentType ( numPointsU - 1 ) );
-      for ( SizeType j = 0; j < numPointsV; ++j )
-      {
-        IndependentType v ( IndependentType ( j ) / IndependentType ( numPointsV - 1 ) );
-        GN::Evaluate::point ( s, u, v, pt );
-
-        if ( global_output_flag )
-        {
-          GN_FORMAT_STRING_2 ( buffer, bufSize, format.first.c_str(), u, v );
-          OUTPUT << buffer;
-          for ( SizeType d = 0; d < dimension; ++d )
-          {
-            GN_FORMAT_STRING_2 ( buffer, bufSize, format.second.c_str(), d, pt[d] );
-            OUTPUT << buffer;
-          }
-          OUTPUT << std::endl;
-        }
-      }
-    }
-  }
-  OUTPUT << "</testSurfacePoint>\n";
 }
 
 
@@ -365,54 +260,15 @@ template < class SplineType > void inline testSurfacePoint ( const SplineType &s
 
 template < class SplineType > void inline testInterpolation ( SplineType &s )
 {
-  typedef typename SplineType::SizeType SizeType;
-  typedef typename SplineType::IndependentType IndependentType;
-  typedef typename SplineType::IndependentSequence IndependentSequence;
-  typedef typename SplineType::DependentType DependentType;
-  typedef typename SplineType::DependentContainer DependentContainer;
-  typedef typename SplineType::Power PowerFunctor;
-  typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
-  typedef GN::Algorithms::Parameterize < IndependentSequence, DependentContainer, PowerFunctor, ErrorCheckerType > Parameterize;
-  typedef GN::Algorithms::KnotVector < IndependentSequence, ErrorCheckerType > KnotVectorBuilder;
+  typedef typename SplineType::UIntType UIntType;
+  typedef typename SplineType::KnotType Parameter;
+  typedef typename SplineType::Vector Point;
   GN_CAN_BE_CURVE ( SplineType );
 
   OUTPUT << "<testInterpolation>\n";
 
-  // Scalar data.
-  const SizeType numDataPts ( 6 );
-  const SizeType dimension ( 3 );
-  const SizeType order ( 4 );
-  const IndependentType power ( GN::Algorithms::Constants::CENTRIPETAL_FIT );
-
-  // Data points.
-  const DependentType data[dimension][numDataPts] =
-  {
-    { 0, 1, 2, 3, 4, 5 }, // x
-    { 1, 2, 1, 2, 1, 2 }, // y
-    { 0, 0, 0, 0, 0, 0 }  // z
-  };
-
-  // Copy to a container.
-  DependentContainer points;
-  GN::Algorithms::copy2dTo2d ( data, dimension, numDataPts, points );
-
-  // Make the parameters.
-  IndependentSequence params;
-  Parameterize::fit ( points, power, params );
-
-  // Make the knot vector. Size it for interpolation.
-  IndependentSequence knots;
-  knots.resize ( numDataPts + order );
-  KnotVectorBuilder::build ( params, order, knots );
-
-  // Interpolate.
-  GN::Interpolate::global ( order, params, knots, points, s );
-
-  // Again.
-  GN::Interpolate::global ( order, points, power, s );
-
-  // Check.
-  ::confirm ( s );
+  UIntType numIndepVars ( 1 );
+  UIntType dimension ( 3 );
 
   OUTPUT << "</testInterpolation>\n";
 }
@@ -424,7 +280,7 @@ template < class SplineType > void inline testInterpolation ( SplineType &s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline testCopying ( const SplineType &s )
+template < class SplineType > void inline testCopying ( SplineType &s )
 {
   typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
 
@@ -507,56 +363,34 @@ template < class SplineType > void inline testDtNurbsCarray ( SplineType &s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline testFindingKnotSpan ( const SplineType &s )
+template < class SplineType > void inline testFindingKnotSpan ( SplineType &s )
 {
-  typedef typename SplineType::SizeType SizeType;
-  typedef typename SplineType::IndependentType IndependentType;
-
-  const std::size_t bufSize ( 1023 );
-  char buffer[bufSize+1];
-
-#ifdef _MSC_VER
-
-  // Determine format string for maximum precision.
-  std::string format;
-  {
-    const int precision ( std::numeric_limits<IndependentType>::digits10 );
-    std::ostringstream out;
-    out << "%0." << precision << "f";
-    format = out.str();
-  }
-
-#endif
+  typedef typename SplineType::UIntType UIntType;
+  typedef typename SplineType::KnotType KnotType;
 
   OUTPUT << "<testFindingKnotSpan>\n";
 
-  SizeType indep ( s.numIndepVars() );
-  SizeType numParams ( 100 );
+  UIntType indep ( s.numIndepVars() );
+  UIntType numParams ( 100 );
   std::string indent1 ( "  " );
   std::string indent2 ( indent1 + indent1 );
+  char buffer[1024];
 
   OUTPUT << indent1 << "<spline>\n";
   OUTPUT << indent2 << "<string>" << s.getStringData() << "</string>\n";
   OUTPUT << indent2 << "<address>" << &s << "</address>\n";
   OUTPUT << indent1 << "</spline>\n";
 
-  for ( SizeType i = 0; i < indep; ++i )
+  for ( UIntType i = 0; i < indep; ++i )
   {
     OUTPUT << indent1 << "<independent which = \"" << i << "\">\n";
 
-    for ( SizeType j = 0; j < numParams; ++j )
+    for ( UIntType j = 0; j < numParams; ++j )
     {
-      IndependentType u ( IndependentType ( j ) / IndependentType ( numParams - 1 ) );
-      SizeType span ( GN::Algorithms::findKnotSpan ( s, i, u ) );
-      OUTPUT << indent2 << "<test j=\"" << j << "\">u = ";
-      #ifdef _MSC_VER
-      ::memset ( buffer, '\0', bufSize );
-      GN_FORMAT_STRING_1 ( buffer, bufSize, format.c_str(), u );
-      OUTPUT << buffer;
-      #else
-      OUTPUT << u;
-      #endif
-      OUTPUT << " span = " << span << "</test>\n";
+      KnotType u ( KnotType ( j ) / KnotType ( numParams - 1 ) );
+      UIntType span ( GN::Algorithms::findKnotSpan ( s, i, u ) );
+      ::sprintf ( buffer, "%20.15f", u );
+      OUTPUT << indent2 << "<test j=\"" << j << "\">u = " << buffer << " span = " << span << "</test>\n";
     }
 
     OUTPUT << indent1 << "</independent>\n";
@@ -572,11 +406,10 @@ template < class SplineType > void inline testFindingKnotSpan ( const SplineType
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline printKnotMultiplicity ( const SplineType &s, typename SplineType::IndependentType u )
+template < class SplineType > void inline printKnotMultiplicity ( SplineType &s, typename SplineType::KnotType u )
 {
-  const unsigned int bufSize ( 1023 );
-  char buffer[bufSize + 1];
-  GN_FORMAT_STRING_2 ( buffer, bufSize, "<multiplicity_test> u = %6.4f  multiplicity = %d </multiplicity_test>\n", u, s.knotMultiplicity ( 0, u ) );
+  char buffer[1024];
+  ::sprintf ( buffer, "<multiplicity_test> u = %6.4f  multiplicity = %d </multiplicity_test>\n", u, s.knotMultiplicity ( 0, u ) );
   OUTPUT << buffer;
 }
 
@@ -587,12 +420,12 @@ template < class SplineType > void inline printKnotMultiplicity ( const SplineTy
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline testKnotMultiplicity ( const SplineType &spline )
+template < class SplineType > void inline testKnotMultiplicity ( SplineType &spline )
 {
   typedef typename SplineType::SplineClass SplineClass;
-  typedef typename SplineClass::IndependentType IndependentType;
+  typedef typename SplineClass::KnotType KnotType;
   
-  const SplineClass &s = spline;
+  SplineClass &s = spline;
 
   OUTPUT << "<testKnotMultiplicity>\n";
   ::printKnotMultiplicity ( s, 0.00f );
@@ -613,10 +446,10 @@ template < class SplineType > void inline testKnotMultiplicity ( const SplineTyp
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class SplineType > void inline printQueryKnotInsertion ( 
-  const SplineType &s, 
-  typename SplineType::SizeType whichIndepVar,
-  typename SplineType::IndependentType knot,
-  typename SplineType::SizeType numTimes )
+  SplineType &s, 
+  typename SplineType::UIntType whichIndepVar,
+  typename SplineType::KnotType knot,
+  typename SplineType::UIntType numTimes )
 {
   std::string reason;
   std::string indent ( "    " );
@@ -636,32 +469,32 @@ template < class SplineType > void inline printQueryKnotInsertion (
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > void inline testQueryKnotInsertion ( const SplineType &spline )
+template < class SplineType > void inline testQueryKnotInsertion ( SplineType &spline )
 {
   typedef typename SplineType::SplineClass SplineClass;
-  typedef typename SplineClass::IndependentType IndependentType;
-  typedef typename SplineClass::SizeType SizeType;
+  typedef typename SplineClass::KnotType KnotType;
+  typedef typename SplineClass::UIntType UIntType;
 
   // Make a copy.
   SplineClass s ( spline );
 
   OUTPUT << "<testQueryKnotInsertion>\n";
 
-  SizeType numIndepVars ( s.numIndepVars() );
+  UIntType numIndepVars ( s.numIndepVars() );
   std::string reason;
   std::string indent1 ( "  " );
 
-  for ( SizeType i = 0; i < numIndepVars; ++i )
+  for ( UIntType i = 0; i < numIndepVars; ++i )
   {
     OUTPUT << indent1 << "<independent i=\"" << i << "\">\n";
-    SizeType numKnots ( s.numKnots ( i ) );
-    SizeType degree ( s.degree ( i ) );
+    UIntType numKnots ( s.numKnots ( i ) );
+    UIntType degree ( s.degree ( i ) );
 
-    for ( SizeType j = 0; j < numKnots; ++j )
+    for ( UIntType j = 0; j < numKnots; ++j )
     {
-      for ( SizeType k = 1; k <= degree; ++k )
+      for ( UIntType k = 1; k <= degree; ++k )
       {
-        IndependentType knot ( s.knot ( i, j ) );
+        KnotType knot ( s.knot ( i, j ) );
         printQueryKnotInsertion ( s, i, knot,         k );
         printQueryKnotInsertion ( s, i, knot + 1e-4f, k );
         printQueryKnotInsertion ( s, i, knot - 1e-4f, k );
@@ -701,14 +534,11 @@ template < class SplineType > void inline testSpline ( SplineType &s )
 
 template < class CurveType > void inline testCurve ( CurveType &c )
 {
-#if 1
   ::testLine ( c );
   ::testCircle ( c );
   ::testCurvePoint ( c );
-  ::testTessellation ( c );
   ::testInterpolation ( c );
   ::testSpline ( c );
-#endif
 }
 
 
@@ -722,10 +552,8 @@ template < class SplineType > void inline testSurface ( SplineType &s )
 {
   ::testSphere ( s );
   ::testSurfacePoint ( s );
-#if 1
   ::testDtNurbsCarray ( s );
   ::testSpline ( s );
-#endif
 }
 
 

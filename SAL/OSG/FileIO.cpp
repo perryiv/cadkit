@@ -66,12 +66,12 @@ Usul::Interfaces::IUnknown *FileIO::queryInterface ( unsigned long iid )
 {
   switch ( iid )
   {
-  case SAL::Interfaces::IRead::IID:
-    return static_cast<SAL::Interfaces::IRead*>(this);
-  case SAL::Interfaces::IWrite::IID:
-    return static_cast<SAL::Interfaces::IWrite*>(this);
+  case Usul::Interfaces::IRead::IID:
+    return static_cast<Usul::Interfaces::IRead*>(this);
+  case Usul::Interfaces::IWrite::IID:
+    return static_cast<Usul::Interfaces::IWrite*>(this);
   case Usul::Interfaces::IUnknown::IID:
-    return static_cast<Usul::Interfaces::IUnknown*>(static_cast<SAL::Interfaces::IRead*>(this));
+    return static_cast<Usul::Interfaces::IUnknown*>(static_cast<Usul::Interfaces::IRead*>(this));
   default:
     return 0x0;
   }
@@ -84,7 +84,7 @@ Usul::Interfaces::IUnknown *FileIO::queryInterface ( unsigned long iid )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Interfaces::INode * FileIO::readNodeFile ( const std::string &filename ) const
+FileIO::Unknown *FileIO::read ( const std::string &filename, Unknown * )
 {
   typedef USUL_REF_POINTER ( osg::Node ) OsgNodePtr;
 
@@ -118,12 +118,13 @@ Interfaces::INode * FileIO::readNodeFile ( const std::string &filename ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FileIO::writeNodeFile ( const std::string &filename, Interfaces::INode *inode ) const
+void FileIO::write ( const std::string &filename, Unknown *data, Unknown * )
 {
   // Get the node.
-  osg::Referenced *ref=((Node*)inode)->osgReferenced();
-  osg::Node *node=dynamic_cast<osg::Node*>(ref);
-	
+  SAL::Interfaces::IOSG::ValidQueryPtr osg ( data );
+  ValidOsgRefPtr refPtr ( osg->osgReferenced() );
+  ValidOsgNodePtr node ( dynamic_cast < osg::Node * > ( refPtr.get() ) );
+
   // Write it to file.
   if ( false == osgDB::writeNodeFile ( *node, filename ) )
   {
@@ -131,7 +132,8 @@ void FileIO::writeNodeFile ( const std::string &filename, Interfaces::INode *ino
     Usul::Exceptions::Thrower<SAL::Exceptions::FailedToWrite> (
       "Error: 2224918676, failed to write node to file.", 
       "\n\tFilename  = ", filename,
-      "\n\tosg::Node = ", node,
+      "\n\tUnknown   = ", data,
+      "\n\tosg::Node = ", node.get(),
       "\n\tName      = ", node->getName() );
   }
 }

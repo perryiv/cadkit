@@ -16,7 +16,7 @@
 #ifndef _USUL_TEMPLATE_2D_VECTOR_CLASS_H_
 #define _USUL_TEMPLATE_2D_VECTOR_CLASS_H_
 
-#include "Usul/Math/UMath.h"
+#include "Usul/Math/Math.h"
 #include "Usul/Errors/AssertPolicy.h"
 
 
@@ -205,7 +205,7 @@ public:
 
   Vector2 &operator /= ( T value )
   {
-    T reciprocal = static_cast < T > ( 1 ) / value;
+    T reciprocal = static_cast < T > ( 1 ) / s;
     _v[0] *= reciprocal;
     _v[1] *= reciprocal;
     return *this;
@@ -220,8 +220,8 @@ public:
 
   Vector2 &operator += ( T s )
   {
-    _v[0] += s;
-    _v[1] += s;
+    v[0] += s;
+    v[1] += s;
     return *this;
   }
 
@@ -234,8 +234,8 @@ public:
 
   Vector2 &operator -= ( T s )
   {
-    _v[0] -= s;
-    _v[1] -= s;
+    v[0] -= s;
+    v[1] -= s;
     return *this;
   }
 

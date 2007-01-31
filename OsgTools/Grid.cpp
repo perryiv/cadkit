@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L Miller IV
+//  Copyright (c) 2002, Perry L. Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -13,7 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Grid.h"
+#include "OsgTools/Grid.h"
 
 #include "Usul/Exceptions/Thrower.h"
 
@@ -22,8 +22,6 @@
 #include "osg/PolygonMode"
 #include "osg/LineWidth"
 #include "osg/MatrixTransform"
-#include "osg/CullFace"
-#include "osg/Depth"
 
 #include <stdexcept>
 
@@ -37,13 +35,11 @@ using namespace OsgTools;
 ///////////////////////////////////////////////////////////////////////////////
 
 Grid::Grid() :
-  _numBlocks   ( 10, 10 ),
-  _color       ( 1, 0, 0, 1 ),
-  _fillColor       ( 0, 0, 0, 0 ),
-  _size        ( 1, 1 ),
-  _center      ( 0, 0, 0 ),
-  _orientation ( 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ),
-  _lineWidth   ( 1 )
+  _numBlocks ( 10, 10 ),
+  _color     ( 1, 0, 0, 1 ),
+  _size      ( 1, 1 ),
+  _center    ( 0, 0, 0 ),
+  _lineWidth ( 1 )
 {
 }
 
@@ -100,13 +96,6 @@ osg::Node* Grid::operator()() const
   unsigned int index ( 0 );
   unsigned int length ( 2 * numColumns ), start ( 0 );
 
-  // Account for grid orientation
-  Vec3f position ( 0, 0, 0 );
-  Matrix44f translation ( 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
-  translation.makeTranslation ( _center );
-  Matrix44f translationInv ( translation );
-  translationInv.invert();
-
   // Set all the vertices.
   for ( unsigned int i = 0; i < numRows - 1; ++i )
   {
@@ -119,14 +108,9 @@ osg::Node* Grid::operator()() const
       float percentX ( float ( j ) / columnPercentDenominator );
       float currentX ( originX + percentX * sizeX );
 
-	  // Apply orientation
       USUL_ASSERT ( index < vertices->size() );
-      position.set ( currentX, originY, zTop );
-      position = translation * _orientation * translationInv * position;
-      vertices->at ( index++ ).set ( position[0], position[1], position[2] );
-      position.set ( currentX, originY, zBot );
-      position = translation * _orientation * translationInv * position;
-      vertices->at ( index++ ).set ( position[0], position[1], position[2]);
+      vertices->at ( index++ ).set ( currentX, originY, zTop );
+      vertices->at ( index++ ).set ( currentX, originY, zBot );
     }
 
     primSetList[i] = new osg::DrawArrays ( osg::PrimitiveSet::QUAD_STRIP, start, length );
@@ -158,7 +142,7 @@ osg::Node* Grid::operator()() const
   // Set the line-width.
   osg::ref_ptr<osg::LineWidth> lw ( new osg::LineWidth );
   lw->setWidth ( _lineWidth );
-  osg::ref_ptr<osg::StateSet> ss = geometry->getOrCreateStateSet();
+  osg::ref_ptr<osg::StateSet> ss = geode->getOrCreateStateSet();
   ss->setAttribute ( lw.get() );
 
   // Tell the grid to draw wire-frame.
@@ -166,52 +150,13 @@ osg::Node* Grid::operator()() const
   mode->setMode ( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE );
   ss->setAttributeAndModes ( mode.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
 
-  // Tell the grid to draw both sides
-  ss->setMode(GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
-
   // Tell it to use color instead of materials.
   ss->setMode ( GL_LIGHTING, osg::StateAttribute::OFF );
   osg::ref_ptr<osg::Vec4Array> colors ( new osg::Vec4Array ( 1 ) );
   colors->at ( 0 ).set ( _color[0], _color[1], _color[2], _color[3] );
   geometry->setColorArray ( colors.get() );
   geometry->setColorBinding ( osg::Geometry::BIND_OVERALL );
-  
-  if( _fillColor[3] != 0 ) // if not completely transparent, fill the grid with a color
-  {
-    // Allocate a new geometry with the same vertices & normals
-    osg::ref_ptr<osg::Geometry> geometry2 ( new osg::Geometry );
-    geometry2->setVertexArray ( vertices.get() );
-    geometry2->setNormalArray ( normals.get() );
-    geometry2->setNormalBinding ( osg::Geometry::BIND_OVERALL );
-    geometry2->setPrimitiveSetList ( primSetList );
-    
-    // add geometry to geode
-    geode->addDrawable ( geometry2.get() );
-    
-    // create a new StateSet for this geometry
-    osg::ref_ptr<osg::StateSet> ss2 ( new osg::StateSet );
-    geometry2->setStateSet( ss2.get() );
-    
-    // Tell the grid to draw filled.
-    osg::ref_ptr<osg::PolygonMode> mode2 ( new osg::PolygonMode );
-    mode2->setMode ( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL );
-    ss2->setAttributeAndModes ( mode2.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
-    
-    // Tell the grid to draw both sides
-    ss2->setMode(GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
-    
-    // Tell it to use color instead of materials.
-    ss2->setMode ( GL_LIGHTING, osg::StateAttribute::OFF );
-    ss2->setMode ( GL_BLEND, osg::StateAttribute::ON );
-    osg::ref_ptr<osg::Depth> depth (new osg::Depth);
-    depth->setWriteMask( false );
-    ss2->setAttribute( depth.get() );
-    osg::ref_ptr<osg::Vec4Array> colors2 ( new osg::Vec4Array ( 1 ) );
-    colors2->at ( 0 ).set ( _fillColor[0], _fillColor[1], _fillColor[2], _fillColor[3] );
-    geometry2->setColorArray ( colors2.get() );
-    geometry2->setColorBinding ( osg::Geometry::BIND_OVERALL );
-  }  
-  
+
   // Return the geode.
   return geode.release();
 }

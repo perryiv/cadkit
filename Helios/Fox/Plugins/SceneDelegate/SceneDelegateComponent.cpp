@@ -17,14 +17,14 @@
 
 #include "Usul/Documents/Document.h"
 
-#include "Helios/Fox/Views/Canvas.h"
+#include "OsgFox/Views/Canvas.h"
 
 #include "FoxTools/Windows/MdiChildWindow.h"
 #include "FoxTools/Functions/GLVisual.h"
 #include "FoxTools/Headers/MDIButton.h"
 
-#include "Usul/Interfaces/Fox/IFoxClientArea.h"
-#include "Usul/Interfaces/Fox/IFoxMDIMenu.h"
+#include "Usul/Interfaces/IFoxClientArea.h"
+#include "Usul/Interfaces/IFoxMDIMenu.h"
 #include "Usul/Interfaces/IBuildScene.h"
 
 #include "Usul/Shared/Preferences.h"
@@ -117,7 +117,7 @@ void SceneDelegateComponent::createDefaultGUI ( Usul::Documents::Document *docum
   LocalChildPtr child ( new ChildWindow ( document, clientArea, "Untitled", 0x0, mdiMenu, 0 ) ); 
 
   // Make the view
-  Helios::Views::Canvas* canvas ( new Helios::Views::Canvas ( doc, child.get(), FoxTools::Functions::visual() ) );
+  OsgFox::Views::Canvas* canvas ( new OsgFox::Views::Canvas ( doc, child.get(), FoxTools::Functions::visual() ) );
 
   // Get pointer to viewer
   Usul::Interfaces::IViewer::ValidQueryPtr viewer ( canvas->viewer() );
@@ -152,11 +152,11 @@ void SceneDelegateComponent::createDefaultGUI ( Usul::Documents::Document *docum
 
 void SceneDelegateComponent::refreshView ( Usul::Documents::Document *document, Usul::Interfaces::IViewer *viewer )
 {
-  Usul::Interfaces::IHeliosView::QueryPtr HeliosView ( viewer );
+  Usul::Interfaces::IOsgFoxView::QueryPtr osgFoxView ( viewer );
 
-  if ( HeliosView.valid() )
+  if ( osgFoxView.valid() )
   {
-    OsgTools::Render::Viewer* canvas ( HeliosView->HeliosView() );
+    OsgTools::Render::Viewer* canvas ( osgFoxView->osgFoxView() );
 
     Usul::Interfaces::IBuildScene::QueryPtr build ( document );
 

@@ -27,6 +27,7 @@
 
 using namespace MenuKit;
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Default constructor.
@@ -222,15 +223,11 @@ void Behavior::moveFocused ( Direction d )
     return;
   }
 
-  _focus->marked( false );  // remove the marking
-
-  // -- change the focus item -- //
   // See if the focused item is a menu.
   Menu::Ptr menu ( dynamic_cast < Menu * > ( focus.get() ) );
   if ( menu.get() )
   {
     _moveFocused ( d, menu.get() );
-    _focus->marked( true );  // add the marking to the new focus
     return;
   }
 
@@ -239,7 +236,6 @@ void Behavior::moveFocused ( Direction d )
   if ( button.get() )
   {
     _moveFocused ( d, button.get() );
-    _focus->marked( true );  // add the marking to the new focus
     return;
   }
 }
@@ -254,6 +250,7 @@ void Behavior::moveFocused ( Direction d )
 void Behavior::_moveFocused ( Direction d, Menu *menu )
 {
   MENUKIT_CHECK_POINTER ( 2531740683u, menu );
+
   switch ( menu->layout() )
   {
   case Menu::HORIZONTAL:

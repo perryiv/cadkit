@@ -9,25 +9,31 @@
 
 #include "SceneDocument.h"
 
-#include "OsgTools/IO/STLWriter.h"
+#include "OsgTools/IO/STLWrite.h"
+#include "OsgTools/IO/STLPrintVisitor.h"
 
 #include "OsgTools/Visitor.h"
+#include "OsgTools/SetDataVariance.h"
+#include "OsgTools/Statistics.h"
 #include "OsgTools/ReadModel.h"
+#include "OsgTools/Visitor.h"
 #include "OsgTools/ForEach.h"
 #include "OsgTools/FlipNormals.h"
 
+#include "Usul/File/Temp.h"
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
 
-#include "Usul/Interfaces/GUI/IProgressBar.h"
-#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/IProgressBar.h"
+#include "Usul/Interfaces/IStatusBar.h"
 
 #include "osg/Group"
 #include "osg/Geode"
 #include "osg/Geometry"
-#include "osg/Material"
 
 #include "osgDB/WriteFile"
+
+#include "osgUtil/Optimizer"
 
 #include <fstream>
 #include <algorithm>
@@ -112,7 +118,7 @@ bool SceneDocument::canInsert ( const std::string &file ) const
 bool SceneDocument::canOpen ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "ive" || ext == "osg" || ext == "yarn" || ext == "flt" || ext == "crss" );
+  return ( ext == "ive" || ext == "osg" || ext == "yarn" );
 }
 
 
@@ -141,22 +147,68 @@ void SceneDocument::write ( const std::string &name, Unknown *caller  ) const
 
   //Write the file as an stl
   if( "stl" == ext )
-  {    
+  {
+    //Make a deep copy of the scene
+    osg::ref_ptr <osg::Group> copy ( dynamic_cast < osg::Group* > (  _scene->clone( osg::CopyOp::DEEP_COPY_ALL ) ) );
+
+    // Traverse the scene and change all transforms to static data-variance.
+    typedef OsgTools::SetDataVariance SetDataVariance;
+    typedef OsgTools::Visitor < osg::Transform, SetDataVariance > VarianceVisitor;
+    SetDataVariance setter ( osg::Object::STATIC );
+    VarianceVisitor::Ptr vv ( new VarianceVisitor ( setter ) );
+    copy->accept ( *vv );
+
+    // Flatten static transforms
+    osgUtil::Optimizer optimizer;
+    optimizer.optimize ( copy.get(), osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS );
+
+    // Count number of facets.
+    OsgTools::Statistics sceneStats;
+    sceneStats.greedy ( true );
+    sceneStats.accumulate ( copy.get() );
+    unsigned int numFacets ( sceneStats.count ( OsgTools::Statistics::TRIANGLES ) );
+    
     //make a copy of the options
     BaseClass::Options options ( this->options() );
-
-    OsgTools::IO::STLWriter writer ( name );
-
-    writer.header ( "Created by Helios. " + _scene->getName() );
 
     //Should we write in ascii?
     if( "ascii" == options["format"] )
     {
-      writer.writeASCII( *_scene );
+      // Make a temporary file
+      Usul::File::Temp file ( Usul::File::Temp::ASCII );
+
+      file.stream() << "solid " << _scene->getName() << std::endl;
+
+      typedef OsgTools::IO::AsciiWriter< osg::Vec3 > Writer;
+      typedef OsgTools::IO::STLPrintVisitor< OsgTools::IO::WriteSTLFile< Writer > > PrintVisitor;
+      osg::ref_ptr<osg::NodeVisitor> printVisitor ( new PrintVisitor ( file.stream() ) );
+      copy->accept ( *printVisitor );
+
+      file.stream() << "endsolid" << std::endl;
+
+      //Rename temporary file to final filename
+      file.rename( name );
+
     }
     else if ( "binary" == options["format"] )
-    { 
-      writer.writeBinary ( *_scene );
+    {
+      // Make a temporary file
+      Usul::File::Temp file ( Usul::File::Temp::BINARY );
+
+      // Create a header.
+      std::string header ( "solid " + _scene->getName() );
+      header.resize ( 80, ' ' );
+      file.stream().write ( header.c_str(), header.length() );
+      Usul::IO::WriteLittleEndian::write ( file.stream(), numFacets );
+
+      // Visitor to write out file
+      typedef OsgTools::IO::BinaryWriter< osg::Vec3 > Writer;
+      typedef OsgTools::IO::STLPrintVisitor< OsgTools::IO::WriteSTLFile< Writer > > PrintVisitor;
+      osg::ref_ptr<osg::NodeVisitor> printVisitor ( new PrintVisitor ( file.stream() ) );
+      copy->accept ( *printVisitor );
+
+      //Rename temporary file to final filename
+      file.rename( name );
     }
     else
     {
@@ -204,8 +256,6 @@ void SceneDocument::read ( const std::string &name, Unknown *caller )
     _scene->addChild( node.get() );
   }
 
-  osg::Material *mat ( new osg::Material );
-  _scene->getOrCreateStateSet()->setAttribute( mat, osg::StateAttribute::ON );
 }
 
 
@@ -266,8 +316,6 @@ SceneDocument::Filters SceneDocument::filtersOpen() const
   filters.push_back ( Filter ( "OpenSceneGraph ASCII (*.osg)",  "*.osg"       ) );
   filters.push_back ( Filter ( "OpenSceneGraph Binary (*.ive)", "*.ive"       ) );
   filters.push_back ( Filter ( "YARN (*.yarn)",                 "*.yarn"      ) );
-  filters.push_back ( Filter ( "CRSS (*.crss)",                 "*.crss"      ) );
-  filters.push_back ( Filter ( "OpenFlight (*.flt)",            "*.flt"       ) );
   return filters;
 }
 

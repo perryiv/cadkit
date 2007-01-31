@@ -41,9 +41,10 @@ namespace Detail {
 template < class SplineType > struct KnotInserter
 {
   typedef typename SplineType::ErrorCheckerType ErrorCheckerType;
-  typedef typename SplineType::SizeType SizeType;
-  typedef typename SplineType::IndependentType IndependentType;
-  typedef typename SplineType::IndependentArgument IndependentArgument;
+  typedef typename SplineType::KnotVector KnotVector;
+  typedef typename SplineType::UIntType UIntType;
+  typedef typename SplineType::KnotType KnotType;
+  typedef typename SplineType::KnotArgument KnotArgument;
   typedef typename SplineType::Limits Limits;
 
 
@@ -57,9 +58,9 @@ template < class SplineType > struct KnotInserter
 
   static bool canInsert ( 
     const SplineType &s, 
-    SizeType whichIndepVar, 
-    IndependentArgument newKnot, 
-    SizeType numTimes, 
+    UIntType whichIndepVar, 
+    KnotArgument newKnot, 
+    UIntType numTimes, 
     std::string &reason )
   {
     // The current curve has to be valid. This is just a partial check. 
@@ -77,7 +78,7 @@ template < class SplineType > struct KnotInserter
     }
 
     // New knot has to be in range.
-    IndependentType first ( s.firstKnot ( whichIndepVar ) );
+    KnotType first ( s.firstKnot ( whichIndepVar ) );
     if ( newKnot <= first )
     {
       std::ostringstream out;
@@ -91,7 +92,7 @@ template < class SplineType > struct KnotInserter
     }
 
     // New knot has to be in range.
-    IndependentType last ( s.lastKnot ( whichIndepVar ) );
+    KnotType last ( s.lastKnot ( whichIndepVar ) );
     if ( newKnot >= last )
     {
       std::ostringstream out;
@@ -105,7 +106,7 @@ template < class SplineType > struct KnotInserter
     }
 
     // Get the current multiplicity.
-    SizeType currentMultiplicity ( s.knotMultiplicity ( whichIndepVar, newKnot ) );
+    UIntType currentMultiplicity ( s.knotMultiplicity ( whichIndepVar, newKnot ) );
 
     // After inserting, we can have a multiplicity of degree, but no more.
     if ( numTimes + currentMultiplicity > s.degree ( whichIndepVar ) )
@@ -145,11 +146,11 @@ template < class SplineType > struct KnotInserter
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > inline
+template < class SplineType >
 bool canInsertKnot ( const SplineType &spline, 
-                     typename SplineType::SizeType whichIndepVar, 
-                     typename SplineType::IndependentArgument newKnot, 
-                     typename SplineType::SizeType numTimes,
+                     typename SplineType::UIntType whichIndepVar, 
+                     typename SplineType::KnotArgument newKnot, 
+                     typename SplineType::UIntType numTimes,
                      std::string &reason )
 {
   typedef typename SplineType::SplineClass SplineClass;
@@ -164,11 +165,11 @@ bool canInsertKnot ( const SplineType &spline,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class SplineType > inline
+template < class SplineType >
 bool canInsertKnot ( const SplineType &spline, 
-                     typename SplineType::SizeType whichIndepVar, 
-                     typename SplineType::IndependentArgument newKnot, 
-                     typename SplineType::SizeType numTimes )
+                     typename SplineType::UIntType whichIndepVar, 
+                     typename SplineType::KnotArgument newKnot, 
+                     typename SplineType::UIntType numTimes )
 {
   std::string reason;
   return canInsertKnot ( spline, whichIndepVar, newKnot, numTimes, reason );

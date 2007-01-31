@@ -16,29 +16,35 @@
 #ifndef _XML_READER_CLASS_H_
 #define _XML_READER_CLASS_H_
 
-#include "XmlDom/DoNothing.h"
-
-#include <algorithm>
+#include <stack>
 
 
 namespace XML {
 
 
-template < class PolicyType, class CallbackType > class Reader
+template
+<
+  class NodeType,
+  class ErrorPolicyType,
+  class NodeCallbackType,
+  class TrimPolicyType
+>
+class Reader
 {
 public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Typedefs.
+  //  Useful typedefs.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  typedef PolicyType                    Policy;
-  typedef CallbackType                  NodeCallback;
-  typedef typename Policy::TrimPolicy   TrimPolicy;
-  typedef typename Policy::String       String;
-  typedef typename Policy::ErrorPolicy  ErrorPolicy;
+  typedef typename NodeType Node;
+  typedef typename NodeType::Pointer Pointer;
+  typedef typename NodeType::String String;
+  typedef ErrorPolicyType ErrorPolicy;
+  typedef NodeCallbackType NodeCallback;
+  typedef TrimPolicyType TrimPolicy;
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -48,10 +54,13 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   explicit Reader() :
+    _root(),
+    _parents(),
     _errorPolicy(),
     _callback(),
     _trimPolicy()
   {
+    // Empty.
   }
 
 
@@ -62,6 +71,8 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   template < class Bi > Reader ( const Bi &first, const Bi &last ) :
+    _root(),
+    _parents(),
     _errorPolicy(),
     _callback(),
     _trimPolicy()
@@ -77,10 +88,13 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   Reader ( const Reader &r ) :
+    _root ( r._root ),
+    _parents ( r._parents ),
     _errorPolicy ( r._errorPolicy ),
-    _callback    ( r._callback ),
-    _trimPolicy  ( r._trimPolicy )
+    _callback ( r._callback ),
+    _trimPolicy ( r._trimPolicy )
   {
+    // Empty.
   }
 
 
@@ -92,6 +106,8 @@ public:
 
   ~Reader()
   {
+    // Should be true.
+    _errorPolicy ( _parents.empty() );
   }
 
 
@@ -101,27 +117,35 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Reader &operator = ( const Reader &r )
+  Reader &operator = ( const Reader &n )
   {
-    _errorPolicy = r._errorPolicy;
-    _callback    = r._callback;
-    _trimPolicy  = r._trimPolicy;
+    _root = r._root;
+    _parents = r._parents;
     return *this;
   }
 
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Read the contents from the bi-directional iterators.
+  //  Get the root node.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  Pointer getRoot() const
+  {
+    return _root;
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Construct the node tree from the bi-directional iterators.
   //
   /////////////////////////////////////////////////////////////////////////////
 
   template < class Bi > void read ( Bi start, const Bi &stop )
   {
-    _errorPolicy ( 2285651998u, start != stop );
-
-    // Tell the callback to clear its state.
-    _callback.clear();
+    _errorPolicy ( start != stop );
 
     // Skip the header.
     start = this->_skipHeader ( start, stop );
@@ -130,7 +154,7 @@ public:
     start = this->_read ( start, stop );
 
     // Should be true.
-    _errorPolicy ( 3953694704u, start == stop );
+    _errorPolicy ( start == stop );
   }
 
 
@@ -140,11 +164,19 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  const ErrorPolicy &errorPolicy() const
+  const ErrorPolicyType &getErrorPolicy() const
   {
     return _errorPolicy;
   }
-  ErrorPolicy &errorPolicy()
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Access to the error policy.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  ErrorPolicyType &getErrorPolicy()
   {
     return _errorPolicy;
   }
@@ -156,11 +188,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  const TrimPolicy &trimPolicy() const
-  {
-    return _trimPolicy;
-  }
-  TrimPolicy &trimPolicy()
+  const TrimPolicyType &getTrimPolicy() const
   {
     return _trimPolicy;
   }
@@ -168,21 +196,63 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Access to the callback policy.
+  //  Access to the error policy.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  const NodeCallback &callback() const
+  TrimPolicyType &getTrimPolicy()
   {
-    return _callback;
-  }
-  NodeCallback &callback()
-  {
-    return _callback;
+    return _trimPolicy;
   }
 
 
 protected:
+
+  typedef std::stack<Pointer> ParentStack;
+  Pointer _root;
+  ParentStack _parents;
+  ErrorPolicy _errorPolicy;
+  NodeCallback _callback;
+  TrimPolicy _trimPolicy;
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Get the current parent.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  Pointer _getParent() const
+  {
+    _errorPolicy ( !_parents.empty() );
+    return _parents.top();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Push the parent.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void _pushParent ( Pointer parent )
+  {
+    _errorPolicy ( _root.valid() );
+    _parents.push ( parent );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Pop the parent.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void _popParent()
+  {
+    _errorPolicy ( !_parents.empty() );
+    _parents.pop();
+  }
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -193,7 +263,7 @@ protected:
 
   template < class Bi > Bi _skipHeader ( Bi start, const Bi &stop ) const
   {
-    _errorPolicy ( 2208648077u, start != stop );
+    _errorPolicy ( start != stop );
 
     // TODO.
 
@@ -204,25 +274,26 @@ protected:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Called at the start of the name.
+  //  Append the node.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  template < class Bi > void _start ( const String &name, const Bi &start, const Bi &stop )
+  void _append ( Pointer child )
   {
-    _errorPolicy ( 2191500792u, !name.empty() );
+    _errorPolicy ( child.valid() );
 
-    // Find the value.
-    Bi end = std::find ( start, stop, '<' );
+    // The first time assign the root.
+    if ( !_root )
+    {
+      _errorPolicy ( _parents.empty() );
+      _root = child;
+    }
 
-    // Grab the string.
-    String value ( start, end );
-
-    // Lose leading and trailing white space if we are supposed to.
-    _trimPolicy ( value );
-
-    // Call the callback.
-    _callback.start ( name, value );
+    // Otherwise, add it to the current parent.
+    else
+    {
+      this->_getParent()->appendChild ( child );
+    }
   }
 
 
@@ -234,10 +305,47 @@ protected:
 
   void _end ( const String &name )
   {
-    _errorPolicy ( 2527909981u, !name.empty() );
+    _errorPolicy ( !name.empty() );
 
     // Call the callback.
-    _callback.end ( name );
+    _callback.endNode ( name );
+
+    // Done with the current parent.
+    this->_popParent();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Called at the start of the name.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template < class Bi > void _start ( const String &name, const Bi &start, const Bi &stop )
+  {
+    _errorPolicy ( !name.empty() );
+
+    // Find the value.
+    Bi end = std::find ( start, stop, '<' );
+
+    // Grab the string.
+    String value ( start, end );
+
+    // Lose leading and trailing white space if we are supposed to.
+    _trimPolicy ( value );
+
+    // Call the callback.
+    _callback.startNode ( name, value );
+
+    // Make a new node.
+    Pointer node ( new Node ( name, value ) );
+
+    // Add it to our tree.
+    this->_append ( node );
+
+    // This node becomes the new parent. If there are no children
+    // then it will be popped in "_end()".
+    this->_pushParent ( node );
   }
 
 
@@ -249,7 +357,7 @@ protected:
 
   template < class Bi > void _notify ( const String &name, const Bi &start, const Bi &stop )
   {
-    _errorPolicy ( 1930609223u, !name.empty() );
+    _errorPolicy ( !name.empty() );
 
     if ( '/' == name[0] )
       this->_end ( String ( name.begin() + 1, name.end() ) );
@@ -266,7 +374,7 @@ protected:
 
   template < class Bi > Bi _read ( Bi start, const Bi &stop )
   {
-    _errorPolicy ( 4242675863u, start != stop );
+    _errorPolicy ( start != stop );
 
     while ( start != stop )
     {
@@ -314,20 +422,6 @@ protected:
     // Call this function recursively.
     return this->_readNode ( i1, i2 );
   }
-
-
-private:
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Data members.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  ErrorPolicy  _errorPolicy;
-  NodeCallback _callback;
-  TrimPolicy   _trimPolicy;
 };
 
 

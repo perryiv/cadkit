@@ -120,8 +120,8 @@ Usul::Interfaces::IUnknown *Factory::createInstance ( unsigned long iid )
   case SAL::Interfaces::ITransformFloat::IID:
   case SAL::Interfaces::ITransformDouble::IID:
     return Usul::Components::Create<Transform>::create ( iid, new osg::MatrixTransform() );
-  case SAL::Interfaces::IRead::IID:
-  case SAL::Interfaces::IWrite::IID:
+  case Usul::Interfaces::IRead::IID:
+  case Usul::Interfaces::IWrite::IID:
     return Usul::Components::Create<FileIO>::create ( iid );
   case SAL::Interfaces::IGridFloat::IID:
     return Usul::Components::Create<Grid>::create ( iid );

@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgDBd.lib foxdlld-1.6.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib foxdlld-1.4.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/ImageModel.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgDB.lib foxdll-1.6.lib"
+				AdditionalDependencies="osg.lib osgDB.lib foxdll-1.4.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/ImageModel.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

@@ -49,9 +49,6 @@ public:
   MdiChildWindow();
   virtual ~MdiChildWindow();
 
-  // Create.
-  virtual void        create();
-
   // Is it created?
   bool                isCreated() const;
 
@@ -65,8 +62,8 @@ public:
 
 private:
 
-  typedef std::auto_ptr < FXGLVisual > FXGLVisualPtr;
-  typedef std::auto_ptr < View       > ViewPtr;
+  typedef Pointer < FXGLVisual, NullOkPolicy, std::auto_ptr < FXGLVisual > > FXGLVisualPtr;
+  typedef Pointer < View,       NullOkPolicy, std::auto_ptr < View >       > ViewPtr;
 
   static FXGLVisualPtr _visual;
   ViewPtr _view;

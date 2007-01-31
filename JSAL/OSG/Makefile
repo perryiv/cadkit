@@ -16,7 +16,7 @@ OS_LINK_FLAGS = -LANG:std -v
 JUGGLER_LIB_DIR = ${VJ_BASE_DIR}/lib32
 endif
 
-COMMON_FLAGS   = -g -D_DEBUG -D_COMPILING_OSG_JSAL -fPIC
+COMMON_FLAGS   = -g -D_DEBUG -D_COMPILING_OSG_JSAL
 COMPILER_FLAGS = $(COMMON_FLAGS) $(OS_COMP_FLAGS)
 LINKER_FLAGS   = $(COMMON_FLAGS) $(OS_LINK_FLAGS)
 
@@ -27,7 +27,7 @@ INCLUDES = -I./ -I../../ -I$(OSG_INC_DIR) -I$(VJ_BASE_DIR)/include
 LIBS = \
 	-L$(OSG_LIB_DIR) -losg -losgUtil \
 	-L../../bin -losgVRJ \
-	-L${JUGGLER_LIB_DIR} -lvrj -lvrj_ogl -lgadget
+	-L${JUGGLER_LIB_DIR} -lJuggler_ogl -lJuggler -lgadget
 
 TARGET      = osg_jsal
 PLUGIN_LIB  = $(TARGET).vrplug

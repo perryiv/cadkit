@@ -1,188 +1,123 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
-	Name="lib: MenuKit OSG"
+	Version="7.10"
+	Name="lib: MenuKitOSG"
 	ProjectGUID="{8F89DCDA-565D-4211-BAF6-2E35EFC4DDAF}"
-	RootNamespace="lib: MenuKit OSG"
-	Keyword="Win32Proj"
-	>
+	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
-			Name="Win32"
-		/>
+			Name="Win32"/>
 	</Platforms>
-	<ToolFiles>
-	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			CharacterSet="2"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
+			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="../../;$(OSGHOME)/include;$(VJ_BASE_DIR)/include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_COMPILING_MENUKIT_OSG"
-				MinimalRebuild="true"
+				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				RuntimeTypeInfo="true"
+				RuntimeLibrary="1"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				WarnAsError="true"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="3"
-			/>
+				WarnAsError="TRUE"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osgd.lib osgTextd.lib"
 				OutputFile="../../bin/MenuKitOsgd.dll"
 				LinkIncremental="2"
-				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
-				GenerateDebugInformation="true"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="&quot;$(OSGHOME)/lib&quot;"
+				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/MenuKitOsgd.pdb"
 				SubSystem="2"
 				ImportLibrary="../../bin/MenuKitOsgd.lib"
-				TargetMachine="1"
-			/>
+				TargetMachine="1"/>
 			<Tool
-				Name="VCALinkTool"
-			/>
+				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCManifestTool"
-			/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCXDCMakeTool"
-			/>
+				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCBscMakeTool"
-			/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
+				Name="VCResourceCompilerTool"/>
 			<Tool
-				Name="VCAppVerifierTool"
-			/>
+				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
+				Name="VCXMLDataGeneratorTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			CharacterSet="2"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
+			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="../../;$(OSGHOME)/include;$(VJ_BASE_DIR)/include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_COMPILING_MENUKIT_OSG"
 				RuntimeLibrary="0"
-				RuntimeTypeInfo="true"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				WarnAsError="true"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="0"
-			/>
+				WarnAsError="TRUE"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="0"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osg.lib osgText.lib"
 				OutputFile="../../bin/MenuKitOsg.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
-				GenerateDebugInformation="true"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="&quot;$(OSGHOME)/lib&quot;"
+				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Release/MenuKitOsg.pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				ImportLibrary="../../bin/MenuKitOsg.lib"
-				TargetMachine="1"
-			/>
+				TargetMachine="1"/>
 			<Tool
-				Name="VCALinkTool"
-			/>
+				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCManifestTool"
-			/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCXDCMakeTool"
-			/>
+				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCBscMakeTool"
-			/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
+				Name="VCResourceCompilerTool"/>
 			<Tool
-				Name="VCAppVerifierTool"
-			/>
+				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
+				Name="VCXMLDataGeneratorTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -191,91 +126,39 @@
 		<Filter
 			Name="Source"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
-			>
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\BackgroundBox.cpp"
-				>
+				RelativePath=".\BaseMenu.cpp">
 			</File>
 			<File
-				RelativePath=".\BackgroundBox.h"
-				>
+				RelativePath=".\BaseMenu.h">
 			</File>
 			<File
-				RelativePath=".\BaseMenu.cpp"
-				>
+				RelativePath=".\Export.h">
 			</File>
 			<File
-				RelativePath=".\BaseMenu.h"
-				>
+				RelativePath=".\Font.cpp">
 			</File>
 			<File
-				RelativePath=".\BasicTheme.h"
-				>
+				RelativePath=".\Font.h">
 			</File>
 			<File
-				RelativePath=".\ColorThemeSkin.h"
-				>
+				RelativePath=".\GFX.cpp">
 			</File>
 			<File
-				RelativePath=".\ColorThemeSkinTile.h"
-				>
+				RelativePath=".\GFX.h">
 			</File>
 			<File
-				RelativePath=".\DrawableFunctor.h"
-				>
+				RelativePath=".\Menu.cpp">
 			</File>
 			<File
-				RelativePath=".\Export.h"
-				>
+				RelativePath=".\Menu.h">
 			</File>
 			<File
-				RelativePath=".\Font.cpp"
-				>
+				RelativePath=".\Skin.cpp">
 			</File>
 			<File
-				RelativePath=".\Font.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GFX.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GFX.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Menu.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Menu.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Skin.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Skin.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ThemeSkin.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TileFunctor.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TileLayer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Word.h"
-				>
+				RelativePath=".\Skin.h">
 			</File>
 		</Filter>
 	</Files>

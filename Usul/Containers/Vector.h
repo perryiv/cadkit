@@ -13,10 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_CONTAINERS_VECTOR_CLASS_H_
-#define _USUL_CONTAINERS_VECTOR_CLASS_H_
-
-#include <functional>
+#ifndef _USUL_CONTAINERS_s_CLASSES_H_
+#define _USUL_CONTAINERS_s_CLASSES_H_
 
 
 namespace Usul {
@@ -40,11 +38,10 @@ public:
   typedef typename Sequence::difference_type difference_type;
   typedef typename Sequence::iterator iterator;
   typedef typename Sequence::const_iterator const_iterator;
-  typedef typename Sequence::reverse_iterator reverse_iterator;
-  typedef typename Sequence::const_reverse_iterator const_reverse_iterator;
   typedef typename Sequence::reference reference;
   typedef typename Sequence::const_reference const_reference;
   typedef Vector<Sequence,ErrorChecker> this_type;
+
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -152,7 +149,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Get the size of the vector.
+  //  Get the size of the Vector.
   //
   /////////////////////////////////////////////////////////////////////////////
 
@@ -164,61 +161,29 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Get the capacity of the vector.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  size_type capacity() const
-  {
-    return _v.capacity();
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Iterators. We don't need bounds-checking here.
+  //  Iterators.
   //
   /////////////////////////////////////////////////////////////////////////////
 
   iterator begin()
   {
+    ErrorChecker ( __FILE__, __LINE__, !this->empty() );
     return _v.begin();
   }
   const_iterator begin() const
   {
+    ErrorChecker ( __FILE__, __LINE__, !this->empty() );
     return _v.begin();
   }
   iterator end()
   {
+    ErrorChecker ( __FILE__, __LINE__, !this->empty() );
     return _v.end();
   }
   const_iterator end() const
   {
+    ErrorChecker ( __FILE__, __LINE__, !this->empty() );
     return _v.end();
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Reverse iterators. We don't need bounds-checking here.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  reverse_iterator rbegin()
-  {
-    return _v.rbegin();
-  }
-  const_reverse_iterator rbegin() const
-  {
-    return _v.rbegin();
-  }
-  reverse_iterator rend()
-  {
-    return _v.rend();
-  }
-  const_reverse_iterator rend() const
-  {
-    return _v.rend();
   }
 
 
@@ -228,107 +193,27 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-#ifdef __APPLE__
-  
-  reference at ( unsigned int i )
-  {
-      ErrorChecker ( __FILE__, __LINE__, i < this->size() );
-      return _v[i];
-  }
-  const_reference at ( unsigned int i ) const
-  {
-      ErrorChecker ( __FILE__, __LINE__, i < this->size() );
-      return _v[i];
-  }
-
-#else
-  
-  reference at ( size_type i )
-  {
-      ErrorChecker ( __FILE__, __LINE__, i < this->size() );
-      return _v[i];
-  }
-  const_reference at ( size_type i ) const
+  reference operator [] ( size_type i )
   {
     ErrorChecker ( __FILE__, __LINE__, i < this->size() );
     return _v[i];
   }
-  reference at ( difference_type i )
-  {
-    ErrorChecker ( __FILE__, __LINE__, i >= 0 );
-    ErrorChecker ( __FILE__, __LINE__, i < static_cast < difference_type > ( this->size() ) );
-    return _v[i];
-  }
-  const_reference at ( difference_type i ) const
-  {
-    ErrorChecker ( __FILE__, __LINE__, i >= 0 );
-    ErrorChecker ( __FILE__, __LINE__, i < static_cast < difference_type > ( this->size() ) );
-    return _v[i];
-  }
-
-#endif
-  
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Array syntax.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-  
-  reference operator [] ( size_type i )
-  {
-      return this->at ( i );
-  }
   const_reference operator [] ( size_type i ) const
   {
-      return this->at ( i );
+    ErrorChecker ( __FILE__, __LINE__, i < this->size() );
+    return _v[i];
   }
-
-#ifndef __APPLE__
-
   reference operator [] ( difference_type i )
   {
-    return this->at ( i );
+    ErrorChecker ( __FILE__, __LINE__, i >= 0 );
+    ErrorChecker ( __FILE__, __LINE__, i < static_cast < difference_type > ( this->size() ) );
+    return _v[i];
   }
   const_reference operator [] ( difference_type i ) const
   {
-    return this->at ( i );
-  }
-
-#endif
-  
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Access first element.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  reference front()
-  {
-    ErrorChecker ( __FILE__, __LINE__, !this->empty() );
-    return _v.front();
-  }
-  const_reference front() const
-  {
-    ErrorChecker ( __FILE__, __LINE__, !this->empty() );
-    return _v.front();
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Access last element.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  reference back()
-  {
-    ErrorChecker ( __FILE__, __LINE__, !this->empty() );
-    return _v.back();
-  }
-  const_reference back() const
-  {
-    ErrorChecker ( __FILE__, __LINE__, !this->empty() );
-    return _v.back();
+    ErrorChecker ( __FILE__, __LINE__, i >= 0 );
+    ErrorChecker ( __FILE__, __LINE__, i < static_cast < difference_type > ( this->size() ) );
+    return _v[i];
   }
 
 
@@ -341,18 +226,6 @@ public:
   void resize ( size_type i )
   {
     _v.resize ( i );
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Reserve.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  void reserve ( size_type i )
-  {
-    _v.reserve ( i );
   }
 
 
@@ -418,49 +291,6 @@ public:
   }
 
 
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Assign this vector.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  void assign ( size_type count, const value_type &value )
-  {
-    return _v.assign ( count, value );
-  }
-
-  template < class II > void assign ( II first, II last )
-  {
-    return _v.assign ( first, last );
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Clear this vector.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  void clear()
-  {
-    return _v.clear();
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Equality predicates for troublesome nested containers.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  struct IsEqual : public std::binary_function < value_type, value_type, bool >
-  {
-    bool operator () ( const value_type &a, const value_type &b )
-    {
-      return ( a.equal ( b ) );
-    }
-  };
-
 private:
 
   Sequence _v;
@@ -497,4 +327,4 @@ template < class S, class E > inline bool operator !=
 }
 
 
-#endif // _USUL_CONTAINERS_VECTOR_CLASS_H_
+#endif // _USUL_CONTAINERS_s_CLASSES_H_

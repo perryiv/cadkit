@@ -86,16 +86,12 @@ void matrix ( const osg::Matrixd &f, Usul::Math::Matrix44<T,I,B> &t )
   Detail::transpose ( f, t );
 }
 
-
-#if 0 // Why not use std::copy? --Per
 template < class F, class T >
 void vector ( const F& from , T& to, unsigned int size )
 {
 	for(unsigned int i=0; i<size; i++)
 		to[i] = from[i];
 }
-#endif
-
 
 }; // namespace Convert
 }; // namespace OsgTools

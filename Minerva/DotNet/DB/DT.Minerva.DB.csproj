@@ -42,7 +42,6 @@
     <Compile Include="ConnectToDatabase.Designer.cs">
       <DependentUpon>ConnectToDatabase.cs</DependentUpon>
     </Compile>
-    <Compile Include="Connections.cs" />
     <Compile Include="Info.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

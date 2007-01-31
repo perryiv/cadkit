@@ -289,7 +289,7 @@ void Parser::_finishButton ( const std::string & )
   setter->setCallback ( _callback, _button.get() );
 
   // Set the callback.
-  //setter->setCallback ( _callback, _button.get() );
+  setter->setCallback ( _callback, _button.get() );
 
   // Reset.
   _button = 0x0;
@@ -375,7 +375,7 @@ void Parser::_setText ( const std::string &s )
   // Otherwise, set the item's text.
   else
 #endif
-  _item->text ( s );
+    _item->text ( s );
 }
 
 
@@ -416,7 +416,7 @@ void Parser::_setLayout ( const std::string &str )
   else
   {
     Usul::Exceptions::Thrower<std::runtime_error>
-      ( "Error 1820395511, invalid menu layout.",
+      ( "Error 1820395511u, invalid menu layout.",
         "\n\tFile:   ", _filename,
         "\n\tMenu:   ", _menus.top()->text(),
         "\n\tLayout: ", str );

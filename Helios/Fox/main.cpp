@@ -13,7 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Fox/Core/MdiMainWindow.h"
+#include "OsgFox/Core/MdiMainWindow.h"
 
 #include "Threads/OpenThreads/Mutex.h"
 
@@ -64,7 +64,7 @@ int main ( int argc, char **argv )
   std::auto_ptr<FX::FXIcon> icon ( Icons::instance()->icon ( Icons::ICON_LOGO ) );
 
   // Declare the main window.
-  Helios::Core::MdiMainWindow *window ( new Helios::Core::MdiMainWindow ( &application, application.getAppName(), icon.get(), icon.get() ) );
+  OsgFox::Core::MdiMainWindow *window ( new OsgFox::Core::MdiMainWindow ( &application, application.getAppName(), icon.get(), icon.get() ) );
 
   // Create the application.
   application.create();

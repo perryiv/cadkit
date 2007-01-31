@@ -14,16 +14,11 @@
         the same file at te same time.
       </comment>
       <writer>ptah-4</writer>
-      <head>viz0</head>
     </machine>
     <grid>
-	  <add_grid>1</add_grid>
       <num_blocks>40 40</num_blocks>
       <scale>10 10</scale>
       <color>1 1 1 1</color>
-	  <rotation_angle_rad>0.0</rotation_angle_rad>
-	  <rotation_vector>1.0 0.0 0.0</rotation_vector>
-	  <offset>true</offset>
     </grid>
     <clipping_plane>
       <near>0.1</near>
@@ -65,26 +60,26 @@
       </comment>
       <scale>      0.25  0.25  1.0 </scale>
       <translate> -2.0   6.0  -4.0 </translate>
-      <color>
-        <comment>customizable menu color scheme</comment>
-
-	<bg_norm>      0.6 0.6 0.6 1.0</bg_norm>
-	<bg_highlight> 0.4 0.4 0.4 1.0</bg_highlight>
-	<bg_disabled>  0.6 0.6 0.6 1.0</bg_disabled>
-	<txt_norm>     0.0 0.0 0.0 1.0</txt_norm>
-	<txt_highlight>0.0 0.0 0.0 1.0</txt_highlight>
-	<txt_disabled> 0.3 0.3 0.3 1.0</txt_disabled>
-
-        <comment>
-	<bg_norm>      1.0 1.0 1.0 1.0</bg_norm>
-	<bg_highlight> 1.0 0.0 0.0 1.0</bg_highlight>
-	<bg_disabled>  0.0 0.0 0.0 1.0</bg_disabled>
-	<txt_norm>     0.0 0.0 1.0 1.0</txt_norm>
-	<txt_highlight>1.0 1.0 1.0 1.0</txt_highlight>
-	<txt_disabled> 0.0 1.0 0.0 1.0</txt_disabled>
-        </comment> 
-      </color>
     </menu>
+    <menu_color>
+	  <comment>customizable menu color scheme</comment>
+	  
+	  <bg_norm>      0.6 0.6 0.6 1.0</bg_norm>
+	  <bg_highlight> 0.4 0.4 0.4 1.0</bg_highlight>
+	  <bg_disabled>  0.6 0.6 0.6 1.0</bg_disabled>
+	  <txt_norm>     0.0 0.0 0.0 1.0</txt_norm>
+	  <txt_highlight>0.0 0.0 0.0 1.0</txt_highlight>
+	  <txt_disabled> 0.3 0.3 0.3 1.0</txt_disabled>
+	  
+	  <comment>
+	  <bg_norm>      1.0 1.0 1.0 1.0</bg_norm>
+	  <bg_highlight> 1.0 0.0 0.0 1.0</bg_highlight>
+	  <bg_disabled>  0.0 0.0 0.0 1.0</bg_disabled>
+	  <txt_norm>     0.0 0.0 1.0 1.0</txt_norm>
+	  <txt_highlight>1.0 1.0 1.0 1.0</txt_highlight>
+	  <txt_disabled> 0.0 1.0 0.0 1.0</txt_disabled>
+	  </comment>
+    </menu_color>
     <status_bar>
       <comment>
         This is the translation and scale of the status-bar.
@@ -94,17 +89,6 @@
       <translate> -2.0   0.0  -2.0 </translate>
       <comment>Should the status-bar be visible at startup?</comment>
       <visible>yes</visible>
-      <color>
-        <comment>customizable status bar color scheme</comment>
-        
-        <bg> 0.6 0.6 0.6 1.0</bg>
-        <txt>0.0 0.0 0.0 1.0</txt>
-
-        <comment>
-        <bg> 1.0 1.0 1.0 1.0</bg>
-        <txt>0.0 0.0 1.0 1.0</txt>
-        </comment>
-      </color>
     </status_bar>
     <speed>
       <translate>  0.05 </translate>
@@ -114,9 +98,5 @@
       </comment>
       <scale>      0.75 </scale>
     </speed>
-	<sinterpoint>
-	  <server>my_server</server>
-	  <writer>my_writer</writer>
-	</sinterpoint>
   </preferences>
 </cv>

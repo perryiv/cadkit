@@ -69,7 +69,7 @@ View::View() :
   _seekingCursor   ( 0x0 )
 {
   // Do not use this constructor.
-  GSG_ASSERT ( false );
+  assert ( false );
   ErrorChecker ( false );
 }
 
@@ -133,7 +133,7 @@ namespace GSG
     // Callback class.
     struct ViewerCB : public Viewer::Callback
     {
-      GSG_DECLARE_REFERENCED ( ViewerCB );
+      GSG_DECLARE_CLONE ( ViewerCB );
       ViewerCB ( View *v ) : Viewer::Callback(), _v ( v ){}
       ViewerCB ( const ViewerCB &cb ) : Viewer::Callback ( cb ), _v ( cb._v ){}
       virtual void operator () ( Viewer::Message id, Path *, Viewer & );
@@ -141,19 +141,13 @@ namespace GSG
       GSG::FOX::View *_v;
       virtual ~ViewerCB();
     };
-    GSG_IMPLEMENT_REFERENCED ( ViewerCB );
+    GSG_IMPLEMENT_CLONE ( ViewerCB );
     void ViewerCB::operator () ( Viewer::Message id, Path *path, Viewer &viewer )
     {
       if ( _v )
         _v->notify ( id, path, viewer );
     }
     ViewerCB::~ViewerCB(){}
-    void ViewerCB::setFrom ( const ViewerCB &v )
-    {
-      Lock lock ( this );
-      _v = v._v;
-      BaseClass::setFrom ( v );
-    }
   };
 };
 
@@ -284,7 +278,7 @@ void View::notify ( Viewer::Message id, Path *path, Viewer &viewer )
 
   default:
 
-    GSG_ASSERT ( 0 ); // What message is this?
+    assert ( 0 ); // What message is this?
   }
 }
 
@@ -324,7 +318,7 @@ void View::spin ( bool state )
   }
 
   // Should be true.
-  GSG_ASSERT ( 0x0 == _timer );
+  assert ( 0x0 == _timer );
 
   // If we are supposed to spin.
   if ( state && _viewer.valid() ) 
@@ -334,7 +328,7 @@ void View::spin ( bool state )
   }
 
   // We should have a good timer now.
-  GSG_ASSERT ( ( 0x0 != _timer ) == state );
+  assert ( ( 0x0 != _timer ) == state );
 }
 
 

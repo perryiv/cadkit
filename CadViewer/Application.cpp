@@ -38,10 +38,10 @@
 
 #include "SAL/Interfaces/INode.h"
 #include "SAL/Interfaces/IOSG.h"
-#include "SAL/Interfaces/IRead.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
+#include "Usul/CommandLine/Parser.h"
 #include "Usul/Components/Object.h"
 #include "Usul/Print/Vector.h"
 #include "Usul/Print/Matrix.h"
@@ -59,31 +59,23 @@
 #include "vrjGA/TrackerDevice.h"
 
 #include "osg/MatrixTransform"
-#include "osg/AutoTransform"
 #include "osg/Matrix"
 #include "osg/LightSource"
 #include "osg/Projection"
-#include "osg/Version"
-#include "osg/AnimationPath"
-#include "osgFX/Scribe"
 
 #include "osgDB/ReadFile"
 #include "osgDB/WriteFile"
-#include "osgDB/ReaderWriter"
 
 #include "OsgTools/Axes.h"
 #include "OsgTools/Text.h"
 #include "OsgTools/Group.h"
 #include "OsgTools/Convert.h"
 #include "OsgTools/Font.h"
-#include "OsgTools/State/StateSet.h"
+#include "OsgTools/State.h"
 #include "OsgTools/Visitor.h"
 
 #include "MenuKit/MemFunCallback.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-//#include <unistd.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -110,7 +102,7 @@ namespace CV
   const unsigned long BUTTON_TRIGGER  = CV::BUTTON5;
 
   // Button combinations.
-/*#if 0
+#if 0
   const unsigned long COMMAND_QUIT             = BUTTON_RED | BUTTON_YELLOW | BUTTON_GREEN;
   const unsigned long COMMAND_RESET_WORLD      = BUTTON_RED | BUTTON_BLUE;
   const unsigned long COMMAND_NAVIGATION       = BUTTON_JOYSTICK;
@@ -127,31 +119,7 @@ namespace CV
   const unsigned long COMMAND_MENU_UP          = BUTTON_YELLOW;
   const unsigned long COMMAND_MENU_DOWN        = BUTTON_GREEN;
   const unsigned long COMMAND_SELECT           = BUTTON_TRIGGER;
-#endif*/
-  const unsigned long COMMAND_MENU_TOGGLE      = BUTTON_JOYSTICK;
-  const unsigned long COMMAND_MENU_SELECT      = BUTTON_TRIGGER;
-  const unsigned long COMMAND_MENU_LEFT        = BUTTON_RED;
-  const unsigned long COMMAND_MENU_RIGHT       = BUTTON_BLUE;
-  const unsigned long COMMAND_MENU_UP          = BUTTON_YELLOW;
-  const unsigned long COMMAND_MENU_DOWN        = BUTTON_GREEN;
-  
-  const unsigned long COMMAND_SELECT           = BUTTON_TRIGGER;
-  const unsigned long COMMAND_HIDE_SELECTED    = BUTTON_YELLOW;
-  const unsigned long COMMAND_UNSELECT_VISIBLE = BUTTON_GREEN;
-  const unsigned long COMMAND_SHOW_ALL         = BUTTON_RED;  
-#if defined (INV3RSION_NAV)
-  const unsigned long INVR_TRANSLATE  = BUTTON_YELLOW;
-  const unsigned long INVR_ROTATE     = BUTTON_RED;
-  const unsigned long INVR_SCALE      = BUTTON_GREEN;
-  const unsigned long NAVIGATE_FLY    = BUTTON_BLUE;
-  const unsigned long INVR_NAV_RESET  = BUTTON_YELLOW | BUTTON_RED;
-#else
-  const unsigned long NAVIGATE_TOGGLE = BUTTON_YELLOW;
-  const unsigned long STOP_NAV_TOOL   = BUTTON_RED;       // helps greatly in sim mode
-  const unsigned long NAVIGATE_FLY    = BUTTON_BLUE;      // Joseph doesn't need it, but its handy if anybody else does
-  const unsigned long TOOL_SCALE      = BUTTON_GREEN;
 #endif
-  const unsigned long NAVIGATE_NO_NAV = 0x00000040;
 };
 
 
@@ -167,14 +135,13 @@ namespace CV
   enum
   {
     NO_NAVIGATION,
-    TRANSLATE_XZ_LOCAL,       // FLY
-    TRANSLATE_XZ_GLOBAL,      // WALK
-//    ROTATE_Y_TRANS_Y_GLOBAL,  // POLE
+    TRANSLATE_XZ_LOCAL,
+    TRANSLATE_XZ_GLOBAL,
     ROTATE_XY_LOCAL,
     ROTATE_XY_GLOBAL,
     INTERSECT_SELECT,
     INTERSECT_SEEK,
-    INTERSECT_HIDE,
+    INTERSECT_HIDE
   };
 };
 
@@ -235,19 +202,6 @@ Application::Application ( Args &args ) :
   _models         ( new osg::MatrixTransform ),
   _gridBranch     ( new osg::MatrixTransform ),
   _cursor         ( new osg::MatrixTransform ),
-  _cursorActiveWithRot  ( new osg::MatrixTransform ),
-  _cursorRedWithRot     ( new osg::MatrixTransform ),
-  _cursorYellowWithRot  ( new osg::MatrixTransform ),
-  _cursorGreenWithRot   ( new osg::MatrixTransform ),
-  _cursorBlueWithRot    ( new osg::MatrixTransform ),
-  _cursorTriggerWithRot ( new osg::MatrixTransform ),
-  _cursorActiveNoRot    ( new osg::MatrixTransform ),
-  _cursorRedNoRot       ( new osg::MatrixTransform ),
-  _cursorYellowNoRot    ( new osg::MatrixTransform ),
-  _cursorGreenNoRot     ( new osg::MatrixTransform ),
-  _cursorBlueNoRot      ( new osg::MatrixTransform ),
-  _cursorTriggerNoRot   ( new osg::MatrixTransform ),
-  _cursor_zoom          ( osgDB::readNodeFile( "/home/users/hansenp/models/Cursors/zoom_in.flt" ) ),
   _menuBranch     ( new osg::MatrixTransform ),
   _statusBranch   ( new osg::MatrixTransform ),
   _origin         ( new osg::Group ),
@@ -269,6 +223,7 @@ Application::Application ( Args &args ) :
   _vp             ( 0, 0, 200, 200 ),
   _flags          ( 0 ),
   _wandOffset     ( 0, 0, 0 ), // feet (used to be z=-4)
+  _frameTime      ( 1 ), // Not zero!
   _cursorMatrix   ( 0x0 ),
   _sceneMutex     (),
   _iVisibility    ( Usul::Components::Object::create ( CV::Interfaces::IVisibility::IID,
@@ -288,28 +243,8 @@ Application::Application ( Args &args ) :
   _prefs          ( new VRV::Prefs::Settings ),
   _home           ( osg::Matrixf::identity() ),
   _colorMap       (),
-  _textures       ( true ),
-  _scribeBranch   ( new osg::MatrixTransform ),
-  _autoPlacement  ( false ),
-  _animations     ( true ),
-  _anim_steps     ( 0 ),
-  _animModel      ( NULL ),
-  _nextFrameTime  ( 0.0 )
-#if defined (INV3RSION_NAV)
-  , _invrNav( new invr::nav::CAD(&_tracker->matrix()) )
-#endif
-#if defined (INV3RSION_COLLABORATE)
-  , _avatarFactory    ( NULL )
-  , _localAvatar      ( NULL )
-  , _localAvatarName  ( "NULL" )
-  , _localAvatarFileName ( "NULL" )
-  , _controlAvatar    ( NULL )
-  , _headTracker      ( new vrjGA::TrackerDevice ( "VJHead" ) )
-  , _bodyMaxYawRate   ( 0.001 )
-  , _avatarWaitCount  ( 0 )
-  , _headYawOffset    ( 0 )
-  , _prevHeadYaw      ( 0 )
-#endif
+  _gridFunctor    (),
+  _textures       ( true )
 {
   ErrorChecker ( 1067097070u, 0 == _appThread );
   ErrorChecker ( 2970484549u, 0 == _mainThread );
@@ -324,7 +259,6 @@ Application::Application ( Args &args ) :
   ErrorChecker ( 1068249416u, _origin.valid() );
   ErrorChecker ( 1069021589u, _auxiliary.valid() );
   ErrorChecker ( 1071446158u, _textBranch.valid() );
-  ErrorChecker ( 1067094629u, _scribeBranch.valid() );
   ErrorChecker ( 1071551353u, 0x0 != _pickText.get() );
   ErrorChecker ( 1071551354u, 0x0 != _navText.get() );
   ErrorChecker ( 1071551355u, 0x0 != _frameText.get() );
@@ -349,7 +283,6 @@ Application::Application ( Args &args ) :
   _root->addChild      ( _navBranch.get()    );
   _navBranch->addChild ( _models.get()       );
   _navBranch->addChild ( _gridBranch.get()   );
-  _navBranch->addChild ( _scribeBranch.get() );
 
   // Name the branches.
   _root->setName         ( "_root"         );
@@ -362,7 +295,6 @@ Application::Application ( Args &args ) :
   _origin->setName       ( "_origin"       );
   _auxiliary->setName    ( "_auxiliary"    );
   _textBranch->setName   ( "_textBranch"   );
-  _scribeBranch->setName ( "_scribeBranch" );
 
   // Hook up the joystick callbacks.
   USUL_VALID_REF_POINTER(JoystickCB) jcb ( new JoystickCB ( this ) );
@@ -372,7 +304,7 @@ Application::Application ( Args &args ) :
   _joystick->callback ( vrjGA::JOYSTICK_ENTERING_DOWN,  jcb.get() );
 
   // Have to load the config files now. Remove them from the arguments.
-  Parser::Args configs = _parser->files ( ".jconf", true );
+  Parser::Args configs = _parser->files ( ".config", true );
   this->_loadConfigFiles ( configs );
 
   // populate the color map
@@ -395,53 +327,6 @@ Application::Application ( Args &args ) :
 
 Application::~Application()
 {
-  unsigned int i;
-  
-  for( i=0; i<_gridFunctors.size(); ++i){
-    delete _gridFunctors[i];
-  }
-  _gridFunctors.clear();
-
-#if defined (INV3RSION_NAV)
-  if(_invrNav) delete _invrNav;
-# endif
-
-#if defined (INV3RSION_COLLABORATE)
-  if(_localAvatar)
-  {
-    std::string cmd = "CV AVATAR_DELETE = ";
-    cmd += _localAvatar->name;
-    _sinterSendCommand(cmd, true);
-  }
-#endif
-
-# if defined (USE_SINTERPOINT)
-  if( _sinterReceiver )
-  {
-    _sinterReceiver->Disconnect();
-    delete _sinterReceiver;
-  }
-# endif
-#if defined (INV3RSION_COLLABORATE)
-  if( _sinterCollabSender )
-  {
-    _sinterCollabSender->Disconnect();
-    delete _sinterCollabSender;
-  }
-  
-  if(_sinterCollabReceiver)
-  {
-    _sinterCollabReceiver->Disconnect();
-    delete _sinterCollabReceiver;
-  }
-  
-  for( i = 0; i < _avatars.size(); i++)
-  {
-    delete _avatars[i]->avatar;
-    delete _avatars[i];
-  }
-  _avatars.clear();
-#endif
 }
 
 
@@ -462,16 +347,6 @@ void Application::contextInit()
   GLint vp[4];
   ::glGetIntegerv ( GL_VIEWPORT, vp );
   _vp.set ( vp[0], vp[1], vp[2], vp[3] );
-
-#if defined (INV3RSION_NAV)
-  _invrNav->contextInit();
-#endif
-
-#if defined (INV3RSION_COLLABORATE)
-  if(_avatarFactory) _avatarFactory->contextInit();
-  _avatarTime = _tracker->time();
-#endif
-
 }
 
 
@@ -531,16 +406,10 @@ void Application::_init()
 
   // Call the base class's function first.
   BaseClass::init();
-  
+
   // Set the global GL_NORMALIZE flag.
   this->normalize ( _prefs->normalizeVertexNormalsGlobal() );
-  
-  // Set Auto-Placement flag
-  _autoPlacement = _prefs->autoPlacement();
-  
-  // Create & clear tmp subdirectory
-  _initTmpDir();
-  
+
   // Set the background color.
   const Preferences::Vec4f &bc = _prefs->backgroundColor();
   this->setBackgroundColor ( osg::Vec4 ( bc[0], bc[1], bc[2], bc[3] ) );
@@ -559,17 +428,11 @@ void Application::_init()
   // Set the scene-viewer's scene.
   this->setSceneData ( _root.get() );
 
-  // Setup Sinterpoint if enabled
-#if defined (USE_SINTERPOINT)
-  this->_sinterPointInit();
-#endif
-
   // Parse the command-line arguments.
   this->_parseCommandLine();
 
   // Move the model-group so that the models are centered and visible.
   this->viewAll ( _models.get(), _prefs->viewAllScaleZ() );
-  this->viewAll ( _scribeBranch.get(), _prefs->viewAllScaleZ() );
 
   // Now that the models are centered, draw a grid in proportion to the size 
   // of the models.
@@ -579,10 +442,10 @@ void Application::_init()
   this->_setHome();
 
   // Set a default cursor matrix functor.
-  //this->_setCursorMatrixFunctor ( new CV::Functors::WandMatrix ( this->_thisUnknown() ) );
+  this->_setCursorMatrixFunctor ( new CV::Functors::WandMatrix ( this->_thisUnknown() ) );
 
   // Based on the scene size, set the near and far clipping plane distances.
-  //this->_setNearAndFarClippingPlanes();
+  this->_setNearAndFarClippingPlanes();
 
   // Initialize the menu.
   this->_initMenu();
@@ -592,24 +455,7 @@ void Application::_init()
 
   // Turn on navigation.
   //this->_setNavigator(); // This breaks time-based navigation. TODO, fix.
-  this->_handleNavigationEvent( NAVIGATE_NO_NAV );   // activate default navigation
-                                                          // TODO: read from _pref
   // Note: we cannot initialize the text yet because the viewport has not been set.
-
-#if defined (INV3RSION_NAV)
-  _invrNav->init();
-  _invrNav->SetIconColor(_prefs->iconColor()[0], 
-                         _prefs->iconColor()[1], 
-                         _prefs->iconColor()[2], 
-                         _prefs->iconColor()[3]);
-  _invrNav->SetIconSize(_prefs->iconSize());
-  _invrNav->SetTranslationAccel(_prefs->acceleration());
-  _invrNav->SetInvertRotation(_prefs->invertRotation());
-#endif
-#if defined (INV3RSION_COLLABORATE)
-  if( _localAvatarName != "NULL" && _localAvatarFileName != "NULL" )
-    _sendAddAvatarCommand( _localAvatarFileName, _localAvatarName);
-#endif
 }
 
 
@@ -630,14 +476,10 @@ void Application::_initText()
   ErrorChecker ( 1071556909, false == Usul::Bits::has ( _flags, Detail::_TEXT_IS_INITIALIZED ) );
   ErrorChecker ( 1071558814, 0 == _textBranch->getNumChildren() );
 
-  if( !this->_isHeadNode() )
-    return;
-
   // Create a matrix-transform relative to the global coordinate system.
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
   ErrorChecker ( 1071452071, mt.valid() );
-
-  mt->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
+  mt->setReferenceFrame ( osg::Transform::RELATIVE_TO_ABSOLUTE );
   mt->setMatrix ( osg::Matrix::identity() );
 
   // Make the text branch an orthographic projection.
@@ -648,7 +490,7 @@ void Application::_initText()
   _textBranch->setMatrix ( osg::Matrix::ortho2D ( x, w, y, h ) );
 
   // Set the text font.
-  std::string f ( OsgTools::Font::fontfile ( "courbd" ) ); // Courier New Bold
+  std::string f ( OsgTools::Font::filename ( "courbd" ) ); // Courier New Bold
   _pickText->font  ( f );
   _navText->font   ( f );
   _frameText->font ( f );
@@ -697,7 +539,6 @@ void Application::_initGrid ( osg::Node *node )
 {
   ErrorChecker ( 1067093690, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 1293823849, 0x0 != node );
-  int i;
 
   // Get the bounding sphere of the node.
   const osg::BoundingSphere &bs = node->getBound();
@@ -705,29 +546,15 @@ void Application::_initGrid ( osg::Node *node )
   // Handle zero-sized bounding spheres.
   float r = ( bs.radius() <= 1e-6 ) ? 1 : bs.radius();
 
-  // Clean up any old grids
-  for(unsigned int i=0; i<_gridFunctors.size(); ++i){
-    delete _gridFunctors[i];
-  }
-  _gridFunctors.clear();
-
   // Set the properties.
-  for(i=0; i<_prefs->numGrids(); ++i){
-    OsgTools::Grid *grid = new OsgTools::Grid();
-    grid->numBlocks ( _prefs->numGridBlocks(i) );
-    grid->size ( r * _prefs->gridScale(i) );
-    grid->color ( _prefs->gridColor(i) );
-    grid->fillColor ( _prefs->gridFillColor(i) );
-    Usul::Math::Matrix44f o;
-    o.makeRotation ( _prefs->gridRotationAngleRad(i), _prefs->gridRotationVector(i) );
-    grid->orientation ( o );
+  _gridFunctor.numBlocks ( _prefs->numGridBlocks() );
+  _gridFunctor.size ( r * _prefs->gridScale() );
+  _gridFunctor.color ( _prefs->gridColor() );
 
-    // Move the center so that it is below the bounding sphere of the node.
-    osg::Vec3 c ( bs.center() );
-    if(_prefs->offsetGrid(i)) c[1] = -r;
-    grid->center ( Usul::Math::Vec3f ( c[0], c[1], c[2] ) );
-	_gridFunctors.push_back(grid);
-  }
+  // Move the center so that it is below the bounding sphere of the node.
+  osg::Vec3 c ( bs.center() );
+  c[1] = -r;
+  _gridFunctor.center ( Usul::Math::Vec3f ( c[0], c[1], c[2] ) );
 
   _rebuildGrid();
 }
@@ -743,9 +570,7 @@ void Application::_rebuildGrid()
 {
   // Remove the old grid and add the new one.
   OsgTools::Group::removeAllChildren ( _gridBranch.get() );
-  for(unsigned int i=0; i<_gridFunctors.size(); ++i){
-    _gridBranch->addChild ( (*(_gridFunctors[i]))() );
-  }
+  _gridBranch->addChild ( _gridFunctor() );
 }
 
 
@@ -763,13 +588,8 @@ void Application::_initLight()
   osg::ref_ptr<osg::Light> light ( new osg::Light );
   osg::Vec3 ld;
   osg::Vec4 lp;
-  int i;
-  for(i=0; i<4; ++i){
-    lp[i]=_prefs->lightPosition()[i];
-  }
-  for(i=0; i<3; ++i){
-    ld[i]=_prefs->lightDirection()[i];
-  }
+  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( _prefs->lightPosition(),lp,4 );
+  OsgTools::Convert::vector<Usul::Math::Vec3f,osg::Vec3>( _prefs->lightDirection(),ld,3 );
   light->setPosition( lp );
   light->setDirection( ld );
 
@@ -854,16 +674,10 @@ void Application::_initMenu()
   _menuBranch->setStateSet( ss.get() );
 
 
-  #define CV_REGISTER(member_function,name) \
-  _buttonMap[name] = MenuKit::memFunCB2 \
-    ( this, &Application::member_function )
   // Fill the callback map.
-  CV_REGISTER ( _quitCallback,     "exit" );    // macro expands to ...
-      // _buttonmap["exit"] = MenuKit::memFunCB2 ( this, &Application::_quitCallback ) 
-  CV_REGISTER ( _quitCallback,     "quit" );    // macro expands to ...
-      // _buttonmap["quit"] = MenuKit::memFunCB2 ( this, &Application::_quitCallback )
-  CV_REGISTER ( _hideSelected,     "hide_selected" );    // macro expands to ...
-      // _buttonmap["hide_selected"] = MenuKit::memFunCB2 ( this, &Application::_hideSelected )
+  CV_REGISTER ( _quitCallback,     "exit" );
+  CV_REGISTER ( _quitCallback,     "quit" );
+  CV_REGISTER ( _hideSelected,     "hide_selected" );
   CV_REGISTER ( _showAll,          "show_all" );
   CV_REGISTER ( _unselectVisible,  "unselect_visible" );
   CV_REGISTER ( _exportSelected,   "export_selected" );
@@ -893,7 +707,6 @@ void Application::_initMenu()
   CV_REGISTER ( _polysFlat,        "polygons_flat" );
   CV_REGISTER ( _polysWireframe,   "polygons_wireframe" );
   CV_REGISTER ( _polysPoints,      "polygons_points" );
-  CV_REGISTER ( _polysScribe,      "polygons_scribe" );
   CV_REGISTER ( _gridVisibility,   "grid_visibility" );
   CV_REGISTER ( _statusBarVis,     "status_bar_visibility" );
   CV_REGISTER ( _viewHome,         "camera_view_home" );
@@ -916,14 +729,11 @@ void Application::_initMenu()
   CV_REGISTER ( _gotoViewLeft,     "goto_left_view" );
   CV_REGISTER ( _rotateWorld,      "rotate_world" );
   CV_REGISTER ( _dropToFloor,      "drop_to_floor" );
-  CV_REGISTER (_toggleAnimations,  "toggle_animations" );
-  CV_REGISTER (_animStepFwd,  "animation_step_fwd" );
   //CV_REGISTER ( _saveView,         "save_camera_view" );
 
   // Get the component.
-  VRV::Interfaces::IMenuRead::ValidQueryPtr reader
-    ( Usul::Components::Object::create( VRV::Interfaces::IMenuRead::IID,
-      CV_GRAPHICAL_USER_INTERFACE ) );
+  VRV::Interfaces::IMenuRead::ValidQueryPtr reader( Usul::Components::Object::create( VRV::Interfaces::IMenuRead::IID,
+                                                                                      CV_GRAPHICAL_USER_INTERFACE      ) );
 
   // Find the path to the config file.
   std::string filename ( CV::Config::filename ( "menu" ) );
@@ -936,9 +746,8 @@ void Application::_initMenu()
   _menu->menu ( menu->getMenu() );
 
   // Default settings, so that the menu has the correct toggle's checked.
-  OsgTools::State::StateSet::setPolygonsFilled ( _models.get(), false );
-  OsgTools::State::StateSet::setPolygonsSmooth ( _models.get() );
-  OsgTools::Group::removeAllOccurances ( _scribeBranch.get(), _navBranch.get() );
+  OsgTools::State::setPolygonsFilled ( _models.get(), false );
+  OsgTools::State::setPolygonsSmooth ( _models.get() );
 }
 
 
@@ -1057,16 +866,6 @@ void Application::_parseCommandLine()
                   restart.end(), 
                   Usul::Adaptors::memberFunction ( this, &Application::_loadRestartFile ) );
 
-#if defined (INV3RSION_COLLABORATE)
-  // Extract the avatar cfg files and remove them from the remaining arguments.
-  Parser::Args avatar = _parser->files ( ".cfg", true );
-
-  // Load the avatar files.
-  std::for_each ( avatar.begin(),
-                  avatar.end(), 
-                  Usul::Adaptors::memberFunction ( this, &Application::_registerAvatar ) );
-#endif
-
   // Extract the model files and remove them from the remaining arguments.
   Parser::Args models = _parser->files ( true );
 
@@ -1116,12 +915,12 @@ void Application::_preFrame()
 {
   ErrorChecker ( 1067093580, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 1067222382, _cursor.valid() );
-  
+
   // Call the base class's function.
   BaseClass::preFrame();
-  
+
   // Update the frame-time.
-  //this->_updateFrameTime();
+  this->_updateFrameTime();
 
   // Update these input devices.
   _buttons->update();
@@ -1151,17 +950,6 @@ void Application::_preFrame()
 
   // Navigate if we are supposed to.
   this->_navigate();
-
-  // Check to see if we are receiving a model, if enabled
-# if defined (USE_SINTERPOINT)
-    this->_sinterReceiveData();
-# endif
-
-#if defined (INV3RSION_COLLABORATE)
-    _headTracker->update();
-    this->_updateAvatars();
-#endif
-
 }
 
 
@@ -1175,33 +963,24 @@ void Application::_processButtons()
 {
   ErrorChecker ( 1083961848u, isAppThread(), CV::NOT_APP_THREAD );
 
-#if 1
+#if 0
   switch ( _buttons->pressed() )
   {
-    case CV::BUTTON0: std::cout << CV::BUTTON0 << " Button 0 pressed (YELLOW)" << std::endl; break;
-    case CV::BUTTON1: std::cout << CV::BUTTON1 << " Button 1 pressed (RED)" << std::endl; break;
-    case CV::BUTTON2: std::cout << CV::BUTTON2 << " Button 2 pressed (GREEN)" << std::endl; break;
-    case CV::BUTTON3: std::cout << CV::BUTTON3 << " Button 3 pressed (BLUE)" << std::endl; break;
-    case CV::BUTTON4: std::cout << CV::BUTTON4 << " Button 4 pressed (JOYSTICK)" << std::endl; break;
-    case CV::BUTTON5: std::cout << CV::BUTTON5 << " Button 5 pressed (TRIGGER)" << std::endl; break;
+    case CV::BUTTON0: std::cout << "Button 0 pressed" << std::endl; break;
+    case CV::BUTTON1: std::cout << "Button 1 pressed" << std::endl; break;
+    case CV::BUTTON2: std::cout << "Button 2 pressed" << std::endl; break;
+    case CV::BUTTON3: std::cout << "Button 3 pressed" << std::endl; break;
+    case CV::BUTTON4: std::cout << "Button 4 pressed" << std::endl; break;
+    case CV::BUTTON5: std::cout << "Button 5 pressed" << std::endl; break;
   }
 #endif
-  
+
   // Let the menu process first.
   if ( this->_handleMenuEvent() )
     return;
 
   // Now process the intersector buttons.
   if ( this->_handleIntersectionEvent() )
-    return;
-
-  if ( this->_handleNavigationEvent() )
-    return;
-
-  if ( this->_handleToolEvent() )
-    return;
-
-  if ( this->_handleCancelEvent() )
     return;
 }
 
@@ -1274,30 +1053,10 @@ bool Application::_handleIntersectionEvent()
 {
   ErrorChecker ( 2588614392u, isAppThread(), CV::NOT_APP_THREAD );
 
-  if(!_intersector) return false;
-
   // Process pressed states.
   if ( COMMAND_SELECT == _buttons->down() )
   {
     this->_intersect();
-    return true;
-  }
-  
-  else if ( COMMAND_HIDE_SELECTED == _buttons->down() )
-  {
-    this->_hideSelected ( MenuKit::MESSAGE_SELECTED, NULL );
-    return true;
-  }
-  
-  else if ( COMMAND_UNSELECT_VISIBLE == _buttons->down() )
-  {
-    this->_unselectVisible ( MenuKit::MESSAGE_SELECTED, NULL );
-    return true;
-  }
-  
-  else if ( COMMAND_SHOW_ALL == _buttons->down() )
-  {
-    this->_showAll ( MenuKit::MESSAGE_SELECTED, NULL );
     return true;
   }
 
@@ -1316,219 +1075,7 @@ bool Application::_handleIntersectionEvent()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Process the button states and apply to Navigation mode selection.
-//  Returns true if the event was handled.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::_handleNavigationEvent( const unsigned long eventRequest )
-{
-  MenuKit::Message nav_message = MenuKit::MESSAGE_SELECTED;   // simulate message/item from MenuKit
-  MenuKit::Item *nav_item (0x0);                              // NULL b/c it's never needed
-  const unsigned long walkID = 1084438120u;                   // comes from AppCallback.cpp
-  bool handled;
-  unsigned long mode;
-  
-  if(_intersector) return false;                              // skip this code if we're in an intersection mode
-
-#if defined (INV3RSION_NAV)
-  mode = _buttons->pressed();                                 // Button press event
-
-  if ( eventRequest )
-    mode = eventRequest;
-
-  switch ( mode )
-  {
-    case INVR_TRANSLATE :
-      std::cout << "INV3RSION CAD TRANSLATE" << std::endl;
-#if defined (INV3RSION_COLLABORATE)
-      _requestNavControl();
-#endif
-      _syncInvrNav();
-      this->_removeCursorChildren();
-      _navigatorH = 0x0;
-      _navigatorV = 0x0;
-      _invrNav->SetMode(invr::nav::CAD::TRANSLATE);
-      handled = true;
-      break;
-    case INVR_ROTATE :
-      std::cout << "INV3RSION CAD ROTATE" << std::endl;
-#if defined (INV3RSION_COLLABORATE)
-      _requestNavControl();
-#endif
-      _syncInvrNav();
-      this->_removeCursorChildren();
-      _navigatorH = 0x0;
-      _navigatorV = 0x0;
-      if(_prefs->newRotation())
-        _invrNav->SetMode(invr::nav::CAD::NEWROTATE);
-      else 
-        _invrNav->SetMode(invr::nav::CAD::ROTATE);
-      handled = true;
-      break;
-    case INVR_SCALE :
-      std::cout << "INV3RSION CAD SCALE" << std::endl;
-#if defined (INV3RSION_COLLABORATE)
-      _requestNavControl();
-#endif
-      _syncInvrNav();
-      this->_removeCursorChildren();
-      _navigatorH = 0x0;
-      _navigatorV = 0x0;
-      _invrNav->SetMode(invr::nav::CAD::SCALE);
-      handled = true;
-      break;
-    case INVR_NAV_RESET :
-      std::cout << "INV3RSION CAD RESET" << std::endl;
-#if defined (INV3RSION_COLLABORATE)
-      _requestNavControl();
-#endif
-      this->_removeCursorChildren();
-      if ( _autoPlacement )
-        _doAutoPlacement(true);
-      else
-        _navBranch->setMatrix ( _home );
-      _syncInvrNav();
-      break;
-  }
-
-#endif
-  mode = _buttons->released();                                // Button release event
-
-  if ( eventRequest )                                         // if mode NOT specified with function call ...
-    mode = eventRequest;                                      // ... get information from buttons
-
-  switch ( mode )                                             // which button was used???
-  {
-#if defined (INV3RSION_NAV)
-    case INVR_TRANSLATE :
-    case INVR_ROTATE :
-    case INVR_SCALE :
-      std::cout << "STOP NAVIGATION" << std::endl;
-#if defined (INV3RSION_COLLABORATE)
-      if( _controlAvatar == _localAvatar )
-      {
-        std::string cmd = "CV AVATAR_CONTROL_RELEASE\n";
-        _sinterSendCommand(cmd, false );
-      }
-#endif
-      _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
-      _navigatorV = 0x0;                                      // invalidate response to vertical joystick
-      _invrNav->SetMode(invr::nav::CAD::NO_NAV);
-      this->_setNearAndFarClippingPlanes();
-      handled = true;
-      break;
-#else
-    case NAVIGATE_TOGGLE :                                    // BUTTON_YELLOW, if not walking, set walk ...
-      std::cout << "TOGGLE: ";                                //                if walking, set pole
-      if ( _navigatorH.valid() &&                             // IF h and v control are valid
-           _navigatorV.valid() &&                             // AND both set to walkID
-           walkID == _navigatorV->id() &&
-           walkID == _navigatorH->id() )
-      {                                                       // if WALK, set navigation to POLE
-        std::cout << "POLE" << std::endl;
-        // Stop navigation first, to prevent menu style callbacks from toggling navigation off
-        _navigatorH = 0x0;                                    // invalidate response to horizontal joystick
-        _navigatorV = 0x0;                                    // invalidate response to vertical joystick
-        // Set navigation mode using 'simulated' call from menu
-        this->_poleNav ( nav_message, nav_item );             // activate navigation (POLE)
-        handled = true;                                       // button event has been handled
-      }
-      else                                                    // if anything else, set navigation to WALK
-      {
-        std::cout << "WALK" << std::endl;
-        _navigatorH = 0x0;                                    // invalidate response to horizontal joystick
-        _navigatorV = 0x0;                                    // invalidate response to vertical joystick
-        this->_hvTransGlobalXZ ( nav_message, nav_item );     // activate navigation (WALK)
-        handled = true;                                       // button event has been handled
-      }
-      break;
-#endif      
-    case NAVIGATE_FLY :                                       // BUTTON_BLUE (FLY in the BLUE sky)
-      std::cout << "FLY" << std::endl;
-      // Stop navigation first.  This prevents toggling off when already in a nav mode
-      _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
-      _navigatorV = 0x0;                                      // invalidate response to vertical joystick
-      // set (or reset) navigation mode.  Simulated a call from the menu.
-      this->_hvTransWandXZ ( nav_message, nav_item );         // activate navigation (FLY)
-      handled = true;                                         // button event has been handled
-      break;
-
-    case NAVIGATE_NO_NAV :                                    // possibly called from _init()
-      std::cout << "STOP NAVIGATION" << std::endl;
-      _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
-      _navigatorV = 0x0;                                      // invalidate response to vertical joystick
-      handled = true;                                         // button event has been handled
-      break;
-
-    default :
-      handled = false;                                        // button event has NOT been handled
-  };
-
-  return handled;  // if false, button event was not handled (doesn't effect navigation)
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Process the button states and apply to Tool selection.
-//  Returns true if the event was handled.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::_handleToolEvent()
-{
-  MenuKit::Message tool_message = MenuKit::MESSAGE_SELECTED;  // simulate message/item from MenuKit
-  MenuKit::Item *tool_item (0x0);                             // NULL b/c it's never needed
-  bool handled(false);
-
-#if !defined (INV3RSION_NAV)
-  if ( _buttons->released() == TOOL_SCALE )                   // BUTTON_GREEN
-  {
-    std::cout << "SCALE" << std::endl;
-    //_sceneTool=0x0;                                         // invalidate scale tool to prevent toggling off
-    this->_vScaleWorld ( tool_message, tool_item );           // if previous line commented, toggle scale; if not, activate scale
-    handled = true;                                           // button event has been handled
-  }
-#endif
-
-  return handled;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Process the button states and apply to cancelation or tools and navigation.
-//  Returns true if the event was handled.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::_handleCancelEvent()
-{
-  //MenuKit::Message tool_message = MenuKit::MESSAGE_SELECTED;  // simulate message/item from MenuKit
-  //MenuKit::Item *tool_item (0x0);                             // NULL b/c it's never needed
-  bool handled(false);
-
-#if !defined (INV3RSION_NAV)
-  if ( _buttons->released() == STOP_NAV_TOOL )                // BUTTON_RED
-  {
-    std::cout << "STOP NAVIGATION/TOOLS" << std::endl;
-    _navigatorH = 0x0;                                        // invalidate response to horizontal joystick
-    _navigatorV = 0x0;                                        // invalidate response to vertical joystick
-    _sceneTool  = 0x0;                                        // invalidate scale tool to prevent toggling off
-
-    this->_removeCursorChildren();
-
-    handled = true;                                           // button event has been handled
-  }
-#endif
-
-  return handled;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Callback for the joystick.
+//  Callback for the quit-button.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1610,30 +1157,9 @@ void Application::_postFrame()
   // Initialize the text if we need to. We cannot call this sooner because 
   // contextInit() has to be called first.
   if ( false == Usul::Bits::has ( _flags, Detail::_TEXT_IS_INITIALIZED ) )
-  {
-    osg::ref_ptr < osg::FrameStamp > framestamp ( this->getFrameStamp() );
-    if ( 0x0 != framestamp.get() && this->getFrameStamp()->getFrameNumber() > 10 )
+    if ( this->getFrameStamp()->getFrameNumber() > 10 )
       this->_initText();
-  }
 #endif
-
-  if(_anim_steps)
-  {
-    _anim_steps--;
-    if( _anim_steps == 0 && _animModel != NULL)
-    {
-      _animationsOnOff(false, _animModel);
-      _animModel = NULL;
-    }
-  }
-
-#if defined (USE_SINTERPOINT)
-    this->_sinterProcessData();
-#if defined (INV3RSION_COLLABORATE)
-    this->_sinterProcessCollabData();
-#endif
-#endif
-
 }
 
 
@@ -1851,41 +1377,17 @@ void Application::_setNavigator()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-//void Application::_setCursor ( unsigned int state )
-//{
-//  ErrorChecker ( 1072722817u, isAppThread(), CV::NOT_APP_THREAD );
-//
-//  OsgTools::Axes axes;
-//  axes.length ( 0.5f );
-//  axes.lineWidth ( 0.05f * axes.length() );
-//  axes.state ( state );
-//
-//  OsgTools::Group::removeAllChildren ( _cursor.get() );
-//  _cursor->addChild ( axes() );
-//}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the cursor's matrix functor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_removeCursorChildren()
+void Application::_setCursor ( unsigned int state )
 {
-  OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorRedWithRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorYellowWithRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorGreenWithRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorBlueWithRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorTriggerWithRot.get() );
+  ErrorChecker ( 1072722817u, isAppThread(), CV::NOT_APP_THREAD );
 
-  OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorRedNoRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorYellowNoRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorGreenNoRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorBlueNoRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorTriggerNoRot.get() );
+  OsgTools::Axes axes;
+  axes.length ( 0.5f );
+  axes.lineWidth ( 0.05f * axes.length() );
+  axes.state ( state );
+
+  OsgTools::Group::removeAllChildren ( _cursor.get() );
+  _cursor->addChild ( axes() );
 }
 
 
@@ -1894,11 +1396,11 @@ void Application::_removeCursorChildren()
 //  Set the cursor's matrix functor.
 //
 ///////////////////////////////////////////////////////////////////////////////
-//
-//void Application::_setCursorMatrixFunctor ( CV::Functors::MatrixFunctor *f )
-//{
-//  _cursorMatrix = f;
-//}
+
+void Application::_setCursorMatrixFunctor ( CV::Functors::MatrixFunctor *f )
+{
+  _cursorMatrix = f;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1999,13 +1501,12 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
   this->_update ( *_msgText, "Reading file: " + filename );
 
   // Create a component for reading the model.
-  SAL::Interfaces::IRead::ValidQueryPtr reader 
+  Usul::Interfaces::IRead::ValidQueryPtr reader 
     ( Usul::Components::Object::create 
-      ( SAL::Interfaces::IRead::IID, CV_SCENE_ABSTRACTION_LAYER, true, true ) );
+      ( Usul::Interfaces::IRead::IID, CV_SCENE_ABSTRACTION_LAYER, true, true ) );
 
   // Read the model.
-  Usul::Interfaces::IUnknown *tmp=NULL;
-  SAL::Interfaces::INode::ValidQueryPtr model ( reader->readNodeFile ( filename ) );
+  SAL::Interfaces::INode::ValidQueryPtr model ( reader->read ( filename, 0x0 ) );
 
   // Get the interface we need.
   SAL::Interfaces::IOSG::ValidQueryPtr iosg ( model );
@@ -2020,7 +1521,7 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
   // not off, because we want to inherit the global state.
   bool norm ( _prefs->normalizeVertexNormalsModels() );
   if ( norm )
-    OsgTools::State::StateSet::setNormalize ( node.get(), norm );
+    OsgTools::State::setNormalize ( node.get(), norm );
 
   // Make a matrix transform for this model.
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
@@ -2031,22 +1532,10 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
   OsgTools::Convert::matrix ( matrix, M );
   mt->setMatrix ( M );
 
-  // Set its name to the filename, minus the pathing portion, if there is no name.
+  // Set its name to the filename if there is no name.
   if ( node->getName().empty() )
-  {
-    unsigned int loc = filename.find_last_of ( "/\\" );
-    std::string name = filename.substr ( loc + 1 );
-    node->setName ( name );
-  }
- 
-  // Create the scribe effect since it must attach to the model
-  osg::ref_ptr<osgFX::Scribe> scribe = new osgFX::Scribe;
-  const Preferences::Vec4f &sc = _prefs->scribeColor();
-  scribe->setWireframeColor ( osg::Vec4 ( sc[0], sc[1], sc[2], sc[3] ) );
-  scribe->setWireframeLineWidth( _prefs->scribeWidth() );
-  scribe->addChild ( node.get() );
-  _scribeBranch->addChild ( scribe.get() );
-  
+    node->setName ( filename );
+
   // Hook things up.
   mt->addChild ( node.get() );
 
@@ -2057,187 +1546,6 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
   this->_postProcessModelLoad ( filename, node.get() );
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the group node child that is a MatrixTransform
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::MatrixTransform* Application::_getGroupMatrixTransform( osg::Group *grp )
-{
-  int num_children = grp->getNumChildren();
-  int i = 0;
-  osg::Transform *xform;
-  
-  // First test the group node
-  if( xform = grp->asTransform() )
-  {
-    return xform->asMatrixTransform();
-  }
-  
-  // next test its children
-  while ( i < num_children )
-  {
-    xform = grp->getChild(i)->asTransform();
-    if(xform)
-    {
-      return xform->asMatrixTransform();
-    }
-    i++;
-  }
-  
-  return NULL;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add or replace a node in the scenegraph
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_replaceNode( osg::ref_ptr<osg::Node> node, const std::string &name )
-{
-  ErrorChecker ( 1901000692u, isAppThread(), CV::NOT_APP_THREAD );
-  ErrorChecker ( 1067093698u, _models.valid() );
-  
-  // See if this node name matches any other in the scene
-  bool matched = false;
-  osg::Node *m = dynamic_cast<osg::Node*>( _models.get() );
-  if ( m )
-  {
-    Matcher match;
-    if ( _recursiveMatchNodeName ( name, m, &match ) )
-    {
-      // We found a match
-      std::cout << "Match found, replacing node" << std::endl;
-      _autoPlacement = false; // do not relocate model if it isn't new
-      node->setName ( name );
-      
-      // Get matrix from original (old) node and apply it to new node
-      osg::Matrix mtx;
-      osg::Group *old_grp = match.node->asGroup();
-      osg::Group *new_grp = node->asGroup();
-            
-      if ( old_grp && new_grp )
-      {
-        osg::MatrixTransform *mxform_old = _getGroupMatrixTransform( old_grp );
-        if ( mxform_old )
-        {
-          mtx = mxform_old->getMatrix();
-          
-          osg::MatrixTransform *mxform_new = _getGroupMatrixTransform( new_grp );
-          if ( mxform_new )
-          {
-            mxform_new->setMatrix( mtx );
-          }
-        }
-      }
-      
-      // replace the node
-      if ( match.parent->replaceChild ( match.node, node.get() ) )
-      {
-        matched = true;
-      }
-    }
-
-    // Now rebuild the scribe node corresponding to the match in _models
-    if ( matched )
-    {
-      // Replace the scribe node at the same position in _scribeBranch
-      // as the replaced node was in _models, using match.modelNum
-      osg::ref_ptr<osgFX::Scribe> scribe = new osgFX::Scribe;
-      const Preferences::Vec4f &sc = _prefs->scribeColor();
-      scribe->setWireframeColor ( osg::Vec4 ( sc[0], sc[1], sc[2], sc[3] ) );
-      scribe->setWireframeLineWidth( _prefs->scribeWidth() );
-      scribe->addChild ( node.get() );
-      _scribeBranch->setChild ( match.modelNum, scribe.get() );
-    }
-  }
-    
-  // Otherwise, add it as a new node
-  if ( !matched )
-  {
-    std::cout << "Adding model as new osg node" << std::endl;
-
-    // Are we supposed to set the normalize flag? We only turn it on, 
-    // not off, because we want to inherit the global state.
-    bool norm ( _prefs->normalizeVertexNormalsModels() );
-    if ( norm )
-      OsgTools::State::StateSet::setNormalize ( node.get(), norm );
-
-    // Make a matrix transform for this model.
-    osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
-    mt->setName ( std::string ( "Branch for: " ) + name );
-
-    // Set its matrix.
-    osg::Matrixf M;
-    Matrix44f matrix;
-    matrix.identity();
-    OsgTools::Convert::matrix ( matrix, M );
-    mt->setMatrix ( M );
-
-    // Set the node name
-    node->setName ( name );
-
-    // Create the scribe effect since it must attach to the model
-    osg::ref_ptr<osgFX::Scribe> scribe = new osgFX::Scribe;
-    const Preferences::Vec4f &sc = _prefs->scribeColor();
-    scribe->setWireframeColor ( osg::Vec4 ( sc[0], sc[1], sc[2], sc[3] ) );
-    scribe->setWireframeLineWidth( _prefs->scribeWidth() );
-    scribe->addChild ( node.get() );
-    _scribeBranch->addChild ( scribe.get() );
-    
-    // Hook things up.
-    mt->addChild ( node.get() );
-
-    // Hook things up.
-    _models->addChild ( mt.get() );
-  }
-  
-  // Do any post-processing.
-  this->_postProcessModelLoad ( std::string("streamed"), node.get() );
-}
-
-#if defined (USE_SINTERPOINT)
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Stream in the model and position it using the matrix.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_streamModel ( std::stringstream &modelstream, const std::string &name )
-{
-  ErrorChecker ( 1901000692u, isAppThread(), CV::NOT_APP_THREAD );
-  
-  // User feedback.
-  this->_update ( *_msgText, "Reading model stream" );
-
-  // Stream in the file
-  osgDB::ReaderWriter* rw = osgDB::Registry::instance()->getReaderWriterForExtension( _sinterFileType );
-  if(!rw){
-	  std::ostringstream out;
-    out << "Error: " << _sinterFileType << " plugin not available, streamed file input will fail.";
-    this->_update ( *_msgText, out.str() );
-    return;
-  }
-  osgDB::ReaderWriter::ReadResult rr = rw->readNode ( modelstream );
-  if(!rr.validNode()){
-	  std::ostringstream out;
-    out << "Error: Streamed input of node file failed, resulting node not vaild.";
-    this->_update ( *_msgText, out.str() );
-    return;
-  }
-  NodePtr node = rr.getNode();
-  
-  this->_replaceNode(node, name);
-  
-  // Signal user when done
-  this->_update ( *_msgText, "Done reading model stream" );
-}
-
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -2363,21 +1671,6 @@ void Application::_navigate()
   // Tell the vertical-input navigator to execute.
   if ( _navigatorV.valid() )
     (*_navigatorV)();
-
-#if defined (INV3RSION_NAV)
-  if( !_navigatorH.valid() && !_navigatorV.valid())
-  {
-    _invrNav->preFrame();
-    _navBranch->setMatrix(osg::Matrix(_invrNav->GetTransform()->mData));
-    
-#if defined (INV3RSION_COLLABORATE)
-    if( _controlAvatar == _localAvatar )
-    {
-      _sinterSendNavUpdate( _invrNav->GetTransform()->mData, false );
-    }
-#endif
-  }
-#endif
 }
 
 
@@ -2651,6 +1944,42 @@ void Application::rotationCenter ( const osg::Vec3 &rc )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Update the frame-time.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_updateFrameTime()
+{
+  ErrorChecker ( 1074146688, isAppThread(), CV::NOT_APP_THREAD );
+
+  // It's ok to have static variables because access to this 
+  // function only occurs in the application thread.
+  static double lastFrameTime ( 0 );
+
+  // Grab the last-time until it is non-zero.
+  if ( 0 == lastFrameTime )
+  {
+    lastFrameTime = this->_getElapsedTime();
+    return;
+  }
+  // Get the current frame-time.
+  double currentFrameTime ( this->_getElapsedTime() );
+
+  // Set the time interval.
+  _frameTime = currentFrameTime - lastFrameTime;
+
+#if 0
+  // Make sure it is not zero.
+  WarningChecker ( 1074200431u, _frameTime > 0, "Frame-time is zero" );
+#endif
+
+  // Save the current time.
+  lastFrameTime = currentFrameTime;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Update the frame-rate text.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2743,6 +2072,22 @@ void Application::_readUserPreferences()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+double Application::_getFrameTime() const
+{
+  ErrorChecker   ( 1074147408u, isAppThread(), CV::NOT_APP_THREAD );
+#if 0
+  WarningChecker ( 1076367925u, _frameTime > 0, "Frame-time is corrupt" );
+#endif
+  return _frameTime;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the frame-time.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 float Application::frameTime() const
 {
   return this->_getFrameTime();
@@ -2755,133 +2100,20 @@ float Application::frameTime() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-//void Application::_updateCursor()
-//{
-//  ErrorChecker ( 1074207542u, isAppThread(), CV::NOT_APP_THREAD );
-//
-//  // If we have a matrix functor...
-//  if ( _cursorMatrix.valid() )
-//  {
-//    // Update the internal matrix.
-//    (*_cursorMatrix)();
-//
-//    // Set the cursor's matrix.
-//    osg::Matrixf M;
-//    OsgTools::Convert::matrix ( _cursorMatrix->matrix(), M );
-//    _cursor->setMatrix ( M );
-//  }
-//}
-
 void Application::_updateCursor()
 {
-  ErrorChecker ( 1100576052u, isAppThread(), CV::NOT_APP_THREAD );
+  ErrorChecker ( 1074207542u, isAppThread(), CV::NOT_APP_THREAD );
 
-  OsgTools::Group::removeAllChildren( _cursor.get() );
-
-  osg::Matrixf oM;                                // OSG Matrix
-  Usul::Math::Matrix44f uM;                       // Usul Matrix
-  this->wandMatrix( uM );                         // get wand's matrix
-  OsgTools::Convert::matrix ( uM , oM );          // oM contains wand's Matrix
-
-  osg::Matrixf oRM;                               // OSG Matrix
-  Usul::Math::Matrix44f uRM;                      // Usul Matrix
-  this->wandRotation ( uRM );                     // get wand's rotational Matrix
-  OsgTools::Convert::matrix ( uRM, oRM );         // oRM contains wand's Rotational Orientation
-
-  float radius(1.0);                              // offset of each cursor from wand
-  osg::Matrixf oS;
-  oS.makeScale( 0.5, 0.5, 0.5 );                  // change size of each cursor
-  osg::Matrixf oTM;                               // oTM will hold an OSG Translation Matrix
-
-  //   0.5000,  0.8660,  0.0    );                // 1:00 position
-  //   0.7071,  0.7071,  0.0    );                // 1:30 position
-  //  -0.9659, -0.2588,  0.0    );                // 8:30 position
-  //  -0.5000, -0.8660,  0.0    );                // 7:00 position
-  //   0.5000, -0.8660,  0.0    );                // 5:00 position
-  //   0.9659, -0.2588,  0.0    );                // 3:30 position
-  //  -0.3536, -0.3536, -0.8660 );                // 7:30, low position
-
-  if ( _cursorActiveWithRot.get() != 0x0 )        // 1:00 position
+  // If we have a matrix functor...
+  if ( _cursorMatrix.valid() )
   {
-    oTM.makeTranslate(  0.5000*radius,  0.0000       , -0.8660*radius );
-    _cursorActiveWithRot->setMatrix( oS*oTM*oM );
-    _cursor->addChild( _cursorActiveWithRot.get() );
-  }
-  if ( _cursorActiveNoRot.get() != 0x0 )
-  {
-    oTM.makeTranslate(  0.5000*radius,  0.0000       , -0.8660*radius );
-    _cursorActiveNoRot->setMatrix( oS*osg::Matrixf::inverse( oRM )*oTM*oM );
-    _cursor->addChild( _cursorActiveNoRot.get() );
-  }
+    // Update the internal matrix.
+    (*_cursorMatrix)();
 
-
-  if ( _cursorRedWithRot.get() != 0x0 )           // 8:30 position
-  {
-    oTM.makeTranslate( -0.9659*radius,  0.0000       ,  0.2588*radius );
-    _cursorRedWithRot->setMatrix( oS*oTM*oM );
-    _cursor->addChild( _cursorRedWithRot.get() );
-  }
-  if ( _cursorRedNoRot.get() != 0x0 )
-  {
-    oTM.makeTranslate( -0.9659*radius,  0.0000       ,  0.2588*radius );
-    _cursorRedNoRot->setMatrix( oS*osg::Matrixf::inverse( oRM )*oTM*oM );
-    _cursor->addChild( _cursorRedNoRot.get() );
-  }
-
-
-  if ( _cursorYellowWithRot.get() != 0x0 )        // 7:00 position
-  {
-    oTM.makeTranslate( -0.5000*radius,  0.0000       ,  0.8660*radius );
-    _cursorYellowWithRot->setMatrix( oS*oTM*oM );
-    _cursor->addChild( _cursorYellowWithRot.get() );
-  }
-  if ( _cursorYellowNoRot.get() != 0x0 )
-  {
-    oTM.makeTranslate( -0.5000*radius,  0.0000       ,  0.8660*radius );
-    _cursorYellowNoRot->setMatrix( oS*osg::Matrixf::inverse( oRM )*oTM*oM );
-    _cursor->addChild( _cursorYellowNoRot.get() );
-  }
-  
-
-  if ( _cursorGreenWithRot.get() != 0x0 )         // 5:00 position
-  {
-    oTM.makeTranslate(  0.5000*radius,  0.0000       ,  0.8660*radius );
-    _cursorGreenWithRot->setMatrix( oS*oTM*oM );
-    _cursor->addChild( _cursorGreenWithRot.get() );
-  }
-  if ( _cursorGreenNoRot.get() != 0x0 )
-  {
-    oTM.makeTranslate(  0.5000*radius,  0.0000       ,  0.8660*radius );
-    _cursorGreenNoRot->setMatrix( oS*osg::Matrixf::inverse( oRM )*oTM*oM );
-    _cursor->addChild( _cursorGreenNoRot.get() );
-  }
-
-
-  if ( _cursorBlueWithRot.get() != 0x0 )          // 3:30 position
-  {
-    oTM.makeTranslate(  0.9659*radius,  0.0000       ,  0.2588*radius );
-    _cursorBlueWithRot->setMatrix( oS*oTM*oM );
-    _cursor->addChild( _cursorBlueWithRot.get() );
-  }
-  if ( _cursorBlueNoRot.get() != 0x0 )
-  {
-    oTM.makeTranslate(  0.9659*radius,  0.0000       ,  0.2588*radius );
-    _cursorBlueNoRot->setMatrix( oS*osg::Matrixf::inverse( oRM )*oTM*oM );
-    _cursor->addChild( _cursorBlueNoRot.get() );
-  }
-
-
-  if ( _cursorTriggerWithRot.get() != 0x0 )       // 7:30, low position
-  {
-    oTM.makeTranslate( -0.3536*radius, -0.8660*radius,  0.3536*radius );
-    _cursorTriggerWithRot->setMatrix( oS*oTM*oM );
-    _cursor->addChild( _cursorTriggerWithRot.get() );
-  }
-  if ( _cursorTriggerNoRot.get() != 0x0 )
-  {
-    oTM.makeTranslate( -0.3536*radius, -0.8660*radius,  0.3536*radius );
-    _cursorTriggerNoRot->setMatrix( oS*osg::Matrixf::inverse( oRM )*oTM*oM );
-    _cursor->addChild( _cursorTriggerNoRot.get() );
+    // Set the cursor's matrix.
+    osg::Matrixf M;
+    OsgTools::Convert::matrix ( _cursorMatrix->matrix(), M );
+    _cursor->setMatrix ( M );
   }
 }
 
@@ -2996,9 +2228,30 @@ void Application::_loadSimConfigs ( std::string dir )
   CV::Detail::LoadConfigFile loader;
 
   // Load the config files.
-  loader ( dir + "sim.base.jconf" );
-  loader ( dir + "sim.wand.mixin.jconf" );
-  loader ( dir + "sim.analog.mixin.jconf" );
+  loader ( dir + "sim.base.config" );
+  loader ( dir + "sim.wand.mixin.config" );
+  loader ( dir + "sim.analog.mixin.config" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the elapsed time since the program started (in seconds).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Application::_getElapsedTime() const
+{
+  ErrorChecker ( 1074354783, isAppThread(), CV::NOT_APP_THREAD );
+#if 0 // Lousy on linux.
+  static clock_t start ( ::clock() );
+  static double  CYCLES_TO_SECONDS ( 1.0 / double ( CLOCKS_PER_SEC ) );
+  clock_t current ( ::clock() );
+  double  elapsed ( double ( current - start ) * CYCLES_TO_SECONDS );
+  ::printf ( "%f %d %f %d\n", CYCLES_TO_SECONDS, start, elapsed, current );
+  return ( elapsed );
+#endif
+  return this->getFrameStamp()->getReferenceTime();
 }
 
 
@@ -3125,16 +2378,6 @@ void Application::_postProcessModelLoad ( const std::string &filename, osg::Node
     // Call the function.
     pp->postProcessModelLoad ( filename, model );
   }
-  
-  if ( _autoPlacement )
-    _doAutoPlacement(true);
-  
-  // reset this boolean because it may have been changed by stream loader
-  _autoPlacement = _prefs->autoPlacement();
-  
-#if defined (INV3RSION_NAV)
-  _syncInvrNav();
-#endif
 }
 
 
@@ -3170,15 +2413,7 @@ void Application::_setNearAndFarClippingPlanes()
 
   // Set both distances.
   _clipDist[0] = 0.1f;
-  _clipDist[1] = 5 * radius;
-
-  // Don't allow a far plane less that 40; it's just too small
-  if ( _clipDist[1] < 40 )
-  {
-    _clipDist[1] = 40.0f;
-  }
-  
-  // Set the clipping planes
+  _clipDist[1] = 4 * radius;
   vrj::Projection::setNearFar ( _clipDist[0], _clipDist[1] );
 }
 
@@ -3472,1472 +2707,4 @@ void Application::_updateSceneTool()
       }
     }
   }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Compare new & old node names for a match 
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::_matchNodeNames( const std::string &new_name, const std::string &old_name )
-{
-  // Make copies of the strings to compare.
-  std::string newname = new_name;
-  std::string oldname = old_name;
-  
-  // Convert names to lowercase because match is case-insensitive.
-  std::transform ( newname.begin(), newname.end(), newname.begin(), ::tolower );
-  std::transform ( oldname.begin(), oldname.end(), oldname.begin(), ::tolower );
-  
-  if( newname == oldname )
-  {
-    return true;
-  }
-  else
-  {
-    // If we don't find an exact match, we need to look for a looser match.
-    // New name_par_4.jt may match old name.par_4
-    std::string::size_type nsz = newname.rfind(std::string("_par"), newname.size() - 1);
-    std::string::size_type osz = oldname.rfind(std::string(".par"), oldname.size() - 1);
-    
-    // If that format seems to be the case, truncate the strings and re-test.
-    if( nsz != std::string::npos && osz != std::string::npos )
-    {
-      newname = newname.substr( 0, nsz );
-      oldname = oldname.substr( 0, osz );
-      
-      if( newname == oldname )
-      {
-        return true;
-      }
-    }
-    
-  }
-  
-  return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Recursively check if model node name matches any others in _models
-//  and returns the matching node/group as a node 
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::_recursiveMatchNodeName ( const std::string &name, osg::Node *model, Matcher *match )
-{
-  osg::Group *g;
-
-  // Check for match on node name
-  if ( _matchNodeNames( name, model->getName() ) )
-  {
-    // Only assign the model, the others are done by the caller
-    match->node = model;
-    match->parent = NULL;
-    match->modelNum = 0;
-    return true;
-  }
-  
-  // If model is a group, it may contain more nodes, so search
-  g = model->asGroup();
-  if ( g )
-  {
-    for ( unsigned int i=0; i<g->getNumChildren(); ++i )
-    {
-      if ( _recursiveMatchNodeName ( name, g->getChild(i), match ) )
-      {
-        // Only assign the parent if we just found the node
-        if ( match->parent == NULL )
-        {
-          match->parent = g;
-        }
-        
-        // Keep reassigning the modelNum, since we need the index from _models 
-        match->modelNum = i;
-
-        return true;
-      }
-    }
-  }
-  
-  return false;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Wipe out all models in the scene
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_deleteScene()
-{
-  // Loop through the _models deleting every child it can find until no more exist
-  // This needs to be done since OSG apparently moves the children back up when the parent
-  // is deleted
-  while ( _models->getNumChildren() > 0 )
-  {
-    for( unsigned int k=0; k<_models->getNumChildren(); k++){
-      _models->removeChild(k);
-    }
-  }
-
-  // Also delete all scribe effects
-  while ( _scribeBranch->getNumChildren() > 0 )
-  {
-    for(unsigned int k=0; k<_scribeBranch->getNumChildren(); k++){
-      _scribeBranch->removeChild(k);
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Delete temporary files, create temporary directory
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_initTmpDir()
-{
-#ifdef _MSC_VER
-  // Compile-time sanity check.
-  const unsigned int bufSize ( 16383 ); // 2^14 - 1
-  USUL_STATIC_ASSERT ( bufSize > MAX_PATH );
-
-  char directory[bufSize + 1];
-  DWORD result ( ::GetTempPath ( bufSize, directory ) );
-
-  std::string d ( result + "/CadViewer" );
-
-  ::_mkdir ( d.c_str() );
-
-  _tmpDirName = d;
-#else
-  // If directory name is empty, generate it
-  if ( _tmpDirName.size() == 0 )
-  {
-    _tmpDirName = "/tmp/cv-";
-    _tmpDirName += getenv( "USER" );
-    _tmpDirName += "/";
-  }
-  
-  struct stat fbuf;
-  std::string cmd;
-  
-  // if directory exists, delete it
-  if ( !::stat ( _tmpDirName.c_str(), &fbuf ) )
-  {
-    // Delete directory and all its subdirectories
-    cmd = "rm -r ";
-    cmd += _tmpDirName;
-    system ( cmd.c_str() );
-  }
-  
-  // Make the directory
-  cmd = "mkdir ";
-  cmd += _tmpDirName;
-  system ( cmd.c_str() );
-#endif
-}
-
-#if defined (USE_SINTERPOINT)
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Patch node with diff residing in stream nodeDiff
-//  On completion nodeDiff contains the new node ready for streamed input
-//  Note this makes use of tmp files and system calls for the "patch" command
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::_patchNodeWithDiff ( const std::string &nodeName, std::stringstream &nodeDiff )
-{
-  std::string tmpDiffFileName = _tmpDirName + "cvDiffFile.patch";
-  std::string tmpNodeFileName = _tmpDirName + _sinterNodeName + "." + _sinterFileType;
-  
-  // Open a temporary diffFile and drop the nodeDiff stream data in
-  std::ofstream diffFile;
-  diffFile.open ( tmpDiffFileName.c_str() );
-  if ( !diffFile.is_open() )
-  {
-    std::cout << "ERROR: diff file " << tmpDiffFileName << " failed to open" << std::endl;
-    return false;
-  }
-  diffFile << nodeDiff.rdbuf();
-  diffFile.close();
-
-  // Find the matching node based on name
-  Matcher match;
-  bool matched=false;
-  osg::Node *m = dynamic_cast<osg::Node*>( _models.get() );
-  if ( m )
-  {
-    if ( _recursiveMatchNodeName ( nodeName, m, &match ) )
-    {
-      // We found a match
-      matched=true;
-    }
-  }
-
-  if ( !matched )
-  {
-    std::cout << "No matching node found to patch with diff" << std::endl;
-    return false;
-  }
-
-  // Now patch the node file with the diff
-  std::cout << "Patching node file" << std::endl;
-  std::string cmd;
-  cmd = std::string("patch -l -u ") + tmpNodeFileName + std::string(" ") + tmpDiffFileName;
-  system(cmd.c_str());
-  
-  // Load patched file =====
-  
-  // reset this boolean
-  //_autoPlacement = _prefs->autoPlacement();
-  
-  // User feedback.
-  this->_update ( *_msgText, "Reading model from patched file" );
-
-  // Load in the file
-  osgDB::ReaderWriter* rw = osgDB::Registry::instance()->getReaderWriterForExtension( _sinterFileType );
-  if(!rw){
-	  std::ostringstream out;
-    out << "Error: " << _sinterFileType << " plugin not available, patched file load will fail.";
-    this->_update ( *_msgText, out.str() );
-    return false;
-  }
-  osgDB::ReaderWriter::ReadResult rr = rw->readNode ( tmpNodeFileName );
-  if(!rr.validNode()){
-	  std::ostringstream out;
-    out << "Error: read of patched file failed, resulting node not vaild.";
-    this->_update ( *_msgText, out.str() );
-    return false;
-  }
-  NodePtr node = rr.getNode();
-  
-  this->_replaceNode(node, nodeName);
-  
-  // Signal user when done
-  this->_update ( *_msgText, "Done reading patched model." );
-  
-  return true;
-}
-
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Find all animations and turn them on/off
-//  Also a recursive functin to find every animation possible under model
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_animationsOnOff ( bool onOff, osg::Node *model )
-{
-  osg::Group *g;
-  osg::NodeCallback *nc;
-  osg::AnimationPathCallback *apc;
-  //osg::AnimationPath *ap;
-
-  // Check to see if we have an animation path
-  nc = model->getUpdateCallback();
-  if (nc)
-  {
-    apc = dynamic_cast<osg::AnimationPathCallback*>(nc);
-    if (apc)
-    {
-      apc->setPause(!onOff);
-    }
-  }
-  
-  // If model is a group, it may contain more nodes, so search
-  g = model->asGroup();
-  if ( g ) {
-    for ( unsigned int i=0; i<g->getNumChildren(); ++i )
-    {
-      _animationsOnOff ( onOff, g->getChild(i) );
-    }
-  }
-  
-  return;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Step animation by num frames
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_animStep ( int num, osg::Node *model )
-{ 
-  _animModel = model;
-  
-  _animationsOnOff(true, model);
-  
-  if(num > 0)
-    _anim_steps = num;
-  
-  return;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Setup SinterPoint, if enabled
-//
-///////////////////////////////////////////////////////////////////////////////
-
-# if defined (USE_SINTERPOINT)
-
-void Application::_sinterPointInit()
-{
-  _sinterReceiver = NULL;
-
-  // If the machine name is the same as the writer...
-  const std::string writer = _prefs->sinterPointWriter();
-      std::cout << "Sinter Point Writer machine = " << writer.c_str() << std::endl;
-
-  // Make sure there is a writer-machine.
-  ErrorChecker ( 2519309141u, !writer.empty(), 
-    "ERROR: No machine specified as the Sinter Point Writer in user-preferences." );
-
-  // Now everyone initializes the SinterAppData
-  vpr::GUID newGuid("87f22bd9-61f7-4fa4-bf60-a19953f35d61");
-  _sinterAppData.init(newGuid, writer);
-
-  // The writer alone uses sinterpoint
-  if( _sinterAppData.isLocal() )
-  {
-    _sinterReceiver = new sinter::Receiver;
-    _sinterReceiver->SetType ( "CADVIEWER2" );
-    _sinterReceiver->SetVersion ( osgGetVersion() );
-    _sinterReceiver->SetMaxSend ( 1 );
-
-    // Connect to server
-    std::string server = _prefs->sinterPointServer();
-    int result = _sinterReceiver->Connect ( server.c_str() );
-    if (result!=0) 
-    {
-      std::cout << "ERROR in SinterPoint = " << result << std::endl;
-      std::cout << "SinterPoint receiver failed to connect to: " << server.c_str() << std::endl;
-      delete _sinterReceiver;
-      _sinterReceiver = NULL;
-    }
-    else
-    {
-      std::cout << "SinterPoint receiver connected successfully" << std::endl;
-    }
-  }
-  
-#if defined (INV3RSION_COLLABORATE)
-    _sinterCollabInit();
-#endif    
-
-  // Start out looking for commands
-  _sinterState = COMMAND;
-  _sinterDiffFlag = false;
-
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Save OSG stream to a temp file
-//
-///////////////////////////////////////////////////////////////////////////////
-
-
-void Application::_dumpStreamToFile()
-{
-  // Save model stream to file
-  std::string tmpNodeFileName = _tmpDirName + "sinterStream.txt";
-  std::ofstream nodeFile;
-  nodeFile.open ( tmpNodeFileName.c_str() );
-  if ( !nodeFile.is_open() )
-  {
-    std::cout << "ERROR: node file " << tmpNodeFileName << " failed to open" << std::endl;
-  }
-  else
-  {
-    _sinterStream.seekg(0);
-    nodeFile << _sinterStream.rdbuf();
-    nodeFile.close();
-  }
-}
-    
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Obtain a model across the network with SinterPoint - preFrame portion
-//
-///////////////////////////////////////////////////////////////////////////////
-
-
-void Application::_sinterReceiveData()
-{    
-  // sinter writer only: receive data
-  if( _sinterReceiver && _sinterAppData.isLocal() )
-  {
-    // clear the data buffer -- all processing should be done by the time we
-    // get here
-    _sinterAppData->_data.clear();
-
-    // The writer obtains the new osg file from Sinterpoint here and sends out
-    // application data for the other machines
-    int size;
-    bool binary=false;
-
-    while( (size = _sinterReceiver->Receive(0,binary)) > 0)
-    {
-      _sinterTmpString.clear();
-      _sinterTmpString.append(_sinterReceiver->Data(),size);
-      _sinterTmpString.resize(size);
-      _sinterAppData->_data.append(_sinterTmpString);
-    }
-
-    // process error codes from negative size
-    if(size < 0)
-    {
-      switch(size)
-      {
-        case -ETIMEDOUT:
-          break;
-        case -EPROTONOSUPPORT:
-          std::cout << "Error receiving data" << std::endl;
-          _dumpStreamToFile();
-          break;
-        default:
-          break;
-      }
-    }
-  }
-#if defined (INV3RSION_COLLABORATE)
-  _sinterCollabReceiveData();
-#endif
-}
-
-#endif
-
-#if defined (INV3RSION_COLLABORATE)
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize SinterPoint collaborative members
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_sinterCollabInit()
-{
-    _sinterCollabReceiver = NULL;
-    _sinterCollabSender = NULL;
-    
-    // If the machine name is the same as the writer...
-    const std::string writer = _prefs->sinterPointWriter();
-
-    // Make sure there is a writer-machine.
-    ErrorChecker ( 2519309141u, !writer.empty(), 
-    "ERROR: No machine specified as the Sinter Point Writer in user-preferences." );
-    
-    // Now everyone initializes the SinterAppData
-    vpr::GUID newGuid("26a02fb0-ea01-11da-8ad9-0800200c9a66");
-    _sinterCollabData.init(newGuid, writer);
-
-    // The writer alone uses sinterpoint
-    if( _sinterCollabData.isLocal() )
-    {
-      _sinterCollabReceiver = new sinter::Receiver;
-      _sinterCollabReceiver->SetType ( "CV-COLLAB" );
-      _sinterCollabReceiver->SetVersion ( osgGetVersion() );
-
-      // Connect to server
-      std::string server = _prefs->sinterPointServer();
-      int result = _sinterCollabReceiver->Connect ( server.c_str() );
-      if (result!=0) 
-      {
-        std::cout << "ERROR in SinterPoint = " << result << std::endl;
-        std::cout << "SinterPoint collab receiver failed to connect to: " << server.c_str() << std::endl;
-        delete _sinterCollabReceiver;
-        _sinterCollabReceiver = NULL;
-      }
-      else
-      {
-        std::cout << "SinterPoint receiver connected successfully" << std::endl;
-      }
-
-      _sinterCollabSender = new sinter::Sender;
-      _sinterCollabSender->SetType( "CV-COLLAB" );
-      _sinterCollabSender->SetVersion ( osgGetVersion() );
-
-      // Connect to server
-      result = _sinterCollabSender->Connect ( server.c_str() );
-      if (result!=0) 
-      {
-        std::cout << "ERROR in SinterPoint = " << result << std::endl;
-        std::cout << "SinterPoint collab sender failed to connect to: " << server.c_str() << std::endl;
-        delete _sinterCollabSender;
-        _sinterCollabSender = NULL;
-      }
-      else
-      {
-        std::cout << "SinterPoint sender connected successfully" << std::endl;
-      }
-    }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  SinterPoint send command for avatar & nav data
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_sinterSendCommand(std::string &cmd, bool cached)
-{
-  if( _sinterCollabSender && _sinterCollabData.isLocal() )
-  {
-    if(cmd[cmd.size()-1] != '\n')
-    {
-      std::string tmpString = cmd;
-      tmpString += "\n";
-      if(cached)
-        _sinterCollabSender->Send(tmpString.c_str());
-      else 
-        _sinterCollabSender->SendUnCached(tmpString.c_str());
-    }
-    else
-      _sinterCollabSender->Send(cmd.c_str());
-  }
-}
-
-void Application::_sinterCollabReceiveData()
-{
-  // sinter writer only: receive data
-  if( _sinterCollabReceiver && _sinterCollabData.isLocal() )
-  {
-    _sinterCollabData->_data.clear();
-
-    int size;
-
-    while( (size = _sinterCollabReceiver->Receive(0)) > 0)
-    {
-      _sinterTmpString.clear();
-      _sinterTmpString.append(_sinterCollabReceiver->Data(),size);
-      _sinterTmpString.resize(size);
-      _sinterCollabData->_data.append(_sinterTmpString);
-    }
-
-    // process error codes from negative size
-    if(size < 0)
-    {
-      switch(size)
-      {
-        case -ETIMEDOUT:
-          break;
-        case -EPROTONOSUPPORT:
-          std::cout << "Error receiving data" << std::endl;
-          break;
-        default:
-          break;
-      }
-    }
-  }
-}
-
-#endif
-
-#if (INV3RSION_NAV && INV3RSION_COLLABORATE)
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Construct and send a navigation update command
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_sinterSendNavUpdate( const float *matrix, const bool cached )
-{    
-  if( _controlAvatar == _localAvatar )
-  {
-    std::stringstream ss;
-
-    ss << "CV NAV_MATRIX =";
-    for(int i = 0; i < 16; i++)
-    {
-      ss << " " << matrix[i];
-    }
-    ss << std::endl;
-
-    std::string cmd = ss.str();
-    _sinterSendCommand( cmd, cached );
-  }
-}
-
-
-void  Application::_requestNavControl()
-{  
-  if(_localAvatar)
-  {
-    std::string cmd = "CV AVATAR_CONTROLLER = ";
-    cmd += _localAvatar->name;
-    _sinterSendCommand(cmd, true);
-  }
-}
-
-#endif
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  SinterPoint data processor -- active on all cluster nodes
-//
-///////////////////////////////////////////////////////////////////////////////
-
-# if defined (USE_SINTERPOINT)
-
-void Application::_sinterProcessData()
-{    
-  if( !_sinterAppData->_data.empty() )
-  {
-    // get size of the message we need to process
-    int size = _sinterAppData->_data.size();
-
-    int processed_size = 0;
-
-    while ( processed_size < size )
-    {         
-      // If we are in data receive mode, just keep grabbing data
-      if ( _sinterState == DATA )
-      {        
-        // Avoid the c_str() command in case we have binary data; pointer to beginning of _data is better
-        const char *data = &(_sinterAppData->_data)[0] + processed_size;
-        int data_size = size - processed_size;
-
-        // if necessary, reduce data size so we don't copy too much data into the stream
-        if ( (_sinterStreamSize + data_size) > _sinterDataSize )
-        {
-          data_size = _sinterDataSize - _sinterStreamSize;
-        }
-
-        // write the data to our stream
-        _sinterStream.write( data, data_size );
-        _sinterStreamSize += data_size;
-        _sinterState = DATA;
-
-        std::cout << "." << std::flush;
-
-        // Check to see if we are finished receiving data
-        if ( _sinterStreamSize == _sinterDataSize )
-        {
-          _sinterTime2 = _getClockTime();
-          std::cout << "\nOSG node receive completed" << std::endl;
-          std::cout << "Total comm time = " << _sinterTime2-_sinterTime1 << std::endl;
-          _sinterDataSize = 0;
-
-          // If we received a diff, patch the diff against the proper node file name
-          // If successful _sinterStream will contain the patched node file
-          if ( _sinterDiffFlag == true )
-          {
-            _patchNodeWithDiff ( _sinterNodeName, _sinterStream );
-            _sinterDiffFlag = false;
-          }
-          else
-          {
-            // Load the model into the scene
-            this->_streamModel ( _sinterStream, _sinterNodeName );   
-
-            // Save model stream to file for later diff if format is not binary
-            if(_sinterFileType != "ive")
-            {
-              std::string tmpNodeFileName = _tmpDirName + _sinterNodeName + "." + _sinterFileType;
-              std::ofstream nodeFile;
-              nodeFile.open ( tmpNodeFileName.c_str() );
-              if ( !nodeFile.is_open() )
-              {
-                std::cout << "ERROR: node file " << tmpNodeFileName << " failed to open" << std::endl;
-              }
-              else
-              {
-                _sinterStream.seekg(0);
-                nodeFile << _sinterStream.rdbuf();
-                nodeFile.close();
-              }
-            }
-          }
-
-          _sinterState = COMMAND;
-        }
-
-        processed_size += data_size;
-      }
-
-      // Otherwise parse for commands
-      else
-      {
-        std::string cmd;
-        int cmdStart = _sinterAppData->_data.find ( "CV ", processed_size );
-        int cmdEnd = _sinterAppData->_data.find ( "\n", cmdStart );
-
-        // Keep parsing until no more CV commands are found
-        if ( cmdStart != std::string::npos && cmdEnd != std::string::npos )
-        {
-          processed_size += cmdEnd - cmdStart + 1;
-          cmdStart += 3;
-          cmd.assign ( _sinterAppData->_data, cmdStart, cmdEnd-cmdStart );
-
-          //std::cout << "Got Command: " << cmd << std::endl;
-
-          // Get the node name
-          if ( cmd.find ( "NODE_NAME", 0 ) != std::string::npos )
-          {
-            _sinterNodeName = _getCmdValue(cmd);
-            // convert to lowercase to prevent problems with matching later
-            std::transform ( _sinterNodeName.begin(), _sinterNodeName.end(), _sinterNodeName.begin(), ::tolower );
-            std::cout << "Received node name = " << _sinterNodeName.c_str() << std::endl;
-          }
-
-          // Get the data type
-          else if ( cmd.find ( "FILE_TYPE", 0 ) != std::string::npos )
-          {
-            _sinterFileType = _getCmdValue(cmd);
-            std::cout << "Received file type = " << _sinterFileType.c_str() << std::endl;
-          }
-
-          // Get the node size
-          else if ( cmd.find ( "NODE_SIZE", 0 ) != std::string::npos )
-          {
-            std::stringstream ss;
-            ss.str(_getCmdValue(cmd));
-            ss >> _sinterDataSize;
-            std::cout << "Received node size = " << _sinterDataSize << std::endl;
-          }
-
-          // The next node data transfer will be a diff
-          else if ( cmd.find ( "NODE_DIFF", 0 ) != std::string::npos )
-          {
-            _sinterDiffFlag = true;
-            std::cout << "Next node file will be a diff for node: " << _sinterNodeName << std::endl;
-          }
-
-          // Enter receive data mode
-          else if ( cmd.find ( "NODE_DATA", 0 ) != std::string::npos )
-          {
-            if ( _sinterDataSize > 0 )
-            {
-              _sinterStream.clear();
-              _sinterStream.str("");
-              _sinterStreamSize = 0;
-              _sinterState = DATA;
-              std::cout << "Begin receive of osg node..." << std::endl;
-              _sinterTime1 = _getClockTime();
-            }
-            else
-            {
-              std::cout << "Data Size Zero; Not entering Data Receive Mode." << std::endl;
-            }
-          }
-
-          // Delete the whole scene
-          else if ( cmd.find ( "CLEARALL", 0 ) != std::string::npos )
-          {
-            std::cout << "Deleting all models in scene" << std::endl;
-            _deleteScene();
-            _initTmpDir();
-          }
-
-          else
-          {
-            std::cout << "Warning: Unrecognized CadViewer Command." << std::endl;
-          }
-
-        }
-        else
-        {
-          std::cout << "Warning: CadViewer Command Not Found" << std::endl;
-        }
-      }
-    }
-  }
-}
-
-#endif
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Navigation -- auto place & size model
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_doAutoPlacement( const bool replace_matrix )
-{  
-  // first remove any transforms to the model
-  osg::Matrixf idMatrix;
-  idMatrix.identity();
-  _models->setMatrix(idMatrix);
-  
-  // get _models bounding sphere and translate & scale accordingly
-  const osg::BoundingSphere &sphere = _models->getBound();
-
-  // center the models
-  osg::Matrixf autoPlaceXform;
-  osg::Matrixf tempMatrix;
-  
-  // scale model only, not grid
-  const float scale = _prefs->autoPlaceRadius() / sphere.radius();
-  tempMatrix.makeScale( scale, scale, scale );
-  _models->preMult( tempMatrix );
-    
-  // translate to origin first
-  const osg::Vec3 centertrans =  sphere.center() * -scale;
-  autoPlaceXform.makeTranslate( centertrans );
-  
-  // next apply rotation
-  Usul::Math::Matrix44f m;
-  m.makeRotation ( _prefs->autoRotationAngle(), _prefs->autoRotationVector() );
-  osg::Matrixf mm;
-  OsgTools::Convert::matrix (m, mm );
-  autoPlaceXform.postMult(mm);
-  
-  // next translate to auto-center position
-  const Preferences::Vec3f &ac = _prefs->autoPlaceCenter();
-  const osg::Vec3 actrans =  osg::Vec3 ( ac[0], ac[1], ac[2] );
-  tempMatrix.makeTranslate( actrans );
-  autoPlaceXform.postMult( tempMatrix );
-  
-  // either replace the nav matrix or multiply the current one
-  if( replace_matrix )
-    _navBranch->setMatrix( autoPlaceXform );
-  else
-    _navBranch->postMult( autoPlaceXform );
-
-#if defined (INV3RSION_NAV)
-  // not sure why this works without a pre-transform
-  // TODO: look into this
-/*  osg::Matrixf m1;
-  m1.makeTranslate( sphere.center() * -scale );
-  _invrNav->SetPreTransform(m1.ptr());*/
-
-  osg::Matrixf m2;
-  //m2.makeTranslate( actrans );
-  m2.makeTranslate( sphere.center() * -scale );
-  _invrNav->SetPostTransform(m2.ptr());
-
-#if (INV3RSION_NAV && INV3RSION_COLLABORATE)
-    const float *matptr = _invrNav->GetPostTransform();
-    std::stringstream ss;
-
-    ss << "CV NAV_POSTXFORM =";
-    for(int i = 0; i < 16; i++)
-    {
-      ss << " " << matptr[i];
-    }
-    ss << std::endl;
-
-    // ss << "CV NAV_MODEL_SCALE = " << scale << std::endl;
-
-    std::string cmd = ss.str();
-    _sinterSendCommand( cmd, true );
-#endif  
-  _syncInvrNav();
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Drawing -- draw extra geometry
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::draw()
-{
-  osgVRJ::Application::draw();   // base class draw method
-
-#if defined (INV3RSION_COLLABORATE)
-  if(!_avatars.empty())
-  {
-    glEnable(GL_DEPTH_TEST);
-    
-    for(unsigned int i = 0; i < _avatars.size(); i++)
-    {
-      if ((_avatars[i] != NULL) && (_avatars[i] != _localAvatar) &&
-          (_avatars[i]->avatar != NULL) && _avatars[i]->visible &&
-          (_avatars[i]->avatar->isReady()))
-      {
-        glPushMatrix();
-        
-        //Render mesh version
-        if ( !_avatars[i]->avatar->renderMesh(vjAvatar::DrawMesh) )
-           std::cout << "Error: Avatar " << i << " did not render" << std::endl;
-        
-        // Render controller icon
-        if( _avatars[i] == _controlAvatar )
-        {
-          CalBone* wrist_bone = _avatars[i]->avatar->getBone( "R_WRIST" );
-          const CalVector wrist_pos = wrist_bone->getTranslationAbsolute();
-                    
-          glEnable(GL_BLEND);
-          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-          glPushMatrix();          
-          glTranslatef(_avatars[i]->avatar->getPos()[0], 
-                       _avatars[i]->avatar->getPos()[1], 
-                       _avatars[i]->avatar->getPos()[2]);
-          glRotatef(_avatars[i]->bodyYaw, 0.0, 1.0, 0.0);
-          glTranslatef(-wrist_pos.x, wrist_pos.z, wrist_pos.y);
-          glScalef(0.35, 0.35, 0.35);
-          glColor4f(1.0, 0.0, 0.0, 0.45);
-          invr::draw::Sphere();
-          glPopMatrix();
-        }
-        
-        glPopMatrix();
-      }
-    }
-  }
-#endif
-
-#if defined (INV3RSION_NAV)
-  _invrNav->draw(); // Nav draw method
-#endif
-}
-
-#if defined (INV3RSION_NAV)
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Navigation -- set INVR nav matrix to current nav matrix
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_syncInvrNav()
-{
-  // set Nav transform to match matrix from model load
-  const double *matptr = _navBranch->getMatrix().ptr();
-  float matfloat[16];
-  for(int i = 0; i < 16; i++) { matfloat[i] = (float) matptr[i]; }  
-  _invrNav->SetTransform(matfloat);
-  
-#if defined (INV3RSION_COLLABORATE)
-  _sinterSendNavUpdate( _invrNav->GetTransform()->mData, true );
-#endif
-}
-
-#endif
-
-#if defined (INV3RSION_COLLABORATE)
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Send Command to add an avatar to the scene
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_sendAddAvatarCommand( const std::string &filename, const std::string &name )
-{
-  ErrorChecker ( 1067093696u, isAppThread(), CV::NOT_APP_THREAD );
-  
-  std::string cmd = "CV AVATAR_NEW = ";
-  cmd += filename;
-  cmd += " ";
-  cmd += name;
-  _sinterSendCommand(cmd, true); 
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add an avatar to the scene
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_addAvatar ( const std::string &filename, const std::string &name )
-{
-  ErrorChecker ( 1067093696u, isAppThread(), CV::NOT_APP_THREAD );
-  
-  if(!_avatarFactory)
-  {    
-    _avatarFactory = new vjAvatarFactory;
-    
-    //First, check that certain environment variables are set for data loading
-    char* data_dir = getenv( "AVATAR_DATA_DIR" );
-    if (data_dir == NULL)
-    {
-      std::cout << "Warning: Must set AVATAR_DATA_DIR environment to enable loading of avatars." << std::endl;
-    }
-    else
-    {
-      _avatarFactory->addPath( std::string( data_dir ) );
-    }
-  }
-  
-  std::cout << "Loading avatar config: " << filename << std::endl;
-  
-  //Add the avatar to the factory
-  if (!_avatarFactory->addAvatar( filename, name )) return;
-
-  // Create new avatar instantiation
-  vjAvatar* currentAvatar = _avatarFactory->newAvatar( name ) ;
-
-  //Set up position/orientation/scaling
-  currentAvatar->setWCS( gmtl::EulerAngleXYZf(gmtl::Math::deg2Rad(-90.0f),0,0) ) ; //Convert to Juggler coordinates
-  currentAvatar->setRot( gmtl::EulerAngleXYZf(0,0,0) );
-  currentAvatar->setPos( gmtl::Vec3f(0,0,0));
-  
-  // trigger the first animation
-  currentAvatar->triggerAnimationCycle("IDLE");
-  
-  AvatarData *currentData = new AvatarData( name, currentAvatar );
-  
-  if( name == _localAvatarName ) _localAvatar = currentData;
-  
-  _avatars.push_back(currentData);
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Load a local avatar from command-line
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_registerAvatar ( const std::string &filename )
-{  
-  // strip out anything before the filename
-  int pos = filename.rfind("/", filename.size());
-  
-  if(pos == std::string::npos) _localAvatarFileName = filename;
-  else _localAvatarFileName = filename.substr( pos + 1, filename.size() - pos );
-  
-  _localAvatarName = _prefs->userName();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Calculate values for avatar tracking
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_updateLocalAvatar()
-{
-  if(_localAvatar)
-  {  
-    AvatarData *avatar = _localAvatar;
-
-    //Get head data
-    gmtl::Matrix44f head_matrix;
-    head_matrix.set ( _headTracker->matrix().getData() );
-
-    // Get head position data for body position
-    avatar->bodyPos = gmtl::makeTrans<gmtl::Vec3f>(head_matrix);
-    avatar->bodyPos[1] = 0.0;
-
-    //Get the head yaw data
-    gmtl::Vec4f transZero(0.0, 0.0, 0.0, 1.0);
-    gmtl::Vec4f unit(1.0, 0.0, 0.0, 1.0);
-    gmtl::Matrix44f head_rot = head_matrix;    
-    gmtl::setTrans(head_rot, transZero);
-    gmtl::xform(transZero, head_rot, unit);
-    float head_yaw = gmtl::Math::rad2Deg( atan2f( -transZero[2], transZero[0] ) ) - avatar->bodyYaw;
-    
-    // filter out change of sign in the angle    
-    if( head_yaw > _prevHeadYaw + 300 )
-      _headYawOffset -= 360.0;    
-    else if( head_yaw < _prevHeadYaw - 300 )
-      _headYawOffset += 360.0; 
-    
-    _prevHeadYaw = head_yaw;
-    
-    head_yaw += _headYawOffset;
-    
-        
-    //Get the shoulder and hand data
-    //This is the position of the shoulder relative to the head position
-    gmtl::Vec3f shoulder_trans(0.8, -0.6, 0.0);
-    gmtl::Matrix44f shoulder_relative_pos = gmtl::makeTrans<gmtl::Matrix44f>( shoulder_trans );
-
-    //Rotate the shoulder_relative position as to the current yaw of the 
-    //body
-    gmtl::Matrix44f temp_rot = gmtl::make<gmtl::Matrix44f>( gmtl::EulerAngleXYZf(0.0f, gmtl::Math::deg2Rad(avatar->bodyYaw), 0.0f));
-
-    gmtl::preMult( shoulder_relative_pos, temp_rot );
-
-    gmtl::Vec3f head_trans = gmtl::makeTrans<gmtl::Vec3f>( head_matrix );
-
-    shoulder_trans = gmtl::makeTrans<gmtl::Vec3f>(shoulder_relative_pos);
-
-    gmtl::Vec3f shoulder_pos = head_trans + shoulder_trans;
-
-    // set the centering
-    float body_center_yaw = avatar->bodyYaw + head_yaw;
-
-    float yaw_rate = powf(fabs(avatar->bodyYaw - body_center_yaw), 1.5) * _bodyMaxYawRate;
-
-    //Rotate the body if it is not centered
-    if (avatar->bodyYaw > body_center_yaw)
-    {
-      avatar->bodyYaw -= yaw_rate;
-      if(avatar->bodyYaw < body_center_yaw) avatar->bodyYaw = body_center_yaw;
-    }
-    else
-    {
-      avatar->bodyYaw += yaw_rate;
-      if(avatar->bodyYaw > body_center_yaw) avatar->bodyYaw = body_center_yaw;
-    }
-
-    //Adjust the head's rotation for the body's current rotation   
-    //Figure how much to rotate the head_matrix (same as inverse of body rotation)
-    temp_rot = gmtl::make<gmtl::Matrix44f>( gmtl::EulerAngleXYZf(0.0f, gmtl::Math::deg2Rad(-avatar->bodyYaw), 0.0f));
-
-    gmtl::preMult(head_matrix, temp_rot) ;
-
-    //Get the head matrix to make a quaternion representation of it
-    //First extract the euler angles from the head matrix
-    gmtl::EulerAngleXYZf head_eulers = gmtl::make<gmtl::EulerAngleXYZf>( head_matrix );
-
-    avatar->headQuat = gmtl::make<gmtl::Quatf>( head_eulers );
-
-    //Convert to the head's coordinate system
-    gmtl::Quatf temp_quat = avatar->headQuat;
-    avatar->headQuat[0] = -temp_quat[1];
-    avatar->headQuat[1] = temp_quat[0];
-    avatar->headQuat[2] = -temp_quat[2];
-
-    //Find the hand position and rotation,.etc.
-    gmtl::Matrix44f hand_matrix;
-    hand_matrix.set ( _tracker->matrix().getData() );
-
-    //Rotate it the same as the current body yaw
-    gmtl::Vec3f hand_pos = gmtl::makeTrans<gmtl::Vec3f>( hand_matrix );
-
-    hand_pos -= shoulder_pos;
-
-    gmtl::Matrix44f hand_mat = gmtl::makeTrans<gmtl::Matrix44f>( hand_pos );
-
-    gmtl::preMult( hand_mat, temp_rot );
-    hand_pos = gmtl::makeTrans<gmtl::Vec3f>(hand_mat);
-
-    gmtl::normalize(hand_pos);
-
-    //Get the shortest arc quaternion from origin_vec to hand_vec
-    avatar->handQuat = gmtl::makeRot<gmtl::Quatf>( gmtl::Vec3f(1,0,0), hand_pos);
-
-    // transmit avatar data to SinterPoint server
-    if ( _avatarWaitCount == 0 )
-    {
-      std::stringstream ss;
-
-      ss << "CV AVATAR_BODY_YAW = " << avatar->name << " " << avatar->bodyYaw << std::endl;
-
-      ss << "CV AVATAR_BODY_POS = " << avatar->name << " " 
-         << avatar->bodyPos[0] << " " << avatar->bodyPos[1] << " " << avatar->bodyPos[2] << std::endl;
-
-      ss << "CV AVATAR_HEAD_QUAT = " << avatar->name << " " 
-         << avatar->headQuat[0] << " " << avatar->headQuat[1] << " " 
-         << avatar->headQuat[2] << " " << avatar->headQuat[3] << std::endl;
-
-      ss << "CV AVATAR_HAND_QUAT = " << avatar->name << " " 
-         << avatar->handQuat[0] << " " << avatar->handQuat[1] << " " 
-         << avatar->handQuat[2] << " " << avatar->handQuat[3] << std::endl;
-
-      std::string cmd = ss.str();
-      _sinterSendCommand( cmd, false );
-      _avatarWaitCount = _prefs->avatarWaitFrames();
-    }
-    else
-    {
-      _avatarWaitCount--;
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Per-frame update of avatars
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_updateAvatars()
-{
-  if(_avatars.empty()) return;
-  
-  double timeNow = _tracker->time();
-  double timeElapsed = timeNow - _avatarTime;
-  _avatarTime = timeNow;
-  
-  _updateLocalAvatar(); // update local data
-  
-  for (unsigned int i=0; i < _avatars.size(); i++)
-  {
-    if(_avatars[i]->visible)
-    {
-      _avatars[i]->avatar->updateAnimations(timeElapsed); 
-
-      //Rotate body based on the current body yaw
-      gmtl::EulerAngleXYZf body_rot = _avatars[i]->avatar->getRotXYZ();
-      body_rot[1] = gmtl::Math::deg2Rad(_avatars[i]->bodyYaw+180);
-      _avatars[i]->avatar->setRot( body_rot );
-
-      _avatars[i]->avatar->updateMove(timeElapsed);
-
-      // Translate to current head pos in X-Z
-      _avatars[i]->avatar->setPos( _avatars[i]->bodyPos );
-
-      CalBone* head_bone = _avatars[i]->avatar->getBone( "NECK" );
-      if (head_bone != NULL)
-      {
-        //Set the head's angle of rotation
-        head_bone->setCoreStateRecursive() ;
-        head_bone->setRotation( getCalQuat( _avatars[i]->headQuat ) ) ;
-        head_bone->calculateState();
-      }
-
-      //Get the right shoulder bone
-      CalBone* right_shoulder_bone = _avatars[i]->avatar->getBone( "R_SHOULDER" );
-      if (right_shoulder_bone != NULL)
-      {
-        right_shoulder_bone->setCoreStateRecursive() ;
-        right_shoulder_bone->setRotation( getCalQuat( _avatars[i]->handQuat ) ) ;
-        right_shoulder_bone->calculateState();
-      }
-
-      _avatars[i]->avatar->updateMesh(timeElapsed);
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Search avatar list for named avatar
-//
-///////////////////////////////////////////////////////////////////////////////
-
-int Application::_getAvatarIndexByName(std::string &name)
-{
-  if(_avatars.empty()) return -1;
-  
-  for ( int i = 0; i < _avatars.size(); i++ )
-  {
-    if( name == _avatars[i]->name )
-      return i;
-  }
-  return -1;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Process collaboration data from SinterPoint
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_sinterProcessCollabData()
-{    
-  if( !_sinterCollabData->_data.empty() )
-  {
-    // get size of the message we need to process
-    int size = _sinterCollabData->_data.size();
-
-    int processed_size = 0;
-
-    while ( processed_size < size )
-    {         
-      // parse for commands
-      std::string cmd;
-      int cmdStart = _sinterCollabData->_data.find ( "CV ", processed_size );
-      int cmdEnd = _sinterCollabData->_data.find ( "\n", cmdStart );
-
-      // Keep parsing until no more CV commands are found
-      if ( cmdStart != std::string::npos && cmdEnd != std::string::npos )
-      {
-        processed_size += cmdEnd - cmdStart + 1;
-        cmdStart += 3;
-        cmd.assign ( _sinterCollabData->_data, cmdStart, cmdEnd-cmdStart );
-
-        // Add an avatar
-        if ( cmd.find ( "AVATAR_NEW", 0 ) != std::string::npos )
-        {
-          std::string subcmd = _getCmdValue(cmd);
-          int pos = 0;
-          std::string filename = _getCmdToken(subcmd, " ", pos);
-          std::string name = _getCmdToken(subcmd, " ", pos);
-          std::cout << "Adding New Avatar: " << name << std::endl;
-          
-          int i = _getAvatarIndexByName(name);
-          if( i != -1 && _avatars[i] != _localAvatar )
-          {
-            _avatars[i]->visible = true;
-          }
-          else
-          {
-            _addAvatar ( filename, name );
-          }
-        }
-
-        else if ( cmd.find ( "AVATAR_DELETE", 0 ) != std::string::npos )
-        {
-          std::string name = _getCmdValue(cmd);
-          int i = _getAvatarIndexByName(name);
-          if( i != -1 && _avatars[i] != _localAvatar )
-          {
-            std::cout << "Removing Avatar: " << _avatars[i]->name << std::endl;
-            if(_controlAvatar == _avatars[i]) _controlAvatar = NULL;
-            _avatars[i]->visible = false;
-          }
-        }
-
-        else if( cmd.find ( "AVATAR_BODY_YAW", 0 ) != std::string::npos )
-        {
-          std::string subcmd = _getCmdValue(cmd);
-          int pos = 0;
-          std::string name = _getCmdToken(subcmd, " ", pos);
-          int i = _getAvatarIndexByName(name);
-          if( i != -1 && _avatars[i] != _localAvatar )
-          {
-            std::string yaw = _getCmdToken(subcmd, " ", pos);
-            _avatars[i]->bodyYaw = atof(yaw.c_str());
-          }
-        }
-
-        else if( cmd.find ( "AVATAR_BODY_POS", 0 ) != std::string::npos )
-        {
-          std::string subcmd = _getCmdValue(cmd);
-          int pos = 0;
-          std::string name = _getCmdToken(subcmd, " ", pos);
-          int i = _getAvatarIndexByName(name);
-          if( i != -1 && _avatars[i] != _localAvatar )
-          {
-            _avatars[i]->bodyPos[0] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            _avatars[i]->bodyPos[1] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            _avatars[i]->bodyPos[2] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-          }
-        }
-
-        else if( cmd.find ( "AVATAR_HEAD_QUAT", 0 ) != std::string::npos )
-        {
-          std::string subcmd = _getCmdValue(cmd);
-          int pos = 0;
-          std::string name = _getCmdToken(subcmd, " ", pos);
-          int i = _getAvatarIndexByName(name);
-          if( i != -1 && _avatars[i] != _localAvatar )
-          {
-            _avatars[i]->headQuat[0] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            _avatars[i]->headQuat[1] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            _avatars[i]->headQuat[2] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            _avatars[i]->headQuat[3] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-          }
-        }
-
-        else if( cmd.find ( "AVATAR_HAND_QUAT", 0 ) != std::string::npos )
-        {
-          std::string subcmd = _getCmdValue(cmd);
-          int pos = 0;
-          std::string name = _getCmdToken(subcmd, " ", pos);
-          int i = _getAvatarIndexByName(name);
-          if( i != -1 && _avatars[i] != _localAvatar )
-          {
-            _avatars[i]->handQuat[0] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            _avatars[i]->handQuat[1] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            _avatars[i]->handQuat[2] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            _avatars[i]->handQuat[3] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-          }
-        }
-
-        else if ( cmd.find ( "AVATAR_CONTROLLER", 0 ) != std::string::npos )
-        {
-          std::string name = _getCmdValue(cmd);
-          int i = _getAvatarIndexByName(name);
-          if( i != -1 )
-          {
-            if( _controlAvatar == _localAvatar )
-            {
-#if defined (INV3RSION_NAV)
-              _invrNav->SetMode(invr::nav::CAD::NO_NAV);
-#endif
-            }
-            _controlAvatar = _avatars[i];
-          }
-        }
-
-        else if ( cmd.find ( "AVATAR_CONTROL_RELEASE", 0 ) != std::string::npos )
-        {
-          _controlAvatar = NULL;
-        }
-
-#if defined (INV3RSION_NAV)
-
-        else if ( cmd.find ( "NAV_MATRIX", 0 ) != std::string::npos )
-        {
-          if( _controlAvatar != _localAvatar )
-          {
-            float matfloat[16];
-            std::string subcmd = _getCmdValue(cmd);
-            int pos = 0;
-            for(int i = 0; i < 16; i++)
-            {
-              matfloat[i] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            }
-
-            _invrNav->SetTransform(matfloat);
-          }
-        }
-
-        else if ( cmd.find ( "NAV_POSTXFORM", 0 ) != std::string::npos )
-        {
-          float matfloat[16];
-          std::string subcmd = _getCmdValue(cmd);
-          int pos = 0;
-          for(int i = 0; i < 16; i++)
-          {
-            matfloat[i] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-          }
-
-          _invrNav->SetPostTransform(matfloat);
-        }
-
-        else if ( cmd.find ( "NAV_MODEL_SCALE", 0 ) != std::string::npos )
-        {
-          std::string subcmd = _getCmdValue(cmd);
-          const float scale = atof( subcmd.c_str() );
-
-          osg::Matrixf tempMatrix;
-          tempMatrix.makeScale( scale, scale, scale );
-          _models->preMult( tempMatrix );
-        }
-
-#endif
-
-        else
-        {
-          std::cout << "Warning: Unrecognized CadViewer Collab Command." << std::endl;
-        }
-
-      }
-      else
-      {
-        std::cout << "Warning: CadViewer Collab Command Not Found" << std::endl;
-      }
-    }
-  }
-}
-
-#endif
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is this machine the head node?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::_isHeadNode() const
-{
-#ifdef _MSC_VER
-  return true;
-#else
-  return Usul::System::Host::name() == _prefs->headNodeMachineName();
-#endif
 }

@@ -20,8 +20,6 @@
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Exceptions/Thrower.h"
 
-#include <stdexcept>
-
 using namespace Threads;
 using namespace Threads::OT;
 
@@ -119,7 +117,7 @@ namespace Threads
 {
   namespace OT
   {
-    Usul::Threads::Mutex *newOpenThreadsMutex()
+    Usul::Threads::Mutex *newMutex()
     {
       return new Mutex();
     }

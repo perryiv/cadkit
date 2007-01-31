@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="Windows-1252"?>
+<?xml version="1.0" encoding = "Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
-	Name="lib: GSG Fox"
-	ProjectGUID="{963A1780-9B57-484A-85A8-60FC11F8889D}"
+	Version="7.00"
+	Name="Fox"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -23,7 +22,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../../,$(BOOST_ROOT_DIR),$(FOX_INC_DIR)"
+				AdditionalIncludeDirectories="../../,$(BOOST_ROOT_DIR),$(FOX_INCLUDE_DIR)"
 				PreprocessorDefinitions="COMPILING_GSG_FOX;FOXDLL;_USRDLL;WIN32;_DEBUG;_WINDOWS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -44,7 +43,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="foxdlld-1.3.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="foxd-1.1.lib odbc32.lib odbccp32.lib"
 				OutputFile="../../bin/gsg_fox_d.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -71,13 +70,7 @@
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
 				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -91,7 +84,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../../,$(BOOST_ROOT_DIR),$(FOX_INC_DIR)"
+				AdditionalIncludeDirectories="../../,$(BOOST_ROOT_DIR),$(FOX_INCLUDE_DIR)"
 				PreprocessorDefinitions="COMPILING_GSG_FOX;FOXDLL;_USRDLL;NDEBUG;WIN32;_WINDOWS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -112,7 +105,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="foxdll-1.3.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="fox-1.1.lib odbc32.lib odbccp32.lib"
 				OutputFile="../../bin/gsg_fox.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -138,17 +131,9 @@
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
 				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
-	<References>
-	</References>
 	<Files>
 		<Filter
 			Name="Precompiled"

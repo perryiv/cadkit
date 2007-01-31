@@ -19,7 +19,7 @@
 #include "Usul/Documents/Document.h"
 
 #include "Usul/Interfaces/IImage.h"
-#include "Usul/Interfaces/Fox/IFoxImage.h"
+#include "Usul/Interfaces/IFoxImage.h"
 
 #include "osg/Image"
 #include "osg/ref_ptr"

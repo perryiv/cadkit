@@ -25,6 +25,9 @@ using namespace VRV::Prefs;
 
 // Constructor
 Settings::Settings()  : BaseClass(),
+                        _numGridBlocks  ( 40, 40 ),
+                        _gridScale      ( 10, 10 ),
+                        _gridColor      ( 1, 1, 1, 1 ),
                         _zNear          ( 0.1f ),
                         _zScale         ( 2 ),
                         _ambientLight   ( 0.2f, 0.2f, 0.2f, 1.0f ),
@@ -46,13 +49,10 @@ Settings::Settings()  : BaseClass(),
                         _statusMatrix   (),
                         _menuHidesScene ( false ),
                         _statusVisible  ( false ),
-                        _statusBgColor  ( 0.6f, 0.6f, 0.6f, 1.0f ),
-                        _statusTxtColor ( 0.0f, 0.0f, 0.0f, 1.0f ),
                         _transSpeed     ( 0.05f ), // percent / second
                         _rotSpeed       ( 30 ),    // degrees / second
                         _scaleSpeed     ( 0.05f ),
-                        _selectColor    ( 1, 1, 0, 1 ),
-                        _autoPlacement  ( false )
+                        _selectColor    ( 1, 1, 0, 1 )
 {
   _menuMatrix.identity();
   _statusMatrix.identity();

@@ -27,19 +27,10 @@
 #include <map>
 #include <string>
 
-namespace Usul 
-{ 
-  namespace Interfaces 
-  { 
-    struct IDecimateTriangles; 
-    struct ISmoothTriangles;
-    struct ISubdivideTriangles;
-  } 
-}
-
 namespace osg { class Node; }
 
 /// I think that we need a Triangle Set interface...
+/// Also, I think we need a group interface ( translate, copy, change material, get meta data, etc ).
 
 class FastLoadTriangleSet : public Usul::Base::Referenced
 {
@@ -61,10 +52,7 @@ public:
   FastLoadTriangleSet();
 
   /// Add a group
-  void                    addGroup ( osg::Vec3Array *vertices, 
-                                     osg::Vec3Array *normalsT, 
-                                     osg::Vec3Array *normalsV, 
-                                     osg::DrawElementsUInt *indices );
+  void                    addGroup ( osg::Vec3Array *vertices, osg::Vec3Array *normals, osg::DrawElementsUInt *indices );
 
   unsigned int            numberOfGroups () const;
   Unknown*                getPrimitiveGroup ( unsigned int i );
@@ -75,21 +63,11 @@ public:
   /// Build the scene
   osg::Node*              buildScene ( const Options &opt, Unknown *caller );
 
-  /// Decimate
-  void                    decimate ( Usul::Interfaces::IDecimateTriangles* decimate, float reduction );
-
   /// Is the triangle set empty?
   bool                    empty() const;
 
   /// Update the bounding box.
   void                    updateBounds ( const osg::Vec3& vertex );
-
-  /// Smooth
-  void                    smooth ( Usul::Interfaces::ISmoothTriangles *smooth, unsigned int numIterations );
-
-  /// Subdivide
-  void                    subdivide ( Usul::Interfaces::ISubdivideTriangles *subdivide, unsigned int numIterations );
-
 protected:
 
   /// Use reference counting.
@@ -97,10 +75,8 @@ protected:
 
 private:
 
-  typedef std::vector< Group::ValidQueryPtr > Groups;
-
   osg::BoundingBox _bb;
-  Groups _groups;
+  std::vector< Group::ValidQueryPtr > _groups;
 };
 
 #endif // __FAST_LOAD_TRIANGLE_SET_H__

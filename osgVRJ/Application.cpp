@@ -1,58 +1,48 @@
 #include "osgVRJPrecompiled.h"
 #include "Application.h"
 
-#include "osg/LightModel"
-#include "osg/MatrixTransform"
+#include <osgUtil/RenderStage>
+#include <osgUtil/RenderBin>
+#include <osg/FrameStamp>
+#include <osg/LightModel>
+#include <osg/MatrixTransform>
+#include <osgUtil/UpdateVisitor>
 #include "osg/AlphaFunc"
 #include "osg/TexEnv"
 
-#include "vrj/Kernel/Kernel.h"
+#ifdef _OSG096_
+#include <osgUtil/DisplayListVisitor>
+#else
+#include <osgUtil/GLObjectsVisitor>
+#endif
+
+#include <vrj/Kernel/Kernel.h>
 #include "vrj/Draw/OGL/GlWindow.h"
 
 #include <stdexcept>
 
 using namespace osgVRJ;
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initializer list.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 #define CONSTRUCTOR_INITIALIZER_LIST\
-  _timer(),\
   _scene_data(0x0),\
+  _frame_stamp(new osg::FrameStamp),\
+  _init_visitor(0x0),\
+  _update_visitor(new osgUtil::UpdateVisitor),\
   _global_stateset(new osg::StateSet),\
   _scene_decorator(0x0),\
-  _framestamp( 0x0 ),\
-  _viewport ( 0x0 ),\
+  _viewport(0x0),\
   _background_color(0,0,0,1),\
   _context_in_sync(false),\
+  _frameNumber(0),\
   _initial_time(0.0),\
-  _frameStart ( 0.0 ), \
-  _frameTime  ( 1 ), \
-  _renderer()
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
+  _head_tracker(),\
+  _sceneview()
 
 Application::Application() : vrj::GlApp(),
   CONSTRUCTOR_INITIALIZER_LIST
 {
   this->_construct();
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
 
 Application::Application(vrj::Kernel* kern) : vrj::GlApp(kern),
   CONSTRUCTOR_INITIALIZER_LIST
@@ -75,13 +65,6 @@ namespace osgVRJ
   };
 };
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 Application::Application(const std::list<std::string>& configs) : vrj::GlApp(),
   CONSTRUCTOR_INITIALIZER_LIST
 {
@@ -98,23 +81,9 @@ void Application::_construct()
   osg::DisplaySettings::instance()->setMaxNumberOfGraphicsContexts ( 20 );
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Destructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 Application::~Application()
 {
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Run the application.
-//
-///////////////////////////////////////////////////////////////////////////////
 
 void Application::run()
 {
@@ -124,13 +93,7 @@ void Application::run()
   kernel->waitForKernelStop();
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  A method to autocenter, places the node in front of viewer
-//
-///////////////////////////////////////////////////////////////////////////////
-
+// a method to autocenter, places the node in front of viewer
 void Application::viewAll ( osg::MatrixTransform* node, osg::Matrix::value_type zScale )
 {
   // Get the bounding sphere of the group.
@@ -144,52 +107,62 @@ void Application::viewAll ( osg::MatrixTransform* node, osg::Matrix::value_type 
   node->postMult( matrix );
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called after the context is initalized.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void Application::contextInit()
 {
-  RendererPtr renderer ( new Renderer );
+  // Make a new state.
+  osg::ref_ptr<osg::State> state = new osg::State;
 
-  renderer->init();
+  // init visitor setup
+#ifdef _OSG096_
+  typedef osgUtil::DisplayListVisitor VisitorType;
+#else
+  typedef osgUtil::GLObjectsVisitor VisitorType;
+#endif
+
+  VisitorType::Mode dlvMode = VisitorType::COMPILE_STATE_ATTRIBUTES;
+#ifndef __sgi
+  dlvMode |= VisitorType::COMPILE_DISPLAY_LISTS;
+#endif
+
+  osg::ref_ptr<VisitorType> dlv = new VisitorType(dlvMode);
+  dlv->setState( state.get() );
+  dlv->setNodeMaskOverride( 0xffffffff );
+
+  // render stuff setup
+  osg::ref_ptr<osgUtil::RenderStage> rs = new osgUtil::RenderStage;
+  osg::ref_ptr<osgUtil::StateGraph> sg = new osgUtil::StateGraph;
+
+  // cull visitor setup
+  osg::ref_ptr<osgUtil::CullVisitor> cv = new osgUtil::CullVisitor;
+  cv->setRenderStage( rs.get() );
+  cv->setStateGraph( sg.get() );
+
+  osgUtil::SceneView* sv = new osgUtil::SceneView;
+  sv->setState( state.get() );
+  sv->setInitVisitor( dlv.get() );
+  sv->setCullVisitor( cv.get() );
+  sv->setRenderStage( rs.get() );
+  sv->setStateGraph( sg.get() );
 
   unsigned int unique_context_id = vrj::GlDrawManager::instance()->getCurrentContext();
-
-  renderer->uniqueID( unique_context_id );
+  sv->getState()->setContextID(unique_context_id);
 
   // allocates things if not already valid,
   // then assigns the sceneview instance the
   // same values as this class maintains
-  setUpSceneViewWithData( renderer.get() );
+  setUpSceneViewWithData(sv);
 
-  // Keep handle to framestamp.
-  _framestamp = renderer->framestamp();
-
-  // Keep handle to viewport.
-  _viewport = renderer->viewport();
-
-  (*_renderer) = renderer.get();
+  sv->init();
+  (*_sceneview) = sv;  
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called after the context is made current, but before the frame draws.
-//
-///////////////////////////////////////////////////////////////////////////////
 
 void Application::contextPreDraw()
 {
+  osgUtil::SceneView* sv = getContextSpecificSceneView();
+
   // if necessary, make data members sync up with the sceneview's data
   if(!_context_in_sync)
-  {
-    Renderer* renderer = _getContextSpecificSceneView();
-    setUpSceneViewWithData( renderer );
-  }
+    setUpSceneViewWithData(sv);
 }
 
 
@@ -242,85 +215,47 @@ namespace osgVRJ
 };
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Draw.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void Application::draw()
 {
   // For exception safety. Pushes attributes in constructor, pops them in destructor.
   Detail::OpenGlStackPushPop pushPop;
 
-  Renderer* renderer = _getContextSpecificSceneView();
-
+  osgUtil::SceneView* sv = getContextSpecificSceneView();
   vrj::GlDrawManager* mgr = vrj::GlDrawManager::instance();
   vprASSERT(mgr != NULL);
 
   // ? constantly adjust the viewport ?
-  osg::Viewport* vp = renderer->viewport();
-  setViewportByDrawManager( vp,mgr);
+  osg::Viewport* vp = sv->getViewport();
+  setViewportByDrawManager(sv->getViewport(),mgr);
 
   // constantly update the projection matrix
   vrj::GlUserData* userData = mgr->currentUserData();
   vrj::Projection* projection = userData->getProjection();
   vrj::Frustum frustum = projection->getFrustum();
-  
-  renderer->setFrustum ( frustum[vrj::Frustum::VJ_LEFT],
-				                 frustum[vrj::Frustum::VJ_RIGHT],
-				                 frustum[vrj::Frustum::VJ_BOTTOM],
-				                 frustum[vrj::Frustum::VJ_TOP],
-				                 frustum[vrj::Frustum::VJ_NEAR],
-				                 frustum[vrj::Frustum::VJ_FAR]);
+  sv->setProjectionMatrixAsFrustum(frustum[vrj::Frustum::VJ_LEFT],
+				   frustum[vrj::Frustum::VJ_RIGHT],
+				   frustum[vrj::Frustum::VJ_BOTTOM],
+				   frustum[vrj::Frustum::VJ_TOP],
+				   frustum[vrj::Frustum::VJ_NEAR],
+				   frustum[vrj::Frustum::VJ_FAR]);
 
   // constantly update the view matrix
   gmtl::Matrix44f proj_mat = projection->getViewMatrix();
 
   osg::ref_ptr<osg::RefMatrix> osg_proj_xform_mat= new osg::RefMatrix;
   osg_proj_xform_mat->set(proj_mat.mData);
-  
-  renderer->viewMatrix(*osg_proj_xform_mat);
+  sv->setViewMatrix(*osg_proj_xform_mat);
 
-  renderer->render();
-
-  /*double left, right, bottom, top, zNear, zFar;
-  renderer->getFrustum ( left, right, bottom, top, zNear, zFar );
-
-  if( left != frustum[vrj::Frustum::VJ_LEFT] )
-    std::cerr << "The left value of the projection matrix changed." << std::endl;
-	if ( right != frustum[vrj::Frustum::VJ_RIGHT] )
-    std::cerr << "The right value of the projection matrix changed." << std::endl;
-	if ( bottom != frustum[vrj::Frustum::VJ_BOTTOM] )
-    std::cerr << "The bottom value of the projection matrix changed." << std::endl;
-  if ( top != frustum[vrj::Frustum::VJ_TOP] )
-    std::cerr << "The top value of the projection matrix changed." << std::endl;
-  if ( zNear != frustum[vrj::Frustum::VJ_NEAR] )
-    std::cerr << "The near value of the projection matrix changed." << std::endl;
-	if ( zFar != frustum[vrj::Frustum::VJ_FAR] )
-    std::cerr << "The far value of the projection matrix changed." << std::endl;*/
+  sv->cull();
+  sv->draw();
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the scene view.
-//  Should only be called from a context-specific thread.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-OsgTools::Render::Renderer* Application::_getContextSpecificSceneView()
+// should only be called from a context-specific thread
+osgUtil::SceneView* Application::getContextSpecificSceneView()
 {
-  RendererPtr renderer = *(_renderer);
-  return renderer.get();
+  osg::ref_ptr<osgUtil::SceneView> sv = *(_sceneview);
+  return( sv.get() );
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the scene data.
-//
-///////////////////////////////////////////////////////////////////////////////
 
 osg::Node* Application::getSceneData()
 {
@@ -331,61 +266,42 @@ osg::Node* Application::getSceneData()
     return(_scene_data.get());
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the time elapsed since the start of the application.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 double Application::getTimeSinceStart()
 {
-  double time_since_start = _timer.delta_s( _initial_time, _timer.tick() );
-  return time_since_start;
+  return(_head_tracker->getTimeStamp().secd() - _initial_time);
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize the application.
-//
-///////////////////////////////////////////////////////////////////////////////
 
 void Application::init()
 {
-  _initial_time = _timer.tick();
+  _head_tracker.init("VJHead");
+  _initial_time = _head_tracker->getTimeStamp().secd();
 
   if(_scene_data.valid())
-    this->setSceneData(_scene_data.get());
+    setSceneData(_scene_data.get());
+
+  // frame stamp setup
+  _frame_stamp->setFrameNumber(0);
+  _frame_stamp->setReferenceTime(_initial_time);
+
+  // update visitor setup
+  _update_visitor->setFrameStamp(_frame_stamp.get());
+  _update_visitor->setTraversalNumber(_frame_stamp->getFrameNumber());
 
   // Also set up the global state-set.
   this->initGlobalStateSet();
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called before the frame.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void Application::preFrame()
 {
-  _frameStart = _timer.tick();
+  // advance the time value of the frame stamp
+  _frame_stamp->setFrameNumber(_frameNumber++);
+  _frame_stamp->setReferenceTime(getTimeSinceStart());
+
+  update();  // traverse the scene
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called when the frame is done.
-//
-///////////////////////////////////////////////////////////////////////////////
 
 void Application::postFrame()
 {
-  // Capture the frame time.
-  _frameTime = _timer.delta_s( _frameStart, _timer.tick() );
-
   if(!_context_in_sync)
     _context_in_sync = true;
 }
@@ -395,6 +311,10 @@ void Application::postFrame()
 // a context specific thread
 void Application::initGlobalStateSet()
 {
+  // update visitor setup
+  if(_update_visitor.valid())
+    _update_visitor->setFrameStamp(_frame_stamp.get());
+
   // global state set setup
   _global_stateset = new osg::StateSet;
   _global_stateset->setGlobalDefaults();
@@ -421,13 +341,6 @@ void Application::initGlobalStateSet()
   _context_in_sync = false;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the scene data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void Application::setSceneData(osg::Node* data)
 {
   if(_scene_data == data)
@@ -444,13 +357,6 @@ void Application::setSceneData(osg::Node* data)
   _context_in_sync = false;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the scene decorator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void Application::setSceneDecorator(osg::Group* decor)
 {
   if(_scene_decorator == decor) return;
@@ -465,44 +371,38 @@ void Application::setSceneDecorator(osg::Group* decor)
   _context_in_sync = false;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set up the scene view.
-//  Should only be called from a context-specific thread.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::setUpSceneViewWithData( Renderer* renderer )
+// should only be called from a context-specific thread
+void Application::setUpSceneViewWithData(osgUtil::SceneView* sv)
 {
   // apply the decorator concept when setting the
   // scene data for all the sceneviews
   if(_scene_decorator.valid())
-    renderer->scene (_scene_decorator.get());
+    sv->setSceneData(_scene_decorator.get());
 
   else if(_scene_data.valid())
-    renderer->scene (_scene_data.get());
+    sv->setSceneData(_scene_data.get());
 
   else
-    renderer->scene( 0x0 );
+    sv->setSceneData( 0 );
+
+  // take care of frame stamps
+  if(_frame_stamp.valid())
+    sv->setFrameStamp(_frame_stamp.get());
 
   // take care of global stateset
   if(_global_stateset.valid())
-    renderer->viewer()->setGlobalStateSet(_global_stateset.get());
+    sv->setGlobalStateSet(_global_stateset.get());
 
   // take care of background color
-  renderer->backgroundColor( _background_color );
+#ifdef _OSG096_
+  sv->setBackgroundColor(_background_color);
+#else
+  sv->setClearColor( _background_color );
+#endif
 
-  renderer->viewer()->setLightingMode(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
-  renderer->viewer()->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
+  sv->setLightingMode(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
+  sv->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the viewport.
-//
-///////////////////////////////////////////////////////////////////////////////
 
 void Application::setViewportByDrawManager(osg::Viewport* vp, vrj::GlDrawManager* mgr)
 {
@@ -521,12 +421,22 @@ void Application::setViewportByDrawManager(osg::Viewport* vp, vrj::GlDrawManager
   vp->setViewport(x,y,w,h);
 }
 
+void Application::update()
+{
+  if(_scene_data.valid() && _update_visitor.valid())
+    {
+      _update_visitor->reset();
+      _update_visitor->setFrameStamp(_frame_stamp.get());
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Quit the application.
-//
-///////////////////////////////////////////////////////////////////////////////
+      if(_frame_stamp.valid())
+	{
+	  _update_visitor->setTraversalNumber(_frame_stamp->getFrameNumber());
+	}
+
+      getSceneData()->accept(*_update_visitor.get());
+      getSceneData()->getBound();
+    }
+}
 
 void Application::quit()
 {
@@ -566,40 +476,3 @@ bool Application::normalize() const
   const osg::StateSet *ss = this->getGlobalStateSet();
   return ( ( ss && osg::StateAttribute::ON == ss->getMode ( GL_NORMALIZE ) ) ? true : false );
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the frame stamp.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::FrameStamp* Application::getFrameStamp()
-{
-  return _framestamp.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the frame stamp.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const osg::FrameStamp* Application::getFrameStamp() const
-{
-  return _framestamp.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the frame-time.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double Application::_getFrameTime() const
-{
-  return _frameTime;
-}
-

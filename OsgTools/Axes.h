@@ -32,7 +32,7 @@ public:
 
   Axes();
 
-  osg::Node*          box_graphic       ( const osg::Vec4& color ) const;
+  osg::Geode*         box_graphic       ( const osg::Vec4& color ) const;
   osg::Group*         cartesian_graphic ( const osg::Vec4& color, const osg::Quat& quat = osg::Quat() ) const;
   osg::Group*         torus_graphic     ( const osg::Vec4& color, const osg::Quat& quat = osg::Quat() ) const;
 

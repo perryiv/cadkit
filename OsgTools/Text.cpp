@@ -14,8 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OsgTools/Text.h"
-
-#include "Usul/Errors/Checker.h"
+#include "OsgTools/ErrorChecker.h"
 
 #include "osg/Geode"
 #include "osg/Projection"
@@ -24,8 +23,6 @@
 #include "osgText/Text"
 
 using namespace OsgTools;
-
-typedef Usul::Errors::Checker ErrorChecker;
 
 
 ///////////////////////////////////////////////////////////////////////////////

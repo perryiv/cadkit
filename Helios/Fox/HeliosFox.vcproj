@@ -74,7 +74,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /PROFILE"
-				AdditionalDependencies="foxdll-1.6.lib osg.lib osgDB.lib"
+				AdditionalDependencies="foxdll-1.4.lib osg.lib osgDB.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/helios.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -107,7 +107,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy %CADKIT_ROOT_DIR%\Helios\Images\*.* %CADKIT_ROOT_DIR%\bin\icons /f /i /k /y /c"
+				CommandLine="xcopy /y %CADKIT_ROOT_DIR%\OsgFox\Images\*.* %CADKIT_ROOT_DIR%\bin\icons"
 			/>
 		</Configuration>
 		<Configuration
@@ -171,7 +171,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /PROFILE"
-				AdditionalDependencies="foxdlld-1.6.lib osgd.lib osgDBd.lib"
+				AdditionalDependencies="foxdlld-1.4.lib osgd.lib osgDBd.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/helios_d.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -205,7 +205,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy %CADKIT_ROOT_DIR%\Helios\Images\*.* %CADKIT_ROOT_DIR%\bin\icons /f /i /k /y /c"
+				CommandLine="xcopy /y %CADKIT_ROOT_DIR%\OsgFox\Images\*.* %CADKIT_ROOT_DIR%\bin\icons"
 			/>
 		</Configuration>
 	</Configurations>

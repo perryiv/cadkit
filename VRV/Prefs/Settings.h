@@ -25,25 +25,12 @@
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Matrix44.h"
-#include "Usul/Math/Absolute.h"
 
 #include <string>
-#include <vector>
+
 
 namespace VRV {
 namespace Prefs {
-
-class Grids
-{
-  public:
-  Usul::Math::Vec2ui _numGridBlocks;
-  Usul::Math::Vec2f _gridScale;
-  Usul::Math::Vec4f _gridColor;
-  Usul::Math::Vec4f _gridFillColor;
-  float _gridRotationAngleRad;
-  Usul::Math::Vec3f _gridRotationVector;
-  bool _offsetGrid;
-};
 
 
 class VRV_PREFS_EXPORT Settings : public Usul::Base::Referenced
@@ -68,24 +55,15 @@ public:
   // Read the user-settings file.
   void                  read ( const std::string &filename );
 
-  // Set/get the grid properties.
-  int                   numGrids() { return _grids.size(); }
-  void                  addGrid() { _grids.push_back(Grids()); }
-  const Color &         gridColor ( int i ) const { return _grids[i]._gridColor; }
-  void                  gridColor (const Color &c ) { _grids[_grids.size()-1]._gridColor = c; }
-  const Color &         gridFillColor ( int i ) const { return _grids[i]._gridFillColor; }
-  void                  gridFillColor (const Color &c ) { _grids[_grids.size()-1]._gridFillColor = c; }
-  const Vec2f &         gridScale ( int i ) const { return _grids[i]._gridScale; }
-  void                  gridScale ( const Vec2f & s ) { _grids[_grids.size()-1]._gridScale = s; }
-  const Vec2ui &        numGridBlocks ( int i ) const { return _grids[i]._numGridBlocks; }
-  void                  numGridBlocks ( const Vec2ui &n ) { _grids[_grids.size()-1]._numGridBlocks = n; }
-  float                 gridRotationAngleRad ( int i ) { return _grids[i]._gridRotationAngleRad; }
-  void                  gridRotationAngleRad ( float a ) { _grids[_grids.size()-1]._gridRotationAngleRad = a; }
-  const Vec3f &         gridRotationVector ( int i ) { return _grids[i]._gridRotationVector; }
-  void                  gridRotationVector ( Vec3f v ) { _grids[_grids.size()-1]._gridRotationVector = v; }
-  bool                  offsetGrid( int i ) { return _grids[i]._offsetGrid; }
-  void                  offsetGrid( bool b ) { _grids[_grids.size()-1]._offsetGrid = b; }
-  
+  // Set/get the properties.
+  const Color &         gridColor() const { return _gridColor; }
+  void                  gridColor ( const Color &c ) { _gridColor = c; }
+  void                  gridColor ( float r, float g, float b, float a ) { _gridColor.set ( r, g, b, a ); }
+  const Vec2f &         gridScale() const { return _gridScale; }
+  void                  gridScale ( const Vec2f & s ) { _gridScale = s; }
+  const Vec2ui &        numGridBlocks() const { return _numGridBlocks; }
+  void                  numGridBlocks ( const Vec2ui &n ) { _numGridBlocks = n; }
+
   // Clipping plane distances.
   float                 nearClippingDistance() const { return _zNear; }
   void                  nearClippingDistance ( float zNear ) { _zNear = zNear; }
@@ -97,8 +75,8 @@ public:
   void                  viewAllScaleZ ( float zScale ) { _zScale = zScale; }
 
   // Get/set the lighting properties.
-  const Vec4f &         lightPosition() const         { return _lightPos; }
-  void                  lightPosition(const Vec4f& p) { _lightPos = p; }
+  const Vec4f &         lightPosition() const { return _lightPos; }
+  void                  lightPosition( const Vec4f& p ) { _lightPos; }
   const Color &         ambientLightColor() const { return _ambientLight; }
   void                  ambientLightColor ( const Vec4f &c ) { _ambientLight = c; }
   const Color &         diffuseLightColor() const { return _diffuseLight; }
@@ -116,11 +94,6 @@ public:
   // Set/get the machine that will write files.
   const std::string &   fileWriterMachineName() const { return _writer; }
   void                  fileWriterMachineName ( const std::string &writer ) { _writer = writer; }
-
-  // Set/get the machine that is the head node.
-  const std::string &   headNodeMachineName() const { return _headNode; }
-  void                  headNodeMachineName ( const std::string &head ) { _headNode = head; }
-  
 
   // Set/get the global-normalization flag.
   bool                  normalizeVertexNormalsGlobal() const { return _normGlobal; }
@@ -168,14 +141,6 @@ public:
   bool                  statusBarVisibleAtStartup() const { return _statusVisible; }
   void                  statusBarVisibleAtStartup ( bool state ) { _statusVisible = state; }
 
-  // Set/get the status bar colors
-  const Color&          statusBgColor () const { return _statusBgColor; }
-  void                  statusBgColor ( const Color &c ) { _statusBgColor = c; }
-  void                  statusBgColor ( float r, float g, float b, float a ) { _statusBgColor.set ( r, g, b, a ); }
-  const Color&          statusTxtColor () const {return _statusTxtColor; }
-  void                  statusTxtColor ( const Color &c ) { _statusTxtColor = c; }
-  void                  statusTxtColor ( float r, float g, float b, float a ) { _statusTxtColor.set ( r, g, b, a ); }
-
   // Set/get the relative translation speed.
   float                 translationSpeed() const { return _transSpeed; }
   void                  translationSpeed ( float s ) { _transSpeed = s; }
@@ -193,52 +158,6 @@ public:
   void                  selectionColor ( const Color &c ) { _selectColor = c; }
   void                  selectionColor ( float r, float g, float b, float a ) { _selectColor.set ( r, g, b, a ); }
 
-  // Set/get the sinterpoint specific information
-  void                  sinterPointServer ( std::string s ) { _sinterServer = s; }
-  const std::string     sinterPointServer() { return _sinterServer; }
-  void                  sinterPointWriter ( std::string s ) { _sinterWriter = s; }
-  const std::string     sinterPointWriter() { return _sinterWriter; }
-  void                  sinterPointTmpFile ( std::string s ) { _sinterTmpFile = s; }
-  const std::string     sinterPointTmpFile() { return _sinterTmpFile; }
-  
-  // Set/get scribe drawing related settings
-  const Color &         scribeColor () const { return _scribeColor; }
-  void                  scribeColor (const Color &c ) { _scribeColor = c; }
-  float                 scribeWidth() const { return _scribeWidth; }
-  void                  scribeWidth ( float w ) { _scribeWidth = w; }  
-  
-  // Set/get auto-placement settings
-  bool                  autoPlacement() const { return _autoPlacement; }
-  void                  autoPlacement ( bool state ) { _autoPlacement = state; }
-  const Vec3f &         autoPlaceCenter () { return _autoPlaceCenter; }
-  void                  autoPlaceCenter ( Vec3f v ) { _autoPlaceCenter = v; }
-  float                 autoPlaceRadius () { return _autoPlaceRadius; }
-  void                  autoPlaceRadius ( float r ) { _autoPlaceRadius = r; }
-  float                 autoRotationAngle () { return _autoRotationAngle; }
-  void                  autoRotationAngle ( float r ) { _autoRotationAngle = r; }
-  const Vec3f &         autoRotationVector () { return _autoRotationVector; }
-  void                  autoRotationVector ( Vec3f v ) { _autoRotationVector = v; }
-  
-  // Set/get INVR navigation settings
-  bool                  invertRotation() const { return _invertRotation; }
-  void                  invertRotation ( bool state ) { _invertRotation = state; }
-  bool                  newRotation() const { return _newRotation; }
-  void                  newRotation ( bool state ) { _newRotation = state; }
-  float                 acceleration() const { return _acceleration; }
-  void                  acceleration ( float a ) { _acceleration = a; }
-  const Vec4f &         iconColor() const         { return _iconColor; }
-  void                  iconColor(const Vec4f& c) { _iconColor = c; }
-  float                 iconSize() const { return _iconSize; }
-  void                  iconSize ( float s ) { _iconSize = s; }
-  
-  // Set/get user settings
-  const std::string    userName() const { return _userName; }
-  void                 userName( std::string s ) { _userName = s; }
-  
-  // Set/get avatar settings
-  int         avatarWaitFrames() const { return _avatarWaitFrames; }
-  void        avatarWaitFrames( int w ) {  _avatarWaitFrames = w; }
-  
 protected:
 
   // Use reference counting.
@@ -250,7 +169,9 @@ private:
   Settings ( const Settings & );
   Settings &operator = ( const Settings & );
 
-  std::vector<Grids> _grids;
+  Vec2ui _numGridBlocks;
+  Vec2f _gridScale;
+  Color _gridColor;
   float _zNear;
   float _zScale;
   Color _ambientLight;
@@ -260,7 +181,6 @@ private:
   Vec4f _lightPos;
   Color _background;
   std::string _writer;
-  std::string _headNode;
   bool _normGlobal;
   bool _normModels;
   Matrix _menuMatrix;
@@ -273,29 +193,10 @@ private:
   Matrix _statusMatrix;
   bool _menuHidesScene;
   bool _statusVisible;
-  Color _statusBgColor;
-  Color _statusTxtColor;
   float _transSpeed;
   float _rotSpeed;
   float _scaleSpeed;
   Color _selectColor;
-  std::string _sinterServer;
-  std::string _sinterWriter;
-  std::string _sinterTmpFile;
-  Vec4f _scribeColor;
-  float _scribeWidth;
-  bool _autoPlacement;
-  Vec3f _autoPlaceCenter;
-  float _autoPlaceRadius;
-  bool _invertRotation;
-  bool _newRotation;
-  float _acceleration;
-  Vec4f _iconColor;
-  float _iconSize;
-  float _autoRotationAngle;
-  Vec3f _autoRotationVector;
-  std::string _userName;
-  int _avatarWaitFrames;
 };
 
 

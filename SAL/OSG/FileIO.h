@@ -17,10 +17,9 @@
 #define _OSG_SAL_FILE_IO_CLASS_H_
 
 #include "SAL/OSG/CompileGuard.h"
-#include "SAL/Interfaces/IRead.h"
-#include "SAL/Interfaces/IWrite.h"
-#include "SAL/Interfaces/INode.h"
 
+#include "Usul/Interfaces/IRead.h"
+#include "Usul/Interfaces/IWrite.h"
 #include "Usul/Base/Referenced.h"
 
 namespace osg { class Referenced; class Node; };
@@ -31,8 +30,8 @@ namespace OSG {
 
 
 class FileIO : public Usul::Base::Referenced,
-               public SAL::Interfaces::IRead,
-               public SAL::Interfaces::IWrite
+               public Usul::Interfaces::IRead,
+               public Usul::Interfaces::IWrite
 {
 public:
 
@@ -69,7 +68,7 @@ protected:
   /////////////////////////////////////////////////////////////////////////////
 
   /// Read the scene from file.
-  virtual Interfaces::INode * readNodeFile ( const std::string &filename ) const;
+  virtual Unknown *   read ( const std::string &filename, Unknown *caller );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -78,7 +77,7 @@ protected:
   /////////////////////////////////////////////////////////////////////////////
 
   /// Write the scene to file.
-  virtual void    writeNodeFile ( const std::string &filename, Interfaces::INode *node ) const;
+  virtual void        write ( const std::string &filename, Unknown *data, Unknown *caller );
 };
 
 

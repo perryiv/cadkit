@@ -166,7 +166,6 @@ public:
     NODE_FINISH
   };
 
-
   /////////////////////////////////////////////////////////////////////////////
   //
   //  Add a callback to be called when the given hierarchy is current.
@@ -342,7 +341,7 @@ protected:
     {
       cppdom::NodePtr &node = *i;
       ErrorPolicy ( 1071119099, 0x0 != node.get() );
-      if ( cppdom::Node::xml_nt_cdata != node->getType() )
+      if ( cppdom::xml_nt_cdata != node->getType() )
         this->_traverse ( ch, *node );
     }
 

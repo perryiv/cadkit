@@ -80,7 +80,7 @@ osg::Node* GFX::traverse(const Menu* menu,float mwidth)
           else  // send a NULL-like value when @ index=0
             previous = menu->end();
 
-          osg::Vec3 move = this->calculate_move(menu,iter->get(), ( previous == menu->end() ? 0x0 : previous->get() ),
+          osg::Vec3 move = this->calculate_move(menu,iter->get(),previous->get(),
             index,mwidth,lwidth,xaccum,yaccum);
 
           // add (and position) the new graphic

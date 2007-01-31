@@ -22,9 +22,9 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Interfaces/GUI/IGUIDelegate.h"
-#include "Usul/Interfaces/GUI/IUpdateGUI.h"
+#include "Usul/Interfaces/IGUIDelegate.h"
 #include "Usul/Interfaces/IHandleActivatingDocument.h"
+#include "Usul/Interfaces/IUpdateGUI.h"
 #include "Usul/Interfaces/IGetLoops.h"
 #include "Usul/Types/Types.h"
 #include "Usul/Math/Vector3.h"
@@ -59,6 +59,8 @@ public:
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef OsgTools::Triangles::Loop Loop;
   typedef Usul::Interfaces::IGetLoops::Loops Loops;
+/** MIKE **/
+  typedef Usul::Math::Vector3<Usul::Types::Int64> Vec3l;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( TriangleDelegateComponent );
@@ -86,8 +88,6 @@ public:
     ID_TOGGLE_GROUP,
     ID_HIDE_GROUPS,
     ID_SHOW_GROUPS,
-    ID_HIDE_ALL_GROUPS,
-    ID_SHOW_ALL_GROUPS,
     ID_GROUP_TRANSPARENCY,
     ID_LAST
   };
@@ -110,8 +110,6 @@ public:
   long                      onCommandToggleGroup       ( FX::FXObject *, FX::FXSelector, void * );
   long                      onCommandHideGroups        ( FX::FXObject *, FX::FXSelector, void * );
   long                      onCommandShowGroups        ( FX::FXObject *, FX::FXSelector, void * );
-  long                      onCommandHideAllGroups     ( FX::FXObject *, FX::FXSelector, void * );
-  long                      onCommandShowAllGroups     ( FX::FXObject *, FX::FXSelector, void * );
   long                      onCommandGroupTransparency ( FX::FXObject *, FX::FXSelector, void * );
 
   /// Update message maps.

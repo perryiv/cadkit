@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Fox/Views/LightEditor.h"
+#include "OsgFox/Views/LightEditor.h"
 
 #include "Usul/Cast/Cast.h"
 
@@ -27,7 +27,7 @@
 #include "osg/Geode"
 #include "osg/ShapeDrawable"
 
-using namespace Helios::Views;
+using namespace OsgFox::Views;
 
 
 ///////////////////////////////////////////////////////////////////////////////

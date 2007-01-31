@@ -32,7 +32,7 @@ class GSG_FOX_EXPORT Context : public GlContext
 {
 public:
 
-  GSG_DECLARE_REFERENCED ( Context );
+  GSG_DECLARE_CLONE ( Context );
   GSG_DECLARE_LOCAL_TYPEDEFS ( Context, GlContext );
 
   Context ( FXGLCanvas *canvas );

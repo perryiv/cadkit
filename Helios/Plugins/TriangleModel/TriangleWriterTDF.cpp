@@ -19,7 +19,7 @@
 #include "OsgTools/Triangles/Triangle.h"
 
 #include "Usul/File/Temp.h"
-#include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/IProgressBar.h"
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Policies/Update.h"
 #include "Usul/IO/Writer.h"

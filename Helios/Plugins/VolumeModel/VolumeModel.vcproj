@@ -4,7 +4,6 @@
 	Version="8.00"
 	Name="plug: Volume Model"
 	ProjectGUID="{77777D5F-CBD8-4F03-B415-181EB37F0A1D}"
-	RootNamespace="plug: Volume Model"
 	>
 	<Platforms>
 		<Platform
@@ -46,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../;../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);"
+				AdditionalIncludeDirectories="../../../;../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(FOX_INC_DIR);"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_VOLUME_MODEL;"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"

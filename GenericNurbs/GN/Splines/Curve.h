@@ -36,12 +36,14 @@ public:
   typedef ConfigType_                                ConfigType;
   typedef Curve < ConfigType >                       ThisType;
   typedef Spline < ConfigType >                      BaseClass;
-  typedef typename BaseClass::SizeType               SizeType;
-  typedef typename BaseClass::SizeContainer          SizeContainer;
-  typedef typename BaseClass::IndependentType        IndependentType;
-  typedef typename BaseClass::IndependentArgument    IndependentArgument;
-  typedef typename BaseClass::DependentType          DependentType;
-  typedef typename BaseClass::DependentContainer     DependentContainer;
+  typedef typename BaseClass::UIntType               UIntType;
+  typedef typename BaseClass::UIntContainer          UIntContainer;
+  typedef typename BaseClass::KnotType               KnotType;
+  typedef typename BaseClass::KnotVectorSizeType     KnotVectorSizeType;
+  typedef typename BaseClass::KnotArgument           KnotArgument;
+  typedef typename BaseClass::ControlPointType       ControlPointType;
+  typedef typename BaseClass::ControlPointContainer  ControlPointContainer;
+  typedef typename BaseClass::UIntContainerSizeType  UIntContainerSizeType;
   typedef GN::Traits::Curve                          TypeTag;
   typedef BaseClass                                  SplineClass;
 
@@ -74,17 +76,18 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-#ifdef GN_USE_VIRTUAL_PROTECTED_DESTRUCTORS
-protected:
-  virtual ~Curve()
-#else
-  ~Curve()
-#endif
+  GN_DESTRUCTOR_TYPE ~Curve()
   {
   }
-#ifdef GN_USE_VIRTUAL_PROTECTED_DESTRUCTORS
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  ///
+  /// Ensure public scope because GN_DESTRUCTOR_TYPE is user-defined.
+  ///
+  /////////////////////////////////////////////////////////////////////////////
+
 public:
-#endif
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -95,11 +98,11 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  SizeType order() const
+  UIntType order() const
   {
     return BaseClass::order ( 0 );
   }
-  SizeType order ( SizeType whichIndepVar ) const
+  UIntType order ( UIntContainerSizeType whichIndepVar ) const
   {
     return BaseClass::order ( whichIndepVar );
   }
@@ -113,11 +116,11 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  SizeType degree() const
+  UIntType degree() const
   {
     return BaseClass::degree ( 0 );
   }
-  SizeType degree ( SizeType whichIndepVar ) const
+  UIntType degree ( UIntContainerSizeType whichIndepVar ) const
   {
     return BaseClass::degree ( whichIndepVar );
   }
@@ -129,11 +132,11 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  SizeType numControlPoints() const
+  UIntType numControlPoints() const
   {
     return BaseClass::numControlPoints ( 0 );
   }
-  SizeType numControlPoints ( SizeType whichIndepVar ) const
+  UIntType numControlPoints ( UIntContainerSizeType whichIndepVar ) const
   {
     return BaseClass::numControlPoints ( whichIndepVar );
   }
@@ -145,11 +148,11 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  SizeType numKnots() const
+  UIntType numKnots() const
   {
     return BaseClass::numKnots ( 0 );
   }
-  SizeType numKnots ( SizeType whichIndepVar ) const
+  UIntType numKnots ( UIntContainerSizeType whichIndepVar ) const
   {
     return BaseClass::numKnots ( whichIndepVar );
   }
@@ -161,22 +164,22 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  const IndependentType &knot ( SizeType whichKnot ) const
+  const KnotType &knot ( KnotVectorSizeType whichKnot ) const
   {
     return BaseClass::knot ( 0, whichKnot );
   }
 
-  IndependentType &knot ( SizeType whichKnot )
+  KnotType &knot ( KnotVectorSizeType whichKnot )
   {
     return BaseClass::knot ( 0, whichKnot );
   }
 
-  const IndependentType &knot ( SizeType whichIndepVar, SizeType whichKnot ) const
+  const KnotType &knot ( KnotVectorSizeType whichIndepVar, KnotVectorSizeType whichKnot ) const
   {
     return BaseClass::knot ( whichIndepVar, whichKnot );
   }
 
-  IndependentType &knot ( SizeType whichIndepVar, SizeType whichKnot )
+  KnotType &knot ( KnotVectorSizeType whichIndepVar, KnotVectorSizeType whichKnot )
   {
     return BaseClass::knot ( whichIndepVar, whichKnot );
   }
@@ -188,22 +191,22 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  const IndependentType &firstKnot() const
+  const KnotType &firstKnot() const
   {
     return BaseClass::firstKnot ( 0 );
   }
 
-  IndependentType &firstKnot()
+  KnotType &firstKnot()
   {
     return BaseClass::firstKnot ( 0 );
   }
 
-  const IndependentType &firstKnot ( SizeType whichIndepVar ) const
+  const KnotType &firstKnot ( KnotVectorSizeType whichIndepVar ) const
   {
     return BaseClass::firstKnot ( whichIndepVar );
   }
 
-  IndependentType &firstKnot ( SizeType whichIndepVar )
+  KnotType &firstKnot ( KnotVectorSizeType whichIndepVar )
   {
     return BaseClass::firstKnot ( whichIndepVar );
   }
@@ -215,22 +218,22 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  const IndependentType &lastKnot() const
+  const KnotType &lastKnot() const
   {
     return BaseClass::lastKnot ( 0 );
   }
 
-  IndependentType &lastKnot()
+  KnotType &lastKnot()
   {
     return BaseClass::lastKnot ( 0 );
   }
 
-  const IndependentType &lastKnot ( SizeType whichIndepVar ) const
+  const KnotType &lastKnot ( KnotVectorSizeType whichIndepVar ) const
   {
     return BaseClass::lastKnot ( whichIndepVar );
   }
 
-  IndependentType &lastKnot ( SizeType whichIndepVar )
+  KnotType &lastKnot ( KnotVectorSizeType whichIndepVar )
   {
     return BaseClass::lastKnot ( whichIndepVar );
   }
@@ -250,22 +253,22 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  const IndependentType &endKnotLeft ( SizeType whichEndKnot ) const
+  const KnotType &endKnotLeft ( KnotVectorSizeType whichEndKnot ) const
   {
     return BaseClass::endKnotLeft ( 0, whichEndKnot );
   }
 
-  IndependentType &endKnotLeft ( SizeType whichEndKnot )
+  KnotType &endKnotLeft ( KnotVectorSizeType whichEndKnot )
   {
     return BaseClass::endKnotLeft ( 0, whichEndKnot );
   }
 
-  const IndependentType &endKnotLeft ( SizeType whichIndepVar, SizeType whichEndKnot ) const
+  const KnotType &endKnotLeft ( KnotVectorSizeType whichIndepVar, KnotVectorSizeType whichEndKnot ) const
   {
     return BaseClass::endKnotLeft ( whichIndepVar, whichEndKnot );
   }
 
-  IndependentType &endKnotLeft ( SizeType whichIndepVar, SizeType whichEndKnot )
+  KnotType &endKnotLeft ( KnotVectorSizeType whichIndepVar, KnotVectorSizeType whichEndKnot )
   {
     return BaseClass::endKnotLeft ( whichIndepVar, whichEndKnot );
   }
@@ -285,22 +288,22 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  const IndependentType &endKnotRight ( SizeType whichEndKnot ) const
+  const KnotType &endKnotRight ( KnotVectorSizeType whichEndKnot ) const
   {
     return BaseClass::endKnotRight ( 0, whichEndKnot );
   }
 
-  IndependentType &endKnotRight ( SizeType whichEndKnot )
+  KnotType &endKnotRight ( KnotVectorSizeType whichEndKnot )
   {
     return BaseClass::endKnotRight ( 0, whichEndKnot );
   }
 
-  const IndependentType &endKnotRight ( SizeType whichIndepVar, SizeType whichEndKnot ) const
+  const KnotType &endKnotRight ( KnotVectorSizeType whichIndepVar, KnotVectorSizeType whichEndKnot ) const
   {
     return BaseClass::endKnotRight ( whichIndepVar, whichEndKnot );
   }
 
-  IndependentType &endKnotRight ( SizeType whichIndepVar, SizeType whichEndKnot )
+  KnotType &endKnotRight ( KnotVectorSizeType whichIndepVar, KnotVectorSizeType whichEndKnot )
   {
     return BaseClass::endKnotRight ( whichIndepVar, whichEndKnot );
   }
@@ -312,14 +315,37 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  SizeType knotMultiplicity ( IndependentArgument u ) const
+  UIntType knotMultiplicity ( KnotArgument u ) const
   {
     return BaseClass::knotMultiplicity ( 0, u );
   }
 
-  SizeType knotMultiplicity ( SizeType whichIndepVar, IndependentArgument u ) const
+  UIntType knotMultiplicity ( KnotVectorSizeType whichIndepVar, KnotArgument u ) const
   {
     return BaseClass::knotMultiplicity ( whichIndepVar, u );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  ///
+  /// Resize the curve.
+  ///
+  /////////////////////////////////////////////////////////////////////////////
+
+  void resize ( UIntType dimension, 
+                UIntType order, 
+                UIntType numCtrPts, 
+                bool rational )
+  {
+    UIntContainer o;
+    o.resize ( 1 );
+    o[0] = order;
+
+    UIntContainer n;
+    n.resize ( 1 );
+    n[0] = numCtrPts;
+
+    BaseClass::resize ( dimension, o, n, rational );
   }
 
 
@@ -368,25 +394,9 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  template < class Predicate_ > bool equal ( const ThisType &c, const Predicate_ &pred ) const
+  template < class Predicate_ > bool equal ( const ThisType &s, const Predicate_ &pred ) const
   {
     return BaseClass::equal ( c, pred );
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  ///
-  /// Return a reference to this curve as a spline.
-  ///
-  /////////////////////////////////////////////////////////////////////////////
-
-  SplineClass &spline()
-  {
-    return *this;
-  }
-  const SplineClass &spline() const
-  {
-    return *this;
   }
 };
 

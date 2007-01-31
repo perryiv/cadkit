@@ -16,6 +16,8 @@
 #ifndef _GENERIC_NURBS_LIBRARY_OSG_CONFIGURATIONS_H_
 #define _GENERIC_NURBS_LIBRARY_OSG_CONFIGURATIONS_H_
 
+#include "GN/Config/BaseClass.h"
+
 #include "osg/Vec4"
 #include "osg/Vec3"
 #include "osg/Vec2"
@@ -34,7 +36,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define GN_USE_VIRTUAL_PROTECTED_DESTRUCTORS
+#define GN_DESTRUCTOR_TYPE protected: virtual
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -44,8 +46,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace GN {
-namespace Config {
-namespace OsgDetail {
+namespace osg {
+namespace Detail {
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -63,36 +65,6 @@ template < class T > struct FloatTester
     #else
     return ( 0 != ::finite ( double ( v ) ) );
     #endif
-  }
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Class for calculating the square root.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class T > struct SquareRoot
-{
-  static T calculate ( const T &v )
-  {
-    return ::sqrt ( v );
-  }
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Class for calculating the power.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class T > struct Power
-{
-  static T calculate ( const T &value, const T &power )
-  {
-    return ::pow ( value, power );
   }
 };
 
@@ -154,15 +126,13 @@ template < class Matrix44, class Vec4, class Vec3 > struct Multiply
 
 struct ThrowingPolicy
 {
-  ThrowingPolicy ( const char *filename, unsigned int line, bool state, const char *message = 0x0 )
+  ThrowingPolicy ( const char *filename, unsigned int line, bool state )
   {
     if ( !state )
     {
-      std::ostringstream out;
-      out << "Error!\n\tLine: " << line << "\n\tFile: " << filename;
-      if ( message )
-        out << "\n\tMessage: " << message;
-      throw std::runtime_error ( out.str() );
+      std::ostringstream message;
+      message << "Error!\n\tLine: " << line << "\n\tFile: " << filename;
+      throw std::runtime_error ( message.str() );
     }
   }
 };
@@ -194,7 +164,7 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  End of namespace OsgDetail.
+//  End of namespace Detail.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -209,48 +179,40 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template
-<
-  class IndependentType_, 
-  class DependentType_ = IndependentType_,
-  class SizeType_ = unsigned int
->
-class OsgConfig
+template < class RealType_ > class Config
 {
 public:
 
-  typedef OsgDetail::ThrowingPolicy  ErrorCheckerType;
-  typedef OsgDetail::StringData      BaseClassType;
+  typedef Detail::ThrowingPolicy  ErrorCheckerType;
+  typedef Detail::StringData      BaseClassType;
 
-  typedef IndependentType_  IndependentType;
-  typedef DependentType_    DependentType;
-  typedef SizeType_         SizeType;
+  typedef unsigned int UIntType;
+  typedef RealType_    KnotType;
+  typedef RealType_    ControlPointType;
 
 private:
 
-  typedef std::vector<IndependentType>  IndependentSequence;
-  typedef std::vector<DependentType>    DependentSequence;
+  typedef std::vector<KnotType>         OneKnotVector;
+  typedef std::vector<ControlPointType> OneCtrPtCoord;
 
 public:
 
-  typedef std::vector<SizeType>             SizeContainer;
-  typedef std::vector<IndependentSequence>  IndependentContainer;
-  typedef std::vector<DependentSequence>    DependentContainer;
+  typedef std::vector<UIntType>      UIntContainer;
+  typedef std::vector<OneKnotVector> KnotContainer;
+  typedef std::vector<OneCtrPtCoord> ControlPointContainer;
 
-  typedef std::vector<DependentType> Vector;
+  typedef std::vector<ControlPointType> Vector;
 
   typedef ::osg::Vec2       Vec2;
   typedef ::osg::Vec3       Vec3;
   typedef ::osg::Vec4       Vec4;
   typedef ::osg::Matrixf    Matrix44;
 
-  typedef OsgDetail::FloatTester<IndependentType>  IndependentTester;
-  typedef OsgDetail::FloatTester<DependentType>    DependentTester;
-  typedef OsgDetail::Translation<Matrix44,Vec3>    Translation;
-  typedef OsgDetail::Scale<Matrix44,Vec3>          Scale;
-  typedef OsgDetail::Multiply<Matrix44,Vec4,Vec3>  Multiply;
-  typedef OsgDetail::SquareRoot<DependentType>     SquareRoot;
-  typedef OsgDetail::Power<DependentType>          Power;
+  typedef Detail::FloatTester<KnotType>           KnotTester;
+  typedef Detail::FloatTester<ControlPointType>   ControlPointTester;
+  typedef Detail::Translation<Matrix44,Vec3>      Translation;
+  typedef Detail::Scale<Matrix44,Vec3>            Scale;
+  typedef Detail::Multiply<Matrix44,Vec4,Vec3>    Multiply;
 };
 
 
@@ -260,7 +222,7 @@ public:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-}; // namespace Config
+}; // namespace osg
 }; // namespace GN
 
 

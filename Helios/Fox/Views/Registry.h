@@ -23,7 +23,7 @@
 #include <string>
 
 
-namespace Helios {
+namespace OsgFox {
 namespace Registry {
 
 
@@ -43,7 +43,7 @@ void write ( const std::string &section, const std::string &key, const osg::Vec4
 
 
 }; // namespace Registry
-}; // namespace Helios
+}; // namespace OsgFox
 
 
 #endif // _OPEN_SCENE_GRAPH_FOX_BINDING_REGISTRY_FUNCTIONS_H_

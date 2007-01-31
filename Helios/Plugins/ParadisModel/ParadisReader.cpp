@@ -12,8 +12,6 @@
 #include "Usul/File/Stats.h"
 #include "Usul/Endian/Endian.h"
 #include "Usul/IO/Reader.h"
-#include "Usul/Interfaces/ICalculatePerVertexNormals.h"
-#include "Usul/Components/Manager.h"
 
 #include <fstream>
 #include <algorithm>
@@ -564,20 +562,20 @@ void ParadisReader::_buildVerticesNormalsTriangles()
   // Feedback.
   _document->setStatusBar ( "Creating vectors of vertices, normals, and triangles..." );
 
-  Usul::Interfaces::IUnknown *unknown ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::ICalculatePerVertexNormals::IID ) );
+  
 
   // Go through the precipitates.
   for( unsigned int i = 0; i < _precipitates.size(); ++i )
   {
-    NormalsPtr normalsT ( new Normals );
-    NormalsPtr normalsV ( new Normals );
+    NormalsPtr normals ( new Normals );
     VerticesPtr vertices ( new Vertices );
     ElementsPtr elements ( new Elements ( osg::PrimitiveSet::TRIANGLES ) );
 
     PrecipitateRecord record ( _precipitates.at( i ) );
 
+
     vertices->reserve( record.numVerts );
-    normalsT->reserve ( record.numTris / 3 );
+    normals->reserve ( record.numTris / 3 );
     elements->reserve ( record.numTris );
 
     // Add the vertices.
@@ -593,7 +591,9 @@ void ParadisReader::_buildVerticesNormalsTriangles()
     {
       osg::Vec3 normal ( *iter, *(iter + 1), *(iter + 2 ) );
 
-      normalsT->push_back( normal );
+      normals->push_back( normal );
+      //normals->push_back( normal );
+      //normals->push_back( normal );
     }
 
     // Add the triangles.
@@ -606,16 +606,11 @@ void ParadisReader::_buildVerticesNormalsTriangles()
       elements->push_back ( v0 );
       elements->push_back ( v1 );
       elements->push_back ( v2 );
+
+
     }
 
-    Usul::Interfaces::ICalculatePerVertexNormals::QueryPtr plugin ( unknown );
-
-    if ( plugin.valid() )
-    {
-      plugin->calculatePerVertexNormals( vertices.get(), elements.get(), normalsT.get(), normalsV.get() );
-    }
-
-    _triangles->addGroup ( vertices.get(), normalsT.get(), normalsV.get(), elements.get() );
+    _triangles->addGroup ( vertices.get(), normals.get(), elements.get() );
   }
 
   // Todo, build per vertex normals/

@@ -16,7 +16,7 @@
 #ifndef _USUL_EXCEPTIONS_THROWER_CLASS_H_
 #define _USUL_EXCEPTIONS_THROWER_CLASS_H_
 
-#include "Usul/Headers/SStream.h"
+#include <sstream>
 
 
 namespace Usul {
@@ -131,33 +131,6 @@ public:
   {
     std::ostringstream message;
     message << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8 << t9 << t10 << t11;
-    throw ExceptionType ( message.str() );
-  }
-
-  // Constructor.
-  template < class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12 >
-  Thrower ( const T1 &t1, const T2 &t2, const T3 &t3, const T4 &t4, const T5 &t5, const T6 &t6, const T7 &t7, const T8 &t8, const T9 &t9, const T10 &t10, const T11 &t11, const T12 &t12 )
-  {
-    std::ostringstream message;
-    message << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8 << t9 << t10 << t11 << t12;
-    throw ExceptionType ( message.str() );
-  }
-
-  // Constructor.
-  template < class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13 >
-  Thrower ( const T1 &t1, const T2 &t2, const T3 &t3, const T4 &t4, const T5 &t5, const T6 &t6, const T7 &t7, const T8 &t8, const T9 &t9, const T10 &t10, const T11 &t11, const T12 &t12, const T13 &t13 )
-  {
-    std::ostringstream message;
-    message << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8 << t9 << t10 << t11 << t12 << t13;
-    throw ExceptionType ( message.str() );
-  }
-
-  // Constructor.
-  template < class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13, class T14 >
-  Thrower ( const T1 &t1, const T2 &t2, const T3 &t3, const T4 &t4, const T5 &t5, const T6 &t6, const T7 &t7, const T8 &t8, const T9 &t9, const T10 &t10, const T11 &t11, const T12 &t12, const T13 &t13, const T14 &t14 )
-  {
-    std::ostringstream message;
-    message << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8 << t9 << t10 << t11 << t12 << t13 << t14;
     throw ExceptionType ( message.str() );
   }
 };

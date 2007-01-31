@@ -29,34 +29,6 @@
 
 using namespace DT::Minerva::Plugins::Document::Glue;
 
-namespace Detail
-{
-  std::string toString( System::String^ source )
-  {
-    System::IntPtr ptr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi( source );
-    char* s = (char*)(void*) ptr;
-    
-    std::string string ( s );
-    
-    System::Runtime::InteropServices::Marshal::FreeHGlobal( ptr );
-
-    return string;
-  }
-
-  System::String^ toMString( const std::string& source )
-  {
-    return gcnew System::String( source.c_str() );
-  }
-
-
-  System::String^ intToString ( int i )
-  {
-    std::ostringstream os;
-    os << i;
-    return toMString ( os.str() );
-  }
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -71,6 +43,12 @@ _sceneManager( 0x0 )
   Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
   _sceneManager = new ::Minerva::Scene::SceneManager;
   Usul::Pointers::reference ( _sceneManager );
+
+  _planet = new Magrathea::Planet();
+  _planet->ref();
+  _planet->init();
+  this->elevationExag( 1.0f );
+  _planet->root()->addChild( _sceneManager->root() );
 }
 
 
@@ -84,6 +62,9 @@ DllGlue::~DllGlue()
 {
   Usul::Pointers::unreference ( _sceneManager );
   _sceneManager = 0x0;
+
+  Usul::Pointers::unreference( _planet );
+  _planet = 0x0;
 }
 
 
@@ -97,6 +78,9 @@ DllGlue::!DllGlue()
 {
   Usul::Pointers::unreference ( _sceneManager );
   _sceneManager = 0x0;
+
+  Usul::Pointers::unreference( _planet );
+  _planet = 0x0;
 }
 
 
@@ -134,6 +118,12 @@ void DllGlue::removeLayer( CadKit::Interfaces::ILayer ^layer )
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Dirty the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void DllGlue::dirtyScene()
 {
@@ -248,12 +238,13 @@ void DllGlue::viewer( CadKit::Viewer::Glue::Viewer ^viewer )
 
     if( _viewer )
     {
-      _viewer->navManip( new ossimPlanetManipulator );
-      _viewer->databasePager( new ossimPlanetDatabasePager );
+      _planet->viewer( _viewer->queryInterface( Usul::Interfaces::IUnknown::IID ) );
+      _viewer->navManip( _planet->manipulator() );
+      _viewer->databasePager( _planet->databasePager() );
 
       _viewer->computeNearFar( false );
 
-      _viewer->scene( _sceneManager->root() );
+      _viewer->scene( _planet->root() );
       _viewer->sceneUpdate( _sceneManager );
     }
   }
@@ -336,11 +327,17 @@ void DllGlue::showLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Job
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a keyword list.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void DllGlue::addKeyWordList( System::String^ kwl )
 {
   try
   {
-    _sceneManager->addKeyWordList( Usul::Strings::convert ( kwl ).c_str() );
+    _planet->readKWL( Usul::Strings::convert ( kwl ).c_str() );
   }
   catch ( System::Exception ^e )
   {
@@ -357,107 +354,283 @@ void DllGlue::addKeyWordList( System::String^ kwl )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add an image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void DllGlue::addLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer )
 {
   if( nullptr != layer )
   {
     // Add layer to group.
-    osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( layer->intPtr().ToPointer() ) );
+    osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( layer->nativeIntPtr().ToPointer() ) );
 
     if( texture.valid() )
-      _sceneManager->addImage( texture.get() );
+      _planet->addLayer( texture.get() );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove an image.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void DllGlue::removeLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer )
 {
   if( nullptr != layer )
   {
-    osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( layer->intPtr().ToPointer() ) );
+    osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( layer->nativeIntPtr().ToPointer() ) );
 
     if( texture.valid() )
-      _sceneManager->removeImage( texture.get() );
+      _planet->removeLayer( texture.get() );
   }
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is elevation enabled.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 bool DllGlue::elevationEnabled()
 {
-  return _sceneManager->elevationEnabled();
+  return _planet->elevationEnabled();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the elevation enabled flag.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void DllGlue::elevationEnabled( bool val )
 {
-  _sceneManager->elevationEnabled( val );
+  _planet->elevationEnabled( val );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the HUD enabled.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 bool DllGlue::hudEnabled()
 {
-  return _sceneManager->hudEnabled();
+  return _planet->hudEnabled();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the hud enabled flag.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void DllGlue::hudEnabled( bool val )
 {
-  _sceneManager->hudEnabled( val );
+  _planet->hudEnabled( val );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is ephemeris enabled?
+//
+///////////////////////////////////////////////////////////////////////////////
 
 bool DllGlue::ephemerisFlag()
 {
-  return _sceneManager->ephemerisFlag();
+  return _planet->ephemerisFlag();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the ephemeris flag.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void DllGlue::ephemerisFlag( bool val )
 {
-  _sceneManager->ephemerisFlag( val );
+  _planet->ephemerisFlag( val );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the elevation exageration flag.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 float DllGlue::elevationExag()
 {
-  return _sceneManager->elevationExag();
+  return _planet->elevationExag();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the elevation exageration flag.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void DllGlue::elevationExag( float exag )
 {
-  _sceneManager->elevationExag( exag );
+  _planet->elevationExag( exag );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the elevation patch size.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 int DllGlue::elevationPatchSize()
 {
-  return _sceneManager->elevationPatchSize();
+  return _planet->elevationPatchSize();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the elevation patch size.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void DllGlue::elevationPatchSize( float patchSize )
 {
-  _sceneManager->elevationPatchSize( patchSize );
+  _planet->elevationPatchSize( patchSize );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the max level of detail.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 int DllGlue::levelDetail()
 {
-  return _sceneManager->levelDetail();
+  return _planet->levelDetail();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the max level of detail.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void DllGlue::levelDetail( float levelDetail )
 {
-  _sceneManager->levelDetail( levelDetail );
+  _planet->levelDetail( levelDetail );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the elevation cache directory.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 System::String^ DllGlue::elevationCacheDir()
 {
-  return gcnew System::String( _sceneManager->elevationCacheDir().c_str() );
+  return gcnew System::String( _planet->elevationCacheDir().c_str() );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the elevation cache directory.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void DllGlue::elevationCacheDir( System::String^ directory )
 {
-  _sceneManager->elevationCacheDir( Usul::Strings::convert( directory ) );
+  _planet->elevationCacheDir( Usul::Strings::convert( directory ) );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the lat long grid flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DllGlue::latLongGrid ( bool b )
+{
+  _planet->showLatLongGrid ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the lat long grid flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DllGlue::latLongGrid()
+{
+  return _planet->showLatLongGrid();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the show legend flag.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void DllGlue::showLegend( bool b )
 {
   _sceneManager->showLegend( b );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show legend flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 bool DllGlue::showLegend()
 {
   return _sceneManager->showLegend();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  View the extents of given layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DllGlue::viewLayerExtents( CadKit::Interfaces::ILayer ^layer )
+{
+  if( nullptr != layer )
+  {
+    CadKit::Interfaces::INativePtr ^ nativePtr = dynamic_cast < CadKit::Interfaces::INativePtr^ > ( layer );
+
+    if( nullptr != nativePtr )
+    {
+      osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( nativePtr->nativeIntPtr().ToPointer() ) );
+
+      if( texture.valid() )
+      {
+        double lat ( 0.0 ), lon ( 0.0 ), height ( 0.0 );
+
+        texture->getCenterLatLonLength( lat, lon, height );
+        _planet->gotoLocation ( lat, lon, height );
+
+      }
+    }
+  }
 }

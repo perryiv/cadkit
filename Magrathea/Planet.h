@@ -27,7 +27,7 @@
 
 namespace Magrathea
 {
-  class OSSIM_PLANET_WRAPPER_EXPORT Planet : public osg::Referenced
+  class MAGRATHEA_EXPORT Planet : public osg::Referenced
   {
     public:
       typedef osg::Referenced BaseClass;

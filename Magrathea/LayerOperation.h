@@ -20,7 +20,7 @@
 
 namespace Magrathea
 {
-  class OSSIM_PLANET_WRAPPER_EXPORT LayerOperation : public osg::Referenced
+  class MAGRATHEA_EXPORT LayerOperation : public osg::Referenced
   {
   public:
     /*

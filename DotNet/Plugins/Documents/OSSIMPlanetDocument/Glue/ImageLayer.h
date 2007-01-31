@@ -17,7 +17,9 @@ namespace CadKit
   {
     namespace Glue
     {
-      public ref class ImageLayer : CadKit::Interfaces::ILayer
+      public ref class ImageLayer : 
+        CadKit::Interfaces::ILayer,
+        CadKit::Interfaces::INativePtr
       {
       public:
         ImageLayer( System::String^ );
@@ -62,8 +64,8 @@ namespace CadKit
         virtual void hide();
         virtual void addToFavorites();
 
-        ossimPlanetTextureLayer* nativePtr();
-        System::IntPtr           intPtr();
+        ossimPlanetTextureLayer*         nativePtr();
+        virtual System::IntPtr           nativeIntPtr();
       private:
         ossimPlanetTextureLayer* _layer;
 

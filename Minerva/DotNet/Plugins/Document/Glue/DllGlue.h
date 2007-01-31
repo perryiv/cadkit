@@ -13,6 +13,7 @@
 #pragma warning ( disable : 4561 )
 #include "Minerva/Scene/SceneManager.h"
 #include "OsgTools/Render/Viewer.h"
+#include "Magrathea/Planet.h"
 
 using namespace System;
 
@@ -38,6 +39,13 @@ namespace DT
             void showLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progess );
             void modifyLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progess );
 
+            void viewLayerExtents( CadKit::Interfaces::ILayer ^layer );
+
+            void                  addKeyWordList( System::String^ kwl );
+            void                  addLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer );
+            void                  removeLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer );
+
+
             void dirtyScene();
 
             void startAnimation(float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays);
@@ -47,11 +55,6 @@ namespace DT
             void viewer( CadKit::Viewer::Glue::Viewer ^viewer );
 
             void resize ( int h, int w );
-
-            void                  addKeyWordList( System::String^ kwl );
-            void                  addLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer );
-            void                  removeLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer );
-
 
             bool                  elevationEnabled();
             void                  elevationEnabled( bool val );
@@ -74,12 +77,16 @@ namespace DT
             System::String^       elevationCacheDir();
             void                  elevationCacheDir( System::String^ directory );
 
+            bool                  latLongGrid();
+            void                  latLongGrid( bool b );
+
             bool                  showLegend();
             void                  showLegend( bool b );
 
           private:
             OsgTools::Render::Viewer *_viewer;
             ::Minerva::Scene::SceneManager *_sceneManager;
+            Magrathea::Planet *_planet;
 	        };
         }
       }

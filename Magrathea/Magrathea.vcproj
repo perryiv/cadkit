@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="lib: OssimPlanetWrapper"
+	Name="lib: Magrathea"
 	ProjectGUID="{FE673D9C-ED8C-4A6D-98BB-C51EA91747E1}"
 	RootNamespace="Magrathea"
 	Keyword="Win32Proj"
@@ -62,12 +62,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osgd.lib osgDBd.lib osgGAd.lib OpenThreadsWin32d.lib ossimd.lib ossimPlanetd.lib osgEphemerisd.lib"
-				OutputFile="../bin/OssimPlanetWrapperd.dll"
+				OutputFile="../bin/Magrathead.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(CADKIT_ROOT_DIR)/bin;$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR);$(OSG_EPHEMERIS_LIB_DIR)"
 				GenerateDebugInformation="true"
 				SubSystem="1"
-				ImportLibrary="../bin/OssimPlanetWrapperd.lib"
+				ImportLibrary="../bin/Magrathead.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -144,7 +144,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib OpenThreadsWin32.lib ossim.lib ossimPlanet.lib osgEphemeris.lib"
-				OutputFile="../bin/OssimPlanetWrapper.dll"
+				OutputFile="../bin/Magrathea.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR);$(OSG_EPHEMERIS_LIB_DIR)"
 				GenerateDebugInformation="false"
@@ -152,7 +152,7 @@
 				OptimizeReferences="0"
 				EnableCOMDATFolding="0"
 				LinkTimeCodeGeneration="0"
-				ImportLibrary="../bin/OssimPlanetWrapper.lib"
+				ImportLibrary="../bin/Magrathea.lib"
 				TargetMachine="0"
 			/>
 			<Tool

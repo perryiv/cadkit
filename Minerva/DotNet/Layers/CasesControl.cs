@@ -104,8 +104,8 @@ namespace DT.Minerva.Layers.Controls
     {
       base._deserialize(info);
 
-      this.MinDate = info.GetDateTime("MinDate");
-      this.MaxDate = info.GetDateTime("MaxDate");
+      this.FirstDate = info.GetDateTime("MinDate");
+      this.LastDate = info.GetDateTime("MaxDate");
       this.PrimitiveSize = (float)info.GetValue("PrimitiveSize", typeof(float));
       this.PrimitiveType = info.GetString("PrimitiveType");
 
@@ -126,8 +126,8 @@ namespace DT.Minerva.Layers.Controls
     {
       base._serialize(info);
 
-      info.AddValue("MinDate", this.MinDate);
-      info.AddValue("MaxDate", this.MaxDate);
+      info.AddValue("MinDate", this.FirstDate);
+      info.AddValue("MaxDate", this.LastDate);
       info.AddValue("PrimitiveSize", this.PrimitiveSize);
       info.AddValue("PrimitiveType", this.PrimitiveType);
       info.AddValue("Species", this.Species);
@@ -139,8 +139,8 @@ namespace DT.Minerva.Layers.Controls
     /// </summary>
     protected void _dataSourceChangedHandler(DT.Minerva.Interfaces.IDataSource dataSource)
     {
-      this.MinDate = System.DateTime.Parse(this.DataSource.getMinValue("wnv_allpoints1", "wnv_date"));
-      this.MaxDate = System.DateTime.Parse(this.DataSource.getMaxValue("wnv_allpoints1", "wnv_date"));
+      this.FirstDate = System.DateTime.Parse(this.DataSource.getMinValue("wnv_allpoints1", "wnv_date"));
+      this.LastDate = System.DateTime.Parse(this.DataSource.getMaxValue("wnv_allpoints1", "wnv_date"));
     }
 
 
@@ -150,10 +150,10 @@ namespace DT.Minerva.Layers.Controls
     /// 
     [
       System.ComponentModel.Category("Date"),
-      System.ComponentModel.Description("Minimum date to show"),
+      System.ComponentModel.Description("First date to show"),
       System.ComponentModel.Browsable(true),
     ]
-    public System.DateTime MinDate
+    public System.DateTime FirstDate
     {
       get { lock (this.Mutex) { return _minDate; } }
       set { lock (this.Mutex) { _minDate = value; this.NeedsUpdate = true; } }
@@ -165,10 +165,10 @@ namespace DT.Minerva.Layers.Controls
     /// </summary>
     [
       System.ComponentModel.Category("Date"),
-      System.ComponentModel.Description("Maximium date to show"),
+      System.ComponentModel.Description("Last date to show"),
       System.ComponentModel.Browsable(true),
     ]
-    public System.DateTime MaxDate
+    public System.DateTime LastDate
     {
       get { lock (this.Mutex) { return _maxDate; } }
       set { lock (this.Mutex) { _maxDate = value; this.NeedsUpdate = true; } }
@@ -235,9 +235,9 @@ namespace DT.Minerva.Layers.Controls
       {
         string where = "";
 
-        where += "wnv_allpoints1.wnv_date > '" + this.MinDate.ToShortDateString() + "'";
+        where += "wnv_allpoints1.wnv_date > '" + this.FirstDate.ToShortDateString() + "'";
 
-        where += " AND wnv_allpoints1.wnv_date < '" + this.MaxDate.ToShortDateString() + "'";
+        where += " AND wnv_allpoints1.wnv_date < '" + this.LastDate.ToShortDateString() + "'";
 
         if (_mode == Mode.HUMAN)
           where += " AND wnv_allpoints1.species='Human'";

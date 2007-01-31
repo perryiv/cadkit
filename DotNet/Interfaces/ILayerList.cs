@@ -18,5 +18,6 @@ namespace CadKit.Interfaces
     void hideLayer(CadKit.Interfaces.ILayer layer, object caller);
     void showLayer(CadKit.Interfaces.ILayer layer, object caller);
     void removeLayer(CadKit.Interfaces.ILayer layer, object caller);
+    void viewLayerExtents(CadKit.Interfaces.ILayer layer);
   }
 }

@@ -13,19 +13,19 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __OSSIM_OSSIMWRAPPER_EXPORT_H__
-#define __OSSIM_OSSIMWRAPPER_EXPORT_H__
+#ifndef __MAGRATHEA_EXPORT_H__
+#define __MAGRATHEA_EXPORT_H__
 
 #ifdef _WIN32
 # pragma warning ( disable : 4275 ) // Irrelevant VC6 warning.
 # pragma warning ( disable : 4251 ) // Irrelevant VC6 warning.
 # ifdef _COMPILING_MAGRATHEA
-#   define OSSIM_PLANET_WRAPPER_EXPORT __declspec ( dllexport ) // We are compiling this library so the classes are exported.
+#   define MAGRATHEA_EXPORT __declspec ( dllexport ) // We are compiling this library so the classes are exported.
 # else
-#   define OSSIM_PLANET_WRAPPER_EXPORT __declspec ( dllimport ) // The classes will be imported into the client's code.
+#   define MAGRATHEA_EXPORT __declspec ( dllimport ) // The classes will be imported into the client's code.
 # endif
 #else // _WIN32
-# define OSSIM_PLANET_WRAPPER_EXPORT
+# define MAGRATHEA_EXPORT
 #endif
 
-#endif // __OSSIM_OSSIMWRAPPER_EXPORT_H__
+#endif // __MAGRATHEA_EXPORT_H__

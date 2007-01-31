@@ -140,7 +140,7 @@ namespace CadKit.Plugins
           // Increment.
           ++number;
 
-          // Add to our list.
+          // Add to our list
           this._addPlugin(plugin);
         }
 

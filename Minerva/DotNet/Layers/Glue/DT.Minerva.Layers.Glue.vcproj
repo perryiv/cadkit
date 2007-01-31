@@ -187,7 +187,7 @@
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{35375870-CDDF-431E-B366-782D431BF6F6}"
-			RelativePathToProject=".\DotNet\Interfaces\DT.Minerva.Interfaces.csproj"
+			RelativePathToProject="..\..\Minerva\DotNet\Interfaces\DT.Minerva.Interfaces.csproj"
 		/>
 	</References>
 	<Files>

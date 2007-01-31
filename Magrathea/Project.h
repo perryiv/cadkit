@@ -11,7 +11,6 @@
 #ifndef __OSSIM_PROJECT_H__
 #define __OSSIM_PROJECT_H__
 
-#include "Export.h"
 
 #include "ossim/base/ossimGpt.h"
 #include "ossim/base/ossimEcefPoint.h"

@@ -124,6 +124,7 @@ namespace CadKit.Plugins.Ossim
     {
       System.Windows.Forms.OpenFileDialog dialog = new System.Windows.Forms.OpenFileDialog();
       dialog.Multiselect = true;
+      dialog.Filter = "All image files (*.tif, *.jpg)|*.tif; *.jpg|All Files (*.*)|*.*";
 
       if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
       {

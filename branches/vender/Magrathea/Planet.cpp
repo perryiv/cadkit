@@ -1,0 +1,597 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Aashish Chaudhary
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "Planet.h"
+
+#include "Usul/Interfaces/IViewMatrix.h"
+
+#include "osgDB/Registry"
+
+#include "ossimPlanet/ossimPlanetDatabasePager.h"
+#include "ossimPlanet/ossimPlanetTextureLayerRegistry.h"
+#include "ossim/base/ossimKeywordlist.h"
+
+#include "osg/PolygonOffset"
+
+using namespace Magrathea;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Planet::Planet() : 
+  BaseClass(),
+  _planet            ( 0x0 ),
+  mDatabasePager     ( 0x0 ),
+  mTextureLayerGroup ( 0x0 ),
+  _manipulator       ( 0x0 ),
+  _latLongGrid       ( 0x0 ),
+  _viewer            ( 0x0 )
+{
+  ossimInit::instance()->initialize();
+
+  _planet                  = new ossimPlanet();
+  mDatabasePager                = new osgDB::DatabasePager();   
+  mTextureLayerGroup            = new ossimPlanetTextureLayerGroup();
+  mTextureOperationLayerGroup   = new ossimPlanetTextureLayerGroup();  
+  mLayerManipulator             = new LayerOperation();
+  _manipulator                  = new Manipulator();
+
+  osg::ref_ptr < osg::StateSet > ss ( _planet->getOrCreateStateSet () );
+  osg::ref_ptr< osg::PolygonOffset > offset ( new osg::PolygonOffset( 1.0f, 1.0f ) );
+  ss->setMode ( GL_POLYGON_OFFSET_FILL, osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
+  ss->setAttribute( offset.get(), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
+
+  _latLongGrid = new LatLongGrid();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Planet::~Planet()
+{
+  mDatabasePager->cancel();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the defaults.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::setDefaults()
+{
+  // Defaults. 
+  const ossimPlanetLandType landType ( ossimPlanetLandType_NORMALIZED_ELLIPSOID );
+
+  const bool  elevEnabled    ( true  );
+  const bool  ephemerisFlag  ( false );
+  const bool  hudEnabled     ( false );
+  const float elevExag       ( 1.0   );
+  const int   elevEstimate   ( 16    );    
+  const int   levelDetail    ( 16    );    
+
+  const ossimFilename elevCache( "" );
+
+  _planet->getLand()->setLandType( landType );
+  _planet->getLand()->setElevationEnabledFlag( elevEnabled );
+  _planet->getLand()->setHeightExag( elevExag );
+  _planet->getLand()->setElevationPatchSize( elevEstimate );
+  _planet->getLand()->setMaxLevelDetail( levelDetail );
+  _planet->getLand()->setElevationCacheDir( elevCache );
+  _planet->setEnableEphemerisFlag( ephemerisFlag );
+  _planet->setEnableHudFlag( hudEnabled );
+  _planet->getLand()->setElevationCacheDir( elevCache );
+  _planet->getLand()->resetGraph();
+
+  mLayerManipulator->setLand( _planet->getLand().get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::init()
+{
+  try
+  {
+    this->setDefaults();
+
+    _planet->getLand()->setTextureLayer( mTextureLayerGroup.get(), 0 );
+    _planet->getLand()->setTextureLayer( mTextureOperationLayerGroup.get(), 1 );
+    _planet->getLand()->resetGraph(); 	
+
+    osgDB::Registry::instance()->setDatabasePager( mDatabasePager.get() );
+	  mDatabasePager->setExpiryDelay(0);
+    mDatabasePager->setUseFrameBlock( true );
+	  mDatabasePager->setAcceptNewDatabaseRequests( true );
+	  mDatabasePager->setDatabasePagerThreadPause( false );	
+  }
+  catch( const std::exception& e )
+  {
+    std::cerr << "Error 332911910: Exception caught in init " << std::endl;
+    std::cerr << "Message:" << e.what() << std::endl;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read a kwl file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::readKWL( const std::string& fileName )
+{
+  ossimKeywordlist kwl( fileName.c_str() );
+  osg::ref_ptr< ossimPlanetTextureLayer > layer = ossimPlanetTextureLayerRegistry::instance()->createLayer(kwl.toString());
+  if( layer.valid() )
+  {
+    mTextureLayerGroup->addTop( layer.get() );
+  }
+
+  reset();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int Planet::addLayer( const std::string& filename )
+{
+  osg::ref_ptr< ossimPlanetTextureLayer > layer ( ossimPlanetTextureLayerRegistry::instance()->createLayer(filename.c_str() ) );
+  return this->addLayer( layer.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int Planet::addLayer( ossimPlanetTextureLayer *layer  )
+{
+  int index ( -1 );
+  if( 0x0 != layer )
+  {    
+    mTextureLayerGroup->addTop( layer );
+    index = mTextureLayerGroup->findLayerIndex( layer );
+  }
+
+  return index;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int Planet::addLayerOperation( const std::string& filename )
+{
+  osg::ref_ptr< ossimPlanetTextureLayer > layer ( ossimPlanetTextureLayerRegistry::instance()->createLayer(filename.c_str() ) );
+  return this->addLayerOperation( layer.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int Planet::addLayerOperation( ossimPlanetTextureLayer *layer  )
+{
+  int index ( -1 );
+  if( 0x0 != layer )
+  {    
+    mTextureOperationLayerGroup->addTop( layer );
+    index = mTextureOperationLayerGroup->findLayerIndex( layer );
+  }
+
+  return index;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::removeLayer( int index  )
+{
+  mTextureLayerGroup->removeLayer( index );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::removeLayerOperation( int index  )
+{
+  mTextureOperationLayerGroup->removeLayer( index );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::removeLayer( ossimPlanetTextureLayer *layer )
+{
+  mTextureLayerGroup->removeLayer( layer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::removeLayerOperation( ossimPlanetTextureLayer *layer  )
+{
+  mTextureOperationLayerGroup->removeLayer( layer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reset the graph.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::reset()
+{  
+  _planet->getLand()->resetGraph(); 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reset the graph.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::refreshLandTextures( ossimPlanetExtents* extents, ossimPlanetPagedLandLodRefreshType refreshType)
+{
+  _planet->getLand()->resetGraph( extents, refreshType);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scene root.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Group* Planet::root() const
+{
+  return _planet.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the database pager.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osgDB::DatabasePager* Planet::databasePager() const
+{
+  return mDatabasePager.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is elevation enabled?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Planet::elevationEnabled() const
+{ 
+  return _planet->getLand()->getElevationEnabledFlag(); 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set elevation enabled.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::elevationEnabled( bool val ) 
+{ 
+  _planet->getLand()->setElevationEnabledFlag( val ); 
+  reset(); 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the HUD enabled?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Planet::hudEnabled() const
+{ 
+  return  _planet->getEnableHudFlag();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the hud enabled flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::hudEnabled( bool val ) 
+{ 
+  _planet->setEnableHudFlag( val );
+  reset(); 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is ephemeris enabled?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Planet::ephemerisFlag() const
+{ 
+  return _planet->getEnableEphemerisFlag();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the ephemeris flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::ephemerisFlag( bool val )
+{ 
+  _planet->setEnableEphemerisFlag( val );
+  // Update??
+}  
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the elevation exageration.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float Planet::elevationExag() const
+{ 
+  return _planet->getLand()->getHeightExag();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the elevation exageration.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::elevationExag( const float& elevExag )
+{ 
+  _planet->getLand()->setHeightExag( elevExag );
+  reset(); 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the elevation patch size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int Planet::elevationPatchSize() const
+{ 
+  return _planet->getLand()->getElevationPatchSize();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the elevation patch size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void  Planet::elevationPatchSize( const int& elevEstimate )
+{ 
+  _planet->getLand()->setElevationPatchSize( elevEstimate );
+  reset(); 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the maximium level of detail.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int Planet::levelDetail() const
+{ 
+  return _planet->getLand()->getMaxLevelDetail();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the maximium level of detail.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::levelDetail( const int& levelDetail )
+{ 
+  _planet->getLand()->setMaxLevelDetail( levelDetail );
+  reset(); 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the land type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::landType( ossimPlanetLandType landType )
+{ 
+  _planet->getLand()->setLandType( landType );
+  reset(); 
+}      
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the show lat long flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::showLatLongGrid( bool b )
+{
+  if( b )
+    _planet->addChild( _latLongGrid.get() );
+  else
+    _planet->removeChild( _latLongGrid.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the lat long grid showing?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Planet::showLatLongGrid() const
+{
+  return _planet->containsNode ( _latLongGrid.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the elevation cache dir.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Planet::elevationCacheDir() const
+{
+  ossimFilename name ( _planet->getLand()->getElevationCacheDir( ) );
+  return name.c_str();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the elevation cache dir.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::elevationCacheDir( const std::string& directory )
+{
+  _planet->getLand()->setElevationCacheDir( directory.c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the manipulator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osgGA::MatrixManipulator* Planet::manipulator() const
+{
+  return _manipulator.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Go to lat, long at given height.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::gotoLocation( double lat, double lon, double height )
+{
+  //ossimString actionString = ":navigator gotolatlonelevnadir ";
+  //actionString += (ossimString::toString(lat) + " " +
+  //                  ossimString::toString(lon) + " " +
+  //                  ossimString::toString(height));
+   
+  //ossimPlanetAction ( actionString.c_str() ).execute();
+  _manipulator->gotoLocation( lat, lon, height );
+
+  Usul::Interfaces::IViewMatrix::QueryPtr viewMatrix ( _viewer );
+
+  if( viewMatrix.valid() )
+    viewMatrix->setViewMatrix ( _manipulator->getInverseMatrix() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the viewer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::viewer( Usul::Interfaces::IUnknown* viewer )
+{
+  _viewer = viewer;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the viewer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Planet::viewer()
+{
+  return _viewer.get();
+}
+
+
+
+void Planet::opacity( const float& val )
+{
+  mLayerManipulator->opacity( val );
+  reset();
+}
+
+float Planet::opacity() const 
+{
+  return mLayerManipulator->opacity();
+}

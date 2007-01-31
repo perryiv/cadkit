@@ -31,8 +31,8 @@ using namespace Magrathea;
 Planet::Planet() : 
   BaseClass(),
   _planet            ( 0x0 ),
-  mDatabasePager     ( 0x0 ),
-  mTextureLayerGroup ( 0x0 ),
+  _databasePager     ( 0x0 ),
+  _textureLayerGroup ( 0x0 ),
   _manipulator       ( 0x0 ),
   _latLongGrid       ( 0x0 ),
   _viewer            ( 0x0 )
@@ -40,10 +40,10 @@ Planet::Planet() :
   ossimInit::instance()->initialize();
 
   _planet                  = new ossimPlanet();
-  mDatabasePager                = new osgDB::DatabasePager();   
-  mTextureLayerGroup            = new ossimPlanetTextureLayerGroup();
-  mTextureOperationLayerGroup   = new ossimPlanetTextureLayerGroup();  
-  mLayerManipulator             = new LayerOperation();
+  _databasePager                = new osgDB::DatabasePager();   
+  _textureLayerGroup            = new ossimPlanetTextureLayerGroup();
+  _textureOperationLayerGroup   = new ossimPlanetTextureLayerGroup();  
+  _layerManipulator             = new LayerManipulator();
   _manipulator                  = new Manipulator();
 
   osg::ref_ptr < osg::StateSet > ss ( _planet->getOrCreateStateSet () );
@@ -63,7 +63,7 @@ Planet::Planet() :
 
 Planet::~Planet()
 {
-  mDatabasePager->cancel();
+  _databasePager->cancel();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -97,7 +97,7 @@ void Planet::setDefaults()
   _planet->getLand()->setElevationCacheDir( elevCache );
   _planet->getLand()->resetGraph();
 
-  mLayerManipulator->setLand( _planet->getLand().get() );
+  _layerManipulator->setLand( _planet->getLand().get() );
 }
 
 
@@ -113,15 +113,15 @@ void Planet::init()
   {
     this->setDefaults();
 
-    _planet->getLand()->setTextureLayer( mTextureLayerGroup.get(), 0 );
-    _planet->getLand()->setTextureLayer( mTextureOperationLayerGroup.get(), 1 );
+    _planet->getLand()->setTextureLayer( _textureLayerGroup.get(), 0 );
+    _planet->getLand()->setTextureLayer( _textureOperationLayerGroup.get(), 1 );
     _planet->getLand()->resetGraph(); 	
 
-    osgDB::Registry::instance()->setDatabasePager( mDatabasePager.get() );
-	  mDatabasePager->setExpiryDelay(0);
-    mDatabasePager->setUseFrameBlock( true );
-	  mDatabasePager->setAcceptNewDatabaseRequests( true );
-	  mDatabasePager->setDatabasePagerThreadPause( false );	
+    osgDB::Registry::instance()->setDatabasePager( _databasePager.get() );
+	  _databasePager->setExpiryDelay(0);
+    _databasePager->setUseFrameBlock( true );
+	  _databasePager->setAcceptNewDatabaseRequests( true );
+	  _databasePager->setDatabasePagerThreadPause( false );	
   }
   catch( const std::exception& e )
   {
@@ -143,7 +143,7 @@ void Planet::readKWL( const std::string& fileName )
   osg::ref_ptr< ossimPlanetTextureLayer > layer = ossimPlanetTextureLayerRegistry::instance()->createLayer(kwl.toString());
   if( layer.valid() )
   {
-    mTextureLayerGroup->addTop( layer.get() );
+    _textureLayerGroup->addTop( layer.get() );
   }
 
   reset();
@@ -174,8 +174,8 @@ int Planet::addLayer( ossimPlanetTextureLayer *layer  )
   int index ( -1 );
   if( 0x0 != layer )
   {    
-    mTextureLayerGroup->addTop( layer );
-    index = mTextureLayerGroup->findLayerIndex( layer );
+    _textureLayerGroup->addTop( layer );
+    index = _textureLayerGroup->findLayerIndex( layer );
   }
 
   return index;
@@ -206,8 +206,8 @@ int Planet::addLayerOperation( ossimPlanetTextureLayer *layer  )
   int index ( -1 );
   if( 0x0 != layer )
   {    
-    mTextureOperationLayerGroup->addTop( layer );
-    index = mTextureOperationLayerGroup->findLayerIndex( layer );
+    _textureOperationLayerGroup->addTop( layer );
+    index = _textureOperationLayerGroup->findLayerIndex( layer );
   }
 
   return index;
@@ -222,7 +222,7 @@ int Planet::addLayerOperation( ossimPlanetTextureLayer *layer  )
 
 void Planet::removeLayer( int index  )
 {
-  mTextureLayerGroup->removeLayer( index );
+  _textureLayerGroup->removeLayer( index );
 }
 
 
@@ -234,7 +234,7 @@ void Planet::removeLayer( int index  )
 
 void Planet::removeLayerOperation( int index  )
 {
-  mTextureOperationLayerGroup->removeLayer( index );
+  _textureOperationLayerGroup->removeLayer( index );
 }
 
 
@@ -246,7 +246,7 @@ void Planet::removeLayerOperation( int index  )
 
 void Planet::removeLayer( ossimPlanetTextureLayer *layer )
 {
-  mTextureLayerGroup->removeLayer( layer );
+  _textureLayerGroup->removeLayer( layer );
 }
 
 
@@ -258,7 +258,7 @@ void Planet::removeLayer( ossimPlanetTextureLayer *layer )
 
 void Planet::removeLayerOperation( ossimPlanetTextureLayer *layer  )
 {
-  mTextureOperationLayerGroup->removeLayer( layer );
+  _textureOperationLayerGroup->removeLayer( layer );
 }
 
 
@@ -306,7 +306,7 @@ osg::Group* Planet::root() const
 
 osgDB::DatabasePager* Planet::databasePager() const
 {
-  return mDatabasePager.get();
+  return _databasePager.get();
 }
 
 
@@ -587,11 +587,11 @@ Usul::Interfaces::IUnknown* Planet::viewer()
 
 void Planet::opacity( const float& val )
 {
-  mLayerManipulator->opacity( val );
+  _layerManipulator->opacity( val );
   reset();
 }
 
 float Planet::opacity() const 
 {
-  return mLayerManipulator->opacity();
+  return _layerManipulator->opacity();
 }

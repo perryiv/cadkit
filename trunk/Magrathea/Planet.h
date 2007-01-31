@@ -12,7 +12,7 @@
 
 #include "Export.h"
 #include "LatLongGrid.h"
-#include "LayerOperation.h"
+#include "LayerManipulator.h"
 #include "Manipulator.h"
 
 #include "Usul/Interfaces/IUnknown.h"
@@ -34,67 +34,67 @@ namespace Magrathea
 
       Planet();
     
-      void                                          setDefaults();
-      void                                          init();
+      void                                            setDefaults();
+      void                                            init();
 
-      void                                          readKWL( const std::string& );
+      void                                            readKWL( const std::string& );
 
-      int                                           addLayer( const std::string& filename );
-      int                                           addLayer( ossimPlanetTextureLayer *layer );
+      int                                             addLayer( const std::string& filename );
+      int                                             addLayer( ossimPlanetTextureLayer *layer );
 
-      int                                           addLayerOperation ( const std::string& filename );
-      int                                           addLayerOperation ( ossimPlanetTextureLayer *layer );
+      int                                             addLayerOperation ( const std::string& filename );
+      int                                             addLayerOperation ( ossimPlanetTextureLayer *layer );
       
-      void                                          removeLayer( int index );
-      void                                          removeLayer( ossimPlanetTextureLayer *layer );
+      void                                            removeLayer( int index );
+      void                                            removeLayer( ossimPlanetTextureLayer *layer );
 
-      void                                          removeLayerOperation ( int index );
-      void                                          removeLayerOperation ( ossimPlanetTextureLayer *layer );
+      void                                            removeLayerOperation ( int index );
+      void                                            removeLayerOperation ( ossimPlanetTextureLayer *layer );
 
-      virtual void                                  reset();
-      void                                          refreshLandTextures( ossimPlanetExtents* extents, ossimPlanetPagedLandLodRefreshType refreshType);
+      virtual void                                    reset();
+      void                                            refreshLandTextures( ossimPlanetExtents* extents, ossimPlanetPagedLandLodRefreshType refreshType);
 
-      osg::Group*                                   root() const;
+      osg::Group*                                     root() const;
 
-      osgDB::DatabasePager*                         databasePager() const;
+      osgDB::DatabasePager*                           databasePager() const;
 
-      osgGA::MatrixManipulator*                     manipulator() const;
+      osgGA::MatrixManipulator*                       manipulator() const;
 
-      bool                                          elevationEnabled() const;
-      void                                          elevationEnabled( bool );
+      bool                                            elevationEnabled() const;
+      void                                            elevationEnabled( bool );
 
-      bool                                          hudEnabled() const;
-      void                                          hudEnabled( bool );
+      bool                                            hudEnabled() const;
+      void                                            hudEnabled( bool );
 
-      bool                                          ephemerisFlag() const;
-      void                                          ephemerisFlag( bool );
+      bool                                            ephemerisFlag() const;
+      void                                            ephemerisFlag( bool );
 
-      float                                         elevationExag() const;
-      void                                          elevationExag( const float& );
+      float                                           elevationExag() const;
+      void                                            elevationExag( const float& );
 
-      int                                           elevationPatchSize() const;
-      void                                          elevationPatchSize( const int& );
+      int                                             elevationPatchSize() const;
+      void                                            elevationPatchSize( const int& );
 
-      int                                           levelDetail() const;
-      void                                          levelDetail( const int& );
+      int                                             levelDetail() const;
+      void                                            levelDetail( const int& );
 
-      std::string                                   elevationCacheDir() const;
-      void                                          elevationCacheDir( const std::string& directory );
+      std::string                                     elevationCacheDir() const;
+      void                                            elevationCacheDir( const std::string& directory );
 
-      void                                          landType( ossimPlanetLandType );
+      void                                            landType( ossimPlanetLandType );
 
-      void                                          showLatLongGrid( bool b );
-      bool                                          showLatLongGrid() const;
+      void                                            showLatLongGrid( bool b );
+      bool                                            showLatLongGrid() const;
 
       /// Go to given lat, long and height.
-      void                                          gotoLocation( double lat, double lon, double height );
+      void                                            gotoLocation( double lat, double lon, double height );
 
       /// Get/Set the viewer.
-      void                                          viewer( Usul::Interfaces::IUnknown* viewer );
-      Usul::Interfaces::IUnknown*                   viewer();
+      void                                            viewer( Usul::Interfaces::IUnknown* viewer );
+      Usul::Interfaces::IUnknown*                     viewer();
 
-      void                                          opacity( const float& val );
-      float                                         opacity() const;
+      void                                            opacity( const float& val );
+      float                                           opacity() const;
      
     protected:
 
@@ -102,15 +102,15 @@ namespace Magrathea
 
     protected: 
     
-      osg::ref_ptr< ossimPlanet >                   _planet;
-      osg::ref_ptr< osgDB::DatabasePager >          mDatabasePager;
-      osg::ref_ptr < ossimPlanetTextureLayerGroup > mTextureLayerGroup;
-      osg::ref_ptr < ossimPlanetTextureLayerGroup > mTextureOperationLayerGroup;
-      osg::ref_ptr< LayerOperation >                mLayerManipulator;
+      osg::ref_ptr< ossimPlanet >                     _planet;
+      osg::ref_ptr< osgDB::DatabasePager >            _databasePager;
+      osg::ref_ptr < ossimPlanetTextureLayerGroup >   _textureLayerGroup;
+      osg::ref_ptr < ossimPlanetTextureLayerGroup >   _textureOperationLayerGroup;
+      osg::ref_ptr< LayerManipulator >                _layerManipulator;
 
-      osg::ref_ptr < Manipulator >                  _manipulator;
-      osg::ref_ptr < LatLongGrid >                  _latLongGrid;
-      Usul::Interfaces::IUnknown::RefPtr            _viewer;
+      osg::ref_ptr < Manipulator >                    _manipulator;
+      osg::ref_ptr < LatLongGrid >                    _latLongGrid;
+      Usul::Interfaces::IUnknown::RefPtr              _viewer;
 
      
   };

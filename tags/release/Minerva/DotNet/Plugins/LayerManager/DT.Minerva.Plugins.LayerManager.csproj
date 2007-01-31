@@ -1,0 +1,117 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{89F05E45-BF87-4CF2-A7BD-3F7698FD7F74}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DT.Minerva.Plugins.LayerManager</RootNamespace>
+    <AssemblyName>DT.Minerva.Plugins.LayerManager</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddLayerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddLayerForm.Designer.cs">
+      <DependentUpon>AddLayerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Component.cs" />
+    <Compile Include="Factory.cs" />
+    <Compile Include="Layers.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Layers.Designer.cs">
+      <DependentUpon>Layers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AddLayerForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AddLayerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Layers.resx">
+      <DependentUpon>Layers.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\DockPanel\DockPanel_Src_1_0_0_0\WinFormsUI\WeifenLuo.WinFormsUI.Docking.csproj">
+      <Project>{A8BBFA78-45B8-4F79-8AB7-AED482BCAB67}</Project>
+      <Name>WeifenLuo.WinFormsUI.Docking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\DotNet\Documents\CadKit.Documents.csproj">
+      <Project>{53DF6058-FBE2-4D41-8CE7-DF8ED0436EAE}</Project>
+      <Name>CadKit.Documents</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\DotNet\Interfaces\CadKit.Interfaces.csproj">
+      <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
+      <Name>CadKit.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\DotNet\Persistence\CadKit.Persistence.csproj">
+      <Project>{DFD2710D-3AB3-4707-B74E-80F21E33A23F}</Project>
+      <Name>CadKit.Persistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\DotNet\Tools\CadKit.Tools.csproj">
+      <Project>{01EAAF17-D9EB-4303-A5BD-BE061F8E58F7}</Project>
+      <Name>CadKit.Tools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Layers\DT.Minerva.Layers.csproj">
+      <Project>{A065F96B-13FD-497C-9992-5DA156FF221C}</Project>
+      <Name>DT.Minerva.Layers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lib\DT.Minerva.Lib.csproj">
+      <Project>{CE9EFD28-1B9B-4B0D-AF5B-19DC98AAF8D8}</Project>
+      <Name>DT.Minerva.Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DB\DT.Minerva.DB.csproj">
+      <Project>{B4A38D25-7F1F-4A97-87D8-200AC443C906}</Project>
+      <Name>DT.Minerva.DB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Layers\Glue\DT.Minerva.Layers.Glue.vcproj">
+      <Project>{1CA9FE49-DA3F-42D7-878C-126B71CD3F8B}</Project>
+      <Name>DT.Minerva.Glue</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interfaces\DT.Minerva.Interfaces.csproj">
+      <Project>{35375870-CDDF-431E-B366-782D431BF6F6}</Project>
+      <Name>DT.Minerva.Interfaces</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>move /Y $(TargetDir)\$(TargetName).dll $(TargetDir)\$(TargetName).plug</PostBuildEvent>
+  </PropertyGroup>
+</Project>

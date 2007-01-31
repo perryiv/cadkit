@@ -18,7 +18,7 @@
 
 namespace Magrathea {
 
-class OSSIM_PLANET_WRAPPER_EXPORT LatLongGrid : public osg::Geode
+class MAGRATHEA_EXPORT LatLongGrid : public osg::Geode
 {
 public:
   typedef osg::Geode BaseClass;

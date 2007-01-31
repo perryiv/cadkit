@@ -14,6 +14,7 @@ namespace CadKit.Interfaces
     bool ElevationEnabled { get; set; }
     bool EphemerisEnabled { get; set; }
     bool HudEnabled { get; set; }
+    bool LatLongGrid { get; set; }
 
     float HeightExageration { get; set; }
     float ElevationPatchSize { get; set; }

@@ -17,7 +17,7 @@
 
 namespace Magrathea {
 
-class OSSIM_PLANET_WRAPPER_EXPORT Manipulator : public ossimPlanetManipulator
+class MAGRATHEA_EXPORT Manipulator : public ossimPlanetManipulator
 {
 public:
   typedef ossimPlanetManipulator BaseClass;

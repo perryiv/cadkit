@@ -222,6 +222,15 @@ namespace DT.Minerva.Plugins.Document
 
 
     /// <summary>
+    /// 
+    /// </summary>
+    void CadKit.Interfaces.ILayerList.viewLayerExtents(CadKit.Interfaces.ILayer layer)
+    {
+      _dll.viewLayerExtents(layer);
+    }
+
+
+    /// <summary>
     /// Remove the layer.
     /// </summary>
     protected void _removeLayer(CadKit.Interfaces.ILayer layer)
@@ -544,6 +553,12 @@ namespace DT.Minerva.Plugins.Document
     {
       get { return _dll.hudEnabled(); }
       set { _dll.hudEnabled(value); }
+    }
+
+    bool CadKit.Interfaces.IOssimPlanetSettings.LatLongGrid
+    {
+      get { return _dll.latLongGrid(); }
+      set { _dll.latLongGrid(value); }
     }
 
     bool CadKit.Interfaces.ILegend.ShowLegend

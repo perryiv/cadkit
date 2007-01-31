@@ -20,6 +20,7 @@ namespace DT.Minerva.Layers.Controls
   {
     private DT.Minerva.Glue.LineLayerGlue _lineLayer = new DT.Minerva.Glue.LineLayerGlue();
     private string _where = null;
+    private string _primaryKeyColumn = "id";
 
     /// <summary>
     /// Constructor.
@@ -142,6 +143,20 @@ namespace DT.Minerva.Layers.Controls
     }
 
 
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [
+      System.ComponentModel.Category("Database")
+    ]
+    public string PrimaryKeyColumn
+    {
+      get { return _primaryKeyColumn; }
+      set { _primaryKeyColumn = value; }
+    }
+
+
     /// <summary>
     /// 
     /// </summary>
@@ -152,7 +167,7 @@ namespace DT.Minerva.Layers.Controls
     {
       get
       {
-        string query = "SELECT id, srid(geom) as srid, asBinary(geom) as geom FROM " + this.DataTable;
+        string query = "SELECT " + this.PrimaryKeyColumn + " as id, srid(geom) as srid, asBinary(geom) as geom FROM " + this.DataTable;
 
         if (null != this.Where && this.Where.Length > 0)
           query += System.String.Format(" WHERE {0}", this.Where);

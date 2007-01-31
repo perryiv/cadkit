@@ -31,6 +31,7 @@ namespace CadKit.Plugins.Options.Ossim
         _elevation.Checked = settings.ElevationEnabled;
         _ephemeris.Checked = settings.EphemerisEnabled;
         _hud.Checked = settings.HudEnabled;
+        _latLongGrid.Checked = settings.LatLongGrid;
 
         _cacheDir.Text = settings.ElevationCacheDir;
 
@@ -87,6 +88,7 @@ namespace CadKit.Plugins.Options.Ossim
         settings.ElevationEnabled = _elevation.Checked;
         settings.EphemerisEnabled = _ephemeris.Checked;
         settings.HudEnabled = _hud.Checked;
+        settings.LatLongGrid = _latLongGrid.Checked;
 
         settings.ElevationCacheDir = _cacheDir.Text;
 

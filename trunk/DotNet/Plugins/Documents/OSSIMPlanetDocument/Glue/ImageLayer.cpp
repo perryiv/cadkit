@@ -11,6 +11,8 @@
 
 #include "Usul/Strings/ManagedToNative.h"
 
+#include "ossim/base/ossimKeywordList.h"
+
 #include "ossimPlanet/ossimPlanetTextureLayerRegistry.h"
 
 using namespace CadKit::OSSIMPlanet::Glue;
@@ -24,7 +26,17 @@ using namespace CadKit::OSSIMPlanet::Glue;
 
 ImageLayer::ImageLayer(System::String ^filename)
 {
-  osg::ref_ptr < ossimPlanetTextureLayer > layer ( ossimPlanetTextureLayerRegistry::instance()->createLayer( Usul::Strings::convert(filename) ) );
+  ossimFilename file ( Usul::Strings::convert(filename).c_str() );
+
+  osg::ref_ptr< ossimPlanetTextureLayer > layer ( 0x0 );
+
+  if( "kwl" == file.ext().downcase() )
+  {
+    ossimKeywordlist kwl( file );
+    layer = ossimPlanetTextureLayerRegistry::instance()->createLayer( kwl.toString() );
+  }
+  else
+    layer = ossimPlanetTextureLayerRegistry::instance()->createLayer( file );
 
   if( layer.valid() )
   {
@@ -205,7 +217,7 @@ ossimPlanetTextureLayer* ImageLayer::nativePtr()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-System::IntPtr ImageLayer::intPtr()
+System::IntPtr ImageLayer::nativeIntPtr()
 {
   return System::IntPtr ( _layer );
 }

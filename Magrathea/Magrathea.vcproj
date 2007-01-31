@@ -202,11 +202,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\LayerOperation.cpp"
+				RelativePath=".\LayerManipulator.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\LayerOperation.h"
+				RelativePath=".\LayerManipulator.h"
 				>
 			</File>
 			<File

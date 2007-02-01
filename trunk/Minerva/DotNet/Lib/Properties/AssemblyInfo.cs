@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("DT.Minerva.Lib")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Decision Theater at Arizona State University")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("DT.Minerva.Lib")]
-[assembly: AssemblyCopyright("Copyright © Decision Theater at Arizona State University 2006")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

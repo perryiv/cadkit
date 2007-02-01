@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Threads")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Decision Theater")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Threads")]
-[assembly: AssemblyCopyright("Copyright © Decision Theater 2006")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

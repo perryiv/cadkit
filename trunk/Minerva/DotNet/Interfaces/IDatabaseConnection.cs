@@ -4,6 +4,7 @@
 //  Copyright (c) 2006, Decision Theater at Arizona State University
 //  All rights reserved.
 //  Created by: Adam Kubach
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
 ///////////////////////////////////////////////////////////////////////////////
 

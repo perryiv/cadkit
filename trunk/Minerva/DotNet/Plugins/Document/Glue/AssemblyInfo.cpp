@@ -13,9 +13,9 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyTitleAttribute("WNVPluginsAppDllGlue")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
-[assembly:AssemblyCompanyAttribute("Decision Theater at Arizona State University")];
+[assembly:AssemblyCompanyAttribute("")];
 [assembly:AssemblyProductAttribute("WNVPluginsAppDllGlue")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c) Decision Theater at Arizona State University 2006")];
+[assembly:AssemblyCopyrightAttribute("")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 

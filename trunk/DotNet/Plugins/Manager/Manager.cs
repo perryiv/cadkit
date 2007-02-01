@@ -22,7 +22,7 @@ namespace CadKit.Plugins
     /// Data members.
     /// </summary>
     private static Manager _instance = null;
-    private CadKit.Threads.Tools.Lock _lock = new CadKit.Threads.Tools.Lock();
+    private CadKit.Threads.Tools.Lock _lock = null;
     private Plugins _plugins = new Plugins();
 
 
@@ -295,7 +295,16 @@ namespace CadKit.Plugins
     /// </summary>
     private CadKit.Threads.Tools.Lock Lock
     {
-      get { return _lock; }
+      get
+      {
+        // If this gets called from the finalizer then the lock may have 
+        // already been destroyed and set to null.
+        if (null == _lock)
+        {
+          _lock = new CadKit.Threads.Tools.Lock();
+        }
+        return _lock;
+      }
     }
 
 

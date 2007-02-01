@@ -12,9 +12,9 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyTitleAttribute("Glue")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
-[assembly:AssemblyCompanyAttribute("House Atreides")];
+[assembly:AssemblyCompanyAttribute("CadKit Project")];
 [assembly:AssemblyProductAttribute("Glue")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c) House Atreides 2006")];
+[assembly:AssemblyCopyrightAttribute("Copyright (c) CadKit Project 2006")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 

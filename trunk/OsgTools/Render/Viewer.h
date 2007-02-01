@@ -325,6 +325,10 @@ public:
   bool                  hasTextureEnvironment() const;
   void                  removeTextureEnvironment();
 
+  // Set/get the texture mode.
+  bool                  textureMode ( osg::StateAttribute::GLMode mode ) const;
+  void                  textureMode ( osg::StateAttribute::GLMode mode, bool state );
+
   // Add/Remove clipping plane
   void                  addPlane ( );
   osg::ClipPlane*       addPlane ( const osg::Plane&, bool widget = true );

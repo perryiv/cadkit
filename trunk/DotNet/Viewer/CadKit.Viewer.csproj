@@ -76,6 +76,10 @@
       <Project>{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}</Project>
       <Name>CadKit.Referenced</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Threads\Tools\CadKit.Threads.Tools.csproj">
+      <Project>{EF977229-371D-4FB1-90C5-237DEE74D069}</Project>
+      <Name>CadKit.Threads.Tools</Name>
+    </ProjectReference>
     <ProjectReference Include="Glue\Cadkit.Viewer.Glue.vcproj">
       <Project>{74E03074-1991-4E02-B5F2-B9D98FAD14D0}</Project>
       <Name>CadKit.Viewer.Glue</Name>

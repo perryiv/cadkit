@@ -69,6 +69,10 @@
       <Project>{FEFE0DC2-5208-4F93-910A-2B4D78163AA3}</Project>
       <Name>CadKit.Helios.Lib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\DotNet\Images\CadKit.Images.csproj">
+      <Project>{7B2D553D-0909-4C86-94E4-3474BD8F8E69}</Project>
+      <Name>CadKit.Images</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\DotNet\Init\Cadkit.Init.Glue.vcproj">
       <Project>{51E8E425-CEF2-4B84-BC7E-E8B187D8A524}</Project>
       <Name>CadKit.Init.Glue</Name>

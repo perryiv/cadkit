@@ -22,6 +22,7 @@ namespace CadKit.Viewer
     CadKit.Interfaces.IPolygonMode,
     CadKit.Interfaces.IShadeModel,
     CadKit.Interfaces.ITextureEnvironment,
+    CadKit.Interfaces.ITextureMode,
     CadKit.Interfaces.IRenderLoop
   {
     /// <summary>
@@ -117,7 +118,7 @@ namespace CadKit.Viewer
     /// </summary>
     public void clear()
     {
-      lock (this.Mutex)
+      using (this.Lock.write())
       {
         this.Viewer.clear();
       }
@@ -129,7 +130,7 @@ namespace CadKit.Viewer
     /// </summary>
     public void init()
     {
-      lock (this.Mutex)
+      if (false == this.InvokeRequired)
       {
         this.initRenderingContext();
 
@@ -178,14 +179,14 @@ namespace CadKit.Viewer
 
 
     /// <summary>
-    /// Get/set the clear color corner.
+    /// Get/set the clear color corners.
     /// </summary>
     public CadKit.Viewer.Glue.Viewer.Corners Corners
     {
-      get { lock (this.Mutex) { return this.Viewer.backgroundCorners(); } }
+      get { using (this.Lock.read()) { return this.Viewer.backgroundCorners(); } }
       set
       {
-        lock (this.Mutex)
+        using (this.Lock.write())
         {
           this.Viewer.backgroundCorners(value);
           CadKit.Persistence.Registry.Instance.setUint(REGISTRY_SECTION, COLOR_CORNERS, (uint)value);
@@ -199,7 +200,7 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Viewer.Glue.Viewer Viewer
     {
-      get { lock (this.Mutex) { return _viewer; } }
+      get { using (this.Lock.read()) { return _viewer; } }
     }
 
 
@@ -211,7 +212,7 @@ namespace CadKit.Viewer
     {
       try
       {
-        lock (this.Mutex)
+        if ( false == this.InvokeRequired)
         {
           // RESET
           if (e.KeyCode == System.Windows.Forms.Keys.Space || e.KeyCode == System.Windows.Forms.Keys.R)
@@ -255,7 +256,7 @@ namespace CadKit.Viewer
     {
       try
       {
-        lock (this.Mutex)
+        if ( false == this.InvokeRequired)
         {
           bool left = (e.Button == System.Windows.Forms.MouseButtons.Left);
           bool middle = (e.Button == System.Windows.Forms.MouseButtons.Middle);
@@ -291,7 +292,7 @@ namespace CadKit.Viewer
     {
       try
       {
-        lock (this.Mutex)
+        if (false == this.InvokeRequired)
         {
           base.OnMouseWheel(e);
         }
@@ -311,7 +312,7 @@ namespace CadKit.Viewer
     {
       try
       {
-        lock (this.Mutex)
+        if (false == this.InvokeRequired)
         {
           bool left = (e.Button == System.Windows.Forms.MouseButtons.Left);
           bool middle = (e.Button == System.Windows.Forms.MouseButtons.Middle);
@@ -341,7 +342,7 @@ namespace CadKit.Viewer
     {
       try
       {
-        lock (this.Mutex)
+        if (false == this.InvokeRequired)
         {
           bool left = (e.Button == System.Windows.Forms.MouseButtons.Left);
           bool middle = (e.Button == System.Windows.Forms.MouseButtons.Middle);
@@ -369,7 +370,7 @@ namespace CadKit.Viewer
     /// </summary>
     protected override void _paintOpenGL()
     {
-      lock (this.Mutex)
+      if (false == this.InvokeRequired)
       {
         if (null != this.Viewer)
           this.Viewer.render();
@@ -382,10 +383,12 @@ namespace CadKit.Viewer
     /// </summary>
     protected override void _resizeOpenGL()
     {
-      lock (this.Mutex)
+      if (false == this.InvokeRequired)
       {
         if (null != this.Viewer)
+        {
           this.Viewer.resize(this.Size.Width, this.Size.Height);
+        }
       }
     }
 
@@ -397,7 +400,7 @@ namespace CadKit.Viewer
     {
       get
       {
-        lock (this.Mutex)
+        using (this.Lock.read())
         {
           CadKit.Viewer.Glue.Viewer.ViewMode mode = this.Viewer.mode();
           return (CadKit.Interfaces.ViewMode)mode;
@@ -405,17 +408,14 @@ namespace CadKit.Viewer
       }
       set
       {
-        lock (this.Mutex)
+        using (this.Lock.write())
         {
           this.Viewer.mode((CadKit.Viewer.Glue.Viewer.ViewMode)value);
-          if (value == CadKit.Interfaces.ViewMode.PICK)
-          {
-            this.ContextMenuStrip = this.buildContextMenu();
-          }
-          else
-          {
-            this.ContextMenuStrip = null;
-          }
+        }
+        System.Windows.Forms.ContextMenuStrip strip = (value == CadKit.Interfaces.ViewMode.PICK) ? this.buildContextMenu() : null;
+        using (this.Lock.write())
+        {
+          this.ContextMenuStrip = strip;
         }
       }
     }
@@ -426,11 +426,15 @@ namespace CadKit.Viewer
     /// </summary>
     public void camera(CadKit.Interfaces.CameraOption option)
     {
-      lock (this.Mutex)
+      if (false == this.InvokeRequired)
       {
-        if (null != this.Viewer)
+        CadKit.Viewer.Glue.Viewer viewer = this.Viewer;
+        if (null != viewer)
         {
-          this.Viewer.camera(option);
+          using (this.Lock.write())
+          {
+            viewer.camera(option);
+          }
         }
       }
     }
@@ -443,14 +447,11 @@ namespace CadKit.Viewer
     {
       get
       {
-        lock (this.Mutex)
-        {
-          CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
-          filters.Add(new CadKit.Interfaces.Filter("JPEG Image (*.jpg)", "*.jpg"));
-          filters.Add(new CadKit.Interfaces.Filter("PNG Image (*.png)", "*.png"));
-          filters.Add(new CadKit.Interfaces.Filter("BMP Image (*.bmp)", "*.bmp"));
-          return filters;
-        }
+        CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
+        filters.Add(new CadKit.Interfaces.Filter("JPEG Image (*.jpg)", "*.jpg"));
+        filters.Add(new CadKit.Interfaces.Filter("PNG Image (*.png)", "*.png"));
+        filters.Add(new CadKit.Interfaces.Filter("BMP Image (*.bmp)", "*.bmp"));
+        return filters;
       }
     }
 
@@ -462,13 +463,10 @@ namespace CadKit.Viewer
     {
       get
       {
-        lock (this.Mutex)
-        {
-          CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
-          filters.Add(new CadKit.Interfaces.Filter("OpenSceneGraph Binary (*.ive)", "*.ive"));
-          filters.Add(new CadKit.Interfaces.Filter("OpenSceneGraph ASCII (*.osg)", "*.osg"));
-          return filters;
-        }
+        CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
+        filters.Add(new CadKit.Interfaces.Filter("OpenSceneGraph Binary (*.ive)", "*.ive"));
+        filters.Add(new CadKit.Interfaces.Filter("OpenSceneGraph ASCII (*.osg)", "*.osg"));
+        return filters;
       }
     }
 
@@ -487,7 +485,7 @@ namespace CadKit.Viewer
     /// </summary>
     public void writeImageFile(string file)
     {
-      lock (this.Mutex)
+      if (false == this.InvokeRequired) // Need multi-threaded way to dump images...
       {
         if (false == this.Viewer.writeImageFile(file))
         {
@@ -502,8 +500,8 @@ namespace CadKit.Viewer
     /// </summary>
     float CadKit.Interfaces.IExportImage.Scale
     {
-      get { lock (this.Mutex) { return this.FrameScale; } }
-      set { lock (this.Mutex) { this.FrameScale = value; } }
+      get { return this.FrameScale; }
+      set { this.FrameScale = value; }
     }
 
 
@@ -512,7 +510,7 @@ namespace CadKit.Viewer
     /// </summary>
     void CadKit.Interfaces.IExportScene.export(string filename, CadKit.Interfaces.SceneExport.Option option)
     {
-      lock (this.Mutex)
+      using (this.Lock.read())
       {
         if (CadKit.Interfaces.SceneExport.Option.ENTIRE_SCENE == option)
         {
@@ -537,7 +535,7 @@ namespace CadKit.Viewer
     /// </summary>
     public override object PropertyGridObject
     {
-      get { lock (this.Mutex) { return new CadKit.Viewer.Panel.PropertyProxy(this); } }
+      get { return new CadKit.Viewer.Panel.PropertyProxy(this); }
     }
 
 
@@ -546,20 +544,8 @@ namespace CadKit.Viewer
     /// </summary>
     public uint RenderingPasses
     {
-      get
-      {
-        lock (this.Mutex)
-        {
-          return this.Viewer.numRenderPasses();
-        }
-      }
-      set
-      {
-        lock (this.Mutex)
-        {
-          this.Viewer.numRenderPasses(value);
-        }
-      }
+      get { using (this.Lock.read()) { return this.Viewer.numRenderPasses(); } }
+      set { using (this.Lock.write()) { this.Viewer.numRenderPasses(value); } }
     }
 
 
@@ -568,20 +554,8 @@ namespace CadKit.Viewer
     /// </summary>
     public double ScatterScale
     {
-      get
-      {
-        lock (this.Mutex)
-        {
-          return this.Viewer.scatterScale();
-        }
-      }
-      set
-      {
-        lock (this.Mutex)
-        {
-          this.Viewer.scatterScale(value);
-        }
-      }
+      get { using (this.Lock.read()) { return this.Viewer.scatterScale(); } }
+      set { using (this.Lock.write()) { this.Viewer.scatterScale(value); } }
     }
 
 
@@ -592,7 +566,7 @@ namespace CadKit.Viewer
     {
       get
       {
-        lock (this.Mutex)
+        using (this.Lock.read())
         {
           CadKit.Viewer.Glue.Viewer.RenderPasses passes = this.Viewer.availableRenderPasses();
           return (null == passes) ? null : passes.ToArray();
@@ -606,14 +580,14 @@ namespace CadKit.Viewer
     /// </summary>
     public string Directory
     {
-      get { lock (this.Mutex) { return this.Viewer.Directory; } }
+      get { using (this.Lock.read()) { return this.Viewer.Directory; } }
       set
       {
-        lock (this.Mutex)
+        using (this.Lock.write())
         {
           this.Viewer.Directory = value;
-          CadKit.Persistence.Registry.Instance.setString(REGISTRY_SECTION, this.FRAME_DUMP_DIRECTORY_KEY, value);
         }
+        CadKit.Persistence.Registry.Instance.setString(REGISTRY_SECTION, this.FRAME_DUMP_DIRECTORY_KEY, value);
       }
     }
 
@@ -623,14 +597,14 @@ namespace CadKit.Viewer
     /// </summary>
     public string BaseFilename
     {
-      get { lock (this.Mutex) { return this.Viewer.Filename; } }
+      get { using (this.Lock.read()) { return this.Viewer.Filename; } }
       set
       {
-        lock (this.Mutex)
+        using (this.Lock.write())
         {
           this.Viewer.Filename = value;
-          CadKit.Persistence.Registry.Instance.setString(REGISTRY_SECTION, this.FRAME_DUMP_FILENAME_KEY, value);
         }
+        CadKit.Persistence.Registry.Instance.setString(REGISTRY_SECTION, this.FRAME_DUMP_FILENAME_KEY, value);
       }
     }
 
@@ -640,14 +614,14 @@ namespace CadKit.Viewer
     /// </summary>
     public string Extension
     {
-      get { lock (this.Mutex) { return this.Viewer.Extension; } }
+      get { using (this.Lock.read()) { return this.Viewer.Extension; } }
       set
       {
-        lock (this.Mutex)
+        using (this.Lock.write())
         {
           this.Viewer.Extension = value;
-          CadKit.Persistence.Registry.Instance.setString(REGISTRY_SECTION, this.FRAME_DUMP_EXTENSION_KEY, value);
         }
+        CadKit.Persistence.Registry.Instance.setString(REGISTRY_SECTION, this.FRAME_DUMP_EXTENSION_KEY, value);
       }
     }
 
@@ -657,8 +631,8 @@ namespace CadKit.Viewer
     /// </summary>
     public bool DumpFrames
     {
-      get { lock (this.Mutex) { return this.Viewer.DumpFrames; } }
-      set { lock (this.Mutex) { this.Viewer.DumpFrames = value; } }
+      get { using (this.Lock.read()) { return this.Viewer.DumpFrames; } }
+      set { using (this.Lock.write()) { this.Viewer.DumpFrames = value; } }
     }
 
 
@@ -667,20 +641,14 @@ namespace CadKit.Viewer
     /// </summary>
     public float FrameScale
     {
-      get
-      {
-        lock (this.Mutex)
-        {
-          return this.Viewer.frameDumpScale();
-        }
-      }
+      get { using (this.Lock.read()) { return this.Viewer.frameDumpScale(); } }
       set
       {
-        lock (this.Mutex)
+        using (this.Lock.write())
         {
           this.Viewer.frameDumpScale(value);
-          CadKit.Persistence.Registry.Instance.setFloat(REGISTRY_SECTION, this.FRAME_DUMP_SCALE_KEY, value);
         }
+        CadKit.Persistence.Registry.Instance.setFloat(REGISTRY_SECTION, this.FRAME_DUMP_SCALE_KEY, value);
       }
     }
 
@@ -708,24 +676,21 @@ namespace CadKit.Viewer
     /// </summary>
     public void takePicture(string file, uint numRenderPasses, float frameSizeScale, float scatterScale)
     {
-      lock (this.Mutex)
+      uint originalNumPasses = this.RenderingPasses;
+      float originalFrameScale = this.FrameScale;
+      double originalScatterScale = this.ScatterScale;
+      try
       {
-        uint originalNumPasses = this.RenderingPasses;
-        float originalFrameScale = this.FrameScale;
-        double originalScatterScale = this.ScatterScale;
-        try
-        {
-          this.RenderingPasses = numRenderPasses;
-          this.FrameScale = frameSizeScale;
-          this.ScatterScale = scatterScale;
-          this.writeImageFile(file);
-        }
-        finally
-        {
-          this.RenderingPasses = originalNumPasses;
-          this.FrameScale = originalFrameScale;
-          this.ScatterScale = originalScatterScale;
-        }
+        this.RenderingPasses = numRenderPasses;
+        this.FrameScale = frameSizeScale;
+        this.ScatterScale = scatterScale;
+        this.writeImageFile(file);
+      }
+      finally
+      {
+        this.RenderingPasses = originalNumPasses;
+        this.FrameScale = originalFrameScale;
+        this.ScatterScale = originalScatterScale;
       }
     }
 
@@ -739,25 +704,28 @@ namespace CadKit.Viewer
       set { this.UseDisplayLists = value; }
     }
 
+
     /// <summary>
     /// Set/get the use of display lists.
     /// </summary>
     public bool UseDisplayLists
     {
-      get { lock (this.Mutex) { return this.Viewer.useDisplayLists(); } }
+      get { using (this.Lock.read()) { return this.Viewer.useDisplayLists(); } }
       set
       {
-        lock (this.Mutex)
+        bool old = this.UseDisplayLists;
+        using (this.Lock.write())
         {
-          bool old = this.Viewer.useDisplayLists();
           this.Viewer.useDisplayLists(value);
-          if (null != this.DisplayListUseChanged)
-          {
-            this.DisplayListUseChanged(this, old, value);
-          }
+        }
+        CadKit.Interfaces.DisplayListUseChangedDelegate changed = this.DisplayListUseChanged;
+        if (null != changed)
+        {
+          changed(this, old, value);
         }
       }
     }
+
 
     /// <summary>
     /// Set/get the use of render loop.
@@ -767,6 +735,7 @@ namespace CadKit.Viewer
       get { return this.UseRenderLoop; }
       set { this.UseRenderLoop = value; }
     }
+
 
     /// <summary>
     /// Set/get the use of display lists.
@@ -793,8 +762,8 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Interfaces.DisplayListUseChangedDelegate DisplayListUseChanged
     {
-      get { lock (this.Mutex) { return _displayListUseChanged; } }
-      set { lock (this.Mutex) { _displayListUseChanged = value; } }
+      get { using (this.Lock.read()) { return _displayListUseChanged; } }
+      set { using (this.Lock.write()) { _displayListUseChanged = value; } }
     }
 
 
@@ -833,12 +802,15 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Interfaces.PolygonMode.Mode PolygonMode
     {
-      get { lock (this.Mutex) { return this.Viewer.polygonMode(CadKit.Interfaces.PolygonMode.Face.FRONT_AND_BACK); } }
+      get { using (this.Lock.read()) { return this.Viewer.polygonMode(CadKit.Interfaces.PolygonMode.Face.FRONT_AND_BACK); } }
       set
       {
-        lock (this.Mutex)
+        using (this.Lock.write())
         {
           this.Viewer.polygonMode(value, CadKit.Interfaces.PolygonMode.Face.FRONT_AND_BACK);
+        }
+        if (false == this.InvokeRequired)
+        {
           this.Invalidate(true);
         }
       }
@@ -860,12 +832,15 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Interfaces.ShadeModel.Model ShadeModel
     {
-      get { lock (this.Mutex) { return this.Viewer.shadeModel(); } }
+      get { using (this.Lock.read()) { return this.Viewer.shadeModel(); } }
       set
       {
-        lock (this.Mutex)
+        using (this.Lock.write())
         {
           this.Viewer.shadeModel(value);
+        }
+        if (false == this.InvokeRequired)
+        {
           this.Invalidate(true);
         }
       }
@@ -887,15 +862,154 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Interfaces.TextureEnvironment.Mode TextureEnvironment
     {
-      get { lock (this.Mutex) { return this.Viewer.textureEnvironment(); } }
+      get { using (this.Lock.read()) { return this.Viewer.textureEnvironment(); } }
       set
       {
-        lock (this.Mutex)
+        using (this.Lock.write())
         {
           this.Viewer.textureEnvironment(value);
-          this.Invalidate(true);
+          if (false == this.InvokeRequired)
+          {
+            this.Invalidate(true);
+          }
         }
       }
+    }
+
+
+    /// <summary>
+    /// Set the texture mode.
+    /// </summary>
+    void CadKit.Interfaces.ITextureMode.mode(CadKit.Interfaces.TextureMode.Mode mode, bool state)
+    {
+      this.textureMode(mode, state);
+    }
+
+
+    /// <summary>
+    /// Get the texture mode.
+    /// </summary>
+    public void textureMode(CadKit.Interfaces.TextureMode.Mode mode, bool state)
+    {
+      using (this.Lock.write()) { this.Viewer.textureMode(mode, state); }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    bool CadKit.Interfaces.ITextureMode.mode(CadKit.Interfaces.TextureMode.Mode mode)
+    {
+      return this.textureMode(mode);
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    public bool textureMode(CadKit.Interfaces.TextureMode.Mode mode)
+    {
+      using (this.Lock.read()) { return this.Viewer.textureMode(mode); }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    bool CadKit.Interfaces.ITextureMode.OneD
+    {
+      get { return this.TextureModeOneD; }
+      set { this.TextureModeOneD = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    public bool TextureModeOneD
+    {
+      get { using (this.Lock.read()) { return this.Viewer.textureMode(CadKit.Interfaces.TextureMode.Mode.D1); } }
+      set { using (this.Lock.write()) { this.Viewer.textureMode(CadKit.Interfaces.TextureMode.Mode.D1, value); } }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    bool CadKit.Interfaces.ITextureMode.TwoD
+    {
+      get { return this.TextureModeTwoD; }
+      set { this.TextureModeTwoD = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    public bool TextureModeTwoD
+    {
+      get { using (this.Lock.read()) { return this.Viewer.textureMode(CadKit.Interfaces.TextureMode.Mode.D2); } }
+      set { using (this.Lock.write()) { this.Viewer.textureMode(CadKit.Interfaces.TextureMode.Mode.D2, value); } }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    bool CadKit.Interfaces.ITextureMode.ThreeD
+    {
+      get { return this.TextureModeThreeD; }
+      set { this.TextureModeThreeD = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    public bool TextureModeThreeD
+    {
+      get { using (this.Lock.read()) { return this.Viewer.textureMode(CadKit.Interfaces.TextureMode.Mode.D3); } }
+      set { using (this.Lock.write()) { this.Viewer.textureMode(CadKit.Interfaces.TextureMode.Mode.D3, value); } }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    bool CadKit.Interfaces.ITextureMode.Rectangle
+    {
+      get { return this.TextureModeRectangle; }
+      set { this.TextureModeRectangle = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    public bool TextureModeRectangle
+    {
+      get { using (this.Lock.read()) { return this.Viewer.textureMode(CadKit.Interfaces.TextureMode.Mode.RECTANGLE); } }
+      set { using (this.Lock.write()) { this.Viewer.textureMode(CadKit.Interfaces.TextureMode.Mode.RECTANGLE, value); } }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    bool CadKit.Interfaces.ITextureMode.CubeMap
+    {
+      get { return this.TextureModeCubeMap; }
+      set { this.TextureModeCubeMap = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    public bool TextureModeCubeMap
+    {
+      get { using (this.Lock.read()) { return this.Viewer.textureMode(CadKit.Interfaces.TextureMode.Mode.CUBE_MAP); } }
+      set { using (this.Lock.write()) { this.Viewer.textureMode(CadKit.Interfaces.TextureMode.Mode.CUBE_MAP, value); } }
     }
   }
 }

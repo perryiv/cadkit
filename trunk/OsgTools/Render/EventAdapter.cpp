@@ -202,4 +202,21 @@ void EventAdapter::setButtonMask ( bool left, bool middle, bool right )
   _buttonMask |= ( ( middle ) ? BaseClass::MIDDLE_MOUSE_BUTTON : 0 );
   _buttonMask |= ( ( right  ) ? BaseClass::RIGHT_MOUSE_BUTTON  : 0 );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the buttons.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void EventAdapter::setButton ( bool left, bool middle, bool right )
+{
+  if ( left )
+    _button = osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON;
+  else if ( middle )
+    _button = osgGA::GUIEventAdapter::MIDDLE_MOUSE_BUTTON;
+  else if ( right )
+    _button = osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON;
+}
 #endif

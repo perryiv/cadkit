@@ -474,7 +474,18 @@ namespace CadKit.Helios
             this._addMenuButton(shading, new CadKit.Helios.Commands.ShadeModelFlatCommand(this));
           }
           {
-            System.Windows.Forms.ToolStripMenuItem textures = CadKit.Tools.Menu.makeMenu("&Textures");
+            System.Windows.Forms.ToolStripMenuItem textures = CadKit.Tools.Menu.makeMenu("Texture &Mode");
+            menu.DropDownItems.Add(textures);
+            this._addMenuButton(textures, new CadKit.Helios.Commands.TextureMode1DCommand(this));
+            this._addMenuButton(textures, new CadKit.Helios.Commands.TextureMode2DCommand(this));
+            this._addMenuButton(textures, new CadKit.Helios.Commands.TextureMode3DCommand(this));
+            this._addMenuButton(textures, new CadKit.Helios.Commands.TextureModeRectangleCommand(this));
+            this._addMenuButton(textures, new CadKit.Helios.Commands.TextureModeCubeMapCommand(this));
+            textures.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
+            this._addMenuButton(textures, new CadKit.Helios.Commands.TextureModeAllCommand(this));
+          }
+          {
+            System.Windows.Forms.ToolStripMenuItem textures = CadKit.Tools.Menu.makeMenu("Texture &Environment");
             menu.DropDownItems.Add(textures);
             this._addMenuButton(textures, new CadKit.Helios.Commands.TextureEnvironmentAddCommand(this));
             this._addMenuButton(textures, new CadKit.Helios.Commands.TextureEnvironmentBlendCommand(this));

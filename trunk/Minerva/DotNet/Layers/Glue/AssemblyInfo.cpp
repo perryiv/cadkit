@@ -13,9 +13,9 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyTitleAttribute("WNVLayersGlue")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
-[assembly:AssemblyCompanyAttribute("Decision Theater at Arizona State University")];
+[assembly:AssemblyCompanyAttribute("")];
 [assembly:AssemblyProductAttribute("WNVLayersGlue")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c) Decision Theater at Arizona State University 2006")];
+[assembly:AssemblyCopyrightAttribute("")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 

@@ -12,6 +12,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#pragma warning ( disable : 4945 )
+
 #include "Viewer.h"
 #include "TimeoutSpin.h"
 
@@ -24,7 +26,34 @@
 #include "Usul/Math/MinMax.h"
 #include "Usul/Threads/Mutex.h"
 
+#include "osg/TextureRectangle"
+#include "osg/TextureCubeMap"
+
 using namespace CadKit::Viewer::Glue;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Map between texture modes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  typedef std::map < unsigned int, unsigned int > TexModeMap;
+  TexModeMap _texModeMap;
+  struct TexModeMapInit
+  {
+    TexModeMapInit()
+    {
+      _texModeMap [ static_cast<TexModeMap::value_type::first_type> ( Viewer::TexMode::Mode::D1 ) ]        = GL_TEXTURE_1D;
+      _texModeMap [ static_cast<TexModeMap::value_type::first_type> ( Viewer::TexMode::Mode::D2 ) ]        = GL_TEXTURE_2D;
+      _texModeMap [ static_cast<TexModeMap::value_type::first_type> ( Viewer::TexMode::Mode::D3 ) ]        = GL_TEXTURE_3D;
+      _texModeMap [ static_cast<TexModeMap::value_type::first_type> ( Viewer::TexMode::Mode::RECTANGLE ) ] = GL_TEXTURE_RECTANGLE;
+      _texModeMap [ static_cast<TexModeMap::value_type::first_type> ( Viewer::TexMode::Mode::CUBE_MAP ) ]  = GL_TEXTURE_CUBE_MAP;
+    }
+  } _texModeMapInit;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -748,6 +777,42 @@ void Viewer::textureEnvironment ( TexEnv::Mode mode )
     _viewer->setTextureEnvironment ( osg::TexEnv::REPLACE );
     break;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the texture mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::textureMode ( Viewer::TexMode::Mode mode )
+{
+  if ( 0x0 == _viewer )
+    return false;
+
+  Detail::TexModeMap::const_iterator i = Detail::_texModeMap.find ( static_cast < Detail::TexModeMap::value_type::first_type > ( mode ) );
+  if ( Detail::_texModeMap.end() != i )
+    return _viewer->textureMode ( i->second );
+
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the texture mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::textureMode ( Viewer::TexMode::Mode mode, bool state )
+{
+  if ( 0x0 == _viewer )
+    return;
+
+  Detail::TexModeMap::const_iterator i = Detail::_texModeMap.find ( static_cast < Detail::TexModeMap::value_type::first_type > ( mode ) );
+  if ( Detail::_texModeMap.end() != i )
+    _viewer->textureMode ( i->second, state );
 }
 
 

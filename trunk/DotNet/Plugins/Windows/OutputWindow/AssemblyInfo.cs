@@ -17,9 +17,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("OutputWindow")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("CadKit Project")]
 [assembly: AssemblyProduct("OutputWindow")]
-[assembly: AssemblyCopyright("Copyright ©  2006")]
+[assembly: AssemblyCopyright("Copyright © CadKit Project 2006")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

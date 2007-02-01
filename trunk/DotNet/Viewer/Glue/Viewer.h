@@ -36,6 +36,7 @@ namespace CadKit
         typedef CadKit::Interfaces::PolygonMode PolygonMode;
         typedef CadKit::Interfaces::ShadeModel ShadeModel;
         typedef CadKit::Interfaces::TextureEnvironment TexEnv;
+        typedef CadKit::Interfaces::TextureMode TexMode;
         delegate void TimeoutDelegate ( bool start, double span );
         typedef void (*NativeTimeoutCallback) ( bool start, double span );
         delegate void SpinDelegate ( System::Object^ sender, System::EventArgs^ args );
@@ -125,6 +126,10 @@ namespace CadKit
         // Set/query/remove the texture environment.
         TexEnv::Mode          textureEnvironment();
         void                  textureEnvironment ( TexEnv::Mode mode );
+
+        // Set/get the texture mode.
+        bool                  textureMode ( TexMode::Mode mode );
+        void                  textureMode ( TexMode::Mode mode, bool state );
 
         // Set all the display-lists to on/off.
         bool                  useDisplayLists();

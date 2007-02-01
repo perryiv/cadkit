@@ -65,6 +65,7 @@ public:
   void                    setWindowSize ( const Usul::Math::Vec2ui &size );
   void                    setMouse      ( const Usul::Math::Vec2f &xy );
   void                    setSeconds    ( double seconds );
+  void                    setButton     ( bool left, bool middle, bool right );
   void                    setButtonMask ( bool left, bool middle, bool right );
 
 protected:

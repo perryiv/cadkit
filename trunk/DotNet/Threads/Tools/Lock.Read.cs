@@ -36,13 +36,16 @@ namespace CadKit.Threads.Tools
         }
         try
         {
-          if (true == _lock.IsWriterLockHeld)
+          // If this thread already holds a write-lock then it is not possible 
+          // for other threads to hold read- or write-locks, so do nothing.
+          // Note: this design assumes the scope of the write-lock held bigger 
+          // than this instance.
+          if (false == _lock.IsWriterLockHeld)
           {
-            throw new System.Exception("Error 1128851690: Writer-lock is already held");
+            _lock.AcquireReaderLock(timeout);
+            this._incrementCount();
+            //this._printCount();
           }
-          _lock.AcquireReaderLock(timeout);
-          this._incrementCount();
-          //this._printCount();
         }
         catch (System.ApplicationException e)
         {
@@ -54,33 +57,32 @@ namespace CadKit.Threads.Tools
 
 
       /// <summary>
-      /// Print the count.
-      /// </summary>
-      private void _printCount()
-      {
-        System.Console.WriteLine("Total number of read-locks: {0}", this.Count);
-      }
-
-
-      /// <summary>
       /// Dispose this instance.
       /// </summary>
       void System.IDisposable.Dispose()
       {
         if (null != _lock)
         {
-          if (true == _lock.IsWriterLockHeld)
-          {
-            System.Console.WriteLine("Error 2517188982: Writer-lock is held");
-            return;
-          }
-          else if (true == _lock.IsReaderLockHeld)
+          // If this thread hold a write-lock when this instance was created 
+          // (see constructor) then no read-lock was acquired.
+          // Note: this design assumes the scope of the write-lock held bigger 
+          // than this instance.
+          if (true == _lock.IsReaderLockHeld)
           {
             _lock.ReleaseReaderLock();
             this._decrementCount();
             //this._printCount();
           }
         }
+      }
+
+
+      /// <summary>
+      /// Print the count.
+      /// </summary>
+      private void _printCount()
+      {
+        System.Console.WriteLine("Total number of read-locks: {0}", this.Count);
       }
 
 

@@ -154,7 +154,9 @@ void OssimPlanet::_init()
   _planet->setEnableEphemerisFlag( false );
   _planet->setEnableHudFlag( true );
 
-  _planet->getLand()->setCacheSize( ossim_uint64 ( 4096 * 1024 * 1024 ), ossim_uint64 ( 2048 * 1024 * 1024 ) );
+  const ossim_uint64 maximum ( 4096UL * 1024UL * 1024UL );
+  const ossim_uint64 minimum ( 2048UL * 1024UL * 1024UL );
+  _planet->getLand()->setCacheSize( maximum, minimum );
 
   _planet->getLand()->setTextureLayer( _textureLayerGroup, 0 );
 }

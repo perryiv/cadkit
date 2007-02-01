@@ -11,7 +11,11 @@ namespace CadKit.OpenGL
 {
   public partial class Canvas
   {
+    /// <summary>
+    /// Delegate used to re-direct a render.
+    /// </summary>
     private delegate void RenderDelegate();
+
 
     /// <summary>
     /// Call to repaint.
@@ -42,36 +46,65 @@ namespace CadKit.OpenGL
       }
     }
 
+
+    /// <summary>
+    /// Start the render timer.
+    /// </summary>
     public void startRenderTimer(int interval)
     {
-      lock (this.Mutex)
+      System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+      timer.Interval = interval;
+      timer.Tick += new System.EventHandler(_onTick);
+      timer.Enabled = true;
+      using (this.Lock.write())
       {
-        _timer = new System.Windows.Forms.Timer();
-        _timer.Interval = interval;
-        _timer.Tick += new System.EventHandler(OnTick);
-        _timer.Enabled = true;
-        _timer.Start();
+        _timer = timer;
+      }
+      timer.Start();
+    }
+
+
+    /// <summary>
+    /// Called every timer tick.
+    /// </summary>
+    private void _onTick(object sender, System.EventArgs args)
+    {
+      try
+      {
+        this.render();
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2549683770: {0}", e.Message);
       }
     }
 
-    private void OnTick(object sender, System.EventArgs e)
-    {
-      this.render();
-    }
 
+    /// <summary>
+    /// End any render timer.
+    /// </summary>
     public void endRenderTimer()
     {
-      lock (this.Mutex)
+      System.Windows.Forms.Timer timer = null;
+      using (this.Lock.write())
       {
-        _timer.Enabled = false;
-        _timer.Stop();
+        timer = _timer;
         _timer = null;
+      }
+      if (null != timer)
+      {
+        timer.Enabled = false;
+        timer.Stop();
       }
     }
 
+
+    /// <summary>
+    /// Set/get the render timer flag.
+    /// </summary>
     public bool RenderTimer
     {
-      get { lock (this.Mutex) { return _timer != null && _timer.Enabled; } }
+      get { using (this.Lock.read()) { return _timer != null && _timer.Enabled; } }
       set
       {
         if (true == value)

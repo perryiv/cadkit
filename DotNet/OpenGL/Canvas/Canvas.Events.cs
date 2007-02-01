@@ -53,10 +53,7 @@ namespace CadKit.OpenGL
     {
       try
       {
-        lock (this.Mutex)
-        {
-          this.render();
-        }
+        this.render();
       }
       catch (System.Exception e)
       {
@@ -72,7 +69,7 @@ namespace CadKit.OpenGL
     {
       try
       {
-        lock (this.Mutex)
+        if (false == this.InvokeRequired)
         {
           // Sizing a form before it is shown will generate a resize event. 
           // That is too soon to render.
@@ -97,7 +94,7 @@ namespace CadKit.OpenGL
     {
       try
       {
-        lock (this.Mutex)
+        if (false == this.InvokeRequired)
         {
           this.editProperties();
         }
@@ -116,7 +113,7 @@ namespace CadKit.OpenGL
     {
       try
       {
-        lock (this.Mutex)
+        if (false == this.InvokeRequired)
         {
           this.editBackgroundColor();
         }
@@ -135,7 +132,7 @@ namespace CadKit.OpenGL
     {
       try
       {
-        lock (this.Mutex)
+        if (false == this.InvokeRequired)
         {
           this.editPixelFormat();
         }
@@ -154,7 +151,7 @@ namespace CadKit.OpenGL
     {
       try
       {
-        lock (this.Mutex)
+        if (false == this.InvokeRequired)
         {
           this._deleteRenderingContext();
         }
@@ -175,7 +172,7 @@ namespace CadKit.OpenGL
     {
       try
       {
-        lock (this.Mutex)
+        if (false == this.InvokeRequired)
         {
           this.OnKeyPress(args);
         }
@@ -195,7 +192,7 @@ namespace CadKit.OpenGL
     {
       try
       {
-        lock (this.Mutex)
+        if (false == this.InvokeRequired)
         {
           this.OnKeyDown(args);
         }
@@ -214,7 +211,7 @@ namespace CadKit.OpenGL
     {
       try
       {
-        lock (this.Mutex)
+        if (false == this.InvokeRequired)
         {
           this.OnMouseWheel(args);
         }
@@ -235,7 +232,7 @@ namespace CadKit.OpenGL
     {
       try
       {
-        lock (this.Mutex)
+        if (false == this.InvokeRequired)
         {
           this.OnMouseDown(args);
         }
@@ -256,7 +253,7 @@ namespace CadKit.OpenGL
     {
       try
       {
-        lock (this.Mutex)
+        if (false == this.InvokeRequired)
         {
           this.OnMouseUp(args);
         }
@@ -277,7 +274,7 @@ namespace CadKit.OpenGL
     {
       try
       {
-        lock (this.Mutex)
+        if (false == this.InvokeRequired)
         {
           this.OnMouseMove(args);
         }

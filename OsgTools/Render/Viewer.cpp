@@ -902,7 +902,7 @@ bool Viewer::hasShadeModel ( osg::ShadeModel::Mode mode ) const
   // Get the state set.
   const osg::StateSet *ss = _renderer->getGlobalStateSet();
 
-  // Get the shade-model attribute, if any.
+  // Get the attribute, if any.
   const osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::SHADEMODEL );
   if ( !sa )
     return false;
@@ -1004,7 +1004,7 @@ bool Viewer::hasTextureEnvironment ( TexEnv::Mode mode ) const
   // Get the state set.
   const osg::StateSet *ss = _renderer->getGlobalStateSet();
 
-  // Get the shade-model attribute, if any.
+  // Get the attribute, if any.
   const osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::TEXENV );
   if ( !sa )
     return false;
@@ -1052,6 +1052,32 @@ void Viewer::removeTextureEnvironment()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Return the texture mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::textureMode ( osg::StateAttribute::GLMode mode ) const
+{
+  const osg::StateSet *ss = _renderer->getGlobalStateSet();
+  return Usul::Bits::has ( ss->getTextureMode ( 0, mode ), osg::StateAttribute::ON );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the texture mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::textureMode ( osg::StateAttribute::GLMode mode, bool state )
+{
+  osg::StateSet *ss = _renderer->getGlobalStateSet();
+  return ss->setTextureMode ( 0, mode, ( ( state ) ? osg::StateAttribute::ON : osg::StateAttribute::OFF ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set two sided lighting
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1082,7 +1108,7 @@ bool Viewer::twoSidedLighting() const
   // Get the state set.
   const osg::StateSet *ss = _renderer->getGlobalStateSet();
 
-  // Get the shade-model attribute, if any.
+  // Get the attribute, if any.
   const osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::LIGHTMODEL );
   if ( !sa )
     return false;
@@ -3629,14 +3655,7 @@ void Viewer::handleNavigation ( float x, float y, bool left, bool middle, bool r
   ea->setWindowSize ( Usul::Math::Vec2ui( this->width(), this->height() ) );
   ea->setMouse ( Usul::Math::Vec2f ( x, y ) );
 
-  // For now
-  if( left )
-    ea->setButton( osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON );
-  else if ( middle )
-    ea->setButton( osgGA::GUIEventAdapter::MIDDLE_MOUSE_BUTTON );
-  else if ( right )
-    ea->setButton( osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON );
-
+  ea->setButton ( left, middle, right );
   ea->setButtonMask ( left, middle, right );
   ea->setEventType ( type );
 

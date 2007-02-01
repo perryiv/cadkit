@@ -19,7 +19,7 @@ namespace CadKit.Threads.Jobs
     /// <summary>
     /// Data members.
     /// </summary>
-    private CadKit.Threads.Tools.Lock _lock = new CadKit.Threads.Tools.Lock();
+    private CadKit.Threads.Tools.Lock _lock = null;
     private int _min = 0;
     private int _max = 100;
     private int _value = 0;
@@ -151,7 +151,16 @@ namespace CadKit.Threads.Jobs
     /// </summary>
     private CadKit.Threads.Tools.Lock Lock
     {
-      get { return _lock; }
+      get
+      {
+        // If this gets called from the finalizer then the lock may have 
+        // already been destroyed and set to null.
+        if (null == _lock)
+        {
+          _lock = new CadKit.Threads.Tools.Lock();
+        }
+        return _lock;
+      }
     }
 
     /// <summary>

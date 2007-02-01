@@ -11,7 +11,7 @@ namespace CadKit.Viewer
 {
   public partial class Panel
   {
-    public class PropertyProxy : CadKit.OpenGL.Canvas.PropertyProxy
+    public new class PropertyProxy : CadKit.OpenGL.Canvas.PropertyProxy
     {
       /// <summary>
       /// Data members.

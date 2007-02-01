@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("CadKit.Viewer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Decision Theater at Arizona State University")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("CadKit.Viewer")]
-[assembly: AssemblyCopyright("Copyright © Decision Theater at Arizona State University 2006")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

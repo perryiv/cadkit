@@ -1,7 +1,7 @@
 ﻿
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater at Arizona State University
+//  Copyright (c) 2006, Decision Theater
 //  All rights reserved.
 //  Created by: Adam Kubach
 //

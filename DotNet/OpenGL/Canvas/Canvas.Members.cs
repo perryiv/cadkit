@@ -36,15 +36,15 @@ namespace CadKit.OpenGL
     /// <summary>
     /// Data members.
     /// </summary>
-    object _mutex = new object();
-    Flags _flags = new Flags();
-    uint _pixelFormat = 0;
-    CadKit.OpenGL.Glue.RenderContext _renderContext = null;
-    InnerPanel _innerPanel = null;
-    CadKit.Persistence.Form _propertyGridForm = null;
-    CadKit.OpenGL.DataGridForm _pixelFormatEditor = null;
-    CadKit.Persistence.Form _colorEditorForm = null;
-    System.Data.DataTable _pixelFormats = null;
-    System.Windows.Forms.Timer _timer = null;
+    private CadKit.Threads.Tools.Lock _lock = null;
+    private Flags _flags = new Flags();
+    private uint _pixelFormat = 0;
+    private CadKit.OpenGL.Glue.RenderContext _renderContext = null;
+    private InnerPanel _innerPanel = null;
+    private CadKit.Persistence.Form _propertyGridForm = null;
+    private CadKit.OpenGL.DataGridForm _pixelFormatEditor = null;
+    private CadKit.Persistence.Form _colorEditorForm = null;
+    private System.Data.DataTable _pixelFormats = null;
+    private System.Windows.Forms.Timer _timer = null;
   }
 }

@@ -101,11 +101,20 @@ namespace CadKit.OpenGL
 
 
     /// <summary>
-    /// Get the mutex.
+    /// Get the lock.
     /// </summary>
-    protected object Mutex
+    protected CadKit.Threads.Tools.Lock Lock
     {
-      get { return _mutex; }
+      get
+      {
+        // If this gets called from the finalizer then the lock may have 
+        // already been destroyed and set to null.
+        if (null == _lock)
+        {
+          _lock = new CadKit.Threads.Tools.Lock();
+        }
+        return _lock;
+      }
     }
 
 
@@ -114,7 +123,7 @@ namespace CadKit.OpenGL
     /// </summary>
     object CadKit.Interfaces.IPropertyGridObject.PropertyGridObject
     {
-      get { lock (this.Mutex) { return this.PropertyGridObject; } }
+      get { return this.PropertyGridObject; }
     }
 
 
@@ -123,7 +132,7 @@ namespace CadKit.OpenGL
     /// </summary>
     public virtual object PropertyGridObject
     {
-      get { lock (this.Mutex) { return new CadKit.OpenGL.Canvas.PropertyProxy(this); } }
+      get { return new CadKit.OpenGL.Canvas.PropertyProxy(this); }
     }
 
 
@@ -132,8 +141,8 @@ namespace CadKit.OpenGL
     /// </summary>
     private InnerPanel InnerControl
     {
-      get { lock (this.Mutex) { return _innerPanel; } }
-      set { lock (this.Mutex) { _innerPanel = value; } }
+      get { using (this.Lock.read()) { return _innerPanel; } }
+      set { using (this.Lock.write()) { _innerPanel = value; } }
     }
   }
 }

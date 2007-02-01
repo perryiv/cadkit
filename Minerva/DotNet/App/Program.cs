@@ -37,7 +37,8 @@ namespace DT.Minerva.App
         // Declare main form and pass the persistant name.
         CadKit.Helios.MainForm form = new CadKit.Helios.MainForm("DT.Minerva.Lib.MainForm");
 
-        form.Icon = new System.Drawing.Icon(CadKit.Helios.Application.Instance.IconDir + "/minerva_logo_64.ico");
+        // Add icon.
+        form.Icon = CadKit.Images.Image.icon(CadKit.Helios.Application.Instance.IconDir + "/minerva_logo_16.png");
 
         // Set the application's main form.
         CadKit.Helios.Application.Instance.MainForm = form;

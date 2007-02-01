@@ -17,9 +17,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle( "LargeTriangleDelegate" )]
 [assembly: AssemblyDescription( "" )]
 [assembly: AssemblyConfiguration( "" )]
-[assembly: AssemblyCompany( "House Atreides" )]
+[assembly: AssemblyCompany( "CadKit Project" )]
 [assembly: AssemblyProduct( "LargeTriangleDelegate" )]
-[assembly: AssemblyCopyright( "Copyright © House Atreides 2006" )]
+[assembly: AssemblyCopyright( "Copyright © CadKit Project 2006" )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
 

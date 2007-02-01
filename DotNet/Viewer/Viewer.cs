@@ -26,6 +26,7 @@ namespace CadKit.Viewer
     CadKit.Interfaces.IPolygonMode,
     CadKit.Interfaces.IShadeModel,
     CadKit.Interfaces.ITextureEnvironment,
+    CadKit.Interfaces.ITextureMode,
     CadKit.Interfaces.IRenderLoop
   {
     /// <summary>
@@ -37,7 +38,7 @@ namespace CadKit.Viewer
     /// <summary>
     /// Data members.
     /// </summary>
-    private object _mutex = new object();
+    private CadKit.Threads.Tools.Lock _lock = null;
     private CadKit.Viewer.Panel _panel = new CadKit.Viewer.Panel();
     private CadKit.Interfaces.IDocument _document = null;
 
@@ -68,10 +69,9 @@ namespace CadKit.Viewer
     {
       try
       {
-        lock (this.Mutex)
+        if (CadKit.Documents.Manager.Instance.ActiveView != this)
         {
-          if( CadKit.Documents.Manager.Instance.ActiveView != this)
-            CadKit.Documents.Manager.Instance.ActiveView = this as CadKit.Interfaces.IDocumentView;
+          CadKit.Documents.Manager.Instance.ActiveView = this as CadKit.Interfaces.IDocumentView;
         }
       }
       catch (System.Exception ex)
@@ -113,7 +113,10 @@ namespace CadKit.Viewer
     /// </summary>
     public void init()
     {
-      lock (this.Mutex) { this.Panel.init(); }
+      if (false == this.InvokeRequired)
+      {
+        this.Panel.init();
+      }
     }
 
 
@@ -124,11 +127,8 @@ namespace CadKit.Viewer
     {
       try
       {
-        lock (this.Mutex)
-        {
-          this.init();
-          this.camera(CadKit.Interfaces.CameraOption.FIT);
-        }
+        this.init();
+        this.camera(CadKit.Interfaces.CameraOption.FIT);
       }
       catch (System.Exception e)
       {
@@ -144,19 +144,22 @@ namespace CadKit.Viewer
     {
       try
       {
-        lock (this.Mutex)
+        if (false == this.InvokeRequired)
         {
+          CadKit.Interfaces.IDocument document = this.Document;
+          CadKit.Viewer.Panel panel = this.Panel;
+
           // Call this first because it circles back around and expects the panel to exist.
-          if (null != this.Document)
+          if (null != document)
           {
-            this.Document.remove(this);
+            document.remove(this);
             this.Document = null;
           }
 
           // Now clear the panel.
-          if (null != this.Panel)
+          if (null != panel)
           {
-            this.Panel.clear();
+            panel.clear();
             this.Panel = null;
           }
         }
@@ -182,7 +185,7 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Viewer.Glue.Viewer HeliosViewer
     {
-      get { lock (this.Mutex) { return this.Panel.Viewer; } }
+      get { using (this.Lock.read()) { return this.Panel.Viewer; } }
     }
 
 
@@ -191,8 +194,8 @@ namespace CadKit.Viewer
     /// </summary>
     public object Scene
     {
-      get { lock (this.Mutex) { return this.Panel.Viewer.Scene; } }
-      set { lock (this.Mutex) { this.Panel.Viewer.Scene = value as CadKit.OSG.Glue.Node; } }
+      get { using (this.Lock.read()) { return this.Panel.Viewer.Scene; } }
+      set { using (this.Lock.write()) { this.Panel.Viewer.Scene = value as CadKit.OSG.Glue.Node; } }
     }
 
 
@@ -210,8 +213,8 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Interfaces.ViewMode Mode
     {
-      get { lock (this.Mutex) { return this.Panel.Mode; } }
-      set { lock (this.Mutex) { this.Panel.Mode = value; } }
+      get { return this.Panel.Mode; }
+      set { this.Panel.Mode = value; }
     }
 
 
@@ -221,7 +224,7 @@ namespace CadKit.Viewer
     /// <param name="interval"></param>
     public void startRenderTimer(int interval)
     {
-      lock (this.Mutex) { this.Panel.startRenderTimer(interval); }
+      this.Panel.startRenderTimer(interval);
     }
 
 
@@ -230,7 +233,7 @@ namespace CadKit.Viewer
     /// </summary>
     public void endRenderTimer()
     {
-      lock (this.Mutex) { this.Panel.endRenderTimer(); }
+      this.Panel.endRenderTimer();
     }
 
 
@@ -239,7 +242,7 @@ namespace CadKit.Viewer
     /// </summary>
     public void render()
     {
-      lock (this.Mutex) { this.Panel.render(); }
+      this.Panel.render();
     }
 
 
@@ -248,7 +251,7 @@ namespace CadKit.Viewer
     /// </summary>
     public void camera(CadKit.Interfaces.CameraOption option)
     {
-      lock (this.Mutex) { this.Panel.camera(option); }
+      this.Panel.camera(option);
     }
 
 
@@ -270,15 +273,12 @@ namespace CadKit.Viewer
     /// </summary>
     void CadKit.Interfaces.IExportImage.export(string filename)
     {
-      lock (this.Mutex)
+      CadKit.Interfaces.IExportImage export = this.Panel as CadKit.Interfaces.IExportImage;
+      if (null == export)
       {
-        CadKit.Interfaces.IExportImage export = this.Panel as CadKit.Interfaces.IExportImage;
-        if (null == export)
-        {
-          throw new System.Exception(System.String.Format("Error 1078988943: Failed to export image file '{0}', feature not supported", filename));
-        }
-        export.export(filename);
+        throw new System.Exception(System.String.Format("Error 1078988943: Failed to export image file '{0}', feature not supported", filename));
       }
+      export.export(filename);
     }
 
 
@@ -287,8 +287,8 @@ namespace CadKit.Viewer
     /// </summary>
     float CadKit.Interfaces.IExportImage.Scale
     {
-      get { lock (this.Mutex) { return this.Panel.FrameScale; } }
-      set { lock (this.Mutex) { this.Panel.FrameScale = value; } }
+      get { return this.Panel.FrameScale; }
+      set { this.Panel.FrameScale = value; }
     }
 
 
@@ -310,24 +310,30 @@ namespace CadKit.Viewer
     /// </summary>
     void CadKit.Interfaces.IExportScene.export(string filename, CadKit.Interfaces.SceneExport.Option option)
     {
-      lock (this.Mutex)
+      CadKit.Interfaces.IExportScene export = this.Panel as CadKit.Interfaces.IExportScene;
+      if (null == export)
       {
-        CadKit.Interfaces.IExportScene export = this.Panel as CadKit.Interfaces.IExportScene;
-        if (null == export)
-        {
-          throw new System.Exception(System.String.Format("Error 1824824745: Failed to export scene file '{0}', feature not supported", filename));
-        }
-        export.export(filename, option);
+        throw new System.Exception(System.String.Format("Error 1824824745: Failed to export scene file '{0}', feature not supported", filename));
       }
+      export.export(filename, option);
     }
 
 
     /// <summary>
-    /// Get the mutex.
+    /// Get the lock.
     /// </summary>
-    public object Mutex
+    public CadKit.Threads.Tools.Lock Lock
     {
-      get { return _mutex; }
+      get
+      {
+        // If this gets called from the finalizer then the lock may have 
+        // already been destroyed and set to null.
+        if (null == _lock)
+        {
+          _lock = new CadKit.Threads.Tools.Lock();
+        }
+        return _lock;
+      }
     }
 
 
@@ -336,10 +342,10 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Interfaces.IDocument Document
     {
-      get { lock (this.Mutex) { return _document; } }
+      get { using (this.Lock.read()) { return _document; } }
       set
       {
-        lock (this.Mutex)
+        using (this.Lock.write())
         {
           this._removeDocumentDelegates();
           _document = value;
@@ -354,8 +360,8 @@ namespace CadKit.Viewer
     /// </summary>
     CadKit.Interfaces.IDocument CadKit.Interfaces.IDocumentView.Document
     {
-      get { lock (this.Mutex) { return this.Document; } }
-      set { lock (this.Mutex) { this.Document = value; } }
+      get { return this.Document; }
+      set { this.Document = value; }
     }
 
 
@@ -384,7 +390,7 @@ namespace CadKit.Viewer
     /// </summary>
     private void _addDocumentDelegates()
     {
-      lock (this.Mutex)
+      using (this.Lock.write())
       {
         if (null != _document)
         {
@@ -403,7 +409,7 @@ namespace CadKit.Viewer
     /// </summary>
     private void _removeDocumentDelegates()
     {
-      lock (this.Mutex)
+      using (this.Lock.write())
       {
         if (null != _document)
         {
@@ -438,8 +444,8 @@ namespace CadKit.Viewer
     /// </summary>
     public string Directory
     {
-      get { lock (this.Mutex) { return this.Panel.Directory; } }
-      set { lock (this.Mutex) { this.Panel.Directory = value; } }
+      get { return this.Panel.Directory; }
+      set { this.Panel.Directory = value; }
     }
 
 
@@ -448,8 +454,8 @@ namespace CadKit.Viewer
     /// </summary>
     public string BaseFilename
     {
-      get { lock (this.Mutex) { return this.Panel.BaseFilename; } }
-      set { lock (this.Mutex) { this.Panel.BaseFilename = value; } }
+      get { return this.Panel.BaseFilename; }
+      set { this.Panel.BaseFilename = value; }
     }
 
 
@@ -458,8 +464,8 @@ namespace CadKit.Viewer
     /// </summary>
     public string Extension
     {
-      get { lock (this.Mutex) { return this.Panel.Extension; } }
-      set { lock (this.Mutex) { this.Panel.Extension = value; } }
+      get { return this.Panel.Extension; }
+      set { this.Panel.Extension = value; }
     }
 
 
@@ -468,8 +474,8 @@ namespace CadKit.Viewer
     /// </summary>
     public bool DumpFrames
     {
-      get { lock (this.Mutex) { return this.Panel.DumpFrames; } }
-      set { lock (this.Mutex) { this.Panel.DumpFrames = value; } }
+      get { return this.Panel.DumpFrames; }
+      set { this.Panel.DumpFrames = value; }
     }
 
 
@@ -497,8 +503,8 @@ namespace CadKit.Viewer
     /// </summary>
     public System.Drawing.Color ClearColor
     {
-      get { lock (this.Mutex) { return this.Panel.ClearColor; } }
-      set { lock (this.Mutex) { this.Panel.ClearColor = value; } }
+      get { return this.Panel.ClearColor; }
+      set { this.Panel.ClearColor = value; }
     }
 
 
@@ -507,8 +513,8 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Viewer.Glue.Viewer.Corners Corner
     {
-      get { lock (this.Mutex) { return this.Panel.Corners; } }
-      set { lock (this.Mutex) { this.Panel.Corners = value; } }
+      get { return this.Panel.Corners; }
+      set { this.Panel.Corners = value; }
     }
 
 
@@ -517,7 +523,7 @@ namespace CadKit.Viewer
     /// </summary>
     public virtual object PropertyGridObject
     {
-      get { lock (this.Mutex) { return this.Panel.PropertyGridObject; } }
+      get { return this.Panel.PropertyGridObject; }
     }
 
 
@@ -528,10 +534,7 @@ namespace CadKit.Viewer
     {
       if (null != this.Panel)
       {
-        lock (this.Mutex)
-        {
-          this.Panel.takePicture(file, numRenderPasses, frameSizeScale, scatterScale);
-        }
+        this.Panel.takePicture(file, numRenderPasses, frameSizeScale, scatterScale);
       }
     }
 
@@ -550,7 +553,7 @@ namespace CadKit.Viewer
     /// </summary>
     public uint[] AvailableRenderingPasses
     {
-      get { lock (this.Mutex) { return (null == this.Panel) ? null : this.Panel.AvailableRenderingPasses; } }
+      get { return (null == this.Panel) ? null : this.Panel.AvailableRenderingPasses; }
     }
 
 
@@ -569,15 +572,12 @@ namespace CadKit.Viewer
     /// </summary>
     public double ScatterScale
     {
-      get { lock (this.Mutex) { return (null == this.Panel) ? 1.0f : this.Panel.ScatterScale; } }
+      get { return (null == this.Panel) ? 1.0f : this.Panel.ScatterScale; }
       set
       {
         if (null != this.Panel)
         {
-          lock (this.Mutex)
-          {
-            this.Panel.ScatterScale = value;
-          }
+          this.Panel.ScatterScale = value;
         }
       }
     }
@@ -598,15 +598,12 @@ namespace CadKit.Viewer
     /// </summary>
     public uint RenderingPasses
     {
-      get { lock (this.Mutex) { return (null == this.Panel) ? 1 : this.Panel.RenderingPasses; } }
+      get { return (null == this.Panel) ? 1 : this.Panel.RenderingPasses; }
       set
       {
         if (null != this.Panel)
         {
-          lock (this.Mutex)
-          {
-            this.Panel.RenderingPasses = value;
-          }
+          this.Panel.RenderingPasses = value;
         }
       }
     }
@@ -627,8 +624,8 @@ namespace CadKit.Viewer
     /// </summary>
     public bool UseDisplayLists
     {
-      get { lock (this.Mutex) { return this.Panel.UseDisplayLists; } }
-      set { lock (this.Mutex) { this.Panel.UseDisplayLists = value; } }
+      get { return this.Panel.UseDisplayLists; }
+      set { this.Panel.UseDisplayLists = value; }
     }
 
     /// <summary>
@@ -646,8 +643,8 @@ namespace CadKit.Viewer
     /// </summary>
     public bool UseRenderLoop
     {
-      get { lock (this.Mutex) { return this.Panel.UseRenderLoop; } }
-      set { lock (this.Mutex) { this.Panel.UseRenderLoop = value; } }
+      get { return this.Panel.UseRenderLoop; }
+      set { this.Panel.UseRenderLoop = value; }
     }
 
     /// <summary>
@@ -665,8 +662,8 @@ namespace CadKit.Viewer
     /// </summary>
     CadKit.Interfaces.DisplayListUseChangedDelegate DisplayListUseChanged
     {
-      get { lock (this.Mutex) { return this.Panel.DisplayListUseChanged; } }
-      set { lock (this.Mutex) { this.Panel.DisplayListUseChanged = value; } }
+      get { return this.Panel.DisplayListUseChanged; }
+      set { this.Panel.DisplayListUseChanged = value; }
     }
 
 
@@ -675,8 +672,8 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Viewer.Panel Panel
     {
-      get { lock (this.Mutex) { return _panel; } }
-      set { lock (this.Mutex) { _panel = value; } }
+      get { using (this.Lock.read()) { return _panel; } }
+      set { using (this.Lock.write()) { _panel = value; } }
     }
 
 
@@ -705,8 +702,8 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Interfaces.PolygonMode.Face PolygonFace
     {
-      get { lock (this.Mutex) { return this.Panel.PolygonFace; } }
-      set { lock (this.Mutex) { this.Panel.PolygonFace = value; } }
+      get { return this.Panel.PolygonFace; }
+      set { this.Panel.PolygonFace = value; }
     }
 
 
@@ -715,8 +712,8 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Interfaces.PolygonMode.Mode PolygonMode
     {
-      get { lock (this.Mutex) { return this.Panel.PolygonMode; } }
-      set { lock (this.Mutex) { this.Panel.PolygonMode = value; } }
+      get { return this.Panel.PolygonMode; }
+      set { this.Panel.PolygonMode = value; }
     }
 
 
@@ -725,8 +722,8 @@ namespace CadKit.Viewer
     /// </summary>
     public object DatabasePager
     {
-      get { lock (this.Mutex) { return this.Panel.Viewer.DatabasePager; } }
-      set { lock (this.Mutex) { this.Panel.Viewer.DatabasePager = value as CadKit.OSG.Glue.DatabasePager; } }
+      get { using (this.Lock.read()) { return this.Panel.Viewer.DatabasePager; } }
+      set { using (this.Lock.write()) { this.Panel.Viewer.DatabasePager = value as CadKit.OSG.Glue.DatabasePager; } }
     }
 
 
@@ -735,8 +732,8 @@ namespace CadKit.Viewer
     /// </summary>
     public object MatrixManipulator
     {
-      get { lock (this.Mutex) { return this.Panel.Viewer.MatrixManipulator; } }
-      set { lock (this.Mutex) { this.Panel.Viewer.MatrixManipulator = value as CadKit.OSG.Glue.MatrixManipulator; } }
+      get { using (this.Lock.read()) { return this.Panel.Viewer.MatrixManipulator; } }
+      set { using (this.Lock.write()) { this.Panel.Viewer.MatrixManipulator = value as CadKit.OSG.Glue.MatrixManipulator; } }
     }
 
 
@@ -765,8 +762,8 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Interfaces.ShadeModel.Model ShadeModel
     {
-      get { lock (this.Mutex) { return this.Panel.ShadeModel; } }
-      set { lock (this.Mutex) { this.Panel.ShadeModel = value; } }
+      get { return this.Panel.ShadeModel; }
+      set { this.Panel.ShadeModel = value; }
     }
 
 
@@ -785,8 +782,144 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Interfaces.TextureEnvironment.Mode TextureEnvironment
     {
-      get { lock (this.Mutex) { return this.Panel.TextureEnvironment; } }
-      set { lock (this.Mutex) { this.Panel.TextureEnvironment = value; } }
+      get { return this.Panel.TextureEnvironment; }
+      set { this.Panel.TextureEnvironment = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    void CadKit.Interfaces.ITextureMode.mode(CadKit.Interfaces.TextureMode.Mode mode, bool state)
+    {
+      this.textureMode(mode, state);
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    public void textureMode(CadKit.Interfaces.TextureMode.Mode mode, bool state)
+    {
+      this.Panel.textureMode(mode, state);
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    bool CadKit.Interfaces.ITextureMode.mode(CadKit.Interfaces.TextureMode.Mode mode)
+    {
+      return this.textureMode(mode);
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    public bool textureMode(CadKit.Interfaces.TextureMode.Mode mode)
+    {
+      return this.Panel.textureMode(mode);
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    bool CadKit.Interfaces.ITextureMode.OneD
+    {
+      get { return this.TextureModeOneD; }
+      set { this.TextureModeOneD = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    public bool TextureModeOneD
+    {
+      get { return this.Panel.TextureModeOneD; }
+      set { this.Panel.TextureModeOneD = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    bool CadKit.Interfaces.ITextureMode.TwoD
+    {
+      get { return this.TextureModeTwoD; }
+      set { this.TextureModeTwoD = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    public bool TextureModeTwoD
+    {
+      get { return this.Panel.TextureModeTwoD; }
+      set { this.Panel.TextureModeTwoD = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    bool CadKit.Interfaces.ITextureMode.ThreeD
+    {
+      get { return this.TextureModeThreeD; }
+      set { this.TextureModeThreeD = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    public bool TextureModeThreeD
+    {
+      get { return this.Panel.TextureModeThreeD; }
+      set { this.Panel.TextureModeThreeD = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    bool CadKit.Interfaces.ITextureMode.Rectangle
+    {
+      get { return this.TextureModeRectangle; }
+      set { this.TextureModeRectangle = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    public bool TextureModeRectangle
+    {
+      get { return this.Panel.TextureModeRectangle; }
+      set { this.Panel.TextureModeRectangle = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    bool CadKit.Interfaces.ITextureMode.CubeMap
+    {
+      get { return this.TextureModeCubeMap; }
+      set { this.TextureModeCubeMap = value; }
+    }
+
+
+    /// <summary>
+    /// Set/get the texture mode.
+    /// </summary>
+    public bool TextureModeCubeMap
+    {
+      get { return this.Panel.TextureModeCubeMap; }
+      set { this.Panel.TextureModeCubeMap = value; }
     }
   }
 }

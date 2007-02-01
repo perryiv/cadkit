@@ -6,7 +6,6 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{63DA3A57-9A4E-4F0D-A983-87569212DB6D}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CadKit.Plugins.Documents.OSSIMPlanetDocument</RootNamespace>
     <AssemblyName>CadKit.Plugins.Documents.OSSIMPlanetDocument</AssemblyName>
   </PropertyGroup>
@@ -39,7 +38,11 @@
     <Compile Include="Delegate.cs" />
     <Compile Include="Document.cs" />
     <Compile Include="Factory.cs" />
+<<<<<<< CadKit.Plugins.Documents.OSSIMPlanetDocument.csproj
+    <Compile Include="AssemblyInfo.cs" />
+=======
     <Compile Include="Properties\AssemblyInfo.cs" />
+>>>>>>> 1.4
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\DockPanel\DockPanel_Src_1_0_0_0\WinFormsUI\WeifenLuo.WinFormsUI.Docking.csproj">

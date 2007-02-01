@@ -34,6 +34,9 @@ namespace CadKit.Threads.Tools
         }
         try
         {
+          // If this thread holds a read-lock then it has to release it before 
+          // getting the write-lock. Otherwise, the attempt to acquire the 
+          // write-lock below will block.
           if (true == _lock.IsReaderLockHeld)
           {
             throw new System.Exception("Error 3637580726: Reader-lock is already held");

@@ -36,6 +36,8 @@
   <ItemGroup>
     <Compile Include="Application.cs" />
     <Compile Include="Commands\CameraViewCommand.cs" />
+    <Compile Include="Commands\TextureModeCommands.cs" />
+    <Compile Include="Commands\TextureModeCommand.cs" />
     <Compile Include="Commands\InsertFileCommand.cs" />
     <Compile Include="Commands\DragDropFilesCommand.cs" />
     <Compile Include="Commands\TextureEnvironmentCommands.cs" />

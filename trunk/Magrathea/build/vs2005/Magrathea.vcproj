@@ -122,7 +122,7 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(OSSIM_INC_DIR); $(OSSIM_PLANET_INC_DIR);$(OSG_EPHEMERIS_INC_DIR);$(CADKIT_ROOT_DIR)"
+				AdditionalIncludeDirectories="$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(OSSIM_INC_DIR); $(OSSIM_PLANET_INC_DIR);$(OSG_EPHEMERIS_INC_DIR);$(CADKIT_ROOT_DIR);$(CADKIT_ROOT_DIR)\Magrathea\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_COMPILING_MAGRATHEA;GEOTIFF_ENABLED;"
 				StringPooling="true"
 				RuntimeLibrary="2"

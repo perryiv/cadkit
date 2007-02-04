@@ -191,7 +191,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DT.Minerva.Plugins.Document
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DT.Minerva.Plugins.Layers.PostGIS", "..\..\Minerva\DotNet\Plugins\LayerManager\DT.Minerva.Plugins.Layers.PostGIS.csproj", "{306A67E8-58A8-4492-A721-10AB2E6D065B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Npgsql", "..\..\Npgsql\src\Npgsql.csproj", "{0F8DF2CB-CEB4-4A8B-897C-9FA0058BC155}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Npgsql", "..\..\..\sdk\Npgsql\src\Npgsql.csproj", "{0F8DF2CB-CEB4-4A8B-897C-9FA0058BC155}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Options.Ossim", "..\Plugins\Options\Ossim\CadKit.Plugins.Options.Ossim.csproj", "{BA3F2EE9-0A5E-4015-95BE-5AC346CB5C56}"
 EndProject

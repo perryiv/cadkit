@@ -89,6 +89,7 @@
     <Compile Include="IDockPanel.cs" />
     <Compile Include="IPersistantFormData.cs" />
     <Compile Include="IRecentFileList.cs" />
+    <Compile Include="ITextureMode.cs" />
     <Compile Include="IUpdateScene.cs" />
     <Compile Include="IViewer.cs" />
     <Compile Include="IViewerMode.cs" />

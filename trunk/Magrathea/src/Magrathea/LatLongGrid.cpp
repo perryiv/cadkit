@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "LatLongGrid.h"
-#include "Project.h"
+#include "Magrathea/LatLongGrid.h"
+#include "Magrathea/Project.h"
 
 #include "OsgTools/State/StateSet.h"
 

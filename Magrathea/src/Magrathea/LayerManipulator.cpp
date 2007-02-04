@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "LayerManipulator.h"
+#include "Magrathea/LayerManipulator.h"
 
 void Magrathea::LayerManipulator::opacity( const float& val )
 {

@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Planet.h"
+#include "Magrathea/Planet.h"
 
 #include "Usul/Interfaces/IViewMatrix.h"
 

@@ -66,16 +66,35 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     public void open(string name, object caller)
     {
-      _dll.addKeyWordList(name);
-
-      // Set document name.
-      this.Name = name;
-
-      // Add file to recent-file list.
-      CadKit.Interfaces.IRecentFileList recent = caller as CadKit.Interfaces.IRecentFileList;
-      if (null != recent)
+      string cwd = null;
+      try
       {
-        recent.add(name);
+        // Make the path the current working directory. 
+        // This will increase the chances of textures loading.
+        cwd = System.IO.Directory.GetCurrentDirectory();
+        System.IO.FileInfo info = new System.IO.FileInfo(name);
+        System.IO.Directory.SetCurrentDirectory(info.DirectoryName);
+
+        // Read the file.
+        _dll.addKeyWordList(name);
+
+        // Set document name.
+        this.Name = name;
+
+        // Add file to recent-file list.
+        CadKit.Interfaces.IRecentFileList recent = caller as CadKit.Interfaces.IRecentFileList;
+        if (null != recent)
+        {
+          recent.add(name);
+        }
+      }
+      finally
+      {
+        // Always reset the current working directory.
+        if (null != cwd && System.IO.Directory.Exists(cwd))
+        {
+          System.IO.Directory.SetCurrentDirectory(cwd);
+        }
       }
     }
 

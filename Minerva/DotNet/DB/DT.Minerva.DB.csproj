@@ -47,7 +47,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Npgsql\src\Npgsql.csproj">
+    <ProjectReference Include="..\..\..\..\sdk\Npgsql\src\Npgsql.csproj">
       <Project>{0F8DF2CB-CEB4-4A8B-897C-9FA0058BC155}</Project>
       <Name>Npgsql</Name>
     </ProjectReference>

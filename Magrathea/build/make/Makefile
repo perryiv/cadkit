@@ -3,9 +3,9 @@ include header.mak
 
 # C++ source files.
 CPP_FILES = \
-	../../src/Magrathea/LatLongGrid.cpp			\
-	../../src/Magrathea/LayerManipulator.cpp		\
-	../../src/Magrathea/Manipulator.cpp			\
+	../../src/Magrathea/LatLongGrid.cpp		\
+	../../src/Magrathea/LayerManipulator.cpp	\
+	../../src/Magrathea/Manipulator.cpp		\
 	../../src/Magrathea/Planet.cpp
 
 # The include path.
@@ -13,17 +13,17 @@ LOCAL_INCLUDE = \
 	-I$(OSG_INC_DIR) 				\
 	-I$(OPENTHREADS_INC_DIR) 			\
 	-I$(OSSIM_INC_DIR) 				\
-	-I$(OSSIM_PLANET_INC_DIR) 		\
-	-I$(OSG_EPHEMERIS_INC_DIR) 		\
+	-I$(OSSIM_PLANET_INC_DIR) 			\
+	-I$(OSG_EPHEMERIS_INC_DIR) 			\
 	-I$(BOOST_INC_DIR) 				\
-	-I../../include/Magrathea			\
-	-I../../../../ 				
+	-I../../src					\
+	-I../../../
 
 # The libraries to link to.
 LOCAL_LIBS = \
 	-L../../../../bin -lOsgTools -lUsul 		\
 	-L$(OSSIM_LIB_DIR) -lossim 			\
-	-L$(OSSIMPLANET_LIB_DIR) -lossimPlanet 	\
+	-L$(OSSIMPLANET_LIB_DIR) -lossimPlanet 		\
 	-L$(BOOST_LIB_DIR)
 
 
@@ -31,7 +31,7 @@ LOCAL_LIBS = \
 LOCAL_CPP_FLAGS = 
 
 # The name of the thing we are making.
-TARGET = MagraThea
+TARGET = Magrathea
 
 # The common rules for compiling are in here.
 include library.mak

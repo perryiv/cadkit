@@ -17,7 +17,7 @@ LIBS = \
 	 -losg -losgUtil -losgDB -losgText -lUsul -lOpenThreads
 
 LIB_DIRS = \
-	-L$(OSG_LIB_DIR) -L../bin -L$(OPENTHREADS_LIB_DIR)
+	-L$(OSG_LIB_DIR) -L$(CADKIT_ROOT_DIR)/bin -L$(OPENTHREADS_LIB_DIR)
 	
 # Include the rules for make...
 include ../Usul/Make/Makerules

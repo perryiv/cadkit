@@ -58,6 +58,9 @@ public:
 
   // Get the time of the event in seconds.
   virtual double          time() const { return _seconds; }
+  void                    setButton     ( bool left, bool middle, bool right );
+#else
+  void                    setButton     ( bool left, bool middle, bool right );
 #endif
 
   // Set the properties.
@@ -65,7 +68,6 @@ public:
   void                    setWindowSize ( const Usul::Math::Vec2ui &size );
   void                    setMouse      ( const Usul::Math::Vec2f &xy );
   void                    setSeconds    ( double seconds );
-  void                    setButton     ( bool left, bool middle, bool right );
   void                    setButtonMask ( bool left, bool middle, bool right );
 
 protected:

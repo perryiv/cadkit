@@ -44,6 +44,8 @@ namespace DT
             void                  addKeyWordList( System::String^ kwl );
             void                  addLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer );
             void                  removeLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer );
+      
+            void                  setLayerOperation( System::String^ optype, int val, CadKit::Interfaces::ILayer^ layer );
 
 
             void dirtyScene();

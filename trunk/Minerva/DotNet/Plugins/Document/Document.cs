@@ -9,13 +9,14 @@
 
 namespace DT.Minerva.Plugins.Document
 {
-  class Document : 
+  class Document :
     CadKit.Documents.Document,
     CadKit.Interfaces.IFileOpen,
     CadKit.Interfaces.ILayerList,
     CadKit.Interfaces.IAnimateTemporal,
     CadKit.Interfaces.IOssimPlanetSettings,
-    CadKit.Interfaces.ILegend
+    CadKit.Interfaces.ILegend,
+    CadKit.Interfaces.ILayerOperation
   {
     /// <summary>
     /// Constants
@@ -55,7 +56,7 @@ namespace DT.Minerva.Plugins.Document
         _distributed.deleteSession();
         _distributed.disconnect();
       }
-      
+
       _dll = null;
       _distributed = null;
     }
@@ -162,8 +163,8 @@ namespace DT.Minerva.Plugins.Document
     /// <summary>
     /// Get the layer list.
     /// </summary>
-    CadKit.Interfaces.ILayer[] CadKit.Interfaces.ILayerList.Layers 
-    { 
+    CadKit.Interfaces.ILayer[] CadKit.Interfaces.ILayerList.Layers
+    {
       get
       {
         return _layers.ToArray();
@@ -584,6 +585,25 @@ namespace DT.Minerva.Plugins.Document
     {
       get { return _dll.showLegend(); }
       set { _dll.showLegend(value); }
+    }
+
+    void CadKit.Interfaces.ILayerOperation.setLayerOperation(string opType, int val, int[] layers)
+    {
+      if (this.Dll)
+      {
+        for (int i = 0; i < layers.Length; ++i)
+        {
+          ((CadKit.Interfaces.ILayerOperation)this).setLayerOperation(opType, val, i);
+        }
+      }
+    }
+
+    void CadKit.Interfaces.ILayerOperation.setLayerOperation(string opType, int val, int layer)
+    {
+      if (this.Dll)
+      {
+         _dll.setLayerOperation(opType, val, _layers[layer]);
+      }
     }
   }
 }

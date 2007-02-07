@@ -54,6 +54,9 @@ namespace DT
         /// Get/Set the query.
         PROPERTY_GET_SET(Query, System::String^);
 
+        /// Get/Set the column to color by.
+        PROPERTY_GET_SET(ColorColumn, System::String^);
+
         /// Set the color functor.
         PROPERTY_GET_SET(ColorFunctor, DT::Minerva::Glue::BaseColorFunctor^);
 

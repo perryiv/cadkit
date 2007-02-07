@@ -41,9 +41,29 @@ namespace CadKit.Plugins.LayerManager.Commands
         this._addPages(form);
         if (form.NumPages > 0)
         {
-          if (form.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+          CadKit.Interfaces.IRenderLoop renderLoop = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IRenderLoop;
+
+          bool useRenderLoop = false;
+
+          // Turn off render loop before we show the dialog.
+          if (null != renderLoop)
           {
-            _form.addLayers();
+            useRenderLoop = renderLoop.UseRenderLoop;
+            renderLoop.UseRenderLoop = false;
+          }
+
+          try
+          {
+            if (form.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+              _form.addLayers();
+            }
+          }
+          finally
+          {
+            // Restore the render loop state.
+            if (null != renderLoop)
+              renderLoop.UseRenderLoop = useRenderLoop;
           }
         }
       }

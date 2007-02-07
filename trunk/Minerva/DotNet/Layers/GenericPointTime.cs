@@ -42,8 +42,8 @@ namespace DT.Minerva.Layers.Controls
     {
       this._pointTimeLayer = new DT.Minerva.Glue.PointTimeLayerGlue(layer._pointTimeLayer);
       this.Layer = _pointTimeLayer;
-      this._minDate = layer.MinDate;
-      this._maxDate = layer.MaxDate;
+      this._minDate = layer.FirstDate;
+      this._maxDate = layer.LastDate;
     }
 
 
@@ -83,8 +83,8 @@ namespace DT.Minerva.Layers.Controls
     {
       base._deserialize(info);
 
-      this.MinDate = info.GetDateTime("MinDate");
-      this.MaxDate = info.GetDateTime("MaxDate");
+      this.FirstDate = info.GetDateTime("MinDate");
+      this.LastDate = info.GetDateTime("MaxDate");
       this.DateColumn = info.GetString("DateColumn");
       this.PrimitiveSize = (float)info.GetValue("PrimitiveSize", typeof(float));
       this.PrimitiveType = info.GetString("PrimitiveType");
@@ -98,8 +98,8 @@ namespace DT.Minerva.Layers.Controls
     {
       base._serialize(info);
 
-      info.AddValue("MinDate", this.MinDate);
-      info.AddValue("MaxDate", this.MaxDate);
+      info.AddValue("MinDate", this.FirstDate);
+      info.AddValue("MaxDate", this.LastDate);
       info.AddValue("DateColumn", this.DateColumn);
       info.AddValue("PrimitiveSize", this.PrimitiveSize);
       info.AddValue("PrimitiveType", this.PrimitiveType);
@@ -112,10 +112,10 @@ namespace DT.Minerva.Layers.Controls
     /// 
     [
       System.ComponentModel.Category("Date"),
-      System.ComponentModel.Description("Minimum date to show"),
+      System.ComponentModel.Description("First date to show"),
       System.ComponentModel.Browsable(true)
     ]
-    public System.DateTime MinDate
+    public System.DateTime FirstDate
     {
       get { lock (this.Mutex) { return _minDate; } }
       set { lock (this.Mutex) { _minDate = value; this.NeedsUpdate = true; } }
@@ -127,10 +127,10 @@ namespace DT.Minerva.Layers.Controls
     /// </summary>
     [
       System.ComponentModel.Category("Date"),
-      System.ComponentModel.Description("Maximium date to show"),
+      System.ComponentModel.Description("Last date to show"),
       System.ComponentModel.Browsable(true)
     ]
-    public System.DateTime MaxDate
+    public System.DateTime LastDate
     {
       get { lock (this.Mutex) { return _maxDate; } }
       set { lock (this.Mutex) { _maxDate = value; this.NeedsUpdate = true; } }
@@ -188,14 +188,18 @@ namespace DT.Minerva.Layers.Controls
     /// </summary>
     protected override void _setLayerProperties()
     {
-      _pointTimeLayer.Query = this.Query;
+      if(!this.CustomQuery)
+        _pointTimeLayer.Query = this.DefaultQuery;
     }
 
 
     /// <summary>
     /// 
     /// </summary>
-    public string Query
+    [
+      System.ComponentModel.Category("Database")
+    ]
+    public string DefaultQuery
     {
       get
       {
@@ -223,8 +227,8 @@ namespace DT.Minerva.Layers.Controls
 
           if (this.DateColumn.Length > 0)
           {
-            where += this.DateColumn + " > '" + this.MinDate.ToShortDateString() + "'";
-            where += " AND " + this.DateColumn + " < '" + this.MaxDate.ToShortDateString() + "'";
+            where += this.DateColumn + " > '" + this.FirstDate.ToShortDateString() + "'";
+            where += " AND " + this.DateColumn + " < '" + this.LastDate.ToShortDateString() + "'";
           }
           return where;
         }

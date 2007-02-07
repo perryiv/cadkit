@@ -458,30 +458,30 @@ namespace DT.Minerva.Plugins.Document
                 System.Xml.XmlNode node = kids[i];
                 if ("distributed" == node.Name)
                 {
-                  if ("true" == node.Value)
+                  if ("true" == node.InnerText)
                   {
                     _useDistributed = true;
                   }
                 }
                 if ("session" == node.Name)
                 {
-                  session = node.Value;
+                  session = node.InnerText;
                 }
                 if ("host" == node.Name)
                 {
-                  _distributed.Hostname = node.Value;
+                  _distributed.Hostname = node.InnerText;
                 }
                 if ("database" == node.Name)
                 {
-                  _distributed.Database = node.Value; ;
+                  _distributed.Database = node.InnerText;
                 }
                 if ("username" == node.Name)
                 {
-                  _distributed.Username = node.Value;
+                  _distributed.Username = node.InnerText;
                 }
                 if ("password" == node.Name)
                 {
-                  _distributed.Password = node.Value;
+                  _distributed.Password = node.InnerText;
                 }
               }
             }

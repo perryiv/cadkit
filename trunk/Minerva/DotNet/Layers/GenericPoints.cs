@@ -40,7 +40,7 @@ namespace DT.Minerva.Layers.Controls
     protected GenericPoints(GenericPoints layer)
       : base(layer)
     {
-      _pointLayer = layer._pointLayer;
+      _pointLayer = new DT.Minerva.Glue.PointLayerGlue(layer._pointLayer);
       this.Layer = _pointLayer;
     }
 
@@ -70,7 +70,35 @@ namespace DT.Minerva.Layers.Controls
     /// </summary>
     public new void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
     {
-      base.GetObjectData(info, context);
+      this._serialize(info);
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    protected override void _serialize(System.Runtime.Serialization.SerializationInfo info)
+    {
+      base._serialize(info);
+      info.AddValue("PrimitiveType", this.PrimitiveType);
+      info.AddValue("PrimitiveSize", this.PrimitiveSize);
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    protected override void _deserialize(System.Runtime.Serialization.SerializationInfo info)
+    {
+      base._deserialize(info);
+      try
+      {
+        this.PrimitiveType = info.GetString("PrimitiveType");
+        this.PrimitiveSize = System.Convert.ToSingle(info.GetValue("PrimitiveSize", typeof(float)));
+      }
+      catch (System.Runtime.Serialization.SerializationException)
+      {
+      }
     }
 
 
@@ -83,9 +111,13 @@ namespace DT.Minerva.Layers.Controls
     }
 
 
+    /// <summary>
+    /// 
+    /// </summary>
     protected override void _setLayerProperties()
     {
-      _pointLayer.Query = this.Query;
+      if(!this.CustomQuery)
+        _pointLayer.Query = this.DefaultQuery;
     }
 
 
@@ -95,14 +127,13 @@ namespace DT.Minerva.Layers.Controls
     [
       System.ComponentModel.Category("Database")
     ]
-    public string Query
+    public string DefaultQuery
     {
       get
       {
         return "SELECT id FROM " + this.DataTable;
       }
     }
-
 
 
     /// <summary>
@@ -136,13 +167,6 @@ namespace DT.Minerva.Layers.Controls
     }
 
 
-    public System.Drawing.Color Color
-    {
-      get { return (System.Drawing.Color)_pointLayer.Color; }
-      set { _pointLayer.Color = value; }
-    }
-
-
     /// <summary>
     /// Get/Set the primitive size.
     /// </summary>
@@ -151,7 +175,7 @@ namespace DT.Minerva.Layers.Controls
       System.ComponentModel.Description("Size of primitive"),
       System.ComponentModel.Browsable(true),
     ]
-    public float Size
+    public float PrimitiveSize
     {
       get { return _pointLayer.Size; }
       set { _pointLayer.Size = value; }

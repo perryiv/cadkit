@@ -80,8 +80,6 @@ namespace DT.Minerva.Layers.Controls
     protected override void _deserialize(System.Runtime.Serialization.SerializationInfo info)
     {
       base._deserialize(info);
-
-      this.Format = info.GetString("Format");
     }
 
 
@@ -91,8 +89,6 @@ namespace DT.Minerva.Layers.Controls
     protected override void _serialize(System.Runtime.Serialization.SerializationInfo info)
     {
       base._serialize(info);
-
-      info.AddValue("Format", this.Format);
     }
 
 
@@ -121,22 +117,25 @@ namespace DT.Minerva.Layers.Controls
     /// </summary>
     protected override void _setLayerProperties()
     {
-      _polygonLayer.FieldName = this.ColumnName;
-      _polygonLayer.Query = this.Query;
+      if(!this.CustomQuery)
+        _polygonLayer.Query = this.DefaultQuery;
     }
 
 
     /// <summary>
     /// 
     /// </summary>
-    public string Query
+    [
+      System.ComponentModel.Category("Database")
+    ]
+    public string DefaultQuery
     {
       get
       {
         string query = "";
-        if (null != this.ColumnName && this.ColumnName != "")
+        if (null != this.ColorColumn && this.ColorColumn != "")
         {
-          query = "SELECT id, " + this.ColumnName + " FROM " + this.DataTable;
+          query = "SELECT id, " + this.ColorColumn + " FROM " + this.DataTable;
         }
         else
           query = "SELECT id FROM " + this.DataTable;
@@ -144,15 +143,6 @@ namespace DT.Minerva.Layers.Controls
       }
     }
 
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public string Format
-    {
-      get { lock (this.Mutex) { return _polygonLayer.Format; } }
-      set { lock (this.Mutex) { _polygonLayer.Format = value; } }
-    }
 
     /// <summary>
     /// 

@@ -75,24 +75,27 @@ namespace DT.Minerva.Layers.Controls
     /// </summary>
     protected override void _setLayerProperties()
     {
-      _polygonTimeLayerGlue.FieldName = this.ColumnName;
-      _polygonTimeLayerGlue.Query = this.Query;
+      if(!this.CustomQuery)
+        _polygonTimeLayerGlue.Query = this.DefaultQuery;
     }
 
 
     /// <summary>
     /// 
     /// </summary>
-    public new string Query
+    [
+      System.ComponentModel.Category("Database")
+    ]
+    public new string DefaultQuery
     {
       get 
       {
         lock (this.Mutex)
         {
           string query = "";
-          if (null != this.ColumnName && this.ColumnName != "")
+          if (null != this.LabelColumn && this.LabelColumn != "")
           {
-            query = "SELECT id, " + this.ColumnName + ", " + this.StepColumn + " FROM " + this.DataTable;
+            query = "SELECT id, " + this.LabelColumn + ", " + this.StepColumn + " FROM " + this.DataTable;
           }
           else
             query = "SELECT id FROM " + this.DataTable;

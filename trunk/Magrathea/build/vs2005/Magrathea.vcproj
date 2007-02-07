@@ -144,7 +144,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib OpenThreadsWin32.lib ossim.lib ossimPlanet.lib osgEphemeris.lib"
-				OutputFile="../bin/Magrathea.dll"
+				OutputFile="$(LOCAL_SRC_DIR)/bin/Cadkit.Magrathea.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR);$(OSG_EPHEMERIS_LIB_DIR)"
 				GenerateDebugInformation="false"

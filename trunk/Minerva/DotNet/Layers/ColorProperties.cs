@@ -131,7 +131,7 @@ namespace DT.Minerva.Layers.Controls
 
         if (null != dataSource)
         {
-          string columnName = layer.ColumnName;
+          string columnName = layer.ColorColumn;
           funtor.MinValue = double.Parse(dataSource.getMinValue(layer.DataTable, columnName));
           funtor.MaxValue = double.Parse(dataSource.getMaxValue(layer.DataTable, columnName));
           return funtor;

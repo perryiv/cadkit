@@ -174,7 +174,7 @@ int Planet::addLayer( ossimPlanetTextureLayer *layer  )
   int index ( -1 );
   if( 0x0 != layer )
   {    
-    _textureLayerGroup->addTop( layer );
+    _textureLayerGroup->addTop( layer );    
     index = _textureLayerGroup->findLayerIndex( layer );
   }
 
@@ -249,6 +249,15 @@ void Planet::removeLayer( ossimPlanetTextureLayer *layer )
   _textureLayerGroup->removeLayer( layer );
 }
 
+bool Planet::hasLayer( ossimPlanetTextureLayer *layer )
+{
+  return _textureLayerGroup->containsLayer( layer );
+}
+
+bool Planet::hasLayerOperation( ossimPlanetTextureLayer *layer )
+{
+  return _textureOperationLayerGroup->containsLayer( layer );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -588,10 +597,30 @@ Usul::Interfaces::IUnknown* Planet::viewer()
 void Planet::opacity( const float& val )
 {
   _layerManipulator->opacity( val );
-  reset();
+  //reset();
 }
 
 float Planet::opacity() const 
 {
   return _layerManipulator->opacity();
+}
+
+void Planet::top()
+{
+  _layerManipulator->top();
+}
+
+void Planet::reference()
+{
+  _layerManipulator->reference();
+}
+
+void Planet::absoluteDifference()
+{
+  _layerManipulator->absoluteDifference();
+}
+
+void Planet::falseColorReplacement()
+{
+  _layerManipulator->falseColorReplacement();
 }

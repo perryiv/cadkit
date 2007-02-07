@@ -51,6 +51,9 @@ namespace Magrathea
       void                                            removeLayerOperation ( int index );
       void                                            removeLayerOperation ( ossimPlanetTextureLayer *layer );
 
+      bool                                            hasLayer( ossimPlanetTextureLayer* layer );
+      bool                                            hasLayerOperation( ossimPlanetTextureLayer* layer );
+
       virtual void                                    reset();
       void                                            refreshLandTextures( ossimPlanetExtents* extents, ossimPlanetPagedLandLodRefreshType refreshType);
 
@@ -95,6 +98,14 @@ namespace Magrathea
 
       void                                            opacity( const float& val );
       float                                           opacity() const;
+
+      void                                            top();
+
+      void                                            reference();
+    
+      void                                            absoluteDifference();
+
+      void                                            falseColorReplacement();
      
     protected:
 

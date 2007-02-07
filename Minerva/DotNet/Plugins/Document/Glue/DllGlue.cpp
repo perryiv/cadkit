@@ -634,3 +634,44 @@ void DllGlue::viewLayerExtents( CadKit::Interfaces::ILayer ^layer )
     }
   }
 }
+
+void DllGlue::setLayerOperation( System::String ^optype, int val, CadKit::Interfaces::ILayer ^layer )
+{
+  if( nullptr != layer ) 
+  {   
+    CadKit::Interfaces::INativePtr^ nativePtr = dynamic_cast< CadKit::Interfaces::INativePtr^ >( layer );   
+    if( nullptr != nativePtr )
+    {
+      osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( nativePtr->nativeIntPtr().ToPointer() ) );
+
+      if( texture.valid() )
+      { 
+        if( !_planet->hasLayerOperation( texture.get() ) )
+        {
+          _planet->addLayerOperation( texture.get() );
+          _planet->removeLayer( texture.get() );
+        }             
+
+        if( optype != nullptr )
+        {
+          if( optype->Equals( "Opacity" ) )
+          {            
+            float opacityVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
+            _planet->opacity( opacityVal );   
+          }
+          else if( optype->Equals( "Top" ) )
+          {
+            _planet->top();
+          }
+          else if( optype->Equals( "Reference" ) )
+          {
+            _planet->reference();
+          }
+          else
+          {
+          }
+        }
+      }
+    }
+  }
+}

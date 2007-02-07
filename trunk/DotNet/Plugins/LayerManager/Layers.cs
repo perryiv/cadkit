@@ -33,12 +33,13 @@ namespace CadKit.Plugins.LayerManager
         WeifenLuo.WinFormsUI.DockAreas.Float;
       this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockRight;
       this.HideOnClose = true;
-
+      this.slider.SetRange(0, 100);
       this._setUpListView();
 
       CadKit.Documents.Manager.Instance.ActiveDocumentChanged += this._activeDocumentChanged;
 
       this._buildToolbar();
+      this._buildComboBox();
     }
 
 
@@ -57,6 +58,12 @@ namespace CadKit.Plugins.LayerManager
       this._addToolbarButton(_toolstrip, new CadKit.Plugins.LayerManager.Commands.AddLayerToFavoritesCommand(this, this));
     }
 
+    protected void _buildComboBox()
+    {
+      this.operationType.Items.Add("Top");
+      this.operationType.Items.Add("Reference");
+      this.operationType.Items.Add("Opacity");
+    }
 
     /// <summary>
     /// Add the tool-bar button.
@@ -441,6 +448,26 @@ namespace CadKit.Plugins.LayerManager
 
         return null;
       }
+    }
+
+    private void slider_Scroll(object sender, System.EventArgs e)
+    {
+      if (_document is CadKit.Interfaces.ILayerOperation)
+      {
+        CadKit.Interfaces.ILayerOperation layerOp = (CadKit.Interfaces.ILayerOperation)_document;
+
+        string optype = (string)this.operationType.SelectedItem;
+        int layer = _treeView.Nodes.IndexOf(_treeView.SelectedNode);
+        layerOp.setLayerOperation(optype, this.slider.Value, layer);
+      }
+    }
+
+    private void operationType_SelectedIndexChanged(object sender, System.EventArgs e)
+    {
+      string optype = (string)this.operationType.SelectedItem;      
+      CadKit.Interfaces.ILayerOperation layerOp = (CadKit.Interfaces.ILayerOperation)_document;
+      int layer = _treeView.Nodes.IndexOf(_treeView.SelectedNode);
+      layerOp.setLayerOperation(optype, this.slider.Value, layer);
     }
   }
 }

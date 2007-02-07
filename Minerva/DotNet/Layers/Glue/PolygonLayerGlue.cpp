@@ -36,7 +36,6 @@ PolygonLayerGlue::PolygonLayerGlue(DT::Minerva::Glue::PolygonLayerGlue ^layer)
 
   this->_setProperties( layer );
 
-  this->FieldName = layer->FieldName;
   this->Format = layer->Format;
 }
 
@@ -71,17 +70,6 @@ Minerva::Layers::Layer* PolygonLayerGlue::layer()
 {
   return _polygonLayer;
 }
-
-
-System::String^ PolygonLayerGlue::FieldName::get()
-{
-  return this->toManagedString( _polygonLayer->fieldName() );
-}
-void PolygonLayerGlue::FieldName::set( System::String^ s )
-{
-  _polygonLayer->fieldName( this->toNativeString( s ) );
-}
-
 
 
 System::String^ PolygonLayerGlue::Format::get()

@@ -52,18 +52,6 @@ namespace DT
           }
         }
 
-        property System::String^ FieldName
-        {
-          System::String^ get()
-          {
-            return this->toManagedString( _polygonTimeLayer->fieldName() );
-          }
-          void set( System::String^ s )
-          {
-            _polygonTimeLayer->fieldName( this->toNativeString( s ) );
-          }
-        }
-
         property System::String^ StepColumn
         {
           System::String^ get()

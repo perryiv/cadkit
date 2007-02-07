@@ -26,16 +26,24 @@ namespace DT.Minerva.Layers.Controls
       {
         this._deserialize();
       }
-      else
-      {
-        _types.Add("Cases", new DT.Minerva.Layers.Controls.CasesControl());
+
+      if(!this.hasType("Custom Polygons"))
         _types.Add("Custom Polygons", new DT.Minerva.Layers.Controls.GenericPolygons());
+
+      if (!this.hasType("Custom Lines"))
         _types.Add("Custom Lines", new DT.Minerva.Layers.Controls.GenericLines());
+
+      if (!this.hasType("Custom Points"))
         _types.Add("Custom Points", new DT.Minerva.Layers.Controls.GenericPoints());
+
+      if (!this.hasType("Custom Point Time"))
         _types.Add("Custom Point Time", new DT.Minerva.Layers.Controls.GenericPointTime());
+
+      if (!this.hasType("Custom Polygon Time"))
         _types.Add("Custom Polygon Time", new DT.Minerva.Layers.Controls.GenericPolygonTime());
+
+      if (!this.hasType("R Results"))
         _types.Add("R Results", new DT.Minerva.Layers.Controls.RControl());
-      }
 
       System.Windows.Forms.Application.ApplicationExit += new System.EventHandler(Application_ApplicationExit);
     }

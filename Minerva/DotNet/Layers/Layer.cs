@@ -42,6 +42,8 @@ namespace DT.Minerva.Layers.Controls
     private bool _needsUpdate = false;
     private string _name = "";
     private ColorProperties _properties = new ColorProperties();
+    private bool _customQuery = false;
+
 
     /// <summary>
     /// 
@@ -97,11 +99,27 @@ namespace DT.Minerva.Layers.Controls
       {
         this.Name = info.GetString("Name");
         this.DataTable = info.GetString("DataTable");
-        this.ColumnName = info.GetString("ColumnName");
+        this.LabelColumn = info.GetString("LabelColumn");
         this.ColorProperties = (ColorProperties)info.GetValue("ColorProperties", typeof(ColorProperties));
         this.Offset = (float)info.GetValue("Offset", typeof(float));
         this.RenderBin = info.GetInt32("RenderBin");
         this.LegendText = info.GetString("LegendText");
+
+        try
+        {
+          this.CustomQuery = info.GetBoolean("CustomQuery");
+        }
+        catch (System.Runtime.Serialization.SerializationException)
+        {
+        }
+
+        try
+        {
+          this.Query = info.GetString("Query");
+        }
+        catch (System.Runtime.Serialization.SerializationException)
+        {
+        }
       }
     }
 
@@ -113,11 +131,13 @@ namespace DT.Minerva.Layers.Controls
     {
       info.AddValue("Name", this.Name);
       info.AddValue("DataTable", this.DataTable);
-      info.AddValue("ColumnName", this.ColumnName);
+      info.AddValue("LabelColumn", this.LabelColumn);
       info.AddValue("ColorProperties", this.ColorProperties);
       info.AddValue("Offset", this.Offset);
       info.AddValue("RenderBin", this.RenderBin);
       info.AddValue("LegendText", this.LegendText);
+      info.AddValue("CustomQuery", this.CustomQuery);
+      info.AddValue("Query", this.Query);
     }
 
 
@@ -131,6 +151,7 @@ namespace DT.Minerva.Layers.Controls
       this.DataSource = layer.DataSource;
       this.Name = layer.Name;
       this.NeedsUpdate = layer.NeedsUpdate;
+      this.CustomQuery = layer.CustomQuery;
     }
     
 
@@ -161,6 +182,33 @@ namespace DT.Minerva.Layers.Controls
     protected object Mutex
     {
       get { return _mutex; }
+    }
+
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [
+      System.ComponentModel.Category("Database")
+    ]
+    public bool CustomQuery
+    {
+      get { return _customQuery; }
+      set { _customQuery = value; }
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [
+      System.ComponentModel.Category("Database")
+    ]
+    public string Query
+    {
+      get { return this.Layer.Query; }
+      set { this.Layer.Query = value; }
     }
 
 
@@ -197,6 +245,22 @@ namespace DT.Minerva.Layers.Controls
     /// 
     /// </summary>
     [
+      System.ComponentModel.Category("Color"),
+      System.ComponentModel.Description("Column to use as the column for gradient color"),
+      System.ComponentModel.TypeConverter(typeof(DT.Minerva.Layers.Controls.TypeConverters.ColumnNames))
+    ]
+    public string ColorColumn
+    {
+      get { lock (this.Mutex) { return _layer.ColorColumn; } }
+      set { lock (this.Mutex) { _layer.ColorColumn = value; } }
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [
+    System.ComponentModel.Category("Color"),
     System.ComponentModel.TypeConverter(typeof(ColorTypeConverter)),
     System.ComponentModel.Editor(typeof(ColorUITypeEditor), typeof(System.Drawing.Design.UITypeEditor))
     ]
@@ -315,7 +379,7 @@ namespace DT.Minerva.Layers.Controls
         lock (this.Mutex)
         {
           _layer.Tablename = value;
-          this.ColumnName = "";
+          this.LabelColumn = "";
 
           if (null != this.DataTableChanged)
             this.DataTableChanged(this.DataTable);
@@ -341,10 +405,11 @@ namespace DT.Minerva.Layers.Controls
     /// 
     /// </summary>
     [
-      System.ComponentModel.Category("Database"),
+      System.ComponentModel.Category("Label"),
+      System.ComponentModel.Description("Column to use as the label"),
       System.ComponentModel.TypeConverter(typeof(DT.Minerva.Layers.Controls.TypeConverters.ColumnNames))
     ]
-    public string ColumnName
+    public string LabelColumn
     {
       get { lock (this.Mutex) { return _layer.LabelColumn; } }
       set { lock (this.Mutex) { _layer.LabelColumn = value; } }

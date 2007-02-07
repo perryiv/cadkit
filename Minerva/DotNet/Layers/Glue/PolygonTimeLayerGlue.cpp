@@ -36,7 +36,6 @@ PolygonTimeLayerGlue::PolygonTimeLayerGlue(DT::Minerva::Glue::PolygonTimeLayerGl
 
   this->StepMode = layer->StepMode;
   this->StepColumn = layer->StepColumn;
-  this->FieldName = layer->FieldName;
   this->ZScaleFactor = layer->ZScaleFactor;
   this->XOffset = layer->XOffset;
   this->YOffset = layer->YOffset;

@@ -29,12 +29,6 @@ namespace DT
         !PolygonLayerGlue();
 
 
-        property System::String^ FieldName
-        {
-          System::String^ get();
-          void set( System::String^ s );
-        }
-
         property System::String^ Format
         {
           System::String^ get();

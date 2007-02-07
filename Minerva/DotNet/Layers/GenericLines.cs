@@ -19,7 +19,6 @@ namespace DT.Minerva.Layers.Controls
     DT.Minerva.Interfaces.IDataTables
   {
     private DT.Minerva.Glue.LineLayerGlue _lineLayer = new DT.Minerva.Glue.LineLayerGlue();
-    private string _where = null;
     private string _primaryKeyColumn = "id";
 
     /// <summary>
@@ -41,7 +40,6 @@ namespace DT.Minerva.Layers.Controls
     {
       this._lineLayer = new DT.Minerva.Glue.LineLayerGlue(layer._lineLayer);
       this.Layer = _lineLayer;
-      this._where = layer._where;
     }
 
 
@@ -82,7 +80,6 @@ namespace DT.Minerva.Layers.Controls
       base._deserialize(info);
       
       this.LineWidth = (float)info.GetValue("LineWidth", typeof(float));
-      this.Where = (string)info.GetString("Where");
     }
 
 
@@ -94,7 +91,6 @@ namespace DT.Minerva.Layers.Controls
       base._serialize(info);
 
       info.AddValue("LineWidth", this.LineWidth);
-      info.AddValue("Where", this.Where);
     }
 
 
@@ -111,20 +107,10 @@ namespace DT.Minerva.Layers.Controls
         DT.Minerva.Interfaces.IQuery query = this.DataSource as DT.Minerva.Interfaces.IQuery;
         if (null != query)
         {
-          return query.executeCountQuery(this.DataTable, this.Where).ToString();
+          return query.executeCountQuery(this.DataTable, "").ToString();
         }
         return "NA";
       }
-    }
-
-
-    /// <summary>
-    /// Return where clause.
-    /// </summary>
-    public string Where
-    {
-      get { return _where; }
-      set { _where = value; }
     }
 
 
@@ -163,16 +149,11 @@ namespace DT.Minerva.Layers.Controls
     [
       System.ComponentModel.Category("Database")
     ]
-    public string Query
+    public string DefaultQuery
     {
       get
       {
-        string query = "SELECT " + this.PrimaryKeyColumn + " as id, srid(geom) as srid, asBinary(geom) as geom FROM " + this.DataTable;
-
-        if (null != this.Where && this.Where.Length > 0)
-          query += System.String.Format(" WHERE {0}", this.Where);
-
-        return query;
+        return "SELECT " + this.PrimaryKeyColumn + " as id, srid(geom) as srid, asBinary(geom) as geom FROM " + this.DataTable;
       }
     }
 
@@ -197,7 +178,8 @@ namespace DT.Minerva.Layers.Controls
     /// </summary>
     protected override void _setLayerProperties()
     {
-      this.Layer.Query = this.Query;
+      if(!this.CustomQuery)
+        this.Layer.Query = this.DefaultQuery;
     }
   }
 }

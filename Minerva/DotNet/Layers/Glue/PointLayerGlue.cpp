@@ -43,6 +43,25 @@ PointLayerGlue::PointLayerGlue() : _pointLayer ( 0x0 )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PointLayerGlue::PointLayerGlue( PointLayerGlue ^layer ) : _pointLayer ( 0x0 )
+{
+  _pointLayer = new ::Minerva::Layers::PointLayer;
+  Usul::Pointers::reference ( _pointLayer );
+
+  this->_setProperties( layer );
+
+  this->PrimitiveID = layer->PrimitiveID;
+  this->Size = layer->Size;
+  this->PrimitiveType = layer->PrimitiveType;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -88,35 +107,6 @@ int PointLayerGlue::PrimitiveID::get()
 void PointLayerGlue::PrimitiveID::set ( int i )
 {
   _pointLayer->primitiveID( i );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the color.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-System::Drawing::Color ^ PointLayerGlue::Color::get ()
-{
-  System::Drawing::Color ^c = gcnew System::Drawing::Color();
-  c = System::Drawing::Color::FromArgb( _pointLayer->color().w() * 255, _pointLayer->color().x() * 255, _pointLayer->color().y() * 255, _pointLayer->color().z() * 255 );
-
-  return c;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the color.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void PointLayerGlue::Color::set ( System::Drawing::Color ^ color )
-{
-  osg::Vec4 c ( (float) color->R / 255, (float) color->G / 255, (float) color->B / 255, (float) color->A / 255 );
-
-  _pointLayer->color( c );
 }
 
 

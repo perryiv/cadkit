@@ -26,6 +26,7 @@ namespace DT
 	    {
       public:
         PointLayerGlue();
+        PointLayerGlue( PointLayerGlue ^ layer );
         virtual ~PointLayerGlue();
         !PointLayerGlue();
 
@@ -36,13 +37,6 @@ namespace DT
         {
           int get();
           void set ( int i );
-        }
-
-
-        property System::Drawing::Color ^ Color
-        {
-          System::Drawing::Color ^ get ();
-          void set ( System::Drawing::Color ^ color );
         }
 
         property float Size

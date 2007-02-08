@@ -656,8 +656,8 @@ void DllGlue::setLayerOperation( System::String ^optype, int val, CadKit::Interf
         {
           if( optype->Equals( "Opacity" ) )
           {            
-            float opacityVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
-            _planet->opacity( opacityVal );   
+            float oVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
+            _planet->opacity( oVal );   
           }
           else if( optype->Equals( "Top" ) )
           {
@@ -667,8 +667,23 @@ void DllGlue::setLayerOperation( System::String ^optype, int val, CadKit::Interf
           {
             _planet->reference();
           }
-          else
+          else if( optype->Equals( "AbsoluteDifference" ) )
           {
+            _planet->absoluteDifference();
+          }
+          else if( optype->Equals( "FalseColorReplacement" ) )
+          {
+            _planet->falseColorReplacement();
+          }
+          else if( optype->Equals( "HorizontalSwipe" ) )
+          {
+            float hVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
+            _planet->horizontalSwipe( hVal );
+          }
+          else if( optype->Equals( "VerticalSwipe" ) )
+          {
+            float vVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
+            _planet->verticalSwipe( vVal );
           }
         }
       }

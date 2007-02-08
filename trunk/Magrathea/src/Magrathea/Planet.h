@@ -96,8 +96,17 @@ namespace Magrathea
       void                                            viewer( Usul::Interfaces::IUnknown* viewer );
       Usul::Interfaces::IUnknown*                     viewer();
 
+      /// We should have only two funtions
+      /// layerOperationType() and layerOperationVal()
+
       void                                            opacity( const float& val );
       float                                           opacity() const;
+
+      float                                           horizontalSwipe() const;
+      void                                            horizontalSwipe( const float& val );      
+
+      float                                           verticalSwipe() const;
+      void                                            verticalSwipe( const float& val );      
 
       void                                            top();
 
@@ -105,7 +114,7 @@ namespace Magrathea
     
       void                                            absoluteDifference();
 
-      void                                            falseColorReplacement();
+      void                                            falseColorReplacement();      
      
     protected:
 

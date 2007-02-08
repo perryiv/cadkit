@@ -158,9 +158,9 @@ namespace CadKit.Plugins.Ossim
           }
         }
       }
-      catch (System.Exception e)
+      catch (System.Exception ex)
       {
-        System.Console.WriteLine("Error 2754833304: {0}", e.Message);
+        System.Console.WriteLine("Error 2754833304: {0}", ex.Message);
       }
     }
   }

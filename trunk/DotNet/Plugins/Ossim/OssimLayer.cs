@@ -122,21 +122,45 @@ namespace CadKit.Plugins.Ossim
     /// </summary>
     private void _browseButton_Click(object sender, System.EventArgs e)
     {
-      System.Windows.Forms.OpenFileDialog dialog = new System.Windows.Forms.OpenFileDialog();
-      dialog.Multiselect = true;
-      dialog.Filter = "All image files (*.tif, *.jpg)|*.tif; *.jpg|All Files (*.*)|*.*";
-
-      if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+      try
       {
-        foreach (string s in dialog.FileNames)
-        {
-          CadKit.OSSIMPlanet.Glue.ImageLayer layer = new CadKit.OSSIMPlanet.Glue.ImageLayer(s);
-          _layers.Add(layer);
+        System.Windows.Forms.OpenFileDialog dialog = new System.Windows.Forms.OpenFileDialog();
+        dialog.Multiselect = true;
+        dialog.Filter = "All image files (*.tif, *.jpg)|*.tif; *.jpg|All Files (*.*)|*.*";
 
-          System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(s);
-          item.SubItems.Add(layer.StateCode.ToString());
-          _listView.Items.Add(item);
+        string persistantName = "ossim_image_dialog";
+
+        // Get filter index.
+        string filterIndexKey = persistantName + "filter_index";
+        dialog.FilterIndex = CadKit.Persistence.Registry.Instance.getInt(persistantName, filterIndexKey, 1);
+
+        // Get initial directory.
+        string initialDirectoryKey = persistantName + "initial_directory";
+        dialog.InitialDirectory = CadKit.Persistence.Registry.Instance.getString(persistantName, initialDirectoryKey, CadKit.Helios.Application.Instance.Directory);
+
+        if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        {
+          if (dialog.FileNames.Length > 0)
+          {
+            System.IO.FileInfo info = new System.IO.FileInfo(dialog.FileNames[0]);
+            CadKit.Persistence.Registry.Instance.setString(persistantName, initialDirectoryKey, info.DirectoryName);
+            CadKit.Persistence.Registry.Instance.setInt(persistantName, filterIndexKey, dialog.FilterIndex);
+
+            foreach (string s in dialog.FileNames)
+            {
+              CadKit.OSSIMPlanet.Glue.ImageLayer layer = new CadKit.OSSIMPlanet.Glue.ImageLayer(s);
+              _layers.Add(layer);
+
+              System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(s);
+              item.SubItems.Add(layer.StateCode.ToString());
+              _listView.Items.Add(item);
+            }
+          }
         }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2754833304: {0}", e.Message);
       }
     }
   }

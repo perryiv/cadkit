@@ -33,7 +33,7 @@ namespace CadKit.Plugins.LayerManager
         WeifenLuo.WinFormsUI.DockAreas.Float;
       this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockRight;
       this.HideOnClose = true;
-      this.slider.SetRange(0, 100);
+      this.opacityopacitySlider.SetRange(0, 100);
       this._setUpListView();
 
       CadKit.Documents.Manager.Instance.ActiveDocumentChanged += this._activeDocumentChanged;
@@ -63,6 +63,10 @@ namespace CadKit.Plugins.LayerManager
       this.operationType.Items.Add("Top");
       this.operationType.Items.Add("Reference");
       this.operationType.Items.Add("Opacity");
+      this.operationType.Items.Add("AbsoluteDifference");
+      this.operationType.Items.Add("FalseColorReplacement");
+      this.operationType.Items.Add("HorizontalSwipe");
+      this.operationType.Items.Add("VerticalSwipe");
     }
 
     /// <summary>
@@ -450,7 +454,7 @@ namespace CadKit.Plugins.LayerManager
       }
     }
 
-    private void slider_Scroll(object sender, System.EventArgs e)
+    private void opacitySlider_Scroll(object sender, System.EventArgs e)
     {
       if (_document is CadKit.Interfaces.ILayerOperation)
       {
@@ -458,7 +462,7 @@ namespace CadKit.Plugins.LayerManager
 
         string optype = (string)this.operationType.SelectedItem;
         int layer = _treeView.Nodes.IndexOf(_treeView.SelectedNode);
-        layerOp.setLayerOperation(optype, this.slider.Value, layer);
+        layerOp.setLayerOperation(optype, this.opacityopacitySlider.Value, layer);
       }
     }
 
@@ -467,7 +471,7 @@ namespace CadKit.Plugins.LayerManager
       string optype = (string)this.operationType.SelectedItem;      
       CadKit.Interfaces.ILayerOperation layerOp = (CadKit.Interfaces.ILayerOperation)_document;
       int layer = _treeView.Nodes.IndexOf(_treeView.SelectedNode);
-      layerOp.setLayerOperation(optype, this.slider.Value, layer);
+      layerOp.setLayerOperation(optype, this.opacityopacitySlider.Value, layer);
     }
   }
 }

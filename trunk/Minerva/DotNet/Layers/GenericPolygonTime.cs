@@ -75,8 +75,6 @@ namespace DT.Minerva.Layers.Controls
     /// </summary>
     protected override void _setLayerProperties()
     {
-      if(!this.CustomQuery)
-        _polygonTimeLayerGlue.Query = this.DefaultQuery;
     }
 
 
@@ -95,10 +93,10 @@ namespace DT.Minerva.Layers.Controls
           string query = "";
           if (null != this.LabelColumn && this.LabelColumn != "")
           {
-            query = "SELECT id, " + this.LabelColumn + ", " + this.StepColumn + " FROM " + this.DataTable;
+            query = "SELECT id, " + this.LabelColumn + ", " + this.StepColumn + ", srid(geom) as srid, asBinary(geom) as geom FROM " + this.DataTable;
           }
           else
-            query = "SELECT id FROM " + this.DataTable;
+            query = base.DefaultQuery;
 
           return query;
         }

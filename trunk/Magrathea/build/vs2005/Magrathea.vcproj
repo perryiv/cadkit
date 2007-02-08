@@ -152,7 +152,7 @@
 				OptimizeReferences="0"
 				EnableCOMDATFolding="0"
 				LinkTimeCodeGeneration="0"
-				ImportLibrary="../bin/Magrathea.lib"
+				ImportLibrary="$(LOCAL_SRC_DIR)/bin/Cadkit.Magrathea.lib"
 				TargetMachine="0"
 			/>
 			<Tool

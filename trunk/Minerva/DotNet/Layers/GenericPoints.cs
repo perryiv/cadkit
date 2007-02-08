@@ -116,23 +116,6 @@ namespace DT.Minerva.Layers.Controls
     /// </summary>
     protected override void _setLayerProperties()
     {
-      if(!this.CustomQuery)
-        _pointLayer.Query = this.DefaultQuery;
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [
-      System.ComponentModel.Category("Database")
-    ]
-    public string DefaultQuery
-    {
-      get
-      {
-        return "SELECT id FROM " + this.DataTable;
-      }
     }
 
 
@@ -146,7 +129,7 @@ namespace DT.Minerva.Layers.Controls
     {
       get
       {
-        return this.DataSource.PointTables.ToArray();
+        return this.DataSource.PointTables;
       }
     }
 

@@ -19,7 +19,6 @@ namespace DT.Minerva.Layers.Controls
     DT.Minerva.Interfaces.IDataTables
   {
     private DT.Minerva.Glue.LineLayerGlue _lineLayer = new DT.Minerva.Glue.LineLayerGlue();
-    private string _primaryKeyColumn = "id";
 
     /// <summary>
     /// Constructor.
@@ -115,7 +114,7 @@ namespace DT.Minerva.Layers.Controls
 
 
     /// <summary>
-    /// 
+    /// Get/Set the line width.
     /// </summary>
     [
       System.ComponentModel.Category("Display"),
@@ -129,37 +128,8 @@ namespace DT.Minerva.Layers.Controls
     }
 
 
-
     /// <summary>
-    /// 
-    /// </summary>
-    [
-      System.ComponentModel.Category("Database")
-    ]
-    public string PrimaryKeyColumn
-    {
-      get { return _primaryKeyColumn; }
-      set { _primaryKeyColumn = value; }
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [
-      System.ComponentModel.Category("Database")
-    ]
-    public string DefaultQuery
-    {
-      get
-      {
-        return "SELECT " + this.PrimaryKeyColumn + " as id, srid(geom) as srid, asBinary(geom) as geom FROM " + this.DataTable;
-      }
-    }
-
-
-    /// <summary>
-    /// 
+    /// Get the all the line tables.
     /// </summary>
     [
     System.ComponentModel.Browsable(false)
@@ -168,18 +138,8 @@ namespace DT.Minerva.Layers.Controls
     {
       get
       {
-        return this.DataSource.LineTables.ToArray();
+        return this.DataSource.LineTables;
       }
-    }
-
-
-    /// <summary>
-    /// Set layer properties.
-    /// </summary>
-    protected override void _setLayerProperties()
-    {
-      if(!this.CustomQuery)
-        this.Layer.Query = this.DefaultQuery;
     }
   }
 }

@@ -14,28 +14,77 @@ void Magrathea::LayerManipulator::opacity( const float& val )
   if( _land.valid() )
   {
     _land->setCurrentFragementShaderType( ossimPlanetShaderProgramSetup::OPACITY );    
-    osg::ref_ptr< osg::Uniform > param = _land->getCurrentShader()->getUniform( "param" );
-    if( param.valid() )
-    {
-       param->set( val );
-    }
+    shaderVal( val );
+  }
+  else
+  {
+    throw "Invalid ossimPlanetLand pointer";
   }
 }
 
 float Magrathea::LayerManipulator::opacity() const 
-{
-  float opacity( 1.0 );
+{  
   if( _land.valid() )
   {
-    _land->setCurrentFragementShaderType( ossimPlanetShaderProgramSetup::OPACITY );    
-    osg::ref_ptr< osg::Uniform > param = _land->getCurrentShader()->getUniform( "param" );
-    if( param.valid() )
-    {
-       param->get( opacity );
-    }
+    _land->setCurrentFragementShaderType( ossimPlanetShaderProgramSetup::OPACITY );        
+    //return shaderVal();
+  }  
+  else
+  {
+    throw "Invalid ossimPlanetLand pointer";
   }
+}
 
-  return opacity;
+float Magrathea::LayerManipulator::horizontalSwipe() const
+{
+  if( _land.valid() )
+  {
+    _land->setCurrentFragementShaderType( ossimPlanetShaderProgramSetup::HORIZONTAL_SWIPE );
+    return shaderVal();
+  }
+  else
+  {
+    throw "Invalid ossimPlanetLand pointer";
+  }
+}
+
+void Magrathea::LayerManipulator::horizontalSwipe( const float& val )
+{
+  if( _land.valid() )
+  {
+    _land->setCurrentFragementShaderType( ossimPlanetShaderProgramSetup::HORIZONTAL_SWIPE );
+    return shaderVal( val );
+  }
+  else
+  {
+    throw "Invalid ossimPlanetLand pointer";
+  }
+}
+
+float Magrathea::LayerManipulator::verticalSwipe() const
+{
+  if( _land.valid() )
+  {
+    _land->setCurrentFragementShaderType( ossimPlanetShaderProgramSetup::VERTICAL_SWIPE );
+    return shaderVal();
+  }
+  else
+  {
+    throw "Invalid ossimPlanetLand pointer";
+  }
+}
+
+void Magrathea::LayerManipulator::verticalSwipe( const float& val )
+{
+  if( _land.valid() )
+  {
+    _land->setCurrentFragementShaderType( ossimPlanetShaderProgramSetup::VERTICAL_SWIPE );
+    return shaderVal( val );
+  }
+  else
+  {
+    throw "Invalid ossimPlanetLand pointer";
+  }
 }
 
 void Magrathea::LayerManipulator::top()
@@ -61,4 +110,25 @@ void Magrathea::LayerManipulator::falseColorReplacement()
 void Magrathea::LayerManipulator::setLand( ossimPlanetLand* land )
 {
   _land = const_cast< ossimPlanetLand* >( land );
+}
+
+float Magrathea::LayerManipulator::shaderVal() const
+{
+  float val( 0.0 );
+  osg::ref_ptr< osg::Uniform > param = _land->getCurrentShader()->getUniform( "param" );
+  if( param.valid() )
+  {
+     param->get( val );
+  }
+
+  return val;
+}
+
+void Magrathea::LayerManipulator::shaderVal( const float& val )
+{
+  osg::ref_ptr< osg::Uniform > param = _land->getCurrentShader()->getUniform( "param" );
+  if( param.valid() )
+  {
+     param->set( val );
+  }
 }

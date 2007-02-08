@@ -605,6 +605,28 @@ float Planet::opacity() const
   return _layerManipulator->opacity();
 }
 
+void Planet::horizontalSwipe( const float& val )
+{
+  _layerManipulator->horizontalSwipe( val );
+  //reset();
+}
+
+float Planet::horizontalSwipe() const 
+{
+  return _layerManipulator->horizontalSwipe();
+}
+
+void Planet::verticalSwipe( const float& val )
+{
+  _layerManipulator->verticalSwipe( val );
+  //reset();
+}
+
+float Planet::verticalSwipe() const 
+{
+  return _layerManipulator->verticalSwipe();
+}
+
 void Planet::top()
 {
   _layerManipulator->top();

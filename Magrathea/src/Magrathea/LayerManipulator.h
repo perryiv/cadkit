@@ -19,7 +19,7 @@
 #include "ossimPlanet/ossimPlanetLand.h"
 
 namespace Magrathea
-{
+{  
   class MAGRATHEA_EXPORT LayerManipulator : public osg::Referenced
   {
   public:
@@ -32,6 +32,20 @@ namespace Magrathea
     float                                         opacity() const ;
     void                                          opacity( const float& );
 
+    float                                         horizontalSwipe() const;
+    void                                          horizontalSwipe( const float& );    
+
+    float                                         verticalSwipe() const;
+    void                                          verticalSwipe( const float& );  
+
+    /*
+    float                                         boxSwipe() const;
+    void                                          boxSwipe( const float& );    
+      
+    float                                         circleSwipe() const;
+    void                                          circleSwipe( const float& );  
+    */
+
     void                                          top(); 
     
     void                                          reference();
@@ -41,14 +55,9 @@ namespace Magrathea
     void                                          falseColorReplacement();
 
     void                                          setLand( ossimPlanetLand* );    
-    
-    /*
-      void                                        horizontalSwipe( const float& );
-      void                                        verticalSwipe( const float& );
-      void                                        boxSwipe( const float& );    
-      void                                        circleSwipe( const float& );
-      
-    */
+ 
+    float                                         shaderVal() const;
+    void                                          shaderVal( const float& );    
 
   protected:
 

@@ -117,8 +117,6 @@ namespace DT.Minerva.Layers.Controls
     /// </summary>
     protected override void _setLayerProperties()
     {
-      if(!this.CustomQuery)
-        _polygonLayer.Query = this.DefaultQuery;
     }
 
 
@@ -128,17 +126,17 @@ namespace DT.Minerva.Layers.Controls
     [
       System.ComponentModel.Category("Database")
     ]
-    public string DefaultQuery
+    public new string DefaultQuery
     {
       get
       {
         string query = "";
         if (null != this.ColorColumn && this.ColorColumn != "")
         {
-          query = "SELECT id, " + this.ColorColumn + " FROM " + this.DataTable;
+          query = "SELECT id, " + this.ColorColumn + ", srid(geom) as srid, asBinary(geom) as geom FROM " + this.DataTable;
         }
         else
-          query = "SELECT id FROM " + this.DataTable;
+          query = base.DefaultQuery;
         return query;
       }
     }
@@ -154,7 +152,7 @@ namespace DT.Minerva.Layers.Controls
     {
       get
       {
-        return this.DataSource.PolygonTables.ToArray();
+        return this.DataSource.PolygonTables;
       }
     }
   }

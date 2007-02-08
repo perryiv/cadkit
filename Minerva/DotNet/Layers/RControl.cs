@@ -114,7 +114,7 @@ namespace DT.Minerva.Layers.Controls
     /// </summary>
     string[] DT.Minerva.Interfaces.IDataTables.DataTables
     {
-      get { lock (this.Mutex) { return this.DataSource.Tables.ToArray(); } }
+      get { lock (this.Mutex) { return this.DataSource.Tables; } }
     }
   }
 }

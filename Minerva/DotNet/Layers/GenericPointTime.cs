@@ -188,8 +188,6 @@ namespace DT.Minerva.Layers.Controls
     /// </summary>
     protected override void _setLayerProperties()
     {
-      if(!this.CustomQuery)
-        _pointTimeLayer.Query = this.DefaultQuery;
     }
 
 
@@ -199,13 +197,13 @@ namespace DT.Minerva.Layers.Controls
     [
       System.ComponentModel.Category("Database")
     ]
-    public string DefaultQuery
+    public new string DefaultQuery
     {
       get
       {
         lock (this.Mutex)
         {
-          string query = "SELECT " + this.DateColumn + ", id FROM " + this.DataTable;
+          string query = "SELECT " + this.DateColumn + ", id, srid(geom) as srid, asBinary(geom) as geom FROM " + this.DataTable;
           if (this.Where.Length > 0)
             query += " WHERE " + this.Where;
           return query;
@@ -341,7 +339,7 @@ namespace DT.Minerva.Layers.Controls
       {
         lock (this.Mutex)
         {
-          return this.DataSource.PointTimeTables.ToArray();
+          return this.DataSource.PointTimeTables;
         }
       }
     }

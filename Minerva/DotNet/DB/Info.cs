@@ -1,4 +1,13 @@
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2006, Decision Theater at Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
 using Strings = System.Collections.Generic.List<string>;
 
 namespace DT.Minerva.DB
@@ -14,14 +23,13 @@ namespace DT.Minerva.DB
     /// <summary>
     /// Get tables that contain polygon data.
     /// </summary>
-    /// <returns></returns>
-    public Strings PolygonTables
+    public string[] PolygonTables
     {
       get
       {
         Strings strings = new Strings();
 
-        Strings tableNames = this.GeometryTables;
+        string[] tableNames = this.GeometryTables;
 
         foreach (string table in tableNames)
         {
@@ -33,44 +41,21 @@ namespace DT.Minerva.DB
           }
         }
 
-        return strings;
+        return strings.ToArray();
       }
     }
 
 
     /// <summary>
-    /// 
+    /// Get all tables that contain line data.
     /// </summary>
-    /// <param name="table"></param>
-    /// <returns></returns>
-    public Strings getColumnNames(string table)
-    {
-      Strings strings = new Strings();
-
-      string query = "SELECT column_name FROM information_schema.columns WHERE table_name='" + table + "'";
-
-      Npgsql.NpgsqlDataReader dr = this.executeQueryDataReader(query);
-
-      while (dr.Read())
-      {
-        strings.Add((string)dr[0]);
-      }
-
-      return strings;
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    public Strings LineTables
+    public string[] LineTables
     {
       get
       {
         Strings strings = new Strings();
 
-        Strings tableNames = this.GeometryTables;
+        string[] tableNames = this.GeometryTables;
 
         foreach (string table in tableNames)
         {
@@ -82,7 +67,7 @@ namespace DT.Minerva.DB
           }
         }
 
-        return strings;
+        return strings.ToArray();
       }
     }
 
@@ -90,14 +75,13 @@ namespace DT.Minerva.DB
     /// <summary>
     /// 
     /// </summary>
-    /// <returns></returns>
-    public Strings PointTables
+    public string[] PointTables
     {
       get
       {
         Strings strings = new Strings();
 
-        Strings tableNames = this.GeometryTables;
+        string[] tableNames = this.GeometryTables;
 
         foreach (string table in tableNames)
         {
@@ -109,7 +93,7 @@ namespace DT.Minerva.DB
           }
         }
 
-        return strings;
+        return strings.ToArray();
       }
     }
 
@@ -117,15 +101,14 @@ namespace DT.Minerva.DB
     /// <summary>
     /// Get tables that have point data and a time column.
     /// </summary>
-    /// <returns></returns>
-    public Strings PointTimeTables
+    public string[] PointTimeTables
     {
       get
       {
         Strings strings = new Strings();
 
         // Get point tables.
-        Strings tableNames = this.PointTables;
+        string[] tableNames = this.PointTables;
 
         foreach (string table in tableNames)
         {
@@ -136,7 +119,7 @@ namespace DT.Minerva.DB
           }
         }
 
-        return strings;
+        return strings.ToArray();
       }
     }
 
@@ -144,8 +127,7 @@ namespace DT.Minerva.DB
     /// <summary>
     /// Get all tables that have a geometry column.
     /// </summary>
-    /// <returns></returns>
-    public Strings GeometryTables
+    public string[] GeometryTables
     {
       get
       {
@@ -159,15 +141,38 @@ namespace DT.Minerva.DB
           strings.Add((string)dr["table_name"]);
         }
 
-        return strings;
+        return strings.ToArray();
 
       }
     }
 
 
-    public System.Collections.Generic.List<string> getColumnNames(string table, string type)
+    /// <summary>
+    /// Get all the column names of the given table.
+    /// </summary>
+    public string[] getColumnNames(string table)
     {
-      System.Collections.Generic.List<string> strings = new System.Collections.Generic.List<string>();
+      Strings strings = new Strings();
+
+      string query = "SELECT column_name FROM information_schema.columns WHERE table_name='" + table + "'";
+
+      Npgsql.NpgsqlDataReader dr = this.executeQueryDataReader(query);
+
+      while (dr.Read())
+      {
+        strings.Add((string)dr[0]);
+      }
+
+      return strings.ToArray();
+    }
+
+
+    /// <summary>
+    /// Get all column names for the given table and type.
+    /// </summary>
+    public string[] getColumnNames(string table, string type)
+    {
+      Strings strings = new Strings();
       string query = "SELECT column_name FROM information_schema.columns WHERE table_name='" + table + "' AND data_type='" + type + "'";
       Npgsql.NpgsqlDataReader dr = this.executeQueryDataReader(query);
 
@@ -176,19 +181,16 @@ namespace DT.Minerva.DB
         strings.Add((string)dr[0]);
       }
 
-      return strings;
+      return strings.ToArray();
     }
 
 
     /// <summary>
-    /// 
+    /// Does the table have a column of the given type.
     /// </summary>
-    /// <param name="tableName"></param>
-    /// <param name="type"></param>
-    /// <returns></returns>
     public bool hasColumnType(string tableName, string type)
     {
-      Strings columnNames = this.getColumnNames(tableName);
+      string[] columnNames = this.getColumnNames(tableName);
 
       foreach (string column in columnNames)
       {
@@ -212,8 +214,6 @@ namespace DT.Minerva.DB
     /// <summary>
     /// Get the geometry type from the table name.  Assumes that the table has a column named geom.
     /// </summary>
-    /// <param name="tableName"></param>
-    /// <returns></returns>
     protected string _getGeometryType(string tableName)
     {
       string query = "SELECT GeometryType(geom) FROM " + tableName + " WHERE IsEmpty(geom)=false LIMIT 1";
@@ -235,9 +235,6 @@ namespace DT.Minerva.DB
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="tablename"></param>
-    /// <param name="column"></param>
-    /// <returns></returns>
     public string getMinValue(string tablename, string column)
     {
       string query = "SELECT MIN(" + column + ") as min FROM " + tablename;
@@ -254,9 +251,6 @@ namespace DT.Minerva.DB
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="tablename"></param>
-    /// <param name="column"></param>
-    /// <returns></returns>
     public string getMaxValue(string tablename, string column)
     {
       string query = "SELECT MAX(" + column + ") as max FROM " + tablename;
@@ -273,10 +267,7 @@ namespace DT.Minerva.DB
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="tablename"></param>
-    /// <param name="column"></param>
-    /// <returns></returns>
-    public Strings getDistinctValues(string tablename, string column)
+    public string[] getDistinctValues(string tablename, string column)
     {
       Strings strings = new Strings();
 
@@ -291,14 +282,14 @@ namespace DT.Minerva.DB
         strings.Add(value.Trim());
       }
 
-      return strings;
+      return strings.ToArray();
     }
 
 
     /// <summary>
-    /// 
+    /// Get all public tables.
     /// </summary>
-    public Strings Tables
+    public string[] Tables
     {
       get
       {
@@ -313,7 +304,7 @@ namespace DT.Minerva.DB
           strings.Add((string)dr[0]);
         }
 
-        return strings;
+        return strings.ToArray();
       }
     }
 
@@ -321,9 +312,6 @@ namespace DT.Minerva.DB
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="tableName"></param>
-    /// <param name="column"></param>
-    /// <returns></returns>
     public string getColumnType(string tableName, string column)
     {
       string query = "SELECT data_type FROM information_schema.columns WHERE table_name='" + tableName + "' AND column_name='" + column + "'";

@@ -43,6 +43,7 @@ namespace DT.Minerva.Layers.Controls
     private string _name = "";
     private ColorProperties _properties = new ColorProperties();
     private bool _customQuery = false;
+    private string _primaryKeyColumn = "id";
 
 
     /// <summary>
@@ -503,6 +504,10 @@ namespace DT.Minerva.Layers.Controls
     public void setLayerProperties()
     {
       this.Layer.ColorFunctor = this.ColorProperties.colorFunctor(this);
+      
+      if (!this.CustomQuery)
+        this.Layer.Query = this.DefaultQuery;
+      
       this._setLayerProperties();
     }
 
@@ -585,9 +590,36 @@ namespace DT.Minerva.Layers.Controls
       get
       {
         if(null != this.DataSource && this.DataTable.Length > 0 )
-          return this.DataSource.getColumnNames(this.DataTable).ToArray();
+          return this.DataSource.getColumnNames(this.DataTable);
         return new string[] { };
       }
+    }
+
+    /// <summary>
+    /// Get the default query.
+    /// </summary>
+    [
+      System.ComponentModel.Category("Database")
+    ]
+    public string DefaultQuery
+    {
+      get
+      {
+        return "SELECT " + this.PrimaryKeyColumn + " as id, srid(geom) as srid, asBinary(geom) as geom FROM " + this.DataTable;
+      }
+    }
+
+
+    /// <summary>
+    /// Get/Set the primary key column.
+    /// </summary>
+    [
+      System.ComponentModel.Category("Database")
+    ]
+    public string PrimaryKeyColumn
+    {
+      get { return _primaryKeyColumn; }
+      set { _primaryKeyColumn = value; }
     }
   }
 }

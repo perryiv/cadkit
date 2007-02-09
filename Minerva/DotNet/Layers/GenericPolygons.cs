@@ -95,26 +95,6 @@ namespace DT.Minerva.Layers.Controls
     /// <summary>
     /// 
     /// </summary>
-    [
-    System.ComponentModel.Browsable(false)
-    ]
-    public override string Number
-    {
-      get
-      {
-        DT.Minerva.Interfaces.IQuery query = this.DataSource as DT.Minerva.Interfaces.IQuery;
-        if (null != query)
-        {
-          return query.executeCountQuery(this.DataTable, "").ToString();
-        }
-        return base.Number;
-      }
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
     protected override void _setLayerProperties()
     {
     }

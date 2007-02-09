@@ -469,38 +469,17 @@ namespace DT.Minerva.Layers.Controls
     /// 
     /// </summary>
     [
-    System.ComponentModel.Browsable(false)
+    System.ComponentModel.Browsable(true)
     ]
-    public virtual string Number
+    public uint Number
     {
-      get { return "NA"; }
+      get { return this.Layer.Number; }
     }
 
 
     /// <summary>
-    /// 
+    /// Set the layer properties.
     /// </summary>
-    [
-    System.ComponentModel.Browsable(false)
-    ]
-    public virtual string Min
-    {
-      get { return "NA"; }
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [
-    System.ComponentModel.Browsable(false)
-    ]
-    public virtual string Max
-    {
-      get { return "NA"; }
-    }
-
-
     public void setLayerProperties()
     {
       this.Layer.ColorFunctor = this.ColorProperties.colorFunctor(this);
@@ -510,6 +489,7 @@ namespace DT.Minerva.Layers.Controls
       
       this._setLayerProperties();
     }
+
 
     /// <summary>
     /// 

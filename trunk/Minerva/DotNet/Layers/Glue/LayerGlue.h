@@ -75,6 +75,9 @@ namespace DT
         /// Get/Set label z offset
         PROPERTY_GET_SET( LabelZOffset, float );
 
+        /// Get the number of data objects in this layer.
+        PROPERTY_GET (Number, unsigned int);
+
         /// Get the layer.
         virtual ::Minerva::Layers::Layer* layer() = 0;
         virtual System::IntPtr      layerPtr();

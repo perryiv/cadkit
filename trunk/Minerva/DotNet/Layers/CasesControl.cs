@@ -287,26 +287,5 @@ namespace DT.Minerva.Layers.Controls
       System.DateTime date = System.DateTime.Parse(maxDate);
       return date.ToShortDateString();
     }
-
-
-    /// <summary>
-    /// Get the number in the current query?
-    /// </summary>
-    [
-    System.ComponentModel.Browsable(false)
-    ]
-    public override string Number
-    {
-      get
-      {
-        DT.Minerva.Interfaces.IQuery query = this.DataSource as DT.Minerva.Interfaces.IQuery;
-        if (null != query)
-        {
-          string where = this.Where;
-          return query.executeCountQuery(this.Layer.Tablename, where).ToString();
-        }
-        return base.Number;
-      }
-    }
   }
 }

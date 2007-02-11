@@ -601,5 +601,18 @@ namespace DT.Minerva.Layers.Controls
       get { return _primaryKeyColumn; }
       set { _primaryKeyColumn = value; }
     }
+
+
+    /// <summary>
+    /// Get/Set the label size.
+    /// </summary>
+    [
+      System.ComponentModel.Category("Label")
+    ]
+    public float LabelSize
+    {
+      get { return this.Layer.LabelSize; }
+      set { this.Layer.LabelSize = value; }
+    }
   }
 }

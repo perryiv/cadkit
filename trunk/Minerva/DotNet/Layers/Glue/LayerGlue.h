@@ -75,6 +75,9 @@ namespace DT
         /// Get/Set label z offset
         PROPERTY_GET_SET( LabelZOffset, float );
 
+        /// Get/Set label size
+        PROPERTY_GET_SET( LabelSize, float );
+
         /// Get the number of data objects in this layer.
         PROPERTY_GET (Number, unsigned int);
 

@@ -229,6 +229,10 @@
 				RelativePath="..\..\src\Magrathea\Project.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\Magrathea\Resample.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

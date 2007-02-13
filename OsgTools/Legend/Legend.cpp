@@ -47,10 +47,10 @@ osg::Node* Legend::buildScene()
 {
   osg::ref_ptr< osg::Group > group ( new osg::Group );
 
-  group->addChild( this->_buildBackground() );
-
   if( _legendObjects.size() > 0 )
   {
+    group->addChild( this->_buildBackground() );
+
     unsigned int heightPerObject ( this->_height / _legendObjects.size() );
     unsigned int padding ( 5 );
 

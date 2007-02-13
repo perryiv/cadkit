@@ -47,6 +47,8 @@ namespace DT
 
         PROPERTY_GET_SET(PrimitiveType, System::String^);
 
+        PROPERTY_GET_SET(StackPoints, bool );
+
         virtual ::Minerva::Layers::Layer * layer() override;
 
       private:

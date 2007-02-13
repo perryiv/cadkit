@@ -11,6 +11,7 @@ namespace DT.Minerva.Plugins.Document
 {
   class Document :
     CadKit.Documents.Document,
+    System.IDisposable,
     CadKit.Interfaces.IFileOpen,
     CadKit.Interfaces.ILayerList,
     CadKit.Interfaces.IAnimateTemporal,
@@ -51,7 +52,25 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     ~Document()
     {
-      if (this.Distributed)
+      this._cleanUp();
+    }
+
+
+    /// <summary>
+    /// Dispose.
+    /// </summary>
+    void System.IDisposable.Dispose()
+    {
+      this._cleanUp();
+    }
+
+
+    /// <summary>
+    /// Clean up.
+    /// </summary>
+    protected override void _cleanUp()
+    {
+      if (this.Distributed && null != _distributed)
       {
         _distributed.deleteSession();
         _distributed.disconnect();

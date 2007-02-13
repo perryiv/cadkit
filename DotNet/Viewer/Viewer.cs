@@ -105,6 +105,12 @@ namespace CadKit.Viewer
     ~Viewer()
     {
       this.Panel = null;
+
+      if (null != _document)
+      {
+        _document.remove(this);
+        _document = null;
+      }
     }
 
 
@@ -146,6 +152,9 @@ namespace CadKit.Viewer
       {
         if (false == this.InvokeRequired)
         {
+          if (this == CadKit.Documents.Manager.Instance.ActiveView)
+            CadKit.Documents.Manager.Instance.ActiveView = null;
+
           CadKit.Interfaces.IDocument document = this.Document;
           CadKit.Viewer.Panel panel = this.Panel;
 

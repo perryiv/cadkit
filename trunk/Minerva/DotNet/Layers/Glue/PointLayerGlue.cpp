@@ -57,6 +57,7 @@ PointLayerGlue::PointLayerGlue( PointLayerGlue ^layer ) : _pointLayer ( 0x0 )
   this->PrimitiveID = layer->PrimitiveID;
   this->Size = layer->Size;
   this->PrimitiveType = layer->PrimitiveType;
+  this->StackPoints = layer->StackPoints;
 }
 
 
@@ -209,4 +210,15 @@ void PointLayerGlue::PrimitiveType::set(System::String^ s )
 Minerva::Layers::Layer* PointLayerGlue::layer()
 {
   return _pointLayer;
+}
+
+
+bool PointLayerGlue::StackPoints::get()
+{
+  return _pointLayer->stackPoints();
+}
+
+void PointLayerGlue::StackPoints::set ( bool b )
+{
+  _pointLayer->stackPoints ( b );
 }

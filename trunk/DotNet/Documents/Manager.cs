@@ -117,6 +117,15 @@ namespace CadKit.Documents
         using (this.Lock.write())
         {
           while (true == _documents.Remove(document)) { }
+
+          // Clear the GUI delegate.
+          //document.GuiDelegate.Document = null;
+          //document.GuiDelegate = null;
+          document.close();
+
+          // Wait for cleanup.
+          System.GC.Collect();
+          System.GC.WaitForPendingFinalizers();
         }
       }
     }

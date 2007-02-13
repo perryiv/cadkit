@@ -153,6 +153,17 @@ namespace CadKit.Documents
     public void close()
     {
       this._closeAllViews();
+      this._clear();
+      this._cleanUp();
+    }
+
+
+    /// <summary>
+    /// Clean up the document.  
+    /// This is a work around because the destructor isn't being called when it should be.
+    /// </summary>
+    protected virtual void _cleanUp()
+    {
     }
 
 

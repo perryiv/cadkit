@@ -163,5 +163,15 @@ namespace DT.Minerva.Layers.Controls
       get { return _pointLayer.Size; }
       set { _pointLayer.Size = value; }
     }
+
+
+    /// <summary>
+    /// Get/Set stack points flag.
+    /// </summary>
+    public bool StackPoints
+    {
+      get { return _pointLayer.StackPoints; }
+      set { _pointLayer.StackPoints = value; }
+    }
   }
 }

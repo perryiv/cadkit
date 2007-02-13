@@ -1,9 +1,10 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2007, Adam Kubach
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -171,7 +172,13 @@ namespace CadKit.Plugins.LayerManager
       if (oldDoc == newDoc)
         return;
 
+      if (null != oldDoc)
+        oldDoc.remove(this);
+
       _document = newDoc;
+
+      if (null != _document)
+        _document.add(this);
 
       this.addLayers();
 

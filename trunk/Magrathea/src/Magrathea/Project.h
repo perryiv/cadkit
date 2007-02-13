@@ -171,7 +171,7 @@ namespace Magrathea
   ///////////////////////////////////////////////////////////////////////////////
 
   template < class Points, class Vertices >
-  void convertVerticesToEarthCoordinates ( const Points& points, Vertices& vertices )
+  void convertVerticesToEarthCoordinates ( const Points& points, Vertices& vertices, float zOffset = 0.0 )
   {
     vertices.clear();
     vertices.reserve ( points.size() );
@@ -184,7 +184,9 @@ namespace Magrathea
 
     for( typename Points::const_iterator iter = points.begin(); iter != points.end(); ++ iter )
     {
-      ossimEcefPoint ecef ( *iter );
+      ossimGpt point ( *iter );
+      point.hgt += zOffset;
+      ossimEcefPoint ecef ( point );
       //double normalizationFactor ( ecef.getMagnitude() );
 
       // Transform to ossimPlanet coordinates

@@ -21,9 +21,9 @@ LOCAL_INCLUDE = \
 
 # The libraries to link to.
 LOCAL_LIBS = \
-	-L../../../../bin -lOsgTools -lUsul 		\
+	-L$(USUL_LIB_DIR) -lOsgTools -lUsul 		\
 	-L$(OSSIM_LIB_DIR) -lossim 			\
-	-L$(OSSIMPLANET_LIB_DIR) -lossimPlanet 		\
+	-L$(OSSIM_PLANET_LIB_DIR) -lossimPlanet 		\
 	-L$(BOOST_LIB_DIR)
 
 

@@ -128,7 +128,7 @@ namespace Magrathea
     output.reserve( points.size() );
 
     // Copy the answer.
-    for( ParametricPoints::const_iterator iter = points.begin(); iter != points.end(); ++iter )
+    for( typename ParametricPoints::const_iterator iter = points.begin(); iter != points.end(); ++iter )
       output.push_back ( iter->p );
   }
 }

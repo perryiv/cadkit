@@ -132,7 +132,7 @@ namespace Magrathea
       osg::ref_ptr < LatLongGrid >                    _latLongGrid;
       Usul::Interfaces::IUnknown::RefPtr              _viewer;
 
-     
+      static bool                                     _ossimInitialized;
   };
 }
 

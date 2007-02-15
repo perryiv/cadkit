@@ -22,6 +22,8 @@
 using namespace Magrathea;
 
 
+bool Planet::_ossimInitialized ( false );
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -37,9 +39,12 @@ Planet::Planet() :
   _latLongGrid       ( 0x0 ),
   _viewer            ( 0x0 )
 {
-  ossimInit::instance()->initialize();
-
-  _planet                  = new ossimPlanet();
+  if( false == _ossimInitialized )
+  {
+    ossimInit::instance()->initialize();
+    _ossimInitialized = true;
+  }
+  _planet                       = new ossimPlanet();
   _databasePager                = new osgDB::DatabasePager();   
   _textureLayerGroup            = new ossimPlanetTextureLayerGroup();
   _textureOperationLayerGroup   = new ossimPlanetTextureLayerGroup();  
@@ -144,9 +149,8 @@ void Planet::readKWL( const std::string& fileName )
   if( layer.valid() )
   {
     _textureLayerGroup->addTop( layer.get() );
+    this->refreshLandTextures( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
   }
-
-  reset();
 }
 
 
@@ -176,6 +180,7 @@ int Planet::addLayer( ossimPlanetTextureLayer *layer  )
   {    
     _textureLayerGroup->addTop( layer );    
     index = _textureLayerGroup->findLayerIndex( layer );
+    this->refreshLandTextures( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
   }
 
   return index;

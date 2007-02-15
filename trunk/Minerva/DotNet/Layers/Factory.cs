@@ -68,6 +68,7 @@ namespace DT.Minerva.Layers.Controls
       try
       {
         stream = System.IO.File.Open(this.Filename, System.IO.FileMode.Create);
+        //System.Xml.Serialization.XmlSerializer formatter = new System.Xml.Serialization.XmlSerializer(typeof(Types));
         System.Runtime.Serialization.Formatters.Binary.BinaryFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 
         formatter.Serialize(stream, _types);
@@ -94,6 +95,7 @@ namespace DT.Minerva.Layers.Controls
       try
       {
         stream = System.IO.File.Open(this.Filename, System.IO.FileMode.OpenOrCreate);
+        //System.Xml.Serialization.XmlSerializer formatter = new System.Xml.Serialization.XmlSerializer(typeof(Types));
         System.Runtime.Serialization.Formatters.Binary.BinaryFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
         _types = (Types)formatter.Deserialize(stream);
       }

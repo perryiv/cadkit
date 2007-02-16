@@ -1,19 +1,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Adam Kubach
+//  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace CadKit.Interfaces
 {
-  public interface IImageLayer
+  public interface IOssimLayer
   {
-    void addImageLayer(string filename);
-    void hideImageLayer(string filename);
-    void showImageLayer(string filename);
-    void removeImageLayer(string filename);
   }
 }

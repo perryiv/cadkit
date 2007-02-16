@@ -204,6 +204,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Magrathea", "..\..\Mag
 		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Layers.Ossim.Wms", "..\Plugins\Ossim\Wms\CadKit.Plugins.Layers.Ossim.Wms.csproj", "{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -892,6 +894,16 @@ Global
 		{FE673D9C-ED8C-4A6D-98BB-C51EA91747E1}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{FE673D9C-ED8C-4A6D-98BB-C51EA91747E1}.Release|Win32.ActiveCfg = Release|Win32
 		{FE673D9C-ED8C-4A6D-98BB-C51EA91747E1}.Release|Win32.Build.0 = Release|Win32
+		{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

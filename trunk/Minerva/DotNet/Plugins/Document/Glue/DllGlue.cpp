@@ -360,15 +360,20 @@ void DllGlue::addKeyWordList( System::String^ kwl )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DllGlue::addLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer )
+void DllGlue::addLayer( CadKit::Interfaces::IOssimLayer ^ layer )
 {
   if( nullptr != layer )
   {
-    // Add layer to group.
-    osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( layer->nativeIntPtr().ToPointer() ) );
+    CadKit::Interfaces::INativePtr ^ nativePtr = dynamic_cast < CadKit::Interfaces::INativePtr^ > ( layer );
 
-    if( texture.valid() )
-      _planet->addLayer( texture.get() );
+    if( nullptr != nativePtr )
+    {
+      // Add layer to group.
+      osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( nativePtr->nativeIntPtr().ToPointer() ) );
+
+      if( texture.valid() )
+        _planet->addLayer( texture.get() );
+    }
   }
 }
 
@@ -379,14 +384,19 @@ void DllGlue::addLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DllGlue::removeLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer )
+void DllGlue::removeLayer( CadKit::Interfaces::IOssimLayer ^ layer )
 {
   if( nullptr != layer )
   {
-    osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( layer->nativeIntPtr().ToPointer() ) );
+    CadKit::Interfaces::INativePtr ^ nativePtr = dynamic_cast < CadKit::Interfaces::INativePtr^ > ( layer );
 
-    if( texture.valid() )
-      _planet->removeLayer( texture.get() );
+    if( nullptr != nativePtr )
+    {
+      osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( nativePtr->nativeIntPtr().ToPointer() ) );
+
+      if( texture.valid() )
+        _planet->removeLayer( texture.get() );
+    }
   }
 }
 

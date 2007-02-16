@@ -237,6 +237,14 @@
 				RelativePath=".\Panel.h"
 				>
 			</File>
+			<File
+				RelativePath=".\WmsLayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WmsLayer.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

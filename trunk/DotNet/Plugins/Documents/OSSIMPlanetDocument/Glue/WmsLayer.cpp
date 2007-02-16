@@ -8,13 +8,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ImageLayer.h"
+#include "WmsLayer.h"
 
 #include "Usul/Strings/ManagedToNative.h"
 
-#include "ossim/base/ossimKeywordList.h"
-
-#include "ossimPlanet/ossimPlanetTextureLayerRegistry.h"
+#include "ossimPlanet/ossimPlanetWmsImageLayer.h"
 
 using namespace CadKit::OSSIMPlanet::Glue;
 
@@ -25,27 +23,13 @@ using namespace CadKit::OSSIMPlanet::Glue;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ImageLayer::ImageLayer(System::String ^filename)
+WmsLayer::WmsLayer() : _wmsImageLayer ( new ossimPlanetWmsImageLayer )
 {
-  ossimFilename file ( Usul::Strings::convert(filename).c_str() );
+  _wmsImageLayer->ref();
+  _wmsImageLayer->setTransparentFlag( true );
 
-  osg::ref_ptr< ossimPlanetTextureLayer > layer ( 0x0 );
-
-  if( "kwl" == file.ext().downcase() )
-  {
-    ossimKeywordlist kwl( file );
-    layer = ossimPlanetTextureLayerRegistry::instance()->createLayer( kwl.toString() );
-  }
-  else
-    layer = ossimPlanetTextureLayerRegistry::instance()->createLayer( file );
-
-  if( layer.valid() )
-  {
-    _layer = layer.get();
-    _layer->ref();
-  }
-
-  this->Name = filename;
+  _wmsImageLayer->setTransparentColorFlag( true );
+  _wmsImageLayer->setTransparentColor( 255, 255, 255 );
 }
 
 
@@ -55,12 +39,12 @@ ImageLayer::ImageLayer(System::String ^filename)
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ImageLayer::~ImageLayer()
+WmsLayer::~WmsLayer()
 {
-  if(0x0 != _layer)
+  if( 0x0 != _wmsImageLayer )
   {
-    _layer->unref();
-    _layer = 0x0;
+    _wmsImageLayer->unref();
+    _wmsImageLayer = 0x0;
   }
 }
 
@@ -71,51 +55,37 @@ ImageLayer::~ImageLayer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ImageLayer::!ImageLayer()
+WmsLayer::!WmsLayer()
 {
-  if(0x0 != _layer)
+  if( 0x0 != _wmsImageLayer )
   {
-    _layer->unref();
-    _layer = 0x0;
+    _wmsImageLayer->unref();
+    _wmsImageLayer = 0x0;
   }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the texture layer state code.
+//  Get the name.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ImageLayer::TextureLayerStateCode ImageLayer::StateCode::get()
+System::String^ WmsLayer::Name::get()
 {
-  if( 0x0 != _layer )
-    return static_cast < TextureLayerStateCode > ( _layer->getStateCode() );
-  return TextureLayerStateCode::NO_SOURCE_DATA;
+  return this->Server;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the name of the layer.
+//  Set the name.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-System::String^ ImageLayer::Name::get()
+void WmsLayer::Name::set ( System::String^ s )
 {
-  return _name;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the name of the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ImageLayer::Name::set ( System::String^ s )
-{
-  _name = s;
+  this->Server = s;
 }
 
 
@@ -125,9 +95,9 @@ void ImageLayer::Name::set ( System::String^ s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ImageLayer::Shown::get()
+bool WmsLayer::Shown::get()
 {
-  return _layer->getEnableFlag();
+  return true;
 }
 
 
@@ -137,8 +107,8 @@ bool ImageLayer::Shown::get()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ImageLayer::NeedsUpdate::get()
-{ 
+bool WmsLayer::NeedsUpdate::get()
+{
   return false;
 }
 
@@ -149,53 +119,51 @@ bool ImageLayer::NeedsUpdate::get()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageLayer::NeedsUpdate::set( bool b )
+void WmsLayer::NeedsUpdate::set( bool b )
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Show the layer.
+//  Show.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageLayer::show()
-{
-  _layer->setEnableFlag( true );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Modify the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ImageLayer::modify()
+void WmsLayer::show()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Hide the layer.
+//  Modify.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageLayer::hide()
+void WmsLayer::modify()
 {
-  _layer->setEnableFlag( false );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add layer to favorites.
+//  Hide.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageLayer::addToFavorites()
+void WmsLayer::hide()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add to favorites.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WmsLayer::addToFavorites()
 {
 }
 
@@ -206,19 +174,56 @@ void ImageLayer::addToFavorites()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ossimPlanetTextureLayer* ImageLayer::nativePtr()
+System::IntPtr WmsLayer::nativeIntPtr()
 {
-  return _layer;
+  return System::IntPtr ( _wmsImageLayer );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the System::IntPtr.
+//  Get the server.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-System::IntPtr ImageLayer::nativeIntPtr()
+System::String^ WmsLayer::Server::get()
 {
-  return System::IntPtr ( _layer );
+  return gcnew System::String ( _wmsImageLayer->getServer().c_str() );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the server.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WmsLayer::Server::set( System::String^ s )
+{
+  _wmsImageLayer->setServer ( Usul::Strings::convert( s ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the cache directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::String^ WmsLayer::CacheDirectory::get()
+{
+  return gcnew System::String ( _wmsImageLayer->getCacheDirectory().c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the cache directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WmsLayer::CacheDirectory::set ( System::String^ s )
+{
+  _wmsImageLayer->setCacheDirectory( Usul::Strings::convert( s ).c_str() );
+}
+

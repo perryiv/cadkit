@@ -17,12 +17,14 @@
 #include "ossimPlanet/ossimPlanetTextureLayerRegistry.h"
 #include "ossim/base/ossimKeywordlist.h"
 
+#include "wms/wms.h"
+
 #include "osg/PolygonOffset"
 
 using namespace Magrathea;
 
-
 bool Planet::_ossimInitialized ( false );
+unsigned int Planet::_planetCount ( 0 );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -44,6 +46,12 @@ Planet::Planet() :
     ossimInit::instance()->initialize();
     _ossimInitialized = true;
   }
+
+  if( 0 == _planetCount )
+    wmsInitialize();
+
+  ++_planetCount;
+
   _planet                       = new ossimPlanet();
   _databasePager                = new osgDB::DatabasePager();   
   _textureLayerGroup            = new ossimPlanetTextureLayerGroup();
@@ -68,6 +76,11 @@ Planet::Planet() :
 
 Planet::~Planet()
 {
+  --_planetCount;
+
+  if( 0 == _planetCount )
+    wmsFinalize();
+
   _databasePager->cancel();
 }
 
@@ -213,6 +226,7 @@ int Planet::addLayerOperation( ossimPlanetTextureLayer *layer  )
   {    
     _textureOperationLayerGroup->addTop( layer );
     index = _textureOperationLayerGroup->findLayerIndex( layer );
+    this->refreshLandTextures( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
   }
 
   return index;
@@ -252,6 +266,7 @@ void Planet::removeLayerOperation( int index  )
 void Planet::removeLayer( ossimPlanetTextureLayer *layer )
 {
   _textureLayerGroup->removeLayer( layer );
+  this->refreshLandTextures( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
 }
 
 bool Planet::hasLayer( ossimPlanetTextureLayer *layer )
@@ -273,6 +288,7 @@ bool Planet::hasLayerOperation( ossimPlanetTextureLayer *layer )
 void Planet::removeLayerOperation( ossimPlanetTextureLayer *layer  )
 {
   _textureOperationLayerGroup->removeLayer( layer );
+  this->refreshLandTextures( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
 }
 
 

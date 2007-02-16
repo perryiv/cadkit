@@ -55,7 +55,7 @@
     <Compile Include="ICreateLayer.cs" />
     <Compile Include="IDocumentIcon.cs" />
     <Compile Include="IGroup.cs" />
-    <Compile Include="IImageLayer.cs" />
+    <Compile Include="IOssimLayer.cs" />
     <Compile Include="IFiltersInsert.cs" />
     <Compile Include="Filter.cs" />
     <Compile Include="IFileInsert.cs" />

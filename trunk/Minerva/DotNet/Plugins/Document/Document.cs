@@ -199,8 +199,8 @@ namespace DT.Minerva.Plugins.Document
       if (null != layer)
       {
         layer.show();
-        if (layer is CadKit.OSSIMPlanet.Glue.ImageLayer)
-          _dll.addLayer((CadKit.OSSIMPlanet.Glue.ImageLayer)layer);
+        if (layer is CadKit.Interfaces.IOssimLayer)
+          _dll.addLayer((CadKit.Interfaces.IOssimLayer)layer);
         else
           this._showLayer(layer);
         _layers.Add(layer);
@@ -252,8 +252,8 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     void CadKit.Interfaces.ILayerList.removeLayer(CadKit.Interfaces.ILayer layer, object caller)
     {
-      if (layer is CadKit.OSSIMPlanet.Glue.ImageLayer)
-        _dll.removeLayer((CadKit.OSSIMPlanet.Glue.ImageLayer)layer);
+      if (layer is CadKit.Interfaces.IOssimLayer)
+        _dll.removeLayer((CadKit.Interfaces.IOssimLayer)layer);
       else
         this._removeLayer(layer);
       _layers.Remove(layer);

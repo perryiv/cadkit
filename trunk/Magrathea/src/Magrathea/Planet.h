@@ -133,6 +133,7 @@ namespace Magrathea
       Usul::Interfaces::IUnknown::RefPtr              _viewer;
 
       static bool                                     _ossimInitialized;
+      static unsigned int                             _planetCount;
   };
 }
 

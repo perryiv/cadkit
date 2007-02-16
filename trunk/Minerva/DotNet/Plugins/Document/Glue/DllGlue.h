@@ -42,8 +42,8 @@ namespace DT
             void viewLayerExtents( CadKit::Interfaces::ILayer ^layer );
 
             void                  addKeyWordList( System::String^ kwl );
-            void                  addLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer );
-            void                  removeLayer( CadKit::OSSIMPlanet::Glue::ImageLayer ^ layer );
+            void                  addLayer( CadKit::Interfaces::IOssimLayer ^ layer );
+            void                  removeLayer( CadKit::Interfaces::IOssimLayer ^ layer );
       
             void                  setLayerOperation( System::String^ optype, int val, CadKit::Interfaces::ILayer^ layer );
 

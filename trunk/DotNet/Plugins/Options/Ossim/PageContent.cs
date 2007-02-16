@@ -85,16 +85,36 @@ namespace CadKit.Plugins.Options.Ossim
       if (CadKit.Documents.Manager.Instance.ActiveDocument is CadKit.Interfaces.IOssimPlanetSettings)
       {
         CadKit.Interfaces.IOssimPlanetSettings settings = (CadKit.Interfaces.IOssimPlanetSettings)CadKit.Documents.Manager.Instance.ActiveDocument;
-        settings.ElevationEnabled = _elevation.Checked;
-        settings.EphemerisEnabled = _ephemeris.Checked;
-        settings.HudEnabled = _hud.Checked;
-        settings.LatLongGrid = _latLongGrid.Checked;
 
-        settings.ElevationCacheDir = _cacheDir.Text;
+        if(settings.ElevationEnabled != _elevation.Checked)
+          settings.ElevationEnabled = _elevation.Checked;
 
-        settings.HeightExageration = System.Convert.ToSingle(_heightExag.Value);
-        settings.MaxLevelDetail = System.Convert.ToSingle(_maxLevelDetail.Value);
-        settings.ElevationPatchSize = System.Convert.ToSingle(_elevationPatch.Value);
+        if(settings.EphemerisEnabled != _ephemeris.Checked)
+          settings.EphemerisEnabled = _ephemeris.Checked;
+
+        if(settings.HudEnabled != _hud.Checked)
+          settings.HudEnabled = _hud.Checked;
+
+        if(settings.LatLongGrid != _latLongGrid.Checked)
+          settings.LatLongGrid = _latLongGrid.Checked;
+
+        if(settings.ElevationCacheDir != _cacheDir.Text )
+          settings.ElevationCacheDir = _cacheDir.Text;
+
+        float heightExag = System.Convert.ToSingle(_heightExag.Value);
+
+        if (settings.HeightExageration != heightExag)
+          settings.HeightExageration = heightExag;
+
+        float maxLevelDetail = System.Convert.ToSingle(_maxLevelDetail.Value);
+
+        if (settings.MaxLevelDetail != maxLevelDetail)
+          settings.MaxLevelDetail = maxLevelDetail;
+
+        float elevationPatch = System.Convert.ToSingle(_elevationPatch.Value);
+
+        if (settings.ElevationPatchSize != elevationPatch)
+          settings.ElevationPatchSize = elevationPatch;
       }
     }
   }

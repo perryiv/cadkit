@@ -35,6 +35,14 @@ namespace Magrathea
     {
       ossimGpt gpt;
       mapProj->eastingNorthingToWorld( ossimDpt ( iter->x(), iter->y() ), gpt );
+
+      double deltaH = ossimElevManager::instance()->getHeightAboveMSL(gpt);
+      if(deltaH == OSSIM_DBL_NAN)
+      {
+         deltaH = 0.0;
+      }
+
+      gpt.height( deltaH + ossimGeoidManager::instance()->offsetFromEllipsoid(gpt) );
       output.push_back ( gpt );
     }
   }

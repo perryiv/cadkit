@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_TRIANGULATE_H__
-#define __USUL_INTERFACES_TRIANGULATE_H__
+#ifndef __USUL_INTERFACES_TRIANGULATE_LOOP_H__
+#define __USUL_INTERFACES_TRIANGULATE_LOOP_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Math/Vector2.h"
@@ -26,7 +26,7 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct ITriangulate : public Usul::Interfaces::IUnknown
+struct ITriangulateLoop : public Usul::Interfaces::IUnknown
 {
   // Useful typedefs.
   typedef std::vector< Usul::Math::Vec2d >  Vertices;
@@ -40,7 +40,7 @@ struct ITriangulate : public Usul::Interfaces::IUnknown
   enum { IID = 3661762526u };
 
   // Triangulate the loop.
-  virtual void triangulate ( const Vertices &in, InnerLoops& inner, Vertices &out, UIntArray& indices ) = 0;
+  virtual void triangulateLoop ( const Vertices &in, InnerLoops& inner, Vertices &out, UIntArray& indices ) = 0;
 };
 
 

@@ -47,6 +47,9 @@ namespace CadKit.Helios
 
         // Run the application.
         System.Windows.Forms.Application.Run(form);
+
+        // Unload the native plugins.
+        CadKit.Init.Glue.Plugins.unloadPlugins();
       }
       catch (System.Exception e)
       {

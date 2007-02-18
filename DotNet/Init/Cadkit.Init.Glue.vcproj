@@ -193,6 +193,14 @@
 				RelativePath=".\Init.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Plugins.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Plugins.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

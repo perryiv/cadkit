@@ -14,4 +14,5 @@
   <plugin file="DT.Minerva.Plugins.Layers.PostGIS.plug" load="true" />
   <plugin file="DT.Minerva.Plugins.Document.plug" load="true" />
   <plugin file="DT.Minerva.Plugins.Options.plug" load="true" />
+  <plugin file="Triangulate.plug" native="true" load="true" />
 </plugins>

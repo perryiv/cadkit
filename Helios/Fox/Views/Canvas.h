@@ -123,7 +123,7 @@ public:
 
   // Get/Set the background color.
   void                  backgroundColor ( const osg::Vec4 &color );
-  const osg::Vec4 &     backgroundColor() const;
+  osg::Vec4             backgroundColor() const;
 
   // Clear the devices.
   void                  clearDevices();

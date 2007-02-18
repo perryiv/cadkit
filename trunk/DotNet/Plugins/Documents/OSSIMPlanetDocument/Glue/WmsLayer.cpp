@@ -28,8 +28,8 @@ WmsLayer::WmsLayer() : _wmsImageLayer ( new ossimPlanetWmsImageLayer )
   _wmsImageLayer->ref();
   _wmsImageLayer->setTransparentFlag( true );
 
-  _wmsImageLayer->setTransparentColorFlag( true );
-  _wmsImageLayer->setTransparentColor( 255, 255, 255 );
+  _wmsImageLayer->setTransparentColorFlag ( true );
+  _wmsImageLayer->setTransparentColor ( 255, 255, 255 );
 }
 
 
@@ -225,5 +225,32 @@ System::String^ WmsLayer::CacheDirectory::get()
 void WmsLayer::CacheDirectory::set ( System::String^ s )
 {
   _wmsImageLayer->setCacheDirectory( Usul::Strings::convert( s ).c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the image type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::String^ WmsLayer::ImageType::get()
+{
+  return gcnew System::String ( _wmsImageLayer->getImageType().c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the image type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WmsLayer::ImageType::set ( System::String^ s )
+{
+  std::string imageType ( Usul::Strings::convert( s ) );
+  _wmsImageLayer->setImageType( imageType.c_str() );
+
+  _wmsImageLayer->setImageType( "image/png" );
 }
 

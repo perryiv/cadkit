@@ -64,6 +64,12 @@ namespace CadKit
           void set ( System::String^ s );
         }
 
+        property System::String^ ImageType
+        {
+          System::String^ get();
+          void set ( System::String^ s );
+        }
+
       private:
         ossimPlanetWmsImageLayer *_wmsImageLayer;
       };

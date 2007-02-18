@@ -58,10 +58,10 @@ namespace Magrathea
     /// one cm resolution
     double errorFactor ( 0.01 );
 
-    double distance0 ( point1.distanceTo( point0.p ) );
-    double distance2 ( point1.distanceTo( point2.p ) );
+    //double distance0 ( point1.distanceTo( point0.p ) );
+    //double distance2 ( point1.distanceTo( point2.p ) );
 
-    if( Usul::Math::absolute ( point1.height() - height1 ) < errorFactor && distance0 < 2.0 && distance2 < 2.0 )
+    if( Usul::Math::absolute ( point1.height() - height1 ) /*< errorFactor && distance0 < 2.0 && distance2 < 2.0*/ )
       return;
 
     Point midPoint;

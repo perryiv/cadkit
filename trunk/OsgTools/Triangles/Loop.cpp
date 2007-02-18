@@ -12,7 +12,7 @@
 #include "Usul/Interfaces/IGetDocument.h"
 #include "Usul/Interfaces/IAddTriangle.h"
 #include "Usul/Interfaces/IGetVertex.h"
-#include "Usul/Interfaces/ITriangulate.h"
+#include "Usul/Interfaces/ITriangulateLoop.h"
 #include "Usul/Interfaces/IAddSharedVertex.h"
 #include "Usul/Interfaces/IActiveView.h"
 #include "Usul/Interfaces/IDocument.h"
@@ -234,11 +234,11 @@ _innerLoops.clear();
 bool Loop::triangulate ( Usul::Interfaces::IUnknown *caller, bool buildOnFly )
 {
   // Useful typedefs.
-  typedef Usul::Interfaces::ITriangulate   Triangulate;
-  typedef Triangulate::Vertices            Vertices;
-  typedef Triangulate::UIntArray           UIntArray;
-  typedef Triangulate::InnerLoops          InnerLoops;
-  typedef Usul::Components::Manager        PluginManager;
+  typedef Usul::Interfaces::ITriangulateLoop   Triangulate;
+  typedef Triangulate::Vertices                Vertices;
+  typedef Triangulate::UIntArray               UIntArray;
+  typedef Triangulate::InnerLoops              InnerLoops;
+  typedef Usul::Components::Manager            PluginManager;
   
   if ( this->isCoplanar(caller) == -1 ) {
     return false;
@@ -310,7 +310,7 @@ bool Loop::triangulate ( Usul::Interfaces::IUnknown *caller, bool buildOnFly )
   }
 
   // Triangulate.
-  tri->triangulate ( vertices, innerLoops, out, indices );
+  tri->triangulateLoop ( vertices, innerLoops, out, indices );
 
   // Matrix to rotate back to 3D
   osg::Matrix m;

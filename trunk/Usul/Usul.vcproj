@@ -1049,19 +1049,11 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Interfaces\ICreateTriangleSet.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Interfaces\IDecimateTriangles.h"
 						>
 					</File>
 					<File
 						RelativePath=".\Interfaces\IGetTriangleNormal.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Interfaces\ISaveTriangleSet.h"
 						>
 					</File>
 					<File
@@ -1086,6 +1078,10 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\ITriangulate.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ITriangulateLoop.h"
 						>
 					</File>
 				</Filter>

@@ -139,6 +139,7 @@ namespace CadKit.Plugins
     {
       string file = "";
       bool load = true;
+      bool native = false;
       foreach (System.Xml.XmlAttribute attr in node.Attributes)
       {
         if (attr.Name == "file")
@@ -149,8 +150,19 @@ namespace CadKit.Plugins
         {
           load = bool.Parse(attr.Value);
         }
+        else if (attr.Name == "native")
+        {
+          native = bool.Parse(attr.Value);
+        }
       }
-      names.Add(file, load);
+
+      if (false == native)
+        names.Add(file, load);
+      else
+      {
+        if (load)
+          CadKit.Init.Glue.Plugins.loadPlugin(file);
+      }
     }
 
 

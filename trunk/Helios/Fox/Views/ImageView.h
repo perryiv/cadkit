@@ -64,10 +64,10 @@ protected:
   /// Usul::Interfaces::IViewer
   virtual void            render();
   virtual void            clearScene();
-  virtual int             x();
-  virtual int             y();
-  virtual int             height();
-  virtual int             width();
+  virtual int             x() const;
+  virtual int             y() const;
+  virtual unsigned int    height() const;
+  virtual unsigned int    width() const;
   virtual void            handleMessage ( unsigned short message );
 
   /// Usul::Interfaces::IImageView

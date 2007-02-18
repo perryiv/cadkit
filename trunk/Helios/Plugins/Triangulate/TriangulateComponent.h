@@ -22,19 +22,19 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Interfaces/ITriangulate.h"
+#include "Usul/Interfaces/ITriangulateLoop.h"
 
 
 class TriangulateComponent : public Usul::Base::Referenced,
-                             public Usul::Interfaces::ITriangulate,
+                             public Usul::Interfaces::ITriangulateLoop,
                              public Usul::Interfaces::IPlugin
 {
 public:
 
   /// Typedefs.
-  typedef Usul::Interfaces::ITriangulate::Vertices    Vertices;
-  typedef Usul::Interfaces::ITriangulate::UIntArray   UIntArray;
-  typedef Usul::Interfaces::ITriangulate::InnerLoops  InnerLoops;
+  typedef Usul::Interfaces::ITriangulateLoop::Vertices    Vertices;
+  typedef Usul::Interfaces::ITriangulateLoop::UIntArray   UIntArray;
+  typedef Usul::Interfaces::ITriangulateLoop::InnerLoops  InnerLoops;
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Interfaces::IUnknown Unknown;
 
@@ -48,7 +48,7 @@ public:
   TriangulateComponent();
   
   /// Generate triangles.
-  virtual void                  triangulate ( const Vertices &in, InnerLoops& inner, Vertices &out, UIntArray& indices );
+  virtual void                  triangulateLoop ( const Vertices &in, InnerLoops& inner, Vertices &out, UIntArray& indices );
 
   /// Return name of plugin.
   virtual std::string           getPluginName() const;

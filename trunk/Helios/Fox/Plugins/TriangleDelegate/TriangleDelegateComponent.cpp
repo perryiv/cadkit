@@ -279,7 +279,7 @@ void TriangleDelegateComponent::createDefaultGUI ( Usul::Documents::Document *do
   child->onBuildScene ( 0x0, 0, 0x0 );
 
   // Make sure the new scene has the proper display-list settings.
-  canvas->viewer()->setDisplayLists();
+  canvas->viewer()->updateDisplayListUse();
 
   // If we should...
   if ( Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::VIEW_ALL_ON_LOAD ) )

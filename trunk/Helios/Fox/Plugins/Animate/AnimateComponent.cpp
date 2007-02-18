@@ -1036,10 +1036,10 @@ long AnimateComponent::onCommandSaveMovie ( FX::FXObject *, FX::FXSelector, void
 
   fd->frameDumpProperties ( dir, name, ext, 0, digits );
   {
-    fd->filenamesSave ( true );
+    fd->dumpFrames ( true );
     IFrameDump::ScopedDump sd ( fd );
     this->_playForward();
-    fd->filenamesSave ( false );
+    fd->dumpFrames ( false );
   }
 
   // Get the filenames.

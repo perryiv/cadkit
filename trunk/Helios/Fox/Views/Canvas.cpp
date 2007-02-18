@@ -260,7 +260,7 @@ void Canvas::backgroundColor ( const osg::Vec4 &color )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec4 &Canvas::backgroundColor() const
+osg::Vec4 Canvas::backgroundColor() const
 {
   if ( !this->viewer() )
     throw ( std::runtime_error ( "Cannot get the background color because there is no viewer" ) );
@@ -1317,7 +1317,7 @@ void Canvas::clearDevices()
 
 long Canvas::onDisplayListSet ( FX::FXObject *, FX::FXSelector, void * )
 {
-  this->viewer()->setDisplayLists();
+  this->viewer()->updateDisplayListUse();
   return 1;
 }
 

@@ -99,7 +99,7 @@ LIB_DIRS = \
 LIBS = \
 	-lOpenThreads -lUsul
 
-flags = -g -D_DEBUG -D_COMPILING_$(COMPILE_GUARD)
+flags = -g -fPIC -D_DEBUG -D_COMPILING_$(COMPILE_GUARD)
 
 BUILD = $(OS)
 ARCHIVE_LIB = lib$(TARGET)$(TARGET_STATIC_SUFFIX)

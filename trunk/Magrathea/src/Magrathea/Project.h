@@ -93,6 +93,21 @@ namespace Magrathea
     double normalizationFactor = ecef.getMagnitude();
 
     mapProj->eastingNorthingToWorld( ossimDpt ( vec.x(), vec.y() ), gpt );
+
+    //std::cerr << "Lat: " << gpt.lat << " Long: " << gpt.lon << std::endl;
+
+    double deltaH = ossimElevManager::instance()->getHeightAboveMSL(gpt);
+    if(deltaH == OSSIM_DBL_NAN)
+    {
+      deltaH = 0.0;
+    }
+
+    //std::cerr << "Height above MSL: " << deltaH << std::endl;
+
+    gpt.height( deltaH + ossimGeoidManager::instance()->offsetFromEllipsoid(gpt) );
+
+    //std::cerr << "Height above ellipsoid: " << gpt.height() << std::endl;
+
     gpt.hgt += zOffset;
 
     // Transform to ossimPlanet coordinates

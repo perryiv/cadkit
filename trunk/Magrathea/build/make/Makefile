@@ -16,6 +16,7 @@ LOCAL_INCLUDE = \
 	-I$(OSSIM_PLANET_INC_DIR) 			\
 	-I$(OSG_EPHEMERIS_INC_DIR) 			\
 	-I$(BOOST_INC_DIR) 				\
+	-I$(LIBWMS_INC_DIR)				\
 	-I../../src					\
 	-I../../../
 
@@ -23,8 +24,9 @@ LOCAL_INCLUDE = \
 LOCAL_LIBS = \
 	-L$(USUL_LIB_DIR) -lOsgTools -lUsul 		\
 	-L$(OSSIM_LIB_DIR) -lossim 			\
-	-L$(OSSIM_PLANET_LIB_DIR) -lossimPlanet 		\
-	-L$(BOOST_LIB_DIR)
+	-L$(OSSIM_PLANET_LIB_DIR) -lossimPlanet 	\
+	-L$(BOOST_LIB_DIR)				\
+	-L$(LIBWMS_LIB_DIR) -lwms
 
 
 # Any flags for the compiler. 

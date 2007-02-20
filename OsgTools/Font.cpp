@@ -51,11 +51,7 @@ std::string Font::fontfile ( const std::string &name )
 
 osgText::Font* Font::defaultFont() 
 {
-  #ifdef _WIN32
-
-     return osgText::readFontFile( "arial.ttf" );
-
-  #elif __APPLE__
+  #ifdef __APPLE__
     // get the existing high level path list
     osgDB::FilePathList wFilePathList = osgDB::Registry::instance()->getDataFilePathList();
     
@@ -71,8 +67,7 @@ osgText::Font* Font::defaultFont()
 
   #else
 
-    return osgText::readFontFile( "/usr/share/fonts/TrueType/ttf-bitstream/Ver/Vera.ttf" );
-
+    return osgText::readFontFile( "arial.ttf" );
   #endif
 }
 

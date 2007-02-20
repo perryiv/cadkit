@@ -26,7 +26,8 @@ using namespace OsgTools::Legend;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Legend::Legend() : BaseClass(),
+Legend::Legend() : 
+BaseClass(),
 _legendObjects(),
 _width ( 0 ),
 _height ( 0 )
@@ -92,9 +93,14 @@ osg::Node* Legend::buildScene()
       (*iter)->size( _width - ( padding * 2 ), heightPerObject );
       unsigned int num ( iter - _legendObjects.begin() );
       osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
-      osg::Matrix m ( osg::Matrix::translate ( padding , heightPerObject * num + padding, 0.0 ) );
+      osg::Matrix m ( osg::Matrix::translate ( padding , heightPerObject * num + padding, 1.0 ) );
       mt->setMatrix( m );
       mt->addChild( (*iter)->buildScene() );
+
+      // Turn off depth testing.
+      osg::ref_ptr < osg::StateSet > ss ( mt->getOrCreateStateSet() );
+      ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+
       group->addChild( mt.get() );
     }
   }
@@ -177,8 +183,9 @@ osg::Node* Legend::_buildBackground()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Legend::size(unsigned int width, unsigned int height)
+void Legend::size( unsigned int width, unsigned int height )
 {
   _width = width;
   _height = height;
 }
+

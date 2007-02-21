@@ -45,6 +45,11 @@ namespace DT.Minerva.App
 
         // Run the application.
         System.Windows.Forms.Application.Run(form);
+
+        // Unload the native plugins.
+        CadKit.Init.Glue.Plugins.unloadPlugins();
+
+        // Clean up.
         System.GC.Collect();
         System.GC.WaitForPendingFinalizers();
       }

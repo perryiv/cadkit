@@ -13,6 +13,8 @@
 
 #include "Usul/Math/Absolute.h"
 
+#include <algorithm>
+
 namespace Magrathea
 {
   template < typename Point >

@@ -581,11 +581,18 @@ namespace DT.Minerva.Layers.Controls
     [
       System.ComponentModel.Category("Database")
     ]
-    public string DefaultQuery
+    public virtual string DefaultQuery
     {
       get
       {
-        return "SELECT " + this.PrimaryKeyColumn + " as id, srid(geom) as srid, asBinary(geom) as geom FROM " + this.DataTable;
+        string query = "SELECT " + this.PrimaryKeyColumn + " as id, srid(geom) as srid, asBinary(geom) as geom";
+        if (null != this.ColorColumn && this.ColorColumn != "")
+        {
+          query += ", " + this.ColorColumn;
+        }
+        
+        query += " FROM " + this.DataTable;
+        return query;
       }
     }
 

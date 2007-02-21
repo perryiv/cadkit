@@ -34,7 +34,7 @@ namespace Magrathea
     for( typename Input::const_iterator iter = input.begin(); iter != input.end(); ++iter )
     {
       ossimGpt gpt;
-      mapProj->eastingNorthingToWorld( ossimDpt ( iter->x(), iter->y() ), gpt );
+      mapProj->eastingNorthingToWorld( ossimDpt ( (*iter)[0], (*iter)[1] ), gpt );
 
       double deltaH = ossimElevManager::instance()->getHeightAboveMSL(gpt);
       if(deltaH == OSSIM_DBL_NAN)

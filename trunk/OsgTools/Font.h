@@ -19,23 +19,20 @@
 #include "OsgTools/Export.h"
 #include "osgText/Font"
 
-
 #include <string>
 
-
 namespace OsgTools {
-
 
 struct OSG_TOOLS_EXPORT Font
 {
   //  Return the font filename.
   static std::string         fontfile ( const std::string &fontName );
   static osgText::Font*      defaultFont();
-  
+
+  static unsigned int        estimateTextWidth ( osgText::Text* text );
 };
 
-
-}; // namespace OsgTools
+} // namespace OsgTools
 
 
 #endif // _OSG_TOOLS_FONT_H_

@@ -14,7 +14,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Font.h"
+
 #include "osgText/Font"
+#include "osgText/Text"
+
 #include "osgDB/Registry"
 #include "osgDB/FileUtils"
 #include <osgDB/ReadFile>
@@ -72,4 +75,81 @@ osgText::Font* Font::defaultFont()
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the esimated width for the font and text.
+//  Adapted from osgText::Text::computeLastCharacterOnLine
+//
+///////////////////////////////////////////////////////////////////////////////
 
+unsigned int Font::estimateTextWidth( osgText::Text* text )
+{
+  osg::ref_ptr < osgText::Font > font ( const_cast < osgText::Font *> ( text->getFont() ) );
+
+  if( false == font.valid() )
+    return 0;
+
+  float characterHeight       ( text->getCharacterHeight() );
+  float characterAspectRatio  ( text->getCharacterAspectRatio() );
+
+  float hr ( characterHeight/ (float) font->getFontHeight() );
+  float wr ( hr / characterAspectRatio );
+
+ // text->update();
+  const osgText::String string ( text->getText() );
+
+  osgText::String::const_iterator lastChar ( string.begin() );
+  unsigned int previous_charcode ( 0 );
+
+  osgText::Text::Layout layout ( text->getLayout() );
+
+  osgText::KerningType kerningType ( text->getKerningType() );
+
+  float width ( 0 );
+
+  for( osgText::String::const_iterator iter = string.begin(); iter != string.end(); ++iter )
+  {
+    unsigned int charcode ( *iter );
+
+    osgText::Font::Glyph* glyph = font->getGlyph( charcode );
+    if ( glyph )
+    {
+      //float width = (float)( glyph->s() - 2 * font->getGlyphImageMargin() ) * wr;
+
+      if ( layout == osgText::Text::RIGHT_TO_LEFT )
+      {
+        width -= glyph->getHorizontalAdvance() * wr;
+      }
+
+      // adjust cursor position w.r.t any kerning.
+      if ( previous_charcode )
+      {
+        osg::Vec2 delta( font->getKerning( previous_charcode, charcode, kerningType ) );
+
+        switch( layout )
+        {
+          case osgText::Text::LEFT_TO_RIGHT:
+          {  
+            width += delta.x() * wr;
+            break;
+          }
+          case osgText::Text::RIGHT_TO_LEFT:
+          {
+            width -= delta.x() * wr;
+            break;
+          }
+        }
+      }
+
+      // move the cursor onto the next character.
+      if( layout == osgText::Text::LEFT_TO_RIGHT )
+      {
+        width += glyph->getHorizontalAdvance() * wr;
+      }
+
+      previous_charcode = charcode;
+    }
+  }
+
+  return static_cast < unsigned int > ( width );
+}

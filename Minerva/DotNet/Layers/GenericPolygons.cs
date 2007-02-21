@@ -104,28 +104,6 @@ namespace DT.Minerva.Layers.Controls
     /// 
     /// </summary>
     [
-      System.ComponentModel.Category("Database")
-    ]
-    public new string DefaultQuery
-    {
-      get
-      {
-        string query = "";
-        if (null != this.ColorColumn && this.ColorColumn != "")
-        {
-          query = "SELECT id, " + this.ColorColumn + ", srid(geom) as srid, asBinary(geom) as geom FROM " + this.DataTable;
-        }
-        else
-          query = base.DefaultQuery;
-        return query;
-      }
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [
     System.ComponentModel.Browsable(false)
     ]
     public string[] DataTables

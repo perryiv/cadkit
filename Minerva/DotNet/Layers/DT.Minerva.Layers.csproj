@@ -35,8 +35,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CasesControl.cs">
-    </Compile>
     <Compile Include="Color.cs">
       <SubType>UserControl</SubType>
     </Compile>

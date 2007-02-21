@@ -206,7 +206,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Magrathea", "..\..\Mag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Layers.Ossim.Wms", "..\Plugins\Ossim\Wms\CadKit.Plugins.Layers.Ossim.Wms.csproj", "{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Trianglulate", "..\..\Minerva\Plugins\Triangulate\Triangulate.vcproj", "{12C7F9F3-DAF6-4529-B914-ADCDDF637917}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Trianglulate", "..\..\Minerva\Plugins\TriangulateVTK\Triangulate.vcproj", "{12C7F9F3-DAF6-4529-B914-ADCDDF637917}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
 		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}

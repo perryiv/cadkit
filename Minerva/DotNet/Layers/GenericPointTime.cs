@@ -197,7 +197,7 @@ namespace DT.Minerva.Layers.Controls
     [
       System.ComponentModel.Category("Database")
     ]
-    public new string DefaultQuery
+    public override string DefaultQuery
     {
       get
       {

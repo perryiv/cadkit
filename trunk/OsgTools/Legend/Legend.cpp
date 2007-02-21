@@ -93,7 +93,13 @@ osg::Node* Legend::buildScene()
       (*iter)->size( _width - ( padding * 2 ), heightPerObject );
       unsigned int num ( iter - _legendObjects.begin() );
       osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
+
+      // WHY?
+#ifdef _MSC_VER
+      osg::Matrix m ( osg::Matrix::translate ( padding , heightPerObject * num + padding, -1.0 ) );
+#else
       osg::Matrix m ( osg::Matrix::translate ( padding , heightPerObject * num + padding, 1.0 ) );
+#endif
       mt->setMatrix( m );
       mt->addChild( (*iter)->buildScene() );
 

@@ -32,6 +32,12 @@ public:
 
   Legend();
 
+  enum GrowDirectionMode
+  {
+    DOWN,
+    UP
+  };
+
   /// Clear.
   void                 clear();
 
@@ -41,9 +47,16 @@ public:
   /// Build the scene.
   osg::Node*           buildScene();
 
-  /// Set the size.
-  void                 size( unsigned int width, unsigned int height );
+  /// Set the maximium size.
+  void                 maximiumSize( unsigned int width, unsigned int height );
 
+  /// Get/Set the height per item
+  void                 heightPerItem( unsigned int height );
+  unsigned int         heightPerItem () const;
+
+  /// Get/Set the grow direction
+  void                 growDirection( GrowDirectionMode mode );
+  GrowDirectionMode    growDirection() const;
 protected:
   virtual ~Legend();
 
@@ -52,9 +65,11 @@ protected:
 private:
   typedef std::vector < LegendObject::RefPtr > LegendObjects;
 
-  LegendObjects _legendObjects;
-  unsigned int _width;
-  unsigned int _height;
+  LegendObjects      _legendObjects;
+  unsigned int       _width;
+  unsigned int       _height;
+  unsigned int       _heightPerItem;
+  GrowDirectionMode  _growDirection;
 };
 
 }

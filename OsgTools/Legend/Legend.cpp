@@ -30,7 +30,9 @@ Legend::Legend() :
 BaseClass(),
 _legendObjects(),
 _width ( 0 ),
-_height ( 0 )
+_height ( 0 ),
+_heightPerItem ( 0 ),
+_growDirection ( UP )
 {
 }
 
@@ -85,7 +87,14 @@ osg::Node* Legend::buildScene()
   {
     group->addChild( this->_buildBackground() );
 
-    unsigned int heightPerObject ( this->_height / _legendObjects.size() );
+    unsigned int heightPerObject ( _heightPerItem );
+
+    unsigned int height ( heightPerObject * _legendObjects.size() );
+
+    // Change the height per object to fit in the size paramaters given.
+    if( height > _height )
+      heightPerObject = this->_height / _legendObjects.size();
+
     unsigned int padding ( 5 );
 
     for( LegendObjects::iterator iter = _legendObjects.begin(); iter != _legendObjects.end(); ++iter )
@@ -189,9 +198,56 @@ osg::Node* Legend::_buildBackground()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Legend::size( unsigned int width, unsigned int height )
+void Legend::maximiumSize( unsigned int width, unsigned int height )
 {
   _width = width;
   _height = height;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the grow direction mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Legend::growDirection( OsgTools::Legend::Legend::GrowDirectionMode mode )
+{
+  _growDirection = mode;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the grow direction mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OsgTools::Legend::Legend::GrowDirectionMode Legend::growDirection() const
+{
+  return _growDirection;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the height per item.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Legend::heightPerItem( unsigned int height )
+{
+  _heightPerItem = height;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the height per item.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Legend::heightPerItem () const
+{
+  return _heightPerItem;
+}

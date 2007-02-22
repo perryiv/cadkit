@@ -95,7 +95,6 @@ unsigned int Font::estimateTextWidth( osgText::Text* text )
   float hr ( characterHeight/ (float) font->getFontHeight() );
   float wr ( hr / characterAspectRatio );
 
- // text->update();
   const osgText::String string ( text->getText() );
 
   osgText::String::const_iterator lastChar ( string.begin() );

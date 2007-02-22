@@ -60,7 +60,7 @@ public:
 protected:
   virtual ~Legend();
 
-  osg::Node*          _buildBackground();
+  osg::Node*          _buildBackground( unsigned int width, unsigned int height );
 
 private:
   typedef std::vector < LegendObject::RefPtr > LegendObjects;

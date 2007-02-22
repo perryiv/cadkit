@@ -85,15 +85,19 @@ osg::Node* Legend::buildScene()
 
   if( _legendObjects.size() > 0 )
   {
-    group->addChild( this->_buildBackground() );
-
     unsigned int heightPerObject ( _heightPerItem );
 
     unsigned int height ( heightPerObject * _legendObjects.size() );
 
     // Change the height per object to fit in the size paramaters given.
     if( height > _height )
+    {
       heightPerObject = this->_height / _legendObjects.size();
+      height = _height;
+    }
+
+    // Build the background
+    group->addChild( this->_buildBackground( _width, height ) );
 
     unsigned int padding ( 5 );
 
@@ -103,11 +107,17 @@ osg::Node* Legend::buildScene()
       unsigned int num ( iter - _legendObjects.begin() );
       osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
 
+      unsigned int yTranslate ( heightPerObject * num + padding );
+
+      // Invert the y translation if we are growing down.
+      if( this->growDirection() == DOWN )
+        yTranslate *= -1;
+
       // WHY?
 #ifdef _MSC_VER
-      osg::Matrix m ( osg::Matrix::translate ( padding , heightPerObject * num + padding, -1.0 ) );
+      osg::Matrix m ( osg::Matrix::translate ( padding, yTranslate, -1.0 ) );
 #else
-      osg::Matrix m ( osg::Matrix::translate ( padding , heightPerObject * num + padding, 1.0 ) );
+      osg::Matrix m ( osg::Matrix::translate ( padding, yTranslate, 1.0 ) );
 #endif
       mt->setMatrix( m );
       mt->addChild( (*iter)->buildScene() );
@@ -130,7 +140,7 @@ osg::Node* Legend::buildScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Legend::_buildBackground()
+osg::Node* Legend::_buildBackground( unsigned int width, unsigned int height )
 {
   osg::ref_ptr< osg::Group > group ( new osg::Group );
 
@@ -138,9 +148,9 @@ osg::Node* Legend::_buildBackground()
 
   osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array );
   vertices->push_back( osg::Vec3 ( 0.0, 0.0, 0.0 ) );
-  vertices->push_back( osg::Vec3 ( 0.0, _height, 0.0 ) );
-  vertices->push_back( osg::Vec3 ( _width, _height, 0.0 ) );
-  vertices->push_back( osg::Vec3 ( _width, 0.0, 0.0 ) );
+  vertices->push_back( osg::Vec3 ( 0.0, height, 0.0 ) );
+  vertices->push_back( osg::Vec3 ( width, height, 0.0 ) );
+  vertices->push_back( osg::Vec3 ( width, 0.0, 0.0 ) );
 
   geometry->setVertexArray ( vertices.get() );
 

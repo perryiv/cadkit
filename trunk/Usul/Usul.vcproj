@@ -1045,6 +1045,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\IComputeTriangleNormals.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\ICreateTriangleDocument.h"
 						>
 					</File>

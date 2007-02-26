@@ -233,6 +233,10 @@
 				RelativePath="..\..\src\Magrathea\Resample.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\Magrathea\Subdivide.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

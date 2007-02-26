@@ -213,10 +213,10 @@ namespace Magrathea
       //double normalizationFactor ( ecef.getMagnitude() );
 
       // Transform to ossimPlanet coordinates
-      osg::Vec3 vec;
-      vec.x() = ecef.x() * dem;
-      vec.y() = ecef.y() * dem;
-      vec.z() = ecef.z() * dem;
+      typename Vertices::value_type vec;
+      vec[0] = ecef.x() * dem;
+      vec[1] = ecef.y() * dem;
+      vec[2] = ecef.z() * dem;
 
       vertices.push_back ( vec );
     }

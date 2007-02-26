@@ -518,7 +518,7 @@ void PolyData::polyDataToVertices ( vtkPolyData *data,
   calcNormals->Update();
 
   vtkSmartPointer < vtkPolyData > nData ( calcNormals->GetOutput() );
-  calcNormals->ComputePointNormalsOn ();
+  calcNormals->ComputeCellNormalsOn ();
   calcNormals->SplittingOff ();
   calcNormals->ConsistencyOff ();
 
@@ -566,7 +566,7 @@ void PolyData::polyDataToVertices ( vtkPolyData *data,
     normalsT.push_back ( osg::Vec3 ( normal[0], normal[1], normal[2] ) );
   }
 
-  vtkSmartPointer < vtkDataArray > normals ( nData->GetPointData()->GetNormals() );
+  vtkSmartPointer < vtkDataArray > normals ( nData->GetCellData()->GetNormals() );
   //vtkSmartPointer < vtkDataArray > normals ( nData->GetCellData()->GetNormals() );
 
   // Build per-vertex normals;

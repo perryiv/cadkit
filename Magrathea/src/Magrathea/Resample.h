@@ -17,6 +17,7 @@
 
 namespace Magrathea
 {
+#if 0
   template < typename Points >
   class Resample
   {
@@ -166,7 +167,7 @@ namespace Magrathea
       output.push_back ( iter->p );
   }
 
-
+#endif
 
   template < typename Point >
   struct ParametricPoint

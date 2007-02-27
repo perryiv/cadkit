@@ -24,7 +24,7 @@ namespace Magrathea
     template < typename Point >
     struct Triangle
     {
-      typedef typename Point PointType;
+      typedef Point PointType;
 
       Point p0;
       Point p1;
@@ -120,7 +120,7 @@ namespace Magrathea
     if ( input.size() % 3 != 0 )
       throw std::invalid_argument( "Error 641631206: Number of points are not divisible by three" );
 
-    typedef Detail::Triangle < Points::value_type > Triangle;
+    typedef Detail::Triangle < typename Points::value_type > Triangle;
     typedef std::list < Triangle > Triangles;
     Triangles triangles;
 
@@ -137,7 +137,7 @@ namespace Magrathea
     output.reserve ( triangles.size() * 3 );
 
     // Copy the triangles into the output.
-    for( Triangles::const_iterator iter = triangles.begin(); iter != triangles.end(); ++iter )
+    for( typename Triangles::const_iterator iter = triangles.begin(); iter != triangles.end(); ++iter )
     {
       output.push_back( iter->p0 );
       output.push_back( iter->p1 );

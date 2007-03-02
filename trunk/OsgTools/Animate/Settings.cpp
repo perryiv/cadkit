@@ -23,6 +23,7 @@ Settings::Settings() :
 BaseClass(),
 _firstDate( boost::date_time::min_date_time ),
 _lastDate( boost::date_time::max_date_time ),
+_period( _firstDate.date(), _lastDate.date() ),
 _animate( false ),
 _showPastDays( true ),
 _timeWindow ( false ),
@@ -51,6 +52,9 @@ Settings::~Settings()
 void Settings::firstDate( const OsgTools::Animate::Date& date )
 {
   _firstDate = date;
+  boost::gregorian::date temp ( _lastDate.date() + boost::gregorian::days ( 1 ) );
+
+  _period = boost::gregorian::date_period ( _firstDate.date(), temp );
 }
 
 
@@ -75,6 +79,9 @@ const OsgTools::Animate::Date& Settings::firstDate() const
 void Settings::lastDate( const OsgTools::Animate::Date& date )
 {
   _lastDate = date;
+  boost::gregorian::date temp ( _lastDate.date() + boost::gregorian::days ( 1 ) );
+
+  _period = boost::gregorian::date_period ( _firstDate.date(), temp );
 }
 
 

@@ -60,6 +60,7 @@ namespace OsgTools
     private:
       OsgTools::Animate::Date _firstDate;
       OsgTools::Animate::Date _lastDate;
+      boost::gregorian::date_period  _period;
 
       bool          _animate;
       bool          _showPastDays;
@@ -74,7 +75,13 @@ namespace OsgTools
 
     inline bool Settings::isDateRangeShown ( const OsgTools::Animate::Date& first, const OsgTools::Animate::Date& last ) const
     {
-      return this->isDateShown( first ) || this->isDateShown( last );
+      // Have to add one more the end of the date duration.
+      // This is because if the duration is 1/1/2006 to 1/31/2006 and the date is 1/31/2006, the contains function will return false.
+      OsgTools::Animate::Date temp ( last );
+      temp.increment();
+      boost::gregorian::date_period period ( first.date(), temp.date() );
+
+      return _period.intersects ( period );
     }
   }
 }

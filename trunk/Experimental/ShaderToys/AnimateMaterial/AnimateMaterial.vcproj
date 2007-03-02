@@ -64,6 +64,7 @@
 				AdditionalDependencies="osgd.lib osgProducerd.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;"
+				IgnoreAllDefaultLibraries="false"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"

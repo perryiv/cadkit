@@ -38,6 +38,10 @@ public:
 
   Date ( const std::string& date );
   Date ( boost::date_time::special_values value );
+
+  /// Get the underlying boost date.
+  boost::gregorian::date&           date();
+  const boost::gregorian::date&     date() const;
   
   void         day( unsigned int );
   unsigned int day() const;

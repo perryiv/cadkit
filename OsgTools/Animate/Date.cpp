@@ -175,3 +175,15 @@ long Date::_toJulian() const
 {
   return _date.julian_day();
 }
+
+
+/// Get the underlying boost date.
+boost::gregorian::date& Date::date()
+{
+  return _date;
+}
+
+const boost::gregorian::date& Date::date() const
+{
+  return _date;
+}

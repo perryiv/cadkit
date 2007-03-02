@@ -263,6 +263,19 @@ namespace DT.Minerva.DB
       return "";
     }
 
+    public void getMinMaxValue(string query, string column, ref double min, ref double max)
+    {
+      string q = "SELECT MAX(" + column + ") as max, MIN(" + min + ") FROM (" + query + ") temp";
+
+      Npgsql.NpgsqlDataReader dr = this.executeQueryDataReader(q);
+
+      if (dr.Read())
+      {
+        min = System.Convert.ToDouble(dr["min"]);
+        max = System.Convert.ToDouble(dr["max"]);
+      }
+    }
+
 
     /// <summary>
     /// 

@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -29,7 +30,6 @@ namespace DT.Minerva.Layers.Controls
     /// </summary>
     public GenericPointTime() : base()
     {
-      _pointTimeLayer.Format = "%s";
       this.Layer = _pointTimeLayer;
     }
 
@@ -85,7 +85,14 @@ namespace DT.Minerva.Layers.Controls
 
       this.FirstDate = info.GetDateTime("MinDate");
       this.LastDate = info.GetDateTime("MaxDate");
-      this.DateColumn = info.GetString("DateColumn");
+      this.FirstDateColumn = info.GetString("DateColumn");
+
+      try
+      {
+        this.LastDateColumn = info.GetString("LastDateColumn");
+      }
+      catch (System.Runtime.Serialization.SerializationException) { }
+
       this.PrimitiveSize = (float)info.GetValue("PrimitiveSize", typeof(float));
       this.PrimitiveType = info.GetString("PrimitiveType");
     }
@@ -100,7 +107,8 @@ namespace DT.Minerva.Layers.Controls
 
       info.AddValue("MinDate", this.FirstDate);
       info.AddValue("MaxDate", this.LastDate);
-      info.AddValue("DateColumn", this.DateColumn);
+      info.AddValue("DateColumn", this.FirstDateColumn); // For backward compatiblity.
+      info.AddValue("LastDateColumn", this.LastDateColumn);
       info.AddValue("PrimitiveSize", this.PrimitiveSize);
       info.AddValue("PrimitiveType", this.PrimitiveType);
     }
@@ -142,13 +150,28 @@ namespace DT.Minerva.Layers.Controls
     /// </summary>
     [
       System.ComponentModel.Category("Date"),
-      System.ComponentModel.Description("Column that contains the date."),
+      System.ComponentModel.Description("Column that contains the first date."),
       System.ComponentModel.Browsable(true)
     ]
-    public string DateColumn
+    public string FirstDateColumn
     {
-      get { lock (this.Mutex) { return _pointTimeLayer.DateColumn; } }
-      set { lock (this.Mutex) { _pointTimeLayer.DateColumn = value; } }
+      get { lock (this.Mutex) { return _pointTimeLayer.FirstDateColumn; } }
+      set { lock (this.Mutex) { _pointTimeLayer.FirstDateColumn = value; } }
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [
+      System.ComponentModel.Category("Date"),
+      System.ComponentModel.Description("Column that contains the last date."),
+      System.ComponentModel.Browsable(true)
+    ]
+    public string LastDateColumn
+    {
+      get { lock (this.Mutex) { return _pointTimeLayer.LastDateColumn; } }
+      set { lock (this.Mutex) { _pointTimeLayer.LastDateColumn = value; } }
     }
 
 
@@ -203,7 +226,19 @@ namespace DT.Minerva.Layers.Controls
       {
         lock (this.Mutex)
         {
-          string query = "SELECT " + this.DateColumn + ", id, srid(geom) as srid, asBinary(geom) as geom FROM " + this.DataTable;
+          string query = "SELECT id, srid(geom) as srid, asBinary(geom) as geom";
+
+          if (this.FirstDateColumn.Length > 0)
+            query += ", " + this.FirstDateColumn;
+
+          if (this.LastDateColumn.Length > 0)
+            query += ", " + this.LastDateColumn;
+
+          if (this.ColorColumn.Length > 0)
+            query += ", " + this.ColorColumn;
+          
+          query += " FROM " + this.DataTable;
+
           if (this.Where.Length > 0)
             query += " WHERE " + this.Where;
           return query;
@@ -223,11 +258,21 @@ namespace DT.Minerva.Layers.Controls
         {
           string where = "";
 
-          if (this.DateColumn.Length > 0)
+          if (this.FirstDateColumn.Length > 0)
           {
-            where += this.DateColumn + " > '" + this.FirstDate.ToShortDateString() + "'";
-            where += " AND " + this.DateColumn + " < '" + this.LastDate.ToShortDateString() + "'";
+            where += this.FirstDateColumn + " >= '" + this.FirstDate.ToShortDateString() + "'";
+            where += " AND " + this.FirstDateColumn + " <= '" + this.LastDate.ToShortDateString() + "'";
           }
+
+          if (this.LastDateColumn.Length > 0)
+          {
+            if (where.Length > 0)
+              where += " AND ";
+
+            where += this.LastDateColumn + " >= '" + this.FirstDate.ToShortDateString() + "'";
+            where += " AND " + this.LastDateColumn + " <= '" + this.LastDate.ToShortDateString() + "'";
+          }
+
           return where;
         }
       }

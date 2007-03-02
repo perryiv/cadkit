@@ -1143,11 +1143,31 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Animate\DateCallback.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Animate\DateCallback.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Animate\DateGroup.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Animate\DateGroup.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Animate\Functor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Animate\Settings.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Animate\Settings.h"
 					>
 				</File>
 			</Filter>

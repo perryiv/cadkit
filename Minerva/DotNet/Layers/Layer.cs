@@ -482,10 +482,10 @@ namespace DT.Minerva.Layers.Controls
     /// </summary>
     public void setLayerProperties()
     {
-      this.Layer.ColorFunctor = this.ColorProperties.colorFunctor(this);
-      
       if (!this.CustomQuery)
         this.Layer.Query = this.DefaultQuery;
+
+      this.Layer.ColorFunctor = this.ColorProperties.colorFunctor(this);
       
       this._setLayerProperties();
     }

@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -10,9 +11,12 @@
 #include "PointTimeLayerGlue.h"
 
 #include "Minerva/DataObjects/Point.h"
+
 #include "Usul/Pointers/Pointers.h"
-#include "Threads/OpenThreads/Mutex.h"
 #include "Usul/Threads/Mutex.h"
+#include "Usul/Strings/ManagedToNative.h"
+
+#include "Threads/OpenThreads/Mutex.h"
 
 using namespace DT::Minerva::Glue;
 
@@ -46,10 +50,17 @@ PointTimeLayerGlue::PointTimeLayerGlue( PointTimeLayerGlue ^ layer )
 
   this->PrimitiveID = layer->PrimitiveID;
   this->PrimitiveType = layer->PrimitiveType;
-  this->DateColumn = layer->DateColumn;
+  this->FirstDateColumn = layer->FirstDateColumn;
+  this->LastDateColumn = layer->LastDateColumn;
   this->Size = layer->Size;
-  this->Format = layer->Format;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 PointTimeLayerGlue::~PointTimeLayerGlue()
 {
@@ -57,16 +68,37 @@ PointTimeLayerGlue::~PointTimeLayerGlue()
   _pointTimeLayer = 0x0;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Finalizer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 PointTimeLayerGlue::!PointTimeLayerGlue()
 {
   Usul::Pointers::unreference( _pointTimeLayer );
   _pointTimeLayer = 0x0;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the layer
+//
+///////////////////////////////////////////////////////////////////////////////
+
 Minerva::Layers::Layer* PointTimeLayerGlue::layer()
 {
   return _pointTimeLayer;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the primitive type.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 System::String^ PointTimeLayerGlue::PrimitiveType::get()
 {
@@ -91,6 +123,13 @@ System::String^ PointTimeLayerGlue::PrimitiveType::get()
   return gcnew System::String( "" );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the primitive type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void PointTimeLayerGlue::PrimitiveType::set(System::String^ s )
 {
   if( s->Equals( "Point" ) )
@@ -110,4 +149,53 @@ void PointTimeLayerGlue::PrimitiveType::set(System::String^ s )
   
   else if ( s->Equals ( "Inverted Cone" ) )
     _pointTimeLayer->primitiveID( ::Minerva::DataObjects::Point::INVERTED_CONE );
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the first date column.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::String^ PointTimeLayerGlue::FirstDateColumn::get()
+{
+  return gcnew System::String ( _pointTimeLayer->firstDateColumn().c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the first date column.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayerGlue::FirstDateColumn::set( System::String^ s )
+{
+  _pointTimeLayer->firstDateColumn ( Usul::Strings::convert( s ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the last date column.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::String^ PointTimeLayerGlue::LastDateColumn::get()
+{
+  return gcnew System::String ( _pointTimeLayer->lastDateColumn().c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the last date column.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayerGlue::LastDateColumn::set( System::String^ s )
+{
+  _pointTimeLayer->lastDateColumn ( Usul::Strings::convert( s ) );
 }

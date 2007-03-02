@@ -19,6 +19,7 @@
 #include "OsgTools/Export.h"
 
 #include "OsgTools/Animate/Date.h"
+#include "OsgTools/Animate/Settings.h"
 
 #include "osg/ref_ptr"
 #include "osg/Group"
@@ -36,38 +37,32 @@ public:
 
   DateGroup();
 
-  // Set the time step duration
-  void setDuration( float speed );
+  /// Set the time step duration
+  void                                 animationSpeed ( float speed );
 
-  // Show we show past events.
-  void accumulate ( bool b );
-
-  // Should there be a time window.
-  void timeWindow ( bool b );
-
-  // How long sould the time window be?
-  void numDays ( unsigned int num );
+  /// Get the time step duration
+  float                                animationSpeed () const;
 
   // Add a date.
-  void addDate ( const OsgTools::Animate::Date& date, osg::Node* node );
+  void                                 updateMinMax ( const OsgTools::Animate::Date& first, const OsgTools::Animate::Date& last );
 
   // Traverse the node.
-  virtual void traverse( osg::NodeVisitor& nv );
+  virtual void                         traverse( osg::NodeVisitor& nv );
 
   // Set the Text to print to.
-  void setText ( osgText::Text *text );
+  void                                 setText ( osgText::Text *text );
+
+  /// Get/Set settings.
+  void                                 settings( OsgTools::Animate::Settings* );
+  OsgTools::Animate::Settings*         settings();
+  const OsgTools::Animate::Settings*   settings() const;
 
 protected:
   virtual ~DateGroup();
 
 private:
 
-  typedef std::pair < OsgTools::Animate::Date, osg::ref_ptr< osg::Node > > DatePair;
-  typedef std::vector < DatePair > DateNodes;
-
-  DateNodes _nodes;
-
-  float _speed;
+  float _animationSpeed;
 
   double _lastTime;
   
@@ -75,11 +70,7 @@ private:
   OsgTools::Animate::Date _minDate;
   OsgTools::Animate::Date _maxDate;
 
-  bool _accumulate;
-  bool _timeWindow;
-  bool _needToSort;
-
-  unsigned int _numDays;
+  OsgTools::Animate::Settings::RefPtr  _settings;
 
   osg::ref_ptr< osgText::Text > _text;
 };

@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater at Arizona State University
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -53,42 +54,9 @@ namespace DT
           }
         }
 
-        property System::String^ Format
-        {
-          System::String^ get()
-          {
-            return this->toManagedString( _pointTimeLayer->format() );
-          }
-          void set( System::String^ s )
-          {
-            _pointTimeLayer->format ( this->toNativeString( s ) );
-          }
-        }
 
-        property System::String^ Columns
-        {
-          System::String^ get()
-          {
-            return this->toManagedString( _pointTimeLayer->columns() );
-          }
-          void set( System::String^ s )
-          {
-            _pointTimeLayer->columns ( this->toNativeString( s ) );
-          }
-        }
-
-        property System::String^ DateColumn
-        {
-          System::String^ get()
-          {
-            return this->toManagedString( _pointTimeLayer->dateColumn() );
-          }
-          void set ( System::String^ s )
-          {
-            _pointTimeLayer->dateColumn( this->toNativeString( s ) );
-          }
-        }
-
+        PROPERTY_GET_SET(FirstDateColumn, System::String^);
+        PROPERTY_GET_SET(LastDateColumn, System::String^);
         PROPERTY_GET_SET(PrimitiveType, System::String^);
 
         virtual ::Minerva::Layers::Layer * layer() override;

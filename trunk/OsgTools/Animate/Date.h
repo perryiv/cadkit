@@ -37,6 +37,7 @@ public:
   Date();
 
   Date ( const std::string& date );
+  Date ( boost::date_time::special_values value );
   
   void         day( unsigned int );
   unsigned int day() const;
@@ -47,11 +48,11 @@ public:
   void         year( unsigned int );
   unsigned int year() const;
 
-  void increment();
+  void         increment();
 
-  void moveBackNumDays ( unsigned int );
+  void         moveBackNumDays ( unsigned int );
 
-  std::string toString();
+  std::string  toString();
 
   bool operator<( const Date& rhs ) const;
   bool operator>( const Date& rhs ) const;

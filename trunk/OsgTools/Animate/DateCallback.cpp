@@ -1,0 +1,90 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "OsgTools/Animate/DateCallback.h"
+
+#include "osg/Node"
+
+using namespace OsgTools::Animate;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DateCallback::DateCallback( OsgTools::Animate::Settings *settings, const OsgTools::Animate::Date& first, const OsgTools::Animate::Date& last ) : 
+BaseClass(),
+_settings ( settings ),
+_first ( first ),
+_last ( last ),
+_functors()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DateCallback::~DateCallback()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Callback.  Decide whether or not to draw.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DateCallback::operator ()( osg::Node *node, osg::NodeVisitor *nv )
+{
+  if( false == _settings->animate() )
+  {
+    traverse( node, nv );
+    return;
+  }
+
+  if( _settings->isDateRangeShown( _first, _last ) )
+  {
+    traverse( node, nv );
+
+    for( Functors::iterator iter = _functors.begin(); iter != _functors.end(); ++iter )
+      (*iter)->execute( _settings->firstDate(), _settings->lastDate() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a functor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DateCallback::addFunctor(OsgTools::Animate::Functor *functor)
+{
+  _functors.push_back ( functor );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a functor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DateCallback::removeFunctor(OsgTools::Animate::Functor *functor)
+{
+  _functors.erase ( std::find_if( _functors.begin(), _functors.end(), OsgTools::Animate::Functor::RefPtr::IsEqual( functor ) ) );
+}

@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -131,9 +132,13 @@ namespace DT.Minerva.Layers.Controls
 
         if (null != dataSource)
         {
-          string columnName = layer.ColorColumn;
-          funtor.MinValue = double.Parse(dataSource.getMinValue(layer.DataTable, columnName));
-          funtor.MaxValue = double.Parse(dataSource.getMaxValue(layer.DataTable, columnName));
+          //string columnName = layer.ColorColumn;
+          double min = 0.0, max = 0.0;
+          dataSource.getMinMaxValue(layer.Query, layer.ColorColumn, ref min, ref max);
+          funtor.MinValue = min;
+          funtor.MaxValue = max;
+          //funtor.MinValue = double.Parse(dataSource.getMinValue(layer.DataTable, columnName));
+          //funtor.MaxValue = double.Parse(dataSource.getMaxValue(layer.DataTable, columnName));
           return funtor;
         }
       }

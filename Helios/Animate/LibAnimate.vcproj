@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="plug: CalcPerVertexNormals"
-	ProjectGUID="{898F6EAD-A540-4A1E-9371-5CC78D9A0D9A}"
-	RootNamespace="plug: CalcPerVertexNormals"
+	Name="lib: Animate"
+	ProjectGUID="{375854CD-3A45-4E7E-A0B5-4E2AE4693858}"
+	RootNamespace="lib: Animate"
 	>
 	<Platforms>
 		<Platform
@@ -40,14 +40,14 @@
 				PreprocessorDefinitions="_DEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/CalcPerVertexNormals.tlb"
+				TypeLibraryName=".\Debug/Animate.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR)/Experimental;$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(VTK_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING__COMPILING_CALCPERVERTEXNORMALS"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(BOOST_ROOT_DIR);$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR);$(CADKIT_ROOT_DIR)/GenericNurbs"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_ANIMATE;NOMINMAX"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -56,7 +56,7 @@
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
-				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
+				PrecompiledHeaderFile=""
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -80,15 +80,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib vtkFiltering.lib vtkCommon.lib vtkGraphics.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/CalcPerVertexNormals.plugd"
+				AdditionalDependencies="osgGAd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgd.lib"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/Animated.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(VTK_LIB_DIR_DEBUG)"
-				ModuleDefinitionFile="Export.def"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR);"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug\CalcPerVertexNormalsd.pdb"
-				ImportLibrary=".\Debug\CalcPerVertexNormalsd.lib"
+				ProgramDatabaseFile=".\Debug/Animated.pdb"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/Animated.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -141,14 +140,14 @@
 				PreprocessorDefinitions="NDEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/CalcPerVertexNormals.tlb"
+				TypeLibraryName=".\Release/Animate.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR)/Experimental;$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(VTK_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING__COMPILING_CALCPERVERTEXNORMALS"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(BOOST_ROOT_DIR);$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR);$(CADKIT_ROOT_DIR)/GenericNurbs"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_ANIMATE;NOMINMAX"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -156,7 +155,7 @@
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
-				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
+				PrecompiledHeaderFile=""
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -179,14 +178,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib vtkFiltering.lib vtkCommon.lib vtkGraphics.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/CalcPerVertexNormals.plug"
+				AdditionalDependencies="osgGA.lib osgDB.lib osgUtil.lib osgText.lib osg.lib"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/Animate.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(VTK_LIB_DIR_RELEASE)"
-				ModuleDefinitionFile="Export.def"
-				ProgramDatabaseFile=".\Release\CalcPerVertexNormals.pdb"
-				ImportLibrary=".\Release\CalcPerVertexNormals.lib"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR);"
+				ProgramDatabaseFile=".\Release/Animate.pdb"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/Animate.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -220,38 +218,22 @@
 		<Filter
 			Name="Source"
 			>
-			<Filter
-				Name="Implementation"
+			<File
+				RelativePath=".\Export.h"
 				>
-				<File
-					RelativePath=".\CalcPerVertexNormalsComponent.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CalcPerVertexNormalsComponent.h"
-					>
-				</File>
-				<File
-					RelativePath=".\CalcPerVertexNormalsFactory.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CalcPerVertexNormalsFactory.h"
-					>
-				</File>
-				<File
-					RelativePath=".\CompileGuard.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="DLL"
+			</File>
+			<File
+				RelativePath=".\Frame.h"
 				>
-				<File
-					RelativePath="Export.def"
-					>
-				</File>
-			</Filter>
+			</File>
+			<File
+				RelativePath=".\Movie.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Movie.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

@@ -10,15 +10,18 @@
 #ifndef __ANIMATE_FRAME_H__
 #define __ANIMATE_FRAME_H__
 
+#include "Helios/Animate/Export.h"
+
 #include "osg/Vec3"
 #include "osg/Quat"
 
 #include <string>
 #include <list>
 
-namespace Animate {
+namespace Helios {
+namespace  Animate {
   
-class Frame
+class ANIMATE_EXPORT Frame
 {
 public:
   typedef std::list< std::string >  Comments;
@@ -77,8 +80,8 @@ private:
 
 }; //class Frame
 
-}; //namespace animate
-
+} // namespace Animate
+} // namespace Helios
 
 #endif //__ANIMATE_FRAME_H__
 

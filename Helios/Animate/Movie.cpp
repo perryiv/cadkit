@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Animate/Movie.h"
+#include "Helios/Animate/Movie.h"
 
 #include "GN/Interpolate/Global.h"
 #include "GN/Algorithms/KnotVector.h"
@@ -56,7 +56,7 @@
 #include <fstream>
 #include <ctime>
 
-using namespace Animate;
+using namespace Helios::Animate;
 
 ///////////////////////////////////////////////////////////////////////////////
 //

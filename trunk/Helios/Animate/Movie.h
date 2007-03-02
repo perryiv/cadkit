@@ -10,7 +10,8 @@
 #ifndef __ANIMATE_MOVIE_H__
 #define __ANIMATE_MOVIE_H__
 
-#include "Animate/Frame.h"
+#include "Helios/Animate/Export.h"
+#include "Helios/Animate/Frame.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
@@ -27,10 +28,11 @@
 
 namespace osg { class Node; }
 
+namespace Helios {
 namespace Animate {
 
 
-class Movie : public Usul::Documents::Document
+class ANIMATE_EXPORT Movie : public Usul::Documents::Document
 {
 public:
 
@@ -224,7 +226,8 @@ private:
 };
 
 
-};// namespace Animate
+} // namespace Animate
+} // namespace Helios
 
 
 #endif //__ANIMATE_MOVIE_H__

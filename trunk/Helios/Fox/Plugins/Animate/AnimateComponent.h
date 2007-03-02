@@ -17,7 +17,8 @@
 #define _ANIMATE_COMPONENT_CLASS_H_
 
 #include "Animate/CompileGuard.h"
-#include "Animate/Movie.h"
+
+#include "Helios/Animate/Movie.h"
 
 #include "FoxTools/Headers/Object.h"
 #include "FoxTools/Menu/Group.h"
@@ -88,10 +89,11 @@ public:
   };
 
   /// Typedefs.
-  typedef Usul::Base::Referenced BaseClass;
-  typedef Usul::Interfaces::IUnknown IUnknown;
-  typedef Movie::Frame Frame;
-  typedef FoxTools::Menu::Group MenuGroup;
+  typedef Usul::Base::Referenced       BaseClass;
+  typedef Usul::Interfaces::IUnknown   IUnknown;
+  typedef Helios::Animate::Movie       Movie;
+  typedef Movie::Frame                 Frame;
+  typedef FoxTools::Menu::Group        MenuGroup;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( AnimateComponent );
@@ -226,7 +228,7 @@ protected:
   virtual void subjectModified ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
 private:
-  typedef std::map < std::string, Movie::ValidRefPtr > Movies;
+  typedef std::map < std::string, Helios::Animate::Movie::ValidRefPtr > Movies;
 
   IUnknown::QueryPtr                _caller;
   Movie::ValidAccessRefPtr          _current;

@@ -243,23 +243,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Frame.h"
-					>
-				</File>
-				<File
 					RelativePath=".\FrameDumpDialog.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\FrameDumpDialog.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Movie.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Movie.h"
 					>
 				</File>
 			</Filter>

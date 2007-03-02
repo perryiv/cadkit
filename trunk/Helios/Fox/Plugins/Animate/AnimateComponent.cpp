@@ -2003,7 +2003,7 @@ void AnimateComponent::_buildGUIForCurrentMovie ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Movie* AnimateComponent::_createMovie( const std::string& file )
+Helios::Animate::Movie* AnimateComponent::_createMovie( const std::string& file )
 {
   Movie::RefPtr movie ( new Movie );
 

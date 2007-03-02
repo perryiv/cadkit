@@ -84,7 +84,7 @@
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/VTKToolsd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(VTK_LIB_DIR);$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(VTK_LIB_DIR_DEBUG);$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/VTKToolsd.pdb"
 				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/VTKToolsd.lib"
@@ -182,7 +182,7 @@
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/VTKTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(VTK_LIB_DIR);$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(VTK_LIB_DIR_RELEASE);$(OSG_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/VTKTools.pdb"
 				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/VTKTools.lib"
 			/>

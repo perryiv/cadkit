@@ -10,7 +10,7 @@
 
 #include "PointTimeLayerGlue.h"
 
-#include "Minerva/DataObjects/Point.h"
+#include "Minerva/Core/DataObjects/Point.h"
 
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/Mutex.h"
@@ -30,7 +30,7 @@ using namespace DT::Minerva::Glue;
 PointTimeLayerGlue::PointTimeLayerGlue() : _pointTimeLayer ( 0x0 )
 {
   Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
-  _pointTimeLayer = new ::Minerva::Layers::PointTimeLayer;
+  _pointTimeLayer = new ::Minerva::Core::Layers::PointTimeLayer;
   Usul::Pointers::reference( _pointTimeLayer );
 }
 
@@ -43,7 +43,7 @@ PointTimeLayerGlue::PointTimeLayerGlue() : _pointTimeLayer ( 0x0 )
 
 PointTimeLayerGlue::PointTimeLayerGlue( PointTimeLayerGlue ^ layer )
 {
-  _pointTimeLayer = new ::Minerva::Layers::PointTimeLayer;
+  _pointTimeLayer = new ::Minerva::Core::Layers::PointTimeLayer;
   Usul::Pointers::reference( _pointTimeLayer );
 
   this->_setProperties( layer );
@@ -88,7 +88,7 @@ PointTimeLayerGlue::!PointTimeLayerGlue()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Minerva::Layers::Layer* PointTimeLayerGlue::layer()
+Minerva::Core::Layers::Layer* PointTimeLayerGlue::layer()
 {
   return _pointTimeLayer;
 }
@@ -106,17 +106,17 @@ System::String^ PointTimeLayerGlue::PrimitiveType::get()
 
   switch( primitiveID )
   {
-  case ::Minerva::DataObjects::Point::POINT:
+  case ::Minerva::Core::DataObjects::Point::POINT:
     return gcnew System::String ( "Point" );
-  case ::Minerva::DataObjects::Point::SPHERE:
+  case ::Minerva::Core::DataObjects::Point::SPHERE:
     return gcnew System::String ( "Sphere" );
-  case ::Minerva::DataObjects::Point::CONE:
+  case ::Minerva::Core::DataObjects::Point::CONE:
     return gcnew System::String ( "Cone" );
-  case ::Minerva::DataObjects::Point::DISK:
+  case ::Minerva::Core::DataObjects::Point::DISK:
     return gcnew System::String ( "Disk" );
-  case ::Minerva::DataObjects::Point::CUBE:
+  case ::Minerva::Core::DataObjects::Point::CUBE:
     return gcnew System::String ( "Cube" );
-  case ::Minerva::DataObjects::Point::INVERTED_CONE:
+  case ::Minerva::Core::DataObjects::Point::INVERTED_CONE:
     return gcnew System::String ( "Inverted Cone" );
   }
 
@@ -133,22 +133,22 @@ System::String^ PointTimeLayerGlue::PrimitiveType::get()
 void PointTimeLayerGlue::PrimitiveType::set(System::String^ s )
 {
   if( s->Equals( "Point" ) )
-    _pointTimeLayer->primitiveID( ::Minerva::DataObjects::Point::POINT );
+    _pointTimeLayer->primitiveID( ::Minerva::Core::DataObjects::Point::POINT );
     
   else if ( s->Equals( "Sphere" ) )
-    _pointTimeLayer->primitiveID( ::Minerva::DataObjects::Point::SPHERE );
+    _pointTimeLayer->primitiveID( ::Minerva::Core::DataObjects::Point::SPHERE );
   
   else if ( s->Equals( "Cone" ) )
-    _pointTimeLayer->primitiveID( ::Minerva::DataObjects::Point::CONE );
+    _pointTimeLayer->primitiveID( ::Minerva::Core::DataObjects::Point::CONE );
   
   else if ( s->Equals ( "Disk" ) )
-    _pointTimeLayer->primitiveID( ::Minerva::DataObjects::Point::DISK );
+    _pointTimeLayer->primitiveID( ::Minerva::Core::DataObjects::Point::DISK );
   
   else if ( s->Equals ( "Cube" ) )
-    _pointTimeLayer->primitiveID( ::Minerva::DataObjects::Point::CUBE );
+    _pointTimeLayer->primitiveID( ::Minerva::Core::DataObjects::Point::CUBE );
   
   else if ( s->Equals ( "Inverted Cone" ) )
-    _pointTimeLayer->primitiveID( ::Minerva::DataObjects::Point::INVERTED_CONE );
+    _pointTimeLayer->primitiveID( ::Minerva::Core::DataObjects::Point::INVERTED_CONE );
 }
 
 

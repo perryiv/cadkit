@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater at Arizona State University
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -71,7 +72,7 @@ namespace DT
           }
         }
 
-        virtual ::Minerva::Layers::Functors::BaseColorFunctor * colorFunctor() override;
+        virtual ::Minerva::Core::Functors::BaseColorFunctor * colorFunctor() override;
 
       private:
         System::Drawing::Color^ _minColor;

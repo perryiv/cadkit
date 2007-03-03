@@ -1,0 +1,41 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2006, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef __MINERVA_POSTGIS_LINE_GEOMETRY_H__
+#define __MINERVA_POSTGIS_LINE_GEOMETRY_H__
+
+#include "Minerva/Core/Export.h"
+#include "Minerva/Core/postGIS/Geometry.h"
+
+namespace Minerva {
+namespace Core {
+namespace postGIS {
+
+
+class MINERVA_EXPORT Line : public Geometry
+{
+public:
+  typedef Geometry BaseClass;
+
+  Line ( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F );
+
+  virtual osg::Node*               buildScene();
+  virtual osg::Geometry*           buildGeometry();
+
+protected:
+  ~Line();
+};
+
+}
+}
+}
+
+
+#endif // __MINERVA_POSTGIS_LINE_GEOMETRY_H__

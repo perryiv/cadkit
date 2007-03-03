@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater at Arizona State University
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -16,7 +17,7 @@
 
 #include "LayerGlue.h"
 
-#include "Minerva/Layers/PolygonTimeLayer.h"
+#include "Minerva/Core/Layers/PolygonTimeLayer.h"
 
 namespace DT
 {
@@ -48,7 +49,7 @@ namespace DT
           }
           void set ( Mode m )
           {
-            _polygonTimeLayer->mode ( (::Minerva::Layers::PolygonTimeLayer::Mode ) m );
+            _polygonTimeLayer->mode ( (::Minerva::Core::Layers::PolygonTimeLayer::Mode ) m );
           }
         }
 
@@ -69,10 +70,10 @@ namespace DT
         PROPERTY_GET_SET(YOffset, float);
 
 
-        virtual ::Minerva::Layers::Layer * layer() override;
+        virtual ::Minerva::Core::Layers::Layer * layer() override;
 
       private:
-        ::Minerva::Layers::PolygonTimeLayer *_polygonTimeLayer;
+        ::Minerva::Core::Layers::PolygonTimeLayer *_polygonTimeLayer;
       };
     }
   }

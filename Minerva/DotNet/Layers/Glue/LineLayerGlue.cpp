@@ -25,7 +25,7 @@ using namespace DT::Minerva::Glue;
 LineLayerGlue::LineLayerGlue() : _lineLayer ( 0x0 )
 {
   Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
-  _lineLayer = new ::Minerva::Layers::LineLayer;
+  _lineLayer = new ::Minerva::Core::Layers::LineLayer;
   Usul::Pointers::reference ( _lineLayer );
 }
 
@@ -38,7 +38,7 @@ LineLayerGlue::LineLayerGlue() : _lineLayer ( 0x0 )
 
 LineLayerGlue::LineLayerGlue(DT::Minerva::Glue::LineLayerGlue ^layer) : _lineLayer ( 0x0 )
 {
-  _lineLayer = new ::Minerva::Layers::LineLayer;
+  _lineLayer = new ::Minerva::Core::Layers::LineLayer;
   Usul::Pointers::reference ( _lineLayer );
 
   this->_setProperties( layer );
@@ -79,7 +79,7 @@ LineLayerGlue::!LineLayerGlue()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Minerva::Layers::Layer* LineLayerGlue::layer()
+Minerva::Core::Layers::Layer* LineLayerGlue::layer()
 {
   return _lineLayer;
 }

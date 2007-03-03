@@ -1,15 +1,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "GradientColorFunctor.h"
 
-#include "Minerva/Layers/Functors/GradientColorFunctor.h"
+#include "Minerva/Core/Functors/GradientColorFunctor.h"
 
 using namespace DT::Minerva::Glue;
 
@@ -21,9 +22,9 @@ _maxValue ( 0.0 )
 {
 }
 
-Minerva::Layers::Functors::BaseColorFunctor * GradientColorFunctor::colorFunctor()
+Minerva::Core::Functors::BaseColorFunctor * GradientColorFunctor::colorFunctor()
 {
-  ::Minerva::Layers::Functors::GradientColorFunctor::RefPtr functor ( new ::Minerva::Layers::Functors::GradientColorFunctor );
+  ::Minerva::Core::Functors::GradientColorFunctor::RefPtr functor ( new ::Minerva::Core::Functors::GradientColorFunctor );
 
   functor->minColor( this->toOsgColor( _minColor ) );
   functor->maxColor( this->toOsgColor( _maxColor ) );

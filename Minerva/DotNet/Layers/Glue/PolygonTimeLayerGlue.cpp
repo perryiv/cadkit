@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -21,7 +22,7 @@ PolygonTimeLayerGlue::PolygonTimeLayerGlue() :
 _polygonTimeLayer ( 0x0 )
 {
   Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
-  _polygonTimeLayer = new ::Minerva::Layers::PolygonTimeLayer;
+  _polygonTimeLayer = new ::Minerva::Core::Layers::PolygonTimeLayer;
   Usul::Pointers::reference ( _polygonTimeLayer );
 }
 
@@ -29,7 +30,7 @@ _polygonTimeLayer ( 0x0 )
 
 PolygonTimeLayerGlue::PolygonTimeLayerGlue(DT::Minerva::Glue::PolygonTimeLayerGlue ^layer) : BaseClass( layer )
 {
-  _polygonTimeLayer = new ::Minerva::Layers::PolygonTimeLayer;
+  _polygonTimeLayer = new ::Minerva::Core::Layers::PolygonTimeLayer;
   Usul::Pointers::reference ( _polygonTimeLayer );
 
   this->_setProperties( layer );
@@ -62,7 +63,7 @@ PolygonTimeLayerGlue::!PolygonTimeLayerGlue()
 }
 
 
-Minerva::Layers::Layer* PolygonTimeLayerGlue::layer()
+Minerva::Core::Layers::Layer* PolygonTimeLayerGlue::layer()
 {
   return _polygonTimeLayer;
 }

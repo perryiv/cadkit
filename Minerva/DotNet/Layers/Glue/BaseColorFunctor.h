@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater at Arizona State University
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -10,7 +11,7 @@
 #pragma once
 
 #include "osg/Vec4"
-#include "Minerva/Layers/Functors/BaseColorFunctor.h"
+#include "Minerva/Core/Functors/BaseColorFunctor.h"
 
 namespace DT
 {
@@ -21,7 +22,7 @@ namespace DT
       public ref class BaseColorFunctor abstract
       {
       public:
-        virtual ::Minerva::Layers::Functors::BaseColorFunctor * colorFunctor() = 0;
+        virtual ::Minerva::Core::Functors::BaseColorFunctor * colorFunctor() = 0;
 
       protected:
         System::Drawing::Color ^ toManagedColor ( const osg::Vec4& color )

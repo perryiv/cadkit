@@ -11,7 +11,7 @@
 #pragma once
 
 #pragma warning ( disable : 4561 )
-#include "Minerva/Scene/SceneManager.h"
+#include "Minerva/Core/Scene/SceneManager.h"
 #include "OsgTools/Render/Viewer.h"
 #include "Magrathea/Planet.h"
 
@@ -87,7 +87,7 @@ namespace DT
 
           private:
             OsgTools::Render::Viewer *_viewer;
-            ::Minerva::Scene::SceneManager *_sceneManager;
+            ::Minerva::Core::Scene::SceneManager *_sceneManager;
             Magrathea::Planet *_planet;
 	        };
         }

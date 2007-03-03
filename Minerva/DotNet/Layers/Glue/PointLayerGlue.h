@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater at Arizona State University
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -12,7 +13,7 @@
 #pragma warning ( disable : 4561 )
 #include "LayerGlue.h"
 
-#include "Minerva/Layers/PointLayer.h"
+#include "Minerva/Core/Layers/PointLayer.h"
 
 using namespace System;
 
@@ -49,10 +50,10 @@ namespace DT
 
         PROPERTY_GET_SET(StackPoints, bool );
 
-        virtual ::Minerva::Layers::Layer * layer() override;
+        virtual ::Minerva::Core::Layers::Layer * layer() override;
 
       private:
-        ::Minerva::Layers::PointLayer *_pointLayer;
+        ::Minerva::Core::Layers::PointLayer *_pointLayer;
 	    };
     }
   }

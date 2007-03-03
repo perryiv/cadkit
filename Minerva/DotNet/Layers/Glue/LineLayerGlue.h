@@ -11,7 +11,7 @@
 
 #include "LayerGlue.h"
 
-#include "Minerva/Layers/LineLayer.h"
+#include "Minerva/Core/Layers/LineLayer.h"
 
 namespace DT
 {
@@ -33,9 +33,9 @@ namespace DT
           void set ( float f );
         }
 
-        virtual ::Minerva::Layers::Layer * layer() override;
+        virtual ::Minerva::Core::Layers::Layer * layer() override;
       private:
-        ::Minerva::Layers::LineLayer *_lineLayer;
+        ::Minerva::Core::Layers::LineLayer *_lineLayer;
       };
     }
   }

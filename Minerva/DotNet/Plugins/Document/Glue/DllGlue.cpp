@@ -15,8 +15,8 @@
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Strings/ManagedToNative.h"
 
-#include "Minerva/Layers/Layer.h"
-#include "Minerva/postGIS/Geometry.h"
+#include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/Core/postGIS/Geometry.h"
 
 #include "osgDB/ReadFile"
 
@@ -41,7 +41,7 @@ _viewer( 0x0 ),
 _sceneManager( 0x0 )
 {
   Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
-  _sceneManager = new ::Minerva::Scene::SceneManager;
+  _sceneManager = new ::Minerva::Core::Scene::SceneManager;
   Usul::Pointers::reference ( _sceneManager );
 
   _planet = new Magrathea::Planet();
@@ -98,7 +98,7 @@ void DllGlue::removeLayer( CadKit::Interfaces::ILayer ^layer )
 
     if( nullptr != layerPtr )
     {
-      ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
+      ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
       _sceneManager->removeLayer( base->layerID() );
       _sceneManager->dirty ( true );
       _sceneManager->buildScene();
@@ -146,7 +146,7 @@ void DllGlue::modifyLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::J
 
     if( nullptr != layerPtr )
     {
-      ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
+      ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
       Progress p ( progress );
       base->modify( p.unmanagedProgress() );
       _sceneManager->dirty( true );
@@ -304,7 +304,7 @@ void DllGlue::showLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Job
 
     if( nullptr != layerPtr )
     {
-      ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
+      ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
 
       // Managed/Unmanged progress interop class.
       Progress p ( progress );

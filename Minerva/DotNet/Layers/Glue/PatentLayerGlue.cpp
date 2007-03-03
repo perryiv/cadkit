@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -19,7 +20,7 @@ PatentLayerGlue::PatentLayerGlue() : BaseClass(),
 _layer ( 0x0 )
 {
   Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
-  _layer = new ::Minerva::Layers::PatentLayer;
+  _layer = new ::Minerva::Core::Layers::PatentLayer;
   Usul::Pointers::reference ( _layer );
 }
 
@@ -35,7 +36,7 @@ PatentLayerGlue::!PatentLayerGlue()
   _layer = 0x0;
 }
 
-::Minerva::Layers::Layer* PatentLayerGlue::layer()
+::Minerva::Core::Layers::Layer* PatentLayerGlue::layer()
 {
   return _layer;
 }

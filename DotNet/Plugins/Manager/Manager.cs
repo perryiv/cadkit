@@ -15,7 +15,16 @@ namespace CadKit.Plugins
     /// Local types.
     /// </summary>
     class Names : System.Collections.Generic.Dictionary<string, bool> { }
-    class Plugins : System.Collections.Generic.List<Plugin> { }
+    public class ClassFactoryHandle : CadKit.Interfaces.ScopedReference<CadKit.Interfaces.IClassFactory>
+    {
+      public ClassFactoryHandle(CadKit.Interfaces.IClassFactory factory) : base(factory) { }
+    }
+    public class PluginHandle : CadKit.Interfaces.ScopedReference<CadKit.Interfaces.IPlugin>
+    {
+      public PluginHandle() : base() { }
+      public PluginHandle(CadKit.Interfaces.IPlugin plugin) : base(plugin) { }
+    }
+    class Plugins : System.Collections.Generic.List<Manager.Plugin> { }
 
 
     /// <summary>

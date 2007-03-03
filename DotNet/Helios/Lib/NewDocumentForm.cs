@@ -22,6 +22,9 @@ namespace CadKit.Helios.Lib
     }
 
 
+    /// <summary>
+    /// Set/get the caller.
+    /// </summary>
     public object Caller
     {
       get
@@ -30,21 +33,31 @@ namespace CadKit.Helios.Lib
       }
       set
       {
-        System.Windows.Forms.Form form = _caller as System.Windows.Forms.Form;
-
-        if (null != form)
         {
-          form.Shown -= this._parentShown;
-          form.Shown += this._parentShown;
+          System.Windows.Forms.Form form = _caller as System.Windows.Forms.Form;
+
+          if (null != form)
+          {
+            form.Shown -= this._parentShown;
+          }
         }
-        
+
         _caller = value;
+
+        {
+          System.Windows.Forms.Form form = _caller as System.Windows.Forms.Form;
+
+          if (null != form)
+          {
+            form.Shown += this._parentShown;
+          }
+        }
       }
     }
 
 
     /// <summary>
-    /// 
+    /// Called when the parent is shown.
     /// </summary>
     void _parentShown(object sender, System.EventArgs e)
     {
@@ -62,7 +75,7 @@ namespace CadKit.Helios.Lib
             System.Windows.Forms.LinkLabel label = new System.Windows.Forms.LinkLabel();
             label.Name = iDoc.TypeName;
             label.Text = iDoc.TypeName;
-            label.Click += new System.EventHandler(label_Click);
+            label.Click += new System.EventHandler(_labelClick);
 
             CadKit.Interfaces.IDocumentIcon docIcon = iDoc as CadKit.Interfaces.IDocumentIcon;
             if (docIcon == null || docIcon.Icon == null)
@@ -116,7 +129,10 @@ namespace CadKit.Helios.Lib
     }
 
 
-    void label_Click(object sender, System.EventArgs e)
+    /// <summary>
+    /// Called when the label is clicked.
+    /// </summary>
+    void _labelClick(object sender, System.EventArgs args)
     {
       try
       {
@@ -146,16 +162,18 @@ namespace CadKit.Helios.Lib
           }
         }
       }
-      catch (System.Exception ex)
+      catch (System.Exception e)
       {
-        System.Console.WriteLine("Error 96335236: trying to create new document: {0}", ex.Message);
+        System.Console.WriteLine("Error 96335236: trying to create new document: {0}", e.Message);
       }
     }
+
 
     /// <summary>
     /// Local types.
     /// </summary>
     private delegate bool CreateDefaultGuiDelegate(CadKit.Interfaces.IDocument idoc);
+
 
     /// <summary>
     /// Create the default user-interface.
@@ -189,6 +207,9 @@ namespace CadKit.Helios.Lib
     }
 
 
+    /// <summary>
+    /// Configure the docking window.
+    /// </summary>
     private static void _configureDockWindow(object sender, NewDocumentForm form)
     {
       CadKit.Interfaces.IDockPanel dockPanel = sender as CadKit.Interfaces.IDockPanel;
@@ -219,11 +240,14 @@ namespace CadKit.Helios.Lib
     }
 
 
+    /// <summary>
+    /// Singleton construction.
+    /// </summary>
     public static NewDocumentForm Instance
     {
       get
       {
-        lock ("CadKit.Helios.Lib.Instance")
+        lock ("CadKit.Helios.Lib.NewDocumentForm.Instance")
         {
           if (null == _instance)
             _instance = new NewDocumentForm();

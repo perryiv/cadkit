@@ -10,6 +10,7 @@
 namespace CadKit.Plugins.Database
 {
   public class Component :
+    CadKit.Referenced.Base,
     CadKit.Interfaces.IPlugin,
     CadKit.Interfaces.IDiskStorageCreate
   {

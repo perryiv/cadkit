@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IClassFactory
+  public interface IClassFactory : IReferenced
   {
     object createInstance ( string type );
   }

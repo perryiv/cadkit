@@ -9,7 +9,9 @@
 
 namespace CadKit.Plugins.Windows.OutputWindow
 {
-  public class Component : CadKit.Interfaces.IPlugin
+  public class Component :
+    CadKit.Referenced.Base,
+    CadKit.Interfaces.IPlugin
   {
     /// <summary>
     /// Construct a component.
@@ -57,19 +59,26 @@ namespace CadKit.Plugins.Windows.OutputWindow
     /// </summary>
     private void _parentShown(object sender, System.EventArgs args)
     {
-      CadKit.Plugins.Windows.OutputWindow.Form form = new CadKit.Plugins.Windows.OutputWindow.Form();
-      System.Windows.Forms.Form parent = sender as System.Windows.Forms.Form;
-      CadKit.Tools.ToolWindow.configure(form, parent, "Output Window", false);
-
-      _configureDockWindow(sender, form);
-
-      CadKit.Interfaces.IWindowMenu windowMenu = sender as CadKit.Interfaces.IWindowMenu;
-      if (null != windowMenu)
+      try
       {
-        windowMenu.addFormWindowMenu(form.Text, form);
-      }
+        CadKit.Plugins.Windows.OutputWindow.Form form = new CadKit.Plugins.Windows.OutputWindow.Form();
+        System.Windows.Forms.Form parent = sender as System.Windows.Forms.Form;
+        CadKit.Tools.ToolWindow.configure(form, parent, "Output Window", false);
 
-      parent.Activate();
+        _configureDockWindow(sender, form);
+
+        CadKit.Interfaces.IWindowMenu windowMenu = sender as CadKit.Interfaces.IWindowMenu;
+        if (null != windowMenu)
+        {
+          windowMenu.addFormWindowMenu(form.Text, form);
+        }
+
+        parent.Activate();
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2740234786: {0}", e.Message);
+      }
     }
 
     private static void _configureDockWindow(object sender, CadKit.Plugins.Windows.OutputWindow.Form form)

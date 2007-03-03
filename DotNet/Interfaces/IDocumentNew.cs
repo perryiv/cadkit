@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IDocumentNew
+  public interface IDocumentNew : IReferenced
   {
     object create ( object caller );
   }

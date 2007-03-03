@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="plug: Trianglulate"
-	ProjectGUID="{12C7F9F3-DAF6-4529-B914-ADCDDF637917}"
+	ProjectGUID="{C304EFFA-960F-4641-AECA-6CA35D1C2EEB}"
 	>
 	<Platforms>
 		<Platform
@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="vtkCommon.lib vtkRendering.lib vtkGraphics.lib vtkFiltering.lib"
+				AdditionalDependencies="vtkCommon.lib   vtkGraphics.lib vtkFiltering.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/Triangulate.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="vtkCommon.lib vtkRendering.lib vtkGraphics.lib vtkFiltering.lib"
+				AdditionalDependencies="vtkCommon.lib   vtkGraphics.lib vtkFiltering.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/Triangulate.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

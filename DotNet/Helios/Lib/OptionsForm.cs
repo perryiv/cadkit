@@ -25,6 +25,7 @@ namespace CadKit.Helios
     /// </summary>
     class Pages : System.Collections.Generic.List<CadKit.Interfaces.IOptionsPage> { }
 
+
     /// <summary>
     /// Data members.
     /// </summary>
@@ -37,6 +38,7 @@ namespace CadKit.Helios
     private System.Windows.Forms.Button _okButton;
     private System.Windows.Forms.Button _cancelButton;
 
+
     /// <summary>
     /// Constructor
     /// </summary>
@@ -48,6 +50,7 @@ namespace CadKit.Helios
       this.MaximizeBox = false;
       this.ShowInTaskbar = false;
     }
+
 
     #region Windows Form Designer generated code
 
@@ -169,6 +172,7 @@ namespace CadKit.Helios
 
     #endregion
 
+
     /// <summary>
     /// Called when the button is pressed.
     /// </summary>
@@ -180,6 +184,7 @@ namespace CadKit.Helios
         this.ok();
       }
     }
+
 
     /// <summary>
     /// Called when the button is pressed.
@@ -193,6 +198,7 @@ namespace CadKit.Helios
       }
     }
 
+
     /// <summary>
     /// Called when the form closes.
     /// </summary>
@@ -202,6 +208,7 @@ namespace CadKit.Helios
       {
       }
     }
+
 
     /// <summary>
     /// Save the changes and close the form.
@@ -214,6 +221,7 @@ namespace CadKit.Helios
         this.Close();
       }
     }
+
 
     /// <summary>
     /// Apply the changes.
@@ -235,6 +243,7 @@ namespace CadKit.Helios
         }
       }
     }
+
 
     /// <summary>
     /// Add a page.
@@ -277,6 +286,7 @@ namespace CadKit.Helios
       }
     }
 
+
     /// <summary>
     /// Make a page.
     /// </summary>
@@ -289,6 +299,7 @@ namespace CadKit.Helios
       }
     }
 
+
     /// <summary>
     /// Make a page.
     /// </summary>
@@ -299,6 +310,7 @@ namespace CadKit.Helios
         return this._newPage(name, image as System.Drawing.Image);
       }
     }
+
 
     /// <summary>
     /// Add a page.
@@ -313,6 +325,7 @@ namespace CadKit.Helios
         return this._newPage(name, image as System.Drawing.Image);
       }
     }
+
 
     /// <summary>
     /// Called when the selected page changed.
@@ -348,6 +361,7 @@ namespace CadKit.Helios
       }
     }
 
+
     /// <summary>
     /// Called when the form is loaded.
     /// </summary>
@@ -370,6 +384,7 @@ namespace CadKit.Helios
       }
     }
 
+
     /// <summary>
     /// Get the number of pages.
     /// </summary>
@@ -384,6 +399,7 @@ namespace CadKit.Helios
       }
     }
 
+
     /// <summary>
     /// Get the number of pages.
     /// </summary>
@@ -396,6 +412,42 @@ namespace CadKit.Helios
           return _pages.Count;
         }
       }
+    }
+
+
+    /// <summary>
+    /// Increment the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.reference()
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.dereference()
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.dereference(bool allowCleanup)
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Return the reference count.
+    /// </summary>
+    uint CadKit.Interfaces.IReferenced.RefCount
+    {
+      get { return 0; } // TODO
     }
   }
 }

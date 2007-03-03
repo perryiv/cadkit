@@ -9,7 +9,8 @@
 
 namespace CadKit.Plugins.Delegates.SimFlowDelegate
 {
-  public class Component : 
+  public class Component :
+    CadKit.Referenced.Base,
     CadKit.Interfaces.IPlugin,
     CadKit.Interfaces.IGuiDelegateCreate
   {

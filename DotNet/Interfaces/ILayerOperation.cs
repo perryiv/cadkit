@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CadKit.Interfaces
 {
-  public interface ILayerOperation
+  public interface ILayerOperation : IReferenced
   {
     void setLayerOperation( String opType, int val, int[] layers );
     void setLayerOperation(String opType, int val, int layer);

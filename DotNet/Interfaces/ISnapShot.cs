@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface ISnapShot
+  public interface ISnapShot : IReferenced
   {
     void takePicture(string file, uint numRenderPasses, float frameSizeScale, float scatterScale);
   }

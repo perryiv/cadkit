@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="plug: IO TIFF"
-	ProjectGUID="{F8B4EE92-DBB3-4A32-951F-CE9F9AB4C091}"
+	ProjectGUID="{31F56BD2-B88A-43C6-BC3B-C41F794A1EF4}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

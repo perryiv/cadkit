@@ -14,7 +14,7 @@ namespace CadKit.Interfaces
     public enum Mode { ALL, D1, D2, D3, RECTANGLE, CUBE_MAP };
   }
 
-  public interface ITextureMode
+  public interface ITextureMode : IReferenced
   {
     /// <summary>
     /// Set/get the texture mode.

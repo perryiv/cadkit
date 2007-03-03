@@ -38,7 +38,7 @@ namespace CadKit.Threads.Tools
         {
           // If this thread already holds a write-lock then it is not possible 
           // for other threads to hold read- or write-locks, so do nothing.
-          // Note: this design assumes the scope of the write-lock held bigger 
+          // Note: this design assumes the scope of the write-lock held is bigger 
           // than this instance.
           if (false == _lock.IsWriterLockHeld)
           {

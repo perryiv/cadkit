@@ -27,7 +27,7 @@ float Magrathea::LayerManipulator::opacity() const
   if( _land.valid() )
   {
     _land->setCurrentFragementShaderType( ossimPlanetShaderProgramSetup::OPACITY );        
-    //return shaderVal();
+    return shaderVal();
   }  
   else
   {

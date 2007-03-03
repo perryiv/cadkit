@@ -33,6 +33,11 @@ namespace CadKit.Viewer
     /// Local types.
     /// </summary>
     public delegate void DocumentChangedDelegate(object changed, object caller);
+    public class DocumentHandle : CadKit.Interfaces.ScopedReference<CadKit.Interfaces.IDocument> { }
+    public class NotifyChangedHandle : CadKit.Interfaces.ScopedReference<CadKit.Interfaces.INotifyChanged>
+    {
+      public NotifyChangedHandle(CadKit.Interfaces.INotifyChanged notify) : base(notify) { }
+    }
 
 
     /// <summary>
@@ -40,7 +45,7 @@ namespace CadKit.Viewer
     /// </summary>
     private CadKit.Threads.Tools.Lock _lock = null;
     private CadKit.Viewer.Panel _panel = new CadKit.Viewer.Panel();
-    private CadKit.Interfaces.IDocument _document = null;
+    private DocumentHandle _document = new DocumentHandle();
 
 
     /// <summary>
@@ -104,12 +109,19 @@ namespace CadKit.Viewer
     /// </summary>
     ~Viewer()
     {
-      this.Panel = null;
-
-      if (null != _document)
+      try
       {
-        _document.remove(this);
-        _document = null;
+        this.Panel = null;
+
+        if (true == _document.Valid)
+        {
+          _document.Value.remove(this);
+          _document.Value = null;
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine(System.String.Format("Error 3341185068: {0}", e.Message));
       }
     }
 
@@ -351,13 +363,19 @@ namespace CadKit.Viewer
     /// </summary>
     public CadKit.Interfaces.IDocument Document
     {
-      get { using (this.Lock.read()) { return _document; } }
+      get
+      {
+        using (this.Lock.read())
+        {
+          return _document.Value;
+        }
+      }
       set
       {
         using (this.Lock.write())
         {
           this._removeDocumentDelegates();
-          _document = value;
+          _document.Value = value;
           this._addDocumentDelegates();
         }
       }
@@ -401,12 +419,14 @@ namespace CadKit.Viewer
     {
       using (this.Lock.write())
       {
-        if (null != _document)
+        if (true == _document.Valid)
         {
-          CadKit.Interfaces.INotifyChanged changed = _document as CadKit.Interfaces.INotifyChanged;
-          if (null != changed)
+          using (NotifyChangedHandle changed = new NotifyChangedHandle(_document.Value as CadKit.Interfaces.INotifyChanged))
           {
-            changed.NotifyChanged += this._documentChanged;
+            if (true == changed.Valid)
+            {
+              changed.Value.NotifyChanged += this._documentChanged;
+            }
           }
         }
       }
@@ -420,12 +440,14 @@ namespace CadKit.Viewer
     {
       using (this.Lock.write())
       {
-        if (null != _document)
+        if (true == _document.Valid)
         {
-          CadKit.Interfaces.INotifyChanged changed = _document as CadKit.Interfaces.INotifyChanged;
-          if (null != changed)
+          using (NotifyChangedHandle changed = new NotifyChangedHandle(_document.Value as CadKit.Interfaces.INotifyChanged))
           {
-            changed.NotifyChanged -= this._documentChanged;
+            if (true == changed.Valid)
+            {
+              changed.Value.NotifyChanged -= this._documentChanged;
+            }
           }
         }
       }
@@ -929,6 +951,62 @@ namespace CadKit.Viewer
     {
       get { return this.Panel.TextureModeCubeMap; }
       set { this.Panel.TextureModeCubeMap = value; }
+    }
+
+
+    /// <summary>
+    /// Get whether the database pager should pre compile OpenGL objects before 
+    /// allowing them to be merged into the scene graph.
+    /// </summary>
+    public bool DatabasePagerPreCompile
+    {
+      get { using (this.Lock.read()) { return this.Panel.DatabasePagerPreCompile; } }
+      set { using (this.Lock.write()) { this.Panel.DatabasePagerPreCompile = value; } }
+    }
+
+
+    /// <summary>
+    /// Set the database pager.
+    /// </summary>
+    public void initDatabasePagerSettings()
+    {
+      using (this.Lock.write()) { this.Panel.initDatabasePagerSettings(); }
+    }
+
+
+    /// <summary>
+    /// Increment the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.reference()
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.dereference()
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.dereference(bool allowCleanup)
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Return the reference count.
+    /// </summary>
+    uint CadKit.Interfaces.IReferenced.RefCount
+    {
+      get { return 0; } // TODO
     }
   }
 }

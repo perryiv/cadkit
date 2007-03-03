@@ -10,6 +10,7 @@
 namespace CadKit.Plugins.LayerManager
 {
   public class Component :
+    CadKit.Referenced.Base,
     CadKit.Interfaces.IPlugin
   {
     /// <summary>
@@ -49,19 +50,26 @@ namespace CadKit.Plugins.LayerManager
     /// </summary>
     private void _parentShown(object sender, System.EventArgs args)
     {
-      CadKit.Plugins.LayerManager.Layers form = new CadKit.Plugins.LayerManager.Layers();
-      System.Windows.Forms.Form parent = sender as System.Windows.Forms.Form;
-      CadKit.Tools.ToolWindow.configure(form, parent, "Layers", false);
-
-      _configureDockWindow(sender, form);
-
-      CadKit.Interfaces.IWindowMenu windowMenu = sender as CadKit.Interfaces.IWindowMenu;
-      if (null != windowMenu)
+      try
       {
-        windowMenu.addFormWindowMenu(form.Text, form);
-      }
+        CadKit.Plugins.LayerManager.Layers form = new CadKit.Plugins.LayerManager.Layers();
+        System.Windows.Forms.Form parent = sender as System.Windows.Forms.Form;
+        CadKit.Tools.ToolWindow.configure(form, parent, "Layers", false);
 
-      parent.Activate();
+        _configureDockWindow(sender, form);
+
+        CadKit.Interfaces.IWindowMenu windowMenu = sender as CadKit.Interfaces.IWindowMenu;
+        if (null != windowMenu)
+        {
+          windowMenu.addFormWindowMenu(form.Text, form);
+        }
+
+        parent.Activate();
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2363874639: {0}", e.Message);
+      }
     }
 
     private static void _configureDockWindow(object sender, CadKit.Plugins.LayerManager.Layers form)

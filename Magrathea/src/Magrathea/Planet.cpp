@@ -82,6 +82,7 @@ Planet::~Planet()
     wmsFinalize();
 
   _databasePager->cancel();
+  _databasePager = 0x0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -135,7 +136,7 @@ void Planet::init()
     _planet->getLand()->setTextureLayer( _textureOperationLayerGroup.get(), 1 );
     _planet->getLand()->resetGraph(); 	
 
-    osgDB::Registry::instance()->setDatabasePager( _databasePager.get() );
+    //osgDB::Registry::instance()->setDatabasePager( _databasePager.get() );
 	  _databasePager->setExpiryDelay(0);
     _databasePager->setUseFrameBlock( true );
 	  _databasePager->setAcceptNewDatabaseRequests( true );

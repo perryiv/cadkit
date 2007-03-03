@@ -219,6 +219,22 @@ namespace CadKit.Viewer
 
 
       /// <summary>
+      /// Get whether the database pager should pre compile OpenGL objects before 
+      /// allowing them to be merged into the scene graph.
+      /// </summary>
+      [
+      System.ComponentModel.Category("Database Pager"),
+      System.ComponentModel.Description("Pre-compile OpenGL display lists"),
+      System.ComponentModel.Browsable(true),
+      ]
+      public bool PreCompile
+      {
+        get { return _panel.DatabasePagerPreCompile; }
+        set { _panel.DatabasePagerPreCompile = value; }
+      }
+
+
+      /// <summary>
       /// Update the panel.
       /// </summary>
       private void _update()

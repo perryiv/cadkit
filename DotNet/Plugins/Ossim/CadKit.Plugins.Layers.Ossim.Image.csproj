@@ -75,6 +75,10 @@
       <Project>{DFD2710D-3AB3-4707-B74E-80F21E33A23F}</Project>
       <Name>CadKit.Persistence</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Referenced\CadKit.Referenced.csproj">
+      <Project>{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}</Project>
+      <Name>CadKit.Referenced</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Manager\CadKit.Plugins.csproj">
       <Project>{38E6CB43-88D0-4549-B27D-0F23F50CC395}</Project>
       <Name>CadKit.Plugins</Name>

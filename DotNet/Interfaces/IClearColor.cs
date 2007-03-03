@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IClearColor
+  public interface IClearColor : IReferenced
   {
     /// <summary>
     /// Get/set the clear color.

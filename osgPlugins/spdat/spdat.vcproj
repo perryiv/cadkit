@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="plug: osgPlugin SPDAT"
-	ProjectGUID="{8102EFB2-88DA-4E6C-9A7B-010E07CA69F9}"
+	ProjectGUID="{1B6612B1-99F9-4FAC-871E-3AC3B7BB2C8A}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

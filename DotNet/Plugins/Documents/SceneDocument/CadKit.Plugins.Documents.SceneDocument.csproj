@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -50,6 +50,10 @@
     <ProjectReference Include="..\..\..\OSG\Glue\CadKit.OSG.Glue.vcproj">
       <Project>{6F8548C1-32FA-44C9-8BDA-C7221B555065}</Project>
       <Name>CadKit.OSG.Glue</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Referenced\CadKit.Referenced.csproj">
+      <Project>{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}</Project>
+      <Name>CadKit.Referenced</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Threads\Tools\CadKit.Threads.Tools.csproj">
       <Project>{EF977229-371D-4FB1-90C5-237DEE74D069}</Project>

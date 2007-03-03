@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-	public interface IGuiDelegateCreate
+  public interface IGuiDelegateCreate : IReferenced
 	{
     /// <summary>
     /// Create new gui-delegate.

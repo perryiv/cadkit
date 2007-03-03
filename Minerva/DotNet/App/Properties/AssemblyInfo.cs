@@ -1,4 +1,13 @@
-﻿using System.Reflection;
+﻿
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2006, Decision Theater at Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -8,9 +17,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("DT.Minerva.App")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Decision Theater at Arizona State University")]
+[assembly: AssemblyCompany("Decision Theater")]
 [assembly: AssemblyProduct("DT.Minerva.App")]
-[assembly: AssemblyCopyright("Decision Theater at Arizona State University")]
+[assembly: AssemblyCopyright("Decision Theater")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

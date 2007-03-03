@@ -9,7 +9,9 @@
 
 namespace CadKit.Commands
 {
-  public abstract class Command : CadKit.Interfaces.ICommand
+  public abstract class Command : 
+    System.IDisposable,
+    CadKit.Interfaces.ICommand
   {
     /// <summary>
     /// Local types.
@@ -52,16 +54,45 @@ namespace CadKit.Commands
     /// </summary>
     ~Command()
     {
+      this._localCleanup();
+    }
+
+
+    /// <summary>
+    /// Called by the system to clean this instance.
+    /// </summary>
+    void System.IDisposable.Dispose()
+    {
+      this._localCleanup();
+    }
+
+
+    /// <summary>
+    /// Clean this instance.
+    /// </summary>
+    private void _localCleanup()
+    {
       try
       {
         using (_commandLock.write())
         {
           _commandList.Remove(this);
         }
+
+        _lock = null;
+        _caller = null;
+        _menuButton = null;
+        _toolButton = null;
+        _text = null;
+        _toolTipText = null;
+        _menuIcon = null;
+        _toolIcon = null;
+        _keys = 0;
+        _isToggle = false;
       }
       catch (System.Exception e)
       {
-        System.Console.WriteLine("Error 3291845313: {0}", e.Message);
+        System.Console.WriteLine("Error 2214346796: {0}", e.Message);
       }
     }
 
@@ -413,6 +444,42 @@ namespace CadKit.Commands
       {
         command.update();
       }
+    }
+
+
+    /// <summary>
+    /// Increment the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.reference()
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.dereference()
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.dereference(bool allowCleanup)
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Return the reference count.
+    /// </summary>
+    uint CadKit.Interfaces.IReferenced.RefCount
+    {
+      get { return 0; } // TODO
     }
   }
 }

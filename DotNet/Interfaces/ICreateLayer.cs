@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface ICreateLayer
+  public interface ICreateLayer : IReferenced
   {
     /// <summary>
     /// Get the name of the page.

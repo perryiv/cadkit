@@ -18,7 +18,8 @@ namespace CadKit
   {
     namespace Glue
     {
-      public ref class ImageLayer : 
+      public ref class ImageLayer :  
+        CadKit::Referenced::Base,
         CadKit::Interfaces::IOssimLayer,
         CadKit::Interfaces::ILayer,
         CadKit::Interfaces::INativePtr

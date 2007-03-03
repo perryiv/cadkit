@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IRecentFileList
+  public interface IRecentFileList : IReferenced
   {
     /// <summary>
     /// Add the name.

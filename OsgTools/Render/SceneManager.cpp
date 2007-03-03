@@ -175,7 +175,8 @@ bool SceneManager::groupHas ( const std::string& key ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get group under the projection node with given key.  Creates one if doesn't exist
+//  Get group under the projection node with given key. 
+//  Creates one if doesn't exist
 //
 ///////////////////////////////////////////////////////////////////////////////
 

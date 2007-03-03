@@ -13,6 +13,7 @@ namespace DT.Minerva.Layers.Controls
     System.Serializable()
   ]
   public partial class BaseLayer : 
+    CadKit.Referenced.Base,
     System.Runtime.Serialization.ISerializable,
     System.ICloneable,
     CadKit.Interfaces.IPropertyGridObject,

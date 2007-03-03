@@ -9,12 +9,15 @@
 
 namespace CadKit.Helios
 {
-  public class RecentFiles : CadKit.Interfaces.IRecentFileList
+  public class RecentFiles : 
+    CadKit.Referenced.Base,
+    CadKit.Interfaces.IRecentFileList
   {
     /// <summary>
     /// Local types.
     /// </summary>
     private class Names : System.Collections.Generic.Queue<string> { }
+
 
     /// <summary>
     /// Data members.
@@ -27,6 +30,7 @@ namespace CadKit.Helios
     private string _entriesKey = "Entries";
     private string _maxCountKey = "MaxCount";
     private char _delimeter = ';';
+
 
     /// <summary>
     /// Constructor.
@@ -46,6 +50,7 @@ namespace CadKit.Helios
       this._buildMenu();
     }
 
+
     /// <summary>
     /// Descructor.
     /// </summary>
@@ -55,6 +60,32 @@ namespace CadKit.Helios
       // has already been called. (Isn't non-deterministic destruction 
       // cool?) Keeping this here as a reminder.
     }
+
+
+    /// <summary>
+    /// Clean this instance.
+    /// </summary>
+    protected override void _cleanup()
+    {
+      try
+      {
+        using (this.Lock.write())
+        {
+          _mutex = null;
+          _names = null;
+          _menu = null;
+          _section = null;
+          _entriesKey = null;
+          _maxCountKey = null;
+        }
+        base._cleanup();
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 4010357980: {0}", e.Message);
+      }
+    }
+
 
     /// <summary>
     /// Return names from the registry.
@@ -89,6 +120,7 @@ namespace CadKit.Helios
       return answer.ToArray();
     }
 
+
     /// <summary>
     /// Called when the menu is being shown.
     /// </summary>
@@ -96,6 +128,7 @@ namespace CadKit.Helios
     {
       lock (_mutex) { this._buildMenu(); }
     }
+
 
     /// <summary>
     /// Build the menu.
@@ -129,6 +162,7 @@ namespace CadKit.Helios
       }
     }
 
+
     /// <summary>
     /// Called when the clear button is clicked.
     /// </summary>
@@ -147,6 +181,7 @@ namespace CadKit.Helios
       }
     }
 
+
     /// <summary>
     /// Add all the name.
     /// </summary>
@@ -161,6 +196,7 @@ namespace CadKit.Helios
       }
     }
 
+
     /// <summary>
     /// Add the name.
     /// </summary>
@@ -171,6 +207,7 @@ namespace CadKit.Helios
         this.add(name);
       }
     }
+
 
     /// <summary>
     /// Add the name.
@@ -201,6 +238,7 @@ namespace CadKit.Helios
       }
     }
 
+
     /// <summary>
     /// Trim extra members.
     /// </summary>
@@ -215,6 +253,7 @@ namespace CadKit.Helios
       }
     }
 
+
     /// <summary>
     /// Remove the name.
     /// </summary>
@@ -222,6 +261,7 @@ namespace CadKit.Helios
     {
       lock (_mutex) { this.remove(name); }
     }
+
 
     /// <summary>
     /// Remove the name.
@@ -250,6 +290,7 @@ namespace CadKit.Helios
       }
     }
 
+
     /// <summary>
     /// Clear the list.
     /// </summary>
@@ -257,6 +298,7 @@ namespace CadKit.Helios
     {
       lock (_mutex) { this.clear(); }
     }
+
 
     /// <summary>
     /// Clear the list.
@@ -273,6 +315,7 @@ namespace CadKit.Helios
       }
     }
 
+
     /// <summary>
     /// Get/set the maximum number of entries.
     /// </summary>
@@ -282,6 +325,7 @@ namespace CadKit.Helios
       set { lock (_mutex) { _maxCount = value; } }
     }
 
+
     /// <summary>
     /// Get the menu.
     /// </summary>
@@ -289,6 +333,7 @@ namespace CadKit.Helios
     {
       get { lock (_mutex) { return _menu; } }
     }
+
 
     /// <summary>
     /// Store the entries.
@@ -301,6 +346,7 @@ namespace CadKit.Helios
         this._store(names);
       }
     }
+
 
     /// <summary>
     /// Store the entries.

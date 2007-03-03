@@ -14,7 +14,7 @@ namespace CadKit.Interfaces
     public enum Model { NONE, FLAT, SMOOTH };
   }
 
-  public interface IShadeModel
+  public interface IShadeModel : IReferenced
   {
     /// <summary>
     /// Set/get the shade model.

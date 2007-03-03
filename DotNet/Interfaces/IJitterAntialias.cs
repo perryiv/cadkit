@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IJitterAntialias
+  public interface IJitterAntialias : IReferenced
   {
     System.UInt32[] AvailableRenderingPasses { get; }
     double ScatterScale { get; set; }

@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface ICommandHistory
+  public interface ICommandHistory : IReferenced
   {
     /// <summary>
     /// Add the recently executed command.

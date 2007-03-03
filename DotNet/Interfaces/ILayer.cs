@@ -1,7 +1,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface ILayer
+  public interface ILayer : IReferenced
   {
     string Name { get; set; }
     bool Shown { get; }

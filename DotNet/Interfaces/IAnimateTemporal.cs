@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IAnimateTemporal
+  public interface IAnimateTemporal : IReferenced
   {
     void startAnimation(float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays);
     void stopAnimation();

@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IPlugin
+  public interface IPlugin : IReferenced
   {
     /// <summary>
     /// Get the name of this plugin.

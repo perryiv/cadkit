@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="vtkCommon.lib vtkIO.lib vtkFiltering.lib vtkRendering.lib vtkGraphics.lib"
+				AdditionalDependencies="vtkCommon.lib vtkIO.lib vtkFiltering.lib   vtkGraphics.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)\bin\$(ProjectName)d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(VTK_LIB_DIR)"
@@ -138,7 +138,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="vtkCommon.lib vtkIO.lib vtkFiltering.lib vtkRendering.lib vtkGraphics.lib"
+				AdditionalDependencies="vtkCommon.lib vtkIO.lib vtkFiltering.lib   vtkGraphics.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)\bin\$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(VTK_LIB_DIR)"

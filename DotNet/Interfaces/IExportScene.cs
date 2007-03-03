@@ -18,7 +18,7 @@ namespace CadKit.Interfaces
     }
   }
 
-  public interface IExportScene
+  public interface IExportScene : IReferenced
   {
     Filters Filters { get; }
     void export(string filename, SceneExport.Option option);

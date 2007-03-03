@@ -9,7 +9,9 @@
 
 namespace CadKit.Commands
 {
-  public class History : CadKit.Interfaces.ICommandHistory
+  public class History : 
+    CadKit.Referenced.Base,
+    CadKit.Interfaces.ICommandHistory
   {
     /// <summary>
     /// Local types.

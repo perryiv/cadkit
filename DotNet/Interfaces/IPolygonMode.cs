@@ -15,7 +15,7 @@ namespace CadKit.Interfaces
     public enum Face { NONE, FRONT, BACK, FRONT_AND_BACK };
   }
 
-  public interface IPolygonMode
+  public interface IPolygonMode : IReferenced
   {
     /// <summary>
     /// Set/get the polygon face.

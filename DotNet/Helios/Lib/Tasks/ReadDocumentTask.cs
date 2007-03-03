@@ -9,15 +9,23 @@
 
 namespace CadKit.Helios
 {
-  public class ReadDocumentTask : CadKit.Interfaces.IProgressBar
+  public class ReadDocumentTask : 
+    System.IDisposable,
+    CadKit.Interfaces.IProgressBar
   {
+    /// <summary>
+    /// Local types.
+    /// </summary>
+    class ProgressBarHandle : CadKit.Interfaces.ScopedReference<CadKit.Interfaces.IProgressBar> { }
+
+
     /// <summary>
     /// Local data members.
     /// </summary>
     private CadKit.Threads.Tools.Lock _lock = null;
     private object _caller = null;
     private string _file = null;
-    private CadKit.Interfaces.IProgressBar _progress = null;
+    private ProgressBarHandle _progress = new ProgressBarHandle();
 
 
     /// <summary>
@@ -46,10 +54,47 @@ namespace CadKit.Helios
       job.Progress.Maximum = this._fileSize(file);
 
       // Progress interface.
-      _progress = job.Progress as CadKit.Interfaces.IProgressBar;
+      _progress.Value = job.Progress as CadKit.Interfaces.IProgressBar;
 
       // Queue the job.
       CadKit.Threads.Jobs.Manager.Instance.add(job);
+    }
+
+
+    /// <summary>
+    /// Destructor.
+    /// </summary>
+    ~ReadDocumentTask()
+    {
+      this._localCleanup();
+    }
+
+
+    /// <summary>
+    /// Called by the system to dispose this instance.
+    /// </summary>
+    void System.IDisposable.Dispose()
+    {
+      this._localCleanup();
+    }
+
+
+    /// <summary>
+    /// Clean this instance.
+    /// </summary>
+    private void _localCleanup()
+    {
+      try
+      {
+        _lock = null;
+        _caller = null;
+        _file = null;
+        _progress.Value = null;
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 4122087760: {0}", e.Message);
+      }
     }
 
 
@@ -138,8 +183,23 @@ namespace CadKit.Helios
     /// </summary>
     string CadKit.Interfaces.IProgressBar.Text
     {
-      get { using (this.Lock.read()) { return (null != _progress) ? _progress.Text : ""; } }
-      set { using (this.Lock.write()) { if (null != _progress) { _progress.Text = value; } } }
+      get
+      {
+        using (this.Lock.read())
+        {
+          return (true == _progress.Valid) ? _progress.Value.Text : "";
+        }
+      }
+      set
+      {
+        using (this.Lock.write())
+        {
+          if (true == _progress.Valid)
+          {
+            _progress.Value.Text = value;
+          }
+        }
+      }
     }
 
 
@@ -148,7 +208,13 @@ namespace CadKit.Helios
     /// </summary>
     int CadKit.Interfaces.IProgressBar.Range
     {
-      get { using (this.Lock.read()) { return (null != _progress) ? _progress.Range : 100; } }
+      get
+      {
+        using (this.Lock.read())
+        {
+          return (true == _progress.Valid) ? _progress.Value.Range : 100;
+        }
+      }
     }
 
 
@@ -157,8 +223,59 @@ namespace CadKit.Helios
     /// </summary>
     int CadKit.Interfaces.IProgressBar.Value
     {
-      get { using (this.Lock.read()) { return (null != _progress) ? _progress.Value : 0; } }
-      set { using (this.Lock.write()) { if (null != _progress) { _progress.Value = value; } } }
+      get
+      {
+        using (this.Lock.read())
+        {
+          return (true == _progress.Valid) ? _progress.Value.Value : 0;
+        }
+      }
+      set
+      {
+        using (this.Lock.write())
+        {
+          if (true == _progress.Valid)
+          {
+            _progress.Value.Value = value;
+          }
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Increment the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.reference()
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.dereference()
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.dereference(bool allowCleanup)
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Return the reference count.
+    /// </summary>
+    uint CadKit.Interfaces.IReferenced.RefCount
+    {
+      get { return 0; } // TODO
     }
   }
 }

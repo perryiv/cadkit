@@ -16,7 +16,9 @@
 
 namespace CadKit.Helios
 {
-  public class OptionsPage : CadKit.Interfaces.IOptionsPage
+  public class OptionsPage : 
+    CadKit.Referenced.Base,
+    CadKit.Interfaces.IOptionsPage
   {
     /// <summary>
     /// Data members.

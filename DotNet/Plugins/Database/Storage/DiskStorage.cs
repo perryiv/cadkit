@@ -9,7 +9,9 @@
 
 namespace CadKit.Plugins.Database.Storage
 {
-  public class DiskStorage : CadKit.Interfaces.IDiskStorage
+  public class DiskStorage :
+    CadKit.Referenced.Base,
+    CadKit.Interfaces.IDiskStorage
   {
     /// <summary>
     /// Data members.

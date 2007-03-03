@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IGroup
+  public interface IGroup : IReferenced
   {
     object[] Children { get; }
   }

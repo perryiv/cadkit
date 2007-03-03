@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IOptionsPageAdd
+  public interface IOptionsPageAdd : IReferenced
   {
     /// <summary>
     /// Get the name of the page.

@@ -10,6 +10,7 @@
 namespace DT.Minerva.Plugins.LayerManager
 {
   public class Component :
+    CadKit.Referenced.Base,
     CadKit.Interfaces.IPlugin,
     CadKit.Interfaces.ICreateLayer
   {

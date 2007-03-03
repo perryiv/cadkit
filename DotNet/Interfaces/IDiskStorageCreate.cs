@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IDiskStorageCreate
+  public interface IDiskStorageCreate : IReferenced
   {
     /// <summary>
     /// Create disk storage.

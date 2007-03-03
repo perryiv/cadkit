@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IViewer
+  public interface IViewer : IReferenced
   {
     /// <summary>
     /// Get/Set the scene.

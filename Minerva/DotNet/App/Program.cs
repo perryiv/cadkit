@@ -12,6 +12,43 @@ namespace DT.Minerva.App
     [STAThread]
     static void Main()
     {
+      Program._main();
+    }
+
+
+    /// <summary>
+    /// Run the program.
+    /// </summary>
+    private static void _main()
+    {
+      try
+      {
+        // Run the program.
+        Program._run();
+
+        // Clean up.
+        System.GC.Collect();
+        System.GC.WaitForPendingFinalizers();
+
+        // Should be zero objects left.
+        if (0 != CadKit.Referenced.Base.TotalNumObjects)
+        {
+          System.Diagnostics.Trace.WriteLine(System.String.Format("{0} objects remaining", CadKit.Referenced.Base.TotalNumObjects));
+          System.Diagnostics.Trace.WriteLine(CadKit.Referenced.Base.ExistingObjects);
+        }
+      }
+      catch (Exception e)
+      {
+        System.Windows.Forms.MessageBox.Show(e.Message);
+      }
+    }
+
+
+    /// <summary>
+    /// Run the program.
+    /// </summary>
+    private static void _run()
+    {
       try
       {
         // Do this first.
@@ -48,10 +85,6 @@ namespace DT.Minerva.App
 
         // Unload the native plugins.
         CadKit.Init.Glue.Plugins.unloadPlugins();
-
-        // Clean up.
-        System.GC.Collect();
-        System.GC.WaitForPendingFinalizers();
       }
       catch (Exception e)
       {

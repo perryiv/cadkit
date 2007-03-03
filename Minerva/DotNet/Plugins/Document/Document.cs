@@ -52,7 +52,7 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     ~Document()
     {
-      this._cleanUp();
+      this._cleanup();
     }
 
 
@@ -61,23 +61,31 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     void System.IDisposable.Dispose()
     {
-      this._cleanUp();
+      this._cleanup();
     }
 
 
     /// <summary>
     /// Clean up.
     /// </summary>
-    protected override void _cleanUp()
+    protected override void _cleanup()
     {
-      if (this.Distributed && null != _distributed)
+      try
       {
-        _distributed.deleteSession();
-        _distributed.disconnect();
-      }
+        if (this.Distributed && null != _distributed)
+        {
+          _distributed.deleteSession();
+          _distributed.disconnect();
+        }
 
-      _dll = null;
-      _distributed = null;
+        _dll = null;
+        _distributed = null;
+        base._cleanup();
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 3258987650: {0}", e.Message);
+      }
     }
 
 

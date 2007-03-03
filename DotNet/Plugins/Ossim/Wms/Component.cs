@@ -10,6 +10,7 @@
 namespace CadKit.Plugins.Layers.Ossim.Wms
 {
   public class Component :
+    CadKit.Referenced.Base,
     CadKit.Interfaces.IPlugin,
     CadKit.Interfaces.ICreateLayer
   {

@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IProgressBar
+  public interface IProgressBar : IReferenced
   {
     string Text { get; set; }
     int Range { get; }

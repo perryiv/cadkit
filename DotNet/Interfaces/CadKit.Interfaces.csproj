@@ -51,6 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ScopedReference.cs" />
+    <Compile Include="IReferenced.cs" />
     <Compile Include="IAnimateTemporal.cs" />
     <Compile Include="ICreateLayer.cs" />
     <Compile Include="IDocumentIcon.cs" />

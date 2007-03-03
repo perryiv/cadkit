@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IOssimPlanetSettings
+  public interface IOssimPlanetSettings : IReferenced
   {
     bool ElevationEnabled { get; set; }
     bool EphemerisEnabled { get; set; }

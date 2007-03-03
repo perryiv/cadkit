@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface ICommandManager
+  public interface ICommandManager : IReferenced
   {
     /// <summary>
     /// Execute the command.

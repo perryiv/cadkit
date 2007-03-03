@@ -14,7 +14,8 @@ namespace CadKit.Interfaces
   /// </summary>
   public delegate void NotifyChangedDelegate(object changed, object caller);
 
-  public interface INotifyChanged
+
+  public interface INotifyChanged : IReferenced
   {
     /// <summary>
     /// Get/set the delegate.

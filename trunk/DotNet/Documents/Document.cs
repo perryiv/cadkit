@@ -10,7 +10,7 @@
 namespace CadKit.Documents
 {
   abstract public class Document :
-    System.IDisposable,
+    CadKit.Referenced.Base,
     CadKit.Interfaces.IDocument,
     CadKit.Interfaces.IDocumentIcon,
     CadKit.Interfaces.IGuiCreate,
@@ -20,17 +20,17 @@ namespace CadKit.Documents
     /// <summary>
     /// Local types.
     /// </summary>
-    class DocViews : System.Collections.Generic.List<CadKit.Interfaces.IDocumentView> { }
+    private class DocViews : System.Collections.Generic.List<CadKit.Interfaces.IDocumentView> { }
+    private class CommandHistoryHandle : CadKit.Interfaces.ScopedReference<CadKit.Interfaces.ICommandHistory> { }
 
 
     /// <summary>
     /// Data members.
     /// </summary>
     private bool _modified = false;
-    private CadKit.Threads.Tools.Lock _lock = null;
     private string _name = "Untitled" + CadKit.Documents.Manager.Instance.NumDocuments.ToString();
     private bool _hasDefaultName = true;
-    private CadKit.Interfaces.ICommandHistory _commands = null;
+    private CommandHistoryHandle _commands = new CommandHistoryHandle();
     private CadKit.Interfaces.IGuiDelegate _gui = null;
     private DocViews _views = new DocViews();
     private CadKit.Interfaces.NotifyChangedDelegate _notifyChanged = null;
@@ -50,31 +50,21 @@ namespace CadKit.Documents
     /// </summary>
     ~Document()
     {
-      this._clear();
     }
 
 
     /// <summary>
-    /// Called when the system is about to dispose this instance.
+    /// Called when the reference count goes to zero.
     /// </summary>
-    void System.IDisposable.Dispose()
-    {
-      this._clear();
-    }
-
-
-    /// <summary>
-    /// Destructor.
-    /// </summary>
-    private void _clear()
+    protected override void _cleanup()
     {
       try
       {
         this._closeAllViews();
-        if (null != _commands)
+        if (true == _commands.Valid)
         {
-          _commands.clear();
-          _commands = null;
+          _commands.Value.clear();
+          _commands.Value = null;
         }
         if (null != _gui)
         {
@@ -86,6 +76,7 @@ namespace CadKit.Documents
           _views.Clear();
           _views = null;
         }
+        base._cleanup();
       }
       catch (System.Exception e)
       {
@@ -152,18 +143,7 @@ namespace CadKit.Documents
     /// </summary>
     public void close()
     {
-      this._closeAllViews();
-      this._clear();
-      this._cleanUp();
-    }
-
-
-    /// <summary>
-    /// Clean up the document.  
-    /// This is a work around because the destructor isn't being called when it should be.
-    /// </summary>
-    protected virtual void _cleanUp()
-    {
+      this._cleanup();
     }
 
 
@@ -266,8 +246,8 @@ namespace CadKit.Documents
     /// </summary>
     public CadKit.Interfaces.ICommandHistory CommandHistory
     {
-      get { using (this.Lock.read()) { return _commands; } }
-      set { using (this.Lock.write()) { _commands = value; } }
+      get { using (this.Lock.read()) { return _commands.Value; } }
+      set { using (this.Lock.write()) { _commands.Value = value; } }
     }
 
 
@@ -390,24 +370,6 @@ namespace CadKit.Documents
 
 
     /// <summary>
-    /// Get the lock.
-    /// </summary>
-    public CadKit.Threads.Tools.Lock Lock
-    {
-      get
-      {
-        // If this gets called from the finalizer then the lock may have 
-        // already been destroyed and set to null.
-        if (null == _lock)
-        {
-          _lock = new CadKit.Threads.Tools.Lock();
-        }
-        return _lock;
-      }
-    }
-
-
-    /// <summary>
     /// Get/set the display-list-use-changed delegate.
     /// </summary>
     CadKit.Interfaces.NotifyChangedDelegate CadKit.Interfaces.INotifyChanged.NotifyChanged
@@ -447,4 +409,3 @@ namespace CadKit.Documents
     }
   }
 }
-

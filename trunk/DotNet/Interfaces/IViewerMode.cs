@@ -16,7 +16,7 @@ namespace CadKit.Interfaces
     SEEK
   };
 
-  public interface IViewerMode
+  public interface IViewerMode : IReferenced
   {
     ViewMode Mode { get; set; }
   }

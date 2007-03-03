@@ -19,6 +19,7 @@ namespace CadKit
     namespace Glue
     {
       public ref class WmsLayer : 
+        CadKit::Referenced::Base,
         CadKit::Interfaces::IOssimLayer,
         CadKit::Interfaces::ILayer,
         CadKit::Interfaces::INativePtr

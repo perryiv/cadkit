@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IDocumentView
+  public interface IDocumentView : IReferenced
   {
     /// <summary>
     /// Get/set the document.

@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IFiltersInsert
+  public interface IFiltersInsert : IReferenced
   {
     CadKit.Interfaces.Filters Filters { get; }
   }

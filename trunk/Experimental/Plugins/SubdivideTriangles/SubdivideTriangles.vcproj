@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="plug: Subdivide Triangles"
-	ProjectGUID="{B3DA0AA0-7D76-11DA-9FA9-000F1F20363B}"
+	ProjectGUID="{DF7AADF6-1A51-4748-A733-BEA09EE5FF44}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

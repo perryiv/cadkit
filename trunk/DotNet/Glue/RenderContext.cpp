@@ -200,7 +200,7 @@ void RenderContext::_create()
     }
 
     // Before we create the UnmanagedRenderContext, make sure the Usul mutex factory is set.
-    Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
+    Usul::Threads::SetMutexFactory factory ( &::Threads::OT::newOpenThreadsMutex );
 
     // Create the unmanaged context class to redirect to this class.
     _unmanagedRenderContext = new UnmanagedRenderContext();

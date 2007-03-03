@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IDockPanel
+  public interface IDockPanel : IReferenced
   {
     /// <summary>
     /// Get the parent form.

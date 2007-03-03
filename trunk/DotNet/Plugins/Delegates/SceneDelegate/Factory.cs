@@ -9,7 +9,9 @@
 
 namespace CadKit.Plugins
 {
-  class Factory : CadKit.Interfaces.IClassFactory
+  class Factory : 
+    CadKit.Referenced.Base,
+    CadKit.Interfaces.IClassFactory
   {
     /// <summary>
     /// Data members.

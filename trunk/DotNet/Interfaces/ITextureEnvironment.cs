@@ -14,7 +14,7 @@ namespace CadKit.Interfaces
     public enum Mode { NONE, DECAL, MODULATE, BLEND, REPLACE, ADD };
   }
 
-  public interface ITextureEnvironment
+  public interface ITextureEnvironment : IReferenced
   {
     /// <summary>
     /// Set/get the texture environment

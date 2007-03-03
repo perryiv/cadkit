@@ -36,7 +36,7 @@ namespace CadKit.OpenGL
     /// <summary>
     /// Data members.
     /// </summary>
-    private CadKit.Threads.Tools.Lock _lock = null;
+    private CadKit.Threads.Tools.Lock _lock = new CadKit.Threads.Tools.Lock();
     private Flags _flags = new Flags();
     private uint _pixelFormat = 0;
     private CadKit.OpenGL.Glue.RenderContext _renderContext = null;

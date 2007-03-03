@@ -88,7 +88,14 @@ Viewer::Viewer() :
 
 Viewer::~Viewer()
 {
-  this->clear();
+  try
+  {
+    this->clear();
+  }
+  catch ( System::Exception ^e )
+  {
+    System::Console::WriteLine ( System::String::Format ( "Error 3992982974: {0}", e->Message ) );
+  }
 }
 
 
@@ -100,7 +107,14 @@ Viewer::~Viewer()
 
 Viewer::!Viewer()
 {
-  this->clear();
+  try
+  {
+    this->clear();
+  }
+  catch ( System::Exception ^e )
+  {
+    System::Console::WriteLine ( System::String::Format ( "Error 5423829210: {0}", e->Message ) );
+  }
 }
 
 
@@ -1073,4 +1087,31 @@ void Viewer::_onSpinTick ( System::Object^ sender, System::EventArgs^ args )
 {
   if ( 0x0 != _viewer )
     _viewer->timeoutSpin();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get whether the database pager should pre compile OpenGL objects before 
+//  allowing them to be merged into the scene graph.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::DatabasePagerPreCompile::get()
+{
+  return ( 0x0 == _viewer || 0x0 == _viewer->databasePager() ) ? false : _viewer->databasePager()->getDoPreCompile();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set whether the database pager should pre compile OpenGL objects before 
+//  allowing them to be merged into the scene graph.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::DatabasePagerPreCompile::set ( bool state )
+{
+  if ( 0x0 != _viewer && 0x0 != _viewer->databasePager() )
+    _viewer->databasePager()->setDoPreCompile ( state );
 }

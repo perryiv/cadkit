@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IPropertyGridObject
+  public interface IPropertyGridObject : IReferenced
   {
     /// <summary>
     /// Return the appropriate object for the property grid.

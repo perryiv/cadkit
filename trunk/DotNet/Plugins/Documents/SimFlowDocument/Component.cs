@@ -10,6 +10,7 @@
 namespace CadKit.Plugins.Documents.SimFlowDocument
 {
   public class Component :
+    CadKit.Referenced.Base,
     CadKit.Interfaces.IPlugin,
     CadKit.Interfaces.IDocumentNew,
     CadKit.Interfaces.IDocumentOpen,

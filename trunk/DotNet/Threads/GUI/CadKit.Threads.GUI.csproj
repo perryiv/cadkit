@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -73,6 +73,10 @@
     <ProjectReference Include="..\..\Interfaces\CadKit.Interfaces.csproj">
       <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
       <Name>CadKit.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Referenced\CadKit.Referenced.csproj">
+      <Project>{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}</Project>
+      <Name>CadKit.Referenced</Name>
     </ProjectReference>
     <ProjectReference Include="..\Jobs\CadKit.Threads.Jobs.csproj">
       <Project>{A27CF288-D89D-4184-A413-011D6E4AD9F6}</Project>

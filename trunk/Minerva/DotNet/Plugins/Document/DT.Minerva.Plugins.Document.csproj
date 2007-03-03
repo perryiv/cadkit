@@ -64,6 +64,10 @@
       <Project>{038F5ACB-7D5D-4B9E-BA29-86F7526C7419}</Project>
       <Name>CadKit.OpenGL</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\DotNet\Referenced\CadKit.Referenced.csproj">
+      <Project>{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}</Project>
+      <Name>CadKit.Referenced</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\DotNet\Threads\Jobs\CadKit.Threads.Jobs.csproj">
       <Project>{A27CF288-D89D-4184-A413-011D6E4AD9F6}</Project>
       <Name>CadKit.Threads.Jobs</Name>

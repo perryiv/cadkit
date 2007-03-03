@@ -21,7 +21,7 @@ namespace CadKit.Plugins
       /// </summary>
       private CadKit.Threads.Tools.Lock _lock = null;
       private string _file = null;
-      private CadKit.Interfaces.IPlugin _handle = null;
+      private PluginHandle _handle = new PluginHandle();
       private System.Reflection.Assembly _assembly = null;
 
 
@@ -98,16 +98,21 @@ namespace CadKit.Plugins
         if (null == assembly)
           return;
 
-        CadKit.Interfaces.IClassFactory factory = Manager._createClassFactory(assembly, file);
-        if (null == factory)
-          return;
+        using (ClassFactoryHandle factory = new ClassFactoryHandle(Manager._createClassFactory(assembly, file)))
+        {
+          if (false == factory.Valid)
+            return;
 
-        CadKit.Interfaces.IPlugin plugin = Manager._createInstance(factory, file);
-        this.Handle = plugin;
-        if (null == plugin)
-          return;
-
-        plugin.start(caller);
+          using (PluginHandle plugin = new PluginHandle(Manager._createInstance(factory.Value, file)))
+          {
+            this.Handle = plugin.Value;
+            if (false == plugin.Valid)
+            {
+              return;
+            }
+            plugin.Value.start(caller);
+          }
+        }
       }
 
 
@@ -132,10 +137,12 @@ namespace CadKit.Plugins
       /// </summary>
       private void _release(object caller)
       {
-        CadKit.Interfaces.IPlugin plugin = this.Handle;
-        if (null != plugin)
+        using (PluginHandle plugin = new PluginHandle(this.Handle))
         {
-          plugin.finish(caller);
+          if (true == plugin.Valid)
+          {
+            plugin.Value.finish(caller);
+          }
         }
         this.Handle = null;
         this.Assembly = null;
@@ -157,8 +164,8 @@ namespace CadKit.Plugins
       /// </summary>
       private CadKit.Interfaces.IPlugin Handle
       {
-        get { using (this.Lock.read()) { return _handle; } }
-        set { using (this.Lock.write()) { _handle = value; } }
+        get { using (this.Lock.read()) { return _handle.Value; } }
+        set { using (this.Lock.write()) { _handle.Value = value; } }
       }
 
 
@@ -178,12 +185,14 @@ namespace CadKit.Plugins
       {
         get
         {
-          CadKit.Interfaces.IPlugin plugin = this.Handle;
-          if (null == plugin)
+          using (PluginHandle plugin = new PluginHandle(this.Handle))
           {
-            throw new System.Exception(System.String.Format("Error 1716053399: Plugin '{0}' is not loaded", this.File));
+            if (false == plugin.Valid)
+            {
+              throw new System.Exception(System.String.Format("Error 1716053399: Plugin '{0}' is not loaded", this.File));
+            }
+            return plugin.Value.Name;
           }
-          return plugin.Name;
         }
       }
 
@@ -222,12 +231,14 @@ namespace CadKit.Plugins
       {
         try
         {
-          CadKit.Interfaces.IPlugin plugin = this.Handle;
-          if (null != plugin)
+          using (PluginHandle plugin = new PluginHandle(this.Handle))
           {
-            if(plugin is T )
+            if (true == plugin.Valid)
             {
-              return (T)plugin;
+              if (plugin.Value is T)
+              {
+                return (T)plugin.Value;
+              }
             }
           }
         }

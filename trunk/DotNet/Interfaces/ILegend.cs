@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface ILegend
+  public interface ILegend : IReferenced
   {
     bool ShowLegend { get; set; }
   }

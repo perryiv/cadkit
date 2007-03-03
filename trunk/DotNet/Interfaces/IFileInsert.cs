@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IFileInsert
+  public interface IFileInsert : IReferenced
   {
     void insert(string file, object caller);
   }

@@ -85,6 +85,10 @@
       <Project>{DFD2710D-3AB3-4707-B74E-80F21E33A23F}</Project>
       <Name>CadKit.Persistence</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\DotNet\Referenced\CadKit.Referenced.csproj">
+      <Project>{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}</Project>
+      <Name>CadKit.Referenced</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\DotNet\Threads\Tools\CadKit.Threads.Tools.csproj">
       <Project>{EF977229-371D-4FB1-90C5-237DEE74D069}</Project>
       <Name>CadKit.Threads.Tools</Name>

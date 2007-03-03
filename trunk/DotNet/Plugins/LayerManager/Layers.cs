@@ -34,7 +34,7 @@ namespace CadKit.Plugins.LayerManager
         WeifenLuo.WinFormsUI.DockAreas.Float;
       this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockRight;
       this.HideOnClose = true;
-      this.opacityopacitySlider.SetRange(0, 100);
+      this._slider.SetRange(0, 100);
       this._setUpListView();
 
       CadKit.Documents.Manager.Instance.ActiveDocumentChanged += this._activeDocumentChanged;
@@ -57,6 +57,13 @@ namespace CadKit.Plugins.LayerManager
       this._addToolbarButton(_toolstrip, new CadKit.Plugins.LayerManager.Commands.MoveLayerDownCommand(this, this));
       _toolstrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
       this._addToolbarButton(_toolstrip, new CadKit.Plugins.LayerManager.Commands.AddLayerToFavoritesCommand(this, this));
+    }
+
+    enum Test
+    {
+      ZERO = 0,
+      ONE,
+      TWO
     }
 
     protected void _buildComboBox()
@@ -461,24 +468,74 @@ namespace CadKit.Plugins.LayerManager
       }
     }
 
-    private void opacitySlider_Scroll(object sender, System.EventArgs e)
+    private void _sliderScroll(object sender, System.EventArgs args)
     {
-      if (_document is CadKit.Interfaces.ILayerOperation)
+      try
       {
-        CadKit.Interfaces.ILayerOperation layerOp = (CadKit.Interfaces.ILayerOperation)_document;
+        if (_document is CadKit.Interfaces.ILayerOperation)
+        {
+          CadKit.Interfaces.ILayerOperation layerOp = (CadKit.Interfaces.ILayerOperation)_document;
 
-        string optype = (string)this.operationType.SelectedItem;
-        int layer = _treeView.Nodes.IndexOf(_treeView.SelectedNode);
-        layerOp.setLayerOperation(optype, this.opacityopacitySlider.Value, layer);
+          string optype = (string)this.operationType.SelectedItem;
+          int layer = _treeView.Nodes.IndexOf(_treeView.SelectedNode);
+          layerOp.setLayerOperation(optype, this._slider.Value, layer);
+        }
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 2283810870: {0}", e.Message);
       }
     }
 
-    private void operationType_SelectedIndexChanged(object sender, System.EventArgs e)
+    private void operationType_SelectedIndexChanged(object sender, System.EventArgs args)
     {
-      string optype = (string)this.operationType.SelectedItem;      
-      CadKit.Interfaces.ILayerOperation layerOp = (CadKit.Interfaces.ILayerOperation)_document;
-      int layer = _treeView.Nodes.IndexOf(_treeView.SelectedNode);
-      layerOp.setLayerOperation(optype, this.opacityopacitySlider.Value, layer);
+      try
+      {
+        string optype = (string)this.operationType.SelectedItem;
+        CadKit.Interfaces.ILayerOperation layerOp = (CadKit.Interfaces.ILayerOperation)_document;
+        int layer = _treeView.Nodes.IndexOf(_treeView.SelectedNode);
+        layerOp.setLayerOperation(optype, this._slider.Value, layer);
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 7642289320: {0}", e.Message);
+      }
+    }
+
+
+    /// <summary>
+    /// Increment the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.reference()
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.dereference()
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.dereference(bool allowCleanup)
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Return the reference count.
+    /// </summary>
+    uint CadKit.Interfaces.IReferenced.RefCount
+    {
+      get { return 0; } // TODO
     }
   }
 }

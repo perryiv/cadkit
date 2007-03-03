@@ -9,12 +9,15 @@
 
 namespace CadKit.Threads.Jobs
 {
-  public class Progress : CadKit.Interfaces.IProgressBar
+  public class Progress : 
+    CadKit.Referenced.Base,
+    CadKit.Interfaces.IProgressBar
   {
     /// <summary>
     /// Local types.
     /// </summary>
     public delegate void NotifyDelegate(CadKit.Threads.Jobs.Job job);
+
 
     /// <summary>
     /// Data members.
@@ -29,6 +32,7 @@ namespace CadKit.Threads.Jobs
     private CadKit.Threads.Jobs.Job _job = null;
     private NotifyDelegate _notifyDelegate = null;
 
+
     /// <summary>
     /// Constructor
     /// </summary>
@@ -39,6 +43,27 @@ namespace CadKit.Threads.Jobs
 
       _job = job;
     }
+
+
+    /// <summary>
+    /// Called when the reference count goes to zero.
+    /// </summary>
+    protected override void _cleanup()
+    {
+      try
+      {
+        _lock = null;
+        _text = null;
+        _job = null;
+        _notifyDelegate = null;
+        base._cleanup();
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 1615620548: {0}", e.Message);
+      }
+    }
+
 
     /// <summary>
     /// Notify about progress.
@@ -63,6 +88,7 @@ namespace CadKit.Threads.Jobs
       }
     }
 
+
     /// <summary>
     /// Get/set the notification delegate.
     /// </summary>
@@ -71,6 +97,7 @@ namespace CadKit.Threads.Jobs
       get { using (this.Lock.read()) { return _notifyDelegate; } }
       set { using (this.Lock.write()) { _notifyDelegate = value; } }
     }
+
 
     /// <summary>
     /// Get/set the minimum.
@@ -81,6 +108,7 @@ namespace CadKit.Threads.Jobs
       set { using (this.Lock.write()) { _min = value; } }
     }
 
+
     /// <summary>
     /// Get/set the maximum.
     /// </summary>
@@ -89,6 +117,7 @@ namespace CadKit.Threads.Jobs
       get { using (this.Lock.read()) { return _max; } }
       set { using (this.Lock.write()) { _max = value; } }
     }
+
 
     /// <summary>
     /// Get/set the value.
@@ -106,6 +135,7 @@ namespace CadKit.Threads.Jobs
       }
     }
 
+
     /// <summary>
     /// Get the fraction completed in the range [0.0,1.0].
     /// </summary>
@@ -120,6 +150,7 @@ namespace CadKit.Threads.Jobs
       }
     }
 
+
     /// <summary>
     /// Get the percentage completed in the range [0.0,100.0].
     /// </summary>
@@ -127,6 +158,7 @@ namespace CadKit.Threads.Jobs
     {
       get { return (100.0f * this.Fraction); }
     }
+
 
     /// <summary>
     /// Get/set the last time the value was updated.
@@ -137,6 +169,7 @@ namespace CadKit.Threads.Jobs
       set { using (this.Lock.write()) { _lastTime = value; } }
     }
 
+
     /// <summary>
     /// Get/set the update-rate.
     /// </summary>
@@ -145,6 +178,7 @@ namespace CadKit.Threads.Jobs
       get { using (this.Lock.read()) { return _updateRate; } }
       set { using (this.Lock.write()) { _updateRate = value; } }
     }
+
 
     /// <summary>
     /// Get the mutex.
@@ -163,6 +197,7 @@ namespace CadKit.Threads.Jobs
       }
     }
 
+
     /// <summary>
     /// Get/set the text.
     /// </summary>
@@ -171,6 +206,7 @@ namespace CadKit.Threads.Jobs
       get { return this.Text; }
       set { this.Text = value; }
     }
+
 
     /// <summary>
     /// Get/set the text.
@@ -181,6 +217,7 @@ namespace CadKit.Threads.Jobs
       set { using (this.Lock.write()) { _text = value; } }
     }
 
+
     /// <summary>
     /// Get the renge.
     /// </summary>
@@ -188,6 +225,7 @@ namespace CadKit.Threads.Jobs
     {
       get { return (this.Maximum - this.Minimum); }
     }
+
 
     /// <summary>
     /// Get/set the value.

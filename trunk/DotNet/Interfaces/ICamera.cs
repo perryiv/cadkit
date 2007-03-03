@@ -12,7 +12,7 @@ namespace CadKit.Interfaces
   // Camera placement flags.
   public enum CameraOption { FIT, RESET, FRONT, BACK, LEFT, RIGHT, TOP, BOTTOM };
 
-  public interface ICamera
+  public interface ICamera : IReferenced
   {
     /// <summary>
     /// Set the camera.

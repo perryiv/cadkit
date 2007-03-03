@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface ILayerList
+  public interface ILayerList : IReferenced
   {
     CadKit.Interfaces.ILayer[] Layers { get; }
 

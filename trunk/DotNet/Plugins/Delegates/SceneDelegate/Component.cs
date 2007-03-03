@@ -10,6 +10,7 @@
 namespace CadKit.Plugins.Delegates.SceneDelegate
 {
   public class Component : 
+    CadKit.Referenced.Base,
     CadKit.Interfaces.IPlugin,
     CadKit.Interfaces.IGuiDelegateCreate
   {

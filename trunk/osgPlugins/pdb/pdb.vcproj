@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="plug: osgPlugin PDB"
-	ProjectGUID="{2835E2F2-C91A-4B61-AD3F-9F5E183CC2D0}"
+	ProjectGUID="{F12C15F3-433E-45C3-B706-4660D561603B}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

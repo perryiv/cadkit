@@ -9,7 +9,9 @@
 
 namespace CadKit.Plugins.Delegates.LargeTriangleDelegate
 {
-  public class Delegate : CadKit.Interfaces.IGuiDelegate
+  public class Delegate :
+    CadKit.Referenced.Base,
+    CadKit.Interfaces.IGuiDelegate
   {
     /// <summary>
     /// Constants

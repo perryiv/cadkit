@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface ICommand
+  public interface ICommand : IReferenced
   {
     /// <summary>
     /// Can the command be undone?

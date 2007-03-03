@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IDocumentOpen
+  public interface IDocumentOpen : IReferenced
   {
     bool canOpen(string name);
     object open(string name, object caller);

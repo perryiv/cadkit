@@ -40,12 +40,12 @@ namespace CadKit.Plugins.LayerManager
       this._toolstrip = new System.Windows.Forms.ToolStrip();
       this._treeView = new System.Windows.Forms.TreeView();
       this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-      this.opacityopacitySlider = new System.Windows.Forms.TrackBar();
+      this._slider = new System.Windows.Forms.TrackBar();
       this.operationType = new System.Windows.Forms.ComboBox();
       this.splitContainer1.Panel1.SuspendLayout();
       this.splitContainer1.Panel2.SuspendLayout();
       this.splitContainer1.SuspendLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.opacityopacitySlider)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this._slider)).BeginInit();
       this.SuspendLayout();
       // 
       // _toolstrip
@@ -77,19 +77,19 @@ namespace CadKit.Plugins.LayerManager
       // 
       // splitContainer1.Panel2
       // 
-      this.splitContainer1.Panel2.Controls.Add(this.opacityopacitySlider);
+      this.splitContainer1.Panel2.Controls.Add(this._slider);
       this.splitContainer1.Panel2.Controls.Add(this.operationType);
       this.splitContainer1.Size = new System.Drawing.Size(304, 540);
       this.splitContainer1.SplitterDistance = 385;
       this.splitContainer1.TabIndex = 2;
       // 
-      // opacityopacitySlider
+      // _slider
       // 
-      this.opacityopacitySlider.Location = new System.Drawing.Point(12, 40);
-      this.opacityopacitySlider.Name = "opacityopacitySlider";
-      this.opacityopacitySlider.Size = new System.Drawing.Size(280, 48);
-      this.opacityopacitySlider.TabIndex = 1;
-      this.opacityopacitySlider.Scroll += new System.EventHandler(this.opacitySlider_Scroll);
+      this._slider.Location = new System.Drawing.Point(12, 40);
+      this._slider.Name = "_slider";
+      this._slider.Size = new System.Drawing.Size(280, 45);
+      this._slider.TabIndex = 1;
+      this._slider.Scroll += new System.EventHandler(this._sliderScroll);
       // 
       // operationType
       // 
@@ -114,7 +114,7 @@ namespace CadKit.Plugins.LayerManager
       this.splitContainer1.Panel2.ResumeLayout(false);
       this.splitContainer1.Panel2.PerformLayout();
       this.splitContainer1.ResumeLayout(false);
-      ((System.ComponentModel.ISupportInitialize)(this.opacityopacitySlider)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this._slider)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -125,7 +125,7 @@ namespace CadKit.Plugins.LayerManager
     private System.Windows.Forms.ToolStrip _toolstrip;
     private System.Windows.Forms.TreeView _treeView;
     private System.Windows.Forms.SplitContainer splitContainer1;
-    private System.Windows.Forms.TrackBar opacityopacitySlider;
+    private System.Windows.Forms.TrackBar _slider;
     private System.Windows.Forms.ComboBox operationType;
   }
 }

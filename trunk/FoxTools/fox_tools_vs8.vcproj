@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="lib: FoxTools"
-	ProjectGUID="{C30C96F6-1E49-4C77-A570-A58D8874C393}"
+	ProjectGUID="{A03CDB56-2A77-4150-977F-B1A736219E1D}"
 	RootNamespace="lib: FoxTools"
 	>
 	<Platforms>

@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IBuildScene
+  public interface IBuildScene : IReferenced
   {
     /// <summary>
     /// Get the scene.

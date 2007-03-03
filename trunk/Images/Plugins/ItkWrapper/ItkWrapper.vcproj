@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="plug: ITK"
-	ProjectGUID="{1F87E925-AB16-44FA-A0D8-71998E3E8DC1}"
+	ProjectGUID="{70897908-D31C-4D55-8EC8-7C1B6970E9D2}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

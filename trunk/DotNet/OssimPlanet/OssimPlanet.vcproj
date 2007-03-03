@@ -202,6 +202,10 @@
 			ReferencedProjectIdentifier="{233305C0-C997-440A-9AA2-BAFEF0D15156}"
 			RelativePathToProject="..\Interfaces\CadKit.Interfaces.csproj"
 		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}"
+			RelativePathToProject="..\Referenced\CadKit.Referenced.csproj"
+		/>
 	</References>
 	<Files>
 		<Filter

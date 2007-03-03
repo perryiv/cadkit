@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IMainForm
+  public interface IMainForm : IReferenced
   {
     object Form { get; }
   }

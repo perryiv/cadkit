@@ -23,6 +23,7 @@ namespace CadKit.Helios
     /// </summary>
     private class FormsMap : System.Collections.Generic.Dictionary<string, System.Windows.Forms.Form> { }
 
+
     /// <summary>
     /// Data members.
     /// </summary>
@@ -31,17 +32,19 @@ namespace CadKit.Helios
     private FormsMap _persistantForms = new FormsMap();
     private FormsMap _windowForms = new FormsMap();
     private System.Windows.Forms.ToolStripMenuItem _windowMenu = null;
-    private System.Windows.Forms.MenuStrip _menuStrip;
-    private System.Windows.Forms.StatusStrip _statusStrip;
-    private System.Windows.Forms.ToolStrip _toolStrip;
-    private WeifenLuo.WinFormsUI.DockPanel _dockPanel;
+    private System.Windows.Forms.MenuStrip _menuStrip = null;
+    private System.Windows.Forms.StatusStrip _statusStrip = null;
+    private System.Windows.Forms.ToolStrip _toolStrip = null;
+    private WeifenLuo.WinFormsUI.DockPanel _dockPanel = null;
     private CadKit.Helios.RecentFiles _recentFiles = new CadKit.Helios.RecentFiles();
+
 
     /// <summary>
     /// Constructor.
     /// </summary>
     public MainForm(string persistentName)
     {
+      _recentFiles.reference();
       _deserializeDockContent = new WeifenLuo.WinFormsUI.DeserializeDockContent(this._getContentFromPersistString);
 
       this.PersistentName = persistentName;
@@ -62,6 +65,41 @@ namespace CadKit.Helios
       this.AllowDrop = true;
       this.DragEnter += this._dragEnter;
       this.DragDrop += this._dragDrop;
+    }
+
+
+    /// <summary>
+    /// Clean up any resources being used.
+    /// </summary>
+    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+    protected override void Dispose(bool disposing)
+    {
+      // Release all the plugins.
+      CadKit.Plugins.Manager.Instance.release(this);
+
+      lock (_mutex)
+      {
+        if (disposing && (components != null))
+        {
+          components.Dispose();
+          components = null;
+        }
+        base.Dispose(disposing);
+
+        _deserializeDockContent = null;
+        _persistantForms = null;
+        _windowForms = null;
+        _windowMenu = null;
+        _menuStrip = null;
+        _statusStrip = null;
+        _toolStrip = null;
+        _dockPanel = null;
+        if (null != _recentFiles)
+        {
+          _recentFiles.dereference();
+          _recentFiles = null;
+        }
+      }
     }
 
 
@@ -146,25 +184,6 @@ namespace CadKit.Helios
       {
         string program = System.Reflection.Assembly.GetEntryAssembly().GetName().Name; // Handles ".vshost"
         return System.Windows.Forms.Application.UserAppDataPath + "\\" + program + "_dock.xml";
-      }
-    }
-
-    /// <summary>
-    /// Clean up any resources being used.
-    /// </summary>
-    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-    protected override void Dispose(bool disposing)
-    {
-      // Release all the plugins.
-      CadKit.Plugins.Manager.Instance.release(this);
-
-      lock (_mutex)
-      {
-        if (disposing && (components != null))
-        {
-          components.Dispose();
-        }
-        base.Dispose(disposing);
       }
     }
 
@@ -721,11 +740,68 @@ namespace CadKit.Helios
       }
     }
 
-    // Get/Set the window menu.
+
+    /// <summary>
+    /// Get/Set the window menu.
+    /// </summary>
     public System.Windows.Forms.ToolStripMenuItem WindowMenu
     {
       get { lock (_mutex) { return _windowMenu; } }
       set { lock (_mutex) { _windowMenu = value; } }
     }
+
+
+    /// <summary>
+    /// Surround all messages with try-catch block.
+    /// </summary>
+    protected override void WndProc(ref System.Windows.Forms.Message m)
+    {
+      try
+      {
+        base.WndProc(ref m);
+      }
+      catch (System.Exception e)
+      {
+        // Do not direct to console because that will fire more events.
+        System.Diagnostics.Trace.WriteLine("Error 2670602680: {0}", e.Message);
+      }
+    }
+
+
+    /// <summary>
+    /// Increment the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.reference()
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.dereference()
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.dereference(bool allowCleanup)
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Return the reference count.
+    /// </summary>
+    uint CadKit.Interfaces.IReferenced.RefCount
+    {
+      get { return 0; } // TODO
+    }
   }
 }
+

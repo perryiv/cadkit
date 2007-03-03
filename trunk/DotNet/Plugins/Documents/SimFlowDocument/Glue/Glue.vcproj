@@ -59,7 +59,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib xerces-c_2D.lib vtkRendering.lib vtkIO.lib vtkGraphics.lib vtkImaging.lib vtkftgl.lib vtkfreetype.lib opengl32.lib vtkFiltering.lib vtkCommon.lib vtksys.lib vtkDICOMParser.lib vtkpng.lib vtktiff.lib vtkzlib.lib vtkjpeg.lib vtkexpat.lib vfw32.lib vtkMPEG2Encode.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib xerces-c_2D.lib   vtkIO.lib vtkGraphics.lib vtkImaging.lib vtkftgl.lib vtkfreetype.lib opengl32.lib vtkFiltering.lib vtkCommon.lib vtksys.lib vtkDICOMParser.lib vtkpng.lib vtktiff.lib vtkzlib.lib vtkjpeg.lib vtkexpat.lib vfw32.lib vtkMPEG2Encode.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(BOOST_LIB_DIR);$(XERCES_LIB_DIR);$(VTK_LIB_DIR_DEBUG)"
 				GenerateDebugInformation="true"
@@ -135,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib xerces-c_2.lib vtkRendering.lib vtkIO.lib vtkGraphics.lib vtkImaging.lib vtkftgl.lib vtkfreetype.lib opengl32.lib vtkFiltering.lib vtkCommon.lib vtksys.lib vtkDICOMParser.lib vtkpng.lib vtktiff.lib vtkzlib.lib vtkjpeg.lib vtkexpat.lib vfw32.lib vtkMPEG2Encode.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib xerces-c_2.lib   vtkIO.lib vtkGraphics.lib vtkImaging.lib vtkftgl.lib vtkfreetype.lib opengl32.lib vtkFiltering.lib vtkCommon.lib vtksys.lib vtkDICOMParser.lib vtkpng.lib vtktiff.lib vtkzlib.lib vtkjpeg.lib vtkexpat.lib vfw32.lib vtkMPEG2Encode.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(BOOST_LIB_DIR);$(XERCES_LIB_DIR);$(VTK_LIB_DIR_RELEASE)"
 				GenerateDebugInformation="true"
@@ -210,7 +210,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib xerces-c_2.lib vtkRendering.lib vtkIO.lib vtkGraphics.lib vtkImaging.lib vtkftgl.lib vtkfreetype.lib opengl32.lib vtkFiltering.lib vtkCommon.lib vtksys.lib vtkDICOMParser.lib vtkpng.lib vtktiff.lib vtkzlib.lib vtkjpeg.lib vtkexpat.lib vfw32.lib vtkMPEG2Encode.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib xerces-c_2.lib   vtkIO.lib vtkGraphics.lib vtkImaging.lib vtkftgl.lib vtkfreetype.lib opengl32.lib vtkFiltering.lib vtkCommon.lib vtksys.lib vtkDICOMParser.lib vtkpng.lib vtktiff.lib vtkzlib.lib vtkjpeg.lib vtkexpat.lib vfw32.lib vtkMPEG2Encode.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(BOOST_LIB_DIR);$(XERCES_LIB_DIR);$(VTK_LIB_DIR_RELEASE)"
 				GenerateDebugInformation="true"

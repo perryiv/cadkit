@@ -14,7 +14,7 @@ namespace CadKit.Interfaces
   /// </summary>
   public delegate void DisplayListUseChangedDelegate(object changed, bool oldValue, bool newValue);
 
-  public interface IDisplayListUse
+  public interface IDisplayListUse : IReferenced
   {
     /// <summary>
     /// Set/get the use of display lists.

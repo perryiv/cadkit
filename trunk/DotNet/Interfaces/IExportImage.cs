@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IExportImage
+  public interface IExportImage : IReferenced
   {
     Filters Filters { get; }
     void export(string filename);

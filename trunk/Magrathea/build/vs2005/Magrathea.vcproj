@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="lib: Magrathea"
-	ProjectGUID="{FE673D9C-ED8C-4A6D-98BB-C51EA91747E1}"
+	ProjectGUID="{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}"
 	RootNamespace="Magrathea"
 	Keyword="Win32Proj"
 	>

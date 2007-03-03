@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface INativePtr
+  public interface INativePtr : IReferenced
   {
     System.IntPtr nativeIntPtr();
   }

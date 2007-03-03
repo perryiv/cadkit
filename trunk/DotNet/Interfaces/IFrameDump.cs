@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IFrameDump
+  public interface IFrameDump : IReferenced
   {
     string Directory { get; set; }
     string BaseFilename { get; set; }

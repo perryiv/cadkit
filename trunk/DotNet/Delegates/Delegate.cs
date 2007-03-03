@@ -10,6 +10,7 @@
 namespace CadKit.Delegates
 {
   abstract public class Delegate :
+    CadKit.Referenced.Base,
     CadKit.Interfaces.IWindowsForward
   {
     /// <summary>

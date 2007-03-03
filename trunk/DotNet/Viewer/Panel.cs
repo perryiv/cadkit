@@ -34,6 +34,7 @@ namespace CadKit.Viewer
     private readonly string FRAME_DUMP_FILENAME_KEY = "FrameDumpFilename";
     private readonly string FRAME_DUMP_EXTENSION_KEY = "FrameDumpExtension";
     private readonly string FRAME_DUMP_SCALE_KEY = "FrameDumpScale";
+    private readonly string DATABASE_PAGER_PRE_COMPILE = "DatabasePagerPreCompile";
     private readonly string COLOR_CORNERS = "ColorCorners";
     private CadKit.Interfaces.DisplayListUseChangedDelegate _displayListUseChanged = null;
 
@@ -65,8 +66,15 @@ namespace CadKit.Viewer
     /// </summary>
     ~Panel()
     {
-      this.Dispose();
-      _viewer = null;
+      try
+      {
+        this.Dispose();
+        _viewer = null;
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine(System.String.Format("Error 1425051324: {0}", e.Message));
+      }
     }
 
 
@@ -212,7 +220,7 @@ namespace CadKit.Viewer
     {
       try
       {
-        if ( false == this.InvokeRequired)
+        if (false == this.InvokeRequired)
         {
           // RESET
           if (e.KeyCode == System.Windows.Forms.Keys.Space || e.KeyCode == System.Windows.Forms.Keys.R)
@@ -256,7 +264,7 @@ namespace CadKit.Viewer
     {
       try
       {
-        if ( false == this.InvokeRequired)
+        if (false == this.InvokeRequired)
         {
           bool left = (e.Button == System.Windows.Forms.MouseButtons.Left);
           bool middle = (e.Button == System.Windows.Forms.MouseButtons.Middle);
@@ -1010,6 +1018,33 @@ namespace CadKit.Viewer
     {
       get { using (this.Lock.read()) { return this.Viewer.textureMode(CadKit.Interfaces.TextureMode.Mode.CUBE_MAP); } }
       set { using (this.Lock.write()) { this.Viewer.textureMode(CadKit.Interfaces.TextureMode.Mode.CUBE_MAP, value); } }
+    }
+
+
+    /// <summary>
+    /// Get whether the database pager should pre compile OpenGL objects before 
+    /// allowing them to be merged into the scene graph.
+    /// </summary>
+    public bool DatabasePagerPreCompile
+    {
+      get { using (this.Lock.read()) { return this.Viewer.DatabasePagerPreCompile; } }
+      set
+      {
+        using (this.Lock.write())
+        {
+          this.Viewer.DatabasePagerPreCompile = value;
+        }
+        CadKit.Persistence.Registry.Instance.setBool(REGISTRY_SECTION, this.DATABASE_PAGER_PRE_COMPILE, value);
+      }
+    }
+
+
+    /// <summary>
+    /// Set the database pager.
+    /// </summary>
+    public void initDatabasePagerSettings()
+    {
+      this.DatabasePagerPreCompile = CadKit.Persistence.Registry.Instance.getBool(REGISTRY_SECTION, this.DATABASE_PAGER_PRE_COMPILE, this.DatabasePagerPreCompile);
     }
   }
 }

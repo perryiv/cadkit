@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="plug: Trianglulate"
-	ProjectGUID="{12C7F9F3-DAF6-4529-B914-ADCDDF637917}"
+	ProjectGUID="{1B1C652A-6441-4365-8D8D-965030DB21E4}"
 	>
 	<Platforms>
 		<Platform

@@ -45,12 +45,14 @@ namespace CadKit.Plugins
         {
           throw new System.Exception(System.String.Format("Error 3490341679: failed to create class factory in assembly file: {0}", file));
         }
-        CadKit.Interfaces.IClassFactory factory = temp as CadKit.Interfaces.IClassFactory;
-        if (null == factory)
+        using (ClassFactoryHandle factory = new ClassFactoryHandle(temp as CadKit.Interfaces.IClassFactory))
         {
-          throw new System.Exception(System.String.Format("Error 1228345170: object created assembly file '{0}' is not a factory", file));
+          if (false == factory.Valid)
+          {
+            throw new System.Exception(System.String.Format("Error 1228345170: object created assembly file '{0}' is not a factory", file));
+          }
+          return factory.release();
         }
-        return factory;
       }
       catch (System.Exception e)
       {
@@ -72,12 +74,14 @@ namespace CadKit.Plugins
         {
           throw new System.Exception(System.String.Format("Error 3887634468: Failed to create plugin instance in assembly file: {0}", file));
         }
-        CadKit.Interfaces.IPlugin plugin = temp as CadKit.Interfaces.IPlugin;
-        if (null == plugin)
+        using (PluginHandle plugin = new PluginHandle(temp as CadKit.Interfaces.IPlugin))
         {
-          throw new System.Exception(System.String.Format("Error 1228345170: object created in assembly file '{0}' is not a plugin", file));
+          if (false == plugin.Valid)
+          {
+            throw new System.Exception(System.String.Format("Error 1228345170: object created in assembly file '{0}' is not a plugin", file));
+          }
+          return plugin.release();
         }
-        return plugin;
       }
       catch (System.Exception e)
       {

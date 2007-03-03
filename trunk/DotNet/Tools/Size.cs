@@ -18,9 +18,6 @@ namespace CadKit.Tools
     {
       lock ("CadKit.Tools.Size.size")
       {
-        if (null == size)
-          return;
-
         if (null == child)
           return;
 

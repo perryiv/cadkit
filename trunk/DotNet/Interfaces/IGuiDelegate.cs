@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IGuiDelegate
+  public interface IGuiDelegate : IReferenced
   {
     /// <summary>
     /// Set/get the document.

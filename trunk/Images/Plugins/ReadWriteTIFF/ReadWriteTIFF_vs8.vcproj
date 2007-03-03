@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="plug: IO TIFF"
-	ProjectGUID="{F8B4EE92-DBB3-4A32-951F-CE9F9AB4C091}"
+	ProjectGUID="{CEEAB1E1-EA08-43BD-98A2-99F6EBC364C6}"
 	SignManifests="true"
 	>
 	<Platforms>

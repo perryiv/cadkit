@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="lib: CadKit Usul"
-	ProjectGUID="{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}"
+	ProjectGUID="{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}"
 	RootNamespace="lib: Usul"
 	>
 	<Platforms>
@@ -1723,6 +1723,10 @@
 				>
 				<File
 					RelativePath=".\Functions\Color.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Functions\SafeCall.h"
 					>
 				</File>
 			</Filter>

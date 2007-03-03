@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IOptionsForm
+  public interface IOptionsForm : IReferenced
   {
     /// <summary>
     /// Add a page.

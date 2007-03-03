@@ -9,7 +9,8 @@
 
 namespace DT.Minerva.Plugins.Options
 {
-  public class Component : 
+  public class Component :
+    CadKit.Referenced.Base,
     CadKit.Interfaces.IPlugin,
     CadKit.Interfaces.IOptionsPageAdd
   {

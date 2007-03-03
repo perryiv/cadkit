@@ -26,7 +26,7 @@ class Callback : public osg::NodeCallback
 {
 public:
 
-  Callback() : osg::NodeCallback (), _random ( 0.0, 1.0 ), _param ( 0.0 ), _lastTime ( 0 ), _speed ( 0.5 )
+  Callback() : osg::NodeCallback (), _random ( 0.0, 1.0 ), _param ( 0.0 ), _lastTime ( 0 ), _speed ( 0.05 )
   {
   }
 
@@ -43,7 +43,7 @@ public:
         osg::StateSet *ss = node->getOrCreateStateSet();
         osg::Uniform* uniform = ss->getOrCreateUniform("param", osg::Uniform::FLOAT);
 
-        _param += .1;
+        _param += .01;
         if( _param > 1.0 )
           _param = 0.0;
         

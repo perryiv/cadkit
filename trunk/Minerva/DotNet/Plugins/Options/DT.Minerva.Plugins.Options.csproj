@@ -60,6 +60,10 @@
       <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
       <Name>CadKit.Interfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\DotNet\Referenced\CadKit.Referenced.csproj">
+      <Project>{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}</Project>
+      <Name>CadKit.Referenced</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

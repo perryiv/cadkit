@@ -9,9 +9,10 @@
 
 namespace CadKit.OpenGL
 {
-  public partial class Canvas : 
+  public partial class Canvas :
     System.Windows.Forms.UserControl,
-    CadKit.Interfaces.IPropertyGridObject
+    CadKit.Interfaces.IPropertyGridObject,
+    CadKit.Interfaces.IReferenced
   {
     /// <summary>
     /// Default constructor.
@@ -89,6 +90,42 @@ namespace CadKit.OpenGL
         menu.Items.Add(item);
       }
       return menu;
+    }
+
+
+    /// <summary>
+    /// Increment the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.reference()
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.dereference()
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.dereference(bool allowCleanup)
+    {
+      // TODO
+    }
+
+
+    /// <summary>
+    /// Return the reference count.
+    /// </summary>
+    uint CadKit.Interfaces.IReferenced.RefCount
+    {
+      get { return 0; } // TODO
     }
   }
 }

@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="lib: FoxTools"
-	ProjectGUID="{C30C96F6-1E49-4C77-A570-A58D8874C393}"
+	ProjectGUID="{37346E4A-D8E7-4DDD-B707-64F0A2964DAD}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

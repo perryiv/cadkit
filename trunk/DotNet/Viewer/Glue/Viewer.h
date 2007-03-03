@@ -205,6 +205,14 @@ namespace CadKit
         void                      frameDumpScale ( float scale );
         void                      computeNearFar( bool b );
 
+        // Set whether the database pager should pre compile OpenGL objects before allowing
+        // them to be merged into the scene graph.
+        property bool DatabasePagerPreCompile
+        {
+          bool get();
+          void set ( bool b );
+        }
+
       protected:
 
         NativeTimeoutCallback     _makeProgressCallback();

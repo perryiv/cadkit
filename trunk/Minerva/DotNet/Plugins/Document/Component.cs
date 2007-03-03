@@ -10,6 +10,7 @@
 namespace DT.Minerva.Plugins.Document
 {
   public class Component :
+    CadKit.Referenced.Base,
     CadKit.Interfaces.IPlugin,
     CadKit.Interfaces.IDocumentNew,
     CadKit.Interfaces.IDocumentOpen,

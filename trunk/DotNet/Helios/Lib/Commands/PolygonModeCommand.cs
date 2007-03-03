@@ -9,7 +9,9 @@
 
 namespace CadKit.Helios.Commands
 {
-  public class PolygonModeCommand : CadKit.Commands.Command
+  public class PolygonModeCommand : 
+    CadKit.Commands.Command,
+    System.IDisposable
   {
     /// <summary>
     /// Data members.
@@ -33,6 +35,24 @@ namespace CadKit.Helios.Commands
     /// Destructor.
     /// </summary>
     ~PolygonModeCommand()
+    {
+      this._localCleanup();
+    }
+
+
+    /// <summary>
+    /// Called by the system to clean this instance.
+    /// </summary>
+    void System.IDisposable.Dispose()
+    {
+      this._localCleanup();
+    }
+
+
+    /// <summary>
+    /// Clean this instance.
+    /// </summary>
+    private void _localCleanup()
     {
       try
       {

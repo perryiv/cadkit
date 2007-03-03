@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IDocument
+  public interface IDocument : IReferenced
   {
     /// <summary>
     /// Set/get the gui-delegate.

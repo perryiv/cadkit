@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IWindowsForward
+  public interface IWindowsForward : IReferenced
   {
     void windowsForward(object caller);
   }

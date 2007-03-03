@@ -9,7 +9,9 @@
 
 namespace CadKit.Plugins.Windows.JobWindow
 {
-  public class Component : CadKit.Interfaces.IPlugin
+  public class Component :
+    CadKit.Referenced.Base,
+    CadKit.Interfaces.IPlugin
   {
     /// <summary>
     /// Construct a component.

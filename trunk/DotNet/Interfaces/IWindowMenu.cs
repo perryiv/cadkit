@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IWindowMenu
+  public interface IWindowMenu : IReferenced
   {
     void addFormWindowMenu(string name, object form);
   }

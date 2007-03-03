@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IFileOpen
+  public interface IFileOpen : IReferenced
   {
     void open(string file, object caller);
   }

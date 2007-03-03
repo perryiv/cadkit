@@ -10,6 +10,7 @@
 namespace DT.Minerva.Plugins.Animate
 {
   public class Component :
+    CadKit.Referenced.Base,
     CadKit.Interfaces.IPlugin
   {
     /// <summary>
@@ -49,19 +50,26 @@ namespace DT.Minerva.Plugins.Animate
     /// </summary>
     private void _parentShown(object sender, System.EventArgs args)
     {
-      DT.Minerva.Plugins.Animate.Animate form = new DT.Minerva.Plugins.Animate.Animate();
-      System.Windows.Forms.Form parent = sender as System.Windows.Forms.Form;
-      CadKit.Tools.ToolWindow.configure(form, parent, "Animate", false);
-
-      _configureDockWindow(sender, form);
-
-      CadKit.Interfaces.IWindowMenu windowMenu = sender as CadKit.Interfaces.IWindowMenu;
-      if (null != windowMenu)
+      try
       {
-        windowMenu.addFormWindowMenu(form.Text, form);
-      }
+        DT.Minerva.Plugins.Animate.Animate form = new DT.Minerva.Plugins.Animate.Animate();
+        System.Windows.Forms.Form parent = sender as System.Windows.Forms.Form;
+        CadKit.Tools.ToolWindow.configure(form, parent, "Animate", false);
 
-      parent.Activate();
+        _configureDockWindow(sender, form);
+
+        CadKit.Interfaces.IWindowMenu windowMenu = sender as CadKit.Interfaces.IWindowMenu;
+        if (null != windowMenu)
+        {
+          windowMenu.addFormWindowMenu(form.Text, form);
+        }
+
+        parent.Activate();
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 1563254966: {0}", e.Message);
+      }
     }
 
     private static void _configureDockWindow(object sender, DT.Minerva.Plugins.Animate.Animate form)

@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IUpdateDisplay
+  public interface IUpdateDisplay : IReferenced
   {
     void updateDisplay();
   }

@@ -17,7 +17,7 @@ namespace CadKit.Interfaces
     public delegate void ApplyDelegate(CadKit.Interfaces.IOptionsForm form, CadKit.Interfaces.IOptionsPage page);
   }
 
-  public interface IOptionsPage
+  public interface IOptionsPage : IReferenced
   {
     /// <summary>
     /// Set/get the apply delegate.

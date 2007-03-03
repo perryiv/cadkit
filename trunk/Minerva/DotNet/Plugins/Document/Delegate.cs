@@ -18,12 +18,14 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     public const string TypeName = "Minerva Delegate";
 
+
     /// <summary>
     /// Construct a delegate.
     /// </summary>
     public Delegate()
     {
     }
+
 
     /// <summary>
     /// Set the document.
@@ -60,6 +62,7 @@ namespace DT.Minerva.Plugins.Document
         if (null != doc)
         {
           doc.Viewer = view.HeliosViewer;
+          view.initDatabasePagerSettings();
           view.SizeChanged += new System.EventHandler(doc.resize);
         }
 

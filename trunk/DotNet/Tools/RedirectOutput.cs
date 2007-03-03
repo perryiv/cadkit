@@ -15,7 +15,7 @@
 
 namespace CadKit.Tools
 {
-  public class RedirectOutput
+  public class RedirectOutput : System.IDisposable
   {
     /// <summary>
     /// Data members.
@@ -28,6 +28,7 @@ namespace CadKit.Tools
     private NotifyDelegate _notify = null;
     private bool _isNotifying = false;
     private object _mutex = new object();
+    private System.IO.TextWriter _original = System.Console.Out;
 
     /// <summary>
     /// Constants.
@@ -56,6 +57,7 @@ namespace CadKit.Tools
         }
       }
     }
+
 
     /// <summary>
     /// Constructor
@@ -91,19 +93,47 @@ namespace CadKit.Tools
 
 
     /// <summary>
+    /// Destructor
+    /// </summary>
+    ~RedirectOutput()
+    {
+      this.Dispose();
+    }
+
+
+    /// <summary>
+    /// Called by the system to dispose this object.
+    /// </summary>
+    public void Dispose()
+    {
+      this._clear();
+    }
+
+
+    /// <summary>
     /// Clear data members and reset standard output.
     /// </summary>
     private void _clear()
     {
-      // Reset members.
-      _file = null;
-      _stream = null;
-      _watcher = null;
+      try
+      {
+        // Reset members.
+        _file = null;
+        _stream = null;
+        _watcher = null;
 
-      // Reset console to print to standard output stream.
-      System.IO.StreamWriter stream = new System.IO.StreamWriter(System.Console.OpenStandardOutput());
-      stream.AutoFlush = true;
-      System.Console.SetOut(stream);
+        // Reset console to print to standard output stream.
+        if (null != _original)
+        {
+          System.Console.SetOut(_original);
+          _original = null;
+        }
+      }
+      catch (System.Exception e)
+      {
+        // Do not send to console.
+        System.Diagnostics.Trace.WriteLine("Error 1936388322: {0}", e.Message);
+      }
     }
 
 

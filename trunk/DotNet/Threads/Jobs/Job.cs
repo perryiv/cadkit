@@ -9,13 +9,15 @@
 
 namespace CadKit.Threads.Jobs
 {
-  public class Job
+  public class Job : System.IDisposable
   {
     /// <summary>
     /// Local types.
     /// </summary>
     public delegate void NotifyDelegate(CadKit.Threads.Jobs.Job job);
     public class Cancel : System.Exception { }
+    private class ProgressHandle : CadKit.Interfaces.ScopedReference<Progress> { }
+
 
     /// <summary>
     /// Data members.
@@ -28,15 +30,52 @@ namespace CadKit.Threads.Jobs
     private bool _queued = false;
     private bool _canceled = false;
     private System.Exception _exception = null;
-    private Progress _progress = null;
+    private ProgressHandle _progress = new ProgressHandle();
+
 
     /// <summary>
     /// Constructor
     /// </summary>
     public Job()
     {
-      _progress = new Progress(this);
+      _progress.Value = new Progress(this);
     }
+
+
+    /// <summary>
+    /// Destructor
+    /// </summary>
+    ~Job()
+    {
+      this._localCleanup();
+    }
+
+
+    /// <summary>
+    /// Called by the system to dispose this instance.
+    /// </summary>
+    void System.IDisposable.Dispose()
+    {
+      this._localCleanup();
+    }
+
+
+    /// <summary>
+    /// Clea up this instance.
+    /// </summary>
+    private void _localCleanup()
+    {
+      _lock = null;
+      _name = null;
+      _thread = null;
+      _notifyStart = null;
+      _notifyFinish = null;
+      _queued = false;
+      _canceled = false;
+      _exception = null;
+      _progress.Value = null;
+    }
+
 
     /// <summary>
     /// Queue the thread. Called by the thread manager.
@@ -56,6 +95,7 @@ namespace CadKit.Threads.Jobs
       // Queue the thread.
       System.Threading.ThreadPool.QueueUserWorkItem(this._executeThread);
     }
+
 
     /// <summary>
     /// Cancel the thread. Called by the thread manager.
@@ -82,6 +122,7 @@ namespace CadKit.Threads.Jobs
       this.Thread = null;
       thread.Abort();
     }
+
 
     /// <summary>
     /// Called by the system to run the thread.
@@ -141,6 +182,7 @@ namespace CadKit.Threads.Jobs
       }
     }
 
+
     /// <summary>
     /// Set the exception.
     /// </summary>
@@ -148,6 +190,7 @@ namespace CadKit.Threads.Jobs
     {
       using (this.Lock.write()) { _exception = e; }
     }
+
 
     /// <summary>
     /// Set the queued state.
@@ -157,6 +200,7 @@ namespace CadKit.Threads.Jobs
       using (this.Lock.write()) { _queued = state; }
     }
 
+
     /// <summary>
     /// Set the cancelled state.
     /// </summary>
@@ -164,6 +208,7 @@ namespace CadKit.Threads.Jobs
     {
       using (this.Lock.write()) { _canceled = state; }
     }
+
 
     /// <summary>
     /// Does the thread have the state?
@@ -184,6 +229,7 @@ namespace CadKit.Threads.Jobs
         return false;
       }
     }
+
 
     /// <summary>
     /// Is the thread running?
@@ -207,6 +253,7 @@ namespace CadKit.Threads.Jobs
       }
     }
 
+
     /// <summary>
     /// Is the thread suspended?
     /// </summary>
@@ -214,6 +261,7 @@ namespace CadKit.Threads.Jobs
     {
       get { return this._hasState(System.Threading.ThreadState.Suspended); }
     }
+
 
     /// <summary>
     /// Is the thread suspended?
@@ -223,6 +271,7 @@ namespace CadKit.Threads.Jobs
       get { using (this.Lock.read()) { return _queued; } }
     }
 
+
     /// <summary>
     /// Has the thread been canceled?
     /// </summary>
@@ -230,6 +279,7 @@ namespace CadKit.Threads.Jobs
     {
       get { using (this.Lock.read()) { return _canceled; } }
     }
+
 
     /// <summary>
     /// Get the thread's exception.
@@ -239,6 +289,7 @@ namespace CadKit.Threads.Jobs
       get { using (this.Lock.read()) { return _exception; } }
     }
 
+
     /// <summary>
     /// Did the thread exit successfuly?
     /// </summary>
@@ -246,6 +297,7 @@ namespace CadKit.Threads.Jobs
     {
       get { return (null == this.Exception); }
     }
+
 
     /// <summary>
     /// Set/get the name.
@@ -256,6 +308,7 @@ namespace CadKit.Threads.Jobs
       set { using (this.Lock.write()) { _name = value; } }
     }
 
+
     /// <summary>
     /// Set/get the thread-start delegate.
     /// </summary>
@@ -264,6 +317,7 @@ namespace CadKit.Threads.Jobs
       get { using (this.Lock.read()) { return _notifyStart; } }
       set { using (this.Lock.write()) { _notifyStart = value; } }
     }
+
 
     /// <summary>
     /// Set/get the thread-finished delegate.
@@ -274,6 +328,7 @@ namespace CadKit.Threads.Jobs
       set { using (this.Lock.write()) { _notifyFinish = value; } }
     }
 
+
     /// <summary>
     /// Get/set the thread member.
     /// </summary>
@@ -283,13 +338,15 @@ namespace CadKit.Threads.Jobs
       set { using (this.Lock.write()) { _thread = value; } }
     }
 
+
     /// <summary>
     /// Get the progress member.
     /// </summary>
     public CadKit.Threads.Jobs.Progress Progress
     {
-      get { using (this.Lock.read()) { return _progress; } }
+      get { using (this.Lock.read()) { return _progress.Value; } }
     }
+
 
     /// <summary>
     /// Get the thread id.
@@ -302,6 +359,7 @@ namespace CadKit.Threads.Jobs
         return (null == thread) ? 0 : thread.ManagedThreadId;
       }
     }
+
 
     /// <summary>
     /// Get the mutex.

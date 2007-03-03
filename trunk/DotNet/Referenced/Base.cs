@@ -22,38 +22,56 @@
 
 namespace CadKit.Referenced
 {
-  public class Base : System.IDisposable
+  public class Base : System.IDisposable, CadKit.Interfaces.IReferenced
   {
+    /// <summary
+    /// Local types.
+    /// </summary>
+    class Objects : System.Collections.Generic.Dictionary<ulong, string> { }
+
     /// <summary>
     /// Data members.
     /// </summary>
     private uint _refCount = 0;
-    private object _mutex = new object();
+    private CadKit.Threads.Tools.Lock _lock = new CadKit.Threads.Tools.Lock();
     private bool _isClean = false;
-    private ulong _objectNumber = _objectCounter++;
+    private ulong _objectNumber = CadKit.Referenced.Base.NextNumber;
+    private static Objects _objects = new Objects();
     private static ulong _objectCounter = 0;
+
 
     /// <summary>
     /// Constructor
     /// </summary>
     public Base()
     {
+      _objects.Add(this.ObjectNumber, this.GetType().ToString());
     }
+
 
     /// <summary>
     /// Destructor
     /// </summary>
     ~Base()
     {
-      if (0 != _refCount)
+      try
       {
-        System.Console.WriteLine(System.String.Format("Error 3799827700: deleting object {0} with reference count of {1}", this.ToString(), _refCount.ToString()));
+        _objects.Remove(this.ObjectNumber);
+        if (0 != _refCount)
+        {
+          System.Console.WriteLine(System.String.Format("Error 3799827700: deleting object {0} with reference count of {1}", this.ToString(), _refCount.ToString()));
+        }
+        if (false == _isClean)
+        {
+          System.Console.WriteLine(System.String.Format("Error 3427194855: deleting object {0} which has not been cleaned", this.ToString()));
+        }
       }
-      if (false == _isClean)
+      catch (System.Exception e)
       {
-        System.Console.WriteLine(System.String.Format("Error 3427194855: deleting object {0} which has not been cleaned", this.ToString()));
+        System.Console.WriteLine(System.String.Format("Error 1499157600: {0}", e.Message));
       }
     }
+
 
     /// <summary>
     /// Called by the system when collecting garbage. If an instance is 
@@ -68,6 +86,34 @@ namespace CadKit.Referenced
       }
     }
 
+
+    /// <summary>
+    /// Increment the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.reference()
+    {
+      this.reference();
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.dereference()
+    {
+      this.dereference();
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count. Pass "false" if you don't want cleanup.
+    /// </summary>
+    void CadKit.Interfaces.IReferenced.dereference(bool allowCleanup)
+    {
+      this.dereference(allowCleanup);
+    }
+
+
     /// <summary>
     /// Increment the reference count.
     /// </summary>
@@ -75,7 +121,7 @@ namespace CadKit.Referenced
     {
       try
       {
-        lock (_mutex)
+        using (this.Lock.write())
         {
           ++_refCount;
         }
@@ -86,18 +132,32 @@ namespace CadKit.Referenced
       }
     }
 
+
     /// <summary>
     /// Decrement the reference count.
     /// </summary>
     public void dereference()
     {
+      this.dereference(true);
+    }
+
+
+    /// <summary>
+    /// Decrement the reference count. Pass "false" if you don't want cleanup.
+    /// </summary>
+    public void dereference(bool allowCleanup)
+    {
       try
       {
-        lock (_mutex)
+        if (0 == this.RefCount)
         {
-          System.Diagnostics.Debug.Assert(_refCount > 0, "Error 3765910177: reference count is already zero");
+          System.Console.WriteLine("Error 3765910177: reference count is already zero");
+          return;
+        }
+        using (this.Lock.write())
+        {
           --_refCount;
-          if (0 == _refCount)
+          if (0 == _refCount && true == allowCleanup)
           {
             this._cleanup();
           }
@@ -109,37 +169,91 @@ namespace CadKit.Referenced
       }
     }
 
+
     /// <summary>
     /// Clean this instance.
     /// </summary>
     protected virtual void _cleanup()
     {
-      lock (_mutex) { _isClean = true; }
+      _objects.Remove(this.ObjectNumber);
+      using (this.Lock.write())
+      {
+        _isClean = true;
+      }
     }
+
 
     /// <summary>
     /// See if this instance is clean.
     /// </summary>
     public bool IsClean
     {
-      get { lock (_mutex) { return _isClean; } }
+      get
+      {
+        using (this.Lock.read())
+        {
+          return _isClean;
+        }
+      }
     }
+
+
+    /// <summary>
+    /// Return the reference count.
+    /// </summary>
+    uint CadKit.Interfaces.IReferenced.RefCount
+    {
+      get { return this.RefCount; }
+    }
+
 
     /// <summary>
     /// Return the reference count.
     /// </summary>
     public uint RefCount
     {
-      get { lock (_mutex) { return _refCount; } }
+      get
+      {
+        using (this.Lock.read())
+        {
+          return _refCount;
+        }
+      }
     }
 
+
     /// <summary>
-    /// Get the mutex, for external locking of this instance.
+    /// Get the object number.
     /// </summary>
-    public object Mutex
+    public ulong ObjectNumber
     {
-      get { return _mutex; }
+      get
+      {
+        using (this.Lock.read())
+        {
+          return _objectNumber;
+        }
+      }
     }
+
+
+    /// <summary>
+    /// Get the lock object.
+    /// </summary>
+    public CadKit.Threads.Tools.Lock Lock
+    {
+      get
+      {
+        // If this gets called from the finalizer then the lock may have 
+        // already been destroyed and set to null.
+        if (null == _lock)
+        {
+          _lock = new CadKit.Threads.Tools.Lock();
+        }
+        return _lock;
+      }
+    }
+
 
     /// <summary>
     /// Convenience function for safe referencing.
@@ -152,6 +266,7 @@ namespace CadKit.Referenced
       }
     }
 
+
     /// <summary>
     /// Convenience function for safe dereferencing.
     /// </summary>
@@ -163,12 +278,56 @@ namespace CadKit.Referenced
       }
     }
 
+
     /// <summary>
-    /// Get the object number.
+    /// Return the next object number.
     /// </summary>
-    public ulong ObjectNumber
+    private static ulong NextNumber
     {
-      get { return _objectNumber; }
+      get
+      {
+        lock ("CadKit.Referenced.Base.NextNumber")
+        {
+          return _objectCounter++;
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Return total number of objects.
+    /// </summary>
+    public static ulong TotalNumObjects
+    {
+      get
+      {
+        lock ("CadKit.Referenced.Base.TotalNumObjects")
+        {
+          int count = ((_objects.Count < 0) ? 0 : _objects.Count);
+          return (ulong)count;
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Return a string containing the object data. Used for debugging.
+    /// </summary>
+    public static string ExistingObjects
+    {
+      get
+      {
+        lock ("CadKit.Referenced.Base.ExistingObjects")
+        {
+          string answer = "";
+          Objects.KeyCollection keys = _objects.Keys;
+          foreach (ulong key in keys)
+          {
+            answer += System.String.Format("{0}: {1}\n", key, _objects[key]);
+          }
+          return answer;
+        }
+      }
     }
   }
 }

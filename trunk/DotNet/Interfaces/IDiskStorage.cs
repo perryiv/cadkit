@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IDiskStorage
+  public interface IDiskStorage : IReferenced
   {
     /// <summary>
     /// Get the name of the disk storage.

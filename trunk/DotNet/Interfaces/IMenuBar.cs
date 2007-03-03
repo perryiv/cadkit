@@ -9,7 +9,7 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IMenuBar
+  public interface IMenuBar : IReferenced
   {
     object MenuBar { get; }
   }

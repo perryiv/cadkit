@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -117,7 +118,7 @@ void LayerGlue::Connection::set ( DT::Minerva::Interfaces::IDatabaseConnection^ 
 {
   if( nullptr != connection )
   {
-    ::Minerva::DB::Connection *c = new ::Minerva::DB::Connection();
+    ::Minerva::Core::DB::Connection *c = new ::Minerva::Core::DB::Connection();
     c->ref();
     c->hostname( this->toNativeString ( connection->Hostname ) );
     c->database( this->toNativeString ( connection->Database ) );

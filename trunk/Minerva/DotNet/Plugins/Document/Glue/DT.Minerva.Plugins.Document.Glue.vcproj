@@ -206,7 +206,7 @@
 		<ProjectReference
 			ReferencedProjectIdentifier="{5D7C06E0-F0B8-4EF0-953A-E25283F58435}"
 			UseDependenciesInBuild="false"
-			RelativePathToProject="..\Plugins\Documents\OSSIMPlanetDocument\Glue\OssimPlanet.vcproj"
+			RelativePathToProject="..\OssimPlanet\OssimPlanet.vcproj"
 		/>
 	</References>
 	<Files>

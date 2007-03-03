@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,14 +25,14 @@ using namespace DT::Minerva::Glue;
 PolygonLayerGlue::PolygonLayerGlue() : _polygonLayer ( 0x0 )
 {
   Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
-  _polygonLayer = new ::Minerva::Layers::PolygonLayer;
+  _polygonLayer = new ::Minerva::Core::Layers::PolygonLayer;
   Usul::Pointers::reference( _polygonLayer );
 }
 
 
 PolygonLayerGlue::PolygonLayerGlue(DT::Minerva::Glue::PolygonLayerGlue ^layer)
 {
-  _polygonLayer = new ::Minerva::Layers::PolygonLayer;
+  _polygonLayer = new ::Minerva::Core::Layers::PolygonLayer;
   Usul::Pointers::reference( _polygonLayer );
 
   this->_setProperties( layer );
@@ -66,7 +67,7 @@ PolygonLayerGlue::!PolygonLayerGlue()
 }
 
 
-Minerva::Layers::Layer* PolygonLayerGlue::layer()
+Minerva::Core::Layers::Layer* PolygonLayerGlue::layer()
 {
   return _polygonLayer;
 }

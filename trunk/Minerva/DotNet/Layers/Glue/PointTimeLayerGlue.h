@@ -13,7 +13,7 @@
 #pragma warning ( disable : 4561 )
 #include "LayerGlue.h"
 
-#include "Minerva/Layers/PointTimeLayer.h"
+#include "Minerva/Core/Layers/PointTimeLayer.h"
 
 namespace DT
 {
@@ -59,10 +59,10 @@ namespace DT
         PROPERTY_GET_SET(LastDateColumn, System::String^);
         PROPERTY_GET_SET(PrimitiveType, System::String^);
 
-        virtual ::Minerva::Layers::Layer * layer() override;
+        virtual ::Minerva::Core::Layers::Layer * layer() override;
 
       private:
-        ::Minerva::Layers::PointTimeLayer* _pointTimeLayer;
+        ::Minerva::Core::Layers::PointTimeLayer* _pointTimeLayer;
       };
     }
   }

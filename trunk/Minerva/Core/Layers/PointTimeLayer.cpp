@@ -1,0 +1,320 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2006, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "Minerva/Core/Layers/PointTimeLayer.h"
+#include "Minerva/Core/DataObjects/PointTime.h"
+#include "Minerva/Core/postGIS/Point.h"
+
+#include "Usul/Interfaces/GUI/IProgressBar.h"
+
+#include "OsgTools/Animate/DateGroup.h"
+#include "OsgTools/Animate/DateCallback.h"
+
+#include "osg/Group"
+#include "osg/MatrixTransform"
+
+using namespace Minerva::Core::Layers;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PointTimeLayer::PointTimeLayer() : BaseClass(),
+_primitiveID ( 2 ),
+_size ( 1.0 ),
+_firstDateColumn(),
+_lastDateColumn(),
+_minDate( boost::date_time::max_date_time ),
+_maxDate( boost::date_time::min_date_time )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PointTimeLayer::~PointTimeLayer()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the primitive id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayer::primitiveID( unsigned int primitiveId )
+{
+  _primitiveID = primitiveId;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the primitive id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int PointTimeLayer::primitiveID() const
+{
+  return _primitiveID;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayer::size( float size )
+{
+  _size = size;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float PointTimeLayer::size() const
+{
+  return _size;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayer::buildScene( osg::Group* parent )
+{
+  if ( OsgTools::Animate::DateGroup *dateGroup = dynamic_cast < OsgTools::Animate::DateGroup* > ( parent ) )
+  {
+    dateGroup->updateMinMax( _minDate, _maxDate );
+
+    // Get the data objects.
+    DataObjects &dataObjects ( this->_getDataObjects() );
+
+    for ( DataObjects::iterator iter = dataObjects.begin(); iter != dataObjects.end(); ++iter )
+    {
+      osg::ref_ptr< osg::Node > node ( (*iter)->buildScene() );
+
+      Minerva::Core::DataObjects::PointTime *pt ( static_cast < Minerva::Core::DataObjects::PointTime* >( iter->get() ) );
+
+      osg::ref_ptr < OsgTools::Animate::DateCallback > cb ( new OsgTools::Animate::DateCallback ( dateGroup->settings(), pt->firstDate(), pt->lastDate() ) );
+      node->setCullCallback( cb.get() );
+      parent->addChild( node.get() );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the data objects.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
+{
+  // Guard this section of code.
+  Guard guard ( _mutex);
+
+  this->legendObject()->icon ( this->colorFunctor()->icon() );
+
+  Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
+
+  const std::string tableName ( this->tablename() );
+  
+  pqxx::result geometryResult ( this->connection()->executeQuery ( this->query() ) );
+
+  if( progress.valid() )
+    progress->setTotalProgressBar( geometryResult.size() );
+
+  for ( pqxx::result::const_iterator i = geometryResult.begin(); i != geometryResult.end(); ++ i )
+  {
+    try
+    {
+      if ( false == i["srid"].is_null() || false == i["geom"].is_null() )
+      {
+        // get date and id.
+        std::string firstDate ( i[this->firstDateColumn()].as < std::string > () );
+        std::string lastDate ( i[this->lastDateColumn()].as < std::string > () );
+        int id ( i["id"].as< int > () );
+        int srid ( i["srid"].as< int> () );
+
+        Minerva::Core::postGIS::Geometry::RefPtr geometry ( new Minerva::Core::postGIS::Point ( this->connection(), this->tablename(), id, srid, i["geom"] ) );
+
+        if( geometry->valid() )
+        {
+          Minerva::Core::DataObjects::PointTime::RefPtr data ( new Minerva::Core::DataObjects::PointTime( firstDate, lastDate ) );
+          data->geometry( geometry.get() );
+          data->color ( this->_color ( i ) );
+          data->size ( this->size() );
+          data->primitiveId ( this->primitiveID() );
+          data->renderBin ( this->renderBin() );
+          data->buildScene();
+
+          this->_updateMinMax ( data->firstDate(), data->lastDate() );
+
+          // Also add to the vector of data objects.  This allows for faster updating.
+          this->_addDataObject( data.get() );
+        }
+        if( progress.valid() )
+        {
+          unsigned int num ( i - geometryResult.begin() );
+          progress->updateProgressBar( num );
+        }
+      }
+    }
+    catch ( const std::exception &e )
+    {
+      std::cout << "Error 5412926260: " << e.what() << std::endl;
+    }
+    catch ( ... )
+    {
+      std::cout << "Error 4160517991: exception generated while adding point-time layer" << std::endl;
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Modify the layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayer::modify( Usul::Interfaces::IUnknown *caller )
+{
+  // Guard this section of code.
+  Guard guard ( _mutex);
+
+  // Get the data objects.
+  DataObjects &dataObjects ( this->_getDataObjects() );
+
+  // Clear what we have...
+  dataObjects.clear();
+
+  // For now rebuild the data objects.
+  // In the future need to check if the query has changed, and then go get new data objects.
+  // If the query is the same, then just modify the current data objects.
+  this->buildDataObjects( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this layer temporal?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PointTimeLayer::isTemporal() const
+{
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the date column.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayer::firstDateColumn( const std::string& dateColumn )
+{
+  _firstDateColumn = dateColumn;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the date column.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& PointTimeLayer::firstDateColumn() const
+{
+  return _firstDateColumn;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the date column.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayer::lastDateColumn( const std::string& dateColumn )
+{
+  _lastDateColumn = dateColumn;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the date column.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& PointTimeLayer::lastDateColumn() const
+{
+  return _lastDateColumn;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set data members from given layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayer::setDataMembers ( Layer * layer )
+{
+  BaseClass::setDataMembers ( layer );
+
+  if( PointTimeLayer *pt = dynamic_cast < PointTimeLayer * > ( layer ) )
+  {
+    this->_primitiveID = pt->_primitiveID;
+    this->_size = pt->_size;
+    this->_firstDateColumn = pt->_firstDateColumn;
+    this->_lastDateColumn = pt->_lastDateColumn;
+    this->_minDate = pt->_minDate;
+    this->_maxDate = pt->_maxDate;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update min and max.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayer::_updateMinMax ( const OsgTools::Animate::Date& min, const OsgTools::Animate::Date& max )
+{
+  if( min < _minDate )
+    _minDate = min;
+
+  if( max > _maxDate )
+    _maxDate = max;
+}

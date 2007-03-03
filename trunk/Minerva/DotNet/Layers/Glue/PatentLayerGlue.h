@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater at Arizona State University
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -11,7 +12,7 @@
 
 #pragma warning ( disable : 4561 )
 #include "LayerGlue.h"
-#include "Minerva/Layers/PatentLayer.h"
+#include "Minerva/Core/Layers/PatentLayer.h"
 
 namespace DT
 {
@@ -28,10 +29,10 @@ namespace DT
         virtual ~PatentLayerGlue();
         !PatentLayerGlue();
 
-        virtual ::Minerva::Layers::Layer* layer() override;
+        virtual ::Minerva::Core::Layers::Layer* layer() override;
 
       private:
-        ::Minerva::Layers::PatentLayer *_layer;
+        ::Minerva::Core::Layers::PatentLayer *_layer;
       };
     }
   }

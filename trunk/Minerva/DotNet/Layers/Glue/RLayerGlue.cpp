@@ -26,7 +26,7 @@ RLayerGlue::RLayerGlue() : BaseClass(),
 _layer ( 0x0 )
 {
   Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
-  _layer = new ::Minerva::Layers::RLayer;
+  _layer = new ::Minerva::Core::Layers::RLayer;
   Usul::Pointers::reference ( _layer );
 }
 
@@ -39,7 +39,7 @@ _layer ( 0x0 )
 
 RLayerGlue::RLayerGlue( RLayerGlue ^ layer ) : BaseClass( layer )
 {
-  _layer = new ::Minerva::Layers::RLayer;
+  _layer = new ::Minerva::Core::Layers::RLayer;
   Usul::Pointers::reference ( _layer );
 
   this->_setProperties( layer );
@@ -79,7 +79,7 @@ RLayerGlue::!RLayerGlue()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-::Minerva::Layers::Layer* RLayerGlue::layer()
+::Minerva::Core::Layers::Layer* RLayerGlue::layer()
 {
   return _layer;
 }
@@ -105,5 +105,5 @@ DT::Minerva::Glue::RLayerGlue::Mode RLayerGlue::DrawMode::get()
 
 void RLayerGlue::DrawMode::set( DT::Minerva::Glue::RLayerGlue::Mode mode )
 {
-  _layer->mode( static_cast < ::Minerva::Layers::RLayer::Mode > ( mode ) );
+  _layer->mode( static_cast < ::Minerva::Core::Layers::RLayer::Mode > ( mode ) );
 }

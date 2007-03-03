@@ -1,4 +1,13 @@
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2006, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
 using namespace System;
 using namespace System::Reflection;
 using namespace System::Runtime::CompilerServices;

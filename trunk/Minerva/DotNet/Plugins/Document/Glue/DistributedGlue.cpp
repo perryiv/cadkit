@@ -12,7 +12,7 @@
 #include "Threads/OpenThreads/Mutex.h"
 #include "Usul/Threads/Mutex.h"
 
-#include "Minerva/Layers/Layer.h"
+#include "Minerva/Core/Layers/Layer.h"
 
 #include "Usul/Strings/ManagedToNative.h"
 
@@ -203,7 +203,7 @@ void DistributedGlue::removeLayer( CadKit::Interfaces::ILayer ^ layer )
 
     if( nullptr != layerPtr )
     {
-      ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
+      ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
       _controller->removeLayer( base->layerID() );
     }
   }
@@ -234,7 +234,7 @@ void DistributedGlue::modifyLayer( CadKit::Interfaces::ILayer ^layer )
 
     if( nullptr != layerPtr )
     {
-      ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
+      ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
       _controller->modifyLayer( base.get() );  
     }
   }
@@ -310,7 +310,7 @@ void DistributedGlue::showLayer ( CadKit::Interfaces::ILayer ^ layer )
 
     if( nullptr != layerPtr )
     {
-      ::Minerva::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
+      ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
       _controller->showLayer( base.get() );
     }
   }

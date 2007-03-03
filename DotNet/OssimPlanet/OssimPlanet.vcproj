@@ -222,22 +222,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\OssimPlanet.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OssimPlanet.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Panel.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Panel.h"
-				>
-			</File>
-			<File
 				RelativePath=".\WmsLayer.cpp"
 				>
 			</File>

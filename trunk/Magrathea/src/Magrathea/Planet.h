@@ -31,6 +31,17 @@ namespace Magrathea
   {
     public:
       typedef osg::Referenced BaseClass;
+      
+      enum ShaderType
+      {
+        OPACITY                 = ossimPlanetShaderProgramSetup::OPACITY,
+        HORIZONTAL_SWIPE        = ossimPlanetShaderProgramSetup::HORIZONTAL_SWIPE, 
+        VERTICAL_SWIPE          = ossimPlanetShaderProgramSetup::VERTICAL_SWIPE, 
+        TOP                     = ossimPlanetShaderProgramSetup::TOP, 
+        REFERENCE               = ossimPlanetShaderProgramSetup::REFERENCE,
+        ABSOLUTE_DIFFERENCE     = ossimPlanetShaderProgramSetup::ABSOLUTE_DIFFERENCE,
+        FALSE_COLOR_REPLACEMENT = ossimPlanetShaderProgramSetup::FALSE_COLOR_REPLACEMENT  
+      };
 
       Planet();
     
@@ -97,7 +108,7 @@ namespace Magrathea
       Usul::Interfaces::IUnknown*                     viewer();
 
       /// We should have only two funtions
-      /// layerOperationType() and layerOperationVal()
+      /// setShaderType() and setShaderParam()
 
       void                                            opacity( const float& val );
       float                                           opacity() const;

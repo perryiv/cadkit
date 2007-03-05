@@ -22,7 +22,9 @@ using namespace Minerva::Document;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MinervaDocument::MinervaDocument() : BaseClass( "Minerva Document" )
+MinervaDocument::MinervaDocument() : BaseClass( "Minerva Document" ),
+_sceneManager ( new Minerva::Core::Scene::SceneManager ),
+_planet ( new Magrathea::Planet )
 {
 }
 

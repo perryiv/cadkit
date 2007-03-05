@@ -15,6 +15,10 @@
 
 #include "Usul/Documents/Document.h"
 
+#include "Minerva/Core/Scene/SceneManager.h"
+
+#include "Magrathea/Planet.h"
+
 namespace Minerva {
 namespace Document {
 
@@ -48,6 +52,10 @@ public:
 
 protected:
   virtual ~MinervaDocument();
+
+private:
+  Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
+  osg::ref_ptr < Magrathea::Planet > _planet;
 
 };
 

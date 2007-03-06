@@ -1,5 +1,3 @@
-#change to test svn
-
 SHELL = /bin/sh
 
 # Must be defined before Makedefs is included.
@@ -11,7 +9,7 @@ include Make/Makedefs
 
 INCLUDES = \
 	-I../
-	
+
 LIBS = 
 
 LIB_DIRS = 

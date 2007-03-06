@@ -53,6 +53,9 @@ public:
 protected:
   virtual ~MinervaDocument();
 
+  MinervaDocument( const MinervaDocument& );
+  MinervaDocument& operator=( const MinervaDocument& );
+
 private:
   Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
   osg::ref_ptr < Magrathea::Planet > _planet;

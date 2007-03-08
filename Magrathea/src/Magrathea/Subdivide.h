@@ -54,7 +54,7 @@ namespace Magrathea
   }
 
   template < typename Triangle, typename Triangles >
-  bool trisect ( const Triangle& triangle, Triangles& triangles, unsigned int &depth )
+  bool trisect ( const Triangle& triangle, Triangles& triangles, unsigned int depth )
   {
     //unsigned int maximumDepth ( ::pow ( 3.0, 3 ) );
     unsigned int maximumDepth ( 2 );
@@ -88,24 +88,10 @@ namespace Magrathea
     Triangle t1 ( triangle.p0, center, triangle.p1 );
     Triangle t2 ( triangle.p1, center, triangle.p2 );
 
-    ++depth;
-    {
-      unsigned int currentDepth ( depth );
-      if ( trisect ( t0, triangles, currentDepth ) )
-        triangles.push_back ( t0 );
-    }
+    if ( trisect ( t0, triangles, depth + 1 ) ) { triangles.push_back ( t0 ); }
+    if ( trisect ( t1, triangles, depth + 1 ) ) { triangles.push_back ( t1 ); }
+    if ( trisect ( t2, triangles, depth + 1 ) ) { triangles.push_back ( t2 ); }
 
-    {
-      unsigned int currentDepth ( depth );
-      if ( trisect ( t1, triangles, currentDepth ) )
-        triangles.push_back ( t1 );
-    }
-
-    {
-      unsigned int currentDepth ( depth );
-      if ( trisect ( t2, triangles, currentDepth ) )
-        triangles.push_back ( t2 );
-    }
     return false;
   }
 

@@ -87,7 +87,12 @@ void DateGroup::traverse( osg::NodeVisitor& nv )
 
         if ( duration > _animationSpeed )
         {
-          _lastDate.increment();
+          if( _settings->timestepType() == Settings::DAY )
+            _lastDate.incrementDay();
+          else if ( _settings->timestepType() == Settings::MONTH )
+            _lastDate.incrementMonth();
+          else if ( _settings->timestepType() == Settings::YEAR )
+            _lastDate.incrementYear();
           _lastTime = t;
         }
 

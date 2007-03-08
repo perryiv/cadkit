@@ -57,6 +57,17 @@ Date::Date ( boost::date_time::special_values value ) : _date ( value )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Date::Date ( const boost::gregorian::date& date ) : _date ( date )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Return the day.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -186,4 +197,24 @@ boost::gregorian::date& Date::date()
 const boost::gregorian::date& Date::date() const
 {
   return _date;
+}
+
+
+void Date::incrementDay()
+{
+  boost::gregorian::date_duration dd(1);
+  _date = _date + dd;
+}
+
+
+void Date::incrementMonth()
+{
+  boost::gregorian::months one(1);
+  _date = _date + one;
+}
+
+void Date::incrementYear()
+{
+  boost::gregorian::years one(1);
+  _date = _date + one;
 }

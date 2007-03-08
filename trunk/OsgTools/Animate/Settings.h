@@ -31,6 +31,13 @@ namespace OsgTools
 
       Settings();
 
+      enum TimestepType
+      {
+        DAY,
+        MONTH,
+        YEAR
+      };
+
       /// First date showing.
       void                                firstDate( const OsgTools::Animate::Date& date );
       const OsgTools::Animate::Date&      firstDate() const;
@@ -42,17 +49,25 @@ namespace OsgTools
       inline bool                         isDateShown( const OsgTools::Animate::Date& date ) const;
       inline bool                         isDateRangeShown ( const OsgTools::Animate::Date& first, const OsgTools::Animate::Date& last ) const;
 
+      /// Get/Set the animation flag.
       void                                animate( bool b );
       bool                                animate() const;
 
+      /// Get/set show past events flag.
       void                                showPastDays( bool b );
       bool                                showPastDays() const;
 
+      /// Get/Set the time window flag.
       void                                timeWindow( bool b );
       bool                                timeWindow() const;
 
+      /// Get/Set the length of the time window.
       void                                windowLength ( unsigned int legnth );
       unsigned int                        windowLength () const;
+
+      /// Get/Set the timestep type.
+      void                                timestepType( TimestepType type );
+      TimestepType                        timestepType() const;
 
     protected:
       virtual ~Settings();
@@ -66,6 +81,7 @@ namespace OsgTools
       bool          _showPastDays;
       bool          _timeWindow;
       unsigned int  _windowLength;
+      TimestepType  _type;
     };
 
     inline bool Settings::isDateShown( const OsgTools::Animate::Date& date ) const

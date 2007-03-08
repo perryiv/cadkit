@@ -53,6 +53,7 @@
 #include "Usul/Math/UMath.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Registry/Constants.h"
+
 #include "Usul/Interfaces/GUI/IUpdateTreeControls.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IReportErrors.h"
@@ -62,6 +63,10 @@
 #include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Interfaces/IHandleMessage.h"
 #include "Usul/Interfaces/IAnimate.h"
+#include "Usul/Interfaces/IMatrixManipulator.h"
+#include "Usul/Interfaces/IDatabasePager.h"
+#include "Usul/Interfaces/ISceneUpdate.h"
+
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/ReportErrors.h"
 #include "Usul/Resources/TextWindow.h"
@@ -140,7 +145,6 @@ Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
   _context         ( context ),
   _renderer        ( new Renderer ),
   _sceneManager    ( new SceneManager ),
-  _sceneUpdate     (),
   _setCursor       ( caller ),
   _timeoutSpin     ( caller ),
   _caller          ( caller ),
@@ -161,9 +165,8 @@ Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
   _useDisplayList  ( false, true ),
   _databasePager   ( 0x0 )
 {
-  // Add this view to the document
-  if( this->document() )
-    this->document()->addView ( this );
+  // Add the document
+  this->document( doc );
 
   // Light so that other lights don't alter geometry under the projection node.
   // Note...
@@ -328,8 +331,9 @@ void Viewer::render()
     return;
 
   // Update the scene.
-  if ( _sceneUpdate.valid() )
-    _sceneUpdate->sceneUpdate();
+  Usul::Interfaces::ISceneUpdate::QueryPtr sceneUpdate ( _document );
+  if ( sceneUpdate.valid() )
+    sceneUpdate->sceneUpdate();
 
   // Make this context current.
   if ( _context.valid() )
@@ -1919,6 +1923,20 @@ Viewer::Document *Viewer::document()
 void Viewer::document( Document *document )
 {
   _document = document;
+
+  // Add this view to the document.
+  if( _document )
+    _document->addView ( this );
+
+  Usul::Interfaces::IMatrixManipulator::QueryPtr mm ( _document );
+
+  if( mm.valid() )
+    this->navManip( mm->getMatrixManipulator() );
+
+  Usul::Interfaces::IDatabasePager::QueryPtr dp ( _document );
+
+  if( dp.valid() )
+    this->databasePager( dp->getDatabasePager() );
 }
 
 
@@ -4999,30 +5017,6 @@ void Viewer::setText ( unsigned int x, unsigned int y, const std::string& text )
 void Viewer::removeText  ( unsigned int x, unsigned int y )
 {
   _sceneManager->removeText( x, y );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get interface for scene updater.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::ISceneUpdate* Viewer::sceneUpdate()
-{
-  return _sceneUpdate.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set interface for scene updater.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::sceneUpdate( Usul::Interfaces::ISceneUpdate* sceneUpdate )
-{
-  _sceneUpdate = sceneUpdate;
 }
 
 

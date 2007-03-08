@@ -164,6 +164,11 @@ void BinaryParser::_createGeometryEndian ( VertexList &vertexList, Usul::Types::
 			::memcpy( &numPoints, &(_buffer->front()) + bytesReadSoFar, sizeof( numPoints ) );
 			bytesReadSoFar += sizeof(numPoints);
 			Convert::convert(numPoints);
+
+      for( Usul::Types::Uint32 i = 0; i < numPoints; ++i )
+			{
+        this->_createGeometry( vertexList, bytesReadSoFar );
+      }
 		}
 		break;
 	case wkbMultiLineString:

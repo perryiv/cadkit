@@ -22,7 +22,7 @@ namespace DT.Minerva.Plugins.Document
 
     public void _showLayer(CadKit.Threads.Jobs.Job job)
     {
-      _application.showLayer(_layer, job.Progress);
+      _application.addLayer(_layer, job.Progress);
     }
 
     public void _removeLayer(CadKit.Threads.Jobs.Job job)

@@ -98,7 +98,7 @@ namespace DT
               void showLayer ( CadKit::Interfaces::ILayer ^ layer );
               void modifyLayer ( CadKit::Interfaces::ILayer ^layer );
 
-              void startAnimation(float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays);
+              void startAnimation(float speed, bool accumulate, bool timeWindow, int numDays);
               void stopAnimation();
 
             private:

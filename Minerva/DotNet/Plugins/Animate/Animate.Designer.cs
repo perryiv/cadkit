@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -42,8 +43,10 @@ namespace DT.Minerva.Plugins.Animate
       this._accumulate = new System.Windows.Forms.CheckBox();
       this._timeWindow = new System.Windows.Forms.CheckBox();
       this._pastDaysToShow = new System.Windows.Forms.NumericUpDown();
-      this._dateTimeStep = new System.Windows.Forms.CheckBox();
       this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+      this._days = new System.Windows.Forms.RadioButton();
+      this._months = new System.Windows.Forms.RadioButton();
+      this._years = new System.Windows.Forms.RadioButton();
       ((System.ComponentModel.ISupportInitialize)(this._speed)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this._pastDaysToShow)).BeginInit();
       this.flowLayoutPanel1.SuspendLayout();
@@ -92,7 +95,7 @@ namespace DT.Minerva.Plugins.Animate
       // _timeWindow
       // 
       this._timeWindow.AutoSize = true;
-      this._timeWindow.Location = new System.Drawing.Point(437, 3);
+      this._timeWindow.Location = new System.Drawing.Point(323, 3);
       this._timeWindow.Name = "_timeWindow";
       this._timeWindow.Size = new System.Drawing.Size(91, 17);
       this._timeWindow.TabIndex = 13;
@@ -101,36 +104,58 @@ namespace DT.Minerva.Plugins.Animate
       // 
       // _pastDaysToShow
       // 
-      this._pastDaysToShow.Location = new System.Drawing.Point(534, 3);
+      this._pastDaysToShow.Location = new System.Drawing.Point(420, 3);
       this._pastDaysToShow.Name = "_pastDaysToShow";
       this._pastDaysToShow.Size = new System.Drawing.Size(120, 20);
       this._pastDaysToShow.TabIndex = 12;
-      // 
-      // _dateTimeStep
-      // 
-      this._dateTimeStep.AutoSize = true;
-      this._dateTimeStep.Checked = true;
-      this._dateTimeStep.CheckState = System.Windows.Forms.CheckState.Checked;
-      this._dateTimeStep.Location = new System.Drawing.Point(323, 3);
-      this._dateTimeStep.Name = "_dateTimeStep";
-      this._dateTimeStep.Size = new System.Drawing.Size(108, 17);
-      this._dateTimeStep.TabIndex = 11;
-      this._dateTimeStep.Text = "Date as time step";
-      this._dateTimeStep.UseVisualStyleBackColor = true;
       // 
       // flowLayoutPanel1
       // 
       this.flowLayoutPanel1.Controls.Add(this._animate);
       this.flowLayoutPanel1.Controls.Add(this._speed);
       this.flowLayoutPanel1.Controls.Add(this._accumulate);
-      this.flowLayoutPanel1.Controls.Add(this._dateTimeStep);
       this.flowLayoutPanel1.Controls.Add(this._timeWindow);
       this.flowLayoutPanel1.Controls.Add(this._pastDaysToShow);
+      this.flowLayoutPanel1.Controls.Add(this._days);
+      this.flowLayoutPanel1.Controls.Add(this._months);
+      this.flowLayoutPanel1.Controls.Add(this._years);
       this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
       this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
       this.flowLayoutPanel1.Name = "flowLayoutPanel1";
       this.flowLayoutPanel1.Size = new System.Drawing.Size(801, 152);
       this.flowLayoutPanel1.TabIndex = 14;
+      // 
+      // _days
+      // 
+      this._days.AutoSize = true;
+      this._days.Checked = true;
+      this._days.Location = new System.Drawing.Point(546, 3);
+      this._days.Name = "_days";
+      this._days.Size = new System.Drawing.Size(49, 17);
+      this._days.TabIndex = 14;
+      this._days.TabStop = true;
+      this._days.Text = "Days";
+      this._days.UseVisualStyleBackColor = true;
+      // 
+      // _months
+      // 
+      this._months.AutoSize = true;
+      this._months.Location = new System.Drawing.Point(601, 3);
+      this._months.Name = "_months";
+      this._months.Size = new System.Drawing.Size(60, 17);
+      this._months.TabIndex = 15;
+      this._months.Text = "Months";
+      this._months.UseVisualStyleBackColor = true;
+      // 
+      // _years
+      // 
+      this._years.AutoSize = true;
+      this._years.Location = new System.Drawing.Point(667, 3);
+      this._years.Name = "_years";
+      this._years.Size = new System.Drawing.Size(52, 17);
+      this._years.TabIndex = 16;
+      this._years.Text = "Years";
+      this._years.UseVisualStyleBackColor = true;
       // 
       // Animate
       // 
@@ -156,7 +181,9 @@ namespace DT.Minerva.Plugins.Animate
     private System.Windows.Forms.CheckBox _accumulate;
     private System.Windows.Forms.CheckBox _timeWindow;
     private System.Windows.Forms.NumericUpDown _pastDaysToShow;
-    private System.Windows.Forms.CheckBox _dateTimeStep;
     private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+    private System.Windows.Forms.RadioButton _days;
+    private System.Windows.Forms.RadioButton _months;
+    private System.Windows.Forms.RadioButton _years;
   }
 }

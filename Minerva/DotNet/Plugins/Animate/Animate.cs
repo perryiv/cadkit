@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -56,7 +57,6 @@ namespace DT.Minerva.Plugins.Animate
       this._animate.Enabled = b;
       this._speed.Enabled = b;
       this._accumulate.Enabled = b;
-      this._dateTimeStep.Enabled = b;
       this._timeWindow.Enabled = b;
       this._pastDaysToShow.Enabled = b;
     }
@@ -74,7 +74,13 @@ namespace DT.Minerva.Plugins.Animate
       {
         if (button.Text == "Animate")
         {
-          animate.startAnimation(float.Parse(_speed.Value.ToString()), _accumulate.Checked, _dateTimeStep.Checked, _timeWindow.Checked, int.Parse(_pastDaysToShow.Value.ToString()));
+          if (_days.Checked)
+            animate.TimestepType = CadKit.Interfaces.AnimateTimestep.DAY;
+          if (_months.Checked)
+            animate.TimestepType = CadKit.Interfaces.AnimateTimestep.MONTH;
+          if (_years.Checked)
+            animate.TimestepType = CadKit.Interfaces.AnimateTimestep.YEAR;
+          animate.startAnimation(float.Parse(_speed.Value.ToString()), _accumulate.Checked, _timeWindow.Checked, int.Parse(_pastDaysToShow.Value.ToString()));
           button.Text = "Stop";
         }
         else

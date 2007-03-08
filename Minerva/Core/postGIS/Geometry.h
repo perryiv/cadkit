@@ -41,8 +41,6 @@ public:
   USUL_DECLARE_REF_POINTERS( Geometry );
 
   Geometry( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F );
-  Geometry( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id );
-  Geometry( Minerva::Core::DB::Connection *connection, const pqxx::result::field &F );
 
   /// TODO: These should probably be in interfaces.
   virtual osg::Node*      buildScene() = 0;

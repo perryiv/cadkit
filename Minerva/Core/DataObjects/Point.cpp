@@ -147,7 +147,7 @@ osg::Node* Point::buildScene()
 
     osg::ref_ptr< osg::AutoTransform > autoTransform ( new osg::AutoTransform );
 
-    autoTransform->setPosition ( this->geometry()->getCenter() );
+    autoTransform->setPosition ( this->geometry()->getCenter( 0.0, 0.0, 0.0 ) );
     autoTransform->setAutoScaleToScreen ( true );
 
     // Set the normalize state to true, so when the sphere size changes it still looks correct.

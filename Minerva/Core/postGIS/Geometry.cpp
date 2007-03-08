@@ -59,69 +59,6 @@ _dirty ( false )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Geometry::Geometry( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id ) : BaseClass(),
-_connection ( connection ),
-_parser ( 0x0 ),
-_tableName ( tableName ),
-_id ( id ),
-_srid ( -1 ),
-_projection ( 0x0 ),
-_xOffset( 0.0 ),
-_yOffset( 0.0 ),
-_zOffset( 0.0 ),
-_dirty ( false )
-{
-  std::ostringstream query;
-  query << "SELECT asBinary(geom) as data, srid(geom) as srid FROM " << _tableName << " WHERE id = " << _id;
-
-  // Execute the query.
-  pqxx::result r ( _connection->executeQuery ( query.str() ) );
-
-  _parser = new BinaryParser ( r[0]["data"] );
-
-  if( false == r[0]["srid"].is_null() )
-  {
-    _srid = r[0]["srid"].as< int > ();
-
-    ossimKeywordlist kwl;
-
-    std::ostringstream os;
-    os << _srid;
-
-    kwl.add( ossimKeywordNames::PCS_CODE_KW, os.str().c_str() );
-
-    _projection = ossimProjectionFactoryRegistry::instance()->createProjection( kwl );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Geometry::Geometry( Minerva::Core::DB::Connection *connection, const pqxx::result::field &F ) : BaseClass(),
-_connection ( connection ),
-_parser ( new BinaryParser ( F ) ),
-_tableName ( ),
-_id ( -1 ),
-_srid ( -1 ),
-_projection ( 0x0 ),
-_xOffset( 0.0 ),
-_yOffset( 0.0 ),
-_zOffset( 0.0 ),
-_dirty ( false )
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////

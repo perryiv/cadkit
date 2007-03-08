@@ -410,12 +410,11 @@ void Controller::_processAnimation( const std::string& tableName, int eventID )
   {
     float speed           ( result[0]["speed"].as < float > () );
     bool accumulate       ( result[0]["accumulate"].as < bool > () );
-    bool dateTimeStep     ( result[0]["date_time_step"].as < bool > () );
     bool timeWindow       ( result[0]["time_window"].as< bool > () );
     bool animate          ( result[0]["animate"].as< bool > () );
     unsigned int numDays  ( result[0]["num_days_to_show"].as < unsigned int > () );
 
-    _sceneManager->animate ( animate, accumulate, dateTimeStep, speed, timeWindow, numDays );
+    _sceneManager->animate ( animate, accumulate, speed, timeWindow, numDays );
     _sceneManager->buildScene();
   }
 }

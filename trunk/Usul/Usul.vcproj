@@ -673,11 +673,19 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\IDatabasePager.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\IFrameDump.h"
 						>
 					</File>
 					<File
 						RelativePath=".\Interfaces\IGroup.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IMatrixManipulator.h"
 						>
 					</File>
 					<File

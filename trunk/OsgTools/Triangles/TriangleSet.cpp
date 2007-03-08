@@ -442,6 +442,13 @@ void TriangleSet::removeTriangle ( const osg::Geode* g, const osg::Drawable *d, 
 
   // Remove references to help it get deleted.
   t->clear();
+
+  // Reset all the triangles indices since we just invalidated them all above.
+  TriangleVector::size_type size ( _triangles.size() );
+  for ( TriangleVector::size_type ii = 0; ii < size; ++ii )
+  {
+    _triangles[ii]->index(ii);
+  }
 }
 
 

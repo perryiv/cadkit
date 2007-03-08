@@ -27,7 +27,8 @@ _period( _firstDate.date(), _lastDate.date() ),
 _animate( false ),
 _showPastDays( true ),
 _timeWindow ( false ),
-_windowLength ( 0 )
+_windowLength ( 0 ),
+_type ( DAY )
 {
 }
 
@@ -190,4 +191,28 @@ void Settings::animate( bool b )
 bool Settings::animate() const
 {
   return _animate;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the timestep type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Settings::timestepType( TimestepType type )
+{
+  _type = type;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the timestep type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Settings::TimestepType Settings::timestepType() const
+{
+  return _type;
 }

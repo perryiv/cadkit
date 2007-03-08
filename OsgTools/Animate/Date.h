@@ -38,21 +38,27 @@ public:
 
   Date ( const std::string& date );
   Date ( boost::date_time::special_values value );
+  Date ( const boost::gregorian::date& date );
 
   /// Get the underlying boost date.
   boost::gregorian::date&           date();
   const boost::gregorian::date&     date() const;
-  
-  void         day( unsigned int );
+
+  /// Get the day.
   unsigned int day() const;
 
-  void         month( unsigned int );
+  /// Get the month.
   unsigned int month() const;
 
-  void         year( unsigned int );
+  /// Get the year.
   unsigned int year() const;
 
+  /// Increment date by one day.
   void         increment();
+
+  void         incrementDay();
+  void         incrementMonth();
+  void         incrementYear();
 
   void         moveBackNumDays ( unsigned int );
 

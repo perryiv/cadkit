@@ -56,7 +56,6 @@
 #include "Usul/Interfaces/ISceneStage.h"
 #include "Usul/Interfaces/ICenterOfRotation.h"
 #include "Usul/Interfaces/IScreenCapture.h"
-#include "Usul/Interfaces/ISceneUpdate.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
@@ -372,10 +371,6 @@ public:
 
   /// Get the scene manager
   SceneManager *        sceneManager() { return _sceneManager.get(); }
-
-  /// Get/Set interface for scene updater.
-  Usul::Interfaces::ISceneUpdate*  sceneUpdate();
-  void                             sceneUpdate( Usul::Interfaces::ISceneUpdate* );
 
   // Get/Set back to front sorting.
   bool                  sortBackToFront () const;
@@ -724,7 +719,6 @@ private:
   IContext::QueryPtr _context;
   Renderer::ValidRefPtr _renderer;
   SceneManager::ValidRefPtr _sceneManager;
-  Usul::Interfaces::ISceneUpdate::QueryPtr _sceneUpdate;
   ISetCursorType::QueryPtr _setCursor;
   ITimeoutSpin::QueryPtr _timeoutSpin;
   IUnknown::QueryPtr _caller;

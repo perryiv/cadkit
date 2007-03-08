@@ -256,11 +256,11 @@ void DistributedGlue::modifyLayer( CadKit::Interfaces::ILayer ^layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DistributedGlue::startAnimation(float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays)
+void DistributedGlue::startAnimation(float speed, bool accumulate, bool timeWindow, int numDays)
 {
   try
   {
-    _controller->startAnimation(speed, accumulate, dateTimeStep, timeWindow, numDays );
+    _controller->startAnimation(speed, accumulate, true, timeWindow, numDays );
   }
   catch ( const std::exception &e )
   {

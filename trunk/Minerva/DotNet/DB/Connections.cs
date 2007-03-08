@@ -60,8 +60,16 @@ namespace DT.Minerva.DB
     {
       _connections.Add(item);
 
-      if (null != this.ConnectionAdded)
-        this.ConnectionAdded(item);
+      try
+      {
+        if (null != this.ConnectionAdded)
+          this.ConnectionAdded(item);
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 1558572682: Exception caught while notifying listeners of a new connection.");
+        System.Console.WriteLine("Message: {0}", e.Message);
+      }
     }
 
 

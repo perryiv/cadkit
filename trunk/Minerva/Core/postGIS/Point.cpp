@@ -77,7 +77,7 @@ osg::Vec3 Point::getCenter ( float xOffset, float yOffset, float zOffset )
 {
   VertexList vertexList ( _parser->getVertices() );
 
-  if( vertexList.size() == 1 )
+  if( vertexList.size() == 1 && vertexList[0].size() == 1 )
   {
     osg::Vec3 center;
     BinaryParser::Vertex v ( vertexList[0][0] );

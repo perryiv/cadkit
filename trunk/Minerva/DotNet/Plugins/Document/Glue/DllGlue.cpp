@@ -16,13 +16,9 @@
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Strings/ManagedToNative.h"
 
+#include "OsgTools/Render/Viewer.h"
+
 #include "Minerva/Core/Layers/Layer.h"
-#include "Minerva/Core/postGIS/Geometry.h"
-
-#include "osgDB/ReadFile"
-
-#include "ossimPlanet/ossimPlanetDatabasePager.h"
-#include "ossimPlanet/ossimPlanetManipulator.h"
 
 #include <string>
 
@@ -38,18 +34,12 @@ using namespace DT::Minerva::Plugins::Document::Glue;
 ///////////////////////////////////////////////////////////////////////////////
 
 DllGlue::DllGlue() : 
-_viewer( 0x0 ),
-_sceneManager( 0x0 )
+_document( 0x0 )
 {
   Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
-  _sceneManager = new ::Minerva::Core::Scene::SceneManager;
-  Usul::Pointers::reference ( _sceneManager );
 
-  _planet = new Magrathea::Planet();
-  _planet->ref();
-  _planet->init();
-  this->elevationExag( 1.0f );
-  _planet->root()->addChild( _sceneManager->root() );
+  _document = new ::Minerva::Document::MinervaDocument;
+  Usul::Pointers::reference ( _document );
 }
 
 
@@ -61,11 +51,8 @@ _sceneManager( 0x0 )
 
 DllGlue::~DllGlue()
 {
-  Usul::Pointers::unreference ( _sceneManager );
-  _sceneManager = 0x0;
-
-  Usul::Pointers::unreference( _planet );
-  _planet = 0x0;
+  Usul::Pointers::unreference ( _document );
+  _document = 0x0;
 }
 
 
@@ -77,11 +64,8 @@ DllGlue::~DllGlue()
 
 DllGlue::!DllGlue()
 {
-  Usul::Pointers::unreference ( _sceneManager );
-  _sceneManager = 0x0;
-
-  Usul::Pointers::unreference( _planet );
-  _planet = 0x0;
+  Usul::Pointers::unreference ( _document );
+  _document = 0x0;
 }
 
 
@@ -100,36 +84,63 @@ void DllGlue::removeLayer( CadKit::Interfaces::ILayer ^layer )
     if( nullptr != layerPtr )
     {
       ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
-      _sceneManager->removeLayer( base->layerID() );
-      _sceneManager->dirty ( true );
-      _sceneManager->buildScene();
+      _document->removeLayer( base.get() );
     }
   }
   catch ( System::Exception ^e )
   {
     System::Console::WriteLine( "Error 2579788220:" + e->Message );
   }
-  catch ( const std::exception &e )
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Hide the layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DllGlue::hideLayer( CadKit::Interfaces::ILayer ^layer )
+{
+  try
   {
-    System::Console::WriteLine( "Error 2608069470:" + gcnew System::String ( e.what() ) );
+    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
+
+    if( nullptr != layerPtr )
+    {
+      ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
+      _document->hideLayer( base.get() );
+    }
   }
-  catch ( ... )
+  catch ( System::Exception ^e )
   {
-    System::Console::WriteLine( "Error 2637756970: Unknown exception caught." );
+    System::Console::WriteLine( "Error 3092116830:" + e->Message );
   }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Dirty the scene.
+//  Show the layer.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DllGlue::dirtyScene()
+void DllGlue::showLayer( CadKit::Interfaces::ILayer ^layer )
 {
-  _sceneManager->dirty( true );
-  _sceneManager->buildScene();
+  try
+  {
+    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
+
+    if( nullptr != layerPtr )
+    {
+      ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
+      _document->showLayer( base.get() );
+    }
+  }
+  catch ( System::Exception ^e )
+  {
+    System::Console::WriteLine( "Error 3046648080:" + e->Message );
+  }
 }
 
 
@@ -149,9 +160,7 @@ void DllGlue::modifyLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::J
     {
       ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
       Progress p ( progress );
-      base->modify( p.unmanagedProgress() );
-      _sceneManager->dirty( true );
-      _sceneManager->buildScene();
+      _document->modifyLayer( base, p.unmanagedProgress() );
     }
   }
   catch ( System::Exception ^e )
@@ -169,18 +178,29 @@ void DllGlue::modifyLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::J
 }
 
 
+void DllGlue::timestepType ( CadKit::Interfaces::AnimateTimestep type )
+{
+ _document->timestepType( static_cast < OsgTools::Animate::Settings::TimestepType > ( type ) );
+}
+
+
+CadKit::Interfaces::AnimateTimestep DllGlue::timestepType ()
+{
+  return static_cast < CadKit::Interfaces::AnimateTimestep > ( _document->timestepType() );
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Start the animation.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DllGlue::startAnimation(float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays)
+void DllGlue::startAnimation(float speed, bool accumulate, bool timeWindow, int numDays)
 {
   try
   {
-    _sceneManager->animate(true, accumulate, dateTimeStep, speed, timeWindow, numDays);
-    _sceneManager->buildScene();
+    _document->startAnimation( speed, accumulate, timeWindow, numDays );
   }
   catch ( System::Exception ^e )
   {
@@ -207,8 +227,7 @@ void DllGlue::stopAnimation()
 {
   try
   {
-    _sceneManager->animate(false, false, false, 0.0, false, 0);
-    _sceneManager->buildScene();
+    _document->stopAnimation( );
   }
   catch ( System::Exception ^e )
   {
@@ -231,22 +250,20 @@ void DllGlue::stopAnimation()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DllGlue::viewer( CadKit::Viewer::Glue::Viewer ^viewer )
+void DllGlue::viewer( CadKit::Viewer::Glue::Viewer ^v )
 {
   try
   {
-    _viewer = reinterpret_cast < OsgTools::Render::Viewer* > ( viewer->viewer().ToPointer() );
+    OsgTools::Render::Viewer* viewer = reinterpret_cast < OsgTools::Render::Viewer* > ( v->viewer().ToPointer() );
 
-    if( _viewer )
+    if( viewer )
     {
-      _planet->viewer( _viewer->queryInterface( Usul::Interfaces::IUnknown::IID ) );
-      _viewer->navManip( _planet->manipulator() );
-      _viewer->databasePager( _planet->databasePager() );
+      _document->viewer( viewer->queryInterface( Usul::Interfaces::IUnknown::IID ) );
+      viewer->document( _document );
 
-      _viewer->computeNearFar( false );
+      viewer->computeNearFar( false );
 
-      _viewer->scene( _planet->root() );
-      _viewer->sceneUpdate( _sceneManager );
+      viewer->scene( _document->buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
     }
   }
   catch ( System::Exception ^e )
@@ -274,7 +291,7 @@ void DllGlue::resize( int w, int h )
 {
   try
   {
-    _sceneManager->resize( 0, 0, w, h );
+    _document->resize( w, h );
   }
   catch ( System::Exception ^e )
   {
@@ -297,7 +314,7 @@ void DllGlue::resize( int w, int h )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DllGlue::showLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progress )
+void DllGlue::addLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progress )
 {
   try
   {
@@ -309,8 +326,8 @@ void DllGlue::showLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Job
 
       // Managed/Unmanged progress interop class.
       Progress p ( progress );
-      base->buildDataObjects( p.unmanagedProgress() );
-      _sceneManager->addLayer( base.get() );
+
+      _document->addLayer( base.get(), p.unmanagedProgress() );
     }
   }
   catch ( System::Exception ^e )
@@ -338,7 +355,7 @@ void DllGlue::addKeyWordList( System::String^ kwl )
 {
   try
   {
-    _planet->readKWL( Usul::Strings::convert ( kwl ).c_str() );
+    _document->addKeyWordList( Usul::Strings::convert ( kwl ).c_str() );
   }
   catch ( System::Exception ^e )
   {
@@ -373,7 +390,7 @@ void DllGlue::addLayer( CadKit::Interfaces::IOssimLayer ^ layer )
       osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( nativePtr->nativeIntPtr().ToPointer() ) );
 
       if( texture.valid() )
-        _planet->addLayer( texture.get() );
+        _document->addLayer( texture.get() );
     }
   }
 }
@@ -396,7 +413,7 @@ void DllGlue::removeLayer( CadKit::Interfaces::IOssimLayer ^ layer )
       osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( nativePtr->nativeIntPtr().ToPointer() ) );
 
       if( texture.valid() )
-        _planet->removeLayer( texture.get() );
+        _document->removeLayer( texture.get() );
     }
   }
 }
@@ -410,7 +427,7 @@ void DllGlue::removeLayer( CadKit::Interfaces::IOssimLayer ^ layer )
 
 bool DllGlue::elevationEnabled()
 {
-  return _planet->elevationEnabled();
+  return _document->elevationEnabled();
 }
 
 
@@ -422,7 +439,7 @@ bool DllGlue::elevationEnabled()
 
 void DllGlue::elevationEnabled( bool val )
 {
-  _planet->elevationEnabled( val );
+  _document->elevationEnabled( val );
 }
 
 
@@ -434,7 +451,7 @@ void DllGlue::elevationEnabled( bool val )
 
 bool DllGlue::hudEnabled()
 {
-  return _planet->hudEnabled();
+  return _document->hudEnabled();
 }
 
 
@@ -446,7 +463,7 @@ bool DllGlue::hudEnabled()
 
 void DllGlue::hudEnabled( bool val )
 {
-  _planet->hudEnabled( val );
+  _document->hudEnabled( val );
 }
 
 
@@ -458,7 +475,7 @@ void DllGlue::hudEnabled( bool val )
 
 bool DllGlue::ephemerisFlag()
 {
-  return _planet->ephemerisFlag();
+  return _document->ephemerisFlag();
 }
 
 
@@ -470,7 +487,7 @@ bool DllGlue::ephemerisFlag()
 
 void DllGlue::ephemerisFlag( bool val )
 {
-  _planet->ephemerisFlag( val );
+  _document->ephemerisFlag( val );
 }
 
 
@@ -482,7 +499,7 @@ void DllGlue::ephemerisFlag( bool val )
 
 float DllGlue::elevationExag()
 {
-  return _planet->elevationExag();
+  return _document->elevationExag();
 }
 
 
@@ -494,7 +511,7 @@ float DllGlue::elevationExag()
 
 void DllGlue::elevationExag( float exag )
 {
-  _planet->elevationExag( exag );
+  _document->elevationExag( exag );
 }
 
 
@@ -506,7 +523,7 @@ void DllGlue::elevationExag( float exag )
 
 int DllGlue::elevationPatchSize()
 {
-  return _planet->elevationPatchSize();
+  return _document->elevationPatchSize();
 }
 
 
@@ -518,7 +535,7 @@ int DllGlue::elevationPatchSize()
 
 void DllGlue::elevationPatchSize( float patchSize )
 {
-  _planet->elevationPatchSize( patchSize );
+  _document->elevationPatchSize( patchSize );
 }
 
 
@@ -530,7 +547,7 @@ void DllGlue::elevationPatchSize( float patchSize )
 
 int DllGlue::levelDetail()
 {
-  return _planet->levelDetail();
+  return _document->levelDetail();
 }
 
 
@@ -542,7 +559,7 @@ int DllGlue::levelDetail()
 
 void DllGlue::levelDetail( float levelDetail )
 {
-  _planet->levelDetail( levelDetail );
+  _document->levelDetail( levelDetail );
 }
 
 
@@ -554,7 +571,7 @@ void DllGlue::levelDetail( float levelDetail )
 
 System::String^ DllGlue::elevationCacheDir()
 {
-  return gcnew System::String( _planet->elevationCacheDir().c_str() );
+  return gcnew System::String( _document->elevationCacheDir().c_str() );
 }
 
 
@@ -566,7 +583,7 @@ System::String^ DllGlue::elevationCacheDir()
 
 void DllGlue::elevationCacheDir( System::String^ directory )
 {
-  _planet->elevationCacheDir( Usul::Strings::convert( directory ) );
+  _document->elevationCacheDir( Usul::Strings::convert( directory ) );
 }
 
 
@@ -578,7 +595,7 @@ void DllGlue::elevationCacheDir( System::String^ directory )
 
 void DllGlue::latLongGrid ( bool b )
 {
-  _planet->showLatLongGrid ( b );
+  _document->latLongGrid ( b );
 }
 
 
@@ -590,7 +607,7 @@ void DllGlue::latLongGrid ( bool b )
 
 bool DllGlue::latLongGrid()
 {
-  return _planet->showLatLongGrid();
+  return _document->latLongGrid();
 }
 
 
@@ -602,7 +619,7 @@ bool DllGlue::latLongGrid()
 
 void DllGlue::showLegend( bool b )
 {
-  _sceneManager->showLegend( b );
+  _document->showLegend( b );
 }
 
 
@@ -614,7 +631,7 @@ void DllGlue::showLegend( bool b )
 
 bool DllGlue::showLegend()
 {
-  return _sceneManager->showLegend();
+  return _document->showLegend();
 }
 
 
@@ -636,11 +653,7 @@ void DllGlue::viewLayerExtents( CadKit::Interfaces::ILayer ^layer )
 
       if( texture.valid() )
       {
-        double lat ( 0.0 ), lon ( 0.0 ), height ( 0.0 );
-
-        texture->getCenterLatLonLength( lat, lon, height );
-        _planet->gotoLocation ( lat, lon, height );
-
+        _document->viewLayerExtents( texture.get() );
       }
     }
   }
@@ -657,46 +670,7 @@ void DllGlue::setLayerOperation( System::String ^optype, int val, CadKit::Interf
 
       if( texture.valid() )
       { 
-        if( !_planet->hasLayerOperation( texture.get() ) )
-        {
-          _planet->addLayerOperation( texture.get() );
-          _planet->removeLayer( texture.get() );
-        }             
-
-        if( optype != nullptr )
-        {
-          if( optype->Equals( "Opacity" ) )
-          {            
-            float oVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
-            _planet->opacity( oVal );   
-          }
-          else if( optype->Equals( "Top" ) )
-          {
-            _planet->top();
-          }
-          else if( optype->Equals( "Reference" ) )
-          {
-            _planet->reference();
-          }
-          else if( optype->Equals( "AbsoluteDifference" ) )
-          {
-            _planet->absoluteDifference();
-          }
-          else if( optype->Equals( "FalseColorReplacement" ) )
-          {
-            _planet->falseColorReplacement();
-          }
-          else if( optype->Equals( "HorizontalSwipe" ) )
-          {
-            float hVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
-            _planet->horizontalSwipe( hVal );
-          }
-          else if( optype->Equals( "VerticalSwipe" ) )
-          {
-            float vVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
-            _planet->verticalSwipe( vVal );
-          }
-        }
+        _document->setLayerOperation( Usul::Strings::convert( optype ), val, texture.get() );
       }
     }
   }

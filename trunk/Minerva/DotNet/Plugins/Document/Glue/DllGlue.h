@@ -11,9 +11,8 @@
 #pragma once
 
 #pragma warning ( disable : 4561 )
-#include "Minerva/Core/Scene/SceneManager.h"
-#include "OsgTools/Render/Viewer.h"
-#include "Magrathea/Planet.h"
+
+#include "Minerva/Document/MinervaDocument.h"
 
 using namespace System;
 
@@ -35,28 +34,28 @@ namespace DT
             ~DllGlue();
             !DllGlue();
 		        
-            void removeLayer( CadKit::Interfaces::ILayer ^layer );
-            void showLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progess );
-            void modifyLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progess );
+            void                  removeLayer ( CadKit::Interfaces::ILayer ^layer );
+            void                  hideLayer ( CadKit::Interfaces::ILayer ^layer );
+            void                  showLayer ( CadKit::Interfaces::ILayer ^layer );
+            void                  addLayer   ( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progess );
+            void                  modifyLayer ( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progess );
 
-            void viewLayerExtents( CadKit::Interfaces::ILayer ^layer );
+            void                  viewLayerExtents ( CadKit::Interfaces::ILayer ^layer );
 
-            void                  addKeyWordList( System::String^ kwl );
-            void                  addLayer( CadKit::Interfaces::IOssimLayer ^ layer );
-            void                  removeLayer( CadKit::Interfaces::IOssimLayer ^ layer );
+            void                  addKeyWordList ( System::String^ kwl );
+            void                  addLayer       ( CadKit::Interfaces::IOssimLayer ^ layer );
+            void                  removeLayer    ( CadKit::Interfaces::IOssimLayer ^ layer );
       
             void                  setLayerOperation( System::String^ optype, int val, CadKit::Interfaces::ILayer^ layer );
 
+            void                  timestepType ( CadKit::Interfaces::AnimateTimestep type );
+            CadKit::Interfaces::AnimateTimestep  timestepType ();
+            void                  startAnimation(float speed, bool accumulate, bool timeWindow, int numDays);
+            void                  stopAnimation();
 
-            void dirtyScene();
+            void                  viewer( CadKit::Viewer::Glue::Viewer ^viewer );
 
-            void startAnimation(float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays);
-
-            void stopAnimation();
-
-            void viewer( CadKit::Viewer::Glue::Viewer ^viewer );
-
-            void resize ( int h, int w );
+            void                  resize ( int h, int w );
 
             bool                  elevationEnabled();
             void                  elevationEnabled( bool val );
@@ -86,9 +85,7 @@ namespace DT
             void                  showLegend( bool b );
 
           private:
-            OsgTools::Render::Viewer *_viewer;
-            ::Minerva::Core::Scene::SceneManager *_sceneManager;
-            Magrathea::Planet *_planet;
+            ::Minerva::Document::MinervaDocument *_document;
 	        };
         }
       }

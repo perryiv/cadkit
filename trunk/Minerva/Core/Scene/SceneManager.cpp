@@ -49,7 +49,6 @@ _displayNode ( new osg::Geode ),
 _animateNode ( new OsgTools::Animate::DateGroup ),
 _layers(),
 _dirty ( true ),
-_dateTimeStep ( true ),
 _width( 0 ),
 _height( 0 ),
 _legend( new OsgTools::Legend::Legend ),
@@ -122,43 +121,27 @@ void SceneManager::buildScene()
 
         if( iter->second->isTemporal() )
         {
-          if ( _dateTimeStep )
-          {
-            iter->second->buildScene ( _animateNode.get() );
+          iter->second->buildScene ( _animateNode.get() );
 
-            osg::ref_ptr < osgText::Text > text ( new osgText::Text );
+          osg::ref_ptr < osgText::Text > text ( new osgText::Text );
 
-            text->setFont( OsgTools::Font::defaultFont() );
-            text->setPosition ( osg::Vec3( 5.0, _height - 25.0, 0.0 ) );
-            text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
+          text->setFont( OsgTools::Font::defaultFont() );
+          text->setPosition ( osg::Vec3( 5.0, _height - 25.0, 0.0 ) );
+          text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
 
-            text->setText ( "" );
+          text->setText ( "" );
 
-            osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-            geode->addDrawable( text.get() );
+          osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+          geode->addDrawable( text.get() );
 
-            osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-            mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+          osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+          mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
 
-            mt->addChild( geode.get() );
+          mt->addChild( geode.get() );
 
-            _projectionNode->addChild ( mt.get() );
+          _projectionNode->addChild ( mt.get() );
 
-            _animateNode->setText( text.get() );
-          }
-          else
-          {
-            osg::ref_ptr< osg::Group > group ( new osg::Group );
-            
-            iter->second->buildScene( group.get() );
-
-            /*osg::ref_ptr < OsgTools::Animate::AnimationCallback > cb ( new OsgTools::Animate::AnimationCallback );
-            cb->setDuration( _animationSpeed );
-            cb->accumulate( _accumulate );
-            group->setCullCallback ( cb.get() );*/
-
-            _root->addChild( group.get() );
-          }
+          _animateNode->setText( text.get() );
         }
         else
         {
@@ -236,14 +219,36 @@ void SceneManager::dirty( bool b )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the timestep type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SceneManager::timestepType( Settings::TimestepType type )
+{
+  _animateNode->settings()->timestepType( type );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the timestep type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OsgTools::Animate::Settings::TimestepType SceneManager::timestepType( ) const
+{
+  return _animateNode->settings()->timestepType( );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the animate flag.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SceneManager::animate( bool animate, bool accumulate, bool dateTimeStep, float speed, bool timeWindow, unsigned int numDays )
+void SceneManager::animate( bool animate, bool accumulate, float speed, bool timeWindow, unsigned int numDays )
 {
-  _dateTimeStep = dateTimeStep;
-
   _animateNode->animationSpeed ( speed );
   _animateNode->settings()->showPastDays ( accumulate );
   _animateNode->settings()->timeWindow( timeWindow );
@@ -255,6 +260,7 @@ void SceneManager::animate( bool animate, bool accumulate, bool dateTimeStep, fl
     this->dirty( true );
   }
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -380,14 +386,16 @@ void SceneManager::setDisplayText ( const std::string& displayText )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SceneManager::resize( int x, int y, int width, int height )
+void SceneManager::resize( unsigned int width, unsigned int height )
 {
   Guard guard ( _mutex );
 
-  _projectionNode->setMatrix( osg::Matrix::ortho2D( x, width, y, height ) );
+  _projectionNode->setMatrix( osg::Matrix::ortho2D( 0, width, 0, height ) );
 
   _width = width;
   _height = height;
+
+  this->dirty( true );
 }
 
 

@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -236,8 +237,7 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
-        layer.hide();
-        _dll.dirtyScene();
+        _dll.hideLayer(layer);
       }
     }
 
@@ -249,8 +249,7 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
-        layer.show();
-        _dll.dirtyScene();
+        _dll.showLayer(layer);
       }
     }
 
@@ -357,14 +356,27 @@ namespace DT.Minerva.Plugins.Document
     }
 
 
+    CadKit.Interfaces.AnimateTimestep CadKit.Interfaces.IAnimateTemporal.TimestepType
+    {
+      get
+      {
+        return _dll.timestepType();
+      }
+      set
+      {
+        _dll.timestepType(value);
+      }
+    }
+
+
     /// <summary>
     /// Start animation.
     /// </summary>
-    void CadKit.Interfaces.IAnimateTemporal.startAnimation(float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays)
+    void CadKit.Interfaces.IAnimateTemporal.startAnimation(float speed, bool accumulate, bool timeWindow, int numDays)
     {
       try
       {
-        this._startAnimation(speed, accumulate, dateTimeStep, timeWindow, numDays);
+        this._startAnimation(speed, accumulate, timeWindow, numDays);
       }
       catch (System.Exception e)
       {
@@ -392,7 +404,7 @@ namespace DT.Minerva.Plugins.Document
     /// <summary>
     /// Start the animation.
     /// </summary>
-    protected void _startAnimation(float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays)
+    protected void _startAnimation(float speed, bool accumulate, bool timeWindow, int numDays)
     {
       if (this.Dll)
       {
@@ -400,12 +412,12 @@ namespace DT.Minerva.Plugins.Document
         if (null != renderLoop)
         {
           renderLoop.UseRenderLoop = true;
-          _dll.startAnimation(speed, accumulate, dateTimeStep, timeWindow, numDays);
+          _dll.startAnimation(speed, accumulate, timeWindow, numDays);
         }
       }
       if (this.Distributed)
       {
-        _distributed.startAnimation(speed, accumulate, dateTimeStep, timeWindow, numDays);
+        _distributed.startAnimation(speed, accumulate, timeWindow, numDays);
       }
     }
 

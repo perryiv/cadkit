@@ -78,7 +78,7 @@ public:
   Layer *                    getLayer            ( int layerID );
 
   /// Resize
-  void                       resize( int x, int y, int width, int height );
+  void                       resize( unsigned int width, unsigned int height );
 
   /// Show the feedback hud.
   void                       addFeedbackHud( int width, int height );
@@ -88,12 +88,19 @@ public:
   bool                       dirty() const;
   void                       dirty( bool );
 
-  void                       animate( bool animate, bool accumulate, bool dateTimeStep, float speed, bool timeWindow, unsigned int numDays );
+  typedef OsgTools::Animate::Settings Settings;
 
+  void                        timestepType( Settings::TimestepType type );
+  Settings::TimestepType      timestepType( ) const;
+
+  void                        animate ( bool animate, bool accumulate, float speed, bool timeWindow, unsigned int numDays );
+
+  /// Clear the internal state.
   void                       clear();
 
   void                       setDisplayText ( const std::string& text );
 
+  /// Toggle the legend on and off.
   bool                       showLegend() const;
   void                       showLegend( bool b );
 
@@ -133,9 +140,6 @@ private:
   Layers _layers;
 
   bool _dirty;
-
-  /// Animate members.
-  bool _dateTimeStep;
 
   /// Screen size members.
   unsigned int _width;

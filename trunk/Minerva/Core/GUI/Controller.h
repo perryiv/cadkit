@@ -62,35 +62,11 @@ public:
   /// Stop Animation.
   void             stopAnimation();
 
-  /// Get tables that contain polygon data.
-  Strings          getPolygonTables();
-
-  /// Get all column names for given table.
-  Strings          getColumnNames( const std::string& table );
-
-  /// Get all tables that contain line data.
-  Strings          getLineTables();
-
-  /// Get all tables tat contain point data.
-  Strings          getPointTables();
-
-  /// Get the name of the tables that have point data and have a data column.
-  Strings          getPointTimeTables();
-
-  /// Return true if table has a column of given type.
-  bool             hasColumnType( const std::string& tableName, const std::string& type );
-
 protected:
   virtual ~Controller();
 
-  /// Get the geometry type from the table name.  Assumes that the table has a column named geom.
-  std::string      _getGeometryType( const std::string& tableName );
-
   /// Delete everything in given table name.
   void             _clearTable( const std::string& tableName );
-
-  /// Get all tables that have a geometry column.
-  Strings          _getGeometryTables();
 
   /// Build a query for the draw command table
   int              _executeLayerQuery( Minerva::Core::Layers::Layer *Layer );

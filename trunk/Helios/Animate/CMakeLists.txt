@@ -1,4 +1,4 @@
-PROJECT (Animated)
+PROJECT (HeliosAnimate)
 
 set(COMPILE_GUARD "_COMPILING_Animated")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
@@ -12,21 +12,11 @@ SET (SOURCES
 )
 
 # ---------- Create a Shared Library
-ADD_LIBRARY(Animated SHARED ${SOURCES} )
+ADD_LIBRARY(HeliosAnimate SHARED ${SOURCES} )
 
-# ---- Change the Suffix on the Generated Dylib --------------------------------
-IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
- SET_TARGET_PROPERTIES (Animated
-	PROPERTIES SUFFIX ".plugd"
- )
-ELSE (CMAKE_BUILD_TYPE STREQUAL "Debug")
- SET_TARGET_PROPERTIES (Animated
-	PROPERTIES SUFFIX ".plug"
- )
-ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 # Link the Library	
-TARGET_LINK_LIBRARIES(Animated
+TARGET_LINK_LIBRARIES(HeliosAnimate
 	Usul
 	OsgTools
   ${OPENTHREADS_LIB}

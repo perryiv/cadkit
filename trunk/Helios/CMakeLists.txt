@@ -6,12 +6,12 @@ FIND_PACKAGE(OpenGL)
 INCLUDE(${PROJECT_SOURCE_DIR}/FindOSG.cmake)
 INCLUDE(${PROJECT_SOURCE_DIR}/FindFoxToolkit.cmake)
 
-# Pick up if the user has set an environment variable to point to the 
-# Helios Lib and includes. If these are not set
+# Pick up IF the user has SET an environment variable to point to the 
+# Helios Lib and includes. If these are not SET
 # then they will simply be ignored.
 SET(HELIOS_BIN_DIR "$ENV{HELIOS_BIN_DIR}")
 IF ( NOT HELIOS_BIN_DIR )
-	SET(HELIOS_BIN_DIR ${PROJECT_BINARY_DIR}/Bin/${CMAKE_BUILD_TYPE} )
+SET(HELIOS_BIN_DIR ${PROJECT_BINARY_DIR}/Bin/${CMAKE_BUILD_TYPE} )
 ENDIF ( NOT HELIOS_BIN_DIR )
 
 SET (HELIOS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../ )
@@ -28,7 +28,6 @@ SET (LIBRARY_OUTPUT_PATH
 	${HELIOS_BIN_DIR}
 	CACHE PATH
 	"Single Directory for all Libraries"
-	FORCE
 )
 
 #setup the Executable output Directory
@@ -36,15 +35,14 @@ SET (EXECUTABLE_OUTPUT_PATH
 	${HELIOS_BIN_DIR}
 	CACHE PATH
 	"SINGLE Directory for all Executables."
-	FORCE
 )
 
 
 IF (APPLE)
-OPTION(OSX_DWARF_DEBUG "Use Dwarf Debug Style" ON)
+option(OSX_DWARF_DEBUG "Use Dwarf Debug Style" ON)
 IF (OSX_DWARF_DEBUG )
 	SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-2")
-ENDIF (OSX_DWARF_DEBUG )
+ENDIF(OSX_DWARF_DEBUG )
 ENDIF (APPLE)
 
 IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -61,7 +59,7 @@ ${PROJECT_SOURCE_DIR}/Fox/Core
 ${PROJECT_SOURCE_DIR}/Fox/Views
 ${PROJECT_SOURCE_DIR}/Fox/Application
 # ---- Helios Fox PlugIns -------
-${PROJECT_SOURCE_DIR}/Animate
+${PROJECT_SOURCE_DIR}/Fox/Plugins/Animate
 ${PROJECT_SOURCE_DIR}/Fox/Plugins/ClipPlanes
 ${PROJECT_SOURCE_DIR}/Fox/Plugins/Convolve
 ${PROJECT_SOURCE_DIR}/Fox/Plugins/EdgeDetect
@@ -82,6 +80,7 @@ ${PROJECT_SOURCE_DIR}/Fox/Plugins/TriangleDelegate
 ${PROJECT_SOURCE_DIR}/Fox/Plugins/VolumeDelegate
 #  ${PROJECT_SOURCE_DIR}/Fox/Plugins/VolumeToTriangles
 # ------- Helios PlugIns ----------------
+${PROJECT_SOURCE_DIR}/Animate
 ${PROJECT_SOURCE_DIR}/Plugins/About
 #  ${PROJECT_SOURCE_DIR}/Plugins/AVIWriter
 #  ${PROJECT_SOURCE_DIR}/Plugins/CalcPerVertexNormals

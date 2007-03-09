@@ -12,7 +12,6 @@ set (SOURCES
   AnimateComponent.cpp
   AnimateFactory.cpp
   FrameDumpDialog.cpp
-  Movie.cpp
 )
 
 

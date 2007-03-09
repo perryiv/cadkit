@@ -13,6 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+
 // Disable deprecated warning in Visual Studio 8 
 #if defined ( _MSC_VER ) && _MSC_VER == 1400
 #pragma warning ( disable : 4996 )
@@ -1317,7 +1318,7 @@ void Canvas::clearDevices()
 
 long Canvas::onDisplayListSet ( FX::FXObject *, FX::FXSelector, void * )
 {
-  this->viewer()->setDisplayLists();
+  this->viewer()->updateDisplayListUse();
   return 1;
 }
 

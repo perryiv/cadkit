@@ -9,13 +9,13 @@ INCLUDE(${PROJECT_SOURCE_DIR}/FindFoxToolkit.cmake)
 # Pick up if the user has set an environment variable to point to the 
 # Helios Lib and includes. If these are not set
 # then they will simply be ignored.
-set(HELIOS_BIN_DIR "$ENV{HELIOS_BIN_DIR}")
+SET(HELIOS_BIN_DIR "$ENV{HELIOS_BIN_DIR}")
 IF ( NOT HELIOS_BIN_DIR )
-set(HELIOS_BIN_DIR ${PROJECT_BINARY_DIR}/Bin/${CMAKE_BUILD_TYPE} )
+	SET(HELIOS_BIN_DIR ${PROJECT_BINARY_DIR}/Bin/${CMAKE_BUILD_TYPE} )
 ENDIF ( NOT HELIOS_BIN_DIR )
 
-set (HELIOS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../ )
-set (GENERIC_NURBS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../GenericNurbs)
+SET (HELIOS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../ )
+SET (GENERIC_NURBS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../GenericNurbs)
 
 
 #Set the Usul Bin Directory to the same as Helios
@@ -41,11 +41,11 @@ SET (EXECUTABLE_OUTPUT_PATH
 
 
 IF (APPLE)
-option(OSX_DWARF_DEBUG "Use Dwarf Debug Style" ON)
-if (OSX_DWARF_DEBUG )
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-2")
-endif(OSX_DWARF_DEBUG )
-endif (APPLE)
+OPTION(OSX_DWARF_DEBUG "Use Dwarf Debug Style" ON)
+IF (OSX_DWARF_DEBUG )
+	SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-2")
+ENDIF (OSX_DWARF_DEBUG )
+ENDIF (APPLE)
 
 IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
 ADD_DEFINITIONS("-D_DEBUG")
@@ -61,7 +61,7 @@ ${PROJECT_SOURCE_DIR}/Fox/Core
 ${PROJECT_SOURCE_DIR}/Fox/Views
 ${PROJECT_SOURCE_DIR}/Fox/Application
 # ---- Helios Fox PlugIns -------
-${PROJECT_SOURCE_DIR}/Fox/Plugins/Animate
+${PROJECT_SOURCE_DIR}/Animate
 ${PROJECT_SOURCE_DIR}/Fox/Plugins/ClipPlanes
 ${PROJECT_SOURCE_DIR}/Fox/Plugins/Convolve
 ${PROJECT_SOURCE_DIR}/Fox/Plugins/EdgeDetect
@@ -105,7 +105,7 @@ ${PROJECT_SOURCE_DIR}/Plugins/TriangleModel
 ${PROJECT_SOURCE_DIR}/Plugins/VolumeModel
 #  ${PROJECT_SOURCE_DIR}/Plugins/VoxelModel
 # ---------- Dislocation Plugins---------------
-${PROJECT_SOURCE_DIR}/../DislocationModel
-${PROJECT_SOURCE_DIR}/../DislocationDelegate
+#${PROJECT_SOURCE_DIR}/../DislocationModel
+#${PROJECT_SOURCE_DIR}/../DislocationDelegate
 )
 

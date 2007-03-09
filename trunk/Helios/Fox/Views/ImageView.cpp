@@ -331,7 +331,7 @@ void ImageView::clearScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int ImageView::x() const
+int ImageView::x() 
 {
   return this->getX();
 }
@@ -343,7 +343,7 @@ int ImageView::x() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int ImageView::y() const
+int ImageView::y() 
 {
   return this->getY();
 }
@@ -355,7 +355,7 @@ int ImageView::y() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int ImageView::height() const
+int ImageView::height() 
 {
   return this->getHeight();
 }
@@ -367,7 +367,7 @@ unsigned int ImageView::height() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int ImageView::width() const
+int ImageView::width() 
 {
   return this->getWidth();
 }

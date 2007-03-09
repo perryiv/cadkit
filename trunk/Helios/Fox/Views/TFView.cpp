@@ -248,7 +248,7 @@ void TFView::clearScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int TFView::x() const
+int TFView::x()
 {
   return this->getX();
 }
@@ -260,7 +260,7 @@ int TFView::x() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int TFView::y() const
+int TFView::y() 
 {
   return this->getY();
 }
@@ -272,7 +272,7 @@ int TFView::y() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int TFView::height() const
+ int TFView::height() 
 {
   return static_cast<unsigned int> ( Usul::Math::absolute ( this->getHeight() ) );
 }
@@ -284,7 +284,7 @@ unsigned int TFView::height() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int TFView::width() const
+ int TFView::width() 
 {
   return static_cast<unsigned int> ( Usul::Math::absolute ( this->getWidth() ) );
 }

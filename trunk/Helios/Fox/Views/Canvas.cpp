@@ -1317,7 +1317,7 @@ void Canvas::clearDevices()
 
 long Canvas::onDisplayListSet ( FX::FXObject *, FX::FXSelector, void * )
 {
-  this->viewer()->updateDisplayListUse();
+  this->viewer()->setDisplayLists();
   return 1;
 }
 

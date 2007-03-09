@@ -3,6 +3,11 @@ PROJECT(FoxTools)
 
 INCLUDE(${PROJECT_SOURCE_DIR}/../Helios/FindFoxToolkit.cmake)
 
+# ------------ Find Boost ----------------------
+SET (Boost_USE_DATE_TIME TRUE)
+INCLUDE(${PROJECT_SOURCE_DIR}/FindBoost.cmake)
+# Note that the Boost Include path will automatically get added
+
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" "${FOXTOOLKIT_INCLUDE}" )
@@ -54,6 +59,7 @@ ADD_LIBRARY(FoxTools SHARED ${SOURCES} )
 # Link the Library	
 TARGET_LINK_LIBRARIES(FoxTools 
   Usul 
+  ${Boost_LIBRARIES}
   ${FOXTOOLKIT_LIB}
 )
 

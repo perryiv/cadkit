@@ -29,6 +29,7 @@
 
 using namespace Helios::Views;
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Message maps.
@@ -331,7 +332,7 @@ void ImageView::clearScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int ImageView::x() 
+int ImageView::x() const
 {
   return this->getX();
 }
@@ -343,7 +344,7 @@ int ImageView::x()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int ImageView::y() 
+int ImageView::y() const
 {
   return this->getY();
 }
@@ -355,7 +356,7 @@ int ImageView::y()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int ImageView::height() 
+unsigned int ImageView::height() const
 {
   return this->getHeight();
 }
@@ -367,7 +368,7 @@ int ImageView::height()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int ImageView::width() 
+unsigned int ImageView::width() const
 {
   return this->getWidth();
 }

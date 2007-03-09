@@ -31,6 +31,7 @@
 
 #include <algorithm>
 
+
 using namespace Helios::Views;
 
 
@@ -248,7 +249,7 @@ void TFView::clearScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int TFView::x()
+int TFView::x() const
 {
   return this->getX();
 }
@@ -260,7 +261,7 @@ int TFView::x()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int TFView::y() 
+int TFView::y() const
 {
   return this->getY();
 }
@@ -272,7 +273,7 @@ int TFView::y()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
- int TFView::height() 
+unsigned int TFView::height() const
 {
   return static_cast<unsigned int> ( Usul::Math::absolute ( this->getHeight() ) );
 }
@@ -284,7 +285,7 @@ int TFView::y()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
- int TFView::width() 
+unsigned int TFView::width() const
 {
   return static_cast<unsigned int> ( Usul::Math::absolute ( this->getWidth() ) );
 }

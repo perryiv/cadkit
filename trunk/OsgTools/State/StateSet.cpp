@@ -595,6 +595,7 @@ float StateSet::getLineWidth ( osg::Node *node )
     return 1.0;
 
   // Get the line width
+
   return ( lw->getWidth() );
 }
 
@@ -627,5 +628,6 @@ void StateSet::hiddenLines ( const osg::Vec4f &color, osg::StateSet *normal, osg
   material->setAmbient ( osg::Material::FRONT_AND_BACK, color );
   material->setDiffuse ( osg::Material::FRONT_AND_BACK, color );
   normal->setAttributeAndModes ( material.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
-  normal->setMode ( GL_LIGHTING, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
+  
+  //normal->setMode ( GL_LIGHTING, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
 }

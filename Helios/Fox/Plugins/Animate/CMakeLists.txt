@@ -1,12 +1,16 @@
 
 
-project (FoxAnimate)
+PROJECT (FoxAnimate)
 
 ADD_DEFINITIONS ("-D_COMPILING_ANIMATE")
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${HELIOS_INCLUDE_DIR}" "${PROJECT_SOURCE_DIR}/../" "${FOXTOOLKIT_INCLUDE}" "${GENERIC_NURBS_INCLUDE_DIR}" )
+INCLUDE_DIRECTORIES( "${HELIOS_INCLUDE_DIR}" 
+	"${PROJECT_SOURCE_DIR}/../" 
+	"${FOXTOOLKIT_INCLUDE}" 
+	"${GENERIC_NURBS_INCLUDE_DIR}" 
+)
 
 set (SOURCES
   AnimateComponent.cpp
@@ -34,6 +38,7 @@ TARGET_LINK_LIBRARIES(FoxAnimate
   Usul 
   FoxTools
   OsgTools
+  HeliosAnimate
   ${FOXTOOLKIT_LIB}
   ${OSG_LIB}
 )

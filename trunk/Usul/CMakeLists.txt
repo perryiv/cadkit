@@ -37,6 +37,18 @@ SET (EXECUTABLE_OUTPUT_PATH
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" )
 
+# Add _DEBUG definition is it's debug.
+IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+ADD_DEFINITIONS("-D_DEBUG")
+ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+
+
+# Add NDEBUG definition is it's release.
+IF (CMAKE_BUILD_TYPE STREQUAL "Release")
+ADD_DEFINITIONS("-DNDEBUG")
+ENDIF (CMAKE_BUILD_TYPE STREQUAL "Release")
+
+
 #List the Sources
 SET (SOURCES
 	App/Controller.cpp

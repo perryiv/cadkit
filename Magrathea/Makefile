@@ -1,12 +1,12 @@
 # Include the header to set up the environment.
-include '${USUL_INC_DIR}/Usul/Make/header.mak'
+include ${USUL_INC_DIR}/Usul/Make/header.mak
 
 # C++ source files.
 CPP_FILES = \
-	../../src/Magrathea/LatLongGrid.cpp		\
-	../../src/Magrathea/LayerManipulator.cpp	\
-	../../src/Magrathea/Manipulator.cpp		\
-	../../src/Magrathea/Planet.cpp
+	LatLongGrid.cpp		\
+	LayerManipulator.cpp	\
+	Manipulator.cpp		\
+	Planet.cpp
 
 # The include path.
 LOCAL_INCLUDE = \
@@ -17,8 +17,7 @@ LOCAL_INCLUDE = \
 	-I$(OSG_EPHEMERIS_INC_DIR) 			\
 	-I$(BOOST_INC_DIR) 				\
 	-I$(LIBWMS_INC_DIR)				\
-	-I../../src					\
-	-I../../../
+	-I$(USUL_INC_DIR)
 
 # The libraries to link to.
 LOCAL_LIBS = \
@@ -36,4 +35,4 @@ LOCAL_CPP_FLAGS =
 TARGET = Magrathea
 
 # The common rules for compiling are in here.
-include '${USUL_INC_DIR}/Usul/Make/library.mak'
+include ${USUL_INC_DIR}/Usul/Make/library.mak

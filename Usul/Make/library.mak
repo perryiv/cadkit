@@ -1,11 +1,11 @@
 # Include the common definitions.
-include common.mak
+include $(USUL_INC_DIR)/Usul/Make/common.mak
 
 # By default we compile a library.
 default: lib
 
 # Include the common targets.
-include targets.mak
+include $(USUL_INC_DIR)/Usul/Make/targets.mak
 
 # Clobber the generated files (libraries too).
 clobber:

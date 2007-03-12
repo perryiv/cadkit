@@ -1,7 +1,6 @@
 
-PROJECT(Threads)
+PROJECT(OpenThreadsEx)
 
-SET (CMAKE_BUILD_TYPE Debug)
 SET (CMAKE_SKIP_RPATH OFF)
 
 #setup output Directories
@@ -54,7 +53,7 @@ SET (SOURCES
 )
 
 # Create a Shared Library
-ADD_LIBRARY(Threads SHARED ${SOURCES} )
+ADD_LIBRARY(OpenThreadsEx SHARED ${SOURCES} )
 
 # Link the Library	
-TARGET_LINK_LIBRARIES(Threads ${USUL_LIBRARY} ${OPENTHREADS_LIB})
+TARGET_LINK_LIBRARIES(OpenThreadsEx ${USUL_LIBRARY} ${OPENTHREADS_LIB})

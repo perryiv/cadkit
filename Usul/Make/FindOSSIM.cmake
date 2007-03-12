@@ -30,7 +30,7 @@ FIND_LIBRARY(WMS_LIB wms ${WMS_LIB_DIR} )
 FIND_LIBRARY(OSSIM_LIB ossim ${OSSIM_LIB_DIR} )
 
 # ------------ Find OssimPlanet Library --------------------
-FIND_LIBRARY(OSSIM_PLANET ossimPlanet ${OSSIM_PLANET_LIB_DIR} )
+FIND_LIBRARY(OSSIM_PLANET_LIB ossimPlanet ${OSSIM_PLANET_LIB_DIR} )
 
 # ------------ Find OssimPlanet Library --------------------
 FIND_LIBRARY(OSG_EPHEMERIS_LIB osgEphemeris ${OSG_EPHEMERIS_LIB_DIR} )

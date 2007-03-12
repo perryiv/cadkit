@@ -10,10 +10,10 @@
 
 #include "DrawCallbackImpl.h"
 
-#include "Minerva/DB/Connection.h"
+#include "Minerva/Core/DB/Connection.h"
 #include "Minerva/Core/Viz/Controller.h"
-#include "Minerva/Scene/SceneManager.h"
-#include "Minerva/DataObjects/UserData.h"
+#include "Minerva/Core/Scene/SceneManager.h"
+#include "Minerva/Core/DataObjects/UserData.h"
 
 #include "Magrathea/Planet.h"
 
@@ -30,65 +30,69 @@
 #include "osgDB/WriteFile"
 #include "osgDB/Registry"
 
-#include <direct.h>
+#ifdef _MSC_VER
+# include <direct.h>
+#endif
 
 class PickHandler : public osgGA::GUIEventHandler
 {
-public: 
-
-  PickHandler(osgProducer::Viewer& viewer, Minerva::Scene::SceneManager * manager ):
-    _viewer(viewer), _manager( manager ) {}
-        
-    ~PickHandler() {}
-    
-    bool handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter& us);
-
-    virtual void pick(const osgGA::GUIEventAdapter& ea);
-
-    void setLabel(const std::string& name)
-    {
-      _manager->setDisplayText( name );
-    }
-    
+public:
+ 
+  PickHandler(osgProducer::Viewer& viewer, Minerva::Core::Scene::SceneManager * manager ):
+     _viewer(viewer), _manager( manager ) {}
+ 
+  ~PickHandler() {}
+ 
+  bool handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter& us);
+ 
+  virtual void pick(const osgGA::GUIEventAdapter& ea);
+ 
+  void setLabel(const std::string& name)
+  {
+    _manager->setDisplayText( name );
+  }
+ 
 protected:
 
-    osgProducer::Viewer& _viewer;
-    Minerva::Scene::SceneManager::RefPtr _manager;
+  osgProducer::Viewer& _viewer;
+  Minerva::Core::Scene::SceneManager::RefPtr _manager;
 };
-
+ 
 bool PickHandler::handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter&)
 {
-    switch(ea.getEventType())
+  switch(ea.getEventType())
+  {
+  case(osgGA::GUIEventAdapter::FRAME):
     {
-    case(osgGA::GUIEventAdapter::FRAME):
-        {
-            pick(ea);
-        }
-        return false;
-        
-    default:
-        return false;
+      pick(ea);
     }
+    return false;
+    
+  default:
+    return false;
+  }
 }
-
+ 
 void PickHandler::pick(const osgGA::GUIEventAdapter& ea)
 {
-    osgUtil::IntersectVisitor::HitList hlist;
-    
-    std::string text ( "" );
-    if ( _viewer.computeIntersections(ea.getX(),ea.getY(),hlist) )
+#if 0
+  osgUtil::IntersectVisitor::HitList hlist;
+   
+  std::string text ( "" );
+  if ( _viewer.computeIntersections(ea.getX(),ea.getY(),hlist) )
     {
       osgUtil::Hit hit ( hlist.front() );
-
+    
       if (hit._geode.valid() )
-      {
-        if( Minerva::DataObjects::UserData *ud = dynamic_cast < Minerva::DataObjects::UserData* > ( hit._geode->getUserData() ) )
-        {
-          text = ud->_do->tooltip();
-        }
-      }
+	{
+	  if( Minerva::DataObjects::UserData *ud = dynamic_cast < Minerva::DataObjects::UserData* > ( hit._geode->getUserData() ) )
+	    {
+	      text = ud->_do->tooltip();
+	    }
+	}
     }
-    setLabel( text );
+  setLabel( text );
+#endif
 }
 
 
@@ -110,9 +114,6 @@ Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
 
 int main ( int argc, char **argv )
 {
-  /*std::string var = "OSG_COMPUTE_NEAR_FAR_MODE";
-  std::string value = "DO_NOT_COMPUTE_NEAR_FAR";
-  ::SetEnvironmentVariableA( var.c_str(), value.c_str() );*/
   // Set command-line arguments.
   Usul::CommandLine::Arguments::instance().set ( argc, argv );
 
@@ -138,12 +139,11 @@ int main ( int argc, char **argv )
   // create the windows and run the threads.
   viewer.realize();
 
-  Minerva::DB::Connection::RefPtr applicationConnection ( new Minerva::DB::Connection );
+  Minerva::Core::DB::Connection::RefPtr applicationConnection ( new Minerva::Core::DB::Connection );
   applicationConnection->username( "wnv_app" );
   applicationConnection->password( "wnv" );
   applicationConnection->database( "wnv_application" );
-  //applicationConnection->hostname ( "cinema.dt.asu.edu" );
-  applicationConnection->hostname ( "localhost" );
+  applicationConnection->hostname ( "cinema.dt.asu.edu" );
   applicationConnection->connect();
 
   // Create the database manager.
@@ -156,7 +156,7 @@ int main ( int argc, char **argv )
   dbManager->callback ( callback.get() );
 
   // Make the scene manager.
-  Minerva::Scene::SceneManager::RefPtr manager ( new Minerva::Scene::SceneManager );
+  Minerva::Core::Scene::SceneManager::RefPtr manager ( new Minerva::Core::Scene::SceneManager );
   dbManager->sceneManager ( manager.get() );
 
   // Make the pick handler.
@@ -172,8 +172,11 @@ int main ( int argc, char **argv )
   osg::ref_ptr < Magrathea::Planet > planet ( new Magrathea::Planet );
   planet->init();
   planet->root()->addChild ( manager->root() );
+
+#ifdef _MSC_VER
   ::chdir ( "F:\\data\\images\\earth" );
   planet->readKWL( "F:\\data\\images\\earth\\blue_marble.kwl" );
+#endif
 
   osgDB::Registry::instance()->setDatabasePager( planet->databasePager() );
 
@@ -192,7 +195,7 @@ int main ( int argc, char **argv )
 
     ::glGetIntegerv(GL_VIEWPORT, viewport);
 
-    manager->resize ( viewport[0], viewport[1], viewport[2], viewport[3] );
+    manager->resize ( static_cast < unsigned int > ( viewport[2] ), static_cast < unsigned int > ( viewport[3] ) );
 
     // If there are draw commands to process...
     if( update() && dbManager->hasEvents() )

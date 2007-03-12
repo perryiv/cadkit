@@ -9,6 +9,11 @@ INCLUDE($ENV{USUL_INC_DIR}/Usul/Make/FindOSG.cmake)
 # ------------ Find Ossim Libraries ----------------------
 INCLUDE($ENV{USUL_INC_DIR}/Usul/Make/FindOSSIM.cmake)
 
+# ------------ Find boost ----------------------
+SET ( Boost_DATE_TIME_LIBRARY TRUE )
+SET ( Boost_USE_SERIALIZATION TRUE )
+INCLUDE( $ENV{USUL_INC_DIR}/Usul/Make/FindBoost.cmake)
+
 # ------------ Find PQXX Library ----------------------
 FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
 
@@ -90,6 +95,7 @@ TARGET_LINK_LIBRARIES(Minerva
 	Usul
 	OsgTools
 	Magrathea
+	${Boost_LIBRARIES}
 	${PQXX_LIB}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}

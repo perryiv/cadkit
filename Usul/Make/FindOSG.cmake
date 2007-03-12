@@ -42,5 +42,5 @@ FIND_LIBRARY(OSG_UTIL_LIB osgUtil
  ${OSG_LIB_DIR}
 )
 
-
-
+# ------------ Find osgProducer Library ----------------------
+FIND_LIBRARY(OSG_PRODUCER_LIB osgProducer ${OSG_LIB_DIR} )

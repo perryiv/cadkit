@@ -187,11 +187,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DT.Minerva.App", "..\..\Min
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DT.Minerva.Plugins.Options", "..\..\Minerva\DotNet\Plugins\Options\DT.Minerva.Plugins.Options.csproj", "{7B6C9BCC-6FA4-4176-9422-A76D3C264FEB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Magrathea", "..\..\Magrathea\build\vs2005\Magrathea.vcproj", "{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}"
-	ProjectSection(ProjectDependencies) = postProject
-		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Layers.Ossim.Wms", "..\Plugins\Ossim\Wms\CadKit.Plugins.Layers.Ossim.Wms.csproj", "{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Trianglulate", "..\..\Minerva\Plugins\TriangulateVTK\Triangulate.vcproj", "{C304EFFA-960F-4641-AECA-6CA35D1C2EEB}"
@@ -223,6 +218,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Minerva Document", "..
 		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93} = {BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{1F0BC334-B3D3-4553-8025-DA8B50D2FA99} = {1F0BC334-B3D3-4553-8025-DA8B50D2FA99}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Magrathea", "..\..\Magrathea\Magrathea.vcproj", "{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
 Global
@@ -877,18 +878,6 @@ Global
 		{7B6C9BCC-6FA4-4176-9422-A76D3C264FEB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{7B6C9BCC-6FA4-4176-9422-A76D3C264FEB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7B6C9BCC-6FA4-4176-9422-A76D3C264FEB}.Release|Win32.ActiveCfg = Release|Any CPU
-		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Debug|Any CPU.Build.0 = Debug|Win32
-		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Debug|Win32.ActiveCfg = Debug|Win32
-		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Debug|Win32.Build.0 = Debug|Win32
-		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Release|Any CPU.ActiveCfg = Release|Win32
-		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Release|Any CPU.Build.0 = Release|Win32
-		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Release|Win32.ActiveCfg = Release|Win32
-		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Release|Win32.Build.0 = Release|Win32
 		{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -967,6 +956,16 @@ Global
 		{0EC3F7B0-CAEC-47A6-8894-195C7BD09C5A}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{0EC3F7B0-CAEC-47A6-8894-195C7BD09C5A}.Release|Win32.ActiveCfg = Release|Win32
 		{0EC3F7B0-CAEC-47A6-8894-195C7BD09C5A}.Release|Win32.Build.0 = Release|Win32
+		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Debug|Win32.Build.0 = Debug|Win32
+		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Release|Any CPU.ActiveCfg = Release|Win32
+		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Release|Win32.ActiveCfg = Release|Win32
+		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

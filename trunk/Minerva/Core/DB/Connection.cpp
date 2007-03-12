@@ -10,6 +10,10 @@
 
 #include "Minerva/Core/DB/Connection.h"
 
+#include "Usul/System/Host.h"
+
+#include "boost/algorithm/string/find.hpp"
+
 #include <iostream>
 
 using namespace Minerva::Core::DB;
@@ -150,7 +154,9 @@ void Connection::connect()
   std::ostringstream os;
 
 #ifndef _MSC_VER
-  _host = "cinema";
+  std::string host ( Usul::System::Host::name() );
+  if( boost::algorithm::find_first ( host, "viz" ) )
+    _host = "cinema";
 #endif
 
   os << "dbname=" << _database << " "

@@ -117,6 +117,14 @@ MARK_AS_ADVANCED(Boost_INCLUDE_DIR)
 # Assume we didn't find it.
 SET(Boost_FOUND 0)
 
+IF( NOT Boost_INCLUDE_DIR )
+	SET( Boost_INCLUDE_DIR "$ENV{BOOST_INC_DIR}" )
+ENDIF ( NOT Boost_INCLUDE_DIR )
+
+IF( NOT Boost_LIBRARY_DIR )
+	SET( Boost_LIBRARY_DIR "$ENV{BOOST_LIB_DIR}" )
+ENDIF ( NOT Boost_LIBRARY_DIR )
+
 # Now try to get the include and library path.
 IF(Boost_INCLUDE_DIR)
 

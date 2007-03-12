@@ -9,21 +9,28 @@ PROJECT(OsgTools)
 IF ( NOT OSGTOOLS_BIN_DIR ) 
 set(OSGTOOLS_BIN_DIR "$ENV{OSGTOOLS_BIN_DIR}")
 ENDIF ( NOT OSGTOOLS_BIN_DIR )
+
+
 # This will be true if the user has NOT defined an environment variable
+# Set directory to be same as Usul's
 IF ( NOT OSGTOOLS_BIN_DIR )
-set(OSGTOOLS_BIN_DIR ${PROJECT_BINARY_DIR}/Bin/${CMAKE_BUILD_TYPE} )
+set(OSGTOOLS_BIN_DIR "$ENV{USUL_LIB_DIR}" )
 ENDIF ( NOT OSGTOOLS_BIN_DIR )
+
 
 # ------------ Find OpenGL Library ----------------------
 FIND_PACKAGE(OpenGL)
 
+
 # ------------ Find OpenSceneGraph Libraries ----------------------
-INCLUDE(${PROJECT_SOURCE_DIR}/FindOSG.cmake)
+INCLUDE($ENV{USUL_INC_DIR}/Usul/Make/FindOSG.cmake)
+
 
 # ------------ Find Boost ----------------------
 SET (Boost_USE_DATE_TIME TRUE)
-INCLUDE(${PROJECT_SOURCE_DIR}/FindBoost.cmake)
+INCLUDE($ENV{USUL_INC_DIR}/Usul/Make/FindBoost.cmake)
 # Note that the Boost Include path will automatically get added
+
 
 #setup output Directories
 SET (LIBRARY_OUTPUT_PATH

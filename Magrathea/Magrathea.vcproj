@@ -190,51 +190,51 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\src\Magrathea\Export.h"
+				RelativePath=".\Export.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\Magrathea\LatLongGrid.cpp"
+				RelativePath=".\LatLongGrid.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\Magrathea\LatLongGrid.h"
+				RelativePath=".\LatLongGrid.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\Magrathea\LayerManipulator.cpp"
+				RelativePath=".\LayerManipulator.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\Magrathea\LayerManipulator.h"
+				RelativePath=".\LayerManipulator.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\Magrathea\Manipulator.cpp"
+				RelativePath=".\Manipulator.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\Magrathea\Manipulator.h"
+				RelativePath=".\Manipulator.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\Magrathea\Planet.cpp"
+				RelativePath=".\Planet.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\Magrathea\Planet.h"
+				RelativePath=".\Planet.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\Magrathea\Project.h"
+				RelativePath=".\Project.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\Magrathea\Resample.h"
+				RelativePath=".\Resample.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\Magrathea\Subdivide.h"
+				RelativePath=".\Subdivide.h"
 				>
 			</File>
 		</Filter>

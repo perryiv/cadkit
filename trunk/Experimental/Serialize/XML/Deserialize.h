@@ -1,0 +1,67 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author: Perry L Miller IV
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Classes and functions for serialization.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _SERIALIZE_XML_DESERIALIZE_FUNCTIONS_H_
+#define _SERIALIZE_XML_DESERIALIZE_FUNCTIONS_H_
+
+#include "XmlTree/Document.h"
+
+
+namespace Serialize {
+namespace XML {
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize the objects.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Container > inline void deserialize ( const XmlTree::Document &document, Container &c )
+{
+  typedef typename Container::value_type PointerType;
+  typedef typename PointerType::element_type ObjectType;
+  typedef typename XmlTree::Document::Children::const_iterator Itr;
+  for ( Itr i = document.children().begin(); i != document.children().end(); ++i )
+  {
+    XmlTree::Node::RefPtr node ( i->get() );
+    PointerType object ( dynamic_cast < ObjectType * > ( Factory::instance().create ( node->name() ) ) );
+    object->deserialize ( *node );
+    c.push_back ( object );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize the objects.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Container > inline void deserialize ( const std::string &file, Container &c )
+{
+  XmlTree::XercesLife life;
+  XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
+  document->load ( file );
+  deserialize ( *document, c );
+}
+
+
+} // namespace Serialize
+} // namespace XML
+
+
+#endif // _SERIALIZE_XML_DESERIALIZE_FUNCTIONS_H_

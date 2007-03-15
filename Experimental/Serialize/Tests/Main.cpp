@@ -187,7 +187,7 @@ void _run()
     std::string file1, file2;
     Usul::File::contents ( FILE_NAME_1, false, file1 );
     Usul::File::contents ( FILE_NAME_2, false, file2 );
-    USUL_ASSERT ( file1 == file2 );
+    USUL_ASSERT ( file1.compare ( file2 ) == 0 );
   }
 }
 

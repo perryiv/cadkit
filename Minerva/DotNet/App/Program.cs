@@ -1,6 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
 
 namespace DT.Minerva.App
 {
@@ -9,7 +15,7 @@ namespace DT.Minerva.App
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
-    [STAThread]
+    [System.STAThread]
     static void Main()
     {
       Program._main();
@@ -37,7 +43,7 @@ namespace DT.Minerva.App
           System.Diagnostics.Trace.WriteLine(CadKit.Referenced.Base.ExistingObjects);
         }
       }
-      catch (Exception e)
+      catch (System.Exception e)
       {
         System.Windows.Forms.MessageBox.Show(e.Message);
       }
@@ -86,7 +92,7 @@ namespace DT.Minerva.App
         // Unload the native plugins.
         CadKit.Init.Glue.Plugins.unloadPlugins();
       }
-      catch (Exception e)
+      catch (System.Exception e)
       {
         System.Windows.Forms.MessageBox.Show(e.Message);
       }

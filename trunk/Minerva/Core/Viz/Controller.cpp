@@ -12,20 +12,6 @@
 #include "Minerva/Core/Viz/Progress.h"
 #include "Minerva/Core/postGIS/Geometry.h"
 
-#include "boost/algorithm/string/replace.hpp"
-#include "boost/serialization/base_object.hpp"
-#include "boost/serialization/nvp.hpp"
-
-#include "Minerva/Core/Layers/Layer.h"
-#include "Minerva/Core/Layers/LineLayer.h"
-#include "Minerva/Core/Layers/PointLayer.h"
-#include "Minerva/Core/Layers/PointTimeLayer.h"
-#include "Minerva/Core/Layers/PolygonLayer.h"
-#include "Minerva/Core/Layers/RLayer.h"
-#include "Minerva/Core/Layers/PolygonTimeLayer.h"
-#include "Minerva/Core/Functors/SingleColorFunctor.h"
-#include "Minerva/Core/Functors/GradientColorFunctor.h"
-
 #include "Usul/Types/Types.h"
 #include "Usul/Endian/Endian.h"
 #include "Usul/File/Temp.h"
@@ -356,25 +342,8 @@ Minerva::Core::Layers::Layer* Controller::_getLayer( const std::string drawComma
 
   // Get the xml data.
   std::string xml ( row["xml_data"].as< std::string > () );
-  
-  // Create the archive.
-  std::istringstream in ( xml );
-  boost::archive::xml_iarchive ia ( in );
 
-  // Register types.
-  /*ia.register_type<Minerva::Core::Layers::LineLayer>();
-  ia.register_type<Minerva::Core::Layers::PolygonLayer>();
-  ia.register_type<Minerva::Core::Layers::PointLayer>();
-  ia.register_type<Minerva::Core::Layers::PointTimeLayer>();
-  ia.register_type<Minerva::Core::Layers::RLayer>();
-  ia.register_type<Minerva::Core::Functors::SingleColorFunctor>();
-  ia.register_type<Minerva::Core::Functors::GradientColorFunctor>();
-  ia.register_type<Minerva::Layers::PolygonTimeLayer>();*/
-
-  // Deserialize.
-  Minerva::Core::Layers::Layer *layer ( 0x0 );
-  ia >> boost::serialization::make_nvp( "Layer", layer );
-  return layer;
+  return Minerva::Core::deserialize( xml );
 }
 
 

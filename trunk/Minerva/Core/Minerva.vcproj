@@ -229,6 +229,10 @@
 					RelativePath=".\Export.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Serialize.h"
+					>
+				</File>
 				<Filter
 					Name="GUI"
 					>

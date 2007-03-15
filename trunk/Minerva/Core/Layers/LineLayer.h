@@ -18,6 +18,9 @@
 
 #include "osg/Vec4"
 
+#include "boost/serialization/base_object.hpp"
+#include "boost/serialization/nvp.hpp"
+#include "boost/serialization/version.hpp"
 namespace boost { namespace serialization { class access; } }
 
 namespace Minerva {
@@ -65,7 +68,6 @@ void LineLayer::serialize( Archive &ar, const unsigned int version )
 
 
 //BOOST_CLASS_EXPORT_GUID( LineLayer, "LineLayer" )
-
 
 }
 }

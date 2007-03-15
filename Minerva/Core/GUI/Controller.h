@@ -11,16 +11,11 @@
 #ifndef __GUI_CONTROLLER_H__
 #define __GUI_CONTROLLER_H__
 
+// Must be included first.
+#include "Minerva/Core/Serialize.h"
+
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/DB/Connection.h"
-
-// This needs to be included before any boost/serialization headers.
-#include "boost/archive/xml_oarchive.hpp"
-
-#include "boost/serialization/base_object.hpp"
-#include "boost/serialization/nvp.hpp"
-
-#include "pqxx/pqxx"
 
 #include <vector>
 #include <string>

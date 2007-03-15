@@ -26,7 +26,8 @@ using namespace Minerva::Core::postGIS;
 ///////////////////////////////////////////////////////////////////////////////
 
 Line::Line ( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F ) :
-BaseClass( connection, tableName, id, srid, F )
+BaseClass( connection, tableName, id, srid, F ),
+_points()
 {
 }
 
@@ -64,7 +65,8 @@ osg::Node* Line::buildScene()
 
 osg::Geometry* Line::buildGeometry()
 {
-  VertexList vertexList ( _parser->getVertices() );
+  if( _points.empty() )
+    this->_buildLatLongPoints();
 
   // Create the geometry
   osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
@@ -73,19 +75,10 @@ osg::Geometry* Line::buildGeometry()
 
   osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
 
-  for( VertexList::iterator iter = vertexList.begin(); iter != vertexList.end(); ++iter )
+  for( PointsList::iterator iter = _points.begin(); iter != _points.end(); ++iter )
   {
-    typedef std::vector< ossimGpt > LatLongPoints;
-    //typedef Magrathea::Resample< LatLongPoints > Resample;
-
-    LatLongPoints latLongPoints;
-    this->_convertToLatLong( *iter, latLongPoints );
-
     LatLongPoints sampledPoints;
-
-    //Resample resample;
-    //resample ( latLongPoints, sampledPoints );
-    Magrathea::resample( latLongPoints, sampledPoints );
+    Magrathea::resample( *iter, sampledPoints );
 
     osg::ref_ptr< osg::Vec3Array > newVertices ( new osg::Vec3Array );
     Magrathea::convertVerticesToEarthCoordinates( sampledPoints, *newVertices, this->zOffset() );
@@ -102,4 +95,25 @@ osg::Geometry* Line::buildGeometry()
 	geometry->setVertexArray( vertices.get() );
 
   return geometry.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the lat long points.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Line::_buildLatLongPoints()
+{
+  _points.clear();
+
+  VertexList vertexList ( _parser->getVertices() );
+
+  for( VertexList::iterator iter = vertexList.begin(); iter != vertexList.end(); ++iter )
+  {
+    LatLongPoints latLongPoints;
+    this->_convertToLatLong( *iter, latLongPoints );
+    _points.push_back ( latLongPoints );
+  }
 }

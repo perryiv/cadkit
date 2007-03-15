@@ -15,9 +15,10 @@
 # define NOMINMAX
 #endif
 
-#include "Minerva/Core/Export.h"
+// Must be included first.
+#include "Minerva/Core/Serialize.h"
 
-#include "boost/archive/xml_iarchive.hpp"
+#include "Minerva/Core/Export.h"
 
 #include "Minerva/Core/DB/Connection.h"
 #include "Minerva/Core/Layers/Layer.h"

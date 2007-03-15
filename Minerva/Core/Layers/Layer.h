@@ -31,8 +31,10 @@ namespace osg { class Group; }
 #ifdef _MSC_VER
 #  pragma warning ( disable : 4561 )
 #endif
+
 #include "boost/serialization/split_member.hpp"
 #include "boost/serialization/is_abstract.hpp"
+
 namespace boost { namespace serialization { class access; } }
 
 #include <string>
@@ -234,33 +236,6 @@ template<class Archive> void Layer::load(Archive & ar, const unsigned int versio
   ar & boost::serialization::make_nvp ( "ColorColumn", _colorColumn );
 }
 
-#if 0
-//template < typename Iter >
-inline osg::Vec4 Layer::_color ( const pqxx::result::const_iterator& iter )
-{
-  osg::Vec4 color( 0.0, 0.0, 0.0, 1.0 );
-
-  try
-  {
-    if( !this->colorColumn().empty() )
-    {
-      std::string column ( this->colorColumn() );
-      double fieldValue = iter[ column.c_str() ].as < double > ();
-      color = (*this->colorFunctor())(fieldValue);
-    }
-    else
-    {
-      color = (*this->colorFunctor())( 0.0 );
-    }
-  }
-  catch ( const std::exception& e )
-  {
-    std::cout << "Error 2909352868: " << e.what() << std::endl;
-  }
-
-  return color;
-}
-#endif
 
 }
 }

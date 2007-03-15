@@ -14,15 +14,6 @@
 #include "boost/algorithm/string/trim.hpp"
 #include "boost/algorithm/string/replace.hpp"
 
-#include "Minerva/Core/Layers/LineLayer.h"
-#include "Minerva/Core/Layers/PolygonLayer.h"
-#include "Minerva/Core/Layers/PointLayer.h"
-#include "Minerva/Core/Layers/PointTimeLayer.h"
-#include "Minerva/Core/Layers/RLayer.h"
-#include "Minerva/Core/Layers/PolygonTimeLayer.h"
-#include "Minerva/Core/Functors/SingleColorFunctor.h"
-#include "Minerva/Core/Functors/GradientColorFunctor.h"
-
 #include <iostream>
 
 using namespace Minerva::Core::GUI;
@@ -206,23 +197,8 @@ void Controller::modifyLayer( Minerva::Core::Layers::Layer *layer )
 
 int Controller::_executeLayerQuery( Minerva::Core::Layers::Layer *layer )
 {
-  // Create the archive.
-  std::ostringstream os;
-  //boost::archive::xml_oarchive oa ( os );
-  //
-  //// Register types.
-  //oa.register_type<Minerva::Core::Layers::LineLayer>();
-  //oa.register_type<Minerva::Core::Layers::PolygonLayer>();
-  //oa.register_type<Minerva::Core::Layers::PointLayer>();
-  //oa.register_type<Minerva::Core::Layers::PointTimeLayer>();
-  //oa.register_type<Minerva::Core::Layers::RLayer>();
-  //oa.register_type<Minerva::Core::Functors::SingleColorFunctor>();
-  //oa.register_type<Minerva::Core::Functors::GradientColorFunctor>();
-  //oa.register_type<Minerva::Core::Layers::PolygonTimeLayer>();
-
-  //// Serialize.
-  //oa << boost::serialization::make_nvp( "Layer", layer );
-  std::string xml ( os.str() );
+  // Create the xml string.
+  std::string xml ( Minerva::Core::serialize( layer ) );
   
   // Enter the data into the database.
   typedef Minerva::Core::DB::Connection::Values Values;

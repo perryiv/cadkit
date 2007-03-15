@@ -31,6 +31,14 @@ public:
 
 protected:
   ~Line();
+
+  void                             _buildLatLongPoints();
+
+private:
+  typedef std::vector < ossimGpt > LatLongPoints;
+  typedef std::vector < LatLongPoints > PointsList;
+
+  PointsList _points;
 };
 
 }

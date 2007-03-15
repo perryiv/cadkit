@@ -10,12 +10,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Class that wraps a data member.
+//  Class that wraps a simple data member.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _SERIALIZE_XML_DATA_MEMBER_CLASS_
-#define _SERIALIZE_XML_DATA_MEMBER_CLASS_
+#ifndef _SERIALIZE_XML_SIMPLE_DATA_MEMBER_CLASS_
+#define _SERIALIZE_XML_SIMPLE_DATA_MEMBER_CLASS_
 
 #include "Serialize/XML/MemberBase.h"
 #include "Serialize/XML/SetValue.h"
@@ -25,48 +25,38 @@ namespace Serialize {
 namespace XML {
 
 
-template < class T > class DataMember : public MemberBase 
+template < class T > class SimpleDataMember : public MemberBase 
 {
 public:
 
-  USUL_DECLARE_REF_POINTERS ( DataMember );
+  USUL_DECLARE_REF_POINTERS ( SimpleDataMember );
   typedef MemberBase BaseClass;
 
-  DataMember ( const std::string &name, T &value ) : BaseClass ( name ),
+  SimpleDataMember ( const std::string &name, T &value ) : BaseClass ( name ),
     _value ( value )
   {
   }
 
   virtual void serialize ( XmlTree::Node &parent ) const
   {
-    parent.children().push_back ( new XmlTree::Node ( this->name(), this->_getValue() ) );
+    parent.children().push_back ( new XmlTree::Node ( this->name(), _value ) );
   }
 
   virtual void deserialize ( const XmlTree::Node &node )
   {
     if ( this->name() == node.name() )
     {
-      this->_setValue ( node.value() );
+      Serialize::XML::SetValue<T>::set ( node.value(), _value );
     }
   }
 
 protected:
 
-  virtual ~DataMember()
+  virtual ~SimpleDataMember()
   {
   }
 
 private:
-
-  void _setValue ( const std::string &s )
-  {
-    Serialize::XML::SetValue<T>::set ( s, _value );
-  }
-
-  const T &_getValue() const
-  {
-    return _value;
-  }
 
   T &_value;
 };
@@ -76,4 +66,4 @@ private:
 } // namespace XML
 
 
-#endif // _SERIALIZE_XML_DATA_MEMBER_CLASS_
+#endif // _SERIALIZE_XML_SIMPLE_DATA_MEMBER_CLASS_

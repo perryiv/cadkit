@@ -30,12 +30,12 @@ namespace XML {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class Container > inline void deserialize ( const XmlTree::Document &document, Container &c )
+template < class Container > inline void deserialize ( const XmlTree::Node &parent, Container &c )
 {
   typedef typename Container::value_type PointerType;
   typedef typename PointerType::element_type ObjectType;
-  typedef typename XmlTree::Document::Children::const_iterator Itr;
-  for ( Itr i = document.children().begin(); i != document.children().end(); ++i )
+  typedef typename XmlTree::Node::Children::const_iterator Itr;
+  for ( Itr i = parent.children().begin(); i != parent.children().end(); ++i )
   {
     XmlTree::Node::RefPtr node ( i->get() );
     PointerType object ( dynamic_cast < ObjectType * > ( Factory::instance().create ( node->name() ) ) );

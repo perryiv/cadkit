@@ -31,7 +31,7 @@ namespace XML {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class Itr > inline void serialize ( XmlTree::Document &document, Itr first, Itr last )
+template < class Itr > inline void serialize ( XmlTree::Node &parent, Itr first, Itr last )
 {
   typedef typename Itr::value_type ValueType;
   for ( Itr i = first; i != last; ++i )
@@ -40,7 +40,7 @@ template < class Itr > inline void serialize ( XmlTree::Document &document, Itr 
     if ( true == value.valid() )
     {
       XmlTree::Node::ValidRefPtr node ( new XmlTree::Node ( value->className() ) );
-      document.children().push_back ( node );
+      parent.children().push_back ( node );
       value->serialize ( *node );
     }
   }

@@ -17,7 +17,8 @@
 #ifndef _SERIALIZE_XML_DATA_MEMBER_MAP_CLASS_
 #define _SERIALIZE_XML_DATA_MEMBER_MAP_CLASS_
 
-#include "Serialize/XML/DataMember.h"
+#include "Serialize/XML/SimpleDataMember.h"
+#include "Serialize/XML/SmartPointerMember.h"
 
 #include "XmlTree/Node.h"
 
@@ -49,7 +50,13 @@ public:
 
   template < class T > void addMember ( const std::string &name, T &value )
   {
-    this->_addMember ( new Serialize::XML::DataMember<T> ( name, value ) );
+    this->_addMember ( new Serialize::XML::SimpleDataMember<T> ( name, value ) );
+  }
+
+  template < class T, class C > void addMember ( const std::string &name, Usul::Pointers::SmartPointer<T,C> value )
+  {
+    typedef Usul::Pointers::SmartPointer<T,C> PointerType;
+    this->_addMember ( new Serialize::XML::SmartPointerMember<PointerType> ( name, value ) );
   }
 
   void        serialize ( XmlTree::Node &parent ) const;

@@ -17,7 +17,7 @@
 #include "Serialize/XML/Serialize.h"
 #include "Serialize/XML/Deserialize.h"
 #include "Serialize/XML/RegisterCreator.h"
-#include "Serialize/XML/DataMember.h"
+#include "Serialize/XML/SimpleDataMember.h"
 #include "Serialize/XML/DataMemberMap.h"
 #include "Serialize/XML/Macros.h"
 
@@ -136,12 +136,88 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Class to be serialized.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class ClassC : public ClassA
+{
+public:
+
+  USUL_DECLARE_REF_POINTERS ( ClassC );
+  typedef ClassA BaseClass;
+
+  ClassC() : BaseClass(),
+    _b ( new ClassB )
+  {
+    _name = "Default name for ClassC";
+    SERIALIZE_XML_ADD_MEMBER ( _b );
+  }
+
+protected:
+
+  virtual ~ClassC()
+  {
+  }
+
+private:
+
+  ClassB::RefPtr _b;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( ClassC );
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Class to be serialized.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class ClassD : public ClassB
+{
+public:
+
+  USUL_DECLARE_REF_POINTERS ( ClassC );
+  typedef ClassB BaseClass;
+
+  ClassD() : BaseClass(),
+    _c ( new ClassC ),
+    _id1D ( ::rand() ),
+    _id2D ( ::rand() )
+  {
+    _name = "Default name for ClassD";
+    SERIALIZE_XML_ADD_MEMBER ( _c );
+    SERIALIZE_XML_ADD_MEMBER ( _id1D );
+    SERIALIZE_XML_ADD_MEMBER ( _id2D );
+  }
+
+protected:
+
+  virtual ~ClassD()
+  {
+  }
+
+private:
+
+  ClassC::RefPtr _c;
+  double _id1D;
+  double _id2D;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( ClassD );
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Register some types.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 SERIALIZE_XML_REGISTER_CREATOR ( ClassA );
 SERIALIZE_XML_REGISTER_CREATOR ( ClassB );
+SERIALIZE_XML_REGISTER_CREATOR ( ClassC );
+SERIALIZE_XML_REGISTER_CREATOR ( ClassD );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -157,7 +233,7 @@ void _run()
 
   // Create objects using factory.
   {
-    const std::string names[] = { "ClassA", "ClassB", "ClassC" };
+    const std::string names[] = { "ClassA", "ClassB", "ClassC", "ClassD", "ClassE" };
     const unsigned int num ( sizeof ( names ) / sizeof ( std::string ) );
 
     objects.reserve ( num );

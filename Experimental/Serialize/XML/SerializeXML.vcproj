@@ -225,10 +225,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\DataMember.h"
-				>
-			</File>
-			<File
 				RelativePath=".\DataMemberMap.cpp"
 				>
 			</File>
@@ -274,6 +270,14 @@
 			</File>
 			<File
 				RelativePath=".\SetValue.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SimpleDataMember.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SmartPointerMember.h"
 				>
 			</File>
 			<File

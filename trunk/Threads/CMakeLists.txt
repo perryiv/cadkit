@@ -1,7 +1,27 @@
-
 PROJECT(OpenThreadsEx)
 
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
 
+
+# setup output Directories
+SET (LIBRARY_OUTPUT_PATH
+	${PROJECT_BINARY_DIR}/Bin
+	CACHE PATH
+	"Single Directory for all Libraries"
+)
+
+#setup the Executable output Directory
+SET (EXECUTABLE_OUTPUT_PATH
+	${PROJECT_BINARY_DIR}/Bin
+	CACHE PATH
+	"Single Directory for all Executables."
+)
+
+# Make sure Usul is built
+SUBDIRS (${PROJECT_SOURCE_DIR}/../Usul)
+
+# Find OSG
+INCLUDE ( ${CMakeModules}/FindOSG.cmake)
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory

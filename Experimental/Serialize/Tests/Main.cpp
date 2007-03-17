@@ -37,6 +37,8 @@
 #include <string>
 #include <ctime>
 #include <map>
+#include <vector>
+#include <list>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -188,7 +190,7 @@ class ClassD : public ClassB
 {
 public:
 
-  USUL_DECLARE_REF_POINTERS ( ClassC );
+  USUL_DECLARE_REF_POINTERS ( ClassD );
   typedef ClassB BaseClass;
 
   ClassD() : BaseClass(),
@@ -228,7 +230,7 @@ class ClassE : public ClassD
 {
 public:
 
-  USUL_DECLARE_REF_POINTERS ( ClassC );
+  USUL_DECLARE_REF_POINTERS ( ClassE );
   typedef ClassD BaseClass;
   typedef std::map<std::string,ClassC::RefPtr> MapC;
   typedef std::map<std::string,ClassA::RefPtr> MapA;
@@ -268,6 +270,53 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Class to be serialized.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class ClassF : public ClassA
+{
+public:
+
+  USUL_DECLARE_REF_POINTERS ( ClassF );
+  typedef ClassA BaseClass;
+  typedef std::vector<ClassB::RefPtr> VectorB;
+  typedef std::list<ClassE::RefPtr> ListE;
+
+  ClassF() : BaseClass(),
+    _vecB(),
+    _listE()
+  {
+    _name = "Default name for ClassF";
+
+    SERIALIZE_XML_ADD_MEMBER ( _vecB );
+    SERIALIZE_XML_ADD_MEMBER ( _listE );
+
+    for ( unsigned int i = 0; i < 10; ++i )
+    {
+      _vecB.push_back ( new ClassB );
+      _vecB.push_back ( new ClassD );
+      _listE.push_back ( new ClassE );
+    }
+  }
+
+protected:
+
+  virtual ~ClassF()
+  {
+  }
+
+private:
+
+  VectorB _vecB;
+  ListE _listE;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( ClassF );
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Register some types.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -277,6 +326,7 @@ SERIALIZE_XML_REGISTER_CREATOR ( ClassB );
 SERIALIZE_XML_REGISTER_CREATOR ( ClassC );
 SERIALIZE_XML_REGISTER_CREATOR ( ClassD );
 SERIALIZE_XML_REGISTER_CREATOR ( ClassE );
+SERIALIZE_XML_REGISTER_CREATOR ( ClassF );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -291,9 +341,9 @@ void _run()
   Objects objects;
 
   // Create objects using factory.
-  for ( unsigned j = 0; j < 100; ++j )
+  for ( unsigned j = 0; j < 10; ++j )
   {
-    const std::string names[] = { "ClassA", "ClassB", "ClassC", "ClassD", "ClassE", "ClassF" };
+    const std::string names[] = { "ClassA", "ClassB", "ClassC", "ClassD", "ClassE", "ClassF", "ClassG" };
     const unsigned int num ( sizeof ( names ) / sizeof ( std::string ) );
 
     objects.reserve ( num );
@@ -305,7 +355,7 @@ void _run()
       {
         std::cout << names[i] << " exists" << std::endl;
         objects.push_back ( object );
-        std::ostringstream out; out << "Object " << j;
+        std::ostringstream out; out << "Object " << j * num + i;
         object->name ( out.str() );
       }
       else
@@ -360,6 +410,6 @@ int main ( int argc, char **argv )
   ::srand ( static_cast < unsigned int > ( ::time ( 0x0 ) ) );
   Usul::Functions::safeCall ( _run,   "3566023837" );
   Usul::Functions::safeCall ( _clean, "3022189564" );
-  std::cin.get();
+  //std::cin.get();
   return 0;
 }

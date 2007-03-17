@@ -265,6 +265,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PointerSequenceMember.h"
+				>
+			</File>
+			<File
 				RelativePath=".\RegisterCreator.h"
 				>
 			</File>

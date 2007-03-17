@@ -77,7 +77,10 @@ void DataMemberMap::deserialize ( const XmlTree::Node &node )
       if ( _map.end() != j )
       {
         Serialize::XML::MemberBase::RefPtr deserializer ( j->second );
-        deserializer->deserialize ( *member );
+        if ( true == deserializer.valid() )
+        {
+          deserializer->deserialize ( *member );
+        }
       }
     }
   }

@@ -261,6 +261,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PointerMapMember.h"
+				>
+			</File>
+			<File
 				RelativePath=".\RegisterCreator.h"
 				>
 			</File>

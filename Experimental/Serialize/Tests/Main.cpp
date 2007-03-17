@@ -78,6 +78,16 @@ public:
     this->_addMember ( "_name", _name );
   }
 
+  void name ( const std::string &n )
+  {
+    _name = n;
+  }
+
+  const std::string &name() const
+  {
+    return _name;
+  }
+
 protected:
 
   virtual ~ClassA()
@@ -210,6 +220,45 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Class to be serialized.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class ClassE : public ClassD
+{
+public:
+
+  USUL_DECLARE_REF_POINTERS ( ClassC );
+  typedef ClassD BaseClass;
+  typedef std::map<std::string,ClassC::RefPtr> Map;
+
+  ClassE() : BaseClass(),
+    _map()
+  {
+    _name = "Default name for ClassE";
+    SERIALIZE_XML_ADD_MEMBER ( _map );
+    _map["Key1"] = new ClassC;
+    _map["Key2"] = new ClassC;
+    _map["Key3"] = new ClassC;
+    _map["Key4"] = new ClassC;
+  }
+
+protected:
+
+  virtual ~ClassE()
+  {
+  }
+
+private:
+
+  Map _map;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( ClassE );
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Register some types.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -218,6 +267,7 @@ SERIALIZE_XML_REGISTER_CREATOR ( ClassA );
 SERIALIZE_XML_REGISTER_CREATOR ( ClassB );
 SERIALIZE_XML_REGISTER_CREATOR ( ClassC );
 SERIALIZE_XML_REGISTER_CREATOR ( ClassD );
+SERIALIZE_XML_REGISTER_CREATOR ( ClassE );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -232,8 +282,9 @@ void _run()
   Objects objects;
 
   // Create objects using factory.
+  for ( unsigned j = 0; j < 100; ++j )
   {
-    const std::string names[] = { "ClassA", "ClassB", "ClassC", "ClassD", "ClassE" };
+    const std::string names[] = { "ClassA", "ClassB", "ClassC", "ClassD", "ClassE", "ClassF" };
     const unsigned int num ( sizeof ( names ) / sizeof ( std::string ) );
 
     objects.reserve ( num );
@@ -241,8 +292,17 @@ void _run()
     for ( unsigned int i = 0; i < num; ++i )
     {
       ClassA::RefPtr object ( dynamic_cast < ClassA * > ( Serialize::XML::Factory::instance().create ( names[i] ) ) );
-      std::cout << names[i] << ( ( object.valid() ) ? " exists" : " does not exist" ) << std::endl;
-      objects.push_back ( object );
+      if ( true == object.valid() )
+      {
+        std::cout << names[i] << " exists" << std::endl;
+        objects.push_back ( object );
+        std::ostringstream out; out << "Object " << j;
+        object->name ( out.str() );
+      }
+      else
+      {
+        std::cout << names[i] << " does not exist" << std::endl;
+      }
     }
   }
 

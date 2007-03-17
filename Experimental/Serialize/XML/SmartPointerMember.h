@@ -18,7 +18,6 @@
 #define _SERIALIZE_XML_SMART_POINTER_DATA_MEMBER_CLASS_
 
 #include "Serialize/XML/MemberBase.h"
-#include "Serialize/XML/SetValue.h"
 
 
 namespace Serialize {
@@ -59,11 +58,6 @@ protected:
   }
 
 private:
-
-  void _setValue ( const std::string &s )
-  {
-    //Serialize::XML::SetValue<T>::set ( s, _value );
-  }
 
   T _value; // T is a smart-pointer, so a copy is ok.
 };

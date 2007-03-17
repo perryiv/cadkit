@@ -19,6 +19,7 @@
 
 #include "Serialize/XML/SimpleDataMember.h"
 #include "Serialize/XML/SmartPointerMember.h"
+#include "Serialize/XML/PointerMapMember.h"
 
 #include "XmlTree/Node.h"
 
@@ -57,6 +58,12 @@ public:
   {
     typedef Usul::Pointers::SmartPointer<T,C> PointerType;
     this->_addMember ( new Serialize::XML::SmartPointerMember<PointerType> ( name, value ) );
+  }
+
+  template < class K, class V > void addMember ( const std::string &name, std::map<K,V> &value )
+  {
+    typedef std::map<K,V> MapType;
+    this->_addMember ( new Serialize::XML::PointerMapMember<MapType> ( name, value ) );
   }
 
   void        serialize ( XmlTree::Node &parent ) const;

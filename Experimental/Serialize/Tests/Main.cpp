@@ -230,17 +230,25 @@ public:
 
   USUL_DECLARE_REF_POINTERS ( ClassC );
   typedef ClassD BaseClass;
-  typedef std::map<std::string,ClassC::RefPtr> Map;
+  typedef std::map<std::string,ClassC::RefPtr> MapC;
+  typedef std::map<std::string,ClassA::RefPtr> MapA;
 
   ClassE() : BaseClass(),
-    _map()
+    _map1(),
+    _map2()
   {
     _name = "Default name for ClassE";
-    SERIALIZE_XML_ADD_MEMBER ( _map );
-    _map["Key1"] = new ClassC;
-    _map["Key2"] = new ClassC;
-    _map["Key3"] = new ClassC;
-    _map["Key4"] = new ClassC;
+
+    SERIALIZE_XML_ADD_MEMBER ( _map1 );
+    _map1["Key1"] = new ClassC;
+    _map1["Key2"] = new ClassC;
+    _map1["Key3"] = new ClassC;
+    _map1["Key4"] = new ClassC;
+
+    SERIALIZE_XML_ADD_MEMBER ( _map2 );
+    _map2["KeyA"] = new ClassB;
+    _map2["KeyB"] = new ClassC;
+    _map2["KeyC"] = new ClassD;
   }
 
 protected:
@@ -251,7 +259,8 @@ protected:
 
 private:
 
-  Map _map;
+  MapC _map1;
+  MapA _map2;
 
   SERIALIZE_XML_DEFINE_MEMBERS ( ClassE );
 };

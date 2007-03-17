@@ -20,6 +20,7 @@
 #include "Serialize/XML/SimpleDataMember.h"
 #include "Serialize/XML/SmartPointerMember.h"
 #include "Serialize/XML/PointerMapMember.h"
+#include "Serialize/XML/PointerSequenceMember.h"
 
 #include "XmlTree/Node.h"
 
@@ -28,6 +29,8 @@
 
 #include <string>
 #include <map>
+#include <vector>
+#include <list>
 
 
 namespace Serialize {
@@ -64,6 +67,18 @@ public:
   {
     typedef std::map<K,V> MapType;
     this->_addMember ( new Serialize::XML::PointerMapMember<MapType> ( name, value ) );
+  }
+
+  template < class T > void addMember ( const std::string &name, std::vector<T> &value )
+  {
+    typedef std::vector<T> VectorType;
+    this->_addMember ( new Serialize::XML::PointerSequenceMember<VectorType> ( name, value ) );
+  }
+
+  template < class T > void addMember ( const std::string &name, std::list<T> &value )
+  {
+    typedef std::list<T> ListType;
+    this->_addMember ( new Serialize::XML::PointerSequenceMember<ListType> ( name, value ) );
   }
 
   void        serialize ( XmlTree::Node &parent ) const;

@@ -217,14 +217,6 @@
 			Name="Source"
 			>
 			<File
-				RelativePath=".\BaseCreator.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\BaseCreator.h"
-				>
-			</File>
-			<File
 				RelativePath=".\DataMemberMap.cpp"
 				>
 			</File>
@@ -241,35 +233,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Factory.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Factory.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Macros.h"
-				>
-			</File>
-			<File
-				RelativePath=".\MemberBase.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MemberBase.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PointerMapMember.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PointerSequenceMember.h"
-				>
-			</File>
-			<File
-				RelativePath=".\RegisterCreator.h"
 				>
 			</File>
 			<File
@@ -277,21 +241,65 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SetValue.h"
+				RelativePath=".\TypeWrapper.h"
 				>
 			</File>
-			<File
-				RelativePath=".\SimpleDataMember.h"
+			<Filter
+				Name="Factory"
 				>
-			</File>
-			<File
-				RelativePath=".\SmartPointerMember.h"
+				<File
+					RelativePath=".\BaseCreator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\BaseCreator.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Factory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Factory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\RegisterCreator.h"
+					>
+				</File>
+				<File
+					RelativePath=".\TypeCreator.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Members"
 				>
-			</File>
-			<File
-				RelativePath=".\TypeCreator.h"
-				>
-			</File>
+				<File
+					RelativePath=".\MemberBase.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MemberBase.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PointerMapMember.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SequenceMember.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SimpleDataMember.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SmartPointerMember.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

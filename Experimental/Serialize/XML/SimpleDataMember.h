@@ -18,7 +18,7 @@
 #define _SERIALIZE_XML_SIMPLE_DATA_MEMBER_CLASS_
 
 #include "Serialize/XML/MemberBase.h"
-#include "Serialize/XML/SetValue.h"
+#include "Serialize/XML/TypeWrapper.h"
 
 
 namespace Serialize {
@@ -46,7 +46,7 @@ public:
   {
     if ( this->name() == node.name() )
     {
-      Serialize::XML::SetValue<T>::set ( node.value(), _value );
+      Serialize::XML::TypeWrapper<T>::set ( node.value(), _value );
     }
   }
 

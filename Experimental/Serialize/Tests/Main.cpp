@@ -281,21 +281,31 @@ public:
   USUL_DECLARE_REF_POINTERS ( ClassF );
   typedef ClassA BaseClass;
   typedef std::vector<ClassB::RefPtr> VectorB;
+  typedef std::vector<std::string> VectorString;
+  typedef std::vector<double> VectorDouble;
   typedef std::list<ClassE::RefPtr> ListE;
 
   ClassF() : BaseClass(),
     _vecB(),
+    _vecString(),
+    _vecDouble(),
     _listE()
   {
     _name = "Default name for ClassF";
 
     SERIALIZE_XML_ADD_MEMBER ( _vecB );
+    SERIALIZE_XML_ADD_MEMBER ( _vecString );
+    SERIALIZE_XML_ADD_MEMBER ( _vecDouble );
     SERIALIZE_XML_ADD_MEMBER ( _listE );
 
     for ( unsigned int i = 0; i < 10; ++i )
     {
+      std::ostringstream out;
+      out << i;
       _vecB.push_back ( new ClassB );
       _vecB.push_back ( new ClassD );
+      _vecString.push_back ( "string " + out.str() );
+      _vecDouble.push_back ( ::rand() );
       _listE.push_back ( new ClassE );
     }
   }
@@ -309,6 +319,8 @@ protected:
 private:
 
   VectorB _vecB;
+  VectorString _vecString;
+  VectorDouble _vecDouble;
   ListE _listE;
 
   SERIALIZE_XML_DEFINE_MEMBERS ( ClassF );
@@ -353,7 +365,6 @@ void _run()
       ClassA::RefPtr object ( dynamic_cast < ClassA * > ( Serialize::XML::Factory::instance().create ( names[i] ) ) );
       if ( true == object.valid() )
       {
-        std::cout << names[i] << " exists" << std::endl;
         objects.push_back ( object );
         std::ostringstream out; out << "Object " << j * num + i;
         object->name ( out.str() );
@@ -367,21 +378,27 @@ void _run()
 
   // Write objects to file.
   {
+    std::cout << "Writing: " << FILE_NAME_1 << std::endl;
     Serialize::XML::serialize ( FILE_NAME_1, "objects", objects.begin(), objects.end() );
   }
 
   // Read objects from first file and write to a second file.
   {
     objects.clear();
+    std::cout << "Reading: " << FILE_NAME_1 << std::endl;
     Serialize::XML::deserialize ( FILE_NAME_1, objects );
+    std::cout << "Writing: " << FILE_NAME_2 << std::endl;
     Serialize::XML::serialize ( FILE_NAME_2, "objects", objects.begin(), objects.end() );
   }
 
   // Compare contents of the two files.
   {
     std::string file1, file2;
+    std::cout << "Reading: " << FILE_NAME_1 << std::endl;
     Usul::File::contents ( FILE_NAME_1, false, file1 );
+    std::cout << "Reading: " << FILE_NAME_2 << std::endl;
     Usul::File::contents ( FILE_NAME_2, false, file2 );
+    std::cout << "Comparing " << FILE_NAME_1 << " and " << FILE_NAME_2 << std::endl;
     USUL_ASSERT ( file1.compare ( file2 ) == 0 );
   }
 }

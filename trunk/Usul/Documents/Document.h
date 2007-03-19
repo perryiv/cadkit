@@ -208,6 +208,9 @@ public:
   /// Always prompts for new file name.
   void                        saveAs ( Unknown *caller = 0x0 );
 
+  /// Use given filename.
+  void                        saveAs ( const std::string& filename, Unknown *caller = 0x0 );
+
   /// Convenience function to set progress bar and flush events.
   void                        setProgressBar ( bool state, unsigned int numerator, unsigned int denominator );
   void                        setProgressBar ( bool state, std::istream &in, unsigned int fileSize );
@@ -334,3 +337,4 @@ void Document::_sendMessage ( Listeners &listeners, unsigned short message )
 
 
 #endif // _USUL_DOCUMENT_H_
+

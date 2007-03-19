@@ -247,8 +247,20 @@ void Document::saveAs ( Usul::Interfaces::IUnknown *caller )
   if ( name.empty() )
     throw Usul::Exceptions::Canceled ( "User cancelled the save-as operation" );
 
+  this->saveAs( name, caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Save document as using given filename.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::saveAs ( const std::string& filename, Unknown *caller )
+{
   // Save the document.
-  this->_save ( name, caller, this->options() );
+  this->_save ( filename, caller, this->options() );
 
   //Since the filename changed, update titles
   this->sendMessage( Document::ID_UPDATE_TITLES );

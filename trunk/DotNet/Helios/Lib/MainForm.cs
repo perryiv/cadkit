@@ -443,6 +443,7 @@ namespace CadKit.Helios
           this._addMenuButton(menu, new CadKit.Helios.Commands.NewDocumentCommand(this));
           this._addMenuButton(menu, new CadKit.Helios.Commands.OpenDocumentCommand(this));
           this._addMenuButton(menu, new CadKit.Helios.Commands.InsertFileCommand(this));
+          this._addMenuButton(menu, new CadKit.Helios.Commands.SaveDocumentCommand(this));
           menu.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
           {
             System.Windows.Forms.ToolStripMenuItem export = CadKit.Tools.Menu.makeMenu("&Export");
@@ -534,6 +535,7 @@ namespace CadKit.Helios
       {
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.NewDocumentCommand(this));
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.OpenDocumentCommand(this));
+        this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.SaveDocumentCommand(this));
         _toolStrip.Items.Add(new System.Windows.Forms.ToolStripSeparator());
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewFitCommand(this));
         this._addToolbarButton(_toolStrip, new CadKit.Helios.Commands.ViewHomeCommand(this));

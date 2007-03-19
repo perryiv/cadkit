@@ -19,5 +19,9 @@ namespace CadKit.Interfaces
     void showLayer(CadKit.Interfaces.ILayer layer, object caller);
     void removeLayer(CadKit.Interfaces.ILayer layer, object caller);
     void viewLayerExtents(CadKit.Interfaces.ILayer layer);
+    
+    void addToFavorites(CadKit.Interfaces.ILayer layer);
+    CadKit.Interfaces.ILayer createFavorite(string name);
+    string[] Favorites { get; }
   }
 }

@@ -186,6 +186,9 @@ namespace CadKit.Referenced
     /// <summary>
     /// See if this instance is clean.
     /// </summary>
+    [
+    System.ComponentModel.Browsable(false)
+    ]
     public bool IsClean
     {
       get
@@ -210,6 +213,9 @@ namespace CadKit.Referenced
     /// <summary>
     /// Return the reference count.
     /// </summary>
+    [
+    System.ComponentModel.Browsable(false)
+    ]
     public uint RefCount
     {
       get
@@ -225,6 +231,9 @@ namespace CadKit.Referenced
     /// <summary>
     /// Get the object number.
     /// </summary>
+    [
+    System.ComponentModel.Browsable(false)
+    ]
     public ulong ObjectNumber
     {
       get
@@ -240,6 +249,9 @@ namespace CadKit.Referenced
     /// <summary>
     /// Get the lock object.
     /// </summary>
+    [
+    System.ComponentModel.Browsable(false)
+    ]
     public CadKit.Threads.Tools.Lock Lock
     {
       get
@@ -282,6 +294,9 @@ namespace CadKit.Referenced
     /// <summary>
     /// Return the next object number.
     /// </summary>
+    [
+    System.ComponentModel.Browsable(false)
+    ]
     private static ulong NextNumber
     {
       get
@@ -297,6 +312,9 @@ namespace CadKit.Referenced
     /// <summary>
     /// Return total number of objects.
     /// </summary>
+    [
+    System.ComponentModel.Browsable(false)
+    ]
     public static ulong TotalNumObjects
     {
       get
@@ -313,6 +331,9 @@ namespace CadKit.Referenced
     /// <summary>
     /// Return a string containing the object data. Used for debugging.
     /// </summary>
+    [
+    System.ComponentModel.Browsable(false)
+    ]
     public static string ExistingObjects
     {
       get

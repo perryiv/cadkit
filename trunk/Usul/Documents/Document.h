@@ -182,7 +182,7 @@ public:
   unsigned int                numViews()     const { return _views.size();     }
 
   /// Open the file. Clears any data this document already has.
-  virtual void                open ( const std::string &filename, Unknown *caller = 0x0 );
+  void                        open ( const std::string &filename, Unknown *caller = 0x0 );
 
   /// Get the options
   Options&                    options();

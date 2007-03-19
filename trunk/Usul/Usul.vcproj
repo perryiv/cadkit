@@ -1170,6 +1170,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Pointers\BoostSerialize.h"
+					>
+				</File>
+				<File
 					RelativePath="Pointers\Exceptions.h"
 					>
 				</File>

@@ -26,6 +26,7 @@ using namespace Minerva::Core::Layers;
 LineLayer::LineLayer() : BaseClass(),
 _lineWidth ( 1.0f )
 {
+  this->name( "LineLayer" );
 }
 
 

@@ -33,14 +33,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IColorMode.cs" />
+    <Compile Include="IColorProperties.cs" />
     <Compile Include="IColumnNames.cs" />
     <Compile Include="IDatabaseConnection.cs" />
     <Compile Include="IDataSource.cs" />
     <Compile Include="IDataTables.cs" />
     <Compile Include="ILayer.cs" />
-    <Compile Include="IQuery.cs" />
-    <Compile Include="ISession.cs" />
-    <Compile Include="ITimeSeries.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

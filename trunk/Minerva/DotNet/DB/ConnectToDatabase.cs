@@ -47,7 +47,7 @@ namespace DT.Minerva.DB
     private void _okButton_Click(object sender, System.EventArgs e)
     {
       // Create local connection to check for errors when connecting.
-      DT.Minerva.DB.Connection connection = new Connection();
+      DT.Minerva.Glue.Connection connection = new DT.Minerva.Glue.Connection();
       connection.Hostname = this.Hostname;
       connection.Database = this.Database;
       connection.Username = this.Username;
@@ -56,21 +56,21 @@ namespace DT.Minerva.DB
       {
         connection.connect();
       }
-      catch (Npgsql.NpgsqlException exception)
-      {
-        // Authentication error.  See http://www.linuxshare.ru/postgresql/manual/errcodes-appendix.html for error codes.
-        if (exception.Code == "28000")
-        {
-          string message = "Authentication for user " + this.Username + " failed.";
-          System.Windows.Forms.MessageBox.Show(message, "Authentication Failed", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
-          return;
-        }
-        else
-        {
-          System.Windows.Forms.MessageBox.Show(System.String.Format("Error when connecting to database: {0}", exception.Message), "Connection Failed!", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
-          return;
-        }
-      }
+      //catch (Npgsql.NpgsqlException exception)
+      //{
+      //  // Authentication error.  See http://www.linuxshare.ru/postgresql/manual/errcodes-appendix.html for error codes.
+      //  if (exception.Code == "28000")
+      //  {
+      //    string message = "Authentication for user " + this.Username + " failed.";
+      //    System.Windows.Forms.MessageBox.Show(message, "Authentication Failed", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+      //    return;
+      //  }
+      //  else
+      //  {
+      //    System.Windows.Forms.MessageBox.Show(System.String.Format("Error when connecting to database: {0}", exception.Message), "Connection Failed!", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+      //    return;
+      //  }
+      //}
       catch (System.Exception exception)
       {
         System.Windows.Forms.MessageBox.Show(System.String.Format ( "Error when connecting to database: {0}", exception.Message ), "Connection Failed!", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);

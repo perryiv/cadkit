@@ -8,12 +8,26 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace DT.Minerva.Interfaces
-{
-  public interface IQuery
-  {
-    System.Data.IDataReader execteQueryIDataReader(string query);
+#pragma once
 
-    long executeCountQuery(string table, string where);
-  }
+namespace DT{
+  namespace Minerva {
+    namespace Glue {
+
+  public ref class Factory
+  {
+  public:
+    static CadKit::Interfaces::ILayer^ create( System::IntPtr pointer );
+
+  private:
+    Factory()
+    {
+    }
+
+    ~Factory()
+    {
+    }
+  };
+}
+}
 }

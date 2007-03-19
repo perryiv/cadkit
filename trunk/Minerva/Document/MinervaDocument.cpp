@@ -13,6 +13,13 @@
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
 
+#include "Minerva/Core/Layers/LineLayer.h"
+#include "Minerva/Core/Layers/PolygonLayer.h"
+#include "Minerva/Core/Layers/PointLayer.h"
+#include "Minerva/Core/Layers/PointTimeLayer.h"
+#include "Minerva/Core/Layers/RLayer.h"
+#include "Minerva/Core/Layers/PolygonTimeLayer.h"
+
 using namespace Minerva::Document;
 
 
@@ -27,11 +34,19 @@ USUL_IMPLEMENT_TYPE_ID ( MinervaDocument );
 ///////////////////////////////////////////////////////////////////////////////
 
 MinervaDocument::MinervaDocument() : BaseClass( "Minerva Document" ),
+_favorites(),
 _sceneManager ( new Minerva::Core::Scene::SceneManager ),
 _planet ( new Magrathea::Planet )
 {
   _planet->init();
   _planet->root()->addChild( _sceneManager->root() );
+
+  this->addToFavorites( new Minerva::Core::Layers::LineLayer );
+  this->addToFavorites( new Minerva::Core::Layers::PointLayer );
+  this->addToFavorites( new Minerva::Core::Layers::PointTimeLayer );
+  this->addToFavorites( new Minerva::Core::Layers::PolygonLayer );
+  this->addToFavorites( new Minerva::Core::Layers::PolygonTimeLayer );
+  this->addToFavorites( new Minerva::Core::Layers::RLayer );
 }
 
 
@@ -720,4 +735,50 @@ void MinervaDocument::sceneUpdate( )
 void MinervaDocument::viewer( Usul::Interfaces::IUnknown *viewer )
 {
   _planet->viewer( viewer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add layer to the favorites.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::addToFavorites( Minerva::Core::Layers::Layer* layer )
+{
+  _favorites[layer->name()] = layer;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a favorite from the string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Minerva::Core::Layers::Layer * MinervaDocument::createFavorite( const std::string& name ) const
+{
+  Favorites::const_iterator iter = _favorites.find( name );
+  if( iter != _favorites.end() )
+    return iter->second.get();
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the list of favorites.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MinervaDocument::Names MinervaDocument::favorites() const
+{
+  Names names;
+
+  for( Favorites::const_iterator iter = _favorites.begin(); iter != _favorites.end(); ++iter )
+  {
+    names.push_back ( iter->first );
+  }
+
+  return names;
 }

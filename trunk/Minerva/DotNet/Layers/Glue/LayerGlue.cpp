@@ -9,6 +9,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "LayerGlue.h"
+#include "SingleColorFunctor.h"
+#include "GradientColorFunctor.h"
+
+#include "Usul/Strings/ManagedToNative.h"
+
+#include "Minerva/Core/DB/Info.h"
 
 using namespace DT::Minerva::Glue;
 
@@ -19,20 +25,11 @@ using namespace DT::Minerva::Glue;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LayerGlue::LayerGlue() : _connection( nullptr )
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Copy Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-LayerGlue::LayerGlue( LayerGlue ^ layer ) :
-_connection ( layer->_connection ),
-_colorFunctor( layer->_colorFunctor )
+LayerGlue::LayerGlue() : 
+_connection( nullptr ),
+_colorFunctor ( nullptr ),
+_customQuery( false ),
+_properties( gcnew DT::Minerva::Layers::Colors::ColorProperties() )
 {
 }
 
@@ -98,48 +95,28 @@ int LayerGlue::LayerID::get()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the layer id.
+//  Set the data source.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LayerGlue::LayerID::set ( int x )
+void LayerGlue::DataSource::set ( System::Object^ value )
 {
-  this->layer()->layerID ( x );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the connection.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LayerGlue::Connection::set ( DT::Minerva::Interfaces::IDatabaseConnection^ connection )
-{
+  DT::Minerva::Glue::Connection^ connection = dynamic_cast < DT::Minerva::Glue::Connection^ > ( value );
   if( nullptr != connection )
   {
-    ::Minerva::Core::DB::Connection *c = new ::Minerva::Core::DB::Connection();
-    c->ref();
-    c->hostname( this->toNativeString ( connection->Hostname ) );
-    c->database( this->toNativeString ( connection->Database ) );
-    c->username( this->toNativeString ( connection->Username ) );
-    c->password( this->toNativeString ( connection->Password ) );
-    c->connect();
-    this->layer()->connection( c );
-    c->unref();
+    _connection = connection;
+    this->layer()->connection( _connection->nativeConnection() );
   }
-
-  _connection = connection;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the connection.
+//  Get the data source.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DT::Minerva::Interfaces::IDatabaseConnection^ LayerGlue::Connection::get()
+System::Object^ LayerGlue::DataSource::get()
 {
   return _connection;
 }
@@ -153,7 +130,7 @@ DT::Minerva::Interfaces::IDatabaseConnection^ LayerGlue::Connection::get()
 
 System::String^ LayerGlue::Tablename::get()
 {
-  return this->toManagedString( this->layer()->tablename() );
+  return gcnew System::String ( this->layer()->tablename().c_str() );
 }
 
 
@@ -165,7 +142,8 @@ System::String^ LayerGlue::Tablename::get()
 
 void LayerGlue::Tablename::set( System::String^ s )
 {
-  this->layer()->tablename( this->toNativeString( s ) );
+  this->layer()->tablename( Usul::Strings::convert ( s ) );
+  this->ColorColumn = "";
 }
 
 
@@ -177,7 +155,7 @@ void LayerGlue::Tablename::set( System::String^ s )
 
 System::String^ LayerGlue::LabelColumn::get()
 {
-  return this->toManagedString( this->layer()->labelColumn() );
+  return gcnew System::String ( this->layer()->labelColumn().c_str() );
 }
 
 
@@ -189,7 +167,7 @@ System::String^ LayerGlue::LabelColumn::get()
 
 void LayerGlue::LabelColumn::set( System::String^ s )
 {
-  this->layer()->labelColumn( this->toNativeString( s ) );
+  this->layer()->labelColumn( Usul::Strings::convert ( s ) );
 }
 
 
@@ -249,7 +227,7 @@ void LayerGlue::Offset::set( float f )
 
 System::String^ LayerGlue::Query::get()
 {
-  return this->toManagedString( this->layer()->query() );
+  return gcnew System::String ( this->layer()->query().c_str() );
 }
 
 
@@ -261,7 +239,7 @@ System::String^ LayerGlue::Query::get()
 
 void LayerGlue::Query::set( System::String^ s )
 {
-  this->layer()->query( this->toNativeString( s ) );
+  this->layer()->query( Usul::Strings::convert ( s ) );
 }
 
 
@@ -299,7 +277,7 @@ void LayerGlue::ColorFunctor::set ( DT::Minerva::Glue::BaseColorFunctor^ functor
 
 System::String^ LayerGlue::LegendText::get()
 {
-  return this->toManagedString( this->layer()->legendText() );
+  return gcnew System::String ( this->layer()->legendText().c_str() );
 }
 
 
@@ -311,7 +289,7 @@ System::String^ LayerGlue::LegendText::get()
 
 void LayerGlue::LegendText::set( System::String^ s )
 {
-  this->layer()->legendText( this->toNativeString( s ) );
+  this->layer()->legendText( Usul::Strings::convert ( s ) );
 }
 
 
@@ -336,26 +314,6 @@ bool LayerGlue::ShowLabel::get()
 void LayerGlue::ShowLabel::set( bool b )
 {
   this->layer()->showLabel( b );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the layer properties.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LayerGlue::_setProperties( LayerGlue ^ layer )
-{
-  this->Connection = layer->Connection;
-  this->Tablename = layer->Tablename;
-  this->LabelColumn = layer->LabelColumn;
-  this->RenderBin = layer->RenderBin;
-  this->Offset = layer->Offset;
-  this->Query = layer->Query;
-  this->ColorFunctor = layer->ColorFunctor;
-  this->LegendText = layer->LegendText;
-  this->ShowLabel = layer->ShowLabel;
 }
 
 
@@ -389,11 +347,11 @@ void LayerGlue::ShowLayer::set( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-System::Drawing::Color^ LayerGlue::LabelColor::get()
+System::Drawing::Color LayerGlue::LabelColor::get()
 {
   osg::Vec4 color ( this->layer()->labelColor() );
 
-  System::Drawing::Color ^c = gcnew System::Drawing::Color();
+  System::Drawing::Color c;
   int a = static_cast < int > ( color.w() * 255 );
   int r = static_cast < int > ( color.x() * 255 );
   int g = static_cast < int > ( color.y() * 255 );
@@ -410,9 +368,9 @@ System::Drawing::Color^ LayerGlue::LabelColor::get()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LayerGlue::LabelColor::set( System::Drawing::Color^ color )
+void LayerGlue::LabelColor::set( System::Drawing::Color color )
 {
-  osg::Vec4 c ( (float) color->R / 255, (float) color->G / 255, (float) color->B / 255, (float) color->A / 255 );
+  osg::Vec4 c ( (float) color.R / 255, (float) color.G / 255, (float) color.B / 255, (float) color.A / 255 );
   this->layer()->labelColor( c );
 }
 
@@ -449,7 +407,7 @@ void LayerGlue::LabelZOffset::set ( float f )
 
 System::String^ LayerGlue::ColorColumn::get()
 {
-  return this->toManagedString( this->layer()->colorColumn() );
+  return gcnew System::String ( this->layer()->colorColumn().c_str() );
 }
 
 
@@ -461,7 +419,7 @@ System::String^ LayerGlue::ColorColumn::get()
 
 void LayerGlue::ColorColumn::set( System::String^ s )
 {
-  this->layer()->colorColumn( this->toNativeString( s ) );
+  this->layer()->colorColumn( Usul::Strings::convert ( s ) );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -497,4 +455,127 @@ float LayerGlue::LabelSize::get()
 void LayerGlue::LabelSize::set ( float f )
 {
   this->layer()->labelSize ( f );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get all column names.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+array<System::String^>^ LayerGlue::ColumnNames::get()
+{
+  if(nullptr != this->Connection && this->Tablename->Length > 0 )
+  {
+    typedef ::Minerva::Core::DB::Info DbInfo;
+    typedef DbInfo::Strings Strings;
+
+    DbInfo::RefPtr info ( new DbInfo ( this->layer()->connection() ) );
+
+    Strings strings ( info->getColumnNames( Usul::Strings::convert ( this->Tablename ) ) );
+
+    array<System::String^>^ columns = gcnew array< System::String^ > ( strings.size() );
+
+    for( unsigned int i = 0; i < strings.size(); ++i )
+      columns->SetValue( gcnew System::String( strings[i].c_str() ), static_cast < int > ( i ) );
+
+    return columns;
+  }
+  return gcnew array<System::String^>( 0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create color functor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DT::Minerva::Glue::BaseColorFunctor^ LayerGlue::_createColorFunctor()
+{
+  if (this->ColorProperties->ColorMode == DT::Minerva::Layers::Colors::ColorProperties::Mode::SINGLE_COLOR)
+  {
+    DT::Minerva::Glue::SingleColorFunctor ^functor = gcnew DT::Minerva::Glue::SingleColorFunctor();
+    functor->Color = this->ColorProperties->Color;
+    return functor;
+  }
+  else if (this->ColorProperties->ColorMode == DT::Minerva::Layers::Colors::ColorProperties::Mode::GRADIENT_COLOR)
+  {
+    DT::Minerva::Glue::GradientColorFunctor ^funtor = gcnew DT::Minerva::Glue::GradientColorFunctor();
+    funtor->MinColor = this->ColorProperties->MinColor;
+    funtor->MaxColor = this->ColorProperties->MaxColor;
+
+    if (nullptr != _connection)
+    {
+      double min = 0.0, max = 0.0;
+      ::Minerva::Core::DB::Info::RefPtr info ( new ::Minerva::Core::DB::Info ( this->layer()->connection() ) );
+      info->getMinMaxValue( Usul::Strings::convert ( this->Query ), Usul::Strings::convert ( this->ColorColumn ), min, max);
+      funtor->MinValue = min;
+      funtor->MaxValue = max;
+      return funtor;
+    }
+  }
+
+  return nullptr;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::String^ LayerGlue::Name::get()
+{
+  return gcnew System::String ( this->layer()->name().c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayerGlue::Name::set ( System::String^ value )
+{
+  this->layer()->name( Usul::Strings::convert( value ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the primary key column.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::String^ LayerGlue::PrimaryKeyColumn::get()
+{
+  return gcnew System::String ( this->layer()->primaryKeyColumn().c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the primary key column.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayerGlue::PrimaryKeyColumn::set( System::String^ value )
+{
+  this->layer()->primaryKeyColumn ( Usul::Strings::convert( value ) ); 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the connection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DT::Minerva::Glue::Connection^ LayerGlue::Connection::get()
+{
+  return _connection;
 }

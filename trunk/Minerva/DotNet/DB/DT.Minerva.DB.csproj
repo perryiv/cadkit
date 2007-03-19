@@ -35,7 +35,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Connection.cs" />
     <Compile Include="ConnectToDatabase.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -43,14 +42,9 @@
       <DependentUpon>ConnectToDatabase.cs</DependentUpon>
     </Compile>
     <Compile Include="Connections.cs" />
-    <Compile Include="Info.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\sdk\Npgsql\src\Npgsql.csproj">
-      <Project>{0F8DF2CB-CEB4-4A8B-897C-9FA0058BC155}</Project>
-      <Name>Npgsql</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\DotNet\Persistence\CadKit.Persistence.csproj">
       <Project>{DFD2710D-3AB3-4707-B74E-80F21E33A23F}</Project>
       <Name>CadKit.Persistence</Name>
@@ -58,6 +52,10 @@
     <ProjectReference Include="..\..\..\Minerva\DotNet\Interfaces\DT.Minerva.Interfaces.csproj">
       <Project>{35375870-CDDF-431E-B366-782D431BF6F6}</Project>
       <Name>DT.Minerva.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Layers\Glue\DT.Minerva.Layers.Glue.vcproj">
+      <Project>{1CA9FE49-DA3F-42D7-878C-126B71CD3F8B}</Project>
+      <Name>DT.Minerva.Glue</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

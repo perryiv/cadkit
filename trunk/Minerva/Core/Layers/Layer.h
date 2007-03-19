@@ -55,6 +55,7 @@ public:
   typedef Usul::Threads::RecursiveMutex             Mutex;
   typedef Usul::Threads::Guard<Mutex>               Guard;
   typedef OsgTools::Legend::LegendObject            LegendObject; 
+  typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Layer );
@@ -62,9 +63,13 @@ public:
   Layer();
 
   /// Get/Set the color functor. 
-  void                                                  colorFunctor( Minerva::Core::Functors::BaseColorFunctor *colorFunctor );
-  Minerva::Core::Functors::BaseColorFunctor *           colorFunctor();
-  const Minerva::Core::Functors::BaseColorFunctor *     colorFunctor() const;
+  void                        colorFunctor( ColorFunctor *colorFunctor );
+  ColorFunctor *              colorFunctor();
+  const ColorFunctor *        colorFunctor() const;
+
+  /// Get/Set the name.
+  void                        name( const std::string& name );
+  const std::string&          name() const;
 
   /// Get/Set the layer id.
   void                        layerID( unsigned int id );
@@ -113,6 +118,9 @@ public:
   void                        query ( const std::string& query );
   const std::string&          query ( ) const;
 
+  /// Get the default query.
+  virtual std::string         defaultQuery() const;
+
   /// Build the data objects.
   virtual void                buildDataObjects( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
 
@@ -143,6 +151,13 @@ public:
   /// Get the number of data objects in this layer.
   virtual unsigned int        number() const;
 
+  /// Get/Set the primary key column.
+  void                        primaryKeyColumn( const std::string& );
+  const std::string&          primaryKeyColumn() const;
+
+  /// Get the geometry column name.
+  std::string                 geometryColumn() const;
+
 protected:
   virtual ~Layer();
 
@@ -162,9 +177,11 @@ private:
   friend class boost::serialization::access;
   template<class Archive> void save(Archive & ar, const unsigned int version) const;
   template<class Archive> void load(Archive & ar, const unsigned int version);
-  BOOST_SERIALIZATION_SPLIT_MEMBER()
+  BOOST_SERIALIZATION_SPLIT_MEMBER();
 
+  std::string _name;
   unsigned int _layerID;
+  std::string _primaryKeyColumn;
   std::string _tablename;
   std::string _labelColumn;
   std::string _query;

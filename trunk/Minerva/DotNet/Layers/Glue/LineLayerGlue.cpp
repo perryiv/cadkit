@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -10,8 +11,8 @@
 #include "LineLayerGlue.h"
 
 #include "Usul/Pointers/Pointers.h"
-#include "Threads/OpenThreads/Mutex.h"
-#include "Usul/Threads/Mutex.h"
+
+#include "Minerva/Core/DB/Info.h"
 
 using namespace DT::Minerva::Glue;
 
@@ -24,7 +25,6 @@ using namespace DT::Minerva::Glue;
 
 LineLayerGlue::LineLayerGlue() : _lineLayer ( 0x0 )
 {
-  Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
   _lineLayer = new ::Minerva::Core::Layers::LineLayer;
   Usul::Pointers::reference ( _lineLayer );
 }
@@ -36,14 +36,9 @@ LineLayerGlue::LineLayerGlue() : _lineLayer ( 0x0 )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LineLayerGlue::LineLayerGlue(DT::Minerva::Glue::LineLayerGlue ^layer) : _lineLayer ( 0x0 )
+LineLayerGlue::LineLayerGlue( ::Minerva::Core::Layers::LineLayer *lineLayer ) : _lineLayer ( lineLayer )
 {
-  _lineLayer = new ::Minerva::Core::Layers::LineLayer;
   Usul::Pointers::reference ( _lineLayer );
-
-  this->_setProperties( layer );
-
-  this->LineWidth = layer->LineWidth;
 }
 
 
@@ -106,4 +101,28 @@ float LineLayerGlue::LineWidth::get()
 void LineLayerGlue::LineWidth::set ( float f )
 {
   _lineLayer->lineWidth ( f );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get all the tables with line data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+array<System::String^>^ LineLayerGlue::DataTables::get()
+{
+  typedef ::Minerva::Core::DB::Info DbInfo;
+  typedef DbInfo::Strings Strings;
+
+  DbInfo::RefPtr info ( new DbInfo ( this->layer()->connection() ) );
+
+  Strings strings ( info->lineTables() );
+
+  array<System::String^>^ tables = gcnew array< System::String^ > ( strings.size() );
+
+  for( unsigned int i = 0; i < strings.size(); ++i )
+    tables->SetValue( gcnew System::String( strings[i].c_str() ), static_cast < int > ( i ) );
+
+  return tables;
 }

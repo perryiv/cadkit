@@ -21,19 +21,21 @@ namespace DT
   {
     namespace Glue 
     {
-      public ref class PolygonLayerGlue : public LayerGlue
+      public ref class PolygonLayerGlue : public LayerGlue,
+        public DT::Minerva::Interfaces::IDataTables
       {
       public:
         PolygonLayerGlue();
-        PolygonLayerGlue( PolygonLayerGlue ^ layer );
+        PolygonLayerGlue( ::Minerva::Core::Layers::PolygonLayer* layer );
         virtual ~PolygonLayerGlue();
         !PolygonLayerGlue();
 
-
-        property System::String^ Format
+        [
+          System::ComponentModel::Browsable(false)
+        ]
+        property array<System::String^>^ DataTables
         {
-          System::String^ get();
-          void set( System::String^ s );
+          virtual array<System::String^>^ get();
         }
 
         virtual ::Minerva::Core::Layers::Layer * layer() override;

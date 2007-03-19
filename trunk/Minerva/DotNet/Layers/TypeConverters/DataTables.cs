@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace DT.Minerva.Layers.Controls.TypeConverters
+namespace DT.Minerva.Layers.TypeConverters
 {
   public class DataTables : System.ComponentModel.StringConverter
   {

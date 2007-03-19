@@ -208,6 +208,11 @@
 			UseDependenciesInBuild="false"
 			RelativePathToProject="..\OssimPlanet\OssimPlanet.vcproj"
 		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{1CA9FE49-DA3F-42D7-878C-126B71CD3F8B}"
+			UseDependenciesInBuild="false"
+			RelativePathToProject="..\..\Minerva\DotNet\Layers\Glue\DT.Minerva.Layers.Glue.vcproj"
+		/>
 	</References>
 	<Files>
 		<Filter

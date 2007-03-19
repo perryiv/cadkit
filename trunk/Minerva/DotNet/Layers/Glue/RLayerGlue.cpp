@@ -10,8 +10,8 @@
 #include "RLayerGlue.h"
 
 #include "Usul/Pointers/Pointers.h"
-#include "Threads/OpenThreads/Mutex.h"
-#include "Usul/Threads/Mutex.h"
+
+#include "Minerva/Core/DB/Info.h"
 
 using namespace DT::Minerva::Glue;
 
@@ -25,7 +25,6 @@ using namespace DT::Minerva::Glue;
 RLayerGlue::RLayerGlue() : BaseClass(),
 _layer ( 0x0 )
 {
-  Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
   _layer = new ::Minerva::Core::Layers::RLayer;
   Usul::Pointers::reference ( _layer );
 }
@@ -37,14 +36,10 @@ _layer ( 0x0 )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RLayerGlue::RLayerGlue( RLayerGlue ^ layer ) : BaseClass( layer )
+RLayerGlue::RLayerGlue( ::Minerva::Core::Layers::RLayer* rLayer ) : 
+_layer ( rLayer )
 {
-  _layer = new ::Minerva::Core::Layers::RLayer;
   Usul::Pointers::reference ( _layer );
-
-  this->_setProperties( layer );
-
-  this->DrawMode = layer->DrawMode;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -106,4 +101,22 @@ DT::Minerva::Glue::RLayerGlue::Mode RLayerGlue::DrawMode::get()
 void RLayerGlue::DrawMode::set( DT::Minerva::Glue::RLayerGlue::Mode mode )
 {
   _layer->mode( static_cast < ::Minerva::Core::Layers::RLayer::Mode > ( mode ) );
+}
+
+
+array<System::String^>^ RLayerGlue::DataTables::get ()
+{
+ typedef ::Minerva::Core::DB::Info DbInfo;
+  typedef DbInfo::Strings Strings;
+
+  DbInfo::RefPtr info ( new DbInfo ( this->layer()->connection() ) );
+
+  Strings strings ( info->tables() );
+
+  array<System::String^>^ tables = gcnew array< System::String^ > ( strings.size() );
+
+  for( unsigned int i = 0; i < strings.size(); ++i )
+    tables->SetValue( gcnew System::String( strings[i].c_str() ), static_cast < int > ( i ) );
+
+  return tables;
 }

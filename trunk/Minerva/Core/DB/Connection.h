@@ -42,6 +42,9 @@ public:
 
   Connection();
 
+  /// Get the name of the connection
+  std::string          name() const;
+
   /// Get/Set hostname.
   void                 hostname( const std::string& host );
   const std::string&   hostname() const;

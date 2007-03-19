@@ -1,15 +1,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace DT.Minerva.Layers.Controls.TypeConverters
+namespace DT.Minerva.Layers.TypeConverters
 {
-  class PointPrimitiveTypes : System.ComponentModel.StringConverter
+  public class PointPrimitiveTypes : System.ComponentModel.StringConverter
   {
     public PointPrimitiveTypes()
     {
@@ -22,7 +23,8 @@ namespace DT.Minerva.Layers.Controls.TypeConverters
 
     public override System.ComponentModel.TypeConverter.StandardValuesCollection GetStandardValues(System.ComponentModel.ITypeDescriptorContext context)
     {
-      return new StandardValuesCollection ( DT.Minerva.Glue.PointLayerGlue.getPointPrimitiveTypes().ToArray() );
+      System.String []types = new System.String [] { "Point", "Sphere", "Cone", "Disk", "Cube", "Inverted Cone" };
+      return new StandardValuesCollection ( types );
     }
 
     public override bool GetStandardValuesExclusive(System.ComponentModel.ITypeDescriptorContext context)

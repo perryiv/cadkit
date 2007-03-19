@@ -84,6 +84,14 @@ namespace DT
             bool                  showLegend();
             void                  showLegend( bool b );
 
+            void                           addToFavorites( CadKit::Interfaces::ILayer^ layer );
+            CadKit::Interfaces::ILayer^    createFavorite( System::String^ name );
+
+            property array<System::String^ > ^ Favorites
+            {
+              array<System::String^ > ^ get();
+            }
+
           private:
             ::Minerva::Document::MinervaDocument *_document;
 	        };

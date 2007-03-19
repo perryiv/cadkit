@@ -15,6 +15,7 @@ namespace DT.Minerva.Plugins.Document
     CadKit.Interfaces.IDocumentNew,
     CadKit.Interfaces.IDocumentOpen,
     CadKit.Interfaces.IFiltersOpen,
+    CadKit.Interfaces.IFiltersSave,
     CadKit.Interfaces.IGuiDelegateCreate
   {
     /// <summary>
@@ -99,7 +100,7 @@ namespace DT.Minerva.Plugins.Document
       // Re-entrant! Do not lock the mutex!
       System.IO.FileInfo info = new System.IO.FileInfo(name);
       string ext = info.Extension.ToLower();
-      return (".kwl" == ext);
+      return (".kwl" == ext) || (".minerva" == ext);
     }
 
     /// <summary>
@@ -112,6 +113,22 @@ namespace DT.Minerva.Plugins.Document
       {
         CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
         filters.Add(new CadKit.Interfaces.Filter("OSSIM Key Word List (*.kwl)", "*.kwl"));
+        filters.Add(new CadKit.Interfaces.Filter("Minerva Document (*.minerva)", "*.minerva"));
+        return filters;
+      }
+    }
+
+
+    /// <summary>
+    /// Return the filters.
+    /// </summary>
+    CadKit.Interfaces.Filters CadKit.Interfaces.IFiltersSave.Filters
+    {
+      // Re-entrant! Do not lock the mutex!
+      get
+      {
+        CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
+        filters.Add(new CadKit.Interfaces.Filter("Minerva Document (*.minerva)", "*.minerva"));
         return filters;
       }
     }

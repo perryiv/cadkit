@@ -31,8 +31,8 @@ namespace DT
         typedef LayerGlue BaseClass;
 
         PolygonTimeLayerGlue();
-        PolygonTimeLayerGlue( PolygonTimeLayerGlue ^ layer );
-        ~PolygonTimeLayerGlue();
+        PolygonTimeLayerGlue( ::Minerva::Core::Layers::PolygonTimeLayer * layer );
+        virtual ~PolygonTimeLayerGlue();
         !PolygonTimeLayerGlue();
 
         enum class Mode
@@ -53,22 +53,11 @@ namespace DT
           }
         }
 
-        property System::String^ StepColumn
-        {
-          System::String^ get()
-          {
-            return this->toManagedString( _polygonTimeLayer->stepColumn() );
-          }
-          void set ( System::String^ s )
-          {
-            _polygonTimeLayer->stepColumn( this->toNativeString( s ) );
-          }
-        }
+        PROPERTY_GET_SET(StepColumn, System::String^ );
 
         PROPERTY_GET_SET(ZScaleFactor, float);
         PROPERTY_GET_SET(XOffset, float);
         PROPERTY_GET_SET(YOffset, float);
-
 
         virtual ::Minerva::Core::Layers::Layer * layer() override;
 

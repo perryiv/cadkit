@@ -20,7 +20,8 @@ namespace DT
   {
     namespace Glue
     {
-      public ref class RLayerGlue : public LayerGlue
+      public ref class RLayerGlue : public LayerGlue,
+        public DT::Minerva::Interfaces::IDataTables
       {
       public:
         typedef DT::Minerva::Glue::LayerGlue BaseClass;
@@ -32,11 +33,19 @@ namespace DT
         };
 
         RLayerGlue();
-        RLayerGlue( RLayerGlue ^ layer );
+        RLayerGlue ( ::Minerva::Core::Layers::RLayer* rLayer );
         virtual ~RLayerGlue();
         !RLayerGlue();
 
         PROPERTY_GET_SET(DrawMode, Mode);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        property array<System::String^>^ DataTables
+        {
+          virtual array<System::String^>^ get ();
+        }
 
         virtual ::Minerva::Core::Layers::Layer* layer() override;
 

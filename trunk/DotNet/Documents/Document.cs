@@ -341,6 +341,7 @@ namespace CadKit.Documents
     protected bool HasDefaultName
     {
       get { using (this.Lock.read()) { return _hasDefaultName; } }
+      set { using (this.Lock.write()) { _hasDefaultName = value; } }
     }
 
 

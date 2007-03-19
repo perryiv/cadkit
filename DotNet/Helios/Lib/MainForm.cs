@@ -344,8 +344,6 @@ namespace CadKit.Helios
     /// <summary>
     /// The form is shown.  Load any serialized dock content.
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
     void _formShown(object sender, System.EventArgs args)
     {
       lock (_mutex)
@@ -444,6 +442,7 @@ namespace CadKit.Helios
           this._addMenuButton(menu, new CadKit.Helios.Commands.OpenDocumentCommand(this));
           this._addMenuButton(menu, new CadKit.Helios.Commands.InsertFileCommand(this));
           this._addMenuButton(menu, new CadKit.Helios.Commands.SaveDocumentCommand(this));
+          this._addMenuButton(menu, new CadKit.Helios.Commands.SaveAsDocumentCommand(this));
           menu.DropDownItems.Add(new System.Windows.Forms.ToolStripSeparator());
           {
             System.Windows.Forms.ToolStripMenuItem export = CadKit.Tools.Menu.makeMenu("&Export");

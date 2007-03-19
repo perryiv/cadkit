@@ -320,6 +320,15 @@ namespace CadKit.Documents
     /// </summary>
     bool CadKit.Interfaces.IDocument.HasDefaultName
     {
+      get { return this.HasDefaultName; }
+    }
+
+
+    /// <summary>
+    /// True if a name has not been assigned (e.g., "Untitled1").
+    /// </summary>
+    protected bool HasDefaultName
+    {
       get { using (this.Lock.read()) { return _hasDefaultName; } }
     }
 

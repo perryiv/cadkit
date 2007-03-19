@@ -28,6 +28,8 @@ public:
   typedef Usul::Base::Referenced BaseClass;
   typedef std::vector < std::string > Strings;
 
+  USUL_DECLARE_REF_POINTERS( Info );
+
   Info( Connection* connection );
 
   /// Get all public tables.
@@ -55,11 +57,15 @@ public:
 
   /// Does the table have a column of the given type.
   bool                            hasColumnType ( const std::string& table, const std::string& type ) const;
+
+  Strings                         getColumnNames ( const std::string& table ) const;
+
+  void                            getMinMaxValue( const std::string& query, const std::string& columnName, double& min, double& max ) const;
 protected:
   virtual ~Info();
 
   std::string                     _getGeometryType ( const std::string& table );
-  Strings                         _fillStringsFromQuery( const std::string& query );
+  Strings                         _fillStringsFromQuery( const std::string& query ) const;
 
 private:
   Info();

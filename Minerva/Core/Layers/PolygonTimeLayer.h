@@ -76,6 +76,9 @@ public:
   /// Is this layer temporal.
   virtual bool            isTemporal() const;
 
+  /// Get the default query.
+  virtual std::string     defaultQuery() const;
+
 protected:
   virtual ~PolygonTimeLayer();
 

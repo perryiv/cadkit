@@ -30,6 +30,7 @@ _primitiveID( 2 ),
 _size( 5 ),
 _stackPoints ( false )
 {
+  this->name( "PointLayer" );
 }
 
 

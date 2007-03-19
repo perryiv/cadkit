@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="DT.Minerva.Layers.Glue"
+	Name="DT.Minerva.Glue"
 	ProjectGUID="{1CA9FE49-DA3F-42D7-878C-126B71CD3F8B}"
 	RootNamespace="WNVLayersGlue"
 	Keyword="ManagedCProj"
@@ -190,6 +190,29 @@
 			ReferencedProjectIdentifier="{35375870-CDDF-431E-B366-782D431BF6F6}"
 			RelativePathToProject="..\..\Minerva\DotNet\Interfaces\DT.Minerva.Interfaces.csproj"
 		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{396B43D3-E25E-4AA2-983E-B567C1F9800E}"
+			UseDependenciesInBuild="false"
+			RelativePathToProject="..\..\Minerva\DotNet\Layers\TypeConverters\DT.Minerva.Layers.TypeConverters.csproj"
+		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}"
+			UseDependenciesInBuild="false"
+			RelativePathToProject="..\Referenced\CadKit.Referenced.csproj"
+		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{233305C0-C997-440A-9AA2-BAFEF0D15156}"
+			RelativePathToProject="..\Interfaces\CadKit.Interfaces.csproj"
+		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{CB1BEBA6-C9EF-4D00-A885-F9A43B1C1034}"
+			UseDependenciesInBuild="false"
+			RelativePathToProject="..\..\Minerva\DotNet\Layers\Colors\DT.Minerva.Layers.Colors.csproj"
+		/>
+		<AssemblyReference
+			RelativePath="System.Drawing.Design.dll"
+			AssemblyName="System.Drawing.Design, Version=2.0.0.0, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
+		/>
 	</References>
 	<Files>
 		<Filter
@@ -197,62 +220,6 @@
 			>
 			<File
 				RelativePath=".\AssemblyInfo.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\LayerGlue.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\LayerGlue.h"
-				>
-			</File>
-			<File
-				RelativePath=".\LineLayerGlue.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\LineLayerGlue.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PointLayerGlue.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PointLayerGlue.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PointTimeLayerGlue.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PointTimeLayerGlue.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PolygonLayerGlue.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PolygonLayerGlue.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PolygonTimeLayerGlue.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PolygonTimeLayerGlue.h"
-				>
-			</File>
-			<File
-				RelativePath=".\RLayerGlue.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\RLayerGlue.h"
 				>
 			</File>
 			<Filter
@@ -280,14 +247,82 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="test"
+				Name="DB"
 				>
 				<File
-					RelativePath=".\PatentLayerGlue.cpp"
+					RelativePath=".\Connection.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\PatentLayerGlue.h"
+					RelativePath=".\Connection.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Layers"
+				>
+				<File
+					RelativePath=".\Factory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Factory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\LayerGlue.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\LayerGlue.h"
+					>
+				</File>
+				<File
+					RelativePath=".\LineLayerGlue.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\LineLayerGlue.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PointLayerGlue.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PointLayerGlue.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PointTimeLayerGlue.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PointTimeLayerGlue.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PolygonLayerGlue.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PolygonLayerGlue.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PolygonTimeLayerGlue.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PolygonTimeLayerGlue.h"
+					>
+				</File>
+				<File
+					RelativePath=".\RLayerGlue.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\RLayerGlue.h"
 					>
 				</File>
 			</Filter>

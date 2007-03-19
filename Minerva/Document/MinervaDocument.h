@@ -36,7 +36,10 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::IMatrixManipulator
 {
 public:
+  /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
+  typedef std::vector< std::string > Names;
+  typedef std::map < std::string, Minerva::Core::Layers::Layer::RefPtr > Favorites;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( MinervaDocument );
@@ -130,6 +133,9 @@ public:
   /// For now
   void                        viewer( Usul::Interfaces::IUnknown* viewer );
 
+  void                             addToFavorites( Minerva::Core::Layers::Layer* layer );
+  Minerva::Core::Layers::Layer *   createFavorite( const std::string& name ) const;
+  Names                            favorites() const;
 protected:
   virtual ~MinervaDocument();
 
@@ -145,6 +151,7 @@ protected:
   /// Usul::Interfaces::IUpdateScene
   virtual void                             sceneUpdate( );
 private:
+  Favorites _favorites;
   Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
   osg::ref_ptr < Magrathea::Planet > _planet;
 };

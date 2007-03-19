@@ -11,8 +11,8 @@
 #include "PolygonLayerGLue.h"
 
 #include "Usul/Pointers/Pointers.h"
-#include "Threads/OpenThreads/Mutex.h"
-#include "Usul/Threads/Mutex.h"
+
+#include "Minerva/Core/DB/Info.h"
 
 using namespace DT::Minerva::Glue;
 
@@ -24,20 +24,20 @@ using namespace DT::Minerva::Glue;
 
 PolygonLayerGlue::PolygonLayerGlue() : _polygonLayer ( 0x0 )
 {
-  Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
   _polygonLayer = new ::Minerva::Core::Layers::PolygonLayer;
   Usul::Pointers::reference( _polygonLayer );
 }
 
 
-PolygonLayerGlue::PolygonLayerGlue(DT::Minerva::Glue::PolygonLayerGlue ^layer)
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PolygonLayerGlue::PolygonLayerGlue( ::Minerva::Core::Layers::PolygonLayer* layer ) : _polygonLayer ( layer )
 {
-  _polygonLayer = new ::Minerva::Core::Layers::PolygonLayer;
   Usul::Pointers::reference( _polygonLayer );
-
-  this->_setProperties( layer );
-
-  this->Format = layer->Format;
 }
 
 
@@ -72,12 +72,19 @@ Minerva::Core::Layers::Layer* PolygonLayerGlue::layer()
   return _polygonLayer;
 }
 
+array<System::String^>^ PolygonLayerGlue::DataTables::get()
+{
+  typedef ::Minerva::Core::DB::Info DbInfo;
+  typedef DbInfo::Strings Strings;
 
-System::String^ PolygonLayerGlue::Format::get()
-{
-  return this->toManagedString( _polygonLayer->format() );
-}
-void PolygonLayerGlue::Format::set( System::String^ s )
-{
-  _polygonLayer->format ( this->toNativeString( s ) );
+  DbInfo::RefPtr info ( new DbInfo ( this->layer()->connection() ) );
+
+  Strings strings ( info->polygonTables() );
+
+  array<System::String^>^ tables = gcnew array< System::String^ > ( strings.size() );
+
+  for( unsigned int i = 0; i < strings.size(); ++i )
+    tables->SetValue( gcnew System::String( strings[i].c_str() ), static_cast < int > ( i ) );
+
+  return tables;
 }

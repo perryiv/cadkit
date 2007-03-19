@@ -40,6 +40,7 @@ _yOffset( 0.0 ),
 _temporalMap(),
 _numberMap()
 {
+  this->name( "PolygonTimeLayer" );
 }
 
 
@@ -282,4 +283,21 @@ void PolygonTimeLayer::yOffset( float f )
 float PolygonTimeLayer::yOffset() const
 {
   return _yOffset;
+}
+
+
+std::string PolygonTimeLayer::defaultQuery() const
+{
+  std::ostringstream query;
+  if ( false != this->labelColumn().empty() )
+  {
+    query << "SELECT id, " << this->labelColumn() << ", " << this->stepColumn() 
+          << ", srid(" << this->geometryColumn() << ") as srid, " 
+          << "asBinary(" << this->geometryColumn() << ") as geom " 
+          << "FROM " << this->tablename();
+  }
+  else
+    return BaseClass::defaultQuery();
+
+  return query.str();
 }

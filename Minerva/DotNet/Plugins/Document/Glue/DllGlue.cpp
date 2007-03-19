@@ -659,6 +659,13 @@ void DllGlue::viewLayerExtents( CadKit::Interfaces::ILayer ^layer )
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the layer operation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void DllGlue::setLayerOperation( System::String ^optype, int val, CadKit::Interfaces::ILayer ^layer )
 {
   if( nullptr != layer ) 
@@ -674,4 +681,58 @@ void DllGlue::setLayerOperation( System::String ^optype, int val, CadKit::Interf
       }
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the layer to the list of favorites.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DllGlue::addToFavorites( CadKit::Interfaces::ILayer^ layer )
+{
+  if( nullptr != layer )
+  {
+    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
+
+    if( nullptr != layerPtr )
+    {
+      ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
+      _document->addToFavorites( base.get() );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a favorite based on the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+CadKit::Interfaces::ILayer^ DllGlue::createFavorite( System::String^ name )
+{
+  ::Minerva::Core::Layers::Layer::RefPtr layer ( _document->createFavorite ( Usul::Strings::convert( name ) ) );
+
+  return DT::Minerva::Glue::Factory::create( System::IntPtr ( layer.get() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get a list of favorites.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+array<System::String^ > ^ DllGlue::Favorites::get()
+{
+  ::Minerva::Document::MinervaDocument::Names names ( _document->favorites() );
+
+  array<System::String^>^ managedNames = gcnew array<System::String^> ( names.size() );
+
+  for( unsigned int i = 0; i < names.size(); ++i )
+    managedNames->SetValue( gcnew System::String( names[i].c_str() ), static_cast < int > ( i ) );
+
+  return managedNames;
 }

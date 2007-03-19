@@ -11,12 +11,10 @@
 #include "PointTimeLayerGlue.h"
 
 #include "Minerva/Core/DataObjects/Point.h"
+#include "Minerva/Core/DB/Info.h"
 
 #include "Usul/Pointers/Pointers.h"
-#include "Usul/Threads/Mutex.h"
 #include "Usul/Strings/ManagedToNative.h"
-
-#include "Threads/OpenThreads/Mutex.h"
 
 using namespace DT::Minerva::Glue;
 
@@ -27,9 +25,9 @@ using namespace DT::Minerva::Glue;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PointTimeLayerGlue::PointTimeLayerGlue() : _pointTimeLayer ( 0x0 )
+PointTimeLayerGlue::PointTimeLayerGlue() : 
+_pointTimeLayer ( 0x0 )
 {
-  Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
   _pointTimeLayer = new ::Minerva::Core::Layers::PointTimeLayer;
   Usul::Pointers::reference( _pointTimeLayer );
 }
@@ -41,18 +39,10 @@ PointTimeLayerGlue::PointTimeLayerGlue() : _pointTimeLayer ( 0x0 )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PointTimeLayerGlue::PointTimeLayerGlue( PointTimeLayerGlue ^ layer )
+PointTimeLayerGlue::PointTimeLayerGlue ( ::Minerva::Core::Layers::PointTimeLayer* pointTimeLayer ) :
+_pointTimeLayer ( pointTimeLayer )
 {
-  _pointTimeLayer = new ::Minerva::Core::Layers::PointTimeLayer;
   Usul::Pointers::reference( _pointTimeLayer );
-
-  this->_setProperties( layer );
-
-  this->PrimitiveID = layer->PrimitiveID;
-  this->PrimitiveType = layer->PrimitiveType;
-  this->FirstDateColumn = layer->FirstDateColumn;
-  this->LastDateColumn = layer->LastDateColumn;
-  this->Size = layer->Size;
 }
 
 
@@ -198,4 +188,80 @@ System::String^ PointTimeLayerGlue::LastDateColumn::get()
 void PointTimeLayerGlue::LastDateColumn::set( System::String^ s )
 {
   _pointTimeLayer->lastDateColumn ( Usul::Strings::convert( s ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the data tables for this layer type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+array< System::String ^ >^ PointTimeLayerGlue::DataTables::get()
+{
+  typedef ::Minerva::Core::DB::Info DbInfo;
+  typedef DbInfo::Strings Strings;
+
+  DbInfo::RefPtr info ( new DbInfo ( this->layer()->connection() ) );
+
+  Strings strings ( info->pointTimeTables() );
+
+  array<System::String^>^ tables = gcnew array< System::String^ > ( strings.size() );
+
+  for( unsigned int i = 0; i < strings.size(); ++i )
+    tables->SetValue( gcnew System::String( strings[i].c_str() ), static_cast < int > ( i ) );
+
+  return tables;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the first date to show.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::DateTime PointTimeLayerGlue::FirstDate::get() 
+{
+  OsgTools::Animate::Date date ( _pointTimeLayer->minDate() );
+  System::DateTime dateTime ( date.year(), date.month(), date.day() );
+  return dateTime;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the first date to show.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayerGlue::FirstDate::set ( System::DateTime value )
+{
+  _pointTimeLayer->minDate( value.Day, value.Month, value.Year );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the lastt date to show.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::DateTime PointTimeLayerGlue::LastDate::get ()
+{
+  OsgTools::Animate::Date date ( _pointTimeLayer->maxDate() );
+  System::DateTime dateTime ( date.year(), date.month(), date.day() );
+  return dateTime;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the last date to show.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayerGlue::LastDate::set ( System::DateTime value )
+{
+  _pointTimeLayer->maxDate( value.Day, value.Month, value.Year );
 }

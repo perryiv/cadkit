@@ -86,7 +86,7 @@ Info::Strings Info::lineTables()
 
   for( Strings::const_iterator iter = geometryTables.begin(); iter != geometryTables.end(); ++iter )
   {
-    if( this->isLineTable( *iter ) )
+    if( this->isLineTable( *iter ) || this->isPolygonTable ( *iter ) )
       strings.push_back( *iter );
   }
 
@@ -175,7 +175,7 @@ std::string Info::_getGeometryType ( const std::string& table )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Info::Strings Info::_fillStringsFromQuery( const std::string& query )
+Info::Strings Info::_fillStringsFromQuery( const std::string& query ) const
 {
   Strings strings;
 
@@ -263,4 +263,36 @@ bool Info::hasColumnType ( const std::string& table, const std::string& type ) c
   std::string query ( "SELECT column_name FROM information_schema.columns WHERE table_name='" + table + "' AND data_type='" + type + "'" );
   pqxx::result result ( _connection->executeQuery( query ) );
   return !result.empty();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get all column names.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Info::Strings Info::getColumnNames ( const std::string& table ) const
+{
+  std::string query ( "SELECT column_name FROM information_schema.columns WHERE table_name='" + table + "'" );
+  return _fillStringsFromQuery( query );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get min and max value for given query.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Info::getMinMaxValue( const std::string& query, const std::string& columnName, double& min, double& max ) const
+{
+  std::string q ( "SELECT MAX(" + columnName + ") as max, MIN(" + columnName + ") FROM (" + query + ") temp" );
+
+  pqxx::result result ( _connection->executeQuery( q ) );
+  if( !result.empty() )
+  {
+    min = result[0]["min"].as< double >();
+    max = result[0]["max"].as< double >();
+  }
 }

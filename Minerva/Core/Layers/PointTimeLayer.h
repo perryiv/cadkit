@@ -76,10 +76,23 @@ public:
   /// Set data members from given layer.
   virtual void            setDataMembers ( Layer * );
 
+  /// Get the default query.
+  virtual std::string     defaultQuery() const;
+
+  /// Get/Set the min date.
+  void                             minDate( const OsgTools::Animate::Date& date );
+  void                             minDate( unsigned int day, unsigned int month, unsigned int year );
+  const OsgTools::Animate::Date&   minDate() const;
+
+  /// Get/Set the max date.
+  void                             maxDate ( const OsgTools::Animate::Date& date );
+  void                             maxDate (unsigned int day, unsigned int month, unsigned int year );
+  const OsgTools::Animate::Date&   maxDate() const;
+
 protected:
   virtual ~PointTimeLayer();
 
-  void                    _updateMinMax ( const OsgTools::Animate::Date& min, const OsgTools::Animate::Date& max );
+  std::string             _whereClause() const;
 
 private:
   friend class boost::serialization::access;

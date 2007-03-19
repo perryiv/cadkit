@@ -47,10 +47,15 @@ namespace DT.Minerva.Plugins.LayerManager
       }
 
       _listBox.Enabled = false;
-      string[] layers = DT.Minerva.Layers.Controls.Factory.Instance.Names;
-      foreach (string s in layers)
+
+      CadKit.Interfaces.ILayerList layerList = CadKit.Documents.Manager.Instance.ActiveDocument as CadKit.Interfaces.ILayerList;
+      if (null != layerList)
       {
-        _listBox.Items.Add(s);
+        string[] layers = layerList.Favorites;
+        foreach (string s in layers)
+        {
+          _listBox.Items.Add(s);
+        }
       }
 
       _connections.SelectedValueChanged += new System.EventHandler(_connections_SelectedValueChanged);
@@ -109,12 +114,21 @@ namespace DT.Minerva.Plugins.LayerManager
       string layerType = _listBox.SelectedItem as string;
       _lastIndexUsed = _connections.SelectedIndex;
 
-      DT.Minerva.Interfaces.IDataSource dataSource = DT.Minerva.DB.Connections.Instance.OpenConnections[_lastIndexUsed] as DT.Minerva.Interfaces.IDataSource;
-      _currentLayer = DT.Minerva.Layers.Controls.Factory.Instance.create(layerType, dataSource);
+      DT.Minerva.Interfaces.IDatabaseConnection dataSource = DT.Minerva.DB.Connections.Instance.OpenConnections[_lastIndexUsed] as DT.Minerva.Interfaces.IDatabaseConnection;
 
-      if(_currentLayer is CadKit.Interfaces.IPropertyGridObject)
-        _propertyGrid.SelectedObject = ((CadKit.Interfaces.IPropertyGridObject)_currentLayer).PropertyGridObject;
+      CadKit.Interfaces.ILayerList layerList = CadKit.Documents.Manager.Instance.ActiveDocument as CadKit.Interfaces.ILayerList;
+      if (null != layerList)
+      {
+        _currentLayer = layerList.createFavorite(layerType);
 
+        DT.Minerva.Interfaces.IDataSource iDataSource = _currentLayer as DT.Minerva.Interfaces.IDataSource;
+
+        if (null != iDataSource)
+          iDataSource.DataSource = dataSource;
+
+        if (_currentLayer is CadKit.Interfaces.IPropertyGridObject)
+          _propertyGrid.SelectedObject = ((CadKit.Interfaces.IPropertyGridObject)_currentLayer).PropertyGridObject;
+      }
       _listBox.Enabled = true;
     }
 
@@ -140,7 +154,7 @@ namespace DT.Minerva.Plugins.LayerManager
 
         if (connect.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
-          DT.Minerva.DB.Info connection = new DT.Minerva.DB.Info();
+          DT.Minerva.Glue.Connection connection = new DT.Minerva.Glue.Connection();
           connection.Hostname = connect.Hostname;
           connection.Database = connect.Database;
           connection.Username = connect.Username;

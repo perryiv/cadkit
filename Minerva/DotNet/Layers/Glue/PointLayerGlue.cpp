@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -10,9 +11,7 @@
 #include "PointLayerGlue.h"
 
 #include "Minerva/Core/DataObjects/Point.h"
-
-#include "Threads/OpenThreads/Mutex.h"
-#include "Usul/Threads/Mutex.h"
+#include "Minerva/Core/DB/Info.h"
 
 using namespace DT::Minerva::Glue;
 
@@ -35,7 +34,6 @@ namespace Detail
 
 PointLayerGlue::PointLayerGlue() : _pointLayer ( 0x0 )
 {
-  Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
   _pointLayer = new ::Minerva::Core::Layers::PointLayer;
   Usul::Pointers::reference ( _pointLayer );
 }
@@ -47,17 +45,10 @@ PointLayerGlue::PointLayerGlue() : _pointLayer ( 0x0 )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PointLayerGlue::PointLayerGlue( PointLayerGlue ^layer ) : _pointLayer ( 0x0 )
+PointLayerGlue::PointLayerGlue( ::Minerva::Core::Layers::PointLayer* pointLayer ) :
+_pointLayer ( pointLayer )
 {
-  _pointLayer = new ::Minerva::Core::Layers::PointLayer;
   Usul::Pointers::reference ( _pointLayer );
-
-  this->_setProperties( layer );
-
-  this->PrimitiveID = layer->PrimitiveID;
-  this->Size = layer->Size;
-  this->PrimitiveType = layer->PrimitiveType;
-  this->StackPoints = layer->StackPoints;
 }
 
 
@@ -141,21 +132,6 @@ void PointLayerGlue::Size::set ( float f )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PointLayerGlue::Strings^ PointLayerGlue::getPointPrimitiveTypes()
-{
-  Strings ^strings = gcnew Strings();
-
-  strings->Add( gcnew System::String ( "Point" ) );
-  strings->Add( gcnew System::String ( "Sphere" ) );
-  strings->Add( gcnew System::String ( "Cone" ) );
-  strings->Add( gcnew System::String ( "Disk" ) );
-  strings->Add( gcnew System::String ( "Cube" ) );
-  strings->Add( gcnew System::String ( "Inverted Cone" ) );
-
-  return strings;
-}
-
-
 System::String^ PointLayerGlue::PrimitiveType::get()
 {
   unsigned int primitiveID( _pointLayer->primitiveID() );
@@ -178,6 +154,13 @@ System::String^ PointLayerGlue::PrimitiveType::get()
 
   return gcnew System::String( "" );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the primitive type.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void PointLayerGlue::PrimitiveType::set(System::String^ s )
 {
@@ -221,4 +204,21 @@ bool PointLayerGlue::StackPoints::get()
 void PointLayerGlue::StackPoints::set ( bool b )
 {
   _pointLayer->stackPoints ( b );
+}
+
+array<System::String^> ^ PointLayerGlue::DataTables::get()
+{
+  typedef ::Minerva::Core::DB::Info DbInfo;
+  typedef DbInfo::Strings Strings;
+
+  DbInfo::RefPtr info ( new DbInfo ( this->layer()->connection() ) );
+
+  Strings strings ( info->pointTables() );
+
+  array<System::String^>^ tables = gcnew array< System::String^ > ( strings.size() );
+
+  for( unsigned int i = 0; i < strings.size(); ++i )
+    tables->SetValue( gcnew System::String( strings[i].c_str() ), static_cast < int > ( i ) );
+
+  return tables;
 }

@@ -30,6 +30,7 @@ using namespace Minerva::Core::Layers;
 RLayer::RLayer() : BaseClass(),
 _mode ( CYLINDER )
 {
+  this->name( "RLayer" );
 }
 
 

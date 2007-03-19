@@ -29,6 +29,7 @@ using namespace Minerva::Core::Layers;
 
 PolygonLayer::PolygonLayer() : BaseClass(), _format()
 {
+  this->name( "PolygonLayer" );
 }
 
 

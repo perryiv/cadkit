@@ -14,6 +14,7 @@ namespace DT.Minerva.Plugins.Document
     CadKit.Documents.Document,
     System.IDisposable,
     CadKit.Interfaces.IFileOpen,
+    CadKit.Interfaces.IFileSave,
     CadKit.Interfaces.ILayerList,
     CadKit.Interfaces.IAnimateTemporal,
     CadKit.Interfaces.IOssimPlanetSettings,
@@ -129,12 +130,29 @@ namespace DT.Minerva.Plugins.Document
 
 
     /// <summary>
+    /// Save the document.
+    /// </summary>
+    public void save(object caller)
+    {
+    }
+
+
+    /// <summary>
+    /// Save the document as the new filename.
+    /// </summary>
+    public void saveAs(string filename, object caller)
+    {
+    }
+
+
+    /// <summary>
     /// Connect to the session.
     /// </summary>
     public void connectToSession(string name)
     {
       _distributed.connectToSession(name);
 
+#if FALSE
       string message = "Do you want to launch a instance of the viz client locally?";
       string caption = "Launch viz client?";
       System.Windows.Forms.MessageBoxButtons buttons = System.Windows.Forms.MessageBoxButtons.YesNo;
@@ -151,6 +169,7 @@ namespace DT.Minerva.Plugins.Document
         System.Diagnostics.Process.Start("wnv_viz.exe", name);
 #endif
       }
+#endif
     }
 
 
@@ -273,6 +292,23 @@ namespace DT.Minerva.Plugins.Document
     void CadKit.Interfaces.ILayerList.viewLayerExtents(CadKit.Interfaces.ILayer layer)
     {
       _dll.viewLayerExtents(layer);
+    }
+
+
+    void CadKit.Interfaces.ILayerList.addToFavorites(CadKit.Interfaces.ILayer layer)
+    {
+      _dll.addToFavorites(layer);
+    }
+
+    CadKit.Interfaces.ILayer CadKit.Interfaces.ILayerList.createFavorite(string name)
+    {
+      return _dll.createFavorite(name);
+    }
+
+
+    string[] CadKit.Interfaces.ILayerList.Favorites
+    {
+      get { return _dll.Favorites; }
     }
 
 

@@ -34,9 +34,10 @@ _primitiveID ( 2 ),
 _size ( 1.0 ),
 _firstDateColumn(),
 _lastDateColumn(),
-_minDate( boost::date_time::max_date_time ),
-_maxDate( boost::date_time::min_date_time )
+_minDate( boost::date_time::min_date_time ),
+_maxDate( boost::date_time::max_date_time )
 {
+  this->name( "PointTimeLayer" );
 }
 
 
@@ -174,8 +175,6 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
           data->renderBin ( this->renderBin() );
           data->buildScene();
 
-          this->_updateMinMax ( data->firstDate(), data->lastDate() );
-
           // Also add to the vector of data objects.  This allows for faster updating.
           this->_addDataObject( data.get() );
         }
@@ -306,15 +305,97 @@ void PointTimeLayer::setDataMembers ( Layer * layer )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Update min and max.
+//  Get the default query.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointTimeLayer::_updateMinMax ( const OsgTools::Animate::Date& min, const OsgTools::Animate::Date& max )
+std::string PointTimeLayer::defaultQuery() const
 {
-  if( min < _minDate )
-    _minDate = min;
+  std::ostringstream query;
+  query << "SELECT id, srid(" << this->geometryColumn() << ") as srid, asBinary(" << this->geometryColumn() << ") as geom";
 
-  if( max > _maxDate )
-    _maxDate = max;
+  if ( this->firstDateColumn().size() > 0 )
+    query << ", " << this->firstDateColumn();
+
+  if ( this->lastDateColumn().size() > 0 )
+    query << ", " + this->lastDateColumn();
+
+  if ( this->colorColumn().size() > 0 )
+    query << ", " << this->colorColumn();
+  
+  query << " FROM " << this->tablename();
+
+  std::string whereClause ( this->_whereClause() );
+
+  if ( whereClause.size() > 0 )
+    query << " WHERE " << whereClause;
+
+  return query.str();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the where clause.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string PointTimeLayer::_whereClause() const
+{
+  std::ostringstream whereClause;
+
+  if ( this->firstDateColumn().size() > 0 )
+  {
+    whereClause << this->firstDateColumn() << " >= '" << _minDate.toString() << "'";
+    whereClause << " AND " << this->firstDateColumn() << " <= '" << _maxDate.toString() << "'";
+  }
+
+  if ( this->lastDateColumn().size() > 0 )
+  {
+    if ( whereClause.str().size() > 0 )
+      whereClause << " AND ";
+
+    whereClause << this->lastDateColumn() << " >= '" << _minDate.toString() << "'";
+    whereClause << " AND " << this->lastDateColumn() << " <= '" << _maxDate.toString() << "'";
+  }
+
+  return whereClause.str();
+}
+
+
+/// Get/Set the min date.
+void PointTimeLayer::minDate( const OsgTools::Animate::Date& date )
+{
+  _minDate = date;
+}
+
+void PointTimeLayer::minDate( unsigned int day, unsigned int month, unsigned int year )
+{
+  std::ostringstream os;
+  os << year << month << day;
+  _minDate = OsgTools::Animate::Date( os.str() );
+}
+
+const OsgTools::Animate::Date& PointTimeLayer::minDate() const
+{
+  return _minDate;
+}
+
+/// Get/Set the max date.
+void PointTimeLayer::maxDate ( const OsgTools::Animate::Date& date )
+{
+  _maxDate = date;
+}
+
+void PointTimeLayer::maxDate (unsigned int day, unsigned int month, unsigned int year )
+{
+  std::ostringstream os;
+  os << year << month << day;
+  _maxDate = OsgTools::Animate::Date( os.str() );
+}
+
+const OsgTools::Animate::Date& PointTimeLayer::maxDate() const
+{
+  return _maxDate;
+}
+

@@ -343,6 +343,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\DB\ConnectionPool.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\DB\ConnectionPool.h"
+						>
+					</File>
+					<File
 						RelativePath=".\DB\Info.cpp"
 						>
 					</File>
@@ -368,14 +376,6 @@
 					</File>
 					<File
 						RelativePath=".\Layers\LineLayer.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\PatentLayer.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\PatentLayer.h"
 						>
 					</File>
 					<File

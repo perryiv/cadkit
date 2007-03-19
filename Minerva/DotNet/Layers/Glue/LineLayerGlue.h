@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater at Arizona State University
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -19,18 +20,33 @@ namespace DT
   {
     namespace Glue 
     {
-      public ref class LineLayerGlue : public LayerGlue
+      public ref class LineLayerGlue : public LayerGlue,
+        public DT::Minerva::Interfaces::IDataTables
       {
       public:
         LineLayerGlue();
-        LineLayerGlue ( LineLayerGlue ^layer );
+        LineLayerGlue ( ::Minerva::Core::Layers::LineLayer *lineLayer );
         virtual ~LineLayerGlue();
         !LineLayerGlue();
 
+        [
+          System::ComponentModel::Category("Display"),
+          System::ComponentModel::Description("Width for the lines."),
+          System::ComponentModel::Browsable(true)
+        ]
         property float LineWidth
         {
           float get();
           void set ( float f );
+        }
+
+        /// Get the all the line tables.
+        [
+          System::ComponentModel::Browsable(false)
+        ]
+        property array<System::String^>^ DataTables
+        {
+          virtual array<System::String^>^ get();
         }
 
         virtual ::Minerva::Core::Layers::Layer * layer() override;

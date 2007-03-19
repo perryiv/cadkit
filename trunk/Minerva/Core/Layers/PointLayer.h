@@ -31,6 +31,9 @@ public:
 
   PointLayer();
 
+  /// Clone the this layer.
+  virtual Layer*              clone() const;
+
   /// Build the data objects.
   virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller = 0x0 );
 
@@ -54,6 +57,8 @@ public:
 
 protected:
   virtual ~PointLayer();
+
+  PointLayer( const PointLayer& layer );
 
 private:
   friend class boost::serialization::access;

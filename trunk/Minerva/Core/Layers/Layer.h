@@ -62,6 +62,9 @@ public:
 
   Layer();
 
+  /// Clone the this layer.
+  virtual Layer*              clone() const = 0;
+
   /// Get/Set the color functor. 
   void                        colorFunctor( ColorFunctor *colorFunctor );
   ColorFunctor *              colorFunctor();
@@ -159,7 +162,12 @@ public:
   std::string                 geometryColumn() const;
 
 protected:
+
+  /// Use reference counting.
   virtual ~Layer();
+
+  /// Copy constructor.
+  Layer( const Layer& layer );
 
   // The mutex.
   Mutex _mutex;
@@ -179,6 +187,7 @@ private:
   template<class Archive> void load(Archive & ar, const unsigned int version);
   BOOST_SERIALIZATION_SPLIT_MEMBER();
 
+  static unsigned int _currentLayerID;
   std::string _name;
   unsigned int _layerID;
   std::string _primaryKeyColumn;
@@ -202,6 +211,7 @@ private:
 
 template<class Archive> void Layer::save(Archive & ar, const unsigned int version) const
 {
+  ar & boost::serialization::make_nvp ( "Name", _name );
   ar & boost::serialization::make_nvp ( "LayerID", _layerID );
   ar & boost::serialization::make_nvp ( "TableName", _tablename );
   ar & boost::serialization::make_nvp ( "LabelColumn", _labelColumn );
@@ -226,6 +236,7 @@ template<class Archive> void Layer::save(Archive & ar, const unsigned int versio
 
 template<class Archive> void Layer::load(Archive & ar, const unsigned int version)
 {
+  ar & boost::serialization::make_nvp ( "Name", _name );
   ar & boost::serialization::make_nvp ( "LayerID", _layerID );
   ar & boost::serialization::make_nvp ( "TableName", _tablename );
   ar & boost::serialization::make_nvp ( "LabelColumn", _labelColumn );

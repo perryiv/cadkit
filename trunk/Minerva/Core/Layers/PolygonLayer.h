@@ -27,6 +27,9 @@ public:
 
   PolygonLayer();
 
+  /// Clone the this layer.
+  virtual Layer*              clone() const;
+
   /// Build the data objects.
   virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller = 0x0 );
 
@@ -41,6 +44,8 @@ public:
 
 protected:
   virtual ~PolygonLayer();
+
+  PolygonLayer( const PolygonLayer& layer );
 
 private:
   friend class boost::serialization::access;

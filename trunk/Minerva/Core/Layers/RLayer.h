@@ -28,6 +28,9 @@ public:
 
   RLayer();
 
+  /// Clone the this layer.
+  virtual Layer*              clone() const;
+
   enum Mode
   {
     CYLINDER,
@@ -51,6 +54,8 @@ public:
 
 protected:
   virtual ~RLayer();
+
+  RLayer( const RLayer& layer );
 
   void            _buildSceneCylinder( osg::Group* parent );
   void            _buildScenePolygons( osg::Group* parent );

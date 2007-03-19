@@ -21,6 +21,15 @@ using namespace Minerva::Core::Layers;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Initialize static data member
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Layer::_currentLayerID ( 0 );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,8 +56,39 @@ _labelZOffset( 1000.0 ),
 _labelSize ( 25.0f ),
 _colorColumn()
 {
-  static unsigned int layerID ( 0 );
-  _layerID = ++layerID;
+  _layerID = ++_currentLayerID;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copy Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Layer::Layer( const Layer& layer )  : BaseClass(),
+_mutex(),
+_name( layer._name ),
+_layerID ( layer._layerID ),
+_primaryKeyColumn( layer._primaryKeyColumn ),
+_tablename( layer._tablename ),
+_labelColumn( layer._labelColumn ),
+_query( layer._query ),
+_renderBin ( layer._renderBin ),
+_zOffset ( layer._zOffset ),
+_dataObjects( layer._dataObjects ),
+_connection( layer._connection ),
+_colorFunctor( layer._colorFunctor ),
+_legendObject ( layer._legendObject ),
+_legendText( layer._legendText ),
+_showLabel ( layer._showLabel ),
+_shown ( layer._shown ),
+_labelColor( layer._labelColor ),
+_labelZOffset( layer._labelZOffset ),
+_labelSize ( layer._labelSize ),
+_colorColumn( layer._colorColumn )
+{
+  _layerID = ++_currentLayerID;
 }
 
 

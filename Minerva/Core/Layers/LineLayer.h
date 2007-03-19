@@ -37,6 +37,9 @@ public:
 
   LineLayer();
 
+  /// Clone the this layer.
+  virtual Layer*              clone() const;
+
   /// Build the data objects.
   virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller );
 
@@ -50,7 +53,11 @@ public:
   virtual void            setDataMembers ( Layer * );
 
 protected:
+  /// Use reference counting.
   virtual ~LineLayer();
+
+  /// Copy Constructor.
+  LineLayer ( const LineLayer& layer );
 
 private:
   friend class boost::serialization::access;

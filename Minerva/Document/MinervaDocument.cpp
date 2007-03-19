@@ -765,7 +765,7 @@ Minerva::Core::Layers::Layer * MinervaDocument::createFavorite( const std::strin
 {
   Favorites::const_iterator iter = _favorites.find( name );
   if( iter != _favorites.end() )
-    return iter->second.get();
+    return iter->second->clone();
   return 0x0;
 }
 

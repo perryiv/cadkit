@@ -37,6 +37,9 @@ public:
 
   PointTimeLayer();
 
+  /// Clone the this layer.
+  virtual Layer*              clone() const;
+
   /// Get/Set First date column name.
   void                    firstDateColumn( const std::string& );
   const std::string&      firstDateColumn() const;
@@ -91,6 +94,8 @@ public:
 
 protected:
   virtual ~PointTimeLayer();
+
+  PointTimeLayer( const PointTimeLayer& layer );
 
   std::string             _whereClause() const;
 

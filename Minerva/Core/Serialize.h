@@ -21,6 +21,9 @@
 #include "boost/serialization/base_object.hpp"
 #include "boost/serialization/nvp.hpp"
 #include "boost/serialization/version.hpp"
+#include "boost/serialization/map.hpp"
+
+#include "Usul/Pointers/BoostSerialize.h"
 
 #include "Minerva/Core/Layers/LineLayer.h"
 #include "Minerva/Core/Layers/PolygonLayer.h"

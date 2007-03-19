@@ -15,6 +15,7 @@ namespace DT.Minerva.Plugins.Document
     System.IDisposable,
     CadKit.Interfaces.IFileOpen,
     CadKit.Interfaces.IFileSave,
+    CadKit.Interfaces.IFiltersSave,
     CadKit.Interfaces.ILayerList,
     CadKit.Interfaces.IAnimateTemporal,
     CadKit.Interfaces.IOssimPlanetSettings,
@@ -106,10 +107,11 @@ namespace DT.Minerva.Plugins.Document
         System.IO.Directory.SetCurrentDirectory(info.DirectoryName);
 
         // Read the file.
-        _dll.addKeyWordList(name);
+        _dll.open(name);
 
         // Set document name.
         this.Name = name;
+        this.HasDefaultName = false;
 
         // Add file to recent-file list.
         CadKit.Interfaces.IRecentFileList recent = caller as CadKit.Interfaces.IRecentFileList;
@@ -134,6 +136,8 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     public void save(object caller)
     {
+      _dll.save();
+      this.Modified = false;
     }
 
 
@@ -142,6 +146,25 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     public void saveAs(string filename, object caller)
     {
+      this.Name = filename;
+      this.HasDefaultName = false;
+
+      _dll.saveAs(filename);
+      this.Modified = false;
+    }
+
+
+    /// <summary>
+    /// Return the filters.
+    /// </summary>
+    CadKit.Interfaces.Filters CadKit.Interfaces.IFiltersSave.Filters
+    {
+      get
+      {
+        CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
+        filters.Add(new CadKit.Interfaces.Filter("Minerva Document (*.minerva)", "*.minerva"));
+        return filters;
+      }
     }
 
 
@@ -232,6 +255,8 @@ namespace DT.Minerva.Plugins.Document
         else
           this._showLayer(layer);
         _layers.Add(layer);
+
+        this.Modified = true;
       }
     }
 
@@ -245,6 +270,8 @@ namespace DT.Minerva.Plugins.Document
       {
         layer.modify();
         this._modifyLayer(layer);
+
+        this.Modified = true;
       }
     }
 
@@ -257,6 +284,7 @@ namespace DT.Minerva.Plugins.Document
       if (null != layer)
       {
         _dll.hideLayer(layer);
+        this.Modified = true;
       }
     }
 
@@ -269,6 +297,7 @@ namespace DT.Minerva.Plugins.Document
       if (null != layer)
       {
         _dll.showLayer(layer);
+        this.Modified = true;
       }
     }
 
@@ -283,6 +312,7 @@ namespace DT.Minerva.Plugins.Document
       else
         this._removeLayer(layer);
       _layers.Remove(layer);
+      this.Modified = true;
     }
 
 
@@ -298,6 +328,7 @@ namespace DT.Minerva.Plugins.Document
     void CadKit.Interfaces.ILayerList.addToFavorites(CadKit.Interfaces.ILayer layer)
     {
       _dll.addToFavorites(layer);
+      this.Modified = true;
     }
 
     CadKit.Interfaces.ILayer CadKit.Interfaces.ILayerList.createFavorite(string name)
@@ -394,14 +425,8 @@ namespace DT.Minerva.Plugins.Document
 
     CadKit.Interfaces.AnimateTimestep CadKit.Interfaces.IAnimateTemporal.TimestepType
     {
-      get
-      {
-        return _dll.timestepType();
-      }
-      set
-      {
-        _dll.timestepType(value);
-      }
+      get { return _dll.timestepType(); }
+      set { _dll.timestepType(value); }
     }
 
 

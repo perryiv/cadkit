@@ -277,6 +277,17 @@ namespace CadKit.Documents
     /// </summary>
     bool CadKit.Interfaces.IDocument.Modified
     {
+      get { return this.Modified; }
+      set { this.Modified = value; }
+    }
+
+
+    /// <summary>
+    /// Return true if this document has been modified 
+    /// after the last time it was saved.
+    /// </summary>
+    protected bool Modified
+    {
       get { using (this.Lock.read()) { return _modified; } }
       set
       {

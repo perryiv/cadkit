@@ -51,6 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IFileSave.cs" />
+    <Compile Include="IFiltersSave.cs" />
     <Compile Include="ScopedReference.cs" />
     <Compile Include="IReferenced.cs" />
     <Compile Include="IAnimateTemporal.cs" />

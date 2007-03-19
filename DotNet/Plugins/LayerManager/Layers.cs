@@ -376,7 +376,7 @@ namespace CadKit.Plugins.LayerManager
 
         if (null != layer)
         {
-          layer.addToFavorites();
+          layerList.addToFavorites(layer);
         }
       }
     }

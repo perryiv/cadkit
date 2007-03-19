@@ -62,7 +62,7 @@ public:
 
   void         moveBackNumDays ( unsigned int );
 
-  std::string  toString();
+  std::string  toString() const;
 
   bool operator<( const Date& rhs ) const;
   bool operator>( const Date& rhs ) const;

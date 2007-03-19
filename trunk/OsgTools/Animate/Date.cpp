@@ -121,7 +121,7 @@ void Date::increment()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Date::toString()
+std::string Date::toString() const
 {
   return boost::gregorian::to_simple_string(_date);
 }

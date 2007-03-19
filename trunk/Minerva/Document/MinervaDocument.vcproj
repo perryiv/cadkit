@@ -230,6 +230,22 @@
 				RelativePath=".\MinervaDocument.h"
 				>
 			</File>
+			<File
+				RelativePath=".\MinervaReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MinervaReader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MinervaWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MinervaWriter.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

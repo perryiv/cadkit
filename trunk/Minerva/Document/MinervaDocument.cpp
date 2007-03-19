@@ -9,6 +9,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Document/MinervaDocument.h"
+#include "Minerva/Document/MinervaReader.h"
+#include "Minerva/Document/MinervaWriter.h"
 
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
@@ -190,23 +192,19 @@ MinervaDocument::Filters MinervaDocument::filtersSave()   const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Open the file. Clears any data this document already has.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::open ( const std::string &filename, Unknown *caller )
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Read the file and add it to existing document's data.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void MinervaDocument::read ( const std::string &filename, Unknown *caller )
 {
+  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
+
+  if( "minerva" == ext )
+  {
+    MinervaReader reader ( filename, caller, this );
+    reader();
+  }
 }
 
 
@@ -218,6 +216,13 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller )
 
 void MinervaDocument::write ( const std::string &filename, Unknown *caller ) const
 {
+  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
+
+  if( "minerva" == ext )
+  {
+    MinervaWriter writer ( filename, caller, this );
+    writer();
+  }
 }
 
 

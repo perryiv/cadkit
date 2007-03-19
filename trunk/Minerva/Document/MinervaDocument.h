@@ -11,6 +11,8 @@
 #ifndef __MINERVA_DOCUMENT_H__
 #define __MINERVA_DOCUMENT_H__
 
+#include "Minerva/Core/Serialize.h"
+
 #include "Export.h"
 
 #include "Usul/Documents/Document.h"
@@ -25,6 +27,8 @@
 #include "Magrathea/Planet.h"
 
 class ossimPlanetTextureLayer;
+
+namespace boost { namespace serialization { class access; } }
 
 namespace Minerva {
 namespace Document {
@@ -66,9 +70,6 @@ public:
   virtual Filters             filtersInsert() const;
   virtual Filters             filtersOpen()   const;
   virtual Filters             filtersSave()   const;
-
-  /// Open the file. Clears any data this document already has.
-  virtual void                open ( const std::string &filename, Unknown *caller = 0x0 );
 
   /// Read the file and add it to existing document's data.
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0 );
@@ -151,10 +152,19 @@ protected:
   /// Usul::Interfaces::IUpdateScene
   virtual void                             sceneUpdate( );
 private:
+  friend class boost::serialization::access;
+  template < class Archive > void serialize( Archive &ar, const unsigned int version );
+
   Favorites _favorites;
   Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
   osg::ref_ptr < Magrathea::Planet > _planet;
 };
+
+template < class Archive >
+void MinervaDocument::serialize( Archive &ar, const unsigned int version )
+{
+  ar & boost::serialization::make_nvp( "Favorites", _favorites );
+}
 
 
 }

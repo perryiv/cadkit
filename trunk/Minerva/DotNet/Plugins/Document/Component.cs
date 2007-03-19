@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -15,7 +16,6 @@ namespace DT.Minerva.Plugins.Document
     CadKit.Interfaces.IDocumentNew,
     CadKit.Interfaces.IDocumentOpen,
     CadKit.Interfaces.IFiltersOpen,
-    CadKit.Interfaces.IFiltersSave,
     CadKit.Interfaces.IGuiDelegateCreate
   {
     /// <summary>
@@ -113,21 +113,6 @@ namespace DT.Minerva.Plugins.Document
       {
         CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
         filters.Add(new CadKit.Interfaces.Filter("OSSIM Key Word List (*.kwl)", "*.kwl"));
-        filters.Add(new CadKit.Interfaces.Filter("Minerva Document (*.minerva)", "*.minerva"));
-        return filters;
-      }
-    }
-
-
-    /// <summary>
-    /// Return the filters.
-    /// </summary>
-    CadKit.Interfaces.Filters CadKit.Interfaces.IFiltersSave.Filters
-    {
-      // Re-entrant! Do not lock the mutex!
-      get
-      {
-        CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
         filters.Add(new CadKit.Interfaces.Filter("Minerva Document (*.minerva)", "*.minerva"));
         return filters;
       }

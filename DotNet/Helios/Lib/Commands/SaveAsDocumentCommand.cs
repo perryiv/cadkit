@@ -57,7 +57,6 @@ namespace CadKit.Helios.Commands
     {
       System.Windows.Forms.SaveFileDialog dialog = new System.Windows.Forms.SaveFileDialog();
       dialog.AddExtension = true;
-      dialog.CheckFileExists = true;
       dialog.CheckPathExists = true;
       dialog.DereferenceLinks = true;
       dialog.RestoreDirectory = false;
@@ -159,13 +158,7 @@ namespace CadKit.Helios.Commands
     /// </summary>
     protected override bool _shouldBeEnabled()
     {
-      CadKit.Interfaces.IDocument document = CadKit.Documents.Manager.Instance.ActiveDocument;
-      if (null != document)
-      {
-        return document.Modified && document is CadKit.Interfaces.IFileSave;
-      }
-
-      return false;
+      return CadKit.Documents.Manager.Instance.ActiveDocument is CadKit.Interfaces.IFileSave;
     }
 
 

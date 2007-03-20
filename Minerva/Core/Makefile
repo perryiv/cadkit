@@ -1,33 +1,33 @@
 # Include the header to set up the environment.
-include header.mak
+include ${USUL_INC_DIR}/Usul/Make/header.mak
 
 # C++ source files.
 CPP_FILES = \
-	../../src/Minerva/Core/GUI/Controller.cpp \
-	../../src/Minerva/Core/Viz/Controller.cpp \
-	../../src/Minerva/Core/Viz/Progress.cpp \
-	../../src/Minerva/DataObjects/Boundary.cpp \
-	../../src/Minerva/DataObjects/DataObject.cpp \
-	../../src/Minerva/DataObjects/Line.cpp \
-	../../src/Minerva/DataObjects/Point.cpp \
-	../../src/Minerva/DataObjects/PointTime.cpp \
-	../../src/Minerva/DB/Connection.cpp \
-	../../src/Minerva/Layers/Functors/SingleColorFunctor.cpp \
-	../../src/Minerva/Layers/Functors/GradientColorFunctor.cpp \
-	../../src/Minerva/Layers/Layer.cpp \
-	../../src/Minerva/Layers/LineLayer.cpp \
-	../../src/Minerva/Layers/PointLayer.cpp \
-	../../src/Minerva/Layers/PointTimeLayer.cpp \
-	../../src/Minerva/Layers/PolygonLayer.cpp \
-	../../src/Minerva/Layers/PolygonTimeLayer.cpp \
-	../../src/Minerva/Layers/RLayer.cpp \
-	../../src/Minerva/postGIS/BinaryParser.cpp \
-	../../src/Minerva/postGIS/Triangulate.cpp \
-	../../src/Minerva/postGIS/Geometry.cpp \
-	../../src/Minerva/postGIS/Point.cpp \
-	../../src/Minerva/postGIS/Line.cpp \
-	../../src/Minerva/postGIS/Polygon.cpp \
-	../../src/Minerva/Scene/SceneManager.cpp
+	GUI/Controller.cpp \
+	Viz/Controller.cpp \
+	Viz/Progress.cpp \
+	DataObjects/Boundary.cpp \
+	DataObjects/DataObject.cpp \
+	DataObjects/Line.cpp \
+	DataObjects/Point.cpp \
+	DataObjects/PointTime.cpp \
+	DB/Connection.cpp \
+	Layers/Functors/SingleColorFunctor.cpp \
+	Layers/Functors/GradientColorFunctor.cpp \
+	Layers/Layer.cpp \
+	Layers/LineLayer.cpp \
+	Layers/PointLayer.cpp \
+	Layers/PointTimeLayer.cpp \
+	Layers/PolygonLayer.cpp \
+	Layers/PolygonTimeLayer.cpp \
+	Layers/RLayer.cpp \
+	postGIS/BinaryParser.cpp \
+	postGIS/Triangulate.cpp \
+	postGIS/Geometry.cpp \
+	postGIS/Point.cpp \
+	postGIS/Line.cpp \
+	postGIS/Polygon.cpp \
+	Scene/SceneManager.cpp
 
 # The include path.
 LOCAL_INCLUDE = \
@@ -40,7 +40,7 @@ LOCAL_INCLUDE = \
 	-I$(PQXX_INC_DIR) \
 	-I$(CGAL_INC_DIR) \
 	-I$(CGAL_INC_DIR)/CGAL/config/x86-64_Linux-2.6_g++-3.4.4 \
-	-I$(CADKIT_ROOT_DIR)/Magrathea/src \
+	-I$(CADKIT_ROOT_DIR) \
 	-I../../../../ \
 	-I../../include
 
@@ -62,4 +62,4 @@ LOCAL_CPP_FLAGS =
 TARGET = Minerva
 
 # The common rules for compiling are in here.
-include library.mak
+include ${USUL_INC_DIR}/Usul/Make/library.mak

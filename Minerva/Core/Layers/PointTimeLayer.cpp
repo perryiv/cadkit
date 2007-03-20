@@ -401,7 +401,7 @@ void PointTimeLayer::minDate( const OsgTools::Animate::Date& date )
 void PointTimeLayer::minDate( unsigned int day, unsigned int month, unsigned int year )
 {
   std::ostringstream os;
-  os << year << month << day;
+  os << year << "/" << month << "/" << day;
   _minDate = OsgTools::Animate::Date( os.str() );
 }
 
@@ -419,7 +419,7 @@ void PointTimeLayer::maxDate ( const OsgTools::Animate::Date& date )
 void PointTimeLayer::maxDate (unsigned int day, unsigned int month, unsigned int year )
 {
   std::ostringstream os;
-  os << year << month << day;
+  os << year << "/" << month << "/" << day;
   _maxDate = OsgTools::Animate::Date( os.str() );
 }
 

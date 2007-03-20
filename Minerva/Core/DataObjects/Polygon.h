@@ -30,22 +30,22 @@ namespace Core {
 namespace DataObjects {
 
 
-class MINERVA_EXPORT Boundary : public Line
+class MINERVA_EXPORT Polygon : public Line
 {
 public:
   typedef Minerva::Core::DataObjects::Line BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Boundary );
+  USUL_DECLARE_REF_POINTERS ( Polygon );
 
-  Boundary();
+  Polygon();
 
   /// Build the scene branch for the data object.
   virtual osg::Node*    buildScene();
 
 protected:
   /// Use reference counting.
-  virtual ~Boundary();
+  virtual ~Polygon();
 
 private:
   osg::ref_ptr < osg::Group > _group;

@@ -31,7 +31,7 @@ using namespace Minerva::Core::DataObjects;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Boundary::Boundary() :
+Polygon::Polygon() :
 BaseClass(),
 _group ( new osg::Group )
 {
@@ -45,7 +45,7 @@ _group ( new osg::Group )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Boundary::~Boundary()
+Polygon::~Polygon()
 {
 }
 
@@ -56,7 +56,7 @@ Boundary::~Boundary()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Boundary::buildScene( )
+osg::Node* Polygon::buildScene( )
 {
   if( this->dirty() )
   {

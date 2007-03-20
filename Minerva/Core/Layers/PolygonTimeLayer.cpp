@@ -188,7 +188,7 @@ void PolygonTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     {
       Minerva::Core::postGIS::Geometry::RefPtr geometry ( new Minerva::Core::postGIS::Polygon ( this->connection(), dataTable, id, srid, iter["geom"] ) );
 
-      Minerva::Core::DataObjects::Boundary::RefPtr data ( new Minerva::Core::DataObjects::Boundary );
+      Minerva::Core::DataObjects::Polygon::RefPtr data ( new Minerva::Core::DataObjects::Polygon );
 
       data->geometry( geometry.get() );
       data->color( this->_color( iter ) );

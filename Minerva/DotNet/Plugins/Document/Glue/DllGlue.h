@@ -46,7 +46,6 @@ namespace DT
 
             void                  viewLayerExtents ( CadKit::Interfaces::ILayer ^layer );
 
-            void                  addKeyWordList ( System::String^ kwl );
             void                  addLayer       ( CadKit::Interfaces::IOssimLayer ^ layer );
             void                  removeLayer    ( CadKit::Interfaces::IOssimLayer ^ layer );
       

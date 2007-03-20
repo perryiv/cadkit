@@ -420,6 +420,42 @@
 					</File>
 				</Filter>
 				<Filter
+					Name="Scene"
+					>
+					<File
+						RelativePath=".\Scene\SceneManager.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Scene\SceneManager.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Functors"
+					>
+					<File
+						RelativePath=".\Functors\BaseColorFunctor.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Functors\GradientColorFunctor.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Functors\GradientColorFunctor.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Functors\SingleColorFunctor.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Functors\SingleColorFunctor.h"
+						>
+					</File>
+				</Filter>
+				<Filter
 					Name="postGIS"
 					>
 					<File
@@ -514,42 +550,6 @@
 					</File>
 					<File
 						RelativePath=".\postGIS\Polygon.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Scene"
-					>
-					<File
-						RelativePath=".\Scene\SceneManager.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Scene\SceneManager.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Functors"
-					>
-					<File
-						RelativePath=".\Functors\BaseColorFunctor.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Functors\GradientColorFunctor.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Functors\GradientColorFunctor.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Functors\SingleColorFunctor.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Functors\SingleColorFunctor.h"
 						>
 					</File>
 				</Filter>

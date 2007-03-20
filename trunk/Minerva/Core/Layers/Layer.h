@@ -219,11 +219,8 @@ template<class Archive> void Layer::save(Archive & ar, const unsigned int versio
   ar & boost::serialization::make_nvp ( "RenderBin", _renderBin );
   ar & boost::serialization::make_nvp ( "Offset", _zOffset );
   //ar & _dataObjects;
-  Minerva::Core::DB::Connection* connection ( _connection.get() );
-  ar & boost::serialization::make_nvp ( "Connection", connection );
-
-  Minerva::Core::Functors::BaseColorFunctor *colorFunctor ( _colorFunctor.get() );
-  ar & boost::serialization::make_nvp ( "ColorFunctor", colorFunctor  );
+  ar & boost::serialization::make_nvp ( "Connection", _connection );
+  ar & boost::serialization::make_nvp ( "ColorFunctor", _colorFunctor  );
 
   ar & boost::serialization::make_nvp ( "LegendText", _legendText );
   ar & boost::serialization::make_nvp ( "ShowLabel", _showLabel );
@@ -244,14 +241,8 @@ template<class Archive> void Layer::load(Archive & ar, const unsigned int versio
   ar & boost::serialization::make_nvp ( "RenderBin", _renderBin );
   ar & boost::serialization::make_nvp ( "Offset", _zOffset );
   //ar & _dataObjects;
-
-  Minerva::Core::DB::Connection* connection ( 0x0 );
-  ar & boost::serialization::make_nvp ( "Connection", connection );
-  _connection = connection;
-
-  Minerva::Core::Functors::BaseColorFunctor *colorFunctor ( 0x0 );
-  ar & boost::serialization::make_nvp ( "ColorFunctor", colorFunctor );
-  _colorFunctor = colorFunctor;
+  ar & boost::serialization::make_nvp ( "Connection", _connection );
+  ar & boost::serialization::make_nvp ( "ColorFunctor", _colorFunctor );
 
   ar & boost::serialization::make_nvp ( "LegendText", _legendText );
   this->legendText( _legendText );

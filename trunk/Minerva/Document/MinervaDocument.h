@@ -44,6 +44,7 @@ public:
   typedef Usul::Documents::Document BaseClass;
   typedef std::vector< std::string > Names;
   typedef std::map < std::string, Minerva::Core::Layers::Layer::RefPtr > Favorites;
+  typedef OsgTools::Animate::Settings Settings;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( MinervaDocument );
@@ -88,13 +89,10 @@ public:
 
   void                        viewLayerExtents ( ossimPlanetTextureLayer * layer );
 
-  void                        addKeyWordList ( const std::string& kwl );
   void                        addLayer       ( ossimPlanetTextureLayer * layer );
   void                        removeLayer    ( ossimPlanetTextureLayer * layer );
 
   void                        setLayerOperation( const std::string&, int val, ossimPlanetTextureLayer * layer );
-
-  typedef OsgTools::Animate::Settings Settings;
 
   void                        timestepType( Settings::TimestepType type );
   Settings::TimestepType      timestepType( ) const;

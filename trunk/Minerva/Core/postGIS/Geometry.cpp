@@ -82,7 +82,8 @@ void Geometry::_convertToLatLong ( const Vertices& vertices, std::vector< ossimG
   {
     for( Vertices::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter )
     {
-      ossimGpt gpt ( (*iter)[0], (*iter)[1] );
+      // Index 0 contains longitude, index 1 contains latitude.
+      ossimGpt gpt ( (*iter)[1], (*iter)[0] ); // Lat is first agrument, long is second.
       
       double deltaH = ossimElevManager::instance()->getHeightAboveMSL( gpt );
       if(deltaH == OSSIM_DBL_NAN)

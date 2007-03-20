@@ -347,33 +347,6 @@ void DllGlue::addLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add a keyword list.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DllGlue::addKeyWordList( System::String^ kwl )
-{
-  try
-  {
-    _document->addKeyWordList( Usul::Strings::convert ( kwl ).c_str() );
-  }
-  catch ( System::Exception ^e )
-  {
-    System::Console::WriteLine( "Error 1935115428:" + e->Message );
-  }
-  catch ( const std::exception &e )
-  {
-    System::Console::WriteLine( "Error 1962615428:" + gcnew System::String ( e.what() ) );
-  }
-  catch ( ... )
-  {
-    System::Console::WriteLine( "Error 1994334178: Unknown exception caught." );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Add an image.
 //
 ///////////////////////////////////////////////////////////////////////////////

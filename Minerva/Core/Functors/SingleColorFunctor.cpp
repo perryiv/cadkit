@@ -12,12 +12,18 @@
 
 #include "OsgTools/Legend/SolidIcon.h"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 using namespace Minerva::Core::Functors;
+
+SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
+SERIALIZE_XML_REGISTER_CREATOR ( SingleColorFunctor );
 
 SingleColorFunctor::SingleColorFunctor() : 
 BaseClass(),
 _color()
 {
+  SERIALIZE_XML_ADD_MEMBER ( _color );
 }
 
 

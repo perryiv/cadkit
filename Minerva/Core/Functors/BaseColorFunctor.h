@@ -20,6 +20,8 @@
 
 #include "boost/serialization/is_abstract.hpp"
 
+#include "Serialize/XML/Macros.h"
+
 namespace OsgTools { namespace Legend { class Icon; } }
 
 namespace Minerva {
@@ -34,9 +36,14 @@ struct MINERVA_EXPORT BaseColorFunctor : public Usul::Base::Referenced
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( BaseColorFunctor );
 
+  BaseColorFunctor() : SERIALIZE_XML_INITIALIZER_LIST { }
+
   virtual osg::Vec4 operator() ( double value ) const = 0;
 
   virtual OsgTools::Legend::Icon * icon () = 0;
+
+  SERIALIZE_XML_DEFINE_MAP;
+  SERIALIZE_XML_DEFINE_MEMBERS ( BaseColorFunctor );
 };
 
   }

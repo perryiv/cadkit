@@ -90,6 +90,8 @@ protected:
   void                    _buildSceneDateMode   ( osg::Group* parent );
   void                    _buildSceneNumberMode ( osg::Group* parent );
 
+  void _registerMembers();
+
 private:
   friend class boost::serialization::access;
   template < class Archive > void serialize( Archive &ar, const unsigned int version );
@@ -105,6 +107,8 @@ private:
   float _yOffset;
   TemporalMap _temporalMap;
   NumberMap _numberMap;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( PolygonTimeLayer );
 };
 
 

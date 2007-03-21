@@ -17,6 +17,8 @@
 
 #include "OsgTools/Utilities/Vec4Serialize.h"
 
+#include "Serialize/XML/Macros.h"
+
 #include "boost/serialization/nvp.hpp"
 namespace boost { namespace serialization { class access; } }
 
@@ -50,6 +52,9 @@ private:
   template < class Archive > void serialize( Archive &ar, const unsigned int version );
 
   osg::Vec4 _color;
+
+  SERIALIZE_XML_DEFINE_MAP;
+  SERIALIZE_XML_DEFINE_MEMBERS ( SingleColorFunctor );
 };
 
 

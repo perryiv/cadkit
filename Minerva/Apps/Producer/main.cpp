@@ -8,6 +8,21 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set for multi-threaded. This is global because the sooner we set this, 
+//  the better. Setting in main() may be too late.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "Usul/Threads/Mutex.h"
+#include "Threads/OpenThreads/Mutex.h"
+
+Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
+
+
+
 #include "DrawCallbackImpl.h"
 
 #include "Minerva/Core/DB/Connection.h"
@@ -17,10 +32,8 @@
 
 #include "Magrathea/Planet.h"
 
-#include "Threads/OpenThreads/Mutex.h"
-
 #include "Usul/App/Controller.h"
-#include "Usul/Threads/Mutex.h"
+
 #include "Usul/CommandLine/Arguments.h"
 
 #include "Usul/Policies/Update.h"
@@ -94,16 +107,6 @@ void PickHandler::pick(const osgGA::GUIEventAdapter& ea)
   setLabel( text );
 #endif
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set for multi-threaded. This is global because the sooner we set this, 
-//  the better. Setting in main() may be too late.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
 
 
 ///////////////////////////////////////////////////////////////////////////////

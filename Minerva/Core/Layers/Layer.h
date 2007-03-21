@@ -23,6 +23,8 @@
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 
+#include "Serialize/XML/Macros.h"
+
 #include "OsgTools/Legend/LegendObject.h"
 
 namespace osg { class Group; }
@@ -75,8 +77,8 @@ public:
   const std::string&          name() const;
 
   /// Get/Set the layer id.
-  void                        layerID( unsigned int id );
-  unsigned int                layerID() const;
+  void                        layerID( Usul::Types::Uint32 id );
+  Usul::Types::Uint32         layerID() const;
 
   /// Get/Set the connection.
   void                        connection ( DB::Connection *connection );
@@ -107,8 +109,8 @@ public:
   float                       labelSize() const;
 
   /// Get/Set the render bin.
-  void                        renderBin( unsigned int bin );
-  unsigned int                renderBin( ) const;
+  void                        renderBin(Usul::Types::Uint32 bin );
+  Usul::Types::Uint32         renderBin( ) const;
 
   /// Get/Set the z offset.
   void                        zOffset( float f );
@@ -180,6 +182,7 @@ protected:
 
   void                        _labelDataObject ( DataObject* dataObject );
 
+  void                        _registerMembers();
 
 private:
   friend class boost::serialization::access;
@@ -189,12 +192,12 @@ private:
 
   static unsigned int _currentLayerID;
   std::string _name;
-  unsigned int _layerID;
+  Usul::Types::Uint32 _layerID;
   std::string _primaryKeyColumn;
   std::string _tablename;
   std::string _labelColumn;
   std::string _query;
-  unsigned int _renderBin;
+  Usul::Types::Uint32 _renderBin;
   float _zOffset;
   DataObjects _dataObjects;
   DB::Connection::RefPtr _connection;
@@ -207,6 +210,9 @@ private:
   float                  _labelZOffset;
   float                  _labelSize;
   std::string            _colorColumn;
+
+  SERIALIZE_XML_DEFINE_MAP;
+  SERIALIZE_XML_DEFINE_MEMBERS ( Layer );
 };
 
 template<class Archive> void Layer::save(Archive & ar, const unsigned int version) const

@@ -14,10 +14,13 @@
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 #include <map>
 
 using namespace Minerva::Core::Layers;
 
+SERIALIZE_XML_REGISTER_CREATOR ( PointLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -31,6 +34,8 @@ _size( 5 ),
 _stackPoints ( false )
 {
   this->name( "PointLayer" );
+
+  this->_registerMembers();
 }
 
 
@@ -45,6 +50,21 @@ _primitiveID( layer._primitiveID ),
 _size( layer._size ),
 _stackPoints ( layer._stackPoints )
 {
+  this->_registerMembers();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointLayer::_registerMembers()
+{
+  SERIALIZE_XML_ADD_MEMBER ( _primitiveID );
+  SERIALIZE_XML_ADD_MEMBER ( _size );
+  SERIALIZE_XML_ADD_MEMBER ( _stackPoints );
 }
 
 
@@ -195,7 +215,7 @@ void PointLayer::modify( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointLayer::primitiveID( unsigned int primitiveId )
+void PointLayer::primitiveID( Usul::Types::Uint32 primitiveId )
 {
   _primitiveID = primitiveId;
 }
@@ -207,7 +227,7 @@ void PointLayer::primitiveID( unsigned int primitiveId )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int PointLayer::primitiveID() const
+Usul::Types::Uint32 PointLayer::primitiveID() const
 {
   return _primitiveID;
 }

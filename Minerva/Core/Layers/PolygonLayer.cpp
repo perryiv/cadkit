@@ -14,12 +14,15 @@
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 #include "osg/Group"
 
 #include <algorithm>
 
 using namespace Minerva::Core::Layers;
 
+SERIALIZE_XML_REGISTER_CREATOR ( PolygonLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -30,6 +33,8 @@ using namespace Minerva::Core::Layers;
 PolygonLayer::PolygonLayer() : BaseClass(), _format()
 {
   this->name( "PolygonLayer" );
+
+  this->_registerMembers();
 }
 
 
@@ -42,6 +47,19 @@ PolygonLayer::PolygonLayer() : BaseClass(), _format()
 PolygonLayer::PolygonLayer ( const PolygonLayer& layer ) : BaseClass ( layer ),
 _format ( layer._format )
 {
+  this->_registerMembers();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PolygonLayer::_registerMembers()
+{
+  SERIALIZE_XML_ADD_MEMBER ( _format );
 }
 
 

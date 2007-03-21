@@ -16,10 +16,13 @@
 
 #include "OsgTools/ShapeFactory.h"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 #include <algorithm>
 
 using namespace Minerva::Core::Layers;
 
+SERIALIZE_XML_REGISTER_CREATOR ( RLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -31,6 +34,8 @@ RLayer::RLayer() : BaseClass(),
 _mode ( CYLINDER )
 {
   this->name( "RLayer" );
+
+  this->_registerMembers();
 }
 
 
@@ -43,6 +48,19 @@ _mode ( CYLINDER )
 RLayer::RLayer ( const RLayer& layer ) : BaseClass ( layer ),
 _mode ( layer._mode )
 {
+  this->_registerMembers();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RLayer::_registerMembers()
+{
+  this->_addMember ( "_mode", reinterpret_cast < int & > ( _mode ) );
 }
 
 

@@ -16,6 +16,8 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 
+#include "Serialize/XML/Macros.h"
+
 #include "pqxx/pqxx"
 
 #include "boost/serialization/nvp.hpp"
@@ -97,6 +99,24 @@ private:
   std::string _password;
 
   pqxx::connection* _connection;
+
+  SERIALIZE_XML_DEFINE_MAP;
+public:
+  virtual const char *className() const { return "Connection"; }
+  virtual void serialize ( XmlTree::Node &parent ) const
+  {
+    _dataMemberMap.serialize ( parent );
+  }
+  virtual void deserialize ( const XmlTree::Node &node )
+  {
+    _dataMemberMap.deserialize ( node );
+    this->connect();
+  }
+protected:
+  template < class T > void _addMember ( const std::string &name, T &value )
+  {
+    _dataMemberMap.addMember ( name, value );
+  }
 };
 
 template< class Archive >

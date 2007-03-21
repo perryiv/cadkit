@@ -17,8 +17,8 @@
 
 #include "BaseColorFunctor.h"
 
-//#include "boost/serialization/nvp.hpp"
-//#include "boost/serialization/export.hpp"
+#include "Serialize/XML/Macros.h"
+
 namespace boost { namespace serialization { class access; } }
 
 namespace Minerva {
@@ -66,6 +66,8 @@ private:
   osg::Vec4 _maxColor;
   double _minValue;
   double _maxValue;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( GradientColorFunctor );
 };
 
 template < class Archive >

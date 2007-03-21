@@ -14,10 +14,13 @@
 
 #include "boost/algorithm/string/find.hpp"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 #include <iostream>
 
 using namespace Minerva::Core::DB;
 
+SERIALIZE_XML_REGISTER_CREATOR ( Connection );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -30,8 +33,13 @@ _host (),
 _database (),
 _user (),
 _password(),
-_connection ( 0x0 )
+_connection ( 0x0 ),
+SERIALIZE_XML_INITIALIZER_LIST
 {
+  SERIALIZE_XML_ADD_MEMBER ( _host );
+  SERIALIZE_XML_ADD_MEMBER ( _database );
+  SERIALIZE_XML_ADD_MEMBER ( _user );
+  SERIALIZE_XML_ADD_MEMBER ( _password );
 }
 
 

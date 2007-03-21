@@ -34,6 +34,9 @@
 #include "Minerva/Core/Functors/SingleColorFunctor.h"
 #include "Minerva/Core/Functors/GradientColorFunctor.h"
 
+#include "Serialize/XML/Serialize.h"
+#include "Serialize/XML/Deserialize.h"
+
 namespace Minerva {
 namespace Core {
 
@@ -66,14 +69,22 @@ template < class Archive > void registerTypes( Archive& a )
 
 inline std::string serialize( Minerva::Core::Layers::Layer *layer )
 {
+  std::vector< Minerva::Core::Layers::Layer::RefPtr > v;
+  v.push_back( layer );
+
+  std::string contents;
+  Serialize::XML::serialize( "Layers", v.begin(), v.end(), contents );
+
   // Create the archive.
-  std::ostringstream os;
+  /*std::ostringstream os;
   boost::archive::xml_oarchive oa ( os );
 
   registerTypes( oa );
 
   oa << boost::serialization::make_nvp( "Layer", layer );
-  return os.str();
+  return os.str();*/
+
+  return contents;
 }
 
 
@@ -85,16 +96,25 @@ inline std::string serialize( Minerva::Core::Layers::Layer *layer )
 
 inline Minerva::Core::Layers::Layer * deserialize ( const std::string& xml )
 {
+  std::vector< Minerva::Core::Layers::Layer::RefPtr > v;
+
+  Serialize::XML::deserialize( xml, v );
+
+  if( !v.empty() )
+    return v.front().get();
+
+  return 0x0;
+
   // Create the archive.
-  std::istringstream in ( xml );
-  boost::archive::xml_iarchive ia ( in );
+  //std::istringstream in ( xml );
+  //boost::archive::xml_iarchive ia ( in );
 
-  registerTypes( ia );
+  //registerTypes( ia );
 
-  // Deserialize.
-  Minerva::Core::Layers::Layer *layer ( 0x0 );
-  ia >> boost::serialization::make_nvp( "Layer", layer );
-  return layer;
+  //// Deserialize.
+  //Minerva::Core::Layers::Layer *layer ( 0x0 );
+  //ia >> boost::serialization::make_nvp( "Layer", layer );
+  //return layer;
 }
 
 

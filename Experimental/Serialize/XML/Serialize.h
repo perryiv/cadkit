@@ -21,6 +21,7 @@
 #include "XmlTree/XercesLife.h"
 
 #include "Usul/File/Contents.h"
+#include "Usul/File/Temp.h"
 
 namespace Serialize {
 namespace XML {

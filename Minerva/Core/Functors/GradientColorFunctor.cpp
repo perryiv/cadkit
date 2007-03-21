@@ -20,7 +20,6 @@
 using namespace Minerva::Core::Functors;
 
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
-SERIALIZE_XML_REGISTER_CREATOR ( GradientColorFunctor );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

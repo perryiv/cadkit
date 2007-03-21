@@ -20,8 +20,6 @@
 
 using namespace Minerva::Core::DB;
 
-SERIALIZE_XML_REGISTER_CREATOR ( Connection );
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.

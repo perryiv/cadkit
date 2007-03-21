@@ -38,7 +38,7 @@ namespace CadKit.Plugins.Windows.OutputWindow
         this.Controls.Add(_text);
         _text.Dock = System.Windows.Forms.DockStyle.Fill;
         _text.Multiline = true;
-        
+
         this.Shown += this._formShown;
         this.FormClosing += this._formClosing;
       }
@@ -47,6 +47,22 @@ namespace CadKit.Plugins.Windows.OutputWindow
         System.Console.WriteLine("Error 1773819642: {0}", e.Message);
         _text = null;
         this.Controls.Clear();
+      }
+    }
+
+
+    /// <summary>
+    /// Finalizer
+    /// </summary>
+    ~Form()
+    {
+      try
+      {
+        this._removeNotifyDelegate();
+      }
+      catch (System.Exception e)
+      {
+        System.Console.WriteLine("Error 3606270125: {0}", e.Message);
       }
     }
 
@@ -61,7 +77,7 @@ namespace CadKit.Plugins.Windows.OutputWindow
         lock (_mutex)
         {
           // The form is shown. Add the notify delegate.
-          CadKit.Tools.RedirectOutput.Instance.Notify += this._notify;
+          this._addNotifyDelegate();
         }
       }
       catch (System.Exception e)
@@ -72,7 +88,7 @@ namespace CadKit.Plugins.Windows.OutputWindow
 
 
     /// <summary>
-    /// Called when the forms is about to close.
+    /// Called when the form is about to close.
     /// </summary>
     private void _formClosing(object sender, System.Windows.Forms.FormClosingEventArgs args)
     {
@@ -81,13 +97,31 @@ namespace CadKit.Plugins.Windows.OutputWindow
         lock (_mutex)
         {
           // The form is closing. Remove the notify delegate.
-          CadKit.Tools.RedirectOutput.Instance.Notify -= this._notify;
+          this._removeNotifyDelegate();
         }
       }
       catch (System.Exception e)
       {
         System.Console.WriteLine("Error 1185796360: {0}", e.Message);
       }
+    }
+
+
+    /// <summary>
+    /// Remove the notify delegate.
+    /// </summary>
+    private void _removeNotifyDelegate()
+    {
+      CadKit.Tools.RedirectOutput.Instance.Notify -= this._notify;
+    }
+
+
+    /// <summary>
+    /// Add the notify delegate.
+    /// </summary>
+    private void _addNotifyDelegate()
+    {
+      CadKit.Tools.RedirectOutput.Instance.Notify += this._notify;
     }
 
 
@@ -127,8 +161,16 @@ namespace CadKit.Plugins.Windows.OutputWindow
         }
         else
         {
-          _text.Text += text;
-          _text.Invalidate(true);
+          if (false == _text.IsDisposed)
+          {
+            _text.Text += text;
+            //_text.Invalidate(true);
+
+            // Scroll to the bottom.
+            // See: http://www.thescripts.com/forum/thread451943.html
+            _text.Select(_text.TextLength, 0);
+            _text.ScrollToCaret();
+          }
         }
       }
       catch (System.Exception e)

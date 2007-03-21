@@ -39,6 +39,10 @@ public:
   // Destructor. Should never throw.
   ~Temp();
 
+  // Call this if you want to close the file before this instance goes 
+  // out of scope, but still have the destructor remove the file.
+  void                        close();
+
   // Return name of directory where temporary files can be created.
   static std::string          directory ( bool wantSlash = false );
 
@@ -65,8 +69,6 @@ protected:
   // No copying.
   Temp ( const Temp & );
   Temp &operator = ( const Temp & );
-
-  void                        _close();
 
 private:
 

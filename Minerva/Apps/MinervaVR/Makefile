@@ -20,8 +20,8 @@ EXTRA_INCLUDES = \
 	-I$(OSSIM_INC_DIR) \
 	-I$(OSSIM_PLANET_INC_DIR) \
 	-I$(OSG_EPHEMERIS_INC_DIR) \
-	-I$(CADKIT_ROOT_DIR)/Magrathea/src \
-	-I$(CADKIT_ROOT_DIR)/Minerva/Native/include \
+	-I$(CADKIT_ROOT_DIR) \
+	-I$(CADKIT_ROOT_DIR)/Experimental \
 	-I$(PRODUCER_INC_DIR) 
 
 LOCAL_LIBS = \

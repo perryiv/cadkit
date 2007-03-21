@@ -28,6 +28,9 @@
 #include "Usul/File/Path.h"
 #include "Usul/File/Remove.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Math/Vector2.h"
+#include "Usul/Math/Vector3.h"
+#include "Usul/Math/Vector4.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/Mutex.h"
 
@@ -329,6 +332,46 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Class to be serialized.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class ClassG : public ClassD
+{
+public:
+
+  USUL_DECLARE_REF_POINTERS ( ClassG );
+  typedef ClassD BaseClass;
+
+  ClassG() : BaseClass(),
+    _vec4 ( ::rand(), ::rand(), ::rand(), ::rand() ),
+    _vec3 ( ::rand(), ::rand(), ::rand() ),
+    _vec2 ( ::rand(), ::rand() )
+  {
+    _name = "Default name for ClassG";
+    SERIALIZE_XML_ADD_MEMBER ( _vec4 );
+    SERIALIZE_XML_ADD_MEMBER ( _vec3 );
+    SERIALIZE_XML_ADD_MEMBER ( _vec2 );
+  }
+
+protected:
+
+  virtual ~ClassG()
+  {
+  }
+
+private:
+
+  Usul::Math::Vec4d _vec4;
+  Usul::Math::Vec3d _vec3;
+  Usul::Math::Vec2d _vec2;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( ClassG );
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Register some types.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -339,6 +382,14 @@ SERIALIZE_XML_REGISTER_CREATOR ( ClassC );
 SERIALIZE_XML_REGISTER_CREATOR ( ClassD );
 SERIALIZE_XML_REGISTER_CREATOR ( ClassE );
 SERIALIZE_XML_REGISTER_CREATOR ( ClassF );
+SERIALIZE_XML_REGISTER_CREATOR ( ClassG );
+
+SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Usul::Math::Vec4d );
+SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Usul::Math::Vec4f );
+SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( Usul::Math::Vec3d );
+SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( Usul::Math::Vec3f );
+SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2d );
+SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2f );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -355,7 +406,7 @@ void _run()
   // Create objects using factory.
   for ( unsigned j = 0; j < 10; ++j )
   {
-    const std::string names[] = { "ClassA", "ClassB", "ClassC", "ClassD", "ClassE", "ClassF", "ClassG" };
+    const std::string names[] = { "ClassA", "ClassB", "ClassC", "ClassD", "ClassE", "ClassF", "ClassG", "ClassH" };
     const unsigned int num ( sizeof ( names ) / sizeof ( std::string ) );
 
     objects.reserve ( num );

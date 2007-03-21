@@ -41,76 +41,6 @@ template < class T > struct TypeWrapper;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Macro to specialize built-in types.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define SERIALIZE_XML_DECLARE_TYPE_WRAPPER(TheType)\
-template <> struct TypeWrapper < TheType >\
-{\
-  typedef TypeWrapper < TheType > ThisType;\
-  static void addAtribute ( const std::string &name, const std::string &value, XmlTree::Node &node )\
-  {\
-  }\
-  static const char *className ( const TheType &value )\
-  {\
-    return #TheType;\
-  }\
-  static TheType create ( const std::string &typeName )\
-  {\
-    return TheType();\
-  }\
-  static void deserialize ( const XmlTree::Node &node, TheType &value )\
-  {\
-    ThisType::set ( node.value(), value );\
-  }\
-  static void getAttribute ( const std::string &name, const XmlTree::Node &node, std::string &value )\
-  {\
-    value.clear();\
-  }\
-  static bool isValid ( const TheType &value )\
-  {\
-    return true;\
-  }\
-  static void serialize ( const TheType &value, XmlTree::Node &node )\
-  {\
-    std::ostringstream out;\
-    out << value;\
-    node.value ( out.str() );\
-  }\
-  static void set ( const std::string &s, TheType &value )\
-  {\
-    if ( false == s.empty() )\
-    {\
-      std::istringstream in ( s );\
-      in >> value;\
-    }\
-  }\
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Specializations built-in types.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( char  );
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( short );
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( int   );
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( long  );
-
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned char  );
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned short );
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned int   );
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned long  );
-
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( float );
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( double );
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Specialization for strings.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -204,5 +134,140 @@ template < class T, class C > struct TypeWrapper < Usul::Pointers::SmartPointer 
 } // namespace Serialize
 } // namespace XML
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macro to specialize built-in types.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define SERIALIZE_XML_DECLARE_TYPE_WRAPPER(TheType)\
+namespace Serialize {\
+namespace XML {\
+template <> struct TypeWrapper < TheType >\
+{\
+  typedef TypeWrapper < TheType > ThisType;\
+  static void addAtribute ( const std::string &name, const std::string &value, XmlTree::Node &node )\
+  {\
+  }\
+  static const char *className ( const TheType &value )\
+  {\
+    return #TheType;\
+  }\
+  static TheType create ( const std::string &typeName )\
+  {\
+    return TheType();\
+  }\
+  static void deserialize ( const XmlTree::Node &node, TheType &value )\
+  {\
+    ThisType::set ( node.value(), value );\
+  }\
+  static void getAttribute ( const std::string &name, const XmlTree::Node &node, std::string &value )\
+  {\
+    value.clear();\
+  }\
+  static bool isValid ( const TheType &value )\
+  {\
+    return true;\
+  }\
+  static void serialize ( const TheType &value, XmlTree::Node &node )\
+  {\
+    std::ostringstream out;\
+    out << value;\
+    node.value ( out.str() );\
+  }\
+  static void set ( const std::string &s, TheType &value )\
+  {\
+    if ( false == s.empty() )\
+    {\
+      std::istringstream in ( s );\
+      in >> value;\
+    }\
+  }\
+};\
+}\
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Specializations built-in types.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( char  );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( short );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( int   );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( long  );
+
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned char  );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned short );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned int   );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned long  );
+
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( float );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( double );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macros to declare stream operators for simple vector types.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_4(the_type)\
+std::ostream &operator << ( std::ostream &out, const the_type &v )\
+{\
+  out << v[0] << ' ' << v[1] << ' ' << v[2] << ' ' << v[3];\
+  return out;\
+}\
+std::istream &operator >> ( std::istream &in, the_type &v )\
+{\
+  in >> v[0] >> v[1] >> v[2] >> v[3];\
+  return in;\
+}
+
+#define SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_3(the_type)\
+std::ostream &operator << ( std::ostream &out, const the_type &v )\
+{\
+  out << v[0] << ' ' << v[1] << ' ' << v[2];\
+  return out;\
+}\
+std::istream &operator >> ( std::istream &in, the_type &v )\
+{\
+  in >> v[0] >> v[1] >> v[2];\
+  return in;\
+}
+
+#define SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_2(the_type)\
+std::ostream &operator << ( std::ostream &out, const the_type &v )\
+{\
+  out << v[0] << ' ' << v[1];\
+  return out;\
+}\
+std::istream &operator >> ( std::istream &in, the_type &v )\
+{\
+  in >> v[0] >> v[1];\
+  return in;\
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macros to declare all plumbing for simple vector types.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER(the_type)\
+  SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_4(the_type);\
+  SERIALIZE_XML_DECLARE_TYPE_WRAPPER(the_type);
+
+#define SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER(the_type)\
+  SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_3(the_type);\
+  SERIALIZE_XML_DECLARE_TYPE_WRAPPER(the_type);
+
+#define SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER(the_type)\
+  SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_2(the_type);\
+  SERIALIZE_XML_DECLARE_TYPE_WRAPPER(the_type);
 
 #endif // _SERIALIZE_XML_SET_VALUE_H_

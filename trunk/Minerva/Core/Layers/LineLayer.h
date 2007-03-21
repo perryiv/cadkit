@@ -59,11 +59,15 @@ protected:
   /// Copy Constructor.
   LineLayer ( const LineLayer& layer );
 
+  void  _registerMembers();
+
 private:
   friend class boost::serialization::access;
   template < class Archive > void serialize( Archive &ar, const unsigned int version );
 
   float _lineWidth;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( LineLayer );
 };
 
 template < class Archive >

@@ -12,11 +12,15 @@
 
 #include "OsgTools/Legend/GradientIcon.h"
 
+#include "Serialize/XML/RegisterCreator.h"
+#include "Serialize/XML/TypeWrapper.h"
+
 #include <iostream>
 
 using namespace Minerva::Core::Functors;
 
-
+SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
+SERIALIZE_XML_REGISTER_CREATOR ( GradientColorFunctor );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -30,6 +34,10 @@ _maxColor(),
 _minValue ( 0.0 ),
 _maxValue ( 0.0 )
 {
+  SERIALIZE_XML_ADD_MEMBER ( _minColor );
+  SERIALIZE_XML_ADD_MEMBER ( _maxColor );
+  SERIALIZE_XML_ADD_MEMBER ( _minValue );
+  SERIALIZE_XML_ADD_MEMBER ( _maxValue );
 }
 
 

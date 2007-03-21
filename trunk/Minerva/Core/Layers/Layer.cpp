@@ -13,11 +13,14 @@
 #include "osg/Group"
 #include "osg/MatrixTransform"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 #include <algorithm>
 #include <functional>
 
 using namespace Minerva::Core::Layers;
 
+SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -54,9 +57,12 @@ _shown ( true ),
 _labelColor( 0.0, 0.0, 0.0, 1.0 ),
 _labelZOffset( 1000.0 ),
 _labelSize ( 25.0f ),
-_colorColumn()
+_colorColumn(),
+SERIALIZE_XML_INITIALIZER_LIST
 {
   _layerID = ++_currentLayerID;
+
+  this->_registerMembers();
 }
 
 
@@ -89,8 +95,39 @@ _labelSize ( layer._labelSize ),
 _colorColumn( layer._colorColumn )
 {
   _layerID = ++_currentLayerID;
+
+  this->_registerMembers();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::_registerMembers()
+{
+  SERIALIZE_XML_ADD_MEMBER ( _name );
+  SERIALIZE_XML_ADD_MEMBER ( _layerID );
+  SERIALIZE_XML_ADD_MEMBER ( _primaryKeyColumn );
+  SERIALIZE_XML_ADD_MEMBER ( _tablename );
+  SERIALIZE_XML_ADD_MEMBER ( _labelColumn );
+  SERIALIZE_XML_ADD_MEMBER ( _query );
+  SERIALIZE_XML_ADD_MEMBER ( _renderBin );
+  SERIALIZE_XML_ADD_MEMBER ( _zOffset );
+  //DataObjects _dataObjects;
+  SERIALIZE_XML_ADD_MEMBER ( _connection );
+  SERIALIZE_XML_ADD_MEMBER ( _colorFunctor );
+  //LegendObject::RefPtr   _legendObject;
+  SERIALIZE_XML_ADD_MEMBER ( _legendText );
+  SERIALIZE_XML_ADD_MEMBER ( _showLabel );
+  SERIALIZE_XML_ADD_MEMBER ( _shown );
+  SERIALIZE_XML_ADD_MEMBER ( _labelColor );
+  SERIALIZE_XML_ADD_MEMBER ( _labelZOffset );
+  SERIALIZE_XML_ADD_MEMBER ( _labelSize );
+  SERIALIZE_XML_ADD_MEMBER ( _colorColumn );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -109,7 +146,7 @@ Layer::~Layer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::layerID( unsigned int id )
+void Layer::layerID( Usul::Types::Uint32 id )
 {
   Guard guard( _mutex );
   _layerID = id;
@@ -122,7 +159,7 @@ void Layer::layerID( unsigned int id )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Layer::layerID() const
+Usul::Types::Uint32 Layer::layerID() const
 {
   return _layerID;
 }
@@ -210,7 +247,7 @@ const std::string& Layer::labelColumn() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::renderBin( unsigned int bin )
+void Layer::renderBin( Usul::Types::Uint32 bin )
 {
   Guard guard( _mutex );
   _renderBin = bin;
@@ -223,7 +260,7 @@ void Layer::renderBin( unsigned int bin )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Layer::renderBin( ) const
+Usul::Types::Uint32 Layer::renderBin( ) const
 {
   return _renderBin;
 }

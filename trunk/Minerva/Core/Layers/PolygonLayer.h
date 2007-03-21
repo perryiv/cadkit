@@ -47,11 +47,15 @@ protected:
 
   PolygonLayer( const PolygonLayer& layer );
 
+  void _registerMembers();
+
 private:
   friend class boost::serialization::access;
   template < class Archive > void serialize( Archive &ar, const unsigned int version );
 
   std::string _format;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( PolygonLayer );
 };
 
 template < class Archive >

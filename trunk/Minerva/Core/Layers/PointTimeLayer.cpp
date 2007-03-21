@@ -17,11 +17,15 @@
 #include "OsgTools/Animate/DateGroup.h"
 #include "OsgTools/Animate/DateCallback.h"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 #include "osg/Group"
 #include "osg/MatrixTransform"
 
 using namespace Minerva::Core::Layers;
 
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER( OsgTools::Animate::Date );
+SERIALIZE_XML_REGISTER_CREATOR ( PointTimeLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -38,6 +42,8 @@ _minDate( boost::date_time::min_date_time ),
 _maxDate( boost::date_time::max_date_time )
 {
   this->name( "PointTimeLayer" );
+
+  this->_registerMembers();
 }
 
 
@@ -55,6 +61,24 @@ _lastDateColumn( layer._lastDateColumn ),
 _minDate( layer._minDate ),
 _maxDate( layer._maxDate )
 {
+  this->_registerMembers();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayer::_registerMembers()
+{
+  SERIALIZE_XML_ADD_MEMBER ( _primitiveID );
+  SERIALIZE_XML_ADD_MEMBER ( _size );
+  SERIALIZE_XML_ADD_MEMBER ( _firstDateColumn );
+  SERIALIZE_XML_ADD_MEMBER ( _lastDateColumn );
+  SERIALIZE_XML_ADD_MEMBER ( _minDate );
+  SERIALIZE_XML_ADD_MEMBER ( _maxDate );
 }
 
 
@@ -87,7 +111,7 @@ PointTimeLayer::~PointTimeLayer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointTimeLayer::primitiveID( unsigned int primitiveId )
+void PointTimeLayer::primitiveID( Usul::Types::Uint32 primitiveId )
 {
   _primitiveID = primitiveId;
 }
@@ -99,7 +123,7 @@ void PointTimeLayer::primitiveID( unsigned int primitiveId )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int PointTimeLayer::primitiveID() const
+Usul::Types::Uint32 PointTimeLayer::primitiveID() const
 {
   return _primitiveID;
 }

@@ -41,8 +41,8 @@ public:
   virtual void            modify( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   /// Get/Set primitive id.
-  void                    primitiveID( unsigned int );
-  unsigned int            primitiveID() const;
+  void                    primitiveID( Usul::Types::Uint32 );
+  Usul::Types::Uint32     primitiveID() const;
 
   /// Get/Set the size.
   void                    size( float );
@@ -60,13 +60,17 @@ protected:
 
   PointLayer( const PointLayer& layer );
 
+  void _registerMembers();
+
 private:
   friend class boost::serialization::access;
   template < class Archive > void serialize( Archive &ar, const unsigned int version );
 
-  unsigned int _primitiveID;
+  Usul::Types::Uint32 _primitiveID;
   float _size;
   bool _stackPoints;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( PointLayer );
 };
 
 

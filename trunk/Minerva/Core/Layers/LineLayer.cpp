@@ -12,10 +12,13 @@
 #include "Minerva/Core/DataObjects/Line.h"
 #include "Minerva/Core/postGIS/Line.h"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 
 using namespace Minerva::Core::Layers;
 
+SERIALIZE_XML_REGISTER_CREATOR ( LineLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -27,6 +30,7 @@ LineLayer::LineLayer() : BaseClass(),
 _lineWidth ( 1.0f )
 {
   this->name( "LineLayer" );
+  this->_registerMembers();
 }
 
 
@@ -39,6 +43,19 @@ _lineWidth ( 1.0f )
 LineLayer::LineLayer ( const LineLayer& layer ) : BaseClass ( layer ),
 _lineWidth ( layer._lineWidth )
 {
+  this->_registerMembers();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LineLayer::_registerMembers()
+{
+  SERIALIZE_XML_ADD_MEMBER ( _lineWidth );
 }
 
 

@@ -63,6 +63,8 @@ protected:
   void            _buildDataObjectsCylinder( Usul::Interfaces::IUnknown *caller );
   void            _buildDataObjectsPolygons( Usul::Interfaces::IUnknown *caller );
 
+  void            _registerMembers();
+
 private:
   friend class boost::serialization::access;
   template < class Archive > void serialize( Archive &ar, const unsigned int version )
@@ -72,6 +74,8 @@ private:
   }
 
   Mode _mode;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( RLayer );
 };
 
 }

@@ -18,11 +18,14 @@
 
 #include "OsgTools/Animate/DateGroup.h"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 #include "osg/MatrixTransform"
 #include "osg/Group"
 
 using namespace Minerva::Core::Layers;
 
+SERIALIZE_XML_REGISTER_CREATOR ( PolygonTimeLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -41,6 +44,8 @@ _temporalMap(),
 _numberMap()
 {
   this->name( "PolygonTimeLayer" );
+
+  this->_registerMembers();
 }
 
 
@@ -60,6 +65,24 @@ _yOffset( layer._yOffset ),
 _temporalMap( layer._temporalMap ),
 _numberMap( layer._numberMap )
 {
+  this->_registerMembers();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PolygonTimeLayer::_registerMembers()
+{
+  this->_addMember ( "_mode", reinterpret_cast< int& > ( _mode ) );
+  this->_addMember ( "_drawMode", reinterpret_cast< int& > ( _drawMode ) );
+  SERIALIZE_XML_ADD_MEMBER ( _stepColumn );
+  SERIALIZE_XML_ADD_MEMBER ( _zScaleFactor );
+  SERIALIZE_XML_ADD_MEMBER ( _xOffset );
+  SERIALIZE_XML_ADD_MEMBER ( _yOffset );
 }
 
 

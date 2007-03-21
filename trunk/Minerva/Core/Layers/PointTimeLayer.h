@@ -49,8 +49,8 @@ public:
   const std::string&      lastDateColumn() const;
 
   /// Get/Set primitive id.
-  void                    primitiveID( unsigned int );
-  unsigned int            primitiveID() const;
+  void                    primitiveID( Usul::Types::Uint32 );
+  Usul::Types::Uint32     primitiveID() const;
 
   /// Get/Set the size.
   void                    size( float );
@@ -99,17 +99,21 @@ protected:
 
   std::string             _whereClause() const;
 
+  void _registerMembers();
+
 private:
   friend class boost::serialization::access;
   template < class Archive > void serialize( Archive &ar, const unsigned int version );
  
-  unsigned int _primitiveID;
+  Usul::Types::Uint32 _primitiveID;
   float _size;
   std::string _firstDateColumn;
   std::string _lastDateColumn;
   
   OsgTools::Animate::Date _minDate;
   OsgTools::Animate::Date _maxDate;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( Layer );
 
 };
 
@@ -122,6 +126,8 @@ void PointTimeLayer::serialize( Archive &ar, const unsigned int version )
   ar & boost::serialization::make_nvp( "Size", _size );
   ar & boost::serialization::make_nvp( "FirstDateColumn", _firstDateColumn );
   ar & boost::serialization::make_nvp( "LastDateColumn", _lastDateColumn );
+  ar & boost::serialization::make_nvp( "FirstDate", _minDate );
+  ar & boost::serialization::make_nvp( "LastDate", _maxDate );
 }
 
 

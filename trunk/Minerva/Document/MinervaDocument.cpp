@@ -49,6 +49,8 @@ _planet ( new Magrathea::Planet )
   this->addToFavorites( new Minerva::Core::Layers::PolygonLayer );
   this->addToFavorites( new Minerva::Core::Layers::PolygonTimeLayer );
   this->addToFavorites( new Minerva::Core::Layers::RLayer );
+
+  SERIALIZE_XML_ADD_MEMBER ( _favorites );
 }
 
 

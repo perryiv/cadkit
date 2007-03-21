@@ -26,6 +26,8 @@
 
 #include "Magrathea/Planet.h"
 
+#include "Serialize/XML/Macros.h"
+
 class ossimPlanetTextureLayer;
 
 namespace boost { namespace serialization { class access; } }
@@ -156,6 +158,9 @@ private:
   Favorites _favorites;
   Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
   osg::ref_ptr < Magrathea::Planet > _planet;
+
+  SERIALIZE_XML_DEFINE_MAP;
+  SERIALIZE_XML_DEFINE_MEMBERS ( MinervaDocument );
 };
 
 template < class Archive >

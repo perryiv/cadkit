@@ -119,6 +119,10 @@ public:
   /// Build the scene.
   virtual void                buildScene( osg::Group* parent );
 
+  /// Get/Set the custom query flag.
+  void                        customQuery( bool value );
+  bool                        customQuery() const;
+
   /// Get/Set the query to get the geometry.
   void                        query ( const std::string& query );
   const std::string&          query ( ) const;
@@ -210,6 +214,7 @@ private:
   float                  _labelZOffset;
   float                  _labelSize;
   std::string            _colorColumn;
+  bool                   _customQuery;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS ( Layer );
@@ -235,6 +240,7 @@ template<class Archive> void Layer::save(Archive & ar, const unsigned int versio
   ar & boost::serialization::make_nvp ( "LabelZOffset", _labelZOffset );
   ar & boost::serialization::make_nvp ( "LabelSize", _labelSize );
   ar & boost::serialization::make_nvp ( "ColorColumn", _colorColumn );
+  ar & boost::serialization::make_nvp ( "CustomQuery", _customQuery );
 }
 
 template<class Archive> void Layer::load(Archive & ar, const unsigned int version)
@@ -259,6 +265,7 @@ template<class Archive> void Layer::load(Archive & ar, const unsigned int versio
   ar & boost::serialization::make_nvp ( "LabelZOffset", _labelZOffset );
   ar & boost::serialization::make_nvp ( "LabelSize", _labelSize );
   ar & boost::serialization::make_nvp ( "ColorColumn", _colorColumn );
+  ar & boost::serialization::make_nvp ( "CustomQuery", _customQuery );
 }
 
 

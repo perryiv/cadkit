@@ -58,6 +58,7 @@ _labelColor( 0.0, 0.0, 0.0, 1.0 ),
 _labelZOffset( 1000.0 ),
 _labelSize ( 25.0f ),
 _colorColumn(),
+_customQuery ( false ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
   _layerID = ++_currentLayerID;
@@ -92,7 +93,8 @@ _shown ( layer._shown ),
 _labelColor( layer._labelColor ),
 _labelZOffset( layer._labelZOffset ),
 _labelSize ( layer._labelSize ),
-_colorColumn( layer._colorColumn )
+_colorColumn( layer._colorColumn ),
+_customQuery( layer._customQuery )
 {
   _layerID = ++_currentLayerID;
 
@@ -127,6 +129,7 @@ void Layer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _labelZOffset );
   SERIALIZE_XML_ADD_MEMBER ( _labelSize );
   SERIALIZE_XML_ADD_MEMBER ( _colorColumn );
+  SERIALIZE_XML_ADD_MEMBER ( _customQuery );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -446,6 +449,8 @@ float Layer::zOffset( ) const
 
 OsgTools::Legend::LegendObject* Layer::legendObject()
 {
+  if( 0x0 == _legendObject.get() )
+    _legendObject = new OsgTools::Legend::LegendObject;
   return _legendObject.get();
 }
 
@@ -770,4 +775,28 @@ const std::string& Layer::primaryKeyColumn() const
 std::string Layer::geometryColumn() const
 {
   return "geom";
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the custom query flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::customQuery( bool value )
+{
+  _customQuery = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the custom query flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Layer::customQuery() const
+{
+  return _customQuery;
 }

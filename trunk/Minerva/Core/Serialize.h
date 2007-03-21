@@ -52,16 +52,23 @@ namespace Core {
 template < class Archive > void registerTypes( Archive& a )
 {
   // Register types.
-  /*a.register_type<Minerva::Core::Layers::LineLayer>();
+#ifdef _MSC_VER
+  a.register_type<Minerva::Core::Layers::LineLayer>();
   a.register_type<Minerva::Core::Layers::PolygonLayer>();
   a.register_type<Minerva::Core::Layers::PointLayer>();
   a.register_type<Minerva::Core::Layers::PointTimeLayer>();
   a.register_type<Minerva::Core::Layers::RLayer>();
   a.register_type<Minerva::Core::Functors::SingleColorFunctor>();
   a.register_type<Minerva::Core::Functors::GradientColorFunctor>();
-  a.register_type<Minerva::Core::Layers::PolygonTimeLayer>();*/
+  a.register_type<Minerva::Core::Layers::PolygonTimeLayer>();
+#endif
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register types that can be serialized.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 inline void registerFactories()
 {
@@ -119,7 +126,7 @@ inline Minerva::Core::Layers::Layer * deserialize ( const std::string& xml )
   Serialize::XML::deserialize( xml, v );
 
   if( !v.empty() )
-    return v.front().get();
+    return v.front().release();
 
   return 0x0;
 

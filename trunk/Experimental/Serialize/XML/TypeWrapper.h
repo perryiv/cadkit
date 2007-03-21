@@ -22,6 +22,7 @@
 #include "XmlTree/Node.h"
 
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Types/Types.h"
 
 #include <sstream>
 
@@ -199,11 +200,14 @@ SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( char  );
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( short );
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( int   );
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( long  );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( bool  );
 
 //SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned char  );
 //SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned short );
 //SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned int   );
 //SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned long  );
+
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Types::Uint32 );
 
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( float );
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( double );
@@ -216,36 +220,36 @@ SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( double );
 ///////////////////////////////////////////////////////////////////////////////
 
 #define SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_4(the_type)\
-std::ostream &operator << ( std::ostream &out, const the_type &v )\
+inline std::ostream &operator << ( std::ostream &out, const the_type &v )\
 {\
   out << v[0] << ' ' << v[1] << ' ' << v[2] << ' ' << v[3];\
   return out;\
 }\
-std::istream &operator >> ( std::istream &in, the_type &v )\
+inline std::istream &operator >> ( std::istream &in, the_type &v )\
 {\
   in >> v[0] >> v[1] >> v[2] >> v[3];\
   return in;\
 }
 
 #define SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_3(the_type)\
-std::ostream &operator << ( std::ostream &out, const the_type &v )\
+inline std::ostream &operator << ( std::ostream &out, const the_type &v )\
 {\
   out << v[0] << ' ' << v[1] << ' ' << v[2];\
   return out;\
 }\
-std::istream &operator >> ( std::istream &in, the_type &v )\
+inline std::istream &operator >> ( std::istream &in, the_type &v )\
 {\
   in >> v[0] >> v[1] >> v[2];\
   return in;\
 }
 
 #define SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_2(the_type)\
-std::ostream &operator << ( std::ostream &out, const the_type &v )\
+inline std::ostream &operator << ( std::ostream &out, const the_type &v )\
 {\
   out << v[0] << ' ' << v[1];\
   return out;\
 }\
-std::istream &operator >> ( std::istream &in, the_type &v )\
+inline std::istream &operator >> ( std::istream &in, the_type &v )\
 {\
   in >> v[0] >> v[1];\
   return in;\

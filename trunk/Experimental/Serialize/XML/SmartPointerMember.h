@@ -38,9 +38,12 @@ public:
 
   virtual void serialize ( XmlTree::Node &parent ) const
   {
-    XmlTree::Node::ValidRefPtr node ( new XmlTree::Node ( this->name() ) );
-    parent.children().push_back ( node.get() );
-    _value->serialize ( *node );
+    if( _value.valid () )
+    {
+      XmlTree::Node::ValidRefPtr node ( new XmlTree::Node ( this->name() ) );
+      parent.children().push_back ( node.get() );
+      _value->serialize ( *node );
+    }
   }
 
   virtual void deserialize ( const XmlTree::Node &node )

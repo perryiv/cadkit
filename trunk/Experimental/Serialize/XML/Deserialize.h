@@ -20,6 +20,9 @@
 #include "XmlTree/Document.h"
 #include "Serialize/XML/Factory.h"
 
+#include "Usul/Predicates/FileExists.h"
+#include "Usul/File/Temp.h"
+
 namespace Serialize {
 namespace XML {
 
@@ -53,10 +56,18 @@ template < class Container > inline void deserialize ( const XmlTree::Node &pare
 
 template < class Container > inline void deserialize ( const std::string &file, Container &c )
 {
-  XmlTree::XercesLife life;
-  XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
-  document->load ( file );
-  deserialize ( *document, c );
+  if ( Usul::Predicates::FileExists::test ( file ) )
+  {
+    Usul::File::Temp temp;
+    deserialize ( temp.name(), c );
+  }
+  else
+  {
+    XmlTree::XercesLife life;
+    XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
+    document->load ( file );
+    deserialize ( *document, c );
+  }
 }
 
 

@@ -86,7 +86,7 @@
 				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/SQLiteWrapd.pdb"
-				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/SQLiteWrapd.lib"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/SerializeXMLd.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -182,7 +182,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
 				ProgramDatabaseFile=".\Release/SQLiteWrap.pdb"
-				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/SQLiteWrap.lib"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/SerializeXML.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

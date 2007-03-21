@@ -26,11 +26,11 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
+#include <vector>
+#include <list>
 
 #include <string>
 #include <map>
-#include <vector>
-#include <list>
 
 
 namespace Serialize {

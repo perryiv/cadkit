@@ -140,7 +140,7 @@ protected:
 
 private:
 
-  unsigned int _id1;
+  int _id1;
   double _id2;
   double _id3;
   int _id4;

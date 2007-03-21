@@ -143,7 +143,7 @@ namespace Helper
   struct SameName
   {
     SameName ( const std::string &n ) : _n ( n ){}
-    bool operator () ( const Node::ValidRefPtr &node )
+    bool operator () ( const Node::ValidRefPtr &node ) const
     {
       return ( _n == node->name() );
     }
@@ -188,16 +188,18 @@ namespace Helper
     And ( const T1 &t1, const T2 &t2 ) : _t1 ( t1 ), _t2 ( t2 ){}
     bool operator () ( const Node::ValidRefPtr &node )
     {
-      return ( _t1 ( node ) && _t2 ( node ) );
+      bool b1 ( _t1 ( node ) );
+      bool b2 ( _t2 ( node ) );
+      return b1 && b2;
     }
   private:
     T1 _t1;
     T2 _t2;
   };
-  template < class T1, class T2 > And < T1, T2 > and ( const T1 &t1, const T2 &t2 )
-  {
-    return ( And < T1, T2 > ( t1, t2 ) );
-  }
+  //template < class T1, class T2 > And < T1, T2 > and ( const T1 &t1, const T2 &t2 )
+  //{
+  //  return ( And < T1, T2 > ( t1, t2 ) );
+  //}
 }
 
 
@@ -213,7 +215,10 @@ XmlTree::Node *Node::_child ( unsigned int which, const std::string &name, bool 
 
   // See if we can quickly find the child.
   {
-    Children::iterator c ( std::find_if ( _children.begin(), _children.end(), Helper::and ( Helper::SameName ( name ), Helper::SameIndex ( which ) ) ) );
+    Helper::SameName sn ( name );
+    Helper::SameIndex si ( which );
+    Helper::And < Helper::SameName, Helper::SameIndex > predicate ( sn, si );
+    Children::iterator c ( std::find_if ( _children.begin(), _children.end(), predicate ) );
     if ( _children.end() != c )
       return c->get();
   }
@@ -233,7 +238,10 @@ XmlTree::Node *Node::_child ( unsigned int which, const std::string &name, bool 
 
   // Look again.
   {
-    Children::iterator c ( std::find_if ( _children.begin(), _children.end(), Helper::and ( Helper::SameName ( name ), Helper::SameIndex ( which ) ) ) );
+    Helper::SameName sn ( name );
+    Helper::SameIndex si ( which );
+    Helper::And < Helper::SameName, Helper::SameIndex > predicate ( sn, si );
+    Children::iterator c ( std::find_if ( _children.begin(), _children.end(), predicate ) );
     if ( _children.end() != c )
       return c->get();
   }

@@ -6,14 +6,14 @@ CPP_FILES = \
 	GUI/Controller.cpp \
 	Viz/Controller.cpp \
 	Viz/Progress.cpp \
-	DataObjects/Boundary.cpp \
+	DataObjects/Polygon.cpp \
 	DataObjects/DataObject.cpp \
 	DataObjects/Line.cpp \
 	DataObjects/Point.cpp \
 	DataObjects/PointTime.cpp \
 	DB/Connection.cpp \
-	Layers/Functors/SingleColorFunctor.cpp \
-	Layers/Functors/GradientColorFunctor.cpp \
+	Functors/SingleColorFunctor.cpp \
+	Functors/GradientColorFunctor.cpp \
 	Layers/Layer.cpp \
 	Layers/LineLayer.cpp \
 	Layers/PointLayer.cpp \
@@ -22,7 +22,6 @@ CPP_FILES = \
 	Layers/PolygonTimeLayer.cpp \
 	Layers/RLayer.cpp \
 	postGIS/BinaryParser.cpp \
-	postGIS/Triangulate.cpp \
 	postGIS/Geometry.cpp \
 	postGIS/Point.cpp \
 	postGIS/Line.cpp \
@@ -38,15 +37,14 @@ LOCAL_INCLUDE = \
 	-I$(OSG_EPHEMERIS_INC_DIR) \
 	-I$(BOOST_INC_DIR) \
 	-I$(PQXX_INC_DIR) \
-	-I$(CGAL_INC_DIR) \
-	-I$(CGAL_INC_DIR)/CGAL/config/x86-64_Linux-2.6_g++-3.4.4 \
 	-I$(CADKIT_ROOT_DIR) \
+	-I$(CADKIT_ROOT_DIR)/Experimental \
 	-I../../../../ \
 	-I../../include
 
 # The libraries to link to.
 LOCAL_LIBS = \
-	-L../../../../bin -lOsgTools -lUsul \
+	-L../../../../bin -lOsgTools -lUsul -lXmlTree_s -lXmlSerialize_s\
 	-L$(OSSIM_LIB_DIR) -lossim \
 	-L$(OSSIMPLANET_LIB_DIR) -lossimPlanet \
 	-L$(PQXX_LIB_DIR) -lpqxx \

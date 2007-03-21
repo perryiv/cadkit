@@ -26,6 +26,9 @@
 #endif
 
 #include "boost/date_time/gregorian/gregorian.hpp"
+#include "boost/date_time/gregorian/greg_serialize.hpp"
+
+namespace boost { namespace serialization { class access; } }
 
 namespace OsgTools {
 namespace Animate {
@@ -63,6 +66,7 @@ public:
   void         moveBackNumDays ( unsigned int );
 
   std::string  toString() const;
+  void         fromString( const std::string& date );
 
   bool operator<( const Date& rhs ) const;
   bool operator>( const Date& rhs ) const;
@@ -77,8 +81,32 @@ protected:
   long _toJulian() const;
 
 private:
+  friend class boost::serialization::access;
+  template < class Archive > void serialize( Archive &ar, const unsigned int version );
+
   boost::gregorian::date _date;
 };
+
+template < class Archive >
+void Date::serialize( Archive &ar, const unsigned int version )
+{
+  ar & boost::serialization::make_nvp( "Date", _date );
+}
+
+
+inline std::ostream& operator<<( std::ostream& out, const Date& date )
+{
+  out << date.toString();
+  return out;
+}
+
+inline std::istream& operator>> ( std::istream& in, Date& date )
+{
+  std::string s;
+  in >> s;
+  date.fromString( s );
+  return in;
+}
 
 }
 }

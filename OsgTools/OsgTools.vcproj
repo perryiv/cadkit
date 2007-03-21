@@ -482,6 +482,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Utilities\Vec4.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Utilities\Vec4Serialize.h"
 					>
 				</File>

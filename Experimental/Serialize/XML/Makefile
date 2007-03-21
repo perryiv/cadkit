@@ -11,11 +11,12 @@ CPP_FILES = \
 # The include path.
 LOCAL_INCLUDE = \
 	-I$(CADKIT_ROOT_DIR)\
-	-I$(CADKIT_ROOT_DIR)/Experimental
+	-I$(CADKIT_ROOT_DIR)/Experimental \
+	-I$(XERCES_INC_DIR)
 
 # The libraries to link to.
 LOCAL_LIBS = \
-	-lxerces-c
+	-L$(XERCES_LIB_DIR) -lxerces-c
 
 # Any flags for the compiler. 
 LOCAL_CPP_FLAGS = 

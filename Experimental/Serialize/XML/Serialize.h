@@ -20,6 +20,7 @@
 #include "XmlTree/Document.h"
 #include "XmlTree/XercesLife.h"
 
+#include "Usul/File/Contents.h"
 
 namespace Serialize {
 namespace XML {
@@ -62,6 +63,20 @@ template < class Itr > inline void serialize ( const std::string &file, const st
   document->write ( file );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Serialize the objects.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Itr > inline void serialize ( const std::string &name, Itr first, Itr last, std::string &contents )
+{
+  Usul::File::Temp temp;
+  serialize( temp.name(), name, first, last );
+
+  Usul::File::contents( temp.name(), contents );
+}
 
 } // namespace Serialize
 } // namespace XML

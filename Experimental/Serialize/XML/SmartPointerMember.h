@@ -31,7 +31,8 @@ public:
   USUL_DECLARE_REF_POINTERS ( SmartPointerMember );
   typedef MemberBase BaseClass;
 
-  SmartPointerMember ( const std::string &name, T value ) : BaseClass ( name ),
+  // Need to be by reference so that the client can change it after this class it made.
+  SmartPointerMember ( const std::string &name, T &value ) : BaseClass ( name ),
     _value ( value )
   {
   }
@@ -63,7 +64,8 @@ protected:
 
 private:
 
-  T _value; // T is a smart-pointer, so a copy is ok.
+  // Need to be by reference so that the client can change it after this class it made.
+  T &_value;
 };
 
 

@@ -207,6 +207,7 @@ public:
     SERIALIZE_XML_ADD_MEMBER ( _c2 );
     SERIALIZE_XML_ADD_MEMBER ( _id1D );
     SERIALIZE_XML_ADD_MEMBER ( _id2D );
+    _c2 = new ClassC;
   }
 
 protected:

@@ -18,7 +18,7 @@
 #define _SERIALIZE_XML_DESERIALIZE_FUNCTIONS_H_
 
 #include "XmlTree/Document.h"
-
+#include "Serialize/XML/Factory.h"
 
 namespace Serialize {
 namespace XML {

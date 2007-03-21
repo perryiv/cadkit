@@ -65,6 +65,46 @@ Usul::Threads::SetMutexFactory factory ( &Usul::Threads::newSingleThreadedMutexS
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  String that represents a ClassD object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string XML_STRING_CLASS_D
+( "\
+  <objects>\
+    <ClassD>\
+      <_c3 TypeName=\"ClassC\">\
+        <_b>\
+          <_id4>5456</_id4>\
+          <_name>Some other name &amp;lt;&amp;gt; for ClassB</_name>\
+        </_b>\
+        <_name>Some name for ClassC</_name>\
+      </_c3>\
+      <_c1>\
+        <_b>\
+          <_id4>01010</_id4>\
+          <_name>Some name &amp;lt;&amp;gt; for ClassB</_name>\
+        </_b>\
+        <_name>Some other name for ClassC</_name>\
+      </_c1>\
+      <_c2>\
+        <_b>\
+          <_id1>822</_id1>\
+          <_id4>189</_id4>\
+          <_name>Some name &amp;lt;&amp;gt; for ClassB</_name>\
+        </_b>\
+        <_name>Some name for ClassC</_name>\
+      </_c2>\
+      <_id1D>2294</_id1D>\
+      <_name>Some cool object</_name>\
+    </ClassD>\
+  </objects>\
+  "
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Class to be serialized.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -199,12 +239,14 @@ public:
   ClassD() : BaseClass(),
     _c1 ( new ClassC ),
     _c2 ( 0x0 ),
+    _c3 ( 0x0 ),
     _id1D ( ::rand() ),
     _id2D ( ::rand() )
   {
     _name = "Default name for ClassD";
     SERIALIZE_XML_ADD_MEMBER ( _c1 );
     SERIALIZE_XML_ADD_MEMBER ( _c2 );
+    SERIALIZE_XML_ADD_MEMBER ( _c3 );
     SERIALIZE_XML_ADD_MEMBER ( _id1D );
     SERIALIZE_XML_ADD_MEMBER ( _id2D );
     _c2 = new ClassC;
@@ -220,6 +262,7 @@ private:
 
   ClassC::RefPtr _c1;
   ClassC::RefPtr _c2;
+  ClassC::RefPtr _c3;
   double _id1D;
   double _id2D;
 
@@ -413,7 +456,7 @@ void _registerTypes()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void _run()
+void _test1()
 {
   // Register types.
   _registerTypes();
@@ -470,6 +513,43 @@ void _run()
     std::cout << "Comparing " << FILE_NAME_1 << " and " << FILE_NAME_2 << std::endl;
     USUL_ASSERT ( file1.compare ( file2 ) == 0 );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Run the test.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void _test2()
+{
+  typedef std::vector<ClassD::RefPtr> Objects;
+  Objects objects;
+
+  // Make an object.
+  ClassD::RefPtr d ( new ClassD );
+  objects.push_back ( d );
+
+  // Read an XML string.
+  Serialize::XML::deserialize ( XML_STRING_CLASS_D, objects );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Run the test.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void _run()
+{
+  // Register types.
+  _registerTypes();
+
+  // Run the tests.
+  //_test1();
+  _test2();
 }
 
 

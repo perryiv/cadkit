@@ -43,6 +43,7 @@ public:
     if ( true == _value.valid() )
     {
       XmlTree::Node::ValidRefPtr node ( new XmlTree::Node ( this->name() ) );
+      node->attributes()["TypeName"] = _value->className();
       parent.children().push_back ( node.get() );
       _value->serialize ( *node );
     }
@@ -52,7 +53,19 @@ public:
   {
     if ( this->name() == node.name() )
     {
-      _value->deserialize ( node );
+      if ( false == _value.valid() )
+      {
+        XmlTree::Node::Attributes::const_iterator j = node.attributes().find ( "TypeName" );
+        if ( node.attributes().end() != j )
+        {
+          _value = dynamic_cast < T::element_type * > ( Factory::instance().create ( j->second ) );
+        }
+      }
+
+      if ( true == _value.valid() )
+      {
+        _value->deserialize ( node );
+      }
     }
   }
 

@@ -1,11 +1,11 @@
 # Include the common definitions.
-include $(CADKIT_ROOT_DIR)/Make/common.mak
+include $(CADKIT_ROOT_DIR)/Usul/Make/common.mak
 
 # By default we compile the target.
 default: release
 
 # Include the common targets.
-include $(CADKIT_ROOT_DIR)/Make/targets.mak
+include $(CADKIT_ROOT_DIR)/Usul/Make/targets.mak
 
 # Clobber the generated files (executable too).
 clobber:

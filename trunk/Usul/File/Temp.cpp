@@ -52,9 +52,9 @@ _name ( Temp::file() ),
   // Open the file in the proper mode.
   std::ofstream *stream ( 0x0 );
   if ( Temp::BINARY == f )
-    stream = new std::ofstream ( _name.c_str(), std::ofstream::out | std::ofstream::binary );
+    stream = new std::ofstream ( this->name().c_str(), std::ofstream::out | std::ofstream::binary );
   else
-    stream = new std::ofstream ( _name.c_str() );
+    stream = new std::ofstream ( this->name().c_str() );
 
   // Assign stream.
   _stream = stream;
@@ -64,7 +64,7 @@ _name ( Temp::file() ),
   {
     // Format the error message.
     std::ostringstream out;
-    out << "Error 1952309409: Failed to open temporary file: " << _name;
+    out << "Error 1952309409: Failed to open temporary file: " << this->name();
 
     // Append any system error...
     if ( LastError::number() )
@@ -87,15 +87,15 @@ Temp::~Temp()
   try
   {
     // Make sure the stream is closed.
-    this->_close();
+    this->close();
 
     // Remove the temporary file if we should.
     if ( _remove )
     {
-      const int result ( ::remove ( _name.c_str() ) );
+      const int result ( ::remove ( this->name().c_str() ) );
       if ( result != 0 )
       {
-        Usul::Errors::Stack::instance().push ( "Error 2034122402: Failed to remove temporary file: " + _name );
+        Usul::Errors::Stack::instance().push ( "Error 2034122402: Failed to remove temporary file: " + this->name() );
       }
     }
   }
@@ -103,12 +103,12 @@ Temp::~Temp()
   catch ( const std::exception &e )
   {
     Usul::Errors::Stack::instance().push ( e.what() );
-    Usul::Errors::Stack::instance().push ( "Error 2355835989: Standard exception caught while removing temporary file: " + _name );
+    Usul::Errors::Stack::instance().push ( "Error 2355835989: Standard exception caught while removing temporary file: " + this->name() );
   }
 
   catch ( ... )
   {
-    Usul::Errors::Stack::instance().push ( "Error 2036890444: Unknown exception caught while removing temporary file: " + _name );
+    Usul::Errors::Stack::instance().push ( "Error 2036890444: Unknown exception caught while removing temporary file: " + this->name() );
   }
 }
 
@@ -165,7 +165,7 @@ std::string Temp::file()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Temp::_close()
+void Temp::close()
 {
   if ( _stream )
   {
@@ -183,7 +183,7 @@ void Temp::_close()
 
 void Temp::release()
 {
-  this->_close();
+  this->close();
   _remove = false;
 }
 
@@ -197,7 +197,7 @@ void Temp::release()
 void Temp::rename ( const std::string &name )
 {
   // Close the file.
-  this->_close();
+  this->close();
 
   // Initialize the last error.
   typedef Usul::System::LastError LastError;
@@ -222,11 +222,11 @@ void Temp::rename ( const std::string &name )
   }
 
   // Try to rename the file.
-  if ( 0 != ::rename ( _name.c_str(), name.c_str() ) )
+  if ( 0 != ::rename ( this->name().c_str(), name.c_str() ) )
   {
     // Format the error message.
     std::ostringstream out;
-    out << "Error 4003249375: Failed to rename temporary file from '" << _name << "' to '" << name;
+    out << "Error 4003249375: Failed to rename temporary file from '" << this->name() << "' to '" << name;
 
     // Append any system error...
     if ( LastError::number() )

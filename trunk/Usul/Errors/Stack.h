@@ -20,6 +20,7 @@
 
 #include <list>
 #include <string>
+#include <stdexcept>
 
 namespace Usul { namespace Threads { class Mutex; }; };
 
@@ -88,6 +89,37 @@ private:
 
 }; // namespace Errors
 }; // namespace Usul
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macros to wrap exceptions and push an error onto the stack.
+//
+//  Use:
+//
+//    USUL_ERROR_STACK_CATCH_EXCEPTIONS_BEGIN;
+//    
+//    Put code here.
+//
+//    USUL_ERROR_STACK_CATCH_EXCEPTIONS_END ( "some id" );
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define USUL_ERROR_STACK_CATCH_EXCEPTIONS_BEGIN try {
+
+#define USUL_ERROR_STACK_CATCH_EXCEPTIONS_END(the_location_id) }\
+  catch ( const std::exception &the_exception )\
+  {\
+    std::ostringstream out;\
+    out << "Error " << the_location_id << ": Standard exception caught: " << the_exception.what();\
+    Usul::Errors::Stack::instance().push ( out.str() );\
+  }\
+  catch ( ... )\
+  {\
+    std::ostringstream out;\
+    out << "Error " << the_location_id << ": Unknown exception caught";\
+    Usul::Errors::Stack::instance().push ( out.str() );\
+  }
 
 
 #endif // _USUL_ERROR_STACK_H_

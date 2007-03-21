@@ -1,24 +1,47 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8.00"
 	Name="lib: GSG Core"
 	ProjectGUID="{9E102E9D-D0B8-4534-8E73-F2E86E798D22}"
-	SccProjectName=""
-	SccLocalPath="">
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/Core.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
@@ -27,122 +50,161 @@
 				PreprocessorDefinitions="COMPILING_GSG_CORE;_USRDLL;WIN32;_DEBUG;_WINDOWS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="2"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="Precompiled.h"
 				PrecompiledHeaderFile=".\Debug/Core.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
+				WarnAsError="true"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
 				OutputFile="../../bin/gsg_core_d.dll"
 				LinkIncremental="2"
-				SuppressStartupBanner="TRUE"
-				GenerateDebugInformation="TRUE"
+				SuppressStartupBanner="true"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/gsg_core_d.pdb"
-				ImportLibrary=".\Debug/gsg_core_d.lib"/>
+				ImportLibrary=".\Debug/gsg_core_d.lib"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/Core.tlb"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/Core.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../,$(BOOST_ROOT_DIR)"
 				PreprocessorDefinitions="COMPILING_GSG_CORE;_USRDLL;NDEBUG;WIN32;_WINDOWS"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="2"
+				EnableFunctionLevelLinking="true"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="Precompiled.h"
 				PrecompiledHeaderFile=".\Release/Core.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
-				CompileAs="0"/>
+				WarnAsError="true"
+				SuppressStartupBanner="true"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
 				OutputFile="../../bin/gsg_core.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\Release/gsg_core.pdb"
-				ImportLibrary=".\Release/gsg_core.lib"/>
+				ImportLibrary=".\Release/gsg_core.lib"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Release/Core.tlb"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -150,340 +212,435 @@
 	<Files>
 		<Filter
 			Name="Precompiled"
-			Filter="*.cpp;*.h">
+			Filter="*.cpp;*.h"
+			>
 			<File
-				RelativePath=".\Precompiled.cpp">
+				RelativePath=".\Precompiled.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\Precompiled.h">
+				RelativePath=".\Precompiled.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Source"
-			Filter="">
+			>
 			<Filter
 				Name="Nodes"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Node.cpp">
+					RelativePath=".\Node.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Node.h">
+					RelativePath=".\Node.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Shape.cpp">
+					RelativePath=".\Shape.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Shape.h">
+					RelativePath=".\Shape.h"
+					>
 				</File>
 				<Filter
 					Name="Group"
-					Filter="">
+					>
 					<File
-						RelativePath=".\Camera.cpp">
+						RelativePath=".\Camera.cpp"
+						>
 					</File>
 					<File
-						RelativePath=".\Camera.h">
+						RelativePath=".\Camera.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Group.cpp">
+						RelativePath=".\Group.cpp"
+						>
 					</File>
 					<File
-						RelativePath=".\Group.h">
+						RelativePath=".\Group.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Lod.cpp">
+						RelativePath=".\Lod.cpp"
+						>
 					</File>
 					<File
-						RelativePath=".\Lod.h">
+						RelativePath=".\Lod.h"
+						>
 					</File>
 					<File
-						RelativePath=".\Transform.cpp">
+						RelativePath=".\Transform.cpp"
+						>
 					</File>
 					<File
-						RelativePath=".\Transform.h">
+						RelativePath=".\Transform.h"
+						>
 					</File>
 				</Filter>
 			</Filter>
 			<Filter
 				Name="Primitives"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Primitive.cpp">
+					RelativePath=".\Primitive.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Primitive.h">
+					RelativePath=".\Primitive.h"
+					>
 				</File>
 				<File
-					RelativePath=".\PrimitiveSet.cpp">
+					RelativePath=".\PrimitiveSet.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\PrimitiveSet.h">
+					RelativePath=".\PrimitiveSet.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Visitors"
-				Filter="">
+				>
 				<File
-					RelativePath=".\BinBuilder.cpp">
+					RelativePath=".\BinBuilder.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\BinBuilder.h">
+					RelativePath=".\BinBuilder.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Draw.cpp">
+					RelativePath=".\Draw.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Draw.h">
+					RelativePath=".\Draw.h"
+					>
 				</File>
 				<File
-					RelativePath=".\FrustumCull.cpp">
+					RelativePath=".\FrustumCull.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\FrustumCull.h">
+					RelativePath=".\FrustumCull.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Renderer.cpp">
+					RelativePath=".\Renderer.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Renderer.h">
+					RelativePath=".\Renderer.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Sort.cpp">
+					RelativePath=".\Sort.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Sort.h">
+					RelativePath=".\Sort.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Update.cpp">
+					RelativePath=".\Update.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Update.h">
+					RelativePath=".\Update.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Visitor.cpp">
+					RelativePath=".\Visitor.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Visitor.h">
+					RelativePath=".\Visitor.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Attributes"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Attribute.cpp">
+					RelativePath=".\Attribute.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Attribute.h">
+					RelativePath=".\Attribute.h"
+					>
 				</File>
 				<File
-					RelativePath=".\AttributeSet.cpp">
+					RelativePath=".\AttributeSet.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\AttributeSet.h">
+					RelativePath=".\AttributeSet.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Color.h">
+					RelativePath=".\Color.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Defaults.h">
+					RelativePath=".\Defaults.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Material.cpp">
+					RelativePath=".\Material.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Material.h">
+					RelativePath=".\Material.h"
+					>
 				</File>
 				<File
-					RelativePath=".\PolygonMode.cpp">
+					RelativePath=".\PolygonMode.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\PolygonMode.h">
+					RelativePath=".\PolygonMode.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Pools"
-				Filter="">
+				>
 				<File
-					RelativePath=".\InterleavedPool.cpp">
+					RelativePath=".\InterleavedPool.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\InterleavedPool.h">
+					RelativePath=".\InterleavedPool.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Vec2Pool.cpp">
+					RelativePath=".\Vec2Pool.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Vec2Pool.h">
+					RelativePath=".\Vec2Pool.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Vec3Pool.cpp">
+					RelativePath=".\Vec3Pool.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Vec3Pool.h">
+					RelativePath=".\Vec3Pool.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Vec4Pool.cpp">
+					RelativePath=".\Vec4Pool.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Vec4Pool.h">
+					RelativePath=".\Vec4Pool.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Misc"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Base.h">
+					RelativePath=".\Base.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Bits.h">
+					RelativePath=".\Bits.h"
+					>
 				</File>
 				<File
-					RelativePath=".\BoundingBox.h">
+					RelativePath=".\BoundingBox.h"
+					>
 				</File>
 				<File
-					RelativePath=".\BoundingSphere.h">
+					RelativePath=".\BoundingSphere.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Factory.cpp">
+					RelativePath=".\Factory.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Factory.h">
+					RelativePath=".\Factory.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Interaction.cpp">
+					RelativePath=".\Interaction.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Interaction.h">
+					RelativePath=".\Interaction.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Keys.cpp">
+					RelativePath=".\Keys.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Keys.h">
+					RelativePath=".\Keys.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Message.h">
+					RelativePath=".\Message.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Path.cpp">
+					RelativePath=".\Path.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Path.h">
+					RelativePath=".\Path.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Pointer.h">
+					RelativePath=".\Pointer.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Referenced.cpp">
+					RelativePath=".\Referenced.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Referenced.h">
+					RelativePath=".\Referenced.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Traits.h">
+					RelativePath=".\Traits.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Viewer.cpp">
+					RelativePath=".\Viewer.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\Viewer.h">
+					RelativePath=".\Viewer.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Viewport.h">
+					RelativePath=".\Viewport.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Math"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Constants.h">
+					RelativePath=".\Constants.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Equality.h">
+					RelativePath=".\Equality.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Math.h">
+					RelativePath=".\Math.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Matrix.h">
+					RelativePath=".\Matrix.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Vector2.h">
+					RelativePath=".\Vector2.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Vector3.h">
+					RelativePath=".\Vector3.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Vector4.h">
+					RelativePath=".\Vector4.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Config"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Config.h">
+					RelativePath=".\Config.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Define.h">
+					RelativePath=".\Define.h"
+					>
 				</File>
 				<File
-					RelativePath=".\ErrorPolicy.h">
+					RelativePath=".\ErrorPolicy.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Threads.h">
+					RelativePath=".\Threads.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Bin"
-				Filter="">
+				>
 				<File
-					RelativePath=".\RenderBin.cpp">
+					RelativePath=".\RenderBin.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\RenderBin.h">
+					RelativePath=".\RenderBin.h"
+					>
 				</File>
 				<File
-					RelativePath=".\RenderElement.cpp">
+					RelativePath=".\RenderElement.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\RenderElement.h">
+					RelativePath=".\RenderElement.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Details"
-				Filter="">
+				>
 				<File
-					RelativePath=".\Adaptors.h">
+					RelativePath=".\Adaptors.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Algorithms.h">
+					RelativePath=".\Algorithms.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Container.h">
+					RelativePath=".\Container.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Functors.h">
+					RelativePath=".\Functors.h"
+					>
 				</File>
 				<File
-					RelativePath=".\Predicates.h">
+					RelativePath=".\Predicates.h"
+					>
 				</File>
 				<File
-					RelativePath=".\PushPop.cpp">
+					RelativePath=".\PushPop.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\PushPop.h">
+					RelativePath=".\PushPop.h"
+					>
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="DLL"
-			Filter="">
+			>
 			<File
-				RelativePath=".\CoreDll.cpp">
+				RelativePath=".\CoreDll.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\CoreDll.h">
+				RelativePath=".\CoreDll.h"
+				>
 			</File>
 		</Filter>
 	</Files>

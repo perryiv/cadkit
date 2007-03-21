@@ -34,6 +34,8 @@
 #include "Minerva/Core/Functors/SingleColorFunctor.h"
 #include "Minerva/Core/Functors/GradientColorFunctor.h"
 
+#include "Serialize/XML/TypeCreator.h"
+#include "Serialize/XML/Factory.h"
 #include "Serialize/XML/Serialize.h"
 #include "Serialize/XML/Deserialize.h"
 
@@ -50,16 +52,30 @@ namespace Core {
 template < class Archive > void registerTypes( Archive& a )
 {
   // Register types.
-  a.register_type<Minerva::Core::Layers::LineLayer>();
+  /*a.register_type<Minerva::Core::Layers::LineLayer>();
   a.register_type<Minerva::Core::Layers::PolygonLayer>();
   a.register_type<Minerva::Core::Layers::PointLayer>();
   a.register_type<Minerva::Core::Layers::PointTimeLayer>();
   a.register_type<Minerva::Core::Layers::RLayer>();
   a.register_type<Minerva::Core::Functors::SingleColorFunctor>();
   a.register_type<Minerva::Core::Functors::GradientColorFunctor>();
-  a.register_type<Minerva::Core::Layers::PolygonTimeLayer>();
+  a.register_type<Minerva::Core::Layers::PolygonTimeLayer>();*/
 }
 
+
+inline void registerFactories()
+{
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::LineLayer> ( "LineLayer" ) );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::PolygonLayer> ( "PolygonLayer" ) );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::PointLayer> ( "PointLayer" ) );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::PointTimeLayer> ( "PointTimeLayer" ) );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::RLayer> ( "RLayer" ) );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::PolygonTimeLayer> ( "PolygonTimeLayer" ) );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Functors::SingleColorFunctor> ( "SingleColorFunctor" ) );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Functors::GradientColorFunctor> ( "GradientColorFunctor" ) );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::DB::Connection> ( "Connection" ) );
+
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -69,6 +85,7 @@ template < class Archive > void registerTypes( Archive& a )
 
 inline std::string serialize( Minerva::Core::Layers::Layer *layer )
 {
+  registerFactories();
   std::vector< Minerva::Core::Layers::Layer::RefPtr > v;
   v.push_back( layer );
 
@@ -96,6 +113,7 @@ inline std::string serialize( Minerva::Core::Layers::Layer *layer )
 
 inline Minerva::Core::Layers::Layer * deserialize ( const std::string& xml )
 {
+  registerFactories();
   std::vector< Minerva::Core::Layers::Layer::RefPtr > v;
 
   Serialize::XML::deserialize( xml, v );

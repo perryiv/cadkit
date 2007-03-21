@@ -25,7 +25,6 @@
 using namespace Minerva::Core::Layers;
 
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER( OsgTools::Animate::Date );
-SERIALIZE_XML_REGISTER_CREATOR ( PointTimeLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

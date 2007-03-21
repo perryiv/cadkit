@@ -25,7 +25,6 @@
 
 using namespace Minerva::Core::Layers;
 
-SERIALIZE_XML_REGISTER_CREATOR ( PolygonTimeLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

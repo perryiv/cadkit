@@ -113,7 +113,7 @@ private:
   OsgTools::Animate::Date _minDate;
   OsgTools::Animate::Date _maxDate;
 
-  SERIALIZE_XML_DEFINE_MEMBERS ( Layer );
+  SERIALIZE_XML_DEFINE_MEMBERS ( PointTimeLayer );
 
 };
 

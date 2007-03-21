@@ -147,6 +147,7 @@ int main ( int argc, char **argv )
   applicationConnection->password( "wnv" );
   applicationConnection->database( "wnv_application" );
   applicationConnection->hostname ( "cinema.dt.asu.edu" );
+  //applicationConnection->hostname ( "localhost" );
   applicationConnection->connect();
 
   // Create the database manager.

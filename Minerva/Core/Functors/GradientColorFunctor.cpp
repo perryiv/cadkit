@@ -12,7 +12,6 @@
 
 #include "OsgTools/Legend/GradientIcon.h"
 
-#include "Serialize/XML/RegisterCreator.h"
 #include "Serialize/XML/TypeWrapper.h"
 
 #include <iostream>

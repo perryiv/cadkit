@@ -28,7 +28,6 @@ using namespace DT::Minerva::Glue;
 LayerGlue::LayerGlue() : 
 _connection( nullptr ),
 _colorFunctor ( nullptr ),
-_customQuery( false ),
 _properties( gcnew DT::Minerva::Layers::Colors::ColorProperties() )
 {
 }

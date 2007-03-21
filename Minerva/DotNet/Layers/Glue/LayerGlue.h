@@ -173,8 +173,8 @@ namespace DT
         ]
         property bool CustomQuery
         {
-          bool get() { return _customQuery; }
-          void set( bool value ) { _customQuery = value; }
+          bool get() { return this->layer()->customQuery(); }
+          void set( bool value ) { this->layer()->customQuery( value ); }
         }
 
 
@@ -298,7 +298,6 @@ namespace DT
       private:
         DT::Minerva::Glue::Connection ^_connection;
         DT::Minerva::Glue::BaseColorFunctor          ^_colorFunctor;
-        bool _customQuery;
         DT::Minerva::Layers::Colors::ColorProperties^ _properties;
 	    };
     }

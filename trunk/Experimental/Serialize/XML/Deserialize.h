@@ -52,15 +52,31 @@ template < class Container > inline void deserialize ( const XmlTree::Node &pare
 //
 //  Deserialize the objects.
 //
+//  When the XML content is in a string (rather than a file), a temporary 
+//  file is dropped and then read. See this link for a better way:
+//  http://mail-archives.apache.org/mod_mbox/xerces-c-dev/200203.mbox/%3C31D2D4F05067D2119A8500805FC7819358EEC8@DBSRV1%3E
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Container > inline void deserialize ( const std::string &file, Container &c )
 {
-  if ( Usul::Predicates::FileExists::test ( file ) )
+  // If the string is not a file name...
+  if ( false == Usul::Predicates::FileExists::test ( file ) )
   {
+    // Make temporary file.
     Usul::File::Temp temp;
+
+    // Assume string contains XML content and write it to file.
+    temp.stream() << file;
+
+    // Close the stream. The destructor will still remove the file.
+    temp.close();
+
+    // Call this function with the file name.
     deserialize ( temp.name(), c );
   }
+
+  // The string is a file name.
   else
   {
     XmlTree::XercesLife life;

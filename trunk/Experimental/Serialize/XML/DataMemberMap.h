@@ -57,7 +57,8 @@ public:
     this->_addMember ( new Serialize::XML::SimpleDataMember<T> ( name, value ) );
   }
 
-  template < class T, class C > void addMember ( const std::string &name, Usul::Pointers::SmartPointer<T,C> value )
+  // Need to be by reference so that the client can change it after this class it made.
+  template < class T, class C > void addMember ( const std::string &name, Usul::Pointers::SmartPointer<T,C> &value )
   {
     typedef Usul::Pointers::SmartPointer<T,C> PointerType;
     this->_addMember ( new Serialize::XML::SmartPointerMember<PointerType> ( name, value ) );

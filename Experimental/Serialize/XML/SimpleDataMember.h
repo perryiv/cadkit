@@ -39,14 +39,25 @@ public:
 
   virtual void serialize ( XmlTree::Node &parent ) const
   {
-    parent.children().push_back ( new XmlTree::Node ( this->name(), _value ) );
+    // Pre-process string to remove illegal XML characters.
+    // Does nothing for non-string types.
+    T temp ( _value );
+    Serialize::XML::TypeWrapper<T>::replaceIllegalCharacters ( temp );
+
+    // Make node with processed string.
+    parent.children().push_back ( new XmlTree::Node ( this->name(), temp ) );
   }
 
   virtual void deserialize ( const XmlTree::Node &node )
   {
     if ( this->name() == node.name() )
     {
-      Serialize::XML::TypeWrapper<T>::set ( node.value(), _value );
+      // Post-process string to swap illegal XML characters.
+      // Does nothing for non-string types.
+      const std::string s ( Serialize::XML::TypeWrapper<T>::restoreIllegalCharacters ( node.value() ) );
+
+      // Set value from string.
+      Serialize::XML::TypeWrapper<T>::set ( s, _value );
     }
   }
 

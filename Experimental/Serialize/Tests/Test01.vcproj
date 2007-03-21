@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR);$(LOCAL_SRC_DIR)/Experimental"
+				AdditionalIncludeDirectories="$(BOOST_INC_DIR);$(LOCAL_SRC_DIR);$(LOCAL_SRC_DIR)/Experimental"
 				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -113,7 +113,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR);$(LOCAL_SRC_DIR)/Experimental"
+				AdditionalIncludeDirectories="$(BOOST_INC_DIR);$(LOCAL_SRC_DIR);$(LOCAL_SRC_DIR)/Experimental"
 				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				WarningLevel="3"

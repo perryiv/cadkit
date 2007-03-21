@@ -20,6 +20,7 @@
 #include "Serialize/XML/Factory.h"
 
 #include "XmlTree/Node.h"
+#include "XmlTree/ReplaceIllegalCharacters.h"
 
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Types/Types.h"
@@ -71,6 +72,16 @@ template <> struct TypeWrapper < std::string >
   static bool isValid ( const std::string &value )
   {
     return true;
+  }
+  static void replaceIllegalCharacters ( std::string &s )
+  {
+    XmlTree::replaceIllegalCharacters ( s );
+  }
+  static std::string restoreIllegalCharacters ( const std::string &in )
+  {
+    std::string out ( in );
+    XmlTree::restoreIllegalCharacters ( out );
+    return out;
   }
   static void set ( const std::string &s, std::string &value )
   {
@@ -170,6 +181,13 @@ template <> struct TypeWrapper < TheType >\
   static bool isValid ( const TheType &value )\
   {\
     return true;\
+  }\
+  static void replaceIllegalCharacters ( TheType &in )\
+  {\
+  }\
+  static std::string restoreIllegalCharacters ( const std::string &in )\
+  {\
+    return in;\
   }\
   static void serialize ( const TheType &value, XmlTree::Node &node )\
   {\

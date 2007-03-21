@@ -38,7 +38,8 @@ public:
 
   virtual void serialize ( XmlTree::Node &parent ) const
   {
-    if( _value.valid () )
+    // Handle null smart-pointer.
+    if ( true == _value.valid() )
     {
       XmlTree::Node::ValidRefPtr node ( new XmlTree::Node ( this->name() ) );
       parent.children().push_back ( node.get() );

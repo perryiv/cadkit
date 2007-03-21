@@ -46,21 +46,21 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Initialize mutex factory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Threads::SetMutexFactory factory ( &Usul::Threads::newSingleThreadedMutexStub );
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Constants.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 const std::string FILE_NAME_1 ( "out_1.xml" );
 const std::string FILE_NAME_2 ( "out_2.xml" );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set mutex factory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Threads::SetMutexFactory factory ( &Usul::Threads::newSingleThreadedMutexStub );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -125,7 +125,7 @@ public:
     _id3 ( ::rand() ),
     _id4 ( ::rand() )
   {
-    _name = "Default name for ClassB";
+    _name = "Default name <> for ClassB";
     SERIALIZE_XML_ADD_MEMBER ( _id1 );
     SERIALIZE_XML_ADD_MEMBER ( _id2 );
     SERIALIZE_XML_ADD_MEMBER ( _id3 );
@@ -197,12 +197,14 @@ public:
   typedef ClassB BaseClass;
 
   ClassD() : BaseClass(),
-    _c ( new ClassC ),
+    _c1 ( new ClassC ),
+    _c2 ( 0x0 ),
     _id1D ( ::rand() ),
     _id2D ( ::rand() )
   {
     _name = "Default name for ClassD";
-    SERIALIZE_XML_ADD_MEMBER ( _c );
+    SERIALIZE_XML_ADD_MEMBER ( _c1 );
+    SERIALIZE_XML_ADD_MEMBER ( _c2 );
     SERIALIZE_XML_ADD_MEMBER ( _id1D );
     SERIALIZE_XML_ADD_MEMBER ( _id2D );
   }
@@ -215,7 +217,8 @@ protected:
 
 private:
 
-  ClassC::RefPtr _c;
+  ClassC::RefPtr _c1;
+  ClassC::RefPtr _c2;
   double _id1D;
   double _id2D;
 
@@ -376,14 +379,6 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SERIALIZE_XML_REGISTER_CREATOR ( ClassA );
-SERIALIZE_XML_REGISTER_CREATOR ( ClassB );
-SERIALIZE_XML_REGISTER_CREATOR ( ClassC );
-SERIALIZE_XML_REGISTER_CREATOR ( ClassD );
-SERIALIZE_XML_REGISTER_CREATOR ( ClassE );
-SERIALIZE_XML_REGISTER_CREATOR ( ClassF );
-SERIALIZE_XML_REGISTER_CREATOR ( ClassG );
-
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Usul::Math::Vec4d );
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Usul::Math::Vec4f );
 SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( Usul::Math::Vec3d );
@@ -394,12 +389,34 @@ SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2f );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Register all types.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void _registerTypes()
+{
+  // Now register creators.
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ClassA> ( "ClassA" ) );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ClassB> ( "ClassB" ) );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ClassC> ( "ClassC" ) );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ClassD> ( "ClassD" ) );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ClassE> ( "ClassE" ) );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ClassF> ( "ClassF" ) );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ClassG> ( "ClassG" ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Run the test.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void _run()
 {
+  // Register types.
+  _registerTypes();
+
   typedef std::vector < ClassA::RefPtr > Objects;
   Objects objects;
 

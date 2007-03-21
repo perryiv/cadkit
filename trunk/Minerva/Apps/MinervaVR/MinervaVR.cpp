@@ -41,10 +41,10 @@ public:
 MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) : 
   OsgVJApp( kern, argc, argv ),
   _dbManager ( new Minerva::Core::Viz::Controller (  ) ),
-  _sceneManager ( new Minerva::Scene::SceneManager ),
+  _sceneManager ( new Minerva::Core::Scene::SceneManager ),
   _planet ( new Magrathea::Planet )
 {
-  Minerva::DB::Connection::RefPtr applicationConnection ( new Minerva::DB::Connection );
+  Minerva::Core::DB::Connection::RefPtr applicationConnection ( new Minerva::Core::DB::Connection );
 
   // TODO: Put this in a config file.
   applicationConnection->username( "wnv_app" );
@@ -107,7 +107,7 @@ void MinervaVR::appPreOsgDraw()
 
   ::glGetIntegerv(GL_VIEWPORT, viewport);
 
-  _sceneManager->resize ( viewport[0], viewport[1], viewport[2], viewport[3] );
+  _sceneManager->resize ( viewport[2], viewport[3] );
 
   this->_updateScene();
 }

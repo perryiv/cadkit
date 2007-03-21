@@ -15,7 +15,7 @@
 #include "VrjCore/OsgVJApp.h"
 
 #include "Minerva/Core/Viz/Controller.h"
-#include "Minerva/Scene/SceneManager.h"
+#include "Minerva/Core/Scene/SceneManager.h"
 
 
 #include "Magrathea/Planet.h"
@@ -40,7 +40,7 @@ class MinervaVR : public VrjCore::OsgVJApp
  private:	
 
   Minerva::Core::Viz::Controller::RefPtr _dbManager;
-  Minerva::Scene::SceneManager::RefPtr   _sceneManager;
+  Minerva::Core::Scene::SceneManager::RefPtr   _sceneManager;
   osg::ref_ptr < Magrathea::Planet >     _planet;
 };
 

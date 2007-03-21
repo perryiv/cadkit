@@ -115,6 +115,47 @@ inline void contents ( const std::string &filename, char comment, std::string &f
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the file contents but skip any comment lines.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline void contents ( const std::string &filename,std::string &file )
+{
+  // Get the size of the file.
+  Usul::Types::Uint64 size ( Usul::File::size ( filename ) );
+
+  // Check to make sure the vector can hold the file.
+  if ( std::numeric_limits< unsigned int >::max() < size )
+  {
+    throw std::runtime_error ( "Error 1423922323, file: " + filename + " is too large to store in a vector"  );
+  }
+
+  file.reserve ( static_cast < unsigned int > ( size ) );
+
+  // Open the file.
+  std::ifstream in ( filename.c_str() );
+  if ( !in.is_open() )
+    throw std::runtime_error ( "Error 1406927723, failed to open file: " + filename );
+
+  // Make a buffer to hold the lines.
+  const unsigned int bufSize ( 1023 );
+  char buffer[bufSize+1];
+
+  // Copy the entire file to the container.
+  while ( EOF != in.peek() )
+  {
+    // Get a line.
+    in.getline ( buffer, bufSize );
+
+    // Append the line.
+    file += buffer;
+    file += '\n';
+  }
+}
+
+
 }; // namespace File
 }; // namespace Usul
 

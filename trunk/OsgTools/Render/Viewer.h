@@ -242,6 +242,9 @@ public:
   const Document *      document() const;
   void                  document ( Document * );
 
+  // Force all detail to render.
+  void                  forceDetail();
+
   // Get/Set the field of view
   void                  fovSet ( double fov );
   double                fovGet () const;

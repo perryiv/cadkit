@@ -1084,109 +1084,109 @@ double Renderer::scatterScale() const
 void Renderer::_tiledScreenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height )
 {
   // Tile height and width
-    const unsigned int tileWidth ( 256 );
-    const unsigned int tileHeight ( 256 );
+  const unsigned int tileWidth ( 256 );
+  const unsigned int tileHeight ( 256 );
 
-    // Calculate the number of rows and columns we will need
-    const unsigned int numRows ( ( height + tileHeight - 1 ) / tileHeight );
-    const unsigned int numCols ( ( width + tileWidth - 1 )   / tileWidth  );
+  // Calculate the number of rows and columns we will need
+  const unsigned int numRows ( ( height + tileHeight - 1 ) / tileHeight );
+  const unsigned int numCols ( ( width + tileWidth - 1 )   / tileWidth  );
 
-    // Set the current tile
-    unsigned int currentTile ( 0 );
+  // Set the current tile
+  unsigned int currentTile ( 0 );
 
-    // Get the old viewport
-    osg::ref_ptr<osg::Viewport> ovp ( static_cast < osg::Viewport* > ( this->viewport()->clone( osg::CopyOp::DEEP_COPY_ALL ) ) );
+  // Get the old viewport
+  osg::ref_ptr<osg::Viewport> ovp ( static_cast < osg::Viewport* > ( this->viewport()->clone( osg::CopyOp::DEEP_COPY_ALL ) ) );
 
-    osg::Matrix opm ( this->viewer()->getProjectionMatrix() );
+  osg::Matrix opm ( this->viewer()->getProjectionMatrix() );
 
-    //double fovy  ( OsgTools::Render::Defaults::CAMERA_FOV_Y );
-    double zNear ( 0.0 );
-    double zFar  ( 0.0 );
-    //double aspect ( width / height );
+  //double fovy  ( OsgTools::Render::Defaults::CAMERA_FOV_Y );
+  double zNear ( 0.0 );
+  double zFar  ( 0.0 );
+  //double aspect ( width / height );
 
-    double top     ( 0.0 );
-    double bottom  ( 0.0 );
-    double left    ( 0.0 );
-    double right   ( 0.0 );
+  double top     ( 0.0 );
+  double bottom  ( 0.0 );
+  double left    ( 0.0 );
+  double right   ( 0.0 );
 
-    projection.getFrustum( left, right, bottom, top, zNear, zFar);
+  projection.getFrustum( left, right, bottom, top, zNear, zFar);
 
-    do
-    {
-      // Begin tile 
-      const unsigned int currentRow ( currentTile / numCols );
-      const unsigned int currentCol ( currentTile % numCols );
-      
-      // Current tile height and width
-      unsigned int currentTileHeight ( 0 );
-      unsigned int currentTileWidth  ( 0 );
+  do
+  {
+    // Begin tile 
+    const unsigned int currentRow ( currentTile / numCols );
+    const unsigned int currentCol ( currentTile % numCols );
+    
+    // Current tile height and width
+    unsigned int currentTileHeight ( 0 );
+    unsigned int currentTileWidth  ( 0 );
 
-      // Get the current tile height.  Accounts for tiles at end that are not comlete
-      if ( currentRow < numRows - 1 )
-        currentTileHeight = tileHeight;
-      else
-        currentTileHeight = height - ( ( numRows - 1 ) * tileHeight );
+    // Get the current tile height.  Accounts for tiles at end that are not complete
+    if ( currentRow < numRows - 1 )
+      currentTileHeight = tileHeight;
+    else
+      currentTileHeight = height - ( ( numRows - 1 ) * tileHeight );
 
-      // Get the current tile width.  Accounts for tiles at end that are not comlete
-      if ( currentCol  < numCols - 1 )
-        currentTileWidth = tileWidth;
-      else
-        currentTileWidth = width - ( ( numCols - 1 ) * tileWidth );    
+    // Get the current tile width.  Accounts for tiles at end that are not comlete
+    if ( currentCol  < numCols - 1 )
+      currentTileWidth = tileWidth;
+    else
+      currentTileWidth = width - ( ( numCols - 1 ) * tileWidth );    
 
-      // Set the view port to the tile width and height
-      this->viewer()->setViewport ( 0, 0, currentTileWidth, currentTileHeight );
+    // Set the view port to the tile width and height
+    this->viewer()->setViewport ( 0, 0, currentTileWidth, currentTileHeight );
 
-      // compute projection parameters
-      const double currentLeft   ( left          + ( right - left ) *  ( currentCol * tileWidth ) / width );
-      const double currentRight  ( currentLeft   + ( right - left ) *            currentTileWidth / width );
-      const double currentBottom ( bottom        + ( top - bottom ) * ( currentRow * tileHeight ) / height );
-      const double currentTop    ( currentBottom + ( top - bottom ) *           currentTileHeight / height );
+    // compute projection parameters
+    const double currentLeft   ( left          + ( right - left ) *  ( currentCol * tileWidth ) / width );
+    const double currentRight  ( currentLeft   + ( right - left ) *            currentTileWidth / width );
+    const double currentBottom ( bottom        + ( top - bottom ) * ( currentRow * tileHeight ) / height );
+    const double currentTop    ( currentBottom + ( top - bottom ) *           currentTileHeight / height );
 
-      // Set the new frustum
-      this->viewer()->setProjectionMatrixAsFrustum ( currentLeft, currentRight, currentBottom, currentTop, zNear, zFar );
-      
-      // Draw
-      this->_singlePassRender();
+    // Set the new frustum
+    this->viewer()->setProjectionMatrixAsFrustum ( currentLeft, currentRight, currentBottom, currentTop, zNear, zFar );
+    
+    // Draw
+    this->_singlePassRender();
 
-      // Previous values
-      GLint prevRowLength, prevSkipRows, prevSkipPixels;
+    // Previous values
+    GLint prevRowLength, prevSkipRows, prevSkipPixels;
 
-      // save current glPixelStore values
-      ::glGetIntegerv(GL_PACK_ROW_LENGTH,  &prevRowLength);
-      ::glGetIntegerv(GL_PACK_SKIP_ROWS,   &prevSkipRows);
-      ::glGetIntegerv(GL_PACK_SKIP_PIXELS, &prevSkipPixels);
+    // save current glPixelStore values
+    ::glGetIntegerv(GL_PACK_ROW_LENGTH,  &prevRowLength);
+    ::glGetIntegerv(GL_PACK_SKIP_ROWS,   &prevSkipRows);
+    ::glGetIntegerv(GL_PACK_SKIP_PIXELS, &prevSkipPixels);
 
-      // Calculate position in image buffer to write to
-      GLint destX ( currentTileWidth  * currentCol );
-      GLint destY ( currentTileHeight * currentRow );
+    // Calculate position in image buffer to write to
+    GLint destX ( currentTileWidth  * currentCol );
+    GLint destY ( currentTileHeight * currentRow );
 
-      // setup pixel store for glReadPixels
-      // This makes sure that the buffer is read into the correct spot in the image buffer
-      ::glPixelStorei(GL_PACK_ROW_LENGTH,  width);
-      ::glPixelStorei(GL_PACK_SKIP_ROWS,   destY);
-      ::glPixelStorei(GL_PACK_SKIP_PIXELS, destX);
+    // setup pixel store for glReadPixels
+    // This makes sure that the buffer is read into the correct spot in the image buffer
+    ::glPixelStorei(GL_PACK_ROW_LENGTH,  width);
+    ::glPixelStorei(GL_PACK_SKIP_ROWS,   destY);
+    ::glPixelStorei(GL_PACK_SKIP_PIXELS, destX);
 
-      // read the tile into the final image
-      ::glReadPixels(0, 0, currentTileWidth, currentTileHeight, GL_RGB, GL_UNSIGNED_BYTE, image.data( ) );
+    // read the tile into the final image
+    ::glReadPixels(0, 0, currentTileWidth, currentTileHeight, GL_RGB, GL_UNSIGNED_BYTE, image.data( ) );
 
-      // restore previous glPixelStore values
-      ::glPixelStorei(GL_PACK_ROW_LENGTH,  prevRowLength);
-      ::glPixelStorei(GL_PACK_SKIP_ROWS,   prevSkipRows);
-      ::glPixelStorei(GL_PACK_SKIP_PIXELS, prevSkipPixels);
+    // restore previous glPixelStore values
+    ::glPixelStorei(GL_PACK_ROW_LENGTH,  prevRowLength);
+    ::glPixelStorei(GL_PACK_SKIP_ROWS,   prevSkipRows);
+    ::glPixelStorei(GL_PACK_SKIP_PIXELS, prevSkipPixels);
 
-      // Go the the next tile
-      currentTile++;
+    // Go the the next tile
+    currentTile++;
 
-      // Are we done?
-      if ( currentTile >= numRows * numCols )
-        break;
+    // Are we done?
+    if ( currentTile >= numRows * numCols )
+      break;
 
-    } while ( 1 );
+  } while ( 1 );
 
-    // Restore old settings
-    this->viewport ( ovp.get() );
-    this->viewer()->setProjectionMatrix( opm );
-    //this->resize ( ovp->width(), ovp->height() );
+  // Restore old settings
+  this->viewport ( ovp.get() );
+  this->viewer()->setProjectionMatrix( opm );
+  //this->resize ( ovp->width(), ovp->height() );
 }
 
 

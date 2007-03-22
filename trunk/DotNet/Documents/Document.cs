@@ -74,7 +74,11 @@ namespace CadKit.Documents
         if (null != _views)
         {
           _views.Clear();
-          _views = null;
+
+          // Not setting to null here is a work-around for a bug related to 
+          // the fact that the views, documents, and document-manager are 
+          // too tightly coupled.
+          _views = new DocViews();
         }
         base._cleanup();
       }

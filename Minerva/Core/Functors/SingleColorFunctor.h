@@ -38,6 +38,8 @@ struct MINERVA_EXPORT SingleColorFunctor : public Minerva::Core::Functors::BaseC
   SingleColorFunctor();
   virtual ~SingleColorFunctor();
 
+  virtual BaseColorFunctor* clone() const;
+
   /// Get/Set the color.
   void               color( const osg::Vec4& );
   const osg::Vec4&   color () const;
@@ -53,7 +55,6 @@ private:
 
   osg::Vec4 _color;
 
-  SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS ( SingleColorFunctor );
 };
 

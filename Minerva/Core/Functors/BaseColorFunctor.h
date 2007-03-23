@@ -38,6 +38,8 @@ struct MINERVA_EXPORT BaseColorFunctor : public Usul::Base::Referenced
 
   BaseColorFunctor() : SERIALIZE_XML_INITIALIZER_LIST { }
 
+  virtual BaseColorFunctor* clone() const = 0;
+
   virtual osg::Vec4 operator() ( double value ) const = 0;
 
   virtual OsgTools::Legend::Icon * icon () = 0;

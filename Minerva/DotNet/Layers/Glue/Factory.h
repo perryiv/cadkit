@@ -10,14 +10,20 @@
 
 #pragma once
 
+namespace Minerva { namespace Core { namespace Functors { struct BaseColorFunctor; } } }
+
 namespace DT{
   namespace Minerva {
     namespace Glue {
+
+      ref class BaseColorFunctor;
 
   public ref class Factory
   {
   public:
     static CadKit::Interfaces::ILayer^ create( System::IntPtr pointer );
+
+    static BaseColorFunctor ^          createColorFunctor ( ::Minerva::Core::Functors::BaseColorFunctor * );
 
   private:
     Factory()

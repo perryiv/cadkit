@@ -85,8 +85,8 @@ _renderBin ( layer._renderBin ),
 _zOffset ( layer._zOffset ),
 _dataObjects( layer._dataObjects ),
 _connection( layer._connection ),
-_colorFunctor( layer._colorFunctor ),
-_legendObject ( layer._legendObject ),
+_colorFunctor( 0x0 ),
+_legendObject ( new OsgTools::Legend::LegendObject ),
 _legendText( layer._legendText ),
 _showLabel ( layer._showLabel ),
 _shown ( layer._shown ),
@@ -96,9 +96,14 @@ _labelSize ( layer._labelSize ),
 _colorColumn( layer._colorColumn ),
 _customQuery( layer._customQuery )
 {
+  if( layer._colorFunctor.valid() )
+    _colorFunctor = layer._colorFunctor->clone();
+
   _layerID = ++_currentLayerID;
 
   this->_registerMembers();
+
+  this->legendText( _legendText );
 }
 
 

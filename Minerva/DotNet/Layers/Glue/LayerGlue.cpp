@@ -578,3 +578,4 @@ DT::Minerva::Glue::Connection^ LayerGlue::Connection::get()
 {
   return _connection;
 }
+

@@ -12,6 +12,8 @@
 
 #include "BaseColorFunctor.h"
 
+#include "Minerva/Core/Functors/SingleColorFunctor.h"
+
 namespace DT
 {
   namespace Minerva
@@ -22,23 +24,20 @@ namespace DT
       {
       public:
         SingleColorFunctor();
+        SingleColorFunctor ( ::Minerva::Core::Functors::SingleColorFunctor* );
+        ~SingleColorFunctor();
+        !SingleColorFunctor();
 
         property System::Drawing::Color^ Color
         {
-          System::Drawing::Color^ get()
-          {
-            return _color;
-          }
-          void set( System::Drawing::Color^ color )
-          {
-            _color = color;
-          }
+          System::Drawing::Color^ get();
+          void set( System::Drawing::Color^ color );
         }
 
         virtual ::Minerva::Core::Functors::BaseColorFunctor * colorFunctor() override;
 
       private:
-        System::Drawing::Color^ _color;
+        ::Minerva::Core::Functors::SingleColorFunctor* _functor;
       };
     }
   }

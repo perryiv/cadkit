@@ -34,7 +34,7 @@ SERIALIZE_XML_DECLARE_TYPE_WRAPPER( OsgTools::Animate::Date );
 
 PointTimeLayer::PointTimeLayer() : BaseClass(),
 _primitiveID ( 2 ),
-_size ( 1.0 ),
+_size ( 5.0 ),
 _firstDateColumn(),
 _lastDateColumn(),
 _minDate( boost::date_time::min_date_time ),

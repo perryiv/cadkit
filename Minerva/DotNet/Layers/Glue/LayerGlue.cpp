@@ -11,6 +11,7 @@
 #include "LayerGlue.h"
 #include "SingleColorFunctor.h"
 #include "GradientColorFunctor.h"
+#include "Factory.h"
 
 #include "Usul/Strings/ManagedToNative.h"
 
@@ -27,8 +28,7 @@ using namespace DT::Minerva::Glue;
 
 LayerGlue::LayerGlue() : 
 _connection( nullptr ),
-_colorFunctor ( nullptr ),
-_properties( gcnew DT::Minerva::Layers::Colors::ColorProperties() )
+_colorFunctor ( nullptr )
 {
 }
 
@@ -239,32 +239,6 @@ System::String^ LayerGlue::Query::get()
 void LayerGlue::Query::set( System::String^ s )
 {
   this->layer()->query( Usul::Strings::convert ( s ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the color functor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-DT::Minerva::Glue::BaseColorFunctor^ LayerGlue::ColorFunctor::get (  )
-{
-  return _colorFunctor;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the color functor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LayerGlue::ColorFunctor::set ( DT::Minerva::Glue::BaseColorFunctor^ functor )
-{
-  if( nullptr != functor )
-    this->layer()->colorFunctor( functor->colorFunctor() );
-  _colorFunctor = functor;
 }
 
 
@@ -491,19 +465,19 @@ array<System::String^>^ LayerGlue::ColumnNames::get()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DT::Minerva::Glue::BaseColorFunctor^ LayerGlue::_createColorFunctor()
+DT::Minerva::Glue::BaseColorFunctor^ LayerGlue::_createColorFunctor( DT::Minerva::Layers::Colors::ColorProperties ^properties )
 {
-  if (this->ColorProperties->ColorMode == DT::Minerva::Layers::Colors::ColorProperties::Mode::SINGLE_COLOR)
+  if (properties->ColorMode == DT::Minerva::Layers::Colors::ColorProperties::Mode::SINGLE_COLOR)
   {
     DT::Minerva::Glue::SingleColorFunctor ^functor = gcnew DT::Minerva::Glue::SingleColorFunctor();
-    functor->Color = this->ColorProperties->Color;
+    functor->Color = properties->Color;
     return functor;
   }
-  else if (this->ColorProperties->ColorMode == DT::Minerva::Layers::Colors::ColorProperties::Mode::GRADIENT_COLOR)
+  else if (properties->ColorMode == DT::Minerva::Layers::Colors::ColorProperties::Mode::GRADIENT_COLOR)
   {
     DT::Minerva::Glue::GradientColorFunctor ^funtor = gcnew DT::Minerva::Glue::GradientColorFunctor();
-    funtor->MinColor = this->ColorProperties->MinColor;
-    funtor->MaxColor = this->ColorProperties->MaxColor;
+    funtor->MinColor = properties->MinColor;
+    funtor->MaxColor = properties->MaxColor;
 
     if (nullptr != _connection)
     {
@@ -579,3 +553,30 @@ DT::Minerva::Glue::Connection^ LayerGlue::Connection::get()
   return _connection;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the color properties.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DT::Minerva::Layers::Colors::ColorProperties^ LayerGlue::ColorProperties::get()
+{
+  BaseColorFunctor ^functor = DT::Minerva::Glue::Factory::createColorFunctor ( this->layer()->colorFunctor() );
+  if( nullptr != functor )
+    return functor->createColorProperties();
+
+  return gcnew DT::Minerva::Layers::Colors::ColorProperties();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the color properties.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayerGlue::ColorProperties::set ( DT::Minerva::Layers::Colors::ColorProperties^ value )
+{
+  this->layer()->colorFunctor( this->_createColorFunctor( value )->colorFunctor() );
+}

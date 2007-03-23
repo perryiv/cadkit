@@ -28,17 +28,17 @@ namespace DT
         ~GradientColorFunctor();
         !GradientColorFunctor();
 
-        property System::Drawing::Color^ MinColor
+        property System::Drawing::Color MinColor
         {
-          System::Drawing::Color^ get();
-          void set( System::Drawing::Color^ color );
+          System::Drawing::Color get();
+          void set( System::Drawing::Color color );
         }
 
 
-        property System::Drawing::Color^ MaxColor
+        property System::Drawing::Color MaxColor
         {
-          System::Drawing::Color^ get();
-          void set( System::Drawing::Color^ color );
+          System::Drawing::Color get();
+          void set( System::Drawing::Color color );
         }
 
         property double MinValue
@@ -54,6 +54,8 @@ namespace DT
         }
 
         virtual ::Minerva::Core::Functors::BaseColorFunctor * colorFunctor() override;
+
+        virtual DT::Minerva::Layers::Colors::ColorProperties^ createColorProperties() override;
 
       private:
         ::Minerva::Core::Functors::GradientColorFunctor * _functor;

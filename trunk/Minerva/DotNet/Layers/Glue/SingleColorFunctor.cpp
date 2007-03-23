@@ -81,7 +81,7 @@ Minerva::Core::Functors::BaseColorFunctor * SingleColorFunctor::colorFunctor()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-System::Drawing::Color^ SingleColorFunctor::Color::get()
+System::Drawing::Color SingleColorFunctor::Color::get()
 {
   return this->toManagedColor( _functor->color() );
 }
@@ -93,7 +93,24 @@ System::Drawing::Color^ SingleColorFunctor::Color::get()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SingleColorFunctor::Color::set( System::Drawing::Color^ color )
+void SingleColorFunctor::Color::set( System::Drawing::Color color )
 {
   _functor->color( this->toOsgColor( color ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the color properties.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DT::Minerva::Layers::Colors::ColorProperties^ SingleColorFunctor::createColorProperties()
+{
+  DT::Minerva::Layers::Colors::ColorProperties^ properties = gcnew DT::Minerva::Layers::Colors::ColorProperties();
+
+  properties->ColorMode = DT::Minerva::Layers::Colors::ColorProperties::Mode::SINGLE_COLOR;
+  properties->Color = this->Color;
+  
+  return properties;
 }

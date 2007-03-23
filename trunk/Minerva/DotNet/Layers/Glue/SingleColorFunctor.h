@@ -28,13 +28,15 @@ namespace DT
         ~SingleColorFunctor();
         !SingleColorFunctor();
 
-        property System::Drawing::Color^ Color
+        property System::Drawing::Color Color
         {
-          System::Drawing::Color^ get();
-          void set( System::Drawing::Color^ color );
+          System::Drawing::Color get();
+          void set( System::Drawing::Color color );
         }
 
         virtual ::Minerva::Core::Functors::BaseColorFunctor * colorFunctor() override;
+
+        virtual DT::Minerva::Layers::Colors::ColorProperties^ createColorProperties() override;
 
       private:
         ::Minerva::Core::Functors::SingleColorFunctor* _functor;

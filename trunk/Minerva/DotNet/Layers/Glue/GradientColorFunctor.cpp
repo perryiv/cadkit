@@ -84,7 +84,7 @@ Minerva::Core::Functors::BaseColorFunctor * GradientColorFunctor::colorFunctor()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-System::Drawing::Color^ GradientColorFunctor::MinColor::get()
+System::Drawing::Color GradientColorFunctor::MinColor::get()
 {
   return this->toManagedColor ( _functor->minColor() );
 }
@@ -96,7 +96,7 @@ System::Drawing::Color^ GradientColorFunctor::MinColor::get()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void GradientColorFunctor::MinColor::set( System::Drawing::Color^ color )
+void GradientColorFunctor::MinColor::set( System::Drawing::Color color )
 {
   _functor->minColor ( this->toOsgColor ( color ) );
 }
@@ -108,7 +108,7 @@ void GradientColorFunctor::MinColor::set( System::Drawing::Color^ color )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-System::Drawing::Color^ GradientColorFunctor::MaxColor::get()
+System::Drawing::Color GradientColorFunctor::MaxColor::get()
 {
   return this->toManagedColor ( _functor->maxColor() );
 }
@@ -120,7 +120,7 @@ System::Drawing::Color^ GradientColorFunctor::MaxColor::get()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void GradientColorFunctor::MaxColor::set( System::Drawing::Color^ color )
+void GradientColorFunctor::MaxColor::set( System::Drawing::Color color )
 {
   return _functor->maxColor ( this->toOsgColor( color ) );
 }
@@ -173,3 +173,20 @@ void GradientColorFunctor::MaxValue::set ( double value )
   _functor->maxValue ( value );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the color properties.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DT::Minerva::Layers::Colors::ColorProperties^ GradientColorFunctor::createColorProperties()
+{
+  DT::Minerva::Layers::Colors::ColorProperties^ properties = gcnew DT::Minerva::Layers::Colors::ColorProperties();
+
+  properties->ColorMode = DT::Minerva::Layers::Colors::ColorProperties::Mode::GRADIENT_COLOR;
+  properties->MinColor = this->MinColor;
+  properties->MaxColor = this->MaxColor;
+
+  return properties;
+}

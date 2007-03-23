@@ -105,11 +105,6 @@ namespace DT
         ]
         PROPERTY_GET_SET(ColorColumn, System::String^);
 
-        /// Set the color functor.
-        [
-          System::ComponentModel::Browsable(false)
-        ]
-        PROPERTY_GET_SET(ColorFunctor, DT::Minerva::Glue::BaseColorFunctor^);
 
         /// Get/Set the legend text.
         [
@@ -203,8 +198,6 @@ namespace DT
         {
           if (!this->CustomQuery)
             this->Query = this->DefaultQuery;
-
-          this->ColorFunctor = this->_createColorFunctor();
         }
 
 
@@ -241,11 +234,7 @@ namespace DT
           System::ComponentModel::TypeConverter( DT::Minerva::Layers::Colors::ColorTypeConverter::typeid),
           System::ComponentModel::Editor( DT::Minerva::Layers::Colors::ColorUITypeEditor::typeid, System::Drawing::Design::UITypeEditor::typeid)
         ]
-        property DT::Minerva::Layers::Colors::ColorProperties^ ColorProperties
-        {
-          DT::Minerva::Layers::Colors::ColorProperties^ get() { return _properties; }
-          void set ( DT::Minerva::Layers::Colors::ColorProperties^ value ) { _properties = value; }
-        }
+        PROPERTY_GET_SET ( ColorProperties, DT::Minerva::Layers::Colors::ColorProperties^ );
 
 
         /// Get/Set the name.
@@ -283,24 +272,21 @@ namespace DT
         ]
         property System::Object^ ColorPropertiesAsObject
         {
-          virtual System::Object^ get() { return _properties; }
+          virtual System::Object^ get() { return this->ColorProperties; }
         }
 
-  
+
         property System::String^ ColorMode
         { 
-          virtual System::String^ get() { return _properties->ColorMode.ToString(); }
+          virtual System::String^ get() { return this->ColorProperties->ColorMode.ToString(); }
         }
 
       protected:
-        DT::Minerva::Glue::BaseColorFunctor^ _createColorFunctor();
-
-        //DT::Minerva::Layers::Colors::ColorProperties^ _getColorProperties();
+        DT::Minerva::Glue::BaseColorFunctor^ _createColorFunctor( DT::Minerva::Layers::Colors::ColorProperties ^ );
 
       private:
-        DT::Minerva::Glue::Connection ^_connection;
+        DT::Minerva::Glue::Connection                ^_connection;
         DT::Minerva::Glue::BaseColorFunctor          ^_colorFunctor;
-        DT::Minerva::Layers::Colors::ColorProperties^ _properties;
 	    };
     }
   }

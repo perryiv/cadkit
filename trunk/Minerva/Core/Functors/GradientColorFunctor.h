@@ -37,6 +37,8 @@ struct MINERVA_EXPORT GradientColorFunctor : public Minerva::Core::Functors::Bas
   GradientColorFunctor();
   virtual ~GradientColorFunctor();
 
+  virtual BaseColorFunctor*    clone() const;
+
   /// Get/Set the min color.
   void               minColor( const osg::Vec4& );
   const osg::Vec4&   minColor () const;

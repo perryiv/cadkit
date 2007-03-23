@@ -68,14 +68,16 @@ namespace DT
         [
           System::ComponentModel::Category("Date"),
           System::ComponentModel::Description("Column that contains the first date."),
-          System::ComponentModel::Browsable(true)
+          System::ComponentModel::Browsable(true),
+          System::ComponentModel::TypeConverter(DT::Minerva::Layers::TypeConverters::ColumnNames::typeid)
         ]
         PROPERTY_GET_SET(FirstDateColumn, System::String^);
 
         [
           System::ComponentModel::Category("Date"),
           System::ComponentModel::Description("Column that contains the last date."),
-          System::ComponentModel::Browsable(true)
+          System::ComponentModel::Browsable(true),
+          System::ComponentModel::TypeConverter(DT::Minerva::Layers::TypeConverters::ColumnNames::typeid)
         ]
         PROPERTY_GET_SET(LastDateColumn, System::String^);
 

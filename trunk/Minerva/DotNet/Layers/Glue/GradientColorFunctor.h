@@ -12,6 +12,8 @@
 
 #include "BaseColorFunctor.h"
 
+#include "Minerva/Core/Functors/GradientColorFunctor.h"
+
 namespace DT
 {
   namespace Minerva
@@ -22,63 +24,39 @@ namespace DT
       {
       public:
         GradientColorFunctor();
+        GradientColorFunctor ( ::Minerva::Core::Functors::GradientColorFunctor* );
+        ~GradientColorFunctor();
+        !GradientColorFunctor();
 
         property System::Drawing::Color^ MinColor
         {
-          System::Drawing::Color^ get()
-          {
-            return _minColor;
-          }
-          void set( System::Drawing::Color^ color )
-          {
-            _minColor = color;
-          }
+          System::Drawing::Color^ get();
+          void set( System::Drawing::Color^ color );
         }
 
 
         property System::Drawing::Color^ MaxColor
         {
-          System::Drawing::Color^ get()
-          {
-            return _maxColor;
-          }
-          void set( System::Drawing::Color^ color )
-          {
-            _maxColor = color;
-          }
+          System::Drawing::Color^ get();
+          void set( System::Drawing::Color^ color );
         }
 
         property double MinValue
         {
-          double get()
-          {
-            return _minValue;
-          }
-          void set ( double value )
-          {
-            _minValue = value;
-          }
+          double get();
+          void set ( double value );
         }
 
         property double MaxValue
         {
-          double get()
-          {
-            return _maxValue;
-          }
-          void set ( double value )
-          {
-            _maxValue = value;
-          }
+          double get();
+          void set ( double value );
         }
 
         virtual ::Minerva::Core::Functors::BaseColorFunctor * colorFunctor() override;
 
       private:
-        System::Drawing::Color^ _minColor;
-        System::Drawing::Color^ _maxColor;
-        double _minValue;
-        double _maxValue;
+        ::Minerva::Core::Functors::GradientColorFunctor * _functor;
       };
     }
   }

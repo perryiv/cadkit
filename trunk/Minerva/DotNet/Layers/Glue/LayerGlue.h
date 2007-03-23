@@ -295,6 +295,8 @@ namespace DT
       protected:
         DT::Minerva::Glue::BaseColorFunctor^ _createColorFunctor();
 
+        //DT::Minerva::Layers::Colors::ColorProperties^ _getColorProperties();
+
       private:
         DT::Minerva::Glue::Connection ^_connection;
         DT::Minerva::Glue::BaseColorFunctor          ^_colorFunctor;

@@ -15,6 +15,8 @@
 #include "PolygonLayerGlue.h"
 #include "PolygonTimeLayerGlue.h"
 #include "RLayerGlue.h"
+#include "SingleColorFunctor.h"
+#include "GradientColorFunctor.h"
 
 #include "Minerva/Core/Layers/LineLayer.h"
 
@@ -38,6 +40,20 @@ CadKit::Interfaces::ILayer^ Factory::create( System::IntPtr pointer )
       return gcnew PolygonTimeLayerGlue ( polygonTimeLayer );
     if( ::Minerva::Core::Layers::RLayer* rLayer = dynamic_cast < ::Minerva::Core::Layers::RLayer* > ( layer.get() ) )
       return gcnew RLayerGlue ( rLayer );
+  }
+
+  return nullptr;
+}
+
+
+BaseColorFunctor ^ Factory::createColorFunctor ( ::Minerva::Core::Functors::BaseColorFunctor * nativePtr )
+{
+  if( 0x0 != nativePtr )
+  {
+    if ( ::Minerva::Core::Functors::SingleColorFunctor *single = dynamic_cast < ::Minerva::Core::Functors::SingleColorFunctor * > ( nativePtr ) )
+      return gcnew SingleColorFunctor ( single );
+    if( ::Minerva::Core::Functors::GradientColorFunctor *gradient = dynamic_cast < ::Minerva::Core::Functors::GradientColorFunctor* > ( nativePtr ) )
+      return gcnew GradientColorFunctor ( gradient );
   }
 
   return nullptr;

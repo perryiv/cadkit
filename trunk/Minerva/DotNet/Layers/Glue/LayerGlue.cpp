@@ -28,7 +28,8 @@ using namespace DT::Minerva::Glue;
 
 LayerGlue::LayerGlue() : 
 _connection( nullptr ),
-_colorFunctor ( nullptr )
+_colorFunctor ( nullptr ),
+_properties ( nullptr )
 {
 }
 
@@ -562,11 +563,16 @@ DT::Minerva::Glue::Connection^ LayerGlue::Connection::get()
 
 DT::Minerva::Layers::Colors::ColorProperties^ LayerGlue::ColorProperties::get()
 {
-  BaseColorFunctor ^functor = DT::Minerva::Glue::Factory::createColorFunctor ( this->layer()->colorFunctor() );
-  if( nullptr != functor )
-    return functor->createColorProperties();
+  if( nullptr == _properties )
+  {
+    BaseColorFunctor ^functor = DT::Minerva::Glue::Factory::createColorFunctor ( this->layer()->colorFunctor() );
+    if( nullptr != functor )
+      _properties = functor->createColorProperties();
+    else
+      _properties = gcnew DT::Minerva::Layers::Colors::ColorProperties();
+  }
 
-  return gcnew DT::Minerva::Layers::Colors::ColorProperties();
+  return _properties;
 }
 
 
@@ -578,5 +584,6 @@ DT::Minerva::Layers::Colors::ColorProperties^ LayerGlue::ColorProperties::get()
 
 void LayerGlue::ColorProperties::set ( DT::Minerva::Layers::Colors::ColorProperties^ value )
 {
+  _properties = value;
   this->layer()->colorFunctor( this->_createColorFunctor( value )->colorFunctor() );
 }

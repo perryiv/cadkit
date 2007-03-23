@@ -198,6 +198,8 @@ namespace DT
         {
           if (!this->CustomQuery)
             this->Query = this->DefaultQuery;
+
+          this->layer()->colorFunctor( this->_createColorFunctor( this->ColorProperties )->colorFunctor( ) );
         }
 
 
@@ -287,6 +289,7 @@ namespace DT
       private:
         DT::Minerva::Glue::Connection                ^_connection;
         DT::Minerva::Glue::BaseColorFunctor          ^_colorFunctor;
+        DT::Minerva::Layers::Colors::ColorProperties ^_properties;
 	    };
     }
   }

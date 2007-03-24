@@ -33,8 +33,9 @@ namespace XML {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class Container > inline void deserialize ( const XmlTree::Node &parent, Container &c )
+template < class T > inline void deserialize ( const XmlTree::Node &parent, std::vector< T > & c )
 {
+  typedef std::vector< T > Container;
   typedef typename Container::value_type PointerType;
   typedef typename PointerType::element_type ObjectType;
   typedef typename XmlTree::Node::Children::const_iterator Itr;
@@ -44,6 +45,22 @@ template < class Container > inline void deserialize ( const XmlTree::Node &pare
     PointerType object ( dynamic_cast < ObjectType * > ( Factory::instance().create ( node->name() ) ) );
     object->deserialize ( *node );
     c.push_back ( object );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize single object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class T > inline void deserialize( const XmlTree::Node& parent, T& t )
+{
+  if( !parent.children().empty() )
+  {
+    XmlTree::Node::RefPtr node ( parent.children().begin()->get() );
+    t.deserialize ( *node );
   }
 }
 

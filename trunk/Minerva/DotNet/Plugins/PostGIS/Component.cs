@@ -1,13 +1,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace DT.Minerva.Plugins.LayerManager
+namespace DT.Minerva.Plugins.Layers.PostGIS
 {
   public class Component :
     CadKit.Referenced.Base,

@@ -1,31 +1,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace DT.Minerva.Plugins.LayerManager
+namespace DT.Minerva.Plugins.Layers.PostGIS
 {
   public partial class AddLayerForm : System.Windows.Forms.UserControl
   {
     private CadKit.Interfaces.IOptionsPage _page;
-    private CadKit.Interfaces.ILayer _currentLayer = null;
     private static int _lastIndexUsed = -1;
-
-
-    /// <summary>
-    ///  Get the layer.
-    /// </summary>
-    public CadKit.Interfaces.ILayer Layer
-    {
-      get
-      {
-        return _currentLayer;
-      }
-    }
 
 
     /// <summary>
@@ -46,21 +34,16 @@ namespace DT.Minerva.Plugins.LayerManager
         _connections.Items.Add(dataConnection.Database + " on " + dataConnection.Hostname);
       }
 
-      _listBox.Enabled = false;
-
       CadKit.Interfaces.ILayerList layerList = CadKit.Documents.Manager.Instance.ActiveDocument as CadKit.Interfaces.ILayerList;
       if (null != layerList)
       {
-        string[] layers = layerList.Favorites;
-        foreach (string s in layers)
-        {
-          _listBox.Items.Add(s);
-        }
+        _favorites.DataSource = layerList.Favorites;
       }
 
       _connections.SelectedValueChanged += new System.EventHandler(_connections_SelectedValueChanged);
 
-      _listBox.SelectedIndexChanged += new System.EventHandler(_listBox_SelectedIndexChanged);
+      _datatables.SelectedIndexChanged += new System.EventHandler(_listBox_SelectedIndexChanged);
+      _favorites.SelectedIndexChanged += new System.EventHandler(_favorites_SelectedIndexChanged);
 
       if (_lastIndexUsed >= 0 && _lastIndexUsed < _connections.Items.Count)
         _connections.SelectedIndex = _lastIndexUsed;
@@ -99,9 +82,32 @@ namespace DT.Minerva.Plugins.LayerManager
     {
       CadKit.Interfaces.ILayerList layerList = CadKit.Documents.Manager.Instance.ActiveDocument as CadKit.Interfaces.ILayerList;
 
-      if (null != layerList && null != this.Layer)
+      if (null != layerList)
       {
-        layerList.addLayer(this.Layer, this);
+        if (null != _favorites.SelectedItem)
+          layerList.addLayer(layerList.createFavorite(_favorites.SelectedItem as string), this);
+        else if (null != _datatables.SelectedItem)
+        {
+          DT.Minerva.Interfaces.IDatabaseConnection dataSource = DT.Minerva.DB.Connections.Instance.OpenConnections[_lastIndexUsed] as DT.Minerva.Interfaces.IDatabaseConnection;
+
+          string tablename = _datatables.SelectedItem as string;
+
+          CadKit.Interfaces.ILayer layer = DT.Minerva.Glue.Factory.create(tablename,dataSource);
+
+          if (null != layer)
+          {
+            DT.Minerva.Interfaces.IDataSource iDataSource = layer as DT.Minerva.Interfaces.IDataSource;
+
+            if (null != iDataSource)
+              iDataSource.DataSource = dataSource;
+
+            Properties properties = new Properties(layer);
+            if (properties.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+              layerList.addLayer(layer, this);
+            }
+          }
+        }
       }
     }
 
@@ -111,25 +117,18 @@ namespace DT.Minerva.Plugins.LayerManager
     /// </summary>
     void _listBox_SelectedIndexChanged(object sender, System.EventArgs e)
     {
-      string layerType = _listBox.SelectedItem as string;
-      _lastIndexUsed = _connections.SelectedIndex;
+      _favorites.SelectedIndex = -1;
+      _favorites.SelectedItem = null;
+    }
 
-      DT.Minerva.Interfaces.IDatabaseConnection dataSource = DT.Minerva.DB.Connections.Instance.OpenConnections[_lastIndexUsed] as DT.Minerva.Interfaces.IDatabaseConnection;
 
-      CadKit.Interfaces.ILayerList layerList = CadKit.Documents.Manager.Instance.ActiveDocument as CadKit.Interfaces.ILayerList;
-      if (null != layerList)
-      {
-        _currentLayer = layerList.createFavorite(layerType);
-
-        DT.Minerva.Interfaces.IDataSource iDataSource = _currentLayer as DT.Minerva.Interfaces.IDataSource;
-
-        if (null != iDataSource)
-          iDataSource.DataSource = dataSource;
-
-        if (_currentLayer is CadKit.Interfaces.IPropertyGridObject)
-          _propertyGrid.SelectedObject = ((CadKit.Interfaces.IPropertyGridObject)_currentLayer).PropertyGridObject;
-      }
-      _listBox.Enabled = true;
+    /// <summary>
+    /// 
+    /// </summary>
+    void _favorites_SelectedIndexChanged(object sender, System.EventArgs e)
+    {
+      _datatables.SelectedIndex = -1;
+      _datatables.SelectedItem = null;
     }
 
 
@@ -138,7 +137,10 @@ namespace DT.Minerva.Plugins.LayerManager
     /// </summary>
     void _connections_SelectedValueChanged(object sender, System.EventArgs e)
     {
-      _listBox.Enabled = true;
+      _lastIndexUsed = _connections.SelectedIndex;
+      _datatables.Enabled = true;
+
+      _datatables.DataSource = DT.Minerva.Glue.Info.geometryTables(DT.Minerva.DB.Connections.Instance.OpenConnections[_lastIndexUsed]);
     }
 
 

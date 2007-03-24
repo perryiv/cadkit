@@ -257,6 +257,14 @@
 					RelativePath=".\Connection.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Info.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Info.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Layers"

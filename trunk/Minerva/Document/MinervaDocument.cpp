@@ -43,13 +43,6 @@ _planet ( new Magrathea::Planet )
   _planet->init();
   _planet->root()->addChild( _sceneManager->root() );
 
-  this->addToFavorites( new Minerva::Core::Layers::LineLayer );
-  this->addToFavorites( new Minerva::Core::Layers::PointLayer );
-  this->addToFavorites( new Minerva::Core::Layers::PointTimeLayer );
-  this->addToFavorites( new Minerva::Core::Layers::PolygonLayer );
-  this->addToFavorites( new Minerva::Core::Layers::PolygonTimeLayer );
-  this->addToFavorites( new Minerva::Core::Layers::RLayer );
-
   SERIALIZE_XML_ADD_MEMBER ( _favorites );
 }
 

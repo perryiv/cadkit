@@ -1,8 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Decision Theater
+//  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -25,7 +26,7 @@ namespace CadKit.Plugins
     /// </summary>
     public Factory()
     {
-      this._addType("CadKit.Interfaces.IPlugin", "DT.Minerva.Plugins.LayerManager.Component");
+      this._addType("CadKit.Interfaces.IPlugin", "DT.Minerva.Plugins.Layers.PostGIS.Component");
     }
 
     /// <summary>

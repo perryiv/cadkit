@@ -212,6 +212,18 @@ bool Info::isPointTable ( const std::string& table ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Is the given table a point time table?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Info::isPointTimeTable ( const std::string& table ) const
+{
+  return ( this->isPointTable( table ) && this->hasColumnType( table, "date" ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Is the given table a line table?
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -224,7 +236,7 @@ bool Info::isLineTable ( const std::string& table ) const
   if( false == result.empty() )
   {
     std::string type ( result[0][0].as < std::string > () );
-    return ( ( type == "LINE" ) || ( type == "MULTILINE" ) );
+    return ( ( type == "LINESTRING" ) || ( type == "MULTILINESTRING" ) );
   }
 
   return false;
@@ -249,6 +261,18 @@ bool Info::isPolygonTable ( const std::string& table ) const
   }
 
   return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the given table a point time table?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Info::isPolygonTimeTable ( const std::string& table ) const
+{
+  return ( this->isPolygonTable( table ) && this->hasColumnType( table, "date" ) );
 }
 
 

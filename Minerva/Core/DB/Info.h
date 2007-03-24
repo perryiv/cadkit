@@ -51,9 +51,11 @@ public:
   Strings                         geometryTables();
 
   /// Check the type of given table.
-  bool                            isPointTable   ( const std::string& table ) const;
-  bool                            isLineTable    ( const std::string& table ) const;
-  bool                            isPolygonTable ( const std::string& table ) const;
+  bool                            isPointTable       ( const std::string& table ) const;
+  bool                            isPointTimeTable   ( const std::string& table ) const;
+  bool                            isLineTable        ( const std::string& table ) const;
+  bool                            isPolygonTable     ( const std::string& table ) const;
+  bool                            isPolygonTimeTable ( const std::string& table ) const;
 
   /// Does the table have a column of the given type.
   bool                            hasColumnType ( const std::string& table, const std::string& type ) const;

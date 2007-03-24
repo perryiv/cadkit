@@ -43,12 +43,22 @@
     </Compile>
     <Compile Include="Component.cs" />
     <Compile Include="Factory.cs" />
+    <Compile Include="Properties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Properties.Designer.cs">
+      <DependentUpon>Properties.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AddLayerForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>AddLayerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Properties.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

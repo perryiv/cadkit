@@ -17,8 +17,12 @@
 #include "RLayerGlue.h"
 #include "SingleColorFunctor.h"
 #include "GradientColorFunctor.h"
+#include "Connection.h"
 
+#include "Minerva/Core/DB/Info.h"
 #include "Minerva/Core/Layers/LineLayer.h"
+
+#include "Usul/Strings/ManagedToNative.h"
 
 using namespace DT::Minerva::Glue;
 
@@ -40,6 +44,49 @@ CadKit::Interfaces::ILayer^ Factory::create( System::IntPtr pointer )
       return gcnew PolygonTimeLayerGlue ( polygonTimeLayer );
     if( ::Minerva::Core::Layers::RLayer* rLayer = dynamic_cast < ::Minerva::Core::Layers::RLayer* > ( layer.get() ) )
       return gcnew RLayerGlue ( rLayer );
+  }
+
+  return nullptr;
+}
+
+CadKit::Interfaces::ILayer^ Factory::create( System::String^ datatable, DT::Minerva::Interfaces::IDatabaseConnection^ connection )
+{
+  try
+  {
+    if( nullptr != datatable && nullptr != connection )
+    {
+      DT::Minerva::Glue::Connection^ c = safe_cast < DT::Minerva::Glue::Connection^ > ( connection );
+      if( nullptr != c )
+      {
+        typedef ::Minerva::Core::DB::Info DbInfo;
+        DbInfo::RefPtr info ( new DbInfo ( c->nativeConnection() ) );
+        std::string table ( Usul::Strings::convert ( datatable ) );
+
+        DT::Minerva::Glue::LayerGlue ^layer = nullptr;
+        if( info->isPointTimeTable ( table ) )
+          layer = gcnew PointTimeLayerGlue();
+        else if ( info->isPolygonTimeTable ( table ) )
+          layer = gcnew PolygonTimeLayerGlue ();
+        else if ( info->isPointTable ( table ) )
+          layer = gcnew PointLayerGlue();
+        else if ( info->isLineTable ( table ) )
+          layer = gcnew LineLayerGlue();
+        else if ( info->isPolygonTable ( table ) )
+          layer = gcnew PolygonLayerGlue();
+
+        if( nullptr != layer )
+        {
+          layer->DataSource = connection;
+          layer->Tablename = datatable;
+
+          return layer;
+        }
+      }
+    }
+  }
+  catch( System::Exception^ e )
+  {
+    System::Console::WriteLine( "Error 255989532: {0}", e->Message );
   }
 
   return nullptr;

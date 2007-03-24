@@ -121,14 +121,14 @@ namespace CadKit.Plugins
     /// <summary>
     /// Load the plugins.
     /// </summary>
-    public void load(string file, object caller)
+    public void load(string pluginDir, string xmlFile, object caller)
     {
       // Open the configuration file.
       try
       {
         // Get all the names.
         Names names = new Names();
-        Manager._getPluginFileNames(file, names);
+        Manager._getPluginFileNames(pluginDir, xmlFile, names);
 
         // Initialize.
         int number = 0;

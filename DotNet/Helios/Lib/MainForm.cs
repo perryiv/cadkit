@@ -304,8 +304,8 @@ namespace CadKit.Helios
         {
           string dir = CadKit.Helios.Application.Instance.Directory;
           string name = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
-          string path = dir + "/../configs/" + name + ".xml";
-          CadKit.Plugins.Manager.Instance.load(path, caller);
+          string xml = dir + "/../configs/" + name + ".xml";
+          CadKit.Plugins.Manager.Instance.load(dir, xml, caller);
         }
       }
       catch (System.Exception e)

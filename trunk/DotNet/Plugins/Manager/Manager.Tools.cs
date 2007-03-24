@@ -94,17 +94,14 @@ namespace CadKit.Plugins
     /// <summary>
     /// Get the file names from the XML file.
     /// </summary>
-    private static void _getPluginFileNames(string file, Names names)
+    private static void _getPluginFileNames(string pluginDir, string xmlFile, Names names)
     {
       // Open the configuration file.
       try
       {
-        // Parse the path string.
-        System.IO.FileInfo info = new System.IO.FileInfo(file);
-
         // Read the file.
         System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
-        doc.Load(file);
+        doc.Load(xmlFile);
 
         // Get top-level node.
         System.Xml.XmlNode root = doc.FirstChild;
@@ -120,7 +117,7 @@ namespace CadKit.Plugins
               System.Xml.XmlNode node = kids[i];
               if ("plugin" == node.Name)
               {
-                Manager._addAttributes(info.DirectoryName, node, names);
+                Manager._addAttributes(pluginDir, node, names);
               }
             }
           }

@@ -22,6 +22,8 @@
 #include "Minerva/Core/Layers/RLayer.h"
 #include "Minerva/Core/Layers/PolygonTimeLayer.h"
 
+#include "Usul/Interfaces/IPlayMovie.h"
+
 using namespace Minerva::Document;
 
 
@@ -677,6 +679,17 @@ void MinervaDocument::showLegend( bool b )
   _sceneManager->showLegend( b );
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the movie mode on / off. 
+//
+///////////////////////////////////////////////////////////////////////////////
+void MinervaDocument::setMovieMode( bool b )
+{
+  std::cout << " Test movie mode: " << std::endl;
+  
+
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

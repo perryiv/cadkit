@@ -131,6 +131,8 @@ public:
   bool                        showLegend() const;
   void                        showLegend( bool b );
 
+  void                        setMovieMode( bool b );
+
   /// For now
   void                        viewer( Usul::Interfaces::IUnknown* viewer );
 

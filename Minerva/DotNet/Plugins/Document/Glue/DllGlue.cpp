@@ -23,6 +23,8 @@
 #include <string>
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/IPlayMovie.h"
+#include "Usul/Components/Manager.h"
 
 using namespace DT::Minerva::Plugins::Document::Glue;
 
@@ -744,4 +746,19 @@ void DllGlue::save()
 void DllGlue::saveAs( System::String^ filename )
 {
   _document->saveAs ( Usul::Strings::convert( filename ) );
+}
+
+void DllGlue::setMovieMode( bool b,  CadKit::Viewer::Glue::Viewer^ v )
+{
+  OsgTools::Render::Viewer* viewer = reinterpret_cast < OsgTools::Render::Viewer* > ( v->viewer().ToPointer() );
+
+  if( viewer )
+  {
+    // PlayMovie plugin implements both IPlayMovie and ITool. 
+    Usul::Interfaces::ITool::QueryPtr component = Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlayMovie::IID );
+    if( component )
+    {
+      viewer->setTool( component );
+    }
+  }  
 }

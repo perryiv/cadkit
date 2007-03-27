@@ -1,0 +1,37 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: XmlDom", "xml_dom.vcproj", "{DB2DC12F-1F7F-4B66-B888-A6DB9FA4ABF7}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demo: XmlDom example 01", "Examples\example01.vcproj", "{DB2DC12F-1F7F-4B66-B888-A6DB9FA4ABF7}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demo: XmlDom example 02", "Examples\example02.vcproj", "{583BD2DE-2F37-4845-A3F3-085433F46977}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{DB2DC12F-1F7F-4B66-B888-A6DB9FA4ABF7}.Debug.ActiveCfg = Debug|Win32
+		{DB2DC12F-1F7F-4B66-B888-A6DB9FA4ABF7}.Debug.Build.0 = Debug|Win32
+		{DB2DC12F-1F7F-4B66-B888-A6DB9FA4ABF7}.Release.ActiveCfg = Release|Win32
+		{DB2DC12F-1F7F-4B66-B888-A6DB9FA4ABF7}.Release.Build.0 = Release|Win32
+		{DB2DC12F-1F7F-4B66-B888-A6DB9FA4ABF7}.Debug.ActiveCfg = Debug|Win32
+		{DB2DC12F-1F7F-4B66-B888-A6DB9FA4ABF7}.Debug.Build.0 = Debug|Win32
+		{DB2DC12F-1F7F-4B66-B888-A6DB9FA4ABF7}.Release.ActiveCfg = Release|Win32
+		{DB2DC12F-1F7F-4B66-B888-A6DB9FA4ABF7}.Release.Build.0 = Release|Win32
+		{583BD2DE-2F37-4845-A3F3-085433F46977}.Debug.ActiveCfg = Debug|Win32
+		{583BD2DE-2F37-4845-A3F3-085433F46977}.Debug.Build.0 = Debug|Win32
+		{583BD2DE-2F37-4845-A3F3-085433F46977}.Release.ActiveCfg = Release|Win32
+		{583BD2DE-2F37-4845-A3F3-085433F46977}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

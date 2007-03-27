@@ -1,0 +1,67 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: ProcessVectorData", "ProcessVectorData.vcproj", "{77E16C74-4F29-468D-B6CB-83978F114ACF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
+		{1F0BC334-B3D3-4553-8025-DA8B50D2FA99} = {1F0BC334-B3D3-4553-8025-DA8B50D2FA99}
+		{FE673D9C-ED8C-4A6D-98BB-C51EA91747E1} = {FE673D9C-ED8C-4A6D-98BB-C51EA91747E1}
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Magrathea", "..\..\..\..\Magrathea\build\vs2005\Magrathea.vcproj", "{FE673D9C-ED8C-4A6D-98BB-C51EA91747E1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Minerva", "..\..\build\vs2005\Minerva.vcproj", "{1F0BC334-B3D3-4553-8025-DA8B50D2FA99}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Usul", "..\..\..\..\Usul\Usul.vcproj", "{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit OpenThreadsEx", "..\..\..\..\Threads\OpenThreads\OpenThreadsEx.vcproj", "{A4610909-A555-40C5-87A8-B95FEFF45CF5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit OsgTools", "..\..\..\..\OsgTools\OsgTools.vcproj", "{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{77E16C74-4F29-468D-B6CB-83978F114ACF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{77E16C74-4F29-468D-B6CB-83978F114ACF}.Debug|Win32.Build.0 = Debug|Win32
+		{77E16C74-4F29-468D-B6CB-83978F114ACF}.Release|Win32.ActiveCfg = Release|Win32
+		{77E16C74-4F29-468D-B6CB-83978F114ACF}.Release|Win32.Build.0 = Release|Win32
+		{FE673D9C-ED8C-4A6D-98BB-C51EA91747E1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FE673D9C-ED8C-4A6D-98BB-C51EA91747E1}.Debug|Win32.Build.0 = Debug|Win32
+		{FE673D9C-ED8C-4A6D-98BB-C51EA91747E1}.Release|Win32.ActiveCfg = Release|Win32
+		{FE673D9C-ED8C-4A6D-98BB-C51EA91747E1}.Release|Win32.Build.0 = Release|Win32
+		{1F0BC334-B3D3-4553-8025-DA8B50D2FA99}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1F0BC334-B3D3-4553-8025-DA8B50D2FA99}.Debug|Win32.Build.0 = Debug|Win32
+		{1F0BC334-B3D3-4553-8025-DA8B50D2FA99}.Release|Win32.ActiveCfg = Release|Win32
+		{1F0BC334-B3D3-4553-8025-DA8B50D2FA99}.Release|Win32.Build.0 = Release|Win32
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Debug|Win32.Build.0 = Debug|Win32
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Release|Win32.ActiveCfg = Release|Win32
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Release|Win32.Build.0 = Release|Win32
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5}.Debug|Win32.Build.0 = Debug|Win32
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5}.Release|Win32.ActiveCfg = Release|Win32
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5}.Release|Win32.Build.0 = Release|Win32
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Debug|Win32.Build.0 = Debug|Win32
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Release|Win32.ActiveCfg = Release|Win32
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

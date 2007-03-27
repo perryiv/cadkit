@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VJCinemaViewer", "VJCinemaViewer.vcproj", "{A374F89E-5358-4A52-A58B-859CACE83E3F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BB294950-FACA-43DA-A791-8ABD7DFEF2A4} = {BB294950-FACA-43DA-A791-8ABD7DFEF2A4}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{50D8F505-0AEE-485A-A025-635314F5FAD3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VJCinema", "..\..\..\..\VJCinema\visual_studio_2005\VJCinema.vcproj", "{BB294950-FACA-43DA-A791-8ABD7DFEF2A4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A374F89E-5358-4A52-A58B-859CACE83E3F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A374F89E-5358-4A52-A58B-859CACE83E3F}.Debug|Win32.Build.0 = Debug|Win32
+		{A374F89E-5358-4A52-A58B-859CACE83E3F}.Release|Win32.ActiveCfg = Release|Win32
+		{A374F89E-5358-4A52-A58B-859CACE83E3F}.Release|Win32.Build.0 = Release|Win32
+		{BB294950-FACA-43DA-A791-8ABD7DFEF2A4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BB294950-FACA-43DA-A791-8ABD7DFEF2A4}.Debug|Win32.Build.0 = Debug|Win32
+		{BB294950-FACA-43DA-A791-8ABD7DFEF2A4}.Release|Win32.ActiveCfg = Release|Win32
+		{BB294950-FACA-43DA-A791-8ABD7DFEF2A4}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

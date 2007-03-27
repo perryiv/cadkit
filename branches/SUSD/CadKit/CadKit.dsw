@@ -1,0 +1,632 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "Controllers"=.\Controllers\Controllers.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DatabaseBase"=.\Database\Base\DatabaseBase.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DatabaseItri"=.\Database\ITRI\DatabaseItri.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name DatabaseBase
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DatabaseJt"=.\Database\Jupiter\DatabaseJt.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseBase
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DatabaseOsg"=.\Database\OpenSceneGraph\DatabaseOsg.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseBase
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DatabasePf"=.\Database\Performer\DatabasePf.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name DatabaseBase
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DatabaseSg"=.\Database\SceneGraph\DatabaseSg.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "DatabaseStl"=.\Database\STL\DatabaseStl.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name DatabaseBase
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DatabaseXml"=.\Database\XML\DatabaseXml.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DemoFoxCube"=.\Demos\Cube\FOX\DemoFoxCube.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GuiFox
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphCore
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphFox
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphOpenGL
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DemoJt2Itri"=.\Demos\Jupiter2Itri\DemoJtItri.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Controllers
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseItri
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DemoJt2Osg"=.\Demos\Jupiter2Osg\DemoJtOsg.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Controllers
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseOsg
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DemoJt2Pfb"=.\Demos\Jupiter2Performer\DemoJt2Pfb.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Controllers
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabasePf
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DemoJt2Stl"=.\Demos\Jupiter2Stl\DemoJtStl.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Controllers
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseStl
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DemoJt2Xml"=.\Demos\Jupiter2Xml\DemoJt2Xml.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name TranslateJt2Xml
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseXml
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Controllers
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseBase
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DemoMfcCube"=.\Demos\Cube\MFC\DemoMfcCube.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphMfc
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphCore
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphOpenGL
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphWin32
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "Docs"=.\Docs\Docs.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ExampleBoundingBox"=.\Examples\BoundingBox\ExampleBoundingBox.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ExampleMatrix44"=.\Examples\Matrix44\ExampleMatrix44.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ExampleMatrixNN"=.\Examples\MatrixNN\ExampleMatrixNN.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ExampleNurbs"=.\Examples\Nurbs\ExampleNurbs.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ExamplePathname"=.\Examples\Pathname\ExamplePathname.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ExampleString"=.\Examples\String\ExampleString.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ExampleVector"=.\Examples\Vector\ExampleVector.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "GuiFox"=.\GUI\FOX\GuiFox.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Interfaces"=.\Interfaces\Interfaces.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "NurbsCore"=.\Nurbs\Core\NurbsCore.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "OldDemoJt2Pfb"=.\Demos\Jupiter2Performer\OldDemoJt2Pfb.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name TranslateJt2Pf
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "SceneGraphCore"=.\SceneGraph\Core\SceneGraphCore.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "SceneGraphFox"=.\SceneGraph\FOX\SceneGraphFox.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphCore
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphOpenGL
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GuiFox
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "SceneGraphMfc"=.\SceneGraph\Mfc\SceneGraphMfc.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphCore
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "SceneGraphOpenGL"=.\SceneGraph\OpenGL\SceneGraphOpenGL.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphCore
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "SceneGraphWin32"=.\SceneGraph\Win32\SceneGraphWin32.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name SceneGraphOpenGL
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "Standard"=.\Standard\Standard.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "TranslateJt2Pf"=.\Translators\Jupiter2Performer\TranslateJt2Pf.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "TranslateJt2Xml"=.\Translators\Jupiter2Xml\TranslateJt2Xml.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseXml
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

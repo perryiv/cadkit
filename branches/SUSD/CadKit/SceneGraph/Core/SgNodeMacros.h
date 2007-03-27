@@ -1,0 +1,95 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, Perry L. Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  SgNodeMacros.h: Macros that are used in node classes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _CADKIT_SCENEGRAPH_CORE_LIBRARY_NODE_MACROS_H_
+#define _CADKIT_SCENEGRAPH_CORE_LIBRARY_NODE_MACROS_H_
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Declaration of the accept() function. Used by other macros.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define _SG_DECLARE_ACCEPT_FUNCTION \
+  public: \
+  virtual bool accept ( SgVisitor &visitor )
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Put this in your abstract node's class definition.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define SG_DECLARE_NODE(class_name, id) \
+  SL_DECLARE_REFERENCE_POINTER ( class_name ); \
+  SL_DECLARE_CLASS(class_name, id); \
+  _SG_DECLARE_ACCEPT_FUNCTION
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Put this in your concrete node's class definition.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define SG_DECLARE_DYNAMIC_NODE(class_name, id) \
+  SL_DECLARE_REFERENCE_POINTER ( class_name ); \
+  SL_DECLARE_DYNAMIC_CLASS(class_name, id); \
+  _SG_DECLARE_ACCEPT_FUNCTION
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Implementation of the accept() function. Used by other macros.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define _SG_IMPLEMENT_ACCEPT_FUNCTION(class_name) \
+  bool class_name::accept ( SgVisitor &visitor ) \
+  { \
+    const clock_t startTime ( ::clock() ); \
+    visitor.pushNode ( this ); \
+    bool result = visitor.visit ( *this ); \
+    visitor.popNode(); \
+    this->_setRenderTime ( ::clock() - startTime ); \
+    return result; \
+  }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Put this in your abstract node's implementation file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define SG_IMPLEMENT_NODE(class_name, base_class_name) \
+  SL_IMPLEMENT_CLASS(class_name, base_class_name) \
+  _SG_IMPLEMENT_ACCEPT_FUNCTION(class_name)
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Put this in your concrete node's implementation file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define SG_IMPLEMENT_DYNAMIC_NODE(class_name, base_class_name) \
+  SL_IMPLEMENT_DYNAMIC_CLASS(class_name, base_class_name) \
+  _SG_IMPLEMENT_ACCEPT_FUNCTION(class_name)
+
+
+#endif // _CADKIT_SCENEGRAPH_CORE_LIBRARY_NODE_MACROS_H_

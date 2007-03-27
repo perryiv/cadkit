@@ -1,0 +1,32 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, John K. Grant and Perry L. Miller IV.
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Functions pertaining to the configuration files.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _CV_CONFIG_FILE_FUNCTIONS_H_
+#define _CV_CONFIG_FILE_FUNCTIONS_H_
+
+#include <string>
+
+
+namespace CV
+{
+  struct Config
+  {
+    // Get the configuration file given the name.
+    static std::string filename ( const std::string &name );
+  };
+};
+
+
+#endif // _CV_CONFIG_FILE_FUNCTIONS_H_

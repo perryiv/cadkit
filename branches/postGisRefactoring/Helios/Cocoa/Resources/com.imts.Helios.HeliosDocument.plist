@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>DefaultItems</key>
+	<array>
+    <string>DisplayLists</string>
+    <string>Lights</string>
+    <string>TwoSidedLighting</string>
+    <string>NSToolbarSeparatorItemIdentifier</string>
+    <string>SurfaceRender</string>
+    <string>HiddenLines</string>
+    <string>WireframeRender</string>
+    <string>NSToolbarSeparatorItemIdentifier</string>
+    <string>VertexLighting</string>
+    <string>FacetLighting</string>
+    <string>NSToolbarSeparatorItemIdentifier</string>
+    <string>Axis</string>
+    <string>BoundBox</string>
+    <string>BoundSphere</string>
+    <string>FrameDump</string>
+    <string>NSToolbarFlexibleSpaceItemIdentifier</string>
+    <string>FitModel</string>
+    <string>ResetView</string>
+    <string>ModelSpin</string>
+    <string>LOD</string>
+    <string>NSToolbarShowColorsItem</string>
+	</array>  
+  <key>Items</key>
+	<dict>
+      <key>FitModel</key>
+		<dict>
+			<key>Action</key>
+			<string>fitModel:</string>
+			<key>Label</key>
+			<string>Fit</string>
+			<key>ToolTip</key>
+			<string>Fit Model to current window size</string>
+		</dict>
+   <key>FrameDump</key>
+		<dict>
+			<key>Action</key>
+			<string>saveSceneAsImage:</string>
+			<key>Label</key>
+			<string>Frame Dump</string>
+			<key>ToolTip</key>
+			<string>Save Current Scene as Image</string>
+		</dict>
+      <key>ResetView</key>
+		<dict>
+			<key>Action</key>
+			<string>resetView:</string>
+			<key>Label</key>
+			<string>Reset View</string>
+			<key>ToolTip</key>
+			<string>Reset the view by applying an identity Matrix</string>
+		</dict>
+
+    <key>Lights</key>
+		<dict>
+			<key>Action</key>
+			<string>toggleLights:</string>
+			<key>Label</key>
+			<string>Toggle Lighting</string>
+			<key>ToolTip</key>
+			<string>Turn scene lighting on or off</string>
+		</dict>
+    <key>HiddenLines</key>
+		<dict>
+			<key>Action</key>
+			<string>toggleHiddenLines:</string>
+			<key>Label</key>
+			<string>Hidden Lines</string>
+			<key>ToolTip</key>
+			<string>Turn on/off Hidden Lines</string>
+		</dict>
+    <key>SurfaceRender</key>
+		<dict>
+			<key>Action</key>
+			<string>enableSurfaceRender:</string>
+			<key>Label</key>
+			<string>Surface</string>
+			<key>ToolTip</key>
+			<string>Use Surface rendering for the model</string>
+		</dict>
+        <key>WireframeRender</key>
+		<dict>
+			<key>Action</key>
+			<string>enableWireframeRender:</string>
+			<key>Label</key>
+			<string>Wireframe</string>
+			<key>ToolTip</key>
+			<string>Turn on wireframe rendering</string>
+		</dict>
+    <key>VertexLighting</key>
+		<dict>
+			<key>Action</key>
+			<string>enablePerVertexLighting:</string>
+			<key>Label</key>
+			<string>Per Vertex Lighting</string>
+			<key>ToolTip</key>
+			<string>Turn on Per Vertex Lighting</string>
+		</dict>
+    <key>FacetLighting</key>
+		<dict>
+			<key>Action</key>
+			<string>enablePerFacetLighting:</string>
+			<key>Label</key>
+			<string>Per Facet Lighting</string>
+			<key>ToolTip</key>
+			<string>Turn on Per Facet Lighting</string>
+		</dict>
+    <key>Axis</key>
+		<dict>
+			<key>Action</key>
+			<string>toggleAxis:</string>
+			<key>Label</key>
+			<string>Axis</string>
+			<key>ToolTip</key>
+			<string>Turn on/off the Axis</string>
+		</dict>
+
+		<key>BoundBox</key>
+		<dict>
+			<key>Action</key>
+			<string>toggleBoundingBox:</string>
+			<key>Label</key>
+			<string>Bounding Box</string>
+			<key>ToolTip</key>
+			<string>Toggle the Bounding Box on or off.</string>
+		</dict>
+    <key>BoundSphere</key>
+		<dict>
+			<key>Action</key>
+			<string>toggleBoundingSphere:</string>
+			<key>Label</key>
+			<string>Bounding Sphere</string>
+			<key>ToolTip</key>
+			<string>Toggle the Bounding Sphere on or off.</string>
+		</dict>
+    <key>TwoSidedLighting</key>
+		<dict>
+			<key>Action</key>
+			<string>toggleTwoSidedLighting:</string>
+			<key>Label</key>
+			<string>Two Sided Lighting</string>
+			<key>ToolTip</key>
+			<string>Toggle two sided lighting on or off.</string>
+		</dict>
+    <key>DisplayLists</key>
+		<dict>
+			<key>Action</key>
+			<string>toggleDisplayLists:</string>
+			<key>Label</key>
+			<string>DisplayLists</string>
+			<key>ToolTip</key>
+			<string>Enable/Disable the use of OpenGL Display Lists</string>
+		</dict>
+    
+      <key>ModelSpin</key>
+		<dict>
+			<key>Action</key>
+			<string>toggleModelSpin:</string>
+			<key>Label</key>
+			<string>Spin Model</string>
+			<key>ToolTip</key>
+			<string>Automatically Spin the Model</string>
+		</dict>
+    <key>LOD</key>
+		<dict>
+			<key>Action</key>
+			<string>toggleLOD:</string>
+			<key>Label</key>
+			<string>LOD</string>
+			<key>ToolTip</key>
+			<string>Turn on or off LODs</string>
+		</dict>
+    <key>NSToolbarShowColorsItem</key>
+    <dict>
+			<key>Action</key>
+			<string>activateColorPanel:</string>
+			<key>Label</key>
+			<string>Background Color</string>
+			<key>ToolTip</key>
+			<string>Change the background color</string>
+		</dict>
+   </dict> 
+  </dict>
+</plist>

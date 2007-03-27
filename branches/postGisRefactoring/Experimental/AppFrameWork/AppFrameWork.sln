@@ -1,0 +1,89 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual C++ Express 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: AppFrameWork", "AppFrameWork.vcproj", "{C1458919-6468-45AB-BA31-4A1097F5F698}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: AppFrameWork Example", "Example\AppFrameWorkExample.vcproj", "{DD07A173-7AF8-43B9-8369-C8D0B88A1A84}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C1458919-6468-45AB-BA31-4A1097F5F698} = {C1458919-6468-45AB-BA31-4A1097F5F698}
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: OpenThreadsEx", "..\..\Threads\OpenThreads\OpenThreadsEx.vcproj", "{A4610909-A555-40C5-87A8-B95FEFF45CF5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Usul", "..\..\Usul\Usul.vcproj", "{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: wxWindows GUI", "Wx\WxGui.vcproj", "{9EDDD388-C730-426D-90FA-239FC0F72DFE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C1458919-6468-45AB-BA31-4A1097F5F698} = {C1458919-6468-45AB-BA31-4A1097F5F698}
+		{43D1785B-173B-4E97-B0EF-CDA7B100E050} = {43D1785B-173B-4E97-B0EF-CDA7B100E050}
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: XmlDom", "..\..\XmlDom\xml_dom.vcproj", "{2E5DA3BC-7700-43DE-ACD5-375EEC360066}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: wxIFM", "..\..\..\sdk\wxIFM\wxIFM-1.0.5\wxIFM.vcproj", "{43D1785B-173B-4E97-B0EF-CDA7B100E050}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: XmlTree", "..\XmlTree\XmlTree.vcproj", "{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}"
+	ProjectSection(ProjectDependencies) = postProject
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: MessageWindows", "..\Plugins\MessageWindows\MessageWindows.vcproj", "{BD603010-8311-11DA-80CB-000F1F1C95A7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C1458919-6468-45AB-BA31-4A1097F5F698} = {C1458919-6468-45AB-BA31-4A1097F5F698}
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C1458919-6468-45AB-BA31-4A1097F5F698}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C1458919-6468-45AB-BA31-4A1097F5F698}.Debug|Win32.Build.0 = Debug|Win32
+		{C1458919-6468-45AB-BA31-4A1097F5F698}.Release|Win32.ActiveCfg = Release|Win32
+		{C1458919-6468-45AB-BA31-4A1097F5F698}.Release|Win32.Build.0 = Release|Win32
+		{DD07A173-7AF8-43B9-8369-C8D0B88A1A84}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DD07A173-7AF8-43B9-8369-C8D0B88A1A84}.Debug|Win32.Build.0 = Debug|Win32
+		{DD07A173-7AF8-43B9-8369-C8D0B88A1A84}.Release|Win32.ActiveCfg = Release|Win32
+		{DD07A173-7AF8-43B9-8369-C8D0B88A1A84}.Release|Win32.Build.0 = Release|Win32
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5}.Debug|Win32.Build.0 = Debug|Win32
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5}.Release|Win32.ActiveCfg = Release|Win32
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5}.Release|Win32.Build.0 = Release|Win32
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Debug|Win32.Build.0 = Debug|Win32
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Release|Win32.ActiveCfg = Release|Win32
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Release|Win32.Build.0 = Release|Win32
+		{9EDDD388-C730-426D-90FA-239FC0F72DFE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9EDDD388-C730-426D-90FA-239FC0F72DFE}.Debug|Win32.Build.0 = Debug|Win32
+		{9EDDD388-C730-426D-90FA-239FC0F72DFE}.Release|Win32.ActiveCfg = Release|Win32
+		{9EDDD388-C730-426D-90FA-239FC0F72DFE}.Release|Win32.Build.0 = Release|Win32
+		{2E5DA3BC-7700-43DE-ACD5-375EEC360066}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2E5DA3BC-7700-43DE-ACD5-375EEC360066}.Debug|Win32.Build.0 = Debug|Win32
+		{2E5DA3BC-7700-43DE-ACD5-375EEC360066}.Release|Win32.ActiveCfg = Release|Win32
+		{2E5DA3BC-7700-43DE-ACD5-375EEC360066}.Release|Win32.Build.0 = Release|Win32
+		{43D1785B-173B-4E97-B0EF-CDA7B100E050}.Debug|Win32.ActiveCfg = Debug|Win32
+		{43D1785B-173B-4E97-B0EF-CDA7B100E050}.Release|Win32.ActiveCfg = Release|Win32
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}.Debug|Win32.Build.0 = Debug|Win32
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}.Release|Win32.ActiveCfg = Release|Win32
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}.Release|Win32.Build.0 = Release|Win32
+		{BD603010-8311-11DA-80CB-000F1F1C95A7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BD603010-8311-11DA-80CB-000F1F1C95A7}.Debug|Win32.Build.0 = Debug|Win32
+		{BD603010-8311-11DA-80CB-000F1F1C95A7}.Release|Win32.ActiveCfg = Release|Win32
+		{BD603010-8311-11DA-80CB-000F1F1C95A7}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

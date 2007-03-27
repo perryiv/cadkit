@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<plugins>
+  <plugin file="CadKit.Plugins.Windows.Properties.plug" load="true" />
+  <plugin file="CadKit.Plugins.Windows.OutputWindow.plug" load="true" />
+  <plugin file="CadKit.Plugins.Windows.JobWindow.plug" load="true" />
+  <plugin file="CadKit.Plugins.Windows.ColorEditor.plug" load="true" />
+  <plugin file="CadKit.Plugins.Windows.SnapShot.plug" load="true" />
+  <plugin file="CadKit.Plugins.LayerManager.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Layers.Ossim.Image.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Layers.Ossim.Wms.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Options.Ossim.plug" load="true"/>
+  <plugin file="DT.Minerva.Plugins.DataExplorer.plug" load="true" />
+  <plugin file="DT.Minerva.Plugins.Animate.plug" load="true" />
+  <plugin file="DT.Minerva.Plugins.Layers.PostGIS.plug" load="true" />
+  <plugin file="DT.Minerva.Plugins.Document.plug" load="true" />
+  <plugin file="DT.Minerva.Plugins.Options.plug" load="true" />
+  
+  <!-- Native Plugins listed below -->
+  <plugin file="TriangulateCGAL.plug" native="true" load="true" />
+  <plugin file="ComputeNormals.plug" native="true" load="true" />
+</plugins>

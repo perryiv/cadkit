@@ -1,0 +1,34 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, Perry L. Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  SgPrimitive.h: Primitive class.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+#ifndef _CADKIT_SCENEGRAPH_CORE_LIBRARY_PRIMITIVE_H_
+#define _CADKIT_SCENEGRAPH_CORE_LIBRARY_PRIMITIVE_H_
+
+#include "SgShape.h"
+
+namespace CadKit
+{
+class SG_API SgPrimitive : public SgShape
+{
+protected:
+
+  SgPrimitive();
+  virtual ~SgPrimitive();
+
+  SG_DECLARE_NODE(SgPrimitive,0x00001022);
+};
+};
+
+#endif

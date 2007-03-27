@@ -1,0 +1,37 @@
+Jupiter Database
+  Assembly
+  Assembly
+    Material (optional)
+    Transform (optional)
+    Texture Image (optional)
+    Part
+  Assembly
+    Part
+    Instance
+      Material (optional)
+      Transform (optional)
+      Texture Image (optional)
+      Pointer to a Part or Assembly (just one)
+    Instance
+    Part
+      Material (optional)
+      Transform (optional)
+      Texture (optional)
+      LOD
+      LOD
+        Shape
+        Shape
+          Material (optional)
+          TriStrip
+          TriStrip
+            Vertices
+            Normals
+            Colors (optional)
+            Texture Coordinates (optional)
+          TriStrip
+        Shape
+      LOD
+      LOD
+    Part
+  Part
+  Assembly

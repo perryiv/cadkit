@@ -1,0 +1,187 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CE9EFD28-1B9B-4B0D-AF5B-19DC98AAF8D8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DT.Minerva.Lib</RootNamespace>
+    <AssemblyName>DT.Minerva.Lib</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controller.cs" />
+    <Compile Include="MergeData.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MergeData.Designer.cs">
+      <DependentUpon>MergeData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\sdk\Npgsql\src\Npgsql.csproj">
+      <Project>{0F8DF2CB-CEB4-4A8B-897C-9FA0058BC155}</Project>
+      <Name>Npgsql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\sdk\zedgraph\zedgraph_src_5.0.2\source\ZedGraph.csproj">
+      <Project>{2541686B-1673-43BF-AF89-3163945DB009}</Project>
+      <Name>ZedGraph</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DockPanel\DockPanel_Src_1_0_0_0\WinFormsUI\WeifenLuo.WinFormsUI.Docking.csproj">
+      <Project>{A8BBFA78-45B8-4F79-8AB7-AED482BCAB67}</Project>
+      <Name>WeifenLuo.WinFormsUI.Docking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DotNet\Commands\CadKit.Commands.csproj">
+      <Project>{4255A478-49D3-4250-B06A-AB16AEF9579E}</Project>
+      <Name>CadKit.Commands</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DotNet\Documents\CadKit.Documents.csproj">
+      <Project>{53DF6058-FBE2-4D41-8CE7-DF8ED0436EAE}</Project>
+      <Name>CadKit.Documents</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DotNet\Graph\CadKit.Graph.csproj">
+      <Project>{305DD8CA-A729-489F-A6E7-DA4A1DF88F9A}</Project>
+      <Name>CadKit.Graph</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DotNet\Helios\Lib\CadKit.Helios.Lib.csproj">
+      <Project>{FEFE0DC2-5208-4F93-910A-2B4D78163AA3}</Project>
+      <Name>CadKit.Helios.Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DotNet\Images\CadKit.Images.csproj">
+      <Project>{7B2D553D-0909-4C86-94E4-3474BD8F8E69}</Project>
+      <Name>CadKit.Images</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DotNet\Interfaces\CadKit.Interfaces.csproj">
+      <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
+      <Name>CadKit.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DotNet\Persistence\CadKit.Persistence.csproj">
+      <Project>{DFD2710D-3AB3-4707-B74E-80F21E33A23F}</Project>
+      <Name>CadKit.Persistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DotNet\Plugins\GUI\CadKit.Plugins.GUI.csproj">
+      <Project>{B3879A4D-93B0-438A-B37A-CD954D9168D9}</Project>
+      <Name>CadKit.Plugins.GUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DotNet\Plugins\Manager\CadKit.Plugins.csproj">
+      <Project>{38E6CB43-88D0-4549-B27D-0F23F50CC395}</Project>
+      <Name>CadKit.Plugins</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DotNet\Tools\CadKit.Tools.csproj">
+      <Project>{01EAAF17-D9EB-4303-A5BD-BE061F8E58F7}</Project>
+      <Name>CadKit.Tools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Minerva\DotNet\Interfaces\DT.Minerva.Interfaces.csproj">
+      <Project>{35375870-CDDF-431E-B366-782D431BF6F6}</Project>
+      <Name>DT.Minerva.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Layers\DT.Minerva.Layers.csproj">
+      <Project>{A065F96B-13FD-497C-9992-5DA156FF221C}</Project>
+      <Name>DT.Minerva.Layers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DB\DT.Minerva.DB.csproj">
+      <Project>{B4A38D25-7F1F-4A97-87D8-200AC443C906}</Project>
+      <Name>DT.Minerva.DB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Layers\Glue\DT.Minerva.Layers.Glue.vcproj">
+      <Project>{1CA9FE49-DA3F-42D7-878C-126B71CD3F8B}</Project>
+      <Name>DT.Minerva.Layers.Glue</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MergeData.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MergeData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Icons\dt-logo-transparent.gif" />
+    <Content Include="Icons\greyscale_1.gif" />
+    <Content Include="Icons\greyscale_10.gif" />
+    <Content Include="Icons\greyscale_11.gif" />
+    <Content Include="Icons\greyscale_12.gif" />
+    <Content Include="Icons\greyscale_13.gif" />
+    <Content Include="Icons\greyscale_14.gif" />
+    <Content Include="Icons\greyscale_15.gif" />
+    <Content Include="Icons\greyscale_16.gif" />
+    <Content Include="Icons\greyscale_17.gif" />
+    <Content Include="Icons\greyscale_18.gif" />
+    <Content Include="Icons\greyscale_19.gif" />
+    <Content Include="Icons\greyscale_2.gif" />
+    <Content Include="Icons\greyscale_20.gif" />
+    <Content Include="Icons\greyscale_21.gif" />
+    <Content Include="Icons\greyscale_22.gif" />
+    <Content Include="Icons\greyscale_23.gif" />
+    <Content Include="Icons\greyscale_24.gif" />
+    <Content Include="Icons\greyscale_25.gif" />
+    <Content Include="Icons\greyscale_26.gif" />
+    <Content Include="Icons\greyscale_27.gif" />
+    <Content Include="Icons\greyscale_28.gif" />
+    <Content Include="Icons\greyscale_29.gif" />
+    <Content Include="Icons\greyscale_3.gif" />
+    <Content Include="Icons\greyscale_30.gif" />
+    <Content Include="Icons\greyscale_31.gif" />
+    <Content Include="Icons\greyscale_32.gif" />
+    <Content Include="Icons\greyscale_33.gif" />
+    <Content Include="Icons\greyscale_34.gif" />
+    <Content Include="Icons\greyscale_35.gif" />
+    <Content Include="Icons\greyscale_36.gif" />
+    <Content Include="Icons\greyscale_37.gif" />
+    <Content Include="Icons\greyscale_38.gif" />
+    <Content Include="Icons\greyscale_39.gif" />
+    <Content Include="Icons\greyscale_4.gif" />
+    <Content Include="Icons\greyscale_40.gif" />
+    <Content Include="Icons\greyscale_5.gif" />
+    <Content Include="Icons\greyscale_6.gif" />
+    <Content Include="Icons\greyscale_7.gif" />
+    <Content Include="Icons\greyscale_8.gif" />
+    <Content Include="Icons\greyscale_9.gif" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(ProjectDir)Icons $(TargetDir)icons /f /i /k /y /c</PostBuildEvent>
+  </PropertyGroup>
+</Project>

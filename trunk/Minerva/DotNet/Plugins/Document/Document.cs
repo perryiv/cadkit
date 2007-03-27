@@ -20,7 +20,8 @@ namespace DT.Minerva.Plugins.Document
     CadKit.Interfaces.IAnimateTemporal,
     CadKit.Interfaces.IOssimPlanetSettings,
     CadKit.Interfaces.ILegend,
-    CadKit.Interfaces.ILayerOperation
+    CadKit.Interfaces.ILayerOperation, 
+    CadKit.Interfaces.IMovieMode
   {
     /// <summary>
     /// Constants
@@ -705,5 +706,21 @@ namespace DT.Minerva.Plugins.Document
          _dll.setLayerOperation(opType, val, _layers[layer]);
       }
     }
-  }
+
+    void CadKit.Interfaces.IMovieMode.setMovieMode( bool b )
+    {
+      if (b)
+      {
+        CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
+        if (this.Dll)
+        {
+          _dll.setMovieMode(b, viewer.HeliosViewer);
+        }
+      }
+      else
+      {
+      }
+    }
+  }  
 }
+

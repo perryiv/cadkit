@@ -95,6 +95,8 @@ namespace DT
               array<System::String^ > ^ get();
             }
 
+            void                  setMovieMode( bool b, CadKit::Viewer::Glue::Viewer ^viewer );
+
           private:
             ::Minerva::Document::MinervaDocument *_document;
 	        };

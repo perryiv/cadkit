@@ -112,9 +112,6 @@ namespace DT
         ]
         PROPERTY_GET_SET(LegendText, System::String^);
 
-        /// Get/Set show label.
-        PROPERTY_GET_SET( ShowLabel, bool );
-
         /// Get/Set show layer.
         [
           System::ComponentModel::Category("Label"),
@@ -122,6 +119,9 @@ namespace DT
           System::ComponentModel::Browsable(true)
         ]
         PROPERTY_GET_SET( ShowLayer, bool );
+
+        /// Get/Set show label.
+        PROPERTY_GET_SET( ShowLabel, bool );
 
         /// Get/Set label color.
         [

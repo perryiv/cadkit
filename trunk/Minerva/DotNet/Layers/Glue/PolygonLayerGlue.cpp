@@ -67,10 +67,23 @@ PolygonLayerGlue::!PolygonLayerGlue()
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 Minerva::Core::Layers::Layer* PolygonLayerGlue::layer()
 {
   return _polygonLayer;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get all the polygon data tables.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 array<System::String^>^ PolygonLayerGlue::DataTables::get()
 {
@@ -87,4 +100,60 @@ array<System::String^>^ PolygonLayerGlue::DataTables::get()
     tables->SetValue( gcnew System::String( strings[i].c_str() ), static_cast < int > ( i ) );
 
   return tables;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show border flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PolygonLayerGlue::ShowBorder::get()
+{
+  return _polygonLayer->border();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the show border flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PolygonLayerGlue::ShowBorder::set( bool value )
+{
+  _polygonLayer->border( value );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the color for the border.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::Drawing::Color PolygonLayerGlue::BorderColor::get()
+{
+  osg::Vec4 color ( _polygonLayer->borderColor() );
+  int a ( static_cast < int > ( color.w() * 255 ) );
+  int r ( static_cast < int > ( color.x() * 255 ) );
+  int g ( static_cast < int > ( color.y() * 255 ) );
+  int b ( static_cast < int > ( color.z() * 255 ) );
+  return System::Drawing::Color::FromArgb( a, r, g, b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the color for the border.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PolygonLayerGlue::BorderColor::set( System::Drawing::Color color )
+{
+  float r ( ( static_cast < float > ( color.R ) ) / 255.0 );
+  float g ( ( static_cast < float > ( color.G ) ) / 255.0 );
+  float b ( ( static_cast < float > ( color.B ) ) / 255.0 );
+  float a ( ( static_cast < float > ( color.A ) ) / 255.0 );
+  _polygonLayer->borderColor( osg::Vec4 ( r, g, b, a ) );
 }

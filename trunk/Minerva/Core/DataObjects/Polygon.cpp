@@ -19,7 +19,6 @@
 
 #include "osg/Material"
 #include "osg/PolygonOffset"
-#include "osg/Depth"
 #include "osg/Group"
 
 using namespace Minerva::Core::DataObjects;
@@ -71,36 +70,27 @@ osg::Node* Polygon::buildScene( )
 
     osg::ref_ptr < osg::StateSet > ss ( _group->getOrCreateStateSet () );
 
-    //if( 1.0f == color.w() )
-    //{
-    //  ss->setMode ( GL_BLEND,      osg::StateAttribute::OFF );
-    //  ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON  );
-    //  
-    //  ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
-    //}
-    //else
-    //{
-    //  //mat->setTransparency( osg::Material::FRONT_AND_BACK, color.w() );
-    //  ss->setMode ( GL_BLEND,      osg::StateAttribute::ON  | osg::StateAttribute::OVERRIDE );
-    //  ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
-    //  ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
-    //}
-
-    ss->setMode ( GL_BLEND,      osg::StateAttribute::OFF  | osg::StateAttribute::OVERRIDE );
-    ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );  
+    // Set the material.
     ss->setAttribute ( mat.get(), osg::StateAttribute::ON );
-    ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
 
-    //if( this->tableName() != "valley_water")
+    // Set state set modes depending on alpha value.
+    if( 1.0f == color.w() )
     {
-      osg::ref_ptr< osg::PolygonOffset > offset ( new osg::PolygonOffset( -1.0f, -1.0f ) );
-      ss->setMode ( GL_POLYGON_OFFSET_FILL, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-      ss->setAttribute( offset.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+      ss->setMode ( GL_BLEND,      osg::StateAttribute::OFF );
+      ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON  );
+      
+      ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
+    }
+    else
+    {
+      ss->setMode ( GL_BLEND,      osg::StateAttribute::ON  | osg::StateAttribute::OVERRIDE );
+      ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
+      ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
     }
 
-    //osg::ref_ptr< osg::Depth > depth ( new osg::Depth );
-    //depth->setRange( 0.1, 1.0 );
-    //ss->setAttribute( depth.get(), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
+    osg::ref_ptr< osg::PolygonOffset > offset ( new osg::PolygonOffset( -1.0f, -1.0f ) );
+    ss->setMode ( GL_POLYGON_OFFSET_FILL, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+    ss->setAttribute( offset.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
   }
 
   return _group.get();

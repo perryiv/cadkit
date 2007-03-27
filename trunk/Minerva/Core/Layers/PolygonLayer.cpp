@@ -20,6 +20,8 @@
 
 #include <algorithm>
 
+SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
+
 using namespace Minerva::Core::Layers;
 
 
@@ -29,7 +31,10 @@ using namespace Minerva::Core::Layers;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PolygonLayer::PolygonLayer() : BaseClass(), _format()
+PolygonLayer::PolygonLayer() : BaseClass(), 
+_format(),
+_showBorder( false ),
+_borderColor()
 {
   this->name( "PolygonLayer" );
 
@@ -44,7 +49,9 @@ PolygonLayer::PolygonLayer() : BaseClass(), _format()
 ///////////////////////////////////////////////////////////////////////////////
 
 PolygonLayer::PolygonLayer ( const PolygonLayer& layer ) : BaseClass ( layer ),
-_format ( layer._format )
+_format ( layer._format ),
+_showBorder ( layer._showBorder ),
+_borderColor ( layer._borderColor )
 {
   this->_registerMembers();
 }
@@ -59,6 +66,8 @@ _format ( layer._format )
 void PolygonLayer::_registerMembers()
 {
   SERIALIZE_XML_ADD_MEMBER ( _format );
+  SERIALIZE_XML_ADD_MEMBER ( _showBorder );
+  SERIALIZE_XML_ADD_MEMBER ( _borderColor );
 }
 
 
@@ -114,9 +123,11 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     int id ( iter["id"].as < int > () );
     int srid ( iter["srid"].as < int > () );
 
+    // Create the geometry.
     Minerva::Core::postGIS::Geometry::RefPtr geometry ( new Minerva::Core::postGIS::Polygon ( this->connection(), dataTable, id, srid, iter["geom"] ) );
     geometry->zOffset( this->zOffset() );
 
+    // Create the Data Object.
     Minerva::Core::DataObjects::Polygon::RefPtr data ( new Minerva::Core::DataObjects::Polygon );
 
     data->geometry ( geometry.get() );
@@ -129,7 +140,7 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 
     data->buildScene();
     
-
+    // Update the progess.
     if( progress.valid() )
     {
       unsigned int num ( iter - geometryResult.begin() );
@@ -219,4 +230,52 @@ void PolygonLayer::setDataMembers ( Layer * layer )
   {
     this->_format = polygon->_format;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the show border flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PolygonLayer::border( bool b )
+{
+  _showBorder = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show border flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PolygonLayer::border() const
+{
+  return _showBorder;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the border color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PolygonLayer::borderColor( const osg::Vec4& color )
+{
+  _borderColor = color;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the border color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec4& PolygonLayer::borderColor() const
+{
+  return _borderColor;
 }

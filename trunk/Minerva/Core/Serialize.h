@@ -11,6 +11,7 @@
 #ifndef __MINERVA_CORE_SERIALIZE_H__
 #define __MINERVA_CORE_SERIALIZE_H__
 
+#if 0
 // This needs to be included before any boost/serialization headers.
 #include "boost/archive/xml_oarchive.hpp"
 #include "boost/archive/xml_iarchive.hpp"
@@ -24,6 +25,8 @@
 #include "boost/serialization/map.hpp"
 
 #include "Usul/Pointers/BoostSerialize.h"
+
+#endif
 
 #include "Minerva/Core/Layers/LineLayer.h"
 #include "Minerva/Core/Layers/PolygonLayer.h"
@@ -52,7 +55,7 @@ namespace Core {
 template < class Archive > void registerTypes( Archive& a )
 {
   // Register types.
-#ifdef _MSC_VER
+#if 0
   a.register_type<Minerva::Core::Layers::LineLayer>();
   a.register_type<Minerva::Core::Layers::PolygonLayer>();
   a.register_type<Minerva::Core::Layers::PointLayer>();

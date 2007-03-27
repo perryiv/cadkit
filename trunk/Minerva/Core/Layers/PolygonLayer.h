@@ -42,6 +42,14 @@ public:
   /// Set data members from given layer.
   virtual void            setDataMembers ( Layer * );
 
+  /// Get/Set the show border flag.
+  void                    border( bool b );
+  bool                    border() const;
+
+  /// Get/Set the border color.
+  void                    borderColor( const osg::Vec4& color );
+  const osg::Vec4&        borderColor() const;
+
 protected:
   virtual ~PolygonLayer();
 
@@ -54,6 +62,8 @@ private:
   template < class Archive > void serialize( Archive &ar, const unsigned int version );
 
   std::string _format;
+  bool        _showBorder;
+  osg::Vec4   _borderColor;
 
   SERIALIZE_XML_DEFINE_MEMBERS ( PolygonLayer );
 };

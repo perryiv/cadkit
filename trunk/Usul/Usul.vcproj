@@ -1097,6 +1097,22 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="GIS"
+					>
+					<File
+						RelativePath=".\Interfaces\ILineData.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IPointData.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IPolygonData.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Math"

@@ -719,6 +719,62 @@ namespace DT.Minerva.Plugins.Document
       }
       else
       {
+        CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
+        if (this.Dll)
+        {
+          _dll.setMovieMode(b, viewer.HeliosViewer);
+        }
+      }
+    }
+
+    void CadKit.Interfaces.IMovieMode.play()
+    {
+      CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
+      if (this.Dll)
+      {
+        _dll.play(viewer.HeliosViewer);
+      }
+    }
+
+    void CadKit.Interfaces.IMovieMode.pause()
+    {
+      CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
+      if (this.Dll)
+      {
+        _dll.pause(viewer.HeliosViewer);
+      }
+    }
+
+    void CadKit.Interfaces.IMovieMode.restart()
+    {
+      CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
+      if (this.Dll)
+      {
+        _dll.restart(viewer.HeliosViewer);
+      }
+    }
+
+    bool CadKit.Interfaces.IMovieMode.isPlaying()
+    {
+      if (this.Dll)
+      {
+        return _dll.isPlaying();
+      }
+      else
+      {
+        return false;
+      }
+    }
+
+    bool CadKit.Interfaces.IMovieMode.isPaused()
+    {
+      if (this.Dll)
+      {
+        return _dll.isPaused();
+      }
+      else
+      {
+        return false;
       }
     }
   }  

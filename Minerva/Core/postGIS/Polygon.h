@@ -14,6 +14,8 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/postGIS/Geometry.h"
 
+#include "Usul/Interfaces/IPolygonData.h"
+
 class ossimGpt;
 
 namespace Minerva {
@@ -21,20 +23,24 @@ namespace Core {
 namespace postGIS {
 
 
-class MINERVA_EXPORT Polygon : public Geometry
+class MINERVA_EXPORT Polygon : public Geometry,
+                               public Usul::Interfaces::IPolygonData
 {
 public:
   typedef Geometry BaseClass;
 
-  Polygon ( DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F );
+  USUL_DECLARE_QUERY_POINTERS ( Polygon );
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  virtual osg::Node*               buildScene();
-  virtual osg::Geometry*           buildGeometry();
+  Polygon ( DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F );
 
 protected:
   virtual ~Polygon();
 
   void                             _buildLatLongPoints();
+
+  /// Usul::Interfaces::IPolygonData
+  virtual osg::Node*               buildPolygonData ();
 
 private:
   typedef std::vector < ossimGpt > LatLongPoints;

@@ -17,6 +17,8 @@
 #include "Minerva/Core/DataObjects/Polygon.h"
 #include "Minerva/Core/DataObjects/UserData.h"
 
+#include "Usul/Interfaces/IPolygonData.h"
+
 #include "osg/Material"
 #include "osg/PolygonOffset"
 #include "osg/Group"
@@ -63,7 +65,10 @@ osg::Node* Polygon::buildScene( )
 
     _group->removeChild( 0, _group->getNumChildren() );
 
-    _group->addChild( this->geometry()->buildScene() );
+    Usul::Interfaces::IPolygonData::QueryPtr polygon ( this->geometry() );
+
+    if( polygon.valid() )
+      _group->addChild( polygon->buildPolygonData() );
 
     osg::ref_ptr < osg::Material > mat ( new osg::Material );
     mat->setDiffuse ( osg::Material::FRONT_AND_BACK, color );

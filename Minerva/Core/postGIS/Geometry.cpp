@@ -24,9 +24,7 @@
 
 using namespace Minerva::Core::postGIS;
 
-Geometry::VerticesCache Geometry::_verticesCache;
-Geometry::TriangleCache Geometry::_triangleCache;
-
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Geometry, Geometry::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -41,9 +39,7 @@ _tableName ( tableName ),
 _id ( id ),
 _srid ( srid ),
 _projection ( 0x0 ),
-_xOffset( 0.0 ),
-_yOffset( 0.0 ),
-_zOffset( 0.0 ),
+_offset( 0.0, 0.0, 0.0 ),
 _dirty ( false )
 {
   ossimKeywordlist kwl;
@@ -109,9 +105,9 @@ void Geometry::_convertToLatLong ( const Vertices& vertices, std::vector< ossimG
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Vec3 Geometry::getCenter ( )
+osg::Vec3f Geometry::geometryCenter ( )
 {
-  return this->getCenter ( this->xOffset(), this->yOffset(), this->zOffset() );
+  return this->geometryCenter ( _offset );
 }
 
 
@@ -121,7 +117,7 @@ osg::Vec3 Geometry::getCenter ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Vec3  Geometry::getCenter ( float xOffset, float yOffset, float zOffset )
+osg::Vec3f  Geometry::geometryCenter ( const osg::Vec3f& offset )
 {
   std::ostringstream os;
   os << "SELECT x(centroid(" << _tableName << ".geom)) as x_c, y(centroid(" << _tableName << ".geom)) as y_c, srid(geom) as srid FROM " << _tableName << " WHERE id = " << _id;
@@ -135,18 +131,18 @@ osg::Vec3  Geometry::getCenter ( float xOffset, float yOffset, float zOffset )
     Usul::Types::Float64 x ( r[0][0].as< float > () );
     Usul::Types::Float64 y ( r[0][1].as< float > () );
 
-    center.set( x, y, 0.0 );
+    center.set( offset.x() + x, offset.y() + y, 0.0 );
   }
 
   ossimMapProjection *mapProj = dynamic_cast < ossimMapProjection * > ( _projection.get() );
 
   if( this->_isSridSphereical( _srid ) )
   {
-    Magrathea::convertToEarthCoordinates( center, zOffset );
+    Magrathea::convertToEarthCoordinates( center, offset.z() );
   }
   else if( _projection.valid() && 0x0 != mapProj )
   {
-    Magrathea::convertToEarthCoordinates( center, mapProj, zOffset );
+    Magrathea::convertToEarthCoordinates( center, mapProj, offset.z() );
   }
 
   return center;
@@ -155,15 +151,15 @@ osg::Vec3  Geometry::getCenter ( float xOffset, float yOffset, float zOffset )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the x offset.
+//  Set the offset.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Geometry::xOffset( float f )
+void Geometry::spatialOffset( const osg::Vec3f& value )
 {
-  if( _xOffset != f )
+  if( _offset != value )
   {
-    _xOffset = f;
+    _offset = value;
     this->dirty( true );
   }
 }
@@ -171,69 +167,13 @@ void Geometry::xOffset( float f )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the x offset.
+//  Get the offset.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Geometry::xOffset( ) const
+const osg::Vec3f& Geometry::spatialOffset( ) const
 {
-  return _xOffset;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the y offset.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Geometry::yOffset( float f )
-{
-  if( _yOffset != f )
-  {
-    _yOffset = f;
-    this->dirty( true );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the y offset.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-float Geometry::yOffset( ) const
-{
-  return _yOffset;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the z offset.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Geometry::zOffset( float f )
-{
-  if( _zOffset != f )
-  {
-    _zOffset = f;
-    this->dirty( true );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the z offset.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-float Geometry::zOffset( ) const
-{
-  return _zOffset;
+  return _offset;
 }
 
 
@@ -283,4 +223,25 @@ bool Geometry::_isSridSphereical( int id )
 {
   // For now, but I think there is an sql statement that can answer this question.
   return id == 4326 || id == 4269;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Geometry::queryInterface( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IGeometryCenter::IID:
+    return static_cast < Usul::Interfaces::IGeometryCenter* > ( this );
+  case Usul::Interfaces::IOffset::IID:
+    return static_cast < Usul::Interfaces::IOffset* > ( this );
+  default:
+    return 0x0;
+  }
 }

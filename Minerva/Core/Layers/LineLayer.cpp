@@ -139,13 +139,17 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     int id ( iter["id"].as < int > () );
     int srid ( iter["srid"].as < int > () );
 
-    Minerva::Core::postGIS::Line::RefPtr geometry ( new Minerva::Core::postGIS::Line ( this->connection(), dataTable, id, srid, iter["geom"] ) );
-    geometry->zOffset( this->zOffset() );
+    Usul::Interfaces::IUnknown::QueryPtr geometry ( new Minerva::Core::postGIS::Line ( this->connection(), dataTable, id, srid, iter["geom"] ) );
+
+    Usul::Interfaces::IOffset::QueryPtr offset ( geometry );
+
+    if( offset.valid() )
+      offset->spatialOffset( osg::Vec3f ( 0.0, 0.0, this->zOffset() ) );
 
     Minerva::Core::DataObjects::Line::RefPtr data ( new Minerva::Core::DataObjects::Line( ) );
     data->color ( this->_color ( iter ) );
     data->width( _lineWidth );
-    data->geometry( geometry.get() );
+    data->geometry( geometry );
     data->renderBin( this->renderBin() );
     data->tableName( dataTable );
     data->rowId( id );

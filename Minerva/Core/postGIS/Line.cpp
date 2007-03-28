@@ -18,6 +18,7 @@
 
 using namespace Minerva::Core::postGIS;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Line, Line::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -45,25 +46,11 @@ Line::~Line()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* Line::buildScene()
-{
-  osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  geode->addDrawable( this->buildGeometry() );
-  return geode.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Build the geometry.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Geometry* Line::buildGeometry()
+osg::Geometry* Line::buildLineData()
 {
   if( _points.empty() )
     this->_buildLatLongPoints();
@@ -81,7 +68,7 @@ osg::Geometry* Line::buildGeometry()
     Magrathea::resample( *iter, sampledPoints );
 
     osg::ref_ptr< osg::Vec3Array > newVertices ( new osg::Vec3Array );
-    Magrathea::convertVerticesToEarthCoordinates( sampledPoints, *newVertices, this->zOffset() );
+    Magrathea::convertVerticesToEarthCoordinates( sampledPoints, *newVertices, this->spatialOffset().z() );
 
     vertices->insert( vertices->end(), newVertices->begin(), newVertices->end() );
 
@@ -115,5 +102,23 @@ void Line::_buildLatLongPoints()
     LatLongPoints latLongPoints;
     this->_convertToLatLong( *iter, latLongPoints );
     _points.push_back ( latLongPoints );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Line::queryInterface( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::ILineData::IID:
+    return static_cast < Usul::Interfaces::ILineData* > ( this );
+  default:
+    return BaseClass::queryInterface( iid );
   }
 }

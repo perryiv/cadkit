@@ -10,6 +10,8 @@
 
 #include "Minerva/Core/Layers/Layer.h"
 
+#include "Usul/Interfaces/IGeometryCenter.h"
+
 #include "osg/Group"
 #include "osg/MatrixTransform"
 
@@ -17,6 +19,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <iostream>
 
 using namespace Minerva::Core::Layers;
 
@@ -667,8 +670,12 @@ void Layer::_labelDataObject ( Minerva::Core::DataObjects::DataObject* dataObjec
     dataObject->label( value );
     dataObject->labelColor( this->labelColor() );
 
-    osg::Vec3 center ( dataObject->geometry()->getCenter( 0.0, 0.0, this->labelZOffset() ) );
-    dataObject->labelPosition( center );
+    Usul::Interfaces::IGeometryCenter::QueryPtr geometryCenter ( dataObject->geometry() );
+    if( geometryCenter.valid() )
+    {
+      osg::Vec3 center ( geometryCenter->geometryCenter( osg::Vec3f ( 0.0, 0.0, this->labelZOffset() ) ) );
+      dataObject->labelPosition( center );
+    }
 
     dataObject->labelSize( _labelSize );
   }

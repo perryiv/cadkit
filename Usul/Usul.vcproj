@@ -1101,7 +1101,15 @@
 					Name="GIS"
 					>
 					<File
+						RelativePath=".\Interfaces\IGeometryCenter.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\ILineData.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IOffset.h"
 						>
 					</File>
 					<File

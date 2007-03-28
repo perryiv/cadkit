@@ -116,27 +116,33 @@ void RLayer::_buildSceneCylinder( osg::Group* parent )
 
   OsgTools::ShapeFactory::Ptr sf ( new OsgTools::ShapeFactory );
 
-  for( DataObjects::const_iterator iter = dataObjects.begin(); iter != dataObjects.end(); ++iter )
+  for( DataObjects::iterator iter = dataObjects.begin(); iter != dataObjects.end(); ++iter )
   {
     Minerva::Core::DataObjects::Point::RefPtr point ( dynamic_cast < Minerva::Core::DataObjects::Point* > ( (*iter).get() ) );
-    osg::Vec3 v0 ( point->geometry()->getCenter() );
-    osg::Vec3 v1 ( v0 );
 
-    v0.z()= 0.0;
+    Usul::Interfaces::IGeometryCenter::QueryPtr geometryCenter ( (*iter)->geometry() );
 
-    osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-    geode->addDrawable( sf->cylinder( 250, 12, v0, v1 ) );
+    if( geometryCenter.valid () )
+    {
+      osg::Vec3 v0 ( geometryCenter->geometryCenter() );
+      osg::Vec3 v1 ( v0 );
 
-    osg::ref_ptr< osg::Material > material ( new osg::Material );
+      v0.z()= 0.0;
+
+      osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+
+      geode->addDrawable( sf->cylinder( 250, 12, v0, v1 ) );
+
+      osg::ref_ptr< osg::Material > material ( new osg::Material );
     
-    material->setDiffuse( osg::Material::FRONT_AND_BACK, point->color() );
+      material->setDiffuse( osg::Material::FRONT_AND_BACK, point->color() );
 
-    osg::StateSet *ss = geode->getOrCreateStateSet();
-    ss->setAttribute( material.get(), osg::StateAttribute::ON );
-    ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
-    ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
-
-    parent->addChild ( geode.get() );
+      osg::StateSet *ss = geode->getOrCreateStateSet();
+      ss->setAttribute( material.get(), osg::StateAttribute::ON );
+      ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
+      ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
+      parent->addChild ( geode.get() );
+    }
   }
 }
 

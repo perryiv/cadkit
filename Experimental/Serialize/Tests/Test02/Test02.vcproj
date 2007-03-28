@@ -196,6 +196,10 @@
 				RelativePath=".\out_1.xml"
 				>
 			</File>
+			<File
+				RelativePath=".\out_2.xml"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

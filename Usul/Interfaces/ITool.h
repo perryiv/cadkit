@@ -31,6 +31,9 @@ struct ITool : public Usul::Interfaces::IUnknown
   enum { IID = 1100798022u };
 
   virtual bool execute ( Unknown* caller, bool left, bool middle, bool right, bool motion, float x, float y, float z ) = 0;
+
+  virtual int lifeTime() = 0;
+
 }; //class ITool
 
 } //namespace Interfaces

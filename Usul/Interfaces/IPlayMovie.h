@@ -28,8 +28,17 @@ struct IPlayMovie : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2131089585 };
   
-  virtual osg::Node* playMovie( const osg::Vec3f& lowerLeft, const osg::Vec3f& upperRight, const std::string& fileName ) = 0;
+  virtual osg::Node*  playMovie( const osg::Vec3f&, const osg::Vec3f&, const osg::Vec3f&, const std::string& fileName ) = 0;
 
+  virtual void        play()      = 0;
+
+  virtual void        pause()     = 0;
+
+  virtual void        restart()   = 0;
+
+  virtual bool        isPlaying() = 0;
+
+  virtual bool        isPaused()  = 0;
 };
 
 }

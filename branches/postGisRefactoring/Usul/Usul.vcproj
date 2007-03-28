@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="User32.lib"
+				AdditionalDependencies="User32.lib rpcrt4.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/Usuld.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="User32.lib"
+				AdditionalDependencies="User32.lib rpcrt4.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/Usul.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -778,6 +778,10 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IPlugin.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ISerialize.h"
 						>
 					</File>
 					<File

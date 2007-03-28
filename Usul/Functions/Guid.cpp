@@ -15,10 +15,7 @@
 # include "windows.h"
 #endif
 
-using namespace Usul::Functions;
-
-
-std::string generateGUID()
+std::string Usul::Functions::generateGUID()
 {
   std::string guid;
 #ifdef _MSC_VER

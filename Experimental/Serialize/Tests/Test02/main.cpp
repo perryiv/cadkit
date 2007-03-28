@@ -40,6 +40,29 @@ const std::string FILE_NAME_2 ( "out_2.xml" );
 
 Usul::Threads::SetMutexFactory factory ( &Usul::Threads::newSingleThreadedMutexStub );
 
+class ClassA : public Usul::Base::Referenced
+{
+public:
+  typedef Usul::Base::Referenced BaseClass;
+
+  USUL_DECLARE_REF_POINTERS ( ClassA );
+
+  ClassA() : BaseClass(),
+    _unknown ( create() )
+  {
+    SERIALIZE_XML_ADD_MEMBER ( _unknown );
+  }
+
+  virtual ~ClassA()
+  {
+  }
+
+protected:
+  Usul::Interfaces::IUnknown::QueryPtr _unknown;
+
+  Serialize::XML::DataMemberMap _dataMemberMap;
+  SERIALIZE_XML_DEFINE_MEMBERS ( ClassA );
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -49,21 +72,26 @@ Usul::Threads::SetMutexFactory factory ( &Usul::Threads::newSingleThreadedMutexS
 
 void _run()
 {
-  Usul::Interfaces::IUnknown::QueryPtr unknown ( create() );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ClassA> ( "ClassA" ) );
+
+  typedef std::vector < ClassA::RefPtr > Objects;
+  Objects objects;
+
+  objects.push_back( new ClassA );
 
   // Write objects to file.
   {
     std::cout << "Writing: " << FILE_NAME_1 << std::endl;
-    Serialize::XML::serialize ( "test", unknown, FILE_NAME_1 );
+    Serialize::XML::serialize ( FILE_NAME_1, "objects", objects.begin(), objects.end() );
   }
 
   // Read objects from first file and write to a second file.
   {
-    Usul::Interfaces::IUnknown::QueryPtr unknown ( create() );
+    objects.clear();
     std::cout << "Reading: " << FILE_NAME_1 << std::endl;
-    Serialize::XML::deserialize ( FILE_NAME_1, unknown );
+    Serialize::XML::deserialize ( FILE_NAME_1, objects );
     std::cout << "Writing: " << FILE_NAME_2 << std::endl;
-    Serialize::XML::serialize ( "test", unknown, FILE_NAME_2 );
+    Serialize::XML::serialize ( FILE_NAME_2, "objects", objects.begin(), objects.end() );
   }
 
   // Compare contents of the two files.

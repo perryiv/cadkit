@@ -17,6 +17,7 @@
 #ifndef _SERIALIZE_XML_DATA_MEMBER_MAP_CLASS_
 #define _SERIALIZE_XML_DATA_MEMBER_MAP_CLASS_
 
+#include "Serialize/XML/QueryPointerMember.h"
 #include "Serialize/XML/SimpleDataMember.h"
 #include "Serialize/XML/SmartPointerMember.h"
 #include "Serialize/XML/PointerMapMember.h"
@@ -56,6 +57,13 @@ public:
   {
     this->_addMember ( new Serialize::XML::SimpleDataMember<T> ( name, value ) );
   }
+
+  // Need to be by reference so that the client can change it after this class it made.
+  template < class T, class C > void addMember ( const std::string &name, Usul::Pointers::QueryPointer<T,C> &value )
+  {
+    this->_addMember ( new Serialize::XML::QueryPointerMember<T, C> ( name, value ) );
+  }
+
 
   // Need to be by reference so that the client can change it after this class it made.
   template < class T, class C > void addMember ( const std::string &name, Usul::Pointers::SmartPointer<T,C> &value )

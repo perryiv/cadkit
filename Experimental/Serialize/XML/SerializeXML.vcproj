@@ -288,6 +288,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\QueryPointerMember.h"
+					>
+				</File>
+				<File
 					RelativePath=".\SequenceMember.h"
 					>
 				</File>

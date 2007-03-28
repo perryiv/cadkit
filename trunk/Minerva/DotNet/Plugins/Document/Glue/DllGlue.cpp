@@ -748,6 +748,11 @@ void DllGlue::saveAs( System::String^ filename )
   _document->saveAs ( Usul::Strings::convert( filename ) );
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the movie mode true / false. 
+//
+///////////////////////////////////////////////////////////////////////////////
 void DllGlue::setMovieMode( bool b,  CadKit::Viewer::Glue::Viewer^ v )
 {
   OsgTools::Render::Viewer* viewer = reinterpret_cast < OsgTools::Render::Viewer* > ( v->viewer().ToPointer() );
@@ -761,4 +766,92 @@ void DllGlue::setMovieMode( bool b,  CadKit::Viewer::Glue::Viewer^ v )
       viewer->setTool( component );
     }
   }  
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Play current movie. 
+//
+///////////////////////////////////////////////////////////////////////////////
+void DllGlue::play( CadKit::Viewer::Glue::Viewer^ v )
+{
+  OsgTools::Render::Viewer* viewer = reinterpret_cast < OsgTools::Render::Viewer* > ( v->viewer().ToPointer() );
+
+  if( viewer )
+  {
+    // PlayMovie plugin implements both IPlayMovie and ITool. 
+    Usul::Interfaces::IPlayMovie::QueryPtr component = Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlayMovie::IID );
+    if( component )
+    {
+      component->play();
+    }
+  }  
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Pause current movie. 
+//
+///////////////////////////////////////////////////////////////////////////////
+void DllGlue::pause( CadKit::Viewer::Glue::Viewer^ v )
+{
+  OsgTools::Render::Viewer* viewer = reinterpret_cast < OsgTools::Render::Viewer* > ( v->viewer().ToPointer() );
+
+  if( viewer )
+  {
+    // PlayMovie plugin implements both IPlayMovie and ITool. 
+    Usul::Interfaces::IPlayMovie::QueryPtr component = Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlayMovie::IID );
+    if( component )
+    {
+      component->pause();
+    }
+  }  
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Restart current movie. 
+//
+///////////////////////////////////////////////////////////////////////////////
+void DllGlue::restart( CadKit::Viewer::Glue::Viewer^ v )
+{
+  OsgTools::Render::Viewer* viewer = reinterpret_cast < OsgTools::Render::Viewer* > ( v->viewer().ToPointer() );
+
+  if( viewer )
+  {
+    // PlayMovie plugin implements both IPlayMovie and ITool. 
+    Usul::Interfaces::IPlayMovie::QueryPtr component = Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlayMovie::IID );
+    if( component )
+    {
+      component->restart();
+    }
+  }  
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Movie currently playing? 
+//
+///////////////////////////////////////////////////////////////////////////////
+bool DllGlue::isPlaying()
+{
+  Usul::Interfaces::IPlayMovie::QueryPtr component = Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlayMovie::IID );
+  if( component )
+  {
+    return component->isPlaying();
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Movie currently paused? 
+//
+///////////////////////////////////////////////////////////////////////////////
+bool DllGlue::isPaused()
+{
+  Usul::Interfaces::IPlayMovie::QueryPtr component = Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlayMovie::IID );
+  if( component )
+  {
+    return component->isPaused();
+  }
 }

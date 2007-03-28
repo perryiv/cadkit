@@ -20,6 +20,8 @@
 
 using namespace Minerva::Core::DB;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Connection, Connection::BaseClass );
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -351,4 +353,25 @@ void Connection::getMinAndMax ( const std::string& tableName, const std::string&
 
   min = r[0]["lowest"].as < double > ();
   max = r[0]["highest"].as < double > ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Connection::queryInterface( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IDatabaseConnection::IID:
+    return static_cast < Usul::Interfaces::IDatabaseConnection* > ( this );
+  case Usul::Interfaces::IPostgresqlConnection::IID:
+    return static_cast < Usul::Interfaces::IPostgresqlConnection* > ( this );
+  default:
+    return 0x0;
+  }
 }

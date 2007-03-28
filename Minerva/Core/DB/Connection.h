@@ -15,23 +15,22 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Interfaces/IDatabaseConnection.h"
+#include "Usul/Interfaces/IPostgresqlConnection.h"
 
 #include "Serialize/XML/Macros.h"
 
 #include "pqxx/pqxx"
 
-#include "boost/serialization/nvp.hpp"
-#include "boost/serialization/split_member.hpp"
-
 #include <string>
-
-namespace boost { namespace serialization { class access; } }
 
 namespace Minerva {
 namespace Core {
 namespace DB {
 
-class MINERVA_EXPORT Connection : public Usul::Base::Referenced
+class MINERVA_EXPORT Connection : public Usul::Base::Referenced,
+                                  public Usul::Interfaces::IDatabaseConnection,
+                                  public Usul::Interfaces::IPostgresqlConnection
 {
 public:
   /// Typedefs.
@@ -40,7 +39,8 @@ public:
   typedef std::vector < StringPair >  Values;
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Connection );
+  USUL_DECLARE_QUERY_POINTERS ( Connection );
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   Connection();
 
@@ -88,10 +88,6 @@ protected:
   int                  _getMaxId( const std::string& table );
 
 private:
-  friend class boost::serialization::access;
-  template<class Archive> void save(Archive & ar, const unsigned int version) const;
-  template<class Archive> void load(Archive & ar, const unsigned int version);
-  BOOST_SERIALIZATION_SPLIT_MEMBER()
 
   std::string _host;
   std::string _database;
@@ -119,25 +115,6 @@ protected:
   }
 };
 
-template< class Archive >
-void Connection::save( Archive &ar, const unsigned int version ) const
-{
-  ar & boost::serialization::make_nvp ( "Host", _host );
-  ar & boost::serialization::make_nvp ( "Database", _database );
-  ar & boost::serialization::make_nvp ( "User", _user );
-  ar & boost::serialization::make_nvp ( "Password", _password );
-}
-
-template< class Archive >
-void Connection::load( Archive &ar, const unsigned int version )
-{
-  ar & boost::serialization::make_nvp ( "Host", _host );
-  ar & boost::serialization::make_nvp ( "Database", _database );
-  ar & boost::serialization::make_nvp ( "User", _user );
-  ar & boost::serialization::make_nvp ( "Password", _password );
-
-  this->connect();
-}
 
 }
 }

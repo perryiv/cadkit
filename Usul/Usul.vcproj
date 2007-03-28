@@ -1121,6 +1121,18 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="DB"
+					>
+					<File
+						RelativePath=".\Interfaces\IDatabaseConnection.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IPostgresqlConnection.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Math"
@@ -1759,6 +1771,32 @@
 				>
 				<File
 					RelativePath=".\Functions\Color.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Functions\Guid.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Functions\Guid.h"
 					>
 				</File>
 				<File

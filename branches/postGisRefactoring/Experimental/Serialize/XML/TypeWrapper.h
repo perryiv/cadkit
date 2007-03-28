@@ -143,6 +143,55 @@ template < class T, class C > struct TypeWrapper < Usul::Pointers::SmartPointer 
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Specialization for smart-pointers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class T, class C > struct TypeWrapper < Usul::Pointers::QueryPointer < T, C > >
+{
+  typedef Usul::Pointers::QueryPointer < T, C > PointerType;
+  typedef typename PointerType::element_type ObjectType;
+
+  static void addAtribute ( const std::string &name, const std::string &value, XmlTree::Node &node )
+  {
+    node.attributes()[name] = value;
+  }
+  static const char *className ( const PointerType &value )
+  {
+    return ( ( true == value.valid() ) ? value->className() : "" );
+  }
+  static ObjectType *create ( const std::string &typeName )
+  {
+    return ( dynamic_cast < ObjectType * > ( Factory::instance().create ( typeName ) ) );
+  }
+  static void deserialize ( const XmlTree::Node &node, PointerType &value )
+  {
+    if ( true == value.valid() )
+    {
+      value->deserialize ( node );
+    }
+  }
+  static void getAttribute ( const std::string &name, const XmlTree::Node &node, std::string &value )
+  {
+    XmlTree::Node::Attributes::const_iterator i = node.attributes().find ( name );
+    value.assign ( ( node.attributes().end() == i ) ? "" : i->second );
+  }
+  static bool isValid ( const PointerType &value )
+  {
+    return ( true == value.valid() );
+  }
+  static void serialize ( const PointerType &value, XmlTree::Node &parent )
+  {
+    if ( true == value.valid() )
+    {
+      value->serialize ( parent );
+    }
+  }
+};
+
+
 } // namespace Serialize
 } // namespace XML
 

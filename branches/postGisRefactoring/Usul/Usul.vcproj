@@ -1129,6 +1129,10 @@
 					Name="DB"
 					>
 					<File
+						RelativePath=".\Interfaces\ICreateConnection.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\IDatabaseConnection.h"
 						>
 					</File>

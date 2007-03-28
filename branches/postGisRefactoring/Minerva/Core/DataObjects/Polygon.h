@@ -18,10 +18,9 @@
 #define __DATA_OBJECTS_BOUNDARY_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Core/DataObjects/Line.h"
+#include "Minerva/Core/DataObjects/DataObject.h"
 
-#include "osg/ref_ptr"
-#include "osg/Array"
+#include "osg/Group"
 
 #include <map>
 
@@ -30,10 +29,10 @@ namespace Core {
 namespace DataObjects {
 
 
-class MINERVA_EXPORT Polygon : public Line
+class MINERVA_EXPORT Polygon : public DataObject
 {
 public:
-  typedef Minerva::Core::DataObjects::Line BaseClass;
+  typedef Minerva::Core::DataObjects::DataObject BaseClass;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Polygon );

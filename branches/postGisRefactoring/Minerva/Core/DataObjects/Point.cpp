@@ -17,6 +17,8 @@
 #include "Minerva/Core/DataObjects/Point.h"
 #include "Minerva/Core/DataObjects/UserData.h"
 
+#include "Usul/Interfaces/IGeometryCenter.h"
+
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Font.h"
 
@@ -147,7 +149,11 @@ osg::Node* Point::buildScene()
 
     osg::ref_ptr< osg::AutoTransform > autoTransform ( new osg::AutoTransform );
 
-    autoTransform->setPosition ( this->geometry()->getCenter( 0.0, 0.0, 0.0 ) );
+    Usul::Interfaces::IGeometryCenter::QueryPtr geometryCenter ( this->geometry() );
+
+    if( geometryCenter.valid () )
+      autoTransform->setPosition ( geometryCenter->geometryCenter() );
+
     autoTransform->setAutoScaleToScreen ( true );
 
     // Set the normalize state to true, so when the sphere size changes it still looks correct.

@@ -124,8 +124,12 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     int srid ( iter["srid"].as < int > () );
 
     // Create the geometry.
-    Minerva::Core::postGIS::Geometry::RefPtr geometry ( new Minerva::Core::postGIS::Polygon ( this->connection(), dataTable, id, srid, iter["geom"] ) );
-    geometry->zOffset( this->zOffset() );
+    Usul::Interfaces::IUnknown::QueryPtr geometry ( new Minerva::Core::postGIS::Polygon ( this->connection(), dataTable, id, srid, iter["geom"] ) );
+
+    Usul::Interfaces::IOffset::QueryPtr offset ( geometry );
+
+    if( offset.valid() )
+      offset->spatialOffset( osg::Vec3f ( 0.0, 0.0, this->zOffset() ) );
 
     // Create the Data Object.
     Minerva::Core::DataObjects::Polygon::RefPtr data ( new Minerva::Core::DataObjects::Polygon );

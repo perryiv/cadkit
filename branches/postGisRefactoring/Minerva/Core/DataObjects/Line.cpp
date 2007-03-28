@@ -17,6 +17,8 @@
 #include "Minerva/Core/DataObjects/Line.h"
 #include "Minerva/Core/DataObjects/UserData.h"
 
+#include "Usul/Interfaces/ILineData.h"
+
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Font.h"
 
@@ -101,20 +103,27 @@ osg::Node* Line::buildScene()
     osg::ref_ptr < osg::StateSet > ss ( _node->getOrCreateStateSet() );
     ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
 
-    osg::ref_ptr < osg::Geometry > geometry ( this->geometry()->buildGeometry() );
+    Usul::Interfaces::ILineData::QueryPtr line ( this->geometry() );
 
-    // Set the colors.
-    osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
-    colors->push_back( this->color() );
-    geometry->setColorArray( colors.get() );
-    geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
+    if( line.valid () )
+    {
+      osg::ref_ptr < osg::Geometry > geometry ( line->buildLineData() );
 
-    _node->addDrawable ( geometry.get() );
+      // Set the colors.
+      osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
+      colors->push_back( this->color() );
+      geometry->setColorArray( colors.get() );
+      geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
 
-    // Turn off lighting.
-    OsgTools::State::StateSet::setLighting ( _node.get(), false );
+      _node->addDrawable ( geometry.get() );
 
-    OsgTools::State::StateSet::setLineWidth ( _node.get(), _width );
+      // Turn off lighting.
+      OsgTools::State::StateSet::setLighting ( _node.get(), false );
+
+      OsgTools::State::StateSet::setLineWidth ( _node.get(), _width );
+
+      geometry->dirtyDisplayList();
+    }
 
     // Do we have a label?
     if( !this->label().empty() )
@@ -132,8 +141,6 @@ osg::Node* Line::buildScene()
 
       _node->addDrawable( text.get() );
     }
-
-    geometry->dirtyDisplayList();
 
     this->dirty( false );
   }

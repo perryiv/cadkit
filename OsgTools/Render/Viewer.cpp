@@ -3853,7 +3853,10 @@ void Viewer::handleTool ( bool left, bool middle, bool right, bool motion, float
       //if ( !( event.state & FX::CONTROLMASK ) )
       {
         // We are done with this tool.
-        this->doneTool();
+        if( _currentTool->lifeTime() != -1 )
+        {
+          this->doneTool();
+        }
       }
     }
   }

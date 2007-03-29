@@ -33,6 +33,7 @@ using namespace Minerva::Core::Layers;
 
 PolygonLayer::PolygonLayer() : BaseClass(), 
 _format(),
+_showInterior( true ),
 _showBorder( false ),
 _borderColor()
 {
@@ -50,6 +51,7 @@ _borderColor()
 
 PolygonLayer::PolygonLayer ( const PolygonLayer& layer ) : BaseClass ( layer ),
 _format ( layer._format ),
+_showInterior( layer._showInterior ),
 _showBorder ( layer._showBorder ),
 _borderColor ( layer._borderColor )
 {
@@ -66,6 +68,7 @@ _borderColor ( layer._borderColor )
 void PolygonLayer::_registerMembers()
 {
   SERIALIZE_XML_ADD_MEMBER ( _format );
+  SERIALIZE_XML_ADD_MEMBER ( _showInterior );
   SERIALIZE_XML_ADD_MEMBER ( _showBorder );
   SERIALIZE_XML_ADD_MEMBER ( _borderColor );
 }
@@ -124,12 +127,18 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     int srid ( iter["srid"].as < int > () );
 
     // Create the geometry.
-    Minerva::Core::postGIS::Geometry::RefPtr geometry ( new Minerva::Core::postGIS::Polygon ( this->connection(), dataTable, id, srid, iter["geom"] ) );
-    geometry->zOffset( this->zOffset() );
+    Usul::Interfaces::IUnknown::QueryPtr geometry ( new Minerva::Core::postGIS::Polygon ( this->connection(), dataTable, id, srid, iter["geom"] ) );
+
+    Usul::Interfaces::IOffset::QueryPtr offset ( geometry );
+
+    if( offset.valid() )
+      offset->spatialOffset( osg::Vec3f ( 0.0, 0.0, this->zOffset() ) );
 
     // Create the Data Object.
     Minerva::Core::DataObjects::Polygon::RefPtr data ( new Minerva::Core::DataObjects::Polygon );
 
+    data->showBorder( this->border() );
+    data->showInterior ( this->showInterior() );
     data->geometry ( geometry.get() );
     data->color( this->_color ( iter ) );
     data->renderBin( this->renderBin() );
@@ -278,4 +287,28 @@ void PolygonLayer::borderColor( const osg::Vec4& color )
 const osg::Vec4& PolygonLayer::borderColor() const
 {
   return _borderColor;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the show interior flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PolygonLayer::showInterior( bool b )
+{
+  _showInterior = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show interior flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PolygonLayer::showInterior() const
+{
+  return _showInterior;
 }

@@ -14,25 +14,31 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/postGIS/Geometry.h"
 
+#include "Usul/Interfaces/ILineData.h"
+
 namespace Minerva {
 namespace Core {
 namespace postGIS {
 
 
-class MINERVA_EXPORT Line : public Geometry
+class MINERVA_EXPORT Line : public Geometry,
+                            public Usul::Interfaces::ILineData
 {
 public:
   typedef Geometry BaseClass;
 
-  Line ( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F );
+  USUL_DECLARE_QUERY_POINTERS ( Line );
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  virtual osg::Node*               buildScene();
-  virtual osg::Geometry*           buildGeometry();
+  Line ( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F );
 
 protected:
   ~Line();
 
   void                             _buildLatLongPoints();
+
+  /// Usul::Interfaces::ILineData.
+  virtual osg::Geometry*           buildLineData ();
 
 private:
   typedef std::vector < ossimGpt > LatLongPoints;

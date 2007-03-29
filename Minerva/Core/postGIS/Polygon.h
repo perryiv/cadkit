@@ -12,7 +12,10 @@
 #define __MINERVA_POSTGIS_POLYGON_GEOMETRY_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Core/postGIS/Geometry.h"
+#include "Minerva/Core/postGIS/Line.h"
+
+#include "Usul/Interfaces/IPolygonData.h"
+#include "Usul/Interfaces/ILineData.h"
 
 class ossimGpt;
 
@@ -21,20 +24,24 @@ namespace Core {
 namespace postGIS {
 
 
-class MINERVA_EXPORT Polygon : public Geometry
+class MINERVA_EXPORT Polygon : public Line,
+                               public Usul::Interfaces::IPolygonData
 {
 public:
-  typedef Geometry BaseClass;
+  typedef Line BaseClass;
+
+  USUL_DECLARE_QUERY_POINTERS ( Polygon );
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   Polygon ( DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F );
-
-  virtual osg::Node*               buildScene();
-  virtual osg::Geometry*           buildGeometry();
 
 protected:
   virtual ~Polygon();
 
   void                             _buildLatLongPoints();
+
+  /// Usul::Interfaces::IPolygonData
+  virtual osg::Node*               buildPolygonData ();
 
 private:
   typedef std::vector < ossimGpt > LatLongPoints;

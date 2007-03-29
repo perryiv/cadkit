@@ -14,25 +14,32 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/postGIS/Geometry.h"
 
+#include "Usul/Interfaces/IPointData.h"
+
 namespace Minerva {
 namespace Core {
 namespace postGIS {
 
 
-class MINERVA_EXPORT Point : public Geometry
+class MINERVA_EXPORT Point : public Geometry,
+                             public Usul::Interfaces::IPointData
 {
 public:
   typedef Geometry BaseClass;
 
+  USUL_DECLARE_QUERY_POINTERS ( Point );
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
+
   Point ( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F );
-
-  virtual osg::Node*               buildScene();
-  virtual osg::Geometry*           buildGeometry();
-
-  virtual osg::Vec3                getCenter ( float xOffset, float yOffset, float zOffset );
 
 protected:
   virtual ~Point();
+
+  /// Usul::Interfaces::IPointData
+  virtual osg::Geometry*            buildPointData ( PrimitiveType type );
+
+  virtual osg::Vec3f                geometryCenter ( const osg::Vec3f& offset );
+
 };
 
 }

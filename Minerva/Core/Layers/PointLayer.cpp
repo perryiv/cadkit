@@ -13,6 +13,7 @@
 #include "Minerva/Core/DataObjects/Point.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/IOffset.h"
 
 #include "Serialize/XML/RegisterCreator.h"
 
@@ -121,11 +122,17 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     int id ( iter["id"].as < int > () );
     int srid ( iter["srid"].as < int > () );
 
-    Minerva::Core::postGIS::Geometry::RefPtr geometry ( new Minerva::Core::postGIS::Point ( this->connection(), this->tablename(), id, srid, iter["geom"] ) );
-    geometry->zOffset( this->zOffset() );
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( new Minerva::Core::postGIS::Point ( this->connection(), this->tablename(), id, srid, iter["geom"] ) );
+
+    Usul::Interfaces::IOffset::QueryPtr offset ( unknown );
+
+    if( offset.valid () )
+    {
+      offset->spatialOffset( osg::Vec3f ( 0.0, 0.0, this->zOffset() ) );
+    }
 
     Minerva::Core::DataObjects::Point::RefPtr data ( new Minerva::Core::DataObjects::Point );
-    data->geometry( geometry.get() );
+    data->geometry( unknown->queryInterface( Usul::Interfaces::IUnknown::IID ) );
     data->color( this->_color ( iter ) );
     data->size ( this->size() );
     data->primitiveId ( this->primitiveID() );
@@ -159,7 +166,12 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 
     for( Layer::DataObjects::iterator iter = dataObjects.begin(); iter != dataObjects.end(); ++iter )
     {
-      map[(*iter)->geometry()->getCenter()].push_back ( *iter );
+      Usul::Interfaces::IGeometryCenter::QueryPtr geometryCenter ( (*iter)->geometry() );
+
+      if( geometryCenter.valid () )
+      {
+        map[ geometryCenter->geometryCenter() ].push_back ( *iter );
+      }
     }
 
     for( Map::iterator iter = map.begin(); iter != map.end(); ++iter )
@@ -170,10 +182,14 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 
         for( unsigned int i = 1; i < value.size(); ++i )
         {
-          Minerva::Core::postGIS::Geometry::RefPtr geom ( value.at( i )->geometry() );
-          float zOffset ( geom->zOffset() );
-          geom->zOffset( zOffset + ( i * 20 ) );
-          value.at( i )->dirty( true );
+          Usul::Interfaces::IOffset::QueryPtr offset ( value.at( i )->geometry() );
+
+          if( offset.valid () )
+          {
+            const osg::Vec3& o ( offset->spatialOffset() );
+            offset->spatialOffset ( osg::Vec3f ( o.x(), o.y(), o.z() + ( i * 20 ) ) );
+            value.at( i )->dirty( true );
+          }
         }
       }
     }

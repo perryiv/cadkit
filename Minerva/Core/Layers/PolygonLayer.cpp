@@ -133,6 +133,7 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     data->geometry ( geometry.get() );
     data->color( this->_color ( iter ) );
     data->renderBin( this->renderBin() );
+    data->connection ( this->connection() );
     data->tableName ( dataTable );
     data->rowId ( id );
 

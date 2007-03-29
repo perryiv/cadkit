@@ -19,6 +19,7 @@
 
 using namespace Minerva::Core::postGIS;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Point, Point::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -45,23 +46,11 @@ Point::~Point()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//   Build a node.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* Point::buildScene()
-{
-  return new osg::Node;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Build a geometry.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Geometry* Point::buildGeometry()
+osg::Geometry* Point::buildPointData( PrimitiveType type )
 {
   return new osg::Geometry;
 }
@@ -73,9 +62,9 @@ osg::Geometry* Point::buildGeometry()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Vec3 Point::getCenter ( float xOffset, float yOffset, float zOffset )
+osg::Vec3f Point::geometryCenter ( const osg::Vec3f& offset )
 {
-  VertexList vertexList ( _parser->getVertices() );
+  const VertexList& vertexList ( this->_vertices() );
 
   if( vertexList.size() == 1 && vertexList[0].size() == 1 )
   {
@@ -87,15 +76,33 @@ osg::Vec3 Point::getCenter ( float xOffset, float yOffset, float zOffset )
 
     if( this->_isSridSphereical( _srid ) )
     {
-      Magrathea::convertToEarthCoordinates( center, zOffset );
+      Magrathea::convertToEarthCoordinates( center, offset.z() );
     }
     else if( _projection.valid() && 0x0 != mapProj )
     {
-      Magrathea::convertToEarthCoordinates( center, mapProj, zOffset );
+      Magrathea::convertToEarthCoordinates( center, mapProj, offset.z() );
     }
 
     return center;
   }
 
-  return BaseClass::getCenter ( xOffset, yOffset, zOffset );
+  return BaseClass::geometryCenter ( offset );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Point::queryInterface( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IPointData::IID:
+    return static_cast < Usul::Interfaces::IPointData* > ( this );
+  default:
+    return BaseClass::queryInterface ( iid );
+  }
 }

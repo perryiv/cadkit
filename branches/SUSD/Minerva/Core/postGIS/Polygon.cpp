@@ -23,6 +23,7 @@
 
 using namespace Minerva::Core::postGIS;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Polygon, Polygon::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -69,9 +70,9 @@ void Polygon::_buildLatLongPoints()
   if( false == triangulate.valid() )
     return;
 
-  VertexList vertexList ( _parser->getVertices() );
+  const VertexList& vertexList ( this->_vertices() );
 
-  for( VertexList::iterator iter = vertexList.begin(); iter != vertexList.end(); ++iter )
+  for( VertexList::const_iterator iter = vertexList.begin(); iter != vertexList.end(); ++iter )
   {
     Vertices     vertices;
     Vertices3D   n;
@@ -96,7 +97,7 @@ void Polygon::_buildLatLongPoints()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Polygon::buildScene()
+osg::Node* Polygon::buildPolygonData()
 {
   // Typedefs.
   typedef Usul::Interfaces::IComputeTriangleNormals   ComputeNormals;
@@ -123,7 +124,7 @@ osg::Node* Polygon::buildScene()
     Normals  normals;
 
     // Convert vertices to earth coordinates.
-    Magrathea::convertVerticesToEarthCoordinates( *iter, earthVertices, this->zOffset() );
+    Magrathea::convertVerticesToEarthCoordinates( *iter, earthVertices, this->spatialOffset().z() );
 
     // Calculate the normals.
     computeNormals->computeNormalsPerTriangle( earthVertices, normals );
@@ -154,19 +155,23 @@ osg::Node* Polygon::buildScene()
     group->addChild ( geode.get() );
   }
 
-  _triangleCache.insert( TriangleCache::value_type( CacheKey ( _tableName, _id ), group.get() ) );
-
   return group.release();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get geometry.
+//  Query for the interface.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Geometry* Polygon::buildGeometry()
+Usul::Interfaces::IUnknown* Polygon::queryInterface( unsigned long iid )
 {
-  return new osg::Geometry;
+  switch ( iid )
+  {
+  case Usul::Interfaces::IPolygonData::IID:
+    return static_cast < Usul::Interfaces::IPolygonData* > ( this );
+  default:
+    return BaseClass::queryInterface ( iid );
+  }
 }

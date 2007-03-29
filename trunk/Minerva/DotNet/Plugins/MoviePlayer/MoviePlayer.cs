@@ -44,9 +44,11 @@ namespace DT.Minerva.Plugins.MoviePlayer
       this.playButton.Name = "playButton";
       this.playButton.Size = new System.Drawing.Size(96, 31);
       this.playButton.TabIndex = 1;
-      this.playButton.Text = "Play";
+      this.playButton.Text = "";
       this.playButton.UseVisualStyleBackColor = true;
       this.playButton.Click += new System.EventHandler(this.playButton_Click);
+      this.playButton.Image = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/player_play.png");      
+      
       // 
       // restartButton
       // 
@@ -73,6 +75,7 @@ namespace DT.Minerva.Plugins.MoviePlayer
       // 
       // button4
       // 
+      this.button4.Enabled = false;
       this.button4.Location = new System.Drawing.Point(320, 20);
       this.button4.Name = "button4";
       this.button4.Size = new System.Drawing.Size(96, 31);
@@ -81,6 +84,7 @@ namespace DT.Minerva.Plugins.MoviePlayer
       // 
       // button3
       // 
+      this.button3.Enabled = false;
       this.button3.Location = new System.Drawing.Point(218, 20);
       this.button3.Name = "button3";
       this.button3.Size = new System.Drawing.Size(96, 31);
@@ -89,6 +93,7 @@ namespace DT.Minerva.Plugins.MoviePlayer
       // 
       // button1
       // 
+      this.button1.Enabled = false;
       this.button1.Location = new System.Drawing.Point(12, 39);
       this.button1.Name = "button1";
       this.button1.Size = new System.Drawing.Size(96, 21);
@@ -97,6 +102,7 @@ namespace DT.Minerva.Plugins.MoviePlayer
       // 
       // button2
       // 
+      this.button2.Enabled = false;
       this.button2.Location = new System.Drawing.Point(12, 70);
       this.button2.Name = "button2";
       this.button2.Size = new System.Drawing.Size(96, 21);

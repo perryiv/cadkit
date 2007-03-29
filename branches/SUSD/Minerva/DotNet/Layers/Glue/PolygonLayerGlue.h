@@ -30,10 +30,19 @@ namespace DT
         virtual ~PolygonLayerGlue();
         !PolygonLayerGlue();
 
+        [
+          System::ComponentModel::Category("DisplayOptions")
+        ]
         PROPERTY_GET_SET(ShowInterior, bool);
 
+        [
+          System::ComponentModel::Category("DisplayOptions")
+        ]
         PROPERTY_GET_SET(ShowBorder, bool);
 
+        [
+          System::ComponentModel::Category("DisplayOptions")
+        ]
         PROPERTY_GET_SET(BorderColor, System::Drawing::Color);
 
         [

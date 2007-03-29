@@ -59,7 +59,8 @@ _label(),
 _labelPosition(),
 _labelSize( 25.0f ),
 _labelColor( 1.0, 1.0, 1.0, 1.0 ),
-_geometry ( 0x0 )
+_geometry ( 0x0 ),
+_connection ( 0x0 )
 {
 }
 
@@ -337,5 +338,29 @@ void DataObject::labelSize( float size )
 float DataObject::labelSize() const
 {
   return _labelSize;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the connection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::connection ( Minerva::Core::DB::Connection* c )
+{
+  _connection = c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the connection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Minerva::Core::DB::Connection* DataObject::connection() const
+{
+  return _connection.get();
 }
 

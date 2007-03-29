@@ -816,6 +816,10 @@
 						RelativePath=".\Interfaces\ITool.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Interfaces\IToolLifeTime.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Document"

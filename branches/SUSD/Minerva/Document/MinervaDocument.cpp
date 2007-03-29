@@ -22,8 +22,6 @@
 #include "Minerva/Core/Layers/RLayer.h"
 #include "Minerva/Core/Layers/PolygonTimeLayer.h"
 
-#include "Usul/Interfaces/IPlayMovie.h"
-
 using namespace Minerva::Document;
 
 

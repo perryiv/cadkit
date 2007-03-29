@@ -130,8 +130,9 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     data->size ( this->size() );
     data->primitiveId ( this->primitiveID() );
     data->renderBin( this->renderBin() );
-    data->tableName( dataTable );
-    data->rowId( id );
+    data->connection ( this->connection() );
+    data->tableName ( dataTable );
+    data->rowId ( id );
 
      /// Set the label.
     this->_labelDataObject( data.get() );

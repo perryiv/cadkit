@@ -226,6 +226,9 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
           data->primitiveId ( this->primitiveID() );
           data->renderBin ( this->renderBin() );
           data->buildScene();
+          data->connection ( this->connection() );
+          data->tableName ( this->tablename() );
+          data->rowId ( id );
 
           // Also add to the vector of data objects.  This allows for faster updating.
           this->_addDataObject( data.get() );

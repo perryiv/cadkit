@@ -147,8 +147,9 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     data->width( _lineWidth );
     data->geometry( geometry.get() );
     data->renderBin( this->renderBin() );
-    data->tableName( dataTable );
-    data->rowId( id );
+    data->connection ( this->connection() );
+    data->tableName ( dataTable );
+    data->rowId ( id );
 
     /// Set the label.
     this->_labelDataObject( data.get() );

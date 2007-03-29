@@ -126,7 +126,8 @@ inline Minerva::Core::Layers::Layer * deserialize ( const std::string& xml )
   registerFactories();
   std::vector< Minerva::Core::Layers::Layer::RefPtr > v;
 
-  Serialize::XML::deserialize( xml, v );
+  std::istringstream in ( xml );
+  Serialize::XML::deserialize( in, v );
 
   if( !v.empty() )
     return v.front().release();

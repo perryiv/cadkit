@@ -66,6 +66,7 @@
 #include "Usul/Interfaces/IMatrixManipulator.h"
 #include "Usul/Interfaces/IDatabasePager.h"
 #include "Usul/Interfaces/ISceneUpdate.h"
+#include "Usul/Interfaces/IToolLifeTime.h"
 
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/ReportErrors.h"
@@ -3853,7 +3854,8 @@ void Viewer::handleTool ( bool left, bool middle, bool right, bool motion, float
       //if ( !( event.state & FX::CONTROLMASK ) )
       {
         // We are done with this tool.
-        if( _currentTool->lifeTime() != -1 )
+        Usul::Interfaces::IToolLifeTime::QueryPtr toolLifeTime( _currentTool->queryInterface( Usul::Interfaces::IToolLifeTime::IID ) );        
+        if( toolLifeTime.valid() && toolLifeTime->temporary() )        
         {
           this->doneTool();
         }

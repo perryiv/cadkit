@@ -58,7 +58,7 @@ public:
         XmlTree::Node::Attributes::const_iterator j = node.attributes().find ( "TypeName" );
         if ( node.attributes().end() != j )
         {
-          _value = dynamic_cast < T::element_type * > ( Factory::instance().create ( j->second ) );
+          _value = dynamic_cast < typename T::element_type * > ( Factory::instance().create ( j->second ) );
         }
       }
 

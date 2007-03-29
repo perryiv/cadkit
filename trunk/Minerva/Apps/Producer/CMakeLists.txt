@@ -17,6 +17,7 @@ INCLUDE($ENV{USUL_INC_DIR}/Usul/Make/FindBoost.cmake)
 # Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
 		     "$ENV{USUL_INC_DIR}" 
+		     "$ENV{USUL_INC_DIR}"/Experimental
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
 		     ${PRODUCER_INC_DIR} 
@@ -50,6 +51,9 @@ TARGET_LINK_LIBRARIES(MinervaProducer
   Usul
   OpenThreadsEx
   OsgTools
+  XmlTree_s
+  XmlSerialize_s
+  xerces-c
   Minerva
   Magrathea
   ${OPENTHREADS_LIB}

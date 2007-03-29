@@ -19,6 +19,7 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/postGIS/Geometry.h"
+#include "Minerva/Core/DB/Connection.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
@@ -92,6 +93,10 @@ public:
   void                  rowId( int id );
   int                   rowId() const;
 
+  /// Get/Set the database connection.
+  void                                  connection( Minerva::Core::DB::Connection* );
+  const Minerva::Core::DB::Connection * connection() const;
+
 protected:
 
   /// Use reference counting.
@@ -109,6 +114,7 @@ private:
   osg::Vec4 _labelColor;
   float _labelSize;
   Geometry::RefPtr _geometry;
+  Minerva::Core::DB::Connection::RefPtr _connection;
 
   /// Shape Factory to share across all Data Objects.
   static OsgTools::ShapeFactory::Ptr _sf;

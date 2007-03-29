@@ -17,6 +17,7 @@
 #include "XmlTree/Functions.h"
 #include "XmlTree/Document.h"
 #include "XmlTree/XercesLife.h"
+#include "XmlTree/XercesString.h"
 
 #include "Usul/Errors/Assert.h"
 #include "Usul/Exceptions/Thrower.h"
@@ -27,10 +28,13 @@
 #include "xercesc/dom/DOMNodeList.hpp"
 #include "xercesc/parsers/XercesDOMParser.hpp"
 #include "xercesc/util/OutOfMemoryException.hpp"
+#include "xercesc/framework/LocalFileInputSource.hpp"
+#include "xercesc/framework/MemBufInputSource.hpp"
 
 #include <stdexcept>
 #include <memory>
 #include <iostream>
+#include <iterator>
 
 using namespace XmlTree;
 
@@ -74,6 +78,23 @@ Loader::~Loader()
 
 namespace Helper
 {
+  xercesc::DOMDocument *load ( xercesc::InputSource& input )
+  {
+    // Make new parser.
+      std::auto_ptr<xercesc::XercesDOMParser> parser ( new xercesc::XercesDOMParser );
+      parser->setValidationScheme ( xercesc::XercesDOMParser::Val_Always );
+
+      // Parse the file.
+      parser->parse ( input );
+
+      // Normalize the document. I think this eliminates empty nodes that 
+      // Xerces may create.
+      parser->getDocument()->normalizeDocument();
+
+      // Take over ownership of document and return it.
+      return parser->adoptDocument();
+  }
+
   xercesc::DOMDocument *load ( const std::string &file )
   {
     // Check file existance.
@@ -86,19 +107,9 @@ namespace Helper
     // Safely...
     try
     {
-      // Make new parser.
-      std::auto_ptr<xercesc::XercesDOMParser> parser ( new xercesc::XercesDOMParser );
-      parser->setValidationScheme ( xercesc::XercesDOMParser::Val_Always );
+      xercesc::LocalFileInputSource input ( XmlTree::fromNative( file ).c_str() );
 
-      // Parse the file.
-      parser->parse ( file.c_str() );
-
-      // Normalize the document. I think this eliminates empty nodes that 
-      // Xerces may create.
-      parser->getDocument()->normalizeDocument();
-
-      // Take over ownership of document and return it.
-      return parser->adoptDocument();
+      return load ( input );
     }
 
     // Catch and re-throw exceptions.
@@ -247,6 +258,52 @@ void Loader::load ( const std::string &file, Document *doc )
   std::auto_ptr<xercesc::DOMDocument> dom ( Helper::load ( file ) );
   if ( 0x0 == dom.get() )
     Usul::Exceptions::Thrower<std::runtime_error> ( "Error 1221774659: Failed to create DOM document from XML file: ", file );
+
+  // Handle no document element.
+  xercesc::DOMElement *element ( dom.get()->getDocumentElement() );
+  if ( 0x0 == element )
+    return;
+
+  // Handle document's element not having a name. Only a header in the file?
+  const std::string name ( XmlTree::Functions::name ( element ) );
+  if ( name.empty() )
+    return;
+
+  // Set the name.
+  doc->name ( name );
+
+  // Traverse the tree and make our nodes.
+  Helper::traverse ( element, doc );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  From stream.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Loader::load ( const std::istream & stream, Document *doc ) const
+{
+  typedef std::string Container;
+  typedef std::istreambuf_iterator < Container::value_type > Iterator;
+
+  std::istream& in ( const_cast < std::istream& > ( stream ) );
+
+  Container contents;
+
+  Iterator iter ( in );
+
+  std::copy ( iter, Iterator (), std::back_inserter ( contents ) );
+
+  XercesString buffer ( XmlTree::fromNative ( contents ) );
+
+  xercesc::MemBufInputSource input ( (const XMLByte*) buffer.c_str(), buffer.length(), "xml in memory parse", false  );
+
+  // Load document.
+  std::auto_ptr<xercesc::DOMDocument> dom ( Helper::load ( input ) );
+  if ( 0x0 == dom.get() )
+    Usul::Exceptions::Thrower<std::runtime_error> ( "Error 1221774659: Failed to create DOM document from XML." );
 
   // Handle no document element.
   xercesc::DOMElement *element ( dom.get()->getDocumentElement() );

@@ -25,9 +25,6 @@
 #include <string>
 #include <functional>
 
-#include <io.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 namespace Usul {
 namespace Predicates {
@@ -74,13 +71,8 @@ public:
 
   static bool test ( const std::string &s )
   {
-#ifdef _MSC_VER
-    return ::_access ( s.c_str(), 0 ) != -1;
-#else
-    return ::access ( s.c_str(), 0 ) != -1;
-#endif
-    /*File file ( s );
-    return file.exists();*/
+    File file ( s );
+    return file.exists();
   }
 
   bool operator () ( const std::string &s ) const

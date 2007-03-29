@@ -20,7 +20,6 @@
 
 #include <string>
 
-
 namespace XmlTree {
 
 class Document;
@@ -35,6 +34,7 @@ public:
 
   // Load contents of file and build the document.
   void                    load ( const std::string &, Document * );
+  void                    load ( const std::istream &, Document * ) const;
 };
 
 

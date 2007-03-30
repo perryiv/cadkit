@@ -23,10 +23,12 @@
 #include "Usul/Interfaces/ISceneIntersect.h"
 #include "Usul/Interfaces/IGetDocument.h"
 #include "Usul/Interfaces/IDistributedVR.h"
+#include "Usul/Interfaces/IGeometryCenter.h"
 
 #include "Minerva/Core/DataObjects/DataObject.h"
 #include "Minerva/Core/DataObjects/UserData.h"
 #include "Minerva/Core/DB/Connection.h"
+#include "Minerva/Core/postGIS/Point.h"
 
 #include "osgUtil/IntersectVisitor"
 
@@ -127,8 +129,33 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
         {
           // Query for IDistributedVR
           Usul::Interfaces::IDistributedVR::QueryPtr distributed ( getDocument->getDocument() );
-          
-          // Send command.
+
+          Minerva::Core::DB::Connection::RefPtr connection ( userdata->_do->connection() );
+
+          std::string movieTable ( "rob_artwalk" );
+          std::ostringstream query;
+          query << "SELECT asBinary(quad_position), asBinary(quad_height), asBinary(quad_width), lin_path, id FROM " << movieTable << " WHERE row_id=" << rowId;
+
+          pqxx::result result ( connection->executeQuery ( query.str() ) );
+
+          if( false == result.empty() )
+          {
+            Minerva::Core::postGIS::Point::RefPtr positionGeom ( new Minerva::Core::postGIS::Point ( connection.get(), movieTable, result[0]["id"].as < int > (), 4326, result[0]["quad_position"] ) );
+            Minerva::Core::postGIS::Point::RefPtr heightGeom ( new Minerva::Core::postGIS::Point ( connection.get(), movieTable, result[0]["id"].as < int > (), 4326, result[0]["quad_height"] ) );
+            Minerva::Core::postGIS::Point::RefPtr widthGeom ( new Minerva::Core::postGIS::Point ( connection.get(), movieTable, result[0]["id"].as < int > (), 4326, result[0]["quad_width"] ) );
+
+            Usul::Interfaces::IGeometryCenter::QueryPtr position ( positionGeom );
+            Usul::Interfaces::IGeometryCenter::QueryPtr height ( heightGeom );
+            Usul::Interfaces::IGeometryCenter::QueryPtr width ( widthGeom );
+
+            if( position.valid() && height.valid() && width.valid() )
+            {
+              std::string path ( result[0]["lin_path"].as < std::string > () );
+              
+              // Send command.
+              distributed->playMovie ( position->geometryCenter(), height->geometryCenter(), width->geometryCenter(), path );
+            }
+          }
         }
 
         Usul::Interfaces::IGroup::QueryPtr gr( caller );

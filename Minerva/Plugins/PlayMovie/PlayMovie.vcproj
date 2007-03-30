@@ -122,7 +122,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR)/Experimental;$(CADKIT_ROOT_DIR);$(CINEMA_INC_DIR)/src;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR);$(PQXX_INC_DIR);$(OSSIM_INC_DIR)"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PLAYMOVIE_EXPORTS;_COMPILING_PLAY_MOVIE;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PLAYMOVIE_EXPORTS;_COMPILING_PLAY_MOVIE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -144,6 +144,7 @@
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/PlayMovie.plug"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(CINEMA_LIB_DIR);$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(PQXX_LIB_DIR)"
+				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

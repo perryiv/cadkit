@@ -27,7 +27,7 @@
 #include "Usul/Interfaces/ITool.h"
 #include "Usul/Interfaces/IToolLifeTime.h"
 
-#include "Core/Movie.h"
+#include "Cinema/Core/Movie.h"
 
 namespace osg{ class Node; }
 

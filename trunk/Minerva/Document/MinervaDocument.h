@@ -11,8 +11,6 @@
 #ifndef __MINERVA_DOCUMENT_H__
 #define __MINERVA_DOCUMENT_H__
 
-#include "Minerva/Core/Serialize.h"
-
 #include "Export.h"
 
 #include "Usul/Documents/Document.h"
@@ -23,14 +21,13 @@
 #include "Usul/Interfaces/IMatrixManipulator.h"
 
 #include "Minerva/Core/Scene/SceneManager.h"
+#include "Minerva/Core/GUI/Controller.h"
 
 #include "Magrathea/Planet.h"
 
 #include "Serialize/XML/Macros.h"
 
 class ossimPlanetTextureLayer;
-
-namespace boost { namespace serialization { class access; } }
 
 namespace Minerva {
 namespace Document {
@@ -134,11 +131,11 @@ public:
   void                        setMovieMode( bool b );
 
   /// For now
-  void                        viewer( Usul::Interfaces::IUnknown* viewer );
+  void                              viewer( Usul::Interfaces::IUnknown* viewer );
 
-  void                             addToFavorites( Minerva::Core::Layers::Layer* layer );
-  Minerva::Core::Layers::Layer *   createFavorite( const std::string& name ) const;
-  Names                            favorites() const;
+  void                              addToFavorites( Minerva::Core::Layers::Layer* layer );
+  Minerva::Core::Layers::Layer *    createFavorite( const std::string& name ) const;
+  Names                             favorites() const;
 protected:
   virtual ~MinervaDocument();
 
@@ -154,22 +151,19 @@ protected:
   /// Usul::Interfaces::IUpdateScene
   virtual void                             sceneUpdate( );
 private:
-  friend class boost::serialization::access;
-  template < class Archive > void serialize( Archive &ar, const unsigned int version );
 
   Favorites _favorites;
   Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
   osg::ref_ptr < Magrathea::Planet > _planet;
 
+  bool _useDistributed;
+  std::string _sessionName;
+  Minerva::Core::GUI::Controller::RefPtr _distributed;
+
+
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS ( MinervaDocument );
 };
-
-template < class Archive >
-void MinervaDocument::serialize( Archive &ar, const unsigned int version )
-{
-  ar & boost::serialization::make_nvp( "Favorites", _favorites );
-}
 
 
 }

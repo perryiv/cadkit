@@ -40,12 +40,18 @@ USUL_IMPLEMENT_TYPE_ID ( MinervaDocument );
 MinervaDocument::MinervaDocument() : BaseClass( "Minerva Document" ),
 _favorites(),
 _sceneManager ( new Minerva::Core::Scene::SceneManager ),
-_planet ( new Magrathea::Planet )
+_planet ( new Magrathea::Planet ),
+_useDistributed ( false ),
+_sessionName(),
+_distributed ( new Minerva::Core::GUI::Controller )
 {
   _planet->init();
   _planet->root()->addChild( _sceneManager->root() );
 
   SERIALIZE_XML_ADD_MEMBER ( _favorites );
+  SERIALIZE_XML_ADD_MEMBER ( _useDistributed );
+  SERIALIZE_XML_ADD_MEMBER ( _sessionName );
+  SERIALIZE_XML_ADD_MEMBER ( _distributed );
 }
 
 
@@ -117,7 +123,7 @@ bool MinervaDocument::canInsert ( const std::string &file ) const
 bool MinervaDocument::canOpen ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "minerva" );
+  return ( ext == "minerva" || ext == "kwl" );
 }
 
 

@@ -20,12 +20,7 @@
 
 #include "pqxx/pqxx"
 
-#include "boost/serialization/nvp.hpp"
-#include "boost/serialization/split_member.hpp"
-
 #include <string>
-
-namespace boost { namespace serialization { class access; } }
 
 namespace Minerva {
 namespace Core {
@@ -88,10 +83,6 @@ protected:
   int                  _getMaxId( const std::string& table );
 
 private:
-  friend class boost::serialization::access;
-  template<class Archive> void save(Archive & ar, const unsigned int version) const;
-  template<class Archive> void load(Archive & ar, const unsigned int version);
-  BOOST_SERIALIZATION_SPLIT_MEMBER()
 
   std::string _host;
   std::string _database;
@@ -118,26 +109,6 @@ protected:
     _dataMemberMap.addMember ( name, value );
   }
 };
-
-template< class Archive >
-void Connection::save( Archive &ar, const unsigned int version ) const
-{
-  ar & boost::serialization::make_nvp ( "Host", _host );
-  ar & boost::serialization::make_nvp ( "Database", _database );
-  ar & boost::serialization::make_nvp ( "User", _user );
-  ar & boost::serialization::make_nvp ( "Password", _password );
-}
-
-template< class Archive >
-void Connection::load( Archive &ar, const unsigned int version )
-{
-  ar & boost::serialization::make_nvp ( "Host", _host );
-  ar & boost::serialization::make_nvp ( "Database", _database );
-  ar & boost::serialization::make_nvp ( "User", _user );
-  ar & boost::serialization::make_nvp ( "Password", _password );
-
-  this->connect();
-}
 
 }
 }

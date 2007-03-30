@@ -104,6 +104,21 @@ template < class Container > inline void deserialize ( const std::string &file, 
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize the objects.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Container > inline void deserialize ( const std::istream &stream, Container &c )
+{
+  XmlTree::XercesLife life;
+  XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
+  document->load ( stream );
+  deserialize ( *document, c );
+}
+
+
 } // namespace Serialize
 } // namespace XML
 

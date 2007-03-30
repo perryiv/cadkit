@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="XmlTreed.lib SerializeXMLd.lib Usuld.lib OsgToolsd.lib OpenThreadsExd.lib CadKit.Magrathead.lib Minervad.lib  libpqxxd.lib osgDBd.lib osgd.lib osgProducerd.lib osgUtild.lib openGL32.lib osgGAd.lib producerd.lib ossimd.lib ossimPlanetd.lib"
+				AdditionalDependencies="OpenThreadsExd.lib CadKit.Magrathead.lib libpqxxd.lib osgDBd.lib osgd.lib osgProducerd.lib osgUtild.lib openGL32.lib osgGAd.lib producerd.lib ossimd.lib ossimPlanetd.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)\bin\wnv_viz_d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(CADKIT_ROOT_DIR)/bin&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;;&quot;$(OSSIM_PLANET_LIB_DIR)&quot;"

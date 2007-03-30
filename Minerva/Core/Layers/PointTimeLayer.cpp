@@ -215,12 +215,12 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
         int id ( i["id"].as< int > () );
         int srid ( i["srid"].as< int> () );
 
-        Minerva::Core::postGIS::Geometry::RefPtr geometry ( new Minerva::Core::postGIS::Point ( this->connection(), this->tablename(), id, srid, i["geom"] ) );
+        Usul::Interfaces::IUnknown::QueryPtr geometry ( new Minerva::Core::postGIS::Point ( this->connection(), this->tablename(), id, srid, i["geom"] ) );
 
-        if( geometry->valid() )
+        if( geometry.valid() )
         {
           Minerva::Core::DataObjects::PointTime::RefPtr data ( new Minerva::Core::DataObjects::PointTime( firstDate, lastDate ) );
-          data->geometry( geometry.get() );
+          data->geometry( geometry );
           data->color ( this->_color ( i ) );
           data->size ( this->size() );
           data->primitiveId ( this->primitiveID() );

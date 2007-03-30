@@ -59,7 +59,7 @@ _label(),
 _labelPosition(),
 _labelSize( 25.0f ),
 _labelColor( 1.0, 1.0, 1.0, 1.0 ),
-_geometry ( 0x0 ),
+_geometry ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
 _connection ( 0x0 )
 {
 }
@@ -259,7 +259,7 @@ const osg::Vec3& DataObject::labelPosition () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DataObject::geometry( Geometry *geometry )
+void DataObject::geometry( Unknown *geometry )
 {
   _geometry = geometry;
   this->dirty( true );
@@ -272,7 +272,7 @@ void DataObject::geometry( Geometry *geometry )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DataObject::Geometry* DataObject::geometry()
+DataObject::Unknown* DataObject::geometry()
 {
   return _geometry.get();
 }
@@ -284,7 +284,7 @@ DataObject::Geometry* DataObject::geometry()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const DataObject::Geometry* DataObject::geometry() const
+const DataObject::Unknown* DataObject::geometry() const
 {
   return _geometry.get();
 }

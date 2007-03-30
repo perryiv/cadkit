@@ -828,11 +828,13 @@ void DllGlue::restart( CadKit::Viewer::Glue::Viewer^ v )
   }  
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Movie currently playing? 
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 bool DllGlue::isPlaying()
 {
   Usul::Interfaces::IPlayMovie::QueryPtr component = Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlayMovie::IID );
@@ -840,13 +842,17 @@ bool DllGlue::isPlaying()
   {
     return component->isPlaying();
   }
+
+  return false;
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Movie currently paused? 
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 bool DllGlue::isPaused()
 {
   Usul::Interfaces::IPlayMovie::QueryPtr component = Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlayMovie::IID );
@@ -854,4 +860,6 @@ bool DllGlue::isPaused()
   {
     return component->isPaused();
   }
+
+  return false;
 }

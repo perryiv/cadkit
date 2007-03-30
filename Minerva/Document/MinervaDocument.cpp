@@ -202,6 +202,10 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller )
     MinervaReader reader ( filename, caller, this );
     reader();
   }
+  if( "kwl" == ext )
+  {
+    _planet->readKWL( filename );
+  }
 }
 
 

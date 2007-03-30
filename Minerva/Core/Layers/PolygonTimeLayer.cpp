@@ -208,7 +208,7 @@ void PolygonTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 
     if ( _drawMode == POLYGON )
     {
-      Minerva::Core::postGIS::Geometry::RefPtr geometry ( new Minerva::Core::postGIS::Polygon ( this->connection(), dataTable, id, srid, iter["geom"] ) );
+      Usul::Interfaces::IUnknown::QueryPtr geometry ( new Minerva::Core::postGIS::Polygon ( this->connection(), dataTable, id, srid, iter["geom"] ) );
 
       Minerva::Core::DataObjects::Polygon::RefPtr data ( new Minerva::Core::DataObjects::Polygon );
 
@@ -235,7 +235,7 @@ void PolygonTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     {
       Minerva::Core::DataObjects::Point::RefPtr data ( new Minerva::Core::DataObjects::Point );
 
-      Minerva::Core::postGIS::Geometry::RefPtr geometry ( new Minerva::Core::postGIS::Point ( this->connection(), dataTable, id, srid, iter["geom"] ) );
+      Usul::Interfaces::IUnknown::QueryPtr geometry ( new Minerva::Core::postGIS::Point ( this->connection(), dataTable, id, srid, iter["geom"] ) );
       data->geometry( geometry.get() );
       data->size( fieldValue * _zScaleFactor );
       data->primitiveId ( Minerva::Core::DataObjects::Point::CYLINDER );

@@ -126,6 +126,7 @@ void PolygonLayerGlue::ShowBorder::set( bool value )
   _polygonLayer->border( value );
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Get the color for the border.
@@ -156,4 +157,28 @@ void PolygonLayerGlue::BorderColor::set( System::Drawing::Color color )
   float b ( ( static_cast < float > ( color.B ) ) / 255.0 );
   float a ( ( static_cast < float > ( color.A ) ) / 255.0 );
   _polygonLayer->borderColor( osg::Vec4 ( r, g, b, a ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show interior flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PolygonLayerGlue::ShowInterior::get()
+{
+  return _polygonLayer->showInterior();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the show interior flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PolygonLayerGlue::ShowInterior::set( bool value )
+{
+  _polygonLayer->showInterior( value );
 }

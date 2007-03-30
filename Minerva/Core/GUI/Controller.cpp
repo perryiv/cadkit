@@ -9,8 +9,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/GUI/Controller.h"
+#include "Minerva/Core/Serialize.h"
 
-#pragma warning ( disable : 4561 )
+#ifdef _MSC_VER
+# pragma warning ( disable : 4561 )
+#endif
+
 #include "boost/algorithm/string/trim.hpp"
 #include "boost/algorithm/string/replace.hpp"
 
@@ -27,6 +31,19 @@ namespace Detail
     os << t;
     return os.str();
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Controller::Controller( ) :
+_connection ( new Minerva::Core::DB::Connection ),
+_sessionID( 0 )
+{
+  SERIALIZE_XML_ADD_MEMBER ( _connection );
 }
 
 
@@ -46,6 +63,8 @@ _sessionID( 0 )
   _connection->password( password );
   
   _connection->connect();
+
+  SERIALIZE_XML_ADD_MEMBER ( _connection );
 }
 
 
@@ -207,7 +226,7 @@ int Controller::_executeLayerQuery( Minerva::Core::Layers::Layer *layer )
   values.push_back( Values::value_type ( "xml_data",    xml ) );
 
   int id ( _connection->executeInsertQuery("wnv_layers", values ) );
-  //layer->layerID( id );
+
   return id;
 }
 

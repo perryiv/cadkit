@@ -11,11 +11,10 @@
 #ifndef __GUI_CONTROLLER_H__
 #define __GUI_CONTROLLER_H__
 
-// Must be included first.
-#include "Minerva/Core/Serialize.h"
-
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/DB/Connection.h"
+
+#include "Serialize/XML/Macros.h"
 
 #include <vector>
 #include <string>
@@ -31,6 +30,9 @@ public:
   /// Typedef(s).
   typedef std::vector<std::string> Strings;
 
+  USUL_DECLARE_REF_POINTERS ( Controller );
+
+  Controller();
   Controller(const std::string& database, const std::string& user, const std::string& password, const std::string& host );
 
   /// Connect to a session.
@@ -73,6 +75,9 @@ private:
 
   Minerva::Core::DB::Connection::RefPtr _connection;
   unsigned int _sessionID;
+
+  SERIALIZE_XML_DEFINE_MAP;
+  SERIALIZE_XML_DEFINE_MEMBERS ( Controller );
 };
 
 }

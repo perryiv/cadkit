@@ -45,7 +45,7 @@ PlayMovieComponent::PlayMovieComponent()
   
   if( !_movie.valid() )
   {
-    throw "Error 1105724513: Failed to create or get an instance ";
+    throw std::runtime_error ( "Error 1105724513: Failed to create or get an instance." );
   }
 }
 
@@ -118,8 +118,8 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
 
       if( userdata.valid() )
       {
-        userdata->_do->tableName();
-        userdata->_do->rowId();
+        std::string tablename ( userdata->_do->tableName() );
+        unsigned int rowId ( userdata->_do->rowId() );
 
         // get active document.
         // Query for IDistributedVR
@@ -135,7 +135,7 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
           {
             group->removeChildren( 0, group->getNumChildren() );
             group->addChild( node.get() );
-          }    
+          }
         }
       }
       else

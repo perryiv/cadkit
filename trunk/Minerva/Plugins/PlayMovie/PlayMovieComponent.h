@@ -69,7 +69,7 @@ public:
 protected:
   
   /// Play a movie given position, width, height vector and filename. 
-  osg::Node* playMovie( const osg::Vec3f&, const osg::Vec3f&, const osg::Vec3f& , const std::string& );
+  osg::Node* playMovie( const osg::Vec3f&, const osg::Vec3f&, const osg::Vec3f& , const std::string& );  
 
   /// Return name of plugin.
   virtual std::string           getPluginName() const;

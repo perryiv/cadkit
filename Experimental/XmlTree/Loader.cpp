@@ -296,13 +296,7 @@ void Loader::load ( const std::istream & stream, Document *doc ) const
 
   std::copy ( iter, Iterator (), std::back_inserter ( contents ) );
 
-  XercesString buffer ( XmlTree::fromNative ( contents ) );
-  buffer.resize( buffer.size() + 1 );
-  buffer[ buffer.size() - 1 ] = '\0';
-
-  unsigned int length ( buffer.length() );
-
-  xercesc::MemBufInputSource input ( (const XMLByte*) buffer.c_str(), buffer.length(), "xml in memory parse", false  );
+  xercesc::MemBufInputSource input ( (const XMLByte*) contents.c_str(), contents.length(), "xml in memory parse", false  );
 
   // Load document.
   std::auto_ptr<xercesc::DOMDocument> dom ( Helper::load ( input ) );

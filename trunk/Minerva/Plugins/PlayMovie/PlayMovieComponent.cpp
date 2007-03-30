@@ -101,6 +101,7 @@ bool PlayMovieComponent::temporary()
 ///////////////////////////////////////////////////////////////////////////////
 bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool right, bool motion, float x, float y, float z )
 { 
+  std::cout << "execute: " << std::endl;
   Usul::Interfaces::ISceneIntersect::QueryPtr intersect ( caller );
 
   if( intersect.valid() )
@@ -137,6 +138,36 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
           }    
         }
       }
+      else
+      {
+        Usul::Interfaces::IGroup::QueryPtr gr( caller );
+        if( gr.valid() )
+        {   
+          osg::ref_ptr< osg::Group > group( gr->getGroup( "movie_node_4047781649" ) );
+          osg::ref_ptr< osg::Node >  node ( playMovie( osg::Vec3f(), osg::Vec3f(), osg::Vec3f(), "test.avi" ) );
+
+          if( node.valid() )
+          {
+            group->removeChildren( 0, group->getNumChildren() );
+            group->addChild( node.get() );
+          }    
+        }
+      }
+    }
+    else
+    {
+      Usul::Interfaces::IGroup::QueryPtr gr( caller );
+      if( gr.valid() )
+      {   
+        osg::ref_ptr< osg::Group > group( gr->getGroup( "movie_node_4047781649" ) );
+        osg::ref_ptr< osg::Node >  node ( playMovie( osg::Vec3f(), osg::Vec3f(), osg::Vec3f(), "test.avi" ) );
+
+        if( node.valid() )
+        {
+          group->removeChildren( 0, group->getNumChildren() );
+          group->addChild( node.get() );
+        }    
+       }
     }
   }
 
@@ -202,20 +233,7 @@ bool PlayMovieComponent::isPaused()
 osg::Node* PlayMovieComponent::playMovie( const osg::Vec3f& position, const osg::Vec3f& widthVector, const osg::Vec3f& heightVector, const std::string& fileName )
 {
   // For test purposes. 
-  static unsigned int oneTime = 0;
-
-  if( oneTime == 0 )
-  {
-    _movie->setMovie( osg::Vec3f( -2.0, 0.0, 0.0 ), osg::Vec3f( 2.0, 2.0, 0.0 ), osg::Vec3f( 0.0, 0.0, 2.0 ), "C:\\Aashish\\src\\bin\\test5.avi" );
-    ++oneTime;
-  }
-  else if( oneTime == 2 )
-  {
-    _movie->setMovie( osg::Vec3f( -2.0, 0.0, 0.0 ), osg::Vec3f( 2.0, 2.0, 0.0 ), osg::Vec3f( 0.0, 0.0, 2.0 ), "C:\\Aashish\\src\\bin\\test5.avi" );
-  }
-
-  ++oneTime;
-
+  _movie->setMovie( osg::Vec3f( -2.0, 0.0, 0.0 ), osg::Vec3f( 2.0, 2.0, 0.0 ), osg::Vec3f( 0.0, 0.0, 2.0 ), "C:\\Aashish\\src\\bin\\test5.avi" );
   _movie->buildScene();
   _movie->play();          
 

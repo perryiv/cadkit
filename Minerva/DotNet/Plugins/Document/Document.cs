@@ -43,7 +43,6 @@ namespace DT.Minerva.Plugins.Document
     public Document()
       : base()
     {
-      this._parseConfigFile();
     }
 
 

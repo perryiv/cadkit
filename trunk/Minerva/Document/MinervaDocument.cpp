@@ -63,6 +63,7 @@ _distributed ( new Minerva::Core::GUI::Controller )
 
 MinervaDocument::~MinervaDocument()
 {
+  _distributed->deleteSession();
 }
 
 
@@ -266,6 +267,7 @@ void MinervaDocument::removeLayer ( Minerva::Core::Layers::Layer * layer )
 {
   _sceneManager->removeLayer( layer->layerID() );
   this->modified( true );
+  this->_removeLayerDistributed( layer->layerID() );
 }
 
 
@@ -279,6 +281,7 @@ void MinervaDocument::hideLayer   ( Minerva::Core::Layers::Layer * layer )
 {
   layer->showLayer ( false );
   _sceneManager->dirty( true );
+  this->_removeLayerDistributed( layer->layerID() );
 }
 
 
@@ -292,6 +295,7 @@ void MinervaDocument::showLayer   ( Minerva::Core::Layers::Layer * layer )
 {
   layer->showLayer ( true );
   _sceneManager->dirty( true );
+  this->_showLayerDistributed( layer );
 }
 
 
@@ -305,7 +309,9 @@ void MinervaDocument::addLayer   ( Minerva::Core::Layers::Layer * layer, Unknown
 {
   layer->buildDataObjects( caller );
   _sceneManager->addLayer( layer );
+  this->_showLayerDistributed( layer );
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -316,6 +322,7 @@ void MinervaDocument::addLayer   ( Minerva::Core::Layers::Layer * layer, Unknown
 void MinervaDocument::modifyLayer ( Minerva::Core::Layers::Layer * layer, Unknown *caller )
 {
   layer->modify( caller );
+  this->_modifyLayerDistributed( layer );
 }
 
 
@@ -447,6 +454,7 @@ OsgTools::Animate::Settings::TimestepType MinervaDocument::timestepType( ) const
 void MinervaDocument::startAnimation( float speed, bool accumulate, bool timeWindow, int numDays )
 {
   _sceneManager->animate(true, accumulate, speed, timeWindow, numDays);
+  this->_startAnimationDistributed( speed, accumulate, true, timeWindow, numDays );
 }
 
 
@@ -459,6 +467,7 @@ void MinervaDocument::startAnimation( float speed, bool accumulate, bool timeWin
 void MinervaDocument::stopAnimation()
 {
   _sceneManager->animate(false, false, 0.0, false, 0);
+  this->_stopAnimationDistributed();
 }
 
 
@@ -792,4 +801,109 @@ MinervaDocument::Names MinervaDocument::favorites() const
   }
 
   return names;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Connect the the distributed session.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_connectToDistributedSession()
+{
+  if ( _useDistributed && _distributed->connected() )
+  {
+    _distributed->connectToSession ( _sessionName );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove layer with given id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_removeLayerDistributed( unsigned int layerID )
+{
+  if( _useDistributed )
+  {
+    // Lazy connection.
+    this->_connectToDistributedSession();
+
+    _distributed->removeLayer( layerID );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_showLayerDistributed ( Minerva::Core::Layers::Layer *Layer )
+{
+  if ( _useDistributed )
+  {
+    // Lazy connection.
+    this->_connectToDistributedSession();
+
+    _distributed->showLayer( Layer );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Modify layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_modifyLayerDistributed ( Minerva::Core::Layers::Layer *layer )
+{
+  if ( _useDistributed )
+  {
+    // Lazy connection.
+    this->_connectToDistributedSession();
+
+    _distributed->modifyLayer( layer );  
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start animation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_startAnimationDistributed ( float speed, bool accumulate, bool dateTimeStep, bool timeWindow, unsigned int numDays )
+{
+  if( _useDistributed )
+  {
+    // Lazy connection.
+    this->_connectToDistributedSession();
+
+    _distributed->startAnimation( speed, accumulate, true, timeWindow, numDays );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Stop Animation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_stopAnimationDistributed ()
+{
+  if( _useDistributed )
+  {
+    // Lazy connection.
+    this->_connectToDistributedSession();
+
+    _distributed->stopAnimation();
+  }
 }

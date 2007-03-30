@@ -136,6 +136,7 @@ public:
   void                              addToFavorites( Minerva::Core::Layers::Layer* layer );
   Minerva::Core::Layers::Layer *    createFavorite( const std::string& name ) const;
   Names                             favorites() const;
+
 protected:
   virtual ~MinervaDocument();
 
@@ -150,6 +151,24 @@ protected:
 
   /// Usul::Interfaces::IUpdateScene
   virtual void                             sceneUpdate( );
+
+  /// Distributed functions.
+  void                                     _connectToDistributedSession();
+
+  /// Remove layer with given id.
+  void             _removeLayerDistributed( unsigned int layerID );
+
+  /// Show layer.
+  void             _showLayerDistributed ( Minerva::Core::Layers::Layer *Layer );
+
+  /// Modify polygon data.
+  void             _modifyLayerDistributed ( Minerva::Core::Layers::Layer *layer );
+
+  /// Start animation.
+  void             _startAnimationDistributed ( float speed, bool accumulate, bool dateTimeStep, bool timeWindow, unsigned int numDays );
+
+  /// Stop Animation.
+  void             _stopAnimationDistributed ();
 private:
 
   Favorites _favorites;

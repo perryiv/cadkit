@@ -276,7 +276,7 @@ void Cinema::Core::Movie::play()
     }
     catch( const std::exception& e )
     {
-      std::cerr << "Error ErrorNo " << std::endl;
+      std::cerr << "Error 2823321539: " << e.what() << std::endl;
     }
   }
 }

@@ -188,30 +188,34 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath="..\src\Core\Export.h"
+			<Filter
+				Name="Core"
 				>
-			</File>
-			<File
-				RelativePath="..\src\Core\Global.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Core\Movie.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Core\Movie.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Core\MovieHandler.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Core\MovieHandler.h"
-				>
-			</File>
+				<File
+					RelativePath="..\src\Cinema\Core\Export.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Cinema\Core\Global.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Cinema\Core\Movie.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Cinema\Core\Movie.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Cinema\Core\MovieHandler.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Cinema\Core\MovieHandler.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

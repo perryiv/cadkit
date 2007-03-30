@@ -53,6 +53,7 @@ _document( 0x0 )
 
 DllGlue::~DllGlue()
 {
+  _document->clear();
   Usul::Pointers::unreference ( _document );
   _document = 0x0;
 }
@@ -68,6 +69,7 @@ DllGlue::!DllGlue()
 {
   try
   {
+    _document->clear();
     Usul::Pointers::unreference ( _document );
     _document = 0x0;
   }

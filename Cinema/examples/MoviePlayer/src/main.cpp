@@ -14,7 +14,7 @@
 #include <osg/ImageStream>
 #include <osg/io_utils>
 
-#include "Core/Movie.h"
+#include "Cinema/Core/Movie.h"
 
 int main(int argc, char** argv)
 {

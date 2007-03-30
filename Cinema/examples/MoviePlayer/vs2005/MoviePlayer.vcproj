@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(PRODUCER_INC_DIR)"
+				AdditionalIncludeDirectories="../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(PRODUCER_INC_DIR);./../../../src;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgProducerd.lib osgDBd.lib Cinemad.lib"
+				AdditionalDependencies="osgd.lib osgProducerd.lib osgDBd.lib "
 				OutputFile="$(VRJCINEMA_ROOT_DIR)/bin/$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(PRODUCER_LIB_DIR);$(VRJCINEMA_ROOT_DIR)/bin;"

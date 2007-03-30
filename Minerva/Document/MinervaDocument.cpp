@@ -814,7 +814,7 @@ MinervaDocument::Names MinervaDocument::favorites() const
 
 void MinervaDocument::_connectToDistributedSession()
 {
-  if ( _useDistributed && _distributed->connected() )
+  if ( _useDistributed && !_distributed->connected() )
   {
     _distributed->connectToSession ( _sessionName );
   }
@@ -917,7 +917,7 @@ void MinervaDocument::_stopAnimationDistributed ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path )
+void MinervaDocument::playMovie ( const osg::Vec3f& position, float width, float height, const std::string& path )
 {
   if( _useDistributed )
   {

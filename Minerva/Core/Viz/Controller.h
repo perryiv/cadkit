@@ -81,7 +81,7 @@ protected:
   void _processAddLayer    ( const std::string& tableName, int eventID );
   void _processRemoveLayer ( const std::string& tableName, int eventID );
   void _processAnimation   ( const std::string& tableName, int eventID );
-
+  void _processPlayMovie   ( const std::string& tableName, int eventID );
 
   // Get the next event.
   void  _getNextEvent( int &type, std::string& tableName, int &eventId );

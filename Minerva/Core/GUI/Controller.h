@@ -65,7 +65,7 @@ public:
   void             stopAnimation();
 
   /// Play a movie.
-  void             playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path );
+  void             playMovie ( const osg::Vec3f& position, float width, float height, const std::string& path );
 
 protected:
   virtual ~Controller();

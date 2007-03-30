@@ -11,6 +11,10 @@
 // Juggler include 
 #include <vrj/Kernel/Kernel.h>
 
+#include "Usul/CommandLine/Arguments.h"
+#include "Usul/Components/Manager.h"
+#include "Usul/Interfaces/IPlugin.h"
+
 #include "Threads/OpenThreads/Mutex.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,6 +28,28 @@ Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
 
 int main( int argc, char* argv[] )
 {
+  Usul::CommandLine::Arguments::instance().set ( argc, argv );
+  // Add some plugin extensions.
+#ifdef _DEBUG
+  Usul::Components::Manager::instance().addPluginExtension ( "plugd" );
+#else
+  Usul::Components::Manager::instance().addPluginExtension ( "plug" );
+#endif
+ 
+  // Get the directory where the application lives.
+  const std::string dir ( Usul::CommandLine::Arguments::instance().directory() );
+   
+  Usul::Components::Manager::instance().addDirectory( dir );
+   
+  // Load all plugins.
+  Usul::Components::Manager::instance().load ( Usul::Interfaces::IPlugin::IID );
+   
+  // Feedback about plugins.
+  const Usul::Components::Manager::Strings names ( Usul::Components::Manager::instance().names() );
+  std::cout << "Found " << names.size() << " plugins: ";
+  std::copy ( names.begin(), names.end(), std::ostream_iterator<std::string> ( std::cout, "; " ) );
+  std::cout << std::endl;
+
   vrj::Kernel* kernel		= vrj::Kernel::instance();
   MinervaVR* application	= new MinervaVR(kernel, argc, argv);	
   

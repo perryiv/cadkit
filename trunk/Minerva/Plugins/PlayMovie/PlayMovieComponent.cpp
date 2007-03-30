@@ -21,6 +21,8 @@
 #include "Minerva/Plugins/PlayMovie/PlayMovieComponent.h"
 
 #include "Usul/Interfaces/ISceneIntersect.h"
+#include "Usul/Interfaces/IGetDocument.h"
+#include "Usul/Interfaces/IDistributedVR.h"
 
 #include "Minerva/Core/DataObjects/DataObject.h"
 #include "Minerva/Core/DataObjects/UserData.h"
@@ -119,9 +121,15 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
         std::string tablename ( userdata->_do->tableName() );
         unsigned int rowId ( userdata->_do->rowId() );
 
-        // get active document.
-        // Query for IDistributedVR
-        // Send xml command.
+        /// Get the document.
+        Usul::Interfaces::IGetDocument::QueryPtr getDocument ( caller );
+        if( getDocument.valid () )
+        {
+          // Query for IDistributedVR
+          Usul::Interfaces::IDistributedVR::QueryPtr distributed ( getDocument->getDocument() );
+          
+          // Send command.
+        }
 
         Usul::Interfaces::IGroup::QueryPtr gr( caller );
         if( gr.valid() )

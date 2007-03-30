@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Cinemad.lib osgd.lib osgUtild.lib libpqxxd.lib"
+				AdditionalDependencies="osgd.lib osgUtild.lib libpqxxd.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/PlayMovie.plugd"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(CINEMA_LIB_DIR);$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(PQXX_LIB_DIR);$(PQXX_LIB_DIR)"

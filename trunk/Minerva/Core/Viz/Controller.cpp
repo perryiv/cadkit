@@ -277,6 +277,8 @@ void Controller::_processEvents()
       break;
     case 3:
       this->_processRemoveLayer ( tableName, eventID );
+    case 4:
+      this->_processPlayMovie ( tableName, eventID );
     };
   }
 }
@@ -394,3 +396,39 @@ void Controller::_processAnimation( const std::string& tableName, int eventID )
   }
 }
 
+
+std::istream& operator >> ( std::istream& in, osg::Vec3f& v )
+{
+  in >> v.x() >> v.y() >> v.z();
+  return in;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process animation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Controller::_processPlayMovie   ( const std::string& tableName, int eventID )
+{
+  std::ostringstream query;
+  query << "SELECT * FROM " << tableName << " WHERE id = " << eventID << " AND session_id = " << _sessionID;;
+
+  pqxx::result result ( _applicationConnection->executeQuery ( query.str() ) );
+
+  if( !result.empty() )
+  {
+    std::string postionString ( result[0]["position"].as< std::string >() );
+    float width ( result[0]["width"].as < float > () );
+    float height ( result[0]["height"].as < float > () );
+    std::string path ( result[0]["path"].as < std::string > () );
+
+    osg::Vec3f position;
+    std::istringstream in ( postionString );
+    in >> position;
+
+    // Play movie.
+    // Create osg::Group from scene manager.
+    // Call play movie function and pass in group, width, height, position, and path.
+  }
+}

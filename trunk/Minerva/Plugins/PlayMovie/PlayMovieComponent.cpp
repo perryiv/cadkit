@@ -132,28 +132,24 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
 
           Minerva::Core::DB::Connection::RefPtr connection ( userdata->_do->connection() );
 
-          std::string movieTable ( "rob_artwalk" );
+          std::string movieTable ( "media" );
           std::ostringstream query;
-          query << "SELECT asBinary(quad_position), asBinary(quad_height), asBinary(quad_width), lin_path, id FROM " << movieTable << " WHERE row_id=" << rowId;
+          query << "SELECT asBinary(quad_position), height, width, lin_path, id FROM " << movieTable << " WHERE row_id=" << rowId;
 
           pqxx::result result ( connection->executeQuery ( query.str() ) );
 
           if( false == result.empty() )
           {
-            Minerva::Core::postGIS::Point::RefPtr positionGeom ( new Minerva::Core::postGIS::Point ( connection.get(), movieTable, result[0]["id"].as < int > (), 4326, result[0]["quad_position"] ) );
-            Minerva::Core::postGIS::Point::RefPtr heightGeom ( new Minerva::Core::postGIS::Point ( connection.get(), movieTable, result[0]["id"].as < int > (), 4326, result[0]["quad_height"] ) );
-            Minerva::Core::postGIS::Point::RefPtr widthGeom ( new Minerva::Core::postGIS::Point ( connection.get(), movieTable, result[0]["id"].as < int > (), 4326, result[0]["quad_width"] ) );
+            Minerva::Core::postGIS::Point::RefPtr positionGeom ( new Minerva::Core::postGIS::Point ( connection.get(), movieTable, result[0]["id"].as < int > (), 4326, result[0][0] ) );
 
             Usul::Interfaces::IGeometryCenter::QueryPtr position ( positionGeom );
-            Usul::Interfaces::IGeometryCenter::QueryPtr height ( heightGeom );
-            Usul::Interfaces::IGeometryCenter::QueryPtr width ( widthGeom );
 
-            if( position.valid() && height.valid() && width.valid() )
+            if( position.valid() )
             {
               std::string path ( result[0]["lin_path"].as < std::string > () );
               
               // Send command.
-              distributed->playMovie ( position->geometryCenter(), height->geometryCenter(), width->geometryCenter(), path );
+              distributed->playMovie ( position->geometryCenter(), result[0]["width"].as < float > (), result[0]["height"].as < float > (), path );
             }
           }
         }

@@ -319,7 +319,7 @@ void Controller::stopAnimation()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Controller::playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path )
+void Controller::playMovie ( const osg::Vec3f& position, float width, float height, const std::string& path )
 {
   typedef Minerva::Core::DB::Connection::Values Values;
   Values values;
@@ -330,7 +330,7 @@ void Controller::playMovie ( const osg::Vec3f& position, const osg::Vec3f& width
   values.push_back ( Values::value_type ( "height", Detail::toString ( height ) ) );
   values.push_back ( Values::value_type ( "path", Detail::toString ( path ) ) );
 
-  int eventId ( _connection->executeInsertQuery("playMovie", values) );
+  int eventId ( _connection->executeInsertQuery("play_movie", values) );
 
   this->_executeEventTableQuery(4, eventId);
 }

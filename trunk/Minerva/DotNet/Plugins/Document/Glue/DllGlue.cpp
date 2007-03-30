@@ -66,8 +66,15 @@ DllGlue::~DllGlue()
 
 DllGlue::!DllGlue()
 {
-  Usul::Pointers::unreference ( _document );
-  _document = 0x0;
+  try
+  {
+    Usul::Pointers::unreference ( _document );
+    _document = 0x0;
+  }
+  catch ( System::Exception ^e )
+  {
+    System::Console::WriteLine( "Error 3775065703:" + e->Message );
+  }
 }
 
 

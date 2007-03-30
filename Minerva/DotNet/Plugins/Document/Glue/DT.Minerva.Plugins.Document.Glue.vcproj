@@ -225,14 +225,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\DistributedGlue.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\DistributedGlue.h"
-				>
-			</File>
-			<File
 				RelativePath=".\DllGlue.cpp"
 				>
 			</File>

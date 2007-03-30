@@ -41,7 +41,8 @@ namespace Detail
 
 Controller::Controller( ) :
 _connection ( new Minerva::Core::DB::Connection ),
-_sessionID( 0 )
+_sessionID( 0 ),
+_connected ( false )
 {
   SERIALIZE_XML_ADD_MEMBER ( _connection );
 }
@@ -55,7 +56,8 @@ _sessionID( 0 )
 
 Controller::Controller( const std::string& database, const std::string& user, const std::string& password, const std::string& host ) :
 _connection ( new Minerva::Core::DB::Connection ),
-_sessionID( 0 )
+_sessionID( 0 ),
+_connected ( false )
 {
   _connection->database( database );
   _connection->hostname( host );
@@ -77,6 +79,18 @@ _sessionID( 0 )
 Controller::~Controller()
 {
   _connection->disconnect();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are we connected to the session?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Controller::connected() const
+{
+  return _connected;
 }
 
 
@@ -110,6 +124,7 @@ int Controller::connectToSession( const std::string& name )
     this->connectToSession ( name );
   }
 
+  _connected = true;
   return _sessionID;
 }
 

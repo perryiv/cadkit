@@ -35,6 +35,9 @@ public:
   Controller();
   Controller(const std::string& database, const std::string& user, const std::string& password, const std::string& host );
 
+  /// Are we connected to the session?
+  bool             connected() const;
+
   /// Connect to a session.
   int              connectToSession( const std::string& name );
 
@@ -75,6 +78,7 @@ private:
 
   Minerva::Core::DB::Connection::RefPtr _connection;
   unsigned int _sessionID;
+  bool _connected;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS ( Controller );

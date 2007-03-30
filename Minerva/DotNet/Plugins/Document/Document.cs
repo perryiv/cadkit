@@ -35,10 +35,6 @@ namespace DT.Minerva.Plugins.Document
     private System.Collections.Generic.List<CadKit.Interfaces.ILayer> _layers = new System.Collections.Generic.List<CadKit.Interfaces.ILayer>();
 
     private DT.Minerva.Plugins.Document.Glue.DllGlue _dll = new DT.Minerva.Plugins.Document.Glue.DllGlue();
-    private DT.Minerva.Plugins.Document.Glue.DistributedGlue _distributed = new DT.Minerva.Plugins.Document.Glue.DistributedGlue();
-
-    private bool _useDll = true;
-    private bool _useDistributed = false;
 
 
     /// <summary>
@@ -76,14 +72,8 @@ namespace DT.Minerva.Plugins.Document
     {
       try
       {
-        if (this.Distributed && null != _distributed)
-        {
-          _distributed.deleteSession();
-          _distributed.disconnect();
-        }
-
         _dll = null;
-        _distributed = null;
+
         base._cleanup();
       }
       catch (System.Exception e)
@@ -166,34 +156,6 @@ namespace DT.Minerva.Plugins.Document
         filters.Add(new CadKit.Interfaces.Filter("Minerva Document (*.minerva)", "*.minerva"));
         return filters;
       }
-    }
-
-
-    /// <summary>
-    /// Connect to the session.
-    /// </summary>
-    public void connectToSession(string name)
-    {
-      _distributed.connectToSession(name);
-
-#if FALSE
-      string message = "Do you want to launch a instance of the viz client locally?";
-      string caption = "Launch viz client?";
-      System.Windows.Forms.MessageBoxButtons buttons = System.Windows.Forms.MessageBoxButtons.YesNo;
-      System.Windows.Forms.MessageBoxIcon icon = System.Windows.Forms.MessageBoxIcon.Question;
-
-      // Displays the MessageBox.
-      System.Windows.Forms.DialogResult result = System.Windows.Forms.MessageBox.Show(message, caption, buttons, icon);
-
-      if (result == System.Windows.Forms.DialogResult.Yes)
-      {
-#if DEBUG
-        System.Diagnostics.Process.Start("wnv_viz_d.exe", name);
-#else
-        System.Diagnostics.Process.Start("wnv_viz.exe", name);
-#endif
-      }
-#endif
     }
 
 
@@ -351,14 +313,7 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
-        if (this.Dll)
-        {
-          _dll.removeLayer(layer);
-        }
-        if (this.Distributed)
-        {
-          _distributed.removeLayer(layer);
-        }
+        _dll.removeLayer(layer);
       }
     }
 
@@ -385,18 +340,11 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
-        if (this.Dll)
-        {
-          DT.Minerva.Plugins.Document.AddLayerJob job = new DT.Minerva.Plugins.Document.AddLayerJob(layer, _dll);
-          job.Name = "Adding " + layer.Name;
-          job.Start += job._showLayer;
-          job.Finish += this._jobEnd;
-          CadKit.Threads.Jobs.Manager.Instance.add(job);
-        }
-        if (this.Distributed)
-        {
-          _distributed.showLayer(layer);
-        }
+        DT.Minerva.Plugins.Document.AddLayerJob job = new DT.Minerva.Plugins.Document.AddLayerJob(layer, _dll);
+        job.Name = "Adding " + layer.Name;
+        job.Start += job._showLayer;
+        job.Finish += this._jobEnd;
+        CadKit.Threads.Jobs.Manager.Instance.add(job);
       }
     }
 
@@ -408,18 +356,11 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
-        if (this.Dll)
-        {
-          DT.Minerva.Plugins.Document.ModifyLayerJob job = new DT.Minerva.Plugins.Document.ModifyLayerJob(layer, _dll);
-          job.Name = "Modifying " + layer.Name;
-          job.Start += job._showLayer;
-          job.Finish += this._jobEnd;
-          CadKit.Threads.Jobs.Manager.Instance.add(job);
-        }
-        if (this.Distributed)
-        {
-          _distributed.showLayer(layer);
-        }
+        DT.Minerva.Plugins.Document.ModifyLayerJob job = new DT.Minerva.Plugins.Document.ModifyLayerJob(layer, _dll);
+        job.Name = "Modifying " + layer.Name;
+        job.Start += job._showLayer;
+        job.Finish += this._jobEnd;
+        CadKit.Threads.Jobs.Manager.Instance.add(job);
       }
     }
 
@@ -468,18 +409,11 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     protected void _startAnimation(float speed, bool accumulate, bool timeWindow, int numDays)
     {
-      if (this.Dll)
+      CadKit.Interfaces.IRenderLoop renderLoop = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IRenderLoop;
+      if (null != renderLoop)
       {
-        CadKit.Interfaces.IRenderLoop renderLoop = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IRenderLoop;
-        if (null != renderLoop)
-        {
-          renderLoop.UseRenderLoop = true;
-          _dll.startAnimation(speed, accumulate, timeWindow, numDays);
-        }
-      }
-      if (this.Distributed)
-      {
-        _distributed.startAnimation(speed, accumulate, timeWindow, numDays);
+        renderLoop.UseRenderLoop = true;
+        _dll.startAnimation(speed, accumulate, timeWindow, numDays);
       }
     }
 
@@ -489,143 +423,11 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     protected void _stopAnimation()
     {
-      if (this.Dll)
+      CadKit.Interfaces.IRenderLoop renderLoop = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IRenderLoop;
+      if (null != renderLoop)
       {
-        CadKit.Interfaces.IRenderLoop renderLoop = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IRenderLoop;
-        if (null != renderLoop)
-        {
-          renderLoop.UseRenderLoop = false;
-          _dll.stopAnimation();
-        }
-      }
-      if (this.Distributed)
-      {
-        _distributed.stopAnimation();
-      }
-    }
-
-
-    /// <summary>
-    /// Config filename.
-    /// </summary>
-    protected string ConfigFilename
-    {
-      get
-      {
-        return System.Windows.Forms.Application.UserAppDataPath + "\\minerva_document_config.xml";
-      }
-    }
-
-
-    /// <summary>
-    /// See if there is a config file.
-    /// </summary>
-    protected bool HasConfigFile
-    {
-      get
-      {
-        if (System.IO.File.Exists(this.ConfigFilename))
-          return true;
-        return false;
-      }
-    }
-
-
-    /// <summary>
-    /// Parse the config file.
-    /// </summary>
-    protected void _parseConfigFile()
-    {
-      try
-      {
-        if (this.HasConfigFile)
-        {
-          // Read the file.
-          System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
-          doc.Load(this.ConfigFilename);
-
-          string session = "default";
-
-          // Get top-level node.
-          System.Xml.XmlNode root = doc.FirstChild;
-
-          // While there is a top-level node...
-          while (null != root)
-          {
-            if ("minerva" == root.Name)
-            {
-              System.Xml.XmlNodeList kids = root.ChildNodes;
-              for (int i = 0; i < kids.Count; ++i)
-              {
-                System.Xml.XmlNode node = kids[i];
-                if ("distributed" == node.Name)
-                {
-                  if ("true" == node.InnerText)
-                  {
-                    _useDistributed = true;
-                  }
-                }
-                if ("session" == node.Name)
-                {
-                  session = node.InnerText;
-                }
-                if ("host" == node.Name)
-                {
-                  _distributed.Hostname = node.InnerText;
-                }
-                if ("database" == node.Name)
-                {
-                  _distributed.Database = node.InnerText;
-                }
-                if ("username" == node.Name)
-                {
-                  _distributed.Username = node.InnerText;
-                }
-                if ("password" == node.Name)
-                {
-                  _distributed.Password = node.InnerText;
-                }
-              }
-            }
-
-            // Go to next top-level node.
-            root = root.NextSibling;
-          }
-
-          if (this.Distributed)
-          {
-            _distributed.connect();
-            this.connectToSession(session);
-          }
-        }
-      }
-      catch (System.Exception e)
-      {
-        System.Console.WriteLine("Error 1284367684: {0}", e.Message);
-      }
-    }
-
-
-    /// <summary>
-    /// Are we in dll mode?
-    /// </summary>
-    public bool Dll
-    {
-      get
-      {
-        return _useDll;
-      }
-    }
-
-
-    /// <summary>
-    /// Are we in distributed mode?
-    /// </summary>
-    public bool Distributed
-    {
-      get
-      {
-        return _useDistributed;
+        renderLoop.UseRenderLoop = false;
+        _dll.stopAnimation();
       }
     }
 
@@ -690,21 +492,15 @@ namespace DT.Minerva.Plugins.Document
 
     void CadKit.Interfaces.ILayerOperation.setLayerOperation(string opType, int val, int[] layers)
     {
-      if (this.Dll)
+      for (int i = 0; i < layers.Length; ++i)
       {
-        for (int i = 0; i < layers.Length; ++i)
-        {
-          ((CadKit.Interfaces.ILayerOperation)this).setLayerOperation(opType, val, i);
-        }
+        ((CadKit.Interfaces.ILayerOperation)this).setLayerOperation(opType, val, i);
       }
     }
 
     void CadKit.Interfaces.ILayerOperation.setLayerOperation(string opType, int val, int layer)
     {
-      if (this.Dll)
-      {
-         _dll.setLayerOperation(opType, val, _layers[layer]);
-      }
+      _dll.setLayerOperation(opType, val, _layers[layer]);
     }
 
     void CadKit.Interfaces.IMovieMode.setMovieMode( bool b )
@@ -712,70 +508,41 @@ namespace DT.Minerva.Plugins.Document
       if (b)
       {
         CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
-        if (this.Dll)
-        {
-          _dll.setMovieMode(b, viewer.HeliosViewer);
-        }
+        _dll.setMovieMode(b, viewer.HeliosViewer);
       }
       else
       {
         CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
-        if (this.Dll)
-        {
-          _dll.setMovieMode(b, viewer.HeliosViewer);
-        }
+        _dll.setMovieMode(b, viewer.HeliosViewer);
       }
     }
 
     void CadKit.Interfaces.IMovieMode.play()
     {
       CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
-      if (this.Dll)
-      {
-        _dll.play(viewer.HeliosViewer);
-      }
+      _dll.play(viewer.HeliosViewer);
     }
 
     void CadKit.Interfaces.IMovieMode.pause()
     {
       CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
-      if (this.Dll)
-      {
-        _dll.pause(viewer.HeliosViewer);
-      }
+      _dll.pause(viewer.HeliosViewer);
     }
 
     void CadKit.Interfaces.IMovieMode.restart()
     {
       CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
-      if (this.Dll)
-      {
-        _dll.restart(viewer.HeliosViewer);
-      }
+      _dll.restart(viewer.HeliosViewer);
     }
 
     bool CadKit.Interfaces.IMovieMode.isPlaying()
     {
-      if (this.Dll)
-      {
-        return _dll.isPlaying();
-      }
-      else
-      {
-        return false;
-      }
+      return _dll.isPlaying();
     }
 
     bool CadKit.Interfaces.IMovieMode.isPaused()
     {
-      if (this.Dll)
-      {
-        return _dll.isPaused();
-      }
-      else
-      {
-        return false;
-      }
+      return _dll.isPaused();
     }
   }  
 }

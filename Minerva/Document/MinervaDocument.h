@@ -19,6 +19,7 @@
 #include "Usul/Interfaces/ISceneUpdate.h"
 #include "Usul/Interfaces/IDatabasePager.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
+#include "Usul/Interfaces/IDistributedVR.h"
 
 #include "Minerva/Core/Scene/SceneManager.h"
 #include "Minerva/Core/GUI/Controller.h"
@@ -36,7 +37,8 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::IBuildScene,
                                                 public Usul::Interfaces::ISceneUpdate,
                                                 public Usul::Interfaces::IDatabasePager,
-                                                public Usul::Interfaces::IMatrixManipulator
+                                                public Usul::Interfaces::IMatrixManipulator,
+                                                public Usul::Interfaces::IDistributedVR
 {
 public:
   /// Useful typedefs.

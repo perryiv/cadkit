@@ -490,6 +490,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IDistributedVR.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IDocumentSelect.h"
 					>
 				</File>

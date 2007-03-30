@@ -85,6 +85,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IDatabasePager* > ( this );
   case Usul::Interfaces::IMatrixManipulator::IID:
     return static_cast < Usul::Interfaces::IMatrixManipulator* > ( this );
+  case Usul::Interfaces::IDistributedVR::IID:
+    return static_cast < Usul::Interfaces::IDistributedVR* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }

@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 
     std::cout << " test1: " << std::endl;
     osg::ref_ptr< Cinema::Core::Movie > movie = Cinema::Core::Movie::instance();
-    movie->setMovie( pos, "test.avi" );
+    movie->setMovie( osg::Vec3f(), osg::Vec3f( 10.0, 0.0, 0.0 ), osg::Vec3f( 0.0, 0.0, 10.0 ), "test5.avi" );
     movie->buildScene();
     movie->play(); 
   

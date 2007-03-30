@@ -44,8 +44,7 @@ namespace Cinema
         FindImageStreamsVisitor( ImageStreamList& imageStreamList ): mImageStreamList( imageStreamList ) {}
             
         virtual void apply( osg::Geode& geode ) 
-        {
-   	    std::cout << " test Geode: " << std::endl;
+        {   	        
             apply( geode.getStateSet() );
 
             for( unsigned int i = 0; i < geode.getNumDrawables(); ++i )
@@ -57,8 +56,7 @@ namespace Cinema
         }
 
         virtual void apply( osg::Billboard& billboard )
-        {
-   	    std::cout << " test Billboard: " << std::endl;
+        {   	        
             apply( billboard.getStateSet() );
 
             for( unsigned int i = 0; i < billboard.getNumDrawables(); ++i )
@@ -70,10 +68,9 @@ namespace Cinema
         }
 
         virtual void apply( osg::Node& node )
-        {
-   	    std::cout << " test Node: " << std::endl;
+        {   	    
             apply( node.getStateSet() );
-            
+
             traverse( node );
         }
        
@@ -83,7 +80,7 @@ namespace Cinema
 
         for( size_t i=0; i < group.getNumChildren(); ++i )
         {
-          osg::ref_ptr< osg::Geode > bb = dynamic_cast< osg::Geode* >( group.getChild( i ) );
+          osg::ref_ptr< osg::Geode > bb ( dynamic_cast< osg::Geode* >( group.getChild( i ) ) );
           if( bb.valid() )
           {
             apply( *( bb.get() ) );

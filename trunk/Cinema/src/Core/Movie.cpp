@@ -38,7 +38,6 @@ Cinema::Core::Movie* Cinema::Core::Movie::instance()
 {
   if( 0x00 == mInstance )
   {
-    loadPlugins();
     mInstance = new Movie();
     return mInstance.get();
   }

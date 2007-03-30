@@ -119,7 +119,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(PRODUCER_INC_DIR)"
+				AdditionalIncludeDirectories="../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(PRODUCER_INC_DIR);./../../../src;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -183,7 +183,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\main.cpp"
+				RelativePath="..\src\main.cpp"
 				>
 			</File>
 		</Filter>

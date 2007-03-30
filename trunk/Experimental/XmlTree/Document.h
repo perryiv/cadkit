@@ -43,8 +43,9 @@ public:
   const std::string &     header() const { return _header; }
   void                    header ( const std::string &h ) { _header = h; }
 
-  // Load contents of file.
+  // Load contents of file or stream.
   void                    load ( const std::string &file );
+  void                    load ( const std::istream& in );
 
   // Write document to file or stream.
   void                    write ( const std::string &file );

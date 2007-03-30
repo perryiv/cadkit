@@ -8,32 +8,34 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_IPOLYGON_DATA_H__
-#define __USUL_INTERFACES_IPOLYGON_DATA_H__
+#ifndef __USUL_INTERFACES_IOFFSET_H__
+#define __USUL_INTERFACES_IOFFSET_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class Node; }
+namespace osg { class Vec3f; }
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct IPolygonData : public Usul::Interfaces::IUnknown
+struct IOffset : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IPolygonData );
+  USUL_DECLARE_QUERY_POINTERS ( IOffset );
 
   /// Id for this interface.
-  enum { IID = 2101968926u };
+  enum { IID = 2942228631u };
 
-  virtual osg::Node* buildPolygonData () = 0;
+  virtual const osg::Vec3f&   spatialOffset () const  = 0;
+  virtual void                spatialOffset ( const osg::Vec3f& ) = 0;
 
-}; // struct IPolygonData
+}; // struct IOffset
 
 
 } // end namespace Interfaces
 } // end namespace Usul
 
 
-#endif /* __USUL_INTERFACES_IPOLYGON_DATA_H__ */
+#endif /* __USUL_INTERFACES_IOFFSET_H__ */
+

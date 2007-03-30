@@ -14,8 +14,6 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/Layer.h"
 
-namespace boost { namespace serialization { class access; } }
-
 namespace Minerva {
 namespace Core {
 namespace Layers {
@@ -42,6 +40,10 @@ public:
   /// Set data members from given layer.
   virtual void            setDataMembers ( Layer * );
 
+  /// Get/Set the show interior flag.
+  void                    showInterior( bool b );
+  bool                    showInterior() const;
+
   /// Get/Set the show border flag.
   void                    border( bool b );
   bool                    border() const;
@@ -58,22 +60,15 @@ protected:
   void _registerMembers();
 
 private:
-  friend class boost::serialization::access;
-  template < class Archive > void serialize( Archive &ar, const unsigned int version );
 
   std::string _format;
+  bool        _showInterior;
   bool        _showBorder;
   osg::Vec4   _borderColor;
 
   SERIALIZE_XML_DEFINE_MEMBERS ( PolygonLayer );
 };
 
-template < class Archive >
-void PolygonLayer::serialize( Archive &ar, const unsigned int version )
-{
-  ar & boost::serialization::make_nvp( "BaseLayer", boost::serialization::base_object< BaseClass >(*this) );
-  ar & boost::serialization::make_nvp( "Format", _format );
-}
 
 }
 }

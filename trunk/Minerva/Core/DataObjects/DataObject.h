@@ -18,11 +18,11 @@
 #define __DATA_OBJECT_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Core/postGIS/Geometry.h"
 #include "Minerva/Core/DB/Connection.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Interfaces/IUnknown.h"
 
 #include "OsgTools/ShapeFactory.h"
 
@@ -37,8 +37,8 @@ namespace DataObjects {
 class MINERVA_EXPORT DataObject : public Usul::Base::Referenced
 {
 public:
-  typedef Usul::Base::Referenced BaseClass;
-  typedef Minerva::Core::postGIS::Geometry Geometry;
+  typedef Usul::Base::Referenced      BaseClass;
+  typedef Usul::Interfaces::IUnknown  Unknown;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( DataObject );
@@ -61,9 +61,9 @@ public:
   void                  dirty ( bool );
 
   /// Get/Set the geometry.
-  void                  geometry( Geometry *geometry );
-  Geometry*             geometry();
-  const Geometry*       geometry() const;
+  void                  geometry( Unknown *geometry );
+  Unknown*              geometry();
+  const Unknown*        geometry() const;
 
   /// Get/Set the label
   void                  label ( const std::string& label );
@@ -113,7 +113,7 @@ private:
   osg::Vec3 _labelPosition;
   osg::Vec4 _labelColor;
   float _labelSize;
-  Geometry::RefPtr _geometry;
+  Unknown::QueryPtr _geometry;
   Minerva::Core::DB::Connection::RefPtr _connection;
 
   /// Shape Factory to share across all Data Objects.

@@ -24,7 +24,7 @@
 
 #include <string>
 #include <functional>
-
+#include <iostream>
 
 namespace Usul {
 namespace Predicates {
@@ -71,8 +71,16 @@ public:
 
   static bool test ( const std::string &s )
   {
-    File file ( s );
-    return file.exists();
+    try
+    {
+      File file ( s );
+      return file.exists();
+    }
+    catch ( ... )
+    {
+    }
+
+    return false;
   }
 
   bool operator () ( const std::string &s ) const

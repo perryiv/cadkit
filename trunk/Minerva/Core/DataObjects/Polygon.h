@@ -20,8 +20,7 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/DataObjects/Line.h"
 
-#include "osg/ref_ptr"
-#include "osg/Array"
+#include "osg/Group"
 
 #include <map>
 
@@ -43,12 +42,25 @@ public:
   /// Build the scene branch for the data object.
   virtual osg::Node*    buildScene();
 
+  /// Get/Set draw border flag.
+  void                  showBorder( bool b );
+  bool                  showBorder() const;
+
+  /// Get/Set draw interior flag.
+  void                  showInterior( bool b );
+  bool                  showInterior() const;
+
 protected:
   /// Use reference counting.
   virtual ~Polygon();
 
+  osg::Node*    _buildPolygons();
+
 private:
   osg::ref_ptr < osg::Group > _group;
+
+  bool _showBorder;
+  bool _showInterior;
 };
 
 }

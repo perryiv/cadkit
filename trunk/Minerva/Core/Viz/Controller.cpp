@@ -293,6 +293,12 @@ void Controller::_processAddLayer( const std::string& drawCommandTable, int even
   // Get the data.
   Minerva::Core::Layers::Layer::RefPtr layer ( this->_getLayer ( drawCommandTable, eventID ) );
 
+  if ( false == layer.valid () )
+  {
+    std::cerr << "Could not create layer." << std::endl;
+    return;
+  }
+
   // Check to see if we already have this layer.
   bool hasLayer ( _sceneManager->hasLayer( layer->layerID() ) );
 

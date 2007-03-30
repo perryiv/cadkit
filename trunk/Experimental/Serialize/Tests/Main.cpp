@@ -498,7 +498,11 @@ void _test1()
   {
     objects.clear();
     std::cout << "Reading: " << FILE_NAME_1 << std::endl;
-    Serialize::XML::deserialize ( FILE_NAME_1, objects );
+
+    std::string xml;
+    Usul::File::contents( FILE_NAME_1, false, xml );
+    std::istringstream in ( xml );
+    Serialize::XML::deserialize ( in, objects );
     std::cout << "Writing: " << FILE_NAME_2 << std::endl;
     Serialize::XML::serialize ( FILE_NAME_2, "objects", objects.begin(), objects.end() );
   }
@@ -532,7 +536,8 @@ void _test2()
   objects.push_back ( d );
 
   // Read an XML string.
-  Serialize::XML::deserialize ( XML_STRING_CLASS_D, objects );
+  std::istringstream in ( XML_STRING_CLASS_D );
+  Serialize::XML::deserialize ( in, objects );
 }
 
 

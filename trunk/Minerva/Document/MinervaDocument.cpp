@@ -909,3 +909,35 @@ void MinervaDocument::_stopAnimationDistributed ()
     _distributed->stopAnimation();
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Play a movie.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path )
+{
+  if( _useDistributed )
+  {
+    // Lazy connection.
+    this->_connectToDistributedSession();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Pause a movie.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::pause( )
+{
+  if( _useDistributed )
+  {
+    // Lazy connection.
+    this->_connectToDistributedSession();
+  }
+}

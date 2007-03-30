@@ -95,6 +95,7 @@ public:
 
   /// Get/Set the database connection.
   void                                  connection( Minerva::Core::DB::Connection* );
+  Minerva::Core::DB::Connection *       connection();
   const Minerva::Core::DB::Connection * connection() const;
 
 protected:

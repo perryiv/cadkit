@@ -244,6 +244,9 @@ void MinervaDocument::write ( const std::string &filename, Unknown *caller ) con
 
 void MinervaDocument::clear ( Unknown *caller )
 {
+  _favorites.clear();
+  _sceneManager->clear();
+  _distributed->deleteSession();
 }
 
 

@@ -19,6 +19,8 @@
 #include <vector>
 #include <string>
 
+namespace osg { class Vec3f; }
+
 namespace Minerva {
 namespace Core {
   namespace Layers { class Layer; }
@@ -61,6 +63,9 @@ public:
 
   /// Stop Animation.
   void             stopAnimation();
+
+  /// Play a movie.
+  void             playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path );
 
 protected:
   virtual ~Controller();

@@ -22,6 +22,12 @@
 
 using namespace Minerva::Core::GUI;
 
+std::ostream& operator<<( std::ostream& os, const osg::Vec3f& v )
+{
+  os << v.x() << " " << v.y() << " " << v.z();
+  return os;
+}
+
 namespace Detail
 {
   template < class T >
@@ -306,3 +312,25 @@ void Controller::stopAnimation()
   this->_executeEventTableQuery(2, eventId);
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Play Movie.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Controller::playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path )
+{
+  typedef Minerva::Core::DB::Connection::Values Values;
+  Values values;
+
+  values.push_back ( Values::value_type ( "session_id", Detail::toString ( _sessionID ) ) );
+  values.push_back ( Values::value_type ( "position", Detail::toString ( position ) ) );
+  values.push_back ( Values::value_type ( "width", Detail::toString ( width ) ) );
+  values.push_back ( Values::value_type ( "height", Detail::toString ( height ) ) );
+  values.push_back ( Values::value_type ( "path", Detail::toString ( path ) ) );
+
+  int eventId ( _connection->executeInsertQuery("playMovie", values) );
+
+  this->_executeEventTableQuery(4, eventId);
+}

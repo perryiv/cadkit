@@ -923,6 +923,8 @@ void MinervaDocument::playMovie ( const osg::Vec3f& position, const osg::Vec3f& 
   {
     // Lazy connection.
     this->_connectToDistributedSession();
+
+    _distributed->playMovie ( position, width, height, path );
   }
 }
 

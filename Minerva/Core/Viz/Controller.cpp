@@ -12,10 +12,13 @@
 #include "Minerva/Core/Viz/Progress.h"
 #include "Minerva/Core/postGIS/Geometry.h"
 
+#include "Usul/Interfaces/IPlayMovie.h"
+
 #include "Usul/Types/Types.h"
 #include "Usul/Endian/Endian.h"
 #include "Usul/File/Temp.h"
 
+#include "Usul/Components/Manager.h"
 #include "osg/ref_ptr"
 
 #include <sstream>
@@ -429,6 +432,14 @@ void Controller::_processPlayMovie   ( const std::string& tableName, int eventID
 
     // Play movie.
     // Create osg::Group from scene manager.
-    // Call play movie function and pass in group, width, height, position, and path.
+    osg::ref_ptr< osg::Group > root = dynamic_cast< osg::Group* >( _sceneManager->root() );   
+    
+    // Call play movie function and pass in group, width, height, position, and path.  
+    Usul::Interfaces::IPlayMovie::QueryPtr playMoviePlug ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlayMovie::IID ) );
+
+    if( playMoviePlug.valid() )
+    {
+      root->addChild( playMoviePlug->playMovie( position, osg::Vec3f( width, 0.0, 0.0 ), osg::Vec3f( 0.0, 0.0, height ), path ) );
+    }
   }
 }

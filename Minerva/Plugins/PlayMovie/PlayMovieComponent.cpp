@@ -134,7 +134,7 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
 
           std::string movieTable ( "media" );
           std::ostringstream query;
-          query << "SELECT asBinary(quad_position), height, width, lin_path, id FROM " << movieTable << " WHERE row_id=" << rowId;
+          query << "SELECT asBinary(quad_position), height, width, lin_path, win_path, id FROM " << movieTable << " WHERE row_id=" << rowId;
 
           pqxx::result result ( connection->executeQuery ( query.str() ) );
 
@@ -150,39 +150,40 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
               
               // Send command.
               distributed->playMovie ( position->geometryCenter(), result[0]["width"].as < float > (), result[0]["height"].as < float > (), path );
+
+              // Play movie on windows side. 
+              Usul::Interfaces::IGroup::QueryPtr gr( caller );
+              if( gr.valid() )
+              {   
+                osg::ref_ptr< osg::Group > group( gr->getGroup( "movie_node_4047781649" ) );
+                std::string path ( result[0]["win_path"].as < std::string > () );
+
+                std::istringstream in;
+
+                float width    = result[0]["width"].as < float >();
+                float height   = result[0]["height"].as < float >();
+                
+                osg::Vec3f widthVec  = osg::Vec3f( width, 0.0, 0.0 );
+                osg::Vec3f heightVec = osg::Vec3f( 0.0,   0.0, height );
+
+                osg::ref_ptr< osg::Node >  node ( playMovie ( position->geometryCenter(), widthVec, heightVec, path ) );
+
+                if( node.valid() )
+                {
+                  group->removeChildren( 0, group->getNumChildren() );
+                  group->addChild( node.get() );
+                }
+              }
             }
           }
-        }
-
-        Usul::Interfaces::IGroup::QueryPtr gr( caller );
-        if( gr.valid() )
-        {   
-          osg::ref_ptr< osg::Group > group( gr->getGroup( "movie_node_4047781649" ) );
-          osg::ref_ptr< osg::Node >  node ( playMovie( osg::Vec3f(), osg::Vec3f(), osg::Vec3f(), "test.avi" ) );
-
-          if( node.valid() )
-          {
-            group->removeChildren( 0, group->getNumChildren() );
-            group->addChild( node.get() );
-          }
-        }
+        }        
       }
       else
       {
-        Usul::Interfaces::IGroup::QueryPtr gr( caller );
-        if( gr.valid() )
-        {   
-          osg::ref_ptr< osg::Group > group( gr->getGroup( "movie_node_4047781649" ) );
-          osg::ref_ptr< osg::Node >  node ( playMovie( osg::Vec3f(), osg::Vec3f(), osg::Vec3f(), "test.avi" ) );
 
-          if( node.valid() )
-          {
-            group->removeChildren( 0, group->getNumChildren() );
-            group->addChild( node.get() );
-          }    
-        }
       }
     }
+#if 0
     else
     {
       Usul::Interfaces::IGroup::QueryPtr gr( caller );
@@ -198,6 +199,7 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
         }    
        }
     }
+#endif 
   }
 
   return true;
@@ -262,7 +264,8 @@ bool PlayMovieComponent::isPaused()
 osg::Node* PlayMovieComponent::playMovie( const osg::Vec3f& position, const osg::Vec3f& widthVector, const osg::Vec3f& heightVector, const std::string& fileName )
 {
   // For test purposes. 
-  _movie->setMovie( osg::Vec3f( -2.0, 0.0, 0.0 ), osg::Vec3f( 2.0, 2.0, 0.0 ), osg::Vec3f( 0.0, 0.0, 2.0 ), "C:\\Aashish\\src\\bin\\test5.avi" );
+  //_movie->setMovie( osg::Vec3f( -2.0, 0.0, 0.0 ), osg::Vec3f( 2.0, 2.0, 0.0 ), osg::Vec3f( 0.0, 0.0, 2.0 ), "C:\\Aashish\\src\\bin\\test5.avi" );
+  _movie->setMovie( position, widthVector, heightVector, fileName );
   _movie->buildScene();
   _movie->play();          
 

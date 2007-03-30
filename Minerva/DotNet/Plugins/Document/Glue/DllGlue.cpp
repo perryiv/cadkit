@@ -770,9 +770,13 @@ void DllGlue::setMovieMode( bool b,  CadKit::Viewer::Glue::Viewer^ v )
   {
     // PlayMovie plugin implements both IPlayMovie and ITool. 
     Usul::Interfaces::ITool::QueryPtr component = Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlayMovie::IID );
-    if( component )
+    if( component && b )
     {
       viewer->setTool( component );
+    }
+    else
+    {
+      viewer->doneTool();
     }
   }  
 }

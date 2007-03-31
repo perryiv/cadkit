@@ -82,7 +82,7 @@ namespace CadKit.Referenced
     {
       if (false == this.IsClean)
       {
-        this._cleanup();
+        //this._cleanup();
       }
     }
 

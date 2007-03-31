@@ -145,6 +145,9 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     data->tableName ( dataTable );
     data->rowId ( id );
 
+    /// Set the label.
+    this->_labelDataObject( data.get() );
+
     this->_addDataObject( data.get() );
 
     data->buildScene();

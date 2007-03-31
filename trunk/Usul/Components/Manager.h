@@ -64,13 +64,13 @@ public:
   // Return list of plugin names. This queries each unknown pointer for IPlugin.
   Strings                       names() const;
 
-  //return the unknowns
+  // Return the unknowns
   UnknownSet&                   unknowns() { return _unknowns; }
 
-  //Get a single IUnknown
+  // Get a single IUnknown
   Usul::Interfaces::IUnknown*   getInterface( unsigned long iid );
 
-  //Get a set of IUnknowns
+  // Get a set of IUnknowns
   UnknownSet                    getInterfaces( unsigned long iid );
   UnknownSet                    getInterfaces( unsigned long iid1, unsigned long iid2 );
 

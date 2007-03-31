@@ -51,7 +51,7 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     ~Document()
     {
-      this._cleanup();
+      //this._cleanup();
     }
 
 
@@ -60,7 +60,7 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     void System.IDisposable.Dispose()
     {
-      this._cleanup();
+      //this._cleanup();
     }
 
 

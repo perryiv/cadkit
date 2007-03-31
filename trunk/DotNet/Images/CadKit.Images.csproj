@@ -6,7 +6,6 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7B2D553D-0909-4C86-94E4-3474BD8F8E69}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CadKit.Images</RootNamespace>
     <AssemblyName>CadKit.Images</AssemblyName>
   </PropertyGroup>
@@ -36,9 +35,6 @@
   <ItemGroup>
     <Compile Include="Image.cs" />
     <Compile Include="AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

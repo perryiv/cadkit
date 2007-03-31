@@ -32,7 +32,7 @@ namespace CadKit.OpenGL
       }
       catch (System.Exception e)
       {
-        System.Console.WriteLine("Error 9052564260: {0}\n{1}", e.Message, e.StackTrace);
+        System.Console.WriteLine("Error 2192974644: {0}\n{1}", e.Message, e.StackTrace);
       }
       finally
       {

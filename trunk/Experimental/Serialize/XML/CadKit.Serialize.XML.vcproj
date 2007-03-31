@@ -2,9 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="lib: CadKit SerializeXML"
+	Name="lib: CadKit Serialize XML"
 	ProjectGUID="{2AFAFF2F-1967-4124-A178-5F1B703C016F}"
-	RootNamespace="SerializeXML"
 	>
 	<Platforms>
 		<Platform
@@ -80,13 +79,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/SerializeXMLd.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/CadKit.Serialize.XMLd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/SQLiteWrapd.pdb"
-				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/SerializeXMLd.lib"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/CadKit.Serialize.XMLd.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -177,12 +176,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/SerializeXML.dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/CadKit.Serialize.XML.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
 				ProgramDatabaseFile=".\Release/SQLiteWrap.pdb"
-				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/SerializeXML.lib"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/CadKit.Serialize.XML.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

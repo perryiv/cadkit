@@ -54,7 +54,7 @@ public:
   // Return the single instance.
   static Arguments &          instance();
 
-  // Return the name the program.
+  // Return the name of the program.
   std::string                 program() const;
 
   // Set the arguments.

@@ -8,7 +8,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "ReadFile.h"
-#include "Reader.h"
+
+#include "OsgTools/IO/Reader.h"
 
 #include "Usul/Math/MinMax.h"
 #include "Usul/Strings/ManagedToNative.h"
@@ -116,7 +117,7 @@ CadKit::OSG::Glue::Node^ ReadFile::readNodeFile ( System::String ^name, System::
     const std::string file ( Usul::Strings::convert ( name ) );
 
     // Read the file.
-    CadKit::OSG::Glue::Reader reader;
+    OsgTools::IO::Reader reader;
     reader.callback ( progress );
     reader.read ( file );
 
@@ -178,7 +179,7 @@ void ReadFile::_progressNotify ( const std::string &name, unsigned long bytes, u
 bool ReadFile::hasReader ( System::String^ name )
 {
   const std::string file ( Usul::Strings::convert ( name ) );
-  return Reader::hasReader ( file );
+  return OsgTools::IO::Reader::hasReader ( file );
 }
 
 
@@ -193,8 +194,8 @@ CadKit::Interfaces::Filters^ ReadFile::filters()
   CadKit::Interfaces::Filters^ filters = gcnew CadKit::Interfaces::Filters();
   try
   {
-    Reader::Filters f ( Reader::filters() );
-    for ( Reader::Filters::const_iterator i = f.begin(); i != f.end(); ++i )
+    OsgTools::IO::Reader::Filters f ( OsgTools::IO::Reader::filters() );
+    for ( OsgTools::IO::Reader::Filters::const_iterator i = f.begin(); i != f.end(); ++i )
     {
       filters->Add ( gcnew CadKit::Interfaces::Filter ( gcnew System::String ( i->first.c_str() ), gcnew System::String ( i->second.c_str() ) ) );
     }

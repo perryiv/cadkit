@@ -228,14 +228,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Reader.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Reader.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ReadFile.cpp"
 				>
 			</File>

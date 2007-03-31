@@ -24,6 +24,9 @@
 
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Types/Types.h"
+#include "Usul/Math/Vector4.h"
+#include "Usul/Math/Vector3.h"
+#include "Usul/Math/Vector2.h"
 
 #include <sstream>
 
@@ -220,12 +223,12 @@ SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( int   );
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( long  );
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( bool  );
 
-//SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned char  );
-//SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned short );
-//SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned int   );
-//SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned long  );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned char  );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned short );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned int   );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned long  );
 
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Types::Uint32 );
+//SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Types::Uint32 );
 
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( float );
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( double );
@@ -291,5 +294,22 @@ inline std::istream &operator >> ( std::istream &in, the_type &v )\
 #define SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER(the_type)\
   SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_2(the_type);\
   SERIALIZE_XML_DECLARE_TYPE_WRAPPER(the_type);
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Declare vector types.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Usul::Math::Vec4d );
+SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Usul::Math::Vec4f );
+
+SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( Usul::Math::Vec3d );
+SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( Usul::Math::Vec3f );
+
+SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2d );
+SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2f );
+
 
 #endif // _SERIALIZE_XML_SET_VALUE_H_

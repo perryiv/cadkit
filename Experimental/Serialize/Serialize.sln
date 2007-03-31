@@ -1,14 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Usul", "..\..\Usul\Usul.vcproj", "{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Usul", "..\..\Usul\CadKit.Usul.vcproj", "{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: XmlTree", "..\XmlTree\XmlTree.vcproj", "{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: XmlTree", "..\XmlTree\CadKit.XmlTree.vcproj", "{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}"
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit SerializeXML", "XML\SerializeXML.vcproj", "{2AFAFF2F-1967-4124-A178-5F1B703C016F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit SerializeXML", "XML\CadKit.Serialize.XML.vcproj", "{2AFAFF2F-1967-4124-A178-5F1B703C016F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}

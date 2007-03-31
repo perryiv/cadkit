@@ -814,6 +814,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\IO\Reader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\IO\Reader.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Io\STLPrintVisitor.h"
 					>
 				</File>

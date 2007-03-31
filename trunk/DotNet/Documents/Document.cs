@@ -147,7 +147,7 @@ namespace CadKit.Documents
     /// </summary>
     public void close()
     {
-      this._cleanup();
+      //this._cleanup();
     }
 
 

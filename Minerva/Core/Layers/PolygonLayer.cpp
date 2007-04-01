@@ -35,7 +35,8 @@ PolygonLayer::PolygonLayer() : BaseClass(),
 _format(),
 _showInterior( true ),
 _showBorder( false ),
-_borderColor()
+_borderColor(),
+_borderWidth ( 1.0f )
 {
   this->name( "PolygonLayer" );
 
@@ -71,6 +72,7 @@ void PolygonLayer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _showInterior );
   SERIALIZE_XML_ADD_MEMBER ( _showBorder );
   SERIALIZE_XML_ADD_MEMBER ( _borderColor );
+  SERIALIZE_XML_ADD_MEMBER ( _borderWidth );
 }
 
 
@@ -137,6 +139,7 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     // Create the Data Object.
     Minerva::Core::DataObjects::Polygon::RefPtr data ( new Minerva::Core::DataObjects::Polygon );
 
+    data->width ( this->borderWidth() );
     data->showBorder( this->border() );
     data->showInterior ( this->showInterior() );
     data->geometry ( geometry.get() );

@@ -10,6 +10,7 @@
 
 #include "Minerva/Core/Layers/Layer.h"
 
+#include "Usul/Functions/Guid.h"
 #include "Usul/Interfaces/IGeometryCenter.h"
 
 #include "osg/Group"
@@ -42,6 +43,7 @@ unsigned int Layer::_currentLayerID ( 0 );
 
 Layer::Layer() : BaseClass(),
 _mutex(),
+_guid ( Usul::Functions::generateGUID() ),
 _name( "Layer" ),
 _layerID ( 0 ),
 _primaryKeyColumn( "id" ),
@@ -78,6 +80,7 @@ SERIALIZE_XML_INITIALIZER_LIST
 
 Layer::Layer( const Layer& layer )  : BaseClass(),
 _mutex(),
+_guid ( layer._guid ),
 _name( layer._name ),
 _layerID ( layer._layerID ),
 _primaryKeyColumn( layer._primaryKeyColumn ),

@@ -195,6 +195,7 @@ private:
   BOOST_SERIALIZATION_SPLIT_MEMBER();
 
   static unsigned int _currentLayerID;
+  std::string _guid;
   std::string _name;
   Usul::Types::Uint32 _layerID;
   std::string _primaryKeyColumn;

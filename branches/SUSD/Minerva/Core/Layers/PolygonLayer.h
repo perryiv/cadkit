@@ -52,6 +52,10 @@ public:
   void                    borderColor( const osg::Vec4& color );
   const osg::Vec4&        borderColor() const;
 
+  /// Get/Set the border width.
+  void                    borderWidth ( float width );
+  float                   borderWidth () const;
+
 protected:
   virtual ~PolygonLayer();
 
@@ -65,6 +69,7 @@ private:
   bool        _showInterior;
   bool        _showBorder;
   osg::Vec4   _borderColor;
+  float       _borderWidth;
 
   SERIALIZE_XML_DEFINE_MEMBERS ( PolygonLayer );
 };

@@ -43,6 +43,11 @@ namespace DT
         [
           System::ComponentModel::Category("DisplayOptions")
         ]
+        PROPERTY_GET_SET(BorderWidth, float);
+
+        [
+          System::ComponentModel::Category("DisplayOptions")
+        ]
         PROPERTY_GET_SET(BorderColor, System::Drawing::Color);
 
         [

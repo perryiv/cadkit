@@ -16,8 +16,6 @@
 
 #include "OsgTools/Animate/Date.h"
 
-namespace boost { namespace serialization { class access; } }
-
 #include <map>
 
 namespace Minerva {
@@ -76,9 +74,6 @@ public:
   /// Is this layer temporal.
   virtual bool            isTemporal() const;
 
-  /// Set data members from given layer.
-  virtual void            setDataMembers ( Layer * );
-
   /// Get the default query.
   virtual std::string     defaultQuery() const;
 
@@ -102,9 +97,7 @@ protected:
   void _registerMembers();
 
 private:
-  friend class boost::serialization::access;
-  template < class Archive > void serialize( Archive &ar, const unsigned int version );
- 
+
   Usul::Types::Uint32 _primitiveID;
   float _size;
   std::string _firstDateColumn;
@@ -116,19 +109,6 @@ private:
   SERIALIZE_XML_DEFINE_MEMBERS ( PointTimeLayer );
 
 };
-
-
-template < class Archive >
-void PointTimeLayer::serialize( Archive &ar, const unsigned int version )
-{
-  ar & boost::serialization::make_nvp( "BaseLayer", boost::serialization::base_object< BaseClass >(*this) );
-  ar & boost::serialization::make_nvp( "PrimitiveID", _primitiveID );
-  ar & boost::serialization::make_nvp( "Size", _size );
-  ar & boost::serialization::make_nvp( "FirstDateColumn", _firstDateColumn );
-  ar & boost::serialization::make_nvp( "LastDateColumn", _lastDateColumn );
-  ar & boost::serialization::make_nvp( "FirstDate", _minDate );
-  ar & boost::serialization::make_nvp( "LastDate", _maxDate );
-}
 
 
 }

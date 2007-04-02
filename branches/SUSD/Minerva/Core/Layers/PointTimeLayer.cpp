@@ -335,28 +335,6 @@ const std::string& PointTimeLayer::lastDateColumn() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set data members from given layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void PointTimeLayer::setDataMembers ( Layer * layer )
-{
-  BaseClass::setDataMembers ( layer );
-
-  if( PointTimeLayer *pt = dynamic_cast < PointTimeLayer * > ( layer ) )
-  {
-    this->_primitiveID = pt->_primitiveID;
-    this->_size = pt->_size;
-    this->_firstDateColumn = pt->_firstDateColumn;
-    this->_lastDateColumn = pt->_lastDateColumn;
-    this->_minDate = pt->_minDate;
-    this->_maxDate = pt->_maxDate;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the default query.
 //
 ///////////////////////////////////////////////////////////////////////////////

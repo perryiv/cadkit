@@ -34,11 +34,6 @@ namespace osg { class Group; }
 #  pragma warning ( disable : 4561 )
 #endif
 
-#include "boost/serialization/split_member.hpp"
-#include "boost/serialization/is_abstract.hpp"
-
-namespace boost { namespace serialization { class access; } }
-
 #include <string>
 #include <vector>
 
@@ -75,10 +70,6 @@ public:
   /// Get/Set the name.
   void                        name( const std::string& name );
   const std::string&          name() const;
-
-  /// Get/Set the layer id.
-  void                        layerID( Usul::Types::Uint32 id );
-  Usul::Types::Uint32         layerID() const;
 
   /// Get/Set the connection.
   void                        connection ( DB::Connection *connection );
@@ -139,9 +130,6 @@ public:
   /// Is this layer temporal.
   virtual bool                isTemporal() const;
 
-  /// Set data members from given layer.
-  virtual void                setDataMembers ( Layer * );
-
   /// Get the legend object.
   virtual LegendObject*       legendObject();
 
@@ -167,6 +155,9 @@ public:
   /// Get the geometry column name.
   std::string                 geometryColumn() const;
 
+  /// Get the guid.
+  const std::string &         guid() const;
+
 protected:
 
   /// Use reference counting.
@@ -189,15 +180,9 @@ protected:
   void                        _registerMembers();
 
 private:
-  friend class boost::serialization::access;
-  template<class Archive> void save(Archive & ar, const unsigned int version) const;
-  template<class Archive> void load(Archive & ar, const unsigned int version);
-  BOOST_SERIALIZATION_SPLIT_MEMBER();
 
-  static unsigned int _currentLayerID;
   std::string _guid;
   std::string _name;
-  Usul::Types::Uint32 _layerID;
   std::string _primaryKeyColumn;
   std::string _tablename;
   std::string _labelColumn;
@@ -221,59 +206,10 @@ private:
   SERIALIZE_XML_DEFINE_MEMBERS ( Layer );
 };
 
-template<class Archive> void Layer::save(Archive & ar, const unsigned int version) const
-{
-  ar & boost::serialization::make_nvp ( "Name", _name );
-  ar & boost::serialization::make_nvp ( "LayerID", _layerID );
-  ar & boost::serialization::make_nvp ( "TableName", _tablename );
-  ar & boost::serialization::make_nvp ( "LabelColumn", _labelColumn );
-  ar & boost::serialization::make_nvp ( "Query", _query );
-  ar & boost::serialization::make_nvp ( "RenderBin", _renderBin );
-  ar & boost::serialization::make_nvp ( "Offset", _zOffset );
-  //ar & _dataObjects;
-  ar & boost::serialization::make_nvp ( "Connection", _connection );
-  ar & boost::serialization::make_nvp ( "ColorFunctor", _colorFunctor  );
-
-  ar & boost::serialization::make_nvp ( "LegendText", _legendText );
-  ar & boost::serialization::make_nvp ( "ShowLabel", _showLabel );
-  ar & boost::serialization::make_nvp ( "Shown", _shown );
-  ar & boost::serialization::make_nvp ( "LabelColor", _labelColor );
-  ar & boost::serialization::make_nvp ( "LabelZOffset", _labelZOffset );
-  ar & boost::serialization::make_nvp ( "LabelSize", _labelSize );
-  ar & boost::serialization::make_nvp ( "ColorColumn", _colorColumn );
-  ar & boost::serialization::make_nvp ( "CustomQuery", _customQuery );
-}
-
-template<class Archive> void Layer::load(Archive & ar, const unsigned int version)
-{
-  ar & boost::serialization::make_nvp ( "Name", _name );
-  ar & boost::serialization::make_nvp ( "LayerID", _layerID );
-  ar & boost::serialization::make_nvp ( "TableName", _tablename );
-  ar & boost::serialization::make_nvp ( "LabelColumn", _labelColumn );
-  ar & boost::serialization::make_nvp ( "Query", _query );
-  ar & boost::serialization::make_nvp ( "RenderBin", _renderBin );
-  ar & boost::serialization::make_nvp ( "Offset", _zOffset );
-  //ar & _dataObjects;
-  ar & boost::serialization::make_nvp ( "Connection", _connection );
-  ar & boost::serialization::make_nvp ( "ColorFunctor", _colorFunctor );
-
-  ar & boost::serialization::make_nvp ( "LegendText", _legendText );
-  this->legendText( _legendText );
-
-  ar & boost::serialization::make_nvp ( "ShowLabel", _showLabel );
-  ar & boost::serialization::make_nvp ( "Shown", _shown );
-  ar & boost::serialization::make_nvp ( "LabelColor", _labelColor );
-  ar & boost::serialization::make_nvp ( "LabelZOffset", _labelZOffset );
-  ar & boost::serialization::make_nvp ( "LabelSize", _labelSize );
-  ar & boost::serialization::make_nvp ( "ColorColumn", _colorColumn );
-  ar & boost::serialization::make_nvp ( "CustomQuery", _customQuery );
-}
-
 
 }
 }
 }
 
-BOOST_IS_ABSTRACT(Minerva::Core::Layers::Layer);
 
 #endif //__MINERVA_LAYERS_LAYER_H__

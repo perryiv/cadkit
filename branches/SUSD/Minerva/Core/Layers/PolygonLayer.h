@@ -37,9 +37,6 @@ public:
   void                    format( const std::string& format );
   const std::string&      format() const;
 
-  /// Set data members from given layer.
-  virtual void            setDataMembers ( Layer * );
-
   /// Get/Set the show interior flag.
   void                    showInterior( bool b );
   bool                    showInterior() const;

@@ -15,8 +15,6 @@
 
 #include "Minerva/Core/Layers/Layer.h"
 
-namespace boost { namespace serialization { class access; } }
-
 namespace Minerva {
 namespace Core {
 namespace Layers {
@@ -52,9 +50,6 @@ public:
   void                    stackPoints ( bool b );
   bool                    stackPoints() const;
 
-  /// Set data members from given layer.
-  virtual void            setDataMembers ( Layer * );
-
 protected:
   virtual ~PointLayer();
 
@@ -63,8 +58,6 @@ protected:
   void _registerMembers();
 
 private:
-  friend class boost::serialization::access;
-  template < class Archive > void serialize( Archive &ar, const unsigned int version );
 
   Usul::Types::Uint32 _primitiveID;
   float _size;
@@ -73,15 +66,6 @@ private:
   SERIALIZE_XML_DEFINE_MEMBERS ( PointLayer );
 };
 
-
-template < class Archive >
-void PointLayer::serialize( Archive &ar, const unsigned int version )
-{
-  ar & boost::serialization::make_nvp( "BaseLayer", boost::serialization::base_object< BaseClass >(*this) );
-  ar & boost::serialization::make_nvp( "PrimitiveID", _primitiveID );
-  ar & boost::serialization::make_nvp( "Size", _size );
-  ar & boost::serialization::make_nvp( "StackPoints", _stackPoints );
-}
 
 }
 }

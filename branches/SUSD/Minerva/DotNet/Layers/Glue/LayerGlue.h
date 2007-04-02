@@ -42,9 +42,6 @@ namespace DT
         virtual ~LayerGlue();
         !LayerGlue();
 
-        /// Get/Set the layer id.
-        PROPERTY_GET(LayerID, int);
-
         /// Set the data source
         [
           System::ComponentModel::Browsable(false)

@@ -232,14 +232,3 @@ void LineLayer::modify( Usul::Interfaces::IUnknown *caller )
   //  }
   //}
 }
-
-/// Set data members from given layer.
-void LineLayer::setDataMembers ( Layer * layer )
-{
-  BaseClass::setDataMembers ( layer );
-
-  if( LineLayer *line = dynamic_cast < LineLayer * > ( layer ) )
-  {
-    this->_lineWidth = line->_lineWidth;
-  }
-}

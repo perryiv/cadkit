@@ -1,5 +1,5 @@
 # Include the header to set up the environment.
-include $(USUL_INC_DIR)/Make/header.mak
+include $(USUL_INC_DIR)/Usul/Make/header.mak
 
 # C++ source files.
 CPP_FILES = \
@@ -36,4 +36,4 @@ LOCAL_CPP_FLAGS =
 TARGET = Cinema
 
 # The common rules for compiling are in here.
-include $(USUL_INC_DIR)/Make/library.mak
+include $(USUL_INC_DIR)/Usul/Make/library.mak

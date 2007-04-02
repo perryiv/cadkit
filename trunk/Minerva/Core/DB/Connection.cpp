@@ -211,18 +211,22 @@ void Connection::disconnect()
 
 pqxx::result Connection::executeQuery( const std::string& query ) const
 {
-  pqxx::work transaction ( *_connection, "Minerva" );
   pqxx::result result;
 
-  try
+  if( 0x0 != _connection )
   {
-    result = transaction.exec ( query.c_str() );
-    transaction.commit();
-  }
-  catch ( ... )
-  {
-    transaction.abort();
-    std::cerr << "Query: " << query << " did not execute properly." << std::endl;
+    pqxx::work transaction ( *_connection, "Minerva" );
+
+    try
+    {
+      result = transaction.exec ( query.c_str() );
+      transaction.commit();
+    }
+    catch ( ... )
+    {
+      transaction.abort();
+      std::cerr << "Query: " << query << " did not execute properly." << std::endl;
+    }
   }
 
   return result;

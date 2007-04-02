@@ -39,7 +39,7 @@ std::string Usul::Functions::generateGUID()
   unsigned int r2 ( ::rand () );
   unsigned int r3 ( ::rand () );
   
-  unsigned long t2 ( ::time ( 0x0 ) );
+  unsigned int t2 ( ::time ( 0x0 ) );
   ::sprintf ( buf, "%08x-%04x-%04x-%04x-%012x", t1, r1, r2, r3, t2 );
 
   guid = buf;

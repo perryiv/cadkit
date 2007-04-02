@@ -246,6 +246,7 @@ void MinervaDocument::clear ( Unknown *caller )
 {
   _favorites.clear();
   _sceneManager->clear();
+  this->_connectToDistributedSession();
   _distributed->deleteSession();
 }
 

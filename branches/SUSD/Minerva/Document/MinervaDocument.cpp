@@ -295,6 +295,7 @@ void MinervaDocument::addLayer   ( Minerva::Core::Layers::Layer * layer, Unknown
   _sceneManager->addLayer( layer );
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Modify the layer.
@@ -304,6 +305,7 @@ void MinervaDocument::addLayer   ( Minerva::Core::Layers::Layer * layer, Unknown
 void MinervaDocument::modifyLayer ( Minerva::Core::Layers::Layer * layer, Unknown *caller )
 {
   layer->modify( caller );
+  _sceneManager->dirty( true );
 }
 
 

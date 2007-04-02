@@ -203,23 +203,16 @@ private:
   bool                   _customQuery;
 
   SERIALIZE_XML_DEFINE_MAP;
-  //SERIALIZE_XML_DEFINE_MEMBERS ( Layer );
+  SERIALIZE_XML_CLASS_NAME ( Layer );
+  SERIALIZE_XML_SERIALIZE_FUNCTION;
 public:
-  virtual const char *className() const { return "Layer"; }
-  virtual void serialize ( XmlTree::Node &parent ) const
-  {
-    _dataMemberMap.serialize ( parent );
-  }
   virtual void deserialize ( const XmlTree::Node &node )
   {
     _dataMemberMap.deserialize ( node );
     this->legendText( _legendText );
   }
-protected:
-  template < class T > void _addMember ( const std::string &name, T &value )
-  {
-    _dataMemberMap.addMember ( name, value );
-  }
+
+  SERIALIZE_XML_ADD_MEMBER_FUNCTION;
 };
 
 

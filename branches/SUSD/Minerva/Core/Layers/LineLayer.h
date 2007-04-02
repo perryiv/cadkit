@@ -57,7 +57,7 @@ private:
 
   float _lineWidth;
 
-  SERIALIZE_XML_DEFINE_MEMBERS ( LineLayer );
+  SERIALIZE_XML_CLASS_NAME ( LineLayer );
 };
 
 

@@ -273,6 +273,7 @@ void SceneManager::clear()
   Guard guard ( _mutex );
 
   _layers.clear();
+  _legend->clear();
 }
 
 

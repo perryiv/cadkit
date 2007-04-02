@@ -164,9 +164,9 @@ int main ( int argc, char **argv )
   dbManager->sceneManager ( manager.get() );
 
   // Make the pick handler.
-  osg::ref_ptr< PickHandler > pick ( new PickHandler( viewer, manager.get() ) );
+  //osg::ref_ptr< PickHandler > pick ( new PickHandler( viewer, manager.get() ) );
  
-  viewer.getEventHandlerList().push_front( pick.get() );
+  //viewer.getEventHandlerList().push_front( pick.get() );
 
   // Set the scene.
   viewer.setClearColor( osg::Vec4( 0.7f, 0.7f, 0.7f, 1.0f ) );
@@ -207,13 +207,13 @@ int main ( int argc, char **argv )
       manager->addFeedbackHud ( viewport[2], viewport[3] );
 
       // Remove the event handler.
-      viewer.getEventHandlerList().pop_front();
+      //viewer.getEventHandlerList().pop_front();
 
       // Update the scene.
       dbManager->updateScene();
 
       // Add the event handler.
-      viewer.getEventHandlerList().push_front( pick.get() );
+      //viewer.getEventHandlerList().push_front( pick.get() );
 
       manager->removeFeedbackHud();
     }

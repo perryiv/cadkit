@@ -68,7 +68,7 @@ private:
   osg::Vec4   _borderColor;
   float       _borderWidth;
 
-  SERIALIZE_XML_DEFINE_MEMBERS ( PolygonLayer );
+  SERIALIZE_XML_CLASS_NAME ( PolygonLayer );
 };
 
 

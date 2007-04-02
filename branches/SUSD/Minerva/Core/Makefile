@@ -44,7 +44,7 @@ LOCAL_INCLUDE = \
 
 # The libraries to link to.
 LOCAL_LIBS = \
-	-L../../../../bin -lOsgTools -lUsul -lXmlTree_s -lXmlSerialize_s\
+	-L../../../../bin -lOsgTools -lUsul -lXmlTree -lXmlSerialize \
 	-L$(OSSIM_LIB_DIR) -lossim \
 	-L$(OSSIMPLANET_LIB_DIR) -lossimPlanet \
 	-L$(PQXX_LIB_DIR) -lpqxx \

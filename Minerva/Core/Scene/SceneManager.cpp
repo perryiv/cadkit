@@ -409,7 +409,7 @@ void SceneManager::addLayer ( Minerva::Core::Layers::Layer *layer )
 {
   Guard guard ( _mutex );
 
-  _layers[ layer->layerID() ] = layer;
+  _layers[ layer->guid() ] = layer;
 
   this->dirty( true );
 }
@@ -421,11 +421,11 @@ void SceneManager::addLayer ( Minerva::Core::Layers::Layer *layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SceneManager::removeLayer ( int layerID )
+void SceneManager::removeLayer ( const std::string& guid )
 {
   Guard guard ( _mutex );
 
-  Layers::iterator iter = _layers.find ( layerID );
+  Layers::iterator iter = _layers.find ( guid );
 
   if ( iter != _layers.end() )
   {
@@ -441,9 +441,9 @@ void SceneManager::removeLayer ( int layerID )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool SceneManager::hasLayer ( int layerID ) const
+bool SceneManager::hasLayer ( const std::string& guid ) const
 {
-  Layers::const_iterator iter = _layers.find( layerID );
+  Layers::const_iterator iter = _layers.find( guid );
   if( iter != _layers.end() )
     return true;
 
@@ -457,14 +457,14 @@ bool SceneManager::hasLayer ( int layerID ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Minerva::Core::Layers::Layer *  SceneManager::getLayer ( int layerID )
+Minerva::Core::Layers::Layer *  SceneManager::getLayer ( const std::string& guid )
 {
   Guard guard ( _mutex );
 
-	Layers::const_iterator iter = _layers.find( layerID );
+	Layers::const_iterator iter = _layers.find( guid );
   if( iter != _layers.end() )
 	{
-		return _layers[layerID].get();
+		return _layers[guid].get();
 	}
 
 	throw std::runtime_error( "Error 284022903: could not find layer id." );

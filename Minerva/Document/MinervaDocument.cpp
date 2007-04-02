@@ -252,7 +252,7 @@ osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unk
 
 void MinervaDocument::removeLayer ( Minerva::Core::Layers::Layer * layer )
 {
-  _sceneManager->removeLayer( layer->layerID() );
+  _sceneManager->removeLayer( layer->guid() );
   this->modified( true );
 }
 

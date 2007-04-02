@@ -236,17 +236,6 @@ const std::string& PolygonLayer::format() const
   return _format;
 }
 
-/// Set data members from given layer.
-void PolygonLayer::setDataMembers ( Layer * layer )
-{
-  BaseClass::setDataMembers ( layer );
-
-  if( PolygonLayer *polygon = dynamic_cast < PolygonLayer * > ( layer ) )
-  {
-    this->_format = polygon->_format;
-  }
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -317,4 +306,28 @@ void PolygonLayer::showInterior( bool b )
 bool PolygonLayer::showInterior() const
 {
   return _showInterior;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the border width flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PolygonLayer::borderWidth( float width )
+{
+  _borderWidth = width;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the border width flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float PolygonLayer::borderWidth() const
+{
+  return _borderWidth;
 }

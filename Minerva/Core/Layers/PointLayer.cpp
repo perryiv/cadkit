@@ -272,20 +272,6 @@ float PointLayer::size() const
 }
 
 
-/// Set data members from given layer.
-void PointLayer::setDataMembers ( Layer * layer )
-{
-  BaseClass::setDataMembers ( layer );
-
-  if( PointLayer *point = dynamic_cast < PointLayer * > ( layer ) )
-  {
-    this->_primitiveID = point->_primitiveID;
-    this->_size = point->_size;
-    this->_stackPoints = point->_stackPoints;
-  }
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the stack points flag.

@@ -205,7 +205,7 @@ void DistributedGlue::removeLayer( CadKit::Interfaces::ILayer ^ layer )
     if( nullptr != layerPtr )
     {
       ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
-      _controller->removeLayer( base->layerID() );
+      _controller->removeLayer( base.get() );
     }
   }
   catch ( const std::exception &e )

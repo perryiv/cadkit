@@ -26,14 +26,6 @@ using namespace Minerva::Core::Layers;
 
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize static data member
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int Layer::_currentLayerID ( 0 );
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -45,7 +37,6 @@ Layer::Layer() : BaseClass(),
 _mutex(),
 _guid ( Usul::Functions::generateGUID() ),
 _name( "Layer" ),
-_layerID ( 0 ),
 _primaryKeyColumn( "id" ),
 _tablename(),
 _labelColumn(),
@@ -66,8 +57,6 @@ _colorColumn(),
 _customQuery ( false ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
-  _layerID = ++_currentLayerID;
-
   this->_registerMembers();
 }
 
@@ -82,7 +71,6 @@ Layer::Layer( const Layer& layer )  : BaseClass(),
 _mutex(),
 _guid ( layer._guid ),
 _name( layer._name ),
-_layerID ( layer._layerID ),
 _primaryKeyColumn( layer._primaryKeyColumn ),
 _tablename( layer._tablename ),
 _labelColumn( layer._labelColumn ),
@@ -105,8 +93,6 @@ _customQuery( layer._customQuery )
   if( layer._colorFunctor.valid() )
     _colorFunctor = layer._colorFunctor->clone();
 
-  _layerID = ++_currentLayerID;
-
   this->_registerMembers();
 
   this->legendText( _legendText );
@@ -121,8 +107,8 @@ _customQuery( layer._customQuery )
 
 void Layer::_registerMembers()
 {
+  SERIALIZE_XML_ADD_MEMBER ( _guid );
   SERIALIZE_XML_ADD_MEMBER ( _name );
-  SERIALIZE_XML_ADD_MEMBER ( _layerID );
   SERIALIZE_XML_ADD_MEMBER ( _primaryKeyColumn );
   SERIALIZE_XML_ADD_MEMBER ( _tablename );
   SERIALIZE_XML_ADD_MEMBER ( _labelColumn );
@@ -151,31 +137,6 @@ void Layer::_registerMembers()
 
 Layer::~Layer()
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the layer id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Layer::layerID( Usul::Types::Uint32 id )
-{
-  Guard guard( _mutex );
-  _layerID = id;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the layer id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Types::Uint32 Layer::layerID() const
-{
-  return _layerID;
 }
 
 
@@ -404,27 +365,6 @@ Minerva::Core::Functors::BaseColorFunctor * Layer::colorFunctor()
 const Minerva::Core::Functors::BaseColorFunctor * Layer::colorFunctor() const
 {
   return _colorFunctor.get();
-}
-
-
-// This is lame...need to find a better way...
-void Layer::setDataMembers ( Layer * layer )
-{
-  this->_layerID = layer->_layerID;
-  this->_tablename = layer->_tablename;
-  this->_labelColumn = layer->_labelColumn;
-  this->_query = layer->_query;
-  this->_renderBin = layer->_renderBin;
-  this->_zOffset = layer->_zOffset;
-  this->_connection = layer->_connection;
-  this->_colorFunctor = layer->_colorFunctor;
-  this->legendText ( layer->legendText() );
-  this->_showLabel = layer->_showLabel;
-  this->_shown = layer->_shown;
-  this->_labelColor = layer->_labelColor;
-  this->_labelZOffset = layer->_labelZOffset;
-  this->_labelSize = layer->_labelSize;
-  this->_colorColumn = layer->_colorColumn;
 }
 
 
@@ -814,4 +754,16 @@ void Layer::customQuery( bool value )
 bool Layer::customQuery() const
 {
   return _customQuery;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the guid.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& Layer::guid() const
+{
+  return _guid;
 }

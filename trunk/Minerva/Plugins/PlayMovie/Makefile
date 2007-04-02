@@ -1,28 +1,33 @@
 SHELL = /bin/sh
 
 # Must be defined before Makedefs is included.
-PKG_NAME = Triangulate
-COMPILE_GUARD = TRIANGULATE
+PKG_NAME = PlayMovie
+COMPILE_GUARD = PLAY_MOVIE
 
 # Include all variables, flags, etc...
-include ../Makedefs
+include $(USUL_INC_DIR)/Usul/Make/Makedefs.plug
 
 INCLUDES = \
-	-I./ \
-	-I../../ \
-	-I${OSG_INC_DIR} \
-	-I${FOX_INC_DIR} \
-	-I${USUL_INC_DIR} \
+	-I./ 				\
+	-I./../../../Cinema/src 	\
+	-I./../../../Experimental 	\
+	-I../../ 			\
+	-I${OSG_INC_DIR} 		\
+	-I${PQXX_INC_DIR}		\
+	-I${FOX_INC_DIR} 		\
+	-I${USUL_INC_DIR} 		\
+	-I${OPENTHREADS_INC_DIR}	\
 	-I${HOME}/sdk/
 
 LIB_DIRS = \
 	-L${USUL_LIB_DIR} \
 	-L${FOX_LIB_DIR} \
 	-L${OSG_LIB_DIR} \
+	-L${OPENTHREADS_LIB_DIR} \
 	-L${HOME}/sdk/Quake
 
 LIBS = \
-	-lUsul -lOpenThreads -losg -ltriangle
+	-lUsul -lOpenThreads -losg -lCinema
 
 # Include the rules for make...
-include ../Makerules
+include $(USUL_INC_DIR)/Usul/Make/Makerules.plug

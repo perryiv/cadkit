@@ -1,10 +1,11 @@
 # Include the header to set up the environment.
-include header.mak
+include $(USUL_INC_DIR)/Make/header.mak
 
 # C++ source files.
 CPP_FILES = \
-	../../src/Cinema/Core/Movie.cpp			\
-	../../src/Cinema/Core/MovieHandler.cpp		\
+	../src/Cinema/Core/Global.cpp			\
+	../src/Cinema/Core/Movie.cpp			\
+	../src/Cinema/Core/MovieHandler.cpp		\
 	
 
 # The include path.
@@ -16,7 +17,7 @@ LOCAL_INCLUDE = \
 	-I$(OSG_EPHEMERIS_INC_DIR) 			\
 	-I$(BOOST_INC_DIR) 				\
 	-I$(LIBWMS_INC_DIR)				\
-	-I../../src					\
+	-I../src					\
 	-I../../../
 
 # The libraries to link to.
@@ -32,7 +33,7 @@ LOCAL_LIBS = \
 LOCAL_CPP_FLAGS = 
 
 # The name of the thing we are making.
-TARGET = Magrathea
+TARGET = Cinema
 
 # The common rules for compiling are in here.
-include library.mak
+include $(USUL_INC_DIR)/Make/library.mak

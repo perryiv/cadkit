@@ -143,6 +143,7 @@ int Controller::connectToSession( const std::string& name )
 
 void Controller::deleteSession()
 {
+  this->_clearTable("play_movie");
   this->_clearTable("wnv_layers");
   this->_clearTable("wnv_event_table");
   this->_clearTable("wnv_animate_table");
@@ -325,7 +326,7 @@ void Controller::playMovie ( const osg::Vec3f& position, float width, float heig
   Values values;
 
   values.push_back ( Values::value_type ( "session_id", Detail::toString ( _sessionID ) ) );
-  values.push_back ( Values::value_type ( "position", Detail::toString ( position ) ) );
+  values.push_back ( Values::value_type ( "the_position", Detail::toString ( position ) ) );
   values.push_back ( Values::value_type ( "width", Detail::toString ( width ) ) );
   values.push_back ( Values::value_type ( "height", Detail::toString ( height ) ) );
   values.push_back ( Values::value_type ( "path", Detail::toString ( path ) ) );

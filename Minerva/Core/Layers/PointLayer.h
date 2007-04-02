@@ -63,7 +63,7 @@ private:
   float _size;
   bool _stackPoints;
 
-  SERIALIZE_XML_DEFINE_MEMBERS ( PointLayer );
+  SERIALIZE_XML_CLASS_NAME ( PointLayer );
 };
 
 

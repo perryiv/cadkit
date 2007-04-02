@@ -109,15 +109,12 @@ namespace DT
         ]
         PROPERTY_GET_SET(LegendText, System::String^);
 
-        /// Get/Set show layer.
+        /// Get/Set show label.
         [
           System::ComponentModel::Category("Label"),
           System::ComponentModel::Description("Should a label be shown?"),
           System::ComponentModel::Browsable(true)
         ]
-        PROPERTY_GET_SET( ShowLayer, bool );
-
-        /// Get/Set show label.
         PROPERTY_GET_SET( ShowLabel, bool );
 
         /// Get/Set label color.
@@ -281,6 +278,8 @@ namespace DT
         }
 
       protected:
+        PROPERTY_GET_SET( ShowLayer, bool );
+
         DT::Minerva::Glue::BaseColorFunctor^ _createColorFunctor( DT::Minerva::Layers::Colors::ColorProperties ^ );
 
       private:

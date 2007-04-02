@@ -105,7 +105,7 @@ private:
   TemporalMap _temporalMap;
   NumberMap _numberMap;
 
-  SERIALIZE_XML_DEFINE_MEMBERS ( PolygonTimeLayer );
+  SERIALIZE_XML_CLASS_NAME ( PolygonTimeLayer );
 };
 
 

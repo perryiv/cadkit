@@ -69,7 +69,7 @@ private:
 
   Mode _mode;
 
-  SERIALIZE_XML_DEFINE_MEMBERS ( RLayer );
+  SERIALIZE_XML_CLASS_NAME ( RLayer );
 };
 
 }

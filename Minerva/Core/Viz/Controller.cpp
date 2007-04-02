@@ -352,7 +352,11 @@ Minerva::Core::Layers::Layer* Controller::_getLayer( const std::string drawComma
     bool hasLayer ( _sceneManager->hasLayer( layer->guid() ) );
 
     if ( hasLayer )
-      Minerva::Core::deserialize( xml, layer.get() );
+    {
+      Minerva::Core::Layers::Layer::RefPtr oldLayer ( _sceneManager->getLayer( layer->guid() ) );
+      Minerva::Core::deserialize( xml, oldLayer.get() );
+      return oldLayer.get();
+    }
   }
 
   return layer.release();

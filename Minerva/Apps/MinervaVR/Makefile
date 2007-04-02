@@ -29,8 +29,10 @@ LOCAL_LIBS = \
 	-lOsgTools \
 	-lUsul \
 	-lOpenThreadsEx \
-	-lMinerva_s \
-	-lMagrathea_s \
+	-lMinerva \
+	-lMagrathea \
+	-lXmlSerialize \
+	-lXmlTree \
 	-L$(VJCINEMA)/lib \
 	-lVrjCinema \
 	-L$(PQXX_LIB_DIR) \
@@ -43,7 +45,9 @@ LOCAL_LIBS = \
 	-L$(OSSIM_PLANET_LIB_DIR) \
 	-lossimPlanet \
 	-L$(OSG_EPHEMERIS_LIB_DIR) \
-	-losgEphemeris 
+	-losgEphemeris \
+	-L$(XERCES_LIB_DIR) \
+	-lxerces-c
 
 
 JUGGLER_LIBS = \

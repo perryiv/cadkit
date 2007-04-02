@@ -428,7 +428,7 @@ void LayerGlue::LabelSize::set ( float f )
 
 array<System::String^>^ LayerGlue::ColumnNames::get()
 {
-  if(nullptr != this->Connection && this->Tablename->Length > 0 )
+  if( 0x0 != this->layer()->connection() && this->Tablename->Length > 0 )
   {
     typedef ::Minerva::Core::DB::Info DbInfo;
     typedef DbInfo::Strings Strings;

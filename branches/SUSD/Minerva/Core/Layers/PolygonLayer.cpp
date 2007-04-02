@@ -54,7 +54,8 @@ PolygonLayer::PolygonLayer ( const PolygonLayer& layer ) : BaseClass ( layer ),
 _format ( layer._format ),
 _showInterior( layer._showInterior ),
 _showBorder ( layer._showBorder ),
-_borderColor ( layer._borderColor )
+_borderColor ( layer._borderColor ),
+_borderWidth ( layer._borderWidth )
 {
   this->_registerMembers();
 }

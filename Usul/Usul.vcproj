@@ -1803,6 +1803,10 @@
 					RelativePath=".\Functions\SafeCall.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Functions\ToString.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Headers"

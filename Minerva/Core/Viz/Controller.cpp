@@ -315,7 +315,6 @@ void Controller::_processAddLayer( const std::string& drawCommandTable, int even
   }
   
   _sceneManager->dirty( true );
-  _sceneManager->buildScene();
 
   // Render for progress.
   this->_updateProgress();
@@ -378,7 +377,6 @@ void Controller::_processRemoveLayer( const std::string& drawCommandTable, int e
     // Remove the layer.
     _sceneManager->removeLayer( layer->guid() );
     _sceneManager->dirty ( true );
-    _sceneManager->buildScene();
   }
 }
 
@@ -405,7 +403,6 @@ void Controller::_processAnimation( const std::string& tableName, int eventID )
     unsigned int numDays  ( result[0]["num_days_to_show"].as < unsigned int > () );
 
     _sceneManager->animate ( animate, accumulate, speed, timeWindow, numDays );
-    _sceneManager->buildScene();
   }
 }
 

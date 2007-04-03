@@ -27,6 +27,8 @@ public:
 
 #include "Usul/System/Host.h"
 
+#include "VrjCore/OssimInteraction.h"
+
 #include <fstream>
 
 #include <osg/Group>
@@ -91,6 +93,15 @@ void MinervaVR::appInit()
     _sceneManager->legendWidth ( 0.50 );
     _sceneManager->legendPadding ( osg::Vec2 ( 20.0, 40.0 ) );
     _sceneManager->legendHeightPerItem ( 60 );
+  }
+
+  // Create and set-up the interactor.
+  VrjCore::OssimInteraction *interactor = new VrjCore::OssimInteraction();
+
+  if( ossimPlanet* planet = dynamic_cast< ossimPlanet* >( _planet->root() ) )
+  {
+    interactor->planet( planet );
+    setEngine( interactor );
   }
 
   std::cerr << " [MinervaVR] app init ends: " << std::endl;
@@ -182,6 +193,7 @@ void MinervaVR::_updateScene()
 
       // Update the scene.
       _dbManager->updateScene();
+      _sceneManager->buildScene();
 
       std::cerr << " [MinervaVR] Finished updating scene." << std::endl;
     }

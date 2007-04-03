@@ -160,23 +160,18 @@ void SceneManager::buildScene()
     {
       // Set the legend size.
       unsigned int legendWidth ( static_cast < unsigned int > ( _width * _legendWidth ) );
-      //unsigned int legendHeight ( _legendHeightPerItem * _layers.size() );
       unsigned int legendHeight ( _height - ( _legendPadding.y() * 2 ) );
+
       _legend->maximiumSize( legendWidth, legendHeight );
       _legend->heightPerItem( _legendHeightPerItem );
 
-      osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
-      mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-
       // Translate legend to correct location.
       unsigned int xTranslate ( static_cast < unsigned int > ( _width - ( legendWidth + _legendPadding.x() ) ) );
-      unsigned int yTranslate ( static_cast < unsigned int > (_legendPadding.y() ) );
-      osg::Matrix m ( osg::Matrix::translate ( xTranslate, yTranslate, 0.0 ) );
-      mt->setMatrix( m );
+      unsigned int yTranslate ( static_cast < unsigned int > ( _legendPadding.y() ) );
+      _legend->position( xTranslate, yTranslate );
 
       // Build the legend.
-      mt->addChild( _legend->buildScene() );
-      _projectionNode->addChild( mt.get() );
+      _projectionNode->addChild( _legend->buildScene() );
     }
 
     _projectionNode->addChild( _updateNode.get() );

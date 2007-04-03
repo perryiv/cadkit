@@ -29,6 +29,8 @@ using namespace OsgTools::Legend;
 Legend::Legend() : 
 BaseClass(),
 _legendObjects(),
+_x ( 0 ),
+_y ( 0 ),
 _width ( 0 ),
 _height ( 0 ),
 _heightPerItem ( 0 ),
@@ -81,7 +83,13 @@ void Legend::addLegendObject( OsgTools::Legend::LegendObject *legendObject )
 
 osg::Node* Legend::buildScene()
 {
+  osg::ref_ptr< osg::MatrixTransform > root ( new osg::MatrixTransform );
+  root->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+  root->setMatrix ( osg::Matrix::translate ( _x, _y, 0.0 ) );
+
   osg::ref_ptr< osg::Group > group ( new osg::Group );
+
+  root->addChild( group.get() );
 
   if( _legendObjects.size() > 0 )
   {
@@ -130,7 +138,7 @@ osg::Node* Legend::buildScene()
     }
   }
 
-  return group.release();
+  return root.release();
 }
 
 
@@ -260,4 +268,17 @@ void Legend::heightPerItem( unsigned int height )
 unsigned int Legend::heightPerItem () const
 {
   return _heightPerItem;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the position of the legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Legend::position( unsigned int x, unsigned int y )
+{
+  _x = x;
+  _y = y;
 }

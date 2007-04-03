@@ -217,7 +217,6 @@ public:
   virtual void deserialize ( const XmlTree::Node &node )
   {
     _dataMemberMap.deserialize ( node );
-    this->legendText( _legendText );
   }
 
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;

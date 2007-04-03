@@ -105,9 +105,16 @@ namespace DT
 
         /// Get/Set the legend text.
         [
-          System::ComponentModel::Category("Display")
+          System::ComponentModel::Category("Legend")
         ]
         PROPERTY_GET_SET(LegendText, System::String^);
+
+        /// Get/Set the show count in legend flag.
+        [
+          System::ComponentModel::Category("Legend"),
+          System::ComponentModel::Description("Should the number of objects in the layer be shown in the legend?")
+        ]
+        PROPERTY_GET_SET(ShowCountLegend, bool);
 
         /// Get/Set show label.
         [

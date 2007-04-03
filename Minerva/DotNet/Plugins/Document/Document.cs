@@ -286,6 +286,9 @@ namespace DT.Minerva.Plugins.Document
       {
         _dll.hideLayer(layer);
         this.Modified = true;
+
+        if (this.Distributed)
+          _distributed.removeLayer(layer);
       }
     }
 
@@ -299,6 +302,9 @@ namespace DT.Minerva.Plugins.Document
       {
         _dll.showLayer(layer);
         this.Modified = true;
+
+        if (this.Distributed)
+          _distributed.showLayer(layer);
       }
     }
 

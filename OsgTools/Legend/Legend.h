@@ -47,6 +47,9 @@ public:
   /// Build the scene.
   osg::Node*           buildScene();
 
+  /// Set the position.
+  void                 position ( unsigned int x, unsigned int y );
+
   /// Set the maximium size.
   void                 maximiumSize( unsigned int width, unsigned int height );
 
@@ -66,6 +69,8 @@ private:
   typedef std::vector < LegendObject::RefPtr > LegendObjects;
 
   LegendObjects      _legendObjects;
+  unsigned int       _x;
+  unsigned int       _y;
   unsigned int       _width;
   unsigned int       _height;
   unsigned int       _heightPerItem;

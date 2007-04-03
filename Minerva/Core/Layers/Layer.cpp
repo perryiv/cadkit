@@ -11,6 +11,7 @@
 #include "Minerva/Core/Layers/Layer.h"
 
 #include "Usul/Functions/Guid.h"
+#include "Usul/Functions/ToString.h"
 #include "Usul/Interfaces/IGeometryCenter.h"
 
 #include "osg/Group"
@@ -96,8 +97,6 @@ _showCountLegend ( layer._showCountLegend )
     _colorFunctor = layer._colorFunctor->clone();
 
   this->_registerMembers();
-
-  this->legendText( _legendText );
 }
 
 
@@ -417,9 +416,6 @@ OsgTools::Legend::LegendObject* Layer::legendObject()
 
 void Layer::legendText( const std::string& text )
 {
-  if( 0x0 == this->legendObject()->text() )
-    this->legendObject()->text( new OsgTools::Legend::Text );
-  this->legendObject()->text()->text ( text );
   _legendText = text;
 }
 
@@ -804,6 +800,31 @@ bool Layer::showCountLegend() const
 
 void Layer::_updateLegendObject()
 {
-  this( 0x0 != this->colorFunctor() )
-    this->legendObject()->icon ( this->colorFunctor()->icon() );
+  try
+  {
+    if( 0x0 != this->colorFunctor() )
+      this->legendObject()->icon ( this->colorFunctor()->icon() );
+
+    // One columns for the text
+    this->legendObject()->columns ( 1 );
+    this->legendObject()->at ( 0 )->text ( this->legendText() );
+    
+
+    if( this->showCountLegend() )
+    {
+      this->legendObject()->columns ( this->legendObject()->columns() + 1 );
+      this->legendObject()->at ( 1 )->text ( Usul::Functions::toString( this->number() ) );
+      this->legendObject()->percentage( 1 ) = 0.20;
+    }
+
+    this->legendObject()->percentage( 0 ) = 0.80;
+  }
+  catch ( const std::exception& e )
+  {
+    std::cout << "Error 3665976713: " << e.what() << std::endl;
+  }
+  catch ( ... )
+  {
+    std::cout << "Error 4254986090: Unknown exception caught." << std::endl;
+  }
 }

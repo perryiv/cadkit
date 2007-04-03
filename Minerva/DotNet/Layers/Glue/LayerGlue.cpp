@@ -575,3 +575,26 @@ void LayerGlue::ColorProperties::set ( DT::Minerva::Layers::Colors::ColorPropert
   _properties = value;
   this->layer()->colorFunctor( this->_createColorFunctor( value )->colorFunctor() );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show count in legend flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool LayerGlue::ShowCountLegend::get()
+{
+  return this->layer()->showCountLegend();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the show count in legend flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayerGlue::ShowCountLegend::set ( bool value )
+{
+  this->layer()->showCountLegend( value );
+}

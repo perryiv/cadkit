@@ -92,7 +92,7 @@ STANDARD_LIBS = \
 
 # Basic options.
 #-------------------------------------------------------
-BUILD_TYPE?=	opt
+BUILD_TYPE=	opt
 
 srcdir=		./
 

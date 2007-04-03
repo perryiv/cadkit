@@ -17,6 +17,8 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 
+#include <vector>
+
 namespace OsgTools {
 namespace Legend {
 
@@ -35,22 +37,32 @@ public:
   Icon*                  icon();
   const Icon*            icon() const;
 
-  /// Get/Set the text.
-  void                   text( Text* );
-  Text*                  text();
-  const Text*            text() const;
+  /// Get the text.
+  Text*                  operator[] ( unsigned int i );
+  Text*                  at ( unsigned int i );
+
+  /// Get/Set the number of columns.
+  void                   columns( unsigned int value );
+  unsigned int           columns() const;
+
+  /// Get the percentage at given column.
+  float&                 percentage( unsigned int i );
 
   osg::Node*             buildScene();
 
   /// Set the size.
-  void                 size( unsigned int width, unsigned int height );
+  void                   size( unsigned int width, unsigned int height );
 
 protected:
   virtual ~LegendObject();
 
 private:
   Icon::RefPtr _icon;
-  Text::RefPtr _text;
+
+  typedef std::vector < Text::RefPtr > TextVector;
+  TextVector _texts;
+
+  std::vector< float > _percentages;
 
   unsigned int _width;
   unsigned int _height;

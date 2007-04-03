@@ -111,8 +111,6 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
   // Guard this section of code.
   Guard guard ( _mutex);
 
-  this->legendObject()->icon( this->colorFunctor()->icon() );
-
   Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
 
   std::string dataTable ( this->tablename() );
@@ -163,6 +161,9 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       progress->updateProgressBar( num );
     }
   }
+
+  // Update the legend.
+  this->_updateLegendObject();
 }
 
 

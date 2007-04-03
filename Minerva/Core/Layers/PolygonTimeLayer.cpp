@@ -183,8 +183,6 @@ void PolygonTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 {
   Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
 
-  this->legendObject()->icon( this->colorFunctor()->icon() );
-
   std::string dataTable ( this->tablename() );
 
   // Execute the query.  This will return data to draw.
@@ -264,6 +262,9 @@ void PolygonTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       progress->updateProgressBar( num );
     }
   }
+
+  // Update the legend.
+  this->_updateLegendObject();
 }
 
 

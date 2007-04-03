@@ -102,8 +102,6 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
   // Lock the mutex.
   Guard guard( _mutex );
 
-  this->legendObject()->icon ( this->colorFunctor()->icon() );
-
   Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
 
   // Execute the query.
@@ -143,8 +141,6 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
      /// Set the label.
     this->_labelDataObject( data.get() );
 
-    data->buildScene();
-
     this->_addDataObject( data.get() );
 
     if( progress.valid() )
@@ -154,6 +150,22 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     }
   }
 
+  /// Stack the points.
+  this->_stack();
+
+  // Update the legend.
+  this->_updateLegendObject();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Stack the points.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointLayer::_stack()
+{
   if( _stackPoints )
   {
     typedef osg::Vec3 Key;

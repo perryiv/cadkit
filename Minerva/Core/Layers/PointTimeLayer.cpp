@@ -192,8 +192,6 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
   // Guard this section of code.
   Guard guard ( _mutex);
 
-  this->legendObject()->icon ( this->colorFunctor()->icon() );
-
   Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
 
   const std::string tableName ( this->tablename() );
@@ -246,6 +244,9 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       std::cout << "Error 4160517991: exception generated while adding point-time layer" << std::endl;
     }
   }
+
+  // Update the legend.
+  this->_updateLegendObject();
 }
 
 

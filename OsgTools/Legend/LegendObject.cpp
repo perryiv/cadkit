@@ -151,8 +151,8 @@ osg::Node* LegendObject::buildScene()
   osg::ref_ptr < osg::Group > group ( new osg::Group );
 
   unsigned int padding ( 5 );
-  unsigned int iconWidth ( _width * 0.20 );
-  unsigned int textWidth ( _width * 0.75 );
+  unsigned int iconWidth ( static_cast < unsigned int > ( _width * 0.20 ) );
+  unsigned int textWidth ( static_cast < unsigned int > ( _width * 0.75 ) );
 
   if( _icon.valid() )
   {
@@ -166,7 +166,7 @@ osg::Node* LegendObject::buildScene()
 
   for( unsigned int i = 0; i < _texts.size(); ++i )
   {
-    const unsigned int columnWidth ( textWidth * _percentages.at( i ) );
+    const unsigned int columnWidth ( static_cast < unsigned int > ( textWidth * _percentages.at( i ) ) );
     Text::RefPtr text ( _texts.at ( i ) );
     text->width( columnWidth );
     text->height( textHeight );

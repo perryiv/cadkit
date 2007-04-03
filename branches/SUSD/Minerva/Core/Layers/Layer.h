@@ -100,7 +100,7 @@ public:
   float                       labelSize() const;
 
   /// Get/Set the render bin.
-  void                        renderBin(Usul::Types::Uint32 bin );
+  void                        renderBin( Usul::Types::Uint32 bin );
   Usul::Types::Uint32         renderBin( ) const;
 
   /// Get/Set the z offset.
@@ -158,6 +158,10 @@ public:
   /// Get the guid.
   const std::string &         guid() const;
 
+  /// Get/Set show count in legend.
+  void                        showCountLegend( bool b );
+  bool                        showCountLegend() const;
+
 protected:
 
   /// Use reference counting.
@@ -178,6 +182,9 @@ protected:
   void                        _labelDataObject ( DataObject* dataObject );
 
   void                        _registerMembers();
+
+  /// update legend object.
+  void                        _updateLegendObject();
 
 private:
 
@@ -201,6 +208,7 @@ private:
   float                  _labelSize;
   std::string            _colorColumn;
   bool                   _customQuery;
+  bool                   _showCountLegend;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME ( Layer );

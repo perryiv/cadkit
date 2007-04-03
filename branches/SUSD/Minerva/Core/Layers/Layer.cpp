@@ -55,6 +55,7 @@ _labelZOffset( 1000.0 ),
 _labelSize ( 25.0f ),
 _colorColumn(),
 _customQuery ( false ),
+_showCountLegend ( false ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
   this->_registerMembers();
@@ -88,7 +89,8 @@ _labelColor( layer._labelColor ),
 _labelZOffset( layer._labelZOffset ),
 _labelSize ( layer._labelSize ),
 _colorColumn( layer._colorColumn ),
-_customQuery( layer._customQuery )
+_customQuery( layer._customQuery ),
+_showCountLegend ( layer._showCountLegend )
 {
   if( layer._colorFunctor.valid() )
     _colorFunctor = layer._colorFunctor->clone();
@@ -127,6 +129,7 @@ void Layer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _labelSize );
   SERIALIZE_XML_ADD_MEMBER ( _colorColumn );
   SERIALIZE_XML_ADD_MEMBER ( _customQuery );
+  SERIALIZE_XML_ADD_MEMBER ( _showCountLegend );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -766,4 +769,41 @@ bool Layer::customQuery() const
 const std::string& Layer::guid() const
 {
   return _guid;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set show count in legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::showCountLegend( bool b )
+{
+  _showCountLegend = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get show count in legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Layer::showCountLegend() const
+{
+  return _showCountLegend;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update legend object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::_updateLegendObject()
+{
+  this( 0x0 != this->colorFunctor() )
+    this->legendObject()->icon ( this->colorFunctor()->icon() );
 }

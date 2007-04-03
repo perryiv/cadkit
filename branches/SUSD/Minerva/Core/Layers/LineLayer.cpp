@@ -117,8 +117,6 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
   // Lock the mutex.
   Guard guard( _mutex );
 
-  this->legendObject()->icon ( this->colorFunctor()->icon() );
-
   // Query for a progress bar.
   Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
 
@@ -169,6 +167,9 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       progress->updateProgressBar( num );
     }
   }
+
+  // Update the legend.
+  this->_updateLegendObject();
 }
 
 

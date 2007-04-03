@@ -57,6 +57,8 @@ protected:
 
   void _registerMembers();
 
+  void _stack ();
+
 private:
 
   Usul::Types::Uint32 _primitiveID;

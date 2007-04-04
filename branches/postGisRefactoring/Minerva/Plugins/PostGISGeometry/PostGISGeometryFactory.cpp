@@ -14,12 +14,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Plugins/ComputeNormals/ComputeNormalsFactory.h"
-#include "Minerva/Plugins/ComputeNormals/ComputeNormalsComponent.h"
+#include "Minerva/Plugins/PostGISGeometry/PostGISGeometryFactory.h"
+#include "Minerva/Plugins/PostGISGeometry/PostGISGeometryComponent.h"
 
 #include "Usul/Components/Create.h"
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ComputeNormalsFactory, ComputeNormalsFactory::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PostGISGeometryFactory, PostGISGeometryFactory::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ extern "C" bool usul_is_debug_build()
 
 extern "C" Usul::Interfaces::IClassFactory *usul_get_class_factory()
 {
-  Usul::Interfaces::IClassFactory::ValidRefPtr factory ( new ComputeNormalsFactory() );
+  Usul::Interfaces::IClassFactory::ValidRefPtr factory ( new PostGISGeometryFactory() );
   return factory.release();
 }
 
@@ -57,7 +57,7 @@ extern "C" Usul::Interfaces::IClassFactory *usul_get_class_factory()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ComputeNormalsFactory::ComputeNormalsFactory() : BaseClass()
+PostGISGeometryFactory::PostGISGeometryFactory() : BaseClass()
 {
 }
 
@@ -68,7 +68,7 @@ ComputeNormalsFactory::ComputeNormalsFactory() : BaseClass()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ComputeNormalsFactory::~ComputeNormalsFactory()
+PostGISGeometryFactory::~PostGISGeometryFactory()
 {
 }
 
@@ -79,7 +79,7 @@ ComputeNormalsFactory::~ComputeNormalsFactory()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown *ComputeNormalsFactory::queryInterface ( unsigned long iid )
+Usul::Interfaces::IUnknown *PostGISGeometryFactory::queryInterface ( unsigned long iid )
 {
   switch ( iid )
   {
@@ -100,10 +100,10 @@ Usul::Interfaces::IUnknown *ComputeNormalsFactory::queryInterface ( unsigned lon
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown *ComputeNormalsFactory::createInstance ( unsigned long iid )
+Usul::Interfaces::IUnknown *PostGISGeometryFactory::createInstance ( unsigned long iid )
 {
   // Require this to construct.
-  ComputeNormalsComponent::ValidAccessRefPtr component ( new ComputeNormalsComponent );
+  PostGISGeometryComponent::ValidAccessRefPtr component ( new PostGISGeometryComponent );
 
   // Do not require this to work.
   Usul::Interfaces::IUnknown::RefPtr unknown ( component->queryInterface ( iid ) );

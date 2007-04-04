@@ -60,6 +60,7 @@
     <Compile Include="Factory.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="MoviePlayer.cs">
+      <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>

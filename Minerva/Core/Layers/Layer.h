@@ -36,6 +36,7 @@ namespace osg { class Group; }
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 namespace Minerva {
 namespace Core {
@@ -239,7 +240,7 @@ osg::Vec4 Layer::_color ( const T& iter )
     if( !this->colorColumn().empty() )
     {
       std::string column ( this->colorColumn() );
-      double fieldValue = iter[ column.c_str() ].as < double > ();
+      double fieldValue = iter[ column.c_str() ].as( static_cast < double > ( 0 ) );
       color = (*this->colorFunctor())(fieldValue);
     }
     else

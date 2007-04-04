@@ -16,6 +16,12 @@
 
 #include "Minerva/Core/DataObjects/DataObject.h"
 
+#include "OsgTools/Font.h"
+
+#include "osg/Geode"
+#include "osgText/Text"
+#include "osg/Billboard"
+
 using namespace Minerva::Core::DataObjects;
 
 
@@ -57,8 +63,9 @@ _tableName(),
 _rowId ( -1 ),
 _label(),
 _labelPosition(),
-_labelSize( 25.0f ),
 _labelColor( 1.0, 1.0, 1.0, 1.0 ),
+_labelSize( 25.0f ),
+_showLabel ( false ),
 _geometry ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) )
 {
 }
@@ -339,3 +346,52 @@ float DataObject::labelSize() const
   return _labelSize;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the node for the label.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* DataObject::_buildLabel()
+{
+  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+  osg::ref_ptr < osgText::Text > text ( new osgText::Text );
+
+  text->setFont( OsgTools::Font::defaultFont() );
+  text->setColor( this->labelColor() );
+  text->setPosition ( this->labelPosition() );
+  text->setAutoRotateToScreen(true);
+  text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
+  text->setCharacterSize( this->labelSize() );
+
+  text->setText ( this->label() );
+
+  geode->addDrawable( text.get() );
+
+  return geode.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flag to show the label.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::showLabel ( bool value )
+{
+  _showLabel = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flag to show the label.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DataObject::showLabel () const
+{
+  return _showLabel;
+}

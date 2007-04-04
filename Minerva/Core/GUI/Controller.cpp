@@ -14,6 +14,8 @@
 #include "boost/algorithm/string/trim.hpp"
 #include "boost/algorithm/string/replace.hpp"
 
+#include "pqxx/pqxx"
+
 #include <iostream>
 
 using namespace Minerva::Core::GUI;

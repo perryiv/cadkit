@@ -34,7 +34,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Controller , Controller::BaseClass );
 ///////////////////////////////////////////////////////////////////////////////
 
 Controller::Controller( ) :
-_sceneManager( new Minerva::Core::Scene::SceneManager ),
+_sceneManager( 0x0 ),
 _callback( 0x0 ),
 _update ( 1000 ),
 _applicationConnection ( 0x0 ),

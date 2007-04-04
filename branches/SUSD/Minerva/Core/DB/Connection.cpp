@@ -16,6 +16,8 @@
 
 #include "Serialize/XML/RegisterCreator.h"
 
+#include "pqxx/pqxx"
+
 #include <iostream>
 
 using namespace Minerva::Core::DB;

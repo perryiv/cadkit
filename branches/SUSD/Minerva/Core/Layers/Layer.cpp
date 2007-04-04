@@ -51,7 +51,7 @@ _legendObject ( new LegendObject ),
 _legendText( "" ),
 _showLabel ( false ),
 _shown ( true ),
-_labelColor( 0.0, 0.0, 0.0, 1.0 ),
+_labelColor( 1.0, 1.0, 1.0, 1.0 ),
 _labelZOffset( 1000.0 ),
 _labelSize ( 25.0f ),
 _colorColumn(),
@@ -554,38 +554,6 @@ const std::string& Layer::colorColumn() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the color.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Vec4 Layer::_color ( const pqxx::result::const_iterator& iter )
-{
-  osg::Vec4 color( 0.0, 0.0, 0.0, 1.0 );
-
-  try
-  {
-    if( !this->colorColumn().empty() )
-    {
-      std::string column ( this->colorColumn() );
-      double fieldValue = iter[ column.c_str() ].as < double > ();
-      color = (*this->colorFunctor())(fieldValue);
-    }
-    else
-    {
-      color = (*this->colorFunctor())( 0.0 );
-    }
-  }
-  catch ( const std::exception& e )
-  {
-    std::cout << "Error 2909352868: " << e.what() << std::endl;
-  }
-
-  return color;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 // Get the number of data objects in this layer.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -604,6 +572,8 @@ unsigned int Layer::number() const
 
 void Layer::_labelDataObject ( Minerva::Core::DataObjects::DataObject* dataObject )
 {
+  dataObject->showLabel ( this->showLabel() );
+
   // If we have a column to use for a label.
   if( this->showLabel() && !this->labelColumn().empty() )
   {

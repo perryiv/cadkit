@@ -21,7 +21,7 @@
 #include "Minerva/Core/DataObjects/DataObject.h"
 
 #include "osg/ref_ptr"
-#include "osg/Geode"
+#include "osg/Group"
 
 namespace Minerva {
 namespace Core {
@@ -50,7 +50,7 @@ protected:
 
 private:
   float     _width;
-  osg::ref_ptr< osg::Geode > _node;
+  osg::ref_ptr< osg::Group > _node;
 };
 
 }

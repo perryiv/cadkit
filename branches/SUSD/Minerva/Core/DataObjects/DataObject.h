@@ -80,6 +80,10 @@ public:
   void                  labelSize ( float size );
   float                 labelSize () const;
 
+  /// Get/Set the flag to show the label.
+  void                  showLabel ( bool value );
+  bool                  showLabel () const;
+
   /// Get/Set the render bin
   unsigned int          renderBin() const;
   void                  renderBin ( unsigned int );
@@ -97,6 +101,8 @@ protected:
   /// Use reference counting.
   virtual ~DataObject ();
 
+  osg::Node*            _buildLabel();
+
 private:
 
   bool _dirty;
@@ -108,6 +114,7 @@ private:
   osg::Vec3 _labelPosition;
   osg::Vec4 _labelColor;
   float _labelSize;
+  bool _showLabel;
   Unknown::QueryPtr _geometry;
 
   /// Shape Factory to share across all Data Objects.

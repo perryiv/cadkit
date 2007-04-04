@@ -14,12 +14,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _COMPUTE_NORMALS_COMPILE_GUARD_H_
-#define _COMPUTE_NORMALS_COMPILE_GUARD_H_
+#ifndef _POST_GIS_GEOMETRY_COMPILE_GUARD_H_
+#define _POST_GIS_GEOMETRY_COMPILE_GUARD_H_
 
-#ifndef _COMPILING_COMPUTE_NORMALS
+#ifndef _COMPILING_POSTGIS_GEOMETRY
 # error "This header file is only used for compiling the library."
 # error "It should not be included in client code."
 #endif
 
-#endif // _COMPUTE_NORMALS_COMPILE_GUARD_H_
+#endif // _POST_GIS_GEOMETRY_COMPILE_GUARD_H_

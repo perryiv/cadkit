@@ -58,6 +58,7 @@
     <Compile Include="Commands\ViewerModeCommands.cs" />
     <Compile Include="Commands\ViewerModeCommand.cs" />
     <Compile Include="NewDocumentForm.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="NewDocumentForm.Designer.cs">
       <DependentUpon>NewDocumentForm.cs</DependentUpon>

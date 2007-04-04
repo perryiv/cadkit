@@ -14,17 +14,17 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _COMPUTE_NORMALS_FACTORY_CLASS_H_
-#define _COMPUTE_NORMALS_FACTORY_CLASS_H_
+#ifndef _POST_GIS_GEOMETRY_FACTORY_CLASS_H_
+#define _POST_GIS_GEOMETRY_FACTORY_CLASS_H_
 
-#include "Minerva/Plugins/ComputeNormals/CompileGuard.h"
+#include "Minerva/Plugins/PostGISGeometry/CompileGuard.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IClassFactory.h"
 
 
-class ComputeNormalsFactory : public Usul::Base::Referenced,
-                              public Usul::Interfaces::IClassFactory
+class PostGISGeometryFactory : public Usul::Base::Referenced,
+                               public Usul::Interfaces::IClassFactory
 {
 public:
 
@@ -33,18 +33,18 @@ public:
   typedef Usul::Base::Referenced BaseClass;
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( ComputeNormalsFactory );
+  USUL_DECLARE_QUERY_POINTERS ( PostGISGeometryFactory );
 
   /// Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   /// Default construction.
-  ComputeNormalsFactory();
+  PostGISGeometryFactory();
 
 protected:
 
   /// Use reference counting.
-  virtual ~ComputeNormalsFactory();
+  virtual ~PostGISGeometryFactory();
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -58,4 +58,4 @@ protected:
 };
 
 
-#endif // _COMPUTE_NORMALS_FACTORY_CLASS_H_
+#endif // _POST_GIS_GEOMETRY_FACTORY_CLASS_H_

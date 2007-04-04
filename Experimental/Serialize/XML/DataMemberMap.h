@@ -61,7 +61,8 @@ public:
   // Need to be by reference so that the client can change it after this class it made.
   template < class T, class C > void addMember ( const std::string &name, Usul::Pointers::QueryPointer<T,C> &value )
   {
-    this->_addMember ( new Serialize::XML::QueryPointerMember<T, C> ( name, value ) );
+    typedef Usul::Pointers::QueryPointer<T,C> PointerType;
+    this->_addMember ( new Serialize::XML::QueryPointerMember<PointerType> ( name, value ) );
   }
 
 

@@ -1105,6 +1105,10 @@
 					Name="GIS"
 					>
 					<File
+						RelativePath=".\Interfaces\ICreateGeometry.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\IGeometryCenter.h"
 						>
 					</File>

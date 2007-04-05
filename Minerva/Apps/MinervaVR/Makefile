@@ -16,7 +16,7 @@ EXTRA_INCLUDES = \
 	-I$(VJ_BASE_DIR)/include/tweek/idl/ \
 	-I${OSG_INC_DIR} \
 	-I${OPENTHREADS_INC_DIR} \
-	-I${VJCINEMA}/src \
+	-I${VRJCINEMA_ROOT_DIR}/src \
 	-I$(OSSIM_INC_DIR) \
 	-I$(OSSIM_PLANET_INC_DIR) \
 	-I$(OSG_EPHEMERIS_INC_DIR) \
@@ -33,7 +33,7 @@ LOCAL_LIBS = \
 	-lMagrathea \
 	-lXmlSerialize \
 	-lXmlTree \
-	-L$(VJCINEMA)/lib \
+	-L${VRJCINEMA_ROOT_DIR}/lib \
 	-lVrjCinema \
 	-L$(PQXX_LIB_DIR) \
 	-lpqxx \
@@ -59,8 +59,7 @@ JUGGLER_LIBS = \
 	-lgadget \
 	-ljccl \
 	-L${VJ_DEPS_DIR}/lib \
-	-lcppdom #\
-#	-lboost_filesystem-gcc-mt-1_32 
+	-lcppdom 
 
 OSG_LIBS = \
 	-L${OSG_LIB_DIR} \
@@ -78,21 +77,9 @@ STANDARD_LIBS = \
 	-lGL \
 	-lm
 
-#NO_DEPEND=	YES
-
-#include $(VJ_BASE_DIR)/share/vrjuggler/vrj.appdefs.mk
-#include $(VJ_BASE_DIR)/share/Doozer/ext/vrjuggler/dzr.vrjuggler.glapp.mk
-#include $(VJ_BASE_DIR)/share/Doozer/ext/tweek/dzr.tweek.mk
-
-#COMPILE_COMMAND	= $(COMPILER) $(DEBUG_FLAGS) $(COMPILER_FLAGS)
-#LINK_COMMAND	= $(COMPILER) $(DEBUG_FLAGS) $(LINKER_FLAGS)
-
-
-
-
 # Basic options.
 #-------------------------------------------------------
-BUILD_TYPE=	opt
+BUILD_TYPE?=	opt
 
 srcdir=		./
 
@@ -110,7 +97,7 @@ include $(VJ_BASE_DIR)/share/vrjuggler/vrj.appdefs.mk
 include $(VJ_BASE_DIR)/share/Doozer/ext/vrjuggler/dzr.vrjuggler.glapp.mk
 include $(VJ_BASE_DIR)/share/Doozer/ext/tweek/dzr.tweek.mk
 
-//EXTRA_CXXFLAGS += -DPQXX_SHARED
+
 
 #vpath %.cpp $(CXX_GEN_DIR)
 #vpath %.h $(CXX_GEN_DIR)

@@ -2,40 +2,23 @@
 PROJECT(OsgTools)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
-
-# If the user has defined OSGTOOLS_BIN_DIR as an environment variable
-#  then use that directory as the output directory. Otherwise set the output
-#  directory to be inside the current build directory.
-#  First check to see if it was defined in another project
-
-# This will be true if the user has NOT defined an environment variable
-# Set directory to be same as Usul's
-IF ( NOT OSGTOOLS_BIN_DIR )
-SET(OSGTOOLS_BIN_DIR "$ENV{OSGTOOLS_BIN_DIR}" )
-ENDIF ( NOT OSGTOOLS_BIN_DIR )
-
-IF ( NOT OSGTOOLS_BIN_DIR ) 
-SET(OSGTOOLS_BIN_DIR  ${PROJECT_BINARY_DIR}/Bin )
-ENDIF ( NOT OSGTOOLS_BIN_DIR )
-
+INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 # setup output Directories
 SET (LIBRARY_OUTPUT_PATH
-	${OSGTOOLS_BIN_DIR}
+	${CADKIT_BIN_DIR}
 	CACHE PATH
 	"Single Directory for all Libraries"
 )
 
 # setup the Executable output Directory
 SET (EXECUTABLE_OUTPUT_PATH
-	${OSGTOOLS_BIN_DIR}
+	${CADKIT_BIN_DIR}
 	CACHE PATH
 	"Single Directory for all Executables."
 )
 
-
-# Make sure Usul is built
-SUBDIRS (${PROJECT_SOURCE_DIR}/../Usul)
+ADD_DEFINITIONS("-D_COMPILING_OSG_TOOLS")
 
 # ------------ Find OpenGL Library ----------------------
 FIND_PACKAGE(OpenGL)
@@ -45,9 +28,10 @@ INCLUDE ( ${CMakeModules}/FindOSG.cmake)
 
 # ------------ Find Boost ----------------------
 SET (Boost_USE_DATE_TIME TRUE)
-INCLUDE ( ${CMakeModules}/FindBOOST.cmake)
+INCLUDE ( ${CMakeModules}/FindBoost.cmake)
 # Note that the Boost Include path will automatically get added
 
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
@@ -146,9 +130,10 @@ SET (SOURCES
 # Create a Shared Library
 ADD_LIBRARY(OsgTools SHARED ${SOURCES} )
 
-# Link the Library	
+# Link the Library
+LINK_CADKIT(OsgTools Usul)
+
 TARGET_LINK_LIBRARIES(OsgTools
-  Usul
   ${Boost_LIBRARIES}
 	${OPENGL_LIBRARIES}
 	${OPENTHREADS_LIB}
@@ -158,6 +143,3 @@ TARGET_LINK_LIBRARIES(OsgTools
 	${OSG_TEXT_LIB}
 	${OSG_UTIL_LIB}
 )
-
-    
-    

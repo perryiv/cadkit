@@ -1,49 +1,29 @@
 
 PROJECT(Magrathea)
 
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
+INCLUDE ( ${CMakeModules}/Cadkit.cmake)
+
 
 # ------------ Find OpenGL Library ----------------------
 FIND_PACKAGE(OpenGL)
 
 
 # ------------ Find OpenSceneGraph Libraries ----------------------
-INCLUDE($ENV{USUL_INC_DIR}/Usul/Make/FindOSG.cmake)
+INCLUDE(${CMakeModules}/FindOSG.cmake)
 
 
 # ------------ Find Ossim Libraries ----------------------
-INCLUDE($ENV{USUL_INC_DIR}/Usul/Make/FindOSSIM.cmake)
+INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 
 
-#setup output Directories
-SET (LIBRARY_OUTPUT_PATH
-	$ENV{USUL_BIN_DIR}
-	CACHE PATH
-	"Single Directory for all Libraries"
-)
-
-#setup the Executable output Directory
-SET (EXECUTABLE_OUTPUT_PATH
-	$ENV{USUL_BIN_DIR}
-	CACHE PATH
-	"Single Directory for all Executables."
-)
-
-# ------------ Find the Usul Library -----------------------------
-if (NOT USUL_BIN_DIR)
-  set(USUL_BIN_DIR "$ENV{USUL_BIN_DIR}")
-  if (NOT USUL_BIN_DIR)  
-    SET (USUL_BIN_DIR ${LIBRARY_OUTPUT_PATH} )
-    endif (NOT USUL_BIN_DIR)
-endif( NOT USUL_BIN_DIR )
-
-
-LINK_DIRECTORIES( ${USUL_BIN_DIR} )
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
-		     "$ENV{USUL_INC_DIR}" 
+		     ${CADKIT_INC_DIR} 
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
 		     ${WMS_INC_DIR}
@@ -65,9 +45,8 @@ SET (SOURCES
 ADD_LIBRARY(Magrathea SHARED ${SOURCES} )
 
 # Link the Library	
+LINK_CADKIT(Magrathea Usul OsgTools)
 TARGET_LINK_LIBRARIES(Magrathea
-	Usul
-	OsgTools
 	${OPENGL_LIBRARIES}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}

@@ -1,52 +1,33 @@
 
 PROJECT(Minerva)
 
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
+INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 # ------------ Find OpenSceneGraph Libraries ----------------------
-INCLUDE($ENV{USUL_INC_DIR}/Usul/Make/FindOSG.cmake)
+INCLUDE(${CMakeModules}/FindOSG.cmake)
 
 
 # ------------ Find Ossim Libraries ----------------------
-INCLUDE($ENV{USUL_INC_DIR}/Usul/Make/FindOSSIM.cmake)
+INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 
 # ------------ Find boost ----------------------
 SET ( Boost_DATE_TIME_LIBRARY TRUE )
 SET ( Boost_USE_SERIALIZATION TRUE )
-INCLUDE( $ENV{USUL_INC_DIR}/Usul/Make/FindBoost.cmake)
+INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
 # ------------ Find PQXX Library ----------------------
 FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
 
-#setup output Directories
-SET (LIBRARY_OUTPUT_PATH
-	$ENV{USUL_BIN_DIR}
-	CACHE PATH
-	"Single Directory for all Libraries"
-)
 
-#setup the Executable output Directory
-SET (EXECUTABLE_OUTPUT_PATH
-	$ENV{USUL_BIN_DIR}
-	CACHE PATH
-	"Single Directory for all Executables."
-)
-
-# ------------ Find the Usul Library -----------------------------
-if (NOT USUL_BIN_DIR)
-  set(USUL_BIN_DIR "$ENV{USUL_BIN_DIR}")
-  if (NOT USUL_BIN_DIR)  
-    SET (USUL_BIN_DIR ${LIBRARY_OUTPUT_PATH} )
-    endif (NOT USUL_BIN_DIR)
-endif( NOT USUL_BIN_DIR )
-
-
-LINK_DIRECTORIES( ${USUL_BIN_DIR} )
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
-		     $ENV{USUL_INC_DIR}
+		     ${CADKIT_INC_DIR}
+		     "${CADKIT_INC_DIR}/Experimental"
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
 		     ${WMS_INC_DIR}
@@ -69,7 +50,6 @@ SET (SOURCES
   ./Layers/PolygonLayer.cpp
   ./Layers/PolygonTimeLayer.cpp
   ./Layers/PointLayer.cpp
-  ./Layers/PatentLayer.cpp
   ./Layers/Layer.cpp
   ./DB/Connection.cpp
   ./DB/Info.cpp
@@ -91,10 +71,8 @@ SET (SOURCES
 ADD_LIBRARY(Minerva SHARED ${SOURCES} )
 
 # Link the Library	
+LINK_CADKIT( Minerva Usul OsgTools Magrathea SerializeXML XmlTree )
 TARGET_LINK_LIBRARIES(Minerva
-	Usul
-	OsgTools
-	Magrathea
 	${Boost_LIBRARIES}
 	${PQXX_LIB}
 	${OPENTHREADS_LIB}

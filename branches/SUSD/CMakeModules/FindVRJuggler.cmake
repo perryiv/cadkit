@@ -1,0 +1,32 @@
+
+set(VRJ_INC_DIR "$ENV{VJ_BASE_DIR}/include")
+
+FIND_LIBRARY(VRJ_LIB vrj 
+  $ENV{VJ_BASE_DIR}/lib64"
+  $ENV{VJ_BASE_DIR}/lib"
+)
+
+FIND_LIBRARY(VRJ_OGL_LIB vrj_ogl 
+  $ENV{VJ_BASE_DIR}/lib64"
+  $ENV{VJ_BASE_DIR}/lib"
+)
+
+FIND_LIBRARY(SONIX_LIB sonix 
+  $ENV{VJ_BASE_DIR}/lib64"
+  $ENV{VJ_BASE_DIR}/lib"
+)
+
+FIND_LIBRARY(VPR_LIB vpr 
+  $ENV{VJ_BASE_DIR}/lib64"
+  $ENV{VJ_BASE_DIR}/lib"
+)
+
+FIND_LIBRARY(GADGET_LIB gadget 
+  $ENV{VJ_BASE_DIR}/lib64"
+  $ENV{VJ_BASE_DIR}/lib"
+)
+
+FIND_LIBRARY(JCCL_LIB jccl 
+  $ENV{VJ_BASE_DIR}/lib64"
+  $ENV{VJ_BASE_DIR}/lib"
+)

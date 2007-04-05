@@ -48,6 +48,8 @@ IF (CMAKE_BUILD_TYPE STREQUAL "Release")
 ADD_DEFINITIONS("-DNDEBUG")
 ENDIF (CMAKE_BUILD_TYPE STREQUAL "Release")
 
+ADD_DEFINITIONS("-D_COMPILING_USUL")
+
 
 #List the Sources
 SET (SOURCES
@@ -74,6 +76,7 @@ SET (SOURCES
 	File/Remove.cpp
 	File/Temp.cpp
 	Functions/Color.cpp
+	Functions/Guid.cpp
 	ID/GUID.cpp
 	Predicates/CanWrite.cpp
 	Resources/CancelButton.cpp
@@ -100,10 +103,14 @@ SET (SOURCES
 	User/Directory.cpp
 )
 
+IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+SET(LIBNAME Usuld)
+ELSE (CMAKE_BUILD_TYPE STREQUAL "Debug")
+SET(LIBNAME Usul)
+ENDIF(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 # Create a Shared Library
-ADD_LIBRARY(Usul SHARED ${SOURCES} )
+ADD_LIBRARY(${LIBNAME} SHARED ${SOURCES} )
 
 # Link the Library	
 TARGET_LINK_LIBRARIES(Usul)
-	

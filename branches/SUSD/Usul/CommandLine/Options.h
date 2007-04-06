@@ -20,6 +20,7 @@
 
 #include <map>
 #include <string>
+#include <iosfwd>
 
 namespace Usul {
 namespace CommandLine {
@@ -72,6 +73,8 @@ class Options
  private:
   Map _options;
 };
+
+ std::istream& operator>>( std::istream& in, Options& o );
 
 }
 }

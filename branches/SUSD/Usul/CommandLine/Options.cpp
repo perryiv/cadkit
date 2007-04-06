@@ -8,6 +8,10 @@
 
 #include "Usul/CommandLine/Options.h"
 
+#include <iostream>
+#include <sstream>
+#include <vector>
+
 using namespace Usul::CommandLine;
 
 
@@ -20,6 +24,7 @@ using namespace Usul::CommandLine;
 Options::Options() : _options()
 {
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -72,17 +77,66 @@ std::string Options::stringValue ( const std::string& option ) const
   return "";
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// The value as an integer
-///////////////////////////////////////////////////////////////////////////////
- unsigned long int Options::intValue (const std::string& option) const {
-  return atoi( this->stringValue(option).c_str() );
- }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Returns a float value from the Options
+//
+// The value as an integer
+//
 ///////////////////////////////////////////////////////////////////////////////
-float Options::floatValue(const std::string& option) const {
-  return (float) atof(this->stringValue(option).c_str() );
+ 
+unsigned long int Options::intValue (const std::string& option) const
+{
+  unsigned long int value ( 0 );
+  std::istringstream in ( this->stringValue(option) );
+  in >> value;
+  return value;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Returns a float value from the Options
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float Options::floatValue(const std::string& option) const
+{
+  float value ( 0 );
+  std::istringstream in ( this->stringValue(option) );
+  in >> value;
+  return value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Populates with values from a stream.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::istream&  Usul::CommandLine::operator>>( std::istream& in, Options& o )
+{
+  const unsigned int size ( 1024 );
+
+  while( !in.eof() )
+  {
+    std::vector< char > line ( size );
+
+    in.getline( &line.front(), line.size() );
+
+    std::string data ( &line.front() );
+
+    // Find the first space.
+    std::string::size_type position ( data.find( ' ' ) );
+
+    if( position != std::string::npos )
+    {
+      std::string first ( data.begin(), data.begin() + position );
+      std::string second ( data.begin() + position, data.end() );
+
+      o.insert ( first, second );
+    }
+  }
+ 
+  return in;
 }
 

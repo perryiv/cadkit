@@ -10,22 +10,8 @@
 
 #include "MinervaVR.h"
 
-
-//#include "ossim/base/ossimNotify.h"
-//#include "ossim/base/ossimTraceManager.h"
-
-class ComputeBounds : public osg::Node::ComputeBoundingSphereCallback
-{
-public:
-  virtual osg::BoundingSphere computeBound ( const osg::Node& )
-  {
-     return osg::BoundingSphere ( osg::Vec3 ( 0.0, 0.0, 0.0 ), 1 );
-  }
-};
-
-#include "Magrathea/Planet.h"
-
 #include "Usul/System/Host.h"
+#include "Usul/File/Path.h"
 
 #include "VrjCore/OssimInteraction.h"
 
@@ -39,37 +25,74 @@ public:
 #endif
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constant keys for options..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string USERNAME      = "username";
+const std::string PASSWORD      = "password";
+const std::string HOST          = "host";
+const std::string DATABASE      = "database";
+const std::string SESSION       = "session";
+const std::string KWL           = "kwl";
+const std::string LEGEND_NODE   = "legend_node";
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) : 
   OsgVJApp( kern, argc, argv ),
   _dbManager ( new Minerva::Core::Viz::Controller (  ) ),
   _sceneManager ( new Minerva::Core::Scene::SceneManager ),
-  _planet ( new Magrathea::Planet )
+  _planet ( new Magrathea::Planet ),
+  _options()
 {
   Minerva::Core::DB::Connection::RefPtr applicationConnection ( new Minerva::Core::DB::Connection );
 
-  // TODO: Put this in a config file.
-  applicationConnection->username( "wnv_app" );
-  applicationConnection->password( "wnv" );
-  applicationConnection->database( "wnv_application" );
-  applicationConnection->hostname ( "cinema" );
-  applicationConnection->connect();
+  std::ifstream fin ( "Minerva.config" );
 
-  _dbManager->applicationConnection( applicationConnection.get() );
+  if( fin.is_open() )
+  {
+    fin >> _options;
 
-  _dbManager->connectToSession( "drum_session" );
-  _dbManager->sceneManager ( _sceneManager.get() );
+    applicationConnection->username( _options.value( USERNAME ) );
+    applicationConnection->password( _options.value( PASSWORD ) );
+    applicationConnection->database( _options.value( DATABASE ) );
+    applicationConnection->hostname( _options.value( HOST     ) );
+    applicationConnection->connect();
+
+    _dbManager->applicationConnection( applicationConnection.get() );
+
+    _dbManager->connectToSession( _options.value ( SESSION ) );
+    _dbManager->sceneManager ( _sceneManager.get() );
+  }
+
+  std::cerr << " [MinervaVR] Constructor finished: " << std::endl;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 MinervaVR::~MinervaVR()
 {
 }
 
 
-//:---------------------------------------------------------------------
-//: One time initialization. 
-//:---------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////
+//
+//  One time initialization. 
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void MinervaVR::appInit()
 {
   std::cerr << " [MinervaVR] app init starts: " << std::endl;
@@ -85,14 +108,19 @@ void MinervaVR::appInit()
   getEngine()->setTransDelta( 0.0001 );
   getEngine()->setRotSpeed( 0.0001 );
 
-  // TODO: put this in a config file.
-  if( Usul::System::Host::name() != "viz1" )
-    _sceneManager->showLegend ( false );
-  else
+  _sceneManager->showLegend ( false );
+
+  if( _options.option( LEGEND_NODE ) )
   {
-    _sceneManager->legendWidth ( 0.50 );
-    _sceneManager->legendPadding ( osg::Vec2 ( 20.0, 40.0 ) );
-    _sceneManager->legendHeightPerItem ( 60 );
+    std::string legendNode ( _options.value ( LEGEND_NODE ) );
+    
+    if( Usul::System::Host::name() == legendNode )
+    {
+      _sceneManager->showLegend ( true );
+      _sceneManager->legendWidth ( 0.50 );
+      _sceneManager->legendPadding ( osg::Vec2 ( 20.0, 40.0 ) );
+      _sceneManager->legendHeightPerItem ( 60 );
+    }
   }
 
   // Create and set-up the interactor.
@@ -107,6 +135,12 @@ void MinervaVR::appInit()
   std::cerr << " [MinervaVR] app init ends: " << std::endl;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Drawing is about to happen. 
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void MinervaVR::appPreOsgDraw()
 {
@@ -123,57 +157,46 @@ void MinervaVR::appPreOsgDraw()
   this->_updateScene();
 }
 
-//:---------------------------------------------------------------------
-//: Scenegraph will be build here. 
-//:---------------------------------------------------------------------
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Scenegraph will be build here.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void MinervaVR::appSceneInit()
 {	
   std::cerr << " [MinervaVR] Scene init starts: " << std::endl;
 
-  //ossimTraceManager::instance()->setTracePattern("ossim*");
-  //ossimNotify(ossimNotifyLevel_DEBUG);
-  //ossimEnableNotify( ossimNotifyFlags_ALL );
-  //ossimSetLogFilename("/array/cluster/home/adam/ossim.log");
-  
   _planet->init();
 
   std::cerr << " [MinervaVR] planet initialized: " << std::endl;
 
   mOsgDatabasePager = _planet->databasePager();
-
-  std::cerr << " [MinervaVR] DB pager set: " << std::endl;
-
   _planet->root()->addChild( _sceneManager->root() );
 
   std::cerr << " [MinervaVR] begin reading kwl: " << std::endl;
 
-#if _MSC_VER
-  ::chdir ( "F:\\data\\images\\earth" );
-  _planet->readKWL( "F:\\data\\images\\earth\\blue_marble.kwl" );
-#else
-  _planet->readKWL("/array/cluster/demos/ossimTest/MCFCD.kwl");
-  //_planet->readKWL("/array/cluster/demos/ossimTest/earth.kwl");
-  //_planet->readKWL("/array/cluster/demos/ossimTest/afghanistan.kwl" );
-  //_planet->readKWL("/array/cluster/home/adam/sdk/ossimPlanet/examples/ossimplanetviewer/test.kwl");
-
-#endif
-
+  if( _options.option ( KWL ) )
+  {
+    std::string kwl ( _options.value ( KWL ) );
+    std::string dir ( Usul::File::directory ( kwl, false ) );
+    ::chdir ( dir.c_str() );
+    _planet->readKWL( kwl );
+  }
   
   std::cerr << " [MinveraVR] done reading kwl: " << std::endl;
  
-  _planet->root()->setComputeBoundingSphereCallback ( new ComputeBounds() );
   mModelGroupNode->addChild ( _planet->root() );
   
   std::cerr << " [MinervaVR] Root set: " << std::endl;
-
-  //this->_updateScene();
 
   // TODO: This should be done in a environment variable.
   // get the existing high level path list
   osgDB::FilePathList wFilePathList = osgDB::Registry::instance()->getDataFilePathList();
     
   // add additional paths of interest to the path list
-  wFilePathList.push_back( "/array/cluster/home/adam/src-osg-1.0/bin/fonts" );
+  wFilePathList.push_back( "/array/cluster/home/adam/src/bin/fonts" );
     
   // re-assign the expanded path list
   osgDB::Registry::instance()->setDataFilePathList( wFilePathList );
@@ -181,6 +204,12 @@ void MinervaVR::appSceneInit()
   std::cerr << " [MinervaVR] Scene init ends: " << std::endl;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void MinervaVR::_updateScene()
 {
@@ -204,6 +233,12 @@ void MinervaVR::_updateScene()
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a light.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void MinervaVR::addSceneLight()
 {

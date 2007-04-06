@@ -159,8 +159,8 @@ void SceneManager::buildScene()
     if( this->showLegend() )
     {
       // Set the legend size.
-      unsigned int legendWidth ( static_cast < unsigned int > ( _width * _legendWidth ) );
-      unsigned int legendHeight ( _height - ( _legendPadding.y() * 2 ) );
+      unsigned int legendWidth  ( static_cast < unsigned int > ( _width * _legendWidth ) );
+      unsigned int legendHeight ( static_cast < unsigned int > ( _height - ( _legendPadding.y() * 2 ) ) );
 
       _legend->maximiumSize( legendWidth, legendHeight );
       _legend->heightPerItem( _legendHeightPerItem );

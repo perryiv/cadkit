@@ -9,7 +9,7 @@ namespace DT.Minerva.Plugins.MoviePlayer
     private System.Windows.Forms.Button playButton;
     private System.Windows.Forms.Button restartButton;
     private System.Windows.Forms.Panel ActionPanel;
-    private System.Windows.Forms.Button button1;
+    private System.Windows.Forms.Button loopButton;
     private System.Windows.Forms.Button button2;
     private System.Windows.Forms.Button button4;
     private System.Windows.Forms.Button button3;
@@ -23,7 +23,7 @@ namespace DT.Minerva.Plugins.MoviePlayer
       this.ActionPanel = new System.Windows.Forms.Panel();
       this.button4 = new System.Windows.Forms.Button();
       this.button3 = new System.Windows.Forms.Button();
-      this.button1 = new System.Windows.Forms.Button();
+      this.loopButton = new System.Windows.Forms.Button();
       this.button2 = new System.Windows.Forms.Button();
       this.ActionPanel.SuspendLayout();
       this.SuspendLayout();
@@ -44,11 +44,9 @@ namespace DT.Minerva.Plugins.MoviePlayer
       this.playButton.Name = "playButton";
       this.playButton.Size = new System.Drawing.Size(96, 31);
       this.playButton.TabIndex = 1;
-      this.playButton.Text = "";
+      this.playButton.Text = "Play";
       this.playButton.UseVisualStyleBackColor = true;
       this.playButton.Click += new System.EventHandler(this.playButton_Click);
-      this.playButton.Image = CadKit.Images.Image.load(CadKit.Helios.Application.Instance.IconDir + "/player_play.png");      
-      
       // 
       // restartButton
       // 
@@ -91,14 +89,16 @@ namespace DT.Minerva.Plugins.MoviePlayer
       this.button3.TabIndex = 4;
       this.button3.UseVisualStyleBackColor = true;
       // 
-      // button1
+      // loopButton
       // 
-      this.button1.Enabled = false;
-      this.button1.Location = new System.Drawing.Point(12, 39);
-      this.button1.Name = "button1";
-      this.button1.Size = new System.Drawing.Size(96, 21);
-      this.button1.TabIndex = 5;
-      this.button1.UseVisualStyleBackColor = true;
+      this.loopButton.Enabled = false;
+      this.loopButton.Location = new System.Drawing.Point(12, 39);
+      this.loopButton.Name = "loopButton";
+      this.loopButton.Size = new System.Drawing.Size(96, 21);
+      this.loopButton.TabIndex = 5;
+      this.loopButton.Text = "Loop On";
+      this.loopButton.UseVisualStyleBackColor = true;
+      this.loopButton.Click += new System.EventHandler(this.loopButton_Click);
       // 
       // button2
       // 
@@ -113,11 +113,10 @@ namespace DT.Minerva.Plugins.MoviePlayer
       // 
       this.ClientSize = new System.Drawing.Size(574, 110);
       this.Controls.Add(this.button2);
-      this.Controls.Add(this.button1);
+      this.Controls.Add(this.loopButton);
       this.Controls.Add(this.ActionPanel);
       this.Controls.Add(this.movieModeButton);
       this.Name = "MoviePlayer";
-      this.Load += new System.EventHandler(this.MoviePlayer_Load);
       this.ActionPanel.ResumeLayout(false);
       this.ResumeLayout(false);
 
@@ -190,6 +189,7 @@ namespace DT.Minerva.Plugins.MoviePlayer
         if (null != mm)
         {
           mm.restart();
+          this.playButton.Text = "Pause";
         }
         else
         {
@@ -226,9 +226,8 @@ namespace DT.Minerva.Plugins.MoviePlayer
       }
     }
 
-    private void MoviePlayer_Load(object sender, EventArgs e)
+    private void loopButton_Click(object sender, EventArgs e)
     {
-
-    }
+    }    
   }
 }

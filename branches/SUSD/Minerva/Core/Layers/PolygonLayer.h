@@ -14,19 +14,25 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/Layer.h"
 
+#include "Usul/Interfaces/IPolygonLayer.h"
+
 namespace Minerva {
 namespace Core {
 namespace Layers {
 
-class MINERVA_EXPORT PolygonLayer : public Minerva::Core::Layers::Layer
+class MINERVA_EXPORT PolygonLayer : public Minerva::Core::Layers::Layer,
+                                    public Usul::Interfaces::IPolygonLayer
 {
 public:
   typedef Minerva::Core::Layers::Layer BaseClass;
 
+  USUL_DECLARE_QUERY_POINTERS ( PolygonLayer );
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
+
   PolygonLayer();
 
   /// Clone the this layer.
-  virtual Layer*              clone() const;
+  virtual Layer*          clone() const;
 
   /// Build the data objects.
   virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller = 0x0 );
@@ -42,8 +48,8 @@ public:
   bool                    showInterior() const;
 
   /// Get/Set the show border flag.
-  void                    border( bool b );
-  bool                    border() const;
+  void                    showBorder( bool b );
+  bool                    showBorder() const;
 
   /// Get/Set the border color.
   void                    borderColor( const osg::Vec4& color );

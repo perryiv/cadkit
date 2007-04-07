@@ -1133,6 +1133,26 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Layers"
+					>
+					<File
+						RelativePath=".\Interfaces\ILayer.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ILineLayer.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IPointLayer.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IPolygonLayer.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Math"

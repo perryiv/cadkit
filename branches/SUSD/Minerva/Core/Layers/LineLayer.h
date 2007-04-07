@@ -14,33 +14,33 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/Layer.h"
 
-#include "OsgTools/Utilities/Vec4Serialize.h"
-
-#include "osg/Vec4"
+#include "Usul/Interfaces/ILineLayer.h"
 
 namespace Minerva {
 namespace Core {
 namespace Layers {
 
-class MINERVA_EXPORT LineLayer : public Minerva::Core::Layers::Layer
+class MINERVA_EXPORT LineLayer : public Minerva::Core::Layers::Layer,
+                                 public Usul::Interfaces::ILineLayer
 {
 public:
   typedef Minerva::Core::Layers::Layer BaseClass;
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( LineLayer );
+  USUL_DECLARE_QUERY_POINTERS ( LineLayer );
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   LineLayer();
 
   /// Clone the this layer.
-  virtual Layer*              clone() const;
+  virtual Layer*          clone() const;
 
   /// Build the data objects.
-  virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller );
+  virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   virtual void            modify( Usul::Interfaces::IUnknown *caller = 0x0 );
 
-  /// Get/Set the line width
+  /// Get/Set the line width.
   void                    lineWidth( float );
   float                   lineWidth() const;
 

@@ -84,6 +84,7 @@ void Legend::addLegendObject( OsgTools::Legend::LegendObject *legendObject )
 osg::Node* Legend::buildScene()
 {
   osg::ref_ptr< osg::MatrixTransform > root ( new osg::MatrixTransform );
+  root->setName( "Legend" );
   root->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
   root->setMatrix ( osg::Matrix::translate ( _x, _y, 0.0 ) );
 

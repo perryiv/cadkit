@@ -22,6 +22,7 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
+#include "Usul/Interfaces/ILayer.h"
 
 #include "Serialize/XML/Macros.h"
 
@@ -42,7 +43,8 @@ namespace Minerva {
 namespace Core {
 namespace Layers {
 
-class MINERVA_EXPORT Layer : public Usul::Base::Referenced
+class MINERVA_EXPORT Layer : public Usul::Base::Referenced,
+                             public Usul::Interfaces::ILayer
 {
 public:
   /// Typedefs.
@@ -56,7 +58,8 @@ public:
   typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Layer );
+  USUL_DECLARE_QUERY_POINTERS ( Layer );
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   Layer();
 

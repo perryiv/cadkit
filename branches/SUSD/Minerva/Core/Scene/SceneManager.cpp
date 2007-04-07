@@ -97,7 +97,7 @@ SceneManager::~SceneManager()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SceneManager::buildScene()
+void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
 {
   Guard guard ( _mutex );
 
@@ -493,9 +493,9 @@ Usul::Interfaces::IUnknown *SceneManager::queryInterface ( unsigned long iid )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SceneManager::sceneUpdate( )
+void SceneManager::sceneUpdate( Usul::Interfaces::IUnknown* caller )
 {
-  this->buildScene();
+  this->buildScene( caller );
 }
 
 

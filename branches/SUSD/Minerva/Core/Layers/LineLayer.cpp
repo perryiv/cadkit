@@ -18,6 +18,7 @@
 
 using namespace Minerva::Core::Layers;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS( LineLayer, LineLayer::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -232,4 +233,23 @@ void LineLayer::modify( Usul::Interfaces::IUnknown *caller )
   //    progress->updateProgressBar( num );
   //  }
   //}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* LineLayer::queryInterface( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::ILineLayer::IID:
+    return static_cast < Usul::Interfaces::ILineLayer* > ( this );
+  default:
+    return BaseClass::queryInterface ( iid );
+  }
 }

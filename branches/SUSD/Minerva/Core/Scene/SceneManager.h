@@ -66,7 +66,7 @@ public:
   SceneManager();
 
   /// Build the scene.
-  void                       buildScene();
+  void                       buildScene( Usul::Interfaces::IUnknown *caller = 0x0);
 
   /// Get the root.
   osg::Node*                 root() { return _root.get(); }
@@ -120,7 +120,7 @@ protected:
 
   virtual ~SceneManager();
 
-  virtual void sceneUpdate( );
+  virtual void sceneUpdate( Usul::Interfaces::IUnknown *caller = 0x0 );
   
 private:
 

@@ -78,6 +78,9 @@ protected:
   PlayMovieComponent             ( const PlayMovieComponent & );
   PlayMovieComponent &operator = ( const PlayMovieComponent & );
 
+  // As of now thiw will parse the geometry point and convert it into osg::Vec3. 
+  osg::Vec3f convertStringToPosition( const std::string& ); 
+
   /// Use reference counting.
   virtual ~PlayMovieComponent();
 

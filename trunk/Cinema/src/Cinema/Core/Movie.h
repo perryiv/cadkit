@@ -23,7 +23,6 @@
 
 #include "osg/Group"
 #include "osg/Geometry"
-#include "osg/Billboard"
 
 #include "MovieHandler.h"
 #include "Export.h"
@@ -108,15 +107,13 @@ namespace Cinema
           mScreenHeightVector         ( osg::Vec3f() ),
           mPosition                   ( osg::Vec3f( 0.0, 0.0, 0.0 ) ), 
           mFileName                   (),
-          mRoot                       ( new osg::Group() ), 
-          mBillboard                  ( new osg::Billboard() ), 
+          mRoot                       ( new osg::Group() ),           
           mMovieHandler               ( new MovieHandler() )
         {
-          if( !mRoot.valid() || !mBillboard.valid() )
+          if( !mRoot.valid() )
           {
-            throw "Error ErrorNo: Failed to initialize node ";
-          }
-          mRoot->addChild( mBillboard.get() );
+            throw "Error 4085586713: Failed to initialize Movie.";
+          }         
         }    
 
         Movie( osg::Vec3f position, const std::string& fileName ) :
@@ -132,16 +129,13 @@ namespace Cinema
           mScreenHeightVector      ( osg::Vec3f() ),
           mPosition                ( position ), 
           mFileName                (), 
-          mRoot                    ( new osg::Group() ),
-          mBillboard               ( new osg::Billboard() ), 
+          mRoot                    ( new osg::Group() ),          
           mMovieHandler            ( new MovieHandler() )
         {
-          if( !mRoot.valid() && !mBillboard.valid() )
+          if( !mRoot.valid() )
           {
-            throw "Error ErrorNo: Failed to initialize node ";
+            throw "Error 7174831750: Failed to initialize Movie.";
           }
-          std::cout << " initializing Movie lib: " << std::endl;
-	        mRoot->addChild( mBillboard.get() );
         }
 
         Movie( float screenWidth, float screenHeight, osg::Vec3f position, const std::string& fileName ) : 
@@ -157,54 +151,50 @@ namespace Cinema
           mScreenHeightVector      ( osg::Vec3f() ),
           mPosition                ( position ), 
           mFileName                ( fileName ), 
-          mRoot                    ( new osg::Group() ),
-          mBillboard               ( new osg::Billboard() ), 
+          mRoot                    ( new osg::Group() ),          
           mMovieHandler            ( new MovieHandler() )
         {
-          if( !mRoot.valid() && !mBillboard.valid() )
+          if( !mRoot.valid() )
           {
-            throw "Error ErrorNo: Failed to initialize node ";
-          }
-          mRoot->addChild( mBillboard.get() );
+            throw "Error 2654299413: Failed to initialize Movie.";
+          }          
         }
 
         virtual ~Movie()
         {
         }       
 
-        osg::Geometry*                    buildGeometry( osg::Image* );        
+        osg::Geometry*                          buildGeometry( osg::Image* );        
 
-        osg::Geometry*                    buildQuad( osg::Image* );        
+        osg::Geometry*                          buildQuad( osg::Image* );        
 
-        bool                              mDirty;
+        bool                                    mDirty;
 
-        bool                              mAllowRotation;
+        bool                                    mAllowRotation;
         
-        bool                              mUseTextureRectangle;  
+        bool                                    mUseTextureRectangle;  
 
-        bool                              mBuildGeometry;
+        bool                                    mBuildGeometry;
 
-        bool                              mUsePositionAsCenterPoint;
+        bool                                    mUsePositionAsCenterPoint;
 
-        ScreenShape                       mScreenShape;
+        ScreenShape                             mScreenShape;
 
-        float                             mScreenWidth;
-        float                             mScreenHeight;
+        float                                   mScreenWidth;
+        float                                   mScreenHeight;
 
-        osg::Vec3f                        mScreenWidthVector;
-        osg::Vec3f                        mScreenHeightVector;
+        osg::Vec3f                              mScreenWidthVector;
+        osg::Vec3f                              mScreenHeightVector;
 
-        osg::Vec3f                        mPosition;        
+        osg::Vec3f                              mPosition;        
 
-        std::string                       mFileName;  
+        std::string                             mFileName;  
 
-        osg::ref_ptr< osg::Group >        mRoot;
-        
-        osg::ref_ptr< osg::Billboard >    mBillboard;
+        osg::ref_ptr< osg::Group >              mRoot;
     
-        osg::ref_ptr< MovieHandler >      mMovieHandler;
+        osg::ref_ptr< MovieHandler >            mMovieHandler;
 
-        static osg::ref_ptr< Movie >      mInstance;
+        static osg::ref_ptr< Movie >            mInstance;
     };
   }
 }

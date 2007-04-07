@@ -558,7 +558,7 @@ public:
 
   Matrix44 &operator *= ( const Matrix44 &M )
   {
-    this->multiplyOnRight ( M );
+    this->postMultiply ( M );
     return *this;
   }
 
@@ -668,6 +668,33 @@ public:
   }
 
 
+  //////////////////////////////////////////////////////////////////////////
+  //
+  //  Return a translation matrix.
+  //
+  //////////////////////////////////////////////////////////////////////////
+
+  template < class Vector3_ > static ThisType translation ( const Vector3_ &t )
+  {
+    ThisType m;
+    m.makeTranslation ( t );
+    return m;
+  }
+
+
+  //////////////////////////////////////////////////////////////////////////
+  //
+  //  Return a translation matrix.
+  //
+  //////////////////////////////////////////////////////////////////////////
+
+  template < class X, class Y, class Z > static ThisType translation ( const X &x, const Y &y, const Z &z )
+  {
+    return ThisType::translation ( Usul::Math::Vector3<value_type> 
+        ( static_cast<value_type> ( x ), static_cast<value_type> ( y ), static_cast<value_type> ( z ) ) );
+  }
+
+
   /////////////////////////////////////////////////////////////////////////////
   //
   //  Make a rotation about an arbitrary axis.
@@ -752,6 +779,20 @@ public:
     _m[SCALE_X] = s[0];
     _m[SCALE_Y] = s[1];
     _m[SCALE_Z] = s[2];
+  }
+
+
+  //////////////////////////////////////////////////////////////////////////
+  //
+  //  Return a scale matrix.
+  //
+  //////////////////////////////////////////////////////////////////////////
+
+  template < class Vector3_ > static ThisType scale ( const Vector3_ &s )
+  {
+    ThisType m;
+    m.makeScale ( s );
+    return m;
   }
 
 protected:

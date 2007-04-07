@@ -22,6 +22,8 @@
 #include "osg/ImageStream"
 #include "osg/TextureRectangle"
 #include "osg/Texture2D"
+#include "osg/MatrixTransform"
+#include "osg/Billboard"
 
 #include <iostream>
 
@@ -161,22 +163,42 @@ void Cinema::Core::Movie::screenHeight( const float& height )
   this->dirty( true );
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get current screen width vector. 
+//
+///////////////////////////////////////////////////////////////////////////////
 const osg::Vec3f& Cinema::Core::Movie::screenWidthVector() const 
 {
   return mScreenWidthVector;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set current screen width vector. 
+//
+///////////////////////////////////////////////////////////////////////////////
 void Cinema::Core::Movie::screenWidthVector( const osg::Vec3f& vec )
 {
   mScreenWidthVector = vec;
   this->dirty( true );
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get current screen height vector. 
+//
+///////////////////////////////////////////////////////////////////////////////
 const osg::Vec3f& Cinema::Core::Movie::screenHeightVector() const 
 {
   return mScreenHeightVector;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set current screen height vector. 
+//
+///////////////////////////////////////////////////////////////////////////////
 void Cinema::Core::Movie::screenHeightVector( const osg::Vec3f& vec )
 {
   mScreenHeightVector = vec;
@@ -345,8 +367,15 @@ void Cinema::Core::Movie::buildScene()
   {
     if( this->dirty() )
     {
-      mBillboard->removeDrawables( 0, mBillboard->getNumDrawables() );   
+      mRoot->removeChildren( 0, mRoot->getNumChildren() );
       mMovieHandler->cleanUp();
+
+      // Create a transform node. 
+      osg::ref_ptr< osg::MatrixTransform > mat( new osg::MatrixTransform() );
+      if( !mat.valid() )
+      {
+        return;
+      }
 
       osg::ref_ptr< osg::Image > image = osgDB::readImageFile( mFileName );
       if( image.valid() )
@@ -360,10 +389,13 @@ void Cinema::Core::Movie::buildScene()
         {      	  
           imageStream->play();
         }
+        else
+        {
+          return;
+        }
 
         if( mBuildGeometry )
-        { 
-      	  std::cout << "Build geometry " << std::endl;
+        {           
           if( mScreenWidth == 0.0 )
           {
             mScreenWidth = image->s();            
@@ -372,22 +404,46 @@ void Cinema::Core::Movie::buildScene()
           {
             mScreenHeight = image->t();            
           }	       
-  	
-          mBillboard->addDrawable( buildGeometry( image.get() ) );	      
 
           if( mAllowRotation )
           {
-            mBillboard->setMode( osg::Billboard::POINT_ROT_EYE );       
+            osg::ref_ptr< osg::Billboard > bb( new osg::Billboard() );
+            
+            if( !bb.valid() ) return;
+
+            bb->setMode( osg::Billboard::POINT_ROT_EYE );       
+            bb->addDrawable( buildGeometry( image.get() ) );	      
+            
+            mat->addChild( bb.get() );
+
+            mRoot->addChild( mat.get() );
           }      
+          else
+          {
+            osg::ref_ptr< osg::Geode > ge( new osg::Geode() );
+
+            if( !ge.valid() ) return;
+
+            ge->addDrawable( buildGeometry( image.get() ) );
+
+            mat->addChild( ge.get() );
+
+            mRoot->addChild( mat.get() );
+          }
 
           mMovieHandler->set( mRoot.get() );
         }
         else
         {
-          // Else find the geometry from the a given node / geode. 
+          // @Todo:
+          // Implement this. 
         }
 
         this->dirty( false );
+      }
+      else
+      {
+        std::cerr << "Error 3393614337: Unable to read file: " << mFileName << std::endl;
       }
     }
   }

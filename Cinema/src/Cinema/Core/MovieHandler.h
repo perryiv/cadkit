@@ -26,6 +26,7 @@
 
 #include "osg/Geode"
 #include "osg/Group"
+#include "osg/MatrixTransform"
 #include "osg/Billboard"
 
 #include "Export.h"
@@ -55,6 +56,34 @@ namespace Cinema
             traverse( geode );
         }
 
+        virtual void apply( osg::MatrixTransform& transform )
+        {   	        
+            apply( transform.getStateSet() );
+  
+            for( size_t i=0; i < transform.getNumChildren(); ++i )
+            {
+              osg::ref_ptr< osg::Geode > ge ( dynamic_cast< osg::Geode* >( transform.getChild( i ) ) );
+              if( ge.valid() )
+              {
+                apply( *( ge.get() ) );
+              }              
+              else
+              {
+                osg::ref_ptr< osg::Billboard > bb ( dynamic_cast< osg::Billboard* >( transform.getChild( i ) ) );
+                if( bb.valid()  )
+                {
+                  apply( *( bb.get() ) );
+                }
+                else
+                {   
+                  apply( *( transform.getChild( i ) ) );
+                }
+              }
+            }
+
+		        traverse( transform );
+        }
+
         virtual void apply( osg::Billboard& billboard )
         {   	        
             apply( billboard.getStateSet() );
@@ -71,7 +100,18 @@ namespace Cinema
         {   	    
             apply( node.getStateSet() );
 
+            apply( *( node.asGroup() ) );
+            apply( *( node.asTransform() ) );
+
             traverse( node );
+        }
+
+        virtual void apply( osg::Transform& transform )
+        {
+          apply( transform.getStateSet() );
+          apply( *( transform.asMatrixTransform() ) );
+
+          traverse( transform );
         }
        
     	virtual void apply( osg::Group& group )
@@ -79,15 +119,23 @@ namespace Cinema
 		    apply( group.getStateSet() );
 
         for( size_t i=0; i < group.getNumChildren(); ++i )
-        {
-          osg::ref_ptr< osg::Geode > bb ( dynamic_cast< osg::Geode* >( group.getChild( i ) ) );
-          if( bb.valid() )
+        {          
+          osg::ref_ptr< osg::Geode > ge ( dynamic_cast< osg::Geode* >( group.getChild( i ) ) );
+          if( ge.valid() )
           {
-            apply( *( bb.get() ) );
+            apply( *( ge.get() ) );
           }
           else
           {
-            apply( *( group.getChild( i ) ) );
+            osg::ref_ptr< osg::Billboard > bb ( dynamic_cast< osg::Billboard* >( group.getChild( i ) ) );
+            if( bb.valid()  )
+            {
+              apply( *( bb.get() ) );
+            }
+            else
+            {                
+              apply( *( group.getChild( i ) ) );
+            }
           }
         }
 		    traverse( group );

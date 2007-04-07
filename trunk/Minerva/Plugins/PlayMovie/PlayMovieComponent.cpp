@@ -126,15 +126,15 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
         /// Get the document.
         Usul::Interfaces::IGetDocument::QueryPtr getDocument ( caller );
         if( getDocument.valid () )
-        {
+        {          
           // Query for IDistributedVR
-          Usul::Interfaces::IDistributedVR::QueryPtr distributed ( getDocument->getDocument() );
+          Usul::Interfaces::IDistributedVR::QueryPtr distributed ( getDocument->getDocument() );          
 
           Minerva::Core::DB::Connection::RefPtr connection ( userdata->_do->connection() );
 
           std::string movieTable ( "media" );
           std::ostringstream query;
-          query << "SELECT asBinary(quad_position), height, width, lin_path, win_path, id FROM " << movieTable << " WHERE row_id=" << rowId;
+          query << "SELECT asBinary(quad_position), height, width, asEWKT( quad_width ), asEWKT( quad_height ), lin_path, win_path, id FROM " << movieTable << " WHERE row_id=" << rowId;
 
           pqxx::result result ( connection->executeQuery ( query.str() ) );
 
@@ -148,25 +148,21 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
             {
               std::string path ( result[0]["lin_path"].as < std::string > () );
               
+              std::string quadWidth( result[0][3].as< std::string >() );
+              std::string quadHeight( result[0][4].as< std::string >() );             
+              
               // Send command.
               distributed->playMovie ( position->geometryCenter(), result[0]["width"].as < float > (), result[0]["height"].as < float > (), path );
 
               // Play movie on windows side. 
-              Usul::Interfaces::IGroup::QueryPtr gr( caller );
+              Usul::Interfaces::IGroup::QueryPtr gr( getDocument->getDocument() );
+
               if( gr.valid() )
               {   
                 osg::ref_ptr< osg::Group > group( gr->getGroup( "movie_node_4047781649" ) );
-                std::string path ( result[0]["win_path"].as < std::string > () );
-
-                std::istringstream in;
-
-                float width    = result[0]["width"].as < float >();
-                float height   = result[0]["height"].as < float >();
-                
-                osg::Vec3f widthVec  = osg::Vec3f( width, 0.0, 0.0 );
-                osg::Vec3f heightVec = osg::Vec3f( 0.0,   0.0, height );
-
-                osg::ref_ptr< osg::Node >  node ( playMovie ( position->geometryCenter(), widthVec, heightVec, path ) );
+                std::string path ( result[0]["win_path"].as < std::string > () );                
+             
+                osg::ref_ptr< osg::Node >  node ( playMovie ( position->geometryCenter(), convertStringToPosition( quadWidth ), convertStringToPosition( quadHeight ), path ) );
 
                 if( node.valid() )
                 {
@@ -281,4 +277,31 @@ osg::Node* PlayMovieComponent::playMovie( const osg::Vec3f& position, const osg:
 std::string PlayMovieComponent::getPluginName() const 
 {
   return "Play Movie";
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert postGIS ( EWKT ) string to osg::Vec. 
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec3f PlayMovieComponent::convertStringToPosition( const std::string& str )
+{
+  osg::Vec3f             resultVec( 0.0, 0.0, 0.0 );  
+  std::string::size_type loc1, loc2, count; 
+  
+  loc1  = str.find( "(", 0 );
+  loc2  = str.find( ")", 0 );                
+  count = loc2 - ( loc1 + 1 );
+  
+  std::string temp( str.substr( loc1+1, count ) );
+  std::istringstream in( temp );
+  
+  if( in.good() )
+  {
+    in >> resultVec[0] >> resultVec[1] >> resultVec[2];
+  }               
+  
+  return resultVec;
+  
 }

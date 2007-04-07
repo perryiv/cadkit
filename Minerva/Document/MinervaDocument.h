@@ -20,6 +20,7 @@
 #include "Usul/Interfaces/IDatabasePager.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
 #include "Usul/Interfaces/IDistributedVR.h"
+#include "Usul/Interfaces/IGroup.h"
 
 #include "Minerva/Core/Scene/SceneManager.h"
 #include "Minerva/Core/GUI/Controller.h"
@@ -38,7 +39,8 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::ISceneUpdate,
                                                 public Usul::Interfaces::IDatabasePager,
                                                 public Usul::Interfaces::IMatrixManipulator,
-                                                public Usul::Interfaces::IDistributedVR
+                                                public Usul::Interfaces::IDistributedVR, 
+                                                public Usul::Interfaces::IGroup
 {
 public:
   /// Useful typedefs.
@@ -175,6 +177,14 @@ protected:
   /// Usul::Interfaces::IDistributedVR
   virtual void playMovie ( const osg::Vec3f& position, float width, float height, const std::string& path );
   virtual void pause     ( );
+
+  /// Implementing IGroup interface. 
+  virtual osg::Group*  getGroup    ( const std::string& );
+  
+  virtual void         removeGroup ( const std::string& );
+
+  virtual bool         hasGroup    ( const std::string& );
+
 private:
 
   Favorites _favorites;
@@ -188,6 +198,11 @@ private:
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS ( MinervaDocument );
+
+  typedef osg::ref_ptr< osg::Group >         GroupPtr;
+  typedef std::map < std::string, GroupPtr > GroupMap;
+  GroupMap _groupMap;
+
 };
 
 

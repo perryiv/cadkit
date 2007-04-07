@@ -23,6 +23,7 @@
 #include "Minerva/Core/Layers/PolygonTimeLayer.h"
 
 #include "Usul/Interfaces/IPlayMovie.h"
+#include "Usul/Interfaces/IGroup.h"
 
 using namespace Minerva::Document;
 
@@ -87,6 +88,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IMatrixManipulator* > ( this );
   case Usul::Interfaces::IDistributedVR::IID:
     return static_cast < Usul::Interfaces::IDistributedVR* > ( this );
+  case Usul::Interfaces::IGroup::IID:
+    return static_cast < Usul::Interfaces::IGroup* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -946,4 +949,59 @@ void MinervaDocument::pause( )
     // Lazy connection.
     this->_connectToDistributedSession();
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get group with given key.  Creates one if doesn't exist
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Group* MinervaDocument::getGroup ( const std::string &key )
+{
+  osg::ref_ptr<osg::Group> &group = _groupMap[ key ];
+
+  // Has the group been created
+  if ( !group.valid() )
+  {
+    // Make a new group
+    group = new osg::Group;
+
+    // Set the name
+    group->setName( key );
+
+    // Add the group to the scene
+    _planet->root()->addChild( group.get() );
+  }
+
+  return group.get();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove group with given key
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::removeGroup( const std::string &key )
+{
+  osg::ref_ptr<osg::Group> &group = _groupMap[key];
+  _planet->root()->removeChild ( group.get() );
+  group = 0x0;
+
+  // Remove key from group map.
+  _groupMap.erase ( key );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the group created?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::hasGroup ( const std::string& key )
+{
+  GroupMap::const_iterator i = _groupMap.find ( key );
+  return i != _groupMap.end();
 }

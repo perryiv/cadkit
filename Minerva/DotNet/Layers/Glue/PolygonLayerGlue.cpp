@@ -111,7 +111,7 @@ array<System::String^>^ PolygonLayerGlue::DataTables::get()
 
 bool PolygonLayerGlue::ShowBorder::get()
 {
-  return _polygonLayer->border();
+  return _polygonLayer->showBorder();
 }
 
 
@@ -123,7 +123,7 @@ bool PolygonLayerGlue::ShowBorder::get()
 
 void PolygonLayerGlue::ShowBorder::set( bool value )
 {
-  _polygonLayer->border( value );
+  _polygonLayer->showBorder( value );
 }
 
 

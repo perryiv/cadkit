@@ -152,7 +152,7 @@ protected:
   virtual osgDB::DatabasePager *           getDatabasePager ();
 
   /// Usul::Interfaces::IUpdateScene
-  virtual void                             sceneUpdate( );
+  virtual void                             sceneUpdate( Usul::Interfaces::IUnknown *caller = 0x0 );
 private:
   friend class boost::serialization::access;
   template < class Archive > void serialize( Archive &ar, const unsigned int version );

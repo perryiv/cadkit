@@ -721,9 +721,9 @@ osgDB::DatabasePager * MinervaDocument::getDatabasePager ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::sceneUpdate( )
+void MinervaDocument::sceneUpdate( Usul::Interfaces::IUnknown *caller )
 {
-  _sceneManager->buildScene();
+  _sceneManager->buildScene( caller );
 }
 
 

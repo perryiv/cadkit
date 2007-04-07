@@ -24,6 +24,7 @@ SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 
 using namespace Minerva::Core::Layers;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS( PolygonLayer, PolygonLayer::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -139,7 +140,7 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     Minerva::Core::DataObjects::Polygon::RefPtr data ( new Minerva::Core::DataObjects::Polygon );
 
     data->width ( this->borderWidth() );
-    data->showBorder( this->border() );
+    data->showBorder( this->showBorder() );
     data->showInterior ( this->showInterior() );
     data->geometry ( geometry.get() );
     data->color( this->_color ( iter ) );
@@ -245,7 +246,7 @@ const std::string& PolygonLayer::format() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PolygonLayer::border( bool b )
+void PolygonLayer::showBorder( bool b )
 {
   _showBorder = b;
 }
@@ -257,7 +258,7 @@ void PolygonLayer::border( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool PolygonLayer::border() const
+bool PolygonLayer::showBorder() const
 {
   return _showBorder;
 }
@@ -332,4 +333,23 @@ void PolygonLayer::borderWidth( float width )
 float PolygonLayer::borderWidth() const
 {
   return _borderWidth;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* PolygonLayer::queryInterface( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IPolygonLayer::IID:
+    return static_cast < Usul::Interfaces::IPolygonLayer* > ( this );
+  default:
+    return BaseClass::queryInterface ( iid );
+  }
 }

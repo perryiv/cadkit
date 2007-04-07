@@ -25,6 +25,8 @@
 
 using namespace Minerva::Core::Layers;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Layer, Layer::BaseClass );
+
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 
 
@@ -773,7 +775,7 @@ void Layer::_updateLegendObject()
   try
   {
     if( 0x0 != this->colorFunctor() )
-      this->legendObject()->icon ( this->colorFunctor()->icon() );
+      this->legendObject()->icon ( this->colorFunctor()->icon( this ) );
 
     // One columns for the text
     this->legendObject()->columns ( 1 );
@@ -796,5 +798,24 @@ void Layer::_updateLegendObject()
   catch ( ... )
   {
     std::cout << "Error 4254986090: Unknown exception caught." << std::endl;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Layer::queryInterface( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::ILayer::IID:
+    return static_cast < Usul::Interfaces::ILayer* > ( this );
+  default:
+    return 0x0;
   }
 }

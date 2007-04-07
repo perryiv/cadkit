@@ -256,7 +256,7 @@ osg::Node* Point::_buildSphere()
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
   geode->setUserData( new UserData( this ) );
 
-  OsgTools::ShapeFactory::MeshSize meshSize ( 20, 20 );
+  OsgTools::ShapeFactory::MeshSize meshSize ( 5, 5 );
   OsgTools::ShapeFactory::LatitudeRange  latRange  ( 89.9f, -89.9f );
   OsgTools::ShapeFactory::LongitudeRange longRange (  0.0f, 360.0f );
 

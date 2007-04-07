@@ -12,20 +12,23 @@
 #define __WNV_LAYERS_POINT_LAYER_H__
 
 #include "Minerva/Core/Export.h"
-
 #include "Minerva/Core/Layers/Layer.h"
+
+#include "Usul/Interfaces/IPointLayer.h"
 
 namespace Minerva {
 namespace Core {
 namespace Layers {
 
-class MINERVA_EXPORT PointLayer : public Minerva::Core::Layers::Layer
+class MINERVA_EXPORT PointLayer : public Minerva::Core::Layers::Layer,
+                                  public Usul::Interfaces::IPointLayer
 {
 public:
   typedef Minerva::Core::Layers::Layer BaseClass;
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( PointLayer );
+  USUL_DECLARE_QUERY_POINTERS ( PointLayer );
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   PointLayer();
 

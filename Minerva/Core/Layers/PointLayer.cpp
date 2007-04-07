@@ -21,6 +21,7 @@
 
 using namespace Minerva::Core::Layers;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS( PointLayer, PointLayer::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -305,4 +306,23 @@ void PointLayer::stackPoints( bool b )
 bool PointLayer::stackPoints() const
 {
   return _stackPoints;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* PointLayer::queryInterface( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IPointLayer::IID:
+    return static_cast < Usul::Interfaces::IPointLayer* > ( this );
+  default:
+    return BaseClass::queryInterface ( iid );
+  }
 }

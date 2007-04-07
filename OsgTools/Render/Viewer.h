@@ -478,6 +478,9 @@ public:
   virtual void doneTool ();
   virtual void loadLastTool ();
 
+  /// Add/Remove group from projection node
+  osg::Group*           projectionGroupGet    ( const std::string& );
+
 protected:
 
   // Do not use.

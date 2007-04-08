@@ -211,6 +211,7 @@ int main ( int argc, char **argv )
 
       // Update the scene.
       dbManager->updateScene();
+      manager->buildScene();
 
       // Add the event handler.
       //viewer.getEventHandlerList().push_front( pick.get() );

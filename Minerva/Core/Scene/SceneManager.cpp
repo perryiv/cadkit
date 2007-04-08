@@ -128,7 +128,6 @@ void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
           text->setFont( OsgTools::Font::defaultFont() );
           text->setPosition ( osg::Vec3( 5.0, _height - 25.0, 0.0 ) );
           text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
-
           text->setText ( "" );
 
           osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
@@ -136,7 +135,6 @@ void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
 
           osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
           mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-
           mt->addChild( geode.get() );
 
           _projectionNode->addChild ( mt.get() );

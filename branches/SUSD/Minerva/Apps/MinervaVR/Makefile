@@ -77,9 +77,12 @@ STANDARD_LIBS = \
 	-lGL \
 	-lm
 
+
 # Basic options.
 #-------------------------------------------------------
-BUILD_TYPE?=	opt
+
+#BUILD_TYPE=	opt
+BUILD_TYPE=	dbg
 
 srcdir=		./
 

@@ -12,6 +12,7 @@
 
 #include "Usul/System/Host.h"
 #include "Usul/File/Path.h"
+#include "Usul/CommandLine/Arguments.h"
 
 #include "VrjCore/OssimInteraction.h"
 
@@ -19,6 +20,8 @@
 
 #include <osg/Group>
 #include <osg/Node>
+
+#include "osgDB/WriteFile"
 
 #if _MSC_VER
 #include <direct.h>
@@ -38,6 +41,10 @@ const std::string DATABASE      = "database";
 const std::string SESSION       = "session";
 const std::string KWL           = "kwl";
 const std::string LEGEND_NODE   = "legend_node";
+const std::string HOME          = "home";
+const std::string HOME_LOOK     = "home_look";
+const std::string BACKGROUND    = "background";
+const std::string EPHEMERIS     = "ephemeris";
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -50,16 +57,25 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
   _dbManager ( new Minerva::Core::Viz::Controller (  ) ),
   _sceneManager ( new Minerva::Core::Scene::SceneManager ),
   _planet ( new Magrathea::Planet ),
-  _options()
+  _options(),
+  _background( 0.0, 0.0, 0.0, 1.0 )
 {
   Minerva::Core::DB::Connection::RefPtr applicationConnection ( new Minerva::Core::DB::Connection );
 
-  std::ifstream fin ( "Minerva.config" );
+  Usul::CommandLine::Arguments::instance().set ( argc, argv );
+
+  std::ostringstream file;
+  file << Usul::CommandLine::Arguments::instance().directory() << "/Minerva.config";
+  std::ifstream fin ( file.str().c_str() );
 
   if( fin.is_open() )
   {
     fin >> _options;
-
+    //for( Usul::CommandLine::Options::iterator iter = _options.begin(); iter != _options.end(); ++iter )
+      //{
+      //std::cerr << "    [MinervaVR] " << iter->first << "|" << iter->second << std::endl;
+      //}
+#if 1
     applicationConnection->username( _options.value( USERNAME ) );
     applicationConnection->password( _options.value( PASSWORD ) );
     applicationConnection->database( _options.value( DATABASE ) );
@@ -68,8 +84,15 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
 
     _dbManager->applicationConnection( applicationConnection.get() );
 
-    _dbManager->connectToSession( _options.value ( SESSION ) );
+    std::string session ( _options.value ( SESSION ) );
+    _dbManager->connectToSession( session );
     _dbManager->sceneManager ( _sceneManager.get() );
+#endif
+    std::cerr << " [MinervaVR] Connected to session: " << session << std::endl;
+  }
+  else
+  {
+    std::cerr << " [MinervaVR] Warning: No Minerva config file found. " << std::endl;
   }
 
   std::cerr << " [MinervaVR] Constructor finished: " << std::endl;
@@ -99,7 +122,15 @@ void MinervaVR::appInit()
 
   //: Set all the properties here
   setDevice(ALL, OFF);	
-  setBackgroundColor((gmtl::Vec4f(0.35, 0.35, 0.35, 1.0)).getData());	
+
+  if( _options.option ( BACKGROUND ) )
+  {
+    std::string background ( _options.value ( BACKGROUND ) );
+    std::istringstream in ( background );
+    in >> _background[0] >> _background[1] >> _background[2] >> _background[3];
+  }
+
+  setBackgroundColor( gmtl::Vec4f( _background[0], _background[1], _background[2], _background[3] ).getData());
 
   setNearFar(0.0001, 10.0);
   setSceneInitialPosition( osg::Vec3f( 0.0, 10.0, 0.0 ) );
@@ -123,14 +154,36 @@ void MinervaVR::appInit()
     }
   }
 
+#if 0
   // Create and set-up the interactor.
   VrjCore::OssimInteraction *interactor = new VrjCore::OssimInteraction();
 
   if( ossimPlanet* planet = dynamic_cast< ossimPlanet* >( _planet->root() ) )
   {
     interactor->planet( planet );
+
+    if( _options.option ( HOME ) )
+    {
+      std::string home ( _options.value ( HOME ) );
+      std::istringstream in ( home );
+      float lat ( 0 ), lon( 0 ), height ( 0 );
+      in >> lat >> lon >> height;
+      interactor->setHomePosition ( lat, lon, height );
+    }
+    
+    if( _options.option ( HOME_LOOK ) )
+    {
+      std::string home_look ( _options.value ( HOME_LOOK ) );
+      std::istringstream in ( home_look );
+      float yaw ( 0 ), pitch( 0 ), roll ( 0 );
+      in >> yaw >> pitch >> roll;
+      interactor->setHomeLook( yaw, pitch, roll );
+    }
+
     setEngine( interactor );
+    interactor->goHome();
   }
+#endif
 
   std::cerr << " [MinervaVR] app init ends: " << std::endl;
 }
@@ -144,9 +197,8 @@ void MinervaVR::appInit()
 
 void MinervaVR::appPreOsgDraw()
 {
-  //: Set background color to grey.
-  glClearColor(0.7, 0.7, 0.7, 1.0);
-  glClear(GL_COLOR_BUFFER_BIT);
+  //glClearColor( _background[0], _background[1], _background[2], _background[3] );
+  //glClear(GL_COLOR_BUFFER_BIT);
 
   GLint viewport[4];
 
@@ -184,12 +236,53 @@ void MinervaVR::appSceneInit()
     ::chdir ( dir.c_str() );
     _planet->readKWL( kwl );
   }
+  //_planet->readKWL( "/array/cluster/demos/ossimTest/MCFCD.kwl" );
   
   std::cerr << " [MinveraVR] done reading kwl: " << std::endl;
  
+  if( _options.option ( EPHEMERIS ) )
+    {
+      std::string e ( _options.value ( EPHEMERIS ) );
+      std::istringstream in ( e );
+      bool useEphemeris ( false );
+      in >> useEphemeris;
+      _planet->ephemerisFlag( useEphemeris );
+
+    }
   mModelGroupNode->addChild ( _planet->root() );
+  //mModelGroupNode->addChild ( _sceneManager->root() );
   
   std::cerr << " [MinervaVR] Root set: " << std::endl;
+
+  // Create and set-up the interactor.
+  VrjCore::OssimInteraction *interactor = new VrjCore::OssimInteraction();
+
+  if( ossimPlanet* planet = dynamic_cast< ossimPlanet* >( _planet->root() ) )
+  {
+    interactor->planet( planet );
+
+    if( _options.option ( HOME ) )
+    {
+      std::string home ( _options.value ( HOME ) );
+      std::istringstream in ( home );
+      float lat ( 0 ), lon( 0 ), height ( 0 );
+      in >> lat >> lon >> height;
+      interactor->setHomePosition ( lat, lon, height );
+    }
+    
+    if( _options.option ( HOME_LOOK ) )
+    {
+      std::string home_look ( _options.value ( HOME_LOOK ) );
+      std::istringstream in ( home_look );
+      float yaw ( 0 ), pitch( 0 ), roll ( 0 );
+      in >> yaw >> pitch >> roll;
+      interactor->setHomeLook( yaw, pitch, roll );
+    }
+
+    setEngine( interactor );
+    interactor->dumpFilename ( Usul::System::Host::name() );
+    interactor->goHome();
+  }
 
   // TODO: This should be done in a environment variable.
   // get the existing high level path list
@@ -223,6 +316,8 @@ void MinervaVR::_updateScene()
       // Update the scene.
       _dbManager->updateScene();
       _sceneManager->buildScene();
+
+      //osgDB::writeNodeFile( *mSceneRoot, "test" + Usul::System::Host::name() + ".osg" );
 
       std::cerr << " [MinervaVR] Finished updating scene." << std::endl;
     }

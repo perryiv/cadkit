@@ -45,6 +45,7 @@ class MinervaVR : public VrjCore::OsgVJApp
   Minerva::Core::Scene::SceneManager::RefPtr   _sceneManager;
   osg::ref_ptr < Magrathea::Planet >           _planet;
   Usul::CommandLine::Options                   _options;
+  osg::Vec4f                                   _background;
 };
 
 #endif //: _MINERVA_VR_H_

@@ -11,15 +11,6 @@ default : make_dirs shared_lib archive_lib
 
 # ##### default values for includes and libs ###### #
 
-# Fox Includes and Libs
-ifeq ("$(FOX_INC_DIR)","")
-FOX_INC_DIR = /usr/local/include/fox-1.4
-endif
-
-ifeq ("$(FOX_LIB_DIR)","")
-FOX_LIB_DIR = /usr/local/lib
-endif
-
 # OpenThreads Includes and Libs
 ifeq ("$(OPENTHREADS_INC_DIR)","")
 OPENTHREADS_INC_DIR = /usr/local/include
@@ -29,51 +20,23 @@ ifeq ("$(OPENTHREADS_LIB_DIR)","")
 OPENTHREADS_LIB_DIR = /usr/local/lib
 endif
 
-# OpenProducer Includes and Libs
-ifeq ("$(PRODUCER_INC_DIR)","")
-PRODUCER_INC_DIR = /usr/local/include
-endif
-
-ifeq ("$(PRODUCER_LIB_DIR)","")
-PRODUCER_LIB_DIR = /usr/local/lib
-endif
-
-# Osg Includes and Libs
-ifeq ("$(OSG_BIN_DIR)","")
-OSG_BIN_DIR = /usr/local/bin
-endif
-
-ifeq ("$(OSG_INC_DIR)","")
-OSG_INC_DIR = /usr/local/include
-endif
-
-ifeq ("$(OSG_LIB_DIR)","")
-OSG_LIB_DIR = /usr/local/lib
-endif
-
 # Our Build Libraries all go in ../libs
 ifeq ("$(USUL_INC_DIR)","")
 USUL_INC_DIR = ../../
 endif
 
 ifeq ("$(USUL_LIB_DIR)","")
-USUL_LIB_DIR = ../../lib
+USUL_LIB_DIR = ../../bin
 endif
 
-ifeq ("$(BOOST_INC_DIR)","")
-BOOST_INC_DIR = /usr/local/include/boost
-endif 
 
-ifeq ("$(BOOST_LIB_DIR)","")
-BOOST_LIB_DIR = /usr/local/lib
-endif 
 # ################################################## #
 
 OS_LINK_FLAGS = -shared
 TARGET_PREFIX = lib
 TARGET_DYNAMIC_SUFFIX = .so
 TARGET_STATIC_SUFFIX = .a
-INSTALL = ../../lib
+INSTALL = ../../bin
 
 # Platform dependent flags. Do not indent.
 ifeq ($(findstring Darwin,$(OS)),Darwin)
@@ -106,10 +69,10 @@ ARCHIVE_LIB = lib$(TARGET)$(TARGET_STATIC_SUFFIX)
 SHARED_LIB  = lib$(TARGET)$(TARGET_DYNAMIC_SUFFIX)
 
 OBJS = $(patsubst %.cpp,%.o,$(subst ./,$(OS)/,$(shell find . -type f -name "*.cpp")))
-  
+
 BUILD_DIRS:= \
   $(dir $(subst ./,$(OS)/,$(shell find . -type f -name "*.cpp")))
-  
+
 make_dirs:
 	@echo '@@@@@ Building $(PKG_NAME) @@@@@'
 	mkdir -p $(BUILD_DIRS)
@@ -136,7 +99,7 @@ clean:
 real-clean: clean
 	$(RM) $(INSTALL)/$(SHARED_LIB)
 	$(RM) $(INSTALL)/$(ARCHIVE_LIB)
-	
+
 mvlibs:
 	mv ./$(OS)/*.so ./$(OS)/*.a $(MOVE_LOCATION)
 	mkdir -p $(MOVE_LOCATION)

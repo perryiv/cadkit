@@ -110,6 +110,7 @@ osg::Vec4 SingleColorFunctor::operator() ( double value ) const
 
 OsgTools::Legend::Icon * SingleColorFunctor::icon (  Usul::Interfaces::IUnknown *caller )
 {
+#if _MSC_VER
   Usul::Interfaces::ILineLayer::QueryPtr lineLayer ( caller );
   if( lineLayer.valid() )
   {
@@ -139,6 +140,7 @@ OsgTools::Legend::Icon * SingleColorFunctor::icon (  Usul::Interfaces::IUnknown 
     icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::BACK );
     return icon.release();
   }
+#endif
 
   OsgTools::Legend::SolidMaterialQuadIcon::RefPtr icon ( new OsgTools::Legend::SolidMaterialQuadIcon );
   icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::FRONT );

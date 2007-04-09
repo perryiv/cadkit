@@ -27,7 +27,7 @@ struct SphereFunctor
     OsgTools::ShapeFactory::LatitudeRange  latRange  ( 89.9f, -89.9f );
     OsgTools::ShapeFactory::LongitudeRange longRange (  0.0f, 360.0f );
 
-    osg::ref_ptr < osg::Geometry > geom ( OsgTools::ShapeFactorySingleton::instance().sphere ( osg::Vec3( width / 2, height/2, 0.0 ), height / 2, meshSize, latRange, longRange  ) );
+    osg::ref_ptr < osg::Geometry > geom ( OsgTools::ShapeFactorySingleton::instance().sphere ( osg::Vec3( width / 2, height/2, -25.0 ), height / 2, meshSize, latRange, longRange  ) );
     //OsgTools::State::StateSet::setLighting ( geom->getOrCreateStateSet(), true );
     //OsgTools::State::StateSet::setNormalize ( geom->getOrCreateStateSet(), true );
 

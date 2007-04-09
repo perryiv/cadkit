@@ -23,7 +23,6 @@
 #include "Minerva/Core/Layers/PolygonTimeLayer.h"
 
 #include "Usul/Interfaces/IPlayMovie.h"
-#include "Usul/Interfaces/IGroup.h"
 
 using namespace Minerva::Document;
 
@@ -274,9 +273,9 @@ osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unk
 
 void MinervaDocument::removeLayer ( Minerva::Core::Layers::Layer * layer )
 {
-  _sceneManager->removeLayer( layer->layerID() );
+  _sceneManager->removeLayer( layer->guid() );
   this->modified( true );
-  this->_removeLayerDistributed( layer->layerID() );
+  this->_removeLayerDistributed( layer );
 }
 
 
@@ -290,7 +289,7 @@ void MinervaDocument::hideLayer   ( Minerva::Core::Layers::Layer * layer )
 {
   layer->showLayer ( false );
   _sceneManager->dirty( true );
-  this->_removeLayerDistributed( layer->layerID() );
+  this->_removeLayerDistributed( layer );
 }
 
 
@@ -332,6 +331,7 @@ void MinervaDocument::modifyLayer ( Minerva::Core::Layers::Layer * layer, Unknow
 {
   layer->modify( caller );
   this->_modifyLayerDistributed( layer );
+  _sceneManager->dirty( true );
 }
 
 
@@ -749,9 +749,9 @@ osgDB::DatabasePager * MinervaDocument::getDatabasePager ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::sceneUpdate( )
+void MinervaDocument::sceneUpdate( Usul::Interfaces::IUnknown *caller )
 {
-  _sceneManager->buildScene();
+  _sceneManager->buildScene( caller );
 }
 
 
@@ -834,14 +834,14 @@ void MinervaDocument::_connectToDistributedSession()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::_removeLayerDistributed( unsigned int layerID )
+void MinervaDocument::_removeLayerDistributed( Minerva::Core::Layers::Layer *layer )
 {
   if( _useDistributed )
   {
     // Lazy connection.
     this->_connectToDistributedSession();
 
-    _distributed->removeLayer( layerID );
+    _distributed->removeLayer( layer );
   }
 }
 
@@ -950,6 +950,7 @@ void MinervaDocument::pause( )
     this->_connectToDistributedSession();
   }
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

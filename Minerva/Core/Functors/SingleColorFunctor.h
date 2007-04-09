@@ -15,12 +15,7 @@
 
 #include "BaseColorFunctor.h"
 
-#include "OsgTools/Utilities/Vec4Serialize.h"
-
 #include "Serialize/XML/Macros.h"
-
-#include "boost/serialization/nvp.hpp"
-namespace boost { namespace serialization { class access; } }
 
 namespace Minerva {
 namespace Core {
@@ -47,25 +42,14 @@ struct MINERVA_EXPORT SingleColorFunctor : public Minerva::Core::Functors::BaseC
   /// Get the color.
   virtual osg::Vec4  operator() ( double value ) const;
 
-  virtual OsgTools::Legend::Icon * icon ();
+  virtual OsgTools::Legend::Icon * icon ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
 private:
-  friend class boost::serialization::access;
-  template < class Archive > void serialize( Archive &ar, const unsigned int version );
 
   osg::Vec4 _color;
 
   SERIALIZE_XML_DEFINE_MEMBERS ( SingleColorFunctor );
 };
-
-
-template < class Archive >
-void SingleColorFunctor::serialize( Archive &ar, const unsigned int version )
-{
-  boost::serialization::void_cast_register<SingleColorFunctor, BaseClass>( this, this );
-
-  ar & boost::serialization::make_nvp( "Color", _color );
-}
 
   }
 }

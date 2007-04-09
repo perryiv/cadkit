@@ -24,6 +24,7 @@ SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 
 using namespace Minerva::Core::Layers;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS( PolygonLayer, PolygonLayer::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -35,7 +36,8 @@ PolygonLayer::PolygonLayer() : BaseClass(),
 _format(),
 _showInterior( true ),
 _showBorder( false ),
-_borderColor()
+_borderColor(),
+_borderWidth ( 1.0f )
 {
   this->name( "PolygonLayer" );
 
@@ -53,7 +55,8 @@ PolygonLayer::PolygonLayer ( const PolygonLayer& layer ) : BaseClass ( layer ),
 _format ( layer._format ),
 _showInterior( layer._showInterior ),
 _showBorder ( layer._showBorder ),
-_borderColor ( layer._borderColor )
+_borderColor ( layer._borderColor ),
+_borderWidth ( layer._borderWidth )
 {
   this->_registerMembers();
 }
@@ -71,6 +74,7 @@ void PolygonLayer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _showInterior );
   SERIALIZE_XML_ADD_MEMBER ( _showBorder );
   SERIALIZE_XML_ADD_MEMBER ( _borderColor );
+  SERIALIZE_XML_ADD_MEMBER ( _borderWidth );
 }
 
 
@@ -108,8 +112,6 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
   // Guard this section of code.
   Guard guard ( _mutex);
 
-  this->legendObject()->icon( this->colorFunctor()->icon() );
-
   Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
 
   std::string dataTable ( this->tablename() );
@@ -137,7 +139,8 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     // Create the Data Object.
     Minerva::Core::DataObjects::Polygon::RefPtr data ( new Minerva::Core::DataObjects::Polygon );
 
-    data->showBorder( this->border() );
+    data->width ( this->borderWidth() );
+    data->showBorder( this->showBorder() );
     data->showInterior ( this->showInterior() );
     data->geometry ( geometry.get() );
     data->color( this->_color ( iter ) );
@@ -145,6 +148,9 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     data->connection ( this->connection() );
     data->tableName ( dataTable );
     data->rowId ( id );
+
+    /// Set the label.
+    this->_labelDataObject( data.get() );
 
     this->_addDataObject( data.get() );
 
@@ -157,6 +163,9 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       progress->updateProgressBar( num );
     }
   }
+
+  // Update the legend.
+  this->_updateLegendObject();
 }
 
 
@@ -231,17 +240,6 @@ const std::string& PolygonLayer::format() const
   return _format;
 }
 
-/// Set data members from given layer.
-void PolygonLayer::setDataMembers ( Layer * layer )
-{
-  BaseClass::setDataMembers ( layer );
-
-  if( PolygonLayer *polygon = dynamic_cast < PolygonLayer * > ( layer ) )
-  {
-    this->_format = polygon->_format;
-  }
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -249,7 +247,7 @@ void PolygonLayer::setDataMembers ( Layer * layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PolygonLayer::border( bool b )
+void PolygonLayer::showBorder( bool b )
 {
   _showBorder = b;
 }
@@ -261,7 +259,7 @@ void PolygonLayer::border( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool PolygonLayer::border() const
+bool PolygonLayer::showBorder() const
 {
   return _showBorder;
 }
@@ -312,4 +310,47 @@ void PolygonLayer::showInterior( bool b )
 bool PolygonLayer::showInterior() const
 {
   return _showInterior;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the border width flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PolygonLayer::borderWidth( float width )
+{
+  _borderWidth = width;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the border width flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float PolygonLayer::borderWidth() const
+{
+  return _borderWidth;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* PolygonLayer::queryInterface( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IPolygonLayer::IID:
+    return static_cast < Usul::Interfaces::IPolygonLayer* > ( this );
+  default:
+    return BaseClass::queryInterface ( iid );
+  }
 }

@@ -191,7 +191,7 @@ osg::Vec4 GradientColorFunctor::operator() ( double value ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OsgTools::Legend::Icon * GradientColorFunctor::icon ()
+OsgTools::Legend::Icon * GradientColorFunctor::icon ( Usul::Interfaces::IUnknown *caller )
 {
   OsgTools::Legend::GradientIcon::RefPtr icon ( new OsgTools::Legend::GradientIcon );
   icon->minColor( _minColor );

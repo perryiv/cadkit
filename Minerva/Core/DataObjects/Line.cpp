@@ -22,12 +22,11 @@
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Font.h"
 
+#include "osg/Geode"
 #include "osg/Geometry"
 #include "osg/Depth"
 #include "osg/Material"
 #include "osg/Version"
-
-#include "osgText/Text"
 
 using namespace Minerva::Core::DataObjects;
 
@@ -41,7 +40,7 @@ using namespace Minerva::Core::DataObjects;
 Line::Line() :
 BaseClass(),
 _width ( 1.0 ),
-_node ( new osg::Geode )
+_node ( new osg::Group )
 {
 }
 
@@ -94,9 +93,9 @@ osg::Node* Line::buildScene()
   {
     // Remove the drawables we have.
 #if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR >= 1
-    _node->removeDrawables( 0, _node->getNumDrawables() );
+    _node->removeChild( 0, _node->getNumChildren() );
 #else
-    _node->removeDrawable( 0, _node->getNumDrawables() );
+    _node->removeChild( 0, _node->getNumChildren() );
 #endif
     _node->setUserData( new UserData( this ) );
 
@@ -104,6 +103,9 @@ osg::Node* Line::buildScene()
     ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
 
     Usul::Interfaces::ILineData::QueryPtr line ( this->geometry() );
+
+    osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+    _node->addChild( geode.get() );
 
     if( line.valid () )
     {
@@ -115,32 +117,18 @@ osg::Node* Line::buildScene()
       geometry->setColorArray( colors.get() );
       geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
 
-      _node->addDrawable ( geometry.get() );
+      geode->addDrawable ( geometry.get() );
 
       // Turn off lighting.
-      OsgTools::State::StateSet::setLighting ( _node.get(), false );
-
+      OsgTools::State::StateSet::setLighting  ( _node.get(), false );
       OsgTools::State::StateSet::setLineWidth ( _node.get(), _width );
 
       geometry->dirtyDisplayList();
     }
 
     // Do we have a label?
-    if( !this->label().empty() )
-    {
-      osg::ref_ptr < osgText::Text > text ( new osgText::Text );
-
-      text->setFont( OsgTools::Font::defaultFont() );
-      text->setColor( this->labelColor() );
-      text->setPosition ( this->labelPosition() );
-      text->setAutoRotateToScreen(true);
-      text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
-      text->setCharacterSize( this->labelSize() );
-
-      text->setText ( this->label() );
-
-      _node->addDrawable( text.get() );
-    }
+    if( this->showLabel() && !this->label().empty() )
+      _node->addChild( this->_buildLabel() );
 
     this->dirty( false );
   }

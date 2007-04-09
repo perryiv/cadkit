@@ -200,11 +200,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MyApp.cpp"
+				RelativePath=".\MinervaVR.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\MyApp.h"
+				RelativePath=".\MinervaVR.h"
 				>
 			</File>
 		</Filter>

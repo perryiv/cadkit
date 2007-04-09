@@ -38,6 +38,7 @@ namespace DT.Minerva.Plugins.Layers.PostGIS
       if (null != layerList)
       {
         _favorites.DataSource = layerList.Favorites;
+        _favorites.SelectedItem = null;
       }
 
       _connections.SelectedValueChanged += new System.EventHandler(_connections_SelectedValueChanged);
@@ -84,9 +85,9 @@ namespace DT.Minerva.Plugins.Layers.PostGIS
 
       if (null != layerList)
       {
-        if (null != _favorites.SelectedItem)
-          layerList.addLayer(layerList.createFavorite(_favorites.SelectedItem as string), this);
-        else if (null != _datatables.SelectedItem)
+        foreach(string s in _favorites.SelectedItems)
+          layerList.addLayer(layerList.createFavorite(s), this);
+        if (null != _datatables.SelectedItem)
         {
           DT.Minerva.Interfaces.IDatabaseConnection dataSource = DT.Minerva.DB.Connections.Instance.OpenConnections[_lastIndexUsed] as DT.Minerva.Interfaces.IDatabaseConnection;
 

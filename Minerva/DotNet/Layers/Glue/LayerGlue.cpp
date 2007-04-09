@@ -83,18 +83,6 @@ void LayerGlue::clear()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the layer id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-int LayerGlue::LayerID::get()
-{
-  return this->layer()->layerID();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the data source.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -440,7 +428,7 @@ void LayerGlue::LabelSize::set ( float f )
 
 array<System::String^>^ LayerGlue::ColumnNames::get()
 {
-  if(nullptr != this->Connection && this->Tablename->Length > 0 )
+  if( 0x0 != this->layer()->connection() && this->Tablename->Length > 0 )
   {
     typedef ::Minerva::Core::DB::Info DbInfo;
     typedef DbInfo::Strings Strings;
@@ -586,4 +574,27 @@ void LayerGlue::ColorProperties::set ( DT::Minerva::Layers::Colors::ColorPropert
 {
   _properties = value;
   this->layer()->colorFunctor( this->_createColorFunctor( value )->colorFunctor() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show count in legend flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool LayerGlue::ShowCountLegend::get()
+{
+  return this->layer()->showCountLegend();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the show count in legend flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayerGlue::ShowCountLegend::set ( bool value )
+{
+  this->layer()->showCountLegend( value );
 }

@@ -94,7 +94,17 @@ private:
 };
 
 
-}; // namespace OsgTools
+class OSG_TOOLS_EXPORT ShapeFactorySingleton
+{
+public:
+  static ShapeFactory& instance();
+
+private:
+  static ShapeFactory* _instance;
+};
+
+
+} // namespace OsgTools
 
 
 #endif // _OPEN_SCENE_GRAPH_TOOLS_SHAPE_FACTORY_H_

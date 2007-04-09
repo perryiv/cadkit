@@ -10,6 +10,8 @@
 
 #include "Minerva/Core/Layers/Layer.h"
 
+#include "Usul/Functions/Guid.h"
+#include "Usul/Functions/ToString.h"
 #include "Usul/Interfaces/IGeometryCenter.h"
 
 #include "osg/Group"
@@ -23,15 +25,9 @@
 
 using namespace Minerva::Core::Layers;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Layer, Layer::BaseClass );
+
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize static data member
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int Layer::_currentLayerID ( 0 );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -42,8 +38,8 @@ unsigned int Layer::_currentLayerID ( 0 );
 
 Layer::Layer() : BaseClass(),
 _mutex(),
+_guid ( Usul::Functions::generateGUID() ),
 _name( "Layer" ),
-_layerID ( 0 ),
 _primaryKeyColumn( "id" ),
 _tablename(),
 _labelColumn(),
@@ -57,15 +53,14 @@ _legendObject ( new LegendObject ),
 _legendText( "" ),
 _showLabel ( false ),
 _shown ( true ),
-_labelColor( 0.0, 0.0, 0.0, 1.0 ),
+_labelColor( 1.0, 1.0, 1.0, 1.0 ),
 _labelZOffset( 1000.0 ),
 _labelSize ( 25.0f ),
 _colorColumn(),
 _customQuery ( false ),
+_showCountLegend ( false ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
-  _layerID = ++_currentLayerID;
-
   this->_registerMembers();
 }
 
@@ -78,8 +73,8 @@ SERIALIZE_XML_INITIALIZER_LIST
 
 Layer::Layer( const Layer& layer )  : BaseClass(),
 _mutex(),
+_guid ( layer._guid ),
 _name( layer._name ),
-_layerID ( layer._layerID ),
 _primaryKeyColumn( layer._primaryKeyColumn ),
 _tablename( layer._tablename ),
 _labelColumn( layer._labelColumn ),
@@ -97,16 +92,13 @@ _labelColor( layer._labelColor ),
 _labelZOffset( layer._labelZOffset ),
 _labelSize ( layer._labelSize ),
 _colorColumn( layer._colorColumn ),
-_customQuery( layer._customQuery )
+_customQuery( layer._customQuery ),
+_showCountLegend ( layer._showCountLegend )
 {
   if( layer._colorFunctor.valid() )
     _colorFunctor = layer._colorFunctor->clone();
 
-  _layerID = ++_currentLayerID;
-
   this->_registerMembers();
-
-  this->legendText( _legendText );
 }
 
 
@@ -118,8 +110,8 @@ _customQuery( layer._customQuery )
 
 void Layer::_registerMembers()
 {
+  SERIALIZE_XML_ADD_MEMBER ( _guid );
   SERIALIZE_XML_ADD_MEMBER ( _name );
-  SERIALIZE_XML_ADD_MEMBER ( _layerID );
   SERIALIZE_XML_ADD_MEMBER ( _primaryKeyColumn );
   SERIALIZE_XML_ADD_MEMBER ( _tablename );
   SERIALIZE_XML_ADD_MEMBER ( _labelColumn );
@@ -138,6 +130,7 @@ void Layer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _labelSize );
   SERIALIZE_XML_ADD_MEMBER ( _colorColumn );
   SERIALIZE_XML_ADD_MEMBER ( _customQuery );
+  SERIALIZE_XML_ADD_MEMBER ( _showCountLegend );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -148,31 +141,6 @@ void Layer::_registerMembers()
 
 Layer::~Layer()
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the layer id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Layer::layerID( Usul::Types::Uint32 id )
-{
-  Guard guard( _mutex );
-  _layerID = id;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the layer id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Types::Uint32 Layer::layerID() const
-{
-  return _layerID;
 }
 
 
@@ -404,27 +372,6 @@ const Minerva::Core::Functors::BaseColorFunctor * Layer::colorFunctor() const
 }
 
 
-// This is lame...need to find a better way...
-void Layer::setDataMembers ( Layer * layer )
-{
-  this->_layerID = layer->_layerID;
-  this->_tablename = layer->_tablename;
-  this->_labelColumn = layer->_labelColumn;
-  this->_query = layer->_query;
-  this->_renderBin = layer->_renderBin;
-  this->_zOffset = layer->_zOffset;
-  this->_connection = layer->_connection;
-  this->_colorFunctor = layer->_colorFunctor;
-  this->legendText ( layer->legendText() );
-  this->_showLabel = layer->_showLabel;
-  this->_shown = layer->_shown;
-  this->_labelColor = layer->_labelColor;
-  this->_labelZOffset = layer->_labelZOffset;
-  this->_labelSize = layer->_labelSize;
-  this->_colorColumn = layer->_colorColumn;
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the z offset.
@@ -471,9 +418,6 @@ OsgTools::Legend::LegendObject* Layer::legendObject()
 
 void Layer::legendText( const std::string& text )
 {
-  if( 0x0 == this->legendObject()->text() )
-    this->legendObject()->text( new OsgTools::Legend::Text );
-  this->legendObject()->text()->text ( text );
   _legendText = text;
 }
 
@@ -612,38 +556,6 @@ const std::string& Layer::colorColumn() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the color.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Vec4 Layer::_color ( const pqxx::result::const_iterator& iter )
-{
-  osg::Vec4 color( 0.0, 0.0, 0.0, 1.0 );
-
-  try
-  {
-    if( !this->colorColumn().empty() )
-    {
-      std::string column ( this->colorColumn() );
-      double fieldValue = iter[ column.c_str() ].as < double > ();
-      color = (*this->colorFunctor())(fieldValue);
-    }
-    else
-    {
-      color = (*this->colorFunctor())( 0.0 );
-    }
-  }
-  catch ( const std::exception& e )
-  {
-    std::cout << "Error 2909352868: " << e.what() << std::endl;
-  }
-
-  return color;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 // Get the number of data objects in this layer.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -662,6 +574,8 @@ unsigned int Layer::number() const
 
 void Layer::_labelDataObject ( Minerva::Core::DataObjects::DataObject* dataObject )
 {
+  dataObject->showLabel ( this->showLabel() );
+
   // If we have a column to use for a label.
   if( this->showLabel() && !this->labelColumn().empty() )
   {
@@ -811,4 +725,97 @@ void Layer::customQuery( bool value )
 bool Layer::customQuery() const
 {
   return _customQuery;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the guid.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& Layer::guid() const
+{
+  return _guid;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set show count in legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::showCountLegend( bool b )
+{
+  _showCountLegend = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get show count in legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Layer::showCountLegend() const
+{
+  return _showCountLegend;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update legend object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::_updateLegendObject()
+{
+  try
+  {
+    if( 0x0 != this->colorFunctor() )
+      this->legendObject()->icon ( this->colorFunctor()->icon( this ) );
+
+    // One columns for the text
+    this->legendObject()->columns ( 1 );
+    this->legendObject()->at ( 0 )->text ( this->legendText() );
+    
+
+    if( this->showCountLegend() )
+    {
+      this->legendObject()->columns ( this->legendObject()->columns() + 1 );
+      this->legendObject()->at ( 1 )->text ( Usul::Functions::toString( this->number() ) );
+      this->legendObject()->percentage( 1 ) = 0.20;
+    }
+
+    this->legendObject()->percentage( 0 ) = 0.80;
+  }
+  catch ( const std::exception& e )
+  {
+    std::cout << "Error 3665976713: " << e.what() << std::endl;
+  }
+  catch ( ... )
+  {
+    std::cout << "Error 4254986090: Unknown exception caught." << std::endl;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Layer::queryInterface( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::ILayer::IID:
+    return static_cast < Usul::Interfaces::ILayer* > ( this );
+  default:
+    return 0x0;
+  }
 }

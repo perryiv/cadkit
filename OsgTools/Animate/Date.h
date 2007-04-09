@@ -26,7 +26,7 @@
 #endif
 
 #include "boost/date_time/gregorian/gregorian.hpp"
-#include "boost/date_time/gregorian/greg_serialize.hpp"
+//#include "boost/date_time/gregorian/greg_serialize.hpp"
 
 namespace boost { namespace serialization { class access; } }
 
@@ -90,7 +90,7 @@ private:
 template < class Archive >
 void Date::serialize( Archive &ar, const unsigned int version )
 {
-  ar & boost::serialization::make_nvp( "Date", _date );
+  //ar & boost::serialization::make_nvp( "Date", _date );
 }
 
 

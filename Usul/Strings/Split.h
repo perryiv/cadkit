@@ -34,8 +34,8 @@ namespace Strings {
 template < class StringContainer > void split ( const std::string &input, const std::string &delim, bool wantEmptyStrings, StringContainer &output )
 {
   // Find index of delimiter.
-  unsigned int offset ( 0 );
-  unsigned int index ( input.find ( delim, offset ) );
+  std::string::size_type offset ( 0 );
+  std::string::size_type index ( input.find ( delim, offset ) );
 
   // Used in the loop.
   std::string sub;

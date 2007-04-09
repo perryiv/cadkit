@@ -42,9 +42,6 @@ namespace DT
         virtual ~LayerGlue();
         !LayerGlue();
 
-        /// Get/Set the layer id.
-        PROPERTY_GET(LayerID, int);
-
         /// Set the data source
         [
           System::ComponentModel::Browsable(false)
@@ -108,19 +105,23 @@ namespace DT
 
         /// Get/Set the legend text.
         [
-          System::ComponentModel::Category("Display")
+          System::ComponentModel::Category("Legend")
         ]
         PROPERTY_GET_SET(LegendText, System::String^);
 
-        /// Get/Set show layer.
+        /// Get/Set the show count in legend flag.
+        [
+          System::ComponentModel::Category("Legend"),
+          System::ComponentModel::Description("Should the number of objects in the layer be shown in the legend?")
+        ]
+        PROPERTY_GET_SET(ShowCountLegend, bool);
+
+        /// Get/Set show label.
         [
           System::ComponentModel::Category("Label"),
           System::ComponentModel::Description("Should a label be shown?"),
           System::ComponentModel::Browsable(true)
         ]
-        PROPERTY_GET_SET( ShowLayer, bool );
-
-        /// Get/Set show label.
         PROPERTY_GET_SET( ShowLabel, bool );
 
         /// Get/Set label color.
@@ -284,6 +285,8 @@ namespace DT
         }
 
       protected:
+        PROPERTY_GET_SET( ShowLayer, bool );
+
         DT::Minerva::Glue::BaseColorFunctor^ _createColorFunctor( DT::Minerva::Layers::Colors::ColorProperties ^ );
 
       private:

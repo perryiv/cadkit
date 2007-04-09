@@ -18,7 +18,13 @@
 
 #include "Serialize/XML/Macros.h"
 
-#include "pqxx/pqxx"
+namespace pqxx
+{
+  class result;
+  template < typename T > class basic_connection;
+  class connect_direct;
+  typedef basic_connection < connect_direct > connection;
+}
 
 #include <string>
 
@@ -113,5 +119,6 @@ protected:
 }
 }
 }
+
 
 #endif // __DB_CONNECTION_H__

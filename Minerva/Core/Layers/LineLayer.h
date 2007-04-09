@@ -14,43 +14,35 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/Layer.h"
 
-#include "OsgTools/Utilities/Vec4Serialize.h"
-
-#include "osg/Vec4"
-
-#include "boost/serialization/base_object.hpp"
-#include "boost/serialization/nvp.hpp"
-#include "boost/serialization/version.hpp"
-namespace boost { namespace serialization { class access; } }
+#include "Usul/Interfaces/ILineLayer.h"
 
 namespace Minerva {
 namespace Core {
 namespace Layers {
 
-class MINERVA_EXPORT LineLayer : public Minerva::Core::Layers::Layer
+class MINERVA_EXPORT LineLayer : public Minerva::Core::Layers::Layer,
+                                 public Usul::Interfaces::ILineLayer
 {
 public:
   typedef Minerva::Core::Layers::Layer BaseClass;
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( LineLayer );
+  USUL_DECLARE_QUERY_POINTERS ( LineLayer );
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   LineLayer();
 
   /// Clone the this layer.
-  virtual Layer*              clone() const;
+  virtual Layer*          clone() const;
 
   /// Build the data objects.
-  virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller );
+  virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   virtual void            modify( Usul::Interfaces::IUnknown *caller = 0x0 );
 
-  /// Get/Set the line width
+  /// Get/Set the line width.
   void                    lineWidth( float );
   float                   lineWidth() const;
-
-  /// Set data members from given layer.
-  virtual void            setDataMembers ( Layer * );
 
 protected:
   /// Use reference counting.
@@ -62,23 +54,12 @@ protected:
   void  _registerMembers();
 
 private:
-  friend class boost::serialization::access;
-  template < class Archive > void serialize( Archive &ar, const unsigned int version );
 
   float _lineWidth;
 
-  SERIALIZE_XML_DEFINE_MEMBERS ( LineLayer );
+  SERIALIZE_XML_CLASS_NAME ( LineLayer );
 };
 
-template < class Archive >
-void LineLayer::serialize( Archive &ar, const unsigned int version )
-{
-  ar & boost::serialization::make_nvp( "BaseLayer", boost::serialization::base_object< BaseClass >(*this) );
-  ar & boost::serialization::make_nvp( "LineWidth", _lineWidth );
-}
-
-
-//BOOST_CLASS_EXPORT_GUID( LineLayer, "LineLayer" )
 
 }
 }

@@ -62,20 +62,20 @@ void MaterialSetter::adjust_stateset(osg::StateSet* ss) const
   osg::ref_ptr<osg::Material> mat = new osg::Material();
 
   // front face properties
-  mat->setAmbient(osg::Material::FRONT,_af);
-  mat->setDiffuse(osg::Material::FRONT,_df);
-  mat->setEmission(osg::Material::FRONT,_ef);
-  mat->setShininess(osg::Material::FRONT,_shf);
-  mat->setSpecular(osg::Material::FRONT,_spf);
+  //mat->setAmbient(osg::Material::FRONT,_af);
+  mat->setDiffuse(osg::Material::FRONT_AND_BACK,_df);
+  //mat->setEmission(osg::Material::FRONT,_ef);
+  //mat->setShininess(osg::Material::FRONT,_shf);
+  //mat->setSpecular(osg::Material::FRONT,_spf);
 
   // back face properties
-  mat->setAmbient(osg::Material::BACK,_ab);
-  mat->setDiffuse(osg::Material::BACK,_db);
-  mat->setEmission(osg::Material::BACK,_eb);
-  mat->setShininess(osg::Material::BACK,_shb);
-  mat->setSpecular(osg::Material::BACK,_spb);
+ // mat->setAmbient(osg::Material::BACK,_ab);
+  //mat->setDiffuse(osg::Material::BACK,_db);
+  //mat->setEmission(osg::Material::BACK,_eb);
+  //mat->setShininess(osg::Material::BACK,_shb);
+  //mat->setSpecular(osg::Material::BACK,_spb);
 
-  ss->setAttribute(mat.get());
+  ss->setAttribute(mat.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
 }
 
 const osg::Vec4& MaterialSetter::ambient(Face face)

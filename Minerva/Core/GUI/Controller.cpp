@@ -18,6 +18,8 @@
 #include "boost/algorithm/string/trim.hpp"
 #include "boost/algorithm/string/replace.hpp"
 
+#include "pqxx/pqxx"
+
 #include <iostream>
 
 using namespace Minerva::Core::GUI;
@@ -212,9 +214,11 @@ void Controller::_executeEventTableQuery( int type, int eventId )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Controller::removeLayer(int layerID)
+void Controller::removeLayer( Minerva::Core::Layers::Layer *layer )
 {
-  this->_executeEventTableQuery(3, layerID);
+  int eventId ( this->_executeLayerQuery( layer ) );
+
+  this->_executeEventTableQuery(3, eventId);
 }
 
 
@@ -248,7 +252,6 @@ int Controller::_executeLayerQuery( Minerva::Core::Layers::Layer *layer )
   values.push_back( Values::value_type ( "xml_data",    xml ) );
 
   int id ( _connection->executeInsertQuery("wnv_layers", values ) );
-
   return id;
 }
 

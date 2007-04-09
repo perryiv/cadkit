@@ -1,35 +1,21 @@
 
 PROJECT(Usul)
 
-# We don't really need this as you set it once using ccmake. If you want to 
-#  do a release build then create another build directory and set the build
-#  type to Release
-#SET (CMAKE_BUILD_TYPE Debug)
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
 
-# If the user has defined USUL_BIN_DIR as an environment variable
-#  then use that directory as the output directory. Otherwise set the output
-#  directory to be inside the current build directory.
-# First check to see if it was defined in another project
-IF ( NOT USUL_BIN_DIR ) 
-SET(USUL_BIN_DIR "$ENV{USUL_BIN_DIR}")
-ENDIF ( NOT USUL_BIN_DIR )
-# This will be true if the user has NOT defined an environment variable
-IF ( NOT USUL_BIN_DIR )
-SET(USUL_BIN_DIR ${PROJECT_BINARY_DIR}/Bin )
-ENDIF ( NOT USUL_BIN_DIR )
-
-
+# include common defines and macros for all cadkit projects.
+INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 #setup output Directories
 SET (LIBRARY_OUTPUT_PATH
-	${USUL_BIN_DIR}
+	${CADKIT_BIN_DIR}
 	CACHE PATH
 	"Single Directory for all Libraries"
 )
 
 #setup the Executable output Directory
 SET (EXECUTABLE_OUTPUT_PATH
-	${USUL_BIN_DIR}
+	${CADKIT_BIN_DIR}
 	CACHE PATH
 	"Single Directory for all Executables."
 )
@@ -37,16 +23,7 @@ SET (EXECUTABLE_OUTPUT_PATH
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" )
 
-# Add _DEBUG definition is it's debug.
-IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
-ADD_DEFINITIONS("-D_DEBUG")
-ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
-
-
-# Add NDEBUG definition is it's release.
-IF (CMAKE_BUILD_TYPE STREQUAL "Release")
-ADD_DEFINITIONS("-DNDEBUG")
-ENDIF (CMAKE_BUILD_TYPE STREQUAL "Release")
+ADD_DEFINITIONS("-D_COMPILING_USUL")
 
 
 #List the Sources
@@ -74,6 +51,7 @@ SET (SOURCES
 	File/Remove.cpp
 	File/Temp.cpp
 	Functions/Color.cpp
+	Functions/Guid.cpp
 	ID/GUID.cpp
 	Predicates/CanWrite.cpp
 	Resources/CancelButton.cpp
@@ -101,9 +79,12 @@ SET (SOURCES
 )
 
 
+SET(LIBNAME Usul)
+
+
 # Create a Shared Library
-ADD_LIBRARY(Usul SHARED ${SOURCES} )
+ADD_LIBRARY(${LIBNAME} SHARED ${SOURCES} )
+
 
 # Link the Library	
 TARGET_LINK_LIBRARIES(Usul)
-	

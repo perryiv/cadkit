@@ -97,7 +97,7 @@ SceneManager::~SceneManager()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SceneManager::buildScene()
+void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
 {
   Guard guard ( _mutex );
 
@@ -128,7 +128,6 @@ void SceneManager::buildScene()
           text->setFont( OsgTools::Font::defaultFont() );
           text->setPosition ( osg::Vec3( 5.0, _height - 25.0, 0.0 ) );
           text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
-
           text->setText ( "" );
 
           osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
@@ -136,7 +135,6 @@ void SceneManager::buildScene()
 
           osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
           mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-
           mt->addChild( geode.get() );
 
           _projectionNode->addChild ( mt.get() );
@@ -159,24 +157,19 @@ void SceneManager::buildScene()
     if( this->showLegend() )
     {
       // Set the legend size.
-      unsigned int legendWidth ( static_cast < unsigned int > ( _width * _legendWidth ) );
-      //unsigned int legendHeight ( _legendHeightPerItem * _layers.size() );
-      unsigned int legendHeight ( _height - ( _legendPadding.y() * 2 ) );
+      unsigned int legendWidth  ( static_cast < unsigned int > ( _width * _legendWidth ) );
+      unsigned int legendHeight ( static_cast < unsigned int > ( _height - ( _legendPadding.y() * 2 ) ) );
+
       _legend->maximiumSize( legendWidth, legendHeight );
       _legend->heightPerItem( _legendHeightPerItem );
 
-      osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
-      mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-
       // Translate legend to correct location.
       unsigned int xTranslate ( static_cast < unsigned int > ( _width - ( legendWidth + _legendPadding.x() ) ) );
-      unsigned int yTranslate ( static_cast < unsigned int > (_legendPadding.y() ) );
-      osg::Matrix m ( osg::Matrix::translate ( xTranslate, yTranslate, 0.0 ) );
-      mt->setMatrix( m );
+      unsigned int yTranslate ( static_cast < unsigned int > ( _legendPadding.y() ) );
+      _legend->position( xTranslate, yTranslate );
 
       // Build the legend.
-      mt->addChild( _legend->buildScene() );
-      _projectionNode->addChild( mt.get() );
+      _projectionNode->addChild( _legend->buildScene() );
     }
 
     _projectionNode->addChild( _updateNode.get() );
@@ -273,6 +266,7 @@ void SceneManager::clear()
   Guard guard ( _mutex );
 
   _layers.clear();
+  _legend->clear();
 }
 
 
@@ -409,7 +403,7 @@ void SceneManager::addLayer ( Minerva::Core::Layers::Layer *layer )
 {
   Guard guard ( _mutex );
 
-  _layers[ layer->layerID() ] = layer;
+  _layers[ layer->guid() ] = layer;
 
   this->dirty( true );
 }
@@ -421,11 +415,11 @@ void SceneManager::addLayer ( Minerva::Core::Layers::Layer *layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SceneManager::removeLayer ( int layerID )
+void SceneManager::removeLayer ( const std::string& guid )
 {
   Guard guard ( _mutex );
 
-  Layers::iterator iter = _layers.find ( layerID );
+  Layers::iterator iter = _layers.find ( guid );
 
   if ( iter != _layers.end() )
   {
@@ -441,9 +435,9 @@ void SceneManager::removeLayer ( int layerID )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool SceneManager::hasLayer ( int layerID ) const
+bool SceneManager::hasLayer ( const std::string& guid ) const
 {
-  Layers::const_iterator iter = _layers.find( layerID );
+  Layers::const_iterator iter = _layers.find( guid );
   if( iter != _layers.end() )
     return true;
 
@@ -457,14 +451,14 @@ bool SceneManager::hasLayer ( int layerID ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Minerva::Core::Layers::Layer *  SceneManager::getLayer ( int layerID )
+Minerva::Core::Layers::Layer *  SceneManager::getLayer ( const std::string& guid )
 {
   Guard guard ( _mutex );
 
-	Layers::const_iterator iter = _layers.find( layerID );
+	Layers::const_iterator iter = _layers.find( guid );
   if( iter != _layers.end() )
 	{
-		return _layers[layerID].get();
+		return _layers[guid].get();
 	}
 
 	throw std::runtime_error( "Error 284022903: could not find layer id." );
@@ -497,9 +491,9 @@ Usul::Interfaces::IUnknown *SceneManager::queryInterface ( unsigned long iid )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SceneManager::sceneUpdate( )
+void SceneManager::sceneUpdate( Usul::Interfaces::IUnknown* caller )
 {
-  this->buildScene();
+  this->buildScene( caller );
 }
 
 

@@ -71,6 +71,7 @@ namespace DT.Minerva.Plugins.Layers.PostGIS
       this._favorites.FormattingEnabled = true;
       this._favorites.Location = new System.Drawing.Point(3, 333);
       this._favorites.Name = "_favorites";
+      this._favorites.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
       this._favorites.Size = new System.Drawing.Size(755, 264);
       this._favorites.TabIndex = 6;
       // 

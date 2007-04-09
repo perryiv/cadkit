@@ -10,6 +10,8 @@
 
 #include "Minerva/Core/DB/Info.h"
 
+#include "pqxx/pqxx"
+
 using namespace Minerva::Core::DB;
 
 

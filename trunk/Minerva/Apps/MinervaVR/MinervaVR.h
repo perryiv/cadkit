@@ -1,4 +1,5 @@
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2006, Arizona State University
@@ -17,6 +18,7 @@
 #include "Minerva/Core/Viz/Controller.h"
 #include "Minerva/Core/Scene/SceneManager.h"
 
+#include "Usul/CommandLine/Options.h"
 
 #include "Magrathea/Planet.h"
 
@@ -39,9 +41,11 @@ class MinervaVR : public VrjCore::OsgVJApp
 
  private:	
 
-  Minerva::Core::Viz::Controller::RefPtr _dbManager;
+  Minerva::Core::Viz::Controller::RefPtr       _dbManager;
   Minerva::Core::Scene::SceneManager::RefPtr   _sceneManager;
-  osg::ref_ptr < Magrathea::Planet >     _planet;
+  osg::ref_ptr < Magrathea::Planet >           _planet;
+  Usul::CommandLine::Options                   _options;
+  osg::Vec4f                                   _background;
 };
 
 #endif //: _MINERVA_VR_H_

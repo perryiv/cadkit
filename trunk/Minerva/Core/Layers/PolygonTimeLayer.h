@@ -21,7 +21,6 @@
 #include <map>
 #include <vector>
 
-namespace boost { namespace serialization { class access; } }
 
 namespace Minerva {
 namespace Core {
@@ -93,8 +92,6 @@ protected:
   void _registerMembers();
 
 private:
-  friend class boost::serialization::access;
-  template < class Archive > void serialize( Archive &ar, const unsigned int version );
 
   typedef std::map < OsgTools::Animate::Date, DataObjects > TemporalMap;
   typedef std::map < int, DataObjects > NumberMap;
@@ -108,21 +105,9 @@ private:
   TemporalMap _temporalMap;
   NumberMap _numberMap;
 
-  SERIALIZE_XML_DEFINE_MEMBERS ( PolygonTimeLayer );
+  SERIALIZE_XML_CLASS_NAME ( PolygonTimeLayer );
 };
 
-
-template < class Archive >
-void PolygonTimeLayer::serialize( Archive &ar, const unsigned int version )
-{
-  ar & boost::serialization::make_nvp( "BaseLayer", boost::serialization::base_object< BaseClass >(*this) );
-  ar & boost::serialization::make_nvp( "Mode", _mode );
-  ar & boost::serialization::make_nvp( "DrawMode", _drawMode );
-  ar & boost::serialization::make_nvp( "StepColumn", _stepColumn );
-  ar & boost::serialization::make_nvp( "ZScaleFactor", _zScaleFactor );
-  ar & boost::serialization::make_nvp( "XOffset", _xOffset );
-  ar & boost::serialization::make_nvp( "YOffset", _yOffset );
-}
 
 }
 }

@@ -302,6 +302,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Builders\Sign.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Builders\Sign.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Sphere.h"
 					>
 				</File>
@@ -1088,11 +1096,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\SolidIcon.cpp"
+					RelativePath=".\Legend\LineFunctor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Legend\QuadFunctor.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Legend\SolidIcon.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Legend\SphereFunctor.h"
 					>
 				</File>
 				<File

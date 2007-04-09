@@ -334,7 +334,7 @@ void Viewer::render()
   // Update the scene.
   Usul::Interfaces::ISceneUpdate::QueryPtr sceneUpdate ( _document );
   if ( sceneUpdate.valid() )
-    sceneUpdate->sceneUpdate();
+    sceneUpdate->sceneUpdate( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
 
   // Make this context current.
   if ( _context.valid() )
@@ -5188,4 +5188,11 @@ void Viewer::forceDetail()
 
     ++count;
   }
+}
+
+
+/// Add/Remove group from projection node
+osg::Group*           Viewer::projectionGroupGet    ( const std::string& key )
+{
+  return _sceneManager->projectionGroupGet ( key );
 }

@@ -66,16 +66,10 @@ protected:
   void            _registerMembers();
 
 private:
-  friend class boost::serialization::access;
-  template < class Archive > void serialize( Archive &ar, const unsigned int version )
-  {
-    ar & boost::serialization::make_nvp( "BaseLayer", boost::serialization::base_object< BaseClass >(*this) );
-    ar & boost::serialization::make_nvp( "Mode", _mode );
-  }
 
   Mode _mode;
 
-  SERIALIZE_XML_DEFINE_MEMBERS ( RLayer );
+  SERIALIZE_XML_CLASS_NAME ( RLayer );
 };
 
 }

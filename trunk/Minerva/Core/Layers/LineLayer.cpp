@@ -18,6 +18,7 @@
 
 using namespace Minerva::Core::Layers;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS( LineLayer, LineLayer::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -117,8 +118,6 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
   // Lock the mutex.
   Guard guard( _mutex );
 
-  this->legendObject()->icon ( this->colorFunctor()->icon() );
-
   // Query for a progress bar.
   Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
 
@@ -170,6 +169,9 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       progress->updateProgressBar( num );
     }
   }
+
+  // Update the legend.
+  this->_updateLegendObject();
 }
 
 
@@ -234,13 +236,21 @@ void LineLayer::modify( Usul::Interfaces::IUnknown *caller )
   //}
 }
 
-/// Set data members from given layer.
-void LineLayer::setDataMembers ( Layer * layer )
-{
-  BaseClass::setDataMembers ( layer );
 
-  if( LineLayer *line = dynamic_cast < LineLayer * > ( layer ) )
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* LineLayer::queryInterface( unsigned long iid )
+{
+  switch ( iid )
   {
-    this->_lineWidth = line->_lineWidth;
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::ILineLayer::IID:
+    return static_cast < Usul::Interfaces::ILineLayer* > ( this );
+  default:
+    return BaseClass::queryInterface ( iid );
   }
 }

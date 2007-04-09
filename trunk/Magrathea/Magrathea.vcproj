@@ -194,6 +194,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ImageTextureLayer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\LatLongGrid.cpp"
 				>
 			</File>
@@ -235,6 +239,14 @@
 			</File>
 			<File
 				RelativePath=".\Subdivide.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WmsLayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WmsLayer.h"
 				>
 			</File>
 		</Filter>

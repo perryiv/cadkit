@@ -57,7 +57,7 @@ MaterialFactory::~MaterialFactory()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Material* MaterialFactory::create ( const std::string key, float min, float max )
+osg::Material* MaterialFactory::create ( const std::string& key, float min, float max )
 {
   //see if a material exists for the key, if so return it
 	Map::iterator i = _materialMap.find ( key );

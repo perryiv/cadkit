@@ -168,24 +168,8 @@ osg::Node* Point::buildScene()
     _mt->addChild( autoTransform.get() );
 
     // Do we have a label?
-    if( !this->label().empty() )
-    {
-      osg::ref_ptr < osgText::Text > text ( new osgText::Text );
-
-      text->setFont( OsgTools::Font::defaultFont() );
-      text->setColor( this->labelColor() );
-      text->setPosition ( this->labelPosition() );
-      text->setAutoRotateToScreen(true);
-      text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
-      text->setCharacterSize( this->labelSize() );
-
-      text->setText ( this->label() );
-
-      osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-      geode->addDrawable( text.get() );
-
-      _mt->addChild ( geode.get() );
-    }
+    if( this->showLabel() && !this->label().empty() )
+      _mt->addChild ( this->_buildLabel() );
 
     this->dirty( false );
   }
@@ -272,7 +256,7 @@ osg::Node* Point::_buildSphere()
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
   geode->setUserData( new UserData( this ) );
 
-  OsgTools::ShapeFactory::MeshSize meshSize ( 20, 20 );
+  OsgTools::ShapeFactory::MeshSize meshSize ( 5, 5 );
   OsgTools::ShapeFactory::LatitudeRange  latRange  ( 89.9f, -89.9f );
   OsgTools::ShapeFactory::LongitudeRange longRange (  0.0f, 360.0f );
 

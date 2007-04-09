@@ -167,8 +167,6 @@ void RLayer::_buildScenePolygons( osg::Group* parent )
 
 void RLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 {
-  this->legendObject()->icon( this->colorFunctor()->icon() );
-
   if(this->mode() == CYLINDER)
   {
     this->_buildDataObjectsCylinder( caller );
@@ -177,6 +175,9 @@ void RLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
   {
     this->_buildDataObjectsPolygons( caller );
   }
+
+  // Update the legend.
+  this->_updateLegendObject();
 }
 
 

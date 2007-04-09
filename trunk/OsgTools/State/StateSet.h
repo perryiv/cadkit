@@ -41,6 +41,7 @@ struct OSG_TOOLS_EXPORT StateSet
   // Set/get the normalization state.
   static bool         getNormalize ( osg::Node *node );
   static void         setNormalize ( osg::Node *node, bool state );
+  static void         setNormalize ( osg::StateSet *ss, bool state );
 
   // Set/get the polygon state.
   static bool         getPolygonsFilled ( osg::Node *node, bool twoSided );

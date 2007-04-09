@@ -154,13 +154,13 @@ protected:
   virtual osgDB::DatabasePager *           getDatabasePager ();
 
   /// Usul::Interfaces::IUpdateScene
-  virtual void                             sceneUpdate( );
+  virtual void                             sceneUpdate( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   /// Distributed functions.
   void                                     _connectToDistributedSession();
 
   /// Remove layer with given id.
-  void             _removeLayerDistributed( unsigned int layerID );
+  void             _removeLayerDistributed( Minerva::Core::Layers::Layer *Layer );
 
   /// Show layer.
   void             _showLayerDistributed ( Minerva::Core::Layers::Layer *Layer );

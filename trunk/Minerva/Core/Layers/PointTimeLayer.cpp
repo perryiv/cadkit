@@ -192,8 +192,6 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
   // Guard this section of code.
   Guard guard ( _mutex);
 
-  this->legendObject()->icon ( this->colorFunctor()->icon() );
-
   Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
 
   const std::string tableName ( this->tablename() );
@@ -249,6 +247,9 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       std::cout << "Error 4160517991: exception generated while adding point-time layer" << std::endl;
     }
   }
+
+  // Update the legend.
+  this->_updateLegendObject();
 }
 
 
@@ -333,28 +334,6 @@ void PointTimeLayer::lastDateColumn( const std::string& dateColumn )
 const std::string& PointTimeLayer::lastDateColumn() const
 {
   return _lastDateColumn;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set data members from given layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void PointTimeLayer::setDataMembers ( Layer * layer )
-{
-  BaseClass::setDataMembers ( layer );
-
-  if( PointTimeLayer *pt = dynamic_cast < PointTimeLayer * > ( layer ) )
-  {
-    this->_primitiveID = pt->_primitiveID;
-    this->_size = pt->_size;
-    this->_firstDateColumn = pt->_firstDateColumn;
-    this->_lastDateColumn = pt->_lastDateColumn;
-    this->_minDate = pt->_minDate;
-    this->_maxDate = pt->_maxDate;
-  }
 }
 
 

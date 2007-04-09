@@ -66,16 +66,16 @@ public:
   SceneManager();
 
   /// Build the scene.
-  void                       buildScene();
+  void                       buildScene( Usul::Interfaces::IUnknown *caller = 0x0);
 
   /// Get the root.
   osg::Node*                 root() { return _root.get(); }
 
   // Add/Remove layer.
   void                       addLayer            ( Layer *layer );
-  void                       removeLayer         ( int layerID );
-  bool                       hasLayer            ( int layerID ) const;
-  Layer *                    getLayer            ( int layerID );
+  void                       removeLayer         ( const std::string& guid );
+  bool                       hasLayer            ( const std::string& guid ) const;
+  Layer *                    getLayer            ( const std::string& guid );
 
   /// Resize
   void                       resize( unsigned int width, unsigned int height );
@@ -120,11 +120,11 @@ protected:
 
   virtual ~SceneManager();
 
-  virtual void sceneUpdate( );
+  virtual void sceneUpdate( Usul::Interfaces::IUnknown *caller = 0x0 );
   
 private:
 
-  typedef std::map < int, Layer::RefPtr >               Layers;
+  typedef std::map < std::string, Layer::RefPtr >               Layers;
 
   // The mutex.
   Mutex _mutex;

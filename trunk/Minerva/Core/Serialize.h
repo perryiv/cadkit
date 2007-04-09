@@ -147,6 +147,19 @@ inline Minerva::Core::Layers::Layer * deserialize ( const std::string& xml )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize the layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline void deserialize ( const std::string& xml, Minerva::Core::Layers::Layer *layer )
+{
+  registerFactories();
+
+  Serialize::XML::deserialize( xml, *layer );
+}
+
 }
 }
 

@@ -15,16 +15,15 @@
 #include "Threads/OpenThreads/Mutex.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Strings/ManagedToNative.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/IPlayMovie.h"
+#include "Usul/Components/Manager.h"
 
 #include "OsgTools/Render/Viewer.h"
 
 #include "Minerva/Core/Layers/Layer.h"
 
 #include <string>
-
-#include "Usul/Interfaces/GUI/IProgressBar.h"
-#include "Usul/Interfaces/IPlayMovie.h"
-#include "Usul/Components/Manager.h"
 
 using namespace DT::Minerva::Plugins::Document::Glue;
 
@@ -764,6 +763,7 @@ void DllGlue::saveAs( System::String^ filename )
 ///////////////////////////////////////////////////////////////////////////////
 void DllGlue::setMovieMode( bool b,  CadKit::Viewer::Glue::Viewer^ v )
 {
+
   OsgTools::Render::Viewer* viewer = reinterpret_cast < OsgTools::Render::Viewer* > ( v->viewer().ToPointer() );
 
   if( viewer )
@@ -786,6 +786,7 @@ void DllGlue::setMovieMode( bool b,  CadKit::Viewer::Glue::Viewer^ v )
 //  Play current movie. 
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 void DllGlue::play( CadKit::Viewer::Glue::Viewer^ v )
 {
   OsgTools::Render::Viewer* viewer = reinterpret_cast < OsgTools::Render::Viewer* > ( v->viewer().ToPointer() );
@@ -806,6 +807,7 @@ void DllGlue::play( CadKit::Viewer::Glue::Viewer^ v )
 //  Pause current movie. 
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 void DllGlue::pause( CadKit::Viewer::Glue::Viewer^ v )
 {
   OsgTools::Render::Viewer* viewer = reinterpret_cast < OsgTools::Render::Viewer* > ( v->viewer().ToPointer() );
@@ -826,6 +828,7 @@ void DllGlue::pause( CadKit::Viewer::Glue::Viewer^ v )
 //  Restart current movie. 
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 void DllGlue::restart( CadKit::Viewer::Glue::Viewer^ v )
 {
   OsgTools::Render::Viewer* viewer = reinterpret_cast < OsgTools::Render::Viewer* > ( v->viewer().ToPointer() );
@@ -876,3 +879,4 @@ bool DllGlue::isPaused()
 
   return false;
 }
+

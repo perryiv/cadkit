@@ -50,7 +50,7 @@ public:
   Strings          getAvailableSessions();
 
   /// Remove layer with given id.
-  void             removeLayer( int layerID );
+  void             removeLayer( Minerva::Core::Layers::Layer *Layer );
 
   /// Show layer.
   int              showLayer ( Minerva::Core::Layers::Layer *Layer );

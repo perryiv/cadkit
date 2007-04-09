@@ -95,6 +95,8 @@ SET (Boost_LIBRARIES "")
 SET (BOOST "boost")
 SET (Boost_VERSION "-1_33_1")
 SET (Boost_DEBUG "-d")
+SET (Boost_COMPILER "")
+
 # - Boost has a naming scheme that we have to match..
 IF (MINGW)
 SET (Boost_COMPILER "-mgw")
@@ -106,6 +108,7 @@ IF ( NOT APPLE )
   ENDIF(CMAKE_COMPILER_IS_GNUCC)
 ENDIF ( NOT APPLE )
 
+MARK_AS_ADVANCED(Boost_COMPILER)
 
 #
 # Look for an installation.

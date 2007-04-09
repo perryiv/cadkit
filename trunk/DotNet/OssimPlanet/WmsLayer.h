@@ -40,16 +40,9 @@ namespace CadKit
           virtual bool get();
         }
 
-        property bool NeedsUpdate 
-        { 
-          virtual bool get(); 
-          virtual void set( bool b ); 
-        }
-
         virtual void show();
         virtual void modify();
         virtual void hide();
-        virtual void addToFavorites();
 
         virtual System::IntPtr           nativeIntPtr();
 

@@ -21,6 +21,7 @@
 
 using namespace Minerva::Core::Layers;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS( PointLayer, PointLayer::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -102,8 +103,6 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
   // Lock the mutex.
   Guard guard( _mutex );
 
-  this->legendObject()->icon ( this->colorFunctor()->icon() );
-
   Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
 
   // Execute the query.
@@ -144,8 +143,6 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
      /// Set the label.
     this->_labelDataObject( data.get() );
 
-    data->buildScene();
-
     this->_addDataObject( data.get() );
 
     if( progress.valid() )
@@ -155,6 +152,22 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     }
   }
 
+  /// Stack the points.
+  this->_stack();
+
+  // Update the legend.
+  this->_updateLegendObject();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Stack the points.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointLayer::_stack()
+{
   if( _stackPoints )
   {
     typedef osg::Vec3 Key;
@@ -273,20 +286,6 @@ float PointLayer::size() const
 }
 
 
-/// Set data members from given layer.
-void PointLayer::setDataMembers ( Layer * layer )
-{
-  BaseClass::setDataMembers ( layer );
-
-  if( PointLayer *point = dynamic_cast < PointLayer * > ( layer ) )
-  {
-    this->_primitiveID = point->_primitiveID;
-    this->_size = point->_size;
-    this->_stackPoints = point->_stackPoints;
-  }
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the stack points flag.
@@ -308,4 +307,23 @@ void PointLayer::stackPoints( bool b )
 bool PointLayer::stackPoints() const
 {
   return _stackPoints;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* PointLayer::queryInterface( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IPointLayer::IID:
+    return static_cast < Usul::Interfaces::IPointLayer* > ( this );
+  default:
+    return BaseClass::queryInterface ( iid );
+  }
 }

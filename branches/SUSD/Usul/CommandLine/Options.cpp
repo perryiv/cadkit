@@ -131,7 +131,7 @@ std::istream&  Usul::CommandLine::operator>>( std::istream& in, Options& o )
     if( position != std::string::npos )
     {
       std::string first ( data.begin(), data.begin() + position );
-      std::string second ( data.begin() + position, data.end() );
+      std::string second ( data.begin() + position + 1, data.end() );
 
       o.insert ( first, second );
     }

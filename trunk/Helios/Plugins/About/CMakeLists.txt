@@ -1,11 +1,19 @@
 project (About)
 
+SET(PLUGIN_NAME "About")
+
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
+INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
+
+
 set(COMPILE_GUARD "_COMPILING_ABOUT")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
+
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${HELIOS_INCLUDE_DIR}" "${PROJECT_SOURCE_DIR}/../" )
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" )
+
 
 set (SOURCES
 	AboutFactory.cpp
@@ -13,22 +21,12 @@ set (SOURCES
 )
 
 # ---------- Create a Shared Library
-ADD_LIBRARY(About SHARED ${SOURCES} )
+ADD_LIBRARY(${PLUGIN_NAME} SHARED ${SOURCES} )
 
-# ---- Change the Suffix on the Generated Dylib --------------------------------
-IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
- SET_TARGET_PROPERTIES (About
-	PROPERTIES SUFFIX ".plugd"
- )
-ELSE (CMAKE_BUILD_TYPE STREQUAL "Debug")
- SET_TARGET_PROPERTIES (About
-	PROPERTIES SUFFIX ".plug"
- )
-ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+CADKIT_PLUGIN()
 
 # Link the Library	
-TARGET_LINK_LIBRARIES(About 
-  Usul
-	${OPENGL_LIBRARIES}
-)
+LINK_CADKIT( ${PLUGIN_NAME} Usul )	
+
+TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} 	${OPENGL_LIBRARIES} )
 

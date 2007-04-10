@@ -1,7 +1,9 @@
 project (TriangulateCGAL)
 
+SET( PLUGIN_NAME "TriangulateCGAL" )
+
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
-INCLUDE ( ${CMakeModules}/Cadkit.cmake)
+INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 INCLUDE(${CMakeModules}/FindCGAL.cmake)
 
@@ -23,20 +25,11 @@ set (SOURCES
 )
 
 # ---------- Create a Shared Library
-ADD_LIBRARY(TriangulateCGAL SHARED ${SOURCES} )
+ADD_LIBRARY( ${PLUGIN_NAME}  SHARED ${SOURCES} )
 
-# ---- Change the Suffix on the Generated library --------------------------------
-IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
- SET_TARGET_PROPERTIES (TriangulateCGAL
-	PROPERTIES SUFFIX ".plugd"
- )
-ELSE (CMAKE_BUILD_TYPE STREQUAL "Debug")
- SET_TARGET_PROPERTIES (TriangulateCGAL
-	PROPERTIES SUFFIX ".plug"
- )
-ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+CADKIT_PLUGIN()
 
 # Link the Library
-LINK_CADKIT( TriangulateCGAL Usul )
+LINK_CADKIT( ${PLUGIN_NAME}  Usul )
 
-TARGET_LINK_LIBRARIES( TriangulateCGAL ${CGAL_LIB} )
+TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}  ${CGAL_LIB} )

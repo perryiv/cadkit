@@ -1,7 +1,9 @@
 project (ComputeNormals)
 
+SET(PLUGIN_NAME "ComputeNormals")
+
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
-INCLUDE ( ${CMakeModules}/Cadkit.cmake)
+INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 set(COMPILE_GUARD "_COMPILING_COMPUTE_NORMALS")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
@@ -17,20 +19,10 @@ set (SOURCES
 )
 
 # ---------- Create a Shared Library
-ADD_LIBRARY(ComputeNormals SHARED ${SOURCES} )
+ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} )
 
-# ---- Change the Suffix on the Generated library --------------------------------
-IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
- SET_TARGET_PROPERTIES (ComputeNormals
-	PROPERTIES SUFFIX ".plugd"
- )
-ELSE (CMAKE_BUILD_TYPE STREQUAL "Debug")
- SET_TARGET_PROPERTIES (ComputeNormals
-	PROPERTIES SUFFIX ".plug"
- )
-ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+CADKIT_PLUGIN()
 
 # Link the Library
-LINK_CADKIT( ComputeNormals Usul )	
-
+LINK_CADKIT( ${PLUGIN_NAME} Usul )	
 

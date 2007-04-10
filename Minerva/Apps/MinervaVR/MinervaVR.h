@@ -1,5 +1,4 @@
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2006, Arizona State University
@@ -12,8 +11,8 @@
 #ifndef __MINERVA_VR_H__
 #define __MINERVA_VR_H__
 
-
 #include "VrjCore/OsgVJApp.h"
+#include "SharedUpdateData.h"
 
 #include "Minerva/Core/Viz/Controller.h"
 #include "Minerva/Core/Scene/SceneManager.h"
@@ -25,7 +24,8 @@
 
 class MinervaVR : public VrjCore::OsgVJApp 
 {
- public:
+public:
+  typedef VrjCore::OsgVJApp BaseClass;
 
   MinervaVR( vrj::Kernel* kern, int& argc, char** argv );
   virtual ~MinervaVR();		
@@ -33,6 +33,7 @@ class MinervaVR : public VrjCore::OsgVJApp
  protected:
   virtual void appInit();
   
+  virtual void preFrame();
   virtual void appSceneInit();
   virtual void appPreOsgDraw();
   virtual void addSceneLight();
@@ -46,6 +47,7 @@ class MinervaVR : public VrjCore::OsgVJApp
   osg::ref_ptr < Magrathea::Planet >           _planet;
   Usul::CommandLine::Options                   _options;
   osg::Vec4f                                   _background;
+  cluster::UserData< SharedUpdateData >        _update;
 };
 
 #endif //: _MINERVA_VR_H_

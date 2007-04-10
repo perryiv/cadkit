@@ -1,10 +1,12 @@
 # This file should be at CadKit/Helios/CMakeLists.txt
 
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
+
 # ------------ Find OpenGL Library ----------------------
 FIND_PACKAGE(OpenGL)
 
-INCLUDE(${PROJECT_SOURCE_DIR}/FindOSG.cmake)
-INCLUDE(${PROJECT_SOURCE_DIR}/FindFoxToolkit.cmake)
+INCLUDE(${CMakeModules}/FindOSG.cmake)
+INCLUDE(${CMakeModules}/FindFoxToolkit.cmake)
 
 # Pick up IF the user has SET an environment variable to point to the 
 # Helios Lib and includes. If these are not SET

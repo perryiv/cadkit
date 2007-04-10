@@ -1,3 +1,13 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Aashish Chaudhary
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #ifndef __PARSER_EXPORT_H__
 #define __PARSER_EXPORT_H__
 

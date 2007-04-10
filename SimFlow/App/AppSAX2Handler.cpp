@@ -1,12 +1,19 @@
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Aashish Chaudhary
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #if defined _MSC_VER
+  // '__fastcall' incompatible with the '/clr' option: converting to '__stdcall'
+  #pragma warning ( disable : 4561 )
 
-// '__fastcall' incompatible with the '/clr' option: converting to '__stdcall'
-#pragma warning ( disable : 4561 )
-
-// 'vararg' : causes native code generation for function ...
-#pragma warning ( disable : 4793 )
-
+  // 'vararg' : causes native code generation for function ...
+  #pragma warning ( disable : 4793 )
 #endif
 
 #include "AppSAX2Handler.h"

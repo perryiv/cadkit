@@ -1,4 +1,13 @@
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Aashish Chaudhary
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #ifndef __SCENE_SCENE_MANAGER_H__
 #define __SCENE_SCENE_MANAGER_H__
 

@@ -1,4 +1,13 @@
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Aashish Chaudhary
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #ifndef __LAYER_POLYGON_LAYER_H__
 #define __LAYER_POLYGON_LAYER_H__
 

@@ -107,23 +107,20 @@ void MinervaVR::appInit()
   vpr::GUID guid ( "6D4B401D-C3FD-429e-84DB-1F9DCC9A2A5C" );
   _update.init( guid, "viz1" );
 
-  if( _update.isLocal() )
-  {
-    Minerva::Core::DB::Connection::RefPtr applicationConnection ( new Minerva::Core::DB::Connection );
-    applicationConnection->username( _options.value( USERNAME ) );
-    applicationConnection->password( _options.value( PASSWORD ) );
-    applicationConnection->database( _options.value( DATABASE ) );
-    applicationConnection->hostname( _options.value( HOST     ) );
-    applicationConnection->connect();
+  Minerva::Core::DB::Connection::RefPtr applicationConnection ( new Minerva::Core::DB::Connection );
+  applicationConnection->username( _options.value( USERNAME ) );
+  applicationConnection->password( _options.value( PASSWORD ) );
+  applicationConnection->database( _options.value( DATABASE ) );
+  applicationConnection->hostname( _options.value( HOST     ) );
+  applicationConnection->connect();
 
-    _dbManager->applicationConnection( applicationConnection.get() );
+  _dbManager->applicationConnection( applicationConnection.get() );
 
-    std::string session ( _options.value ( SESSION ) );
-    _dbManager->connectToSession( session );
-    _dbManager->sceneManager ( _sceneManager.get() );
+  std::string session ( _options.value ( SESSION ) );
+  _dbManager->connectToSession( session );
+  _dbManager->sceneManager ( _sceneManager.get() );
 
-    std::cerr << " [MinervaVR] Connected to session: " << session << std::endl;
-  }
+  std::cerr << " [MinervaVR] Connected to session: " << session << std::endl;
 
   if( _options.option ( BACKGROUND ) )
   {

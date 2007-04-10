@@ -101,7 +101,7 @@ void MinervaVR::appInit()
 {
   std::cerr << " [MinervaVR] app init starts: " << std::endl;
 
-  //: Set all the properties here
+  // Set all the properties here
   setDevice(ALL, OFF);	
 
   vpr::GUID guid ( "6D4B401D-C3FD-429e-84DB-1F9DCC9A2A5C" );
@@ -218,14 +218,15 @@ void MinervaVR::appSceneInit()
   std::cerr << " [MinveraVR] done reading kwl: " << std::endl;
  
   if( _options.option ( EPHEMERIS ) )
-    {
-      std::string e ( _options.value ( EPHEMERIS ) );
-      std::istringstream in ( e );
-      bool useEphemeris ( false );
-      in >> useEphemeris;
-      _planet->ephemerisFlag( useEphemeris );
+  {
+    std::string e ( _options.value ( EPHEMERIS ) );
+    std::istringstream in ( e );
+    bool useEphemeris ( false );
+    in >> useEphemeris;
+    _planet->ephemerisFlag( useEphemeris );
 
-    }
+  }
+
   mModelGroupNode->addChild ( _planet->root() );
   //mModelGroupNode->addChild ( _sceneManager->root() );
   

@@ -58,10 +58,9 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
   _sceneManager ( new Minerva::Core::Scene::SceneManager ),
   _planet ( new Magrathea::Planet ),
   _options(),
-  _background( 0.0, 0.0, 0.0, 1.0 )
+  _background( 0.0, 0.0, 0.0, 1.0 ),
+  _update()
 {
-  Minerva::Core::DB::Connection::RefPtr applicationConnection ( new Minerva::Core::DB::Connection );
-
   Usul::CommandLine::Arguments::instance().set ( argc, argv );
 
   std::ostringstream file;
@@ -71,24 +70,6 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
   if( fin.is_open() )
   {
     fin >> _options;
-    //for( Usul::CommandLine::Options::iterator iter = _options.begin(); iter != _options.end(); ++iter )
-      //{
-      //std::cerr << "    [MinervaVR] " << iter->first << "|" << iter->second << std::endl;
-      //}
-#if 1
-    applicationConnection->username( _options.value( USERNAME ) );
-    applicationConnection->password( _options.value( PASSWORD ) );
-    applicationConnection->database( _options.value( DATABASE ) );
-    applicationConnection->hostname( _options.value( HOST     ) );
-    applicationConnection->connect();
-
-    _dbManager->applicationConnection( applicationConnection.get() );
-
-    std::string session ( _options.value ( SESSION ) );
-    _dbManager->connectToSession( session );
-    _dbManager->sceneManager ( _sceneManager.get() );
-#endif
-    std::cerr << " [MinervaVR] Connected to session: " << session << std::endl;
   }
   else
   {
@@ -123,6 +104,27 @@ void MinervaVR::appInit()
   //: Set all the properties here
   setDevice(ALL, OFF);	
 
+  vpr::GUID guid ( "6D4B401D-C3FD-429e-84DB-1F9DCC9A2A5C" );
+  _update.init( guid, "viz1" );
+
+  if( _update.isLocal() )
+  {
+    Minerva::Core::DB::Connection::RefPtr applicationConnection ( new Minerva::Core::DB::Connection );
+    applicationConnection->username( _options.value( USERNAME ) );
+    applicationConnection->password( _options.value( PASSWORD ) );
+    applicationConnection->database( _options.value( DATABASE ) );
+    applicationConnection->hostname( _options.value( HOST     ) );
+    applicationConnection->connect();
+
+    _dbManager->applicationConnection( applicationConnection.get() );
+
+    std::string session ( _options.value ( SESSION ) );
+    _dbManager->connectToSession( session );
+    _dbManager->sceneManager ( _sceneManager.get() );
+
+    std::cerr << " [MinervaVR] Connected to session: " << session << std::endl;
+  }
+
   if( _options.option ( BACKGROUND ) )
   {
     std::string background ( _options.value ( BACKGROUND ) );
@@ -154,40 +156,18 @@ void MinervaVR::appInit()
     }
   }
 
-#if 0
-  // Create and set-up the interactor.
-  VrjCore::OssimInteraction *interactor = new VrjCore::OssimInteraction();
-
-  if( ossimPlanet* planet = dynamic_cast< ossimPlanet* >( _planet->root() ) )
-  {
-    interactor->planet( planet );
-
-    if( _options.option ( HOME ) )
-    {
-      std::string home ( _options.value ( HOME ) );
-      std::istringstream in ( home );
-      float lat ( 0 ), lon( 0 ), height ( 0 );
-      in >> lat >> lon >> height;
-      interactor->setHomePosition ( lat, lon, height );
-    }
-    
-    if( _options.option ( HOME_LOOK ) )
-    {
-      std::string home_look ( _options.value ( HOME_LOOK ) );
-      std::istringstream in ( home_look );
-      float yaw ( 0 ), pitch( 0 ), roll ( 0 );
-      in >> yaw >> pitch >> roll;
-      interactor->setHomeLook( yaw, pitch, roll );
-    }
-
-    setEngine( interactor );
-    interactor->goHome();
-  }
-#endif
-
   std::cerr << " [MinervaVR] app init ends: " << std::endl;
 }
 
+
+void MinervaVR::preFrame()
+{
+  /// Check to see if we have data.
+  if( _update.isLocal() )
+    _update->dataAvailable ( _dbManager->hasEvents() );
+
+  BaseClass::preFrame();
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -280,7 +260,7 @@ void MinervaVR::appSceneInit()
     }
 
     setEngine( interactor );
-    interactor->dumpFilename ( Usul::System::Host::name() );
+//    interactor->dumpFilename ( Usul::System::Host::name() );
     interactor->goHome();
   }
 
@@ -309,7 +289,8 @@ void MinervaVR::_updateScene()
   try
   {
     // If there are draw commands to process...
-    if( _dbManager->hasEvents() )
+    //if( _dbManager->hasEvents() )
+    if ( _update->dataAvailable() )
     {
       std::cerr << " [MinervaVR] Updating scene..." << std::endl;
 

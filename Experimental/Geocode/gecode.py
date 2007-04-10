@@ -46,6 +46,11 @@ for a in options[:]:
 	zip=a[1]
     print a
 
+if street=='' and city=='' and state=='' and zip=='':
+    print 'Error: Must enter at least one agrument.'
+    usage()
+    sys.exit(0)
+
 params = urllib.urlencode({
 	'appid': appid,
 	'street': street,

@@ -44,7 +44,6 @@ for a in options[:]:
 	state=a[1]
     elif a[0] == '--zip':
 	zip=a[1]
-    print a
 
 if street=='' and city=='' and state=='' and zip=='':
     print 'Error: Must enter at least one agrument.'
@@ -74,7 +73,7 @@ def getLongitude(dom):
     result = dom.getElementsByTagName('Longitude')
     return result[0].firstChild.data
 
-print getPrecision(dom)
-print getLatitude(dom)
-print getLongitude(dom)
+print 'Precision: ', getPrecision(dom)
+print 'Latitude:', getLatitude(dom)
+print 'Longitude:', getLongitude(dom)
 

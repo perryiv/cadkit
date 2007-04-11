@@ -434,13 +434,21 @@ void Controller::_processPlayMovie   ( const std::string& tableName, int eventID
   if( !result.empty() )
   {
     std::string postionString ( result[0]["position"].as< std::string >() );
-    float width ( result[0]["width"].as < float > () );
-    float height ( result[0]["height"].as < float > () );
-    std::string path ( result[0]["path"].as < std::string > () );
+    std::string widthString   ( result[0]["width"].as< std::string >() );
+    std::string heightString  ( result[0]["height"].as< std::string >() );    
+    std::string path          ( result[0]["path"].as < std::string > () );
 
-    osg::Vec3f position;
+    osg::Vec3f position, width, height;
     std::istringstream in ( postionString );
     in >> position;
+
+    in.clear();     
+    in.str( widthString ); 
+    in >> width;
+
+    in.clear();
+    in.str( heightString );
+    in >> height;
 
     // Play movie.
     // Create osg::Group from scene manager.
@@ -451,7 +459,7 @@ void Controller::_processPlayMovie   ( const std::string& tableName, int eventID
 
     if( playMoviePlug.valid() )
     {
-      root->addChild( playMoviePlug->playMovie( position, osg::Vec3f( width, 0.0, 0.0 ), osg::Vec3f( 0.0, 0.0, height ), path ) );
+      root->addChild( playMoviePlug->playMovie( position, width, height, path ) );
     }
   }
 }

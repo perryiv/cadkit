@@ -103,6 +103,7 @@ bool PlayMovieComponent::temporary()
 ///////////////////////////////////////////////////////////////////////////////
 bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool right, bool motion, float x, float y, float z )
 { 
+  #if 0
   std::cout << "execute: " << std::endl;
   Usul::Interfaces::ISceneIntersect::QueryPtr intersect ( caller );
 
@@ -162,13 +163,18 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
                 osg::ref_ptr< osg::Group > group( gr->getGroup( "movie_node_4047781649" ) );
                 std::string path ( result[0]["win_path"].as < std::string > () );                
              
-                osg::ref_ptr< osg::Node >  node ( playMovie ( position->geometryCenter(), convertStringToPosition( quadWidth ), convertStringToPosition( quadHeight ), path ) );
-
-                if( node.valid() )
+                try
                 {
-                  group->removeChildren( 0, group->getNumChildren() );
-                  group->addChild( node.get() );
+                  osg::ref_ptr< osg::Node >  node ( playMovie ( position->geometryCenter(), convertStringToPosition( quadWidth ), convertStringToPosition( quadHeight ), "C://movie//test.mpg" ) );
+                  if( node.valid() )
+                  {
+                    group->removeChildren( 0, group->getNumChildren() );
+                    group->addChild( node.get() );
+                  }
                 }
+                catch( ... )
+                {
+                }                
               }
             }
           }
@@ -179,24 +185,31 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
 
       }
     }
-#if 0
-    else
+#endif
+#if 1
+    //else    
+
+    static int i = 0;    
+
+    if( i == 0 )
     {
       Usul::Interfaces::IGroup::QueryPtr gr( caller );
       if( gr.valid() )
-      {   
+      { 
         osg::ref_ptr< osg::Group > group( gr->getGroup( "movie_node_4047781649" ) );
-        osg::ref_ptr< osg::Node >  node ( playMovie( osg::Vec3f(), osg::Vec3f(), osg::Vec3f(), "test.avi" ) );
+        osg::ref_ptr< osg::Node >  node ( playMovie( osg::Vec3f( 0.0, 0.0, 0.0 ), osg::Vec3f( 2.0, 0.0, 0.0 ), osg::Vec3f( 0.0, 0.0, 2.0 ), "C:\\movie\\other.mpg" ) );
 
-        if( node.valid() )
+        if( node.valid() && group.valid() )
         {
-          group->removeChildren( 0, group->getNumChildren() );
+          group->removeChild( 0, 1 );
           group->addChild( node.get() );
         }    
        }
     }
+    i = ( i + 1 ) % 2;
+    
 #endif 
-  }
+  //}
 
   return true;
 }
@@ -261,9 +274,11 @@ osg::Node* PlayMovieComponent::playMovie( const osg::Vec3f& position, const osg:
 {
   // For test purposes. 
   //_movie->setMovie( osg::Vec3f( -2.0, 0.0, 0.0 ), osg::Vec3f( 2.0, 2.0, 0.0 ), osg::Vec3f( 0.0, 0.0, 2.0 ), "C:\\Aashish\\src\\bin\\test5.avi" );
+  _movie->stop();
   _movie->setMovie( position, widthVector, heightVector, fileName );
   _movie->buildScene();
-  _movie->play();          
+  
+  //_movie->play();          
 
   return _movie->root();
 }

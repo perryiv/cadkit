@@ -87,7 +87,8 @@ BUILD_TYPE=	dbg
 srcdir=		./
 
 SRCS=		main.cpp		\
-		MinervaVR.cpp
+		MinervaVR.cpp \
+		SharedUpdateData.cpp
 
 NO_DEPEND=	YES
 

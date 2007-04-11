@@ -36,9 +36,9 @@ struct XineLife
       #endif
       #else
         #ifdef _DEBUG 
-          osgDB::DynamicLibrary::loadLibrary( "osgdb_xined.so" );
+          //osgDB::DynamicLibrary::loadLibrary( "osgdb_xined.so" );
         #else
-          osgDB::DynamicLibrary::loadLibrary( "osgdb_xine.so" );
+          //osgDB::DynamicLibrary::loadLibrary( "osgdb_xine.so" );
         #endif
     #endif   
   }

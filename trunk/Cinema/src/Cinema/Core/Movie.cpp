@@ -296,9 +296,9 @@ void Cinema::Core::Movie::play()
       mMovieHandler->action( MovieHandler::PLAY );
       mMovieHandler->update();
     }
-    catch( const std::exception& e )
+    catch( ... )
     {
-      std::cerr << "Error 2823321539: " << e.what() << std::endl;
+      std::cerr << "Error 2823321539: " << std::endl;
     }
   }
 }

@@ -218,6 +218,7 @@ namespace Cinema
 
         ~MovieHandler()
         {
+          cleanUp();
         }
 
       protected: 

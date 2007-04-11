@@ -17,7 +17,7 @@ osg::Referenced (),
 mDirty          ( false ),
 mShow           ( true ),
 mTemporal       ( false ), 
-mLayerID        (), 
+mLayerId        (), 
 mRenderType     ( 1 ), 
 mRenderSize     ( 1.5 ), 
 mRoot           ( new osg::MatrixTransform() ), 
@@ -73,14 +73,14 @@ void Layer::material( osg::Material* mat )
 	mMaterial = mat;
 }
 
-const unsigned int& Layer::layerID() const
+const std::string& Layer::layerId() const
 {
-	return mLayerID;
+  return mRoot->getName();
 }
 
-void Layer::layerID( const unsigned int& layerID )
+void Layer::layerId( const std::string& layerId )
 {
-	mLayerID = layerID;
+  mRoot->setName( layerId );
 }
 
 const bool& Layer::show() const

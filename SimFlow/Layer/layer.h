@@ -46,7 +46,7 @@ namespace SimFlow
 
 			Layer();
 
-      osg::Node*                                  root();
+      osg::Node*                            root();
 
 			virtual osg::Node*						        buildScene();
 
@@ -59,8 +59,8 @@ namespace SimFlow
 
 			virtual unsigned int					        size() const;			
 
-			const unsigned int&						        layerID() const;
-			void									                layerID( const unsigned int& );
+      const std::string&      			        layerId() const;
+      void									                layerId( const std::string& );
 
 			const bool&								            show() const; 
 			void									                show( const bool& );
@@ -95,11 +95,12 @@ namespace SimFlow
 			bool									                mDirty;			
 			bool									                mShow;
       bool                                  mTemporal;
-
-			unsigned int							            mLayerID;
+			
 			unsigned int							            mRenderType;
 
 			float									                mRenderSize;
+
+      std::string                           mLayerId;
 
 			osg::ref_ptr< osg::MatrixTransform >	mRoot;
 			osg::ref_ptr< osg::Material >			    mMaterial;

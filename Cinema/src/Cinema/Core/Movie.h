@@ -162,6 +162,7 @@ namespace Cinema
 
         virtual ~Movie()
         {
+          mInstance->unref();          
         }       
 
         osg::Geometry*                          buildGeometry( osg::Image* );        

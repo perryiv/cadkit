@@ -82,6 +82,7 @@ namespace SimFlow
       mLightSpecularStartTag  ( false ), 
       mLightSpecularEndTag    ( false ),       
 			mGroupType			        ( "" ), 
+      mId                     ( "" ),
 			mPrimitiveType	        ( 1  ), 
 			mPrimitiveSize	        ( 1.0 )
 			{
@@ -167,8 +168,14 @@ namespace SimFlow
       bool                  mLightAmbientEndTag;
 
       std::string						mGroupType;
-			unsigned int					mPrimitiveType;
+			
+      std::string           mId;
+
+      unsigned int					mPrimitiveType;
+
 			float								  mPrimitiveSize;
+
+
 
 
 			///////////////////////////////////////////////////////////////////

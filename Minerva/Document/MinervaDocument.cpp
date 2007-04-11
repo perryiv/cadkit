@@ -949,7 +949,7 @@ void MinervaDocument::_stopAnimationDistributed ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::playMovie ( const osg::Vec3f& position, float width, float height, const std::string& path )
+void MinervaDocument::playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path )
 {
   if( _useDistributed )
   {

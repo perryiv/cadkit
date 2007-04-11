@@ -178,7 +178,7 @@ protected:
   void             _stopAnimationDistributed ();
 
   /// Usul::Interfaces::IDistributedVR
-  virtual void playMovie ( const osg::Vec3f& position, float width, float height, const std::string& path );
+  virtual void playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path );
   virtual void pause     ( );
 
   /// Implementing IGroup interface. 

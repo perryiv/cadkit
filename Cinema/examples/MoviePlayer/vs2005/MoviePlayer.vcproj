@@ -62,7 +62,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osgd.lib osgProducerd.lib osgDBd.lib "
-				OutputFile="$(VRJCINEMA_ROOT_DIR)/bin/$(ProjectName).exe"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/MoviePlayerd.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(PRODUCER_LIB_DIR);$(VRJCINEMA_ROOT_DIR)/bin;"
 				GenerateDebugInformation="true"
@@ -139,7 +139,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osg.lib osgProducer.lib osgDB.lib"
-				OutputFile="$(VRJCINEMA_ROOT_DIR)/bin/$(ProjectName).exe"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/MoviePlayer.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(PRODUCER_LIB_DIR)"
 				GenerateDebugInformation="true"

@@ -27,8 +27,6 @@ int main(int argc, char** argv)
     arguments.getApplicationUsage()->setCommandLineUsage(arguments.getApplicationName()+" [options] filename ...");
     arguments.getApplicationUsage()->addCommandLineOption("-h or --help","Display this information");
     
-    //osgDB::DynamicLibrary::loadLibrary("osgdb_xined.dll");        
-
     // construct the viewer.
     osgProducer::Viewer viewer(arguments);
     
@@ -51,9 +49,9 @@ int main(int argc, char** argv)
 
     std::cout << " test1: " << std::endl;
     osg::ref_ptr< Cinema::Core::Movie > movie = Cinema::Core::Movie::instance();
-    movie->setMovie( osg::Vec3f(), osg::Vec3f( 10.0, 0.0, 0.0 ), osg::Vec3f( 0.0, 0.0, 10.0 ), "test5.avi" );
+    movie->setMovie( osg::Vec3f(), osg::Vec3f( 10.0, 0.0, 0.0 ), osg::Vec3f( 0.0, 0.0, 10.0 ), "C:\\movie\\test.mpg" );
     movie->buildScene();
-    movie->play(); 
+    //movie->play(); 
   
     // set the scene to render
     viewer.setSceneData( movie->root() );
@@ -74,7 +72,10 @@ int main(int argc, char** argv)
         viewer.frame();
         
     }
-    
+
+    movie->pause();
+
+
     // wait for all cull and draw threads to complete.
     viewer.sync();
 

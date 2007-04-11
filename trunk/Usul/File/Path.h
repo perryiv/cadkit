@@ -88,6 +88,7 @@ inline std::string fullPath ( const std::string &file )
 
   std::cout << "Usul/File/Path.h std::string fullPath ( const std::string &file ) "
     << " Is not implemented yet." << std::endl;
+
 #endif
 
   return std::string ( buffer );

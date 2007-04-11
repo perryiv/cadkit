@@ -489,6 +489,12 @@ namespace DT.Minerva.Plugins.Document
       set { _dll.showLegend(value); }
     }
 
+    float CadKit.Interfaces.ILegend.PercentScreenWidth
+    {
+      get { return _dll.percentScreenWidth(); }
+      set { _dll.percentScreenWidth(value); }
+    }
+
     void CadKit.Interfaces.ILayerOperation.setLayerOperation(string opType, int val, int[] layers)
     {
       for (int i = 0; i < layers.Length; ++i)

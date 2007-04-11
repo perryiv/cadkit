@@ -104,8 +104,8 @@ void MinervaVR::appInit()
   // Set all the properties here
   setDevice(ALL, OFF);	
 
-  vpr::GUID guid ( "6D4B401D-C3FD-429e-84DB-1F9DCC9A2A5C" );
-  _update.init( guid, "viz1" );
+  //vpr::GUID guid ( "6D4B401D-C3FD-429e-84DB-1F9DCC9A2A5C" );
+  //_update.init( guid, "viz1" );
 
   Minerva::Core::DB::Connection::RefPtr applicationConnection ( new Minerva::Core::DB::Connection );
   applicationConnection->username( _options.value( USERNAME ) );
@@ -160,8 +160,8 @@ void MinervaVR::appInit()
 void MinervaVR::preFrame()
 {
   /// Check to see if we have data.
-  if( _update.isLocal() )
-    _update->dataAvailable ( _dbManager->hasEvents() );
+  //if( _update.isLocal() )
+  //_update->dataAvailable ( _dbManager->hasEvents() );
 
   BaseClass::preFrame();
 }
@@ -287,8 +287,8 @@ void MinervaVR::_updateScene()
   try
   {
     // If there are draw commands to process...
-    //if( _dbManager->hasEvents() )
-    if ( _update->dataAvailable() )
+    if( _dbManager->hasEvents() )
+    //if ( _update->dataAvailable() )
     {
       std::cerr << " [MinervaVR] Updating scene..." << std::endl;
 

@@ -81,13 +81,13 @@ void SceneManager::animate( const bool& val )
 
 void SceneManager::addLayer( SimFlow::Layer::Layer *layer )
 {
-	mLayers[ layer->layerID() ] = layer;	
+	mLayers[ layer->layerId() ] = layer;	
 	this->dirty( true );
 }
 
-void SceneManager::removeLayer( int layerID )
+void SceneManager::removeLayer( std::string layerId )
 {
-	Layers::iterator iter = mLayers.find ( layerID );
+	Layers::iterator iter = mLayers.find ( layerId );
 	if ( iter != mLayers.end() )
 	{
 		mLayers.erase ( iter );
@@ -95,17 +95,17 @@ void SceneManager::removeLayer( int layerID )
 	}
 }
 
-bool SceneManager::hasLayer( int layerID ) const
+bool SceneManager::hasLayer( std::string layerId ) const
 {
-	Layers::const_iterator iter = mLayers.find( layerID );
+	Layers::const_iterator iter = mLayers.find( layerId );
 	if( iter != mLayers.end() )
 		return true;
 	return false;
 }
 
-SimFlow::Layer::Layer* SceneManager::getLayer( int layerID )
+SimFlow::Layer::Layer* SceneManager::getLayer( std::string layerId )
 {
-	Layers::iterator iter = mLayers.find ( layerID );
+	Layers::iterator iter = mLayers.find ( layerId );
 
 	if( iter != mLayers.end() )
 	{

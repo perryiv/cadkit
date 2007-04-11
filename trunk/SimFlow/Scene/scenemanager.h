@@ -33,7 +33,7 @@ namespace SimFlow
 		{
 		public:
 
-      typedef std::map< int, osg::ref_ptr< SimFlow::Layer::Layer > >	Layers;
+      typedef std::map< std::string, osg::ref_ptr< SimFlow::Layer::Layer > >	Layers;
 
 			static SceneManager&                    instance();
 			
@@ -49,10 +49,11 @@ namespace SimFlow
       const bool&                             animate() const;
       void                                    animate( const bool& );
 
-			virtual void				                    addLayer( SimFlow::Layer::Layer *layer );
-			virtual void				                    removeLayer( int layerID );
-			virtual bool				                    hasLayer( int layerID ) const;
-			virtual SimFlow::Layer::Layer*          getLayer( int layerID );
+			virtual void				                    addLayer    ( SimFlow::Layer::Layer *layer );
+      virtual void				                    removeLayer ( std::string layerId );
+			virtual bool				                    hasLayer    ( std::string layerId ) const;
+			virtual SimFlow::Layer::Layer*          getLayer    ( std::string layerId );
+
 			virtual unsigned int		                numberOfLayers();
 
 			void								                    decrementTimeStep();

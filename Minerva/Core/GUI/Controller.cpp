@@ -323,7 +323,7 @@ void Controller::stopAnimation()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Controller::playMovie ( const osg::Vec3f& position, float width, float height, const std::string& path )
+void Controller::playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path )
 {
   typedef Minerva::Core::DB::Connection::Values Values;
   Values values;

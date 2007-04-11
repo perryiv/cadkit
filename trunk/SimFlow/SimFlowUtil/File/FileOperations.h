@@ -32,7 +32,7 @@ namespace SimFlow
 			{
         // bool b = true;
 				
-        fs::path fPath( path, fs::native );
+        fs::path fPath = fs::path( path, fs::native );
 				return fs::exists( fPath  );
 
         /*

@@ -76,6 +76,12 @@ void SimFlow::App::AppSAX2Handler::startElement( const XMLCh *const uri,
         std::transform( mGroupType.begin(), mGroupType.end(), mGroupType.begin(), tolower );
 			}
 
+      if( strcmp( cxml::StrX( attrs.getLocalName( i ) ).localForm(), "id" ) == 0 )
+			{
+				mId = cxml::StrX( attrs.getValue( attrs.getLocalName( i ) ) ).localForm();
+        std::transform( mId.begin(), mId.end(), mId.begin(), tolower );
+			}
+
 			if( strcmp( cxml::StrX( attrs.getLocalName( i ) ).localForm(), "primitive" ) == 0 )
 			{
 				mPrimitiveType = SimFlow::SimFlowUtil::String::convert( mPrimitiveType, cxml::StrX( attrs.getValue( attrs.getLocalName( i ) ) ).localForm() );
@@ -338,7 +344,7 @@ void SimFlow::App::AppSAX2Handler::addPointTimeData()
 {
   osg::ref_ptr< SimFlow::Layer::PointTimeLayer > pTimeLayer( new SimFlow::Layer::PointTimeLayer() );
 					
-	pTimeLayer->layerID( mSceneManager->numberOfLayers() );
+	pTimeLayer->layerId( mId );
 	pTimeLayer->renderType( mPrimitiveType );
 	pTimeLayer->renderSize( mPrimitiveSize );
 
@@ -388,7 +394,7 @@ void SimFlow::App::AppSAX2Handler::addPointTimeData()
 void SimFlow::App::AppSAX2Handler::addPolygonData()
 {
   osg::ref_ptr< SimFlow::Layer::PolygonLayer > pLayer( new SimFlow::Layer::PolygonLayer() );
-	pLayer->layerID( mSceneManager->numberOfLayers() );
+	pLayer->layerId( mId );
 	mSceneManager->addLayer( pLayer.get() );
   addDataAsPolygonData( pLayer.get(), DataObject::DataObject::POLYGONDATA );
 }
@@ -396,7 +402,7 @@ void SimFlow::App::AppSAX2Handler::addPolygonData()
 void SimFlow::App::AppSAX2Handler::addStructureGridData()
 {
   osg::ref_ptr< SimFlow::Layer::PolygonLayer > pLayer( new SimFlow::Layer::PolygonLayer() );
-	pLayer->layerID( mSceneManager->numberOfLayers() );
+	pLayer->layerId( mId );
 	mSceneManager->addLayer( pLayer.get() );
   addDataAsPolygonData( pLayer.get(), DataObject::DataObject::STRUCTUREDGRID ); 
 }

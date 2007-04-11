@@ -131,6 +131,9 @@ public:
   bool                        showLegend() const;
   void                        showLegend( bool b );
 
+  void                        percentScreenWidth ( float );
+  float                       percentScreenWidth();
+
   void                        setMovieMode( bool b );
 
   /// For now

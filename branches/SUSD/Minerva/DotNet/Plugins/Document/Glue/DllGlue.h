@@ -87,6 +87,9 @@ namespace DT
             bool                  showLegend();
             void                  showLegend( bool b );
 
+            void                  percentScreenWidth ( float );
+            float                 percentScreenWidth();
+
             void                           addToFavorites( CadKit::Interfaces::ILayer^ layer );
             CadKit::Interfaces::ILayer^    createFavorite( System::String^ name );
 

@@ -77,6 +77,7 @@ namespace DT.Minerva.Plugins.Options
       {
         CadKit.Interfaces.ILegend legend = (CadKit.Interfaces.ILegend)CadKit.Documents.Manager.Instance.ActiveDocument;
         legend.ShowLegend = _legend.Checked;
+        legend.PercentScreenWidth = float.Parse(_percentScreenWidthSpinner.Value.ToString());
         CadKit.Interfaces.IViewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IViewer;
         if (null != viewer)
           viewer.render();

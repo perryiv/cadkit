@@ -32,8 +32,11 @@ namespace DT.Minerva.Plugins.Options
       this.groupBox1 = new System.Windows.Forms.GroupBox();
       this._ossimPlanetGroupBox = new System.Windows.Forms.GroupBox();
       this._legend = new System.Windows.Forms.CheckBox();
+      this._percentScreenWidthSpinner = new System.Windows.Forms.NumericUpDown();
+      this._percentScreenWidthLabel = new System.Windows.Forms.Label();
       this.flowLayoutPanel1.SuspendLayout();
       this._ossimPlanetGroupBox.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this._percentScreenWidthSpinner)).BeginInit();
       this.SuspendLayout();
       // 
       // flowLayoutPanel1
@@ -58,6 +61,8 @@ namespace DT.Minerva.Plugins.Options
       // 
       // _ossimPlanetGroupBox
       // 
+      this._ossimPlanetGroupBox.Controls.Add(this._percentScreenWidthLabel);
+      this._ossimPlanetGroupBox.Controls.Add(this._percentScreenWidthSpinner);
       this._ossimPlanetGroupBox.Controls.Add(this._legend);
       this._ossimPlanetGroupBox.Location = new System.Drawing.Point(9, 3);
       this._ossimPlanetGroupBox.Name = "_ossimPlanetGroupBox";
@@ -76,6 +81,33 @@ namespace DT.Minerva.Plugins.Options
       this._legend.Text = "Legend";
       this._legend.UseVisualStyleBackColor = true;
       // 
+      // _percentScreenWidthSpinner
+      // 
+      this._percentScreenWidthSpinner.DecimalPlaces = 2;
+      this._percentScreenWidthSpinner.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+      this._percentScreenWidthSpinner.Location = new System.Drawing.Point(132, 60);
+      this._percentScreenWidthSpinner.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+      this._percentScreenWidthSpinner.Name = "_percentScreenWidthSpinner";
+      this._percentScreenWidthSpinner.Size = new System.Drawing.Size(62, 20);
+      this._percentScreenWidthSpinner.TabIndex = 3;
+      // 
+      // _percentScreenWidthLabel
+      // 
+      this._percentScreenWidthLabel.AutoSize = true;
+      this._percentScreenWidthLabel.Location = new System.Drawing.Point(14, 62);
+      this._percentScreenWidthLabel.Name = "_percentScreenWidthLabel";
+      this._percentScreenWidthLabel.Size = new System.Drawing.Size(112, 13);
+      this._percentScreenWidthLabel.TabIndex = 4;
+      this._percentScreenWidthLabel.Text = "Percent Screen Width";
+      // 
       // PageContent
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -86,6 +118,7 @@ namespace DT.Minerva.Plugins.Options
       this.flowLayoutPanel1.ResumeLayout(false);
       this._ossimPlanetGroupBox.ResumeLayout(false);
       this._ossimPlanetGroupBox.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)(this._percentScreenWidthSpinner)).EndInit();
       this.ResumeLayout(false);
 
     }
@@ -96,5 +129,7 @@ namespace DT.Minerva.Plugins.Options
     private System.Windows.Forms.GroupBox groupBox1;
     private System.Windows.Forms.GroupBox _ossimPlanetGroupBox;
     private System.Windows.Forms.CheckBox _legend;
+    private System.Windows.Forms.Label _percentScreenWidthLabel;
+    private System.Windows.Forms.NumericUpDown _percentScreenWidthSpinner;
   }
 }

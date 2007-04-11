@@ -110,7 +110,7 @@ osg::Vec4 SingleColorFunctor::operator() ( double value ) const
 
 OsgTools::Legend::Icon * SingleColorFunctor::icon (  Usul::Interfaces::IUnknown *caller )
 {
-#if _MSC_VER
+#if 0 // For now... always return quad for legend
   Usul::Interfaces::ILineLayer::QueryPtr lineLayer ( caller );
   if( lineLayer.valid() )
   {
@@ -141,7 +141,6 @@ OsgTools::Legend::Icon * SingleColorFunctor::icon (  Usul::Interfaces::IUnknown 
     return icon.release();
   }
 #endif
-
   OsgTools::Legend::SolidMaterialQuadIcon::RefPtr icon ( new OsgTools::Legend::SolidMaterialQuadIcon );
   icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::FRONT );
   icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::BACK );

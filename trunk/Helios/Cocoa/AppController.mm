@@ -45,6 +45,8 @@
   //Set the Thread Mutex...
   Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
 
+  [self loadAllBundles];
+  
 #ifdef _DEBUG
   Usul::Components::Manager::instance().addPluginExtension ( "plugd" );
 #else 
@@ -53,6 +55,103 @@
   Usul::App::Controller::instance().loadPlugins();
 
   
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load all the bundles
+//
+///////////////////////////////////////////////////////////////////////////////
+
+-(void) loadAllBundles
+{
+    NSMutableArray *instances;                                         // 1
+    NSMutableArray *bundlePaths;
+    NSEnumerator *pathEnum;
+    NSString *currPath;
+    NSBundle *currBundle;
+    Class currPrincipalClass;
+    id currInstance;
+
+    bundlePaths = [NSMutableArray array];
+
+    if(!instances)
+    {
+        instances = [[NSMutableArray alloc] init];
+    }
+
+    [bundlePaths addObjectsFromArray:[self allBundles]];               // 2
+
+    pathEnum = [bundlePaths objectEnumerator];
+
+    while(currPath = [pathEnum nextObject])
+    {
+
+        currBundle = [NSBundle bundleWithPath:currPath];               // 3
+
+        if(currBundle)
+        {
+            currPrincipalClass = [currBundle principalClass];          // 4
+            if(currPrincipalClass)
+            {
+                currInstance = [[currPrincipalClass alloc] init];      // 5
+                if(currInstance)
+
+                {
+                    [instances addObject:[currInstance autorelease]];
+                }
+            }
+        }
+    }
+}
+
+-(NSMutableArray *) allBundles
+{
+  NSArray *librarySearchPaths;
+  NSEnumerator *searchPathEnum;
+  NSString *currPath;
+  NSMutableArray *bundleSearchPaths = [NSMutableArray array];
+  NSMutableArray *allBundles = [NSMutableArray array];
+
+  librarySearchPaths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSAllDomainsMask - NSSystemDomainMask, YES);
+
+  searchPathEnum = [librarySearchPaths objectEnumerator];
+
+  while(currPath = [searchPathEnum nextObject])
+  {
+     [bundleSearchPaths addObject:
+            [currPath stringByAppendingPathComponent:appSupportSubpath]];
+
+  }
+
+  [bundleSearchPaths addObject: [[NSBundle mainBundle] builtInPlugInsPath]];
+
+ 
+
+  searchPathEnum = [bundleSearchPaths objectEnumerator];
+
+  while(currPath = [searchPathEnum nextObject])
+  {
+     NSDirectoryEnumerator *bundleEnum;
+     NSString *currBundlePath;
+
+     bundleEnum = [[NSFileManager defaultManager]
+           enumeratorAtPath:currPath];
+
+     if(bundleEnum)
+     {
+       while(currBundlePath = [bundleEnum nextObject])
+       {
+         if([[currBundlePath pathExtension] isEqualToString:ext])
+          {
+            [allBundles addObject:[currPath
+                           stringByAppendingPathComponent:currBundlePath]];
+          }
+       }
+    }
+  }
+
+  return allBundles;
 }
 
 @end

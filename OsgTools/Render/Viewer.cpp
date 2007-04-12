@@ -5154,10 +5154,12 @@ void Viewer::forceDetail()
   const unsigned int maxNum ( 10000 );
   unsigned int count ( 0 );
 
+#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR == 2
   while ( count < maxNum )
-  {
+  {	
     const unsigned int requests  ( db->getFileRequestListSize()   );
     const unsigned int toCompile ( db->getDataToCompileListSize() );
+
 
     #ifdef _DEBUG
     std::cout << "         count = " << count << std::endl;
@@ -5187,7 +5189,9 @@ void Viewer::forceDetail()
     }
 
     ++count;
+	
   }
+  #endif
 }
 
 

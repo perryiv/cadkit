@@ -241,18 +241,18 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: PlayMovie", "..\..\Mi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Cinema", "..\..\Cinema\vs2005\Cinema.vcproj", "{5C966754-058C-4E93-B73D-835F1C4D0B18}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Serialize XML", "..\..\Experimental\Serialize\XML\CadKit.Serialize.XML.vcproj", "{2AFAFF2F-1967-4124-A178-5F1B703C016F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Serialize XML", "..\..\Experimental\Serialize\XML\SerializeXML.vcproj", "{2AFAFF2F-1967-4124-A178-5F1B703C016F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit XmlTree", "..\..\Experimental\XmlTree\CadKit.XmlTree.vcproj", "{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit XmlTree", "..\..\Experimental\XmlTree\XmlTree.vcproj", "{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}"
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Usul", "..\..\Usul\CadKit.Usul.vcproj", "{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Usul", "..\..\Usul\Usul.vcproj", "{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

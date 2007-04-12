@@ -1252,6 +1252,11 @@
 		43FED996092452F800EBB610 /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED859092452F700EBB610 /* Types.cpp */; };
 		43FEDAF5092454D500EBB610 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FEDAEE092454D500EBB610 /* Mutex.cpp */; };
 		43FEDAF6092454D500EBB610 /* Mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = 43FEDAEF092454D500EBB610 /* Mutex.h */; };
+		6673DD2A0BC5F2F800C0131F /* GradientBackground.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6673DD280BC5F2F800C0131F /* GradientBackground.cpp */; };
+		6673DD2B0BC5F2F800C0131F /* GradientBackground.h in Headers */ = {isa = PBXBuildFile; fileRef = 6673DD290BC5F2F800C0131F /* GradientBackground.h */; };
+		6673DD550BC5F96700C0131F /* SceneDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6673DD540BC5F96700C0131F /* SceneDocument.mm */; };
+		6673DD8A0BC5FC0900C0131F /* ICreateDocument.h in Copy OSG Frameworks */ = {isa = PBXBuildFile; fileRef = 6673DD890BC5FC0900C0131F /* ICreateDocument.h */; };
+		6673DDA10BC60B7800C0131F /* SceneComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 6673DDA00BC60B7800C0131F /* SceneComponent.m */; };
 		6687115809D5E0020003384F /* GLFeedback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6687115409D5E0020003384F /* GLFeedback.cpp */; };
 		6687115909D5E0020003384F /* GLFeedback.h in Headers */ = {isa = PBXBuildFile; fileRef = 6687115509D5E0020003384F /* GLFeedback.h */; };
 		66DA93200ACCDBD300D3E379 /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66DA931E0ACCDBD300D3E379 /* Environment.cpp */; };
@@ -1828,6 +1833,7 @@
 				43A005630960D21300F3BC07 /* osgGA.framework in Copy OSG Frameworks */,
 				43A005640960D21300F3BC07 /* osgText.framework in Copy OSG Frameworks */,
 				43A005650960D21300F3BC07 /* osgUtil.framework in Copy OSG Frameworks */,
+				6673DD8A0BC5FC0900C0131F /* ICreateDocument.h in Copy OSG Frameworks */,
 			);
 			name = "Copy OSG Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2453,7 +2459,7 @@
 		43442F900960A341000A1AB5 /* Enum.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Enum.h; sourceTree = "<group>"; };
 		43442F920960A375000A1AB5 /* Intersect.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Intersect.cpp; sourceTree = "<group>"; };
 		43442F930960A375000A1AB5 /* Intersect.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Intersect.h; sourceTree = "<group>"; };
-		434D2D15095B2CA700642126 /* Helios.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; path = Helios.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		434D2D15095B2CA700642126 /* Helios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Helios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		434D2D71095B2DBC00642126 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		4358F7FC095B32CA008F7E5E /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		4358F7FE095B32DB008F7E5E /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
@@ -3166,6 +3172,15 @@
 		43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libOpenThreadsEx.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		43FEDAEE092454D500EBB610 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Mutex.cpp; path = ../Threads/OpenThreads/Mutex.cpp; sourceTree = SOURCE_ROOT; };
 		43FEDAEF092454D500EBB610 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Mutex.h; path = ../Threads/OpenThreads/Mutex.h; sourceTree = SOURCE_ROOT; };
+		6673DD280BC5F2F800C0131F /* GradientBackground.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = GradientBackground.cpp; sourceTree = "<group>"; };
+		6673DD290BC5F2F800C0131F /* GradientBackground.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GradientBackground.h; sourceTree = "<group>"; };
+		6673DD4C0BC5F87100C0131F /* SceneDocumentBundle.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SceneDocumentBundle.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		6673DD4D0BC5F87100C0131F /* SceneDocumentBundle-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "SceneDocumentBundle-Info.plist"; sourceTree = "<group>"; };
+		6673DD530BC5F96700C0131F /* SceneDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneDocument.h; path = ../Helios/Cocoa/Bundles/SceneDocument/SceneDocument.h; sourceTree = SOURCE_ROOT; };
+		6673DD540BC5F96700C0131F /* SceneDocument.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SceneDocument.mm; path = ../Helios/Cocoa/Bundles/SceneDocument/SceneDocument.mm; sourceTree = SOURCE_ROOT; };
+		6673DD890BC5FC0900C0131F /* ICreateDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ICreateDocument.h; path = ../Helios/Cocoa/Protocol/ICreateDocument.h; sourceTree = SOURCE_ROOT; };
+		6673DD9F0BC60B7800C0131F /* SceneComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneComponent.h; path = ../Helios/Cocoa/Bundles/SceneDocument/SceneComponent.h; sourceTree = SOURCE_ROOT; };
+		6673DDA00BC60B7800C0131F /* SceneComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SceneComponent.m; path = ../Helios/Cocoa/Bundles/SceneDocument/SceneComponent.m; sourceTree = SOURCE_ROOT; };
 		6687115409D5E0020003384F /* GLFeedback.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = GLFeedback.cpp; sourceTree = "<group>"; };
 		6687115509D5E0020003384F /* GLFeedback.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GLFeedback.h; sourceTree = "<group>"; };
 		66DA931E0ACCDBD300D3E379 /* Environment.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Environment.cpp; sourceTree = "<group>"; };
@@ -3787,6 +3802,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6673DD4A0BC5F87100C0131F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8DD76F660486A84900D96B5E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -3813,6 +3835,7 @@
 		08FB7794FE84155DC02AAC07 /* Helios */ = {
 			isa = PBXGroup;
 			children = (
+				6673DD610BC5FAB200C0131F /* SceneDocumentBundle */,
 				4392274B095C9F1B004A602C /* Helios */,
 				437B6C400944A1B700C9F948 /* Resources */,
 				43887E750945DA6B00B519D0 /* X-Window */,
@@ -3825,6 +3848,7 @@
 				431BB9DE09246F3B00ED2131 /* Plugin Libs */,
 				43E1AAF3094619B7007F0715 /* Frameworks/Libs */,
 				43F66685092481C5006DE918 /* Products */,
+				6673DD890BC5FC0900C0131F /* ICreateDocument.h */,
 			);
 			name = Helios;
 			sourceTree = "<group>";
@@ -4864,6 +4888,8 @@
 		43A192F9094F20210029ED97 /* Builders */ = {
 			isa = PBXGroup;
 			children = (
+				6673DD280BC5F2F800C0131F /* GradientBackground.cpp */,
+				6673DD290BC5F2F800C0131F /* GradientBackground.h */,
 				43A192FA094F20210029ED97 /* Arrow.cpp */,
 				43A192FB094F20210029ED97 /* Arrow.h */,
 			);
@@ -5563,6 +5589,7 @@
 				434D2D15095B2CA700642126 /* Helios.app */,
 				4366F2450A158D5500882B30 /* libSceneModel.dylib */,
 				4366F26A0A158D6D00882B30 /* libTriangleModel.dylib */,
+				6673DD4C0BC5F87100C0131F /* SceneDocumentBundle.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -6163,6 +6190,18 @@
 			path = ../Threads/OpenThreads;
 			sourceTree = SOURCE_ROOT;
 		};
+		6673DD610BC5FAB200C0131F /* SceneDocumentBundle */ = {
+			isa = PBXGroup;
+			children = (
+				6673DD530BC5F96700C0131F /* SceneDocument.h */,
+				6673DD540BC5F96700C0131F /* SceneDocument.mm */,
+				6673DD4D0BC5F87100C0131F /* SceneDocumentBundle-Info.plist */,
+				6673DD9F0BC60B7800C0131F /* SceneComponent.h */,
+				6673DDA00BC60B7800C0131F /* SceneComponent.m */,
+			);
+			name = SceneDocumentBundle;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -6282,6 +6321,7 @@
 				66E7B0DD0B1761B600E3D682 /* LegendObject.h in Headers */,
 				66E7B0DF0B1761B600E3D682 /* SolidIcon.h in Headers */,
 				66E7B0E10B1761B600E3D682 /* Text.h in Headers */,
+				6673DD2B0BC5F2F800C0131F /* GradientBackground.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7482,6 +7522,23 @@
 			productReference = 43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
+		6673DD4B0BC5F87100C0131F /* SceneDocumentBundle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6673DD4E0BC5F87200C0131F /* Build configuration list for PBXNativeTarget "SceneDocumentBundle" */;
+			buildPhases = (
+				6673DD480BC5F87100C0131F /* Resources */,
+				6673DD490BC5F87100C0131F /* Sources */,
+				6673DD4A0BC5F87100C0131F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SceneDocumentBundle;
+			productName = SceneDocumentBundle;
+			productReference = 6673DD4C0BC5F87100C0131F /* SceneDocumentBundle.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
 		8DD76F620486A84900D96B5E /* osgfox.exe */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "osgfox.exe" */;
@@ -7590,6 +7647,7 @@
 				431BB8D509246BB300ED2131 /* VolumeDelegate */,
 				431BB8E009246BD700ED2131 /* VolumeModel */,
 				431BB8E909246BF100ED2131 /* VoxelModel */,
+				6673DD4B0BC5F87100C0131F /* SceneDocumentBundle */,
 			);
 		};
 /* End PBXProject section */
@@ -7661,6 +7719,13 @@
 			files = (
 				4337BFE20945DEE20051EE2A /* Helios_app.plist in Resources */,
 				43D72611094DEC32009181E3 /* Helios.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6673DD480BC5F87100C0131F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7776,6 +7841,7 @@
 				66E7B0DC0B1761B600E3D682 /* LegendObject.cpp in Sources */,
 				66E7B0DE0B1761B600E3D682 /* SolidIcon.cpp in Sources */,
 				66E7B0E00B1761B600E3D682 /* Text.cpp in Sources */,
+				6673DD2A0BC5F2F800C0131F /* GradientBackground.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8231,6 +8297,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				43FEDAF5092454D500EBB610 /* Mutex.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6673DD490BC5F87100C0131F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6673DD550BC5F96700C0131F /* SceneDocument.mm in Sources */,
+				6673DDA10BC60B7800C0131F /* SceneComponent.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11252,6 +11327,56 @@
 			};
 			name = Release;
 		};
+		6673DD4F0BC5F87200C0131F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "SceneDocumentBundle-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = SceneDocumentBundle;
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		6673DD500BC5F87200C0131F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "SceneDocumentBundle-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = SceneDocumentBundle;
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -11611,6 +11736,15 @@
 			buildConfigurations = (
 				43FEDAE7092454C300EBB610 /* Debug */,
 				43FEDAE8092454C300EBB610 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6673DD4E0BC5F87200C0131F /* Build configuration list for PBXNativeTarget "SceneDocumentBundle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6673DD4F0BC5F87200C0131F /* Debug */,
+				6673DD500BC5F87200C0131F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

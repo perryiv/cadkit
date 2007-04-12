@@ -109,7 +109,7 @@
   _viewer = new OsgTools::Render::Viewer( _iDocument.get(), context , _bridge->queryInterface(Usul::Interfaces::IUnknown::IID) );
   _viewer->create();
   Usul::Shared::Preferences::instance().setBool ( Usul::Registry::Keys::DISPLAY_LISTS, true );
-  _viewer->setDisplayLists();
+  _viewer->useDisplayLists( true );
 
   
   Usul::Interfaces::IBuildScene::ValidQueryPtr buildScene ( _iDocument );
@@ -755,10 +755,7 @@
 // -----------------------------------------------------------------------------
 - (IBAction) toggleDisplayLists:(id)sender
 {
-  typedef Usul::Shared::Preferences Prefs;
-  bool displayList = Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::DISPLAY_LISTS );
-  Usul::Shared::Preferences::instance().setBool ( Usul::Registry::Keys::DISPLAY_LISTS, !displayList );
-  _viewer->setDisplayLists( );
+  _viewer->useDisplayLists( !_viewer->useDisplayLists() );
   Usul::Interfaces::IBuildScene::ValidQueryPtr buildScene ( _iDocument );
   _viewer->scene ( buildScene->buildScene ( Usul::Documents::Document::Options(), 0x0 ) );
 }

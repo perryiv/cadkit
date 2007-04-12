@@ -15,6 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
+#include <sstream>
 
 #include "OsgTools/Render/Viewer.h"
 
@@ -30,7 +31,11 @@
 #include "Minerva/Core/DB/Connection.h"
 #include "Minerva/Core/postGIS/Point.h"
 
+#include "osg/io_utils"
+
 #include "osgUtil/IntersectVisitor"
+
+using namespace osg;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PlayMovieComponent, PlayMovieComponent::BaseClass );
 
@@ -103,7 +108,7 @@ bool PlayMovieComponent::temporary()
 ///////////////////////////////////////////////////////////////////////////////
 bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool right, bool motion, float x, float y, float z )
 { 
-  #if 0
+  #if 1
   std::cout << "execute: " << std::endl;
   Usul::Interfaces::ISceneIntersect::QueryPtr intersect ( caller );
 
@@ -153,7 +158,10 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
               std::string quadHeight( result[0][4].as< std::string >() );             
               
               // Send command.
-              distributed->playMovie ( position->geometryCenter(), result[0]["width"].as < float > (), result[0]["height"].as < float > (), path );
+              distributed->playMovie( position->geometryCenter(), 
+                                      convertStringToPosition( quadWidth ), 
+                                      convertStringToPosition( quadHeight ), 
+                                      path );
 
               // Play movie on windows side. 
               Usul::Interfaces::IGroup::QueryPtr gr( getDocument->getDocument() );
@@ -186,7 +194,7 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
       }
     }
 #endif
-#if 1
+#if 0
     //else    
 
     static int i = 0;    
@@ -209,7 +217,8 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
     i = ( i + 1 ) % 2;
     
 #endif 
-  //}
+
+  }
 
   return true;
 }
@@ -302,7 +311,7 @@ std::string PlayMovieComponent::getPluginName() const
 
 osg::Vec3f PlayMovieComponent::convertStringToPosition( const std::string& str )
 {
-  osg::Vec3f             resultVec( 0.0, 0.0, 0.0 );  
+  osg::Vec3f resultVec( 0.0, 0.0, 0.0 );
   std::string::size_type loc1, loc2, count; 
   
   loc1  = str.find( "(", 0 );
@@ -314,7 +323,7 @@ osg::Vec3f PlayMovieComponent::convertStringToPosition( const std::string& str )
   
   if( in.good() )
   {
-    in >> resultVec[0] >> resultVec[1] >> resultVec[2];
+    in >> resultVec;
   }               
   
   return resultVec;

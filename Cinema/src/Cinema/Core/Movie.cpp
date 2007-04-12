@@ -303,6 +303,22 @@ void Cinema::Core::Movie::play()
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Stop movie / stream. 
+//
+///////////////////////////////////////////////////////////////////////////////
+void Cinema::Core::Movie::stop()
+{
+  if( 0x00 != mMovieHandler.get() )
+  {
+    this->pause();
+    mRoot->removeChildren( 0, mRoot->getNumChildren() );
+    mMovieHandler->cleanUp();
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Pause movie. 
@@ -346,11 +362,21 @@ void Cinema::Core::Movie::loop( bool val )
   }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// Query if movie is playing. 
+//
+///////////////////////////////////////////////////////////////////////////////
 bool Cinema::Core::Movie::isPlaying()
 {
   return mMovieHandler->isPlaying();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// Query if movie is paused. 
+//
+///////////////////////////////////////////////////////////////////////////////
 bool Cinema::Core::Movie::isPaused()
 {
   return mMovieHandler->isPaused();
@@ -377,6 +403,7 @@ void Cinema::Core::Movie::buildScene()
         return;
       }
 
+      osgDB::DynamicLibrary::loadLibrary( "osgdb_qtd.dll" );
       osg::ref_ptr< osg::Image > image = osgDB::readImageFile( mFileName );
       if( image.valid() )
       {        
@@ -407,27 +434,31 @@ void Cinema::Core::Movie::buildScene()
 
           if( mAllowRotation )
           {
-            osg::ref_ptr< osg::Billboard > bb( new osg::Billboard() );
-            
-            if( !bb.valid() ) return;
+            osg::ref_ptr< osg::Billboard > bb( new osg::Billboard() );            
+
+            if( !bb.valid() ) 
+            {
+              return;
+            }
 
             bb->setMode( osg::Billboard::POINT_ROT_EYE );       
             bb->addDrawable( buildGeometry( image.get() ) );	      
             
             mat->addChild( bb.get() );
-
             mRoot->addChild( mat.get() );
           }      
           else
           {
             osg::ref_ptr< osg::Geode > ge( new osg::Geode() );
 
-            if( !ge.valid() ) return;
+            if( !ge.valid() ) 
+            {
+              return;
+            }
 
             ge->addDrawable( buildGeometry( image.get() ) );
 
             mat->addChild( ge.get() );
-
             mRoot->addChild( mat.get() );
           }
 
@@ -443,12 +474,13 @@ void Cinema::Core::Movie::buildScene()
       }
       else
       {
-        std::cerr << "Error 3393614337: Unable to read file: " << mFileName << std::endl;
+        std::cerr << "Error 3393614337: Unable to read file " << mFileName << std::endl;
       }
     }
   }
   catch(...)
   {
+    std::cerr << "Error 1720237171: Unknown error. " << std::endl;
   }
 }
 

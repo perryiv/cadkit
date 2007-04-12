@@ -32,7 +32,7 @@ struct XineLife
       #ifdef _DEBUG
         osgDB::DynamicLibrary::loadLibrary( "osgdb_qtd.dll" );
       #else
-        osgDB::DynamicLibrary::loadLibrary( "osgdb_qt.dll" );
+        osgDB::DynamicLibrary::loadLibrary( "osgdb_xine.dll" );
       #endif
       #else
         #ifdef _DEBUG 

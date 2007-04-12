@@ -81,8 +81,13 @@ namespace Cinema
 
 
         virtual void                      play();
+
+        virtual void                      stop();
+
         virtual void                      pause();
+
         virtual void                      restart();
+
         virtual void                      loop( bool );
 
         virtual bool                      isPlaying();
@@ -162,7 +167,7 @@ namespace Cinema
 
         virtual ~Movie()
         {
-          mInstance->unref();          
+          mMovieHandler->cleanUp();
         }       
 
         osg::Geometry*                          buildGeometry( osg::Image* );        

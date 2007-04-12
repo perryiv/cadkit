@@ -27,7 +27,7 @@ struct IDistributedVR : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2867749813u };
 
-  virtual void playMovie ( const osg::Vec3f& position, float width, float height, const std::string& path ) = 0;
+  virtual void playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path ) = 0;
   virtual void pause     ( ) = 0;
 
 }; // struct IDistributedVR

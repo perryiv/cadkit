@@ -18,6 +18,7 @@
 
 #include <string>
 #include <fstream>
+#include <stdexcept>
 
 namespace Usul {
 namespace File {

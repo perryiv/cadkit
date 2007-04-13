@@ -43,6 +43,7 @@ Point::Point() :
 BaseClass(),
 _size ( 1.0 ),
 _primitiveId ( 1 ),
+_quality ( 0.80f ),
 _material ( new osg::Material ),
 _mt ( new osg::MatrixTransform )
 {
@@ -256,7 +257,8 @@ osg::Node* Point::_buildSphere()
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
   geode->setUserData( new UserData( this ) );
 
-  OsgTools::ShapeFactory::MeshSize meshSize ( 5, 5 );
+  float size ( 20.0f * this->quality() );
+  OsgTools::ShapeFactory::MeshSize meshSize ( size, size );
   OsgTools::ShapeFactory::LatitudeRange  latRange  ( 89.9f, -89.9f );
   OsgTools::ShapeFactory::LongitudeRange longRange (  0.0f, 360.0f );
 
@@ -351,3 +353,28 @@ osg::Node* Point::_buildCylinder()
 
   return geode.release();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set quality.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Point::quality( float value )
+{
+  _quality = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get quality.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float Point::quality() const
+{
+  return _quality;
+}
+

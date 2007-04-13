@@ -67,6 +67,10 @@ public:
   /// Build the scene branch for the data object.
   virtual osg::Node*    buildScene();
 
+  /// Get/Set quality
+  void                    quality( float value );
+  float                   quality() const;
+
 protected:
 
   // Use reference counting
@@ -84,6 +88,7 @@ protected:
 private:
   float _size;
   unsigned int _primitiveId;
+  float _quality;
 
   osg::ref_ptr < osg::Material >       _material;
   osg::ref_ptr< osg::MatrixTransform >   _mt;

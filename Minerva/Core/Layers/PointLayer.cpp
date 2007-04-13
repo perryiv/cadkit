@@ -32,7 +32,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS( PointLayer, PointLayer::BaseClass );
 PointLayer::PointLayer() : BaseClass(),
 _primitiveID( 2 ),
 _size( 5 ),
-_stackPoints ( false )
+_stackPoints ( false ),
+_quality ( 0.80 )
 {
   this->name( "PointLayer" );
 
@@ -49,7 +50,8 @@ _stackPoints ( false )
 PointLayer::PointLayer ( const PointLayer& layer ) : BaseClass ( layer ),
 _primitiveID( layer._primitiveID ),
 _size( layer._size ),
-_stackPoints ( layer._stackPoints )
+_stackPoints ( layer._stackPoints ),
+_quality( layer._quality )
 {
   this->_registerMembers();
 }
@@ -66,6 +68,7 @@ void PointLayer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _primitiveID );
   SERIALIZE_XML_ADD_MEMBER ( _size );
   SERIALIZE_XML_ADD_MEMBER ( _stackPoints );
+  SERIALIZE_XML_ADD_MEMBER ( _quality );
 }
 
 
@@ -135,6 +138,7 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     data->color( this->_color ( iter ) );
     data->size ( this->size() );
     data->primitiveId ( this->primitiveID() );
+    data->quality ( this->quality() );
     data->renderBin( this->renderBin() );
     data->connection ( this->connection() );
     data->tableName ( dataTable );
@@ -326,4 +330,28 @@ Usul::Interfaces::IUnknown* PointLayer::queryInterface( unsigned long iid )
   default:
     return BaseClass::queryInterface ( iid );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set quality.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointLayer::quality( float value )
+{
+  _quality = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get quality.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float PointLayer::quality() const
+{
+  return _quality;
 }

@@ -69,6 +69,14 @@ namespace DT
         /// Get/Set stack points flag.
         PROPERTY_GET_SET(StackPoints, bool );
 
+        /// Get/Set primitive quality
+        [
+          System::ComponentModel::Category("Primitive"),
+          System::ComponentModel::Description("Quality of primitive"),
+          System::ComponentModel::Browsable(true)
+        ]
+        PROPERTY_GET_SET ( Quality, float );
+
 
         /// <summary>
         /// 

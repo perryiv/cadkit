@@ -11,6 +11,7 @@ INCLUDES = \
 	-I../ \
 	-I$(OSG_INC_DIR) \
 	-I$(USUL_INC_DIR) \
+	-I$(PRODUCER_INC_DIR) \
 	-I$(OPENTHREADS_INC_DIR)
 
 LIBS = \

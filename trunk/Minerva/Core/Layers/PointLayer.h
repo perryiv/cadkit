@@ -53,6 +53,10 @@ public:
   void                    stackPoints ( bool b );
   bool                    stackPoints() const;
 
+  /// Get/Set quality
+  void                    quality( float value );
+  float                   quality() const;
+
 protected:
   virtual ~PointLayer();
 
@@ -67,6 +71,7 @@ private:
   Usul::Types::Uint32 _primitiveID;
   float _size;
   bool _stackPoints;
+  float _quality;
 
   SERIALIZE_XML_CLASS_NAME ( PointLayer );
 };

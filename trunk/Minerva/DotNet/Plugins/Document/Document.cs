@@ -185,7 +185,7 @@ namespace DT.Minerva.Plugins.Document
     public void resize(object sender, System.EventArgs e)
     {
       System.Windows.Forms.Form form = sender as System.Windows.Forms.Form;
-      if (null != form)
+      if (null != form && null != _dll)
       {
         _dll.resize(form.Size.Width, form.Size.Height);
       }

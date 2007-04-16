@@ -9,14 +9,16 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Scene/SceneManager.h"
-#include "Minerva/Core/DataObjects/DataObject.h"
+
+#include "Usul/Interfaces/IVectorLayer.h"
+#include "Usul/Interfaces/ITemporalData.h"
+#include "Usul/Interfaces/IAddRowLegend.h"
 
 #include "OsgTools/Animate/AnimationCallback.h"
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Font.h"
 
 #include "osg/Geode"
-#include "osg/MatrixTransform"
 #include "osg/Material"
 #include "osg/Sequence"
 #include "osg/Version"
@@ -44,8 +46,6 @@ _mutex(),
 _root ( new osg::Group ),
 _static_root( new osg::Group ),
 _projectionNode ( new osg::Projection ),
-_updateNode ( new osg::MatrixTransform ),
-_displayNode ( new osg::Geode ),
 _animateNode ( new OsgTools::Animate::DateGroup ),
 _layers(),
 _dirty ( true ),
@@ -57,15 +57,10 @@ _legendWidth ( 0.20f ),
 _legendHeightPerItem ( 30 ),
 _legendPadding ( 20.0f, 20.0f )
 {
-  _updateNode->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-
   // Make sure it draws last and without depth testing.
   osg::ref_ptr< osg::StateSet > ss ( _projectionNode->getOrCreateStateSet() );
   ss->setRenderBinDetails( 1000, "RenderBin" );
   ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
-
-  _projectionNode->addChild( _updateNode.get() );
-  _projectionNode->addChild( _displayNode.get() );
 
   osg::ref_ptr< osg::Light > light ( new osg::Light );
   light->setLightNum ( 1 );
@@ -109,43 +104,31 @@ void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
     _root->removeChild( 0, _root->getNumChildren() );
     _static_root->removeChild( 0, _static_root->getNumChildren() );
     _projectionNode->removeChild ( 0, _projectionNode->getNumChildren() );
-    _animateNode->removeChild ( 0, _projectionNode->getNumChildren() );
+    _animateNode->removeChild ( 0, _animateNode->getNumChildren() );
+
+    // Set up animation node.
+    this->_setUpAnimationNode();
 
     // Loop throught the layers
     for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
     {
       if( iter->second->showLayer() )
       {
-        _legend->addLegendObject( iter->second->legendObject() );
-        osg::ref_ptr < osg::Group > group ( new osg::Group );
-
-        if( iter->second->isTemporal() )
+        Usul::Interfaces::IVectorLayer::QueryPtr vector ( iter->second.get() );
+        if( vector.valid() )
         {
-          iter->second->buildScene ( _animateNode.get() );
+          Usul::Interfaces::ITemporalData::QueryPtr temporal ( vector );
 
-          osg::ref_ptr < osgText::Text > text ( new osgText::Text );
-
-          text->setFont( OsgTools::Font::defaultFont() );
-          text->setPosition ( osg::Vec3( 5.0, _height - 25.0, 0.0 ) );
-          text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
-          text->setText ( "" );
-
-          osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-          geode->addDrawable( text.get() );
-
-          osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-          mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-          mt->addChild( geode.get() );
-
-          _projectionNode->addChild ( mt.get() );
-
-          _animateNode->setText( text.get() );
-        }
-        else
-        {
-          osg::ref_ptr< osg::Group > group ( new osg::Group );
-          iter->second->buildScene( group.get() );
-          _static_root->addChild( group.get() );
+          if( temporal.valid() )
+          {
+            vector->buildScene ( _animateNode.get() );
+          }
+          else
+          {
+            osg::ref_ptr< osg::Group > group ( new osg::Group );
+            vector->buildScene( group.get() );
+            _static_root->addChild( group.get() );
+          }
         }
       }
     }
@@ -154,32 +137,81 @@ void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
     _root->addChild( _static_root.get() );
     _root->addChild ( _projectionNode.get() );
 
-    if( this->showLegend() )
-    {
-      // Set the legend size.
-      unsigned int legendWidth  ( static_cast < unsigned int > ( _width * _legendWidth ) );
-      unsigned int legendHeight ( static_cast < unsigned int > ( _height - ( _legendPadding.y() * 2 ) ) );
-
-      _legend->maximiumSize( legendWidth, legendHeight );
-      _legend->heightPerItem( _legendHeightPerItem );
-
-      // Translate legend to correct location.
-      unsigned int xTranslate ( static_cast < unsigned int > ( _width - ( legendWidth + _legendPadding.x() ) ) );
-      unsigned int yTranslate ( static_cast < unsigned int > ( _legendPadding.y() ) );
-      _legend->position( xTranslate, yTranslate );
-
-      // Build the legend.
-      _projectionNode->addChild( _legend->buildScene() );
-    }
-
-    _projectionNode->addChild( _updateNode.get() );
-    _projectionNode->addChild( _displayNode.get() );
+    /// Build the legend.
+    this->_buildLegend();
 
     _root->dirtyBound();
     _static_root->dirtyBound();
     _projectionNode->dirtyBound();
 
     this->dirty( false );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set up the animation node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SceneManager::_setUpAnimationNode()
+{
+  osg::ref_ptr < osgText::Text > text ( new osgText::Text );
+
+  text->setFont( OsgTools::Font::defaultFont() );
+  text->setPosition ( osg::Vec3( 5.0, _height - 25.0, 0.0 ) );
+  text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
+  text->setText ( "" );
+
+  osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+  geode->addDrawable( text.get() );
+
+  osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+  mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+  mt->addChild( geode.get() );
+
+  _projectionNode->addChild ( mt.get() );
+
+  _animateNode->setText( text.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SceneManager::_buildLegend()
+{
+  if( this->showLegend() )
+  {
+    // Set the legend size.
+    unsigned int legendWidth  ( static_cast < unsigned int > ( _width * _legendWidth ) );
+    unsigned int legendHeight ( static_cast < unsigned int > ( _height - ( _legendPadding.y() * 2 ) ) );
+
+    _legend->maximiumSize( legendWidth, legendHeight );
+    _legend->heightPerItem( _legendHeightPerItem );
+
+    // Translate legend to correct location.
+    unsigned int xTranslate ( static_cast < unsigned int > ( _width - ( legendWidth + _legendPadding.x() ) ) );
+    unsigned int yTranslate ( static_cast < unsigned int > ( _legendPadding.y() ) );
+    _legend->position( xTranslate, yTranslate );
+
+    for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
+    {
+      Usul::Interfaces::IAddRowLegend::QueryPtr addRow ( iter->second.get() );
+      if( iter->second->showLayer() && addRow.valid() )
+      {
+        OsgTools::Legend::LegendObject::RefPtr row ( new OsgTools::Legend::LegendObject );
+        addRow->addLegendRow( row.get() );
+        _legend->addLegendObject( row.get() );
+      }
+    }
+
+    // Build the legend.
+    _projectionNode->addChild( _legend->buildScene() );
   }
 }
 
@@ -272,110 +304,6 @@ void SceneManager::clear()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build a hud for feedback.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::addFeedbackHud( int width, int height )
-{
-  Guard guard ( _mutex );
-
-  _updateNode->removeChild( 0, _updateNode->getNumChildren() );
-
-  // Base update text.
-  std::string updateText ( "Updating" );
-  
-  // Create static message.  This is because before the sequence starts the loop over again,
-  // it doesn't draw anything.
-  {
-    osg::ref_ptr < osgText::Text > text ( new osgText::Text );
-
-    text->setFont( OsgTools::Font::defaultFont() );
-    text->setPosition ( osg::Vec3( 5.0, height - 25.0, 0.0 ) );
-    text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
-
-    text->setText ( updateText );
-
-    osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-    geode->addDrawable ( text.get() );
-
-    _updateNode->addChild( geode.get() );
-  }
-
-  // Create sequence for adding dots.
-	osg::ref_ptr < osg::Sequence > animation ( new osg::Sequence );
-
-  for( unsigned int i = 0; i < 4; ++i )
-  {
-    osg::ref_ptr < osgText::Text > text ( new osgText::Text );
-
-    text->setFont( OsgTools::Font::defaultFont() );
-    text->setPosition ( osg::Vec3( 5.0, height - 25.0, 0.0 ) );
-    text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
-
-    text->setText ( updateText );
-
-    osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-    geode->addDrawable ( text.get() );
-
-	  animation->addChild( geode.get() );
-	  animation->setTime( i, 1.0f );
-
-    updateText += ".";
-  }
-
-  animation->setDuration( 0.5 );
-  animation->setInterval( osg::Sequence::LOOP, 0, animation->getNumChildren() );
-  animation->setMode( osg::Sequence::START );
-
-  _updateNode->addChild ( animation.get() );  
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove the feed back hud.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::removeFeedbackHud( )
-{
-  Guard guard ( _mutex );
-
-  _updateNode->removeChild( 0, _updateNode->getNumChildren() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the display text.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::setDisplayText ( const std::string& displayText )
-{
-  Guard guard ( _mutex );
-
-  osg::ref_ptr < osgText::Text > text ( new osgText::Text );
-
-  text->setFont( OsgTools::Font::defaultFont() );
-  text->setPosition ( osg::Vec3( 5.0, 10.0, 0.0 ) );
-  text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
-
-  text->setText ( displayText );
-
-#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR >= 1
-  _displayNode->removeDrawables( 0, _displayNode->getNumDrawables() );
-#else
-  _displayNode->removeDrawable( 0, _displayNode->getNumDrawables() );
-#endif
-
-  _displayNode->addDrawable( text.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Resize.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -399,7 +327,7 @@ void SceneManager::resize( unsigned int width, unsigned int height )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SceneManager::addLayer ( Minerva::Core::Layers::Layer *layer )
+void SceneManager::addLayer ( Layer *layer )
 {
   Guard guard ( _mutex );
 
@@ -451,7 +379,7 @@ bool SceneManager::hasLayer ( const std::string& guid ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Minerva::Core::Layers::Layer *  SceneManager::getLayer ( const std::string& guid )
+SceneManager::Layer *  SceneManager::getLayer ( const std::string& guid )
 {
   Guard guard ( _mutex );
 
@@ -481,7 +409,6 @@ Usul::Interfaces::IUnknown *SceneManager::queryInterface ( unsigned long iid )
   default:
     return 0x0;
   }
-  
 }
 
 

@@ -58,10 +58,11 @@ public:
 
       // Add value (the smart-pointer)
       {
+        typedef Serialize::XML::TypeWrapper< typename T::mapped_type > TypeWrapper;
         XmlTree::Node::ValidRefPtr value ( new XmlTree::Node ( "value" ) );
-        value->attributes()["TypeName"] = i->second->className();
+        TypeWrapper::addAtribute ( "TypeName", TypeWrapper::className ( i->second ), *value );
         element->children().push_back ( value.get() );
-        i->second->serialize ( *value );
+        TypeWrapper::serialize ( i->second, *value );
       }
     }
   }
@@ -72,6 +73,7 @@ public:
     typedef typename T::value_type ValueType;
     typedef typename T::mapped_type PointerType;
     typedef typename PointerType::element_type ObjectType;
+    typedef Serialize::XML::TypeWrapper< PointerType > TypeWrapper;
 
     if ( this->name() != node.name() )
       return;
@@ -95,23 +97,20 @@ public:
             const std::string keyString ( elementKey->value() );
             if ( false == keyString.empty() )
             {
-              XmlTree::Node::Attributes::const_iterator j = elementValue->attributes().find ( "TypeName" );
-              if ( elementValue->attributes().end() != j )
+              std::string typeName ( "" );
+              TypeWrapper::getAttribute ( "TypeName", *elementValue, typeName );
+              PointerType object ( TypeWrapper::create ( typeName ) );
+              if ( true == object.valid() )
               {
-                const std::string typeName ( j->second );
-                PointerType object ( dynamic_cast < ObjectType * > ( Factory::instance().create ( typeName ) ) );
-                if ( true == object.valid() )
-                {
-                  // Ask object to populate itself.
-                  object->deserialize ( *elementValue );
+                // Ask object to populate itself.
+                TypeWrapper::deserialize ( *elementValue, object );
 
-                  // Erase existing value so that insert statement always works.
-                  _value.erase ( keyString );
+                // Erase existing value so that insert statement always works.
+                _value.erase ( keyString );
 
-                  // Use insert statement instead of [] operator because the 
-                  // smart-pointer may be a ValidRefPtr.
-                  _value.insert ( ValueType ( keyString, object ) );
-                }
+                // Use insert statement instead of [] operator because the 
+                // smart-pointer may be a ValidRefPtr.
+                _value.insert ( ValueType ( keyString, object ) );
               }
             }
           }

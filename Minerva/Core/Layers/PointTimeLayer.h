@@ -13,8 +13,12 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/Core/Interfaces.h"
 
 #include "OsgTools/Animate/Date.h"
+
+#include "Usul/Interfaces/IPointLayer.h"
+#include "Usul/Interfaces/ITemporalData.h"
 
 #include <map>
 
@@ -22,7 +26,10 @@ namespace Minerva {
 namespace Core {
 namespace Layers {
 
-class MINERVA_EXPORT PointTimeLayer : public Minerva::Core::Layers::Layer
+class MINERVA_EXPORT PointTimeLayer : public Minerva::Core::Layers::Layer,
+                                      public Usul::Interfaces::IPointLayer,
+                                      public Usul::Interfaces::ITemporalData,
+                                      public Minerva::Core::IPointTimeLayerRawPointer
 {
 public:
   typedef Minerva::Core::Layers::Layer BaseClass;
@@ -33,10 +40,10 @@ public:
     ATTRIBUTE
   };
 
-  PointTimeLayer();
+  USUL_DECLARE_QUERY_POINTERS ( PointTimeLayer );
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  /// Clone the this layer.
-  virtual Layer*              clone() const;
+  PointTimeLayer();
 
   /// Get/Set First date column name.
   void                    firstDateColumn( const std::string& );
@@ -95,6 +102,12 @@ protected:
   std::string             _whereClause() const;
 
   void _registerMembers();
+
+  virtual PointTimeLayer*         getRawPointer();
+  virtual const PointTimeLayer*   getRawPointer() const;
+
+  /// Clone the this layer.
+  virtual Usul::Interfaces::IUnknown*          clone() const;
 
 private:
 

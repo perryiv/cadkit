@@ -39,15 +39,12 @@ namespace DT
             void                  saveAs( System::String^ filename );
 		        
             void                  removeLayer ( CadKit::Interfaces::ILayer ^layer );
-            void                  hideLayer ( CadKit::Interfaces::ILayer ^layer );
-            void                  showLayer ( CadKit::Interfaces::ILayer ^layer );
-            void                  addLayer   ( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progess );
+            void                  hideLayer   ( CadKit::Interfaces::ILayer ^layer );
+            void                  showLayer   ( CadKit::Interfaces::ILayer ^layer );
+            void                  addLayer    ( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progess );
             void                  modifyLayer ( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progess );
 
             void                  viewLayerExtents ( CadKit::Interfaces::ILayer ^layer );
-
-            void                  addLayer       ( CadKit::Interfaces::IOssimLayer ^ layer );
-            void                  removeLayer    ( CadKit::Interfaces::IOssimLayer ^ layer );
       
             void                  setLayerOperation( System::String^ optype, int val, CadKit::Interfaces::ILayer^ layer );
 
@@ -96,6 +93,12 @@ namespace DT
             property array<System::String^ > ^ Favorites
             {
               array<System::String^ > ^ get();
+            }
+
+
+            property array<CadKit::Interfaces::ILayer^ > ^ Layers
+            {
+              array<CadKit::Interfaces::ILayer^ > ^ get();
             }
 
             void                  setMovieMode( bool b, CadKit::Viewer::Glue::Viewer ^viewer );

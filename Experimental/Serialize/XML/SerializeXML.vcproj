@@ -287,6 +287,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\QueryPointerMember.h"
+					>
+				</File>
+				<File
 					RelativePath=".\SequenceMember.h"
 					>
 				</File>
@@ -296,6 +300,22 @@
 				</File>
 				<File
 					RelativePath=".\SmartPointerMember.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Functions"
+				>
+				<File
+					RelativePath=".\BuiltInType.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SmartPointer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\StandardString.h"
 					>
 				</File>
 			</Filter>

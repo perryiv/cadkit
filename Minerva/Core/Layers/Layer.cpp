@@ -17,8 +17,6 @@
 #include "osg/Group"
 #include "osg/MatrixTransform"
 
-#include "Serialize/XML/RegisterCreator.h"
-
 #include <algorithm>
 #include <functional>
 #include <iostream>
@@ -734,7 +732,7 @@ bool Layer::customQuery() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& Layer::guid() const
+std::string Layer::guid() const
 {
   return _guid;
 }
@@ -775,7 +773,7 @@ void Layer::_updateLegendObject()
   try
   {
     if( 0x0 != this->colorFunctor() )
-      this->legendObject()->icon ( this->colorFunctor()->icon( this ) );
+      this->legendObject()->icon ( this->colorFunctor()->icon( this->queryInterface( Usul::Interfaces::IUnknown::IID ) ) );
 
     // One columns for the text
     this->legendObject()->columns ( 1 );
@@ -815,7 +813,82 @@ Usul::Interfaces::IUnknown* Layer::queryInterface( unsigned long iid )
   case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::ILayer::IID:
     return static_cast < Usul::Interfaces::ILayer* > ( this );
+  case Usul::Interfaces::IVectorLayer::IID:
+    return static_cast < Usul::Interfaces::IVectorLayer* > ( this );
+  case Usul::Interfaces::IAddRowLegend::IID:
+    return static_cast < Usul::Interfaces::IAddRowLegend* > ( this );
+  case Usul::Interfaces::ISerialize::IID:
+    return static_cast < Usul::Interfaces::ISerialize* > ( this );
+  case Usul::Interfaces::IClonable::IID:
+    return static_cast < Usul::Interfaces::IClonable* > ( this );
   default:
     return 0x0;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the vector data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::buildVectorData  ( Usul::Interfaces::IUnknown *caller )
+{
+  if( true == _query.empty() && false == this->customQuery() )
+    _query = this->defaultQuery();
+  this->buildDataObjects( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Modify the vector data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::modifyVectorData ( Usul::Interfaces::IUnknown *caller )
+{
+  this->modify ( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a legend row.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
+{
+  try
+  {
+    if( 0x0 != row )
+    {
+      if( 0x0 != this->colorFunctor() )
+        row->icon ( this->colorFunctor()->icon( this->queryInterface( Usul::Interfaces::IUnknown::IID ) ) );
+
+      // One columns for the text
+      row->columns ( 1 );
+      row->at ( 0 )->text ( this->legendText() );
+      
+
+      if( this->showCountLegend() )
+      {
+        row->columns ( this->legendObject()->columns() + 1 );
+        row->at ( 1 )->text ( Usul::Functions::toString( this->number() ) );
+        row->percentage( 1 ) = 0.20;
+      }
+
+      row->percentage( 0 ) = 0.80;
+    }
+  }
+  catch ( const std::exception& e )
+  {
+    std::cout << "Error 3665976713: " << e.what() << std::endl;
+  }
+  catch ( ... )
+  {
+    std::cout << "Error 4254986090: Unknown exception caught." << std::endl;
   }
 }

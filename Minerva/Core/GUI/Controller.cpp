@@ -214,7 +214,7 @@ void Controller::_executeEventTableQuery( int type, int eventId )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Controller::removeLayer( Minerva::Core::Layers::Layer *layer )
+void Controller::removeLayer( Usul::Interfaces::ILayer *layer )
 {
   int eventId ( this->_executeLayerQuery( layer ) );
 
@@ -228,7 +228,7 @@ void Controller::removeLayer( Minerva::Core::Layers::Layer *layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Controller::modifyLayer( Minerva::Core::Layers::Layer *layer )
+void Controller::modifyLayer( Usul::Interfaces::ILayer *layer )
 {
   this->showLayer( layer );
 }
@@ -240,7 +240,7 @@ void Controller::modifyLayer( Minerva::Core::Layers::Layer *layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Controller::_executeLayerQuery( Minerva::Core::Layers::Layer *layer )
+int Controller::_executeLayerQuery( Usul::Interfaces::ILayer *layer )
 {
   // Create the xml string.
   std::string xml ( Minerva::Core::serialize( layer ) );
@@ -262,7 +262,7 @@ int Controller::_executeLayerQuery( Minerva::Core::Layers::Layer *layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Controller::showLayer ( Minerva::Core::Layers::Layer *layer )
+int Controller::showLayer ( Usul::Interfaces::ILayer *layer )
 {
   int eventId ( this->_executeLayerQuery( layer ) );
 

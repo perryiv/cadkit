@@ -38,6 +38,7 @@ public:
 
   USUL_DECLARE_REF_POINTERS ( TypeCreator );
   typedef BaseCreator BaseClass;
+  typedef T ObjectType;
 
   TypeCreator ( const std::string &name ) : BaseClass ( name )
   {

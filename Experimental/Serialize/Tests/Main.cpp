@@ -14,12 +14,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Serialize/XML/Serialize.h"
-#include "Serialize/XML/Deserialize.h"
 #include "Serialize/XML/RegisterCreator.h"
 #include "Serialize/XML/SimpleDataMember.h"
 #include "Serialize/XML/DataMemberMap.h"
 #include "Serialize/XML/Macros.h"
+#include "Serialize/XML/Serialize.h"
+#include "Serialize/XML/Deserialize.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Base/Referenced.h"
@@ -423,12 +423,12 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Usul::Math::Vec4d );
-SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Usul::Math::Vec4f );
-SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( Usul::Math::Vec3d );
-SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( Usul::Math::Vec3f );
-SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2d );
-SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2f );
+//SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Usul::Math::Vec4d );
+//SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Usul::Math::Vec4f );
+//SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( Usul::Math::Vec3d );
+//SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( Usul::Math::Vec3f );
+//SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2d );
+//SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2f );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -553,8 +553,8 @@ void _run()
   _registerTypes();
 
   // Run the tests.
-  //_test1();
-  _test2();
+  _test1();
+  //_test2();
 }
 
 

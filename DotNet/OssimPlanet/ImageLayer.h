@@ -10,7 +10,7 @@
 
 #pragma once
 
-class ossimPlanetTextureLayer;
+namespace Magrathea { class ImageTextureLayer; }
 
 namespace CadKit
 {
@@ -26,6 +26,7 @@ namespace CadKit
       {
       public:
         ImageLayer( System::String^ );
+        ImageLayer( Magrathea::ImageTextureLayer* );
         ~ImageLayer();
         !ImageLayer();
 
@@ -45,10 +46,14 @@ namespace CadKit
           TextureLayerStateCode get();
         }
 
+        property System::String^ Guid
+        {
+          virtual System::String^ get();
+        }
+
         property System::String^ Name
         {
           virtual System::String^ get();
-          virtual void set ( System::String^ s );
         }
         
         property bool Shown
@@ -56,23 +61,9 @@ namespace CadKit
           virtual bool get();
         }
 
-        property bool NeedsUpdate 
-        { 
-          virtual bool get(); 
-          virtual void set( bool b ); 
-        }
-
-        virtual void show();
-        virtual void modify();
-        virtual void hide();
-        virtual void addToFavorites();
-
-        ossimPlanetTextureLayer*         nativePtr();
         virtual System::IntPtr           nativeIntPtr();
       private:
-        ossimPlanetTextureLayer* _layer;
-
-        System::String^ _name;
+        Magrathea::ImageTextureLayer* _imageLayer;
       };
     }
   }

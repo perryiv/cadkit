@@ -17,6 +17,7 @@
 #ifndef __USUL_COMMAND_LINE_OPTIONS_H__
 #define __USUL_COMMAND_LINE_OPTIONS_H__
 
+#include "Usul/Export/Export.h"
 
 #include <map>
 #include <string>
@@ -25,7 +26,7 @@
 namespace Usul {
 namespace CommandLine {
 
-class Options
+class USUL_EXPORT Options
 {
  public:
   typedef std::map < std::string, std::string > Map;
@@ -74,7 +75,7 @@ class Options
   Map _options;
 };
 
- std::istream& operator>>( std::istream& in, Options& o );
+USUL_EXPORT std::istream& operator>>( std::istream& in, Options& o );
 
 }
 }

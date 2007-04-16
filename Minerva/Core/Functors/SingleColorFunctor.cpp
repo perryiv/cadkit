@@ -16,8 +16,6 @@
 #include "Usul/Interfaces/ILineLayer.h"
 #include "Usul/Interfaces/IPolygonLayer.h"
 
-#include "Serialize/XML/RegisterCreator.h"
-
 #include "osg/Geometry"
 #include "osg/Array"
 

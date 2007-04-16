@@ -36,9 +36,6 @@ public:
 
   PolygonTimeLayer();
 
-  /// Clone the this layer.
-  virtual Layer*              clone() const;
-
   enum Mode
   {
     DATE,
@@ -89,7 +86,10 @@ protected:
   void                    _buildSceneDateMode   ( osg::Group* parent );
   void                    _buildSceneNumberMode ( osg::Group* parent );
 
-  void _registerMembers();
+  void                    _registerMembers();
+
+  /// Clone the this layer.
+  virtual Usul::Interfaces::IUnknown*              clone() const;
 
 private:
 

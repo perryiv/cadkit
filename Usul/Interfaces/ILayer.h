@@ -13,6 +13,8 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
+#include <string>
+
 namespace Usul {
 namespace Interfaces {
 
@@ -24,6 +26,16 @@ struct ILayer : public Usul::Interfaces::IUnknown
 
   /// Id for this interface.
   enum { IID = 1743049682u };
+
+  /// Return by copy incase a guid is hard coded.
+  virtual std::string                 guid() const = 0;
+
+  /// Get the name.
+  virtual const std::string&          name() const = 0;
+
+  /// Get/Set show layer
+  virtual void                        showLayer( bool b ) = 0;
+  virtual bool                        showLayer() const = 0;
 
 }; // struct ILayer
 

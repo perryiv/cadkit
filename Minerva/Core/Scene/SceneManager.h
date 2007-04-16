@@ -18,14 +18,12 @@
 #define __MINERVA_SCENE_MANAGER_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Core/DataObjects/DataObject.h"
-#include "Minerva/Core/DataObjects/PointTime.h"
-#include "Minerva/Core/Layers/Layer.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Interfaces/ISceneUpdate.h"
+#include "Usul/Interfaces/ILayer.h"
 
 #include "OsgTools/Legend/Legend.h"
 #include "OsgTools/Animate/DateGroup.h"
@@ -33,12 +31,9 @@
 #include "osg/ref_ptr"
 #include "osg/Group"
 #include "osg/Array"
-#include "osg/PrimitiveSet"
-#include "osg/Sequence"
 #include "osg/Node"
 #include "osg/Projection"
 #include "osg/MatrixTransform"
-
 
 #include <map>
 
@@ -50,11 +45,12 @@ class MINERVA_EXPORT SceneManager : public Usul::Base::Referenced,
                                     public Usul::Interfaces::ISceneUpdate
 {
 public:
-  /// Typedefs
+
+  /// Typedefs.
   typedef Usul::Base::Referenced         BaseClass;
   typedef Usul::Threads::RecursiveMutex  Mutex;
   typedef Usul::Threads::Guard< Mutex >  Guard;
-  typedef Minerva::Core::Layers::Layer   Layer;
+  typedef Usul::Interfaces::ILayer       Layer;
  
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( SceneManager );
@@ -66,7 +62,7 @@ public:
   SceneManager();
 
   /// Build the scene.
-  void                       buildScene( Usul::Interfaces::IUnknown *caller = 0x0);
+  void                       buildScene( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   /// Get the root.
   osg::Node*                 root() { return _root.get(); }
@@ -79,10 +75,6 @@ public:
 
   /// Resize
   void                       resize( unsigned int width, unsigned int height );
-
-  /// Show the feedback hud.
-  void                       addFeedbackHud( int width, int height );
-  void                       removeFeedbackHud( );
 
   /// Get/Set the dirty flag.
   bool                       dirty() const;
@@ -97,8 +89,6 @@ public:
 
   /// Clear the internal state.
   void                       clear();
-
-  void                       setDisplayText ( const std::string& text );
 
   /// Toggle the legend on and off.
   bool                       showLegend() const;
@@ -122,9 +112,11 @@ protected:
 
   virtual void sceneUpdate( Usul::Interfaces::IUnknown *caller = 0x0 );
   
+  void                       _setUpAnimationNode();
+  void                       _buildLegend();
 private:
 
-  typedef std::map < std::string, Layer::RefPtr >               Layers;
+  typedef std::map < std::string, Layer::QueryPtr >               Layers;
 
   // The mutex.
   Mutex _mutex;
@@ -133,8 +125,6 @@ private:
   osg::ref_ptr < osg::Group >                    _root;			// The root node of the scene graph
   osg::ref_ptr < osg::Group >                    _static_root;		// The parent node for all static data
   osg::ref_ptr < osg::Projection >               _projectionNode;
-  osg::ref_ptr < osg::MatrixTransform >          _updateNode;
-  osg::ref_ptr < osg::Geode >                    _displayNode;
   osg::ref_ptr < OsgTools::Animate::DateGroup >  _animateNode;
 
   Layers _layers;

@@ -49,6 +49,7 @@ Usul::Threads::SetMutexFactory factory ( &Usul::Threads::newSingleThreadedMutexS
 
 void _run()
 {
+#if 0
   Usul::Interfaces::IUnknown::QueryPtr unknown ( create() );
 
   // Write objects to file.
@@ -76,6 +77,7 @@ void _run()
     std::cout << "Comparing " << FILE_NAME_1 << " and " << FILE_NAME_2 << std::endl;
     USUL_ASSERT ( file1.compare ( file2 ) == 0 );
   }
+#endif
 }
 
 

@@ -14,15 +14,10 @@
 
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
-
-#include "Minerva/Core/Layers/LineLayer.h"
-#include "Minerva/Core/Layers/PolygonLayer.h"
-#include "Minerva/Core/Layers/PointLayer.h"
-#include "Minerva/Core/Layers/PointTimeLayer.h"
-#include "Minerva/Core/Layers/RLayer.h"
-#include "Minerva/Core/Layers/PolygonTimeLayer.h"
-
+#include "Usul/Interfaces/IOssimPlanetLayer.h"
 #include "Usul/Interfaces/IPlayMovie.h"
+#include "Usul/Interfaces/ILayerExtents.h"
+#include "Usul/Interfaces/IClonable.h"
 
 using namespace Minerva::Document;
 
@@ -38,6 +33,7 @@ USUL_IMPLEMENT_TYPE_ID ( MinervaDocument );
 ///////////////////////////////////////////////////////////////////////////////
 
 MinervaDocument::MinervaDocument() : BaseClass( "Minerva Document" ),
+_layers(),
 _favorites(),
 _sceneManager ( new Minerva::Core::Scene::SceneManager ),
 _planet ( new Magrathea::Planet ),
@@ -48,6 +44,7 @@ _distributed ( new Minerva::Core::GUI::Controller )
   _planet->init();
   _planet->root()->addChild( _sceneManager->root() );
 
+  SERIALIZE_XML_ADD_MEMBER ( _layers );
   SERIALIZE_XML_ADD_MEMBER ( _favorites );
   SERIALIZE_XML_ADD_MEMBER ( _useDistributed );
   SERIALIZE_XML_ADD_MEMBER ( _sessionName );
@@ -267,113 +264,20 @@ osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unk
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Remove the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::removeLayer ( Minerva::Core::Layers::Layer * layer )
-{
-  _sceneManager->removeLayer( layer->guid() );
-  this->modified( true );
-  this->_removeLayerDistributed( layer );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Hide the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::hideLayer   ( Minerva::Core::Layers::Layer * layer )
-{
-  layer->showLayer ( false );
-  _sceneManager->dirty( true );
-  this->_removeLayerDistributed( layer );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Show the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::showLayer   ( Minerva::Core::Layers::Layer * layer )
-{
-  layer->showLayer ( true );
-  _sceneManager->dirty( true );
-  this->_showLayerDistributed( layer );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::addLayer   ( Minerva::Core::Layers::Layer * layer, Unknown *caller )
-{
-  layer->buildDataObjects( caller );
-  _sceneManager->addLayer( layer );
-  this->_showLayerDistributed( layer );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Modify the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::modifyLayer ( Minerva::Core::Layers::Layer * layer, Unknown *caller )
-{
-  layer->modify( caller );
-  this->_modifyLayerDistributed( layer );
-  _sceneManager->dirty( true );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  View the layer extents.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::viewLayerExtents ( ossimPlanetTextureLayer * layer )
+void MinervaDocument::viewLayerExtents ( Usul::Interfaces::IUnknown * layer )
 {
-  if( 0x0 != layer )
+  Usul::Interfaces::ILayerExtents::QueryPtr extents ( layer );
+  if ( extents.valid() )
   {
     double lat ( 0.0 ), lon ( 0.0 ), height ( 0.0 );
 
-    layer->getCenterLatLonLength( lat, lon, height );
+    extents->layerExtents( lat, lon, height );
     _planet->gotoLocation ( lat, lon, height );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add an ossimPlanet texture layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::addLayer       ( ossimPlanetTextureLayer * layer )
-{
-  _planet->addLayer( layer );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove an ossimPlanet texture layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::removeLayer    ( ossimPlanetTextureLayer * layer )
-{
-  _planet->removeLayer( layer );
 }
 
 
@@ -798,9 +702,12 @@ void MinervaDocument::viewer( Usul::Interfaces::IUnknown *viewer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::addToFavorites( Minerva::Core::Layers::Layer* layer )
+void MinervaDocument::addToFavorites( Usul::Interfaces::IUnknown* unknown )
 {
-  _favorites[layer->name()] = layer;
+  Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
+
+  if( layer.valid() )
+    _favorites[layer->name()] = layer;
 }
 
 
@@ -810,11 +717,29 @@ void MinervaDocument::addToFavorites( Minerva::Core::Layers::Layer* layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Minerva::Core::Layers::Layer * MinervaDocument::createFavorite( const std::string& name ) const
+Usul::Interfaces::IUnknown * MinervaDocument::createFavorite( const std::string& name ) const
 {
   Favorites::const_iterator iter = _favorites.find( name );
   if( iter != _favorites.end() )
-    return iter->second->clone();
+  {
+    Usul::Interfaces::IClonable::QueryPtr clonable ( const_cast < Usul::Interfaces::ILayer* > ( iter->second.get() ) );
+
+    if( clonable.valid() )
+    {
+      /// Clone the "template"
+      //Usul::Interfaces::IUnknown::QueryPtr clone ( clonable->clone() );
+
+      Usul::Interfaces::ILayer::QueryPtr layer ( clonable->clone() );
+
+      /// Make sure that the favorite is shown.
+      if( layer.valid() )
+        layer->showLayer( true );
+
+      /// Return the layer we created.
+      return layer.release();
+    }
+  }
+
   return 0x0;
 }
 
@@ -859,7 +784,7 @@ void MinervaDocument::_connectToDistributedSession()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::_removeLayerDistributed( Minerva::Core::Layers::Layer *layer )
+void MinervaDocument::_removeLayerDistributed( Usul::Interfaces::ILayer *layer )
 {
   if( _useDistributed )
   {
@@ -877,7 +802,7 @@ void MinervaDocument::_removeLayerDistributed( Minerva::Core::Layers::Layer *lay
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::_showLayerDistributed ( Minerva::Core::Layers::Layer *Layer )
+void MinervaDocument::_showLayerDistributed ( Usul::Interfaces::ILayer *Layer )
 {
   if ( _useDistributed )
   {
@@ -895,7 +820,7 @@ void MinervaDocument::_showLayerDistributed ( Minerva::Core::Layers::Layer *Laye
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::_modifyLayerDistributed ( Minerva::Core::Layers::Layer *layer )
+void MinervaDocument::_modifyLayerDistributed ( Usul::Interfaces::ILayer *layer )
 {
   if ( _useDistributed )
   {
@@ -1030,4 +955,168 @@ bool MinervaDocument::hasGroup ( const std::string& key )
 {
   GroupMap::const_iterator i = _groupMap.find ( key );
   return i != _groupMap.end();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
+{
+  Usul::Interfaces::IOssimPlanetLayer::QueryPtr ossim ( layer );
+  if( ossim.valid() )
+  {
+    _planet->removeLayer( ossim->ossimPlanetLayer() );
+  }
+  else
+  {
+    _sceneManager->removeLayer( layer->guid() );
+    this->_removeLayerDistributed( layer );
+  }
+
+  Layers::iterator doomed ( std::find( _layers.begin(), _layers.end(), Usul::Interfaces::ILayer::QueryPtr ( layer ) ) );
+  if( doomed != _layers.end() )
+    _layers.erase( doomed );
+
+  this->modified( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Hide a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::hideLayer   ( Usul::Interfaces::ILayer * layer )
+{
+  layer->showLayer( false );
+  _sceneManager->dirty( true );
+  this->_removeLayerDistributed( layer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::showLayer   ( Usul::Interfaces::ILayer * layer )
+{
+  layer->showLayer ( true );
+  _sceneManager->dirty( true );
+  this->_showLayerDistributed( layer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer, Unknown *caller )
+{
+  this->_addLayer( layer, caller );
+  _layers.push_back( layer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void  MinervaDocument::_addLayer ( Usul::Interfaces::ILayer * layer, Unknown *caller )
+{
+  try
+  {
+    Usul::Interfaces::IOssimPlanetLayer::QueryPtr ossim ( layer );
+    if( ossim.valid() )
+    {
+      _planet->addLayer( ossim->ossimPlanetLayer() );
+    }
+    else
+    {
+      Usul::Interfaces::IVectorLayer::QueryPtr vector ( layer );
+      if( vector.valid() )
+      {
+        vector->buildVectorData( caller );
+        _sceneManager->addLayer( layer );
+        this->_showLayerDistributed( layer );
+      }
+    }
+  }
+  catch ( const std::exception& e )
+  {
+    std::cout << "Error 2006879022: " << e.what() << std::endl;
+  }
+  catch ( ... )
+  {
+    std::cout << "Error 4156147184: Unknown exception caught while trying to add a layer." << std::endl;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Modify a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::modifyLayer ( Usul::Interfaces::ILayer * layer, Unknown *caller )
+{
+  Usul::Interfaces::IVectorLayer::QueryPtr vector ( layer );
+  if( vector.valid() )
+  {
+    vector->modifyVectorData ( caller );
+    this->_modifyLayerDistributed( layer );
+    _sceneManager->dirty( true );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Modify a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::deserialize ( const XmlTree::Node &node )
+{
+  _dataMemberMap.deserialize ( node );
+
+  for( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
+  {
+    this->_addLayer( (*iter).get() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MinervaDocument::Layers& MinervaDocument::layers()
+{
+  return _layers;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const MinervaDocument::Layers& MinervaDocument::layers() const
+{
+  return _layers;
 }

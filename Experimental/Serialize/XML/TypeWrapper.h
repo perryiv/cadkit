@@ -97,6 +97,60 @@ template <> struct TypeWrapper < std::string >
 };
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Specialization for query-pointers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class T, class C > struct TypeWrapper < Usul::Pointers::QueryPointer < T, C > >
+{
+  typedef Usul::Pointers::QueryPointer < T, C > PointerType;
+  typedef typename PointerType::element_type ObjectType;
+
+  static void addAtribute ( const std::string &name, const std::string &value, XmlTree::Node &node )
+  {
+    node.attributes()[name] = value;
+  }
+  static const char *className ( const PointerType &value )
+  {
+    Usul::Interfaces::ISerialize::QueryPtr iSerialize ( const_cast < PointerType::element_type* > ( value.get() ) );
+    return ( ( true == iSerialize.valid() ) ? iSerialize->className() : "" );
+  }
+  static ObjectType *create ( const std::string &typeName )
+  {
+    ObjectType * object ( dynamic_cast < ObjectType* > ( Factory::instance().create ( typeName ) ) );
+    return object;
+  }
+  static void deserialize ( const XmlTree::Node &node, PointerType &value )
+  {
+    Usul::Interfaces::ISerialize::QueryPtr iSerialize ( value );
+    if ( true == iSerialize.valid() )
+    {
+      iSerialize->deserialize ( node );
+    }
+  }
+  static void getAttribute ( const std::string &name, const XmlTree::Node &node, std::string &value )
+  {
+    XmlTree::Node::Attributes::const_iterator i = node.attributes().find ( name );
+    value.assign ( ( node.attributes().end() == i ) ? "" : i->second );
+  }
+  static bool isValid ( const PointerType &value )
+  {
+    return ( true == value.valid() );
+  }
+  static void serialize ( const PointerType &value, XmlTree::Node &parent )
+  {
+    Usul::Interfaces::ISerialize::QueryPtr iSerialize ( const_cast < PointerType::element_type* > ( value.get() ) );
+    if ( true == iSerialize.valid() )
+    {
+      iSerialize->serialize ( parent );
+    }
+  }
+};
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Specialization for smart-pointers.

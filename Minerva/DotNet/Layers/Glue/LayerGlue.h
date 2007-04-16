@@ -29,12 +29,12 @@ namespace DT
     {
       public ref class LayerGlue abstract : 
         public CadKit::Referenced::Base,
-        public DT::Minerva::Interfaces::ILayer,
         public DT::Minerva::Interfaces::IColumnNames,
         public DT::Minerva::Interfaces::IColorMode,
         public DT::Minerva::Interfaces::IColorProperties,
         public DT::Minerva::Interfaces::IDataSource,
         public CadKit::Interfaces::ILayer,
+        public CadKit::Interfaces::INativePtr,
         public CadKit::Interfaces::IPropertyGridObject
 	    {
       public:
@@ -160,7 +160,7 @@ namespace DT
 
         /// Get the layer.
         virtual ::Minerva::Core::Layers::Layer*  layer() = 0;
-        virtual System::IntPtr                   layerPtr();
+        virtual System::IntPtr                   nativeIntPtr();
 
         void clear();
 
@@ -282,6 +282,14 @@ namespace DT
         property System::String^ ColorMode
         { 
           virtual System::String^ get() { return this->ColorProperties->ColorMode.ToString(); }
+        }
+
+        [
+          System::ComponentModel::Browsable(false)
+        ]
+        property System::String^ Guid
+        {
+          virtual System::String^ get();
         }
 
       protected:

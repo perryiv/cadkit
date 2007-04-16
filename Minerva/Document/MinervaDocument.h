@@ -21,9 +21,11 @@
 #include "Usul/Interfaces/IMatrixManipulator.h"
 #include "Usul/Interfaces/IDistributedVR.h"
 #include "Usul/Interfaces/IGroup.h"
+#include "Usul/Interfaces/ILayer.h"
 
 #include "Minerva/Core/Scene/SceneManager.h"
 #include "Minerva/Core/GUI/Controller.h"
+#include "Minerva/Core/Layers/Layer.h"
 
 #include "Magrathea/Planet.h"
 
@@ -46,8 +48,9 @@ public:
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
   typedef std::vector< std::string > Names;
-  typedef std::map < std::string, Minerva::Core::Layers::Layer::RefPtr > Favorites;
+  typedef std::map < std::string, Usul::Interfaces::ILayer::QueryPtr > Favorites;
   typedef OsgTools::Animate::Settings Settings;
+  typedef std::vector < Usul::Interfaces::ILayer::QueryPtr > Layers;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( MinervaDocument );
@@ -84,16 +87,13 @@ public:
   /// Clear any existing data.
   virtual void                clear ( Unknown *caller = 0x0 );
 
-  void                        removeLayer ( Minerva::Core::Layers::Layer * layer );
-  void                        hideLayer   ( Minerva::Core::Layers::Layer * layer );
-  void                        showLayer   ( Minerva::Core::Layers::Layer * layer );
-  void                        addLayer    ( Minerva::Core::Layers::Layer * layer, Unknown *caller = 0x0 );
-  void                        modifyLayer ( Minerva::Core::Layers::Layer * layer, Unknown *caller = 0x0 );
+  void                        removeLayer ( Usul::Interfaces::ILayer * layer );
+  void                        hideLayer   ( Usul::Interfaces::ILayer * layer );
+  void                        showLayer   ( Usul::Interfaces::ILayer * layer );
+  void                        addLayer    ( Usul::Interfaces::ILayer * layer, Unknown *caller = 0x0 );
+  void                        modifyLayer ( Usul::Interfaces::ILayer * layer, Unknown *caller = 0x0 );
 
-  void                        viewLayerExtents ( ossimPlanetTextureLayer * layer );
-
-  void                        addLayer       ( ossimPlanetTextureLayer * layer );
-  void                        removeLayer    ( ossimPlanetTextureLayer * layer );
+  void                        viewLayerExtents ( Usul::Interfaces::IUnknown * layer );
 
   void                        setLayerOperation( const std::string&, int val, ossimPlanetTextureLayer * layer );
 
@@ -140,9 +140,12 @@ public:
   /// For now
   void                              viewer( Usul::Interfaces::IUnknown* viewer );
 
-  void                              addToFavorites( Minerva::Core::Layers::Layer* layer );
-  Minerva::Core::Layers::Layer *    createFavorite( const std::string& name ) const;
+  void                              addToFavorites( Usul::Interfaces::IUnknown* layer );
+  Usul::Interfaces::IUnknown *      createFavorite( const std::string& name ) const;
   Names                             favorites() const;
+
+  Layers&                           layers();
+  const Layers&                     layers() const;
 
 protected:
   virtual ~MinervaDocument();
@@ -162,14 +165,16 @@ protected:
   /// Distributed functions.
   void                                     _connectToDistributedSession();
 
+  void                                     _addLayer    ( Usul::Interfaces::ILayer * layer, Unknown *caller = 0x0 );
+
   /// Remove layer with given id.
-  void             _removeLayerDistributed( Minerva::Core::Layers::Layer *Layer );
+  void             _removeLayerDistributed( Usul::Interfaces::ILayer *Layer );
 
   /// Show layer.
-  void             _showLayerDistributed ( Minerva::Core::Layers::Layer *Layer );
+  void             _showLayerDistributed ( Usul::Interfaces::ILayer *Layer );
 
   /// Modify polygon data.
-  void             _modifyLayerDistributed ( Minerva::Core::Layers::Layer *layer );
+  void             _modifyLayerDistributed ( Usul::Interfaces::ILayer *layer );
 
   /// Start animation.
   void             _startAnimationDistributed ( float speed, bool accumulate, bool dateTimeStep, bool timeWindow, unsigned int numDays );
@@ -183,13 +188,11 @@ protected:
 
   /// Implementing IGroup interface. 
   virtual osg::Group*  getGroup    ( const std::string& );
-  
   virtual void         removeGroup ( const std::string& );
-
   virtual bool         hasGroup    ( const std::string& );
 
 private:
-
+  Layers _layers;
   Favorites _favorites;
   Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
   osg::ref_ptr < Magrathea::Planet > _planet;
@@ -198,10 +201,14 @@ private:
   std::string _sessionName;
   Minerva::Core::GUI::Controller::RefPtr _distributed;
 
-
   SERIALIZE_XML_DEFINE_MAP;
-  SERIALIZE_XML_DEFINE_MEMBERS ( MinervaDocument );
+  SERIALIZE_XML_CLASS_NAME(MinervaDocument);
+  SERIALIZE_XML_SERIALIZE_FUNCTION;
+public:
+  virtual void deserialize ( const XmlTree::Node &node );
+  SERIALIZE_XML_ADD_MEMBER_FUNCTION;
 
+private:
   typedef osg::ref_ptr< osg::Group >         GroupPtr;
   typedef std::map < std::string, GroupPtr > GroupMap;
   GroupMap _groupMap;

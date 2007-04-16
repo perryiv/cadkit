@@ -10,9 +10,14 @@
 
 #include "Magrathea/WmsLayer.h"
 
+#include "Usul/Functions/Guid.h"
+
+#include "Serialize/XML/RegisterCreator.h"
+
 using namespace Magrathea;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WmsLayer, WmsLayer::BaseClass );
+SERIALIZE_XML_REGISTER_CREATOR ( WmsLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -21,8 +26,27 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WmsLayer, WmsLayer::BaseClass );
 ///////////////////////////////////////////////////////////////////////////////
 
 WmsLayer::WmsLayer() : BaseClass(),
-_wmsImageLayer ( new ossimPlanetWmsImageLayer )
+_guid ( Usul::Functions::generateGUID() ),
+_server (),
+_imageType (),
+_cacheDirectory (),
+_transparentFlag ( false ),
+_transparentColorFlag ( false ),
+_r ( 0 ),
+_g ( 0 ),
+_b ( 0 ),
+_wmsImageLayer ( new ossimPlanetWmsImageLayer ),
+SERIALIZE_XML_INITIALIZER_LIST
 {
+  SERIALIZE_XML_ADD_MEMBER ( _guid );
+  SERIALIZE_XML_ADD_MEMBER ( _server );
+  SERIALIZE_XML_ADD_MEMBER ( _imageType );
+  SERIALIZE_XML_ADD_MEMBER ( _cacheDirectory );
+  SERIALIZE_XML_ADD_MEMBER ( _transparentFlag );
+  SERIALIZE_XML_ADD_MEMBER ( _transparentColorFlag );
+  SERIALIZE_XML_ADD_MEMBER ( _r );
+  SERIALIZE_XML_ADD_MEMBER ( _g );
+  SERIALIZE_XML_ADD_MEMBER ( _b );
 }
 
 
@@ -45,13 +69,14 @@ WmsLayer::~WmsLayer()
 
 void WmsLayer::server( const std::string& serverString )
 {
+  _server = serverString;
   _wmsImageLayer->setServer ( serverString );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//  Get the server.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -63,19 +88,20 @@ const std::string& WmsLayer::server() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//  Set the image type.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void WmsLayer::imageType( const std::string& imageType )
 {
+  _imageType = imageType;
   _wmsImageLayer->setImageType ( imageType );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//  Get the image type.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -87,23 +113,24 @@ const std::string& WmsLayer::imageType() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//  Set the cache directory.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void WmsLayer::cacheDirectory( const std::string& directory )
 {
+  _cacheDirectory = directory;
   _wmsImageLayer->setCacheDirectory( directory.c_str() );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//  Get the cache directory.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& WmsLayer::cacheDirectory() const
+std::string WmsLayer::cacheDirectory() const
 {
   return _wmsImageLayer->getCacheDirectory().c_str();
 }
@@ -111,19 +138,20 @@ const std::string& WmsLayer::cacheDirectory() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//  Set the transparent flag.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void WmsLayer::transparentFlag( bool flag )
 {
+  _transparentFlag = flag;
   _wmsImageLayer->setTransparentFlag ( flag );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//  Get the transparent flag.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -135,19 +163,20 @@ bool WmsLayer::transparentFlag() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//  Set the transparent color flag.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void WmsLayer::transparentColorFlag( bool flag )
 {
+  _transparentColorFlag = flag;
   _wmsImageLayer->setTransparentColorFlag ( flag );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//  Get the transparent color flag.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -159,19 +188,20 @@ bool WmsLayer::transparentColorFlag() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//  Set the transparent color.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void WmsLayer::transparentColor( unsigned int r, unsigned int g, unsigned int b )
 {
+  _r = r; _g = g; _b = b;
   _wmsImageLayer->setTransparentColor ( r, g, b );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//  Query for the interface.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -182,8 +212,102 @@ Usul::Interfaces::IUnknown* WmsLayer::queryInterface(unsigned long iid)
   case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::ILayer::IID:
     return static_cast < Usul::Interfaces::ILayer * > ( this );
+  case Usul::Interfaces::IOssimPlanetLayer::IID:
+    return static_cast < Usul::Interfaces::IOssimPlanetLayer * > ( this );
+  case Usul::Interfaces::ILayerExtents::IID:
+    return static_cast < Usul::Interfaces::ILayerExtents* > ( this );
+  case Usul::Interfaces::ISerialize::IID:
+    return static_cast < Usul::Interfaces::ISerialize* > ( this );
   default:
     return 0x0;
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the ossimPlanetTexutureLayer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ossimPlanetTextureLayer* WmsLayer::ossimPlanetLayer()
+{
+  return _wmsImageLayer.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the guid.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string WmsLayer::guid() const
+{
+  return _guid;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set show layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WmsLayer::showLayer( bool b )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get show layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool WmsLayer::showLayer() const
+{
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the layer extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WmsLayer::layerExtents ( double &lat, double &lon, double& height ) const
+{
+  _wmsImageLayer->getCenterLatLonLength( lat, lon, height );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WmsLayer::deserialize ( const XmlTree::Node& node )
+{
+  _dataMemberMap.deserialize( node );
+  this->server ( _server );
+  this->imageType ( _imageType );
+  this->cacheDirectory( _cacheDirectory );
+  this->transparentFlag ( _transparentFlag );
+  this->transparentColorFlag ( _transparentColorFlag );
+  this->transparentColor ( _r, _g, _b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string&  WmsLayer::name() const
+{
+  return this->server();
+}

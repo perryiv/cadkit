@@ -18,6 +18,11 @@ namespace CadKit.Plugins.LayerManager
     private const float _offset = 0.0f;
     private CadKit.Interfaces.IDocument _document = null;
 
+    class Nodes : System.Collections.Generic.Dictionary<System.Windows.Forms.TreeNode, string> { }
+    class LayersMap : System.Collections.Generic.Dictionary<string, CadKit.Interfaces.ILayer> { }
+
+    Nodes _nodes = new Nodes();
+    LayersMap _layers = new LayersMap();
 
     /// <summary>
     /// Constructor.
@@ -99,7 +104,23 @@ namespace CadKit.Plugins.LayerManager
       _treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(_treeView_NodeMouseDoubleClick);
       _treeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(_treeView_AfterCheck);
       _treeView.ContextMenuStrip = this._buildContextMenu();
+
+      // Apparently we need both to get the property grid to update properly.
       _treeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(_treeView_NodeMouseClick);
+      _treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(_treeView_AfterSelect);
+    }
+
+    void _treeView_AfterSelect(object sender, System.Windows.Forms.TreeViewEventArgs e)
+    {
+      try
+      {
+        CadKit.Documents.Manager.Instance.ActiveView = this;
+      }
+      catch (System.Exception exception)
+      {
+        System.Console.WriteLine("Error 2270625540: Exception caught while trying to change selected index.");
+        System.Console.WriteLine("Message: {0}", exception.Message);
+      }
     }
 
 
@@ -121,18 +142,26 @@ namespace CadKit.Plugins.LayerManager
 
 
     /// <summary>
+    /// Get the layer for the node.
+    /// </summary>
+    CadKit.Interfaces.ILayer _getLayer(System.Windows.Forms.TreeNode node)
+    {
+      string guid = _nodes[node];
+      return _layers[guid];
+    }
+
+
+    /// <summary>
     /// 
     /// </summary>
     void _treeView_AfterCheck(object sender, System.Windows.Forms.TreeViewEventArgs e)
     {
       try
       {
-        int index = _treeView.Nodes.IndexOf(e.Node);
-
         if (_document is CadKit.Interfaces.ILayerList)
         {
           CadKit.Interfaces.ILayerList layerList = (CadKit.Interfaces.ILayerList)_document;
-          CadKit.Interfaces.ILayer layer = layerList.Layers[index] as CadKit.Interfaces.ILayer;
+          CadKit.Interfaces.ILayer layer = this._getLayer(e.Node);
 
           if (null != layerList && null != layer)
           {
@@ -166,7 +195,8 @@ namespace CadKit.Plugins.LayerManager
       if (_document is CadKit.Interfaces.ILayerList)
       {
         CadKit.Interfaces.ILayerList layerList = (CadKit.Interfaces.ILayerList)_document;
-        layerList.viewLayerExtents(layerList.Layers[_treeView.Nodes.IndexOf(_treeView.SelectedNode)]);
+        CadKit.Interfaces.ILayer layer = this._getLayer(_treeView.SelectedNode);
+        layerList.viewLayerExtents(layer);
       }
     }
 
@@ -202,6 +232,8 @@ namespace CadKit.Plugins.LayerManager
       {
         // Clear what we have.
         _treeView.Nodes.Clear();
+        _nodes.Clear();
+        _layers.Clear();
 
         // If the document is a layer list.
         if (_document is CadKit.Interfaces.ILayerList)
@@ -235,23 +267,27 @@ namespace CadKit.Plugins.LayerManager
         {
           System.Windows.Forms.TreeNode item = new System.Windows.Forms.TreeNode(layer.Name);
 
+          /// Add objects to map for easy look up later.
+          _nodes.Add(item, layer.Guid);
+          _layers.Add(layer.Guid, layer);
+
           item.Checked = layer.Shown;
           _treeView.Nodes.Add(item);
 
-          if (layer is CadKit.Interfaces.IGroup)
-          {
-            CadKit.Interfaces.IGroup group = (CadKit.Interfaces.IGroup)layer;
-            foreach (object o in group.Children)
-            {
-              CadKit.Interfaces.ILayer sublayer = o as CadKit.Interfaces.ILayer;
-              if (null != sublayer)
-              {
-                System.Windows.Forms.TreeNode subitem = new System.Windows.Forms.TreeNode(layer.Name);
-                subitem.Checked = layer.Shown;
-                item.Nodes.Add(subitem);
-              }
-            }
-          }
+          //if (layer is CadKit.Interfaces.IGroup)
+          //{
+          //  CadKit.Interfaces.IGroup group = (CadKit.Interfaces.IGroup)layer;
+          //  foreach (object o in group.Children)
+          //  {
+          //    CadKit.Interfaces.ILayer sublayer = o as CadKit.Interfaces.ILayer;
+          //    if (null != sublayer)
+          //    {
+          //      System.Windows.Forms.TreeNode subitem = new System.Windows.Forms.TreeNode(layer.Name);
+          //      subitem.Checked = layer.Shown;
+          //      item.Nodes.Add(subitem);
+          //    }
+          //  }
+          //}
         }
       }
       catch (System.Exception exception)
@@ -270,10 +306,11 @@ namespace CadKit.Plugins.LayerManager
       {
         if (_document is CadKit.Interfaces.ILayerList)
         {
-          CadKit.Interfaces.ILayerList layerList = (CadKit.Interfaces.ILayerList)_document;
-
-          int index = _treeView.Nodes.IndexOf(_treeView.SelectedNode);
-          this._removeLayer(index, layerList);
+          CadKit.Interfaces.ILayerList layerList = _document as CadKit.Interfaces.ILayerList;
+          if (null != layerList)
+          {
+            this._removeLayer(_treeView.SelectedNode, layerList);
+          }
         }
       }
       catch (System.Exception exception)
@@ -287,13 +324,20 @@ namespace CadKit.Plugins.LayerManager
     /// <summary>
     /// Remove layer at given index.
     /// </summary>
-    private void _removeLayer(int index, CadKit.Interfaces.ILayerList layerList)
+    private void _removeLayer(System.Windows.Forms.TreeNode node, CadKit.Interfaces.ILayerList layerList)
     {
-      CadKit.Interfaces.ILayer layer = layerList.Layers[index] as CadKit.Interfaces.ILayer;
+      CadKit.Interfaces.ILayer layer = this._getLayer(node);
 
       if (null != layer)
       {
-        _treeView.Nodes.RemoveAt(index);
+        // Remove objects from maps.
+        _nodes.Remove(node);
+        _layers.Remove(layer.Guid);
+
+        // Remove object from tree.
+        _treeView.Nodes.Remove(node);
+
+        // Remove object from document's list.
         layerList.removeLayer(layer, this);
       }
     }
@@ -371,8 +415,7 @@ namespace CadKit.Plugins.LayerManager
       {
         CadKit.Interfaces.ILayerList layerList = (CadKit.Interfaces.ILayerList)_document;
 
-        CadKit.Interfaces.ILayer[] layers = layerList.Layers;
-        CadKit.Interfaces.ILayer layer = layers[_treeView.Nodes.IndexOf(_treeView.SelectedNode)];
+        CadKit.Interfaces.ILayer layer = this._getLayer(_treeView.SelectedNode);
 
         if (null != layer)
         {
@@ -393,9 +436,7 @@ namespace CadKit.Plugins.LayerManager
         {
           CadKit.Interfaces.ILayerList layerList = (CadKit.Interfaces.ILayerList)_document;
 
-          CadKit.Interfaces.ILayer[] layers = layerList.Layers;
-
-          CadKit.Interfaces.ILayer layer = layers[_treeView.Nodes.IndexOf(_treeView.SelectedNode)];
+          CadKit.Interfaces.ILayer layer = this._getLayer(_treeView.SelectedNode);
           if (null != layer)
           {
             layerList.modifyLayer(layer, this);
@@ -420,7 +461,7 @@ namespace CadKit.Plugins.LayerManager
         if (_document is CadKit.Interfaces.ILayerList)
         {
           CadKit.Interfaces.ILayerList layerList = (CadKit.Interfaces.ILayerList)_document;
-          this._removeLayer(_treeView.Nodes.IndexOf(_treeView.SelectedNode), layerList);
+          this._removeLayer(_treeView.SelectedNode, layerList);
         }
       }
       catch (System.Exception exception)
@@ -459,7 +500,7 @@ namespace CadKit.Plugins.LayerManager
       {
         if (_document is CadKit.Interfaces.ILayerList)
         {
-          object layer = ((CadKit.Interfaces.ILayerList)_document).Layers[_treeView.Nodes.IndexOf(_treeView.SelectedNode)];
+          CadKit.Interfaces.ILayer layer = this._getLayer(_treeView.SelectedNode);
           if (layer is CadKit.Interfaces.IPropertyGridObject)
             return ((CadKit.Interfaces.IPropertyGridObject)layer).PropertyGridObject;
         }
@@ -477,8 +518,7 @@ namespace CadKit.Plugins.LayerManager
           CadKit.Interfaces.ILayerOperation layerOp = (CadKit.Interfaces.ILayerOperation)_document;
 
           string optype = (string)this.operationType.SelectedItem;
-          int layer = _treeView.Nodes.IndexOf(_treeView.SelectedNode);
-          layerOp.setLayerOperation(optype, this._slider.Value, layer);
+          layerOp.setLayerOperation(optype, this._slider.Value, this._getLayer(_treeView.SelectedNode));
         }
       }
       catch (System.Exception e)
@@ -493,8 +533,7 @@ namespace CadKit.Plugins.LayerManager
       {
         string optype = (string)this.operationType.SelectedItem;
         CadKit.Interfaces.ILayerOperation layerOp = (CadKit.Interfaces.ILayerOperation)_document;
-        int layer = _treeView.Nodes.IndexOf(_treeView.SelectedNode);
-        layerOp.setLayerOperation(optype, this._slider.Value, layer);
+        layerOp.setLayerOperation(optype, this._slider.Value, this._getLayer(_treeView.SelectedNode));
       }
       catch (System.Exception e)
       {

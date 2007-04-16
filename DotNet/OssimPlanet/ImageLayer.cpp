@@ -11,10 +11,7 @@
 #include "ImageLayer.h"
 
 #include "Usul/Strings/ManagedToNative.h"
-
-#include "ossim/base/ossimKeywordList.h"
-
-#include "ossimPlanet/ossimPlanetTextureLayerRegistry.h"
+#include "Magrathea/ImageTextureLayer.h"
 
 using namespace CadKit::OSSIMPlanet::Glue;
 
@@ -25,27 +22,22 @@ using namespace CadKit::OSSIMPlanet::Glue;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ImageLayer::ImageLayer(System::String ^filename)
+ImageLayer::ImageLayer( System::String ^filename )
 {
-  ossimFilename file ( Usul::Strings::convert(filename).c_str() );
+  _imageLayer = new Magrathea::ImageTextureLayer( Usul::Strings::convert ( filename ) );
+  Usul::Pointers::reference ( _imageLayer );
+}
 
-  osg::ref_ptr< ossimPlanetTextureLayer > layer ( 0x0 );
 
-  if( "kwl" == file.ext().downcase() )
-  {
-    ossimKeywordlist kwl( file );
-    layer = ossimPlanetTextureLayerRegistry::instance()->createLayer( kwl.toString() );
-  }
-  else
-    layer = ossimPlanetTextureLayerRegistry::instance()->createLayer( file );
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-  if( layer.valid() )
-  {
-    _layer = layer.get();
-    _layer->ref();
-  }
-
-  this->Name = filename;
+ImageLayer::ImageLayer( Magrathea::ImageTextureLayer* layer ) : _imageLayer ( layer )
+{
+  Usul::Pointers::reference ( _imageLayer );
 }
 
 
@@ -57,11 +49,8 @@ ImageLayer::ImageLayer(System::String ^filename)
 
 ImageLayer::~ImageLayer()
 {
-  if(0x0 != _layer)
-  {
-    _layer->unref();
-    _layer = 0x0;
-  }
+  Usul::Pointers::unreference( _imageLayer );
+  _imageLayer = 0x0;
 }
 
 
@@ -73,11 +62,8 @@ ImageLayer::~ImageLayer()
 
 ImageLayer::!ImageLayer()
 {
-  if(0x0 != _layer)
-  {
-    _layer->unref();
-    _layer = 0x0;
-  }
+  Usul::Pointers::unreference( _imageLayer );
+  _imageLayer = 0x0;
 }
 
 
@@ -89,9 +75,21 @@ ImageLayer::!ImageLayer()
 
 ImageLayer::TextureLayerStateCode ImageLayer::StateCode::get()
 {
-  if( 0x0 != _layer )
-    return static_cast < TextureLayerStateCode > ( _layer->getStateCode() );
+  if( 0x0 != _imageLayer )
+    return static_cast < TextureLayerStateCode > ( _imageLayer->getStateCode() );
   return TextureLayerStateCode::NO_SOURCE_DATA;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the Guid.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::String^ ImageLayer::Guid::get()
+{
+  return gcnew System::String ( _imageLayer->guid().c_str() );
 }
 
 
@@ -103,19 +101,7 @@ ImageLayer::TextureLayerStateCode ImageLayer::StateCode::get()
 
 System::String^ ImageLayer::Name::get()
 {
-  return _name;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the name of the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ImageLayer::Name::set ( System::String^ s )
-{
-  _name = s;
+  return gcnew System::String ( _imageLayer->filename().c_str() );
 }
 
 
@@ -127,88 +113,7 @@ void ImageLayer::Name::set ( System::String^ s )
 
 bool ImageLayer::Shown::get()
 {
-  return _layer->getEnableFlag();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the needs update flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool ImageLayer::NeedsUpdate::get()
-{ 
-  return false;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the needs update flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ImageLayer::NeedsUpdate::set( bool b )
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Show the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ImageLayer::show()
-{
-  _layer->setEnableFlag( true );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Modify the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ImageLayer::modify()
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Hide the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ImageLayer::hide()
-{
-  _layer->setEnableFlag( false );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add layer to favorites.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ImageLayer::addToFavorites()
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the native pointer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-ossimPlanetTextureLayer* ImageLayer::nativePtr()
-{
-  return _layer;
+  return true;
 }
 
 
@@ -220,5 +125,5 @@ ossimPlanetTextureLayer* ImageLayer::nativePtr()
 
 System::IntPtr ImageLayer::nativeIntPtr()
 {
-  return System::IntPtr ( _layer );
+  return System::IntPtr ( _imageLayer->queryInterface( Usul::Interfaces::IUnknown::IID ) );
 }

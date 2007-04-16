@@ -68,9 +68,10 @@ void RLayer::_registerMembers()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Layer* RLayer::clone() const
+Usul::Interfaces::IUnknown* RLayer::clone() const
 {
-  return new RLayer( *this );
+  Usul::Interfaces::IUnknown::QueryPtr copy ( new RLayer( *this ) );
+  return copy.release();
 }
 
 

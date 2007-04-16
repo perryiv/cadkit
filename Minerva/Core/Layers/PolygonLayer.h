@@ -13,6 +13,7 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/Core/Interfaces.h"
 
 #include "Usul/Interfaces/IPolygonLayer.h"
 
@@ -21,7 +22,8 @@ namespace Core {
 namespace Layers {
 
 class MINERVA_EXPORT PolygonLayer : public Minerva::Core::Layers::Layer,
-                                    public Usul::Interfaces::IPolygonLayer
+                                    public Usul::Interfaces::IPolygonLayer,
+                                    public Minerva::Core::IPolygonLayerRawPointer
 {
 public:
   typedef Minerva::Core::Layers::Layer BaseClass;
@@ -30,9 +32,6 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   PolygonLayer();
-
-  /// Clone the this layer.
-  virtual Layer*          clone() const;
 
   /// Build the data objects.
   virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller = 0x0 );
@@ -65,6 +64,12 @@ protected:
   PolygonLayer( const PolygonLayer& layer );
 
   void _registerMembers();
+
+  virtual PolygonLayer*          getRawPointer();
+  virtual const PolygonLayer*    getRawPointer() const; 
+
+  /// Clone the this layer.
+  virtual Usul::Interfaces::IUnknown*          clone() const;
 
 private:
 

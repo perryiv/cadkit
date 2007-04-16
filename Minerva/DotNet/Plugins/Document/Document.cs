@@ -32,9 +32,12 @@ namespace DT.Minerva.Plugins.Document
     /// <summary>
     ///  Data Members
     /// </summary>
-    private System.Collections.Generic.List<CadKit.Interfaces.ILayer> _layers = new System.Collections.Generic.List<CadKit.Interfaces.ILayer>();
-
     private DT.Minerva.Plugins.Document.Glue.DllGlue _dll = new DT.Minerva.Plugins.Document.Glue.DllGlue();
+
+    /// <summary>
+    ///  Mirror layers on managed side.  It's a bit easier to work with.
+    /// </summary>
+    private System.Collections.Generic.List<CadKit.Interfaces.ILayer> _layers = new System.Collections.Generic.List<CadKit.Interfaces.ILayer>();
 
 
     /// <summary>
@@ -109,6 +112,8 @@ namespace DT.Minerva.Plugins.Document
         {
           recent.add(name);
         }
+
+        _layers.InsertRange(0, _dll.Layers);
       }
       finally
       {
@@ -199,7 +204,7 @@ namespace DT.Minerva.Plugins.Document
     {
       get
       {
-        return _layers.ToArray();
+        return this._layers.ToArray();
       }
     }
 
@@ -211,13 +216,12 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
-        layer.show();
         if (layer is CadKit.Interfaces.IOssimLayer)
-          _dll.addLayer((CadKit.Interfaces.IOssimLayer)layer);
+          _dll.addLayer(layer, null);
         else
-          this._showLayer(layer);
-        _layers.Add(layer);
+          this._createAddLayerJob(layer);
 
+        _layers.Add(layer);
         this.Modified = true;
       }
     }
@@ -230,9 +234,7 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
-        layer.modify();
-        this._modifyLayer(layer);
-
+        this._createModifyLayerJob(layer);
         this.Modified = true;
       }
     }
@@ -269,12 +271,12 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     void CadKit.Interfaces.ILayerList.removeLayer(CadKit.Interfaces.ILayer layer, object caller)
     {
-      if (layer is CadKit.Interfaces.IOssimLayer)
-        _dll.removeLayer((CadKit.Interfaces.IOssimLayer)layer);
-      else
-        this._removeLayer(layer);
-      _layers.Remove(layer);
-      this.Modified = true;
+      if (null != layer)
+      {
+        _layers.Remove(layer);
+        _dll.removeLayer(layer);
+        this.Modified = true;
+      }
     }
 
 
@@ -306,18 +308,6 @@ namespace DT.Minerva.Plugins.Document
 
 
     /// <summary>
-    /// Remove the layer.
-    /// </summary>
-    protected void _removeLayer(CadKit.Interfaces.ILayer layer)
-    {
-      if (null != layer)
-      {
-        _dll.removeLayer(layer);
-      }
-    }
-
-
-    /// <summary>
     /// The job has ended.
     /// </summary>
     protected void _jobEnd(CadKit.Threads.Jobs.Job job)
@@ -335,7 +325,7 @@ namespace DT.Minerva.Plugins.Document
     /// <summary>
     /// Show the layer.
     /// </summary>
-    protected void _showLayer(CadKit.Interfaces.ILayer layer)
+    protected void _createAddLayerJob(CadKit.Interfaces.ILayer layer)
     {
       if (null != layer)
       {
@@ -351,7 +341,7 @@ namespace DT.Minerva.Plugins.Document
     /// <summary>
     /// Modify the layer.
     /// </summary>
-    protected void _modifyLayer(CadKit.Interfaces.ILayer layer)
+    protected void _createModifyLayerJob(CadKit.Interfaces.ILayer layer)
     {
       if (null != layer)
       {
@@ -495,17 +485,9 @@ namespace DT.Minerva.Plugins.Document
       set { _dll.percentScreenWidth(value); }
     }
 
-    void CadKit.Interfaces.ILayerOperation.setLayerOperation(string opType, int val, int[] layers)
+    void CadKit.Interfaces.ILayerOperation.setLayerOperation(string opType, int val, CadKit.Interfaces.ILayer layer)
     {
-      for (int i = 0; i < layers.Length; ++i)
-      {
-        ((CadKit.Interfaces.ILayerOperation)this).setLayerOperation(opType, val, i);
-      }
-    }
-
-    void CadKit.Interfaces.ILayerOperation.setLayerOperation(string opType, int val, int layer)
-    {
-      _dll.setLayerOperation(opType, val, _layers[layer]);
+      _dll.setLayerOperation(opType, val, layer);
     }
 
     void CadKit.Interfaces.IMovieMode.setMovieMode( bool b )

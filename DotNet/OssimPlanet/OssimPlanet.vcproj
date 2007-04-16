@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(OSSIM_PLANET_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(OSSIM_INC_DIR);$(OSG_EPHEMERIS_INC_DIR);"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR)/Experimental;$(CADKIT_ROOT_DIR);$(OSSIM_PLANET_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(OSSIM_INC_DIR);$(OSG_EPHEMERIS_INC_DIR);"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
@@ -117,7 +117,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(OSSIM_PLANET_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(OSSIM_INC_DIR);$(OSG_EPHEMERIS_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR)/Experimental;$(CADKIT_ROOT_DIR);$(OSSIM_PLANET_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(OSSIM_INC_DIR);$(OSG_EPHEMERIS_INC_DIR);"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -180,16 +180,6 @@
 			RelativePath="System.XML.dll"
 			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 		/>
-		<ProjectReference
-			ReferencedProjectIdentifier="{6F8548C1-32FA-44C9-8BDA-C7221B555065}"
-			UseDependenciesInBuild="false"
-			RelativePathToProject="..\OSG\Glue\CadKit.OSG.Glue.vcproj"
-		/>
-		<ProjectReference
-			ReferencedProjectIdentifier="{038F5ACB-7D5D-4B9E-BA29-86F7526C7419}"
-			UseDependenciesInBuild="false"
-			RelativePathToProject="..\OpenGL\CadKit.OpenGL.csproj"
-		/>
 		<AssemblyReference
 			RelativePath="System.Windows.Forms.dll"
 			AssemblyName="System.Windows.Forms, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
@@ -219,11 +209,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Factory.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Factory.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ImageLayer.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\ImageLayer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\KwlLayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\KwlLayer.h"
 				>
 			</File>
 			<File

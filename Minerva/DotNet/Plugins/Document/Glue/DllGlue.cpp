@@ -15,8 +15,10 @@
 #include "Threads/OpenThreads/Mutex.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Strings/ManagedToNative.h"
+
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/IPlayMovie.h"
+#include "Usul/Interfaces/IOssimPlanetLayer.h"
 #include "Usul/Components/Manager.h"
 
 #include "OsgTools/Render/Viewer.h"
@@ -89,11 +91,11 @@ void DllGlue::removeLayer( CadKit::Interfaces::ILayer ^layer )
 {
   try
   {
-    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
+    CadKit::Interfaces::INativePtr ^layerPtr = safe_cast < CadKit::Interfaces::INativePtr ^ > ( layer );
 
     if( nullptr != layerPtr )
     {
-      ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
+      Usul::Interfaces::ILayer::QueryPtr base ( reinterpret_cast < Usul::Interfaces::ILayer * > ( layerPtr->nativeIntPtr().ToPointer() ) );
       _document->removeLayer( base.get() );
     }
   }
@@ -114,11 +116,11 @@ void DllGlue::hideLayer( CadKit::Interfaces::ILayer ^layer )
 {
   try
   {
-    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
+    CadKit::Interfaces::INativePtr ^layerPtr = safe_cast < CadKit::Interfaces::INativePtr ^ > ( layer );
 
     if( nullptr != layerPtr )
     {
-      ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
+      Usul::Interfaces::ILayer::QueryPtr base ( reinterpret_cast < Usul::Interfaces::ILayer * > ( layerPtr->nativeIntPtr().ToPointer() ) );
       _document->hideLayer( base.get() );
     }
   }
@@ -139,12 +141,15 @@ void DllGlue::showLayer( CadKit::Interfaces::ILayer ^layer )
 {
   try
   {
-    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
+    CadKit::Interfaces::INativePtr ^layerPtr = safe_cast < CadKit::Interfaces::INativePtr ^ > ( layer );
 
     if( nullptr != layerPtr )
     {
-      ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
-      _document->showLayer( base.get() );
+      void *ptr ( layerPtr->nativeIntPtr().ToPointer() );
+      Usul::Interfaces::IUnknown *unknown ( reinterpret_cast < Usul::Interfaces::IUnknown * > ( ptr ) );
+      //Usul::Interfaces::ILayer::QueryPtr base ( unknown );
+      if( 0x0 != unknown && 0x0 != unknown->queryInterface( Usul::Interfaces::ILayer::IID ) )
+        _document->showLayer( static_cast < Usul::Interfaces::ILayer* > ( unknown ) );
     }
   }
   catch ( System::Exception ^e )
@@ -164,35 +169,80 @@ void DllGlue::modifyLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::J
 {
   try
   {
-    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
+    CadKit::Interfaces::INativePtr ^layerPtr = safe_cast < CadKit::Interfaces::INativePtr ^ > ( layer );
 
     if( nullptr != layerPtr )
     {
-      ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
-      Progress p ( progress );
-      _document->modifyLayer( base, p.unmanagedProgress() );
+      Usul::Interfaces::ILayer::QueryPtr base ( reinterpret_cast < Usul::Interfaces::ILayer * > ( layerPtr->nativeIntPtr().ToPointer() ) );
+      Usul::Interfaces::IUnknown::QueryPtr queryPtr ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) );
+
+      if( nullptr != progress )
+      {
+        // Managed/Unmanged progress interop class.
+        Progress p ( progress );
+        queryPtr = p.unmanagedProgress();
+      }
+
+      _document->modifyLayer( base, queryPtr.get() );
     }
   }
   catch ( System::Exception ^e )
   {
     System::Console::WriteLine( "Error 2048069470:" + e->Message );
   }
-  catch ( const std::exception &e )
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show the layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DllGlue::addLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progress )
+{
+  try
   {
-    System::Console::WriteLine( "Error 2083538220:" + gcnew System::String ( e.what() ) );
+    CadKit::Interfaces::INativePtr ^layerPtr = safe_cast < CadKit::Interfaces::INativePtr ^ > ( layer );
+
+    if( nullptr != layerPtr )
+    {
+      Usul::Interfaces::ILayer::QueryPtr base ( reinterpret_cast < Usul::Interfaces::ILayer * > ( layerPtr->nativeIntPtr().ToPointer() ) );
+      Usul::Interfaces::IUnknown::QueryPtr queryPtr ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) );
+
+      if( nullptr != progress )
+      {
+        // Managed/Unmanged progress interop class.
+        Progress p ( progress );
+        queryPtr = p.unmanagedProgress();
+      }
+      _document->addLayer( base.get(), queryPtr.get() );
+    }
   }
-  catch ( ... )
+  catch ( System::Exception ^e )
   {
-    System::Console::WriteLine( "Error 2122288220: Unknown exception caught." );
+    System::Console::WriteLine( "Error 674969904:" + e->Message );
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the timestep type.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void DllGlue::timestepType ( CadKit::Interfaces::AnimateTimestep type )
 {
  _document->timestepType( static_cast < OsgTools::Animate::Settings::TimestepType > ( type ) );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the timestep type.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 CadKit::Interfaces::AnimateTimestep DllGlue::timestepType ()
 {
@@ -216,14 +266,6 @@ void DllGlue::startAnimation(float speed, bool accumulate, bool timeWindow, int 
   {
     System::Console::WriteLine( "Error 1740100720:" + e->Message );
   }
-  catch ( const std::exception &e )
-  {
-    System::Console::WriteLine( "Error 1762600720:" + gcnew System::String ( e.what() ) );
-  }
-  catch ( ... )
-  {
-    System::Console::WriteLine( "Error 1818850720: Unknown exception caught." );
-  }
 }
 
 
@@ -242,14 +284,6 @@ void DllGlue::stopAnimation()
   catch ( System::Exception ^e )
   {
     System::Console::WriteLine( "Error 1595256970:" + e->Message );
-  }
-  catch ( const std::exception &e )
-  {
-    System::Console::WriteLine( "Error 1620413220:" + gcnew System::String ( e.what() ) );
-  }
-  catch ( ... )
-  {
-    System::Console::WriteLine( "Error 1646194470: Unknown exception caught." );
   }
 }
 
@@ -280,14 +314,6 @@ void DllGlue::viewer( CadKit::Viewer::Glue::Viewer ^v )
   {
     System::Console::WriteLine( "Error 1347444470:" + e->Message );
   }
-  catch ( const std::exception &e )
-  {
-    System::Console::WriteLine( "Error 1372131970:" + gcnew System::String ( e.what() ) );
-  }
-  catch ( ... )
-  {
-    System::Console::WriteLine( "Error 1396038220: Unknown exception caught." );
-  }
 }
 
 
@@ -306,98 +332,6 @@ void DllGlue::resize( int w, int h )
   catch ( System::Exception ^e )
   {
     System::Console::WriteLine( "Error 3665068016:" + e->Message );
-  }
-  catch ( const std::exception &e )
-  {
-    System::Console::WriteLine( "Error 4149780950:" + gcnew System::String ( e.what() ) );
-  }
-  catch ( ... )
-  {
-    System::Console::WriteLine( "Error 4175093450: Unknown exception caught." );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Show the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DllGlue::addLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs::Progress ^progress )
-{
-  try
-  {
-    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
-
-    if( nullptr != layerPtr )
-    {
-      ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
-
-      // Managed/Unmanged progress interop class.
-      Progress p ( progress );
-
-      _document->addLayer( base.get(), p.unmanagedProgress() );
-    }
-  }
-  catch ( System::Exception ^e )
-  {
-    System::Console::WriteLine( "Error 674969904:" + e->Message );
-  }
-  catch ( const std::exception &e )
-  {
-    System::Console::WriteLine( "Error 1029090542:" + gcnew System::String ( e.what() ) );
-  }
-  catch ( ... )
-  {
-    System::Console::WriteLine( "Error 1050340542: Unknown exception caught." );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add an image.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DllGlue::addLayer( CadKit::Interfaces::IOssimLayer ^ layer )
-{
-  if( nullptr != layer )
-  {
-    CadKit::Interfaces::INativePtr ^ nativePtr = dynamic_cast < CadKit::Interfaces::INativePtr^ > ( layer );
-
-    if( nullptr != nativePtr )
-    {
-      // Add layer to group.
-      osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( nativePtr->nativeIntPtr().ToPointer() ) );
-
-      if( texture.valid() )
-        _document->addLayer( texture.get() );
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove an image.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DllGlue::removeLayer( CadKit::Interfaces::IOssimLayer ^ layer )
-{
-  if( nullptr != layer )
-  {
-    CadKit::Interfaces::INativePtr ^ nativePtr = dynamic_cast < CadKit::Interfaces::INativePtr^ > ( layer );
-
-    if( nullptr != nativePtr )
-    {
-      osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( nativePtr->nativeIntPtr().ToPointer() ) );
-
-      if( texture.valid() )
-        _document->removeLayer( texture.get() );
-    }
   }
 }
 
@@ -650,19 +584,22 @@ float DllGlue::percentScreenWidth()
 
 void DllGlue::viewLayerExtents( CadKit::Interfaces::ILayer ^layer )
 {
-  if( nullptr != layer )
+  try
   {
-    CadKit::Interfaces::INativePtr ^ nativePtr = dynamic_cast < CadKit::Interfaces::INativePtr^ > ( layer );
-
-    if( nullptr != nativePtr )
+    if( nullptr != layer )
     {
-      osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( nativePtr->nativeIntPtr().ToPointer() ) );
+      CadKit::Interfaces::INativePtr ^ nativePtr = dynamic_cast < CadKit::Interfaces::INativePtr^ > ( layer );
 
-      if( texture.valid() )
+      if( nullptr != nativePtr )
       {
-        _document->viewLayerExtents( texture.get() );
+        Usul::Interfaces::IUnknown::QueryPtr unknown ( reinterpret_cast < Usul::Interfaces::IUnknown* > ( nativePtr->nativeIntPtr().ToPointer() ) );
+        _document->viewLayerExtents( unknown.get() );
       }
     }
+  }
+  catch ( System::Exception ^e )
+  {
+    System::Console::WriteLine( "Error 1986414875:" + e->Message );
   }
 }
 
@@ -701,12 +638,13 @@ void DllGlue::addToFavorites( CadKit::Interfaces::ILayer^ layer )
 {
   if( nullptr != layer )
   {
-    DT::Minerva::Interfaces::ILayer ^layerPtr = dynamic_cast < DT::Minerva::Interfaces::ILayer ^ > ( layer );
+    CadKit::Interfaces::INativePtr ^layerPtr = safe_cast < CadKit::Interfaces::INativePtr ^ > ( layer );
 
     if( nullptr != layerPtr )
     {
-      ::Minerva::Core::Layers::Layer::RefPtr base ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( layerPtr->layerPtr().ToPointer() ) );
-      _document->addToFavorites( base.get() );
+      Usul::Interfaces::IUnknown::QueryPtr unknwon ( reinterpret_cast < Usul::Interfaces::IUnknown* > ( layerPtr->nativeIntPtr().ToPointer() ) );
+      if( unknwon.valid() )
+        _document->addToFavorites( unknwon.get() );
     }
   }
 }
@@ -720,9 +658,8 @@ void DllGlue::addToFavorites( CadKit::Interfaces::ILayer^ layer )
 
 CadKit::Interfaces::ILayer^ DllGlue::createFavorite( System::String^ name )
 {
-  ::Minerva::Core::Layers::Layer::RefPtr layer ( _document->createFavorite ( Usul::Strings::convert( name ) ) );
-
-  return DT::Minerva::Glue::Factory::create( System::IntPtr ( layer.get() ) );
+  Usul::Interfaces::ILayer::QueryPtr layer ( _document->createFavorite ( Usul::Strings::convert( name ) ) );
+  return DT::Minerva::Glue::Factory::createIUnknown( System::IntPtr ( layer.get() ) );
 }
 
 
@@ -780,11 +717,13 @@ void DllGlue::saveAs( System::String^ filename )
   _document->saveAs ( Usul::Strings::convert( filename ) );
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the movie mode true / false. 
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 void DllGlue::setMovieMode( bool b,  CadKit::Viewer::Glue::Viewer^ v )
 {
 
@@ -804,6 +743,7 @@ void DllGlue::setMovieMode( bool b,  CadKit::Viewer::Glue::Viewer^ v )
     }
   }  
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -826,6 +766,7 @@ void DllGlue::play( CadKit::Viewer::Glue::Viewer^ v )
   }  
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Pause current movie. 
@@ -846,6 +787,7 @@ void DllGlue::pause( CadKit::Viewer::Glue::Viewer^ v )
     }
   }  
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -904,3 +846,37 @@ bool DllGlue::isPaused()
   return false;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+array<CadKit::Interfaces::ILayer^ > ^ DllGlue::Layers::get()
+{
+  typedef ::Minerva::Document::MinervaDocument::Layers  NativeLayers;
+  NativeLayers& layers ( _document->layers() );
+
+  const unsigned int size ( layers.size() );
+
+  array<CadKit::Interfaces::ILayer^ > ^ managedLayers = gcnew array<CadKit::Interfaces::ILayer^ > ( size );
+
+  for ( unsigned int i = 0; i < size; ++i  )
+  {
+    Usul::Interfaces::ILayer::QueryPtr layer ( layers.at( i ) );
+    Usul::Interfaces::IVectorLayer::QueryPtr vector ( layer );
+    if( vector.valid() )
+    {
+      managedLayers->SetValue( DT::Minerva::Glue::Factory::createIUnknown( System::IntPtr ( layer.get() ) ), static_cast < int > ( i ) );
+    }
+    else
+    {
+      Usul::Interfaces::IOssimPlanetLayer::QueryPtr ossim ( layer );
+      if( ossim.valid() )
+        managedLayers->SetValue( CadKit::OSSIMPlanet::Glue::Factory::create( System::IntPtr ( ossim.get() ) ), static_cast < int > ( i ) );
+    }
+  }
+
+  return managedLayers;
+}

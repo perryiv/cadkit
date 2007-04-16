@@ -15,8 +15,6 @@
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/IOffset.h"
 
-#include "Serialize/XML/RegisterCreator.h"
-
 #include <map>
 
 using namespace Minerva::Core::Layers;
@@ -78,9 +76,10 @@ void PointLayer::_registerMembers()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Layer* PointLayer::clone() const
+Usul::Interfaces::IUnknown* PointLayer::clone() const
 {
-  return new PointLayer( *this );
+  Usul::Interfaces::IUnknown::QueryPtr copy ( new PointLayer( *this ) );
+  return copy.release();
 }
 
 
@@ -324,12 +323,38 @@ Usul::Interfaces::IUnknown* PointLayer::queryInterface( unsigned long iid )
 {
   switch ( iid )
   {
-  case Usul::Interfaces::IUnknown::IID:
+  //case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IPointLayer::IID:
     return static_cast < Usul::Interfaces::IPointLayer* > ( this );
+  case Minerva::Core::IPointLayerRawPointer::IID:
+    return static_cast < Minerva::Core::IPointLayerRawPointer* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the point layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PointLayer* PointLayer::getRawPointer()
+{
+  return this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the point layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const PointLayer* PointLayer::getRawPointer() const
+{
+  return this;
 }
 
 

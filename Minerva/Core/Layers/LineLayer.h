@@ -13,6 +13,7 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/Core/Interfaces.h"
 
 #include "Usul/Interfaces/ILineLayer.h"
 
@@ -21,7 +22,8 @@ namespace Core {
 namespace Layers {
 
 class MINERVA_EXPORT LineLayer : public Minerva::Core::Layers::Layer,
-                                 public Usul::Interfaces::ILineLayer
+                                 public Usul::Interfaces::ILineLayer,
+                                 public Minerva::Core::ILineLayerRawPointer
 {
 public:
   typedef Minerva::Core::Layers::Layer BaseClass;
@@ -31,9 +33,6 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   LineLayer();
-
-  /// Clone the this layer.
-  virtual Layer*          clone() const;
 
   /// Build the data objects.
   virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller = 0x0 );
@@ -52,6 +51,12 @@ protected:
   LineLayer ( const LineLayer& layer );
 
   void  _registerMembers();
+
+  virtual LineLayer*         getRawPointer();
+  virtual const LineLayer*   getRawPointer() const;
+
+  /// Clone the this layer.
+  virtual Usul::Interfaces::IUnknown*          clone() const;
 
 private:
 

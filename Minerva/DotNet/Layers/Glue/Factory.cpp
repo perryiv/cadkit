@@ -23,31 +23,72 @@
 #include "Minerva/Core/Layers/LineLayer.h"
 
 #include "Usul/Strings/ManagedToNative.h"
+#include "Usul/Interfaces/ITemporalData.h"
+#include "Usul/Interfaces/IPointLayer.h"
+#include "Usul/Interfaces/IPolygonLayer.h"
+#include "Usul/Interfaces/ILineLayer.h"
 
 using namespace DT::Minerva::Glue;
 
-CadKit::Interfaces::ILayer^ Factory::create( System::IntPtr pointer )
+CadKit::Interfaces::ILayer^ Factory::createIUnknown( System::IntPtr pointer )
 {
-  ::Minerva::Core::Layers::Layer::RefPtr layer ( reinterpret_cast < ::Minerva::Core::Layers::Layer * > ( pointer.ToPointer() ) );
+  Usul::Interfaces::IUnknown::QueryPtr      unknown ( static_cast < Usul::Interfaces::IUnknown * > ( pointer.ToPointer() ) );  
+  
+  ::Minerva::Core::IPointLayerRawPointer::QueryPtr   pointLayer ( unknown );
+  ::Minerva::Core::IPointTimeLayerRawPointer::QueryPtr   pointTimeLayer ( unknown );
+  ::Minerva::Core::IPolygonLayerRawPointer::QueryPtr polygonLayer ( unknown );
+  ::Minerva::Core::ILineLayerRawPointer::QueryPtr    lineLayer ( unknown );
+
+  CadKit::Interfaces::ILayer ^managedLayer ( nullptr );
+
+  if( pointTimeLayer.valid() )
+  {
+    managedLayer = gcnew PointTimeLayerGlue ( pointTimeLayer->getRawPointer() );
+  }
+  else if ( pointLayer.valid() )
+  {
+    managedLayer = gcnew PointLayerGlue ( pointLayer->getRawPointer() );
+  }
+  else if ( polygonLayer.valid() )
+  {
+    managedLayer = gcnew PolygonLayerGlue( polygonLayer->getRawPointer() );
+  }
+  else if ( lineLayer.valid() )
+  {
+    managedLayer = gcnew LineLayerGlue( lineLayer->getRawPointer() );
+  }
+
+  return managedLayer;
+}
+
+
+CadKit::Interfaces::ILayer^ Factory::createFromMinervaLayer( System::IntPtr pointer )
+{
+  ::Minerva::Core::Layers::Layer::RefPtr    layer ( reinterpret_cast < ::Minerva::Core::Layers::Layer* > ( pointer.ToPointer() ) );
+
+  CadKit::Interfaces::ILayer ^managedLayer ( nullptr );
 
   if( layer.valid() )
   {
     if( ::Minerva::Core::Layers::LineLayer* lineLayer = dynamic_cast < ::Minerva::Core::Layers::LineLayer* > ( layer.get() ) )
-      return gcnew LineLayerGlue( lineLayer );
-    if( ::Minerva::Core::Layers::PointLayer* pointLayer = dynamic_cast < ::Minerva::Core::Layers::PointLayer* > ( layer.get() ) )
-      return gcnew PointLayerGlue( pointLayer );
-    if( ::Minerva::Core::Layers::PointTimeLayer* pointTimeLayer = dynamic_cast < ::Minerva::Core::Layers::PointTimeLayer* > ( layer.get() ) )
-      return gcnew PointTimeLayerGlue( pointTimeLayer );
-    if( ::Minerva::Core::Layers::PolygonLayer* polygonLayer = dynamic_cast < ::Minerva::Core::Layers::PolygonLayer* > ( layer.get() ) )
-      return gcnew PolygonLayerGlue( polygonLayer );
-    if( ::Minerva::Core::Layers::PolygonTimeLayer* polygonTimeLayer = dynamic_cast < ::Minerva::Core::Layers::PolygonTimeLayer* > ( layer.get() ) )
-      return gcnew PolygonTimeLayerGlue ( polygonTimeLayer );
-    if( ::Minerva::Core::Layers::RLayer* rLayer = dynamic_cast < ::Minerva::Core::Layers::RLayer* > ( layer.get() ) )
-      return gcnew RLayerGlue ( rLayer );
+      managedLayer = gcnew LineLayerGlue( lineLayer );
+    else if( ::Minerva::Core::Layers::PointLayer* pointLayer = dynamic_cast < ::Minerva::Core::Layers::PointLayer* > ( layer.get() ) )
+      managedLayer = gcnew PointLayerGlue( pointLayer );
+    else if( ::Minerva::Core::Layers::PointTimeLayer* pointTimeLayer = dynamic_cast < ::Minerva::Core::Layers::PointTimeLayer* > ( layer.get() ) )
+      managedLayer = gcnew PointTimeLayerGlue( pointTimeLayer );
+    else if( ::Minerva::Core::Layers::PolygonLayer* polygonLayer = dynamic_cast < ::Minerva::Core::Layers::PolygonLayer* > ( layer.get() ) )
+      managedLayer = gcnew PolygonLayerGlue( polygonLayer );
+    else if( ::Minerva::Core::Layers::PolygonTimeLayer* polygonTimeLayer = dynamic_cast < ::Minerva::Core::Layers::PolygonTimeLayer* > ( layer.get() ) )
+      managedLayer = gcnew PolygonTimeLayerGlue ( polygonTimeLayer );
+    else if( ::Minerva::Core::Layers::RLayer* rLayer = dynamic_cast < ::Minerva::Core::Layers::RLayer* > ( layer.get() ) )
+      managedLayer = gcnew RLayerGlue ( rLayer );
   }
 
-  return nullptr;
+  return managedLayer;
 }
+
+
+
 
 CadKit::Interfaces::ILayer^ Factory::create( System::String^ datatable, DT::Minerva::Interfaces::IDatabaseConnection^ connection )
 {

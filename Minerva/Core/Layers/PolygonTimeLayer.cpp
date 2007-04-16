@@ -91,9 +91,10 @@ void PolygonTimeLayer::_registerMembers()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Layer* PolygonTimeLayer::clone() const
+Usul::Interfaces::IUnknown* PolygonTimeLayer::clone() const
 {
-  return new PolygonTimeLayer( *this );
+  Usul::Interfaces::IUnknown::QueryPtr copy ( new PolygonTimeLayer( *this ) );
+  return copy.release();
 }
 
 

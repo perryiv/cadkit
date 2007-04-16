@@ -25,7 +25,9 @@ print out
 reader.next()
 for row in reader:
     for s in row:
+        out.write ("\"")
         out.write ( s )
+        out.write ("\"")
         out.write ( ", " )
     g = geocode.geocode ( row[1], row[3], row[4], row[5] )
     out.write ( g.precision )

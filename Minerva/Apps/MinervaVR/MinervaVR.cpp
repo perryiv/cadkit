@@ -206,13 +206,18 @@ void MinervaVR::appSceneInit()
 
   std::cerr << " [MinervaVR] begin reading kwl: " << std::endl;
 
+  
   if( _options.option ( KWL ) )
   {
     std::string kwl ( _options.value ( KWL ) );
     std::string dir ( Usul::File::directory ( kwl, false ) );
-    ::chdir ( dir.c_str() );
-    _planet->readKWL( kwl );
+
+	std::cout << "KWL is:" << kwl << ":" << std::endl;
+    //::chdir ( dir.c_str() );
+    _planet->readKWL( kwl.c_str() );
   }
+  
+
   //_planet->readKWL( "/array/cluster/demos/ossimTest/MCFCD.kwl" );
   
   std::cerr << " [MinveraVR] done reading kwl: " << std::endl;

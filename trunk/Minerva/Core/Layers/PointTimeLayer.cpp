@@ -17,12 +17,12 @@
 #include "OsgTools/Animate/DateGroup.h"
 #include "OsgTools/Animate/DateCallback.h"
 
-#include "Serialize/XML/RegisterCreator.h"
-
 #include "osg/Group"
 #include "osg/MatrixTransform"
 
 using namespace Minerva::Core::Layers;
+
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS( PointTimeLayer, PointTimeLayer::BaseClass );
 
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER( OsgTools::Animate::Date );
 
@@ -87,9 +87,10 @@ void PointTimeLayer::_registerMembers()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Layer* PointTimeLayer::clone() const
+Usul::Interfaces::IUnknown* PointTimeLayer::clone() const
 {
-  return new PointTimeLayer( *this );
+  Usul::Interfaces::IUnknown::QueryPtr copy ( new PointTimeLayer( *this ) );
+  return copy.release();
 }
 
 
@@ -433,3 +434,48 @@ const OsgTools::Animate::Date& PointTimeLayer::maxDate() const
   return _maxDate;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* PointTimeLayer::queryInterface( unsigned long iid )
+{
+  switch ( iid )
+  {
+  //case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IPointLayer::IID:
+    return static_cast < Usul::Interfaces::IPointLayer* > ( this );
+  case Usul::Interfaces::ITemporalData::IID:
+    return static_cast < Usul::Interfaces::ITemporalData* > ( this );
+  case Minerva::Core::IPointTimeLayerRawPointer::IID:
+    return static_cast < Minerva::Core::IPointTimeLayerRawPointer * > ( this );
+  default:
+    return BaseClass::queryInterface ( iid );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the point time layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PointTimeLayer* PointTimeLayer::getRawPointer()
+{
+  return this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the point time layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const PointTimeLayer* PointTimeLayer::getRawPointer() const
+{
+  return this;
+}

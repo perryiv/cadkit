@@ -12,7 +12,7 @@ namespace CadKit.Plugins.Ossim
 {
   public class OssimLayer : System.Windows.Forms.UserControl
   {
-    private System.Collections.Generic.List<CadKit.OSSIMPlanet.Glue.ImageLayer> _layers = new System.Collections.Generic.List<CadKit.OSSIMPlanet.Glue.ImageLayer>();
+    private System.Collections.Generic.List<CadKit.Interfaces.ILayer> _layers = new System.Collections.Generic.List<CadKit.Interfaces.ILayer>();
     private CadKit.Interfaces.IOptionsPage _page;
     private System.Windows.Forms.Panel panel1;
     private System.Windows.Forms.ListView _listView;
@@ -118,7 +118,7 @@ namespace CadKit.Plugins.Ossim
 
       if (null != layerList)
       {
-        foreach (CadKit.OSSIMPlanet.Glue.ImageLayer layer in _layers)
+        foreach (CadKit.Interfaces.ILayer layer in _layers)
         {
           layerList.addLayer(layer, this);
         }
@@ -157,12 +157,7 @@ namespace CadKit.Plugins.Ossim
 
             foreach (string s in dialog.FileNames)
             {
-              CadKit.OSSIMPlanet.Glue.ImageLayer layer = new CadKit.OSSIMPlanet.Glue.ImageLayer(s);
-              _layers.Add(layer);
-
-              System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(s);
-              item.SubItems.Add(layer.StateCode.ToString());
-              _listView.Items.Add(item);
+              _addLayer(s);
             }
           }
         }
@@ -170,6 +165,29 @@ namespace CadKit.Plugins.Ossim
       catch (System.Exception ex)
       {
         System.Console.WriteLine("Error 2754833304: {0}", ex.Message);
+      }
+    }
+
+    private void _addLayer(string s)
+    {
+      System.IO.FileInfo info = new System.IO.FileInfo(s);
+      if (".kwl" == info.Extension)
+      {
+        CadKit.OSSIMPlanet.Glue.KwlLayer layer = new CadKit.OSSIMPlanet.Glue.KwlLayer(s);
+        _layers.Add(layer);
+
+        System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(s);
+        item.SubItems.Add(layer.StateCode.ToString());
+        _listView.Items.Add(item);
+      }
+      else
+      {
+        CadKit.OSSIMPlanet.Glue.ImageLayer layer = new CadKit.OSSIMPlanet.Glue.ImageLayer(s);
+        _layers.Add(layer);
+
+        System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(s);
+        item.SubItems.Add(layer.StateCode.ToString());
+        _listView.Items.Add(item);
       }
     }
   }

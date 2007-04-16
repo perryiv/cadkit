@@ -11,23 +11,6 @@
 #ifndef __MINERVA_CORE_SERIALIZE_H__
 #define __MINERVA_CORE_SERIALIZE_H__
 
-#if 0
-// This needs to be included before any boost/serialization headers.
-#include "boost/archive/xml_oarchive.hpp"
-#include "boost/archive/xml_iarchive.hpp"
-
-#include "boost/serialization/extended_type_info_typeid.hpp"
-
-#include "boost/serialization/serialization.hpp"
-#include "boost/serialization/base_object.hpp"
-#include "boost/serialization/nvp.hpp"
-#include "boost/serialization/version.hpp"
-#include "boost/serialization/map.hpp"
-
-#include "Usul/Pointers/BoostSerialize.h"
-
-#endif
-
 #include "Minerva/Core/Layers/LineLayer.h"
 #include "Minerva/Core/Layers/PolygonLayer.h"
 #include "Minerva/Core/Layers/PointLayer.h"
@@ -44,28 +27,6 @@
 
 namespace Minerva {
 namespace Core {
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Register types that can be serialized.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class Archive > void registerTypes( Archive& a )
-{
-  // Register types.
-#if 0
-  a.register_type<Minerva::Core::Layers::LineLayer>();
-  a.register_type<Minerva::Core::Layers::PolygonLayer>();
-  a.register_type<Minerva::Core::Layers::PointLayer>();
-  a.register_type<Minerva::Core::Layers::PointTimeLayer>();
-  a.register_type<Minerva::Core::Layers::RLayer>();
-  a.register_type<Minerva::Core::Functors::SingleColorFunctor>();
-  a.register_type<Minerva::Core::Functors::GradientColorFunctor>();
-  a.register_type<Minerva::Core::Layers::PolygonTimeLayer>();
-#endif
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -93,10 +54,11 @@ inline void registerFactories()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline std::string serialize( Minerva::Core::Layers::Layer *layer )
+template < class T >
+inline std::string serialize( T *layer )
 {
   registerFactories();
-  std::vector< Minerva::Core::Layers::Layer::RefPtr > v;
+  std::vector< Usul::Interfaces::ISerialize::QueryPtr > v;
   v.push_back( layer );
 
   std::string contents;

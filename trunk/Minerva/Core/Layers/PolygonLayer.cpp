@@ -14,8 +14,6 @@
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 
-#include "Serialize/XML/RegisterCreator.h"
-
 #include "osg/Group"
 
 #include <algorithm>
@@ -84,9 +82,10 @@ void PolygonLayer::_registerMembers()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Layer* PolygonLayer::clone() const
+Usul::Interfaces::IUnknown* PolygonLayer::clone() const
 {
-  return new PolygonLayer( *this );
+  Usul::Interfaces::IUnknown::QueryPtr copy  ( new PolygonLayer( *this ) );
+  return copy.release();
 }
 
 
@@ -347,10 +346,36 @@ Usul::Interfaces::IUnknown* PolygonLayer::queryInterface( unsigned long iid )
 {
   switch ( iid )
   {
-  case Usul::Interfaces::IUnknown::IID:
+  //case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IPolygonLayer::IID:
     return static_cast < Usul::Interfaces::IPolygonLayer* > ( this );
+  case Minerva::Core::IPolygonLayerRawPointer::IID:
+    return static_cast < Minerva::Core::IPolygonLayerRawPointer* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the raw pointer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PolygonLayer* PolygonLayer::getRawPointer()
+{
+  return this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the raw pointer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const PolygonLayer* PolygonLayer::getRawPointer() const
+{
+  return this;
 }

@@ -224,7 +224,6 @@ void MinervaVR::appSceneInit()
     bool useEphemeris ( false );
     in >> useEphemeris;
     _planet->ephemerisFlag( useEphemeris );
-
   }
 
   mModelGroupNode->addChild ( _planet->root() );

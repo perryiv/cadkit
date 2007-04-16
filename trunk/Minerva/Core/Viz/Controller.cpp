@@ -357,9 +357,14 @@ Minerva::Core::Layers::Layer* Controller::_getLayer( const std::string drawComma
 
     if ( hasLayer )
     {
-      Minerva::Core::Layers::Layer::RefPtr oldLayer ( _sceneManager->getLayer( layer->guid() ) );
-      Minerva::Core::deserialize( xml, oldLayer.get() );
-      return oldLayer.get();
+      // For now.
+      Minerva::Core::Layers::Layer::RefPtr oldLayer ( reinterpret_cast < Minerva::Core::Layers::Layer* > ( _sceneManager->getLayer( layer->guid() ) ) );
+
+      if( oldLayer.valid() )
+      {
+        Minerva::Core::deserialize( xml, oldLayer.get() );
+        return oldLayer.get();
+      }
     }
   }
 

@@ -39,7 +39,6 @@
     <Compile Include="IDatabaseConnection.cs" />
     <Compile Include="IDataSource.cs" />
     <Compile Include="IDataTables.cs" />
-    <Compile Include="ILayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

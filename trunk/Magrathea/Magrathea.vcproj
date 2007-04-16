@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR)/Magrathea/src;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(OSSIM_INC_DIR); $(OSSIM_PLANET_INC_DIR);$(OSG_EPHEMERIS_INC_DIR);$(CADKIT_ROOT_DIR);$(WMS_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR)/Experimental;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(OSSIM_INC_DIR); $(OSSIM_PLANET_INC_DIR);$(OSG_EPHEMERIS_INC_DIR);$(CADKIT_ROOT_DIR);$(WMS_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_COMPILING_MAGRATHEA;GEOTIFF_ENABLED;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -122,7 +122,7 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR)/Magrathea/src;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(OSSIM_INC_DIR); $(OSSIM_PLANET_INC_DIR);$(OSG_EPHEMERIS_INC_DIR);$(CADKIT_ROOT_DIR);$(WMS_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR)/Experimental;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(OSSIM_INC_DIR); $(OSSIM_PLANET_INC_DIR);$(OSG_EPHEMERIS_INC_DIR);$(CADKIT_ROOT_DIR);$(WMS_INC_DIR)"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_COMPILING_MAGRATHEA;GEOTIFF_ENABLED;"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -194,7 +194,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ImageTextureLayer.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ImageTextureLayer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\KwlLayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\KwlLayer.h"
 				>
 			</File>
 			<File

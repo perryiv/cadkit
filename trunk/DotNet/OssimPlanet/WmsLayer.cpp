@@ -12,7 +12,7 @@
 
 #include "Usul/Strings/ManagedToNative.h"
 
-#include "ossimPlanet/ossimPlanetWmsImageLayer.h"
+#include "Magrathea/WmsLayer.h"
 
 using namespace CadKit::OSSIMPlanet::Glue;
 
@@ -23,14 +23,31 @@ using namespace CadKit::OSSIMPlanet::Glue;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-WmsLayer::WmsLayer() : _wmsImageLayer ( new ossimPlanetWmsImageLayer )
+WmsLayer::WmsLayer() : _wmsImageLayer ( new Magrathea::WmsLayer )
 {
   _wmsImageLayer->ref();
-  _wmsImageLayer->setTransparentFlag( true );
+  _wmsImageLayer->transparentFlag( true );
 
-  _wmsImageLayer->setTransparentColorFlag ( true );
-  _wmsImageLayer->setTransparentColor ( 255, 255, 255 );
+  _wmsImageLayer->transparentColorFlag ( true );
+  _wmsImageLayer->transparentColor ( 255, 255, 255 );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+WmsLayer::WmsLayer( Magrathea::WmsLayer* layer ) : _wmsImageLayer ( layer )
+{
+  _wmsImageLayer->ref();
+  _wmsImageLayer->transparentFlag( true );
+
+  _wmsImageLayer->transparentColorFlag ( true );
+  _wmsImageLayer->transparentColor ( 255, 255, 255 );
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -67,6 +84,18 @@ WmsLayer::!WmsLayer()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the Guid.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::String^ WmsLayer::Guid::get()
+{
+  return gcnew System::String ( _wmsImageLayer->guid().c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the name.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -74,18 +103,6 @@ WmsLayer::!WmsLayer()
 System::String^ WmsLayer::Name::get()
 {
   return this->Server;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the name.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void WmsLayer::Name::set ( System::String^ s )
-{
-  this->Server = s;
 }
 
 
@@ -103,46 +120,13 @@ bool WmsLayer::Shown::get()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Show.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void WmsLayer::show()
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Modify.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void WmsLayer::modify()
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Hide.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void WmsLayer::hide()
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the native pointer.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 System::IntPtr WmsLayer::nativeIntPtr()
 {
-  return System::IntPtr ( _wmsImageLayer );
+  return System::IntPtr ( _wmsImageLayer->queryInterface( Usul::Interfaces::IUnknown::IID ) );
 }
 
 
@@ -154,7 +138,7 @@ System::IntPtr WmsLayer::nativeIntPtr()
 
 System::String^ WmsLayer::Server::get()
 {
-  return gcnew System::String ( _wmsImageLayer->getServer().c_str() );
+  return gcnew System::String ( _wmsImageLayer->server().c_str() );
 }
 
 
@@ -166,7 +150,7 @@ System::String^ WmsLayer::Server::get()
 
 void WmsLayer::Server::set( System::String^ s )
 {
-  _wmsImageLayer->setServer ( Usul::Strings::convert( s ) );
+  _wmsImageLayer->server ( Usul::Strings::convert( s ) );
 }
 
 
@@ -178,7 +162,7 @@ void WmsLayer::Server::set( System::String^ s )
 
 System::String^ WmsLayer::CacheDirectory::get()
 {
-  return gcnew System::String ( _wmsImageLayer->getCacheDirectory().c_str() );
+  return gcnew System::String ( _wmsImageLayer->cacheDirectory().c_str() );
 }
 
 
@@ -190,7 +174,7 @@ System::String^ WmsLayer::CacheDirectory::get()
 
 void WmsLayer::CacheDirectory::set ( System::String^ s )
 {
-  _wmsImageLayer->setCacheDirectory( Usul::Strings::convert( s ).c_str() );
+  _wmsImageLayer->cacheDirectory( Usul::Strings::convert( s ).c_str() );
 }
 
 
@@ -202,7 +186,7 @@ void WmsLayer::CacheDirectory::set ( System::String^ s )
 
 System::String^ WmsLayer::ImageType::get()
 {
-  return gcnew System::String ( _wmsImageLayer->getImageType().c_str() );
+  return gcnew System::String ( _wmsImageLayer->imageType().c_str() );
 }
 
 
@@ -215,8 +199,6 @@ System::String^ WmsLayer::ImageType::get()
 void WmsLayer::ImageType::set ( System::String^ s )
 {
   std::string imageType ( Usul::Strings::convert( s ) );
-  _wmsImageLayer->setImageType( imageType.c_str() );
-
-  //_wmsImageLayer->setImageType( "image/png" );
+  _wmsImageLayer->imageType( imageType.c_str() );
 }
 

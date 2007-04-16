@@ -23,6 +23,10 @@
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Interfaces/ILayer.h"
+#include "Usul/Interfaces/IVectorLayer.h"
+#include "Usul/Interfaces/IAddRowLegend.h"
+#include "Usul/Interfaces/ISerialize.h"
+#include "Usul/Interfaces/IClonable.h"
 
 #include "Serialize/XML/Macros.h"
 
@@ -44,7 +48,11 @@ namespace Core {
 namespace Layers {
 
 class MINERVA_EXPORT Layer : public Usul::Base::Referenced,
-                             public Usul::Interfaces::ILayer
+                             public Usul::Interfaces::ILayer,
+                             public Usul::Interfaces::IVectorLayer,
+                             public Usul::Interfaces::IAddRowLegend,
+                             public Usul::Interfaces::ISerialize,
+                             public Usul::Interfaces::IClonable
 {
 public:
   /// Typedefs.
@@ -62,9 +70,6 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   Layer();
-
-  /// Clone the this layer.
-  virtual Layer*              clone() const = 0;
 
   /// Get/Set the color functor. 
   void                        colorFunctor( ColorFunctor *colorFunctor );
@@ -160,7 +165,7 @@ public:
   std::string                 geometryColumn() const;
 
   /// Get the guid.
-  const std::string &         guid() const;
+  std::string                 guid() const;
 
   /// Get/Set show count in legend.
   void                        showCountLegend( bool b );
@@ -190,6 +195,16 @@ protected:
 
   /// update legend object.
   void                        _updateLegendObject();
+
+  /// Usul::Interfaces::IVectorLayer
+  virtual void                buildVectorData  ( Usul::Interfaces::IUnknown *caller = 0x0 );
+  virtual void                modifyVectorData ( Usul::Interfaces::IUnknown *caller = 0x0 );
+
+  /// Usul::Interfaces::IAddRowLegend
+  virtual void                             addLegendRow ( OsgTools::Legend::LegendObject* row );
+
+  /// Clone the this layer.
+  virtual Usul::Interfaces::IUnknown*      clone() const = 0;
 
 private:
 

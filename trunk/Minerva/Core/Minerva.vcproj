@@ -230,6 +230,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Serialize.h"
 					>
 				</File>

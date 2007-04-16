@@ -20,10 +20,10 @@
 #include <string>
 
 namespace osg { class Vec3f; }
+namespace Usul { namespace Interfaces { struct ILayer; } }
 
 namespace Minerva {
 namespace Core {
-  namespace Layers { class Layer; }
 namespace GUI {
 
 class MINERVA_EXPORT Controller : public Usul::Base::Referenced
@@ -50,13 +50,13 @@ public:
   Strings          getAvailableSessions();
 
   /// Remove layer with given id.
-  void             removeLayer( Minerva::Core::Layers::Layer *Layer );
+  void             removeLayer( Usul::Interfaces::ILayer *Layer );
 
   /// Show layer.
-  int              showLayer ( Minerva::Core::Layers::Layer *Layer );
+  int              showLayer ( Usul::Interfaces::ILayer *Layer );
 
   /// Modify polygon data.
-  void             modifyLayer( Minerva::Core::Layers::Layer *layer );
+  void             modifyLayer( Usul::Interfaces::ILayer *layer );
 
   /// Start animation.
   void             startAnimation( float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays );
@@ -74,7 +74,7 @@ protected:
   void             _clearTable( const std::string& tableName );
 
   /// Build a query for the draw command table
-  int              _executeLayerQuery( Minerva::Core::Layers::Layer *Layer );
+  int              _executeLayerQuery( Usul::Interfaces::ILayer *Layer );
 
   /// Add an event.
   void             _executeEventTableQuery( int type, int eventId );

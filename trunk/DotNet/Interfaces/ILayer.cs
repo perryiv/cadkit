@@ -3,11 +3,8 @@ namespace CadKit.Interfaces
 {
   public interface ILayer : IReferenced
   {
-    string Name { get; set; }
+    string Guid { get; }
+    string Name { get; }
     bool Shown { get; }
-
-    void show();
-    void modify();
-    void hide();
   }
 }

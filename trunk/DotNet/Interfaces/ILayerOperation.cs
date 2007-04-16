@@ -6,7 +6,6 @@ namespace CadKit.Interfaces
 {
   public interface ILayerOperation : IReferenced
   {
-    void setLayerOperation( String opType, int val, int[] layers );
-    void setLayerOperation(String opType, int val, int layer);
+    void setLayerOperation(String opType, int val, CadKit.Interfaces.ILayer layer);
   }
 }

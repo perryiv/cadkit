@@ -21,7 +21,8 @@ namespace DT{
   public ref class Factory
   {
   public:
-    static CadKit::Interfaces::ILayer^ create( System::IntPtr pointer );
+    static CadKit::Interfaces::ILayer^ createIUnknown( System::IntPtr pointer );
+    static CadKit::Interfaces::ILayer^ createFromMinervaLayer( System::IntPtr pointer );
     static CadKit::Interfaces::ILayer^ create( System::String^ datatable, DT::Minerva::Interfaces::IDatabaseConnection^ connection );
 
     static BaseColorFunctor ^          createColorFunctor ( ::Minerva::Core::Functors::BaseColorFunctor * );

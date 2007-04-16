@@ -12,8 +12,6 @@
 
 #include "OsgTools/Legend/GradientIcon.h"
 
-#include "Serialize/XML/TypeWrapper.h"
-
 #include <iostream>
 
 using namespace Minerva::Core::Functors;

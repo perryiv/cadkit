@@ -10,7 +10,7 @@
 
 #pragma once
 
-class ossimPlanetWmsImageLayer;
+namespace Magrathea { class WmsLayer; }
 
 namespace CadKit
 {
@@ -26,23 +26,24 @@ namespace CadKit
       {
       public:
         WmsLayer( );
+        WmsLayer( Magrathea::WmsLayer * );
         ~WmsLayer();
         !WmsLayer();
+
+        property System::String^ Guid
+        {
+          virtual System::String^ get();
+        }
 
         property System::String^ Name
         {
           virtual System::String^ get();
-          virtual void set ( System::String^ s );
         }
         
         property bool Shown
         {
           virtual bool get();
         }
-
-        virtual void show();
-        virtual void modify();
-        virtual void hide();
 
         virtual System::IntPtr           nativeIntPtr();
 
@@ -65,7 +66,7 @@ namespace CadKit
         }
 
       private:
-        ossimPlanetWmsImageLayer *_wmsImageLayer;
+        Magrathea::WmsLayer *_wmsImageLayer;
       };
     }
   }

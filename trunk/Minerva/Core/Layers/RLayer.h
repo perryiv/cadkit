@@ -28,9 +28,6 @@ public:
 
   RLayer();
 
-  /// Clone the this layer.
-  virtual Layer*              clone() const;
-
   enum Mode
   {
     CYLINDER,
@@ -64,6 +61,9 @@ protected:
   void            _buildDataObjectsPolygons( Usul::Interfaces::IUnknown *caller );
 
   void            _registerMembers();
+
+  /// Clone the this layer.
+  virtual Usul::Interfaces::IUnknown*              clone() const;
 
 private:
 

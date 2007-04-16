@@ -64,9 +64,12 @@ LayerGlue::!LayerGlue()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-System::IntPtr LayerGlue::layerPtr()
+System::IntPtr LayerGlue::nativeIntPtr()
 {
-  return System::IntPtr ( this->layer() );
+  /// Make sure every thing is set properly before returning native pointer.
+  this->setLayerProperties();
+
+  return System::IntPtr ( this->layer()->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 }
 
 
@@ -598,3 +601,16 @@ void LayerGlue::ShowCountLegend::set ( bool value )
 {
   this->layer()->showCountLegend( value );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the Guid.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::String^ LayerGlue::Guid::get()
+{
+  return gcnew System::String ( this->layer()->guid().c_str() );
+}
+

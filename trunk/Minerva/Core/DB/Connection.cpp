@@ -171,21 +171,32 @@ const std::string& Connection::password() const
 
 void Connection::connect()
 {
-  std::ostringstream os;
+  try
+  {
+    std::ostringstream os;
 
-#ifndef _MSC_VER
-  std::string host ( Usul::System::Host::name() );
-  if( boost::algorithm::find_first ( host, "viz" ) )
-    _host = "cinema";
-#endif
+  #ifndef _MSC_VER
+    std::string host ( Usul::System::Host::name() );
+    if( boost::algorithm::find_first ( host, "viz" ) )
+      _host = "cinema";
+  #endif
 
-  os << "dbname=" << _database << " "
-    << "user=" << _user << " "
-    << "password=" << _password << " "
-    << "host=" << _host;
+    os << "dbname=" << _database << " "
+      << "user=" << _user << " "
+      << "password=" << _password << " "
+      << "host=" << _host;
 
-  // Set up a connection to the backend.
-  _connection = new pqxx::connection( os.str().c_str() );
+    // Set up a connection to the backend.
+    _connection = new pqxx::connection( os.str().c_str() );
+  }
+  catch ( const std::exception& e )
+  {
+    std::cerr << "Error 3839724500: " << e.what() << std::endl;
+  }
+  catch ( ... )
+  {
+    std::cerr << "Error 4295095950: Unknown exception caught while trying to connect." << std::endl;
+  }
 }
 
 

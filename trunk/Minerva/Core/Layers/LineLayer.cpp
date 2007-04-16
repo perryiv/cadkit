@@ -65,9 +65,10 @@ void LineLayer::_registerMembers()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Layer* LineLayer::clone() const
+Usul::Interfaces::IUnknown* LineLayer::clone() const
 {
-  return new LineLayer( *this );
+  Usul::Interfaces::IUnknown::QueryPtr copy ( new LineLayer( *this ) );
+  return copy.release();
 }
 
 
@@ -247,10 +248,36 @@ Usul::Interfaces::IUnknown* LineLayer::queryInterface( unsigned long iid )
 {
   switch ( iid )
   {
-  case Usul::Interfaces::IUnknown::IID:
+  //case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::ILineLayer::IID:
     return static_cast < Usul::Interfaces::ILineLayer* > ( this );
+  case Minerva::Core::ILineLayerRawPointer::IID:
+    return static_cast < Minerva::Core::ILineLayerRawPointer* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the line layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+LineLayer* LineLayer::getRawPointer()
+{
+  return this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the line layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const LineLayer* LineLayer::getRawPointer() const
+{
+  return this;
 }

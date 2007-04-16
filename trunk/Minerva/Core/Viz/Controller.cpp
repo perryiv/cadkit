@@ -30,6 +30,64 @@ using namespace Minerva::Core::Viz;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Controller , Controller::BaseClass );
 
+
+class MovieLayer : public Minerva::Core::Layers::Layer
+{
+	public:
+
+	typedef Minerva::Core::Layers::Layer	BaseClass;
+
+	USUL_DECLARE_REF_POINTERS ( MovieLayer );
+
+	MovieLayer() : BaseClass(), 
+		_position( 0.0, 0.0, 0.0 ),
+		_width( 0.0, 0.0, 0.0 ),
+		_height( 0.0, 0.0, 0.0 ), 
+		_fileName( std::string( "" ) )		
+	{					
+	}
+
+	Layer* clone() const 
+	{
+		return new MovieLayer();
+	}	  
+
+	void buildDataObjects( Usul::Interfaces::IUnknown* ){}
+
+	void modify( Usul::Interfaces::IUnknown* ){} 
+
+	void buildScene( osg::Group* gr )
+	{
+		if( gr )
+		{
+		 	 // Call play movie function and pass in group, width, height, position, and path.
+    				Usul::Interfaces::IPlayMovie::QueryPtr playMoviePlug ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlayMovie::IID ) );
+
+    			if( playMoviePlug.valid() )
+    			{
+     	 			gr->addChild( playMoviePlug->playMovie( _position, _width, _height, _fileName ) );
+    			}
+
+		}	
+	}
+
+	void setValues( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& fileName )
+	{
+		_position = position;
+		_width    = width;
+		_height   = height;
+		_fileName = fileName;
+	}  
+
+	protected:
+	
+	osg::Vec3f  _position;
+	osg::Vec3f  _width;
+	osg::Vec3f  _height;
+
+	std::string _fileName;	 
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -438,7 +496,7 @@ void Controller::_processPlayMovie   ( const std::string& tableName, int eventID
 
   if( !result.empty() )
   {
-    std::string postionString ( result[0]["position"].as< std::string >() );
+    std::string postionString ( result[0]["the_position"].as< std::string >() );
     std::string widthString   ( result[0]["width"].as< std::string >() );
     std::string heightString  ( result[0]["height"].as< std::string >() );    
     std::string path          ( result[0]["path"].as < std::string > () );
@@ -455,16 +513,26 @@ void Controller::_processPlayMovie   ( const std::string& tableName, int eventID
     in.str( heightString );
     in >> height;
 
+
+	//std::cout << "Params are: " << position << " " << width << " " << height << std::endl;
+
+     MovieLayer::RefPtr movie =  new MovieLayer();
+	movie->setValues( position, width, height, path );
+
+	if( movie.valid() )
+	{
+		_sceneManager->addLayer( movie.get() );
+	}
     // Play movie.
     // Create osg::Group from scene manager.
-    osg::ref_ptr< osg::Group > root = dynamic_cast< osg::Group* >( _sceneManager->root() );   
+    //osg::ref_ptr< osg::Group > root = dynamic_cast< osg::Group* >( _sceneManager->root() );   
     
     // Call play movie function and pass in group, width, height, position, and path.  
-    Usul::Interfaces::IPlayMovie::QueryPtr playMoviePlug ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlayMovie::IID ) );
+    //Usul::Interfaces::IPlayMovie::QueryPtr playMoviePlug ( Usul::Components::Manager::instance().getInterface( Usul::Interfa//ces::IPlayMovie::IID ) );
 
-    if( playMoviePlug.valid() )
-    {
-      root->addChild( playMoviePlug->playMovie( position, width, height, path ) );
-    }
+    //if( playMoviePlug.valid() )
+    //{
+     // root->addChild( playMoviePlug->playMovie( position, width, height, path ) );
+    //}
   }
 }

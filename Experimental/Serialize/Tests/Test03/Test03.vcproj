@@ -118,6 +118,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="$(BOOST_INC_DIR);$(LOCAL_SRC_DIR);$(LOCAL_SRC_DIR)/Experimental;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -136,7 +137,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="XmlTree.lib  SerializeXML.lib Usul.lib osg.lib"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(LOCAL_SRC_DIR)/bin; $(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

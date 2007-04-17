@@ -28,7 +28,7 @@ SERIALIZE_XML_REGISTER_CREATOR ( ImageTextureLayer );
 ImageTextureLayer::ImageTextureLayer( ) : BaseClass(),
 _guid ( Usul::Functions::generateGUID() ),
 _filename ( ),
-_ossimTextureLayer ( 0x0 ),
+_ossimTextureLayer ( new ossimPlanetOssimImageLayer ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
   SERIALIZE_XML_ADD_MEMBER ( _guid );

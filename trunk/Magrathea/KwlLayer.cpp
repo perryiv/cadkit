@@ -11,6 +11,8 @@
 #include "Magrathea/KwlLayer.h"
 
 #include "Usul/Functions/Guid.h"
+#include "Usul/System/Directory.h"
+#include "Usul/File/Path.h"
 
 #include "Serialize/XML/RegisterCreator.h"
 
@@ -76,8 +78,21 @@ KwlLayer::~KwlLayer()
 
 void KwlLayer::open ( )
 {
+  // Get the directory the file lives in.
+  std::string directory ( Usul::File::directory( _filename, false ) );
+  
+  // Get the current working directory.
+  std::string cwd ( Usul::System::Directory::cwd () );
+
+  // Set the new current working directory.
+  Usul::System::Directory::cwd ( directory );
+
+  // Open the kwl.
   ossimKeywordlist kwl( _filename.c_str() );
   _layer = ossimPlanetTextureLayerRegistry::instance()->createLayer( kwl.toString() );
+
+  // Restore the old current working directory.
+  Usul::System::Directory::cwd( directory );
 }
 
 

@@ -1398,6 +1398,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\System\Directory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\System\Directory.h"
+					>
+				</File>
+				<File
 					RelativePath=".\System\Environment.cpp"
 					>
 				</File>

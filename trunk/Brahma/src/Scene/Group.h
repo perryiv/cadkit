@@ -1,5 +1,4 @@
 
-
 #ifndef __BRAHMA_SCENE_GROUP_H__
 #define __BRAHMA_SCENE_GROUP_H__
 
@@ -31,8 +30,8 @@ namespace Brahma
           this->_addMember( "_children", _children );
         }
 
-        void                                        children( const Children& children );
-        Children                                    children();
+        const Children&                             children() const;
+        void                                        children( const Children& children );        
 
       protected:
 

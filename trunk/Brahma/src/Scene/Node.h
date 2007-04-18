@@ -39,10 +39,10 @@ namespace Brahma
         {
         }
 
-        std::string         _id;      
-        std::string         _data;
-        
-        SERIALIZE_XML_DEFINE_MEMBERS ( Node );
+        std::string         _id;          
+        std::string         _data;  
+
+        SERIALIZE_XML_DEFINE_MEMBERS ( Node );     
     };
   }
 }

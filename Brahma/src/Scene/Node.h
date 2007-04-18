@@ -1,6 +1,6 @@
 
-#ifndef __BRAHMA_SCENE_BRAHMA_H__
-#define __BRAHMA_SCENE_BRAHMA_H__
+#ifndef __BRAHMA_SCENE_NODE_H__
+#define __BRAHMA_SCENE_NODE_H__
 
 #include "Core/Object.h"
 
@@ -19,20 +19,20 @@ namespace Brahma
         USUL_DECLARE_REF_POINTERS( Node );
 
         Node() : BaseClass(),           
-          _id( "" )
+          _id   ( "" ), 
+          _data ( "" )
         {
           this->_addMember( "_id", _id );  
+          this->_addMember( "_data", _data );
         }
 
-        void id( const std::string& id )
-        {
-          _id = id;
-        }
+        void                id( const std::string& id );
 
-        const std::string& id() const
-        {
-          return _id;
-        }        
+        const std::string&  id() const;        
+
+        void                data( const std::string& source );
+
+        const std::string&  data() const;
 
       protected:
 
@@ -40,11 +40,12 @@ namespace Brahma
         {
         }
 
-        std::string       _id;      
+        std::string         _id;      
+        std::string         _data;
         
         SERIALIZE_XML_DEFINE_MEMBERS ( Node );
     };
   }
 }
 
-#endif // #define __BRAHMA_SCENE_BRAHMA_H__
+#endif // #define __BRAHMA_SCENE_NODE_H__

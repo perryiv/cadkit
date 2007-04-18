@@ -14,7 +14,6 @@
 #include "PointTimeLayerGlue.h"
 #include "PolygonLayerGlue.h"
 #include "PolygonTimeLayerGlue.h"
-#include "RLayerGlue.h"
 #include "SingleColorFunctor.h"
 #include "GradientColorFunctor.h"
 #include "Connection.h"
@@ -80,8 +79,6 @@ CadKit::Interfaces::ILayer^ Factory::createFromMinervaLayer( System::IntPtr poin
       managedLayer = gcnew PolygonLayerGlue( polygonLayer );
     else if( ::Minerva::Core::Layers::PolygonTimeLayer* polygonTimeLayer = dynamic_cast < ::Minerva::Core::Layers::PolygonTimeLayer* > ( layer.get() ) )
       managedLayer = gcnew PolygonTimeLayerGlue ( polygonTimeLayer );
-    else if( ::Minerva::Core::Layers::RLayer* rLayer = dynamic_cast < ::Minerva::Core::Layers::RLayer* > ( layer.get() ) )
-      managedLayer = gcnew RLayerGlue ( rLayer );
   }
 
   return managedLayer;

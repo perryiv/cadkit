@@ -113,7 +113,7 @@ void RLayer::buildScene( osg::Group* parent )
 
 void RLayer::_buildSceneCylinder( osg::Group* parent )
 {
-  DataObjects &dataObjects ( this->_getDataObjects() );
+  /*DataObjects &dataObjects ( this->_getDataObjects() );
 
   OsgTools::ShapeFactory::Ptr sf ( new OsgTools::ShapeFactory );
 
@@ -144,7 +144,7 @@ void RLayer::_buildSceneCylinder( osg::Group* parent )
       ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
       parent->addChild ( geode.get() );
     }
-  }
+  }*/
 }
 
 
@@ -176,9 +176,6 @@ void RLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
   {
     this->_buildDataObjectsPolygons( caller );
   }
-
-  // Update the legend.
-  this->_updateLegendObject();
 }
 
 

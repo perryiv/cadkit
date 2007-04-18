@@ -200,7 +200,10 @@ namespace DT
           if (!this->CustomQuery)
             this->Query = this->DefaultQuery;
 
-          this->layer()->colorFunctor( this->_createColorFunctor( this->ColorProperties )->colorFunctor( ) );
+          DT::Minerva::Glue::BaseColorFunctor^ functor = this->_createColorFunctor( this->ColorProperties );
+
+          if( nullptr != functor )
+            this->layer()->colorFunctor( functor->colorFunctor( ) );
         }
 
 

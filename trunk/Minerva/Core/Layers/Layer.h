@@ -30,8 +30,6 @@
 
 #include "Serialize/XML/Macros.h"
 
-#include "OsgTools/Legend/LegendObject.h"
-
 namespace osg { class Group; }
 #include "osg/Vec4"
 
@@ -62,7 +60,6 @@ public:
   typedef std::vector< DataObjectPtr >	            DataObjects;
   typedef Usul::Threads::RecursiveMutex             Mutex;
   typedef Usul::Threads::Guard<Mutex>               Guard;
-  typedef OsgTools::Legend::LegendObject            LegendObject; 
   typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;
 
   /// Smart-pointer definitions.
@@ -139,9 +136,6 @@ public:
   /// Is this layer temporal.
   virtual bool                isTemporal() const;
 
-  /// Get the legend object.
-  virtual LegendObject*       legendObject();
-
   /// Get/Set the text for the legend.
   void                        legendText( const std::string& text );
   const std::string&          legendText() const;
@@ -193,9 +187,6 @@ protected:
 
   void                        _registerMembers();
 
-  /// update legend object.
-  void                        _updateLegendObject();
-
   /// Usul::Interfaces::IVectorLayer
   virtual void                buildVectorData  ( Usul::Interfaces::IUnknown *caller = 0x0 );
   virtual void                modifyVectorData ( Usul::Interfaces::IUnknown *caller = 0x0 );
@@ -219,7 +210,6 @@ private:
   DataObjects _dataObjects;
   DB::Connection::RefPtr _connection;
   Functors::BaseColorFunctor::RefPtr _colorFunctor;
-  LegendObject::RefPtr   _legendObject;
   std::string            _legendText;
   bool                   _showLabel;
   bool                   _shown;

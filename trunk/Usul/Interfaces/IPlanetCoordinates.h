@@ -8,34 +8,33 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_IGEOMETRY_CENTER_H__
-#define __USUL_INTERFACES_IGEOMETRY_CENTER_H__
+#ifndef __USUL_PLANET_COORDINATES_H__
+#define __USUL_PLANET_COORDINATES_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class Vec3f; }
+#include "Usul/Math/Vector3.h"
 
 namespace Usul {
 namespace Interfaces {
 
 
-struct IGeometryCenter : public Usul::Interfaces::IUnknown
+struct IPlanetCoordinates : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IGeometryCenter );
+  USUL_DECLARE_QUERY_POINTERS ( IPlanetCoordinates );
 
   /// Id for this interface.
-  enum { IID = 1213513200u };
+  enum { IID = 2885858388u };
 
-  virtual osg::Vec3f geometryCenter ( unsigned int& srid ) = 0;
-  virtual osg::Vec3f geometryCenter ( const osg::Vec3f& offset, unsigned int& srid ) = 0;
+  virtual void convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const = 0;
 
-}; // struct IGeometryCenter
+}; // struct IPlanetCoordinates
 
 
 } // end namespace Interfaces
 } // end namespace Usul
 
 
-#endif /* __USUL_INTERFACES_IGEOMETRY_CENTER_H__ */
+#endif /* __USUL_PLANET_COORDINATES_H__ */
 

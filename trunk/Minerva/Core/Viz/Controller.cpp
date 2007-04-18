@@ -47,9 +47,9 @@ class MovieLayer : public Minerva::Core::Layers::Layer
 	{					
 	}
 
-	Layer* clone() const 
+  Usul::Interfaces::IUnknown* clone() const 
 	{
-		return new MovieLayer();
+    return (new MovieLayer())->queryInterface( Usul::Interfaces::IUnknown::IID );
 	}	  
 
 	void buildDataObjects( Usul::Interfaces::IUnknown* ){}

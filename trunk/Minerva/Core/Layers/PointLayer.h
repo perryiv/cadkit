@@ -48,6 +48,10 @@ public:
   void                    size( float );
   float                   size() const;
 
+  /// Get/Set primitive size column.
+  void                    primitiveSizeColumn ( const std::string& );
+  const std::string&      primitiveSizeColumn () const;
+
   /// Get/Set stack points.
   void                    stackPoints ( bool b );
   bool                    stackPoints() const;
@@ -55,6 +59,9 @@ public:
   /// Get/Set quality
   void                    quality( float value );
   float                   quality() const;
+
+  /// Get the default query.
+  virtual std::string         defaultQuery() const;
 
 protected:
   virtual ~PointLayer();
@@ -77,6 +84,7 @@ private:
   float _size;
   bool _stackPoints;
   float _quality;
+  std::string _primitiveSizeColumn;
 
   SERIALIZE_XML_CLASS_NAME ( PointLayer );
 };

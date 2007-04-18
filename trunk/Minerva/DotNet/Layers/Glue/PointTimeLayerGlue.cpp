@@ -108,6 +108,8 @@ System::String^ PointTimeLayerGlue::PrimitiveType::get()
     return gcnew System::String ( "Cube" );
   case ::Minerva::Core::DataObjects::Point::INVERTED_CONE:
     return gcnew System::String ( "Inverted Cone" );
+  case ::Minerva::Core::DataObjects::Point::CYLINDER:
+    return gcnew System::String ( "Cylinder" );
   }
 
   return gcnew System::String( "" );
@@ -139,6 +141,9 @@ void PointTimeLayerGlue::PrimitiveType::set(System::String^ s )
   
   else if ( s->Equals ( "Inverted Cone" ) )
     _pointTimeLayer->primitiveID( ::Minerva::Core::DataObjects::Point::INVERTED_CONE );
+
+  else if ( s->Equals ( "Cylinder" ) )
+    _pointTimeLayer->primitiveID( ::Minerva::Core::DataObjects::Point::CYLINDER );
 }
 
 

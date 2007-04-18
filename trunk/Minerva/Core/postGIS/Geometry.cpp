@@ -17,6 +17,9 @@
 
 #include "osg/Node"
 
+#include "Usul/Components/Manager.h"
+#include "Usul/Interfaces/IProjectCoordinates.h"
+
 #include "ossim/base/ossimKeywordNames.h"
 #include "ossim/base/ossimKeywordlist.h"
 #include "ossim/projection/ossimProjectionFactoryRegistry.h"
@@ -75,30 +78,21 @@ Geometry::~Geometry()
 
 void Geometry::_convertToLatLong ( const Vertices& vertices, std::vector< ossimGpt >& latLongPoints )
 {
-  ossimMapProjection *mapProj = dynamic_cast < ossimMapProjection * > ( _projection.get() );
+  Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
 
-  if( this->_isSridSphereical( _srid ) )
+  if ( project.valid() )
   {
     for( Vertices::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter )
     {
-      // Index 0 contains longitude, index 1 contains latitude.
-      ossimGpt gpt ( (*iter)[1], (*iter)[0] ); // Lat is first agrument, long is second.
+      Usul::Math::Vec3d orginal ( (*iter)[0], (*iter)[1], 0.0 );
+      Usul::Math::Vec3d point;
+      project->projectToSpherical( orginal, _srid, point );
+
+      ossimGpt gpt ( point[0], point[1], point[2] ); // Lat is first agrument, long is second.
       
-      double deltaH = ossimElevManager::instance()->getHeightAboveMSL( gpt );
-      if(deltaH == OSSIM_DBL_NAN)
-      {
-         deltaH = 0.0;
-      }
-
-      gpt.height( deltaH + ossimGeoidManager::instance()->offsetFromEllipsoid(gpt) );
-
       latLongPoints.push_back( gpt );
     }
   }
-  else if( _projection.valid() && 0x0 != mapProj )
-  {
-    Magrathea::convertToLatLong( vertices, latLongPoints, mapProj );
-  }
 }
 
 
@@ -108,9 +102,9 @@ void Geometry::_convertToLatLong ( const Vertices& vertices, std::vector< ossimG
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Vec3f Geometry::geometryCenter ( )
+osg::Vec3f Geometry::geometryCenter ( unsigned int& srid )
 {
-  return this->geometryCenter ( _offset );
+  return this->geometryCenter ( _offset, srid );
 }
 
 
@@ -120,8 +114,11 @@ osg::Vec3f Geometry::geometryCenter ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Vec3f  Geometry::geometryCenter ( const osg::Vec3f& offset )
+osg::Vec3f  Geometry::geometryCenter ( const osg::Vec3f& offset, unsigned int& srid )
 {
+  // Set the srid.
+  srid = _srid;
+
   std::ostringstream os;
   os << "SELECT x(centroid(" << _tableName << ".geom)) as x_c, y(centroid(" << _tableName << ".geom)) as y_c, srid(geom) as srid FROM " << _tableName << " WHERE id = " << _id;
 
@@ -134,10 +131,10 @@ osg::Vec3f  Geometry::geometryCenter ( const osg::Vec3f& offset )
     Usul::Types::Float64 x ( r[0][0].as< float > () );
     Usul::Types::Float64 y ( r[0][1].as< float > () );
 
-    center.set( offset.x() + x, offset.y() + y, 0.0 );
+    center.set( offset.x() + x, offset.y() + y, offset.z() );
   }
 
-  ossimMapProjection *mapProj = dynamic_cast < ossimMapProjection * > ( _projection.get() );
+  /*ossimMapProjection *mapProj = dynamic_cast < ossimMapProjection * > ( _projection.get() );
 
   if( this->_isSridSphereical( _srid ) )
   {
@@ -146,7 +143,7 @@ osg::Vec3f  Geometry::geometryCenter ( const osg::Vec3f& offset )
   else if( _projection.valid() && 0x0 != mapProj )
   {
     Magrathea::convertToEarthCoordinates( center, mapProj, offset.z() );
-  }
+  }*/
 
   return center;
 }

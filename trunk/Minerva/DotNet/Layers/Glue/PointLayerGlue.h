@@ -23,8 +23,7 @@ namespace DT
   {
     namespace Glue 
     {
-      public ref class PointLayerGlue : public LayerGlue,
-        public DT::Minerva::Interfaces::IDataTables
+      public ref class PointLayerGlue : public LayerGlue
 	    {
       public:
         PointLayerGlue();
@@ -34,15 +33,6 @@ namespace DT
 
         typedef System::Collections::Generic::List< System::String ^ >  Strings;
 
-        [
-          System::ComponentModel::Browsable(false)
-        ]
-        property int PrimitiveID
-        {
-          int get();
-          void set ( int i );
-        }
-
 
         /// Get/Set the primitive size.
         [
@@ -50,11 +40,7 @@ namespace DT
           System::ComponentModel::Description("Size of primitive"),
           System::ComponentModel::Browsable(true)
         ]
-        property float Size
-        {
-          float get();
-          void set ( float f );
-        }
+        PROPERTY_GET_SET(Size, float )
 
         /// Get/Set the primitive type.
         [
@@ -64,6 +50,16 @@ namespace DT
           System::ComponentModel::TypeConverter( DT::Minerva::Layers::TypeConverters::PointPrimitiveTypes::typeid )
         ]
         PROPERTY_GET_SET(PrimitiveType, System::String^);
+
+
+        /// Get/Set the column to base primitive size from.
+        [
+          System::ComponentModel::Category("Primitive"),
+          System::ComponentModel::Description("Column to base size of primitive from"),
+          System::ComponentModel::Browsable(true),
+          System::ComponentModel::TypeConverter( DT::Minerva::Layers::TypeConverters::ColumnNames::typeid )
+        ]
+        PROPERTY_GET_SET( PrimitiveSizeColumn, System::String^ )
 
 
         /// Get/Set stack points flag.
@@ -76,18 +72,6 @@ namespace DT
           System::ComponentModel::Browsable(true)
         ]
         PROPERTY_GET_SET ( Quality, float );
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [
-          System::ComponentModel::Browsable(false)
-        ]
-        property array<System::String^> ^ DataTables
-        {
-          virtual array<System::String^> ^ get ();
-        }
 
         virtual ::Minerva::Core::Layers::Layer * layer() override;
 

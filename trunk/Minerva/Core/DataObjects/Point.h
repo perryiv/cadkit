@@ -86,12 +86,15 @@ protected:
   osg::Node*            _buildCylinder();
 
 private:
-  float _size;
+  float        _size;
   unsigned int _primitiveId;
-  float _quality;
+  float        _quality;
+  unsigned int _srid;
+  osg::Vec3    _orginalCenter;
+  osg::Vec3    _convertedCenter;
 
-  osg::ref_ptr < osg::Material >       _material;
-  osg::ref_ptr< osg::MatrixTransform >   _mt;
+  osg::ref_ptr < osg::Material >         _material;
+  osg::ref_ptr< osg::Group >             _group;
 };
 
 

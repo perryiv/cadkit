@@ -287,48 +287,53 @@ void MinervaDocument::viewLayerExtents ( Usul::Interfaces::IUnknown * layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::setLayerOperation( const std::string& optype, int val, ossimPlanetTextureLayer * layer )
+void MinervaDocument::setLayerOperation( const std::string& optype, int val, Usul::Interfaces::IUnknown * layer )
 {
-  osg::ref_ptr < ossimPlanetTextureLayer > texture ( layer );
+  Usul::Interfaces::IOssimPlanetLayer::QueryPtr ossim ( layer );
 
-  if( texture.valid() )
-  { 
-    if( !_planet->hasLayerOperation( texture.get() ) )
-    {
-      _planet->addLayerOperation( texture.get() );
-      _planet->removeLayer( texture.get() );
-    }             
+  if( ossim.valid() )
+  {
+    osg::ref_ptr < ossimPlanetTextureLayer > texture ( ossim->ossimPlanetLayer() );
 
-    if( optype == "Opacity"  )
-    {            
-      float oVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
-      _planet->opacity( oVal );   
-    }
-    else if( optype == "Top" )
-    {
-      _planet->top();
-    }
-    else if( optype == "Reference" )
-    {
-      _planet->reference();
-    }
-    else if( optype == "AbsoluteDifference" )
-    {
-      _planet->absoluteDifference();
-    }
-    else if( optype == "FalseColorReplacement" )
-    {
-      _planet->falseColorReplacement();
-    }
-    else if( optype == "HorizontalSwipe" )
-    {
-      float hVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
-      _planet->horizontalSwipe( hVal );
-    }
-    else if( optype == "VerticalSwipe" )
-    {
-      float vVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
-      _planet->verticalSwipe( vVal );
+    if( texture.valid() )
+    { 
+      if( !_planet->hasLayerOperation( texture.get() ) )
+      {
+        _planet->addLayerOperation( texture.get() );
+        _planet->removeLayer( texture.get() );
+      }             
+
+      if( optype == "Opacity"  )
+      {            
+        float oVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
+        _planet->opacity( oVal );   
+      }
+      else if( optype == "Top" )
+      {
+        _planet->top();
+      }
+      else if( optype == "Reference" )
+      {
+        _planet->reference();
+      }
+      else if( optype == "AbsoluteDifference" )
+      {
+        _planet->absoluteDifference();
+      }
+      else if( optype == "FalseColorReplacement" )
+      {
+        _planet->falseColorReplacement();
+      }
+      else if( optype == "HorizontalSwipe" )
+      {
+        float hVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
+        _planet->horizontalSwipe( hVal );
+      }
+      else if( optype == "VerticalSwipe" )
+      {
+        float vVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
+        _planet->verticalSwipe( vVal );
+      }
     }
   }
 }

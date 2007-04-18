@@ -295,47 +295,80 @@ osg::Geometry * ShapeFactory::cylinder ( float radius,
   osg::Matrix matrix ( scale * rotate * translate );
 
   float c = 3.14159 / 180.0;
-  float x,y,z;
+  float x, z;
+
+  osg::ref_ptr< osg::Vec3Array > topVertices ( new osg::Vec3Array );
+  osg::ref_ptr< osg::Vec3Array > topNormals  ( new osg::Vec3Array );
+
+  topVertices->push_back( unPoint2 );
+  topNormals->push_back( osg::Vec3 ( 0.0, 1.0, 0.0 ) );
+
+  osg::ref_ptr< osg::Vec3Array > bottomVertices ( new osg::Vec3Array );
+  osg::ref_ptr< osg::Vec3Array > bottomNormals  ( new osg::Vec3Array );
+
+  bottomVertices->push_back( unPoint1 );
+  bottomNormals->push_back( osg::Vec3 ( 0.0, -1.0, 0.0 ) );
+
   //calculate the point for the unit cylinder then multiply it by the transform matrix
-  for(unsigned int i = 0; i < sides; ++i)
+  for( unsigned int i = 0; i < sides; ++i )
   {
     float u = (float) i / (float) (sides - 1);
     float theta = u * 360.0;
-    x = radius * sin( c * theta ) + unPoint1[0];
-    y = unPoint1[1];
-    z = radius * cos( c * theta ) + unPoint1[2];
+    x = radius * sin( c * theta );
+    z = radius * cos( c * theta );
 
-    osg::Vec3 v0 (x, y, z);
+    osg::Vec3 v0 ( x, 0.0, z );
 
-    vertices->push_back( v0 );
+    normals->push_back( v0 );
+    vertices->push_back( v0 + unPoint1 );
 
-    x = radius * sin( c * theta ) + unPoint2[0];
-    y = unPoint2[1];
-    z = radius * cos( c * theta ) + unPoint2[2];
+    bottomVertices->push_back( v0 + unPoint1 );
+    bottomNormals->push_back( osg::Vec3 ( 0.0, -1.0, 0.0 ) );
 
-    osg::Vec3 v1 ( x, y, z );
+    x = radius * sin( c * theta );
+    z = radius * cos( c * theta );
 
-    vertices->push_back( v1 );
+    osg::Vec3 v1 ( x, 0.0, z );
+
+    normals->push_back( v1 );
+    vertices->push_back( v1 + unPoint2 );
+
+    topVertices->push_back( v1 + unPoint2 );
+    topNormals->push_back( osg::Vec3 ( 0.0, 1.0, 0.0 ) );
   }
 
-  geometry->setVertexArray ( vertices.get() );
+  // Add the body.
   geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLE_STRIP, 0, vertices->size() ) );
 
-  normals->reserve(vertices->size());
+  // Add the top fan
+  geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLE_FAN, vertices->size(), topVertices->size() ) );
+  vertices->insert( vertices->end(), topVertices->begin(), topVertices->end() );
+  normals->insert( normals->end(), topNormals->begin(), topNormals->end() );
 
-  //calculate the normals for the tri-strips
-  for(osg::Vec3Array::iterator i = vertices->begin(); i != vertices->end(); ++ i)
+  // Add the bottom fan.
+  geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLE_FAN, vertices->size(), topVertices->size() ) );
+  vertices->insert( vertices->end(), bottomVertices->begin(), bottomVertices->end() );
+  normals->insert( normals->end(), bottomNormals->begin(), bottomNormals->end() );
+
+  // Calculate the normals for the tri-strips
+  for( osg::Vec3Array::iterator i = normals->begin(); i != normals->end(); ++i )
   {
     osg::Vec3 normal ( *i );
     normal.normalize();
     normal = normal * rotate;
-    normals->push_back(normal);
+    *i = normal;
+  }
 
+  // Move the vertices into the right location.
+  for(osg::Vec3Array::iterator i = vertices->begin(); i != vertices->end(); ++ i)
+  {
     *i = *i * matrix;
   }
 
-  geometry->setNormalArray(normals.get());
-  geometry->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);  
+  // Set the vertices and normals.
+  geometry->setVertexArray ( vertices.get() );
+  geometry->setNormalArray( normals.get() );
+  geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
 
   _cylinders[key] = geometry;
   return geometry.get();

@@ -248,9 +248,6 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       std::cout << "Error 4160517991: exception generated while adding point-time layer" << std::endl;
     }
   }
-
-  // Update the legend.
-  this->_updateLegendObject();
 }
 
 

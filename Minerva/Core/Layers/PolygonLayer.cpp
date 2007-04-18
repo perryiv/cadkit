@@ -162,9 +162,6 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       progress->updateProgressBar( num );
     }
   }
-
-  // Update the legend.
-  this->_updateLegendObject();
 }
 
 

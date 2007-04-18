@@ -62,17 +62,31 @@ osg::Geometry* Point::buildPointData( PrimitiveType type )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Vec3f Point::geometryCenter ( const osg::Vec3f& offset )
+osg::Vec3f Point::geometryCenter ( unsigned int& srid )
 {
+  return Point::geometryCenter( this->spatialOffset(), srid );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the center of the geometry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec3f Point::geometryCenter ( const osg::Vec3f& offset, unsigned int& srid )
+{
+  srid = this->srid();
+
   const VertexList& vertexList ( this->_vertices() );
 
   if( vertexList.size() == 1 && vertexList[0].size() == 1 )
   {
     osg::Vec3 center;
     BinaryParser::Vertex v ( vertexList[0][0] );
-    center.set( v[0], v[1], 0.0 );
+    center.set( v[0], v[1], offset.z() );
 
-    ossimMapProjection *mapProj = dynamic_cast < ossimMapProjection * > ( _projection.get() );
+    /*ossimMapProjection *mapProj = dynamic_cast < ossimMapProjection * > ( _projection.get() );
 
     if( this->_isSridSphereical( _srid ) )
     {
@@ -81,12 +95,12 @@ osg::Vec3f Point::geometryCenter ( const osg::Vec3f& offset )
     else if( _projection.valid() && 0x0 != mapProj )
     {
       Magrathea::convertToEarthCoordinates( center, mapProj, offset.z() );
-    }
+    }*/
 
     return center;
   }
 
-  return BaseClass::geometryCenter ( offset );
+  return BaseClass::geometryCenter ( offset, srid );
 }
 
 

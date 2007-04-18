@@ -23,7 +23,7 @@ namespace DT.Minerva.Layers.TypeConverters
 
     public override System.ComponentModel.TypeConverter.StandardValuesCollection GetStandardValues(System.ComponentModel.ITypeDescriptorContext context)
     {
-      System.String []types = new System.String [] { "Point", "Sphere", "Cone", "Disk", "Cube", "Inverted Cone" };
+      System.String []types = new System.String [] { "Point", "Sphere", "Cone", "Disk", "Cube", "Inverted Cone", "Cylinder" };
       return new StandardValuesCollection ( types );
     }
 

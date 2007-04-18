@@ -157,8 +157,9 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
               std::string quadWidth( result[0][3].as< std::string >() );
               std::string quadHeight( result[0][4].as< std::string >() );             
               
+              unsigned int srid ( 0 );
               // Send command.
-              distributed->playMovie( position->geometryCenter(), 
+              distributed->playMovie( position->geometryCenter( srid ), 
                                       convertStringToPosition( quadWidth ), 
                                       convertStringToPosition( quadHeight ), 
                                       path );
@@ -173,7 +174,8 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
              
                 try
                 {
-                  osg::ref_ptr< osg::Node >  node ( playMovie ( position->geometryCenter(), convertStringToPosition( quadWidth ), convertStringToPosition( quadHeight ), "C://movie//test.mpg" ) );
+                  unsigned int srid ( 0 );
+                  osg::ref_ptr< osg::Node >  node ( playMovie ( position->geometryCenter( srid ), convertStringToPosition( quadWidth ), convertStringToPosition( quadHeight ), "C://movie//test.mpg" ) );
                   if( node.valid() )
                   {
                     group->removeChildren( 0, group->getNumChildren() );

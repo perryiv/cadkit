@@ -54,12 +54,15 @@ public:
   void                    dirty ( bool b );
   bool                    dirty () const;
 
+  /// Get the srid.
+  unsigned int            srid () const { return _srid; }
+
 protected:
   virtual ~Geometry();
 
   /// Usul::Interfaces::IGeometryCenter
-  virtual osg::Vec3f geometryCenter ( );
-  virtual osg::Vec3f geometryCenter ( const osg::Vec3f& offset );
+  virtual osg::Vec3f geometryCenter ( unsigned int& srid );
+  virtual osg::Vec3f geometryCenter ( const osg::Vec3f& offset, unsigned int& srid );
 
   /// Usul::Interfaces::IOffset
   virtual const osg::Vec3f&   spatialOffset () const;

@@ -31,7 +31,8 @@ PointLayer::PointLayer() : BaseClass(),
 _primitiveID( 2 ),
 _size( 5 ),
 _stackPoints ( false ),
-_quality ( 0.80 )
+_quality ( 0.80 ),
+_primitiveSizeColumn()
 {
   this->name( "PointLayer" );
 
@@ -49,7 +50,8 @@ PointLayer::PointLayer ( const PointLayer& layer ) : BaseClass ( layer ),
 _primitiveID( layer._primitiveID ),
 _size( layer._size ),
 _stackPoints ( layer._stackPoints ),
-_quality( layer._quality )
+_quality( layer._quality ),
+_primitiveSizeColumn( layer._primitiveSizeColumn )
 {
   this->_registerMembers();
 }
@@ -67,6 +69,7 @@ void PointLayer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _size );
   SERIALIZE_XML_ADD_MEMBER ( _stackPoints );
   SERIALIZE_XML_ADD_MEMBER ( _quality );
+  SERIALIZE_XML_ADD_MEMBER ( _primitiveSizeColumn );
 }
 
 
@@ -143,6 +146,12 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     data->tableName ( dataTable );
     data->rowId ( id );
 
+    if( this->primitiveSizeColumn().size() > 0 )
+    {
+      float value ( iter [ this->primitiveSizeColumn() ].as < float > () );
+      data->size( this->size() * value );
+    }
+
      /// Set the label.
     this->_labelDataObject( data.get() );
 
@@ -157,9 +166,6 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 
   /// Stack the points.
   this->_stack();
-
-  // Update the legend.
-  this->_updateLegendObject();
 }
 
 
@@ -181,13 +187,15 @@ void PointLayer::_stack()
 
     DataObjects &dataObjects ( this->_getDataObjects() );
 
+    unsigned int srid ( 0 );
+
     for( Layer::DataObjects::iterator iter = dataObjects.begin(); iter != dataObjects.end(); ++iter )
     {
       Usul::Interfaces::IGeometryCenter::QueryPtr geometryCenter ( (*iter)->geometry() );
 
       if( geometryCenter.valid () )
       {
-        map[ geometryCenter->geometryCenter() ].push_back ( *iter );
+        map[ geometryCenter->geometryCenter( srid ) ].push_back ( *iter );
       }
     }
 
@@ -379,4 +387,57 @@ void PointLayer::quality( float value )
 float PointLayer::quality() const
 {
   return _quality;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set quality.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointLayer::primitiveSizeColumn( const std::string& value )
+{
+  _primitiveSizeColumn = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get quality.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& PointLayer::primitiveSizeColumn() const
+{
+  return _primitiveSizeColumn;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the default query.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string PointLayer::defaultQuery() const
+{
+  // Get the geometry colomn.
+  const std::string geomColumn ( this->geometryColumn() );
+
+  // Build the query.
+  std::ostringstream query;
+  query << "SELECT " << this->primaryKeyColumn() << " as id, srid(" << geomColumn << ") as srid, asBinary(" << geomColumn << ") as geom";
+  if ( this->colorColumn().size() > 0 )
+  {
+    query << ", " << this->colorColumn();
+  }
+
+  if ( this->primitiveSizeColumn().size() > 0 )
+  {
+    query << ", " << this->primitiveSizeColumn();
+  }
+  
+  query << " FROM " << this->tablename( );
+  return query.str();
 }

@@ -12,7 +12,12 @@
 
 #include "Usul/Functions/Guid.h"
 #include "Usul/Functions/ToString.h"
+#include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IGeometryCenter.h"
+#include "Usul/Interfaces/IProjectCoordinates.h"
+#include "Usul/Interfaces/IPlanetCoordinates.h"
+
+#include "OsgTools/Legend/LegendObject.h"
 
 #include "osg/Group"
 #include "osg/MatrixTransform"
@@ -47,7 +52,6 @@ _zOffset ( 0.0 ),
 _dataObjects(),
 _connection(),
 _colorFunctor( 0x0 ),
-_legendObject ( new LegendObject ),
 _legendText( "" ),
 _showLabel ( false ),
 _shown ( true ),
@@ -82,7 +86,6 @@ _zOffset ( layer._zOffset ),
 _dataObjects( layer._dataObjects ),
 _connection( layer._connection ),
 _colorFunctor( 0x0 ),
-_legendObject ( new OsgTools::Legend::LegendObject ),
 _legendText( layer._legendText ),
 _showLabel ( layer._showLabel ),
 _shown ( layer._shown ),
@@ -119,7 +122,6 @@ void Layer::_registerMembers()
   //DataObjects _dataObjects;
   SERIALIZE_XML_ADD_MEMBER ( _connection );
   SERIALIZE_XML_ADD_MEMBER ( _colorFunctor );
-  //LegendObject::RefPtr   _legendObject;
   SERIALIZE_XML_ADD_MEMBER ( _legendText );
   SERIALIZE_XML_ADD_MEMBER ( _showLabel );
   SERIALIZE_XML_ADD_MEMBER ( _shown );
@@ -396,20 +398,6 @@ float Layer::zOffset( ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the legend object.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-OsgTools::Legend::LegendObject* Layer::legendObject()
-{
-  if( 0x0 == _legendObject.get() )
-    _legendObject = new OsgTools::Legend::LegendObject;
-  return _legendObject.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the legend text.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -582,12 +570,34 @@ void Layer::_labelDataObject ( Minerva::Core::DataObjects::DataObject* dataObjec
     dataObject->label( value );
     dataObject->labelColor( this->labelColor() );
 
+    osg::Vec3 center;
+    unsigned int srid ( 0 );
     Usul::Interfaces::IGeometryCenter::QueryPtr geometryCenter ( dataObject->geometry() );
     if( geometryCenter.valid() )
     {
-      osg::Vec3 center ( geometryCenter->geometryCenter( osg::Vec3f ( 0.0, 0.0, this->labelZOffset() ) ) );
-      dataObject->labelPosition( center );
+      center = geometryCenter->geometryCenter( srid );
     }
+
+    Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
+    Usul::Interfaces::IPlanetCoordinates::QueryPtr  planet  ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlanetCoordinates::IID ) );
+
+    if( project.valid() )
+    {
+      Usul::Math::Vec3d orginal;
+      orginal[0] = center[0];
+      orginal[1] = center[1];
+      orginal[2] = this->labelZOffset();
+      Usul::Math::Vec3d point;
+      project->projectToSpherical( orginal, srid, point );
+
+      if( planet.valid() )
+      {
+        planet->convertToPlanet( point, point );
+        center.set ( point[0], point[1], point[2] );
+      }
+    }
+
+    dataObject->labelPosition( center );
 
     dataObject->labelSize( _labelSize );
   }
@@ -764,44 +774,6 @@ bool Layer::showCountLegend() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Update legend object.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Layer::_updateLegendObject()
-{
-  try
-  {
-    if( 0x0 != this->colorFunctor() )
-      this->legendObject()->icon ( this->colorFunctor()->icon( this->queryInterface( Usul::Interfaces::IUnknown::IID ) ) );
-
-    // One columns for the text
-    this->legendObject()->columns ( 1 );
-    this->legendObject()->at ( 0 )->text ( this->legendText() );
-    
-
-    if( this->showCountLegend() )
-    {
-      this->legendObject()->columns ( this->legendObject()->columns() + 1 );
-      this->legendObject()->at ( 1 )->text ( Usul::Functions::toString( this->number() ) );
-      this->legendObject()->percentage( 1 ) = 0.20;
-    }
-
-    this->legendObject()->percentage( 0 ) = 0.80;
-  }
-  catch ( const std::exception& e )
-  {
-    std::cout << "Error 3665976713: " << e.what() << std::endl;
-  }
-  catch ( ... )
-  {
-    std::cout << "Error 4254986090: Unknown exception caught." << std::endl;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Query for the interface.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -875,7 +847,7 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
 
       if( this->showCountLegend() )
       {
-        row->columns ( this->legendObject()->columns() + 1 );
+        row->columns ( row->columns() + 1 );
         row->at ( 1 )->text ( Usul::Functions::toString( this->number() ) );
         row->percentage( 1 ) = 0.20;
       }

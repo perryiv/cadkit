@@ -10,8 +10,9 @@
 
 #include "PointLayerGlue.h"
 
+#include "Usul/Strings/ManagedToNative.h"
+
 #include "Minerva/Core/DataObjects/Point.h"
-#include "Minerva/Core/DB/Info.h"
 
 using namespace DT::Minerva::Glue;
 
@@ -80,30 +81,6 @@ PointLayerGlue::!PointLayerGlue()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the primitive id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-int PointLayerGlue::PrimitiveID::get()
-{
-  return _pointLayer->primitiveID();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the primitive id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void PointLayerGlue::PrimitiveID::set ( int i )
-{
-  _pointLayer->primitiveID( i );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the size.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -150,6 +127,8 @@ System::String^ PointLayerGlue::PrimitiveType::get()
     return gcnew System::String ( "Cube" );
   case ::Minerva::Core::DataObjects::Point::INVERTED_CONE:
     return gcnew System::String ( "Inverted Cone" );
+  case ::Minerva::Core::DataObjects::Point::CYLINDER:
+    return gcnew System::String ( "Cylinder" );
   }
 
   return gcnew System::String( "" );
@@ -181,6 +160,9 @@ void PointLayerGlue::PrimitiveType::set(System::String^ s )
   
   else if ( s->Equals ( "Inverted Cone" ) )
     _pointLayer->primitiveID( ::Minerva::Core::DataObjects::Point::INVERTED_CONE );
+  
+  else if ( s->Equals ( "Cylinder" ) )
+    _pointLayer->primitiveID( ::Minerva::Core::DataObjects::Point::CYLINDER );
 }
 
 
@@ -244,19 +226,27 @@ void PointLayerGlue::Quality::set ( float value )
 }
 
 
-array<System::String^> ^ PointLayerGlue::DataTables::get()
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the primitive quality.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::String^ PointLayerGlue::PrimitiveSizeColumn::get()
 {
-  typedef ::Minerva::Core::DB::Info DbInfo;
-  typedef DbInfo::Strings Strings;
-
-  DbInfo::RefPtr info ( new DbInfo ( this->layer()->connection() ) );
-
-  Strings strings ( info->pointTables() );
-
-  array<System::String^>^ tables = gcnew array< System::String^ > ( strings.size() );
-
-  for( unsigned int i = 0; i < strings.size(); ++i )
-    tables->SetValue( gcnew System::String( strings[i].c_str() ), static_cast < int > ( i ) );
-
-  return tables;
+  return gcnew System::String ( _pointLayer->primitiveSizeColumn().c_str() );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the primitive quality.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointLayerGlue::PrimitiveSizeColumn::set ( System::String^ value )
+{
+  _pointLayer->primitiveSizeColumn( Usul::Strings::convert( value ) );
+}
+

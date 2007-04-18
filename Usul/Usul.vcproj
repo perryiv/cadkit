@@ -506,6 +506,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IPlanetCoordinates.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IProjectCoordinates.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IScreenCapture.h"
 					>
 				</File>

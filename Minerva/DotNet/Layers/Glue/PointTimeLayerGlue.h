@@ -30,22 +30,6 @@ namespace DT
         virtual ~PointTimeLayerGlue();
         !PointTimeLayerGlue();
 
-        [
-          System::ComponentModel::Browsable(false)
-        ]
-        property int PrimitiveID
-        {
-          int get()
-          {
-            return _pointTimeLayer->primitiveID();
-          }
-          void set ( int i )
-          {
-            _pointTimeLayer->primitiveID( i );
-          }
-        }
-
-
         /// Get/Set the primitive size.
         [
           System::ComponentModel::Category("Primitive"),
@@ -64,6 +48,15 @@ namespace DT
           }
         }
 
+        /// Get/Set the primitive type.
+        [
+          System::ComponentModel::Category("Primitive"),
+          System::ComponentModel::Description("Type of primitive"),
+          System::ComponentModel::Browsable(true),
+          System::ComponentModel::TypeConverter( DT::Minerva::Layers::TypeConverters::PointPrimitiveTypes::typeid )
+        ]
+        PROPERTY_GET_SET(PrimitiveType, System::String^);
+
 
         [
           System::ComponentModel::Category("Date"),
@@ -80,15 +73,6 @@ namespace DT
           System::ComponentModel::TypeConverter(DT::Minerva::Layers::TypeConverters::ColumnNames::typeid)
         ]
         PROPERTY_GET_SET(LastDateColumn, System::String^);
-
-
-        /// Get/Set the primitive type.
-        [
-          System::ComponentModel::Category("Primitive"),
-          System::ComponentModel::Description("Type of primitive"),
-          System::ComponentModel::Browsable(true)
-        ]
-        PROPERTY_GET_SET(PrimitiveType, System::String^);
 
         property array< System::String ^ >^ DataTables
         {

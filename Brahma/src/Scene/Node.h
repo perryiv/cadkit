@@ -26,13 +26,12 @@ namespace Brahma
           this->_addMember( "_data", _data );
         }
 
+        const std::string&  id() const;        
         void                id( const std::string& id );
 
-        const std::string&  id() const;        
-
-        void                data( const std::string& source );
-
+        
         const std::string&  data() const;
+        void                data( const std::string& source );        
 
       protected:
 

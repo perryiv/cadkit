@@ -617,12 +617,8 @@ void DllGlue::setLayerOperation( System::String ^optype, int val, CadKit::Interf
     CadKit::Interfaces::INativePtr^ nativePtr = dynamic_cast< CadKit::Interfaces::INativePtr^ >( layer );   
     if( nullptr != nativePtr )
     {
-      osg::ref_ptr< ossimPlanetTextureLayer > texture ( reinterpret_cast < ossimPlanetTextureLayer* > ( nativePtr->nativeIntPtr().ToPointer() ) );
-
-      if( texture.valid() )
-      { 
-        _document->setLayerOperation( Usul::Strings::convert( optype ), val, texture.get() );
-      }
+      Usul::Interfaces::IUnknown::QueryPtr unknown ( reinterpret_cast < Usul::Interfaces::IUnknown* > ( nativePtr->nativeIntPtr().ToPointer() ) );
+      _document->setLayerOperation( Usul::Strings::convert( optype ), val, unknown.get() );
     }
   }
 }

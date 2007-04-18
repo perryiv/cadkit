@@ -95,7 +95,7 @@ public:
 
   void                        viewLayerExtents ( Usul::Interfaces::IUnknown * layer );
 
-  void                        setLayerOperation( const std::string&, int val, ossimPlanetTextureLayer * layer );
+  void                        setLayerOperation( const std::string&, int val, Usul::Interfaces::IUnknown * layer );
 
   void                        timestepType( Settings::TimestepType type );
   Settings::TimestepType      timestepType( ) const;

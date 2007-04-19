@@ -13,29 +13,36 @@ import csv
 import sys,string
 import geocode
 
-print "Enter a filename: ",
+print "Enter a filename for input: ",
 filename = string.rstrip(sys.stdin.readline())
 
 reader = csv.reader ( open( filename, "rb" ) )
-print reader
 
-out = open( 'output.csv', 'w' )
-print out
+print "Enter output filename: ",
+outfile = string.rstrip(sys.stdin.readline())
 
-reader.next()
+out = open( outfile, 'w' )
+
+for s in reader.next():
+    out.write("\"")
+    out.write(s)
+    out.write("\",")
+
+out.write ( "\"Precision\",\"Latitude\",\"Longitude\" \n" )
+    
 for row in reader:
     for s in row:
-        out.write ("\"")
-        out.write ( s )
-        out.write ("\"")
-        out.write ( ", " )
+        if s != '':
+            out.write ("\"")
+            out.write ( s )
+            out.write ("\"")
+        out.write ( "," )
     g = geocode.geocode ( row[1], row[3], row[4], row[5] )
     out.write ( g.precision )
-    out.write ( ", " )
+    out.write ( "," )
     out.write ( g.latitude )
-    out.write ( ", " )
+    out.write ( "," )
     out.write ( g.longitude )
-    out.write ( ", " )
     out.write ( "\n" )
 
 

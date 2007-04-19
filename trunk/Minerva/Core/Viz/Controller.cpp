@@ -17,6 +17,7 @@
 #include "Usul/Types/Types.h"
 #include "Usul/Endian/Endian.h"
 #include "Usul/File/Temp.h"
+#include "Usul/Pointers/Pointers.h"
 
 #include "Usul/Components/Manager.h"
 #include "osg/ref_ptr"
@@ -47,9 +48,12 @@ class MovieLayer : public Minerva::Core::Layers::Layer
 	{					
 	}
 
-  Usul::Interfaces::IUnknown* clone() const 
+	virtual Usul::Interfaces::IUnknown* clone() const 
 	{
-    return (new MovieLayer())->queryInterface( Usul::Interfaces::IUnknown::IID );
+    MovieLayer::RefPtr layer ( new MovieLayer );                  // Reference count is now 1
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( layer.get() ); // Reference count is now 2
+    layer.release();                                              // Reference count is now 1
+    return unknown.release();                                     // Reference count is now 0
 	}	  
 
 	void buildDataObjects( Usul::Interfaces::IUnknown* ){}
@@ -58,17 +62,16 @@ class MovieLayer : public Minerva::Core::Layers::Layer
 
 	void buildScene( osg::Group* gr )
 	{
-		if( gr )
-		{
-		 	 // Call play movie function and pass in group, width, height, position, and path.
-    				Usul::Interfaces::IPlayMovie::QueryPtr playMoviePlug ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlayMovie::IID ) );
+    if( gr )
+    {
+      // Call play movie function and pass in group, width, height, position, and path.
+      Usul::Interfaces::IPlayMovie::QueryPtr playMoviePlug ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlayMovie::IID ) );
 
-    			if( playMoviePlug.valid() )
-    			{
-     	 			gr->addChild( playMoviePlug->playMovie( _position, _width, _height, _fileName ) );
-    			}
-
-		}	
+      if( playMoviePlug.valid() )
+      {
+        gr->addChild( playMoviePlug->playMovie( _position, _width, _height, _fileName ) );
+      }
+    }	
 	}
 
 	void setValues( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& fileName )

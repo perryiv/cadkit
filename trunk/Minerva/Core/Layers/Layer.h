@@ -194,7 +194,7 @@ protected:
   /// Usul::Interfaces::IAddRowLegend
   virtual void                             addLegendRow ( OsgTools::Legend::LegendObject* row );
 
-  /// Clone the this layer.
+  /// Clone this layer.
   virtual Usul::Interfaces::IUnknown*      clone() const = 0;
 
 private:

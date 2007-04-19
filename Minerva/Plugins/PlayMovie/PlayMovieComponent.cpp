@@ -17,14 +17,17 @@
 #include <iostream>
 #include <sstream>
 
-#include "OsgTools/Render/Viewer.h"
-
 #include "Minerva/Plugins/PlayMovie/PlayMovieComponent.h"
 
+#include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/ISceneIntersect.h"
 #include "Usul/Interfaces/IGetDocument.h"
 #include "Usul/Interfaces/IDistributedVR.h"
 #include "Usul/Interfaces/IGeometryCenter.h"
+#include "Usul/Interfaces/IProjectCoordinates.h"
+#include "Usul/Interfaces/IPlanetCoordinates.h"
+#include "Usul/Interfaces/IGroup.h"
+#include "Usul/Interfaces/IToolLifetime.h"
 
 #include "Minerva/Core/DataObjects/DataObject.h"
 #include "Minerva/Core/DataObjects/UserData.h"
@@ -150,6 +153,27 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
 
             Usul::Interfaces::IGeometryCenter::QueryPtr position ( positionGeom );
 
+            unsigned int srid ( 0 );
+            osg::Vec3 center ( position->geometryCenter( srid ) );
+            Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
+            Usul::Interfaces::IPlanetCoordinates::QueryPtr  planet  ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlanetCoordinates::IID ) );
+
+            if( project.valid() )
+            {
+              Usul::Math::Vec3d orginal;
+              orginal[0] = center[0];
+              orginal[1] = center[1];
+              orginal[2] = center[2];
+              Usul::Math::Vec3d point;
+              project->projectToSpherical( orginal, srid, point );
+
+              if( planet.valid() )
+              {
+                planet->convertToPlanet( point, point );
+                center.set ( point[0], point[1], point[2] );
+              }
+            }
+
             if( position.valid() )
             {
               std::string path ( result[0]["lin_path"].as < std::string > () );
@@ -157,9 +181,8 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
               std::string quadWidth( result[0][3].as< std::string >() );
               std::string quadHeight( result[0][4].as< std::string >() );             
               
-              unsigned int srid ( 0 );
               // Send command.
-              distributed->playMovie( position->geometryCenter( srid ), 
+              distributed->playMovie( center, 
                                       convertStringToPosition( quadWidth ), 
                                       convertStringToPosition( quadHeight ), 
                                       path );
@@ -174,8 +197,7 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
              
                 try
                 {
-                  unsigned int srid ( 0 );
-                  osg::ref_ptr< osg::Node >  node ( playMovie ( position->geometryCenter( srid ), convertStringToPosition( quadWidth ), convertStringToPosition( quadHeight ), "C://movie//test.mpg" ) );
+                  osg::ref_ptr< osg::Node >  node ( playMovie ( center, convertStringToPosition( quadWidth ), convertStringToPosition( quadHeight ), "C://movie//test.mpg" ) );
                   if( node.valid() )
                   {
                     group->removeChildren( 0, group->getNumChildren() );

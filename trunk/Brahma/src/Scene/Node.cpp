@@ -11,12 +11,22 @@ void Brahma::Scene::Node::id( const std::string& id )
   _id = id;
 }
 
-const std::string& Brahma::Scene::Node::data() const 
+Brahma::Scene::Database* Brahma::Scene::Node::database() 
 {
-  return _data;
+  return _database.get();
 }
 
-void Brahma::Scene::Node::data( const std::string& source )
+void Brahma::Scene::Node::database( Brahma::Scene::Database* db )
 {
-  _data = source;
+  _database = db;
 }
+
+//const std::string& Brahma::Scene::Node::data() const 
+//{
+//  return _data;
+//}
+//
+//void Brahma::Scene::Node::data( const std::string& source )
+//{
+//  _data = source;
+//}

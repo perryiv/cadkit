@@ -5,6 +5,11 @@
 
 #include "Usul/Pointers/Pointers.h"
 
+const Brahma::Core::Brahma::BaseObjects& Brahma::Core::Brahma::objects() const
+{
+  return _baseObjects;
+}
+
 void Brahma::Core::Brahma::load( const std::string &config )
 {
   _inputConfig = config;

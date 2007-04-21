@@ -23,7 +23,11 @@ namespace Brahma
 
         USUL_DECLARE_REF_POINTERS( Transform );
 
-        Transform() : BaseClass()
+        Transform() : BaseClass(), 
+          _type     ( "MatrixTransform" ), 
+          _position ( 0.0f, 0.0f, 0.0f ), 
+          _rotation ( 0.0f, 0.0f, 0.0f, 0.0f ), 
+          _pivot    ( 0.0f, 0.0f, 0.0f ) 
         {         
           this->_addMember( "_type",     _type );
           this->_addMember( "_position", _position );

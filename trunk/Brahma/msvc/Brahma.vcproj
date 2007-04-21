@@ -206,7 +206,15 @@
 				Name="Scene"
 				>
 				<File
+					RelativePath="..\src\Scene\Database.h"
+					>
+				</File>
+				<File
 					RelativePath="..\src\Scene\Export.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Scene\Group.cpp"
 					>
 				</File>
 				<File
@@ -214,11 +222,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\Scene\Node.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\Scene\Node.h"
 					>
 				</File>
 				<File
-					RelativePath="..\src\Scene\Scene.h"
+					RelativePath="..\src\Scene\Transform.cpp"
 					>
 				</File>
 				<File

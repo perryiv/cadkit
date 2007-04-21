@@ -42,15 +42,17 @@ namespace Brahma
         {
         }
 
-        void load( const std::string& config );
+        const BaseObjects&                    objects() const;
 
-        void serialize( const std::string& config );
+        void                                  load( const std::string& config );
+
+        void                                  serialize( const std::string& config );
 
         void deserialize();
 
-        BaseObject query( const std::string& name );
+        BaseObject                            query( const std::string& name );
 
-        void clean();
+        void                                  clean();
 
         template< class T >
         void registerType( const std::string& name )

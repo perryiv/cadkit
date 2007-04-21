@@ -25,7 +25,8 @@ namespace Brahma
 
         USUL_DECLARE_REF_POINTERS( Group );
 
-        Group() : BaseClass()
+        Group() : BaseClass(), 
+          _children()
         {         
           this->_addMember( "_children", _children );
         }

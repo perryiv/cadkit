@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects>
-	<Node>
-		<_id>10</_id>
-	</Node>
+  <Group>
+    <_id>G1</_id>
+    <_children>
+      <element TypeName="Transform">
+        <_id>G1T1</_id>
+        <_position>0 0 0 </_position>
+        <_rotation>0 0 0 0</_rotation>
+        <_pivot>0 0 0</_pivot>
+        <_children>
+          <element TypeName="Node">
+            <_id>G1T1N1</_id>
+            <_database TypeName="Database">
+              <_data>C:\Aashish\data\OpenSceneGraph-Data\osgcool.osg</_data>
+            </_database>
+          </element>
+        </_children>
+      </element>
+    </_children>
+  </Group>
 </objects>

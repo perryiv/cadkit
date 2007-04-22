@@ -26,8 +26,10 @@
 #include <limits>
 
 #ifdef _WIN32
-# define STAT_STRUCT      struct __stat64
-# define STAT_FUNCTION    _stat64
+# define STAT_STRUCT_32      struct _stat32
+# define STAT_STRUCT_64      struct _stat64
+# define STAT_FUNCTION_32    _stat32
+# define STAT_FUNCTION_64    _stat64
 #else
 # define STAT_STRUCT      struct stat
 # define STAT_FUNCTION    ::stat
@@ -49,15 +51,23 @@ namespace Detail
 {
   template < class T > struct Traits;
 
-  template <> struct Traits < Usul::Types::Uint64 >
+  template <> struct Traits < Usul::Types::Uint32 >
   {
-    typedef STAT_STRUCT StructType;
+    typedef STAT_STRUCT_32 StructType;
     static bool stat ( const std::string &file, StructType &s )
     {
-      return ( 0 == STAT_FUNCTION ( file.c_str(), &s ) );
+      return ( 0 == STAT_FUNCTION_32 ( file.c_str(), &s ) );
     }
   };
-  
+
+  template <> struct Traits < Usul::Types::Uint64 >
+  {
+    typedef STAT_STRUCT_64 StructType;
+    static bool stat ( const std::string &file, StructType &s )
+    {
+      return ( 0 == STAT_FUNCTION_64 ( file.c_str(), &s ) );
+    }
+  };
 }
 
 

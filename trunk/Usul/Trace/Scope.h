@@ -10,28 +10,32 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Class for printing a string.
+//  Class for Scopeing when entering and leaving a scope.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_DEBUG_TRACE_PRINT_H_
-#define _USUL_DEBUG_TRACE_PRINT_H_
+#ifndef _USUL_DEBUG_TRACE_SCOPE_H_
+#define _USUL_DEBUG_TRACE_SCOPE_H_
 
 #include "Usul/Export/Export.h"
 
 #include <string>
-#include <iostream>
 
 
 namespace Usul {
 namespace Trace {
 
 
-struct USUL_EXPORT Print
+class USUL_EXPORT Scope
 {
-  static void execute ( const std::string & );
-  static void execute ( const char * );
-  static void stream ( std::ostream * );
+public:
+
+  Scope ( const std::string &name );
+  ~Scope();
+
+private:
+
+  std::string _name;
 };
 
 
@@ -39,4 +43,4 @@ struct USUL_EXPORT Print
 }
 
 
-#endif // _USUL_DEBUG_TRACE_PRINT_H_
+#endif // _USUL_DEBUG_TRACE_SCOPE_H_

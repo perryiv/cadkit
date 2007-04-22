@@ -138,7 +138,7 @@ Stack::size_type Stack::size() const
 void Stack::push ( const std::string &message )
 {
   Guard guard ( *_m );
-  _s.push_front ( message );
+  _s.push_front ( Usul::Errors::Error ( message ) );
 }
 
 
@@ -152,7 +152,7 @@ void Stack::push ( const char *message )
 {
   Guard guard ( *_m );
   if ( message )
-    _s.push_front ( std::string ( message ) );
+    _s.push_front ( Usul::Errors::Error ( message ) );
 }
 
 
@@ -175,10 +175,10 @@ void Stack::pop()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Stack::top() const
+Stack::value_type Stack::top() const
 {
   Guard guard ( *_m );
-  std::string result ( _s.front() );
+  value_type result ( _s.front() );
   return result;
 }
 
@@ -193,8 +193,8 @@ void Stack::format ( const std::string &prefix, std::string &s ) const
 {
   Guard guard ( *_m );
   std::ostringstream temp;
-  for ( StringList::const_iterator i = _s.begin(); i != _s.end(); ++i )
-    temp << prefix << *i << '\n';
+  for ( ErrorStack::const_iterator i = _s.begin(); i != _s.end(); ++i )
+    temp << prefix << i->format() << '\n';
   s = temp.str();
 }
 

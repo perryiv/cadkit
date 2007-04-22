@@ -47,7 +47,7 @@
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
 				AdditionalIncludeDirectories="../"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_USUL"
+				PreprocessorDefinitions="_USUL_TRACE;WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_USUL"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -378,6 +378,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\DLL\Listener.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DLL\Listener.h"
+					>
+				</File>
+				<File
 					RelativePath="DLL\Loader.cpp"
 					>
 				</File>
@@ -407,6 +415,14 @@
 				</File>
 				<File
 					RelativePath="Errors\DoNothingPolicy.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Errors\Error.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Errors\Error.h"
 					>
 				</File>
 				<File
@@ -1334,6 +1350,14 @@
 				Name="Predicates"
 				>
 				<File
+					RelativePath=".\Predicates\CanWrite.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Predicates\CanWrite.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Predicates\CloseFloat.h"
 					>
 				</File>
@@ -1470,6 +1494,14 @@
 				Name="Threads"
 				>
 				<File
+					RelativePath=".\Threads\Callback.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\Callback.h"
+					>
+				</File>
+				<File
 					RelativePath="Threads\Guard.h"
 					>
 				</File>
@@ -1486,6 +1518,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Threads\Pool.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\Pool.h"
+					>
+				</File>
+				<File
 					RelativePath="Threads\Queue.h"
 					>
 				</File>
@@ -1499,6 +1539,22 @@
 				</File>
 				<File
 					RelativePath="Threads\Set.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\Task.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\Task.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\Thread.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\Thread.h"
 					>
 				</File>
 				<File
@@ -1554,6 +1610,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\File\Make.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\File\Make.h"
+					>
+				</File>
+				<File
 					RelativePath=".\File\Path.h"
 					>
 				</File>
@@ -1571,6 +1635,10 @@
 				</File>
 				<File
 					RelativePath=".\File\Stats.h"
+					>
+				</File>
+				<File
+					RelativePath=".\File\StreamBuffer.h"
 					>
 				</File>
 				<File
@@ -1655,6 +1723,10 @@
 				>
 				<File
 					RelativePath=".\Strings\Case.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Strings\Format.h"
 					>
 				</File>
 				<File
@@ -1985,6 +2057,30 @@
 				</File>
 				<File
 					RelativePath=".\Trace\Print.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Trace\Scope.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Trace\Scope.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Trace\Trace.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="User"
+				>
+				<File
+					RelativePath=".\User\Directory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\User\Directory.h"
 					>
 				</File>
 			</Filter>

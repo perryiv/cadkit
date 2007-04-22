@@ -18,7 +18,6 @@
 #include "Usul/Threads/Guard.h"
 #include "Usul/Errors/Assert.h"
 
-using namespace Usul;
 using namespace Usul::Threads;
 
 

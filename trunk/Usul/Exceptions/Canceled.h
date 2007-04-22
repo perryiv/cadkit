@@ -64,6 +64,9 @@ private:
 };
 
 
+typedef Canceled Cancelled;
+
+
 }; // namespace Exceptions
 }; // namespace Usul
 

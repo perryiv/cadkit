@@ -256,6 +256,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ReplaceIllegalCharacters.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ReplaceIllegalCharacters.h"
 				>
 			</File>

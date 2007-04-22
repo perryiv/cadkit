@@ -45,11 +45,8 @@ namespace Helper
   {
     InitFilters()
     {
-      filters = Reader::filters();
-      osgDB::Registry::instance()->clearObjectCache();
-      osgDB::Registry::instance()->clearArchiveCache();
-      osgDB::Registry::instance()->closeAllLibraries();
     }
+
     Reader::Filters filters;
   } filters;
 }
@@ -327,6 +324,14 @@ Reader::Filters Reader::filters()
   // Sort the filters and make sure unique.
   std::sort ( filters.begin(), filters.end() );
   filters.erase ( std::unique ( filters.begin(), filters.end() ), filters.end() );
+
+  // Cache the results
+  Helper::filters.filters = filters;
+
+  // Clean up
+  osgDB::Registry::instance()->clearObjectCache();
+  osgDB::Registry::instance()->clearArchiveCache();
+  osgDB::Registry::instance()->closeAllLibraries();
 
   // Return the filters.
   return filters;

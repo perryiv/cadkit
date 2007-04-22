@@ -104,7 +104,7 @@ void LogWindow::_makeRequestedControls()
   {
     // Find or create the button in the menu.
     AFW::Menus::Button::RefPtr button ( AFW::Menus::Button::button 
-      ( this->menu(), this->title(), AFW::Menus::Button::Type::MENU_CHECK, 0, true ) );
+      ( this->menu(), this->title(), AFW::Menus::Button::MENU_CHECK, 0, true ) );
 
     // Add actions to hide/show this window.
     button->append ( new AFW::Actions::ToggleVisible ( this ) );

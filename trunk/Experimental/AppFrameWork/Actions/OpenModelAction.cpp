@@ -17,7 +17,7 @@
 #include "AppFrameWork/Core/Application.h"
 #include "AppFrameWork/Core/Program.h"
 
-#include "Usul/Interfaces/ILoadFileDialog.h"
+#include "Usul/Interfaces/GUI/ILoadFileDialog.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Resources/TextWindow.h"
 #include "Usul/Predicates/FileExists.h"

@@ -22,7 +22,6 @@
 
 #include <stdexcept>
 
-using namespace Threads;
 using namespace Threads::OT;
 
 
@@ -32,7 +31,9 @@ using namespace Threads::OT;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Mutex::Mutex() : _mutex ( new OpenThreads::Mutex ), _threadId ( 0 )
+Mutex::Mutex() : BaseClass(),
+  _mutex ( new OpenThreads::Mutex ), 
+  _threadId ( 0 )
 {
 }
 

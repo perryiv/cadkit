@@ -67,8 +67,8 @@ Usul::Interfaces::IUnknown *TriangulateComponent::queryInterface ( unsigned long
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::ITriangulate::IID:
-    return static_cast < Usul::Interfaces::ITriangulate*>(this);
+  case Usul::Interfaces::ITriangulateLoop::IID:
+    return static_cast < Usul::Interfaces::ITriangulateLoop*>(this);
   case Usul::Interfaces::IPlugin::IID:
     return static_cast < Usul::Interfaces::IPlugin* > ( this );
   default:
@@ -83,7 +83,7 @@ Usul::Interfaces::IUnknown *TriangulateComponent::queryInterface ( unsigned long
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangulateComponent::triangulate ( const Vertices &inVertices, InnerLoops& inner, Vertices &outVertices, UIntArray& indices )
+void TriangulateComponent::triangulateLoop ( const Vertices &inVertices, InnerLoops& inner, Vertices &outVertices, UIntArray& indices )
 {
   ::triangulateio in, mid;
   ::memset(&in, sizeof(::triangulateio), 0);

@@ -31,6 +31,8 @@ class OPEN_THREADS_EXTENSIONS_EXPORT Mutex : public Usul::Threads::Mutex
 {
 public:
 
+  typedef Usul::Threads::Mutex BaseClass;
+
   Mutex();
   virtual ~Mutex();
 

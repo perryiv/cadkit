@@ -46,7 +46,7 @@
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
 				AdditionalIncludeDirectories="$(OPENTHREADS_INC_DIR);$(CADKIT_ROOT_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_OPEN_THREADS_EXTENSIONS"
+				PreprocessorDefinitions="_USUL_TRACE;WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_OPEN_THREADS_EXTENSIONS"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -227,6 +227,14 @@
 			</File>
 			<File
 				RelativePath=".\Mutex.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Thread.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Thread.h"
 				>
 			</File>
 		</Filter>

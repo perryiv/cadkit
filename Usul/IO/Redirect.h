@@ -45,8 +45,26 @@ struct Redirect
   {
     if ( _close )
     {
-      ::fclose ( _stdout );
-      ::fclose ( _stderr );
+      if ( 0x0 != _stdout )
+      {
+        try
+        {
+          ::fclose ( _stdout );
+        }
+        catch ( ... )
+        {
+        }
+      } 
+      if ( 0x0 != _stderr )
+      {
+        try
+        {
+          ::fclose ( _stderr );
+        }
+        catch ( ... )
+        {
+        }
+      }
     }
   }
 

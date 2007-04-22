@@ -16,7 +16,6 @@
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Errors/Assert.h"
 
-using namespace Usul;
 using namespace Usul::Threads;
 
 

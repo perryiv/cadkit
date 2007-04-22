@@ -17,9 +17,11 @@
 #define _USUL_ERROR_STACK_H_
 
 #include "Usul/Export/Export.h"
+#include "Usul/Errors/Error.h"
 
 #include <list>
 #include <string>
+#include <sstream>
 #include <stdexcept>
 
 namespace Usul { namespace Threads { class Mutex; }; };
@@ -40,9 +42,9 @@ class USUL_EXPORT Stack
 public:
 
   // Useful typedefs.
-  typedef std::list < std::string > StringList;
-  typedef StringList::size_type size_type;
-  typedef StringList::value_type value_type;
+  typedef std::list < Usul::Errors::Error > ErrorStack;
+  typedef ErrorStack::size_type size_type;
+  typedef ErrorStack::value_type value_type;
   typedef Usul::Threads::Mutex Mutex;
 
   // Clear the stack.
@@ -81,7 +83,7 @@ private:
   Stack ( const Stack & );
   Stack &operator = ( const Stack & );
 
-  StringList _s;
+  ErrorStack _s;
   Mutex *_m;
   static Stack *_instance;
 };

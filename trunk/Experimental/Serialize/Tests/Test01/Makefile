@@ -19,7 +19,7 @@ LOCAL_LIBS = \
 LOCAL_CPP_FLAGS = 
 
 # The name of the thing we are making.
-TARGET = XmlSerialize
+TARGET = SerializeTest01
 
 # The common rules for compiling are in here.
 include ${USUL_INC_DIR}/Usul/Make/executable.mak

@@ -54,7 +54,9 @@ public:
   }
 
 protected:
-  virtual ~IUnknownTest();
+  virtual ~IUnknownTest()
+  {
+  }
 
   /// Get/Set the hostname.
   virtual void                         hostname ( const std::string& h ) { _hostname = h; }

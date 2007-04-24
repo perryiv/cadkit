@@ -12,7 +12,7 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} ${XERCESC_INC_DIR} "${PROJECT_SOURCE_DIR}/../../" )
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} ${XERCESC_INCLUDE_DIR} "${PROJECT_SOURCE_DIR}/../../" )
 
 
 #List the Sources

@@ -208,15 +208,11 @@ void DllGlue::addLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs
     if( nullptr != layerPtr )
     {
       Usul::Interfaces::ILayer::QueryPtr base ( reinterpret_cast < Usul::Interfaces::ILayer * > ( layerPtr->nativeIntPtr().ToPointer() ) );
-      Usul::Interfaces::IUnknown::QueryPtr queryPtr ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) );
+      
+      // Managed/Unmanged progress interop class.
+      Progress p ( progress );
 
-      if( nullptr != progress )
-      {
-        // Managed/Unmanged progress interop class.
-        Progress p ( progress );
-        queryPtr = p.unmanagedProgress();
-      }
-      _document->addLayer( base.get(), queryPtr.get() );
+      _document->addLayer( base.get(), p.unmanagedProgress() );
     }
   }
   catch ( System::Exception ^e )

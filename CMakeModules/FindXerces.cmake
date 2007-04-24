@@ -6,6 +6,7 @@
 # Look for a root installation
 FIND_PATH(XERCESC_ROOT_DIR include/xercesc/parsers/SAXParser.hpp
 	/usr
+	$ENV{XERCESC_ROOT_DIR}
 	DOC "The root of an installed xerces-c installation"
 )
  	

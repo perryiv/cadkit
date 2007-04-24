@@ -35,6 +35,7 @@ using namespace Minerva::Core::DataObjects;
 Polygon::Polygon() :
 BaseClass(),
 _group ( new osg::Group ),
+_preBuiltScene ( 0x0 ),
 _showBorder( false ),
 _showInterior ( true )
 {
@@ -63,17 +64,15 @@ osg::Node* Polygon::buildScene( )
 {
   if( this->dirty() )
   {
-    _group->removeChild( 0, _group->getNumChildren() );
+    this->preBuildScene();
+  }
 
-    if( this->showInterior() )
-    {
-      _group->addChild( this->_buildPolygons() );
-    }
-
-    if( this->showBorder() )
-    {
-      _group->addChild( BaseClass::buildScene() );
-    }
+  // Switch the pre built scene for what we hand back to osg.
+  // This is safer in a multi-threaded environment.
+  if( _preBuiltScene.valid() )
+  {
+    _group = _preBuiltScene;
+    _preBuiltScene = 0x0;
   }
 
   return _group.get();
@@ -127,6 +126,32 @@ osg::Node* Polygon::_buildPolygons( )
 
   return 0x0;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Pre build the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Polygon::preBuildScene()
+{
+  // Clear what we have by making a new one.
+  _preBuiltScene = new osg::Group;
+
+  if( this->showInterior() )
+  {
+    _preBuiltScene->addChild( this->_buildPolygons() );
+  }
+
+  if( this->showBorder() )
+  {
+    _preBuiltScene->addChild( BaseClass::buildScene() );
+  }
+
+  this->dirty( false );
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////

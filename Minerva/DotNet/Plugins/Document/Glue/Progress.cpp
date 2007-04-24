@@ -21,7 +21,9 @@ using namespace DT::Minerva::Plugins::Document::Glue;
 Progress::Progress(CadKit::Threads::Jobs::Progress ^progress)
 {
   _progress = progress;
-  _progress->Minimum = 0;
+
+  if( nullptr != progress )
+    _progress->Minimum = 0;
 
   _updateDelegate = gcnew CallbackDelegate(this, &Progress::update);
   _totalDelegate = gcnew CallbackDelegate(this, &Progress::total);
@@ -64,7 +66,8 @@ Progress::~Progress()
 
 void Progress::update( int i )
 {
-  _progress->Value = i;
+  if( nullptr != _progress )
+    _progress->Value = i;
 }
 
 
@@ -76,7 +79,8 @@ void Progress::update( int i )
 
 void Progress::total( int i )
 {
-  _progress->Maximum = i;
+  if( nullptr != _progress )
+    _progress->Maximum = i;
 }
 
 

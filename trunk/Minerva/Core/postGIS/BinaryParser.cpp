@@ -132,14 +132,14 @@ void BinaryParser::_createGeometryEndian ( VertexList &vertexList, Usul::Types::
 	case wkbPoint:
 		{
       Vertices vertices;
-			_createVertices < Usul::Endian::FromLittleToSystem > ( 1, bytesReadSoFar, vertices );
+			_createVertices < Convert > ( 1, bytesReadSoFar, vertices );
 			vertexList.push_back ( vertices );
 		}
 		break;
 	case wkbLineString:
 		{
       Vertices vertices;
-			_parseLineString < Usul::Endian::FromLittleToSystem > ( bytesReadSoFar, vertices );
+			_parseLineString < Convert > ( bytesReadSoFar, vertices );
 			vertexList.push_back ( vertices );
 		}
 		break;
@@ -153,7 +153,7 @@ void BinaryParser::_createGeometryEndian ( VertexList &vertexList, Usul::Types::
       for ( Usul::Types::Uint32 i = 0; i < numRings; ++i )
       {
          Vertices vertices;
-        _parseLineString < Usul::Endian::FromLittleToSystem > ( bytesReadSoFar, vertices );
+        _parseLineString < Convert > ( bytesReadSoFar, vertices );
 			  vertexList.push_back ( vertices );
       }
 		}

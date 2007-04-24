@@ -17,7 +17,7 @@
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Base/Referenced.h"
 
-#include "Scene/Node.h"
+#include "Brahma/Scene/Node.h"
 
 #include "Object.h"
 #include "Export.h"

@@ -186,19 +186,19 @@
 				Name="Core"
 				>
 				<File
-					RelativePath="..\src\Core\Brahma.cpp"
+					RelativePath="..\src\Brahma\Core\Brahma.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\src\Core\Brahma.h"
+					RelativePath="..\src\Brahma\Core\Brahma.h"
 					>
 				</File>
 				<File
-					RelativePath="..\src\Core\Export.h"
+					RelativePath="..\src\Brahma\Core\Export.h"
 					>
 				</File>
 				<File
-					RelativePath="..\src\Core\Object.h"
+					RelativePath="..\src\Brahma\Core\Object.h"
 					>
 				</File>
 			</Filter>
@@ -206,35 +206,43 @@
 				Name="Scene"
 				>
 				<File
-					RelativePath="..\src\Scene\Database.h"
+					RelativePath="..\src\Brahma\Scene\BaseNodeVisitor.h"
 					>
 				</File>
 				<File
-					RelativePath="..\src\Scene\Export.h"
+					RelativePath="..\src\Brahma\Scene\Database.h"
 					>
 				</File>
 				<File
-					RelativePath="..\src\Scene\Group.cpp"
+					RelativePath="..\src\Brahma\Scene\Export.h"
 					>
 				</File>
 				<File
-					RelativePath="..\src\Scene\Group.h"
+					RelativePath="..\src\Brahma\Scene\Group.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\src\Scene\Node.cpp"
+					RelativePath="..\src\Brahma\Scene\Group.h"
 					>
 				</File>
 				<File
-					RelativePath="..\src\Scene\Node.h"
+					RelativePath="..\src\Brahma\Scene\Node.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\src\Scene\Transform.cpp"
+					RelativePath="..\src\Brahma\Scene\Node.h"
 					>
 				</File>
 				<File
-					RelativePath="..\src\Scene\Transform.h"
+					RelativePath="..\src\Brahma\Scene\Scene.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Brahma\Scene\Transform.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Brahma\Scene\Transform.h"
 					>
 				</File>
 			</Filter>
@@ -242,7 +250,7 @@
 				Name="Interaction"
 				>
 				<File
-					RelativePath="..\src\Interaction\Nagivation.h"
+					RelativePath="..\src\Brahma\Interaction\Nagivation.h"
 					>
 				</File>
 			</Filter>

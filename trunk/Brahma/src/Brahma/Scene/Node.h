@@ -2,9 +2,9 @@
 #ifndef __BRAHMA_SCENE_NODE_H__
 #define __BRAHMA_SCENE_NODE_H__
 
-#include "Core/Object.h"
+#include "Brahma/Core/Object.h"
 
-#include "Scene/Database.h"
+#include "Brahma/Scene/Database.h"
 
 #include "Export.h" 
 

@@ -123,38 +123,50 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 
   for ( pqxx::result::const_iterator iter = geometryResult.begin(); iter != geometryResult.end(); ++ iter )
   {
-    // Id for row
-    int id ( iter["id"].as < int > () );
-    int srid ( iter["srid"].as < int > () );
+    try
+    {
+      // Id for row
+      int id ( iter["id"].as < int > () );
+      int srid ( iter["srid"].as < int > () );
 
-    // Create the geometry.
-    Usul::Interfaces::IUnknown::QueryPtr geometry ( new Minerva::Core::postGIS::Polygon ( this->connection(), dataTable, id, srid, iter["geom"] ) );
+      // Create the geometry.
+      Usul::Interfaces::IUnknown::QueryPtr geometry ( new Minerva::Core::postGIS::Polygon ( this->connection(), dataTable, id, srid, iter["geom"] ) );
 
-    Usul::Interfaces::IOffset::QueryPtr offset ( geometry );
+      Usul::Interfaces::IOffset::QueryPtr offset ( geometry );
 
-    if( offset.valid() )
-      offset->spatialOffset( osg::Vec3f ( 0.0, 0.0, this->zOffset() ) );
+      if( offset.valid() )
+        offset->spatialOffset( osg::Vec3f ( 0.0, 0.0, this->zOffset() ) );
 
-    // Create the Data Object.
-    Minerva::Core::DataObjects::Polygon::RefPtr data ( new Minerva::Core::DataObjects::Polygon );
+      // Create the Data Object.
+      Minerva::Core::DataObjects::Polygon::RefPtr data ( new Minerva::Core::DataObjects::Polygon );
 
-    data->width ( this->borderWidth() );
-    data->showBorder( this->showBorder() );
-    data->showInterior ( this->showInterior() );
-    data->geometry ( geometry.get() );
-    data->color( this->_color ( iter ) );
-    data->renderBin( this->renderBin() );
-    data->connection ( this->connection() );
-    data->tableName ( dataTable );
-    data->rowId ( id );
+      data->width ( this->borderWidth() );
+      data->showBorder( this->showBorder() );
+      data->showInterior ( this->showInterior() );
+      data->geometry ( geometry.get() );
+      data->color( this->_color ( iter ) );
+      data->renderBin( this->renderBin() );
+      data->connection ( this->connection() );
+      data->tableName ( dataTable );
+      data->rowId ( id );
 
-    /// Set the label.
-    this->_labelDataObject( data.get() );
+      /// Set the label.
+      this->_labelDataObject( data.get() );
 
-    this->_addDataObject( data.get() );
+      // Pre build the scene.
+      data->preBuildScene();
 
-    data->buildScene();
-    
+      this->_addDataObject( data.get() );
+    }
+    catch ( const std::exception& e )
+    {
+      std::cout << "Error 3149586695: " << e.what() << std::endl;
+    }
+    catch ( ... )
+    {
+      std::cout << "Error 3420474749: Exception caught while adding data to layer." << std::endl;
+    }
+
     // Update the progess.
     if( progress.valid() )
     {

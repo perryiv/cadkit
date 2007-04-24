@@ -2,7 +2,7 @@
 #ifndef __BRAHMA_SCENE_FILENODE_H__
 #define __BRAHMA_SCENE_FILENODE_H__
 
-#include "Core/Object.h"
+#include "Brahma/Core/Object.h"
 
 #include "Export.h"
 

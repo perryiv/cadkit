@@ -2,7 +2,7 @@
 #ifndef __SCENE_BASENODEVISITOR_H__
 #define __SCENE_BASENODEVISITOR_H__
 
-#include "Core/Object.h"
+#include "Brahma/Core/Object.h"
 
 namespace Brahma
 {

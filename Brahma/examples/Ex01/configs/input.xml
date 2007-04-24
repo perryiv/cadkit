@@ -3,20 +3,46 @@
   <Group>
     <_id>G1</_id>
     <_children>
-      <element TypeName="Transform">
-        <_id>G1T1</_id>
-        <_position>0 0 0 </_position>
-        <_rotation>0 0 0 0</_rotation>
-        <_pivot>0 0 0</_pivot>
+      <element TypeName="Group">
+        <_id>G1G1</_id>
         <_children>
           <element TypeName="Node">
-            <_id>G1T1N1</_id>
+            <_id>G1G1N1</_id>
+            <_database TypeName="Database">
+              <_data>C:\Aashish\data\OpenSceneGraph-Data\cow.osg</_data>
+            </_database>
+          </element>
+        </_children>
+      </element>
+      <element TypeName="Group">
+        <_id>G1G2</_id>
+        <_children>
+          <element TypeName="Node">
+            <_id>G1G1N1</_id>
+            <_database TypeName="Database">
+              <_data>C:\Aashish\data\OpenSceneGraph-Data\osgcool.osg</_data>
+            </_database>
+          </element>
+          <element TypeName="Node">
+            <_id>G1G1N2</_id>
+            <_database TypeName="Database">
+              <_data>C:\Aashish\data\OpenSceneGraph-Data\cessna.osg</_data>
+            </_database>
+          </element>
+          <element TypeName="Node">
+            <_id>G1G1N3</_id>
+            <_database TypeName="Database">
+              <_data>C:\Aashish\data\OpenSceneGraph-Data\dumptruck.osg</_data>
+            </_database>
+          </element>
+          <element TypeName="Node">
+            <_id>G1G1N4</_id>
             <_database TypeName="Database">
               <_data>C:\Aashish\data\OpenSceneGraph-Data\osgcool.osg</_data>
             </_database>
           </element>
         </_children>
-      </element>
+      </element>      
     </_children>
   </Group>
 </objects>

@@ -86,6 +86,17 @@ template < class T > inline const T & maximum ( const T &t1, const T &t2, const 
 }
 
 
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Clamp the value between min and max.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+template < typename T > inline T clamp ( const T& t1, const T &t2, const T& t3 )
+{
+  return min ( max ( t1, t2 ), t3 );
+}
+
 }; // namespace Math
 }; // namespace Usul
 

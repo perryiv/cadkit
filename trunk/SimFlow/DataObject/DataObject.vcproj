@@ -293,6 +293,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\..\Experimental\XmlTree\XmlTree.vcproj"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

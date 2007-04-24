@@ -39,6 +39,7 @@ SET (SOURCES
   LayerManipulator.cpp
   Manipulator.cpp
   Planet.cpp
+  Navigator.cpp
 )
 
 # Create a Shared Library

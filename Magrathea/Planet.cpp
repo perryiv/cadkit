@@ -67,6 +67,9 @@ Planet::Planet() :
   _layerManipulator             = new LayerManipulator();
   _manipulator                  = new Manipulator();
 
+  // Set the planet.
+  _manipulator->planet( _planet.get() );
+
   osg::ref_ptr < osg::StateSet > ss ( _planet->getOrCreateStateSet () );
   osg::ref_ptr< osg::PolygonOffset > offset ( new osg::PolygonOffset( 1.0f, 1.0f ) );
   ss->setMode ( GL_POLYGON_OFFSET_FILL, osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );

@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgGAd.lib OpenThreadsWin32d.lib ossimd.lib ossimPlanetd.lib osgEphemerisd.lib libwmsd.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgGAd.lib OpenThreadsWin32d.lib ossimd.lib ossimPlanetd.lib osgEphemerisd.lib libwmsd.lib osgUtild.lib"
 				OutputFile="$(LOCAL_SRC_DIR)/bin/Cadkit.Magrathead.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(CADKIT_ROOT_DIR)/bin;$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR);$(OSG_EPHEMERIS_LIB_DIR);$(WMS_LIB_DIR)"
@@ -143,7 +143,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib OpenThreadsWin32.lib ossim.lib ossimPlanet.lib osgEphemeris.lib libwms.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib OpenThreadsWin32.lib ossim.lib ossimPlanet.lib osgEphemeris.lib libwms.lib osgUtil.lib"
 				OutputFile="$(LOCAL_SRC_DIR)/bin/Cadkit.Magrathea.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(CADKIT_ROOT_DIR)/bin;$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR);$(OSG_EPHEMERIS_LIB_DIR);$(WMS_LIB_DIR)"
@@ -194,6 +194,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Frame.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Frame.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ImageTextureLayer.cpp"
 				>
 			</File>
@@ -231,6 +239,14 @@
 			</File>
 			<File
 				RelativePath=".\Manipulator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Navigator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Navigator.h"
 				>
 			</File>
 			<File

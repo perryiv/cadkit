@@ -52,11 +52,13 @@ INCLUDE_DIRECTORIES(
 		     "${VRJ_INC_DIR}/tweek/CORBA"
 		     "${VRJ_INC_DIR}/tweek/idl"
 		     ${PRODUCER_INC_DIR}
+		     ${XERCESC_INCLUDE_DIR}
 		     )
 
 #List the Sources
 SET (SOURCES
-    MinervaVR
+    MinervaVR.cpp
+    SharedUpdateData.cpp
     main.cpp
 )
 

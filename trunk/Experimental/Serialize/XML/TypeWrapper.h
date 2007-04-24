@@ -27,6 +27,7 @@
 #include "Usul/Math/Vector4.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector2.h"
+#include "Usul/Interfaces/ISerialize.h"
 
 #include <sstream>
 
@@ -115,7 +116,7 @@ template < class T, class C > struct TypeWrapper < Usul::Pointers::QueryPointer 
   }
   static const char *className ( const PointerType &value )
   {
-    Usul::Interfaces::ISerialize::QueryPtr iSerialize ( const_cast < PointerType::element_type* > ( value.get() ) );
+    Usul::Interfaces::ISerialize::QueryPtr iSerialize ( const_cast < typename PointerType::element_type* > ( value.get() ) );
     return ( ( true == iSerialize.valid() ) ? iSerialize->className() : "" );
   }
   static ObjectType *create ( const std::string &typeName )
@@ -142,7 +143,7 @@ template < class T, class C > struct TypeWrapper < Usul::Pointers::QueryPointer 
   }
   static void serialize ( const PointerType &value, XmlTree::Node &parent )
   {
-    Usul::Interfaces::ISerialize::QueryPtr iSerialize ( const_cast < PointerType::element_type* > ( value.get() ) );
+    Usul::Interfaces::ISerialize::QueryPtr iSerialize ( const_cast < typename PointerType::element_type* > ( value.get() ) );
     if ( true == iSerialize.valid() )
     {
       iSerialize->serialize ( parent );
@@ -277,12 +278,12 @@ SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( int   );
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( long  );
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( bool  );
 
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned char  );
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned short );
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned int   );
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned long  );
+//SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned char  );
+//SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned short );
+//SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned int   );
+//SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( unsigned long  );
 
-//SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Types::Uint32 );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Types::Uint32 );
 
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( float );
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( double );

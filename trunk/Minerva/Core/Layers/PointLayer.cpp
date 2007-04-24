@@ -122,40 +122,51 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
   // Loop through the results.
   for ( pqxx::result::const_iterator iter = geometryResult.begin(); iter != geometryResult.end(); ++ iter )
   {
-    // Get the id.
-    int id ( iter["id"].as < int > () );
-    int srid ( iter["srid"].as < int > () );
-
-    Usul::Interfaces::IUnknown::QueryPtr unknown ( new Minerva::Core::postGIS::Point ( this->connection(), this->tablename(), id, srid, iter["geom"] ) );
-
-    Usul::Interfaces::IOffset::QueryPtr offset ( unknown );
-
-    if( offset.valid () )
+    try
     {
-      offset->spatialOffset( osg::Vec3f ( 0.0, 0.0, this->zOffset() ) );
+      // Get the id.
+      int id ( iter["id"].as < int > () );
+      int srid ( iter["srid"].as < int > () );
+
+      Usul::Interfaces::IUnknown::QueryPtr unknown ( new Minerva::Core::postGIS::Point ( this->connection(), this->tablename(), id, srid, iter["geom"] ) );
+
+      Usul::Interfaces::IOffset::QueryPtr offset ( unknown );
+
+      if( offset.valid () )
+      {
+        offset->spatialOffset( osg::Vec3f ( 0.0, 0.0, this->zOffset() ) );
+      }
+
+      Minerva::Core::DataObjects::Point::RefPtr data ( new Minerva::Core::DataObjects::Point );
+      data->geometry( unknown->queryInterface( Usul::Interfaces::IUnknown::IID ) );
+      data->color( this->_color ( iter ) );
+      data->size ( this->size() );
+      data->primitiveId ( this->primitiveID() );
+      data->quality ( this->quality() );
+      data->renderBin( this->renderBin() );
+      data->connection ( this->connection() );
+      data->tableName ( dataTable );
+      data->rowId ( id );
+
+      if( this->primitiveSizeColumn().size() > 0 )
+      {
+        float value ( iter [ this->primitiveSizeColumn() ].as < float > () );
+        data->size( this->size() * value );
+      }
+
+       /// Set the label.
+      this->_labelDataObject( data.get() );
+
+      this->_addDataObject( data.get() );
     }
-
-    Minerva::Core::DataObjects::Point::RefPtr data ( new Minerva::Core::DataObjects::Point );
-    data->geometry( unknown->queryInterface( Usul::Interfaces::IUnknown::IID ) );
-    data->color( this->_color ( iter ) );
-    data->size ( this->size() );
-    data->primitiveId ( this->primitiveID() );
-    data->quality ( this->quality() );
-    data->renderBin( this->renderBin() );
-    data->connection ( this->connection() );
-    data->tableName ( dataTable );
-    data->rowId ( id );
-
-    if( this->primitiveSizeColumn().size() > 0 )
+    catch ( const std::exception& e )
     {
-      float value ( iter [ this->primitiveSizeColumn() ].as < float > () );
-      data->size( this->size() * value );
+      std::cout << "Error 6442903120: " << e.what() << std::endl;
     }
-
-     /// Set the label.
-    this->_labelDataObject( data.get() );
-
-    this->_addDataObject( data.get() );
+    catch ( ... )
+    {
+      std::cout << "Error 1112177078: Exception caught while adding data to layer." << std::endl;
+    }
 
     if( progress.valid() )
     {

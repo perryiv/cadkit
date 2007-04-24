@@ -33,6 +33,10 @@
 #else
 # define STAT_STRUCT      struct stat
 # define STAT_FUNCTION    ::stat
+# define STAT_STRUCT_32     STAT_STRUCT
+# define STAT_STRUCT_64     STAT_STRUCT
+# define STAT_FUNCTION_32   STAT_FUNCTION
+# define STAT_FUNCTION_64   STAT_FUNCTION
 
 #endif
 

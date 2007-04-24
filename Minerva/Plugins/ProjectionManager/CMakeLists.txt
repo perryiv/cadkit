@@ -1,11 +1,11 @@
 project (ComputeNormals)
 
-SET(PLUGIN_NAME "ComputeNormals")
+SET(PLUGIN_NAME "ProjectionManager")
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
-set(COMPILE_GUARD "_COMPILING_COMPUTE_NORMALS")
+set(COMPILE_GUARD "_COMPILING_PROJECTION_MANAGER")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
@@ -14,8 +14,8 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" )
 
 set (SOURCES
-    ComputeNormalsFactory.cpp
-    ComputeNormalsComponent.cpp
+    ProjectionManagerFactory.cpp
+    ProjectionManagerComponent.cpp
 )
 
 # ---------- Create a Shared Library

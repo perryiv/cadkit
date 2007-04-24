@@ -57,15 +57,15 @@ public:
   Point();
 
   /// Get/Set the size.
-  float                 size () const;
-  void                  size ( float );
+  float                   size () const;
+  void                    size ( float );
 
   ///Get/Set the primitiveId.
-  unsigned int          primitiveId () const;
-  void                  primitiveId ( unsigned int );
+  unsigned int            primitiveId () const;
+  void                    primitiveId ( unsigned int );
 
   /// Build the scene branch for the data object.
-  virtual osg::Node*    buildScene();
+  virtual osg::Node*      buildScene();
 
   /// Get/Set quality
   void                    quality( float value );

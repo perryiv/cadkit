@@ -24,6 +24,7 @@ SET (SOURCES
     Writer.cpp
     Detail/RootImpl.cpp
     Functions.cpp
+    ReplaceIllegalCharacters.cpp
 )
 
 # Create a Shared Library

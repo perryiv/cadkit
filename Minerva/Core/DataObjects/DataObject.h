@@ -51,6 +51,7 @@ public:
 
   /// Build the scene branch for the data object.
   virtual osg::Node*    buildScene() = 0;
+  virtual void          preBuildScene();
 
   /// Get/Set the color.
   const osg::Vec4&      color () const;

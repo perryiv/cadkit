@@ -41,6 +41,7 @@ public:
 
   /// Build the scene branch for the data object.
   virtual osg::Node*    buildScene();
+  virtual void          preBuildScene();
 
   /// Get/Set draw border flag.
   void                  showBorder( bool b );
@@ -58,6 +59,7 @@ protected:
 
 private:
   osg::ref_ptr < osg::Group > _group;
+  osg::ref_ptr < osg::Group > _preBuiltScene;
 
   bool _showBorder;
   bool _showInterior;

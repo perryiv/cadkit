@@ -83,10 +83,14 @@ void Polygon::_buildLatLongPoints()
     std::vector< ossimGpt > latLongPoints;
     this->_convertToLatLong( vertices, latLongPoints );
 
+#if 0
     std::vector< ossimGpt > subdividedPoints;
     Magrathea::subdivide( latLongPoints, subdividedPoints );
 
     _points.push_back ( subdividedPoints );
+#else
+    _points.push_back ( latLongPoints );
+#endif
   }
 }
 

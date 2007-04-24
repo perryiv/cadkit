@@ -128,6 +128,9 @@ void ProjectionManagerComponent::projectToSpherical ( const Usul::Math::Vec3d& o
   {
     ossimGpt gpt;
     mapProj->eastingNorthingToWorld( ossimDpt ( orginal[0], orginal[1] ), gpt );
+    //latLonPoint[0] = gpt.lat;
+    //latLonPoint[1] = gpt.lon;
+    //latLonPoint[2] = gpt.hgt;
 
     Detail::projectFromGpt( gpt, latLonPoint );
   }

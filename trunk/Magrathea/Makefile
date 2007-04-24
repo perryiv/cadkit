@@ -6,7 +6,8 @@ CPP_FILES = \
 	LatLongGrid.cpp		\
 	LayerManipulator.cpp	\
 	Manipulator.cpp		\
-	Planet.cpp
+	Planet.cpp		\
+	Navigator.cpp
 
 # The include path.
 LOCAL_INCLUDE = \

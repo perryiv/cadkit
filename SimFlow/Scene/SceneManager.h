@@ -17,6 +17,7 @@
 #include "SimFlow/DataObject/Point.h"
 
 #include "SimFlow/Layer/PointLayer.h"
+#include "SimFlow/Layer/Layer.h"
 
 #include "osg/ref_ptr"
 #include "osg/Geode"

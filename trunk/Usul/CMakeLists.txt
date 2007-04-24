@@ -47,6 +47,7 @@ SET (SOURCES
 	Documents/Document.cpp
 	Documents/Manager.cpp
 	Errors/Stack.cpp
+	Errors/Error.cpp
 	File/Make.cpp
 	File/Remove.cpp
 	File/Temp.cpp

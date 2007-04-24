@@ -18,6 +18,9 @@
 #define _SERIALIZE_XML_QUERY_POINTER_DATA_MEMBER_CLASS_
 
 #include "Serialize/XML/MemberBase.h"
+#include "Serialize/XML/Factory.h"
+
+#include "Usul/Interfaces/ISerialize.h"
 
 namespace Serialize {
 namespace XML {
@@ -63,7 +66,7 @@ public:
         XmlTree::Node::Attributes::const_iterator j = node.attributes().find ( "TypeName" );
         if ( node.attributes().end() != j )
         {
-          _value = dynamic_cast < T::element_type * > ( Factory::instance().create ( j->second ) );
+          _value = dynamic_cast < typename T::element_type * > ( Factory::instance().create ( j->second ) );
         }
       }
 

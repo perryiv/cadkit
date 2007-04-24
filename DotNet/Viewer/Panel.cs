@@ -37,7 +37,9 @@ namespace CadKit.Viewer
     private readonly string DATABASE_PAGER_PRE_COMPILE = "DatabasePagerPreCompile";
     private readonly string COLOR_CORNERS = "ColorCorners";
     private CadKit.Interfaces.DisplayListUseChangedDelegate _displayListUseChanged = null;
-
+    private bool _leftButtonDown = false;
+    private bool _middleButtonDown = false;
+    private bool _rightButtonDown = false;
 
     /// <summary>
     /// Contructor.
@@ -266,14 +268,14 @@ namespace CadKit.Viewer
       {
         if (false == this.InvokeRequired)
         {
-          bool left = (e.Button == System.Windows.Forms.MouseButtons.Left);
-          bool middle = (e.Button == System.Windows.Forms.MouseButtons.Middle);
-          bool right = (e.Button == System.Windows.Forms.MouseButtons.Right);
+          //bool left = (e.Button == System.Windows.Forms.MouseButtons.Left);
+          //bool middle = (e.Button == System.Windows.Forms.MouseButtons.Middle);
+          //bool right = (e.Button == System.Windows.Forms.MouseButtons.Right);
 
           float x = e.Location.X;
           float y = this.Size.Height - e.Location.Y;
 
-          bool mouse = left || middle || right;
+          bool mouse = _leftButtonDown || _middleButtonDown || _rightButtonDown;
           if (false == mouse)
             return;
 
@@ -281,7 +283,7 @@ namespace CadKit.Viewer
 
           if (null != this.Viewer)
           {
-            this.Viewer.handleNavigation(x, y, left, middle, right, type);
+            this.Viewer.handleNavigation(x, y, _leftButtonDown, _middleButtonDown, _rightButtonDown, type);
           }
         }
       }
@@ -333,6 +335,13 @@ namespace CadKit.Viewer
           {
             this.Viewer.buttonRelease(x, y, left, middle, right);
           }
+
+          if (left)
+            _leftButtonDown = false;
+          if (middle)
+            _middleButtonDown = false;
+          if (right)
+            _rightButtonDown = false;
         }
       }
       catch (System.Exception ex)
@@ -364,6 +373,13 @@ namespace CadKit.Viewer
             this.Viewer.buttonPress(x, y, left, middle, right);
             this.Viewer.handleSeek(x, y, left);
           }
+
+          if (left)
+            _leftButtonDown = true;
+          if (middle)
+            _middleButtonDown = true;
+          if (right)
+            _rightButtonDown = true;
         }
       }
       catch (System.Exception ex)

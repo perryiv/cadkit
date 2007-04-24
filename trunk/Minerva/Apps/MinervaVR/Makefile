@@ -81,8 +81,8 @@ STANDARD_LIBS = \
 # Basic options.
 #-------------------------------------------------------
 
-#BUILD_TYPE=	opt
-BUILD_TYPE=	dbg
+BUILD_TYPE=	opt
+#BUILD_TYPE=	dbg
 
 srcdir=		./
 

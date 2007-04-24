@@ -1,0 +1,79 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2006, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "InteractionController.h"
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+InteractionController::InteractionController() : BaseClass(),
+						 _navigator ( 0x0 )
+{
+  _navigator = new ossimPlanetNavigator(new ossimPlanetPrimaryBody("earth_wgs84",
+                                                                      6378137.0,
+                                                                      6356752.3142,
+                                                                      86400,
+                                                                      5.9742e24,
+                                                                      -180,
+                                                                     180)); 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+InteractionController::~InteractionController()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the planet.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void InteractionController::planet ( ossimPlanet * planet )
+{
+  _navigator->planet ( planet );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the home position
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void InteractionController::home ( double lat, double lon, double height )
+{
+  _home.set ( lat, lon, height );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the home look at posiont
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void InteractionController::homeLook ( double yaw, double pitch, double roll )
+{
+  _homeLook.set ( yaw, pitch, roll );
+}
+

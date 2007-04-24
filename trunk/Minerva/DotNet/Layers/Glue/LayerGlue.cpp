@@ -459,27 +459,30 @@ array<System::String^>^ LayerGlue::ColumnNames::get()
 
 DT::Minerva::Glue::BaseColorFunctor^ LayerGlue::_createColorFunctor( DT::Minerva::Layers::Colors::ColorProperties ^properties )
 {
-  if (properties->ColorMode == DT::Minerva::Layers::Colors::ColorProperties::Mode::SINGLE_COLOR)
+  if( nullptr != properties )
   {
-    DT::Minerva::Glue::SingleColorFunctor ^functor = gcnew DT::Minerva::Glue::SingleColorFunctor();
-    functor->Color = properties->Color;
-    return functor;
-  }
-  else if (properties->ColorMode == DT::Minerva::Layers::Colors::ColorProperties::Mode::GRADIENT_COLOR)
-  {
-    DT::Minerva::Glue::GradientColorFunctor ^funtor = gcnew DT::Minerva::Glue::GradientColorFunctor();
-    funtor->MinColor = properties->MinColor;
-    funtor->MaxColor = properties->MaxColor;
-
-    if (nullptr != _connection)
+    if (properties->ColorMode == DT::Minerva::Layers::Colors::ColorProperties::Mode::SINGLE_COLOR)
     {
-      double min = 0.0, max = 0.0;
-      ::Minerva::Core::DB::Info::RefPtr info ( new ::Minerva::Core::DB::Info ( this->layer()->connection() ) );
-      info->getMinMaxValue( Usul::Strings::convert ( this->Query ), Usul::Strings::convert ( this->ColorColumn ), min, max);
-      funtor->MinValue = min;
-      funtor->MaxValue = max;
-      return funtor;
+      DT::Minerva::Glue::SingleColorFunctor ^functor = gcnew DT::Minerva::Glue::SingleColorFunctor();
+      functor->Color = properties->Color;
+      return functor;
     }
+    else if (properties->ColorMode == DT::Minerva::Layers::Colors::ColorProperties::Mode::GRADIENT_COLOR)
+    {
+      DT::Minerva::Glue::GradientColorFunctor ^funtor = gcnew DT::Minerva::Glue::GradientColorFunctor();
+      funtor->MinColor = properties->MinColor;
+      funtor->MaxColor = properties->MaxColor;
+
+      if (nullptr != _connection)
+      {
+        double min = 0.0, max = 0.0;
+        ::Minerva::Core::DB::Info::RefPtr info ( new ::Minerva::Core::DB::Info ( this->layer()->connection() ) );
+        info->getMinMaxValue( Usul::Strings::convert ( this->Query ), Usul::Strings::convert ( this->ColorColumn ), min, max);
+        funtor->MinValue = min;
+        funtor->MaxValue = max;
+        return funtor;
+      }
+  }
   }
 
   return nullptr;

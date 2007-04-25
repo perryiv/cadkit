@@ -14,10 +14,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Threads/Thread.h"
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/Exceptions/Canceled.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
@@ -26,18 +29,6 @@
 #include <iostream>
 
 using namespace Usul::Threads;
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Static data members.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Thread::StaticMutex *Thread::_staticMutex ( 0x0 );
-Thread::FactoryFunction *Thread::_fun ( 0x0 ); // Client has to set.
-unsigned long Thread::_guiThread ( 0 );        // Client has to set.
-unsigned long Thread::_nextThreadId ( 0 );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -55,7 +46,7 @@ Thread::Thread() : BaseClass(),
   _finishedCB     ( 0x0 ),
   _startedCB      ( 0x0 ),
   _errorMessage   (),
-  _id             ( _nextThreadId++ ),
+  _id             ( Manager::instance().nextThreadId() ),
   _systemId       ( 0 ),
   _creationThread ( Usul::Threads::currentThreadId() )
 {
@@ -75,7 +66,12 @@ Thread::~Thread()
 
   USUL_ERROR_STACK_CATCH_EXCEPTIONS_BEGIN;
 
-  USUL_ASSERT ( Thread::NOT_RUNNING == _state );
+  if ( Thread::NOT_RUNNING != _state )
+  {
+    std::cout << Usul::Strings::format ( "Error 4212506063: deleting Thread: ", this, ", id: ", _id, ", system thread: ", _systemId,  '\n' );
+    std::cout << std::flush;
+    USUL_ASSERT ( false );
+  }
 
   _cancelledCB = 0x0;
   _errorCB = 0x0;
@@ -84,106 +80,6 @@ Thread::~Thread()
   _errorMessage.clear();
 
   USUL_ERROR_STACK_CATCH_EXCEPTIONS_END(3271694255);
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create the thread. Client needs to set the function.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Thread *Thread::create()
-{
-  USUL_TRACE_SCOPE;
-  StaticGuard guard ( Thread::_getStaticMutex() );
-
-  if ( 0x0 == _fun )
-  {
-    USUL_ASSERT ( _fun ); // The client needs to set this.
-    throw std::runtime_error ( "Error 1689981392: No thread factory set" );
-  }
-
-  return (*_fun)();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the factory-function. Return the previous one.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Thread::FactoryFunction *Thread::createFunction ( Thread::FactoryFunction *fun )
-{
-  USUL_TRACE_SCOPE;
-  StaticGuard guard ( Thread::_getStaticMutex() );
-
-  FactoryFunction *original = _fun;
-  _fun = fun;
-  return original;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the factory-function.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Thread::FactoryFunction *Thread::createFunction()
-{
-  USUL_TRACE_SCOPE;
-  StaticGuard guard ( Thread::_getStaticMutex() );
-  return _fun;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the class's mutex.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Thread::StaticMutex &Thread::_getStaticMutex()
-{
-  USUL_TRACE_SCOPE;
-
-  if ( 0x0 == _staticMutex )
-  {
-    _staticMutex = Thread::StaticMutex::create();
-  }
-
-  return *_staticMutex;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the GUI thread ID. Not thread safe!
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Thread::guiThread ( unsigned long id )
-{
-  USUL_TRACE_SCOPE;
-  StaticGuard guard ( Thread::_getStaticMutex() );
-  _guiThread = id;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is this the GUI thread?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Thread::isGuiThread()
-{
-  USUL_TRACE_SCOPE;
-  StaticGuard guard ( Thread::_getStaticMutex() );
-  const unsigned long id ( Usul::Threads::currentThreadId() );
-  return ( id == _guiThread );
 }
 
 
@@ -286,20 +182,6 @@ void Thread::_setResult ( Thread::Result result )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the state and result.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Thread::_set ( Thread::State state, Thread::Result result )
-{
-  USUL_TRACE_SCOPE;
-  this->_setState ( state );
-  this->_setResult ( result );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the result.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -335,7 +217,19 @@ Thread::State Thread::state() const
 void Thread::cancel()
 {
   USUL_TRACE_SCOPE;
+
+  // Set the flag.
   this->_setResult ( Thread::CANCELLED );
+
+  // Get the thread ids.
+  const unsigned long currentThread ( Usul::Threads::currentThreadId() );
+  const unsigned long systemThread  ( this->systemId() );
+
+  // If the current thread is the system thread that we created...
+  if ( systemThread == currentThread )
+  {
+    throw Usul::Exceptions::Cancelled();
+  }
 }
 
 
@@ -343,17 +237,34 @@ void Thread::cancel()
 //
 //  Schedules the thread and immediately returns.
 //
+//  TODO: Need mutex for this function or the "running" state. No other way 
+//  to guard this function against re-entrance.
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 void Thread::start()
 {
   USUL_TRACE_SCOPE;
 
-  // Initialize the error.
-  this->_setError ( "" );
+  // We should not be running.
+  if ( Thread::NOT_RUNNING != this->state() )
+  {
+    throw Usul::Exceptions::Thrower<std::runtime_error>
+      ( "Error 4293851626: thread ", this->id(), " is already running or scheduled to run" );
+  }
 
-  // Set the state and result.
-  this->_set ( Thread::SCHEDULED, Thread::NORMAL );
+  // Using scope to release lock before we start thread.
+  {
+    // Lock access and set all flags together.
+    Guard guard ( this->mutex() );
+
+    // Initialize the error.
+    this->_setError ( "" );
+
+    // Set the state and result.
+    this->_setState ( Thread::SCHEDULED );
+    this->_setResult ( Thread::NORMAL );
+  }
 
   // Start the thread.
   this->_start();
@@ -363,6 +274,9 @@ void Thread::start()
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Run the thread.
+//
+//  TODO: Need mutex for this function or the "running" state. No other way 
+//  to guard this function against re-entrance.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -399,7 +313,7 @@ void Thread::_execute()
     // Is there an error?
     if ( hasError )
     {
-      this->_set ( Thread::NOT_RUNNING, Thread::ERROR_RESULT );
+      this->_setResult ( Thread::ERROR_RESULT );
       this->_notifyError();
     }
 
@@ -410,7 +324,8 @@ void Thread::_execute()
       this->_setSystemThreadId ( Usul::Threads::currentThreadId() );
 
       // Set the state and result.
-      this->_set ( Thread::RUNNING, Thread::NORMAL );
+      this->_setState  ( Thread::RUNNING );
+      this->_setResult ( Thread::NORMAL  );
 
       // Notify start callback.
       this->_notifyStarted();
@@ -419,32 +334,36 @@ void Thread::_execute()
       this->_notifyFinished();
 
       // Set the state and result.
-      this->_set ( Thread::NOT_RUNNING, Thread::NORMAL );
+      this->_setResult ( Thread::NORMAL );
     }
   }
 
   // Handle special exception.
   catch ( const Usul::Exceptions::Cancelled & )
   {
-    this->_set ( Thread::NOT_RUNNING, Thread::CANCELLED );
-    this->_notifyCancelled();
+    Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &Thread::_setResult ), Thread::CANCELLED, "9390472160" );
+    Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Thread::_notifyCancelled ), "1672077110" );
   }
 
   // Handle standard exceptions.
   catch ( const std::exception &e )
   {
     this->_reportErrorNoThrow ( Usul::Strings::format ( "Error 3474512825: standard exception caught while running thread ", this->id(), ", ", e.what() ) );
-    this->_set ( Thread::NOT_RUNNING, Thread::ERROR_RESULT );
-    this->_notifyError();
+    Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &Thread::_setResult ), Thread::ERROR_RESULT, "1486236410" );
+    Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Thread::_notifyError ), "2480505155" );
   }
 
   // Handle unknown exceptions.
   catch ( ... )
   {
     this->_reportErrorNoThrow ( Usul::Strings::format ( "Error 1668279636: unknown exception caught while running thread ", this->id() ) );
-    this->_set ( Thread::NOT_RUNNING, Thread::ERROR_RESULT );
-    this->_notifyError();
+    Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &Thread::_setResult ), Thread::ERROR_RESULT, "4044605042" );
+    Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Thread::_notifyError ), "2253082170" );
   }
+
+  // Always reset this, and in this order.
+  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &Thread::_setSystemThreadId ), 0, "3250307774" );
+  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &Thread::_setState ), Thread::NOT_RUNNING, "1283621892" );
 }
 
 

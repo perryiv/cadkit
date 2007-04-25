@@ -33,12 +33,16 @@
   Usul::Trace::Print::execute ( exp )
 
 #define USUL_TRACE_SCOPE\
+  Usul::Trace::Scope trace_scope ( this, __FUNCTION__ )
+
+#define USUL_TRACE_SCOPE_STATIC\
   Usul::Trace::Scope trace_scope ( __FUNCTION__ )
 
 #else
 
 #define USUL_TRACE_1(exp)
 #define USUL_TRACE_SCOPE
+#define USUL_TRACE_SCOPE_STATIC
 
 #endif
 

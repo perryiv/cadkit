@@ -19,6 +19,7 @@
 #include "Usul/Errors/Stack.h"
 #include "Usul/Exceptions/Canceled.h"
 #include "Usul/Threads/Mutex.h"
+#include "Usul/Threads/Manager.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
 
@@ -50,7 +51,7 @@ Pool::Pool() :
   _queued     (),
   _tasks      (),
   _nextTaskId ( 0 ),
-  _thread     ( Thread::create() )
+  _thread     ( Usul::Threads::Manager::instance().create() )
 {
   USUL_TRACE_SCOPE;
 

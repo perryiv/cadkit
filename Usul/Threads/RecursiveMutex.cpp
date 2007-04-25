@@ -14,9 +14,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Errors/Assert.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Guard.h"
-#include "Usul/Errors/Assert.h"
+
+#include <iostream>
 
 using namespace Usul::Threads;
 
@@ -52,7 +55,12 @@ RecursiveMutex::RecursiveMutex() :
 
 RecursiveMutex::~RecursiveMutex()
 {
-  USUL_ASSERT ( 0 == _count );
+  if ( 0 != _count )
+  {
+    std::cout << Usul::Strings::format ( "Error 2732635427: deleting RecursiveMutex ", this, " with lock count ", _count, '\n' );
+    std::cout << std::flush;
+    USUL_ASSERT ( false );
+  }
   delete _local;
   delete _mutex;
 }

@@ -31,15 +31,25 @@ using namespace Usul::Trace;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Scope::Scope ( const std::string &n ) : _name ( n )
+Scope::Scope ( const void *object, const std::string &n ) : 
+  _name   ( n ), 
+  _object ( object )
 {
-  std::ostringstream out;
-  out << "<function";
-  out << " name=\"" << _name << "\"";
-  out << " time=\"" << Usul::System::Clock::milliseconds() << "\"";
-  out << " thread=\"" << Usul::Threads::currentThreadId() << "\"";
-  out << ">\n";
-  Usul::Trace::Print::execute ( out.str() );
+  this->_begin();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Scope::Scope ( const std::string &n ) : 
+  _name   ( n ), 
+  _object ( 0x0 )
+{
+  this->_begin();
 }
 
 
@@ -50,6 +60,42 @@ Scope::Scope ( const std::string &n ) : _name ( n )
 ///////////////////////////////////////////////////////////////////////////////
 
 Scope::~Scope()
+{
+  this->_end();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Print the beginning of a scope.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Scope::_begin() const
+{
+  std::ostringstream out;
+
+  out << "<function";
+
+  if ( 0x0 != _object )
+    out << " object=\"" << _object << "\"";
+
+  out << " name=\"" << _name << "\"";
+  out << " time=\"" << Usul::System::Clock::milliseconds() << "\"";
+  out << " thread=\"" << Usul::Threads::currentThreadId() << "\"";
+  out << ">\n";
+
+  Usul::Trace::Print::execute ( out.str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Print the end of a scope.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Scope::_end() const
 {
   Usul::Trace::Print::execute ( "</function>\n" );
 }

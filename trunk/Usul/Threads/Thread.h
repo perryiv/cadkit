@@ -27,12 +27,6 @@ namespace Usul {
 namespace Threads {
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Base thread class.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 class USUL_EXPORT Thread : public Usul::Base::Referenced
 {
 public:
@@ -65,19 +59,11 @@ public:
     ERROR_RESULT, // Thread encountered an error.
   };
 
-  // Set the state to cancelled. This flag is a request that the 
-  // implementation has to act upon accordingly.
+  // If this function is called from the system thread that this instance 
+  // encapsulates then it will throw the "cancelled" exception. Otherwise,
+  // it simply sets the state to cancelled. Setting this flags is a request 
+  // that the implementation has to act upon accordingly.
   void                    cancel();
-
-  // Create a thread. Uses the registered factory-function.
-  static Thread *         create();
-
-  // Set/get the factory-function. Return the previous one.
-  static FactoryFunction *createFunction ( FactoryFunction *fun );
-  static FactoryFunction *createFunction();
-
-  // Set the GUI thread ID.
-  static void             guiThread ( unsigned long );
 
   // Get the thread's ID. This is not the system's ID for the thread, 
   // but a unique integer that increments for each new thread object.
@@ -86,9 +72,6 @@ public:
   // See if the thread has the given resut or state.
   bool                    hasResult ( Result ) const;
   bool                    hasState ( State ) const;
-
-  // Is this the GUI thread?
-  static bool             isGuiThread();
 
   // Kill the thread. Behavior is implementation specific.
   virtual void            kill() = 0;
@@ -138,7 +121,6 @@ private:
   Thread &operator = ( const Thread & );
 
   unsigned long           _getCreationThread() const;
-  static StaticMutex &    _getStaticMutex();
 
   void                    _notifyCancelled();
   void                    _notifyError();
@@ -147,7 +129,6 @@ private:
 
   void                    _reportErrorNoThrow ( const std::string &s );
 
-  void                    _set ( State, Result );
   void                    _setError ( const std::string & );
   void                    _setResult ( Result );
   void                    _setState ( State );
@@ -165,30 +146,6 @@ private:
   unsigned long _id;
   unsigned long _systemId;
   unsigned long _creationThread;
-
-  // Static data members.
-  static StaticMutex *_staticMutex;
-  static FactoryFunction *_fun;
-  static unsigned long _guiThread;
-  static unsigned long _nextThreadId;
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Helper struct. Make a global instance of this if setting in main() is 
-//  too late in the program execution.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-struct SetThreadFactory
-{
-  template < class FactoryFunction > SetThreadFactory ( FactoryFunction f, bool replace = false )
-  {
-    Usul::Threads::Thread::FactoryFunction *current ( Usul::Threads::Thread::createFunction() );
-    if ( 0x0 == current || true == replace )
-      Usul::Threads::Thread::createFunction ( f );
-  }
 };
 
 

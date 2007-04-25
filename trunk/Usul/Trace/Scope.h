@@ -30,12 +30,17 @@ class USUL_EXPORT Scope
 {
 public:
 
+  Scope ( const void *object, const std::string &name );
   Scope ( const std::string &name );
   ~Scope();
 
 private:
 
+  void              _begin() const;
+  void              _end() const;
+
   std::string _name;
+  const void *_object;
 };
 
 

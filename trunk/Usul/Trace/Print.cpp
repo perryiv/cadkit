@@ -61,7 +61,7 @@ void Print::execute ( const char *s )
   {
     if ( 0x0 != s )
     {
-      *Detail::_stream << s;
+      *Detail::_stream << s << std::flush;
     }
   }
 }

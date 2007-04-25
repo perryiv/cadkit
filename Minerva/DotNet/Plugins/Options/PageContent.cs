@@ -29,6 +29,7 @@ namespace DT.Minerva.Plugins.Options
       {
         CadKit.Interfaces.ILegend legend = (CadKit.Interfaces.ILegend)CadKit.Documents.Manager.Instance.ActiveDocument;
         _legend.Checked = legend.ShowLegend;
+        _percentScreenWidthSpinner.Value = System.Convert.ToDecimal(legend.PercentScreenWidth);
       }
     }
 

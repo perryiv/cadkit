@@ -17,9 +17,12 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/Trace/Trace.h"
 
 #include "OpenThreads/Thread"
+
+#include <iostream>
 
 using namespace Threads::OT;
 
@@ -44,7 +47,7 @@ namespace Detail
       USUL_TRACE_SCOPE;
     }
 
-    ~OpenThread()
+    virtual ~OpenThread()
     {
       USUL_TRACE_SCOPE;
       // Nothing to delete, we do not own the thread object.
@@ -113,7 +116,14 @@ void Thread::_destroy()
       {
         if ( true == t->isRunning() )
         {
-          OpenThreads::Thread::microSleep ( 100000 ); // One tenth of a second.
+          // Many threads may call cout, so formatting the string first will 
+          // ensure this line stays together.
+          std::cout << Usul::Strings::format 
+            ( "Warning 4624401900: waiting for thread to stop running, id: ", 
+              this->id(), ", OpenThreads id: ", t->getThreadId(), '\n' );
+
+          // Wait one second.
+          OpenThreads::Thread::microSleep ( 1000000 );
         }
       }
     }
@@ -166,7 +176,7 @@ namespace Threads
   {
     Usul::Threads::Thread *newOpenThreadsThread()
     {
-      USUL_TRACE_SCOPE;
+      USUL_TRACE_SCOPE_STATIC;
       return new Thread();
     }
   };

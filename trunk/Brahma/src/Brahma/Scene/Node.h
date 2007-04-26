@@ -4,7 +4,7 @@
 
 #include "Brahma/Core/Object.h"
 
-#include "Brahma/Scene/Database.h"
+//#include "Brahma/Scene/Database.h"
 
 #include "Export.h" 
 
@@ -23,29 +23,39 @@ namespace Brahma
 
         USUL_DECLARE_REF_POINTERS( Node );        
 
-        Node() : BaseClass(),           
-          _id   ( "" ), 
-          _database( 0x00 )
-        {
-          this->_addMember( "_id", _id );  
-          this->_addMember( "_database", _database );
-          //this->_addMember( "_data", _data );
-        }
+        //Node() : BaseClass(),           
+        //  _id   ( "" ), 
+        //  _database( 0x00 )
+        //{
+        //  this->_addMember( "_id", _id );  
+        //  //this->_addMember( "_database", _database );
+        //  //this->_addMember( "_data", _data );
+        //}
 
-        const std::string&  id() const;        
-        void                id( const std::string& id );
+        const std::string&		id() const;        
+        void									id( const std::string& id );
 
-        Database*           database();
-        void                database( Database* db );        
-
-				virtual void				accept( NodeVisitor& nv );       
 				
+        //Database*           database();
+        //void                database( Database* db );        
+
+				virtual void					accept( NodeVisitor& nv ) = 0;
+        
+				//virtual void				traverse();
 
         //const std::string&  data() const;
         //void                data( const std::string& source );        
 
       protected:     
-      
+				
+				Node() : BaseClass(),           
+          _id   ( "" )           
+        {
+          this->_addMember( "_id", _id );  
+          //this->_addMember( "_database", _database );
+          //this->_addMember( "_data", _data );
+        }
+				
         virtual ~Node()
         {
         }
@@ -53,7 +63,7 @@ namespace Brahma
         std::string           _id;          
         //std::string         _data;  
 
-        Database::RefPtr      _database;
+        //Database::RefPtr      _database;
 
         SERIALIZE_XML_DEFINE_MEMBERS ( Node );     
     };

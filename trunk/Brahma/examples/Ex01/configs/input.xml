@@ -3,45 +3,25 @@
   <Group>
     <_id>G1</_id>
     <_children>
-      <element TypeName="Group">
+      <element TypeName="Transform">
         <_id>G1G1</_id>
+        <position>0 0 0</position>
+        <_rotation>90 1 0 0</_rotation>
+        <_pivot>0 0 0</_pivot>
         <_children>
-          <element TypeName="Node">
+          <element TypeName="LeafNode">
+            <_id>G1G1N1</_id>            
+            <_data>C:\Aashish\data\OpenSceneGraph-Data\cow.osg</_data>            
+          </element>
+          <element TypeName="LeafNode">
             <_id>G1G1N1</_id>
-            <_database TypeName="Database">
-              <_data>C:\Aashish\data\OpenSceneGraph-Data\cow.osg</_data>
-            </_database>
+            <_data>C:\Aashish\data\OpenSceneGraph-Data\cessna.osg</_data>
           </element>
-        </_children>
-      </element>
-      <element TypeName="Group">
-        <_id>G1G2</_id>
-        <_children>
-          <element TypeName="Node">
+          <element TypeName="LeafNode">
             <_id>G1G1N1</_id>
-            <_database TypeName="Database">
-              <_data>C:\Aashish\data\OpenSceneGraph-Data\osgcool.osg</_data>
-            </_database>
+            <_data>C:\Aashish\data\OpenSceneGraph-Data\dumptruck.osg</_data>
           </element>
-          <element TypeName="Node">
-            <_id>G1G1N2</_id>
-            <_database TypeName="Database">
-              <_data>C:\Aashish\data\OpenSceneGraph-Data\cessna.osg</_data>
-            </_database>
-          </element>
-          <element TypeName="Node">
-            <_id>G1G1N3</_id>
-            <_database TypeName="Database">
-              <_data>C:\Aashish\data\OpenSceneGraph-Data\dumptruck.osg</_data>
-            </_database>
-          </element>
-          <element TypeName="Node">
-            <_id>G1G1N4</_id>
-            <_database TypeName="Database">
-              <_data>C:\Aashish\data\OpenSceneGraph-Data\osgcool.osg</_data>
-            </_database>
-          </element>
-        </_children>
+        </_children>      
       </element>      
     </_children>
   </Group>

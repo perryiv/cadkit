@@ -206,14 +206,6 @@
 				Name="Scene"
 				>
 				<File
-					RelativePath="..\src\Brahma\Scene\BaseNodeVisitor.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\Brahma\Scene\Database.h"
-					>
-				</File>
-				<File
 					RelativePath="..\src\Brahma\Scene\Export.h"
 					>
 				</File>
@@ -226,11 +218,23 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\Brahma\Scene\LeafNode.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Brahma\Scene\LeafNode.h"
+					>
+				</File>
+				<File
 					RelativePath="..\src\Brahma\Scene\Node.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\src\Brahma\Scene\Node.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Brahma\Scene\NodeVisitor.h"
 					>
 				</File>
 				<File

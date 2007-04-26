@@ -27,7 +27,7 @@
 #include "Usul/Interfaces/IProjectCoordinates.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Interfaces/IGroup.h"
-#include "Usul/Interfaces/IToolLifetime.h"
+#include "Usul/Interfaces/IToolLifeTime.h"
 
 #include "Minerva/Core/DataObjects/DataObject.h"
 #include "Minerva/Core/DataObjects/UserData.h"

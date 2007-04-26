@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../src;$(LOCAL_SRC_DIR)/Experimental;$(LOCAL_SRC_DIR);$(BOOST_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(PRODUCER_INC_DIR)"
+				AdditionalIncludeDirectories="../../../src;$(LOCAL_SRC_DIR)/Experimental;$(LOCAL_SRC_DIR);$(BOOST_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(PRODUCER_INC_DIR);$(LOCAL_SRC_DIR)/SceneParser/src;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

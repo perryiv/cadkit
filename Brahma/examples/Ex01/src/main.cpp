@@ -1,10 +1,12 @@
 
-#include "Core/Brahma.h"
+#include "Brahma/Core/Brahma.h"
 
-#include "Scene/Node.h"
-#include "Scene/Group.h"
-#include "Scene/Transform.h"
-#include "Scene/Database.h"
+#include "Brahma/Scene/Node.h"
+#include "Brahma/Scene/Group.h"
+#include "Brahma/Scene/Transform.h"
+#include "Brahma/Scene/LeafNode.h"
+
+#include "Parser/Scene/SceneNodeVisitor.h"
 
 #include "Usul/Threads/Mutex.h"
 
@@ -22,9 +24,10 @@ const std::string OUTPUT_FILE_NAME( "output.xml" );
 
 Usul::Threads::SetMutexFactory factory ( &Usul::Threads::newSingleThreadedMutexStub );
 
+#if 0
 void addNode( Brahma::Scene::Node* node, osg::Group* osgGroup )
 {   
-  Brahma::Scene::Database::RefPtr db( node->database() );
+  Brahma::Scene::LeafNode::RefPtr b( node->database() );
   if( db.valid() )
   {
     // Check here whether we have a dir or a file. 
@@ -111,23 +114,49 @@ void parse( const Brahma::Core::Brahma::BaseObjects& objects, osg::Group* osgRoo
     }
   }
 }
+#endif 
 
 int main( int argc, char** argv )
 {
   osg::ref_ptr< osg::Group > osgRoot( new osg::Group() );
 
+	Parser::Scene::SceneNodeVisitor::RefPtr nodeVisitor( new Parser::Scene::SceneNodeVisitor() );
+
   Brahma::Core::Brahma::RefPtr brahma( new Brahma::Core::Brahma() );
 
-  brahma->registerType< Brahma::Scene::Node > ( "Node" );
+  //brahma->registerType< Brahma::Scene::Node > ( "Node" );
   brahma->registerType< Brahma::Scene::Group >( "Group" );
   brahma->registerType< Brahma::Scene::Transform >( "Transform" );
-  brahma->registerType< Brahma::Scene::Database >( "Database" );
+  brahma->registerType< Brahma::Scene::LeafNode >( "LeafNode" );
 
   brahma->load( INPUT_FILE_NAME );
 
   brahma->deserialize();
 
+	brahma->serialize( OUTPUT_FILE_NAME );
+
+	#if 0
   parse( brahma->objects(), osgRoot.get() );       
+	#endif
+
+	Brahma::Core::Brahma::BaseObjects objects( brahma->objects() );
+
+	for( size_t i = 0; i < objects.size(); ++i )
+  {
+    Brahma::Scene::Group::RefPtr group = dynamic_cast< Brahma::Scene::Group* >( objects[ i ].get() );
+    
+    if( group.valid() )
+    {
+			group->accept( *( nodeVisitor.get() ) );
+    }
+
+   // Brahma::Scene::Node::RefPtr node = dynamic_cast< Brahma::Scene::Node* >( objects[ i ].get() );
+   // 
+   // if( node.valid() )
+   // {
+			//node->accept( *( nodeVisitor.get() ) );
+   // }
+  }
 
   //brahma->serialize( OUTPUT_FILE_NAME );
 
@@ -162,7 +191,11 @@ int main( int argc, char** argv )
     return 1;
   }
 
+	#if 0
   viewer.setSceneData( osgRoot.get() );
+	#endif
+
+	viewer.setSceneData( nodeVisitor->root() );
 
   // create the windows and run the threads.
   viewer.realize();

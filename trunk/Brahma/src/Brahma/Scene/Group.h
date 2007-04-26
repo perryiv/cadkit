@@ -4,7 +4,7 @@
 
 #include "Brahma/Core/Object.h"
 
-#include "Node.h"
+#include "Brahma/Scene/Node.h"
 
 #include "Export.h" 
 
@@ -15,12 +15,14 @@ namespace Brahma
 { 
   namespace Scene
   {
-    class SCENE_EXPORT Group: public Node
+    class SCENE_EXPORT Group: public Brahma::Scene::Node
     {
       public:
 
-        typedef Node                                BaseClass;
-        typedef std::vector< BaseClass::RefPtr >    Children;
+        typedef Brahma::Scene::Node                 BaseClass;
+				typedef Brahma::Scene::Node::RefPtr					NodePtr;
+
+				typedef std::vector< NodePtr >							Children;
 
 
         USUL_DECLARE_REF_POINTERS( Group );
@@ -33,6 +35,8 @@ namespace Brahma
 
         const Children&                             children() const;
         void                                        children( const Children& children );        
+
+				virtual void																accept( NodeVisitor& nv );       
 
       protected:
 

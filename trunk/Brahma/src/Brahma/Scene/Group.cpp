@@ -1,5 +1,6 @@
 
 #include "Group.h"
+#include "NodeVisitor.h"
 
 const Brahma::Scene::Group::Children& Brahma::Scene::Group::children() const
 {
@@ -11,3 +12,7 @@ void Brahma::Scene::Group::children( const Brahma::Scene::Group::Children& child
   _children = children;
 }
 
+void Brahma::Scene::Group::accept( NodeVisitor& nv )
+{
+	nv.visit( *this );
+}

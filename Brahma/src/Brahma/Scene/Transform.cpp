@@ -1,5 +1,6 @@
 
-#include "Transform.h"
+#include "Brahma/Scene/Transform.h"
+#include "Brahma/Scene/NodeVisitor.h"
 
 const std::string& Brahma::Scene::Transform::type() const 
 {
@@ -41,6 +42,10 @@ void Brahma::Scene::Transform::pivot( const Usul::Math::Vec3f& pivot )
   _pivot = pivot;
 }
 
+void Brahma::Scene::Transform::accept( NodeVisitor& nv )
+{
+	nv.visit( *this );
+}
 
 
 

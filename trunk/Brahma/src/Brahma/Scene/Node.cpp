@@ -1,5 +1,6 @@
 
 #include "Node.h"
+#include "NodeVisitor.h"
 
 const std::string& Brahma::Scene::Node::id() const
 {
@@ -19,6 +20,12 @@ Brahma::Scene::Database* Brahma::Scene::Node::database()
 void Brahma::Scene::Node::database( Brahma::Scene::Database* db )
 {
   _database = db;
+}
+
+
+void Brahma::Scene::Node::accept( Brahma::Scene::NodeVisitor &nv )
+{
+	nv.visit( *this );
 }
 
 //const std::string& Brahma::Scene::Node::data() const 

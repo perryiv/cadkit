@@ -12,6 +12,9 @@ namespace Brahma
 { 
   namespace Scene
   {
+
+		class NodeVisitor;
+
     class SCENE_EXPORT Node: public Core::Object
     {
       public:
@@ -35,7 +38,9 @@ namespace Brahma
         Database*           database();
         void                database( Database* db );        
 
-        
+				virtual void				accept( NodeVisitor& nv );       
+				
+
         //const std::string&  data() const;
         //void                data( const std::string& source );        
 

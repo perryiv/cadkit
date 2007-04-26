@@ -48,6 +48,7 @@ namespace Brahma
         const Usul::Math::Vec3f&                    pivot() const;
         void                                        pivot( const Usul::Math::Vec3f& pivot );
         
+				virtual void																accept( NodeVisitor& nv );       
 
       protected:
 

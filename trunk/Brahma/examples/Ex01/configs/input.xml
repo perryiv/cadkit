@@ -5,24 +5,32 @@
     <_children>
       <element TypeName="Transform">
         <_id>G1G1</_id>
-        <position>0 0 0</position>
-        <_rotation>90 1 0 0</_rotation>
+        <_position>0 0 0</_position>
+        <_rotation>-90 1 0 0</_rotation>
         <_pivot>0 0 0</_pivot>
         <_children>
           <element TypeName="LeafNode">
-            <_id>G1G1N1</_id>            
-            <_data>C:\Aashish\data\OpenSceneGraph-Data\cow.osg</_data>            
+            <_id>G1G1N1</_id>
+            <_data>C:\Aashish\data\OpenSceneGraph-Data\cow.osg</_data>
           </element>
           <element TypeName="LeafNode">
             <_id>G1G1N1</_id>
             <_data>C:\Aashish\data\OpenSceneGraph-Data\cessna.osg</_data>
           </element>
-          <element TypeName="LeafNode">
-            <_id>G1G1N1</_id>
-            <_data>C:\Aashish\data\OpenSceneGraph-Data\dumptruck.osg</_data>
+          <element TypeName="Transform">
+            <id>TestTransform1</id>
+            <_position>100 0 0</_position>
+            <_rotation>90 0 0 1</_rotation>
+            <_pivot>0 0 0</_pivot>
+            <_children>
+              <element TypeName="LeafNode">
+                <_id>G1G1N1</_id>
+                <_data>C:\Aashish\data\OpenSceneGraph-Data\dumptruck.osg</_data>
+              </element>
+            </_children>
           </element>
-        </_children>      
-      </element>      
+        </_children>
+        </element>
     </_children>
   </Group>
 </objects>

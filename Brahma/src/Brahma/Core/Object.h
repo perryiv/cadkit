@@ -1,4 +1,13 @@
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Aashish Chaudhary
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #ifndef __BRAHMA_CORE_OBJECT_H__
 #define __BRAHMA_CORE_OBJECT_H__
 
@@ -38,4 +47,5 @@ namespace Brahma
     };
   }
 }
+
 #endif // __BRAHMA_CORE_OBJECT_H__

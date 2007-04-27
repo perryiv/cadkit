@@ -1,4 +1,13 @@
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Aashish Chaudhary
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #include "SceneNodeVisitor.h"
 
 #include "Brahma/Scene/Node.h"
@@ -48,6 +57,7 @@ void Parser::Scene::SceneNodeVisitor::visit( Brahma::Scene::LeafNode& leaf, cons
 
 void Parser::Scene::SceneNodeVisitor::visit( Brahma::Scene::Group& group, const bool& createNew )
 {
+	// If this is a group node. 
 	if( createNew )
 	{
 		osg::ref_ptr< osg::Group > osgGroup ( new osg::Group() );	
@@ -94,10 +104,12 @@ void Parser::Scene::SceneNodeVisitor::visit( Brahma::Scene::Transform& transform
 			rotation = transform.rotation();
 			pivot		 = transform.pivot();
 
-			osgTransform->setName( transform.id() );		
+			// First rotate and then translate. 
+			osgTransform->setName( transform.id() );					
 			osgTransform->preMult( osg::Matrix::rotate( osg::DegreesToRadians( rotation[ 0 ] ), rotation[ 1 ], rotation[ 2 ], rotation[ 3 ] ) );
+			osgTransform->preMult( osg::Matrix::rotate( osg::DegreesToRadians( -rotation[ 0 ] ), rotation[ 1 ], rotation[ 2 ], rotation[ 3 ] ) );
 			osgTransform->preMult( osg::Matrix::translate( position[ 0 ], position[ 1 ], position[ 2 ] ) );
-			
+			osgTransform->preMult( osg::Matrix::rotate( osg::DegreesToRadians( rotation[ 0 ] ), rotation[ 1 ], rotation[ 2 ], rotation[ 3 ] ) );
 			_parent->addChild( osgTransform.get() );
 
 			_parent = osgTransform.get();

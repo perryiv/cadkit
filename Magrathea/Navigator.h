@@ -72,6 +72,9 @@ protected:
   /// Calculate where the line of sight intersects the planet.
   bool                    _losIntersectionPoint ( osg::Vec3d& point );
 
+  /// Calculate the speed given current parameters.
+  double                  _calculateLinearSpeed ( double factor, double displacement ) const;
+
 private:
   // Eye position in lat, lon.
   double _lat;

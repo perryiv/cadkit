@@ -33,8 +33,8 @@ _zoom ( -4.2 ),
 _hpr( 0.0, 0.0, 0.0 ),
 _zoomMin ( -4.2 ),
 _zoomMax ( 0.001 ),
-_rotateSpeed ( 2.5 ),
-_elevationSpeed ( 0.25 ),
+_rotateSpeed ( 8.0 ),
+_elevationSpeed ( 0.75 ),
 _pitchSpeed ( 0.5 ),
 _yawSpeed ( 20 ),
 _landModel ( 0x0 ),
@@ -67,6 +67,8 @@ void Navigator::setLatLonHeight(double lat, double lon, double height)
   _lon = lon;
 
   _zoom = Usul::Math::clamp ( -( 1.0 + ( height / _primary->radius ( _lat ) ) ), _zoomMin, _zoomMax );
+  _hpr.x() = 0;
+  _hpr.y() = 0;
 }
 
 
@@ -192,7 +194,7 @@ void Navigator::rotate ( const osg::Vec3f& point0, const osg::Vec3f& point1 )
   double x ( dx * c + dy * s );
   double y ( -dx * s + dy * c );
 
-  const double speed ( this->rotateSpeed() * -_zoom );
+  const double speed ( this->rotateSpeed() * - ( _zoom + 1 ) );
 
   _lon = Detail::wrap ( _lon + ( x * speed ), _primary->minLon(), _primary->maxLon() );
   _lat += ( y * speed );
@@ -272,10 +274,9 @@ void Navigator::rotateLOS ( const osg::Vec3f& point0, const osg::Vec3f& point1 )
 
 void Navigator::elevation ( const osg::Vec3f& point0, const osg::Vec3f& point1 )
 {
-  double dx ( point1.x() - point0.x() );
   double dy ( point1.y() - point0.y() );
 
-  const double dZoom ( _zoom * this->elevationSpeed() * dy );
+  double dZoom ( this->_calculateLinearSpeed ( this->elevationSpeed(), dy ) );
 
   double zoom ( Usul::Math::clamp ( _zoom + dZoom, _zoomMin, _zoomMax ) );
   _zoom = zoom;
@@ -426,4 +427,17 @@ bool Navigator::_losIntersectionPoint ( osg::Vec3d& point )
   }
 
   return hitFound;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Calculate the speed given current parameters.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Navigator::_calculateLinearSpeed ( double factor, double displacement ) const
+{
+  double speed ( ( _zoom + 1 ) * factor * displacement );
+  return speed;
 }

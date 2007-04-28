@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Thread classes.
+//  Thread class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -119,7 +119,7 @@ void Thread::_destroy()
           // Many threads may call cout, so formatting the string first will 
           // ensure this line stays together.
           std::cout << Usul::Strings::format 
-            ( "Warning 4624401900: waiting for thread to stop running, id: ", 
+            ( "Warning 4624401900: waiting for thread ", this, " to stop running, id: ", 
               this->id(), ", OpenThreads id: ", t->getThreadId(), '\n' );
 
           // Wait one second.
@@ -127,7 +127,20 @@ void Thread::_destroy()
         }
       }
     }
-    delete t;
+
+    // If it's not running then delete it.
+    if ( false == t->isRunning() )
+    {
+      delete t;
+    }
+
+    // Otherwise, it's a leak, which is better than bringing down the house.
+    else
+    {
+      std::cout << Usul::Strings::format 
+        ( "Warning 3096769450: memory leak for thread ", this, " because it failed to stop running, id: ", 
+          this->id(), ", OpenThreads id: ", t->getThreadId(), '\n' );
+    }
   }
 }
 
@@ -161,6 +174,28 @@ void Thread::_start()
   }
 
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( _thread, &Detail::OpenThread::start ), "2262084867" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if it's ok to delete this instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Thread::isIdle() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // See if there is a running thread.
+  if ( 0x0 != _thread && true == _thread->isRunning() )
+  {
+    return false;
+  }
+
+  // See what the base class has to say.
+  return BaseClass::isIdle();
 }
 
 

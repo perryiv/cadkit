@@ -12,17 +12,17 @@
 #define __PARSER_SCENENODEVISITOR_H__
 
 #ifdef _MSC_VER 
-  #if defined( SCENEPARSER_STATIC )
-	  #define SCENE_EXPORT	
+  #if defined( PARSER_SCENENODEVISITOR_STATIC )
+	  #define PARSER_SCENENODEVISITOR_EXPORT	
 	#else
-	  #ifdef SCENEPARSER_SHARED
-	    #define SCENE_EXPORT __declspec(dllexport)
+	  #ifdef  PARSER_SCENENODEVISITOR_SHARED
+	    #define PARSER_SCENENODEVISITOR_EXPORT __declspec(dllexport)
 	  #else
-	    #define SCENE_EXPORT __declspec(dllimport)
+	    #define PARSER_SCENENODEVISITOR_EXPORT __declspec(dllimport)
 	  #endif
 	#endif
 #else
-	#define SCENE_EXPORT
+	#define PARSER_SCENENODEVISITOR_EXPORT
 #endif 
 
 #endif // __PARSER_SCENENODEVISITOR_H__

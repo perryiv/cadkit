@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="$(OSG_INC_DIR); $(OPENTHREADS_INC_DIR);$(LOCAL_SRC_DIR)/Brahma/src;$(LOCAL_SRC_DIR)/Experimental;$(LOCAL_SRC_DIR);$(BOOST_INC_DIR);"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;SCENEPARSER_EXPORTS;SCENEPARSER_SHARED;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;SCENEPARSER_EXPORTS;PARSER_SCENENODEVISITOR_SHARED;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -119,7 +119,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;SCENEPARSER_EXPORTS"
+				AdditionalIncludeDirectories="$(OSG_INC_DIR); $(OPENTHREADS_INC_DIR);$(LOCAL_SRC_DIR)/Brahma/src;$(LOCAL_SRC_DIR)/Experimental;$(LOCAL_SRC_DIR);$(BOOST_INC_DIR);"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;SCENEPARSER_EXPORTS; PARSER_SCENENODEVISITOR_SHARED"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -137,7 +138,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="osg.lib osgDB.lib Usul.lib SerializeXML.lib XMLTree.lib"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR); $(OPENTHREADS_LIB_DIR); $(LOCAL_SRC_DIR)/bin;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"

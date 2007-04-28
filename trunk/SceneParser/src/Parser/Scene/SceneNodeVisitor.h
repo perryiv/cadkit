@@ -8,6 +8,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Class implements NodeVisitor interface for scene traversal. 
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #ifndef __SCENE_SCENENODEVISITOR_H__
 #define __SCENE_SCENENODEVISITOR_H__
 
@@ -16,6 +23,13 @@
 #include "Brahma/Scene/NodeVisitor.h"
 
 #include "Export.h"
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Forward declarations. 
+//
+///////////////////////////////////////////////////////////////////////////////
 
 namespace Brahma
 {
@@ -31,7 +45,7 @@ namespace Parser
 {
 	namespace Scene
 	{
-		class SCENE_EXPORT SceneNodeVisitor : public Brahma::Scene::NodeVisitor
+		class PARSER_SCENENODEVISITOR_EXPORT SceneNodeVisitor : public Brahma::Scene::NodeVisitor
 		{
 			public:         
 	      
@@ -58,9 +72,7 @@ namespace Parser
 				GroupPtrs																	_groups;
 		
 		
-				virtual ~SceneNodeVisitor()
-				{
-				}
+				virtual	~SceneNodeVisitor();
 		};
 	}
 }

@@ -14,11 +14,15 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Threads/Manager.h"
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Assert.h"
+#include "Usul/Errors/Stack.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
 
 #include <stdexcept>
+#include <algorithm>
 
 using namespace Usul::Threads;
 
@@ -42,7 +46,8 @@ Manager::Manager() :
   _mutex          (),
   _factory        ( 0x0 ),
   _guiThread      ( 0 ),
-  _nextThreadId   ( 0 )
+  _nextThreadId   ( 0 ),
+  _threads        ()
 {
   USUL_TRACE_SCOPE;
 }
@@ -57,6 +62,7 @@ Manager::Manager() :
 Manager::~Manager()
 {
   USUL_TRACE_SCOPE;
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Manager::_destroy ), "3593335840" );
 }
 
 
@@ -79,6 +85,32 @@ Manager &Manager::instance()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Singleton destruction.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::init()
+{
+  USUL_TRACE_SCOPE_STATIC;
+  delete _instance;
+  _instance = 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destroy the members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::_destroy()
+{
+  _threads.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Create the thread. Client needs to set the function.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -94,7 +126,14 @@ Usul::Threads::Thread *Manager::create()
     throw std::runtime_error ( "Error 2149832182: No thread factory set" );
   }
 
-  return (*_factory)();
+  Usul::Threads::Thread::RefPtr thread ( (*_factory)() );
+  if ( false == thread.valid() )
+  {
+    throw std::runtime_error ( "Error 3505918135: Thread creation failed" );
+  }
+
+  _threads.push_back ( thread );
+  return thread.get();
 }
 
 
@@ -197,4 +236,34 @@ unsigned long Manager::nextThreadId()
   Guard guard ( this->mutex() );
   unsigned long id ( _nextThreadId++ );
   return id;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Purge all threads that are ready to be deleted.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::purge()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Remove all threads that are ready.
+  _threads.remove_if ( std::mem_fun ( &Thread::isIdle ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the list of threads is empty.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Manager::empty() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _threads.empty();
 }

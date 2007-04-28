@@ -40,6 +40,9 @@ public:
   // Create a thread. Uses the registered factory-function.
   Thread *                create();
 
+  // See if the list of threads is empty.
+  bool                    empty() const;
+
   // Set/get the factory-function. Return the previous one.
   FactoryFunction *       factory ( FactoryFunction *fun );
   FactoryFunction *       factory();
@@ -47,6 +50,9 @@ public:
   // Set/get the GUI thread ID.
   unsigned long           guiThread() const;
   void                    guiThread ( unsigned long );
+
+  // This will delete the previous instance, if any.
+  static void             init();
 
   // It's a singleton.
   static Manager &        instance();
@@ -60,6 +66,9 @@ public:
   // Return the mutex. Use with caution.
   Mutex &                 mutex() const;
 
+  // Purge all threads that are ready to be deleted.
+  void                    purge();
+
 private:
 
   // Constructor and destructor.
@@ -70,12 +79,15 @@ private:
   Manager ( const Manager & );
   Manager &operator = ( const Manager & );
 
+  void                    _destroy();
+
   // Data members.
   static Manager *_instance;
   mutable Mutex _mutex;
   FactoryFunction *_factory;
   unsigned long _guiThread;
   unsigned long _nextThreadId;
+  ThreadList _threads;
 };
 
 

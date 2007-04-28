@@ -73,6 +73,9 @@ public:
   bool                    hasResult ( Result ) const;
   bool                    hasState ( State ) const;
 
+  // See if this thread is idle. When it's idle it is ok to delete.
+  virtual bool            isIdle() const;
+
   // Kill the thread. Behavior is implementation specific.
   virtual void            kill() = 0;
 

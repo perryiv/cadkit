@@ -557,3 +557,21 @@ bool Thread::hasResult ( Result r ) const
   USUL_TRACE_SCOPE;
   return ( this->result() == r );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if it's ok to delete this instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Thread::isIdle() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  const bool notRunning ( Thread::NOT_RUNNING == this->state() );
+  const bool zeroSystemThread ( 0 == this->systemId() );
+
+  return ( notRunning && zeroSystemThread );
+}

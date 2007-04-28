@@ -8,6 +8,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Node that contains the data. 
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #ifndef __BRAHMA_SCENE_LEAFNODE_H__
 #define __BRAHMA_SCENE_LEAFNODE_H__
 
@@ -24,38 +31,28 @@ namespace Brahma
     {
       public:
 
+				///////////////////////////////////////////////////////////////////////
+				//	
+				//  Easy to remember names. 
+				//
+				///////////////////////////////////////////////////////////////////////
+
 				typedef Brahma::Scene::Node BaseClass;
 
         USUL_DECLARE_REF_POINTERS( LeafNode );                
-      
-         LeafNode() : BaseClass(),
-          _data ( "" )
-        {
-          this->_addMember( "_data", _data );
-        }
 
-        const std::string&  data() const
-        {
-          return _data;
-        }
+        LeafNode();
 
-        void data( const std::string& source )
-        {
-          _data = source;
-        }
+        const std::string&											data() const;
+        void																		data( const std::string& source );
 
-				virtual void accept( Brahma::Scene::NodeVisitor &nv )
-				{
-					nv.visit( *this );
-				}
+				virtual void														accept( Brahma::Scene::NodeVisitor &nv );
 
       protected:
       
-        virtual ~LeafNode()
-        {
-        }
+        virtual ~LeafNode();
 
-        std::string         _data;  
+        std::string															_data;  
 
         SERIALIZE_XML_DEFINE_MEMBERS ( LeafNode );     
     };

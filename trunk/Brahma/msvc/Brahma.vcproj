@@ -120,7 +120,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR)/Experimental;$(LOCAL_SRC_DIR);$(BOOST_INC_DIR);$(LOCAL_SRC_DIR)/Brahma/src"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;BRAHMA_EXPORTS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;BRAHMA_EXPORTS;BRAHMA_SHARED;"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -235,10 +235,6 @@
 				</File>
 				<File
 					RelativePath="..\src\Brahma\Scene\NodeVisitor.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\Brahma\Scene\Scene.h"
 					>
 				</File>
 				<File

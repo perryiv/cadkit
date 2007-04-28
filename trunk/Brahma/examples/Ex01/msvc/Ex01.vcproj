@@ -119,7 +119,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../../src;$(LOCAL_SRC_DIR)/Experimental;$(LOCAL_SRC_DIR);$(BOOST_INC_DIR);"
+				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR)/Experimental;$(LOCAL_SRC_DIR);$(LOCAL_SRC_DIR)/Brahma/src;$(BOOST_INC_DIR);$(LOCAL_SRC_DIR)/SceneParser/src;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(PRODUCER_INC_DIR);"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -138,9 +138,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Usul.lib SerializeXML.lib XMLTree.lib"
+				AdditionalDependencies="Usul.lib SerializeXML.lib XMLTree.lib osg.lib osgDB.lib osgProducer.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(LOCAL_SRC_DIR)/bin"
+				AdditionalLibraryDirectories="$(LOCAL_SRC_DIR)/bin;$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(PRODUCER_LIB_DIR);"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"

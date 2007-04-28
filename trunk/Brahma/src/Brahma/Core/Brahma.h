@@ -41,9 +41,9 @@ namespace Brahma
     {
       public:
 
-        typedef Usul::Base::Referenced                            BaseClass;  
-        typedef Object::RefPtr                                    BaseObject;
-        typedef std::vector< BaseObject >                         BaseObjects;
+        typedef Usul::Base::Referenced        BaseClass;  
+        typedef Object::RefPtr                BaseObject;
+        typedef std::vector< BaseObject >     BaseObjects;
 
         USUL_DECLARE_REF_POINTERS( Brahma );
 
@@ -53,7 +53,7 @@ namespace Brahma
 
         const BaseObjects&                    objects() const;
 
-        void                                  load( const std::string& config );
+        void                                  setConfig( const std::string& config );
 
         void                                  serialize( const std::string& config );
 
@@ -79,9 +79,9 @@ namespace Brahma
 
       private:
 
-        std::string                         _inputConfig;
+        std::string														_inputConfig;
 
-        BaseObjects                         _baseObjects;
+        BaseObjects														_baseObjects;
         
     };    
   }

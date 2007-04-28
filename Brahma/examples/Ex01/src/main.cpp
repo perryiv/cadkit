@@ -138,7 +138,7 @@ int main( int argc, char** argv )
   brahma->registerType< Brahma::Scene::Transform >( "Transform" );
   brahma->registerType< Brahma::Scene::LeafNode >( "LeafNode" );
 
-  brahma->load( INPUT_FILE_NAME );
+  brahma->setConfig( INPUT_FILE_NAME );
 
   brahma->deserialize();
 
@@ -192,7 +192,7 @@ int main( int argc, char** argv )
 
   osg::Timer_t end_tick = osg::Timer::instance()->tick();
 
-  std::cout << "Time to load = "<<osg::Timer::instance()->delta_s(start_tick,end_tick)<<std::endl;
+  std::cout << "Time to setConfig = "<<osg::Timer::instance()->delta_s(start_tick,end_tick)<<std::endl;
 
   // pass the loaded scene graph to the viewer.
   if( !osgRoot.valid() )

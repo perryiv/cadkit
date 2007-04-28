@@ -134,7 +134,7 @@ void Referenced::ref()
   Guard guard ( *_rcMutex );
 
 #ifdef _DEBUG
-  // If this is the first time, update the entry in the instange-manager. 
+  // If this is the first time, update the entry in the instance-manager. 
   // When the entry is first made in the constructor, the virtual table 
   // is not fully constructed.
   if ( 0 == _refCount )

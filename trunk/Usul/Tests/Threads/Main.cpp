@@ -34,11 +34,9 @@
 #include <fstream>
 #include <cstdlib>
 #include <ctime>
-#include <list>
 #include <algorithm>
 #include <windows.h>
 
-typedef std::list<Usul::Threads::Thread::RefPtr> ThreadList;
 
 namespace Detail
 {
@@ -121,11 +119,10 @@ void _threadCancelled ( Usul::Threads::Thread *thread )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void _startThread ( ThreadList &threads )
+void _startThread()
 {
   USUL_TRACE_SCOPE_STATIC;
   Usul::Threads::Thread::RefPtr thread ( Usul::Threads::Manager::instance().create() );
-  threads.push_back ( thread );
   thread->started   ( Usul::Threads::newFunctionCallback ( _threadStarted   ) );
   thread->finished  ( Usul::Threads::newFunctionCallback ( _threadFinished  ) );
   thread->cancelled ( Usul::Threads::newFunctionCallback ( _threadCancelled ) );
@@ -149,36 +146,18 @@ void _test()
                            ( 20 ) );
 
   std::cout << Usul::Strings::format ( "Number of threads to start: ", num, '\n' );
-  ThreadList threads;
 
   // Start some threads.
+  for ( unsigned int i = 0; i < num; ++i )
   {
-    for ( unsigned int i = 0; i < num; ++i )
-    {
-      _startThread ( threads );
-      ::Sleep ( 100 );
-    }
+    _startThread();
+    ::Sleep ( 100 );
   }
 
   // Remove the ones that are done.
+  while ( false == Usul::Threads::Manager::instance().empty() )
   {
-    while ( false == threads.empty() )
-    {
-      ThreadList::iterator i ( std::find_if ( threads.begin(), threads.end(), std::bind2nd ( std::mem_fun ( &Usul::Threads::Thread::hasState ), Usul::Threads::Thread::NOT_RUNNING ) ) );
-      if ( threads.end() != i )
-      {
-        Usul::Threads::Thread::RefPtr thread ( *i );
-        if ( true == thread.valid() )
-        {
-          std::ostringstream out;
-          out << "  Removing thread " << std::setw ( 4 ) << thread->id() 
-              << " using system thread " << std::setw ( 4 ) << thread->systemId() 
-              << ", address " << thread << '\n';
-          std::cout << out.str() << std::flush;
-        }
-        threads.erase ( i );
-      }
-    }
+    Usul::Threads::Manager::instance().purge();
   }
 }
 
@@ -193,7 +172,7 @@ void _clean()
 {
   Detail::_mutex = 0x0;
   Usul::Threads::Mutex::createFunction  ( 0x0 );
-  Usul::Threads::Manager::instance().factory ( 0x0 );
+  Usul::Threads::Manager::init();
   Usul::Trace::Print::execute ( "</functions>\n" );
 }
 

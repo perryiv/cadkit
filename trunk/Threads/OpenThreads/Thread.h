@@ -36,6 +36,8 @@ public:
 
   Thread();
 
+  virtual bool            isIdle() const;
+
   virtual void            kill();
 
 protected:

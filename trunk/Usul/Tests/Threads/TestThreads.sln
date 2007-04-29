@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test: CadKit Usul Threads 01", "TestThreads.vcproj", "{C973AA39-4129-4F4A-A8A0-BCA19D7A3782}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test: CadKit Usul Threads 01", "Test01\TestThreads01.vcproj", "{C973AA39-4129-4F4A-A8A0-BCA19D7A3782}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}

@@ -18,6 +18,7 @@
 #include <sstream>
 
 #ifdef _MSC_VER
+# define NOMINMAX
 # include <windows.h> // For GetComputerName()
 #endif
 

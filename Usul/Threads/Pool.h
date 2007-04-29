@@ -16,8 +16,12 @@
 #ifndef _USUL_THREADS_POOL_CLASS_H_
 #define _USUL_THREADS_POOL_CLASS_H_
 
-#include "Usul/Threads/Thread.h"
+#include "Usul/Base/Referenced.h"
+#include "Usul/Threads/Guard.h"
+#include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Task.h"
+#include "Usul/Threads/Thread.h"
+#include "Usul/Pointers/Pointers.h"
 
 #include <vector>
 #include <list>
@@ -28,11 +32,12 @@ namespace Usul {
 namespace Threads {
 
 
-class USUL_EXPORT Pool
+class USUL_EXPORT Pool : public Usul::Base::Referenced
 {
 public:
 
   // Useful typedefs.
+  typedef Usul::Base::Referenced BaseClass;
   typedef std::vector<Thread::RefPtr> ThreadPool;
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
@@ -41,14 +46,21 @@ public:
   typedef unsigned int TaskHandle;
   typedef std::map<TaskHandle,Task::RefPtr> AllTasks;
 
+  // Smart-pointer definitions.
+  USUL_DECLARE_REF_POINTERS ( Pool );
+
+  // Constructor
+  Pool ( unsigned int numThreads = 10 );
+
   // Add a task.
   TaskHandle              add ( Callback *started, 
                                 Callback *finished = 0x0,
                                 Callback *cancelled = 0x0,
-                                Callback *error = 0x0 );
+                                Callback *error = 0x0,
+                                Callback *destroyed = 0x0 );
 
-  // It's a singleton.
-  Pool &                  instance();
+  // Cancel all threads inthe pool.
+  void                    cancel();
 
   // Does the pool have the task?
   bool                    hasTask ( TaskHandle ) const;
@@ -56,17 +68,11 @@ public:
   // Return the mutex. Use with caution.
   Mutex &                 mutex() const;
 
-  // Set the number of threads the pool has. If the number of non-idle 
-  // threads is greater than the new size then this function will throw
-  // unless false is passed as the last argument.
-  void                    numThreads ( unsigned int num, bool allowThrow );
-
   // Get the number of threads in the pool.
   unsigned int            numThreads() const;
 
-  // Get the number of threads with the given state or result.
-  unsigned int            numThreads ( const Usul::Threads::Thread::Result &result ) const;
-  unsigned int            numThreads ( const Usul::Threads::Thread::State &state ) const;
+  // Get the number of idle threads.
+  unsigned int            numThreadsIdle() const;
 
   // Get the number of tasks that are waiting for idle threads.
   unsigned int            numTasksQueued() const;
@@ -74,23 +80,40 @@ public:
   // Remove the task from the pool.
   void                    remove ( TaskHandle );
 
+  // Set/get the sleep duration. This is the amount of time (in milliseconds) 
+  // that the internal worker thread will sleep during a loop.
+  void                    sleepDuration ( unsigned long );
+  unsigned long           sleepDuration() const;
+
+  // Wait for all threads in the pool to complete.
+  void                    wait();
+  void                    wait ( unsigned long timeout );
+
 protected:
 
-  // Constructor/destructor.
-  Pool();
-  ~Pool();
-
-  // Callbacks for internal thread.
-  void                    _started   ( Usul::Threads::Thread * );
-  void                    _cancelled ( Usul::Threads::Thread * );
-  void                    _error     ( Usul::Threads::Thread * );
-  void                    _finished  ( Usul::Threads::Thread * );
+  // Use reference counting.
+  virtual ~Pool();
 
 private:
 
   // No copying or assigning.
   Pool ( const Pool & );
   Pool &operator = ( const Pool & );
+
+  void                    _destroy();
+
+  Thread *                _firstAvailableThread();
+
+  bool                    _isRunning() const;
+
+  void                    _threadProcessTasks();
+
+  Task *                  _nextTask();
+
+  void                    _threadStarted   ( Usul::Threads::Thread * );
+  void                    _threadCancelled ( Usul::Threads::Thread * );
+  void                    _threadError     ( Usul::Threads::Thread * );
+  void                    _threadFinished  ( Usul::Threads::Thread * );
 
   // Data members.
   mutable Mutex _mutex;
@@ -99,7 +122,7 @@ private:
   AllTasks _tasks;
   unsigned long _nextTaskId;
   Thread::RefPtr _thread;
-  static Pool *_instance;
+  unsigned long _sleep;
 };
 
 

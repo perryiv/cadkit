@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="test: CadKit Usul Threads 01"
-	ProjectGUID="{C973AA39-4129-4F4A-A8A0-BCA19D7A3782}"
+	Name="test: CadKit Usul Threads 02"
+	ProjectGUID="{470869B0-2670-455B-AB83-F01344517C35}"
 	RootNamespace="ThreadsTest"
 	>
 	<Platforms>
@@ -59,7 +59,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="Debug/ThreadsTest01d.exe"
+				OutputFile="Debug/ThreadsTest02d.exe"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -131,7 +131,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="Release/ThreadsTest01.exe"
+				OutputFile="Release/ThreadsTest02.exe"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"

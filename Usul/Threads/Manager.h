@@ -40,6 +40,9 @@ public:
   // Create a thread. Uses the registered factory-function.
   Thread *                create();
 
+  // This will delete the previous instance, if any.
+  static void             destroy();
+
   // See if the list of threads is empty.
   bool                    empty() const;
 
@@ -50,9 +53,6 @@ public:
   // Set/get the GUI thread ID.
   unsigned long           guiThread() const;
   void                    guiThread ( unsigned long );
-
-  // This will delete the previous instance, if any.
-  static void             init();
 
   // It's a singleton.
   static Manager &        instance();

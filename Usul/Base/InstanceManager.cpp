@@ -19,7 +19,8 @@
 #include "Usul/Threads/Guard.h"
 
 #ifdef _MSC_VER
-#include "windows.h"
+# define NOMINMAX
+# include <windows.h>
 #endif
 
 #include <iostream>

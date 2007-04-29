@@ -16,7 +16,6 @@
 #include "Usul/Threads/Manager.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Assert.h"
-#include "Usul/Errors/Stack.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
@@ -89,7 +88,7 @@ Manager &Manager::instance()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::init()
+void Manager::destroy()
 {
   USUL_TRACE_SCOPE_STATIC;
   delete _instance;

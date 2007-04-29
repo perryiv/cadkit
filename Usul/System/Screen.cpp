@@ -16,6 +16,7 @@
 #include "Usul/System/Screen.h"
 
 #ifdef _WIN32
+# define NOMINMAX
 # include <windows.h> // For GetSystemMetrics()
 #endif
 

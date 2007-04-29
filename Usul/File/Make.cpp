@@ -19,8 +19,9 @@
 #include "Usul/System/LastError.h"
 
 #ifdef _MSC_VER
-# include "windows.h"
-# include "io.h"
+# define NOMINMAX
+# include <windows.h>
+# include <io.h>
 # define TEST_ACCESS _access
 #else
 # include <sys/stat.h>

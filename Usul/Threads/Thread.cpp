@@ -42,6 +42,7 @@ Thread::Thread() : BaseClass(),
   _result         ( Thread::NORMAL ),
   _mutex          (),
   _cancelledCB    ( 0x0 ),
+  _destroyedCB    ( 0x0 ),
   _errorCB        ( 0x0 ),
   _finishedCB     ( 0x0 ),
   _startedCB      ( 0x0 ),
@@ -66,14 +67,17 @@ Thread::~Thread()
 
   USUL_ERROR_STACK_CATCH_EXCEPTIONS_BEGIN;
 
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Thread::_notifyDestroyed ), "2055113901" );
+
   if ( Thread::NOT_RUNNING != _state )
   {
-    std::cout << Usul::Strings::format ( "Error 4212506063: deleting Thread: ", this, ", id: ", _id, ", system thread: ", _systemId,  '\n' );
+    std::cout << Usul::Strings::format ( "Error 4212506063: deleting running thread: ", this, ", id: ", _id, ", system thread: ", _systemId,  '\n' );
     std::cout << std::flush;
     USUL_ASSERT ( false );
   }
 
   _cancelledCB = 0x0;
+  _destroyedCB = 0x0;
   _errorCB = 0x0;
   _finishedCB = 0x0;
   _startedCB = 0x0;
@@ -107,6 +111,20 @@ void Thread::cancelled ( Callback *cb )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _cancelledCB = cb;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the callback.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Thread::destroyed ( Callback *cb )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _destroyedCB = cb;
 }
 
 
@@ -381,6 +399,24 @@ void Thread::_notifyCancelled()
   if ( true == _cancelledCB.valid() )
   {
     (*_cancelledCB) ( this );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify callback.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Thread::_notifyDestroyed()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  if ( true == _destroyedCB.valid() )
+  {
+    (*_destroyedCB) ( this );
   }
 }
 

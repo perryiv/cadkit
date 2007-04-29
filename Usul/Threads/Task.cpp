@@ -26,9 +26,10 @@ using namespace Usul::Threads;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Task::Task ( unsigned long id, Callback *started, Callback *finished, Callback *cancelled, Callback *error ) : BaseClass(),
+Task::Task ( unsigned long id, Callback *started, Callback *finished, Callback *cancelled, Callback *error, Callback *destroyed ) : BaseClass(),
   _id          ( id ),
   _cancelledCB ( cancelled ),
+  _destroyedCB ( destroyed ),
   _errorCB     ( error ),
   _finishedCB  ( finished ),
   _startedCB   ( started )
@@ -49,6 +50,7 @@ Task::~Task()
   USUL_ERROR_STACK_CATCH_EXCEPTIONS_BEGIN;
 
   _cancelledCB = 0x0;
+  _destroyedCB = 0x0;
   _errorCB = 0x0;
   _finishedCB = 0x0;
   _startedCB = 0x0;

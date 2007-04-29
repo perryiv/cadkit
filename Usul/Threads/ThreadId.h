@@ -18,6 +18,7 @@
 #define _USUL_THREADS_THREAD_ID_CLASS_H_
 
 #ifdef _WIN32
+# define NOMINMAX
 # include <windows.h>
 #elif __GNUC__
 # include "Usul/Cast/Cast.h"

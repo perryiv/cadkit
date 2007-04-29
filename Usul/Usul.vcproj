@@ -1477,6 +1477,14 @@
 					RelativePath=".\System\Screen.h"
 					>
 				</File>
+				<File
+					RelativePath=".\System\Sleep.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\System\Sleep.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Types"

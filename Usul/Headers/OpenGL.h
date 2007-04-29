@@ -16,6 +16,7 @@
 # include <OpenGL/gl.h>
 #else
 # ifdef _MSC_VER
+#  define NOMINMAX
 #  include <windows.h>
 # endif
 # include <GL/gl.h>

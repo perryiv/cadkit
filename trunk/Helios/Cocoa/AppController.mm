@@ -1,6 +1,7 @@
 
 
 #import "AppController.h"
+#import "Foundation/NSPathUtilities.h"
 
 #include "Usul/Components/Manager.h"
 #include "Usul/App/Controller.h"
@@ -112,8 +113,10 @@
   NSString *currPath;
   NSMutableArray *bundleSearchPaths = [NSMutableArray array];
   NSMutableArray *allBundles = [NSMutableArray array];
+  NSString *ext = @"bundle";
+  NSString *appSupportSubpath = @"Application Support/XHelios/PlugIns";
 
-  librarySearchPaths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSAllDomainsMask - NSSystemDomainMask, YES);
+  librarySearchPaths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, (NSSearchPathDomainMask) (NSAllDomainsMask - NSSystemDomainMask), YES);
 
   searchPathEnum = [librarySearchPaths objectEnumerator];
 

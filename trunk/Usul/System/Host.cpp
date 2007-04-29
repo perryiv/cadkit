@@ -18,6 +18,7 @@
 #include "Usul/Exceptions/Thrower.h"
 
 #ifdef _WIN32
+# define NOMINMAX
 # include <windows.h> // For GetComputerName()
 #endif
 #include <algorithm>

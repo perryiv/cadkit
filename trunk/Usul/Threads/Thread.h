@@ -17,10 +17,10 @@
 #define _USUL_THREADS_THREAD_CLASS_H_
 
 #include "Usul/Base/Referenced.h"
-#include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Callback.h"
+#include "Usul/Pointers/Pointers.h"
 
 
 namespace Usul {
@@ -99,6 +99,7 @@ public:
 
   // Set the callbacks.
   void                    cancelled ( Callback * );
+  void                    destroyed ( Callback * );
   void                    error     ( Callback * );
   void                    finished  ( Callback * );
   void                    started   ( Callback * );
@@ -126,6 +127,7 @@ private:
   unsigned long           _getCreationThread() const;
 
   void                    _notifyCancelled();
+  void                    _notifyDestroyed();
   void                    _notifyError();
   void                    _notifyFinished();
   void                    _notifyStarted();
@@ -142,6 +144,7 @@ private:
   Result _result;
   mutable Mutex _mutex;
   Callback::RefPtr _cancelledCB;
+  Callback::RefPtr _destroyedCB;
   Callback::RefPtr _errorCB;
   Callback::RefPtr _finishedCB;
   Callback::RefPtr _startedCB;

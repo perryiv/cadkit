@@ -27,7 +27,8 @@
 #include <stdexcept>
 
 #ifdef _MSC_VER // Visual C++
-#include "windows.h"
+# define NOMINMAX
+# include <windows.h>
 #endif
 
 using namespace Usul;

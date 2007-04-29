@@ -22,6 +22,7 @@
 #include "Usul/IO/Redirect.h"
 #include "Usul/Math/Absolute.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/System/Sleep.h"
 #include "Usul/Threads/Callback.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Mutex.h"
@@ -35,14 +36,11 @@
 #include <cstdlib>
 #include <ctime>
 #include <algorithm>
-#include <windows.h>
-
 
 namespace Detail
 {
-  typedef Usul::Threads::Mutex Mutex;
-  typedef Usul::Threads::Guard<Mutex> Guard;
-  Mutex *_mutex ( 0x0 );
+  typedef std::vector<unsigned long> RandomNumbers;
+  RandomNumbers randomNumbers;
 }
 
 
@@ -55,10 +53,8 @@ namespace Detail
 void _threadStarted ( Usul::Threads::Thread *thread )
 {
   USUL_TRACE_SCOPE_STATIC;
-  Detail::Guard guard ( *(Detail::_mutex) );
 
-  // Use thread's address to make pseudo random time to sleep.
-  const Usul::Types::Uint64 sleep ( ( reinterpret_cast<Usul::Types::Uint64> ( thread ) ) / 10000 );
+  const unsigned long sleep ( Detail::randomNumbers.at ( thread->id() ) );
 
   std::ostringstream out;
   out << "  Started thread " << std::setw ( 4 ) << thread->id() 
@@ -66,13 +62,19 @@ void _threadStarted ( Usul::Threads::Thread *thread )
       << ", sleeping " << sleep << '\n';
   std::cout << out.str() << std::flush;
 
-  ::Sleep ( static_cast<DWORD> ( sleep ) );
+  Usul::System::Sleep::milliseconds ( sleep );
 
   // Every 4th thread we cancel.
   const unsigned long id ( thread->id() );
   if ( ( 0 != id ) && ( 0 == ( id % 4 ) ) )
   {
     thread->cancel();
+  }
+
+  // Every 5th thread we generate an error.
+  if ( ( 0 != id ) && ( 0 == ( id % 5 ) ) )
+  {
+    throw std::runtime_error ( "Error 1954614090: Generating error for testing" );
   }
 }
 
@@ -86,7 +88,6 @@ void _threadStarted ( Usul::Threads::Thread *thread )
 void _threadFinished ( Usul::Threads::Thread *thread )
 {
   USUL_TRACE_SCOPE_STATIC;
-  Detail::Guard guard ( *(Detail::_mutex) );
 
   std::ostringstream out;
   out << " Finished thread " << std::setw ( 4 ) << thread->id() 
@@ -104,10 +105,43 @@ void _threadFinished ( Usul::Threads::Thread *thread )
 void _threadCancelled ( Usul::Threads::Thread *thread )
 {
   USUL_TRACE_SCOPE_STATIC;
-  Detail::Guard guard ( *(Detail::_mutex) );
 
   std::ostringstream out;
   out << "Cancelled thread " << std::setw ( 4 ) << thread->id() 
+      << " using system thread " << std::setw ( 4 ) << thread->systemId() << '\n';
+  std::cout << out.str() << std::flush;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when a thread encounters an error.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void _threadError ( Usul::Threads::Thread *thread )
+{
+  USUL_TRACE_SCOPE_STATIC;
+
+  std::ostringstream out;
+  out << " Error in thread " << std::setw ( 4 ) << thread->id() 
+      << " using system thread " << std::setw ( 4 ) << thread->systemId() << '\n';
+  std::cout << out.str() << std::flush;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when a thread is deleted.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void _threadDestroyed ( Usul::Threads::Thread *thread )
+{
+  USUL_TRACE_SCOPE_STATIC;
+
+  std::ostringstream out;
+  out << "Destroyed thread " << std::setw ( 4 ) << thread->id() 
       << " using system thread " << std::setw ( 4 ) << thread->systemId() << '\n';
   std::cout << out.str() << std::flush;
 }
@@ -126,6 +160,8 @@ void _startThread()
   thread->started   ( Usul::Threads::newFunctionCallback ( _threadStarted   ) );
   thread->finished  ( Usul::Threads::newFunctionCallback ( _threadFinished  ) );
   thread->cancelled ( Usul::Threads::newFunctionCallback ( _threadCancelled ) );
+  thread->error     ( Usul::Threads::newFunctionCallback ( _threadError     ) );
+  thread->destroyed ( Usul::Threads::newFunctionCallback ( _threadDestroyed ) );
   thread->start();
 }
 
@@ -141,17 +177,27 @@ void _test()
   USUL_TRACE_SCOPE_STATIC;
 
   Usul::CommandLine::Arguments::Args args ( Usul::CommandLine::Arguments::instance().args() );
+
+  // The number of threads to start.
   const unsigned int num ( ( args.size() > 1 && false == args[1].empty() ) ? 
                            ( static_cast < unsigned int > ( Usul::Math::absolute ( ::atoi ( args[1].c_str() ) ) ) ) : 
                            ( 20 ) );
-
   std::cout << Usul::Strings::format ( "Number of threads to start: ", num, '\n' );
+
+  // The time to sleep between starting threads.
+  const unsigned long sleep ( ( args.size() > 2 && false == args[2].empty() ) ? 
+                              ( static_cast < unsigned long > ( Usul::Math::absolute ( ::atoi ( args[2].c_str() ) ) ) ) : 
+                              ( 100 ) );
+
+  // Fill random number vector now. Calling rand() in the child threads is unreliable.
+  Detail::randomNumbers.resize ( num );
+  std::generate ( Detail::randomNumbers.begin(), Detail::randomNumbers.end(), ::rand );
 
   // Start some threads.
   for ( unsigned int i = 0; i < num; ++i )
   {
     _startThread();
-    ::Sleep ( 100 );
+    Usul::System::Sleep::milliseconds ( sleep );
   }
 
   // Remove the ones that are done.
@@ -170,9 +216,9 @@ void _test()
 
 void _clean()
 {
-  Detail::_mutex = 0x0;
+  Detail::randomNumbers.clear();
   Usul::Threads::Mutex::createFunction  ( 0x0 );
-  Usul::Threads::Manager::init();
+  Usul::Threads::Manager::destroy();
   Usul::Trace::Print::execute ( "</functions>\n" );
 }
 
@@ -185,15 +231,15 @@ void _clean()
 
 void _run()
 {
-  ::srand ( static_cast < unsigned int > ( ::time ( 0x0 ) ) );
+  //::srand ( static_cast < unsigned int > ( ::time ( 0x0 ) ) );
+  ::srand ( 10 );
+  Detail::randomNumbers.clear();
 
   Usul::Trace::Print::execute ( "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" );
   Usul::Trace::Print::execute ( "<functions>\n" );
 
   Usul::Threads::Mutex::createFunction ( &Threads::OT::newOpenThreadsMutex );
   Usul::Threads::Manager::instance().factory ( &Threads::OT::newOpenThreadsThread );
-
-  Detail::_mutex = Usul::Threads::Mutex::create();
 
   Usul::Functions::safeCall ( _test, "1824980904" );
 }

@@ -18,6 +18,9 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/Exceptions/Canceled.h"
+#include "Usul/Functions/SafeCall.h"
+#include "Usul/System/Clock.h"
+#include "Usul/System/Sleep.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/ThreadId.h"
@@ -26,17 +29,9 @@
 #include <stdexcept>
 #include <iostream>
 #include <algorithm>
+#include <limits>
 
 using namespace Usul::Threads;
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Static data members.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Pool *Pool::_instance = 0x0;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -45,21 +40,30 @@ Pool *Pool::_instance = 0x0;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Pool::Pool() :
+Pool::Pool ( unsigned int numThreads ) : BaseClass(),
   _mutex      (),
   _pool       (),
   _queued     (),
   _tasks      (),
   _nextTaskId ( 0 ),
-  _thread     ( Usul::Threads::Manager::instance().create() )
+  _thread     ( Usul::Threads::Manager::instance().create() ),
+  _sleep      ( 500 )
 {
   USUL_TRACE_SCOPE;
 
+  // Populate pool.
+  _pool.reserve ( numThreads );
+  for ( unsigned int i = 0; i < numThreads; ++i )
+  {
+    Usul::Threads::Thread::RefPtr thread ( Usul::Threads::Manager::instance().create() );
+    _pool.push_back ( thread );
+  }
+
   // Set callbacks for the internal thread.
-  _thread->started   ( newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Pool::_started   ) ) );
-  _thread->cancelled ( newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Pool::_cancelled ) ) );
-  _thread->error     ( newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Pool::_error     ) ) );
-  _thread->finished  ( newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Pool::_finished  ) ) );
+  _thread->started   ( newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Pool::_threadStarted   ) ) );
+  _thread->cancelled ( newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Pool::_threadCancelled ) ) );
+  _thread->error     ( newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Pool::_threadError     ) ) );
+  _thread->finished  ( newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Pool::_threadFinished  ) ) );
 
   // Start the internal thread.
   _thread->start();
@@ -75,31 +79,40 @@ Pool::Pool() :
 Pool::~Pool()
 {
   USUL_TRACE_SCOPE;
-  USUL_ERROR_STACK_CATCH_EXCEPTIONS_BEGIN;
-
-  _pool.clear();
-  _queued.clear();
-  _tasks.clear();
-  _thread = 0x0;
-
-  USUL_ERROR_STACK_CATCH_EXCEPTIONS_END(4272162595);
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Pool::_destroy ), "4142774520" );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Singleton construction.
+//  Destroy the members.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Pool &Pool::instance()
+void Pool::_destroy()
 {
-  USUL_TRACE_SCOPE;
-  if ( 0x0 == _instance )
+  Guard guard ( this->mutex() );
+
+  // Cancel all the threads.
+  this->cancel();
+
+  // Wait for them to finish.
+  this->wait ( 10000 );
+
+  // Now delete internal thread.
+  if ( 0x0 != _thread && false == _thread->isIdle() )
   {
-    _instance = new Pool;
+    _thread->cancel();
+    while ( false == _thread->isIdle() )
+    {
+      Usul::System::Sleep::milliseconds ( 100 );
+    }
   }
-  return *_instance;
+
+  _thread = 0x0;
+  _pool.clear();
+  _queued.clear();
+  _tasks.clear();
 }
 
 
@@ -122,12 +135,12 @@ Pool::Mutex &Pool::mutex() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Pool::TaskHandle Pool::add ( Callback *started, Callback *finished, Callback *cancelled, Callback *error )
+Pool::TaskHandle Pool::add ( Callback *started, Callback *finished, Callback *cancelled, Callback *error, Callback *destroyed )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Task::RefPtr task ( new Task ( _nextTaskId++, started, finished, cancelled, error ) );
+  Task::RefPtr task ( new Task ( _nextTaskId++, started, finished, cancelled, error, destroyed ) );
   _queued.push_back ( task );
   _tasks[task->id()] = task;
 
@@ -166,79 +179,19 @@ unsigned int Pool::numThreads() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the number of threads with the given state.
+//  Get the number of threads that are idle.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Pool::numThreads ( const Usul::Threads::Thread::State &state ) const
+unsigned int Pool::numThreadsIdle() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
   unsigned int count ( static_cast<unsigned int> ( std::count_if ( _pool.begin(), _pool.end(), 
-    std::bind2nd ( std::mem_fun ( &Usul::Threads::Thread::hasState ), state ) ) ) );
+    std::mem_fun ( &Usul::Threads::Thread::isIdle ) ) ) );
 
   return count;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the number of threads with the given result.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int Pool::numThreads ( const Usul::Threads::Thread::Result &result ) const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  unsigned int count ( static_cast<unsigned int> ( std::count_if ( _pool.begin(), _pool.end(), 
-    std::bind2nd ( std::mem_fun ( &Usul::Threads::Thread::hasResult ), result ) ) ) );
-
-  return count;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the number of threads.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Pool::numThreads ( unsigned int request, bool allowThrow )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  // Determine number of non-idle (active) threads.
-  unsigned int idle ( this->numThreads ( Thread::NOT_RUNNING ) );
-  unsigned int size ( this->numThreads() );
-  USUL_ASSERT ( idle <= size );
-  unsigned int active ( size - idle );
-
-  // If the new size will hold all the non-idle threads...
-  if ( request >= active )
-  {
-    // Put all active threads at the beginning of the sequence.
-    ThreadPool::iterator end ( std::remove_if ( _pool.begin(), _pool.end(), 
-      std::bind2nd ( std::mem_fun ( &Usul::Threads::Thread::hasState ), Thread::NOT_RUNNING ) ) );
-
-    // Should be true.
-    USUL_ASSERT ( static_cast < unsigned int > ( std::distance ( _pool.begin(), end ) ) <= request );
-
-    // Trim to the new size.
-    _pool.resize ( request );
-  }
-
-  // Otherwise...
-  else
-  {
-    if ( true == allowThrow )
-    {
-      throw std::runtime_error ( "Error 4967564190: Number of non-idle threads exceeds the requested thread-pool size" );
-    }
-  }
 }
 
 
@@ -279,12 +232,95 @@ void Pool::remove ( TaskHandle id )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  See if the internal thread is running.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Pool::_isRunning() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return ( ( 0x0 != _thread ) ? ( Usul::Threads::Thread::RUNNING == _thread->state() ) : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Called when the internal thread starts.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Pool::_started ( Usul::Threads::Thread * )
+void Pool::_threadStarted ( Usul::Threads::Thread * )
 {
+  USUL_TRACE_SCOPE;
+  // Do not lock mutex here!
+
+  // Check thread.
+  if ( Usul::Threads::currentThreadId() != _thread->systemId() )
+    throw std::runtime_error ( "Error 2565542508: wrong thread in start function" );
+
+  // Loop until this thread is cancelled or this instance is deleted.
+  while ( this->_isRunning() )
+  {
+    // Sleep so that this thread doesn't take over.
+    Usul::System::Sleep::milliseconds ( this->sleepDuration() );
+
+    // Process any queued tasks.
+    this->_threadProcessTasks();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the internal thread starts.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Pool::_threadProcessTasks()
+{
+  USUL_TRACE_SCOPE;
+  // Do not lock mutex here!
+
+  // Check thread.
+  if ( Usul::Threads::currentThreadId() != _thread->systemId() )
+    throw std::runtime_error ( "Error 1154876700: wrong thread in task-processing function" );
+
+  // Check to see if we've been cancelled.
+  if ( Thread::CANCELLED == _thread->result() )
+    throw Usul::Exceptions::Cancelled();
+
+  // If there are any queued tasks...
+  const unsigned int queued ( this->numTasksQueued() );
+  if ( queued > 0 )
+  {
+    // Are there any idle threads?
+    const unsigned int idle ( this->numThreadsIdle() );
+    if ( idle > 0 )
+    {
+      Guard guard ( this->mutex() );
+
+      // Get next available thread.
+      Usul::Threads::Thread::RefPtr thread ( this->_firstAvailableThread() );
+      if ( true == thread.valid() )
+      {
+        // Get the next task.
+        Task::RefPtr task ( this->_nextTask() );
+        if ( true == task.valid() )
+        {
+          // Set callbacks.
+          thread->started   ( task->startedCB()   );
+          thread->finished  ( task->finishedCB()  );
+          thread->cancelled ( task->cancelledCB() );
+          thread->error     ( task->errorCB()     );
+          thread->destroyed ( task->destroyedCB() );
+
+          // Start the thread.
+          thread->start();
+        }
+      }
+    }
+  }
 }
 
 
@@ -294,8 +330,9 @@ void Pool::_started ( Usul::Threads::Thread * )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Pool::_cancelled ( Usul::Threads::Thread * )
+void Pool::_threadCancelled ( Usul::Threads::Thread * )
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -305,8 +342,9 @@ void Pool::_cancelled ( Usul::Threads::Thread * )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Pool::_error ( Usul::Threads::Thread * )
+void Pool::_threadError ( Usul::Threads::Thread * )
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -316,6 +354,152 @@ void Pool::_error ( Usul::Threads::Thread * )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Pool::_finished ( Usul::Threads::Thread * )
+void Pool::_threadFinished ( Usul::Threads::Thread * )
 {
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the next task.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Threads::Task *Pool::_nextTask()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  Task::RefPtr task ( 0x0 );
+
+  if ( false == _queued.empty() )
+  {
+    task = _queued.front();
+    _queued.pop_front();
+  }
+
+  return task.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the first available thread.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Threads::Thread *Pool::_firstAvailableThread()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  ThreadPool::iterator i ( std::find_if ( _pool.begin(), _pool.end(), std::mem_fun ( &Thread::isIdle ) ) );
+  return ( ( _pool.end() == i ) ? 0x0 : i->get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the sleep duration.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned long Pool::sleepDuration() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _sleep;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the sleep duration.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Pool::sleepDuration ( unsigned long duration )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _sleep = duration;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Cancel all threads in the pool that are running.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Pool::cancel()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Loop through theads.
+  for ( ThreadPool::iterator i = _pool.begin(); i != _pool.end(); ++i )
+  {
+    Thread::RefPtr thread ( *i );
+    if ( true == thread.valid() )
+    {
+      if ( Thread::RUNNING == thread->state() )
+      {
+        thread->cancel();
+      }
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Wait for all threads to complete.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Pool::wait ( unsigned long timeout )
+{
+  USUL_TRACE_SCOPE;
+
+  // Save current time.
+  const unsigned long start ( static_cast<unsigned long> ( Usul::System::Clock::milliseconds() ) );
+
+  // Copy the pool.
+  typedef std::list<Thread::RefPtr> ThreadList;
+  ThreadList pool;
+  {
+    Guard guard ( this->mutex() );
+    pool.assign ( _pool.begin(), _pool.end() );
+  }
+
+  // While there are threads...
+  while ( false == pool.empty() )
+  {
+    // Remove the ones that are idle.
+    pool.remove_if ( std::mem_fun ( &Thread::isIdle ) );
+
+    // Sleep some so that we don't spike the cpu.
+    Usul::System::Sleep::milliseconds ( 100 );
+
+    // Check the time.
+    const unsigned long now ( static_cast<unsigned long> ( Usul::System::Clock::milliseconds() ) );
+    if ( now - start > timeout )
+    {
+      return;
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Wait for all threads to complete.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Pool::wait()
+{
+  USUL_TRACE_SCOPE;
+  this->wait ( std::numeric_limits<unsigned long>::max() );
 }

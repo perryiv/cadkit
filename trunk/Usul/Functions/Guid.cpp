@@ -12,7 +12,8 @@
 
 #ifdef _MSC_VER
 # include <vector>
-# include "windows.h"
+# define NOMINMAX
+# include <windows.h>
 #endif
 
 std::string Usul::Functions::generateGUID()

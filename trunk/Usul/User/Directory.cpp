@@ -17,8 +17,9 @@
 #include "Usul/System/Environment.h"
 
 #ifdef _MSC_VER // Visual C++
-#include "windows.h"
-#include "shlobj.h"
+# define NOMINMAX
+# include <windows.h>
+# include <shlobj.h>
 #endif
 
 #include <stdexcept>

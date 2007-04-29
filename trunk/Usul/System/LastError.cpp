@@ -19,6 +19,7 @@
 #include "Usul/Errors/Assert.h"
 
 #ifdef _WIN32
+# define NOMINMAX
 # include <windows.h> // For GetLastError()
 #else
 # include <dlfcn.h>   // For dlerror()

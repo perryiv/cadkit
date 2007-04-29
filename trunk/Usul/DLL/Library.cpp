@@ -22,6 +22,7 @@
 #include "Usul/Threads/Guard.h"
 
 #ifdef _WIN32
+# define NOMINMAX
 # include <windows.h>
 #else
 # include <dlfcn.h>

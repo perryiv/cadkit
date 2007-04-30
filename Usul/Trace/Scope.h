@@ -41,6 +41,7 @@ private:
 
   std::string _name;
   const void *_object;
+  unsigned long _thread;
 };
 
 

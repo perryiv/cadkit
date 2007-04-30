@@ -18,6 +18,7 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/Exceptions/Canceled.h"
+#include "Usul/Exceptions/Thrower.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/System/Clock.h"
 #include "Usul/System/Sleep.h"
@@ -47,7 +48,7 @@ Pool::Pool ( unsigned int numThreads ) : BaseClass(),
   _tasks      (),
   _nextTaskId ( 0 ),
   _thread     ( Usul::Threads::Manager::instance().create() ),
-  _sleep      ( 500 )
+  _sleep      ( 100 )
 {
   USUL_TRACE_SCOPE;
 
@@ -93,11 +94,11 @@ void Pool::_destroy()
 {
   Guard guard ( this->mutex() );
 
-  // Cancel all the threads.
+  // Cancel all the tasks.
   this->cancel();
 
-  // Wait for them to finish.
-  this->wait ( 10000 );
+  // Wait for threads to finish.
+  this->_waitForThreads ( 100000 );
 
   // Now delete internal thread.
   if ( 0x0 != _thread && false == _thread->isIdle() )
@@ -428,7 +429,7 @@ void Pool::sleepDuration ( unsigned long duration )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Cancel all threads in the pool that are running.
+//  Cancel all tasks.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -449,6 +450,55 @@ void Pool::cancel()
       }
     }
   }
+
+  // Clear the tasks.
+  _queued.clear();
+  _tasks.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Wait for all tasks to complete.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Pool::wait ( unsigned long timeout )
+{
+  USUL_TRACE_SCOPE;
+
+  // Save current time.
+  const unsigned long start ( static_cast<unsigned long> ( Usul::System::Clock::milliseconds() ) );
+
+  // While there are tasks...
+  while ( this->numTasksQueued() )
+  {
+    // Sleep some so that we don't spike the cpu.
+    Usul::System::Sleep::milliseconds ( 100 );
+
+    // Check the time.
+    const unsigned long now ( static_cast<unsigned long> ( Usul::System::Clock::milliseconds() ) );
+    if ( now - start > timeout )
+    {
+      Usul::Exceptions::Thrower<std::runtime_error>
+        ( "Error 3360169001: exceeded allowable time period of ", 
+          static_cast<double> ( timeout ) / 1000.0, 
+          " seconds while waiting for tasks" );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Wait for all tasks to complete.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Pool::wait()
+{
+  USUL_TRACE_SCOPE;
+  this->wait ( std::numeric_limits<unsigned long>::max() );
 }
 
 
@@ -458,7 +508,7 @@ void Pool::cancel()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Pool::wait ( unsigned long timeout )
+void Pool::_waitForThreads ( unsigned long timeout )
 {
   USUL_TRACE_SCOPE;
 
@@ -486,20 +536,10 @@ void Pool::wait ( unsigned long timeout )
     const unsigned long now ( static_cast<unsigned long> ( Usul::System::Clock::milliseconds() ) );
     if ( now - start > timeout )
     {
-      return;
+      Usul::Exceptions::Thrower<std::runtime_error>
+        ( "Error 3331992936: exceeded allowable time period of ", 
+          static_cast<double> ( timeout ) / 1000.0, 
+          " seconds while waiting for threads" );
     }
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Wait for all threads to complete.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Pool::wait()
-{
-  USUL_TRACE_SCOPE;
-  this->wait ( std::numeric_limits<unsigned long>::max() );
 }

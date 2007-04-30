@@ -15,6 +15,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Trace/Print.h"
+#include "Usul/Threads/Mutex.h"
+#include "Usul/Threads/Guard.h"
 
 using namespace Usul::Trace;
 
@@ -27,7 +29,9 @@ using namespace Usul::Trace;
 
 namespace Detail
 {
-  std::ostream *_stream = &std::cout;
+  std::ostream *_stream ( 0x0 );
+  Usul::Threads::Mutex *_mutex ( 0x0 );
+  typedef Usul::Threads::Guard<Usul::Threads::Mutex> Guard;
 }
 
 
@@ -43,7 +47,8 @@ void Print::execute ( const std::string &s )
   {
     if ( false == s.empty() )
     {
-      *Detail::_stream << s;
+      Detail::Guard guard ( *Detail::_mutex );
+      *Detail::_stream << s << std::flush;
     }
   }
 }
@@ -61,6 +66,7 @@ void Print::execute ( const char *s )
   {
     if ( 0x0 != s )
     {
+      Detail::Guard guard ( *Detail::_mutex );
       *Detail::_stream << s << std::flush;
     }
   }
@@ -70,11 +76,13 @@ void Print::execute ( const char *s )
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the stream to print to. 
+//  Initialize the mutex.
 //  Not thread safe!
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Print::stream ( std::ostream *s )
+void Print::init ( std::ostream *s )
 {
+  Detail::_mutex = Usul::Threads::Mutex::create();
   Detail::_stream = s;
 }

@@ -19,6 +19,7 @@
 
 #include <stdexcept>
 #include <iostream>
+#include <sstream>
 
 
 namespace Usul {
@@ -33,11 +34,15 @@ template < class F > void safeCall ( F function, const char *id = 0x0 )
   }
   catch ( std::exception &e )
   {
-    std::cout << "Error " << ( ( 0x0 == id ) ? "3021688577" : id ) << ": " << e.what() << std::endl;
+    std::ostringstream out;
+    out << "Error " << ( ( 0x0 == id ) ? "3021688577" : id ) << ": " << e.what() << '\n';
+    std::cout << out.str() << std::flush;
   }
   catch ( ... )
   {
-    std::cout << "Error " << id << ": exception generated when calling wrapped function" << std::endl;
+    std::ostringstream out;
+    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
+    std::cout << out.str() << std::flush;
   }
 }
 
@@ -50,11 +55,15 @@ template < class F, class T1 > void safeCallR1 ( F function, T1 &t1, const char 
   }
   catch ( std::exception &e )
   {
-    std::cout << "Error " << ( ( 0x0 == id ) ? "2847149640" : id ) << ": " << e.what() << std::endl;
+    std::ostringstream out;
+    out << "Error " << ( ( 0x0 == id ) ? "2847149640" : id ) << ": " << e.what() << '\n';
+    std::cout << out.str() << std::flush;
   }
   catch ( ... )
   {
-    std::cout << "Error " << id << ": exception generated when calling wrapped function" << std::endl;
+    std::ostringstream out;
+    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
+    std::cout << out.str() << std::flush;
   }
 }
 
@@ -67,11 +76,15 @@ template < class F, class T1 > void safeCallV1 ( F function, T1 t1, const char *
   }
   catch ( std::exception &e )
   {
-    std::cout << "Error " << ( ( 0x0 == id ) ? "6891331220" : id ) << ": " << e.what() << std::endl;
+    std::ostringstream out;
+    out << "Error " << ( ( 0x0 == id ) ? "6891331220" : id ) << ": " << e.what() << '\n';
+    std::cout << out.str() << std::flush;
   }
   catch ( ... )
   {
-    std::cout << "Error " << id << ": exception generated when calling wrapped function" << std::endl;
+    std::ostringstream out;
+    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
+    std::cout << out.str() << std::flush;
   }
 }
 
@@ -84,11 +97,15 @@ template < class F, class T1, class T2 > void safeCallR1R2 ( F function, T1 &t1,
   }
   catch ( std::exception &e )
   {
-    std::cout << "Error " << ( ( 0x0 == id ) ? "1295065733" : id ) << ": " << e.what() << std::endl;
+    std::ostringstream out;
+    out << "Error " << ( ( 0x0 == id ) ? "1295065733" : id ) << ": " << e.what() << '\n';
+    std::cout << out.str() << std::flush;
   }
   catch ( ... )
   {
-    std::cout << "Error " << id << ": exception generated when calling wrapped function" << std::endl;
+    std::ostringstream out;
+    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
+    std::cout << out.str() << std::flush;
   }
 }
 
@@ -101,11 +118,15 @@ template < class F, class T1, class T2 > void safeCallV1V2 ( F function, T1 t1, 
   }
   catch ( std::exception &e )
   {
-    std::cout << "Error " << ( ( 0x0 == id ) ? "2683524620" : id ) << ": " << e.what() << std::endl;
+    std::ostringstream out;
+    out << "Error " << ( ( 0x0 == id ) ? "2683524620" : id ) << ": " << e.what() << '\n';
+    std::cout << out.str() << std::flush;
   }
   catch ( ... )
   {
-    std::cout << "Error " << id << ": exception generated when calling wrapped function" << std::endl;
+    std::ostringstream out;
+    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
+    std::cout << out.str() << std::flush;
   }
 }
 
@@ -118,11 +139,15 @@ template < class F, class T1, class T2, class T3 > void safeCallR1R2R3 ( F funct
   }
   catch ( std::exception &e )
   {
-    std::cout << "Error " << ( ( 0x0 == id ) ? "4105045581" : id ) << ": " << e.what() << std::endl;
+    std::ostringstream out;
+    out << "Error " << ( ( 0x0 == id ) ? "4105045581" : id ) << ": " << e.what() << '\n';
+    std::cout << out.str() << std::flush;
   }
   catch ( ... )
   {
-    std::cout << "Error " << id << ": exception generated when calling wrapped function" << std::endl;
+    std::ostringstream out;
+    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
+    std::cout << out.str() << std::flush;
   }
 }
 

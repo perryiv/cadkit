@@ -28,13 +28,10 @@
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Trace/Trace.h"
-#include "Usul/Types/Types.h"
 
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#include <cstdlib>
-#include <ctime>
 #include <algorithm>
 
 namespace Detail
@@ -219,29 +216,6 @@ void _clean()
   Detail::randomNumbers.clear();
   Usul::Threads::Mutex::createFunction  ( 0x0 );
   Usul::Threads::Manager::destroy();
-  Usul::Trace::Print::execute ( "</functions>\n" );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Run the test.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void _run()
-{
-  //::srand ( static_cast < unsigned int > ( ::time ( 0x0 ) ) );
-  ::srand ( 10 );
-  Detail::randomNumbers.clear();
-
-  Usul::Trace::Print::execute ( "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" );
-  Usul::Trace::Print::execute ( "<functions>\n" );
-
-  Usul::Threads::Mutex::createFunction ( &Threads::OT::newOpenThreadsMutex );
-  Usul::Threads::Manager::instance().factory ( &Threads::OT::newOpenThreadsThread );
-
-  Usul::Functions::safeCall ( _test, "1824980904" );
 }
 
 
@@ -253,12 +227,17 @@ void _run()
 
 int main ( int argc, char **argv )
 {
-  //Usul::IO::Redirect redirect ( "output.txt", true, true );
-  std::ofstream trace ( "trace.xml" );
-  Usul::Trace::Print::stream ( &trace );
+  ::srand ( 10 );
+  Detail::randomNumbers.clear();
+
+  Usul::Threads::Mutex::createFunction ( &Threads::OT::newOpenThreadsMutex );
+  Usul::Threads::Manager::instance().factory ( &Threads::OT::newOpenThreadsThread );
+
+  std::ofstream trace ( "trace.csv" );
+  Usul::Trace::Print::init ( &trace );
   Usul::CommandLine::Arguments::instance().set ( argc, argv );
 
-  Usul::Functions::safeCall ( _run,   "7106715220" );
+  Usul::Functions::safeCall ( _test,  "7106715220" );
   Usul::Functions::safeCall ( _clean, "1461687444" );
 
   //std::cin.get();

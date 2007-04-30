@@ -33,7 +33,8 @@ using namespace Usul::Trace;
 
 Scope::Scope ( const void *object, const std::string &n ) : 
   _name   ( n ), 
-  _object ( object )
+  _object ( object ),
+  _thread ( Usul::Threads::currentThreadId() )
 {
   this->_begin();
 }
@@ -47,7 +48,8 @@ Scope::Scope ( const void *object, const std::string &n ) :
 
 Scope::Scope ( const std::string &n ) : 
   _name   ( n ), 
-  _object ( 0x0 )
+  _object ( 0x0 ),
+  _thread ( Usul::Threads::currentThreadId() )
 {
   this->_begin();
 }
@@ -74,17 +76,7 @@ Scope::~Scope()
 void Scope::_begin() const
 {
   std::ostringstream out;
-
-  out << "<function";
-
-  if ( 0x0 != _object )
-    out << " object=\"" << _object << "\"";
-
-  out << " name=\"" << _name << "\"";
-  out << " time=\"" << Usul::System::Clock::milliseconds() << "\"";
-  out << " thread=\"" << Usul::Threads::currentThreadId() << "\"";
-  out << ">\n";
-
+  out << "Begin " << _thread << ", " << Usul::System::Clock::milliseconds() << ", " << _object << ", " << _name << '\n';
   Usul::Trace::Print::execute ( out.str() );
 }
 
@@ -97,5 +89,7 @@ void Scope::_begin() const
 
 void Scope::_end() const
 {
-  Usul::Trace::Print::execute ( "</function>\n" );
+  std::ostringstream out;
+  out << "  End " << _thread << ", " << Usul::System::Clock::milliseconds() << ", " << _object << ", " << _name << '\n';
+  Usul::Trace::Print::execute ( out.str() );
 }

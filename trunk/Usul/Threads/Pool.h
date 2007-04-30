@@ -59,7 +59,7 @@ public:
                                 Callback *error = 0x0,
                                 Callback *destroyed = 0x0 );
 
-  // Cancel all threads inthe pool.
+  // Cancel all tasks.
   void                    cancel();
 
   // Does the pool have the task?
@@ -85,7 +85,7 @@ public:
   void                    sleepDuration ( unsigned long );
   unsigned long           sleepDuration() const;
 
-  // Wait for all threads in the pool to complete.
+  // Wait for all tasks to complete.
   void                    wait();
   void                    wait ( unsigned long timeout );
 
@@ -114,6 +114,8 @@ private:
   void                    _threadCancelled ( Usul::Threads::Thread * );
   void                    _threadError     ( Usul::Threads::Thread * );
   void                    _threadFinished  ( Usul::Threads::Thread * );
+
+  void                    _waitForThreads ( unsigned long timeout );
 
   // Data members.
   mutable Mutex _mutex;

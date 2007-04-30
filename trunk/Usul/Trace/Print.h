@@ -31,7 +31,7 @@ struct USUL_EXPORT Print
 {
   static void execute ( const std::string & );
   static void execute ( const char * );
-  static void stream ( std::ostream * );
+  static void init ( std::ostream * );
 };
 
 

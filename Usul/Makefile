@@ -12,8 +12,8 @@ CPP_FILES = \
 ./CommandLine/Arguments.cpp \
 ./CommandLine/Options.cpp \
 ./CommandLine/Flags.cpp \
-./Trace/Print.cpp \
 ./Trace/Scope.cpp \
+./Trace/Print.cpp \
 ./Documents/Document.cpp \
 ./Documents/Manager.cpp \
 ./Types/Types.cpp \
@@ -41,25 +41,27 @@ CPP_FILES = \
 ./Devices/Factory.cpp \
 ./Devices/BaseDevice.cpp \
 ./System/Environment.cpp \
+./System/Directory.cpp \
 ./System/Memory.cpp \
+./System/Sleep.cpp \
 ./System/LastError.cpp \
 ./System/Host.cpp \
 ./System/Screen.cpp \
 ./System/Socket.cpp \
 ./System/Clock.cpp \
 ./System/DateTime.cpp \
-./System/Directory.cpp \
 ./Components/Object.cpp \
 ./Components/Registry.cpp \
 ./Components/Manager.cpp \
-./Threads/RecursiveMutex.cpp \
-./Threads/Mutex.cpp \
 ./Threads/Task.cpp \
+./Threads/Mutex.cpp \
 ./Threads/Thread.cpp \
 ./Threads/Pool.cpp \
+./Threads/Manager.cpp \
+./Threads/RecursiveMutex.cpp \
 ./Threads/Callback.cpp \
 ./ID/GUID.cpp \
-./Shared/Preferences.cpp \
+./Shared/Preferences.cpp
 
 LOCAL_INCLUDE = \
 	-I../

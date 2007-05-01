@@ -83,7 +83,7 @@ Thread::~Thread()
   _startedCB = 0x0;
   _errorMessage.clear();
 
-  USUL_ERROR_STACK_CATCH_EXCEPTIONS_END(3271694255);
+  USUL_ERROR_STACK_CATCH_EXCEPTIONS_END(1177998049);
 }
 
 

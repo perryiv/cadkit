@@ -20,7 +20,7 @@
 # define NOMINMAX
 # include <windows.h>
 #else
-TODO
+# include <unistd.h>
 #endif 
 
 
@@ -35,7 +35,7 @@ void Usul::System::Sleep::milliseconds ( unsigned long duration )
 #ifdef _MSC_VER
   ::Sleep ( duration );
 #else
-  TODO
+  ::usleep ( duration * 1000 ); // Wants microseconds
 #endif
 }
 

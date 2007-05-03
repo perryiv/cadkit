@@ -61,6 +61,14 @@ public:
   void                    size( float );
   float                   size() const;
 
+  /// Get/Set primitive size column.
+  void                    primitiveSizeColumn ( const std::string& );
+  const std::string&      primitiveSizeColumn () const;
+
+  /// Get/Set quality
+  void                    quality( float value );
+  float                   quality() const;
+
   /// Get/Set the animation type.
   void                    animationType ( AnimationType type );
   AnimationType           animationType () const;
@@ -113,6 +121,9 @@ private:
 
   Usul::Types::Uint32 _primitiveID;
   float _size;
+  float _quality;
+  std::string _primitiveSizeColumn;
+
   std::string _firstDateColumn;
   std::string _lastDateColumn;
   

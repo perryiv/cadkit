@@ -21,6 +21,7 @@
 #include "Usul/Interfaces/IGeometryCenter.h"
 #include "Usul/Interfaces/IProjectCoordinates.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
+#include "Usul/Trace/Trace.h"
 
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Font.h"
@@ -183,6 +184,8 @@ namespace Detail
 
 osg::Node* Point::buildScene()
 {
+  USUL_TRACE_SCOPE;
+
   if ( this->dirty() )
   {
     // Get the state set
@@ -245,6 +248,8 @@ osg::Node* Point::buildScene()
 
 osg::Node* Point::_buildGeometry()
 {
+  USUL_TRACE_SCOPE;
+
   switch ( _primitiveId )
   {
   case POINT:          return this->_buildPoint();
@@ -451,6 +456,8 @@ osg::Node* Point::_buildCube()
 
 osg::Node* Point::_buildCylinder()
 {
+  USUL_TRACE_SCOPE;
+
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
   geode->setUserData( new UserData( this ) );
 

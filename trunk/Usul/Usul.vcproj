@@ -1185,6 +1185,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\IDataObjects.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\ILayer.h"
 						>
 					</File>

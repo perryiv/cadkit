@@ -57,6 +57,8 @@ _maxDate( boost::date_time::max_date_time )
 PointTimeLayer::PointTimeLayer ( const PointTimeLayer& layer ) : BaseClass ( layer ),
 _primitiveID ( layer._primitiveID ),
 _size ( layer._size ),
+_quality ( layer._quality ),
+_primitiveSizeColumn ( layer._primitiveSizeColumn ),
 _firstDateColumn( layer._firstDateColumn ),
 _lastDateColumn( layer._lastDateColumn ),
 _minDate( layer._minDate ),
@@ -76,6 +78,8 @@ void PointTimeLayer::_registerMembers()
 {
   SERIALIZE_XML_ADD_MEMBER ( _primitiveID );
   SERIALIZE_XML_ADD_MEMBER ( _size );
+  SERIALIZE_XML_ADD_MEMBER ( _quality );
+  SERIALIZE_XML_ADD_MEMBER ( _primitiveSizeColumn );
   SERIALIZE_XML_ADD_MEMBER ( _firstDateColumn );
   SERIALIZE_XML_ADD_MEMBER ( _lastDateColumn );
   SERIALIZE_XML_ADD_MEMBER ( _minDate );

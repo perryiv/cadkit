@@ -257,9 +257,17 @@ void Layer::buildScene( osg::Group* parent )
   Guard guard( _mutex );
   //std::for_each( _dataObjects.begin(), _dataObjects.end(), std::mem_fun( &DataObject::buildScene) );
 
+  unsigned int size ( _dataObjects.size() );
+
   for( DataObjects::iterator iter = _dataObjects.begin(); iter != _dataObjects.end(); ++iter )
   {
     parent->addChild( (*iter)->buildScene() );
+
+#ifndef _MSC_VER
+    unsigned int num ( iter - _dataObjects.begin() );
+    if( num % 10 == 0 )
+      std::cout << this->name() << " " << num << std::endl;
+#endif
   }
 }
 

@@ -8,11 +8,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+
 namespace CadKit.Interfaces
 {
-  public interface IFileSave : IReferenced
+  public interface IFiltersExport : IReferenced
   {
-    void save(object caller);
-    void saveAs(string filename, object caller);
+    CadKit.Interfaces.Filters Filters { get; }
   }
 }

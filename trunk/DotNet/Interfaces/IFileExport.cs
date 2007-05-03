@@ -10,9 +10,8 @@
 
 namespace CadKit.Interfaces
 {
-  public interface IFileSave : IReferenced
+  public interface IFileExport : IReferenced
   {
-    void save(object caller);
-    void saveAs(string filename, object caller);
+    void export(string filename);
   }
 }

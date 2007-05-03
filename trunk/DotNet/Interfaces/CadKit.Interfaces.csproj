@@ -51,7 +51,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IFileExport.cs" />
     <Compile Include="IFileSave.cs" />
+    <Compile Include="IFiltersExport.cs" />
     <Compile Include="IFiltersSave.cs" />
     <Compile Include="IMovieMode.cs" />
     <Compile Include="ScopedReference.cs" />

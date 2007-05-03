@@ -379,8 +379,6 @@ void Controller::_processAddLayer( const std::string& drawCommandTable, int even
     _sceneManager->addLayer( layer );
     layer->buildDataObjects( progress.get() );
   }
-  
-  _sceneManager->dirty( true );
 
   // Render for progress.
   this->_updateProgress();
@@ -412,6 +410,10 @@ Minerva::Core::Layers::Layer* Controller::_getLayer( const std::string drawComma
   Minerva::Core::Layers::Layer::RefPtr layer ( Minerva::Core::deserialize( xml ) );
 
   if( layer.valid() )
+    _sceneManager->removeLayer ( layer->guid() );
+
+  /*
+  if( layer.valid() )
   {
     // Check to see if we already have this layer.
     bool hasLayer ( _sceneManager->hasLayer( layer->guid() ) );
@@ -427,7 +429,7 @@ Minerva::Core::Layers::Layer* Controller::_getLayer( const std::string drawComma
         return oldLayer.get();
       }
     }
-  }
+    }*/
 
   return layer.release();
 }
@@ -447,7 +449,6 @@ void Controller::_processRemoveLayer( const std::string& drawCommandTable, int e
   {
     // Remove the layer.
     _sceneManager->removeLayer( layer->guid() );
-    _sceneManager->dirty ( true );
   }
 }
 

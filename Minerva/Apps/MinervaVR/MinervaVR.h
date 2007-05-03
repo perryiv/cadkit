@@ -48,6 +48,8 @@ public:
   Usul::CommandLine::Options                   _options;
   osg::Vec4f                                   _background;
   cluster::UserData< SharedUpdateData >        _update;
+  unsigned int                                 _numFramesBuild;
+  unsigned int                                 _frameBuild;
 };
 
 #endif //: _MINERVA_VR_H_

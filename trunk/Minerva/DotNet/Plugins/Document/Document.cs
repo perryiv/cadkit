@@ -15,7 +15,9 @@ namespace DT.Minerva.Plugins.Document
     System.IDisposable,
     CadKit.Interfaces.IFileOpen,
     CadKit.Interfaces.IFileSave,
+    CadKit.Interfaces.IFileExport,
     CadKit.Interfaces.IFiltersSave,
+    CadKit.Interfaces.IFiltersExport,
     CadKit.Interfaces.ILayerList,
     CadKit.Interfaces.IAnimateTemporal,
     CadKit.Interfaces.IOssimPlanetSettings,
@@ -160,6 +162,31 @@ namespace DT.Minerva.Plugins.Document
         filters.Add(new CadKit.Interfaces.Filter("Minerva Document (*.minerva)", "*.minerva"));
         return filters;
       }
+    }
+
+
+    /// <summary>
+    /// Return the filters.
+    /// </summary>
+    CadKit.Interfaces.Filters CadKit.Interfaces.IFiltersExport.Filters
+    {
+      get
+      {
+        CadKit.Interfaces.Filters filters = new CadKit.Interfaces.Filters();
+        filters.Add(new CadKit.Interfaces.Filter("Minerva Document (*.minerva)", "*.minerva"));
+        filters.Add(new CadKit.Interfaces.Filter("Google Earth (*.kml)", "*.kml"));
+        filters.Add(new CadKit.Interfaces.Filter("Google Earth Archive (*.kmz)", "*.kmz"));
+        return filters;
+      }
+    }
+
+
+    /// <summary>
+    /// Export the document to the given filename.
+    /// </summary>
+    public void export(string filename)
+    {
+      _dll.exportFile(filename);
     }
 
 

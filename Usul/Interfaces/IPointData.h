@@ -13,7 +13,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class Geometry; }
+#include "Usul/Math/Vector3.h"
 
 namespace Usul {
 namespace Interfaces {
@@ -27,18 +27,8 @@ struct IPointData : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1916416800u };
 
-  enum PrimitiveType
-  {
-    POINT = 1,
-    SPHERE,
-    CONE,
-    DISK,
-    CUBE,
-    INVERTED_CONE,
-    CYLINDER
-  };
-
-  virtual osg::Geometry* buildPointData ( PrimitiveType type ) = 0;
+  /// Return the point.
+  virtual Usul::Math::Vec3d        pointData ( ) = 0;
 
 }; // struct IPointData
 

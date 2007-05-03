@@ -35,6 +35,8 @@ SERIALIZE_XML_DECLARE_TYPE_WRAPPER( OsgTools::Animate::Date );
 PointTimeLayer::PointTimeLayer() : BaseClass(),
 _primitiveID ( 2 ),
 _size ( 5.0 ),
+_quality ( 0.8 ),
+_primitiveSizeColumn ( "" ),
 _firstDateColumn(),
 _lastDateColumn(),
 _minDate( boost::date_time::min_date_time ),
@@ -228,6 +230,13 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
           data->connection ( this->connection() );
           data->tableName ( this->tablename() );
           data->rowId ( id );
+          data->quality ( this->quality() );
+
+          if( this->primitiveSizeColumn().size() > 0 )
+          {
+            float value ( i [ this->primitiveSizeColumn() ].as < float > () );
+            data->size( this->size() * value );
+          }
 
           // Also add to the vector of data objects.  This allows for faster updating.
           this->_addDataObject( data.get() );
@@ -475,4 +484,52 @@ PointTimeLayer* PointTimeLayer::getRawPointer()
 const PointTimeLayer* PointTimeLayer::getRawPointer() const
 {
   return this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set quality.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayer::quality( float value )
+{
+  _quality = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get quality.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float PointTimeLayer::quality() const
+{
+  return _quality;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set quality.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayer::primitiveSizeColumn( const std::string& value )
+{
+  _primitiveSizeColumn = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get quality.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& PointTimeLayer::primitiveSizeColumn() const
+{
+  return _primitiveSizeColumn;
 }

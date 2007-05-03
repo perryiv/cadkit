@@ -37,6 +37,7 @@ namespace DT
             void                  open( System::String^ filename );
             void                  save();
             void                  saveAs( System::String^ filename );
+            void                  exportFile( System::String^ filename );
 		        
             void                  removeLayer ( CadKit::Interfaces::ILayer ^layer );
             void                  hideLayer   ( CadKit::Interfaces::ILayer ^layer );

@@ -44,7 +44,6 @@ SET (SOURCES
   ./Scene/SceneManager.cpp
   ./Functors/GradientColorFunctor.cpp
   ./Functors/SingleColorFunctor.cpp
-  ./Layers/RLayer.cpp
   ./Layers/PointTimeLayer.cpp
   ./Layers/LineLayer.cpp
   ./Layers/PolygonLayer.cpp

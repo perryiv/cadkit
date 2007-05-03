@@ -59,7 +59,9 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
   _planet ( new Magrathea::Planet ),
   _options(),
   _background( 0.0, 0.0, 0.0, 1.0 ),
-  _update()
+  _update(),
+  _numFramesBuild ( 0 ),
+  _frameBuild ( 0 )
 {
   Usul::CommandLine::Arguments::instance().set ( argc, argv );
 
@@ -77,6 +79,10 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
   }
 
   std::cerr << " [MinervaVR] Constructor finished: " << std::endl;
+
+  std::string host ( Usul::System::Host::name() );
+  char num ( host[ host.size() - 1 ] );
+  _frameBuild = 10 * ( num - 48 );
 }
 
 
@@ -100,6 +106,9 @@ MinervaVR::~MinervaVR()
 void MinervaVR::appInit()
 {
   std::cerr << " [MinervaVR] app init starts: " << std::endl;
+
+  // Initalize clock.
+  ::clock();
 
   // Set all the properties here
   setDevice(ALL, OFF);	
@@ -177,11 +186,16 @@ void MinervaVR::appPreOsgDraw()
   //glClearColor( _background[0], _background[1], _background[2], _background[3] );
   //glClear(GL_COLOR_BUFFER_BIT);
 
-  GLint viewport[4];
+  static bool sizeSet ( false );
 
-  ::glGetIntegerv(GL_VIEWPORT, viewport);
+  if( true == sizeSet )
+  {
+    GLint viewport[4];
 
-  _sceneManager->resize ( viewport[2], viewport[3] );
+    ::glGetIntegerv(GL_VIEWPORT, viewport);
+
+    _sceneManager->resize ( viewport[2], viewport[3] );
+  }
 
   this->_updateScene();
 }
@@ -262,7 +276,7 @@ void MinervaVR::appSceneInit()
     }
 
     setEngine( interactor );
-//    interactor->dumpFilename ( Usul::System::Host::name() );
+    interactor->dumpFilename ( Usul::System::Host::name() );
     interactor->goHome();
   }
 
@@ -298,12 +312,32 @@ void MinervaVR::_updateScene()
 
       // Update the scene.
       _dbManager->updateScene();
-      _sceneManager->buildScene();
+      _sceneManager->dirty ( true );
+
+      std::cerr << " [MinervaVR] Finished updating scene." << std::endl;
+
+      //_sceneManager->buildScene();
 
       //osgDB::writeNodeFile( *mSceneRoot, "test" + Usul::System::Host::name() + ".osg" );
 
-      std::cerr << " [MinervaVR] Finished updating scene." << std::endl;
+      //std::cerr << " [MinervaVR] Finished building scene." << std::endl;
+
+      _numFramesBuild = 0;
     }
+
+    if( _sceneManager->dirty() && _numFramesBuild > _frameBuild )
+    {
+      std::cerr << " [MinervaVR] Starting building scene." << std::endl;
+
+      _sceneManager->buildScene();
+      _numFramesBuild = 0;
+
+      std::cerr << " [MinervaVR] Finished building scene." << std::endl;
+
+      _sceneManager->dirty ( false );
+    }
+    else
+      ++_numFramesBuild;
   }
   catch ( ... )
   {

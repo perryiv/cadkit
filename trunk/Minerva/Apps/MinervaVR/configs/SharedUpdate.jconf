@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?org-vrjuggler-jccl-settings configuration.version="3.0"?>
+<configuration xmlns="http://www.vrjuggler.org/jccl/xsd/3.0/configuration" name="Configuration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.vrjuggler.org/jccl/xsd/3.0/configuration http://www.vrjuggler.org/jccl/xsd/3.0/configuration.xsd">
+   <elements>
+      <application_data name="SharedUpdate" version="1">
+         <guid>6D4B401D-C3FD-429e-84DB-1F9DCC9A2A5C</guid>
+         <hostname>viz1</hostname>
+      </application_data>
+   </elements>
+</configuration>

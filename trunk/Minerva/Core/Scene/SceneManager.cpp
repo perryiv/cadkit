@@ -282,7 +282,6 @@ void SceneManager::animate( bool animate, bool accumulate, float speed, bool tim
   if ( animate != _animateNode->settings()->animate() )
   {
     _animateNode->settings()->animate ( animate );
-    this->dirty( true );
   }
 }
 

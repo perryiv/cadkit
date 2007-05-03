@@ -98,8 +98,8 @@ namespace Detail
        deltaH = 0.0;
     }
 
-    latLonPoint[0] = gpt.lat;
-    latLonPoint[1] = gpt.lon;
+    latLonPoint[0] = gpt.lon;
+    latLonPoint[1] = gpt.lat;
     latLonPoint[2] = deltaH + ossimGeoidManager::instance()->offsetFromEllipsoid( gpt );
   }
 }
@@ -128,9 +128,6 @@ void ProjectionManagerComponent::projectToSpherical ( const Usul::Math::Vec3d& o
   {
     ossimGpt gpt;
     mapProj->eastingNorthingToWorld( ossimDpt ( orginal[0], orginal[1] ), gpt );
-    //latLonPoint[0] = gpt.lat;
-    //latLonPoint[1] = gpt.lon;
-    //latLonPoint[2] = gpt.hgt;
 
     Detail::projectFromGpt( gpt, latLonPoint );
   }
@@ -147,7 +144,7 @@ void ProjectionManagerComponent::convertToPlanet ( const Usul::Math::Vec3d& orgi
   ecef = dummy;
   double normalizationFactor = ecef.getMagnitude();
 
-  ossimGpt gpt ( orginal[0], orginal[1], orginal[2] );
+  ossimGpt gpt ( orginal[1], orginal[0], orginal[2] );
 
   // Transform to ossimPlanet coordinates
   ecef = gpt;

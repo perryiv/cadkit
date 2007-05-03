@@ -58,6 +58,23 @@ namespace DT
         PROPERTY_GET_SET(PrimitiveType, System::String^);
 
 
+        /// Get/Set primitive quality
+        [
+          System::ComponentModel::Category("Primitive"),
+          System::ComponentModel::Description("Quality of primitive"),
+          System::ComponentModel::Browsable(true)
+        ]
+        PROPERTY_GET_SET ( Quality, float );
+
+        /// Get/Set the column to base primitive size from.
+        [
+          System::ComponentModel::Category("Primitive"),
+          System::ComponentModel::Description("Column to base size of primitive from"),
+          System::ComponentModel::Browsable(true),
+          System::ComponentModel::TypeConverter( DT::Minerva::Layers::TypeConverters::ColumnNames::typeid )
+        ]
+        PROPERTY_GET_SET( PrimitiveSizeColumn, System::String^ )
+
         [
           System::ComponentModel::Category("Date"),
           System::ComponentModel::Description("Column that contains the first date."),

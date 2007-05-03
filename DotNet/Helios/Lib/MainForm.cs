@@ -447,6 +447,7 @@ namespace CadKit.Helios
           {
             System.Windows.Forms.ToolStripMenuItem export = CadKit.Tools.Menu.makeMenu("&Export");
             menu.DropDownItems.Add(export);
+            this._addMenuButton(export, new CadKit.Helios.Commands.ExportFileCommand(this));
             this._addMenuButton(export, new CadKit.Helios.Commands.ExportModelCommand(this));
             this._addMenuButton(export, new CadKit.Helios.Commands.ExportSceneCommand(this));
             this._addMenuButton(export, new CadKit.Helios.Commands.ExportImageCommand(this));

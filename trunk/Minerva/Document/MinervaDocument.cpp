@@ -11,6 +11,7 @@
 #include "Minerva/Document/MinervaDocument.h"
 #include "Minerva/Document/MinervaReader.h"
 #include "Minerva/Document/MinervaWriter.h"
+#include "Minerva/Document/KmlWriter.h"
 
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
@@ -230,6 +231,11 @@ void MinervaDocument::write ( const std::string &filename, Unknown *caller ) con
   if( "minerva" == ext )
   {
     MinervaWriter writer ( filename, caller, this );
+    writer();
+  }
+  else if( "kml" == ext || "kmz" == ext )
+  {
+    KmlWriter writer ( filename, caller, this );
     writer();
   }
 }
@@ -732,8 +738,6 @@ Usul::Interfaces::IUnknown * MinervaDocument::createFavorite( const std::string&
     if( clonable.valid() )
     {
       /// Clone the "template"
-      //Usul::Interfaces::IUnknown::QueryPtr clone ( clonable->clone() );
-
       Usul::Interfaces::ILayer::QueryPtr layer ( clonable->clone() );
 
       /// Make sure that the favorite is shown.
@@ -850,7 +854,7 @@ void MinervaDocument::_startAnimationDistributed ( float speed, bool accumulate,
     // Lazy connection.
     this->_connectToDistributedSession();
 
-    _distributed->startAnimation( speed, accumulate, true, timeWindow, numDays );
+    _distributed->startAnimation( speed, accumulate, true, timeWindow, numDays, _sceneManager->timestepType() );
   }
 }
 
@@ -978,8 +982,8 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
   }
   else
   {
-    _sceneManager->removeLayer( layer->guid() );
     this->_removeLayerDistributed( layer );
+    _sceneManager->removeLayer( layer->guid() );
   }
 
   Layers::iterator doomed ( std::find( _layers.begin(), _layers.end(), Usul::Interfaces::ILayer::QueryPtr ( layer ) ) );
@@ -998,9 +1002,9 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
 
 void MinervaDocument::hideLayer   ( Usul::Interfaces::ILayer * layer )
 {
+  this->_removeLayerDistributed( layer );
   layer->showLayer( false );
   _sceneManager->dirty( true );
-  this->_removeLayerDistributed( layer );
 }
 
 
@@ -1012,9 +1016,9 @@ void MinervaDocument::hideLayer   ( Usul::Interfaces::ILayer * layer )
 
 void MinervaDocument::showLayer   ( Usul::Interfaces::ILayer * layer )
 {
+  this->_showLayerDistributed( layer );
   layer->showLayer ( true );
   _sceneManager->dirty( true );
-  this->_showLayerDistributed( layer );
 }
 
 
@@ -1048,12 +1052,13 @@ void  MinervaDocument::_addLayer ( Usul::Interfaces::ILayer * layer, Unknown *ca
     }
     else
     {
+      this->_showLayerDistributed( layer );
+
       Usul::Interfaces::IVectorLayer::QueryPtr vector ( layer );
       if( vector.valid() )
       {
         vector->buildVectorData( caller );
-        _sceneManager->addLayer( layer );
-        this->_showLayerDistributed( layer );
+        _sceneManager->addLayer( layer );  
       }
     }
   }
@@ -1079,8 +1084,8 @@ void MinervaDocument::modifyLayer ( Usul::Interfaces::ILayer * layer, Unknown *c
   Usul::Interfaces::IVectorLayer::QueryPtr vector ( layer );
   if( vector.valid() )
   {
-    vector->modifyVectorData ( caller );
     this->_modifyLayerDistributed( layer );
+    vector->modifyVectorData ( caller );
     _sceneManager->dirty( true );
   }
 }

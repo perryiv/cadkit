@@ -414,14 +414,6 @@
 						RelativePath=".\Layers\PolygonTimeLayer.h"
 						>
 					</File>
-					<File
-						RelativePath=".\Layers\RLayer.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\RLayer.h"
-						>
-					</File>
 				</Filter>
 				<Filter
 					Name="Scene"

@@ -223,6 +223,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\KmlWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\KmlWriter.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MinervaDocument.cpp"
 				>
 			</File>

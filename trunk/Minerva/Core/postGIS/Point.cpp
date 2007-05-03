@@ -10,12 +10,8 @@
 
 #include "Minerva/Core/postGIS/Point.h"
 
-#include "Magrathea/Project.h"
-
-#include "osg/Node"
-#include "osg/Geometry"
-
-#include "ossim/projection/ossimMapProjection.h"
+#include "Usul/Components/Manager.h"
+#include "Usul/Interfaces/IProjectCoordinates.h"
 
 using namespace Minerva::Core::postGIS;
 
@@ -46,13 +42,34 @@ Point::~Point()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build a geometry.
+//  Return the point
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Geometry* Point::buildPointData( PrimitiveType type )
+Usul::Math::Vec3d Point::pointData( )
 {
-  return new osg::Geometry;
+  Usul::Math::Vec3d point;
+
+  const VertexList& vertexList ( this->_vertices() );
+
+  if( vertexList.size() > 0 )
+  {
+    Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
+
+    BinaryParser::Vertex v ( vertexList[0][0] );
+    point.set( v[0] + _offset[0], v[1] + _offset[1], _offset[2] );
+
+    if( project.valid() )
+    {
+      Usul::Math::Vec3d latLongPoint;
+      project->projectToSpherical( point, _srid, latLongPoint );
+      point[0] = latLongPoint[0];
+      point[1] = latLongPoint[1];
+      point[2] = latLongPoint[2];
+    }
+  }
+
+  return point;
 }
 
 
@@ -85,17 +102,6 @@ osg::Vec3f Point::geometryCenter ( const osg::Vec3f& offset, unsigned int& srid 
     osg::Vec3 center;
     BinaryParser::Vertex v ( vertexList[0][0] );
     center.set( v[0], v[1], offset.z() );
-
-    /*ossimMapProjection *mapProj = dynamic_cast < ossimMapProjection * > ( _projection.get() );
-
-    if( this->_isSridSphereical( _srid ) )
-    {
-      Magrathea::convertToEarthCoordinates( center, offset.z() );
-    }
-    else if( _projection.valid() && 0x0 != mapProj )
-    {
-      Magrathea::convertToEarthCoordinates( center, mapProj, offset.z() );
-    }*/
 
     return center;
   }

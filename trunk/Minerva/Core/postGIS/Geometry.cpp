@@ -40,20 +40,10 @@ _connection ( connection ),
 _tableName ( tableName ),
 _id ( id ),
 _srid ( srid ),
-_projection ( 0x0 ),
 _offset( 0.0, 0.0, 0.0 ),
 _dirty ( false ),
 _orginalVertices()
 {
-  ossimKeywordlist kwl;
-
-  std::ostringstream os;
-  os << _srid;
-
-  kwl.add( ossimKeywordNames::PCS_CODE_KW, os.str().c_str() );
-
-  _projection = ossimProjectionFactoryRegistry::instance()->createProjection( kwl );
-
   BinaryParser::RefPtr parser ( new BinaryParser( F ) );
   _orginalVertices = parser->getVertices();
 }
@@ -88,7 +78,7 @@ void Geometry::_convertToLatLong ( const Vertices& vertices, std::vector< ossimG
       Usul::Math::Vec3d point;
       project->projectToSpherical( orginal, _srid, point );
 
-      ossimGpt gpt ( point[0], point[1], point[2] ); // Lat is first agrument, long is second.
+      ossimGpt gpt ( point[1], point[0], point[2] ); // Lat is first agrument, long is second.
       
       latLongPoints.push_back( gpt );
     }
@@ -133,17 +123,6 @@ osg::Vec3f  Geometry::geometryCenter ( const osg::Vec3f& offset, unsigned int& s
 
     center.set( offset.x() + x, offset.y() + y, offset.z() );
   }
-
-  /*ossimMapProjection *mapProj = dynamic_cast < ossimMapProjection * > ( _projection.get() );
-
-  if( this->_isSridSphereical( _srid ) )
-  {
-    Magrathea::convertToEarthCoordinates( center, offset.z() );
-  }
-  else if( _projection.valid() && 0x0 != mapProj )
-  {
-    Magrathea::convertToEarthCoordinates( center, mapProj, offset.z() );
-  }*/
 
   return center;
 }
@@ -210,19 +189,6 @@ void Geometry::dirty ( bool b )
 bool Geometry::dirty () const
 {
   return _dirty;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is the given srid spherical?.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Geometry::_isSridSphereical( int id )
-{
-  // For now, but I think there is an sql statement that can answer this question.
-  return id == 4326 || id == 4269;
 }
 
 

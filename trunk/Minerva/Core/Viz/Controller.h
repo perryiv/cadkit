@@ -88,8 +88,6 @@ protected:
 
   Minerva::Core::Layers::Layer* _getLayer ( const std::string drawCommandTable, int eventID );
 
-  bool _getAnimateCommand( const std::string animateTable, int eventID, bool &accumulate, bool &dateTimeStep, float &speed );
-
   // Update progress
   void _updateProgress();
 

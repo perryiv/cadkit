@@ -24,10 +24,9 @@ namespace osg { class Geometry; class Node; }
 
 #include "pqxx/pqxx"
 
-#include "ossim/base/ossimRefPtr.h"
-#include "ossim/projection/ossimProjection.h"
-
 #include <vector>
+
+#include "ossim/base/ossimGpt.h"
 
 namespace Minerva {
 namespace Core {
@@ -69,7 +68,6 @@ protected:
   virtual void                spatialOffset ( const osg::Vec3f& );
 
   void _convertToLatLong ( const Vertices& vertices, std::vector< ossimGpt >& latLongPoints );
-  bool _isSridSphereical( int id );
 
   const VertexList& _vertices() const;
 
@@ -77,7 +75,6 @@ protected:
   std::string _tableName;
   int _id;
   int _srid;
-  ossimRefPtr < ossimProjection > _projection;
   osg::Vec3f _offset;
   bool _dirty;
 

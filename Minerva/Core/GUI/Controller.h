@@ -14,6 +14,8 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/DB/Connection.h"
 
+#include "OsgTools/Animate/Settings.h"
+
 #include "Serialize/XML/Macros.h"
 
 #include <vector>
@@ -59,7 +61,7 @@ public:
   void             modifyLayer( Usul::Interfaces::ILayer *layer );
 
   /// Start animation.
-  void             startAnimation( float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays );
+  void             startAnimation( float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays, OsgTools::Animate::Settings::TimestepType type );
 
   /// Stop Animation.
   void             stopAnimation();

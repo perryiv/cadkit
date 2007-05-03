@@ -16,6 +16,7 @@
 #include "Usul/Interfaces/IGeometryCenter.h"
 #include "Usul/Interfaces/IProjectCoordinates.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
+#include "Usul/Bits/Bits.h"
 
 #include "OsgTools/Legend/LegendObject.h"
 
@@ -60,7 +61,7 @@ _labelZOffset( 1000.0 ),
 _labelSize ( 25.0f ),
 _colorColumn(),
 _customQuery ( false ),
-_showCountLegend ( false ),
+_legendFlags ( 0x0 ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
   this->_registerMembers();
@@ -94,7 +95,7 @@ _labelZOffset( layer._labelZOffset ),
 _labelSize ( layer._labelSize ),
 _colorColumn( layer._colorColumn ),
 _customQuery( layer._customQuery ),
-_showCountLegend ( layer._showCountLegend )
+_legendFlags ( layer._legendFlags )
 {
   if( layer._colorFunctor.valid() )
     _colorFunctor = layer._colorFunctor->clone();
@@ -130,7 +131,7 @@ void Layer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _labelSize );
   SERIALIZE_XML_ADD_MEMBER ( _colorColumn );
   SERIALIZE_XML_ADD_MEMBER ( _customQuery );
-  SERIALIZE_XML_ADD_MEMBER ( _showCountLegend );
+  SERIALIZE_XML_ADD_MEMBER ( _legendFlags );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -756,7 +757,10 @@ std::string Layer::guid() const
 
 void Layer::showCountLegend( bool b )
 {
-  _showCountLegend = b;
+  if ( b )
+    _legendFlags = Usul::Bits::add( _legendFlags, COUNT );
+  else
+    _legendFlags = Usul::Bits::remove( _legendFlags, COUNT );
 }
 
 
@@ -768,9 +772,62 @@ void Layer::showCountLegend( bool b )
 
 bool Layer::showCountLegend() const
 {
-  return _showCountLegend;
+  return Usul::Bits::has( _legendFlags, COUNT );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set show min in legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::showMinLegend( bool b )
+{
+  if ( b )
+    _legendFlags = Usul::Bits::add( _legendFlags, MIN );
+  else
+    _legendFlags = Usul::Bits::remove( _legendFlags, MIN );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get show min in legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Layer::showMinLegend() const
+{
+  return Usul::Bits::has( _legendFlags, MIN );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set show max in legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::showMaxLegend( bool b )
+{
+  if ( b )
+    _legendFlags = Usul::Bits::add( _legendFlags, MAX );
+  else
+    _legendFlags = Usul::Bits::remove( _legendFlags, MAX );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get show max in legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Layer::showMaxLegend() const
+{
+  return Usul::Bits::has( _legendFlags, MAX );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -793,6 +850,8 @@ Usul::Interfaces::IUnknown* Layer::queryInterface( unsigned long iid )
     return static_cast < Usul::Interfaces::ISerialize* > ( this );
   case Usul::Interfaces::IClonable::IID:
     return static_cast < Usul::Interfaces::IClonable* > ( this );
+  case Usul::Interfaces::IDataObjects::IID:
+    return static_cast < Usul::Interfaces::IDataObjects* > ( this );
   default:
     return 0x0;
   }
@@ -852,6 +911,14 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
         row->percentage( 1 ) = 0.20;
       }
 
+      if( this->showMinLegend() )
+      {
+      }
+
+      if( this->showMaxLegend() )
+      {
+      }
+
       row->percentage( 0 ) = 0.80;
     }
   }
@@ -864,3 +931,40 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
     std::cout << "Error 4254986090: Unknown exception caught." << std::endl;
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of data objects.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Layer::numberDataObjects() const
+{
+  return _dataObjects.size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the data object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Minerva::Core::DataObjects::DataObject * Layer::dataObject( unsigned int i )
+{
+  return _dataObjects.at ( i );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the data object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Minerva::Core::DataObjects::DataObject * Layer::dataObject( unsigned int i ) const
+{
+  return _dataObjects.at ( i );
+}
+

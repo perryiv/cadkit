@@ -36,7 +36,7 @@ protected:
   virtual ~Point();
 
   /// Usul::Interfaces::IPointData
-  virtual osg::Geometry*            buildPointData ( PrimitiveType type );
+  virtual Usul::Math::Vec3d         pointData ( );
 
   virtual osg::Vec3f                geometryCenter ( unsigned int& srid );
   virtual osg::Vec3f                geometryCenter ( const osg::Vec3f& offset, unsigned int& srid );

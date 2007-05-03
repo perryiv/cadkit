@@ -246,31 +246,6 @@ void Controller::_getNextEvent( int& type, std::string& tableName, int &eventId 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Should there be animation?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Controller::_getAnimateCommand( const std::string animateTable, int eventID, bool &accumulate, bool &dateTimeStep, float &speed )
-{
-  std::ostringstream query;
-  query << "SELECT * FROM " << animateTable << " WHERE id = " << eventID << " AND session_id = " << _sessionID;;
-
-  pqxx::result result ( _applicationConnection->executeQuery ( query.str() ) );
-
-  if( !result.empty() && !result[0]["animate"].is_null() )
-  {
-    speed = result[0]["speed"].as < float > ();
-    accumulate = result[0]["accumulate"].as < bool > ();
-    dateTimeStep = result[0]["date_time_step"].as < bool > ();
-    return result[0]["animate"].as< bool > ();
-  }
-
-  return false;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //   Update the progress if we should.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -473,7 +448,9 @@ void Controller::_processAnimation( const std::string& tableName, int eventID )
     bool timeWindow       ( result[0]["time_window"].as< bool > () );
     bool animate          ( result[0]["animate"].as< bool > () );
     unsigned int numDays  ( result[0]["num_days_to_show"].as < unsigned int > () );
+    OsgTools::Animate::Settings::TimestepType type ( static_cast < OsgTools::Animate::Settings::TimestepType > ( result[0]["timestep_type"].as < unsigned int > () ) );
 
+    _sceneManager->timestepType( type );
     _sceneManager->animate ( animate, accumulate, speed, timeWindow, numDays );
   }
 }

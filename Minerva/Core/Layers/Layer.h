@@ -27,6 +27,7 @@
 #include "Usul/Interfaces/IAddRowLegend.h"
 #include "Usul/Interfaces/ISerialize.h"
 #include "Usul/Interfaces/IClonable.h"
+#include "Usul/Interfaces/IDataObjects.h"
 
 #include "Serialize/XML/Macros.h"
 
@@ -50,7 +51,8 @@ class MINERVA_EXPORT Layer : public Usul::Base::Referenced,
                              public Usul::Interfaces::IVectorLayer,
                              public Usul::Interfaces::IAddRowLegend,
                              public Usul::Interfaces::ISerialize,
-                             public Usul::Interfaces::IClonable
+                             public Usul::Interfaces::IClonable,
+                             public Usul::Interfaces::IDataObjects
 {
 public:
   /// Typedefs.
@@ -67,6 +69,13 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   Layer();
+
+  enum LegendFlags
+  {
+    COUNT = 0x00000001,
+    MIN   = 0x00000002,
+    MAX   = 0x00000004
+  };
 
   /// Get/Set the color functor. 
   void                        colorFunctor( ColorFunctor *colorFunctor );
@@ -165,6 +174,14 @@ public:
   void                        showCountLegend( bool b );
   bool                        showCountLegend() const;
 
+  /// Get/Set show min in legend.
+  void                        showMinLegend( bool b );
+  bool                        showMinLegend() const;
+
+  /// Get/Set show max in legend.
+  void                        showMaxLegend( bool b );
+  bool                        showMaxLegend () const;
+
 protected:
 
   /// Use reference counting.
@@ -192,10 +209,18 @@ protected:
   virtual void                modifyVectorData ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   /// Usul::Interfaces::IAddRowLegend
-  virtual void                             addLegendRow ( OsgTools::Legend::LegendObject* row );
+  virtual void                                             addLegendRow ( OsgTools::Legend::LegendObject* row );
 
   /// Clone this layer.
-  virtual Usul::Interfaces::IUnknown*      clone() const = 0;
+  virtual Usul::Interfaces::IUnknown*                      clone() const = 0;
+
+  /// Usul::Interfaces::IDataObjects
+  /// Get the number of data objects.
+  virtual unsigned int                                     numberDataObjects() const;
+
+  /// Get the data object.
+  virtual Minerva::Core::DataObjects::DataObject *         dataObject( unsigned int i );
+  virtual const Minerva::Core::DataObjects::DataObject *   dataObject( unsigned int i ) const;
 
 private:
 
@@ -218,7 +243,7 @@ private:
   float                  _labelSize;
   std::string            _colorColumn;
   bool                   _customQuery;
-  bool                   _showCountLegend;
+  unsigned int           _legendFlags;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME ( Layer );

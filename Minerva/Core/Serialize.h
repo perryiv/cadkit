@@ -15,7 +15,6 @@
 #include "Minerva/Core/Layers/PolygonLayer.h"
 #include "Minerva/Core/Layers/PointLayer.h"
 #include "Minerva/Core/Layers/PointTimeLayer.h"
-#include "Minerva/Core/Layers/RLayer.h"
 #include "Minerva/Core/Layers/PolygonTimeLayer.h"
 #include "Minerva/Core/Functors/SingleColorFunctor.h"
 #include "Minerva/Core/Functors/GradientColorFunctor.h"
@@ -40,7 +39,6 @@ inline void registerFactories()
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::PolygonLayer> ( "PolygonLayer" ) );
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::PointLayer> ( "PointLayer" ) );
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::PointTimeLayer> ( "PointTimeLayer" ) );
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::RLayer> ( "RLayer" ) );
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::PolygonTimeLayer> ( "PolygonTimeLayer" ) );
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Functors::SingleColorFunctor> ( "SingleColorFunctor" ) );
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Functors::GradientColorFunctor> ( "GradientColorFunctor" ) );

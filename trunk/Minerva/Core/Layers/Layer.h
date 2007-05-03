@@ -118,6 +118,14 @@ public:
   void                        renderBin( Usul::Types::Uint32 bin );
   Usul::Types::Uint32         renderBin( ) const;
 
+  /// Get/Set the x offset.
+  void                        xOffset( float f );
+  float                       xOffset( ) const;
+
+  /// Get/Set the y offset.
+  void                        yOffset( float f );
+  float                       yOffset( ) const;
+
   /// Get/Set the z offset.
   void                        zOffset( float f );
   float                       zOffset( ) const;
@@ -231,6 +239,8 @@ private:
   std::string _labelColumn;
   std::string _query;
   Usul::Types::Uint32 _renderBin;
+  float _xOffset;
+  float _yOffset;
   float _zOffset;
   DataObjects _dataObjects;
   DB::Connection::RefPtr _connection;

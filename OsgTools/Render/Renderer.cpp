@@ -39,6 +39,12 @@
 #include "osg/Geometry"
 #include "osg/Geode"
 
+#ifndef USE_DEPRECATED_API
+#define USE_DEPRECATED_API
+#endif
+
+#include "osg/CameraNode"
+
 #include "osg/GLU"
 
 #include "osgUtil/UpdateVisitor"

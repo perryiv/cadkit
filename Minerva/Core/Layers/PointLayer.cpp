@@ -134,7 +134,7 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 
       if( offset.valid () )
       {
-        offset->spatialOffset( osg::Vec3f ( 0.0, 0.0, this->zOffset() ) );
+        offset->spatialOffset( osg::Vec3f ( this->xOffset(), this->yOffset(), this->zOffset() ) );
       }
 
       Minerva::Core::DataObjects::Point::RefPtr data ( new Minerva::Core::DataObjects::Point );

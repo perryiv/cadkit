@@ -101,7 +101,7 @@ osg::Vec3f Point::geometryCenter ( const osg::Vec3f& offset, unsigned int& srid 
   {
     osg::Vec3 center;
     BinaryParser::Vertex v ( vertexList[0][0] );
-    center.set( v[0], v[1], offset.z() );
+    center.set( v[0] + offset.x(), v[1] + offset.y(), offset.z() );
 
     return center;
   }

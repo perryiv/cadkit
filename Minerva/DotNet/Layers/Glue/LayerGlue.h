@@ -80,11 +80,25 @@ namespace DT
         ]
         PROPERTY_GET_SET(RenderBin, int);
 
-        /// Get/Set the offset.
+
+        /// Get/Set the x offset.
         [
           System::ComponentModel::Category("Display")
         ]
-        PROPERTY_GET_SET(Offset, float);
+        PROPERTY_GET_SET(XOffset, float);
+
+
+        /// Get/Set the y offset.
+        [
+          System::ComponentModel::Category("Display")
+        ]
+        PROPERTY_GET_SET(YOffset, float);
+
+        /// Get/Set the z offset.
+        [
+          System::ComponentModel::Category("Display")
+        ]
+        PROPERTY_GET_SET(ZOffset, float);
 
         
         /// Get/Set the query.

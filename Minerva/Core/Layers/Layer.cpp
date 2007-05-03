@@ -49,6 +49,8 @@ _tablename(),
 _labelColumn(),
 _query(),
 _renderBin ( 0 ),
+_xOffset ( 0.0 ),
+_yOffset ( 0.0 ),
 _zOffset ( 0.0 ),
 _dataObjects(),
 _connection(),
@@ -83,6 +85,8 @@ _tablename( layer._tablename ),
 _labelColumn( layer._labelColumn ),
 _query( layer._query ),
 _renderBin ( layer._renderBin ),
+_xOffset ( layer._xOffset ),
+_yOffset ( layer._yOffset ),
 _zOffset ( layer._zOffset ),
 _dataObjects( layer._dataObjects ),
 _connection( layer._connection ),
@@ -119,6 +123,8 @@ void Layer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _labelColumn );
   SERIALIZE_XML_ADD_MEMBER ( _query );
   SERIALIZE_XML_ADD_MEMBER ( _renderBin );
+  SERIALIZE_XML_ADD_MEMBER ( _xOffset );
+  SERIALIZE_XML_ADD_MEMBER ( _yOffset );
   SERIALIZE_XML_ADD_MEMBER ( _zOffset );
   //DataObjects _dataObjects;
   SERIALIZE_XML_ADD_MEMBER ( _connection );
@@ -378,6 +384,53 @@ Minerva::Core::Functors::BaseColorFunctor * Layer::colorFunctor()
 const Minerva::Core::Functors::BaseColorFunctor * Layer::colorFunctor() const
 {
   return _colorFunctor.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the x offset.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::xOffset( float f )
+{
+  _xOffset = f;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the x offset.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float Layer::xOffset( ) const
+{
+  return _xOffset;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the y offset.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::yOffset( float f )
+{
+  _yOffset = f;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the y offset.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float Layer::yOffset( ) const
+{
+  return _yOffset;
 }
 
 

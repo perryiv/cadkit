@@ -48,7 +48,7 @@ _static_root( new osg::Group ),
 _projectionNode ( new osg::Projection ),
 _animateNode ( new OsgTools::Animate::DateGroup ),
 _layers(),
-_dirty ( true ),
+_dirty ( false ),
 _width( 0 ),
 _height( 0 ),
 _legend( new OsgTools::Legend::Legend ),
@@ -143,9 +143,9 @@ void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
     _root->dirtyBound();
     _static_root->dirtyBound();
     _projectionNode->dirtyBound();
-
-    this->dirty( false );
   }
+
+  this->dirty( false );
 }
 
 

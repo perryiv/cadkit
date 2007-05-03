@@ -22,6 +22,7 @@
 #include "Usul/Math/Matrix44.h"
 
 #include "osg/Drawable"
+#include "osg/Version"
 
 #include <string>
 #include <vector>
@@ -59,7 +60,11 @@ public:
   virtual osg::Object         *cloneType() const;
 
   // Draw voxels.
+#if OSG_VERSION_MAJOR >= 1 && OSG_VERSION_MINOR >= 9
+  virtual void                drawImplementation( osg::RenderInfo& renderInfo ) const;
+#else
   virtual void                drawImplementation ( osg::State &state ) const;
+#endif
 
   // Set/get the number of planes used.
   unsigned int                numPlanes() const { return _numPlanes; }

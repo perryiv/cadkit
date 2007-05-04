@@ -197,7 +197,7 @@ bool PlayMovieComponent::execute ( Unknown* caller, bool left, bool middle, bool
              
                 try
                 {
-                  osg::ref_ptr< osg::Node >  node ( playMovie ( center, convertStringToPosition( quadWidth ), convertStringToPosition( quadHeight ), "C://movie//test.mpg" ) );
+                  osg::ref_ptr< osg::Node >  node ( playMovie ( center, convertStringToPosition( quadWidth ), convertStringToPosition( quadHeight ), path ) );
                   if( node.valid() )
                   {
                     group->removeChildren( 0, group->getNumChildren() );

@@ -59,7 +59,7 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
   _planet ( new Magrathea::Planet ),
   _options(),
   _background( 0.0, 0.0, 0.0, 1.0 ),
-  _update(),
+  _update( ),
   _numFramesBuild ( 0 ),
   _frameBuild ( 0 )
 {
@@ -156,7 +156,7 @@ void MinervaVR::appInit()
     if( Usul::System::Host::name() == legendNode )
     {
       _sceneManager->showLegend ( true );
-      _sceneManager->legendWidth ( 0.50 );
+      _sceneManager->legendWidth ( 0.75 );
       _sceneManager->legendPadding ( osg::Vec2 ( 20.0, 40.0 ) );
       _sceneManager->legendHeightPerItem ( 60 );
     }
@@ -170,7 +170,7 @@ void MinervaVR::preFrame()
 {
   /// Check to see if we have data.
   //if( _update.isLocal() )
-  //_update->dataAvailable ( _dbManager->hasEvents() );
+  //  _update->dataAvailable ( _dbManager->hasEvents() );
 
   BaseClass::preFrame();
 }
@@ -188,13 +188,15 @@ void MinervaVR::appPreOsgDraw()
 
   static bool sizeSet ( false );
 
-  if( true == sizeSet )
+  if( false == sizeSet )
   {
     GLint viewport[4];
 
     ::glGetIntegerv(GL_VIEWPORT, viewport);
 
     _sceneManager->resize ( viewport[2], viewport[3] );
+    
+    sizeSet = true;
   }
 
   this->_updateScene();
@@ -226,13 +228,9 @@ void MinervaVR::appSceneInit()
     std::string kwl ( _options.value ( KWL ) );
     std::string dir ( Usul::File::directory ( kwl, false ) );
 
-	std::cout << "KWL is:" << kwl << ":" << std::endl;
     //::chdir ( dir.c_str() );
     _planet->readKWL( kwl.c_str() );
   }
-  
-
-  //_planet->readKWL( "/array/cluster/demos/ossimTest/MCFCD.kwl" );
   
   std::cerr << " [MinveraVR] done reading kwl: " << std::endl;
  
@@ -246,7 +244,6 @@ void MinervaVR::appSceneInit()
   }
 
   mModelGroupNode->addChild ( _planet->root() );
-  //mModelGroupNode->addChild ( _sceneManager->root() );
   
   std::cerr << " [MinervaVR] Root set: " << std::endl;
 
@@ -317,10 +314,6 @@ void MinervaVR::_updateScene()
       std::cerr << " [MinervaVR] Finished updating scene." << std::endl;
 
       //_sceneManager->buildScene();
-
-      //osgDB::writeNodeFile( *mSceneRoot, "test" + Usul::System::Host::name() + ".osg" );
-
-      //std::cerr << " [MinervaVR] Finished building scene." << std::endl;
 
       _numFramesBuild = 0;
     }

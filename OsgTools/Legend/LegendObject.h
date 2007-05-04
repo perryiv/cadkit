@@ -41,6 +41,9 @@ public:
   Text*                  operator[] ( unsigned int i );
   Text*                  at ( unsigned int i );
 
+  /// Add a text item.
+  unsigned int           addText ( Text* );
+
   /// Get/Set the number of columns.
   void                   columns( unsigned int value );
   unsigned int           columns() const;

@@ -30,7 +30,9 @@ public:
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Text );
 
+  /// Constructors.
   Text();
+  Text( const std::string& text );
 
   /// Get/Set the text.
   void                    text( const std::string& text );

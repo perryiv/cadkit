@@ -34,12 +34,12 @@ struct XineLife
       #else
         osgDB::DynamicLibrary::loadLibrary( "osgdb_xine.dll" );
       #endif
+    #else
+      #ifdef _DEBUG 
+        osgDB::DynamicLibrary::loadLibrary( "osgdb_xined.so" );
       #else
-        #ifdef _DEBUG 
-          //osgDB::DynamicLibrary::loadLibrary( "osgdb_xined.so" );
-        #else
-          //osgDB::DynamicLibrary::loadLibrary( "osgdb_xine.so" );
-        #endif
+        osgDB::DynamicLibrary::loadLibrary( "osgdb_xine.so" );
+      #endif
     #endif   
   }
   ~XineLife()

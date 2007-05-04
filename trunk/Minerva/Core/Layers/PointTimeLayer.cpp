@@ -222,6 +222,13 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 
         Usul::Interfaces::IUnknown::QueryPtr geometry ( new Minerva::Core::postGIS::Point ( this->connection(), this->tablename(), id, srid, i["geom"] ) );
 
+        Usul::Interfaces::IOffset::QueryPtr offset ( geometry );
+
+        if( offset.valid () )
+        {
+          offset->spatialOffset( osg::Vec3f ( this->xOffset(), this->yOffset(), this->zOffset() ) );
+        }
+
         if( geometry.valid() )
         {
           Minerva::Core::DataObjects::PointTime::RefPtr data ( new Minerva::Core::DataObjects::PointTime( firstDate, lastDate ) );

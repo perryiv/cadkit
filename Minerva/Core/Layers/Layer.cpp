@@ -17,7 +17,9 @@
 #include "Usul/Interfaces/IProjectCoordinates.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Bits/Bits.h"
+#include "Usul/Math/NaN.h"
 
+#include "OsgTools/Legend/Text.h"
 #include "OsgTools/Legend/LegendObject.h"
 
 #include "osg/Group"
@@ -26,6 +28,7 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
+#include <limits>
 
 using namespace Minerva::Core::Layers;
 
@@ -64,6 +67,7 @@ _labelSize ( 25.0f ),
 _colorColumn(),
 _customQuery ( false ),
 _legendFlags ( 0x0 ),
+_minMax ( std::numeric_limits< double >::max(), std::numeric_limits< double >::min() ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
   this->_registerMembers();
@@ -99,7 +103,8 @@ _labelZOffset( layer._labelZOffset ),
 _labelSize ( layer._labelSize ),
 _colorColumn( layer._colorColumn ),
 _customQuery( layer._customQuery ),
-_legendFlags ( layer._legendFlags )
+_legendFlags ( layer._legendFlags ),
+_minMax( layer._minMax )
 {
   if( layer._colorFunctor.valid() )
     _colorFunctor = layer._colorFunctor->clone();
@@ -890,6 +895,7 @@ bool Layer::showMaxLegend() const
   return Usul::Bits::has( _legendFlags, MAX );
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Query for the interface.
@@ -967,20 +973,37 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
 
       if( this->showCountLegend() )
       {
-        row->columns ( row->columns() + 1 );
-        row->at ( 1 )->text ( Usul::Functions::toString( this->number() ) );
-        row->percentage( 1 ) = 0.20;
+        unsigned int index ( row->addText ( new OsgTools::Legend::Text ( Usul::Functions::toString( this->number() ) ) ) );
+        row->percentage( index ) = 0.20;
       }
 
       if( this->showMinLegend() )
       {
+        double min ( _minMax.first );
+        bool valid ( min != std::numeric_limits< double >::max() && !Usul::Math::nan( min ) );
+        
+        std::string text ( valid ? Usul::Functions::toString( min ) : "NA" );
+        
+        row->addText ( new OsgTools::Legend::Text ( Usul::Functions::toString( min ) ) );
       }
 
       if( this->showMaxLegend() )
       {
+        double max ( _minMax.second );
+        bool valid ( max != std::numeric_limits< double >::min() && !Usul::Math::nan( max ) );
+        
+        std::string text ( valid ? Usul::Functions::toString( max ) : "NA" );
+        
+        row->addText ( new OsgTools::Legend::Text ( Usul::Functions::toString( max ) ) );
       }
 
-      row->percentage( 0 ) = 0.80;
+      /// Find out how many columns we have.
+      unsigned int numColumns ( row->columns() );
+
+      for( unsigned int i = 0; i < numColumns; ++i )
+        row->percentage( i ) = .20;
+
+      row->percentage( 0 ) = 1.0 - ( ( numColumns - 1 ) * .20 );
     }
   }
   catch ( const std::exception& e )
@@ -1029,3 +1052,17 @@ const Minerva::Core::DataObjects::DataObject * Layer::dataObject( unsigned int i
   return _dataObjects.at ( i );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the min and max.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::_updateMinMax ( double value )
+{
+  if( value < _minMax.first )
+    _minMax.first = value;
+  if ( value > _minMax.second )
+    _minMax.second = value;
+}

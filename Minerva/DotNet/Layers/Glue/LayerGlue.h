@@ -130,6 +130,18 @@ namespace DT
         ]
         PROPERTY_GET_SET(ShowCountLegend, bool);
 
+        /// Get/Set the show count in legend flag.
+        [
+          System::ComponentModel::Category("Legend")
+        ]
+        PROPERTY_GET_SET(ShowMinLegend, bool);
+
+        /// Get/Set the show count in legend flag.
+        [
+          System::ComponentModel::Category("Legend")
+        ]
+        PROPERTY_GET_SET(ShowMaxLegend, bool);
+
         /// Get/Set show label.
         [
           System::ComponentModel::Category("Label"),

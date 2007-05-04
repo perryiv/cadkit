@@ -247,6 +247,7 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
           {
             float value ( i [ this->primitiveSizeColumn() ].as < float > () );
             data->size( this->size() * value );
+            this->_updateMinMax( value );
           }
 
           // Also add to the vector of data objects.  This allows for faster updating.
@@ -374,6 +375,9 @@ std::string PointTimeLayer::defaultQuery() const
 
   if ( this->colorColumn().size() > 0 )
     query << ", " << this->colorColumn();
+
+  if ( this->primitiveSizeColumn().size() > 0 )
+    query << ", " << this->primitiveSizeColumn();
   
   query << " FROM " << this->tablename();
 

@@ -152,6 +152,7 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       {
         float value ( iter [ this->primitiveSizeColumn() ].as < float > () );
         data->size( this->size() * value );
+        this->_updateMinMax( value );
       }
 
        /// Set the label.

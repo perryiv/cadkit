@@ -210,7 +210,11 @@ protected:
 
   void                        _labelDataObject ( DataObject* dataObject );
 
+  /// Register members for serialization.
   void                        _registerMembers();
+
+  /// Update the min and max.
+  void                        _updateMinMax ( double value );
 
   /// Usul::Interfaces::IVectorLayer
   virtual void                buildVectorData  ( Usul::Interfaces::IUnknown *caller = 0x0 );
@@ -245,15 +249,16 @@ private:
   DataObjects _dataObjects;
   DB::Connection::RefPtr _connection;
   Functors::BaseColorFunctor::RefPtr _colorFunctor;
-  std::string            _legendText;
-  bool                   _showLabel;
-  bool                   _shown;
-  osg::Vec4              _labelColor;
-  float                  _labelZOffset;
-  float                  _labelSize;
-  std::string            _colorColumn;
-  bool                   _customQuery;
-  unsigned int           _legendFlags;
+  std::string                  _legendText;
+  bool                         _showLabel;
+  bool                         _shown;
+  osg::Vec4                    _labelColor;
+  float                        _labelZOffset;
+  float                        _labelSize;
+  std::string                  _colorColumn;
+  bool                         _customQuery;
+  unsigned int                 _legendFlags;
+  std::pair < double, double > _minMax;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME ( Layer );

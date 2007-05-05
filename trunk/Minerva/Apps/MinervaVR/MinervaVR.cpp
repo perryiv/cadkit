@@ -159,6 +159,7 @@ void MinervaVR::appInit()
       _sceneManager->legendWidth ( 0.75 );
       _sceneManager->legendPadding ( osg::Vec2 ( 20.0, 40.0 ) );
       _sceneManager->legendHeightPerItem ( 60 );
+      _sceneManager->legendPosition( Minerva::Core::Scene::SceneManager::LEGEND_TOP_LEFT );
     }
   }
 

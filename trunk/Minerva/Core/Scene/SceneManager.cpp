@@ -55,7 +55,8 @@ _legend( new OsgTools::Legend::Legend ),
 _showLegend( true ),
 _legendWidth ( 0.20f ),
 _legendHeightPerItem ( 30 ),
-_legendPadding ( 20.0f, 20.0f )
+_legendPadding ( 20.0f, 20.0f ),
+_legendPosition ( LEGEND_BOTTOM_RIGHT )
 {
   // Make sure it draws last and without depth testing.
   osg::ref_ptr< osg::StateSet > ss ( _projectionNode->getOrCreateStateSet() );
@@ -194,11 +195,6 @@ void SceneManager::_buildLegend()
     _legend->maximiumSize( legendWidth, legendHeight );
     _legend->heightPerItem( _legendHeightPerItem );
 
-    // Translate legend to correct location.
-    unsigned int xTranslate ( static_cast < unsigned int > ( _width - ( legendWidth + _legendPadding.x() ) ) );
-    unsigned int yTranslate ( static_cast < unsigned int > ( _legendPadding.y() ) );
-    _legend->position( xTranslate, yTranslate );
-
     for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
     {
       Usul::Interfaces::IAddRowLegend::QueryPtr addRow ( iter->second.get() );
@@ -210,9 +206,62 @@ void SceneManager::_buildLegend()
       }
     }
 
+    // Must be called after rows are added to the legend.
+    this->_setLegendPosition( legendWidth );
+
     // Build the legend.
     _projectionNode->addChild( _legend->buildScene() );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the legend position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SceneManager::_setLegendPosition ( unsigned int legendWidth )
+{
+  // Translate legend to correct location.
+  unsigned int x ( 0 );
+  unsigned int y ( 0 );
+
+  unsigned legendHeight ( _legend->height() );
+
+  switch ( _legendPosition )
+  {
+  case LEGEND_TOP_LEFT:
+    {
+      x = static_cast < unsigned int > ( _legendPadding.x() );
+      y = static_cast < unsigned int > ( _height - legendHeight -_legendPadding.y() );
+      _legend->growDirection( OsgTools::Legend::Legend::UP );
+    }
+    break;
+  case LEGEND_TOP_RIGHT:
+    {
+      x = static_cast < unsigned int > ( _width - ( legendWidth + _legendPadding.x() ) );
+      y = static_cast < unsigned int > ( _height - legendHeight - _legendPadding.y() );
+      _legend->growDirection( OsgTools::Legend::Legend::UP );
+    }
+    break;
+  case LEGEND_BOTTOM_RIGHT:
+    {
+      x = static_cast < unsigned int > ( _width - ( legendWidth + _legendPadding.x() ) );
+      y = static_cast < unsigned int > ( _legendPadding.y() );
+      _legend->growDirection( OsgTools::Legend::Legend::UP );
+    }
+    break;
+  case LEGEND_BOTTOM_LEFT:
+    {
+      x = static_cast < unsigned int > ( _legendPadding.x() );
+      y = static_cast < unsigned int > ( _legendPadding.y() );
+      _legend->growDirection( OsgTools::Legend::Legend::UP );
+    }
+    break;
+  }
+
+  _legend->position( x, y );
 }
 
 
@@ -520,4 +569,28 @@ void SceneManager::legendHeightPerItem( unsigned int height )
 unsigned int SceneManager::legendHeightPerItem() const
 {
   return _legendHeightPerItem;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the legend position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SceneManager::legendPosition ( LegendPosition position )
+{
+  _legendPosition = position;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the legend position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+SceneManager::LegendPosition SceneManager::legendPosition () const
+{
+  return _legendPosition;
 }

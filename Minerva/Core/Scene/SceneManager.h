@@ -90,6 +90,18 @@ public:
   /// Clear the internal state.
   void                       clear();
 
+  enum LegendPosition
+  {
+    LEGEND_TOP_LEFT,
+    LEGEND_TOP_RIGHT,
+    LEGEND_BOTTOM_RIGHT,
+    LEGEND_BOTTOM_LEFT
+  };
+
+  /// Get/Set the legend position.
+  void                       legendPosition ( LegendPosition position );
+  LegendPosition             legendPosition ( ) const;
+
   /// Toggle the legend on and off.
   bool                       showLegend() const;
   void                       showLegend( bool b );
@@ -110,10 +122,12 @@ protected:
 
   virtual ~SceneManager();
 
-  virtual void sceneUpdate( Usul::Interfaces::IUnknown *caller = 0x0 );
+  virtual void               sceneUpdate( Usul::Interfaces::IUnknown *caller = 0x0 );
   
   void                       _setUpAnimationNode();
   void                       _buildLegend();
+
+  void                       _setLegendPosition ( unsigned int legendWidth );
 private:
 
   typedef std::map < std::string, Layer::QueryPtr >               Layers;
@@ -141,6 +155,7 @@ private:
   float _legendWidth;
   unsigned int _legendHeightPerItem;
   osg::Vec2 _legendPadding;
+  LegendPosition _legendPosition;
 };
 
 }

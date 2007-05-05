@@ -53,6 +53,9 @@ public:
   /// Set the maximium size.
   void                 maximiumSize( unsigned int width, unsigned int height );
 
+  /// Get the height.
+  unsigned int         height () const;
+
   /// Get/Set the height per item
   void                 heightPerItem( unsigned int height );
   unsigned int         heightPerItem () const;

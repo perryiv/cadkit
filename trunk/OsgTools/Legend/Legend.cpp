@@ -116,7 +116,8 @@ osg::Node* Legend::buildScene()
       unsigned int num ( iter - _legendObjects.begin() );
       osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
 
-      unsigned int yTranslate ( heightPerObject * num + padding );
+      /// Needs to be signed.
+      int yTranslate ( heightPerObject * num + padding );
 
       // Invert the y translation if we are growing down.
       if( this->growDirection() == DOWN )
@@ -282,4 +283,18 @@ void Legend::position( unsigned int x, unsigned int y )
 {
   _x = x;
   _y = y;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the height.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Legend::height() const
+{
+  unsigned int height ( _heightPerItem * _legendObjects.size() );
+
+  return ( ( height > _height ) ? _height : height );
 }

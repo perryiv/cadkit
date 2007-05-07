@@ -39,6 +39,7 @@ public:
   virtual void addSceneLight();
 
   void _updateScene();
+  void _buildScene();
 
  private:	
 

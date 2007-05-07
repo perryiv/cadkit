@@ -201,6 +201,7 @@ void MinervaVR::appPreOsgDraw()
   }
 
   this->_updateScene();
+  this->_buildScene();
 }
 
 
@@ -274,14 +275,17 @@ void MinervaVR::appSceneInit()
     }
 
     setEngine( interactor );
+#ifndef _MSC_VER
     interactor->dumpFilename ( Usul::System::Host::name() );
+#endif
+
     interactor->goHome();
   }
 
   // TODO: This should be done in a environment variable.
   // get the existing high level path list
   osgDB::FilePathList wFilePathList = osgDB::Registry::instance()->getDataFilePathList();
-    
+
   // add additional paths of interest to the path list
   wFilePathList.push_back( "/array/cluster/home/adam/src/bin/fonts" );
     
@@ -314,11 +318,26 @@ void MinervaVR::_updateScene()
 
       std::cerr << " [MinervaVR] Finished updating scene." << std::endl;
 
-      //_sceneManager->buildScene();
-
       _numFramesBuild = 0;
     }
+  }
+  catch ( ... )
+  {
+    std::cerr << "[MinervaVR] exception caught while trying to update scene." << std::endl;
+  }
+}
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaVR::_buildScene()
+{
+  try
+  {
     if( _sceneManager->dirty() && _numFramesBuild > _frameBuild )
     {
       std::cerr << " [MinervaVR] Starting building scene." << std::endl;
@@ -335,7 +354,7 @@ void MinervaVR::_updateScene()
   }
   catch ( ... )
   {
-    std::cerr << "[MinervaVR] exception caught while trying to update scene." << std::endl;
+    std::cerr << "[MinervaVR] exception caught while trying to build scene." << std::endl;
   }
 }
 
@@ -350,8 +369,6 @@ void MinervaVR::addSceneLight()
 {
   osg::ref_ptr < osg::Light > light ( new osg::Light );
   light->setDiffuse( osg::Vec4 ( 0.8f, 0.8f, 0.8f, 1.0f ) );
-  //  light->setEmission( osg::Vec4 ( 0.0f, 0.0f, 0.0f, 1.0f ) );
-  //light->setDirection ( osg::Vec3 ( 0.0, 0.0, -1.0f ) );
   light->setPosition( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
   light->setLightNum ( 0 );
 
@@ -364,5 +381,4 @@ void MinervaVR::addSceneLight()
 
   osg::ref_ptr < osg::StateSet > ss ( mSceneRoot->getOrCreateStateSet() );
   lightSource->setStateSetModes( *ss.get(), osg::StateAttribute::ON );
-    //ss->setAttributeAndModes( light.get(), osg::StateAttribute::ON );
 }

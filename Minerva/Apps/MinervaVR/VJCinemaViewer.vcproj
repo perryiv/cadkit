@@ -66,7 +66,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ossimd.lib ossimPlanetd.lib Usuld.lib OsgToolsd.lib OpenThreadsExd.lib CadKit.Magrathead.lib Minervad.lib libpqxxd.lib producerd.lib osgd.lib osgDBd.lib osgUtild.lib osgFXd.lib osgTextd.lib vrj_d.lib vpr_d.lib gadget_d.lib jccl_d.lib vrj_ogl_d.lib tweek_d.lib openGL32.lib omnithread32_rtd.lib omniDynamic407_rtd.lib omniORB407_rtd.lib libnspr4.lib libplc4.lib comctl32.lib ws2_32.lib $(NOINHERIT)"
+				AdditionalDependencies="ossimd.lib ossimPlanetd.lib libpqxxd.lib producerd.lib osgd.lib osgDBd.lib osgUtild.lib osgFXd.lib osgTextd.lib vrj_d.lib vpr_d.lib gadget_d.lib jccl_d.lib vrj_ogl_d.lib tweek_d.lib openGL32.lib omnithread32_rtd.lib omniDynamic407_rtd.lib omniORB407_rtd.lib libnspr4.lib libplc4.lib comctl32.lib ws2_32.lib $(NOINHERIT)"
 				OutputFile="$(OutDir)/viewerd.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -213,6 +213,14 @@
 			</File>
 			<File
 				RelativePath=".\SharedUpdateData.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UpdateThread.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UpdateThread.h"
 				>
 			</File>
 		</Filter>

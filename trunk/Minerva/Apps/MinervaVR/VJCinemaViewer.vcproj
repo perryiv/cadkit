@@ -215,14 +215,6 @@
 				RelativePath=".\SharedUpdateData.h"
 				>
 			</File>
-			<File
-				RelativePath=".\UpdateThread.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\UpdateThread.h"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

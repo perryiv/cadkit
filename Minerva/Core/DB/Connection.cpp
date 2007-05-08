@@ -30,7 +30,7 @@ using namespace Minerva::Core::DB;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Connection::Pool Connection::_pool;
+//Connection::Pool Connection::_pool;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -45,7 +45,7 @@ _database (),
 _user (),
 _password(),
 _connection ( static_cast < ConnectionType* > ( 0x0 ) ),
-_connectionMutex ( Mutex::create() ),
+			   //_connectionMutex ( Mutex::create() ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
   SERIALIZE_XML_ADD_MEMBER ( _host );
@@ -65,7 +65,7 @@ Connection::~Connection()
 {
   this->disconnect();
 
-  delete _connectionMutex;
+  //delete _connectionMutex;
 }
 
 

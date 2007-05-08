@@ -122,6 +122,7 @@ void MinervaVR::appInit()
   applicationConnection->database( _options.value( DATABASE ) );
   applicationConnection->hostname( _options.value( HOST     ) );
   applicationConnection->connect();
+  applicationConnection->activate();
 
   _dbManager->applicationConnection( applicationConnection.get() );
 

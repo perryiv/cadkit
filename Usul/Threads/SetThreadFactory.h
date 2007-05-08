@@ -20,6 +20,8 @@
 
 #include "Usul/Threads/Manager.h"
 
+namespace Usul {
+namespace Threads {
 
 struct SetThreadFactory
 {

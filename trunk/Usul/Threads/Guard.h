@@ -26,7 +26,7 @@ template < class MutexType > class Guard
 public:
 
   // Constructor. Locks the mutex.
-  Guard ( MutexType &m ) : _mutex ( m )
+  Guard ( const MutexType &m ) : _mutex ( const_cast < MutexType& > ( m ) )
   {
     _mutex.lock();
   }

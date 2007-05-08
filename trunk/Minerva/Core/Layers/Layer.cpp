@@ -45,7 +45,7 @@ SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 
 Layer::Layer() : BaseClass(),
 _mutex(),
-_guid ( Usul::Functions::generateGUID() ),
+_guid ( Usul::Functions::GUID::generate() ),
 _name( "Layer" ),
 _primaryKeyColumn( "id" ),
 _tablename(),

@@ -13,16 +13,22 @@
 
 #include "Minerva/Core/Export.h"
 
+#include "Usul/Threads/Mutex.h"
+#include "Usul/Threads/Guard.h"
+#include "Usul/Threads/Map.h"
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 
 #include "Serialize/XML/Macros.h"
+
+#include "boost/shared_ptr.hpp"
 
 namespace pqxx
 {
   class result;
   template < typename T > class basic_connection;
   class connect_direct;
+  class connect_lazy;
   typedef basic_connection < connect_direct > connection;
 }
 
@@ -37,8 +43,11 @@ class MINERVA_EXPORT Connection : public Usul::Base::Referenced
 public:
   /// Typedefs.
   typedef Usul::Base::Referenced BaseClass;
+  typedef Usul::Threads::Mutex Mutex;
+  typedef Usul::Threads::Guard < Mutex > Guard;
   typedef std::pair< std::string, std::string > StringPair;
   typedef std::vector < StringPair >  Values;
+  typedef pqxx::basic_connection < pqxx::connect_lazy > ConnectionType;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Connection );
@@ -70,6 +79,12 @@ public:
   /// Disconnect.
   void                 disconnect();
 
+  /// Activate.
+  void                 activate();
+
+  /// Deactivate
+  void                 deactivate();
+
   /// Execute the query.
   pqxx::result         executeQuery( const std::string& ) const;
 
@@ -82,20 +97,38 @@ public:
   // Get max and min values of the given field name.
   void                 getMinAndMax ( const std::string& tableName, const std::string& fieldName, double& min, double& max );
 
+  struct ScopedConnection
+  {
+    ScopedConnection ( Connection &c );
+    ~ScopedConnection();
+
+  private:
+    Connection &_c;
+  };
+
 protected:
   virtual ~Connection();
 
   /// Get the maximium primary id in the given table.
   int                  _getMaxId( const std::string& table );
 
+  /// Create Connection.
+  ConnectionType*          _createConnection() const;
+
 private:
+
+  typedef boost::shared_ptr < ConnectionType >  ConnectionPtr;
+  typedef Usul::Threads::Map < std::string, ConnectionPtr > Pool;
 
   std::string _host;
   std::string _database;
   std::string _user;
   std::string _password;
 
-  pqxx::connection* _connection;
+  static Pool _pool;
+  ConnectionPtr _connection;
+
+  Mutex *_connectionMutex;
 
   SERIALIZE_XML_DEFINE_MAP;
 public:

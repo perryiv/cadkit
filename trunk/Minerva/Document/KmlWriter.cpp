@@ -90,7 +90,7 @@ void KmlWriter::_writeHeader( std::ofstream& out ) const
   out << "<kml xmlns=\"http://earth.google.com/kml/2.1\">" << std::endl;
 
   // Start of the folder.
-  out << "\t<Folder id =\"" << Usul::Functions::generateGUID() << "\">" << std::endl;
+  out << "\t<Folder id =\"" << Usul::Functions::GUID::generate() << "\">" << std::endl;
 
   // Write the name.
   out << "\t\t<name>" << _document->fileName() << "</name>" << std::endl;

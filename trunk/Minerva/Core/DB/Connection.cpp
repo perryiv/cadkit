@@ -10,6 +10,7 @@
 
 #include "Minerva/Core/DB/Connection.h"
 
+#include "Usul/Functions/GUID.h"
 #include "Usul/System/Host.h"
 
 #include "boost/algorithm/string/find.hpp"
@@ -22,6 +23,16 @@
 
 using namespace Minerva::Core::DB;
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize static data members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Connection::Pool Connection::_pool;
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -33,7 +44,8 @@ _host (),
 _database (),
 _user (),
 _password(),
-_connection ( 0x0 ),
+_connection ( static_cast < ConnectionType* > ( 0x0 ) ),
+_connectionMutex ( Mutex::create() ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
   SERIALIZE_XML_ADD_MEMBER ( _host );
@@ -52,6 +64,8 @@ SERIALIZE_XML_INITIALIZER_LIST
 Connection::~Connection()
 {
   this->disconnect();
+
+  delete _connectionMutex;
 }
 
 
@@ -173,21 +187,22 @@ void Connection::connect()
 {
   try
   {
-    std::ostringstream os;
-
-  #ifndef _MSC_VER
-    std::string host ( Usul::System::Host::name() );
-    if( boost::algorithm::find_first ( host, "viz" ) )
-      _host = "cinema";
-  #endif
-
-    os << "dbname=" << _database << " "
-      << "user=" << _user << " "
-      << "password=" << _password << " "
-      << "host=" << _host;
-
+#if 0
+    // Check to see if we already have a connection.
+    Pool::iterator iter = _pool.find( this->name() );
+    if( iter != _pool.end() )
+      _connection = iter->second;
+    else
+    {
+      // Set up a connection to the backend.
+      _connection = ConnectionPtr ( this->_createConnection() );
+      _pool.insert( Pool::value_type ( this->name(), _connection ) );
+    }
+#else
     // Set up a connection to the backend.
-    _connection = new pqxx::connection( os.str().c_str() );
+    _connection = ConnectionPtr ( this->_createConnection() );
+#endif
+
   }
   catch ( const std::exception& e )
   {
@@ -202,6 +217,31 @@ void Connection::connect()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Create a connection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Connection::ConnectionType* Connection::_createConnection() const
+{
+  std::ostringstream os;
+
+#ifndef _MSC_VER
+  std::string host ( Usul::System::Host::name() );
+  if( boost::algorithm::find_first ( host, "viz" ) )
+    _host = "cinema";
+#endif
+
+  os << "dbname=" << _database << " "
+    << "user=" << _user << " "
+    << "password=" << _password << " "
+    << "host=" << _host;
+
+  return new ConnectionType( os.str().c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Disconnect.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -211,10 +251,55 @@ void Connection::disconnect()
   if( _connection )
   {
     _connection->disconnect();
-    _connection = 0x0;
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Activate.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Connection::activate()
+{
+  _connection->activate();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deactivate.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Connection::deactivate()
+{
+  _connection->deactivate();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Scoped Connection Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Connection::ScopedConnection::ScopedConnection ( Connection &c ) : _c ( c )
+{
+  _c.activate();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Scoped Connection Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Connection::ScopedConnection::~ScopedConnection ( ) 
+{
+  _c.deactivate();
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -224,15 +309,16 @@ void Connection::disconnect()
 
 pqxx::result Connection::executeQuery( const std::string& query ) const
 {
+  //Guard guard ( *_connectionMutex );
   pqxx::result result;
 
   if( 0x0 != _connection )
   {
-    pqxx::work transaction ( *_connection, "Minerva" );
+    pqxx::work transaction ( *_connection, Usul::Functions::GUID::generate() );
 
     try
     {
-      result = transaction.exec ( query.c_str() );
+      result = transaction.exec ( query );
       transaction.commit();
     }
     catch ( ... )

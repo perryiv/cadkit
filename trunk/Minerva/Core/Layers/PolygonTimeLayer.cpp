@@ -184,6 +184,8 @@ void PolygonTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 {
   Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
 
+  Minerva::Core::DB::Connection::ScopedConnection scopedConnection ( *this->connection() );
+
   std::string dataTable ( this->tablename() );
 
   // Execute the query.  This will return data to draw.

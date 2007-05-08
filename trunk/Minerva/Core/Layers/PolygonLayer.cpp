@@ -111,6 +111,8 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
   // Guard this section of code.
   Guard guard ( _mutex);
 
+  Minerva::Core::DB::Connection::ScopedConnection scopedConnection ( *this->connection() );
+
   Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
 
   std::string dataTable ( this->tablename() );

@@ -108,6 +108,8 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
   // Lock the mutex.
   Guard guard( _mutex );
 
+  Minerva::Core::DB::Connection::ScopedConnection scopedConnection ( *this->connection() );
+
   Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
 
   // Execute the query.

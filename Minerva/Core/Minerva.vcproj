@@ -347,14 +347,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\DB\ConnectionPool.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\DB\ConnectionPool.h"
-						>
-					</File>
-					<File
 						RelativePath=".\DB\Info.cpp"
 						>
 					</File>

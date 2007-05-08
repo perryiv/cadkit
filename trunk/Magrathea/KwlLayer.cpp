@@ -31,7 +31,7 @@ SERIALIZE_XML_REGISTER_CREATOR ( KwlLayer );
 ///////////////////////////////////////////////////////////////////////////////
 
 KwlLayer::KwlLayer() : BaseClass(),
-_guid ( Usul::Functions::generateGUID() ),
+_guid ( Usul::Functions::GUID::generate() ),
 _filename (),
 _layer ( 0x0 ),
 SERIALIZE_XML_INITIALIZER_LIST
@@ -48,7 +48,7 @@ SERIALIZE_XML_INITIALIZER_LIST
 ///////////////////////////////////////////////////////////////////////////////
 
 KwlLayer::KwlLayer( const std::string & filename ) : BaseClass(),
-_guid ( Usul::Functions::generateGUID() ),
+_guid ( Usul::Functions::GUID::generate() ),
 _filename ( filename ),
 _layer ( 0x0 )
 {

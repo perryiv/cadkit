@@ -14,8 +14,11 @@
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IPlugin.h"
+#include "Usul/Threads/SetThreadFactory.h"
 
 #include "Threads/OpenThreads/Mutex.h"
+#include "Threads/OpenThreads/Thread.h"
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -24,7 +27,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
+Usul::Threads::SetMutexFactory  mutexFactory  ( &Threads::OT::newOpenThreadsMutex );
+Usul::Threads::SetThreadFactory threadFactory ( &Threads::OT::newOpenThreadsThread );
 
 int main( int argc, char* argv[] )
 {
@@ -43,7 +47,9 @@ int main( int argc, char* argv[] )
    
   // Load all plugins.
   Usul::Components::Manager::instance().load ( Usul::Interfaces::IPlugin::IID );
-   
+
+  std::cerr << "Loading plugins...." << std::endl;
+
   // Feedback about plugins.
   const Usul::Components::Manager::Strings names ( Usul::Components::Manager::instance().names() );
   std::cout << "Found " << names.size() << " plugins: ";

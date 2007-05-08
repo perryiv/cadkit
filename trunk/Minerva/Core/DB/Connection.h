@@ -125,10 +125,10 @@ private:
   std::string _user;
   std::string _password;
 
-  static Pool _pool;
+  //static Pool _pool;
   ConnectionPtr _connection;
 
-  Mutex *_connectionMutex;
+  //Mutex *_connectionMutex;
 
   SERIALIZE_XML_DEFINE_MAP;
 public:

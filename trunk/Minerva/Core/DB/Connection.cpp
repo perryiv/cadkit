@@ -45,7 +45,7 @@ _database (),
 _user (),
 _password(),
 _connection ( static_cast < ConnectionType* > ( 0x0 ) ),
-			   //_connectionMutex ( Mutex::create() ),
+_connectionMutex ( ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
   SERIALIZE_XML_ADD_MEMBER ( _host );
@@ -309,7 +309,7 @@ Connection::ScopedConnection::~ScopedConnection ( )
 
 pqxx::result Connection::executeQuery( const std::string& query ) const
 {
-  //Guard guard ( *_connectionMutex );
+  Guard guard ( _connectionMutex );
   pqxx::result result;
 
   if( 0x0 != _connection )

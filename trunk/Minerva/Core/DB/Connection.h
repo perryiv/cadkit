@@ -13,7 +13,7 @@
 
 #include "Minerva/Core/Export.h"
 
-#include "Usul/Threads/Mutex.h"
+#include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Map.h"
 #include "Usul/Base/Referenced.h"
@@ -43,7 +43,7 @@ class MINERVA_EXPORT Connection : public Usul::Base::Referenced
 public:
   /// Typedefs.
   typedef Usul::Base::Referenced BaseClass;
-  typedef Usul::Threads::Mutex Mutex;
+  typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard < Mutex > Guard;
   typedef std::pair< std::string, std::string > StringPair;
   typedef std::vector < StringPair >  Values;
@@ -128,7 +128,7 @@ private:
   //static Pool _pool;
   ConnectionPtr _connection;
 
-  //Mutex *_connectionMutex;
+  Mutex _connectionMutex;
 
   SERIALIZE_XML_DEFINE_MAP;
 public:

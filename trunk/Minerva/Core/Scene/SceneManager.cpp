@@ -273,6 +273,8 @@ void SceneManager::_setLegendPosition ( unsigned int legendWidth )
 
 bool SceneManager::dirty() const
 {
+  Guard guard ( _mutex );
+
   return _dirty;
 }
 
@@ -413,6 +415,8 @@ void SceneManager::removeLayer ( const std::string& guid )
 
 bool SceneManager::hasLayer ( const std::string& guid ) const
 {
+  Guard guard ( _mutex );
+
   Layers::const_iterator iter = _layers.find( guid );
   if( iter != _layers.end() )
     return true;

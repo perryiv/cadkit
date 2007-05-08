@@ -72,6 +72,7 @@ SET (SOURCES
 	System/LastError.cpp
 	System/Memory.cpp
 	System/Screen.cpp
+	System/Sleep.cpp
 	System/Socket.cpp
 	Threads/Mutex.cpp
 	Threads/RecursiveMutex.cpp

@@ -13,6 +13,8 @@
 #include "Usul/System/Host.h"
 #include "Usul/File/Path.h"
 #include "Usul/CommandLine/Arguments.h"
+#include "Usul/Threads/Manager.h"
+#include "Usul/Adaptors/MemberFunction.h"
 
 #include "VrjCore/OssimInteraction.h"
 
@@ -61,10 +63,9 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
   _background( 0.0, 0.0, 0.0, 1.0 ),
   _update( ),
   _numFramesBuild ( 0 ),
-  _frameBuild ( 0 )
+  _frameBuild ( 0 ),
+  _updateThread ( 0x0 )
 {
-  Usul::CommandLine::Arguments::instance().set ( argc, argv );
-
   std::ostringstream file;
   file << Usul::CommandLine::Arguments::instance().directory() << "/Minerva.config";
   std::ifstream fin ( file.str().c_str() );
@@ -144,10 +145,20 @@ void MinervaVR::appInit()
   setNearFar(0.0001, 10.0);
   setSceneInitialPosition( osg::Vec3f( 0.0, 10.0, 0.0 ) );
 
-  getEngine()->setTransSpeed( 0.0001 );
-  getEngine()->setTransDelta( 0.0001 );
-  getEngine()->setRotSpeed( 0.0001 );
+  this->_initLegend();
 
+  std::cerr << " [MinervaVR] app init ends: " << std::endl;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaVR::_initLegend()
+{
   _sceneManager->showLegend ( false );
 
   if( _options.option( LEGEND_NODE ) )
@@ -163,10 +174,14 @@ void MinervaVR::appInit()
       _sceneManager->legendPosition( Minerva::Core::Scene::SceneManager::LEGEND_TOP_LEFT );
     }
   }
-
-  std::cerr << " [MinervaVR] app init ends: " << std::endl;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called before the frame is started. 
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void MinervaVR::preFrame()
 {
@@ -177,6 +192,7 @@ void MinervaVR::preFrame()
   BaseClass::preFrame();
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Drawing is about to happen. 
@@ -185,23 +201,38 @@ void MinervaVR::preFrame()
 
 void MinervaVR::appPreOsgDraw()
 {
-  //glClearColor( _background[0], _background[1], _background[2], _background[3] );
-  //glClear(GL_COLOR_BUFFER_BIT);
-
   static bool sizeSet ( false );
 
   if( false == sizeSet )
   {
     GLint viewport[4];
 
-    ::glGetIntegerv(GL_VIEWPORT, viewport);
+    ::glGetIntegerv( GL_VIEWPORT, viewport );
 
     _sceneManager->resize ( viewport[2], viewport[3] );
     
     sizeSet = true;
   }
 
-  this->_updateScene();
+  if( _updateThread->isIdle() )
+  {
+    Usul::Threads::Manager::instance().purge();
+    _updateThread = 0x0;
+  }
+
+  // If there are draw commands to process...
+  if( _dbManager->hasEvents() && 0x0 == _updateThread.get() )
+  {
+    _updateThread = Usul::Threads::Manager::instance().create();
+
+    typedef void (MinervaVR::*Function) ( Usul::Threads::Thread *s );
+    typedef Usul::Adaptors::MemberFunction < MinervaVR*, Function > MemFun;
+
+    _updateThread->started ( Usul::Threads::newFunctionCallback( MemFun ( this, &MinervaVR::_updateScene ) ) );
+    _updateThread->start();
+  }
+    
+  //this->_updateScene();
   this->_buildScene();
 }
 
@@ -303,12 +334,12 @@ void MinervaVR::appSceneInit()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaVR::_updateScene()
+void MinervaVR::_updateScene( Usul::Threads::Thread *thread )
 {
   try
   {
     // If there are draw commands to process...
-    if( _dbManager->hasEvents() )
+    //if( _dbManager->hasEvents() )
     //if ( _update->dataAvailable() )
     {
       std::cerr << " [MinervaVR] Updating scene..." << std::endl;

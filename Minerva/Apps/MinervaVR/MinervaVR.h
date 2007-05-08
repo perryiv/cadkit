@@ -17,6 +17,9 @@
 #include "Minerva/Core/Viz/Controller.h"
 #include "Minerva/Core/Scene/SceneManager.h"
 
+#include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Threads/Guard.h"
+#include "Usul/Threads/Thread.h"
 #include "Usul/CommandLine/Options.h"
 
 #include "Magrathea/Planet.h"
@@ -25,8 +28,12 @@
 class MinervaVR : public VrjCore::OsgVJApp 
 {
 public:
-  typedef VrjCore::OsgVJApp BaseClass;
+  typedef VrjCore::OsgVJApp                  BaseClass;
+  typedef Usul::Threads::RecursiveMutex      Mutex;
+  typedef Usul::Threads::Guard<Mutex>        Guard;
+  typedef Usul::Threads::Thread              Thread;
 
+  /// Construction/Destruction.
   MinervaVR( vrj::Kernel* kern, int& argc, char** argv );
   virtual ~MinervaVR();		
 
@@ -38,8 +45,10 @@ public:
   virtual void appPreOsgDraw();
   virtual void addSceneLight();
 
-  void _updateScene();
-  void _buildScene();
+  void         _initLegend();
+
+  void         _updateScene( Usul::Threads::Thread *thread = 0x0 );
+  void         _buildScene();
 
  private:	
 
@@ -51,6 +60,7 @@ public:
   cluster::UserData< SharedUpdateData >        _update;
   unsigned int                                 _numFramesBuild;
   unsigned int                                 _frameBuild;
+  Thread::RefPtr                               _updateThread;
 };
 
 #endif //: _MINERVA_VR_H_

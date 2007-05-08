@@ -18,8 +18,10 @@
 namespace Usul {
 namespace Functions {
 
-USUL_EXPORT std::string generateGUID ();
-
+  struct USUL_EXPORT GUID
+  {
+    static std::string generate();
+  };
 }
 }
 

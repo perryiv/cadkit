@@ -26,7 +26,7 @@ SERIALIZE_XML_REGISTER_CREATOR ( WmsLayer );
 ///////////////////////////////////////////////////////////////////////////////
 
 WmsLayer::WmsLayer() : BaseClass(),
-_guid ( Usul::Functions::generateGUID() ),
+_guid ( Usul::Functions::GUID::generate() ),
 _server (),
 _imageType (),
 _cacheDirectory (),

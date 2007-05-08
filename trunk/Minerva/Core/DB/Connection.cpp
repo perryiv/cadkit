@@ -10,7 +10,7 @@
 
 #include "Minerva/Core/DB/Connection.h"
 
-#include "Usul/Functions/GUID.h"
+#include "Usul/Functions/Guid.h"
 #include "Usul/System/Host.h"
 
 #include "boost/algorithm/string/find.hpp"
@@ -221,7 +221,7 @@ void Connection::connect()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Connection::ConnectionType* Connection::_createConnection() const
+Connection::ConnectionType* Connection::_createConnection()
 {
   std::ostringstream os;
 

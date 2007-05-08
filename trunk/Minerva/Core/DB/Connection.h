@@ -113,7 +113,7 @@ protected:
   int                  _getMaxId( const std::string& table );
 
   /// Create Connection.
-  ConnectionType*          _createConnection() const;
+  ConnectionType*          _createConnection();
 
 private:
 

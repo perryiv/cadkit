@@ -87,7 +87,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Map &operator = ( const Map & )
+  Map &operator = ( const Map & m )
   {
     Guard guard ( _mutex );
     _map = m._map;

@@ -75,6 +75,11 @@ SET (SOURCES
 	System/Socket.cpp
 	Threads/Mutex.cpp
 	Threads/RecursiveMutex.cpp
+	Threads/Task.cpp
+	Threads/Thread.cpp
+	Threads/Pool.cpp
+	Threads/Callback.cpp
+	Threads/Manager.cpp
 	Trace/Scope.cpp
 	Trace/Print.cpp
 	Types/Types.cpp

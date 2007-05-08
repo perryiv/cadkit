@@ -42,6 +42,7 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 #List the Sources
 SET (SOURCES
 	Mutex.cpp
+	Thread.cpp
 )
 
 # Create a Shared Library

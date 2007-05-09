@@ -33,6 +33,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Usul", "..\..\..\Usul\Usul.vcproj", "{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit OpenThreadsEx", "..\..\..\Threads\OpenThreads\OpenThreadsEx.vcproj", "{A4610909-A555-40C5-87A8-B95FEFF45CF5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Serialize XML", "..\..\..\Serialize\XML\SerializeXML.vcproj", "{2AFAFF2F-1967-4124-A178-5F1B703C016F}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -46,6 +49,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit XmlTree", "..\.
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Magrathea", "..\..\..\Magrathea\Magrathea.vcproj", "{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+		{2AFAFF2F-1967-4124-A178-5F1B703C016F} = {2AFAFF2F-1967-4124-A178-5F1B703C016F}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

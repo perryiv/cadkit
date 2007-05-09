@@ -1,7 +1,7 @@
 
 PROJECT(SerializeXML)
 
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 ADD_DEFINITIONS("-D_COMPILING_SERIALIZE_XML")

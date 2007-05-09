@@ -15,7 +15,7 @@
 
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
-#include "Usul/Threads/Map.h"
+//#include "Usul/Threads/Map.h"
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 
@@ -118,7 +118,7 @@ protected:
 private:
 
   typedef boost::shared_ptr < ConnectionType >  ConnectionPtr;
-  typedef Usul::Threads::Map < std::string, ConnectionPtr > Pool;
+  //typedef Usul::Threads::Map < std::string, ConnectionPtr > Pool;
 
   std::string _host;
   std::string _database;

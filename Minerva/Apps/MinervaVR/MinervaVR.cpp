@@ -83,7 +83,7 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
 
   std::string host ( Usul::System::Host::name() );
   char num ( host[ host.size() - 1 ] );
-  _frameBuild = 10 * ( num - 48 );
+  _frameBuild = 10 + ( num - 48 );
 }
 
 

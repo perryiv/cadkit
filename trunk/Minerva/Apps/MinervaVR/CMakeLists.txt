@@ -27,11 +27,12 @@ SUBDIRS(
 ${CADKIT_ROOT_DIR}/Usul 
 ${CADKIT_ROOT_DIR}/Threads/OpenThreads
 ${CADKIT_ROOT_DIR}/OsgTools
-${CADKIT_ROOT_DIR}/Experimental/XmlTree
-${CADKIT_ROOT_DIR}/Experimental/Serialize/XML
+${CADKIT_ROOT_DIR}/XmlTree
+${CADKIT_ROOT_DIR}/Serialize/XML
 ${CADKIT_ROOT_DIR}/Magrathea
 ${CADKIT_ROOT_DIR}/Minerva/Core
 # ---- PlugIns -------
+${CADKIT_ROOT_DIR}/Minerva/Plugins/ProjectionManager
 ${CADKIT_ROOT_DIR}/Minerva/Plugins/ComputeNormals
 ${CADKIT_ROOT_DIR}/Minerva/Plugins/TriangulateCGAL
 )

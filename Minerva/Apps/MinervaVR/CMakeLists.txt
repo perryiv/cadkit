@@ -14,7 +14,7 @@ INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 INCLUDE(${CMakeModules}/FindXerces.cmake)
 
 # ------------ Find boost ----------------------
-SET ( Boost_DATE_TIME_LIBRARY TRUE )
+SET ( Boost_USE_DATE_TIME TRUE )
 INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
 FIND_LIBRARY(VJCINEMA_LIB VrjCinema
@@ -54,6 +54,7 @@ INCLUDE_DIRECTORIES(
 		     "${VRJ_INC_DIR}/tweek/idl"
 		     ${PRODUCER_INC_DIR}
 		     ${XERCESC_INCLUDE_DIR}
+		     "$ENV{VJ_DEPS_DIR}/include"
 		     )
 
 #List the Sources
@@ -63,12 +64,23 @@ SET (SOURCES
     main.cpp
 )
 
-# Create a Shared Library
-ADD_EXECUTABLE(MinervaVR ${SOURCES} )
+
+# Create an executable
+IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+SET ( TARGET MinervaVRd )
+ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+
+
+# Create an executable
+IF (CMAKE_BUILD_TYPE STREQUAL "Release")
+SET ( TARGET MinervaVR )
+ENDIF (CMAKE_BUILD_TYPE STREQUAL "Release")
+
+ADD_EXECUTABLE( ${TARGET} ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( MinervaVR Usul OpenThreadsEx OsgTools Magrathea Minerva )
-TARGET_LINK_LIBRARIES(MinervaVR 
+LINK_CADKIT( ${TARGET} Usul OpenThreadsEx OsgTools Magrathea Minerva )
+TARGET_LINK_LIBRARIES( ${TARGET} 
   ${VJCINEMA_LIB}
   ${VR_JUGGLER_LIBS}
   ${OPENTHREADS_LIB}

@@ -16,6 +16,7 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Threads/SetThreadFactory.h"
+#include "Usul/Trace/Print.h"
 
 #include "Threads/OpenThreads/Mutex.h"
 #include "Threads/OpenThreads/Thread.h"
@@ -33,6 +34,12 @@ Usul::Threads::SetThreadFactory threadFactory ( &Threads::OT::newOpenThreadsThre
 
 int main( int argc, char* argv[] )
 {
+  // Set the trace stream.
+#ifdef _DEBUG
+  Usul::Trace::Print::init ( &std::cerr );
+#endif
+
+  // Set the command line arguments.
   Usul::CommandLine::Arguments::instance().set ( argc, argv );
 
   // Add some plugin extensions.

@@ -84,6 +84,8 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
   std::string host ( Usul::System::Host::name() );
   char num ( host[ host.size() - 1 ] );
   _frameBuild = 10 + ( num - 48 );
+
+  _updateThread = Usul::Threads::Manager::instance().create();
 }
 
 
@@ -214,15 +216,19 @@ void MinervaVR::appPreOsgDraw()
     sizeSet = true;
   }
 
-  if( _updateThread->isIdle() )
-  {
-    Usul::Threads::Manager::instance().purge();
-    _updateThread = 0x0;
-  }
+#if 1
+  //  if( _updateThread.valid() &&  _updateThread->isIdle() )
+  //{
+  //  Usul::Threads::Manager::instance().purge();
+  //}
 
   // If there are draw commands to process...
-  if( _dbManager->hasEvents() && 0x0 == _updateThread.get() )
+  if( _dbManager->hasEvents() && _updateThread->isIdle() )
   {
+    // Purge any threads that may be finished.
+    Usul::Threads::Manager::instance().purge();
+
+    // Create a new thread to update in.
     _updateThread = Usul::Threads::Manager::instance().create();
 
     typedef void (MinervaVR::*Function) ( Usul::Threads::Thread *s );
@@ -231,8 +237,12 @@ void MinervaVR::appPreOsgDraw()
     _updateThread->started ( Usul::Threads::newFunctionCallback( MemFun ( this, &MinervaVR::_updateScene ) ) );
     _updateThread->start();
   }
-    
-  //this->_updateScene();
+#else
+  
+  if( _dbManager->hasEvents() )
+    this->_updateScene();
+#endif
+
   this->_buildScene();
 }
 

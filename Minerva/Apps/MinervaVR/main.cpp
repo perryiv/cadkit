@@ -17,6 +17,7 @@
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Threads/SetThreadFactory.h"
 #include "Usul/Trace/Print.h"
+#include "Usul/System/Host.h"
 
 #include "Threads/OpenThreads/Mutex.h"
 #include "Threads/OpenThreads/Thread.h"
@@ -36,7 +37,9 @@ int main( int argc, char* argv[] )
 {
   // Set the trace stream.
 #ifdef _DEBUG
-  Usul::Trace::Print::init ( &std::cerr );
+  std::string filename ( Usul::System::Host::name() + "_log.txt" );
+  std::ofstream out ( filename.c_str() );
+  Usul::Trace::Print::init ( &out );
 #endif
 
   // Set the command line arguments.

@@ -13,6 +13,7 @@
 #include "Usul/Interfaces/IVectorLayer.h"
 #include "Usul/Interfaces/ITemporalData.h"
 #include "Usul/Interfaces/IAddRowLegend.h"
+#include "Usul/Trace/Trace.h"
 
 #include "OsgTools/Animate/AnimationCallback.h"
 #include "OsgTools/State/StateSet.h"
@@ -95,6 +96,8 @@ SceneManager::~SceneManager()
 
 void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
+
   Guard guard ( _mutex );
 
   if ( this->dirty() )
@@ -164,6 +167,7 @@ void SceneManager::_setUpAnimationNode()
   text->setPosition ( osg::Vec3( 5.0, _height - 25.0, 0.0 ) );
   text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
   text->setText ( "" );
+  text->setColor( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
 
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
   geode->addDrawable( text.get() );
@@ -379,6 +383,8 @@ void SceneManager::resize( unsigned int width, unsigned int height )
 
 void SceneManager::addLayer ( Layer *layer )
 {
+  USUL_TRACE_SCOPE;
+
   Guard guard ( _mutex );
 
   _layers[ layer->guid() ] = layer;
@@ -395,6 +401,8 @@ void SceneManager::addLayer ( Layer *layer )
 
 void SceneManager::removeLayer ( const std::string& guid )
 {
+  USUL_TRACE_SCOPE;
+
   Guard guard ( _mutex );
 
   Layers::iterator iter = _layers.find ( guid );
@@ -415,6 +423,8 @@ void SceneManager::removeLayer ( const std::string& guid )
 
 bool SceneManager::hasLayer ( const std::string& guid ) const
 {
+  USUL_TRACE_SCOPE;
+
   Guard guard ( _mutex );
 
   Layers::const_iterator iter = _layers.find( guid );
@@ -433,15 +443,17 @@ bool SceneManager::hasLayer ( const std::string& guid ) const
 
 SceneManager::Layer *  SceneManager::getLayer ( const std::string& guid )
 {
+  USUL_TRACE_SCOPE;
+
   Guard guard ( _mutex );
 
-	Layers::const_iterator iter = _layers.find( guid );
+  Layers::const_iterator iter = _layers.find( guid );
   if( iter != _layers.end() )
-	{
-		return _layers[guid].get();
-	}
+  {
+    return _layers[guid].get();
+  }
 
-	throw std::runtime_error( "Error 284022903: could not find layer id." );
+  throw std::runtime_error( "Error 284022903: could not find layer id." );
 }
 
 

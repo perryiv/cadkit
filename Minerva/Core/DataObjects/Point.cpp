@@ -320,7 +320,7 @@ osg::Node* Point::_buildSphere()
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
   geode->setUserData( new UserData( this ) );
 
-  float size ( 20.0f * this->quality() );
+  unsigned int size ( static_cast < unsigned int > ( 20.0f * this->quality() ) );
   OsgTools::ShapeFactory::MeshSize meshSize ( size, size );
   OsgTools::ShapeFactory::LatitudeRange  latRange  ( 89.9f, -89.9f );
   OsgTools::ShapeFactory::LongitudeRange longRange (  0.0f, 360.0f );
@@ -470,7 +470,7 @@ osg::Node* Point::_buildCylinder()
     v1 *= this->size();
     v1 += v0;
 
-    unsigned int sides ( 20 * this->quality() );
+    unsigned int sides ( static_cast < unsigned int > ( 20 * this->quality() ) );
     geode->addDrawable( BaseClass::shapeFactory()->cylinder( 0.00005, sides, v0, v1 ) );
   }
 

@@ -12,6 +12,7 @@
 
 #include "Usul/Functions/Guid.h"
 #include "Usul/System/Host.h"
+#include "Usul/Trace/Trace.h"
 
 #include "boost/algorithm/string/find.hpp"
 
@@ -31,7 +32,7 @@ using namespace Minerva::Core::DB;
 ///////////////////////////////////////////////////////////////////////////////
 
 //Connection::Pool Connection::_pool;
-
+//Connection::Mutex Connection::_connectionMutex;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -45,7 +46,7 @@ _database (),
 _user (),
 _password(),
 _connection ( static_cast < ConnectionType* > ( 0x0 ) ),
-_connectionMutex ( ),
+_connectionMutex ( Mutex::create () ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
   SERIALIZE_XML_ADD_MEMBER ( _host );
@@ -65,7 +66,7 @@ Connection::~Connection()
 {
   this->disconnect();
 
-  //delete _connectionMutex;
+  delete _connectionMutex;
 }
 
 
@@ -309,7 +310,11 @@ Connection::ScopedConnection::~ScopedConnection ( )
 
 pqxx::result Connection::executeQuery( const std::string& query ) const
 {
-  Guard guard ( _connectionMutex );
+  USUL_TRACE_SCOPE;
+
+  // Only one thread at a time can execute a query.
+  Guard guard ( *_connectionMutex );
+
   pqxx::result result;
 
   if( 0x0 != _connection )

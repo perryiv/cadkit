@@ -19,6 +19,8 @@
 
 #include "Serialize/XML/DataMemberMap.h"
 
+#include "Usul/Trace/Trace.h"
+
 #include "XmlTree/Node.h"
 
 
@@ -43,6 +45,7 @@ public:\
 public:\
   virtual void serialize ( XmlTree::Node &parent ) const\
   {\
+    USUL_TRACE_SCOPE;\
     _dataMemberMap.serialize ( parent );\
   }\
 
@@ -57,6 +60,7 @@ public:\
 public:\
   virtual void deserialize ( const XmlTree::Node &node )\
   {\
+    USUL_TRACE_SCOPE;\
     _dataMemberMap.deserialize ( node );\
   }\
 

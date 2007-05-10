@@ -18,6 +18,8 @@
 
 #include "OsgTools/Export.h"
 
+#include "Usul/Trace/Trace.h"
+
 #include <string>
 
 #ifdef _MSC_VER
@@ -96,12 +98,16 @@ void Date::serialize( Archive &ar, const unsigned int version )
 
 inline std::ostream& operator<<( std::ostream& out, const Date& date )
 {
+  USUL_TRACE_SCOPE_STATIC;
+
   out << date.toString();
   return out;
 }
 
 inline std::istream& operator>> ( std::istream& in, Date& date )
 {
+  USUL_TRACE_SCOPE_STATIC;
+
   std::string s;
   in >> s;
   date.fromString( s );

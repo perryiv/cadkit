@@ -18,6 +18,7 @@
 #include "Usul/Endian/Endian.h"
 #include "Usul/File/Temp.h"
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Trace/Trace.h"
 
 #include "Usul/Components/Manager.h"
 #include "osg/ref_ptr"
@@ -209,6 +210,8 @@ bool Controller::hasEvents()
 
 void Controller::_getNextEvent( int& type, std::string& tableName, int &eventId )
 {
+  USUL_TRACE_SCOPE;
+
   std::ostringstream query;
   query << "SELECT * FROM wnv_event_table WHERE id > " << _lastEventID << " AND session_id = " << _sessionID << " LIMIT 1";
 
@@ -296,6 +299,8 @@ void Controller::updateScene( )
 
 void Controller::_processEvents()
 {
+  USUL_TRACE_SCOPE;
+
   // While we have more work to do...
   while ( this->hasEvents() )
   {
@@ -316,6 +321,7 @@ void Controller::_processEvents()
       break;
     case 3:
       this->_processRemoveLayer ( tableName, eventID );
+      break;
     case 4:
       this->_processPlayMovie ( tableName, eventID );
     };
@@ -331,6 +337,8 @@ void Controller::_processEvents()
 
 void Controller::_processAddLayer( const std::string& drawCommandTable, int eventID )
 {
+  USUL_TRACE_SCOPE;
+
   // Get the data.
   Minerva::Core::Layers::Layer::RefPtr layer ( this->_getLayer ( drawCommandTable, eventID ) );
 
@@ -340,20 +348,17 @@ void Controller::_processAddLayer( const std::string& drawCommandTable, int even
     return;
   }
 
-  // Check to see if we already have this layer.
-  bool hasLayer ( _sceneManager->hasLayer( layer->guid() ) );
-
+  // Progress feedback.
   Minerva::Core::Viz::Progress::RefPtr progress ( new Minerva::Core::Viz::Progress );
 
-  if ( hasLayer )
-  {
-    layer->modify( progress.get() );
-  }
-  else 
-  {
-    _sceneManager->addLayer( layer );
-    layer->buildDataObjects( progress.get() );
-  }
+  // Always remove.  This isn't optimal, but it's more stable.
+  _sceneManager->removeLayer ( layer->guid() );
+  
+  // Build the data objects.
+  layer->buildDataObjects( progress.get() );
+
+  // Add the layer to the scene manager.
+  _sceneManager->addLayer( layer );
 
   // Render for progress.
   this->_updateProgress();
@@ -368,6 +373,8 @@ void Controller::_processAddLayer( const std::string& drawCommandTable, int even
 
 Minerva::Core::Layers::Layer* Controller::_getLayer( const std::string drawCommandTable, int eventID )
 {
+  USUL_TRACE_SCOPE;
+
   std::ostringstream query;
   query << "SELECT * FROM " << drawCommandTable << " WHERE id = " << eventID << " AND session_id = " << _sessionID;
 
@@ -382,30 +389,10 @@ Minerva::Core::Layers::Layer* Controller::_getLayer( const std::string drawComma
   // Get the xml data.
   std::string xml ( row["xml_data"].as< std::string > () );
 
+  // Deserialize.
   Minerva::Core::Layers::Layer::RefPtr layer ( Minerva::Core::deserialize( xml ) );
 
-  if( layer.valid() )
-    _sceneManager->removeLayer ( layer->guid() );
-
-  /*
-  if( layer.valid() )
-  {
-    // Check to see if we already have this layer.
-    bool hasLayer ( _sceneManager->hasLayer( layer->guid() ) );
-
-    if ( hasLayer )
-    {
-      // For now.
-      Minerva::Core::Layers::Layer::RefPtr oldLayer ( reinterpret_cast < Minerva::Core::Layers::Layer* > ( _sceneManager->getLayer( layer->guid() ) ) );
-
-      if( oldLayer.valid() )
-      {
-        Minerva::Core::deserialize( xml, oldLayer.get() );
-        return oldLayer.get();
-      }
-    }
-    }*/
-
+  // Return the layer.
   return layer.release();
 }
 

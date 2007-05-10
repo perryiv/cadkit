@@ -15,6 +15,7 @@
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Trace/Trace.h"
 
 #include "VrjCore/OssimInteraction.h"
 
@@ -216,14 +217,9 @@ void MinervaVR::appPreOsgDraw()
     sizeSet = true;
   }
 
-#if 1
-  //  if( _updateThread.valid() &&  _updateThread->isIdle() )
-  //{
-  //  Usul::Threads::Manager::instance().purge();
-  //}
 
   // If there are draw commands to process...
-  if( _dbManager->hasEvents() && _updateThread->isIdle() )
+  if( _updateThread->isIdle() && _dbManager->hasEvents() )
   {
     // Purge any threads that may be finished.
     Usul::Threads::Manager::instance().purge();
@@ -237,11 +233,6 @@ void MinervaVR::appPreOsgDraw()
     _updateThread->started ( Usul::Threads::newFunctionCallback( MemFun ( this, &MinervaVR::_updateScene ) ) );
     _updateThread->start();
   }
-#else
-  
-  if( _dbManager->hasEvents() )
-    this->_updateScene();
-#endif
 
   this->_buildScene();
 }
@@ -346,6 +337,8 @@ void MinervaVR::appSceneInit()
 
 void MinervaVR::_updateScene( Usul::Threads::Thread *thread )
 {
+  USUL_TRACE_SCOPE;
+
   try
   {
     // If there are draw commands to process...
@@ -378,6 +371,8 @@ void MinervaVR::_updateScene( Usul::Threads::Thread *thread )
 
 void MinervaVR::_buildScene()
 {
+  USUL_TRACE_SCOPE;
+
   try
   {
     if( _sceneManager->dirty() && _numFramesBuild > _frameBuild )

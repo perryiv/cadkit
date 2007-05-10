@@ -13,6 +13,7 @@
 #include "Minerva/Core/postGIS/Point.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Trace/Trace.h"
 
 #include "OsgTools/Animate/DateGroup.h"
 #include "OsgTools/Animate/DateCallback.h"
@@ -42,6 +43,8 @@ _lastDateColumn(),
 _minDate( boost::date_time::min_date_time ),
 _maxDate( boost::date_time::max_date_time )
 {
+  USUL_TRACE_SCOPE;
+
   this->name( "PointTimeLayer" );
 
   this->_registerMembers();
@@ -64,6 +67,8 @@ _lastDateColumn( layer._lastDateColumn ),
 _minDate( layer._minDate ),
 _maxDate( layer._maxDate )
 {
+  USUL_TRACE_SCOPE;
+
   this->_registerMembers();
 }
 
@@ -196,6 +201,8 @@ void PointTimeLayer::buildScene( osg::Group* parent )
 
 void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
+
   // Guard this section of code.
   Guard guard ( _mutex);
 

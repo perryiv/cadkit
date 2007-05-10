@@ -18,6 +18,7 @@
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Math/NaN.h"
+#include "Usul/Trace/Trace.h"
 
 #include "OsgTools/Legend/Text.h"
 #include "OsgTools/Legend/LegendObject.h"
@@ -70,6 +71,8 @@ _legendFlags ( 0x0 ),
 _minMax ( std::numeric_limits< double >::max(), std::numeric_limits< double >::min() ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
+  USUL_TRACE_SCOPE;
+
   this->_registerMembers();
 }
 
@@ -106,6 +109,8 @@ _customQuery( layer._customQuery ),
 _legendFlags ( layer._legendFlags ),
 _minMax( layer._minMax )
 {
+  USUL_TRACE_SCOPE;
+
   if( layer._colorFunctor.valid() )
     _colorFunctor = layer._colorFunctor->clone();
 

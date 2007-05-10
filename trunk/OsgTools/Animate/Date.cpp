@@ -29,6 +29,7 @@ using namespace OsgTools::Animate;
 Date::Date() :
 _date()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -41,6 +42,7 @@ _date()
 Date::Date( const std::string& date ) :
 _date ( boost::gregorian::from_simple_string ( date ) )
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -52,6 +54,7 @@ _date ( boost::gregorian::from_simple_string ( date ) )
 
 Date::Date ( boost::date_time::special_values value ) : _date ( value )
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -63,6 +66,7 @@ Date::Date ( boost::date_time::special_values value ) : _date ( value )
 
 Date::Date ( const boost::gregorian::date& date ) : _date ( date )
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -135,6 +139,9 @@ std::string Date::toString() const
 
 void Date::fromString( const std::string& date )
 {
+  USUL_TRACE_SCOPE;
+  USUL_TRACE_1 ( date );
+
   _date = boost::gregorian::from_simple_string ( date );
 }
 

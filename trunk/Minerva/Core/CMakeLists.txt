@@ -13,7 +13,6 @@ INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 
 # ------------ Find boost ----------------------
 SET ( Boost_USE_DATE_TIME TRUE )
-SET ( Boost_USE_SERIALIZATION TRUE )
 INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
 # ------------ Find PQXX Library ----------------------

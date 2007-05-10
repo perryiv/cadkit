@@ -1,6 +1,8 @@
 
 # Cmake file for all cadkit libaries to include.
 
+# Turn on tracing.  TODO.  Make this an option.
+ADD_DEFINITIONS("-D_USUL_TRACE")
 
 # Add _DEBUG definition is it's debug.
 IF (CMAKE_BUILD_TYPE STREQUAL "Debug")

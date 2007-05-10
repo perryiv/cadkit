@@ -40,9 +40,15 @@ private:
   RecursiveMutex ( const RecursiveMutex & );             // No copying
   RecursiveMutex &operator = ( const RecursiveMutex & ); // No assignment
 
+  unsigned long           _getReferenceCount() const;
+  unsigned long           _getOwnerThread() const;
+
+  void                    _destroy();
+
   Usul::Threads::Mutex *_mutex;
-  Usul::Threads::Mutex *_local;
-  unsigned int _count;
+  mutable Usul::Threads::Mutex *_local;
+  unsigned long _count;
+  unsigned long _thread;
 };
 
 

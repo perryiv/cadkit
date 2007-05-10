@@ -92,7 +92,9 @@ Pool::~Pool()
 
 void Pool::_destroy()
 {
-  Guard guard ( this->mutex() );
+  USUL_TRACE_SCOPE;
+
+  // Do not lock mutex up here.
 
   // Cancel all the tasks.
   this->cancel();
@@ -110,10 +112,16 @@ void Pool::_destroy()
     }
   }
 
-  _thread = 0x0;
-  _pool.clear();
-  _queued.clear();
-  _tasks.clear();
+  // Don't lock mutex until we get here.
+  {
+    Guard guard ( this->mutex() );
+
+    // Destroy members.
+    _thread = 0x0;
+    _pool.clear();
+    _queued.clear();
+    _tasks.clear();
+  }
 }
 
 

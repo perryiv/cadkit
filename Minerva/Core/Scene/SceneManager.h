@@ -133,7 +133,7 @@ private:
   typedef std::map < std::string, Layer::QueryPtr >               Layers;
 
   // The mutex.
-  Mutex _mutex;
+  mutable Mutex _mutex;
 
   // OSG nodes.
   osg::ref_ptr < osg::Group >                    _root;			// The root node of the scene graph

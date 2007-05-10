@@ -13,9 +13,8 @@
 
 #include "Minerva/Core/Export.h"
 
-#include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Guard.h"
-//#include "Usul/Threads/Map.h"
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 
@@ -43,7 +42,7 @@ class MINERVA_EXPORT Connection : public Usul::Base::Referenced
 public:
   /// Typedefs.
   typedef Usul::Base::Referenced BaseClass;
-  typedef Usul::Threads::RecursiveMutex Mutex;
+  typedef Usul::Threads::Mutex Mutex;
   typedef Usul::Threads::Guard < Mutex > Guard;
   typedef std::pair< std::string, std::string > StringPair;
   typedef std::vector < StringPair >  Values;
@@ -92,7 +91,7 @@ public:
   int                  executeInsertQuery( const std::string& tableName, const Values& values );
 
   std::string          getColumnDataString ( const std::string& tableName, int id, const std::string& columnName );
-	double               getColumnDataDouble ( const std::string& tableName, int id, const std::string& columnName );
+  double               getColumnDataDouble ( const std::string& tableName, int id, const std::string& columnName );
 
   // Get max and min values of the given field name.
   void                 getMinAndMax ( const std::string& tableName, const std::string& fieldName, double& min, double& max );
@@ -128,7 +127,7 @@ private:
   //static Pool _pool;
   ConnectionPtr _connection;
 
-  Mutex _connectionMutex;
+  mutable Mutex *_connectionMutex;
 
   SERIALIZE_XML_DEFINE_MAP;
 public:

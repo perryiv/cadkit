@@ -96,6 +96,7 @@ SET (BOOST "boost")
 SET (Boost_VERSION "-1_33_1")
 SET (Boost_DEBUG "-d")
 SET (Boost_COMPILER "")
+SET (Boost_MUTLI_THREAD "-mt")
 
 # - Boost has a naming scheme that we have to match..
 IF (MINGW)
@@ -109,6 +110,7 @@ IF ( NOT APPLE )
 ENDIF ( NOT APPLE )
 
 MARK_AS_ADVANCED(Boost_COMPILER)
+MARK_AS_ADVANCED(Boost_MULTI_THREAD)
 
 #
 # Look for an installation.
@@ -186,13 +188,13 @@ IF ( Boost_USE_DATE_TIME )
   SET (Boost_DATE_TIME_NAME "date_time")
 
   #-- Try to find the release version of the date_time library
-  FIND_LIBRARY(Boost_DATE_TIME_LIBRARY "${BOOST}_${Boost_DATE_TIME_NAME}${Boost_COMPILER}${Boost_VERSION}" 
+  FIND_LIBRARY(Boost_DATE_TIME_LIBRARY "${BOOST}_${Boost_DATE_TIME_NAME}${Boost_COMPILER}${Boost_MULTI_THREAD}${Boost_VERSION}" 
       ${Boost_LIBRARY_DIR}
   )
   MARK_AS_ADVANCED(Boost_DATE_TIME_LIBRARY)
 
   #-- Try to find the debug version of the date_time library
-  FIND_LIBRARY(Boost_DATE_TIME_LIBRARY_DEBUG "${BOOST}_${Boost_DATE_TIME_NAME}${Boost_COMPILER}${Boost_DEBUG}${Boost_VERSION}"
+  FIND_LIBRARY(Boost_DATE_TIME_LIBRARY_DEBUG "${BOOST}_${Boost_DATE_TIME_NAME}${Boost_COMPILER}${Boost_MULTI_THREAD}${Boost_DEBUG}${Boost_VERSION}"
       ${Boost_LIBRARY_DIR}
   )
   MARK_AS_ADVANCED(Boost_DATE_TIME_LIBRARY_DEBUG)

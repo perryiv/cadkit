@@ -527,7 +527,7 @@ void Thread::_reportErrorNoThrow ( const std::string &s )
     if ( false == s.empty() )
     {
       this->_setError ( s );
-      std::cout << s << std::endl;
+      std::cout << ( ( '\n' != s.at ( s.size() - 1 ) ) ? ( s + "\n" ) : s ) << std::endl;
       Usul::Errors::Stack::instance().push ( s );
     }
   }

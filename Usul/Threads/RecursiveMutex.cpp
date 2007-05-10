@@ -14,12 +14,18 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Assert.h"
+#include "Usul/Exceptions/Thrower.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Guard.h"
+#include "Usul/Threads/ThreadId.h"
+#include "Usul/Trace/Trace.h"
 
 #include <iostream>
+#include <stdexcept>
 
 using namespace Usul::Threads;
 
@@ -40,10 +46,12 @@ typedef Usul::Threads::Guard < Usul::Threads::Mutex > MutexGuard;
 ///////////////////////////////////////////////////////////////////////////////
 
 RecursiveMutex::RecursiveMutex() :
-  _mutex ( Usul::Threads::Mutex::create() ),
-  _local ( Usul::Threads::Mutex::create() ),
-  _count ( 0 )
+  _mutex  ( Usul::Threads::Mutex::create() ),
+  _local  ( Usul::Threads::Mutex::create() ),
+  _count  ( 0 ),
+  _thread ( 0 )
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -55,12 +63,33 @@ RecursiveMutex::RecursiveMutex() :
 
 RecursiveMutex::~RecursiveMutex()
 {
+  USUL_TRACE_SCOPE;
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &RecursiveMutex::_destroy ), "8683423670" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destroy this class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RecursiveMutex::_destroy()
+{
+  USUL_TRACE_SCOPE;
+
   if ( 0 != _count )
   {
-    std::cout << Usul::Strings::format ( "Error 2732635427: deleting RecursiveMutex ", this, " with lock count ", _count, '\n' );
-    std::cout << std::flush;
-    USUL_ASSERT ( false );
+    Usul::Exceptions::Thrower<std::runtime_error>
+      ( "Error 2732635427: deleting RecursiveMutex ", this, " with lock count ", _count );
   }
+
+  if ( 0 != _thread )
+  {
+    Usul::Exceptions::Thrower<std::runtime_error>
+      ( "Error 1730106011: deleting RecursiveMutex ", this, " locked with thread ", _thread );
+  }
+
   delete _local;
   delete _mutex;
 }
@@ -74,15 +103,26 @@ RecursiveMutex::~RecursiveMutex()
 
 void RecursiveMutex::lock()
 {
-  // One thread at a time in this function.
-  MutexGuard guard ( *_local );
+  USUL_TRACE_SCOPE;
 
-  // Lock mutex if we should.
-  if ( 0 == _count )
+  // Get threads.
+  const unsigned long id ( Usul::Threads::currentThreadId() );
+  const unsigned long owner ( this->_getOwnerThread() );
+
+  // Are we the owner?
+  if ( id == owner )
+  {
+    ++_count;
+  }
+
+  // Otherwise, take ownership.
+  else
+  {
+    // Lock first then set members.
     _mutex->lock();
-
-  // Increment the count.
-  ++_count;
+    _thread = id;
+    ++_count;
+  }
 }
 
 
@@ -94,13 +134,54 @@ void RecursiveMutex::lock()
 
 void RecursiveMutex::unlock()
 {
-  // One thread at a time in this function.
-  MutexGuard guard ( *_local );
+  USUL_TRACE_SCOPE;
+
+  // Get threads.
+  const unsigned long id ( Usul::Threads::currentThreadId() );
+  const unsigned long owner ( this->_getOwnerThread() );
+
+  // We should only be in here if we own the mutex.
+  if ( id != owner )
+  {
+    Usul::Exceptions::Thrower<std::runtime_error>
+      ( "Error 3066735345: Thread ", id, " attempting to unlock recursive mutex owned by thread ", owner );
+  }
 
   // Decrement the count.
   --_count;
 
   // Unlock mutex if we should.
   if ( 0 == _count )
+  {
+    _thread = 0;
     _mutex->unlock();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the reference count.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned long RecursiveMutex::_getReferenceCount() const
+{
+  USUL_TRACE_SCOPE;
+  MutexGuard guard ( *_local );
+  return _count;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the owner thread.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned long RecursiveMutex::_getOwnerThread() const
+{
+  USUL_TRACE_SCOPE;
+  MutexGuard guard ( *_local );
+  return _thread;
 }

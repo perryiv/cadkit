@@ -387,6 +387,41 @@ void Thread::_execute()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to call callbacks.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  void notify ( Thread *thread, Thread::Callback::RefPtr &cb )
+  {
+    USUL_TRACE_SCOPE_STATIC;
+
+    // Handle bad input.
+    if ( 0x0 == thread )
+    {
+      return;
+    }
+
+    // Get a copy of the callback.
+    Callback::RefPtr copy ( 0x0 );
+    {
+      // Don't lock the mutex for long.
+      Thread::Guard guard ( thread->mutex() );
+      copy = cb;
+    }
+
+    // If the callback is valid then call it.
+    if ( true == copy.valid() )
+    {
+      (*copy) ( thread );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Notify callback.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -394,12 +429,7 @@ void Thread::_execute()
 void Thread::_notifyCancelled()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  if ( true == _cancelledCB.valid() )
-  {
-    (*_cancelledCB) ( this );
-  }
+  Helper::notify ( this, _cancelledCB );
 }
 
 
@@ -412,12 +442,7 @@ void Thread::_notifyCancelled()
 void Thread::_notifyDestroyed()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  if ( true == _destroyedCB.valid() )
-  {
-    (*_destroyedCB) ( this );
-  }
+  Helper::notify ( this, _destroyedCB );
 }
 
 
@@ -430,12 +455,7 @@ void Thread::_notifyDestroyed()
 void Thread::_notifyError()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  if ( true == _errorCB.valid() )
-  {
-    (*_errorCB) ( this );
-  }
+  Helper::notify ( this, _errorCB );
 }
 
 
@@ -448,12 +468,7 @@ void Thread::_notifyError()
 void Thread::_notifyFinished()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  if ( true == _finishedCB.valid() )
-  {
-    (*_finishedCB) ( this );
-  }
+  Helper::notify ( this, _finishedCB );
 }
 
 
@@ -466,12 +481,7 @@ void Thread::_notifyFinished()
 void Thread::_notifyStarted()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  if ( true == _startedCB.valid() )
-  {
-    (*_startedCB) ( this );
-  }
+  Helper::notify ( this, _startedCB );
 }
 
 

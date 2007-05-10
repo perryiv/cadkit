@@ -10,7 +10,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Wraps a function call with try-catch block.
+//  Wraps a function call with try-catch block. 
+//
+//  Note: sensible output in multi-threaded environment requires first 
+//  building the std::ostringstream and then pushing this all at once to 
+//  std::cout.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

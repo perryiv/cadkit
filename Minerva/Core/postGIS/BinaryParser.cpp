@@ -236,6 +236,7 @@ void BinaryParser::_createGeometry( VertexList &vertexList, Usul::Types::Uint64&
 	// Error!
 	else
 	{
+    throw std::runtime_error ( "Error 1713426630: Unknown endian type." );
 	}
 }
 

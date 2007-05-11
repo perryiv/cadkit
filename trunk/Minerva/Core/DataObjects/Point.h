@@ -89,9 +89,7 @@ private:
   float        _size;
   unsigned int _primitiveId;
   float        _quality;
-  unsigned int _srid;
-  osg::Vec3    _orginalCenter;
-  osg::Vec3    _convertedCenter;
+  osg::Vec3    _center;
 
   osg::ref_ptr < osg::Material >         _material;
   osg::ref_ptr< osg::Group >             _group;

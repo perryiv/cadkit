@@ -18,6 +18,7 @@
 #include "Minerva/Core/DataObjects/UserData.h"
 
 #include "Usul/Components/Manager.h"
+#include "Usul/Interfaces/IPointData.h"
 #include "Usul/Interfaces/IGeometryCenter.h"
 #include "Usul/Interfaces/IProjectCoordinates.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
@@ -48,9 +49,7 @@ BaseClass(),
 _size ( 1.0 ),
 _primitiveId ( 1 ),
 _quality ( 0.80f ),
-_srid ( 0 ),
-_orginalCenter(),
-_convertedCenter(),
+_center(),
 _material ( new osg::Material ),
 _group ( new osg::Group )
 {
@@ -152,25 +151,13 @@ namespace Detail
 
 namespace Detail
 {
-  void projectAndConvert ( osg::Vec3& p, unsigned int srid )
+  void convertToPlanet ( Usul::Math::Vec3d& p )
   {
-    Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
     Usul::Interfaces::IPlanetCoordinates::QueryPtr  planet  ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlanetCoordinates::IID ) );
 
-    if( project.valid() )
+    if( planet.valid() )
     {
-      Usul::Math::Vec3d orginal;
-      orginal[0] = p[0];
-      orginal[1] = p[1];
-      orginal[2] = p[2];
-      Usul::Math::Vec3d point;
-      project->projectToSpherical( orginal, srid, point );
-
-      if( planet.valid() )
-      {
-        planet->convertToPlanet( point, point );
-        p.set ( point[0], point[1], point[2] );
-      }
+      planet->convertToPlanet( p, p );
     }
   }
 }
@@ -216,16 +203,18 @@ osg::Node* Point::buildScene()
     // Clear what we have.
     _group->removeChild( 0, _group->getNumChildren() );
 
-    Usul::Interfaces::IGeometryCenter::QueryPtr geometryCenter ( this->geometry() );
+    Usul::Interfaces::IPointData::QueryPtr pointData ( this->geometry() );
 
-    osg::Vec3 center;
+    Usul::Math::Vec3d center;
 
-    if( geometryCenter.valid () )
-      center = geometryCenter->geometryCenter( _srid );
+    /// Get the center from our data source.
+    if( pointData.valid () )
+      center = pointData->pointData( );
     
-    _orginalCenter = center;
-    _convertedCenter = _orginalCenter;
-    Detail::projectAndConvert ( _convertedCenter, _srid );
+    Detail::convertToPlanet ( center );
+
+    // Convert from Usul's Vec3d to a osg::Vec3
+    _center.set( center[0], center[1], center[2] );
 
     _group->addChild( this->_buildGeometry() );
 
@@ -279,7 +268,7 @@ osg::Node* Point::_buildPoint()
   osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
 
   osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
-  vertices->push_back ( _convertedCenter );
+  vertices->push_back ( _center );
 
   geometry->setVertexArray( vertices.get() );
 
@@ -327,7 +316,7 @@ osg::Node* Point::_buildSphere()
 
   geode->addDrawable( BaseClass::shapeFactory()->sphere ( _size, meshSize, latRange, longRange  ) );
 
-  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _convertedCenter ) );
+  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _center ) );
   autoTransform->addChild ( geode.get() );
 
   return autoTransform.release();
@@ -351,17 +340,11 @@ osg::Node* Point::_buildCone( bool invert )
   // For now use a shape drawable.
   osg::ref_ptr < osg::Cone > cone ( new osg::Cone( osg::Vec3( 0.0, 0.0, height/2.0 ), radius, height ) );
 
-  /*osg::Vec3 p0 ( _orginalCenter );
-  osg::Vec3 p1 ( p0 );
-  p1.z() += 1000;
-
-  Detail::projectAndConvert ( p0, _srid );
-  Detail::projectAndConvert ( p1, _srid );*/
-
-  //osg::Vec3 v1 ( p1 - p0 );
-  osg::Vec3 v1 ( _convertedCenter );
+  // v1 is also a vector from the center of the sphere, to the point on the sphere.
+  osg::Vec3 v1 ( _center );
   v1.normalize();
 
+  // Figure out the needed rotation to place the cone on the earth.
   osg::Quat rotation;
   if( invert )
   {
@@ -378,7 +361,7 @@ osg::Node* Point::_buildCone( bool invert )
 
   geode->addDrawable( sd.get() );
 
-  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _convertedCenter ) );
+  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _center ) );
   autoTransform->addChild ( geode.get() );
 
   return autoTransform.release();
@@ -399,7 +382,7 @@ osg::Node* Point::_buildDisk()
   // For now use a short cylinder.  Ellipsoid would be better.
   osg::ref_ptr < osg::Cylinder > cylinder ( new osg::Cylinder( osg::Vec3( 0.0, 0.0, 0.0 ), _size, _size * 0.25 ) );
 
-  osg::Vec3 v1 ( _convertedCenter );
+  osg::Vec3 v1 ( _center );
   v1.normalize();
 
   osg::Quat rotation;
@@ -410,7 +393,7 @@ osg::Node* Point::_buildDisk()
 
   geode->addDrawable ( sd.get() );
 
-  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _convertedCenter ) );
+  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _center ) );
   autoTransform->addChild ( geode.get() );
 
   return autoTransform.release();
@@ -430,7 +413,7 @@ osg::Node* Point::_buildCube()
 
   geode->addDrawable( BaseClass::shapeFactory()->cube ( osg::Vec3 ( _size, _size, _size )  ) );
 
-  osg::Vec3 v1 ( _convertedCenter );
+  osg::Vec3 v1 ( _center );
   v1.normalize();
 
   osg::Quat rotation;
@@ -441,7 +424,7 @@ osg::Node* Point::_buildCube()
   mt->setMatrix ( matrix );
   mt->addChild( geode.get() );
 
-  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _convertedCenter ) );
+  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _center ) );
   autoTransform->addChild ( mt.get() );
 
   return autoTransform.release();
@@ -463,7 +446,7 @@ osg::Node* Point::_buildCylinder()
 
   if( this->size() > 0 )
   {
-    osg::Vec3 v0 ( _convertedCenter );
+    osg::Vec3 v0 ( _center );
 
     osg::Vec3 v1 ( v0 );
     v1.normalize();

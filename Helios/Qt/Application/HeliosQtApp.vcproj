@@ -177,10 +177,6 @@
 			UniqueIdentifier="{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}"
 			ParseFiles="false"
 			>
-			<File
-				RelativePath="..\Icons\app_icon_32x32.ico"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Misc Files"

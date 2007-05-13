@@ -20,12 +20,14 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Predicates/FileExists.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
 
-#include "QtCore/QCoreApplication"
-#include "QtGui/QStatusBar"
+#include "QtGui/QApplication"
 #include "QtGui/QMenuBar"
+#include "QtGui/QImageReader"
+#include "QtGui/QStatusBar"
 
 using namespace CadKit::Helios::Core;
 
@@ -63,6 +65,16 @@ MainWindow::MainWindow ( const std::string &vendor,
   QCoreApplication::setOrganizationName ( vendor.c_str() );
   QCoreApplication::setOrganizationDomain ( url.c_str() );
   QCoreApplication::setApplicationName ( program.c_str() );
+
+  // Set the icon.
+  {
+    const std::string file ( "../../Images/helios_sun.png" );
+    if ( true == Usul::Predicates::FileExists::test ( file ) )
+    {
+      QIcon icon ( file.c_str() );
+      QApplication::setWindowIcon ( icon );
+    }
+  }
 
   // Enable toolbar docking.
   this->setEnabled ( true );

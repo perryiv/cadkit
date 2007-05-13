@@ -156,6 +156,27 @@ template < class F, class T1, class T2, class T3 > void safeCallR1R2R3 ( F funct
 }
 
 
+template < class F, class T1, class T2, class T3 > void safeCallV1V2R3 ( F function, T1 t1, T2 t2, T3 &t3, const char *id = 0x0 )
+{
+  try
+  {
+    function ( t1, t2, t3 );
+  }
+  catch ( std::exception &e )
+  {
+    std::ostringstream out;
+    out << "Error " << ( ( 0x0 == id ) ? "3880275686" : id ) << ": " << e.what() << '\n';
+    std::cout << out.str() << std::flush;
+  }
+  catch ( ... )
+  {
+    std::ostringstream out;
+    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
+    std::cout << out.str() << std::flush;
+  }
+}
+
+
 } // namespace Functions
 } // namespace Usul
 

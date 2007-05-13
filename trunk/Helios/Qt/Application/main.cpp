@@ -101,7 +101,7 @@ namespace Program
     // Send trace output here. Comment this out for stdout.
     const std::string traceFile ( tempDir + program + ".trace" );
     std::ofstream traceStream ( traceFile.c_str() );
-    Usul::Trace::Print::stream ( &traceStream );
+    Usul::Trace::Print::init ( &traceStream );
 
     // Parent tag in trace file.
     Usul::Trace::Print::execute ( "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" );
@@ -143,7 +143,7 @@ int main ( int argc, char **argv )
   int result ( 1 );
 
   // Run the application.
-  Usul::Functions::safeCall ( &Program::run, argc, argv, result, "4083709520" );
+  Usul::Functions::safeCallV1V2R3 ( &Program::run, argc, argv, result, "4083709520" );
 
   // Return the result.
   return result;

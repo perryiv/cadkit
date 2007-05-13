@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="app: CadKit Helios Qt App"
-	ProjectGUID="{4CD7F65F-3E52-4C60-ABC0-D837D5F408B5}"
+	Name="lib: CadKit Helios Qt Commands"
+	ProjectGUID="{70727975-A957-49F7-AE08-4A7FB01C40BD}"
 	Keyword="Qt4VSv1.0"
 	>
 	<Platforms>
@@ -18,7 +18,7 @@
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -38,7 +38,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories=".\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui"
-				PreprocessorDefinitions="UNICODE,WIN32,QT_THREAD_SUPPORT,QT_NO_DEBUG,NDEBUG,QT_CORE_LIB,QT_GUI_LIB"
+				PreprocessorDefinitions="_COMPILING_HELIOS_QT_COMMANDS;UNICODE,WIN32,QT_THREAD_SUPPORT,QT_NO_DEBUG,NDEBUG,QT_CORE_LIB,QT_GUI_LIB,CORE_LIB"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
 				DebugInformationFormat="0"
@@ -55,7 +55,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies=" qtmain.lib QtCore4.lib QtGui4.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosQt.exe"
+				OutputFile="$(OutDir)\$(ProjectName).dll"
 				AdditionalLibraryDirectories="$(QTDIR)\lib"
 				GenerateDebugInformation="false"
 				SubSystem="2"
@@ -83,13 +83,14 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -110,7 +111,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR);$(QTDIR)\include"
-				PreprocessorDefinitions="_USUL_TRACE;UNICODE,WIN32,QT_THREAD_SUPPORT,QT_CORE_LIB,QT_GUI_LIB"
+				PreprocessorDefinitions="_USUL_TRACE;_COMPILING_HELIOS_QT_COMMANDS;UNICODE,WIN32,QT_THREAD_SUPPORT,QT_CORE_LIB,QT_GUI_LIB,CORE_LIB"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
 				DebugInformationFormat="3"
@@ -127,7 +128,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosQtAppd.exe"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosQtCommandsd.dll"
 				AdditionalLibraryDirectories="$(QTDIR)\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -155,6 +156,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine=""
 			/>
 		</Configuration>
 	</Configurations>
@@ -162,35 +164,20 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
+			Name="Source"
 			Filter="cpp;cxx;c;def"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\main.cpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="qrc;*"
-			UniqueIdentifier="{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}"
-			ParseFiles="false"
-			>
-			<File
-				RelativePath=".\Resources.rc"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Misc Files"
-			>
-			<File
-				RelativePath="C:\Documents and Settings\perry\Application Data\CadKit Project\Helios.ini"
+				RelativePath=".\Export.h"
 				>
 			</File>
 			<File
-				RelativePath="C:\Documents and Settings\perry\Local Settings\Temp\Helios.out"
+				RelativePath=".\OpenDocumentCommand.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OpenDocumentCommand.h"
 				>
 			</File>
 		</Filter>

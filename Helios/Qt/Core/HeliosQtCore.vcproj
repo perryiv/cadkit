@@ -37,7 +37,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui"
+				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR);$(QTDIR)\include"
 				PreprocessorDefinitions="_COMPILING_HELIOS_QT_CORE;UNICODE,WIN32,QT_THREAD_SUPPORT,QT_NO_DEBUG,NDEBUG,QT_CORE_LIB,QT_GUI_LIB,CORE_LIB"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -83,6 +83,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy ..\..\Images %CADKIT_ROOT_DIR%\bin\icons /f /i /k /y /c"
 			/>
 		</Configuration>
 		<Configuration
@@ -155,6 +156,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy ..\..\Images %CADKIT_ROOT_DIR%\bin\icons /f /i /k /y /c"
 			/>
 		</Configuration>
 	</Configurations>
@@ -166,6 +168,32 @@
 			Filter="cpp;cxx;c;def"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath=".\Command.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Command.h"
+				>
+			</File>
 			<File
 				RelativePath=".\Constants.h"
 				>
@@ -197,6 +225,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Icon.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Icon.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MainWindow.cpp"
 				>
 			</File>
@@ -225,6 +261,14 @@
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_MainWindow.cpp&quot;"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Object.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Object.h"
+				>
 			</File>
 			<File
 				RelativePath=".\SettingsGroupScope.cpp"

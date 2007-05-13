@@ -15,12 +15,12 @@
 
 #include "Helios/Qt/Core/MainWindow.h"
 #include "Helios/Qt/Core/Constants.h"
+#include "Helios/Qt/Core/Icon.h"
 #include "Helios/Qt/Core/SettingsGroupScope.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/Functions/SafeCall.h"
-#include "Usul/Predicates/FileExists.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
 
@@ -28,6 +28,7 @@
 #include "QtGui/QMenuBar"
 #include "QtGui/QImageReader"
 #include "QtGui/QStatusBar"
+#include "QtGui/QToolBar"
 
 using namespace CadKit::Helios::Core;
 
@@ -38,12 +39,9 @@ using namespace CadKit::Helios::Core;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define IS_GUI_THREAD\
+#define ENSURE_GUI_THREAD\
   if ( false == this->isGuiThread() )\
     return
-
-#define GUARD_MUTEX\
-  Guard guard ( this->mutex() )
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -55,9 +53,11 @@ using namespace CadKit::Helios::Core;
 MainWindow::MainWindow ( const std::string &vendor, 
                          const std::string &url, 
                          const std::string &program ) : BaseClass(),
-  _mutex ( new MainWindow::Mutex ),
-  _settings ( QSettings::IniFormat, QSettings::UserScope, vendor.c_str(), program.c_str() ),
-  _guiThread ( Usul::Threads::currentThreadId() )
+  _mutex     ( new MainWindow::Mutex ),
+  _settings  ( QSettings::IniFormat, QSettings::UserScope, vendor.c_str(), program.c_str() ),
+  _guiThread ( Usul::Threads::currentThreadId() ),
+  _actions   (),
+  _toolBars  ()
 {
   USUL_TRACE_SCOPE;
 
@@ -67,20 +67,14 @@ MainWindow::MainWindow ( const std::string &vendor,
   QCoreApplication::setApplicationName ( program.c_str() );
 
   // Set the icon.
-  {
-    const std::string file ( "../../Images/helios_sun.png" );
-    if ( true == Usul::Predicates::FileExists::test ( file ) )
-    {
-      QIcon icon ( file.c_str() );
-      QApplication::setWindowIcon ( icon );
-    }
-  }
+  CadKit::Helios::Core::Icon::set ( "helios_sun.png", this );
 
   // Enable toolbar docking.
   this->setEnabled ( true );
 
   // Make the menu.
   this->_buildMenu();
+  this->_buildToolBar();
 
   // Make sure we can size the status bar.
   this->statusBar()->setSizeGripEnabled ( true );
@@ -114,7 +108,7 @@ MainWindow::~MainWindow()
 void MainWindow::_destroy()
 {
   USUL_TRACE_SCOPE;
-  IS_GUI_THREAD;
+  ENSURE_GUI_THREAD;
   delete _mutex; _mutex = 0x0;
 }
 
@@ -128,8 +122,7 @@ void MainWindow::_destroy()
 void MainWindow::_loadSettings()
 {
   USUL_TRACE_SCOPE;
-  IS_GUI_THREAD;
-  GUARD_MUTEX;
+  ENSURE_GUI_THREAD;
 
   // Set the window's properties.
   {
@@ -149,8 +142,7 @@ void MainWindow::_loadSettings()
 void MainWindow::_saveSettings()
 {
   USUL_TRACE_SCOPE;
-  IS_GUI_THREAD;
-  GUARD_MUTEX;
+  ENSURE_GUI_THREAD;
 
   // Set the window's properties.
   {
@@ -173,27 +165,79 @@ void MainWindow::_saveSettings()
 void MainWindow::_buildMenu()
 {
   USUL_TRACE_SCOPE;
-  IS_GUI_THREAD;
-  GUARD_MUTEX;
+  ENSURE_GUI_THREAD;
+
+  // Make sure actions are built.
+  this->_makeActions();
 
   // Handle repeated calls.
   this->menuBar()->clear();
 
   // Add menus.
   QMenu *menu = this->menuBar()->addMenu ( tr ( "&File" ) );
+  menu->addAction ( _actions["open_document"] );
+  menu->addSeparator();
+  menu->addAction ( _actions["exit"] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the tool bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_buildToolBar()
+{
+  USUL_TRACE_SCOPE;
+  ENSURE_GUI_THREAD;
+
+  // Make sure actions are built.
+  this->_makeActions();
+
+  // Handle repeated calls.
+  const char *standardToolBarName ( "standard_tool_bar" );
+  this->removeToolBar ( _toolBars[standardToolBarName] );
+  QToolBar *toolBar ( this->addToolBar ( standardToolBarName ) );
+  _toolBars.insert ( ToolBars::value_type ( standardToolBarName, toolBar ) );
+
+  // Set standard size.
+  toolBar->setIconSize ( QSize ( 16, 16 ) );
+
+  // Add buttons.
+  toolBar->addAction ( _actions["open_document"] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make the actions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_makeActions()
+{
+  USUL_TRACE_SCOPE;
+  ENSURE_GUI_THREAD;
+
+  // Only build the actions once.
+  if ( false == _actions.empty() )
+    return;
+
   {
     QAction *action ( new QAction ( tr ( "&Open" ), this ) );
     action->setShortcut ( tr ( "Ctrl+O" ) );
     action->setStatusTip ( "Open existing document" );
+    CadKit::Helios::Core::Icon::set ( "openDocument.png", action );
     this->connect ( action, SIGNAL ( triggered() ), this, SLOT ( _open() ) );
-    menu->addAction ( action );
+    _actions.insert ( Actions::value_type ( "open_document", action ) );
   }
-  menu->addSeparator();
+
   {
     QAction *action ( new QAction ( tr ( "E&xit" ), this ) );
     action->setStatusTip ( "Exit the application" );
     this->connect ( action, SIGNAL ( triggered() ), this, SLOT ( _quit() ) );
-    menu->addAction ( action );
+    _actions.insert ( Actions::value_type ( "exit", action ) );
   }
 }
 
@@ -207,8 +251,7 @@ void MainWindow::_buildMenu()
 void MainWindow::_open()
 {
   USUL_TRACE_SCOPE;
-  IS_GUI_THREAD;
-  GUARD_MUTEX;
+  ENSURE_GUI_THREAD;
 }
 
 
@@ -221,7 +264,7 @@ void MainWindow::_open()
 void MainWindow::_quit()
 {
   USUL_TRACE_SCOPE;
-  IS_GUI_THREAD;
+  ENSURE_GUI_THREAD;
 
   USUL_ERROR_STACK_CATCH_EXCEPTIONS_BEGIN;
 
@@ -239,6 +282,35 @@ void MainWindow::_quit()
 
 bool MainWindow::isGuiThread() const
 {
+  USUL_TRACE_SCOPE;
   const unsigned long thread ( Usul::Threads::currentThreadId() );
   return ( thread == _guiThread );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the settings.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const QSettings &MainWindow::settings() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _settings;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the settings.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+QSettings &MainWindow::settings()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _settings;
 }

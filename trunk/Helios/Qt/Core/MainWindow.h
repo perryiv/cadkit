@@ -25,6 +25,7 @@
 #include "QtGui/QMainWindow"
 
 #include <string>
+#include <map>
 
 
 namespace CadKit {
@@ -42,6 +43,8 @@ public:
   typedef QMainWindow                       BaseClass;
   typedef Usul::Threads::RecursiveMutex     Mutex;
   typedef Usul::Threads::Guard<Mutex>       Guard;
+  typedef std::map<std::string,QAction*>    Actions;
+  typedef std::map<std::string,QToolBar*>   ToolBars;
 
   // Constructor and destructor.
   MainWindow ( const std::string &vendor, const std::string &url, const std::string &program );
@@ -53,11 +56,18 @@ public:
   // Get the mutex.
   Mutex &                   mutex() const { return *_mutex; }
 
+  // Get the settings.
+  const QSettings &         settings() const;
+  QSettings &               settings();
+
 protected:
 
   void                      _buildMenu();
+  void                      _buildToolBar();
 
   void                      _loadSettings();
+
+  void                      _makeActions();
 
   void                      _saveSettings();
 
@@ -68,11 +78,17 @@ private slots:
 
 private:
 
+  // No copying or assignment.
+  MainWindow ( const MainWindow & );
+  MainWindow &operator = ( const MainWindow & );
+
   void                      _destroy();
 
   mutable Mutex *_mutex;
   QSettings _settings;
   const unsigned long _guiThread;
+  Actions _actions;
+  ToolBars _toolBars;
 };
 
 

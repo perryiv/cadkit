@@ -47,9 +47,6 @@ namespace Program
 
     // Unset the mutex factory.
     Usul::Threads::Mutex::createFunction ( 0x0 );
-
-    // Close parent tag in trace file.
-    Usul::Trace::Print::execute ( "</functions>\n" );
   }
 }
 
@@ -99,13 +96,9 @@ namespace Program
     Usul::IO::Redirect redirect ( output, true, true );
 
     // Send trace output here. Comment this out for stdout.
-    const std::string traceFile ( tempDir + program + ".trace" );
+    const std::string traceFile ( tempDir + program + ".csv" );
     std::ofstream traceStream ( traceFile.c_str() );
     Usul::Trace::Print::init ( &traceStream );
-
-    // Parent tag in trace file.
-    Usul::Trace::Print::execute ( "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" );
-    Usul::Trace::Print::execute ( "<functions>\n" );
 
     // We want the above objects to live longer than the application.
     {

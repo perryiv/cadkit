@@ -18,6 +18,8 @@
 
 #include "Helios/Qt/Core/Export.h"
 
+#include "QtCore/QRect"
+
 #include <string>
 
 
@@ -33,6 +35,7 @@ namespace CadKit
         {
           // Registry sections.
           const std::string MAIN_WINDOW               = "main_window";
+          const std::string FILE_DIALOG               = "file_dialog";
         }
 
         namespace Keys
@@ -44,15 +47,22 @@ namespace CadKit
           const std::string WIDTH                     = "width";
           const std::string HEIGHT                    = "height";
           const std::string MAXIMIZED                 = "maximized";
+
+          // File dialog properties.
+          const std::string LAST_DIRECTORY            = "last_directory";
         }
 
         namespace Defaults
         {
+          // Geometry.
           const QRect GEOMETRY                        ( 100, 100, 800, 600 );
           const int X                                 = 100;
           const int Y                                 = 100;
           const int WIDTH                             = 800;
           const int HEIGHT                            = 600;
+
+          // File dialog properties.
+          const std::string LAST_DIRECTORY            = "";
         }
       }
     }

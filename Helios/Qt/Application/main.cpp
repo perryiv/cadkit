@@ -27,6 +27,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/IO/Redirect.h"
 #include "Usul/Threads/Mutex.h"
+#include "Usul/Threads/Named.h"
 #include "Usul/Trace/Print.h"
 
 #include <fstream>
@@ -47,6 +48,9 @@ namespace Program
 
     // Unset the mutex factory.
     Usul::Threads::Mutex::createFunction ( 0x0 );
+
+    // Clear the map of named threads.
+    Usul::Threads::Named::clear();
   }
 }
 
@@ -99,6 +103,9 @@ namespace Program
     const std::string traceFile ( tempDir + program + ".csv" );
     std::ofstream traceStream ( traceFile.c_str() );
     Usul::Trace::Print::init ( &traceStream );
+
+    // Initialize singleton of named threads.
+    Usul::Threads::Named::instance().set ( Usul::Threads::Names::MAIN );
 
     // We want the above objects to live longer than the application.
     {

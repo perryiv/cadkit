@@ -15,11 +15,12 @@
 
 #include "Helios/Qt/Commands/OpenDocumentCommand.h"
 #include "Helios/Qt/Core/Constants.h"
-#include "Helios/Qt/Core/MainWindow.h"
-#include "Helios/Qt/Core/SettingsGroupScope.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/CommandLine/Arguments.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Strings/Qt.h"
+#include "Usul/Threads/Named.h"
 #include "Usul/Trace/Trace.h"
 
 #include "QtGui/QFileDialog"
@@ -35,7 +36,7 @@ USUL_IMPLEMENT_TYPE_ID ( OpenDocumentCommand );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OpenDocumentCommand::OpenDocumentCommand ( CadKit::Helios::Core::MainWindow *mw ) : BaseClass ( mw )
+OpenDocumentCommand::OpenDocumentCommand ( IUnknown *caller ) : BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
 }
@@ -91,44 +92,74 @@ void OpenDocumentCommand::_askForFileNames ( const std::string &title, FileNames
   // Initialize.
   files.clear();
 
-  // Check thread.
-  CadKit::Helios::Core::MainWindow *mw ( this->_getMainWindow() );
-  if ( 0x0 == mw || false == mw->isGuiThread() )
-    return;
+  // Only GUI thread.
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
 
   // Get the last directory.
-  QString dir;
-  {
-    Guard mwGuard ( mw->mutex() );
-    CadKit::Helios::Core::SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::FILE_DIALOG, mw->settings() );
-    dir = mw->settings().value ( CadKit::Helios::Core::Registry::Keys::GEOMETRY.c_str(), CadKit::Helios::Core::Registry::Defaults::GEOMETRY ).value<QString>();
-  }
+  const std::string dir ( this->_lastDirectory() );
 
   // Get the filter string.
-  QString filter;
+  const std::string filters ( this->_filters() );
 
   // Get the file names.
-  QStringList answer ( QFileDialog::getOpenFileNames ( mw, title.c_str(), dir, filter ) );
+  const QStringList answer ( QFileDialog::getOpenFileNames ( 0x0, QString ( title.c_str() ), QString ( dir.c_str() ), QString ( filters.c_str() ) ) );
 
   // If there are no file names...
   if ( true == answer.empty() )
     return;
 
   // Set the directory.
-  {
-    Guard mwGuard ( mw->mutex() );
-    CadKit::Helios::Core::SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::FILE_DIALOG, mw->settings() );
-    mw->settings().setValue ( CadKit::Helios::Core::Registry::Keys::GEOMETRY.c_str(), dir );
-  }
+  this->_lastDirectory ( dir );
 
   // Set the files.
-  files.reserve ( answer.size() );
-  for ( QStringList::const_iterator i = answer.begin(); i != answer.end(); ++i )
-  {
-    const QString &file ( *i );
-    QByteArray bytes ( file.toAscii() );
-    files.push_back ( std::string ( bytes.begin(), bytes.end() ) );
-  }
+  Usul::Strings::convert ( answer, files );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the last directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string OpenDocumentCommand::_lastDirectory() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  std::string dir ( Usul::CommandLine::Arguments::instance().directory() );
+  return dir;
+  //CadKit::Helios::Core::SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::FILE_DIALOG, mw->settings() );
+  //dir = mw->settings().value ( CadKit::Helios::Core::Registry::Keys::GEOMETRY.c_str(), CadKit::Helios::Core::Registry::Defaults::GEOMETRY ).value<QString>();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the last directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OpenDocumentCommand::_lastDirectory ( const std::string &dir )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  //CadKit::Helios::Core::SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::FILE_DIALOG, mw->settings() );
+  //mw->settings().setValue ( CadKit::Helios::Core::Registry::Keys::GEOMETRY.c_str(), dir );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the filters.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string OpenDocumentCommand::_filters() const
+{
+  USUL_TRACE_SCOPE;
+  //Guard guard ( this->mutex() ); Do you need to guard?
+  std::string filters;
+  return filters;
 }
 
 
@@ -143,8 +174,6 @@ void OpenDocumentCommand::_open ( const std::string &file )
   USUL_TRACE_SCOPE;
   // Do not lock the mutex. This function is re-entrant.
 
-  HERE
-  // De-couple from MainWindow with interfaces.
   // Launch a thread here to do the work.
   // Probably want each command to contain an action.
   // Make different commands for menubar and toolbar, but have them point to the same functions.

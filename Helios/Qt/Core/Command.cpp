@@ -15,6 +15,8 @@
 
 #include "Helios/Qt/Core/Command.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Trace/Trace.h"
 
 using namespace CadKit::Helios::Core;
@@ -30,8 +32,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Command, Command::BaseClass );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Command::Command ( MainWindow *mw ) : BaseClass(),
-  _mainWindow ( mw )
+Command::Command ( Usul::Interfaces::IUnknown *caller ) : BaseClass(),
+  _caller ( caller )
 {
   USUL_TRACE_SCOPE;
 }
@@ -46,7 +48,20 @@ Command::Command ( MainWindow *mw ) : BaseClass(),
 Command::~Command()
 {
   USUL_TRACE_SCOPE;
-  _mainWindow = 0x0;
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Command::_destroy ), "3176019710" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destroy.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Command::_destroy()
+{
+  USUL_TRACE_SCOPE;
+  _caller = 0x0;
 }
 
 
@@ -75,27 +90,27 @@ Usul::Interfaces::IUnknown *Command::queryInterface ( unsigned long iid )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the main window.
+//  Return the caller.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const MainWindow *Command::_getMainWindow() const
+const Usul::Interfaces::IUnknown *Command::_getCaller() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return _mainWindow;
+  return _caller.get();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the main window.
+//  Return the caller.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MainWindow *Command::_getMainWindow()
+Usul::Interfaces::IUnknown *Command::_getCaller()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return _mainWindow;
+  return _caller.get();
 }

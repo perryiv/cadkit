@@ -22,8 +22,6 @@
 
 #include <string>
 
-namespace CadKit { namespace Helios { namespace Core { class MainWindow; } } }
-
 
 namespace CadKit {
 namespace Helios {
@@ -37,6 +35,7 @@ public:
 
   // Typedefs.
   typedef Object BaseClass;
+  typedef Usul::Interfaces::IUnknown IUnknown;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Command );
@@ -50,13 +49,13 @@ public:
 protected:
 
   // Constructor.
-  Command ( MainWindow * );
+  Command ( IUnknown *caller );
 
   // Use reference counting.
   virtual ~Command();
 
-  const MainWindow *        _getMainWindow() const;
-  MainWindow *              _getMainWindow();
+  const IUnknown *          _getCaller() const;
+  IUnknown *                _getCaller();
 
 private:
 
@@ -64,7 +63,9 @@ private:
   Command ( const Command & );
   Command &operator = ( const Command & );
 
-  MainWindow *_mainWindow;
+  void                      _destroy();
+
+  IUnknown::RefPtr _caller;
 };
 
 

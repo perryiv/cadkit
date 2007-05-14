@@ -21,6 +21,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Threads/Named.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
 
@@ -35,17 +36,6 @@ using namespace CadKit::Helios::Core;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Macros used below.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define ENSURE_GUI_THREAD\
-  if ( false == this->isGuiThread() )\
-    return
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -55,11 +45,13 @@ MainWindow::MainWindow ( const std::string &vendor,
                          const std::string &program ) : BaseClass(),
   _mutex     ( new MainWindow::Mutex ),
   _settings  ( QSettings::IniFormat, QSettings::UserScope, vendor.c_str(), program.c_str() ),
-  _guiThread ( Usul::Threads::currentThreadId() ),
   _actions   (),
   _toolBars  ()
 {
   USUL_TRACE_SCOPE;
+
+  // Name this thread.
+  Usul::Threads::Named::instance().add ( Usul::Threads::Names::GUI, Usul::Threads::currentThreadId() );
 
   // Program-wide settings.
   QCoreApplication::setOrganizationName ( vendor.c_str() );
@@ -108,7 +100,7 @@ MainWindow::~MainWindow()
 void MainWindow::_destroy()
 {
   USUL_TRACE_SCOPE;
-  ENSURE_GUI_THREAD;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
   delete _mutex; _mutex = 0x0;
 }
 
@@ -122,7 +114,7 @@ void MainWindow::_destroy()
 void MainWindow::_loadSettings()
 {
   USUL_TRACE_SCOPE;
-  ENSURE_GUI_THREAD;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
 
   // Set the window's properties.
   {
@@ -142,7 +134,7 @@ void MainWindow::_loadSettings()
 void MainWindow::_saveSettings()
 {
   USUL_TRACE_SCOPE;
-  ENSURE_GUI_THREAD;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
 
   // Set the window's properties.
   {
@@ -165,7 +157,7 @@ void MainWindow::_saveSettings()
 void MainWindow::_buildMenu()
 {
   USUL_TRACE_SCOPE;
-  ENSURE_GUI_THREAD;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
 
   // Make sure actions are built.
   this->_makeActions();
@@ -190,7 +182,7 @@ void MainWindow::_buildMenu()
 void MainWindow::_buildToolBar()
 {
   USUL_TRACE_SCOPE;
-  ENSURE_GUI_THREAD;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
 
   // Make sure actions are built.
   this->_makeActions();
@@ -218,7 +210,7 @@ void MainWindow::_buildToolBar()
 void MainWindow::_makeActions()
 {
   USUL_TRACE_SCOPE;
-  ENSURE_GUI_THREAD;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
 
   // Only build the actions once.
   if ( false == _actions.empty() )
@@ -251,7 +243,7 @@ void MainWindow::_makeActions()
 void MainWindow::_open()
 {
   USUL_TRACE_SCOPE;
-  ENSURE_GUI_THREAD;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
 }
 
 
@@ -264,27 +256,13 @@ void MainWindow::_open()
 void MainWindow::_quit()
 {
   USUL_TRACE_SCOPE;
-  ENSURE_GUI_THREAD;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
 
   USUL_ERROR_STACK_CATCH_EXCEPTIONS_BEGIN;
 
   this->close();
 
   USUL_ERROR_STACK_CATCH_EXCEPTIONS_END ( 2624682894 );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  See if the calling thread is the GUI thread.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool MainWindow::isGuiThread() const
-{
-  USUL_TRACE_SCOPE;
-  const unsigned long thread ( Usul::Threads::currentThreadId() );
-  return ( thread == _guiThread );
 }
 
 

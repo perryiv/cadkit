@@ -34,6 +34,7 @@ public:
 
   // Typedefs.
   typedef CadKit::Helios::Core::Command BaseClass;
+  typedef Usul::Interfaces::IUnknown IUnknown;
   typedef std::vector<std::string> FileNames;
 
   // Smart-pointer definitions.
@@ -43,10 +44,10 @@ public:
   USUL_DECLARE_TYPE_ID ( OpenDocumentCommand );
 
   // Constructor.
-  OpenDocumentCommand ( CadKit::Helios::Core::MainWindow * );
+  OpenDocumentCommand ( IUnknown *caller );
 
   // Execute the command.
-  virtual void              execute ( Usul::Interfaces::IUnknown *caller );
+  virtual void              execute ( IUnknown *caller );
 
 protected:
 
@@ -54,6 +55,11 @@ protected:
   virtual ~OpenDocumentCommand();
 
   void                      _askForFileNames ( const std::string &title, FileNames &files );
+
+  std::string               _filters() const;
+
+  std::string               _lastDirectory() const;
+  void                      _lastDirectory ( const std::string & );
 
   void                      _open ( const std::string & );
 

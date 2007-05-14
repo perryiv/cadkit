@@ -50,9 +50,6 @@ public:
   MainWindow ( const std::string &vendor, const std::string &url, const std::string &program );
   virtual ~MainWindow();
 
-  // See if the calling thread is the GUI thread.
-  bool                      isGuiThread() const;
-
   // Get the mutex.
   Mutex &                   mutex() const { return *_mutex; }
 
@@ -86,7 +83,6 @@ private:
 
   mutable Mutex *_mutex;
   QSettings _settings;
-  const unsigned long _guiThread;
   Actions _actions;
   ToolBars _toolBars;
 };

@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "Usul/Strings/ManagedToNative.h"
+#include "Usul/Strings/Managed.h"
 
 #include "osg/Group"
 #include "osg/Node"

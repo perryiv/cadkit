@@ -10,7 +10,7 @@
 
 #include "ImageLayer.h"
 
-#include "Usul/Strings/ManagedToNative.h"
+#include "Usul/Strings/Managed.h"
 #include "Magrathea/ImageTextureLayer.h"
 
 using namespace CadKit::OSSIMPlanet::Glue;

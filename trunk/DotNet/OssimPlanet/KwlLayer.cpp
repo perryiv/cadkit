@@ -10,7 +10,7 @@
 
 #include "KwlLayer.h"
 
-#include "Usul/Strings/ManagedToNative.h"
+#include "Usul/Strings/Managed.h"
 #include "Magrathea/KwlLayer.h"
 
 using namespace CadKit::OSSIMPlanet::Glue;

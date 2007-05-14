@@ -1556,6 +1556,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Threads\Named.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\Named.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Threads\Pool.cpp"
 					>
 				</File>
@@ -1772,7 +1780,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Strings\ManagedToNative.h"
+					RelativePath=".\Strings\Managed.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Strings\Qt.h"
 					>
 				</File>
 				<File

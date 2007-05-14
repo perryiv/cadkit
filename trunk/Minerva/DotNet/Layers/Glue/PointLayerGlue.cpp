@@ -10,7 +10,7 @@
 
 #include "PointLayerGlue.h"
 
-#include "Usul/Strings/ManagedToNative.h"
+#include "Usul/Strings/Managed.h"
 
 #include "Minerva/Core/DataObjects/Point.h"
 

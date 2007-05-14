@@ -13,7 +13,7 @@
 #include "Minerva/Core/DB/Connection.h"
 
 #include "Usul/Pointers/Pointers.h"
-#include "Usul/Strings/ManagedToNative.h"
+#include "Usul/Strings/Managed.h"
 
 using namespace DT::Minerva::Glue;
 

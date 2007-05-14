@@ -21,7 +21,7 @@
 #include "Minerva/Core/DB/Info.h"
 #include "Minerva/Core/Layers/LineLayer.h"
 
-#include "Usul/Strings/ManagedToNative.h"
+#include "Usul/Strings/Managed.h"
 #include "Usul/Interfaces/ITemporalData.h"
 #include "Usul/Interfaces/IPointLayer.h"
 #include "Usul/Interfaces/IPolygonLayer.h"

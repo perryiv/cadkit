@@ -10,7 +10,7 @@
 
 #include "PolygonTimeLayerGlue.h"
 
-#include "Usul/Strings/ManagedToNative.h"
+#include "Usul/Strings/Managed.h"
 #include "Usul/Pointers/Pointers.h"
 
 using namespace DT::Minerva::Glue;

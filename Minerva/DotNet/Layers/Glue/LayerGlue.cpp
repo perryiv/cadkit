@@ -13,7 +13,7 @@
 #include "GradientColorFunctor.h"
 #include "Factory.h"
 
-#include "Usul/Strings/ManagedToNative.h"
+#include "Usul/Strings/Managed.h"
 
 #include "Minerva/Core/DB/Info.h"
 

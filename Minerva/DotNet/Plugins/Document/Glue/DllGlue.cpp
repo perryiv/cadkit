@@ -14,7 +14,7 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Threads/OpenThreads/Mutex.h"
 #include "Usul/Threads/Mutex.h"
-#include "Usul/Strings/ManagedToNative.h"
+#include "Usul/Strings/Managed.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/IPlayMovie.h"

@@ -12,7 +12,7 @@
 
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Components/Manager.h"
-#include "Usul/Strings/ManagedToNative.h"
+#include "Usul/Strings/Managed.h"
 
 using namespace CadKit::Init::Glue;
 

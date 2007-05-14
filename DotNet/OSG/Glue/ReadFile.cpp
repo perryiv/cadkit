@@ -12,7 +12,7 @@
 #include "OsgTools/IO/Reader.h"
 
 #include "Usul/Math/MinMax.h"
-#include "Usul/Strings/ManagedToNative.h"
+#include "Usul/Strings/Managed.h"
 
 #include <limits>
 

@@ -10,7 +10,7 @@
 
 #include "WmsLayer.h"
 
-#include "Usul/Strings/ManagedToNative.h"
+#include "Usul/Strings/Managed.h"
 
 #include "Magrathea/WmsLayer.h"
 

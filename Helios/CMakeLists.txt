@@ -31,12 +31,14 @@ SUBDIRS(
 ${PROJECT_SOURCE_DIR}/../Usul 
 ${PROJECT_SOURCE_DIR}/../Threads/OpenThreads
 ${PROJECT_SOURCE_DIR}/../OsgTools 
+${PROJECT_SOURCE_DIR}/../XmlTree 
 )
 
 
 # include base plugins
 SUBDIRS(
 ${PROJECT_SOURCE_DIR}/Animate
+${PROJECT_SOURCE_DIR}/Plugins/Manager
 ${PROJECT_SOURCE_DIR}/Plugins/About
 ${PROJECT_SOURCE_DIR}/Plugins/SceneModel
 ${PROJECT_SOURCE_DIR}/Plugins/SceneStatsOSG

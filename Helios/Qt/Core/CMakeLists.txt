@@ -25,10 +25,12 @@ SET (SOURCES
     MainWindow.cpp
     Object.cpp
     SettingsGroupScope.cpp
+    SplashScreen.cpp
 )
 
 SET(MOC_HDRS
   MainWindow.h
+  SplashScreen.h
 )
 
 # After this call, foo_MOC_SRCS = moc_Class1.cxx moc_Class2.cxx moc_Class3.cxx.

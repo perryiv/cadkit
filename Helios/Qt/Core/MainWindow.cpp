@@ -262,7 +262,7 @@ void MainWindow::_quit()
 
   this->close();
 
-  USUL_ERROR_STACK_CATCH_EXCEPTIONS_END ( 2624682894 );
+  USUL_ERROR_STACK_CATCH_EXCEPTIONS_END ( 2624682894u );
 }
 
 

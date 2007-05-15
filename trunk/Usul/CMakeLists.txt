@@ -75,6 +75,7 @@ SET (SOURCES
 	System/Sleep.cpp
 	System/Socket.cpp
 	Threads/Mutex.cpp
+	Threads/Named.cpp
 	Threads/RecursiveMutex.cpp
 	Threads/Task.cpp
 	Threads/Thread.cpp

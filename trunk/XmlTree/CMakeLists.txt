@@ -7,12 +7,13 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 ADD_DEFINITIONS("-D_COMPILING_XML_TREE")
 
 INCLUDE ( ${CMakeModules}/FindXerces.cmake)
+INCLUDE ( ${CMakeModules}/FindBoost.cmake)
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} ${XERCESC_INCLUDE_DIR} "${PROJECT_SOURCE_DIR}/../" )
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} ${XERCESC_INCLUDE_DIR} ${Boost_INCLUDE_DIR} "${PROJECT_SOURCE_DIR}/../" )
 
 
 #List the Sources

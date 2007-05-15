@@ -1,12 +1,20 @@
 project (SceneModel)
 
+# Set the name.  Needed for the macros to set up plugin properties.
+SET(PLUGIN_NAME "SceneModel")
+
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
+INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
+
+# Set the compile guard.
 set(COMPILE_GUARD "_COMPILING_SCENE_MODEL")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${HELIOS_INCLUDE_DIR}" "${PROJECT_SOURCE_DIR}/../" )
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" )
 
+# Set the sources to compile.
 set (SOURCES
 	SceneFactory.cpp
 	SceneComponent.cpp
@@ -14,24 +22,15 @@ set (SOURCES
 )
 
 # ---------- Create a Shared Library
-ADD_LIBRARY(SceneModel SHARED ${SOURCES} )
+ADD_LIBRARY(${PLUGIN_NAME} SHARED ${SOURCES} )
 
-# ---- Change the Suffix on the Generated Dylib --------------------------------
-IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
- SET_TARGET_PROPERTIES (SceneModel
-	PROPERTIES SUFFIX ".plugd"
- )
-ELSE (CMAKE_BUILD_TYPE STREQUAL "Debug")
- SET_TARGET_PROPERTIES (SceneModel
-	PROPERTIES SUFFIX ".plug"
- )
-ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+CADKIT_PLUGIN()
+
+# Link the Library with Cadkit Libraries.
+LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools )
 
 # Link the Library	
-TARGET_LINK_LIBRARIES(SceneModel 
-  Usul
-  OsgTools
+TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} 
   ${OPENTHREADS_LIB}
 	${OSG_LIB}
 )
-

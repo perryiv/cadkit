@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: Helios", "HeliosFox.vcproj", "{86DB1279-AAAB-4AA4-8F19-E433191ABE4C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: Helios", "Application/HeliosFox.vcproj", "{86DB1279-AAAB-4AA4-8F19-E433191ABE4C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A03CDB56-2A77-4150-977F-B1A736219E1D} = {A03CDB56-2A77-4150-977F-B1A736219E1D}
 		{276F7F09-5F65-477E-88E0-E8C819CF72CC} = {276F7F09-5F65-477E-88E0-E8C819CF72CC}

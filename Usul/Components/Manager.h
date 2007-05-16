@@ -60,6 +60,7 @@ public:
   void                          load ( unsigned long iid, const std::string &dir, const std::string &ext, bool keepGoingIfException = true );
   void                          load ( unsigned long iid, const Strings &plugins, bool keepGoingIfException = true );
   void                          load ( unsigned long iid, bool keepGoingIfException = true );
+  void                          load ( unsigned long iid, const std::string& file );
 
   // Return list of plugin names. This queries each unknown pointer for IPlugin.
   Strings                       names() const;

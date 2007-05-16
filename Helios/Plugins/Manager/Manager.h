@@ -15,6 +15,8 @@
 
 #include <string>
 
+namespace XmlTree { class Node; }
+
 namespace CadKit {
 namespace Helios {
 namespace Plugins {
@@ -33,6 +35,11 @@ public:
 
 	/// Parse the file.
 	void                      parse();
+	
+protected:
+	void                      _addPlugins ( XmlTree::Node &node );
+	void                      _addPlugin  ( XmlTree::Node &node );
+	
 private:
 	Manager();
 	~Manager();

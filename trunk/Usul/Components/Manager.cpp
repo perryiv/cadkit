@@ -280,6 +280,38 @@ void Manager::load ( unsigned long iid, const Strings &plugins, bool keepGoingIf
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Load a plugin with the given filename.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::load ( unsigned long iid, const std::string& file )
+{
+	try
+	{
+		// Find the factory
+  	Usul::Interfaces::IClassFactory::ValidQueryPtr factory ( this->_factory ( file ) );
+      
+    // Get the IUnknown
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( factory->createInstance ( iid ) );
+
+    // Insert into set of plugins.
+    if ( unknown.valid() )
+    	_unknowns.insert ( unknown.get() );
+	}
+	catch ( const std::exception& e )
+	{
+		std::cout << "Error 4241786283: Exception caught while trying to load " << file << std::endl;
+		std::cout << "Message: " << e.what() << std::endl;
+	}
+	catch ( ... )
+	{
+		std::cout << "Error 4241786283: Unknown exception caught while trying to load. " << std::endl;
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Clear plugins and release libraries
 //
 ///////////////////////////////////////////////////////////////////////////////

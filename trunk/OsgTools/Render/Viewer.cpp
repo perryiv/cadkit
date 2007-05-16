@@ -2032,9 +2032,6 @@ void Viewer::_setDisplayListsGeode ( osg::Geode *geode )
 
 void Viewer::numRenderPasses ( unsigned int num )
 {
-#if __APPLE__
-#warning This may not work correctly...
-#endif
   _renderer->numRenderPasses( num );
 }
 

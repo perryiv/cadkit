@@ -10,7 +10,36 @@
 
 #include "Helios/Plugins/Manager/Manager.h"
 
+#include "Usul/Components/Manager.h"
+#include "Usul/Interfaces/IPlugin.h"
+
+#include "XmlTree/Document.h"
+
 using namespace CadKit::Helios::Plugins::Manager;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Static data member.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Manager* Manager::_instance ( 0x0 );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Manager& Manager::instance()
+{
+	if( 0x0 == _instance )
+		_instance = new Manager();
+		
+	return *_instance;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -67,4 +96,74 @@ const std::string& Manager::filename() const
 
 void Manager::parse()
 {
+	XmlTree::Document::RefPtr doc = new XmlTree::Document ( );
+	doc->load ( _filename );
+	
+	typedef XmlTree::Document::Children Children;
+	
+	Children& children ( doc->children() );
+	
+	for( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+	{
+		XmlTree::Node::RefPtr node ( (*iter) );
+		if( "plugins" == node->name() )
+		{
+			this->_addPlugins( *node );
+		}
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::_addPlugins ( XmlTree::Node &parent )
+{
+typedef XmlTree::Document::Children Children;
+	
+	Children& children ( parent.children() );
+	
+	for( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+	{
+		XmlTree::Node::RefPtr node ( (*iter) );
+		if( "plugin" == node->name() )
+		{
+			this->_addPlugin ( *node );
+		}
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::_addPlugin ( XmlTree::Node &node )
+{
+	typedef XmlTree::Document::Attributes Attributes;
+	
+	Attributes& attributes ( node.attributes() );
+	
+	std::string file ( "" );
+  bool load ( true );
+  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+  {
+  	if ( "file" == iter->first )
+    {
+  	  file = iter->second;
+    }
+    else if ( "load" == iter->first )
+    {
+    	std::istringstream in ( iter->second );
+    	in >> load;
+   	}
+  }
+  
+  if( load && false == file.empty() )
+  	Usul::Components::Manager::instance().load ( Usul::Interfaces::IPlugin::IID, file );
 }

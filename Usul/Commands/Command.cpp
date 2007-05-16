@@ -13,13 +13,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Qt/Core/Command.h"
+#include "Usul/Commands/Command.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Trace/Trace.h"
 
-using namespace CadKit::Helios::Core;
+using namespace Usul::Commands;
 
 USUL_IMPLEMENT_TYPE_ID ( Command );
 
@@ -68,6 +68,8 @@ void Command::_destroy()
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Query for the interface.
+//  Does this function need to be guarded?
+//  If two threads are in this function there isn't any chance of data problems.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

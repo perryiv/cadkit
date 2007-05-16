@@ -20,10 +20,8 @@ INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../../../" ${QT_INCLUDE_DIR} )
 
 #List the Sources
 SET (SOURCES
-		Command.cpp
 		Icon.cpp
     MainWindow.cpp
-    Object.cpp
     SettingsGroupScope.cpp
     SplashScreen.cpp
 )

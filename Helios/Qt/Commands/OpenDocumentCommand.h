@@ -18,7 +18,7 @@
 
 #include "Helios/Qt/Commands/Export.h"
 
-#include "Helios/Qt/Core/Command.h"
+#include "Usul/Commands/Command.h"
 
 #include <vector>
 
@@ -28,7 +28,7 @@ namespace Helios {
 namespace Commands {
 
 
-class HELIOS_QT_COMMANDS_EXPORT OpenDocumentCommand : public CadKit::Helios::Core::Command
+class HELIOS_QT_COMMANDS_EXPORT OpenDocumentCommand : public Usul::Commands::Command
 {
 public:
 

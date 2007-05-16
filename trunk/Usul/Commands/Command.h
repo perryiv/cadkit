@@ -13,23 +13,23 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_HELIOS_QT_CORE_COMMAND_CLASS_H_
-#define _CADKIT_HELIOS_QT_CORE_COMMAND_CLASS_H_
+#ifndef _USUL_COMMANDS_COMMAND_CLASS_H_
+#define _USUL_COMMANDS_COMMAND_CLASS_H_
 
-#include "Helios/Qt/Core/Object.h"
+#include "Usul/Export/Export.h"
+#include "Usul/Base/Object.h"
 
 #include "Usul/Interfaces/ICommand.h"
 
 #include <string>
 
 
-namespace CadKit {
-namespace Helios {
-namespace Core {
+namespace Usul {
+namespace Commands {
 
 
-class HELIOS_QT_CORE_EXPORT Command : public Object,
-                                      public Usul::Interfaces::ICommand
+class USUL_EXPORT Command : public Usul::Base::Object,
+                            public Usul::Interfaces::ICommand
 {
 public:
 
@@ -69,9 +69,8 @@ private:
 };
 
 
-} // namespace Core
-} // namespace Helios
-} // namespace CadKit
+} // namespace Commands
+} // namespace Usul
 
 
-#endif //_CADKIT_HELIOS_QT_CORE_COMMAND_CLASS_H_
+#endif //_USUL_COMMANDS_COMMAND_CLASS_H_

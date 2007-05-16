@@ -30,11 +30,13 @@ ADD_DEFINITIONS("-D_COMPILING_USUL")
 SET (SOURCES
 	App/Controller.cpp
 	Base/InstanceManager.cpp
+	Base/Object.cpp
 	Base/Referenced.cpp
 	Base/Typed.cpp
 	CommandLine/Arguments.cpp
 	CommandLine/Flags.cpp
 	CommandLine/Options.cpp
+	Commands/Command.cpp
 	Components/Manager.cpp
 	Components/Object.cpp
 	Components/Registry.cpp

@@ -13,13 +13,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Qt/Core/Object.h"
+#include "Usul/Base/Object.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Trace/Trace.h"
 
-using namespace CadKit::Helios::Core;
+using namespace Usul::Base;
 
 USUL_IMPLEMENT_TYPE_ID ( Object );
 

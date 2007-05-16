@@ -13,10 +13,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_HELIOS_QT_CORE_OBJECT_CLASS_H_
-#define _CADKIT_HELIOS_QT_CORE_OBJECT_CLASS_H_
+#ifndef _USUL_BASE_OBJECT_CLASS_H_
+#define _USUL_BASE_OBJECT_CLASS_H_
 
-#include "Helios/Qt/Core/Export.h"
+#include "Usul/Export/Export.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
@@ -26,12 +26,11 @@
 #include <string>
 
 
-namespace CadKit {
-namespace Helios {
-namespace Core {
+namespace Usul {
+namespace Base {
 
 
-class HELIOS_QT_CORE_EXPORT Object : public Usul::Base::Referenced
+class USUL_EXPORT Object : public Usul::Base::Referenced
 {
 public:
 
@@ -85,9 +84,8 @@ private:
 };
 
 
-} // namespace Core
-} // namespace Helios
-} // namespace CadKit
+} // namespace Base
+} // namespace Usul
 
 
-#endif //_CADKIT_HELIOS_QT_CORE_OBJECT_CLASS_H_
+#endif //_USUL_BASE_OBJECT_CLASS_H_

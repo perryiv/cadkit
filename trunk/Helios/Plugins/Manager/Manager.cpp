@@ -12,6 +12,8 @@
 
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IPlugin.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
 
 #include "XmlTree/Document.h"
 
@@ -49,7 +51,8 @@ Manager& Manager::instance()
 ///////////////////////////////////////////////////////////////////////////////
 
 Manager::Manager() : 
-	_filename()
+	_filename(),
+	_names()
 {
 }
 
@@ -164,6 +167,49 @@ void Manager::_addPlugin ( XmlTree::Node &node )
    	}
   }
   
-  if( load && false == file.empty() )
-  	Usul::Components::Manager::instance().load ( Usul::Interfaces::IPlugin::IID, file );
+  if( false == file.empty() )
+  	_names.insert ( Names::value_type ( file, load ) );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load all the plugins.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::load( Usul::Interfaces::IUnknown *caller )
+{
+	// Query for interfaces.
+	Usul::Interfaces::IStatusBar::UpdateStatusBar status ( caller );
+	Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
+	
+	// Set the size for the progress bar.
+	if( progress.valid() )
+		progress->setTotalProgressBar( _names.size() );
+	
+	// Number we are on.
+	unsigned int number ( 0 );
+	
+	// Load the plugins.
+	for ( Names::iterator iter = _names.begin(); iter != _names.end(); ++iter )
+	{
+		// Load the plugin if we are suppose to.
+		if( iter->second )
+		{
+			// The name.
+			std::string name ( iter->first );
+			
+			// Let the user know what plugin we are loading.
+			status( "Loading " + name + "...", true );
+		
+			// Load the plugin.
+			Usul::Components::Manager::instance().load ( Usul::Interfaces::IPlugin::IID, name );
+		}
+		
+		// Update progress.
+		if( progress.valid() )
+			progress->updateProgressBar( ++number );
+	}
+}
+

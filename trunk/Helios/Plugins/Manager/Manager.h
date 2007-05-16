@@ -14,6 +14,9 @@
 #include "Export.h"
 
 #include <string>
+#include <map>
+
+namespace Usul { namespace Interfaces { struct IUnknown; } }
 
 namespace XmlTree { class Node; }
 
@@ -36,15 +39,21 @@ public:
 	/// Parse the file.
 	void                      parse();
 	
+	/// Load all the plugins.
+	void                      load( Usul::Interfaces::IUnknown *caller = 0x0 );
+	
 protected:
 	void                      _addPlugins ( XmlTree::Node &node );
 	void                      _addPlugin  ( XmlTree::Node &node );
 	
 private:
+	typedef std::map < std::string, bool > Names;
+	
 	Manager();
 	~Manager();
 	
 	std::string     _filename;
+	Names           _names;
 	
 	static Manager *_instance;
 };

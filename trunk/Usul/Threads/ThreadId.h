@@ -17,6 +17,8 @@
 #ifndef _USUL_THREADS_THREAD_ID_CLASS_H_
 #define _USUL_THREADS_THREAD_ID_CLASS_H_
 
+#include "Usul/Errors/Assert.h"
+
 #ifdef _WIN32
 # define NOMINMAX
 # include <windows.h>
@@ -43,7 +45,8 @@ inline unsigned long currentThreadId()
   #elif __sgi
     return ::pthread_self(); // TODO, find low-level way.
   #else
-    TODO;
+  	// TODO.  Shouldn't compile, but just in case....
+   	USUL_ASSERT ( false );
   #endif
 }
 

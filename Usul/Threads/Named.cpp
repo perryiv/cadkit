@@ -176,7 +176,7 @@ bool Named::is ( const std::string &name ) const
 {
   Guard guard ( this->mutex() );
   ThreadMap::const_iterator i ( _map.find ( name ) );
-  return ( ( _map.end() == i ) ? ( i->second == Usul::Threads::currentThreadId() ) : false );
+  return ( ( _map.end() != i ) ? ( i->second == Usul::Threads::currentThreadId() ) : false );
 }
 
 

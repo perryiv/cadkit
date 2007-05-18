@@ -47,5 +47,18 @@ LINK_CADKIT( HeliosQtCore
 TARGET_LINK_LIBRARIES( HeliosQtCore
    ${QT_LIBRARIES}
 )
-    
-   
+
+SET( IconDir ${EXECUTABLE_OUTPUT_PATH}/icons )
+FILE(GLOB IconFiles "${CMAKE_CURRENT_SOURCE_DIR}/../../Images/*.png" )
+
+#WRITE_FILE(Helios.log "${CMAKE_CURRENT_SOURCE_DIR}")
+
+MAKE_DIRECTORY( ${IconDir} )
+FOREACH(FILE ${IconFiles})
+WRITE_FILE(Helios.log "${FILE}" APPEND)
+ADD_CUSTOM_COMMAND(
+        SOURCE HeliosQtCore
+        COMMAND ${CCOMMAND_COMMAND}
+        ARGS cp ${FILE}  ${IconDir}
+        TARGET HeliosQtCore )
+ENDFOREACH(FILE ${IconFiles})

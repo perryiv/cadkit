@@ -17,11 +17,13 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/System/Clock.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
 
 #include <stdexcept>
 #include <algorithm>
+#include <limits>
 
 using namespace Usul::Threads;
 
@@ -265,4 +267,47 @@ bool Manager::empty() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _threads.empty();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Wait for all tasks to complete.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::wait ( unsigned long timeout )
+{
+  USUL_TRACE_SCOPE;
+
+  // Save current time.
+  const unsigned long start ( static_cast<unsigned long> ( Usul::System::Clock::milliseconds() ) );
+
+  while ( false == Usul::Threads::Manager::instance().empty() )
+  {
+    Usul::Threads::Manager::instance().purge();
+
+    // Check the time.
+    const unsigned long now ( static_cast<unsigned long> ( Usul::System::Clock::milliseconds() ) );
+    if ( now - start > timeout )
+    {
+      Usul::Exceptions::Thrower<std::runtime_error>
+        ( "Error 3602078852: exceeded allowable time period of ", 
+          static_cast<double> ( timeout ) / 1000.0, 
+          " seconds while waiting for threads" );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Wait for all tasks to complete.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::wait()
+{
+  USUL_TRACE_SCOPE;
+  this->wait ( std::numeric_limits<unsigned long>::max() );
 }

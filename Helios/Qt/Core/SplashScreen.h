@@ -13,9 +13,11 @@
 
 #include "QtGui/QWidget"
 
+
 namespace CadKit {
 namespace Helios {
 namespace Core {
+
 
 class SplashScreen : public QWidget
 {
@@ -28,8 +30,10 @@ public:
 	
 };
 
+
 }
 }
 }
+
 
 #endif // __HELIOS_QT_CORE_SPLASH_SCREEN_H__

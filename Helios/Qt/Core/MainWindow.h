@@ -1,9 +1,10 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L Miller IV
+//  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Perry L Miller IV
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -18,8 +19,9 @@
 
 #include "Helios/Qt/Core/Export.h"
 
-#include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
+#include "Usul/Threads/Pool.h"
+#include "Usul/Threads/RecursiveMutex.h"
 
 #include "QtCore/QSettings"
 #include "QtGui/QMainWindow"
@@ -45,6 +47,7 @@ public:
   typedef Usul::Threads::Guard<Mutex>       Guard;
   typedef std::map<std::string,QAction*>    Actions;
   typedef std::map<std::string,QToolBar*>   ToolBars;
+  typedef Usul::Threads::Pool               ThreadPool;
 
   // Constructor and destructor.
   MainWindow ( const std::string &vendor, const std::string &url, const std::string &program );
@@ -85,6 +88,7 @@ private:
   QSettings _settings;
   Actions _actions;
   ToolBars _toolBars;
+  ThreadPool::ValidAccessRefPtr _threadPool;
 };
 
 

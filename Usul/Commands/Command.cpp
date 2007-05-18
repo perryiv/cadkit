@@ -142,11 +142,11 @@ void Command::text( const std::string& value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& Command::text() const
+std::string Command::text() const
 {
 	USUL_TRACE_SCOPE;
 	Guard guard ( this->mutex() );
-	return _text;
+  return std::string ( _text.begin(), _text.end() ); // More thread-safe?
 }
   
 
@@ -170,11 +170,11 @@ void Command::tooltip ( const std::string& value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& Command::tooltip() const
+std::string Command::tooltip() const
 {
 	USUL_TRACE_SCOPE;
 	Guard guard ( this->mutex() );
-	return _toolTipText;
+  return std::string ( _toolTipText.begin(), _toolTipText.end() ); // More thread-safe?
 }
   
 
@@ -198,11 +198,11 @@ void Command::shortcut ( const std::string& value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& Command::shortcut() const
+std::string Command::shortcut() const
 {
 	USUL_TRACE_SCOPE;
 	Guard guard ( this->mutex() );
-	return _shortcut;
+  return std::string ( _shortcut.begin(), _shortcut.end() ); // More thread-safe?
 }
   
 
@@ -226,9 +226,9 @@ void Command::iconPath ( const std::string& value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& Command::iconPath() const
+std::string Command::iconPath() const
 {
 	USUL_TRACE_SCOPE;
 	Guard guard ( this->mutex() );
-	return _iconPath;
+  return std::string ( _iconPath.begin(), _iconPath.end() ); // More thread-safe?
 }

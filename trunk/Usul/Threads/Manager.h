@@ -69,6 +69,10 @@ public:
   // Purge all threads that are ready to be deleted.
   void                    purge();
 
+  // Wait for all threads to complete.
+  void                    wait();
+  void                    wait ( unsigned long timeout );
+
 private:
 
   // Constructor and destructor.

@@ -270,6 +270,32 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Base\Object.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Base\Object.h"
+					>
+				</File>
+				<File
 					RelativePath="Base\Referenced.cpp"
 					>
 				</File>
@@ -2135,6 +2161,18 @@
 				</File>
 				<File
 					RelativePath=".\User\Directory.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Commands"
+				>
+				<File
+					RelativePath=".\Commands\Command.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Commands\Command.h"
 					>
 				</File>
 			</Filter>

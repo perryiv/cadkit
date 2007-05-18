@@ -151,7 +151,7 @@ std::string Object::name() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return _name;
+  return std::string ( _name.begin(), _name.end() ); // More thread-safe?
 }
 
 

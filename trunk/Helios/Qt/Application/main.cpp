@@ -1,9 +1,10 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2007, Perry L Miller IV
+//  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Perry L Miller IV
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -18,6 +19,7 @@
 #include "Helios/Qt/Core/MainWindow.h"
 
 #include "Threads/OpenThreads/Mutex.h"
+#include "Threads/OpenThreads/Thread.h"
 
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Components/Manager.h"
@@ -26,6 +28,7 @@
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/IO/Redirect.h"
+#include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Trace/Print.h"
@@ -48,6 +51,9 @@ namespace Program
 
     // Unset the mutex factory.
     Usul::Threads::Mutex::createFunction ( 0x0 );
+
+    // Destroy the thread manager.
+    Usul::Threads::Manager::destroy();
 
     // Clear the map of named threads.
     Usul::Threads::Named::clear();
@@ -83,8 +89,9 @@ namespace Program
 {
   void run ( int argc, char **argv, int &result )
   {
-    // Set for multi-threaded.
+    // Set for multi-threaded using OpenThreads.
     Usul::Threads::Mutex::createFunction ( &Threads::OT::newOpenThreadsMutex );
+    Usul::Threads::Manager::instance().factory ( &Threads::OT::newOpenThreadsThread );
 
     // Set command-line arguments.
     Usul::CommandLine::Arguments::instance().set ( argc, argv );

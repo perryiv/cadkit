@@ -1,9 +1,10 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L Miller IV
+//  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Perry L Miller IV
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -21,6 +22,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
@@ -43,20 +45,21 @@ using namespace CadKit::Helios::Core;
 MainWindow::MainWindow ( const std::string &vendor, 
                          const std::string &url, 
                          const std::string &program ) : BaseClass(),
-  _mutex     ( new MainWindow::Mutex ),
-  _settings  ( QSettings::IniFormat, QSettings::UserScope, vendor.c_str(), program.c_str() ),
-  _actions   (),
-  _toolBars  ()
+  _mutex      ( new MainWindow::Mutex ),
+  _settings   ( QSettings::IniFormat, QSettings::UserScope, vendor.c_str(), program.c_str() ),
+  _actions    (),
+  _toolBars   (),
+  _threadPool ( 0x0 )
 {
   USUL_TRACE_SCOPE;
-
-  // Name this thread.
-  Usul::Threads::Named::instance().add ( Usul::Threads::Names::GUI, Usul::Threads::currentThreadId() );
 
   // Program-wide settings.
   QCoreApplication::setOrganizationName ( vendor.c_str() );
   QCoreApplication::setOrganizationDomain ( url.c_str() );
   QCoreApplication::setApplicationName ( program.c_str() );
+
+  // Name this thread.
+  Usul::Threads::Named::instance().add ( Usul::Threads::Names::GUI, Usul::Threads::currentThreadId() );
 
   // Set the icon.
   CadKit::Helios::Core::Icon::set ( "helios_sun.png", this );
@@ -74,6 +77,9 @@ MainWindow::MainWindow ( const std::string &vendor,
 
   // Load the settings.
   this->_loadSettings();
+
+  // Start the thread pool.
+  _threadPool = new ThreadPool;
 }
 
 
@@ -101,7 +107,16 @@ void MainWindow::_destroy()
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
-  delete _mutex; _mutex = 0x0;
+
+  // Wait here until all threads in the pool are done.
+  _threadPool->wait();
+  _threadPool = 0x0;
+
+  // Wait here until all threads are done.
+  Usul::Threads::Manager::instance().wait();
+
+  delete _mutex;
+  _mutex = 0x0;
 }
 
 
@@ -121,6 +136,8 @@ void MainWindow::_loadSettings()
     SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::MAIN_WINDOW, _settings );
     const QRect rect ( _settings.value ( CadKit::Helios::Core::Registry::Keys::GEOMETRY.c_str(), CadKit::Helios::Core::Registry::Defaults::GEOMETRY ).value<QRect>() );
     this->setGeometry ( rect );
+
+    // also add to usul preferences...
   }
 }
 

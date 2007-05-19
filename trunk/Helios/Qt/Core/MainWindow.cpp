@@ -18,14 +18,21 @@
 #include "Helios/Qt/Core/Constants.h"
 #include "Helios/Qt/Core/Icon.h"
 #include "Helios/Qt/Core/SettingsGroupScope.h"
+#include "Helios/Qt/Core/SplashScreen.h"
+#include "Helios/Plugins/Manager/Manager.h"
 
+#include "Usul/CommandLine/Arguments.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Threads/ThreadId.h"
+#include "Usul/Threads/Thread.h"
+#include "Usul/Threads/Manager.h"
+#include "Usul/Threads/Callback.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Interfaces/IUnknown.h"
 
 #include "QtGui/QApplication"
 #include "QtGui/QMenuBar"
@@ -77,6 +84,15 @@ MainWindow::MainWindow ( const std::string &vendor,
 
   // Load the settings.
   this->_loadSettings();
+
+  // Set the title.
+  this->setWindowTitle( tr ( "Helios" ) );
+  
+  // Delete on close.
+  this->setAttribute ( Qt::WA_DeleteOnClose );
+  
+  // Load plugins.
+  this->_loadPlugins();
 
   // Start the thread pool.
   _threadPool = new ThreadPool;
@@ -185,6 +201,7 @@ void MainWindow::_buildMenu()
   // Add menus.
   QMenu *menu = this->menuBar()->addMenu ( tr ( "&File" ) );
   menu->addAction ( _actions["open_document"] );
+  
   menu->addSeparator();
   menu->addAction ( _actions["exit"] );
 }
@@ -308,4 +325,65 @@ QSettings &MainWindow::settings()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _settings;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the plugins.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_loadPlugins()
+{
+	USUL_TRACE_SCOPE;
+
+	// Create a thread.
+	Usul::Threads::Thread::RefPtr thread ( Usul::Threads::Manager::instance().create() );
+	
+	// Useful typedefs.  Needed for gcc.
+	typedef void (MainWindow::*Function) ( Usul::Threads::Thread *s );
+  typedef Usul::Adaptors::MemberFunction < MainWindow*, Function > MemFun;
+	
+	thread->started  ( Usul::Threads::newFunctionCallback ( MemFun ( this, &MainWindow::_startLoadPlugins ) ) );
+	thread->finished ( Usul::Threads::newFunctionCallback ( MemFun ( this, &MainWindow::_finishLoadPlugins ) ) );
+
+	thread->start();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start loading plugins.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_startLoadPlugins ( Usul::Threads::Thread* )
+{
+	USUL_TRACE_SCOPE;
+
+	SplashScreen splash;
+	
+	std::string pluginFile ( Usul::CommandLine::Arguments::instance().directory() + "../config/HeliosQt.xml" );
+	
+	CadKit::Helios::Plugins::Manager::Manager::instance().filename ( pluginFile );
+	CadKit::Helios::Plugins::Manager::Manager::instance().parse();
+	
+	CadKit::Helios::Plugins::Manager::Manager::instance().load ( splash.queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Plugins are finished loading.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_finishLoadPlugins ( Usul::Threads::Thread* )
+{
+  USUL_TRACE_SCOPE;
+
+	// Splash screen is done.
+	// Show MainWindow.
+	this->show();
 }

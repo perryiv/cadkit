@@ -31,6 +31,7 @@
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Named.h"
+#include "Usul/Threads/Manager.h"
 #include "Usul/Trace/Print.h"
 
 #include <fstream>
@@ -90,7 +91,7 @@ namespace Program
   void run ( int argc, char **argv, int &result )
   {
     // Set for multi-threaded using OpenThreads.
-    Usul::Threads::Mutex::createFunction ( &Threads::OT::newOpenThreadsMutex );
+    Usul::Threads::Mutex::createFunction       ( &Threads::OT::newOpenThreadsMutex );
     Usul::Threads::Manager::instance().factory ( &Threads::OT::newOpenThreadsThread );
 
     // Set command-line arguments.
@@ -126,7 +127,7 @@ namespace Program
       CadKit::Helios::Core::MainWindow mw ( vendor, url, program );
 
       // Show the main window.
-      mw.show();
+      //mw.show();
 
       // Call quit when the last window closes. (Not sure if this is needed...)
       app.connect ( &app, SIGNAL ( lastWindowClosed() ), &app, SLOT ( quit() ) );

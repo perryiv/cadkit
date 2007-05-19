@@ -33,6 +33,7 @@
 #include "Usul/Threads/Callback.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Predicates/FileExists.h"
 
 #include "QtGui/QApplication"
 #include "QtGui/QMenuBar"
@@ -364,12 +365,16 @@ void MainWindow::_startLoadPlugins ( Usul::Threads::Thread* )
 
 	SplashScreen splash;
 	
-	std::string pluginFile ( Usul::CommandLine::Arguments::instance().directory() + "../config/HeliosQt.xml" );
+	std::string pluginFile ( Usul::CommandLine::Arguments::instance().directory() + "/../config/HeliosQt.xml" );
+	USUL_TRACE_2( "Plugin file: ", pluginFile );
 	
-	CadKit::Helios::Plugins::Manager::Manager::instance().filename ( pluginFile );
-	CadKit::Helios::Plugins::Manager::Manager::instance().parse();
+	if( Usul::Predicates::FileExists::test( pluginFile ) )
+	{
+		CadKit::Helios::Plugins::Manager::Manager::instance().filename ( pluginFile );
+		CadKit::Helios::Plugins::Manager::Manager::instance().parse();
 	
-	CadKit::Helios::Plugins::Manager::Manager::instance().load ( splash.queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+		CadKit::Helios::Plugins::Manager::Manager::instance().load ( splash.queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+	}
 }
 
 

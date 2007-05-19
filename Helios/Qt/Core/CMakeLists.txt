@@ -41,7 +41,7 @@ ADD_LIBRARY(HeliosQtCore SHARED ${SOURCES} ${MOC_SRCS} )
 
 # Link the Library	
 LINK_CADKIT( HeliosQtCore 
-  Usul 
+  Usul HeliosPluginManager
 )
 
 TARGET_LINK_LIBRARIES( HeliosQtCore

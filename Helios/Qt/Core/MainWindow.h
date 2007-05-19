@@ -29,6 +29,7 @@
 #include <string>
 #include <map>
 
+namespace Usul { namespace Threads { class Thread; } }
 
 namespace CadKit {
 namespace Helios {
@@ -70,6 +71,11 @@ protected:
   void                      _makeActions();
 
   void                      _saveSettings();
+  
+  /// Load plugin functions.
+  void                      _loadPlugins();
+  void                      _startLoadPlugins  ( Usul::Threads::Thread* );
+  void                      _finishLoadPlugins ( Usul::Threads::Thread* );
 
 private slots:
 

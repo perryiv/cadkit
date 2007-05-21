@@ -28,6 +28,7 @@ ADD_DEFINITIONS("-D_COMPILING_USUL")
 
 #List the Sources
 SET (SOURCES
+	App/Application.cpp
 	App/Controller.cpp
 	Base/InstanceManager.cpp
 	Base/Object.cpp

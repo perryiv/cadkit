@@ -24,6 +24,7 @@
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Exceptions/Thrower.h"
+#include "Usul/File/Make.h"
 #include "Usul/File/Temp.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
@@ -35,6 +36,16 @@
 #include "Usul/Trace/Print.h"
 
 #include <fstream>
+#include <sstream>
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Need this to live longer than anything.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Program { Usul::IO::Redirect *redirect ( 0x0 ); }
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -82,6 +93,26 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Format data string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string formatBuildDate ( const std::string &date )
+{
+  if ( 11 != date.size() )
+    return date;
+
+  const std::string year  ( date.begin() + 7, date.end() );
+  const std::string month ( date.begin() + 0, date.begin() + 3 );
+  const std::string day   ( date.begin() + 4, date.begin() + 6 );
+  std::ostringstream out;
+  out << day << '-' << month << '-' << year;
+  return out.str();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Run the application.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -99,13 +130,20 @@ namespace Program
 
     // Vendor and program name.
     const std::string program ( "Helios" );
-    const std::string vendor ( "CadKit Project" );
+    const std::string vendor ( "CadKit" );
     const std::string url ( "cadkit.sf.net" );
 
-    // Redirect standard out and error to a file.
-    const std::string tempDir ( Usul::File::Temp::directory ( true ) );
+    // Get temporary directory nd make sure it exists.
+    const std::string tempDir ( Usul::File::Temp::directory ( true ) + "/" + program + "/" );
+    Usul::File::make ( tempDir );
+
+    // Redirect standard out and error to a file. This is a leak by design.
     const std::string output ( tempDir + program + ".out" );
-    Usul::IO::Redirect redirect ( output, true, true );
+    Program::redirect = new Usul::IO::Redirect ( output, true, true );
+
+    // Print welcome message.
+    std::cout << "Welcome to " << program << std::endl;
+    std::cout << "Built on " << ::formatBuildDate ( __DATE__ ) << " at " << __TIME__ << std::endl;
 
     // Send trace output here. Comment this out for stdout.
     const std::string traceFile ( tempDir + program + ".csv" );

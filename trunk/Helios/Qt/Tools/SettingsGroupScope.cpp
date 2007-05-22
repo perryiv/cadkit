@@ -14,13 +14,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Qt/Core/SettingsGroupScope.h"
+#include "Helios/Qt/Tools/SettingsGroupScope.h"
 
 #include "Usul/Trace/Trace.h"
 
 #include "QtCore/QSettings"
 
-using namespace CadKit::Helios::Core;
+using namespace CadKit::Helios::Tools;
 
 
 ///////////////////////////////////////////////////////////////////////////////

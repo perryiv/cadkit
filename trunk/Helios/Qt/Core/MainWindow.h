@@ -19,6 +19,7 @@
 
 #include "Helios/Qt/Core/Export.h"
 
+#include "Usul/Interfaces/GUI/ILoadFileDialog.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Pool.h"
 #include "Usul/Threads/RecursiveMutex.h"
@@ -36,7 +37,9 @@ namespace Helios {
 namespace Core {
 
 
-class HELIOS_QT_CORE_EXPORT MainWindow : public QMainWindow
+class HELIOS_QT_CORE_EXPORT MainWindow : 
+  public QMainWindow,
+  public Usul::Interfaces::ILoadFileDialog
 {
   Q_OBJECT
 
@@ -49,10 +52,24 @@ public:
   typedef std::map<std::string,QAction*>    Actions;
   typedef std::map<std::string,QToolBar*>   ToolBars;
   typedef Usul::Threads::Pool               ThreadPool;
+  typedef Usul::Interfaces::ILoadFileDialog ILoadFileDialog;
+  typedef ILoadFileDialog::FileResult       FileResult;
+  typedef ILoadFileDialog::FilesResult      FilesResult;
+  typedef ILoadFileDialog::Filters          Filters;
+
+  // Smart-pointer definitions.
+  USUL_DECLARE_REF_POINTERS ( MainWindow );
+
+  // Usul::Interfaces::IUnknown members.
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   // Constructor and destructor.
   MainWindow ( const std::string &vendor, const std::string &url, const std::string &program );
   virtual ~MainWindow();
+
+  // Get the name of the file to load from
+  virtual FileResult        getLoadFileName  ( const std::string &title = "Load", const Filters &filters = Filters() );
+  virtual FilesResult       getLoadFileNames ( const std::string &title = "Load", const Filters &filters = Filters() );
 
   // Get the mutex.
   Mutex &                   mutex() const { return *_mutex; }
@@ -95,6 +112,7 @@ private:
   Actions _actions;
   ToolBars _toolBars;
   ThreadPool::ValidAccessRefPtr _threadPool;
+  unsigned long _refCount;
 };
 
 

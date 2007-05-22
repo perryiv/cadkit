@@ -14,7 +14,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Qt/Core/Icon.h"
+#include "Helios/Qt/Tools/Icon.h"
 
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/File/Path.h"
@@ -25,7 +25,7 @@
 #include "QtGui/QIcon"
 #include "QtGui/QWidget"
 
-using namespace CadKit::Helios::Core;
+using namespace CadKit::Helios::Tools;
 
 
 ///////////////////////////////////////////////////////////////////////////////

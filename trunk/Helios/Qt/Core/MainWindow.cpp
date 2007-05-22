@@ -16,24 +16,18 @@
 
 #include "Helios/Qt/Core/MainWindow.h"
 #include "Helios/Qt/Core/Constants.h"
-#include "Helios/Qt/Core/Icon.h"
-#include "Helios/Qt/Core/SettingsGroupScope.h"
-#include "Helios/Qt/Core/SplashScreen.h"
-#include "Helios/Plugins/Manager/Manager.h"
+#include "Helios/Qt/Commands/Action.h"
+#include "Helios/Qt/Commands/OpenDocument.h"
+#include "Helios/Qt/Tools/Icon.h"
+#include "Helios/Qt/Tools/SettingsGroupScope.h"
 
-#include "Usul/CommandLine/Arguments.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Threads/ThreadId.h"
-#include "Usul/Threads/Thread.h"
-#include "Usul/Threads/Manager.h"
-#include "Usul/Threads/Callback.h"
 #include "Usul/Trace/Trace.h"
-#include "Usul/Interfaces/IUnknown.h"
-#include "Usul/Predicates/FileExists.h"
 
 #include "QtGui/QApplication"
 #include "QtGui/QMenuBar"
@@ -57,7 +51,8 @@ MainWindow::MainWindow ( const std::string &vendor,
   _settings   ( QSettings::IniFormat, QSettings::UserScope, vendor.c_str(), program.c_str() ),
   _actions    (),
   _toolBars   (),
-  _threadPool ( 0x0 )
+  _threadPool ( 0x0 ),
+  _refCount   ( 0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -70,7 +65,7 @@ MainWindow::MainWindow ( const std::string &vendor,
   Usul::Threads::Named::instance().add ( Usul::Threads::Names::GUI, Usul::Threads::currentThreadId() );
 
   // Set the icon.
-  CadKit::Helios::Core::Icon::set ( "helios_sun.png", this );
+  CadKit::Helios::Tools::Icon::set ( "helios_sun.png", this );
 
   // Enable toolbar docking.
   this->setEnabled ( true );
@@ -85,15 +80,6 @@ MainWindow::MainWindow ( const std::string &vendor,
 
   // Load the settings.
   this->_loadSettings();
-
-  // Set the title.
-  this->setWindowTitle( tr ( "Helios" ) );
-  
-  // Delete on close.
-  this->setAttribute ( Qt::WA_DeleteOnClose );
-  
-  // Load plugins.
-  this->_loadPlugins();
 
   // Start the thread pool.
   _threadPool = new ThreadPool;
@@ -123,7 +109,23 @@ MainWindow::~MainWindow()
 void MainWindow::_destroy()
 {
   USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+  USUL_THREADS_ENSURE_GUI_THREAD ( throw std::runtime_error ( "Error 2933090027: Not GUI thread" ) );
+
+  // Detach actions.
+  while ( false == _actions.empty() )
+  {
+    CadKit::Helios::Commands::BaseAction *action ( dynamic_cast < CadKit::Helios::Commands::BaseAction * > ( _actions.begin()->second ) );
+    if ( 0x0 != action )
+    {
+      this->removeAction ( action );
+      action->caller ( 0x0 );
+      delete action;
+    }
+    _actions.erase ( _actions.begin() );
+  }
+
+  // Should be true.
+  USUL_ASSERT ( 0 == _refCount );
 
   // Wait here until all threads in the pool are done.
   _threadPool->wait();
@@ -150,7 +152,7 @@ void MainWindow::_loadSettings()
 
   // Set the window's properties.
   {
-    SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::MAIN_WINDOW, _settings );
+    CadKit::Helios::Tools::SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::MAIN_WINDOW, _settings );
     const QRect rect ( _settings.value ( CadKit::Helios::Core::Registry::Keys::GEOMETRY.c_str(), CadKit::Helios::Core::Registry::Defaults::GEOMETRY ).value<QRect>() );
     this->setGeometry ( rect );
 
@@ -172,7 +174,7 @@ void MainWindow::_saveSettings()
 
   // Set the window's properties.
   {
-    SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::MAIN_WINDOW, _settings );
+    CadKit::Helios::Tools::SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::MAIN_WINDOW, _settings );
     const QRect rect ( this->geometry() );
     _settings.setValue ( CadKit::Helios::Core::Registry::Keys::GEOMETRY.c_str(), rect );
   }
@@ -202,7 +204,6 @@ void MainWindow::_buildMenu()
   // Add menus.
   QMenu *menu = this->menuBar()->addMenu ( tr ( "&File" ) );
   menu->addAction ( _actions["open_document"] );
-  
   menu->addSeparator();
   menu->addAction ( _actions["exit"] );
 }
@@ -255,9 +256,11 @@ void MainWindow::_makeActions()
     QAction *action ( new QAction ( tr ( "&Open" ), this ) );
     action->setShortcut ( tr ( "Ctrl+O" ) );
     action->setStatusTip ( "Open existing document" );
-    CadKit::Helios::Core::Icon::set ( "openDocument.png", action );
+    CadKit::Helios::Tools::Icon::set ( "openDocument.png", action );
     this->connect ( action, SIGNAL ( triggered() ), this, SLOT ( _open() ) );
-    _actions.insert ( Actions::value_type ( "open_document", action ) );
+
+    _actions.insert ( Actions::value_type ( "open_document", 
+      new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::OpenDocument> ( this ) ) );
   }
 
   {
@@ -331,64 +334,88 @@ QSettings &MainWindow::settings()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Load the plugins.
+//  Increment the reference count.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::_loadPlugins()
-{
-	USUL_TRACE_SCOPE;
-
-	// Create a thread.
-	Usul::Threads::Thread::RefPtr thread ( Usul::Threads::Manager::instance().create() );
-	
-	// Useful typedefs.  Needed for gcc.
-	typedef void (MainWindow::*Function) ( Usul::Threads::Thread *s );
-  typedef Usul::Adaptors::MemberFunction < MainWindow*, Function > MemFun;
-	
-	thread->started  ( Usul::Threads::newFunctionCallback ( MemFun ( this, &MainWindow::_startLoadPlugins ) ) );
-	thread->finished ( Usul::Threads::newFunctionCallback ( MemFun ( this, &MainWindow::_finishLoadPlugins ) ) );
-
-	thread->start();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Start loading plugins.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MainWindow::_startLoadPlugins ( Usul::Threads::Thread* )
-{
-	USUL_TRACE_SCOPE;
-
-	SplashScreen splash;
-	
-	std::string pluginFile ( Usul::CommandLine::Arguments::instance().directory() + "/../config/HeliosQt.xml" );
-	USUL_TRACE_2( "Plugin file: ", pluginFile );
-	
-	if( Usul::Predicates::FileExists::test( pluginFile ) )
-	{
-		CadKit::Helios::Plugins::Manager::Manager::instance().filename ( pluginFile );
-		CadKit::Helios::Plugins::Manager::Manager::instance().parse();
-	
-		CadKit::Helios::Plugins::Manager::Manager::instance().load ( splash.queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-	}
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Plugins are finished loading.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MainWindow::_finishLoadPlugins ( Usul::Threads::Thread* )
+void MainWindow::ref()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  ++_refCount;
+}
 
-	// Splash screen is done.
-	// Show MainWindow.
-	this->show();
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Decrement the reference count.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::unref ( bool )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  if ( 0 == _refCount )
+  {
+    USUL_ASSERT ( 0 );
+    Usul::Exceptions::Thrower<std::runtime_error> ( "Error 4107780854: Reference count is already 0" );
+  }
+
+  --_refCount;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
+{
+  USUL_TRACE_SCOPE;
+  // No need to guard, should be re-entrant.
+
+  switch ( iid )
+  {
+  case Usul::Interfaces::ILoadFileDialog::IID:
+    return static_cast<Usul::Interfaces::ILoadFileDialog*>(this);
+  case Usul::Interfaces::IUnknown::IID:
+    return static_cast<Usul::Interfaces::IUnknown*>(static_cast<Usul::Interfaces::ILoadFileDialog*>(this));
+  default:
+    return 0x0;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show dialog to get a file name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MainWindow::FileResult MainWindow::getLoadFileName ( const std::string &title, const Filters &filters )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  FilesResult result ( this->getLoadFileNames ( title, filters ) );
+  return ( ( result.first.empty() ) ? FileResult() : FileResult ( result.first.front(), result.second ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show dialog to get many file names.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MainWindow::FilesResult MainWindow::getLoadFileNames ( const std::string &title, const Filters &filters )
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( throw std::runtime_error ( "Error 4159638088: Not GUI thread" ) );
+  Guard guard ( this->mutex() );
+  FilesResult result;
+  return result;
 }

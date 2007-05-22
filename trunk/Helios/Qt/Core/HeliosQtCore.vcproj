@@ -177,14 +177,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Icon.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Icon.h"
-				>
-			</File>
-			<File
 				RelativePath=".\MainWindow.cpp"
 				>
 			</File>
@@ -213,14 +205,6 @@
 						Outputs="&quot;.\GeneratedFiles\moc_MainWindow.cpp&quot;"
 					/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\SettingsGroupScope.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SettingsGroupScope.h"
-				>
 			</File>
 			<File
 				RelativePath=".\SplashScreen.cpp"

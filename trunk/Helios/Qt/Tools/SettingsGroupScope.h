@@ -10,36 +10,45 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Helper class for creating icons.
+//  Scope for setting groups.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_HELIOS_QT_CORE_ICONS_H_
-#define _CADKIT_HELIOS_QT_CORE_ICONS_H_
+#ifndef _CADKIT_HELIOS_QT_TOOLS_SETTINGS_GROUP_SCOPE_H_
+#define _CADKIT_HELIOS_QT_TOOLS_SETTINGS_GROUP_SCOPE_H_
 
-#include "Helios/Qt/Core/Export.h"
+#include "Helios/Qt/Tools/Export.h"
 
 #include <string>
 
-class QWidget;
-class QAction;
+class QSettings;
 
 
 namespace CadKit {
 namespace Helios {
-namespace Core {
+namespace Tools {
 
 
-struct HELIOS_QT_CORE_EXPORT Icon
+class HELIOS_QT_TOOLS_EXPORT SettingsGroupScope
 {
-  static void set ( const std::string &file, QWidget *widget );
-  static void set ( const std::string &file, QAction *action );
+public:
+
+  SettingsGroupScope ( const std::string &name, QSettings &settings );
+  ~SettingsGroupScope();
+
+private:
+
+  // No copying or assignment.
+  SettingsGroupScope ( const SettingsGroupScope & );
+  SettingsGroupScope &operator = ( const SettingsGroupScope & );
+
+  QSettings &_settings;
 };
 
 
-} // namespace Core
+} // namespace Tools
 } // namespace Helios
 } // namespace CadKit
 
 
-#endif //_CADKIT_HELIOS_QT_CORE_ICONS_H_
+#endif //_CADKIT_HELIOS_QT_TOOLS_SETTINGS_GROUP_SCOPE_H_

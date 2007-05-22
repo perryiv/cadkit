@@ -169,15 +169,76 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\Action.h"
+				>
+			</File>
+			<File
+				RelativePath=".\BaseAction.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\BaseAction.h"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing BaseAction.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe  -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;.&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;.\BaseAction.h&quot; -o &quot;.\GeneratedFiles\moc_BaseAction.cpp&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\BaseAction.h"
+						Outputs="&quot;.\GeneratedFiles\moc_BaseAction.cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing BaseAction.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe  -D_USUL_TRACE -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -I&quot;$(LOCAL_SRC_DIR)&quot; -I&quot;$(QTDIR)\include&quot; &quot;.\BaseAction.h&quot; -o &quot;.\GeneratedFiles\moc_BaseAction.cpp&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\BaseAction.h"
+						Outputs="&quot;.\GeneratedFiles\moc_BaseAction.cpp&quot;"
+					/>
+				</FileConfiguration>
+
+			</File>
+			<File
+				RelativePath=".\Command.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Command.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Export.h"
 				>
 			</File>
 			<File
-				RelativePath=".\OpenDocumentCommand.cpp"
+				RelativePath=".\OpenDocument.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\OpenDocumentCommand.h"
+				RelativePath=".\OpenDocument.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Target.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Target.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Generated Files"
+			Filter="moc;h;cpp"
+			UniqueIdentifier="{9437f44b-e7bb-46c1-9a8f-35f3a7ad52c8}"
+			>
+			<File
+				RelativePath=".\GeneratedFiles\moc_BaseAction.cpp"
 				>
 			</File>
 		</Filter>

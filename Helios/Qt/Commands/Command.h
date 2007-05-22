@@ -1,0 +1,76 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Perry L Miller IV
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Base class for all commands.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _CADKIT_HELIOS_QT_COMMANDS_COMMAND_CLASS_H_
+#define _CADKIT_HELIOS_QT_COMMANDS_COMMAND_CLASS_H_
+
+#include "Helios/Qt/Commands/Export.h"
+
+#include "Usul/Commands/Command.h"
+
+#include <string>
+
+namespace CadKit { namespace Helios { namespace Commands { class Target; } } }
+
+class QAction;
+
+
+namespace CadKit {
+namespace Helios {
+namespace Commands {
+
+
+class HELIOS_QT_COMMANDS_EXPORT Command : public Usul::Commands::Command
+{
+public:
+
+  // Typedefs.
+  typedef Usul::Commands::Command BaseClass;
+  typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef CadKit::Helios::Commands::Target Target;
+
+  // Smart-pointer definitions.
+  USUL_DECLARE_REF_POINTERS ( Command );
+
+  // Type-id definition.
+  USUL_DECLARE_TYPE_ID ( Command );
+
+protected:
+
+  // Constructor.
+  Command ( IUnknown *caller );
+
+  // Use reference counting.
+  virtual ~Command();
+
+private:
+
+  // No copying or assignment.
+  Command ( const Command & );
+  Command &operator = ( const Command & );
+
+  void                      _destroy();
+
+  Target *_target;
+};
+
+
+} // namespace Commands
+} // namespace Helios
+} // namespace CadKit
+
+
+#endif //_CADKIT_HELIOS_QT_COMMANDS_COMMAND_CLASS_H_

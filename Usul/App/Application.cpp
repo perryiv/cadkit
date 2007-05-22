@@ -21,6 +21,22 @@ using namespace Usul::App;
 
 Application * Application::_instance ( 0x0 );
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application& Application::instance()
+{
+  if( 0x0 == _instance )
+    _instance = new Application;
+
+  return *_instance;
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -54,6 +70,8 @@ const std::string Application::iconDirectory() const
 {
 	const std::string dir ( Usul::CommandLine::Arguments::instance().directory() );
 	std::string path ( dir + "/icons/" );
+
+  return path;
 }
 
 

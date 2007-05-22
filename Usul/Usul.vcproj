@@ -2139,6 +2139,14 @@
 					RelativePath=".\App\Controller.h"
 					>
 				</File>
+				<File
+					RelativePath=".\App\Application.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\App\Application.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Registry"

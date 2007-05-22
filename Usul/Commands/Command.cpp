@@ -9,7 +9,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Base class for all commands.
+//  Base class for all commands. A command is instantiated and executed 
+//  inside of an event handler (action).
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -32,12 +33,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Command, Command::BaseClass );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Command::Command ( Usul::Interfaces::IUnknown *caller ) : BaseClass(),
-  _caller ( caller ),
-  _text(),
-  _toolTipText(),
-  _shortcut(),
-  _iconPath()
+Command::Command ( IUnknown *caller ) : BaseClass(),
+  _caller ( caller )
 {
   USUL_TRACE_SCOPE;
 }
@@ -72,15 +69,13 @@ void Command::_destroy()
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Query for the interface.
-//  Does this function need to be guarded?
-//  If two threads are in this function there isn't any chance of data problems.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 Usul::Interfaces::IUnknown *Command::queryInterface ( unsigned long iid )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  // No need to guard, should be re-entrant.
 
   switch ( iid )
   {
@@ -96,11 +91,27 @@ Usul::Interfaces::IUnknown *Command::queryInterface ( unsigned long iid )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Execute the command.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Command::execute ( Usul::Interfaces::IUnknown * )
+{
+  USUL_TRACE_SCOPE;
+  // No need to guard, should be re-entrant.
+
+  // Execute the command.
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Command::_execute ), "3084410573" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Return the caller.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Usul::Interfaces::IUnknown *Command::_getCaller() const
+const Usul::Interfaces::IUnknown *Command::caller() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -114,121 +125,9 @@ const Usul::Interfaces::IUnknown *Command::_getCaller() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown *Command::_getCaller()
+Usul::Interfaces::IUnknown *Command::caller()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _caller.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the text.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Command::text( const std::string& value )
-{
-	USUL_TRACE_SCOPE;
-	Guard guard ( this->mutex() );
-	_text = value;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the text.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string Command::text() const
-{
-	USUL_TRACE_SCOPE;
-	Guard guard ( this->mutex() );
-  return std::string ( _text.begin(), _text.end() ); // More thread-safe?
-}
-  
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the tooltip.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Command::tooltip ( const std::string& value )
-{
-	USUL_TRACE_SCOPE;
-	Guard guard ( this->mutex() );
-	_toolTipText = value;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the tooltip.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string Command::tooltip() const
-{
-	USUL_TRACE_SCOPE;
-	Guard guard ( this->mutex() );
-  return std::string ( _toolTipText.begin(), _toolTipText.end() ); // More thread-safe?
-}
-  
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the shortcut.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Command::shortcut ( const std::string& value )
-{
-	USUL_TRACE_SCOPE;
-	Guard guard ( this->mutex() );
-	_shortcut = value;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the shortcut.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string Command::shortcut() const
-{
-	USUL_TRACE_SCOPE;
-	Guard guard ( this->mutex() );
-  return std::string ( _shortcut.begin(), _shortcut.end() ); // More thread-safe?
-}
-  
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the icon path.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Command::iconPath ( const std::string& value )
-{
-	USUL_TRACE_SCOPE;
-	Guard guard ( this->mutex() );
-	_iconPath = value;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the icon path.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string Command::iconPath() const
-{
-	USUL_TRACE_SCOPE;
-	Guard guard ( this->mutex() );
-  return std::string ( _iconPath.begin(), _iconPath.end() ); // More thread-safe?
 }

@@ -859,10 +859,6 @@
 						>
 					</File>
 					<File
-						RelativePath="Interfaces\ICommand.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Interfaces\IHandle.h"
 						>
 					</File>
@@ -1244,6 +1240,30 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\IVectorLayer.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Commands"
+					>
+					<File
+						RelativePath=".\Interfaces\ICanRedo.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ICanUndo.h"
+						>
+					</File>
+					<File
+						RelativePath="Interfaces\ICommand.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IRedo.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IUndo.h"
 						>
 					</File>
 				</Filter>
@@ -2168,11 +2188,27 @@
 				Name="Commands"
 				>
 				<File
+					RelativePath=".\Commands\Action.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Commands\Action.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Commands\Command.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Commands\Command.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Commands\History.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Commands\History.h"
 					>
 				</File>
 			</Filter>

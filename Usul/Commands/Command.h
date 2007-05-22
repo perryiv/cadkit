@@ -9,7 +9,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Base class for all commands.
+//  Base class for all commands. A command is instantiated and executed 
+//  inside of an event handler (action).
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -20,8 +21,6 @@
 #include "Usul/Base/Object.h"
 
 #include "Usul/Interfaces/ICommand.h"
-
-#include <string>
 
 
 namespace Usul {
@@ -43,24 +42,15 @@ public:
   // Type-id definition.
   USUL_DECLARE_TYPE_ID ( Command );
 
-  /// Usul::Interfaces::IUnknown members.
+  // Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
-  
-  /// Get/Set the text.
-  void                        text( const std::string& value );
-  std::string                 text() const;
-  
-  /// Get/Set the tooltip.
-  void                        tooltip ( const std::string& value );
-  std::string                 tooltip() const;
-  
-  /// Get/Set the shortcut.
-  void                        shortcut ( const std::string& value );
-  std::string                 shortcut() const;
-  
-  /// Get/Set the icon path.
-  void                        iconPath ( const std::string& value );
-  std::string                 iconPath() const;
+
+  // Get the caller.
+  const IUnknown *            caller() const;
+  IUnknown *                  caller();
+
+  // Execute the command.
+  virtual void                execute ( Usul::Interfaces::IUnknown * );
 
 protected:
 
@@ -70,8 +60,7 @@ protected:
   // Use reference counting.
   virtual ~Command();
 
-  const IUnknown *            _getCaller() const;
-  IUnknown *                  _getCaller();
+  virtual void                _execute() = 0;
 
 private:
 
@@ -82,11 +71,6 @@ private:
   void                        _destroy();
 
   IUnknown::RefPtr _caller;
-  std::string      _text;
-  std::string      _toolTipText;
-  std::string      _shortcut;
-  std::string      _iconPath;
-  
 };
 
 

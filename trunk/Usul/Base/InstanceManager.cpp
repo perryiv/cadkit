@@ -53,8 +53,8 @@ namespace Usul
 ///////////////////////////////////////////////////////////////////////////////
 
 InstanceManager::InstanceManager() : 
-_imMutex( 0x0 ),
-_objects()
+  _imMutex( 0x0 ),
+  _objects()
 {
 }
 

@@ -21,6 +21,7 @@
 #include "Threads/OpenThreads/Mutex.h"
 #include "Threads/OpenThreads/Thread.h"
 
+#include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Exceptions/Thrower.h"
@@ -161,11 +162,14 @@ namespace Program
       // Declare application.
       QApplication app ( argc, argv );
 
+      // Set the splash screen.
+      Usul::App::Application::instance().splashImage( "splash_screen.jpg" );
+
       // Declare the main window.
       CadKit::Helios::Core::MainWindow mw ( vendor, url, program );
 
       // Show the main window.
-      //mw.show();
+      mw.show();
 
       // Call quit when the last window closes. (Not sure if this is needed...)
       app.connect ( &app, SIGNAL ( lastWindowClosed() ), &app, SLOT ( quit() ) );

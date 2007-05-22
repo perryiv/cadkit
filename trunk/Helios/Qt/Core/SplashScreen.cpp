@@ -11,10 +11,13 @@
 #include "Helios/Qt/Core/SplashScreen.h"
 
 #include "Usul/Errors/Assert.h"
+#include "Usul/App/Application.h"
+#include "Usul/Predicates/FileExists.h"
 
 #include "QtGui/QVBoxLayout"
 #include "QtGui/QSplashScreen"
 #include "QtGui/QProgressBar"
+#include "QtGui/QPixmap"
 
 using namespace CadKit::Helios::Core;
 
@@ -25,11 +28,27 @@ using namespace CadKit::Helios::Core;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SplashScreen::SplashScreen() : BaseClass(),
-_splashScreen ( 0x0 ),
-_progressBar ( 0x0 ),
+SplashScreen::SplashScreen( QWidget *mainWindow ) : BaseClass(),
+_splashScreen ( new QSplashScreen ),
+_progressBar ( new QProgressBar ),
 _refCount ( 0 )
 {
+  QVBoxLayout *layout ( new QVBoxLayout ( this ) );
+
+  QPixmap pixmap;
+
+  // Get the splash screen.
+  std::string splashImage ( Usul::App::Application::instance().splashImagePath() );
+  if( Usul::Predicates::FileExists::test ( splashImage ) )
+    pixmap.load( splashImage.c_str() );
+
+  if ( false == pixmap.isNull() )
+    _splashScreen->setPixmap( pixmap );
+
+  _splashScreen->finish ( mainWindow );
+
+  layout->addWidget( _splashScreen );
+  layout->addWidget( _progressBar );
 }
 
 

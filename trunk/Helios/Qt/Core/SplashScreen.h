@@ -32,7 +32,7 @@ class SplashScreen : public QWidget,
 public:
 	typedef QWidget BaseClass;
 	
-	SplashScreen();
+  SplashScreen( QWidget *mainWindow );
 	~SplashScreen();
 	
 	USUL_DECLARE_IUNKNOWN_MEMBERS;

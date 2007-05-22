@@ -16,6 +16,7 @@
 
 #include "Helios/Qt/Core/MainWindow.h"
 #include "Helios/Qt/Core/Constants.h"
+#include "Helios/Qt/Core/SplashScreen.h"
 #include "Helios/Qt/Commands/Action.h"
 #include "Helios/Qt/Commands/OpenDocument.h"
 #include "Helios/Qt/Tools/Icon.h"
@@ -55,6 +56,10 @@ MainWindow::MainWindow ( const std::string &vendor,
   _refCount   ( 0 )
 {
   USUL_TRACE_SCOPE;
+
+  // Make the splash screen.
+  SplashScreen splashScreen ( this );
+  splashScreen.show();
 
   // Program-wide settings.
   QCoreApplication::setOrganizationName ( vendor.c_str() );

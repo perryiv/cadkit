@@ -12,6 +12,7 @@
 //
 //  I'm not sure if this class is needed, or if this is the correct location for it.
 //  I'm currently thinking that this class will be used for branding.
+//  TODO: Need a mutex.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

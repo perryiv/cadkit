@@ -139,13 +139,7 @@ namespace CV
   const unsigned long COMMAND_HIDE_SELECTED    = BUTTON_YELLOW;
   const unsigned long COMMAND_UNSELECT_VISIBLE = BUTTON_GREEN;
   const unsigned long COMMAND_SHOW_ALL         = BUTTON_RED;  
-#if defined (INV3RSION_NAV)
-  const unsigned long INVR_TRANSLATE  = BUTTON_YELLOW;
-  const unsigned long INVR_ROTATE     = BUTTON_RED;
-  const unsigned long INVR_SCALE      = BUTTON_GREEN;
-  const unsigned long NAVIGATE_FLY    = BUTTON_BLUE;
-  const unsigned long INVR_NAV_RESET  = BUTTON_YELLOW | BUTTON_RED;
-#else
+
   const unsigned long NAVIGATE_TOGGLE = BUTTON_YELLOW;
   const unsigned long STOP_NAV_TOOL   = BUTTON_RED;       // helps greatly in sim mode
   const unsigned long NAVIGATE_FLY    = BUTTON_BLUE;      // Joseph doesn't need it, but its handy if anybody else does
@@ -295,21 +289,6 @@ Application::Application ( Args &args ) :
   _anim_steps     ( 0 ),
   _animModel      ( NULL ),
   _nextFrameTime  ( 0.0 )
-#if defined (INV3RSION_NAV)
-  , _invrNav( new invr::nav::CAD(&_tracker->matrix()) )
-#endif
-#if defined (INV3RSION_COLLABORATE)
-  , _avatarFactory    ( NULL )
-  , _localAvatar      ( NULL )
-  , _localAvatarName  ( "NULL" )
-  , _localAvatarFileName ( "NULL" )
-  , _controlAvatar    ( NULL )
-  , _headTracker      ( new vrjGA::TrackerDevice ( "VJHead" ) )
-  , _bodyMaxYawRate   ( 0.001 )
-  , _avatarWaitCount  ( 0 )
-  , _headYawOffset    ( 0 )
-  , _prevHeadYaw      ( 0 )
-#endif
 {
   ErrorChecker ( 1067097070u, 0 == _appThread );
   ErrorChecker ( 2970484549u, 0 == _mainThread );
@@ -401,47 +380,6 @@ Application::~Application()
     delete _gridFunctors[i];
   }
   _gridFunctors.clear();
-
-#if defined (INV3RSION_NAV)
-  if(_invrNav) delete _invrNav;
-# endif
-
-#if defined (INV3RSION_COLLABORATE)
-  if(_localAvatar)
-  {
-    std::string cmd = "CV AVATAR_DELETE = ";
-    cmd += _localAvatar->name;
-    _sinterSendCommand(cmd, true);
-  }
-#endif
-
-# if defined (USE_SINTERPOINT)
-  if( _sinterReceiver )
-  {
-    _sinterReceiver->Disconnect();
-    delete _sinterReceiver;
-  }
-# endif
-#if defined (INV3RSION_COLLABORATE)
-  if( _sinterCollabSender )
-  {
-    _sinterCollabSender->Disconnect();
-    delete _sinterCollabSender;
-  }
-  
-  if(_sinterCollabReceiver)
-  {
-    _sinterCollabReceiver->Disconnect();
-    delete _sinterCollabReceiver;
-  }
-  
-  for( i = 0; i < _avatars.size(); i++)
-  {
-    delete _avatars[i]->avatar;
-    delete _avatars[i];
-  }
-  _avatars.clear();
-#endif
 }
 
 
@@ -462,16 +400,6 @@ void Application::contextInit()
   GLint vp[4];
   ::glGetIntegerv ( GL_VIEWPORT, vp );
   _vp.set ( vp[0], vp[1], vp[2], vp[3] );
-
-#if defined (INV3RSION_NAV)
-  _invrNav->contextInit();
-#endif
-
-#if defined (INV3RSION_COLLABORATE)
-  if(_avatarFactory) _avatarFactory->contextInit();
-  _avatarTime = _tracker->time();
-#endif
-
 }
 
 
@@ -559,11 +487,6 @@ void Application::_init()
   // Set the scene-viewer's scene.
   this->setSceneData ( _root.get() );
 
-  // Setup Sinterpoint if enabled
-#if defined (USE_SINTERPOINT)
-  this->_sinterPointInit();
-#endif
-
   // Parse the command-line arguments.
   this->_parseCommandLine();
 
@@ -595,21 +518,6 @@ void Application::_init()
   this->_handleNavigationEvent( NAVIGATE_NO_NAV );   // activate default navigation
                                                           // TODO: read from _pref
   // Note: we cannot initialize the text yet because the viewport has not been set.
-
-#if defined (INV3RSION_NAV)
-  _invrNav->init();
-  _invrNav->SetIconColor(_prefs->iconColor()[0], 
-                         _prefs->iconColor()[1], 
-                         _prefs->iconColor()[2], 
-                         _prefs->iconColor()[3]);
-  _invrNav->SetIconSize(_prefs->iconSize());
-  _invrNav->SetTranslationAccel(_prefs->acceleration());
-  _invrNav->SetInvertRotation(_prefs->invertRotation());
-#endif
-#if defined (INV3RSION_COLLABORATE)
-  if( _localAvatarName != "NULL" && _localAvatarFileName != "NULL" )
-    _sendAddAvatarCommand( _localAvatarFileName, _localAvatarName);
-#endif
 }
 
 
@@ -697,7 +605,6 @@ void Application::_initGrid ( osg::Node *node )
 {
   ErrorChecker ( 1067093690, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 1293823849, 0x0 != node );
-  int i;
 
   // Get the bounding sphere of the node.
   const osg::BoundingSphere &bs = node->getBound();
@@ -706,13 +613,15 @@ void Application::_initGrid ( osg::Node *node )
   float r = ( bs.radius() <= 1e-6 ) ? 1 : bs.radius();
 
   // Clean up any old grids
-  for(unsigned int i=0; i<_gridFunctors.size(); ++i){
+  for(unsigned int i=0; i<_gridFunctors.size(); ++i)
+  {
     delete _gridFunctors[i];
   }
   _gridFunctors.clear();
 
   // Set the properties.
-  for(i=0; i<_prefs->numGrids(); ++i){
+  for( int i = 0; i < _prefs->numGrids(); ++i )
+  {
     OsgTools::Grid *grid = new OsgTools::Grid();
     grid->numBlocks ( _prefs->numGridBlocks(i) );
     grid->size ( r * _prefs->gridScale(i) );
@@ -726,7 +635,7 @@ void Application::_initGrid ( osg::Node *node )
     osg::Vec3 c ( bs.center() );
     if(_prefs->offsetGrid(i)) c[1] = -r;
     grid->center ( Usul::Math::Vec3f ( c[0], c[1], c[2] ) );
-	_gridFunctors.push_back(grid);
+	  _gridFunctors.push_back(grid);
   }
 
   _rebuildGrid();
@@ -853,10 +762,6 @@ void Application::_initMenu()
   // set the stateset
   _menuBranch->setStateSet( ss.get() );
 
-
-  #define CV_REGISTER(member_function,name) \
-  _buttonMap[name] = MenuKit::memFunCB2 \
-    ( this, &Application::member_function )
   // Fill the callback map.
   CV_REGISTER ( _quitCallback,     "exit" );    // macro expands to ...
       // _buttonmap["exit"] = MenuKit::memFunCB2 ( this, &Application::_quitCallback ) 
@@ -921,7 +826,7 @@ void Application::_initMenu()
   //CV_REGISTER ( _saveView,         "save_camera_view" );
 
   // Get the component.
-  VRV::Interfaces::IMenuRead::ValidQueryPtr reader
+  VRV::Interfaces::IMenuRead::QueryPtr reader
     ( Usul::Components::Object::create( VRV::Interfaces::IMenuRead::IID,
       CV_GRAPHICAL_USER_INTERFACE ) );
 
@@ -929,11 +834,14 @@ void Application::_initMenu()
   std::string filename ( CV::Config::filename ( "menu" ) );
 
   // Read the configuration file.
-  reader->readMenuFile ( filename, ValidUnknown ( this ) );
+  if( reader.valid() )
+    reader->readMenuFile ( filename, ValidUnknown ( this ) );
 
   // Set the menu.
-  VRV::Interfaces::IMenuGet::ValidQueryPtr menu ( reader );
-  _menu->menu ( menu->getMenu() );
+  VRV::Interfaces::IMenuGet::QueryPtr menu ( reader );
+
+  if( menu.valid() )
+    _menu->menu ( menu->getMenu() );
 
   // Default settings, so that the menu has the correct toggle's checked.
   OsgTools::State::StateSet::setPolygonsFilled ( _models.get(), false );
@@ -1018,7 +926,6 @@ void Application::_initStatusBar()
 {
   ErrorChecker ( 2652041460u, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 1890904769u, _statusBar.valid() );
-  typedef USUL_VALID_REF_POINTER(MenuKit::Menu) ValidStatusBar;
   typedef USUL_VALID_REF_POINTER(osg::StateSet) StateSet;
 
   // Set the status-bar scene.
@@ -1057,16 +964,6 @@ void Application::_parseCommandLine()
                   restart.end(), 
                   Usul::Adaptors::memberFunction ( this, &Application::_loadRestartFile ) );
 
-#if defined (INV3RSION_COLLABORATE)
-  // Extract the avatar cfg files and remove them from the remaining arguments.
-  Parser::Args avatar = _parser->files ( ".cfg", true );
-
-  // Load the avatar files.
-  std::for_each ( avatar.begin(),
-                  avatar.end(), 
-                  Usul::Adaptors::memberFunction ( this, &Application::_registerAvatar ) );
-#endif
-
   // Extract the model files and remove them from the remaining arguments.
   Parser::Args models = _parser->files ( true );
 
@@ -1096,13 +993,11 @@ void Application::preFrame()
   {
     this->_update ( *_msgText, "Error 1999395957: Application::preFrame(): exception: " + std::string ( e.what() ) );
   }
-#if 1
   // Catch exceptions.
   catch ( ... )
   {
     this->_update ( *_msgText, "Error 2847458960: Application::preFrame(): unknown exception." );
   }
-#endif
 }
 
 
@@ -1151,17 +1046,6 @@ void Application::_preFrame()
 
   // Navigate if we are supposed to.
   this->_navigate();
-
-  // Check to see if we are receiving a model, if enabled
-# if defined (USE_SINTERPOINT)
-    this->_sinterReceiveData();
-# endif
-
-#if defined (INV3RSION_COLLABORATE)
-    _headTracker->update();
-    this->_updateAvatars();
-#endif
-
 }
 
 
@@ -1331,68 +1215,6 @@ bool Application::_handleNavigationEvent( const unsigned long eventRequest )
   
   if(_intersector) return false;                              // skip this code if we're in an intersection mode
 
-#if defined (INV3RSION_NAV)
-  mode = _buttons->pressed();                                 // Button press event
-
-  if ( eventRequest )
-    mode = eventRequest;
-
-  switch ( mode )
-  {
-    case INVR_TRANSLATE :
-      std::cout << "INV3RSION CAD TRANSLATE" << std::endl;
-#if defined (INV3RSION_COLLABORATE)
-      _requestNavControl();
-#endif
-      _syncInvrNav();
-      this->_removeCursorChildren();
-      _navigatorH = 0x0;
-      _navigatorV = 0x0;
-      _invrNav->SetMode(invr::nav::CAD::TRANSLATE);
-      handled = true;
-      break;
-    case INVR_ROTATE :
-      std::cout << "INV3RSION CAD ROTATE" << std::endl;
-#if defined (INV3RSION_COLLABORATE)
-      _requestNavControl();
-#endif
-      _syncInvrNav();
-      this->_removeCursorChildren();
-      _navigatorH = 0x0;
-      _navigatorV = 0x0;
-      if(_prefs->newRotation())
-        _invrNav->SetMode(invr::nav::CAD::NEWROTATE);
-      else 
-        _invrNav->SetMode(invr::nav::CAD::ROTATE);
-      handled = true;
-      break;
-    case INVR_SCALE :
-      std::cout << "INV3RSION CAD SCALE" << std::endl;
-#if defined (INV3RSION_COLLABORATE)
-      _requestNavControl();
-#endif
-      _syncInvrNav();
-      this->_removeCursorChildren();
-      _navigatorH = 0x0;
-      _navigatorV = 0x0;
-      _invrNav->SetMode(invr::nav::CAD::SCALE);
-      handled = true;
-      break;
-    case INVR_NAV_RESET :
-      std::cout << "INV3RSION CAD RESET" << std::endl;
-#if defined (INV3RSION_COLLABORATE)
-      _requestNavControl();
-#endif
-      this->_removeCursorChildren();
-      if ( _autoPlacement )
-        _doAutoPlacement(true);
-      else
-        _navBranch->setMatrix ( _home );
-      _syncInvrNav();
-      break;
-  }
-
-#endif
   mode = _buttons->released();                                // Button release event
 
   if ( eventRequest )                                         // if mode NOT specified with function call ...
@@ -1400,25 +1222,6 @@ bool Application::_handleNavigationEvent( const unsigned long eventRequest )
 
   switch ( mode )                                             // which button was used???
   {
-#if defined (INV3RSION_NAV)
-    case INVR_TRANSLATE :
-    case INVR_ROTATE :
-    case INVR_SCALE :
-      std::cout << "STOP NAVIGATION" << std::endl;
-#if defined (INV3RSION_COLLABORATE)
-      if( _controlAvatar == _localAvatar )
-      {
-        std::string cmd = "CV AVATAR_CONTROL_RELEASE\n";
-        _sinterSendCommand(cmd, false );
-      }
-#endif
-      _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
-      _navigatorV = 0x0;                                      // invalidate response to vertical joystick
-      _invrNav->SetMode(invr::nav::CAD::NO_NAV);
-      this->_setNearAndFarClippingPlanes();
-      handled = true;
-      break;
-#else
     case NAVIGATE_TOGGLE :                                    // BUTTON_YELLOW, if not walking, set walk ...
       std::cout << "TOGGLE: ";                                //                if walking, set pole
       if ( _navigatorH.valid() &&                             // IF h and v control are valid
@@ -1482,16 +1285,6 @@ bool Application::_handleToolEvent()
   MenuKit::Item *tool_item (0x0);                             // NULL b/c it's never needed
   bool handled(false);
 
-#if !defined (INV3RSION_NAV)
-  if ( _buttons->released() == TOOL_SCALE )                   // BUTTON_GREEN
-  {
-    std::cout << "SCALE" << std::endl;
-    //_sceneTool=0x0;                                         // invalidate scale tool to prevent toggling off
-    this->_vScaleWorld ( tool_message, tool_item );           // if previous line commented, toggle scale; if not, activate scale
-    handled = true;                                           // button event has been handled
-  }
-#endif
-
   return handled;
 }
 
@@ -1507,20 +1300,6 @@ bool Application::_handleCancelEvent()
   //MenuKit::Message tool_message = MenuKit::MESSAGE_SELECTED;  // simulate message/item from MenuKit
   //MenuKit::Item *tool_item (0x0);                             // NULL b/c it's never needed
   bool handled(false);
-
-#if !defined (INV3RSION_NAV)
-  if ( _buttons->released() == STOP_NAV_TOOL )                // BUTTON_RED
-  {
-    std::cout << "STOP NAVIGATION/TOOLS" << std::endl;
-    _navigatorH = 0x0;                                        // invalidate response to horizontal joystick
-    _navigatorV = 0x0;                                        // invalidate response to vertical joystick
-    _sceneTool  = 0x0;                                        // invalidate scale tool to prevent toggling off
-
-    this->_removeCursorChildren();
-
-    handled = true;                                           // button event has been handled
-  }
-#endif
 
   return handled;
 }
@@ -1626,14 +1405,6 @@ void Application::_postFrame()
       _animModel = NULL;
     }
   }
-
-#if defined (USE_SINTERPOINT)
-    this->_sinterProcessData();
-#if defined (INV3RSION_COLLABORATE)
-    this->_sinterProcessCollabData();
-#endif
-#endif
-
 }
 
 
@@ -2089,6 +1860,7 @@ osg::MatrixTransform* Application::_getGroupMatrixTransform( osg::Group *grp )
   return NULL;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Add or replace a node in the scenegraph
@@ -2198,46 +1970,6 @@ void Application::_replaceNode( osg::ref_ptr<osg::Node> node, const std::string 
   this->_postProcessModelLoad ( std::string("streamed"), node.get() );
 }
 
-#if defined (USE_SINTERPOINT)
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Stream in the model and position it using the matrix.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_streamModel ( std::stringstream &modelstream, const std::string &name )
-{
-  ErrorChecker ( 1901000692u, isAppThread(), CV::NOT_APP_THREAD );
-  
-  // User feedback.
-  this->_update ( *_msgText, "Reading model stream" );
-
-  // Stream in the file
-  osgDB::ReaderWriter* rw = osgDB::Registry::instance()->getReaderWriterForExtension( _sinterFileType );
-  if(!rw){
-	  std::ostringstream out;
-    out << "Error: " << _sinterFileType << " plugin not available, streamed file input will fail.";
-    this->_update ( *_msgText, out.str() );
-    return;
-  }
-  osgDB::ReaderWriter::ReadResult rr = rw->readNode ( modelstream );
-  if(!rr.validNode()){
-	  std::ostringstream out;
-    out << "Error: Streamed input of node file failed, resulting node not vaild.";
-    this->_update ( *_msgText, out.str() );
-    return;
-  }
-  NodePtr node = rr.getNode();
-  
-  this->_replaceNode(node, name);
-  
-  // Signal user when done
-  this->_update ( *_msgText, "Done reading model stream" );
-}
-
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -2363,21 +2095,6 @@ void Application::_navigate()
   // Tell the vertical-input navigator to execute.
   if ( _navigatorV.valid() )
     (*_navigatorV)();
-
-#if defined (INV3RSION_NAV)
-  if( !_navigatorH.valid() && !_navigatorV.valid())
-  {
-    _invrNav->preFrame();
-    _navBranch->setMatrix(osg::Matrix(_invrNav->GetTransform()->mData));
-    
-#if defined (INV3RSION_COLLABORATE)
-    if( _controlAvatar == _localAvatar )
-    {
-      _sinterSendNavUpdate( _invrNav->GetTransform()->mData, false );
-    }
-#endif
-  }
-#endif
 }
 
 
@@ -3131,10 +2848,7 @@ void Application::_postProcessModelLoad ( const std::string &filename, osg::Node
   
   // reset this boolean because it may have been changed by stream loader
   _autoPlacement = _prefs->autoPlacement();
-  
-#if defined (INV3RSION_NAV)
-  _syncInvrNav();
-#endif
+
 }
 
 
@@ -3642,92 +3356,6 @@ void Application::_initTmpDir()
 #endif
 }
 
-#if defined (USE_SINTERPOINT)
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Patch node with diff residing in stream nodeDiff
-//  On completion nodeDiff contains the new node ready for streamed input
-//  Note this makes use of tmp files and system calls for the "patch" command
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::_patchNodeWithDiff ( const std::string &nodeName, std::stringstream &nodeDiff )
-{
-  std::string tmpDiffFileName = _tmpDirName + "cvDiffFile.patch";
-  std::string tmpNodeFileName = _tmpDirName + _sinterNodeName + "." + _sinterFileType;
-  
-  // Open a temporary diffFile and drop the nodeDiff stream data in
-  std::ofstream diffFile;
-  diffFile.open ( tmpDiffFileName.c_str() );
-  if ( !diffFile.is_open() )
-  {
-    std::cout << "ERROR: diff file " << tmpDiffFileName << " failed to open" << std::endl;
-    return false;
-  }
-  diffFile << nodeDiff.rdbuf();
-  diffFile.close();
-
-  // Find the matching node based on name
-  Matcher match;
-  bool matched=false;
-  osg::Node *m = dynamic_cast<osg::Node*>( _models.get() );
-  if ( m )
-  {
-    if ( _recursiveMatchNodeName ( nodeName, m, &match ) )
-    {
-      // We found a match
-      matched=true;
-    }
-  }
-
-  if ( !matched )
-  {
-    std::cout << "No matching node found to patch with diff" << std::endl;
-    return false;
-  }
-
-  // Now patch the node file with the diff
-  std::cout << "Patching node file" << std::endl;
-  std::string cmd;
-  cmd = std::string("patch -l -u ") + tmpNodeFileName + std::string(" ") + tmpDiffFileName;
-  system(cmd.c_str());
-  
-  // Load patched file =====
-  
-  // reset this boolean
-  //_autoPlacement = _prefs->autoPlacement();
-  
-  // User feedback.
-  this->_update ( *_msgText, "Reading model from patched file" );
-
-  // Load in the file
-  osgDB::ReaderWriter* rw = osgDB::Registry::instance()->getReaderWriterForExtension( _sinterFileType );
-  if(!rw){
-	  std::ostringstream out;
-    out << "Error: " << _sinterFileType << " plugin not available, patched file load will fail.";
-    this->_update ( *_msgText, out.str() );
-    return false;
-  }
-  osgDB::ReaderWriter::ReadResult rr = rw->readNode ( tmpNodeFileName );
-  if(!rr.validNode()){
-	  std::ostringstream out;
-    out << "Error: read of patched file failed, resulting node not vaild.";
-    this->_update ( *_msgText, out.str() );
-    return false;
-  }
-  NodePtr node = rr.getNode();
-  
-  this->_replaceNode(node, nodeName);
-  
-  // Signal user when done
-  this->_update ( *_msgText, "Done reading patched model." );
-  
-  return true;
-}
-
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -3788,483 +3416,6 @@ void Application::_animStep ( int num, osg::Node *model )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Setup SinterPoint, if enabled
-//
-///////////////////////////////////////////////////////////////////////////////
-
-# if defined (USE_SINTERPOINT)
-
-void Application::_sinterPointInit()
-{
-  _sinterReceiver = NULL;
-
-  // If the machine name is the same as the writer...
-  const std::string writer = _prefs->sinterPointWriter();
-      std::cout << "Sinter Point Writer machine = " << writer.c_str() << std::endl;
-
-  // Make sure there is a writer-machine.
-  ErrorChecker ( 2519309141u, !writer.empty(), 
-    "ERROR: No machine specified as the Sinter Point Writer in user-preferences." );
-
-  // Now everyone initializes the SinterAppData
-  vpr::GUID newGuid("87f22bd9-61f7-4fa4-bf60-a19953f35d61");
-  _sinterAppData.init(newGuid, writer);
-
-  // The writer alone uses sinterpoint
-  if( _sinterAppData.isLocal() )
-  {
-    _sinterReceiver = new sinter::Receiver;
-    _sinterReceiver->SetType ( "CADVIEWER2" );
-    _sinterReceiver->SetVersion ( osgGetVersion() );
-    _sinterReceiver->SetMaxSend ( 1 );
-
-    // Connect to server
-    std::string server = _prefs->sinterPointServer();
-    int result = _sinterReceiver->Connect ( server.c_str() );
-    if (result!=0) 
-    {
-      std::cout << "ERROR in SinterPoint = " << result << std::endl;
-      std::cout << "SinterPoint receiver failed to connect to: " << server.c_str() << std::endl;
-      delete _sinterReceiver;
-      _sinterReceiver = NULL;
-    }
-    else
-    {
-      std::cout << "SinterPoint receiver connected successfully" << std::endl;
-    }
-  }
-  
-#if defined (INV3RSION_COLLABORATE)
-    _sinterCollabInit();
-#endif    
-
-  // Start out looking for commands
-  _sinterState = COMMAND;
-  _sinterDiffFlag = false;
-
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Save OSG stream to a temp file
-//
-///////////////////////////////////////////////////////////////////////////////
-
-
-void Application::_dumpStreamToFile()
-{
-  // Save model stream to file
-  std::string tmpNodeFileName = _tmpDirName + "sinterStream.txt";
-  std::ofstream nodeFile;
-  nodeFile.open ( tmpNodeFileName.c_str() );
-  if ( !nodeFile.is_open() )
-  {
-    std::cout << "ERROR: node file " << tmpNodeFileName << " failed to open" << std::endl;
-  }
-  else
-  {
-    _sinterStream.seekg(0);
-    nodeFile << _sinterStream.rdbuf();
-    nodeFile.close();
-  }
-}
-    
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Obtain a model across the network with SinterPoint - preFrame portion
-//
-///////////////////////////////////////////////////////////////////////////////
-
-
-void Application::_sinterReceiveData()
-{    
-  // sinter writer only: receive data
-  if( _sinterReceiver && _sinterAppData.isLocal() )
-  {
-    // clear the data buffer -- all processing should be done by the time we
-    // get here
-    _sinterAppData->_data.clear();
-
-    // The writer obtains the new osg file from Sinterpoint here and sends out
-    // application data for the other machines
-    int size;
-    bool binary=false;
-
-    while( (size = _sinterReceiver->Receive(0,binary)) > 0)
-    {
-      _sinterTmpString.clear();
-      _sinterTmpString.append(_sinterReceiver->Data(),size);
-      _sinterTmpString.resize(size);
-      _sinterAppData->_data.append(_sinterTmpString);
-    }
-
-    // process error codes from negative size
-    if(size < 0)
-    {
-      switch(size)
-      {
-        case -ETIMEDOUT:
-          break;
-        case -EPROTONOSUPPORT:
-          std::cout << "Error receiving data" << std::endl;
-          _dumpStreamToFile();
-          break;
-        default:
-          break;
-      }
-    }
-  }
-#if defined (INV3RSION_COLLABORATE)
-  _sinterCollabReceiveData();
-#endif
-}
-
-#endif
-
-#if defined (INV3RSION_COLLABORATE)
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize SinterPoint collaborative members
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_sinterCollabInit()
-{
-    _sinterCollabReceiver = NULL;
-    _sinterCollabSender = NULL;
-    
-    // If the machine name is the same as the writer...
-    const std::string writer = _prefs->sinterPointWriter();
-
-    // Make sure there is a writer-machine.
-    ErrorChecker ( 2519309141u, !writer.empty(), 
-    "ERROR: No machine specified as the Sinter Point Writer in user-preferences." );
-    
-    // Now everyone initializes the SinterAppData
-    vpr::GUID newGuid("26a02fb0-ea01-11da-8ad9-0800200c9a66");
-    _sinterCollabData.init(newGuid, writer);
-
-    // The writer alone uses sinterpoint
-    if( _sinterCollabData.isLocal() )
-    {
-      _sinterCollabReceiver = new sinter::Receiver;
-      _sinterCollabReceiver->SetType ( "CV-COLLAB" );
-      _sinterCollabReceiver->SetVersion ( osgGetVersion() );
-
-      // Connect to server
-      std::string server = _prefs->sinterPointServer();
-      int result = _sinterCollabReceiver->Connect ( server.c_str() );
-      if (result!=0) 
-      {
-        std::cout << "ERROR in SinterPoint = " << result << std::endl;
-        std::cout << "SinterPoint collab receiver failed to connect to: " << server.c_str() << std::endl;
-        delete _sinterCollabReceiver;
-        _sinterCollabReceiver = NULL;
-      }
-      else
-      {
-        std::cout << "SinterPoint receiver connected successfully" << std::endl;
-      }
-
-      _sinterCollabSender = new sinter::Sender;
-      _sinterCollabSender->SetType( "CV-COLLAB" );
-      _sinterCollabSender->SetVersion ( osgGetVersion() );
-
-      // Connect to server
-      result = _sinterCollabSender->Connect ( server.c_str() );
-      if (result!=0) 
-      {
-        std::cout << "ERROR in SinterPoint = " << result << std::endl;
-        std::cout << "SinterPoint collab sender failed to connect to: " << server.c_str() << std::endl;
-        delete _sinterCollabSender;
-        _sinterCollabSender = NULL;
-      }
-      else
-      {
-        std::cout << "SinterPoint sender connected successfully" << std::endl;
-      }
-    }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  SinterPoint send command for avatar & nav data
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_sinterSendCommand(std::string &cmd, bool cached)
-{
-  if( _sinterCollabSender && _sinterCollabData.isLocal() )
-  {
-    if(cmd[cmd.size()-1] != '\n')
-    {
-      std::string tmpString = cmd;
-      tmpString += "\n";
-      if(cached)
-        _sinterCollabSender->Send(tmpString.c_str());
-      else 
-        _sinterCollabSender->SendUnCached(tmpString.c_str());
-    }
-    else
-      _sinterCollabSender->Send(cmd.c_str());
-  }
-}
-
-void Application::_sinterCollabReceiveData()
-{
-  // sinter writer only: receive data
-  if( _sinterCollabReceiver && _sinterCollabData.isLocal() )
-  {
-    _sinterCollabData->_data.clear();
-
-    int size;
-
-    while( (size = _sinterCollabReceiver->Receive(0)) > 0)
-    {
-      _sinterTmpString.clear();
-      _sinterTmpString.append(_sinterCollabReceiver->Data(),size);
-      _sinterTmpString.resize(size);
-      _sinterCollabData->_data.append(_sinterTmpString);
-    }
-
-    // process error codes from negative size
-    if(size < 0)
-    {
-      switch(size)
-      {
-        case -ETIMEDOUT:
-          break;
-        case -EPROTONOSUPPORT:
-          std::cout << "Error receiving data" << std::endl;
-          break;
-        default:
-          break;
-      }
-    }
-  }
-}
-
-#endif
-
-#if (INV3RSION_NAV && INV3RSION_COLLABORATE)
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Construct and send a navigation update command
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_sinterSendNavUpdate( const float *matrix, const bool cached )
-{    
-  if( _controlAvatar == _localAvatar )
-  {
-    std::stringstream ss;
-
-    ss << "CV NAV_MATRIX =";
-    for(int i = 0; i < 16; i++)
-    {
-      ss << " " << matrix[i];
-    }
-    ss << std::endl;
-
-    std::string cmd = ss.str();
-    _sinterSendCommand( cmd, cached );
-  }
-}
-
-
-void  Application::_requestNavControl()
-{  
-  if(_localAvatar)
-  {
-    std::string cmd = "CV AVATAR_CONTROLLER = ";
-    cmd += _localAvatar->name;
-    _sinterSendCommand(cmd, true);
-  }
-}
-
-#endif
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  SinterPoint data processor -- active on all cluster nodes
-//
-///////////////////////////////////////////////////////////////////////////////
-
-# if defined (USE_SINTERPOINT)
-
-void Application::_sinterProcessData()
-{    
-  if( !_sinterAppData->_data.empty() )
-  {
-    // get size of the message we need to process
-    int size = _sinterAppData->_data.size();
-
-    int processed_size = 0;
-
-    while ( processed_size < size )
-    {         
-      // If we are in data receive mode, just keep grabbing data
-      if ( _sinterState == DATA )
-      {        
-        // Avoid the c_str() command in case we have binary data; pointer to beginning of _data is better
-        const char *data = &(_sinterAppData->_data)[0] + processed_size;
-        int data_size = size - processed_size;
-
-        // if necessary, reduce data size so we don't copy too much data into the stream
-        if ( (_sinterStreamSize + data_size) > _sinterDataSize )
-        {
-          data_size = _sinterDataSize - _sinterStreamSize;
-        }
-
-        // write the data to our stream
-        _sinterStream.write( data, data_size );
-        _sinterStreamSize += data_size;
-        _sinterState = DATA;
-
-        std::cout << "." << std::flush;
-
-        // Check to see if we are finished receiving data
-        if ( _sinterStreamSize == _sinterDataSize )
-        {
-          _sinterTime2 = _getClockTime();
-          std::cout << "\nOSG node receive completed" << std::endl;
-          std::cout << "Total comm time = " << _sinterTime2-_sinterTime1 << std::endl;
-          _sinterDataSize = 0;
-
-          // If we received a diff, patch the diff against the proper node file name
-          // If successful _sinterStream will contain the patched node file
-          if ( _sinterDiffFlag == true )
-          {
-            _patchNodeWithDiff ( _sinterNodeName, _sinterStream );
-            _sinterDiffFlag = false;
-          }
-          else
-          {
-            // Load the model into the scene
-            this->_streamModel ( _sinterStream, _sinterNodeName );   
-
-            // Save model stream to file for later diff if format is not binary
-            if(_sinterFileType != "ive")
-            {
-              std::string tmpNodeFileName = _tmpDirName + _sinterNodeName + "." + _sinterFileType;
-              std::ofstream nodeFile;
-              nodeFile.open ( tmpNodeFileName.c_str() );
-              if ( !nodeFile.is_open() )
-              {
-                std::cout << "ERROR: node file " << tmpNodeFileName << " failed to open" << std::endl;
-              }
-              else
-              {
-                _sinterStream.seekg(0);
-                nodeFile << _sinterStream.rdbuf();
-                nodeFile.close();
-              }
-            }
-          }
-
-          _sinterState = COMMAND;
-        }
-
-        processed_size += data_size;
-      }
-
-      // Otherwise parse for commands
-      else
-      {
-        std::string cmd;
-        int cmdStart = _sinterAppData->_data.find ( "CV ", processed_size );
-        int cmdEnd = _sinterAppData->_data.find ( "\n", cmdStart );
-
-        // Keep parsing until no more CV commands are found
-        if ( cmdStart != std::string::npos && cmdEnd != std::string::npos )
-        {
-          processed_size += cmdEnd - cmdStart + 1;
-          cmdStart += 3;
-          cmd.assign ( _sinterAppData->_data, cmdStart, cmdEnd-cmdStart );
-
-          //std::cout << "Got Command: " << cmd << std::endl;
-
-          // Get the node name
-          if ( cmd.find ( "NODE_NAME", 0 ) != std::string::npos )
-          {
-            _sinterNodeName = _getCmdValue(cmd);
-            // convert to lowercase to prevent problems with matching later
-            std::transform ( _sinterNodeName.begin(), _sinterNodeName.end(), _sinterNodeName.begin(), ::tolower );
-            std::cout << "Received node name = " << _sinterNodeName.c_str() << std::endl;
-          }
-
-          // Get the data type
-          else if ( cmd.find ( "FILE_TYPE", 0 ) != std::string::npos )
-          {
-            _sinterFileType = _getCmdValue(cmd);
-            std::cout << "Received file type = " << _sinterFileType.c_str() << std::endl;
-          }
-
-          // Get the node size
-          else if ( cmd.find ( "NODE_SIZE", 0 ) != std::string::npos )
-          {
-            std::stringstream ss;
-            ss.str(_getCmdValue(cmd));
-            ss >> _sinterDataSize;
-            std::cout << "Received node size = " << _sinterDataSize << std::endl;
-          }
-
-          // The next node data transfer will be a diff
-          else if ( cmd.find ( "NODE_DIFF", 0 ) != std::string::npos )
-          {
-            _sinterDiffFlag = true;
-            std::cout << "Next node file will be a diff for node: " << _sinterNodeName << std::endl;
-          }
-
-          // Enter receive data mode
-          else if ( cmd.find ( "NODE_DATA", 0 ) != std::string::npos )
-          {
-            if ( _sinterDataSize > 0 )
-            {
-              _sinterStream.clear();
-              _sinterStream.str("");
-              _sinterStreamSize = 0;
-              _sinterState = DATA;
-              std::cout << "Begin receive of osg node..." << std::endl;
-              _sinterTime1 = _getClockTime();
-            }
-            else
-            {
-              std::cout << "Data Size Zero; Not entering Data Receive Mode." << std::endl;
-            }
-          }
-
-          // Delete the whole scene
-          else if ( cmd.find ( "CLEARALL", 0 ) != std::string::npos )
-          {
-            std::cout << "Deleting all models in scene" << std::endl;
-            _deleteScene();
-            _initTmpDir();
-          }
-
-          else
-          {
-            std::cout << "Warning: Unrecognized CadViewer Command." << std::endl;
-          }
-
-        }
-        else
-        {
-          std::cout << "Warning: CadViewer Command Not Found" << std::endl;
-        }
-      }
-    }
-  }
-}
-
-#endif
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Navigation -- auto place & size model
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -4310,37 +3461,6 @@ void Application::_doAutoPlacement( const bool replace_matrix )
     _navBranch->setMatrix( autoPlaceXform );
   else
     _navBranch->postMult( autoPlaceXform );
-
-#if defined (INV3RSION_NAV)
-  // not sure why this works without a pre-transform
-  // TODO: look into this
-/*  osg::Matrixf m1;
-  m1.makeTranslate( sphere.center() * -scale );
-  _invrNav->SetPreTransform(m1.ptr());*/
-
-  osg::Matrixf m2;
-  //m2.makeTranslate( actrans );
-  m2.makeTranslate( sphere.center() * -scale );
-  _invrNav->SetPostTransform(m2.ptr());
-
-#if (INV3RSION_NAV && INV3RSION_COLLABORATE)
-    const float *matptr = _invrNav->GetPostTransform();
-    std::stringstream ss;
-
-    ss << "CV NAV_POSTXFORM =";
-    for(int i = 0; i < 16; i++)
-    {
-      ss << " " << matptr[i];
-    }
-    ss << std::endl;
-
-    // ss << "CV NAV_MODEL_SCALE = " << scale << std::endl;
-
-    std::string cmd = ss.str();
-    _sinterSendCommand( cmd, true );
-#endif  
-  _syncInvrNav();
-#endif
 }
 
 
@@ -4353,578 +3473,7 @@ void Application::_doAutoPlacement( const bool replace_matrix )
 void Application::draw()
 {
   osgVRJ::Application::draw();   // base class draw method
-
-#if defined (INV3RSION_COLLABORATE)
-  if(!_avatars.empty())
-  {
-    glEnable(GL_DEPTH_TEST);
-    
-    for(unsigned int i = 0; i < _avatars.size(); i++)
-    {
-      if ((_avatars[i] != NULL) && (_avatars[i] != _localAvatar) &&
-          (_avatars[i]->avatar != NULL) && _avatars[i]->visible &&
-          (_avatars[i]->avatar->isReady()))
-      {
-        glPushMatrix();
-        
-        //Render mesh version
-        if ( !_avatars[i]->avatar->renderMesh(vjAvatar::DrawMesh) )
-           std::cout << "Error: Avatar " << i << " did not render" << std::endl;
-        
-        // Render controller icon
-        if( _avatars[i] == _controlAvatar )
-        {
-          CalBone* wrist_bone = _avatars[i]->avatar->getBone( "R_WRIST" );
-          const CalVector wrist_pos = wrist_bone->getTranslationAbsolute();
-                    
-          glEnable(GL_BLEND);
-          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-          glPushMatrix();          
-          glTranslatef(_avatars[i]->avatar->getPos()[0], 
-                       _avatars[i]->avatar->getPos()[1], 
-                       _avatars[i]->avatar->getPos()[2]);
-          glRotatef(_avatars[i]->bodyYaw, 0.0, 1.0, 0.0);
-          glTranslatef(-wrist_pos.x, wrist_pos.z, wrist_pos.y);
-          glScalef(0.35, 0.35, 0.35);
-          glColor4f(1.0, 0.0, 0.0, 0.45);
-          invr::draw::Sphere();
-          glPopMatrix();
-        }
-        
-        glPopMatrix();
-      }
-    }
-  }
-#endif
-
-#if defined (INV3RSION_NAV)
-  _invrNav->draw(); // Nav draw method
-#endif
 }
-
-#if defined (INV3RSION_NAV)
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Navigation -- set INVR nav matrix to current nav matrix
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_syncInvrNav()
-{
-  // set Nav transform to match matrix from model load
-  const double *matptr = _navBranch->getMatrix().ptr();
-  float matfloat[16];
-  for(int i = 0; i < 16; i++) { matfloat[i] = (float) matptr[i]; }  
-  _invrNav->SetTransform(matfloat);
-  
-#if defined (INV3RSION_COLLABORATE)
-  _sinterSendNavUpdate( _invrNav->GetTransform()->mData, true );
-#endif
-}
-
-#endif
-
-#if defined (INV3RSION_COLLABORATE)
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Send Command to add an avatar to the scene
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_sendAddAvatarCommand( const std::string &filename, const std::string &name )
-{
-  ErrorChecker ( 1067093696u, isAppThread(), CV::NOT_APP_THREAD );
-  
-  std::string cmd = "CV AVATAR_NEW = ";
-  cmd += filename;
-  cmd += " ";
-  cmd += name;
-  _sinterSendCommand(cmd, true); 
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add an avatar to the scene
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_addAvatar ( const std::string &filename, const std::string &name )
-{
-  ErrorChecker ( 1067093696u, isAppThread(), CV::NOT_APP_THREAD );
-  
-  if(!_avatarFactory)
-  {    
-    _avatarFactory = new vjAvatarFactory;
-    
-    //First, check that certain environment variables are set for data loading
-    char* data_dir = getenv( "AVATAR_DATA_DIR" );
-    if (data_dir == NULL)
-    {
-      std::cout << "Warning: Must set AVATAR_DATA_DIR environment to enable loading of avatars." << std::endl;
-    }
-    else
-    {
-      _avatarFactory->addPath( std::string( data_dir ) );
-    }
-  }
-  
-  std::cout << "Loading avatar config: " << filename << std::endl;
-  
-  //Add the avatar to the factory
-  if (!_avatarFactory->addAvatar( filename, name )) return;
-
-  // Create new avatar instantiation
-  vjAvatar* currentAvatar = _avatarFactory->newAvatar( name ) ;
-
-  //Set up position/orientation/scaling
-  currentAvatar->setWCS( gmtl::EulerAngleXYZf(gmtl::Math::deg2Rad(-90.0f),0,0) ) ; //Convert to Juggler coordinates
-  currentAvatar->setRot( gmtl::EulerAngleXYZf(0,0,0) );
-  currentAvatar->setPos( gmtl::Vec3f(0,0,0));
-  
-  // trigger the first animation
-  currentAvatar->triggerAnimationCycle("IDLE");
-  
-  AvatarData *currentData = new AvatarData( name, currentAvatar );
-  
-  if( name == _localAvatarName ) _localAvatar = currentData;
-  
-  _avatars.push_back(currentData);
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Load a local avatar from command-line
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_registerAvatar ( const std::string &filename )
-{  
-  // strip out anything before the filename
-  int pos = filename.rfind("/", filename.size());
-  
-  if(pos == std::string::npos) _localAvatarFileName = filename;
-  else _localAvatarFileName = filename.substr( pos + 1, filename.size() - pos );
-  
-  _localAvatarName = _prefs->userName();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Calculate values for avatar tracking
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_updateLocalAvatar()
-{
-  if(_localAvatar)
-  {  
-    AvatarData *avatar = _localAvatar;
-
-    //Get head data
-    gmtl::Matrix44f head_matrix;
-    head_matrix.set ( _headTracker->matrix().getData() );
-
-    // Get head position data for body position
-    avatar->bodyPos = gmtl::makeTrans<gmtl::Vec3f>(head_matrix);
-    avatar->bodyPos[1] = 0.0;
-
-    //Get the head yaw data
-    gmtl::Vec4f transZero(0.0, 0.0, 0.0, 1.0);
-    gmtl::Vec4f unit(1.0, 0.0, 0.0, 1.0);
-    gmtl::Matrix44f head_rot = head_matrix;    
-    gmtl::setTrans(head_rot, transZero);
-    gmtl::xform(transZero, head_rot, unit);
-    float head_yaw = gmtl::Math::rad2Deg( atan2f( -transZero[2], transZero[0] ) ) - avatar->bodyYaw;
-    
-    // filter out change of sign in the angle    
-    if( head_yaw > _prevHeadYaw + 300 )
-      _headYawOffset -= 360.0;    
-    else if( head_yaw < _prevHeadYaw - 300 )
-      _headYawOffset += 360.0; 
-    
-    _prevHeadYaw = head_yaw;
-    
-    head_yaw += _headYawOffset;
-    
-        
-    //Get the shoulder and hand data
-    //This is the position of the shoulder relative to the head position
-    gmtl::Vec3f shoulder_trans(0.8, -0.6, 0.0);
-    gmtl::Matrix44f shoulder_relative_pos = gmtl::makeTrans<gmtl::Matrix44f>( shoulder_trans );
-
-    //Rotate the shoulder_relative position as to the current yaw of the 
-    //body
-    gmtl::Matrix44f temp_rot = gmtl::make<gmtl::Matrix44f>( gmtl::EulerAngleXYZf(0.0f, gmtl::Math::deg2Rad(avatar->bodyYaw), 0.0f));
-
-    gmtl::preMult( shoulder_relative_pos, temp_rot );
-
-    gmtl::Vec3f head_trans = gmtl::makeTrans<gmtl::Vec3f>( head_matrix );
-
-    shoulder_trans = gmtl::makeTrans<gmtl::Vec3f>(shoulder_relative_pos);
-
-    gmtl::Vec3f shoulder_pos = head_trans + shoulder_trans;
-
-    // set the centering
-    float body_center_yaw = avatar->bodyYaw + head_yaw;
-
-    float yaw_rate = powf(fabs(avatar->bodyYaw - body_center_yaw), 1.5) * _bodyMaxYawRate;
-
-    //Rotate the body if it is not centered
-    if (avatar->bodyYaw > body_center_yaw)
-    {
-      avatar->bodyYaw -= yaw_rate;
-      if(avatar->bodyYaw < body_center_yaw) avatar->bodyYaw = body_center_yaw;
-    }
-    else
-    {
-      avatar->bodyYaw += yaw_rate;
-      if(avatar->bodyYaw > body_center_yaw) avatar->bodyYaw = body_center_yaw;
-    }
-
-    //Adjust the head's rotation for the body's current rotation   
-    //Figure how much to rotate the head_matrix (same as inverse of body rotation)
-    temp_rot = gmtl::make<gmtl::Matrix44f>( gmtl::EulerAngleXYZf(0.0f, gmtl::Math::deg2Rad(-avatar->bodyYaw), 0.0f));
-
-    gmtl::preMult(head_matrix, temp_rot) ;
-
-    //Get the head matrix to make a quaternion representation of it
-    //First extract the euler angles from the head matrix
-    gmtl::EulerAngleXYZf head_eulers = gmtl::make<gmtl::EulerAngleXYZf>( head_matrix );
-
-    avatar->headQuat = gmtl::make<gmtl::Quatf>( head_eulers );
-
-    //Convert to the head's coordinate system
-    gmtl::Quatf temp_quat = avatar->headQuat;
-    avatar->headQuat[0] = -temp_quat[1];
-    avatar->headQuat[1] = temp_quat[0];
-    avatar->headQuat[2] = -temp_quat[2];
-
-    //Find the hand position and rotation,.etc.
-    gmtl::Matrix44f hand_matrix;
-    hand_matrix.set ( _tracker->matrix().getData() );
-
-    //Rotate it the same as the current body yaw
-    gmtl::Vec3f hand_pos = gmtl::makeTrans<gmtl::Vec3f>( hand_matrix );
-
-    hand_pos -= shoulder_pos;
-
-    gmtl::Matrix44f hand_mat = gmtl::makeTrans<gmtl::Matrix44f>( hand_pos );
-
-    gmtl::preMult( hand_mat, temp_rot );
-    hand_pos = gmtl::makeTrans<gmtl::Vec3f>(hand_mat);
-
-    gmtl::normalize(hand_pos);
-
-    //Get the shortest arc quaternion from origin_vec to hand_vec
-    avatar->handQuat = gmtl::makeRot<gmtl::Quatf>( gmtl::Vec3f(1,0,0), hand_pos);
-
-    // transmit avatar data to SinterPoint server
-    if ( _avatarWaitCount == 0 )
-    {
-      std::stringstream ss;
-
-      ss << "CV AVATAR_BODY_YAW = " << avatar->name << " " << avatar->bodyYaw << std::endl;
-
-      ss << "CV AVATAR_BODY_POS = " << avatar->name << " " 
-         << avatar->bodyPos[0] << " " << avatar->bodyPos[1] << " " << avatar->bodyPos[2] << std::endl;
-
-      ss << "CV AVATAR_HEAD_QUAT = " << avatar->name << " " 
-         << avatar->headQuat[0] << " " << avatar->headQuat[1] << " " 
-         << avatar->headQuat[2] << " " << avatar->headQuat[3] << std::endl;
-
-      ss << "CV AVATAR_HAND_QUAT = " << avatar->name << " " 
-         << avatar->handQuat[0] << " " << avatar->handQuat[1] << " " 
-         << avatar->handQuat[2] << " " << avatar->handQuat[3] << std::endl;
-
-      std::string cmd = ss.str();
-      _sinterSendCommand( cmd, false );
-      _avatarWaitCount = _prefs->avatarWaitFrames();
-    }
-    else
-    {
-      _avatarWaitCount--;
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Per-frame update of avatars
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_updateAvatars()
-{
-  if(_avatars.empty()) return;
-  
-  double timeNow = _tracker->time();
-  double timeElapsed = timeNow - _avatarTime;
-  _avatarTime = timeNow;
-  
-  _updateLocalAvatar(); // update local data
-  
-  for (unsigned int i=0; i < _avatars.size(); i++)
-  {
-    if(_avatars[i]->visible)
-    {
-      _avatars[i]->avatar->updateAnimations(timeElapsed); 
-
-      //Rotate body based on the current body yaw
-      gmtl::EulerAngleXYZf body_rot = _avatars[i]->avatar->getRotXYZ();
-      body_rot[1] = gmtl::Math::deg2Rad(_avatars[i]->bodyYaw+180);
-      _avatars[i]->avatar->setRot( body_rot );
-
-      _avatars[i]->avatar->updateMove(timeElapsed);
-
-      // Translate to current head pos in X-Z
-      _avatars[i]->avatar->setPos( _avatars[i]->bodyPos );
-
-      CalBone* head_bone = _avatars[i]->avatar->getBone( "NECK" );
-      if (head_bone != NULL)
-      {
-        //Set the head's angle of rotation
-        head_bone->setCoreStateRecursive() ;
-        head_bone->setRotation( getCalQuat( _avatars[i]->headQuat ) ) ;
-        head_bone->calculateState();
-      }
-
-      //Get the right shoulder bone
-      CalBone* right_shoulder_bone = _avatars[i]->avatar->getBone( "R_SHOULDER" );
-      if (right_shoulder_bone != NULL)
-      {
-        right_shoulder_bone->setCoreStateRecursive() ;
-        right_shoulder_bone->setRotation( getCalQuat( _avatars[i]->handQuat ) ) ;
-        right_shoulder_bone->calculateState();
-      }
-
-      _avatars[i]->avatar->updateMesh(timeElapsed);
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Search avatar list for named avatar
-//
-///////////////////////////////////////////////////////////////////////////////
-
-int Application::_getAvatarIndexByName(std::string &name)
-{
-  if(_avatars.empty()) return -1;
-  
-  for ( int i = 0; i < _avatars.size(); i++ )
-  {
-    if( name == _avatars[i]->name )
-      return i;
-  }
-  return -1;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Process collaboration data from SinterPoint
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_sinterProcessCollabData()
-{    
-  if( !_sinterCollabData->_data.empty() )
-  {
-    // get size of the message we need to process
-    int size = _sinterCollabData->_data.size();
-
-    int processed_size = 0;
-
-    while ( processed_size < size )
-    {         
-      // parse for commands
-      std::string cmd;
-      int cmdStart = _sinterCollabData->_data.find ( "CV ", processed_size );
-      int cmdEnd = _sinterCollabData->_data.find ( "\n", cmdStart );
-
-      // Keep parsing until no more CV commands are found
-      if ( cmdStart != std::string::npos && cmdEnd != std::string::npos )
-      {
-        processed_size += cmdEnd - cmdStart + 1;
-        cmdStart += 3;
-        cmd.assign ( _sinterCollabData->_data, cmdStart, cmdEnd-cmdStart );
-
-        // Add an avatar
-        if ( cmd.find ( "AVATAR_NEW", 0 ) != std::string::npos )
-        {
-          std::string subcmd = _getCmdValue(cmd);
-          int pos = 0;
-          std::string filename = _getCmdToken(subcmd, " ", pos);
-          std::string name = _getCmdToken(subcmd, " ", pos);
-          std::cout << "Adding New Avatar: " << name << std::endl;
-          
-          int i = _getAvatarIndexByName(name);
-          if( i != -1 && _avatars[i] != _localAvatar )
-          {
-            _avatars[i]->visible = true;
-          }
-          else
-          {
-            _addAvatar ( filename, name );
-          }
-        }
-
-        else if ( cmd.find ( "AVATAR_DELETE", 0 ) != std::string::npos )
-        {
-          std::string name = _getCmdValue(cmd);
-          int i = _getAvatarIndexByName(name);
-          if( i != -1 && _avatars[i] != _localAvatar )
-          {
-            std::cout << "Removing Avatar: " << _avatars[i]->name << std::endl;
-            if(_controlAvatar == _avatars[i]) _controlAvatar = NULL;
-            _avatars[i]->visible = false;
-          }
-        }
-
-        else if( cmd.find ( "AVATAR_BODY_YAW", 0 ) != std::string::npos )
-        {
-          std::string subcmd = _getCmdValue(cmd);
-          int pos = 0;
-          std::string name = _getCmdToken(subcmd, " ", pos);
-          int i = _getAvatarIndexByName(name);
-          if( i != -1 && _avatars[i] != _localAvatar )
-          {
-            std::string yaw = _getCmdToken(subcmd, " ", pos);
-            _avatars[i]->bodyYaw = atof(yaw.c_str());
-          }
-        }
-
-        else if( cmd.find ( "AVATAR_BODY_POS", 0 ) != std::string::npos )
-        {
-          std::string subcmd = _getCmdValue(cmd);
-          int pos = 0;
-          std::string name = _getCmdToken(subcmd, " ", pos);
-          int i = _getAvatarIndexByName(name);
-          if( i != -1 && _avatars[i] != _localAvatar )
-          {
-            _avatars[i]->bodyPos[0] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            _avatars[i]->bodyPos[1] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            _avatars[i]->bodyPos[2] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-          }
-        }
-
-        else if( cmd.find ( "AVATAR_HEAD_QUAT", 0 ) != std::string::npos )
-        {
-          std::string subcmd = _getCmdValue(cmd);
-          int pos = 0;
-          std::string name = _getCmdToken(subcmd, " ", pos);
-          int i = _getAvatarIndexByName(name);
-          if( i != -1 && _avatars[i] != _localAvatar )
-          {
-            _avatars[i]->headQuat[0] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            _avatars[i]->headQuat[1] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            _avatars[i]->headQuat[2] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            _avatars[i]->headQuat[3] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-          }
-        }
-
-        else if( cmd.find ( "AVATAR_HAND_QUAT", 0 ) != std::string::npos )
-        {
-          std::string subcmd = _getCmdValue(cmd);
-          int pos = 0;
-          std::string name = _getCmdToken(subcmd, " ", pos);
-          int i = _getAvatarIndexByName(name);
-          if( i != -1 && _avatars[i] != _localAvatar )
-          {
-            _avatars[i]->handQuat[0] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            _avatars[i]->handQuat[1] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            _avatars[i]->handQuat[2] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            _avatars[i]->handQuat[3] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-          }
-        }
-
-        else if ( cmd.find ( "AVATAR_CONTROLLER", 0 ) != std::string::npos )
-        {
-          std::string name = _getCmdValue(cmd);
-          int i = _getAvatarIndexByName(name);
-          if( i != -1 )
-          {
-            if( _controlAvatar == _localAvatar )
-            {
-#if defined (INV3RSION_NAV)
-              _invrNav->SetMode(invr::nav::CAD::NO_NAV);
-#endif
-            }
-            _controlAvatar = _avatars[i];
-          }
-        }
-
-        else if ( cmd.find ( "AVATAR_CONTROL_RELEASE", 0 ) != std::string::npos )
-        {
-          _controlAvatar = NULL;
-        }
-
-#if defined (INV3RSION_NAV)
-
-        else if ( cmd.find ( "NAV_MATRIX", 0 ) != std::string::npos )
-        {
-          if( _controlAvatar != _localAvatar )
-          {
-            float matfloat[16];
-            std::string subcmd = _getCmdValue(cmd);
-            int pos = 0;
-            for(int i = 0; i < 16; i++)
-            {
-              matfloat[i] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-            }
-
-            _invrNav->SetTransform(matfloat);
-          }
-        }
-
-        else if ( cmd.find ( "NAV_POSTXFORM", 0 ) != std::string::npos )
-        {
-          float matfloat[16];
-          std::string subcmd = _getCmdValue(cmd);
-          int pos = 0;
-          for(int i = 0; i < 16; i++)
-          {
-            matfloat[i] = atof( _getCmdToken(subcmd, " ", pos).c_str() );
-          }
-
-          _invrNav->SetPostTransform(matfloat);
-        }
-
-        else if ( cmd.find ( "NAV_MODEL_SCALE", 0 ) != std::string::npos )
-        {
-          std::string subcmd = _getCmdValue(cmd);
-          const float scale = atof( subcmd.c_str() );
-
-          osg::Matrixf tempMatrix;
-          tempMatrix.makeScale( scale, scale, scale );
-          _models->preMult( tempMatrix );
-        }
-
-#endif
-
-        else
-        {
-          std::cout << "Warning: Unrecognized CadViewer Collab Command." << std::endl;
-        }
-
-      }
-      else
-      {
-        std::cout << "Warning: CadViewer Collab Command Not Found" << std::endl;
-      }
-    }
-  }
-}
-
-#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////

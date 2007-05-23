@@ -58,55 +58,6 @@
 #include <fstream>
 #include <sstream>
 
-#if defined (USE_SINTERPOINT)
-#include "SinterAppData.h"
-#include "sys/time.h"
-#endif
-
-#if defined (INV3RSION_NAV)
-#include "invr/Nav.h"
-#endif
-
-#if defined (INV3RSION_COLLABORATE)
-#include "invr/Draw.h"
-#include <vjAvatarFactory.h>
-
-#include <cal3d/quaternion.h>
-inline CalQuaternion getCalQuat( const gmtl::Quatf gmtl_quat ) 
-{
-   //Convert to Cal3D coordinates and make a new CalQuaternion
-   return CalQuaternion( gmtl_quat[0],
-                        -gmtl_quat[2],
-                         gmtl_quat[1],
-                         gmtl_quat[3] ) ;
-}
-
-class AvatarData
-{
-public:
-  AvatarData(const std::string &n, vjAvatar *a)
-  {
-    name = n;
-    avatar = a;
-    bodyPos.set(0.0, 0.0, 0.0);
-    handQuat.set(0.0, 0.0, 0.0, 1.0);
-    headQuat.set(0.0, 0.0, 0.0, 1.0);
-    bodyYaw = 0.0;
-    visible = true;
-  }
-  ~AvatarData() { ; }
-  
-  // public data members
-  vjAvatar *avatar;
-  std::string name;
-  gmtl::Vec3f bodyPos;
-  gmtl::Quatf handQuat;
-  gmtl::Quatf headQuat;
-  float bodyYaw;
-  bool visible;
-};
-
-#endif
 
 namespace CV {
 
@@ -325,11 +276,6 @@ protected:
   
   // draw function
   virtual void draw();
-  
-#if defined (INV3RSION_NAV)
-  // set INVR nav to current nav matrix
-  void _syncInvrNav();
-#endif
 
   // Is this the head node?
   bool                          _isHeadNode() const;
@@ -635,115 +581,6 @@ protected:
   osg::Node         *_animModel;
   std::string       _tmpDirName;
   double            _nextFrameTime;
-
-#if defined (INV3RSION_NAV)
-  invr::nav::CAD    *_invrNav;
-# if defined (USE_SINTERPOINT)
-  void            _sinterSendNavUpdate(const float *matrix, const bool cached);
-  void            _requestNavControl();
-#endif
-#endif 
-
-#if defined (USE_SINTERPOINT)
-  // SinterPoint variables
-  sinter::Receiver*                   _sinterReceiver;
-  int                                 _sinterStreamSize;
-  int                                 _sinterDataSize;
-  cluster::UserData< SinterAppData >  _sinterAppData;
-  SinterState                         _sinterState;
-  bool                                _sinterDiffFlag;
-  std::string                         _sinterTmpString;
-  std::stringstream                   _sinterStream;
-  std::string                         _sinterNodeName;
-  std::string                         _sinterFileType;
-
-
-  // Functions used for networked file loading with SinterPoint, if enabled
-  void            _sinterPointInit();
-  void            _sinterReceiveData();
-  void            _sinterProcessData();
-  
-
-  // Used to time sinterpoint loading
-  double _getClockTime(){
-    struct timeval t;
-    gettimeofday(&t,NULL);
-    return((double)t.tv_sec + (double)t.tv_usec * 0.000001);
-  }
-  double _sinterTime1, _sinterTime2;
-
-  // Used to strip values out of sinterpoint string commands based on "=" sign
-  std::string _getCmdValue ( std::string cmd )
-  {
-    std::string whitespace = "\t\n\r ";
-    int eq = cmd.find ( "=" );
-    if ( eq != std::string::npos )
-    {
-      std::string res = cmd.substr ( eq+1 );
-      int beg = res.find_first_not_of ( whitespace );
-      int end = res.find_last_not_of ( whitespace );
-      return res.substr ( beg, end+1 ); 
-    }
-    return "";
-  }
-  
-  // separate string into tokens
-  std::string _getCmdToken ( const std::string cmd, const std::string token, int &pos )
-  {
-    std::string res = cmd.substr ( pos, cmd.size() - pos );
-    int end = res.find_first_of ( token );
-    if( end != std::string::npos )
-    {
-      pos += end + 1;  // increment to next non-token position
-      return res.substr ( 0, end );
-    }
-    return res;
-  }
-
-#endif
-
-#if defined (INV3RSION_COLLABORATE)
-
-#ifndef USE_SINTERPOINT
-#error "Collaboration only available with SinterPoint compile"
-#endif
-
-   // avatar methods
-   void _registerAvatar   ( const std::string &filename );
-   void _addAvatar ( const std::string &filename, const std::string &name);
-   void _updateAvatars();
-   void _updateLocalAvatar();
-   int _getAvatarIndexByName(std::string &name);
-   
-   //
-   TrackerPtr                             _headTracker;
-   
-   // Avatar variables
-   vjAvatarFactory*                     _avatarFactory;
-   std::vector<AvatarData*>                   _avatars;
-   AvatarData*                            _localAvatar;
-   std::string 			      _localAvatarName;
-   std::string 			  _localAvatarFileName;
-   AvatarData*                          _controlAvatar;
-   double                                  _avatarTime;
-   float _bodyMaxYawRate;
-   int _avatarWaitCount;
-   float                                  _prevHeadYaw;
-   float                                  _headYawOffset;
-   
-   // SinterPoint methods
-   void _sinterSendCommand(std::string &cmd, bool cached);
-   void _sinterCollabInit();
-   void _sinterCollabReceiveData();
-   void _sinterProcessCollabData();
-   void _sendAddAvatarCommand( const std::string &filename, const std::string &name );
-
-   
-   // SinterPoint variables
-   sinter::Sender*                       _sinterCollabSender;
-   sinter::Receiver*                     _sinterCollabReceiver;
-   cluster::UserData< SinterAppData >    _sinterCollabData;
-#endif
 
 };
 

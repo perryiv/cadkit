@@ -38,7 +38,7 @@ COMPILER        = c++
 DEBUG_FLAGS     = -g -D_DEBUG -D_DEBUG_PRINT
 COMPILER_FLAGS  = 
 LINKER_FLAGS    = 
-JUGGLER_LIB_DIR = ${VJ_BASE_DIR}/lib
+JUGGLER_LIB_DIR = ${VJ_BASE_DIR}/lib64
 
 # Change some settings when on irix.
 ifeq ($(findstring IRIX,$(OS)),IRIX)
@@ -60,18 +60,20 @@ INCLUDES = \
 	-I./ \
 	-I../ \
 	-I${VJ_BASE_DIR}/include \
+	-I${VJ_DEPS_DIR}/include \
 	-I${OSG_INC_DIR} \
 	-I${OPENTHREADS_INC_DIR}
 
 LOCAL_LIBS = \
 	-L$(BIN_DIR) \
-	-lOsgTools_s \
+	-lOsgTools \
 	-lUsul \
 	-losgVRJ \
 	-lvrjGA \
 	-lMenuKit \
 	-lMenuKit_OSG \
-	-lvrv_prefs_s
+	-lvrv_prefs_s \
+	-lOpenThreadsEx
 
 JUGGLER_LIBS = \
 	-L${JUGGLER_LIB_DIR} \
@@ -130,12 +132,12 @@ CLEAN   = rm -rf ii_files/ ; rm -f *.o ; cd ../
 default : $(TARGET)
 
 $(TARGET) : ${OBJECTS}
-	${LINK_COMMAND} ${OBJECTS} -o $(TARGET) ${LIBS}
+	${LINK_COMMAND} -fPIC ${OBJECTS} -o $(TARGET) ${LIBS}
 	mkdir -p $(BIN_DIR)
 	mv $(TARGET) $(BIN_DIR)
 
 .cpp.o :
-	$(COMPILE_COMMAND) $(INCLUDES) -c $< -o $@
+	$(COMPILE_COMMAND) $(INCLUDES) -c -fPIC $< -o $@
 
 clean:
 	rm -f ${TARGET} ${OBJECTS} *.o

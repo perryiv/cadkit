@@ -21,7 +21,7 @@ LINKER_FLAGS   = $(COMMON_FLAGS) $(OS_LINK_FLAGS)
 COMPILE_COMMAND = $(COMPILER) $(COMPILER_FLAGS)
 LINK_COMMAND		= $(COMPILER) $(LINKER_FLAGS)
 
-INCLUDES = -I../../ -I$(VJ_BASE_DIR)/include
+INCLUDES = -I../../ -I$(VJ_BASE_DIR)/include -I$(VJ_DEPS_DIR)/include
 LIBS =
 
 TARGET      = vrv_prefs
@@ -36,13 +36,13 @@ default : $(TARGET)
 $(TARGET) : ${OBJECTS}
 	rm -rf $(ARCHIVE_LIB)
 	ar -cr $(ARCHIVE_LIB) $(OBJECTS)
-	$(LINK_COMMAND) -shared $(OBJECTS) -o $(SHARED_LIB) $(LIBS)
+	$(LINK_COMMAND) -shared -fPIC $(OBJECTS) -o $(SHARED_LIB) $(LIBS)
 	mkdir -p $(BIN_DIR)
 	mv $(ARCHIVE_LIB) $(BIN_DIR)
 	mv $(SHARED_LIB) $(BIN_DIR)
 
 .cpp.o :
-	$(COMPILE_COMMAND) $(INCLUDES) -c $< -o $@
+	$(COMPILE_COMMAND) $(INCLUDES) -c -fPIC $< -o $@
 
 clean:
 	rm -f ${OBJECTS}

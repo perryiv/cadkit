@@ -144,7 +144,6 @@ namespace CV
   const unsigned long STOP_NAV_TOOL   = BUTTON_RED;       // helps greatly in sim mode
   const unsigned long NAVIGATE_FLY    = BUTTON_BLUE;      // Joseph doesn't need it, but its handy if anybody else does
   const unsigned long TOOL_SCALE      = BUTTON_GREEN;
-#endif
   const unsigned long NAVIGATE_NO_NAV = 0x00000040;
 };
 
@@ -1246,7 +1245,6 @@ bool Application::_handleNavigationEvent( const unsigned long eventRequest )
         handled = true;                                       // button event has been handled
       }
       break;
-#endif      
     case NAVIGATE_FLY :                                       // BUTTON_BLUE (FLY in the BLUE sky)
       std::cout << "FLY" << std::endl;
       // Stop navigation first.  This prevents toggling off when already in a nav mode

@@ -14,7 +14,7 @@ LIB_OS = lib32
 CLEAN = $(RM) -r $(BUILD) so_locations
 endif
 
-includes = -I$(TOP_DIR)/../ -I$(BOOST_ROOT_DIR) -I$(OSG_INC_DIR) $(PLATFORM_INCLUDES)
+includes = -I$(TOP_DIR)/../ -I$(BOOST_ROOT_DIR) -I$(OSG_INC_DIR) $(PLATFORM_INCLUDES) -I$(OPENTHREADS_INC_DIR)
 libs = -L$(TOP_DIR)/$(BUILD) -lMenuKit -L$(OSG_LIB_DIR) -losg -losgText
 
 BUILD=$(OS)
@@ -31,14 +31,14 @@ OBJS = \
 	$(BUILD)/BackgroundBox.o
 
 shared_lib: $(OBJS)
-	$(CXX) -shared -g $(OBJS) -o $(BUILD)/$(libname) $(libs)
+	$(CXX) -shared -g -fPIC $(OBJS) -o $(BUILD)/$(libname) $(libs)
 	mkdir -p ../bin
 	cp $(BUILD)/$(libname) ../../bin/
 
 $(OBJS): $(BUILD)/%.o: %.cpp
 	mkdir -p $(BUILD)
 	@echo "Compiling $< into $@"
-	$(CXX) -g $(includes) -c $< -o $@
+	$(CXX) -g -fPIC $(includes) -c $< -o $@
 
 clean:
 	$(CLEAN)

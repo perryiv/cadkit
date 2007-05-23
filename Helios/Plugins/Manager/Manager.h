@@ -11,7 +11,10 @@
 #ifndef __CADKIT_HELIOS_PLUGINS_MANAGER_H__
 #define __CADKIT_HELIOS_PLUGINS_MANAGER_H__
 
-#include "Export.h"
+#include "Helios/Plugins/Manager/Export.h"
+
+#include "Usul/Threads/Guard.h"
+#include "Usul/Threads/RecursiveMutex.h"
 
 #include <string>
 #include <map>
@@ -20,49 +23,57 @@ namespace Usul { namespace Interfaces { struct IUnknown; } }
 
 namespace XmlTree { class Node; }
 
+
 namespace CadKit {
 namespace Helios {
 namespace Plugins {
 namespace Manager {
 
+
 class HELIOS_PLUGINS_EXPORT Manager
 {
 public:
 
-	/// Return the instance.
-	static Manager& instance();
-	
+  /// Useful typedefs.
+  typedef Usul::Threads::RecursiveMutex     Mutex;
+  typedef Usul::Threads::Guard<Mutex>       Guard;
+
+  // Constructor and destructor.
+	Manager();
+	~Manager();
+
 	/// Get/Set the filename to parse.
 	void                      filename ( const std::string& filename );
-	const std::string&        filename() const;
+	std::string               filename() const;
+
+  // Get the mutex.
+  Mutex &                   mutex() const { return *_mutex; }
 
 	/// Parse the file.
 	void                      parse();
 	
 	/// Load all the plugins.
-	void                      load( Usul::Interfaces::IUnknown *caller = 0x0 );
+	void                      load ( Usul::Interfaces::IUnknown *caller = 0x0 );
 	
 protected:
-	void                      _addPlugins ( XmlTree::Node &node );
+
+  void                      _addPlugins ( XmlTree::Node &node );
 	void                      _addPlugin  ( XmlTree::Node &node );
 	
 private:
+
 	typedef std::map < std::string, bool > Names;
-	
-	Manager();
-	~Manager();
 	
 	std::string     _filename;
 	Names           _names;
-	
-	static Manager *_instance;
+  mutable Mutex * _mutex;
 };
 
 
-}
-}
-}
-}
+} // namespace Manager
+} // namespace Plugins
+} // namespace Helios
+} // namespace CadKit
 
 
 #endif // __CADKIT_HELIOS_PLUGINS_MANAGER_H__

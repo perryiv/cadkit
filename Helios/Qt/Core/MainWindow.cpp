@@ -21,10 +21,15 @@
 #include "Helios/Qt/Commands/OpenDocument.h"
 #include "Helios/Qt/Tools/Icon.h"
 #include "Helios/Qt/Tools/SettingsGroupScope.h"
+#include "Helios/Plugins/Manager/Manager.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/CommandLine/Arguments.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Predicates/FileExists.h"
+#include "Usul/Threads/Callback.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Threads/ThreadId.h"
@@ -86,6 +91,12 @@ MainWindow::MainWindow ( const std::string &vendor,
   // Load the settings.
   this->_loadSettings();
 
+  // Set the title.
+  this->setWindowTitle ( tr ( "Helios" ) );
+
+  // Load plugins.
+  this->_loadPlugins ( splashScreen.queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+
   // Start the thread pool.
   _threadPool = new ThreadPool;
 }
@@ -114,7 +125,7 @@ MainWindow::~MainWindow()
 void MainWindow::_destroy()
 {
   USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( throw std::runtime_error ( "Error 2933090027: Not GUI thread" ) );
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2933090027" );
 
   // Detach actions.
   while ( false == _actions.empty() )
@@ -153,7 +164,7 @@ void MainWindow::_destroy()
 void MainWindow::_loadSettings()
 {
   USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2863006339" );
 
   // Set the window's properties.
   {
@@ -175,7 +186,7 @@ void MainWindow::_loadSettings()
 void MainWindow::_saveSettings()
 {
   USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "9722347090" );
 
   // Set the window's properties.
   {
@@ -198,7 +209,7 @@ void MainWindow::_saveSettings()
 void MainWindow::_buildMenu()
 {
   USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2357339900" );
 
   // Make sure actions are built.
   this->_makeActions();
@@ -223,7 +234,7 @@ void MainWindow::_buildMenu()
 void MainWindow::_buildToolBar()
 {
   USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "6391763130" );
 
   // Make sure actions are built.
   this->_makeActions();
@@ -251,7 +262,7 @@ void MainWindow::_buildToolBar()
 void MainWindow::_makeActions()
 {
   USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2351054815" );
 
   // Only build the actions once.
   if ( false == _actions.empty() )
@@ -339,6 +350,30 @@ QSettings &MainWindow::settings()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Load the plugins.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_loadPlugins ( Usul::Interfaces::IUnknown *caller )
+{
+	USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "4106161463" );
+
+	std::string pluginFile ( Usul::CommandLine::Arguments::instance().directory() + "/../config/HeliosQt.xml" );
+	USUL_TRACE_2 ( "Plugin file: ", pluginFile );
+	
+	if ( Usul::Predicates::FileExists::test ( pluginFile ) )
+	{
+		CadKit::Helios::Plugins::Manager::Manager loader;
+    loader.filename ( pluginFile );
+		loader.parse();
+		loader.load ( caller );
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Increment the reference count.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -419,7 +454,7 @@ MainWindow::FileResult MainWindow::getLoadFileName ( const std::string &title, c
 MainWindow::FilesResult MainWindow::getLoadFileNames ( const std::string &title, const Filters &filters )
 {
   USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( throw std::runtime_error ( "Error 4159638088: Not GUI thread" ) );
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "4159638088" );
   Guard guard ( this->mutex() );
   FilesResult result;
   return result;

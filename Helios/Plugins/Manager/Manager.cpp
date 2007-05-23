@@ -14,34 +14,11 @@
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Trace/Trace.h"
 
 #include "XmlTree/Document.h"
 
 using namespace CadKit::Helios::Plugins::Manager;
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Static data member.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Manager* Manager::_instance ( 0x0 );
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Manager& Manager::instance()
-{
-	if( 0x0 == _instance )
-		_instance = new Manager();
-		
-	return *_instance;
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -52,8 +29,10 @@ Manager& Manager::instance()
 
 Manager::Manager() : 
 	_filename(),
-	_names()
+	_names(),
+  _mutex()
 {
+  USUL_TRACE_SCOPE;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -64,6 +43,7 @@ Manager::Manager() :
 
 Manager::~Manager()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -75,6 +55,8 @@ Manager::~Manager()
 
 void Manager::filename ( const std::string& filename )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
 	_filename = filename;
 }
 
@@ -85,8 +67,10 @@ void Manager::filename ( const std::string& filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& Manager::filename() const
+std::string Manager::filename() const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
 	return _filename;
 }
 
@@ -99,7 +83,10 @@ const std::string& Manager::filename() const
 
 void Manager::parse()
 {
-	XmlTree::Document::RefPtr doc = new XmlTree::Document ( );
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  XmlTree::Document::RefPtr doc = new XmlTree::Document ( );
 	doc->load ( _filename );
 	
 	typedef XmlTree::Document::Children Children;
@@ -125,8 +112,10 @@ void Manager::parse()
 
 void Manager::_addPlugins ( XmlTree::Node &parent )
 {
-typedef XmlTree::Document::Children Children;
-	
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  typedef XmlTree::Document::Children Children;
 	Children& children ( parent.children() );
 	
 	for( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
@@ -148,8 +137,10 @@ typedef XmlTree::Document::Children Children;
 
 void Manager::_addPlugin ( XmlTree::Node &node )
 {
-	typedef XmlTree::Document::Attributes Attributes;
-	
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  typedef XmlTree::Document::Attributes Attributes;
 	Attributes& attributes ( node.attributes() );
 	
 	std::string file ( "" );
@@ -178,16 +169,19 @@ void Manager::_addPlugin ( XmlTree::Node &node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::load( Usul::Interfaces::IUnknown *caller )
+void Manager::load ( Usul::Interfaces::IUnknown *caller )
 {
-	// Query for interfaces.
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Query for interfaces.
 	Usul::Interfaces::IStatusBar::UpdateStatusBar status ( caller );
 	Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
 	
 	// Set the size for the progress bar.
 	if( progress.valid() )
 		progress->setTotalProgressBar( _names.size() );
-	
+
 	// Number we are on.
 	unsigned int number ( 0 );
 	
@@ -212,4 +206,3 @@ void Manager::load( Usul::Interfaces::IUnknown *caller )
 			progress->updateProgressBar( ++number );
 	}
 }
-

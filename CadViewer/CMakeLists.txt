@@ -26,6 +26,10 @@ ${CADKIT_ROOT_DIR}/MenuKit/OSG
 ${CADKIT_ROOT_DIR}/CadViewer/Plugins/scene_operations
 ${CADKIT_ROOT_DIR}/CadViewer/Plugins/display_scene_stats
 ${CADKIT_ROOT_DIR}/Collision/PQP
+${CADKIT_ROOT_DIR}/VRV/GUI
+${CADKIT_ROOT_DIR}/VRV/IO
+${CADKIT_ROOT_DIR}/VRV/Commands
+${CADKIT_ROOT_DIR}/SAL/OSG
 )
 
 # ------------ Set Include Folders ----------------------

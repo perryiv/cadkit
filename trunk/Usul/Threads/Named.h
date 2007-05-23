@@ -105,6 +105,7 @@ namespace Names
   {\
     exp;\
   }
-
+#define USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW(id)\
+  USUL_THREADS_ENSURE_GUI_THREAD ( throw std::runtime_error ( std::string ( "Error " ) + std::string ( id ) + std::string ( ": Not GUI thread" ) ) );
 
 #endif // _USUL_THREADS_NAMED_THREADS_CLASS_H_

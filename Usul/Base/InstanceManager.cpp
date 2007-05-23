@@ -68,7 +68,7 @@ InstanceManager::InstanceManager() :
 InstanceManager::~InstanceManager()
 {
   // Delete the mutex.
-  if( 0x0 != _imMutex )
+  if ( 0x0 != _imMutex )
     delete _imMutex;
 
   // Need this declared up here.
@@ -82,12 +82,15 @@ InstanceManager::~InstanceManager()
     {
       USUL_ASSERT ( 0 ); // FYI
       out << "Error 3951994349: " << _objects.size() << " referenced items remain:\n";
-      for ( ObjectMap::const_iterator i = _objects.begin(); i != _objects.end(); ++i )
+      while ( false == _objects.empty() )
       {
-        const ObjectMap::value_type value ( *i );
-        const Referenced *address ( value.first );
-        const std::string &typeName ( value.second );
-        out << "\taddress = " << address << ", name = " << typeName << '\n';
+        const ObjectSet::value_type value ( *(_objects.begin()) );
+        const Referenced *address ( value );
+        out << "\taddress = " << address;
+        if ( 0x0 != address )
+          out << ", name = " << address->typeId().name();
+        out << '\n';
+        _objects.erase ( _objects.begin() );
       }
     }
   }
@@ -110,6 +113,12 @@ InstanceManager::~InstanceManager()
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the mutex. Create it if this is the first time.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 Usul::Threads::Mutex& InstanceManager::_mutex()
 {
   if( 0x0 == _imMutex )
@@ -130,11 +139,11 @@ void InstanceManager::add ( const Referenced *object )
   Guard guard ( this->_mutex() );
 
   USUL_ASSERT ( 0x0 != object );
-  if ( object )
+  if ( 0x0 != object )
   {
-    const Result result ( _objects.insert ( ObjectMap::value_type ( object, object->typeId().name() ) ) );
+    const Result result ( _objects.insert ( object ) );
     USUL_ASSERT ( true == result.second );
-    USUL_ASSERT ( object == result.first->first );
+    USUL_ASSERT ( object == *(result.first) );
   }
 }
 

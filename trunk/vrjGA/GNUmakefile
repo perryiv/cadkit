@@ -1,6 +1,6 @@
 PKG_NAME = vrjGA
 SHELL = /bin/sh
-LIB_OS = lib
+LIB_OS = lib64
 OS := $(shell uname)
 
 default : shared_lib
@@ -14,7 +14,7 @@ LIB_OS = lib32
 endif
 
 libs = -L$(VJ_BASE_DIR)/$(LIB_OS) -lgadget
-includes = -I../ -I$(BOOST_ROOT_DIR) -I$(VJ_BASE_DIR)/include
+includes = -I../ -I$(BOOST_ROOT_DIR) -I$(VJ_BASE_DIR)/include -I$(VJ_DEPS_DIR)/include
 flags = -D_COMPILING_VRJ_GA
 
 BUILD=$(OS)
@@ -31,14 +31,14 @@ OBJS=\
 	$(BUILD)/Callback.o
 
 shared_lib: $(OBJS)
-	$(CXX) $(OS_LINK_FLAGS) -shared -g $(OBJS) -o $(BUILD)/$(libname) $(libs)
+	$(CXX) $(OS_LINK_FLAGS) -shared -g -fPIC $(OBJS) -o $(BUILD)/$(libname) $(libs)
 	mkdir -p ../bin
 	cp $(BUILD)/$(libname) ../bin/
 
 $(OBJS): $(BUILD)/%.o: %.cpp
 	mkdir -p $(BUILD)
 	@echo "Compiling $< into $@"
-	$(CXX) $(OS_COMP_FLAGS) $(flags) $(CXXFLAGS) -g $(includes) -c $< -o $@
+	$(CXX) $(OS_COMP_FLAGS) $(flags) $(CXXFLAGS) -g -fPIC $(includes) -c $< -o $@
 
 clean:
 	$(RM) -r $(BUILD) so_locations

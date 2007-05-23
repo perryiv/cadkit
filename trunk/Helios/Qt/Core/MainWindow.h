@@ -90,7 +90,7 @@ protected:
   void                      _saveSettings();
   
   /// Load plugin functions.
-  void                      _loadPlugins();
+  void                      _loadPlugins ( Usul::Interfaces::IUnknown *caller );
   void                      _startLoadPlugins  ( Usul::Threads::Thread* );
   void                      _finishLoadPlugins ( Usul::Threads::Thread* );
 

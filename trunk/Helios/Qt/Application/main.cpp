@@ -168,11 +168,11 @@ namespace Program
       // Declare the main window.
       CadKit::Helios::Core::MainWindow mw ( vendor, url, program );
 
-      // Show the main window.
-      mw.show();
-
       // Call quit when the last window closes. (Not sure if this is needed...)
       app.connect ( &app, SIGNAL ( lastWindowClosed() ), &app, SLOT ( quit() ) );
+
+      // Show the main window.
+      mw.show();
 
       // Run the application.
       result = app.exec();

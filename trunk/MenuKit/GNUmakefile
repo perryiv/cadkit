@@ -35,14 +35,14 @@ OBJS = \
 	$(BUILD)/MessageVisitor.o
 
 shared_lib: $(OBJS)
-	$(CXX) -shared -g $(OBJS) -o $(BUILD)/$(libname)
+	$(CXX) -shared -g -fPIC $(OBJS) -o $(BUILD)/$(libname)
 	mkdir -p ../bin
 	cp $(BUILD)/$(libname) ../bin/
 
 $(OBJS): $(BUILD)/%.o: %.cpp
 	mkdir -p $(BUILD)
 	@echo "Compiling $< into $@"
-	$(CXX) -g $(includes) -c $< -o $@
+	$(CXX) -g -fPIC $(includes) -c $< -o $@
 
 clean:
 	$(CLEAN)

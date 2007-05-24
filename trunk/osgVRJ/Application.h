@@ -11,6 +11,7 @@
 
 // osgjuggler includes
 #include "osgVRJ.h"
+#include "SharedDouble.h"
 
 #include "OsgTools/Render/Renderer.h"
 
@@ -122,6 +123,7 @@ namespace osgVRJ
     osg::Timer_t                       _initial_time;
     osg::Timer_t                       _frameStart;
     double                             _frameTime;
+    cluster::UserData < SharedDouble > _sharedFrameTime;
 
     vrj::GlContextData< RendererPtr >  _renderer;
   };

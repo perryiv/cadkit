@@ -234,6 +234,14 @@
 				RelativePath="Application.h"
 				>
 			</File>
+			<File
+				RelativePath=".\SharedDouble.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SharedDouble.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="DLL"

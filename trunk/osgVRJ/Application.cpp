@@ -29,8 +29,9 @@ using namespace osgVRJ;
   _viewport ( 0x0 ),\
   _background_color(0,0,0,1),\
   _context_in_sync(false),\
-  _initial_time(0.0),\
-  _frameStart ( 0.0 ), \
+  _initial_time( static_cast < osg::Timer_t > ( 0.0 ) ),\
+  _frameStart ( static_cast < osg::Timer_t > ( 0.0 ) ), \
+  _sharedFrameTime(),
   _frameTime  ( 1 ), \
   _renderer()
 
@@ -96,6 +97,10 @@ void Application::_construct()
   // Note: this has to be done early. Waiting for init() or contextInit() is 
   // too late.
   osg::DisplaySettings::instance()->setMaxNumberOfGraphicsContexts ( 20 );
+
+  // Initialize the shared frame time data.
+  vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
+  _sharedFrameTime.init ( guid, "viz0" );
 }
 
 
@@ -283,22 +288,6 @@ void Application::draw()
   renderer->viewMatrix(*osg_proj_xform_mat);
 
   renderer->render();
-
-  /*double left, right, bottom, top, zNear, zFar;
-  renderer->getFrustum ( left, right, bottom, top, zNear, zFar );
-
-  if( left != frustum[vrj::Frustum::VJ_LEFT] )
-    std::cerr << "The left value of the projection matrix changed." << std::endl;
-	if ( right != frustum[vrj::Frustum::VJ_RIGHT] )
-    std::cerr << "The right value of the projection matrix changed." << std::endl;
-	if ( bottom != frustum[vrj::Frustum::VJ_BOTTOM] )
-    std::cerr << "The bottom value of the projection matrix changed." << std::endl;
-  if ( top != frustum[vrj::Frustum::VJ_TOP] )
-    std::cerr << "The top value of the projection matrix changed." << std::endl;
-  if ( zNear != frustum[vrj::Frustum::VJ_NEAR] )
-    std::cerr << "The near value of the projection matrix changed." << std::endl;
-	if ( zFar != frustum[vrj::Frustum::VJ_FAR] )
-    std::cerr << "The far value of the projection matrix changed." << std::endl;*/
 }
 
 
@@ -371,6 +360,11 @@ void Application::init()
 
 void Application::preFrame()
 {
+  if( _sharedFrameTime.isLocal() )
+  {
+    _sharedFrameTime->data = _frameTime;
+  }
+
   _frameStart = _timer.tick();
 }
 
@@ -600,6 +594,7 @@ const osg::FrameStamp* Application::getFrameStamp() const
 
 double Application::_getFrameTime() const
 {
-  return _frameTime;
+  return _sharedFrameTime->data;
+  //return _frameTime;
 }
 

@@ -26,6 +26,7 @@ INCLUDE_DIRECTORIES(
 #List the Sources
 SET (SOURCES
   ./Application.cpp
+  ./SharedDouble.cpp
 )
 
 # Create a Shared Library

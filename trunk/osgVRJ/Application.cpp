@@ -31,7 +31,7 @@ using namespace osgVRJ;
   _context_in_sync(false),\
   _initial_time( static_cast < osg::Timer_t > ( 0.0 ) ),\
   _frameStart ( static_cast < osg::Timer_t > ( 0.0 ) ), \
-  _sharedFrameTime(),
+  _sharedFrameTime(),\
   _frameTime  ( 1 ), \
   _renderer()
 
@@ -98,9 +98,6 @@ void Application::_construct()
   // too late.
   osg::DisplaySettings::instance()->setMaxNumberOfGraphicsContexts ( 20 );
 
-  // Initialize the shared frame time data.
-  vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
-  _sharedFrameTime.init ( guid, "viz0" );
 }
 
 
@@ -349,6 +346,10 @@ void Application::init()
 
   // Also set up the global state-set.
   this->initGlobalStateSet();
+
+  // Initialize the shared frame time data.
+  vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
+  _sharedFrameTime.init ( guid, "viz0" );
 }
 
 
@@ -362,6 +363,7 @@ void Application::preFrame()
 {
   if( _sharedFrameTime.isLocal() )
   {
+    std::cerr << "Setting frame time" << std::endl;
     _sharedFrameTime->data = _frameTime;
   }
 

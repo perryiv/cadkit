@@ -10,7 +10,7 @@
 
 #include "SharedDouble.h"
 
-using osgVRJ;
+using namespace osgVRJ;
 
 SharedDouble::SharedDouble() : data ( 0.0 )
 {

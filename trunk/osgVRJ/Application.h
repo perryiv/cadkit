@@ -18,6 +18,7 @@
 // vrj includes
 #include "vrj/Draw/OGL/GlApp.h"
 #include "vrj/Draw/OGL/GlContextData.h"
+#include "plugins/ApplicationDataManager/UserData.h"
 
 // osg
 #include "osg/Referenced"

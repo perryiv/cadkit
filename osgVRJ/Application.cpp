@@ -90,6 +90,13 @@ Application::Application(const std::list<std::string>& configs) : vrj::GlApp(),
   std::for_each(configs.begin(),configs.end(), Detail::LoadConfigFile());
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Not sure if this is still needed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void Application::_construct()
 {
   // Crank up the max number of contexts. When you figure out a good way to 
@@ -195,8 +202,13 @@ void Application::contextPreDraw()
 }
 
 
-// Small class that pushes the state in constructor and pops it in destructor.
-// This is for exception safety.
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Small class that pushes the state in constructor and pops it in destructor.
+//  This is for exception safety.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 namespace osgVRJ
 {
   namespace Detail
@@ -239,9 +251,9 @@ namespace osgVRJ
 
         glPopAttrib();
       }
-    };
-  };
-};
+    }
+  }
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -269,6 +281,7 @@ void Application::draw()
   vrj::Projection* projection = userData->getProjection();
   vrj::Frustum frustum = projection->getFrustum();
   
+  // Do we need to do this each frame?
   renderer->setFrustum ( frustum[vrj::Frustum::VJ_LEFT],
 				                 frustum[vrj::Frustum::VJ_RIGHT],
 				                 frustum[vrj::Frustum::VJ_BOTTOM],
@@ -284,6 +297,7 @@ void Application::draw()
   
   renderer->viewMatrix(*osg_proj_xform_mat);
 
+  // Do the drawing.
   renderer->render();
 }
 
@@ -326,7 +340,7 @@ osg::Node* Application::getSceneData()
 
 double Application::getTimeSinceStart()
 {
-  double time_since_start = _timer.delta_s( _initial_time, _timer.tick() );
+  double time_since_start ( _timer.delta_s( _initial_time, _timer.tick() ) );
   return time_since_start;
 }
 
@@ -361,13 +375,10 @@ void Application::init()
 
 void Application::preFrame()
 {
-  if( _sharedFrameTime.isLocal() )
-  {
-    _sharedFrameTime->data = _frameTime;
-  }
-
+  // Get the frame time.
   _frameTime = _sharedFrameTime->data;
 
+  // Mark the start of the frame.
   _frameStart = _timer.tick();
 }
 
@@ -383,13 +394,25 @@ void Application::postFrame()
   // Capture the frame time.
   _frameTime = _timer.delta_s( _frameStart, _timer.tick() );
 
+  // Write the frame time if we've suppose to.
+  if( _sharedFrameTime.isLocal() )
+  {
+    _sharedFrameTime->data = _frameTime;
+  }
+
   if(!_context_in_sync)
     _context_in_sync = true;
 }
 
-// application thread call settings done here will
-// be pushed out to all SceneView instances in
-// a context specific thread
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Application thread call settings done here will
+//  be pushed out to all SceneView instances in
+//  a context specific thread
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void Application::initGlobalStateSet()
 {
   // global state set setup
@@ -455,9 +478,9 @@ void Application::setSceneDecorator(osg::Group* decor)
   _scene_decorator = decor;
 
   if( decor && _scene_data.valid())
-    {
-      decor->addChild(_scene_data.get());
-    }
+  {
+    decor->addChild(_scene_data.get());
+  }
 
   _context_in_sync = false;
 }
@@ -597,7 +620,7 @@ const osg::FrameStamp* Application::getFrameStamp() const
 
 double Application::_getFrameTime() const
 {
-  return _sharedFrameTime->data;
-  //return _frameTime;
+  //return _sharedFrameTime->data;
+  return _frameTime;
 }
 

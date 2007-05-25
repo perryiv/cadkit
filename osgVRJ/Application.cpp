@@ -366,6 +366,8 @@ void Application::preFrame()
     _sharedFrameTime->data = _frameTime;
   }
 
+  _frameTime = _sharedFrameTime->data;
+
   _frameStart = _timer.tick();
 }
 

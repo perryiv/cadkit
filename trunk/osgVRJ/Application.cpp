@@ -218,8 +218,8 @@ namespace osgVRJ
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
 
-        glMatrixMode(GL_TEXTURE);
-        glPushMatrix();
+        //glMatrixMode(GL_TEXTURE);
+        //glPushMatrix();
       }
       ~OpenGlStackPushPop()
       {
@@ -228,8 +228,8 @@ namespace osgVRJ
         assert ( GL_ERROR_NO == ::glGetError() );
         #endif
 
-        glMatrixMode(GL_TEXTURE);
-        glPopMatrix();
+        //glMatrixMode(GL_TEXTURE);
+        //glPopMatrix();
 
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
@@ -363,7 +363,6 @@ void Application::preFrame()
 {
   if( _sharedFrameTime.isLocal() )
   {
-    std::cerr << "Setting frame time" << std::endl;
     _sharedFrameTime->data = _frameTime;
   }
 

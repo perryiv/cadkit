@@ -251,7 +251,7 @@ namespace osgVRJ
 
         glPopAttrib();
       }
-    }
+    };
   }
 }
 

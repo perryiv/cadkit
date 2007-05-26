@@ -979,12 +979,12 @@ void Application::_parseCommandLine()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::preFrame()
+void Application::latePreFrame()
 {
   // For safety.
   try
   {
-    this->_preFrame();
+    this->_latePreFrame();
   }
 
   // Catch exceptions.
@@ -1006,13 +1006,13 @@ void Application::preFrame()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_preFrame()
+void Application::_latePreFrame()
 {
   ErrorChecker ( 1067093580, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 1067222382, _cursor.valid() );
   
   // Call the base class's function.
-  BaseClass::preFrame();
+  BaseClass::latePreFrame();
   
   // Update the frame-time.
   //this->_updateFrameTime();

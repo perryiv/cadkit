@@ -334,8 +334,8 @@ protected:
   void                          _postProcessModelLoad ( const std::string &filename, osg::Node *model );
 
   // Called by the kernel before the frame.
-  virtual void                  preFrame();
-  void                          _preFrame();
+  virtual void                  latePreFrame();
+  void                          _latePreFrame();
   
 
   // Process the button states.

@@ -60,8 +60,6 @@ namespace osgVRJ
     virtual void contextInit();
     virtual void contextPreDraw();
     virtual void init();
-    virtual void preFrame();
-    virtual void postFrame();
     virtual void viewAll (osg::MatrixTransform *mt,osg::Matrix::value_type zScale=2);
 
     void                    setBackgroundColor(const osg::Vec4& bg) { _background_color = bg; _context_in_sync=false; }
@@ -88,14 +86,24 @@ namespace osgVRJ
     void quit();
     void run();
 
+    /// Get/Set the viewport.
     osg::Viewport*          viewport()       { return _viewport.get(); }
     const osg::Viewport*    viewport() const { return _viewport.get(); }
 
   protected:
 
+    virtual void preFrame();
+    virtual void latePreFrame();
+    virtual void postFrame();
     virtual void draw();
+
+    /// Set the viewport.
     virtual void setViewportByDrawManager(osg::Viewport*,vrj::GlDrawManager*);
+
+    /// Set the renderer with proper data.
     virtual void setUpSceneViewWithData( Renderer* );
+
+    /// Initialize the global state set.
     virtual void initGlobalStateSet();
 
     void           _construct();

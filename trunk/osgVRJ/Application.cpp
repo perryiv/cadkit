@@ -375,11 +375,31 @@ void Application::init()
 
 void Application::preFrame()
 {
-  // Get the frame time.
-  _frameTime = _sharedFrameTime->data;
+  // Write the frame time if we've suppose to.
+  if( _sharedFrameTime.isLocal() )
+  {
+    if( _framestamp.valid() && _framestamp->getFrameNumber() % 300 == 0 )
+      std::cerr << "Writing frame time: " << _frameTime << std::endl;
+
+    // Capture the frame time.
+    _sharedFrameTime->data = _frameTime;
+  }
 
   // Mark the start of the frame.
   _frameStart = _timer.tick();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called after preFrame, but before the frame.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::latePreFrame()
+{
+  // Get the frame time.
+  _frameTime = _sharedFrameTime->data;
 }
 
 
@@ -394,11 +414,18 @@ void Application::postFrame()
   // Capture the frame time.
   _frameTime = _timer.delta_s( _frameStart, _timer.tick() );
 
+#if 0
   // Write the frame time if we've suppose to.
   if( _sharedFrameTime.isLocal() )
   {
-    _sharedFrameTime->data = _frameTime;
+    double frameTime ( _timer.delta_s( _frameStart, _timer.tick() ) );
+    if( _framestamp.valid() && _framestamp->getFrameNumber() % 300 == 0 )
+      std::cerr << "Writing frame time: " << frameTime << std::endl;
+
+    // Capture the frame time.
+    _sharedFrameTime->data = frameTime;
   }
+#endif
 
   if(!_context_in_sync)
     _context_in_sync = true;

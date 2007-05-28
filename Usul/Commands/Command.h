@@ -52,6 +52,26 @@ public:
   // Execute the command.
   virtual void                execute ( Usul::Interfaces::IUnknown * );
 
+  // Get/Set the icon path.
+  void                        iconPath ( const std::string& value );
+  std::string                 iconPath() const;
+
+  // Get/Set the shortcut.
+  void                        shortcut ( const std::string& value );
+  std::string                 shortcut() const;
+
+  // Get/Set the status tip.
+  void                        statusTip ( const std::string& value );
+  std::string                 statusTip() const;
+
+  // Get/Set the text.
+  void                        text( const std::string& value );
+  std::string                 text() const;
+
+  // Get/Set the tooltip.
+  void                        toolTip ( const std::string& value );
+  std::string                 toolTip() const;
+
 protected:
 
   // Constructor.
@@ -71,6 +91,11 @@ private:
   void                        _destroy();
 
   IUnknown::RefPtr _caller;
+  std::string      _text;
+  std::string      _toolTip;
+  std::string      _statusTip;
+  std::string      _shortcut;
+  std::string      _iconPath;
 };
 
 

@@ -5,6 +5,7 @@ SET(PLUGIN_NAME "VRVIO")
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
+INCLUDE ( ${CMakeModules}/FindVRJuggler.cmake)
 
 set(COMPILE_GUARD "_COMPILING_VRV_IO")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
@@ -26,4 +27,5 @@ CADKIT_PLUGIN()
 
 # Link the Library
 LINK_CADKIT( ${PLUGIN_NAME} Usul )	
+TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} ${CPPDOM_LIB} )
 

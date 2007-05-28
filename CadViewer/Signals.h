@@ -80,12 +80,15 @@ void handleSIGSEGV ( int num )
 
 inline void registerSignalHandlers ( const std::string &programName )
 {
+  // TODO: Figure out why this won't compile on apple.
+#ifndef __APPLE__
   Detail::_programName = programName;
   struct sigaction sa;
   ::sigemptyset ( &sa.sa_mask );
   sa.sa_flags = 0;
   sa.sa_handler = handleSIGSEGV;
   ::sigaction ( SIGSEGV, &sa, 0 );
+#endif
 }
 
 

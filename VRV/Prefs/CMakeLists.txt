@@ -46,4 +46,6 @@ ADD_LIBRARY( VRVPrefs SHARED ${SOURCES} )
 # Link the Library	
 LINK_CADKIT( VRVPrefs Usul )
 
-
+TARGET_LINK_LIBRARIES( VRVPrefs
+	${CPPDOM_LIB}
+)

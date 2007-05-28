@@ -9,8 +9,6 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 FIND_PACKAGE(OpenGL)
 
 INCLUDE(${CMakeModules}/FindOSG.cmake)
-INCLUDE(${CMakeModules}/FindProducer.cmake)
-INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 INCLUDE(${CMakeModules}/FindBoost.cmake)
 INCLUDE(${CMakeModules}/FindVRJuggler.cmake)
 
@@ -90,6 +88,7 @@ ADD_EXECUTABLE( ${TARGET} ${SOURCES} )
 LINK_CADKIT( ${TARGET} Usul OpenThreadsEx OsgTools osgVRJ vrjGA VRVPrefs MenuKit MenuKit_OSG )
 TARGET_LINK_LIBRARIES( ${TARGET} 
   ${VR_JUGGLER_LIBS}
+  ${VJ_DEPS_LIBS}
   ${OPENTHREADS_LIB}
   ${OSG_LIB}
   ${OSG_DB_LIB}
@@ -98,5 +97,4 @@ TARGET_LINK_LIBRARIES( ${TARGET}
   ${OSG_UTIL_LIB}
   ${OSG_FX_LIB}
   ${OPENGL_LIBRARIES}
-  ${OMNI_LIBS}
 )

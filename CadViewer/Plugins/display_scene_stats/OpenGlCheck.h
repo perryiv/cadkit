@@ -22,7 +22,7 @@
 # include <windows.h>
 #endif
 
-#include "GL/gl.h"
+#include "Usul/Headers/OpenGL.h"
 
 #include "Usul/MPL/StaticAssert.h"
 

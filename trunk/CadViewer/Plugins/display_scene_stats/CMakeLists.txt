@@ -6,13 +6,17 @@ SET(PLUGIN_NAME "DisplaySceneStats")
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
+# ------------ Find OpenGL Library ----------------------
+FIND_PACKAGE(OpenGL)
+INCLUDE ( ${CMakeModules}/FindOSG.cmake)
+
 set(COMPILE_GUARD "_COMPILING_DISPLAY_SCENE_STATS")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # ------------ Set Include Folders ----------------------
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" )
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${OPENGL_INCLUDE_DIR})
 
 set (SOURCES
 ./Component.cpp
@@ -26,4 +30,4 @@ CADKIT_PLUGIN()
 
 # Link the Library
 LINK_CADKIT( ${PLUGIN_NAME} Usul )	
-
+TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} ${OSG_LIB} )

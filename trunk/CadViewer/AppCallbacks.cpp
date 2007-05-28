@@ -1385,7 +1385,7 @@ void Application::_gridColor ( MenuKit::Message m, MenuKit::Item *item )
   {
     const osg::Vec4& c = this->_getColor( item->text() );
 	  for(unsigned int i=0; i<_gridFunctors.size(); ++i){
-		  _gridFunctors[i]->color ( c[0], c[1], c[2], c[3] );
+		  _gridFunctors[i].color ( c[0], c[1], c[2], c[3] );
 	}
     this->_rebuildGrid();
   }

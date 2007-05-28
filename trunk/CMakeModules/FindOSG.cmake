@@ -15,6 +15,7 @@
 # ------------ Find OpenThreads Library ----------------------
 FIND_LIBRARY(OPENTHREADS_LIB OpenThreads
  ${OT_LIB_DIR}
+ ${OSG_LIB_DIR}
 )
 
 # ------------ Find osg Library ----------------------

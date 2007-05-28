@@ -9,6 +9,8 @@ INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 set(COMPILE_GUARD "_COMPILING_SCENE_OPERATIONS")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
+INCLUDE ( ${CMakeModules}/FindOSG.cmake)
+
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # ------------ Set Include Folders ----------------------
@@ -30,4 +32,4 @@ CADKIT_PLUGIN()
 
 # Link the Library
 LINK_CADKIT( ${PLUGIN_NAME} Usul )	
-
+TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} ${OSG_LIB} )

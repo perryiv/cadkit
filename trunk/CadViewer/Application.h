@@ -572,7 +572,7 @@ protected:
   PrefsPtr          _prefs;
   osg::Matrixf      _home;
   ColorMap          _colorMap;
-  std::vector<OsgTools::Grid*> _gridFunctors;
+  std::vector<OsgTools::Grid> _gridFunctors;
   bool              _textures;
   MatTransPtr       _scribeBranch;
   bool              _autoPlacement;

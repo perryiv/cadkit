@@ -4,7 +4,9 @@ project (VRVCOMMANDS)
 SET(PLUGIN_NAME "VRVCOMMANDS")
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
-INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
+INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake )
+INCLUDE ( ${CMakeModules}/FindVRJuggler.cmake )
+INCLUDE ( ${CMakeModules}/FindBoost.cmake )
 
 set(COMPILE_GUARD "_COMPILING_VRV_COMMANDS")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
@@ -30,4 +32,5 @@ CADKIT_PLUGIN()
 
 # Link the Library
 LINK_CADKIT( ${PLUGIN_NAME} Usul )	
+TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} ${VR_JUGGLER_LIBS} ${CPPDOM_LIB} ${Boost_FILESYSTEM_LIBRARY} )
 

@@ -372,12 +372,7 @@ Application::Application ( Args &args ) :
 ///////////////////////////////////////////////////////////////////////////////
 
 Application::~Application()
-{
-  unsigned int i;
-  
-  for( i=0; i<_gridFunctors.size(); ++i){
-    delete _gridFunctors[i];
-  }
+{  
   _gridFunctors.clear();
 }
 
@@ -611,29 +606,27 @@ void Application::_initGrid ( osg::Node *node )
   // Handle zero-sized bounding spheres.
   float r = ( bs.radius() <= 1e-6 ) ? 1 : bs.radius();
 
-  // Clean up any old grids
-  for(unsigned int i=0; i<_gridFunctors.size(); ++i)
-  {
-    delete _gridFunctors[i];
-  }
+  // Clean up any old grids.
   _gridFunctors.clear();
 
   // Set the properties.
-  for( int i = 0; i < _prefs->numGrids(); ++i )
+  for( unsigned int i = 0; i < _prefs->numGrids(); ++i )
   {
-    OsgTools::Grid *grid = new OsgTools::Grid();
-    grid->numBlocks ( _prefs->numGridBlocks(i) );
-    grid->size ( r * _prefs->gridScale(i) );
-    grid->color ( _prefs->gridColor(i) );
-    grid->fillColor ( _prefs->gridFillColor(i) );
+    OsgTools::Grid grid;
+    grid.numBlocks ( _prefs->numGridBlocks(i) );
+    grid.size ( r * _prefs->gridScale(i) );
+    grid.color ( _prefs->gridColor(i) );
+    grid.fillColor ( _prefs->gridFillColor(i) );
     Usul::Math::Matrix44f o;
-    o.makeRotation ( _prefs->gridRotationAngleRad(i), _prefs->gridRotationVector(i) );
-    grid->orientation ( o );
+    o.makeRotation ( _prefs->gridRotationAngleRad( static_cast < int > ( i ) ), _prefs->gridRotationVector(i) );
+    grid.orientation ( o );
 
     // Move the center so that it is below the bounding sphere of the node.
     osg::Vec3 c ( bs.center() );
-    if(_prefs->offsetGrid(i)) c[1] = -r;
-    grid->center ( Usul::Math::Vec3f ( c[0], c[1], c[2] ) );
+    if(_prefs->offsetGrid( static_cast < int > ( i ) )) 
+    	c[1] = -r;
+    
+    grid.center ( Usul::Math::Vec3f ( c[0], c[1], c[2] ) );
 	  _gridFunctors.push_back(grid);
   }
 
@@ -652,7 +645,7 @@ void Application::_rebuildGrid()
   // Remove the old grid and add the new one.
   OsgTools::Group::removeAllChildren ( _gridBranch.get() );
   for(unsigned int i=0; i<_gridFunctors.size(); ++i){
-    _gridBranch->addChild ( (*(_gridFunctors[i]))() );
+    _gridBranch->addChild ( _gridFunctors[i]() );
   }
 }
 
@@ -671,11 +664,13 @@ void Application::_initLight()
   osg::ref_ptr<osg::Light> light ( new osg::Light );
   osg::Vec3 ld;
   osg::Vec4 lp;
-  int i;
-  for(i=0; i<4; ++i){
+
+  for( unsigned int i=0; i<4; ++i)
+  {
     lp[i]=_prefs->lightPosition()[i];
   }
-  for(i=0; i<3; ++i){
+  for( unsigned int i=0; i<3; ++i)
+  {
     ld[i]=_prefs->lightDirection()[i];
   }
   light->setPosition( lp );
@@ -762,12 +757,9 @@ void Application::_initMenu()
   _menuBranch->setStateSet( ss.get() );
 
   // Fill the callback map.
-  CV_REGISTER ( _quitCallback,     "exit" );    // macro expands to ...
-      // _buttonmap["exit"] = MenuKit::memFunCB2 ( this, &Application::_quitCallback ) 
-  CV_REGISTER ( _quitCallback,     "quit" );    // macro expands to ...
-      // _buttonmap["quit"] = MenuKit::memFunCB2 ( this, &Application::_quitCallback )
-  CV_REGISTER ( _hideSelected,     "hide_selected" );    // macro expands to ...
-      // _buttonmap["hide_selected"] = MenuKit::memFunCB2 ( this, &Application::_hideSelected )
+  CV_REGISTER ( _quitCallback,     "exit" );
+  CV_REGISTER ( _quitCallback,     "quit" );
+  CV_REGISTER ( _hideSelected,     "hide_selected" );
   CV_REGISTER ( _showAll,          "show_all" );
   CV_REGISTER ( _unselectVisible,  "unselect_visible" );
   CV_REGISTER ( _exportSelected,   "export_selected" );
@@ -1773,7 +1765,6 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
       ( SAL::Interfaces::IRead::IID, CV_SCENE_ABSTRACTION_LAYER, true, true ) );
 
   // Read the model.
-  Usul::Interfaces::IUnknown *tmp=NULL;
   SAL::Interfaces::INode::ValidQueryPtr model ( reader->readNodeFile ( filename ) );
 
   // Get the interface we need.

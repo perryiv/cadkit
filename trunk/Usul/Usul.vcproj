@@ -2132,19 +2132,19 @@
 				Name="App"
 				>
 				<File
-					RelativePath=".\App\Controller.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\App\Controller.h"
-					>
-				</File>
-				<File
 					RelativePath=".\App\Application.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\App\Application.h"
+					>
+				</File>
+				<File
+					RelativePath=".\App\Controller.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\App\Controller.h"
 					>
 				</File>
 			</Filter>
@@ -2195,14 +2195,6 @@
 			<Filter
 				Name="Commands"
 				>
-				<File
-					RelativePath=".\Commands\Action.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Commands\Action.h"
-					>
-				</File>
 				<File
 					RelativePath=".\Commands\Command.cpp"
 					>

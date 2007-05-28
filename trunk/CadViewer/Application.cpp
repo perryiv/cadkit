@@ -209,7 +209,6 @@ unsigned long Application::_mainThread = 0;
 
 #define CV_SCENE_OPERATIONS         "Scene Operations"
 #define CV_COLLISION_DETECTION      "Collision Detection"
-#define CV_SCENE_ABSTRACTION_LAYER  "Scene Abstraction Layer"
 #define CV_RESTART_FILE_PARSER      "Restart File Parser"
 #define CV_GRAPHICAL_USER_INTERFACE "Graphical User Interface"
 
@@ -240,7 +239,7 @@ Application::Application ( Args &args ) :
   _cursorGreenNoRot     ( new osg::MatrixTransform ),
   _cursorBlueNoRot      ( new osg::MatrixTransform ),
   _cursorTriggerNoRot   ( new osg::MatrixTransform ),
-  _cursor_zoom          ( osgDB::readNodeFile( "/home/users/hansenp/models/Cursors/zoom_in.flt" ) ),
+  _cursor_zoom          ( 0x0 ),
   _menuBranch     ( new osg::MatrixTransform ),
   _statusBranch   ( new osg::MatrixTransform ),
   _origin         ( new osg::Group ),
@@ -353,15 +352,15 @@ Application::Application ( Args &args ) :
   Parser::Args configs = _parser->files ( ".jconf", true );
   this->_loadConfigFiles ( configs );
 
-  // populate the color map
-  _colorMap["red"]    = osg::Vec4 ( 1.0,0.0,0.0,1.0);
-  _colorMap["yellow"] = osg::Vec4 ( 1.0,1.0,0.0,1.0);
-  _colorMap["green"]  = osg::Vec4 ( 0.0,1.0,0.0,1.0);
-  _colorMap["teal"]   = osg::Vec4 ( 0.0,1.0,1.0,1.0);
-  _colorMap["blue"]   = osg::Vec4 ( 0.0,0.0,1.0,1.0);
-  _colorMap["white"]  = osg::Vec4 ( 1.0,1.0,1.0,1.0);
-  _colorMap["grey"]   = osg::Vec4 ( 0.5,0.5,0.5,1.0);
-  _colorMap["black"]  = osg::Vec4 ( 0.0,0.0,0.0,1.0);
+  // populate the color map.  TODO: Read from config file.
+  _colorMap["red"]    = osg::Vec4 ( 1.0,0.0,0.0,1.0 );
+  _colorMap["yellow"] = osg::Vec4 ( 1.0,1.0,0.0,1.0 );
+  _colorMap["green"]  = osg::Vec4 ( 0.0,1.0,0.0,1.0 );
+  _colorMap["teal"]   = osg::Vec4 ( 0.0,1.0,1.0,1.0 );
+  _colorMap["blue"]   = osg::Vec4 ( 0.0,0.0,1.0,1.0 );
+  _colorMap["white"]  = osg::Vec4 ( 1.0,1.0,1.0,1.0 );
+  _colorMap["grey"]   = osg::Vec4 ( 0.5,0.5,0.5,1.0 );
+  _colorMap["black"]  = osg::Vec4 ( 0.0,0.0,0.0,1.0 );
 }
 
 
@@ -420,7 +419,6 @@ void Application::init()
               << std::endl;
     stop = true;
   }
-#if 1
   catch ( ... )
   {
     std::cout << "Error 1082603859: "
@@ -428,7 +426,7 @@ void Application::init()
               << std::endl;
     stop = true;
   }
-#endif
+
   // Are you supposed to stop?
   if ( stop )
     vrj::Kernel::instance()->stop();
@@ -610,7 +608,7 @@ void Application::_initGrid ( osg::Node *node )
   _gridFunctors.clear();
 
   // Set the properties.
-  for( unsigned int i = 0; i < _prefs->numGrids(); ++i )
+  for( int i = 0; i < _prefs->numGrids(); ++i )
   {
     OsgTools::Grid grid;
     grid.numBlocks ( _prefs->numGridBlocks(i) );
@@ -665,14 +663,9 @@ void Application::_initLight()
   osg::Vec3 ld;
   osg::Vec4 lp;
 
-  for( unsigned int i=0; i<4; ++i)
-  {
-    lp[i]=_prefs->lightPosition()[i];
-  }
-  for( unsigned int i=0; i<3; ++i)
-  {
-    ld[i]=_prefs->lightDirection()[i];
-  }
+  OsgTools::Convert::vector( _prefs->lightPosition(), lp, 4 );
+  OsgTools::Convert::vector( _prefs->lightDirection(), ld, 3 );
+
   light->setPosition( lp );
   light->setDirection( ld );
 
@@ -1759,22 +1752,14 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
   // User feedback.
   this->_update ( *_msgText, "Reading file: " + filename );
 
-  // Create a component for reading the model.
-  SAL::Interfaces::IRead::ValidQueryPtr reader 
-    ( Usul::Components::Object::create 
-      ( SAL::Interfaces::IRead::IID, CV_SCENE_ABSTRACTION_LAYER, true, true ) );
-
   // Read the model.
-  SAL::Interfaces::INode::ValidQueryPtr model ( reader->readNodeFile ( filename ) );
-
-  // Get the interface we need.
-  SAL::Interfaces::IOSG::ValidQueryPtr iosg ( model );
-
-  // Get the node.
-  USUL_VALID_REF_POINTER(osg::Node) node ( dynamic_cast < osg::Node * > ( iosg->osgReferenced() ) );
-
+  osg::ref_ptr< osg::Node > node ( osgDB::readNodeFile ( filename ) );
+  
   // User feedback.
   this->_update ( *_msgText, "Done reading: " + filename );
+
+  if( false == node.get() )
+    return;
 
   // Are we supposed to set the normalize flag? We only turn it on, 
   // not off, because we want to inherit the global state.

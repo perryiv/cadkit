@@ -40,6 +40,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/Zm512"
 				Optimization="0"
 				AdditionalIncludeDirectories="../,$(OPENTHREADS_INC_DIR),$(OSG_INC_DIR),$(VJ_BASE_DIR)/include,$(NSPR_ROOT)/include;$(OPENTHREADS_INC_DIR);$(BOOST_ROOT_DIR);$(GMTL_ROOT)/include;$(CADKIT_ROOT_DIR)/CadViewer"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"

@@ -8,7 +8,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Plugins/Manager/Manager.h"
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Loader for plugin files.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "Helios/Plugins/Manager/Loader.h"
 
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IPlugin.h"
@@ -27,7 +33,7 @@ using namespace CadKit::Helios::Plugins::Manager;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Manager::Manager() : 
+Loader::Loader() : 
 	_filename(),
 	_names(),
   _mutex()
@@ -41,7 +47,7 @@ Manager::Manager() :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Manager::~Manager()
+Loader::~Loader()
 {
   USUL_TRACE_SCOPE;
 }
@@ -53,7 +59,7 @@ Manager::~Manager()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::filename ( const std::string& filename )
+void Loader::filename ( const std::string& filename )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -67,7 +73,7 @@ void Manager::filename ( const std::string& filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Manager::filename() const
+std::string Loader::filename() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -81,7 +87,7 @@ std::string Manager::filename() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::parse()
+void Loader::parse()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -110,7 +116,7 @@ void Manager::parse()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::_addPlugins ( XmlTree::Node &parent )
+void Loader::_addPlugins ( XmlTree::Node &parent )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -135,7 +141,7 @@ void Manager::_addPlugins ( XmlTree::Node &parent )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::_addPlugin ( XmlTree::Node &node )
+void Loader::_addPlugin ( XmlTree::Node &node )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -169,7 +175,7 @@ void Manager::_addPlugin ( XmlTree::Node &node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::load ( Usul::Interfaces::IUnknown *caller )
+void Loader::load ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -179,8 +185,8 @@ void Manager::load ( Usul::Interfaces::IUnknown *caller )
 	Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
 	
 	// Set the size for the progress bar.
-	if( progress.valid() )
-		progress->setTotalProgressBar( _names.size() );
+	if ( progress.valid() )
+		progress->setTotalProgressBar ( _names.size() );
 
 	// Number we are on.
 	unsigned int number ( 0 );
@@ -202,7 +208,7 @@ void Manager::load ( Usul::Interfaces::IUnknown *caller )
 		}
 		
 		// Update progress.
-		if( progress.valid() )
-			progress->updateProgressBar( ++number );
+		if ( progress.valid() )
+			progress->updateProgressBar ( ++number );
 	}
 }

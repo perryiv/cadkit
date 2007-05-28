@@ -223,11 +223,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Manager.cpp"
+				RelativePath=".\Loader.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Manager.h"
+				RelativePath=".\Loader.h"
 				>
 			</File>
 		</Filter>

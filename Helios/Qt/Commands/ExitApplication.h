@@ -10,18 +10,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Base class for all commands.
+//  Command to exit the application.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_HELIOS_QT_COMMANDS_COMMAND_CLASS_H_
-#define _CADKIT_HELIOS_QT_COMMANDS_COMMAND_CLASS_H_
+#ifndef _CADKIT_HELIOS_QT_COMMANDS_EXIT_APPLICATION_COMMAND_H_
+#define _CADKIT_HELIOS_QT_COMMANDS_EXIT_APPLICATION_COMMAND_H_
 
-#include "Helios/Qt/Commands/Export.h"
-
-#include "Usul/Commands/Command.h"
-
-#include <string>
+#include "Helios/Qt/Commands/Command.h"
 
 
 namespace CadKit {
@@ -29,35 +25,35 @@ namespace Helios {
 namespace Commands {
 
 
-class HELIOS_QT_COMMANDS_EXPORT Command : public Usul::Commands::Command
+class HELIOS_QT_COMMANDS_EXPORT ExitApplication : public CadKit::Helios::Commands::Command
 {
 public:
 
   // Typedefs.
-  typedef Usul::Commands::Command BaseClass;
+  typedef CadKit::Helios::Commands::Command BaseClass;
   typedef Usul::Interfaces::IUnknown IUnknown;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Command );
+  USUL_DECLARE_REF_POINTERS ( ExitApplication );
 
   // Type-id definition.
-  USUL_DECLARE_TYPE_ID ( Command );
+  USUL_DECLARE_TYPE_ID ( ExitApplication );
+
+  // Constructor.
+  ExitApplication ( IUnknown *caller );
 
 protected:
 
-  // Constructor.
-  Command ( IUnknown *caller );
-
   // Use reference counting.
-  virtual ~Command();
+  virtual ~ExitApplication();
+
+  virtual void              _execute();
 
 private:
 
   // No copying or assignment.
-  Command ( const Command & );
-  Command &operator = ( const Command & );
-
-  void                      _destroy();
+  ExitApplication ( const ExitApplication & );
+  ExitApplication &operator = ( const ExitApplication & );
 };
 
 
@@ -66,4 +62,4 @@ private:
 } // namespace CadKit
 
 
-#endif //_CADKIT_HELIOS_QT_COMMANDS_COMMAND_CLASS_H_
+#endif //_CADKIT_HELIOS_QT_COMMANDS_EXIT_APPLICATION_COMMAND_H_

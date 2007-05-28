@@ -19,6 +19,7 @@
 #include "Helios/Qt/Core/SplashScreen.h"
 #include "Helios/Qt/Commands/Action.h"
 #include "Helios/Qt/Commands/OpenDocument.h"
+#include "Helios/Qt/Commands/ExitApplication.h"
 #include "Helios/Qt/Tools/Icon.h"
 #include "Helios/Qt/Tools/Move.h"
 #include "Helios/Qt/Tools/SettingsGroupScope.h"
@@ -136,28 +137,18 @@ void MainWindow::_destroy()
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2933090027" );
 
-  // Detach actions.
-  while ( false == _actions.empty() )
-  {
-    CadKit::Helios::Commands::BaseAction *action ( dynamic_cast < CadKit::Helios::Commands::BaseAction * > ( _actions.begin()->second ) );
-    if ( 0x0 != action )
-    {
-      this->removeAction ( action );
-      action->caller ( 0x0 );
-      delete action;
-    }
-    _actions.erase ( _actions.begin() );
-  }
-
-  // Should be true.
-  USUL_ASSERT ( 0 == _refCount );
-
   // Wait here until all threads in the pool are done.
   _threadPool->wait();
   _threadPool = 0x0;
 
   // Wait here until all threads are done.
   Usul::Threads::Manager::instance().wait();
+
+  // This will delete the actions and set their callers to null.
+  _actions.clear();
+
+  // Should be true.
+  USUL_ASSERT ( 0 == _refCount );
 
   delete _mutex;
   _mutex = 0x0;
@@ -220,17 +211,23 @@ void MainWindow::_buildMenu()
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2357339900" );
 
-  // Make sure actions are built.
-  this->_makeActions();
-
   // Handle repeated calls.
   this->menuBar()->clear();
 
   // Add menus.
   QMenu *menu = this->menuBar()->addMenu ( tr ( "&File" ) );
-  menu->addAction ( _actions["open_document"] );
+
+  {
+    CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::OpenDocument> ( this ) );
+    _actions.insert ( action );
+    menu->addAction ( action.get() );
+  }
   menu->addSeparator();
-  menu->addAction ( _actions["exit"] );
+  {
+    CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::ExitApplication> ( this ) );
+    _actions.insert ( action );
+    menu->addAction ( action.get() );
+  }
 }
 
 
@@ -245,9 +242,6 @@ void MainWindow::_buildToolBar()
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "6391763130" );
 
-  // Make sure actions are built.
-  this->_makeActions();
-
   // Handle repeated calls.
   const char *standardToolBarName ( "standard_tool_bar" );
   this->removeToolBar ( _toolBars[standardToolBarName] );
@@ -258,74 +252,11 @@ void MainWindow::_buildToolBar()
   toolBar->setIconSize ( QSize ( 16, 16 ) );
 
   // Add buttons.
-  toolBar->addAction ( _actions["open_document"] );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Make the actions.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MainWindow::_makeActions()
-{
-  USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2351054815" );
-
-  // Only build the actions once.
-  if ( false == _actions.empty() )
-    return;
-
   {
-    QAction *action ( new QAction ( tr ( "&Open" ), this ) );
-    action->setShortcut ( tr ( "Ctrl+O" ) );
-    action->setStatusTip ( "Open existing document" );
-    CadKit::Helios::Tools::Icon::set ( "openDocument.png", action );
-    this->connect ( action, SIGNAL ( triggered() ), this, SLOT ( _open() ) );
-
-    _actions.insert ( Actions::value_type ( "open_document", 
-      new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::OpenDocument> ( this ) ) );
+    CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::OpenDocument> ( this ) );
+    _actions.insert ( action );
+    toolBar->addAction ( action.get() );
   }
-
-  {
-    QAction *action ( new QAction ( tr ( "E&xit" ), this ) );
-    action->setStatusTip ( "Exit the application" );
-    this->connect ( action, SIGNAL ( triggered() ), this, SLOT ( _quit() ) );
-    _actions.insert ( Actions::value_type ( "exit", action ) );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Open files.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MainWindow::_open()
-{
-  USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Quit the program.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MainWindow::_quit()
-{
-  USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
-
-  USUL_ERROR_STACK_CATCH_EXCEPTIONS_BEGIN;
-
-  this->close();
-
-  USUL_ERROR_STACK_CATCH_EXCEPTIONS_END ( 2624682894u );
 }
 
 

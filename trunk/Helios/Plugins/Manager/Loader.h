@@ -8,6 +8,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Loader for plugin files.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #ifndef __CADKIT_HELIOS_PLUGINS_MANAGER_H__
 #define __CADKIT_HELIOS_PLUGINS_MANAGER_H__
 
@@ -30,7 +36,7 @@ namespace Plugins {
 namespace Manager {
 
 
-class HELIOS_PLUGINS_EXPORT Manager
+class HELIOS_PLUGINS_EXPORT Loader
 {
 public:
 
@@ -39,8 +45,8 @@ public:
   typedef Usul::Threads::Guard<Mutex>       Guard;
 
   // Constructor and destructor.
-	Manager();
-	~Manager();
+	Loader();
+	~Loader();
 
 	/// Get/Set the filename to parse.
 	void                      filename ( const std::string& filename );

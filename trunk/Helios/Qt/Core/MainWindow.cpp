@@ -23,7 +23,7 @@
 #include "Helios/Qt/Tools/Icon.h"
 #include "Helios/Qt/Tools/Move.h"
 #include "Helios/Qt/Tools/SettingsGroupScope.h"
-#include "Helios/Plugins/Manager/Manager.h"
+#include "Helios/Plugins/Manager/Loader.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
@@ -304,7 +304,7 @@ void MainWindow::_loadPlugins ( Usul::Interfaces::IUnknown *caller )
 	
 	if ( Usul::Predicates::FileExists::test ( pluginFile ) )
 	{
-		CadKit::Helios::Plugins::Manager::Manager loader;
+		CadKit::Helios::Plugins::Manager::Loader loader;
     loader.filename ( pluginFile );
 		loader.parse();
 		loader.load ( caller );

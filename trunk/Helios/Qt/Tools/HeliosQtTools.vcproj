@@ -181,6 +181,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Move.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Move.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SettingsGroupScope.cpp"
 				>
 			</File>

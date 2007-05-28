@@ -163,7 +163,7 @@ namespace Program
       QApplication app ( argc, argv );
 
       // Set the splash screen.
-      Usul::App::Application::instance().splashImage( "splash_screen.jpg" );
+      Usul::App::Application::instance().splashImage ( "splash_screen.jpg" );
 
       // Declare the main window.
       CadKit::Helios::Core::MainWindow mw ( vendor, url, program );

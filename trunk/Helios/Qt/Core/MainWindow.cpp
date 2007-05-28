@@ -20,10 +20,12 @@
 #include "Helios/Qt/Commands/Action.h"
 #include "Helios/Qt/Commands/OpenDocument.h"
 #include "Helios/Qt/Tools/Icon.h"
+#include "Helios/Qt/Tools/Move.h"
 #include "Helios/Qt/Tools/SettingsGroupScope.h"
 #include "Helios/Plugins/Manager/Manager.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/Functions/SafeCall.h"
@@ -36,10 +38,16 @@
 #include "Usul/Trace/Trace.h"
 
 #include "QtGui/QApplication"
-#include "QtGui/QMenuBar"
+#include "QtGui/QDockWidget"
 #include "QtGui/QImageReader"
+#include "QtGui/QLabel"
+#include "QtGui/QMenuBar"
+#include "QtGui/QProgressDialog"
+#include "QtGui/QPushButton"
+#include "QtGui/QSplashScreen"
 #include "QtGui/QStatusBar"
 #include "QtGui/QToolBar"
+#include "QtGui/QVBoxLayout"
 
 using namespace CadKit::Helios::Core;
 
@@ -62,17 +70,18 @@ MainWindow::MainWindow ( const std::string &vendor,
 {
   USUL_TRACE_SCOPE;
 
+  // Name this thread.
+  Usul::Threads::Named::instance().set ( Usul::Threads::Names::GUI );
+
   // Make the splash screen.
   SplashScreen splashScreen ( this );
+  CadKit::Helios::Tools::Move::center ( &splashScreen );
   splashScreen.show();
 
   // Program-wide settings.
   QCoreApplication::setOrganizationName ( vendor.c_str() );
   QCoreApplication::setOrganizationDomain ( url.c_str() );
   QCoreApplication::setApplicationName ( program.c_str() );
-
-  // Name this thread.
-  Usul::Threads::Named::instance().add ( Usul::Threads::Names::GUI, Usul::Threads::currentThreadId() );
 
   // Set the icon.
   CadKit::Helios::Tools::Icon::set ( "helios_sun.png", this );
@@ -92,7 +101,7 @@ MainWindow::MainWindow ( const std::string &vendor,
   this->_loadSettings();
 
   // Set the title.
-  this->setWindowTitle ( tr ( "Helios" ) );
+  this->setWindowTitle ( QCoreApplication::applicationName() );
 
   // Load plugins.
   this->_loadPlugins ( splashScreen.queryInterface ( Usul::Interfaces::IUnknown::IID ) );

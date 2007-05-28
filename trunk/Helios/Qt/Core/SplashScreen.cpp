@@ -13,11 +13,14 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/App/Application.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/Threads/Named.h"
+#include "Usul/Trace/Trace.h"
 
-#include "QtGui/QVBoxLayout"
+#include "QtGui/QLabel"
 #include "QtGui/QSplashScreen"
 #include "QtGui/QProgressBar"
 #include "QtGui/QPixmap"
+#include "QtGui/QVBoxLayout"
 
 using namespace CadKit::Helios::Core;
 
@@ -28,38 +31,41 @@ using namespace CadKit::Helios::Core;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SplashScreen::SplashScreen( QWidget *mainWindow ) : BaseClass(),
-_splashScreen ( new QSplashScreen ),
-_progressBar ( new QProgressBar ),
-_refCount ( 0 )
+SplashScreen::SplashScreen ( QWidget *mainWindow ) : 
+  BaseClass ( 0x0, Qt::FramelessWindowHint | Qt::SplashScreen | Qt::WindowStaysOnTopHint ),
+  _image ( 0x0 ),
+  _progressBar ( 0x0 ),
+  _refCount ( 0 ),
+  _mutex()
 {
-  QVBoxLayout *layout ( new QVBoxLayout ( this ) );
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "7770121390" );
 
-  QPixmap pixmap;
+  _image = new QLabel ( this );
+  _progressBar = new QProgressBar ( this );
 
-  // Get the splash screen.
-  std::string splashImage ( Usul::App::Application::instance().splashImagePath() );
-  if( Usul::Predicates::FileExists::test ( splashImage ) )
-    pixmap.load( splashImage.c_str() );
+  this->setContentsMargins ( 0, 0, 0, 0 );
+  _image->setContentsMargins ( 0, 0, 0, 0 );
+  _progressBar->setContentsMargins ( 0, 0, 0, 0 );
 
-  if ( false == pixmap.isNull() )
-    _splashScreen->setPixmap( pixmap );
+  this->_loadSplashImage();
 
-  _splashScreen->finish ( mainWindow );
-
-  layout->addWidget( _splashScreen );
-  layout->addWidget( _progressBar );
+  // Could not get layout to work. This code makes sense.
+  _image->setGeometry ( 0, 0, _image->pixmap()->width(), _image->pixmap()->height() );
+  _progressBar->setGeometry ( 0, _image->height(), _image->width(), _progressBar->height() / 2 );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Destructor.
+//  Destructor. Qt deletes child widgets.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 SplashScreen::~SplashScreen()
 {
+  USUL_TRACE_SCOPE;
+
 	// Make sure.
 	USUL_ASSERT ( 0 == _refCount );
 }
@@ -73,10 +79,13 @@ SplashScreen::~SplashScreen()
 
 void SplashScreen::setStatusBarText ( const std::string &text, bool force )
 {
-	if( 0x0 != _splashScreen )
-		_splashScreen->showMessage ( tr ( text.c_str() ) );
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2442782510" );
+
+  if ( 0x0 != _image )
+		_image->setText ( tr ( text.c_str() ) );
 }
-	
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -86,6 +95,8 @@ void SplashScreen::setStatusBarText ( const std::string &text, bool force )
 
 void SplashScreen::showProgressBar()
 {
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "6541436130" );
 }
 
 
@@ -97,7 +108,10 @@ void SplashScreen::showProgressBar()
 
 void SplashScreen::setTotalProgressBar ( unsigned int value )
 {
-	if( 0x0 != _progressBar )
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1137254021" );
+
+  if ( 0x0 != _progressBar )
 		_progressBar->setRange ( 0, static_cast < int > ( value ) );
 }
 
@@ -110,7 +124,10 @@ void SplashScreen::setTotalProgressBar ( unsigned int value )
 
 void SplashScreen::updateProgressBar ( unsigned int value )
 {
-	if ( 0x0 != _progressBar )
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1900994211" );
+
+  if ( 0x0 != _progressBar )
 		_progressBar->setValue ( static_cast < int > ( value ) );
 }
 
@@ -123,6 +140,8 @@ void SplashScreen::updateProgressBar ( unsigned int value )
 
 void SplashScreen::hideProgressBar()
 {
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1401918977" );
 }
 
 
@@ -134,6 +153,8 @@ void SplashScreen::hideProgressBar()
 
 Usul::Interfaces::IUnknown* SplashScreen::queryInterface ( unsigned long iid )
 {
+  USUL_TRACE_SCOPE;
+
 	switch ( iid )
 	{
 	case Usul::Interfaces::IUnknown::IID:
@@ -155,6 +176,8 @@ Usul::Interfaces::IUnknown* SplashScreen::queryInterface ( unsigned long iid )
 
 void SplashScreen::ref()
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
 	++_refCount;
 }
 
@@ -167,5 +190,49 @@ void SplashScreen::ref()
 
 void SplashScreen::unref ( bool )
 {
-	--_refCount;
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  if ( 0 == _refCount )
+  {
+    USUL_ASSERT ( 0 );
+    Usul::Exceptions::Thrower<std::runtime_error> ( "Error 3396931127: Reference count is already 0" );
+  }
+
+  --_refCount;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the splash screen image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SplashScreen::_loadSplashImage()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "8048315890" );
+
+  // Try to load the splash screen image.
+  QPixmap pixmap;
+  std::string splashImage ( Usul::App::Application::instance().splashImagePath() );
+
+  if ( true == Usul::Predicates::FileExists::test ( splashImage ) )
+  {
+    if ( false == pixmap.load ( splashImage.c_str() ) )
+    {
+      std::cout << "Warning 3987519476: Failed to load splash screen image :" << splashImage << std::endl;
+    }
+  }
+  else
+  {
+    std::cout << "Warning 3987519476: Splash screen image '" << splashImage << "' does not exist" << std::endl;
+  }
+
+  // If we have an image then set it.
+  if ( false == pixmap.isNull() )
+  {
+    _image->setPixmap ( pixmap );
+  }
 }

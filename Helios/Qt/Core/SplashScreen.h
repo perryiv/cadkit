@@ -13,15 +13,19 @@
 
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Threads/Guard.h"
+#include "Usul/Threads/RecursiveMutex.h"
 
 #include "QtGui/QWidget"
 
-class QSplashScreen;
+class QLabel;
 class QProgressBar;
+
 
 namespace CadKit {
 namespace Helios {
 namespace Core {
+
 
 class SplashScreen : public QWidget,
 										 public Usul::Interfaces::IStatusBar,
@@ -30,38 +34,50 @@ class SplashScreen : public QWidget,
 	Q_OBJECT
 
 public:
-	typedef QWidget BaseClass;
+
+  typedef QWidget                           BaseClass;
+  typedef Usul::Threads::RecursiveMutex     Mutex;
+  typedef Usul::Threads::Guard<Mutex>       Guard;
 	
-  SplashScreen( QWidget *mainWindow );
+  SplashScreen ( QWidget *mainWindow );
 	~SplashScreen();
-	
+
+  // Smart-pointer definitions.
+  USUL_DECLARE_REF_POINTERS ( SplashScreen );
+
+  // Usul::Interfaces::IUnknown members.
 	USUL_DECLARE_IUNKNOWN_MEMBERS;
-	
+
+  // Get the mutex.
+  Mutex &                   mutex() const { return *_mutex; }
+
 protected:
 	
 	/// Usul::Interfaces::IStatusBar
 	/// Set the status bar text.
-  virtual void setStatusBarText ( const std::string &text, bool force );
+  virtual void              setStatusBarText ( const std::string &text, bool force );
 	
 	/// Usul::Interfaces::IProgressBar.h
 	/// Show the progress bar
-  virtual void showProgressBar();
+  virtual void              showProgressBar();
 
   /// Set the total of progress bar
-  virtual void setTotalProgressBar ( unsigned int value );
+  virtual void              setTotalProgressBar ( unsigned int value );
 
   /// Update the progress bar
-  virtual void updateProgressBar ( unsigned int value );
+  virtual void              updateProgressBar ( unsigned int value );
 
   /// Hide the progress bar
-  virtual void hideProgressBar();
-  
+  virtual void              hideProgressBar();
+
 private:
-	QSplashScreen *_splashScreen;
-	QProgressBar  *_progressBar;
-	
+
+  void                      _loadSplashImage();
+
+  QLabel *_image;
+	QProgressBar *_progressBar;
 	unsigned int _refCount;
-	
+  mutable Mutex *_mutex;
 };
 
 

@@ -40,6 +40,11 @@ USUL_IMPLEMENT_TYPE_ID ( OpenDocument );
 OpenDocument::OpenDocument ( IUnknown *caller ) : BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
+  this->text ( "&Open" );
+  this->shortcut ( "Ctrl+O" );
+  this->statusTip ( "Open existing document" );
+  this->toolTip ( "Open existing document" );
+  this->iconPath ( "openDocument.png" );
 }
 
 

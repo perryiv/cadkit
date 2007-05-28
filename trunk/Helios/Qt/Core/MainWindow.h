@@ -18,6 +18,7 @@
 #define _CADKIT_HELIOS_QT_CORE_MAIN_WINDOW_H_
 
 #include "Helios/Qt/Core/Export.h"
+#include "Helios/Qt/Commands/BaseAction.h"
 
 #include "Usul/Interfaces/GUI/ILoadFileDialog.h"
 #include "Usul/Threads/Guard.h"
@@ -29,6 +30,7 @@
 
 #include <string>
 #include <map>
+#include <set>
 
 namespace Usul { namespace Threads { class Thread; } }
 
@@ -47,16 +49,17 @@ class HELIOS_QT_CORE_EXPORT MainWindow :
 public:
 
   // Useful typedefs.
-  typedef QMainWindow                       BaseClass;
-  typedef Usul::Threads::RecursiveMutex     Mutex;
-  typedef Usul::Threads::Guard<Mutex>       Guard;
-  typedef std::map<std::string,QAction*>    Actions;
-  typedef std::map<std::string,QToolBar*>   ToolBars;
-  typedef Usul::Threads::Pool               ThreadPool;
-  typedef Usul::Interfaces::ILoadFileDialog ILoadFileDialog;
-  typedef ILoadFileDialog::FileResult       FileResult;
-  typedef ILoadFileDialog::FilesResult      FilesResult;
-  typedef ILoadFileDialog::Filters          Filters;
+  typedef QMainWindow                           BaseClass;
+  typedef Usul::Threads::RecursiveMutex         Mutex;
+  typedef Usul::Threads::Guard<Mutex>           Guard;
+  typedef CadKit::Helios::Commands::BaseAction  BaseAction;
+  typedef std::set<BaseAction::RefPtr>          Actions;
+  typedef std::map<std::string,QToolBar*>       ToolBars;
+  typedef Usul::Threads::Pool                   ThreadPool;
+  typedef Usul::Interfaces::ILoadFileDialog     ILoadFileDialog;
+  typedef ILoadFileDialog::FileResult           FileResult;
+  typedef ILoadFileDialog::FilesResult          FilesResult;
+  typedef ILoadFileDialog::Filters              Filters;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( MainWindow );
@@ -86,8 +89,6 @@ protected:
 
   void                      _loadSettings();
 
-  void                      _makeActions();
-
   void                      _saveSettings();
   
   /// Load plugin functions.
@@ -96,9 +97,6 @@ protected:
   void                      _finishLoadPlugins ( Usul::Threads::Thread* );
 
 private slots:
-
-  void                      _quit();
-  void                      _open();
 
 private:
 

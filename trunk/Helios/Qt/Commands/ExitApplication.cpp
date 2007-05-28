@@ -10,20 +10,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Target for QAction.
+//  Command to exit the application.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Qt/Commands/Target.h"
-#include "Helios/Qt/Tools/Icon.h"
+#include "Helios/Qt/Commands/ExitApplication.h"
 
-#include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Functions/SafeCall.h"
 #include "Usul/Trace/Trace.h"
 
-#include <memory>
+#include "QtGui/QApplication"
 
 using namespace CadKit::Helios::Commands;
+
+USUL_IMPLEMENT_TYPE_ID ( ExitApplication );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -32,10 +31,12 @@ using namespace CadKit::Helios::Commands;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Target::Target ( Command *command ) : BaseClass(),
-  _command ( command )
+ExitApplication::ExitApplication ( IUnknown *caller ) : BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
+  this->text ( "E&xit" );
+  this->statusTip ( "Exit the application" );
+  this->toolTip ( "Exit the application" );
 }
 
 
@@ -45,37 +46,23 @@ Target::Target ( Command *command ) : BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Target::~Target()
+ExitApplication::~ExitApplication()
 {
   USUL_TRACE_SCOPE;
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Target::_destroy ), "2696785842" );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Destroy.
+//  Execute the command. This function is re-entrant.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Target::_destroy()
+void ExitApplication::_execute()
 {
   USUL_TRACE_SCOPE;
-  _command = 0x0;
-}
+  // Do not lock the mutex. This function is re-entrant.
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  This gets called when the action is requested from the GUI.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Target::_slot()
-{
-  USUL_TRACE_SCOPE;
-  if ( true == _command.valid() )
-  {
-    _command->execute ( _command->caller() );
-  }
+  // Closing all windows will exit the program.
+  QApplication::closeAllWindows();
 }

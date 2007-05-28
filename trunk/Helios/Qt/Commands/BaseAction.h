@@ -25,6 +25,8 @@
 
 #include "QtGui/QAction"
 
+#include "boost/shared_ptr.hpp"
+
 
 namespace CadKit {
 namespace Helios {
@@ -42,6 +44,7 @@ public:
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef Usul::Threads::Mutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
+  typedef boost::shared_ptr<BaseAction> RefPtr;
 
   // Destructor.
   virtual ~BaseAction();

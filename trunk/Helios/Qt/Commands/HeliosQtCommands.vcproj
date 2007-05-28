@@ -37,7 +37,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui"
+				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR);$(QTDIR)\include;$(BOOST_ROOT_DIR)"
 				PreprocessorDefinitions="_COMPILING_HELIOS_QT_COMMANDS;UNICODE,WIN32,QT_THREAD_SUPPORT,QT_NO_DEBUG,NDEBUG,QT_CORE_LIB,QT_GUI_LIB,CORE_LIB"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -110,7 +110,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR);$(QTDIR)\include"
+				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR);$(QTDIR)\include;$(BOOST_ROOT_DIR)"
 				PreprocessorDefinitions="_USUL_TRACE;_COMPILING_HELIOS_QT_COMMANDS;UNICODE,WIN32,QT_THREAD_SUPPORT,QT_CORE_LIB,QT_GUI_LIB,CORE_LIB"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
@@ -201,7 +201,6 @@
 						Outputs="&quot;.\GeneratedFiles\moc_BaseAction.cpp&quot;"
 					/>
 				</FileConfiguration>
-
 			</File>
 			<File
 				RelativePath=".\Command.cpp"
@@ -209,6 +208,14 @@
 			</File>
 			<File
 				RelativePath=".\Command.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ExitApplication.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ExitApplication.h"
 				>
 			</File>
 			<File
@@ -221,14 +228,6 @@
 			</File>
 			<File
 				RelativePath=".\OpenDocument.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Target.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Target.h"
 				>
 			</File>
 		</Filter>

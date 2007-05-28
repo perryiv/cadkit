@@ -15,14 +15,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Helios/Qt/Commands/Command.h"
-#include "Helios/Qt/Commands/Target.h"
 #include "Helios/Qt/Tools/Icon.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Trace/Trace.h"
-
-#include "QtGui/QAction"
 
 using namespace CadKit::Helios::Commands;
 
@@ -35,21 +32,9 @@ USUL_IMPLEMENT_TYPE_ID ( Command );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Command::Command ( Usul::Interfaces::IUnknown *caller ) : BaseClass ( caller ),
-  _target ( 0x0 )
+Command::Command ( Usul::Interfaces::IUnknown *caller ) : BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
-
-  // Make target.
-  _target = new Target ( this );
-
-  // Make the action point it to the target.
-  //std::auto_ptr<QAction> action ( new QAction ( "&Open", _target ) );
-  //action->setShortcut ( QKeySequence ( "Ctrl+O" ) );
-  //action->setStatusTip ( "Open existing document" );
-  //CadKit::Helios::Tools::Icon::set ( "openDocument.png", action.get() );
-  //_target->connect ( action.get(), SIGNAL ( triggered() ), _target, SLOT ( _slot() ) );
-  //action.release();
 }
 
 
@@ -75,5 +60,4 @@ Command::~Command()
 void Command::_destroy()
 {
   USUL_TRACE_SCOPE;
-  _target = 0x0;
 }

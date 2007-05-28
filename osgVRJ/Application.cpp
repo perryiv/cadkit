@@ -281,7 +281,7 @@ void Application::draw()
   vrj::Projection* projection = userData->getProjection();
   vrj::Frustum frustum = projection->getFrustum();
   
-  // Do we need to do this each frame?
+  // We need to set this every frame to account for stereo.
   renderer->setFrustum ( frustum[vrj::Frustum::VJ_LEFT],
 				                 frustum[vrj::Frustum::VJ_RIGHT],
 				                 frustum[vrj::Frustum::VJ_BOTTOM],
@@ -298,6 +298,7 @@ void Application::draw()
   renderer->viewMatrix(*osg_proj_xform_mat);
 
   // Do the drawing.
+  renderer->update();
   renderer->render();
 }
 
@@ -413,19 +414,6 @@ void Application::postFrame()
 {
   // Capture the frame time.
   _frameTime = _timer.delta_s( _frameStart, _timer.tick() );
-
-#if 0
-  // Write the frame time if we've suppose to.
-  if( _sharedFrameTime.isLocal() )
-  {
-    double frameTime ( _timer.delta_s( _frameStart, _timer.tick() ) );
-    if( _framestamp.valid() && _framestamp->getFrameNumber() % 300 == 0 )
-      std::cerr << "Writing frame time: " << frameTime << std::endl;
-
-    // Capture the frame time.
-    _sharedFrameTime->data = frameTime;
-  }
-#endif
 
   if(!_context_in_sync)
     _context_in_sync = true;

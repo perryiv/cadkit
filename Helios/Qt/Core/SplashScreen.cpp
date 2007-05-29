@@ -9,20 +9,25 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Helios/Qt/Core/SplashScreen.h"
+#include "Helios/Qt/Tools/Show.h"
+#include "Helios/Qt/Tools/Image.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Assert.h"
-#include "Usul/App/Application.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Trace/Trace.h"
 
 #include "QtGui/QLabel"
-#include "QtGui/QSplashScreen"
 #include "QtGui/QProgressBar"
 #include "QtGui/QPixmap"
-#include "QtGui/QVBoxLayout"
 
 using namespace CadKit::Helios::Core;
+
+USUL_IMPLEMENT_TYPE_ID ( SplashScreen );
+
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( SplashScreen, SplashScreen::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -31,28 +36,13 @@ using namespace CadKit::Helios::Core;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SplashScreen::SplashScreen ( QWidget *mainWindow ) : 
-  BaseClass ( 0x0, Qt::FramelessWindowHint | Qt::SplashScreen | Qt::WindowStaysOnTopHint ),
-  _image ( 0x0 ),
-  _progressBar ( 0x0 ),
-  _refCount ( 0 ),
-  _mutex()
+SplashScreen::SplashScreen ( const std::string &image ) : BaseClass(),
+  _window   ( 0x0 ),
+  _image    ( 0x0 ),
+  _progress ( 0x0 ),
+  _file     ( image )
 {
   USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "7770121390" );
-
-  _image = new QLabel ( this );
-  _progressBar = new QProgressBar ( this );
-
-  this->setContentsMargins ( 0, 0, 0, 0 );
-  _image->setContentsMargins ( 0, 0, 0, 0 );
-  _progressBar->setContentsMargins ( 0, 0, 0, 0 );
-
-  this->_loadSplashImage();
-
-  // Could not get layout to work. This code makes sense.
-  _image->setGeometry ( 0, 0, _image->pixmap()->width(), _image->pixmap()->height() );
-  _progressBar->setGeometry ( 0, _image->height(), _image->width(), _progressBar->height() / 2 );
 }
 
 
@@ -65,9 +55,22 @@ SplashScreen::SplashScreen ( QWidget *mainWindow ) :
 SplashScreen::~SplashScreen()
 {
   USUL_TRACE_SCOPE;
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &SplashScreen::_destroy ), "6002667960" );
+}
 
-	// Make sure.
-	USUL_ASSERT ( 0 == _refCount );
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor contents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SplashScreen::_destroy()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2336754210" );
+  this->hide();
+  _file.clear();
 }
 
 
@@ -83,13 +86,13 @@ void SplashScreen::setStatusBarText ( const std::string &text, bool force )
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2442782510" );
 
   if ( 0x0 != _image )
-		_image->setText ( tr ( text.c_str() ) );
+    _image->setText ( text.c_str() );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Show the progress bar.
+//  Implementating this for a splash screen does not make sense.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -97,6 +100,19 @@ void SplashScreen::showProgressBar()
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "6541436130" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Implementating this for a splash screen does not make sense.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SplashScreen::hideProgressBar()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1401918977" );
 }
 
 
@@ -111,8 +127,8 @@ void SplashScreen::setTotalProgressBar ( unsigned int value )
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1137254021" );
 
-  if ( 0x0 != _progressBar )
-		_progressBar->setRange ( 0, static_cast < int > ( value ) );
+  if ( 0x0 != _progress )
+		_progress->setRange ( 0, static_cast < int > ( value ) );
 }
 
 
@@ -127,21 +143,8 @@ void SplashScreen::updateProgressBar ( unsigned int value )
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1900994211" );
 
-  if ( 0x0 != _progressBar )
-		_progressBar->setValue ( static_cast < int > ( value ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Hide the progress bar.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SplashScreen::hideProgressBar()
-{
-  USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1401918977" );
+  if ( 0x0 != _progress )
+		_progress->setValue ( static_cast < int > ( value ) );
 }
 
 
@@ -170,41 +173,6 @@ Usul::Interfaces::IUnknown* SplashScreen::queryInterface ( unsigned long iid )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Ref.  Keep track for debugging purposes.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SplashScreen::ref()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-	++_refCount;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Unref.  Do not delete.  Qt will handle deletion.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SplashScreen::unref ( bool )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  if ( 0 == _refCount )
-  {
-    USUL_ASSERT ( 0 );
-    Usul::Exceptions::Thrower<std::runtime_error> ( "Error 3396931127: Reference count is already 0" );
-  }
-
-  --_refCount;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Load the splash screen image.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -214,25 +182,73 @@ void SplashScreen::_loadSplashImage()
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "8048315890" );
 
-  // Try to load the splash screen image.
-  QPixmap pixmap;
-  std::string splashImage ( Usul::App::Application::instance().splashImagePath() );
+  CadKit::Helios::Tools::Image::pixmap ( _file, _image );
 
-  if ( true == Usul::Predicates::FileExists::test ( splashImage ) )
+  if ( true == _image->pixmap()->isNull() )
   {
-    if ( false == pixmap.load ( splashImage.c_str() ) )
-    {
-      std::cout << "Warning 3987519476: Failed to load splash screen image :" << splashImage << std::endl;
-    }
+    std::cout << "Warning 3987519476: Failed to load splash screen image: " << _file << std::endl;
   }
-  else
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show this window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SplashScreen::show()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "3645128969" );
+
+  // Handle repeated calls.
+  if ( 0x0 != _window )
   {
-    std::cout << "Warning 3987519476: Splash screen image '" << splashImage << "' does not exist" << std::endl;
+    CadKit::Helios::Tools::Show::center ( _window );
+    return;
   }
 
-  // If we have an image then set it.
-  if ( false == pixmap.isNull() )
+  // Make the top-level window.
+  _window = new QWidget ( 0x0, Qt::FramelessWindowHint | Qt::SplashScreen | Qt::WindowStaysOnTopHint );
+  _image = new QLabel ( _window );
+  _progress = new QProgressBar ( _window );
+
+  // No margins.
+  _window->setContentsMargins ( 0, 0, 0, 0 );
+  _image->setContentsMargins ( 0, 0, 0, 0 );
+  _progress->setContentsMargins ( 0, 0, 0, 0 );
+
+  // Load the image.
+  this->_loadSplashImage();
+
+  // Could not get layout to work. This code makes sense.
+  if ( false == _image->pixmap()->isNull() )
   {
-    _image->setPixmap ( pixmap );
+    _image->setGeometry ( 0, 0, _image->pixmap()->width(), _image->pixmap()->height() );
+    _progress->setGeometry ( 0, _image->height(), _image->width(), _progress->height() / 2 );
   }
+
+  // Show it at the center of the screen.
+  CadKit::Helios::Tools::Show::center ( _window );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Hide this window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SplashScreen::hide()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "3011770616" );
+
+  // Delete parent window.
+  delete _window; _window = 0x0;
+
+  // These should already be deleted by above statement.
+  _image = 0x0;
+	_progress = 0x0;
 }

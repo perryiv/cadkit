@@ -18,7 +18,7 @@
 #define _CADKIT_HELIOS_QT_COMMANDS_ACTION_CLASS_H_
 
 #include "Helios/Qt/Commands/BaseAction.h"
-#include "Helios/Qt/Tools/Icon.h"
+#include "Helios/Qt/Tools/Image.h"
 
 #include "Usul/Commands/History.h"
 #include "Usul/Threads/Named.h"
@@ -67,7 +67,7 @@ public:
       this->setToolTip ( tr ( toolTip.c_str() ) );
 
     if ( false == iconPath.empty() )
-      CadKit::Helios::Tools::Icon::set ( command->iconPath().c_str(), this );
+      CadKit::Helios::Tools::Image::icon ( command->iconPath().c_str(), this );
   }
 
   // Destructor.

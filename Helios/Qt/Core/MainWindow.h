@@ -18,6 +18,7 @@
 #define _CADKIT_HELIOS_QT_CORE_MAIN_WINDOW_H_
 
 #include "Helios/Qt/Core/Export.h"
+#include "Helios/Qt/Core/SplashScreen.h"
 #include "Helios/Qt/Commands/BaseAction.h"
 
 #include "Usul/Interfaces/GUI/ILoadFileDialog.h"
@@ -31,6 +32,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include <vector>
 
 namespace Usul { namespace Threads { class Thread; } }
 
@@ -60,6 +62,7 @@ public:
   typedef ILoadFileDialog::FileResult           FileResult;
   typedef ILoadFileDialog::FilesResult          FilesResult;
   typedef ILoadFileDialog::Filters              Filters;
+  typedef std::vector<std::string>              PluginFiles;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( MainWindow );
@@ -68,7 +71,11 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   // Constructor and destructor.
-  MainWindow ( const std::string &vendor, const std::string &url, const std::string &program );
+  MainWindow ( const std::string &vendor, 
+               const std::string &url, 
+               const std::string &program, 
+               const std::string &icon,
+               bool showSplash = true );
   virtual ~MainWindow();
 
   // Get the name of the file to load from
@@ -78,9 +85,34 @@ public:
   // Get the mutex.
   Mutex &                   mutex() const { return *_mutex; }
 
+  // Functions for adding, clearing, etc., the plugin configuration files.
+  void                      addPluginFile ( const std::string & );
+  void                      clearPluginFiles();
+  std::string               defautPluginFile() const;
+  PluginFiles               pluginFiles() const;
+
+  // Functions for loading, releasing, etc., the plugins.
+  void                      loadPlugins();
+  void                      loadPlugins ( const std::string &configFile );
+  void                      loadPlugin  ( const std::string &pluginFile );
+  void                      releasePlugins();
+  void                      releasePlugin ( const std::string &pluginFile );
+
+  // Functions for getting information about this binary.
+  std::string               directory() const;
+  std::string               icon() const;
+  std::string               programFile() const;
+  std::string               programName() const;
+  std::string               vendor() const;
+  std::string               url() const;
+
   // Get the settings.
   const QSettings &         settings() const;
   QSettings &               settings();
+
+  // Show/hide the splash screen.
+  void                      hideSplashScreen();
+  void                      showSplashScreen();
 
 protected:
 
@@ -91,11 +123,6 @@ protected:
 
   void                      _saveSettings();
   
-  /// Load plugin functions.
-  void                      _loadPlugins ( Usul::Interfaces::IUnknown *caller );
-  void                      _startLoadPlugins  ( Usul::Threads::Thread* );
-  void                      _finishLoadPlugins ( Usul::Threads::Thread* );
-
 private slots:
 
 private:
@@ -112,6 +139,12 @@ private:
   ToolBars _toolBars;
   ThreadPool::ValidAccessRefPtr _threadPool;
   unsigned long _refCount;
+  PluginFiles _pluginFiles;
+  std::string _vendor;
+  std::string _url;
+  std::string _program;
+  std::string _icon;
+  SplashScreen::RefPtr _splash;
 };
 
 

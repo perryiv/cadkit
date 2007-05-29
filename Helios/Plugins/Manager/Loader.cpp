@@ -137,7 +137,7 @@ void Loader::_addPlugins ( XmlTree::Node &parent )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add a node.
+//  Add a plugin.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -164,8 +164,25 @@ void Loader::_addPlugin ( XmlTree::Node &node )
    	}
   }
   
-  if( false == file.empty() )
-  	_names.insert ( Names::value_type ( file, load ) );
+  this->addPlugin ( file );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a plugin.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Loader::addPlugin ( const std::string &file )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+ 
+  if ( false == file.empty() )
+  {
+  	_names.insert ( Names::value_type ( file, true ) );
+  }
 }
 
 
@@ -201,7 +218,7 @@ void Loader::load ( Usul::Interfaces::IUnknown *caller )
 			std::string name ( iter->first );
 			
 			// Let the user know what plugin we are loading.
-			status( "Loading " + name + "...", true );
+			status ( "Loading " + name + "...", true );
 		
 			// Load the plugin.
 			Usul::Components::Manager::instance().load ( Usul::Interfaces::IPlugin::IID, name );

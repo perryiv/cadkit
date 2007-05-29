@@ -173,11 +173,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Icon.cpp"
+				RelativePath=".\Image.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Icon.h"
+				RelativePath=".\Image.h"
 				>
 			</File>
 			<File
@@ -194,6 +194,14 @@
 			</File>
 			<File
 				RelativePath=".\SettingsGroupScope.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Show.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Show.h"
 				>
 			</File>
 		</Filter>

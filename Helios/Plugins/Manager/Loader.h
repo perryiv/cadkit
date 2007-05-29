@@ -48,6 +48,9 @@ public:
 	Loader();
 	~Loader();
 
+  // Add a single plugin file name.
+	void                      addPlugin ( const std::string &file );
+
 	/// Get/Set the filename to parse.
 	void                      filename ( const std::string& filename );
 	std::string               filename() const;

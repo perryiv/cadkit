@@ -76,6 +76,9 @@ public:
   // See if this thread is idle. When it's idle it is ok to delete.
   virtual bool            isIdle() const;
 
+  // Is this thread executing the thread-pool task?
+  bool                    isTask() const;
+
   // Kill the thread. Behavior is implementation specific.
   virtual void            kill() = 0;
 
@@ -104,6 +107,10 @@ public:
   void                    finished  ( Callback * );
   void                    started   ( Callback * );
 
+  // Set/get the task id.
+  void                    task ( unsigned long task );
+  unsigned long           task() const;
+
 protected:
 
   // Use creation function.
@@ -119,6 +126,8 @@ protected:
   virtual void            _start() = 0;
 
 private:
+
+  typedef std::pair<unsigned long,bool> TaskId;
 
   // No copying or assigning.
   Thread ( const Thread & );
@@ -152,6 +161,7 @@ private:
   unsigned long _id;
   unsigned long _systemId;
   unsigned long _creationThread;
+  TaskId _task;
 };
 
 

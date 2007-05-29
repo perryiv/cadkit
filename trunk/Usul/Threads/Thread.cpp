@@ -49,7 +49,8 @@ Thread::Thread() : BaseClass(),
   _errorMessage   (),
   _id             ( Manager::instance().nextThreadId() ),
   _systemId       ( 0 ),
-  _creationThread ( Usul::Threads::currentThreadId() )
+  _creationThread ( Usul::Threads::currentThreadId() ),
+  _task           ( 0, false )
 {
   USUL_TRACE_SCOPE;
 }
@@ -620,4 +621,47 @@ bool Thread::isIdle() const
   const bool zeroSystemThread ( 0 == this->systemId() );
 
   return ( notRunning && zeroSystemThread );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the task id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Thread::task ( unsigned long task )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _task.first = task;
+  _task.second = true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the task id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned long Thread::task() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _task.first;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this thread executing the thread-pool task?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Thread::isTask() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _task.second;
 }

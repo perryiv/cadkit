@@ -17,6 +17,7 @@
 #include "Usul/File/Find.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IClassesFactory.h"
+#include "Usul/Trace/Trace.h"
 
 #include <iostream>
 
@@ -30,7 +31,9 @@ using namespace Usul::Components;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace Detail {
+namespace Usul {
+namespace Components {
+namespace Helper {
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -52,6 +55,7 @@ LibraryPool _pool;
 
 bool _isDebug()
 {
+  USUL_TRACE_SCOPE_STATIC;
   #ifdef _DEBUG
     return true;
   #else
@@ -68,6 +72,7 @@ bool _isDebug()
 
 std::string _buildMode ( bool debug )
 {
+  USUL_TRACE_SCOPE_STATIC;
   return ( debug ) ? "Debug" : "Release";
 }
 
@@ -80,6 +85,8 @@ std::string _buildMode ( bool debug )
 
 Usul::DLL::Library::Function _getFunction ( const std::string &name, Usul::DLL::Library *ptr )
 {
+  USUL_TRACE_SCOPE_STATIC;
+
   // The constructor will throw if the pointer is null.
   Usul::DLL::Library::ValidRefPtr lib ( ptr );
 
@@ -107,6 +114,8 @@ Usul::DLL::Library::Function _getFunction ( const std::string &name, Usul::DLL::
 
 void _checkBuildModes ( bool loader, bool justLoaded, Usul::DLL::Library *ptr )
 {
+  USUL_TRACE_SCOPE_STATIC;
+
   // The constructor will throw if the pointer is null.
   Usul::DLL::Library::ValidRefPtr lib ( ptr );
 
@@ -116,8 +125,8 @@ void _checkBuildModes ( bool loader, bool justLoaded, Usul::DLL::Library *ptr )
     // Throw the exception.
     Usul::Exceptions::Thrower<Usul::Components::Exceptions::MismatchedBuildModes>
       ( "Error: 4210150186, mismatched build modes.",
-        "\n\tBuild mode for loading module is ", Detail::_buildMode ( loader ),
-        "\n\tBuild mode for '", lib->filename(), "' is ", Detail::_buildMode ( justLoaded ) );
+        "\n\tBuild mode for loading module is ", Helper::_buildMode ( loader ),
+        "\n\tBuild mode for '", lib->filename(), "' is ", Helper::_buildMode ( justLoaded ) );
   }
 }
 
@@ -128,6 +137,8 @@ void _checkBuildModes ( bool loader, bool justLoaded, Usul::DLL::Library *ptr )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+}
+}
 }
 
 
@@ -148,6 +159,7 @@ Manager* Manager::_instance ( 0x0 );
 
 Manager& Manager::instance()
 {
+  USUL_TRACE_SCOPE_STATIC;
   if ( !_instance )
     _instance = new Manager();
   return *_instance;
@@ -161,10 +173,11 @@ Manager& Manager::instance()
 ///////////////////////////////////////////////////////////////////////////////
 
 Manager::Manager() :
-_unknowns(),
-_plugExts(),
-_directories()
+  _unknowns(),
+  _plugExts(),
+  _directories()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -176,6 +189,7 @@ _directories()
 
 void Manager::load ( unsigned long iid, const std::string &dir, const std::string &ext, bool keepGoingIfException )
 {
+  USUL_TRACE_SCOPE;
   Strings plugins;
   Usul::File::find ( dir, ext, plugins );
   this->load ( iid, plugins, keepGoingIfException );
@@ -190,6 +204,8 @@ void Manager::load ( unsigned long iid, const std::string &dir, const std::strin
 
 void Manager::load ( unsigned long iid, bool keepGoingIfException )
 {
+  USUL_TRACE_SCOPE;
+
   // Get a list of all the potential plugins.
   std::list<std::string> plugins;
   for ( Directories::const_iterator dir = _directories.begin(); dir != _directories.end(); ++dir )
@@ -210,6 +226,8 @@ void Manager::load ( unsigned long iid, bool keepGoingIfException )
 
 void Manager::load ( unsigned long iid, const Strings &plugins, bool keepGoingIfException )
 {
+  USUL_TRACE_SCOPE;
+
   typedef std::list<std::string>::const_iterator Iterator;
 
   for ( Iterator i = plugins.begin(); i != plugins.end(); ++i )
@@ -286,7 +304,9 @@ void Manager::load ( unsigned long iid, const Strings &plugins, bool keepGoingIf
 
 void Manager::load ( unsigned long iid, const std::string& file )
 {
-	try
+  USUL_TRACE_SCOPE;
+
+  try
 	{
 		// Find the factory
   	Usul::Interfaces::IClassFactory::ValidQueryPtr factory ( this->_factory ( file ) );
@@ -318,10 +338,12 @@ void Manager::load ( unsigned long iid, const std::string& file )
 
 void Manager::clear ( std::ostream *out ) 
 {
+  USUL_TRACE_SCOPE;
+
   if ( 0x0 == out )
   {
     _unknowns.clear(); 
-    Detail::_pool.clear();
+    Helper::_pool.clear();
     return;
   }
 
@@ -335,11 +357,11 @@ void Manager::clear ( std::ostream *out )
     _unknowns.erase ( i );
   }
 
-  while ( false == Detail::_pool.empty() )
+  while ( false == Helper::_pool.empty() )
   {
-    Detail::LibraryPool::iterator i ( Detail::_pool.begin() );
+    Helper::LibraryPool::iterator i ( Helper::_pool.begin() );
     (*out) << "Releasing file: " << (*i)->filename() << std::endl;
-    Detail::_pool.erase ( i );
+    Helper::_pool.erase ( i );
   }
 }
 
@@ -352,6 +374,8 @@ void Manager::clear ( std::ostream *out )
 
 Usul::Interfaces::IUnknown* Manager::getInterface( unsigned long iid )
 {
+  USUL_TRACE_SCOPE;
+
   for ( UnknownItr i = _unknowns.begin(); i != _unknowns.end(); ++i )
   {
     IUnknown *u ( (*i).get() );
@@ -371,9 +395,10 @@ Usul::Interfaces::IUnknown* Manager::getInterface( unsigned long iid )
 
 Manager::UnknownSet Manager::getInterfaces ( unsigned long iid )
 {
-  UnknownSet set;
+  USUL_TRACE_SCOPE;
 
-  for( UnknownItr i = _unknowns.begin(); i != _unknowns.end(); ++i )
+  UnknownSet set;
+  for ( UnknownItr i = _unknowns.begin(); i != _unknowns.end(); ++i )
   {
     IUnknown *u ( (*i).get() );
     if( u->queryInterface( iid ) )
@@ -392,8 +417,9 @@ Manager::UnknownSet Manager::getInterfaces ( unsigned long iid )
 
 Manager::UnknownSet Manager::getInterfaces ( unsigned long iid1, unsigned long iid2 )
 {
-  UnknownSet set;
+  USUL_TRACE_SCOPE;
 
+  UnknownSet set;
   for ( UnknownItr i = _unknowns.begin(); i != _unknowns.end(); ++i )
   {
     IUnknown *u ( i->get() );
@@ -413,6 +439,8 @@ Manager::UnknownSet Manager::getInterfaces ( unsigned long iid1, unsigned long i
 
 Manager::Strings Manager::names() const
 {
+  USUL_TRACE_SCOPE;
+
   Manager::Strings names;
   UnknownSet unknowns ( _unknowns );
   for ( UnknownSet::iterator i = unknowns.begin(); i != unknowns.end(); ++i )
@@ -428,29 +456,52 @@ Manager::Strings Manager::names() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Print message about loaded plugins.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::print ( std::ostream &out ) const
+{
+  USUL_TRACE_SCOPE;
+
+  const Manager::Strings names ( this->names() );
+  out << names.size() << ( ( 1 == names.size() ) ? ( " plugin" ) : ( " plugins" ) );
+  if ( false == names.empty() )
+  {
+    out << ": ";
+    std::copy ( names.begin(), names.end(), std::ostream_iterator<std::string> ( out, "; " ) );
+  }
+  out << std::endl;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the factory for the given file name
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 Manager::Factory* Manager::_factory ( const std::string &filename )
 {
+  USUL_TRACE_SCOPE;
+
   // Load the library. It throws if it fails to load.
   Usul::DLL::Library::ValidRefPtr lib ( Usul::DLL::Loader::load ( filename ) );
 
   // Cache in our pool.
-  Detail::_pool.insert ( lib.get() );
+  Helper::_pool.insert ( lib.get() );
 
   // Get the debug function. Note: g++ does not allow a reinterpret_cast.
   typedef bool (*DebugFunction)();
-  DebugFunction df = (DebugFunction) Detail::_getFunction ( "usul_is_debug_build", lib );
+  DebugFunction df = (DebugFunction) Helper::_getFunction ( "usul_is_debug_build", lib );
 
   // Make sure it matches.
-  Detail::_checkBuildModes ( Detail::_isDebug(), df(), lib.get() );
+  Helper::_checkBuildModes ( Helper::_isDebug(), df(), lib.get() );
 
   // Get the factory function.
   typedef Usul::Interfaces::IClassFactory IClassFactory;
   typedef IClassFactory * (*FactoryFunction)();
-  FactoryFunction ff = (FactoryFunction) Detail::_getFunction ( "usul_get_class_factory", lib );
+  FactoryFunction ff = (FactoryFunction) Helper::_getFunction ( "usul_get_class_factory", lib );
 
   // Get the class factory.
   IClassFactory::ValidRefPtr factory ( ff() );
@@ -466,6 +517,7 @@ Manager::Factory* Manager::_factory ( const std::string &filename )
 
 void Manager::addPluginExtension ( const std::string &ext )
 {
+  USUL_TRACE_SCOPE;
   _plugExts.insert ( ext );
 }
 
@@ -478,6 +530,7 @@ void Manager::addPluginExtension ( const std::string &ext )
 
 void Manager::removePluginExtension ( const std::string &ext )
 {
+  USUL_TRACE_SCOPE;
   _plugExts.erase ( ext );
 }
 
@@ -490,6 +543,7 @@ void Manager::removePluginExtension ( const std::string &ext )
 
 void Manager::clearPluginExtensions()
 {
+  USUL_TRACE_SCOPE;
   _plugExts.clear();
 }
 
@@ -502,6 +556,7 @@ void Manager::clearPluginExtensions()
 
 void Manager::addDirectory ( const std::string &ext )
 {
+  USUL_TRACE_SCOPE;
   _directories.insert ( ext );
 }
 
@@ -514,6 +569,7 @@ void Manager::addDirectory ( const std::string &ext )
 
 void Manager::removeDirectory ( const std::string &ext )
 {
+  USUL_TRACE_SCOPE;
   _directories.erase ( ext );
 }
 
@@ -526,6 +582,6 @@ void Manager::removeDirectory ( const std::string &ext )
 
 void Manager::clearDirectory()
 {
+  USUL_TRACE_SCOPE;
   _directories.clear();
 }
-

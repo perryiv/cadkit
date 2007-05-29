@@ -129,9 +129,10 @@ public:
     const bool result ( Traits::stat ( name, filebuf ) );
     return _convert ( result, filebuf.st_mtime );
   }
-  
+
+
   //
-  //  Get the time of creation....
+  //  Get the time of creation.
   //
   
   static T created ( const std::string &name )
@@ -140,8 +141,6 @@ public:
     const bool result ( Traits::stat ( name, filebuf ) );
     return _convert ( result, filebuf.st_ctime );
   }
-  
-  
 };
 
 

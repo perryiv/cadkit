@@ -156,7 +156,7 @@ void _addTask ( Usul::Threads::Pool *pool )
     Usul::Threads::Callback::RefPtr cancelled ( Usul::Threads::newFunctionCallback ( _threadCancelled ) );
     Usul::Threads::Callback::RefPtr error     ( Usul::Threads::newFunctionCallback ( _threadError     ) );
     Usul::Threads::Callback::RefPtr destroyed ( Usul::Threads::newFunctionCallback ( _threadDestroyed ) );
-    pool->add ( started.get(), finished.get(), cancelled.get(), error.get(), destroyed.get() );
+    pool->addTask ( started.get(), finished.get(), cancelled.get(), error.get(), destroyed.get() );
   }
 }
 

@@ -81,7 +81,7 @@ const std::string Application::iconDirectory() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::splashImage( const std::string& image )
+void Application::splashImage ( const std::string& image )
 {
 	_splashImage = image;
 }
@@ -93,7 +93,7 @@ void Application::splashImage( const std::string& image )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string & Application::splashImage( ) const
+const std::string & Application::splashImage() const
 {
 	return _splashImage;
 }

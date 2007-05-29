@@ -20,6 +20,7 @@
 #include "Usul/Trace/Trace.h"
 
 #include <iostream>
+#include <iterator>
 
 using namespace Usul;
 using namespace Usul::Components;

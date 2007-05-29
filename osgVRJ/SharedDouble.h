@@ -11,7 +11,7 @@
 #ifndef __SHARED_DOUBLE_H__
 #define __SHARED_DOUBLE_H__
 
-#include "osgVRJ.h"
+#include "Export.h"
 
 #include "vpr/IO/SerializableObject.h"
 #include "vpr/IO/ObjectReader.h"

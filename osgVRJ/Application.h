@@ -10,7 +10,7 @@
 #define _osgVRJ_Application_
 
 // osgjuggler includes
-#include "osgVRJ.h"
+#include "Export.h"
 #include "SharedDouble.h"
 
 #include "OsgTools/Render/Renderer.h"
@@ -49,42 +49,46 @@ namespace osgVRJ
   class OSG_VRJ_EXPORT Application : public vrj::GlApp, public osg::Referenced
   {
   public:
+    // Typedefs.
     typedef OsgTools::Render::Renderer Renderer;
     typedef Renderer::RefPtr RendererPtr;
-    // constructor(s)
+
+    // Constructors.
     Application();
-    Application(vrj::Kernel*);
-    Application(const std::list<std::string>&);  // valid vrj config files
+    Application( vrj::Kernel* );
+    Application( const std::list<std::string>& );  // valid vrj config files
 
-    // method(s)
-    virtual void contextInit();
-    virtual void contextPreDraw();
-    virtual void init();
-    virtual void viewAll (osg::MatrixTransform *mt,osg::Matrix::value_type zScale=2);
+    virtual void            init();
+    virtual void            viewAll (osg::MatrixTransform *mt,osg::Matrix::value_type zScale=2);
 
+    /// Get/Set the background color.
     void                    setBackgroundColor(const osg::Vec4& bg) { _background_color = bg; _context_in_sync=false; }
     const osg::Vec4&        getBackgroundColor() const { return _background_color; }
 
+    /// Get/Set the framestamp.
     osg::FrameStamp*        getFrameStamp();
     const osg::FrameStamp*  getFrameStamp() const;
 
+    /// Get/Set the global state set.
     void                    setGlobalStateSet(osg::StateSet* gss) { _global_stateset = gss; _context_in_sync=false; }
     const osg::StateSet*    getGlobalStateSet() const { return _global_stateset.get(); }
     osg::StateSet*          getGlobalStateSet() { return _global_stateset.get(); }
 
+    /// Get/Set the scene data.
     osg::Node*              getSceneData();
     void                    setSceneData(osg::Node*);
 
+    /// Get/Set the scene decorator.
     void                    setSceneDecorator(osg::Group*);
     const osg::Group*       getSceneDecorator() const { return _scene_decorator.get(); }
 
     double                  getTimeSinceStart();
 
-    void normalize ( bool state );
-    bool normalize() const;
+    void                    normalize ( bool state );
+    bool                    normalize() const;
 
-    void quit();
-    void run();
+    void                    quit();
+    void                    run();
 
     /// Get/Set the viewport.
     osg::Viewport*          viewport()       { return _viewport.get(); }
@@ -92,29 +96,35 @@ namespace osgVRJ
 
   protected:
 
-    virtual void preFrame();
-    virtual void latePreFrame();
-    virtual void postFrame();
-    virtual void draw();
+    /// VR Juggler methods.
+    virtual void            contextInit();
+    virtual void            contextPreDraw();
+    virtual void            preFrame();
+    virtual void            latePreFrame();
+    virtual void            postFrame();
+    virtual void            draw();
 
     /// Set the viewport.
-    virtual void setViewportByDrawManager(osg::Viewport*,vrj::GlDrawManager*);
+    virtual void            setViewportByDrawManager(osg::Viewport*,vrj::GlDrawManager*);
 
     /// Set the renderer with proper data.
-    virtual void setUpSceneViewWithData( Renderer* );
+    virtual void            setUpSceneViewWithData( Renderer* );
 
     /// Initialize the global state set.
-    virtual void initGlobalStateSet();
+    virtual void            initGlobalStateSet();
 
-    void           _construct();
-    Renderer*      _getContextSpecificSceneView();
+    void                    _construct();
+    Renderer*               _getContextSpecificSceneView();
 
     // Get the duration of the last frame in seconds.
-    double         _getFrameTime() const;
+    double                  _getFrameTime() const;
 
-    Application(const Application&);               // not implemented by design
-    Application& operator = (const Application&);  // not implemented by design
-    virtual ~Application();  // destructor
+    /// No copying.
+    Application ( const Application& );
+    Application& operator = (const Application&);
+    
+    /// Use reference counting.
+    virtual ~Application();
 
   private:
     // data members

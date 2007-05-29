@@ -212,12 +212,10 @@ void Registry::_moduleFile ( const std::string &s )
 {
   _file = s;
 
-  // On windows, the extension for the debug-built plugin 
-  // will have a 'd' appended to it.
-#ifdef _WIN32
+  // If it's a debug build, append d to the name.
+  // Plugins have d appended on windows and on unix systems if CMake is used.
 #ifdef _DEBUG
   _file = s + 'd';
-#endif
 #endif
 }
 

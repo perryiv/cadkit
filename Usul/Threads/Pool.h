@@ -17,6 +17,7 @@
 #define _USUL_THREADS_POOL_CLASS_H_
 
 #include "Usul/Base/Referenced.h"
+#include "Usul/Interfaces/Threads/IThreadPoolAddTask.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Task.h"
@@ -32,7 +33,8 @@ namespace Usul {
 namespace Threads {
 
 
-class USUL_EXPORT Pool : public Usul::Base::Referenced
+class USUL_EXPORT Pool : public Usul::Base::Referenced,
+                         public Usul::Interfaces::IThreadPoolAddTask
 {
 public:
 
@@ -43,21 +45,28 @@ public:
   typedef Usul::Threads::Guard<Mutex> Guard;
   typedef Usul::Threads::Callback Callback;
   typedef std::list<Task::RefPtr> QueuedTasks;
-  typedef unsigned int TaskHandle;
+  typedef Usul::Interfaces::IThreadPoolAddTask IThreadPoolAddTask;
+  typedef IThreadPoolAddTask::TaskHandle TaskHandle;
   typedef std::map<TaskHandle,Task::RefPtr> AllTasks;
+
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( Pool );
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Pool );
+
+  // Usul::Interfaces::IUnknown members.
+	USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   // Constructor
   Pool ( unsigned int numThreads = 10 );
 
   // Add a task.
-  TaskHandle              add ( Callback *started, 
-                                Callback *finished = 0x0,
-                                Callback *cancelled = 0x0,
-                                Callback *error = 0x0,
-                                Callback *destroyed = 0x0 );
+  TaskHandle              addTask ( Callback *started, 
+                                    Callback *finished = 0x0,
+                                    Callback *cancelled = 0x0,
+                                    Callback *error = 0x0,
+                                    Callback *destroyed = 0x0 );
 
   // Cancel all tasks.
   void                    cancel();

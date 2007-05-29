@@ -1267,6 +1267,14 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Threads"
+					>
+					<File
+						RelativePath=".\Interfaces\Threads\IThreadPoolAddTask.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Math"

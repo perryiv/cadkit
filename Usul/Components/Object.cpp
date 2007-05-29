@@ -14,25 +14,18 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Components/Object.h"
-#include "Usul/Components/Registry.h"
 #include "Usul/Components/Exceptions.h"
-
+#include "Usul/Components/Registry.h"
+#include "Usul/DLL/Exceptions.h"
 #include "Usul/DLL/Library.h"
 #include "Usul/DLL/Loader.h"
-#include "Usul/DLL/Exceptions.h"
-
-#include "Usul/Interfaces/IClassFactory.h"
-
-#include "Usul/Exceptions/Thrower.h"
-
-#include "Usul/System/LastError.h"
-
 #include "Usul/Errors/Assert.h"
-
+#include "Usul/Exceptions/Thrower.h"
+#include "Usul/Interfaces/IClassFactory.h"
 #include "Usul/Predicates/FileExists.h"
-
-#include "Usul/Threads/Mutex.h"
+#include "Usul/System/LastError.h"
 #include "Usul/Threads/Guard.h"
+#include "Usul/Threads/Mutex.h"
 
 #include <map>
 

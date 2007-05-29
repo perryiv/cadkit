@@ -65,6 +65,9 @@ public:
   // Return list of plugin names. This queries each unknown pointer for IPlugin.
   Strings                       names() const;
 
+  // Print message about loaded plugins.
+  void                          print ( std::ostream & ) const;
+
   // Return the unknowns
   UnknownSet&                   unknowns() { return _unknowns; }
 

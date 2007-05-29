@@ -34,6 +34,9 @@
 
 using namespace Usul::Threads;
 
+USUL_IMPLEMENT_TYPE_ID ( Pool );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Pool, Pool::BaseClass );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -144,7 +147,7 @@ Pool::Mutex &Pool::mutex() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Pool::TaskHandle Pool::add ( Callback *started, Callback *finished, Callback *cancelled, Callback *error, Callback *destroyed )
+Pool::TaskHandle Pool::addTask ( Callback *started, Callback *finished, Callback *cancelled, Callback *error, Callback *destroyed )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -323,6 +326,9 @@ void Pool::_threadProcessTasks()
           thread->cancelled ( task->cancelledCB() );
           thread->error     ( task->errorCB()     );
           thread->destroyed ( task->destroyedCB() );
+
+          // Set the task id.
+          thread->task ( task->id() );
 
           // Start the thread.
           thread->start();
@@ -550,4 +556,25 @@ void Pool::_waitForThreads ( unsigned long timeout )
           " seconds while waiting for threads" );
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Pool::queryInterface ( unsigned long iid )
+{
+  USUL_TRACE_SCOPE;
+
+	switch ( iid )
+	{
+	case Usul::Interfaces::IUnknown::IID:
+	case Usul::Interfaces::IThreadPoolAddTask::IID:
+		return static_cast < Usul::Interfaces::IThreadPoolAddTask* > ( this );
+	default:
+		return 0x0;
+	}
 }

@@ -346,9 +346,6 @@ protected:
   // Read the user's preferences.
   void                          _readUserPreferences();
 
-  // Read the near and far clipping plane from file.
-  void                          _readNearAndFarClippingPlanes();
-
   // Seek to the intersected point, if any.
   void                          _seek();
 
@@ -390,9 +387,6 @@ protected:
 
   // Write the scene to file.
   void                          _writeScene ( const std::string &filename, const osg::Node *node ) const;
-  
-  // Create & clear out temporary directory
-  void                          _initTmpDir();
 
   // Perform Auto Placement of model
   void                          _doAutoPlacement( const bool replace_matrix );
@@ -541,7 +535,6 @@ protected:
   bool              _textures;
   MatTransPtr       _scribeBranch;
   bool              _autoPlacement;
-  std::string       _tmpDirName;
 };
 
 

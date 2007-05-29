@@ -247,11 +247,7 @@
 			Name="DLL"
 			>
 			<File
-				RelativePath="osgVRJ.cpp"
-				>
-			</File>
-			<File
-				RelativePath="osgVRJ.h"
+				RelativePath=".\Export.h"
 				>
 			</File>
 		</Filter>

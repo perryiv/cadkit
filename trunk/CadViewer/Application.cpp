@@ -36,10 +36,6 @@
 #include "VRV/Interfaces/IMenuRead.h"
 #include "VRV/Interfaces/IMenuGet.h"
 
-#include "SAL/Interfaces/INode.h"
-#include "SAL/Interfaces/IOSG.h"
-#include "SAL/Interfaces/IRead.h"
-
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Components/Object.h"
@@ -48,7 +44,6 @@
 #include "Usul/Math/Constants.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/System/Host.h"
-#include "Usul/Interfaces/IRead.h"
 #include "Usul/Functors/If.h"
 #include "Usul/Predicates/UnaryPair.h"
 
@@ -64,7 +59,6 @@
 #include "osg/LightSource"
 #include "osg/Projection"
 #include "osg/Version"
-#include "osg/AnimationPath"
 #include "osgFX/Scribe"
 
 #include "osgDB/ReadFile"
@@ -80,10 +74,6 @@
 #include "OsgTools/Visitor.h"
 
 #include "MenuKit/MemFunCallback.h"
-
-#include <sys/types.h>
-#include <sys/stat.h>
-//#include <unistd.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -454,9 +444,6 @@ void Application::_init()
   // Set Auto-Placement flag
   _autoPlacement = _prefs->autoPlacement();
   
-  // Create & clear tmp subdirectory
-  _initTmpDir();
-  
   // Set the background color.
   const Preferences::Vec4f &bc = _prefs->backgroundColor();
   this->setBackgroundColor ( osg::Vec4 ( bc[0], bc[1], bc[2], bc[3] ) );
@@ -638,7 +625,7 @@ void Application::_rebuildGrid()
 {
   // Remove the old grid and add the new one.
   OsgTools::Group::removeAllChildren ( _gridBranch.get() );
-  for(unsigned int i=0; i<_gridFunctors.size(); ++i)
+  for( unsigned int i = 0; i < _gridFunctors.size(); ++i )
   {
     _gridBranch->addChild ( _gridFunctors[i]() );
   }
@@ -670,24 +657,6 @@ void Application::_initLight()
   source->setLocalStateSetModes ( osg::StateAttribute::ON );
 
   this->setSceneDecorator ( source.get() );
-
-  const char *home = ::getenv ( "HOME" );
-  if ( home )
-  {
-    std::ostringstream filename;
-    filename << home << "/.cadviewer/lighting.txt";
-    std::ifstream in ( filename.str().c_str() );
-    if ( in )
-    {
-      osg::Vec4 ambient, diffuse, specular;
-      in >>  ambient[0] >>  ambient[1] >>  ambient[2] >>  ambient[3];
-      in >>  diffuse[0] >>  diffuse[1] >>  diffuse[2] >>  diffuse[3];
-      in >> specular[0] >> specular[1] >> specular[2] >> specular[3];
-      light->setAmbient  ( ambient );
-      light->setDiffuse  ( diffuse );
-      light->setSpecular ( specular );
-    }
-  }
 }
 
 
@@ -2744,52 +2713,6 @@ void Application::_setNearAndFarClippingPlanes()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Read the near and far clipping plane from file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_readNearAndFarClippingPlanes()
-{
-  ErrorChecker ( 3749122612u, isAppThread(), CV::NOT_APP_THREAD );
-
-  const char *home = ::getenv ( "HOME" );
-  if ( !home )
-  {
-    this->_update ( *_msgText, "Error 2675346972: Environment variable 'HOME' not found." );
-    return;
-  }
-
-  std::ostringstream filename;
-  filename << home << "/.cadviewer/near_and_far_clipping_plane_distances.txt";
-  std::ifstream in ( filename.str().c_str() );
-  if ( !in )
-  {
-    std::ostringstream message;
-    message << "Error 2987625210: Failed to open file: " << filename;
-    this->_update ( *_msgText, message.str() );
-    return;
-  }
-
-  float zNear ( -1 ), zFar ( -1 );
-  in >> zNear >> zFar;
-
-  if ( zNear > 0 && zNear < zFar )
-    vrj::Projection::setNearFar ( zNear, zFar );
-
-  else
-  {
-    std::ostringstream message;
-    message << "Error 3424960281: Invalid clipping-plane distances."
-            << "\n\tFile: " << filename
-            << "\n\tNear: " << zNear
-            << "\n\t Far: " << zFar;
-    this->_update ( *_msgText, message.str() );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the clipping planes
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -3031,56 +2954,6 @@ void Application::_updateSceneTool()
       }
     }
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Delete temporary files, create temporary directory
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_initTmpDir()
-{
-#ifdef _MSC_VER
-  // Compile-time sanity check.
-  const unsigned int bufSize ( 16383 ); // 2^14 - 1
-  USUL_STATIC_ASSERT ( bufSize > MAX_PATH );
-
-  char directory[bufSize + 1];
-  DWORD result ( ::GetTempPath ( bufSize, directory ) );
-
-  std::string d ( result + "/CadViewer" );
-
-  ::_mkdir ( d.c_str() );
-
-  _tmpDirName = d;
-#else
-  // If directory name is empty, generate it
-  if ( _tmpDirName.size() == 0 )
-  {
-    _tmpDirName = "/tmp/cv-";
-    _tmpDirName += getenv( "USER" );
-    _tmpDirName += "/";
-  }
-  
-  struct stat fbuf;
-  std::string cmd;
-  
-  // if directory exists, delete it
-  if ( !::stat ( _tmpDirName.c_str(), &fbuf ) )
-  {
-    // Delete directory and all its subdirectories
-    cmd = "rm -r ";
-    cmd += _tmpDirName;
-    system ( cmd.c_str() );
-  }
-  
-  // Make the directory
-  cmd = "mkdir ";
-  cmd += _tmpDirName;
-  system ( cmd.c_str() );
-#endif
 }
 
 

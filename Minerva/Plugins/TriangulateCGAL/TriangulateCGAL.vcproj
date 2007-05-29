@@ -39,7 +39,7 @@
 				PreprocessorDefinitions="_DEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/TriangulateCGAL.tlb"
+				TypeLibraryName=".\Debug/TriangulateCGALd.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"

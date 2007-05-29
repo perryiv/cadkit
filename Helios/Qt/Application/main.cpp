@@ -151,15 +151,19 @@ namespace Program
       // We want the application to live longer than the main window.
       {
         // Declare the main window.
-        CadKit::Helios::Core::MainWindow mw ( vendor, url, program, icon, true );
+        CadKit::Helios::Core::MainWindow mw ( vendor, url, program, icon, output, true );
 
         // Load the plugins.
         mw.addPluginFile ( mw.defautPluginFile() );
         mw.loadPlugins();
+        mw.printPlugins();
 
         // Hide the splash screen and show the main window.
         mw.hideSplashScreen();
         mw.show();
+
+        // Force an update of the text window.
+        mw.updateTextWindow();
 
         // Run the application.
         result = app.exec();

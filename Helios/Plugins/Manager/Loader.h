@@ -56,7 +56,7 @@ public:
 	std::string               filename() const;
 
   // Get the mutex.
-  Mutex &                   mutex() const { return *_mutex; }
+  Mutex &                   mutex() const { return _mutex; }
 
 	/// Parse the file.
 	void                      parse();
@@ -75,7 +75,7 @@ private:
 	
 	std::string     _filename;
 	Names           _names;
-  mutable Mutex * _mutex;
+  mutable Mutex   _mutex;
 };
 
 

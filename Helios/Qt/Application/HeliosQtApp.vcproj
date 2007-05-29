@@ -170,10 +170,6 @@
 				RelativePath=".\main.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\plugins.xml"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -199,6 +195,18 @@
 			</File>
 			<File
 				RelativePath="C:\Documents and Settings\perry\Local Settings\Temp\Helios\Helios.out"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Config Files"
+			>
+			<File
+				RelativePath="..\..\..\configs\HeliosPlugins.xml"
+				>
+			</File>
+			<File
+				RelativePath=".\plugins.xml"
 				>
 			</File>
 		</Filter>

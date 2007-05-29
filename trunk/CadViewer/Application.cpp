@@ -681,8 +681,6 @@ void Application::_initMenu()
 {
   ErrorChecker ( 1155745824u, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 2049202602u, _menu.valid() );
-  typedef USUL_VALID_REF_POINTER(MenuKit::Menu) ValidMenu;
-  typedef USUL_VALID_REF_POINTER(osg::StateSet) StateSet;
   
   // Set menu's background and text colors from preferences.xml stored in VRV::Prefs::Settings _prefs
   const float* BNarrayf = _prefs->menuBgColorNorm().get();
@@ -705,15 +703,20 @@ void Application::_initMenu()
   _menu->scene ( _menuBranch.get() );
 
   // Make the menu always draw on top (last). See osgfxbrowser.cpp.
-	StateSet ss ( _menuBranch->getOrCreateStateSet() );
-	ss->setRenderBinDetails ( 100, "RenderBin" );
-	ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+	osg::ref_ptr < osg::StateSet > ss ( _menuBranch->getOrCreateStateSet() );
 
-  // take lighting off of the menu
-  ss->setMode( GL_LIGHTING , osg::StateAttribute::OFF );
+  // The line above should always return a valid state set.  Check just to make sure.
+  if( ss.valid() )
+  {
+	  ss->setRenderBinDetails ( 100, "RenderBin" );
+	  ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
 
-  // set the stateset
-  _menuBranch->setStateSet( ss.get() );
+    // take lighting off of the menu
+    ss->setMode( GL_LIGHTING , osg::StateAttribute::OFF );
+
+    // set the stateset
+    _menuBranch->setStateSet( ss.get() );
+  }
 
   // Fill the callback map.
   CV_REGISTER ( _quitCallback,     "exit" );
@@ -874,7 +877,6 @@ void Application::_initStatusBar()
 {
   ErrorChecker ( 2652041460u, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 1890904769u, _statusBar.valid() );
-  typedef USUL_VALID_REF_POINTER(osg::StateSet) StateSet;
 
   // Set the status-bar scene.
   osg::Matrixf sbm;
@@ -888,9 +890,12 @@ void Application::_initStatusBar()
   _statusBar->updateScene();
 
   // Make the status-bar always draw on top (last). See osgfxbrowser.cpp.
-	StateSet ss ( _statusBranch->getOrCreateStateSet() );
-	ss->setRenderBinDetails ( 100, "RenderBin" );
-	ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+	osg::ref_ptr < osg::StateSet > ss ( _statusBranch->getOrCreateStateSet() );
+  if( ss.valid() )
+  {
+	  ss->setRenderBinDetails ( 100, "RenderBin" );
+	  ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+  }
 }
 
 

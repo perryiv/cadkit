@@ -10,13 +10,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Helper class for creating icons.
+//  Helper class for creating images.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Qt/Tools/Icon.h"
+#include "Helios/Qt/Tools/Image.h"
 
-#include "Usul/CommandLine/Arguments.h"
+#include "Usul/App/Application.h"
 #include "Usul/File/Path.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Trace/Trace.h"
@@ -24,6 +24,7 @@
 #include "QtGui/QAction"
 #include "QtGui/QIcon"
 #include "QtGui/QWidget"
+#include "QtGui/QLabel"
 
 using namespace CadKit::Helios::Tools;
 
@@ -85,8 +86,8 @@ namespace Detail
     if ( false == Usul::Predicates::FileExists::test ( path ) )
     {
       const std::string file ( Usul::File::base ( name ) + "." + Usul::File::extension ( name ) );
-      const std::string dir ( Usul::CommandLine::Arguments::instance().directory() );
-      path = dir + "/icons/" + file;
+      const std::string dir ( Usul::App::Application::instance().iconDirectory() );
+      path = dir + file;
       if ( false == Usul::Predicates::FileExists::test ( path ) )
       {
         return;
@@ -110,7 +111,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Icon::set ( const std::string &name, QWidget *widget )
+void Image::icon ( const std::string &name, QWidget *widget )
 {
   USUL_TRACE_SCOPE_STATIC;
   Detail::set ( name, widget );
@@ -123,8 +124,49 @@ void Icon::set ( const std::string &name, QWidget *widget )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Icon::set ( const std::string &name, QAction *action )
+void Image::icon ( const std::string &name, QAction *action )
 {
   USUL_TRACE_SCOPE_STATIC;
   Detail::set ( name, action );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the pixmap.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Image::pixmap ( const std::string &name, QLabel *label )
+{
+  USUL_TRACE_SCOPE_STATIC;
+
+  if ( 0x0 == label )
+  {
+    return;
+  }
+
+  std::string path ( name );
+  if ( false == Usul::Predicates::FileExists::test ( path ) )
+  {
+    const std::string file ( Usul::File::base ( name ) + "." + Usul::File::extension ( name ) );
+    const std::string dir ( Usul::App::Application::instance().iconDirectory() );
+    path = dir + file;
+    if ( false == Usul::Predicates::FileExists::test ( path ) )
+    {
+      return;
+    }
+  }
+
+  QPixmap pixmap;
+  if ( false == pixmap.load ( path.c_str() ) )
+  {
+    return;
+  }
+
+  // If we have an image then set it.
+  if ( ( false == pixmap.isNull() ) && ( 0x0 != label ) )
+  {
+    label->setPixmap ( pixmap );
+  }
 }

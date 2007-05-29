@@ -30,6 +30,7 @@
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/IO/Redirect.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Named.h"
@@ -94,26 +95,6 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Format data string.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string formatBuildDate ( const std::string &date )
-{
-  if ( 11 != date.size() )
-    return date;
-
-  const std::string year  ( date.begin() + 7, date.end() );
-  const std::string month ( date.begin() + 0, date.begin() + 3 );
-  const std::string day   ( date.begin() + 4, date.begin() + 6 );
-  std::ostringstream out;
-  out << day << '-' << month << '-' << year;
-  return out.str();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Run the application.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -129,10 +110,12 @@ namespace Program
     // Set command-line arguments.
     Usul::CommandLine::Arguments::instance().set ( argc, argv );
 
-    // Vendor and program name.
+    // Branding.
     const std::string program ( "Helios" );
     const std::string vendor ( "CadKit" );
     const std::string url ( "cadkit.sf.net" );
+    const std::string icon ( "helios_sun.png" );
+    Usul::App::Application::instance().splashImage ( "splash_screen.jpg" );
 
     // Get temporary directory nd make sure it exists.
     const std::string tempDir ( Usul::File::Temp::directory ( true ) + "/" + program + "/" );
@@ -144,7 +127,7 @@ namespace Program
 
     // Print welcome message.
     std::cout << "Welcome to " << program << std::endl;
-    std::cout << "Built on " << ::formatBuildDate ( __DATE__ ) << " at " << __TIME__ << std::endl;
+    std::cout << "Built on " << Usul::Strings::formatDate ( __DATE__ ) << " at " << __TIME__ << std::endl;
 
     // Send trace output here. Comment this out for stdout.
     const std::string traceFile ( tempDir + program + ".csv" );
@@ -162,20 +145,25 @@ namespace Program
       // Declare application.
       QApplication app ( argc, argv );
 
-      // Set the splash screen.
-      Usul::App::Application::instance().splashImage ( "splash_screen.jpg" );
-
-      // Declare the main window.
-      CadKit::Helios::Core::MainWindow mw ( vendor, url, program );
-
       // Call quit when the last window closes. (Not sure if this is needed...)
       app.connect ( &app, SIGNAL ( lastWindowClosed() ), &app, SLOT ( quit() ) );
 
-      // Show the main window.
-      mw.show();
+      // We want the application to live longer than the main window.
+      {
+        // Declare the main window.
+        CadKit::Helios::Core::MainWindow mw ( vendor, url, program, icon, true );
 
-      // Run the application.
-      result = app.exec();
+        // Load the plugins.
+        mw.addPluginFile ( mw.defautPluginFile() );
+        mw.loadPlugins();
+
+        // Hide the splash screen and show the main window.
+        mw.hideSplashScreen();
+        mw.show();
+
+        // Run the application.
+        result = app.exec();
+      }
     }
   }
 }

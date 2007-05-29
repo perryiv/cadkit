@@ -20,8 +20,7 @@
 #include "Helios/Qt/Commands/Action.h"
 #include "Helios/Qt/Commands/OpenDocument.h"
 #include "Helios/Qt/Commands/ExitApplication.h"
-#include "Helios/Qt/Tools/Icon.h"
-#include "Helios/Qt/Tools/Move.h"
+#include "Helios/Qt/Tools/Image.h"
 #include "Helios/Qt/Tools/SettingsGroupScope.h"
 #include "Helios/Plugins/Manager/Loader.h"
 
@@ -29,9 +28,11 @@
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Errors/Stack.h"
+#include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/Strings/Qt.h"
 #include "Usul/Threads/Callback.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Named.h"
@@ -45,10 +46,11 @@
 #include "QtGui/QMenuBar"
 #include "QtGui/QProgressDialog"
 #include "QtGui/QPushButton"
-#include "QtGui/QSplashScreen"
 #include "QtGui/QStatusBar"
 #include "QtGui/QToolBar"
 #include "QtGui/QVBoxLayout"
+
+#include <algorithm>
 
 using namespace CadKit::Helios::Core;
 
@@ -61,13 +63,21 @@ using namespace CadKit::Helios::Core;
 
 MainWindow::MainWindow ( const std::string &vendor, 
                          const std::string &url, 
-                         const std::string &program ) : BaseClass(),
-  _mutex      ( new MainWindow::Mutex ),
-  _settings   ( QSettings::IniFormat, QSettings::UserScope, vendor.c_str(), program.c_str() ),
-  _actions    (),
-  _toolBars   (),
-  _threadPool ( 0x0 ),
-  _refCount   ( 0 )
+                         const std::string &program,
+                         const std::string &icon,
+                         bool showSplash ) : BaseClass(),
+  _mutex       ( new MainWindow::Mutex ),
+  _settings    ( QSettings::IniFormat, QSettings::UserScope, vendor.c_str(), program.c_str() ),
+  _actions     (),
+  _toolBars    (),
+  _threadPool  ( 0x0 ),
+  _refCount    ( 0 ),
+  _pluginFiles (),
+  _vendor      ( vendor ),
+  _url         ( url ),
+  _program     ( program ),
+  _icon        ( icon ),
+  _splash      ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -75,9 +85,13 @@ MainWindow::MainWindow ( const std::string &vendor,
   Usul::Threads::Named::instance().set ( Usul::Threads::Names::GUI );
 
   // Make the splash screen.
-  SplashScreen splashScreen ( this );
-  CadKit::Helios::Tools::Move::center ( &splashScreen );
-  splashScreen.show();
+  const std::string iconDir ( Usul::App::Application::instance().iconDirectory() );
+  const std::string splashImage ( Usul::App::Application::instance().splashImage() );
+  _splash = new SplashScreen ( iconDir + splashImage );
+
+  // Show the splash screen if we should.
+  if ( true == showSplash )
+    this->showSplashScreen();
 
   // Program-wide settings.
   QCoreApplication::setOrganizationName ( vendor.c_str() );
@@ -85,7 +99,7 @@ MainWindow::MainWindow ( const std::string &vendor,
   QCoreApplication::setApplicationName ( program.c_str() );
 
   // Set the icon.
-  CadKit::Helios::Tools::Icon::set ( "helios_sun.png", this );
+  CadKit::Helios::Tools::Image::icon ( icon, this );
 
   // Enable toolbar docking.
   this->setEnabled ( true );
@@ -102,10 +116,7 @@ MainWindow::MainWindow ( const std::string &vendor,
   this->_loadSettings();
 
   // Set the title.
-  this->setWindowTitle ( QCoreApplication::applicationName() );
-
-  // Load plugins.
-  this->_loadPlugins ( splashScreen.queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  this->setWindowTitle ( program.c_str() );
 
   // Start the thread pool.
   _threadPool = new ThreadPool;
@@ -150,8 +161,16 @@ void MainWindow::_destroy()
   // Should be true.
   USUL_ASSERT ( 0 == _refCount );
 
-  delete _mutex;
-  _mutex = 0x0;
+  // Delete remaining members.
+  _pluginFiles.clear();
+  _vendor.clear();
+  _url.clear();
+  _program.clear();
+  _icon.clear();
+  _splash = 0x0;
+
+  // Delete the mutex last.
+  delete _mutex; _mutex = 0x0;
 }
 
 
@@ -290,30 +309,6 @@ QSettings &MainWindow::settings()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Load the plugins.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MainWindow::_loadPlugins ( Usul::Interfaces::IUnknown *caller )
-{
-	USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "4106161463" );
-
-	std::string pluginFile ( Usul::CommandLine::Arguments::instance().directory() + "/../config/HeliosQt.xml" );
-	USUL_TRACE_2 ( "Plugin file: ", pluginFile );
-	
-	if ( Usul::Predicates::FileExists::test ( pluginFile ) )
-	{
-		CadKit::Helios::Plugins::Manager::Loader loader;
-    loader.filename ( pluginFile );
-		loader.parse();
-		loader.load ( caller );
-	}
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Increment the reference count.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -398,4 +393,270 @@ MainWindow::FilesResult MainWindow::getLoadFileNames ( const std::string &title,
   Guard guard ( this->mutex() );
   FilesResult result;
   return result;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the directory where this binary lives.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string MainWindow::directory() const
+{
+  USUL_TRACE_SCOPE;
+  //Guard guard ( this->mutex() );
+  return Usul::CommandLine::Arguments::instance().directory();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the icon file name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string MainWindow::icon() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return std::string ( _icon.begin(), _icon.end() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the program file name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string MainWindow::programFile() const
+{
+  USUL_TRACE_SCOPE;
+  //Guard guard ( this->mutex() );
+
+  const std::string path ( Usul::CommandLine::Arguments::instance().program() );
+  std::ostringstream file;
+  file << Usul::File::base ( path ) << '.' << Usul::File::extension ( path );
+  return file.str();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the program name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string MainWindow::programName() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return std::string ( _program.begin(), _program.end() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the vendor name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string MainWindow::vendor() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return std::string ( _vendor.begin(), _vendor.end() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the url.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string MainWindow::url() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return std::string ( _url.begin(), _url.end() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear plugin file names.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::clearPluginFiles()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _pluginFiles.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a plugin file name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::addPluginFile ( const std::string &name )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // If it's not empty...
+  if ( false == name.empty() )
+  {
+    // If it's not already in the list...
+    if ( _pluginFiles.end() == std::find ( _pluginFiles.begin(), _pluginFiles.end(), name ) )
+    {
+      // Append the name.
+      _pluginFiles.push_back ( name );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the list of plugin file names.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MainWindow::PluginFiles MainWindow::pluginFiles() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return PluginFiles ( _pluginFiles.begin(), _pluginFiles.end() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the default plugin file name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string MainWindow::defautPluginFile() const
+{
+  USUL_TRACE_SCOPE;
+  //Guard guard ( this->mutex() );
+
+  std::string file ( this->directory() + "/../config/" + this->programFile() );
+  std::replace ( file.begin(), file.end(), '\\', '/' );
+  return file;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the plugins.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::loadPlugins()
+{
+  USUL_TRACE_SCOPE;
+  const PluginFiles configs ( this->pluginFiles() );
+  for ( PluginFiles::const_iterator i = configs.begin(); i != configs.end(); ++i )
+  {
+    const std::string config ( *i );
+    this->loadPlugins ( config );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the plugins.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::loadPlugins ( const std::string &config )
+{
+	USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "4106161463" );
+
+  if ( false == Usul::Predicates::FileExists::test ( config ) )
+  {
+    std::cout << "Warning 2088092978: Plugin file '" << config << "' does not exist" << std::endl;
+    return;
+  }
+
+  std::cout << "Processing plugin config file: " << config << std::endl;
+
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( this );
+  Usul::Interfaces::IUnknown::QueryPtr splash ( _splash );
+
+  CadKit::Helios::Plugins::Manager::Loader loader;
+  loader.filename ( config );
+	loader.parse();
+  loader.load ( ( splash.valid() ) ? splash : unknown );
+
+  std::cout << "Done processing plugin config file: " << config << std::endl;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the single plugin.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::loadPlugin ( const std::string &plugin )
+{
+	USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2338588069" );
+
+  if ( false == Usul::Predicates::FileExists::test ( plugin ) )
+  {
+    std::cout << "Warning 3552654765: Plugin file '" << plugin << "' does not exist" << std::endl;
+    return;
+  }
+
+  std::cout << "Processing plugin file: " << plugin << std::endl;
+
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( this );
+  Usul::Interfaces::IUnknown::QueryPtr splash ( _splash );
+
+  CadKit::Helios::Plugins::Manager::Loader loader;
+  loader.addPlugin ( plugin );
+  loader.load ( ( splash.valid() ) ? splash : unknown );
+
+  std::cout << "Done processing plugin file: " << plugin << std::endl;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show the splash screen.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::showSplashScreen()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "3041826876" );
+  if ( true == _splash.valid() )
+    _splash->show();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Hide the splash screen.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::hideSplashScreen()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "3041826876" );
+  if ( true == _splash.valid() )
+    _splash->hide();
 }

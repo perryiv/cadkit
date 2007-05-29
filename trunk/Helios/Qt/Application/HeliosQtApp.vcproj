@@ -170,6 +170,10 @@
 				RelativePath=".\main.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\plugins.xml"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

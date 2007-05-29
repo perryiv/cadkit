@@ -10,12 +10,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Class for moving widgets.
+//  Class for showing widgets.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_HELIOS_QT_TOOLS_MOVE_H_
-#define _CADKIT_HELIOS_QT_TOOLS_MOVE_H_
+#ifndef _CADKIT_HELIOS_QT_TOOLS_SHOW_H_
+#define _CADKIT_HELIOS_QT_TOOLS_SHOW_H_
 
 #include "Helios/Qt/Tools/Export.h"
 
@@ -27,7 +27,7 @@ namespace Helios {
 namespace Tools {
 
 
-struct HELIOS_QT_TOOLS_EXPORT Move
+struct HELIOS_QT_TOOLS_EXPORT Show
 {
   static void center ( QWidget *widget );
 };
@@ -38,4 +38,4 @@ struct HELIOS_QT_TOOLS_EXPORT Move
 } // namespace CadKit
 
 
-#endif //_CADKIT_HELIOS_QT_TOOLS_MOVE_H_
+#endif //_CADKIT_HELIOS_QT_TOOLS_SHOW_H_

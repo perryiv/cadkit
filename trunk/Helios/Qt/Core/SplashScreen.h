@@ -11,13 +11,15 @@
 #ifndef __HELIOS_QT_CORE_SPLASH_SCREEN_H__
 #define __HELIOS_QT_CORE_SPLASH_SCREEN_H__
 
+#include "Helios/Qt/Core/Export.h"
+
+#include "Usul/Base/Object.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
-#include "Usul/Threads/Guard.h"
-#include "Usul/Threads/RecursiveMutex.h"
 
-#include "QtGui/QWidget"
+#include <string>
 
+class QWidget;
 class QLabel;
 class QProgressBar;
 
@@ -27,20 +29,21 @@ namespace Helios {
 namespace Core {
 
 
-class SplashScreen : public QWidget,
+class SplashScreen : public Usul::Base::Object,
 										 public Usul::Interfaces::IStatusBar,
 										 public Usul::Interfaces::IProgressBar
 {
-	Q_OBJECT
-
 public:
 
-  typedef QWidget                           BaseClass;
-  typedef Usul::Threads::RecursiveMutex     Mutex;
-  typedef Usul::Threads::Guard<Mutex>       Guard;
-	
-  SplashScreen ( QWidget *mainWindow );
-	~SplashScreen();
+  typedef Usul::Base::Object  BaseClass;
+  typedef BaseClass::Mutex    Mutex;
+  typedef BaseClass::Guard    Guard;
+
+  // Constructor.
+  SplashScreen ( const std::string &image );
+
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( SplashScreen );
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( SplashScreen );
@@ -48,42 +51,52 @@ public:
   // Usul::Interfaces::IUnknown members.
 	USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  // Get the mutex.
-  Mutex &                   mutex() const { return *_mutex; }
+  // Show and hide this window.
+  void                      show();
+  void                      hide();
 
 protected:
-	
-	/// Usul::Interfaces::IStatusBar
-	/// Set the status bar text.
+
+  // Use reference counting.
+	virtual ~SplashScreen();
+
+  // Usul::Interfaces::IStatusBar
+	// Set the status bar text.
   virtual void              setStatusBarText ( const std::string &text, bool force );
 	
-	/// Usul::Interfaces::IProgressBar.h
-	/// Show the progress bar
+	// Usul::Interfaces::IProgressBar.h
+	// Show the progress bar
   virtual void              showProgressBar();
 
-  /// Set the total of progress bar
+  // Set the total of progress bar
   virtual void              setTotalProgressBar ( unsigned int value );
 
-  /// Update the progress bar
+  // Update the progress bar
   virtual void              updateProgressBar ( unsigned int value );
 
-  /// Hide the progress bar
+  // Hide the progress bar
   virtual void              hideProgressBar();
 
 private:
 
+  // No copying or assignment.
+  SplashScreen ( const SplashScreen & );
+  SplashScreen &operator = ( const SplashScreen & );
+
+  void                      _destroy();
+
   void                      _loadSplashImage();
 
+  QWidget *_window;
   QLabel *_image;
-	QProgressBar *_progressBar;
-	unsigned int _refCount;
-  mutable Mutex *_mutex;
+	QProgressBar *_progress;
+  std::string _file;
 };
 
 
-}
-}
-}
+} // namespace Core
+} // namespace Helios
+} // namespace CadKit
 
 
 #endif // __HELIOS_QT_CORE_SPLASH_SCREEN_H__

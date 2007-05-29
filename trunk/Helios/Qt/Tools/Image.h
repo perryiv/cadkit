@@ -10,7 +10,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Helper class for creating icons.
+//  Helper class for creating images.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -23,6 +23,7 @@
 
 class QWidget;
 class QAction;
+class QLabel;
 
 
 namespace CadKit {
@@ -30,10 +31,11 @@ namespace Helios {
 namespace Tools {
 
 
-struct HELIOS_QT_TOOLS_EXPORT Icon
+struct HELIOS_QT_TOOLS_EXPORT Image
 {
-  static void set ( const std::string &file, QWidget *widget );
-  static void set ( const std::string &file, QAction *action );
+  static void icon   ( const std::string &file, QWidget *widget );
+  static void icon   ( const std::string &file, QAction *action );
+  static void pixmap ( const std::string &file, QLabel  *label  );
 };
 
 

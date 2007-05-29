@@ -506,19 +506,6 @@
       </button>
     </menu>
     <menu>
-      <text>World</text>
-      <button>
-        <text>Toggle Animations</text>
-        <info>Start/Stop Animations</info>
-        <id>toggle_animations</id>
-      </button>
-      <button>
-        <text>Step Animation</text>
-        <info>Increment animation by one step</info>
-        <id>animation_step_fwd</id>
-      </button>
-    </menu>
-    <menu>
       <text>Help</text>
       <button>
         <text>About CadViewer...</text>

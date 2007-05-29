@@ -282,11 +282,7 @@ Application::Application ( Args &args ) :
   _colorMap       (),
   _textures       ( true ),
   _scribeBranch   ( new osg::MatrixTransform ),
-  _autoPlacement  ( false ),
-  _animations     ( true ),
-  _anim_steps     ( 0 ),
-  _animModel      ( NULL ),
-  _nextFrameTime  ( 0.0 )
+  _autoPlacement  ( false )
 {
   ErrorChecker ( 1067097070u, 0 == _appThread );
   ErrorChecker ( 2970484549u, 0 == _mainThread );
@@ -497,7 +493,7 @@ void Application::_init()
   //this->_setCursorMatrixFunctor ( new CV::Functors::WandMatrix ( this->_thisUnknown() ) );
 
   // Based on the scene size, set the near and far clipping plane distances.
-  //this->_setNearAndFarClippingPlanes();
+  this->_setNearAndFarClippingPlanes();
 
   // Initialize the menu.
   this->_initMenu();
@@ -642,7 +638,8 @@ void Application::_rebuildGrid()
 {
   // Remove the old grid and add the new one.
   OsgTools::Group::removeAllChildren ( _gridBranch.get() );
-  for(unsigned int i=0; i<_gridFunctors.size(); ++i){
+  for(unsigned int i=0; i<_gridFunctors.size(); ++i)
+  {
     _gridBranch->addChild ( _gridFunctors[i]() );
   }
 }
@@ -663,8 +660,8 @@ void Application::_initLight()
   osg::Vec3 ld;
   osg::Vec4 lp;
 
-  OsgTools::Convert::vector( _prefs->lightPosition(), lp, 4 );
-  OsgTools::Convert::vector( _prefs->lightDirection(), ld, 3 );
+  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( _prefs->lightPosition(), lp, 4 );
+  OsgTools::Convert::vector<Usul::Math::Vec3f,osg::Vec3>( _prefs->lightDirection(), ld, 3 );
 
   light->setPosition( lp );
   light->setDirection( ld );
@@ -805,8 +802,6 @@ void Application::_initMenu()
   CV_REGISTER ( _gotoViewLeft,     "goto_left_view" );
   CV_REGISTER ( _rotateWorld,      "rotate_world" );
   CV_REGISTER ( _dropToFloor,      "drop_to_floor" );
-  CV_REGISTER (_toggleAnimations,  "toggle_animations" );
-  CV_REGISTER (_animStepFwd,  "animation_step_fwd" );
   //CV_REGISTER ( _saveView,         "save_camera_view" );
 
   // Get the component.
@@ -999,9 +994,6 @@ void Application::_latePreFrame()
   // Call the base class's function.
   BaseClass::latePreFrame();
   
-  // Update the frame-time.
-  //this->_updateFrameTime();
-
   // Update these input devices.
   _buttons->update();
   _tracker->update();
@@ -1368,7 +1360,6 @@ void Application::_postFrame()
   // Call the base class's function.
   BaseClass::postFrame();
 
-#if 1
   // Initialize the text if we need to. We cannot call this sooner because 
   // contextInit() has to be called first.
   if ( false == Usul::Bits::has ( _flags, Detail::_TEXT_IS_INITIALIZED ) )
@@ -1376,17 +1367,6 @@ void Application::_postFrame()
     osg::ref_ptr < osg::FrameStamp > framestamp ( this->getFrameStamp() );
     if ( 0x0 != framestamp.get() && this->getFrameStamp()->getFrameNumber() > 10 )
       this->_initText();
-  }
-#endif
-
-  if(_anim_steps)
-  {
-    _anim_steps--;
-    if( _anim_steps == 0 && _animModel != NULL)
-    {
-      _animationsOnOff(false, _animModel);
-      _animModel = NULL;
-    }
   }
 }
 
@@ -1802,6 +1782,7 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
   this->_postProcessModelLoad ( filename, node.get() );
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Return the group node child that is a MatrixTransform
@@ -1832,116 +1813,6 @@ osg::MatrixTransform* Application::_getGroupMatrixTransform( osg::Group *grp )
   }
   
   return NULL;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add or replace a node in the scenegraph
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_replaceNode( osg::ref_ptr<osg::Node> node, const std::string &name )
-{
-  ErrorChecker ( 1901000692u, isAppThread(), CV::NOT_APP_THREAD );
-  ErrorChecker ( 1067093698u, _models.valid() );
-  
-  // See if this node name matches any other in the scene
-  bool matched = false;
-  osg::Node *m = dynamic_cast<osg::Node*>( _models.get() );
-  if ( m )
-  {
-    Matcher match;
-    if ( _recursiveMatchNodeName ( name, m, &match ) )
-    {
-      // We found a match
-      std::cout << "Match found, replacing node" << std::endl;
-      _autoPlacement = false; // do not relocate model if it isn't new
-      node->setName ( name );
-      
-      // Get matrix from original (old) node and apply it to new node
-      osg::Matrix mtx;
-      osg::Group *old_grp = match.node->asGroup();
-      osg::Group *new_grp = node->asGroup();
-            
-      if ( old_grp && new_grp )
-      {
-        osg::MatrixTransform *mxform_old = _getGroupMatrixTransform( old_grp );
-        if ( mxform_old )
-        {
-          mtx = mxform_old->getMatrix();
-          
-          osg::MatrixTransform *mxform_new = _getGroupMatrixTransform( new_grp );
-          if ( mxform_new )
-          {
-            mxform_new->setMatrix( mtx );
-          }
-        }
-      }
-      
-      // replace the node
-      if ( match.parent->replaceChild ( match.node, node.get() ) )
-      {
-        matched = true;
-      }
-    }
-
-    // Now rebuild the scribe node corresponding to the match in _models
-    if ( matched )
-    {
-      // Replace the scribe node at the same position in _scribeBranch
-      // as the replaced node was in _models, using match.modelNum
-      osg::ref_ptr<osgFX::Scribe> scribe = new osgFX::Scribe;
-      const Preferences::Vec4f &sc = _prefs->scribeColor();
-      scribe->setWireframeColor ( osg::Vec4 ( sc[0], sc[1], sc[2], sc[3] ) );
-      scribe->setWireframeLineWidth( _prefs->scribeWidth() );
-      scribe->addChild ( node.get() );
-      _scribeBranch->setChild ( match.modelNum, scribe.get() );
-    }
-  }
-    
-  // Otherwise, add it as a new node
-  if ( !matched )
-  {
-    std::cout << "Adding model as new osg node" << std::endl;
-
-    // Are we supposed to set the normalize flag? We only turn it on, 
-    // not off, because we want to inherit the global state.
-    bool norm ( _prefs->normalizeVertexNormalsModels() );
-    if ( norm )
-      OsgTools::State::StateSet::setNormalize ( node.get(), norm );
-
-    // Make a matrix transform for this model.
-    osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
-    mt->setName ( std::string ( "Branch for: " ) + name );
-
-    // Set its matrix.
-    osg::Matrixf M;
-    Matrix44f matrix;
-    matrix.identity();
-    OsgTools::Convert::matrix ( matrix, M );
-    mt->setMatrix ( M );
-
-    // Set the node name
-    node->setName ( name );
-
-    // Create the scribe effect since it must attach to the model
-    osg::ref_ptr<osgFX::Scribe> scribe = new osgFX::Scribe;
-    const Preferences::Vec4f &sc = _prefs->scribeColor();
-    scribe->setWireframeColor ( osg::Vec4 ( sc[0], sc[1], sc[2], sc[3] ) );
-    scribe->setWireframeLineWidth( _prefs->scribeWidth() );
-    scribe->addChild ( node.get() );
-    _scribeBranch->addChild ( scribe.get() );
-    
-    // Hook things up.
-    mt->addChild ( node.get() );
-
-    // Hook things up.
-    _models->addChild ( mt.get() );
-  }
-  
-  // Do any post-processing.
-  this->_postProcessModelLoad ( std::string("streamed"), node.get() );
 }
 
 
@@ -3162,124 +3033,6 @@ void Application::_updateSceneTool()
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Compare new & old node names for a match 
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::_matchNodeNames( const std::string &new_name, const std::string &old_name )
-{
-  // Make copies of the strings to compare.
-  std::string newname = new_name;
-  std::string oldname = old_name;
-  
-  // Convert names to lowercase because match is case-insensitive.
-  std::transform ( newname.begin(), newname.end(), newname.begin(), ::tolower );
-  std::transform ( oldname.begin(), oldname.end(), oldname.begin(), ::tolower );
-  
-  if( newname == oldname )
-  {
-    return true;
-  }
-  else
-  {
-    // If we don't find an exact match, we need to look for a looser match.
-    // New name_par_4.jt may match old name.par_4
-    std::string::size_type nsz = newname.rfind(std::string("_par"), newname.size() - 1);
-    std::string::size_type osz = oldname.rfind(std::string(".par"), oldname.size() - 1);
-    
-    // If that format seems to be the case, truncate the strings and re-test.
-    if( nsz != std::string::npos && osz != std::string::npos )
-    {
-      newname = newname.substr( 0, nsz );
-      oldname = oldname.substr( 0, osz );
-      
-      if( newname == oldname )
-      {
-        return true;
-      }
-    }
-    
-  }
-  
-  return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Recursively check if model node name matches any others in _models
-//  and returns the matching node/group as a node 
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::_recursiveMatchNodeName ( const std::string &name, osg::Node *model, Matcher *match )
-{
-  osg::Group *g;
-
-  // Check for match on node name
-  if ( _matchNodeNames( name, model->getName() ) )
-  {
-    // Only assign the model, the others are done by the caller
-    match->node = model;
-    match->parent = NULL;
-    match->modelNum = 0;
-    return true;
-  }
-  
-  // If model is a group, it may contain more nodes, so search
-  g = model->asGroup();
-  if ( g )
-  {
-    for ( unsigned int i=0; i<g->getNumChildren(); ++i )
-    {
-      if ( _recursiveMatchNodeName ( name, g->getChild(i), match ) )
-      {
-        // Only assign the parent if we just found the node
-        if ( match->parent == NULL )
-        {
-          match->parent = g;
-        }
-        
-        // Keep reassigning the modelNum, since we need the index from _models 
-        match->modelNum = i;
-
-        return true;
-      }
-    }
-  }
-  
-  return false;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Wipe out all models in the scene
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_deleteScene()
-{
-  // Loop through the _models deleting every child it can find until no more exist
-  // This needs to be done since OSG apparently moves the children back up when the parent
-  // is deleted
-  while ( _models->getNumChildren() > 0 )
-  {
-    for( unsigned int k=0; k<_models->getNumChildren(); k++){
-      _models->removeChild(k);
-    }
-  }
-
-  // Also delete all scribe effects
-  while ( _scribeBranch->getNumChildren() > 0 )
-  {
-    for(unsigned int k=0; k<_scribeBranch->getNumChildren(); k++){
-      _scribeBranch->removeChild(k);
-    }
-  }
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -3328,63 +3081,6 @@ void Application::_initTmpDir()
   cmd += _tmpDirName;
   system ( cmd.c_str() );
 #endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Find all animations and turn them on/off
-//  Also a recursive functin to find every animation possible under model
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_animationsOnOff ( bool onOff, osg::Node *model )
-{
-  osg::Group *g;
-  osg::NodeCallback *nc;
-  osg::AnimationPathCallback *apc;
-  //osg::AnimationPath *ap;
-
-  // Check to see if we have an animation path
-  nc = model->getUpdateCallback();
-  if (nc)
-  {
-    apc = dynamic_cast<osg::AnimationPathCallback*>(nc);
-    if (apc)
-    {
-      apc->setPause(!onOff);
-    }
-  }
-  
-  // If model is a group, it may contain more nodes, so search
-  g = model->asGroup();
-  if ( g ) {
-    for ( unsigned int i=0; i<g->getNumChildren(); ++i )
-    {
-      _animationsOnOff ( onOff, g->getChild(i) );
-    }
-  }
-  
-  return;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Step animation by num frames
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_animStep ( int num, osg::Node *model )
-{ 
-  _animModel = model;
-  
-  _animationsOnOff(true, model);
-  
-  if(num > 0)
-    _anim_steps = num;
-  
-  return;
 }
 
 

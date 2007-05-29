@@ -27,8 +27,10 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
+#include "Usul/Components/Manager.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/File/Path.h"
+#include "Usul/File/Stats.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Predicates/FileExists.h"
@@ -39,6 +41,7 @@
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
 
+#include "QtCore/QFileSystemWatcher"
 #include "QtGui/QApplication"
 #include "QtGui/QDockWidget"
 #include "QtGui/QImageReader"
@@ -48,9 +51,12 @@
 #include "QtGui/QPushButton"
 #include "QtGui/QStatusBar"
 #include "QtGui/QToolBar"
+#include "QtGui/QTextEdit"
 #include "QtGui/QVBoxLayout"
+#include "QtGui/QWorkSpace"
 
 #include <algorithm>
+#include <fstream>
 
 using namespace CadKit::Helios::Core;
 
@@ -65,6 +71,7 @@ MainWindow::MainWindow ( const std::string &vendor,
                          const std::string &url, 
                          const std::string &program,
                          const std::string &icon,
+                         const std::string &output,
                          bool showSplash ) : BaseClass(),
   _mutex       ( new MainWindow::Mutex ),
   _settings    ( QSettings::IniFormat, QSettings::UserScope, vendor.c_str(), program.c_str() ),
@@ -77,12 +84,21 @@ MainWindow::MainWindow ( const std::string &vendor,
   _url         ( url ),
   _program     ( program ),
   _icon        ( icon ),
-  _splash      ( 0x0 )
+  _splash      ( 0x0 ),
+  _workSpace   ( 0x0 ),
+  _textWindow  ( 0x0, 0 ),
+  _dockMenu    ( 0x0 ),
+  _fileWatcher ( new QFileSystemWatcher, output )
 {
   USUL_TRACE_SCOPE;
 
   // Name this thread.
   Usul::Threads::Named::instance().set ( Usul::Threads::Names::GUI );
+
+  // Program-wide settings.
+  QCoreApplication::setOrganizationName ( vendor.c_str() );
+  QCoreApplication::setOrganizationDomain ( url.c_str() );
+  QCoreApplication::setApplicationName ( program.c_str() );
 
   // Make the splash screen.
   const std::string iconDir ( Usul::App::Application::instance().iconDirectory() );
@@ -93,13 +109,12 @@ MainWindow::MainWindow ( const std::string &vendor,
   if ( true == showSplash )
     this->showSplashScreen();
 
-  // Program-wide settings.
-  QCoreApplication::setOrganizationName ( vendor.c_str() );
-  QCoreApplication::setOrganizationDomain ( url.c_str() );
-  QCoreApplication::setApplicationName ( program.c_str() );
-
   // Set the icon.
   CadKit::Helios::Tools::Image::icon ( icon, this );
+
+  // Make the work space.
+  _workSpace = new QWorkspace ( this );
+  this->setCentralWidget ( _workSpace );
 
   // Enable toolbar docking.
   this->setEnabled ( true );
@@ -107,6 +122,9 @@ MainWindow::MainWindow ( const std::string &vendor,
   // Make the menu.
   this->_buildMenu();
   this->_buildToolBar();
+
+  // Build the text window.
+  this->_buildTextWindow();
 
   // Make sure we can size the status bar.
   this->statusBar()->setSizeGripEnabled ( true );
@@ -168,6 +186,11 @@ void MainWindow::_destroy()
   _program.clear();
   _icon.clear();
   _splash = 0x0;
+  _workSpace = 0x0;
+  _textWindow.first = 0x0;
+  _dockMenu = 0x0;
+  delete _fileWatcher.first; _fileWatcher.first = 0x0;
+  _fileWatcher.second.clear();
 
   // Delete the mutex last.
   delete _mutex; _mutex = 0x0;
@@ -232,20 +255,34 @@ void MainWindow::_buildMenu()
 
   // Handle repeated calls.
   this->menuBar()->clear();
+  _dockMenu = 0x0;
 
-  // Add menus.
-  QMenu *menu = this->menuBar()->addMenu ( tr ( "&File" ) );
-
+  // Add file menu.
   {
-    CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::OpenDocument> ( this ) );
-    _actions.insert ( action );
-    menu->addAction ( action.get() );
+    QMenu *menu = this->menuBar()->addMenu ( tr ( "&File" ) );
+    {
+      CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::OpenDocument> ( this ) );
+      _actions.insert ( action );
+      menu->addAction ( action.get() );
+    }
+    menu->addSeparator();
+    {
+      CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::ExitApplication> ( this ) );
+      _actions.insert ( action );
+      menu->addAction ( action.get() );
+    }
   }
-  menu->addSeparator();
+
+  // Add edit menu.
   {
-    CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::ExitApplication> ( this ) );
-    _actions.insert ( action );
-    menu->addAction ( action.get() );
+  }
+
+  // Add view menu.
+  {
+    QMenu *menu = this->menuBar()->addMenu ( tr ( "&View" ) );
+    {
+      _dockMenu = menu->addMenu ( "Docking Windows" );
+    }
   }
 }
 
@@ -275,6 +312,49 @@ void MainWindow::_buildToolBar()
     CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::OpenDocument> ( this ) );
     _actions.insert ( action );
     toolBar->addAction ( action.get() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the settings.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_buildTextWindow()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "3978847086" );
+
+  // Handle repeated calls.
+  if ( 0x0 != _textWindow.first )
+    return;
+
+  // Build the docking window.
+  QDockWidget *dock = new QDockWidget ( tr ( "Text Output" ), this );
+  dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
+
+  // Make the text window.
+  _textWindow.first = new QTextEdit ( dock );
+  _textWindow.second = 0;
+  _textWindow.first->setReadOnly ( true );
+
+  // Dock it.
+  dock->setWidget ( _textWindow.first );
+  this->addDockWidget ( Qt::BottomDockWidgetArea, dock );
+
+  // Add toggle to the menu.
+  if ( 0x0 != _dockMenu )
+    _dockMenu->addAction ( dock->toggleViewAction() );
+
+  // Watch this file.
+  const bool exists ( Usul::Predicates::FileExists::test ( _fileWatcher.second ) );
+  if ( 0x0 != _fileWatcher.first && true == exists )
+  {
+    _fileWatcher.first->addPath ( _fileWatcher.second.c_str() );
+    QObject::connect ( _fileWatcher.first, SIGNAL ( fileChanged  ( QString ) ), 
+                       this, SLOT ( _updateTextWindow ( QString ) ) );
   }
 }
 
@@ -357,6 +437,8 @@ Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
   {
   case Usul::Interfaces::ILoadFileDialog::IID:
     return static_cast<Usul::Interfaces::ILoadFileDialog*>(this);
+  case Usul::Interfaces::IThreadPoolAddTask::IID:
+    return static_cast<Usul::Interfaces::IThreadPoolAddTask*>(this);
   case Usul::Interfaces::IUnknown::IID:
     return static_cast<Usul::Interfaces::IUnknown*>(static_cast<Usul::Interfaces::ILoadFileDialog*>(this));
   default:
@@ -547,9 +629,22 @@ std::string MainWindow::defautPluginFile() const
   USUL_TRACE_SCOPE;
   //Guard guard ( this->mutex() );
 
-  std::string file ( this->directory() + "/../config/" + this->programFile() );
+  std::string file ( this->directory() + "/../configs/" + this->programName() + "Plugins.xml" );
   std::replace ( file.begin(), file.end(), '\\', '/' );
   return file;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Print the loaded plugin names.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::printPlugins() const
+{
+  USUL_TRACE_SCOPE;
+  Usul::Components::Manager::instance().print ( std::cout );
 }
 
 
@@ -588,8 +683,6 @@ void MainWindow::loadPlugins ( const std::string &config )
     return;
   }
 
-  std::cout << "Processing plugin config file: " << config << std::endl;
-
   Usul::Interfaces::IUnknown::QueryPtr unknown ( this );
   Usul::Interfaces::IUnknown::QueryPtr splash ( _splash );
 
@@ -597,8 +690,6 @@ void MainWindow::loadPlugins ( const std::string &config )
   loader.filename ( config );
 	loader.parse();
   loader.load ( ( splash.valid() ) ? splash : unknown );
-
-  std::cout << "Done processing plugin config file: " << config << std::endl;
 }
 
 
@@ -659,4 +750,106 @@ void MainWindow::hideSplashScreen()
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "3041826876" );
   if ( true == _splash.valid() )
     _splash->hide();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the text window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::updateTextWindow()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
+  // Don't allow this to throw because it may create an infinite loop.
+  try
+  {
+    this->_updateTextWindow ( _fileWatcher.second.c_str() );
+  }
+  catch ( ... )
+  {
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the given file changes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_updateTextWindow ( QString text )
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
+  if ( 0x0 == _textWindow.first )
+    return;
+
+  const std::string file ( Usul::Strings::convert ( text ) );
+
+  // Don't allow this to throw because it may create an infinite loop.
+  try
+  {
+    // Get the file length first.
+    const unsigned int length ( Usul::File::Stats<unsigned int>::size ( file ) );
+    if ( 0 == length )
+      return;
+
+    // Open the file for reading.
+    std::ifstream in ( file.c_str(), std::ios::binary | std::ios::in );
+    if ( false == in.is_open() )
+      return;
+
+    // Move to the correct position in the file.
+    in.seekg ( _textWindow.second );
+
+    // Grab file contents starting from this position.
+    std::vector<char> contents;
+    contents.resize ( ( length - _textWindow.second ) + 1 );
+    in.read ( &contents[0], contents.size() - 1 );
+
+    // Important!
+    contents.at ( contents.size() - 1 ) = '\0';
+    _textWindow.second = length;
+
+    // Append the text.
+    _textWindow.first->append ( &contents[0] );
+  }
+
+  // Catch all exceptions.
+  catch ( ... )
+  {
+    try
+    {
+      std::ostringstream out;
+      out << Usul::Strings::convert ( _textWindow.first->toPlainText() ) 
+          << "\nError 1536020510: failed to access output file '" << file;
+      _textWindow.first->setPlainText ( out.str().c_str() );
+    }
+    catch ( ... )
+    {
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a task.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MainWindow::TaskHandle MainWindow::addTask ( Usul::Threads::Callback *started, 
+                                             Usul::Threads::Callback *finished, 
+                                             Usul::Threads::Callback *cancelled, 
+                                             Usul::Threads::Callback *error, 
+                                             Usul::Threads::Callback *destroyed )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return ( ( true == _threadPool.valid() ) ? _threadPool->addTask ( started, finished, cancelled, error, destroyed ) : 0 );
 }

@@ -26,7 +26,6 @@
 using namespace CadKit::Helios::Core;
 
 USUL_IMPLEMENT_TYPE_ID ( SplashScreen );
-
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( SplashScreen, SplashScreen::BaseClass );
 
 

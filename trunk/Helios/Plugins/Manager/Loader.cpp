@@ -94,19 +94,11 @@ void Loader::parse()
 
   XmlTree::Document::RefPtr doc = new XmlTree::Document ( );
 	doc->load ( _filename );
-	
-	typedef XmlTree::Document::Children Children;
-	
-	Children& children ( doc->children() );
-	
-	for( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
-	{
-		XmlTree::Node::RefPtr node ( (*iter) );
-		if( "plugins" == node->name() )
-		{
-			this->_addPlugins( *node );
-		}
-	}
+
+  if ( "plugins" == doc->name() )
+  {
+    this->_addPlugins ( *doc );
+  }
 }
 
 
@@ -124,10 +116,10 @@ void Loader::_addPlugins ( XmlTree::Node &parent )
   typedef XmlTree::Document::Children Children;
 	Children& children ( parent.children() );
 	
-	for( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+	for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
 	{
 		XmlTree::Node::RefPtr node ( (*iter) );
-		if( "plugin" == node->name() )
+		if ( "plugin" == node->name() )
 		{
 			this->_addPlugin ( *node );
 		}
@@ -178,10 +170,15 @@ void Loader::addPlugin ( const std::string &file )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
- 
-  if ( false == file.empty() )
+
+  std::string name ( file );
+#if _DEBUG
+  name += 'd';
+#endif
+
+  if ( false == name.empty() )
   {
-  	_names.insert ( Names::value_type ( file, true ) );
+  	_names.insert ( Names::value_type ( name, true ) );
   }
 }
 
@@ -200,14 +197,14 @@ void Loader::load ( Usul::Interfaces::IUnknown *caller )
   // Query for interfaces.
 	Usul::Interfaces::IStatusBar::UpdateStatusBar status ( caller );
 	Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
-	
+
 	// Set the size for the progress bar.
 	if ( progress.valid() )
 		progress->setTotalProgressBar ( _names.size() );
 
 	// Number we are on.
 	unsigned int number ( 0 );
-	
+
 	// Load the plugins.
 	for ( Names::iterator iter = _names.begin(); iter != _names.end(); ++iter )
 	{
@@ -216,14 +213,14 @@ void Loader::load ( Usul::Interfaces::IUnknown *caller )
 		{
 			// The name.
 			std::string name ( iter->first );
-			
+
 			// Let the user know what plugin we are loading.
 			status ( "Loading " + name + "...", true );
-		
+
 			// Load the plugin.
 			Usul::Components::Manager::instance().load ( Usul::Interfaces::IPlugin::IID, name );
 		}
-		
+
 		// Update progress.
 		if ( progress.valid() )
 			progress->updateProgressBar ( ++number );

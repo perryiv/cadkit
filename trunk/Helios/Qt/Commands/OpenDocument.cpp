@@ -20,7 +20,9 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/Strings/Qt.h"
+#include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Trace/Trace.h"
 
@@ -180,7 +182,144 @@ void OpenDocument::_open ( const std::string &file )
   USUL_TRACE_SCOPE;
   // Do not lock the mutex. This function is re-entrant.
 
-  // Launch a thread here to do the work.
-  // Probably want each command to contain an action.
-  // Make different commands for menubar and toolbar, but have them point to the same functions.
+  Usul::Interfaces::IThreadPoolAddTask::QueryPtr pool ( this->caller() );
+  if ( true == pool.valid() )
+  {
+    Usul::Threads::Callback::RefPtr started   ( Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &OpenDocument::_threadStarted   ) ) );
+    Usul::Threads::Callback::RefPtr finished  ( Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &OpenDocument::_threadFinished  ) ) );
+    Usul::Threads::Callback::RefPtr error     ( Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &OpenDocument::_threadError     ) ) );
+    Usul::Threads::Callback::RefPtr cancelled ( Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &OpenDocument::_threadCancelled ) ) );
+    OpenDocument::TaskHandle task ( pool->addTask ( started.get(), finished.get(), cancelled.get(), error.get(), 0x0 ) );
+
+    //HERE
+    // Need to add user-data to the task. 
+    // The user-data is an instance of a "task" class that opens the files.
+    // Make a new task for each file.
+    // When the pool's task finishes it deletes its user-data... the task class.
+
+    // Save the file with the task.
+    this->_addTaskedFile ( task, file );
+
+    // Reference this instance for each task.
+    this->ref();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the thread starts.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OpenDocument::_threadStarted ( Usul::Threads::Thread *thread )
+{
+  USUL_TRACE_SCOPE;
+  const std::string file ( this->_getTaskedFile ( thread ) );
+
+  std::cout << Usul::Strings::format ( "Opening file: ", file ) << std::endl;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the thread finished.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OpenDocument::_threadFinished ( Usul::Threads::Thread *thread )
+{
+  USUL_TRACE_SCOPE;
+  this->_removeTaskedFile ( thread );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called if the thread fails.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OpenDocument::_threadError ( Usul::Threads::Thread *thread )
+{
+  USUL_TRACE_SCOPE;
+  this->_removeTaskedFile ( thread );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called if the thread fails.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OpenDocument::_threadCancelled ( Usul::Threads::Thread *thread )
+{
+  USUL_TRACE_SCOPE;
+  this->_removeTaskedFile ( thread );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the file to the map.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OpenDocument::_addTaskedFile ( TaskHandle task, const std::string &file )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _taskedFiles[task] = file;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the file from the map.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OpenDocument::_removeTaskedFile ( Usul::Threads::Thread *thread )
+{
+  USUL_TRACE_SCOPE;
+
+  bool found ( false );
+  if ( 0x0 != thread && true == thread->isTask() )
+  {
+    Guard guard ( this->mutex() );
+    TaskedFiles::iterator i ( _taskedFiles.find ( thread->task() ) );
+    if ( _taskedFiles.end() != i )
+    {
+      _taskedFiles.erase ( i );
+      found = true;
+    }
+  }
+
+  // Have to do this after the guard goes out of scope.
+  if ( true == found )
+  {
+    this->unref();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the file from the map.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string OpenDocument::_getTaskedFile ( Usul::Threads::Thread *thread )
+{
+  USUL_TRACE_SCOPE;
+
+  if ( 0x0 != thread && true == thread->isTask() )
+  {
+    Guard guard ( this->mutex() );
+    TaskedFiles::const_iterator i ( _taskedFiles.find ( thread->task() ) );
+    return ( ( _taskedFiles.end() == i ) ? std::string ( "" ) : i->second );
+  }
+
+  return std::string ( "" );
 }

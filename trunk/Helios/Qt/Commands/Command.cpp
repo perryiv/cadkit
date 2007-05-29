@@ -15,7 +15,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Helios/Qt/Commands/Command.h"
-#include "Helios/Qt/Tools/Icon.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"

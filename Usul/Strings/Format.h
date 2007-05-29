@@ -73,6 +73,29 @@ inline std::string format ( const T1 &t1, const T2 &t2, const T3 &t3, const T4 &
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Format date string. Pass __DATE__ macro.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline std::string formatDate ( const std::string &d )
+{
+  // If the string is not this size then the logic below does not work.
+  if ( 11 != d.size() )
+    return d;
+
+  const std::string year  ( d.begin() + 7, d.end() );
+  const std::string month ( d.begin() + 0, d.begin() + 3 );
+  const std::string day   ( d.begin() + 4, d.begin() + 6 );
+
+  std::ostringstream out;
+  out << day << '-' << month << '-' << year;
+
+  return out.str();
+}
+
+
 }; // namespace Strings
 }; // namespace Usul
 

@@ -232,8 +232,8 @@ public:
   void                  iconSize ( float s ) { _iconSize = s; }
   
   // Set/get user settings
-  const std::string    userName() const { return _userName; }
-  void                 userName( std::string s ) { _userName = s; }
+  const std::string&    userName() const { return _userName; }
+  void                  userName( const std::string& s ) { _userName = s; }
   
   // Set/get avatar settings
   int         avatarWaitFrames() const { return _avatarWaitFrames; }

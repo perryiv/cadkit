@@ -48,6 +48,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Threads/ThreadId.h"
+#include "Usul/Math/Absolute.h"
 
 #include "vrj/Kernel/Kernel.h"
 #include "vrj/Display/Projection.h"
@@ -841,8 +842,8 @@ void Application::_setNearAndFarClippingPlanes()
   VRV::Spheref bs = this->_validBoundingSphere ( ValidNode ( _root ) );
 
   // Calculate the clipping plane distances.
-  float zNear ( Usul::Math::abs ( _prefs.nearClippingDistance() ) );
-  float zFar  ( Usul::Math::abs ( 4 * bs.radius() ) );
+  float zNear ( Usul::Math::absolute ( _prefs.nearClippingDistance() ) );
+  float zFar  ( Usul::Math::absolute ( 4 * bs.radius() ) );
 
   // Make sure the far-distance is grester than the near. 
   // This can happen if the radius is zero.

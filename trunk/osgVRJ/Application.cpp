@@ -386,6 +386,8 @@ void Application::preFrame()
     _sharedFrameTime->data = _frameTime;
   }
 
+  // TODO: Write FrameStamp data.
+
   // Mark the start of the frame.
   _frameStart = _timer.tick();
 }

@@ -47,7 +47,6 @@
 #include "osg/Matrix"
 #include "osg/LineSegment"
 #include "osgUtil/IntersectVisitor"
-#include "osgDB/ReadFile"
 #include "osgFX/Scribe"
 
 #include "OsgTools/Group.h"
@@ -1384,7 +1383,8 @@ void Application::_gridColor ( MenuKit::Message m, MenuKit::Item *item )
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
     const osg::Vec4& c = this->_getColor( item->text() );
-	  for(unsigned int i=0; i<_gridFunctors.size(); ++i){
+	for(unsigned int i=0; i<_gridFunctors.size(); ++i)
+	{
 		  _gridFunctors[i].color ( c[0], c[1], c[2], c[3] );
 	}
     this->_rebuildGrid();
@@ -1871,60 +1871,3 @@ void Application::_dropToFloor ( MenuKit::Message m, MenuKit::Item *item )
     this->postMultiply ( M );
   }
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Turn on or off all animations
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_toggleAnimations ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 3042741394u, isAppThread(), CV::NOT_APP_THREAD );
-
-  bool onOff = true;
-
-  // Process the message.
-  switch ( m )
-  {
-    case MenuKit::MESSAGE_UPDATE:
-      item->checked ( _animations );
-      break;
-    
-    case MenuKit::MESSAGE_SELECTED:
-      if ( _animations ){
-        _animations = false;
-      }
-      else{
-        _animations = true;
-      }
-      osg::Node *m = dynamic_cast<osg::Node*>( _models.get() );
-      if (m){
-        _animationsOnOff ( _animations, m );
-      }
-      break;
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Step Animation
-//
-///////////////////////////////////////////////////////////////////////////////
-
-
-void Application::_animStepFwd ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 3042741394u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Process the message.
-  if( m==MenuKit::MESSAGE_SELECTED )
-  {
-    osg::Node *m = dynamic_cast<osg::Node*>( _models.get() );
-    if (m){
-      this->_animStep( 5,  m );
-    }
-  }
-}
-

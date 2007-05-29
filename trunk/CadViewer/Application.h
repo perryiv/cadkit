@@ -56,20 +56,9 @@
 #include <vector>
 #include <list>
 #include <fstream>
-#include <sstream>
 
 
 namespace CV {
-
-
-// Used to match nodes scene for replacement
-class Matcher
-{
-  public:
-    osg::Node *node;
-    osg::Group *parent;
-    int modelNum;
-};
 
 	
 // The CadViewer application
@@ -349,12 +338,10 @@ protected:
   void                          _postFrame();
   
   // return a MatrixTransform belonging to a Group
-  osg::MatrixTransform* Application::_getGroupMatrixTransform( osg::Group *grp );
+  osg::MatrixTransform*         _getGroupMatrixTransform( osg::Group *grp );
   
   // Read the model and position it using the matrix.
   void                          _readModel ( const std::string &filename, const Matrix44f &matrix );
-  void                          _streamModel ( std::stringstream &modelstream, const std::string &name);
-  void                          _replaceNode( osg::ref_ptr<osg::Node> node, const std::string &name );
 
   // Read the user's preferences.
   void                          _readUserPreferences();
@@ -404,32 +391,12 @@ protected:
   // Write the scene to file.
   void                          _writeScene ( const std::string &filename, const osg::Node *node ) const;
   
-  // Compare incoming & existing node names
-  bool                          _matchNodeNames( const std::string &new_name, const std::string &old_name );
-  
-  // Find similarly named model nodes
-  bool                          _recursiveMatchNodeName ( const std::string &name , osg::Node *model, Matcher *match );
-
-  // Clear out all models in scene
-  void                          _deleteScene();
-  
   // Create & clear out temporary directory
   void                          _initTmpDir();
 
-  // Patch node file with diff
-  bool                          _patchNodeWithDiff ( const std::string &nodeName, std::stringstream &nodeDiff );
-
-  // Turn animations on/off
-  void							_animationsOnOff ( bool onOff, osg::Node *model );
-  
-  // Step Animation by num frames
-  void							_animStep ( int num, osg::Node *model );
-  
   // Perform Auto Placement of model
   void                          _doAutoPlacement( const bool replace_matrix );
-  
-  void _dumpStreamToFile();
-  
+
   // Button callbacks.
   void                          _defaultCallback  ( MenuKit::Message m, MenuKit::Item *item );
   void                          _hideSelected     ( MenuKit::Message m, MenuKit::Item *item );
@@ -489,8 +456,6 @@ protected:
   void                          _gotoViewLeft     ( MenuKit::Message m, MenuKit::Item *item );
   void                          _rotateWorld      ( MenuKit::Message m, MenuKit::Item *item );
   void                          _dropToFloor      ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _toggleAnimations ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _animStepFwd      ( MenuKit::Message m, MenuKit::Item *item );
 
   // For readability.
   typedef unsigned long                                 ThreadId;
@@ -576,12 +541,7 @@ protected:
   bool              _textures;
   MatTransPtr       _scribeBranch;
   bool              _autoPlacement;
-  bool              _animations;
-  int               _anim_steps;
-  osg::Node         *_animModel;
   std::string       _tmpDirName;
-  double            _nextFrameTime;
-
 };
 
 

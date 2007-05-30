@@ -47,7 +47,6 @@
 #include "osg/Matrix"
 #include "osg/LineSegment"
 #include "osgUtil/IntersectVisitor"
-#include "osgFX/Scribe"
 
 #include "OsgTools/Group.h"
 #include "OsgTools/State/StateSet.h"
@@ -340,15 +339,8 @@ void Application::_hTransWandPosX ( MenuKit::Message m, MenuKit::Item *item )
 
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
-    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
-    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
-    if ( _navigatorH.valid() && id == _navigatorH->id() )
-    {
-      OsgTools::Axes horizTrans;
-      horizTrans.state( OsgTools::Axes::POSITIVE_X |
-                        OsgTools::Axes::NEGATIVE_X );
-      _cursorActiveWithRot->addChild( horizTrans() );
-    }
+    this->_setCursor ( OsgTools::Axes::POSITIVE_X |
+                       OsgTools::Axes::NEGATIVE_X );
   }
 }
 
@@ -376,15 +368,8 @@ void Application::_hTransGlobalPosX ( MenuKit::Message m, MenuKit::Item *item )
 
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
-    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
-    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
-    if ( _navigatorH.valid() && id == _navigatorH->id() )
-    {
-      OsgTools::Axes horizTrans;
-      horizTrans.state( OsgTools::Axes::POSITIVE_X |
-                        OsgTools::Axes::NEGATIVE_X );
-      _cursorActiveNoRot->addChild( horizTrans() );
-    }
+    this->_setCursor ( OsgTools::Axes::POSITIVE_X |
+                       OsgTools::Axes::NEGATIVE_X );
   }
 }
 
@@ -412,15 +397,8 @@ void Application::_hTransWandNegX ( MenuKit::Message m, MenuKit::Item *item )
 
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
-    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
-    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
-    if ( _navigatorH.valid() && id == _navigatorH->id() )
-    {
-      OsgTools::Axes horizTrans;
-      horizTrans.state( OsgTools::Axes::POSITIVE_X |
-                        OsgTools::Axes::NEGATIVE_X );
-      _cursorActiveWithRot->addChild( horizTrans() );
-    }
+    this->_setCursor ( OsgTools::Axes::POSITIVE_X |
+                       OsgTools::Axes::NEGATIVE_X );
   }
 }
 
@@ -448,15 +426,8 @@ void Application::_hTransGlobalNegX ( MenuKit::Message m, MenuKit::Item *item )
 
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
-    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
-    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
-    if ( _navigatorH.valid() && id == _navigatorH->id() )
-    {
-      OsgTools::Axes horizTrans;
-      horizTrans.state( OsgTools::Axes::POSITIVE_X |
-                        OsgTools::Axes::NEGATIVE_X );
-      _cursorActiveNoRot->addChild( horizTrans() );
-    }
+    this->_setCursor ( OsgTools::Axes::POSITIVE_X |
+                       OsgTools::Axes::NEGATIVE_X );
   }
 }
 
@@ -484,15 +455,8 @@ void Application::_vTransWandPosY ( MenuKit::Message m, MenuKit::Item *item )
 
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
-    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
-    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
-    if ( _navigatorV.valid() && id == _navigatorV->id() )
-    {
-      OsgTools::Axes vertTrans;
-      vertTrans.state( OsgTools::Axes::POSITIVE_Y |
+    this->_setCursor ( OsgTools::Axes::POSITIVE_Y |
                        OsgTools::Axes::NEGATIVE_Y );
-      _cursorActiveWithRot->addChild( vertTrans() );
-    }
   }
 }
 
@@ -520,15 +484,8 @@ void Application::_vTransWandPosZ ( MenuKit::Message m, MenuKit::Item *item )
 
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
-    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
-    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
-    if ( _navigatorV.valid() && id == _navigatorV->id() )
-    {
-      OsgTools::Axes vertTrans;
-      vertTrans.state( OsgTools::Axes::POSITIVE_Z |
+    this->_setCursor ( OsgTools::Axes::POSITIVE_Z |
                        OsgTools::Axes::NEGATIVE_Z );
-      _cursorActiveWithRot->addChild( vertTrans() );
-    }
   }
 }
 
@@ -556,15 +513,8 @@ void Application::_vTransGlobalPosZ ( MenuKit::Message m, MenuKit::Item *item )
 
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
-    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
-    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
-    if ( _navigatorV.valid() && id == _navigatorV->id() )
-    {
-      OsgTools::Axes vertTrans;
-      vertTrans.state( OsgTools::Axes::POSITIVE_Z |
+    this->_setCursor ( OsgTools::Axes::POSITIVE_Z |
                        OsgTools::Axes::NEGATIVE_Z );
-      _cursorActiveNoRot->addChild( vertTrans() );
-    }
   }
 }
 
@@ -592,15 +542,8 @@ void Application::_vTransWandNegZ ( MenuKit::Message m, MenuKit::Item *item )
 
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
-    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
-    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
-    if ( _navigatorV.valid() && id == _navigatorV->id() )
-    {
-      OsgTools::Axes vertTrans;
-      vertTrans.state( OsgTools::Axes::POSITIVE_Z |
+    this->_setCursor ( OsgTools::Axes::POSITIVE_Z |
                        OsgTools::Axes::NEGATIVE_Z );
-      _cursorActiveWithRot->addChild( vertTrans() );
-    }
   }
 }
 
@@ -628,15 +571,8 @@ void Application::_vTransGlobalNegZ ( MenuKit::Message m, MenuKit::Item *item )
 
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
-    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
-    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
-    if ( _navigatorV.valid() && id == _navigatorV->id() )
-    {
-      OsgTools::Axes vertTrans;
-      vertTrans.state( OsgTools::Axes::POSITIVE_Z |
+    this->_setCursor ( OsgTools::Axes::POSITIVE_Z |
                        OsgTools::Axes::NEGATIVE_Z );
-      _cursorActiveNoRot->addChild( vertTrans() );
-    }
   }
 }
 
@@ -664,14 +600,7 @@ void Application::_hRotWandPosY ( MenuKit::Message m, MenuKit::Item *item )
 
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
-    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
-    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
-    if ( _navigatorH.valid() && id == _navigatorH->id() )
-    {
-      OsgTools::Axes horizRot;
-      horizRot.state( OsgTools::Axes::ROTATE_Y );
-      _cursorActiveWithRot->addChild( horizRot() );
-    }
+    this->_setCursor ( OsgTools::Axes::ROTATE_Y );
   }
 }
 
@@ -699,14 +628,7 @@ void Application::_hRotGlobalPosY ( MenuKit::Message m, MenuKit::Item *item )
 
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
-    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
-    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
-    if ( _navigatorH.valid() && id == _navigatorH->id() )
-    {
-      OsgTools::Axes horizRot;
-      horizRot.state( OsgTools::Axes::ROTATE_Y );
-      _cursorActiveNoRot->addChild( horizRot() );
-    }
+    this->_setCursor ( OsgTools::Axes::ROTATE_Y );
   }
 }
 
@@ -734,15 +656,8 @@ void Application::_vTransGlobalPosY ( MenuKit::Message m, MenuKit::Item *item )
 
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
-    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
-    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
-    if ( _navigatorV.valid() && id == _navigatorV->id() )
-    {
-      OsgTools::Axes vertTrans;
-      vertTrans.state( OsgTools::Axes::POSITIVE_Y |
-                       OsgTools::Axes::NEGATIVE_Y );
-      _cursorActiveNoRot->addChild( vertTrans() );
-    }
+    this->_setCursor ( OsgTools::Axes::POSITIVE_Y |
+                       OsgTools::Axes::NEGATIVE_Y  );
   }
 }
 
@@ -910,34 +825,6 @@ void Application::_polysPoints ( MenuKit::Message m, MenuKit::Item *item )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Draw polygons with scribe effect
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_polysScribe ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1084120995u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Process the message.
-  switch ( m )
-  {
-    case MenuKit::MESSAGE_UPDATE:
-      item->checked ( _navBranch->containsNode ( _scribeBranch.get() ) );
-      break;
-
-    case MenuKit::MESSAGE_SELECTED:
-      if ( item->checked() && _navBranch->containsNode ( _scribeBranch.get() ) )
-        OsgTools::Group::removeAllOccurances ( _scribeBranch.get(), _navBranch.get() );
-      else
-        _navBranch->addChild ( _scribeBranch.get() );
-      break;
-  }
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Toggle textures TODO: fix this callback
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1076,14 +963,12 @@ void Application::_viewWorld ( MenuKit::Message m, MenuKit::Item *item )
 
     // Perform the "view all" on the model's branch.
     this->viewAll ( _models.get(), _prefs->viewAllScaleZ() );
-    this->viewAll ( _scribeBranch.get(), _prefs->viewAllScaleZ() );
 
     // Move the navigation branch.
     _navBranch->setMatrix ( _models->getMatrix() );
 
     // Restore the model's matrix.
     _models->setMatrix ( original );
-    _scribeBranch->setMatrix ( original );
 
     // make sure the scene is visible
     this->_setNearAndFarClippingPlanes();
@@ -1149,20 +1034,9 @@ void Application::_vScaleWorld ( MenuKit::Message m, MenuKit::Item *item )
   // Put the models-branch in a vector.
   Tool::Transforms vt;
   vt.push_back ( _models.get() );
-  vt.push_back ( _scribeBranch.get() );
 
   // Call the convenience function.
   CV::ScaleCB<Analog,Tool>::execute ( id, m, item, _sceneTool, vt, speed, scale, this );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
-    OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
-    if ( _sceneTool.valid() && id == _sceneTool->id() )
-    {
-      _cursorActiveNoRot->addChild( _cursor_zoom.get() );
-    }
-  }
 }
 
 
@@ -1322,7 +1196,6 @@ void Application::_wMoveTopLocal ( MenuKit::Message m, MenuKit::Item *item )
       // Put the models-branch in a vector.
       MoveTool::Transforms vt;
       vt.push_back ( _models.get() );
-      vt.push_back ( _scribeBranch.get() );
       tool->transforms ( vt );
 
       _sceneTool = tool;
@@ -1607,15 +1480,8 @@ void Application::_gotoViewFront ( MenuKit::Message m, MenuKit::Item *item )
   {
   case MenuKit::MESSAGE_SELECTED:
     const osg::BoundingSphere& bs = _models->getBound();
-    if ( !_autoPlacement )
-    {
-      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius())-bs.center() ) );
-      _navBranch->setMatrix( trans );
-    }
-    else
-    {
-      _doAutoPlacement( true );
-    }
+    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius())-bs.center() ) );
+    _navBranch->setMatrix( trans );
   }
 }
 
@@ -1639,17 +1505,9 @@ void Application::_gotoViewBack ( MenuKit::Message m, MenuKit::Item *item )
   case MenuKit::MESSAGE_SELECTED:
     const osg::BoundingSphere& bs = _models->getBound();
     osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI , osg::Y_AXIS ) );
-    if ( !_autoPlacement )
-    {
-      osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
-      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-      _navBranch->setMatrix( zero*rot*trans );
-    }
-    else
-    {
-      _navBranch->setMatrix( rot );
-      _doAutoPlacement( false );
-    }
+    osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
+    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
+    _navBranch->setMatrix( zero*rot*trans );
   }
 }
 
@@ -1673,17 +1531,9 @@ void Application::_gotoViewTop ( MenuKit::Message m, MenuKit::Item *item )
   case MenuKit::MESSAGE_SELECTED:
     const osg::BoundingSphere& bs = _models->getBound();
     osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI_2 , osg::X_AXIS ) );
-    if ( !_autoPlacement )
-    {
-      osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
-      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-      _navBranch->setMatrix( zero*rot*trans );
-    }
-    else
-    {
-      _navBranch->setMatrix( rot );
-      _doAutoPlacement( false );
-    }
+    osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
+    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
+    _navBranch->setMatrix( zero*rot*trans );
   }
 }
 
@@ -1707,17 +1557,9 @@ void Application::_gotoViewBottom ( MenuKit::Message m, MenuKit::Item *item )
   case MenuKit::MESSAGE_SELECTED:
     const osg::BoundingSphere& bs = _models->getBound();
     osg::Matrix rot  ( osg::Matrix::rotate   ( -osg::PI_2 , osg::X_AXIS ) );
-    if ( !_autoPlacement )
-    {
-      osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
-      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-      _navBranch->setMatrix( zero*rot*trans );
-    }
-    else
-    {
-      _navBranch->setMatrix( rot );
-      _doAutoPlacement( false );
-    }
+    osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
+    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
+    _navBranch->setMatrix( zero*rot*trans );
   }
 }
 
@@ -1741,17 +1583,9 @@ void Application::_gotoViewRight ( MenuKit::Message m, MenuKit::Item *item )
   case MenuKit::MESSAGE_SELECTED:
     const osg::BoundingSphere& bs = _models->getBound();
     osg::Matrix rot  ( osg::Matrix::rotate   ( -osg::PI_2 , osg::Y_AXIS ) );
-    if ( !_autoPlacement )
-    {
-      osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
-      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-      _navBranch->setMatrix( zero*rot*trans );
-    }
-    else
-    {
-      _navBranch->setMatrix( rot );
-      _doAutoPlacement( false );
-    }
+    osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
+    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
+    _navBranch->setMatrix( zero*rot*trans );
   }
 }
 
@@ -1775,17 +1609,9 @@ void Application::_gotoViewLeft ( MenuKit::Message m, MenuKit::Item *item )
   case MenuKit::MESSAGE_SELECTED:
     const osg::BoundingSphere& bs = _models->getBound();
     osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI_2 , osg::Y_AXIS ) );
-    if ( !_autoPlacement )
-    {    
-      osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
-      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-      _navBranch->setMatrix( zero*rot*trans );
-    }
-    else
-    {
-      _navBranch->setMatrix( rot );
-      _doAutoPlacement( false );
-    }
+    osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
+    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
+    _navBranch->setMatrix( zero*rot*trans );
   }
 }
 
@@ -1824,7 +1650,6 @@ void Application::_rotateWorld ( MenuKit::Message m, MenuKit::Item *item )
     const osg::BoundingSphere& bs = _models->getBound();
     osg::Matrix rot ( osg::Matrix::rotate ( radians, vec ) );
     _models->preMult ( rot );
-    _scribeBranch->preMult ( rot );
   }
 }
 

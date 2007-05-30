@@ -17,13 +17,13 @@
       <head>viz0</head>
     </machine>
     <grid>
-	  <add_grid>1</add_grid>
-      <num_blocks>40 40</num_blocks>
-      <scale>10 10</scale>
-      <color>1 1 1 1</color>
-	  <rotation_angle_rad>0.0</rotation_angle_rad>
-	  <rotation_vector>1.0 0.0 0.0</rotation_vector>
-	  <offset>true</offset>
+	    <add_grid>1</add_grid>
+        <num_blocks>40 40</num_blocks>
+        <scale>10 10</scale>
+        <color>1 1 1 1</color>
+	    <rotation_angle_rad>0.0</rotation_angle_rad>
+	    <rotation_vector>1.0 0.0 0.0</rotation_vector>
+	    <offset>true</offset>
     </grid>
     <clipping_plane>
       <near>0.1</near>
@@ -114,9 +114,5 @@
       </comment>
       <scale>      0.75 </scale>
     </speed>
-	<sinterpoint>
-	  <server>my_server</server>
-	  <writer>my_writer</writer>
-	</sinterpoint>
   </preferences>
 </cv>

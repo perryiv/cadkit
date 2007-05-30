@@ -191,53 +191,7 @@ public:
   // Set/get the selection color.
   const Color &         selectionColor() const { return _selectColor; }
   void                  selectionColor ( const Color &c ) { _selectColor = c; }
-  void                  selectionColor ( float r, float g, float b, float a ) { _selectColor.set ( r, g, b, a ); }
-
-  // Set/get the sinterpoint specific information
-  void                  sinterPointServer ( std::string s ) { _sinterServer = s; }
-  const std::string     sinterPointServer() { return _sinterServer; }
-  void                  sinterPointWriter ( std::string s ) { _sinterWriter = s; }
-  const std::string     sinterPointWriter() { return _sinterWriter; }
-  void                  sinterPointTmpFile ( std::string s ) { _sinterTmpFile = s; }
-  const std::string     sinterPointTmpFile() { return _sinterTmpFile; }
-  
-  // Set/get scribe drawing related settings
-  const Color &         scribeColor () const { return _scribeColor; }
-  void                  scribeColor (const Color &c ) { _scribeColor = c; }
-  float                 scribeWidth() const { return _scribeWidth; }
-  void                  scribeWidth ( float w ) { _scribeWidth = w; }  
-  
-  // Set/get auto-placement settings
-  bool                  autoPlacement() const { return _autoPlacement; }
-  void                  autoPlacement ( bool state ) { _autoPlacement = state; }
-  const Vec3f &         autoPlaceCenter () { return _autoPlaceCenter; }
-  void                  autoPlaceCenter ( Vec3f v ) { _autoPlaceCenter = v; }
-  float                 autoPlaceRadius () { return _autoPlaceRadius; }
-  void                  autoPlaceRadius ( float r ) { _autoPlaceRadius = r; }
-  float                 autoRotationAngle () { return _autoRotationAngle; }
-  void                  autoRotationAngle ( float r ) { _autoRotationAngle = r; }
-  const Vec3f &         autoRotationVector () { return _autoRotationVector; }
-  void                  autoRotationVector ( Vec3f v ) { _autoRotationVector = v; }
-  
-  // Set/get INVR navigation settings
-  bool                  invertRotation() const { return _invertRotation; }
-  void                  invertRotation ( bool state ) { _invertRotation = state; }
-  bool                  newRotation() const { return _newRotation; }
-  void                  newRotation ( bool state ) { _newRotation = state; }
-  float                 acceleration() const { return _acceleration; }
-  void                  acceleration ( float a ) { _acceleration = a; }
-  const Vec4f &         iconColor() const         { return _iconColor; }
-  void                  iconColor(const Vec4f& c) { _iconColor = c; }
-  float                 iconSize() const { return _iconSize; }
-  void                  iconSize ( float s ) { _iconSize = s; }
-  
-  // Set/get user settings
-  const std::string&    userName() const { return _userName; }
-  void                  userName( const std::string& s ) { _userName = s; }
-  
-  // Set/get avatar settings
-  int         avatarWaitFrames() const { return _avatarWaitFrames; }
-  void        avatarWaitFrames( int w ) {  _avatarWaitFrames = w; }
+  void                  selectionColor ( float r, float g, float b, float a ) { _selectColor.set ( r, g, b, a ); }  
   
 protected:
 
@@ -279,23 +233,6 @@ private:
   float _rotSpeed;
   float _scaleSpeed;
   Color _selectColor;
-  std::string _sinterServer;
-  std::string _sinterWriter;
-  std::string _sinterTmpFile;
-  Vec4f _scribeColor;
-  float _scribeWidth;
-  bool _autoPlacement;
-  Vec3f _autoPlaceCenter;
-  float _autoPlaceRadius;
-  bool _invertRotation;
-  bool _newRotation;
-  float _acceleration;
-  Vec4f _iconColor;
-  float _iconSize;
-  float _autoRotationAngle;
-  Vec3f _autoRotationVector;
-  std::string _userName;
-  int _avatarWaitFrames;
 };
 
 

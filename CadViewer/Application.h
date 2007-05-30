@@ -294,7 +294,6 @@ protected:
   bool                          _handleNavigationEvent( const unsigned long event_request = 0 );
   bool                          _handleToolEvent();
   bool                          _handleCancelEvent();
-  void                          _removeCursorChildren();
 
   // Called by the kernel to initialize this instance.
   virtual void                  init();
@@ -337,9 +336,6 @@ protected:
   virtual void                  postFrame();
   void                          _postFrame();
   
-  // return a MatrixTransform belonging to a Group
-  osg::MatrixTransform*         _getGroupMatrixTransform( osg::Group *grp );
-  
   // Read the model and position it using the matrix.
   void                          _readModel ( const std::string &filename, const Matrix44f &matrix );
 
@@ -357,8 +353,8 @@ protected:
   void                          _selected ( CV::Functors::Tool::Transforms &vt );
 
   // Set the cursor and its matrix functor.
-  //void                          _setCursor ( unsigned int );
-  //void                          _setCursorMatrixFunctor ( CV::Functors::MatrixFunctor * );
+  void                          _setCursor ( unsigned int );
+  void                          _setCursorMatrixFunctor ( CV::Functors::MatrixFunctor * );
 
   // Set the current "camera" position as "home".
   void                          _setHome();
@@ -387,9 +383,6 @@ protected:
 
   // Write the scene to file.
   void                          _writeScene ( const std::string &filename, const osg::Node *node ) const;
-
-  // Perform Auto Placement of model
-  void                          _doAutoPlacement( const bool replace_matrix );
 
   // Button callbacks.
   void                          _defaultCallback  ( MenuKit::Message m, MenuKit::Item *item );
@@ -425,7 +418,6 @@ protected:
   void                          _polysFlat        ( MenuKit::Message m, MenuKit::Item *item );
   void                          _polysWireframe   ( MenuKit::Message m, MenuKit::Item *item );
   void                          _polysPoints      ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _polysScribe      ( MenuKit::Message m, MenuKit::Item *item );
   void                          _polysTexture     ( MenuKit::Message m, MenuKit::Item *item );
   void                          _setAnalogTrim    ( MenuKit::Message m, MenuKit::Item *item );
   void                          _viewHome         ( MenuKit::Message m, MenuKit::Item *item );
@@ -484,19 +476,6 @@ protected:
   MatTransPtr       _models;
   MatTransPtr       _gridBranch;
   MatTransPtr       _cursor;
-  MatTransPtr       _cursorActiveWithRot;
-  MatTransPtr       _cursorRedWithRot;
-  MatTransPtr       _cursorYellowWithRot;
-  MatTransPtr       _cursorGreenWithRot;
-  MatTransPtr       _cursorBlueWithRot;
-  MatTransPtr       _cursorTriggerWithRot;
-  MatTransPtr       _cursorActiveNoRot;
-  MatTransPtr       _cursorRedNoRot;
-  MatTransPtr       _cursorYellowNoRot;
-  MatTransPtr       _cursorGreenNoRot;
-  MatTransPtr       _cursorBlueNoRot;
-  MatTransPtr       _cursorTriggerNoRot;
-  NodePtr           _cursor_zoom;
   MatTransPtr       _menuBranch;
   MatTransPtr       _statusBranch;
   GroupPtr          _origin;
@@ -533,8 +512,6 @@ protected:
   ColorMap          _colorMap;
   std::vector<OsgTools::Grid> _gridFunctors;
   bool              _textures;
-  MatTransPtr       _scribeBranch;
-  bool              _autoPlacement;
 };
 
 

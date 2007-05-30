@@ -217,19 +217,6 @@ Application::Application ( Args &args ) :
   _models         ( new osg::MatrixTransform ),
   _gridBranch     ( new osg::MatrixTransform ),
   _cursor         ( new osg::MatrixTransform ),
-  _cursorActiveWithRot  ( new osg::MatrixTransform ),
-  _cursorRedWithRot     ( new osg::MatrixTransform ),
-  _cursorYellowWithRot  ( new osg::MatrixTransform ),
-  _cursorGreenWithRot   ( new osg::MatrixTransform ),
-  _cursorBlueWithRot    ( new osg::MatrixTransform ),
-  _cursorTriggerWithRot ( new osg::MatrixTransform ),
-  _cursorActiveNoRot    ( new osg::MatrixTransform ),
-  _cursorRedNoRot       ( new osg::MatrixTransform ),
-  _cursorYellowNoRot    ( new osg::MatrixTransform ),
-  _cursorGreenNoRot     ( new osg::MatrixTransform ),
-  _cursorBlueNoRot      ( new osg::MatrixTransform ),
-  _cursorTriggerNoRot   ( new osg::MatrixTransform ),
-  _cursor_zoom          ( 0x0 ),
   _menuBranch     ( new osg::MatrixTransform ),
   _statusBranch   ( new osg::MatrixTransform ),
   _origin         ( new osg::Group ),
@@ -270,9 +257,7 @@ Application::Application ( Args &args ) :
   _prefs          ( new VRV::Prefs::Settings ),
   _home           ( osg::Matrixf::identity() ),
   _colorMap       (),
-  _textures       ( true ),
-  _scribeBranch   ( new osg::MatrixTransform ),
-  _autoPlacement  ( false )
+  _textures       ( true )
 {
   ErrorChecker ( 1067097070u, 0 == _appThread );
   ErrorChecker ( 2970484549u, 0 == _mainThread );
@@ -287,7 +272,6 @@ Application::Application ( Args &args ) :
   ErrorChecker ( 1068249416u, _origin.valid() );
   ErrorChecker ( 1069021589u, _auxiliary.valid() );
   ErrorChecker ( 1071446158u, _textBranch.valid() );
-  ErrorChecker ( 1067094629u, _scribeBranch.valid() );
   ErrorChecker ( 1071551353u, 0x0 != _pickText.get() );
   ErrorChecker ( 1071551354u, 0x0 != _navText.get() );
   ErrorChecker ( 1071551355u, 0x0 != _frameText.get() );
@@ -312,7 +296,6 @@ Application::Application ( Args &args ) :
   _root->addChild      ( _navBranch.get()    );
   _navBranch->addChild ( _models.get()       );
   _navBranch->addChild ( _gridBranch.get()   );
-  _navBranch->addChild ( _scribeBranch.get() );
 
   // Name the branches.
   _root->setName         ( "_root"         );
@@ -325,7 +308,6 @@ Application::Application ( Args &args ) :
   _origin->setName       ( "_origin"       );
   _auxiliary->setName    ( "_auxiliary"    );
   _textBranch->setName   ( "_textBranch"   );
-  _scribeBranch->setName ( "_scribeBranch" );
 
   // Hook up the joystick callbacks.
   USUL_VALID_REF_POINTER(JoystickCB) jcb ( new JoystickCB ( this ) );
@@ -441,9 +423,6 @@ void Application::_init()
   // Set the global GL_NORMALIZE flag.
   this->normalize ( _prefs->normalizeVertexNormalsGlobal() );
   
-  // Set Auto-Placement flag
-  _autoPlacement = _prefs->autoPlacement();
-  
   // Set the background color.
   const Preferences::Vec4f &bc = _prefs->backgroundColor();
   this->setBackgroundColor ( osg::Vec4 ( bc[0], bc[1], bc[2], bc[3] ) );
@@ -467,7 +446,6 @@ void Application::_init()
 
   // Move the model-group so that the models are centered and visible.
   this->viewAll ( _models.get(), _prefs->viewAllScaleZ() );
-  this->viewAll ( _scribeBranch.get(), _prefs->viewAllScaleZ() );
 
   // Now that the models are centered, draw a grid in proportion to the size 
   // of the models.
@@ -477,7 +455,7 @@ void Application::_init()
   this->_setHome();
 
   // Set a default cursor matrix functor.
-  //this->_setCursorMatrixFunctor ( new CV::Functors::WandMatrix ( this->_thisUnknown() ) );
+  this->_setCursorMatrixFunctor ( new CV::Functors::WandMatrix ( this->_thisUnknown() ) );
 
   // Based on the scene size, set the near and far clipping plane distances.
   this->_setNearAndFarClippingPlanes();
@@ -751,7 +729,6 @@ void Application::_initMenu()
   CV_REGISTER ( _polysFlat,        "polygons_flat" );
   CV_REGISTER ( _polysWireframe,   "polygons_wireframe" );
   CV_REGISTER ( _polysPoints,      "polygons_points" );
-  CV_REGISTER ( _polysScribe,      "polygons_scribe" );
   CV_REGISTER ( _gridVisibility,   "grid_visibility" );
   CV_REGISTER ( _statusBarVis,     "status_bar_visibility" );
   CV_REGISTER ( _viewHome,         "camera_view_home" );
@@ -797,7 +774,6 @@ void Application::_initMenu()
   // Default settings, so that the menu has the correct toggle's checked.
   OsgTools::State::StateSet::setPolygonsFilled ( _models.get(), false );
   OsgTools::State::StateSet::setPolygonsSmooth ( _models.get() );
-  OsgTools::Group::removeAllOccurances ( _scribeBranch.get(), _navBranch.get() );
 }
 
 
@@ -890,7 +866,7 @@ void Application::_initStatusBar()
   _statusBar->updateScene();
 
   // Make the status-bar always draw on top (last). See osgfxbrowser.cpp.
-	osg::ref_ptr < osg::StateSet > ss ( _statusBranch->getOrCreateStateSet() );
+  osg::ref_ptr < osg::StateSet > ss ( _statusBranch->getOrCreateStateSet() );
   if( ss.valid() )
   {
 	  ss->setRenderBinDetails ( 100, "RenderBin" );
@@ -1559,41 +1535,17 @@ void Application::_setNavigator()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-//void Application::_setCursor ( unsigned int state )
-//{
-//  ErrorChecker ( 1072722817u, isAppThread(), CV::NOT_APP_THREAD );
-//
-//  OsgTools::Axes axes;
-//  axes.length ( 0.5f );
-//  axes.lineWidth ( 0.05f * axes.length() );
-//  axes.state ( state );
-//
-//  OsgTools::Group::removeAllChildren ( _cursor.get() );
-//  _cursor->addChild ( axes() );
-//}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the cursor's matrix functor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_removeCursorChildren()
+void Application::_setCursor ( unsigned int state )
 {
-  OsgTools::Group::removeAllChildren( _cursorActiveWithRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorRedWithRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorYellowWithRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorGreenWithRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorBlueWithRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorTriggerWithRot.get() );
+  ErrorChecker ( 1072722817u, isAppThread(), CV::NOT_APP_THREAD );
 
-  OsgTools::Group::removeAllChildren( _cursorActiveNoRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorRedNoRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorYellowNoRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorGreenNoRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorBlueNoRot.get() );
-  OsgTools::Group::removeAllChildren( _cursorTriggerNoRot.get() );
+  OsgTools::Axes axes;
+  axes.length ( 0.5f );
+  axes.lineWidth ( 0.05f * axes.length() );
+  axes.state ( state );
+
+  OsgTools::Group::removeAllChildren ( _cursor.get() );
+  _cursor->addChild ( axes() );
 }
 
 
@@ -1603,10 +1555,10 @@ void Application::_removeCursorChildren()
 //
 ///////////////////////////////////////////////////////////////////////////////
 //
-//void Application::_setCursorMatrixFunctor ( CV::Functors::MatrixFunctor *f )
-//{
-//  _cursorMatrix = f;
-//}
+void Application::_setCursorMatrixFunctor ( CV::Functors::MatrixFunctor *f )
+{
+  _cursorMatrix = f;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1737,14 +1689,6 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
     std::string name = filename.substr ( loc + 1 );
     node->setName ( name );
   }
- 
-  // Create the scribe effect since it must attach to the model
-  osg::ref_ptr<osgFX::Scribe> scribe = new osgFX::Scribe;
-  const Preferences::Vec4f &sc = _prefs->scribeColor();
-  scribe->setWireframeColor ( osg::Vec4 ( sc[0], sc[1], sc[2], sc[3] ) );
-  scribe->setWireframeLineWidth( _prefs->scribeWidth() );
-  scribe->addChild ( node.get() );
-  _scribeBranch->addChild ( scribe.get() );
   
   // Hook things up.
   mt->addChild ( node.get() );
@@ -1754,39 +1698,6 @@ void Application::_readModel ( const std::string &filename, const Matrix44f &mat
 
   // Do any post-processing.
   this->_postProcessModelLoad ( filename, node.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the group node child that is a MatrixTransform
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::MatrixTransform* Application::_getGroupMatrixTransform( osg::Group *grp )
-{
-  int num_children = grp->getNumChildren();
-  int i = 0;
-  osg::Transform *xform;
-  
-  // First test the group node
-  if( xform = grp->asTransform() )
-  {
-    return xform->asMatrixTransform();
-  }
-  
-  // next test its children
-  while ( i < num_children )
-  {
-    xform = grp->getChild(i)->asTransform();
-    if(xform)
-    {
-      return xform->asMatrixTransform();
-    }
-    i++;
-  }
-  
-  return NULL;
 }
 
 
@@ -2291,133 +2202,20 @@ float Application::frameTime() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-//void Application::_updateCursor()
-//{
-//  ErrorChecker ( 1074207542u, isAppThread(), CV::NOT_APP_THREAD );
-//
-//  // If we have a matrix functor...
-//  if ( _cursorMatrix.valid() )
-//  {
-//    // Update the internal matrix.
-//    (*_cursorMatrix)();
-//
-//    // Set the cursor's matrix.
-//    osg::Matrixf M;
-//    OsgTools::Convert::matrix ( _cursorMatrix->matrix(), M );
-//    _cursor->setMatrix ( M );
-//  }
-//}
-
 void Application::_updateCursor()
 {
-  ErrorChecker ( 1100576052u, isAppThread(), CV::NOT_APP_THREAD );
+  ErrorChecker ( 1074207542u, isAppThread(), CV::NOT_APP_THREAD );
 
-  OsgTools::Group::removeAllChildren( _cursor.get() );
-
-  osg::Matrixf oM;                                // OSG Matrix
-  Usul::Math::Matrix44f uM;                       // Usul Matrix
-  this->wandMatrix( uM );                         // get wand's matrix
-  OsgTools::Convert::matrix ( uM , oM );          // oM contains wand's Matrix
-
-  osg::Matrixf oRM;                               // OSG Matrix
-  Usul::Math::Matrix44f uRM;                      // Usul Matrix
-  this->wandRotation ( uRM );                     // get wand's rotational Matrix
-  OsgTools::Convert::matrix ( uRM, oRM );         // oRM contains wand's Rotational Orientation
-
-  float radius(1.0);                              // offset of each cursor from wand
-  osg::Matrixf oS;
-  oS.makeScale( 0.5, 0.5, 0.5 );                  // change size of each cursor
-  osg::Matrixf oTM;                               // oTM will hold an OSG Translation Matrix
-
-  //   0.5000,  0.8660,  0.0    );                // 1:00 position
-  //   0.7071,  0.7071,  0.0    );                // 1:30 position
-  //  -0.9659, -0.2588,  0.0    );                // 8:30 position
-  //  -0.5000, -0.8660,  0.0    );                // 7:00 position
-  //   0.5000, -0.8660,  0.0    );                // 5:00 position
-  //   0.9659, -0.2588,  0.0    );                // 3:30 position
-  //  -0.3536, -0.3536, -0.8660 );                // 7:30, low position
-
-  if ( _cursorActiveWithRot.get() != 0x0 )        // 1:00 position
+  // If we have a matrix functor...
+  if ( _cursorMatrix.valid() )
   {
-    oTM.makeTranslate(  0.5000*radius,  0.0000       , -0.8660*radius );
-    _cursorActiveWithRot->setMatrix( oS*oTM*oM );
-    _cursor->addChild( _cursorActiveWithRot.get() );
-  }
-  if ( _cursorActiveNoRot.get() != 0x0 )
-  {
-    oTM.makeTranslate(  0.5000*radius,  0.0000       , -0.8660*radius );
-    _cursorActiveNoRot->setMatrix( oS*osg::Matrixf::inverse( oRM )*oTM*oM );
-    _cursor->addChild( _cursorActiveNoRot.get() );
-  }
+    // Update the internal matrix.
+    (*_cursorMatrix)();
 
-
-  if ( _cursorRedWithRot.get() != 0x0 )           // 8:30 position
-  {
-    oTM.makeTranslate( -0.9659*radius,  0.0000       ,  0.2588*radius );
-    _cursorRedWithRot->setMatrix( oS*oTM*oM );
-    _cursor->addChild( _cursorRedWithRot.get() );
-  }
-  if ( _cursorRedNoRot.get() != 0x0 )
-  {
-    oTM.makeTranslate( -0.9659*radius,  0.0000       ,  0.2588*radius );
-    _cursorRedNoRot->setMatrix( oS*osg::Matrixf::inverse( oRM )*oTM*oM );
-    _cursor->addChild( _cursorRedNoRot.get() );
-  }
-
-
-  if ( _cursorYellowWithRot.get() != 0x0 )        // 7:00 position
-  {
-    oTM.makeTranslate( -0.5000*radius,  0.0000       ,  0.8660*radius );
-    _cursorYellowWithRot->setMatrix( oS*oTM*oM );
-    _cursor->addChild( _cursorYellowWithRot.get() );
-  }
-  if ( _cursorYellowNoRot.get() != 0x0 )
-  {
-    oTM.makeTranslate( -0.5000*radius,  0.0000       ,  0.8660*radius );
-    _cursorYellowNoRot->setMatrix( oS*osg::Matrixf::inverse( oRM )*oTM*oM );
-    _cursor->addChild( _cursorYellowNoRot.get() );
-  }
-  
-
-  if ( _cursorGreenWithRot.get() != 0x0 )         // 5:00 position
-  {
-    oTM.makeTranslate(  0.5000*radius,  0.0000       ,  0.8660*radius );
-    _cursorGreenWithRot->setMatrix( oS*oTM*oM );
-    _cursor->addChild( _cursorGreenWithRot.get() );
-  }
-  if ( _cursorGreenNoRot.get() != 0x0 )
-  {
-    oTM.makeTranslate(  0.5000*radius,  0.0000       ,  0.8660*radius );
-    _cursorGreenNoRot->setMatrix( oS*osg::Matrixf::inverse( oRM )*oTM*oM );
-    _cursor->addChild( _cursorGreenNoRot.get() );
-  }
-
-
-  if ( _cursorBlueWithRot.get() != 0x0 )          // 3:30 position
-  {
-    oTM.makeTranslate(  0.9659*radius,  0.0000       ,  0.2588*radius );
-    _cursorBlueWithRot->setMatrix( oS*oTM*oM );
-    _cursor->addChild( _cursorBlueWithRot.get() );
-  }
-  if ( _cursorBlueNoRot.get() != 0x0 )
-  {
-    oTM.makeTranslate(  0.9659*radius,  0.0000       ,  0.2588*radius );
-    _cursorBlueNoRot->setMatrix( oS*osg::Matrixf::inverse( oRM )*oTM*oM );
-    _cursor->addChild( _cursorBlueNoRot.get() );
-  }
-
-
-  if ( _cursorTriggerWithRot.get() != 0x0 )       // 7:30, low position
-  {
-    oTM.makeTranslate( -0.3536*radius, -0.8660*radius,  0.3536*radius );
-    _cursorTriggerWithRot->setMatrix( oS*oTM*oM );
-    _cursor->addChild( _cursorTriggerWithRot.get() );
-  }
-  if ( _cursorTriggerNoRot.get() != 0x0 )
-  {
-    oTM.makeTranslate( -0.3536*radius, -0.8660*radius,  0.3536*radius );
-    _cursorTriggerNoRot->setMatrix( oS*osg::Matrixf::inverse( oRM )*oTM*oM );
-    _cursor->addChild( _cursorTriggerNoRot.get() );
+    // Set the cursor's matrix.
+    osg::Matrixf M;
+    OsgTools::Convert::matrix ( _cursorMatrix->matrix(), M );
+    _cursor->setMatrix ( M );
   }
 }
 
@@ -2661,13 +2459,6 @@ void Application::_postProcessModelLoad ( const std::string &filename, osg::Node
     // Call the function.
     pp->postProcessModelLoad ( filename, model );
   }
-  
-  if ( _autoPlacement )
-    _doAutoPlacement(true);
-  
-  // reset this boolean because it may have been changed by stream loader
-  _autoPlacement = _prefs->autoPlacement();
-
 }
 
 
@@ -2959,56 +2750,6 @@ void Application::_updateSceneTool()
       }
     }
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Navigation -- auto place & size model
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_doAutoPlacement( const bool replace_matrix )
-{  
-  // first remove any transforms to the model
-  osg::Matrixf idMatrix;
-  idMatrix.identity();
-  _models->setMatrix(idMatrix);
-  
-  // get _models bounding sphere and translate & scale accordingly
-  const osg::BoundingSphere &sphere = _models->getBound();
-
-  // center the models
-  osg::Matrixf autoPlaceXform;
-  osg::Matrixf tempMatrix;
-  
-  // scale model only, not grid
-  const float scale = _prefs->autoPlaceRadius() / sphere.radius();
-  tempMatrix.makeScale( scale, scale, scale );
-  _models->preMult( tempMatrix );
-    
-  // translate to origin first
-  const osg::Vec3 centertrans =  sphere.center() * -scale;
-  autoPlaceXform.makeTranslate( centertrans );
-  
-  // next apply rotation
-  Usul::Math::Matrix44f m;
-  m.makeRotation ( _prefs->autoRotationAngle(), _prefs->autoRotationVector() );
-  osg::Matrixf mm;
-  OsgTools::Convert::matrix (m, mm );
-  autoPlaceXform.postMult(mm);
-  
-  // next translate to auto-center position
-  const Preferences::Vec3f &ac = _prefs->autoPlaceCenter();
-  const osg::Vec3 actrans =  osg::Vec3 ( ac[0], ac[1], ac[2] );
-  tempMatrix.makeTranslate( actrans );
-  autoPlaceXform.postMult( tempMatrix );
-  
-  // either replace the nav matrix or multiply the current one
-  if( replace_matrix )
-    _navBranch->setMatrix( autoPlaceXform );
-  else
-    _navBranch->postMult( autoPlaceXform );
 }
 
 

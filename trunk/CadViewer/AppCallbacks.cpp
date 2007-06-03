@@ -917,10 +917,10 @@ void Application::_defaultCallback ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 1411642884u, isAppThread(), CV::NOT_APP_THREAD );
 
   if( MenuKit::MESSAGE_UPDATE == m )
-    {
-      if( dynamic_cast<MenuKit::Button*>( item ) )
-	item->enabled( false );
-    }
+  {
+    if( dynamic_cast< MenuKit::Button* >( item ) )
+	    item->enabled( false );
+  }
 
   // Update the status-bar.
   if ( MenuKit::MESSAGE_FOCUS_ON == m )
@@ -939,10 +939,10 @@ void Application::_viewHome ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 2437985028u, isAppThread(), CV::NOT_APP_THREAD );
 
   if ( MenuKit::MESSAGE_SELECTED == m )
-    {
-      _navBranch->setMatrix ( _home );
-      this->_setNearAndFarClippingPlanes();
-    }
+  {
+    _navBranch->setMatrix ( _home );
+    this->_setNearAndFarClippingPlanes();
+  }
 }
 
 
@@ -987,10 +987,10 @@ void Application::_viewScene ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 3436039617u, isAppThread(), CV::NOT_APP_THREAD );
 
   if ( MenuKit::MESSAGE_SELECTED == m )
-    {
-      this->viewAll ( _navBranch.get(), _prefs->viewAllScaleZ() );
-      this->_setNearAndFarClippingPlanes();
-    }
+  {
+    this->viewAll ( _navBranch.get(), _prefs->viewAllScaleZ() );
+    this->_setNearAndFarClippingPlanes();
+  }
 }
 
 
@@ -1256,10 +1256,10 @@ void Application::_gridColor ( MenuKit::Message m, MenuKit::Item *item )
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
     const osg::Vec4& c = this->_getColor( item->text() );
-	for(unsigned int i=0; i<_gridFunctors.size(); ++i)
-	{
+	  for( unsigned int i = 0; i < _gridFunctors.size(); ++i )
+	  {
 		  _gridFunctors[i].color ( c[0], c[1], c[2], c[3] );
-	}
+	  }
     this->_rebuildGrid();
   }
 }

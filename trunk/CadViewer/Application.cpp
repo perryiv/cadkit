@@ -572,12 +572,12 @@ void Application::_initGrid ( osg::Node *node )
   for( int i = 0; i < _prefs->numGrids(); ++i )
   {
     OsgTools::Grid grid;
-    grid.numBlocks ( _prefs->numGridBlocks(i) );
-    grid.size ( r * _prefs->gridScale(i) );
-    grid.color ( _prefs->gridColor(i) );
-    grid.fillColor ( _prefs->gridFillColor(i) );
+    grid.numBlocks ( _prefs->numGridBlocks( i ) );
+    grid.size ( r * _prefs->gridScale( i ) );
+    grid.color ( _prefs->gridColor( i ) );
+    grid.fillColor ( _prefs->gridFillColor( i ) );
     Usul::Math::Matrix44f o;
-    o.makeRotation ( _prefs->gridRotationAngleRad( static_cast < int > ( i ) ), _prefs->gridRotationVector(i) );
+    o.makeRotation ( _prefs->gridRotationAngleRad( static_cast < int > ( i ) ), _prefs->gridRotationVector( i ) );
     grid.orientation ( o );
 
     // Move the center so that it is below the bounding sphere of the node.
@@ -1007,12 +1007,6 @@ void Application::_processButtons()
 
   if ( this->_handleNavigationEvent() )
     return;
-
-  if ( this->_handleToolEvent() )
-    return;
-
-  if ( this->_handleCancelEvent() )
-    return;
 }
 
 
@@ -1135,13 +1129,12 @@ bool Application::_handleNavigationEvent( const unsigned long eventRequest )
 {
   MenuKit::Message nav_message = MenuKit::MESSAGE_SELECTED;   // simulate message/item from MenuKit
   MenuKit::Item *nav_item (0x0);                              // NULL b/c it's never needed
-  const unsigned long walkID = 1084438120u;                   // comes from AppCallback.cpp
-  bool handled;
-  unsigned long mode;
+  const unsigned long walkID ( 1084438120u );                 // comes from AppCallback.cpp
+  bool handled ( false );
   
   if(_intersector) return false;                              // skip this code if we're in an intersection mode
 
-  mode = _buttons->released();                                // Button release event
+  unsigned long mode ( _buttons->released() );                // Button release event
 
   if ( eventRequest )                                         // if mode NOT specified with function call ...
     mode = eventRequest;                                      // ... get information from buttons
@@ -1194,39 +1187,6 @@ bool Application::_handleNavigationEvent( const unsigned long eventRequest )
   };
 
   return handled;  // if false, button event was not handled (doesn't effect navigation)
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Process the button states and apply to Tool selection.
-//  Returns true if the event was handled.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::_handleToolEvent()
-{
-  MenuKit::Message tool_message = MenuKit::MESSAGE_SELECTED;  // simulate message/item from MenuKit
-  MenuKit::Item *tool_item (0x0);                             // NULL b/c it's never needed
-  bool handled(false);
-
-  return handled;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Process the button states and apply to cancelation or tools and navigation.
-//  Returns true if the event was handled.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::_handleCancelEvent()
-{
-  //MenuKit::Message tool_message = MenuKit::MESSAGE_SELECTED;  // simulate message/item from MenuKit
-  //MenuKit::Item *tool_item (0x0);                             // NULL b/c it's never needed
-  bool handled(false);
-
-  return handled;
 }
 
 

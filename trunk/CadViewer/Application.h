@@ -292,8 +292,6 @@ protected:
   bool                          _handleMenuEvent();
   bool                          _handleIntersectionEvent();
   bool                          _handleNavigationEvent( const unsigned long event_request = 0 );
-  bool                          _handleToolEvent();
-  bool                          _handleCancelEvent();
 
   // Called by the kernel to initialize this instance.
   virtual void                  init();
@@ -325,7 +323,6 @@ protected:
   virtual void                  latePreFrame();
   void                          _latePreFrame();
   
-
   // Process the button states.
   void                          _processButtons();
 

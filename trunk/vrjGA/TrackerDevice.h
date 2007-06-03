@@ -43,10 +43,10 @@ public:
   TrackerDevice ( const std::string &name );
 
   // Get the device's matrix.
-  const gmtl::Matrix44f&   matrix() const { return _matrix; }
+  const gmtl::Matrix44f&    matrix() const { return _matrix; }
 
   // Get the time
-  double time() { return _time; }
+  double                    time() { return _time; }
 
   // Update the internal state.
   void                      update();

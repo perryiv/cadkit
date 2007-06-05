@@ -25,6 +25,20 @@ using namespace Minerva::Core::postGIS;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Polygon, Polygon::BaseClass );
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Polygon::Polygon ( ) :
+BaseClass(  ),
+_points()
+{
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -81,7 +95,7 @@ void Polygon::_buildLatLongPoints()
     triangulate->triangulate ( *iter, vertices, n );
 
     std::vector< ossimGpt > latLongPoints;
-    this->_convertToLatLong( vertices, latLongPoints );
+    Geometry::_convertToLatLong( vertices, latLongPoints );
 
 #if 0
     std::vector< ossimGpt > subdividedPoints;

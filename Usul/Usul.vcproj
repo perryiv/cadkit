@@ -219,22 +219,6 @@
 			Name="Source"
 			>
 			<Filter
-				Name="Adaptors"
-				>
-				<File
-					RelativePath=".\Adaptors\Bind.h"
-					>
-				</File>
-				<File
-					RelativePath="Adaptors\MemberFunction.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Adaptors\Random.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="Algorithms"
 				>
 				<File
@@ -1172,6 +1156,18 @@
 					</File>
 					<File
 						RelativePath=".\Interfaces\ILineData.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IMultiLineData.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IMultiPointData.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IMultiPolygonData.h"
 						>
 					</File>
 					<File
@@ -2217,6 +2213,22 @@
 				</File>
 				<File
 					RelativePath=".\Commands\History.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Adaptors"
+				>
+				<File
+					RelativePath=".\Adaptors\Bind.h"
+					>
+				</File>
+				<File
+					RelativePath="Adaptors\MemberFunction.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Adaptors\Random.h"
 					>
 				</File>
 			</Filter>

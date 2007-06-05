@@ -13,6 +13,9 @@
 #include "Magrathea/Project.h"
 #include "Magrathea/Resample.h"
 
+#include "Usul/Components/Manager.h"
+#include "Usul/Interfaces/IProjectCoordinates.h"
+
 #include "osg/Geode"
 #include "osg/Geometry"
 
@@ -26,8 +29,23 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Line, Line::BaseClass );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+Line::Line() : BaseClass(),
+_line(),
+_points()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 Line::Line ( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F ) :
 BaseClass( connection, tableName, id, srid, F ),
+_line(),
+_latLongPoints(),
 _points()
 {
 }
@@ -87,6 +105,29 @@ osg::Geometry* Line::buildLineData()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Convert to lat long points.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Line::_convertToLatLong ( const Vertices& vertices, Vertices& latLongPoints )
+{
+  Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
+
+  if ( project.valid() )
+  {
+    latLongPoints.reserve ( vertices.size() );
+    for( Vertices::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter )
+    {
+      Usul::Math::Vec3d point;
+      project->projectToSpherical( *iter, this->srid(), point );     
+      latLongPoints.push_back( point );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the lat long points.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -100,9 +141,26 @@ void Line::_buildLatLongPoints()
   for( VertexList::const_iterator iter = vertexList.begin(); iter != vertexList.end(); ++iter )
   {
     LatLongPoints latLongPoints;
-    this->_convertToLatLong( *iter, latLongPoints );
+    BaseClass::_convertToLatLong( *iter, latLongPoints );
     _points.push_back ( latLongPoints );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the line data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Line::Vertices& Line::lineData ()
+{
+  if( _latLongPoints.empty() )
+  {
+    this->_convertToLatLong ( _line, _latLongPoints );
+  }
+
+  return _latLongPoints;
 }
 
 
@@ -121,4 +179,27 @@ Usul::Interfaces::IUnknown* Line::queryInterface( unsigned long iid )
   default:
     return BaseClass::queryInterface( iid );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the line data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Line::line( const Vertices& data )
+{
+  _line = data;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the line data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Line::Vertices& Line::line() const
+{
+  return _line;
 }

@@ -455,6 +455,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\postGIS\Factory.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\postGIS\Factory.h"
+						>
+					</File>
+					<File
 						RelativePath=".\postGIS\Geometry.cpp"
 						>
 					</File>
@@ -486,6 +494,30 @@
 					</File>
 					<File
 						RelativePath=".\postGIS\Line.h"
+						>
+					</File>
+					<File
+						RelativePath=".\postGIS\MultiLine.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\postGIS\MultiLine.h"
+						>
+					</File>
+					<File
+						RelativePath=".\postGIS\MultiPoint.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\postGIS\MultiPoint.h"
+						>
+					</File>
+					<File
+						RelativePath=".\postGIS\MultiPolygon.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\postGIS\MultiPolygon.h"
 						>
 					</File>
 					<File
@@ -538,6 +570,14 @@
 					</File>
 					<File
 						RelativePath=".\postGIS\Polygon.h"
+						>
+					</File>
+					<File
+						RelativePath=".\postGIS\TextParser.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\postGIS\TextParser.h"
 						>
 					</File>
 				</Filter>

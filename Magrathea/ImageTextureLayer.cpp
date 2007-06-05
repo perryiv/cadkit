@@ -17,7 +17,7 @@
 using namespace Magrathea;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ImageTextureLayer, ImageTextureLayer::BaseClass );
-SERIALIZE_XML_REGISTER_CREATOR ( ImageTextureLayer );
+//SERIALIZE_XML_REGISTER_CREATOR ( ImageTextureLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

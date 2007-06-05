@@ -11,8 +11,6 @@
 #ifndef __MINERVA_READER_H__
 #define __MINERVA_READER_H__
 
-#include "Minerva/Core/Serialize.h"
-
 #include "MinervaDocument.h"
 
 #include <string>

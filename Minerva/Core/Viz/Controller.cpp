@@ -32,7 +32,7 @@ using namespace Minerva::Core::Viz;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Controller , Controller::BaseClass );
 
-
+// TODO: This should be moved into it's own file.
 class MovieLayer : public Minerva::Core::Layers::Layer
 {
 	public:

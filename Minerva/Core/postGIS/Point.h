@@ -30,7 +30,12 @@ public:
   USUL_DECLARE_QUERY_POINTERS ( Point );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
+  Point ();
   Point ( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F );
+
+  /// Get/Set the point.
+  void                              point( const Usul::Math::Vec3d & );
+  const Usul::Math::Vec3d           point() const;
 
 protected:
   virtual ~Point();
@@ -41,6 +46,8 @@ protected:
   virtual osg::Vec3f                geometryCenter ( unsigned int& srid );
   virtual osg::Vec3f                geometryCenter ( const osg::Vec3f& offset, unsigned int& srid );
 
+private:
+  Usul::Math::Vec3d _point;
 };
 
 }

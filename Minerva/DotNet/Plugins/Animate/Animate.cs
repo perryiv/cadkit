@@ -10,19 +10,19 @@
 
 namespace DT.Minerva.Plugins.Animate
 {
-  public partial class Animate : WeifenLuo.WinFormsUI.DockContent
+  public partial class Animate : WeifenLuo.WinFormsUI.Docking.DockContent
   {
     public Animate()
     {
       InitializeComponent();
 
-      this.DockableAreas =
-        WeifenLuo.WinFormsUI.DockAreas.DockBottom |
-        WeifenLuo.WinFormsUI.DockAreas.DockLeft |
-        WeifenLuo.WinFormsUI.DockAreas.DockRight |
-        WeifenLuo.WinFormsUI.DockAreas.DockTop |
-        WeifenLuo.WinFormsUI.DockAreas.Float;
-      this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockBottom;
+      this.DockAreas =
+        WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom |
+        WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft |
+        WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight |
+        WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop |
+        WeifenLuo.WinFormsUI.Docking.DockAreas.Float;
+      this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockBottom;
       this.HideOnClose = true;
 
       this._setEnabled(false);

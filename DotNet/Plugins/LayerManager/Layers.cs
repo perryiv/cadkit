@@ -11,7 +11,7 @@
 namespace CadKit.Plugins.LayerManager
 {
   public partial class Layers :
-    WeifenLuo.WinFormsUI.DockContent,
+    WeifenLuo.WinFormsUI.Docking.DockContent,
     CadKit.Interfaces.IDocumentView,
     CadKit.Interfaces.IPropertyGridObject
   {
@@ -31,13 +31,13 @@ namespace CadKit.Plugins.LayerManager
     {
       InitializeComponent();
 
-      this.DockableAreas =
-        WeifenLuo.WinFormsUI.DockAreas.DockBottom |
-        WeifenLuo.WinFormsUI.DockAreas.DockLeft |
-        WeifenLuo.WinFormsUI.DockAreas.DockRight |
-        WeifenLuo.WinFormsUI.DockAreas.DockTop |
-        WeifenLuo.WinFormsUI.DockAreas.Float;
-      this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockRight;
+      this.DockAreas =
+        WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom |
+        WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft |
+        WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight |
+        WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop |
+        WeifenLuo.WinFormsUI.Docking.DockAreas.Float;
+      this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockRight;
       this.HideOnClose = true;
       this._slider.SetRange(0, 100);
       this._setUpListView();

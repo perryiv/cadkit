@@ -41,8 +41,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\DockPanel\DockPanel_Src_1_0_0_0\WinFormsUI\WeifenLuo.WinFormsUI.Docking.csproj">
-      <Project>{A8BBFA78-45B8-4F79-8AB7-AED482BCAB67}</Project>
+    <ProjectReference Include="..\..\..\3rdParty\DockPanel\WinFormsUI\WeifenLuo.WinFormsUI.Docking.csproj">
+      <Project>{C75532C4-765B-418E-B09B-46D36B2ABDB1}</Project>
       <Name>WeifenLuo.WinFormsUI.Docking</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Delegates\CadKit.Delegates.csproj">

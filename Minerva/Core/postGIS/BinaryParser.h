@@ -4,7 +4,22 @@
 //  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Created by: Adam Kubach
+//  Author(s): Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Use this parser when using the asBinary postGIS function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  I'm in the process of refactoring this class to return a pointer to the 
+//  base geometry class.  When finished I believe it will be the better design.
+//  However, I'm having some trouble figuring out a good way to implement it.
+//  For now, use getVertices().
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -18,22 +33,19 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 
-#include "pqxx/pqxx"
-
 #include <vector>
 
 namespace Minerva {
 namespace Core {
 namespace postGIS {
 
-class MINERVA_EXPORT BinaryParser : public Usul::Base::Referenced
+class Geometry;
+
+class MINERVA_EXPORT BinaryParser
 {
 public:
-  typedef Usul::Base::Referenced BaseClass;
-
-  USUL_DECLARE_REF_POINTERS( BinaryParser );
-
-  BinaryParser( const pqxx::result::field &F );
+  BinaryParser();
+  ~BinaryParser();
 
   typedef Usul::Math::Vec2d                Vertex;
   typedef std::vector < Vertex >           Vertices;
@@ -50,24 +62,26 @@ public:
     wkbGeometryCollection = 7
   };
 
-  VertexList              getVertices();
+  enum wkbEndianType
+  {
+    wkbBigEndian = 0,
+    wkbLittleEndian = 1
+  };
+
+  VertexList              getVertices( const unsigned char* buffer );
+
+  Geometry*               operator() ( const unsigned char* buffer );
 
 protected:
-  virtual ~BinaryParser();
 
   template < class Convert >
-  void   _createVertices( Usul::Types::Uint32 numPoints, Usul::Types::Uint64& bytesReadSoFar, Vertices& vertices );
+	void _createGeometryEndian ( const unsigned char*& buffer, VertexList &vertexList );
+  void _createGeometry       ( const unsigned char*& buffer, VertexList &vertexList );
 
   template < class Convert >
-	void   _parseLineString( Usul::Types::Uint64& bytesReadSoFar, Vertices& vertices );
+	Geometry* _createGeometryEndian ( const unsigned char*& buffer );
+  Geometry* _createGeometry       ( const unsigned char*& buffer );
 
-  template < class Convert >
-	void _createGeometryEndian ( VertexList &vertexList, Usul::Types::Uint64& bytesReadSoFar );
-
-  void _createGeometry( VertexList &vertexList, Usul::Types::Uint64& bytesReadSoFar );
-
-private:
-  pqxx::binarystring *_buffer;
 };
 
 }

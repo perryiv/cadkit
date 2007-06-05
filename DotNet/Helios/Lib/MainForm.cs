@@ -28,14 +28,14 @@ namespace CadKit.Helios
     /// Data members.
     /// </summary>
     private System.ComponentModel.IContainer components = null;
-    private WeifenLuo.WinFormsUI.DeserializeDockContent _deserializeDockContent;
+    private WeifenLuo.WinFormsUI.Docking.DeserializeDockContent _deserializeDockContent;
     private FormsMap _persistantForms = new FormsMap();
     private FormsMap _windowForms = new FormsMap();
     private System.Windows.Forms.ToolStripMenuItem _windowMenu = null;
     private System.Windows.Forms.MenuStrip _menuStrip = null;
     private System.Windows.Forms.StatusStrip _statusStrip = null;
     private System.Windows.Forms.ToolStrip _toolStrip = null;
-    private WeifenLuo.WinFormsUI.DockPanel _dockPanel = null;
+    private WeifenLuo.WinFormsUI.Docking.DockPanel _dockPanel = null;
     private CadKit.Helios.RecentFiles _recentFiles = new CadKit.Helios.RecentFiles();
 
 
@@ -45,16 +45,16 @@ namespace CadKit.Helios
     public MainForm(string persistentName)
     {
       _recentFiles.reference();
-      _deserializeDockContent = new WeifenLuo.WinFormsUI.DeserializeDockContent(this._getContentFromPersistString);
+      _deserializeDockContent = new WeifenLuo.WinFormsUI.Docking.DeserializeDockContent(this._getContentFromPersistString);
 
       this.PersistentName = persistentName;
       this.InitializeComponent();
       this.IsMdiContainer = true;
 
       if (CadKit.Persistence.Registry.Instance.getBool("CadKit.Options.General", "use_system_mdi_child_windows", true))
-        _dockPanel.DocumentStyle = WeifenLuo.WinFormsUI.DocumentStyles.SystemMdi;
+        _dockPanel.DocumentStyle = WeifenLuo.WinFormsUI.Docking.DocumentStyle.SystemMdi;
       else if (CadKit.Persistence.Registry.Instance.getBool("CadKit.Options.General", "use_tabbed_mdi_child_windows", true))
-        _dockPanel.DocumentStyle = WeifenLuo.WinFormsUI.DocumentStyles.DockingMdi; // DockingSdi or DockingWindow makes it assert in CadKit.Referenced.Base on exit.
+        _dockPanel.DocumentStyle = WeifenLuo.WinFormsUI.Docking.DocumentStyle.DockingMdi; // DockingSdi or DockingWindow makes it assert in CadKit.Referenced.Base on exit.
 
       this.Text = CadKit.Helios.Application.Instance.Name;
       this._buildMenu();
@@ -135,10 +135,10 @@ namespace CadKit.Helios
     /// <summary>
     /// Return the docking content associated with the string.
     /// </summary>
-    private WeifenLuo.WinFormsUI.IDockContent _getContentFromPersistString(string persistString)
+    private WeifenLuo.WinFormsUI.Docking.IDockContent _getContentFromPersistString(string persistString)
     {
       if (_persistantForms.ContainsKey(persistString))
-        return _persistantForms[persistString] as WeifenLuo.WinFormsUI.IDockContent;
+        return _persistantForms[persistString] as WeifenLuo.WinFormsUI.Docking.IDockContent;
       return null;
     }
 
@@ -199,7 +199,7 @@ namespace CadKit.Helios
       this._menuStrip = new System.Windows.Forms.MenuStrip();
       this._statusStrip = new System.Windows.Forms.StatusStrip();
       this._toolStrip = new System.Windows.Forms.ToolStrip();
-      this._dockPanel = new WeifenLuo.WinFormsUI.DockPanel();
+      this._dockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
       this.SuspendLayout();
       // 
       // _menuStrip
@@ -609,7 +609,7 @@ namespace CadKit.Helios
       get { return this.DockPanel; }
     }
 
-    protected WeifenLuo.WinFormsUI.DockPanel DockPanel
+    protected WeifenLuo.WinFormsUI.Docking.DockPanel DockPanel
     {
       get { lock (_mutex) { return this._dockPanel; } }
     }
@@ -724,7 +724,7 @@ namespace CadKit.Helios
         if (null != item)
         {
           System.Windows.Forms.Form form = _windowForms[item.Text];
-          WeifenLuo.WinFormsUI.DockContent dock = form as WeifenLuo.WinFormsUI.DockContent;
+          WeifenLuo.WinFormsUI.Docking.DockContent dock = form as WeifenLuo.WinFormsUI.Docking.DockContent;
           if (null != dock)
           {
             dock.Show(_dockPanel);

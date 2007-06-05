@@ -79,7 +79,7 @@ namespace CadKit.Plugins.Windows.Properties
       CadKit.Interfaces.IDockPanel dockPanel = sender as CadKit.Interfaces.IDockPanel;
       if (null != dockPanel)
       {
-        WeifenLuo.WinFormsUI.DockPanel panel = dockPanel.DockPanel as WeifenLuo.WinFormsUI.DockPanel;
+        WeifenLuo.WinFormsUI.Docking.DockPanel panel = dockPanel.DockPanel as WeifenLuo.WinFormsUI.Docking.DockPanel;
         if (null != panel)
         {
 

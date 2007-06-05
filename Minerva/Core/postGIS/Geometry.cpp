@@ -10,24 +10,31 @@
 
 #include "Minerva/Core/postGIS/Geometry.h"
 
-#include "Magrathea/Project.h"
-
-#pragma warning ( disable : 4561 )
-#include "boost/algorithm/string/find.hpp"
-
-#include "osg/Node"
-
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IProjectCoordinates.h"
-
-#include "ossim/base/ossimKeywordNames.h"
-#include "ossim/base/ossimKeywordlist.h"
-#include "ossim/projection/ossimProjectionFactoryRegistry.h"
-#include "ossim/projection/ossimMapProjection.h"
 
 using namespace Minerva::Core::postGIS;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Geometry, Geometry::BaseClass );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Geometry::Geometry(  ) : BaseClass(),
+_connection ( 0x0 ),
+_tableName ( ),
+_id ( -1 ),
+_srid ( 0 ) ,
+_offset( 0.0, 0.0, 0.0 ),
+_dirty ( false ),
+_orginalVertices()
+{
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -44,8 +51,9 @@ _offset( 0.0, 0.0, 0.0 ),
 _dirty ( false ),
 _orginalVertices()
 {
-  BinaryParser::RefPtr parser ( new BinaryParser( F ) );
-  _orginalVertices = parser->getVertices();
+  pqxx::binarystring buffer ( F );
+  BinaryParser parser;
+  _orginalVertices = parser.getVertices( &buffer.front() );
 }
 
 
@@ -112,16 +120,19 @@ osg::Vec3f  Geometry::geometryCenter ( const osg::Vec3f& offset, unsigned int& s
   std::ostringstream os;
   os << "SELECT x(centroid(" << _tableName << ".geom)) as x_c, y(centroid(" << _tableName << ".geom)) as y_c, srid(geom) as srid FROM " << _tableName << " WHERE id = " << _id;
 
-  pqxx::result r ( _connection->executeQuery( os.str() ) );
-
   osg::Vec3f center ( 0.0, 0.0, 0.0 );
 
-  if( !r.empty() && !r[0][0].is_null() && !r[0][1].is_null() )
+  if( 0x0 != _connection.get() )
   {
-    Usul::Types::Float64 x ( r[0][0].as< float > () );
-    Usul::Types::Float64 y ( r[0][1].as< float > () );
+    pqxx::result r ( _connection->executeQuery( os.str() ) );
 
-    center.set( offset.x() + x, offset.y() + y, offset.z() );
+    if( !r.empty() && !r[0][0].is_null() && !r[0][1].is_null() )
+    {
+      Usul::Types::Float64 x ( r[0][0].as< float > () );
+      Usul::Types::Float64 y ( r[0][1].as< float > () );
+
+      center.set( offset.x() + x, offset.y() + y, offset.z() );
+    }
   }
 
   return center;

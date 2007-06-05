@@ -427,7 +427,7 @@ namespace WeifenLuo.WinFormsUI.Docking
             }
 		}
 
-		private Rectangle DocumentRectangle
+		public Rectangle DocumentRectangle
 		{
 			get
 			{

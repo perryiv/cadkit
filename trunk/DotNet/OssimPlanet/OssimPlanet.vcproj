@@ -59,7 +59,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(NoInherit) osgd.lib osgDBd.lib osgUtild.lib osgGAd.lib ossimd.lib ossimPlanetd.lib OpenThreadsWin32d.lib"
+				AdditionalDependencies="$(NoInherit) osgd.lib osgDBd.lib osgUtild.lib osgGAd.lib ossimd.lib ossimPlanetd.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR);$(OPENTHREADS_LIB_DIR)"
 				GenerateDebugInformation="true"
@@ -135,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(NoInherit) osg.lib osgDB.lib osgUtil.lib osgGA.lib ossim.lib ossimPlanet.lib osgDB.lib OpenThreadsWin32.lib"
+				AdditionalDependencies="$(NoInherit) osg.lib osgDB.lib osgUtil.lib osgGA.lib ossim.lib ossimPlanet.lib osgDB.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR);$(OPENTHREADS_LIB_DIR)"
 				GenerateDebugInformation="true"

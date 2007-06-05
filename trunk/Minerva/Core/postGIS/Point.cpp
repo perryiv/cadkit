@@ -17,6 +17,18 @@ using namespace Minerva::Core::postGIS;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Point, Point::BaseClass );
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Point::Point() : BaseClass()
+{
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -50,26 +62,18 @@ Usul::Math::Vec3d Point::pointData( )
 {
   Usul::Math::Vec3d point;
 
-  const VertexList& vertexList ( this->_vertices() );
+  Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
 
-  if( vertexList.size() > 0 )
+  if( project.valid() )
   {
-    Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
+    point.set( _point[0] + _offset[0], _point[1] + _offset[1], _offset[2] );
 
-    BinaryParser::Vertex v ( vertexList[0][0] );
-    point.set( v[0] + _offset[0], v[1] + _offset[1], _offset[2] );
-
-    if( project.valid() )
-    {
-      Usul::Math::Vec3d latLongPoint;
-      project->projectToSpherical( point, _srid, latLongPoint );
-      point[0] = latLongPoint[0];
-      point[1] = latLongPoint[1];
-      point[2] = latLongPoint[2];
-    }
+    Usul::Math::Vec3d latLongPoint;
+    project->projectToSpherical( point, _srid, latLongPoint );
+    return latLongPoint;
   }
 
-  return point;
+  return _point;
 }
 
 
@@ -94,19 +98,8 @@ osg::Vec3f Point::geometryCenter ( unsigned int& srid )
 osg::Vec3f Point::geometryCenter ( const osg::Vec3f& offset, unsigned int& srid )
 {
   srid = this->srid();
-
-  const VertexList& vertexList ( this->_vertices() );
-
-  if( vertexList.size() == 1 && vertexList[0].size() == 1 )
-  {
-    osg::Vec3 center;
-    BinaryParser::Vertex v ( vertexList[0][0] );
-    center.set( v[0] + offset.x(), v[1] + offset.y(), offset.z() );
-
-    return center;
-  }
-
-  return BaseClass::geometryCenter ( offset, srid );
+  osg::Vec3f center ( _point[0] + _offset[0], _point[1] + _offset[1], _offset[2] );
+  return center;
 }
 
 
@@ -125,4 +118,28 @@ Usul::Interfaces::IUnknown* Point::queryInterface( unsigned long iid )
   default:
     return BaseClass::queryInterface ( iid );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the point.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Point::point( const Usul::Math::Vec3d& p )
+{
+  _point = p;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the point.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Usul::Math::Vec3d Point::point() const
+{
+  return _point;
 }

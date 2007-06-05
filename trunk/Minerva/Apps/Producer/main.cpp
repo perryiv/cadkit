@@ -21,8 +21,6 @@
 
 Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
 
-
-
 #include "DrawCallbackImpl.h"
 
 #include "Minerva/Core/DB/Connection.h"
@@ -46,67 +44,6 @@ Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
 #ifdef _MSC_VER
 # include <direct.h>
 #endif
-
-class PickHandler : public osgGA::GUIEventHandler
-{
-public:
- 
-  PickHandler(osgProducer::Viewer& viewer, Minerva::Core::Scene::SceneManager * manager ):
-     _viewer(viewer), _manager( manager ) {}
- 
-  ~PickHandler() {}
- 
-  bool handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter& us);
- 
-  virtual void pick(const osgGA::GUIEventAdapter& ea);
- 
-  void setLabel(const std::string& name)
-  {
-    _manager->setDisplayText( name );
-  }
- 
-protected:
-
-  osgProducer::Viewer& _viewer;
-  Minerva::Core::Scene::SceneManager::RefPtr _manager;
-};
- 
-bool PickHandler::handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter&)
-{
-  switch(ea.getEventType())
-  {
-  case(osgGA::GUIEventAdapter::FRAME):
-    {
-      pick(ea);
-    }
-    return false;
-    
-  default:
-    return false;
-  }
-}
- 
-void PickHandler::pick(const osgGA::GUIEventAdapter& ea)
-{
-#if 0
-  osgUtil::IntersectVisitor::HitList hlist;
-   
-  std::string text ( "" );
-  if ( _viewer.computeIntersections(ea.getX(),ea.getY(),hlist) )
-    {
-      osgUtil::Hit hit ( hlist.front() );
-    
-      if (hit._geode.valid() )
-	{
-	  if( Minerva::DataObjects::UserData *ud = dynamic_cast < Minerva::DataObjects::UserData* > ( hit._geode->getUserData() ) )
-	    {
-	      text = ud->_do->tooltip();
-	    }
-	}
-    }
-  setLabel( text );
-#endif
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -163,11 +100,6 @@ int main ( int argc, char **argv )
   Minerva::Core::Scene::SceneManager::RefPtr manager ( new Minerva::Core::Scene::SceneManager );
   dbManager->sceneManager ( manager.get() );
 
-  // Make the pick handler.
-  //osg::ref_ptr< PickHandler > pick ( new PickHandler( viewer, manager.get() ) );
- 
-  //viewer.getEventHandlerList().push_front( pick.get() );
-
   // Set the scene.
   viewer.setClearColor( osg::Vec4( 0.7f, 0.7f, 0.7f, 1.0f ) );
 
@@ -204,19 +136,9 @@ int main ( int argc, char **argv )
     // If there are draw commands to process...
     if( update() && dbManager->hasEvents() )
     {
-      manager->addFeedbackHud ( viewport[2], viewport[3] );
-
-      // Remove the event handler.
-      //viewer.getEventHandlerList().pop_front();
-
       // Update the scene.
       dbManager->updateScene();
       manager->buildScene();
-
-      // Add the event handler.
-      //viewer.getEventHandlerList().push_front( pick.get() );
-
-      manager->removeFeedbackHud();
     }
 
     // update the scene by traversing it with the the update visitor which will

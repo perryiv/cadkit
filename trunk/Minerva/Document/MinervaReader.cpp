@@ -10,6 +10,9 @@
 
 #include "MinervaReader.h"
 
+#include "Minerva/Core/Serialize.h"
+#include "Magrathea/RegisterFactories.h"
+
 using namespace Minerva::Document;
 
 
@@ -47,6 +50,8 @@ MinervaReader::~MinervaReader()
 void MinervaReader::operator()()
 {
   Minerva::Core::registerFactories();
+  Magrathea::registerFactories();
+
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<MinervaDocument> ( "MinervaDocument" ) );
   Serialize::XML::deserialize ( _filename, *_document );
 

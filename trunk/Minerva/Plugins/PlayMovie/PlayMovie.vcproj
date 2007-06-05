@@ -121,7 +121,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR)/Cinema/src;$(CADKIT_ROOT_DIR)/Experimental;$(CADKIT_ROOT_DIR);$(CINEMA_INC_DIR)/src;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR);$(PQXX_INC_DIR);$(OSSIM_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR)/Cinema/src;$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR);$(PQXX_INC_DIR);$(OSSIM_INC_DIR)"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PLAYMOVIE_EXPORTS;_COMPILING_PLAY_MOVIE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

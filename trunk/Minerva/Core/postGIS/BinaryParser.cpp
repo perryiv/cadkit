@@ -4,16 +4,52 @@
 //  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Created by: Adam Kubach
+//  Author(s): Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/postGIS/BinaryParser.h"
+#include "Minerva/Core/postGIS/Point.h"
+#include "Minerva/Core/postGIS/MultiPoint.h"
+#include "Minerva/Core/postGIS/Line.h"
+#include "Minerva/Core/postGIS/MultiLine.h"
+#include "Minerva/Core/postGIS/Polygon.h"
+#include "Minerva/Core/postGIS/MultiPolygon.h"
 
 #include "Usul/Endian/Endian.h"
 
 #include <algorithm>
 
+using namespace Minerva::Core::postGIS;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+BinaryParser::BinaryParser()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+BinaryParser::~BinaryParser()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Predicate for comparing vertices.  Should probably use CloseFloat for robustness.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 namespace Detail
 {
@@ -30,33 +66,26 @@ namespace Detail
 }
 
 
-using namespace Minerva::Core::postGIS;
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Constructor.
+//  Get data and convert.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BinaryParser::BinaryParser( const pqxx::result::field &F ) : 
-BaseClass(),
-_buffer ( new pqxx::binarystring( F ) )
+namespace Detail
 {
+  template < typename Type, class Convert >
+  Type convert ( const unsigned char *& buffer )
+  {
+    Type t;
+    const unsigned int size ( sizeof ( t ) );
+    ::memcpy( &t, buffer, size );
+    buffer += size;
+
+		Convert::convert( t );
+    return t;
+  }
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Destructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-BinaryParser::~BinaryParser()
-{
-  delete _buffer;
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -64,51 +93,49 @@ BinaryParser::~BinaryParser()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class Convert >
-void BinaryParser::_createVertices( Usul::Types::Uint32 numPoints, Usul::Types::Uint64& bytesReadSoFar, Vertices& vertices )
+namespace Detail
 {
-  vertices.reserve( numPoints );
 
-	Usul::Types::Uint32 sizeOfFloat ( sizeof ( Usul::Types::Float64 ) );
+  template < class Convert, class Vertices >
+  void createVertices( const unsigned char*& buffer, Vertices& vertices )
+  {
+    typedef typename Vertices::value_type Vertex;
 
-	for ( Usul::Types::Uint32 i = 0; i < numPoints; ++i )
-	{
-		Usul::Types::Float64 x ( 0 );
-		::memcpy( &x, &(_buffer->front()) + bytesReadSoFar, sizeOfFloat );
-		bytesReadSoFar += sizeOfFloat;
+    Usul::Types::Uint32 numPoints ( Detail::convert < Usul::Types::Uint32, Convert > ( buffer ) );
+    vertices.reserve( numPoints );
 
-		Convert::convert(x);
+	  for ( Usul::Types::Uint32 i = 0; i < numPoints; ++i )
+	  {
+      Usul::Types::Float64 x ( convert < Usul::Types::Float64, Convert > ( buffer ) );
+      Usul::Types::Float64 y ( convert < Usul::Types::Float64, Convert > ( buffer ) );
+      
+      vertices.push_back( Vertex ( x, y ) );
+	  }
 
-		Usul::Types::Float64 y ( 0 );
-		::memcpy( &y, &(_buffer->front()) + bytesReadSoFar, sizeOfFloat );
-		bytesReadSoFar += sizeOfFloat;
+    // Remove any duplicate vertices.
+    vertices.erase ( std::unique ( vertices.begin(), vertices.end(), Detail::VectorCompare() ), vertices.end() );
+  }
 
-		Convert::convert(y);  
-    
-    vertices.push_back( Vertex ( x, y ) );
-	}
+  template < class Convert, class Vertices >
+  void createVertices3D( const unsigned char*& buffer, Vertices& vertices )
+  {
+    typedef typename Vertices::value_type Vertex;
 
-  // Remove any duplicate vertices.
-  vertices.erase ( std::unique ( vertices.begin(), vertices.end(), Detail::VectorCompare() ), vertices.end() );
-}
+    Usul::Types::Uint32 numPoints ( Detail::convert < Usul::Types::Uint32, Convert > ( buffer ) );
+    vertices.reserve( numPoints );
 
+	  for ( Usul::Types::Uint32 i = 0; i < numPoints; ++i )
+	  {
+      Usul::Types::Float64 x ( convert < Usul::Types::Float64, Convert > ( buffer ) );
+      Usul::Types::Float64 y ( convert < Usul::Types::Float64, Convert > ( buffer ) );
+      
+      vertices.push_back( Vertex ( x, y, 0.0 ) );
+	  }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Parse the line string.
-//
-///////////////////////////////////////////////////////////////////////////////
+    // Remove any duplicate vertices.
+    vertices.erase ( std::unique ( vertices.begin(), vertices.end(), Detail::VectorCompare() ), vertices.end() );
+  }
 
-template < class Convert >
-void BinaryParser::_parseLineString( Usul::Types::Uint64& bytesReadSoFar, Vertices& vertices )
-{
-	Usul::Types::Uint32 numPoints ( 0 );
-	::memcpy( &numPoints, &(_buffer->front()) + bytesReadSoFar, sizeof( numPoints ) );
-	bytesReadSoFar += sizeof(numPoints);
-
-	Convert::convert(numPoints);
-
-	return _createVertices< Convert > ( numPoints, bytesReadSoFar, vertices );
 }
 
 
@@ -119,90 +146,75 @@ void BinaryParser::_parseLineString( Usul::Types::Uint64& bytesReadSoFar, Vertic
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Convert >
-void BinaryParser::_createGeometryEndian ( VertexList &vertexList, Usul::Types::Uint64& bytesReadSoFar )
+void BinaryParser::_createGeometryEndian ( const unsigned char*& buffer, VertexList &vertexList )
 {
-	Usul::Types::Uint32 polygonType ( 0 );
-	::memcpy( &polygonType, &(_buffer->front()) + bytesReadSoFar, sizeof( polygonType ) );
-	bytesReadSoFar += sizeof(polygonType);
-
-	Convert::convert(polygonType);
+  Usul::Types::Uint32 polygonType ( Detail::convert < Usul::Types::Uint32, Convert > ( buffer ) );
 
 	switch ( polygonType )
 	{
 	case wkbPoint:
 		{
       Vertices vertices;
-			_createVertices < Convert > ( 1, bytesReadSoFar, vertices );
+      Usul::Types::Float64 x ( Detail::convert < Usul::Types::Float64, Convert > ( buffer ) );
+      Usul::Types::Float64 y ( Detail::convert < Usul::Types::Float64, Convert > ( buffer ) );
+      
+      vertices.push_back( Vertex ( x, y ) );
+
 			vertexList.push_back ( vertices );
 		}
 		break;
 	case wkbLineString:
 		{
       Vertices vertices;
-			_parseLineString < Convert > ( bytesReadSoFar, vertices );
+			Detail::createVertices < Convert, Vertices > ( buffer, vertices );
 			vertexList.push_back ( vertices );
 		}
 		break;
 	case wkbPolygon:
 		{
-			Usul::Types::Uint32 numRings ( 0 );
-			::memcpy( &numRings, &(_buffer->front()) + bytesReadSoFar, sizeof( Usul::Types::Uint32 ) );
-			bytesReadSoFar += sizeof(numRings);
-			Convert::convert(numRings);
+      Usul::Types::Uint32 numRings ( Detail::convert < Usul::Types::Uint32, Convert > ( buffer ) );
 
       for ( Usul::Types::Uint32 i = 0; i < numRings; ++i )
       {
-         Vertices vertices;
-        _parseLineString < Convert > ( bytesReadSoFar, vertices );
+        Vertices vertices;
+        Detail::createVertices < Convert, Vertices > ( buffer, vertices );
 			  vertexList.push_back ( vertices );
       }
 		}
 		break;
 	case wkbMultiPoint:
 		{
-			Usul::Types::Uint32 numPoints ( 0 );
-			::memcpy( &numPoints, &(_buffer->front()) + bytesReadSoFar, sizeof( numPoints ) );
-			bytesReadSoFar += sizeof(numPoints);
-			Convert::convert(numPoints);
+      Usul::Types::Uint32 numPoints ( Detail::convert < Usul::Types::Uint32, Convert > ( buffer ) );
 
       for( Usul::Types::Uint32 i = 0; i < numPoints; ++i )
 			{
-        this->_createGeometry( vertexList, bytesReadSoFar );
+        this->_createGeometry( buffer, vertexList );
       }
 		}
 		break;
 	case wkbMultiLineString:
 		{
-			Usul::Types::Uint32 numLineStrings ( 0 );
-			::memcpy( &numLineStrings, &(_buffer->front()) + bytesReadSoFar, sizeof( numLineStrings ) );
-			bytesReadSoFar += sizeof(numLineStrings);
-			Convert::convert(numLineStrings);
+      Usul::Types::Uint32 numLineStrings ( Detail::convert < Usul::Types::Uint32, Convert > ( buffer ) );
 
 			for( Usul::Types::Uint32 i = 0; i < numLineStrings; ++i )
 			{
-        this->_createGeometry( vertexList, bytesReadSoFar );
+        this->_createGeometry( buffer, vertexList );
       }
 		}
 		break;
 	case wkbMultiPolygon:
 		{
-			Usul::Types::Uint32 numPolygons ( 0 );
-			::memcpy( &numPolygons, &(_buffer->front()) + bytesReadSoFar, sizeof( numPolygons ) );
-			bytesReadSoFar += sizeof(numPolygons);
-			Convert::convert(numPolygons);
+      Usul::Types::Uint32 numPolygons ( Detail::convert < Usul::Types::Uint32, Convert > ( buffer ) );
 
 			for( Usul::Types::Uint32 i = 0; i < numPolygons; ++i )
 			{
-		    this->_createGeometry( vertexList, bytesReadSoFar );
+		    this->_createGeometry( buffer, vertexList );
 			}
 		}
 		break;
 	case wkbGeometryCollection:
 		{
-			Usul::Types::Uint32 numGeometries ( 0 );
-			::memcpy( &numGeometries, &(_buffer->front()) + bytesReadSoFar, sizeof( numGeometries ) );
-			bytesReadSoFar += sizeof(numGeometries);
-			Convert::convert(numGeometries);
+      throw std::runtime_error ("Error 1860300399: Geometry Collections are not supported." );
 		}
 		break;
 	default: // Unknown
@@ -217,25 +229,24 @@ void BinaryParser::_createGeometryEndian ( VertexList &vertexList, Usul::Types::
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void BinaryParser::_createGeometry( VertexList &vertexList, Usul::Types::Uint64& bytesReadSoFar )
+void BinaryParser::_createGeometry( const unsigned char*& buffer, VertexList &vertexList )
 {
 	Usul::Types::Uint8 endian ( 0 );
-	::memcpy( &endian, &(_buffer->front()), sizeof( endian ) );
-	bytesReadSoFar += sizeof(endian);
+	::memcpy( &endian, buffer, sizeof( endian ) );
+  buffer += sizeof(endian);
 
+  switch ( endian )
+  {
 	// Big endian.
-	if( endian == 0 )
-	{
-		_createGeometryEndian < Usul::Endian::FromBigToSystem > ( vertexList, bytesReadSoFar );
-	}
+  case wkbBigEndian:
+		_createGeometryEndian < Usul::Endian::FromBigToSystem > ( buffer, vertexList );
+    break;
 	// Little endian.
-	else if ( endian == 1 )
-	{
-		_createGeometryEndian < Usul::Endian::FromLittleToSystem > ( vertexList, bytesReadSoFar );
-	}
+  case wkbLittleEndian:
+		_createGeometryEndian < Usul::Endian::FromLittleToSystem > ( buffer, vertexList );
+    break;
 	// Error!
-	else
-	{
+  default:
     throw std::runtime_error ( "Error 1713426630: Unknown endian type." );
 	}
 }
@@ -243,16 +254,181 @@ void BinaryParser::_createGeometry( VertexList &vertexList, Usul::Types::Uint64&
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get vertex data for the given table and id.
+//  Parse and create geomtry.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BinaryParser::VertexList BinaryParser::getVertices ()
+BinaryParser::VertexList BinaryParser::getVertices ( const unsigned char* buffer )
 {
-  Usul::Types::Uint64 bytesReadSoFar ( 0 );
-
   VertexList vertexList;
-  this->_createGeometry( vertexList, bytesReadSoFar );
- 
+  this->_createGeometry( buffer, vertexList );
+
   return vertexList;
+}
+
+
+namespace Detail
+{
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Create a point.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  template < class Convert >
+  Point* createPoint ( const unsigned char *& buffer )
+  {
+    Point::RefPtr point ( new Point );
+
+    Usul::Types::Float64 x ( convert < Usul::Types::Float64, Convert > ( buffer ) );
+    Usul::Types::Float64 y ( convert < Usul::Types::Float64, Convert > ( buffer ) );
+
+    point->point ( Usul::Math::Vec3d ( x, y, 0.0 ) );
+
+    return point.release();
+  }
+
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Create a line.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  template < class Convert >
+  Line* createLine ( const unsigned char *& buffer )
+  {
+    Line::RefPtr line ( new Line );
+
+    typedef Line::Vertices Vertices;
+
+    Vertices vertices;
+	  Detail::createVertices3D < Convert, Vertices > ( buffer, vertices );
+
+    line->line( vertices );
+
+    return line.release();
+  }
+
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Create a polygon.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  template < class Convert >
+  Polygon* createPolygon ( const unsigned char *& buffer )
+  {
+    Polygon::RefPtr polygon ( new Polygon );
+
+    Usul::Types::Uint32 numRings ( Detail::convert < Usul::Types::Uint32, Convert > ( buffer ) );
+
+    for ( Usul::Types::Uint32 i = 0; i < numRings; ++i )
+    {
+    }
+
+    return polygon.release();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse and create geomtry with given endian converter.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Convert >
+Geometry* BinaryParser::_createGeometryEndian ( const unsigned char*& buffer )
+{
+  Usul::Types::Uint32 polygonType ( Detail::convert < Usul::Types::Uint32, Convert > ( buffer ) );
+
+	switch ( polygonType )
+	{
+	case wkbPoint:       return Detail::createPoint   < Convert > ( buffer );
+  case wkbLineString:  return Detail::createLine    < Convert > ( buffer );
+  case wkbPolygon:     return Detail::createPolygon < Convert > ( buffer );
+	case wkbMultiPoint:
+		{
+      // How many points will we have?
+      Usul::Types::Uint32 numPoints ( Detail::convert < Usul::Types::Uint32, Convert > ( buffer ) );
+
+      MultiPoint::RefPtr multiPoint ( new MultiPoint );
+
+      // Loop through and add the points.
+      for( Usul::Types::Uint32 i = 0; i < numPoints; ++i )
+			{
+        multiPoint->addGeometry( this->_createGeometry( buffer ) );
+      }
+		}
+		break;
+	case wkbMultiLineString:
+		{
+      // Get the number of lines to expect.
+      Usul::Types::Uint32 numLines ( Detail::convert < Usul::Types::Uint32, Convert > ( buffer ) );
+
+      MultiLine::RefPtr multiLine ( new MultiLine );
+
+			for( Usul::Types::Uint32 i = 0; i < numLines; ++i )
+			{
+        multiLine->addGeometry( this->_createGeometry ( buffer ) );
+      }
+		}
+		break;
+	case wkbMultiPolygon:
+		{
+      // Get the number of polygons to expect.
+      Usul::Types::Uint32 numPolygons ( Detail::convert < Usul::Types::Uint32, Convert > ( buffer ) );
+
+			for( Usul::Types::Uint32 i = 0; i < numPolygons; ++i )
+			{
+			}
+		}
+		break;
+	case wkbGeometryCollection:
+		{
+      throw std::runtime_error ("Error 7080891000: Geometry Collections are not supported." );
+		}
+		break;
+	}
+
+  throw std::runtime_error ("Error 4919319700: Unknown geometry type." );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse and create geomtry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Geometry* BinaryParser::_createGeometry ( const unsigned char*& buffer )
+{
+  Usul::Types::Uint8 endian ( 0 );
+	::memcpy( &endian, buffer, sizeof( endian ) );
+  buffer += sizeof(endian);
+
+  switch ( endian )
+  {
+	// Big endian.
+  case wkbBigEndian:
+		return _createGeometryEndian < Usul::Endian::FromBigToSystem > ( buffer );
+	// Little endian.
+  case wkbLittleEndian:
+		return _createGeometryEndian < Usul::Endian::FromLittleToSystem > ( buffer );    
+	}
+
+  throw std::runtime_error ( "Error 1713426630: Unknown endian type." );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse and create geomtry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Geometry* BinaryParser::operator() ( const unsigned char* buffer )
+{
+  return this->_createGeometry( buffer );
 }

@@ -339,7 +339,7 @@ osg::Vec3f PlayMovieComponent::convertStringToPosition( const std::string& str )
   std::string::size_type loc1, loc2, count; 
   
   loc1  = str.find( "(", 0 );
-  loc2  = str.find( ")", 0 );                
+  loc2  = str.find( ")", 0 );
   count = loc2 - ( loc1 + 1 );
   
   std::string temp( str.substr( loc1+1, count ) );

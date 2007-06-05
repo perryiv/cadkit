@@ -9,7 +9,7 @@
 
 namespace CadKit.Plugins.Windows.SnapShot
 {
-  public partial class SnapShotWindow : WeifenLuo.WinFormsUI.DockContent, System.IDisposable
+  public partial class SnapShotWindow : WeifenLuo.WinFormsUI.Docking.DockContent, System.IDisposable
   {
     /// <summary>
     /// Local constants.
@@ -41,13 +41,13 @@ namespace CadKit.Plugins.Windows.SnapShot
       {
         this.InitializeComponent();
 
-        this.DockableAreas =
-          WeifenLuo.WinFormsUI.DockAreas.DockBottom |
-          WeifenLuo.WinFormsUI.DockAreas.DockLeft |
-          WeifenLuo.WinFormsUI.DockAreas.DockRight |
-          WeifenLuo.WinFormsUI.DockAreas.DockTop |
-          WeifenLuo.WinFormsUI.DockAreas.Float;
-        this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockBottom;
+        this.DockAreas =
+          WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom |
+          WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft |
+          WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight |
+          WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop |
+          WeifenLuo.WinFormsUI.Docking.DockAreas.Float;
+        this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockBottom;
         this.HideOnClose = true;
         CadKit.Documents.Manager.Instance.ActiveViewChanged += this._activeViewChanged;
         this.FormClosing += this._formClosing;

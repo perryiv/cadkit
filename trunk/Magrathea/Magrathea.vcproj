@@ -61,13 +61,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgGAd.lib OpenThreadsWin32d.lib ossimd.lib ossimPlanetd.lib osgEphemerisd.lib libwmsd.lib osgUtild.lib"
-				OutputFile="$(LOCAL_SRC_DIR)/bin/Cadkit.Magrathead.dll"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgGAd.lib ossimd.lib ossimPlanetd.lib osgEphemerisd.lib libwmsd.lib osgUtild.lib OpenThreadsd.lib"
+				OutputFile="$(LOCAL_SRC_DIR)/bin/Magrathead.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(CADKIT_ROOT_DIR)/bin;$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR);$(OSG_EPHEMERIS_LIB_DIR);$(WMS_LIB_DIR)"
 				GenerateDebugInformation="true"
 				SubSystem="1"
-				ImportLibrary="$(LOCAL_SRC_DIR)/bin/Cadkit.Magrathead.lib"
+				ImportLibrary="$(LOCAL_SRC_DIR)/bin/Magrathead.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -143,8 +143,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib OpenThreadsWin32.lib ossim.lib ossimPlanet.lib osgEphemeris.lib libwms.lib osgUtil.lib"
-				OutputFile="$(LOCAL_SRC_DIR)/bin/Cadkit.Magrathea.dll"
+				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib ossim.lib ossimPlanet.lib osgEphemeris.lib libwms.lib osgUtil.lib OpenThreads.lib"
+				OutputFile="$(LOCAL_SRC_DIR)/bin/.Magrathea.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(CADKIT_ROOT_DIR)/bin;$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR);$(OSG_EPHEMERIS_LIB_DIR);$(WMS_LIB_DIR)"
 				GenerateDebugInformation="false"
@@ -152,7 +152,7 @@
 				OptimizeReferences="0"
 				EnableCOMDATFolding="0"
 				LinkTimeCodeGeneration="0"
-				ImportLibrary="$(LOCAL_SRC_DIR)/bin/Cadkit.Magrathea.lib"
+				ImportLibrary="$(LOCAL_SRC_DIR)/bin/Magrathea.lib"
 				TargetMachine="0"
 			/>
 			<Tool
@@ -259,6 +259,10 @@
 			</File>
 			<File
 				RelativePath=".\Project.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RegisterFactories.h"
 				>
 			</File>
 			<File

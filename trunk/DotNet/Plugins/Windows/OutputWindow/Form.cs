@@ -9,7 +9,7 @@
 
 namespace CadKit.Plugins.Windows.OutputWindow
 {
-  public class Form : WeifenLuo.WinFormsUI.DockContent
+  public class Form : WeifenLuo.WinFormsUI.Docking.DockContent
   {
     /// <summary>
     /// Data members.
@@ -24,13 +24,13 @@ namespace CadKit.Plugins.Windows.OutputWindow
     {
       try
       {
-        this.DockableAreas =
-            WeifenLuo.WinFormsUI.DockAreas.DockBottom |
-            WeifenLuo.WinFormsUI.DockAreas.DockTop |
-            WeifenLuo.WinFormsUI.DockAreas.DockLeft |
-            WeifenLuo.WinFormsUI.DockAreas.DockRight |
-            WeifenLuo.WinFormsUI.DockAreas.Float;
-        this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockBottom;
+        this.DockAreas =
+            WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom |
+            WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop |
+            WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft |
+            WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight |
+            WeifenLuo.WinFormsUI.Docking.DockAreas.Float;
+        this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockBottom;
         this.HideOnClose = true;
 
         _text = new System.Windows.Forms.RichTextBox();

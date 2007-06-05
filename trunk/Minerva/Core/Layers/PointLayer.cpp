@@ -9,7 +9,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Layers/PointLayer.h"
-#include "Minerva/Core/postGIS/Point.h"
+#include "Minerva/Core/postGIS/Geometry.h"
+#include "Minerva/Core/postGIS/Factory.h"
 #include "Minerva/Core/DataObjects/Point.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
@@ -130,9 +131,16 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       int id ( iter["id"].as < int > () );
       int srid ( iter["srid"].as < int > () );
 
-      Usul::Interfaces::IUnknown::QueryPtr unknown ( new Minerva::Core::postGIS::Point ( this->connection(), this->tablename(), id, srid, iter["geom"] ) );
+      typedef Minerva::Core::postGIS::Geometry Geometry;
+      typedef Minerva::Core::postGIS::Factory  GeometryFactory;
 
-      Usul::Interfaces::IOffset::QueryPtr offset ( unknown );
+      pqxx::binarystring buffer ( iter["geom"] );
+      Geometry::RefPtr geometry ( GeometryFactory::instance().createFromBinary ( &buffer.front() ) );
+      geometry->srid( srid );
+
+      //Usul::Interfaces::IUnknown::QueryPtr unknown ( new Minerva::Core::postGIS::Point ( this->connection(), this->tablename(), id, srid, iter["geom"] ) );
+
+      Usul::Interfaces::IOffset::QueryPtr offset ( geometry );
 
       if( offset.valid () )
       {
@@ -140,7 +148,7 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       }
 
       Minerva::Core::DataObjects::Point::RefPtr data ( new Minerva::Core::DataObjects::Point );
-      data->geometry( unknown->queryInterface( Usul::Interfaces::IUnknown::IID ) );
+      data->geometry( geometry->queryInterface( Usul::Interfaces::IUnknown::IID ) );
       data->color( this->_color ( iter ) );
       data->size ( this->size() );
       data->primitiveId ( this->primitiveID() );

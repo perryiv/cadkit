@@ -44,6 +44,7 @@ public:
   USUL_DECLARE_QUERY_POINTERS( Geometry );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
+  Geometry();
   Geometry( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F );
 
   // Is it valid?
@@ -53,8 +54,9 @@ public:
   void                    dirty ( bool b );
   bool                    dirty () const;
 
-  /// Get the srid.
+  /// Get/Set the srid.
   unsigned int            srid () const { return _srid; }
+  void                    srid ( unsigned int srid ) { _srid = srid; }
 
 protected:
   virtual ~Geometry();

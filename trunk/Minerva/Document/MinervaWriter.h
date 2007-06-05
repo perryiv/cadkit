@@ -11,8 +11,6 @@
 #ifndef __MINERVA_WRITER_H__
 #define __MINERVA_WRITER_H__
 
-#include "Minerva/Core/Serialize.h"
-
 #include "MinervaDocument.h"
 
 #include <string>

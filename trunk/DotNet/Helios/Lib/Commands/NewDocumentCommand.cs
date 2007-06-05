@@ -35,7 +35,7 @@ namespace CadKit.Helios.Commands
       CadKit.Interfaces.IDockPanel dock = _caller as CadKit.Interfaces.IDockPanel;
       if (null != dock)
       {
-        CadKit.Helios.Lib.NewDocumentForm.Instance.Show(dock.DockPanel as WeifenLuo.WinFormsUI.DockPanel);
+        CadKit.Helios.Lib.NewDocumentForm.Instance.Show(dock.DockPanel as WeifenLuo.WinFormsUI.Docking.DockPanel);
       }
       else
       {

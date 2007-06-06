@@ -8,7 +8,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Compass.h"
-using OsgTools::Builders;
+
+#include "Usul/CommandLine/Arguments.h"
+
+using namespace OsgTools::Builders;
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Update Callback for hiding and showing the compass
@@ -131,6 +135,7 @@ _radius(.8),
 _animating(false),
 _rotate_by_view(true)
 {
+	_texfn = Usul::CommandLine::Arguments::instance().directory() + "/icons/big_compass_1.tga";
 	_pos = (osg::Vec3(_scale * 4.0f, _scale * -3.0f, -1.0f));
 	_compassobject = buildCompassObject();
 	buildCompass();

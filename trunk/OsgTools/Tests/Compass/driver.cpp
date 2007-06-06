@@ -13,6 +13,9 @@
 
 #include "CompassEventHandler.h"
 #include "terrain_coords.h"
+
+#include "Usul/CommandLine/Arguments.h"
+
 #include "OsgTools/Builders/Compass.h"
 
 
@@ -20,7 +23,7 @@ class DriverEventHandler : public osgGA::GUIEventHandler
 {
 public:
     
-	DriverEventHandler(Compass* c, osgViewer::Viewer* v):
+	DriverEventHandler( OsgTools::Builders::Compass* c, osgViewer::Viewer* v):
              _compass(c),_viewer(v){}
     
         virtual bool handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter&)
@@ -54,7 +57,7 @@ public:
             }
         }
         
-		osg::ref_ptr<Compass> _compass;
+		osg::ref_ptr< OsgTools::Builders::Compass > _compass;
 		osg::ref_ptr<osgViewer::Viewer> _viewer;
         
 };
@@ -108,8 +111,9 @@ osg::Geode* createShapes()
     return geode.release();
 	//return geode;
 }
-int main(int, char **)
+int main(int argc , char ** argv)
 {
+	Usul::CommandLine::Arguments::instance().set ( argc, argv );
     // construct the viewer.
 	
 	osg::ref_ptr<osgViewer::Viewer> viewer (new osgViewer::Viewer());

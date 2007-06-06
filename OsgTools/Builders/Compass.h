@@ -49,8 +49,8 @@ public:
 	void setTextureFilename(const std::string& fn);
 	osg::Node* getCompass();
 	
-	bool getAnimationState();
-	void setAnimationState(bool state);
+	bool isAnimating();
+	void setAnimation(bool state);
 
 	float getRotation();
 	void setRotation(float r);
@@ -63,7 +63,7 @@ public:
 	float getScale();
 	void setScale(float s);
 
-	bool getCompassState();
+	bool isVisible();
 	
 	void buildCompass();
 	void keyChange(int key,int value);
@@ -83,7 +83,7 @@ private:
 	osg::Vec3 _pos;
 	float _scale;
 	std::string _texfn;
-	int _numslices;
+	unsigned int _numslices;
 	float _radius;
 	osg::ref_ptr<osg::Group> _compassgroup;
 	osg::ref_ptr<osg::Geode> _compassobject;

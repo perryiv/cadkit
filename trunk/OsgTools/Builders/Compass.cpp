@@ -18,11 +18,11 @@ using namespace OsgTools::Builders;
 //  Update Callback for hiding and showing the compass
 //
 ///////////////////////////////////////////////////////////////////////////////
-class MyTransformCallback : public osg::NodeCallback
+class CompassAnimationCallback : public osg::NodeCallback
 {
     public:
 
-        MyTransformCallback(Compass* compass, float start, float end, float step)
+        CompassAnimationCallback(Compass* compass, float start, float end, float step)
         {
             _start = start;
 			_end = end;
@@ -33,32 +33,34 @@ class MyTransformCallback : public osg::NodeCallback
         virtual void operator() (osg::Node* node, osg::NodeVisitor* nv)
         {
             osg::MatrixTransform* transform = dynamic_cast<osg::MatrixTransform*>(node);    
-			if(_compass->getAnimationState())
-			{
-				if(_compass->getCompassState())
-				{
-					if (_start < _end)
-					{
-						_start += _step;
-						transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
-						
-					}
-					else
-						_compass->setAnimationState(false);
-				}
-				else
-				{
-					if (_start > _end)
-					{
-						_start += _step;
-						transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
-						
-					}
-					else
-						_compass->setAnimationState(false);
-				}
-			}
-			            
+            if(0L != transform)
+            {
+			        if(_compass->isAnimating())
+			        {
+				        if(_compass->isVisible())
+				        {
+					        if (_start < _end)
+					        {
+						        _start += _step;
+						        transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
+        						
+					        }
+					        else
+						        _compass->setAnimation(false);
+				        }
+				        else
+				        {
+					        if (_start > _end)
+					        {
+						        _start += _step;
+						        transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
+        						
+					        }
+					        else
+						        _compass->setAnimation(false);
+				        }
+			        }
+            }   
             traverse(node,nv);            
             
         }
@@ -89,10 +91,10 @@ class CompassOrientationCallback : public osg::NodeCallback
         virtual void operator()(osg::Node *node, osg::NodeVisitor *nv)
         {
             osgUtil::CullVisitor *cv = dynamic_cast<osgUtil::CullVisitor *>(nv);
-            if( cv != 0L)
+            if( 0L != cv)
             {
                 osg::MatrixTransform *tx = dynamic_cast<osg::MatrixTransform *>(node);
-                if( tx != 0L )
+                if( 0L != tx )
                 {
                     osg::Matrix VM = cv->getState()->getInitialViewMatrix();
 					 
@@ -141,28 +143,129 @@ _rotate_by_view(true)
 	buildCompass();
 }
 Compass::~Compass(){}
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get/Set Methods
+//  Return the state of the compass: visible or not
 //
 ///////////////////////////////////////////////////////////////////////////////
-bool Compass::getCompassState(){return _showcompass;}
 
-void Compass::setTextureFilename(const std::string& fn){_texfn = fn;buildCompass();}
+bool Compass::isVisible()
+{
+	return _showcompass;
+}
 
-osg::Node* Compass::getCompass(){return _compassgroup.get();}
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the texture filename for the compass
+//
+///////////////////////////////////////////////////////////////////////////////
 
-float Compass::getRotation(){return _rotdeg;}
-void Compass::setRotation(float r){_rotdeg = r;}
+void Compass::setTextureFilename(const std::string& fn)
+{
+  _texfn = fn;
+  buildCompass();
+}
 
-const osg::Vec3& Compass::getPosition(){return _pos;}
-void Compass::setPotion(const osg::Vec3& p){_pos = p;}
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the compass group with object and matrix transformations
+//
+///////////////////////////////////////////////////////////////////////////////
 
-float Compass::getScale(){return _scale;}
-void Compass::setScale(float s){_scale = s;}
+osg::Node* Compass::getCompass()
+{
+  return _compassgroup.get();
+}
 
-bool Compass::getAnimationState(){return _animating;}
-void Compass::setAnimationState(bool state){_animating = state;}
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the amount of rotation of the compass
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float Compass::getRotation()
+{
+  return _rotdeg;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the amount of rotation on the compass
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Compass::setRotation(float r)
+{
+  _rotdeg = r;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the position on the screen of the compass
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec3& Compass::getPosition()
+{
+  return _pos;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the position on the screen of the compass
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Compass::setPotion(const osg::Vec3& p)
+{
+  _pos = p;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the xyz scale value of the compass
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float Compass::getScale()
+{
+  return _scale;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the xyz scale value of the compass
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Compass::setScale(float s)
+{
+  _scale = s;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return true if the compass is in the act of showing or hiding
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Compass::isAnimating()
+{
+  return _animating;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the animation state to trigger a show or hide.
+//  Use showCompass() or hideCompass() methods.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Compass::setAnimation(bool state)
+{
+  _animating = state;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //  true to use the view matrix
@@ -171,7 +274,10 @@ void Compass::setAnimationState(bool state){_animating = state;}
 //		- call "updateCompass" after changing angle values to rebuild 
 //		  the compass
 ///////////////////////////////////////////////////////////////////////////////
-void Compass::setRotationMode(bool m){_rotate_by_view = m;}
+void Compass::setRotationMode(bool m)
+{
+  _rotate_by_view = m;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -196,8 +302,7 @@ void Compass::updateCompass()
 ///////////////////////////////////////////////////////////////////////////////
 osg::Geode* Compass::buildCompassObject()
 {
-	int x;
-	float angle;
+	
 	osg::ref_ptr<osg::Geode> geode (new osg::Geode());
 	osg::ref_ptr<osg::StateSet> stateset (new osg::StateSet());
 	osg::ref_ptr<osg::Image> image = osgDB::readImageFile(_texfn);
@@ -228,9 +333,9 @@ osg::Geode* Compass::buildCompassObject()
 	top_fan_tex->push_back(osg::Vec2(0.5f, 0.5f));
 	btm_fan_tex->push_back(osg::Vec2(0.5f, 0.5f));
 	
-	for(x = 0; x < _numslices + 1; ++x)
+	for(unsigned int x = 0; x < _numslices + 1; ++x)
 	{	
-		angle =  float (x) * ( (2 * osg::PI) / _numslices);
+		float angle =  float (x) * ( (2 * osg::PI) / _numslices);
 		
 		top_fan->push_back(osg::Vec3(_radius * ( cos(angle) ), _radius * (sin(angle)), 0.0f));
 		bottom_fan->push_back(osg::Vec3(_radius * ( cos(angle) ), _radius * (sin(angle)), -0.05f));
@@ -286,7 +391,7 @@ osg::MatrixTransform* Compass::initCompass(osg::Node* geode)
 	osg::ref_ptr<osg::MatrixTransform> anim (new osg::MatrixTransform());
 	osg::ref_ptr<CompassOrientationCallback> rotation_callback (new CompassOrientationCallback(this));
 	
-	anim->setUpdateCallback(new MyTransformCallback(this, _animation_start, _animation_end, _animation_step));
+	anim->setUpdateCallback(new CompassAnimationCallback(this, _animation_start, _animation_end, _animation_step));
 	if(_rotate_by_view)
 	{
 		rot->setCullCallback(rotation_callback.get());

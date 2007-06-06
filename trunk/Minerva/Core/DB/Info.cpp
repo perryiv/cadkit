@@ -148,7 +148,7 @@ Info::Strings Info::pointTimeTables()
 
 Info::Strings Info::geometryTables()
 {
-  std::string query ( "SELECT table_name FROM information_schema.columns WHERE column_name='geom'" );
+  std::string query ( "SELECT table_schema || '.' || table_name FROM information_schema.columns WHERE column_name='geom'" );
   return this->_fillStringsFromQuery( query );
 }
 

@@ -112,6 +112,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(ProjectDir)\Builders\Images $(TargetDir)icons /f /i /k /y /c"
 			/>
 		</Configuration>
 		<Configuration
@@ -251,6 +252,14 @@
 				</File>
 				<File
 					RelativePath=".\ColorPolicyFunctor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Builders\Compass.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Builders\Compass.h"
 					>
 				</File>
 				<File

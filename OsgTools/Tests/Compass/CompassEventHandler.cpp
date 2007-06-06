@@ -9,7 +9,7 @@
 
 #include "CompassEventHandler.h"
 
-CompassEventHandler::CompassEventHandler(Compass* c) : _compass(c) {}
+CompassEventHandler::CompassEventHandler( OsgTools::Builders::Compass* c) : _compass(c) {}
 CompassEventHandler::CompassEventHandler(){}
 CompassEventHandler::~CompassEventHandler(){}
 

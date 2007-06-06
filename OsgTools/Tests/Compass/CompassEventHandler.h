@@ -32,12 +32,12 @@
 #include <osgDB/Registry>
 
 
-#include "Compass.h"
+#include "OsgTools/Builders/Compass.h"
 
 class CompassEventHandler : public osgGA::GUIEventHandler
 {
 public:
-	CompassEventHandler(Compass* c);
+	CompassEventHandler( OsgTools::Builders::Compass* c);
 	CompassEventHandler();
 	virtual ~CompassEventHandler();
 
@@ -50,7 +50,7 @@ protected:
 
 private:
 	
-	osg::ref_ptr<Compass> _compass;
+	osg::ref_ptr< OsgTools::Builders::Compass > _compass;
 
 	
 	

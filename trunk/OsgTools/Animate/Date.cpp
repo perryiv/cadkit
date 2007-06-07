@@ -15,6 +15,8 @@
 
 #include "OsgTools/Animate/Date.h"
 
+#include "Usul/Strings/Split.h"
+
 #include <vector>
 #include <sstream>
 
@@ -142,7 +144,40 @@ void Date::fromString( const std::string& date )
   USUL_TRACE_SCOPE;
   USUL_TRACE_1 ( date );
 
-  _date = boost::gregorian::from_simple_string ( date );
+  std::vector< std::string > split;
+
+  Usul::Strings::split ( date, '-', false, split );
+
+  if( 3 == split.size() )
+  {
+    unsigned int year ( 0 ), month ( 0 ), day ( 0 );
+
+    {
+      std::istringstream in ( split[0] );
+      in >> year;
+    }
+
+    {
+      typedef boost::gregorian::greg_month Month;
+      typedef Month::month_map_type MonthMap;
+      typedef MonthMap::iterator MonthIterator;
+      MonthIterator iter = Month::get_month_map_ptr()->find( split[1] );
+      if( iter != Month::get_month_map_ptr()->end() )
+      {
+	month = iter->second;
+      }
+    }
+
+    {
+      std::istringstream in ( split[0] );
+      in >> day;
+    }
+
+    split.clear();
+
+    //    _date = boost::gregorian::from_simple_string ( date );
+    _date = boost::gregorian::date ( year, month, day );
+  }
 }
 
 

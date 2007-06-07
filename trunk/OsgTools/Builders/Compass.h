@@ -17,7 +17,7 @@
 #include <osg/Material>
 #include <osg/Texture2D>
 #include <osg/Image>
-#include <osgViewer/Viewer>
+//#include <osgViewer/Viewer>
 #include <osg/PolygonStipple>
 
 #include <osgDB/ReadFile>

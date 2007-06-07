@@ -9,6 +9,8 @@
 
 #include "Compass.h"
 
+#include "osgUtil/CullVisitor"
+
 #include "Usul/CommandLine/Arguments.h"
 
 using namespace OsgTools::Builders;
@@ -311,8 +313,9 @@ osg::Geode* Compass::buildCompassObject()
     {
 		osg::ref_ptr<osg::Texture2D> texture (new osg::Texture2D()); 
 		texture->setImage(image.get());
-		stateset->setTextureAttributeAndModes(0,texture.get(),osg::StateAttribute::ON);
-		stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
+		stateset->setTextureAttributeAndModes(0,texture.get(),osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+		stateset->setMode(GL_BLEND,osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+		stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
         
         stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
     }
@@ -432,6 +435,11 @@ void Compass::buildCompass()
 	osg::ref_ptr<osg::Group> group (new osg::Group());
 	osg::ref_ptr<osg::Geode> geode = buildCompassObject();
 
+	osg::ref_ptr < osg::StateSet > ss ( _compassgroup->getOrCreateStateSet() );
+	ss->setRenderBinDetails ( 1000, "RenderBin" );
+	ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+	ss->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::INHERIT );
+
 	_compassgroup->removeChildren(0,_compassgroup->getNumChildren()); 
 	_compassgroup->addChild( initCompass(geode.get()) );	
 }
@@ -464,6 +472,7 @@ void Compass::hideCompass()
 ///////////////////////////////////////////////////////////////////////////////
 void Compass::keyChange(int key,int value)
 {
+#if _MSC_VER
     if (value)
     {
         
@@ -524,6 +533,7 @@ void Compass::keyChange(int key,int value)
 		updateCompass();
 
     }
+#endif
     
 }
 

@@ -117,14 +117,12 @@ protected:
 private:
 
   typedef boost::shared_ptr < ConnectionType >  ConnectionPtr;
-  //typedef Usul::Threads::Map < std::string, ConnectionPtr > Pool;
 
   std::string _host;
   std::string _database;
   std::string _user;
   std::string _password;
 
-  //static Pool _pool;
   ConnectionPtr _connection;
 
   mutable Mutex *_connectionMutex;

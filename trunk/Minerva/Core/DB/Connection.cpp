@@ -27,15 +27,6 @@ using namespace Minerva::Core::DB;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Initialize static data members.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-//Connection::Pool Connection::_pool;
-//Connection::Mutex Connection::_connectionMutex;
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -188,22 +179,8 @@ void Connection::connect()
 {
   try
   {
-#if 0
-    // Check to see if we already have a connection.
-    Pool::iterator iter = _pool.find( this->name() );
-    if( iter != _pool.end() )
-      _connection = iter->second;
-    else
-    {
-      // Set up a connection to the backend.
-      _connection = ConnectionPtr ( this->_createConnection() );
-      _pool.insert( Pool::value_type ( this->name(), _connection ) );
-    }
-#else
     // Set up a connection to the backend.
     _connection = ConnectionPtr ( this->_createConnection() );
-#endif
-
   }
   catch ( const std::exception& e )
   {

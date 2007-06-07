@@ -48,6 +48,7 @@ SET (SOURCES
   Axes.cpp
   Builders/Arrow.cpp
   Builders/GradientBackground.cpp
+  Builders/Compass.cpp
   Callbacks/BoundingSphere.cpp
   Callbacks/SortBackToFront.cpp
   Circle.cpp

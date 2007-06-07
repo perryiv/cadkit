@@ -17,6 +17,8 @@
 #include "osg/PolygonMode"
 #include "osg/PolygonOffset"
 
+#include <algorithm>
+
 using namespace OsgTools::Legend;
 
 
@@ -77,12 +79,37 @@ void Legend::addLegendObject( OsgTools::Legend::LegendObject *legendObject )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Predicate to sort legend objects.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct SortLegend
+  {
+    template < class T >
+    bool operator () ( const T& rhs, const T& lhs ) const
+    {
+      // Greater than because the first item is drawn on the bottom of the legend.
+      // Sorting from Z to A will display A to Z on the legend.
+      return rhs->at( 0 )->text() > lhs->at( 0 )->text();
+    }
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 osg::Node* Legend::buildScene()
 {
+  // Sort the legend by name.
+  std::sort( _legendObjects.begin(), _legendObjects.end(), Detail::SortLegend() );
+
+  // Create the root for the legend.
   osg::ref_ptr< osg::MatrixTransform > root ( new osg::MatrixTransform );
   root->setName( "Legend" );
   root->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
@@ -92,10 +119,11 @@ osg::Node* Legend::buildScene()
 
   root->addChild( group.get() );
 
+  // Only build the legend if we have something...
   if( _legendObjects.size() > 0 )
   {
+    // Calculate needed height values.
     unsigned int heightPerObject ( _heightPerItem );
-
     unsigned int height ( heightPerObject * _legendObjects.size() );
 
     // Change the height per object to fit in the size paramaters given.

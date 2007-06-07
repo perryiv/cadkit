@@ -40,6 +40,7 @@ public:
   /// Get the text.
   Text*                  operator[] ( unsigned int i );
   Text*                  at ( unsigned int i );
+  const Text*            at ( unsigned int i ) const;
 
   /// Add a text item.
   unsigned int           addText ( Text* );

@@ -47,7 +47,7 @@ Info::~Info()
 
 Info::Strings Info::tables()
 {
-  std::string query ( "SELECT table_name FROM information_schema.tables WHERE table_schema='public'" );
+  std::string query ( "SELECT table_schema || '.' || table_name FROM information_schema.tables" );
   return this->_fillStringsFromQuery( query );
 }
 
@@ -298,8 +298,19 @@ bool Info::hasColumnType ( const std::string& table, const std::string& type ) c
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Info::Strings Info::getColumnNames ( const std::string& table ) const
+Info::Strings Info::getColumnNames ( const std::string& t ) const
 {
+  // Make a copy.
+  std::string table ( t );
+
+  // See if there is a schema specified.
+  std::string::size_type pos ( table.find_first_of ( '.' ) );
+  
+  // Trim the table if we should.
+  if( std::string::npos != pos )
+    table = table.substr ( pos + 1, table.length() - pos );
+
+  // Run the query.
   std::string query ( "SELECT column_name FROM information_schema.columns WHERE table_name='" + table + "'" );
   return _fillStringsFromQuery( query );
 }

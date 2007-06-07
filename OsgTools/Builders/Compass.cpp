@@ -109,13 +109,18 @@ class CompassOrientationCallback : public osg::NodeCallback
                     VM(3,1) = 0.0;
                     VM(3,2) = 0.0;
 
-					osg::Quat quat ( VM.getRotate() );
+					osg::Quat temp ( VM.getRotate() );
+          osg::Quat quat = temp;
 					quat.set(0,0,quat.z(),quat.w());
 					VM.setRotate(quat);
 
 					tx->setMatrix(osg::Matrix::scale(_compass->getScale(),_compass->getScale(),_compass->getScale()));
 					tx->postMult(VM);
-                    tx->postMult( osg::Matrix::rotate(osg::inDegrees(-70.0f),1.0f,0.0f,0.0f) *
+          quat = temp;
+          quat.set(quat.x(),0,0,quat.w());
+					VM.setRotate(quat);
+          tx->postMult(VM);
+                    tx->postMult( /*osg::Matrix::rotate(osg::inDegrees(-70.0f),1.0f,0.0f,0.0f) **/
 							      osg::Matrix::translate(_compass->getPosition()));
 					 
                 }
@@ -139,7 +144,8 @@ class CompassOrientationCallback : public osg::NodeCallback
 Compass::Compass():
   _topTexfn ( ),
   _botTexfn ( ),
-  _rotdeg ( 0.0f ),
+  _heading ( 0.0f ),
+  _pitch ( 0.0f ),
   _scale ( .07f ),
   _compassGroup ( new osg::Group() ),
   _showOrHideCompass ( true ),
@@ -197,33 +203,56 @@ osg::Node* Compass::getCompass()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the amount of rotation of the compass
+//  Get the heading of the compass
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Compass::getRotation()
+float Compass::getHeading()
 {
-  return _rotdeg;
+  return _heading;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the heading of the compass
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Compass::setHeading(float r)
+{
+  _heading = r;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the amount of rotation on the compass
+//  Get the pitch of the compass
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Compass::setRotation(float r)
+float Compass::getPitch()
 {
-  _rotdeg = r;
+  return _pitch;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the pitch of the compass
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Compass::setPitch(float p)
+{
+  _pitch = p;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Get the position on the screen of the compass
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 
 const osg::Vec3& Compass::getPosition()
 {
@@ -315,7 +344,7 @@ void Compass::setAnimation(bool state)
 //		  the compass
 ///////////////////////////////////////////////////////////////////////////////
 
-void Compass::setRotationMode(bool m)
+void Compass::setRotateByViewMatrix(bool m)
 {
   _rotateByView = m;
 }
@@ -444,9 +473,9 @@ osg::MatrixTransform* Compass::_initCompass(osg::Node* geode)
 	else
 	{
 		rot->setMatrix ( osg::Matrix::scale ( _scale, _scale, _scale ) * 
-					           osg::Matrix::rotate ( osg::inDegrees ( _rotdeg ), 0.0f, 0.0f, 1.0f ) * 
-					           osg::Matrix::rotate ( osg::inDegrees ( -70.0f ), 1.0f, 0.0f, 0.0f ) *
-				             osg::Matrix::translate ( _pos ) );
+					           osg::Matrix::rotate ( osg::inDegrees ( _heading ), 0.0f, 0.0f, 1.0f ) *
+                     osg::Matrix::rotate ( osg::inDegrees ( _pitch ), 1.0f, 0.0f, 0.0f ) *
+                     osg::Matrix::translate ( _pos ) );
 	}				
 								  
 	rot->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
@@ -554,13 +583,20 @@ void Compass::keyChange(int key,int value)
 		}
 		else if (key==osgGA::GUIEventAdapter::KEY_Page_Down  )
 		{	
-			setRotation(getRotation() - 1.0f);
-			//_rotdeg += 1.0f;
+			setHeading(getHeading() - 1.0f);
+		}
+    else if (key==osgGA::GUIEventAdapter::KEY_Insert )
+		{	
+      setPitch( getPitch() + 1.0f );
+		}
+    else if (key==osgGA::GUIEventAdapter::KEY_Page_Up  )
+		{	
+			
+      setPitch ( getPitch() - 1.0f );
 		}
 		else if (key==osgGA::GUIEventAdapter::KEY_Delete )
 		{	
-			setRotation(getRotation() + 1.0f);
-			//_rotdeg -= 1.0f;
+			setHeading(getHeading() + 1.0f);
 		}
 		else if (key==osgGA::GUIEventAdapter::KEY_Space )
 		{	

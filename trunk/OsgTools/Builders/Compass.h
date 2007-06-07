@@ -40,10 +40,13 @@ public:
 	bool isAnimating ( );
 	void setAnimation(bool state);
 
-	float getRotation ( );
-	void setRotation ( float r );
+	float getHeading ( );
+	void setHeading ( float r );
 
-	void setRotationMode ( bool m );
+  float getPitch ( );
+	void setPitch ( float p );
+
+	void setRotateByViewMatrix ( bool m );
 
 	const osg::Vec3& getPosition ( );
 	void setPotion ( const osg::Vec3& p );
@@ -82,7 +85,7 @@ private:
 	bool _rotateByView;
 	float _animationStart, _animationEnd, _animationStep;
 	
-	float _rotdeg;	
+	float _heading, _pitch;	
 
 }; //Compass
 

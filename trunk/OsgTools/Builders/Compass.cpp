@@ -383,6 +383,7 @@ osg::Geode* Compass::_buildTriangleFan(std::string tex, float zoff, unsigned int
   osg::ref_ptr< osg::Vec4Array > color ( new osg::Vec4Array() );
   color->push_back ( osg::Vec4 ( 1.0f, 1.0f, 1.0f, 1.0f ) );
 	geometry->setColorArray ( color.get() );
+  geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
 	normal->push_back ( n );
 
 	geometry->setVertexArray ( fan.get() );

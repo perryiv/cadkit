@@ -416,8 +416,8 @@ osg::Geode* Compass::_buildTriangleFan(std::string tex, float zoff, unsigned int
 osg::Node* Compass::_buildCompassObject()
 {
   osg::ref_ptr < osg::Group > group ( new osg::Group() );
-  group->addChild ( this->_buildTriangleFan ( _topTexfn, 0.0f, 1001, osg::Vec3 ( 0.0f, 1.0f, 0.0f ) ) );
-  group->addChild ( this->_buildTriangleFan ( _botTexfn, -0.05f, 1000, osg::Vec3 ( 0.0f, -1.0f, 0.0f ) ) );
+  group->addChild ( this->_buildTriangleFan ( _topTexfn, 0.0f, 1001, osg::Vec3 ( 0.0f, 0.0f, 1.0f ) ) );
+  //group->addChild ( this->_buildTriangleFan ( _botTexfn, -0.05f, 1000, osg::Vec3 ( 0.0f, 0.0f, 1.0f ) ) );
 	return group.release();
 }
 

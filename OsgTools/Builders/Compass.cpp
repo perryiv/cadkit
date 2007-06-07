@@ -15,11 +15,13 @@
 
 using namespace OsgTools::Builders;
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Update Callback for hiding and showing the compass
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 class CompassAnimationCallback : public osg::NodeCallback
 {
     public:
@@ -76,11 +78,14 @@ class CompassAnimationCallback : public osg::NodeCallback
 		float				_step;
 
 };
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Cull Callback for rotating the compass based on the current view matrix
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 class CompassOrientationCallback : public osg::NodeCallback
 {
     public:
@@ -123,28 +128,35 @@ class CompassOrientationCallback : public osg::NodeCallback
 		 osg::Vec3 _pos;
 		 float _scale;
 }; 
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor/Destructor
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 Compass::Compass():
-_texfn("./icons/big_compass_1.tga"),
-_rotdeg(0.0f),
-_scale(.07f),
-_compassgroup(new osg::Group()),
-_showcompass(true),
-_numslices(32),
-_radius(.8),
-_animating(false),
-_rotate_by_view(true)
+  _topTexfn ( ),
+  _botTexfn ( ),
+  _rotdeg ( 0.0f ),
+  _scale ( .07f ),
+  _compassGroup ( new osg::Group() ),
+  _showOrHideCompass ( true ),
+  _numslices ( 32 ),
+  _radius ( .8 ),
+  _animating ( false ),
+  _rotateByView ( true )
 {
-	_texfn = Usul::CommandLine::Arguments::instance().directory() + "/icons/big_compass_1.tga";
-	_pos = (osg::Vec3(_scale * 4.0f, _scale * -3.0f, -1.0f));
-	_compassobject = buildCompassObject();
+	_topTexfn = Usul::CommandLine::Arguments::instance().directory() + "/icons/big_compass_1.tga";
+  _botTexfn = Usul::CommandLine::Arguments::instance().directory() + "/icons/big_compass_mask.tga";
+	//_pos = (osg::Vec3(_scale * 4.0f, _scale * -3.0f, -1.0f));
+  this->setPositionByPercentage( 1.0f, 0.0f );
+	_compassObject = _buildCompassObject();
 	buildCompass();
 }
 Compass::~Compass(){}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -154,8 +166,9 @@ Compass::~Compass(){}
 
 bool Compass::isVisible()
 {
-	return _showcompass;
+	return _showOrHideCompass;
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -165,9 +178,10 @@ bool Compass::isVisible()
 
 void Compass::setTextureFilename(const std::string& fn)
 {
-  _texfn = fn;
+  _topTexfn = fn;
   buildCompass();
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -177,8 +191,9 @@ void Compass::setTextureFilename(const std::string& fn)
 
 osg::Node* Compass::getCompass()
 {
-  return _compassgroup.get();
+  return _compassGroup.get();
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -191,6 +206,7 @@ float Compass::getRotation()
   return _rotdeg;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the amount of rotation on the compass
@@ -201,6 +217,7 @@ void Compass::setRotation(float r)
 {
   _rotdeg = r;
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -213,15 +230,32 @@ const osg::Vec3& Compass::getPosition()
   return _pos;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the position on the screen of the compass
+//  Set the position on the screen of the compass by absolute postion
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void Compass::setPotion(const osg::Vec3& p)
 {
   _pos = p;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the position on the screen of the compass by percentage of screen
+//  Pass in a float value between 0 and 1;
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Compass::setPositionByPercentage ( float width, float height )
+{
+  float w = ( _scale *  width * 8.0f ) - ( 4.0f * _scale );
+  float h = ( _scale *  height * 6.0f ) - ( 3.0f * _scale );
+
+  _pos = osg::Vec3(w, h, -1.0f);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -235,6 +269,7 @@ float Compass::getScale()
   return _scale;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the xyz scale value of the compass
@@ -246,6 +281,7 @@ void Compass::setScale(float s)
   _scale = s;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Return true if the compass is in the act of showing or hiding
@@ -256,6 +292,7 @@ bool Compass::isAnimating()
 {
   return _animating;
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -269,6 +306,7 @@ void Compass::setAnimation(bool state)
   _animating = state;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //  true to use the view matrix
 //  false to use "by angle degree"
@@ -276,10 +314,12 @@ void Compass::setAnimation(bool state)
 //		- call "updateCompass" after changing angle values to rebuild 
 //		  the compass
 ///////////////////////////////////////////////////////////////////////////////
+
 void Compass::setRotationMode(bool m)
 {
-  _rotate_by_view = m;
+  _rotateByView = m;
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -287,99 +327,99 @@ void Compass::setRotationMode(bool m)
 //	Call this method to rebuild after changing parameters in a set method
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 void Compass::updateCompass()
 {
-	if(_showcompass)
+	if(_showOrHideCompass)
 		buildCompass();
-	if(!_showcompass && _animating)
+	if(!_showOrHideCompass && _animating)
 		buildCompass();
-	if(!_showcompass && !_animating)
-		emptyCompass();
+	if(!_showOrHideCompass && !_animating)
+		_emptyCompass();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build a triangle fan object to use as a compass face
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Geode* Compass::_buildTriangleFan(std::string tex, float zoff, unsigned int render_level, const osg::Vec3& n)
+{
+  osg::ref_ptr< osg::Geode > geode ( new osg::Geode() );
+	osg::ref_ptr< osg::StateSet > stateset ( new osg::StateSet() );
+	osg::ref_ptr< osg::Image > image = osgDB::readImageFile( tex );
+
+	if ( image.get() )
+  {
+	  osg::ref_ptr< osg::Texture2D > texture ( new osg::Texture2D() ); 
+	  texture->setImage ( image.get() );
+	  stateset->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+	  stateset->setMode ( GL_BLEND, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+	  stateset->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );    
+    stateset->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
+    stateset->setRenderBinDetails ( render_level, "RenderBin" );
+    
+  }
+	
+	osg::ref_ptr< osg::Vec3Array > fan ( new osg::Vec3Array() );
+	osg::ref_ptr< osg::Vec2Array > fan_tex ( new osg::Vec2Array() );
+	
+	fan->reserve( _numslices +1 );
+	fan_tex->reserve( _numslices +1 );
+	
+	fan->push_back( osg::Vec3 ( 0.0f, 0.0f, zoff ) );
+	fan_tex->push_back( osg::Vec2 ( 0.5f, 0.5f ) );
+	
+	for ( unsigned int x = 0; x < _numslices + 1; ++x )
+	{	
+		float angle =  float ( x ) * ( ( 2 * osg::PI ) / _numslices );
+		fan->push_back ( osg::Vec3 ( _radius * ( cos( angle ) ), _radius * ( sin ( angle ) ), zoff ) );
+		fan_tex->push_back(osg::Vec2(0.5f + (0.5f * ( cos( angle ) ) ),0.5f +( 0.5f * ( sin ( angle ) ) ) ));
+	}
+	osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() ); 
+	osg::ref_ptr< osg::Vec3Array > normal = new osg::Vec3Array;
+  osg::ref_ptr< osg::Vec4Array > color ( new osg::Vec4Array() );
+  color->push_back ( osg::Vec4 ( 1.0f, 1.0f, 1.0f, 1.0f ) );
+	geometry->setColorArray ( color.get() );
+	normal->push_back ( n );
+
+	geometry->setVertexArray ( fan.get() );
+
+	geometry->setTexCoordArray ( 0, fan_tex.get() );
+
+	geometry->setNormalArray ( normal.get() );
+
+	geometry->setNormalBinding ( osg::Geometry::BIND_OVERALL );
+
+	geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLE_FAN, 0, fan->size() ) );
+
+	geometry->setStateSet ( stateset.get() );
+
+	geode->setStateSet ( stateset.get() );
+    
+	geode->addDrawable ( geometry.get() );
+
+	return geode.release();
+
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Build the acutal compass object, consisting of 2 textured triangle fans
 //
 ///////////////////////////////////////////////////////////////////////////////
-osg::Geode* Compass::buildCompassObject()
+
+osg::Node* Compass::_buildCompassObject()
 {
-	
-	osg::ref_ptr<osg::Geode> geode (new osg::Geode());
-	osg::ref_ptr<osg::StateSet> stateset (new osg::StateSet());
-	osg::ref_ptr<osg::Image> image = osgDB::readImageFile(_texfn);
-
-	if (image.get())
-    {
-		osg::ref_ptr<osg::Texture2D> texture (new osg::Texture2D()); 
-		texture->setImage(image.get());
-		stateset->setTextureAttributeAndModes(0,texture.get(),osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-		stateset->setMode(GL_BLEND,osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-		stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
-        
-        stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-    }
-	
-	osg::ref_ptr<osg::Vec3Array> top_fan (new osg::Vec3Array());
-	osg::ref_ptr<osg::Vec3Array> bottom_fan (new osg::Vec3Array());
-	osg::ref_ptr<osg::Vec2Array> top_fan_tex (new osg::Vec2Array());
-	osg::ref_ptr<osg::Vec2Array> btm_fan_tex (new osg::Vec2Array());
-	
-	top_fan->reserve(_numslices +1);
-	bottom_fan->reserve(_numslices +1);
-
-	top_fan_tex->reserve(_numslices +1);
-	btm_fan_tex->reserve(_numslices +1);
-	
-	top_fan->push_back(osg::Vec3(0.0f, 0.0f, 0.0f));
-	bottom_fan->push_back(osg::Vec3(0.0f, 0.0f, -0.05f));
-	top_fan_tex->push_back(osg::Vec2(0.5f, 0.5f));
-	btm_fan_tex->push_back(osg::Vec2(0.5f, 0.5f));
-	
-	for(unsigned int x = 0; x < _numslices + 1; ++x)
-	{	
-		float angle =  float (x) * ( (2 * osg::PI) / _numslices);
-		
-		top_fan->push_back(osg::Vec3(_radius * ( cos(angle) ), _radius * (sin(angle)), 0.0f));
-		bottom_fan->push_back(osg::Vec3(_radius * ( cos(angle) ), _radius * (sin(angle)), -0.05f));
-
-		top_fan_tex->push_back(osg::Vec2(0.5f + (0.5f * ( cos(angle) ) ),0.5f +( 0.5f * (sin(angle)) ) ));
-		btm_fan_tex->push_back(osg::Vec2(0.5f + (0.5f * ( cos(angle) ) ),0.5f +( 0.5f * (sin(angle)) ) ));
-
-	}
-	osg::ref_ptr<osg::Geometry> top_geometry ( new osg::Geometry() ); 
-	osg::ref_ptr<osg::Geometry> bottom_geometry ( new osg::Geometry() ); 
-	osg::ref_ptr<osg::Vec3Array> top_normal = new osg::Vec3Array;
-	osg::ref_ptr<osg::Vec3Array> bottom_normal = new osg::Vec3Array;
-
-	top_normal->push_back(osg::Vec3(0.0f,0.0f,1.0f));
-	bottom_normal->push_back(osg::Vec3(0.0f,0.0f,-1.0f));
-
-	top_geometry->setVertexArray(top_fan.get());
-	bottom_geometry->setVertexArray(bottom_fan.get());
-
-	top_geometry->setTexCoordArray(0,top_fan_tex.get());
-	bottom_geometry->setTexCoordArray(0,btm_fan_tex.get());
-
-	top_geometry->setNormalArray(top_normal.get());
-	bottom_geometry->setNormalArray(bottom_normal.get());
-
-	top_geometry->setNormalBinding(osg::Geometry::BIND_OVERALL);
-	bottom_geometry->setNormalBinding(osg::Geometry::BIND_OVERALL);
-
-	top_geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLE_FAN,0,top_fan->size()));
-	bottom_geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLE_FAN,0,bottom_fan->size()));
-
-	top_geometry->setStateSet( stateset.get() );
-	bottom_geometry->setStateSet( stateset.get() );
-
-	geode->setStateSet( stateset.get() );
-    
-	geode->addDrawable(top_geometry.get());
-	geode->addDrawable(bottom_geometry.get());
-
-	return geode.release();
+  osg::ref_ptr < osg::Group > group ( new osg::Group() );
+  group->addChild ( this->_buildTriangleFan ( _topTexfn, 0.0f, 1001, osg::Vec3 ( 0.0f, 1.0f, 0.0f ) ) );
+  group->addChild ( this->_buildTriangleFan ( _botTexfn, -0.05f, 1000, osg::Vec3 ( 0.0f, -1.0f, 0.0f ) ) );
+	return group.release();
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -387,33 +427,35 @@ osg::Geode* Compass::buildCompassObject()
 //	for rotation and animation.
 //
 ///////////////////////////////////////////////////////////////////////////////
-osg::MatrixTransform* Compass::initCompass(osg::Node* geode)
+
+osg::MatrixTransform* Compass::_initCompass(osg::Node* geode)
 {
 	
-	osg::ref_ptr<osg::MatrixTransform> rot (new osg::MatrixTransform());
-	osg::ref_ptr<osg::MatrixTransform> anim (new osg::MatrixTransform());
-	osg::ref_ptr<CompassOrientationCallback> rotation_callback (new CompassOrientationCallback(this));
+	osg::ref_ptr < osg::MatrixTransform > rot ( new osg::MatrixTransform() );
+	osg::ref_ptr < osg::MatrixTransform > anim ( new osg::MatrixTransform() );
+	osg::ref_ptr < CompassOrientationCallback > rotation_callback ( new CompassOrientationCallback ( this ) );
 	
-	anim->setUpdateCallback(new CompassAnimationCallback(this, _animation_start, _animation_end, _animation_step));
-	if(_rotate_by_view)
+	anim->setUpdateCallback ( new CompassAnimationCallback ( this, _animationStart, _animationEnd, _animationStep ) );
+	if( _rotateByView )
 	{
-		rot->setCullCallback(rotation_callback.get());
+		rot->setCullCallback ( rotation_callback.get() );
 	}
 	else
 	{
-		rot->setMatrix( osg::Matrix::scale( _scale,_scale,_scale ) * 
-					    osg::Matrix::rotate( osg::inDegrees(_rotdeg),0.0f,0.0f,1.0f ) * 
-					    osg::Matrix::rotate( osg::inDegrees(-70.0f),1.0f,0.0f,0.0f ) *
-				        osg::Matrix::translate( _pos ) );
+		rot->setMatrix ( osg::Matrix::scale ( _scale, _scale, _scale ) * 
+					           osg::Matrix::rotate ( osg::inDegrees ( _rotdeg ), 0.0f, 0.0f, 1.0f ) * 
+					           osg::Matrix::rotate ( osg::inDegrees ( -70.0f ), 1.0f, 0.0f, 0.0f ) *
+				             osg::Matrix::translate ( _pos ) );
 	}				
 								  
-	rot->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+	rot->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
 
-	anim->addChild(_compassobject.get());
-	rot->addChild(anim.get());
+	anim->addChild ( _compassObject.get() );
+	rot->addChild ( anim.get() );
 	
 	return rot.release();
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -421,55 +463,68 @@ osg::MatrixTransform* Compass::initCompass(osg::Node* geode)
 //  "hidden"
 //
 ///////////////////////////////////////////////////////////////////////////////
-void Compass::emptyCompass()
+
+void Compass::_emptyCompass()
 {
-	_compassgroup->removeChildren(0,_compassgroup->getNumChildren());
+	_compassGroup->removeChildren ( 0, _compassGroup->getNumChildren() );
 }
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Build the compass.
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 void Compass::buildCompass()
 {
-	osg::ref_ptr<osg::Group> group (new osg::Group());
-	osg::ref_ptr<osg::Geode> geode = buildCompassObject();
+	osg::ref_ptr < osg::Group > group ( new osg::Group() );
+	osg::ref_ptr < osg::Node > geode = _buildCompassObject();
 
-	osg::ref_ptr < osg::StateSet > ss ( _compassgroup->getOrCreateStateSet() );
+	osg::ref_ptr < osg::StateSet > ss ( _compassGroup->getOrCreateStateSet() );
 	ss->setRenderBinDetails ( 1000, "RenderBin" );
 	ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
 	ss->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::INHERIT );
 
-	_compassgroup->removeChildren(0,_compassgroup->getNumChildren()); 
-	_compassgroup->addChild( initCompass(geode.get()) );	
+	_compassGroup->removeChildren ( 0, _compassGroup->getNumChildren() ); 
+	_compassGroup->addChild ( _initCompass ( geode.get() ) );	
 }
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set parameters to display the "show" animation.
 //
 ///////////////////////////////////////////////////////////////////////////////
-void Compass::showCompass()
+
+void Compass::_showCompass()
 {
-	_animation_start = 0.0f;
-	_animation_end = 1.0f; 
-	_animation_step = 1.0f / 20.0f;
+	_animationStart = 0.0f;
+	_animationEnd = 1.0f; 
+	_animationStep = 1.0f / 20.0f;
 }
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set parameters to display the "hide" animation.
 //
 ///////////////////////////////////////////////////////////////////////////////
-void Compass::hideCompass()
+
+void Compass::_hideCompass()
 {
-	_animation_start = 1.0f;
-	_animation_end = 0.0f; 
-	_animation_step = -1 * (1.0f / 20.0f);
+	_animationStart = 1.0f;
+	_animationEnd = 0.0f; 
+	_animationStep = -1 * (1.0f / 20.0f);
 }
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Handle key pressed events.  Called from CompassEventHandler.
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 void Compass::keyChange(int key,int value)
 {
 #if _MSC_VER
@@ -478,22 +533,22 @@ void Compass::keyChange(int key,int value)
         
 		if (key==osgGA::GUIEventAdapter::KEY_Left)
 		{	
-			if(_showcompass)
+			if(_showOrHideCompass)
 			_pos = osg::Vec3(_pos.x() - _scale / 10, _pos.y(), _pos.z());
 		}
 		else if (key==osgGA::GUIEventAdapter::KEY_Right )
 		{	
-			if(_showcompass)
+			if(_showOrHideCompass)
 			_pos = osg::Vec3(_pos.x() + _scale / 10, _pos.y(), _pos.z());
 		}
 		else if (key==osgGA::GUIEventAdapter::KEY_Down )
 		{	
-			if(_showcompass)
+			if(_showOrHideCompass)
 			_pos = osg::Vec3(_pos.x(), _pos.y() - _scale / 10, _pos.z());
 		}
 		else if (key==osgGA::GUIEventAdapter::KEY_Up  )
 		{	
-			if(_showcompass)
+			if(_showOrHideCompass)
 			_pos = osg::Vec3(_pos.x(), _pos.y() + _scale / 10, _pos.z());
 		}
 		else if (key==osgGA::GUIEventAdapter::KEY_Page_Down  )
@@ -508,24 +563,24 @@ void Compass::keyChange(int key,int value)
 		}
 		else if (key==osgGA::GUIEventAdapter::KEY_Space )
 		{	
-			if(_rotate_by_view)
-				_rotate_by_view = false;
+			if(_rotateByView)
+				_rotateByView = false;
 			else
-				_rotate_by_view = true;
+				_rotateByView = true;
 		}
 		else if (key==osgGA::GUIEventAdapter::KEY_End)
 		{
-			if(_showcompass)
+			if(_showOrHideCompass)
 			{
-				hideCompass();
+				_hideCompass();
 				_animating = true;
-				_showcompass = false;
+				_showOrHideCompass = false;
 			}
 			else
 			{
-				showCompass();
+				_showCompass();
 				_animating = true;
-				_showcompass = true;
+				_showOrHideCompass = true;
 			}
 
 		}

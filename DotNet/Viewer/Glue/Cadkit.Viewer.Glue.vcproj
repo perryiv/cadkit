@@ -59,7 +59,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDB.lib osgUtild.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"

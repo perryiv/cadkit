@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib vtkRendering.lib vtkIO.lib vtkGraphics.lib vtkImaging.lib vtkftgl.lib vtkfreetype.lib opengl32.lib vtkFiltering.lib vtkCommon.lib vtksys.lib vtkDICOMParser.lib vtkpng.lib vtktiff.lib vtkzlib.lib vtkjpeg.lib vtkexpat.lib vfw32.lib vtkMPEG2Encode.lib $(NOINHERIT)"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib vtkRendering.lib vtkIO.lib vtkGraphics.lib vtkImaging.lib vtkftgl.lib vtkfreetype.lib opengl32.lib vtkFiltering.lib vtkCommon.lib vtksys.lib vtkDICOMParser.lib vtkpng.lib vtktiff.lib vtkzlib.lib vtkjpeg.lib vtkexpat.lib vfw32.lib $(NOINHERIT)"
 				OutputFile="../../bin/CadKit.SimFlow.VTKUtild.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(VTK_LIB_DIR_DEBUG)"

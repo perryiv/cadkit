@@ -67,7 +67,7 @@ protected:
   struct PluginInfo
   {
     PluginInfo() :
-      name( "" ),
+      name ( "" ),
       alias ( "" ),
       load ( false )
     {
@@ -98,7 +98,7 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Document >
-Loader< Document >::Loader() : 
+inline Loader< Document >::Loader() : 
 	_plugins(),
   _mutex()
 {
@@ -112,7 +112,7 @@ Loader< Document >::Loader() :
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Document >
-Loader< Document >::~Loader()
+inline Loader< Document >::~Loader()
 {
   USUL_TRACE_SCOPE;
 }
@@ -125,7 +125,7 @@ Loader< Document >::~Loader()
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Document >
-void Loader< Document >::parse( const std::string& filename )
+inline void Loader< Document >::parse( const std::string& filename )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -147,7 +147,7 @@ void Loader< Document >::parse( const std::string& filename )
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Document >
-void Loader< Document >::_addPlugins ( Node &parent )
+inline void Loader< Document >::_addPlugins ( Node &parent )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -173,7 +173,7 @@ void Loader< Document >::_addPlugins ( Node &parent )
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Document >
-void Loader< Document >::_addPlugin ( Node &node )
+inline void Loader< Document >::_addPlugin ( Node &node )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -214,7 +214,7 @@ void Loader< Document >::_addPlugin ( Node &node )
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Document >
-void Loader< Document >::_addPlugin ( PluginInfo &plugin )
+inline void Loader< Document >::_addPlugin ( PluginInfo &plugin )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -234,7 +234,7 @@ void Loader< Document >::_addPlugin ( PluginInfo &plugin )
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Document >
-void Loader< Document >::addPlugin ( const std::string &file )
+inline void Loader< Document >::addPlugin ( const std::string &file )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -254,7 +254,7 @@ void Loader< Document >::addPlugin ( const std::string &file )
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Document >
-void Loader< Document >::load ( Usul::Interfaces::IUnknown *caller )
+inline void Loader< Document >::load ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );

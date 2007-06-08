@@ -53,8 +53,8 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="1"
-				PrecompiledHeaderThrough="osgVRJPrecompiled.h"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderThrough=""
 				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
@@ -153,8 +153,8 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="1"
-				PrecompiledHeaderThrough="osgVRJPrecompiled.h"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderThrough=""
 				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
@@ -218,10 +218,6 @@
 		<Filter
 			Name="Precompiled"
 			>
-			<File
-				RelativePath="osgVRJPrecompiled.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Source"

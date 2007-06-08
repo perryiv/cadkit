@@ -159,6 +159,9 @@ void Application::contextInit()
   // Turn off computing of the near and far plane.
   renderer->viewer()->setComputeNearFarMode ( osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR );
 
+  // Needed for stereo to work.
+  renderer->viewer()->setDrawBufferValue( GL_NONE );
+
   // Turn on back face culling.
   renderer->getGlobalStateSet()->setMode( GL_CULL_FACE, osg::StateAttribute::ON );
 
@@ -275,11 +278,11 @@ void Application::draw()
 				                 frustum[vrj::Frustum::VJ_NEAR],
 				                 frustum[vrj::Frustum::VJ_FAR] );
 
-  // constantly update the view matrix
+  // Constantly update the view matrix.  Is this needed?
   gmtl::Matrix44f proj ( projection->getViewMatrix() );
 
   osg::ref_ptr< osg::RefMatrix > osgProj ( new osg::RefMatrix );
-  osgProj->set(proj.mData);
+  osgProj->set( proj.mData );
   
   renderer->viewMatrix( *osgProj );
 
@@ -349,8 +352,7 @@ osg::Node* Application::getSceneData()
 
 double Application::getTimeSinceStart()
 {
-  double time_since_start ( _timer.delta_s( _initialTime, _timer.tick() ) );
-  return time_since_start;
+  return _timer.delta_s( _initialTime, _timer.tick() );
 }
 
 

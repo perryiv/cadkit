@@ -24,6 +24,7 @@
 #include <string>
 #include <set>
 #include <list>
+#include <map>
 #include <iosfwd>
 
 namespace Usul {
@@ -33,11 +34,13 @@ namespace Components {
 class USUL_EXPORT Manager
 {
 public:
-  typedef Usul::Interfaces::IUnknown          IUnknown;
-  typedef std::set < IUnknown::ValidRefPtr >  UnknownSet;
-  typedef std::list < std::string >           Strings;
-  typedef std::set < std::string >            PluginExtensions;
-  typedef std::set < std::string >            Directories;
+  typedef Usul::Interfaces::IUnknown             IUnknown;
+  typedef IUnknown::ValidRefPtr                  UnknownPtr;
+  typedef std::set < UnknownPtr >                UnknownSet;
+  typedef std::list < std::string >              Strings;
+  typedef std::set < std::string >               PluginExtensions;
+  typedef std::set < std::string >               Directories;
+  typedef std::map < std::string, UnknownPtr >   Aliases;
 
   static Manager& instance();
 
@@ -57,10 +60,9 @@ public:
   bool                          empty () const { return _unknowns.empty(); }
 
   // Load the plugins.
-  void                          load ( unsigned long iid, const std::string &dir, const std::string &ext, bool keepGoingIfException = true );
   void                          load ( unsigned long iid, const Strings &plugins, bool keepGoingIfException = true );
   void                          load ( unsigned long iid, bool keepGoingIfException = true );
-  void                          load ( unsigned long iid, const std::string& file );
+  void                          load ( unsigned long iid, const std::string& file, const std::string& alias = "" );
 
   // Return list of plugin names. This queries each unknown pointer for IPlugin.
   Strings                       names() const;
@@ -73,6 +75,7 @@ public:
 
   // Get a single IUnknown
   Usul::Interfaces::IUnknown*   getInterface( unsigned long iid );
+  Usul::Interfaces::IUnknown*   getInterface( const std::string& alias );
 
   // Get a set of IUnknowns
   UnknownSet                    getInterfaces( unsigned long iid );
@@ -90,6 +93,7 @@ private:
   UnknownSet            _unknowns;
   PluginExtensions      _plugExts;
   Directories           _directories;
+  Aliases               _aliases;
   static Manager *      _instance;
 };
 

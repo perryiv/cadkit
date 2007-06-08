@@ -348,6 +348,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Components\Loader.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Components\Manager.cpp"
 					>
 				</File>

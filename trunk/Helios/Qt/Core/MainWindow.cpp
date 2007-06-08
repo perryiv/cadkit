@@ -22,12 +22,12 @@
 #include "Helios/Qt/Commands/ExitApplication.h"
 #include "Helios/Qt/Tools/Image.h"
 #include "Helios/Qt/Tools/SettingsGroupScope.h"
-#include "Helios/Plugins/Manager/Loader.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Components/Manager.h"
+#include "Usul/Components/Loader.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/File/Path.h"
 #include "Usul/File/Stats.h"
@@ -40,6 +40,8 @@
 #include "Usul/Threads/Named.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
+
+#include "XmlTree/Document.h"
 
 #include "QtCore/QFileSystemWatcher"
 #include "QtGui/QApplication"
@@ -686,9 +688,9 @@ void MainWindow::loadPlugins ( const std::string &config )
   Usul::Interfaces::IUnknown::QueryPtr unknown ( this );
   Usul::Interfaces::IUnknown::QueryPtr splash ( _splash );
 
-  CadKit::Helios::Plugins::Manager::Loader loader;
-  loader.filename ( config );
-	loader.parse();
+  typedef Usul::Components::Loader < XmlTree::Document > Loader;
+  Loader loader;
+	loader.parse( config );
   loader.load ( ( splash.valid() ) ? splash : unknown );
 }
 
@@ -715,7 +717,8 @@ void MainWindow::loadPlugin ( const std::string &plugin )
   Usul::Interfaces::IUnknown::QueryPtr unknown ( this );
   Usul::Interfaces::IUnknown::QueryPtr splash ( _splash );
 
-  CadKit::Helios::Plugins::Manager::Loader loader;
+  typedef Usul::Components::Loader < XmlTree::Document > Loader;
+  Loader loader;
   loader.addPlugin ( plugin );
   loader.load ( ( splash.valid() ) ? splash : unknown );
 

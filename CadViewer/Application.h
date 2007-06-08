@@ -299,9 +299,6 @@ protected:
   // Load the file(s).
   void                          _loadModelFile   ( const std::string &filename );
   void                          _loadRestartFile ( const std::string &filename );
-  void                          _loadConfigFiles ( const ParserArgs &configs );
-  void                          _loadSimConfigs  ( std::string dir );
-  void                          _loadSimConfigs();
 
   // Navigate if we are supposed to.
   void                          _navigate();

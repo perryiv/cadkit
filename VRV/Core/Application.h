@@ -4,7 +4,7 @@
 //  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Created by: Adam Kubach
+//  Author(s): Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -120,6 +120,11 @@ protected:
 
   // Get the duration of the last frame in seconds.
   double                  _getFrameTime() const;
+
+  // Load VR Juggler config files.
+  void                    _loadConfigFiles ( const std::vector < std::string > &configs );
+  void                    _loadSimConfigs  ( const std::string& dir );
+  void                    _loadSimConfigs();
 
   /// No copying.
   Application ( const Application& );

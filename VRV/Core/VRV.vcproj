@@ -231,7 +231,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Exceptions.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Export.h"
+					>
+				</File>
+				<File
+					RelativePath=".\JugglerFunctors.h"
 					>
 				</File>
 				<File

@@ -21,6 +21,8 @@
 
 #include "Threads/OpenThreads/Mutex.h"
 
+#include "VRV/Core/Exceptions.h"
+
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -100,7 +102,7 @@ int main ( int argc, char **argv )
   }
 
   // Catch local exceptions.
-  catch ( const CV::Exceptions::UserInput &e )
+  catch ( const VRV::Core::Exceptions::UserInput &e )
   {
     std::cout << "Input Error:\n" << e.what() << std::endl;
     CV::Application::usage ( argv[0], std::cout );

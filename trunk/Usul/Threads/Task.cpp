@@ -14,7 +14,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Threads/Task.h"
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Stack.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Trace/Trace.h"
 
 using namespace Usul::Threads;
@@ -47,13 +49,112 @@ Task::Task ( unsigned long id, Callback *started, Callback *finished, Callback *
 Task::~Task()
 {
   USUL_TRACE_SCOPE;
-  USUL_ERROR_STACK_CATCH_EXCEPTIONS_BEGIN;
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Task::_destroy ), "3978096206" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destroy
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Task::_destroy()
+{
+  USUL_TRACE_SCOPE;
 
   _cancelledCB = 0x0;
   _destroyedCB = 0x0;
   _errorCB = 0x0;
   _finishedCB = 0x0;
   _startedCB = 0x0;
+}
 
-  USUL_ERROR_STACK_CATCH_EXCEPTIONS_END(1760922525);
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned long Task::id() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _id;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the callback.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Task::Callback *Task::cancelledCB()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Callback *cb ( _cancelledCB.get() );
+  return cb;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the callback.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Task::Callback *Task::destroyedCB()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Callback *cb ( _destroyedCB.get() );
+  return cb;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the callback.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Task::Callback *Task::errorCB()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Callback *cb ( _errorCB.get() );
+  return cb;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the callback.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Task::Callback *Task::finishedCB()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Callback *cb ( _finishedCB.get() );
+  return cb;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the callback.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Task::Callback *Task::startedCB()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Callback *cb ( _startedCB.get() );
+  return cb;
 }

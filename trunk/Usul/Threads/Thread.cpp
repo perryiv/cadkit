@@ -49,8 +49,7 @@ Thread::Thread() : BaseClass(),
   _errorMessage   (),
   _id             ( Manager::instance().nextThreadId() ),
   _systemId       ( 0 ),
-  _creationThread ( Usul::Threads::currentThreadId() ),
-  _task           ( 0, false )
+  _creationThread ( Usul::Threads::currentThreadId() )
 {
   USUL_TRACE_SCOPE;
 }
@@ -311,21 +310,21 @@ void Thread::_execute()
     // This thread should not be the one that created us.
     if ( Usul::Threads::currentThreadId() == this->_getCreationThread() )
     {
-      this->_reportErrorNoThrow ( Usul::Strings::format ( "Error 1746088330: calling thread ", this->id(), "'s _execute() from the system thread that created it" ) );
+      this->_reportError ( Usul::Strings::format ( "Error 1746088330: calling thread ", this->id(), "'s _execute() from the system thread that created it" ) );
       hasError = true;
     }
 
     // Are we already running?
     else if ( Thread::RUNNING == this->state() )
     {
-      this->_reportErrorNoThrow ( Usul::Strings::format ( "Error 2551583580: thread ", this->id(), " is already running" ) );
+      this->_reportError ( Usul::Strings::format ( "Error 2551583580: thread ", this->id(), " is already running" ) );
       hasError = true;
     }
 
     // We should be scheduled to run.
     else if ( Thread::SCHEDULED != this->state() )
     {
-      this->_reportErrorNoThrow ( Usul::Strings::format ( "Error 3288388842: thread ", this->id(), " is not scheduled to run" ) );
+      this->_reportError ( Usul::Strings::format ( "Error 3288388842: thread ", this->id(), " is not scheduled to run" ) );
       hasError = true;
     }
 
@@ -367,7 +366,7 @@ void Thread::_execute()
   // Handle standard exceptions.
   catch ( const std::exception &e )
   {
-    this->_reportErrorNoThrow ( Usul::Strings::format ( "Error 3474512825: standard exception caught while running thread ", this->id(), ", ", e.what() ) );
+    this->_reportError ( Usul::Strings::format ( "Error 3474512825: standard exception caught while running thread ", this->id(), ", ", e.what() ) );
     Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &Thread::_setResult ), Thread::ERROR_RESULT, "1486236410" );
     Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Thread::_notifyError ), "2480505155" );
   }
@@ -375,7 +374,7 @@ void Thread::_execute()
   // Handle unknown exceptions.
   catch ( ... )
   {
-    this->_reportErrorNoThrow ( Usul::Strings::format ( "Error 1668279636: unknown exception caught while running thread ", this->id() ) );
+    this->_reportError ( Usul::Strings::format ( "Error 1668279636: unknown exception caught while running thread ", this->id() ) );
     Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &Thread::_setResult ), Thread::ERROR_RESULT, "4044605042" );
     Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Thread::_notifyError ), "2253082170" );
   }
@@ -520,7 +519,7 @@ void Thread::_setError ( const std::string &s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Thread::_reportErrorNoThrow ( const std::string &s )
+void Thread::_reportError ( const std::string &s ) throw()
 {
   USUL_TRACE_SCOPE;
   try
@@ -528,7 +527,7 @@ void Thread::_reportErrorNoThrow ( const std::string &s )
     if ( false == s.empty() )
     {
       this->_setError ( s );
-      std::cout << ( ( '\n' != s.at ( s.size() - 1 ) ) ? ( s + "\n" ) : s ) << std::endl;
+      std::cout << s << std::endl;
       Usul::Errors::Stack::instance().push ( s );
     }
   }
@@ -621,47 +620,4 @@ bool Thread::isIdle() const
   const bool zeroSystemThread ( 0 == this->systemId() );
 
   return ( notRunning && zeroSystemThread );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the task id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Thread::task ( unsigned long task )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  _task.first = task;
-  _task.second = true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the task id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned long Thread::task() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _task.first;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is this thread executing the thread-pool task?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Thread::isTask() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _task.second;
 }

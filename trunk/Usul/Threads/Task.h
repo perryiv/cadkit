@@ -16,8 +16,7 @@
 #ifndef _USUL_THREADS_POOL_TASK_CLASS_H_
 #define _USUL_THREADS_POOL_TASK_CLASS_H_
 
-#include "Usul/Base/Referenced.h"
-#include "Usul/Pointers/Pointers.h"
+#include "Usul/Base/Object.h"
 #include "Usul/Threads/Callback.h"
 
 
@@ -25,12 +24,12 @@ namespace Usul {
 namespace Threads {
 
 
-class Task : public Usul::Base::Referenced
+class Task : public Usul::Base::Object
 {
 public:
 
   // Useful typedefs.
-  typedef Usul::Base::Referenced BaseClass;
+  typedef Usul::Base::Object BaseClass;
   typedef Usul::Threads::Callback Callback;
 
   // Smart-pointer definitions.
@@ -39,12 +38,12 @@ public:
   // Constructor
   Task ( unsigned long id, Callback *started, Callback *finished, Callback *cancelled, Callback *error, Callback *destroyed );
 
-  unsigned long   id() const { return _id; }
-  Callback *      cancelledCB() { return _cancelledCB; }
-  Callback *      destroyedCB() { return _destroyedCB; }
-  Callback *      errorCB()     { return _errorCB; }
-  Callback *      finishedCB()  { return _finishedCB; }
-  Callback *      startedCB()   { return _startedCB; }
+  unsigned long             id() const;
+  Callback *                cancelledCB();
+  Callback *                destroyedCB();
+  Callback *                errorCB();
+  Callback *                finishedCB();
+  Callback *                startedCB();
 
 protected:
 
@@ -52,6 +51,12 @@ protected:
   virtual ~Task();
 
 private:
+
+  // No copying or assignment.
+  Task ( const Task & );
+  Task &operator = ( const Task & );
+
+  void                      _destroy();
 
   unsigned long _id;
   Callback::RefPtr _cancelledCB;

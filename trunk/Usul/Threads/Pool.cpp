@@ -47,7 +47,6 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Pool, Pool::BaseClass );
 Pool::Pool ( unsigned int numThreads ) : BaseClass(),
   _mutex      (),
   _pool       (),
-  _queued     (),
   _tasks      (),
   _nextTaskId ( 0 ),
   _thread     ( Usul::Threads::Manager::instance().create() ),
@@ -122,7 +121,6 @@ void Pool::_destroy()
     // Destroy members.
     _thread = 0x0;
     _pool.clear();
-    _queued.clear();
     _tasks.clear();
   }
 }
@@ -153,7 +151,6 @@ Pool::TaskHandle Pool::addTask ( Callback *started, Callback *finished, Callback
   Guard guard ( this->mutex() );
 
   Task::RefPtr task ( new Task ( _nextTaskId++, started, finished, cancelled, error, destroyed ) );
-  _queued.push_back ( task );
   _tasks[task->id()] = task;
 
   return task->id();
@@ -217,7 +214,7 @@ unsigned int Pool::numTasksQueued() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return _queued.size();
+  return _tasks.size();
 }
 
 
@@ -237,7 +234,6 @@ void Pool::remove ( TaskHandle id )
   {
     Task::RefPtr task ( i->second );
     _tasks.erase ( i );
-    _queued.remove ( task );
   }
 }
 
@@ -327,9 +323,6 @@ void Pool::_threadProcessTasks()
           thread->error     ( task->errorCB()     );
           thread->destroyed ( task->destroyedCB() );
 
-          // Set the task id.
-          thread->task ( task->id() );
-
           // Start the thread.
           thread->start();
         }
@@ -386,15 +379,18 @@ Usul::Threads::Task *Pool::_nextTask()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Task::RefPtr task ( 0x0 );
-
-  if ( false == _queued.empty() )
+  if ( false == _tasks.empty() )
   {
-    task = _queued.front();
-    _queued.pop_front();
+    // Since the task id numbers always increase, the map acts like 
+    // a queue if we always grab from the beginning.
+    Task::RefPtr task ( _tasks.begin()->second );
+    _tasks.erase ( _tasks.begin() );
+    return task.release();
   }
-
-  return task.get();
+  else
+  {
+    return 0x0;
+  }
 }
 
 
@@ -466,7 +462,6 @@ void Pool::cancel()
   }
 
   // Clear the tasks.
-  _queued.clear();
   _tasks.clear();
 }
 

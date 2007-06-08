@@ -25,7 +25,6 @@
 #include "Usul/Pointers/Pointers.h"
 
 #include <vector>
-#include <list>
 #include <map>
 
 
@@ -44,7 +43,6 @@ public:
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
   typedef Usul::Threads::Callback Callback;
-  typedef std::list<Task::RefPtr> QueuedTasks;
   typedef Usul::Interfaces::IThreadPoolAddTask IThreadPoolAddTask;
   typedef IThreadPoolAddTask::TaskHandle TaskHandle;
   typedef std::map<TaskHandle,Task::RefPtr> AllTasks;
@@ -129,7 +127,6 @@ private:
   // Data members.
   mutable Mutex _mutex;
   ThreadPool _pool;
-  QueuedTasks _queued;
   AllTasks _tasks;
   unsigned long _nextTaskId;
   Thread::RefPtr _thread;

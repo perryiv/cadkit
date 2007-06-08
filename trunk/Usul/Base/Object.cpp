@@ -110,7 +110,9 @@ void Object::userData ( UserData *data )
 Object::UserData *Object::userData()
 {
   USUL_TRACE_SCOPE;
-  return _userData.get();
+  Guard guard ( this->mutex() );
+  Object::UserData *data ( _userData.get() );
+  return data;
 }
 
 
@@ -123,7 +125,9 @@ Object::UserData *Object::userData()
 const Object::UserData *Object::userData() const
 {
   USUL_TRACE_SCOPE;
-  return _userData.get();
+  Guard guard ( this->mutex() );
+  Object::UserData *data ( _userData.get() );
+  return data;
 }
 
 

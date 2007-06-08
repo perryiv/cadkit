@@ -134,14 +134,14 @@ void StateSet::setNormalize ( osg::StateSet *ss, bool on )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool StateSet::getNormalize ( osg::Node *node )
+bool StateSet::getNormalize ( const osg::Node *node )
 {
   // Handle bad input.
   if ( 0x0 == node )
     return false;
 
   // Get the state set.
-  osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
+  osg::ref_ptr< const osg::StateSet > ss ( node->getStateSet() );
   if ( false == ss.valid() )
     return false;
 

@@ -39,7 +39,7 @@ struct OSG_TOOLS_EXPORT StateSet
   static void         setTwoSidedLighting ( osg::StateSet *ss, bool state );
 
   // Set/get the normalization state.
-  static bool         getNormalize ( osg::Node *node );
+  static bool         getNormalize ( const osg::Node *node );
   static void         setNormalize ( osg::Node *node, bool state );
   static void         setNormalize ( osg::StateSet *ss, bool state );
 

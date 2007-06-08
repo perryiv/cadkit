@@ -620,7 +620,6 @@ void Application::_initLight()
 {
   ErrorChecker ( 1067093691, isAppThread(), CV::NOT_APP_THREAD );
 
-  osg::ref_ptr<osg::LightSource> source ( new osg::LightSource );
   osg::ref_ptr<osg::Light> light ( new osg::Light );
   osg::Vec3 ld;
   osg::Vec4 lp;
@@ -631,10 +630,7 @@ void Application::_initLight()
   light->setPosition( lp );
   light->setDirection( ld );
 
-  source->setLight ( light.get() );
-  source->setLocalStateSetModes ( osg::StateAttribute::ON );
-
-  this->setSceneDecorator ( source.get() );
+  this->addLight ( light.get() );
 }
 
 

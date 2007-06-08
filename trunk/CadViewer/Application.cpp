@@ -17,7 +17,6 @@
 #include "Application.h"
 #include "Constants.h"
 #include "ErrorChecker.h"
-#include "JugglerFunctors.h"
 #include "Exceptions.h"
 #include "ConfigFiles.h"
 #include "SceneFunctors.h"
@@ -2188,107 +2187,6 @@ void Application::usage ( const std::string &exe, std::ostream &out )
   out << "<juggler1.config> [juggler2.config ... jugglerN.config] ";
   out << "[file1.osg ... fileN.osg] ";
   out << '\n';
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Load all the config files.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_loadConfigFiles ( const Parser::Args &configs )
-{
-  ErrorChecker ( 1074300066, isMainThread() );
-
-  // See if there is at least one config file. Do not use the ErrorChecker.
-  if ( configs.empty() )
-  {
-    std::cout << "No VRJuggler config-files specified."
-              << "\n\tAttempting to use a sim-mode configuration."
-              << std::endl;
-    this->_loadSimConfigs();
-    return;
-  }
-
-  // Load the config files.
-  std::for_each ( configs.begin(), configs.end(), CV::Detail::LoadConfigFile() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Load the default config files.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_loadSimConfigs()
-{
-  ErrorChecker ( 1082599461u, isMainThread() );
-
-  std::cout << "Looking for environment variable VJ_CONFIG_DIR" << std::endl;
-
-  // Try this environment variable.
-  const char *dir = ::getenv ( "VJ_CONFIG_DIR" );
-  if ( dir )
-  {
-    // Load default config files from this directory.
-    this->_loadSimConfigs ( dir );
-    return;
-  }
-
-  std::cout << "Environment variable VJ_CONFIG_DIR not found." << std::endl;
-  std::cout << "Looking for environment variable VJ_BASE_DIR" << std::endl;
-
-  // Try this environment variable.
-  dir = ::getenv ( "VJ_BASE_DIR" );
-  if ( dir )
-  {
-    // Make sure there is a slash.
-    std::string d ( dir );
-    std::string::size_type last ( d.size() - 1 );
-    if ( '/' != d[last] || '\\' != d[last] )
-      d += '/';
-
-    // Add the sub-directory.
-    d += "share/vrjuggler/data/configFiles";
-
-    // Load default config files from this directory.
-    this->_loadSimConfigs ( d );
-    return;
-  }
-
-  std::cout << "Environment variable VJ_BASE_DIR not found." << std::endl;
-
-  // If we get this far then we failed.
-  Usul::Exceptions::Thrower < CV::Exceptions::UserInput > 
-    ( "No default VRJuggler config-files found." );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Load the default config files from the given directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_loadSimConfigs ( std::string dir )
-{
-  ErrorChecker ( 1082600560u, isMainThread() );
-  ErrorChecker ( 1082600585u, !dir.empty() );
-
-  // Make sure there is a slash.
-  std::string::size_type last ( dir.size() - 1 );
-  if ( '/' != dir[last] || '\\' != dir[last] )
-    dir += '/';
-
-  // The config-file loader.
-  CV::Detail::LoadConfigFile loader;
-
-  // Load the config files.
-  loader ( dir + "sim.base.jconf" );
-  loader ( dir + "sim.wand.mixin.jconf" );
-  loader ( dir + "sim.analog.mixin.jconf" );
 }
 
 

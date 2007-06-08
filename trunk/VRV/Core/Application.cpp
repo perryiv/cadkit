@@ -9,8 +9,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "VRV/Core/Application.h"
+#include "VRV/Core/JugglerFunctors.h"
+#include "VRV/Core/Exceptions.h"
 
 #include "Usul/Errors/Assert.h"
+#include "Usul/Trace/Trace.h"
 
 #include "OsgTools/State/StateSet.h"
 
@@ -54,6 +57,7 @@ using namespace VRV::Core;
 Application::Application() : vrj::GlApp(),
   CONSTRUCTOR_INITIALIZER_LIST
 {
+  USUL_TRACE_SCOPE;
   this->_construct();
 }
 
@@ -67,6 +71,7 @@ Application::Application() : vrj::GlApp(),
 Application::Application(vrj::Kernel* kern) : vrj::GlApp(kern),
   CONSTRUCTOR_INITIALIZER_LIST
 {
+  USUL_TRACE_SCOPE;
   this->_construct();
 }
 
@@ -79,6 +84,8 @@ Application::Application(vrj::Kernel* kern) : vrj::GlApp(kern),
 
 void Application::_construct()
 {
+  USUL_TRACE_SCOPE;
+
   // Crank up the max number of contexts. When you figure out a good way to 
   // get the real number, then use it here instead of this hard-coded one. 
   // Note: this has to be done early. Waiting for init() or contextInit() is 
@@ -96,6 +103,8 @@ void Application::_construct()
 
 Application::~Application()
 {
+  USUL_TRACE_SCOPE;
+
   // Make sure we don't have any references hanging around.
   USUL_ASSERT ( 0 == _refCount );
 }
@@ -109,6 +118,8 @@ Application::~Application()
 
 void Application::run()
 {
+  USUL_TRACE_SCOPE;
+
   vrj::Kernel* kernel ( vrj::Kernel::instance() );
   kernel->setApplication( this );
   kernel->start();
@@ -124,6 +135,8 @@ void Application::run()
 
 void Application::viewAll ( osg::MatrixTransform* node, osg::Matrix::value_type zScale )
 {
+  USUL_TRACE_SCOPE;
+
   // Get the bounding sphere of the group.
   osg::BoundingSphere bs ( node->getBound() );
   osg::Vec3 c ( bs.center() );
@@ -144,6 +157,9 @@ void Application::viewAll ( osg::MatrixTransform* node, osg::Matrix::value_type 
 
 void Application::contextInit()
 {
+  USUL_TRACE_SCOPE;
+
+  // Make a new Renderer.
   RendererPtr renderer ( new Renderer );
 
   // Initialize the renderer.
@@ -185,6 +201,8 @@ void Application::contextInit()
 
 void Application::contextPreDraw()
 {
+  USUL_TRACE_SCOPE;
+
   // if necessary, make data members sync up with the sceneview's data
   if( !_dirty )
   {
@@ -201,7 +219,9 @@ void Application::contextPreDraw()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace Detail
+namespace VRV {
+namespace Core {
+namespace Detail 
 {
   struct OpenGlStackPushPop
   {
@@ -243,6 +263,8 @@ namespace Detail
     }
   };
 }
+}
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -253,6 +275,8 @@ namespace Detail
 
 void Application::draw()
 {
+  USUL_TRACE_SCOPE;
+
   // For exception safety. Pushes attributes in constructor, pops them in destructor.
   Detail::OpenGlStackPushPop pushPop;
 
@@ -301,6 +325,8 @@ void Application::draw()
 
 OsgTools::Render::Renderer* Application::_getContextSpecificRenderer()
 {
+  USUL_TRACE_SCOPE;
+
   RendererPtr renderer = *(_renderer);
   return renderer.get();
 }
@@ -313,6 +339,8 @@ OsgTools::Render::Renderer* Application::_getContextSpecificRenderer()
 
 void Application::setSceneData( osg::Node* node )
 {
+  USUL_TRACE_SCOPE;
+
   _sceneManager->model( node );
 
   // Is this needed?
@@ -328,6 +356,7 @@ void Application::setSceneData( osg::Node* node )
 
 const osg::Node* Application::getSceneData() const
 {
+  USUL_TRACE_SCOPE;
   return _sceneManager->model();
 }
 
@@ -340,6 +369,7 @@ const osg::Node* Application::getSceneData() const
 
 osg::Node* Application::getSceneData()
 {
+  USUL_TRACE_SCOPE;
   return _sceneManager->model();
 }
 
@@ -352,6 +382,7 @@ osg::Node* Application::getSceneData()
 
 double Application::getTimeSinceStart()
 {
+  USUL_TRACE_SCOPE;
   return _timer.delta_s( _initialTime, _timer.tick() );
 }
 
@@ -364,6 +395,8 @@ double Application::getTimeSinceStart()
 
 void Application::init()
 {
+  USUL_TRACE_SCOPE;
+
   _initialTime = _timer.tick();
 
   // Initialize the shared frame time data.
@@ -380,6 +413,8 @@ void Application::init()
 
 void Application::preFrame()
 {
+  USUL_TRACE_SCOPE;
+
   // Write the frame time if we've suppose to.
   if( _sharedFrameTime.isLocal() )
   {
@@ -402,6 +437,8 @@ void Application::preFrame()
 
 void Application::latePreFrame()
 {
+  USUL_TRACE_SCOPE;
+
   // Get the frame time.
   _frameTime = _sharedFrameTime->data;
 }
@@ -415,6 +452,8 @@ void Application::latePreFrame()
 
 void Application::postFrame()
 {
+  USUL_TRACE_SCOPE;
+
   // Capture the frame time.
   _frameTime = _timer.delta_s( _frameStart, _timer.tick() );
 
@@ -432,6 +471,8 @@ void Application::postFrame()
 
 void Application::_initRenderer( Renderer* renderer )
 {
+  USUL_TRACE_SCOPE;
+
   renderer->scene ( _sceneManager->scene() );
 
   // Set the background color.
@@ -447,6 +488,8 @@ void Application::_initRenderer( Renderer* renderer )
 
 void Application::_setViewport( osg::Viewport* vp, vrj::GlDrawManager* mgr )
 {
+  USUL_TRACE_SCOPE;
+
   float vpX,vpY,vpW,vpH;
   int winX,winY,winW,winH;
 
@@ -470,6 +513,7 @@ void Application::_setViewport( osg::Viewport* vp, vrj::GlDrawManager* mgr )
 
 void Application::quit()
 {
+  USUL_TRACE_SCOPE;
   vrj::Kernel::instance()->stop();
 }
 
@@ -482,6 +526,7 @@ void Application::quit()
 
 void Application::normalize ( bool on )
 {
+  USUL_TRACE_SCOPE;
   OsgTools::State::StateSet::setNormalize ( this->getSceneData(), on );
 }
 
@@ -494,6 +539,7 @@ void Application::normalize ( bool on )
 
 bool Application::normalize() const
 {
+  USUL_TRACE_SCOPE;
   return OsgTools::State::StateSet::getNormalize ( this->getSceneData() );
 }
 
@@ -506,6 +552,7 @@ bool Application::normalize() const
 
 osg::FrameStamp* Application::getFrameStamp()
 {
+  USUL_TRACE_SCOPE;
   return _framestamp.get();
 }
 
@@ -518,6 +565,7 @@ osg::FrameStamp* Application::getFrameStamp()
 
 const osg::FrameStamp* Application::getFrameStamp() const
 {
+  USUL_TRACE_SCOPE;
   return _framestamp.get();
 }
 
@@ -530,6 +578,7 @@ const osg::FrameStamp* Application::getFrameStamp() const
 
 double Application::_getFrameTime() const
 {
+  USUL_TRACE_SCOPE;
   return _frameTime;
 }
 
@@ -542,6 +591,7 @@ double Application::_getFrameTime() const
 
 void Application::addLight ( osg::Light* light )
 {
+  USUL_TRACE_SCOPE;
   _sceneManager->globalLight ( light );
 }
 
@@ -568,3 +618,111 @@ void Application::unref ( bool )
 {
   --_refCount;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load all the config files.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_loadConfigFiles ( const std::vector < std::string > &configs )
+{
+  USUL_TRACE_SCOPE;
+
+  // See if there is at least one config file. Do not use the ErrorChecker.
+  if ( configs.empty() )
+  {
+    std::cout << "No VRJuggler config-files specified."
+              << "\n\tAttempting to use a sim-mode configuration."
+              << std::endl;
+    this->_loadSimConfigs();
+    return;
+  }
+
+  // Load the config files.
+  std::for_each ( configs.begin(), configs.end(), VRV::Core::Detail::LoadConfigFile() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the default config files.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_loadSimConfigs()
+{
+  USUL_TRACE_SCOPE;
+
+  std::cout << "Looking for environment variable VJ_CONFIG_DIR" << std::endl;
+
+  // Try this environment variable.
+  const char *dir = ::getenv ( "VJ_CONFIG_DIR" );
+  if ( dir )
+  {
+    // Load default config files from this directory.
+    this->_loadSimConfigs ( dir );
+    return;
+  }
+
+  std::cout << "Environment variable VJ_CONFIG_DIR not found." << std::endl;
+  std::cout << "Looking for environment variable VJ_BASE_DIR" << std::endl;
+
+  // Try this environment variable.
+  dir = ::getenv ( "VJ_BASE_DIR" );
+  if ( dir )
+  {
+    // Make sure there is a slash.
+    std::string d ( dir );
+    std::string::size_type last ( d.size() - 1 );
+    if ( '/' != d[last] || '\\' != d[last] )
+      d += '/';
+
+    // Add the sub-directory.
+    d += "share/vrjuggler/data/configFiles";
+
+    // Load default config files from this directory.
+    this->_loadSimConfigs ( d );
+    return;
+  }
+
+  std::cout << "Environment variable VJ_BASE_DIR not found." << std::endl;
+
+  // If we get this far then we failed.
+  Usul::Exceptions::Thrower < VRV::Core::Exceptions::UserInput > 
+    ( "No default VRJuggler config-files found." );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the default config files from the given directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_loadSimConfigs ( const std::string& d )
+{
+  USUL_TRACE_SCOPE;
+
+  // Return if string is empty.
+  if ( d.empty() )
+    return;
+
+  // Make a copy.
+  std::string dir ( d );
+
+  // Make sure there is a slash.
+  std::string::size_type last ( dir.size() - 1 );
+  if ( '/' != dir[last] || '\\' != dir[last] )
+    dir += '/';
+
+  // The config-file loader.
+  VRV::Core::Detail::LoadConfigFile loader;
+
+  // Load the config files.
+  loader ( dir + "sim.base.jconf" );
+  loader ( dir + "sim.wand.mixin.jconf" );
+  loader ( dir + "sim.analog.mixin.jconf" );
+}
+

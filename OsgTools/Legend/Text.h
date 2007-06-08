@@ -34,6 +34,17 @@ public:
   Text();
   Text( const std::string& text );
 
+  /// Alignment.
+  enum Alignment
+  {
+    LEFT,
+    RIGHT
+  };
+
+  /// Get/Set the alignment.
+  void                    alignment ( Alignment type );
+  Alignment               alignment () const;
+
   /// Get/Set the text.
   void                    text( const std::string& text );
   const std::string &     text () const;
@@ -56,6 +67,7 @@ private:
   std::string _text;
   unsigned int _width;
   unsigned int _height;
+  Alignment _alignment;
 };
 
 }

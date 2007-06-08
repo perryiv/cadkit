@@ -182,8 +182,8 @@ osg::Node* LegendObject::buildScene()
   osg::ref_ptr < osg::Group > group ( new osg::Group );
 
   unsigned int padding ( 5 );
-  unsigned int iconWidth ( static_cast < unsigned int > ( _width * 0.20 ) );
-  unsigned int textWidth ( static_cast < unsigned int > ( _width * 0.75 ) );
+  unsigned int iconWidth ( static_cast < unsigned int > ( _width * 0.10 ) );
+  unsigned int textWidth ( static_cast < unsigned int > ( _width * 0.85 ) );
 
   if( _icon.valid() )
   {

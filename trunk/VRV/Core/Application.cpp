@@ -276,7 +276,7 @@ void Application::draw()
 				                 frustum[vrj::Frustum::VJ_FAR] );
 
   // constantly update the view matrix
-  gmtl::Matrix44f projt ( projection->getViewMatrix() );
+  gmtl::Matrix44f proj ( projection->getViewMatrix() );
 
   osg::ref_ptr< osg::RefMatrix > osgProj ( new osg::RefMatrix );
   osgProj->set(proj.mData);

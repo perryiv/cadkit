@@ -383,9 +383,6 @@ void Application::preFrame()
   // Write the frame time if we've suppose to.
   if( _sharedFrameTime.isLocal() )
   {
-    if( _framestamp.valid() && _framestamp->getFrameNumber() % 300 == 0 )
-      std::cerr << "Writing frame time: " << _frameTime << std::endl;
-
     // Capture the frame time.
     _sharedFrameTime->data = _frameTime;
   }

@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="OpenThreadsd.lib"
+				AdditionalDependencies="OpenThreadsWin32d.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/OpenThreadsExd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -177,7 +177,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="OpenThreads.lib"
+				AdditionalDependencies="OpenThreadsWin32.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/OpenThreadsEx.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

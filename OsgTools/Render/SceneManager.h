@@ -36,16 +36,26 @@ public:
 
   SceneManager();
 
+  /// Add a global light.  This will be placed in an absolute reference frame.
+  unsigned int          globalLight ( osg::Light* light );
+
+  /// Get global light at index i.
+  osg::Light*           globalLight( unsigned int i );
+  const osg::Light*     globalLight( unsigned int i ) const;
+
+  /// Remove global light at index i.
+  void                  globalLightRemove ( unsigned int i );
+
   /// Get the scene
-  osg::Node * scene();
-  const osg::Node * scene() const;
+  osg::Node *           scene();
+  const osg::Node *     scene() const;
 
   /// Set the Model
-  void model( osg::Node * );
+  void                  model( osg::Node * );
 
   /// Get the model
-  osg::Node * model();
-  const osg::Node * model () const;
+  osg::Node *           model();
+  const osg::Node *     model () const;
 
   // Add/Remove group from scene
   osg::Group*           groupGet    ( const std::string& );
@@ -81,18 +91,21 @@ protected:
 
 private:
 
-  typedef osg::ref_ptr<Group> GroupPtr;
-  typedef osg::ref_ptr < osg::ClipNode > ClipNodePtr;
-  typedef osg::ref_ptr < osg::Projection > ProjectionPtr;
-  typedef osg::ref_ptr < osgText::Text > TextPtr;
+  typedef osg::ref_ptr < Group >                   GroupPtr;
+  typedef osg::ref_ptr < osg::ClipNode >           ClipNodePtr;
+  typedef osg::ref_ptr < osg::Projection >         ProjectionPtr;
+  typedef osg::ref_ptr < osgText::Text >           TextPtr;
   typedef std::pair < unsigned int, unsigned int > XYPair;
-  typedef std::map < XYPair, TextPtr > TextMap;
-
-  typedef std::map < std::string, GroupPtr > GroupMap;
+  typedef std::map < XYPair, TextPtr >             TextMap;
+  typedef osg::ref_ptr< osg::Light >               LightPtr;
+  typedef std::vector < LightPtr >                 Lights;
+  typedef std::map < std::string, GroupPtr >       GroupMap;
 
   GroupPtr _scene;
   ClipNodePtr _clipNode;
   ProjectionPtr _projectionNode;
+  GroupPtr _lightNode;
+  Lights   _lights;
 
   GroupMap _groupMap;
   GroupMap _projectionMap;

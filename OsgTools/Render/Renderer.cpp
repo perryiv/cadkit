@@ -119,6 +119,10 @@ Renderer::~Renderer()
 
 void Renderer::init()
 {
+  // Set defaults for the global state set.
+  this->getGlobalStateSet()->setGlobalDefaults();
+
+  // Find out how many accumulation bits we have.
   GLint red ( 0 ), green ( 0 ), blue ( 0 ), alpha ( 0 );
   ::glGetIntegerv ( GL_ACCUM_RED_BITS,   &red   );
   ::glGetIntegerv ( GL_ACCUM_GREEN_BITS, &green );

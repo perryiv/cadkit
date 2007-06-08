@@ -13,6 +13,7 @@
 #include "OsgTools/Render/Constants.h"
 
 #include "osg/Geode"
+#include "osg/LightSource"
 
 using namespace OsgTools::Render;
 
@@ -28,12 +29,15 @@ SceneManager::SceneManager() :
   _scene           ( new Group ),
   _clipNode        ( new osg::ClipNode ),
   _projectionNode  ( new osg::Projection ),
+  _lightNode       ( new osg::Group ),
+  _lights          (),
   _groupMap        (),
   _projectionMap   (),
   _textMap         ()
 {
   _scene->addChild ( _projectionNode.get() );
   _scene->addChild ( _clipNode.get() );
+  _scene->addChild ( _lightNode.get() );
 }
 
 
@@ -310,7 +314,7 @@ osgText::Text* SceneManager::getText( unsigned int x, unsigned int y )
 
 void SceneManager::setText( unsigned int x, unsigned int y, const std::string& text )
 {
-  this->getText(x,y)->setText( text );
+  this->getText( x, y )->setText( text );
 }
 
 
@@ -345,5 +349,79 @@ void SceneManager::removeText( unsigned int x, unsigned int y )
     
     // Remove the text from the map.
     _textMap.erase( i );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a global light.  This will be placed in an absolute reference frame.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int SceneManager::globalLight ( osg::Light* light )
+{
+  // Get the number for this light.
+  unsigned int num ( _lights.size() );
+
+  // Set the number.
+  light->setLightNum ( num );
+
+  // Add to the end of the list.
+  _lights.push_back ( light );
+
+  // Make the light source.
+  osg::ref_ptr < osg::LightSource > source ( new osg::LightSource );
+  source->setReferenceFrame ( osg::LightSource::ABSOLUTE_RF );
+  source->setLight( light );
+  source->setLocalStateSetModes ( osg::StateAttribute::ON );
+
+  // Add to the scene.
+  _lightNode->addChild ( source.get() );
+
+  // Enable the lights in the root's state set.
+  osg::ref_ptr < osg::StateSet > ss ( this->scene()->getOrCreateStateSet() );
+  source->setStateSetModes( *ss, osg::StateAttribute::ON );
+
+  return num;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get global light at index i.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Light* SceneManager::globalLight( unsigned int i )
+{
+  return _lights.at( i ).get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get global light at index i.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Light* SceneManager::globalLight( unsigned int i ) const
+{
+  return _lights.at( i ).get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove global light at index i.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SceneManager::globalLightRemove ( unsigned int i )
+{
+  if( i < _lights.size() )
+  {
+    _lightNode->removeChild ( i );
+    _lights.erase ( _lights.begin() + i );
   }
 }

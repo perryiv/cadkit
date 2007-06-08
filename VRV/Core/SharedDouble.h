@@ -11,15 +11,16 @@
 #ifndef __SHARED_DOUBLE_H__
 #define __SHARED_DOUBLE_H__
 
-#include "Export.h"
+#include "VRV/Core/Export.h"
 
 #include "vpr/IO/SerializableObject.h"
 #include "vpr/IO/ObjectReader.h"
 #include "vpr/IO/ObjectWriter.h"
 
-namespace osgVRJ {
+namespace VRV {
+namespace Core {
 
-class OSG_VRJ_EXPORT SharedDouble : public vpr::SerializableObject
+class VRV_EXPORT SharedDouble : public vpr::SerializableObject
 {
 public:
   SharedDouble();
@@ -30,6 +31,7 @@ public:
   double data;
 };
 
+}
 }
 
 #endif // __SHARED_DOUBLE_H__

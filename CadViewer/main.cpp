@@ -61,10 +61,10 @@ void runApplication ( int argc, char **argv )
   std::copy ( argv + 1, argv + argc, std::back_inserter ( args ) );
 
   // Construct an application.
-  CV::Application::ValidRefPtr app ( new CV::Application ( args ) );
+  CV::Application app ( args );
 
   // Run the application.
-  app->run();
+  app.run();
 }
 
 

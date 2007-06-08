@@ -39,8 +39,6 @@
 
 # include "osgUtil/IntersectVisitor"
 
-# include "osgVRJ/Application.h"
-
 # include "vrj/Kernel/Kernel.h"
 
 # include "gmtl/Generate.h"

@@ -31,6 +31,7 @@ public:
 
   // Typedefs.
   typedef XmlTree::Node BaseClass;
+  typedef XmlTree::Node NodeType;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Document );

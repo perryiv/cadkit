@@ -283,7 +283,7 @@ void OpenDocument::_addTaskedFile ( TaskHandle task, const std::string &file )
 void OpenDocument::_removeTaskedFile ( Usul::Threads::Thread *thread )
 {
   USUL_TRACE_SCOPE;
-
+#if 0
   bool found ( false );
   if ( 0x0 != thread && true == thread->isTask() )
   {
@@ -301,6 +301,7 @@ void OpenDocument::_removeTaskedFile ( Usul::Threads::Thread *thread )
   {
     this->unref();
   }
+#endif
 }
 
 
@@ -313,13 +314,13 @@ void OpenDocument::_removeTaskedFile ( Usul::Threads::Thread *thread )
 std::string OpenDocument::_getTaskedFile ( Usul::Threads::Thread *thread )
 {
   USUL_TRACE_SCOPE;
-
+#if 0
   if ( 0x0 != thread && true == thread->isTask() )
   {
     Guard guard ( this->mutex() );
     TaskedFiles::const_iterator i ( _taskedFiles.find ( thread->task() ) );
     return ( ( _taskedFiles.end() == i ) ? std::string ( "" ) : i->second );
   }
-
+#endif
   return std::string ( "" );
 }

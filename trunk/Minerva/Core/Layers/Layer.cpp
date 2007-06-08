@@ -26,6 +26,8 @@
 #include "osg/Group"
 #include "osg/MatrixTransform"
 
+#include "osgText/Text"
+
 #include <algorithm>
 #include <functional>
 #include <iostream>
@@ -979,6 +981,7 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
       if( this->showCountLegend() )
       {
         unsigned int index ( row->addText ( new OsgTools::Legend::Text ( Usul::Functions::toString( this->number() ) ) ) );
+	row->at ( index )->alignment ( OsgTools::Legend::Text::RIGHT );
         row->percentage( index ) = 0.20;
       }
 

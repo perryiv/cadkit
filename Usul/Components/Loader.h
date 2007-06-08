@@ -4,7 +4,7 @@
 //  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Created by: Adam Kubach
+//  Authors: Adam Kubach and Perry Miller.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -14,7 +14,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Plugins/Manager/Loader.h"
+#ifndef __USUL_COMPONENTS_LOADER_H__
+#define __USUL_COMPONENTS_LOADER_H__
+
+#include "Usul/Threads/Guard.h"
+#include "Usul/Threads/RecursiveMutex.h"
 
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IPlugin.h"
@@ -22,9 +26,69 @@
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Trace/Trace.h"
 
-#include "XmlTree/Document.h"
+#include <string>
+#include <map>
 
-using namespace CadKit::Helios::Plugins::Manager;
+namespace Usul { namespace Interfaces { struct IUnknown; } }
+
+
+namespace Usul {
+namespace Components {
+
+
+template < class Document >
+class Loader
+{
+public:
+
+  /// Useful typedefs.
+  typedef Usul::Threads::RecursiveMutex     Mutex;
+  typedef Usul::Threads::Guard<Mutex>       Guard;
+  typedef typename Document::NodeType       Node;
+
+  // Constructor and destructor.
+	Loader();
+	~Loader();
+
+  // Add a single plugin file name.
+	void                      addPlugin ( const std::string &file );
+
+  // Get the mutex.
+  Mutex &                   mutex() const { return _mutex; }
+
+	/// Parse the file.
+	void                      parse( const std::string& filename );
+	
+	/// Load all the plugins.
+	void                      load ( Usul::Interfaces::IUnknown *caller = 0x0 );
+	
+protected:
+
+  struct PluginInfo
+  {
+    PluginInfo() :
+      name( "" ),
+      alias ( "" ),
+      load ( false )
+    {
+    }
+    
+    std::string name;
+    std::string alias;
+    bool load;
+  };
+
+  void                      _addPlugins ( Node &node );
+	void                      _addPlugin  ( Node &node );
+  void                      _addPlugin  ( PluginInfo &plugin );
+	
+private:
+
+	typedef std::vector < PluginInfo > Plugins;
+	
+	Plugins         _plugins;
+  mutable Mutex   _mutex;
+};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -33,9 +97,9 @@ using namespace CadKit::Helios::Plugins::Manager;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Loader::Loader() : 
-	_filename(),
-	_names(),
+template < class Document >
+Loader< Document >::Loader() : 
+	_plugins(),
   _mutex()
 {
   USUL_TRACE_SCOPE;
@@ -47,37 +111,10 @@ Loader::Loader() :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Loader::~Loader()
+template < class Document >
+Loader< Document >::~Loader()
 {
   USUL_TRACE_SCOPE;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the filename to parse.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Loader::filename ( const std::string& filename )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-	_filename = filename;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the filename to parse.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string Loader::filename() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-	return _filename;
 }
 
 
@@ -87,13 +124,14 @@ std::string Loader::filename() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Loader::parse()
+template < class Document >
+void Loader< Document >::parse( const std::string& filename )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  XmlTree::Document::RefPtr doc = new XmlTree::Document ( );
-	doc->load ( _filename );
+  Document::RefPtr doc = new Document ( );
+	doc->load ( filename );
 
   if ( "plugins" == doc->name() )
   {
@@ -108,12 +146,13 @@ void Loader::parse()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Loader::_addPlugins ( XmlTree::Node &parent )
+template < class Document >
+void Loader< Document >::_addPlugins ( Node &parent )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  typedef XmlTree::Document::Children Children;
+  typedef typename Document::Children Children;
 	Children& children ( parent.children() );
 	
 	for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
@@ -133,30 +172,38 @@ void Loader::_addPlugins ( XmlTree::Node &parent )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Loader::_addPlugin ( XmlTree::Node &node )
+template < class Document >
+void Loader< Document >::_addPlugin ( Node &node )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  typedef XmlTree::Document::Attributes Attributes;
+  typedef typename Document::Attributes Attributes;
 	Attributes& attributes ( node.attributes() );
 	
-	std::string file ( "" );
-  bool load ( true );
+	PluginInfo plugin;
+
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
   	if ( "file" == iter->first )
     {
-  	  file = iter->second;
+      plugin.name = iter->second;
+    }
+    else if ( "alias" == iter->first )
+    {
+      plugin.name = iter->second;
     }
     else if ( "load" == iter->first )
     {
-    	std::istringstream in ( iter->second );
-    	in >> load;
+      std::string load ( iter->second );
+
+      // Should we load.  Default is no.
+      if ( "true" == load )
+        plugin.load = true;
    	}
   }
   
-  this->addPlugin ( file );
+  this->_addPlugin ( plugin );
 }
 
 
@@ -166,20 +213,37 @@ void Loader::_addPlugin ( XmlTree::Node &node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Loader::addPlugin ( const std::string &file )
+template < class Document >
+void Loader< Document >::_addPlugin ( PluginInfo &plugin )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  std::string name ( file );
 #if _DEBUG
-  name += 'd';
+  plugin.name += 'd';
 #endif
 
-  if ( false == name.empty() )
-  {
-  	_names.insert ( Names::value_type ( name, true ) );
-  }
+  _plugins.push_back ( plugin );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a plugin.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Document >
+void Loader< Document >::addPlugin ( const std::string &file )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  PluginInfo plugin;
+  plugin.name = file;
+  plugin.load = true;
+
+  this->_addPlugin ( plugin );
 }
 
 
@@ -189,7 +253,8 @@ void Loader::addPlugin ( const std::string &file )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Loader::load ( Usul::Interfaces::IUnknown *caller )
+template < class Document >
+void Loader< Document >::load ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -200,25 +265,28 @@ void Loader::load ( Usul::Interfaces::IUnknown *caller )
 
 	// Set the size for the progress bar.
 	if ( progress.valid() )
-		progress->setTotalProgressBar ( _names.size() );
+		progress->setTotalProgressBar ( _plugins.size() );
 
 	// Number we are on.
 	unsigned int number ( 0 );
 
 	// Load the plugins.
-	for ( Names::iterator iter = _names.begin(); iter != _names.end(); ++iter )
+	for ( Plugins::iterator iter = _plugins.begin(); iter != _plugins.end(); ++iter )
 	{
 		// Load the plugin if we are suppose to.
-		if( iter->second )
+		if( iter->load )
 		{
 			// The name.
-			std::string name ( iter->first );
+			std::string name ( iter->name );
 
 			// Let the user know what plugin we are loading.
 			status ( "Loading " + name + "...", true );
 
+      // Get the alias.
+      std::string alias ( iter->alias );
+
 			// Load the plugin.
-			Usul::Components::Manager::instance().load ( Usul::Interfaces::IPlugin::IID, name );
+			Usul::Components::Manager::instance().load ( Usul::Interfaces::IPlugin::IID, name, alias );
 		}
 
 		// Update progress.
@@ -226,3 +294,10 @@ void Loader::load ( Usul::Interfaces::IUnknown *caller )
 			progress->updateProgressBar ( ++number );
 	}
 }
+
+
+} // namespace Components
+} // namespace Usul
+
+
+#endif // __CADKIT_HELIOS_PLUGINS_MANAGER_H__

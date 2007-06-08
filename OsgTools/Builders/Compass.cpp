@@ -223,7 +223,22 @@ void Compass::setHeading(float r)
   _heading = r;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the heading of the compass based on a lat/lon position and a 
+//  lat/lon north.
+//
+///////////////////////////////////////////////////////////////////////////////
 
+void Compass::setHeadingRelativeToNorth(const osg::Vec2& north, const osg::Vec2& pos)
+{
+  float theta = atan ( ( north.x() - pos.x() ) / ( north.y() - pos.y() ) );
+
+  if( north.x() - pos.x() < 0 )
+    theta *= -1.0f;
+
+  this->setHeading( theta );
+}
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Get the pitch of the compass

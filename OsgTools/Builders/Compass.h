@@ -42,6 +42,7 @@ public:
 
 	float getHeading ( );
 	void setHeading ( float r );
+  void setHeadingRelativeToNorth(const osg::Vec2& north, const osg::Vec2& pos);
 
   float getPitch ( );
 	void setPitch ( float p );

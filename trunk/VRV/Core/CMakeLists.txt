@@ -1,7 +1,7 @@
 
-PROJECT(osgVRJ)
+PROJECT(VRVCore)
 
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 # Find needed libraries.
@@ -33,11 +33,11 @@ SET (SOURCES
 )
 
 # Create a Shared Library
-ADD_LIBRARY(osgVRJ SHARED ${SOURCES} )
+ADD_LIBRARY(VRVCore SHARED ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( osgVRJ Usul OsgTools )
-TARGET_LINK_LIBRARIES( osgVRJ
+LINK_CADKIT( VRVCore Usul OsgTools )
+TARGET_LINK_LIBRARIES( VRVCore
 	${OSG_LIB}
 	${VR_JUGGLER_LIBS}
 	${Boost_FILESYSTEM_LIBRARY}

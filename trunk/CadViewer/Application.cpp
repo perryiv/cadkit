@@ -2324,10 +2324,7 @@ void Application::ref()
 
 void Application::unref ( bool allowDeletion )
 {
-  if ( allowDeletion )
-    BaseClass::unref();
-  else
-    BaseClass::unref_nodelete();
+  BaseClass::unref( allowDeletion );
 }
 
 
@@ -2706,18 +2703,6 @@ void Application::_updateSceneTool()
       }
     }
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Drawing -- draw extra geometry
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::draw()
-{
-  osgVRJ::Application::draw();   // base class draw method
 }
 
 

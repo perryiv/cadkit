@@ -44,7 +44,7 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/CommandLine/Parser.h"
 
-#include "osgVRJ/Application.h"
+#include "VRV/Core/Application.h"
 
 #include "vrjGA/JoystickDevice.h"
 
@@ -62,7 +62,7 @@ namespace CV {
 
 	
 // The CadViewer application
-class Application : public osgVRJ::Application,
+class Application : public VRV::Core::Application,
                     public CV::Interfaces::IApplication,
                     public CV::Interfaces::IAuxiliaryScene,
                     public CV::Interfaces::INavigationScene,
@@ -80,13 +80,15 @@ class Application : public osgVRJ::Application,
 public:
 
   // Useful typedefs
-  USUL_DECLARE_REF_POINTERS ( Application );
-  typedef osgVRJ::Application BaseClass;
+  typedef VRV::Core::Application BaseClass;
   typedef std::list<std::string> Args;
   typedef Usul::Math::Matrix44f Matrix44f;
 
   // Constructor.
   Application ( Args &args );
+
+  // Destructor.
+  virtual ~Application();
 
   // Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
@@ -260,12 +262,6 @@ protected:
   Application ( const Application &app );
   Application& operator = ( const Application &app );
 
-  // Destructor.
-  virtual ~Application();
-  
-  // draw function
-  virtual void draw();
-
   // Is this the head node?
   bool                          _isHeadNode() const;
 
@@ -311,7 +307,7 @@ protected:
   void                          _navigate();
 
     // Get the number of selected
-  unsigned int                 _numSelected();
+  unsigned int                  _numSelected();
 
   // Parse the command-line arguments.
   void                          _parseCommandLine();

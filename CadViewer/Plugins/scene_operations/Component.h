@@ -19,11 +19,11 @@
 #include "CompileGuard.h"
 
 #include "Usul/Base/Referenced.h"
+#include "Usul/Interfaces/IPlugin.h"
 
 #include "CadViewer/Interfaces/IMaterialStack.h"
 #include "CadViewer/Interfaces/ISelection.h"
 #include "CadViewer/Interfaces/IVisibility.h"
-
 
 namespace CV {
 namespace Plugins {
@@ -32,7 +32,8 @@ namespace Plugins {
 class Component : public Usul::Base::Referenced,
                   public CV::Interfaces::IMaterialStack,
                   public CV::Interfaces::ISelection,
-                  public CV::Interfaces::IVisibility
+                  public CV::Interfaces::IVisibility,
+                  public Usul::Interfaces::IPlugin
 {
 public:
 
@@ -98,6 +99,9 @@ protected:
 
   /// Use reference counting.
   virtual ~Component();
+
+  /// Usul::Interfaces::IPlugin.
+  virtual std::string getPluginName() const;
 };
 
 

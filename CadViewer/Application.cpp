@@ -17,7 +17,6 @@
 #include "Application.h"
 #include "Constants.h"
 #include "ErrorChecker.h"
-#include "Exceptions.h"
 #include "ConfigFiles.h"
 #include "SceneFunctors.h"
 #include "ScenePredicates.h"
@@ -37,7 +36,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
-#include "Usul/Components/Object.h"
+#include "Usul/Components/Manager.h"
 #include "Usul/Print/Vector.h"
 #include "Usul/Print/Matrix.h"
 #include "Usul/Math/Constants.h"
@@ -239,16 +238,9 @@ Application::Application ( Args &args ) :
   _wandOffset     ( 0, 0, 0 ), // feet (used to be z=-4)
   _cursorMatrix   ( 0x0 ),
   _sceneMutex     (),
-  _iVisibility    ( Usul::Components::Object::create ( CV::Interfaces::IVisibility::IID,
-                                                       CV_SCENE_OPERATIONS ) ),
-  _iSelection     ( Usul::Components::Object::create ( CV::Interfaces::ISelection::IID,
-                                                       CV_SCENE_OPERATIONS ) ),
-  _iMaterialStack ( Usul::Components::Object::create ( CV::Interfaces::IMaterialStack::IID,
-                                                       CV_SCENE_OPERATIONS ) ),
-  _iCollider      ( Usul::Components::Object::create ( Collision::Interfaces::ICollider::IID,
-                                                       CV_COLLISION_DETECTION,
-                                                       false,
-                                                       false ) ),
+  _iVisibility    ( static_cast < CV::Interfaces::IVisibility* >    ( 0x0 ) ),
+  _iSelection     ( static_cast < CV::Interfaces::ISelection* >     ( 0x0 ) ),
+  _iMaterialStack ( static_cast < CV::Interfaces::IMaterialStack* > ( 0x0 ) ),
   _clipDist       ( 0, 0 ),
   _menu           ( new MenuKit::OSG::Menu() ),
   _statusBar      ( new MenuKit::OSG::Menu() ),
@@ -281,9 +273,6 @@ Application::Application ( Args &args ) :
 
   // Read the user's preference file, if any.
   this->_readUserPreferences();
-
-  // Did we load a collider?
-  WarningChecker ( 1082589164u, _iCollider.valid(), "Failed to load collider module." );
 
   // Hook up the branches.
   _root->addChild      ( _cursor.get()       );
@@ -328,6 +317,13 @@ Application::Application ( Args &args ) :
   _colorMap["white"]  = osg::Vec4 ( 1.0,1.0,1.0,1.0 );
   _colorMap["grey"]   = osg::Vec4 ( 0.5,0.5,0.5,1.0 );
   _colorMap["black"]  = osg::Vec4 ( 0.0,0.0,0.0,1.0 );
+
+  typedef Usul::Components::Manager Manager;
+
+  // Save the plugin pointers.
+  _iVisibility    = Manager::instance().getInterface( CV_SCENE_OPERATIONS );
+  _iSelection     = Manager::instance().getInterface( CV_SCENE_OPERATIONS );
+  _iMaterialStack = Manager::instance().getInterface( CV_SCENE_OPERATIONS );
 }
 
 
@@ -749,9 +745,7 @@ void Application::_initMenu()
   //CV_REGISTER ( _saveView,         "save_camera_view" );
 
   // Get the component.
-  VRV::Interfaces::IMenuRead::QueryPtr reader
-    ( Usul::Components::Object::create( VRV::Interfaces::IMenuRead::IID,
-      CV_GRAPHICAL_USER_INTERFACE ) );
+  VRV::Interfaces::IMenuRead::QueryPtr reader ( Usul::Components::Manager::instance().getInterface ( CV_GRAPHICAL_USER_INTERFACE ) );
 
   // Find the path to the config file.
   std::string filename ( CV::Config::filename ( "menu" ) );
@@ -1549,18 +1543,19 @@ void Application::_loadRestartFile ( const std::string &filename )
   typedef VRV::Interfaces::IParseRestart Reader;
 
   // Declare a restart-file reader.
-  Reader::ValidQueryPtr reader 
-    ( Usul::Components::Object::create
-      ( Reader::IID, CV_RESTART_FILE_PARSER, true, true ) );
+  Reader::QueryPtr reader ( Usul::Components::Manager::instance().getInterface ( CV_RESTART_FILE_PARSER ) );
 
-  // User feedback.
-  this->_update ( *_msgText, "Reading file: " + filename );
+  if( reader.valid() )
+  {
+    // User feedback.
+    this->_update ( *_msgText, "Reading file: " + filename );
 
-  // Read the file.
-  reader->parseRestartFile ( filename, ValidUnknown ( this ) );
+    // Read the file.
+    reader->parseRestartFile ( filename, ValidUnknown ( this ) );
 
-  // User feedback.
-  this->_update ( *_msgText, "Done reading: " + filename );
+    // User feedback.
+    this->_update ( *_msgText, "Done reading: " + filename );
+  }
 }
 
 
@@ -2290,16 +2285,15 @@ void Application::_postProcessModelLoad ( const std::string &filename, osg::Node
   ErrorChecker ( 1075424507, model->referenceCount() > 0 ); // Should be in scene.
 
   // To shorten the lines.
-  typedef Usul::Components::Object Object;
-  typedef Object::UnknownList UnknownList;
+  typedef Usul::Components::Manager Manager;
+  typedef Manager::UnknownSet UnknownSet;
   typedef CV::Interfaces::IPostModelLoad PostProcess;
 
   // See if we have any appropriate plugins.
-  UnknownList unknowns;
-  Object::create ( PostProcess::IID, unknowns );
+  UnknownSet unknowns ( Manager::instance().getInterfaces ( PostProcess::IID ) );
 
   // Loop through the found plugins.
-  for ( UnknownList::iterator i = unknowns.begin(); i != unknowns.end(); ++i )
+  for ( UnknownSet::iterator i = unknowns.begin(); i != unknowns.end(); ++i )
   {
     // Grab the pointer.
     Usul::Interfaces::IUnknown::ValidRefPtr u ( *i );
@@ -2536,6 +2530,9 @@ void Application::_selected ( CV::Functors::Tool::Transforms &vt )
   typedef Usul::Functors::IfThen<IsSelected,Append> IfThen;
 //  typedef Usul::Functors::IfThen<IsWanted,Append> IfThen;
   typedef OsgTools::Visitor<MT,IfThen> Visitor;
+
+  if( false == _iVisibility.valid() || false == _iSelection.valid () )
+    return;
 
   // Compose the functors. For some reason I need to declare all the functors 
   // as variables, rather than pass, for example, IsSelected().

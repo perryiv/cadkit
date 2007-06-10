@@ -132,12 +132,17 @@ void Application::_unselectVisible ( MenuKit::Message m, MenuKit::Item *item )
   // update the tool because different things are selected
   this->_updateSceneTool();
 
+  // Return if the pointer isn't valid.
+  if ( false == _iVisibility.valid() || false == _iMaterialStack.valid() || false == _iSelection.valid() )
+    return;
+
   // Compose the functors. For some reason I need to declare all the functors 
   // as variables, rather than pass, for example, IsSelected().
   PopMaterial pop ( _iMaterialStack );
   Unselect unselect ( _iSelection );
   Restore restore ( pop, unselect );
   IsVisible isVisible ( _iVisibility );
+
   IfThen ifThen ( isVisible, restore );
 
   // Make the visitor.
@@ -167,6 +172,9 @@ void Application::_hideSelected ( MenuKit::Message m, MenuKit::Item *item )
   typedef CV::OSG::Functors::Hide Hide;
   typedef Usul::Functors::IfThen<IsSelected,Hide> IfThen;
   typedef OsgTools::Visitor<osg::MatrixTransform,IfThen> Visitor;
+
+  if( false == _iVisibility.valid() || false == _iSelection.valid() )
+    return;
 
   // Compose the functors. For some reason I need to declare all the functors 
   // as variables, rather than pass, for example, IsSelected().
@@ -199,6 +207,9 @@ void Application::_showAll ( MenuKit::Message m, MenuKit::Item *item )
   // For readability.
   typedef CV::OSG::Functors::Show Show;
   typedef OsgTools::Visitor<osg::MatrixTransform,Show> Visitor;
+
+  if ( false == _iVisibility.valid() )
+    return;
 
   // Make the visitor.
   Visitor::Ptr visitor ( new Visitor ( Show ( _iVisibility ) ) );

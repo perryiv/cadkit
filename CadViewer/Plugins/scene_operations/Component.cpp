@@ -69,6 +69,8 @@ Usul::Interfaces::IUnknown *Component::queryInterface ( unsigned long iid )
     return static_cast<Interfaces::IVisibility*>(this);
   case Usul::Interfaces::IUnknown::IID:
     return static_cast<Usul::Interfaces::IUnknown*>(static_cast<Interfaces::IMaterialStack*>(this));
+  case Usul::Interfaces::IPlugin::IID:
+    return static_cast < Usul::Interfaces::IPlugin * > ( this );    
   default:
     return 0x0;
   }
@@ -225,4 +227,16 @@ bool Component::isVisible ( const osg::Node* node ) const
 {
   CV::ErrorChecker ( 1071571559, 0x0 != node );
   return node->getNodeMask() != 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name of the plugin.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Component::getPluginName() const
+{
+  return "Scene Operations";
 }

@@ -1,38 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<cv>
+<plugins>
   <comment>
-    This is the CadViewer component registry. This file is necessary 
+    This is the CadViewer component registry. This file is necessary
     for CadViewer to run properly. DO NOT DELETE THIS FILE!
   </comment>
-  <plugins>
-    <directory>C:\src\png\bin</directory>
-    <module>
-      <name>Display Scene Stats</name>
-      <file>display_scene_stats.cvplug</file>
-    </module>
-    <module>
-      <name>Scene Operations</name>
-      <file>scene_operations.cvplug</file>
-    </module>
-    <module>
-      <name>Scene Abstraction Layer</name>
-      <file>osg_sal.vrplug</file>
-    </module>
-    <module>
-      <name>Collision Detection</name>
-      <file>collision_pqp.vrplug</file>
-    </module>
-    <module>
-      <name>Restart File Parser</name>
-      <file>vrv_io.vrplug</file>
-    </module>
-    <module>
-      <name>Standard Button Commands</name>
-      <file>vrv_commands.vrplug</file>
-    </module>
-    <module>
-      <name>Graphical User Interface</name>
-      <file>vrv_gui.vrplug</file>
-    </module>
-  </plugins>
-</cv>
+  
+  <!-- TODO: Add ability to specify directory.-->
+  <!--<directory>C:\src\png\bin</directory>-->
+  <plugin alias="Display Scene Stats" file="display_scene_stats.cvplug" />
+  <plugin alias="Scene Operations" file="scene_operations.cvplug" />
+  <plugin alias="Restart File Parser" file="vrv_io.vrplug" />
+  <plugin alias="Graphical User Interface" file="vrv_gui.vrplug" />
+
+</plugins>
+

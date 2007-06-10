@@ -75,6 +75,39 @@ void Print::execute ( const char *s )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Macro to print the number.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define IMPLEMENT_NUMBER_PRINTING_MEMBER(number_type)\
+void Print::execute ( number_type num )\
+{\
+  if ( 0x0 != Detail::_stream )\
+  {\
+    Detail::Guard guard ( *Detail::_mutex );\
+    *Detail::_stream << num << std::flush;\
+  }\
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Print the numbers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+IMPLEMENT_NUMBER_PRINTING_MEMBER ( unsigned long );
+IMPLEMENT_NUMBER_PRINTING_MEMBER ( unsigned short );
+IMPLEMENT_NUMBER_PRINTING_MEMBER ( unsigned int );
+IMPLEMENT_NUMBER_PRINTING_MEMBER ( long );
+IMPLEMENT_NUMBER_PRINTING_MEMBER ( short );
+IMPLEMENT_NUMBER_PRINTING_MEMBER ( int );
+IMPLEMENT_NUMBER_PRINTING_MEMBER ( double );
+IMPLEMENT_NUMBER_PRINTING_MEMBER ( float );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the stream to print to. 
 //  Initialize the mutex.
 //  Not thread safe!

@@ -24,7 +24,7 @@ namespace Usul {
 namespace Threads {
 
 
-class Task : public Usul::Base::Object
+class USUL_EXPORT Task : public Usul::Base::Object
 {
 public:
 

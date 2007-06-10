@@ -25,6 +25,7 @@
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Pool.h"
 #include "Usul/Trace/Trace.h"
+
 #include <iostream>
 #include <iomanip>
 #include <fstream>

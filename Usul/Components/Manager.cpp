@@ -8,7 +8,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Components/Manager.h"
-#include "Usul/Components/Object.h"
 #include "Usul/Components/Exceptions.h"
 #include "Usul/DLL/Library.h"
 #include "Usul/DLL/Loader.h"

@@ -180,11 +180,7 @@
 			Name="Files"
 			>
 			<File
-				RelativePath=".\output.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\trace.xml"
+				RelativePath=".\trace.csv"
 				>
 			</File>
 		</Filter>

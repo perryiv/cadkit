@@ -175,16 +175,20 @@
 				RelativePath=".\Main.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\TestJob.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TestJob.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Files"
 			>
 			<File
-				RelativePath=".\output.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\trace.xml"
+				RelativePath=".\trace.csv"
 				>
 			</File>
 		</Filter>

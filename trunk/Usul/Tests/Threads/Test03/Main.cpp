@@ -14,19 +14,19 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "TestJob.h"
+
 #include "Threads/OpenThreads/Mutex.h"
 #include "Threads/OpenThreads/Thread.h"
 
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Jobs/Manager.h"
 #include "Usul/Math/Absolute.h"
-#include "Usul/Strings/Format.h"
-#include "Usul/System/Sleep.h"
 #include "Usul/Threads/Manager.h"
-#include "Usul/Threads/Pool.h"
 #include "Usul/Trace/Trace.h"
+
 #include <iostream>
-#include <iomanip>
 #include <fstream>
 #include <algorithm>
 
@@ -34,130 +34,6 @@ namespace Detail
 {
   typedef std::vector<unsigned long> RandomNumbers;
   RandomNumbers randomNumbers;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called when a thread is started.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void _threadStarted ( Usul::Threads::Thread *thread )
-{
-  USUL_TRACE_SCOPE_STATIC;
-
-  const unsigned long sleep ( Detail::randomNumbers.at ( thread->id() ) );
-
-  std::ostringstream out;
-  out << "  Started thread " << std::setw ( 4 ) << thread->id() 
-      << " using system thread " << std::setw ( 4 ) << thread->systemId() 
-      << ", sleeping " << sleep << '\n';
-  std::cout << out.str() << std::flush;
-
-  Usul::System::Sleep::milliseconds ( sleep );
-
-  // Every 4th thread we cancel.
-  const unsigned long id ( thread->id() );
-  if ( ( 0 != id ) && ( 0 == ( id % 4 ) ) )
-  {
-    thread->cancel();
-  }
-
-  // Every 5th thread we generate an error.
-  if ( ( 0 != id ) && ( 0 == ( id % 5 ) ) )
-  {
-    throw std::runtime_error ( "Error 1954614090: Generating error for testing" );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called when a thread is done.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void _threadFinished ( Usul::Threads::Thread *thread )
-{
-  USUL_TRACE_SCOPE_STATIC;
-
-  std::ostringstream out;
-  out << " Finished thread " << std::setw ( 4 ) << thread->id() 
-      << " using system thread " << std::setw ( 4 ) << thread->systemId() << '\n';
-  std::cout << out.str() << std::flush;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called when a thread is cancelled.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void _threadCancelled ( Usul::Threads::Thread *thread )
-{
-  USUL_TRACE_SCOPE_STATIC;
-
-  std::ostringstream out;
-  out << "Cancelled thread " << std::setw ( 4 ) << thread->id() 
-      << " using system thread " << std::setw ( 4 ) << thread->systemId() << '\n';
-  std::cout << out.str() << std::flush;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called when a thread encounters an error.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void _threadError ( Usul::Threads::Thread *thread )
-{
-  USUL_TRACE_SCOPE_STATIC;
-
-  std::ostringstream out;
-  out << " Error in thread " << std::setw ( 4 ) << thread->id() 
-      << " using system thread " << std::setw ( 4 ) << thread->systemId() << '\n';
-  std::cout << out.str() << std::flush;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called when a thread is deleted.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void _threadDestroyed ( Usul::Threads::Thread *thread )
-{
-  USUL_TRACE_SCOPE_STATIC;
-
-  std::ostringstream out;
-  out << "Destroyed thread " << std::setw ( 4 ) << thread->id() 
-      << " using system thread " << std::setw ( 4 ) << thread->systemId() << '\n';
-  std::cout << out.str() << std::flush;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add a task.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void _addTask ( Usul::Threads::Pool *pool )
-{
-  USUL_TRACE_SCOPE_STATIC;
-  if ( 0x0 != pool )
-  {
-    Usul::Threads::Callback::RefPtr started   ( Usul::Threads::newFunctionCallback ( _threadStarted   ) );
-    Usul::Threads::Callback::RefPtr finished  ( Usul::Threads::newFunctionCallback ( _threadFinished  ) );
-    Usul::Threads::Callback::RefPtr cancelled ( Usul::Threads::newFunctionCallback ( _threadCancelled ) );
-    Usul::Threads::Callback::RefPtr error     ( Usul::Threads::newFunctionCallback ( _threadError     ) );
-    Usul::Threads::Callback::RefPtr destroyed ( Usul::Threads::newFunctionCallback ( _threadDestroyed ) );
-    pool->addTask ( started.get(), finished.get(), cancelled.get(), error.get(), destroyed.get() );
-  }
 }
 
 
@@ -173,32 +49,36 @@ void _test()
 
   Usul::CommandLine::Arguments::Args args ( Usul::CommandLine::Arguments::instance().args() );
 
-  // The number of tasks to start.
+  // The number of jobs to start.
   const unsigned int num ( ( args.size() > 1 && false == args[1].empty() ) ? 
                            ( static_cast < unsigned int > ( Usul::Math::absolute ( ::atoi ( args[1].c_str() ) ) ) ) : 
                            ( 10 ) );
-  std::cout << Usul::Strings::format ( "Number of tasks: ", num, '\n' );
+                           std::cout << "Number of jobs: " << num << std::endl;
 
   // The pool size.
   const unsigned int size ( ( args.size() > 2 && false == args[2].empty() ) ? 
                             ( static_cast < unsigned int > ( Usul::Math::absolute ( ::atoi ( args[2].c_str() ) ) ) ) : 
                             ( 10 ) );
-  std::cout << Usul::Strings::format ( "Pool size: ", size, '\n' );
+                            std::cout << "Pool size: " << size << std::endl;
 
   // Fill random number vector now. Calling rand() in the child threads is unreliable.
-  Detail::randomNumbers.resize ( size * 2 );
+  Detail::randomNumbers.resize ( num * 2 );
   std::generate ( Detail::randomNumbers.begin(), Detail::randomNumbers.end(), ::rand );
 
-  // Make the thread pool.
-  Usul::Threads::Pool::ValidRefPtr pool ( new Usul::Threads::Pool ( size ) );
+  // Set the job manager's thread-pool size.
+  Usul::Jobs::Manager::instance().poolResize ( size );
 
+  // Start the jobs.
   for ( unsigned int i = 0; i < num; ++i )
   {
-    _addTask ( pool.get() );
+    Usul::Jobs::Job::RefPtr job ( new TestJob ( Detail::randomNumbers.at(i) ) );
+    Usul::Jobs::Manager::instance().add ( job.get() );
   }
 
-  // Wait for all tasks to finish.
-  pool->wait();
+  // Wait until all jobs finish.
+  TRACE_AND_PRINT ( "Waiting for jobs to finish...\n" );
+  Usul::Jobs::Manager::instance().wait();
+  TRACE_AND_PRINT ( "All jobs have finished.\n" );
 }
 
 
@@ -210,8 +90,23 @@ void _test()
 
 void _clean()
 {
+  USUL_TRACE_SCOPE_STATIC;
+
+  // Clear global list of random numbers.
   Detail::randomNumbers.clear();
-  Usul::Threads::Mutex::createFunction  ( 0x0 );
+
+  // The job manager has a thread-pool.
+  Usul::Jobs::Manager::destroy();
+
+  // There should not be any threads running.
+  TRACE_AND_PRINT ( "Waiting for all threads to finish...\n" );
+  Usul::Threads::Manager::instance().wait();
+  TRACE_AND_PRINT ( "All threads have finished.\n" );
+
+  // Set the mutex factory to null so that we can find late uses of it.
+  Usul::Threads::Mutex::createFunction ( 0x0 );
+
+  // Clean up the thread manager.
   Usul::Threads::Manager::destroy();
 }
 

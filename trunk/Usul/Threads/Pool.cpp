@@ -479,9 +479,12 @@ void Pool::wait ( unsigned long timeout )
   // Save current time.
   const unsigned long start ( static_cast<unsigned long> ( Usul::System::Clock::milliseconds() ) );
 
-  // While there are tasks...
-  while ( this->numTasksQueued() )
+  // While there are ququed tasks...
+  unsigned int num ( this->numTasksQueued() );
+  while ( num > 0 )
   {
+    USUL_TRACE_3 ( "Trace 3685583618: Waiting on ", num, " tasks\n" );
+
     // Sleep some so that we don't spike the cpu.
     Usul::System::Sleep::milliseconds ( 100 );
 
@@ -494,7 +497,16 @@ void Pool::wait ( unsigned long timeout )
           static_cast<double> ( timeout ) / 1000.0, 
           " seconds while waiting for tasks" );
     }
+
+    // Get the number of tasks left.
+    num = this->numTasksQueued();
   }
+
+  // Save how long it took.
+  const unsigned long duration ( static_cast<unsigned long> ( Usul::System::Clock::milliseconds() ) - start );
+
+  // There are no more tasks queued but there may be threads running.
+  this->_waitForThreads ( ( timeout > duration ) ? timeout - duration : 0 );
 }
 
 
@@ -513,7 +525,7 @@ void Pool::wait()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Wait for all threads to complete.
+//  Wait for all threads in the pool to complete.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

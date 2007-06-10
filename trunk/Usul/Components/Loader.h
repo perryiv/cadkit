@@ -29,9 +29,6 @@
 #include <string>
 #include <map>
 
-namespace Usul { namespace Interfaces { struct IUnknown; } }
-
-
 namespace Usul {
 namespace Components {
 
@@ -86,6 +83,7 @@ private:
 
 	typedef std::vector < PluginInfo > Plugins;
 	
+	std::string     _directory;
 	Plugins         _plugins;
   mutable Mutex   _mutex;
 };
@@ -99,6 +97,7 @@ private:
 
 template < class Document >
 inline Loader< Document >::Loader() : 
+	_directory(),
 	_plugins(),
   _mutex()
 {
@@ -130,7 +129,7 @@ inline void Loader< Document >::parse( const std::string& filename )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Document::RefPtr doc = new Document ( );
+  typename Document::RefPtr doc = new Document;
 	doc->load ( filename );
 
   if ( "plugins" == doc->name() )
@@ -155,12 +154,16 @@ inline void Loader< Document >::_addPlugins ( Node &parent )
   typedef typename Document::Children Children;
 	Children& children ( parent.children() );
 	
-	for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+	for ( typename Children::iterator iter = children.begin(); iter != children.end(); ++iter )
 	{
-		XmlTree::Node::RefPtr node ( (*iter) );
+		typename Node::RefPtr node ( (*iter) );
 		if ( "plugin" == node->name() )
 		{
 			this->_addPlugin ( *node );
+		}
+		else if ( "directory" == node->name() )
+		{
+			_directory = node->value();
 		}
 	}
 }
@@ -183,7 +186,7 @@ inline void Loader< Document >::_addPlugin ( Node &node )
 	
 	PluginInfo plugin;
 
-  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+  for ( typename Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
   	if ( "file" == iter->first )
     {
@@ -271,13 +274,17 @@ inline void Loader< Document >::load ( Usul::Interfaces::IUnknown *caller )
 	unsigned int number ( 0 );
 
 	// Load the plugins.
-	for ( Plugins::iterator iter = _plugins.begin(); iter != _plugins.end(); ++iter )
+	for ( typename Plugins::iterator iter = _plugins.begin(); iter != _plugins.end(); ++iter )
 	{
 		// Load the plugin if we are suppose to.
 		if( iter->load )
 		{
 			// The name.
 			std::string name ( iter->name );
+			
+			// Prepend the directory if we have one...
+      if( false == _directory.empty() )
+      	name = _directory + name;
 
 			// Let the user know what plugin we are loading.
 			status ( "Loading " + name + "...", true );

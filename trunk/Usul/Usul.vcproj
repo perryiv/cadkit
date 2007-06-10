@@ -360,14 +360,6 @@
 					>
 				</File>
 				<File
-					RelativePath="Components\Object.cpp"
-					>
-				</File>
-				<File
-					RelativePath="Components\Object.h"
-					>
-				</File>
-				<File
 					RelativePath="Components\Registry.cpp"
 					>
 				</File>
@@ -2233,6 +2225,18 @@
 				</File>
 				<File
 					RelativePath=".\Adaptors\Random.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Console"
+				>
+				<File
+					RelativePath=".\Console\Feedback.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Console\Feedback.h"
 					>
 				</File>
 			</Filter>

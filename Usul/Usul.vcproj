@@ -359,14 +359,6 @@
 					RelativePath=".\Components\Manager.h"
 					>
 				</File>
-				<File
-					RelativePath="Components\Registry.cpp"
-					>
-				</File>
-				<File
-					RelativePath="Components\Registry.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

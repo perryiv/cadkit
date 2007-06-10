@@ -41,6 +41,7 @@ SET (SOURCES
 	Components/Manager.cpp
 	Components/Object.cpp
 	Components/Registry.cpp
+	Console/Feedback.cpp
 	Devices/BaseDevice.cpp
 	Devices/Factory.cpp
 	Devices/State.cpp

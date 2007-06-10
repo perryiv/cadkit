@@ -106,11 +106,17 @@ Usul::Interfaces::IUnknown *Factory::queryInterface ( unsigned long iid )
 
 Usul::Interfaces::IUnknown *Factory::createInstance ( unsigned long iid )
 {
-  switch ( iid )
-  {
-  case VRV::Interfaces::IParseRestart::IID:
-    return Usul::Components::Create<Parser>::create ( iid );
-  default:
-    return 0x0; // No component.
-  }
+	// Require this to construct.
+  Parser::ValidRefPtr component ( new Parser );
+
+  // Do not require this to work.
+  Usul::Interfaces::IUnknown::RefPtr unknown ( component->queryInterface ( iid ) );
+
+  // Release this now so that we control the order of unreferencing.
+  // Reference count should go from 2 -> 1.
+  component.release();
+
+  // Return the released pointer to the component.
+  // Reference count should go from 1 -> 0, but it should not delete.
+  return unknown.release();
 }

@@ -231,7 +231,7 @@ void Renderer::render()
     this->_singlePassRender();
 
   // Check for errors.
-  Detail::checkForErrors( 2764743220 );
+  Detail::checkForErrors( 2764743220u );
 }
 
 
@@ -276,7 +276,7 @@ void Renderer::_multiPassRender()
     ::glClear ( GL_ACCUM_BUFFER_BIT );
 
     // Check for errors.
-    Detail::checkForErrors( 2576774470 );
+    Detail::checkForErrors( 2576774470u );
 
     // Needed in the loop.
     osg::Matrixd matrix;
@@ -294,21 +294,21 @@ void Renderer::_multiPassRender()
       this->_singlePassRender();
 
       // Check for errors.
-      Detail::checkForErrors( 2681461970 );
+      Detail::checkForErrors( 2681461970u );
 
       // Accumulate the pixels from the frame buffer.
       float value ( 1.0f / static_cast < float > ( this->numRenderPasses() ) );
       ::glAccum ( GL_ACCUM, value );
 
       // Check for errors.
-      Detail::checkForErrors( 3558773016 );
+      Detail::checkForErrors( 3558773016u );
     }
 
     // Transfer the accumulation buffer into the frame buffer.
     ::glAccum ( GL_RETURN, 1.0f );
 
     // Check for errors.
-    Detail::checkForErrors( 2459899470 );
+    Detail::checkForErrors( 2459899470u );
   }
 
   // Catch all exceptions and reset the number of passes. Otherwise, you 

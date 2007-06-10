@@ -116,5 +116,5 @@ MenuKit::Menu *Menu::getMenu()
 
 std::string Menu::getPluginName() const
 {
-  return "VRV Menu Parser.";
+  return "VRV Menu Parser";
 }

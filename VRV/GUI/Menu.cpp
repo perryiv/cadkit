@@ -62,6 +62,8 @@ Usul::Interfaces::IUnknown *Menu::queryInterface ( unsigned long iid )
     return static_cast<VRV::Interfaces::IMenuGet*>(this);
   case Usul::Interfaces::IUnknown::IID:
     return static_cast<Usul::Interfaces::IUnknown*>(static_cast<VRV::Interfaces::IMenuRead*>(this));
+  case Usul::Interfaces::IPlugin::IID:
+    return static_cast < Usul::Interfaces::IPlugin* > ( this );
   default:
     return 0x0;
   }
@@ -103,4 +105,16 @@ const MenuKit::Menu *Menu::getMenu() const
 MenuKit::Menu *Menu::getMenu()
 {
   return _menu.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the plugin name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Menu::getPluginName() const
+{
+  return "VRV Menu Parser.";
 }

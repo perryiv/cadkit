@@ -73,6 +73,8 @@ Usul::Interfaces::IUnknown *Parser::queryInterface ( unsigned long iid )
     return static_cast<VRV::Interfaces::IParseRestart*>(this);
   case Usul::Interfaces::IUnknown::IID:
     return static_cast<Usul::Interfaces::IUnknown*>(static_cast<VRV::Interfaces::IParseRestart*>(this));
+  case Usul::Interfaces::IPlugin::IID:
+    return static_cast < Usul::Interfaces::IPlugin* > ( this );
   default:
     return 0x0;
   }
@@ -547,4 +549,16 @@ void Parser::_setModelFile ( const std::string &filename )
 void Parser::_progress ( const std::string &message )
 {
   // TODO
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Report progress.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Parser::getPluginName() const
+{
+  return "VRV Restart File Parser";
 }

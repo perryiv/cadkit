@@ -22,6 +22,7 @@
 #include "VRV/Interfaces/IMenuGet.h"
 
 #include "Usul/Base/Referenced.h"
+#include "Usul/Interfaces/IPlugin.h"
 
 #include "MenuKit/Menu.h"
 
@@ -32,7 +33,8 @@ namespace GUI {
 
 class Menu : public Usul::Base::Referenced,
              public VRV::Interfaces::IMenuRead,
-             public VRV::Interfaces::IMenuGet
+             public VRV::Interfaces::IMenuGet,
+             public Usul::Interfaces::IPlugin
 {
 public:
 
@@ -57,6 +59,9 @@ protected:
 
   // Use reference counting.
   virtual ~Menu();
+
+  /// Usul::Interfaces::IPlugin.
+  virtual std::string getPluginName() const;
 
   /////////////////////////////////////////////////////////////////////////////
   //

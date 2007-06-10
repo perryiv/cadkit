@@ -25,6 +25,7 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Math/Matrix44.h"
+#include "Usul/Interfaces/IPlugin.h"
 
 #include <string>
 
@@ -34,7 +35,8 @@ namespace IO {
 
 
 class Parser : public Usul::Base::Referenced,
-               public VRV::Interfaces::IParseRestart
+               public VRV::Interfaces::IParseRestart,
+               public Usul::Interfaces::IPlugin
 {
 public:
 
@@ -65,6 +67,9 @@ protected:
 
   // Use reference counting.
   virtual ~Parser();
+
+  /// Usul::Interfaces::IPlugin.
+  virtual std::string getPluginName() const;
 
   /////////////////////////////////////////////////////////////////////////////
   //

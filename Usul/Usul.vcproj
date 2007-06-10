@@ -2232,6 +2232,44 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Jobs"
+				>
+				<File
+					RelativePath=".\Jobs\Job.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Jobs\Job.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Jobs\Manager.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)3.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)3.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)3.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)3.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Jobs\Manager.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

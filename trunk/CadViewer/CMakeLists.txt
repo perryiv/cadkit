@@ -16,18 +16,16 @@ SUBDIRS(
 ${CADKIT_ROOT_DIR}/Usul 
 ${CADKIT_ROOT_DIR}/Threads/OpenThreads
 ${CADKIT_ROOT_DIR}/OsgTools
-${CADKIT_ROOT_DIR}/osgVRJ
+${CADKIT_ROOT_DIR}/XmlTree
 ${CADKIT_ROOT_DIR}/vrjGA
 ${CADKIT_ROOT_DIR}/VRV/Prefs
 ${CADKIT_ROOT_DIR}/MenuKit
 ${CADKIT_ROOT_DIR}/MenuKit/OSG
 ${CADKIT_ROOT_DIR}/CadViewer/Plugins/scene_operations
 ${CADKIT_ROOT_DIR}/CadViewer/Plugins/display_scene_stats
-${CADKIT_ROOT_DIR}/Collision/PQP
 ${CADKIT_ROOT_DIR}/VRV/GUI
 ${CADKIT_ROOT_DIR}/VRV/IO
-${CADKIT_ROOT_DIR}/VRV/Commands
-${CADKIT_ROOT_DIR}/SAL/OSG
+${CADKIT_ROOT_DIR}/VRV/Core
 )
 
 # ------------ Set Include Folders ----------------------
@@ -67,7 +65,6 @@ SET (SOURCES
 ./Pick/Intersect.cpp
 ./Pick/Select.cpp
 ./Pick/Seek.cpp
-./Registry.cpp
 ./AppCallbacks.cpp
 ./main.cpp
 ./Application.cpp
@@ -85,7 +82,7 @@ ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
 ADD_EXECUTABLE( ${TARGET} ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( ${TARGET} Usul OpenThreadsEx OsgTools osgVRJ vrjGA VRVPrefs MenuKit MenuKit_OSG )
+LINK_CADKIT( ${TARGET} Usul OpenThreadsEx OsgTools VRVCore vrjGA VRVPrefs MenuKit MenuKit_OSG XmlTree )
 TARGET_LINK_LIBRARIES( ${TARGET} 
   ${VR_JUGGLER_LIBS}
   ${VJ_DEPS_LIBS}

@@ -18,6 +18,7 @@
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Components/Loader.h"
 #include "Usul/Components/Manager.h"
+#include "Usul/Console/Feedback.h"
 
 #include "Threads/OpenThreads/Mutex.h"
 
@@ -38,6 +39,7 @@
 
 Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  This function starts the application and returns when it stops, or if 
@@ -55,9 +57,16 @@ void runApplication ( int argc, char **argv )
     return;
   }
 #endif
+	// Console Feedback.
+	Usul::Console::Feedback::RefPtr feedback ( new Usul::Console::Feedback );
+	
   // Load the plugins.
   Usul::Components::Loader < XmlTree::Document > loader;
   loader.parse ( CV::Config::filename ( "registry" ) );
+  loader.load ( feedback->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  
+  // Print what we found.
+  Usul::Components::Manager::instance().print ( std::cout );
 
   // Put the arguments into a container.
   CV::Application::Args args;

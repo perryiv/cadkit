@@ -19,6 +19,7 @@
 #include "CompileGuard.h"
 
 #include "Usul/Base/Referenced.h"
+#include "Usul/Interfaces/IPlugin.h"
 
 #include "CadViewer/Interfaces/IPostModelLoad.h"
 
@@ -34,7 +35,8 @@ namespace Plugins {
 
 
 class Component : public Usul::Base::Referenced,
-                  public CV::Interfaces::IPostModelLoad
+                  public CV::Interfaces::IPostModelLoad,
+                  public Usul::Interfaces::IPlugin
 {
 public:
 
@@ -73,6 +75,9 @@ protected:
   void                    _accumulateStatsGeode ( osg::Geode * );
   void                    _accumulateStatsMT ( osg::MatrixTransform * );
   void                    _print ( const std::string &filename, std::ostream & ) const;
+
+  /// Usul::Interface::IPlugin
+  virtual std::string getPluginName() const;
 
 private:
 

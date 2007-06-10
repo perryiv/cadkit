@@ -101,7 +101,8 @@ Usul::Interfaces::IUnknown *Component::queryInterface ( unsigned long iid )
   case CV::Interfaces::IPostModelLoad::IID:
     return static_cast<CV::Interfaces::IPostModelLoad*>(this);
   case Usul::Interfaces::IUnknown::IID:
-    return static_cast<Usul::Interfaces::IUnknown*>(this);
+  case Usul::Interfaces::IPlugin::IID:
+    return static_cast < Usul::Interfaces::IPlugin* > ( this );
   default:
     return 0x0;
   }
@@ -245,4 +246,16 @@ void Component::_print ( const std::string &filename, std::ostream &out ) const
   out << "****    triangle fans ...... " << _counts[GL_TRIANGLE_FAN]   << '\n';
   out << "****    quad sets .......... " << _counts[GL_QUADS]          << '\n';
   out << "****    quad strips ........ " << _counts[GL_QUAD_STRIP]     << '\n';
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the plugin name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Component::getPluginName() const
+{
+  return "Display Scene Stats";
 }

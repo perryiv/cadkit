@@ -262,14 +262,6 @@
 					>
 				</File>
 				<File
-					RelativePath="Registry.cpp"
-					>
-				</File>
-				<File
-					RelativePath="Registry.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Signals.h"
 					>
 				</File>

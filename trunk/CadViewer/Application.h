@@ -39,8 +39,6 @@
 #include "VRV/Interfaces/IMenuCallback.h"
 #include "VRV/Prefs/Settings.h"
 
-#include "Collision/Interfaces/ICollider.h"
-
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/CommandLine/Parser.h"
 
@@ -446,11 +444,9 @@ protected:
   typedef USUL_VALID_REF_POINTER(vrjGA::JoystickDevice) JoystickPtr;
   typedef std::auto_ptr<OsgTools::Text>                 TextPtr;
   typedef CV::Functors::MatrixFunctor::RefPtr           MatrixFunctorPtr;
-  typedef Interfaces::IVisibility::ValidQueryPtr        IVisibilityPtr;
-  typedef Interfaces::ISelection::ValidQueryPtr         ISelectionPtr;
-  typedef Interfaces::IMaterialStack::ValidQueryPtr     IMaterialStackPtr;
-  typedef Collision::Interfaces::ICollider              Collider;
-  typedef Collider::ValidAccessQueryPtr                 ICollider;
+  typedef Interfaces::IVisibility::QueryPtr             IVisibilityPtr;
+  typedef Interfaces::ISelection::QueryPtr              ISelectionPtr;
+  typedef Interfaces::IMaterialStack::QueryPtr          IMaterialStackPtr;
   typedef USUL_VALID_REF_POINTER(MenuKit::OSG::Menu)    MenuPtr;
   typedef std::map<std::string,MenuKit::Callback::Ptr>  ButtonMap;
   typedef VRV::Prefs::Settings                          Preferences;
@@ -492,7 +488,6 @@ protected:
   IVisibilityPtr    _iVisibility;
   ISelectionPtr     _iSelection;
   IMaterialStackPtr _iMaterialStack;
-  ICollider         _iCollider;
   osg::Vec2         _clipDist;
   MenuPtr           _menu;
   MenuPtr           _statusBar;

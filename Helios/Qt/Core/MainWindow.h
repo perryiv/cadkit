@@ -22,9 +22,7 @@
 #include "Helios/Qt/Commands/BaseAction.h"
 
 #include "Usul/Interfaces/GUI/ILoadFileDialog.h"
-#include "Usul/Interfaces/Threads/IThreadPoolAddTask.h"
 #include "Usul/Threads/Guard.h"
-#include "Usul/Threads/Pool.h"
 #include "Usul/Threads/RecursiveMutex.h"
 
 #include "QtCore/QSettings"
@@ -39,6 +37,7 @@ class QWorkspace;
 class QTextEdit;
 class QMenu;
 class QFileSystemWatcher;
+class QTimer;
 
 namespace Usul { namespace Threads { class Thread; } }
 
@@ -50,8 +49,7 @@ namespace Core {
 
 class HELIOS_QT_CORE_EXPORT MainWindow : 
   public QMainWindow,
-  public Usul::Interfaces::ILoadFileDialog,
-  public Usul::Interfaces::IThreadPoolAddTask
+  public Usul::Interfaces::ILoadFileDialog
 {
   Q_OBJECT
 
@@ -64,14 +62,11 @@ public:
   typedef CadKit::Helios::Commands::BaseAction  BaseAction;
   typedef std::set<BaseAction::RefPtr>          Actions;
   typedef std::map<std::string,QToolBar*>       ToolBars;
-  typedef Usul::Threads::Pool                   ThreadPool;
   typedef Usul::Interfaces::ILoadFileDialog     ILoadFileDialog;
   typedef ILoadFileDialog::FileResult           FileResult;
   typedef ILoadFileDialog::FilesResult          FilesResult;
   typedef ILoadFileDialog::Filters              Filters;
   typedef std::vector<std::string>              PluginFiles;
-  typedef Usul::Interfaces::IThreadPoolAddTask  IThreadPoolAddTask;
-  typedef IThreadPoolAddTask::TaskHandle        TaskHandle;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( MainWindow );
@@ -87,13 +82,6 @@ public:
                const std::string &output,
                bool showSplash = true );
   virtual ~MainWindow();
-
-  // Add a thread-pool task.
-  TaskHandle                addTask ( Usul::Threads::Callback *started, 
-                                      Usul::Threads::Callback *finished = 0x0,
-                                      Usul::Threads::Callback *cancelled = 0x0,
-                                      Usul::Threads::Callback *error = 0x0,
-                                      Usul::Threads::Callback *destroyed = 0x0 );
 
   // Get the name of the file to load from
   virtual FileResult        getLoadFileName  ( const std::string &title = "Load", const Filters &filters = Filters() );
@@ -147,11 +135,11 @@ protected:
   
 private slots:
 
+  void                      _idleProcess();
   void                      _updateTextWindow ( QString );
 
 private:
 
-  typedef ThreadPool::ValidAccessRefPtr ThreadPoolPtr;
   typedef std::pair<QTextEdit*,unsigned int> TextWindow;
   typedef std::pair<QFileSystemWatcher*,std::string> FileWatcher;
 
@@ -165,7 +153,6 @@ private:
   QSettings _settings;
   Actions _actions;
   ToolBars _toolBars;
-  ThreadPoolPtr _threadPool;
   unsigned long _refCount;
   PluginFiles _pluginFiles;
   std::string _vendor;
@@ -177,6 +164,7 @@ private:
   TextWindow _textWindow;
   QMenu *_dockMenu;
   FileWatcher _fileWatcher;
+  QTimer *_idleTimer;
 };
 
 

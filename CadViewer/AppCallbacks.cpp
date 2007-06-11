@@ -1763,3 +1763,14 @@ void Application::_dropToFloor ( MenuKit::Message m, MenuKit::Item *item )
     this->postMultiply ( M );
   }
 }
+
+
+void Application::_increaseSpeed    ( MenuKit::Message m, MenuKit::Item *item )
+{
+  _prefs->translationSpeed ( _prefs->translationSpeed() * 2 );
+}
+
+void Application::_decreaseSpeed    ( MenuKit::Message m, MenuKit::Item *item )
+{
+  _prefs->translationSpeed ( _prefs->translationSpeed() / 2 );
+}

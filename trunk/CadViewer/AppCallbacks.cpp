@@ -655,7 +655,7 @@ void Application::_vRotWandPosX ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 3306102879u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickHorizontal Analog;
+  typedef CV::Functors::JoystickVertical Analog;
   typedef CV::Functors::WandRotation Mat;
   typedef CV::Functors::Rotate Nav;
 
@@ -683,7 +683,7 @@ void Application::_vRotGlobalPosX ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 3834691556u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickHorizontal Analog;
+  typedef CV::Functors::JoystickVertical Analog;
   typedef CV::Functors::IdentityMatrix Mat;
   typedef CV::Functors::Rotate Nav;
 

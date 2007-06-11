@@ -844,7 +844,7 @@ void Application::_initStatusBar()
 
   // Set the status-bar's properties.
   _statusBar->menu()->append ( new MenuKit::Button );
-  _statusBar->menu()->expanded ( _prefs->statusBarVisibleAtStartup() );
+  _statusBar->menu()->expanded ( false );
   _statusBar->updateScene();
 
   // Make the status-bar always draw on top (last). See osgfxbrowser.cpp.

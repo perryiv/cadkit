@@ -22,6 +22,7 @@
 #include "Helios/Qt/Commands/BaseAction.h"
 
 #include "Usul/Interfaces/GUI/ILoadFileDialog.h"
+#include "Usul/Interfaces/GUI/IUpdateTextWindow.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/RecursiveMutex.h"
 
@@ -36,7 +37,6 @@
 class QWorkspace;
 class QTextEdit;
 class QMenu;
-class QFileSystemWatcher;
 class QTimer;
 
 namespace Usul { namespace Threads { class Thread; } }
@@ -49,7 +49,8 @@ namespace Core {
 
 class HELIOS_QT_CORE_EXPORT MainWindow : 
   public QMainWindow,
-  public Usul::Interfaces::ILoadFileDialog
+  public Usul::Interfaces::ILoadFileDialog,
+  public Usul::Interfaces::IUpdateTextWindow
 {
   Q_OBJECT
 
@@ -121,8 +122,8 @@ public:
   void                      showSplashScreen();
 
   // Update these sub-windows.
-  void                      updateTextWindow();
-
+  virtual void              updateTextWindow ( bool force );
+  
 protected:
 
   void                      _buildMenu();
@@ -135,13 +136,13 @@ protected:
   
 private slots:
 
+  void                      _forceUpdateTextWindow();
+
   void                      _idleProcess();
-  void                      _updateTextWindow ( QString );
 
 private:
 
   typedef std::pair<QTextEdit*,unsigned int> TextWindow;
-  typedef std::pair<QFileSystemWatcher*,std::string> FileWatcher;
 
   // No copying or assignment.
   MainWindow ( const MainWindow & );
@@ -159,11 +160,11 @@ private:
   std::string _url;
   std::string _program;
   std::string _icon;
+  std::string _output;
   SplashScreen::RefPtr _splash;
   QWorkspace *_workSpace;
   TextWindow _textWindow;
   QMenu *_dockMenu;
-  FileWatcher _fileWatcher;
   QTimer *_idleTimer;
 };
 

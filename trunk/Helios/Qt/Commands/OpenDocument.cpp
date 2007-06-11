@@ -19,8 +19,10 @@
 
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Jobs/Manager.h"
+#include "Usul/Resources/TextWindow.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Strings/Qt.h"
+#include "Usul/System/Sleep.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Trace/Trace.h"
 
@@ -201,5 +203,6 @@ std::string OpenDocument::_filters() const
 void OpenDocument::Job::_started()
 {
   USUL_TRACE_SCOPE;
-  std::cout << Usul::Strings::format ( "Opening file: ", _name, ", thread = ", this->thread()->id() ) << std::endl;
+  std::cout << Usul::Strings::format ( "Opening file: ", _name, ", thread = ", this->thread()->id() ) << Usul::Resources::TextWindow::endl;
+  Usul::System::Sleep::seconds ( 1 );
 }

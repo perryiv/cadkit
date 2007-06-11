@@ -162,7 +162,7 @@ namespace Program
         mw.show();
 
         // Force an update of the text window.
-        mw.updateTextWindow();
+        mw.updateTextWindow ( true );
 
         // Run the application.
         result = app.exec();

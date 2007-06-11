@@ -35,6 +35,7 @@
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/Resources/TextWindow.h"
 #include "Usul/Strings/Qt.h"
 #include "Usul/Threads/Callback.h"
 #include "Usul/Threads/Manager.h"
@@ -87,11 +88,11 @@ MainWindow::MainWindow ( const std::string &vendor,
   _url         ( url ),
   _program     ( program ),
   _icon        ( icon ),
+  _output      ( output ),
   _splash      ( 0x0 ),
   _workSpace   ( 0x0 ),
   _textWindow  ( 0x0, 0 ),
   _dockMenu    ( 0x0 ),
-  _fileWatcher ( new QFileSystemWatcher, output ),
   _idleTimer   ( 0x0 )
 {
   USUL_TRACE_SCOPE;
@@ -129,6 +130,9 @@ MainWindow::MainWindow ( const std::string &vendor,
 
   // Build the text window.
   this->_buildTextWindow();
+
+  // Set the text window resource.
+  Usul::Resources::textWindow ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 
   // Make sure we can size the status bar.
   this->statusBar()->setSizeGripEnabled ( true );
@@ -195,6 +199,9 @@ void MainWindow::_destroy()
   // This will delete the actions and set their callers to null.
   _actions.clear();
 
+  // Unset the text window resource.
+  Usul::Resources::textWindow ( 0x0 );
+
   // Should be true.
   USUL_ASSERT ( 0 == _refCount );
 
@@ -204,12 +211,11 @@ void MainWindow::_destroy()
   _url.clear();
   _program.clear();
   _icon.clear();
+  _output.clear();
   _splash = 0x0;
   _workSpace = 0x0;
   _textWindow.first = 0x0;
   _dockMenu = 0x0;
-  delete _fileWatcher.first; _fileWatcher.first = 0x0;
-  _fileWatcher.second.clear();
   _idleTimer = 0x0;
 
   // Delete the mutex last.
@@ -367,15 +373,6 @@ void MainWindow::_buildTextWindow()
   // Add toggle to the menu.
   if ( 0x0 != _dockMenu )
     _dockMenu->addAction ( dock->toggleViewAction() );
-
-  // Watch this file.
-  const bool exists ( Usul::Predicates::FileExists::test ( _fileWatcher.second ) );
-  if ( 0x0 != _fileWatcher.first && true == exists )
-  {
-    _fileWatcher.first->addPath ( _fileWatcher.second.c_str() );
-    QObject::connect ( _fileWatcher.first, SIGNAL ( fileChanged  ( QString ) ), 
-                       this, SLOT ( _updateTextWindow ( QString ) ) );
-  }
 }
 
 
@@ -457,6 +454,8 @@ Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
   {
   case Usul::Interfaces::ILoadFileDialog::IID:
     return static_cast<Usul::Interfaces::ILoadFileDialog*>(this);
+  case Usul::Interfaces::IUpdateTextWindow::IID:
+    return static_cast<Usul::Interfaces::IUpdateTextWindow*>(this);
   case Usul::Interfaces::IUnknown::IID:
     return static_cast<Usul::Interfaces::IUnknown*>(static_cast<Usul::Interfaces::ILoadFileDialog*>(this));
   default:
@@ -778,48 +777,48 @@ void MainWindow::hideSplashScreen()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::updateTextWindow()
+void MainWindow::_forceUpdateTextWindow()
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
-
-  // Don't allow this to throw because it may create an infinite loop.
-  try
-  {
-    this->_updateTextWindow ( _fileWatcher.second.c_str() );
-  }
-  catch ( ... )
-  {
-  }
+  this->updateTextWindow ( true );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Called when the given file changes.
+//  Update the text window.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::_updateTextWindow ( QString text )
+void MainWindow::updateTextWindow ( bool force )
 {
   USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
+  // If this is not the GUI thread then re-direct.
+  if ( false == Usul::Threads::Named::instance().is ( Usul::Threads::Names::GUI ) )
+  {
+    QMetaObject::invokeMethod ( this, "_forceUpdateTextWindow", Qt::QueuedConnection );
+    return;
+  }
 
   if ( 0x0 == _textWindow.first )
     return;
 
-  const std::string file ( Usul::Strings::convert ( text ) );
-
   // Don't allow this to throw because it may create an infinite loop.
   try
   {
+    // Flush the streams.
+    std::cout << std::flush;
+    std::cerr << std::flush;
+
     // Get the file length first.
-    const unsigned int length ( Usul::File::Stats<unsigned int>::size ( file ) );
-    if ( 0 == length )
+    const unsigned int length ( Usul::File::Stats<unsigned int>::size ( _output ) );
+    if ( 0 == length || length <= _textWindow.second )
       return;
 
     // Open the file for reading.
-    std::ifstream in ( file.c_str(), std::ios::binary | std::ios::in );
+    std::ifstream in ( _output.c_str(), std::ios::binary | std::ios::in );
     if ( false == in.is_open() )
       return;
 
@@ -831,12 +830,25 @@ void MainWindow::_updateTextWindow ( QString text )
     contents.resize ( ( length - _textWindow.second ) + 1 );
     in.read ( &contents[0], contents.size() - 1 );
 
+    // Remove all carriage returns and null characters.
+    contents.erase ( std::remove ( contents.begin(), contents.end(), '\r' ), contents.end() );
+    contents.erase ( std::remove ( contents.begin(), contents.end(), '\0' ), contents.end() );
+
+    // Handle empty string.
+    if ( true == contents.empty() )
+      return;
+
     // Important!
-    contents.at ( contents.size() - 1 ) = '\0';
+    const unsigned int last ( contents.size() - 1 );
+    contents.at ( last ) = '\0';
     _textWindow.second = length;
 
     // Append the text.
     _textWindow.first->append ( &contents[0] );
+
+    // Force a GUI update now if we should.
+    if ( true == force )
+      _textWindow.first->update();
   }
 
   // Catch all exceptions.
@@ -846,7 +858,7 @@ void MainWindow::_updateTextWindow ( QString text )
     {
       std::ostringstream out;
       out << Usul::Strings::convert ( _textWindow.first->toPlainText() ) 
-          << "\nError 1536020510: failed to access output file '" << file;
+          << "\nError 1536020510: failed to access output file '" << _output;
       _textWindow.first->setPlainText ( out.str().c_str() );
     }
     catch ( ... )
@@ -866,6 +878,7 @@ void MainWindow::_idleProcess()
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Jobs::Manager::instance()),    &Usul::Jobs::Manager::purge    ) );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Jobs::Manager::instance()), &Usul::Jobs::Manager::purge ) );
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Threads::Manager::instance()), &Usul::Threads::Manager::purge ) );
+  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &MainWindow::updateTextWindow ), false );
 }

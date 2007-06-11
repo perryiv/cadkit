@@ -243,6 +243,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Program.h"
+					>
+				</File>
+				<File
 					RelativePath=".\SharedDouble.cpp"
 					>
 				</File>
@@ -268,10 +272,6 @@
 				</File>
 				<File
 					RelativePath="..\Interfaces\IClippingDistance.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Interfaces\ICommandList.h"
 					>
 				</File>
 				<File

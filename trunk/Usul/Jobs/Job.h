@@ -21,7 +21,7 @@
 #include "Usul/Threads/Thread.h"
 
 namespace Usul { namespace Jobs { class Manager; } }
-namespace Usul { namespace Jobs { namespace Helper { class ScopedThread; } } }
+namespace Usul { namespace Jobs { namespace Helper { class ScopedThread; class ScopedDone; } } }
 
 
 namespace Usul {
@@ -45,6 +45,9 @@ public:
 
   // Return this job's id.
   unsigned long             id() const;
+
+  // Is the job done?
+  bool                      isDone() const;
 
   // Return this job's thread.
   const Thread *            thread() const;
@@ -72,6 +75,7 @@ protected:
 private:
 
   typedef Usul::Jobs::Helper::ScopedThread ScopedThread;
+  typedef Usul::Jobs::Helper::ScopedDone ScopedDone;
 
   // No copying or assignment.
   Job ( const Job & );
@@ -79,6 +83,7 @@ private:
 
   void                      _destroy();
 
+  void                      _setDone ( bool );
   void                      _setThread ( Thread *thread );
 
   void                      _threadCancelled ( Thread * );
@@ -88,6 +93,7 @@ private:
 
   friend class Usul::Jobs::Manager;
   friend class ScopedThread;
+  friend class ScopedDone;
 
   unsigned long _id;
   Callback::RefPtr _cancelledCB;
@@ -95,6 +101,7 @@ private:
   Callback::RefPtr _finishedCB;
   Callback::RefPtr _startedCB;
   Thread::RefPtr _thread;
+  bool _done;
 };
 
 

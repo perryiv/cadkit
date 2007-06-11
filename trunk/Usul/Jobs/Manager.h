@@ -40,6 +40,9 @@ public:
   // Add a job to the list.
   void                    add ( Job * );
 
+  // Cancel all jobs.
+  void                    cancel();
+
   // This will delete the previous instance, if any.
   static void             destroy();
 
@@ -58,6 +61,9 @@ public:
   // Get the size and resize the thread pool.
   void                    poolResize ( unsigned int numThreads );
   unsigned int            poolSize() const;
+
+  // Purge all jobs that are ready to be deleted.
+  void                    purge();
 
   // Wait for all jobs to complete.
   void                    wait();

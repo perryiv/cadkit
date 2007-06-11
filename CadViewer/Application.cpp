@@ -738,7 +738,7 @@ void Application::_initMenu()
   //CV_REGISTER ( _saveView,         "save_camera_view" );
 
   // Get the component.
-  VRV::Interfaces::IMenuRead::QueryPtr reader ( Usul::Components::Manager::instance().getInterface ( CV_GRAPHICAL_USER_INTERFACE ) );
+  VRV::Interfaces::IMenuRead::QueryPtr reader ( Usul::Components::Manager::instance().getInterface ( VRV::Interfaces::IMenuRead::IID ) );
 
   // Find the path to the config file.
   std::string filename ( CV::Config::filename ( "menu" ) );

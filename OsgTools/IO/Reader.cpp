@@ -141,14 +141,13 @@ osgDB::ReaderWriter *Reader::_findReader ( const std::string &file )
 
 namespace Detail
 {
-  osgDB::ReaderWriter::ReadResult read ( const std::string &file, osgDB::ReaderWriter &rw, Reader &reader )
+  osgDB::ReaderWriter::ReadResult read ( const std::string &file, osgDB::ReaderWriter &rw, Reader::Callback *callback )
   {
     // Open the stream.
     Usul::File::StreamBuffer buf ( file );
 
-    // Make the callback.
-    Reader::Callback callback ( reader );
-    buf.callback ( &callback );
+    // Set the callback.
+    buf.callback ( callback );
 
     // Read the file.
     {
@@ -169,7 +168,7 @@ namespace Detail
 void Reader::_read ( const std::string &file, osgDB::ReaderWriter &rw )
 {
   // Try using the stream-buffer.
-  osgDB::ReaderWriter::ReadResult result = Detail::read ( file, rw, *this );
+  osgDB::ReaderWriter::ReadResult result = Detail::read ( file, rw, _progress );
 
   // If the plugins doesn't handle input streams.
   if ( osgDB::ReaderWriter::ReadResult::FILE_NOT_HANDLED == result.status() )
@@ -188,19 +187,6 @@ void Reader::_read ( const std::string &file, osgDB::ReaderWriter &rw )
   if ( true == result.error() )
     out << ". " << result.message();
   throw std::runtime_error ( out.str() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called during file-reading progress.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Reader::_notifyProgress ( const std::string &file, unsigned long bytes, unsigned long total )
-{
-  if ( 0x0 != _progress )
-    _progress ( file, bytes, total );
 }
 
 

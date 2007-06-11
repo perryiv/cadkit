@@ -113,12 +113,15 @@ CadKit::OSG::Glue::Node^ ReadFile::readNodeFile ( System::String ^name, System::
     // Make native function pointer to the progress interface.
     NativeProgressCallback progress ( this->_makeProgressCallback() );
 
+    // Make the callback.
+    OsgTools::IO::Reader::FunctionCallback callback ( progress );
+
     // Get file name.
     const std::string file ( Usul::Strings::convert ( name ) );
 
     // Read the file.
     OsgTools::IO::Reader reader;
-    reader.callback ( progress );
+    reader.callback ( &callback );
     reader.read ( file );
 
     // Save the node.

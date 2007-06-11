@@ -267,6 +267,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Interfaces\IClippingDistance.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Interfaces\ICommandList.h"
 					>
 				</File>
@@ -283,11 +287,23 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Interfaces\IRequestRead.h"
+					RelativePath="..\Interfaces\IPostModelLoad.h"
 					>
 				</File>
 				<File
-					RelativePath="..\Interfaces\IThread.h"
+					RelativePath="..\Interfaces\IRequestRead.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Jobs"
+				>
+				<File
+					RelativePath="..\Jobs\LoadModel.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Jobs\LoadModel.h"
 					>
 				</File>
 			</Filter>

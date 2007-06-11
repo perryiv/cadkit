@@ -21,7 +21,7 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
 
-#include "CadViewer/Interfaces/IPostModelLoad.h"
+#include "VRV/Interfaces/IPostModelLoad.h"
 
 #include <vector>
 #include <iosfwd>
@@ -35,7 +35,7 @@ namespace Plugins {
 
 
 class Component : public Usul::Base::Referenced,
-                  public CV::Interfaces::IPostModelLoad,
+                  public VRV::Interfaces::IPostModelLoad,
                   public Usul::Interfaces::IPlugin
 {
 public:

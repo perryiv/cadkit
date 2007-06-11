@@ -21,7 +21,7 @@
 #include "CadViewer/Interfaces/INavigationScene.h"
 #include "CadViewer/Interfaces/IModelsScene.h"
 #include "CadViewer/Interfaces/IWandState.h"
-#include "CadViewer/Interfaces/IClippingDistance.h"
+#include "VRV/Interfaces/IClippingDistance.h"
 
 #include "osg/Vec3"
 
@@ -56,7 +56,7 @@ protected:
   typedef CV::Interfaces::INavigationScene NavigationScene;
   typedef CV::Interfaces::IModelsScene ModelsScene;
   typedef CV::Interfaces::IWandStateFloat WandState;
-  typedef CV::Interfaces::IClippingDistanceFloat ClippingDistance;
+  typedef VRV::Interfaces::IClippingDistanceFloat ClippingDistance;
 
   Intersect ( Unknown *unknown, Direction *dir, unsigned int id );
   Intersect ( const Intersect &cb );

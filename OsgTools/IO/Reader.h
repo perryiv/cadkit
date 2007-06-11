@@ -37,15 +37,12 @@ namespace IO {
 class OSG_TOOLS_EXPORT Reader
 {
 public:
-
-  typedef void (*ProgressCallback) ( const std::string &, unsigned long, unsigned long );
   typedef std::pair<std::string,std::string>    Filter;
   typedef std::vector<Filter>                   Filters;
+  typedef Usul::File::StreamBuffer::Callback    Callback;
 
   Reader();
   ~Reader();
-
-  void                  callback ( ProgressCallback cb ) { _progress = cb; }
 
   static Filters        filters();
 
@@ -55,23 +52,28 @@ public:
 
   void                  read ( const std::string &file );
 
-  struct Callback : public Usul::File::StreamBuffer::Callback
+  /// Callback.
+  template < class Fun >
+  struct ReaderCallback : public Callback
   {
-    Callback ( Reader &reader ) : _reader ( reader ){}
+    ReaderCallback ( Fun callback ) : _callback ( callback ) {}
     virtual void operator () ( const std::string &file, unsigned long bytes, unsigned long total )
     {
-      _reader._notifyProgress ( file, bytes, total );
+      _callback ( file, bytes, total );
     }
   private:
-    Reader &_reader;
-    friend class Reader;
+    Fun _callback;
   };
+
+  /// Typedefs for backwards compatibilty.
+  typedef void (*ProgressCallback) ( const std::string &, unsigned long, unsigned long );
+  typedef ReaderCallback < ProgressCallback > FunctionCallback;
+
+  void                  callback ( Callback *cb ) { _progress = cb; }
 
 protected:
 
   osgDB::ReaderWriter   *_findReader ( const std::string &file );
-
-  void                  _notifyProgress ( const std::string &file, unsigned long bytes, unsigned long total );
 
   void                  _read ( const std::string &file, osgDB::ReaderWriter &reader );
   void                  _read ( Usul::File::StreamBuffer::BaseClass &buf, osgDB::ReaderWriter &reader );
@@ -79,7 +81,7 @@ protected:
 private:
 
   osg::ref_ptr<osg::Node> _node;
-  ProgressCallback _progress;
+  Callback *_progress;
 };
 
 

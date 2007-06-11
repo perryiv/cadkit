@@ -117,7 +117,7 @@ namespace Program
     const std::string icon ( "helios_sun.png" );
     Usul::App::Application::instance().splashImage ( "splash_screen.jpg" );
 
-    // Get temporary directory nd make sure it exists.
+    // Get temporary directory and make sure it exists.
     const std::string tempDir ( Usul::File::Temp::directory ( true ) + "/" + program + "/" );
     Usul::File::make ( tempDir );
 

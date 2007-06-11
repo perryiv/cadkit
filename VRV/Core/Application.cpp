@@ -11,9 +11,11 @@
 #include "VRV/Core/Application.h"
 #include "VRV/Core/JugglerFunctors.h"
 #include "VRV/Core/Exceptions.h"
+#include "VRV/Jobs/LoadModel.h"
 
 #include "Usul/Errors/Assert.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Jobs/Manager.h"
 
 #include "OsgTools/State/StateSet.h"
 
@@ -34,6 +36,8 @@ using namespace VRV::Core;
 ///////////////////////////////////////////////////////////////////////////////
 
 #define CONSTRUCTOR_INITIALIZER_LIST\
+  _mutex(), \
+  _models ( new osg::MatrixTransform ), \
   _timer(),\
   _framestamp( 0x0 ),\
   _viewport ( 0x0 ),\
@@ -45,6 +49,7 @@ using namespace VRV::Core;
   _frameTime  ( 1 ), \
   _renderer(), \
   _sceneManager ( new OsgTools::Render::SceneManager ), \
+  _clipDist     ( 0, 0 ), \
   _refCount ( 0 )
 
 
@@ -78,7 +83,7 @@ Application::Application(vrj::Kernel* kern) : vrj::GlApp(kern),
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Not sure if this is still needed.
+//  Construct.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -92,6 +97,8 @@ void Application::_construct()
   // too late.
   osg::DisplaySettings::instance()->setMaxNumberOfGraphicsContexts ( 20 );
 
+  // Set the name.
+  _models->setName       ( "_models"       );
 }
 
 
@@ -105,8 +112,31 @@ Application::~Application()
 {
   USUL_TRACE_SCOPE;
 
+  _renderer.getDataVector()->clear();
+
   // Make sure we don't have any references hanging around.
   USUL_ASSERT ( 0 == _refCount );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case VRV::Interfaces::IModelAdd::IID:
+    return static_cast < VRV::Interfaces::IModelAdd* > ( this );
+  case VRV::Interfaces::IClippingDistanceFloat::IID:
+    return static_cast < VRV::Interfaces::IClippingDistanceFloat* > ( this );
+  default:
+    return 0x0;
+  }
 }
 
 
@@ -133,19 +163,22 @@ void Application::run()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::viewAll ( osg::MatrixTransform* node, osg::Matrix::value_type zScale )
+void Application::viewAll ( osg::Node* node, osg::Matrix::value_type zScale )
 {
   USUL_TRACE_SCOPE;
 
-  // Get the bounding sphere of the group.
-  osg::BoundingSphere bs ( node->getBound() );
-  osg::Vec3 c ( bs.center() );
+  if( osg::MatrixTransform *mt = dynamic_cast < osg::MatrixTransform* > ( node ) )
+  {
+    // Get the bounding sphere of the group.
+    osg::BoundingSphere bs ( node->getBound() );
+    osg::Vec3 c ( bs.center() );
 
-  // Push it back so we can see it.
-  osg::Matrix matrix;
-  osg::Matrix::value_type z ( zScale * bs.radius() + c[2] );
-  matrix.makeTranslate( -c[0], -c[1], -z );
-  node->postMult( matrix );
+    // Push it back so we can see it.
+    osg::Matrix matrix;
+    osg::Matrix::value_type z ( zScale * bs.radius() + c[2] );
+    matrix.makeTranslate( -c[0], -c[1], -z );
+    mt->postMult( matrix );
+  }
 }
 
 
@@ -276,6 +309,7 @@ namespace Detail
 void Application::draw()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
 
   // For exception safety. Pushes attributes in constructor, pops them in destructor.
   Detail::OpenGlStackPushPop pushPop;
@@ -726,3 +760,148 @@ void Application::_loadSimConfigs ( const std::string& d )
   loader ( dir + "sim.analog.mixin.jconf" );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::addModel ( osg::Node *model, const std::string& filename )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Set its name to the filename, minus the pathing portion, if there is no name.
+  if ( model->getName().empty() )
+  {
+    unsigned int loc = filename.find_last_of ( "/\\" );
+    std::string name = filename.substr ( loc + 1 );
+    model->setName ( name );
+  }
+
+  // Hook things up.
+  _models->addChild ( model );
+
+  // If this is the first one...
+  if ( _models->getNumChildren() == 1 )
+    this->viewAll ( this->models(), 1.5 );
+
+  // Based on the scene size, set the near and far clipping plane distances.
+  this->_setNearAndFarClippingPlanes();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_loadModelFile ( const std::string &filename )
+{
+  USUL_TRACE_SCOPE;
+
+  // Create a job.
+  VRV::Jobs::LoadModel::RefPtr load ( new VRV::Jobs::LoadModel ( filename, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
+
+  // Add the job to the manager.
+  Usul::Jobs::Manager::instance().add ( load.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the models node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::MatrixTransform* Application::models()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  return _models.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the models node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::MatrixTransform* Application::models() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  return _models.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the near and far clipping planes based on the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_setNearAndFarClippingPlanes()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Get the bounding sphere.
+  const osg::BoundingSphere &sphere = _sceneManager->scene()->getBound();
+  float radius = sphere.radius();
+
+  // Handle zero-sized bounding spheres.
+  if ( radius <= 1e-6 )
+    radius = 1;
+
+  // Set both distances.
+  _clipDist[0] = 0.1f;
+  _clipDist[1] = 5 * radius;
+
+  // Don't allow a far plane less that 40; it's just too small
+  if ( _clipDist[1] < 40 )
+  {
+    _clipDist[1] = 40.0f;
+  }
+  
+  // Set the clipping planes
+  vrj::Projection::setNearFar ( _clipDist[0], _clipDist[1] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the clipping planes
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::getClippingDistances ( float &nearDist, float &farDist ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  nearDist = _clipDist[0];
+  farDist  = _clipDist[1];
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the clipping planes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::setClippingDistances ( float nearDist, float farDist )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  _clipDist[0] = nearDist;
+  _clipDist[1] = farDist;
+  vrj::Projection::setNearFar ( nearDist, farDist );
+}

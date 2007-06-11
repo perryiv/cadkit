@@ -149,7 +149,7 @@ void Application::_unselectVisible ( MenuKit::Message m, MenuKit::Item *item )
   Visitor::Ptr visitor ( new Visitor ( ifThen ) );
 
   // Traverse the models-scene and unselect all the nodes.
-  _models->accept ( *visitor );
+  this->models()->accept ( *visitor );
 }
 
 
@@ -186,7 +186,7 @@ void Application::_hideSelected ( MenuKit::Message m, MenuKit::Item *item )
   Visitor::Ptr visitor ( new Visitor ( ifThen ) );
 
   // Traverse the models-scene and hide all selected nodes.
-  _models->accept ( *visitor );
+  this->models()->accept ( *visitor );
 }
 
 
@@ -215,7 +215,7 @@ void Application::_showAll ( MenuKit::Message m, MenuKit::Item *item )
   Visitor::Ptr visitor ( new Visitor ( Show ( _iVisibility ) ) );
 
   // Traverse the models-scene and hide all selected nodes.
-  _models->accept ( *visitor );
+  this->models()->accept ( *visitor );
 }
 
 
@@ -254,7 +254,7 @@ void Application::_exportWorld ( MenuKit::Message m, MenuKit::Item *item )
       static unsigned int count ( 0 );
       std::string number ( this->_counter ( ++count ) );
       std::string filename ( "cv_world_" + number + ".osg" );
-      this->_writeScene ( filename, _models.get() );
+      this->_writeScene ( filename, this->models() );
       break;
     }
   }
@@ -748,13 +748,13 @@ void Application::_polysSmooth ( MenuKit::Message m, MenuKit::Item *item )
   switch ( m )
   {
     case MenuKit::MESSAGE_UPDATE:
-      item->checked ( OsgTools::State::StateSet::getPolygonsFilled ( _models.get(), false ) &&
-                      OsgTools::State::StateSet::getPolygonsSmooth ( _models.get() ) );
+      item->checked ( OsgTools::State::StateSet::getPolygonsFilled ( this->models(), false ) &&
+                      OsgTools::State::StateSet::getPolygonsSmooth ( this->models() ) );
       break;
 
     case MenuKit::MESSAGE_SELECTED:
-      OsgTools::State::StateSet::setPolygonsFilled ( _models.get(), false );
-      OsgTools::State::StateSet::setPolygonsSmooth ( _models.get() );
+      OsgTools::State::StateSet::setPolygonsFilled ( this->models(), false );
+      OsgTools::State::StateSet::setPolygonsSmooth ( this->models() );
       break;
   }
 }
@@ -774,13 +774,13 @@ void Application::_polysFlat ( MenuKit::Message m, MenuKit::Item *item )
   switch ( m )
   {
     case MenuKit::MESSAGE_UPDATE:
-      item->checked ( OsgTools::State::StateSet::getPolygonsFilled ( _models.get(), false ) &&
-                      OsgTools::State::StateSet::getPolygonsFlat   ( _models.get() ) );
+      item->checked ( OsgTools::State::StateSet::getPolygonsFilled ( this->models(), false ) &&
+                      OsgTools::State::StateSet::getPolygonsFlat   ( this->models() ) );
       break;
 
     case MenuKit::MESSAGE_SELECTED:
-      OsgTools::State::StateSet::setPolygonsFilled ( _models.get(), false );
-      OsgTools::State::StateSet::setPolygonsFlat   ( _models.get() );
+      OsgTools::State::StateSet::setPolygonsFilled ( this->models(), false );
+      OsgTools::State::StateSet::setPolygonsFlat   ( this->models() );
       break;
   }
 }
@@ -800,11 +800,11 @@ void Application::_polysWireframe ( MenuKit::Message m, MenuKit::Item *item )
   switch ( m )
   {
     case MenuKit::MESSAGE_UPDATE:
-      item->checked ( OsgTools::State::StateSet::getPolygonsLines ( _models.get(), false ) );
+      item->checked ( OsgTools::State::StateSet::getPolygonsLines ( this->models(), false ) );
       break;
 
     case MenuKit::MESSAGE_SELECTED:
-      OsgTools::State::StateSet::setPolygonsLines ( _models.get(), true );
+      OsgTools::State::StateSet::setPolygonsLines ( this->models(), true );
       break;
   }
 }
@@ -824,11 +824,11 @@ void Application::_polysPoints ( MenuKit::Message m, MenuKit::Item *item )
   switch ( m )
   {
     case MenuKit::MESSAGE_UPDATE:
-      item->checked ( OsgTools::State::StateSet::getPolygonsPoints ( _models.get(), false ) );
+      item->checked ( OsgTools::State::StateSet::getPolygonsPoints ( this->models(), false ) );
       break;
 
     case MenuKit::MESSAGE_SELECTED:
-      OsgTools::State::StateSet::setPolygonsPoints ( _models.get(), true );
+      OsgTools::State::StateSet::setPolygonsPoints ( this->models(), true );
       break;
   }
 }
@@ -851,15 +851,15 @@ void Application::_polysTexture ( MenuKit::Message m, MenuKit::Item *item )
   switch ( m )
   {
     case MenuKit::MESSAGE_UPDATE:
-      //item->checked ( OsgTools::State::StateSet::getPolygonsTextures ( _models->getStateSet() ) );
+      //item->checked ( OsgTools::State::StateSet::getPolygonsTextures ( this->models()->getStateSet() ) );
       item->checked ( _textures );
       break;
 
     case MenuKit::MESSAGE_SELECTED:
-      //bool state = OsgTools::State::StateSet::getPolygonsTextures ( _models->getStateSet() );
-      //OsgTools::State::StateSet::setPolygonsTextures (  _models->getStateSet() , state );
+      //bool state = OsgTools::State::StateSet::getPolygonsTextures ( this->models()->getStateSet() );
+      //OsgTools::State::StateSet::setPolygonsTextures (  this->models()->getStateSet() , state );
       _textures = !_textures;
-      OsgTools::State::StateSet::setPolygonsTextures( _models->getOrCreateStateSet(), _textures );
+      OsgTools::State::StateSet::setPolygonsTextures( this->models()->getOrCreateStateSet(), _textures );
       break;
   }
 }
@@ -970,16 +970,16 @@ void Application::_viewWorld ( MenuKit::Message m, MenuKit::Item *item )
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
     // Save current model-matrix.
-    osg::Matrix original ( _models->getMatrix() );
+    osg::Matrix original ( this->models()->getMatrix() );
 
     // Perform the "view all" on the model's branch.
-    this->viewAll ( _models.get(), _prefs->viewAllScaleZ() );
+    this->viewAll ( this->models(), _prefs->viewAllScaleZ() );
 
     // Move the navigation branch.
-    _navBranch->setMatrix ( _models->getMatrix() );
+    _navBranch->setMatrix ( this->models()->getMatrix() );
 
     // Restore the model's matrix.
-    _models->setMatrix ( original );
+    this->models()->setMatrix ( original );
 
     // make sure the scene is visible
     this->_setNearAndFarClippingPlanes();
@@ -1044,7 +1044,7 @@ void Application::_vScaleWorld ( MenuKit::Message m, MenuKit::Item *item )
 
   // Put the models-branch in a vector.
   Tool::Transforms vt;
-  vt.push_back ( _models.get() );
+  vt.push_back ( this->models() );
 
   // Call the convenience function.
   CV::ScaleCB<Analog,Tool>::execute ( id, m, item, _sceneTool, vt, speed, scale, this );
@@ -1206,7 +1206,7 @@ void Application::_wMoveTopLocal ( MenuKit::Message m, MenuKit::Item *item )
 
       // Put the models-branch in a vector.
       MoveTool::Transforms vt;
-      vt.push_back ( _models.get() );
+      vt.push_back ( this->models() );
       tool->transforms ( vt );
 
       _sceneTool = tool;
@@ -1228,7 +1228,7 @@ void Application::_resizeGrid ( MenuKit::Message m, MenuKit::Item *item )
   // Process the message.
   if( m==MenuKit::MESSAGE_SELECTED )
   {
-    this->_initGrid ( _models.get() );
+    this->_initGrid ( this->models() );
     this->_setNearAndFarClippingPlanes();
   }
 }
@@ -1490,7 +1490,7 @@ void Application::_gotoViewFront ( MenuKit::Message m, MenuKit::Item *item )
   switch( m )
   {
   case MenuKit::MESSAGE_SELECTED:
-    const osg::BoundingSphere& bs = _models->getBound();
+    const osg::BoundingSphere& bs = this->models()->getBound();
     osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius())-bs.center() ) );
     _navBranch->setMatrix( trans );
   }
@@ -1514,7 +1514,7 @@ void Application::_gotoViewBack ( MenuKit::Message m, MenuKit::Item *item )
   switch( m )
   {
   case MenuKit::MESSAGE_SELECTED:
-    const osg::BoundingSphere& bs = _models->getBound();
+    const osg::BoundingSphere& bs = this->models()->getBound();
     osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI , osg::Y_AXIS ) );
     osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
     osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
@@ -1540,7 +1540,7 @@ void Application::_gotoViewTop ( MenuKit::Message m, MenuKit::Item *item )
   switch( m )
   {
   case MenuKit::MESSAGE_SELECTED:
-    const osg::BoundingSphere& bs = _models->getBound();
+    const osg::BoundingSphere& bs = this->models()->getBound();
     osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI_2 , osg::X_AXIS ) );
     osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
     osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
@@ -1566,7 +1566,7 @@ void Application::_gotoViewBottom ( MenuKit::Message m, MenuKit::Item *item )
   switch( m )
   {
   case MenuKit::MESSAGE_SELECTED:
-    const osg::BoundingSphere& bs = _models->getBound();
+    const osg::BoundingSphere& bs = this->models()->getBound();
     osg::Matrix rot  ( osg::Matrix::rotate   ( -osg::PI_2 , osg::X_AXIS ) );
     osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
     osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
@@ -1592,7 +1592,7 @@ void Application::_gotoViewRight ( MenuKit::Message m, MenuKit::Item *item )
   switch( m )
   {
   case MenuKit::MESSAGE_SELECTED:
-    const osg::BoundingSphere& bs = _models->getBound();
+    const osg::BoundingSphere& bs = this->models()->getBound();
     osg::Matrix rot  ( osg::Matrix::rotate   ( -osg::PI_2 , osg::Y_AXIS ) );
     osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
     osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
@@ -1618,7 +1618,7 @@ void Application::_gotoViewLeft ( MenuKit::Message m, MenuKit::Item *item )
   switch( m )
   {
   case MenuKit::MESSAGE_SELECTED:
-    const osg::BoundingSphere& bs = _models->getBound();
+    const osg::BoundingSphere& bs = this->models()->getBound();
     osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI_2 , osg::Y_AXIS ) );
     osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
     osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
@@ -1658,9 +1658,9 @@ void Application::_rotateWorld ( MenuKit::Message m, MenuKit::Item *item )
       vec = osg::Y_AXIS;
     }
 
-    const osg::BoundingSphere& bs = _models->getBound();
+    const osg::BoundingSphere& bs = this->models()->getBound();
     osg::Matrix rot ( osg::Matrix::rotate ( radians, vec ) );
-    _models->preMult ( rot );
+    this->models()->preMult ( rot );
   }
 }
 

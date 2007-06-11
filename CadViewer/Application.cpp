@@ -189,18 +189,6 @@ unsigned long Application::_mainThread = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Define component names so that we can change them in one place.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define CV_SCENE_OPERATIONS         "Scene Operations"
-#define CV_COLLISION_DETECTION      "Collision Detection"
-#define CV_RESTART_FILE_PARSER      "Restart File Parser"
-#define CV_GRAPHICAL_USER_INTERFACE "Graphical User Interface"
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -315,9 +303,9 @@ Application::Application ( Args &args ) :
   typedef Usul::Components::Manager Manager;
 
   // Save the plugin pointers.
-  _iVisibility    = Manager::instance().getInterface( CV_SCENE_OPERATIONS );
-  _iSelection     = Manager::instance().getInterface( CV_SCENE_OPERATIONS );
-  _iMaterialStack = Manager::instance().getInterface( CV_SCENE_OPERATIONS );
+  _iVisibility    = Manager::instance().getInterface( CV::Interfaces::IVisibility::IID );
+  _iSelection     = Manager::instance().getInterface( CV::Interfaces::ISelection::IID );
+  _iMaterialStack = Manager::instance().getInterface( CV::Interfaces::IMaterialStack::IID );
 }
 
 
@@ -703,6 +691,8 @@ void Application::_initMenu()
   CV_REGISTER ( _vTransGlobalNegZ, "vertical_translate_global_negative_z" );
   CV_REGISTER ( _hRotWandPosY,     "horizontal_rotate_wand_clockwise_y" );
   CV_REGISTER ( _hRotGlobalPosY,   "horizontal_rotate_global_clockwise_y" );
+  CV_REGISTER ( _vRotWandPosX,     "vertical_rotate_wand_clockwise_x" );
+  CV_REGISTER ( _vRotGlobalPosX,   "vertical_rotate_global_clockwise_x" );
   CV_REGISTER ( _vScaleWorld,      "vertical_scale_world" );
   CV_REGISTER ( _vScaleSelected,   "vertical_scale_selected" );
   CV_REGISTER ( _wMoveSelLocal,    "move_selected_local_wand" );
@@ -1518,7 +1508,7 @@ void Application::_loadRestartFile ( const std::string &filename )
   typedef VRV::Interfaces::IParseRestart Reader;
 
   // Declare a restart-file reader.
-  Reader::QueryPtr reader ( Usul::Components::Manager::instance().getInterface ( CV_RESTART_FILE_PARSER ) );
+  Reader::QueryPtr reader ( Usul::Components::Manager::instance().getInterface ( Reader::IID ) );
 
   if( reader.valid() )
   {

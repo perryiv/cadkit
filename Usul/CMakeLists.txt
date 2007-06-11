@@ -39,8 +39,6 @@ SET (SOURCES
 	CommandLine/Options.cpp
 	Commands/Command.cpp
 	Components/Manager.cpp
-	Components/Object.cpp
-	Components/Registry.cpp
 	Console/Feedback.cpp
 	Devices/BaseDevice.cpp
 	Devices/Factory.cpp
@@ -57,6 +55,8 @@ SET (SOURCES
 	File/Temp.cpp
 	Functions/Color.cpp
 	Functions/Guid.cpp
+	Jobs/Job.cpp
+	Jobs/Manager.cpp
 	ID/GUID.cpp
 	Predicates/CanWrite.cpp
 	Resources/CancelButton.cpp

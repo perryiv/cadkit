@@ -725,6 +725,8 @@ void Application::_initMenu()
   CV_REGISTER ( _gotoViewLeft,     "goto_left_view" );
   CV_REGISTER ( _rotateWorld,      "rotate_world" );
   CV_REGISTER ( _dropToFloor,      "drop_to_floor" );
+  CV_REGISTER ( _increaseSpeed,    "increase_speed" );
+  CV_REGISTER ( _decreaseSpeed,    "decrease_speed" );
   //CV_REGISTER ( _saveView,         "save_camera_view" );
 
   // Get the component.

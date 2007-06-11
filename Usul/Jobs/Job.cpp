@@ -35,7 +35,8 @@ Job::Job() : BaseClass(),
   _errorCB     ( 0x0 ),
   _finishedCB  ( 0x0 ),
   _startedCB   ( 0x0 ),
-  _thread      ( 0x0 )
+  _thread      ( 0x0 ),
+  _done        ( false )
 {
   USUL_TRACE_SCOPE;
 
@@ -92,16 +93,48 @@ namespace Usul
       class ScopedThread
       {
       public:
-        ScopedThread ( Job &job, Usul::Threads::Thread *thread ) : _job ( job )
+        ScopedThread ( Job &job, Usul::Threads::Thread *during, Usul::Threads::Thread *after ) : _job ( job ), _after ( after )
         {
-          _job._setThread ( thread );
+          _job._setThread ( during );
         }
         ~ScopedThread()
         {
-          _job._setThread ( 0x0 );
+          _job._setThread ( _after.get() );
         }
       private:
         Job &_job;
+        Usul::Threads::Thread::RefPtr _after;
+      };
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class to set the done flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Usul
+{
+  namespace Jobs
+  {
+    namespace Helper
+    {
+      class ScopedDone
+      {
+      public:
+        ScopedDone ( Job &job, bool done ) : _job ( job ), _done ( done )
+        {
+        }
+        ~ScopedDone()
+        {
+          _job._setDone ( _done );
+        }
+      private:
+        Job &_job;
+        bool _done;
       };
     }
   }
@@ -117,7 +150,8 @@ namespace Usul
 void Job::_threadCancelled ( Thread *thread )
 {
   USUL_TRACE_SCOPE;
-  ScopedThread scoped ( *this, thread );
+  ScopedThread scoped ( *this, thread, 0x0 );
+  ScopedDone done ( *this, true );
   this->_cancelled();
 }
 
@@ -143,7 +177,8 @@ void Job::_cancelled()
 void Job::_threadError ( Thread *thread )
 {
   USUL_TRACE_SCOPE;
-  ScopedThread scoped ( *this, thread );
+  ScopedThread scoped ( *this, thread, 0x0 );
+  ScopedDone done ( *this, true );
   this->_error();
 }
 
@@ -169,7 +204,8 @@ void Job::_error()
 void Job::_threadFinished ( Thread *thread )
 {
   USUL_TRACE_SCOPE;
-  ScopedThread scoped ( *this, thread );
+  ScopedThread scoped ( *this, thread, 0x0 );
+  ScopedDone done ( *this, true );
   this->_finished();
 }
 
@@ -195,7 +231,7 @@ void Job::_finished()
 void Job::_threadStarted ( Thread *thread )
 {
   USUL_TRACE_SCOPE;
-  ScopedThread scoped ( *this, thread );
+  this->_setThread ( thread );
   this->_started();
 }
 
@@ -223,6 +259,20 @@ void Job::_setThread ( Thread *thread )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _thread = thread;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the done flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Job::_setDone ( bool done )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _done = done;
 }
 
 
@@ -269,4 +319,18 @@ const Usul::Threads::Thread *Job::thread() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _thread.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this job done?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Job::isDone() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _done;
 }

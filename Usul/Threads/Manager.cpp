@@ -283,9 +283,9 @@ void Manager::wait ( unsigned long timeout )
   // Save current time.
   const unsigned long start ( static_cast<unsigned long> ( Usul::System::Clock::milliseconds() ) );
 
-  while ( false == Usul::Threads::Manager::instance().empty() )
+  while ( false == this->empty() )
   {
-    Usul::Threads::Manager::instance().purge();
+    this->purge();
 
     // Check the time.
     const unsigned long now ( static_cast<unsigned long> ( Usul::System::Clock::milliseconds() ) );
@@ -310,4 +310,18 @@ void Manager::wait()
 {
   USUL_TRACE_SCOPE;
   this->wait ( std::numeric_limits<unsigned long>::max() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Cancel all threads.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::cancel()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  std::for_each ( _threads.begin(), _threads.end(), std::mem_fun ( &Thread::cancel ) );
 }

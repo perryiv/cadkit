@@ -225,3 +225,33 @@ unsigned int Manager::poolSize() const
   Guard guard ( this->mutex() );
   return _pool->numThreads();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Cancel all threads.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::cancel()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _pool->cancel();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Purge all threads that are ready to be deleted.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::purge()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Remove all jobs that are ready.
+  _jobs.remove_if ( std::mem_fun ( &Job::isDone ) );
+}

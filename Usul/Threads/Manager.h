@@ -37,6 +37,9 @@ public:
   typedef Usul::Threads::Guard<Mutex> Guard;
   typedef std::list<Thread::RefPtr> ThreadList;
 
+  // Cancel all threads.
+  void                    cancel();
+
   // Create a thread. Uses the registered factory-function.
   Thread *                create();
 

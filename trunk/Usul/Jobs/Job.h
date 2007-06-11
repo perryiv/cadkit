@@ -91,9 +91,10 @@ private:
   void                      _threadFinished  ( Thread * );
   void                      _threadStarted   ( Thread * );
 
+	// Use namespaces here, or gcc 4.0 will give an error.
   friend class Usul::Jobs::Manager;
-  friend class ScopedThread;
-  friend class ScopedDone;
+  friend class Helper::ScopedThread;
+  friend class Helper::ScopedDone;
 
   unsigned long _id;
   Callback::RefPtr _cancelledCB;

@@ -80,6 +80,7 @@ SET (SOURCES
   Images/Threshold.cpp
   Intersect/FrustumVisitor.cpp
   IO/GLFeedback.cpp
+  IO/Reader.cpp
   IO/STLWriter.cpp
   IO/WriteEPS.cpp
   Jitter.cpp

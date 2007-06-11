@@ -1,5 +1,5 @@
 
-PROJECT(VRVCore)
+PROJECT(VRV)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
@@ -13,7 +13,7 @@ INCLUDE(${CMakeModules}/FindBoost.cmake)
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
-ADD_DEFINITIONS("-D_COMPILING_OSG_VRJ")
+ADD_DEFINITIONS("-D_COMPILING_VRV")
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
@@ -30,14 +30,15 @@ INCLUDE_DIRECTORIES(
 SET (SOURCES
   ./Application.cpp
   ./SharedDouble.cpp
+  ../Jobs/LoadModel.cpp
 )
 
 # Create a Shared Library
-ADD_LIBRARY(VRVCore SHARED ${SOURCES} )
+ADD_LIBRARY(VRV SHARED ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( VRVCore Usul OsgTools )
-TARGET_LINK_LIBRARIES( VRVCore
+LINK_CADKIT( VRV Usul OsgTools )
+TARGET_LINK_LIBRARIES( VRV
 	${OSG_LIB}
 	${VR_JUGGLER_LIBS}
 	${Boost_FILESYSTEM_LIBRARY}

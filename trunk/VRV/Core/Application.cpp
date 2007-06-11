@@ -4,7 +4,7 @@
 //  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Created by: Adam Kubach
+//  Author: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -111,8 +111,6 @@ void Application::_construct()
 Application::~Application()
 {
   USUL_TRACE_SCOPE;
-
-  _renderer.getDataVector()->clear();
 
   // Make sure we don't have any references hanging around.
   USUL_ASSERT ( 0 == _refCount );
@@ -223,6 +221,19 @@ void Application::contextInit()
   _viewport = renderer->viewport();
 
   (*_renderer) = renderer.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called before the context is closed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::contextClose()
+{
+  // Clean up context specific data.
+  (*_renderer) = 0x0;
 }
 
 

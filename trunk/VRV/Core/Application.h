@@ -122,6 +122,7 @@ protected:
   virtual void            latePreFrame();
   virtual void            postFrame();
   virtual void            draw();
+  virtual void            contextClose();
 
   /// Set the viewport.
   virtual void            _setViewport ( osg::Viewport*, vrj::GlDrawManager* );

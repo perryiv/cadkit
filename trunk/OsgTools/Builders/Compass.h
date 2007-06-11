@@ -11,20 +11,16 @@
 #ifndef _OSG_TOOLS_BUILDERS_COMPASS_H_
 #define _OSG_TOOLS_BUILDERS_COMPASS_H_
 
+#include "osg/Group"
+#include <string>
 #include "OsgTools/Export.h"
 
-#include <osg/Geode>
-#include <osg/Texture2D>
-#include <osg/Image>
-#include <osg/Math>
-#include <osg/MatrixTransform>
-#include <osg/Geometry>
-#include <osgDB/ReadFile>
 
-#if _MSC_VER
-  #include <osgViewer/Viewer>
-#endif
 
+//#if _MSC_VER
+//  #include <osgViewer/Viewer>
+//#endif
+namespace osg { class MatrixTransform; class Geode; }
 namespace OsgTools {
 namespace Builders {
 
@@ -61,7 +57,7 @@ public:
 	bool isVisible ( );
 	
 	void buildCompass ( );
-	void keyChange ( int key,int value );
+	
 	
 	void updateCompass ( );
 

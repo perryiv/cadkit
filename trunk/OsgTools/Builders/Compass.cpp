@@ -9,10 +9,22 @@
 
 #include "OsgTools/Builders/Compass.h"
 
+
+
+
+
 #include "Usul/CommandLine/Arguments.h"
 
 #include "osgUtil/CullVisitor"
 
+#include "osgUtil/CullVisitor"
+#include "osgDB/ReadFile"
+#include "osg/MatrixTransform"
+#include "osg/Math"
+#include "osg/Texture2D"
+#include "osg/Image"
+#include "osg/Geometry"
+#include "osg/Geode"
 using namespace OsgTools::Builders;
 
 
@@ -563,7 +575,7 @@ void Compass::_hideCompass()
 	_animationStep = -1 * (1.0f / 20.0f);
 }
 
-
+/*
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Handle key pressed events.  Called from CompassEventHandler.
@@ -643,5 +655,5 @@ void Compass::keyChange(int key,int value)
 #endif
     
 }
-
+*/
 

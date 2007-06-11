@@ -19,10 +19,9 @@
 
 #include "Helios/Qt/Commands/Command.h"
 
-#include "Usul/Interfaces/Threads/IThreadPoolAddTask.h"
+#include "Usul/Jobs/Job.h"
 
 #include <vector>
-#include <map>
 
 namespace Usul { namespace Threads { class Thread; } }
 
@@ -40,9 +39,6 @@ public:
   typedef CadKit::Helios::Commands::Command BaseClass;
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef std::vector<std::string> FileNames;
-  typedef Usul::Interfaces::IThreadPoolAddTask IThreadPoolAddTask;
-  typedef IThreadPoolAddTask::TaskHandle TaskHandle;
-  typedef std::map<TaskHandle,std::string> TaskedFiles;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( OpenDocument );
@@ -58,7 +54,19 @@ protected:
   // Use reference counting.
   virtual ~OpenDocument();
 
-  void                      _addTaskedFile ( TaskHandle, const std::string &file );
+  // Internal job class.
+  class Job : public Usul::Jobs::Job
+  {
+  public:
+    typedef Usul::Jobs::Job BaseClass;
+    Job ( const std::string &name, IUnknown *caller );
+  protected:
+    virtual ~Job();
+    virtual void _started();
+  private:
+    std::string _name;
+    IUnknown::RefPtr _caller;
+  };
 
   void                      _askForFileNames ( const std::string &title, FileNames &files );
 
@@ -66,27 +74,14 @@ protected:
 
   std::string               _filters() const;
 
-  std::string               _getTaskedFile ( Usul::Threads::Thread *thread );
-
   std::string               _lastDirectory() const;
   void                      _lastDirectory ( const std::string & );
-
-  void                      _open ( const std::string & );
-
-  void                      _removeTaskedFile ( Usul::Threads::Thread *thread );
-
-  void                      _threadStarted   ( Usul::Threads::Thread *thread );
-  void                      _threadFinished  ( Usul::Threads::Thread *thread );
-  void                      _threadError     ( Usul::Threads::Thread *thread );
-  void                      _threadCancelled ( Usul::Threads::Thread *thread );
 
 private:
 
   // No copying or assignment.
   OpenDocument ( const OpenDocument & );
   OpenDocument &operator = ( const OpenDocument & );
-
-  TaskedFiles _taskedFiles;
 };
 
 

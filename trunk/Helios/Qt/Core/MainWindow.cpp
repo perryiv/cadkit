@@ -32,6 +32,7 @@
 #include "Usul/File/Path.h"
 #include "Usul/File/Stats.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Jobs/Manager.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Strings/Qt.h"
@@ -44,6 +45,7 @@
 #include "XmlTree/Document.h"
 
 #include "QtCore/QFileSystemWatcher"
+#include "QtCore/QTimer"
 #include "QtGui/QApplication"
 #include "QtGui/QDockWidget"
 #include "QtGui/QImageReader"
@@ -79,7 +81,6 @@ MainWindow::MainWindow ( const std::string &vendor,
   _settings    ( QSettings::IniFormat, QSettings::UserScope, vendor.c_str(), program.c_str() ),
   _actions     (),
   _toolBars    (),
-  _threadPool  ( 0x0 ),
   _refCount    ( 0 ),
   _pluginFiles (),
   _vendor      ( vendor ),
@@ -90,7 +91,8 @@ MainWindow::MainWindow ( const std::string &vendor,
   _workSpace   ( 0x0 ),
   _textWindow  ( 0x0, 0 ),
   _dockMenu    ( 0x0 ),
-  _fileWatcher ( new QFileSystemWatcher, output )
+  _fileWatcher ( new QFileSystemWatcher, output ),
+  _idleTimer   ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -138,8 +140,10 @@ MainWindow::MainWindow ( const std::string &vendor,
   // Set the title.
   this->setWindowTitle ( program.c_str() );
 
-  // Start the thread pool.
-  _threadPool = new ThreadPool;
+  // Start the idle timer.
+  _idleTimer = new QTimer ( this );
+  QObject::connect ( _idleTimer, SIGNAL ( timeout() ), SLOT ( _idleProcess() ) );
+  _idleTimer->start ( 1000 ); // Once every second.
 }
 
 
@@ -168,12 +172,25 @@ void MainWindow::_destroy()
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2933090027" );
 
-  // Wait here until all threads in the pool are done.
-  _threadPool->wait();
-  _threadPool = 0x0;
+  // Stop the idle timer.
+  if ( 0x0 != _idleTimer )
+    _idleTimer->stop();
+
+  // Wait here until all jobs are done.
+  std::cout << "Waiting for all jobs to finish..." << std::endl;
+  Usul::Jobs::Manager::instance().purge();
+  Usul::Jobs::Manager::instance().cancel();
+  Usul::Jobs::Manager::instance().wait();
+  Usul::Jobs::Manager::destroy();
+  std::cout << "All jobs have finished" << std::endl;
 
   // Wait here until all threads are done.
+  std::cout << "Waiting for all threads to finish..." << std::endl;
+  Usul::Threads::Manager::instance().purge();
+  Usul::Threads::Manager::instance().cancel();
   Usul::Threads::Manager::instance().wait();
+  Usul::Threads::Manager::destroy();
+  std::cout << "All threads have finished" << std::endl;
 
   // This will delete the actions and set their callers to null.
   _actions.clear();
@@ -193,6 +210,7 @@ void MainWindow::_destroy()
   _dockMenu = 0x0;
   delete _fileWatcher.first; _fileWatcher.first = 0x0;
   _fileWatcher.second.clear();
+  _idleTimer = 0x0;
 
   // Delete the mutex last.
   delete _mutex; _mutex = 0x0;
@@ -439,8 +457,6 @@ Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
   {
   case Usul::Interfaces::ILoadFileDialog::IID:
     return static_cast<Usul::Interfaces::ILoadFileDialog*>(this);
-  case Usul::Interfaces::IThreadPoolAddTask::IID:
-    return static_cast<Usul::Interfaces::IThreadPoolAddTask*>(this);
   case Usul::Interfaces::IUnknown::IID:
     return static_cast<Usul::Interfaces::IUnknown*>(static_cast<Usul::Interfaces::ILoadFileDialog*>(this));
   default:
@@ -842,17 +858,14 @@ void MainWindow::_updateTextWindow ( QString text )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add a task.
+//  Called by the idle timer.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MainWindow::TaskHandle MainWindow::addTask ( Usul::Threads::Callback *started, 
-                                             Usul::Threads::Callback *finished, 
-                                             Usul::Threads::Callback *cancelled, 
-                                             Usul::Threads::Callback *error, 
-                                             Usul::Threads::Callback *destroyed )
+void MainWindow::_idleProcess()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return ( ( true == _threadPool.valid() ) ? _threadPool->addTask ( started, finished, cancelled, error, destroyed ) : 0 );
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Jobs::Manager::instance()),    &Usul::Jobs::Manager::purge    ) );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Threads::Manager::instance()), &Usul::Threads::Manager::purge ) );
 }

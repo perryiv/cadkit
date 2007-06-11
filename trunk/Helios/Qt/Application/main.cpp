@@ -34,7 +34,6 @@
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Named.h"
-#include "Usul/Threads/Manager.h"
 #include "Usul/Trace/Print.h"
 
 #include <fstream>
@@ -63,7 +62,7 @@ namespace Program
     // Release all plugins.
     Usul::Components::Manager::instance().clear ( &std::cout );
 
-    // Unset the mutex factory.
+    // Unset the mutex factory to null so that we can find late uses of it.
     Usul::Threads::Mutex::createFunction ( 0x0 );
 
     // Destroy the thread manager.

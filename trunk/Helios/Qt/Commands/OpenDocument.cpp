@@ -17,12 +17,10 @@
 #include "Helios/Qt/Commands/OpenDocument.h"
 #include "Helios/Qt/Core/Constants.h"
 
-#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/CommandLine/Arguments.h"
-#include "Usul/Functions/SafeCall.h"
+#include "Usul/Jobs/Manager.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Strings/Qt.h"
-#include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Trace/Trace.h"
 
@@ -64,6 +62,34 @@ OpenDocument::~OpenDocument()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Constructor for job class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OpenDocument::Job::Job ( const std::string &name, Usul::Interfaces::IUnknown *caller ) : 
+  OpenDocument::Job::BaseClass(),
+  _name   ( name ),
+  _caller ( caller )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor for job class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OpenDocument::Job::~Job()
+{
+  USUL_TRACE_SCOPE;
+  _caller = 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Execute the command. This function is re-entrant.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -81,7 +107,7 @@ void OpenDocument::_execute()
   for ( FileNames::const_iterator i = files.begin(); i != files.end(); ++i )
   {
     const std::string file ( *i );
-    Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction ( this, &OpenDocument::_open ), file, "9974193900" );
+    Usul::Jobs::Manager::instance().add ( new OpenDocument::Job ( file, this->caller() ) );
   }
 }
 
@@ -136,8 +162,6 @@ std::string OpenDocument::_lastDirectory() const
   Guard guard ( this->mutex() );
   std::string dir ( Usul::CommandLine::Arguments::instance().directory() );
   return dir;
-  //CadKit::Helios::Core::SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::FILE_DIALOG, mw->settings() );
-  //dir = mw->settings().value ( CadKit::Helios::Core::Registry::Keys::GEOMETRY.c_str(), CadKit::Helios::Core::Registry::Defaults::GEOMETRY ).value<QString>();
 }
 
 
@@ -151,8 +175,6 @@ void OpenDocument::_lastDirectory ( const std::string &dir )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  //CadKit::Helios::Core::SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::FILE_DIALOG, mw->settings() );
-  //mw->settings().setValue ( CadKit::Helios::Core::Registry::Keys::GEOMETRY.c_str(), dir );
 }
 
 
@@ -165,162 +187,19 @@ void OpenDocument::_lastDirectory ( const std::string &dir )
 std::string OpenDocument::_filters() const
 {
   USUL_TRACE_SCOPE;
-  //Guard guard ( this->mutex() ); Do you need to guard?
   std::string filters;
   return filters;
 }
-
+    
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Open the file. This function is re-entrant.
+//  Called when the job starts.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OpenDocument::_open ( const std::string &file )
+void OpenDocument::Job::_started()
 {
   USUL_TRACE_SCOPE;
-  // Do not lock the mutex. This function is re-entrant.
-
-  Usul::Interfaces::IThreadPoolAddTask::QueryPtr pool ( this->caller() );
-  if ( true == pool.valid() )
-  {
-    Usul::Threads::Callback::RefPtr started   ( Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &OpenDocument::_threadStarted   ) ) );
-    Usul::Threads::Callback::RefPtr finished  ( Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &OpenDocument::_threadFinished  ) ) );
-    Usul::Threads::Callback::RefPtr error     ( Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &OpenDocument::_threadError     ) ) );
-    Usul::Threads::Callback::RefPtr cancelled ( Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &OpenDocument::_threadCancelled ) ) );
-    OpenDocument::TaskHandle task ( pool->addTask ( started.get(), finished.get(), cancelled.get(), error.get(), 0x0 ) );
-
-    //HERE
-    // Need to add user-data to the task. 
-    // The user-data is an instance of a "task" class that opens the files.
-    // Make a new task for each file.
-    // When the pool's task finishes it deletes its user-data... the task class.
-
-    // Save the file with the task.
-    this->_addTaskedFile ( task, file );
-
-    // Reference this instance for each task.
-    this->ref();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called when the thread starts.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OpenDocument::_threadStarted ( Usul::Threads::Thread *thread )
-{
-  USUL_TRACE_SCOPE;
-  const std::string file ( this->_getTaskedFile ( thread ) );
-
-  std::cout << Usul::Strings::format ( "Opening file: ", file ) << std::endl;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called when the thread finished.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OpenDocument::_threadFinished ( Usul::Threads::Thread *thread )
-{
-  USUL_TRACE_SCOPE;
-  this->_removeTaskedFile ( thread );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called if the thread fails.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OpenDocument::_threadError ( Usul::Threads::Thread *thread )
-{
-  USUL_TRACE_SCOPE;
-  this->_removeTaskedFile ( thread );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called if the thread fails.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OpenDocument::_threadCancelled ( Usul::Threads::Thread *thread )
-{
-  USUL_TRACE_SCOPE;
-  this->_removeTaskedFile ( thread );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add the file to the map.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OpenDocument::_addTaskedFile ( TaskHandle task, const std::string &file )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  _taskedFiles[task] = file;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove the file from the map.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OpenDocument::_removeTaskedFile ( Usul::Threads::Thread *thread )
-{
-  USUL_TRACE_SCOPE;
-#if 0
-  bool found ( false );
-  if ( 0x0 != thread && true == thread->isTask() )
-  {
-    Guard guard ( this->mutex() );
-    TaskedFiles::iterator i ( _taskedFiles.find ( thread->task() ) );
-    if ( _taskedFiles.end() != i )
-    {
-      _taskedFiles.erase ( i );
-      found = true;
-    }
-  }
-
-  // Have to do this after the guard goes out of scope.
-  if ( true == found )
-  {
-    this->unref();
-  }
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the file from the map.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string OpenDocument::_getTaskedFile ( Usul::Threads::Thread *thread )
-{
-  USUL_TRACE_SCOPE;
-#if 0
-  if ( 0x0 != thread && true == thread->isTask() )
-  {
-    Guard guard ( this->mutex() );
-    TaskedFiles::const_iterator i ( _taskedFiles.find ( thread->task() ) );
-    return ( ( _taskedFiles.end() == i ) ? std::string ( "" ) : i->second );
-  }
-#endif
-  return std::string ( "" );
+  std::cout << Usul::Strings::format ( "Opening file: ", _name, ", thread = ", this->thread()->id() ) << std::endl;
 }

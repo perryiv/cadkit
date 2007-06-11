@@ -16,8 +16,9 @@
 #include "Usul/Pointers/Pointers.h"
 
 #include "osg/ref_ptr"
-#include "osg/Group"
 #include "osg/ClipNode"
+#include "osg/Group"
+#include "osg/Light"
 #include "osg/Projection"
 #include "osgText/Text"
 

@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2007, Arizona State University
@@ -7,9 +8,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef COMPASS_H
-#define COMPASS_H
+#ifndef _OSG_TOOLS_BUILDERS_COMPASS_H_
+#define _OSG_TOOLS_BUILDERS_COMPASS_H_
 
+#include "OsgTools/Export.h"
 
 #include <osg/Geode>
 #include <osg/Texture2D>
@@ -18,14 +20,14 @@
 #include <osg/MatrixTransform>
 #include <osg/Geometry>
 #include <osgDB/ReadFile>
-#include "OsgTools/Export.h"
 
 #if _MSC_VER
   #include <osgViewer/Viewer>
 #endif
 
 namespace OsgTools {
-	namespace Builders {
+namespace Builders {
+
 
 class OSG_TOOLS_EXPORT Compass : public osg::Referenced
 {
@@ -64,6 +66,7 @@ public:
 	void updateCompass ( );
 
 protected:
+
 	osg::Node* _buildCompassObject ( );
 	osg::MatrixTransform*  _initCompass ( osg::Node* geode );
 	
@@ -87,9 +90,11 @@ private:
 	float _animationStart, _animationEnd, _animationStep;
 	
 	float _heading, _pitch;	
+};
 
-}; //Compass
 
-} //Namespace Builders
-} //Namespace OsgTools
-#endif
+} // Namespace Builders
+} // Namespace OsgTools
+
+
+#endif // _OSG_TOOLS_BUILDERS_COMPASS_H_

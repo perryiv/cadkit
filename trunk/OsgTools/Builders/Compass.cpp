@@ -7,11 +7,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Compass.h"
-
-#include "osgUtil/CullVisitor"
+#include "OsgTools/Builders/Compass.h"
 
 #include "Usul/CommandLine/Arguments.h"
+
+#include "osgUtil/CullVisitor"
 
 using namespace OsgTools::Builders;
 

@@ -45,7 +45,7 @@ public:
   void                  look      ( const osg::Vec3f& point0, const osg::Vec3f& point1 );
 
   // Set the planet.
-  void                 planet( ossimPlanet * planet );
+  void                  planet( ossimPlanet * planet );
  
   /// Get/Set rotate speed.
   void                  rotateSpeed ( double speed ) { _rotateSpeed = speed; }

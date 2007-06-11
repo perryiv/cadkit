@@ -21,7 +21,7 @@ bool CompassEventHandler::handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActi
 		case(osgGA::GUIEventAdapter::KEYDOWN):
 		{
 
-			_compass->keyChange(ea.getKey(),1);
+			//_compass->keyChange(ea.getKey(),1);
 			
 			return false;
 		}

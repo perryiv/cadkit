@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgGAd.lib ossimd.lib ossimPlanetd.lib osgEphemerisd.lib libwmsd.lib osgUtild.lib OpenThreadsd.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgGAd.lib ossimd.lib ossimPlanetd.lib libwmsd.lib osgUtild.lib OpenThreadsd.lib"
 				OutputFile="$(LOCAL_SRC_DIR)/bin/Magrathead.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(CADKIT_ROOT_DIR)/bin;$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR);$(OSG_EPHEMERIS_LIB_DIR);$(WMS_LIB_DIR)"
@@ -143,7 +143,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib ossim.lib ossimPlanet.lib osgEphemeris.lib libwms.lib osgUtil.lib OpenThreads.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib ossim.lib ossimPlanet.lib libwms.lib osgUtil.lib OpenThreads.lib"
 				OutputFile="$(LOCAL_SRC_DIR)/bin/.Magrathea.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(CADKIT_ROOT_DIR)/bin;$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR);$(OSG_EPHEMERIS_LIB_DIR);$(WMS_LIB_DIR)"

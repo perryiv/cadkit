@@ -374,6 +374,8 @@ protected:
   void                          _vTransGlobalNegZ ( MenuKit::Message m, MenuKit::Item *item );
   void                          _hRotWandPosY     ( MenuKit::Message m, MenuKit::Item *item );
   void                          _hRotGlobalPosY   ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _vRotWandPosX     ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _vRotGlobalPosX   ( MenuKit::Message m, MenuKit::Item *item );
   void                          _vScaleWorld      ( MenuKit::Message m, MenuKit::Item *item );
   void                          _vScaleSelected   ( MenuKit::Message m, MenuKit::Item *item );
   void                          _wMoveSelLocal    ( MenuKit::Message m, MenuKit::Item *item );

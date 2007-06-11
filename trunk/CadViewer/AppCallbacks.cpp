@@ -646,6 +646,62 @@ void Application::_hRotGlobalPosY ( MenuKit::Message m, MenuKit::Item *item )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Make horizontal joystick input rotate about the wand's y-axis.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_vRotWandPosX ( MenuKit::Message m, MenuKit::Item *item )
+{
+  ErrorChecker ( 3306102879u, isAppThread(), CV::NOT_APP_THREAD );
+
+  // To shorten the lines.
+  typedef CV::Functors::JoystickHorizontal Analog;
+  typedef CV::Functors::WandRotation Mat;
+  typedef CV::Functors::Rotate Nav;
+
+  // The id for this navigator.
+  const unsigned int id ( 3106060360u );
+  float speed ( _prefs->rotationSpeed() );
+  CV::Functors::Direction::Vector dir ( 1, 0, 0 );
+  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
+
+  if ( MenuKit::MESSAGE_SELECTED == m )
+  {
+    this->_setCursor ( OsgTools::Axes::ROTATE_X );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make horizontal joystick input rotate about the global y-axis.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_vRotGlobalPosX ( MenuKit::Message m, MenuKit::Item *item )
+{
+  ErrorChecker ( 3834691556u, isAppThread(), CV::NOT_APP_THREAD );
+
+  // To shorten the lines.
+  typedef CV::Functors::JoystickHorizontal Analog;
+  typedef CV::Functors::IdentityMatrix Mat;
+  typedef CV::Functors::Rotate Nav;
+
+  // The id for this navigator.
+  const unsigned int id ( 2513007202u );
+  float speed ( _prefs->rotationSpeed() );
+  CV::Functors::Direction::Vector dir ( 1, 0, 0 );
+  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
+
+  if ( MenuKit::MESSAGE_SELECTED == m )
+  {
+    this->_setCursor ( OsgTools::Axes::ROTATE_X );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Make vertical joystick input translate along the global y-axis.
 //
 ///////////////////////////////////////////////////////////////////////////////

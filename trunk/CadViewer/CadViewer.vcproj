@@ -522,10 +522,6 @@
 					>
 				</File>
 				<File
-					RelativePath="Interfaces\IPostModelLoad.h"
-					>
-				</File>
-				<File
 					RelativePath="Interfaces\IRotationCenter.h"
 					>
 				</File>

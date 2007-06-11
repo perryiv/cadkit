@@ -1007,6 +1007,7 @@ bool Application::_handleMenuEvent()
   if ( COMMAND_MENU_TOGGLE == _buttons->released() )
   {
     _menu->toggleVisible();
+    _statusBar->toggleVisible();
     return true;
   }
 

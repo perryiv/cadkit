@@ -21,8 +21,6 @@
 #include "SceneFunctors.h"
 #include "ScenePredicates.h"
 
-#include "CadViewer/Interfaces/IPostModelLoad.h"
-
 #include "CadViewer/Functors/WandMatrix.h"
 #include "CadViewer/Functors/WandRotation.h"
 #include "CadViewer/Functors/ToolPair.h"
@@ -212,7 +210,6 @@ Application::Application ( Args &args ) :
   _parser         ( new Parser ( args.begin(), args.end() ) ),
   _root           ( new osg::Group ),
   _navBranch      ( new osg::MatrixTransform ),
-  _models         ( new osg::MatrixTransform ),
   _gridBranch     ( new osg::MatrixTransform ),
   _cursor         ( new osg::MatrixTransform ),
   _menuBranch     ( new osg::MatrixTransform ),
@@ -241,7 +238,6 @@ Application::Application ( Args &args ) :
   _iVisibility    ( static_cast < CV::Interfaces::IVisibility* >    ( 0x0 ) ),
   _iSelection     ( static_cast < CV::Interfaces::ISelection* >     ( 0x0 ) ),
   _iMaterialStack ( static_cast < CV::Interfaces::IMaterialStack* > ( 0x0 ) ),
-  _clipDist       ( 0, 0 ),
   _menu           ( new MenuKit::OSG::Menu() ),
   _statusBar      ( new MenuKit::OSG::Menu() ),
   _buttonMap      (),
@@ -255,7 +251,6 @@ Application::Application ( Args &args ) :
   ErrorChecker ( 1074058928u, 0x0 != _parser.get() );
   ErrorChecker ( 1067094626u, _root.valid() );
   ErrorChecker ( 1067222084u, _navBranch.valid() );
-  ErrorChecker ( 1067094627u, _models.valid() );
   ErrorChecker ( 1067094628u, _gridBranch.valid() );
   ErrorChecker ( 1067094631u, _cursor.valid() );
   ErrorChecker ( 1325879383u, _menuBranch.valid() );
@@ -282,13 +277,12 @@ Application::Application ( Args &args ) :
   _root->addChild      ( _auxiliary.get()    );
   _root->addChild      ( _textBranch.get()   );
   _root->addChild      ( _navBranch.get()    );
-  _navBranch->addChild ( _models.get()       );
+  _navBranch->addChild ( this->models()      );
   _navBranch->addChild ( _gridBranch.get()   );
 
   // Name the branches.
   _root->setName         ( "_root"         );
   _navBranch->setName    ( "_navBranch"    );
-  _models->setName       ( "_models"       );
   _gridBranch->setName   ( "_gridBranch"   );
   _cursor->setName       ( "_cursor"       );
   _menuBranch->setName   ( "_menuBranch"   );
@@ -407,7 +401,6 @@ void Application::_init()
   ErrorChecker ( 1067096939, 0 == _appThread );
   ErrorChecker ( 1074061336, !isMainThread() );
   ErrorChecker ( 1067093507, _root.valid() );
-  ErrorChecker ( 1067093508, _models.valid() );
 
   // Initialize the application thread.
   _appThread = Usul::Threads::currentThreadId();
@@ -440,11 +433,11 @@ void Application::_init()
   this->_parseCommandLine();
 
   // Move the model-group so that the models are centered and visible.
-  this->viewAll ( _models.get(), _prefs->viewAllScaleZ() );
+  //this->viewAll ( this->models(), _prefs->viewAllScaleZ() );
 
   // Now that the models are centered, draw a grid in proportion to the size 
   // of the models.
-  this->_initGrid ( _models.get() );
+  this->_initGrid ( this->models() );
 
   // Save the "home" position.
   this->_setHome();
@@ -761,8 +754,8 @@ void Application::_initMenu()
     _menu->menu ( menu->getMenu() );
 
   // Default settings, so that the menu has the correct toggle's checked.
-  OsgTools::State::StateSet::setPolygonsFilled ( _models.get(), false );
-  OsgTools::State::StateSet::setPolygonsSmooth ( _models.get() );
+  OsgTools::State::StateSet::setPolygonsFilled ( this->models(), false );
+  OsgTools::State::StateSet::setPolygonsSmooth ( this->models() );
 }
 
 
@@ -1512,25 +1505,6 @@ void Application::_setCursorMatrixFunctor ( CV::Functors::MatrixFunctor *f )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Load the model.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_loadModelFile ( const std::string &filename )
-{
-  ErrorChecker ( 1067093696u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Need an identity matrix.
-  Matrix44f matrix;
-  matrix.identity();
-
-  // Append the request.
-  this->requestRead ( filename, matrix );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Load the restart file.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1571,8 +1545,10 @@ void Application::requestRead ( const std::string &filename, const Matrix44f &ma
 
   try
   {
+    // Is this function ever called?
+    USUL_ASSERT ( false );
     // Read the model.
-    this->_readModel ( filename, matrix );
+    //this->_readModel ( filename, matrix );
   }
 
   catch ( const std::exception &e )
@@ -1591,63 +1567,6 @@ void Application::requestRead ( const std::string &filename, const Matrix44f &ma
         << "\n\tFile: " << filename;
     this->_update ( *_msgText, out.str() );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Read the model and position it using the matrix.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_readModel ( const std::string &filename, const Matrix44f &matrix )
-{
-  ErrorChecker ( 1901000691u, isAppThread(), CV::NOT_APP_THREAD );
-  ErrorChecker ( 1067093697u, _models.valid() );
-
-  // User feedback.
-  this->_update ( *_msgText, "Reading file: " + filename );
-
-  // Read the model.
-  osg::ref_ptr< osg::Node > node ( osgDB::readNodeFile ( filename ) );
-  
-  // User feedback.
-  this->_update ( *_msgText, "Done reading: " + filename );
-
-  if( false == node.get() )
-    return;
-
-  // Are we supposed to set the normalize flag? We only turn it on, 
-  // not off, because we want to inherit the global state.
-  bool norm ( _prefs->normalizeVertexNormalsModels() );
-  if ( norm )
-    OsgTools::State::StateSet::setNormalize ( node.get(), norm );
-
-  // Make a matrix transform for this model.
-  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
-  mt->setName ( std::string ( "Branch for: " ) + filename );
-
-  // Set its matrix.
-  osg::Matrixf M;
-  OsgTools::Convert::matrix ( matrix, M );
-  mt->setMatrix ( M );
-
-  // Set its name to the filename, minus the pathing portion, if there is no name.
-  if ( node->getName().empty() )
-  {
-    unsigned int loc = filename.find_last_of ( "/\\" );
-    std::string name = filename.substr ( loc + 1 );
-    node->setName ( name );
-  }
-  
-  // Hook things up.
-  mt->addChild ( node.get() );
-
-  // Hook things up.
-  _models->addChild ( mt.get() );
-
-  // Do any post-processing.
-  this->_postProcessModelLoad ( filename, node.get() );
 }
 
 
@@ -2015,8 +1934,7 @@ osg::Group *Application::navigationScene()
 
 const osg::Group *Application::modelsScene() const
 {
-  ErrorChecker ( 1071420702, _models.valid() );
-  return _models.get();
+  return dynamic_cast < const osg::Group * > ( this->models() );
 }
 
 
@@ -2028,8 +1946,7 @@ const osg::Group *Application::modelsScene() const
 
 osg::Group *Application::modelsScene()
 {
-  ErrorChecker ( 1071420703, _models.valid() );
-  return _models.get();
+  return dynamic_cast < osg::Group * > ( this->models() );
 }
 
 
@@ -2249,8 +2166,6 @@ Usul::Interfaces::IUnknown *Application::queryInterface ( unsigned long iid )
     return static_cast<CV::Interfaces::IWandStateFloat *>(this);
   case CV::Interfaces::IJoystickFloat::IID:
     return static_cast<CV::Interfaces::IJoystickFloat *>(this);
-  case CV::Interfaces::IClippingDistanceFloat::IID:
-    return static_cast<CV::Interfaces::IClippingDistanceFloat *>(this);
   case VRV::Interfaces::IRequestRead::IID:
     return static_cast<VRV::Interfaces::IRequestRead *>(this);
   case VRV::Interfaces::IButtonCallback::IID:
@@ -2266,43 +2181,7 @@ Usul::Interfaces::IUnknown *Application::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IUnknown::IID:
     return static_cast<Usul::Interfaces::IUnknown *>(static_cast<CV::Interfaces::IApplication *>(this));
   default:
-    return 0x0;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Post-process the model loading.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_postProcessModelLoad ( const std::string &filename, osg::Node *model )
-{
-  ErrorChecker ( 1075424504, isAppThread(), CV::NOT_APP_THREAD );
-  ErrorChecker ( 1075424505, false == filename.empty() );
-  ErrorChecker ( 1075424506, 0x0   != model );
-  ErrorChecker ( 1075424507, model->referenceCount() > 0 ); // Should be in scene.
-
-  // To shorten the lines.
-  typedef Usul::Components::Manager Manager;
-  typedef Manager::UnknownSet UnknownSet;
-  typedef CV::Interfaces::IPostModelLoad PostProcess;
-
-  // See if we have any appropriate plugins.
-  UnknownSet unknowns ( Manager::instance().getInterfaces ( PostProcess::IID ) );
-
-  // Loop through the found plugins.
-  for ( UnknownSet::iterator i = unknowns.begin(); i != unknowns.end(); ++i )
-  {
-    // Grab the pointer.
-    Usul::Interfaces::IUnknown::ValidRefPtr u ( *i );
-
-    // Query for the one we need. This should always work.
-    PostProcess::ValidQueryPtr pp ( u.get() );
-
-    // Call the function.
-    pp->postProcessModelLoad ( filename, model );
+    return BaseClass::queryInterface ( iid );
   }
 }
 
@@ -2316,68 +2195,6 @@ void Application::_postProcessModelLoad ( const std::string &filename, osg::Node
 Usul::Interfaces::IUnknown *Application::_thisUnknown()
 {
   return this->queryInterface ( Usul::Interfaces::IUnknown::IID );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the near and far clipping planes based on the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_setNearAndFarClippingPlanes()
-{
-  ErrorChecker ( 2381597435u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Get the bounding sphere.
-  const osg::BoundingSphere &sphere = _root->getBound();
-  float radius = sphere.radius();
-
-  // Handle zero-sized bounding spheres.
-  if ( radius <= 1e-6 )
-    radius = 1;
-
-  // Set both distances.
-  _clipDist[0] = 0.1f;
-  _clipDist[1] = 5 * radius;
-
-  // Don't allow a far plane less that 40; it's just too small
-  if ( _clipDist[1] < 40 )
-  {
-    _clipDist[1] = 40.0f;
-  }
-  
-  // Set the clipping planes
-  vrj::Projection::setNearFar ( _clipDist[0], _clipDist[1] );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the clipping planes
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::getClippingDistances ( float &nearDist, float &farDist ) const
-{
-  ErrorChecker ( 1348789405u, isAppThread(), CV::NOT_APP_THREAD );
-  nearDist = _clipDist[0];
-  farDist  = _clipDist[1];
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the clipping planes.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::setClippingDistances ( float nearDist, float farDist )
-{
-  ErrorChecker ( 3211238302u, isAppThread(), CV::NOT_APP_THREAD );
-  _clipDist[0] = nearDist;
-  _clipDist[1] = farDist;
-  vrj::Projection::setNearFar ( nearDist, farDist );
 }
 
 
@@ -2551,7 +2368,7 @@ void Application::_selected ( CV::Functors::Tool::Transforms &vt )
   Visitor::Ptr visitor ( new Visitor ( ifThen ) );
 
   // Traverse the models-scene and append selected nodes.
-  _models->accept ( *visitor );
+  this->models()->accept ( *visitor );
 
   // Set the given vector.
   Append &append = visitor->op().then();

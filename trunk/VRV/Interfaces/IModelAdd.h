@@ -21,6 +21,7 @@
 
 #include <string>
 
+namespace osg { class Node; }
 
 namespace VRV {
 namespace Interfaces {
@@ -29,7 +30,6 @@ namespace Interfaces {
 struct IModelAdd : public Usul::Interfaces::IUnknown
 {
   typedef Usul::Interfaces::IUnknown Unknown;
-  typedef Usul::Math::Matrix44f Matrix;
 
   // Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( IModelAdd );
@@ -38,12 +38,12 @@ struct IModelAdd : public Usul::Interfaces::IUnknown
   enum { IID = 3922695617u };
 
   // Add the new model.
-  virtual void addModel ( Unknown *model, const Matrix &m, const std::string &filename ) = 0;
+  virtual void addModel ( osg::Node *model, const std::string& filename ) = 0;
 };
 
 
-}; // namespace Interfaces
-}; // namespace VRV
+} // namespace Interfaces
+} // namespace VRV
 
 
 #endif // _VIRTUAL_REALITY_VIEWER_INTERFACE_MODEL_ADD_H_

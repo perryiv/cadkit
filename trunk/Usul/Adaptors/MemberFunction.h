@@ -62,6 +62,12 @@ struct MemberFunction
     ((*_o).*_f) ( arg1, arg2 );
   }
 
+  template < class Arg1, class Arg2, class Arg3 >
+  void operator () ( const Arg1 &arg1, Arg2 arg2, Arg3 arg3 )
+  {
+    ((*_o).*_f) ( arg1, arg2, arg3 );
+  }
+
 private:
 
   ObjectType _o;

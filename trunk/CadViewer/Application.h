@@ -29,7 +29,6 @@
 #include "CadViewer/Interfaces/IMatrixMultiply.h"
 #include "CadViewer/Interfaces/IWandState.h"
 #include "CadViewer/Interfaces/IJoystick.h"
-#include "CadViewer/Interfaces/IClippingDistance.h"
 #include "CadViewer/Functors/MatrixFunctor.h"
 #include "CadViewer/Functors/Tool.h"
 #include "CadViewer/Pick/Intersect.h"
@@ -70,7 +69,6 @@ class Application : public VRV::Core::Application,
                     public CV::Interfaces::IMatrixMultiplyFloat,
                     public CV::Interfaces::IWandStateFloat,
                     public CV::Interfaces::IJoystickFloat,
-                    public CV::Interfaces::IClippingDistanceFloat,
                     public VRV::Interfaces::IRequestRead,
                     public VRV::Interfaces::IButtonCallback,
                     public VRV::Interfaces::IMenuCallback
@@ -180,15 +178,6 @@ public:
   virtual float                 joystickHorizontal() const;
   virtual float                 joystickVertical()   const;
 
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  CV::Interfaces::IClippingDistanceFloat
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  /// Get/set the clipping distances.
-  virtual void                  getClippingDistances ( float &nearDist, float &farDist ) const;
-  virtual void                  setClippingDistances ( float nearDist, float farDist );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -294,10 +283,6 @@ protected:
   // Intersect if we are supposed to.
   void                          _intersect();
 
-  // Load the file(s).
-  void                          _loadModelFile   ( const std::string &filename );
-  void                          _loadRestartFile ( const std::string &filename );
-
   // Navigate if we are supposed to.
   void                          _navigate();
 
@@ -307,8 +292,8 @@ protected:
   // Parse the command-line arguments.
   void                          _parseCommandLine();
 
-  // Post-process the model loading.
-  void                          _postProcessModelLoad ( const std::string &filename, osg::Node *model );
+  // Load the file(s).
+  void                          _loadRestartFile ( const std::string &filename );
 
   // Called by the kernel before the frame.
   virtual void                  latePreFrame();
@@ -323,9 +308,6 @@ protected:
   // Called by the kernel after the frame.
   virtual void                  postFrame();
   void                          _postFrame();
-  
-  // Read the model and position it using the matrix.
-  void                          _readModel ( const std::string &filename, const Matrix44f &matrix );
 
   // Read the user's preferences.
   void                          _readUserPreferences();
@@ -346,9 +328,6 @@ protected:
 
   // Set the current "camera" position as "home".
   void                          _setHome();
-
-  // Set the near and far clipping planes based on the scene.
-  void                          _setNearAndFarClippingPlanes();
 
   // Return an unknown pointer to this instance.
   Unknown *                     _thisUnknown();
@@ -459,7 +438,6 @@ protected:
   ParserPtr         _parser;
   GroupPtr          _root;
   MatTransPtr       _navBranch;
-  MatTransPtr       _models;
   MatTransPtr       _gridBranch;
   MatTransPtr       _cursor;
   MatTransPtr       _menuBranch;
@@ -488,7 +466,6 @@ protected:
   IVisibilityPtr    _iVisibility;
   ISelectionPtr     _iSelection;
   IMaterialStackPtr _iMaterialStack;
-  osg::Vec2         _clipDist;
   MenuPtr           _menu;
   MenuPtr           _statusBar;
   ButtonMap         _buttonMap;

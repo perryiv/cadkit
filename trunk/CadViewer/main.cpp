@@ -15,12 +15,17 @@
 # include "Signals.h"
 #endif
 
+#include "Threads/OpenThreads/Mutex.h"
+#include "Threads/OpenThreads/Thread.h"
+
+#include "Usul/CommandLine/Arguments.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Components/Loader.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Console/Feedback.h"
-
-#include "Threads/OpenThreads/Mutex.h"
+#include "Usul/Jobs/Manager.h"
+#include "Usul/Threads/Manager.h"
+#include "Usul/Trace/Trace.h"
 
 #include "VRV/Core/Exceptions.h"
 
@@ -49,14 +54,12 @@ Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
 
 void runApplication ( int argc, char **argv )
 {
-#if 0
-  // Check arguments.
-  if ( argc < 2 )
-  {
-    CV::Application::usage ( argv[0], std::cout );
-    return;
-  }
-#endif
+  Usul::Threads::Manager::instance().factory ( &Threads::OT::newOpenThreadsThread );
+
+  std::ofstream trace ( "trace.csv" );
+  Usul::Trace::Print::init ( &trace );
+  Usul::CommandLine::Arguments::instance().set ( argc, argv );
+
 	// Console Feedback.
 	Usul::Console::Feedback::RefPtr feedback ( new Usul::Console::Feedback );
 	
@@ -64,7 +67,10 @@ void runApplication ( int argc, char **argv )
   Usul::Components::Loader < XmlTree::Document > loader;
   loader.parse ( CV::Config::filename ( "registry" ) );
   loader.load ( feedback->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-  
+
+  // Use 10 threads.
+  Usul::Jobs::Manager::instance().poolResize ( 10 );
+
   // Print what we found.
   Usul::Components::Manager::instance().print ( std::cout );
 
@@ -77,7 +83,25 @@ void runApplication ( int argc, char **argv )
 
   // Run the application.
   app.run();
+
+  // The job manager has a thread-pool.
+  Usul::Jobs::Manager::destroy();
+
+  // There should not be any threads running.
+  Usul::Threads::Manager::instance().wait();
+
+  // Set the mutex factory to null so that we can find late uses of it.
+  Usul::Threads::Mutex::createFunction ( 0x0 );
+
+  // Clean up the thread manager.
+  Usul::Threads::Manager::destroy();
+
+  // Release all libraries that loaded during component creation. 
+  // Note: We should be able to safely do this now that all components 
+  // should have been destroyed.
+  Usul::Components::Manager::instance().clear( &std::cout );
 }
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -101,11 +125,6 @@ int main ( int argc, char **argv )
 
     // Isolate application run inside this function.
     ::runApplication ( argc, argv );
-
-    // Release all libraries that loaded during component creation. 
-    // Note: We should be able to safely do this now that all components 
-    // should have been destroyed.
-    Usul::Components::Manager::instance().clear( &std::cout );
 
     // Success.
     result = 0;

@@ -13,6 +13,11 @@
 
 #include "VRV/Core/Export.h"
 #include "VRV/Core/SharedDouble.h"
+#include "VRV/Interfaces/IModelAdd.h"
+#include "VRV/Interfaces/IClippingDistance.h"
+
+#include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Threads/Guard.h"
 
 #include "OsgTools/Render/Renderer.h"
 #include "OsgTools/Render/SceneManager.h"
@@ -48,14 +53,20 @@ namespace VRV {
 namespace Core {
 
 
-class VRV_EXPORT Application : public vrj::GlApp
+class VRV_EXPORT Application : public vrj::GlApp,
+                               public VRV::Interfaces::IModelAdd,
+                               public VRV::Interfaces::IClippingDistanceFloat
 {
 public:
   // Typedefs.
-  typedef vrj::GlApp                  BaseClass;
-  typedef OsgTools::Render::Renderer  Renderer;
-  typedef Renderer::RefPtr            RendererPtr;
-  typedef VRV::Core::SharedDouble     SharedDouble;
+  typedef vrj::GlApp                       BaseClass;
+  typedef OsgTools::Render::Renderer       Renderer;
+  typedef Renderer::RefPtr                 RendererPtr;
+  typedef VRV::Core::SharedDouble          SharedDouble;
+  typedef Usul::Threads::RecursiveMutex    Mutex;
+  typedef Usul::Threads::Guard<Mutex>      Guard;
+
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   // Constructors.
   Application();
@@ -65,7 +76,7 @@ public:
   virtual ~Application();
 
   virtual void            init();
-  virtual void            viewAll ( osg::MatrixTransform *mt, osg::Matrix::value_type zScale=2 );
+  virtual void            viewAll ( osg::Node *mt, osg::Matrix::value_type zScale=2 );
 
   /// Add a light.
   void                    addLight ( osg::Light* light );
@@ -91,6 +102,13 @@ public:
   void                    quit();
   void                    run();
 
+  /// Get the models node.
+  osg::MatrixTransform*              models();
+  const osg::MatrixTransform*        models() const;
+
+  /// Get the mutex.
+  Mutex&                  mutex() const { return _mutex; }
+
   /// Get/Set the viewport.
   osg::Viewport*          viewport()       { return _viewport.get(); }
   const osg::Viewport*    viewport() const { return _viewport.get(); }
@@ -104,10 +122,6 @@ protected:
   virtual void            latePreFrame();
   virtual void            postFrame();
   virtual void            draw();
-
-  // Ref/Unref functions.  Keep track for debugging.
-  void                    ref();
-  void                    unref ( bool );
 
   /// Set the viewport.
   virtual void            _setViewport ( osg::Viewport*, vrj::GlDrawManager* );
@@ -126,12 +140,33 @@ protected:
   void                    _loadSimConfigs  ( const std::string& dir );
   void                    _loadSimConfigs();
 
+  // Load the file(s).
+  void                    _loadModelFile   ( const std::string &filename );
+
+  // Set the near and far clipping planes based on the scene.
+  void                    _setNearAndFarClippingPlanes();
+
+  /// VRV::Interfaces::IClippingDistanceFloat
+  /// Get/set the clipping distances.
+  virtual void            getClippingDistances ( float &nearDist, float &farDist ) const;
+  virtual void            setClippingDistances ( float nearDist, float farDist );
+
+  /// VRV::Interfaces::IModelAdd
+  virtual void            addModel ( osg::Node *model, const std::string& filename );
+
   /// No copying.
   Application ( const Application& );
   Application& operator = (const Application&);
 
 private:
+  // Typedefs.
+  typedef osg::ref_ptr<osg::MatrixTransform>            MatTransPtr;
+
   // Data members.
+  mutable Mutex                      _mutex;
+
+  MatTransPtr                        _models;
+
   osg::Timer                         _timer;
   osg::ref_ptr< osg::FrameStamp >    _framestamp;
   osg::ref_ptr< osg::Viewport >      _viewport;
@@ -147,6 +182,8 @@ private:
 
   vrj::GlContextData< RendererPtr >  _renderer;
   OsgTools::Render::SceneManager::RefPtr _sceneManager;
+
+  osg::Vec2                              _clipDist;
 
   unsigned int _refCount;
 };

@@ -238,14 +238,6 @@
 					>
 				</File>
 				<File
-					RelativePath="Exceptions.h"
-					>
-				</File>
-				<File
-					RelativePath="JugglerFunctors.h"
-					>
-				</File>
-				<File
 					RelativePath="main.cpp"
 					>
 				</File>
@@ -503,10 +495,6 @@
 				</File>
 				<File
 					RelativePath="Interfaces\IAuxiliaryScene.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IClippingDistance.h"
 					>
 				</File>
 				<File

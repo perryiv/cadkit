@@ -98,8 +98,8 @@ Usul::Interfaces::IUnknown *Component::queryInterface ( unsigned long iid )
 {
   switch ( iid )
   {
-  case CV::Interfaces::IPostModelLoad::IID:
-    return static_cast<CV::Interfaces::IPostModelLoad*>(this);
+  case VRV::Interfaces::IPostModelLoad::IID:
+    return static_cast<VRV::Interfaces::IPostModelLoad*>(this);
   case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IPlugin::IID:
     return static_cast < Usul::Interfaces::IPlugin* > ( this );

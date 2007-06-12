@@ -10,12 +10,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Class for sharing a double across all nodes.
+//  Class for sharing an osg::Matrix across all nodes.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __SHARED_DOUBLE_H__
-#define __SHARED_DOUBLE_H__
+#ifndef __VRV_CORE_SHARED_MATRIX_H__
+#define __VRV_CORE_SHARED_MATRIX_H__
 
 #include "VRV/Core/Export.h"
 
@@ -26,20 +26,21 @@ namespace vpr { class ObjectReader; class ObjectWriter; }
 namespace VRV {
 namespace Core {
 
-class VRV_EXPORT SharedDouble : public vpr::SerializableObject
+class VRV_EXPORT SharedMatrix : public vpr::SerializableObject
 {
 public:
   typedef vpr::SerializableObject BaseClass;
 
-  SharedDouble();
+  SharedMatrix();
 
   virtual vpr::ReturnStatus readObject ( vpr::ObjectReader *reader );
   virtual vpr::ReturnStatus writeObject ( vpr::ObjectWriter *writer );
 
-  double data;
+private:
+  osg::Matrixd _matrix;
 };
 
 }
 }
 
-#endif // __SHARED_DOUBLE_H__
+#endif // __VRV_CORE_SHARED_MATRIX_H__

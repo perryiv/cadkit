@@ -10,6 +10,9 @@
 
 #include "SharedDouble.h"
 
+#include "vpr/IO/ObjectReader.h"
+#include "vpr/IO/ObjectWriter.h"
+
 using namespace VRV::Core;
 
 

@@ -1,7 +1,7 @@
 
 PROJECT(VRV)
 
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 # Find needed libraries.
@@ -28,9 +28,9 @@ INCLUDE_DIRECTORIES(
 
 #List the Sources
 SET (SOURCES
-  ./Application.cpp
-  ./SharedDouble.cpp
-  ../Jobs/LoadModel.cpp
+  ./Core/Application.cpp
+  ./Core/SharedDouble.cpp
+  ./Jobs/LoadModel.cpp
 )
 
 # Create a Shared Library

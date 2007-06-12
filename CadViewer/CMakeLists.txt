@@ -25,7 +25,7 @@ ${CADKIT_ROOT_DIR}/CadViewer/Plugins/scene_operations
 ${CADKIT_ROOT_DIR}/CadViewer/Plugins/display_scene_stats
 ${CADKIT_ROOT_DIR}/VRV/GUI
 ${CADKIT_ROOT_DIR}/VRV/IO
-${CADKIT_ROOT_DIR}/VRV/Core
+${CADKIT_ROOT_DIR}/VRV
 )
 
 # ------------ Set Include Folders ----------------------

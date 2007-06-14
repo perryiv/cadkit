@@ -19,6 +19,8 @@
 
 #include "VRV/Core/Export.h"
 
+#include "osg/Matrixd"
+
 #include "vpr/IO/SerializableObject.h"
 
 namespace vpr { class ObjectReader; class ObjectWriter; }
@@ -32,9 +34,15 @@ public:
   typedef vpr::SerializableObject BaseClass;
 
   SharedMatrix();
+  virtual ~SharedMatrix();
 
+  /// Read/Write the object.
   virtual vpr::ReturnStatus readObject ( vpr::ObjectReader *reader );
   virtual vpr::ReturnStatus writeObject ( vpr::ObjectWriter *writer );
+
+  /// Get/Set the matrix.
+  const osg::Matrixd&       matrix() const            { return _matrix; }
+  void                      matrix( osg::Matrixd& m ) { _matrix = m ; }
 
 private:
   osg::Matrixd _matrix;

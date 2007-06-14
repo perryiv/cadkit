@@ -17,7 +17,6 @@
 #define _CV_APPLICATION_CLASS_H_
 
 #include "CadViewer/Declarations.h"
-#include "CadViewer/Interfaces/IApplication.h"
 #include "CadViewer/Interfaces/IVisibility.h"
 #include "CadViewer/Interfaces/IMaterialStack.h"
 #include "CadViewer/Interfaces/ISelection.h"
@@ -60,7 +59,6 @@ namespace CV {
 	
 // The CadViewer application
 class Application : public VRV::Core::Application,
-                    public CV::Interfaces::IApplication,
                     public CV::Interfaces::IAuxiliaryScene,
                     public CV::Interfaces::INavigationScene,
                     public CV::Interfaces::IModelsScene,

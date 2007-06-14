@@ -490,10 +490,6 @@
 				Name="Interfaces"
 				>
 				<File
-					RelativePath="Interfaces\IApplication.h"
-					>
-				</File>
-				<File
 					RelativePath="Interfaces\IAuxiliaryScene.h"
 					>
 				</File>

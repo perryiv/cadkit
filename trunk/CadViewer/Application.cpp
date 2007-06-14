@@ -2141,8 +2141,7 @@ Usul::Interfaces::IUnknown *Application::queryInterface ( unsigned long iid )
 {
   switch ( iid )
   {
-  case CV::Interfaces::IApplication::IID:
-    return static_cast<CV::Interfaces::IApplication *>(this);
+  case Usul::Interfaces::IUnknown::IID:
   case CV::Interfaces::IAuxiliaryScene::IID:
     return static_cast<CV::Interfaces::IAuxiliaryScene *>(this);
   case CV::Interfaces::INavigationScene::IID:
@@ -2171,8 +2170,6 @@ Usul::Interfaces::IUnknown *Application::queryInterface ( unsigned long iid )
     return _iSelection.get();
   case CV::Interfaces::IMaterialStack::IID:
     return _iMaterialStack.get();
-  case Usul::Interfaces::IUnknown::IID:
-    return static_cast<Usul::Interfaces::IUnknown *>(static_cast<CV::Interfaces::IApplication *>(this));
   default:
     return BaseClass::queryInterface ( iid );
   }

@@ -10,7 +10,9 @@
 
 #include "Minerva/Core/Viz/Controller.h"
 #include "Minerva/Core/Viz/Progress.h"
+#include "Minerva/Core/Viz/AddLayerJob.h"
 #include "Minerva/Core/postGIS/Geometry.h"
+#include "Minerva/Core/Serialize.h"
 
 #include "Usul/Interfaces/IPlayMovie.h"
 
@@ -19,6 +21,7 @@
 #include "Usul/File/Temp.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Jobs/Manager.h"
 
 #include "Usul/Components/Manager.h"
 #include "osg/ref_ptr"
@@ -353,12 +356,15 @@ void Controller::_processAddLayer( const std::string& drawCommandTable, int even
 
   // Always remove.  This isn't optimal, but it's more stable.
   _sceneManager->removeLayer ( layer->guid() );
-  
+
+  // Create a job to add layer to scene.
+  Usul::Jobs::Manager::instance().add ( new AddLayerJob ( _sceneManager.get(), layer, progress.get() ) );
+
   // Build the data objects.
-  layer->buildDataObjects( progress.get() );
+  //layer->buildDataObjects( progress.get() );
 
   // Add the layer to the scene manager.
-  _sceneManager->addLayer( layer );
+  //_sceneManager->addLayer( layer );
 
   // Render for progress.
   this->_updateProgress();
@@ -411,6 +417,9 @@ void Controller::_processRemoveLayer( const std::string& drawCommandTable, int e
   {
     // Remove the layer.
     _sceneManager->removeLayer( layer->guid() );
+
+    // Dirty the scene.
+    _sceneManager->dirty ( true );
   }
 }
 
@@ -439,6 +448,9 @@ void Controller::_processAnimation( const std::string& tableName, int eventID )
 
     _sceneManager->timestepType( type );
     _sceneManager->animate ( animate, accumulate, speed, timeWindow, numDays );
+
+    // Dirty the scene.
+    _sceneManager->dirty ( true );
   }
 }
 
@@ -490,6 +502,9 @@ void Controller::_processPlayMovie   ( const std::string& tableName, int eventID
 	if( movie.valid() )
 	{
 		_sceneManager->addLayer( movie.get() );
+
+		// Dirty the scene.
+		_sceneManager->dirty ( true );
 	}
     // Play movie.
     // Create osg::Group from scene manager.

@@ -15,9 +15,6 @@
 # define NOMINMAX
 #endif
 
-// Must be included first.
-#include "Minerva/Core/Serialize.h"
-
 #include "Minerva/Core/Export.h"
 
 #include "Minerva/Core/DB/Connection.h"

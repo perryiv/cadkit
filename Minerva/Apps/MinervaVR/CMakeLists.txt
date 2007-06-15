@@ -65,16 +65,12 @@ SET (SOURCES
 )
 
 
+SET ( TARGET MinervaVR )
+
 # Create an executable
 IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
-SET ( TARGET MinervaVRd )
+SET ( TARGET ${TARGET}d )
 ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
-
-
-# Create an executable
-IF (CMAKE_BUILD_TYPE STREQUAL "Release")
-SET ( TARGET MinervaVR )
-ENDIF (CMAKE_BUILD_TYPE STREQUAL "Release")
 
 ADD_EXECUTABLE( ${TARGET} ${SOURCES} )
 

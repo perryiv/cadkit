@@ -1,0 +1,79 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "Minerva/Core/Viz/AddLayerJob.h"
+
+using namespace Minerva::Core::Viz;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AddLayerJob::AddLayerJob ( Minerva::Core::Scene::SceneManager* manager, 
+			   Minerva::Core::Layers::Layer* layer,
+			   Usul::Interfaces::IUnknown *caller ) :
+  BaseClass (),
+  _layer ( layer ),
+  _manager ( manager ),
+  _caller ( caller )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AddLayerJob::~AddLayerJob()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the data objects and add the layer to the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void  AddLayerJob::_started()
+{
+  // Build the data objects.
+  _layer->buildDataObjects( _caller );
+
+  // Add the layer to the scene manager.
+  _manager->addLayer( _layer.get() );
+
+  // Dirty the scene.
+  _manager->dirty ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clean up.  
+//  The destructor may be too late since we don't know when the object is deleted.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AddLayerJob::_finished()
+{
+  // Feedback.
+  std::cout << "Done loading layer: " << _layer->name() << std::endl;
+
+  // No longer needed.  Unref.
+  _layer = 0x0;
+  _manager = 0x0;
+}
+

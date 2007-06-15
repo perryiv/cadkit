@@ -33,15 +33,16 @@ SERIALIZE_XML_DECLARE_TYPE_WRAPPER( OsgTools::Animate::Date );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PointTimeLayer::PointTimeLayer() : BaseClass(),
-_primitiveID ( 2 ),
-_size ( 5.0 ),
-_quality ( 0.8 ),
-_primitiveSizeColumn ( "" ),
-_firstDateColumn(),
-_lastDateColumn(),
-_minDate( boost::date_time::min_date_time ),
-_maxDate( boost::date_time::max_date_time )
+PointTimeLayer::PointTimeLayer() : 
+  BaseClass(),
+  _primitiveID ( 2 ),
+  _size ( 5.0 ),
+  _quality ( 0.8 ),
+  _primitiveSizeColumn ( "" ),
+  _firstDateColumn(),
+  _lastDateColumn(),
+  _minDate( boost::date_time::min_date_time ),
+  _maxDate( boost::date_time::max_date_time )
 {
   USUL_TRACE_SCOPE;
 
@@ -57,15 +58,16 @@ _maxDate( boost::date_time::max_date_time )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PointTimeLayer::PointTimeLayer ( const PointTimeLayer& layer ) : BaseClass ( layer ),
-_primitiveID ( layer._primitiveID ),
-_size ( layer._size ),
-_quality ( layer._quality ),
-_primitiveSizeColumn ( layer._primitiveSizeColumn ),
-_firstDateColumn( layer._firstDateColumn ),
-_lastDateColumn( layer._lastDateColumn ),
-_minDate( layer._minDate ),
-_maxDate( layer._maxDate )
+PointTimeLayer::PointTimeLayer ( const PointTimeLayer& layer ) : 
+  BaseClass ( layer ),
+  _primitiveID ( layer._primitiveID ),
+  _size ( layer._size ),
+  _quality ( layer._quality ),
+  _primitiveSizeColumn ( layer._primitiveSizeColumn ),
+  _firstDateColumn( layer._firstDateColumn ),
+  _lastDateColumn( layer._lastDateColumn ),
+  _minDate( layer._minDate ),
+  _maxDate( layer._maxDate )
 {
   USUL_TRACE_SCOPE;
 
@@ -172,23 +174,36 @@ float PointTimeLayer::size() const
 
 void PointTimeLayer::buildScene( osg::Group* parent )
 {
-  if ( OsgTools::Animate::DateGroup *dateGroup = dynamic_cast < OsgTools::Animate::DateGroup* > ( parent ) )
+  try
   {
-    dateGroup->updateMinMax( _minDate, _maxDate );
-
-    // Get the data objects.
-    DataObjects &dataObjects ( this->_getDataObjects() );
-
-    for ( DataObjects::iterator iter = dataObjects.begin(); iter != dataObjects.end(); ++iter )
+    if ( OsgTools::Animate::DateGroup *dateGroup = dynamic_cast < OsgTools::Animate::DateGroup* > ( parent ) )
     {
-      osg::ref_ptr< osg::Node > node ( (*iter)->buildScene() );
+      dateGroup->updateMinMax( _minDate, _maxDate );
 
-      Minerva::Core::DataObjects::PointTime *pt ( static_cast < Minerva::Core::DataObjects::PointTime* >( iter->get() ) );
+      // Get the data objects.
+      DataObjects &dataObjects ( this->_getDataObjects() );
 
-      osg::ref_ptr < OsgTools::Animate::DateCallback > cb ( new OsgTools::Animate::DateCallback ( dateGroup->settings(), pt->firstDate(), pt->lastDate() ) );
-      node->setCullCallback( cb.get() );
-      parent->addChild( node.get() );
+      for ( DataObjects::iterator iter = dataObjects.begin(); iter != dataObjects.end(); ++iter )
+      {
+	osg::ref_ptr< osg::Node > node ( (*iter)->buildScene() );
+
+	Minerva::Core::DataObjects::PointTime *pt ( static_cast < Minerva::Core::DataObjects::PointTime* >( iter->get() ) );
+
+	typedef OsgTools::Animate::DateCallback Callback;
+	osg::ref_ptr < Callback > cb ( new Callback ( dateGroup->settings(), pt->firstDate(), pt->lastDate() ) );
+	node->setCullCallback( cb.get() );
+	parent->addChild( node.get() );
+      }
     }
+  }
+  catch ( const std::exception &e )
+  {
+    std::cerr << "Standard exception caught while processing layer: " << this->name() << std::endl;
+    std::cerr << "Message: " << e.what() << std::endl;
+  }
+  catch ( ... )
+  {
+    std::cerr << "Unknown exception caught while processing layer: " << this->name() << std::endl;
   }
 }
 

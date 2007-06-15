@@ -16,6 +16,9 @@
 #include "Usul/Threads/Manager.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Jobs/Manager.h"
+
+#include "OsgTools/Builders/Compass.h"
 
 #include "VrjCore/OssimInteraction.h"
 
@@ -88,6 +91,9 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
   _frameBuild = 10 + ( num - 48 );
 
   _updateThread = Usul::Threads::Manager::instance().create();
+
+  // Make room for 2
+  Usul::Jobs::Manager::instance().poolResize ( 2 );
 }
 
 
@@ -99,6 +105,11 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
 
 MinervaVR::~MinervaVR()
 {
+  // Clear the thread pool
+  Usul::Jobs::Manager::destroy();
+
+  // Wait until all threads are done.
+  Usul::Threads::Manager::instance().wait();
 }
 
 
@@ -146,7 +157,7 @@ void MinervaVR::appInit()
 
   setBackgroundColor( gmtl::Vec4f( _background[0], _background[1], _background[2], _background[3] ).getData());
 
-  setNearFar(0.0001, 10.0);
+  vrj::Projection::setNearFar(0.000001, 15.0);
   setSceneInitialPosition( osg::Vec3f( 0.0, 10.0, 0.0 ) );
 
   this->_initLegend();
@@ -219,6 +230,7 @@ void MinervaVR::appPreOsgDraw()
     sizeSet = true;
   }
 
+#if 1
 
   // If there are draw commands to process...
   if( _updateThread->isIdle() && _dbManager->hasEvents() )
@@ -235,6 +247,10 @@ void MinervaVR::appPreOsgDraw()
     _updateThread->started ( Usul::Threads::newFunctionCallback( MemFun ( this, &MinervaVR::_updateScene ) ) );
     _updateThread->start();
   }
+#else
+  if ( _dbManager->hasEvents() )
+    this->_updateScene();
+#endif
 
   this->_buildScene();
 }
@@ -242,7 +258,7 @@ void MinervaVR::appPreOsgDraw()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Draw.. 
+//  Draw.  Guard with a mutex.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -294,11 +310,17 @@ void MinervaVR::appSceneInit()
   }
 
   mModelGroupNode->addChild ( _planet->root() );
+
+  
   
   std::cerr << " [MinervaVR] Root set: " << std::endl;
 
   // Create and set-up the interactor.
   VrjCore::OssimInteraction *interactor = new VrjCore::OssimInteraction();
+
+  
+  if( "viz0" == Usul::System::Host::name() )
+    mModelGroupNode->addChild ( interactor->compass() );
 
   if( ossimPlanet* planet = dynamic_cast< ossimPlanet* >( _planet->root() ) )
   {
@@ -365,7 +387,6 @@ void MinervaVR::_updateScene( Usul::Threads::Thread *thread )
 
       // Update the scene.
       _dbManager->updateScene();
-      _sceneManager->dirty ( true );
 
       std::cerr << " [MinervaVR] Finished updating scene." << std::endl;
 

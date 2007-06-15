@@ -73,7 +73,7 @@ Application::Application() : vrj::GlApp(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Application::Application(vrj::Kernel* kern) : vrj::GlApp(kern),
+Application::Application( vrj::Kernel* kern ) : vrj::GlApp( kern ),
   CONSTRUCTOR_INITIALIZER_LIST
 {
   USUL_TRACE_SCOPE;
@@ -99,6 +99,11 @@ void Application::_construct()
 
   // Set the name.
   _models->setName       ( "_models"       );
+
+  osg::Matrix m;
+  m.makeRotate ( -osg::PI / 2, osg::Vec3 ( 1, 0, 0 ) );
+
+  _models->setMatrix( m );
 }
 
 
@@ -795,8 +800,8 @@ void Application::addModel ( osg::Node *model, const std::string& filename )
   _models->addChild ( model );
 
   // If this is the first one...
-  if ( _models->getNumChildren() == 1 )
-    this->viewAll ( this->models(), 1.5 );
+  //if ( _models->getNumChildren() == 1 )
+  //  this->viewAll ( this->models(), 1.5 );
 
   // Based on the scene size, set the near and far clipping plane distances.
   this->_setNearAndFarClippingPlanes();

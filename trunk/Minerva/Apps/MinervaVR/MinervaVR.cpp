@@ -65,7 +65,8 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
   _update( ),
   _numFramesBuild ( 0 ),
   _frameBuild ( 0 ),
-  _updateThread ( 0x0 )
+  _updateThread ( 0x0 ),
+  _mutex()
 {
   std::ostringstream file;
   file << Usul::CommandLine::Arguments::instance().directory() << "/Minerva.config";
@@ -204,6 +205,7 @@ void MinervaVR::preFrame()
 
 void MinervaVR::appPreOsgDraw()
 {
+  Guard guard ( this->mutex() );
   static bool sizeSet ( false );
 
   if( false == sizeSet )
@@ -235,6 +237,19 @@ void MinervaVR::appPreOsgDraw()
   }
 
   this->_buildScene();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw.. 
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaVR::draw()
+{
+  Guard guard ( this->mutex() );
+  BaseClass::draw();
 }
 
 
@@ -338,6 +353,7 @@ void MinervaVR::appSceneInit()
 void MinervaVR::_updateScene( Usul::Threads::Thread *thread )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
 
   try
   {
@@ -372,6 +388,7 @@ void MinervaVR::_updateScene( Usul::Threads::Thread *thread )
 void MinervaVR::_buildScene()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
 
   try
   {

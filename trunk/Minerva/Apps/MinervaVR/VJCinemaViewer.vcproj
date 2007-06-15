@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="&quot;$(PQXX_INC_DIR)&quot;;&quot;$(VRJCINEMA_ROOT_DIR)/src&quot;;&quot;$(VJ_BASE_DIR)/include/tweek/idl&quot;;&quot;$(VJ_BASE_DIR)/include&quot;;&quot;$(VJ_DEPS_DIR)/include&quot;;&quot;$(OSGHOME)/include&quot;;&quot;$(PRODUCERHOME)/include&quot;;&quot;$(OPENTHREADSHOME)/include&quot;;&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(CADKIT_ROOT_DIR)/Experimental&quot;;&quot;$(CADKIT_ROOT_DIR)/Minerva/Native/include&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(OSSIM_PLANET_INC_DIR)&quot;;&quot;$(OSG_EPHEMERIS_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(PQXX_INC_DIR)&quot;;&quot;$(VRJCINEMA_ROOT_DIR)/src&quot;;&quot;$(VJ_BASE_DIR)/include/tweek/idl&quot;;&quot;$(VJ_BASE_DIR)/include&quot;;&quot;$(VJ_DEPS_DIR)/include&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(CADKIT_ROOT_DIR)/Experimental&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(OSSIM_PLANET_INC_DIR)&quot;;&quot;$(OSG_EPHEMERIS_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;__WIN32__=1;__x86__=1;__NT__=1;__OSVERSION__=5;USE_core_stub_in_nt_dll;USE_core_stub_in_nt_dll_NOT_DEFINED_Subject;NOMINMAX;$(NOINHERIT)"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

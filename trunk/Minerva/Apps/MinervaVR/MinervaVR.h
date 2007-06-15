@@ -37,12 +37,15 @@ public:
   MinervaVR( vrj::Kernel* kern, int& argc, char** argv );
   virtual ~MinervaVR();		
 
+  Mutex&       mutex() const { return _mutex; }
+
  protected:
   virtual void appInit();
   
   virtual void preFrame();
   virtual void appSceneInit();
   virtual void appPreOsgDraw();
+  virtual void draw();
   virtual void addSceneLight();
 
   void         _initLegend();
@@ -61,6 +64,7 @@ public:
   unsigned int                                 _numFramesBuild;
   unsigned int                                 _frameBuild;
   Thread::RefPtr                               _updateThread;
+  mutable Mutex                                _mutex;
 };
 
 #endif //: _MINERVA_VR_H_

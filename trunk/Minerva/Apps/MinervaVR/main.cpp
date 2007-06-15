@@ -63,10 +63,7 @@ int main( int argc, char* argv[] )
   std::cerr << "Loading plugins...." << std::endl;
 
   // Feedback about plugins.
-  const Usul::Components::Manager::Strings names ( Usul::Components::Manager::instance().names() );
-  std::cout << "Found " << names.size() << " plugins: ";
-  std::copy ( names.begin(), names.end(), std::ostream_iterator<std::string> ( std::cout, "; " ) );
-  std::cout << std::endl;
+  Usul::Components::Manager::instance().print ( std::cout );
 
   vrj::Kernel* kernel		= vrj::Kernel::instance();
   MinervaVR* application	= new MinervaVR(kernel, argc, argv);	

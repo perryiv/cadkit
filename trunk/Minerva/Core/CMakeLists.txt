@@ -61,8 +61,14 @@ SET (SOURCES
   ./postGIS/BinaryParser.cpp
   ./postGIS/Line.cpp
   ./postGIS/Point.cpp
+  ./postGIS/MultiPoint.cpp
+  ./postGIS/MultiLine.cpp
+  ./postGIS/MultiPolygon.cpp
+  ./postGIS/Factory.cpp
+  ./postGIS/TextParser.cpp
   ./Viz/Progress.cpp
   ./Viz/Controller.cpp
+  ./Viz/AddLayerJob.cpp
 )
 
 # Create a Shared Library

@@ -39,8 +39,8 @@ public:
     // Set the trace output file.
     Usul::Trace::Print::init ( _trace );
 
-    // Use 10 threads.
-    Usul::Jobs::Manager::instance().poolResize ( 10 );
+    // Use 1 threads.
+    Usul::Jobs::Manager::instance().poolResize ( 1 );
   }
 
   ~Program()
@@ -67,8 +67,8 @@ public:
     Usul::CommandLine::Arguments::instance().set ( argc, argv );
 
     // Console Feedback.
-	  Usul::Console::Feedback::RefPtr feedback ( new Usul::Console::Feedback );
-  	
+    Usul::Console::Feedback::RefPtr feedback ( new Usul::Console::Feedback );
+
     // Load the plugins.
     Usul::Components::Loader < XmlTree::Document > loader;
     loader.parse ( CV::Config::filename ( "registry" ) );

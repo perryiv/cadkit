@@ -16,6 +16,8 @@
 
 #include "Serialize/XML/DataMemberMap.h"
 
+#include "Usul/Trace/Trace.h"
+
 using namespace Serialize::XML;
 
 
@@ -49,6 +51,8 @@ DataMemberMap::~DataMemberMap()
 
 void DataMemberMap::serialize ( XmlTree::Node &parent ) const
 {
+  USUL_TRACE_SCOPE;
+
   for ( Map::const_iterator i = _map.begin(); i != _map.end(); ++i )
   {
     if ( true == i->second.valid() )
@@ -67,6 +71,8 @@ void DataMemberMap::serialize ( XmlTree::Node &parent ) const
 
 void DataMemberMap::deserialize ( const XmlTree::Node &node )
 {
+  USUL_TRACE_SCOPE;
+
   typedef XmlTree::Node::Children::const_iterator Itr;
   for ( Itr i = node.children().begin(); i != node.children().end(); ++i )
   {

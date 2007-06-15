@@ -20,6 +20,7 @@
 #include "osg/Group"
 #include "osg/Light"
 #include "osg/Projection"
+
 #include "osgText/Text"
 
 namespace OsgTools {

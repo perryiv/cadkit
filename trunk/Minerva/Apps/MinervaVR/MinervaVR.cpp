@@ -60,7 +60,7 @@ const std::string EPHEMERIS     = "ephemeris";
 
 MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) : 
   OsgVJApp( kern, argc, argv ),
-  _dbManager ( new Minerva::Core::Viz::Controller (  ) ),
+  _dbManager ( new Minerva::Core::Viz::Controller ),
   _sceneManager ( new Minerva::Core::Scene::SceneManager ),
   _planet ( new Magrathea::Planet ),
   _options(),
@@ -69,8 +69,13 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
   _numFramesBuild ( 0 ),
   _frameBuild ( 0 ),
   _updateThread ( 0x0 ),
-  _mutex()
+  _mutex(),
+  _rand ( 0, 5 )
 {
+  // Initialize random numbers
+  ::srand ( ::time ( 0x0 ) );
+
+  // Get the config file.
   std::ostringstream file;
   file << Usul::CommandLine::Arguments::instance().directory() << "/Minerva.config";
   std::ifstream fin ( file.str().c_str() );
@@ -90,9 +95,7 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
   char num ( host[ host.size() - 1 ] );
   _frameBuild = 10 + ( num - 48 );
 
-  _updateThread = Usul::Threads::Manager::instance().create();
-
-  // Make room for 2
+  // Make room for 2 Jobs.
   Usul::Jobs::Manager::instance().poolResize ( 2 );
 }
 
@@ -105,6 +108,10 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
 
 MinervaVR::~MinervaVR()
 {
+  // Kill the update thread.
+  if( _updateThread.valid() )
+    _updateThread->kill();
+
   // Clear the thread pool
   Usul::Jobs::Manager::destroy();
 
@@ -162,6 +169,9 @@ void MinervaVR::appInit()
 
   this->_initLegend();
 
+  // Launch the update thread.
+  this->_launchUpdateThread();
+  
   std::cerr << " [MinervaVR] app init ends: " << std::endl;
 }
 
@@ -189,6 +199,25 @@ void MinervaVR::_initLegend()
       _sceneManager->legendPosition( Minerva::Core::Scene::SceneManager::LEGEND_TOP_LEFT );
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a thread to poll database for updating.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaVR::_launchUpdateThread()
+{
+  // Create a new thread to update in.
+  _updateThread = Usul::Threads::Manager::instance().create();
+  
+  typedef void (MinervaVR::*Function) ( Usul::Threads::Thread *s );
+  typedef Usul::Adaptors::MemberFunction < MinervaVR*, Function > MemFun;
+
+  _updateThread->started ( Usul::Threads::newFunctionCallback( MemFun ( this, &MinervaVR::_updateScene ) ) );
+  _updateThread->start();
 }
 
 
@@ -230,22 +259,15 @@ void MinervaVR::appPreOsgDraw()
     sizeSet = true;
   }
 
+  // Purge any threads that may be finished.
+  Usul::Threads::Manager::instance().purge();
+
 #if 1
 
-  // If there are draw commands to process...
-  if( _updateThread->isIdle() && _dbManager->hasEvents() )
+  // Launch the update thread if it stopped.
+  if( _updateThread->isIdle() )
   {
-    // Purge any threads that may be finished.
-    Usul::Threads::Manager::instance().purge();
-
-    // Create a new thread to update in.
-    _updateThread = Usul::Threads::Manager::instance().create();
-
-    typedef void (MinervaVR::*Function) ( Usul::Threads::Thread *s );
-    typedef Usul::Adaptors::MemberFunction < MinervaVR*, Function > MemFun;
-
-    _updateThread->started ( Usul::Threads::newFunctionCallback( MemFun ( this, &MinervaVR::_updateScene ) ) );
-    _updateThread->start();
+    this->_launchUpdateThread();
   }
 #else
   if ( _dbManager->hasEvents() )
@@ -375,27 +397,26 @@ void MinervaVR::appSceneInit()
 void MinervaVR::_updateScene( Usul::Threads::Thread *thread )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
 
-  try
+  // 60 seconds.
+  Usul::Policies::TimeBased update ( 6000000 );
+
+  while ( 1 )
   {
-    // If there are draw commands to process...
-    //if( _dbManager->hasEvents() )
-    //if ( _update->dataAvailable() )
+    try
     {
-      std::cerr << " [MinervaVR] Updating scene..." << std::endl;
+      ::sleep ( static_cast < unsigned int > ( _rand () ) );
 
       // Update the scene.
       _dbManager->updateScene();
 
-      std::cerr << " [MinervaVR] Finished updating scene." << std::endl;
-
-      _numFramesBuild = 0;
+      if( update () )
+	std::cerr << " [MinervaVR] Update thread still alive." << std::endl;
     }
-  }
-  catch ( ... )
-  {
-    std::cerr << "[MinervaVR] exception caught while trying to update scene." << std::endl;
+    catch ( ... )
+    {
+      std::cerr << "[MinervaVR] exception caught while trying to update scene." << std::endl;
+    }
   }
 }
 
@@ -413,19 +434,16 @@ void MinervaVR::_buildScene()
 
   try
   {
-    if( _sceneManager->dirty() && _numFramesBuild > _frameBuild )
+    if( _sceneManager->dirty() )
     {
       std::cerr << " [MinervaVR] Starting building scene." << std::endl;
 
       _sceneManager->buildScene();
-      _numFramesBuild = 0;
 
       std::cerr << " [MinervaVR] Finished building scene." << std::endl;
 
       _sceneManager->dirty ( false );
     }
-    else
-      ++_numFramesBuild;
   }
   catch ( ... )
   {

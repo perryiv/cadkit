@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Viz/Controller.h"
-#include "Minerva/Core/Viz/Progress.h"
+//#include "Minerva/Core/Viz/Progress.h"
 #include "Minerva/Core/Viz/AddLayerJob.h"
 #include "Minerva/Core/postGIS/Geometry.h"
 #include "Minerva/Core/Serialize.h"
@@ -22,6 +22,7 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
+#include "Usul/Console/Feedback.h"
 
 #include "Usul/Components/Manager.h"
 #include "osg/ref_ptr"
@@ -340,7 +341,8 @@ void Controller::_processAddLayer( const std::string& drawCommandTable, int even
   }
 
   // Progress feedback.
-  Minerva::Core::Viz::Progress::RefPtr progress ( new Minerva::Core::Viz::Progress );
+  //Minerva::Core::Viz::Progress::RefPtr progress ( new Minerva::Core::Viz::Progress );
+  Usul::Interfaces::IUnknown::QueryPtr progress ( new Usul::Console::Feedback );
 
   // Always remove.  This isn't optimal, but it's more stable.
   _sceneManager->removeLayer ( layer->guid() );

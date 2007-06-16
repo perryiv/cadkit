@@ -50,7 +50,8 @@ namespace Detail
 Controller::Controller( ) :
 _connection ( new Minerva::Core::DB::Connection ),
 _sessionID( 0 ),
-_connected ( false )
+_connected ( false ),
+_mutex()
 {
   SERIALIZE_XML_ADD_MEMBER ( _connection );
 }
@@ -65,7 +66,8 @@ _connected ( false )
 Controller::Controller( const std::string& database, const std::string& user, const std::string& password, const std::string& host ) :
 _connection ( new Minerva::Core::DB::Connection ),
 _sessionID( 0 ),
-_connected ( false )
+_connected ( false ),
+_mutex()
 {
   _connection->database( database );
   _connection->hostname( host );
@@ -110,6 +112,8 @@ bool Controller::connected() const
 
 int Controller::connectToSession( const std::string& name )
 {
+  Guard guard ( this->mutex() );
+
   std::ostringstream query;
   query << "SELECT * FROM wnv_sessions WHERE name = '" << name << "'";
 
@@ -145,6 +149,8 @@ int Controller::connectToSession( const std::string& name )
 
 void Controller::deleteSession()
 {
+  Guard guard ( this->mutex() );
+
   this->_clearTable("play_movie");
   this->_clearTable("wnv_layers");
   this->_clearTable("wnv_event_table");
@@ -160,6 +166,8 @@ void Controller::deleteSession()
 
 Controller::Strings Controller::getAvailableSessions()
 {
+  Guard guard ( this->mutex() );
+
   std::string query ( "SELECT * FROM wnv_sessions ORDER BY name" );
 
   pqxx::result result ( _connection->executeQuery ( query ) );
@@ -183,6 +191,8 @@ Controller::Strings Controller::getAvailableSessions()
 
 void Controller::_clearTable( const std::string& tableName )
 {
+  Guard guard ( this->mutex() );
+
   std::ostringstream query;
   query << "DELETE FROM " << tableName << " WHERE session_id = " << _sessionID;
 
@@ -198,6 +208,8 @@ void Controller::_clearTable( const std::string& tableName )
 
 void Controller::_executeEventTableQuery( int type, int eventId )
 {
+  Guard guard ( this->mutex() );
+
   typedef Minerva::Core::DB::Connection::Values Values;
   Values values;
   values.push_back ( Values::value_type ( "type", Detail::toString ( type ) ) );
@@ -216,6 +228,8 @@ void Controller::_executeEventTableQuery( int type, int eventId )
 
 void Controller::removeLayer( Usul::Interfaces::ILayer *layer )
 {
+  Guard guard ( this->mutex() );
+
   int eventId ( this->_executeLayerQuery( layer ) );
 
   this->_executeEventTableQuery(3, eventId);
@@ -230,6 +244,8 @@ void Controller::removeLayer( Usul::Interfaces::ILayer *layer )
 
 void Controller::modifyLayer( Usul::Interfaces::ILayer *layer )
 {
+  Guard guard ( this->mutex() );
+
   this->showLayer( layer );
 }
 
@@ -242,6 +258,8 @@ void Controller::modifyLayer( Usul::Interfaces::ILayer *layer )
 
 int Controller::_executeLayerQuery( Usul::Interfaces::ILayer *layer )
 {
+  Guard guard ( this->mutex() );
+
   // Create the xml string.
   std::string xml ( Minerva::Core::serialize( layer ) );
   
@@ -264,6 +282,8 @@ int Controller::_executeLayerQuery( Usul::Interfaces::ILayer *layer )
 
 int Controller::showLayer ( Usul::Interfaces::ILayer *layer )
 {
+  Guard guard ( this->mutex() );
+
   int eventId ( this->_executeLayerQuery( layer ) );
 
   this->_executeEventTableQuery(1, eventId);
@@ -280,6 +300,8 @@ int Controller::showLayer ( Usul::Interfaces::ILayer *layer )
 
 void Controller::startAnimation(float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays, OsgTools::Animate::Settings::TimestepType type )
 {
+  Guard guard ( this->mutex() );
+
   typedef Minerva::Core::DB::Connection::Values Values;
   Values values;
 
@@ -306,6 +328,8 @@ void Controller::startAnimation(float speed, bool accumulate, bool dateTimeStep,
 
 void Controller::stopAnimation()
 {
+  Guard guard ( this->mutex() );
+
   typedef Minerva::Core::DB::Connection::Values Values;
   Values values;
 
@@ -326,6 +350,8 @@ void Controller::stopAnimation()
 
 void Controller::playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path )
 {
+  Guard guard ( this->mutex() );
+
   typedef Minerva::Core::DB::Connection::Values Values;
   Values values;
 

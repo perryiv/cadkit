@@ -103,8 +103,6 @@ class MovieLayer : public Minerva::Core::Layers::Layer
 
 Controller::Controller( ) :
 _sceneManager( 0x0 ),
-_callback( 0x0 ),
-_update ( 1000 ),
 _applicationConnection ( 0x0 ),
 _sessionID( 0 ),
 _lastEventID ( 0 )
@@ -198,7 +196,7 @@ bool Controller::hasEvents()
 
   if ( !r.empty() && !r[0][0].is_null() )
   {
-    return ( r[0][0].as< int >() > _lastEventID );
+    return ( r[0][0].as< unsigned int >() > _lastEventID );
   }
 
   return false;
@@ -252,24 +250,6 @@ void Controller::_getNextEvent( int& type, std::string& tableName, int &eventId 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//   Update the progress if we should.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Controller::_updateProgress()
-{
-  // If we should update...
-  if( _update() )
-  {
-    // Render for progress.
-    if( _callback.valid() )
-      _callback->draw();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Update the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -304,8 +284,15 @@ void Controller::_processEvents()
 {
   USUL_TRACE_SCOPE;
 
+  // Create the query.
+  std::ostringstream query;
+  query << "SELECT * FROM wnv_event_table WHERE id > " << _lastEventID << " AND session_id = " << _sessionID;
+
+  // Get the result.
+  pqxx::result result ( _applicationConnection->executeQuery ( query.str() ) );
+
   // While we have more work to do...
-  while ( this->hasEvents() )
+  for ( pqxx::result::const_iterator iter = result.begin(); iter != result.end(); ++iter )
   {
     // Variables needed to figure out what to draw.
     int type ( 0 ), eventID ( 0 );
@@ -314,6 +301,7 @@ void Controller::_processEvents()
     // Get the data.
     this->_getNextEvent ( type, tableName, eventID );
 
+    // Redirect to the proper function.
     switch ( type )
     {
     case 1:
@@ -365,9 +353,6 @@ void Controller::_processAddLayer( const std::string& drawCommandTable, int even
 
   // Add the layer to the scene manager.
   //_sceneManager->addLayer( layer );
-
-  // Render for progress.
-  this->_updateProgress();
 }
 
 

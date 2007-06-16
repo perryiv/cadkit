@@ -21,6 +21,7 @@
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Thread.h"
 #include "Usul/CommandLine/Options.h"
+#include "Usul/Adaptors/Random.h"
 
 #include "Magrathea/Planet.h"
 
@@ -53,6 +54,8 @@ public:
   void         _updateScene( Usul::Threads::Thread *thread = 0x0 );
   void         _buildScene();
 
+  void         _launchUpdateThread();
+
  private:	
 
   Minerva::Core::Viz::Controller::RefPtr       _dbManager;
@@ -65,6 +68,7 @@ public:
   unsigned int                                 _frameBuild;
   Thread::RefPtr                               _updateThread;
   mutable Mutex                                _mutex;
+  Usul::Adaptors::Random < double >            _rand;
 };
 
 #endif //: _MINERVA_VR_H_

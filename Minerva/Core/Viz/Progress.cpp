@@ -37,7 +37,7 @@ void Progress::setTotalProgressBar ( unsigned int value )
 // Update the progress bar
 void Progress::updateProgressBar ( unsigned int value )
 {
-  if( value % 5 == 0 )
+  if( value % 25 == 0 )
     std::cerr << value << std::endl;
 }
 

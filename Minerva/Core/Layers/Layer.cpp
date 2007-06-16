@@ -282,9 +282,9 @@ void Layer::buildScene( osg::Group* parent )
     parent->addChild( (*iter)->buildScene() );
 
 #ifndef _MSC_VER
-    unsigned int num ( iter - _dataObjects.begin() );
-    if( num % 10 == 0 )
-      std::cout << this->name() << " " << num << std::endl;
+    //unsigned int num ( iter - _dataObjects.begin() );
+    //if( num % 10 == 0 )
+    //  std::cout << this->name() << " " << num << std::endl;
 #endif
   }
 }

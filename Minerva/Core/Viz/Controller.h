@@ -52,9 +52,6 @@ public:
   // Set the application connection.
   void applicationConnection( Minerva::Core::DB::Connection * );
 
-  // Add a data connection.
-  void addDataConnection( Minerva::Core::DB::Connection * );
-
   // Connect to a session.
   void connectToSession( const std::string& name );
 
@@ -64,9 +61,7 @@ public:
   // Update the scene.
   void updateScene( );  
 
-  // Set the callback
-  void callback ( DrawCallback * callback ) { _callback = callback; }
-
+  // Set the SceneManager.  TODO: This should probably be an interface.
   void sceneManager ( Minerva::Core::Scene::SceneManager * manager ) { _sceneManager = manager; }
 
 protected:
@@ -85,19 +80,11 @@ protected:
 
   Minerva::Core::Layers::Layer* _getLayer ( const std::string drawCommandTable, int eventID );
 
-  // Update progress
-  void _updateProgress();
-
-
 private:
   Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
-  DrawCallback::RefPtr _callback;
-  Usul::Policies::TimeBased _update;
-
   Minerva::Core::DB::Connection::RefPtr _applicationConnection;
   unsigned int _sessionID;
-  
-  int _lastEventID;
+  unsigned int _lastEventID;
 };
 
     }

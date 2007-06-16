@@ -18,6 +18,9 @@
 
 #include "Serialize/XML/Macros.h"
 
+#include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Threads/Guard.h"
+
 #include <vector>
 #include <string>
 
@@ -32,7 +35,9 @@ class MINERVA_EXPORT Controller : public Usul::Base::Referenced
 {
 public:
   /// Typedef(s).
-  typedef std::vector<std::string> Strings;
+  typedef std::vector<std::string>                  Strings;
+  typedef Usul::Threads::RecursiveMutex             Mutex;
+  typedef Usul::Threads::Guard<Mutex>               Guard;
 
   USUL_DECLARE_REF_POINTERS ( Controller );
 
@@ -69,6 +74,8 @@ public:
   /// Play a movie.
   void             playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path );
 
+  /// Get the mutex.
+  Mutex&           mutex() const { return _mutex; }
 protected:
   virtual ~Controller();
 
@@ -86,6 +93,7 @@ private:
   Minerva::Core::DB::Connection::RefPtr _connection;
   unsigned int _sessionID;
   bool _connected;
+  mutable Mutex _mutex;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS ( Controller );

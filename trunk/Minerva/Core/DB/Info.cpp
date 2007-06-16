@@ -280,13 +280,42 @@ bool Info::isPolygonTimeTable ( const std::string& table ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Remove the schema name if present.
+//  Use this function when querying the information_schema table.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail 
+{
+  std::string tableName ( const std::string& table )
+  {
+    // Make a copy.
+    std::string name ( table );
+
+    // See if there is a schema specified.
+    std::string::size_type pos ( name.find_first_of ( '.' ) );
+    
+    // Trim the table if we should.
+    if( std::string::npos != pos )
+      name = table.substr ( pos + 1, name.length() - pos );
+
+    return name;
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Does the table have a column of the given type?
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 bool Info::hasColumnType ( const std::string& table, const std::string& type ) const
 {
-  std::string query ( "SELECT column_name FROM information_schema.columns WHERE table_name='" + table + "' AND data_type='" + type + "'" );
+  // Remove the schema name, if any.
+  std::string name ( Detail::tableName( table ) );
+
+  // Run the query.
+  std::string query ( "SELECT column_name FROM information_schema.columns WHERE table_name='" + name + "' AND data_type='" + type + "'" );
   pqxx::result result ( _connection->executeQuery( query ) );
   return !result.empty();
 }
@@ -298,20 +327,13 @@ bool Info::hasColumnType ( const std::string& table, const std::string& type ) c
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Info::Strings Info::getColumnNames ( const std::string& t ) const
+Info::Strings Info::getColumnNames ( const std::string& table ) const
 {
-  // Make a copy.
-  std::string table ( t );
-
-  // See if there is a schema specified.
-  std::string::size_type pos ( table.find_first_of ( '.' ) );
-  
-  // Trim the table if we should.
-  if( std::string::npos != pos )
-    table = table.substr ( pos + 1, table.length() - pos );
+  // Remove the schema name, if any.
+  std::string name ( Detail::tableName( table ) );
 
   // Run the query.
-  std::string query ( "SELECT column_name FROM information_schema.columns WHERE table_name='" + table + "'" );
+  std::string query ( "SELECT column_name FROM information_schema.columns WHERE table_name='" + name + "'" );
   return _fillStringsFromQuery( query );
 }
 

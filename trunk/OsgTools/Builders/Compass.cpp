@@ -128,10 +128,10 @@ class CompassOrientationCallback : public osg::NodeCallback
 
 					tx->setMatrix(osg::Matrix::scale(_compass->getScale(),_compass->getScale(),_compass->getScale()));
 					tx->postMult(VM);
-          quat = temp;
+          /*quat = temp;
           quat.set(quat.x(),0,0,quat.w());
 					VM.setRotate(quat);
-          tx->postMult(VM);
+          tx->postMult(VM);*/
                     tx->postMult( /*osg::Matrix::rotate(osg::inDegrees(-70.0f),1.0f,0.0f,0.0f) **/
 							      osg::Matrix::translate(_compass->getPosition()));
 					 
@@ -170,7 +170,7 @@ Compass::Compass():
   _botTexfn = Usul::CommandLine::Arguments::instance().directory() + "/icons/big_compass_mask.tga";
 	//_pos = (osg::Vec3(_scale * 4.0f, _scale * -3.0f, -1.0f));
   this->setPositionByPercentage( 1.0f, 0.0f );
-	_compassObject = _buildCompassObject();
+	_compassObject = this->_buildCompassObject();
 	buildCompass();
 }
 Compass::~Compass(){}
@@ -197,7 +197,7 @@ bool Compass::isVisible()
 void Compass::setTextureFilename(const std::string& fn)
 {
   _topTexfn = fn;
-  buildCompass();
+  _compassObject = this->_buildCompassObject();
 }
 
 
@@ -237,19 +237,25 @@ void Compass::setHeading(float r)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the heading of the compass based on a lat/lon position and a 
-//  lat/lon north.
+//  Set the heading of the compass based on a ( x = lon, y = lat ) position 
+//  and a ( x = lon, y = lat ) north.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void Compass::setHeadingRelativeToNorth(const osg::Vec2& north, const osg::Vec2& pos)
 {
-  float theta = atan ( ( north.x() - pos.x() ) / ( north.y() - pos.y() ) );
+  //FILE* debug = fopen ("C:/debug.txt","a");
 
-  if( north.x() - pos.x() < 0 )
-    theta *= -1.0f;
+  osg::Vec2f p ( pos.x(), pos.y() );
 
-  this->setHeading( theta );
+  /*if( p.x() > 180 )
+    p.set( p.x() - 180.0f , p.y() );*/
+ 
+  float theta =  atan ( ( north.y() - p.y() ) / ( north.x() -  p.x() ) );
+
+  //fprintf(debug,"N.x=%f , N.y=%f\tP.x=%f(%f) , P.y=%f\ttheta=%f\n",north.x(),north.y(),pos.x(),p.x(),p.y(),(theta * 180 / osg::PI) );
+  //fclose(debug);
+  this->setHeading( osg::RadiansToDegrees( theta ) );
 }
 ///////////////////////////////////////////////////////////////////////////////
 //

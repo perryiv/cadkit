@@ -117,6 +117,8 @@ protected:
   /// Clone the this layer.
   virtual Usul::Interfaces::IUnknown*          clone() const;
 
+  void                            _updateMinMaxDate ( const std::string&, const std::string& );
+
 private:
 
   Usul::Types::Uint32 _primitiveID;

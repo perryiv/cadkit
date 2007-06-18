@@ -55,9 +55,6 @@ public:
   // Connect to a session.
   void connectToSession( const std::string& name );
 
-  // Are there any events to process?
-  bool hasEvents();
-
   // Update the scene.
   void updateScene( );  
 
@@ -70,21 +67,22 @@ protected:
 
   void _processEvents();
 
-  void _processAddLayer    ( const std::string& tableName, int eventID );
-  void _processRemoveLayer ( const std::string& tableName, int eventID );
-  void _processAnimation   ( const std::string& tableName, int eventID );
-  void _processPlayMovie   ( const std::string& tableName, int eventID );
+  void _processAddLayer    ( const std::string& tableName, unsigned int eventID );
+  void _processRemoveLayer ( const std::string& tableName, unsigned int eventID );
+  void _processAnimation   ( const std::string& tableName, unsigned int eventID );
+  void _processPlayMovie   ( const std::string& tableName, unsigned int eventID );
 
-  // Get the next event.
-  void  _getNextEvent( int &type, std::string& tableName, int &eventId );
+  // Get the tablename for given event type.
+  std::string _getTablename( int type );
 
-  Minerva::Core::Layers::Layer* _getLayer ( const std::string drawCommandTable, int eventID );
+  Minerva::Core::Layers::Layer* _getLayer ( const std::string drawCommandTable, unsigned int eventID );
 
 private:
   Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
   Minerva::Core::DB::Connection::RefPtr _applicationConnection;
   unsigned int _sessionID;
   unsigned int _lastEventID;
+  unsigned int _timeout;
 };
 
     }

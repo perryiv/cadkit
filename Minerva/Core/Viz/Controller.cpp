@@ -9,7 +9,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Viz/Controller.h"
-//#include "Minerva/Core/Viz/Progress.h"
 #include "Minerva/Core/Viz/AddLayerJob.h"
 #include "Minerva/Core/postGIS/Geometry.h"
 #include "Minerva/Core/Serialize.h"
@@ -106,7 +105,8 @@ Controller::Controller( ) :
 _sceneManager( 0x0 ),
 _applicationConnection ( 0x0 ),
 _sessionID( 0 ),
-_lastEventID ( 0 )
+_lastEventID ( 0 ),
+_timeout ( 60 )
 {
 }
 
@@ -185,67 +185,24 @@ void Controller::connectToSession( const std::string& name )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Are there any events to process?
+//  Get the tablename for the given event.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Controller::hasEvents()
-{
-  std::ostringstream query;
-  query << "SELECT MAX(id) FROM wnv_event_table WHERE session_id = " << _sessionID;
-  pqxx::result r ( _applicationConnection->executeQuery ( query.str() ) );
-
-  if ( !r.empty() && !r[0][0].is_null() )
-  {
-    return ( r[0][0].as< unsigned int >() > _lastEventID );
-  }
-
-  return false;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Are there any events to process?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Controller::_getNextEvent( int& type, std::string& tableName, int &eventId )
+std::string Controller::_getTablename( int type )
 {
   USUL_TRACE_SCOPE;
-
-  std::ostringstream query;
-  query << "SELECT * FROM wnv_event_table WHERE id > " << _lastEventID << " AND session_id = " << _sessionID << " LIMIT 1";
-
-  pqxx::result result ( _applicationConnection->executeQuery ( query.str() ) );
-
-  if( result.empty() )
-    throw std::runtime_error ("Error 4176339188: No new draw command data in the database." );
-
-  // Get the row.
-  pqxx::result::tuple row ( result[0] );
-
-  // Get the id.
-  int id ( row["id"].as< int > ( ) );
-
-  // Get the command type
-  type = row["type"].as< int >( );
-
-  // Get the event id.
-  eventId = row["event_id"].as<int>( );
 
   std::ostringstream os;
   os << "SELECT * FROM wnv_event_types WHERE id = " << type;
 
-  pqxx::result r ( _applicationConnection->executeQuery ( os.str() ) );
+  pqxx::result r ( _applicationConnection->executeQuery ( os.str(), _timeout ) );
 
   if( r.empty() )
     throw std::runtime_error("Error 545121892: No data in wnv_event_types" );
 
   // table for the criteria.
-  tableName = r[0]["table_name"].as< std::string > ();
-
-  _lastEventID = id;
+  return r[0]["table_name"].as< std::string > ();
 }
 
 
@@ -290,17 +247,23 @@ void Controller::_processEvents()
   query << "SELECT * FROM wnv_event_table WHERE id > " << _lastEventID << " AND session_id = " << _sessionID;
 
   // Get the result.
-  pqxx::result result ( _applicationConnection->executeQuery ( query.str() ) );
+  pqxx::result result ( _applicationConnection->executeQuery ( query.str(), _timeout ) );
+
+  if( result.size() > 0 )
+    std::cerr << "Processing " << result.size() << " events..." << std::endl;
 
   // While we have more work to do...
   for ( pqxx::result::const_iterator iter = result.begin(); iter != result.end(); ++iter )
   {
-    // Variables needed to figure out what to draw.
-    int type ( 0 ), eventID ( 0 );
-    std::string tableName ( "" );
+    // Get the id of the row we are processing.
+    unsigned int rowId ( iter["id"].as < unsigned int > () );
 
-    // Get the data.
-    this->_getNextEvent ( type, tableName, eventID );
+    // Variables needed to figure out what to draw.
+    int type ( iter["type"].as < int >() );
+    unsigned int eventID ( iter["event_id"].as < unsigned int > () );
+
+    // Get the table name to pull command from.
+    std::string tableName ( this->_getTablename ( type ) );
 
     // Redirect to the proper function.
     switch ( type )
@@ -317,6 +280,10 @@ void Controller::_processEvents()
     case 4:
       this->_processPlayMovie ( tableName, eventID );
     };
+
+    // Remember the last id we processed.
+    _lastEventID = rowId;
+
   }
 }
 
@@ -327,7 +294,7 @@ void Controller::_processEvents()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Controller::_processAddLayer( const std::string& drawCommandTable, int eventID )
+void Controller::_processAddLayer( const std::string& drawCommandTable, unsigned int eventID )
 {
   USUL_TRACE_SCOPE;
 
@@ -341,7 +308,6 @@ void Controller::_processAddLayer( const std::string& drawCommandTable, int even
   }
 
   // Progress feedback.
-  //Minerva::Core::Viz::Progress::RefPtr progress ( new Minerva::Core::Viz::Progress );
   Usul::Interfaces::IUnknown::QueryPtr progress ( new Usul::Console::Feedback );
 
   // Always remove.  This isn't optimal, but it's more stable.
@@ -349,12 +315,6 @@ void Controller::_processAddLayer( const std::string& drawCommandTable, int even
 
   // Create a job to add layer to scene.
   Usul::Jobs::Manager::instance().add ( new AddLayerJob ( _sceneManager.get(), layer, progress.get() ) );
-
-  // Build the data objects.
-  //layer->buildDataObjects( progress.get() );
-
-  // Add the layer to the scene manager.
-  //_sceneManager->addLayer( layer );
 }
 
 
@@ -364,14 +324,14 @@ void Controller::_processAddLayer( const std::string& drawCommandTable, int even
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Minerva::Core::Layers::Layer* Controller::_getLayer( const std::string drawCommandTable, int eventID )
+Minerva::Core::Layers::Layer* Controller::_getLayer( const std::string drawCommandTable, unsigned int eventID )
 {
   USUL_TRACE_SCOPE;
 
   std::ostringstream query;
   query << "SELECT * FROM " << drawCommandTable << " WHERE id = " << eventID << " AND session_id = " << _sessionID;
 
-  pqxx::result result ( _applicationConnection->executeQuery ( query.str() ) );
+  pqxx::result result ( _applicationConnection->executeQuery ( query.str(), _timeout ) );
 
   if( result.empty() )
     throw std::runtime_error ("Error 1607371066: No new layer data in the database." );
@@ -396,7 +356,7 @@ Minerva::Core::Layers::Layer* Controller::_getLayer( const std::string drawComma
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Controller::_processRemoveLayer( const std::string& drawCommandTable, int eventID )
+void Controller::_processRemoveLayer( const std::string& drawCommandTable, unsigned int eventID )
 {
   Minerva::Core::Layers::Layer::RefPtr layer ( this->_getLayer ( drawCommandTable, eventID ) );
 
@@ -417,12 +377,12 @@ void Controller::_processRemoveLayer( const std::string& drawCommandTable, int e
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Controller::_processAnimation( const std::string& tableName, int eventID )
+void Controller::_processAnimation( const std::string& tableName, unsigned int eventID )
 {
   std::ostringstream query;
   query << "SELECT * FROM " << tableName << " WHERE id = " << eventID << " AND session_id = " << _sessionID;;
 
-  pqxx::result result ( _applicationConnection->executeQuery ( query.str() ) );
+  pqxx::result result ( _applicationConnection->executeQuery ( query.str(), _timeout ) );
 
   if( !result.empty() && !result[0]["animate"].is_null() )
   {
@@ -454,12 +414,12 @@ std::istream& operator >> ( std::istream& in, osg::Vec3f& v )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Controller::_processPlayMovie   ( const std::string& tableName, int eventID )
+void Controller::_processPlayMovie   ( const std::string& tableName, unsigned int eventID )
 {
   std::ostringstream query;
   query << "SELECT * FROM " << tableName << " WHERE id = " << eventID << " AND session_id = " << _sessionID;;
 
-  pqxx::result result ( _applicationConnection->executeQuery ( query.str() ) );
+  pqxx::result result ( _applicationConnection->executeQuery ( query.str(), _timeout ) );
 
   if( !result.empty() )
   {
@@ -481,28 +441,15 @@ void Controller::_processPlayMovie   ( const std::string& tableName, int eventID
     in >> height;
 
 
-	//std::cout << "Params are: " << position << " " << width << " " << height << std::endl;
+    MovieLayer::RefPtr movie =  new MovieLayer();
+    movie->setValues( position, width, height, path );
 
-     MovieLayer::RefPtr movie =  new MovieLayer();
-	movie->setValues( position, width, height, path );
+    if( movie.valid() )
+    {
+      _sceneManager->addLayer( movie.get() );
 
-	if( movie.valid() )
-	{
-		_sceneManager->addLayer( movie.get() );
-
-		// Dirty the scene.
-		_sceneManager->dirty ( true );
-	}
-    // Play movie.
-    // Create osg::Group from scene manager.
-    //osg::ref_ptr< osg::Group > root = dynamic_cast< osg::Group* >( _sceneManager->root() );   
-    
-    // Call play movie function and pass in group, width, height, position, and path.  
-    //Usul::Interfaces::IPlayMovie::QueryPtr playMoviePlug ( Usul::Components::Manager::instance().getInterface( Usul::Interfa//ces::IPlayMovie::IID ) );
-
-    //if( playMoviePlug.valid() )
-    //{
-     // root->addChild( playMoviePlug->playMovie( position, width, height, path ) );
-    //}
+      // Dirty the scene.
+      _sceneManager->dirty ( true );
+    }
   }
 }

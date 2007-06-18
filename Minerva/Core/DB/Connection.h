@@ -87,6 +87,9 @@ public:
   /// Execute the query.
   pqxx::result         executeQuery( const std::string& ) const;
 
+  /// Execute the query with a timeout value.
+  pqxx::result         executeQuery( const std::string& query, unsigned int seconds ) const;
+
   /// Execute insert query.
   int                  executeInsertQuery( const std::string& tableName, const Values& values );
 

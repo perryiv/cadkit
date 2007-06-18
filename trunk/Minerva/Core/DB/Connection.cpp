@@ -13,6 +13,9 @@
 #include "Usul/Functions/Guid.h"
 #include "Usul/System/Host.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Threads/Thread.h"
+#include "Usul/Threads/Manager.h"
+#include "Usul/Adaptors/MemberFunction.h"
 
 #include "boost/algorithm/string/find.hpp"
 
@@ -308,6 +311,119 @@ pqxx::result Connection::executeQuery( const std::string& query ) const
       transaction.abort();
       std::cerr << "Query: " << query << " did not execute properly." << std::endl;
     }
+  }
+
+  return result;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Execute a query.  Commit to ensure that it's executed now.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  struct QueryHelper
+  {
+    typedef Usul::Threads::Mutex Mutex;
+    typedef Usul::Threads::Guard < Mutex > Guard;
+    typedef Connection::ConnectionType ConnectionType;
+
+    QueryHelper ( ConnectionType &connection, pqxx::result& result, const std::string& query ) :
+      _mutex ( Mutex::create() ),
+      _done ( false ),
+      _connection ( connection ),
+      _result ( result ),
+      _query ( query )
+    {
+    }
+    
+    void start ( Usul::Threads::Thread* )
+    {
+      pqxx::work transaction ( _connection, Usul::Functions::GUID::generate() );
+
+      try
+      {
+	_result = transaction.exec ( _query );
+	transaction.commit();
+      }
+      catch ( ... )
+      {
+	transaction.abort();
+	std::cerr << "Query: " << _query << " did not execute properly." << std::endl;
+      }
+    }
+
+    void end ( Usul::Threads::Thread* )
+    {
+      Guard ( *_mutex );
+      _done = true;
+    }
+  
+    bool done () const
+    {
+      Guard ( *_mutex );
+      return _done;
+    }
+
+  private:
+    mutable Mutex    *_mutex;
+    bool              _done;
+    ConnectionType   &_connection;
+    pqxx::result     &_result;
+    std::string       _query;
+  };
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Execute a query.  
+//  Cancel query if it takes longer then given number of seconds.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+pqxx::result Connection::executeQuery( const std::string& query, unsigned int timeout ) const
+{
+  USUL_TRACE_SCOPE;
+
+  // Only one thread at a time can execute a query.
+  Guard guard ( *_connectionMutex );
+
+  // The result.
+  pqxx::result result;
+
+  // Helper struct.
+  Helper::QueryHelper helper ( *_connection, result, query );
+
+  Usul::Threads::Thread::RefPtr thread ( Usul::Threads::Manager::instance().create () );
+  
+  typedef void (Helper::QueryHelper::*Function) ( Usul::Threads::Thread *s );
+  typedef Usul::Adaptors::MemberFunction < Helper::QueryHelper*, Function > MemFun;
+
+  thread->started  ( Usul::Threads::newFunctionCallback( MemFun ( &helper, &Helper::QueryHelper::start ) ) );
+  thread->finished ( Usul::Threads::newFunctionCallback( MemFun ( &helper, &Helper::QueryHelper::end ) ) );
+  thread->start();
+
+  unsigned int seconds ( 0 );
+
+  while ( 1 )
+  {
+    ::sleep ( 1 );
+
+    seconds++;
+
+    // Break if we are done or the timeout has expired.
+    if ( helper.done() || seconds > timeout)
+      break;
+  }
+
+  // If the thread didn't finish, kill it.
+  if ( false == helper.done () )
+  {
+    thread->kill();
+    throw std::runtime_error ( "Error 4205862221: Connection timed out." );
   }
 
   return result;

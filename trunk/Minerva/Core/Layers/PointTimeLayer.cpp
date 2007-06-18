@@ -89,8 +89,8 @@ void PointTimeLayer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _primitiveSizeColumn );
   SERIALIZE_XML_ADD_MEMBER ( _firstDateColumn );
   SERIALIZE_XML_ADD_MEMBER ( _lastDateColumn );
-  SERIALIZE_XML_ADD_MEMBER ( _minDate );
-  SERIALIZE_XML_ADD_MEMBER ( _maxDate );
+  //SERIALIZE_XML_ADD_MEMBER ( _minDate );
+  //SERIALIZE_XML_ADD_MEMBER ( _maxDate );
 }
 
 
@@ -185,14 +185,14 @@ void PointTimeLayer::buildScene( osg::Group* parent )
 
       for ( DataObjects::iterator iter = dataObjects.begin(); iter != dataObjects.end(); ++iter )
       {
-	osg::ref_ptr< osg::Node > node ( (*iter)->buildScene() );
+	      osg::ref_ptr< osg::Node > node ( (*iter)->buildScene() );
 
-	Minerva::Core::DataObjects::PointTime *pt ( static_cast < Minerva::Core::DataObjects::PointTime* >( iter->get() ) );
+	      Minerva::Core::DataObjects::PointTime *pt ( static_cast < Minerva::Core::DataObjects::PointTime* >( iter->get() ) );
 
-	typedef OsgTools::Animate::DateCallback Callback;
-	osg::ref_ptr < Callback > cb ( new Callback ( dateGroup->settings(), pt->firstDate(), pt->lastDate() ) );
-	node->setCullCallback( cb.get() );
-	parent->addChild( node.get() );
+      	typedef OsgTools::Animate::DateCallback Callback;
+	      osg::ref_ptr < Callback > cb ( new Callback ( dateGroup->settings(), pt->firstDate(), pt->lastDate() ) );
+	      node->setCullCallback( cb.get() );
+	      parent->addChild( node.get() );
       }
     }
   }
@@ -241,6 +241,10 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
         // get date and id.
         std::string firstDate ( i[this->firstDateColumn()].as < std::string > () );
         std::string lastDate ( i[this->lastDateColumn()].as < std::string > () );
+
+        // Update min max.
+        this->_updateMinMaxDate( firstDate, lastDate );
+
         int id ( i["id"].as< int > () );
         int srid ( i["srid"].as< int> () );
 
@@ -571,4 +575,23 @@ void PointTimeLayer::primitiveSizeColumn( const std::string& value )
 const std::string& PointTimeLayer::primitiveSizeColumn() const
 {
   return _primitiveSizeColumn;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update min max dates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayer::_updateMinMaxDate ( const std::string& min, const std::string& max )
+{
+  OsgTools::Animate::Date d0 ( min );
+  OsgTools::Animate::Date d1 ( max );
+
+  if( d0 < _minDate )
+    _minDate = d0;
+
+  if( d1 > _maxDate )
+    _maxDate = d1;
 }

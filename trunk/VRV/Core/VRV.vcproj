@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../../;$(VJ_BASE_DIR)/include;$(NSPR_ROOT)/include;$(OSG_INC_DIR)"
+				AdditionalIncludeDirectories="&quot;$(BOOST_INC_DIR)&quot;;../../;&quot;$(VJ_BASE_DIR)/include&quot;;&quot;$(VJ_DEPS_DIR)/include&quot;;&quot;$(OSG_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_VRV"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -84,7 +84,7 @@
 				OutputFile="../../bin/VRVd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(VJ_BASE_DIR)/lib;$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(BOOST_LIB_DIR);$(VJ_BASE_DIR)/lib;$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/VRVd.pdb"
 				ImportLibrary="../../bin/VRVd.lib"
@@ -147,7 +147,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../../;$(VJ_BASE_DIR)/include;$(NSPR_ROOT)/include;$(OSG_INC_DIR)"
+				AdditionalIncludeDirectories="../../;&quot;$(VJ_BASE_DIR)/include&quot;;&quot;$(VJ_DEPS_DIR)/include&quot;;&quot;$(OSG_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_VRV"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -306,6 +306,14 @@
 			<Filter
 				Name="Jobs"
 				>
+				<File
+					RelativePath="..\Jobs\LoadDirectory.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Jobs\LoadDirectory.h"
+					>
+				</File>
 				<File
 					RelativePath="..\Jobs\LoadModel.cpp"
 					>

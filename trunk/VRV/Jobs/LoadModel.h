@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __VRV_JOBS_JOB_H__
-#define __VRV_JOBS_JOB_H__
+#ifndef __VRV_JOBS_LOAD_MODEL_H__
+#define __VRV_JOBS_LOAD_MODEL_H__
 
 #include "Usul/Jobs/Job.h"
 #include "Usul/Interfaces/IUnknown.h"
@@ -45,4 +45,4 @@ private:
 }
 }
 
-#endif // __VRV_JOBS_JOB_H__
+#endif // __VRV_JOBS_LOAD_MODEL_H__

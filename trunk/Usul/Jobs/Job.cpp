@@ -36,7 +36,9 @@ Job::Job() : BaseClass(),
   _finishedCB  ( 0x0 ),
   _startedCB   ( 0x0 ),
   _thread      ( 0x0 ),
-  _done        ( false )
+  _done        ( false ),
+  _progress    ( static_cast < ProgressBar * > ( 0x0 ) ),
+  _label       ( static_cast < StatusBar  * > ( 0x0 ) )
 {
   USUL_TRACE_SCOPE;
 
@@ -333,4 +335,64 @@ bool Job::isDone() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _done;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Job::progress ( IUnknown* progress )
+{
+  _progress = progress;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the label.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Job::label ( IUnknown* label )
+{
+  _label = label;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Job::_updateProgress ( unsigned int numerator, unsigned int denominator, bool state )
+{
+  // If we should...
+  if ( state )
+  {
+    // Report progress.
+    if ( _progress.valid() )
+    {
+      const float n ( static_cast < float > ( numerator ) );
+      const float d ( static_cast < float > ( denominator ) );
+      const float fraction ( n / d );
+      _progress->updateProgressBar ( static_cast < unsigned int > ( fraction * 100 ) );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the label text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Job::_setLabel ( const std::string& text )
+{
+  if ( _label.valid() )
+    _label->setStatusBarText ( text, true );
 }

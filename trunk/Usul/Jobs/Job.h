@@ -19,6 +19,8 @@
 #include "Usul/Base/Object.h"
 #include "Usul/Threads/Callback.h"
 #include "Usul/Threads/Thread.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
 
 namespace Usul { namespace Jobs { class Manager; } }
 namespace Usul { namespace Jobs { namespace Helper { class ScopedThread; class ScopedDone; } } }
@@ -36,6 +38,9 @@ public:
   typedef Usul::Base::Object BaseClass;
   typedef Usul::Threads::Callback Callback;
   typedef Usul::Threads::Thread Thread;
+  typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef Usul::Interfaces::IProgressBar ProgressBar;
+  typedef Usul::Interfaces::IStatusBar StatusBar;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Job );
@@ -52,6 +57,11 @@ public:
   // Return this job's thread.
   const Thread *            thread() const;
 
+  /// Set the progress bar.
+  void                      progress ( IUnknown* progress );
+
+  /// Set the label.
+  void                      label ( IUnknown* label );
 protected:
 
   // Constructor
@@ -71,6 +81,12 @@ protected:
 
   // Called when the job starts.
   virtual void              _started();
+
+  /// Update the progress bar.
+  void                      _updateProgress ( unsigned int numerator, unsigned int denominator, bool state = true );
+
+  /// Set the label text.
+  void                      _setLabel ( const std::string& text );
 
 private:
 
@@ -103,6 +119,8 @@ private:
   Callback::RefPtr _startedCB;
   Thread::RefPtr _thread;
   bool _done;
+  ProgressBar::QueryPtr _progress;
+  StatusBar::QueryPtr   _label;
 };
 
 

@@ -15,6 +15,7 @@
 #include "Usul/System/Sleep.h"
 #include "Usul/File/Path.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/System/Directory.h"
 
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
@@ -67,10 +68,13 @@ namespace Detail
     Iterator end;
     for( ; iter != end; ++iter )
     {
+      // Make a recursive call if its a directory.
       if( boost::filesystem::is_directory ( iter->status() ) )
       {
         findFiles ( iter->path(), ext, c );
       }
+
+      // Add it to our list if its a file and the extenstion matches.
       else if ( Usul::File::extension ( iter->leaf() ) == ext )
       {
         c.push_back ( iter->leaf() );
@@ -90,9 +94,13 @@ namespace Detail
 {
   void loadModel ( const std::string& filename, Usul::Interfaces::IUnknown* caller )
   {
+    // Create a job.
     Usul::Jobs::Job::RefPtr job ( new LoadModel ( filename, caller ) );
+
+    // Add the job to the manager.
     Usul::Jobs::Manager::instance().add ( job.get() );
 
+    // Wait until it's done.
     while ( false == job->isDone() )
       Usul::System::Sleep::seconds( 5 );
   }
@@ -113,10 +121,15 @@ void LoadDirectory::_started()
 
   if ( boost::filesystem::is_directory ( path ) )
   {
+    // Find all the files we want to load.
     Filenames filenames;
     Detail::findFiles ( path, "osg", filenames );
     Detail::findFiles ( path, "ive", filenames );
 
+    // Scope the directory change.
+    Usul::System::Directory::ScopedCwd cwd ( _directory );
+
+    // Load all the filenames we found.
     Usul::Interfaces::IProgressBar::ShowHide showHide ( this->progress() );
     for ( Filenames::iterator iter = filenames.begin(); iter != filenames.end(); ++iter )
     {

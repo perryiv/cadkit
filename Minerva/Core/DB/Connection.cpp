@@ -16,6 +16,7 @@
 #include "Usul/Threads/Thread.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/System/Sleep.h"
 
 #include "boost/algorithm/string/find.hpp"
 
@@ -327,12 +328,9 @@ namespace Helper
 {
   struct QueryHelper
   {
-    typedef Usul::Threads::Mutex Mutex;
-    typedef Usul::Threads::Guard < Mutex > Guard;
     typedef Connection::ConnectionType ConnectionType;
 
     QueryHelper ( ConnectionType &connection, pqxx::result& result, const std::string& query ) :
-      _mutex ( Mutex::create() ),
       _done ( false ),
       _connection ( connection ),
       _result ( result ),
@@ -346,30 +344,27 @@ namespace Helper
 
       try
       {
-	_result = transaction.exec ( _query );
-	transaction.commit();
+	      _result = transaction.exec ( _query );
+    	  transaction.commit();
       }
       catch ( ... )
       {
-	transaction.abort();
-	std::cerr << "Query: " << _query << " did not execute properly." << std::endl;
+	      transaction.abort();
+	      std::cerr << "Query: " << _query << " did not execute properly." << std::endl;
       }
     }
 
     void end ( Usul::Threads::Thread* )
     {
-      Guard ( *_mutex );
       _done = true;
     }
   
     bool done () const
     {
-      Guard ( *_mutex );
       return _done;
     }
 
   private:
-    mutable Mutex    *_mutex;
     bool              _done;
     ConnectionType   &_connection;
     pqxx::result     &_result;
@@ -410,7 +405,7 @@ pqxx::result Connection::executeQuery( const std::string& query, unsigned int ti
 
   while ( 1 )
   {
-    ::sleep ( 1 );
+    Usul::System::Sleep::seconds ( 1 );
 
     seconds++;
 

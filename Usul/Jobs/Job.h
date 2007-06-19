@@ -57,8 +57,9 @@ public:
   // Return this job's thread.
   const Thread *            thread() const;
 
-  /// Set the progress bar.
+  /// Get/Set the progress bar.
   void                      progress ( IUnknown* progress );
+  IUnknown*                 progress ();
 
   /// Set the label.
   void                      label ( IUnknown* label );

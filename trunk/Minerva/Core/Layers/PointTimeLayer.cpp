@@ -11,6 +11,7 @@
 #include "Minerva/Core/Layers/PointTimeLayer.h"
 #include "Minerva/Core/DataObjects/PointTime.h"
 #include "Minerva/Core/postGIS/Point.h"
+#include "Minerva/Core/postGIS/Factory.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Trace/Trace.h"
@@ -248,7 +249,12 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
         int id ( i["id"].as< int > () );
         int srid ( i["srid"].as< int> () );
 
-        Usul::Interfaces::IUnknown::QueryPtr geometry ( new Minerva::Core::postGIS::Point ( this->connection(), this->tablename(), id, srid, i["geom"] ) );
+        typedef Minerva::Core::postGIS::Geometry Geometry;
+        typedef Minerva::Core::postGIS::Factory  GeometryFactory;
+
+        pqxx::binarystring buffer ( i["geom"] );
+        Geometry::RefPtr geometry ( GeometryFactory::instance().createFromBinary ( &buffer.front() ) );
+        geometry->srid( srid );
 
         Usul::Interfaces::IOffset::QueryPtr offset ( geometry );
 
@@ -260,7 +266,7 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
         if( geometry.valid() )
         {
           Minerva::Core::DataObjects::PointTime::RefPtr data ( new Minerva::Core::DataObjects::PointTime( firstDate, lastDate ) );
-          data->geometry( geometry );
+          data->geometry( geometry->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
           data->color ( this->_color ( i ) );
           data->size ( this->size() );
           data->primitiveId ( this->primitiveID() );

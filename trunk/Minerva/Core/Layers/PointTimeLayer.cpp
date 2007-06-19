@@ -179,8 +179,6 @@ void PointTimeLayer::buildScene( osg::Group* parent )
   {
     if ( OsgTools::Animate::DateGroup *dateGroup = dynamic_cast < OsgTools::Animate::DateGroup* > ( parent ) )
     {
-      dateGroup->updateMinMax( _minDate, _maxDate );
-
       // Get the data objects.
       DataObjects &dataObjects ( this->_getDataObjects() );
 
@@ -194,6 +192,9 @@ void PointTimeLayer::buildScene( osg::Group* parent )
 	      osg::ref_ptr < Callback > cb ( new Callback ( dateGroup->settings(), pt->firstDate(), pt->lastDate() ) );
 	      node->setCullCallback( cb.get() );
 	      parent->addChild( node.get() );
+
+        // Update min and max.
+        dateGroup->updateMinMax ( pt->firstDate(), pt->lastDate() );
       }
     }
   }

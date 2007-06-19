@@ -54,7 +54,11 @@ def createSqlInsert( row, tablename ):
     last = length - 1
 
     for i in range( length ):
-        sql = sql + '\'' + string.strip(str( row[i] )) + '\''
+        value = string.strip(str( row[i] ))
+        if len(value) > 0:
+            sql = sql + '\'' + string.strip(str( row[i] )) + '\''
+        else:
+            sql = sql + 'NULL'
         if i != last:
             sql += ', '
 
@@ -62,92 +66,109 @@ def createSqlInsert( row, tablename ):
 
     return sql
 
-print "Enter a filename for input: ",
-datafile = string.strip(sys.stdin.readline())
 
-#reader = csv.reader ( open( filename, "rb" ) )
+def main():
 
-tablename = os.path.basename(datafile).split('.')[0]
-outfile = os.path.dirname(datafile) + '/' + tablename + '.sql'
+    # Get the file name from the arguments.  If it's not there, prompt the user.
+    if len(sys.argv) > 1:
+        datafile = sys.argv[1]
+    else:
+        print "Enter a filename for input: ",
+        datafile = string.strip(sys.stdin.readline())
 
-# Create string translation tables
-allowed = ' _01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-delchars = ''
-for i in range(255):
-    if chr(i) not in allowed: delchars = delchars + chr(i)
-deltable = string.maketrans(' ','_')
+    # Get the table name to create.
+    tablename = os.path.basename(datafile).split('.')[0]
 
-# Open the reader.
-reader = csv.reader( open( datafile, "rb" ),dialect='excel')
+    #Get the directory the data file lives in.
+    dir = os.path.dirname(datafile)
 
-# Get the first line.
-header = reader.next()
+    # if we don't have a directory, make it the current working directory.
+    if len(dir) == 0:
+        dir = os.getcwd()
 
-# Get the number of columns.
-num_cols = len(header)
+    # Create the name of the output file.
+    outfile = dir + '/' + tablename + '.sql'
 
-# Empty list for the column [names], [width].
-cols = []
+    # Create string translation tables
+    allowed = ' _01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    delchars = ''
+    for i in range(255):
+        if chr(i) not in allowed: delchars = delchars + chr(i)
+    deltable = string.maketrans(' ','_')
 
-# Loop through the header names.
-for col in header:
+    # Open the reader.
+    reader = csv.reader( open( datafile, "rb" ),dialect='excel')
 
-    # Format the column header for sql.
-    formated = formatColumnHeader( col, deltable, delchars )
+    # Get the first line.
+    header = reader.next()
 
-    # check for duplicate column names.
-    d = 0
-    dupcol = formated
-    while dupcol in cols:
-        d = d + 1
-        dupcol = fmtcol + '_' + str(d)
+    # Get the number of columns.
+    num_cols = len(header)
 
-    # Add to the list.
-    cols.append([dupcol,1])
+    # Empty list for the column [names], [width].
+    cols = []
 
-row = reader.next();
+    # Loop through the header names.
+    for col in header:
 
-col_types = []
+        # Format the column header for sql.
+        formated = formatColumnHeader( col, deltable, delchars )
 
-# Loop through the row and determine column types.
-for col in row:
-    type = determineSqlType ( col )
-    print type
+        # check for duplicate column names.
+        d = 0
+        dupcol = formated
+        while dupcol in cols:
+            d = d + 1
+            dupcol = fmtcol + '_' + str(d)
 
-# I think this will re-initialize the reader and skip the header
-reader = csv.reader( open( datafile, "rb" ),dialect='excel')
-reader.next()
+        # Add to the list.
+        cols.append([dupcol,1])
 
-inserts = ''
+    row = reader.next();
 
-# Determine max width of each column in each row
-rc = 0
-for row in reader:
-    rc = rc + 1
+    col_types = []
 
-    # Check to make sure the number of columns are consistent.
-    if len(row) == num_cols:
-        inserts = inserts + createSqlInsert( row, tablename )
-        for i in range(len(row)):
-            fld = string.strip(row[i])
-            if len(fld) > cols[i][1]:
-                cols[i][1] = len(fld)
-    else: print 'Warning: Line %s ignored. Different width than header' % (rc)
+    # Loop through the row and determine column types.
+    for col in row:
+        type = determineSqlType ( col )
+        print type
 
-print
+    # I think this will re-initialize the reader and skip the header
+    reader = csv.reader( open( datafile, "rb" ),dialect='excel')
+    reader.next()
 
-# Create the create table statement.
-sql = 'CREATE TABLE %s\n(' % (tablename)
-for col in cols:
-    sql = sql + ('\n\t%s NVARCHAR(%s) NULL,' % (col[0],col[1]))
-sql = sql[:len(sql)-1] + '\n);'
+    inserts = ''
 
-sqlfile = open(outfile,'w')
-sqlfile.write(sql)
-sqlfile.write('\n')
-sqlfile.write ( inserts )
-sqlfile.close
+    # Determine max width of each column in each row
+    rc = 0
+    for row in reader:
+        rc = rc + 1
 
-print '%s created.' % (outfile)
+        # Check to make sure the number of columns are consistent.
+        if len(row) == num_cols:
+            inserts = inserts + createSqlInsert( row, tablename )
+            for i in range(len(row)):
+                fld = string.strip(row[i])
+                if len(fld) > cols[i][1]:
+                    cols[i][1] = len(fld)
+        else: print 'Warning: Line %s ignored. Different width than header' % (rc)
+
+    print
+
+    # Create the create table statement.
+    sql = 'CREATE TABLE %s\n(' % (tablename)
+    for col in cols:
+        sql = sql + ('\n\t%s NVARCHAR(%s) NULL,' % (col[0],col[1]))
+    sql = sql[:len(sql)-1] + '\n);'
+
+    sqlfile = open(outfile,'w')
+    sqlfile.write(sql)
+    sqlfile.write('\n')
+    sqlfile.write ( inserts )
+    sqlfile.close
+
+    print '%s created.' % (outfile)
 
 
+if __name__ == "__main__":
+    main()

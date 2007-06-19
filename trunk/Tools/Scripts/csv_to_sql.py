@@ -33,6 +33,11 @@ def determineSqlType ( s ):
     if re.match('(\d\d\d\d)-(\d\d)-(\d\d)', s):
         return 'date'
 
+    if re.match('(\d\d)/(\d\d)/(\d\d\d\d)', s):
+        return 'date'
+
+    # It would be nice to figure out a better way to determine the type.
+    # This isn't going to scale well...
     # Try integers.
     try:
         int(s)
@@ -132,6 +137,7 @@ def main():
     for col in row:
         type = determineSqlType ( col )
         print type
+        col_types.append( type )
 
     # I think this will re-initialize the reader and skip the header
     reader = csv.reader( open( datafile, "rb" ),dialect='excel')

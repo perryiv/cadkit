@@ -105,10 +105,14 @@ Usul::Interfaces::IUnknown *Command::queryInterface ( unsigned long iid )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Command::execute ( Usul::Interfaces::IUnknown * )
+void Command::execute ( Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
   // No need to guard, should be re-entrant.
+
+  // If we don't already have a caller, and we are given a valid one, set our internal caller.
+  if( false == _caller.valid() && 0x0 != caller )
+    _caller = caller;
 
   // Execute the command.
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Command::_execute ), "3084410573" );

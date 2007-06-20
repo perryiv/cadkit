@@ -339,7 +339,12 @@ osg::Node* Point::_buildCone( bool invert )
   float radius ( height * 0.25 );
 
   // For now use a shape drawable.
-  osg::ref_ptr < osg::Cone > cone ( new osg::Cone( osg::Vec3( 0.0, 0.0, height/2.0 ), radius, height ) );
+  osg::ref_ptr < osg::Cone > cone ( 0x0 );
+  
+  if( this->autotransform() )
+    cone = new osg::Cone( osg::Vec3( 0.0, 0.0, height/2.0 ), radius, height );
+  else
+    cone = new osg::Cone( osg::Vec3( _center ), radius, height );
 
   // v1 is also a vector from the center of the sphere, to the point on the sphere.
   osg::Vec3 v1 ( _center );
@@ -371,10 +376,7 @@ osg::Node* Point::_buildCone( bool invert )
   }
   else
   {
-    osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-    mt->setMatrix ( osg::Matrix::translate( _center ) );
-    mt->addChild ( geode.get() );
-    return mt.release();
+    return geode.release();
   }
 
   // Should never get here.

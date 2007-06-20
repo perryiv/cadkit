@@ -376,7 +376,10 @@ osg::Node* Point::_buildCone( bool invert )
   }
   else
   {
-    return geode.release();
+    osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+    mt->setMatrix ( osg::Matrix::translate( v1 * ( height / 2.0 ) ) );
+    mt->addChild ( geode.get() );
+    return mt.release();
   }
 
   // Should never get here.

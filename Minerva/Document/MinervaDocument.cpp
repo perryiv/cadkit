@@ -99,6 +99,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IDistributedVR* > ( this );
   case Usul::Interfaces::IGroup::IID:
     return static_cast < Usul::Interfaces::IGroup* > ( this );
+  case Minerva::Interfaces::IAnimationControl::IID:
+    return static_cast < Minerva::Interfaces::IAnimationControl * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -409,18 +411,6 @@ void MinervaDocument::stopAnimationCommand()
 {
   Minerva::Core::Commands::StopAnimation::RefPtr command ( new Minerva::Core::Commands::StopAnimation );
   this->_executeCommand ( command.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Stop the animation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::stopAnimation()
-{
-  _sceneManager->stopAnimation();
 }
 
 
@@ -1154,4 +1144,40 @@ void MinervaDocument::_executeCommand ( Usul::Interfaces::ICommand* command )
     // Execute the command.
     command->execute( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Stop the animation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::stopAnimation()
+{
+  _sceneManager->stopAnimation();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the animate speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::animateSpeed ( double speed )
+{
+  _sceneManager->animationSpeed ( speed );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the animate speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double MinervaDocument::animateSpeed () const
+{
+  return _sceneManager->animationSpeed ();
 }

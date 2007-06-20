@@ -419,6 +419,54 @@ namespace DT.Minerva.Plugins.Document
       }
     }
 
+    void CadKit.Interfaces.IAnimateTemporal.pauseAnimation()
+    {
+    }
+
+    double CadKit.Interfaces.IAnimateTemporal.AnimationSpeed
+    {
+      get
+      {
+        return 0.0;
+      }
+      set
+      {
+      }
+    }
+
+    bool CadKit.Interfaces.IAnimateTemporal.ShowPastEvents
+    {
+      get
+      {
+        return false;
+      }
+      set
+      {
+      }
+    }
+
+    bool CadKit.Interfaces.IAnimateTemporal.TimeWindow
+    {
+      get
+      {
+        return false;
+      }
+      set
+      {
+      }
+    }
+
+    bool CadKit.Interfaces.IAnimateTemporal.TimeWindowLength
+    {
+      get
+      {
+        return false;
+      }
+      set
+      {
+      }
+    }
+
 
     /// <summary>
     /// Start the animation.

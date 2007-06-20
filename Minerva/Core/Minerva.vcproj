@@ -589,11 +589,11 @@
 					Name="Commands"
 					>
 					<File
-						RelativePath=".\Commands\AnimationTime.cpp"
+						RelativePath=".\Commands\AnimationSpeed.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\Commands\AnimationTime.h"
+						RelativePath=".\Commands\AnimationSpeed.h"
 						>
 					</File>
 					<File

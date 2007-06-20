@@ -81,11 +81,23 @@ namespace DT.Minerva.Plugins.Animate
       }
     }
 
+
+    /// <summary>
+    /// 
+    /// </summary>
     private void _pauseButton_Click(object sender, System.EventArgs e)
     {
+      CadKit.Interfaces.IAnimateTemporal animate = CadKit.Documents.Manager.Instance.ActiveDocument as CadKit.Interfaces.IAnimateTemporal;
 
+      if (null != animate)
+      {
+      }
     }
 
+
+    /// <summary>
+    /// 
+    /// </summary>
     private void _stopButton_Click(object sender, System.EventArgs e)
     {
       CadKit.Interfaces.IAnimateTemporal animate = CadKit.Documents.Manager.Instance.ActiveDocument as CadKit.Interfaces.IAnimateTemporal;
@@ -93,6 +105,20 @@ namespace DT.Minerva.Plugins.Animate
       if (null != animate)
       {
         animate.stopAnimation();
+      }
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private void _speed_ValueChanged(object sender, System.EventArgs e)
+    {
+      CadKit.Interfaces.IAnimateTemporal animate = CadKit.Documents.Manager.Instance.ActiveDocument as CadKit.Interfaces.IAnimateTemporal;
+
+      if (null != animate)
+      {
+        double value = System.Convert.ToDouble(_speed.Value);
       }
     }
   }

@@ -82,13 +82,34 @@ public:
 
   typedef OsgTools::Animate::Settings Settings;
 
+  /// Get/Set the timestep type.
   void                        timestepType( Settings::TimestepType type );
   Settings::TimestepType      timestepType( ) const;
 
-  void                        animate ( bool animate, bool accumulate, float speed, bool timeWindow, unsigned int numDays );
+  /// Get/Set show past events.
+  void                        showPastEvents ( bool b );
+  bool                        showPastEvents () const;
+
+  /// Get/Set the time window flag.
+  void                        timeWindow ( bool b );
+  bool                        timeWindow () const;
+
+  /// Get/Set the number of days in the time window.
+  void                        timeWindowDuration ( unsigned int days );
+  unsigned int                timeWindowDuration () const;
+
+  /// Get/Set the animation speed.
+  void                        animationSpeed ( float speed );
+  float                       animationSpeed () const;
+
+  /// Start the animation.
+  void                        startAnimation();
+
+  /// Stop the animation.
+  void                        stopAnimation();
 
   /// Clear the internal state.
-  void                       clear();
+  void                        clear();
 
   enum LegendPosition
   {

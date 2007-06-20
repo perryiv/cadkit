@@ -12,7 +12,9 @@
 
 #include "Minerva/Core/Serialize.h"
 
-#include "Magrathea/RegisterFactories.h"
+#include "Serialize/XML/TypeCreator.h"
+#include "Serialize/XML/Factory.h"
+#include "Serialize/XML/Serialize.h"
 
 using namespace Minerva::Document;
 
@@ -49,18 +51,6 @@ MinervaWriter::~MinervaWriter()
 
 void MinervaWriter::operator()()
 {
-  Minerva::Core::registerFactories();
-  Magrathea::registerFactories();
-
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<MinervaDocument> ( "MinervaDocument" ) );
   Serialize::XML::serialize( "MinervaDocument", *_document, _filename );
-
-  // Create the archive.
-  /*std::ofstream fout ( _filename.c_str() );
-  boost::archive::xml_oarchive oa ( fout );
-
-  Minerva::Core::registerTypes( oa );
-  oa.register_type< MinervaDocument > ();
-
-  oa << boost::serialization::make_nvp( "Document", *_document );*/
 }

@@ -11,6 +11,7 @@
 #include "Minerva/Core/Viz/Controller.h"
 #include "Minerva/Core/Viz/AddLayerJob.h"
 #include "Minerva/Core/postGIS/Geometry.h"
+#include "Minerva/Core/RegisterFactories.h"
 #include "Minerva/Core/Serialize.h"
 
 #include "Usul/Interfaces/IPlayMovie.h"
@@ -101,13 +102,17 @@ class MovieLayer : public Minerva::Core::Layers::Layer
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Controller::Controller( ) :
+Controller::Controller( Usul::Interfaces::IUnknown *caller ) :
 _sceneManager( 0x0 ),
 _applicationConnection ( 0x0 ),
 _sessionID( 0 ),
 _lastEventID ( 0 ),
-_timeout ( 60 )
+_lastCommandID ( 0 ),
+_timeout ( 60 ),
+_caller ( caller )
 {
+  // Make sure we have factories registered.
+  Minerva::Core::registerFactories();
 }
 
 
@@ -218,6 +223,7 @@ void Controller::updateScene( )
   try
   {
     this->_processEvents();
+    this->_processCommands();
   }
 
   // TODO: if an expection is thrown, then the offending row should be removed so it doesn't get tried again.
@@ -284,6 +290,42 @@ void Controller::_processEvents()
     // Remember the last id we processed.
     _lastEventID = rowId;
 
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process Commands.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Controller::_processCommands()
+{
+  USUL_TRACE_SCOPE;
+
+  // Create the query.
+  std::ostringstream query;
+  query << "SELECT * FROM commands WHERE id > " << _lastCommandID << " AND session_id = " << _sessionID;
+
+  // Get the result.
+  pqxx::result result ( _applicationConnection->executeQuery ( query.str(), _timeout ) );
+
+  // While we have more work to do...
+  for ( pqxx::result::const_iterator iter = result.begin(); iter != result.end(); ++iter )
+  {
+    // Get the id of the row we are processing.
+    unsigned int rowId ( iter["id"].as < unsigned int > () );
+
+    // Get the xml data.
+    std::string xml ( iter["xml_data"].as< std::string > () );
+
+    // Deserialize.
+    Usul::Interfaces::ICommand::QueryPtr command ( Minerva::Core::deserializeCommand ( xml ) );
+    command->execute ( _caller.get() );
+
+    // Remember the last id we processed.
+    _lastCommandID = rowId;
   }
 }
 
@@ -386,15 +428,25 @@ void Controller::_processAnimation( const std::string& tableName, unsigned int e
 
   if( !result.empty() && !result[0]["animate"].is_null() )
   {
-    float speed           ( result[0]["speed"].as < float > () );
-    bool accumulate       ( result[0]["accumulate"].as < bool > () );
-    bool timeWindow       ( result[0]["time_window"].as< bool > () );
+    // Get the animation flag.
     bool animate          ( result[0]["animate"].as< bool > () );
-    unsigned int numDays  ( result[0]["num_days_to_show"].as < unsigned int > () );
-    OsgTools::Animate::Settings::TimestepType type ( static_cast < OsgTools::Animate::Settings::TimestepType > ( result[0]["timestep_type"].as < unsigned int > () ) );
 
-    _sceneManager->timestepType( type );
-    _sceneManager->animate ( animate, accumulate, speed, timeWindow, numDays );
+    if( animate )
+    {
+      float speed           ( result[0]["speed"].as < float > () );
+      bool accumulate       ( result[0]["accumulate"].as < bool > () );
+      bool timeWindow       ( result[0]["time_window"].as< bool > () );
+      unsigned int numDays  ( result[0]["num_days_to_show"].as < unsigned int > () );
+      OsgTools::Animate::Settings::TimestepType type ( static_cast < OsgTools::Animate::Settings::TimestepType > ( result[0]["timestep_type"].as < unsigned int > () ) );
+      _sceneManager->timestepType( type );
+      _sceneManager->showPastEvents ( accumulate );
+      _sceneManager->animationSpeed ( speed );
+      _sceneManager->timeWindow ( timeWindow );
+      _sceneManager->timeWindowDuration ( numDays );
+      _sceneManager->startAnimation();
+    }
+    else
+      _sceneManager->stopAnimation();
 
     // Dirty the scene.
     _sceneManager->dirty ( true );

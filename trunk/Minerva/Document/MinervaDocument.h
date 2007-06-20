@@ -26,12 +26,15 @@
 #include "Minerva/Core/Scene/SceneManager.h"
 #include "Minerva/Core/GUI/Controller.h"
 #include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/Interfaces/IAnimationControl.h"
 
 #include "Magrathea/Planet.h"
 
 #include "Serialize/XML/Macros.h"
 
 class ossimPlanetTextureLayer;
+
+namespace Usul { namespace Interfaces { struct ICommand; } }
 
 namespace Minerva {
 namespace Document {
@@ -42,7 +45,8 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::IDatabasePager,
                                                 public Usul::Interfaces::IMatrixManipulator,
                                                 public Usul::Interfaces::IDistributedVR, 
-                                                public Usul::Interfaces::IGroup
+                                                public Usul::Interfaces::IGroup,
+                                                public Minerva::Interfaces::IAnimationControl
 {
 public:
   /// Useful typedefs.
@@ -97,11 +101,12 @@ public:
 
   void                        setLayerOperation( const std::string&, int val, Usul::Interfaces::IUnknown * layer );
 
+  /// Animation methods.
   void                        timestepType( Settings::TimestepType type );
   Settings::TimestepType      timestepType( ) const;
 
   void                        startAnimation( float speed, bool accumulate, bool timeWindow, int numDays );
-  void                        stopAnimation();
+  void                        stopAnimationCommand();
 
   void                        resize ( unsigned int width, unsigned int height );
 
@@ -134,8 +139,6 @@ public:
 
   void                        percentScreenWidth ( float );
   float                       percentScreenWidth();
-
-  void                        setMovieMode( bool b );
 
   /// For now
   void                              viewer( Usul::Interfaces::IUnknown* viewer );
@@ -179,8 +182,11 @@ protected:
   /// Start animation.
   void             _startAnimationDistributed ( float speed, bool accumulate, bool dateTimeStep, bool timeWindow, unsigned int numDays );
 
-  /// Stop Animation.
-  void             _stopAnimationDistributed ();
+  /// Execute a command.
+  void            _executeCommand ( Usul::Interfaces::ICommand* command );
+
+  /// Minerva::Interfaces::IAnimationControls
+  void            stopAnimation();
 
   /// Usul::Interfaces::IDistributedVR
   virtual void playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path );
@@ -192,6 +198,9 @@ protected:
   virtual bool         hasGroup    ( const std::string& );
 
 private:
+  typedef osg::ref_ptr< osg::Group >         GroupPtr;
+  typedef std::map < std::string, GroupPtr > GroupMap;
+
   Layers _layers;
   Favorites _favorites;
   Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
@@ -200,19 +209,13 @@ private:
   bool _useDistributed;
   std::string _sessionName;
   Minerva::Core::GUI::Controller::RefPtr _distributed;
+  GroupMap _groupMap;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME(MinervaDocument);
   SERIALIZE_XML_SERIALIZE_FUNCTION;
-public:
   virtual void deserialize ( const XmlTree::Node &node );
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;
-
-private:
-  typedef osg::ref_ptr< osg::Group >         GroupPtr;
-  typedef std::map < std::string, GroupPtr > GroupMap;
-  GroupMap _groupMap;
-
 };
 
 

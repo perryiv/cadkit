@@ -234,6 +234,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\RegisterFactories.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Serialize.h"
 					>
 				</File>
@@ -284,14 +288,6 @@
 					</File>
 					<File
 						RelativePath=".\Viz\Controller.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Viz\Progress.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Viz\Progress.h"
 						>
 					</File>
 				</Filter>
@@ -589,6 +585,98 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Commands"
+					>
+					<File
+						RelativePath=".\Commands\AnimationTime.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\AnimationTime.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\MaxDateShown.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\MaxDateShown.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\MinDateShown.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\MinDateShown.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\PauseAnimation.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\PauseAnimation.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\ShowPastCases.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\ShowPastCases.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\StartAnimation.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\StartAnimation.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\StopAnimation.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\StopAnimation.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\TimestepAmount.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\TimestepAmount.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\TimestepType.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\TimestepType.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\TimeWindow.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\TimeWindow.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="Interfaces"
+				>
+				<File
+					RelativePath="..\Interfaces\IAnimationControl.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 	</Files>

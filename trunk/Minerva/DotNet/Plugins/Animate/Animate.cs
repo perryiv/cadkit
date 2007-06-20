@@ -67,27 +67,32 @@ namespace DT.Minerva.Plugins.Animate
     /// </summary>
     private void _animate_Click(object sender, System.EventArgs e)
     {
-      System.Windows.Forms.Button button = sender as System.Windows.Forms.Button;
       CadKit.Interfaces.IAnimateTemporal animate = CadKit.Documents.Manager.Instance.ActiveDocument as CadKit.Interfaces.IAnimateTemporal;
 
-      if(null != button && null != animate)
+      if (null != animate)
       {
-        if (button.Text == "Animate")
-        {
-          if (_days.Checked)
-            animate.TimestepType = CadKit.Interfaces.AnimateTimestep.DAY;
-          if (_months.Checked)
-            animate.TimestepType = CadKit.Interfaces.AnimateTimestep.MONTH;
-          if (_years.Checked)
-            animate.TimestepType = CadKit.Interfaces.AnimateTimestep.YEAR;
-          animate.startAnimation(float.Parse(_speed.Value.ToString()), _accumulate.Checked, _timeWindow.Checked, int.Parse(_pastDaysToShow.Value.ToString()));
-          button.Text = "Stop";
-        }
-        else
-        {
-          animate.stopAnimation();
-          button.Text = "Animate";
-        }
+        if (_days.Checked)
+          animate.TimestepType = CadKit.Interfaces.AnimateTimestep.DAY;
+        if (_months.Checked)
+          animate.TimestepType = CadKit.Interfaces.AnimateTimestep.MONTH;
+        if (_years.Checked)
+          animate.TimestepType = CadKit.Interfaces.AnimateTimestep.YEAR;
+        animate.startAnimation(float.Parse(_speed.Value.ToString()), _accumulate.Checked, _timeWindow.Checked, int.Parse(_pastDaysToShow.Value.ToString()));
+      }
+    }
+
+    private void _pauseButton_Click(object sender, System.EventArgs e)
+    {
+
+    }
+
+    private void _stopButton_Click(object sender, System.EventArgs e)
+    {
+      CadKit.Interfaces.IAnimateTemporal animate = CadKit.Documents.Manager.Instance.ActiveDocument as CadKit.Interfaces.IAnimateTemporal;
+
+      if (null != animate)
+      {
+        animate.stopAnimation();
       }
     }
   }

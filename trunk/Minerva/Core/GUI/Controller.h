@@ -25,7 +25,7 @@
 #include <string>
 
 namespace osg { class Vec3f; }
-namespace Usul { namespace Interfaces { struct ILayer; } }
+namespace Usul { namespace Interfaces { struct ILayer; struct ICommand; } }
 
 namespace Minerva {
 namespace Core {
@@ -56,6 +56,9 @@ public:
   /// Get all availabe sessions.
   Strings          getAvailableSessions();
 
+  /// Send a command.
+  void             sendCommand ( Usul::Interfaces::ICommand *command );
+
   /// Remove layer with given id.
   void             removeLayer( Usul::Interfaces::ILayer *Layer );
 
@@ -67,9 +70,6 @@ public:
 
   /// Start animation.
   void             startAnimation( float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays, OsgTools::Animate::Settings::TimestepType type );
-
-  /// Stop Animation.
-  void             stopAnimation();
 
   /// Play a movie.
   void             playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path );

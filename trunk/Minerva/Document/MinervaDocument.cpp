@@ -12,6 +12,10 @@
 #include "Minerva/Document/MinervaReader.h"
 #include "Minerva/Document/MinervaWriter.h"
 #include "Minerva/Document/KmlWriter.h"
+#include "Minerva/Core/Commands/StopAnimation.h"
+#include "Minerva/Core/RegisterFactories.h"
+
+#include "Magrathea/RegisterFactories.h"
 
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
@@ -19,6 +23,7 @@
 #include "Usul/Interfaces/IPlayMovie.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/IClonable.h"
+#include "Usul/Interfaces/ICommand.h"
 
 using namespace Minerva::Document;
 
@@ -40,8 +45,15 @@ _sceneManager ( new Minerva::Core::Scene::SceneManager ),
 _planet ( new Magrathea::Planet ),
 _useDistributed ( false ),
 _sessionName(),
-_distributed ( new Minerva::Core::GUI::Controller )
+_distributed ( new Minerva::Core::GUI::Controller ),
+_groupMap(),
+SERIALIZE_XML_INITIALIZER_LIST
 {
+  // Make sure we have factories registered.
+  Minerva::Core::registerFactories();
+  Magrathea::registerFactories();
+
+  // Initialize the planet.
   _planet->init();
   _planet->root()->addChild( _sceneManager->root() );
 
@@ -377,8 +389,26 @@ OsgTools::Animate::Settings::TimestepType MinervaDocument::timestepType( ) const
 
 void MinervaDocument::startAnimation( float speed, bool accumulate, bool timeWindow, int numDays )
 {
-  _sceneManager->animate(true, accumulate, speed, timeWindow, numDays);
+  _sceneManager->showPastEvents ( accumulate );
+  _sceneManager->animationSpeed ( speed );
+  _sceneManager->timeWindow ( timeWindow );
+  _sceneManager->timeWindowDuration ( numDays );
+  _sceneManager->startAnimation();
+
   this->_startAnimationDistributed( speed, accumulate, true, timeWindow, numDays );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create and execute StopAnimation command.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::stopAnimationCommand()
+{
+  Minerva::Core::Commands::StopAnimation::RefPtr command ( new Minerva::Core::Commands::StopAnimation );
+  this->_executeCommand ( command.get() );
 }
 
 
@@ -390,8 +420,7 @@ void MinervaDocument::startAnimation( float speed, bool accumulate, bool timeWin
 
 void MinervaDocument::stopAnimation()
 {
-  _sceneManager->animate(false, false, 0.0, false, 0);
-  this->_stopAnimationDistributed();
+  _sceneManager->stopAnimation();
 }
 
 
@@ -649,18 +678,6 @@ float MinervaDocument::percentScreenWidth()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Set the movie mode on / off. 
-//
-///////////////////////////////////////////////////////////////////////////////
-void MinervaDocument::setMovieMode( bool b )
-{
-  std::cout << " Test movie mode: " << std::endl;
-  
-
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the matrix manipulator.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -855,24 +872,6 @@ void MinervaDocument::_startAnimationDistributed ( float speed, bool accumulate,
     this->_connectToDistributedSession();
 
     _distributed->startAnimation( speed, accumulate, true, timeWindow, numDays, _sceneManager->timestepType() );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Stop Animation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::_stopAnimationDistributed ()
-{
-  if( _useDistributed )
-  {
-    // Lazy connection.
-    this->_connectToDistributedSession();
-
-    _distributed->stopAnimation();
   }
 }
 
@@ -1129,4 +1128,30 @@ MinervaDocument::Layers& MinervaDocument::layers()
 const MinervaDocument::Layers& MinervaDocument::layers() const
 {
   return _layers;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Execute a command.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_executeCommand ( Usul::Interfaces::ICommand* command )
+{
+  if ( 0x0 != command )
+  { 
+    // Send the command to the distributed client.
+    if ( _distributed.valid() && _useDistributed )
+    {
+      // Lazy connection.
+      this->_connectToDistributedSession();
+
+      // Send the command.
+      _distributed->sendCommand ( command );
+    }
+
+    // Execute the command.
+    command->execute( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
+  }
 }

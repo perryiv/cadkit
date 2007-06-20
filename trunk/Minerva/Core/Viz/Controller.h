@@ -47,7 +47,7 @@ public:
   /// Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  Controller();
+  Controller( Usul::Interfaces::IUnknown *caller );
 
   // Set the application connection.
   void applicationConnection( Minerva::Core::DB::Connection * );
@@ -66,6 +66,7 @@ protected:
   virtual ~Controller();
 
   void _processEvents();
+  void _processCommands();
 
   void _processAddLayer    ( const std::string& tableName, unsigned int eventID );
   void _processRemoveLayer ( const std::string& tableName, unsigned int eventID );
@@ -82,7 +83,9 @@ private:
   Minerva::Core::DB::Connection::RefPtr _applicationConnection;
   unsigned int _sessionID;
   unsigned int _lastEventID;
+  unsigned int _lastCommandID;
   unsigned int _timeout;
+  Usul::Interfaces::IUnknown::QueryPtr _caller;
 };
 
     }

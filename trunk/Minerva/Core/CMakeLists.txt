@@ -39,36 +39,48 @@ INCLUDE_DIRECTORIES(
 
 #List the Sources
 SET (SOURCES
-  ./GUI/Controller.cpp
-  ./Scene/SceneManager.cpp
-  ./Functors/GradientColorFunctor.cpp
-  ./Functors/SingleColorFunctor.cpp
-  ./Layers/PointTimeLayer.cpp
-  ./Layers/LineLayer.cpp
-  ./Layers/PolygonLayer.cpp
-  ./Layers/PolygonTimeLayer.cpp
-  ./Layers/PointLayer.cpp
-  ./Layers/Layer.cpp
-  ./DB/Connection.cpp
-  ./DB/Info.cpp
-  ./DataObjects/Polygon.cpp
-  ./DataObjects/PointTime.cpp
-  ./DataObjects/DataObject.cpp
-  ./DataObjects/Line.cpp
-  ./DataObjects/Point.cpp
-  ./postGIS/Polygon.cpp
-  ./postGIS/Geometry.cpp
-  ./postGIS/BinaryParser.cpp
-  ./postGIS/Line.cpp
-  ./postGIS/Point.cpp
-  ./postGIS/MultiPoint.cpp
-  ./postGIS/MultiLine.cpp
-  ./postGIS/MultiPolygon.cpp
-  ./postGIS/Factory.cpp
-  ./postGIS/TextParser.cpp
-  ./Viz/Progress.cpp
-  ./Viz/Controller.cpp
-  ./Viz/AddLayerJob.cpp
+./Commands/AnimationTime.cpp
+./Commands/MaxDateShown.cpp
+./Commands/MinDateShown.cpp
+./Commands/PauseAnimation.cpp
+./Commands/ShowPastCases.cpp
+./Commands/StartAnimation.cpp
+./Commands/StopAnimation.cpp
+./Commands/TimestepAmount.cpp
+./Commands/TimestepType.cpp
+./Commands/TimeWindow.cpp
+./DataObjects/DataObject.cpp
+./DataObjects/Line.cpp
+./DataObjects/Point.cpp
+./DataObjects/PointTime.cpp
+./DataObjects/Polygon.cpp
+./DB/Connection.cpp
+./DB/ConnectionPool.cpp
+./DB/Info.cpp
+./Functors/GradientColorFunctor.cpp
+./Functors/SingleColorFunctor.cpp
+./GUI/Controller.cpp
+./Layers/Layer.cpp
+./Layers/LineLayer.cpp
+./Layers/PatentLayer.cpp
+./Layers/PointLayer.cpp
+./Layers/PointTimeLayer.cpp
+./Layers/PolygonLayer.cpp
+./Layers/PolygonTimeLayer.cpp
+./Layers/RLayer.cpp
+./postGIS/BinaryParser.cpp
+./postGIS/Factory.cpp
+./postGIS/Geometry.cpp
+./postGIS/Line.cpp
+./postGIS/MultiLine.cpp
+./postGIS/MultiPoint.cpp
+./postGIS/MultiPolygon.cpp
+./postGIS/Point.cpp
+./postGIS/Polygon.cpp
+./postGIS/TextParser.cpp
+./Scene/SceneManager.cpp
+./Viz/AddLayerJob.cpp
+./Viz/Controller.cpp
 )
 
 # Create a Shared Library
@@ -85,6 +97,3 @@ TARGET_LINK_LIBRARIES(Minerva
 	${OSSIM_LIB}
 	${OSSIM_PLANET_LIB}
 )
-
-    
-    

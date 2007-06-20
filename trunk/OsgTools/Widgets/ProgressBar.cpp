@@ -272,7 +272,6 @@ void ProgressBar::setRelativeToAbsolute ( bool value )
 void ProgressBar::setBarLength ( float l )
 {
   _barLength = l;
-  //this->_buildProgressBarObject();
   this->updateProgressBar();
 }
 
@@ -296,8 +295,6 @@ void ProgressBar::setCurrent( double c )
 
   _barSize = _barLength * ( (_current + _min ) / _max );
 
-  //this->_buildProgressBarObject();
-
   this->updateProgressBar();
 }
 
@@ -310,18 +307,18 @@ void ProgressBar::setCurrent( double c )
 osg::Geode* ProgressBar::_drawTextAtPosition( const osg::Vec3f & p, const std::string & s )
 { 
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode() );
-  /////////////////////////////////////////////////////////////
+
   osg::ref_ptr< osgText::Font > font = osgText::readFontFile("fonts/arial.ttf");
   osgText::Text* text = new osgText::Text;
+
   text->setFont( font.get() );
-  
   text->setColor( osg::Vec4f (1.0f, 1.0f, 1.0f, 1.0f ) );
   text->setCharacterSize( 0.025f );
   text->setPosition( p );
   text->setLayout(osgText::Text::LEFT_TO_RIGHT);
   text->setText( s );
+
   geode->addDrawable(text);
-  /////////////////////////////////////////////////////////////
 
   return geode.release();
 }

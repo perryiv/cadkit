@@ -27,18 +27,42 @@ public:
   USUL_DECLARE_REF_POINTERS ( ProgressBarGroup );
 	ProgressBarGroup();
 	
+  ///////////////////
+  //inline functions
+  ///////////////////
+
+  // Get the position of the progress bar group
+  const osg::Vec3f & getPosition() { return _pos; }
+
+  // Get the bar message on the slave bar
+  const std::string& getMessage() { return _slave->getMessage(); }
+
+  // Return true if the bar group is rendering relative to absolute
+  bool isRelativeToAbsolute() { return _isRelativeToAbsolute; }
+
+  // Return true if the slave is 100% complete
+  bool isCurrentItemFinished() { return _slave->isFinished(); }
+
+  // Return the number of items ( _max ) on the master bar
+  int getNumItems() { return _master->getMax(); }
+
+  // Get the current item on the master bar
+  int getCurrentItem() { return _master->getCurrent(); }
+
+  // Return the length of the bar group
+  float getLength() { return _length; }
+
+  // Return the min value on the slave bar
+  double getCurrentItemMin() { return _slave->getMin(); }
+
+  // Return the max value on the slave bar
+  double getCurrentItemMax() { return _slave->getMax(); }
+
+  // Return the current value on the slave bar
+  double getCurrentItemValue() { return _slave->getCurrent(); }
+
 
   osg::Node* getProgressBarGroup();
-  const osg::Vec3f & getPosition() { return _pos; }
-  const std::string& getMessage() { return _slaveText; }
-  bool isRelativeToAbsolute() { return _isRelativeToAbsolute; }
-  bool isCurrentItemFinished() { return _slave->isFinished(); }
-  int getNumItems() { return _numItems; }
-  int getCurrentItem() { return _currentItem; }
-  float getLength() { return _length; }
-  double getCurrentItemMin() { return _currItemMin; }
-  double getCurrentItemMax() { return _currItemMax; }
-  double getCurrentItemValue() { return _currItemVal; }
   
   void setRelativeToAbsolute ( bool value );
   void setPosition ( const osg::Vec3f & );
@@ -63,17 +87,15 @@ protected:
 private:
 
   bool _isRelativeToAbsolute;
-  int _numItems, _currentItem;
   float _length, _height, _padding;
-  double _currItemMin, _currItemMax, _currItemVal;
   double _borderZOffset;// ( -0.0003f ),
-
-  std::string _masterText, _slaveText;
 
   ProgressBar::RefPtr _master;
   ProgressBar::RefPtr _slave;
+
   osg::ref_ptr< osg::Node > _border;
   osg::ref_ptr< osg::Group > _group;
+
   osg::Vec3f _pos;
   osg::Vec2f _ll;
   
@@ -81,7 +103,7 @@ private:
 };
 
 } // Namespace Builders
-} // Namespace OsgTools
+} // Namespace OsgWidgets
 
 
 #endif

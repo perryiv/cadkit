@@ -37,18 +37,45 @@ public:
 
 	ProgressBar();
 	
-	osg::Node* getProgressBar();
+  ///////////////////
+  //inline functions
+  ///////////////////
+	
+  // Return the current text of the progress bar
   const std::string& getMessage() { return _barText; }
+
+  // Return the lower left corner of the bar object
   const osg::Vec2f& getLowerLeft() { return _ll; }
+
+  // Return true if the bar is 100% complete ( _current == _max )
   bool isFinished() { return _isFinished; }
+
+  // Return true if the current render mode is relative to absolute
   bool isRelativeToAbsolute() { return _isRelativeToAbsolute; }
+
+  // Return the height of the bar object
   float getBarHeight() { return _barHeight; }
+  
+  // Return the length of the bar object
   float getBarLength() { return _barLength; }
+
+  // Return the height of the border object
   float getBorderHeight() { return _borderHeight; }
+
+  // Return the length of the border object
   float getBorderLength() { return _borderLength; }
+
+  // Return the minimum value of the progress bar
   double getMin() { return _min; }
+
+  // Return the maximum value of the progress bar
   double getMax() { return _max; }
+
+  // Return the current value of the progress bar
   double getCurrent() { return _current; }
+
+
+  osg::Node* getProgressBar();
   
   void updateProgressBar();
   void setMin( double min );
@@ -115,6 +142,6 @@ private:
 
 };
 } // Namespace Builders
-} // Namespace OsgTools
+} // Namespace OsgWidgets
 
 #endif

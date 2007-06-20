@@ -33,7 +33,8 @@ _primitiveID( 2 ),
 _size( 5 ),
 _stackPoints ( false ),
 _quality ( 0.80 ),
-_primitiveSizeColumn()
+_primitiveSizeColumn(),
+_autotransform ( true )
 {
   this->name( "PointLayer" );
 
@@ -52,7 +53,8 @@ _primitiveID( layer._primitiveID ),
 _size( layer._size ),
 _stackPoints ( layer._stackPoints ),
 _quality( layer._quality ),
-_primitiveSizeColumn( layer._primitiveSizeColumn )
+_primitiveSizeColumn( layer._primitiveSizeColumn ),
+_autotransform ( layer._autotransform )
 {
   this->_registerMembers();
 }
@@ -71,6 +73,7 @@ void PointLayer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _stackPoints );
   SERIALIZE_XML_ADD_MEMBER ( _quality );
   SERIALIZE_XML_ADD_MEMBER ( _primitiveSizeColumn );
+  SERIALIZE_XML_ADD_MEMBER ( _autotransform );
 }
 
 
@@ -138,8 +141,6 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       Geometry::RefPtr geometry ( GeometryFactory::instance().createFromBinary ( &buffer.front() ) );
       geometry->srid( srid );
 
-      //Usul::Interfaces::IUnknown::QueryPtr unknown ( new Minerva::Core::postGIS::Point ( this->connection(), this->tablename(), id, srid, iter["geom"] ) );
-
       Usul::Interfaces::IOffset::QueryPtr offset ( geometry );
 
       if( offset.valid () )
@@ -157,6 +158,7 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       data->connection ( this->connection() );
       data->tableName ( dataTable );
       data->rowId ( id );
+      data->autotransform ( this->autotransform () );
 
       if( this->primitiveSizeColumn().size() > 0 )
       {
@@ -463,3 +465,28 @@ std::string PointLayer::defaultQuery() const
   query << " FROM " << this->tablename( );
   return query.str();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set use auto transform flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointLayer::autotransform ( bool b )
+{
+  _autotransform = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get use auto transform flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PointLayer::autotransform () const
+{
+  return _autotransform;
+}
+

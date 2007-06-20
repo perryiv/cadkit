@@ -36,10 +36,6 @@ SERIALIZE_XML_DECLARE_TYPE_WRAPPER( OsgTools::Animate::Date );
 
 PointTimeLayer::PointTimeLayer() : 
   BaseClass(),
-  _primitiveID ( 2 ),
-  _size ( 5.0 ),
-  _quality ( 0.8 ),
-  _primitiveSizeColumn ( "" ),
   _firstDateColumn(),
   _lastDateColumn(),
   _minDate( boost::date_time::min_date_time ),
@@ -61,10 +57,6 @@ PointTimeLayer::PointTimeLayer() :
 
 PointTimeLayer::PointTimeLayer ( const PointTimeLayer& layer ) : 
   BaseClass ( layer ),
-  _primitiveID ( layer._primitiveID ),
-  _size ( layer._size ),
-  _quality ( layer._quality ),
-  _primitiveSizeColumn ( layer._primitiveSizeColumn ),
   _firstDateColumn( layer._firstDateColumn ),
   _lastDateColumn( layer._lastDateColumn ),
   _minDate( layer._minDate ),
@@ -84,10 +76,7 @@ PointTimeLayer::PointTimeLayer ( const PointTimeLayer& layer ) :
 
 void PointTimeLayer::_registerMembers()
 {
-  SERIALIZE_XML_ADD_MEMBER ( _primitiveID );
-  SERIALIZE_XML_ADD_MEMBER ( _size );
-  SERIALIZE_XML_ADD_MEMBER ( _quality );
-  SERIALIZE_XML_ADD_MEMBER ( _primitiveSizeColumn );
+  BaseClass::_registerMembers();
   SERIALIZE_XML_ADD_MEMBER ( _firstDateColumn );
   SERIALIZE_XML_ADD_MEMBER ( _lastDateColumn );
   //SERIALIZE_XML_ADD_MEMBER ( _minDate );
@@ -116,54 +105,6 @@ Usul::Interfaces::IUnknown* PointTimeLayer::clone() const
 
 PointTimeLayer::~PointTimeLayer()
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the primitive id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void PointTimeLayer::primitiveID( Usul::Types::Uint32 primitiveId )
-{
-  _primitiveID = primitiveId;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the primitive id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Types::Uint32 PointTimeLayer::primitiveID() const
-{
-  return _primitiveID;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the size.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void PointTimeLayer::size( float size )
-{
-  _size = size;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the size.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-float PointTimeLayer::size() const
-{
-  return _size;
 }
 
 
@@ -277,6 +218,7 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
           data->tableName ( this->tablename() );
           data->rowId ( id );
           data->quality ( this->quality() );
+          data->autotransform ( this->autotransform () );
 
           if( this->primitiveSizeColumn().size() > 0 )
           {
@@ -454,11 +396,23 @@ std::string PointTimeLayer::_whereClause() const
 }
 
 
-/// Get/Set the min date.
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the min date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void PointTimeLayer::minDate( const OsgTools::Animate::Date& date )
 {
   _minDate = date;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the min date.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void PointTimeLayer::minDate( unsigned int day, unsigned int month, unsigned int year )
 {
@@ -467,16 +421,36 @@ void PointTimeLayer::minDate( unsigned int day, unsigned int month, unsigned int
   _minDate = OsgTools::Animate::Date( os.str() );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the min date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 const OsgTools::Animate::Date& PointTimeLayer::minDate() const
 {
   return _minDate;
 }
 
-/// Get/Set the max date.
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the max date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void PointTimeLayer::maxDate ( const OsgTools::Animate::Date& date )
 {
   _maxDate = date;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the max date.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void PointTimeLayer::maxDate (unsigned int day, unsigned int month, unsigned int year )
 {
@@ -484,6 +458,13 @@ void PointTimeLayer::maxDate (unsigned int day, unsigned int month, unsigned int
   os << year << "/" << month << "/" << day;
   _maxDate = OsgTools::Animate::Date( os.str() );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the max date.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 const OsgTools::Animate::Date& PointTimeLayer::maxDate() const
 {
@@ -501,8 +482,6 @@ Usul::Interfaces::IUnknown* PointTimeLayer::queryInterface( unsigned long iid )
   switch ( iid )
   {
   //case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::IPointLayer::IID:
-    return static_cast < Usul::Interfaces::IPointLayer* > ( this );
   case Usul::Interfaces::ITemporalData::IID:
     return static_cast < Usul::Interfaces::ITemporalData* > ( this );
   case Minerva::Core::IPointTimeLayerRawPointer::IID:
@@ -534,54 +513,6 @@ PointTimeLayer* PointTimeLayer::getRawPointer()
 const PointTimeLayer* PointTimeLayer::getRawPointer() const
 {
   return this;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set quality.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void PointTimeLayer::quality( float value )
-{
-  _quality = value;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get quality.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-float PointTimeLayer::quality() const
-{
-  return _quality;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set quality.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void PointTimeLayer::primitiveSizeColumn( const std::string& value )
-{
-  _primitiveSizeColumn = value;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get quality.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const std::string& PointTimeLayer::primitiveSizeColumn() const
-{
-  return _primitiveSizeColumn;
 }
 
 

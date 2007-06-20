@@ -71,6 +71,10 @@ public:
   void                    quality( float value );
   float                   quality() const;
 
+  /// Get/Set use auto transform flag.
+  void                    autotransform ( bool b );
+  bool                    autotransform () const;
+
 protected:
 
   // Use reference counting
@@ -90,6 +94,7 @@ private:
   unsigned int _primitiveId;
   float        _quality;
   osg::Vec3    _center;
+  bool         _autotransform;
 
   osg::ref_ptr < osg::Material >         _material;
   osg::ref_ptr< osg::Group >             _group;

@@ -198,30 +198,6 @@ void PointTimeLayerGlue::LastDateColumn::set( System::String^ s )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the data tables for this layer type.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-array< System::String ^ >^ PointTimeLayerGlue::DataTables::get()
-{
-  typedef ::Minerva::Core::DB::Info DbInfo;
-  typedef DbInfo::Strings Strings;
-
-  DbInfo::RefPtr info ( new DbInfo ( this->layer()->connection() ) );
-
-  Strings strings ( info->pointTimeTables() );
-
-  array<System::String^>^ tables = gcnew array< System::String^ > ( strings.size() );
-
-  for( unsigned int i = 0; i < strings.size(); ++i )
-    tables->SetValue( gcnew System::String( strings[i].c_str() ), static_cast < int > ( i ) );
-
-  return tables;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the first date to show.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -319,3 +295,28 @@ void PointTimeLayerGlue::PrimitiveSizeColumn::set ( System::String^ value )
 {
   _pointTimeLayer->primitiveSizeColumn( Usul::Strings::convert( value ) );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the auto transform flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PointTimeLayerGlue::AutoTransform::get()
+{
+  return _pointTimeLayer->autotransform();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the auto transform flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTimeLayerGlue::AutoTransform::set ( bool value )
+{
+  _pointTimeLayer->autotransform( value );
+}
+

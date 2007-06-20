@@ -21,8 +21,7 @@ namespace DT
   {
     namespace Glue 
     {
-      public ref class PointTimeLayerGlue : public LayerGlue,
-        DT::Minerva::Interfaces::IDataTables
+      public ref class PointTimeLayerGlue : public LayerGlue
       {
       public:
         PointTimeLayerGlue();
@@ -75,6 +74,14 @@ namespace DT
         ]
         PROPERTY_GET_SET( PrimitiveSizeColumn, System::String^ )
 
+        /// Get/Set use auto transforms flag.
+        [
+          System::ComponentModel::Category("Primitive"),
+          System::ComponentModel::Description("Use auto transforms?"),
+          System::ComponentModel::Browsable(true)
+        ]
+        PROPERTY_GET_SET ( AutoTransform, bool );
+
         [
           System::ComponentModel::Category("Date"),
           System::ComponentModel::Description("Column that contains the first date."),
@@ -90,11 +97,6 @@ namespace DT
           System::ComponentModel::TypeConverter(DT::Minerva::Layers::TypeConverters::ColumnNames::typeid)
         ]
         PROPERTY_GET_SET(LastDateColumn, System::String^);
-
-        property array< System::String ^ >^ DataTables
-        {
-          virtual array< System::String ^ >^ get();
-        };
 
         virtual ::Minerva::Core::Layers::Layer * layer() override;
 

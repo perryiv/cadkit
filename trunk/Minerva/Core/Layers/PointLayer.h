@@ -60,6 +60,10 @@ public:
   void                    quality( float value );
   float                   quality() const;
 
+  /// Get/Set use auto transform flag.
+  void                    autotransform ( bool b );
+  bool                    autotransform () const;
+
   /// Get the default query.
   virtual std::string         defaultQuery() const;
 
@@ -85,6 +89,7 @@ private:
   bool _stackPoints;
   float _quality;
   std::string _primitiveSizeColumn;
+  bool _autotransform;
 
   SERIALIZE_XML_CLASS_NAME ( PointLayer );
 };

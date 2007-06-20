@@ -16,12 +16,11 @@
 #ifndef _INTERSENSE_TRACKER_STATION_CLASS_H_
 #define _INTERSENSE_TRACKER_STATION_CLASS_H_
 
-#include "InterSense/Referenced.h"
-
-#include "boost/intrusive_ptr.hpp"
-
-#include "gmtl/Vec.h"
-#include "gmtl/Matrix.h"
+#include "Usul/Base/Referenced.h"
+#include "Usul/Math/Vector4.h"
+#include "Usul/Math/Vector3.h"
+#include "Usul/Math/Vector2.h"
+#include "Usul/Math/Matrix44.h"
 
 #include <map>
 
@@ -32,9 +31,16 @@ namespace InterSense {
 class Tracker;
 
 
-class Station : public Referenced
+class Station : public Usul::Base::Referenced
 {
 public:
+
+  // Useful typedefs.
+  typedef Usul::Base::Referenced BaseClass;
+  typedef Usul::Math::Vec2f Vec2f;
+  typedef Usul::Math::Vec3f Vec3f;
+  typedef Usul::Math::Vec4f Vec4f;Referenced
+  typedef Usul::Math::Matrix44f Matrix44f;
 
   // Orientation format.
   enum OrientationFormat { EULER, QUATERNION, UNSET };
@@ -79,7 +85,7 @@ public:
   // Get/set the origin. This will vary depending on where the 
   // tracker is (i.e., the bars hanging from the ceiling).
   void                   origin ( float x, float y, float z );
-  const gmtl::Vec3f &    origin() const { return _origin; }
+  const Vec3f &          origin() const { return _origin; }
 
   // Set/get the orientation format.
   void                   orientationFormat ( OrientationFormat format );
@@ -94,11 +100,11 @@ public:
   Units                  lengthUnits() const { return _units; }
 
   // Get the position in the current units.
-  const gmtl::Vec3f &    position() const { return _position; }
+  const Vec3f &          position() const { return _position; }
 
   // Get the orientation. The 4 values will either be a quaternion 
   // or Euler angles, depending on the OrientationFormat.
-  const gmtl::Vec4f &    orientation() const { return _orientation; }
+  const Vec4f &          orientation() const { return _orientation; }
 
   // Get the state of all the buttons as a bit-mask.
   unsigned int           buttons() const { return _buttons; }
@@ -107,10 +113,10 @@ public:
   ButtonState            button ( ButtonID id ) const;
 
   // Get the matrix.
-  const gmtl::Matrix44f  matrix() const { return _matrix; }
+  const Matrix44f        matrix() const { return _matrix; }
 
   // Get the joystick values in the range [-1,1].
-  const gmtl::Vec2f &    joystick() const { return _stick; }
+  const Vec2f &          joystick() const { return _stick; }
 
   // Update this station.
   void                   update();
@@ -129,16 +135,16 @@ protected:
 
   typedef std::map < ButtonID, ButtonState > ButtonMap;
 
-  boost::intrusive_ptr<Tracker> _tracker;
+  Tracker *_tracker;
   ID _which;
   mutable OrientationFormat _of;
-  gmtl::Vec3f _position;
-  gmtl::Vec4f _orientation;
-  gmtl::Vec3f _origin;
-  gmtl::Matrix44f _matrix;
+  Vec3f _position;
+  Vec4f _orientation;
+  Vec3f _origin;
+  Matrix44f _matrix;
   unsigned int _buttons;
-  gmtl::Vec2f _stick;
-  float _lengthConversion;
+  Vec2f _stick;
+  float _lengthConv;
   Units _units;
   ButtonMap _map;
 

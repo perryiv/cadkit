@@ -46,7 +46,7 @@
   <a target="_blank" href="http://dt.asu.edu">Decision Theater</a>, 
   and is used in our production facility to support policy decision-making meetings 
   for our customers. Projects completed with Minerva vary from 
-  <a target="_blank" href="http://picasaweb.google.com/perryiv/SUSD">school enrollment</a>
+  <a target="_blank" href="http://picasaweb.google.com/perryiv/ScottsdaleUnifiedSchoolDistrict">school enrollment</a>
   to 
   <a target="_blank" href="http://picasaweb.google.com/perryiv/WestNileVirus">disease propagation</a>
   studies.

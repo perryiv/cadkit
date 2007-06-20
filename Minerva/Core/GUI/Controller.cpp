@@ -11,6 +11,9 @@
 #include "Minerva/Core/GUI/Controller.h"
 #include "Minerva/Core/Serialize.h"
 
+#include "Usul/Interfaces/ICommand.h"
+#include "Usul/Interfaces/ISerialize.h"
+
 #ifdef _MSC_VER
 # pragma warning ( disable : 4561 )
 #endif
@@ -151,10 +154,11 @@ void Controller::deleteSession()
 {
   Guard guard ( this->mutex() );
 
-  this->_clearTable("play_movie");
-  this->_clearTable("wnv_layers");
-  this->_clearTable("wnv_event_table");
-  this->_clearTable("wnv_animate_table");
+  this->_clearTable ( "commands" );
+  this->_clearTable ( "play_movie" );
+  this->_clearTable ( "wnv_layers" );
+  this->_clearTable ( "wnv_event_table" );
+  this->_clearTable ( "wnv_animate_table" );
 }
 
 
@@ -322,28 +326,6 @@ void Controller::startAnimation(float speed, bool accumulate, bool dateTimeStep,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Stop Animation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Controller::stopAnimation()
-{
-  Guard guard ( this->mutex() );
-
-  typedef Minerva::Core::DB::Connection::Values Values;
-  Values values;
-
-  values.push_back ( Values::value_type ( "animate", "false" ) );
-  values.push_back ( Values::value_type ( "session_id", Detail::toString ( _sessionID ) ) );
-
-  int eventId ( _connection->executeInsertQuery("wnv_animate_table", values) );
-
-  this->_executeEventTableQuery(2, eventId);
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Play Movie.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -364,4 +346,32 @@ void Controller::playMovie ( const osg::Vec3f& position, const osg::Vec3f& width
   int eventId ( _connection->executeInsertQuery("play_movie", values) );
 
   this->_executeEventTableQuery(4, eventId);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Send a command.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Controller::sendCommand ( Usul::Interfaces::ICommand *command )
+{
+  Guard guard ( this->mutex() );
+
+  Usul::Interfaces::ISerialize::QueryPtr serialize ( command );
+
+  if( serialize.valid() )
+  {
+    // Create the xml string.
+    std::string xml ( Minerva::Core::serialize < Usul::Interfaces::ISerialize > ( serialize.get() ) );
+    
+    // Enter the data into the database.
+    typedef Minerva::Core::DB::Connection::Values Values;
+    Values values;
+    values.push_back( Values::value_type ( "session_id",  Detail::toString ( _sessionID ) ) );
+    values.push_back( Values::value_type ( "xml_data",    xml ) );
+
+    _connection->executeInsertQuery( "commands", values );
+  }
 }

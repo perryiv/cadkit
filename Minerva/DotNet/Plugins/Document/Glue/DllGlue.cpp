@@ -275,7 +275,7 @@ void DllGlue::stopAnimation()
 {
   try
   {
-    _document->stopAnimation( );
+    _document->stopAnimationCommand( );
   }
   catch ( System::Exception ^e )
   {

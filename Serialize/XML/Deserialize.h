@@ -18,6 +18,7 @@
 #define _SERIALIZE_XML_DESERIALIZE_FUNCTIONS_H_
 
 #include "XmlTree/Document.h"
+#include "XmlTree/XercesLife.h"
 #include "Serialize/XML/Factory.h"
 
 #include "Usul/Predicates/FileExists.h"

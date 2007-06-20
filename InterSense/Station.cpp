@@ -20,14 +20,10 @@
 #include "InterSense/Defines.h"
 #include "InterSense/Constants.h"
 
+#include "/Usul/Errors/Assert.h"
+#include "/Usul/MPL/SameType.h"
+
 #include "isense/isense.h"
-
-#include "boost/mpl/assert_is_same.hpp"
-
-#include "gmtl/Generate.h"
-#include "gmtl/MatrixOps.h"
-
-#include <assert.h>
 
 using namespace InterSense;
 
@@ -38,27 +34,22 @@ using namespace InterSense;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Station::Station ( 
-  Tracker *tracker, 
-  Station::ID which ) : 
-  Referenced(),
-  _tracker ( tracker ),
-  _which ( which ),
-  _of ( UNSET ),
-  _position ( 0, 0, 0 ),
+Station::Station ( Tracker *tracker, Station::ID which ) : BaseClass(),
+  _tracker     ( tracker ),
+  _which       ( which ),
+  _of          ( Station::UNSET ),
+  _position    ( 0, 0, 0 ),
   _orientation ( 0, 0, 0, 0 ),
-  _origin ( DEFAULT_ORIGIN_X, 
-            DEFAULT_ORIGIN_Y, 
-            DEFAULT_ORIGIN_Z ),
-  _matrix(),
-  _buttons ( 0 ),
-  _stick ( 0, 0 ),
-  _lengthConversion ( METERS_TO_FEET ),
-  _units ( FEET ),
+  _origin      ( InterSense::DEFAULT_ORIGIN_X, InterSense::DEFAULT_ORIGIN_Y, InterSense::DEFAULT_ORIGIN_Z ),
+  _matrix      (),
+  _buttons     ( 0 ),
+  _stick       ( 0, 0 ),
+  _lengthConv  ( InterSense::METERS_TO_FEET ),
+  _units       ( Station::FEET ),
   _map()
 {
-  BOOST_MPL_ASSERT_IS_SAME ( ID, ::WORD );
-  assert ( _which < ISD_MAX_STATIONS );
+  USUL_ASSERT_SAME_TYPE ( ID, ::WORD );
+  USUL_ASSERT ( _which < ISD_MAX_STATIONS );
 
   // Initialize the map.
   _map[Station::BUTTON0] = OFF;
@@ -237,7 +228,7 @@ void Station::_update ( const void *stationState )
   BOOST_STATIC_ASSERT ( 8 == ISD_MAX_BUTTONS );
   BOOST_STATIC_ASSERT ( 2 <= ISD_MAX_CHANNELS );
   assert ( _which < ISD_MAX_STATIONS );
-  assert ( _lengthConversion > 0 );
+  assert ( _lengthConv > 0 );
   assert ( stationState );
 
   // Cast to the struct we need.
@@ -246,9 +237,9 @@ void Station::_update ( const void *stationState )
   ISD_STATION_STATE_TYPE &data = *temp2;
 
   // Set our position. Note the signs, index ordering, and the origin offset.
-  _position[0] =   data.Position[1] * _lengthConversion - _origin[0];
-  _position[1] = - data.Position[2] * _lengthConversion - _origin[1];
-  _position[2] = - data.Position[0] * _lengthConversion - _origin[2];
+  _position[0] =   data.Position[1] * _lengthConv - _origin[0];
+  _position[1] = - data.Position[2] * _lengthConv - _origin[1];
+  _position[2] = - data.Position[0] * _lengthConv - _origin[2];
 
   // Set the translation matrix. We'll need the rotation matrix below.
   gmtl::Matrix44f R, T;
@@ -343,28 +334,28 @@ void Station::lengthUnits ( Units units )
   switch ( units )
   {
   case MILLIMETERS:
-    _lengthConversion = METERS_TO_MILLIMETERS;
+    _lengthConv = METERS_TO_MILLIMETERS;
     break;
   case CENTIMETERS:
-    _lengthConversion = METERS_TO_CENTIMETERS;
+    _lengthConv = METERS_TO_CENTIMETERS;
     break;
   case METERS:
-    _lengthConversion = 1;
+    _lengthConv = 1;
     break;
   case KILOMETERS:
-    _lengthConversion = METERS_TO_KILOMETERS;
+    _lengthConv = METERS_TO_KILOMETERS;
     break;
   case INCHES:
-    _lengthConversion = METERS_TO_INCHES;
+    _lengthConv = METERS_TO_INCHES;
     break;
   case FEET:
-    _lengthConversion = METERS_TO_FEET;
+    _lengthConv = METERS_TO_FEET;
     break;
   case YARDS:
-    _lengthConversion = METERS_TO_YARDS;
+    _lengthConv = METERS_TO_YARDS;
     break;
   case MILES:
-    _lengthConversion = METERS_TO_MILES;
+    _lengthConv = METERS_TO_MILES;
     break;
   default:
     throw UnknownUnits();

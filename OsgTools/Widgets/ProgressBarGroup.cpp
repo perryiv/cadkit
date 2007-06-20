@@ -35,8 +35,8 @@ using namespace OsgTools::Widgets;
 ProgressBarGroup::ProgressBarGroup() : 
 _master ( new ProgressBar() ),
 _slave ( new ProgressBar() ),
-_numItems ( 1 ), _currentItem ( 0 ),
-_currItemMin ( 0.0f ), _currItemMax ( 100.0f ), _currItemVal ( 0.0f ),
+//_numItems ( 1 ), _currentItem ( 0 ),
+//_currItemMin ( 0.0f ), _currItemMax ( 100.0f ), _currItemVal ( 0.0f ),
 _border ( new osg::Node() ),
 _pos( osg::Vec3f ( 0.0f, 0.0f, -3.1f ) ),
 _ll ( osg::Vec2f( 0.0f, 0.0f ) ),
@@ -91,7 +91,6 @@ void ProgressBarGroup::setRelativeToAbsolute( bool value )
 
 void ProgressBarGroup::setCurrentItemMin( double min )
 {
-  _currItemMin = min;
   _slave->setMin( min );
   this->_buildProgressBarGroup();
 }
@@ -105,7 +104,6 @@ void ProgressBarGroup::setCurrentItemMin( double min )
 
 void ProgressBarGroup::setMessage ( const std::string& m )
 {
-  _slaveText = m;
   _slave->setMessage( m );
   this->_buildProgressBarGroup();
 }
@@ -119,7 +117,6 @@ void ProgressBarGroup::setMessage ( const std::string& m )
 
 void ProgressBarGroup::setCurrentItemMax( double max )
 {
-  _currItemMax = max;
   _slave->setMax( max );
   this->_buildProgressBarGroup();
 }
@@ -133,7 +130,6 @@ void ProgressBarGroup::setCurrentItemMax( double max )
 
 void ProgressBarGroup::reset()
 {
-  _currItemVal = _currItemMin;
   _slave->reset();
 }
 
@@ -146,7 +142,6 @@ void ProgressBarGroup::reset()
 
 void ProgressBarGroup::setCurrentItemValue( double v )
 {
-  _currItemVal = v;
   _slave->setCurrent( v );
   this->_buildProgressBarGroup();
 }
@@ -160,7 +155,6 @@ void ProgressBarGroup::setCurrentItemValue( double v )
 
 void ProgressBarGroup::setNumItems ( int n )
 {
-  _numItems = n;
   _master->setMax( float( n ) );
   this->_updateMasterMessage();
   this->_buildProgressBarGroup();
@@ -175,7 +169,6 @@ void ProgressBarGroup::setNumItems ( int n )
 
 void ProgressBarGroup::setCurrentItem ( int i )
 {
-  _currentItem = i;
   _master->setCurrent( float ( i ) );
   this->_updateMasterMessage();
   this->_buildProgressBarGroup();
@@ -242,12 +235,12 @@ void ProgressBarGroup::_init()
   _ll.y() -= _padding;
 
   _master->setMin ( 0.0f );
-  _master->setMax ( float ( _numItems ) );
-  _master->setCurrent ( float ( _currentItem ) );
+  _master->setMax ( 1.0f );
+  _master->setCurrent ( 0.0f );
 
-  _slave->setMin ( _currItemMin );
-  _slave->setMax ( _currItemMax );
-  _slave->setCurrent ( _currItemVal );
+  _slave->setMin ( 0.0f );
+  _slave->setMax ( 100.0f );
+  _slave->setCurrent ( 0.0f );
 
   this->_updateMasterMessage();
 }
@@ -262,10 +255,8 @@ void ProgressBarGroup::_init()
 void ProgressBarGroup::_updateMasterMessage()
 {
   std::ostringstream text;
-  text << "Loading item: " << _currentItem << " of " << _numItems;
-  _masterText = text.str().c_str();
-  _master->setMessage( _masterText );
-
+  text << "Loading item: " << _master->getCurrent() << " of " << _master->getMax();
+  _master->setMessage( text.str().c_str() );
 }
 
 

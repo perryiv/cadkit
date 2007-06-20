@@ -1,3 +1,12 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Jeff Conner
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #ifndef PROGRESSBAR_H
 #define PROGRESSBAR_H
 
@@ -6,61 +15,40 @@
 
 #include "OsgTools/Export.h"
 
+#include "Usul/Base/Referenced.h"
+#include "Usul/Pointers/Pointers.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
+
+
 namespace OsgTools {
 namespace Widgets {
 
-class OSG_TOOLS_EXPORT ProgressBar : public osg::Referenced
+class OSG_TOOLS_EXPORT ProgressBar : public Usul::Base::Referenced,
+							                       public Usul::Interfaces::IStatusBar,
+							                       public Usul::Interfaces::IProgressBar
 {
 public:
+  
+  typedef Usul::Base::Referenced BaseClass;
+
+  USUL_DECLARE_QUERY_POINTERS ( ProgressBar );
+	USUL_DECLARE_IUNKNOWN_MEMBERS;
 
 	ProgressBar();
-	virtual ~ProgressBar();
 	
-  double getMin()
-  {
-    return _min;
-  };
-  double getMax()
-  {
-    return _max;
-  };
-  double getCurrent()
-  {
-    return _current;
-  };
-  float getBarHeight()
-  {
-    return _barHeight;
-  };
-  float getBarLength()
-  {
-    return _barLength;
-  };
-   float getBorderHeight()
-  {
-    return _borderHeight;
-  };
-  float getBorderLength()
-  {
-    return _borderLength;
-  };
-  osg::Node* getProgressBar();
-  bool isRelativeToAbsolute()
-  {
-    return _isRelativeToAbsolute;
-  };
-  const std::string& getMessage()
-  {
-    return _barText;
-  };
-  const osg::Vec2f& getLowerLeft()
-  {
-    return _ll;
-  };
-  bool isFinished()
-  {
-    return _isFinished;
-  };
+	osg::Node* getProgressBar();
+  const std::string& getMessage() { return _barText; }
+  const osg::Vec2f& getLowerLeft() { return _ll; }
+  bool isFinished() { return _isFinished; }
+  bool isRelativeToAbsolute() { return _isRelativeToAbsolute; }
+  float getBarHeight() { return _barHeight; }
+  float getBarLength() { return _barLength; }
+  float getBorderHeight() { return _borderHeight; }
+  float getBorderLength() { return _borderLength; }
+  double getMin() { return _min; }
+  double getMax() { return _max; }
+  double getCurrent() { return _current; }
   
   void updateProgressBar();
   void setMin( double min );
@@ -73,14 +61,33 @@ public:
   void setLowerLeft( const osg::Vec2f & ll );
   void reset();
 
+  // Show the progress bar
+  virtual void showProgressBar();
+
+  // Set the total of progress bar
+  virtual void setTotalProgressBar ( unsigned int value );
+
+  // Update the progress bar
+  virtual void updateProgressBar ( unsigned int value );
+
+  // Hide the progress bar
+  virtual void hideProgressBar();
+  
+  // Set the status bar text.
+  virtual void setStatusBarText ( const std::string &text, bool force );
+
+  
+
   
 protected:
 	
+  virtual ~ProgressBar();
   void _buildProgressBarObject();
   void _buildProgressBar();
   std::string _getPercentComplete();
-  osg::Node* _buildBar(  int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth  );
-  osg::Geode* _drawTextAtPosition( const osg::Vec3f & p, const std::string & s );
+  osg::Node* _buildBar (  int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth  );
+  osg::Geode* _drawTextAtPosition ( const osg::Vec3f & p, const std::string & s );
+
 private:
 	double _min, _max, _current;
   float _barSize;

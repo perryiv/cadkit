@@ -1,4 +1,13 @@
-#include "ProgressBar.h"
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Jeff Conner
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "OsgTools/Widgets/ProgressBar.h"
 
 #include "osgDB/ReadFile"
 #include "osg/MatrixTransform"
@@ -13,15 +22,16 @@
 //#include <iostream>
 using namespace OsgTools::Widgets;
 
-
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ProgressBar, ProgressBar::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Constructor/Destructor
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 ProgressBar::ProgressBar() :
+BaseClass(),
 _min ( 0.0 ),
 _max ( 100.0 ),
 _current ( 0.0 ),
@@ -60,7 +70,7 @@ ProgressBar::~ProgressBar()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Get the progress bar group
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -72,7 +82,7 @@ osg::Node* ProgressBar::getProgressBar()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Reset progress bar values to the starting parameters
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -84,78 +94,151 @@ void ProgressBar::reset()
   this->updateProgressBar();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for given interface id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* ProgressBar::queryInterface ( unsigned long iid )
+{
+	switch ( iid )
+	{
+	case Usul::Interfaces::IUnknown::IID:
+	case Usul::Interfaces::IStatusBar::IID:
+		return static_cast < Usul::Interfaces::IStatusBar * > ( this );
+	case Usul::Interfaces::IProgressBar::IID:
+		return static_cast < Usul::Interfaces::IProgressBar * > ( this );
+	default:
+		return 0x0;
+	}
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Show the progress bar.
 //
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBar::showProgressBar()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Hide the progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBar::hideProgressBar()
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the total of progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBar::setTotalProgressBar ( unsigned int value )
+{
+	this->setMax ( value );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBar::updateProgressBar ( unsigned int value )
+{
+	this->setCurrent ( value );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the status bar text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBar::setStatusBarText ( const std::string &text, bool force )
+{
+	this->setMessage ( text );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Rebuild the progress bar objects after changes have been made.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void ProgressBar::updateProgressBar()
 {
-  
+  this->_buildProgressBarObject();
   this->_buildProgressBar();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Set the minimum value
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void ProgressBar::setMin( double min )
 {
   _min = min;
-  this->_buildProgressBarObject();
   this->updateProgressBar();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Set the maximum value
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void ProgressBar::setMax( double max )
 {
   _max = max;
-  this->_buildProgressBarObject();
   this->updateProgressBar();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Set the hight of the progress bar
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void ProgressBar::setBarHeight ( float h )
 {
   _barHeight = h;
-  this->_buildProgressBarObject();
   this->updateProgressBar();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Set the progress bar message
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void ProgressBar::setMessage ( const std::string& s )
 {
   _barText = s;
-  this->_buildProgressBarObject();
   this->updateProgressBar();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Set the lower left corner of the progress bar
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -163,41 +246,39 @@ void ProgressBar::setLowerLeft( const osg::Vec2f & ll )
 {
   _ll.x() = ll.x();
   _ll.y() = ll.y();
-  this->_buildProgressBarObject();
   this->updateProgressBar();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Set RelativeToAbsolute flag for rendering
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void ProgressBar::setRelativeToAbsolute ( bool value )
 {
   _isRelativeToAbsolute = value;
-  this->_buildProgressBarObject();
   this->updateProgressBar();
 }
-///////////////////////////////////////////////////////////////////////////////
-//
-//
-//
-///////////////////////////////////////////////////////////////////////////////
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the length of the bar
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void ProgressBar::setBarLength ( float l )
 {
   _barLength = l;
-  this->_buildProgressBarObject();
+  //this->_buildProgressBarObject();
   this->updateProgressBar();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Set the current value
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -215,14 +296,14 @@ void ProgressBar::setCurrent( double c )
 
   _barSize = _barLength * ( (_current + _min ) / _max );
 
-  this->_buildProgressBarObject();
+  //this->_buildProgressBarObject();
 
   this->updateProgressBar();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Draw a text string <s> at position <p>
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -248,7 +329,7 @@ osg::Geode* ProgressBar::_drawTextAtPosition( const osg::Vec3f & p, const std::s
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Return the percentage complete
 //
 ///////////////////////////////////////////////////////////////////////////////
 std::string ProgressBar::_getPercentComplete()
@@ -269,7 +350,7 @@ std::string ProgressBar::_getPercentComplete()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Build the bar objects
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -310,7 +391,7 @@ void ProgressBar::_buildProgressBarObject()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Set the progress bar group with bar objects.  Set matrix transform options
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -347,7 +428,8 @@ void ProgressBar::_buildProgressBar()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Build an individual progress bar object (i.e. the bar, the border, the
+//  background, etc. )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -372,7 +454,7 @@ osg::Node* ProgressBar::_buildBar( int render_level , std::string tex, const osg
   }
 
   osg::ref_ptr< osg::Vec4Array > white ( new osg::Vec4Array() );  
-  white->push_back(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
+  white->push_back ( osg::Vec4 ( 1.0f, 1.0f, 1.0f, 1.0f ) );
 
   osg::ref_ptr< osg::Vec3Array > normal ( new osg::Vec3Array() );
   normal->push_back ( osg::Vec3 ( 0.0f, 0.0f, 1.0f ) );
@@ -384,14 +466,6 @@ osg::Node* ProgressBar::_buildBar( int render_level , std::string tex, const osg
   vertices->push_back ( osg::Vec3f ( lr.x(), ul.y(), depth ) );
   vertices->push_back ( osg::Vec3f ( ul.x(), ul.y(), depth ) );
 
-
-  /*osg::Vec3 coords[] =
-  {
-    osg::Vec3(0.0f, 0.0f, 0.0f),
-    osg::Vec3(1.0f, 0.0f, 0.0f),
-    osg::Vec3(1.0f, 1.0f, 0.0f),
-    osg::Vec3(0.0f, 1.0f, 0.0f),            
-  };*/
   osg::Vec2 texCoords[] =
   {
     osg::Vec2(0.0f, 0.0f),
@@ -400,24 +474,21 @@ osg::Node* ProgressBar::_buildBar( int render_level , std::string tex, const osg
     osg::Vec2(0.0f, 1.0f),            
   };
 
-  //osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array( 4, coords ) );
-  osg::ref_ptr< osg::Vec2Array > uvcoords ( new osg::Vec2Array( 4, texCoords ) );
+  osg::ref_ptr< osg::Vec2Array > uvcoords ( new osg::Vec2Array ( 4, texCoords ) );
 
-  geometry->setTexCoordArray( 0 , uvcoords.get() );
+  geometry->setTexCoordArray ( 0 , uvcoords.get() );
 
-  geometry->setVertexArray( vertices.get() );
+  geometry->setVertexArray ( vertices.get() );
 
-  geometry->setColorArray( white.get() );
-  geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
+  geometry->setColorArray ( white.get() );
+  geometry->setColorBinding ( osg::Geometry::BIND_OVERALL );
         
-  geometry->setNormalArray( normal.get() );
-  geometry->setNormalBinding( osg::Geometry::BIND_OVERALL );
+  geometry->setNormalArray ( normal.get() );
+  geometry->setNormalBinding ( osg::Geometry::BIND_OVERALL );
 
-  geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::QUADS, 0, 4 ) );
+  geometry->addPrimitiveSet ( new osg::DrawArrays( osg::PrimitiveSet::QUADS, 0, 4 ) );
 
-  //geometry->setStateSet ( stateset.get() );
-
-  geode->addDrawable( geometry.get() );
+  geode->addDrawable ( geometry.get() );
 
   return geode.release();
 }

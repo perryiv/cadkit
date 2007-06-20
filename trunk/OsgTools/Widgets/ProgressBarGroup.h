@@ -1,68 +1,47 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Jeff Conner
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #ifndef PROGRESSBARGROUP_H
 #define PROGRESSBARGROUP_H
 
 #include "osg/Group"
 #include <string>
-#include "ProgressBar.h"
+#include "OsgTools/Widgets/ProgressBarGroup.h"
+#include "OsgTools/Widgets/ProgressBar.h"
 #include "OsgTools/Export.h"
+#include "Usul/Base/Referenced.h"
+#include "Usul/Pointers/Pointers.h"
 
 namespace OsgTools {
 namespace Widgets {
 
-class OSG_TOOLS_EXPORT ProgressBarGroup : public osg::Referenced
+  class OSG_TOOLS_EXPORT ProgressBarGroup : public Usul::Base::Referenced
 {
 public:
-
+  USUL_DECLARE_REF_POINTERS ( ProgressBarGroup );
 	ProgressBarGroup();
-	virtual ~ProgressBarGroup();
+	
 
   osg::Node* getProgressBarGroup();
-
-  bool isRelativeToAbsolute()
-  {
-    return _isRelativeToAbsolute;
-  };
-  const osg::Vec3f & getPosition()
-  {
-    return _pos;
-  };
-
-  double getCurrentItemMin()
-  {
-    return _currItemMin;
-  };
-  double getCurrentItemMax()
-  {
-    return _currItemMax;
-  };
-  double getCurrentItemValue()
-  {
-    return _currItemVal;
-  };
-  int getNumItems()
-  {
-    return _numItems;
-  };
-  int getCurrentItem()
-  {
-    return _currentItem;
-  };
-  float getLength()
-  {
-    return _length;
-  };
-  const std::string& getMessage()
-  {
-    return _slaveText;
-  };
-  bool isCurrentItemFinished()
-  {
-    return _slave->isFinished();
-  };
-
+  const osg::Vec3f & getPosition() { return _pos; }
+  const std::string& getMessage() { return _slaveText; }
+  bool isRelativeToAbsolute() { return _isRelativeToAbsolute; }
+  bool isCurrentItemFinished() { return _slave->isFinished(); }
+  int getNumItems() { return _numItems; }
+  int getCurrentItem() { return _currentItem; }
+  float getLength() { return _length; }
+  double getCurrentItemMin() { return _currItemMin; }
+  double getCurrentItemMax() { return _currItemMax; }
+  double getCurrentItemValue() { return _currItemVal; }
+  
   void setRelativeToAbsolute ( bool value );
   void setPosition ( const osg::Vec3f & );
-  
   void setCurrentItemMin( double min );
   void setCurrentItemMax( double max );
   void setCurrentItemValue( double v );
@@ -74,10 +53,11 @@ public:
 	
 protected:
 
+  virtual ~ProgressBarGroup();
 	void _buildProgressBarGroup();
   void _init();
   std::string _getPercentComplete();
-  osg::Node* _buildBar(  int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth  );
+  osg::Node* _buildBar ( int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth  );
   void _updateMasterMessage();
 
 private:
@@ -90,7 +70,8 @@ private:
 
   std::string _masterText, _slaveText;
 
-  osg::ref_ptr< ProgressBar > _master, _slave;
+  ProgressBar::RefPtr _master;
+  ProgressBar::RefPtr _slave;
   osg::ref_ptr< osg::Node > _border;
   osg::ref_ptr< osg::Group > _group;
   osg::Vec3f _pos;

@@ -213,7 +213,6 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
           data->size ( this->size() );
           data->primitiveId ( this->primitiveID() );
           data->renderBin ( this->renderBin() );
-          data->buildScene();
           data->connection ( this->connection() );
           data->tableName ( this->tablename() );
           data->rowId ( id );

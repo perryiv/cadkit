@@ -362,23 +362,23 @@ osg::Node* Point::_buildCone( bool invert )
 
   geode->addDrawable( sd.get() );
 
-  osg::ref_ptr < osg::Transform > transform ( 0x0 );
-
   // Use an auto transform if we should.
   if( this->autotransform() )
   {
-    transform = Detail::createAutoTransform( _center );
+    osg::ref_ptr < osg::AutoTransform > at ( Detail::createAutoTransform( _center ) );
+    at->addChild ( geode.get() );
+    return at.release();
   }
   else
   {
     osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
     mt->setMatrix ( osg::Matrix::translate( _center ) );
-    transform = mt.get();
+    mt->addChild ( geode.get() );
+    return mt.release();
   }
 
-  transform->addChild ( geode.get() );
-
-  return transform.release();
+  // Should never get here.
+  return 0x0;
 }
 
 

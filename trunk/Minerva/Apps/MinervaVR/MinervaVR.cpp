@@ -60,7 +60,7 @@ const std::string EPHEMERIS     = "ephemeris";
 
 MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) : 
   OsgVJApp( kern, argc, argv ),
-  _dbManager ( new Minerva::Core::Viz::Controller ),
+  _dbManager ( 0x0 ),
   _sceneManager ( new Minerva::Core::Scene::SceneManager ),
   _planet ( new Magrathea::Planet ),
   _options(),
@@ -72,6 +72,8 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
   _mutex(),
   _rand ( 0, 5 )
 {
+  _dbManager = new Minerva::Core::Viz::Controller ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+
   // Initialize random numbers
   ::srand ( ::time ( 0x0 ) );
 
@@ -474,4 +476,81 @@ void MinervaVR::addSceneLight()
 
   osg::ref_ptr < osg::StateSet > ss ( mSceneRoot->getOrCreateStateSet() );
   lightSource->setStateSetModes( *ss.get(), osg::StateAttribute::ON );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for an interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* MinervaVR::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Minerva::Interfaces::IAnimationControl::IID:
+    return static_cast < Minerva::Interfaces::IAnimationControl * > ( this );
+  default:
+    return 0x0;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Referenece.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaVR::ref()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Unreferenece.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaVR::unref( bool )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Stop the animation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaVR::stopAnimation ()
+{
+  _sceneManager->stopAnimation ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the animate speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaVR::animateSpeed ( double speed )
+{
+  _sceneManager->animationSpeed ( speed );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the animate speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double MinervaVR::animateSpeed () const
+{
+  return _sceneManager->animationSpeed ();
 }

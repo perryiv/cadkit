@@ -171,22 +171,26 @@ protected:
   void                                     _addLayer    ( Usul::Interfaces::ILayer * layer, Unknown *caller = 0x0 );
 
   /// Remove layer with given id.
-  void             _removeLayerDistributed( Usul::Interfaces::ILayer *Layer );
+  void                                     _removeLayerDistributed( Usul::Interfaces::ILayer *Layer );
 
   /// Show layer.
-  void             _showLayerDistributed ( Usul::Interfaces::ILayer *Layer );
+  void                                     _showLayerDistributed ( Usul::Interfaces::ILayer *Layer );
 
   /// Modify polygon data.
-  void             _modifyLayerDistributed ( Usul::Interfaces::ILayer *layer );
+  void                                     _modifyLayerDistributed ( Usul::Interfaces::ILayer *layer );
 
   /// Start animation.
-  void             _startAnimationDistributed ( float speed, bool accumulate, bool dateTimeStep, bool timeWindow, unsigned int numDays );
+  void                                     _startAnimationDistributed ( float speed, bool accumulate, bool dateTimeStep, bool timeWindow, unsigned int numDays );
 
   /// Execute a command.
-  void            _executeCommand ( Usul::Interfaces::ICommand* command );
+  void                                     _executeCommand ( Usul::Interfaces::ICommand* command );
 
-  /// Minerva::Interfaces::IAnimationControls
-  void            stopAnimation();
+  /// Minerva::Interfaces::IAnimationControl
+  void                                     stopAnimation();
+
+  /// Get/Set the animate speed.
+  virtual void                             animateSpeed ( double speed );
+  virtual double                           animateSpeed () const;
 
   /// Usul::Interfaces::IDistributedVR
   virtual void playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path );

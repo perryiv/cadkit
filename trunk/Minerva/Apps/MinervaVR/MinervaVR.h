@@ -16,6 +16,7 @@
 
 #include "Minerva/Core/Viz/Controller.h"
 #include "Minerva/Core/Scene/SceneManager.h"
+#include "Minerva/Interfaces/IAnimationControl.h"
 
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
@@ -26,13 +27,16 @@
 #include "Magrathea/Planet.h"
 
 
-class MinervaVR : public VrjCore::OsgVJApp 
+class MinervaVR : public VrjCore::OsgVJApp,
+                  public Minerva::Interfaces::IAnimationControl
 {
 public:
   typedef VrjCore::OsgVJApp                  BaseClass;
   typedef Usul::Threads::RecursiveMutex      Mutex;
   typedef Usul::Threads::Guard<Mutex>        Guard;
   typedef Usul::Threads::Thread              Thread;
+
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   /// Construction/Destruction.
   MinervaVR( vrj::Kernel* kern, int& argc, char** argv );
@@ -55,6 +59,14 @@ public:
   void         _buildScene();
 
   void         _launchUpdateThread();
+
+  /// Minerva::Interfaces::IAnimationControl
+  /// Stop the animation.
+  virtual void                 stopAnimation ();
+
+  /// Get/Set the animate speed.
+  virtual void                 animateSpeed ( double speed );
+  virtual double               animateSpeed () const;
 
  private:	
 

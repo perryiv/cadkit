@@ -44,26 +44,26 @@ namespace DT.Minerva.Plugins.Animate
       this._timeWindow = new System.Windows.Forms.CheckBox();
       this._pastDaysToShow = new System.Windows.Forms.NumericUpDown();
       this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-      this._days = new System.Windows.Forms.RadioButton();
-      this._months = new System.Windows.Forms.RadioButton();
-      this._years = new System.Windows.Forms.RadioButton();
-      this.groupBox1 = new System.Windows.Forms.GroupBox();
-      this.groupBox2 = new System.Windows.Forms.GroupBox();
       this.groupBox3 = new System.Windows.Forms.GroupBox();
-      this._pauseButton = new System.Windows.Forms.Button();
-      this.trackBar1 = new System.Windows.Forms.TrackBar();
       this._stopButton = new System.Windows.Forms.Button();
-      this._stepAmount = new System.Windows.Forms.NumericUpDown();
+      this._pauseButton = new System.Windows.Forms.Button();
+      this.groupBox1 = new System.Windows.Forms.GroupBox();
       this.trackBar2 = new System.Windows.Forms.TrackBar();
+      this.trackBar1 = new System.Windows.Forms.TrackBar();
+      this.groupBox2 = new System.Windows.Forms.GroupBox();
+      this._stepAmount = new System.Windows.Forms.NumericUpDown();
+      this._days = new System.Windows.Forms.RadioButton();
+      this._years = new System.Windows.Forms.RadioButton();
+      this._months = new System.Windows.Forms.RadioButton();
       ((System.ComponentModel.ISupportInitialize)(this._speed)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this._pastDaysToShow)).BeginInit();
       this.flowLayoutPanel1.SuspendLayout();
-      this.groupBox1.SuspendLayout();
-      this.groupBox2.SuspendLayout();
       this.groupBox3.SuspendLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)(this._stepAmount)).BeginInit();
+      this.groupBox1.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
+      this.groupBox2.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this._stepAmount)).BeginInit();
       this.SuspendLayout();
       // 
       // _animate
@@ -93,6 +93,7 @@ namespace DT.Minerva.Plugins.Animate
             0,
             0,
             65536});
+      this._speed.ValueChanged += new System.EventHandler(this._speed_ValueChanged);
       // 
       // _accumulate
       // 
@@ -134,64 +135,6 @@ namespace DT.Minerva.Plugins.Animate
       this.flowLayoutPanel1.Size = new System.Drawing.Size(832, 200);
       this.flowLayoutPanel1.TabIndex = 14;
       // 
-      // _days
-      // 
-      this._days.AutoSize = true;
-      this._days.Checked = true;
-      this._days.Location = new System.Drawing.Point(9, 22);
-      this._days.Name = "_days";
-      this._days.Size = new System.Drawing.Size(49, 17);
-      this._days.TabIndex = 14;
-      this._days.TabStop = true;
-      this._days.Text = "Days";
-      this._days.UseVisualStyleBackColor = true;
-      // 
-      // _months
-      // 
-      this._months.AutoSize = true;
-      this._months.Location = new System.Drawing.Point(9, 47);
-      this._months.Name = "_months";
-      this._months.Size = new System.Drawing.Size(60, 17);
-      this._months.TabIndex = 15;
-      this._months.Text = "Months";
-      this._months.UseVisualStyleBackColor = true;
-      // 
-      // _years
-      // 
-      this._years.AutoSize = true;
-      this._years.Location = new System.Drawing.Point(9, 70);
-      this._years.Name = "_years";
-      this._years.Size = new System.Drawing.Size(52, 17);
-      this._years.TabIndex = 16;
-      this._years.Text = "Years";
-      this._years.UseVisualStyleBackColor = true;
-      // 
-      // groupBox1
-      // 
-      this.groupBox1.Controls.Add(this.trackBar2);
-      this.groupBox1.Controls.Add(this.trackBar1);
-      this.groupBox1.Controls.Add(this._pastDaysToShow);
-      this.groupBox1.Controls.Add(this._timeWindow);
-      this.groupBox1.Location = new System.Drawing.Point(256, 3);
-      this.groupBox1.Name = "groupBox1";
-      this.groupBox1.Size = new System.Drawing.Size(385, 156);
-      this.groupBox1.TabIndex = 17;
-      this.groupBox1.TabStop = false;
-      this.groupBox1.Text = "Window";
-      // 
-      // groupBox2
-      // 
-      this.groupBox2.Controls.Add(this._stepAmount);
-      this.groupBox2.Controls.Add(this._days);
-      this.groupBox2.Controls.Add(this._years);
-      this.groupBox2.Controls.Add(this._months);
-      this.groupBox2.Location = new System.Drawing.Point(647, 3);
-      this.groupBox2.Name = "groupBox2";
-      this.groupBox2.Size = new System.Drawing.Size(115, 156);
-      this.groupBox2.TabIndex = 18;
-      this.groupBox2.TabStop = false;
-      this.groupBox2.Text = "Timestep";
-      // 
       // groupBox3
       // 
       this.groupBox3.Controls.Add(this._stopButton);
@@ -206,6 +149,16 @@ namespace DT.Minerva.Plugins.Animate
       this.groupBox3.TabStop = false;
       this.groupBox3.Text = "Controls";
       // 
+      // _stopButton
+      // 
+      this._stopButton.Location = new System.Drawing.Point(87, 15);
+      this._stopButton.Name = "_stopButton";
+      this._stopButton.Size = new System.Drawing.Size(75, 23);
+      this._stopButton.TabIndex = 12;
+      this._stopButton.Text = "Stop";
+      this._stopButton.UseVisualStyleBackColor = true;
+      this._stopButton.Click += new System.EventHandler(this._stopButton_Click);
+      // 
       // _pauseButton
       // 
       this._pauseButton.Location = new System.Drawing.Point(166, 15);
@@ -216,6 +169,26 @@ namespace DT.Minerva.Plugins.Animate
       this._pauseButton.UseVisualStyleBackColor = true;
       this._pauseButton.Click += new System.EventHandler(this._pauseButton_Click);
       // 
+      // groupBox1
+      // 
+      this.groupBox1.Controls.Add(this.trackBar2);
+      this.groupBox1.Controls.Add(this.trackBar1);
+      this.groupBox1.Controls.Add(this._pastDaysToShow);
+      this.groupBox1.Controls.Add(this._timeWindow);
+      this.groupBox1.Location = new System.Drawing.Point(256, 3);
+      this.groupBox1.Name = "groupBox1";
+      this.groupBox1.Size = new System.Drawing.Size(385, 156);
+      this.groupBox1.TabIndex = 17;
+      this.groupBox1.TabStop = false;
+      this.groupBox1.Text = "Window";
+      // 
+      // trackBar2
+      // 
+      this.trackBar2.Location = new System.Drawing.Point(16, 94);
+      this.trackBar2.Name = "trackBar2";
+      this.trackBar2.Size = new System.Drawing.Size(363, 45);
+      this.trackBar2.TabIndex = 15;
+      // 
       // trackBar1
       // 
       this.trackBar1.Location = new System.Drawing.Point(16, 42);
@@ -223,15 +196,18 @@ namespace DT.Minerva.Plugins.Animate
       this.trackBar1.Size = new System.Drawing.Size(363, 45);
       this.trackBar1.TabIndex = 14;
       // 
-      // _stopButton
+      // groupBox2
       // 
-      this._stopButton.Location = new System.Drawing.Point(87, 15);
-      this._stopButton.Name = "_stopButton";
-      this._stopButton.Size = new System.Drawing.Size(75, 23);
-      this._stopButton.TabIndex = 12;
-      this._stopButton.Text = "Stop";
-      this._stopButton.UseVisualStyleBackColor = true;
-      this._stopButton.Click += new System.EventHandler(this._stopButton_Click);
+      this.groupBox2.Controls.Add(this._stepAmount);
+      this.groupBox2.Controls.Add(this._days);
+      this.groupBox2.Controls.Add(this._years);
+      this.groupBox2.Controls.Add(this._months);
+      this.groupBox2.Location = new System.Drawing.Point(647, 3);
+      this.groupBox2.Name = "groupBox2";
+      this.groupBox2.Size = new System.Drawing.Size(115, 156);
+      this.groupBox2.TabIndex = 18;
+      this.groupBox2.TabStop = false;
+      this.groupBox2.Text = "Timestep";
       // 
       // _stepAmount
       // 
@@ -255,12 +231,37 @@ namespace DT.Minerva.Plugins.Animate
             0,
             0});
       // 
-      // trackBar2
+      // _days
       // 
-      this.trackBar2.Location = new System.Drawing.Point(16, 94);
-      this.trackBar2.Name = "trackBar2";
-      this.trackBar2.Size = new System.Drawing.Size(363, 45);
-      this.trackBar2.TabIndex = 15;
+      this._days.AutoSize = true;
+      this._days.Checked = true;
+      this._days.Location = new System.Drawing.Point(9, 22);
+      this._days.Name = "_days";
+      this._days.Size = new System.Drawing.Size(49, 17);
+      this._days.TabIndex = 14;
+      this._days.TabStop = true;
+      this._days.Text = "Days";
+      this._days.UseVisualStyleBackColor = true;
+      // 
+      // _years
+      // 
+      this._years.AutoSize = true;
+      this._years.Location = new System.Drawing.Point(9, 70);
+      this._years.Name = "_years";
+      this._years.Size = new System.Drawing.Size(52, 17);
+      this._years.TabIndex = 16;
+      this._years.Text = "Years";
+      this._years.UseVisualStyleBackColor = true;
+      // 
+      // _months
+      // 
+      this._months.AutoSize = true;
+      this._months.Location = new System.Drawing.Point(9, 47);
+      this._months.Name = "_months";
+      this._months.Size = new System.Drawing.Size(60, 17);
+      this._months.TabIndex = 15;
+      this._months.Text = "Months";
+      this._months.UseVisualStyleBackColor = true;
       // 
       // Animate
       // 
@@ -274,15 +275,15 @@ namespace DT.Minerva.Plugins.Animate
       ((System.ComponentModel.ISupportInitialize)(this._speed)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this._pastDaysToShow)).EndInit();
       this.flowLayoutPanel1.ResumeLayout(false);
-      this.groupBox1.ResumeLayout(false);
-      this.groupBox1.PerformLayout();
-      this.groupBox2.ResumeLayout(false);
-      this.groupBox2.PerformLayout();
       this.groupBox3.ResumeLayout(false);
       this.groupBox3.PerformLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
-      ((System.ComponentModel.ISupportInitialize)(this._stepAmount)).EndInit();
+      this.groupBox1.ResumeLayout(false);
+      this.groupBox1.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
+      this.groupBox2.ResumeLayout(false);
+      this.groupBox2.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)(this._stepAmount)).EndInit();
       this.ResumeLayout(false);
 
     }

@@ -50,6 +50,7 @@ _size ( 1.0 ),
 _primitiveId ( 1 ),
 _quality ( 0.80f ),
 _center(),
+_autotransform ( true ),
 _material ( new osg::Material ),
 _group ( new osg::Group )
 {
@@ -361,10 +362,23 @@ osg::Node* Point::_buildCone( bool invert )
 
   geode->addDrawable( sd.get() );
 
-  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _center ) );
-  autoTransform->addChild ( geode.get() );
+  osg::ref_ptr < osg::Transform > transform ( 0x0 );
 
-  return autoTransform.release();
+  // Use an auto transform if we should.
+  if( this->autotransform() )
+  {
+    transform = Detail::createAutoTransform( _center );
+  }
+  else
+  {
+    osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+    mt->setMatrix ( osg::Matrix::translate( _center ) );
+    transform = mt.get();
+  }
+
+  transform->addChild ( geode.get() );
+
+  return transform.release();
 }
 
 
@@ -453,6 +467,11 @@ osg::Node* Point::_buildCylinder()
     v1 *= this->size();
     v1 += v0;
 
+    // TODO:
+    // Get lat long of center.
+    // Offset center by height m.
+    // Convert to earth coordinates.
+
     unsigned int sides ( static_cast < unsigned int > ( 20 * this->quality() ) );
     geode->addDrawable( BaseClass::shapeFactory()->cylinder( 0.00005, sides, v0, v1 ) );
   }
@@ -484,3 +503,26 @@ float Point::quality() const
   return _quality;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set use auto transform flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Point::autotransform ( bool b )
+{
+  _autotransform = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get use auto transform flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Point::autotransform () const
+{
+  return _autotransform;
+}

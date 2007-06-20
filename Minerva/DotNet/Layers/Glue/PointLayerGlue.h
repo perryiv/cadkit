@@ -73,6 +73,15 @@ namespace DT
         ]
         PROPERTY_GET_SET ( Quality, float );
 
+
+        /// Get/Set use auto transforms flag.
+        [
+          System::ComponentModel::Category("Primitive"),
+          System::ComponentModel::Description("Use auto transforms?"),
+          System::ComponentModel::Browsable(true)
+        ]
+        PROPERTY_GET_SET ( AutoTransform, bool );
+
         virtual ::Minerva::Core::Layers::Layer * layer() override;
 
       private:

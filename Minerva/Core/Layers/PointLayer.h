@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __WNV_LAYERS_POINT_LAYER_H__
-#define __WNV_LAYERS_POINT_LAYER_H__
+#ifndef __MINERVA_LAYERS_POINT_LAYER_H__
+#define __MINERVA_LAYERS_POINT_LAYER_H__
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/Layer.h"
@@ -48,6 +48,10 @@ public:
   void                    size( float );
   float                   size() const;
 
+  /// Get/Set the secondary size.
+  float                   secondarySize () const;
+  void                    secondarySize ( float );
+
   /// Get/Set primitive size column.
   void                    primitiveSizeColumn ( const std::string& );
   const std::string&      primitiveSizeColumn () const;
@@ -85,11 +89,12 @@ protected:
 private:
 
   Usul::Types::Uint32 _primitiveID;
-  float _size;
-  bool _stackPoints;
-  float _quality;
-  std::string _primitiveSizeColumn;
-  bool _autotransform;
+  float               _size;
+  float               _secondarySize;
+  bool                _stackPoints;
+  float               _quality;
+  std::string         _primitiveSizeColumn;
+  bool                _autotransform;
 
   SERIALIZE_XML_CLASS_NAME ( PointLayer );
 };
@@ -99,4 +104,4 @@ private:
 }
 }
 
-#endif // __WNV_LAYERS_POINT_LAYER_H__
+#endif // __MINERVA_LAYERS_POINT_LAYER_H__

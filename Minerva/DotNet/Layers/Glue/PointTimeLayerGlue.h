@@ -47,6 +47,14 @@ namespace DT
           }
         }
 
+        /// Get/Set secondary size.
+        [
+          System::ComponentModel::Category("Primitive"),
+          System::ComponentModel::Description("Secondary size of primitive."),
+          System::ComponentModel::Browsable(true)
+        ]
+        PROPERTY_GET_SET ( SecondarySize, float );
+
         /// Get/Set the primitive type.
         [
           System::ComponentModel::Category("Primitive"),

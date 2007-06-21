@@ -218,6 +218,7 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
           data->rowId ( id );
           data->quality ( this->quality() );
           data->autotransform ( this->autotransform () );
+          data->secondarySize ( this->secondarySize() );
 
           if( this->primitiveSizeColumn().size() > 0 )
           {

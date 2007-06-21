@@ -47,6 +47,7 @@ using namespace Minerva::Core::DataObjects;
 Point::Point() :
 BaseClass(),
 _size ( 1.0 ),
+_secondarySize ( 1.0 ),
 _primitiveId ( 1 ),
 _quality ( 0.80f ),
 _center(),
@@ -92,6 +93,31 @@ float Point::size () const
 void Point::size ( float size )
 {
   _size = size;
+  this->dirty( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the secondary size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float Point::secondarySize () const
+{
+  return _secondarySize;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the secondary size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Point::secondarySize ( float size )
+{
+  _secondarySize = size;
   this->dirty( true );
 }
 
@@ -478,7 +504,7 @@ osg::Node* Point::_buildCylinder()
     // Convert to earth coordinates.
 
     unsigned int sides ( static_cast < unsigned int > ( 20 * this->quality() ) );
-    geode->addDrawable( BaseClass::shapeFactory()->cylinder( 0.00005, sides, v0, v1 ) );
+    geode->addDrawable( BaseClass::shapeFactory()->cylinder( this->secondarySize(), sides, v0, v1 ) );
   }
 
   return geode.release();

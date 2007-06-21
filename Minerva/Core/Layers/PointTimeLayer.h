@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __WNV_LAYERS_POINT_TIME_LAYER_H__
-#define __WNV_LAYERS_POINT_TIME_LAYER_H__
+#ifndef __MINERVA_LAYERS_POINT_TIME_LAYER_H__
+#define __MINERVA_LAYERS_POINT_TIME_LAYER_H__
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/PointLayer.h"
@@ -104,4 +104,4 @@ private:
 }
 }
 
-#endif // __WNV_LAYERS_POINT_LAYER_H__
+#endif // __MINERVA_LAYERS_POINT_TIME_LAYER_H__

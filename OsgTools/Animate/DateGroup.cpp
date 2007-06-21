@@ -128,6 +128,7 @@ void DateGroup::traverse( osg::NodeVisitor& nv )
     {
       this->settings()->firstDate( _minDate );
       this->settings()->lastDate( _maxDate );
+      _text->setText( "" );
     }
     
   }

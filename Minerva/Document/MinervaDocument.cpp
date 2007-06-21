@@ -417,6 +417,19 @@ void MinervaDocument::animationSpeedCommand( double value )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Create and execute StartAnimation command.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::startAnimationCommand()
+{
+  Minerva::Core::Commands::StartAnimation::RefPtr command ( new Minerva::Core::Commands::StartAnimation );
+  this->_executeCommand ( command.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Create and execute StopAnimation command.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1158,6 +1171,18 @@ void MinervaDocument::_executeCommand ( Usul::Interfaces::ICommand* command )
     // Execute the command.
     command->execute( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start the animation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::startAnimation()
+{
+  _sceneManager->startAnimation();
 }
 
 

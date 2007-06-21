@@ -256,7 +256,7 @@ void DllGlue::startAnimation(float speed, bool accumulate, bool timeWindow, int 
 {
   try
   {
-    _document->startAnimation( speed, accumulate, timeWindow, numDays );
+    _document->startAnimationCommand();
   }
   catch ( System::Exception ^e )
   {

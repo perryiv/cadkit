@@ -107,6 +107,7 @@ public:
 
   void                        startAnimation( float speed, bool accumulate, bool timeWindow, int numDays );
   
+  void                        startAnimationCommand();
   void                        stopAnimationCommand();
   void                        animationSpeedCommand ( double value );
 
@@ -188,7 +189,9 @@ protected:
   void                                     _executeCommand ( Usul::Interfaces::ICommand* command );
 
   /// Minerva::Interfaces::IAnimationControl
-  void                                     stopAnimation();
+  /// Start the animation.
+  virtual void                             startAnimation ();
+  virtual void                             stopAnimation();
 
   /// Get/Set the animate speed.
   virtual void                             animateSpeed ( double speed );

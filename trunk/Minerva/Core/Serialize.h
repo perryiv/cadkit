@@ -84,8 +84,9 @@ inline Usul::Interfaces::IUnknown* deserializeCommand ( const std::string& xml )
 
   if( !v.empty() )
   {
-    Usul::Interfaces::IUnknown::QueryPtr unknown ( v.front() );
-    return unknown.release();
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( v.front() );  // Ref count = 2
+    v.clear();                                                   // Ref count 2 -> 1
+    return unknown.release();                                    // Ref count 1->0
   }
 
   return 0x0;

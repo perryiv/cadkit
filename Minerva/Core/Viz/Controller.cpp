@@ -15,6 +15,7 @@
 #include "Minerva/Core/Serialize.h"
 
 #include "Usul/Interfaces/IPlayMovie.h"
+#include "Usul/Interfaces/ICommandQueueAdd.h"
 
 #include "Usul/Types/Types.h"
 #include "Usul/Endian/Endian.h"
@@ -323,8 +324,11 @@ void Controller::_processCommands()
     // Deserialize.
     Usul::Interfaces::ICommand::QueryPtr command ( Minerva::Core::deserializeCommand ( xml ) );
 
-    if( command.valid() )
-      command->execute ( _caller.get() );
+    Usul::Interfaces::ICommandQueueAdd::QueryPtr queue ( _caller );
+
+    // Add the command to the queue...
+    if( command.valid() && queue.valid() )
+      queue->addCommand ( command.get() );
 
     // Remember the last id we processed.
     _lastCommandID = rowId;

@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="&quot;$(PQXX_INC_DIR)&quot;;&quot;$(VRJCINEMA_ROOT_DIR)/src&quot;;&quot;$(VJ_BASE_DIR)/include/tweek/idl&quot;;&quot;$(VJ_BASE_DIR)/include&quot;;&quot;$(VJ_DEPS_DIR)/include&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(CADKIT_ROOT_DIR)/Experimental&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(OSSIM_PLANET_INC_DIR)&quot;;&quot;$(OSG_EPHEMERIS_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(PQXX_INC_DIR)&quot;;&quot;$(CADKIT_ROOT_DIR)/VrjCinema/src&quot;;&quot;$(VJ_BASE_DIR)/include/tweek/idl&quot;;&quot;$(VJ_BASE_DIR)/include&quot;;&quot;$(VJ_DEPS_DIR)/include&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(OSSIM_PLANET_INC_DIR)&quot;;&quot;$(OSG_EPHEMERIS_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;__WIN32__=1;__x86__=1;__NT__=1;__OSVERSION__=5;USE_core_stub_in_nt_dll;USE_core_stub_in_nt_dll_NOT_DEFINED_Subject;NOMINMAX;$(NOINHERIT)"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -66,11 +66,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ossimd.lib ossimPlanetd.lib libpqxxd.lib producerd.lib osgd.lib osgDBd.lib osgUtild.lib osgFXd.lib osgTextd.lib vrj_d.lib vpr_d.lib gadget_d.lib jccl_d.lib vrj_ogl_d.lib tweek_d.lib openGL32.lib omnithread32_rtd.lib omniDynamic407_rtd.lib omniORB407_rtd.lib libnspr4.lib libplc4.lib comctl32.lib ws2_32.lib $(NOINHERIT)"
+				AdditionalDependencies="ossimd.lib ossimPlanetd.lib libpqxxd.lib osgd.lib osgDBd.lib osgUtild.lib osgFXd.lib osgTextd.lib vrj_d.lib vpr_d.lib gadget_d.lib jccl_d.lib vrj_ogl_d.lib tweek_d.lib openGL32.lib omnithread32_rtd.lib omniDynamic407_rtd.lib omniORB407_rtd.lib libnspr4.lib libplc4.lib comctl32.lib ws2_32.lib $(NOINHERIT)"
 				OutputFile="$(OutDir)/viewerd.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSSIM_PLANET_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;;&quot;$(VJ_BASE_DIR)/lib&quot;;&quot;$(VJ_DEPS_DIR)/lib&quot;;&quot;$(OSGHOME)/lib&quot;;&quot;$(PRODUCERHOME)/lib&quot;;&quot;$(OPENTHREADSHOME)/lib&quot;;&quot;$(CADKIT_ROOT_DIR)/bin&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSSIM_PLANET_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;;&quot;$(VJ_BASE_DIR)/lib&quot;;&quot;$(VJ_DEPS_DIR)/lib&quot;"
 				ManifestFile="$(IntDir)\$(TargetFileName).intermediate.manifest"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/viewer.pdb"

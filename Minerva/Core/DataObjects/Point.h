@@ -28,8 +28,6 @@
 #include "osg/Material"
 #include "osg/Geode"
 
-namespace osg { class Drawable; }
-
 namespace Minerva {
 namespace Core {
 namespace DataObjects {
@@ -102,7 +100,7 @@ private:
   bool         _autotransform;
 
   osg::ref_ptr < osg::Material >         _material;
-  osg::ref_ptr< osg::Group >             _group;
+  osg::ref_ptr < osg::Group >            _group;
 };
 
 

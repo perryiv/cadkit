@@ -94,6 +94,7 @@ namespace DT.Minerva.Plugins.Animate
 
       if (null != animate)
       {
+        animate.pauseAnimation();
       }
     }
 

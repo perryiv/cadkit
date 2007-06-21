@@ -73,7 +73,7 @@ void DateGroup::traverse( osg::NodeVisitor& nv )
 {
   if ( nv.getVisitorType() == osg::NodeVisitor::CULL_VISITOR )
   {
-    if( this->settings()->animate() )
+    if( this->settings()->animate() && false == this->settings()->pause() )
     {
       const osg::FrameStamp* framestamp = nv.getFrameStamp();
       if ( framestamp )

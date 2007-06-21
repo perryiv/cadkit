@@ -25,6 +25,7 @@ _firstDate( boost::date_time::min_date_time ),
 _lastDate( boost::date_time::max_date_time ),
 _period( _firstDate.date(), _lastDate.date() ),
 _animate( false ),
+_pause ( false ),
 _showPastDays( false ),
 _timeWindow ( false ),
 _windowLength ( 0 ),
@@ -179,6 +180,11 @@ unsigned int Settings::windowLength () const
 void Settings::animate( bool b )
 {
   _animate = b;
+
+  if( false == _animate )
+    _period = boost::gregorian::date_period ( _firstDate.date(), _lastDate.date() );
+
+  this->pause ( false );
 }
 
 
@@ -216,3 +222,28 @@ Settings::TimestepType Settings::timestepType() const
 {
   return _type;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the pause flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Settings::pause ( bool b )
+{
+  _pause = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the pause flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Settings::pause () const
+{
+  return _pause;
+}
+

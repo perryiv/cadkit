@@ -69,6 +69,10 @@ namespace OsgTools
       void                                timestepType( TimestepType type );
       TimestepType                        timestepType() const;
 
+      /// Get/Set the pause flag.
+      void                                pause ( bool b );
+      bool                                pause () const;
+
     protected:
       virtual ~Settings();
 
@@ -78,6 +82,7 @@ namespace OsgTools
       boost::gregorian::date_period  _period;
 
       bool          _animate;
+      bool          _pause;
       bool          _showPastDays;
       bool          _timeWindow;
       unsigned int  _windowLength;

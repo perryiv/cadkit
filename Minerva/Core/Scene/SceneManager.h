@@ -108,6 +108,9 @@ public:
   /// Stop the animation.
   void                        stopAnimation();
 
+  /// Pause the animation
+  void                        pauseAnimation();
+
   /// Clear the internal state.
   void                        clear();
 

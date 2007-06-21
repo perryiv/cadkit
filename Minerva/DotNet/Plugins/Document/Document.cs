@@ -421,6 +421,7 @@ namespace DT.Minerva.Plugins.Document
 
     void CadKit.Interfaces.IAnimateTemporal.pauseAnimation()
     {
+      _dll.pauseAnimation();
     }
 
     double CadKit.Interfaces.IAnimateTemporal.AnimationSpeed

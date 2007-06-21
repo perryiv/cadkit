@@ -31,6 +31,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS( PointLayer, PointLayer::BaseClass );
 PointLayer::PointLayer() : BaseClass(),
 _primitiveID( 2 ),
 _size( 5 ),
+_secondarySize ( 0.00005 ),
 _stackPoints ( false ),
 _quality ( 0.80 ),
 _primitiveSizeColumn(),
@@ -51,6 +52,7 @@ _autotransform ( true )
 PointLayer::PointLayer ( const PointLayer& layer ) : BaseClass ( layer ),
 _primitiveID( layer._primitiveID ),
 _size( layer._size ),
+_secondarySize ( layer._secondarySize ),
 _stackPoints ( layer._stackPoints ),
 _quality( layer._quality ),
 _primitiveSizeColumn( layer._primitiveSizeColumn ),
@@ -70,6 +72,7 @@ void PointLayer::_registerMembers()
 {
   SERIALIZE_XML_ADD_MEMBER ( _primitiveID );
   SERIALIZE_XML_ADD_MEMBER ( _size );
+  SERIALIZE_XML_ADD_MEMBER ( _secondarySize );
   SERIALIZE_XML_ADD_MEMBER ( _stackPoints );
   SERIALIZE_XML_ADD_MEMBER ( _quality );
   SERIALIZE_XML_ADD_MEMBER ( _primitiveSizeColumn );
@@ -159,6 +162,7 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       data->tableName ( dataTable );
       data->rowId ( id );
       data->autotransform ( this->autotransform () );
+      data->secondarySize ( this->secondarySize() );
 
       if( this->primitiveSizeColumn().size() > 0 )
       {
@@ -318,6 +322,30 @@ void PointLayer::size( float size )
 float PointLayer::size() const
 {
   return _size;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the secondary size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float PointLayer::secondarySize () const
+{
+  return _secondarySize;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the secondary size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointLayer::secondarySize ( float size )
+{
+  _secondarySize = size;
 }
 
 

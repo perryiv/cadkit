@@ -60,6 +60,10 @@ public:
   float                   size () const;
   void                    size ( float );
 
+  /// Get/Set the secondary size.
+  float                   secondarySize () const;
+  void                    secondarySize ( float );
+
   ///Get/Set the primitiveId.
   unsigned int            primitiveId () const;
   void                    primitiveId ( unsigned int );
@@ -91,6 +95,7 @@ protected:
 
 private:
   float        _size;
+  float        _secondarySize;
   unsigned int _primitiveId;
   float        _quality;
   osg::Vec3    _center;

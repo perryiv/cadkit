@@ -19,6 +19,7 @@
 #include "Minerva/Core/Functors/SingleColorFunctor.h"
 #include "Minerva/Core/Functors/GradientColorFunctor.h"
 #include "Minerva/Core/Commands/StopAnimation.h"
+#include "Minerva/Core/Commands/AnimationSpeed.h"
 
 #include "Serialize/XML/TypeCreator.h"
 #include "Serialize/XML/Factory.h"
@@ -43,6 +44,7 @@ inline void registerFactories()
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Functors::GradientColorFunctor> ( "GradientColorFunctor" ) );
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::DB::Connection> ( "Connection" ) );
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Commands::StopAnimation> ( "StopAnimation" ) );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Commands::AnimationSpeed> ( "AnimationSpeed" ) );
 }
 
 }

@@ -431,6 +431,7 @@ namespace DT.Minerva.Plugins.Document
       }
       set
       {
+        _dll.animationSpeed(value);
       }
     }
 

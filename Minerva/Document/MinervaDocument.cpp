@@ -13,6 +13,7 @@
 #include "Minerva/Document/MinervaWriter.h"
 #include "Minerva/Document/KmlWriter.h"
 #include "Minerva/Core/Commands/StopAnimation.h"
+#include "Minerva/Core/Commands/AnimationSpeed.h"
 #include "Minerva/Core/RegisterFactories.h"
 
 #include "Magrathea/RegisterFactories.h"
@@ -398,6 +399,19 @@ void MinervaDocument::startAnimation( float speed, bool accumulate, bool timeWin
   _sceneManager->startAnimation();
 
   this->_startAnimationDistributed( speed, accumulate, true, timeWindow, numDays );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create and execute StopAnimation command.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::animationSpeedCommand( double value )
+{
+  Minerva::Core::Commands::AnimationSpeed::RefPtr command ( new Minerva::Core::Commands::AnimationSpeed ( value ) );
+  this->_executeCommand ( command.get() );
 }
 
 

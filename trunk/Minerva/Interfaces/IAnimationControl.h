@@ -24,6 +24,9 @@ struct IAnimationControl : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2210737686u };
 
+  /// Start the animation.
+  virtual void                 startAnimation () = 0;
+
   /// Stop the animation.
   virtual void                 stopAnimation () = 0;
 

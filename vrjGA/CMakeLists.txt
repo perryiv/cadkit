@@ -40,7 +40,6 @@ INCLUDE_DIRECTORIES(
 
 #List the Sources
 SET (SOURCES
-./Referenced.cpp
 ./TrackerDevice.cpp
 ./JoystickDevice.cpp
 ./ButtonGroup.cpp

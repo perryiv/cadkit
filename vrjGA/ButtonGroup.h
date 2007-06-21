@@ -16,6 +16,7 @@
 #ifndef _VRJGA_BUTTON_DEVICES_GROUP_H_
 #define _VRJGA_BUTTON_DEVICES_GROUP_H_
 
+#include "vrjGA/vrjGA.h"
 #include "vrjGA/ButtonDevice.h"
 
 #include <vector>
@@ -27,12 +28,12 @@ namespace vrjGA {
 class VRJ_GA_EXPORT ButtonGroup : public Referenced
 {
 public:
-
+  
   // Useful typedefs.
   typedef Referenced BaseClass;
 
   /// Smart-pointer definitions.
-  VRJGA_DECLARE_POINTER ( ButtonGroup );
+  USUL_DECLARE_REF_POINTERS ( ButtonGroup );
 
   // Constructor.
   ButtonGroup();
@@ -62,7 +63,7 @@ private:
   ButtonGroup ( const ButtonGroup & );
   ButtonGroup& operator = ( const ButtonGroup & );
 
-  typedef std::vector<ButtonDevice::Ptr> Buttons;
+  typedef std::vector<ButtonDevice::RefPtr> Buttons;
   Buttons _buttons;
   unsigned long _down;
   unsigned long _pressed;

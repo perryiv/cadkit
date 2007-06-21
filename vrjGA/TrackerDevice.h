@@ -16,6 +16,7 @@
 #ifndef _VRJGA_TRACKER_DEVICE_H_
 #define _VRJGA_TRACKER_DEVICE_H_
 
+#include "vrjGA/vrjGA.h"
 #include "vrjGA/Referenced.h"
 
 #include "gadget/Type/PositionInterface.h"
@@ -37,7 +38,7 @@ public:
   typedef gadget::PositionInterface PI;
 
   // Smart-pointer definitions.
-  VRJGA_DECLARE_POINTER ( TrackerDevice );
+  USUL_DECLARE_REF_POINTERS ( TrackerDevice );
 
   // Constructor.
   TrackerDevice ( const std::string &name );

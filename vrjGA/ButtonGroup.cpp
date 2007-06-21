@@ -100,10 +100,12 @@ namespace vrjGA
 {
   namespace Detail
   {
-    struct SameMask : public std::unary_function < ButtonDevice::Ptr *, bool >
+    struct SameMask : public std::unary_function < ButtonDevice::RefPtr *, bool >
     {
       SameMask ( unsigned long mask ) : _mask ( mask ){}
-      bool operator () ( const ButtonDevice::Ptr &b ) const
+
+      template < class T >
+      bool operator () ( const T &b ) const
       {
         return ( ( 0x0 != b.get() ) && ( _mask == b->mask() ) );
       }

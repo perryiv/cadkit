@@ -15,6 +15,9 @@
 #include "KwlLayer.h"
 #include "WmsLayer.h"
 
+#include "Serialize/XML/TypeCreator.h"
+#include "Serialize/XML/Factory.h"
+
 namespace Magrathea
 {
   inline void registerFactories()

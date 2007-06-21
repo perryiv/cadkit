@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DT.Minerva.Plugins.MoviePlayer
 {
-  class MoviePlayer : WeifenLuo.WinFormsUI.Docking.DockContent
+  class MoviePlayer : WeifenLuo.WinFormsUI.DockContent
   {
     private System.Windows.Forms.Button playButton;
     private System.Windows.Forms.Button restartButton;
@@ -127,13 +127,13 @@ namespace DT.Minerva.Plugins.MoviePlayer
     {
       InitializeComponent();
 
-      this.DockAreas =
-        WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom |
-        WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft |
-        WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight |
-        WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop |
-        WeifenLuo.WinFormsUI.Docking.DockAreas.Float;
-      this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockBottom;
+      this.DockableAreas =
+        WeifenLuo.WinFormsUI.DockAreas.DockBottom |
+        WeifenLuo.WinFormsUI.DockAreas.DockLeft |
+        WeifenLuo.WinFormsUI.DockAreas.DockRight |
+        WeifenLuo.WinFormsUI.DockAreas.DockTop |
+        WeifenLuo.WinFormsUI.DockAreas.Float;
+      this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockBottom;
       this.HideOnClose = true;
     }
 

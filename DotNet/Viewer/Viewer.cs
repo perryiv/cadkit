@@ -10,7 +10,7 @@
 namespace CadKit.Viewer
 {
   public class Viewer :
-    WeifenLuo.WinFormsUI.Docking.DockContent,
+    WeifenLuo.WinFormsUI.DockContent,
     CadKit.Interfaces.IViewer,
     CadKit.Interfaces.IViewerMode,
     CadKit.Interfaces.ICamera,
@@ -56,8 +56,8 @@ namespace CadKit.Viewer
       this.Controls.Add(this.Panel);
       this.Panel.Dock = System.Windows.Forms.DockStyle.Fill;
 
-      this.DockAreas = WeifenLuo.WinFormsUI.Docking.DockAreas.Document | WeifenLuo.WinFormsUI.Docking.DockAreas.Float;
-      this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.Float;
+      this.DockableAreas = WeifenLuo.WinFormsUI.DockAreas.Document | WeifenLuo.WinFormsUI.DockAreas.Float;
+      this.ShowHint = WeifenLuo.WinFormsUI.DockState.Float;
 
       this.FormClosed += this._formClosed;
       this.Shown += this._viewerShown;

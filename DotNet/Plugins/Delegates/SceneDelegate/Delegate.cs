@@ -62,10 +62,10 @@ namespace CadKit.Plugins.Delegates.SceneDelegate
 
         // Get dock-panel and show.
         CadKit.Interfaces.IDockPanel getPanel = caller as CadKit.Interfaces.IDockPanel;
-        WeifenLuo.WinFormsUI.Docking.DockPanel panel = (null != getPanel) ? (getPanel.DockPanel as WeifenLuo.WinFormsUI.Docking.DockPanel) : null;
+        WeifenLuo.WinFormsUI.DockPanel panel = (null != getPanel) ? (getPanel.DockPanel as WeifenLuo.WinFormsUI.DockPanel) : null;
         if (null != panel)
         {
-          if (panel.DocumentStyle == WeifenLuo.WinFormsUI.Docking.DocumentStyle.SystemMdi)
+          if (panel.DocumentStyle == WeifenLuo.WinFormsUI.DocumentStyles.SystemMdi)
           {
             view.MdiParent = caller as System.Windows.Forms.Form;
             CadKit.Tools.Size.mdiChild(panel.DocumentRectangle.Size,view);

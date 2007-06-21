@@ -322,7 +322,9 @@ void Controller::_processCommands()
 
     // Deserialize.
     Usul::Interfaces::ICommand::QueryPtr command ( Minerva::Core::deserializeCommand ( xml ) );
-    command->execute ( _caller.get() );
+
+    if( command.valid() )
+      command->execute ( _caller.get() );
 
     // Remember the last id we processed.
     _lastCommandID = rowId;

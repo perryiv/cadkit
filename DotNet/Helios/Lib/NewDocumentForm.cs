@@ -1,7 +1,7 @@
 
 namespace CadKit.Helios.Lib
 {
-  public partial class NewDocumentForm : WeifenLuo.WinFormsUI.Docking.DockContent
+  public partial class NewDocumentForm : WeifenLuo.WinFormsUI.DockContent
   {
     private object _caller = null;
     private CadKit.Interfaces.IDocumentNew[] _documentNew = null;
@@ -11,13 +11,13 @@ namespace CadKit.Helios.Lib
     {
       InitializeComponent();
 
-      this.DockAreas =
-          WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom |
-          WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft |
-          WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight |
-          WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop |
-          WeifenLuo.WinFormsUI.Docking.DockAreas.Float;
-      this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockRight;
+      this.DockableAreas =
+          WeifenLuo.WinFormsUI.DockAreas.DockBottom |
+          WeifenLuo.WinFormsUI.DockAreas.DockLeft |
+          WeifenLuo.WinFormsUI.DockAreas.DockRight |
+          WeifenLuo.WinFormsUI.DockAreas.DockTop |
+          WeifenLuo.WinFormsUI.DockAreas.Float;
+      this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockRight;
       this.HideOnClose = true;
     }
 
@@ -215,7 +215,7 @@ namespace CadKit.Helios.Lib
       CadKit.Interfaces.IDockPanel dockPanel = sender as CadKit.Interfaces.IDockPanel;
       if (null != dockPanel)
       {
-        WeifenLuo.WinFormsUI.Docking.DockPanel panel = dockPanel.DockPanel as WeifenLuo.WinFormsUI.Docking.DockPanel;
+        WeifenLuo.WinFormsUI.DockPanel panel = dockPanel.DockPanel as WeifenLuo.WinFormsUI.DockPanel;
         if (null != panel)
         {
 

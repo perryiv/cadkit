@@ -78,7 +78,7 @@ namespace DT.Minerva.Plugins.MoviePlayer
       CadKit.Interfaces.IDockPanel dockPanel = sender as CadKit.Interfaces.IDockPanel;
       if (null != dockPanel)
       {
-        WeifenLuo.WinFormsUI.Docking.DockPanel panel = dockPanel.DockPanel as WeifenLuo.WinFormsUI.Docking.DockPanel;
+        WeifenLuo.WinFormsUI.DockPanel panel = dockPanel.DockPanel as WeifenLuo.WinFormsUI.DockPanel;
         if (null != panel)
         {
 

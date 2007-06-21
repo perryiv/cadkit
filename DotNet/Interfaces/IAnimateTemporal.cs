@@ -22,5 +22,14 @@ namespace CadKit.Interfaces
     AnimateTimestep TimestepType { get; set; }
     void startAnimation(float speed, bool accumulate, bool timeWindow, int numDays);
     void stopAnimation();
+    void pauseAnimation();
+
+    double AnimationSpeed { get; set; }
+
+    bool ShowPastEvents { get; set; }
+
+    bool TimeWindow { get; set; }
+
+    bool TimeWindowLength { get; set; }
   }
 }

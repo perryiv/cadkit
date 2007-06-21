@@ -323,6 +323,26 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Functors"
+				>
+				<File
+					RelativePath="..\Functors\BaseFunctor.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Functors\BaseFunctor.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Common"
+				>
+				<File
+					RelativePath="..\Common\Buttons.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

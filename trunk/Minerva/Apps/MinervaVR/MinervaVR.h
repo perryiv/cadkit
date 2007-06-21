@@ -72,6 +72,9 @@ public:
   void         _processCommands ();
 
   /// Minerva::Interfaces::IAnimationControl
+  /// Start the animation.
+  virtual void                 startAnimation ();
+
   /// Stop the animation.
   virtual void                 stopAnimation ();
 

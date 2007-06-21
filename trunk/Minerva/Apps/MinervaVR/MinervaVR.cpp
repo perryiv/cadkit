@@ -160,7 +160,9 @@ void MinervaVR::appInit()
 
   setBackgroundColor( gmtl::Vec4f( _background[0], _background[1], _background[2], _background[3] ).getData());
 
-  vrj::Projection::setNearFar(0.000001, 15.0);
+  //vrj::Projection::setNearFar(0.000001, 15.0);
+  vrj::Projection::setNearFar(0.001, 15.0);
+
   setSceneInitialPosition( osg::Vec3f( 0.0, 10.0, 0.0 ) );
 
   this->_initLegend();
@@ -512,7 +514,7 @@ void MinervaVR::_processCommands ()
     CommandPtr command ( _commandQueue.front() );
 
     // Remove it from the list.
-    _commandQueue.pop_front():
+    _commandQueue.pop_front();
 
     // Execute the command.
     if( command.valid() )
@@ -576,6 +578,18 @@ void MinervaVR::ref()
 
 void MinervaVR::unref( bool )
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start the animation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaVR::startAnimation ()
+{
+  _sceneManager->startAnimation ();
 }
 
 

@@ -11,6 +11,7 @@
 #include "MinervaVR.h"
 
 #include "Usul/System/Host.h"
+#include "Usul/System/Sleep.h"
 #include "Usul/File/Path.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Threads/Manager.h"
@@ -66,11 +67,10 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
   _options(),
   _background( 0.0, 0.0, 0.0, 1.0 ),
   _update( ),
-  _numFramesBuild ( 0 ),
-  _frameBuild ( 0 ),
   _updateThread ( 0x0 ),
   _mutex(),
-  _rand ( 0, 5 )
+  _rand ( 0, 5 ),
+  _commandQueue ()
 {
   _dbManager = new Minerva::Core::Viz::Controller ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 
@@ -90,12 +90,6 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
   {
     std::cerr << " [MinervaVR] Warning: No Minerva config file found. " << std::endl;
   }
-
-  std::cerr << " [MinervaVR] Constructor finished: " << std::endl;
-
-  std::string host ( Usul::System::Host::name() );
-  char num ( host[ host.size() - 1 ] );
-  _frameBuild = 10 + ( num - 48 );
 
   // Make room for 2 Jobs.
   Usul::Jobs::Manager::instance().poolResize ( 2 );
@@ -264,17 +258,11 @@ void MinervaVR::appPreOsgDraw()
   // Purge any threads that may be finished.
   Usul::Threads::Manager::instance().purge();
 
-#if 1
-
   // Launch the update thread if it stopped.
   if( _updateThread->isIdle() )
   {
     this->_launchUpdateThread();
   }
-#else
-  if ( _dbManager->hasEvents() )
-    this->_updateScene();
-#endif
 
   this->_buildScene();
 }
@@ -392,7 +380,7 @@ void MinervaVR::appSceneInit()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Update the scene.
+//  Update the scene.  Do not lock the mutex.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -407,13 +395,13 @@ void MinervaVR::_updateScene( Usul::Threads::Thread *thread )
   {
     try
     {
-      ::sleep ( static_cast < unsigned int > ( _rand () ) );
+      Usul::System::Sleep::seconds ( static_cast < unsigned long > ( _rand () ) );
 
       // Update the scene.
       _dbManager->updateScene();
 
       if( update () )
-	std::cerr << " [MinervaVR] Update thread still alive." << std::endl;
+	      std::cerr << " [MinervaVR] Update thread still alive." << std::endl;
     }
     catch ( ... )
     {
@@ -481,6 +469,75 @@ void MinervaVR::addSceneLight()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Frame has finished.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaVR::postFrame()
+{
+  USUL_TRACE_SCOPE;
+
+  try
+  {
+    BaseClass::postFrame();
+
+    this->_processCommands();
+  }
+  catch ( const std::exception& e )
+  {
+    std::cerr << "Error 1632458424: Standard exception caught in post frame." << std::endl;
+    std::cerr << "Message: " << e.what() << std::endl;
+  }
+  catch ( ... )
+  {
+    std::cerr << "Error 2681275507: Unknown exception caught in post frame." << std::endl;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process commands in the queue.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaVR::_processCommands ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  while ( false == _commandQueue.empty() )
+  {
+    // Get the first command.
+    CommandPtr command ( _commandQueue.front() );
+
+    // Remove it from the list.
+    _commandQueue.pop_front():
+
+    // Execute the command.
+    if( command.valid() )
+      command->execute ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a command.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaVR::addCommand ( Usul::Interfaces::ICommand* command )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  _commandQueue.push_back ( command );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Query for an interface.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -492,6 +549,8 @@ Usul::Interfaces::IUnknown* MinervaVR::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IUnknown::IID:
   case Minerva::Interfaces::IAnimationControl::IID:
     return static_cast < Minerva::Interfaces::IAnimationControl * > ( this );
+  case Usul::Interfaces::ICommandQueueAdd::IID:
+    return static_cast < Usul::Interfaces::ICommandQueueAdd * > ( this );
   default:
     return 0x0;
   }

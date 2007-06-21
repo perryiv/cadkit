@@ -23,18 +23,26 @@
 #include "Usul/Threads/Thread.h"
 #include "Usul/CommandLine/Options.h"
 #include "Usul/Adaptors/Random.h"
+#include "Usul/Interfaces/ICommand.h"
+#include "Usul/Interfaces/ICommandQueueAdd.h"
 
 #include "Magrathea/Planet.h"
 
+#include <list>
 
 class MinervaVR : public VrjCore::OsgVJApp,
-                  public Minerva::Interfaces::IAnimationControl
+                  public Minerva::Interfaces::IAnimationControl,
+                  public Usul::Interfaces::ICommandQueueAdd
 {
 public:
+  // Typedefs.
   typedef VrjCore::OsgVJApp                  BaseClass;
   typedef Usul::Threads::RecursiveMutex      Mutex;
   typedef Usul::Threads::Guard<Mutex>        Guard;
   typedef Usul::Threads::Thread              Thread;
+  typedef Usul::Interfaces::ICommand         Command;
+  typedef Command::QueryPtr                  CommandPtr;
+  typedef std::list < CommandPtr >           CommandQueue;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -51,6 +59,7 @@ public:
   virtual void appSceneInit();
   virtual void appPreOsgDraw();
   virtual void draw();
+  virtual void postFrame();
   virtual void addSceneLight();
 
   void         _initLegend();
@@ -60,6 +69,8 @@ public:
 
   void         _launchUpdateThread();
 
+  void         _processCommands ();
+
   /// Minerva::Interfaces::IAnimationControl
   /// Stop the animation.
   virtual void                 stopAnimation ();
@@ -67,6 +78,9 @@ public:
   /// Get/Set the animate speed.
   virtual void                 animateSpeed ( double speed );
   virtual double               animateSpeed () const;
+
+  /// Usul::Interfaces::ICommandQueueAdd
+  virtual void                 addCommand ( Usul::Interfaces::ICommand* command );
 
  private:	
 
@@ -76,12 +90,11 @@ public:
   Usul::CommandLine::Options                   _options;
   osg::Vec4f                                   _background;
   cluster::UserData< SharedUpdateData >        _update;
-  unsigned int                                 _numFramesBuild;
-  unsigned int                                 _frameBuild;
   Thread::RefPtr                               _updateThread;
   mutable Mutex                                _mutex;
   Usul::Adaptors::Random < double >            _rand;
+  CommandQueue                                 _commandQueue;
 };
 
-#endif //: _MINERVA_VR_H_
+#endif // _MINERVA_VR_H_
 

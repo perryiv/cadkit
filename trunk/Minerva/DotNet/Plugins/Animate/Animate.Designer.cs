@@ -78,7 +78,7 @@ namespace DT.Minerva.Plugins.Animate
       // 
       // _speed
       // 
-      this._speed.DecimalPlaces = 1;
+      this._speed.DecimalPlaces = 3;
       this._speed.Increment = new decimal(new int[] {
             1,
             0,

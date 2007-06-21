@@ -38,7 +38,7 @@ public:
   typedef gadget::AnalogInterface AI;
 
   /// Smart-pointer definitions.
-  VRJGA_DECLARE_POINTER ( JoystickDevice );
+  USUL_DECLARE_REF_POINTERS ( JoystickDevice );
 
   // Constructor.
   JoystickDevice ( const std::string &h, const std::string &v );

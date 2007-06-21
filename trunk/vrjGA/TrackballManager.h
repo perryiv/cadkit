@@ -32,7 +32,7 @@ namespace vrjGA
 	{
 	public:
     typedef Referenced BaseClass;
-    VRJGA_DECLARE_POINTER ( TrackballManager );
+    USUL_DECLARE_REF_POINTERS ( TrackballManager );
 
     TrackballManager(): BaseClass(),
       _tb(0x0), _wand(0x0), _btn(0x0) {}

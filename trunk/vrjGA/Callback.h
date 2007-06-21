@@ -16,6 +16,7 @@
 #ifndef _VRJGA_CALLBACK_H_
 #define _VRJGA_CALLBACK_H_
 
+#include "vrjGA/vrjGA.h"
 #include "vrjGA/Referenced.h"
 #include "vrjGA/Messages.h"
 
@@ -29,7 +30,8 @@ public:
 
   // Typedefs and smart-pointers.
   typedef Referenced BaseClass;
-  VRJGA_DECLARE_POINTER ( Callback );
+  USUL_DECLARE_REF_POINTERS ( Callback );
+  typedef RefPtr Ptr;
 
   // Execute the callback functionality.
   virtual void operator () ( Message m, Referenced *caller ) = 0;

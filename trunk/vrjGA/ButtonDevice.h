@@ -16,6 +16,7 @@
 #ifndef _VRJGA_BUTTON_DEVICE_H_
 #define _VRJGA_BUTTON_DEVICE_H_
 
+#include "vrjGA/vrjGA.h"
 #include "vrjGA/Referenced.h"
 
 #include "gadget/Type/DigitalInterface.h"
@@ -35,7 +36,7 @@ public:
   typedef gadget::DigitalInterface DI;
 
   /// Smart-pointer definitions.
-  VRJGA_DECLARE_POINTER ( ButtonDevice );
+  USUL_DECLARE_REF_POINTERS ( ButtonDevice );
 
   // Constructor.
   ButtonDevice ( unsigned long mask, const std::string &name );

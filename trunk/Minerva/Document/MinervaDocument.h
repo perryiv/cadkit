@@ -106,7 +106,9 @@ public:
   Settings::TimestepType      timestepType( ) const;
 
   void                        startAnimation( float speed, bool accumulate, bool timeWindow, int numDays );
+  
   void                        stopAnimationCommand();
+  void                        animationSpeedCommand ( double value );
 
   void                        resize ( unsigned int width, unsigned int height );
 

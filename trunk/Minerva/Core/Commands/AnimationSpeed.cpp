@@ -23,6 +23,20 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( AnimationSpeed, AnimationSpeed::BaseClass );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+AnimationSpeed::AnimationSpeed ( ) : 
+  BaseClass ( 0x0 ),
+  _speed    ( 0.0 )
+{
+  this->_addMember ( "speed", _speed );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 AnimationSpeed::AnimationSpeed ( double speed ) : 
   BaseClass ( 0x0 ),
   _speed    ( speed )

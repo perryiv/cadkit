@@ -51,8 +51,11 @@ namespace DT
 
             void                  timestepType ( CadKit::Interfaces::AnimateTimestep type );
             CadKit::Interfaces::AnimateTimestep  timestepType ();
-            void                  startAnimation(float speed, bool accumulate, bool timeWindow, int numDays);
+            void                  startAnimation( float speed, bool accumulate, bool timeWindow, int numDays );
             void                  stopAnimation();
+
+            void                  animationSpeed ( double d );
+            double                animationSpeed ();
 
             void                  viewer( CadKit::Viewer::Glue::Viewer ^viewer );
 

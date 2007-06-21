@@ -32,6 +32,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( AnimationSpeed );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
+  AnimationSpeed ( );
   AnimationSpeed ( double speed );
 
 protected:

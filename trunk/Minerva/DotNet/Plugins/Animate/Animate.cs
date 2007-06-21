@@ -77,6 +77,9 @@ namespace DT.Minerva.Plugins.Animate
           animate.TimestepType = CadKit.Interfaces.AnimateTimestep.MONTH;
         if (_years.Checked)
           animate.TimestepType = CadKit.Interfaces.AnimateTimestep.YEAR;
+
+        animate.AnimationSpeed = System.Convert.ToDouble(_speed.Value);
+
         animate.startAnimation(float.Parse(_speed.Value.ToString()), _accumulate.Checked, _timeWindow.Checked, int.Parse(_pastDaysToShow.Value.ToString()));
       }
     }
@@ -119,6 +122,7 @@ namespace DT.Minerva.Plugins.Animate
       if (null != animate)
       {
         double value = System.Convert.ToDouble(_speed.Value);
+        animate.AnimationSpeed = value;
       }
     }
   }

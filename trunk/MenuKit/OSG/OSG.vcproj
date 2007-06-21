@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="../../;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;$(OPENTHREADS_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_COMPILING_MENUKIT_OSG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -125,7 +125,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_ROOT_DIR)&quot;;$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="../../;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;$(OPENTHREADS_INC_DIR)"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_COMPILING_MENUKIT_OSG"
 				RuntimeLibrary="0"
 				RuntimeTypeInfo="true"

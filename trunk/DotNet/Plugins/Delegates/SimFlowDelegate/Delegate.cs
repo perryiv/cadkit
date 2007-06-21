@@ -68,11 +68,11 @@ namespace CadKit.Plugins.Delegates.SimFlowDelegate
         }
 
         CadKit.Interfaces.IDockPanel getPanel = caller as CadKit.Interfaces.IDockPanel;
-        WeifenLuo.WinFormsUI.Docking.DockPanel panel = (null != getPanel) ? (getPanel.DockPanel as WeifenLuo.WinFormsUI.Docking.DockPanel) : null;
+        WeifenLuo.WinFormsUI.DockPanel panel = (null != getPanel) ? (getPanel.DockPanel as WeifenLuo.WinFormsUI.DockPanel) : null;
 
         if (null != panel)
         {
-          if (panel.DocumentStyle == WeifenLuo.WinFormsUI.Docking.DocumentStyle.SystemMdi)
+          if (panel.DocumentStyle == WeifenLuo.WinFormsUI.DocumentStyles.SystemMdi)
           {
             _view.MdiParent = caller as System.Windows.Forms.Form;
             CadKit.Tools.Size.mdiChild(panel.DocumentRectangle.Size,_view);

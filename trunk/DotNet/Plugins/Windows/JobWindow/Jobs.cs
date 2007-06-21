@@ -9,7 +9,7 @@
 
 namespace CadKit.Plugins.Windows.JobWindow
 {
-  public partial class Jobs : WeifenLuo.WinFormsUI.Docking.DockContent
+  public partial class Jobs : WeifenLuo.WinFormsUI.DockContent
   {
     /// <summary>
     /// Constructor
@@ -20,13 +20,13 @@ namespace CadKit.Plugins.Windows.JobWindow
       {
         this.InitializeComponent();
 
-        this.DockAreas =
-          WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom |
-          WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft |
-          WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight |
-          WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop |
-          WeifenLuo.WinFormsUI.Docking.DockAreas.Float;
-        this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockBottom;
+        this.DockableAreas =
+          WeifenLuo.WinFormsUI.DockAreas.DockBottom |
+          WeifenLuo.WinFormsUI.DockAreas.DockLeft |
+          WeifenLuo.WinFormsUI.DockAreas.DockRight |
+          WeifenLuo.WinFormsUI.DockAreas.DockTop |
+          WeifenLuo.WinFormsUI.DockAreas.Float;
+        this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockBottom;
         this.HideOnClose = true;
 
         CadKit.Threads.GUI.Jobs jobs = new CadKit.Threads.GUI.Jobs();

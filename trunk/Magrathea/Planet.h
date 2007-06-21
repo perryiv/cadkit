@@ -66,7 +66,7 @@ namespace Magrathea
       bool                                            hasLayerOperation( ossimPlanetTextureLayer* layer );
 
       virtual void                                    reset();
-      void                                            refreshLandTextures( ossimPlanetExtents* extents, ossimPlanetPagedLandLodRefreshType refreshType);
+      void                                            refreshLandTextures( ossimPlanetExtents* extents, ossimPlanetLandRefreshType refreshType);
 
       osg::Group*                                     root() const;
 

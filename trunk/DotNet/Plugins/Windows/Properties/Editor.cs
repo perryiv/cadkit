@@ -9,7 +9,7 @@
 
 namespace CadKit.Plugins.Windows.Properties
 {
-  public partial class Editor : WeifenLuo.WinFormsUI.Docking.DockContent
+  public partial class Editor : WeifenLuo.WinFormsUI.DockContent
   {
     /// <summary>
     /// Data members.
@@ -26,13 +26,13 @@ namespace CadKit.Plugins.Windows.Properties
       {
         this.InitializeComponent();
 
-        this.DockAreas =
-          WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom |
-          WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft |
-          WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight |
-          WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop |
-          WeifenLuo.WinFormsUI.Docking.DockAreas.Float;
-        this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockBottom;
+        this.DockableAreas =
+          WeifenLuo.WinFormsUI.DockAreas.DockBottom |
+          WeifenLuo.WinFormsUI.DockAreas.DockLeft |
+          WeifenLuo.WinFormsUI.DockAreas.DockRight |
+          WeifenLuo.WinFormsUI.DockAreas.DockTop |
+          WeifenLuo.WinFormsUI.DockAreas.Float;
+        this.ShowHint = WeifenLuo.WinFormsUI.DockState.DockBottom;
         this.HideOnClose = true;
 
         _grid.Dock = System.Windows.Forms.DockStyle.Fill;

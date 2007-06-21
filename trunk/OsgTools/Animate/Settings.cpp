@@ -25,7 +25,7 @@ _firstDate( boost::date_time::min_date_time ),
 _lastDate( boost::date_time::max_date_time ),
 _period( _firstDate.date(), _lastDate.date() ),
 _animate( false ),
-_showPastDays( true ),
+_showPastDays( false ),
 _timeWindow ( false ),
 _windowLength ( 0 ),
 _type ( DAY )

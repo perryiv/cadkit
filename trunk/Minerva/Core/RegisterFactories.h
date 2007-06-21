@@ -21,6 +21,7 @@
 #include "Minerva/Core/Commands/StartAnimation.h"
 #include "Minerva/Core/Commands/StopAnimation.h"
 #include "Minerva/Core/Commands/AnimationSpeed.h"
+#include "Minerva/Core/Commands/PauseAnimation.h"
 
 #include "Serialize/XML/TypeCreator.h"
 #include "Serialize/XML/Factory.h"
@@ -47,6 +48,7 @@ inline void registerFactories()
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Commands::StopAnimation> ( "StopAnimation" ) );
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Commands::AnimationSpeed> ( "AnimationSpeed" ) );
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Commands::StartAnimation> ( "StartAnimation" ) );
+  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Commands::StartAnimation> ( "PauseAnimation" ) );
 }
 
 }

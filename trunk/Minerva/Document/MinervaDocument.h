@@ -109,6 +109,7 @@ public:
   
   void                        startAnimationCommand();
   void                        stopAnimationCommand();
+  void                        pauseAnimationCommand();
   void                        animationSpeedCommand ( double value );
 
   void                        resize ( unsigned int width, unsigned int height );
@@ -192,6 +193,7 @@ protected:
   /// Start the animation.
   virtual void                             startAnimation ();
   virtual void                             stopAnimation();
+  virtual void                             pauseAnimation();
 
   /// Get/Set the animate speed.
   virtual void                             animateSpeed ( double speed );

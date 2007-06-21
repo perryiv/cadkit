@@ -53,6 +53,7 @@ namespace DT
             CadKit::Interfaces::AnimateTimestep  timestepType ();
             void                  startAnimation( float speed, bool accumulate, bool timeWindow, int numDays );
             void                  stopAnimation();
+            void                  pauseAnimation();
 
             void                  animationSpeed ( double d );
             double                animationSpeed ();

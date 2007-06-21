@@ -30,6 +30,9 @@ struct IAnimationControl : public Usul::Interfaces::IUnknown
   /// Stop the animation.
   virtual void                 stopAnimation () = 0;
 
+   /// Stop the animation.
+  virtual void                 pauseAnimation () = 0;
+
   /// Get/Set the animate speed.
   virtual void                 animateSpeed ( double speed ) = 0;
   virtual double               animateSpeed () const = 0;

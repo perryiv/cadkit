@@ -283,10 +283,6 @@
 			Name="DLL"
 			>
 			<File
-				RelativePath="vrjGA.cpp"
-				>
-			</File>
-			<File
 				RelativePath="vrjGA.h"
 				>
 			</File>

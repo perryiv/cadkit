@@ -1243,6 +1243,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\ICommandQueueAdd.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\IRedo.h"
 						>
 					</File>

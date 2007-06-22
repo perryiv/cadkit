@@ -71,6 +71,12 @@ public:
   // Return the current value of the progress bar
   double getCurrent() { return _current; }
 
+  // Return true if the progress is being animated
+  bool isAnimating() { return _isAnimating; }
+
+  // Return true if the progress bar is being shown
+  bool isVisible() { return _isVisible; }
+
 
   
   osg::Vec2f getLowerLeft();
@@ -88,6 +94,7 @@ public:
   void setRelativeToAbsolute ( bool value );
   void setMessage ( const std::string & s );
   void setLowerLeft( const osg::Vec2f & ll );
+  void setAnimation ( bool value );
   void reset();
 
   // Show the progress bar
@@ -105,7 +112,7 @@ public:
   // Set the status bar text.
   virtual void setStatusBarText ( const std::string &text, bool force );
 
-  
+  void clear();
 
   
 protected:
@@ -113,6 +120,7 @@ protected:
   virtual ~ProgressBar();
   void _buildProgressBarObject();
   void _buildProgressBar();
+  void _emptyProgressBar();
   std::string _getPercentComplete();
   osg::Node* _buildBar (  int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth );
   osg::Geode* _drawTextAtPosition ( const osg::Vec3f & p, const std::string & s, const osg::Vec4f& color, float size );
@@ -130,8 +138,11 @@ private:
   float _borderPadding;
   float _borderZOffset;
   float _textZOffset;
+  float _animationStart, _animationEnd, _animationStep;
   bool _isRelativeToAbsolute;
   bool _isFinished;
+  bool _isVisible, _isAnimating;
+
   osg::Vec2f _ll;
   std::string _barText;
   osg::ref_ptr< osg::Node > _progressBar;

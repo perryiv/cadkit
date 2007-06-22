@@ -24,6 +24,64 @@ using namespace OsgTools::Widgets;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ProgressBar, ProgressBar::BaseClass );
 
+class ProgressBarAnimationCallback : public osg::NodeCallback
+{
+    public:
+
+      ProgressBarAnimationCallback(ProgressBar* bar, float start, float end, float step) :
+          _start ( start ),
+          _end ( end ),
+          _step ( step ),
+          _bar ( bar )
+            
+        {
+          
+        }
+
+        virtual void operator() (osg::Node* node, osg::NodeVisitor* nv)
+        {
+            osg::MatrixTransform* transform = dynamic_cast<osg::MatrixTransform*>(node);    
+            if(0L != transform)
+            {
+			        if(_bar->isAnimating())
+			        {
+				        if(_bar->isVisible())
+				        {
+					        if (_start < _end)
+					        {
+						        _start += _step;
+						        transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
+        						
+					        }
+					        else
+						        _bar->setAnimation(false);
+				        }
+				        else
+				        {
+					        if (_start > _end)
+					        {
+						        _start += _step;
+						        transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
+        						
+					        }
+					        else
+						        _bar->setAnimation(false);
+				        }
+			        }
+            }   
+            traverse(node,nv);            
+            
+        }
+        
+    protected:
+    
+      ProgressBar::RefPtr _bar;
+        
+		  float				_start;
+		  float				_end;
+		  float				_step;
+
+};
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor/Destructor
@@ -49,14 +107,19 @@ _borderPadding ( 0.1f ),
 _borderZOffset ( -0.0002f ),
 _barBorderThickness ( 0.005f ),
 _barBorderZOffset ( -0.0001f ),
-_textZOffset ( 0.005f ),
+_textZOffset ( 0.0005f ),
 _isRelativeToAbsolute ( false ),
 _isFinished ( false ),
+_isVisible ( true ),
+_isAnimating ( false ),
 _ll ( osg::Vec2f ( 0.0f, 0.0f ) )
 {
   _borderPadding = ( _barHeight + _barBorderThickness ) * ( _barLength + _barBorderThickness) * .5;
   _borderHeight = ( _barHeight * 2.0f ) + _borderPadding;
   _borderLength = _barLength + _borderPadding;
+  _animationStart = 1.0f;
+	_animationEnd = 0.0f; 
+	_animationStep = -1 * (1.0f / 20.0f);
   _pbarGroup = new osg::Group() ;
 	this->_buildProgressBarObject();
   this->updateProgressBar();
@@ -158,6 +221,12 @@ Usul::Interfaces::IUnknown* ProgressBar::queryInterface ( unsigned long iid )
 
 void ProgressBar::showProgressBar()
 {
+  _animationStart = 0.0f;
+	_animationEnd = 1.0f; 
+	_animationStep = 1.0f / 20.0f;
+  _isAnimating = true;
+  _isVisible = true;
+  updateProgressBar();
 }
 
 
@@ -169,6 +238,12 @@ void ProgressBar::showProgressBar()
 
 void ProgressBar::hideProgressBar()
 {
+  _animationStart = 1.0f;
+	_animationEnd = 0.0f; 
+	_animationStep = -1 * (1.0f / 20.0f);
+  _isAnimating = true;
+	_isVisible = false;
+  updateProgressBar();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -215,8 +290,33 @@ void ProgressBar::setStatusBarText ( const std::string &text, bool force )
 
 void ProgressBar::updateProgressBar()
 {
-  this->_buildProgressBarObject();
-  this->_buildProgressBar();
+  if( _isVisible )
+  {
+    this->_buildProgressBarObject();
+		this->_buildProgressBar();
+  }
+
+	if( !_isVisible && _isAnimating )
+  {
+    this->_buildProgressBarObject();
+		this->_buildProgressBar();
+  }
+
+	if( !_isVisible && !_isAnimating )
+		_emptyProgressBar();
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set value to true to start animation
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBar::setAnimation ( bool value )
+{
+  _isAnimating = value;
 }
 
 
@@ -333,6 +433,19 @@ void ProgressBar::setCurrent( double c )
   this->updateProgressBar();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove all children from the compass group.  Called when compass is
+//  "hidden"
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBar::_emptyProgressBar()
+{
+	_pbarGroup->removeChildren ( 0, _pbarGroup->getNumChildren() );
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Draw a text string <s> at position <p>
@@ -352,8 +465,9 @@ osg::Geode* ProgressBar::_drawTextAtPosition( const osg::Vec3f & p, const std::s
   text->setPosition( p );
   text->setLayout(osgText::Text::LEFT_TO_RIGHT);
   text->setText( s );
+  text->setFontResolution ( 40, 40 );
   
-  //text->setBackdropType( osgText::Text::NONE );
+  text->setBackdropType( osgText::Text::NONE );
 
   geode->addDrawable(text);
 
@@ -436,19 +550,23 @@ void ProgressBar::_buildProgressBar()
   //matrix transforms
  
   osg::ref_ptr< osg::MatrixTransform > matrixT ( new osg::MatrixTransform() );
+  osg::ref_ptr < osg::MatrixTransform > anim ( new osg::MatrixTransform() );
+
+  anim->setUpdateCallback ( new ProgressBarAnimationCallback ( this, _animationStart, _animationEnd, _animationStep ) );
 
   //matrixT->setMatrix( osg::Matrix::translate( _pos.x(), _pos.y(), _pos.z() ) );
 
-  matrixT->addChild ( _progressBar.get() );
-  matrixT->addChild ( _backgroundBar.get() );
-  matrixT->addChild ( _barBorder.get() );
-  matrixT->addChild ( _border.get() );
-  matrixT->addChild ( _text.get() );
-  matrixT->addChild ( _percent.get() );
+  anim->addChild ( _progressBar.get() );
+  anim->addChild ( _backgroundBar.get() );
+  anim->addChild ( _barBorder.get() );
+  anim->addChild ( _border.get() );
+  anim->addChild ( _text.get() );
+  anim->addChild ( _percent.get() );
 
   if( _isRelativeToAbsolute )
     matrixT->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
 
+  matrixT->addChild ( anim.get() );
   
   _pbarGroup->removeChildren ( 0, _pbarGroup->getNumChildren() ); 
 
@@ -483,10 +601,10 @@ osg::Node* ProgressBar::_buildBar( int render_level , std::string tex, const osg
 	  osg::ref_ptr< osg::Texture2D > texture ( new osg::Texture2D() ); 
 	  texture->setImage ( image.get() );
 	  stateset->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-	  stateset->setMode ( GL_REPLACE, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-	  stateset->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );    
-    stateset->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
-    stateset->setRenderBinDetails ( render_level, "RenderBin" );
+	  //stateset->setMode ( GL_REPEAT, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+	  //stateset->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );    
+    //stateset->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
+    //stateset->setRenderBinDetails ( render_level, "RenderBin" );
   }
 
   osg::ref_ptr< osg::Vec4Array > white ( new osg::Vec4Array() );  
@@ -529,3 +647,9 @@ osg::Node* ProgressBar::_buildBar( int render_level , std::string tex, const osg
   return geode.release();
 }
 
+
+void ProgressBar::clear()
+{
+  _pbarGroup->removeChild ( 0 , _pbarGroup->getNumChildren() );
+  _pbarGroup = 0x0;
+}

@@ -1246,7 +1246,7 @@ Movie::Filters Movie::filtersWrite() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Movie::writeMovie ( const Filename& filename, const Filenames& filenames )
+void Movie::writeMovie ( const FileName& filename, const FileNames& filenames )
 {
   typedef Usul::Components::Manager Manager;
   typedef Manager::UnknownSet UnknownSet;

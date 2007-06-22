@@ -19,6 +19,7 @@
 
 #include "Helios/Qt/Commands/Command.h"
 
+#include "Usul/Interfaces/GUI/ILoadFileDialog.h"
 #include "Usul/Jobs/Job.h"
 
 #include <vector>
@@ -36,9 +37,11 @@ class HELIOS_QT_COMMANDS_EXPORT OpenDocument : public CadKit::Helios::Commands::
 public:
 
   // Typedefs.
-  typedef CadKit::Helios::Commands::Command BaseClass;
-  typedef Usul::Interfaces::IUnknown IUnknown;
-  typedef std::vector<std::string> FileNames;
+  typedef CadKit::Helios::Commands::Command     BaseClass;
+  typedef Usul::Interfaces::IUnknown            IUnknown;
+  typedef Usul::Interfaces::ILoadFileDialog     ILoadFileDialog;
+  typedef ILoadFileDialog::FileNames            FileNames;
+  typedef ILoadFileDialog::Filters              Filters;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( OpenDocument );
@@ -68,14 +71,9 @@ protected:
     IUnknown::RefPtr _caller;
   };
 
-  void                      _askForFileNames ( const std::string &title, FileNames &files );
+  FileNames                 _askForFileNames ( const std::string &title );
 
   virtual void              _execute();
-
-  std::string               _filters() const;
-
-  std::string               _lastDirectory() const;
-  void                      _lastDirectory ( const std::string & );
 
 private:
 

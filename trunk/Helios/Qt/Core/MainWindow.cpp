@@ -46,10 +46,11 @@
 #include "XmlTree/Document.h"
 
 #include "QtCore/QFileSystemWatcher"
+#include "QtCore/QStringList"
 #include "QtCore/QTimer"
 #include "QtGui/QApplication"
 #include "QtGui/QDockWidget"
-#include "QtGui/QImageReader"
+#include "QtGui/QFileDialog"
 #include "QtGui/QLabel"
 #include "QtGui/QMenuBar"
 #include "QtGui/QProgressDialog"
@@ -473,8 +474,7 @@ Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
 MainWindow::FileResult MainWindow::getLoadFileName ( const std::string &title, const Filters &filters )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  FilesResult result ( this->getLoadFileNames ( title, filters ) );
+  const FilesResult result ( this->getLoadFileNames ( title, filters ) );
   return ( ( result.first.empty() ) ? FileResult() : FileResult ( result.first.front(), result.second ) );
 }
 
@@ -489,9 +489,120 @@ MainWindow::FilesResult MainWindow::getLoadFileNames ( const std::string &title,
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "4159638088" );
+
+  // Initialize the answer.
+  FilesResult files;
+
+  // Set the filter string.
+  const std::string allFilters ( this->_formatFilters ( filters ) );
+
+  // Get the current filter.
+  const std::string filter ( this->_lastFileDialogFilter ( title ) );
+
+  // Get the directory.
+  const std::string dir ( this->_lastFileDialogDir ( title ) );
+
+  // Need to use this static function to get native file dialog.
+  from here down needs work...
+  QStringList answer ( QFileDialog::getOpenFileNames ( this, title.c_str(), dir.c_str(), 0x0, filter.c_str() ) );
+
+  // Show the dialog and wait for the answer.
+  if ( QDialog::Accepted == dialog.exec() )
+  {
+    // Convert the file names and filter.
+    Usul::Strings::convert ( dialog.selectedFiles(),  files.first );
+    Usul::Strings::convert ( dialog.selectedFilter(), files.second.first );
+
+    // Fox and WinForms both use a string for the filter "label" and another 
+    // one for the actual file extensions. Qt does not, so the fact that 
+    // files.second is a pair is legacy.
+    files.second.second = files.second.first;
+
+    // Save the directory and filter.
+    this->_lastFileDialogDir    ( title, Usul::Strings::convert ( dialog.directory().path() ) );
+    this->_lastFileDialogFilter ( title, Usul::Strings::convert ( dialog.selectedFilter() ) );
+  }
+
+  // Return the result, which may be an empty list.
+  return files;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Format the given filters into a single string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_formatFilters ( const Filters &filters, QStringList &answer ) const
+{
+  USUL_TRACE_SCOPE;
+
+  // Initialize the answer.
+  answer.clear();
+
+  // Loop through and append each filter.
+  for ( Filters::const_iterator i = filters.begin(); i != filters.end(); ++i )
+  {
+    const std::string filter ( i->first );
+    answer << filter.c_str();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the last directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string MainWindow::_lastFileDialogDir ( const std::string &title ) const
+{
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  FilesResult result;
-  return result;
+  std::string dir ( Usul::CommandLine::Arguments::instance().directory() );
+  return dir;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the last directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_lastFileDialogDir ( const std::string &title, const std::string &dir ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the last file dialog filter.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string MainWindow::_lastFileDialogFilter ( const std::string &title ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  std::string filter;
+  return filter;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the last file dialog filter.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_lastFileDialogFilter ( const std::string &title, const std::string &filter ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
 }
 
 
@@ -504,7 +615,7 @@ MainWindow::FilesResult MainWindow::getLoadFileNames ( const std::string &title,
 std::string MainWindow::directory() const
 {
   USUL_TRACE_SCOPE;
-  //Guard guard ( this->mutex() );
+  // No guard needed.
   return Usul::CommandLine::Arguments::instance().directory();
 }
 

@@ -114,7 +114,7 @@ public:
                 }
                 if( ea.getKey() == osgGA::GUIEventAdapter::KEY_Up  )
                 {
-                  if( _barToChange < _bar->getNumItems () )
+                  if( _barToChange < _bar->getNumItems () - 1 )
                     ++_barToChange;
                 }
                 if( ea.getKey() == osgGA::GUIEventAdapter::KEY_Down )

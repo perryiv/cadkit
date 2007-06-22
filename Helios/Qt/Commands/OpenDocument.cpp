@@ -18,6 +18,8 @@
 #include "Helios/Qt/Core/Constants.h"
 
 #include "Usul/CommandLine/Arguments.h"
+#include "Usul/Documents/Manager.h"
+#include "Usul/Interfaces/GUI/ILoadFileDialog.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Resources/TextWindow.h"
 #include "Usul/Strings/Format.h"
@@ -102,8 +104,7 @@ void OpenDocument::_execute()
   // Do not lock the mutex. This function is re-entrant.
 
   // Get file names.
-  FileNames files;
-  this->_askForFileNames ( "Open Document", files );
+  FileNames files ( this->_askForFileNames ( "Open Document" ) );
 
   // Loop through the files.
   for ( FileNames::const_iterator i = files.begin(); i != files.end(); ++i )
@@ -120,79 +121,24 @@ void OpenDocument::_execute()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OpenDocument::_askForFileNames ( const std::string &title, FileNames &files )
+OpenDocument::FileNames OpenDocument::_askForFileNames ( const std::string &title )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  // Do not lock the mutex. This function is re-entrant.
 
-  // Initialize.
-  files.clear();
+  // Get the needed interface.
+  ILoadFileDialog::QueryPtr dialog ( this->caller() );
+  if ( false == dialog.valid() )
+    return FileNames();
 
-  // Only GUI thread.
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
-
-  // Get the last directory.
-  const std::string dir ( this->_lastDirectory() );
-
-  // Get the filter string.
-  const std::string filters ( this->_filters() );
+  // Get appropriate filters.
+  Filters filters ( Usul::Documents::Manager::instance().filtersOpen() );
 
   // Get the file names.
-  const QStringList answer ( QFileDialog::getOpenFileNames ( 0x0, QString ( title.c_str() ), QString ( dir.c_str() ), QString ( filters.c_str() ) ) );
-
-  // If there are no file names...
-  if ( true == answer.empty() )
-    return;
-
-  // Set the directory.
-  this->_lastDirectory ( dir );
-
-  // Set the files.
-  Usul::Strings::convert ( answer, files );
+  ILoadFileDialog::FilesResult result ( dialog->getLoadFileNames ( title, filters ) );
+  return result.first;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the last directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string OpenDocument::_lastDirectory() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  std::string dir ( Usul::CommandLine::Arguments::instance().directory() );
-  return dir;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the last directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OpenDocument::_lastDirectory ( const std::string &dir )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the filters.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string OpenDocument::_filters() const
-{
-  USUL_TRACE_SCOPE;
-  std::string filters;
-  return filters;
-}
-    
 
 ///////////////////////////////////////////////////////////////////////////////
 //

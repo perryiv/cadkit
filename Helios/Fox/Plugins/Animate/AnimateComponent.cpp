@@ -735,11 +735,11 @@ long AnimateComponent::onUpdateSaveAnimation ( FX::FXObject *object, FX::FXSelec
 long AnimateComponent::onCommandLoadAnimation ( FX::FXObject *, FX::FXSelector, void * )
 {
   typedef Usul::Interfaces::ILoadFileDialog ILoadFileDialog;
-  typedef ILoadFileDialog::Filename Filename;
+  typedef ILoadFileDialog::FileName FileName;
   typedef ILoadFileDialog::Filters Filters;
   typedef ILoadFileDialog::FileResult FileResult;
 
-  Filename filename;
+  FileName filename;
 
   {
     Movie::RefPtr movie ( new Movie );
@@ -1043,7 +1043,7 @@ long AnimateComponent::onCommandSaveMovie ( FX::FXObject *, FX::FXSelector, void
   }
 
   // Get the filenames.
-  Movie::Filenames filenames ( fd->filenames() );
+  Movie::FileNames filenames ( fd->filenames() );
 
   // Create the movie
   _current->writeMovie ( filename, filenames );

@@ -534,7 +534,7 @@ void MainWindow::loadCommandLineFiles()
     return;
 
   // Open files.
-  Filenames names ( files.begin() + 1, files.end() );
+  FileNames names ( files.begin() + 1, files.end() );
   this->_openDocuments ( names );
 }
 
@@ -1208,13 +1208,13 @@ long MainWindow::onCommandDocumentSave ( FX::FXObject *sender, FX::FXSelector, v
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::_openDocuments ( const Filenames &names )
+void MainWindow::_openDocuments ( const FileNames &names )
 {
   // Clear the error stack.
   Usul::Errors::Stack::instance().clear();
 
   // Loop through the files.
-  for ( Filenames::const_iterator i = names.begin(); i != names.end(); ++i )
+  for ( FileNames::const_iterator i = names.begin(); i != names.end(); ++i )
   {
     // Get the file.
     std::string file ( *i );

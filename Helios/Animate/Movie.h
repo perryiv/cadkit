@@ -51,8 +51,8 @@ public:
   typedef DoubleCurve::DependentSequence       DependentSequence;
   typedef DoubleCurve::IndependentType         Parameter;
   typedef Usul::Interfaces::IUnknown           IUnknown;
-  typedef std::string                          Filename;
-  typedef std::vector< Filename >              Filenames;
+  typedef std::string                          FileName;
+  typedef std::vector< FileName >              FileNames;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Movie );
@@ -150,7 +150,7 @@ public:
 
   /// Write movie to external format ( i.e. avi ).  Not sure if these are the best functions for this.
   virtual Filters             filtersWrite() const;
-  virtual void                writeMovie ( const Filename& filename, const Filenames& filenames );
+  virtual void                writeMovie ( const FileName& filename, const FileNames& filenames );
 
   // Set/Get the last U value
   Frame                         lastU ( Parameter u );

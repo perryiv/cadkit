@@ -112,7 +112,7 @@ public:
   typedef std::vector<Filter>                   Filters;
   typedef Usul::Interfaces::ILoadFileDialog     ILoadFileDialog;
   typedef Usul::Interfaces::ISaveFileDialog     ISaveFileDialog;
-  typedef ILoadFileDialog::Filenames            Filenames;
+  typedef ILoadFileDialog::FileNames            FileNames;
   typedef Usul::Interfaces::IUnknown            IUnknown;
   typedef Usul::Components::Manager::UnknownSet PluginSet;
   typedef PluginSet::iterator                   PluginItr;
@@ -396,7 +396,7 @@ protected:
   void                                  _initTabControl();
 
   virtual void                          _openDocument ( const std::string &filename );
-  virtual void                          _openDocuments ( const Filenames &names );
+  virtual void                          _openDocuments ( const FileNames &names );
   virtual void                          _onCommandOpen();
   virtual void                          _onCommandExport();
   void                                  _onCommandCamera      ( unsigned int option );

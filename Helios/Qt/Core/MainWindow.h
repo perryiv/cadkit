@@ -37,6 +37,7 @@
 class QWorkspace;
 class QTextEdit;
 class QMenu;
+class QStringList;
 class QTimer;
 
 namespace Usul { namespace Threads { class Thread; } }
@@ -130,6 +131,12 @@ protected:
   void                      _buildTextWindow();
   void                      _buildToolBar();
 
+  void                      _formatFilters ( const Filters &filters, QStringList &answer ) const;
+
+  std::string               _lastFileDialogDir ( const std::string &title ) const;
+  void                      _lastFileDialogDir ( const std::string &title, const std::string &dir ) const;
+  std::string               _lastFileDialogFilter ( const std::string &title ) const;
+  void                      _lastFileDialogFilter ( const std::string &title, const std::string &filter ) const;
   void                      _loadSettings();
 
   void                      _saveSettings();

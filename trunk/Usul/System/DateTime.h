@@ -27,8 +27,13 @@ namespace Usul {
 namespace System {
 
 
-struct USUL_EXPORT DateTime
+class USUL_EXPORT DateTime
 {
+public:
+
+  DateTime();
+  ~DateTime();
+
   static std::string        format ( time_t ); // time_t
   static std::string        format();
 

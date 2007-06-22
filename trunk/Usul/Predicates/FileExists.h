@@ -85,7 +85,7 @@ public:
 
   bool operator () ( const std::string &s ) const
   {
-    return this->test ( s );
+    return Usul::Predicates::FileExists::test ( s );
   }
 };
 

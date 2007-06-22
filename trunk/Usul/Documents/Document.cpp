@@ -339,7 +339,7 @@ void Document::insert ( Unknown *caller )
   // For convenience.
   typedef Usul::Interfaces::ILoadFileDialog FileDialog;
   typedef FileDialog::FilesResult FilesResult;
-  typedef FileDialog::Filenames Filenames;
+  typedef FileDialog::FileNames FileNames;
 
   // Get the file dialog interface
   FileDialog::QueryPtr fileDialog ( caller );
@@ -350,7 +350,7 @@ void Document::insert ( Unknown *caller )
 
   // Ask for file names.
   const FilesResult result ( fileDialog->getLoadFileNames ( "Insert", this->filtersInsert() ) );
-  const Filenames files ( result.first );
+  const FileNames files ( result.first );
   if ( files.empty() )
     return;
 
@@ -365,7 +365,7 @@ void Document::insert ( Unknown *caller )
   Usul::Interfaces::IProgressBar::UpdateProgressBar progress ( 0, 1, Usul::Resources::progressBar() );
 
   // Loop through the files.
-  for ( Filenames::const_iterator i = files.begin(); i != files.end(); ++i )
+  for ( FileNames::const_iterator i = files.begin(); i != files.end(); ++i )
   {
     std::cout << "Inserting document: " << *i << Usul::Resources::TextWindow::endl;
     this->read ( *i, caller );
@@ -394,7 +394,7 @@ void Document::exportDocument ( Unknown *caller )
   // For convenience.
   typedef Usul::Interfaces::ISaveFileDialog FileDialog;
   typedef FileDialog::FilesResult Result;
-  typedef FileDialog::Filenames Filenames;
+  typedef FileDialog::FileNames FileNames;
 
   // Get the file dialog interface
   FileDialog::QueryPtr fileDialog ( caller );
@@ -405,10 +405,10 @@ void Document::exportDocument ( Unknown *caller )
 
   // Ask for file names.
   const Result result ( fileDialog->getSaveFileNames ( "Export", this->filtersExport() ) );
-  const Filenames &files = result.first;
+  const FileNames &files = result.first;
 
   // Loop through the files.
-  for ( Filenames::const_iterator i = files.begin(); i != files.end(); ++i )
+  for ( FileNames::const_iterator i = files.begin(); i != files.end(); ++i )
     this->write ( *i, caller );
 }
 

@@ -53,11 +53,13 @@ void _threadStarted ( Usul::Threads::Thread *thread )
 
   const unsigned long sleep ( Detail::randomNumbers.at ( thread->id() ) );
 
-  std::ostringstream out;
-  out << "  Started thread " << std::setw ( 4 ) << thread->id() 
-      << " using system thread " << std::setw ( 4 ) << thread->systemId() 
-      << ", sleeping " << sleep << '\n';
-  std::cout << out.str() << std::flush;
+  {
+    std::ostringstream out;
+    out << "  Started thread " << std::setw ( 4 ) << thread->id() 
+        << " using system thread " << std::setw ( 4 ) << thread->systemId() 
+        << ", sleeping " << sleep << '\n';
+    std::cout << out.str() << std::flush;
+  }
 
   Usul::System::Sleep::milliseconds ( sleep );
 
@@ -66,6 +68,7 @@ void _threadStarted ( Usul::Threads::Thread *thread )
   if ( ( 0 != id ) && ( 0 == ( id % 4 ) ) )
   {
     thread->cancel();
+    return;
   }
 
   // Every 5th thread we generate an error.
@@ -73,6 +76,26 @@ void _threadStarted ( Usul::Threads::Thread *thread )
   {
     throw std::runtime_error ( "Error 1954614090: Generating error for testing" );
   }
+#if 0
+  // Every 6th thread we kill.
+  if ( ( 0 != id ) && ( 0 == ( id % 6 ) ) )
+  {
+    {
+      std::ostringstream out;
+      out << "  Killing thread " << std::setw ( 4 ) << thread->id() 
+          << " using system thread " << std::setw ( 4 ) << thread->systemId() << '\n';
+      std::cout << out.str() << std::flush;
+    }
+    thread->kill();
+    {
+      std::ostringstream out;
+      out << "   Killed thread " << std::setw ( 4 ) << thread->id() 
+          << " using system thread " << std::setw ( 4 ) << thread->systemId() << '\n';
+      std::cout << out.str() << std::flush;
+    }
+    return;
+  }
+#endif
 }
 
 
@@ -240,6 +263,8 @@ int main ( int argc, char **argv )
   Usul::Functions::safeCall ( _test,  "7106715220" );
   Usul::Functions::safeCall ( _clean, "1461687444" );
 
-  //std::cin.get();
+  std::cout << "Finished test!" << std::endl;
+
+  std::cin.get();
   return 0;
 }

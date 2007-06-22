@@ -21,7 +21,7 @@
 #include "Usul/Threads/Thread.h"
 
 namespace OpenThreads { class Thread; }
-namespace Detail { class OpenThread; }
+namespace Threads { namespace OT { namespace Detail { class OpenThread; } } }
 
 
 namespace Threads {

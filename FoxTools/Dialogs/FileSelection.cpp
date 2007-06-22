@@ -234,7 +234,7 @@ bool FileSelection::runModal ( FX::FXWindow *owner )
   if ( _filenames.size() > 1 )
   {
     // Grab the first one, it's the directory (make a hard copy).
-    Filenames::iterator i = _filenames.begin();
+    FileNames::iterator i = _filenames.begin();
     std::string dir ( *i );
 
     // Append the slash.
@@ -530,7 +530,7 @@ FileSelection::FileResult FileSelection::askForFileName ( const Type &type, cons
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool FileSelection::_appendExtension ( const FileSelection::Filter &filter, FileSelection::Filenames &names, FX::FXWindow *owner )
+bool FileSelection::_appendExtension ( const FileSelection::Filter &filter, FileSelection::FileNames &names, FX::FXWindow *owner )
 {
   // Get extension from filter. Filters are like this: "*.stl", so we drop the "*."
   std::string fe ( filter.second );
@@ -544,7 +544,7 @@ bool FileSelection::_appendExtension ( const FileSelection::Filter &filter, File
   fe.erase ( 0, 2 );
 
   // Loop through the names.
-  for ( FileSelection::Filenames::iterator i = names.begin(); i != names.end(); ++i )
+  for ( FileSelection::FileNames::iterator i = names.begin(); i != names.end(); ++i )
   {
     // Get reference to name.
     std::string &name ( *i );

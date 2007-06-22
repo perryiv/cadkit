@@ -40,11 +40,15 @@ _slave ( new ProgressBar() ),
 _border ( new osg::Node() ),
 _pos( osg::Vec3f ( 0.0f, 0.0f, -3.1f ) ),
 _ll ( osg::Vec2f( 0.0f, 0.0f ) ),
+_padding ( 0.01 ),
+_height ( 0.01 ),
+_length ( 0.01 ),
+_numBars ( 0 ),
 _borderZOffset ( -0.0003f ),
 _isRelativeToAbsolute ( true )
 {
   _group = new osg::Group();
-  this->_init();
+  //this->_init();
   this->_buildProgressBarGroup();
 }
 
@@ -85,12 +89,15 @@ void ProgressBarGroup::setRelativeToAbsolute( bool value )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the minimum item on the slave bar.
+//  Set the minimum item on the bar at index i
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ProgressBarGroup::setCurrentItemMin( double min )
+void ProgressBarGroup::setItemMin( int i, double min )
 {
+  if( _numBars >= i )
+    _pbarVector.at ( i )->setMin ( min );
+
   _slave->setMin( min );
   this->_buildProgressBarGroup();
 }
@@ -98,12 +105,15 @@ void ProgressBarGroup::setCurrentItemMin( double min )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the progress bar message on the slave bar
+//  Set the progress bar message on the bar at index i
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ProgressBarGroup::setMessage ( const std::string& m )
+void ProgressBarGroup::setMessage ( int i, const std::string& m )
 {
+  if( _numBars >= i )
+    _pbarVector.at ( i )->setMessage ( m );
+
   _slave->setMessage( m );
   this->_buildProgressBarGroup();
 }
@@ -111,12 +121,15 @@ void ProgressBarGroup::setMessage ( const std::string& m )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the max value on the slave bar
+//  Set the max value on the bar at index i
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ProgressBarGroup::setCurrentItemMax( double max )
+void ProgressBarGroup::setItemMax( int i, double max )
 {
+  if( _numBars >= i )
+    _pbarVector.at ( i )->setMax ( max );
+
   _slave->setMax( max );
   this->_buildProgressBarGroup();
 }
@@ -124,24 +137,30 @@ void ProgressBarGroup::setCurrentItemMax( double max )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Reset the slave bar parameters to their starting values
+//  Reset the bar at index i parameters to their starting values
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ProgressBarGroup::reset()
+void ProgressBarGroup::resetBar( int i )
 {
+  if( _numBars >= i )
+    _pbarVector.at ( i )->reset();
+
   _slave->reset();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the current progression value on the slave bar
+//  Set the current progression value on the bar at index i
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ProgressBarGroup::setCurrentItemValue( double v )
+void ProgressBarGroup::setItemValue( int i, double v )
 {
+  if( _numBars >= i )
+    _pbarVector.at ( i )->setCurrent ( v );
+
   _slave->setCurrent( v );
   this->_buildProgressBarGroup();
 }
@@ -156,6 +175,7 @@ void ProgressBarGroup::setCurrentItemValue( double v )
 void ProgressBarGroup::setNumItems ( int n )
 {
   _master->setMax( float( n ) );
+  _numBars = n;
   this->_updateMasterMessage();
   this->_buildProgressBarGroup();
 }
@@ -190,6 +210,18 @@ void ProgressBarGroup::setPosition ( const osg::Vec3f & p )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the amount of padding between bar objects
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarGroup::setPadding ( float p )
+{
+  _padding = p;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -197,6 +229,114 @@ void ProgressBarGroup::setPosition ( const osg::Vec3f & p )
 void ProgressBarGroup::updateProgressBarGroup()
 {
   
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a progress bar object to the progress bar group
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarGroup::add ( ProgressBar* pbar )
+{
+  if( _numBars == 0 )
+    pbar->setLowerLeft( osg::Vec2f ( _ll.x() + _padding, _ll.y() + _height ) );
+  else
+    pbar->setLowerLeft( osg::Vec2f ( _ll.x() + _padding,
+                                     _pbarVector.at( _numBars - 1 )->getLowerLeft().y() + 
+                                     _pbarVector.at( _numBars - 1 )->getHeight() + 
+                                     _padding ) );
+  ++_numBars;
+  if(_length < pbar->getLength() + _padding )
+    _length = pbar->getLength() + _padding * 2;
+
+  _height +=  pbar->getHeight() + _padding;
+
+  _pbarVector.push_back ( pbar );
+
+  this->_buildProgressBarGroup();
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create and add a progress bar object to the progress bar group
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarGroup::add ( const std::string& m, double min, double max )
+{
+  ProgressBar::RefPtr pbar = new ProgressBar( );
+  pbar->setMessage ( m );
+  pbar->setMin ( min );
+  pbar->setMax ( max );
+  pbar->setCurrent ( min );
+  if( _numBars == 0 )
+    pbar->setLowerLeft( osg::Vec2f ( _ll.x() + _padding, _ll.y() + _height ) );
+  else
+    pbar->setLowerLeft( osg::Vec2f ( _ll.x() + _padding,
+                                     _pbarVector.at( _numBars - 1 )->getLowerLeft().y() + 
+                                     _pbarVector.at( _numBars - 1 )->getHeight() + 
+                                     _padding ) );
+  ++_numBars;
+  if(_length < pbar->getLength() + _padding )
+    _length = pbar->getLength() + _padding * 2;
+
+  _height +=  pbar->getHeight() + _padding;
+
+  
+  
+  _pbarVector.push_back ( pbar );
+  
+  this->_buildProgressBarGroup();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  TODO
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarGroup::remove ( int pos )
+{
+  //TODO
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the location of the progress bar on the screen.  Designed to work with
+//  relative to absolute flag set.  Use setPosition when relative to absolute
+//  is false.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarGroup::setLocation ( unsigned int loc )
+{
+  switch( loc )
+  {
+    case LOWER_LEFT : 
+      this->setPosition ( osg::Vec3f ( -0.95 , -.75, -3.0f ) );
+      break;
+    case LOWER_RIGHT : 
+      this->setPosition ( osg::Vec3f ( 0.50 * .7, -.75, -3.0f ) );
+      break;
+    case UPPER_LEFT : 
+      this->setPosition ( osg::Vec3f ( -0.95 * .7, .4, -3.0f ) );
+      break;
+    case UPPER_RIGHT : 
+      this->setPosition ( osg::Vec3f ( 0.50  * .7, .4, -3.0f ) ); 
+      break;
+    case CENTER : 
+      this->setPosition ( osg::Vec3f ( -.25f, -.4, -3.0f ) );
+      break;
+    default:
+      break;
+  }
+
 }
 
 
@@ -212,7 +352,7 @@ void ProgressBarGroup::updateProgressBarGroup()
 
 void ProgressBarGroup::_init()
 {
-  float length, height;
+ /* float length, height;
 
   if( _master->getBorderLength() >= _slave->getBorderLength() )
     length = _master->getBorderLength();
@@ -224,7 +364,7 @@ void ProgressBarGroup::_init()
   else
     height = _slave->getBorderHeight();
 
-  _padding = height * .15;
+  _padding = 0.05f;
 
   _slave->setLowerLeft( osg::Vec2f ( _ll.x() + _padding, _ll.y() + _padding ) );
   _master->setLowerLeft( osg::Vec2f ( _ll.x() + _padding, _slave->getLowerLeft().y() + _slave ->getBorderHeight() + _padding * 2) );
@@ -242,7 +382,7 @@ void ProgressBarGroup::_init()
   _slave->setMax ( 100.0f );
   _slave->setCurrent ( 0.0f );
 
-  this->_updateMasterMessage();
+  this->_updateMasterMessage();*/
 }
 
 
@@ -272,8 +412,14 @@ void ProgressBarGroup::_buildProgressBarGroup()
 
   matrix->setMatrix( osg::Matrix::translate( _pos.x(), _pos.y(), _pos.z() ) );
 
-  matrix->addChild( _master->getProgressBar() );
-  matrix->addChild( _slave->getProgressBar() );
+  
+  for( int x = 0; x < _numBars ; ++x  )
+  {
+    matrix->addChild ( _pbarVector.at ( x )->getProgressBar() );
+  }
+    
+  //matrix->addChild( _master->getProgressBar() );
+  //matrix->addChild( _slave->getProgressBar() );
   matrix->addChild( this->_buildBar( 999,
                                      "icons/borderGroup.tga",
                                      osg::Vec2f ( _ll.x(), _ll.y() + _height ),

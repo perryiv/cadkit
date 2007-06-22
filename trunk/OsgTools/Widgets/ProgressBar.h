@@ -44,9 +44,6 @@ public:
   // Return the current text of the progress bar
   const std::string& getMessage() { return _barText; }
 
-  // Return the lower left corner of the bar object
-  const osg::Vec2f& getLowerLeft() { return _ll; }
-
   // Return true if the bar is 100% complete ( _current == _max )
   bool isFinished() { return _isFinished; }
 
@@ -75,6 +72,11 @@ public:
   double getCurrent() { return _current; }
 
 
+  
+  osg::Vec2f getLowerLeft();
+  
+  float getLength();
+  float getHeight();
   osg::Node* getProgressBar();
   
   void updateProgressBar();
@@ -112,8 +114,8 @@ protected:
   void _buildProgressBarObject();
   void _buildProgressBar();
   std::string _getPercentComplete();
-  osg::Node* _buildBar (  int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth  );
-  osg::Geode* _drawTextAtPosition ( const osg::Vec3f & p, const std::string & s );
+  osg::Node* _buildBar (  int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth );
+  osg::Geode* _drawTextAtPosition ( const osg::Vec3f & p, const std::string & s, const osg::Vec4f& color, float size );
 
 private:
 	double _min, _max, _current;

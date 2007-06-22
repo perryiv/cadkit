@@ -58,9 +58,6 @@ public:
   // Return the number of items ( _max ) on the master bar
   int getNumItems() { return _numBars; }
 
-  // Get the current item on the master bar
-  //int getCurrentItem() { return _master->getCurrent(); }
-
   // Return the length of the bar group
   float getLength() { return _length; }
 
@@ -76,7 +73,6 @@ public:
   //Return the padding value that is set to space out bars
   float getPadding() { return _padding; }
 
-
   osg::Node* getProgressBarGroup();
   
   void setLocation ( unsigned int loc );
@@ -85,11 +81,8 @@ public:
   void setItemMin( int i, double min );
   void setItemMax( int i, double max );
   void setItemValue( int i, double v );
-  void setNumItems ( int n );
-  void setCurrentItem ( int i );
   void setMessage ( int i, const std::string& m );
   void setPadding ( float p );
-  void updateProgressBarGroup();
   void resetBar ( int i );
 
   void add ( ProgressBar* pbar );
@@ -100,10 +93,7 @@ protected:
 
   virtual ~ProgressBarGroup();
 	void _buildProgressBarGroup();
-  void _init();
-  std::string _getPercentComplete();
   osg::Node* _buildBar ( int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth  );
-  void _updateMasterMessage();
 
 private:
 
@@ -112,8 +102,6 @@ private:
   float _length, _height, _padding;
   double _borderZOffset;// ( -0.0003f ),
 
-  ProgressBar::RefPtr _master;
-  ProgressBar::RefPtr _slave;
   std::vector < ProgressBar::RefPtr > _pbarVector;
 
   osg::ref_ptr< osg::Node > _border;

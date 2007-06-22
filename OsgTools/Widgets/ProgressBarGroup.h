@@ -24,20 +24,17 @@ namespace Widgets {
 
 class OSG_TOOLS_EXPORT ProgressBarGroup : public Usul::Base::Referenced
 {
-  
-  
-
 public:
   USUL_DECLARE_REF_POINTERS ( ProgressBarGroup );
 	ProgressBarGroup();
 
 	enum
   {
-    LOWER_LEFT = 0x00000001,
-    LOWER_RIGHT = 0x00000002,
-    UPPER_LEFT = 0x00000004,
-    UPPER_RIGHT = 0x000000008,
-    CENTER = 0x00000010
+    LOWER_LEFT,
+    LOWER_RIGHT,
+    UPPER_LEFT,
+    UPPER_RIGHT,
+    CENTER
   };
   ///////////////////
   //inline functions
@@ -73,32 +70,43 @@ public:
   //Return the padding value that is set to space out bars
   float getPadding() { return _padding; }
 
+   // Return true if the progress bar at index is being animated
+  bool isAnimating( unsigned int index ) { return _pbarVector.at(index)->isAnimating(); }
+
+  // Return true if the progress bar at index is being shown
+  bool isVisible( unsigned int index ) { return _pbarVector.at(index)->isVisible(); }
+
   osg::Node* getProgressBarGroup();
   
   void setLocation ( unsigned int loc );
   void setRelativeToAbsolute ( bool value );
   void setPosition ( const osg::Vec3f & );
-  void setItemMin( int i, double min );
-  void setItemMax( int i, double max );
-  void setItemValue( int i, double v );
-  void setMessage ( int i, const std::string& m );
+  void setItemMin( unsigned int i, double min );
+  void setItemMax( unsigned int i, double max );
+  void setItemValue( unsigned int i, double v );
+  void setMessage ( unsigned int i, const std::string& m );
   void setPadding ( float p );
-  void resetBar ( int i );
+
+  void showProgressBar ( unsigned int index );
+  void hideProgressBar ( unsigned int index );
+  void resetBar ( unsigned int i );
 
   void add ( ProgressBar* pbar );
   void add ( const std::string& m, double min, double max );
-  void remove ( int pos );
+  void remove ( unsigned int pos );
+
+  void clear();
 	
 protected:
 
   virtual ~ProgressBarGroup();
 	void _buildProgressBarGroup();
-  osg::Node* _buildBar ( int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth  );
+  osg::Node* _buildBar ( unsigned int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth  );
 
 private:
 
   bool _isRelativeToAbsolute;
-  int _numBars;
+  unsigned int _numBars;
   float _length, _height, _padding;
   double _borderZOffset;// ( -0.0003f ),
 

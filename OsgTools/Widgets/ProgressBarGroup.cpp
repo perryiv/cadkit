@@ -21,10 +21,70 @@
 
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 using namespace std;
 using namespace OsgTools::Widgets;
 
+/*class ProgressBarAnimationCallback : public osg::NodeCallback
+{
+    public:
+
+      ProgressBarAnimationCallback(ProgressBarGroup* bar, float start, float end, float step) :
+          _start ( start ),
+          _end ( end ),
+          _step ( step ),
+          _bar ( bar )
+            
+        {
+          
+        }
+
+        virtual void operator() (osg::Node* node, osg::NodeVisitor* nv)
+        {
+            osg::MatrixTransform* transform = dynamic_cast<osg::MatrixTransform*>(node);    
+            if(0L != transform)
+            {
+			        if(_bar->isAnimating())
+			        {
+				        if(_bar->isVisible())
+				        {
+					        if (_start < _end)
+					        {
+						        _start += _step;
+						        transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
+        						
+					        }
+					        else
+						        _bar->setAnimation(false);
+				        }
+				        else
+				        {
+					        if (_start > _end)
+					        {
+						        _start += _step;
+						        transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
+        						
+					        }
+					        else
+						        _bar->setAnimation(false);
+				        }
+			        }
+            }   
+            traverse(node,nv);            
+            
+        }
+        
+    protected:
+    
+      ProgressBarGroup::RefPtr _bar;
+        
+		  float				_start;
+		  float				_end;
+		  float				_step;
+
+};
+*/
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -49,7 +109,8 @@ _isRelativeToAbsolute ( true )
 
 ProgressBarGroup::~ProgressBarGroup()
 {
-	
+  std::for_each ( _pbarVector.begin(), _pbarVector.end(), std::mem_fun ( &ProgressBar::clear ) );
+  _pbarVector.clear();
 }
 
 ////////////////////////////
@@ -67,6 +128,7 @@ osg::Node* ProgressBarGroup::getProgressBarGroup()
   return _group.get();
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set RelativeToAbsolute flag for rendering
@@ -83,13 +145,39 @@ void ProgressBarGroup::setRelativeToAbsolute( bool value )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Show the progress bar at index i
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarGroup::showProgressBar ( unsigned int index )
+{
+  if ( _numBars >= index  && _numBars > 0 )
+    _pbarVector.at(index)->showProgressBar();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Hide the progress bar at index i
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarGroup::hideProgressBar ( unsigned int index )
+{
+  if ( _numBars >= index  && _numBars > 0 )
+    _pbarVector.at(index)->hideProgressBar();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the minimum item on the bar at index i
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ProgressBarGroup::setItemMin( int i, double min )
+void ProgressBarGroup::setItemMin( unsigned int i, double min )
 {
-  if ( _numBars >= i )
+  if ( _numBars >= i  && _numBars > 0 )
     _pbarVector.at ( i )->setMin ( min );
 
   this->_buildProgressBarGroup();
@@ -102,9 +190,9 @@ void ProgressBarGroup::setItemMin( int i, double min )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ProgressBarGroup::setMessage ( int i, const std::string& m )
+void ProgressBarGroup::setMessage ( unsigned int i, const std::string& m )
 {
-  if ( _numBars >= i )
+  if ( _numBars >= i  && _numBars > 0 )
     _pbarVector.at ( i )->setMessage ( m );
 
   this->_buildProgressBarGroup();
@@ -117,9 +205,9 @@ void ProgressBarGroup::setMessage ( int i, const std::string& m )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ProgressBarGroup::setItemMax( int i, double max )
+void ProgressBarGroup::setItemMax( unsigned int i, double max )
 {
-  if ( _numBars >= i )
+  if ( _numBars >= i && _numBars > 0 )
     _pbarVector.at ( i )->setMax ( max );
 
   this->_buildProgressBarGroup();
@@ -132,10 +220,12 @@ void ProgressBarGroup::setItemMax( int i, double max )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ProgressBarGroup::resetBar( int i )
+void ProgressBarGroup::resetBar( unsigned int i )
 {
-  if ( _numBars >= i )
+  if ( _numBars >= i  && _numBars > 0 )
     _pbarVector.at ( i )->reset();
+
+  this->_buildProgressBarGroup();
 }
 
 
@@ -145,9 +235,9 @@ void ProgressBarGroup::resetBar( int i )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ProgressBarGroup::setItemValue( int i, double v )
+void ProgressBarGroup::setItemValue( unsigned int i, double v )
 {
-  if ( _numBars >= i )
+  if ( _numBars >= i  && _numBars > 0 )
     _pbarVector.at ( i )->setCurrent ( v );
 
   this->_buildProgressBarGroup();
@@ -247,11 +337,49 @@ void ProgressBarGroup::add ( const std::string& m, double min, double max )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ProgressBarGroup::remove ( int pos )
+void ProgressBarGroup::remove ( unsigned int pos )
 {
-  //TODO
+  if ( _numBars > 0 )
+  {
+    if ( _numBars == 1 )
+    {
+      _height = 0.00;
+      _length = 0.00;
+      
+    }
+    else
+    {
+      for ( unsigned int x = _numBars - 1; x > pos; --x)
+      {
+        _pbarVector.at( x )->setLowerLeft ( osg::Vec2f ( _ll.x() + _padding,
+                                       _pbarVector.at( x - 1 )->getLowerLeft().y() ) );
+      }
+      _height -= _pbarVector.at( pos )->getHeight()  + _padding;
+      
+    }
+    
+    
+    std::for_each ( _pbarVector.begin() + pos, _pbarVector.begin() + pos + 1, std::mem_fun ( &ProgressBar::clear ) );
+    _pbarVector.erase( _pbarVector.begin() + pos );
+    if( _numBars > 0 )
+      _numBars --;
+  }
+  
+  this->_buildProgressBarGroup();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  TODO: Removes progress bar object at position pos
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarGroup::clear()
+{
+  _group->removeChild ( 0 , _group->getNumChildren() );
+  _group = 0x0;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -304,10 +432,26 @@ void ProgressBarGroup::_buildProgressBarGroup()
   matrix->setMatrix ( osg::Matrix::translate( _pos.x(), _pos.y(), _pos.z() ) );
 
   
-  for( int x = 0; x < _numBars ; ++x  )
+  for( unsigned int x = 0; x < _numBars ; ++x  )
   {
     matrix->addChild ( _pbarVector.at ( x )->getProgressBar() );
   }
+
+  /*osg::ref_ptr < osg::Geometry > geom ( new osg::Geometry );
+  osg::ref_ptr < osg::Vec3Array > verts ( new osg::Vec3Array );
+
+  verts->push_back ( osg::Vec3 ( _ll.x(), _ll.y() + _height, 0 ) );
+  verts->push_back ( osg::Vec3 ( _ll.x() + _length, _ll.y() + _height, 0 ) );
+  verts->push_back ( osg::Vec3 ( _ll.x() + _length, _ll.y(), 0 ) );
+  verts->push_back ( osg::Vec3 ( _ll, 0.0 ) );
+
+  geom->setVertexArray ( verts.get() );
+
+  geom->addPrimitiveSet ( new osg::DrawArrays ( GL_QUADS, 0, 4 ) );
+
+  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+  geode->addDrawable ( geom.get() );
+  matrix->addChild ( geode.get() );*/
 
   matrix->addChild ( this->_buildBar( 999,
                                      "icons/borderGroup.tga",
@@ -330,7 +474,7 @@ void ProgressBarGroup::_buildProgressBarGroup()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* ProgressBarGroup::_buildBar( int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth  )
+osg::Node* ProgressBarGroup::_buildBar( unsigned int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth  )
 {
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode() );
   osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
@@ -342,10 +486,10 @@ osg::Node* ProgressBarGroup::_buildBar( int render_level , std::string tex, cons
 	  osg::ref_ptr< osg::Texture2D > texture ( new osg::Texture2D() ); 
 	  texture->setImage ( image.get() );
 	  stateset->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-	  stateset->setMode ( GL_REPLACE, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-	  stateset->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );    
-    stateset->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
-    stateset->setRenderBinDetails ( render_level, "RenderBin" );
+	  //stateset->setMode ( GL_REPEAT, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+	  //stateset->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );    
+    //stateset->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
+    //stateset->setRenderBinDetails ( render_level, "RenderBin" );
   }
 
   osg::ref_ptr< osg::Vec4Array > white ( new osg::Vec4Array() );  

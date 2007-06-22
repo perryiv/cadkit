@@ -31,8 +31,8 @@ struct ISaveFileDialog : public Usul::Interfaces::IUnknown
   // Typedefs.
   typedef Usul::Interfaces::ILoadFileDialog::Filter Filter;
   typedef Usul::Interfaces::ILoadFileDialog::Filters Filters;
-  typedef Usul::Interfaces::ILoadFileDialog::Filename Filename;
-  typedef Usul::Interfaces::ILoadFileDialog::Filenames Filenames;
+  typedef Usul::Interfaces::ILoadFileDialog::FileName FileName;
+  typedef Usul::Interfaces::ILoadFileDialog::FileNames FileNames;
   typedef Usul::Interfaces::ILoadFileDialog::FileResult FileResult;
   typedef Usul::Interfaces::ILoadFileDialog::FilesResult FilesResult;
 

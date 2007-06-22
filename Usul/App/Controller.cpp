@@ -383,7 +383,7 @@ void Controller::documentOpen ( const std::string& filename, Usul::Interfaces::I
       // Is a document open with this file name?
       if( (*i)->fileName() == filename )
       {
-        //Needed to make g++ happy
+        // Needed to make g++ happy
         Document::RefPtr d ( i->get() );
 
         // Bring this document's windows to the front.

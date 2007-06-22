@@ -64,16 +64,25 @@ Thread::Thread() : BaseClass(),
 Thread::~Thread()
 {
   USUL_TRACE_SCOPE;
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Usul::Threads::Thread::_destroy ), "1177998049" );
+}
 
-  USUL_ERROR_STACK_CATCH_EXCEPTIONS_BEGIN;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destroy.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Thread::_destroy()
+{
+  USUL_TRACE_SCOPE;
 
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Thread::_notifyDestroyed ), "2055113901" );
 
   if ( Thread::NOT_RUNNING != _state )
   {
-    std::cout << Usul::Strings::format ( "Error 4212506063: deleting running thread: ", this, ", id: ", _id, ", system thread: ", _systemId,  '\n' );
-    std::cout << std::flush;
-    USUL_ASSERT ( false );
+    std::cout << Usul::Strings::format ( "Error 4212506063: deleting running thread: ", this, ", id: ", _id, ", system thread: ", _systemId,  '\n' ) << std::flush;
   }
 
   _cancelledCB = 0x0;
@@ -82,8 +91,6 @@ Thread::~Thread()
   _finishedCB = 0x0;
   _startedCB = 0x0;
   _errorMessage.clear();
-
-  USUL_ERROR_STACK_CATCH_EXCEPTIONS_END(1177998049);
 }
 
 
@@ -304,6 +311,10 @@ void Thread::_execute()
 
   try
   {
+    // See if we've been killed.
+    if ( Thread::KILLED == this->result() )
+      return;
+
     // Initialize.
     bool hasError ( false );
 
@@ -435,6 +446,16 @@ namespace Usul
 void Thread::_notifyCancelled()
 {
   USUL_TRACE_SCOPE;
+
+  // Should be true.
+  USUL_ASSERT ( this->refCount() > 0 );
+
+  // We reference this instance here to ensure that it doesn't get purged 
+  // while it's inside a callback. Since the thread manager keeps a 
+  // reference this should not deference to zero.
+  Thread::RefPtr me ( this );
+
+  // Notify...
   Helper::notify ( this, _cancelledCB );
 }
 
@@ -448,6 +469,10 @@ void Thread::_notifyCancelled()
 void Thread::_notifyDestroyed()
 {
   USUL_TRACE_SCOPE;
+
+  // Note: do not reference this instance like in the other callbacks 
+  // because we are being called from inside the destructor.
+
   Helper::notify ( this, _destroyedCB );
 }
 
@@ -461,6 +486,16 @@ void Thread::_notifyDestroyed()
 void Thread::_notifyError()
 {
   USUL_TRACE_SCOPE;
+
+  // Should be true.
+  USUL_ASSERT ( this->refCount() > 0 );
+
+  // reference this instance here to ensure that it doesn't get purged 
+  // while it's inside a callback. Since the thread manager keeps a 
+  // reference this should not deference to zero.
+  Thread::RefPtr me ( this );
+
+  // Notify...
   Helper::notify ( this, _errorCB );
 }
 
@@ -474,6 +509,16 @@ void Thread::_notifyError()
 void Thread::_notifyFinished()
 {
   USUL_TRACE_SCOPE;
+
+  // Should be true.
+  USUL_ASSERT ( this->refCount() > 0 );
+
+  // reference this instance here to ensure that it doesn't get purged 
+  // while it's inside a callback. Since the thread manager keeps a 
+  // reference this should not deference to zero.
+  Thread::RefPtr me ( this );
+
+  // Notify...
   Helper::notify ( this, _finishedCB );
 }
 
@@ -487,6 +532,16 @@ void Thread::_notifyFinished()
 void Thread::_notifyStarted()
 {
   USUL_TRACE_SCOPE;
+
+  // Should be true.
+  USUL_ASSERT ( this->refCount() > 0 );
+
+  // reference this instance here to ensure that it doesn't get purged 
+  // while it's inside a callback. Since the thread manager keeps a 
+  // reference this should not deference to zero.
+  Thread::RefPtr me ( this );
+
+  // Notify...
   Helper::notify ( this, _startedCB );
 }
 
@@ -626,4 +681,33 @@ bool Thread::isIdle() const
   const bool zeroSystemThread ( 0 == this->systemId() );
 
   return ( notRunning && zeroSystemThread );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flags to indicate that the thread was killed. This function is 
+//  virtual; the overriding function should call this implementation before 
+//  actually killing the real thread.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Thread::kill()
+{
+  USUL_TRACE_SCOPE;
+
+  // Lock mutex to make sure that all of these members are set together.
+  Guard guard ( this->mutex() );
+
+  // Set these members.
+  this->_setResult ( Thread::KILLED );
+  this->_setState ( Thread::NOT_RUNNING );
+  this->_setSystemThreadId ( 0 );
+
+  // Set the callbacks.
+  this->cancelled ( 0x0 );
+  this->destroyed ( 0x0 );
+  this->error     ( 0x0 );
+  this->finished  ( 0x0 );
+  this->started   ( 0x0 );
 }

@@ -31,10 +31,10 @@ struct ILoadFileDialog : public Usul::Interfaces::IUnknown
   // Typedefs.
   typedef std::pair < std::string, std::string > Filter;
   typedef std::vector < Filter > Filters;
-  typedef std::string Filename;
-  typedef std::vector < Filename > Filenames;
-  typedef std::pair < Filename, Filter > FileResult;
-  typedef std::pair < Filenames, Filter > FilesResult;
+  typedef std::string FileName;
+  typedef std::vector < FileName > FileNames;
+  typedef std::pair < FileName, Filter > FileResult;
+  typedef std::pair < FileNames, Filter > FilesResult;
 
   // Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( ILoadFileDialog );

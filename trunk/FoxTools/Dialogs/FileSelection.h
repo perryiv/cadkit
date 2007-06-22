@@ -38,8 +38,8 @@ public:
   typedef Usul::Interfaces::ILoadFileDialog ILoadFileDialog;
   typedef ILoadFileDialog::Filter Filter;
   typedef ILoadFileDialog::Filters Filters;
-  typedef ILoadFileDialog::Filename Filename;
-  typedef ILoadFileDialog::Filenames Filenames;
+  typedef ILoadFileDialog::FileName FileName;
+  typedef ILoadFileDialog::FileNames FileNames;
   typedef ILoadFileDialog::FileResult FileResult;
   typedef ILoadFileDialog::FilesResult FilesResult;
 
@@ -59,10 +59,10 @@ public:
   static FileResult             askForFileName  ( const Type &type, const std::string &title, const Filters &filters, FX::FXWindow *owner, bool appendExtension );
 
   // Get the i'th filename selected. Throws if not available.
-  const Filename &              filename ( unsigned int i ) const { return _filenames.at ( i ); }
+  const FileName &              filename ( unsigned int i ) const { return _filenames.at ( i ); }
 
   // Direct access to the filenames.
-  const Filenames &             filenames() const { return _filenames; }
+  const FileNames &             filenames() const { return _filenames; }
 
   // Get the i'th filter. Throws if not available.
   const Filter &                filter ( unsigned int i ) const { return _filters.at ( i ); }
@@ -115,7 +115,7 @@ public:
 
 protected:
 
-  static bool                   _appendExtension ( const Filter &filter, Filenames &names, FX::FXWindow *owner );
+  static bool                   _appendExtension ( const Filter &filter, FileNames &names, FX::FXWindow *owner );
 
   void                          _makePatterns ( std::string & ) const;
 
@@ -135,7 +135,7 @@ private:
   unsigned int _filterIndex;
   unsigned int _flags;
   Filters _filters;
-  Filenames _filenames;
+  FileNames _filenames;
   Type _type;
 };
 

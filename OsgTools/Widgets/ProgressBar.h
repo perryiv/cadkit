@@ -4,7 +4,7 @@
 //  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Created by: Jeff Conner
+//  Authors: Jeff Conner and Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -15,6 +15,7 @@
 #include <string>
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Widgets/Helper/UpdateTextCallback.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
@@ -35,7 +36,8 @@ class OSG_TOOLS_EXPORT ProgressBar : public Usul::Base::Referenced,
 {
 public:
   
-  typedef Usul::Base::Referenced BaseClass;
+  typedef Usul::Base::Referenced                         BaseClass;
+  typedef OsgTools::Widgets::Helper::ThreadSafeText      ThreadSafeText;
 
   USUL_DECLARE_QUERY_POINTERS ( ProgressBar );
 	USUL_DECLARE_IUNKNOWN_MEMBERS;
@@ -128,7 +130,6 @@ protected:
   void _emptyProgressBar();
   std::string _getPercentComplete();
   osg::Node*  _buildBar (  int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth, osg::Geometry& geometry  );
-  osg::Geode* _drawTextAtPosition ( const osg::Vec3f & p, const std::string & s, const osg::Vec4f& color, float size );
 
 private:
 
@@ -180,9 +181,13 @@ private:
   osg::ref_ptr< osg::Geode > _text;
   osg::ref_ptr< osg::Group > _pbarGroup;
 
+  osg::ref_ptr < ThreadSafeText > _labelText;
+  osg::ref_ptr < ThreadSafeText > _percentText;
+
   osg::ref_ptr < ProgressDrawable > _progressDrawable;
   osg::ref_ptr < ProgressDrawable > _backgroundDrawable;
 };
+
 } // Namespace Builders
 } // Namespace OsgWidgets
 

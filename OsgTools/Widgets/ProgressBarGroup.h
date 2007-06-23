@@ -92,6 +92,7 @@ ProgressBarGroup();
   void hideProgressBar ( unsigned int index );
   void resetBar ( unsigned int i );
 
+  // Append a progress bar to the stack.
   Usul::Interfaces::IUnknown*  append();
 
   void add ( ProgressBar* pbar );

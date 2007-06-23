@@ -43,36 +43,36 @@ class ProgressBarAnimationCallback : public osg::NodeCallback
 
         virtual void operator() (osg::Node* node, osg::NodeVisitor* nv)
         {
-            osg::MatrixTransform* transform = dynamic_cast<osg::MatrixTransform*>(node);    
-            if(0L != transform && _bar.valid() )
+          osg::MatrixTransform* transform = dynamic_cast<osg::MatrixTransform*>(node);    
+          if( 0x0 != transform && _bar.valid() )
+          {
+            if(_bar->isAnimating())
             {
-	      if(_bar->isAnimating())
-	      {
-		if(_bar->isVisible())
-		{
-		  if (_start < _end)
-		  {
-		    _start += _step;
-		    transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
-		    
-		  }
-		  else
-		    _bar->setAnimation(false);
-		}
-		else
-		{
-		  if (_start > _end)
-		  {
-		    _start += _step;
-		    transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
-        						
-		  }
-		  else
-		    _bar->setAnimation(false);
-		}
-	      }
-            }   
-            traverse(node,nv);            
+	            if(_bar->isVisible())
+	            {
+	              if (_start < _end)
+	              {
+	                _start += _step;
+	                transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
+          		    
+	              }
+	              else
+	                _bar->setAnimation(false);
+	            }
+	            else
+	            {
+	              if (_start > _end)
+	              {
+	                _start += _step;
+	                transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
+                						
+	              }
+	              else
+	                _bar->setAnimation(false);
+  	          }
+            }
+          }   
+          traverse(node,nv);            
             
         }
         
@@ -85,9 +85,11 @@ class ProgressBarAnimationCallback : public osg::NodeCallback
       float				_step;
 
 };
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Constructor/Destructor
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -116,19 +118,31 @@ _isFinished ( false ),
 _isVisible ( true ),
 _isAnimating ( false ),
 _ll ( osg::Vec2f ( 0.0f, 0.0f ) ),
+_labelText ( new ThreadSafeText ),
+_percentText ( new ThreadSafeText ),
 _progressDrawable ( new ProgressDrawable ),
 _backgroundDrawable ( new ProgressDrawable )
 {
+  _progressDrawable->setUseDisplayList ( false );
+  _backgroundDrawable->setUseDisplayList ( false );
+
   _borderPadding = ( _barHeight + _barBorderThickness ) * ( _barLength + _barBorderThickness) * .5;
   _borderHeight = ( _barHeight * 2.0f ) + _borderPadding;
   _borderLength = _barLength + _borderPadding;
   _animationStart = 1.0f;
 	_animationEnd = 0.0f; 
-	_animationStep = -1 * (1.0f / 20.0f);
+	_animationStep = -1 * ( 1.0f / 20.0f );
   _pbarGroup = new osg::Group() ;
 	this->_buildProgressBarObject();
   this->updateProgressBar();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor
+//
+///////////////////////////////////////////////////////////////////////////////
 
 ProgressBar::~ProgressBar()
 {
@@ -146,6 +160,7 @@ osg::Node* ProgressBar::getProgressBar()
 {
   return _pbarGroup.get();
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -255,6 +270,7 @@ void ProgressBar::hideProgressBar()
   updateProgressBar();
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the total of progress bar.
@@ -290,7 +306,7 @@ void ProgressBar::updateProgressBar ( unsigned int value )
 void ProgressBar::setStatusBarText ( const std::string &text, bool force )
 {
   USUL_TRACE_SCOPE;
-  //this->setMessage ( text );
+  this->setMessage ( text );
 }
 
 
@@ -344,6 +360,7 @@ void ProgressBar::setMin( double min )
   this->updateProgressBar();
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the maximum value
@@ -353,7 +370,7 @@ void ProgressBar::setMin( double min )
 void ProgressBar::setMax( double max )
 {
   _max = max;
-  //this->updateProgressBar();
+  this->updateProgressBar();
 }
 
 
@@ -379,7 +396,7 @@ void ProgressBar::setBarHeight ( float h )
 void ProgressBar::setMessage ( const std::string& s )
 {
   _barText = s;
-  this->updateProgressBar();
+  _labelText->setText ( s );
 }
 
 
@@ -446,6 +463,7 @@ void ProgressBar::setCurrent( double c )
   _progressDrawable->setBounds ( osg::Vec2f ( _ll.x(), _ll.y() + _barHeight ), osg::Vec2f(_ll.x() + _barSize , _ll.y()) );
   _backgroundDrawable->setBounds ( osg::Vec2f ( _ll.x() + _barSize, _ll.y() + _barHeight ),  osg::Vec2f ( _ll.x() + _barLength , _ll.y() ) );
 
+  _percentText->setText ( this->_getPercentComplete() );
     //this->updateProgressBar();
 }
 
@@ -469,26 +487,23 @@ void ProgressBar::_emptyProgressBar()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Geode* ProgressBar::_drawTextAtPosition( const osg::Vec3f & p, const std::string & s, const osg::Vec4f& color, float size )
-{ 
-  osg::ref_ptr< osg::Geode > geode ( new osg::Geode() );
+namespace Detail
+{
+  Helper::ThreadSafeText* drawTextAtPosition( const osg::Vec3f & p, const std::string & s, const osg::Vec4f& color, float size )
+  { 
+    osg::ref_ptr< osgText::Font > font ( osgText::readFontFile ( "fonts/arial.ttf" ) );
+    osg::ref_ptr < Helper::ThreadSafeText > text ( new Helper::ThreadSafeText );
 
-  osg::ref_ptr< osgText::Font > font = osgText::readFontFile("fonts/arial.ttf");
-  osgText::Text* text = new osgText::Text;
+    text->setFont( font.get() );
+    text->setColor( color );
+    text->setCharacterSize( size );
+    text->setPosition( p );
+    text->setLayout( osgText::Text::LEFT_TO_RIGHT );
+    text->setText( s );
+    text->setFontResolution ( 40, 40 );
 
-  text->setFont( font.get() );
-  text->setColor( color );
-  text->setCharacterSize( size );
-  text->setPosition( p );
-  text->setLayout(osgText::Text::LEFT_TO_RIGHT);
-  text->setText( s );
-  text->setFontResolution ( 40, 40 );
-  
-  text->setBackdropType( osgText::Text::NONE );
-
-  geode->addDrawable(text);
-
-  return geode.release();
+    return text.release();
+  }
 }
 
 
@@ -501,14 +516,11 @@ osg::Geode* ProgressBar::_drawTextAtPosition( const osg::Vec3f & p, const std::s
 std::string ProgressBar::_getPercentComplete()
 {
   char s[10];
-  //std::string s;
-//  std::ostringstream f;
  
-  double percentage =  (_current + _min ) / _max;
-  //f << "0.1f";
+  double percentage =  ( _current + _min ) / _max;
+
   percentage *= 100;
   sprintf( s , "%0.1lf%c" , percentage, '%' );
-  //_barSize = _barLength * ( (_current + _min ) / _max );
 
   return s;
 }
@@ -552,7 +564,8 @@ void ProgressBar::ProgressDrawable::drawImplementation ( osg::RenderInfo& info )
 
   // Const cast voodoo
   ( const_cast < ProgressDrawable * > ( this ) )->setVertexArray ( vertices.get() );
-    
+  ( const_cast < ProgressDrawable * > ( this ) )->dirtyDisplayList ();
+
   BaseClass::drawImplementation ( info );
 }
 
@@ -566,19 +579,20 @@ void ProgressBar::ProgressDrawable::drawImplementation ( osg::RenderInfo& info )
 
 void ProgressBar::_buildProgressBarObject()
 {
-  //build bar objects
+  // build bar objects.
   osg::ref_ptr< osg::Group > group ( new osg::Group() );
 
   
   this->_progressBar =  ( this->_buildBar( 1003,
                                            "icons/bar.tga",
                                            osg::Vec2f ( _ll.x(), _ll.y() + _barHeight ),
-                                           osg::Vec2f(_ll.x() + _barSize , _ll.y()),
+                                           osg::Vec2f( _ll.x() + _barSize , _ll.y()),
                                            0.0f, *_progressDrawable ) );
+
   this->_backgroundBar = (  this->_buildBar( 1002,
                                              "icons/background.tga",
                                              osg::Vec2f ( _ll.x() + _barSize, _ll.y() + _barHeight ),
-                                             osg::Vec2f(_ll.x() + _barLength , _ll.y() ),
+                                             osg::Vec2f( _ll.x() + _barLength , _ll.y() ),
                                              0.0f, *_backgroundDrawable ) );
 
   {
@@ -602,11 +616,15 @@ void ProgressBar::_buildProgressBarObject()
   osg::Vec4f white ( osg::Vec4f (1.0f, 1.0f, 1.0f, 1.0f ) );
   osg::Vec4f black ( osg::Vec4f (0.0f, 0.0f, 0.0f, 1.0f ) );
 
-  this->_text = this->_drawTextAtPosition ( osg::Vec3f ( _ll.x(), _ll.y() + _barHeight + _barBorderThickness * 3.0f, _textZOffset ), this->_barText, white, 0.032 );
+  // Create a label above the progress bar.
+  _labelText = Detail::drawTextAtPosition ( osg::Vec3f ( _ll.x(), _ll.y() + _barHeight + _barBorderThickness * 3.0f, _textZOffset ), this->_barText, white, 0.032 );
+  _text = new osg::Geode;
+  _text->addDrawable ( _labelText.get() );
 
-  //draw percentage at the midpoint of the progress bar
-  this->_percent = this->_drawTextAtPosition ( osg::Vec3f ( _ll.x() + _barLength *0.45f , _ll.y() + _barHeight *.25f, _textZOffset ), this->_getPercentComplete(), white, 0.024 );
-
+  // Draw percentage at the midpoint of the progress bar.
+  _percentText = Detail::drawTextAtPosition ( osg::Vec3f ( _ll.x() + _barLength *0.45f , _ll.y() + _barHeight *.25f, _textZOffset ), this->_getPercentComplete(), white, 0.024 );
+  _percent = new osg::Geode;
+  _percent->addDrawable ( _percentText.get() );
 }
 
 

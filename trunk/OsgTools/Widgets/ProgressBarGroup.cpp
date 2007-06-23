@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2007, Arizona State University
@@ -25,72 +26,11 @@
 #include <sstream>
 #include <algorithm>
 
-using namespace std;
 using namespace OsgTools::Widgets;
-
-/*class ProgressBarAnimationCallback : public osg::NodeCallback
-{
-    public:
-
-      ProgressBarAnimationCallback(ProgressBarGroup* bar, float start, float end, float step) :
-          _start ( start ),
-          _end ( end ),
-          _step ( step ),
-          _bar ( bar )
-            
-        {
-          
-        }
-
-        virtual void operator() (osg::Node* node, osg::NodeVisitor* nv)
-        {
-            osg::MatrixTransform* transform = dynamic_cast<osg::MatrixTransform*>(node);    
-            if(0L != transform)
-            {
-			        if(_bar->isAnimating())
-			        {
-				        if(_bar->isVisible())
-				        {
-					        if (_start < _end)
-					        {
-						        _start += _step;
-						        transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
-        						
-					        }
-					        else
-						        _bar->setAnimation(false);
-				        }
-				        else
-				        {
-					        if (_start > _end)
-					        {
-						        _start += _step;
-						        transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
-        						
-					        }
-					        else
-						        _bar->setAnimation(false);
-				        }
-			        }
-            }   
-            traverse(node,nv);            
-            
-        }
-        
-    protected:
-    
-      ProgressBarGroup::RefPtr _bar;
-        
-		  float				_start;
-		  float				_end;
-		  float				_step;
-
-};
-*/
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Constructor/Destructor
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -109,15 +49,19 @@ _isRelativeToAbsolute ( true )
   this->_buildProgressBarGroup();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 ProgressBarGroup::~ProgressBarGroup()
 {
   std::for_each ( _pbarVector.begin(), _pbarVector.end(), std::mem_fun ( &ProgressBar::clear ) );
   _pbarVector.clear();
 }
 
-////////////////////////////
-// Public Methods
-////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -140,8 +84,7 @@ osg::Node* ProgressBarGroup::getProgressBarGroup()
 void ProgressBarGroup::setRelativeToAbsolute( bool value )
 {
   _isRelativeToAbsolute = value;
-  this->_buildProgressBarGroup();
-  
+  this->_buildProgressBarGroup(); 
 }
 
 
@@ -300,6 +243,7 @@ void ProgressBarGroup::add ( const std::string& m, double min, double max )
   this->_addProgressBar ( pbar.get() );
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Create and add a progress bar object to the progress bar group
@@ -359,7 +303,6 @@ void ProgressBarGroup::remove ( unsigned int pos )
     {
       _height = 0.00;
       _length = 0.00;
-      
     }
     else
     {
@@ -395,6 +338,7 @@ void ProgressBarGroup::clear()
   _group = 0x0;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the location of the progress bar on the screen.  Designed to work with
@@ -429,10 +373,6 @@ void ProgressBarGroup::setLocation ( unsigned int loc )
 }
 
 
-////////////////////////////
-// Protected Methods
-////////////////////////////
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Build the "Progress Bar Group" group.  Apply matrix transforms
@@ -451,22 +391,6 @@ void ProgressBarGroup::_buildProgressBarGroup()
     matrix->addChild ( _pbarVector.at ( x )->getProgressBar() );
   }
 
-  /*osg::ref_ptr < osg::Geometry > geom ( new osg::Geometry );
-  osg::ref_ptr < osg::Vec3Array > verts ( new osg::Vec3Array );
-
-  verts->push_back ( osg::Vec3 ( _ll.x(), _ll.y() + _height, 0 ) );
-  verts->push_back ( osg::Vec3 ( _ll.x() + _length, _ll.y() + _height, 0 ) );
-  verts->push_back ( osg::Vec3 ( _ll.x() + _length, _ll.y(), 0 ) );
-  verts->push_back ( osg::Vec3 ( _ll, 0.0 ) );
-
-  geom->setVertexArray ( verts.get() );
-
-  geom->addPrimitiveSet ( new osg::DrawArrays ( GL_QUADS, 0, 4 ) );
-
-  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-  geode->addDrawable ( geom.get() );
-  matrix->addChild ( geode.get() );*/
-
   matrix->addChild ( this->_buildBar( 999,
                                      "icons/borderGroup.tga",
                                      osg::Vec2f ( _ll.x(), _ll.y() + _height ),
@@ -481,6 +405,8 @@ void ProgressBarGroup::_buildProgressBarGroup()
   _group->addChild ( matrix.release() );
   
 }
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Build a progress bar object.  Used to build the progress bar group
@@ -502,10 +428,6 @@ osg::Node* ProgressBarGroup::_buildBar( unsigned int render_level , std::string 
 	  osg::ref_ptr< osg::Texture2D > texture ( new osg::Texture2D() ); 
 	  texture->setImage ( image.get() );
 	  stateset->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-	  //stateset->setMode ( GL_REPEAT, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-	  //stateset->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );    
-    //stateset->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
-    //stateset->setRenderBinDetails ( render_level, "RenderBin" );
   }
 
   osg::ref_ptr< osg::Vec4Array > white ( new osg::Vec4Array() );  
@@ -521,15 +443,11 @@ osg::Node* ProgressBarGroup::_buildBar( unsigned int render_level , std::string 
   vertices->push_back ( osg::Vec3f ( lr.x(), ul.y(), depth ) );
   vertices->push_back ( osg::Vec3f ( ul.x(), ul.y(), depth ) );
 
-  osg::Vec2 texCoords[] =
-  {
-    osg::Vec2(0.0f, 0.0f),
-    osg::Vec2(1.0f, 0.0f),
-    osg::Vec2(1.0f, 1.0f),
-    osg::Vec2(0.0f, 1.0f),            
-  };
-
-  osg::ref_ptr< osg::Vec2Array > uvcoords ( new osg::Vec2Array( 4, texCoords ) );
+  osg::ref_ptr< osg::Vec2Array > uvcoords ( new osg::Vec2Array( 4 ) );
+  uvcoords->at ( 0 ) = osg::Vec2( 0.0f, 0.0f );
+  uvcoords->at ( 1 ) = osg::Vec2( 1.0f, 0.0f );
+  uvcoords->at ( 2 ) = osg::Vec2( 1.0f, 1.0f );
+  uvcoords->at ( 3 ) = osg::Vec2( 0.0f, 1.0f );
 
   geometry->setTexCoordArray ( 0 , uvcoords.get() );
 

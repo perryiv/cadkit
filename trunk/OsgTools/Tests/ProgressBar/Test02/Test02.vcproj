@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="ProgressBar"
-	ProjectGUID="{7CF85B7B-6834-4765-8B1C-008B792F3506}"
-	RootNamespace="ProgressBar"
+	Name="Test02"
+	ProjectGUID="{E3D3B1AF-BD69-4C50-B16B-6769A9DC94AA}"
+	RootNamespace="Test02"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(OSG_INC_DIR)"
+				AdditionalIncludeDirectories="$(OSG_INC_DIR);$(CADKIT_ROOT_DIR)"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,12 +61,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(NOINHERIT) kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib  OpenThreadsd.lib osgd.lib osgDBd.lib osgUtild.lib osgGAd.lib osgViewerd.lib osgTextd.lib osgGAd.lib osgUtild.lib osgDBd.lib osgd.lib OpenThreadsd.lib glu32.lib opengl32.lib "
+				AdditionalDependencies="osgd.lib osgviewerd.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"
 				SubSystem="1"
-				StackReserveSize="10000000"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -119,6 +118,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="$(OSG_INC_DIR);$(CADKIT_ROOT_DIR)"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -138,6 +138,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -179,21 +180,17 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\driver.cpp"
+				RelativePath=".\Main.cpp"
 				>
 			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
-			>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
-			>
+			<File
+				RelativePath=".\TestJob.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TestJob.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

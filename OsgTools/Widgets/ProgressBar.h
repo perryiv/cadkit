@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2007, Arizona State University
@@ -143,7 +144,7 @@ private:
       
     void setBounds ( const osg::Vec2f& ul,  const osg::Vec2f& lr );
 
-    virtual void drawImplementation ( osg::RenderInfo& info );
+    virtual void drawImplementation ( osg::RenderInfo& info ) const;
 
 
   private:

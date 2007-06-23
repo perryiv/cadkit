@@ -21,6 +21,7 @@
 
 #include "OsgTools/Render/Renderer.h"
 #include "OsgTools/Render/SceneManager.h"
+#include "OsgTools/Widgets/ProgressBarGroup.h"
 
 #include "vrj/Draw/OGL/GlApp.h"
 #include "vrj/Draw/OGL/GlContextData.h"
@@ -59,12 +60,13 @@ class VRV_EXPORT Application : public vrj::GlApp,
 {
 public:
   // Typedefs.
-  typedef vrj::GlApp                       BaseClass;
-  typedef OsgTools::Render::Renderer       Renderer;
-  typedef Renderer::RefPtr                 RendererPtr;
-  typedef VRV::Core::SharedDouble          SharedDouble;
-  typedef Usul::Threads::RecursiveMutex    Mutex;
-  typedef Usul::Threads::Guard<Mutex>      Guard;
+  typedef vrj::GlApp                           BaseClass;
+  typedef OsgTools::Render::Renderer           Renderer;
+  typedef Renderer::RefPtr                     RendererPtr;
+  typedef VRV::Core::SharedDouble              SharedDouble;
+  typedef Usul::Threads::RecursiveMutex        Mutex;
+  typedef Usul::Threads::Guard<Mutex>          Guard;
+  typedef OsgTools::Widgets::ProgressBarGroup  ProgressBars;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -183,6 +185,7 @@ private:
 
   vrj::GlContextData< RendererPtr >  _renderer;
   OsgTools::Render::SceneManager::RefPtr _sceneManager;
+  ProgressBars::RefPtr                   _progressBars;
 
   osg::Vec2                              _clipDist;
 

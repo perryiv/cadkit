@@ -19,7 +19,11 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Threads/Mutex.h"
+#include "Usul/Threads/Guard.h"
 
+#include "osg/Geometry"
+#include "osg/RenderInfo"
 
 namespace OsgTools {
 namespace Widgets {
@@ -122,11 +126,33 @@ protected:
   void _buildProgressBar();
   void _emptyProgressBar();
   std::string _getPercentComplete();
-  osg::Node* _buildBar (  int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth );
+  osg::Node*  _buildBar (  int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth, osg::Geometry& geometry  );
   osg::Geode* _drawTextAtPosition ( const osg::Vec3f & p, const std::string & s, const osg::Vec4f& color, float size );
 
 private:
-	double _min, _max, _current;
+
+  class ProgressDrawable : public osg::Geometry
+  {
+  public:
+    typedef osg::Geometry BaseClass;
+    typedef Usul::Threads::Mutex Mutex;
+    typedef Usul::Threads::Guard< Mutex > Guard;
+
+    ProgressDrawable ();
+    virtual ~ProgressDrawable();
+      
+    void setBounds ( const osg::Vec2f& ul,  const osg::Vec2f& lr );
+
+    virtual void drawImplementation ( osg::RenderInfo& info );
+
+
+  private:
+    Mutex        *_mutex;
+    osg::Vec2f    _ul;
+    osg::Vec2f    _lr;
+  };
+
+  double _min, _max, _current;
   float _barSize;
   float _backSize;
   float _barLength;
@@ -153,6 +179,8 @@ private:
   osg::ref_ptr< osg::Geode > _text;
   osg::ref_ptr< osg::Group > _pbarGroup;
 
+  osg::ref_ptr < ProgressDrawable > _progressDrawable;
+  osg::ref_ptr < ProgressDrawable > _backgroundDrawable;
 };
 } // Namespace Builders
 } // Namespace OsgWidgets

@@ -24,8 +24,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Feedback, Feedback::BaseClass );
 ///////////////////////////////////////////////////////////////////////////////
 
 Feedback::Feedback() :
-	BaseClass(),
-	_total ( 0 )
+  BaseClass(),
+  _total ( 0 )
 {
 }
 
@@ -49,16 +49,16 @@ Feedback::~Feedback()
 
 Usul::Interfaces::IUnknown* Feedback::queryInterface ( unsigned long iid )
 {
-	switch ( iid )
-	{
-	case Usul::Interfaces::IUnknown::IID:
-	case Usul::Interfaces::IStatusBar::IID:
-		return static_cast < Usul::Interfaces::IStatusBar * > ( this );
-	case Usul::Interfaces::IProgressBar::IID:
-		return static_cast < Usul::Interfaces::IProgressBar * > ( this );
-	default:
-		return 0x0;
-	}
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IStatusBar::IID:
+    return static_cast < Usul::Interfaces::IStatusBar * > ( this );
+  case Usul::Interfaces::IProgressBar::IID:
+    return static_cast < Usul::Interfaces::IProgressBar * > ( this );
+  default:
+    return 0x0;
+  }
 }
 
 
@@ -81,7 +81,7 @@ void Feedback::showProgressBar()
 
 void Feedback::setTotalProgressBar ( unsigned int value )
 {
-	_total = value;
+  _total = value;
 }
 
 
@@ -93,8 +93,11 @@ void Feedback::setTotalProgressBar ( unsigned int value )
 
 void Feedback::updateProgressBar ( unsigned int value )
 {
-	float percentage ( static_cast < float > ( value ) / _total );
-	std::cout << static_cast < unsigned int > ( percentage * 100 ) << "%" << std::endl;
+  float f ( static_cast < float > ( value ) / _total );
+  unsigned int percentage ( static_cast < unsigned int > ( f * 100 ) );
+
+  if( percentage % 10 == 0 )
+    std::cout << percentage << "%" << std::endl;
 }
 
 
@@ -117,5 +120,5 @@ void Feedback::hideProgressBar()
 
 void Feedback::setStatusBarText ( const std::string &text, bool force )
 {
-	std::cout << text << std::endl;
+  std::cout << text << std::endl;
 }

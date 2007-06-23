@@ -9,6 +9,9 @@
 
 #include "OsgTools/Widgets/ProgressBar.h"
 
+#include "Usul/CommandLine/Arguments.h"
+#include "Usul/Trace/Trace.h"
+
 #include "osgDB/ReadFile"
 #include "osg/MatrixTransform"
 #include "osg/Math"
@@ -28,7 +31,7 @@ class ProgressBarAnimationCallback : public osg::NodeCallback
 {
     public:
 
-      ProgressBarAnimationCallback(ProgressBar* bar, float start, float end, float step) :
+      ProgressBarAnimationCallback( ProgressBar* bar, float start, float end, float step ) :
           _start ( start ),
           _end ( end ),
           _step ( step ),
@@ -41,33 +44,33 @@ class ProgressBarAnimationCallback : public osg::NodeCallback
         virtual void operator() (osg::Node* node, osg::NodeVisitor* nv)
         {
             osg::MatrixTransform* transform = dynamic_cast<osg::MatrixTransform*>(node);    
-            if(0L != transform)
+            if(0L != transform && _bar.valid() )
             {
-			        if(_bar->isAnimating())
-			        {
-				        if(_bar->isVisible())
-				        {
-					        if (_start < _end)
-					        {
-						        _start += _step;
-						        transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
+	      if(_bar->isAnimating())
+	      {
+		if(_bar->isVisible())
+		{
+		  if (_start < _end)
+		  {
+		    _start += _step;
+		    transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
+		    
+		  }
+		  else
+		    _bar->setAnimation(false);
+		}
+		else
+		{
+		  if (_start > _end)
+		  {
+		    _start += _step;
+		    transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
         						
-					        }
-					        else
-						        _bar->setAnimation(false);
-				        }
-				        else
-				        {
-					        if (_start > _end)
-					        {
-						        _start += _step;
-						        transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
-        						
-					        }
-					        else
-						        _bar->setAnimation(false);
-				        }
-			        }
+		  }
+		  else
+		    _bar->setAnimation(false);
+		}
+	      }
             }   
             traverse(node,nv);            
             
@@ -77,9 +80,9 @@ class ProgressBarAnimationCallback : public osg::NodeCallback
     
       ProgressBar::RefPtr _bar;
         
-		  float				_start;
-		  float				_end;
-		  float				_step;
+      float				_start;
+      float				_end;
+      float				_step;
 
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -112,7 +115,9 @@ _isRelativeToAbsolute ( false ),
 _isFinished ( false ),
 _isVisible ( true ),
 _isAnimating ( false ),
-_ll ( osg::Vec2f ( 0.0f, 0.0f ) )
+_ll ( osg::Vec2f ( 0.0f, 0.0f ) ),
+_progressDrawable ( new ProgressDrawable ),
+_backgroundDrawable ( new ProgressDrawable )
 {
   _borderPadding = ( _barHeight + _barBorderThickness ) * ( _barLength + _barBorderThickness) * .5;
   _borderHeight = ( _barHeight * 2.0f ) + _borderPadding;
@@ -221,9 +226,11 @@ Usul::Interfaces::IUnknown* ProgressBar::queryInterface ( unsigned long iid )
 
 void ProgressBar::showProgressBar()
 {
+  USUL_TRACE_SCOPE;
+
   _animationStart = 0.0f;
-	_animationEnd = 1.0f; 
-	_animationStep = 1.0f / 20.0f;
+  _animationEnd = 1.0f; 
+  _animationStep = 1.0f / 20.0f;
   _isAnimating = true;
   _isVisible = true;
   updateProgressBar();
@@ -238,11 +245,13 @@ void ProgressBar::showProgressBar()
 
 void ProgressBar::hideProgressBar()
 {
+  USUL_TRACE_SCOPE;
+
   _animationStart = 1.0f;
-	_animationEnd = 0.0f; 
-	_animationStep = -1 * (1.0f / 20.0f);
+  _animationEnd = 0.0f; 
+  _animationStep = -1 * (1.0f / 20.0f);
   _isAnimating = true;
-	_isVisible = false;
+  _isVisible = false;
   updateProgressBar();
 }
 
@@ -254,7 +263,8 @@ void ProgressBar::hideProgressBar()
 
 void ProgressBar::setTotalProgressBar ( unsigned int value )
 {
-	this->setMax ( value );
+  USUL_TRACE_SCOPE;
+  this->setMax ( value );
 }
 
 
@@ -266,7 +276,8 @@ void ProgressBar::setTotalProgressBar ( unsigned int value )
 
 void ProgressBar::updateProgressBar ( unsigned int value )
 {
-	this->setCurrent ( value );
+  USUL_TRACE_SCOPE;
+  this->setCurrent ( value );
 }
 
 
@@ -278,7 +289,8 @@ void ProgressBar::updateProgressBar ( unsigned int value )
 
 void ProgressBar::setStatusBarText ( const std::string &text, bool force )
 {
-	this->setMessage ( text );
+  USUL_TRACE_SCOPE;
+  //this->setMessage ( text );
 }
 
 
@@ -293,17 +305,17 @@ void ProgressBar::updateProgressBar()
   if( _isVisible )
   {
     this->_buildProgressBarObject();
-		this->_buildProgressBar();
+    this->_buildProgressBar();
   }
 
-	if( !_isVisible && _isAnimating )
+  if( !_isVisible && _isAnimating )
   {
     this->_buildProgressBarObject();
-		this->_buildProgressBar();
+    this->_buildProgressBar();
   }
 
-	if( !_isVisible && !_isAnimating )
-		_emptyProgressBar();
+  if( !_isVisible && !_isAnimating )
+    _emptyProgressBar();
 
 }
 
@@ -341,7 +353,7 @@ void ProgressBar::setMin( double min )
 void ProgressBar::setMax( double max )
 {
   _max = max;
-  this->updateProgressBar();
+  //this->updateProgressBar();
 }
 
 
@@ -430,7 +442,10 @@ void ProgressBar::setCurrent( double c )
 
   _barSize = _barLength * ( (_current + _min ) / _max );
 
-  this->updateProgressBar();
+  _progressDrawable->setBounds ( osg::Vec2f ( _ll.x(), _ll.y() + _barHeight ), osg::Vec2f(_ll.x() + _barSize , _ll.y()) );
+  _backgroundDrawable->setBounds ( osg::Vec2f ( _ll.x() + _barSize, _ll.y() + _barHeight ),  osg::Vec2f ( _ll.x() + _barLength , _ll.y() ) );
+
+    //this->updateProgressBar();
 }
 
 
@@ -498,6 +513,49 @@ std::string ProgressBar::_getPercentComplete()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Make a drawable
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ProgressBar::ProgressDrawable::ProgressDrawable () : 
+  BaseClass(),
+  _mutex ( Mutex::create() )
+{
+}
+
+ProgressBar::ProgressDrawable::~ProgressDrawable()
+{
+  delete _mutex;
+}
+
+void ProgressBar::ProgressDrawable::setBounds ( const osg::Vec2f& ul,  const osg::Vec2f& lr )
+{
+  Guard guard ( this->mutex() );
+  _ul = ul;
+  _lr = lr;
+}
+
+void ProgressBar::ProgressDrawable::drawImplementation ( osg::RenderInfo& info )
+{
+  Guard guard ( this->mutex() );
+
+  // Make new vertex array
+  osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array() );
+  vertices->reserve( 4 );
+  vertices->push_back ( osg::Vec3f ( ul.x(), lr.y(), depth ) );
+  vertices->push_back ( osg::Vec3f ( lr.x(), lr.y(), depth ) );
+  vertices->push_back ( osg::Vec3f ( lr.x(), ul.y(), depth ) );
+  vertices->push_back ( osg::Vec3f ( ul.x(), ul.y(), depth ) );
+
+  this->setVertexArray ( vertices.get() );
+    
+  BaseClass::drawImplementation ( info );
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the bar objects
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -507,26 +565,36 @@ void ProgressBar::_buildProgressBarObject()
   //build bar objects
   osg::ref_ptr< osg::Group > group ( new osg::Group() );
 
+  
   this->_progressBar =  ( this->_buildBar( 1003,
                                            "icons/bar.tga",
                                            osg::Vec2f ( _ll.x(), _ll.y() + _barHeight ),
                                            osg::Vec2f(_ll.x() + _barSize , _ll.y()),
-                                           0.0f ) );
+                                           0.0f, *_progressDrawable ) );
   this->_backgroundBar = (  this->_buildBar( 1002,
                                              "icons/background.tga",
                                              osg::Vec2f ( _ll.x() + _barSize, _ll.y() + _barHeight ),
                                              osg::Vec2f(_ll.x() + _barLength , _ll.y() ),
-                                             0.0f ) );
-  this->_barBorder = (  this->_buildBar( 1001,
+                                             0.0f, *_backgroundDrawable ) );
+
+  {
+    osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
+    this->_barBorder = (  this->_buildBar( 1001,
                                          "icons/barborder.tga",
                                          osg::Vec2f ( _ll.x() - _barBorderThickness, _ll.y() + _barHeight + _barBorderThickness ),
                                          osg::Vec2f( _ll.x() + _barLength + _barBorderThickness , _ll.y() -_barBorderThickness),
-                                         _barBorderZOffset ) );
-  this->_border = (  this->_buildBar( 1000,
+                                         _barBorderZOffset, *geometry ) );
+  }
+
+  {
+    osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
+    this->_border = (  this->_buildBar( 1000,
                                       "icons/border.tga",
                                       osg::Vec2f ( _ll.x() - _borderPadding, _ll.y() + _borderHeight ),
                                       osg::Vec2f(_ll.x() + _borderLength , _ll.y() - _borderPadding ),
-                                      _borderZOffset ) );
+                                      _borderZOffset, *geometry ) );
+  }
+
   //this->_barText = ( "Loading file: test.txt " );
   osg::Vec4f white ( osg::Vec4f (1.0f, 1.0f, 1.0f, 1.0f ) );
   osg::Vec4f black ( osg::Vec4f (0.0f, 0.0f, 0.0f, 1.0f ) );
@@ -587,16 +655,18 @@ void ProgressBar::_buildProgressBar()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* ProgressBar::_buildBar( int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth  )
+osg::Node* ProgressBar::_buildBar( int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth, osg::Geometry& geometry  )
 {
+  std::string directory ( Usul::CommandLine::Arguments::instance().directory() + tex );
+
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode() );
 
-  osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
+  //osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
 
   osg::ref_ptr< osg::StateSet > stateset ( geometry->getOrCreateStateSet() );
-	osg::ref_ptr< osg::Image > image = osgDB::readImageFile( tex );
+  osg::ref_ptr< osg::Image > image = osgDB::readImageFile( directory );
 
-	if ( image.get() )
+  if ( image.get() )
   {
 	  osg::ref_ptr< osg::Texture2D > texture ( new osg::Texture2D() ); 
 	  texture->setImage ( image.get() );
@@ -630,19 +700,19 @@ osg::Node* ProgressBar::_buildBar( int render_level , std::string tex, const osg
 
   osg::ref_ptr< osg::Vec2Array > uvcoords ( new osg::Vec2Array ( 4, texCoords ) );
 
-  geometry->setTexCoordArray ( 0 , uvcoords.get() );
+  geometry.setTexCoordArray ( 0 , uvcoords.get() );
 
-  geometry->setVertexArray ( vertices.get() );
+  geometry.setVertexArray ( vertices.get() );
 
-  geometry->setColorArray ( white.get() );
-  geometry->setColorBinding ( osg::Geometry::BIND_OVERALL );
+  geometry.setColorArray ( white.get() );
+  geometry.setColorBinding ( osg::Geometry::BIND_OVERALL );
         
-  geometry->setNormalArray ( normal.get() );
-  geometry->setNormalBinding ( osg::Geometry::BIND_OVERALL );
+  geometry.setNormalArray ( normal.get() );
+  geometry.setNormalBinding ( osg::Geometry::BIND_OVERALL );
 
-  geometry->addPrimitiveSet ( new osg::DrawArrays( osg::PrimitiveSet::QUADS, 0, 4 ) );
+  geometry.addPrimitiveSet ( new osg::DrawArrays( osg::PrimitiveSet::QUADS, 0, 4 ) );
 
-  geode->addDrawable ( geometry.get() );
+  geode->addDrawable ( &geometry );
 
   return geode.release();
 }

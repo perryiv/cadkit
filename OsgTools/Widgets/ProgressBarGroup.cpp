@@ -9,6 +9,8 @@
 
 #include "ProgressBarGroup.h"
 
+#include "Usul/CommandLine/Arguments.h"
+
 #include "osgDB/ReadFile"
 #include "osg/MatrixTransform"
 #include "osg/Math"
@@ -277,23 +279,7 @@ void ProgressBarGroup::setPadding ( float p )
 
 void ProgressBarGroup::add ( ProgressBar* pbar )
 {
-  if ( _numBars == 0 )
-    pbar->setLowerLeft ( osg::Vec2f ( _ll.x() + _padding, _ll.y() + _height ) );
-  else
-    pbar->setLowerLeft ( osg::Vec2f ( _ll.x() + _padding,
-                                     _pbarVector.at( _numBars - 1 )->getLowerLeft().y() + 
-                                     _pbarVector.at( _numBars - 1 )->getHeight() + 
-                                     _padding ) );
-  ++_numBars;
-  if (_length < pbar->getLength() + _padding )
-    _length = pbar->getLength() + _padding * 2;
-
-  _height +=  pbar->getHeight() + _padding;
-
-  _pbarVector.push_back ( pbar );
-
-  this->_buildProgressBarGroup();
-
+  this->_addProgressBar ( pbar );
 }
 
 
@@ -310,6 +296,34 @@ void ProgressBarGroup::add ( const std::string& m, double min, double max )
   pbar->setMin ( min );
   pbar->setMax ( max );
   pbar->setCurrent ( min );
+
+  this->_addProgressBar ( pbar.get() );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create and add a progress bar object to the progress bar group
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* ProgressBarGroup::append (  )
+{
+  ProgressBar::RefPtr pbar = new ProgressBar( );
+
+  this->_addProgressBar ( pbar.get() );
+
+  return pbar->queryInterface ( Usul::Interfaces::IUnknown::IID );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create and add a progress bar object to the progress bar group
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarGroup::_addProgressBar ( ProgressBar * pbar )
+{
   if( _numBars == 0 )
     pbar->setLowerLeft ( osg::Vec2f ( _ll.x() + _padding, _ll.y() + _height ) );
   else
@@ -476,10 +490,12 @@ void ProgressBarGroup::_buildProgressBarGroup()
 
 osg::Node* ProgressBarGroup::_buildBar( unsigned int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth  )
 {
+  std::string directory ( Usul::CommandLine::Arguments::instance().directory() + tex );
+
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode() );
   osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
   osg::ref_ptr< osg::StateSet > stateset ( geometry->getOrCreateStateSet() );
-	osg::ref_ptr< osg::Image > image = osgDB::readImageFile ( tex );
+  osg::ref_ptr< osg::Image > image = osgDB::readImageFile ( directory );
 
 	if ( image.get() )
   {

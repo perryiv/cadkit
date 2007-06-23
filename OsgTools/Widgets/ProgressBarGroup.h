@@ -26,9 +26,10 @@ class OSG_TOOLS_EXPORT ProgressBarGroup : public Usul::Base::Referenced
 {
 public:
   USUL_DECLARE_REF_POINTERS ( ProgressBarGroup );
-	ProgressBarGroup();
+  
+ProgressBarGroup();
 
-	enum
+  enum
   {
     LOWER_LEFT,
     LOWER_RIGHT,
@@ -91,6 +92,8 @@ public:
   void hideProgressBar ( unsigned int index );
   void resetBar ( unsigned int i );
 
+  Usul::Interfaces::IUnknown*  append();
+
   void add ( ProgressBar* pbar );
   void add ( const std::string& m, double min, double max );
   void remove ( unsigned int pos );
@@ -103,6 +106,7 @@ protected:
 	void _buildProgressBarGroup();
   osg::Node* _buildBar ( unsigned int render_level , std::string tex, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth  );
 
+  void       _addProgressBar ( ProgressBar * bar );
 private:
 
   bool _isRelativeToAbsolute;

@@ -20,6 +20,7 @@
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/System/Host.h"
 
 #include "XmlTree/Document.h"
 
@@ -31,8 +32,11 @@ class Program
 {
 public:
   Program() : 
-    _trace ( new std::ofstream ( "trace.csv" ) )
+    _trace ( 0x0 )
   {
+    std::string filename ( Usul::System::Host::name() + "_trace.csv" );
+    _trace = new std::ofstream ( filename.c_str() );
+
     // Set the Thread factory.
     Usul::Threads::Manager::instance().factory ( &Threads::OT::newOpenThreadsThread );
 
@@ -67,7 +71,8 @@ public:
     Usul::CommandLine::Arguments::instance().set ( argc, argv );
 
     // Console Feedback.
-    Usul::Console::Feedback::RefPtr feedback ( new Usul::Console::Feedback );
+    
+Usul::Console::Feedback::RefPtr feedback ( new Usul::Console::Feedback );
 
     // Load the plugins.
     Usul::Components::Loader < XmlTree::Document > loader;
@@ -86,6 +91,9 @@ public:
 
     // Run the application.
     app.run();
+
+    // Wait for all jobs to finish
+    Usul::Jobs::Manager::wait();
 
     // The job manager has a thread-pool.
     Usul::Jobs::Manager::destroy();

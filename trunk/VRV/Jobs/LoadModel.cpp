@@ -14,6 +14,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Components/Manager.h"
+#include "Usul/Trace/Trace.h"
 
 #include "OsgTools/IO/Reader.h"
 
@@ -55,15 +56,23 @@ LoadModel::~LoadModel()
 
 void LoadModel::_started()
 {
+  USUL_TRACE_SCOPE;
+
   typedef void (LoadModel::*Function) ( const std::string &, unsigned long, unsigned long ); 
   typedef Usul::Adaptors::MemberFunction < LoadModel*, Function > MemFun;
   typedef OsgTools::IO::Reader::ReaderCallback < MemFun > Callback;
+
+  // Show the progress bar.
+  Usul::Interfaces::IProgressBar::ShowHide showHide ( this->progress() );
+
+  // Set the label.
+  this->_setLabel ( "Loading filename: " + _filename );
 
   // Make the reader.
   OsgTools::IO::Reader reader;
 
   // Set the callback.
-  Callback callback ( MemFun ( this, &LoadModel::_updateProgress ) );
+  Callback callback ( MemFun ( this, &LoadModel::_updateProgressCallback ) );
   reader.callback ( &callback );
 
   // Read the file.
@@ -101,13 +110,12 @@ void LoadModel::_finished()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LoadModel::_updateProgress ( const std::string& filename, unsigned long bytes, unsigned long total )
+void LoadModel::_updateProgressCallback ( const std::string& filename, unsigned long bytes, unsigned long total )
 {
-  float percentage ( static_cast < float > ( bytes ) / total );
-  unsigned int t ( static_cast < unsigned int > ( percentage * 100 ) );
+  USUL_TRACE_SCOPE;
 
-  if ( t % 10 == 0 )
-    std::cout << filename << ": " << t << std::endl;
+  // Update for progress.
+  this->_updateProgress ( bytes, total, true );
 }
 
 

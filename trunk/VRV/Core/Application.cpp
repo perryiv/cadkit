@@ -49,6 +49,7 @@ using namespace VRV::Core;
   _frameTime  ( 1 ), \
   _renderer(), \
   _sceneManager ( new OsgTools::Render::SceneManager ), \
+  _progressBars ( new ProgressBars ), \
   _clipDist     ( 0, 0 ), \
   _refCount ( 0 )
 
@@ -226,6 +227,12 @@ void Application::contextInit()
   _viewport = renderer->viewport();
 
   (*_renderer) = renderer.get();
+
+  // Get the viewport. 
+  //GLint vp[4];
+  //::glGetIntegerv ( GL_VIEWPORT, vp );
+
+  //_progressBars->
 }
 
 
@@ -452,6 +459,10 @@ void Application::init()
   // Initialize the shared frame time data.
   vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
   _sharedFrameTime.init ( guid, "viz0" );
+
+  // Add the progress bars to the scene.
+  osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
+  group->addChild ( _progressBars->getProgressBarGroup() );
 }
 
 
@@ -799,10 +810,6 @@ void Application::addModel ( osg::Node *model, const std::string& filename )
   // Hook things up.
   _models->addChild ( model );
 
-  // If this is the first one...
-  //if ( _models->getNumChildren() == 1 )
-  //  this->viewAll ( this->models(), 1.5 );
-
   // Based on the scene size, set the near and far clipping plane distances.
   this->_setNearAndFarClippingPlanes();
 }
@@ -820,6 +827,11 @@ void Application::_loadModelFile ( const std::string &filename )
 
   // Create a job.
   VRV::Jobs::LoadModel::RefPtr load ( new VRV::Jobs::LoadModel ( filename, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
+
+  // Make a progress bar for the job.
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( _progressBars->append() );
+  load->progress ( unknown.get() );
+  load->label ( unknown.get() );
 
   // Add the job to the manager.
   Usul::Jobs::Manager::instance().add ( load.get() );

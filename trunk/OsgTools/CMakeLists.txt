@@ -127,6 +127,8 @@ SET (SOURCES
   Utilities/Intersect.cpp
   Widgets/Axes.cpp
   Widgets/ClipPlane.cpp
+  Widgets/ProgressBar.cpp
+  Widgets/ProgressBarGroup.cpp
 )
 
 # Create a Shared Library

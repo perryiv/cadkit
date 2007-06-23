@@ -36,7 +36,7 @@ protected:
   void                      _postProcessModelLoad ( const std::string &filename, osg::Node *model );
 
   // Update the progress.
-  void                      _updateProgress ( const std::string& filename, unsigned long bytes, unsigned long total );
+  void                      _updateProgressCallback ( const std::string& filename, unsigned long bytes, unsigned long total );
 private:
   std::string _filename;
   Usul::Interfaces::IUnknown::QueryPtr _caller;

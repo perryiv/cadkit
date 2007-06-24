@@ -15,7 +15,7 @@
 #include <string>
 
 #include "OsgTools/Export.h"
-#include "OsgTools/Widgets/Helper/UpdateTextCallback.h"
+#include "OsgTools/Widgets/Helper/ThreadSafeText.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"

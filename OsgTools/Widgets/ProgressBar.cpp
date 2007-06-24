@@ -1,9 +1,10 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Created by: Jeff Conner
+//  Authors: Jeff Conner and Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -29,60 +30,60 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ProgressBar, ProgressBar::BaseClass );
 
 class ProgressBarAnimationCallback : public osg::NodeCallback
 {
-    public:
+public:
 
-      ProgressBarAnimationCallback( ProgressBar* bar, float start, float end, float step ) :
-          _start ( start ),
-          _end ( end ),
-          _step ( step ),
-          _bar ( bar )
-            
-        {
-          
-        }
+  ProgressBarAnimationCallback( ProgressBar* bar, float start, float end, float step ) :
+      _start ( start ),
+      _end ( end ),
+      _step ( step ),
+      _bar ( bar )
+        
+    {
+      
+    }
 
-        virtual void operator() (osg::Node* node, osg::NodeVisitor* nv)
+    virtual void operator() (osg::Node* node, osg::NodeVisitor* nv)
+    {
+      osg::MatrixTransform* transform = dynamic_cast<osg::MatrixTransform*>(node);    
+      if( 0x0 != transform && _bar.valid() )
+      {
+        if(_bar->isAnimating())
         {
-          osg::MatrixTransform* transform = dynamic_cast<osg::MatrixTransform*>(node);    
-          if( 0x0 != transform && _bar.valid() )
+          if(_bar->isVisible())
           {
-            if(_bar->isAnimating())
+            if (_start < _end)
             {
-	            if(_bar->isVisible())
-	            {
-	              if (_start < _end)
-	              {
-	                _start += _step;
-	                transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
-          		    
-	              }
-	              else
-	                _bar->setAnimation(false);
-	            }
-	            else
-	            {
-	              if (_start > _end)
-	              {
-	                _start += _step;
-	                transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
-                						
-	              }
-	              else
-	                _bar->setAnimation(false);
-  	          }
+              _start += _step;
+              transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
+      		    
             }
-          }   
-          traverse(node,nv);            
-            
+            else
+              _bar->setAnimation(false);
+          }
+          else
+          {
+            if (_start > _end)
+            {
+              _start += _step;
+              transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
+            						
+            }
+            else
+              _bar->setAnimation(false);
+          }
         }
+      }   
+      traverse(node,nv);            
         
-    protected:
+    }
     
-      ProgressBar::RefPtr _bar;
-        
-      float				_start;
-      float				_end;
-      float				_step;
+protected:
+
+  ProgressBar::RefPtr _bar;
+    
+  float				_start;
+  float				_end;
+  float				_step;
 
 };
 

@@ -54,7 +54,9 @@ private:
   Mutex       *_mutex;
   bool         _dirty;
   std::string  _text;
-  osg::ref_ptr < osgText::Text > _sceneText;
+
+  // Raw pointer to avoid a circular reference.
+  osgText::Text *_sceneText;
 };
 
 

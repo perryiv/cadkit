@@ -20,9 +20,47 @@ namespace OsgTools {
 namespace Widgets {
 namespace Helper {
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Callback to set the geometry of an osg::Geometry during an update traversal.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
 class UpdateProgressCallback : public osg::Drawable::UpdateCallback
 {
+  public:
+  typedef osg::Drawable::UpdateCallback   BaseClass;
+  typedef Usul::Threads::Mutex            Mutex;
+  typedef Usul::Threads::Guard < Mutex >  Guard;
+
+  UpdateProgressCallback ( );
+
+  virtual void update ( osg::NodeVisitor *nv, osg::Drawable* );
+
+  // Set the bounds of the geometry
+  void setBounds ( const osg::Vec2f& ul,  const osg::Vec2f& lr );
+
+  // Set the geometry
+  void setGeometry ( osg::Geometry * geometry );
+
+  // Set the mutex.
+  void mutex ( Mutex* mutex );
+
+private:
+  Mutex       *_mutex;
+  osg::Vec2f    _ul;
+  osg::Vec2f    _lr;
+  bool         _dirty;
+
+  osg::Geometry * _geometry;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Class to update the geometry in a thread safe way.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 class UpdateProgress : public osg::Geometry
 {
@@ -40,8 +78,7 @@ public:
 
 private:
   Mutex        *_mutex;
-  osg::Vec2f    _ul;
-  osg::Vec2f    _lr;
+  osg::ref_ptr < UpdateProgressCallback > _updateCallback;
 };
 
 }

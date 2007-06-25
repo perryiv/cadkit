@@ -16,20 +16,20 @@
 #ifndef _CV_MATRIX_FUNCTOR_PAIR_H_
 #define _CV_MATRIX_FUNCTOR_PAIR_H_
 
-#include "CadViewer/Functors/MatrixFunctor.h"
+#include "VRV/Functors/Matrix/MatrixFunctor.h"
 
 
 namespace CV {
 namespace Functors {
 
 
-class MatrixPair : public MatrixFunctor
+class MatrixPair : public VRV::Functors::Matrix::MatrixFunctor
 {
 public:
 
   // Useful typedef(s).
   USUL_DECLARE_REF_POINTERS ( MatrixPair );
-  typedef MatrixFunctor BaseClass;
+  typedef VRV::Functors::Matrix::MatrixFunctor BaseClass;
   typedef BaseClass::Unknown Unknown;
   typedef Usul::Math::Matrix44f Matrix;
 

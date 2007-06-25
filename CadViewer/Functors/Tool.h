@@ -33,13 +33,13 @@ namespace CV {
 namespace Functors {
 
 
-class Tool : public BaseFunctor
+class Tool : public VRV::Functors::BaseFunctor
 {
 public:
 
   // Useful typedef(s).
   USUL_DECLARE_REF_POINTERS ( Tool );
-  typedef BaseFunctor BaseClass;
+  typedef VRV::Functors::BaseFunctor BaseClass;
   typedef BaseClass::Unknown Unknown;
   typedef Usul::Math::Matrix44f Matrix;
   typedef CV::Functors::AnalogInput AnalogInput;

@@ -17,6 +17,8 @@
 #ifndef _VRV_BASE_FUNCTOR_CLASS_H_
 #define _VRV_BASE_FUNCTOR_CLASS_H_
 
+#include "VRV/Export.h"
+
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
@@ -26,7 +28,7 @@ namespace VRV {
 namespace Functors {
 
 
-class BaseFunctor : public Usul::Base::Referenced
+class VRV_EXPORT BaseFunctor : public Usul::Base::Referenced
 {
 public:
 

@@ -23,13 +23,13 @@ namespace CV {
 namespace Functors {
 
 
-class TransformPair : public BaseFunctor
+class TransformPair : public VRV::Functors::BaseFunctor
 {
 public:
 
   // Useful typedef(s).
   USUL_DECLARE_REF_POINTERS ( TransformPair );
-  typedef BaseFunctor BaseClass;
+  typedef VRV::Functors::BaseFunctor BaseClass;
   typedef BaseClass::Unknown Unknown;
 
   TransformPair ( 

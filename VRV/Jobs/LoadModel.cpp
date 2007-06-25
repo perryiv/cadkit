@@ -63,7 +63,7 @@ void LoadModel::_started()
   typedef OsgTools::IO::Reader::ReaderCallback < MemFun > Callback;
 
   // Show the progress bar.
-  Usul::Interfaces::IProgressBar::ShowHide showHide ( this->progress() );
+  //Usul::Interfaces::IProgressBar::ShowHide showHide ( this->progress() );
 
   // Set the label.
   this->_setLabel ( "Loading filename: " + _filename );

@@ -23,13 +23,13 @@ namespace CV {
 namespace Functors {
 
 
-class ToolPair : public BaseFunctor
+class ToolPair : public VRV::Functors::BaseFunctor
 {
 public:
 
   // Useful typedef(s).
   USUL_DECLARE_REF_POINTERS ( ToolPair );
-  typedef BaseFunctor BaseClass;
+  typedef VRV::Functors::BaseFunctor BaseClass;
   typedef BaseClass::Unknown Unknown;
   typedef Tool::Transforms Transforms;
 

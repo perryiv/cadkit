@@ -16,20 +16,20 @@
 #ifndef _CV_ANALOG_INPUT_BASE_FUNCTOR_H_
 #define _CV_ANALOG_INPUT_BASE_FUNCTOR_H_
 
-#include "CadViewer/Functors/BaseFunctor.h"
+#include "VRV/Functors/BaseFunctor.h"
 
 
 namespace CV {
 namespace Functors {
 
 
-class AnalogInput : public BaseFunctor
+class AnalogInput : public VRV::Functors::BaseFunctor
 {
 public:
 
   // Useful typedef(s).
   USUL_DECLARE_REF_POINTERS ( AnalogInput );
-  typedef BaseFunctor BaseClass;
+  typedef VRV::Functors::BaseFunctor BaseClass;
   typedef BaseClass::Unknown Unknown;
 
   // Update the analog input.

@@ -1152,11 +1152,11 @@ void Application::_wMoveSelLocal ( MenuKit::Message m, MenuKit::Item *item )
 {
   ErrorChecker ( 2457117960u, isAppThread(), CV::NOT_APP_THREAD );
 
+  typedef VRV::Functors::Matrix::MatrixFunctor MF;
   typedef CV::Functors::ToolPair ToolPair;
   typedef CV::Functors::MoveTool MoveTool;
   typedef CV::Functors::JoystickHorizontal JH;
   typedef CV::Functors::JoystickVertical JV;
-  typedef CV::Functors::MatrixFunctor MF;
   typedef CV::Functors::WandRotation WR;
   typedef CV::Functors::Direction Dir;
   typedef Dir::Vector Vec;
@@ -1220,7 +1220,7 @@ void Application::_wMoveTopLocal ( MenuKit::Message m, MenuKit::Item *item )
   typedef CV::Functors::MoveTool MoveTool;
   typedef CV::Functors::JoystickHorizontal JH;
   typedef CV::Functors::JoystickVertical JV;
-  typedef CV::Functors::MatrixFunctor MF;
+  typedef VRV::Functors::Matrix::MatrixFunctor MF;
   typedef CV::Functors::WandRotation WR;
   typedef CV::Functors::Direction Dir;
   typedef Dir::Vector Vec;

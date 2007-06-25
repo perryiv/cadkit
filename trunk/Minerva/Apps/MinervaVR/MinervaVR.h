@@ -78,6 +78,9 @@ public:
   /// Stop the animation.
   virtual void                 stopAnimation ();
 
+  /// Pause the animation.
+  virtual void                 pauseAnimation ();
+
   /// Get/Set the animate speed.
   virtual void                 animateSpeed ( double speed );
   virtual double               animateSpeed () const;

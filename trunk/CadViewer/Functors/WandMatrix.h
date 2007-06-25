@@ -16,7 +16,7 @@
 #ifndef _CV_WAND_MATRIX_FUNCTOR_H_
 #define _CV_WAND_MATRIX_FUNCTOR_H_
 
-#include "CadViewer/Functors/MatrixFunctor.h"
+#include "VRV/Functors/Matrix/MatrixFunctor.h"
 #include "CadViewer/Interfaces/IWandState.h"
 
 
@@ -24,13 +24,13 @@ namespace CV {
 namespace Functors {
 
 
-class WandMatrix : public MatrixFunctor
+class WandMatrix : public VRV::Functors::Matrix::MatrixFunctor
 {
 public:
 
   // Useful typedef(s).
   USUL_DECLARE_REF_POINTERS ( WandMatrix );
-  typedef MatrixFunctor BaseClass;
+  typedef VRV::Functors::Matrix::MatrixFunctor BaseClass;
   typedef BaseClass::Unknown Unknown;
   typedef CV::Interfaces::IWandStateFloat WandState;
   typedef Usul::Math::Matrix44f Matrix;

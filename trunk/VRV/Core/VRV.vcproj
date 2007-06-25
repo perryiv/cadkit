@@ -334,6 +334,18 @@
 					RelativePath="..\Functors\BaseFunctor.h"
 					>
 				</File>
+				<Filter
+					Name="Matrix"
+					>
+					<File
+						RelativePath="..\Functors\Matrix\MatrixFunctor.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Functors\Matrix\MatrixFunctor.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Common"

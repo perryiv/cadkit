@@ -16,7 +16,7 @@
 #ifndef _CV_DIRECTION_VECTOR_FUNCTOR_H_
 #define _CV_DIRECTION_VECTOR_FUNCTOR_H_
 
-#include "CadViewer/Functors/MatrixFunctor.h"
+#include "VRV/Functors/Matrix/MatrixFunctor.h"
 
 #include "Usul/Math/Vector3.h"
 
@@ -25,15 +25,16 @@ namespace CV {
 namespace Functors {
 
 
-class Direction : public BaseFunctor
+class Direction : public VRV::Functors::BaseFunctor
 {
 public:
 
   // Useful typedef(s).
   USUL_DECLARE_REF_POINTERS ( Direction );
-  typedef BaseFunctor BaseClass;
+  typedef VRV::Functors::BaseFunctor BaseClass;
   typedef BaseClass::Unknown Unknown;
   typedef Usul::Math::Vec3f Vector;
+  typedef VRV::Functors::Matrix::MatrixFunctor MatrixFunctor;
 
   Direction ( Unknown *unknown, const Vector &dir, MatrixFunctor *mf );
   Direction ( const Direction &d );

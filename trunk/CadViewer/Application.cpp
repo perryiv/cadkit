@@ -1489,7 +1489,7 @@ void Application::_setCursor ( unsigned int state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 //
-void Application::_setCursorMatrixFunctor ( CV::Functors::MatrixFunctor *f )
+void Application::_setCursorMatrixFunctor ( VRV::Functors::Matrix::MatrixFunctor *f )
 {
   _cursorMatrix = f;
 }

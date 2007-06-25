@@ -30,13 +30,13 @@ namespace CV {
 namespace Functors {
 
 
-class Transform : public BaseFunctor
+class Transform : public VRV::Functors::BaseFunctor
 {
 public:
 
   // Useful typedef(s).
   USUL_DECLARE_REF_POINTERS ( Transform );
-  typedef BaseFunctor BaseClass;
+  typedef VRV::Functors::BaseFunctor BaseClass;
 
 protected:
 

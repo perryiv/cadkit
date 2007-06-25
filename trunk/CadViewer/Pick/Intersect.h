@@ -36,13 +36,13 @@ namespace CV {
 namespace Pick {
 
 
-class Intersect : public CV::Functors::BaseFunctor
+class Intersect : public VRV::Functors::BaseFunctor
 {
 public:
 
   // Useful typedef(s).
   USUL_DECLARE_REF_POINTERS ( Intersect );
-  typedef CV::Functors::BaseFunctor BaseClass;
+  typedef VRV::Functors::BaseFunctor BaseClass;
 
   // Reset any states.
   virtual void          reset();

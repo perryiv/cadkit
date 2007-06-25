@@ -28,7 +28,6 @@
 #include "CadViewer/Interfaces/IMatrixMultiply.h"
 #include "CadViewer/Interfaces/IWandState.h"
 #include "CadViewer/Interfaces/IJoystick.h"
-#include "CadViewer/Functors/MatrixFunctor.h"
 #include "CadViewer/Functors/Tool.h"
 #include "CadViewer/Pick/Intersect.h"
 
@@ -41,6 +40,7 @@
 #include "VRV/Prefs/Settings.h"
 
 #include "VRV/Core/Application.h"
+#include "VRV/Functors/Matrix/MatrixFunctor.h"
 
 #include "VRV/Devices/JoystickDevice.h"
 #include "VRV/Devices/ButtonGroup.h"
@@ -324,7 +324,7 @@ protected:
 
   // Set the cursor and its matrix functor.
   void                          _setCursor ( unsigned int );
-  void                          _setCursorMatrixFunctor ( CV::Functors::MatrixFunctor * );
+  void                          _setCursorMatrixFunctor ( VRV::Functors::Matrix::MatrixFunctor * );
 
   // Set the current "camera" position as "home".
   void                          _setHome();
@@ -421,12 +421,12 @@ protected:
   typedef osg::ref_ptr<osg::Group>                      GroupPtr;
   typedef osg::ref_ptr<osg::Node>                       NodePtr;
   typedef osg::ref_ptr<osg::Projection>                 ProjectPtr;
-  typedef CV::Functors::BaseFunctor::RefPtr             FunctorPtr;
+  typedef VRV::Functors::BaseFunctor::RefPtr            FunctorPtr;
   typedef VRV::Devices::ButtonGroup::ValidRefPtr        ButtonsPtr;
   typedef VRV::Devices::TrackerDevice::ValidRefPtr      TrackerPtr;
   typedef VRV::Devices::JoystickDevice::ValidRefPtr     JoystickPtr;
   typedef std::auto_ptr<OsgTools::Text>                 TextPtr;
-  typedef CV::Functors::MatrixFunctor::RefPtr           MatrixFunctorPtr;
+  typedef VRV::Functors::Matrix::MatrixFunctor::RefPtr  MatrixFunctorPtr;
   typedef Interfaces::IVisibility::QueryPtr             IVisibilityPtr;
   typedef Interfaces::ISelection::QueryPtr              ISelectionPtr;
   typedef Interfaces::IMaterialStack::QueryPtr          IMaterialStackPtr;

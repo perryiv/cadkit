@@ -269,14 +269,6 @@
 			<Filter
 				Name="Functors"
 				>
-				<File
-					RelativePath="Functors\BaseFunctor.cpp"
-					>
-				</File>
-				<File
-					RelativePath="Functors\BaseFunctor.h"
-					>
-				</File>
 				<Filter
 					Name="Navigate"
 					>
@@ -394,14 +386,6 @@
 					</File>
 					<File
 						RelativePath="Functors\InverseMatrix.h"
-						>
-					</File>
-					<File
-						RelativePath="Functors\MatrixFunctor.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Functors\MatrixFunctor.h"
 						>
 					</File>
 					<File

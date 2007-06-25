@@ -1097,7 +1097,11 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Widgets\Helper\UpdateProgressCallback.h"
+						RelativePath=".\Widgets\Helper\UpdateProgress.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Widgets\Helper\UpdateProgress.h"
 						>
 					</File>
 				</Filter>

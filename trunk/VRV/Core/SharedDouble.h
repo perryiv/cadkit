@@ -17,7 +17,7 @@
 #ifndef __SHARED_DOUBLE_H__
 #define __SHARED_DOUBLE_H__
 
-#include "VRV/Core/Export.h"
+#include "VRV/Export.h"
 
 #include "vpr/IO/SerializableObject.h"
 

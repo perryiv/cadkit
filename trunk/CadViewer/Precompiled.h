@@ -47,9 +47,9 @@
 # include "gadget/Type/AnalogInterface.h"
 # include "gadget/Type/PositionInterface.h"
 
-# include "vrjGA/ButtonGroup.h"
-# include "vrjGA/TrackerDevice.h"
-# include "vrjGA/JoystickDevice.h"
+# include "VRV/Devices/ButtonGroup.h"
+# include "VRV/Devices/TrackerDevice.h"
+# include "VRV/Devices/JoystickDevice.h"
 
 # include "cppdom/cppdom.h"
 # include "cppdom/shared_ptr.h"

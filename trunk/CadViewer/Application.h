@@ -32,17 +32,19 @@
 #include "CadViewer/Functors/Tool.h"
 #include "CadViewer/Pick/Intersect.h"
 
+#include "Usul/Pointers/Pointers.h"
+#include "Usul/CommandLine/Parser.h"
+
 #include "VRV/Interfaces/IRequestRead.h"
 #include "VRV/Interfaces/IButtonCallback.h"
 #include "VRV/Interfaces/IMenuCallback.h"
 #include "VRV/Prefs/Settings.h"
 
-#include "Usul/Pointers/Pointers.h"
-#include "Usul/CommandLine/Parser.h"
-
 #include "VRV/Core/Application.h"
 
 #include "VRV/Devices/JoystickDevice.h"
+#include "VRV/Devices/ButtonGroup.h"
+#include "VRV/Devices/TrackerDevice.h"
 
 #include "MenuKit/OSG/Menu.h"
 
@@ -420,9 +422,9 @@ protected:
   typedef osg::ref_ptr<osg::Node>                       NodePtr;
   typedef osg::ref_ptr<osg::Projection>                 ProjectPtr;
   typedef CV::Functors::BaseFunctor::RefPtr             FunctorPtr;
-  typedef USUL_VALID_REF_POINTER(VRV::Devices::ButtonGroup)    ButtonsPtr;
-  typedef USUL_VALID_REF_POINTER(VRV::Devices::TrackerDevice)  TrackerPtr;
-  typedef USUL_VALID_REF_POINTER(VRV::Devices::JoystickDevice) JoystickPtr;
+  typedef VRV::Devices::ButtonGroup::ValidRefPtr        ButtonsPtr;
+  typedef VRV::Devices::TrackerDevice::ValidRefPtr      TrackerPtr;
+  typedef VRV::Devices::JoystickDevice::ValidRefPtr     JoystickPtr;
   typedef std::auto_ptr<OsgTools::Text>                 TextPtr;
   typedef CV::Functors::MatrixFunctor::RefPtr           MatrixFunctorPtr;
   typedef Interfaces::IVisibility::QueryPtr             IVisibilityPtr;

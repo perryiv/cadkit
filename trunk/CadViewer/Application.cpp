@@ -836,15 +836,15 @@ void Application::_initStatusBar()
 
   // Set the status-bar's properties.
   _statusBar->menu()->append ( new MenuKit::Button );
-  _statusBar->menu()->expanded ( false );
+  _statusBar->menu()->expanded ( _prefs->statusBarVisibleAtStartup() );
   _statusBar->updateScene();
 
   // Make the status-bar always draw on top (last). See osgfxbrowser.cpp.
   osg::ref_ptr < osg::StateSet > ss ( _statusBranch->getOrCreateStateSet() );
   if( ss.valid() )
   {
-	  ss->setRenderBinDetails ( 100, "RenderBin" );
-	  ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+    ss->setRenderBinDetails ( 100, "RenderBin" );
+    ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
   }
 }
 
@@ -999,7 +999,6 @@ bool Application::_handleMenuEvent()
   if ( COMMAND_MENU_TOGGLE == _buttons->released() )
   {
     _menu->toggleVisible();
-    _statusBar->toggleVisible();
     return true;
   }
 

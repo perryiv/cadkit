@@ -112,7 +112,7 @@ std::string Arguments::program() const
 
 std::string Arguments::directory() const
 {
-  return Usul::File::directory ( this->program(), true );
+  return Usul::File::directory ( this->program(), false );
 }
 
 

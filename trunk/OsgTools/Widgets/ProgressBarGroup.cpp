@@ -59,7 +59,6 @@ _isRelativeToAbsolute ( true )
 ProgressBarGroup::~ProgressBarGroup()
 {
   std::for_each ( _pbarVector.begin(), _pbarVector.end(), std::mem_fun ( &ProgressBar::clear ) );
-  _pbarVector.clear();
 }
 
 
@@ -297,6 +296,7 @@ void ProgressBarGroup::_addProgressBar ( ProgressBar * pbar )
 
 void ProgressBarGroup::remove ( unsigned int pos )
 {
+  ProgressBar::RefPtr bar ( _pbarVector.at ( pos ) );
   if ( _numBars > 0 )
   {
     if ( _numBars == 1 )
@@ -311,12 +311,11 @@ void ProgressBarGroup::remove ( unsigned int pos )
         _pbarVector.at( x )->setLowerLeft ( osg::Vec2f ( _ll.x() + _padding,
                                        _pbarVector.at( x - 1 )->getLowerLeft().y() ) );
       }
-      _height -= _pbarVector.at( pos )->getHeight()  + _padding;
+      _height -= bar->getHeight()  + _padding;
       
     }
     
-    
-    std::for_each ( _pbarVector.begin() + pos, _pbarVector.begin() + pos + 1, std::mem_fun ( &ProgressBar::clear ) );
+    bar->clear();
     _pbarVector.erase( _pbarVector.begin() + pos );
     if( _numBars > 0 )
       _numBars --;
@@ -392,7 +391,7 @@ void ProgressBarGroup::_buildProgressBarGroup()
   }
 
   matrix->addChild ( this->_buildBar( 999,
-                                     "icons/borderGroup.tga",
+                                     "/icons/borderGroup.tga",
                                      osg::Vec2f ( _ll.x(), _ll.y() + _height ),
                                      osg::Vec2f ( _ll.x() + _length, _ll.y() ),
                                      _borderZOffset ) );

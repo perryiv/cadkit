@@ -201,7 +201,7 @@ _backgroundDrawable ( new UpdateProgress )
 	_animationEnd = 0.0f; 
 	_animationStep = -1 * ( 1.0f / 20.0f );
   _pbarGroup = new osg::Group() ;
-	this->_buildProgressBarObject();
+	//this->_buildProgressBarObject();
   this->updateProgressBar();
 }
 

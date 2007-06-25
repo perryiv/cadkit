@@ -30,7 +30,14 @@ INCLUDE_DIRECTORIES(
 SET (SOURCES
   ./Core/Application.cpp
   ./Core/SharedDouble.cpp
+  ./Core/SharedMatrix.cpp
   ./Jobs/LoadModel.cpp
+  ./Devices/JoystickDevice.cpp
+  ./Devices/ButtonGroup.cpp
+  ./Devices/ButtonDevice.cpp
+  ./Devices/TrackerDevice.cpp
+  ./Devices/Callback.cpp
+
 )
 
 # Create a Shared Library

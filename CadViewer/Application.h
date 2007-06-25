@@ -42,7 +42,7 @@
 
 #include "VRV/Core/Application.h"
 
-#include "vrjGA/JoystickDevice.h"
+#include "VRV/Devices/JoystickDevice.h"
 
 #include "MenuKit/OSG/Menu.h"
 
@@ -227,10 +227,10 @@ protected:
   typedef Parser::Args                                  ParserArgs;
 
   // Joystick callbacks.
-  struct JoystickCB : public vrjGA::Callback
+  struct JoystickCB : public VRV::Devices::Callback
   {
     JoystickCB ( Application *app ) : _app ( app ){}
-    virtual void operator () ( vrjGA::Message m, vrjGA::Referenced *caller );
+    virtual void operator () ( VRV::Devices::Message m, Usul::Base::Referenced *caller );
   private:
     Application *_app;
   };
@@ -420,9 +420,9 @@ protected:
   typedef osg::ref_ptr<osg::Node>                       NodePtr;
   typedef osg::ref_ptr<osg::Projection>                 ProjectPtr;
   typedef CV::Functors::BaseFunctor::RefPtr             FunctorPtr;
-  typedef USUL_VALID_REF_POINTER(vrjGA::ButtonGroup)    ButtonsPtr;
-  typedef USUL_VALID_REF_POINTER(vrjGA::TrackerDevice)  TrackerPtr;
-  typedef USUL_VALID_REF_POINTER(vrjGA::JoystickDevice) JoystickPtr;
+  typedef USUL_VALID_REF_POINTER(VRV::Devices::ButtonGroup)    ButtonsPtr;
+  typedef USUL_VALID_REF_POINTER(VRV::Devices::TrackerDevice)  TrackerPtr;
+  typedef USUL_VALID_REF_POINTER(VRV::Devices::JoystickDevice) JoystickPtr;
   typedef std::auto_ptr<OsgTools::Text>                 TextPtr;
   typedef CV::Functors::MatrixFunctor::RefPtr           MatrixFunctorPtr;
   typedef Interfaces::IVisibility::QueryPtr             IVisibilityPtr;

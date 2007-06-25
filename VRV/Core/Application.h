@@ -11,7 +11,7 @@
 #ifndef __VRV_CORE_APPLICATION_H__
 #define __VRV_CORE_APPLICATION_H__
 
-#include "VRV/Core/Export.h"
+#include "VRV/Export.h"
 #include "VRV/Core/SharedDouble.h"
 #include "VRV/Interfaces/IModelAdd.h"
 #include "VRV/Interfaces/IClippingDistance.h"

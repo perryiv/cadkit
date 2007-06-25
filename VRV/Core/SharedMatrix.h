@@ -17,7 +17,7 @@
 #ifndef __VRV_CORE_SHARED_MATRIX_H__
 #define __VRV_CORE_SHARED_MATRIX_H__
 
-#include "VRV/Core/Export.h"
+#include "VRV/Export.h"
 
 #include "osg/Matrixd"
 

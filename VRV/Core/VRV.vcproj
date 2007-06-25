@@ -343,6 +343,54 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Devices"
+				>
+				<File
+					RelativePath="..\Devices\ButtonDevice.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Devices\ButtonDevice.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Devices\ButtonGroup.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Devices\ButtonGroup.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Devices\Callback.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Devices\Callback.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Devices\JoystickDevice.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Devices\JoystickDevice.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Devices\Messages.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Devices\TrackerDevice.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Devices\TrackerDevice.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

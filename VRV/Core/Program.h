@@ -71,8 +71,7 @@ public:
     Usul::CommandLine::Arguments::instance().set ( argc, argv );
 
     // Console Feedback.
-    
-Usul::Console::Feedback::RefPtr feedback ( new Usul::Console::Feedback );
+    Usul::Console::Feedback::RefPtr feedback ( new Usul::Console::Feedback );
 
     // Load the plugins.
     Usul::Components::Loader < XmlTree::Document > loader;
@@ -93,7 +92,7 @@ Usul::Console::Feedback::RefPtr feedback ( new Usul::Console::Feedback );
     app.run();
 
     // Wait for all jobs to finish
-    Usul::Jobs::Manager::wait();
+    Usul::Jobs::Manager::instance().wait();
 
     // The job manager has a thread-pool.
     Usul::Jobs::Manager::destroy();

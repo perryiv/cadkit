@@ -46,8 +46,8 @@
 #include "vrj/Kernel/Kernel.h"
 #include "vrj/Display/Projection.h"
 
-#include "vrjGA/ButtonGroup.h"
-#include "vrjGA/TrackerDevice.h"
+#include "VRV/Devices/ButtonGroup.h"
+#include "VRV/Devices/TrackerDevice.h"
 
 #include "osg/MatrixTransform"
 #include "osg/AutoTransform"
@@ -209,9 +209,9 @@ Application::Application ( Args &args ) :
   _navigatorV     ( 0x0 ),
   _sceneTool      ( 0x0 ),
   _intersector    ( 0x0 ),
-  _buttons        ( new vrjGA::ButtonGroup ),
-  _tracker        ( new vrjGA::TrackerDevice ( "VJWand" ) ),
-  _joystick       ( new vrjGA::JoystickDevice ( "VJAnalog0", "VJAnalog1" ) ),
+  _buttons        ( new VRV::Devices::ButtonGroup ),
+  _tracker        ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
+  _joystick       ( new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" ) ),
   _analogTrim     ( 0, 0 ),
   _rotCenter      ( 0, 0, 0 ),
   _pickText       ( new OsgTools::Text ),
@@ -281,10 +281,10 @@ Application::Application ( Args &args ) :
 
   // Hook up the joystick callbacks.
   USUL_VALID_REF_POINTER(JoystickCB) jcb ( new JoystickCB ( this ) );
-  _joystick->callback ( vrjGA::JOYSTICK_ENTERING_RIGHT, jcb.get() );
-  _joystick->callback ( vrjGA::JOYSTICK_ENTERING_LEFT,  jcb.get() );
-  _joystick->callback ( vrjGA::JOYSTICK_ENTERING_UP,    jcb.get() );
-  _joystick->callback ( vrjGA::JOYSTICK_ENTERING_DOWN,  jcb.get() );
+  _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
+  _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
+  _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
+  _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
 
   // Have to load the config files now. Remove them from the arguments.
   Parser::Args configs = _parser->files ( ".jconf", true );
@@ -404,12 +404,12 @@ void Application::_init()
   this->setBackgroundColor ( osg::Vec4 ( bc[0], bc[1], bc[2], bc[3] ) );
 
   // Initialize the button group by adding the individual buttons.
-  _buttons->add ( new vrjGA::ButtonDevice ( CV::BUTTON0, "VJButton0" ) );
-  _buttons->add ( new vrjGA::ButtonDevice ( CV::BUTTON1, "VJButton1" ) );
-  _buttons->add ( new vrjGA::ButtonDevice ( CV::BUTTON2, "VJButton2" ) );
-  _buttons->add ( new vrjGA::ButtonDevice ( CV::BUTTON3, "VJButton3" ) );
-  _buttons->add ( new vrjGA::ButtonDevice ( CV::BUTTON4, "VJButton4" ) );
-  _buttons->add ( new vrjGA::ButtonDevice ( CV::BUTTON5, "VJButton5" ) );
+  _buttons->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON0, "VJButton0" ) );
+  _buttons->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON1, "VJButton1" ) );
+  _buttons->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON2, "VJButton2" ) );
+  _buttons->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON3, "VJButton3" ) );
+  _buttons->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON4, "VJButton4" ) );
+  _buttons->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON5, "VJButton5" ) );
 
   // Set up lights.
   this->_initLight();
@@ -1171,7 +1171,7 @@ bool Application::_handleNavigationEvent( const unsigned long eventRequest )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::JoystickCB::operator() ( vrjGA::Message m, vrjGA::Referenced * )
+void Application::JoystickCB::operator() ( VRV::Devices::Message m, Usul::Base::Referenced * )
 {
   ErrorChecker ( 1915253659u, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 4165917933u, 0x0 != _app );
@@ -1181,19 +1181,19 @@ void Application::JoystickCB::operator() ( vrjGA::Message m, vrjGA::Referenced *
 
   switch ( m )
   {
-    case vrjGA::JOYSTICK_ENTERING_RIGHT:
+    case VRV::Devices::JOYSTICK_ENTERING_RIGHT:
       menu->moveFocused ( MenuKit::Behavior::RIGHT );
       break;
 
-    case vrjGA::JOYSTICK_ENTERING_LEFT:
+    case VRV::Devices::JOYSTICK_ENTERING_LEFT:
       menu->moveFocused ( MenuKit::Behavior::LEFT );
       break;
 
-    case vrjGA::JOYSTICK_ENTERING_UP:
+    case VRV::Devices::JOYSTICK_ENTERING_UP:
       menu->moveFocused ( MenuKit::Behavior::UP );
       break;
 
-    case vrjGA::JOYSTICK_ENTERING_DOWN:
+    case VRV::Devices::JOYSTICK_ENTERING_DOWN:
       menu->moveFocused ( MenuKit::Behavior::DOWN );
       break;
   }

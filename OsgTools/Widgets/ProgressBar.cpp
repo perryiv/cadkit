@@ -309,14 +309,16 @@ Usul::Interfaces::IUnknown* ProgressBar::queryInterface ( unsigned long iid )
 
 void ProgressBar::showProgressBar()
 {
-  USUL_TRACE_SCOPE;
+  //USUL_TRACE_SCOPE;
 
-  _animationStart = 0.0f;
-  _animationEnd = 1.0f; 
-  _animationStep = 1.0f / 20.0f;
-  _isAnimating = true;
-  _isVisible = true;
-  updateProgressBar();
+  /*if(!_isVisible)
+  {
+    _animationStart = 0.0f;
+    _animationEnd = 1.0f; 
+    _animationStep = 1.0f / 20.0f;
+    _isAnimating = true;
+    _isVisible = true;
+  }*/
 }
 
 
@@ -328,14 +330,18 @@ void ProgressBar::showProgressBar()
 
 void ProgressBar::hideProgressBar()
 {
-  USUL_TRACE_SCOPE;
+  //USUL_TRACE_SCOPE;
 
-  _animationStart = 1.0f;
-  _animationEnd = 0.0f; 
-  _animationStep = -1 * (1.0f / 20.0f);
-  _isAnimating = true;
-  _isVisible = false;
-  updateProgressBar();
+ /* if(_isVisible)
+  {
+    _animationStart = 1.0f;
+    _animationEnd = 0.0f; 
+    _animationStep = -1 * (1.0f / 20.0f);
+    _isAnimating = true;
+    _isVisible = false;
+  }*/
+  
+  
 }
 
 

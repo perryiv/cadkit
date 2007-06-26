@@ -24,13 +24,13 @@
 #include "SceneFunctors.h"
 #include "ScenePredicates.h"
 
+#include "VRV/Functors/Matrix/IdentityMatrix.h"
 #include "CadViewer/Functors/Translate.h"
 #include "CadViewer/Functors/Rotate.h"
 #include "CadViewer/Functors/Direction.h"
 #include "CadViewer/Functors/AnalogInput.h"
 #include "CadViewer/Functors/WandRotation.h"
 #include "CadViewer/Functors/WandPosition.h"
-#include "CadViewer/Functors/IdentityMatrix.h"
 #include "CadViewer/Functors/JoystickHorizontal.h"
 #include "CadViewer/Functors/JoystickVertical.h"
 #include "CadViewer/Functors/ScaleTool.h"
@@ -368,7 +368,7 @@ void Application::_hTransGlobalPosX ( MenuKit::Message m, MenuKit::Item *item )
 
   // To shorten the lines.
   typedef CV::Functors::JoystickHorizontal Analog;
-  typedef CV::Functors::IdentityMatrix Mat;
+  typedef VRV::Functors::Matrix::IdentityMatrix Mat;
   typedef CV::Functors::Translate Nav;
 
   // Call the common function.
@@ -426,7 +426,7 @@ void Application::_hTransGlobalNegX ( MenuKit::Message m, MenuKit::Item *item )
 
   // To shorten the lines.
   typedef CV::Functors::JoystickHorizontal Analog;
-  typedef CV::Functors::IdentityMatrix Mat;
+  typedef VRV::Functors::Matrix::IdentityMatrix Mat;
   typedef CV::Functors::Translate Nav;
 
   // Call the common function.
@@ -513,7 +513,7 @@ void Application::_vTransGlobalPosZ ( MenuKit::Message m, MenuKit::Item *item )
 
   // To shorten the lines.
   typedef CV::Functors::JoystickVertical Analog;
-  typedef CV::Functors::IdentityMatrix Mat;
+  typedef VRV::Functors::Matrix::IdentityMatrix Mat;
   typedef CV::Functors::Translate Nav;
 
   // Call the common function.
@@ -571,7 +571,7 @@ void Application::_vTransGlobalNegZ ( MenuKit::Message m, MenuKit::Item *item )
 
   // To shorten the lines.
   typedef CV::Functors::JoystickVertical Analog;
-  typedef CV::Functors::IdentityMatrix Mat;
+  typedef VRV::Functors::Matrix::IdentityMatrix Mat;
   typedef CV::Functors::Translate Nav;
 
   // The id for this navigator.
@@ -628,7 +628,7 @@ void Application::_hRotGlobalPosY ( MenuKit::Message m, MenuKit::Item *item )
 
   // To shorten the lines.
   typedef CV::Functors::JoystickHorizontal Analog;
-  typedef CV::Functors::IdentityMatrix Mat;
+  typedef VRV::Functors::Matrix::IdentityMatrix Mat;
   typedef CV::Functors::Rotate Nav;
 
   // The id for this navigator.
@@ -684,7 +684,7 @@ void Application::_vRotGlobalPosX ( MenuKit::Message m, MenuKit::Item *item )
 
   // To shorten the lines.
   typedef CV::Functors::JoystickVertical Analog;
-  typedef CV::Functors::IdentityMatrix Mat;
+  typedef VRV::Functors::Matrix::IdentityMatrix Mat;
   typedef CV::Functors::Rotate Nav;
 
   // The id for this navigator.
@@ -712,7 +712,7 @@ void Application::_vTransGlobalPosY ( MenuKit::Message m, MenuKit::Item *item )
 
   // To shorten the lines.
   typedef CV::Functors::JoystickVertical Analog;
-  typedef CV::Functors::IdentityMatrix Mat;
+  typedef VRV::Functors::Matrix::IdentityMatrix Mat;
   typedef CV::Functors::Translate Nav;
 
   // The id for this navigator.

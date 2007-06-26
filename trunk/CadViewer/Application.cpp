@@ -222,7 +222,6 @@ Application::Application ( Args &args ) :
   _flags          ( 0 ),
   _wandOffset     ( 0, 0, 0 ), // feet (used to be z=-4)
   _cursorMatrix   ( 0x0 ),
-  _sceneMutex     (),
   _iVisibility    ( static_cast < CV::Interfaces::IVisibility* >    ( 0x0 ) ),
   _iSelection     ( static_cast < CV::Interfaces::ISelection* >     ( 0x0 ) ),
   _iMaterialStack ( static_cast < CV::Interfaces::IMaterialStack* > ( 0x0 ) ),

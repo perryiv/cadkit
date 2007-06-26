@@ -279,7 +279,7 @@ Application::Application ( Args &args ) :
   _textBranch->setName   ( "_textBranch"   );
 
   // Hook up the joystick callbacks.
-  USUL_VALID_REF_POINTER(JoystickCB) jcb ( new JoystickCB ( this ) );
+  JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
   _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
   _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
   _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
@@ -418,9 +418,6 @@ void Application::_init()
 
   // Parse the command-line arguments.
   this->_parseCommandLine();
-
-  // Move the model-group so that the models are centered and visible.
-  //this->viewAll ( this->models(), _prefs->viewAllScaleZ() );
 
   // Now that the models are centered, draw a grid in proportion to the size 
   // of the models.
@@ -1765,19 +1762,6 @@ void Application::_update ( OsgTools::Text &t, const std::string &s )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the maximum world size.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-float Application::worldRadius() const
-{
-  ErrorChecker ( 1068000937, isAppThread(), CV::NOT_APP_THREAD );
-  return ( _navBranch.valid() ) ? _navBranch->getBound().radius() : 0;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the wand's position.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1965,7 +1949,7 @@ void Application::_updateFrameRateDisplay()
   ErrorChecker ( 1071560060, isAppThread(), CV::NOT_APP_THREAD );
 
   // Make sure the frame-time is greater than zero.
-  double ft ( this->_getFrameTime() );
+  double ft ( this->frameTime() );
   if ( ft > 0 )
   {
     // Compose the string. Note: std::setprecision() doesn't 
@@ -2039,18 +2023,6 @@ void Application::_readUserPreferences()
   WarningChecker ( 2816534029u,
                    !_prefs->fileWriterMachineName().empty(), 
                    "No machine specified as the file-writer in user-preferences." );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the frame-time.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-float Application::frameTime() const
-{
-  return this->_getFrameTime();
 }
 
 
@@ -2146,10 +2118,6 @@ Usul::Interfaces::IUnknown *Application::queryInterface ( unsigned long iid )
     return static_cast<CV::Interfaces::INavigationScene *>(this);
   case CV::Interfaces::IModelsScene::IID:
     return static_cast<CV::Interfaces::IModelsScene *>(this);
-  case CV::Interfaces::IFrameInfoFloat::IID:
-    return static_cast<CV::Interfaces::IFrameInfoFloat *>(this);
-  case CV::Interfaces::IWorldInfoFloat::IID:
-    return static_cast<CV::Interfaces::IWorldInfoFloat *>(this);
   case CV::Interfaces::IMatrixMultiplyFloat::IID:
     return static_cast<CV::Interfaces::IMatrixMultiplyFloat *>(this);
   case CV::Interfaces::IWandStateFloat::IID:

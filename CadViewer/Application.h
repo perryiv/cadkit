@@ -23,8 +23,6 @@
 #include "CadViewer/Interfaces/IAuxiliaryScene.h"
 #include "CadViewer/Interfaces/INavigationScene.h"
 #include "CadViewer/Interfaces/IModelsScene.h"
-#include "CadViewer/Interfaces/IFrameInfo.h"
-#include "CadViewer/Interfaces/IWorldInfo.h"
 #include "CadViewer/Interfaces/IMatrixMultiply.h"
 #include "CadViewer/Interfaces/IWandState.h"
 #include "CadViewer/Interfaces/IJoystick.h"
@@ -64,8 +62,6 @@ class Application : public VRV::Core::Application,
                     public CV::Interfaces::IAuxiliaryScene,
                     public CV::Interfaces::INavigationScene,
                     public CV::Interfaces::IModelsScene,
-                    public CV::Interfaces::IFrameInfoFloat,
-                    public CV::Interfaces::IWorldInfoFloat,
                     public CV::Interfaces::IMatrixMultiplyFloat,
                     public CV::Interfaces::IWandStateFloat,
                     public CV::Interfaces::IJoystickFloat,
@@ -118,24 +114,6 @@ public:
   // Get the models scene.
   virtual const osg::Group *    modelsScene() const;
   virtual osg::Group *          modelsScene();
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  CV::Interfaces::IFrameInfoFloat
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Get the duration of the last frame in seconds.
-  virtual float                 frameTime() const;
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  CV::Interfaces::IWorldInfoFloat
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Get the radius of the "world".
-  virtual float                 worldRadius() const;
 
   /////////////////////////////////////////////////////////////////////////////
   //

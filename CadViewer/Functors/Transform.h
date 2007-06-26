@@ -19,8 +19,8 @@
 #include "CadViewer/Functors/AnalogInput.h"
 #include "CadViewer/Functors/Direction.h"
 
-#include "CadViewer/Interfaces/IFrameInfo.h"
-#include "CadViewer/Interfaces/IWorldInfo.h"
+#include "VRV/Interfaces/IFrameInfo.h"
+#include "VRV/Interfaces/IWorldInfo.h"
 #include "CadViewer/Interfaces/IMatrixMultiply.h"
 
 #include "Usul/Math/Matrix44.h"
@@ -45,8 +45,8 @@ protected:
   typedef CV::Functors::AnalogInput AnalogInput;
   typedef Direction::Vector Vector;
   typedef Usul::Math::Matrix44f Matrix;
-  typedef CV::Interfaces::IFrameInfoFloat FrameInfo;
-  typedef CV::Interfaces::IWorldInfoFloat WorldInfo;
+  typedef VRV::Interfaces::IFrameInfo FrameInfo;
+  typedef VRV::Interfaces::IWorldInfo WorldInfo;
   typedef CV::Interfaces::IMatrixMultiplyFloat MatrixMultiply;
 
   Transform (

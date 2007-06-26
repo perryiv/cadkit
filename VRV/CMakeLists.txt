@@ -32,6 +32,7 @@ SET (SOURCES
   ./Core/SharedDouble.cpp
   ./Core/SharedMatrix.cpp
   ./Jobs/LoadModel.cpp
+  ./Jobs/LoadDirectory.cpp
   ./Devices/JoystickDevice.cpp
   ./Devices/ButtonGroup.cpp
   ./Devices/ButtonDevice.cpp
@@ -39,6 +40,9 @@ SET (SOURCES
   ./Devices/Callback.cpp
   ./Functors/BaseFunctor.cpp
   ./Functors/Matrix/MatrixFunctor.cpp
+  ./Functors/Matrix/IdentityMatrix.cpp
+  ./Functors/Matrix/MatrixPair.cpp
+  ./Functors/Matrix/InverseMatrix.cpp
 )
 
 # Create a Shared Library

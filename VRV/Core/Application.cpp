@@ -12,6 +12,7 @@
 #include "VRV/Core/JugglerFunctors.h"
 #include "VRV/Core/Exceptions.h"
 #include "VRV/Jobs/LoadModel.h"
+#include "VRV/Jobs/LoadDirectory.h"
 
 #include "Usul/Errors/Assert.h"
 #include "Usul/Trace/Trace.h"
@@ -23,6 +24,8 @@
 
 #include "vrj/Kernel/Kernel.h"
 #include "vrj/Draw/OGL/GlWindow.h"
+
+#include "boost/filesystem/operations.hpp"
 
 #include <stdexcept>
 
@@ -852,16 +855,23 @@ void Application::_loadModelFile ( const std::string &filename )
 {
   USUL_TRACE_SCOPE;
 
+  Usul::Jobs::Job::RefPtr job ( 0x0 );
+
+  if( boost::filesystem::is_directory ( filename ) )
+    job = new VRV::Jobs::LoadDirectory ( filename, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  else
+    job = new VRV::Jobs::LoadModel ( filename, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+
   // Create a job.
-  VRV::Jobs::LoadModel::RefPtr load ( new VRV::Jobs::LoadModel ( filename, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
+  //  VRV::Jobs::LoadModel::RefPtr load ( new VRV::Jobs::LoadModel ( filename, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
 
   // Make a progress bar for the job.
   Usul::Interfaces::IUnknown::QueryPtr unknown ( _progressBars->append() );
-  load->progress ( unknown.get() );
-  load->label ( unknown.get() );
+  job->progress ( unknown.get() );
+  job->label ( unknown.get() );
 
   // Add the job to the manager.
-  Usul::Jobs::Manager::instance().add ( load.get() );
+  Usul::Jobs::Manager::instance().add ( job.get() );
 }
 
 

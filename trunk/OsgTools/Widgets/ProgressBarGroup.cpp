@@ -30,6 +30,51 @@ using namespace OsgTools::Widgets;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Update Callback for the progress bar group to remove finished progress
+//  bars.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class UpdateProgressBarGroupCallback : public osg::NodeCallback
+{
+  public:
+  typedef osg::Drawable::UpdateCallback   BaseClass;
+
+  UpdateProgressBarGroupCallback::UpdateProgressBarGroupCallback ( OsgTools::Widgets::ProgressBarGroup * pbarGroup ) : 
+  _pbarGroup ( pbarGroup )
+  {
+  }
+  
+  virtual void operator() (osg::Node* node, osg::NodeVisitor* nv)
+  {
+    if( 0x0 != _pbarGroup )
+    {
+      //int num = _pbarGroup->getNumItems();
+      for( int i = 0; i < _pbarGroup->getNumItems(); ++i)
+      {
+        if( _pbarGroup->isItemFinished ( i ) )
+        {
+          _pbarGroup->remove ( i );
+        }
+      }
+    }
+    traverse(node,nv);
+  }
+
+protected:
+  virtual UpdateProgressBarGroupCallback::~UpdateProgressBarGroupCallback()
+  {
+    _pbarGroup = 0x0;
+  }
+private:
+ 
+  OsgTools::Widgets::ProgressBarGroup * _pbarGroup;
+};
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -46,6 +91,7 @@ _borderZOffset ( -0.0003f ),
 _isRelativeToAbsolute ( true )
 {
   _group = new osg::Group();
+  _group->setUpdateCallback( new UpdateProgressBarGroupCallback ( this ) ); 
   this->_buildProgressBarGroup();
 }
 
@@ -261,6 +307,18 @@ Usul::Interfaces::IUnknown* ProgressBarGroup::append (  )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Update (rebuild) the progress bar group
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarGroup::update()
+{
+  this->_buildProgressBarGroup();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Create and add a progress bar object to the progress bar group
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -321,7 +379,7 @@ void ProgressBarGroup::remove ( unsigned int pos )
       _numBars --;
   }
   
-  this->_buildProgressBarGroup();
+  this->update();
 }
 
 
@@ -395,12 +453,14 @@ void ProgressBarGroup::_buildProgressBarGroup()
                                      osg::Vec2f ( _ll.x(), _ll.y() + _height ),
                                      osg::Vec2f ( _ll.x() + _length, _ll.y() ),
                                      _borderZOffset ) );
+ 
 
   if ( _isRelativeToAbsolute )
     matrix->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
 
   _group->removeChildren ( 0, _group->getNumChildren() ); 
 
+  
   _group->addChild ( matrix.release() );
   
 }

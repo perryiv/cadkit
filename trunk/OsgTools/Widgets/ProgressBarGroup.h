@@ -22,6 +22,7 @@
 namespace OsgTools {
 namespace Widgets {
 
+
 class OSG_TOOLS_EXPORT ProgressBarGroup : public Usul::Base::Referenced
 {
 public:
@@ -98,6 +99,7 @@ ProgressBarGroup();
   void add ( ProgressBar* pbar );
   void add ( const std::string& m, double min, double max );
   void remove ( unsigned int pos );
+  void update ();
 
   void clear();
 	
@@ -122,6 +124,9 @@ private:
 
   osg::Vec3f _pos;
   osg::Vec2f _ll;
+
+  
+  //osg::ref_ptr < UpdateProgressBarGroupCallback > _updateCallback;
   
 
 };

@@ -127,6 +127,8 @@ void LoadModel::_updateProgressCallback ( const std::string& filename, unsigned 
 
 void LoadModel::_postProcessModelLoad ( const std::string &filename, osg::Node *model )
 {
+  USUL_TRACE_SCOPE;
+
   // Sanity check...
   if ( true == filename.empty() || 0x0 == model )
     return;

@@ -71,6 +71,8 @@
 
 #include "MenuKit/MemFunCallback.h"
 
+#include "boost/filesystem/operations.hpp"
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Button mappings.
@@ -830,6 +832,28 @@ void Application::_initStatusBar()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Predicate to test for a directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace CV 
+{
+  namespace Detail
+  {
+    struct IsDirectory
+    {
+      template < class T >
+      bool operator () ( const T& t ) const
+      {
+        return boost::filesystem::is_directory ( t );
+      }
+    };
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Parse the command-line arguments.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -853,6 +877,20 @@ void Application::_parseCommandLine()
   std::for_each ( models.begin(),
                   models.end(), 
                   Usul::Adaptors::memberFunction ( this, &Application::_loadModelFile ) );
+
+  // Find all directories.
+  Parser::Args directories;
+
+  // Extract the files with the given extension.
+  Usul::Algorithms::extract ( Detail::IsDirectory(),
+                              _parser->args(),
+                              directories,
+                              true );
+
+  // Load the directories.
+  std::for_each ( directories.begin(),
+                  directories.end(), 
+                  Usul::Adaptors::memberFunction ( this, &Application::_loadDirectory ) );
 }
 
 

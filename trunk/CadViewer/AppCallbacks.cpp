@@ -278,7 +278,7 @@ void Application::_exportScene ( MenuKit::Message m, MenuKit::Item *item )
       static unsigned int count ( 0 );
       std::string number ( this->_counter ( ++count ) );
       std::string filename ( "cv_scene_" + number + ".osg" );
-      this->_writeScene ( filename, _root.get() );
+      this->_writeScene ( filename, this->_sceneRoot() );
     }
   }
 }
@@ -931,8 +931,9 @@ void Application::_gridVisibility ( MenuKit::Message m, MenuKit::Item *item )
 {
   ErrorChecker ( 1084126008u, isAppThread(), CV::NOT_APP_THREAD );
 
+  // TODO: fix.
   // Process the message.
-  switch ( m )
+  /*switch ( m )
   {
     case MenuKit::MESSAGE_UPDATE:
       item->checked ( _navBranch->containsNode ( _gridBranch.get() ) );
@@ -944,7 +945,7 @@ void Application::_gridVisibility ( MenuKit::Message m, MenuKit::Item *item )
       else
         _navBranch->addChild ( _gridBranch.get() );
       break;
-  }
+  }*/
 }
 
 
@@ -1007,7 +1008,7 @@ void Application::_viewHome ( MenuKit::Message m, MenuKit::Item *item )
 
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
-    _navBranch->setMatrix ( _home );
+    this->_navigationMatrix ( _home );
     this->_setNearAndFarClippingPlanes();
   }
 }
@@ -1032,7 +1033,7 @@ void Application::_viewWorld ( MenuKit::Message m, MenuKit::Item *item )
     this->viewAll ( this->models(), _prefs->viewAllScaleZ() );
 
     // Move the navigation branch.
-    _navBranch->setMatrix ( this->models()->getMatrix() );
+    this->_navigationMatrix ( this->models()->getMatrix() );
 
     // Restore the model's matrix.
     this->models()->setMatrix ( original );
@@ -1055,7 +1056,7 @@ void Application::_viewScene ( MenuKit::Message m, MenuKit::Item *item )
 
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
-    this->viewAll ( _navBranch.get(), _prefs->viewAllScaleZ() );
+    this->viewAll ( this->navigationScene(), _prefs->viewAllScaleZ() );
     this->_setNearAndFarClippingPlanes();
   }
 }
@@ -1548,7 +1549,7 @@ void Application::_gotoViewFront ( MenuKit::Message m, MenuKit::Item *item )
   case MenuKit::MESSAGE_SELECTED:
     const osg::BoundingSphere& bs = this->models()->getBound();
     osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius())-bs.center() ) );
-    _navBranch->setMatrix( trans );
+    this->_navigationMatrix ( trans );
   }
 }
 
@@ -1574,7 +1575,7 @@ void Application::_gotoViewBack ( MenuKit::Message m, MenuKit::Item *item )
     osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI , osg::Y_AXIS ) );
     osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
     osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-    _navBranch->setMatrix( zero*rot*trans );
+    this->_navigationMatrix ( zero*rot*trans );
   }
 }
 
@@ -1600,7 +1601,7 @@ void Application::_gotoViewTop ( MenuKit::Message m, MenuKit::Item *item )
     osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI_2 , osg::X_AXIS ) );
     osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
     osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-    _navBranch->setMatrix( zero*rot*trans );
+    this->_navigationMatrix ( zero*rot*trans );
   }
 }
 
@@ -1626,7 +1627,7 @@ void Application::_gotoViewBottom ( MenuKit::Message m, MenuKit::Item *item )
     osg::Matrix rot  ( osg::Matrix::rotate   ( -osg::PI_2 , osg::X_AXIS ) );
     osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
     osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-    _navBranch->setMatrix( zero*rot*trans );
+    this->_navigationMatrix ( zero*rot*trans );
   }
 }
 
@@ -1652,7 +1653,7 @@ void Application::_gotoViewRight ( MenuKit::Message m, MenuKit::Item *item )
     osg::Matrix rot  ( osg::Matrix::rotate   ( -osg::PI_2 , osg::Y_AXIS ) );
     osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
     osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-    _navBranch->setMatrix( zero*rot*trans );
+    this->_navigationMatrix ( zero*rot*trans );
   }
 }
 
@@ -1678,7 +1679,7 @@ void Application::_gotoViewLeft ( MenuKit::Message m, MenuKit::Item *item )
     osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI_2 , osg::Y_AXIS ) );
     osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
     osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-    _navBranch->setMatrix( zero*rot*trans );
+    this->_navigationMatrix ( zero*rot*trans );
   }
 }
 

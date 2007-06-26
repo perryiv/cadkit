@@ -466,14 +466,6 @@
 					>
 				</File>
 				<File
-					RelativePath="Interfaces\IModelsScene.h"
-					>
-				</File>
-				<File
-					RelativePath="Interfaces\INavigationScene.h"
-					>
-				</File>
-				<File
 					RelativePath="Interfaces\IRotationCenter.h"
 					>
 				</File>

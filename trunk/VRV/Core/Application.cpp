@@ -36,22 +36,24 @@ using namespace VRV::Core;
 ///////////////////////////////////////////////////////////////////////////////
 
 #define CONSTRUCTOR_INITIALIZER_LIST\
-  _mutex(), \
-  _models ( new osg::MatrixTransform ), \
-  _timer(),\
-  _framestamp( 0x0 ),\
-  _viewport ( 0x0 ),\
-  _backgroundColor( 0, 0, 0, 1 ),\
-  _dirty ( false ),\
-  _initialTime( static_cast < osg::Timer_t > ( 0.0 ) ),\
-  _frameStart ( static_cast < osg::Timer_t > ( 0.0 ) ), \
-  _sharedFrameTime(),\
-  _frameTime  ( 1 ), \
-  _renderer(), \
-  _sceneManager ( new OsgTools::Render::SceneManager ), \
-  _progressBars ( new ProgressBars ), \
-  _clipDist     ( 0, 0 ), \
-  _refCount ( 0 )
+  _mutex           (), \
+  _root            ( new osg::Group ), \
+  _navBranch       ( new osg::MatrixTransform ), \
+  _models          ( new osg::MatrixTransform ), \
+  _timer           (), \
+  _framestamp      ( 0x0 ),\
+  _viewport        ( 0x0 ),\
+  _backgroundColor ( 0, 0, 0, 1 ),\
+  _dirty           ( false ),\
+  _initialTime     ( static_cast < osg::Timer_t > ( 0.0 ) ),\
+  _frameStart      ( static_cast < osg::Timer_t > ( 0.0 ) ), \
+  _sharedFrameTime (),\
+  _frameTime       ( 1 ), \
+  _renderer        (), \
+  _sceneManager    ( new OsgTools::Render::SceneManager ), \
+  _progressBars    ( new ProgressBars ), \
+  _clipDist        ( 0, 0 ), \
+  _refCount        ( 0 )
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -98,7 +100,13 @@ void Application::_construct()
   // too late.
   osg::DisplaySettings::instance()->setMaxNumberOfGraphicsContexts ( 20 );
 
-  // Set the name.
+  // Hook up the branches
+  _root->addChild      ( _navBranch.get()    );
+  _navBranch->addChild ( _models.get()       );
+
+  // Name the branches.
+  _root->setName         ( "_root"         );
+  _navBranch->setName    ( "_navBranch"    );
   _models->setName       ( "_models"       );
 
   osg::Matrix m;
@@ -142,6 +150,12 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < VRV::Interfaces::IFrameInfo* > ( this );
   case VRV::Interfaces::IWorldInfo::IID:
     return static_cast < VRV::Interfaces::IWorldInfo* > ( this );
+  case VRV::Interfaces::IModelsScene::IID:
+    return static_cast < VRV::Interfaces::IModelsScene * > ( this );
+  case VRV::Interfaces::INavigationScene::IID:
+    return static_cast < VRV::Interfaces::INavigationScene* > ( this );
+  case VRV::Interfaces::IMatrixMultiplyFloat::IID:
+    return static_cast < VRV::Interfaces::IMatrixMultiplyFloat * > ( this );
   default:
     return 0x0;
   }
@@ -457,6 +471,9 @@ double Application::getTimeSinceStart()
 void Application::init()
 {
   USUL_TRACE_SCOPE;
+
+  // Set the scene-viewer's scene.
+  this->setSceneData ( _root.get() );
 
   _initialTime = _timer.tick();
 
@@ -950,3 +967,124 @@ double Application::worldRadius() const
   // Use the whole scene or just the navBranch?
   return _sceneManager->scene()->getBound().radius();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the navigation scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Group *Application::navigationScene() const
+{
+  return _navBranch.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the navigation scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Group *Application::navigationScene()
+{
+  return _navBranch.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the models scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Group *Application::modelsScene() const
+{
+  return _models.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the models scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Group *Application::modelsScene()
+{
+  return _models.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Multiply the navigation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::postMultiply ( const Matrix44f &m )
+{
+  _navBranch->postMult ( osg::Matrixf ( m.get() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Multiply the navigation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::preMultiply ( const Matrix44f &m )
+{
+  _navBranch->preMult ( osg::Matrixf ( m.get() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the navigation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_navigationMatrix ( const osg::Matrixd& m )
+{
+  _navBranch->setMatrix ( m );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the navigation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Matrixd& Application::_navigationMatrix ( ) const
+{
+  return _navBranch->getMatrix ( );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scene root.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Group* Application::_sceneRoot()
+{
+  return _root.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scene root.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Group* Application::_sceneRoot() const
+{
+  return _root.get();
+}
+

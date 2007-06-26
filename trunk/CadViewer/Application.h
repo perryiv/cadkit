@@ -21,9 +21,6 @@
 #include "CadViewer/Interfaces/IMaterialStack.h"
 #include "CadViewer/Interfaces/ISelection.h"
 #include "CadViewer/Interfaces/IAuxiliaryScene.h"
-#include "CadViewer/Interfaces/INavigationScene.h"
-#include "CadViewer/Interfaces/IModelsScene.h"
-#include "CadViewer/Interfaces/IMatrixMultiply.h"
 #include "CadViewer/Interfaces/IWandState.h"
 #include "CadViewer/Interfaces/IJoystick.h"
 #include "CadViewer/Functors/Tool.h"
@@ -60,9 +57,6 @@ namespace CV {
 // The CadViewer application
 class Application : public VRV::Core::Application,
                     public CV::Interfaces::IAuxiliaryScene,
-                    public CV::Interfaces::INavigationScene,
-                    public CV::Interfaces::IModelsScene,
-                    public CV::Interfaces::IMatrixMultiplyFloat,
                     public CV::Interfaces::IWandStateFloat,
                     public CV::Interfaces::IJoystickFloat,
                     public VRV::Interfaces::IRequestRead,
@@ -94,38 +88,6 @@ public:
   // Get the auxiliary scene.
   virtual const osg::Group *    auxiliaryScene() const;
   virtual osg::Group *          auxiliaryScene();
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  CV::Interfaces::INavigationScene
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Get the navigation scene.
-  virtual const osg::Group *    navigationScene() const;
-  virtual osg::Group *          navigationScene();
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  CV::Interfaces::ModelsScene
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Get the models scene.
-  virtual const osg::Group *    modelsScene() const;
-  virtual osg::Group *          modelsScene();
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  CV::Interfaces::IMatrixMultiplyFloat
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Post-multiply the component's matrix by the given matrix.
-  virtual void                  postMultiply ( const Matrix44f &M );
-
-  // Pre-multiply the component's matrix by the given matrix.
-  virtual void                  preMultiply ( const Matrix44f &M );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -418,8 +380,6 @@ protected:
   static ThreadId   _appThread;
   static ThreadId   _mainThread;
   ParserPtr         _parser;
-  GroupPtr          _root;
-  MatTransPtr       _navBranch;
   MatTransPtr       _gridBranch;
   MatTransPtr       _cursor;
   MatTransPtr       _menuBranch;

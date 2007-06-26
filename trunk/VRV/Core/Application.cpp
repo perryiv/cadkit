@@ -159,6 +159,8 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < VRV::Interfaces::INavigationScene* > ( this );
   case VRV::Interfaces::IMatrixMultiplyFloat::IID:
     return static_cast < VRV::Interfaces::IMatrixMultiplyFloat * > ( this );
+  case Usul::Interfaces::IProgressBarFactory::IID:
+    return static_cast < Usul::Interfaces::IProgressBarFactory* > ( this );
   default:
     return 0x0;
   }
@@ -855,15 +857,31 @@ void Application::_loadModelFile ( const std::string &filename )
 {
   USUL_TRACE_SCOPE;
 
-  Usul::Jobs::Job::RefPtr job ( 0x0 );
+  // Create a job.
+  VRV::Jobs::LoadModel::RefPtr job ( new VRV::Jobs::LoadModel ( filename, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
 
-  if( boost::filesystem::is_directory ( filename ) )
-    job = new VRV::Jobs::LoadDirectory ( filename, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-  else
-    job = new VRV::Jobs::LoadModel ( filename, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  // Make a progress bar for the job.
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( _progressBars->append() );
+  job->progress ( unknown.get() );
+  job->label ( unknown.get() );
+
+  // Add the job to the manager.
+  Usul::Jobs::Manager::instance().add ( job.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_loadDirectory ( const std::string &directory )
+{
+  USUL_TRACE_SCOPE;
 
   // Create a job.
-  //  VRV::Jobs::LoadModel::RefPtr load ( new VRV::Jobs::LoadModel ( filename, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
+  Usul::Jobs::Job::RefPtr job ( new VRV::Jobs::LoadDirectory ( directory, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
 
   // Make a progress bar for the job.
   Usul::Interfaces::IUnknown::QueryPtr unknown ( _progressBars->append() );
@@ -1104,3 +1122,14 @@ const osg::Group* Application::_sceneRoot() const
   return _root.get();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Application::createProgressBar()
+{
+  return _progressBars->append();
+}

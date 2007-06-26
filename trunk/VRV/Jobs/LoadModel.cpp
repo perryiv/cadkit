@@ -30,7 +30,7 @@ using namespace VRV::Jobs;
 ///////////////////////////////////////////////////////////////////////////////
 
 LoadModel::LoadModel( const std::string& filename, Usul::Interfaces::IUnknown *caller ) :
-  BaseClass(),
+  BaseClass( caller ),
   _filename ( filename ),
   _caller ( caller )
 {
@@ -63,7 +63,7 @@ void LoadModel::_started()
   typedef OsgTools::IO::Reader::ReaderCallback < MemFun > Callback;
 
   // Show the progress bar.
-  //Usul::Interfaces::IProgressBar::ShowHide showHide ( this->progress() );
+  Usul::Interfaces::IProgressBar::ShowHide showHide ( this->progress() );
 
   // Set the label.
   this->_setLabel ( "Loading filename: " + _filename );

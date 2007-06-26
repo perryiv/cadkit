@@ -21,6 +21,7 @@
 #include "VRV/Interfaces/IModelsScene.h"
 #include "VRV/Interfaces/IMatrixMultiply.h"
 
+#include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 
@@ -66,7 +67,8 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public VRV::Interfaces::IWorldInfo,
                                public VRV::Interfaces::INavigationScene,
                                public VRV::Interfaces::IModelsScene,
-                               public VRV::Interfaces::IMatrixMultiplyFloat
+                               public VRV::Interfaces::IMatrixMultiplyFloat,
+                               public Usul::Interfaces::IProgressBarFactory
 {
 public:
   // Typedefs.
@@ -153,6 +155,7 @@ protected:
 
   // Load the file(s).
   void                    _loadModelFile   ( const std::string &filename );
+  void                    _loadDirectory   ( const std::string &directory );
 
   // Set the near and far clipping planes based on the scene.
   void                    _setNearAndFarClippingPlanes();
@@ -202,6 +205,9 @@ protected:
 
   // Pre-multiply the component's matrix by the given matrix.
   virtual void                  preMultiply ( const Matrix44f &M );
+
+  /// Usul::Interfaces::IProgressBarFactory
+  virtual Usul::Interfaces::IUnknown*   createProgressBar();
 
   /// No copying.
   Application ( const Application& );

@@ -43,7 +43,6 @@ INCLUDE_DIRECTORIES(
 SET (SOURCES
 ./Functors/WandRotation.cpp
 ./Functors/InverseMatrix.cpp
-./Functors/MatrixFunctor.cpp
 ./Functors/JoystickHorizontal.cpp
 ./Functors/WandMatrix.cpp
 ./Functors/MatrixPair.cpp
@@ -55,7 +54,6 @@ SET (SOURCES
 ./Functors/MoveTool.cpp
 ./Functors/IdentityMatrix.cpp
 ./Functors/Transform.cpp
-./Functors/BaseFunctor.cpp
 ./Functors/Tool.cpp
 ./Functors/WandPosition.cpp
 ./Functors/Direction.cpp

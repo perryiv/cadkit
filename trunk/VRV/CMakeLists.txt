@@ -37,7 +37,8 @@ SET (SOURCES
   ./Devices/ButtonDevice.cpp
   ./Devices/TrackerDevice.cpp
   ./Devices/Callback.cpp
-
+  ./Functors/BaseFunctor.cpp
+  ./Functors/Matrix/MatrixFunctor.cpp
 )
 
 # Create a Shared Library

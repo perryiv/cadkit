@@ -247,10 +247,13 @@ void Application::contextInit()
   (*_renderer) = renderer.get();
 
   // Get the viewport. 
-  //GLint vp[4];
-  //::glGetIntegerv ( GL_VIEWPORT, vp );
+  GLint vp[4];
+  ::glGetIntegerv ( GL_VIEWPORT, vp );
 
-  //_progressBars->
+  _viewport->setViewport ( vp[0], vp[1], vp[2], vp[3] );
+
+  // Set the projection.
+  _sceneManager->projection()->setMatrix ( osg::Matrix::ortho2D ( _viewport->x(), _viewport->width(), _viewport->y(), _viewport->height() ) );
 }
 
 
@@ -377,7 +380,8 @@ void Application::draw()
 				                 frustum[vrj::Frustum::VJ_NEAR],
 				                 frustum[vrj::Frustum::VJ_FAR] );
 
-  // Constantly update the view matrix.  Is this needed?
+  // Constantly update the view matrix.  
+  // Since the navigation is done on a osg::MatrixTransform, is this needed?
   gmtl::Matrix44f proj ( projection->getViewMatrix() );
 
   osg::ref_ptr< osg::RefMatrix > osgProj ( new osg::RefMatrix );
@@ -480,6 +484,8 @@ void Application::init()
   // Initialize the shared frame time data.
   vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
   _sharedFrameTime.init ( guid, "viz0" );
+
+  //_progressBars->setPosition ( osg::Vec3 ( 10, 10, 0 ) );
 
   // Add the progress bars to the scene.
   osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );

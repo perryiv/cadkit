@@ -216,7 +216,6 @@ Application::Application ( Args &args ) :
   _navText        ( new OsgTools::Text ),
   _frameText      ( new OsgTools::Text ),
   _msgText        ( new OsgTools::Text ),
-  _vp             ( 0, 0, 200, 200 ),
   _flags          ( 0 ),
   _wandOffset     ( 0, 0, 0 ), // feet (used to be z=-4)
   _cursorMatrix   ( 0x0 ),
@@ -324,11 +323,6 @@ void Application::contextInit()
 
   // Call the base class's function first.
   BaseClass::contextInit();
-
-  // Get the viewport. This assumes all displays are the same size.
-  GLint vp[4];
-  ::glGetIntegerv ( GL_VIEWPORT, vp );
-  _vp.set ( vp[0], vp[1], vp[2], vp[3] );
 }
 
 
@@ -462,10 +456,11 @@ void Application::_initText()
   mt->setMatrix ( osg::Matrix::identity() );
 
   // Make the text branch an orthographic projection.
-  float x ( _vp[0] );
-  float y ( _vp[1] );
-  float w ( _vp[2] );
-  float h ( _vp[3] );
+  osg::ref_ptr < osg::Viewport > vp ( this->viewport() );
+  float x ( vp->x()      );
+  float y ( vp->y()      );
+  float w ( vp->width()  );
+  float h ( vp->height() );
   _textBranch->setMatrix ( osg::Matrix::ortho2D ( x, w, y, h ) );
 
   // Set the text font.

@@ -151,6 +151,7 @@ private:
   bool _isVisible, _isAnimating;
 
   osg::Vec2f _ll;
+  osg::Vec3f _pos;
   std::string _barText;
   osg::ref_ptr< osg::Node > _progressBar;
   osg::ref_ptr< osg::Node > _backgroundBar;

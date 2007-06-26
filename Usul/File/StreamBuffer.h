@@ -16,6 +16,8 @@
 #ifndef _USUL_FILE_STREAM_BUFFER_CLASS_
 #define _USUL_FILE_STREAM_BUFFER_CLASS_
 
+#include "Usul/Trace/Trace.h"
+
 #include <string>
 #include <fstream>
 #include <stdexcept>
@@ -53,8 +55,24 @@ public:
 
 protected:
 
+  // This funcion needs to be used on linux.  TODO: Find out if it also works on windows.
+#ifndef _MSC_VER
+  virtual IntType underflow()
+  {
+    USUL_TRACE_SCOPE;
+
+    _count += ( this->egptr() - this->eback() );
+    if ( 0x0 != _callback )
+      (*_callback) ( _file, _count, _size );
+
+    return BaseClass::underflow();
+  }
+#endif
+
   virtual IntType uflow()
   {
+    USUL_TRACE_SCOPE;
+
     IntType v = BaseClass::uflow();
     _count += ( this->egptr() - this->gptr() );
     if ( 0x0 != _callback )

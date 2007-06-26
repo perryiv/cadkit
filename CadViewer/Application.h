@@ -400,7 +400,6 @@ protected:
   TextPtr           _navText;
   TextPtr           _frameText;
   TextPtr           _msgText;
-  Usul::Math::Vec4i _vp;
   unsigned int      _flags;
   Usul::Math::Vec3f _wandOffset;
   MatrixFunctorPtr  _cursorMatrix;

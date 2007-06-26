@@ -213,26 +213,26 @@ private:
   typedef osg::ref_ptr < osg::Group >                      GroupPtr;
 
   // Data members.
-  mutable Mutex                      _mutex;
+  mutable Mutex                          _mutex;
 
-  GroupPtr                           _root;
-  MatTransPtr                        _navBranch;
-  MatTransPtr                        _models;
+  GroupPtr                               _root;
+  MatTransPtr                            _navBranch;
+  MatTransPtr                            _models;
 
-  osg::Timer                         _timer;
-  osg::ref_ptr< osg::FrameStamp >    _framestamp;
-  osg::ref_ptr< osg::Viewport >      _viewport;
+  osg::Timer                             _timer;
+  osg::ref_ptr< osg::FrameStamp >        _framestamp;
+  osg::ref_ptr< osg::Viewport >          _viewport;
 
-  osg::Vec4                          _backgroundColor;
+  osg::Vec4                              _backgroundColor;
 
-  bool                               _dirty;
+  bool                                   _dirty;
   
-  osg::Timer_t                       _initialTime;
-  osg::Timer_t                       _frameStart;
-  double                             _frameTime;
-  cluster::UserData < SharedDouble > _sharedFrameTime;
+  osg::Timer_t                           _initialTime;
+  osg::Timer_t                           _frameStart;
+  double                                 _frameTime;
+  cluster::UserData < SharedDouble >     _sharedFrameTime;
 
-  vrj::GlContextData< RendererPtr >  _renderer;
+  vrj::GlContextData< RendererPtr >      _renderer;
   OsgTools::Render::SceneManager::RefPtr _sceneManager;
   ProgressBars::RefPtr                   _progressBars;
 

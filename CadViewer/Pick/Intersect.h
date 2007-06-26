@@ -18,8 +18,8 @@
 
 #include "CadViewer/Functors/Direction.h"
 #include "CadViewer/Interfaces/IAuxiliaryScene.h"
-#include "CadViewer/Interfaces/INavigationScene.h"
-#include "CadViewer/Interfaces/IModelsScene.h"
+#include "VRV/Interfaces/INavigationScene.h"
+#include "VRV/Interfaces/IModelsScene.h"
 #include "CadViewer/Interfaces/IWandState.h"
 #include "VRV/Interfaces/IClippingDistance.h"
 
@@ -53,8 +53,8 @@ protected:
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef CV::Functors::Direction Direction;
   typedef CV::Interfaces::IAuxiliaryScene AuxiliaryScene;
-  typedef CV::Interfaces::INavigationScene NavigationScene;
-  typedef CV::Interfaces::IModelsScene ModelsScene;
+  typedef VRV::Interfaces::INavigationScene NavigationScene;
+  typedef VRV::Interfaces::IModelsScene ModelsScene;
   typedef CV::Interfaces::IWandStateFloat WandState;
   typedef VRV::Interfaces::IClippingDistanceFloat ClippingDistance;
 

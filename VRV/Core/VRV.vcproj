@@ -287,11 +287,23 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Interfaces\IMatrixMultiply.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Interfaces\IModelAdd.h"
 					>
 				</File>
 				<File
 					RelativePath="..\Interfaces\IModelCaching.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IModelsScene.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\INavigationScene.h"
 					>
 				</File>
 				<File

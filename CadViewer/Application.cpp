@@ -196,8 +196,6 @@ unsigned long Application::_mainThread = 0;
 Application::Application ( Args &args ) :
   BaseClass       ( vrj::Kernel::instance() ),
   _parser         ( new Parser ( args.begin(), args.end() ) ),
-  _root           ( new osg::Group ),
-  _navBranch      ( new osg::MatrixTransform ),
   _gridBranch     ( new osg::MatrixTransform ),
   _cursor         ( new osg::MatrixTransform ),
   _menuBranch     ( new osg::MatrixTransform ),
@@ -236,8 +234,6 @@ Application::Application ( Args &args ) :
   ErrorChecker ( 1067097070u, 0 == _appThread );
   ErrorChecker ( 2970484549u, 0 == _mainThread );
   ErrorChecker ( 1074058928u, 0x0 != _parser.get() );
-  ErrorChecker ( 1067094626u, _root.valid() );
-  ErrorChecker ( 1067222084u, _navBranch.valid() );
   ErrorChecker ( 1067094628u, _gridBranch.valid() );
   ErrorChecker ( 1067094631u, _cursor.valid() );
   ErrorChecker ( 1325879383u, _menuBranch.valid() );
@@ -257,19 +253,15 @@ Application::Application ( Args &args ) :
   this->_readUserPreferences();
 
   // Hook up the branches.
-  _root->addChild      ( _cursor.get()       );
-  _root->addChild      ( _menuBranch.get()   );
-  _root->addChild      ( _statusBranch.get() );
-  _root->addChild      ( _origin.get()       );
-  _root->addChild      ( _auxiliary.get()    );
-  _root->addChild      ( _textBranch.get()   );
-  _root->addChild      ( _navBranch.get()    );
-  _navBranch->addChild ( this->models()      );
-  _navBranch->addChild ( _gridBranch.get()   );
+  this->_sceneRoot()->addChild      ( _cursor.get()       );
+  this->_sceneRoot()->addChild      ( _menuBranch.get()   );
+  this->_sceneRoot()->addChild      ( _statusBranch.get() );
+  this->_sceneRoot()->addChild      ( _origin.get()       );
+  this->_sceneRoot()->addChild      ( _auxiliary.get()    );
+  this->_sceneRoot()->addChild      ( _textBranch.get()   );
+  //_navBranch->addChild ( _gridBranch.get()   );
 
   // Name the branches.
-  _root->setName         ( "_root"         );
-  _navBranch->setName    ( "_navBranch"    );
   _gridBranch->setName   ( "_gridBranch"   );
   _cursor->setName       ( "_cursor"       );
   _menuBranch->setName   ( "_menuBranch"   );
@@ -387,7 +379,6 @@ void Application::_init()
 {
   ErrorChecker ( 1067096939, 0 == _appThread );
   ErrorChecker ( 1074061336, !isMainThread() );
-  ErrorChecker ( 1067093507, _root.valid() );
 
   // Initialize the application thread.
   _appThread = Usul::Threads::currentThreadId();
@@ -412,9 +403,6 @@ void Application::_init()
 
   // Set up lights.
   this->_initLight();
-
-  // Set the scene-viewer's scene.
-  this->setSceneData ( _root.get() );
 
   // Parse the command-line arguments.
   this->_parseCommandLine();
@@ -1633,32 +1621,6 @@ float Application::joystickVertical() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Multiply the navigation matrix.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::postMultiply ( const Matrix44f &m )
-{
-  ErrorChecker ( 1067221542, _navBranch.valid() );
-  _navBranch->postMult ( osg::Matrixf ( m.get() ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Multiply the navigation matrix.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::preMultiply ( const Matrix44f &m )
-{
-  ErrorChecker ( 1067221543, _navBranch.valid() );
-  _navBranch->preMult ( osg::Matrixf ( m.get() ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Navigate if we are supposed to.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1877,56 +1839,6 @@ osg::Group *Application::auxiliaryScene()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the navigation scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const osg::Group *Application::navigationScene() const
-{
-  ErrorChecker ( 1069794380, _navBranch.valid() );
-  return _navBranch.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the navigation scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Group *Application::navigationScene()
-{
-  ErrorChecker ( 1069794381, _navBranch.valid() );
-  return _navBranch.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the models scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const osg::Group *Application::modelsScene() const
-{
-  return dynamic_cast < const osg::Group * > ( this->models() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the models scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Group *Application::modelsScene()
-{
-  return dynamic_cast < osg::Group * > ( this->models() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the center of rotation.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2114,12 +2026,6 @@ Usul::Interfaces::IUnknown *Application::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IUnknown::IID:
   case CV::Interfaces::IAuxiliaryScene::IID:
     return static_cast<CV::Interfaces::IAuxiliaryScene *>(this);
-  case CV::Interfaces::INavigationScene::IID:
-    return static_cast<CV::Interfaces::INavigationScene *>(this);
-  case CV::Interfaces::IModelsScene::IID:
-    return static_cast<CV::Interfaces::IModelsScene *>(this);
-  case CV::Interfaces::IMatrixMultiplyFloat::IID:
-    return static_cast<CV::Interfaces::IMatrixMultiplyFloat *>(this);
   case CV::Interfaces::IWandStateFloat::IID:
     return static_cast<CV::Interfaces::IWandStateFloat *>(this);
   case CV::Interfaces::IJoystickFloat::IID:
@@ -2241,7 +2147,7 @@ void Application::_updateStatusBar ( const std::string &s )
 void Application::_setHome()
 {
   ErrorChecker ( 3948236564u, isAppThread(), CV::NOT_APP_THREAD );
-  _home = _navBranch->getMatrix();
+  _home = this->_navigationMatrix();
 }
 
 

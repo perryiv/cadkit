@@ -17,6 +17,9 @@
 #include "VRV/Interfaces/IClippingDistance.h"
 #include "VRV/Interfaces/IFrameInfo.h"
 #include "VRV/Interfaces/IWorldInfo.h"
+#include "VRV/Interfaces/INavigationScene.h"
+#include "VRV/Interfaces/IModelsScene.h"
+#include "VRV/Interfaces/IMatrixMultiply.h"
 
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
@@ -60,7 +63,10 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public VRV::Interfaces::IModelAdd,
                                public VRV::Interfaces::IClippingDistanceFloat,
                                public VRV::Interfaces::IFrameInfo,
-                               public VRV::Interfaces::IWorldInfo
+                               public VRV::Interfaces::IWorldInfo,
+                               public VRV::Interfaces::INavigationScene,
+                               public VRV::Interfaces::IModelsScene,
+                               public VRV::Interfaces::IMatrixMultiplyFloat
 {
 public:
   // Typedefs.
@@ -71,6 +77,7 @@ public:
   typedef Usul::Threads::RecursiveMutex        Mutex;
   typedef Usul::Threads::Guard<Mutex>          Guard;
   typedef OsgTools::Widgets::ProgressBarGroup  ProgressBars;
+  typedef Usul::Math::Matrix44f                Matrix44f;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -150,6 +157,14 @@ protected:
   // Set the near and far clipping planes based on the scene.
   void                    _setNearAndFarClippingPlanes();
 
+  // Set/Get the navigation matrix.
+  void                    _navigationMatrix ( const osg::Matrixd& m );
+  const osg::Matrixd&     _navigationMatrix () const;
+
+  // Get the scene root.
+  osg::Group*             _sceneRoot();
+  const osg::Group*       _sceneRoot() const;
+
   /// VRV::Interfaces::IClippingDistanceFloat
   /// Get/set the clipping distances.
   virtual void            getClippingDistances ( float &nearDist, float &farDist ) const;
@@ -164,7 +179,29 @@ protected:
 
   /// VRV::Interfaces::IWorldInfo
   /// Get the radius of the "world".
-  virtual double              worldRadius() const;
+  virtual double          worldRadius() const;
+
+  ///  VRV::Interfaces::INavigationScene
+  /// Get the navigation scene.
+  virtual const osg::Group *    navigationScene() const;
+  virtual osg::Group *          navigationScene();
+
+  /// VRV::Interfaces::ModelsScene
+  /// Get the models scene.
+  virtual const osg::Group *    modelsScene() const;
+  virtual osg::Group *          modelsScene();
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  VRV::Interfaces::IMatrixMultiplyFloat
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Post-multiply the component's matrix by the given matrix.
+  virtual void                  postMultiply ( const Matrix44f &M );
+
+  // Pre-multiply the component's matrix by the given matrix.
+  virtual void                  preMultiply ( const Matrix44f &M );
 
   /// No copying.
   Application ( const Application& );
@@ -172,11 +209,14 @@ protected:
 
 private:
   // Typedefs.
-  typedef osg::ref_ptr<osg::MatrixTransform>            MatTransPtr;
+  typedef osg::ref_ptr < osg::MatrixTransform >            MatTransPtr;
+  typedef osg::ref_ptr < osg::Group >                      GroupPtr;
 
   // Data members.
   mutable Mutex                      _mutex;
 
+  GroupPtr                           _root;
+  MatTransPtr                        _navBranch;
   MatTransPtr                        _models;
 
   osg::Timer                         _timer;

@@ -21,7 +21,7 @@
 
 #include "VRV/Interfaces/IFrameInfo.h"
 #include "VRV/Interfaces/IWorldInfo.h"
-#include "CadViewer/Interfaces/IMatrixMultiply.h"
+#include "VRV/Interfaces/IMatrixMultiply.h"
 
 #include "Usul/Math/Matrix44.h"
 
@@ -47,7 +47,7 @@ protected:
   typedef Usul::Math::Matrix44f Matrix;
   typedef VRV::Interfaces::IFrameInfo FrameInfo;
   typedef VRV::Interfaces::IWorldInfo WorldInfo;
-  typedef CV::Interfaces::IMatrixMultiplyFloat MatrixMultiply;
+  typedef VRV::Interfaces::IMatrixMultiplyFloat MatrixMultiply;
 
   Transform (
     Unknown *unknown,

@@ -19,6 +19,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Scope/Caller.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 
 using namespace Usul::Jobs;
 
@@ -29,7 +30,7 @@ using namespace Usul::Jobs;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Job::Job() : BaseClass(),
+Job::Job( Usul::Interfaces::IUnknown * caller ) : BaseClass(),
   _id          ( Usul::Jobs::Manager::instance().nextJobId() ),
   _cancelledCB ( 0x0 ),
   _errorCB     ( 0x0 ),
@@ -46,6 +47,15 @@ Job::Job() : BaseClass(),
   _errorCB     = Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Job::_threadError     ) );
   _finishedCB  = Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Job::_threadFinished  ) );
   _startedCB   = Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Job::_threadStarted   ) );
+
+  // Check to see if our caller can create our progress bar.
+  Usul::Interfaces::IProgressBarFactory::QueryPtr factory ( caller );
+  if( factory.valid() )
+  {
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( factory->createProgressBar() );
+    _progress = unknown.get();
+    _label = unknown.get();
+  }
 }
 
 

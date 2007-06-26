@@ -643,6 +643,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\GUI\IProgressBarFactory.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\GUI\IQuestion.h"
 						>
 					</File>

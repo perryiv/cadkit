@@ -19,6 +19,7 @@
 #include "Usul/Strings/Format.h"
 #include "Usul/System/Sleep.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Adaptors/Random.h"
 
 #include <iostream>
 #include <iomanip>
@@ -69,7 +70,7 @@ void TestJob::_started()
   USUL_TRACE_SCOPE;
 
   // Show the progress bar if it's not already shown.  Hide when done.
-  //Usul::Interfaces::IProgressBar::ShowHide showHide ( this->progress() );
+  Usul::Interfaces::IProgressBar::ShowHide showHide ( this->progress() );
 
   const unsigned long id ( this->id() );
 
@@ -85,10 +86,14 @@ void TestJob::_started()
 
   Usul::System::Sleep::milliseconds ( _sleep );
 
+  // Time to sleep in each loop.
+  Usul::Adaptors::Random < unsigned int > rand ( 100, 250 );
+  unsigned int sleep ( rand() );
+
   // Loop and update progress.
   for ( unsigned int i = 0; i <= 100; ++i )
   {
     this->_updateProgress ( i, 100 );
-    Usul::System::Sleep::milliseconds ( 250 );
+    Usul::System::Sleep::milliseconds ( sleep );
   }
 }

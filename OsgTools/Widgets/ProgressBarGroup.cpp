@@ -81,7 +81,7 @@ private:
 
 ProgressBarGroup::ProgressBarGroup() : 
 _border ( new osg::Node() ),
-_pos( osg::Vec3f ( 0.0f, 0.0f, -3.1f ) ),
+_pos( osg::Vec3f ( -0.95 , -.75, -3.0f ) ),
 _ll ( osg::Vec2f( 0.0f, 0.0f ) ),
 _padding ( 0.01 ),
 _height ( 0.01 ),
@@ -170,7 +170,7 @@ void ProgressBarGroup::setItemMin( unsigned int i, double min )
   if ( _numBars >= i  && _numBars > 0 )
     _pbarVector.at ( i )->setMin ( min );
 
-  this->_buildProgressBarGroup();
+  //this->_buildProgressBarGroup();
 }
 
 
@@ -185,7 +185,7 @@ void ProgressBarGroup::setMessage ( unsigned int i, const std::string& m )
   if ( _numBars >= i  && _numBars > 0 )
     _pbarVector.at ( i )->setMessage ( m );
 
-  this->_buildProgressBarGroup();
+  //this->_buildProgressBarGroup();
 }
 
 
@@ -200,7 +200,7 @@ void ProgressBarGroup::setItemMax( unsigned int i, double max )
   if ( _numBars >= i && _numBars > 0 )
     _pbarVector.at ( i )->setMax ( max );
 
-  this->_buildProgressBarGroup();
+  //this->_buildProgressBarGroup();
 }
 
 
@@ -230,7 +230,7 @@ void ProgressBarGroup::setItemValue( unsigned int i, double v )
   if ( _numBars >= i  && _numBars > 0 )
     _pbarVector.at ( i )->setCurrent ( v );
 
-  this->_buildProgressBarGroup();
+  //this->_buildProgressBarGroup();
 }
 
 
@@ -326,7 +326,7 @@ void ProgressBarGroup::update()
 void ProgressBarGroup::_addProgressBar ( ProgressBar * pbar )
 {
   if( _numBars == 0 )
-    pbar->setLowerLeft ( osg::Vec2f ( _ll.x() + _padding, _ll.y() + _height ) );
+    pbar->setLowerLeft ( osg::Vec2f ( _ll.x() + _padding, _ll.y() + _padding ) );
   else
     pbar->setLowerLeft ( osg::Vec2f ( _ll.x() + _padding,
                                      _pbarVector.at( _numBars - 1 )->getLowerLeft().y() + 
@@ -336,7 +336,10 @@ void ProgressBarGroup::_addProgressBar ( ProgressBar * pbar )
   if (_length < pbar->getLength() + _padding )
     _length = pbar->getLength() + _padding * 2;
 
-  _height +=  pbar->getHeight() + _padding;
+  if(_height == 0 )
+    _height +=  pbar->getHeight() + _padding * 2;
+  else
+    _height +=  pbar->getHeight() + _padding;
 
   
   

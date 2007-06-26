@@ -19,8 +19,8 @@
 #include "CadViewer/Functors/AnalogInput.h"
 #include "CadViewer/Functors/Direction.h"
 
-#include "CadViewer/Interfaces/IFrameInfo.h"
-#include "CadViewer/Interfaces/IWorldInfo.h"
+#include "VRV/Interfaces/IFrameInfo.h"
+#include "VRV/Interfaces/IWorldInfo.h"
 
 #include "Usul/Math/Matrix44.h"
 
@@ -45,8 +45,8 @@ public:
   typedef CV::Functors::AnalogInput AnalogInput;
   typedef CV::Functors::Direction Direction;
   typedef Direction::Vector Vector;
-  typedef CV::Interfaces::IFrameInfoFloat FrameInfo;
-  typedef CV::Interfaces::IWorldInfoFloat WorldInfo;
+  typedef VRV::Interfaces::IFrameInfo FrameInfo;
+  typedef VRV::Interfaces::IWorldInfo WorldInfo;
   typedef osg::MatrixTransform Transform;
   typedef USUL_REF_POINTER(Transform) TransformPtr;
   typedef std::vector<TransformPtr> Transforms;

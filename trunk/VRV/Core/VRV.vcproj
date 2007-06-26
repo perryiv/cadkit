@@ -283,6 +283,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Interfaces\IFrameInfo.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Interfaces\IModelAdd.h"
 					>
 				</File>
@@ -300,6 +304,10 @@
 				</File>
 				<File
 					RelativePath="..\Interfaces\IRequestRead.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IWorldInfo.h"
 					>
 				</File>
 			</Filter>

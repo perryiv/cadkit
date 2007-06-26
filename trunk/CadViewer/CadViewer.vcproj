@@ -454,10 +454,6 @@
 					>
 				</File>
 				<File
-					RelativePath="Interfaces\IFrameInfo.h"
-					>
-				</File>
-				<File
 					RelativePath="Interfaces\IJoystick.h"
 					>
 				</File>
@@ -491,10 +487,6 @@
 				</File>
 				<File
 					RelativePath="Interfaces\IWandState.h"
-					>
-				</File>
-				<File
-					RelativePath="Interfaces\IWorldInfo.h"
 					>
 				</File>
 			</Filter>

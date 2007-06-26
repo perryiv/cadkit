@@ -15,6 +15,8 @@
 #include "VRV/Core/SharedDouble.h"
 #include "VRV/Interfaces/IModelAdd.h"
 #include "VRV/Interfaces/IClippingDistance.h"
+#include "VRV/Interfaces/IFrameInfo.h"
+#include "VRV/Interfaces/IWorldInfo.h"
 
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
@@ -56,7 +58,9 @@ namespace Core {
 
 class VRV_EXPORT Application : public vrj::GlApp,
                                public VRV::Interfaces::IModelAdd,
-                               public VRV::Interfaces::IClippingDistanceFloat
+                               public VRV::Interfaces::IClippingDistanceFloat,
+                               public VRV::Interfaces::IFrameInfo,
+                               public VRV::Interfaces::IWorldInfo
 {
 public:
   // Typedefs.
@@ -135,9 +139,6 @@ protected:
   void                    _construct();
   Renderer*               _getContextSpecificRenderer();
 
-  // Get the duration of the last frame in seconds.
-  double                  _getFrameTime() const;
-
   // Load VR Juggler config files.
   void                    _loadConfigFiles ( const std::vector < std::string > &configs );
   void                    _loadSimConfigs  ( const std::string& dir );
@@ -156,6 +157,14 @@ protected:
 
   /// VRV::Interfaces::IModelAdd
   virtual void            addModel ( osg::Node *model, const std::string& filename );
+
+  /// VRV::Interfaces::IFrameInfo
+  /// Get the duration of the last frame in seconds.
+  virtual double          frameTime() const;
+
+  /// VRV::Interfaces::IWorldInfo
+  /// Get the radius of the "world".
+  virtual double              worldRadius() const;
 
   /// No copying.
   Application ( const Application& );

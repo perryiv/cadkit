@@ -138,6 +138,10 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < VRV::Interfaces::IModelAdd* > ( this );
   case VRV::Interfaces::IClippingDistanceFloat::IID:
     return static_cast < VRV::Interfaces::IClippingDistanceFloat* > ( this );
+  case VRV::Interfaces::IFrameInfo::IID:
+    return static_cast < VRV::Interfaces::IFrameInfo* > ( this );
+  case VRV::Interfaces::IWorldInfo::IID:
+    return static_cast < VRV::Interfaces::IWorldInfo* > ( this );
   default:
     return 0x0;
   }
@@ -633,11 +637,11 @@ const osg::FrameStamp* Application::getFrameStamp() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the frame-time.
+//  Get the duration of the last frame in seconds.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-double Application::_getFrameTime() const
+double Application::frameTime() const
 {
   USUL_TRACE_SCOPE;
   return _frameTime;
@@ -932,4 +936,17 @@ void Application::setClippingDistances ( float nearDist, float farDist )
   _clipDist[0] = nearDist;
   _clipDist[1] = farDist;
   vrj::Projection::setNearFar ( nearDist, farDist );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the maximum world size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Application::worldRadius() const
+{
+  // Use the whole scene or just the navBranch?
+  return _sceneManager->scene()->getBound().radius();
 }

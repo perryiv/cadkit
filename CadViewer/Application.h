@@ -466,7 +466,6 @@ protected:
   unsigned int      _flags;
   Usul::Math::Vec3f _wandOffset;
   MatrixFunctorPtr  _cursorMatrix;
-  vpr::Mutex        _sceneMutex;
   IVisibilityPtr    _iVisibility;
   ISelectionPtr     _iSelection;
   IMaterialStackPtr _iMaterialStack;

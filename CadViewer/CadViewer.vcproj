@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm512"
 				Optimization="0"
-				AdditionalIncludeDirectories="../,$(OPENTHREADS_INC_DIR),$(OSG_INC_DIR),$(VJ_BASE_DIR)/include,$(NSPR_ROOT)/include;$(OPENTHREADS_INC_DIR);$(BOOST_ROOT_DIR);$(GMTL_ROOT)/include;$(CADKIT_ROOT_DIR)/CadViewer;$(CADKIT_ROOT_DIR)"
+				AdditionalIncludeDirectories="../;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(VJ_BASE_DIR)/include&quot;;&quot;$(CADKIT_ROOT_DIR)/CadViewer&quot;;&quot;$(CADKIT_ROOT_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -72,7 +72,7 @@
 				AdditionalDependencies="opengl32.lib vrj_d.lib vrj_ogl_d.lib gadget_d.lib jccl_d.lib vpr_d.lib osgd.lib osgDBd.lib osgTextd.lib osgUtild.lib osgFXd.lib cppdom_d.lib"
 				OutputFile="../bin/CadViewerd.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(VJ_BASE_DIR)/lib,$(OSG_LIB_DIR);$(CPPDOM_ROOT)/lib"
+				AdditionalLibraryDirectories="&quot;$(VJ_BASE_DIR)/lib&quot;;&quot;$(OSG_LIB_DIR)&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/CadViewer.pdb"
 				SubSystem="1"
@@ -131,7 +131,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="../,$(OPENTHREADS_INC_DIR),$(OSG_INC_DIR),$(VJ_BASE_DIR)/include,$(NSPR_ROOT)/include;$(OPENTHREADS_INC_DIR);$(BOOST_ROOT_DIR);$(GMTL_ROOT)/include;$(CADKIT_ROOT_DIR)/CadViewer;$(CADKIT_ROOT_DIR)"
+				AdditionalIncludeDirectories="../;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(VJ_BASE_DIR)/include&quot;;&quot;$(CADKIT_ROOT_DIR)/CadViewer&quot;;&quot;$(CADKIT_ROOT_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -372,30 +372,6 @@
 				<Filter
 					Name="Matrix Functors"
 					>
-					<File
-						RelativePath="Functors\IdentityMatrix.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Functors\IdentityMatrix.h"
-						>
-					</File>
-					<File
-						RelativePath="Functors\InverseMatrix.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Functors\InverseMatrix.h"
-						>
-					</File>
-					<File
-						RelativePath="Functors\MatrixPair.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Functors\MatrixPair.h"
-						>
-					</File>
 					<File
 						RelativePath="Functors\WandMatrix.cpp"
 						>

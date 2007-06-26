@@ -338,11 +338,35 @@
 					Name="Matrix"
 					>
 					<File
+						RelativePath="..\Functors\Matrix\IdentityMatrix.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Functors\Matrix\IdentityMatrix.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Functors\Matrix\InverseMatrix.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Functors\Matrix\InverseMatrix.h"
+						>
+					</File>
+					<File
 						RelativePath="..\Functors\Matrix\MatrixFunctor.cpp"
 						>
 					</File>
 					<File
 						RelativePath="..\Functors\Matrix\MatrixFunctor.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Functors\Matrix\MatrixPair.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Functors\Matrix\MatrixPair.h"
 						>
 					</File>
 				</Filter>

@@ -36,7 +36,8 @@ ProgressBarGroup();
     LOWER_RIGHT,
     UPPER_LEFT,
     UPPER_RIGHT,
-    CENTER
+    CENTER,
+    BOTTOM
   };
   ///////////////////
   //inline functions
@@ -88,6 +89,9 @@ ProgressBarGroup();
   void setItemValue( unsigned int i, double v );
   void setMessage ( unsigned int i, const std::string& m );
   void setPadding ( float p );
+  void setGroupLength ( float l);
+  void setGroupHeight ( float h );
+  void setGroupLengthAndHeight ( const osg::Vec2f& lh );
 
   void showProgressBar ( unsigned int index );
   void hideProgressBar ( unsigned int index );
@@ -124,6 +128,7 @@ private:
 
   osg::Vec3f _pos;
   osg::Vec2f _ll;
+  osg::Vec2f _groupLH;
 
   
   //osg::ref_ptr < UpdateProgressBarGroupCallback > _updateCallback;

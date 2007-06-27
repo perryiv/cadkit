@@ -71,6 +71,18 @@ public:
   // Return the length of the bar object
   float getBarLength() { return _barLH.x(); }
 
+  // Return the animation starting point
+  float getAnimationStart () { return _animationStart; }
+
+  // Return the animation step value
+  float getAnimationStep () { return _animationStep; }
+
+  // Return the animation end value
+  float getAnimationEnd () { return _animationEnd; }
+
+  // Return the animation current value
+  float getAnimationCurrent () { return _animationCurrent; }
+
   // Return the minimum value of the progress bar
   double getMin() { return _min; }
 
@@ -106,6 +118,8 @@ public:
   void setLowerLeft( const osg::Vec2f & ll );
   void setAnimation ( bool value );
   void setTextBehavior ( unsigned int flag );
+  void setAnimationCurrent ( float c );
+  void stepAnimation();
   void reset();
 
   // Show the progress bar
@@ -148,7 +162,7 @@ private:
   float _borderPadding;
   float _borderZOffset;
   float _textZOffset;
-  float _animationStart, _animationEnd, _animationStep;
+  float _animationStart, _animationEnd, _animationStep, _animationCurrent;
   unsigned int _textFlag;
   bool _isRelativeToAbsolute;
   bool _isFinished;

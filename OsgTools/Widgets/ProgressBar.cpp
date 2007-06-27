@@ -42,7 +42,7 @@ public:
 
     virtual void operator() (osg::Node* node, osg::NodeVisitor* nv)
     {
-      osg::MatrixTransform* transform = dynamic_cast<osg::MatrixTransform*>(node);    
+      osg::MatrixTransform* transform = dynamic_cast < osg::MatrixTransform* > ( node );    
       if( 0x0 != transform && _bar.valid() )
       {
         if(_bar->isAnimating())
@@ -52,7 +52,7 @@ public:
             if (_start < _end)
             {
               _start += _step;
-              transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
+              transform->setMatrix(osg::Matrix::scale(1.0f, _start, 1.0f));
       		    
             }
             else
@@ -63,7 +63,7 @@ public:
             if (_start > _end)
             {
               _start += _step;
-              transform->setMatrix(osg::Matrix::scale(_start,_start,_start));
+              transform->setMatrix(osg::Matrix::scale(1.0f, _start, 1.0f));
             						
             }
             else
@@ -105,6 +105,7 @@ namespace Detail
 
     if ( image.get() )
     {
+      
 	    osg::ref_ptr< osg::Texture2D > texture ( new osg::Texture2D() ); 
 	    texture->setImage ( image.get() );
 	    stateset->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
@@ -164,45 +165,45 @@ BaseClass(),
 _min ( 0.0 ),
 _max ( 100.0 ),
 _current ( 0.0 ),
-_border ( new osg::Node() ),
-_progressBar ( new osg::Node() ),
-_backgroundBar ( new osg::Node() ),
-_barText ( "" ),
 _barSize ( 0.0f ),
 _backSize ( 0.5f ),
-_borderLength ( 0.7f ),
-_borderHeight ( 0.2f ),
-_borderZOffset ( -0.0002f ),
 _barBorderThickness ( 0.005f ),
 _barBorderZOffset ( -0.0001f ),
+_borderPadding ( 0.01f ),
+_borderZOffset ( -0.0002f ),
 _textZOffset ( 0.0005f ),
+_animationStart ( 1.0f ),
+_animationEnd ( 0.0f ), 
+_animationStep ( -1 * ( 1.0f / 20.0f ) ),
+_textFlag ( OsgTools::Widgets::ProgressBar::NORMAL ),
 _isRelativeToAbsolute ( false ),
 _isFinished ( false ),
 _isVisible ( true ),
 _isAnimating ( false ),
 _ll ( osg::Vec2f ( 0.0f, 0.0f ) ),
+_pos ( osg::Vec3f( 0.0f, 0.0f, 0.0f ) ),
+_barText ( "" ),
+_progressBar ( new osg::Node() ),
+_backgroundBar ( new osg::Node() ),
+_barBorder ( new osg::Node ),
+_border ( new osg::Node() ),
+_pbarGroup ( new osg::Group() ),
+_barLH ( osg::Vec2f( 0.5f, 0.05f ) ),
 _labelText ( new ThreadSafeText ),
 _percentText ( new ThreadSafeText ),
 _progressDrawable ( new UpdateProgress ),
 _backgroundDrawable ( new UpdateProgress ),
-_pos ( osg::Vec3f( 0.0f, 0.0f, 0.0f ) )
+_barBorderDrawable ( new UpdateProgress ),
+_borderDrawable ( new UpdateProgress )
 {
   _progressDrawable->setUseDisplayList ( false );
   _backgroundDrawable->setUseDisplayList ( false );
+  _barBorderDrawable->setUseDisplayList ( false );
+  _borderDrawable->setUseDisplayList ( false );
 
-  
-  _barLength = 0.5f;
-  _barHeight = 0.05f;
-  _barBorderThickness = 0.005f;
-  _borderPadding = ( _barHeight + _barBorderThickness ) * ( _barLength + _barBorderThickness) * .5;
-  _borderHeight = ( _barHeight * 2.0f ) + _borderPadding;
-  _borderLength = _barLength + _borderPadding;
-  _animationStart = 1.0f;
-	_animationEnd = 0.0f; 
-	_animationStep = -1 * ( 1.0f / 20.0f );
-  _pbarGroup = new osg::Group() ;
+  this->reset();
 	this->_buildProgressBarObject();
-  
+  this->showProgressBar();
 }
 
 
@@ -250,7 +251,7 @@ osg::Vec2f ProgressBar::getLowerLeft()
 
 float ProgressBar::getLength()
 {
-  return _ll.x() + _barLength + ( _borderPadding * 2 ) + ( _barBorderThickness * 2 );
+  return _borderLH.x();
 }
 
 
@@ -262,7 +263,7 @@ float ProgressBar::getLength()
 
 float ProgressBar::getHeight()
 {
-  return (_ll.y() + _borderPadding + _barBorderThickness + _barHeight) * 2 + _borderPadding;
+  return _borderLH.y();
 }
 
 
@@ -274,9 +275,40 @@ float ProgressBar::getHeight()
 
 void ProgressBar::reset()
 {
-  _isFinished = false;
-  _current = _min;
-  this->_buildProgressBarObject();
+   _borderPos = osg::Vec3f ( _ll.x(), _ll.y(), _borderZOffset );
+
+  _barBorderPos = osg::Vec3f ( _borderPos.x() + _borderPadding,
+                               _borderPos.y() + _borderPadding,
+                               _barBorderZOffset);
+
+  _barPos = osg::Vec3f ( _barBorderPos.x() + _barBorderThickness,
+                         _barBorderPos.y() + _barBorderThickness,
+                         0.0f );
+
+  _barBorderLH = osg::Vec2f ( _barBorderPos.x() + _barLH.x()  ,
+                              _barBorderPos.y() + _barLH.y()   );
+
+  _borderLH = osg::Vec2f ( ( _borderPos.x() + _barBorderLH.x() + _borderPadding * 2 ),
+                           ( _borderPos.y() + _barBorderLH.y() + _borderPadding ) * 2 );
+
+  _progressDrawable->setBounds ( osg::Vec2f ( _barPos.x(), _barPos.y() + _barLH.y() ),
+                                 osg::Vec2f( _barPos.x() + _barSize , _barPos.y() ) );
+
+  _backgroundDrawable->setBounds ( osg::Vec2f ( _barPos.x() + _barSize, _barPos.y() + _barLH.y() ),
+                                   osg::Vec2f ( _barPos.x() + _barLH.x() , _barPos.y() ) );
+  
+  _barBorderDrawable->setBounds ( osg::Vec2f ( _barBorderPos.x(), _barBorderPos.y() + _barBorderLH.y() ),
+                                  osg::Vec2f ( _barBorderPos.x() + _barBorderLH.x() , _barBorderPos.y() ) );
+
+  _borderDrawable->setBounds ( osg::Vec2f ( _borderPos.x(), _borderPos.y() + _borderLH.y() ),
+                               osg::Vec2f ( _borderPos.x() + _borderLH.x() , _borderPos.y() ) );
+  
+  _labelPos   = ( osg::Vec3f ( _barBorderPos.x(), _borderPos.y() + _borderLH.y() * .75, _textZOffset) );
+
+  _percentPos = ( osg::Vec3f ( _barPos.x() + ( _barLH.x() * 0.45f ) ,
+                               _barPos.y() + ( _barLH.y() * 0.25f ) ,
+                               _textZOffset) );
+
   this->updateProgressBar();
 }
 
@@ -311,14 +343,14 @@ void ProgressBar::showProgressBar()
 {
   //USUL_TRACE_SCOPE;
 
-  /*if(!_isVisible)
+  if(!_isVisible)
   {
     _animationStart = 0.0f;
     _animationEnd = 1.0f; 
     _animationStep = 1.0f / 20.0f;
     _isAnimating = true;
     _isVisible = true;
-  }*/
+  }
 }
 
 
@@ -332,14 +364,14 @@ void ProgressBar::hideProgressBar()
 {
   //USUL_TRACE_SCOPE;
 
-  /*if(_isVisible)
+  if(_isVisible)
   {
     _animationStart = 1.0f;
     _animationEnd = 0.0f; 
     _animationStep = -1 * (1.0f / 20.0f);
     _isAnimating = true;
     _isVisible = false;
-  }*/
+  }
   
   
 }
@@ -438,10 +470,13 @@ void ProgressBar::setMin( double min )
   if( _current < _min )
     _current = _min;
 
-  _barSize = _barLength * ( ( _current + _min ) / _max );
+  _barSize = _barLH.x() * ( ( _current + _min ) / _max );
 
- _progressDrawable->setBounds ( osg::Vec2f ( _ll.x() + _borderPadding + _barBorderThickness, _ll.y() + _borderPadding + _barBorderThickness + _barHeight ), osg::Vec2f(_ll.x() + _borderPadding + _barBorderThickness + _barSize , _ll.y() + _borderPadding + _barBorderThickness ) );
-  _backgroundDrawable->setBounds ( osg::Vec2f ( _ll.x() + _borderPadding + _barBorderThickness + _barSize, _ll.y() + _borderPadding + _barBorderThickness + _barHeight ),  osg::Vec2f ( _ll.x() + _borderPadding + _barBorderThickness + _barLength , _ll.y() + _borderPadding + _barBorderThickness ) );
+ _progressDrawable->setBounds ( osg::Vec2f ( _barPos.x(), _barPos.y() + _barLH.y() ),
+                                osg::Vec2f( _barPos.x() + _barSize , _barPos.y() ) );
+
+ _backgroundDrawable->setBounds ( osg::Vec2f ( _barPos.x() + _barSize, _barPos.y() + _barLH.y() ),
+                                  osg::Vec2f ( _barPos.x() + _barLH.x() , _barPos.y() ) );
 
   _percentText->setText ( this->_getPercentComplete() );
 }
@@ -465,11 +500,13 @@ void ProgressBar::setMax( double max )
   if( _current < _min )
     _current = _min;
 
-  _barSize = _barLength * ( ( _current + _min ) / _max );
+  _barSize = _barLH.x() * ( ( _current + _min ) / _max );
 
-  _progressDrawable->setBounds ( osg::Vec2f ( _ll.x() + _borderPadding + _barBorderThickness, _ll.y() + _borderPadding + _barBorderThickness + _barHeight ), osg::Vec2f(_ll.x() + _borderPadding + _barBorderThickness + _barSize , _ll.y() + _borderPadding + _barBorderThickness ) );
-  _backgroundDrawable->setBounds ( osg::Vec2f ( _ll.x() + _borderPadding + _barBorderThickness + _barSize, _ll.y() + _borderPadding + _barBorderThickness + _barHeight ),  osg::Vec2f ( _ll.x() + _borderPadding + _barBorderThickness + _barLength , _ll.y() + _borderPadding + _barBorderThickness ) );
+ _progressDrawable->setBounds ( osg::Vec2f ( _barPos.x(), _barPos.y() + _barLH.y() ),
+                                osg::Vec2f( _barPos.x() + _barSize , _barPos.y() ) );
 
+ _backgroundDrawable->setBounds ( osg::Vec2f ( _barPos.x() + _barSize, _barPos.y() + _barLH.y() ),
+                                  osg::Vec2f ( _barPos.x() + _barLH.x() , _barPos.y() ) );
   _percentText->setText ( this->_getPercentComplete() );
 }
 
@@ -482,8 +519,33 @@ void ProgressBar::setMax( double max )
 
 void ProgressBar::setBarHeight ( float h )
 {
-  _barHeight = h;
-  this->updateProgressBar();
+  _barLH.y() = h;
+ // _borderPadding = ( _barLH.y() + _barBorderThickness ) * ( _barLH.x() + _barBorderThickness) * .5;
+  this->reset();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the hight of the progress bar
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBar::setBarLengthAndHeight ( const osg::Vec2f & lh )
+{
+  _barLH.set( lh.x(), lh.y() );
+  this->reset();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the progress bar message
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBar::setTextBehavior ( unsigned int flag )
+{
+  _textFlag = flag;
 }
 
 
@@ -495,8 +557,18 @@ void ProgressBar::setBarHeight ( float h )
 
 void ProgressBar::setMessage ( const std::string& s )
 {
-  _barText = s;
-  _labelText->setText ( s );
+  
+  if( _textFlag == OsgTools::Widgets::ProgressBar::WORD_WRAP && s.length() > 50 )
+  {
+    std::string head = s.substr( 0, 50 );
+    std::string tail = s.substr( 50, s.length() );
+    _labelText->setText ( head + "\n" + tail );
+  }
+  else
+  {
+    _barText = s;
+    _labelText->setText ( s );
+  }
 }
 
 
@@ -537,8 +609,9 @@ void ProgressBar::setRelativeToAbsolute ( bool value )
 
 void ProgressBar::setBarLength ( float l )
 {
-  _barLength = l;
-  this->updateProgressBar();
+  _barLH.x() = l;
+  
+  this->reset();
 }
 
 
@@ -560,11 +633,14 @@ void ProgressBar::setCurrent( double c )
   if( _current < _min )
     _current = _min;
 
-  _barSize = _barLength * ( ( _current + _min ) / _max );
+  _barSize = _barLH.x() * ( ( _current + _min ) / _max );
 
-  _progressDrawable->setBounds ( osg::Vec2f ( _ll.x() + _borderPadding + _barBorderThickness, _ll.y() + _borderPadding + _barBorderThickness + _barHeight ), osg::Vec2f(_ll.x() + _borderPadding + _barBorderThickness + _barSize , _ll.y() + _borderPadding + _barBorderThickness ) );
-  _backgroundDrawable->setBounds ( osg::Vec2f ( _ll.x() + _borderPadding + _barBorderThickness + _barSize, _ll.y() + _borderPadding + _barBorderThickness + _barHeight ),  osg::Vec2f ( _ll.x() + _borderPadding + _barBorderThickness + _barLength , _ll.y() + _borderPadding + _barBorderThickness ) );
+  _progressDrawable->setBounds ( osg::Vec2f ( _barPos.x(), _barPos.y() + _barLH.y() ),
+                                  osg::Vec2f( _barPos.x() + _barSize , _barPos.y() ) );
 
+  _backgroundDrawable->setBounds ( osg::Vec2f ( _barPos.x() + _barSize, _barPos.y() + _barLH.y() ),
+                                    osg::Vec2f ( _barPos.x() + _barLH.x() , _barPos.y() ) );
+  
   _percentText->setText ( this->_getPercentComplete() );
   
 }
@@ -601,8 +677,8 @@ namespace Detail
     text->setCharacterSize( size );
     text->setPosition( p );
     text->setLayout( osgText::Text::LEFT_TO_RIGHT );
-    text->setText( s );
     text->setFontResolution ( 40, 40 );
+    text->setText( s );
 
     return text.release();
   }
@@ -644,49 +720,47 @@ void ProgressBar::_buildProgressBarObject()
   
   this->_progressBar =  ( Detail::buildQuad( 1003,
                                            "icons/bar.tga",
-                                           osg::Vec2f ( _ll.x() + barPadding, _ll.y() + barPadding + _barHeight ),
-                                           osg::Vec2f( _ll.x() + barPadding + _barSize , _ll.y() + barPadding ),
+                                           osg::Vec2f ( _barPos.x(), _barPos.y() + _barLH.y() ),
+                                           osg::Vec2f ( _barPos.x() + _barSize , _barPos.y() ),
                                            0.0f, *_progressDrawable ) );
 
   this->_backgroundBar = (  Detail::buildQuad( 1002,
                                              "icons/background.tga",
-                                             osg::Vec2f ( _ll.x() + barPadding + _barSize, _ll.y() + barPadding + _barHeight ),
-                                             osg::Vec2f( _ll.x() + barPadding + _barLength , _ll.y() + barPadding ),
+                                             osg::Vec2f ( _barPos.x() + _barSize, _barPos.y() + _barLH.y() ),
+                                             osg::Vec2f( _barPos.x() + _barLH.x() , _barPos.y() ),
                                              0.0f, *_backgroundDrawable ) );
 
-  {
-    osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
+  
+    //osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
     this->_barBorder = ( Detail::buildQuad( 1001,
                                          "icons/barborder.tga",
-                                         osg::Vec2f ( _ll.x() + _borderPadding, _ll.y() + _barHeight + _borderPadding * 2 ),
-                                         osg::Vec2f( _ll.x() + _barLength + _borderPadding * 2 , _ll.y() + _borderPadding ),
-                                         _barBorderZOffset, *geometry ) );
-  }
+                                         osg::Vec2f ( _barBorderPos.x(), _barBorderPos.y() + _barBorderLH.y() ),
+                                         osg::Vec2f( _barBorderPos.x() + _barBorderLH.x() , _barBorderPos.y() ),
+                                         _barBorderZOffset, *_barBorderDrawable ) );
+  
 
-  {
-    osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
+  
+    //osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
     this->_border = ( Detail::buildQuad( 1000,
                                       "icons/border.tga",
-                                      osg::Vec2f ( _ll.x() , (_ll.y() + barPadding + _barHeight) * 2 + _borderPadding ),
-                                      osg::Vec2f(_ll.x() +( _borderPadding * 2) + (_barBorderThickness * 2) + _barLength , _ll.y() ),
-                                      _borderZOffset, *geometry ) );
-  }
+                                      osg::Vec2f ( _borderPos.x(), _borderPos.y() + _borderLH.y() ),
+                                      osg::Vec2f ( _borderPos.x() + _borderLH.x() , _borderPos.y() ),
+                                      _borderZOffset, *_borderDrawable ) );
+  
 
   osg::Vec4f white ( osg::Vec4f ( 1.0f, 1.0f, 1.0f, 1.0f ) );
   osg::Vec4f black ( osg::Vec4f ( 0.0f, 0.0f, 0.0f, 1.0f ) );
 
   // Create a label above the progress bar.
-  _labelText = Detail::drawTextAtPosition ( osg::Vec3f ( _ll.x() + barPadding, 
-                                                         _ll.y() + barPadding + _barHeight + _barBorderThickness * 3.0f, 
-                                                         _textZOffset ),
-                                                         this->_barText,
-                                                         white,
-                                                         0.032 );
+  _labelText = Detail::drawTextAtPosition ( osg::Vec3f ( 0.0f, 0.0f, 0.0f ), this->_barText, white, 0.024 );
   _text = new osg::Geode;
   _text->addDrawable ( _labelText.get() );
 
   // Draw percentage at the midpoint of the progress bar.
-  _percentText = Detail::drawTextAtPosition ( osg::Vec3f ( _ll.x() + barPadding + _barLength * 0.45f , _ll.y() + barPadding + _barHeight *.25f, _textZOffset ), this->_getPercentComplete(), white, 0.024 );
+  _percentText = Detail::drawTextAtPosition ( osg::Vec3f ( 0.0f, 0.0f, 0.0f ),
+                                                           this->_getPercentComplete(),
+                                                           white,
+                                                           0.024 );
   _percent = new osg::Geode;
   _percent->addDrawable ( _percentText.get() );
 }
@@ -707,17 +781,24 @@ void ProgressBar::_buildProgressBar()
 
   anim->setUpdateCallback ( new ProgressBarAnimationCallback ( this, _animationStart, _animationEnd, _animationStep ) );
 
- 
-
   anim->addChild ( _progressBar.get() );
   anim->addChild ( _backgroundBar.get() );
   anim->addChild ( _barBorder.get() );
   anim->addChild ( _border.get() );
-  anim->addChild ( _text.get() );
-  anim->addChild ( _percent.get() );
+
+  osg::ref_ptr< osg::MatrixTransform > textPos ( new osg::MatrixTransform() );
+  textPos->setMatrix( osg::Matrix::translate( _labelPos ) );
+  textPos->addChild( _text.get() );
+  anim->addChild ( textPos.get() );
+
+  osg::ref_ptr< osg::MatrixTransform > perPos  ( new osg::MatrixTransform() );
+  perPos->setMatrix( osg::Matrix::translate( _percentPos ) );
+  perPos->addChild( _percent.get() );
+  anim->addChild ( perPos.get() );
 
   if( _isRelativeToAbsolute )
     matrixT->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
+
   matrixT->setMatrix( osg::Matrix::translate ( _pos ) );
 
   matrixT->addChild ( anim.get() );

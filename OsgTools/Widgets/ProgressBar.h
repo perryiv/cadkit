@@ -46,6 +46,12 @@ public:
 
 	ProgressBar();
 	
+  enum
+  {
+    WORD_WRAP,
+    NORMAL
+  };
+
   ///////////////////
   //inline functions
   ///////////////////
@@ -60,16 +66,10 @@ public:
   bool isRelativeToAbsolute() { return _isRelativeToAbsolute; }
 
   // Return the height of the bar object
-  float getBarHeight() { return _barHeight; }
+  float getBarHeight() { return _barLH.y(); }
   
   // Return the length of the bar object
-  float getBarLength() { return _barLength; }
-
-  // Return the height of the border object
-  float getBorderHeight() { return _borderHeight; }
-
-  // Return the length of the border object
-  float getBorderLength() { return _borderLength; }
+  float getBarLength() { return _barLH.x(); }
 
   // Return the minimum value of the progress bar
   double getMin() { return _min; }
@@ -100,10 +100,12 @@ public:
   void setCurrent( double c );
   void setBarHeight ( float h );
   void setBarLength ( float l );
+  void setBarLengthAndHeight ( const osg::Vec2f & lh );
   void setRelativeToAbsolute ( bool value );
   void setMessage ( const std::string & s );
   void setLowerLeft( const osg::Vec2f & ll );
   void setAnimation ( bool value );
+  void setTextBehavior ( unsigned int flag );
   void reset();
 
   // Show the progress bar
@@ -136,19 +138,22 @@ private:
   double _min, _max, _current;
   float _barSize;
   float _backSize;
-  float _barLength;
-  float _barHeight;
+
+  // TODO: replace with vec2f version _barLH
+  /*float _barLength;
+  float _barHeight;*/
+  
   float _barBorderThickness;
   float _barBorderZOffset;
-  float _borderLength;
-  float _borderHeight;
   float _borderPadding;
   float _borderZOffset;
   float _textZOffset;
   float _animationStart, _animationEnd, _animationStep;
+  unsigned int _textFlag;
   bool _isRelativeToAbsolute;
   bool _isFinished;
   bool _isVisible, _isAnimating;
+  
 
   osg::Vec2f _ll;
   osg::Vec3f _pos;
@@ -161,11 +166,17 @@ private:
   osg::ref_ptr< osg::Geode > _text;
   osg::ref_ptr< osg::Group > _pbarGroup;
 
+  osg::Vec3f _barPos, _barBorderPos, _borderPos;
+  osg::Vec2f _barLH, _barBorderLH, _borderLH;
+  osg::Vec3f _percentPos, _labelPos;
+
   osg::ref_ptr < ThreadSafeText > _labelText;
   osg::ref_ptr < ThreadSafeText > _percentText;
 
   osg::ref_ptr < UpdateProgress > _progressDrawable;
   osg::ref_ptr < UpdateProgress > _backgroundDrawable;
+  osg::ref_ptr < UpdateProgress > _barBorderDrawable;
+  osg::ref_ptr < UpdateProgress > _borderDrawable;
 };
 
 } // Namespace Builders

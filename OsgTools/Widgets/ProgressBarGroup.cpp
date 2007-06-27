@@ -52,7 +52,7 @@ class UpdateProgressBarGroupCallback : public osg::NodeCallback
       //int num = _pbarGroup->getNumItems();
       for( int i = 0; i < _pbarGroup->getNumItems(); ++i)
       {
-        if( _pbarGroup->isItemFinished ( i ) )
+        if( _pbarGroup->isItemFinished ( i ) && !_pbarGroup ->isAnimating( i ) && !_pbarGroup->isVisible( i ) )
         {
           _pbarGroup->remove ( i );
         }
@@ -81,14 +81,15 @@ private:
 
 ProgressBarGroup::ProgressBarGroup() : 
 _border ( new osg::Node() ),
-_pos( osg::Vec3f ( -0.95 , -.75, -3.0f ) ),
+_pos( osg::Vec3f ( -.25f, -.75, -3.0f ) ),
 _ll ( osg::Vec2f( 0.0f, 0.0f ) ),
-_padding ( 0.01 ),
+_padding ( 0.0 ),
 _height ( 0.01 ),
 _length ( 0.01 ),
 _numBars ( 0 ),
 _borderZOffset ( -0.0003f ),
-_isRelativeToAbsolute ( true )
+_isRelativeToAbsolute ( true ),
+_groupLH ( osg::Vec2f ( 1.0f, 0.03f ) )
 {
   _group = new osg::Group();
   _group->setUpdateCallback( new UpdateProgressBarGroupCallback ( this ) ); 
@@ -221,6 +222,64 @@ void ProgressBarGroup::resetBar( unsigned int i )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the global length for all bars in the progress bar group
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarGroup::setGroupLength ( float l)
+{
+  if( l != _groupLH.x() )
+  {
+    _groupLH.x() = l;
+    for( unsigned int i = 0; i < _numBars; ++i)
+    {
+      _pbarVector.at ( i )->setBarLength ( _groupLH.x() );
+    }
+  }
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the global height for all bars in the progress bar group
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarGroup::setGroupHeight ( float h )
+{
+  if( h != _groupLH.y() )
+  {
+    _groupLH.y() = h;
+    for( unsigned int i = 0; i < _numBars; ++i)
+    {
+      _pbarVector.at ( i )->setBarHeight ( _groupLH.y() );
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the global height and length for all bars in the progress bar group
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarGroup::setGroupLengthAndHeight ( const osg::Vec2f& lh )
+{
+  if( lh.y() != _groupLH.y() || lh.x() != _groupLH.x() )
+  {
+    _groupLH.y() = lh.y();
+    _groupLH.x() = lh.x();
+    for( unsigned int i = 0; i < _numBars; ++i)
+    {
+      _pbarVector.at ( i )->setBarLengthAndHeight ( _groupLH );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the current progression value on the bar at index i
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -267,6 +326,7 @@ void ProgressBarGroup::setPadding ( float p )
 
 void ProgressBarGroup::add ( ProgressBar* pbar )
 {
+  pbar->setBarLengthAndHeight ( _groupLH );
   this->_addProgressBar ( pbar );
 }
 
@@ -280,6 +340,7 @@ void ProgressBarGroup::add ( ProgressBar* pbar )
 void ProgressBarGroup::add ( const std::string& m, double min, double max )
 {
   ProgressBar::RefPtr pbar = new ProgressBar( );
+  pbar->setBarLengthAndHeight ( _groupLH );
   pbar->setMessage ( m );
   pbar->setMin ( min );
   pbar->setMax ( max );
@@ -299,6 +360,7 @@ Usul::Interfaces::IUnknown* ProgressBarGroup::append (  )
 {
   ProgressBar::RefPtr pbar = new ProgressBar( );
 
+  pbar->setBarLengthAndHeight ( _groupLH );
   this->_addProgressBar ( pbar.get() );
 
   return pbar->queryInterface ( Usul::Interfaces::IUnknown::IID );
@@ -426,6 +488,9 @@ void ProgressBarGroup::setLocation ( unsigned int loc )
     case CENTER : 
       this->setPosition ( osg::Vec3f ( -.25f, -.4, -3.0f ) );
       break;
+    case BOTTOM :
+      this->setPosition ( osg::Vec3f ( -.25f, -.75, -3.0f ) );
+      break;
     default:
       break;
   }
@@ -451,11 +516,11 @@ void ProgressBarGroup::_buildProgressBarGroup()
     matrix->addChild ( _pbarVector.at ( x )->getProgressBar() );
   }
 
-  matrix->addChild ( this->_buildBar( 999,
+  /*matrix->addChild ( this->_buildBar( 999,
                                      "/icons/borderGroup.tga",
                                      osg::Vec2f ( _ll.x(), _ll.y() + _height ),
                                      osg::Vec2f ( _ll.x() + _length, _ll.y() ),
-                                     _borderZOffset ) );
+                                     _borderZOffset ) );*/
  
 
   if ( _isRelativeToAbsolute )

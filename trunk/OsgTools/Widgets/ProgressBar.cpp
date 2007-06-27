@@ -30,58 +30,48 @@ class ProgressBarAnimationCallback : public osg::NodeCallback
 {
 public:
 
-  ProgressBarAnimationCallback( ProgressBar* bar, float start, float end, float step ) :
-      _start ( start ),
-      _end ( end ),
-      _step ( step ),
-      _bar ( bar )
-        
-    {
-      
+  ProgressBarAnimationCallback( ProgressBar* bar ) :
+      _bar ( bar )     
+    { 
     }
 
-    virtual void operator() (osg::Node* node, osg::NodeVisitor* nv)
+    virtual void operator() ( osg::Node* node, osg::NodeVisitor* nv )
     {
       osg::MatrixTransform* transform = dynamic_cast < osg::MatrixTransform* > ( node );    
       if( 0x0 != transform && _bar.valid() )
       {
-        if(_bar->isAnimating())
+        if( _bar->isAnimating() )
         {
-          if(_bar->isVisible())
+          if( _bar->isVisible() )
           {
-            if (_start < _end)
+            if ( _bar->getAnimationCurrent() < _bar->getAnimationEnd() )
             {
-              _start += _step;
-              transform->setMatrix(osg::Matrix::scale(1.0f, _start, 1.0f));
+              _bar->stepAnimation();
+              transform->setMatrix ( osg::Matrix::scale ( 1.0f, _bar->getAnimationCurrent(), 1.0f ) );
       		    
             }
             else
-              _bar->setAnimation(false);
+              _bar->setAnimation ( false );
           }
           else
           {
-            if (_start > _end)
+            if ( _bar->getAnimationCurrent() > _bar->getAnimationEnd() )
             {
-              _start += _step;
-              transform->setMatrix(osg::Matrix::scale(1.0f, _start, 1.0f));
+              _bar->stepAnimation();
+              transform->setMatrix ( osg::Matrix::scale ( 1.0f, _bar->getAnimationCurrent(), 1.0f ) );
             						
             }
             else
-              _bar->setAnimation(false);
+              _bar->setAnimation ( false );
           }
         }
       }   
-      traverse(node,nv);            
+      traverse ( node,nv );            
         
     }
     
-protected:
-
+private:
   ProgressBar::RefPtr _bar;
-    
-  float				_start;
-  float				_end;
-  float				_step;
 
 };
 
@@ -108,6 +98,7 @@ namespace Detail
       
 	    osg::ref_ptr< osg::Texture2D > texture ( new osg::Texture2D() ); 
 	    texture->setImage ( image.get() );
+      texture->setWrap( osg::Texture2D::WRAP_S, osg::Texture2D::REPEAT );
 	    stateset->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
     }
 
@@ -172,13 +163,14 @@ _barBorderZOffset ( -0.0001f ),
 _borderPadding ( 0.01f ),
 _borderZOffset ( -0.0002f ),
 _textZOffset ( 0.0005f ),
-_animationStart ( 1.0f ),
-_animationEnd ( 0.0f ), 
-_animationStep ( -1 * ( 1.0f / 20.0f ) ),
+_animationStart ( 0.0f ),
+_animationEnd ( 1.0f ), 
+_animationStep ( 1.0f / 20.0f ),
+_animationCurrent ( 0.0f ),
 _textFlag ( OsgTools::Widgets::ProgressBar::NORMAL ),
 _isRelativeToAbsolute ( false ),
 _isFinished ( false ),
-_isVisible ( true ),
+_isVisible ( false ),
 _isAnimating ( false ),
 _ll ( osg::Vec2f ( 0.0f, 0.0f ) ),
 _pos ( osg::Vec3f( 0.0f, 0.0f, 0.0f ) ),
@@ -285,14 +277,14 @@ void ProgressBar::reset()
                          _barBorderPos.y() + _barBorderThickness,
                          0.0f );
 
-  _barBorderLH = osg::Vec2f ( _barBorderPos.x() + _barLH.x()  ,
+  _barBorderLH = osg::Vec2f ( _barBorderPos.x() + _barLH.x(),
                               _barBorderPos.y() + _barLH.y()   );
 
   _borderLH = osg::Vec2f ( ( _borderPos.x() + _barBorderLH.x() + _borderPadding * 2 ),
                            ( _borderPos.y() + _barBorderLH.y() + _borderPadding ) * 2 );
 
   _progressDrawable->setBounds ( osg::Vec2f ( _barPos.x(), _barPos.y() + _barLH.y() ),
-                                 osg::Vec2f( _barPos.x() + _barSize , _barPos.y() ) );
+                                 osg::Vec2f ( _barPos.x() + _barSize, _barPos.y() ) );
 
   _backgroundDrawable->setBounds ( osg::Vec2f ( _barPos.x() + _barSize, _barPos.y() + _barLH.y() ),
                                    osg::Vec2f ( _barPos.x() + _barLH.x() , _barPos.y() ) );
@@ -301,7 +293,7 @@ void ProgressBar::reset()
                                   osg::Vec2f ( _barBorderPos.x() + _barBorderLH.x() , _barBorderPos.y() ) );
 
   _borderDrawable->setBounds ( osg::Vec2f ( _borderPos.x(), _borderPos.y() + _borderLH.y() ),
-                               osg::Vec2f ( _borderPos.x() + _borderLH.x() , _borderPos.y() ) );
+                               osg::Vec2f ( _borderPos.x() + _borderLH.x(), _borderPos.y() ) );
   
   _labelPos   = ( osg::Vec3f ( _barBorderPos.x(), _borderPos.y() + _borderLH.y() * .75, _textZOffset) );
 
@@ -346,6 +338,7 @@ void ProgressBar::showProgressBar()
   if(!_isVisible)
   {
     _animationStart = 0.0f;
+    _animationCurrent = 0.0f;
     _animationEnd = 1.0f; 
     _animationStep = 1.0f / 20.0f;
     _isAnimating = true;
@@ -367,6 +360,7 @@ void ProgressBar::hideProgressBar()
   if(_isVisible)
   {
     _animationStart = 1.0f;
+    _animationCurrent = 1.0f;
     _animationEnd = 0.0f; 
     _animationStep = -1 * (1.0f / 20.0f);
     _isAnimating = true;
@@ -437,6 +431,29 @@ void ProgressBar::updateProgressBar()
   if( !_isVisible && !_isAnimating )
     _emptyProgressBar();
 
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set value of the current animation frame
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBar::setAnimationCurrent ( float c )
+{
+  _animationCurrent = c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Step through a frame of animation
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBar::stepAnimation()
+{
+  _animationCurrent += _animationStep;
 }
 
 
@@ -779,7 +796,7 @@ void ProgressBar::_buildProgressBar()
   osg::ref_ptr< osg::MatrixTransform > matrixT ( new osg::MatrixTransform() );
   osg::ref_ptr < osg::MatrixTransform > anim ( new osg::MatrixTransform() );
 
-  anim->setUpdateCallback ( new ProgressBarAnimationCallback ( this, _animationStart, _animationEnd, _animationStep ) );
+  anim->setUpdateCallback ( new ProgressBarAnimationCallback ( this ) );
 
   anim->addChild ( _progressBar.get() );
   anim->addChild ( _backgroundBar.get() );

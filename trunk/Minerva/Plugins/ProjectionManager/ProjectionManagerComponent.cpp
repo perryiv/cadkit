@@ -24,6 +24,8 @@
 #include "ossim/base/ossimEcefPoint.h"
 #include "ossim/base/ossimGeoidManager.h"
 
+#include "ossim/base/ossimEllipsoid.h"
+
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ProjectionManagerComponent, ProjectionManagerComponent::BaseClass );
 
 
@@ -92,7 +94,12 @@ namespace Detail
 
   void projectFromGpt( const ossimGpt& gpt, Usul::Math::Vec3d& latLonPoint )
   {
-    double deltaH = ossimElevManager::instance()->getHeightAboveMSL( gpt );
+    double deltaH = ossimElevManager::instance()->getHeightAboveEllipsoid( gpt );
+    if(deltaH == OSSIM_DBL_NAN)
+    {
+       deltaH = ossimGeoidManager::instance()->offsetFromEllipsoid( gpt );
+    }
+
     if(deltaH == OSSIM_DBL_NAN)
     {
        deltaH = 0.0;
@@ -100,7 +107,7 @@ namespace Detail
 
     latLonPoint[0] = gpt.lon;
     latLonPoint[1] = gpt.lat;
-    latLonPoint[2] = deltaH + ossimGeoidManager::instance()->offsetFromEllipsoid( gpt );
+    latLonPoint[2] = deltaH;
   }
 }
 
@@ -137,8 +144,15 @@ void ProjectionManagerComponent::projectToSpherical ( const Usul::Math::Vec3d& o
 }
 
 
+const double WGS_84_RADIUS_EQUATOR = 6378137.0;
+const double WGS_84_RADIUS_POLAR = 6356752.3142;
+
 void ProjectionManagerComponent::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
 {
+  /*ossimEllipsoid model ( WGS_84_RADIUS_EQUATOR, WGS_84_RADIUS_POLAR );
+
+  model.latLonHeightToXYZ( orginal[0], orginal[1], orginal[2], planetPoint[0], planetPoint[1], planetPoint[2] );*/
+
   ossimEcefPoint ecef;
   ossimGpt dummy;
   ecef = dummy;
@@ -151,4 +165,6 @@ void ProjectionManagerComponent::convertToPlanet ( const Usul::Math::Vec3d& orgi
   planetPoint[0] = ecef.x()/normalizationFactor;
   planetPoint[1] = ecef.y()/normalizationFactor;
   planetPoint[2] = ecef.z()/normalizationFactor;
+
+  //planetPoint /= WGS_84_RADIUS_EQUATOR;
 }

@@ -186,4 +186,4 @@ private:
 }
 }
 
-#endif // __WNV_SCENE_MANAGER_H__
+#endif // __MINERVA_SCENE_MANAGER_H__

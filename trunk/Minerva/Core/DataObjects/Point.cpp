@@ -184,7 +184,7 @@ namespace Detail
 
     if( planet.valid() )
     {
-      planet->convertToPlanet( p, p );
+      planet->convertToPlanet( Usul::Math::Vec3d ( p ), p );
     }
   }
 }

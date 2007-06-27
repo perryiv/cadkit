@@ -245,19 +245,11 @@ void VoxelGeometry::_intersect ( const Matrix44 &imv, const Lines &borders, floa
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#if OSG_VERSION_MAJOR >= 1 && OSG_VERSION_MINOR >= 9
 void VoxelGeometry::drawImplementation( osg::RenderInfo& renderInfo ) const
-#else
-void VoxelGeometry::drawImplementation ( osg::State &state ) const
-#endif
 {
   try
   {
-#if OSG_VERSION_MAJOR >= 1 && OSG_VERSION_MINOR >= 9
     this->_drawImplementation ( *renderInfo.getState() );
-#else
-    this->_drawImplementation ( state );
-#endif
   }
 
   catch ( const std::exception &e )

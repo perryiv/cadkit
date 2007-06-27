@@ -42,26 +42,7 @@ public:
   // Constructor.
   EventAdapter();
 
-#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR == 0
-  // Get the properties.
-  virtual EventType       getEventType()  const { return _type; }
-  virtual int             getKey()        const { return _key; }
-  virtual int             getButton()     const { return _button; }
-  virtual float           getXmin()       const { return 0.0f; }
-  virtual float           getXmax()       const { return _size[0]; }
-  virtual float           getYmin()       const { return 0.0f; }
-  virtual float           getYmax()       const { return _size[1]; }
-  virtual float           getX()          const { return _mouse[0]; }
-  virtual float           getY()          const { return _mouse[1]; }
-  virtual unsigned int    getButtonMask() const { return _buttons; }
-  virtual unsigned int    getModKeyMask() const { return 0; }
-
-  // Get the time of the event in seconds.
-  virtual double          time() const { return _seconds; }
   void                    setButton     ( bool left, bool middle, bool right );
-#else
-  void                    setButton     ( bool left, bool middle, bool right );
-#endif
 
   // Set the properties.
   void                    setEventType  ( const EventType &type );
@@ -75,15 +56,6 @@ protected:
   // Use reference counting.
   virtual ~EventAdapter();
 
-#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR == 0
-  EventType _type;
-  int _key;
-  int _button;
-  Usul::Math::Vec2f _size;
-  Usul::Math::Vec2f _mouse;
-  unsigned int _buttons;
-  double _seconds;
-#endif
 };
 
 

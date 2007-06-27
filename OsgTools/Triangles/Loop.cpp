@@ -293,11 +293,7 @@ bool Loop::triangulate ( Usul::Interfaces::IUnknown *caller, bool buildOnFly )
   osg::Matrix mat;
 
   //Make the rotation matrix to rotate the loop into the x-y plane
-#if OSG_VERSION_MAJOR >= 1 && OSG_VERSION_MINOR >= 9
   mat.makeRotate( plane.getNormal(), osg::Plane::Vec3_type ( 0.0, 0.0, 1.0 ) );
-#else
-  mat.makeRotate( plane.getNormal(), osg::Vec3 ( 0.0, 0.0, 1.0 ) );
-#endif
 
   float planeValue ( (v1 * mat).z() );
 
@@ -319,12 +315,7 @@ bool Loop::triangulate ( Usul::Interfaces::IUnknown *caller, bool buildOnFly )
 
   // Matrix to rotate back to 3D
   osg::Matrix m;
-
-#if OSG_VERSION_MAJOR >= 1 && OSG_VERSION_MINOR >= 9
   m.makeRotate( osg::Plane::Vec3_type ( 0.0, 0.0, 1.0 ), plane.getNormal()  );
-#else
-  m.makeRotate( osg::Vec3 ( 0.0, 0.0, 1.0 ), plane.getNormal()  );
-#endif
 
   // Add the triangles
   for ( unsigned int i = 0; i < indices.size(); i+= 3 )
@@ -401,11 +392,7 @@ bool Loop::pointInside( const osg::Vec3 &point, Usul::Interfaces::IUnknown *call
   osg::Matrix matrix;
 
   //Make matrix to rotate to x-y plane
-#if OSG_VERSION_MAJOR >= 1 && OSG_VERSION_MINOR >= 9
   matrix.makeRotate( planeOne.getNormal(), osg::Plane::Vec3_type ( 0.0, 0.0, 1.0 ) );
-#else
-  matrix.makeRotate( planeOne.getNormal(), osg::Vec3 ( 0.0, 0.0, 1.0 ) );
-#endif
 
   //Rotate the point into the proper plane
   osg::Vec3 pt ( point * matrix );
@@ -675,11 +662,7 @@ void Loop::printQuakePolygonFile( Usul::Interfaces::IUnknown *caller )
   osg::Matrix mat;
 
   //Make the rotation matrix to rotate the loop into the x-y plane
-#if OSG_VERSION_MAJOR >= 1 && OSG_VERSION_MINOR >= 9
   mat.makeRotate( plane.getNormal(), osg::Plane::Vec3_type ( 0.0, 0.0, 1.0 ) );
-#else
-   mat.makeRotate( plane.getNormal(), osg::Vec3 ( 0.0, 0.0, 1.0 ) );
-#endif
 
   for( unsigned int i = 0; i < this->size(); ++ i )
   {

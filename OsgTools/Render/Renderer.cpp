@@ -981,8 +981,6 @@ void Renderer::_screenCapture ( osg::Image& image, const osg::Matrix& projection
   // Should we use frame buffer objects?
 #if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR >= 1
   bool useFBO ( osg::FBOExtensions::instance( _contextId, true )->isSupported() && height <= 4096 && width <= 4096 );
-#elif OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR == 0
-  bool useFBO ( osg::FBOExtensions::instance( _contextId )->isSupported() && height <= 4096 && width <= 4096 );
 #else
   bool useFBO ( false );
 #endif

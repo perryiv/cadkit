@@ -92,11 +92,8 @@ osg::Node* Line::buildScene()
   if ( this->dirty() )
   {
     // Remove the drawables we have.
-#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR >= 1
     _node->removeChild( 0, _node->getNumChildren() );
-#else
-    _node->removeChild( 0, _node->getNumChildren() );
-#endif
+
     _node->setUserData( new UserData( this ) );
 
     osg::ref_ptr < osg::StateSet > ss ( _node->getOrCreateStateSet() );

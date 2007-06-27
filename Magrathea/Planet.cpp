@@ -174,7 +174,7 @@ void Planet::readKWL( const std::string& fileName )
   if( layer.valid() )
   {
     _textureLayerGroup->addTop( layer.get() );
-    this->refreshLandTextures( layer->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
+    this->refreshLandTextures( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
   }
 }
 
@@ -205,7 +205,7 @@ int Planet::addLayer( ossimPlanetTextureLayer *layer  )
   {    
     _textureLayerGroup->addTop( layer );    
     index = _textureLayerGroup->findLayerIndex( layer );
-    this->refreshLandTextures( layer->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
+    this->refreshLandTextures( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
   }
 
   return index;
@@ -238,7 +238,7 @@ int Planet::addLayerOperation( ossimPlanetTextureLayer *layer  )
   {    
     _textureOperationLayerGroup->addTop( layer );
     index = _textureOperationLayerGroup->findLayerIndex( layer );
-    this->refreshLandTextures( layer->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
+    this->refreshLandTextures( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
   }
 
   return index;
@@ -278,7 +278,7 @@ void Planet::removeLayerOperation( int index  )
 void Planet::removeLayer( ossimPlanetTextureLayer *layer )
 {
   _textureLayerGroup->removeLayer( layer );
-  this->refreshLandTextures( layer->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
+  this->refreshLandTextures( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
 }
 
 bool Planet::hasLayer( ossimPlanetTextureLayer *layer )
@@ -300,7 +300,7 @@ bool Planet::hasLayerOperation( ossimPlanetTextureLayer *layer )
 void Planet::removeLayerOperation( ossimPlanetTextureLayer *layer  )
 {
   _textureOperationLayerGroup->removeLayer( layer );
-  this->refreshLandTextures( layer->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
+  this->refreshLandTextures( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
 }
 
 
@@ -322,7 +322,7 @@ void Planet::reset()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Planet::refreshLandTextures( ossimPlanetExtents* extents, ossimPlanetLandRefreshType refreshType )
+void Planet::refreshLandTextures( ossimPlanetExtents* extents, ossimPlanetPagedLandLodRefreshType refreshType )
 {
   _planet->getLand()->resetGraph( extents, refreshType );
 }

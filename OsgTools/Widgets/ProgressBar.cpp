@@ -207,7 +207,7 @@ _borderDrawable ( new UpdateProgress )
 
 ProgressBar::~ProgressBar()
 {
-	
+	this->clear();
 }
 
 
@@ -665,8 +665,7 @@ void ProgressBar::setCurrent( double c )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Remove all children from the compass group.  Called when compass is
-//  "hidden"
+//  Remove all children from the compass group.  Called when "hidden"
 //
 ///////////////////////////////////////////////////////////////////////////////
 

@@ -62,6 +62,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osgd.lib osgviewerd.lib"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/test_progress_bard.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"
@@ -137,6 +138,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/test_progress_bar.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"

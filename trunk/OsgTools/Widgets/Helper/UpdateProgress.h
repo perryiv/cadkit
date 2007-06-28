@@ -15,6 +15,7 @@
 #include "Usul/Threads/Guard.h"
 
 #include "osg/Geometry"
+#include "osg/Version"
 
 namespace OsgTools {
 namespace Widgets {
@@ -74,7 +75,11 @@ public:
     
   void setBounds ( const osg::Vec2f& ul,  const osg::Vec2f& lr );
 
+#if OSG_VERSION_MAJOR <= 1 && OSG_VERSION_MINOR <= 2
+  virtual void drawImplementation ( osg::State& state ) const;
+#else
   virtual void drawImplementation ( osg::RenderInfo& info ) const;
+#endif
 
 private:
   Mutex        *_mutex;

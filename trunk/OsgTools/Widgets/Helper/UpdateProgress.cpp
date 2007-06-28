@@ -12,12 +12,6 @@
 
 using namespace OsgTools::Widgets::Helper;
 
-
-
-/////////////////////////////
-//  UpdateProgressCallback
-/////////////////////////////
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor
@@ -104,10 +98,6 @@ void UpdateProgressCallback::mutex ( Mutex* mutex )
 }
 
 
-//////////////////////
-//  UpdateProgress
-//////////////////////
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor
@@ -146,9 +136,25 @@ void UpdateProgress::setBounds ( const osg::Vec2f& ul,  const osg::Vec2f& lr )
   _updateCallback->setBounds ( ul, lr );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Call the base class' draw.  Lock the mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#if OSG_VERSION_MAJOR <= 1 && OSG_VERSION_MINOR <= 2
+void UpdateProgress::drawImplementation ( osg::State & state ) const
+#else
 void UpdateProgress::drawImplementation ( osg::RenderInfo& info ) const
+#endif
 {
   Guard guard ( *_mutex );
+
+#if OSG_VERSION_MAJOR <= 1 && OSG_VERSION_MINOR <= 2
+  BaseClass::drawImplementation ( state );
+#else
   BaseClass::drawImplementation ( info );
+#endif
 }
 

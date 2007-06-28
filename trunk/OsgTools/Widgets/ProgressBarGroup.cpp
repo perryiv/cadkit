@@ -339,7 +339,7 @@ void ProgressBarGroup::add ( ProgressBar* pbar )
 
 void ProgressBarGroup::add ( const std::string& m, double min, double max )
 {
-  ProgressBar::RefPtr pbar = new ProgressBar( );
+  ProgressBar::RefPtr pbar ( new ProgressBar() );
   pbar->setBarLengthAndHeight ( _groupLH );
   pbar->setMessage ( m );
   pbar->setMin ( min );

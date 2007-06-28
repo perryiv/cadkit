@@ -18,7 +18,7 @@
 #include "OsgTools/Widgets/Helper/ThreadSafeText.h"
 #include "OsgTools/Widgets/Helper/UpdateProgress.h"
 
-#include "Usul/Base/Referenced.h"
+#include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
@@ -31,13 +31,13 @@
 namespace OsgTools {
 namespace Widgets {
 
-class OSG_TOOLS_EXPORT ProgressBar : public Usul::Base::Referenced,
+class OSG_TOOLS_EXPORT ProgressBar : public Usul::Base::Object,
 							                       public Usul::Interfaces::IStatusBar,
 							                       public Usul::Interfaces::IProgressBar
 {
 public:
   
-  typedef Usul::Base::Referenced                         BaseClass;
+  typedef Usul::Base::Object                             BaseClass;
   typedef OsgTools::Widgets::Helper::ThreadSafeText      ThreadSafeText;
   typedef OsgTools::Widgets::Helper::UpdateProgress      UpdateProgress;
 
@@ -148,6 +148,10 @@ protected:
   std::string _getPercentComplete();
 
 private:
+
+  // No copying or assignment.
+  ProgressBar ( const ProgressBar & );
+  ProgressBar &operator = ( const ProgressBar & );
 
   double _min, _max, _current;
   float _barSize;

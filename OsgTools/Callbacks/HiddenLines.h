@@ -33,7 +33,11 @@ class OSG_TOOLS_EXPORT HiddenLines : public osg::Drawable::DrawCallback
 {
 public:
   // We may want to have differnt modes for hidden lines.
+#if OSG_VERSION_MAJOR <= 1 && OSG_VERSION_MINOR <= 2
+  virtual void drawImplementation( osg::State& state, const osg::Drawable* drawable ) const
+#else
   virtual void drawImplementation( osg::RenderInfo& renderInfo, const osg::Drawable* drawable ) const
+#endif
   {
     // See if the drawable has a state set.
     const osg::StateSet *ss ( drawable->getStateSet() );
@@ -42,8 +46,13 @@ public:
       ss = _findNodeWithStateSet ( drawable );
 
     // Draw
+#if OSG_VERSION_MAJOR <= 1 && OSG_VERSION_MINOR <= 2
+    state.apply ( ss ); 	 
+	  drawable->drawImplementation( state );
+#else
     renderInfo.getState()->apply ( ss );
     drawable->drawImplementation( renderInfo );
+#endif
 
     // Make a copy
     osg::ref_ptr < osg::StateSet > hidden ( static_cast < osg::StateSet* > ( ss->clone ( osg::CopyOp::DEEP_COPY_ALL ) ) );
@@ -68,10 +77,18 @@ public:
     hidden->setMode ( GL_LIGHTING, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
 
     // Apply the state set.
+#if OSG_VERSION_MAJOR <= 1 && OSG_VERSION_MINOR <= 2
+    state.apply ( hidden.get() );
+#else
     renderInfo.getState()->apply ( hidden.get() );
+#endif
 
     // Draw
+#if OSG_VERSION_MAJOR <= 1 && OSG_VERSION_MINOR <= 2
+    drawable->drawImplementation( state );
+#else
     drawable->drawImplementation( renderInfo );
+#endif
   }
 
 private:

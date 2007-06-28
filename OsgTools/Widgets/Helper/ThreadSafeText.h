@@ -15,6 +15,7 @@
 #include "Usul/Threads/Guard.h"
 
 #include "osg/Drawable"
+#include "osg/Version"
 
 #include "osgText/Text"
 
@@ -75,7 +76,11 @@ public:
 
   ThreadSafeText ();
 
-  virtual void drawImplementation( osg::RenderInfo& renderInfo ) const;
+#if OSG_VERSION_MAJOR <= 1 && OSG_VERSION_MINOR <= 2
+  virtual void drawImplementation ( osg::State& state ) const;
+#else
+  virtual void drawImplementation ( osg::RenderInfo& info ) const;
+#endif
 
   void setText ( const std::string& text );
 

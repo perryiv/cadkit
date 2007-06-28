@@ -126,15 +126,25 @@ ThreadSafeText::~ThreadSafeText ()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Draw.
+//  Call the base class' draw.  Lock the mutex.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ThreadSafeText::drawImplementation( osg::RenderInfo& renderInfo ) const
+#if OSG_VERSION_MAJOR <= 1 && OSG_VERSION_MINOR <= 2
+void ThreadSafeText::drawImplementation ( osg::State & state ) const
+#else
+void ThreadSafeText::drawImplementation ( osg::RenderInfo& info ) const
+#endif
 {
   Guard guard ( *_mutex );
-  BaseClass::drawImplementation ( renderInfo );
+
+#if OSG_VERSION_MAJOR <= 1 && OSG_VERSION_MINOR <= 2
+  BaseClass::drawImplementation ( state );
+#else
+  BaseClass::drawImplementation ( info );
+#endif
 }
+
 
 
 ///////////////////////////////////////////////////////////////////////////////

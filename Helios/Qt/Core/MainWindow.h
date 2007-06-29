@@ -131,10 +131,10 @@ protected:
   void                      _buildTextWindow();
   void                      _buildToolBar();
 
-  void                      _formatFilters ( const Filters &filters, QStringList &answer ) const;
+  std::string               _formatFilters ( const Filters &filters ) const;
 
   std::string               _lastFileDialogDir ( const std::string &title ) const;
-  void                      _lastFileDialogDir ( const std::string &title, const std::string &dir ) const;
+  void                      _lastFileDialogDir ( const std::string &title, const std::string &dir );
   std::string               _lastFileDialogFilter ( const std::string &title ) const;
   void                      _lastFileDialogFilter ( const std::string &title, const std::string &filter ) const;
   void                      _loadSettings();

@@ -25,8 +25,9 @@ using namespace Serialize::XML;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BaseCreator::BaseCreator ( const std::string &name ) : BaseClass(),
-  _name ( name )
+BaseCreator::BaseCreator ( const std::string &name ) :
+  _name ( name ),
+  _refCount ( 0 )
 {
 }
 
@@ -51,4 +52,30 @@ BaseCreator::~BaseCreator()
 const std::string &BaseCreator::name()
 {
   return _name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reference this instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseCreator::ref()
+{
+  ++_refCount;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Unreference this instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseCreator::unref ( bool allowDeletion )
+{
+  if ( 0 == --_refCount && allowDeletion )
+  {
+    delete this;
+  }
 }

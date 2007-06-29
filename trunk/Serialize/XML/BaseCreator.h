@@ -19,11 +19,11 @@
 
 #include "Serialize/XML/Export.h"
 
-#include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 
 #include <string>
 
+namespace Usul { namespace Base { class Referenced; } }
 
 namespace Serialize {
 namespace XML {
@@ -35,12 +35,11 @@ namespace XML {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-class SERIALIZE_XML_EXPORT BaseCreator : public Usul::Base::Referenced 
+class SERIALIZE_XML_EXPORT BaseCreator
 {
 public:
 
   USUL_DECLARE_REF_POINTERS ( BaseCreator );
-  typedef Usul::Base::Referenced BaseClass;
 
   BaseCreator ( const std::string &name );
 
@@ -48,11 +47,16 @@ public:
 
   const std::string &               name();
 
+  void                              ref ();
+  void                              unref ( bool allowDeletion = true );
+
 protected:
 
   virtual ~BaseCreator();
 
   std::string _name;
+
+  unsigned int _refCount;
 };
 
 

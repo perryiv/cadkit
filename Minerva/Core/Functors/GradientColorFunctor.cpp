@@ -12,11 +12,14 @@
 
 #include "OsgTools/Legend/GradientIcon.h"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 #include <iostream>
 
 using namespace Minerva::Core::Functors;
 
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
+SERIALIZE_XML_REGISTER_CREATOR ( GradientColorFunctor );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

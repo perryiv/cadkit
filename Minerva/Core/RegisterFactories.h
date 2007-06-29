@@ -37,13 +37,13 @@ namespace Core {
 
 inline void registerFactories()
 {
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::LineLayer> ( "LineLayer" ) );
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::PolygonLayer> ( "PolygonLayer" ) );
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::PointLayer> ( "PointLayer" ) );
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::PointTimeLayer> ( "PointTimeLayer" ) );
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::PolygonTimeLayer> ( "PolygonTimeLayer" ) );
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Functors::SingleColorFunctor> ( "SingleColorFunctor" ) );
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Functors::GradientColorFunctor> ( "GradientColorFunctor" ) );
+  //Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::LineLayer> ( "LineLayer" ) );
+  //Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::PolygonLayer> ( "PolygonLayer" ) );
+  //Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::PointLayer> ( "PointLayer" ) );
+  //Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::PointTimeLayer> ( "PointTimeLayer" ) );
+  //Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Layers::PolygonTimeLayer> ( "PolygonTimeLayer" ) );
+  //Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Functors::SingleColorFunctor> ( "SingleColorFunctor" ) );
+  //Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Functors::GradientColorFunctor> ( "GradientColorFunctor" ) );
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::DB::Connection> ( "Connection" ) );
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Commands::StopAnimation> ( "StopAnimation" ) );
   Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<Minerva::Core::Commands::AnimationSpeed> ( "AnimationSpeed" ) );

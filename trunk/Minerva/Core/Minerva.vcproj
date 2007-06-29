@@ -222,10 +222,6 @@
 				Name="Core"
 				>
 				<File
-					RelativePath=".\DrawCallback.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Export.h"
 					>
 				</File>

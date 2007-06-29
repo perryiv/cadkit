@@ -262,10 +262,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RegisterFactories.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Resample.h"
 				>
 			</File>

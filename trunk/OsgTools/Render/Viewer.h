@@ -170,7 +170,7 @@ public:
   };
 
   // Construction/destruction.
-  Viewer ( Document *doc, IContext* context, IUnknown *caller );
+  Viewer ( Document *doc, IUnknown* context, IUnknown *caller );
   virtual ~Viewer();
 
   // Add a chore.
@@ -230,9 +230,9 @@ public:
   void                  clear();
 
   /// Get/Set the database pager.
-  void                  databasePager( osgDB::DatabasePager* dbPager );
-  osgDB::DatabasePager* databasePager();
-  const osgDB::DatabasePager* databasePager() const;
+  void                          databasePager( osgDB::DatabasePager* dbPager );
+  osgDB::DatabasePager*         databasePager();
+  const osgDB::DatabasePager*   databasePager() const;
 
   // Set the default background.
   void                  defaultBackground();

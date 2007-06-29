@@ -149,7 +149,7 @@ Viewer::MatrixManipPtr Viewer::_navManipCopyBuffer ( 0x0 );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Viewer::Viewer ( Document *doc, IContext* context, IUnknown *caller ) :
+Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   _context         ( context ),
   _renderer        ( new Renderer ),
   _sceneManager    ( new SceneManager ),

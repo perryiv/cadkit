@@ -27,6 +27,8 @@
 #include "Usul/System/Sleep.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/File/Path.h"
+#include "Usul/App/Controller.h"
 
 #include "QtGui/QFileDialog"
 
@@ -149,6 +151,10 @@ OpenDocument::FileNames OpenDocument::_askForFileNames ( const std::string &titl
 void OpenDocument::Job::_started()
 {
   USUL_TRACE_SCOPE;
+
+  // Open the document.
+  Usul::App::Controller::instance().documentOpen ( _name, _caller );
+
   std::cout << Usul::Strings::format ( "Opening file: ", _name, ", thread = ", this->thread()->id() ) << Usul::Resources::TextWindow::endl;
   Usul::System::Sleep::seconds ( 1 );
 }

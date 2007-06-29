@@ -17,7 +17,7 @@
 using namespace Magrathea;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WmsLayer, WmsLayer::BaseClass );
-//SERIALIZE_XML_REGISTER_CREATOR ( WmsLayer );
+SERIALIZE_XML_REGISTER_CREATOR ( WmsLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

@@ -22,9 +22,9 @@ namespace Magrathea
 {
   inline void registerFactories()
   {
-    Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<WmsLayer> ( "WmsLayer" ) );
-    Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<KwlLayer> ( "KwlLayer" ) );
-    Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ImageTextureLayer> ( "ImageTextureLayer" ) );
+    //Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<WmsLayer> ( "WmsLayer" ) );
+    //Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<KwlLayer> ( "KwlLayer" ) );
+    //Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ImageTextureLayer> ( "ImageTextureLayer" ) );
   }
 }
 

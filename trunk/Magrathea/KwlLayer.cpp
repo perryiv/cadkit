@@ -22,7 +22,7 @@
 using namespace Magrathea;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( KwlLayer, KwlLayer::BaseClass );
-//SERIALIZE_XML_REGISTER_CREATOR ( KwlLayer );
+SERIALIZE_XML_REGISTER_CREATOR ( KwlLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

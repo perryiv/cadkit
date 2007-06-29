@@ -19,6 +19,7 @@
 using namespace Minerva::Core::Layers;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( LineLayer, LineLayer::BaseClass );
+SERIALIZE_XML_REGISTER_CREATOR ( LineLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

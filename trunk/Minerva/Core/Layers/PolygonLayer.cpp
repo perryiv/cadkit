@@ -14,6 +14,8 @@
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 #include "osg/Group"
 
 #include <algorithm>
@@ -23,6 +25,7 @@ SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 using namespace Minerva::Core::Layers;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( PolygonLayer, PolygonLayer::BaseClass );
+SERIALIZE_XML_REGISTER_CREATOR ( PolygonLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

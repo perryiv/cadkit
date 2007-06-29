@@ -19,12 +19,15 @@
 #include "OsgTools/Animate/DateGroup.h"
 #include "OsgTools/Animate/DateCallback.h"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 #include "osg/Group"
 #include "osg/MatrixTransform"
 
 using namespace Minerva::Core::Layers;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( PointTimeLayer, PointTimeLayer::BaseClass );
+SERIALIZE_XML_REGISTER_CREATOR ( PointTimeLayer );
 
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER( OsgTools::Animate::Date );
 

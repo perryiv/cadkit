@@ -11,10 +11,10 @@
 #include "Minerva/Core/Viz/Controller.h"
 #include "Minerva/Core/Viz/AddLayerJob.h"
 #include "Minerva/Core/postGIS/Geometry.h"
-#include "Minerva/Core/RegisterFactories.h"
 #include "Minerva/Core/Serialize.h"
 
 #include "Usul/Interfaces/IPlayMovie.h"
+#include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/ICommandQueueAdd.h"
 
 #include "Usul/Types/Types.h"
@@ -112,8 +112,6 @@ _lastCommandID ( 0 ),
 _timeout ( 60 ),
 _caller ( caller )
 {
-  // Make sure we have factories registered.
-  Minerva::Core::registerFactories();
 }
 
 

@@ -12,9 +12,12 @@
 
 #include "Minerva/Interfaces/IAnimationControl.h"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StopAnimation, StopAnimation::BaseClass );
+SERIALIZE_XML_REGISTER_CREATOR ( StopAnimation );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

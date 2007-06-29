@@ -12,10 +12,12 @@
 
 #include "Minerva/Interfaces/IAnimationControl.h"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( AnimationSpeed, AnimationSpeed::BaseClass );
-
+SERIALIZE_XML_REGISTER_CREATOR ( AnimationSpeed );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

@@ -13,10 +13,9 @@
 #include "Minerva/Document/MinervaWriter.h"
 #include "Minerva/Document/KmlWriter.h"
 #include "Minerva/Core/Commands/StopAnimation.h"
+#include "Minerva/Core/Commands/StartAnimation.h"
+#include "Minerva/Core/Commands/PauseAnimation.h"
 #include "Minerva/Core/Commands/AnimationSpeed.h"
-#include "Minerva/Core/RegisterFactories.h"
-
-#include "Magrathea/RegisterFactories.h"
 
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
@@ -50,10 +49,6 @@ _distributed ( new Minerva::Core::GUI::Controller ),
 _groupMap(),
 SERIALIZE_XML_INITIALIZER_LIST
 {
-  // Make sure we have factories registered.
-  Minerva::Core::registerFactories();
-  Magrathea::registerFactories();
-
   // Initialize the planet.
   _planet->init();
   _planet->root()->addChild( _sceneManager->root() );

@@ -503,24 +503,31 @@ MainWindow::FilesResult MainWindow::getLoadFileNames ( const std::string &title,
   const std::string dir ( this->_lastFileDialogDir ( title ) );
 
   // Need to use this static function to get native file dialog.
-  from here down needs work...
-  QStringList answer ( QFileDialog::getOpenFileNames ( this, title.c_str(), dir.c_str(), 0x0, filter.c_str() ) );
+  QStringList answer ( QFileDialog::getOpenFileNames ( this, title.c_str(), dir.c_str(), allFilters.c_str(), 0x0 ) );
 
-  // Show the dialog and wait for the answer.
-  if ( QDialog::Accepted == dialog.exec() )
+  // If we have at least one file.
+  if( false == answer.empty() )
   {
-    // Convert the file names and filter.
-    Usul::Strings::convert ( dialog.selectedFiles(),  files.first );
-    Usul::Strings::convert ( dialog.selectedFilter(), files.second.first );
+    std::string filename ( answer.first().toStdString() );
+    std::string directory ( Usul::File::directory ( filename, false ) );
+    std::string filter ( "" );
+
+    // Save the directory and filter.
+    this->_lastFileDialogDir    ( title, directory );
+    this->_lastFileDialogFilter ( title, filter    );
+
+    files.second.first = filter;
 
     // Fox and WinForms both use a string for the filter "label" and another 
     // one for the actual file extensions. Qt does not, so the fact that 
     // files.second is a pair is legacy.
     files.second.second = files.second.first;
+  }
 
-    // Save the directory and filter.
-    this->_lastFileDialogDir    ( title, Usul::Strings::convert ( dialog.directory().path() ) );
-    this->_lastFileDialogFilter ( title, Usul::Strings::convert ( dialog.selectedFilter() ) );
+  // Convert the answer.
+  for( QStringList::const_iterator iter = answer.begin(); iter != answer.end(); ++iter )
+  {
+    files.first.push_back ( iter->toStdString() );
   }
 
   // Return the result, which may be an empty list.
@@ -534,19 +541,28 @@ MainWindow::FilesResult MainWindow::getLoadFileNames ( const std::string &title,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::_formatFilters ( const Filters &filters, QStringList &answer ) const
+std::string MainWindow::_formatFilters ( const Filters &filters ) const
 {
   USUL_TRACE_SCOPE;
 
   // Initialize the answer.
-  answer.clear();
+  QStringList allFilters;
 
   // Loop through and append each filter.
   for ( Filters::const_iterator i = filters.begin(); i != filters.end(); ++i )
   {
     const std::string filter ( i->first );
-    answer << filter.c_str();
+    allFilters.push_back ( filter.c_str() );
   }
+
+  // Sort the filters.
+  allFilters.sort();
+
+  // Put a semi-colon between each filter.
+  QString answer ( allFilters.join ( ";;" ) );
+
+  // Return the answer.
+  return answer.toStdString();
 }
 
 
@@ -560,8 +576,10 @@ std::string MainWindow::_lastFileDialogDir ( const std::string &title ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  std::string dir ( Usul::CommandLine::Arguments::instance().directory() );
-  return dir;
+
+  const std::string key ( "helios_qt_file_dialog_" + title );
+  QVariant dir ( _settings.value ( key.c_str(), QString ( Usul::CommandLine::Arguments::instance().directory().c_str() ) ) );
+  return dir.toString().toStdString();
 }
 
 
@@ -571,10 +589,13 @@ std::string MainWindow::_lastFileDialogDir ( const std::string &title ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::_lastFileDialogDir ( const std::string &title, const std::string &dir ) const
+void MainWindow::_lastFileDialogDir ( const std::string &title, const std::string &dir )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
+  const std::string key ( "helios_qt_file_dialog_" + title );
+  _settings.setValue ( key.c_str(), QVariant ( dir.c_str() ) );
 }
 
 

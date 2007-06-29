@@ -44,6 +44,9 @@ namespace osg { class Group; }
 
 namespace Minerva {
 namespace Core {
+
+  class Visitor;
+
 namespace Layers {
 
 class MINERVA_EXPORT Layer : public Usul::Base::Referenced,
@@ -76,6 +79,12 @@ public:
     MIN   = 0x00000002,
     MAX   = 0x00000004
   };
+
+  /// Accept the visitor.
+  virtual void                accept ( Minerva::Core::Visitor& visitor );
+
+  /// Traverse all DataObjects.
+  virtual void                traverse ( Minerva::Core::Visitor& visitor );
 
   /// Get/Set the color functor. 
   void                        colorFunctor( ColorFunctor *colorFunctor );

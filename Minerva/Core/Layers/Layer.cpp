@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/Core/Visitor.h"
 
 #include "Usul/Functions/Guid.h"
 #include "Usul/Functions/ToString.h"
@@ -160,6 +161,33 @@ void Layer::_registerMembers()
 
 Layer::~Layer()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::accept ( Minerva::Core::Visitor& visitor )
+{
+  visitor.visit ( *this );
+
+  this->traverse ( visitor );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Traverse all DataObjects.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::traverse ( Minerva::Core::Visitor& visitor )
+{
+  for ( DataObjects::iterator iter = _dataObjects.begin(); iter != _dataObjects.end(); ++iter )
+    (*iter)->accept ( visitor );
 }
 
 

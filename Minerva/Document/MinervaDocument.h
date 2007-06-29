@@ -104,8 +104,6 @@ public:
   /// Animation methods.
   void                        timestepType( Settings::TimestepType type );
   Settings::TimestepType      timestepType( ) const;
-
-  void                        startAnimation( float speed, bool accumulate, bool timeWindow, int numDays );
   
   void                        startAnimationCommand();
   void                        stopAnimationCommand();
@@ -182,9 +180,6 @@ protected:
 
   /// Modify polygon data.
   void                                     _modifyLayerDistributed ( Usul::Interfaces::ILayer *layer );
-
-  /// Start animation.
-  void                                     _startAnimationDistributed ( float speed, bool accumulate, bool dateTimeStep, bool timeWindow, unsigned int numDays );
 
   /// Execute a command.
   void                                     _executeCommand ( Usul::Interfaces::ICommand* command );

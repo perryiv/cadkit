@@ -276,9 +276,6 @@ void Controller::_processEvents()
     case 1:
       this->_processAddLayer ( tableName, eventID );
       break;
-    case 2:
-      this->_processAnimation ( tableName, eventID );
-      break;
     case 3:
       this->_processRemoveLayer ( tableName, eventID );
       break;
@@ -410,47 +407,6 @@ void Controller::_processRemoveLayer( const std::string& drawCommandTable, unsig
   {
     // Remove the layer.
     _sceneManager->removeLayer( layer->guid() );
-
-    // Dirty the scene.
-    _sceneManager->dirty ( true );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Process animation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Controller::_processAnimation( const std::string& tableName, unsigned int eventID )
-{
-  std::ostringstream query;
-  query << "SELECT * FROM " << tableName << " WHERE id = " << eventID << " AND session_id = " << _sessionID;;
-
-  pqxx::result result ( _applicationConnection->executeQuery ( query.str(), _timeout ) );
-
-  if( !result.empty() && !result[0]["animate"].is_null() )
-  {
-    // Get the animation flag.
-    bool animate          ( result[0]["animate"].as< bool > () );
-
-    if( animate )
-    {
-      float speed           ( result[0]["speed"].as < float > () );
-      bool accumulate       ( result[0]["accumulate"].as < bool > () );
-      bool timeWindow       ( result[0]["time_window"].as< bool > () );
-      unsigned int numDays  ( result[0]["num_days_to_show"].as < unsigned int > () );
-      OsgTools::Animate::Settings::TimestepType type ( static_cast < OsgTools::Animate::Settings::TimestepType > ( result[0]["timestep_type"].as < unsigned int > () ) );
-      _sceneManager->timestepType( type );
-      _sceneManager->showPastEvents ( accumulate );
-      _sceneManager->animationSpeed ( speed );
-      _sceneManager->timeWindow ( timeWindow );
-      _sceneManager->timeWindowDuration ( numDays );
-      _sceneManager->startAnimation();
-    }
-    else
-      _sceneManager->stopAnimation();
 
     // Dirty the scene.
     _sceneManager->dirty ( true );

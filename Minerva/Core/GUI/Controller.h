@@ -68,9 +68,6 @@ public:
   /// Modify polygon data.
   void             modifyLayer( Usul::Interfaces::ILayer *layer );
 
-  /// Start animation.
-  void             startAnimation( float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays, OsgTools::Animate::Settings::TimestepType type );
-
   /// Play a movie.
   void             playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path );
 

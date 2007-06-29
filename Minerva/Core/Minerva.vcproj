@@ -230,11 +230,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\RegisterFactories.h"
+					RelativePath=".\Serialize.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Serialize.h"
+					RelativePath=".\Visitor.h"
 					>
 				</File>
 				<Filter

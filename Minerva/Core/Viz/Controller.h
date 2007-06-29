@@ -69,7 +69,6 @@ protected:
 
   void _processAddLayer    ( const std::string& tableName, unsigned int eventID );
   void _processRemoveLayer ( const std::string& tableName, unsigned int eventID );
-  void _processAnimation   ( const std::string& tableName, unsigned int eventID );
   void _processPlayMovie   ( const std::string& tableName, unsigned int eventID );
 
   // Get the tablename for given event type.

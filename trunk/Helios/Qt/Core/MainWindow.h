@@ -140,6 +140,8 @@ protected:
   void                      _loadSettings();
 
   void                      _saveSettings();
+
+  void                      _clearDocuments();
   
 private slots:
 

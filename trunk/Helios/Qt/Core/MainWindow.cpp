@@ -42,6 +42,7 @@
 #include "Usul/Threads/Named.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Documents/Manager.h"
 
 #include "XmlTree/Document.h"
 
@@ -161,8 +162,9 @@ MainWindow::MainWindow ( const std::string &vendor,
 MainWindow::~MainWindow()
 {
   USUL_TRACE_SCOPE;
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MainWindow::_saveSettings ), "1772821423" );
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MainWindow::_destroy ),      "1934297230" );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MainWindow::_clearDocuments ),      "4010634300" );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MainWindow::_saveSettings ),        "1772821423" );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MainWindow::_destroy ),             "1934297230" );
 }
 
 
@@ -1013,4 +1015,38 @@ void MainWindow::_idleProcess()
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Jobs::Manager::instance()), &Usul::Jobs::Manager::purge ) );
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Threads::Manager::instance()), &Usul::Threads::Manager::purge ) );
   Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &MainWindow::updateTextWindow ), false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear all the documents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_clearDocuments()
+{
+  // Typedefs.
+  typedef Usul::Documents::Manager::Documents  Documents;
+  typedef Usul::Documents::Document            Document;
+
+  {
+    // Make a copy because as the documents are closing, they remove themselves from the document manager.
+    Documents copy ( Usul::Documents::Manager::instance().documents() );
+
+    // For convienence.
+    Usul::Interfaces::IUnknown::QueryPtr me ( this );
+
+    // Tell the remaining open documents that the application is about to close.
+    // This allows the document to clean up any circular references.
+    for ( Documents::iterator i = copy.begin(); i != copy.end(); ++i )
+    {
+      // Grab the document in a smart pointer so it doesn't get deleted out from under us.
+      Document::RefPtr doc ( *i );
+      doc->applicationClosing( me.get() );
+    }
+  }
+
+  // Clear documents.
+  Usul::Documents::Manager::instance().documents().clear();
 }

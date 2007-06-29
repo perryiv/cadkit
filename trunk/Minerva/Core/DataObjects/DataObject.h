@@ -32,6 +32,9 @@ namespace osg { class Node; }
 
 namespace Minerva {
 namespace Core {
+
+  class Visitor;
+
 namespace DataObjects {
 
 class MINERVA_EXPORT DataObject : public Usul::Base::Referenced
@@ -48,6 +51,9 @@ public:
 
   /// Get the shape factory.
   static OsgTools::ShapeFactory* shapeFactory();
+
+  /// Accept the visitor.
+  virtual void          accept ( Minerva::Core::Visitor& visitor );
 
   /// Build the scene branch for the data object.
   virtual osg::Node*    buildScene() = 0;

@@ -381,24 +381,6 @@ OsgTools::Animate::Settings::TimestepType MinervaDocument::timestepType( ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Start the animation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::startAnimation( float speed, bool accumulate, bool timeWindow, int numDays )
-{
-  _sceneManager->showPastEvents ( accumulate );
-  _sceneManager->animationSpeed ( speed );
-  _sceneManager->timeWindow ( timeWindow );
-  _sceneManager->timeWindowDuration ( numDays );
-  _sceneManager->startAnimation();
-
-  this->_startAnimationDistributed( speed, accumulate, true, timeWindow, numDays );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Create and execute StopAnimation command.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -879,24 +861,6 @@ void MinervaDocument::_modifyLayerDistributed ( Usul::Interfaces::ILayer *layer 
     this->_connectToDistributedSession();
 
     _distributed->modifyLayer( layer );  
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Start animation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::_startAnimationDistributed ( float speed, bool accumulate, bool dateTimeStep, bool timeWindow, unsigned int numDays )
-{
-  if( _useDistributed )
-  {
-    // Lazy connection.
-    this->_connectToDistributedSession();
-
-    _distributed->startAnimation( speed, accumulate, true, timeWindow, numDays, _sceneManager->timestepType() );
   }
 }
 

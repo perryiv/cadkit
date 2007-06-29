@@ -298,34 +298,6 @@ int Controller::showLayer ( Usul::Interfaces::ILayer *layer )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Start animation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Controller::startAnimation(float speed, bool accumulate, bool dateTimeStep, bool timeWindow, int numDays, OsgTools::Animate::Settings::TimestepType type )
-{
-  Guard guard ( this->mutex() );
-
-  typedef Minerva::Core::DB::Connection::Values Values;
-  Values values;
-
-  values.push_back ( Values::value_type ( "animate", "true" ) );
-  values.push_back ( Values::value_type ( "session_id", Detail::toString ( _sessionID ) ) );
-  values.push_back ( Values::value_type ( "speed", Detail::toString ( speed ) ) );
-  values.push_back ( Values::value_type ( "accumulate", Detail::toString ( accumulate ) ) );
-  values.push_back ( Values::value_type ( "date_time_step", Detail::toString ( dateTimeStep ) ) );
-  values.push_back ( Values::value_type ( "time_window", Detail::toString ( timeWindow ) ) );
-  values.push_back ( Values::value_type ( "num_days_to_show", Detail::toString ( numDays ) ) );
-  values.push_back ( Values::value_type ( "timestep_type", Detail::toString ( type ) ) );
-
-  int eventId ( _connection->executeInsertQuery("wnv_animate_table", values) );
-
-  this->_executeEventTableQuery(2, eventId);
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Play Movie.
 //
 ///////////////////////////////////////////////////////////////////////////////

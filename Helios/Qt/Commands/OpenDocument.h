@@ -21,6 +21,7 @@
 
 #include "Usul/Interfaces/GUI/ILoadFileDialog.h"
 #include "Usul/Jobs/Job.h"
+#include "Usul/Documents/Document.h"
 
 #include <vector>
 
@@ -42,6 +43,7 @@ public:
   typedef Usul::Interfaces::ILoadFileDialog     ILoadFileDialog;
   typedef ILoadFileDialog::FileNames            FileNames;
   typedef ILoadFileDialog::Filters              Filters;
+  typedef Usul::Documents::Document             Document;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( OpenDocument );
@@ -62,11 +64,12 @@ protected:
   {
   public:
     typedef Usul::Jobs::Job BaseClass;
-    Job ( const std::string &name, IUnknown *caller );
+    Job ( Document *doc, const std::string &name, IUnknown *caller );
   protected:
     virtual ~Job();
     virtual void _started();
   private:
+    Document::RefPtr _document;
     std::string _name;
     IUnknown::RefPtr _caller;
   };
@@ -74,6 +77,8 @@ protected:
   FileNames                 _askForFileNames ( const std::string &title );
 
   virtual void              _execute();
+
+  void                      _startJob ( const std::string& filename );
 
 private:
 

@@ -20,6 +20,7 @@
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Interfaces/GUI/ILoadFileDialog.h"
+#include "Usul/Interfaces/GUI/IGUIDelegateNotify.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Resources/TextWindow.h"
 #include "Usul/Strings/Format.h"
@@ -28,9 +29,7 @@
 #include "Usul/Threads/Named.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/File/Path.h"
-#include "Usul/App/Controller.h"
-
-#include "QtGui/QFileDialog"
+#include "Usul/System/Clock.h"
 
 using namespace CadKit::Helios::Commands;
 
@@ -72,10 +71,11 @@ OpenDocument::~OpenDocument()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OpenDocument::Job::Job ( const std::string &name, Usul::Interfaces::IUnknown *caller ) : 
+OpenDocument::Job::Job ( Document *doc, const std::string &name, Usul::Interfaces::IUnknown *caller ) : 
   OpenDocument::Job::BaseClass(),
-  _name   ( name ),
-  _caller ( caller )
+  _document ( doc ),
+  _name     ( name ),
+  _caller   ( caller )
 {
   USUL_TRACE_SCOPE;
 }
@@ -112,8 +112,60 @@ void OpenDocument::_execute()
   for ( FileNames::const_iterator i = files.begin(); i != files.end(); ++i )
   {
     const std::string file ( *i );
-    Usul::Jobs::Manager::instance().add ( new OpenDocument::Job ( file, this->caller() ) );
+    try
+    {
+      this->_startJob ( file );
+    }
+    catch ( const std::exception& e )
+    {
+      std::cout << "Error 7531978100: Standard exception caught while trying to create job for " << file << std::endl;
+      std::cout << "Message: " << e.what() << std::endl;
+    }
+    catch ( ... )
+    {
+      std::cout << "Error 2160956073: Unknown exception caught while trying to create job for " << file << std::endl;
+    }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start a job.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OpenDocument::_startJob ( const std::string& file )
+{
+  USUL_TRACE_SCOPE;
+
+  // Typedefs.
+  typedef Usul::Documents::Manager Manager;
+  typedef Manager::DocumentInfo    DocumentInfo;
+
+  // Get needed information for the filename.
+  DocumentInfo info ( Manager::instance().find ( file, this->caller() ) );
+
+  // Make sure a document was found.
+  if( 0x0 == info.document.get() )
+    Usul::Exceptions::Thrower < std::runtime_error > ( "Error 2771743457: Could not find document for file: ", file );
+
+  // Make sure a delegate was found.
+  if( 0x0 == info.delegate.get() )
+    Usul::Exceptions::Thrower < std::runtime_error > ( "Error 4522012370: Could not find delegate for file: ", file );
+
+  // If the document is loaded, pop the windows of the document forward.
+  if ( info.loaded )
+  {
+    info.document->windowsForward ( );
+    return;
+  }
+
+  // Set the delegate.
+  info.document->delegate ( info.delegate );
+
+  // Create and add the job to the job manager.
+  Usul::Jobs::Manager::instance().add ( new OpenDocument::Job ( info.document.get(), file, this->caller() ) );
 }
 
 
@@ -152,9 +204,29 @@ void OpenDocument::Job::_started()
 {
   USUL_TRACE_SCOPE;
 
-  // Open the document.
-  Usul::App::Controller::instance().documentOpen ( _name, _caller );
+  // If we have a valid document...
+  if( _document.valid() )
+  {
+    // Feedback.
+    std::cout << Usul::Strings::format ( "Opening file: ", _name, ", thread = ", this->thread()->id() ) << Usul::Resources::TextWindow::endl;
+    
+    // Initialize start time.
+    Usul::Types::Uint64 start ( Usul::System::Clock::milliseconds() );
 
-  std::cout << Usul::Strings::format ( "Opening file: ", _name, ", thread = ", this->thread()->id() ) << Usul::Resources::TextWindow::endl;
-  Usul::System::Sleep::seconds ( 1 );
+    // Lets open the document.
+    _document->open ( _name, _caller );
+
+    // Feedback.
+    ::printf ( "%8.4f seconds .... Total time to open new document.\n", static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
+
+    // See if the caller wants to be notified with the document finishes loading.
+    Usul::Interfaces::IGUIDelegateNotify::QueryPtr notify ( _caller );
+
+    // Notify.
+    if ( notify.valid() )
+      notify->notifyDocumentFinishedLoading ( _document );
+
+    // Add the document to the manager.
+    Usul::Documents::Manager::instance().add( _document );
+  }
 }

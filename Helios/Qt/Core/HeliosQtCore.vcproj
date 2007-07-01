@@ -173,6 +173,25 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DocumentProxy.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DocumentProxy.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description=""
+						CommandLine=""
+						AdditionalDependencies=""
+						Outputs=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\Export.h"
 				>
 			</File>

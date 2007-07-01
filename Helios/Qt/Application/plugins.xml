@@ -4,4 +4,5 @@
   <plugin load="true" file="ComputeNormals.plug" />
   <plugin load="true" file="ProjectionManager.plug" />
   <plugin load="true" file="SceneModel.plug" />
+  <plugin load="true" file="QtSceneDelegate.plug" />
 </plugins>

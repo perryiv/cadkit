@@ -20,6 +20,7 @@
 #include "Usul/Documents/Document.h"
 
 #include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Interfaces/GUI/IGUIDelegate.h"
 
 #include <string>
 #include <vector>
@@ -38,6 +39,15 @@ public:
   typedef Document::RefPtr                      DocumentPtr;
   typedef std::list< DocumentPtr >              Documents;
   typedef Usul::Interfaces::IDocument           IDocument;
+  typedef Usul::Interfaces::IGUIDelegate        Delegate;
+
+  // Struct that contains infomation on how to load a document.
+  struct DocumentInfo
+  {
+    DocumentPtr         document;
+    Delegate::QueryPtr  delegate;
+    bool                loaded;
+  };
 
   // Singleton.
   static Manager &      instance();
@@ -63,18 +73,26 @@ public:
   // Find a delegate for the given document.
   void                  delegate ( Document *document );
 
-  // Get the document list
+  // Get the document list.
   Documents&            documents()       { return _documents; }
   const Documents&      documents() const { return _documents; }
 
   // Return all file-open filters.
   Filters               filtersOpen() const;
 
+  // Find a document and delegate for the given filename.
+  DocumentInfo          find ( const std::string& filename, Usul::Interfaces::IUnknown *caller = 0x0 );
+
   // Deletes current instance. Clears cached data.
   static void           reset();
 
   // Send the message to all documents.
   void                  sendMessage ( unsigned short message, const Document *skip = 0x0 );
+
+protected:
+
+  // Find a delegate for the given document.
+  Delegate*             _findDelegate ( Document * document );
 
 private:
 

@@ -34,6 +34,12 @@ QGLFormat CadKit::Helios::Views::OSG::defaultFormat ()
     
     // Set our defaults.
 
+    // Turn on alpha channel.
+    Detail::_format->setAlpha ( true );
+
+    // We want 8 bits per channel.
+    Detail::_format->setAlphaBufferSize ( 8 );
+
     // Turn on the accumulation buffer.
     Detail::_format->setAccum ( true );
 

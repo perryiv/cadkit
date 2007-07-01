@@ -18,10 +18,10 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
+namespace Usul { namespace Documents { class Document; } }
+
+
 namespace Usul {
-
-namespace Documents { class Document; }
-
 namespace Interfaces {
 
 struct IViewer;

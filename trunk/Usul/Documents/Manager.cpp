@@ -19,6 +19,7 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IDocumentCreate.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
+#include "Usul/Interfaces/IDocumentSelect.h"
 
 #include <algorithm>
 
@@ -297,26 +298,108 @@ void Manager::sendMessage ( unsigned short message, const Document *skip )
 
 void Manager::delegate ( Document *document )
 {
+  Delegate::QueryPtr gd ( this->_findDelegate ( document ) );
+  if( gd.valid() )
+  {
+    // Set the delegate
+    document->delegate ( gd.get() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find a delegate for the given document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Manager::Delegate* Manager::_findDelegate ( Document * document )
+{
   // Typedefs.
   typedef Usul::Components::Manager PluginManager;
   typedef PluginManager::UnknownSet PluginSet;
   typedef PluginSet::iterator PluginItr;
 
-  // Ask for plugins that open documents.
-  PluginSet plugins ( PluginManager::instance().getInterfaces ( Usul::Interfaces::IGUIDelegate::IID ) );
-
-  // Loop through the plugins.
-  for ( PluginItr i = plugins.begin(); i != plugins.end(); ++i )
+  // Make sure we have a valid document.
+  if ( 0x0 != document )
   {
-    Usul::Interfaces::IGUIDelegate::ValidQueryPtr gd ( i->get() );
+    // Ask for plugins that open documents.
+    PluginSet plugins ( PluginManager::instance().getInterfaces ( Usul::Interfaces::IGUIDelegate::IID ) );
 
-    // Use the typeName as the token
-    if( gd->doesHandle( document->typeName() ) )
+    // Loop through the plugins.
+    for ( PluginItr i = plugins.begin(); i != plugins.end(); ++i )
     {
-      // Set the delegate
-      document->delegate ( gd.get() );
+      Usul::Interfaces::IGUIDelegate::ValidQueryPtr gd ( i->get() );
+
+      // Use the typeName as the token
+      if( gd->doesHandle( document->typeName() ) )
+        return gd.get();
     }
   }
+
+  return 0x0;
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find a document and delegate for the given filename.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Manager::DocumentInfo Manager::find ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
+{
+  DocumentInfo info;
+
+  bool loaded ( false );
+
+  // The document to open.
+  Document::RefPtr document ( 0x0 );
+
+  // Check to see if there is a document already open with this filename.
+  for( Documents::iterator i = _documents.begin(); i != _documents.end(); ++ i )
+  {
+    // Is a document open with this file name?
+    if( (*i)->fileName() == filename )
+    {
+      document = (*i).get();
+      loaded = true;
+    }
+  }
+
+  // If we didn't find a document already open...
+  if( 0x0 == document )
+  {
+    // Create the document.
+    Documents documents ( this->create ( filename ) );
+
+    // Make sure...
+    if ( documents.empty() )
+    {
+      std::ostringstream message;
+      message << "Error 2565795720: Failed to create document for file: " << filename;
+      throw std::runtime_error ( message.str() );
+    }
+
+    Usul::Interfaces::IDocumentSelect::QueryPtr select ( caller );
+
+    if ( select.valid() && documents.size() > 1 )
+    {
+      // Get the document from the user.
+      document = select->selectDocument( documents );
+    }
+    else
+    {
+      // Just use the front if that's all we have, or if we don't have an interface to select a document.
+      document = documents.front();
+    }
+  }
+
+  // Set the members.
+  info.document = document;
+  info.delegate = this->_findDelegate ( document );
+  info.loaded   = loaded;
+
+  // Return what we found.
+  return info;
+}

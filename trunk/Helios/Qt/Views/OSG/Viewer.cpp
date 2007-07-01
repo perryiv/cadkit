@@ -46,6 +46,12 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
 
   // Set the focus.
   this->setFocus();
+
+  // Delete on close.
+  this->setAttribute ( Qt::WA_DeleteOnClose );
+
+  // Initalize the placement and size.
+  this->_initPlacement ();
 }
 
 
@@ -60,6 +66,8 @@ Viewer::~Viewer()
   // Clear the viewer.
   _viewer->clear();
   _viewer = 0x0;
+
+  Usul::Documents::Manager::instance().close ( _document );
 
   // Better be zero
   USUL_ASSERT ( 0 == _refCount );
@@ -196,4 +204,69 @@ void Viewer::focusInEvent ( QFocusEvent * event )
   // Make our document and view current.
   Usul::Documents::Manager::instance ().active ( this->document() );
   this->document()->activeView( _viewer.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make current.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::makeCurrent()
+{
+  BaseClass::makeCurrent();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Swap buffers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::swapBuffers()
+{
+  BaseClass::swapBuffers();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the placement. This gives the nice cascading behavior.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_initPlacement ()
+{
+  if( QWidget* parent = dynamic_cast < QWidget* > ( this->parent() ) )
+  {
+    // Shortcuts.
+    double percent ( 0.6 );
+    int width  ( parent->width() );
+    int height ( parent->height() );
+    int w ( static_cast <int> ( percent * width ) );
+    int h ( static_cast <int> ( percent * height ) );
+
+    // Declare the placement static.
+    static int x ( 0 );
+    static int y ( 0 );
+
+    // Set the placement.
+    this->move    ( x, y );
+    this->resize  ( w, h );
+
+    // Increment.
+    x += 20;
+    y += 20;
+
+    // If we are too far then start over.
+    if ( ( x + w ) > width || ( y + h ) > height )
+    {
+      x = 0;
+      y = 0;
+    }
+
+    this->adjustSize();
+  }
 }

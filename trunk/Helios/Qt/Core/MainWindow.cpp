@@ -16,7 +16,6 @@
 
 #include "Helios/Qt/Core/MainWindow.h"
 #include "Helios/Qt/Core/Constants.h"
-#include "Helios/Qt/Core/SplashScreen.h"
 #include "Helios/Qt/Commands/Action.h"
 #include "Helios/Qt/Commands/OpenDocument.h"
 #include "Helios/Qt/Commands/ExitApplication.h"
@@ -61,12 +60,15 @@
 #include "QtGui/QTextEdit"
 #include "QtGui/QVBoxLayout"
 #include "QtGui/QWorkSpace"
+#include "QtCore/QMetaType.h"
 
 #include <algorithm>
 #include <fstream>
 
 using namespace CadKit::Helios::Core;
 
+// Needed for invoke method.
+Q_DECLARE_METATYPE( DocumentProxy );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -150,6 +152,9 @@ MainWindow::MainWindow ( const std::string &vendor,
   _idleTimer = new QTimer ( this );
   QObject::connect ( _idleTimer, SIGNAL ( timeout() ), SLOT ( _idleProcess() ) );
   _idleTimer->start ( 1000 ); // Once every second.
+
+  // Register DocumentProxy for Usul::Documents::Document.
+  qRegisterMetaType < DocumentProxy > ( );
 }
 
 
@@ -455,12 +460,17 @@ Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
 
   switch ( iid )
   {
+  case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::ILoadFileDialog::IID:
     return static_cast<Usul::Interfaces::ILoadFileDialog*>(this);
   case Usul::Interfaces::IUpdateTextWindow::IID:
     return static_cast<Usul::Interfaces::IUpdateTextWindow*>(this);
-  case Usul::Interfaces::IUnknown::IID:
-    return static_cast<Usul::Interfaces::IUnknown*>(static_cast<Usul::Interfaces::ILoadFileDialog*>(this));
+  case Usul::Interfaces::Qt::IMainWindow::IID:
+    return static_cast < Usul::Interfaces::Qt::IMainWindow* > ( this );
+  case Usul::Interfaces::Qt::IWorkspace::IID:
+    return static_cast < Usul::Interfaces::Qt::IWorkspace* > ( this );
+  case Usul::Interfaces::IGUIDelegateNotify::IID:
+    return static_cast < Usul::Interfaces::IGUIDelegateNotify* > ( this );
   default:
     return 0x0;
   }
@@ -1049,4 +1059,126 @@ void MainWindow::_clearDocuments()
 
   // Clear documents.
   Usul::Documents::Manager::instance().documents().clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the MainWindow.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+QMainWindow * MainWindow::mainWindow()
+{
+  return this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the MainWindow.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const QMainWindow* MainWindow::mainWindow() const
+{
+  return this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the Workspace.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+QWorkspace * MainWindow::workspace()
+{
+  return _workSpace;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the Workspace.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const QWorkspace* MainWindow::workspace() const
+{
+  return _workSpace;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The document has finished loading.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::notifyDocumentFinishedLoading ( Usul::Documents::Document* document )
+{
+  if( 0x0 != document )
+  {
+    // Reference the document.  Some care will have to be taken since the proxy has a raw pointer.
+    // The proxies aren't being deleted, which is why a raw pointer need to be used.
+    document->ref();
+
+    DocumentProxy proxy ( document );
+
+    // This will add an event to the applications event loop.  It will be executed in the proper thread.
+    QMetaObject::invokeMethod ( this, "_notifyDocumentFinishedLoading", Qt::QueuedConnection, 
+                                Q_ARG ( DocumentProxy, proxy ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The document has finished loading.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_notifyDocumentFinishedLoading ( DocumentProxy proxy  )
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1119473115" );
+
+  // Typedefs.
+  typedef Usul::Documents::Document Document;
+  typedef Document::Delegate        Delegate;
+  
+  Document* document ( proxy.document() );
+
+  // If we have a vaild document...
+  if( 0x0 != document )
+  {
+    try
+    {
+      Delegate::QueryPtr delegate ( document->delegate() );
+
+      // If there is a valid delegate.
+      if( delegate.valid() );
+      {
+        // Create the GUI.
+        delegate->createDefaultGUI ( document, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+      }
+    }
+    catch ( const std::exception& e )
+    {
+      // Unreference and rethrow.
+      document->unref();
+      throw e;
+    }
+    catch ( ... )
+    {
+      // Unreference and throw.
+      document->unref();
+      throw;
+    }
+  }
+
+  // Unreference.
+  document->unref();
+  proxy.document ( 0x0 );
 }

@@ -93,7 +93,7 @@ Document::~Document()
 
 void Document::applicationClosing ( Usul::Interfaces::IUnknown *caller )
 {
-  //Set delegate to null.  This is needed so delegates are unreferenced and properly deleted.
+  // Set delegate to null.  This is needed so delegates are unreferenced and properly deleted.
   this->delegate( 0x0 );
 
   // Clear the modified observers.
@@ -896,7 +896,7 @@ void Document::removeModifiedObserver ( Usul::Interfaces::IModifiedObserver* obs
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document:: modified ( bool m )
+void Document::modified ( bool m )
 {
   _file.modified ( m );
 

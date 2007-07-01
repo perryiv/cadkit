@@ -19,10 +19,14 @@
 
 #include "Helios/Qt/Core/Export.h"
 #include "Helios/Qt/Core/SplashScreen.h"
+#include "Helios/Qt/Core/DocumentProxy.h"
 #include "Helios/Qt/Commands/BaseAction.h"
 
 #include "Usul/Interfaces/GUI/ILoadFileDialog.h"
 #include "Usul/Interfaces/GUI/IUpdateTextWindow.h"
+#include "Usul/Interfaces/GUI/IGUIDelegateNotify.h"
+#include "Usul/Interfaces/Qt/IMainWindow.h"
+#include "Usul/Interfaces/Qt/IWorkspace.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/RecursiveMutex.h"
 
@@ -51,7 +55,10 @@ namespace Core {
 class HELIOS_QT_CORE_EXPORT MainWindow : 
   public QMainWindow,
   public Usul::Interfaces::ILoadFileDialog,
-  public Usul::Interfaces::IUpdateTextWindow
+  public Usul::Interfaces::IUpdateTextWindow,
+  public Usul::Interfaces::Qt::IMainWindow,
+  public Usul::Interfaces::Qt::IWorkspace,
+  public Usul::Interfaces::IGUIDelegateNotify
 {
   Q_OBJECT
 
@@ -142,12 +149,25 @@ protected:
   void                      _saveSettings();
 
   void                      _clearDocuments();
-  
+ 
+  /// Usul::Interfaces::Qt::IMainWindow
+  virtual QMainWindow *              mainWindow();
+  virtual const QMainWindow*         mainWindow() const;
+
+  /// Usul::Interfaces::Qt::IWorkspace
+  virtual QWorkspace *               workspace();
+  virtual const QWorkspace*          workspace() const;
+
+  /// Usul::Interfaces::IGUIDelegateNotify
+  virtual void                       notifyDocumentFinishedLoading ( Usul::Documents::Document* document );
+
 private slots:
 
-  void                      _forceUpdateTextWindow();
+  void                               _forceUpdateTextWindow();
 
-  void                      _idleProcess();
+  void                               _idleProcess();
+
+  void                               _notifyDocumentFinishedLoading ( DocumentProxy proxy );
 
 private:
 

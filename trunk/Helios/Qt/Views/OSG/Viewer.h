@@ -47,9 +47,15 @@ public:
   OsgTools::Render::Viewer*               viewer ();
   const OsgTools::Render::Viewer*         viewer () const;
 
-  // Usul::Interfaces::IOpenGLContext's members are defined by the base class.
+  /// Usul::Interfaces::IOpenGLContext
+  virtual void                            makeCurrent();
+  virtual void                            swapBuffers();
+
 protected:
 
+  void                                    _initPlacement ();
+
+  // Override these events.
   virtual void                            paintEvent  ( QPaintEvent * event );
   virtual void                            resizeEvent ( QResizeEvent * event );
   virtual void                            focusInEvent ( QFocusEvent * event );

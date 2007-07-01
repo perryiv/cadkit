@@ -619,6 +619,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\GUI\IGUIDelegateNotify.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\GUI\IGUIServer.h"
 						>
 					</File>
@@ -1264,6 +1268,18 @@
 					>
 					<File
 						RelativePath=".\Interfaces\Threads\IThreadPoolAddTask.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Qt"
+					>
+					<File
+						RelativePath=".\Interfaces\Qt\IMainWindow.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\Qt\IWorkspace.h"
 						>
 					</File>
 				</Filter>

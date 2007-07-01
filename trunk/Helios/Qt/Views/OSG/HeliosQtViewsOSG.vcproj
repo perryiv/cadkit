@@ -54,9 +54,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies=" qtmain.lib QtCore4.lib QtGui4.lib QtOpenGL4.lib"
+				AdditionalDependencies=" qtmain.lib QtCore4.lib QtGui4.lib QtOpenGL4.lib osg.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosQtViewsOsg.dll"
-				AdditionalLibraryDirectories="$(QTDIR)\lib"
+				AdditionalLibraryDirectories="$(QTDIR)\lib;$(OSG_LIB_DIR)"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 			/>
@@ -127,9 +127,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib QtOpenGLd4.lib"
+				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib QtOpenGLd4.lib osgd.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosQtViewsOsgd.dll"
-				AdditionalLibraryDirectories="$(QTDIR)\lib"
+				AdditionalLibraryDirectories="$(QTDIR)\lib;$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 			/>

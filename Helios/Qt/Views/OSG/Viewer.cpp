@@ -379,6 +379,52 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
     // Move the camera.
     this->viewer()->camera ( OsgTools::Render::Viewer::FIT );
     break;
+
+  // See if it was the right-arrow key...
+  case Qt::Key_Right:
+
+    // Move the camera.
+    this->viewer()->rotate ( osg::Vec3 ( 0, 1, 0 ), -osg::PI_2 );
+    break;
+
+  // See if it was the left-arrow key...
+  case Qt::Key_Left:
+
+    // Move the camera.
+    this->viewer()->rotate ( osg::Vec3 ( 0, 1, 0 ), osg::PI_2 );
+    break;
+
+  // See if it was the up-arrow key...
+  case Qt::Key_Up:
+
+    // Move the camera.
+    this->viewer()->rotate ( osg::Vec3 ( 1, 0, 0 ), osg::PI_2 );
+    break;
+
+  // See if it was the down-arrow key...
+  case Qt::Key_Down:
+
+    // Move the camera.
+    this->viewer()->rotate ( osg::Vec3 ( 1, 0, 0 ), -osg::PI_2 );
+    break;
+
+    // See if it was the h key...
+  case Qt::Key_H:
+    if( this->viewer()->polygonMode() == Usul::Interfaces::IPolygonMode::HIDDEN_LINES )
+      this->viewer()->polygonMode( Usul::Interfaces::IPolygonMode::NONE );
+    else
+      this->viewer()->polygonMode( Usul::Interfaces::IPolygonMode::HIDDEN_LINES );
+    this->viewer()->render();
+    break;
+
+  // See if it was the w key...
+  case Qt::Key_W:
+    if( this->viewer()->polygonMode() == Usul::Interfaces::IPolygonMode::WIRE_FRAME )
+      this->viewer()->polygonMode( Usul::Interfaces::IPolygonMode::NONE );
+    else
+      this->viewer()->polygonMode( Usul::Interfaces::IPolygonMode::WIRE_FRAME );
+    this->viewer()->render();
+    break;
   }
 }
 

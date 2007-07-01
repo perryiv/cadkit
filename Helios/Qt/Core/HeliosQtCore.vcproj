@@ -55,10 +55,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies=" qtmain.lib QtCore4.lib QtGui4.lib"
-				OutputFile="$(OutDir)\$(ProjectName).dll"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosQtCore.dll"
 				AdditionalLibraryDirectories="$(QTDIR)\lib"
 				GenerateDebugInformation="false"
 				SubSystem="2"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/HeliosQtCore.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

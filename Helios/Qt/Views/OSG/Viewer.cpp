@@ -270,3 +270,125 @@ void Viewer::_initPlacement ()
     this->adjustSize();
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The mouse has moved.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::mouseMoveEvent ( QMouseEvent * event )
+{
+  bool left   ( event->buttons().testFlag ( Qt::LeftButton  ) );
+  bool middle ( event->buttons().testFlag ( Qt::MidButton   ) );
+  bool right  ( event->buttons().testFlag ( Qt::RightButton ) );
+
+  float x ( event->x() );
+  float y ( this->height() - event->y() );
+
+  // See if any mouses button are down.
+  unsigned int mouse ( left || middle || right );
+
+  // Set the event type.
+  typedef OsgTools::Render::EventAdapter EventAdapter;
+  EventAdapter::EventType type ( ( mouse ) ? EventAdapter::DRAG : EventAdapter::MOVE );
+
+  // Handle the events. Make sure you pick before you drag.
+  this->viewer()->handleNavigation ( x, y, left, middle, right, type );
+  this->viewer()->handlePicking    ( x, y, false, 0 );
+  this->viewer()->handleDragging   ( x, y, OsgTools::Draggers::Dragger::MOVE );
+
+  // Handle tool.
+  this->viewer()->handleTool ( left, middle, right, true, x, y, 0.0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  A mouse button has been pressed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::mousePressEvent ( QMouseEvent * event )
+{
+  bool left   ( event->buttons().testFlag ( Qt::LeftButton  ) );
+  bool middle ( event->buttons().testFlag ( Qt::MidButton   ) );
+  bool right  ( event->buttons().testFlag ( Qt::RightButton ) );
+
+  float x ( event->x() );
+  float y ( this->height() - event->y() );
+
+  this->viewer()->buttonPress ( x, y, left, middle, right );
+
+  // Handle the events. Make sure you pick before you drag.
+  this->viewer()->handlePicking  ( x, y, left, 1 );
+  this->viewer()->handleDragging ( x, y, OsgTools::Draggers::Dragger::START );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  A mouse button has been released.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::mouseReleaseEvent ( QMouseEvent * event )
+{
+  bool left   ( event->buttons().testFlag ( Qt::LeftButton  ) );
+  bool middle ( event->buttons().testFlag ( Qt::MidButton   ) );
+  bool right  ( event->buttons().testFlag ( Qt::RightButton ) );
+
+  float x ( event->x() );
+  float y ( this->height() - event->y() );
+
+  this->viewer()->buttonRelease ( x, y, left, middle, right );
+
+  // Handle the events. Make sure you pick before you drag.
+  this->viewer()->handlePicking  ( x, y, left, 1 );
+  this->viewer()->handleDragging ( x, y, OsgTools::Draggers::Dragger::START );
+
+  // Make sure.
+  OsgTools::Draggers::Dragger::dragging ( 0x0, osg::Matrixd::identity() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Key pressed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::keyPressEvent ( QKeyEvent * event )
+{
+  // Stop any spin.
+  this->viewer()->spin ( false );
+
+  // Process the key.
+  switch ( event->key() )
+  {
+    // See if it was the space-bar or the r-key...
+  case Qt::Key_Space:
+  case Qt::Key_R:
+    // Move the camera.
+    this->viewer()->camera ( OsgTools::Render::Viewer::RESET );
+    break;
+
+    // See if it was the f-key...
+  case Qt::Key_F:
+    // Move the camera.
+    this->viewer()->camera ( OsgTools::Render::Viewer::FIT );
+    break;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Key released.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::keyReleaseEvent ( QKeyEvent * event )
+{
+}

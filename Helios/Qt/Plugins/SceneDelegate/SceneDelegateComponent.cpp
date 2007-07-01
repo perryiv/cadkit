@@ -108,6 +108,9 @@ void SceneDelegateComponent::createDefaultGUI ( Usul::Documents::Document *docum
     QWorkspace *parent ( workspace->workspace() );
     QtViewerPtr viewer ( new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent ) );
     parent->addWindow ( viewer.get() );
+
+    this->refreshView ( document, viewer->viewer() );
+
     viewer->show();
   }
 }
@@ -121,5 +124,16 @@ void SceneDelegateComponent::createDefaultGUI ( Usul::Documents::Document *docum
 
 void SceneDelegateComponent::refreshView ( Usul::Documents::Document *document, Usul::Interfaces::IViewer *viewer )
 {
+  Usul::Interfaces::IHeliosView::QueryPtr HeliosView ( viewer );
+
+  if ( HeliosView.valid() )
+  {
+    OsgTools::Render::Viewer* canvas ( HeliosView->HeliosView() );
+
+    Usul::Interfaces::IBuildScene::QueryPtr build ( document );
+
+    if ( build.valid () )
+      canvas->scene ( build->buildScene ( document->options(), viewer ) );
+  }
 }
 

@@ -28,6 +28,7 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Components/Loader.h"
 #include "Usul/Errors/Stack.h"
+#include "Usul/File/Contents.h"
 #include "Usul/File/Path.h"
 #include "Usul/File/Stats.h"
 #include "Usul/Functions/SafeCall.h"
@@ -95,7 +96,7 @@ MainWindow::MainWindow ( const std::string &vendor,
   _output      ( output ),
   _splash      ( 0x0 ),
   _workSpace   ( 0x0 ),
-  _textWindow  ( 0x0, 0 ),
+  _textWindow  ( 0x0, StreamQueuePtr ( new StreamQueue() ) ),
   _dockMenu    ( 0x0 ),
   _idleTimer   ( 0x0 )
 {
@@ -223,6 +224,7 @@ void MainWindow::_destroy()
   _splash = 0x0;
   _workSpace = 0x0;
   _textWindow.first = 0x0;
+  _textWindow.second.reset();
   _dockMenu = 0x0;
   _idleTimer = 0x0;
 
@@ -371,7 +373,6 @@ void MainWindow::_buildTextWindow()
 
   // Make the text window.
   _textWindow.first = new QTextEdit ( dock );
-  _textWindow.second = 0;
   _textWindow.first->setReadOnly ( true );
 
   // Dock it.
@@ -471,6 +472,8 @@ Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::Qt::IWorkspace* > ( this );
   case Usul::Interfaces::IGUIDelegateNotify::IID:
     return static_cast < Usul::Interfaces::IGUIDelegateNotify* > ( this );
+  case Usul::Interfaces::IStreamListenerChar::IID:
+    return static_cast < Usul::Interfaces::IStreamListenerChar* > ( this );
   default:
     return 0x0;
   }
@@ -921,7 +924,7 @@ void MainWindow::hideSplashScreen()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::_forceUpdateTextWindow()
+void MainWindow::_updateTextWindow()
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
@@ -942,56 +945,33 @@ void MainWindow::updateTextWindow ( bool force )
   // If this is not the GUI thread then re-direct.
   if ( false == Usul::Threads::Named::instance().is ( Usul::Threads::Names::GUI ) )
   {
-    QMetaObject::invokeMethod ( this, "_forceUpdateTextWindow", Qt::QueuedConnection );
+    QMetaObject::invokeMethod ( this, "_updateTextWindow", Qt::QueuedConnection );
     return;
   }
 
+  // If we get this far it should be the gui thread.
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
+  // Handle no text window.
   if ( 0x0 == _textWindow.first )
     return;
 
   // Don't allow this to throw because it may create an infinite loop.
   try
   {
-    // Flush the streams.
-    std::cout << std::flush;
-    std::cerr << std::flush;
+    bool changed ( false );
 
-    // Get the file length first.
-    const unsigned int length ( Usul::File::Stats<unsigned int>::size ( _output ) );
-    if ( 0 == length || length <= _textWindow.second )
-      return;
-
-    // Open the file for reading.
-    std::ifstream in ( _output.c_str(), std::ios::binary | std::ios::in );
-    if ( false == in.is_open() )
-      return;
-
-    // Move to the correct position in the file.
-    in.seekg ( _textWindow.second );
-
-    // Grab file contents starting from this position.
-    std::vector<char> contents;
-    contents.resize ( ( length - _textWindow.second ) + 1 );
-    in.read ( &contents[0], contents.size() - 1 );
-
-    // Remove all carriage returns and null characters.
-    contents.erase ( std::remove ( contents.begin(), contents.end(), '\r' ), contents.end() );
-    contents.erase ( std::remove ( contents.begin(), contents.end(), '\0' ), contents.end() );
-
-    // Handle empty string.
-    if ( true == contents.empty() )
-      return;
-
-    // Important!
-    const unsigned int last ( contents.size() - 1 );
-    contents.at ( last ) = '\0';
-    _textWindow.second = length;
-
-    // Append the text.
-    _textWindow.first->append ( &contents[0] );
+    // Loop over all strings in the queue. The queue has an internal mutex.
+    while ( false == _textWindow.second->empty() )
+    {
+      // Append the new string.
+      const std::string s ( _textWindow.second->next() );
+      _textWindow.first->append ( s.c_str() );
+      changed = true;
+    }
 
     // Force a GUI update now if we should.
-    if ( true == force )
+    if ( true == force && true == changed )
       _textWindow.first->update();
   }
 
@@ -1000,10 +980,7 @@ void MainWindow::updateTextWindow ( bool force )
   {
     try
     {
-      std::ostringstream out;
-      out << Usul::Strings::convert ( _textWindow.first->toPlainText() ) 
-          << "\nError 1536020510: failed to access output file '" << _output;
-      _textWindow.first->setPlainText ( out.str().c_str() );
+      _textWindow.first->append ( "Error 1536020510: failed to append new text output" );
     }
     catch ( ... )
     {
@@ -1024,7 +1001,6 @@ void MainWindow::_idleProcess()
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Jobs::Manager::instance()), &Usul::Jobs::Manager::purge ) );
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Threads::Manager::instance()), &Usul::Threads::Manager::purge ) );
-  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &MainWindow::updateTextWindow ), false );
 }
 
 
@@ -1181,4 +1157,35 @@ void MainWindow::_notifyDocumentFinishedLoading ( DocumentProxy proxy  )
   // Unreference.
   document->unref();
   proxy.document ( 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The document has finished loading.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::notify ( Usul::Interfaces::IUnknown *caller, const char *values, unsigned int numValues )
+{
+  USUL_TRACE_SCOPE;
+
+  if ( 0x0 != values && numValues > 0 )
+  {
+    // Remove all carriage returns and null characters.
+    std::string s ( values, values + numValues );
+    s.erase ( std::remove ( s.begin(), s.end(), '\r' ), s.end() );
+    s.erase ( std::remove ( s.begin(), s.end(), '\0' ), s.end() );
+
+    // Chop any trailing newline characters. The text window appends 
+    // "paragraphs", which automatically start at the next line.
+    if ( false == s.empty() && '\n' == s.at ( s.size() - 1 ) )
+      s.resize ( s.size() - 1 );
+
+    // Do not guard, the queue has an internal mutex.
+    _textWindow.second->add ( s );
+
+    // Tell window to refresh.
+    this->updateTextWindow ( true );
+  }
 }

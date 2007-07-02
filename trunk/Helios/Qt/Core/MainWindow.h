@@ -22,6 +22,7 @@
 #include "Helios/Qt/Core/DocumentProxy.h"
 #include "Helios/Qt/Commands/BaseAction.h"
 
+#include "Usul/Interfaces/IStreamListener.h"
 #include "Usul/Interfaces/GUI/ILoadFileDialog.h"
 #include "Usul/Interfaces/GUI/IUpdateTextWindow.h"
 #include "Usul/Interfaces/GUI/IGUIDelegateNotify.h"
@@ -29,13 +30,15 @@
 #include "Usul/Interfaces/Qt/IWorkspace.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Threads/Queue.h"
 
 #include "QtCore/QSettings"
 #include "QtGui/QMainWindow"
 
-#include <string>
 #include <map>
+#include <queue>
 #include <set>
+#include <string>
 #include <vector>
 
 class QWorkspace;
@@ -58,7 +61,8 @@ class HELIOS_QT_CORE_EXPORT MainWindow :
   public Usul::Interfaces::IUpdateTextWindow,
   public Usul::Interfaces::Qt::IMainWindow,
   public Usul::Interfaces::Qt::IWorkspace,
-  public Usul::Interfaces::IGUIDelegateNotify
+  public Usul::Interfaces::IGUIDelegateNotify,
+  public Usul::Interfaces::IStreamListenerChar
 {
   Q_OBJECT
 
@@ -93,91 +97,98 @@ public:
   virtual ~MainWindow();
 
   // Get the name of the file to load from
-  virtual FileResult        getLoadFileName  ( const std::string &title = "Load", const Filters &filters = Filters() );
-  virtual FilesResult       getLoadFileNames ( const std::string &title = "Load", const Filters &filters = Filters() );
+  virtual FileResult                getLoadFileName  ( const std::string &title = "Load", const Filters &filters = Filters() );
+  virtual FilesResult               getLoadFileNames ( const std::string &title = "Load", const Filters &filters = Filters() );
 
   // Get the mutex.
-  Mutex &                   mutex() const { return *_mutex; }
+  Mutex &                           mutex() const { return *_mutex; }
 
   // Functions for adding, clearing, etc., the plugin configuration files.
-  void                      addPluginFile ( const std::string & );
-  void                      clearPluginFiles();
-  std::string               defautPluginFile() const;
-  PluginFiles               pluginFiles() const;
+  void                              addPluginFile ( const std::string & );
+  void                              clearPluginFiles();
+  std::string                       defautPluginFile() const;
+  PluginFiles                       pluginFiles() const;
 
   // Functions for loading, releasing, etc., the plugins.
-  void                      loadPlugins();
-  void                      loadPlugins ( const std::string &configFile );
-  void                      loadPlugin  ( const std::string &pluginFile );
-  void                      printPlugins() const;
-  void                      releasePlugins();
-  void                      releasePlugin ( const std::string &pluginFile );
+  void                              loadPlugins();
+  void                              loadPlugins ( const std::string &configFile );
+  void                              loadPlugin  ( const std::string &pluginFile );
+  void                              printPlugins() const;
+  void                              releasePlugins();
+  void                              releasePlugin ( const std::string &pluginFile );
 
   // Functions for getting information about this binary.
-  std::string               directory() const;
-  std::string               icon() const;
-  std::string               programFile() const;
-  std::string               programName() const;
-  std::string               vendor() const;
-  std::string               url() const;
+  std::string                       directory() const;
+  std::string                       icon() const;
+  std::string                       programFile() const;
+  std::string                       programName() const;
+  std::string                       vendor() const;
+  std::string                       url() const;
 
   // Get the settings.
-  const QSettings &         settings() const;
-  QSettings &               settings();
+  const QSettings &                 settings() const;
+  QSettings &                       settings();
 
   // Show/hide the splash screen.
-  void                      hideSplashScreen();
-  void                      showSplashScreen();
+  void                              hideSplashScreen();
+  void                              showSplashScreen();
 
   // Update these sub-windows.
-  virtual void              updateTextWindow ( bool force );
+  virtual void                      updateTextWindow ( bool force );
   
 protected:
 
-  void                      _buildMenu();
-  void                      _buildTextWindow();
-  void                      _buildToolBar();
+  void                              _buildMenu();
+  void                              _buildTextWindow();
+  void                              _buildToolBar();
 
-  std::string               _formatFilters ( const Filters &filters ) const;
+  std::string                       _formatFilters ( const Filters &filters ) const;
 
-  std::string               _lastFileDialogDir ( const std::string &title ) const;
-  void                      _lastFileDialogDir ( const std::string &title, const std::string &dir );
-  std::string               _lastFileDialogFilter ( const std::string &title ) const;
-  void                      _lastFileDialogFilter ( const std::string &title, const std::string &filter ) const;
-  void                      _loadSettings();
+  std::string                       _lastFileDialogDir ( const std::string &title ) const;
+  void                              _lastFileDialogDir ( const std::string &title, const std::string &dir );
+  std::string                       _lastFileDialogFilter ( const std::string &title ) const;
+  void                              _lastFileDialogFilter ( const std::string &title, const std::string &filter ) const;
+  void                              _loadSettings();
 
-  void                      _saveSettings();
+  void                              _saveSettings();
 
-  void                      _clearDocuments();
+  void                              _clearDocuments();
  
-  /// Usul::Interfaces::Qt::IMainWindow
-  virtual QMainWindow *              mainWindow();
-  virtual const QMainWindow*         mainWindow() const;
+  // Usul::Interfaces::Qt::IMainWindow
+  virtual QMainWindow *             mainWindow();
+  virtual const QMainWindow*        mainWindow() const;
 
-  /// Usul::Interfaces::Qt::IWorkspace
-  virtual QWorkspace *               workspace();
-  virtual const QWorkspace*          workspace() const;
+  // Usul::Interfaces::Qt::IWorkspace
+  virtual QWorkspace *              workspace();
+  virtual const QWorkspace*         workspace() const;
 
-  /// Usul::Interfaces::IGUIDelegateNotify
-  virtual void                       notifyDocumentFinishedLoading ( Usul::Documents::Document* document );
+  // Usul::Interfaces::IGUIDelegateNotify
+  virtual void                      notifyDocumentFinishedLoading ( Usul::Documents::Document* document );
+
+  // Usul::Interfaces::IStreamListenerChar
+  virtual void                      notify ( Usul::Interfaces::IUnknown *caller, const char *values, unsigned int numValues );
 
 private slots:
 
-  void                               _forceUpdateTextWindow();
+  void                              _idleProcess();
 
-  void                               _idleProcess();
+  void                              _notifyDocumentFinishedLoading ( DocumentProxy proxy );
 
-  void                               _notifyDocumentFinishedLoading ( DocumentProxy proxy );
+  void                              _updateTextWindow();
 
 private:
 
-  typedef std::pair<QTextEdit*,unsigned int> TextWindow;
+  typedef std::queue<std::string> StringQueue;
+  USUL_DECLARE_QUEUE_CONFIG ( QueueConfig, Mutex, Guard, StringQueue );
+  typedef Usul::Threads::Queue<QueueConfig> StreamQueue;
+  typedef boost::shared_ptr<StreamQueue> StreamQueuePtr;
+  typedef std::pair<QTextEdit*,StreamQueuePtr> TextWindow;
 
   // No copying or assignment.
   MainWindow ( const MainWindow & );
   MainWindow &operator = ( const MainWindow & );
 
-  void                      _destroy();
+  void                              _destroy();
 
   mutable Mutex *_mutex;
   QSettings _settings;

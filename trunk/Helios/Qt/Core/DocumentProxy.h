@@ -30,6 +30,7 @@ namespace Core {
 class DocumentProxy
 {
 public:
+
   /// Useful typedes.
   typedef Usul::Documents::Document Document;
 

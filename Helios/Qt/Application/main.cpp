@@ -30,6 +30,7 @@
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/IO/Redirect.h"
+#include "Usul/IO/StreamSink.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Mutex.h"
@@ -46,7 +47,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace Program { Usul::IO::Redirect *redirect ( 0x0 ); }
+namespace Program
+{
+  typedef Usul::IO::StreamSink StreamSink;
+  StreamSink::RefPtr sink ( static_cast<StreamSink *> ( 0x0 ) );
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -120,13 +125,15 @@ namespace Program
     const std::string tempDir ( Usul::File::Temp::directory ( true ) + "/" + program + "/" );
     Usul::File::make ( tempDir );
 
-    // Redirect standard out and error to a file. This is a leak by design.
+    // Redirect standard out and error to a file.
     const std::string output ( tempDir + program + ".out" );
-    Program::redirect = new Usul::IO::Redirect ( output, true, true );
+    Usul::File::remove ( output, false );
+    Program::sink = Program::StreamSink::RefPtr ( new Usul::IO::StreamSink ( output ) );
 
     // Print welcome message.
-    std::cout << "Welcome to " << program << std::endl;
-    std::cout << "Built on " << Usul::Strings::formatDate ( __DATE__ ) << " at " << __TIME__ << std::endl;
+    std::ostringstream out;
+    out << "Welcome to " << program << std::endl;
+    out << "Built on " << Usul::Strings::formatDate ( __DATE__ ) << " at " << __TIME__ << std::endl;
 
     // Send trace output here. Comment this out for stdout.
     const std::string traceFile ( tempDir + program + ".csv" );
@@ -152,20 +159,28 @@ namespace Program
         // Declare the main window.
         CadKit::Helios::Core::MainWindow mw ( vendor, url, program, icon, output, true );
 
-        // Load the plugins.
-        mw.addPluginFile ( mw.defautPluginFile() );
-        mw.loadPlugins();
-        mw.printPlugins();
+        // Main window needs to live longer than the stream listener.
+        {
+          // Add and remove main window as listener to stream sink.
+          StreamSink::ScopedListener listener ( *sink, &mw );
 
-        // Hide the splash screen and show the main window.
-        mw.hideSplashScreen();
-        mw.show();
+          // Now we can print this to stdout. Note: this isn't fool-proof. 
+          // If some other code printed to stdout or stderr before the sink's 
+          // listener was set, it will go to the file but not the text window.
+          std::cout << out.str() << std::flush;
 
-        // Force an update of the text window.
-        mw.updateTextWindow ( true );
+          // Load the plugins.
+          mw.addPluginFile ( mw.defautPluginFile() );
+          mw.loadPlugins();
+          mw.printPlugins();
 
-        // Run the application.
-        result = app.exec();
+          // Hide the splash screen and show the main window.
+          mw.hideSplashScreen();
+          mw.show();
+
+          // Run the application.
+          result = app.exec();
+        }
       }
     }
   }

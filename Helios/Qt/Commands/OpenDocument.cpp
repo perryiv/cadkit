@@ -90,6 +90,8 @@ OpenDocument::Job::Job ( Document *doc, const std::string &name, Usul::Interface
 OpenDocument::Job::~Job()
 {
   USUL_TRACE_SCOPE;
+  _document = 0x0;
+  _name.clear();
   _caller = 0x0;
 }
 

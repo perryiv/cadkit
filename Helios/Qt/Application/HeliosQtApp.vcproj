@@ -55,7 +55,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies=" qtmain.lib QtCore4.lib QtGui4.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosQt.exe"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosQtApp.exe"
 				AdditionalLibraryDirectories="$(QTDIR)\lib"
 				GenerateDebugInformation="false"
 				SubSystem="2"

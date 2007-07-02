@@ -17,14 +17,23 @@
 #ifndef _IMAGES_GIL_ACTION_STITCHER_CLASS_H_
 #define _IMAGES_GIL_ACTION_STITCHER_CLASS_H_
 
+#ifdef _MSC_VER
+#define NOMINMAX
+#endif
+
 #include "Images/GIL/Exceptions/Exceptions.h"
 #include "Images/GIL/IO/Base.h"
 
 #include "Usul/Exceptions/Thrower.h"
+#include "Usul/Math/Absolute.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/MPL/SameType.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Types/Types.h"
+
+#include <boost/gil/extension/dynamic_image/algorithm.hpp>
+#include <boost/gil/extension/numeric/sampler.hpp>
+#include <boost/gil/extension/numeric/resample.hpp>
 
 #include <boost/shared_ptr.hpp>
 
@@ -77,9 +86,9 @@ public:
     _ioMap   (),
     _input   (),
     _quality ( 100 ),
-    _columns ( 0 ),
     _output  (),
-    _ignored ()
+    _ignored (),
+    _dim     ( 0, 0 )
   {
   }
 
@@ -125,6 +134,7 @@ public:
     args.push_back ( "--output <output>" );
     args.push_back ( "--quality <[1,100]> (jpeg only, default is 100)" );
     args.push_back ( "--columns <number of columns in the tiles> (default is number of input tiles)" );
+    args.push_back ( "--dimensions <width and height of output image> (default is sum of all input tiles)" );
     return args;
   }
 
@@ -159,6 +169,68 @@ public:
   {
     typedef typename Dimensions::value_type DimValueType;
     typedef Usul::Types::Uint64 Uint64;
+
+    const Uint64 max16u ( std::numeric_limits<Usul::Types::Uint16>::max() );
+    const Uint64 max16  ( std::numeric_limits<Usul::Types::Int16 >::max() );
+    const Uint64 max32u ( std::numeric_limits<Usul::Types::Uint32>::max() );
+    const Uint64 max32  ( std::numeric_limits<Usul::Types::Int32 >::max() );
+
+    const Uint64 w ( dim.x );
+    const Uint64 h ( dim.y );
+
+    const bool overflow16u ( w > max16u || h > max16u );
+    const bool overflow16  ( w > max16  || h > max16  );
+    const bool overflow32u ( w > max32u || h > max32u );
+    const bool overflow32  ( w > max32  || h > max32  );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Get the number of columns.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  unsigned int columns() const
+  {
+    return static_cast<unsigned int> ( ( _input.empty() ) ? 0 : _input.front().size() );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Get the number of rows.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  unsigned int rows() const
+  {
+    return static_cast<unsigned int> ( _input.size() );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Get the target dimensions.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  Dimensions dimensions() const
+  {
+    return _dim;
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Set the target dimensions.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void dimensions ( const Dimensions &dim )
+  {
+    _dim.x = Usul::Math::absolute ( dim.x );
+    _dim.y = Usul::Math::absolute ( dim.y );
   }
 
 
@@ -218,8 +290,21 @@ public:
 
   void input ( const FileNames &input )
   {
+    // Initialize the number of columns.
+    unsigned int numColumns ( static_cast<unsigned int> ( ( input.empty() ) ? 0 : input.front().size() ) );
+
+    // Check input for consistant size.
+    for ( FileNames::const_iterator i = input.begin(); i != input.end(); ++i )
+    {
+      const Strings &row ( *i );
+      if ( row.size() != numColumns )
+      {
+        throw std::runtime_error ( "Error 3232399187: Inconsistant number of columns in input file matrix" );
+      }
+    }
+
+    // Set input matrix.
     _input = input;
-    _columns = ( static_cast<unsigned int> ( ( _input.empty() ) ? 0 : _input.front().size() ) );
   }
 
 
@@ -269,13 +354,20 @@ public:
   {
     USUL_ASSERT_SAME_TYPE ( Dimensions, boost::gil::point2<std::ptrdiff_t> );
 
-    const FileNames::size_type rows ( _input.size() );
-    const Strings::size_type columns ( ( rows > 0 ) ? _input.front().size() : 0 );
+    if ( 0 != _dim.x && 0 != _dim.y )
+    {
+      return _dim;
+    }
+    else
+    {
+      const FileNames::size_type rows ( _input.size() );
+      const Strings::size_type columns ( ( rows > 0 ) ? _input.front().size() : 0 );
 
-    Dimensions dim;
-    dim.x = maxInputDim.x * static_cast<Dimensions::value_type> ( columns );
-    dim.y = maxInputDim.y * static_cast<Dimensions::value_type> ( rows );
-    return dim;
+      Dimensions dim;
+      dim.x = maxInputDim.x * static_cast<Dimensions::value_type> ( columns );
+      dim.y = maxInputDim.y * static_cast<Dimensions::value_type> ( rows );
+      return dim;
+    }
   }
 
 
@@ -288,11 +380,12 @@ public:
   void parse ( const CommandLine &args, std::ostream *out = &std::cout )
   {
     // Initialize.
-    Strings input;
-    input.reserve ( args.size() );
+    Strings files;
+    files.reserve ( args.size() );
     unsigned int columns ( 0 );
     unsigned int quality ( _quality );
     std::string output;
+    Dimensions dim ( 0, 0 );
 
     // Loop through the command-line arguments.
     {
@@ -305,20 +398,24 @@ public:
         {
           // Grab all the input files.
           ++i;
-          for ( CommandLine::const_iterator j = i; j != args.end(); ++j )
+          CommandLine::const_iterator j = i;
+          while ( j != args.end() )
           {
             const std::string file ( *j );
             if ( '-' == file.at(0) )
             {
-              i = j - 1;
               break;
             }
             if ( false == Usul::Predicates::FileExists::test ( file ) )
             {
               throw Images::GIL::Exceptions::CommandLineException ( "Error 7789741330: Cannot read input file: " + file );
             }
-            input.push_back ( file );
+            files.push_back ( file );
+            ++j;
           }
+
+          // Set next iterator for outer loop.
+          i = j - 1;
         }
 
         else if ( "--output" == word )
@@ -347,6 +444,22 @@ public:
           }
         }
 
+        else if ( "--dimensions" == word )
+        {
+          ++i;
+          if ( args.end() != i )
+          {
+            std::istringstream in ( *i );
+            in >> dim.x;
+          }
+          ++i;
+          if ( args.end() != i )
+          {
+            std::istringstream in ( *i );
+            in >> dim.y;
+          }
+        }
+
         else
         {
           OUTPUT_STREAM << "Warning: Ignoring argument: " << word << std::endl;
@@ -363,33 +476,33 @@ public:
     }
 
     // Make sure there are enough input files.
-    if ( input.size() < 2 )
+    if ( files.size() < 1 )
     {
       Usul::Exceptions::Thrower<Images::GIL::Exceptions::CommandLineException>
-        ( "Error 3468882899: Number of input files is ", input.size() );
+        ( "Error 3468882899: Number of input files is ", files.size() );
     }
 
     // Set the number of columns.
-    _columns = static_cast<unsigned int> ( ( ( 0 == columns || columns > input.size() ) ? input.size() : columns ) );
+    columns = static_cast<unsigned int> ( ( ( 0 == columns || columns > files.size() ) ? files.size() : columns ) );
 
     // Calculate the number of rows.
-    const unsigned int rows ( static_cast<unsigned int> ( ( input.size() == _columns ) ? 1 : ( input.size() / _columns ) ) );
+    const unsigned int rows ( static_cast<unsigned int> ( ( files.size() == columns ) ? 1 : ( files.size() / columns ) ) );
 
     // Make sure the number of rows makes sense.
-    if ( input.size() != ( rows * _columns ) )
+    if ( files.size() != ( rows * columns ) )
     {
       Usul::Exceptions::Thrower<Images::GIL::Exceptions::CommandLineException>
-        ( "Error 3760601841: Number of input files (", input.size(), ") is not evenly divisible by specified number of columns (", _columns, ")" );
+        ( "Error 3760601841: Number of input files (", files.size(), ") is not evenly divisible by specified number of columns (", columns, ")" );
     }
 
     // Set input files.
     {
       FileNames matrix;
       matrix.reserve ( rows );
-      Strings::const_iterator first = input.begin();
+      Strings::const_iterator first = files.begin();
       for ( unsigned int i = 0; i < rows; ++i )
       {
-        Strings::const_iterator last ( first + _columns );
+        Strings::const_iterator last ( first + columns );
         matrix.push_back ( Strings ( first, last ) );
         first = last;
       }
@@ -401,6 +514,9 @@ public:
 
     // Set the output file.
     this->output ( output );
+
+    // Set the dimensions.
+    this->dimensions ( dim );
   }
 
 
@@ -448,12 +564,15 @@ public:
     }
 
     // Determine dimensions.
-    OUTPUT_STREAM << "Calculating maximum input dimensions ... " << std::flush;
     Dimensions maxInputDim ( this->maxInputDimensions() );
-    OUTPUT_STREAM << '(' << maxInputDim.x << ',' << maxInputDim.y << ')' << std::endl;
 
     // Get the target image dimensions.
     Dimensions targetDim ( this->targetDimensions ( maxInputDim ) );
+
+    // Calculate the size to make each input image before copying it.
+    const bool useInput ( 0 != _dim.x && 0 != _dim.y );
+    Dimensions tileDim ( ( ( useInput ) ? ( _dim.x / this->columns() ) : maxInputDim.x ),
+                         ( ( useInput ) ? ( _dim.y / this->rows()    ) : maxInputDim.y ) );
 
     // Check for overflow.
     this->checkOverflow ( targetDim, out );
@@ -478,22 +597,37 @@ public:
         OUTPUT_STREAM << "Reading tile [" << i << ',' << j << "] '" << file << "' ... " << std::flush;
 
         // Read the tile.
-        Image tile;
+        ImagePtr tile ( new Image );
         IOPtr reader ( this->_getIO ( file ) );
-        reader->read ( file, tile );
+        reader->read ( file, *tile );
+
+        // Resize the image if we should.
+        if ( tile->dimensions() != tileDim  )
+        {
+          std::cout << "Resizing ... " << std::flush;
+          ImagePtr tempImage ( new Image ( tileDim ) );
+          boost::gil::resize_view 
+            ( boost::gil::const_view ( *tile ), 
+              boost::gil::view ( *tempImage ), 
+              boost::gil::bilinear_sampler() );
+          tile = tempImage;
+        }
 
         // Copy all the pixels from the input image to the current view.
         std::cout << "Copying pixels ... " << std::flush;
-        boost::gil::copy_and_convert_pixels ( boost::gil::const_view ( tile ), boost::gil::subimage_view ( boost::gil::view ( *target ), topLeft, maxInputDim ) );
+        boost::gil::copy_and_convert_pixels 
+          ( boost::gil::const_view ( *tile ), 
+            boost::gil::subimage_view ( boost::gil::view ( *target ), 
+            topLeft, tile->dimensions() ) );
         std::cout << "Done" << std::endl;
 
         // Move the original of the next view.
-        topLeft.x += maxInputDim.x;
+        topLeft.x += tileDim.x;
       }
 
       // Move the original of the next view.
       topLeft.x = 0;
-      topLeft.y += maxInputDim.y;
+      topLeft.y += tileDim.y;
     }
 
     // If we get to here then set the target.
@@ -558,9 +692,9 @@ private:
   IOMap _ioMap;
   FileNames _input;
   unsigned int _quality;
-  unsigned int _columns;
   std::string _output;
   Strings _ignored;
+  Dimensions _dim;
 };
 
 

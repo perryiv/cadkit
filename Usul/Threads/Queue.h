@@ -55,11 +55,27 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
+  //  Clear the queue.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void clear()
+  {
+    guard_type guard ( _mutex );
+    while ( false == _queue.empty() )
+    {
+      _queue.pop()
+    }
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
   //  Is it empty?
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  bool empty()
+  bool empty() const
   {
     guard_type guard ( _mutex );
     return _queue.empty();
@@ -68,63 +84,29 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Get the front (most recently added) of the queue.
+  //  Get the next item on the queue and pop it off the queue.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  value_type &front()
+  value_type next()
   {
     guard_type guard ( _mutex );
-    return _queue.front();
-  }
-  const value_type &front() const
-  {
-    guard_type guard ( _mutex );
-    return _queue.front();
+    value_type value ( _queue.front() );
+    _queue.pop();
+    return value;
   }
 
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Get the back of the queue.
+  //  Add an element onto the queue.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  value_type &back()
-  {
-    guard_type guard ( _mutex );
-    return _queue.back();
-  }
-  const value_type &back() const
-  {
-    guard_type guard ( _mutex );
-    return _queue.back();
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Push an element onto the queue.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  void push ( const value_type &value )
+  void add ( const value_type &value )
   {
     guard_type guard ( _mutex );
     _queue.push ( value );
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Pop an element off of the queue.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  void pop()
-  {
-    guard_type guard ( _mutex );
-    _queue.pop();
   }
 
 
@@ -146,7 +128,7 @@ private:
   Queue ( const Queue & );
   Queue &operator = ( const Queue & );
 
-  mutex_type _mutex;
+  mutable mutex_type _mutex;
   queue_type _queue;
 };
 

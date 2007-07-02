@@ -48,7 +48,7 @@ namespace Images
           return boost::gil::png_read_dimensions ( file );
         }
 
-        virtual void read  ( const std::string &file, ImageType &image )
+        virtual void read ( const std::string &file, ImageType &image )
         {
           boost::gil::png_read_and_convert_image ( file, image );
         }

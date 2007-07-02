@@ -855,6 +855,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\IStreamListener.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\ITool.h"
 						>
 					</File>
@@ -1811,6 +1815,10 @@
 				</File>
 				<File
 					RelativePath=".\Io\Redirect.h"
+					>
+				</File>
+				<File
+					RelativePath=".\IO\StreamSink.h"
 					>
 				</File>
 				<File

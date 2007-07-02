@@ -20,14 +20,14 @@
 #include <stdexcept>
 #include <sstream>
 
-
+#if 0
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Remove the file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Usul::File::remove ( const std::string &name )
+void Usul::File::remove ( const std::string &name, bool allowThrow )
 {
   // Make sure there is no file with the given name.
   if ( Usul::Predicates::FileExists() ( name ) )
@@ -47,3 +47,4 @@ void Usul::File::remove ( const std::string &name )
     }
   }
 }
+#endif

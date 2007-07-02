@@ -205,7 +205,7 @@ void Temp::rename ( const std::string &name )
   LastError::init();
 
   // Make sure there is no file with the given name.
-  if ( Usul::Predicates::FileExists() ( name ) )
+  if ( Usul::Predicates::FileExists::test ( name ) )
   {
     if ( 0 != ::remove ( name.c_str() ) )
     {
@@ -283,7 +283,7 @@ std::string Temp::directory ( bool wantSlash )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return name of directory where temporary files can be created.
+//  Remove the file if it exists.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

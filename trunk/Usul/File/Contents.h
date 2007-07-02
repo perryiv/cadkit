@@ -117,11 +117,11 @@ inline void contents ( const std::string &filename, char comment, std::string &f
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the file contents but skip any comment lines.
+//  Get the file contents.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline void contents ( const std::string &filename,std::string &file )
+inline void contents ( const std::string &filename, std::string &file )
 {
   // Get the size of the file.
   Usul::Types::Uint64 size ( Usul::File::size ( filename ) );

@@ -1241,6 +1241,26 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Volume"
+				>
+				<File
+					RelativePath=".\Volume\PlanarProxyGeometry.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Volume\PlanarProxyGeometry.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Volume\Texture3DVolume.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Volume\Texture3DVolume.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

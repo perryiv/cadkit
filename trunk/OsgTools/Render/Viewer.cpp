@@ -3858,7 +3858,7 @@ void Viewer::handleTool ( bool left, bool middle, bool right, bool motion, float
       //if ( !( event.state & FX::CONTROLMASK ) )
       {
         // We are done with this tool.
-        Usul::Interfaces::IToolLifeTime::QueryPtr toolLifeTime( _currentTool->queryInterface( Usul::Interfaces::IToolLifeTime::IID ) );        
+        Usul::Interfaces::IToolLifeTime::QueryPtr toolLifeTime ( _currentTool );
         if( toolLifeTime.valid() && toolLifeTime->temporary() )        
         {
           this->doneTool();

@@ -19,13 +19,11 @@
 #include "OsgTools/Draggers/Translate1.h"
 
 #include "OsgTools/Images/Image3d.h"
-#include "OsgTools/Drawables/VoxelGeometry.h"
 #include "OsgTools/Volume/Texture3DVolume.h"
 
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Policies/Update.h"
-#include "Usul/Functions/Color.h"
 #include "Usul/Math/Vector3.h"
 
 #include "Usul/Interfaces/IGetOptions.h"
@@ -36,22 +34,8 @@
 #include "osg/Texture2D"
 #include "osg/Texture3D"
 #include "osg/TexEnv"
-#include "osg/Billboard"
-#include "osg/TexGenNode"
-#include "osg/TexEnvCombine"
-#include "osg/AlphaFunc"
-#include "osg/Material"
-#include "osg/ClipNode"
-#include "osg/ShapeDrawable"
-#include "osg/BlendFunc"
-#include "osg/LOD"
-#include "osg/TexMat"
 
 #include "osgDB/ReadFile"
-#include "osgDB/WriteFile"
-
-#include <limits>
-
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VolumeDocument, VolumeDocument::BaseClass );
 

@@ -87,14 +87,9 @@ protected:
   /// Use reference counting.
   virtual ~VolumeDocument();
 
-  void                        _applyTransferFunction ( osg::Image *image );
-  double                      _calculateGradient ( unsigned int s, unsigned int t, unsigned int r, osg::Image *image );
-
   osg::Node*                  _buildScene2DTexture ( const BaseClass::Options&, Unknown* caller );
   osg::Node*                  _buildScene3DTexture ( const BaseClass::Options&, Unknown* caller );
   osg::Node*                  _buildSceneVoxels    ( const BaseClass::Options&, Unknown* caller );
-
-  osg::Node*                  _makeCube( unsigned int numSlices, int width = 1, int height = 1 );
 
   osg::Texture3D*             _make3DTexture();
 

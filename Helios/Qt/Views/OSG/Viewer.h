@@ -15,6 +15,7 @@
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IOpenGLContext.h"
+#include "Usul/Interfaces/GUI/IWindow.h"
 
 #include "OsgTools/Render/Viewer.h"
 
@@ -26,7 +27,8 @@ namespace Views {
 namespace OSG {
 
 class HELIOS_QT_VIEWS_OSG_EXPORT Viewer : public QGLWidget,
-                                          public Usul::Interfaces::IOpenGLContext
+                                          public Usul::Interfaces::IOpenGLContext,
+                                          public Usul::Interfaces::IWindow
 {
 public:
   /// Typedefs.
@@ -50,6 +52,10 @@ public:
   /// Usul::Interfaces::IOpenGLContext
   virtual void                            makeCurrent();
   virtual void                            swapBuffers();
+
+  /// Usul::Interfaces::IWindow
+  virtual void                            setFocus();
+  virtual void                            setTitle ( const std::string& title );
 
 protected:
 

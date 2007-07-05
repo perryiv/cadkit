@@ -127,6 +127,9 @@ void Document::addWindow ( Window *window )
   // Changed set to list to get proper order of addition
   if ( std::find_if ( _windows.begin(), _windows.end(), WindowPtr::IsEqual ( window ) ) == _windows.end() )
     _windows.push_back ( window );
+
+  // Update window titles.
+  this->updateWindowTitles ();
 }
 
 
@@ -152,6 +155,9 @@ void Document::addView ( View *view )
 void Document::removeWindow ( Window *window )
 {
   _windows.remove ( window );
+
+  // Update window titles.
+  this->updateWindowTitles ();
 }
 
 
@@ -265,7 +271,7 @@ void Document::saveAs ( const std::string& filename, Unknown *caller )
   this->_save ( filename, caller, this->options() );
 
   //Since the filename changed, update titles
-  this->sendMessage( Document::ID_UPDATE_TITLES );
+  this->updateWindowTitles ();
 }
 
 
@@ -907,5 +913,21 @@ void Document::modified ( bool m )
     // Need to make gcc happy.
     Usul::Interfaces::IModifiedObserver::RefPtr temp ( iter->get() );
     temp->subjectModified( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the window titles.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::updateWindowTitles ()
+{
+  for ( Windows::iterator iter = _windows.begin(); iter != _windows.end(); ++iter )
+  {
+    std::string title ( this->getTitle ( *iter ) );
+    (*iter)->setTitle ( title );
   }
 }

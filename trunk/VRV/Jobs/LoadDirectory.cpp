@@ -15,6 +15,7 @@
 #include "Usul/System/Sleep.h"
 #include "Usul/File/Path.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/System/Directory.h"
 
 #include "boost/filesystem/operations.hpp"
@@ -25,6 +26,7 @@
 
 using namespace VRV::Jobs;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( LoadDirectory, LoadDirectory::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -33,10 +35,15 @@ using namespace VRV::Jobs;
 ///////////////////////////////////////////////////////////////////////////////
 
 LoadDirectory::LoadDirectory( const std::string &directory, Usul::Interfaces::IUnknown *caller ) :
-  BaseClass(),
+  BaseClass( caller ),
   _directory ( directory ),
-  _caller ( caller )
+  _caller ( caller ),
+  _secondProgressBar ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) )
 {
+  Usul::Interfaces::IProgressBarFactory::QueryPtr factory ( caller );
+
+  if ( factory.valid() )
+    _secondProgressBar = factory->createProgressBar ();
 }
 
 
@@ -90,20 +97,18 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace Detail
+
+void LoadDirectory::_loadModel ( const std::string& filename )
 {
-  void loadModel ( const std::string& filename, Usul::Interfaces::IUnknown* caller )
-  {
-    // Create a job.
-    Usul::Jobs::Job::RefPtr job ( new LoadModel ( filename, caller ) );
+  // Create a job.
+  Usul::Jobs::Job::RefPtr job ( new LoadModel ( filename, this->queryInterface ( Usul::Interfaces::IUnknown::IID ), false ) );
 
-    // Add the job to the manager.
-    Usul::Jobs::Manager::instance().add ( job.get() );
+  // Add the job to the manager.
+  Usul::Jobs::Manager::instance().add ( job.get() );
 
-    // Wait until it's done.
-    while ( false == job->isDone() )
-      Usul::System::Sleep::seconds( 5 );
-  }
+  // Wait until it's done.
+  while ( false == job->isDone() )
+    Usul::System::Sleep::seconds( 5 );
 }
 
 
@@ -134,10 +139,60 @@ void LoadDirectory::_started()
     for ( Filenames::iterator iter = filenames.begin(); iter != filenames.end(); ++iter )
     {
       // Load the filename.
-      Detail::loadModel ( *iter, _caller.get() );
+      this->_loadModel ( *iter );
 
       // Update for progress.
       this->_updateProgress ( iter - filenames.begin(), filenames.size() );
     }
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the new model.
+//  This will re-direct to the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LoadDirectory::addModel ( osg::Node *model, const std::string& filename )
+{
+  VRV::Interfaces::IModelAdd::QueryPtr modelAdd ( _caller );
+
+  if ( modelAdd.valid () )
+    modelAdd->addModel ( model, filename );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown*  LoadDirectory::createProgressBar()
+{
+  return _secondProgressBar.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for an interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* LoadDirectory::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IProgressBarFactory::IID:
+    return static_cast < Usul::Interfaces::IProgressBarFactory* > ( this );
+  case VRV::Interfaces::IModelAdd::IID:
+    return static_cast < VRV::Interfaces::IModelAdd * > ( this );
+  default:
+    return 0x0;
+  }
+}
+

@@ -77,6 +77,17 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Qt Scene Delegate", "
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Volume Model", "..\Plugins\VolumeModel\VolumeModel.vcproj", "{77777D5F-CBD8-4F03-B415-181EB37F0A1D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Scene Tree Qt", "Plugins\SceneTree\SceneTreeQt.vcproj", "{17701950-6309-4D13-8C5B-B549E27991CB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -139,6 +150,14 @@ Global
 		{56404183-F480-4893-8D47-53CD47BA8418}.Debug|Win32.Build.0 = Debug|Win32
 		{56404183-F480-4893-8D47-53CD47BA8418}.Release|Win32.ActiveCfg = Release|Win32
 		{56404183-F480-4893-8D47-53CD47BA8418}.Release|Win32.Build.0 = Release|Win32
+		{77777D5F-CBD8-4F03-B415-181EB37F0A1D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{77777D5F-CBD8-4F03-B415-181EB37F0A1D}.Debug|Win32.Build.0 = Debug|Win32
+		{77777D5F-CBD8-4F03-B415-181EB37F0A1D}.Release|Win32.ActiveCfg = Release|Win32
+		{77777D5F-CBD8-4F03-B415-181EB37F0A1D}.Release|Win32.Build.0 = Release|Win32
+		{17701950-6309-4D13-8C5B-B549E27991CB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{17701950-6309-4D13-8C5B-B549E27991CB}.Debug|Win32.Build.0 = Debug|Win32
+		{17701950-6309-4D13-8C5B-B549E27991CB}.Release|Win32.ActiveCfg = Release|Win32
+		{17701950-6309-4D13-8C5B-B549E27991CB}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

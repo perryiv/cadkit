@@ -24,6 +24,7 @@
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/IView.h"
 #include "Usul/Interfaces/IViewer.h"
+#include "Usul/Interfaces/IHandleMessage.h"
 #include "Usul/Interfaces/GUI/IWindow.h"
 #include "Usul/Interfaces/GUI/IQuestion.h"
 
@@ -40,7 +41,8 @@ namespace Windows {
 class FOX_TOOLS_EXPORT MdiChildWindow : public FX::FXMDIChild,
                                         public Usul::Interfaces::IView,
                                         public Usul::Interfaces::IWindow,
-                                        public Usul::Interfaces::IQuestion
+                                        public Usul::Interfaces::IQuestion,
+                                        public Usul::Interfaces::IHandleMessage
 {
 public:
 
@@ -102,6 +104,8 @@ protected:
 
   /// Usul::Interfaces::IWindow
   virtual void              setFocus();
+
+  /// Usul::Interfaces::IHandleMessage
   virtual void              handleMessage ( unsigned short message );
 
   /// Usul::Interfaces::IQuestion

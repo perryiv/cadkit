@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnimateMaterial", "AnimateMaterial\AnimateMaterial.vcproj", "{4932BD35-6E15-41C7-9EBA-98EA2B9F2D8E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Usul", "..\..\Usul\Usul.vcproj", "{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Usul", "..\..\Usul\Usul.vcproj", "{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PerPixelLighting", "PerPixelLighting\PerPixelLighting.vcproj", "{009FFA46-D75B-4713-8ED5-916C8A8FECBE}"
 EndProject
@@ -17,10 +17,10 @@ Global
 		{4932BD35-6E15-41C7-9EBA-98EA2B9F2D8E}.Debug|Win32.Build.0 = Debug|Win32
 		{4932BD35-6E15-41C7-9EBA-98EA2B9F2D8E}.Release|Win32.ActiveCfg = Release|Win32
 		{4932BD35-6E15-41C7-9EBA-98EA2B9F2D8E}.Release|Win32.Build.0 = Release|Win32
-		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Debug|Win32.ActiveCfg = Debug|Win32
-		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Debug|Win32.Build.0 = Debug|Win32
-		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Release|Win32.ActiveCfg = Release|Win32
-		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Release|Win32.Build.0 = Release|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Debug|Win32.ActiveCfg = Debug|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Debug|Win32.Build.0 = Debug|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Release|Win32.ActiveCfg = Release|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Release|Win32.Build.0 = Release|Win32
 		{009FFA46-D75B-4713-8ED5-916C8A8FECBE}.Debug|Win32.ActiveCfg = Debug|Win32
 		{009FFA46-D75B-4713-8ED5-916C8A8FECBE}.Debug|Win32.Build.0 = Debug|Win32
 		{009FFA46-D75B-4713-8ED5-916C8A8FECBE}.Release|Win32.ActiveCfg = Release|Win32

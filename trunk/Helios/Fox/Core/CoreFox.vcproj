@@ -176,7 +176,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenThreadsWin32.lib opengl32.lib foxdll-1.6.lib shell32.lib"
+				AdditionalDependencies="OpenThreads.lib opengl32.lib foxdll-1.6.lib shell32.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosCore.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

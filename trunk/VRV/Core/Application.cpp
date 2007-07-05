@@ -394,8 +394,10 @@ void Application::draw()
   
   renderer->viewMatrix( *osgProj );
 
-  // Do the drawing.
+  // Update.  This needs to be moved into the Preframe.
   renderer->update();
+
+  // Do the drawing.
   renderer->render();
 }
 

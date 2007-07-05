@@ -31,7 +31,6 @@ struct IWindow : public Usul::Interfaces::IUnknown
   enum { IID = 4041454608u };
 
   virtual void setFocus() = 0;
-  virtual void handleMessage ( unsigned short message ) = 0;
 
 };
 

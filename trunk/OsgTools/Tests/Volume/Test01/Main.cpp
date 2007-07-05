@@ -66,7 +66,7 @@ int main( int argc, char **argv )
 
   osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
   osg::ref_ptr < Drawable > drawable ( new Drawable );
-  drawable->numPlanes ( 16 );
+  drawable->numPlanes ( 1024 );
 
   OsgTools::State::StateSet::setPolygonsLines ( geode.get(), true );
   OsgTools::State::StateSet::setLighting      ( drawable->getOrCreateStateSet(), false );

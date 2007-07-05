@@ -870,14 +870,6 @@ void Application::_parseCommandLine()
                   restart.end(), 
                   Usul::Adaptors::memberFunction ( this, &Application::_loadRestartFile ) );
 
-  // Extract the model files and remove them from the remaining arguments.
-  Parser::Args models = _parser->files ( true );
-
-  // Load the model files.
-  std::for_each ( models.begin(),
-                  models.end(), 
-                  Usul::Adaptors::memberFunction ( this, &Application::_loadModelFile ) );
-
   // Find all directories.
   Parser::Args directories;
 
@@ -891,6 +883,14 @@ void Application::_parseCommandLine()
   std::for_each ( directories.begin(),
                   directories.end(), 
                   Usul::Adaptors::memberFunction ( this, &Application::_loadDirectory ) );
+
+  // Extract the model files and remove them from the remaining arguments.
+  Parser::Args models = _parser->files ( true );
+
+  // Load the model files.
+  std::for_each ( models.begin(),
+                  models.end(), 
+                  Usul::Adaptors::memberFunction ( this, &Application::_loadModelFile ) );
 }
 
 

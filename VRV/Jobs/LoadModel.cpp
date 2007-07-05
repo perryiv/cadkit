@@ -29,10 +29,11 @@ using namespace VRV::Jobs;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LoadModel::LoadModel( const std::string& filename, Usul::Interfaces::IUnknown *caller ) :
+LoadModel::LoadModel( const std::string& filename, Usul::Interfaces::IUnknown *caller, bool hideBar ) :
   BaseClass( caller ),
   _filename ( filename ),
-  _caller ( caller )
+  _caller ( caller ),
+  _hideProgressBar ( hideBar )
 {
 }
 
@@ -58,12 +59,53 @@ void LoadModel::_started()
 {
   USUL_TRACE_SCOPE;
 
+  Usul::Interfaces::IProgressBar::QueryPtr progressBar ( this->progress() );
+
+  try
+  {
+    if( progressBar.valid() )
+      progressBar->showProgressBar ();
+
+    this->_loadModel ();
+  }
+  catch ( const std::exception& e )
+  {
+    // Make sure we hide the progress bar.
+    if( progressBar.valid() && _hideProgressBar )
+      progressBar->hideProgressBar();
+
+    // Re-throw
+    throw e;
+  }
+  catch ( ... )
+  {
+    // Make sure we hide the progress bar.
+    if( progressBar.valid() && _hideProgressBar )
+      progressBar->hideProgressBar();
+
+    // throw
+    throw;
+  }
+
+  // Make sure we hide the progress bar.
+  if( progressBar.valid() && _hideProgressBar )
+    progressBar->hideProgressBar();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the model..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LoadModel::_loadModel()
+{
+  USUL_TRACE_SCOPE;
+
   typedef void (LoadModel::*Function) ( const std::string &, unsigned long, unsigned long ); 
   typedef Usul::Adaptors::MemberFunction < LoadModel*, Function > MemFun;
   typedef OsgTools::IO::Reader::ReaderCallback < MemFun > Callback;
-
-  // Show the progress bar.
-  Usul::Interfaces::IProgressBar::ShowHide showHide ( this->progress() );
 
   // Set the label.
   this->_setLabel ( "Loading filename: " + _filename );

@@ -24,13 +24,15 @@ class LoadModel : public Usul::Jobs::Job
 public:
   typedef Usul::Jobs::Job BaseClass;
 
-  LoadModel( const std::string& filename, Usul::Interfaces::IUnknown *caller = 0x0 );
+  LoadModel( const std::string& filename, Usul::Interfaces::IUnknown *caller = 0x0, bool hideBar = true );
 
 protected:
   virtual ~LoadModel();
 
   virtual void              _started();
   virtual void              _finished();
+
+  virtual void              _loadModel ();
 
   // Post-process the model loading.
   void                      _postProcessModelLoad ( const std::string &filename, osg::Node *model );
@@ -40,6 +42,7 @@ protected:
 private:
   std::string _filename;
   Usul::Interfaces::IUnknown::QueryPtr _caller;
+  bool _hideProgressBar;
 };
 
 }

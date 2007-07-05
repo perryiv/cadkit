@@ -43,8 +43,8 @@ public:
     // Set the trace output file.
     Usul::Trace::Print::init ( _trace );
 
-    // Use 2 threads.
-    Usul::Jobs::Manager::instance().poolResize ( 2 );
+    // Use 5 threads.
+    Usul::Jobs::Manager::instance().poolResize ( 5 );
   }
 
   ~Program()

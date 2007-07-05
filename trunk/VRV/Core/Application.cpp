@@ -495,7 +495,7 @@ void Application::init()
   //_progressBars->setPosition ( osg::Vec3 ( 10, 10, 0 ) );
 
   // Add the progress bars to the scene.
-  osg::ref_ptr < osg::Group > group ( _sceneManager->projectionGroupGet ( "ProgressBarGroup" ) );
+  osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
   group->addChild ( _progressBars->buildScene() );
 }
 
@@ -524,6 +524,9 @@ void Application::preFrame()
 
   // Update the progress bars.
   _progressBars->buildScene();
+
+  // Purge.
+  Usul::Jobs::Manager::instance().purge();
 }
 
 

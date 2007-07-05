@@ -64,7 +64,10 @@ void LoadModel::_started()
   try
   {
     if( progressBar.valid() )
+    {
       progressBar->showProgressBar ();
+      progressBar->updateProgressBar ( 0 );
+    }
 
     this->_loadModel ();
   }

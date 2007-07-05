@@ -15,7 +15,7 @@
 
 #include "TransparencyComponent.h"
 
-#include "Usul/Interfaces/IActiveDocument.h"
+#include "Usul/Documents/Manager.h"
 #include "Usul/Interfaces/IImageList.h"
 #include "Usul/Interfaces/ISendMessage.h"
 
@@ -141,91 +141,87 @@ std::string TransparencyComponent::menuGroup() const
 
 void TransparencyComponent::execute ( Usul::Interfaces::IUnknown *caller )
 {
-  Usul::Interfaces::IActiveDocument::QueryPtr activeDocument ( caller );
+  Usul::Documents::Document::RefPtr document ( Usul::Documents::Manager::instance().active() );
+  Usul::Interfaces::IImageList::QueryPtr imageList ( document );
 
-  if ( activeDocument.valid () )
+  if ( imageList.valid() )
   {
-    Usul::Interfaces::IImageList::QueryPtr imageList ( activeDocument->getActiveDocument() );
+    FX::FXColorDialog dialog ( (FX::FXWindow*) FoxTools::Functions::mainWindow(), "Choose Color" );
+    dialog.setOpaqueOnly ( true );
 
-    if ( imageList.valid() )
+    if ( dialog.execute ( FX::PLACEMENT_OWNER ) )
     {
-      FX::FXColorDialog dialog ( (FX::FXWindow*) FoxTools::Functions::mainWindow(), "Choose Color" );
-      dialog.setOpaqueOnly ( true );
+      FX::FXVec4f c ( dialog.getRGBA() );
+    
+      osg::Vec4 c1 ( c[0] * 255, c[1] * 255, c[2] * 255, 1.0 );
 
-      if ( dialog.execute ( FX::PLACEMENT_OWNER ) )
+      FX::FXDialogBox trans ( (FX::FXWindow*) FoxTools::Functions::mainWindow(), "Set Transparency", FX::DECOR_TITLE | FX::DECOR_BORDER | FX::DECOR_RESIZE | FX::DECOR_CLOSE, 0, 0, 300 );
+
+      FX::FXVerticalFrame *contents ( new FX::FXVerticalFrame( &trans , LAYOUT_FILL_X|LAYOUT_FILL_Y) );
+
+      FoxTools::Widgets::SliderTextField *slider = new FoxTools::Widgets::SliderTextField ( contents, "Transparency: " );
+
+      FX::FXHorizontalFrame *hframe ( new FX::FXHorizontalFrame ( contents, FX::LAYOUT_FILL_Y| FX::LAYOUT_FILL_X ) );
+      new FX::FXButton ( hframe, "Accept", 0x0, &trans, FX::FXDialogBox::ID_ACCEPT,FX::LAYOUT_LEFT|BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK );
+      new FX::FXButton ( hframe, "Cancel", 0x0, &trans, FX::FXDialogBox::ID_CANCEL,FX::LAYOUT_RIGHT|BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK );
+
+      if( trans.execute ( FX::PLACEMENT_OWNER ) )
       {
-        FX::FXVec4f c ( dialog.getRGBA() );
-      
-        osg::Vec4 c1 ( c[0] * 255, c[1] * 255, c[2] * 255, 1.0 );
 
-        FX::FXDialogBox trans ( (FX::FXWindow*) FoxTools::Functions::mainWindow(), "Set Transparency", FX::DECOR_TITLE | FX::DECOR_BORDER | FX::DECOR_RESIZE | FX::DECOR_CLOSE, 0, 0, 300 );
+        float transparency ( slider->getValue() );
 
-        FX::FXVerticalFrame *contents ( new FX::FXVerticalFrame( &trans , LAYOUT_FILL_X|LAYOUT_FILL_Y) );
+        typedef Usul::Interfaces::IImageList::ImagePtr ImagePtr;
+        typedef Usul::Interfaces::IImageList::ImageList ImageList;
+        
+        ImageList &images ( imageList->getImageList() );
 
-        FoxTools::Widgets::SliderTextField *slider = new FoxTools::Widgets::SliderTextField ( contents, "Transparency: " );
-
-        FX::FXHorizontalFrame *hframe ( new FX::FXHorizontalFrame ( contents, FX::LAYOUT_FILL_Y| FX::LAYOUT_FILL_X ) );
-        new FX::FXButton ( hframe, "Accept", 0x0, &trans, FX::FXDialogBox::ID_ACCEPT,FX::LAYOUT_LEFT|BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK );
-        new FX::FXButton ( hframe, "Cancel", 0x0, &trans, FX::FXDialogBox::ID_CANCEL,FX::LAYOUT_RIGHT|BUTTON_INITIAL|BUTTON_DEFAULT|FRAME_RAISED|FRAME_THICK );
-
-        if( trans.execute ( FX::PLACEMENT_OWNER ) )
+        for( ImageList::iterator i = images.begin(); i != images.end(); ++i )
         {
+          ImagePtr image ( *i );
 
-          float transparency ( slider->getValue() );
+          const unsigned int numBits ( image->getPixelSizeInBits() );
+          const int width ( image->s() );
+          const int height ( image->t() );
+          const unsigned int size ( image->getImageSizeInBytes() );
 
-          typedef Usul::Interfaces::IImageList::ImagePtr ImagePtr;
-          typedef Usul::Interfaces::IImageList::ImageList ImageList;
-          
-          ImageList &images ( imageList->getImageList() );
-
-          for( ImageList::iterator i = images.begin(); i != images.end(); ++i )
+          switch ( image->getPixelFormat() )
           {
-            ImagePtr image ( *i );
-
-            const unsigned int numBits ( image->getPixelSizeInBits() );
-            const int width ( image->s() );
-            const int height ( image->t() );
-            const unsigned int size ( image->getImageSizeInBytes() );
-
-            switch ( image->getPixelFormat() )
+          case(GL_ALPHA):
+            break;
+          case(GL_LUMINANCE_ALPHA):
             {
-            case(GL_ALPHA):
-              break;
-            case(GL_LUMINANCE_ALPHA):
+              for(int t=0;t<height;++t)
               {
-                for(int t=0;t<height;++t)
+                unsigned char* source = image->data(0,t,0);
+
+                for(int i=0;i<width*2;++i)
                 {
-                  unsigned char* source = image->data(0,t,0);
-
-                  for(int i=0;i<width*2;++i)
+                  unsigned char* value ( source++ );
+                  unsigned char* alpha ( source++ );
+                  
+                  if ( *value == c1[0] )
                   {
-                    unsigned char* value ( source++ );
-                    unsigned char* alpha ( source++ );
-                    
-                    if ( *value == c1[0] )
-                    {
-                      *alpha = transparency; 
-                    }
+                    *alpha = transparency; 
                   }
-
                 }
+
               }
-              break;
-            case(GL_RGBA):
-              // TODO
-              break;
-            default:
-              throw std::runtime_error ( "Image format not supported." );
-            };
+            }
+            break;
+          case(GL_RGBA):
+            // TODO
+            break;
+          default:
+            throw std::runtime_error ( "Image format not supported." );
+          };
 
-            
-          }
-
-          // Rebuild the scene
-          Usul::Interfaces::ISendMessage::ValidQueryPtr sendMessage ( activeDocument->getActiveDocument() );
-          sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_BUILD_SCENE );
-          sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_RENDER_SCENE );
+          
         }
+
+        // Rebuild the scene
+        Usul::Interfaces::ISendMessage::ValidQueryPtr sendMessage ( document );
+        sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_BUILD_SCENE );
+        sendMessage->sendMessage( Usul::Interfaces::ISendMessage::ID_RENDER_SCENE );
       }
     }
   }

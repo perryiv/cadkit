@@ -310,6 +310,8 @@ Usul::Interfaces::IUnknown* MdiChildWindow::queryInterface( unsigned long iid )
     return static_cast < Usul::Interfaces::IWindow* > ( this );
   case Usul::Interfaces::IQuestion::IID:
     return static_cast < Usul::Interfaces::IQuestion* > ( this );
+  case Usul::Interfaces::IHandleMessage::IID:
+    return static_cast < Usul::Interfaces::IHandleMessage* > ( this );
   default:
     return 0x0;
   }

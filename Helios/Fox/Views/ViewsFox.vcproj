@@ -176,7 +176,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenThreadsWin32.lib opengl32.lib foxdll-1.6.lib osg.lib osgUtil.lib osgGA.lib osgDB.lib osgText.lib"
+				AdditionalDependencies="OpenThreads.lib opengl32.lib foxdll-1.6.lib osg.lib osgUtil.lib osgGA.lib osgDB.lib osgText.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosViews.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

@@ -302,7 +302,9 @@ void Document::_sendMessage ( Listeners &listeners, unsigned short message, cons
     {
       // We can't return if the handle function returns zero because an object
       // that does not handle the message id will also return zero.
-      listener->handleMessage ( message );
+      Usul::Interfaces::IHandleMessage::QueryPtr handle ( listener );
+      if ( handle.valid( ) )
+        handle->handleMessage ( message );
     }
   }
 }
@@ -327,7 +329,9 @@ void Document::_sendMessage ( Listeners &listeners, unsigned short message )
 
     // We can't return if the handle function returns zero because an object
     // that does not handle the message id will also return zero.
-    listener->handleMessage ( message );
+    Usul::Interfaces::IHandleMessage::QueryPtr handle ( listener );
+    if ( handle.valid( ) )
+      handle->handleMessage ( message );
   }
 }
 

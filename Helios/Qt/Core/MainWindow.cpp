@@ -34,6 +34,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Interfaces/GUI/IAddDockWindow.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Resources/TextWindow.h"
 #include "Usul/Strings/Qt.h"
@@ -188,6 +189,9 @@ void MainWindow::_destroy()
   // Stop the idle timer.
   if ( 0x0 != _idleTimer )
     _idleTimer->stop();
+
+  // Release all the plugins.
+  this->releasePlugins();
 
   // Wait here until all jobs are done.
   std::cout << "Waiting for all jobs to finish..." << std::endl;
@@ -890,6 +894,18 @@ void MainWindow::loadPlugin ( const std::string &plugin )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Release all the plugins.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::releasePlugins()
+{
+  Usul::Components::Manager::instance().clear ( &std::cout );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Show the splash screen.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1188,4 +1204,59 @@ void MainWindow::notify ( Usul::Interfaces::IUnknown *caller, const char *values
     // Tell window to refresh.
     this->updateTextWindow ( true );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize all the plugins.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::initPlugins()
+{
+  // Have the plugins build any dock widgets.
+  this->_buildPluginDockWidgets();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Have the plugins build any dock widgets.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_buildPluginDockWidgets()
+{
+  typedef Usul::Components::Manager Manager;
+  typedef Manager::UnknownSet       Unknowns;
+
+  // Get all the plugins that implement Usul::Interfaces::IAddDockWindow.
+  Unknowns unknowns ( Manager::instance().getInterfaces ( Usul::Interfaces::IAddDockWindow::IID ) );
+
+  // For convienence.
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+
+  // Go through the plugins.
+  for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
+  {
+    Usul::Interfaces::IAddDockWindow::ValidQueryPtr plugin ( *iter );
+    plugin->addDockWindow ( me );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  A close event has been recieved.  Close any windows that the workspace has open.
+//  Calling in the destructor is too late because the event loop has exited.
+//  TODO:  Ask the documents if they need to save before calling the BaseClass' fucntion.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::closeEvent ( QCloseEvent* event )
+{
+  _workSpace->closeAllWindows();
+  
+  BaseClass::closeEvent ( event );
 }

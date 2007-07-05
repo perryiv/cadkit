@@ -116,6 +116,7 @@ public:
   void                              printPlugins() const;
   void                              releasePlugins();
   void                              releasePlugin ( const std::string &pluginFile );
+  void                              initPlugins ();
 
   // Functions for getting information about this binary.
   std::string                       directory() const;
@@ -141,6 +142,7 @@ protected:
   void                              _buildMenu();
   void                              _buildTextWindow();
   void                              _buildToolBar();
+  void                              _buildPluginDockWidgets();
 
   std::string                       _formatFilters ( const Filters &filters ) const;
 
@@ -153,6 +155,8 @@ protected:
   void                              _saveSettings();
 
   void                              _clearDocuments();
+
+  virtual void                      closeEvent ( QCloseEvent *event );
  
   // Usul::Interfaces::Qt::IMainWindow
   virtual QMainWindow *             mainWindow();

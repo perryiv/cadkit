@@ -1,7 +1,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
 //  Copyright (c) 2005, Perry L. Miller IV and Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
@@ -30,6 +29,7 @@
 #include "Usul/Interfaces/GUI/IQuestion.h"
 #include "Usul/Interfaces/GUI/IUpdateGUI.h"
 #include "Usul/Interfaces/IHandleActivatingDocument.h"
+#include "Usul/Interfaces/IHandleMessage.h"
 
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Resources/EventQueue.h"
@@ -105,8 +105,10 @@ void Document::applicationClosing ( Usul::Interfaces::IUnknown *caller )
   // Loop through the windows.
   for ( Temp::iterator i = temp.begin(); i != temp.end(); ++i )
   {
-    Window *window ( *i );
-    window->handleMessage ( Document::ID_CLOSE );
+    Usul::Interfaces::IHandleMessage::QueryPtr message ( *i );
+
+    if( message.valid() )
+      message->handleMessage ( Document::ID_CLOSE );
   }
 
   // Let anyone else who may be open that the document is closing

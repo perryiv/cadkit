@@ -75,7 +75,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib OpenThreadsWin32.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib OpenThreads.lib"
 				OutputFile="$(OSG_BIN_DIR)/osgdb_pdb.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

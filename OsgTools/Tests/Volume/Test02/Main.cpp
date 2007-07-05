@@ -56,7 +56,7 @@ osg::Image* loadTexture( int sizeX, int sizeY, int sizeZ, const std::string& fil
 osg::Node* buildVolume()
 {
   osg::ref_ptr < OsgTools::Volume::Texture3DVolume > volume ( new OsgTools::Volume::Texture3DVolume );
-  volume->numPlanes ( 128 );
+  volume->numPlanes ( 512 );
   volume->image ( loadTexture ( 256, 256, 256, "Engine256.raw" ) );
 
   return volume.release();

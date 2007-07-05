@@ -173,6 +173,7 @@ namespace Program
           mw.addPluginFile ( mw.defautPluginFile() );
           mw.loadPlugins();
           mw.printPlugins();
+          mw.initPlugins();
 
           // Hide the splash screen and show the main window.
           mw.hideSplashScreen();

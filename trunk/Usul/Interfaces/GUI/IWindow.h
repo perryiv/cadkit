@@ -30,7 +30,11 @@ struct IWindow : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 4041454608u };
 
-  virtual void setFocus() = 0;
+  /// Make the window active.
+  virtual void                     setFocus() = 0;
+
+  /// Set the title of the window.
+  virtual void                     setTitle ( const std::string& title ) = 0;
 
 };
 

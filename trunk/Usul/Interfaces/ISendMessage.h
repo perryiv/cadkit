@@ -25,7 +25,6 @@ struct ISendMessage : public Usul::Interfaces::IUnknown
   enum
   {
     ID_FIRST = 1000,
-    ID_UPDATE_TITLES,
     ID_CLEAR_SCENE,
     ID_BUILD_SCENE,
     ID_RENDER_SCENE,

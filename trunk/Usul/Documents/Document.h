@@ -226,6 +226,9 @@ public:
 
   /// Update the GUI.
   virtual void                updateGUI();
+  
+  /// Update the window titles.
+  void                        updateWindowTitles ();
 
   /// Bring the windows forward
   void                        windowsForward();

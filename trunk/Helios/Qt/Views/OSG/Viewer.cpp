@@ -52,6 +52,9 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
 
   // Initalize the placement and size.
   this->_initPlacement ();
+
+  // Add this to the document
+  this->document()->addWindow   ( this );
 }
 
 
@@ -67,7 +70,12 @@ Viewer::~Viewer()
   _viewer->clear();
   _viewer = 0x0;
 
-  Usul::Documents::Manager::instance().close ( _document );
+  // Remove this window from the document's sets.
+  this->document()->removeWindow   ( this );
+
+  // Tell the document this is closing.  
+  // Make sure function is called after removeWindow is called.
+  this->document()->closing( this );
 
   // Better be zero
   USUL_ASSERT ( 0 == _refCount );
@@ -135,6 +143,8 @@ Usul::Interfaces::IUnknown * Viewer::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IOpenGLContext::IID:
     return static_cast < Usul::Interfaces::IOpenGLContext* > ( this );
+  case Usul::Interfaces::IWindow::IID:
+    return static_cast < Usul::Interfaces::IWindow* > ( this );
   default:
     return 0x0;
   }
@@ -437,4 +447,28 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
 
 void Viewer::keyReleaseEvent ( QKeyEvent * event )
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make this window the active window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::setFocus()
+{
+  BaseClass::setFocus();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the title.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::setTitle ( const std::string& title )
+{
+  this->setWindowTitle ( title.c_str() );
 }

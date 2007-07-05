@@ -495,8 +495,8 @@ void Application::init()
   //_progressBars->setPosition ( osg::Vec3 ( 10, 10, 0 ) );
 
   // Add the progress bars to the scene.
-  osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
-  group->addChild ( _progressBars->getProgressBarGroup() );
+  osg::ref_ptr < osg::Group > group ( _sceneManager->projectionGroupGet ( "ProgressBarGroup" ) );
+  group->addChild ( _progressBars->buildScene() );
 }
 
 
@@ -521,6 +521,9 @@ void Application::preFrame()
 
   // Mark the start of the frame.
   _frameStart = _timer.tick();
+
+  // Update the progress bars.
+  _progressBars->buildScene();
 }
 
 
@@ -862,11 +865,6 @@ void Application::_loadModelFile ( const std::string &filename )
   // Create a job.
   VRV::Jobs::LoadModel::RefPtr job ( new VRV::Jobs::LoadModel ( filename, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
 
-  // Make a progress bar for the job.
-  Usul::Interfaces::IUnknown::QueryPtr unknown ( _progressBars->append() );
-  job->progress ( unknown.get() );
-  job->label ( unknown.get() );
-
   // Add the job to the manager.
   Usul::Jobs::Manager::instance().add ( job.get() );
 }
@@ -884,11 +882,6 @@ void Application::_loadDirectory ( const std::string &directory )
 
   // Create a job.
   Usul::Jobs::Job::RefPtr job ( new VRV::Jobs::LoadDirectory ( directory, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
-
-  // Make a progress bar for the job.
-  Usul::Interfaces::IUnknown::QueryPtr unknown ( _progressBars->append() );
-  job->progress ( unknown.get() );
-  job->label ( unknown.get() );
 
   // Add the job to the manager.
   Usul::Jobs::Manager::instance().add ( job.get() );

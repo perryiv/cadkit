@@ -27,7 +27,7 @@
 
 #include "OsgTools/Render/Renderer.h"
 #include "OsgTools/Render/SceneManager.h"
-#include "OsgTools/Widgets/ProgressBarGroup.h"
+#include "OsgTools/Widgets/ThreadSafeProgressBarGroup.h"
 
 #include "vrj/Draw/OGL/GlApp.h"
 #include "vrj/Draw/OGL/GlContextData.h"
@@ -78,7 +78,7 @@ public:
   typedef VRV::Core::SharedDouble              SharedDouble;
   typedef Usul::Threads::RecursiveMutex        Mutex;
   typedef Usul::Threads::Guard<Mutex>          Guard;
-  typedef OsgTools::Widgets::ProgressBarGroup  ProgressBars;
+  typedef OsgTools::Widgets::ThreadSafeProgressBarGroup  ProgressBars;
   typedef Usul::Math::Matrix44f                Matrix44f;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;

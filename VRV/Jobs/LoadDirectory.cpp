@@ -55,6 +55,9 @@ LoadDirectory::LoadDirectory( const std::string &directory, Usul::Interfaces::IU
 
 LoadDirectory::~LoadDirectory()
 {
+  Usul::Interfaces::IProgressBar::QueryPtr progressBar ( _secondProgressBar );
+  if( progressBar.valid() )
+    progressBar->hideProgressBar ();
 }
 
 

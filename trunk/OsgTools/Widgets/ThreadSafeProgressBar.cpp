@@ -788,7 +788,7 @@ osg::Node * ThreadSafeProgressBar::_buildScene()
       Usul::Math::Vec2f size ( this->size() );
       Usul::Math::Vec2f padding ( this->padding() );
     }*/
-
+    Guard guard ( this->mutex() );
     
     osg::ref_ptr<osg::MatrixTransform> anim ( new osg::MatrixTransform );
 

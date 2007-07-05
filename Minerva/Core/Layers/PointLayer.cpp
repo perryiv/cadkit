@@ -13,6 +13,8 @@
 #include "Minerva/Core/postGIS/Factory.h"
 #include "Minerva/Core/DataObjects/Point.h"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/IOffset.h"
 
@@ -21,6 +23,7 @@
 using namespace Minerva::Core::Layers;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( PointLayer, PointLayer::BaseClass );
+SERIALIZE_XML_REGISTER_CREATOR ( PointLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

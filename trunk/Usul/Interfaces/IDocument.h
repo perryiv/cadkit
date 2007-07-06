@@ -20,15 +20,22 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace Usul {
 namespace Interfaces {
 
   struct IWindow;
+  struct IView;
   struct IViewer;
 
 struct IDocument : public Usul::Interfaces::IUnknown
 {
+  /// Typedef(s).
+  typedef Usul::Interfaces::IUnknown            Unknown;
+  typedef std::pair<std::string,std::string>    Filter;
+  typedef std::vector<Filter>                   Filters;
+
   /// Format-format enumerations.
   enum Format
   {
@@ -43,11 +50,14 @@ struct IDocument : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3762815634u };
 
-  virtual void                          activeView( Usul::Interfaces::IViewer * ) = 0;
-  virtual Usul::Interfaces::IViewer *   activeView() const = 0;
-
   virtual void                          addWindow   ( Usul::Interfaces::IWindow *window ) = 0;
-  virtual void                          addView     ( Usul::Interfaces::IViewer *view   ) = 0;
+  virtual void                          addView     ( Usul::Interfaces::IView *view   ) = 0;
+
+  /// Return true if this document can do it.
+  virtual bool                          canExport ( const std::string &ext ) const = 0;
+  virtual bool                          canInsert ( const std::string &ext ) const = 0;
+  virtual bool                          canOpen   ( const std::string &ext ) const = 0;
+  virtual bool                          canSave   ( const std::string &ext ) const = 0;
 
   // The following window is closing
   virtual void                          closing     ( Usul::Interfaces::IWindow *window ) = 0;
@@ -64,18 +74,36 @@ struct IDocument : public Usul::Interfaces::IUnknown
   virtual bool                          fileValid() const = 0;
   virtual void                          fileValid ( bool ) = 0;
 
+  /// Get the filters that correspond to what this document can do.
+  virtual Filters                       filtersExport() const = 0;
+  virtual Filters                       filtersInsert() const = 0;
+  virtual Filters                       filtersOpen()   const = 0;
+  virtual Filters                       filtersSave()   const = 0;
+
+  /// Prompt user for documents to insert into this one.
+  virtual void                          insert ( Unknown *caller = 0x0 ) = 0;
+
   virtual bool                          modified() const = 0;
   virtual void                          modified ( bool ) = 0;
+
+  /// Save the document to existing file name.
+  virtual void                          save ( Unknown *caller = 0x0 ) = 0;
+
+  /// Always prompts for new file name.
+  virtual void                          saveAs ( Unknown *caller = 0x0 ) = 0;
 
   /// Refresh the view
   virtual void                          refreshView ( Usul::Interfaces::IViewer * ) = 0;
 
   virtual void                          removeWindow   ( Usul::Interfaces::IWindow *window ) = 0;
-  virtual void                          removeView     ( Usul::Interfaces::IViewer *view   ) = 0;
+  virtual void                          removeView     ( Usul::Interfaces::IView *view   ) = 0;
 
   virtual const std::string&            typeName() const = 0;
 
   virtual void                          updateGUI() = 0;
+
+  /// Write the document to given file name. Does not rename this document.
+  virtual void                          write ( const std::string &filename, Unknown *caller = 0x0  ) const = 0;
 };
 
 

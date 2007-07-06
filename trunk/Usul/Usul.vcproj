@@ -875,7 +875,7 @@
 					Name="Document"
 					>
 					<File
-						RelativePath=".\Interfaces\IActiveDocument.h"
+						RelativePath=".\Interfaces\IActiveDocumentListener.h"
 						>
 					</File>
 					<File
@@ -920,6 +920,10 @@
 					>
 					<File
 						RelativePath=".\Interfaces\IActiveView.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IActiveViewListener.h"
 						>
 					</File>
 					<File

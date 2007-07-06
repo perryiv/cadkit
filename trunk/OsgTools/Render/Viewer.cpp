@@ -272,12 +272,6 @@ void Viewer::clear()
   if ( this->document() )
   {
     this->document()->removeView ( this );
-
-    Usul::Interfaces::IViewer::ValidQueryPtr me ( this );
-
-    // If we are the active view, set the active view to null.
-    if( me.get() == this->document()->activeView() )
-      this->document()->activeView( 0x0 );
   }
 
   // Delete all display-lists associated with our context id.
@@ -2316,6 +2310,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ICenterOfRotation * > ( this );
   case Usul::Interfaces::IScreenCapture::IID:
     return static_cast < Usul::Interfaces::IScreenCapture * > ( this );
+  case Usul::Interfaces::IView::IID:
+    return static_cast < Usul::Interfaces::IView * > ( this );
   default:
     return 0x0;
   }

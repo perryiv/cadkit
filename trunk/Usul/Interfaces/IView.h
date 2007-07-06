@@ -21,7 +21,7 @@
 namespace Usul {
 namespace Interfaces {
 
-  struct IViewer;
+  struct IDocument;
 
 struct IView : public Usul::Interfaces::IUnknown
 {
@@ -31,8 +31,8 @@ struct IView : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2923712104u };
 
-  virtual Usul::Interfaces::IViewer* view() = 0;
-  virtual void view( Usul::Interfaces::IViewer* ) = 0;
+  // Get the document
+  virtual Usul::Interfaces::IDocument  * document() = 0;
 
 }; // class IView
 

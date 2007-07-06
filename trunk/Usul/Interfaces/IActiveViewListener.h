@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_IADD_DOCK_WINDOW_H__
-#define __USUL_INTERFACES_IADD_DOCK_WINDOW_H__
+#ifndef __USUL_INTERFACES_IACTIVE_VIEW_LISTENER_H__
+#define __USUL_INTERFACES_IACTIVE_VIEW_LISTENER_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -17,20 +17,22 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct IAddDockWindow : public Usul::Interfaces::IUnknown
+struct IActiveViewListener : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IAddDockWindow );
+  USUL_DECLARE_QUERY_POINTERS ( IActiveViewListener );
 
   /// Id for this interface.
-  enum { IID = 3439614978u };
+  enum { IID = 2585242778u };
 
-  virtual void                     addDockWindow ( Usul::Interfaces::IUnknown* caller = 0x0 ) = 0;
+  /// The active document has changed.
+  virtual void                          activeViewChanged ( Usul::Interfaces::IUnknown *oldView, Usul::Interfaces::IUnknown *newView ) = 0;
 
-}; // struct IAddDockWindow
+}; // struct IActiveViewListener
 
 
 } // End namespace Interfaces
 } // End namespace Usul
 
-#endif // __USUL_INTERFACES_IADD_DOCK_WINDOW_H__
+
+#endif // __USUL_INTERFACES_IACTIVE_VIEW_LISTENER_H__

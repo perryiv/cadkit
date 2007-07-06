@@ -1085,6 +1085,22 @@
 					RelativePath=".\Widgets\ProgressBarGroup.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Widgets\ThreadSafeProgressBar.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Widgets\ThreadSafeProgressBar.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Widgets\ThreadSafeProgressBarGroup.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Widgets\ThreadSafeProgressBarGroup.h"
+					>
+				</File>
 				<Filter
 					Name="Helper"
 					>

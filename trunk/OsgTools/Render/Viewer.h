@@ -56,6 +56,7 @@
 #include "Usul/Interfaces/ISceneStage.h"
 #include "Usul/Interfaces/ICenterOfRotation.h"
 #include "Usul/Interfaces/IScreenCapture.h"
+#include "Usul/Interfaces/IView.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
@@ -125,7 +126,8 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
                                 public Usul::Interfaces::ILights,
                                 public Usul::Interfaces::ISceneStage,
                                 public Usul::Interfaces::ICenterOfRotation,
-                                public Usul::Interfaces::IScreenCapture
+                                public Usul::Interfaces::IScreenCapture,
+                                public Usul::Interfaces::IView
 {
 public:
 

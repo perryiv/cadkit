@@ -131,9 +131,6 @@ MdiChildWindow::~MdiChildWindow()
   // Remove this window from the document's sets.
   this->document()->removeWindow   ( this );
 
-  // Update all child window's titles
-  this->document()->sendMessage( Usul::Interfaces::ISendMessage::ID_UPDATE_TITLES );
-
   // Tell the document this is closing.  
   // Make sure function is called after removeWindow is called.
   this->document()->closing( this );
@@ -160,9 +157,6 @@ void MdiChildWindow::create()
   
   // Add this to the document
   this->document()->addWindow   ( this );
-
-  // Update titles.
-  this->document()->sendMessage ( Document::ID_UPDATE_TITLES );
 
   // Enable windows drag-and-drop.
   #ifdef _WIN32

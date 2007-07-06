@@ -16,6 +16,11 @@
       <menu>
         <text>Export</text>
         <button>
+          <text>Image</text>
+          <info>Export Image of the current frame.</info>
+          <id>export_image</id>
+        </button>
+        <button>
           <text>Selected</text>
           <info>Export only the selected geometry</info>
           <id>export_selected</id>

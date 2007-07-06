@@ -99,8 +99,8 @@ public:
   void                    addLight ( osg::Light* light );
 
   /// Get/Set the background color.
-  void                    setBackgroundColor( const osg::Vec4& bg ) { _backgroundColor = bg; _dirty = false; }
-  const osg::Vec4&        getBackgroundColor() const { return _backgroundColor; }
+  void                    setBackgroundColor( const osg::Vec4& bg );
+  const osg::Vec4&        getBackgroundColor() const;
 
   /// Get/Set the framestamp.
   osg::FrameStamp*        getFrameStamp();
@@ -144,6 +144,7 @@ protected:
   virtual void            postFrame();
   virtual void            contextClose();
 
+  // Draw functions.
   virtual void            _preDraw ( OsgTools::Render::Renderer *renderer );
   void                    _draw ( OsgTools::Render::Renderer *renderer );
   virtual void            _postDraw ( OsgTools::Render::Renderer *renderer );
@@ -151,11 +152,7 @@ protected:
   /// Set the viewport.
   virtual void            _setViewport ( osg::Viewport*, vrj::GlDrawManager* );
 
-  /// Set the renderer with proper data.
-  virtual void            _initRenderer ( Renderer* );
-
   void                    _construct();
-  Renderer*               _getContextSpecificRenderer();
 
   // Load VR Juggler config files.
   void                    _loadConfigFiles ( const std::vector < std::string > &configs );

@@ -961,11 +961,7 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
 void Renderer::_screenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height )
 {
   // Should we use frame buffer objects?
-#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR >= 1
   bool useFBO ( osg::FBOExtensions::instance( _contextId, true )->isSupported() && height <= 4096 && width <= 4096 );
-#else
-  bool useFBO ( false );
-#endif
 
   // Make enough space
   image.allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE );

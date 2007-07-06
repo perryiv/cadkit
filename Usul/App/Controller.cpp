@@ -133,7 +133,7 @@ Controller::~Controller(void)
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Documents::Document* Controller::activeDocument()
+Usul::Interfaces::IDocument* Controller::activeDocument()
 {
   return Usul::Documents::Manager::instance().active();
 }
@@ -147,7 +147,10 @@ Usul::Documents::Document* Controller::activeDocument()
 
 Usul::Interfaces::IViewer *Controller::activeView()
 {
-  return ( this->activeDocument() ? this->activeDocument()->activeView() : 0x0 );
+  Usul::Interfaces::IViewer::QueryPtr viewer ( Usul::Documents::Manager::instance().activeView() );
+
+  // Should I use get or release here?
+  return viewer.get();
 }
 
 
@@ -620,12 +623,12 @@ void Controller::documentExport ( const std::string& filename, std::string filte
     // See if the document can export this.
   if ( this->activeDocument()->canExport ( filename ) )
   {
-    Usul::Documents::Document::Options &options ( this->activeDocument()->options() );
+    /*Usul::Documents::Document::Options &options ( this->activeDocument()->options() );
     
     std::transform ( filter.begin(), filter.end(), filter.begin(), ::tolower );
     std::string format ( ( std::string::npos != filter.find ( "binary" ) ) ? "binary" : "ascii" );
     
-    options["format"] = format;
+    options["format"] = format;*/
 
     this->activeDocument()->write ( filename, caller );
     return;
@@ -661,9 +664,9 @@ void Controller::flipNormals ( Usul::Interfaces::IUnknown* caller )
 
     // Do the flipping.
     flip->flipNormalVectors();
-    this->activeDocument()->sendMessage ( Document::ID_CLEAR_SCENE  );
+    /*this->activeDocument()->sendMessage ( Document::ID_CLEAR_SCENE  );
     this->activeDocument()->sendMessage ( Document::ID_BUILD_SCENE  );
-    this->activeDocument()->sendMessage ( Document::ID_RENDER_SCENE );
+    this->activeDocument()->sendMessage ( Document::ID_RENDER_SCENE );*/
   }
 }
 
@@ -1179,7 +1182,7 @@ void Controller::newWindow ( Usul::Interfaces::IUnknown* caller )
   Usul::Interfaces::ICancelButton::ShowHide cancel  ( caller );
 
   // Open new window for active document.
-  Document::RefPtr doc ( this->activeDocument() );
+  Usul::Interfaces::IDocument::RefPtr doc ( this->activeDocument() );
   if ( doc.valid() )
     doc->createDefaultGUI ( caller );
 

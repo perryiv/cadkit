@@ -211,9 +211,8 @@ void Viewer::focusInEvent ( QFocusEvent * event )
   // Call the base class first.
   BaseClass::focusInEvent ( event );
 
-  // Make our document and view current.
-  Usul::Documents::Manager::instance ().active ( this->document() );
-  this->document()->activeView( _viewer.get() );
+  // Make our view current.
+  Usul::Documents::Manager::instance ().activeView ( _viewer.get() );
 }
 
 

@@ -12,6 +12,7 @@
 
 #include "Usul/Export/Export.h"
 #include "Usul/Interfaces/IViewer.h"
+#include "Usul/Interfaces/IDocument.h"
 #include "Usul/Interfaces/IPolygonMode.h"
 #include "Usul/Interfaces/IShadeModel.h"
 
@@ -40,8 +41,8 @@ public:
   // Singleton.
   static Controller &         instance();
 
-  Document *                  activeDocument();
-  Usul::Interfaces::IViewer*  activeView();
+  Usul::Interfaces::IDocument * activeDocument();
+  Usul::Interfaces::IViewer*    activeView();
 
   std::string                 aboutMessage ( );
 

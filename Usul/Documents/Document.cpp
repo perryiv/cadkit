@@ -57,11 +57,10 @@ Document::Document ( const std::string &type ) : BaseClass(),
   _file      (),
   _windows   (),
   _views     (),
-  _active    (),
   _typeName  ( type ),
   _delegate  (),
   _options   (),
-  _modifiedObservers()
+  _modifiedObservers ()
 {
   // Assign default filename.
   static unsigned int count ( 0 );
@@ -170,7 +169,10 @@ void Document::removeWindow ( Window *window )
 void Document::removeView ( View *view )
 {
   _views.remove ( view );
-  //_options.erase ( view );
+  
+  // If the view the active view, set the active view to null.
+  if( view == Usul::Documents::Manager::instance().activeView () )
+    Usul::Documents::Manager::instance().activeView ( 0x0 );
 }
 
 
@@ -665,37 +667,6 @@ std::string Document::getTitle ( Window *window )
 }
 
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Notify the document that it is no longer active.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Document::noLongerActive( const std::string &activeType )
-{
-  Usul::Interfaces::IHandleActivatingDocument::QueryPtr handle ( this->delegate() );
-
-  if( handle.valid() )
-    handle->noLongerActive( this, activeType );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Notify the document that it is active
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Document::nowActive( const std::string &oldType )
-{
-  Usul::Interfaces::IHandleActivatingDocument::QueryPtr handle ( this->delegate() );
-
-  if( handle.valid() )
-    handle->nowActive( this, oldType );
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Given window is closing
@@ -777,30 +748,6 @@ void Document::refreshView ( Usul::Interfaces::IViewer *viewer )
 {
   if ( this->delegate() )
     this->delegate()->refreshView ( this, viewer );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the active view.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void  Document::activeView  ( View *view )
-{
-  _active = view;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the active view.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Document::View* Document::activeView  (  ) const
-{
-  return _active.get();
 }
 
 

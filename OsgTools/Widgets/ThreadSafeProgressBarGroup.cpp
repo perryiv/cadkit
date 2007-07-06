@@ -268,7 +268,7 @@ osg::Node * ThreadSafeProgressBarGroup::buildScene()
 
     matrix->setMatrix ( osg::Matrix::translate( _pos[0], _pos[1], _pos[2] ) );
     if ( _isRelativeToAbsolute )
-    matrix->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
+      matrix->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
 
     // Get a copy of the bars.
     Bars bars;

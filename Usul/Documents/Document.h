@@ -30,7 +30,7 @@
 #include "Usul/Interfaces/IGetTitle.h"
 #include "Usul/Interfaces/ICanClose.h"
 #include "Usul/Interfaces/ICanInsert.h"
-#include "Usul/Interfaces/IViewer.h"
+#include "Usul/Interfaces/IView.h"
 #include "Usul/Interfaces/GUI/IWindow.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
 #include "Usul/Interfaces/IModifiedSubject.h"
@@ -65,7 +65,7 @@ public:
   typedef Usul::Interfaces::IWindow             Window;
   typedef Window::ValidRefPtr                   WindowPtr;
   typedef std::list<WindowPtr>                  Windows;
-  typedef Usul::Interfaces::IViewer             View;
+  typedef Usul::Interfaces::IView               View;
   typedef View::ValidRefPtr                     ViewPtr;
   typedef std::list<ViewPtr>                    Views;
   typedef std::pair<std::string,std::string>    Filter;
@@ -86,10 +86,6 @@ public:
 
   /// Construction.
   Document ( const std::string &type );
-
-  /// Get/Set the active view
-  virtual void                activeView  ( View *view );
-  virtual View*               activeView  (  ) const;
 
   /// Add a window to the proper set.
   virtual void                addWindow   ( Window *window );
@@ -123,7 +119,7 @@ public:
   virtual void                clear ( Unknown *caller = 0x0 ) = 0;
 
   /// Close all referenced windows except one specified
-  bool                        closeWindows( Usul::Interfaces::IUnknown *caller = 0x0, const Window* skip = 0x0);
+  bool                        closeWindows( Usul::Interfaces::IUnknown *caller = 0x0, const Window* skip = 0x0 );
 
   /// Create default GUI
   virtual void                createDefaultGUI ( Unknown *caller = 0x0 );
@@ -169,12 +165,6 @@ public:
 
   /// Notify this document of the message.
   virtual void                notify ( unsigned short message );
-
-  // Notify the document that it is no longer active.
-  virtual void                noLongerActive ( const std::string& activeType );
-
-  // Notify the document that it is active.
-  virtual void                nowActive      ( const std::string& oldType );
 
   /// Return the number of windows.
   unsigned int                numWindows()   const { return _windows.size();   }
@@ -271,7 +261,6 @@ private:
   FileInfo _file;
   Windows _windows;
   Views   _views;
-  View::RefPtr _active;
   std::string _typeName;
   Delegate::RefPtr _delegate;
 

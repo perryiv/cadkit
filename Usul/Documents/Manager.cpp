@@ -44,7 +44,10 @@ Manager *Manager::_manager ( 0x0 );
 
 Manager::Manager() :
 _documents (),
-_active ( 0x0 )
+_activeDocument ( 0x0 ),
+_activeDocumentListeners (),
+_activeView ( 0x0 ),
+_activeViewListeners ()
 {
 }
 
@@ -57,7 +60,11 @@ _active ( 0x0 )
 
 Manager::~Manager()
 {
-  _active = 0x0;
+  _activeDocument = 0x0;
+  _activeDocumentListeners.clear();
+
+  _activeView = 0x0;
+  _activeViewListeners.clear();
 
   // Sanity check.  Should be empty when manager is destroyed
   USUL_ASSERT ( _documents.empty() );
@@ -201,25 +208,21 @@ Manager::Filters Manager::filtersOpen() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::active ( Document *document )
+void Manager::active ( IDocument *document )
 {
   // Return now if document is already active
-  if( document == _active.get() )
+  if( document == _activeDocument.get() )
     return;
 
-  // Notify the active document that it is no longer active.
-  if( _active )
-    _active->noLongerActive( document->typeName() );
-  
-  // Get the old type.
-  std::string oldType ( _active ? _active->typeName() : "" );
+  // Save the old document.
+  IDocument::RefPtr oldDoc ( _activeDocument );
 
   // Set the active document
-  _active = document;
+  _activeDocument = document;
 
-  // Notify the document that it is now active.
-  if( _active )
-    _active->nowActive( oldType );
+  // Notify any listeners we may have.
+  for ( ActiveDocumentListeners::iterator iter = _activeDocumentListeners.begin(); iter != _activeDocumentListeners.end(); ++iter )
+    (*iter)->activeDocumentChanged ( Usul::Interfaces::IUnknown::QueryPtr ( oldDoc.get() ), Usul::Interfaces::IUnknown::QueryPtr ( document ) );
 }
 
 
@@ -229,9 +232,50 @@ void Manager::active ( Document *document )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Document* Manager::active()
+Usul::Interfaces::IDocument* Manager::active()
 {
-  return _active.get();
+  return _activeDocument.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the active view
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::activeView ( View * view )
+{
+  // Return now if the view is already active.
+  if( view == _activeView.get () )
+    return;
+
+  // Save the old view.
+  View::RefPtr oldView ( _activeView );
+
+  // Set the active view.
+  _activeView = view;
+
+  IDocument::RefPtr document ( view ? view->document() : 0x0 );
+
+  // Set the active document.
+  this->active ( document );
+
+  // Notify any listeners we may have.
+  for ( ActiveViewListeners::iterator iter = _activeViewListeners.begin(); iter != _activeViewListeners.end(); ++iter )
+    (*iter)->activeViewChanged ( oldView.get(), view );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the active view.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Manager::View* Manager::activeView ()
+{
+  return _activeView.get();
 }
 
 
@@ -247,11 +291,13 @@ void Manager::close ( Document *document )
   if ( document->numWindows() > 0 )
     return;
 
+  Usul::Interfaces::IDocument::QueryPtr doc ( document );
+
   // Unset the active document if it is the one that is closing
-  if ( document == _active.get() )
+  if ( doc.get() == _activeDocument.get() )
   {
-    _active->noLongerActive( "" );
-    _active = 0x0;
+    // Set the active document to null.  Call this instead of setting it directy.
+    this->active ( 0x0 );
   }
 
   // Remove the document from the list
@@ -402,4 +448,58 @@ Manager::DocumentInfo Manager::find ( const std::string& filename, Usul::Interfa
 
   // Return what we found.
   return info;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add ActiveDocumentListener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::addActiveDocumentListener    ( ActiveDocumentListener* listener )
+{
+  _activeDocumentListeners.push_back ( listener );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove ActiveDocumentListener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::removeActiveDocumentListener ( ActiveDocumentListener* listener )
+{
+  _activeDocumentListeners.erase ( 
+    std::find_if ( _activeDocumentListeners.begin(), 
+                   _activeDocumentListeners.end(), 
+                   Usul::Interfaces::IActiveDocumentListener::RefPtr::IsEqual ( listener ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add ActiveViewListener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::addActiveViewListener    ( ActiveViewListener* listener )
+{
+  _activeViewListeners.push_back ( listener );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove ActiveViewListener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::removeActiveViewListener ( ActiveViewListener* listener )
+{
+  _activeViewListeners.erase ( 
+    std::find_if ( _activeViewListeners.begin(), 
+                   _activeViewListeners.end(), 
+                   Usul::Interfaces::IActiveViewListener::RefPtr::IsEqual ( listener ) ) );
 }

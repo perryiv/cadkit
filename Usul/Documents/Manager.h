@@ -21,6 +21,9 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
+#include "Usul/Interfaces/IActiveDocumentListener.h"
+#include "Usul/Interfaces/IActiveViewListener.h"
+#include "Usul/Interfaces/IView.h"
 
 #include <string>
 #include <vector>
@@ -33,13 +36,18 @@ class USUL_EXPORT Manager
 public:
 
   // Typedefs.
-  typedef Usul::Interfaces::IUnknown            Unknown;
-  typedef std::pair<std::string,std::string>    Filter;
-  typedef std::vector<Filter>                   Filters;
-  typedef Document::RefPtr                      DocumentPtr;
-  typedef std::list< DocumentPtr >              Documents;
-  typedef Usul::Interfaces::IDocument           IDocument;
-  typedef Usul::Interfaces::IGUIDelegate        Delegate;
+  typedef Usul::Interfaces::IUnknown                      Unknown;
+  typedef std::pair<std::string,std::string>              Filter;
+  typedef std::vector<Filter>                             Filters;
+  typedef Document::RefPtr                                DocumentPtr;
+  typedef std::list< DocumentPtr >                        Documents;
+  typedef Usul::Interfaces::IDocument                     IDocument;
+  typedef Usul::Interfaces::IGUIDelegate                  Delegate;
+  typedef Usul::Interfaces::IActiveDocumentListener       ActiveDocumentListener;
+  typedef std::vector < ActiveDocumentListener::RefPtr >  ActiveDocumentListeners;
+  typedef Usul::Interfaces::IView                         View;
+  typedef Usul::Interfaces::IActiveViewListener           ActiveViewListener;
+  typedef std::vector < ActiveViewListener::RefPtr >      ActiveViewListeners;
 
   // Struct that contains infomation on how to load a document.
   struct DocumentInfo
@@ -53,10 +61,14 @@ public:
   static Manager &      instance();
 
   // Make this document active
-  void                  active ( Document* );
+  void                  active ( IDocument* );
 
   // Get the active document
-  Document*             active ();
+  IDocument*            active ();
+
+  /// Get/Set the active view.
+  void                  activeView ( View * );
+  View*                 activeView ();
 
   // Add document to internal list
   void                  add ( Document * );
@@ -89,6 +101,14 @@ public:
   // Send the message to all documents.
   void                  sendMessage ( unsigned short message, const Document *skip = 0x0 );
 
+  /// Add/Remove IActiveDocumentListeners.
+  void                  addActiveDocumentListener    ( ActiveDocumentListener* listener );
+  void                  removeActiveDocumentListener ( ActiveDocumentListener* listener );
+
+  /// Add/Remove IActiveViewListeners.
+  void                  addActiveViewListener    ( ActiveViewListener* listener );
+  void                  removeActiveViewListener ( ActiveViewListener* listener );
+
 protected:
 
   // Find a delegate for the given document.
@@ -102,9 +122,11 @@ private:
   ~Manager();
 
   
-  Documents       _documents;
-  DocumentPtr     _active;
-  
+  Documents                _documents;
+  IDocument::RefPtr        _activeDocument;
+  ActiveDocumentListeners  _activeDocumentListeners;
+  View::RefPtr             _activeView;
+  ActiveViewListeners      _activeViewListeners;
 
   static Manager *_manager;
 };

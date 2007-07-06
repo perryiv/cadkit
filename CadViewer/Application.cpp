@@ -2371,5 +2371,9 @@ bool Application::_isHeadNode() const
 
 void Application::_exportImage ( MenuKit::Message m, MenuKit::Item *item )
 {
-  this->exportNextFrame ();
+  switch ( m )
+  {
+    case MenuKit::MESSAGE_SELECTED:
+      this->exportNextFrame ();
+  }
 }

@@ -42,17 +42,14 @@ INCLUDE_DIRECTORIES(
 #List the Sources
 SET (SOURCES
 ./Functors/WandRotation.cpp
-./Functors/InverseMatrix.cpp
 ./Functors/JoystickHorizontal.cpp
 ./Functors/WandMatrix.cpp
-./Functors/MatrixPair.cpp
 ./Functors/AnalogInput.cpp
 ./Functors/TransformPair.cpp
 ./Functors/Translate.cpp
 ./Functors/ToolPair.cpp
 ./Functors/Rotate.cpp
 ./Functors/MoveTool.cpp
-./Functors/IdentityMatrix.cpp
 ./Functors/Transform.cpp
 ./Functors/Tool.cpp
 ./Functors/WandPosition.cpp
@@ -79,7 +76,7 @@ ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
 ADD_EXECUTABLE( ${TARGET} ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( ${TARGET} Usul OpenThreadsEx OsgTools VRV vrjGA VRVPrefs MenuKit MenuKit_OSG XmlTree )
+LINK_CADKIT( ${TARGET} Usul OpenThreadsEx OsgTools VRV VRVPrefs MenuKit MenuKit_OSG XmlTree )
 TARGET_LINK_LIBRARIES( ${TARGET} 
   ${VR_JUGGLER_LIBS}
   ${VJ_DEPS_LIBS}

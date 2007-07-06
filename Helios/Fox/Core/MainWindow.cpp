@@ -1737,16 +1737,12 @@ Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
     return static_cast< Usul::Interfaces::IFoxTabItem* > (this);
   case Usul::Interfaces::IPreferencesManager::IID:
     return static_cast< Usul::Interfaces::IPreferencesManager* > ( this );
-  case Usul::Interfaces::IActiveView::IID:
-    return static_cast<Usul::Interfaces::IActiveView*>(this);
   case Usul::Interfaces::IFlushEvents::IID:
     return static_cast<Usul::Interfaces::IFlushEvents*>(this);
   case Usul::Interfaces::IUpdateTextWindow::IID:
     return static_cast<Usul::Interfaces::IUpdateTextWindow*>(this);
   case Usul::Interfaces::IFoxTabBook::IID:
     return static_cast< Usul::Interfaces::IFoxTabBook* > ( this );
-  case Usul::Interfaces::IActiveDocument::IID:
-    return static_cast < Usul::Interfaces::IActiveDocument* >  ( this );
   case Usul::Interfaces::IQuestion::IID:
     return static_cast < Usul::Interfaces::IQuestion* > ( this );
   case Usul::Interfaces::IMenuBar::IID:
@@ -1979,18 +1975,6 @@ void MainWindow::hideProgressBar()
       this->_flush();
     }
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get Active View
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown* MainWindow::getActiveView()
-{
-  return this->activeView();
 }
 
 
@@ -2518,18 +2502,6 @@ FX::FXTabBook * MainWindow::tabBook()
 const FX::FXTabBook * MainWindow::tabBook() const
 {
   return _tabBook;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the active docuemnt.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown* MainWindow::getActiveDocument()
-{
-  return this->activeDocument()->queryInterface ( Usul::Interfaces::IUnknown::IID );
 }
 
 
@@ -3381,7 +3353,7 @@ long MainWindow::onUpdateShadingAsIs ( FX::FXObject *sender, FX::FXSelector, voi
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Documents::Document* MainWindow::activeDocument()
+Usul::Interfaces::IDocument* MainWindow::activeDocument()
 {
   return Usul::App::Controller::instance().activeDocument();
 }

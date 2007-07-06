@@ -23,8 +23,6 @@
 
 #include "Usul/Interfaces/IClassFactory.h"
 #include "Usul/Interfaces/INotify.h"
-#include "Usul/Interfaces/IActiveView.h"
-#include "Usul/Interfaces/IActiveDocument.h"
 #include "Usul/Interfaces/IShadeModel.h"
 #include "Usul/Interfaces/IPolygonMode.h"
 #include "Usul/Interfaces/IDocumentSelect.h"
@@ -88,7 +86,6 @@ class OSG_FOX_CORE_EXPORT MainWindow : public FX::FXMainWindow,
                                        public Usul::Interfaces::INotifyString,
                                        public Usul::Interfaces::IProgressBar,
                                        public Usul::Interfaces::IStatusBar,
-                                       public Usul::Interfaces::IActiveView,
                                        public Usul::Interfaces::ISaveFileDialog,
                                        public Usul::Interfaces::ILoadFileDialog,
                                        public Usul::Interfaces::ICancelButton,
@@ -98,7 +95,6 @@ class OSG_FOX_CORE_EXPORT MainWindow : public FX::FXMainWindow,
                                        public Usul::Interfaces::IFlushEvents,
                                        public Usul::Interfaces::IUpdateTextWindow,
                                        public Usul::Interfaces::IFoxTabBook,
-                                       public Usul::Interfaces::IActiveDocument,
                                        public Usul::Interfaces::IQuestion,
                                        public Usul::Interfaces::IMenuBar,
                                        public Usul::Interfaces::IDocumentSelect
@@ -120,6 +116,7 @@ public:
   typedef Usul::Components::Manager             PluginManager;
   typedef Usul::Documents::Document             Document;
   typedef FoxTools::Menu::Bar                   MenuBar;
+  typedef Usul::Interfaces::IDocument           IDocument;
   typedef Usul::Interfaces::IViewer             IViewer;
   typedef Usul::Interfaces::IPolygonMode        IPolygonMode;
   typedef Usul::Interfaces::IShadeModel         IShadeModel;
@@ -351,7 +348,7 @@ public:
   FX::FXSplitter *                      splitterVertical()         { return _vSplitter.first; }
 
   /// Get the active document
-  virtual Document*                     activeDocument();
+  virtual IDocument*                    activeDocument();
 
 protected:
 
@@ -406,9 +403,6 @@ protected:
 
   virtual void                          _writeToRegistry() const;
 
-  ///  Usul::Interfaces::IActiveView
-  virtual Usul::Interfaces::IUnknown*   getActiveView();
-
   /////////////////////////////////////////////////////////////////////////////
   //
   //  Usul::Interfaces::INotifyString
@@ -421,9 +415,6 @@ protected:
   /// Usul::Interfaces::IFoxTabBook
   virtual FX::FXTabBook *       tabBook  (  );
   virtual const FX::FXTabBook * tabBook  (  ) const;
-
-  /// Usul::Interfaces::IActiveDocument
-  virtual Usul::Interfaces::IUnknown* getActiveDocument();
 
   /////////////////////////////////////////////////////////////////////////////
   //

@@ -1463,7 +1463,7 @@ void Application::_hvTransGlobalXZ ( MenuKit::Message m, MenuKit::Item *item )
       else
       {
         // Call the other functions.
-        this->_hTransGlobalPosX ( m, item );
+        this->_hRotGlobalPosY   ( m, item );
         this->_vTransGlobalPosZ ( m, item );
 
         // Reset the ids.

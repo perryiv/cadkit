@@ -80,6 +80,7 @@ public:
   typedef Usul::Threads::Guard<Mutex>          Guard;
   typedef OsgTools::Widgets::ThreadSafeProgressBarGroup  ProgressBars;
   typedef Usul::Math::Matrix44f                Matrix44f;
+  typedef std::vector < std::string >          Filenames;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -154,8 +155,7 @@ protected:
   void                    _loadSimConfigs();
 
   // Load the file(s).
-  void                    _loadModelFile   ( const std::string &filename );
-  void                    _loadDirectory   ( const std::string &directory );
+  void                    _loadModelFiles  ( const Filenames& filename );
 
   // Set the near and far clipping planes based on the scene.
   void                    _setNearAndFarClippingPlanes();

@@ -32,7 +32,6 @@ SET (SOURCES
   ./Core/SharedDouble.cpp
   ./Core/SharedMatrix.cpp
   ./Jobs/LoadModel.cpp
-  ./Jobs/LoadDirectory.cpp
   ./Devices/JoystickDevice.cpp
   ./Devices/ButtonGroup.cpp
   ./Devices/ButtonDevice.cpp

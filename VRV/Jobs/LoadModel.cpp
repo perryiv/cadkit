@@ -12,9 +12,13 @@
 #include "VRV/Interfaces/IModelAdd.h"
 #include "VRV/Interfaces/IPostModelLoad.h"
 
+#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/System/Directory.h"
+#include "Usul/File/Path.h"
 
 #include "OsgTools/IO/Reader.h"
 
@@ -29,12 +33,16 @@ using namespace VRV::Jobs;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LoadModel::LoadModel( const std::string& filename, Usul::Interfaces::IUnknown *caller, bool hideBar ) :
+LoadModel::LoadModel( const Filenames& filenames, Usul::Interfaces::IUnknown *caller ) :
   BaseClass( caller ),
-  _filename ( filename ),
+  _filenames ( filenames ),
   _caller ( caller ),
-  _hideProgressBar ( hideBar )
+  _secondProgressBar ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) )
 {
+  Usul::Interfaces::IProgressBarFactory::QueryPtr factory ( caller );
+
+  if ( factory.valid() )
+    _secondProgressBar = factory->createProgressBar ();
 }
 
 
@@ -59,40 +67,20 @@ void LoadModel::_started()
 {
   USUL_TRACE_SCOPE;
 
-  Usul::Interfaces::IProgressBar::QueryPtr progressBar ( this->progress() );
+  Usul::Interfaces::IProgressBar::ShowHide showHide  ( this->progress()   );
+  Usul::Interfaces::IProgressBar::ShowHide showHide2 ( _secondProgressBar.get() );
 
-  try
+  // Set the label.
+  this->_setLabel ( "Total file loading progress..." );
+
+  for ( Filenames::iterator iter = _filenames.begin(); iter != _filenames.end(); ++iter )
   {
-    if( progressBar.valid() )
-    {
-      progressBar->showProgressBar ();
-      progressBar->updateProgressBar ( 0 );
-    }
+    // Load the model.
+    this->_loadModel ( *iter );
 
-    this->_loadModel ();
+    // Update for progress.
+    this->_updateProgress ( iter - _filenames.begin(), _filenames.size(), true );
   }
-  catch ( const std::exception& e )
-  {
-    // Make sure we hide the progress bar.
-    if( progressBar.valid() && _hideProgressBar )
-      progressBar->hideProgressBar();
-
-    // Re-throw
-    throw e;
-  }
-  catch ( ... )
-  {
-    // Make sure we hide the progress bar.
-    if( progressBar.valid() && _hideProgressBar )
-      progressBar->hideProgressBar();
-
-    // throw
-    throw;
-  }
-
-  // Make sure we hide the progress bar.
-  if( progressBar.valid() && _hideProgressBar )
-    progressBar->hideProgressBar();
 }
 
 
@@ -102,7 +90,7 @@ void LoadModel::_started()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LoadModel::_loadModel()
+void LoadModel::_loadModel( const std::string& filename )
 {
   USUL_TRACE_SCOPE;
 
@@ -110,8 +98,14 @@ void LoadModel::_loadModel()
   typedef Usul::Adaptors::MemberFunction < LoadModel*, Function > MemFun;
   typedef OsgTools::IO::Reader::ReaderCallback < MemFun > Callback;
 
+  std::string directory ( Usul::File::directory ( filename, false ) );
+
+  // Scope the directory change.
+  Usul::System::Directory::ScopedCwd cwd ( directory );
+
   // Set the label.
-  this->_setLabel ( "Loading filename: " + _filename );
+  Usul::Interfaces::IStatusBar::UpdateStatusBar label ( _secondProgressBar.get() );
+  label ( "Loading filename: " + filename, true );
 
   // Make the reader.
   OsgTools::IO::Reader reader;
@@ -121,20 +115,20 @@ void LoadModel::_loadModel()
   reader.callback ( &callback );
 
   // Read the file.
-  reader.read( _filename );
+  reader.read( filename );
 
   // Get the node.
   osg::ref_ptr < osg::Node > model ( reader.node() );
 
   // Do any post-processing.
-  this->_postProcessModelLoad ( _filename, model.get() );
+  this->_postProcessModelLoad ( filename, model.get() );
 
   // See if our caller implements the needed interface.
   VRV::Interfaces::IModelAdd::QueryPtr modelAdd ( _caller );
 
   // Add the model.
   if ( modelAdd.valid() )
-    modelAdd->addModel ( model.get(), _filename );
+    modelAdd->addModel ( model.get(), filename );
 }
 
 
@@ -159,8 +153,16 @@ void LoadModel::_updateProgressCallback ( const std::string& filename, unsigned 
 {
   USUL_TRACE_SCOPE;
 
-  // Update for progress.
-  this->_updateProgress ( bytes, total, true );
+  Usul::Interfaces::IProgressBar::QueryPtr progressBar ( _secondProgressBar );
+
+  // Report progress.
+  if ( progressBar.valid() )
+  {
+    const double n ( static_cast < double > ( bytes ) );
+    const double d ( static_cast < double > ( total ) );
+    const float fraction ( n / d );
+    progressBar->updateProgressBar ( static_cast < unsigned int > ( fraction * 100 ) );
+  }
 }
 
 

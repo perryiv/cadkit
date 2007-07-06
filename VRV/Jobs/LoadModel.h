@@ -14,6 +14,8 @@
 #include "Usul/Jobs/Job.h"
 #include "Usul/Interfaces/IUnknown.h"
 
+#include <vector>
+
 namespace osg { class Node; }
 
 namespace VRV {
@@ -23,8 +25,9 @@ class LoadModel : public Usul::Jobs::Job
 {
 public:
   typedef Usul::Jobs::Job BaseClass;
+  typedef std::vector< std::string > Filenames;
 
-  LoadModel( const std::string& filename, Usul::Interfaces::IUnknown *caller = 0x0, bool hideBar = true );
+  LoadModel( const Filenames& filenames, Usul::Interfaces::IUnknown *caller = 0x0 );
 
 protected:
   virtual ~LoadModel();
@@ -32,17 +35,18 @@ protected:
   virtual void              _started();
   virtual void              _finished();
 
-  virtual void              _loadModel ();
+  virtual void              _loadModel ( const std::string& filename );
 
   // Post-process the model loading.
   void                      _postProcessModelLoad ( const std::string &filename, osg::Node *model );
 
   // Update the progress.
   void                      _updateProgressCallback ( const std::string& filename, unsigned long bytes, unsigned long total );
+
 private:
-  std::string _filename;
+  Filenames _filenames;
   Usul::Interfaces::IUnknown::QueryPtr _caller;
-  bool _hideProgressBar;
+  Usul::Interfaces::IUnknown::QueryPtr _secondProgressBar;
 };
 
 }

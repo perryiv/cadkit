@@ -518,6 +518,7 @@ OsgTools::Render::Renderer* Application::_getContextSpecificRenderer()
 void Application::setSceneData( osg::Node* node )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
 
   _sceneManager->model( node );
 
@@ -535,6 +536,8 @@ void Application::setSceneData( osg::Node* node )
 const osg::Node* Application::getSceneData() const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
   return _sceneManager->model();
 }
 
@@ -548,6 +551,8 @@ const osg::Node* Application::getSceneData() const
 osg::Node* Application::getSceneData()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
   return _sceneManager->model();
 }
 
@@ -583,8 +588,6 @@ void Application::init()
   // Initialize the shared frame time data.
   vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
   _sharedFrameTime.init ( guid, "viz0" );
-
-  //_progressBars->setPosition ( osg::Vec3 ( 10, 10, 0 ) );
 
   // Add the progress bars to the scene.
   osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
@@ -1070,6 +1073,8 @@ void Application::setClippingDistances ( float nearDist, float farDist )
 
 double Application::worldRadius() const
 {
+  Guard guard ( this->mutex() );
+
   // Use the whole scene or just the navBranch?
   return _sceneManager->scene()->getBound().radius();
 }
@@ -1083,6 +1088,7 @@ double Application::worldRadius() const
 
 const osg::Group *Application::navigationScene() const
 {
+  Guard guard ( this->mutex() );
   return _navBranch.get();
 }
 
@@ -1095,6 +1101,7 @@ const osg::Group *Application::navigationScene() const
 
 osg::Group *Application::navigationScene()
 {
+  Guard guard ( this->mutex() );
   return _navBranch.get();
 }
 
@@ -1107,6 +1114,7 @@ osg::Group *Application::navigationScene()
 
 const osg::Group *Application::modelsScene() const
 {
+  Guard guard ( this->mutex() );
   return _models.get();
 }
 
@@ -1119,6 +1127,7 @@ const osg::Group *Application::modelsScene() const
 
 osg::Group *Application::modelsScene()
 {
+  Guard guard ( this->mutex() );
   return _models.get();
 }
 
@@ -1131,6 +1140,7 @@ osg::Group *Application::modelsScene()
 
 void Application::postMultiply ( const Matrix44f &m )
 {
+  Guard guard ( this->mutex() );
   _navBranch->postMult ( osg::Matrixf ( m.get() ) );
 }
 
@@ -1143,6 +1153,7 @@ void Application::postMultiply ( const Matrix44f &m )
 
 void Application::preMultiply ( const Matrix44f &m )
 {
+  Guard guard ( this->mutex() );
   _navBranch->preMult ( osg::Matrixf ( m.get() ) );
 }
 
@@ -1155,6 +1166,7 @@ void Application::preMultiply ( const Matrix44f &m )
 
 void Application::_navigationMatrix ( const osg::Matrixd& m )
 {
+  Guard guard ( this->mutex() );
   _navBranch->setMatrix ( m );
 }
 
@@ -1167,6 +1179,7 @@ void Application::_navigationMatrix ( const osg::Matrixd& m )
 
 const osg::Matrixd& Application::_navigationMatrix ( ) const
 {
+  Guard guard ( this->mutex() );
   return _navBranch->getMatrix ( );
 }
 
@@ -1179,6 +1192,7 @@ const osg::Matrixd& Application::_navigationMatrix ( ) const
 
 osg::Group* Application::_sceneRoot()
 {
+  Guard guard ( this->mutex() );
   return _root.get();
 }
 
@@ -1191,6 +1205,7 @@ osg::Group* Application::_sceneRoot()
 
 const osg::Group* Application::_sceneRoot() const
 {
+  Guard guard ( this->mutex() );
   return _root.get();
 }
 
@@ -1203,6 +1218,7 @@ const osg::Group* Application::_sceneRoot() const
 
 Usul::Interfaces::IUnknown* Application::createProgressBar()
 {
+  Guard guard ( this->mutex() );
   return _progressBars->append();
 }
 

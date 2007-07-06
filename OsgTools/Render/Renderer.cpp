@@ -886,6 +886,8 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
   {
     _sceneView->setViewMatrix ( matrix );
 
+    const osg::Matrixd &proj = _sceneView->getProjectionMatrix();
+
     if ( this->numRenderPasses() > 1 )
     {
       // Save original projection matrix.
@@ -894,7 +896,6 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
       // Needed in the loop.
       osg::Matrixd pMatrix;
       osg::ref_ptr<osg::Viewport> vp ( this->viewport() );
-      const osg::Matrixd &proj = _sceneView->getProjectionMatrix();
 
       // Vector to store the images.
       ImageList images;
@@ -934,7 +935,7 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
     else
     {
       // Fill in the image.
-      this->_screenCapture ( *answer, width, height );
+      this->_screenCapture ( *answer, proj, width, height );
     }
   }
 
@@ -948,25 +949,6 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
   _sceneView->setViewMatrix( oldViewMatrix );
 
   return answer.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Capture the screen.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Renderer::_screenCapture ( osg::Image& image, unsigned int width, unsigned int height )
-{
-  // Set the projection matrix.
-  double fovy  ( Usul::Shared::Preferences::instance().getDouble ( Usul::Registry::Keys::FOV ) );
-  double zNear ( OsgTools::Render::Defaults::CAMERA_Z_NEAR );
-  double zFar  ( OsgTools::Render::Defaults::CAMERA_Z_FAR );
-  double w ( width ), h ( height );
-  double aspect ( w / h );
-
-  this->_screenCapture ( image, osg::Matrix::perspective( fovy, aspect, zNear, zFar ), width, height );
 }
 
 

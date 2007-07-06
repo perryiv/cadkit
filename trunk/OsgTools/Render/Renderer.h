@@ -137,7 +137,6 @@ protected:
   void                  _multiPassRender();
 
   // Capture the screen.
-  void                  _screenCapture ( osg::Image& image, unsigned int width, unsigned int height );
   void                  _screenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height );
 
   void                  _singlePassRender();

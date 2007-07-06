@@ -460,14 +460,8 @@ void Application::_postDraw( OsgTools::Render::Renderer *renderer )
     unsigned int width  ( _viewport->width() );
     unsigned int height ( _viewport->height() );
 
-    // Make the image
-    osg::ref_ptr<osg::Image> image ( new osg::Image );
-
-    // Make enough space
-    image->allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE );
-
     // Capture image.
-    image = renderer->screenCapture ( renderer->viewMatrix(), width, height );
+    osg::ref_ptr<osg::Image> image ( renderer->screenCapture ( renderer->viewMatrix(), width, height ) );
 
     // How many images have we exported.
     static unsigned int count ( 0 );

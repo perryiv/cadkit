@@ -1690,12 +1690,6 @@ bool Viewer::_writeImageFile ( const std::string &filename ) const
 
 bool Viewer::_writeImageFile ( const std::string &filename, unsigned int width, unsigned int height ) const
 {
-  // Make the image
-  osg::ref_ptr<osg::Image> image ( new osg::Image );
-
-  // Make enough space
-  image->allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE );
-
   // Get non const pointer to this
   Viewer *me ( const_cast < Viewer * > ( this ) );
 
@@ -1704,7 +1698,7 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int width, 
     me->_context->makeCurrent();
 
   // Capture image.
-  image = me->_renderer->screenCapture ( this->getViewMatrix(), width, height );
+  osg::ref_ptr<osg::Image> image ( me->_renderer->screenCapture ( this->getViewMatrix(), width, height ) );
 
   // Write the image to file.
   return osgDB::writeImageFile ( *image, filename );

@@ -17,6 +17,9 @@
 #include "SceneTreeComponent.h"
 
 #include "Usul/Interfaces/Qt/IMainWindow.h"
+#include "Usul/Interfaces/IOpenSceneGraph.h"
+
+#include "Usul/Documents/Manager.h"
 
 #include "osg/Node"
 #include "osg/Drawable"
@@ -42,6 +45,8 @@ SceneTreeComponent::SceneTreeComponent() : BaseClass(),
   _dock ( 0x0 ),
   _sceneTree ( 0x0 )
 {
+  // We want to be notified when the active view changes.
+  Usul::Documents::Manager::instance().addActiveViewListener ( this );
 }
 
 
@@ -53,6 +58,9 @@ SceneTreeComponent::SceneTreeComponent() : BaseClass(),
 
 SceneTreeComponent::~SceneTreeComponent()
 {
+  // Remove this from the list of active view listeners.
+  Usul::Documents::Manager::instance().removeActiveViewListener ( this );
+
   // Clear the SceneTree
   _sceneTree->clear();
 
@@ -96,6 +104,8 @@ Usul::Interfaces::IUnknown *SceneTreeComponent::queryInterface ( unsigned long i
     return static_cast< Usul::Interfaces::IUpdateTreeControls*> ( this );
   case Usul::Interfaces::IPlugin::IID:
     return static_cast < Usul::Interfaces::IPlugin*>(this);
+  case Usul::Interfaces::IActiveViewListener::IID:
+    return static_cast < Usul::Interfaces::IActiveViewListener* > ( this );
   default:
     return 0x0;
   }
@@ -247,3 +257,20 @@ void SceneTreeComponent::updateTreeControls( osg::Node *scene  )
   _sceneTree->addTopLevelItem ( root );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The active document has changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SceneTreeComponent::activeViewChanged ( Usul::Interfaces::IUnknown *oldView, Usul::Interfaces::IUnknown *newView )
+{
+  Usul::Interfaces::IOpenSceneGraph::QueryPtr osg ( newView );
+
+  if ( osg.valid() )
+  {
+    // If dynamic cast fails, it will return null.  By passing null to this function, it will clear the scene tree.
+    this->updateTreeControls ( dynamic_cast < osg::Node* > ( osg->osgReferenced () ) );
+  }
+}

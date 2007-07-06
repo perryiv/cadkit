@@ -24,6 +24,7 @@
 #include "Usul/Interfaces/GUI/IAddDockWindow.h"
 #include "Usul/Interfaces/GUI/IUpdateTreeControls.h"
 #include "Usul/Interfaces/IPlugin.h"
+#include "Usul/Interfaces/IActiveViewListener.h"
 
 class QTreeWidget; class QDockWidget;
 
@@ -33,7 +34,8 @@ namespace osg { class Node; }
 class SceneTreeComponent : public Usul::Base::Referenced,
                            public Usul::Interfaces::IAddDockWindow,
                            public Usul::Interfaces::IUpdateTreeControls,
-                           public Usul::Interfaces::IPlugin
+                           public Usul::Interfaces::IPlugin,
+                           public Usul::Interfaces::IActiveViewListener
 {
 public:
 
@@ -71,9 +73,12 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  virtual void updateTreeControls( osg::Node *scene );
+  virtual void updateTreeControls ( osg::Node *scene );
 
 protected:
+
+  /// The active document has changed.
+  virtual void                          activeViewChanged ( Usul::Interfaces::IUnknown *oldView, Usul::Interfaces::IUnknown *newView );
 
   // Do not copy.
   SceneTreeComponent ( const SceneTreeComponent & );

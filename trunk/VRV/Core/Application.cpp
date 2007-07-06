@@ -246,13 +246,17 @@ void Application::contextInit()
   // Turn on back face culling.
   renderer->getGlobalStateSet()->setMode( GL_CULL_FACE, osg::StateAttribute::ON );
 
-  this->_initRenderer( renderer.get() );
-
   // Keep handle to framestamp.
   _framestamp = renderer->framestamp();
 
   // Keep handle to viewport.
   _viewport = renderer->viewport();
+
+  // Set the scene.
+  renderer->scene ( _sceneManager->scene() );
+
+  // Set the background color.
+  renderer->backgroundColor ( _backgroundColor );
 
   (*_renderer) = renderer.get();
 
@@ -300,13 +304,6 @@ void Application::contextClose()
 void Application::contextPreDraw()
 {
   USUL_TRACE_SCOPE;
-
-  // if necessary, make data members sync up with the sceneview's data
-  if( !_dirty )
-  {
-    Renderer* renderer ( this->_getContextSpecificRenderer() );
-    this->_initRenderer ( renderer );
-  }
 }
 
 
@@ -379,8 +376,8 @@ void Application::draw()
   // For exception safety. Pushes attributes in constructor, pops them in destructor.
   Detail::OpenGlStackPushPop pushPop;
 
-  // Get the renderer.
-  Renderer* renderer ( this->_getContextSpecificRenderer() );
+  // Get the renderer for this context.
+  Renderer* renderer ( *(_renderer) );
 
   // Drawing is about to happen.
   this->_preDraw ( renderer );
@@ -426,11 +423,7 @@ void Application::_draw ( OsgTools::Render::Renderer *renderer )
   // Constantly update the view matrix.  
   // Since the navigation is done on a osg::MatrixTransform, is this needed?
   gmtl::Matrix44f proj ( projection->getViewMatrix() );
-
-  osg::ref_ptr< osg::RefMatrix > osgProj ( new osg::RefMatrix );
-  osgProj->set( proj.mData );
-  
-  renderer->viewMatrix( *osgProj );
+  renderer->viewMatrix( osg::Matrix ( proj.mData ) );
 
   // Update.  This needs to be moved into the Preframe.
   renderer->update();
@@ -496,21 +489,6 @@ void Application::_postDraw( OsgTools::Render::Renderer *renderer )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the Renderer.
-//  Should only be called from a context-specific thread.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-OsgTools::Render::Renderer* Application::_getContextSpecificRenderer()
-{
-  USUL_TRACE_SCOPE;
-
-  RendererPtr renderer = *(_renderer);
-  return renderer.get();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the scene data.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -521,9 +499,6 @@ void Application::setSceneData( osg::Node* node )
   Guard guard ( this->mutex() );
 
   _sceneManager->model( node );
-
-  // Is this needed?
-  _dirty = false;
 }
 
 
@@ -652,27 +627,6 @@ void Application::postFrame()
 
   // Capture the frame time.
   _frameTime = _timer.delta_s( _frameStart, _timer.tick() );
-
-  if( !_dirty )
-    _dirty = true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set up the scene view.
-//  Should only be called from a context-specific thread.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_initRenderer( Renderer* renderer )
-{
-  USUL_TRACE_SCOPE;
-
-  renderer->scene ( _sceneManager->scene() );
-
-  // Set the background color.
-  renderer->backgroundColor ( _backgroundColor );
 }
 
 
@@ -1235,4 +1189,39 @@ void Application::exportNextFrame()
   Guard guard ( this->mutex() );
 
   _exportImage = true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the backgroup color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::setBackgroundColor( const osg::Vec4& color )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  _backgroundColor = color;
+
+  for( Renderers::iterator iter = _renderers.begin(); iter != _renderers.end(); ++iter )
+  {
+    (*iter)->backgroundColor ( _backgroundColor );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the backgroup color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec4& Application::getBackgroundColor() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  return _backgroundColor;
 }

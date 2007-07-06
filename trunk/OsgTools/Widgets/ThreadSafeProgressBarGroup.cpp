@@ -79,7 +79,7 @@ ThreadSafeProgressBarGroup::ThreadSafeProgressBarGroup() : BaseClass(),
   _bars     (),
   _size     ( 0.0f, 0.0f ),
   _groupBarSize ( 1.0f, 0.03f ),
-  _pos      (  -.25f, -.75, -3.0f ),
+  _pos      (  0.0f, 0.0, -3.0f ),
   _dirty    ( true ),
   _isRelativeToAbsolute ( true ),
   _root     ( new osg::Group ),
@@ -268,7 +268,7 @@ osg::Node * ThreadSafeProgressBarGroup::buildScene()
 
     matrix->setMatrix ( osg::Matrix::translate( _pos[0], _pos[1], _pos[2] ) );
     if ( _isRelativeToAbsolute )
-      matrix->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
+    matrix->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
 
     // Get a copy of the bars.
     Bars bars;
@@ -322,6 +322,7 @@ void ThreadSafeProgressBarGroup::_addProgressBar ( ThreadSafeProgressBar * pbar 
     _size[1] +=  pbar->getHeight() + _padding;
 
   _bars.push_back ( pbar );
+
 #ifdef _MSC_VER
 # ifdef _DEBUG
   
@@ -336,8 +337,7 @@ void ThreadSafeProgressBarGroup::_addProgressBar ( ThreadSafeProgressBar * pbar 
   }*/
 # endif
 #endif
-
-  
  
 }
+
 

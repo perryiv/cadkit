@@ -17,6 +17,7 @@
 #include "osg/Drawable"
 #include "osg/Version"
 
+
 #include "osgText/Text"
 
 #include <string>

@@ -65,7 +65,6 @@ FXDEFMAP ( MdiChildWindow ) WindowMap[] =
   FXMAPFUNC ( FX::SEL_COMMAND, FXMDIChild::ID_MDI_MENUCLOSE,                              MdiChildWindow::onCommandClose          ),
   FXMAPFUNC ( FX::SEL_COMMAND, FoxTools::App::Application::ID_DROP_FILE,                  MdiChildWindow::onCommandDropFile       ),
   FXMAPFUNC ( FX::SEL_COMMAND, MdiChildWindow::Document::ID_CLOSE,                        MdiChildWindow::onCommandDocumentClose  ),
-  FXMAPFUNC ( FX::SEL_COMMAND, MdiChildWindow::Document::ID_UPDATE_TITLES,                MdiChildWindow::onCommandUpdateTitle    ),
   FXMAPFUNC ( FX::SEL_COMMAND, MdiChildWindow::Document::ID_CLEAR_SCENE,                  MdiChildWindow::onClearScene            ),
   FXMAPFUNC ( FX::SEL_COMMAND, MdiChildWindow::Document::ID_BUILD_SCENE,                  MdiChildWindow::onBuildScene            ),
   FXMAPFUNC ( FX::SEL_COMMAND, MdiChildWindow::Document::ID_DISPLAY_LISTS_UPDATE,         MdiChildWindow::onDisplayListSet        ),
@@ -394,28 +393,6 @@ long MdiChildWindow::onCommandDocumentClose ( FX::FXObject *object, FX::FXSelect
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Update the title based on the number of windows in the document
-//
-///////////////////////////////////////////////////////////////////////////////
-
-long MdiChildWindow::onCommandUpdateTitle ( FX::FXObject *, FX::FXSelector, void * )
-{
-  // Get the interface
-  Usul::Interfaces::IGetTitle::QueryPtr getTitle ( this->document() );
-
-  // String for title
-  std::string title ( getTitle.valid() ? getTitle->getTitle( this ) : "" );
-
-  // Set the title
-  this->setTitle ( title.c_str() );
-
-  // Message handled
-  return 1;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Focus is now on this window
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -426,8 +403,7 @@ long MdiChildWindow::onFocusIn ( FX::FXObject *object, FX::FXSelector sel, void 
   BaseClass::onFocusIn ( object, sel, data );
 
   // Tell the document that it is active
-  Usul::Documents::Manager::instance().active( this->document() );
-  this->document()->activeView( _view.get() );
+  Usul::Documents::Manager::instance().activeView ( Usul::Interfaces::IView::QueryPtr ( _view ) );
 
   //Handled
   return 1;
@@ -568,3 +544,14 @@ std::string MdiChildWindow::question ( const std::string &buttons, const std::st
   return FoxTools::Dialogs::Message::question ( buttons, title, text );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the title.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MdiChildWindow::setTitle ( const std::string& title )
+{
+  BaseClass::setTitle ( title.c_str() );
+}

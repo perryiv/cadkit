@@ -86,7 +86,6 @@ public:
   long                      onCommandClose           ( FX::FXObject *, FX::FXSelector, void * );
   long                      onCommandDocumentClose   ( FX::FXObject *, FX::FXSelector, void * );
   long                      onCommandDropFile        ( FX::FXObject *, FX::FXSelector, void * );
-  long                      onCommandUpdateTitle     ( FX::FXObject *, FX::FXSelector, void * );
   long                      onDisplayListSet         ( FX::FXObject *, FX::FXSelector, void * );
 
   long                      onMotion                 ( FX::FXObject *, FX::FXSelector, void * );
@@ -104,6 +103,7 @@ protected:
 
   /// Usul::Interfaces::IWindow
   virtual void              setFocus();
+  virtual void              setTitle ( const std::string& title );
 
   /// Usul::Interfaces::IHandleMessage
   virtual void              handleMessage ( unsigned short message );

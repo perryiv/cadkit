@@ -12,7 +12,6 @@
 #include "VRV/Core/JugglerFunctors.h"
 #include "VRV/Core/Exceptions.h"
 #include "VRV/Jobs/LoadModel.h"
-#include "VRV/Jobs/LoadDirectory.h"
 
 #include "Usul/Errors/Assert.h"
 #include "Usul/Trace/Trace.h"
@@ -857,34 +856,16 @@ void Application::addModel ( osg::Node *model, const std::string& filename )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Load the model.
+//  Load the models.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_loadModelFile ( const std::string &filename )
+void Application::_loadModelFiles  ( const Filenames& filenames )
 {
   USUL_TRACE_SCOPE;
 
   // Create a job.
-  VRV::Jobs::LoadModel::RefPtr job ( new VRV::Jobs::LoadModel ( filename, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
-
-  // Add the job to the manager.
-  Usul::Jobs::Manager::instance().add ( job.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Load the model.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_loadDirectory ( const std::string &directory )
-{
-  USUL_TRACE_SCOPE;
-
-  // Create a job.
-  Usul::Jobs::Job::RefPtr job ( new VRV::Jobs::LoadDirectory ( directory, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
+  VRV::Jobs::LoadModel::RefPtr job ( new VRV::Jobs::LoadModel ( filenames, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
 
   // Add the job to the manager.
   Usul::Jobs::Manager::instance().add ( job.get() );

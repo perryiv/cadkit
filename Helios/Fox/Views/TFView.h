@@ -15,6 +15,7 @@
 
 #include "FoxTools/Headers/GLCanvas.h"
 
+#include "Usul/Interfaces/IView.h"
 #include "Usul/Interfaces/IViewer.h"
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Math/Vector2.h"
@@ -34,7 +35,8 @@ namespace Views {
 
 
 class OSG_FOX_VIEWS_EXPORT TFView : public FX::FXGLCanvas,
-                                    public Usul::Interfaces::IViewer
+                                    public Usul::Interfaces::IViewer,
+                                    public Usul::Interfaces::IView
 {
 public:
   // Usul::Interfaces::IUnknown members.
@@ -55,6 +57,9 @@ public:
   virtual unsigned int    height() const;
   virtual unsigned int    width() const;
   virtual void            handleMessage ( unsigned short message );
+
+  /// Usul::Interfaces::IView
+  virtual Usul::Interfaces::IDocument* document();
 
   void build();
 

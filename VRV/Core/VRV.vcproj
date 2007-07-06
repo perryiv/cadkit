@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="vrj_d.lib vpr_d.lib osgd.lib osgUtild.lib opengl32.lib"
+				AdditionalDependencies="vrj_d.lib vpr_d.lib osgd.lib osgDBd.lib osgUtild.lib opengl32.lib"
 				OutputFile="../../bin/VRVd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -147,7 +147,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../../;&quot;$(VJ_BASE_DIR)/include&quot;;&quot;$(VJ_DEPS_DIR)/include&quot;;&quot;$(OSG_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(BOOST_INC_DIR)&quot;;../../;&quot;$(VJ_BASE_DIR)/include&quot;;&quot;$(VJ_DEPS_DIR)/include&quot;;&quot;$(OSG_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_VRV"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -179,11 +179,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="vrj.lib vpr.lib osg.lib osgUtil.lib opengl32.lib"
+				AdditionalDependencies="vrj.lib vpr.lib osg.lib osgDB.lib osgUtil.lib opengl32.lib"
 				OutputFile="../../bin/VRV.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(VJ_BASE_DIR)/lib;$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(BOOST_LIB_DIR);$(VJ_BASE_DIR)/lib;$(OSG_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/VRV.pdb"
 				ImportLibrary="../../bin/VRV.lib"
 			/>
@@ -326,14 +326,6 @@
 			<Filter
 				Name="Jobs"
 				>
-				<File
-					RelativePath="..\Jobs\LoadDirectory.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Jobs\LoadDirectory.h"
-					>
-				</File>
 				<File
 					RelativePath="..\Jobs\LoadModel.cpp"
 					>

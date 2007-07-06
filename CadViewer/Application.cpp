@@ -709,6 +709,7 @@ void Application::_initMenu()
   CV_REGISTER ( _dropToFloor,      "drop_to_floor" );
   CV_REGISTER ( _increaseSpeed,    "increase_speed" );
   CV_REGISTER ( _decreaseSpeed,    "decrease_speed" );
+  CV_REGISTER ( _exportImage,      "export_image" );
   //CV_REGISTER ( _saveView,         "save_camera_view" );
 
   // Get the component.
@@ -2359,4 +2360,16 @@ bool Application::_isHeadNode() const
 #else
   return Usul::System::Host::name() == _prefs->headNodeMachineName();
 #endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export the next frame.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_exportImage ( MenuKit::Message m, MenuKit::Item *item )
+{
+  this->exportNextFrame ();
 }

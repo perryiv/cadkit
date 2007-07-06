@@ -75,6 +75,7 @@ public:
   typedef vrj::GlApp                           BaseClass;
   typedef OsgTools::Render::Renderer           Renderer;
   typedef Renderer::RefPtr                     RendererPtr;
+  typedef std::vector < RendererPtr >          Renderers;
   typedef VRV::Core::SharedDouble              SharedDouble;
   typedef Usul::Threads::RecursiveMutex        Mutex;
   typedef Usul::Threads::Guard<Mutex>          Guard;
@@ -129,16 +130,23 @@ public:
   osg::Viewport*          viewport()       { return _viewport.get(); }
   const osg::Viewport*    viewport() const { return _viewport.get(); }
 
+  /// Export the next frame.
+  void                    exportNextFrame ();
+
 protected:
 
   /// VR Juggler methods.
   virtual void            contextInit();
-  virtual void            contextPreDraw();
   virtual void            preFrame();
   virtual void            latePreFrame();
-  virtual void            postFrame();
+  virtual void            contextPreDraw();
   virtual void            draw();
+  virtual void            postFrame();
   virtual void            contextClose();
+
+  virtual void            _preDraw ( OsgTools::Render::Renderer *renderer );
+  void                    _draw ( OsgTools::Render::Renderer *renderer );
+  virtual void            _postDraw ( OsgTools::Render::Renderer *renderer );
 
   /// Set the viewport.
   virtual void            _setViewport ( osg::Viewport*, vrj::GlDrawManager* );
@@ -239,12 +247,15 @@ private:
   cluster::UserData < SharedDouble >     _sharedFrameTime;
 
   vrj::GlContextData< RendererPtr >      _renderer;
+  Renderers                              _renderers;
   OsgTools::Render::SceneManager::RefPtr _sceneManager;
   ProgressBars::RefPtr                   _progressBars;
 
   osg::Vec2                              _clipDist;
 
-  unsigned int _refCount;
+  bool                                   _exportImage;
+
+  unsigned int                           _refCount;
 };
 
 }

@@ -472,9 +472,10 @@ void Manager::addActiveDocumentListener    ( ActiveDocumentListener* listener )
 void Manager::removeActiveDocumentListener ( ActiveDocumentListener* listener )
 {
   _activeDocumentListeners.erase ( 
-    std::find_if ( _activeDocumentListeners.begin(), 
-                   _activeDocumentListeners.end(), 
-                   Usul::Interfaces::IActiveDocumentListener::RefPtr::IsEqual ( listener ) ) );
+    std::remove_if ( _activeDocumentListeners.begin(), 
+                     _activeDocumentListeners.end(), 
+                     Usul::Interfaces::IActiveDocumentListener::RefPtr::IsEqual ( listener ) ),
+    _activeDocumentListeners.end() );
 }
 
 
@@ -499,7 +500,8 @@ void Manager::addActiveViewListener    ( ActiveViewListener* listener )
 void Manager::removeActiveViewListener ( ActiveViewListener* listener )
 {
   _activeViewListeners.erase ( 
-    std::find_if ( _activeViewListeners.begin(), 
-                   _activeViewListeners.end(), 
-                   Usul::Interfaces::IActiveViewListener::RefPtr::IsEqual ( listener ) ) );
+    std::remove_if ( _activeViewListeners.begin(), 
+                     _activeViewListeners.end(), 
+                     Usul::Interfaces::IActiveViewListener::RefPtr::IsEqual ( listener ) ),
+    _activeViewListeners.end() );
 }

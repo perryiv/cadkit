@@ -10,6 +10,8 @@
 
 #include "OsgTools/Widgets/Helper/UpdateProgress.h"
 
+#include "osg/NodeVisitor"
+
 using namespace OsgTools::Widgets::Helper;
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -26,7 +26,7 @@
 #include "Usul/Threads/Guard.h"
 
 #include "osg/Geometry"
-#include "osg/RenderInfo"
+
 
 namespace OsgTools {
 namespace Widgets {

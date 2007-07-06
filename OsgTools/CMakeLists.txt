@@ -64,7 +64,6 @@ SET (SOURCES
   Draggers/Translate2.cpp
   Draggers/Translate3.cpp
   Draggers/TranslateScreen.cpp
-  Drawables/VoxelGeometry.cpp
   Font.cpp
   GlassBoundingBox.cpp
   Grid.cpp
@@ -127,8 +126,10 @@ SET (SOURCES
   Utilities/Intersect.cpp
   Widgets/Axes.cpp
   Widgets/ClipPlane.cpp
-  Widgets/ProgressBar.cpp
-  Widgets/ProgressBarGroup.cpp
+  Widgets/ThreadSafeProgressBar.cpp
+  Widgets/ThreadSafeProgressBarGroup.cpp
+  Widgets/Helper/ThreadSafeText.cpp
+  Widgets/Helper/UpdateProgress.cpp
 )
 
 # Create a Shared Library

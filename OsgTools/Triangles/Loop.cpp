@@ -9,12 +9,13 @@
 
 #include "OsgTools/Triangles/Loop.h"
 
+#include "Usul/Documents/Manager.h"
+
 #include "Usul/Interfaces/IGetDocument.h"
 #include "Usul/Interfaces/IAddTriangle.h"
 #include "Usul/Interfaces/IGetVertex.h"
 #include "Usul/Interfaces/ITriangulateLoop.h"
 #include "Usul/Interfaces/IAddSharedVertex.h"
-#include "Usul/Interfaces/IActiveView.h"
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Interfaces/IGroup.h"

@@ -40,12 +40,13 @@
 #include "Usul/Resources/EventQueue.h"
 #include "Usul/Resources/TextWindow.h"
 
+#include "Usul/Documents/Manager.h"
+
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IFlushEvents.h"
 #include "Usul/Interfaces/GUI/ICancelButton.h"
 #include "Usul/Interfaces/IRedraw.h"
-#include "Usul/Interfaces/IActiveView.h"
 
 #include "osgUtil/IntersectVisitor"
 
@@ -2087,10 +2088,8 @@ void TriangleSet::findAllConnected ( Usul::Interfaces::IUnknown* caller, Connect
 
 void TriangleSet::groupTriangles ( Usul::Interfaces::IUnknown *caller )
 {
-  Usul::Interfaces::IActiveView::ValidQueryPtr activeView ( caller );
-  
   // Get needed interfaces.
-  Usul::Interfaces::IRedraw::QueryPtr redraw ( activeView->getActiveView() );
+  Usul::Interfaces::IRedraw::QueryPtr redraw ( Usul::Documents::Manager::instance().activeView() );
   
   // Turn off stats updating on the status bar.
   Usul::Interfaces::IRedraw::ResetStatsDisplay resetStats ( redraw.get(), false, true  );

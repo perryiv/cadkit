@@ -17,6 +17,7 @@
 
 #include "Usul/File/Find.h"
 #include "Usul/File/Path.h"
+#include "Usul/Trace/Trace.h"
 
 #include "osg/ref_ptr"
 #include "osg/Node"
@@ -81,6 +82,8 @@ Reader::~Reader()
 
 void Reader::read ( const std::string &file )
 {
+  USUL_TRACE_SCOPE;
+
   osg::ref_ptr<osgDB::ReaderWriter> reader ( this->_findReader ( file ) );
   this->_read ( file, *reader );
 }
@@ -167,6 +170,8 @@ namespace Detail
 
 void Reader::_read ( const std::string &file, osgDB::ReaderWriter &rw )
 {
+  USUL_TRACE_SCOPE;
+
   // Try using the stream-buffer.
   osgDB::ReaderWriter::ReadResult result = Detail::read ( file, rw, _progress );
 

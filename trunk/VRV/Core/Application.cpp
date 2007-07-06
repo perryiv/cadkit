@@ -481,7 +481,9 @@ void Application::_postDraw( OsgTools::Render::Renderer *renderer )
 
     // Construct the filename.
     std::ostringstream filename;
-    filename << Usul::System::Directory::home( true ) << "screen_shots" << count++ << "_" << Usul::System::Host::name() << "_" << ".jpg";
+    filename << Usul::System::Directory::home( true ) << "screen_shots/" << count++ << "_" << Usul::System::Host::name() << "_" << ".bmp";
+
+    std::cout << " Writing image file: " << filename.str() << std::endl;
 
     // Write the image to file.
     osgDB::writeImageFile ( *image, filename.str() );

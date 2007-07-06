@@ -1051,6 +1051,9 @@ void MainWindow::_clearDocuments()
 
   // Clear documents.
   Usul::Documents::Manager::instance().documents().clear();
+
+  // Reset the document manager.
+  Usul::Documents::Manager::reset();
 }
 
 

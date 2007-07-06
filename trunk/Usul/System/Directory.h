@@ -42,6 +42,12 @@ public:
   private:
     std::string _oldCwd;
   };
+
+  // Get home directory. If environment variable 'HOME' is set, then that is 
+  // returned. On Windows, if there is no 'HOME' environment variable, then 
+  // the 'Application Data' directory in the user's profile is returned. 
+  // Throws if it failed.
+  static std::string      home ( bool wantSlash = false );
 };
 
 }

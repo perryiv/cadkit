@@ -141,7 +141,7 @@ std::string TransparencyComponent::menuGroup() const
 
 void TransparencyComponent::execute ( Usul::Interfaces::IUnknown *caller )
 {
-  Usul::Documents::Document::RefPtr document ( Usul::Documents::Manager::instance().active() );
+  Usul::Interfaces::IDocument::QueryPtr  document  ( Usul::Documents::Manager::instance().active() );
   Usul::Interfaces::IImageList::QueryPtr imageList ( document );
 
   if ( imageList.valid() )

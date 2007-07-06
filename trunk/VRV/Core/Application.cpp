@@ -16,10 +16,14 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
+#include "Usul/System/Host.h"
+#include "Usul/System/Directory.h"
 
 #include "OsgTools/State/StateSet.h"
 
 #include "osg/MatrixTransform"
+
+#include "osgDB/WriteFile"
 
 #include "vrj/Kernel/Kernel.h"
 #include "vrj/Draw/OGL/GlWindow.h"
@@ -52,9 +56,11 @@ using namespace VRV::Core;
   _sharedFrameTime (),\
   _frameTime       ( 1 ), \
   _renderer        (), \
+  _renderers       (), \
   _sceneManager    ( new OsgTools::Render::SceneManager ), \
   _progressBars    ( new ProgressBars ), \
   _clipDist        ( 0, 0 ), \
+  _exportImage     ( false ), \
   _refCount        ( 0 )
 
 
@@ -258,6 +264,9 @@ void Application::contextInit()
 
   // Set the projection.
   _sceneManager->projection()->setMatrix ( osg::Matrix::ortho2D ( _viewport->x(), _viewport->width(), _viewport->y(), _viewport->height() ) );
+
+  // Add this renderer to our list.
+  _renderers.push_back ( renderer );
 }
 
 
@@ -269,8 +278,16 @@ void Application::contextInit()
 
 void Application::contextClose()
 {
+  RendererPtr renderer ( *_renderer );
+
   // Clean up context specific data.
   (*_renderer) = 0x0;
+
+  // Remove the renderer from our list.
+  _renderers.erase ( std::find_if ( _renderers.begin(), _renderers.end(), RendererPtr::IsEqual ( renderer ) ) );
+
+  // Clear the local ref pointer.
+  renderer = 0x0;
 }
 
 
@@ -362,7 +379,29 @@ void Application::draw()
   // For exception safety. Pushes attributes in constructor, pops them in destructor.
   Detail::OpenGlStackPushPop pushPop;
 
+  // Get the renderer.
   Renderer* renderer ( this->_getContextSpecificRenderer() );
+
+  // Drawing is about to happen.
+  this->_preDraw ( renderer );
+
+  // Draw.
+  this->_draw ( renderer );
+
+  // Drawing has finished.
+  this->_postDraw ( renderer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_draw ( OsgTools::Render::Renderer *renderer )
+{
+  USUL_TRACE_SCOPE;
 
   vrj::GlDrawManager* mgr ( vrj::GlDrawManager::instance() );
   USUL_ASSERT ( 0x0 != mgr );
@@ -398,6 +437,58 @@ void Application::draw()
 
   // Do the drawing.
   renderer->render();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called before draw happens.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_preDraw( OsgTools::Render::Renderer *renderer )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called before after happens.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_postDraw( OsgTools::Render::Renderer *renderer )
+{
+  USUL_TRACE_SCOPE;
+
+  if( true == _exportImage )
+  {
+    unsigned int width  ( _viewport->width() );
+    unsigned int height ( _viewport->height() );
+
+    // Make the image
+    osg::ref_ptr<osg::Image> image ( new osg::Image );
+
+    // Make enough space
+    image->allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE );
+
+    // Capture image.
+    image = renderer->screenCapture ( renderer->viewMatrix(), width, height );
+
+    // How many images have we exported.
+    static unsigned int count ( 0 );
+
+    // Construct the filename.
+    std::ostringstream filename;
+    filename << Usul::System::Directory::home( true ) << "screen_shots" << count++ << "_" << Usul::System::Host::name() << "_" << ".jpg";
+
+    // Write the image to file.
+    osgDB::writeImageFile ( *image, filename.str() );
+
+    // Don't export next time.
+    _exportImage = false;
+  }
 }
 
 
@@ -1111,4 +1202,19 @@ const osg::Group* Application::_sceneRoot() const
 Usul::Interfaces::IUnknown* Application::createProgressBar()
 {
   return _progressBars->append();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export the next image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::exportNextFrame()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  _exportImage = true;
 }

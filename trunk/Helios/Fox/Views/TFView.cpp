@@ -205,12 +205,6 @@ TFView::TFView( Usul::Interfaces::IDocument* document, FX::FXComposite *parent, 
 TFView::~TFView()
 {
   _document->removeView ( this );
-
-  Usul::Interfaces::IViewer::ValidQueryPtr me ( this );
-
-  // If we are the active view, set the active view to null.
-  if( me.get() == _document->activeView() )
-    _document->activeView( 0x0 );
 }
 
 
@@ -332,6 +326,8 @@ Usul::Interfaces::IUnknown* TFView::queryInterface( unsigned long iid )
   case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IViewer::IID:
     return static_cast< Usul::Interfaces::IViewer* > ( this );
+  case Usul::Interfaces::IView::IID:
+    return static_cast < Usul::Interfaces::IView * > ( this );
   default:
     return 0x0;
   }
@@ -927,3 +923,14 @@ bool TFView::_intersect ( const FX::FXEvent &event, osg::Node *scene, osgUtil::H
   return true;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IDocument* TFView::document()
+{
+  return _document.get();
+}

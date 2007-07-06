@@ -5,7 +5,7 @@
     for CadViewer to run properly. DO NOT DELETE THIS FILE!
   </comment>
   
-  <!-- TODO: Add ability to specify directory.-->
+  
   <!--<directory>C:\src\png\bin</directory>-->
   <plugin alias="Display Scene Stats" file="display_scene_stats.cvplug" />
   <plugin alias="Scene Operations" file="scene_operations.cvplug" />

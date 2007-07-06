@@ -42,6 +42,7 @@
 #include "Usul/System/Host.h"
 #include "Usul/Functors/If.h"
 #include "Usul/Predicates/UnaryPair.h"
+#include "Usul/File/Path.h"
 
 #include "vrj/Kernel/Kernel.h"
 #include "vrj/Display/Projection.h"
@@ -848,6 +849,29 @@ namespace CV
         return boost::filesystem::is_directory ( t );
       }
     };
+
+    template < class Container >
+    void findFiles ( const boost::filesystem::path & path, const std::string& ext, Container& c )
+    {
+      typedef boost::filesystem::directory_iterator Iterator;
+
+      Iterator iter ( path );
+      Iterator end;
+      for( ; iter != end; ++iter )
+      {
+        // Make a recursive call if its a directory.
+        if( boost::filesystem::is_directory ( iter->status() ) )
+        {
+          findFiles ( iter->path(), ext, c );
+        }
+
+        // Add it to our list if its a file and the extenstion matches.
+        else if ( Usul::File::extension ( iter->leaf() ) == ext )
+        {
+          c.push_back ( iter->path().native_directory_string() );
+        }
+      }
+    }
   }
 }
 
@@ -870,6 +894,9 @@ void Application::_parseCommandLine()
                   restart.end(), 
                   Usul::Adaptors::memberFunction ( this, &Application::_loadRestartFile ) );
 
+  // The filenames to load.
+  Filenames filenames;
+
   // Find all directories.
   Parser::Args directories;
 
@@ -879,18 +906,24 @@ void Application::_parseCommandLine()
                               directories,
                               true );
 
-  // Load the directories.
-  std::for_each ( directories.begin(),
-                  directories.end(), 
-                  Usul::Adaptors::memberFunction ( this, &Application::_loadDirectory ) );
+  for ( Parser::Args::iterator iter = directories.begin(); iter != directories.end(); ++ iter )
+  {
+    // Find the files that we can load.
+    Detail::findFiles ( *iter, "osg", filenames );
+    Detail::findFiles ( *iter, "ive", filenames );
+  }
 
   // Extract the model files and remove them from the remaining arguments.
   Parser::Args models = _parser->files ( true );
 
+  // Reserve enough room.
+  filenames.reserve ( filenames.size() + models.size() );
+
+  // Copy the model files into our list to load.
+  std::copy ( models.begin(), models.end(), std::back_inserter( filenames ) );
+
   // Load the model files.
-  std::for_each ( models.begin(),
-                  models.end(), 
-                  Usul::Adaptors::memberFunction ( this, &Application::_loadModelFile ) );
+  this->_loadModelFiles ( filenames );
 }
 
 

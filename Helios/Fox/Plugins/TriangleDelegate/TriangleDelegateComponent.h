@@ -24,7 +24,7 @@
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
 #include "Usul/Interfaces/GUI/IUpdateGUI.h"
-#include "Usul/Interfaces/IHandleActivatingDocument.h"
+#include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Interfaces/IGetLoops.h"
 #include "Usul/Types/Types.h"
 #include "Usul/Math/Vector3.h"
@@ -48,7 +48,7 @@ namespace Usul { namespace Interfaces { struct IDocument; } }
 class TriangleDelegateComponent : public Usul::Base::Referenced,
                                   public Usul::Interfaces::IPlugin,
                                   public Usul::Interfaces::IGUIDelegate,
-                                  public Usul::Interfaces::IHandleActivatingDocument,
+                                  public Usul::Interfaces::IActiveDocumentListener,
                                   public Usul::Interfaces::IUpdateGUI,
                                   public FX::FXObject
 {
@@ -132,12 +132,14 @@ protected:
   virtual void                createDefaultGUI ( Usul::Documents::Document *document, Usul::Interfaces::IUnknown* caller );
   virtual void                refreshView      ( Usul::Documents::Document *document, Usul::Interfaces::IViewer  *viewer );
 
-  /// Usul::Interfaces::IHandleActivatingDocument
-  virtual void                noLongerActive ( Usul::Documents::Document* document, const std::string& activeType );
-  virtual void                nowActive      ( Usul::Documents::Document* document, const std::string& oldType );
+  /// Usul::Interfaces::IActiveDocumentListener.
+  virtual void                          activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc );
 
   /// Usul::Interfaces::IUpdateGUI
   virtual void                updateGUI();
+
+  void _clear();
+  void _build( Usul::Interfaces::IDocument* document );
 
   void _findLoops ( Usul::Interfaces::IUnknown* document );
 

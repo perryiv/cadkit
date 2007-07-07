@@ -710,6 +710,10 @@ void Application::_initMenu()
   CV_REGISTER ( _increaseSpeed,    "increase_speed" );
   CV_REGISTER ( _decreaseSpeed,    "decrease_speed" );
   CV_REGISTER ( _exportImage,      "export_image" );
+  CV_REGISTER ( _renderPassesOne,     "render_passes_one" );
+  CV_REGISTER ( _renderPassesThree,   "render_passes_three" );
+  CV_REGISTER ( _renderPassesNine,    "render_passes_nine" );
+  CV_REGISTER ( _renderPassesTweleve, "render_passes_tweleve" );
   //CV_REGISTER ( _saveView,         "save_camera_view" );
 
   // Get the component.

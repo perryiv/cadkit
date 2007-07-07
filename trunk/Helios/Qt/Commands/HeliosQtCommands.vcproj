@@ -223,6 +223,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ExportImage.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ExportImage.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OpenDocument.cpp"
 				>
 			</File>

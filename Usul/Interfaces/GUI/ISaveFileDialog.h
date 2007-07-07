@@ -29,12 +29,10 @@ namespace Interfaces {
 struct ISaveFileDialog : public Usul::Interfaces::IUnknown
 {
   // Typedefs.
-  typedef Usul::Interfaces::ILoadFileDialog::Filter Filter;
-  typedef Usul::Interfaces::ILoadFileDialog::Filters Filters;
-  typedef Usul::Interfaces::ILoadFileDialog::FileName FileName;
-  typedef Usul::Interfaces::ILoadFileDialog::FileNames FileNames;
-  typedef Usul::Interfaces::ILoadFileDialog::FileResult FileResult;
-  typedef Usul::Interfaces::ILoadFileDialog::FilesResult FilesResult;
+  typedef Usul::Interfaces::ILoadFileDialog::Filter       Filter;
+  typedef Usul::Interfaces::ILoadFileDialog::Filters      Filters;
+  typedef Usul::Interfaces::ILoadFileDialog::FileName     FileName;
+  typedef Usul::Interfaces::ILoadFileDialog::FileResult   FileResult;
 
   // Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( ISaveFileDialog );
@@ -44,7 +42,6 @@ struct ISaveFileDialog : public Usul::Interfaces::IUnknown
 
   // Get the name of the file to save to
   virtual FileResult    getSaveFileName  ( const std::string &title = "Save", const Filters &filters = Filters() ) = 0;
-  virtual FilesResult   getSaveFileNames ( const std::string &title = "Save", const Filters &filters = Filters() ) = 0;
 };
 
 

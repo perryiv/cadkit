@@ -454,7 +454,7 @@ public:
   void                  viewer ( SceneView * );
 
   // Write the current frame to an image file.
-  bool                  writeImageFile ( const std::string &filename, const std::string &options = std::string() ) const;
+  bool                  writeImageFile ( const std::string &filename ) const;
   virtual bool          writeImageFile ( const std::string &filename, unsigned int width, unsigned int height ) const;
 
   // Write the current model or scene to file.

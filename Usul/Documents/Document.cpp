@@ -402,8 +402,7 @@ void Document::exportDocument ( Unknown *caller )
 {
   // For convenience.
   typedef Usul::Interfaces::ISaveFileDialog FileDialog;
-  typedef FileDialog::FilesResult Result;
-  typedef FileDialog::FileNames FileNames;
+  typedef FileDialog::FileResult Result;
 
   // Get the file dialog interface
   FileDialog::QueryPtr fileDialog ( caller );
@@ -413,12 +412,12 @@ void Document::exportDocument ( Unknown *caller )
     return;
 
   // Ask for file names.
-  const Result result ( fileDialog->getSaveFileNames ( "Export", this->filtersExport() ) );
-  const FileNames &files = result.first;
-
-  // Loop through the files.
-  for ( FileNames::const_iterator i = files.begin(); i != files.end(); ++i )
-    this->write ( *i, caller );
+  const Result result ( fileDialog->getSaveFileName ( "Export", this->filtersExport() ) );
+  const std::string filename ( result.first );
+  
+  // Write the file, if we have one.
+  if( false == filename.empty() )
+    this->write ( filename, caller );
 }
 
 

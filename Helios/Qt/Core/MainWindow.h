@@ -24,6 +24,7 @@
 
 #include "Usul/Interfaces/IStreamListener.h"
 #include "Usul/Interfaces/GUI/ILoadFileDialog.h"
+#include "Usul/Interfaces/GUI/ISaveFileDialog.h"
 #include "Usul/Interfaces/GUI/IUpdateTextWindow.h"
 #include "Usul/Interfaces/GUI/IGUIDelegateNotify.h"
 #include "Usul/Interfaces/Qt/IMainWindow.h"
@@ -58,6 +59,7 @@ namespace Core {
 class HELIOS_QT_CORE_EXPORT MainWindow : 
   public QMainWindow,
   public Usul::Interfaces::ILoadFileDialog,
+  public Usul::Interfaces::ISaveFileDialog,
   public Usul::Interfaces::IUpdateTextWindow,
   public Usul::Interfaces::Qt::IMainWindow,
   public Usul::Interfaces::Qt::IWorkspace,
@@ -99,6 +101,9 @@ public:
   // Get the name of the file to load from
   virtual FileResult                getLoadFileName  ( const std::string &title = "Load", const Filters &filters = Filters() );
   virtual FilesResult               getLoadFileNames ( const std::string &title = "Load", const Filters &filters = Filters() );
+
+  // Get the name of the file to save to.
+  virtual FileResult                getSaveFileName  ( const std::string &title = "Save", const Filters &filters = Filters() );
 
   // Get the mutex.
   Mutex &                           mutex() const { return *_mutex; }

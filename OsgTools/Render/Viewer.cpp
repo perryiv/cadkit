@@ -1599,11 +1599,8 @@ void Viewer::_dumpFrame()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::writeImageFile ( const std::string &filename, const std::string &options ) const
+bool Viewer::writeImageFile ( const std::string &filename ) const
 {
-  // Save and restore default options.
-  OsgTools::ScopedOptions scoped ( options );
-
   // Force all detail to render.
   Viewer *me ( const_cast < Viewer * > ( this ) );
   me->forceDetail();

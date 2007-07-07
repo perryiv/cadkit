@@ -18,6 +18,7 @@
 #include "Helios/Qt/Core/Constants.h"
 #include "Helios/Qt/Commands/Action.h"
 #include "Helios/Qt/Commands/OpenDocument.h"
+#include "Helios/Qt/Commands/ExportImage.h"
 #include "Helios/Qt/Commands/ExitApplication.h"
 #include "Helios/Qt/Tools/Image.h"
 #include "Helios/Qt/Tools/SettingsGroupScope.h"
@@ -307,6 +308,12 @@ void MainWindow::_buildMenu()
     }
     menu->addSeparator();
     {
+      CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::ExportImage> ( this ) );
+      _actions.insert ( action );
+      menu->addAction ( action.get() );
+    }
+    menu->addSeparator();
+    {
       CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::ExitApplication> ( this ) );
       _actions.insert ( action );
       menu->addAction ( action.get() );
@@ -468,6 +475,8 @@ Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::ILoadFileDialog::IID:
     return static_cast<Usul::Interfaces::ILoadFileDialog*>(this);
+  case Usul::Interfaces::ISaveFileDialog::IID:
+    return static_cast < Usul::Interfaces::ISaveFileDialog * > ( this );
   case Usul::Interfaces::IUpdateTextWindow::IID:
     return static_cast<Usul::Interfaces::IUpdateTextWindow*>(this);
   case Usul::Interfaces::Qt::IMainWindow::IID:
@@ -551,6 +560,49 @@ MainWindow::FilesResult MainWindow::getLoadFileNames ( const std::string &title,
 
   // Return the result, which may be an empty list.
   return files;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show dialog to get a file name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MainWindow::FileResult MainWindow::getSaveFileName  ( const std::string &title, const Filters &filters )
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1215213562" );
+
+  // Initialize the answer.
+  FileResult file;
+
+  // Set the filter string.
+  const std::string allFilters ( this->_formatFilters ( filters ) );
+
+  // Get the current filter.
+  const std::string filter ( this->_lastFileDialogFilter ( title ) );
+
+  // Get the directory.
+  const std::string dir ( this->_lastFileDialogDir ( title ) );
+
+  // Need to use this static function to get native file dialog.
+  QString answer ( QFileDialog::getSaveFileName ( this, title.c_str(), dir.c_str(), allFilters.c_str(), 0x0 ) );
+
+  if( 0 != answer.size () )
+  {
+    std::string filename ( answer.toStdString() );
+    std::string directory ( Usul::File::directory ( filename, false ) );
+    std::string filter ( "" );
+
+    // Save the directory and filter.
+    this->_lastFileDialogDir    ( title, directory );
+    this->_lastFileDialogFilter ( title, filter    );
+
+    file.first = filename;
+  }
+
+  return file;
 }
 
 

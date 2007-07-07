@@ -1500,6 +1500,7 @@ bool MainWindow::_exiting()
 
   // Clear documents.
   Usul::Documents::Manager::instance().documents().clear();
+  Usul::Documents::Manager::reset();
 
   // Release the preferences.
   Helios::Core::Preferences::releaseInstance();

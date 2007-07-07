@@ -50,7 +50,6 @@
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Interfaces/GUI/ICancelButton.h"
 #include "Usul/Interfaces/GUI/IFlushEvents.h"
-#include "Usul/Interfaces/IActiveView.h"
 #include "Usul/Interfaces/IAnimate.h"
 #include "Usul/Interfaces/IGroup.h"
 #include "Usul/Interfaces/IAddTriangle.h"
@@ -62,6 +61,7 @@
 #include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Interfaces/IGroupPrimitives.h"
 #include "Usul/Interfaces/ISceneElement.h"
+#include "Usul/Interfaces/IGetOptions.h"
 
 #include "Usul/Registry/Constants.h"
 #include "Usul/Properties/Attribute.h"
@@ -139,7 +139,7 @@ FOX_TOOLS_IMPLEMENT ( TriangleDelegateComponent, FX::FXObject, MessageMap, ARRAY
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-typedef Usul::Properties::Attribute < Usul::Documents::Document* > DocAttribute;
+typedef Usul::Properties::Attribute < Usul::Interfaces::IDocument* > DocAttribute;
 typedef FoxTools::ToolBar::Bar ToolBar;
 typedef FoxTools::ToolBar::ToggleButton ToggleButton;
 typedef FoxTools::ToolBar::Factory Factory;
@@ -165,6 +165,8 @@ _activeLoops(),
 _groupFrame ( 0x0 ),
 _groupList ( 0x0 )
 {
+  // We are a document listener.
+  Usul::Documents::Manager::instance().addActiveDocumentListener ( this );
 }
 
 
@@ -176,6 +178,9 @@ _groupList ( 0x0 )
 
 TriangleDelegateComponent::~TriangleDelegateComponent()
 {
+  // Remove from the list.
+  Usul::Documents::Manager::instance().removeActiveDocumentListener ( this );
+
   Usul::Interfaces::IFoxTabItem::QueryPtr tabItem ( Usul::Resources::menuBar() );
 
   if( tabItem.valid( ) )
@@ -214,8 +219,8 @@ Usul::Interfaces::IUnknown *TriangleDelegateComponent::queryInterface ( unsigned
     return static_cast < Usul::Interfaces::IPlugin*>(this);
   case Usul::Interfaces::IGUIDelegate::IID:
     return static_cast < Usul::Interfaces::IGUIDelegate*>(this);
-  case Usul::Interfaces::IHandleActivatingDocument::IID:
-    return static_cast < Usul::Interfaces::IHandleActivatingDocument* > ( this );
+  case Usul::Interfaces::IActiveDocumentListener::IID:
+    return static_cast < Usul::Interfaces::IActiveDocumentListener* > ( this );
   case Usul::Interfaces::IUpdateGUI::IID:
     return static_cast < Usul::Interfaces::IUpdateGUI* > ( this );
   default:
@@ -307,18 +312,31 @@ void TriangleDelegateComponent::refreshView ( Usul::Documents::Document *documen
     Usul::Interfaces::IBuildScene::QueryPtr build ( document );
 
     if ( build.valid () )
-      canvas->scene ( build->buildScene ( document->options( viewer ) ) );
+      canvas->scene ( build->buildScene ( document->options( Usul::Interfaces::IView::QueryPtr ( viewer ) ) ) );
   }
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Given document is no longer active.
+//  The active document has changed.
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void TriangleDelegateComponent::noLongerActive ( Usul::Documents::Document* document, const std::string& activeType )
+void TriangleDelegateComponent::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
+{
+  this->_clear();
+  this->_build ( Usul::Interfaces::IDocument::QueryPtr ( newDoc ) );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Clear any gui components.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void TriangleDelegateComponent::_clear ()
 {
   // Remove the triangle toolbar.  The tool bar buttons contain references to the document.
   // This is needed so that the document get properly deleted and the update functions don't get called again.
@@ -358,42 +376,49 @@ void TriangleDelegateComponent::noLongerActive ( Usul::Documents::Document* docu
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void TriangleDelegateComponent::nowActive ( Usul::Documents::Document* document, const std::string& oldType )
+void TriangleDelegateComponent::_build ( Usul::Interfaces::IDocument* document )
 {
-  //Make the triangle toolbar
-  ToolBar::ValidRefPtr triangleToolBar ( Factory::instance().create( "Triangle", Factory::TOP ) );
+  // Return if we don't have a good document.
+  if( 0x0 == document )
+    return;
 
-  triangleToolBar->clear();
+  if( this->doesHandle ( document->typeName() ) )
+  {
+    //Make the triangle toolbar
+    ToolBar::ValidRefPtr triangleToolBar ( Factory::instance().create( "Triangle", Factory::TOP ) );
 
-  ToggleButton::ValidRefPtr b1 ( new ToggleButton ( "Facet",  "Turn on per facet shading.",   Icons::ICON_FLAT,    this, ID_FACET ) );
-  b1->userData ( new DocAttribute ( document ) );
+    triangleToolBar->clear();
 
-  ToggleButton::ValidRefPtr b2 ( new ToggleButton ( "Vertex", "Turn on per vertex shading.",  Icons::ICON_SMOOTH, this, ID_VERTEX  ) );
-  b2->userData ( new DocAttribute ( document ) );
+    ToggleButton::ValidRefPtr b1 ( new ToggleButton ( "Facet",  "Turn on per facet shading.",   Icons::ICON_FLAT,    this, ID_FACET ) );
+    b1->userData ( new DocAttribute ( document ) );
 
-  ToggleButton::ValidRefPtr b3 ( new ToggleButton ( "Bounding Box",  "Show the bounding box.",   Icons::ICON_BOUND_BOX,    this, ID_BOUNDING_BOX ) );
-  b3->userData ( new DocAttribute ( document ) );
+    ToggleButton::ValidRefPtr b2 ( new ToggleButton ( "Vertex", "Turn on per vertex shading.",  Icons::ICON_SMOOTH, this, ID_VERTEX  ) );
+    b2->userData ( new DocAttribute ( document ) );
 
-  ToggleButton::ValidRefPtr b4 ( new ToggleButton ( "Glass Bounding Box", "Show the glass bounding box.",  Icons::ICON_GLASS_BOX, this, ID_GLASS_BOUNDING_BOX  ) );
-  b4->userData ( new DocAttribute ( document ) );
-  
-  // Append the buttons
-  triangleToolBar->append ( b1.get() );
-  triangleToolBar->append ( b2.get() );
-  triangleToolBar->append ( b3.get() );
-  triangleToolBar->append ( b4.get() );
+    ToggleButton::ValidRefPtr b3 ( new ToggleButton ( "Bounding Box",  "Show the bounding box.",   Icons::ICON_BOUND_BOX,    this, ID_BOUNDING_BOX ) );
+    b3->userData ( new DocAttribute ( document ) );
 
-  triangleToolBar->build();
-  triangleToolBar->create();
+    ToggleButton::ValidRefPtr b4 ( new ToggleButton ( "Glass Bounding Box", "Show the glass bounding box.",  Icons::ICON_GLASS_BOX, this, ID_GLASS_BOUNDING_BOX  ) );
+    b4->userData ( new DocAttribute ( document ) );
+    
+    // Append the buttons
+    triangleToolBar->append ( b1.get() );
+    triangleToolBar->append ( b2.get() );
+    triangleToolBar->append ( b3.get() );
+    triangleToolBar->append ( b4.get() );
 
-  Factory::instance().layout();
+    triangleToolBar->build();
+    triangleToolBar->create();
 
-  Usul::Interfaces::IDocument::ValidQueryPtr doc ( document );
+    Factory::instance().layout();
 
-    //Build the tabs
-  this->_buildUncappedTab  ( Usul::Resources::menuBar(), doc.get() );
-  this->_buildSucceededTab ( Usul::Resources::menuBar(), doc.get() );
-  this->_buildGroupTab     ( Usul::Resources::menuBar(), doc.get() );
+    Usul::Interfaces::IDocument::ValidQueryPtr doc ( document );
+
+      //Build the tabs
+    this->_buildUncappedTab  ( Usul::Resources::menuBar(), doc.get() );
+    this->_buildSucceededTab ( Usul::Resources::menuBar(), doc.get() );
+    this->_buildGroupTab     ( Usul::Resources::menuBar(), doc.get() );
+  }
 }
 
 
@@ -414,21 +439,23 @@ long TriangleDelegateComponent::onCommandFacet ( FX::FXObject *object, FX::FXSel
   ToggleButton::RefPtr button ( reinterpret_cast < ToggleButton *  > ( b->getUserData() ) );
   DocAttribute::RefPtr attribute ( reinterpret_cast < DocAttribute* > ( button->userData() ) );
 
-  typedef Usul::Documents::Document Document;
-
-  Document::RefPtr document ( attribute->value() );
+  // Query for interfaces.
+  Usul::Interfaces::IDocument::QueryPtr document ( attribute->value() );
+  Usul::Interfaces::IGetOptions::QueryPtr getOptions ( document );
+  Usul::Interfaces::ISendMessage::QueryPtr sendMessage ( document );
 
   // Return now if we didn't get a valid docuument.
-  if( false == document.valid() )
+  if( false == getOptions.valid() || false == sendMessage.valid() )
     return 0;
 
-  Document::Options &options ( document->options() );
+  Usul::Interfaces::IGetOptions::Options options;
+  getOptions->getOptions( options );
 
   options["normals"] = "per-facet";
   options["colors"]  = "per-facet";
 
-  document->sendMessage( Usul::Documents::Document::ID_BUILD_SCENE );
-  document->sendMessage( Usul::Documents::Document::ID_RENDER_SCENE );
+  sendMessage->sendMessage( Usul::Documents::Document::ID_BUILD_SCENE );
+  sendMessage->sendMessage( Usul::Documents::Document::ID_RENDER_SCENE );
 
   return 1;
 }
@@ -451,21 +478,23 @@ long TriangleDelegateComponent::onCommandVertex ( FX::FXObject *object, FX::FXSe
   ToggleButton::RefPtr button ( reinterpret_cast < ToggleButton *  > ( b->getUserData() ) );
   DocAttribute::RefPtr attribute ( reinterpret_cast < DocAttribute* > ( button->userData() ) );
 
-  typedef Usul::Documents::Document Document;
-
-  Document::RefPtr document ( attribute->value() );
+  // Query for interfaces.
+  Usul::Interfaces::IDocument::QueryPtr document ( attribute->value() );
+  Usul::Interfaces::IGetOptions::QueryPtr getOptions ( document );
+  Usul::Interfaces::ISendMessage::QueryPtr sendMessage ( document );
 
   // Return now if we didn't get a valid docuument.
-  if( false == document.valid() )
+  if( false == getOptions.valid() || false == sendMessage.valid() )
     return 0;
 
-  Document::Options &options ( document->options() );
+  Usul::Interfaces::IGetOptions::Options options;
+  getOptions->getOptions( options );
 
   options["normals"] = "per-vertex";
   options["colors"]  = "per-vertex";
 
-  document->sendMessage( Usul::Documents::Document::ID_BUILD_SCENE );
-  document->sendMessage( Usul::Documents::Document::ID_RENDER_SCENE );
+  sendMessage->sendMessage( Usul::Documents::Document::ID_BUILD_SCENE );
+  sendMessage->sendMessage( Usul::Documents::Document::ID_RENDER_SCENE );
 
   return 1;
 }
@@ -488,14 +517,17 @@ long TriangleDelegateComponent::onUpdateFacet ( FX::FXObject *object, FX::FXSele
   ToggleButton::RefPtr button ( reinterpret_cast < ToggleButton *  > ( b->getUserData() ) );
   DocAttribute::RefPtr attribute ( reinterpret_cast < DocAttribute* > ( button->userData() ) );
 
-  typedef Usul::Documents::Document Document;
-  Document::RefPtr document ( attribute->value() );
+  // Query for interfaces.
+  Usul::Interfaces::IDocument::QueryPtr document ( attribute->value() );
+  Usul::Interfaces::IGetOptions::QueryPtr getOptions ( document );
 
   // Return now if we didn't get a valid docuument.
-  if( false == document.valid() )
+  if( false == getOptions.valid() )
     return 0;
 
-  Document::Options options ( document->options() );
+  // Get the options.
+  Usul::Interfaces::IGetOptions::Options options;
+  getOptions->getOptions( options );
 
   const bool average ( "per-vertex" == options["normals"] );
   FoxTools::Functions::check ( !average, object );
@@ -521,14 +553,17 @@ long TriangleDelegateComponent::onUpdateVertex ( FX::FXObject *object, FX::FXSel
   ToggleButton::RefPtr button ( reinterpret_cast < ToggleButton *  > ( b->getUserData() ) );
   DocAttribute::RefPtr attribute ( reinterpret_cast < DocAttribute* > ( button->userData() ) );
 
-  typedef Usul::Documents::Document Document;
-  Document::RefPtr document ( attribute->value() );
+  // Query for interfaces.
+  Usul::Interfaces::IDocument::QueryPtr document ( attribute->value() );
+  Usul::Interfaces::IGetOptions::QueryPtr getOptions ( document );
 
   // Return now if we didn't get a valid docuument.
-  if( false == document.valid() )
+  if( false == getOptions.valid() )
     return 0;
 
-  Document::Options options ( document->options() );
+  // Get the options.
+  Usul::Interfaces::IGetOptions::Options options;
+  getOptions->getOptions( options );
 
   const bool average ( "per-vertex" == options["normals"] );
   FoxTools::Functions::check( average, object );
@@ -554,15 +589,18 @@ long TriangleDelegateComponent::onCommandBoundingBox ( FX::FXObject *object, FX:
   ToggleButton::RefPtr button ( reinterpret_cast < ToggleButton *  > ( b->getUserData() ) );
   DocAttribute::RefPtr attribute ( reinterpret_cast < DocAttribute* > ( button->userData() ) );
 
-  typedef Usul::Documents::Document Document;
-
-  Document::RefPtr document ( attribute->value() );
+  // Query for interfaces.
+  Usul::Interfaces::IDocument::QueryPtr document ( attribute->value() );
+  Usul::Interfaces::IGetOptions::QueryPtr getOptions ( document );
+  Usul::Interfaces::ISendMessage::QueryPtr sendMessage ( document );
 
   // Return now if we didn't get a valid docuument.
-  if( false == document.valid() )
+  if( false == getOptions.valid() || false == sendMessage.valid() )
     return 0;
 
-  Document::Options &options ( document->options() );
+  // Get the options.
+  Usul::Interfaces::IGetOptions::Options options;
+  getOptions->getOptions( options );
 
   const bool show ( "Show" == options["BoundingBox"] );
 
@@ -571,8 +609,8 @@ long TriangleDelegateComponent::onCommandBoundingBox ( FX::FXObject *object, FX:
   else
     options["BoundingBox"] = "Show";
 
-  document->sendMessage( Usul::Documents::Document::ID_BUILD_SCENE );
-  document->sendMessage( Usul::Documents::Document::ID_RENDER_SCENE );
+  sendMessage->sendMessage( Usul::Documents::Document::ID_BUILD_SCENE );
+  sendMessage->sendMessage( Usul::Documents::Document::ID_RENDER_SCENE );
 
   return 1;
 }
@@ -595,15 +633,18 @@ long TriangleDelegateComponent::onCommandGlassBoundingBox ( FX::FXObject *object
   ToggleButton::RefPtr button ( reinterpret_cast < ToggleButton *  > ( b->getUserData() ) );
   DocAttribute::RefPtr attribute ( reinterpret_cast < DocAttribute* > ( button->userData() ) );
 
-  typedef Usul::Documents::Document Document;
-
-  Document::RefPtr document ( attribute->value() );
+  // Query for interfaces.
+  Usul::Interfaces::IDocument::QueryPtr document ( attribute->value() );
+  Usul::Interfaces::IGetOptions::QueryPtr getOptions ( document );
+  Usul::Interfaces::ISendMessage::QueryPtr sendMessage ( document );
 
   // Return now if we didn't get a valid docuument.
-  if( false == document.valid() )
+  if( false == getOptions.valid() || false == sendMessage.valid() )
     return 0;
 
-  Document::Options &options ( document->options() );
+  // Get the options.
+  Usul::Interfaces::IGetOptions::Options options;
+  getOptions->getOptions( options );
 
   const bool show ( "Show" == options["GlassBoundingBox"] );
 
@@ -612,8 +653,8 @@ long TriangleDelegateComponent::onCommandGlassBoundingBox ( FX::FXObject *object
   else
     options["GlassBoundingBox"] = "Show";
 
-  document->sendMessage( Usul::Documents::Document::ID_BUILD_SCENE );
-  document->sendMessage( Usul::Documents::Document::ID_RENDER_SCENE );
+  sendMessage->sendMessage( Usul::Documents::Document::ID_BUILD_SCENE );
+  sendMessage->sendMessage( Usul::Documents::Document::ID_RENDER_SCENE );
 
   return 1;
 }
@@ -636,11 +677,17 @@ long TriangleDelegateComponent::onUpdateBoundingBox ( FX::FXObject *object, FX::
   ToggleButton::RefPtr button ( reinterpret_cast < ToggleButton *  > ( b->getUserData() ) );
   DocAttribute::RefPtr attribute ( reinterpret_cast < DocAttribute* > ( button->userData() ) );
 
-  typedef Usul::Documents::Document Document;
+  // Query for interfaces.
+  Usul::Interfaces::IDocument::QueryPtr document ( attribute->value() );
+  Usul::Interfaces::IGetOptions::QueryPtr getOptions ( document );
 
-  Document::ValidRefPtr document ( attribute->value() );
+  // Return now if we didn't get a valid docuument.
+  if( false == getOptions.valid() )
+    return 0;
 
-  Document::Options &options ( document->options() );
+  // Get the options.
+  Usul::Interfaces::IGetOptions::Options options;
+  getOptions->getOptions( options );
 
   const bool show ( "Show" == options["BoundingBox"] );
 
@@ -667,11 +714,17 @@ long TriangleDelegateComponent::onUpdateGlassBoundingBox  ( FX::FXObject *object
   ToggleButton::RefPtr button ( reinterpret_cast < ToggleButton *  > ( b->getUserData() ) );
   DocAttribute::RefPtr attribute ( reinterpret_cast < DocAttribute* > ( button->userData() ) );
 
-  typedef Usul::Documents::Document Document;
+  // Query for interfaces.
+  Usul::Interfaces::IDocument::QueryPtr document ( attribute->value() );
+  Usul::Interfaces::IGetOptions::QueryPtr getOptions ( document );
 
-  Document::ValidRefPtr document ( attribute->value() );
+  // Return now if we didn't get a valid docuument.
+  if( false == getOptions.valid() )
+    return 0;
 
-  Document::Options &options ( document->options() );
+  // Get the options.
+  Usul::Interfaces::IGetOptions::Options options;
+  getOptions->getOptions( options );
 
   const bool show ( "Show" == options["GlassBoundingBox"] );
 
@@ -1000,7 +1053,7 @@ void TriangleDelegateComponent::_gotoLoop ( Loop& loop, Usul::Interfaces::IUnkno
     animate->animate( center, distance, rotation );
   
   // Get the active view
-  Usul::Interfaces::IViewer::QueryPtr activeView ( Usul::Documents::Manager::instance().active()->activeView() );
+  Usul::Interfaces::IViewer::QueryPtr activeView ( Usul::Documents::Manager::instance().activeView() );
 
   Usul::Interfaces::IGroup::QueryPtr group ( activeView );
 
@@ -1227,7 +1280,7 @@ long TriangleDelegateComponent::onCommandLoopDone ( FX::FXObject *, FX::FXSelect
   unsigned int current ( _succeededList->getCurrentItem() );
 
   // Get needed interfaces
-  Usul::Interfaces::IGroup::QueryPtr            group       ( Usul::Documents::Manager::instance().active()->activeView() );
+  Usul::Interfaces::IGroup::QueryPtr            group       ( Usul::Documents::Manager::instance().activeView() );
   Usul::Interfaces::IDocument::ValidQueryPtr    document    ( Usul::Documents::Manager::instance().active() );
   Usul::Interfaces::IGetLoops::ValidQueryPtr    getLoops    ( document );
 
@@ -1266,7 +1319,7 @@ long TriangleDelegateComponent::onCommandShowAll ( FX::FXObject *, FX::FXSelecto
   //Get needed interfaces.
   Usul::Interfaces::IDocument::ValidQueryPtr    document    ( Usul::Documents::Manager::instance().active() );
   Usul::Interfaces::IGetLoops::ValidQueryPtr    getLoops    ( document );
-  Usul::Interfaces::IGroup::QueryPtr            group       ( Usul::Documents::Manager::instance().active()->activeView() );
+  Usul::Interfaces::IGroup::QueryPtr            group       ( Usul::Documents::Manager::instance().activeView() );
   Usul::Interfaces::ISendMessage::ValidQueryPtr sendMessage ( document );
 
   // Get both uncapped and capped loops
@@ -1303,7 +1356,7 @@ long TriangleDelegateComponent::onCommandShowAll ( FX::FXObject *, FX::FXSelecto
 long TriangleDelegateComponent::onCommandHideAll ( FX::FXObject *, FX::FXSelector, void* )
 {
   //Get needed interfaces
-  Usul::Interfaces::IGroup::QueryPtr            group       ( Usul::Documents::Manager::instance().active()->activeView() );
+  Usul::Interfaces::IGroup::QueryPtr            group       ( Usul::Documents::Manager::instance().activeView() );
   Usul::Interfaces::ISendMessage::ValidQueryPtr sendMessage ( Usul::Documents::Manager::instance().active() );
 
   if( group.valid() )
@@ -1413,6 +1466,13 @@ osg::Geode * TriangleDelegateComponent::_drawLoop ( OsgTools::Triangles::Loop& l
   return geode.release();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create an osgText::Text.  TODO: We use functions like this often.  Put it in OsgTools.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 osg::Drawable* TriangleDelegateComponent::_makeNumber ( const std::string& name, const osg::Vec3& pos, const osg::Vec4& color, float size )
 {
   osg::ref_ptr< osgText::Text > text ( new osgText::Text );
@@ -1440,7 +1500,7 @@ long TriangleDelegateComponent::onCommandClipBox  ( FX::FXObject *, FX::FXSelect
 
   if( false == _useClipBox )
   {
-    Usul::Interfaces::IClippingPlanes::QueryPtr clip ( Usul::Documents::Manager::instance().active()->activeView() );
+    Usul::Interfaces::IClippingPlanes::QueryPtr clip ( Usul::Documents::Manager::instance().activeView() );
     if( clip.valid() )
       clip->removeClippingPlanes();
   }

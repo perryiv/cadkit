@@ -133,6 +133,9 @@ public:
   /// Export the next frame.
   void                    exportNextFrame ();
 
+  /// Set the number of rendering passes
+  void                    numRenderPasses ( unsigned int num );
+
 protected:
 
   /// VR Juggler methods.

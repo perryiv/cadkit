@@ -354,6 +354,11 @@ protected:
   void                          _increaseSpeed    ( MenuKit::Message m, MenuKit::Item *item );
   void                          _decreaseSpeed    ( MenuKit::Message m, MenuKit::Item *item );
   void                          _exportImage      ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _renderPassesOne      ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _renderPassesThree    ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _renderPassesNine     ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _renderPassesTweleve  ( MenuKit::Message m, MenuKit::Item *item );
+  
 
   // For readability.
   typedef unsigned long                                 ThreadId;

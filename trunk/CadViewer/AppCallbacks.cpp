@@ -1766,12 +1766,75 @@ void Application::_dropToFloor ( MenuKit::Message m, MenuKit::Item *item )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Increase speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void Application::_increaseSpeed    ( MenuKit::Message m, MenuKit::Item *item )
 {
-  _prefs->translationSpeed ( _prefs->translationSpeed() * 2 );
+  // Process the message.
+  switch( m )
+  {
+  case MenuKit::MESSAGE_SELECTED:
+    _prefs->translationSpeed ( _prefs->translationSpeed() * 2 );
+  }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Decrease speed.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void Application::_decreaseSpeed    ( MenuKit::Message m, MenuKit::Item *item )
 {
-  _prefs->translationSpeed ( _prefs->translationSpeed() / 2 );
+  // Process the message.
+  switch( m )
+  {
+  case MenuKit::MESSAGE_SELECTED:
+    _prefs->translationSpeed ( _prefs->translationSpeed() / 2 );
+  }
+}
+
+void Application::_renderPassesOne      ( MenuKit::Message m, MenuKit::Item *item )
+{
+  // Process the message.
+  switch( m )
+  {
+  case MenuKit::MESSAGE_SELECTED:
+    this->numRenderPasses ( 1 );
+  }
+}
+
+void Application::_renderPassesThree    ( MenuKit::Message m, MenuKit::Item *item )
+{
+  // Process the message.
+  switch( m )
+  {
+  case MenuKit::MESSAGE_SELECTED:
+    this->numRenderPasses ( 3 );
+  }
+}
+
+void  Application::_renderPassesNine     ( MenuKit::Message m, MenuKit::Item *item )
+{
+  // Process the message.
+  switch( m )
+  {
+  case MenuKit::MESSAGE_SELECTED:
+    this->numRenderPasses ( 9 );
+  }
+}
+
+void  Application::_renderPassesTweleve  ( MenuKit::Message m, MenuKit::Item *item )
+{
+  // Process the message.
+  switch( m )
+  {
+  case MenuKit::MESSAGE_SELECTED:
+    this->numRenderPasses ( 12 );
+  }
 }

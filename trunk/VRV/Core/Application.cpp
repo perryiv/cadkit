@@ -457,8 +457,12 @@ void Application::_postDraw( OsgTools::Render::Renderer *renderer )
 
   if( true == _exportImage )
   {
-    unsigned int width  ( _viewport->width() );
-    unsigned int height ( _viewport->height() );
+    /// Scales 1400 pixel to 4096.
+    const double multiplier ( 2.92f );
+
+    // Scale the width and height.
+    unsigned int width  ( static_cast < unsigned int > ( _viewport->width()  * multiplier ) );
+    unsigned int height ( static_cast < unsigned int > ( _viewport->height() * multiplier ) );
 
     // Capture image.
     osg::ref_ptr<osg::Image> image ( renderer->screenCapture ( renderer->viewMatrix(), width, height ) );
@@ -559,8 +563,8 @@ void Application::init()
   _sharedFrameTime.init ( guid, "viz0" );
 
   // Add the progress bars to the scene.
-  osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
-  group->addChild ( _progressBars->buildScene() );
+  //osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
+  //group->addChild ( _progressBars->buildScene() );
 }
 
 
@@ -587,7 +591,7 @@ void Application::preFrame()
   _frameStart = _timer.tick();
 
   // Update the progress bars.
-  _progressBars->buildScene();
+  //_progressBars->buildScene();
 
   // Purge.
   Usul::Jobs::Manager::instance().purge();
@@ -1218,4 +1222,22 @@ const osg::Vec4& Application::getBackgroundColor() const
   Guard guard ( this->mutex() );
 
   return _backgroundColor;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of rendering passes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::numRenderPasses ( unsigned int num )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for( Renderers::iterator iter = _renderers.begin(); iter != _renderers.end(); ++iter )
+  {
+    (*iter)->numRenderPasses ( num );
+  }
 }

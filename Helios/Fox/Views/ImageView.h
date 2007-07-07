@@ -17,6 +17,7 @@
 
 #include "Usul/Interfaces/IBackground.h"
 #include "Usul/Interfaces/IViewer.h"
+#include "Usul/Interfaces/IView.h"
 #include "Usul/Interfaces/IImageView.h"
 #include "Usul/Interfaces/IDocument.h"
 
@@ -31,7 +32,8 @@ namespace Views {
 class OSG_FOX_VIEWS_EXPORT ImageView : public FX::FXGLCanvas,
                                        public Usul::Interfaces::IBackground,
                                        public Usul::Interfaces::IImageView,
-                                       public Usul::Interfaces::IViewer
+                                       public Usul::Interfaces::IViewer,
+                                       public Usul::Interfaces::IView
 {
 public:
   // Typedefs
@@ -78,6 +80,9 @@ protected:
   /// Usul::Interfaces::IBackground
   virtual void            editBackground();
   virtual void            defaultBackground();
+
+  /// Usul::Interfaces::IView
+  virtual Usul::Interfaces::IDocument*  document ();
 
 private:
   Usul::Interfaces::IDocument::ValidRefPtr _document;

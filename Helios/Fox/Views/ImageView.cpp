@@ -118,6 +118,8 @@ Usul::Interfaces::IUnknown* ImageView::queryInterface( unsigned long iid )
     return static_cast< Usul::Interfaces::IImageView* > ( this );
   case Usul::Interfaces::IViewer::IID:
     return static_cast< Usul::Interfaces::IViewer* > ( this );
+  case Usul::Interfaces::IView::IID:
+    return static_cast < Usul::Interfaces::IView* > ( this );
   default:
     return 0x0;
   }
@@ -405,6 +407,12 @@ long ImageView::onBackgroundChanged ( FXObject* object, FX::FXSelector, void * )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Resize event.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 long ImageView::onResize( FX::FXObject *object, FX::FXSelector selector, void * callData )
 {
   FX::FXEvent *event = (FX::FXEvent *) callData;
@@ -439,6 +447,11 @@ long ImageView::onResize( FX::FXObject *object, FX::FXSelector selector, void * 
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Paint event.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 long ImageView::onPaint ( FX::FXObject *, FX::FXSelector, void * )
 {
@@ -447,3 +460,14 @@ long ImageView::onPaint ( FX::FXObject *, FX::FXSelector, void * )
   return 1;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IDocument* ImageView::document()
+{
+  return _document.get();
+}

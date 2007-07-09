@@ -1704,6 +1704,28 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int width, 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Create image of current using current view matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::takePicture ( const std::string& filename, float frameSizeScale, unsigned int numSamples )
+{
+  // Get non const pointer to this
+  Viewer *me ( const_cast < Viewer * > ( this ) );
+
+  // Make this context current.
+  if ( _context.valid() )
+    me->_context->makeCurrent();
+
+  osg::ref_ptr < osg::Image > image ( me->_renderer->screenCapture ( frameSizeScale, numSamples ) );
+
+  // Write the image to file.
+  osgDB::writeImageFile ( *image, filename );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Write the current scene to file.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2301,6 +2323,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ICenterOfRotation * > ( this );
   case Usul::Interfaces::IScreenCapture::IID:
     return static_cast < Usul::Interfaces::IScreenCapture * > ( this );
+  case Usul::Interfaces::ISnapShot::IID:
+    return static_cast < Usul::Interfaces::ISnapShot* > ( this );
   case Usul::Interfaces::IView::IID:
     return static_cast < Usul::Interfaces::IView * > ( this );
   default:

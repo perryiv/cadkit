@@ -1399,21 +1399,6 @@ MainWindow::ISaveFileDialog::FileResult MainWindow::getSaveFileName ( const std:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Show dialog to get file names.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-MainWindow::ISaveFileDialog::FilesResult MainWindow::getSaveFileNames ( const std::string &title, const Filters &filters )
-{
-  typedef FoxTools::Dialogs::FileSelection FileDialog;
-  FileDialog::FilesResult result ( FileDialog::askForFileNames ( FileDialog::SAVE, title, filters, 0x0, true ) );
-  return result;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Window is being closed.
 //
 ///////////////////////////////////////////////////////////////////////////////

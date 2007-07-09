@@ -528,10 +528,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IScreenCapture.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\ITimeVaryingData.h"
 					>
 				</File>
@@ -755,11 +751,19 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\IScreenCapture.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\ISelectionBox.h"
 						>
 					</File>
 					<File
 						RelativePath=".\Interfaces\IShadeModel.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\ISnapShot.h"
 						>
 					</File>
 					<File

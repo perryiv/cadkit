@@ -56,6 +56,7 @@
 #include "Usul/Interfaces/ISceneStage.h"
 #include "Usul/Interfaces/ICenterOfRotation.h"
 #include "Usul/Interfaces/IScreenCapture.h"
+#include "Usul/Interfaces/ISnapShot.h"
 #include "Usul/Interfaces/IView.h"
 
 #include "OsgTools/Render/FrameDump.h"
@@ -127,6 +128,7 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
                                 public Usul::Interfaces::ISceneStage,
                                 public Usul::Interfaces::ICenterOfRotation,
                                 public Usul::Interfaces::IScreenCapture,
+                                public Usul::Interfaces::ISnapShot,
                                 public Usul::Interfaces::IView
 {
 public:
@@ -682,6 +684,9 @@ protected:
   /// Usul::Interfaces::IScreenCapture
   virtual osg::Image*           screenCapture ( const osg::Vec3f& center, float distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const;
   virtual osg::Image*           screenCapture ( unsigned int height, unsigned int width ) const;
+
+  /// Usul::Interfaces::ISnapShot
+  virtual void                  takePicture ( const std::string& filename, float frameSizeScale, unsigned int numSamples );
 
 private:
 

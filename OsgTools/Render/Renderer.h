@@ -99,6 +99,9 @@ public:
   // Get a screen capture with the given view matrix.
   osg::Image*           screenCapture ( const osg::Matrix& matrix, unsigned int width, unsigned int height );
 
+  // Capture the screen.
+  osg::Image*           screenCapture ( float frameSizeScale, unsigned int numSamples );
+
   // Get the time.
   double                timeAverage ( const std::string &name ) const;
   double                timeLast    ( const std::string &name ) const;

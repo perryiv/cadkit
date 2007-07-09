@@ -453,7 +453,6 @@ protected:
   /////////////////////////////////////////////////////////////////////////////
   
   virtual ISaveFileDialog::FileResult   getSaveFileName ( const std::string &title = "Save", const Filters &filters = Filters() );
-  virtual ISaveFileDialog::FilesResult  getSaveFileNames ( const std::string &title = "Save", const Filters &filters = Filters() );
   
   /////////////////////////////////////////////////////////////////////////////
   //

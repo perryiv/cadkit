@@ -15,6 +15,8 @@
 #include "OsgTools/Render/Defaults.h"
 #include "OsgTools/Images/Matrix.h"
 #include "OsgTools/Render/ClampProjection.h"
+#include "OsgTools/Render/FBOScreenCapture.h"
+#include "OsgTools/Render/TiledScreenCapture.h"
 #include "OsgTools/Builders/GradientBackground.h"
 
 #include "Usul/Errors/Checker.h"
@@ -981,59 +983,35 @@ void Renderer::_screenCapture ( osg::Image& image, const osg::Matrix& projection
 
 void Renderer::_fboScreenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height )
 {
-  // Set up the texture.
-  osg::ref_ptr< osg::Texture2D > tex ( new osg::Texture2D );
-  tex->setTextureSize(width, height);
-  tex->setInternalFormat(GL_RGBA);
-  tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR);
-  tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
-  tex->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
-  tex->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
-  
-  // Make the fbo.
-  osg::ref_ptr< osg::FrameBufferObject > fbo ( new osg::FrameBufferObject );
-  fbo->setAttachment(GL_COLOR_ATTACHMENT0_EXT, osg::FrameBufferAttachment(tex.get()));
-  fbo->setAttachment(GL_DEPTH_ATTACHMENT_EXT, osg::FrameBufferAttachment(new osg::RenderBuffer(width, height, GL_DEPTH_COMPONENT24)));
-
-  // Make the camera buffer.
-  osg::ref_ptr< osg::CameraNode > camera ( new osg::CameraNode );
-  camera->setClearColor( this->viewer()->getClearColor() );
-  camera->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  camera->setViewport(0, 0, width, height);
-
-  // Set the camera to render before the main camera.
-  camera->setRenderOrder(osg::CameraNode::PRE_RENDER);
-
-  // Set the projection matrix.
-  camera->setProjectionMatrix ( projection );
-
-  // Set view.
-  camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-  camera->setViewMatrix ( this->viewer()->getViewMatrix() );
-
-  // Tell the camera to use OpenGL frame buffer object where supported.
-  camera->setRenderTargetImplementation( osg::CameraNode::FRAME_BUFFER_OBJECT );
-
-  // Attach the texture and use it as the color buffer.
-  camera->attach( osg::CameraNode::COLOR_BUFFER, &image );
-
-  // Save the old root.
-  osg::ref_ptr< osg::Node > node ( this->scene() );
-
-  // Add the scene to the camera.
-  camera->addChild ( this->scene() );
-
-  // Make the camera file the scene data.
-  this->viewer()->setSceneData ( camera.get() );
-
-  // Render to the image.
-  this->_singlePassRender();
-
-  // Set the old root back to the scene data.
-  this->viewer()->setSceneData ( node.get() );
+  FBOScreenCapture fbo;
+  fbo.size ( width, height );
+  fbo.clearColor ( this->backgroundColor() );
+  fbo.viewMatrix ( this->viewMatrix() );
+  fbo ( image, *this->viewer(), projection );
 
   // Figure out how to avoid this last render.
   this->render();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Capture the screen using super-sampled, tiled rendering.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Image* Renderer::screenCapture ( float frameSizeScale, unsigned int numSamples )
+{
+  // Get our current width and height.
+  unsigned int width  ( this->viewport()->width () );
+  unsigned int height ( this->viewport()->height () );
+
+  TiledScreenCapture tiled;
+  tiled.size ( width, height );
+  tiled.clearColor ( this->backgroundColor() );
+  tiled.viewMatrix ( this->viewMatrix() );
+  tiled.numSamples ( numSamples );
+  return tiled ( *this->viewer(), _sceneView->getProjectionMatrix() );
 }
 
 

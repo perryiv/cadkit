@@ -484,6 +484,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\ScopedViewport.h"
+					>
+				</File>
+				<File
 					RelativePath=".\SetDataVariance.h"
 					>
 				</File>
@@ -764,6 +768,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Render\FBOScreenCapture.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Render\FBOScreenCapture.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Render\FrameDump.cpp"
 					>
 				</File>
@@ -801,6 +813,14 @@
 				</File>
 				<File
 					RelativePath=".\Render\SceneManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Render\TiledScreenCapture.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Render\TiledScreenCapture.h"
 					>
 				</File>
 				<File

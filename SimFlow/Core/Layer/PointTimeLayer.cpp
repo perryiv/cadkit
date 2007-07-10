@@ -10,12 +10,13 @@
 
 #include "SimFlow/Core/Layer/PointTimeLayer.h"
 
+#include "OsgTools/ShapeFactory.h"
+
 #include <cassert>
 #include <stdexcept>
 
 #include "osg/Geode"
 #include "osg/Node"
-#include "osg/ShapeDrawable"
 
 using namespace SimFlow::Layer;
 
@@ -56,16 +57,10 @@ void PointTimeLayer::buildGeometry()
 		case 1:
 		{
 			osg::ref_ptr< osg::Geode > geode( new osg::Geode() );
+      OsgTools::ShapeFactory::MeshSize size ( 20, 20 );
+      osg::ref_ptr < osg::Geometry > geometry ( OsgTools::ShapeFactorySingleton::instance().sphere ( this->renderSize(), size ) );
 
-			//osg::ref_ptr< osg::Box > box( new osg::Box() );					
-			
-			osg::ref_ptr< osg::Sphere > sph( new osg::Sphere() );			
-			sph->setRadius( renderSize() );
-			
-			//box->setHalfLengths( osg::Vec3f( renderSize(), renderSize(), renderSize() ) );
-
-			osg::ref_ptr< osg::ShapeDrawable > sd( new osg::ShapeDrawable( sph.get() ) );			
-			geode->addDrawable( sd.get() );
+      geode->addDrawable( geometry.get() );
 			
 			mPrimitiveObject = geode.get();
 			break;			

@@ -237,36 +237,6 @@ void SimFlow::App::AppSAX2Handler::characters( const XMLCh *const chars,
 	}
 }
 
-/*
-void SimFlow::App::AppSAX2Handler::extractData( Scene::Sequence* seq, Scene::Model* model )
-{
-	osg::ref_ptr< osg::Geode > geode = 
-		dynamic_cast< osg::Geode* >( model->getRoot() );	
-
-	if( geode.valid() )
-	{
-		for( size_t i=0; i < geode->getNumDrawables(); ++i )
-		{
-			std::cout << "[extractData] Processing drawable: " << i << std::endl;
-
-			osg::ref_ptr< osg::Geometry > drawable	= 
-				dynamic_cast< osg::Geometry* >( geode->getDrawable(i) );
-
-			if( drawable.valid() )
-			{	
-				std::vector< osg::Vec3f > positions;				
-				osg::ref_ptr< osg::Vec3Array > points =  dynamic_cast< osg::Vec3Array* >( drawable->getVertexArray() );
-				for( size_t j=0; j < points->size(); ++j )
-				{
-					//std::cout << "[extractData] Processing points: " << j << std::endl;								
-					positions.push_back( ( *points.get() )[j] );							
-				}								
-				seq->addPositions( positions );
-			}
-		}
-	}
-}
-*/
 
 void SimFlow::App::AppSAX2Handler::addPointTimeData( SimFlow::Layer::PointTimeLayer* pTimeLayer )
 {
@@ -299,11 +269,11 @@ void SimFlow::App::AppSAX2Handler::addPointTimeData( SimFlow::Layer::PointTimeLa
 				{										
 					osg::ref_ptr< osg::Vec3Array > pPositions =  dynamic_cast< osg::Vec3Array* >( drawable->getVertexArray() );
 					for( size_t k = 0; k < pPositions->size(); ++k )
-					{						
+					{
 						osg::ref_ptr< SimFlow::DataObject::Point > point( new SimFlow::DataObject::Point() );
 						point->center( ( *pPositions.get() )[k] );							
 						pLayer->addDataObject( point.get() );
-					}													
+					}
 				}
 			}		
 		}

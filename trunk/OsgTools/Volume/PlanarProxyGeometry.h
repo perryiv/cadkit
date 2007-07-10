@@ -41,6 +41,10 @@ public:
   // Draw.
   virtual void                drawImplementation( osg::RenderInfo& renderInfo ) const;
 
+  // Set/Get the bounding box.
+  void                        boundingBox ( const osg::BoundingBox& bb );
+  const osg::BoundingBox&     boundingBox () const;
+
   // Set/get the number of planes used.
   unsigned int                numPlanes() const { return _numPlanes; }
   void                        numPlanes ( unsigned int num ) { _numPlanes = num; }

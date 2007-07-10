@@ -39,6 +39,10 @@ public:
   unsigned int                     numPlanes () const;
   void                             numPlanes ( unsigned int num );
 
+  // Set/Get the bounding box.
+  void                        boundingBox ( const osg::BoundingBox& bb );
+  const osg::BoundingBox&     boundingBox () const;
+
 protected:
   virtual ~Texture3DVolume();
 

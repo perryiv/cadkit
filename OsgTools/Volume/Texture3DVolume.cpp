@@ -14,36 +14,10 @@
 #include "osg/Shader"
 #include "osg/BlendFunc"
 
+#include <sstream>
+
 using namespace OsgTools::Volume;
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Vertex and Fragment shaders.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  static const char* vertSource = 
-  { 
-    "void main(void)\n"
-    "{\n"
-    "   gl_TexCoord[0] =  ( gl_Vertex.xyzw + 1.0 ) / 2.0;\n"
-    "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
-    "}\n"
-  };
-
-  static const char* fragSource = 
-  {
-    "uniform sampler3D TextureSampler1;\n"
-    "void main(void)\n"
-    "{\n"
-    "   vec4 color = vec4( texture3D( TextureSampler1, gl_TexCoord[0].xyz ) );  \n"
-    "   gl_FragColor = vec4( color );\n"
-    "}\n"
-  };
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -158,6 +132,55 @@ void Texture3DVolume::numPlanes ( unsigned int num )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Vertex and Fragment shaders.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  static const char* vertSource = 
+  { 
+    "void main(void)\n"
+    "{\n"
+    "   gl_TexCoord[0] =  ( gl_Vertex.xyzw + 1.0 ) / 2.0;\n"
+    "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+    "}\n"
+  };
+
+  std::string buildVertexShader ( double xLength, double yLength, double zLength )
+  {
+    // If the lengths are equal, return the default shader.  I think the will be faster for rendering.
+    if ( xLength == yLength && xLength == zLength )
+      return vertSource;
+
+    std::ostringstream os;
+
+    os << "void main(void)\n";
+    os << "{\n";
+    os << "   gl_TexCoord[0].x =  ( gl_Vertex.x + " << xLength / 2.0f << " ) / " << xLength << ";\n";
+    os << "   gl_TexCoord[0].y =  ( gl_Vertex.y + " << yLength / 2.0f << " ) / " << yLength << ";\n";
+    os << "   gl_TexCoord[0].z =  ( gl_Vertex.z + " << zLength / 2.0f << " ) / " << zLength << ";\n";
+    os << "   gl_TexCoord[0].w =  ( gl_Vertex.w + 1.0 ) / 2.0;\n";
+    os << "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n";
+    os << "}\n";
+
+    return os.str();
+  }
+
+  static const char* fragSource = 
+  {
+    "uniform sampler3D TextureSampler1;\n"
+    "void main(void)\n"
+    "{\n"
+    "   vec4 color = vec4( texture3D( TextureSampler1, gl_TexCoord[0].xyz ) );\n"
+    "   gl_FragColor = vec4( color );\n"
+    "}\n"
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Create the shaders.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -171,7 +194,15 @@ void Texture3DVolume::_createShaders ()
 	osg::ref_ptr< osg::Shader > vertShader( new osg::Shader( osg::Shader::VERTEX ) );
 	osg::ref_ptr< osg::Shader > fragShader( new osg::Shader( osg::Shader::FRAGMENT ) );
 
-  vertShader->setShaderSource( Detail::vertSource );
+  osg::Vec3 min ( _geometry->boundingBox()._min );
+  osg::Vec3 max ( _geometry->boundingBox()._max );
+
+  // Get the lengths of the bounding box.
+  double xLength ( max.x() - min.x() );
+  double yLength ( max.y() - min.y() );
+  double zLength ( max.z() - min.z() );
+
+  vertShader->setShaderSource( Detail::buildVertexShader ( xLength, yLength, zLength ) );
   fragShader->setShaderSource( Detail::fragSource );
 
 	program->addShader( vertShader.get() );
@@ -179,4 +210,29 @@ void Texture3DVolume::_createShaders ()
  
   ss->setAttributeAndModes( program.get(), osg::StateAttribute::ON );
   ss->addUniform( new osg::Uniform( "TextureSampler1", 0 ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the bounding box.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Texture3DVolume::boundingBox ( const osg::BoundingBox& bb )
+{
+  _geometry->boundingBox ( bb );
+  this->_createShaders ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the bounding box.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::BoundingBox& Texture3DVolume::boundingBox () const
+{
+  return _geometry->boundingBox();
 }

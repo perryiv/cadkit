@@ -53,11 +53,12 @@ osg::Image* loadTexture( int sizeX, int sizeY, int sizeZ, const std::string& fil
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* buildVolume()
+osg::Node* buildVolume( const osg::BoundingBox& bb )
 {
   osg::ref_ptr < OsgTools::Volume::Texture3DVolume > volume ( new OsgTools::Volume::Texture3DVolume );
   volume->numPlanes ( 512 );
   volume->image ( loadTexture ( 256, 256, 256, "Engine256.raw" ) );
+  volume->boundingBox ( bb );
 
   return volume.release();
 }
@@ -69,11 +70,8 @@ osg::Node* buildVolume()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* buildBoundingBox()
+osg::Node* buildBoundingBox( const osg::BoundingBox& bb )
 {
-  // Draw the bounding box.
-  osg::BoundingBox bb ( osg::Vec3 ( -1.0, -1.0, -1.0 ), osg::Vec3 ( 1.0, 1.0, 1.0 ) );
-
   OsgTools::ColorBox box ( bb );
   box.color_policy().color ( osg::Vec4 ( 0, 0, 1, 1 ) );
 
@@ -104,8 +102,10 @@ int main( int argc, char **argv )
 
   osg::ref_ptr < osg::Group > root ( new osg::Group );
 
-  root->addChild ( buildBoundingBox() );
-  root->addChild ( buildVolume() );
+  osg::BoundingBox bb ( osg::Vec3 ( -1.0, -1.0, -1.0 ), osg::Vec3 ( 1.0, 1.0, 1.0 ) );
+
+  root->addChild ( buildBoundingBox( bb ) );
+  root->addChild ( buildVolume( bb ) );
 
   viewer.setSceneData ( root.get() );
 

@@ -62,7 +62,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgViewerd.lib xerces-c_2D.lib OpenThreadsd.lib osgGAd.lib osgFXd.lib"
-				OutputFile="../../bin/Viewerd.exe"
+				OutputFile="../../bin/SimFlowViewerd.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(OPENTHREADS_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(XERCES_LIB_DIR)&quot;"
 				GenerateDebugInformation="true"
@@ -141,7 +141,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgViewer.lib xerces-c_2.lib OpenThreads.lib osgGA.lib osgFX.lib"
-				OutputFile="../../bin/Viewer.exe"
+				OutputFile="../../bin/SimFlowViewer.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(OPENTHREADS_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(XERCES_LIB_DIR)&quot;"
 				GenerateDebugInformation="true"
@@ -187,10 +187,6 @@
 			>
 			<File
 				RelativePath=".\main.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PickHandler.h"
 				>
 			</File>
 		</Filter>

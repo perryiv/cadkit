@@ -10,6 +10,9 @@
 
 #include "OsgTools/Volume/Texture3DVolume.h"
 
+#include "Usul/Bits/Bits.h"
+
+#include "osg/Texture1D"
 #include "osg/Texture3D"
 #include "osg/Shader"
 #include "osg/BlendFunc"
@@ -26,8 +29,10 @@ using namespace OsgTools::Volume;
 ///////////////////////////////////////////////////////////////////////////////
 
 Texture3DVolume::Texture3DVolume() : BaseClass (),
-_image ( 0x0 ),
-_geometry ( new Geometry )
+_volume ( 0x0, 0 ),
+_geometry ( new Geometry ),
+_flags ( 0 ),
+_transferFunction ( 0x0, 0 )
 {
   // Get the state set.
   osg::ref_ptr < osg::StateSet > ss  ( this->getOrCreateStateSet() );
@@ -61,7 +66,7 @@ Texture3DVolume::~Texture3DVolume()
 
 osg::Image* Texture3DVolume::image ()
 {
-  return _image.get();
+  return _volume.first.get();
 }
 
 
@@ -73,7 +78,7 @@ osg::Image* Texture3DVolume::image ()
 
 const osg::Image* Texture3DVolume::image () const
 {
-  return _image.get();
+  return _volume.first.get();
 }
 
 
@@ -83,9 +88,10 @@ const osg::Image* Texture3DVolume::image () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Texture3DVolume::image ( osg::Image* image )
+void Texture3DVolume::image ( osg::Image* image, TextureUnit unit )
 {
-  _image = image;
+  _volume.first = image;
+  _volume.second = unit;
 
   // Create the 3D texture.
   osg::ref_ptr < osg::Texture3D > texture3D ( new osg::Texture3D() );
@@ -97,9 +103,12 @@ void Texture3DVolume::image ( osg::Image* image )
   texture3D->setWrap( osg::Texture3D::WRAP_S, osg::Texture3D::CLAMP );
   texture3D->setWrap( osg::Texture3D::WRAP_T, osg::Texture3D::CLAMP );
 
+  // Don't resize.
+  texture3D->setResizeNonPowerOfTwoHint( false );
+
   // Get the state set.
   osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
-  ss->setTextureAttributeAndModes ( 0, texture3D.get(), osg::StateAttribute::ON );
+  ss->setTextureAttributeAndModes ( unit, texture3D.get(), osg::StateAttribute::ON );
 
   // Create the shaders.
   this->_createShaders ();
@@ -149,10 +158,6 @@ namespace Detail
 
   std::string buildVertexShader ( double xLength, double yLength, double zLength )
   {
-    // If the lengths are equal, return the default shader.  I think the will be faster for rendering.
-    if ( xLength == yLength && xLength == zLength )
-      return vertSource;
-
     std::ostringstream os;
 
     os << "void main(void)\n";
@@ -169,13 +174,33 @@ namespace Detail
 
   static const char* fragSource = 
   {
-    "uniform sampler3D TextureSampler1;\n"
+    "uniform sampler3D Volume;\n"
     "void main(void)\n"
     "{\n"
-    "   vec4 color = vec4( texture3D( TextureSampler1, gl_TexCoord[0].xyz ) );\n"
+    "   vec4 color = vec4( texture3D( Volume, gl_TexCoord[0].xyz ) );\n"
     "   gl_FragColor = vec4( color );\n"
     "}\n"
   };
+
+  static const char* fragTransferFunctionSource = 
+  {
+    "uniform sampler3D Volume;\n"
+    "uniform sampler1D TransferFunction;\n"
+    "void main(void)\n"
+    "{\n"
+    "   float index = vec4( texture3D( Volume, gl_TexCoord[0].xyz ) ).x;\n"
+    "   vec4 color = vec4( texture1D( TransferFunction, index ) );\n"
+    "   gl_FragColor = vec4( color );\n"
+    "}\n"
+  };
+
+  std::string buildFagmentShader ( bool transferFunction )
+  {
+    if ( transferFunction )
+      return fragTransferFunctionSource;
+
+    return fragSource;
+  }
 }
 
 
@@ -203,13 +228,14 @@ void Texture3DVolume::_createShaders ()
   double zLength ( max.z() - min.z() );
 
   vertShader->setShaderSource( Detail::buildVertexShader ( xLength, yLength, zLength ) );
-  fragShader->setShaderSource( Detail::fragSource );
+  fragShader->setShaderSource( Detail::buildFagmentShader ( this->useTransferFunction() ) );
 
 	program->addShader( vertShader.get() );
 	program->addShader( fragShader.get() );
  
   ss->setAttributeAndModes( program.get(), osg::StateAttribute::ON );
-  ss->addUniform( new osg::Uniform( "TextureSampler1", 0 ) );
+  ss->addUniform( new osg::Uniform( "Volume",           static_cast < int > ( _volume.second           ) ) );
+  ss->addUniform( new osg::Uniform( "TransferFunction", static_cast < int > ( _transferFunction.second ) ) );
 }
 
 
@@ -236,3 +262,73 @@ const osg::BoundingBox& Texture3DVolume::boundingBox () const
 {
   return _geometry->boundingBox();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the transfer function flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Texture3DVolume::useTransferFunction ( bool b )
+{
+  _flags = Usul::Bits::set ( _flags, _USE_TRANSFER_FUNCTION, b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the transfer function flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Texture3DVolume::useTransferFunction () const
+{
+  return Usul::Bits::has ( _flags, _USE_TRANSFER_FUNCTION );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the transfer function image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Texture3DVolume::transferFunction ( osg::Image* image, TextureUnit unit )
+{
+  if ( 0x0 != image )
+  {
+    this->useTransferFunction ( true );
+    _transferFunction.first = image;
+    _transferFunction.second = unit;
+
+    // Create the 1D texture.
+    osg::ref_ptr < osg::Texture1D > texture1D ( new osg::Texture1D() );
+    texture1D->setImage( image );
+
+    texture1D->setFilter( osg::Texture::MIN_FILTER, osg::Texture::NEAREST );
+    texture1D->setFilter( osg::Texture::MAG_FILTER, osg::Texture::NEAREST );
+    texture1D->setWrap  ( osg::Texture::WRAP_S, osg::Texture::CLAMP );
+    texture1D->setInternalFormatMode ( osg::Texture::USE_IMAGE_DATA_FORMAT );
+
+    // Get the state set.
+    osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
+    ss->setTextureAttributeAndModes ( unit, texture1D.get(), osg::StateAttribute::ON );
+
+    // Create the shaders.
+    this->_createShaders ();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the transfer function image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Image* Texture3DVolume::transferFunction () const
+{
+  return _transferFunction.first.get();
+}
+

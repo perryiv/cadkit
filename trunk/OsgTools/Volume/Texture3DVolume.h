@@ -24,8 +24,11 @@ class OSG_TOOLS_EXPORT Texture3DVolume : public osg::Geode
 {
 public:
   /// Typedefs.
-  typedef osg::Geode BaseClass;
-  typedef OsgTools::Volume::PlanarProxyGeometry Geometry;
+  typedef osg::Geode                             BaseClass;
+  typedef OsgTools::Volume::PlanarProxyGeometry  Geometry;
+  typedef osg::ref_ptr < osg::Image >            ImagePtr;
+  typedef unsigned int                           TextureUnit;
+  typedef std::pair < ImagePtr, TextureUnit >    TexutreInfo;
 
   /// Construction.
   Texture3DVolume();
@@ -33,15 +36,23 @@ public:
   /// Get/Set the image.
   osg::Image*                      image ();
   const osg::Image*                image () const;
-  void                             image ( osg::Image* image );
+  void                             image ( osg::Image* image, TextureUnit unit = 0 );
 
   /// Get/Set the number of planes.
   unsigned int                     numPlanes () const;
   void                             numPlanes ( unsigned int num );
 
-  // Set/Get the bounding box.
-  void                        boundingBox ( const osg::BoundingBox& bb );
-  const osg::BoundingBox&     boundingBox () const;
+  /// Get/Set the bounding box.
+  void                             boundingBox ( const osg::BoundingBox& bb );
+  const osg::BoundingBox&          boundingBox () const;
+
+  /// Get/Set the transfer function flag.
+  void                             useTransferFunction ( bool b );
+  bool                             useTransferFunction () const;
+  
+  /// Get/Set the transfer function as an image.
+  void                             transferFunction ( osg::Image* tf, TextureUnit unit = 1 );
+  osg::Image*                      transferFunction () const;
 
 protected:
   virtual ~Texture3DVolume();
@@ -50,8 +61,15 @@ protected:
 
 private:
 
-  osg::ref_ptr < osg::Image > _image;
-  osg::ref_ptr < Geometry >   _geometry;
+  enum RenderFlags
+  {
+    _USE_TRANSFER_FUNCTION = 0x00000001
+  };
+
+  TexutreInfo                  _volume;
+  osg::ref_ptr < Geometry >    _geometry;
+  unsigned int                 _flags;
+  TexutreInfo                  _transferFunction;
 };
 
 }

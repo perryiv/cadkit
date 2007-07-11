@@ -10,9 +10,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  This is a test of the volume node.
+//  This is a test of a transfer function.
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+#include "Usul/Functions/Color.h"
 
 #include "OsgTools/Box.h"
 #include "OsgTools/State/StateSet.h"
@@ -55,6 +57,37 @@ osg::Image* loadTexture( int sizeX, int sizeY, int sizeZ, const std::string& fil
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Build the transferFunction.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Image* buildTransferFunction ( )
+{
+  osg::ref_ptr < osg::Image > image ( new osg::Image );
+  image->allocateImage ( 256, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE );
+
+  unsigned char *data ( image->data() );
+
+  std::fill ( data, data + ( 256 * 4 ), 0 );
+  
+  data += ( 128 * 4 );
+  for ( unsigned int i = 127; i < 256; ++i )
+  {
+    float value ( static_cast < float > ( i - 127 ) / 128 );
+    float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
+    Usul::Functions::hsvToRgb ( r, g, b, value * 360, 1.0f, 1.0f );
+    *data++ = r * 255;
+    *data++ = g * 255;
+    *data++ = b * 255;
+    *data++ = i;
+  }
+
+  return image.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the volume.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -62,9 +95,10 @@ osg::Image* loadTexture( int sizeX, int sizeY, int sizeZ, const std::string& fil
 osg::Node* buildVolume( const osg::BoundingBox& bb )
 {
   osg::ref_ptr < OsgTools::Volume::Texture3DVolume > volume ( new OsgTools::Volume::Texture3DVolume );
-  volume->numPlanes ( 512 );
+  volume->numPlanes ( 1024 );
   volume->image ( loadTexture ( 256, 256, 256, "Engine256.raw" ) );
   volume->boundingBox ( bb );
+  volume->transferFunction ( buildTransferFunction() );
 
   return volume.release();
 }
@@ -108,7 +142,7 @@ int main( int argc, char **argv )
 
   osg::ref_ptr < osg::Group > root ( new osg::Group );
 
-  osg::BoundingBox bb ( osg::Vec3 ( -4.0, -2.0, -1.0 ), osg::Vec3 ( 4.0, 2.0, 1.0 ) );
+  osg::BoundingBox bb ( osg::Vec3 ( -1.0, -1.0, -1.0 ), osg::Vec3 ( 1.0, 1.0, 1.0 ) );
 
   root->addChild ( buildBoundingBox( bb ) );
   root->addChild ( buildVolume( bb ) );

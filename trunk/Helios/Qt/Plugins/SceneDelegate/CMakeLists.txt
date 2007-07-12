@@ -1,38 +1,39 @@
-project (FoxSceneDelegate)
+project (SceneDelegateQt)
+
+# Set the name.  Needed for the macros to set up plugin properties.
+SET(PLUGIN_NAME "SceneDelegateQt")
+
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
+INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 ADD_DEFINITIONS ("-D_COMPILING_SCENE_DELEGATE")
 
+
+
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${HELIOS_INCLUDE_DIR}" "${PROJECT_SOURCE_DIR}/../" "${FOXTOOLKIT_INCLUDE}" "${GENERIC_NURBS_INCLUDE_DIR}" )
+INCLUDE_DIRECTORIES( "${OSG_INC_DIR}" "${PROJECT_SOURCE_DIR}/../" )
+
 
 set (SOURCES
 	SceneDelegateFactory.cpp
 	SceneDelegateComponent.cpp
 )
 
-# ---------- Create a Shared Library
-ADD_LIBRARY(FoxSceneDelegate SHARED ${SOURCES} )
 
-# ---- Change the Suffix on the Generated Dylib --------------------------------
-IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
- SET_TARGET_PROPERTIES (FoxSceneDelegate
-	PROPERTIES SUFFIX ".plugd"
- )
-ELSE (CMAKE_BUILD_TYPE STREQUAL "Debug")
- SET_TARGET_PROPERTIES (FoxSceneDelegate
-	PROPERTIES SUFFIX ".plug"
- )
-ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+# ---------- Create a Shared Library
+ADD_LIBRARY(SceneDelegateQt SHARED ${SOURCES} )
+
+
+CADKIT_PLUGIN()
+
+# Link the Library with Cadkit Libraries.
+LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools HeliosQtViewsOSG )
+
 
 # Link the Library	
-TARGET_LINK_LIBRARIES(FoxSceneDelegate 
-  Usul 
-  FoxTools
-  FoxViews
-  OsgTools
+TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
   ${OPENTHREADS_LIB}
 	${OSG_LIB}
-  ${FOXTOOLKIT_LIB}
 )
 

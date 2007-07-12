@@ -3,7 +3,7 @@ project (SceneDelegateQt)
 # Set the name.  Needed for the macros to set up plugin properties.
 SET(PLUGIN_NAME "SceneDelegateQt")
 
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 ADD_DEFINITIONS ("-D_COMPILING_SCENE_DELEGATE")
@@ -12,7 +12,7 @@ ADD_DEFINITIONS ("-D_COMPILING_SCENE_DELEGATE")
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${OSG_INC_DIR}" "${PROJECT_SOURCE_DIR}/../" )
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${OSG_INC_DIR}" "${PROJECT_SOURCE_DIR}/../" ${QT_INCLUDE_DIR} )
 
 
 set (SOURCES

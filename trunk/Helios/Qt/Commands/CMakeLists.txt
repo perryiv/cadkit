@@ -9,13 +9,6 @@ INCLUDE ( ${CMakeModules}/FindBoost.cmake)
 
 SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_COMPILING_OSG_QT_CORE")
 
-FIND_PACKAGE(Qt4 REQUIRED)
-
-ADD_DEFINITIONS(${QT_DEFINITIONS})
-
-# the next line sets up include and link directories and defines some variables that we will use.
-# you can modify the behavior by setting some variables, e.g.
-INCLUDE(${QT_USE_FILE})
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory

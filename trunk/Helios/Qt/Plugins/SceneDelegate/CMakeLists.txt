@@ -1,7 +1,7 @@
-project (SceneDelegateQt)
+project (QtSceneDelegate)
 
 # Set the name.  Needed for the macros to set up plugin properties.
-SET(PLUGIN_NAME "SceneDelegateQt")
+SET(PLUGIN_NAME "QtSceneDelegate")
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
@@ -22,7 +22,7 @@ set (SOURCES
 
 
 # ---------- Create a Shared Library
-ADD_LIBRARY(SceneDelegateQt SHARED ${SOURCES} )
+ADD_LIBRARY(QtSceneDelegate SHARED ${SOURCES} )
 
 
 CADKIT_PLUGIN()

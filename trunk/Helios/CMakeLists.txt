@@ -8,6 +8,9 @@ FIND_PACKAGE(OpenGL)
 
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 
+INCLUDE ( ${CMakeModules}/FindBoost.cmake)
+# Note that the Boost Include path will automatically get added
+
 
 # Options for different versions of Helios.
 OPTION(BUILD_HELIOS_QT "Build QT version of Helios" ON)
@@ -37,12 +40,11 @@ ${PROJECT_SOURCE_DIR}/../XmlTree
 
 # include base plugins
 SUBDIRS(
-${PROJECT_SOURCE_DIR}/Animate
-${PROJECT_SOURCE_DIR}/Plugins/Manager
-${PROJECT_SOURCE_DIR}/Plugins/About
+#${PROJECT_SOURCE_DIR}/Animate
+#${PROJECT_SOURCE_DIR}/Plugins/About
 ${PROJECT_SOURCE_DIR}/Plugins/SceneModel
-${PROJECT_SOURCE_DIR}/Plugins/SceneStatsOSG
-${PROJECT_SOURCE_DIR}/Plugins/TriangleModel
+#${PROJECT_SOURCE_DIR}/Plugins/SceneStatsOSG
+#${PROJECT_SOURCE_DIR}/Plugins/TriangleModel
 ${PROJECT_SOURCE_DIR}/Plugins/VolumeModel
 )
 

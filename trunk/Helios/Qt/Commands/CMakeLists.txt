@@ -1,8 +1,11 @@
 
-PROJECT(HeliosQtCore)
+PROJECT(HeliosQtCommands)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
+
+INCLUDE ( ${CMakeModules}/FindBoost.cmake)
+# Note that the Boost Include path will automatically get added
 
 SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_COMPILING_OSG_QT_CORE")
 
@@ -20,13 +23,15 @@ INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../../../" ${QT_INCLUDE_DIR} )
 
 #List the Sources
 SET (SOURCES
-    DocumentProxy.cpp
-    MainWindow.cpp
-    SplashScreen.cpp
+    BaseAction.cpp
+    Command.cpp
+    ExitApplication.cpp
+    ExportImage.cpp
+    OpenDocument.cpp
 )
 
 SET(MOC_HDRS
-  MainWindow.h
+  BaseAction.h
 )
 
 # After this call, foo_MOC_SRCS = moc_Class1.cxx moc_Class2.cxx moc_Class3.cxx.
@@ -35,28 +40,10 @@ QT4_WRAP_CPP(MOC_SRCS ${MOC_HDRS})
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # Create a Shared Library
-ADD_LIBRARY(HeliosQtCore SHARED ${SOURCES} ${MOC_SRCS} )
+ADD_LIBRARY(HeliosQtCommands SHARED ${SOURCES} ${MOC_SRCS} )
 
 # Link the Library	
-LINK_CADKIT( HeliosQtCore HeliosQtCommands HeliosQtTools XmlTree
-  Usul
-)
+LINK_CADKIT( HeliosQtCommands Usul)
 
-TARGET_LINK_LIBRARIES( HeliosQtCore
-   ${QT_LIBRARIES}
-)
+TARGET_LINK_LIBRARIES( HeliosQtCommands ${QT_LIBRARIES} )
 
-SET( IconDir ${EXECUTABLE_OUTPUT_PATH}/icons )
-FILE(GLOB IconFiles "${CMAKE_CURRENT_SOURCE_DIR}/../../Images/*.png" )
-
-#WRITE_FILE(Helios.log "${CMAKE_CURRENT_SOURCE_DIR}")
-
-MAKE_DIRECTORY( ${IconDir} )
-FOREACH(FILE ${IconFiles})
-WRITE_FILE(Helios.log "${FILE}" APPEND)
-ADD_CUSTOM_COMMAND(
-        SOURCE HeliosQtCore
-        COMMAND ${CCOMMAND_COMMAND}
-        ARGS cp ${FILE}  ${IconDir}
-        TARGET HeliosQtCore )
-ENDFOREACH(FILE ${IconFiles})

@@ -51,7 +51,7 @@ inline void convert ( const QtStringContainer &q, StandardStringContainer &s )
   if ( false == q.empty() )
   {
     s.reserve ( q.size() );
-    for ( QtStringContainer::const_iterator i = q.begin(); i != q.end(); ++i )
+    for ( typename QtStringContainer::const_iterator i = q.begin(); i != q.end(); ++i )
     {
       const QString &temp ( *i );
       const QByteArray bytes ( temp.toAscii() );

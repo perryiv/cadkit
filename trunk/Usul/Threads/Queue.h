@@ -64,7 +64,7 @@ public:
     guard_type guard ( _mutex );
     while ( false == _queue.empty() )
     {
-      _queue.pop()
+      _queue.pop();
     }
   }
 

@@ -62,8 +62,8 @@
 #include "QtGui/QToolBar"
 #include "QtGui/QTextEdit"
 #include "QtGui/QVBoxLayout"
-#include "QtGui/QWorkSpace"
-#include "QtCore/QMetaType.h"
+#include "QtGui/QWorkspace"
+#include "QtCore/QMetaType"
 
 #include <algorithm>
 #include <fstream>

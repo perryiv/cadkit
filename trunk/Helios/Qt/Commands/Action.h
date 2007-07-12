@@ -46,7 +46,7 @@ public:
   template < class CallerType > Action ( CallerType *caller ) : BaseClass ( IUnknown::QueryPtr ( caller ) )
   {
     USUL_TRACE_SCOPE;
-    CommandType::RefPtr command ( new CommandType ( this->caller() ) );
+    typename CommandType::RefPtr command ( new CommandType ( this->caller() ) );
 
     const std::string text      ( command->text() );
     const std::string shortcut  ( command->shortcut() );
@@ -86,7 +86,7 @@ private:
   {
     USUL_TRACE_SCOPE;
     USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "3551910933" );
-    CommandType::RefPtr command ( new CommandType ( this->caller() ) );
+    typename CommandType::RefPtr command ( new CommandType ( this->caller() ) );
     command->execute ( 0x0 );
   }
 };

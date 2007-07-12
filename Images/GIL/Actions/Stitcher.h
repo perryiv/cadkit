@@ -47,6 +47,7 @@
 
 #define NULL_IMAGE ImagePtr ( static_cast<Image *> ( 0x0 ) )
 #define OUTPUT_STREAM if ( 0x0 != out ) (*out)
+#define OUTPUT_STREAM_IF(exp) if ( 0x0 != out && true == (exp) ) (*out)
 
 namespace Images {
 namespace GIL {
@@ -182,6 +183,11 @@ public:
     const bool overflow16  ( w > max16  || h > max16  );
     const bool overflow32u ( w > max32u || h > max32u );
     const bool overflow32  ( w > max32  || h > max32  );
+
+    OUTPUT_STREAM_IF ( overflow16  ) << "Warning 2178537368: Dimensions exceed max 16-bit signed integer"   << std::endl;
+    OUTPUT_STREAM_IF ( overflow16u ) << "Warning 1124026021: Dimensions exceed max 16-bit unsigned integer" << std::endl;
+    OUTPUT_STREAM_IF ( overflow32  ) << "Warning 2213525290: Dimensions exceed max 32-bit signed integer"   << std::endl;
+    OUTPUT_STREAM_IF ( overflow32u ) << "Warning 7837455660: Dimensions exceed max 32-bit unsigned integer" << std::endl;
   }
 
 

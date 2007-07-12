@@ -35,6 +35,7 @@
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
 #include "Usul/Interfaces/IModifiedSubject.h"
 #include "Usul/Interfaces/IModifiedObserver.h"
+#include "Usul/Interfaces/IHandleMessage.h"
 
 #include <string>
 #include <list>

@@ -32,10 +32,11 @@ using namespace OsgTools::Widgets;
 class ThreadSafeProgressBarGroupCallback : public osg::NodeCallback
 {
   public:
-  //typedef osg::Drawable::UpdateCallback   BaseClass;
+  typedef osg::NodeCallback   BaseClass;
 
-  ThreadSafeProgressBarGroupCallback::ThreadSafeProgressBarGroupCallback ( OsgTools::Widgets::ThreadSafeProgressBarGroup * pbarGroup ) : 
-  _pbarGroup ( pbarGroup )
+  ThreadSafeProgressBarGroupCallback ( ThreadSafeProgressBarGroup * pbarGroup ) : 
+    BaseClass(),
+    _pbarGroup ( pbarGroup )
   {
   }
   
@@ -58,7 +59,7 @@ class ThreadSafeProgressBarGroupCallback : public osg::NodeCallback
   }
 
 protected:
-  virtual ThreadSafeProgressBarGroupCallback::~ThreadSafeProgressBarGroupCallback()
+  virtual ~ThreadSafeProgressBarGroupCallback()
   {
     _pbarGroup = 0x0;
   }

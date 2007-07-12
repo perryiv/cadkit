@@ -1295,7 +1295,7 @@ void MainWindow::_buildPluginDockWidgets()
   // Go through the plugins.
   for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
   {
-    Usul::Interfaces::IAddDockWindow::ValidQueryPtr plugin ( *iter );
+    Usul::Interfaces::IAddDockWindow::ValidQueryPtr plugin ( (*iter).get() );
     plugin->addDockWindow ( me );
   }
 }

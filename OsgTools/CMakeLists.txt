@@ -99,10 +99,12 @@ SET (SOURCES
   Render/Animation.cpp
   Render/ClipPlaneCallback.cpp
   Render/EventAdapter.cpp
+  Render/FBOScreenCapture.cpp
   Render/FrameDump.cpp
   Render/LightCallback.cpp
   Render/Renderer.cpp
   Render/SceneManager.cpp
+  Render/TiledScreenCapture.cpp
   Render/Trackball.cpp
   Render/Viewer.cpp
   Sample.cpp
@@ -130,6 +132,8 @@ SET (SOURCES
   Widgets/ThreadSafeProgressBarGroup.cpp
   Widgets/Helper/ThreadSafeText.cpp
   Widgets/Helper/UpdateProgress.cpp
+  Volume/PlanarProxyGeometry.cpp
+  Volume/Texture3DVolume.cpp
 )
 
 # Create a Shared Library

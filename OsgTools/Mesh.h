@@ -43,6 +43,10 @@ public:
   Mesh ( const Mesh & );
   Mesh &operator = ( const Mesh & );
 
+  // Allocate the mesh.
+  void                allocatePoints();
+  void                allocateNormals();
+
   // The number of columns.
   unsigned int        columns() const { return _columns; }
 

@@ -66,7 +66,6 @@
 #include "Usul/File/Temp.h"
 #include "Usul/File/Remove.h"
 #include "Usul/Properties/Attribute.h"
-#include "Usul/Interfaces/IActiveView.h"
 #include "Usul/Interfaces/ITrackball.h"
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/IFrameDump.h"
@@ -674,8 +673,8 @@ long AnimateComponent::onCommandClear ( FX::FXObject *object, FX::FXSelector, vo
 
 long AnimateComponent::onUpdateClear ( FX::FXObject *object, FX::FXSelector, void * )
 {
-  Usul::Interfaces::IActiveView::QueryPtr activeView ( _caller );
-  bool active ( activeView.valid() && 0x0 != activeView->getActiveView() );
+  Usul::Interfaces::IView::QueryPtr view ( Usul::Documents::Manager::instance().activeView () );
+  bool active ( view.valid() );
   bool movie ( _current.valid() && !_current->empty() );
   FoxTools::Functions::enable ( active && movie, object );
   return 1;
@@ -816,8 +815,7 @@ long AnimateComponent::onUpdateCameraState ( FX::FXObject *object, FX::FXSelecto
   {
     button->enable ( true );
 
-    Usul::Interfaces::IActiveView::ValidQueryPtr activeView ( _caller );
-    Usul::Interfaces::ITrackball::ValidQueryPtr trackball ( activeView->getActiveView() );
+    Usul::Interfaces::ITrackball::ValidQueryPtr trackball ( Usul::Documents::Manager::instance().activeView() );
 
     // Get user-data.
     UIntAttribute::RefPtr data ( dynamic_cast < UIntAttribute * > ( button->userData() ) );
@@ -847,10 +845,10 @@ long AnimateComponent::onUpdateCameraState ( FX::FXObject *object, FX::FXSelecto
 long AnimateComponent::onUpdateMenuCommand ( FX::FXObject *object, FX::FXSelector, void * )
 {
   // Get the active view
-  Usul::Interfaces::IActiveView::QueryPtr activeView ( _caller );
+  Usul::Interfaces::IView::QueryPtr view ( Usul::Documents::Manager::instance().activeView () );
 
   // Enable or Disable
-  FoxTools::Functions::enable ( ( activeView.valid() && 0x0 != activeView->getActiveView() ), object );
+  FoxTools::Functions::enable ( view.valid(), object );
 
   // Message handled.
   return 1;
@@ -903,8 +901,8 @@ long AnimateComponent::onUpdatePlayReverse ( FX::FXObject *object, FX::FXSelecto
 
 AnimateComponent::Frame AnimateComponent::_currentFrame()
 {
-  Usul::Interfaces::IActiveView::ValidQueryPtr activeView ( _caller );
-  Usul::Interfaces::ITrackball::ValidQueryPtr trackball ( activeView->getActiveView() );
+  Usul::Interfaces::IView::QueryPtr view ( Usul::Documents::Manager::instance().activeView () );
+  Usul::Interfaces::ITrackball::ValidQueryPtr trackball ( view );
   Frame frame ( trackball->getCenter(), trackball->getDistance(), trackball->getRotation() );
   return frame;
 }
@@ -1005,8 +1003,9 @@ long AnimateComponent::onCommandSaveFrames ( FX::FXObject *, FX::FXSelector, voi
 
 long AnimateComponent::onCommandSaveMovie ( FX::FXObject *, FX::FXSelector, void * )
 {
-
+  // Typedefs.
   typedef FoxTools::Dialogs::FileSelection FileSelection;
+  typedef Usul::Interfaces::IFrameDump     IFrameDump;
 
   //FileSelection::Filters filters ( create->getFilters() );
   FileSelection::Filters filters ( _current->filtersWrite() );
@@ -1018,12 +1017,11 @@ long AnimateComponent::onCommandSaveMovie ( FX::FXObject *, FX::FXSelector, void
   if( filename.empty() )
     return 0;
 
-  //Useful typedefs
-  typedef Usul::Interfaces::IFrameDump IFrameDump;
-  typedef Usul::Interfaces::IActiveView IActiveView;
+  IFrameDump::QueryPtr fd ( Usul::Documents::Manager::instance().activeView() );
 
-  IActiveView::ValidQueryPtr view ( _caller );
-  IFrameDump::ValidQueryPtr fd ( view->getActiveView() );
+  // Return now if we don't have a frame dump interface.
+  if( false == fd.valid() )
+    return 0;
 
   // Create a temp name
   Usul::File::Temp temp;
@@ -1310,8 +1308,7 @@ long AnimateComponent::onUpdateComboBox ( FX::FXObject *object, FX::FXSelector, 
     //Set the combo box item to the current camera
     comboBox->setCurrentItem( current );
 
-    Usul::Interfaces::IActiveView::ValidQueryPtr activeView ( _caller );
-    Usul::Interfaces::ITrackball::ValidQueryPtr trackball ( activeView->getActiveView() );
+    Usul::Interfaces::ITrackball::ValidQueryPtr trackball ( Usul::Documents::Manager::instance().activeView() );
     const Frame &frame ( _current->frame( _current->getCurrentFrame() ) );
 
     //If the trackball and frame are the same...
@@ -1439,10 +1436,8 @@ long AnimateComponent::onCommandComments ( FX::FXObject *, FX::FXSelector, void 
 long AnimateComponent::onCommandFrameDump ( FX::FXObject *, FX::FXSelector, void * )
 {
   typedef Usul::Interfaces::IFrameDump IFrameDump;
-  typedef Usul::Interfaces::IActiveView IActiveView;
 
-  IActiveView::ValidQueryPtr view ( _caller );
-  IFrameDump::ValidQueryPtr fd ( view->getActiveView() );
+  IFrameDump::ValidQueryPtr fd ( Usul::Documents::Manager::instance().activeView() );
 
   // if we are currently dumping frames, turn it off
   if( fd->dumpFrames() )
@@ -1471,11 +1466,8 @@ long AnimateComponent::onCommandFrameDump ( FX::FXObject *, FX::FXSelector, void
 long AnimateComponent::onUpdateFrameDump ( FX::FXObject *object, FX::FXSelector, void * )
 {
   typedef Usul::Interfaces::IFrameDump IFrameDump;
-  typedef Usul::Interfaces::IActiveView IActiveView;
 
-  IActiveView::QueryPtr view ( _caller );
-
-  IFrameDump::QueryPtr fd ( view->getActiveView() );
+  IFrameDump::QueryPtr fd ( Usul::Documents::Manager::instance().activeView() );
 
   FoxTools::Functions::enable ( fd.valid(), object );
   bool result ( fd.valid() && fd->dumpFrames() );
@@ -1599,8 +1591,8 @@ long AnimateComponent::onUpdateStop  ( FX::FXObject *object, FX::FXSelector, voi
 
 bool AnimateComponent::_validMovieAndView( )
 {
-  Usul::Interfaces::IActiveView::QueryPtr activeView ( _caller );
-  return ( activeView.valid() && 0x0 != activeView->getActiveView() && _current.valid() );
+  Usul::Interfaces::IView::QueryPtr view ( Usul::Documents::Manager::instance().activeView() );
+  return ( view.valid() && _current.valid() );
 }
 
 
@@ -1689,8 +1681,8 @@ void AnimateComponent::clear ( const std::string& groupName )
 
 long AnimateComponent::onUpdateCurrentCamera ( FX::FXObject *object, FX::FXSelector, void * )
 {
-  Usul::Interfaces::IActiveView::ValidQueryPtr view ( _caller );
-  FoxTools::Functions::enable ( ( view.valid() && view->getActiveView() ), object );
+  Usul::Interfaces::IView::QueryPtr view ( Usul::Documents::Manager::instance().activeView() );
+  FoxTools::Functions::enable ( view.valid(), object );
   return 1;
 }
 
@@ -1815,8 +1807,7 @@ std::string AnimateComponent::documentTypeName()
 
 long AnimateComponent::onCommandAnimationPath ( FX::FXObject *, FX::FXSelector, void * )
 {
-  Usul::Interfaces::IActiveView::ValidQueryPtr activeView ( _caller );
-  Usul::Interfaces::IGroup::QueryPtr           group      ( activeView->getActiveView() );
+  Usul::Interfaces::IGroup::QueryPtr           group      ( Usul::Documents::Manager::instance().activeView() );
 
   if( group.valid() )
   {
@@ -1853,8 +1844,7 @@ long AnimateComponent::onUpdateAnimationPath ( FX::FXObject *object, FX::FXSelec
 {
   FoxTools::Functions::enable ( this->_validMovieAndView() && _current->canPlay() , object );
 
-  Usul::Interfaces::IActiveView::ValidQueryPtr activeView ( _caller );
-  Usul::Interfaces::IGroup::QueryPtr           group      ( activeView->getActiveView() );
+  Usul::Interfaces::IGroup::QueryPtr           group      ( Usul::Documents::Manager::instance().activeView() );
 
   bool result ( group.valid() ? group->hasGroup ( "Animation_Group" ) : false );
 
@@ -1880,15 +1870,15 @@ long AnimateComponent::onCommandAnimationSlider ( FX::FXObject *object, FX::FXSe
 
   Frame frame ( _current->lastU ( (double) value / 100 ) );
 
-  typedef Usul::Interfaces::IActiveView        IActiveView;
+  typedef Usul::Interfaces::IView              IView;
   typedef Usul::Interfaces::ITrackball         ITrackball;
   typedef Usul::Interfaces::IRedraw            IRedraw;
   typedef Usul::Interfaces::IFlushEvents       IFlushEvents;
 
   // Get the needed interfaces.
-  IActiveView::ValidQueryPtr   activeView ( _caller );
-  ITrackball::ValidQueryPtr    trackball ( activeView->getActiveView() );
-  IRedraw::ValidQueryPtr       redraw ( activeView->getActiveView() );
+  IView::ValidQueryPtr         view ( Usul::Documents::Manager::instance().activeView() );
+  ITrackball::ValidQueryPtr    trackball ( view );
+  IRedraw::ValidQueryPtr       redraw ( view );
 
   trackball->setTrackball ( frame.getCenter(), frame.getDistance(), frame.getRotation(), true, true );
 
@@ -1975,8 +1965,7 @@ void AnimateComponent::_buildGUIForCurrentMovie ( )
   // Rebuild the slides.
   this->_buildSlides();
 
-  Usul::Interfaces::IActiveView::ValidQueryPtr activeView ( _caller );
-  Usul::Interfaces::IGroup::QueryPtr           group      ( activeView->getActiveView() );
+  Usul::Interfaces::IGroup::QueryPtr           group      ( Usul::Documents::Manager::instance().activeView() );
 
   if( group.valid() )
   {

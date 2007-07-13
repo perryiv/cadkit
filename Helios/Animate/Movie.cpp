@@ -19,7 +19,6 @@
 #include "Usul/System/Clock.h"
 #include "Usul/Components/Manager.h"
 
-#include "Usul/Interfaces/IActiveView.h"
 #include "Usul/Interfaces/ITrackball.h"
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/GUI/IFlushEvents.h"
@@ -30,6 +29,7 @@
 #include "Usul/File/Temp.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/File/Path.h"
+#include "Usul/Documents/Manager.h"
 
 #include "XmlDom/Policy.h"
 #include "XmlDom/Reader.h"
@@ -897,15 +897,15 @@ void Movie::_animatePath ( const DoubleCurve &positions,
   typedef DoubleCurve::SizeType SizeType;
   typedef IndependentSequence::const_iterator ConstIterator;
   typedef std::greater<Parameter> IsGreater;
-  typedef Usul::Interfaces::IActiveView        IActiveView;
+  typedef Usul::Interfaces::IView              IView;
   typedef Usul::Interfaces::ITrackball         ITrackball;
   typedef Usul::Interfaces::IRedraw            IRedraw;
   typedef Usul::Interfaces::IFlushEvents       IFlushEvents;
 
   // Get the needed interfaces.
-  IActiveView::ValidQueryPtr   activeView ( caller );
-  ITrackball::ValidQueryPtr    trackball ( activeView->getActiveView() );
-  IRedraw::ValidQueryPtr       redraw ( activeView->getActiveView() );
+  IView::ValidQueryPtr         view ( Usul::Documents::Manager::instance().activeView () );
+  ITrackball::ValidQueryPtr    trackball ( view );
+  IRedraw::ValidQueryPtr       redraw ( view );
   IFlushEvents::ValidQueryPtr  flush ( caller );
 
   // Should be true.

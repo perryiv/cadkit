@@ -612,6 +612,14 @@
 				Name="Images"
 				>
 				<File
+					RelativePath=".\Images\DownSample.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Images\DownSample.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Images\EdgeDetect.cpp"
 					>
 				</File>

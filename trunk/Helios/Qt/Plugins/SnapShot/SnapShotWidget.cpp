@@ -66,30 +66,41 @@ void SnapShotWidget::_deleteFiles ()
 
 void SnapShotWidget::on__snapShotButton_clicked ()
 {
-  Usul::Interfaces::ISnapShot::QueryPtr snapShot ( Usul::Documents::Manager::instance().activeView() );
-
-  if( snapShot.valid () )
+  try
   {
-    // Get the parameters for the snap shot.
-    double frameScale ( _snapShot._frameScale->value() );
-    unsigned int numSamples ( _snapShot._numSamples->value() );
+    Usul::Interfaces::ISnapShot::QueryPtr snapShot ( Usul::Documents::Manager::instance().activeView() );
 
-    // Create a temp file.
-    std::string filename ( Usul::File::Temp::file() );
+    if( snapShot.valid () )
+    {
+      // Get the parameters for the snap shot.
+      double frameScale ( _snapShot._frameScale->value() );
+      unsigned int numSamples ( _snapShot._numSamples->value() );
 
-    // Make it a bitmap.
-    boost::algorithm::replace_last ( filename, ".tmp", ".bmp" );
+      // Create a temp file.
+      std::string filename ( Usul::File::Temp::file() );
 
-    // Save it to our list.
-    _files.push_back ( filename );
+      // Make it a bitmap.
+      boost::algorithm::replace_last ( filename, ".tmp", ".bmp" );
 
-    // Some feedback...
-    std::cout << "Creating image: " << filename << std::endl;
+      // Save it to our list.
+      _files.push_back ( filename );
 
-    // Take the picture.
-    snapShot->takePicture ( filename, frameScale, numSamples );
+      // Some feedback...
+      std::cout << "Creating image: " << filename << std::endl;
 
-    // Open it up.
-    QProcess::startDetached ( filename.c_str() );
+      // Take the picture.
+      snapShot->takePicture ( filename, frameScale, numSamples );
+
+      // Open it up.
+      QProcess::startDetached ( filename.c_str() );
+    }
+  }
+  catch ( const std::exception& e )
+  {
+    std::cout << "Error 1415262500: Standard exception caught while trying to take snap shot: " << e.what() << std::endl;
+  }
+  catch ( ... )
+  {
+    std::cout << "Error 3216169248: Unknown exception caught while trying to take snap shot." << std::endl;
   }
 }

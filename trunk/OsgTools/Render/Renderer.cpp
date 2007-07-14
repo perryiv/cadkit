@@ -35,18 +35,9 @@
 #include "Usul/System/Clock.h"
 #include "Usul/Headers/OpenGL.h"
 
-#include "osg/Texture2D"
-#include "osg/Version"
 #include "osg/MatrixTransform"
 #include "osg/Geometry"
 #include "osg/Geode"
-
-#ifndef USE_DEPRECATED_API
-#define USE_DEPRECATED_API
-#endif
-
-#include "osg/CameraNode"
-
 #include "osg/GLU"
 
 #include "osgUtil/UpdateVisitor"
@@ -1003,8 +994,8 @@ void Renderer::_fboScreenCapture ( osg::Image& image, const osg::Matrix& project
 osg::Image* Renderer::screenCapture ( float frameSizeScale, unsigned int numSamples )
 {
   // Get our current width and height.
-  unsigned int width  ( this->viewport()->width () );
-  unsigned int height ( this->viewport()->height () );
+  unsigned int width  ( this->viewport()->width ()  * frameSizeScale );
+  unsigned int height ( this->viewport()->height () * frameSizeScale  );
 
   TiledScreenCapture tiled;
   tiled.size ( width, height );

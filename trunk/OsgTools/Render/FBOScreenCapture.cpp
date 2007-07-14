@@ -145,11 +145,12 @@ void FBOScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& scen
   // Set up the texture.
   osg::ref_ptr< osg::Texture2D > tex ( new osg::Texture2D );
   tex->setTextureSize(width, height);
-  tex->setInternalFormat(GL_RGBA);
+  tex->setInternalFormat( GL_RGBA );
   tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR);
   tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
   tex->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
   tex->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
+  tex->setResizeNonPowerOfTwoHint ( false );
   
   // Make the fbo.
   osg::ref_ptr< osg::FrameBufferObject > fbo ( new osg::FrameBufferObject );
@@ -207,7 +208,7 @@ osg::Image* FBOScreenCapture::operator () ( osgUtil::SceneView& sceneView, const
   osg::ref_ptr < osg::Image > image ( new osg::Image );
 
   // Make enough space
-  image->allocateImage ( _size [ 0 ], _size [ 1 ], 1, GL_RGB, GL_UNSIGNED_BYTE );
+  image->allocateImage ( _size [ 0 ], _size [ 1 ], 1, GL_RGBA, GL_UNSIGNED_BYTE );
 
   (*this ) ( *image, sceneView, projection );
 

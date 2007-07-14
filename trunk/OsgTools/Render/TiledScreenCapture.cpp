@@ -10,7 +10,18 @@
 
 #include "OsgTools/Render/TiledScreenCapture.h"
 #include "OsgTools/Render/FBOScreenCapture.h"
+#include "OsgTools/Images/DownSample.h"
 #include "OsgTools/ScopedViewport.h"
+
+// For debugging...
+#include "Usul/File/Temp.h"
+#include "Usul/File/Remove.h"
+
+#include "osgDB/WriteFile"
+
+#include <vector>
+#include <string>
+#include <sstream>
 
 #include "osg/Image"
 
@@ -166,29 +177,49 @@ namespace Detail
                                       unsigned int tileX, 
                                       unsigned int tileY )
   {
-    osg::Matrix ras2ndc (
-        1.0f / answerWidth,           0,          0,   0,
-        0,                  -1.0f / answerHeight, 0, -1.0f,
-        0,                            0,          1,   0,
-        0,                            0,          0,   1 );
+    double zNear   ( 0.0 );
+    double zFar    ( 0.0 );
+    double top     ( 0.0 );
+    double bottom  ( 0.0 );
+    double left    ( 0.0 );
+    double right   ( 0.0 );
 
-    // Find the lower left corner of this tile in Normalized Device Coordinates ( ndc ).
-    float xndc ( static_cast < float > ( x ) / answerWidth  );
-    float yndc ( static_cast < float > ( y ) / answerHeight );
+    proj.getFrustum( left, right, bottom, top, zNear, zFar );
 
-    // Find the inverse width and height of this tile in ndc coordinates.
-    float inv_wndc ( static_cast < float > ( answerWidth  / tileX ) );
-    float inv_hndc ( static_cast < float > ( answerHeight / tileY ) );
-
-    // Construct a matrix to zoom this tile's ndc region to [-1,1]x[-1,1].
-    osg::Matrix T0 ( osg::Matrix::translate ( -xndc, -yndc, 0 ) );
-    osg::Matrix S  ( osg::Matrix::scale     ( 2 * inv_wndc, 2 * inv_hndc, 1 ) );
-    osg::Matrix T1 ( osg::Matrix::translate ( -1, -1, 0 ) );
-    osg::Matrix ndc2tile ( T0 * S * T1 );
+    // compute projection parameters
+    const double currentLeft   ( left          + ( right - left ) *  x / answerWidth );
+    const double currentRight  ( currentLeft   + ( right - left ) *  tileX / answerWidth );
+    const double currentBottom ( bottom        + ( top - bottom ) *  y / answerHeight );
+    const double currentTop    ( currentBottom + ( top - bottom ) *  tileY / answerHeight );
 
     // Construct tile matrix.
-    osg::Matrix m ( proj * ras2ndc * ndc2tile );
+    osg::Matrix m;
+    m.makeFrustum ( currentLeft, currentRight, currentBottom, currentTop, zNear, zFar );
     return m;
+
+    //osg::Matrix ras2ndc (
+    //    1.0f / answerWidth,           0,          0,   0,
+    //    0,                  -1.0f / answerHeight, 0, -1.0f,
+    //    0,                            0,          1,   0,
+    //    0,                            0,          0,   1 );
+
+    //// Find the lower left corner of this tile in Normalized Device Coordinates ( ndc ).
+    //float xndc ( static_cast < float > ( x ) / answerWidth  );
+    //float yndc ( static_cast < float > ( y ) / answerHeight );
+
+    //// Find the inverse width and height of this tile in ndc coordinates.
+    //float inv_wndc ( static_cast < float > ( answerWidth  / tileX ) );
+    //float inv_hndc ( static_cast < float > ( answerHeight / tileY ) );
+
+    //// Construct a matrix to zoom this tile's ndc region to [-1,1]x[-1,1].
+    //osg::Matrix T0 ( osg::Matrix::translate ( -xndc, -yndc, 0 ) );
+    //osg::Matrix S  ( osg::Matrix::scale     ( 2 * inv_wndc, 2 * inv_hndc, 1 ) );
+    //osg::Matrix T1 ( osg::Matrix::translate ( -1, -1, 0 ) );
+    //osg::Matrix ndc2tile ( T0 * S * T1 );
+
+    //// Construct tile matrix.
+    //osg::Matrix m ( proj * ras2ndc * ndc2tile );
+    //return m;
   }
 }
 
@@ -209,7 +240,7 @@ void TiledScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& sc
   const float filterWidth ( 2.0f ), filterHeight ( 2.0f );
 
   // Tile width and height without padding.
-  const unsigned int tileX ( 32 ), tileY ( 32 );
+  const unsigned int tileX ( 128 ), tileY ( 128 );
 
   // Number of samples in x and y direction.
   const unsigned int samplesX ( this->numSamples () ), samplesY ( this->numSamples () );
@@ -219,8 +250,10 @@ void TiledScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& sc
   unsigned int yPadding ( static_cast < unsigned int > ( ::ceil ( filterHeight / ( 2.0 + 0.5 ) ) ) );
 
   // Tile width and height including padding.
-  unsigned int tileWidth  ( tileX + ( 2 * xPadding ) );
-  unsigned int tileHeight ( tileY + ( 2 * yPadding ) );
+  /*unsigned int tileWidth  ( tileX + ( 2 * xPadding ) );
+  unsigned int tileHeight ( tileY + ( 2 * yPadding ) );*/
+  unsigned int tileWidth  ( tileX );
+  unsigned int tileHeight ( tileY );
 
   // Starting x and y value for the loop.
   // This is pad the final image to ensure edge pixels are correct.
@@ -229,7 +262,8 @@ void TiledScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& sc
 
   // Frame Buffer Object to render the tiles to.
   FBOScreenCapture fbo;
-  fbo.size ( tileWidth * samplesX, tileHeight * samplesY );
+  //fbo.size ( tileWidth * samplesX, tileHeight * samplesY );
+  fbo.size ( tileWidth, tileHeight );
   fbo.viewMatrix ( this->viewMatrix() );
   fbo.clearColor ( this->clearColor() );
 
@@ -237,12 +271,30 @@ void TiledScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& sc
   OsgTools::ScopedViewport sv ( &sceneView );
 
   // Set the viewport for the tile.
-  sceneView.setViewport ( 0, 0, tileX * samplesX, tileY * samplesY );
+  //sceneView.setViewport ( 0, 0, tileX * samplesX, tileY * samplesY );
+  sceneView.setViewport ( 0, 0, tileX, tileY );
+
+  // Downsampler.
+  OsgTools::Images::DownSample downSample;
+  downSample.size ( tileX, tileY );
+  downSample.numSamples ( this->numSamples( ) );
+  downSample.filterSize ( filterWidth, filterHeight );
+
+  typedef std::vector < std::string > Files;
+  Files files;
+
+  // Create a temp file.
+  std::string filename ( Usul::File::Temp::file() );
+  files.push_back ( filename );
+
+  unsigned int i ( 0 );
 
   // Create the tiles.
-  for ( int y = -firstY; y < static_cast < int > ( width ) + firstY; y += tileY )
+  for ( int y = -firstY; y < static_cast < int > ( height ) + firstY; y += tileY )
   {
-    for ( int x = -firstX; x < static_cast < int > ( height ) + firstX; x += tileX )
+    unsigned int j ( 0 );
+
+    for ( int x = -firstX; x < static_cast < int > ( width ) + firstX; x += tileX )
     {
       // Get the matrix.
       osg::Matrix m ( Detail::computeTileProjection ( projection, width, height, x, y, tileX, tileY ) );
@@ -251,10 +303,23 @@ void TiledScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& sc
       osg::ref_ptr < osg::Image > tile ( fbo ( sceneView, m ) );
 
       // Downsample.
+      //osg::ref_ptr < osg::Image > downTile ( downSample ( tile.get() ) );
+
+      std::ostringstream os;
+      os << filename << "_" << i << "_" << j++ << ".bmp";
+      files.push_back ( os.str() );
+
+      osgDB::writeImageFile ( *tile, os.str () );
 
       // Add tile to answer image.
+      this->_accumulate ( image, *tile, static_cast < unsigned int > ( x + firstX ), static_cast < unsigned int > ( y + firstY ) );
     }
+
+    ++i;
   }
+
+  for ( Files::iterator iter = files.begin(); iter != files.end(); ++iter )
+    Usul::File::remove ( *iter );
 }
 
 
@@ -269,9 +334,41 @@ osg::Image* TiledScreenCapture::operator () ( osgUtil::SceneView& sceneView, con
   osg::ref_ptr < osg::Image > image ( new osg::Image );
 
   // Make enough space
-  image->allocateImage ( _size [ 0 ], _size [ 1 ], 1, GL_RGB, GL_UNSIGNED_BYTE );
+  image->allocateImage ( _size [ 0 ], _size [ 1 ], 1, GL_RGBA, GL_UNSIGNED_BYTE );
 
   (*this ) ( *image, sceneView, projection );
 
   return image.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accumulate the tile into the final image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TiledScreenCapture::_accumulate ( osg::Image& image, const osg::Image& tile, unsigned int x, unsigned int y )
+{
+  for ( int i = 0; i < tile.s(); ++ i )
+  {
+    for ( int j = 0; j < tile.t(); ++ j )
+    {
+      int x0 ( x + i );
+      int y0 ( y + j );
+
+      if ( x0 >= image.s() || y0 >= image.t() )
+        continue;
+      
+      {
+        unsigned char* result ( image.data ( x0, y0 ) );
+        const unsigned char* pixels ( tile.data ( i, j ) );
+        
+        *result++ = *pixels++;
+        *result++ = *pixels++;
+        *result++ = *pixels++;
+        *result++ = *pixels++;
+      }
+    }
+  }
 }

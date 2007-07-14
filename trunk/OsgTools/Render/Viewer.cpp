@@ -1710,17 +1710,23 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int width, 
 
 void Viewer::takePicture ( const std::string& filename, float frameSizeScale, unsigned int numSamples )
 {
-  // Get non const pointer to this
-  Viewer *me ( const_cast < Viewer * > ( this ) );
+  // Save the axes state.
+  bool axes ( this->axes() );
+
+  // Turn off the axes.
+  this->axes( false );
 
   // Make this context current.
   if ( _context.valid() )
-    me->_context->makeCurrent();
+    _context->makeCurrent();
 
-  osg::ref_ptr < osg::Image > image ( me->_renderer->screenCapture ( frameSizeScale, numSamples ) );
+  osg::ref_ptr < osg::Image > image ( _renderer->screenCapture ( frameSizeScale, numSamples ) );
 
   // Write the image to file.
   osgDB::writeImageFile ( *image, filename );
+
+  // Restore the state.
+  this->axes ( axes );
 }
 
 

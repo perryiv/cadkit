@@ -7,4 +7,5 @@
   <plugin load="true" file="QtSceneDelegate.plug" />
   <plugin load="true" file="VolumeModel.plug" />
   <plugin load="true" file="SceneTreeQt.plug" />
+  <plugin load="true" file="SnapShotQt.plug" />
 </plugins>

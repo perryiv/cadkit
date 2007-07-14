@@ -19,6 +19,11 @@ template < class T >
 class Matrix
 {
 public:
+  typedef Matrix < T >                    ThisType;
+  typedef std::vector < T >               Array;
+  typedef typename Array::iterator        Iterator;
+  typedef typename Array::const_iterator  ConstIterator;
+
   Matrix ( unsigned int r, unsigned int c ) :
     _r ( r ),
     _c ( c ),
@@ -50,6 +55,27 @@ public:
 
   unsigned int columns () const { return _c; }
 
+  // Make the input the transpose of this matrix.
+  void         transpose ( ThisType& in )
+  {
+    const typename Array::size_type rows    ( this->rows () );
+    const typename Array::size_type columns ( in.columns () );
+
+    for ( unsigned int c = 0; c < columns; ++c )
+    {
+      for ( unsigned int r = 0; r < rows; ++r )
+      {
+        in( c, r ) = (*this) ( r, c );
+      }
+    }
+  }
+
+  Iterator begin () { return _array.begin(); }
+  Iterator end ()   { return _array.end(); }
+
+  ConstIterator begin () const { return _array.begin(); }
+  ConstIterator end ()   const { return _array.end(); }
+
 private:
   unsigned int _r;
   unsigned int _c;
@@ -60,3 +86,4 @@ private:
 }
 
 #endif // __OSG_TOOLS_IMAGES_MATRIX_H__
+

@@ -55,6 +55,7 @@ public:
   osg::Image*                  operator () ( osgUtil::SceneView& sceneView, const osg::Matrix& projection );
 
 private:
+  void                         _accumulate ( osg::Image& image, const osg::Image& tile, unsigned int x, unsigned int y );
   Usul::Math::Vec2ui _size;
   osg::Vec4          _color;
   osg::Matrix        _viewMatrix;

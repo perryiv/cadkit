@@ -9,8 +9,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OsgTools/Widgets/ThreadSafeProgressBar.h"
-#include "Usul/CommandLine/Arguments.h"
 
+#include "Usul/CommandLine/Arguments.h"
+#include "Usul/Trace/Trace.h"
 
 #include "osgDB/ReadFile"
 #include "osg/MatrixTransform"
@@ -256,7 +257,7 @@ Usul::Interfaces::IUnknown* ThreadSafeProgressBar::queryInterface ( unsigned lon
 
 void ThreadSafeProgressBar::showProgressBar()
 {
-  //USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   if(!_isVisible)
   {
@@ -275,7 +276,7 @@ void ThreadSafeProgressBar::showProgressBar()
 
 void ThreadSafeProgressBar::hideProgressBar()
 {
-  //USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   if(_isVisible)
   {
@@ -296,7 +297,7 @@ void ThreadSafeProgressBar::hideProgressBar()
 
 void ThreadSafeProgressBar::setTotalProgressBar ( unsigned int value )
 {
-//  USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _range.set ( 0, double ( value ) );
   _layout();
@@ -311,8 +312,8 @@ void ThreadSafeProgressBar::setTotalProgressBar ( unsigned int value )
 
 void ThreadSafeProgressBar::updateProgressBar ( unsigned int value )
 {
- // USUL_TRACE_SCOPE;
-  //Guard guard ( this->mutex() );
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   this->value ( double ( value ) );
   
 }
@@ -326,14 +327,11 @@ void ThreadSafeProgressBar::updateProgressBar ( unsigned int value )
 
 void ThreadSafeProgressBar::setStatusBarText ( const std::string &text, bool force )
 {
- // USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE;
   this->text ( text );
 }
 
 
-////////////////////
-// Public
-////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Reset progress bar values to the starting parameters

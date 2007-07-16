@@ -36,7 +36,7 @@ class OSG_TOOLS_EXPORT ThreadSafeProgressBarGroup : public Usul::Base::Object
 public:
   
   typedef Usul::Base::Object BaseClass;
-  typedef std::vector<ThreadSafeProgressBar::RefPtr> Bars;
+  typedef std::vector < ThreadSafeProgressBar::RefPtr > Bars;
 
   USUL_DECLARE_QUERY_POINTERS ( ThreadSafeProgressBarGroup );
 
@@ -51,15 +51,21 @@ public:
   osg::Node *                             buildScene();
   osg::Node *                             getScene();
   int                                     getNumBars();
-  void                                    setBarValue ( int i, double v );
+  
   void                                    remove ( unsigned int pos );
-  double                                  getBarValue( int i ); 
+  void                                    removeFinishedProgressBars ( );
+  
   Bars                                    getBars();
+
+  void                                    setBarValue ( int i, double v );
+  double                                  getBarValue( int i ); 
 
 protected:
 	
   virtual                                 ~ThreadSafeProgressBarGroup();
-  void                                    _addProgressBar ( ThreadSafeProgressBar * bar );
+  void                                    _addProgressBar    ( ThreadSafeProgressBar * bar );
+  void                                    _removeProgressBar ( ThreadSafeProgressBar * bar );
+  void                                    _updatePositions ();
 private:
 
   // No copying or assignment.
@@ -77,7 +83,7 @@ private:
   bool                                  _isRelativeToAbsolute;
   osg::ref_ptr<osg::Group>              _root;
   float                                 _padding;
-  unsigned int                          _numBars;             
+  unsigned int                          _numBars;
 };
 
 

@@ -10,8 +10,12 @@
 
 #include "OsgTools/Widgets/ThreadSafeProgressBarGroup.h"
 
+#include "Usul/Trace/Trace.h"
+
 #include "osg/Group"
 #include "osg/MatrixTransform"
+
+#include <algorithm>
 
 #ifdef _MSC_VER 
 # ifdef _DEBUG
@@ -42,18 +46,10 @@ class ThreadSafeProgressBarGroupCallback : public osg::NodeCallback
   
   virtual void operator() (osg::Node* node, osg::NodeVisitor* nv)
   {
+    USUL_TRACE_SCOPE;
     if( 0x0 != _pbarGroup )
     {
-      //int num = _pbarGroup->getNumItems();
-      for( unsigned int i = 0; i < _pbarGroup->getBars().size(); ++i)
-      {
-        if(  _pbarGroup->getBars().at( i )->isFinished()   && 
-            !_pbarGroup ->getBars().at( i )->isAnimating() &&
-            !_pbarGroup->getBars().at( i )->isVisible() )
-        {
-          _pbarGroup->remove ( i );
-        }
-      }
+      _pbarGroup->removeFinishedProgressBars ();
     }
     traverse(node,nv);
   }
@@ -115,6 +111,7 @@ OsgTools::Widgets::ThreadSafeProgressBarGroup::Bars ThreadSafeProgressBarGroup::
   return _bars;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Removes progress bar object at position pos
@@ -123,12 +120,14 @@ OsgTools::Widgets::ThreadSafeProgressBarGroup::Bars ThreadSafeProgressBarGroup::
 
 void ThreadSafeProgressBarGroup::remove ( unsigned int pos )
 {
+  USUL_TRACE_SCOPE;
+
   ThreadSafeProgressBar::RefPtr bar ( _bars.at ( pos ) );
   if ( _bars.size() > 0 )
   {
     if ( _bars.size() == 1 )
     {
-      _size.set ( 0, 0);
+      _size.set ( 0, 0 );
     }
     else
     {
@@ -146,6 +145,63 @@ void ThreadSafeProgressBarGroup::remove ( unsigned int pos )
     
   }
 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove all progress bars that are finished.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ThreadSafeProgressBarGroup::removeFinishedProgressBars ( )
+{
+  typedef OsgTools::Widgets::ThreadSafeProgressBarGroup::Bars ProgressBars;
+
+  // Make a copy.
+  ProgressBars bars ( this->getBars() );
+
+  // Progress bars that will need to be removed.
+  ProgressBars doomed;
+
+  for( ProgressBars::iterator iter = bars.begin(); iter != bars.end(); ++iter )
+  {
+    if(  (*iter)->isFinished() && !(*iter)->isAnimating() && !(*iter)->isVisible() )
+    {
+      doomed.push_back ( *iter );
+    }
+  }
+
+  for( ProgressBars::iterator iter = doomed.begin(); iter != doomed.end(); ++iter )
+    this->_removeProgressBar ( *iter );
+
+  this->_updatePositions ();
+
+  // We need to be rebuilt.
+  this->_setDirty ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the given progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ThreadSafeProgressBarGroup::_removeProgressBar ( ThreadSafeProgressBar * bar )
+{
+  USUL_TRACE_SCOPE;
+  
+  if ( 0x0 != bar )
+  {
+    bar->clear();
+
+    Guard guard ( this->mutex() );
+    _bars.erase ( std::remove_if ( _bars.begin(), 
+                                 _bars.end(), 
+                                 ThreadSafeProgressBar::RefPtr::IsEqual ( bar ) ), 
+                  _bars.end() );
+  }
 }
 
 
@@ -205,6 +261,7 @@ int ThreadSafeProgressBarGroup::getNumBars()
 
 Usul::Interfaces::IUnknown* ThreadSafeProgressBarGroup::append (  )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   ThreadSafeProgressBar::RefPtr pbar = new ThreadSafeProgressBar();
 
@@ -226,7 +283,7 @@ Usul::Interfaces::IUnknown* ThreadSafeProgressBarGroup::append ( ThreadSafeProgr
   if ( 0x0 != bar )
   {
     Guard guard ( this->mutex() );
-    _bars.push_back ( ThreadSafeProgressBar::RefPtr ( bar ) );
+    _bars.push_back ( bar );
     return bar->queryInterface ( Usul::Interfaces::IUnknown::IID );
   }
   else
@@ -279,12 +336,22 @@ osg::Node * ThreadSafeProgressBarGroup::buildScene()
      
     }
 
+    osg::Vec3 currentPosition ( _padding, _padding, 0.0 );
+
     for ( Bars::const_iterator i = bars.begin(); i != bars.end(); ++i )
     {
+      osg::ref_ptr< osg::MatrixTransform > m ( new osg::MatrixTransform() );
+      m->setMatrix ( osg::Matrix::translate ( currentPosition ) );
+
       ThreadSafeProgressBar::RefPtr _bar ( *i );
-      matrix->addChild ( _bar->buildScene() );
+      m->addChild ( _bar->buildScene() );
       
+      matrix->addChild ( m.get() );
+
+      //currentPosition.x() += _bar->size()[0];
+      currentPosition.y() += _bar->size()[1];
     }
+
     _root->addChild ( matrix.get() );
     
     this->_setDirty ( false );
@@ -304,15 +371,17 @@ void ThreadSafeProgressBarGroup::_addProgressBar ( ThreadSafeProgressBar * pbar 
 {
  
   unsigned int numBars = _bars.size();
-  if( numBars == 0 )
-    pbar->setLowerLeft ( Usul::Math::Vec2f ( _padding, _padding ) );
-  else
-  {
-    float prevBarLL = _bars.at( numBars - 1 )->getLowerLeft()[1];
-    float prevBarH = _bars.at( numBars - 1 )->getHeight();
-    pbar->setLowerLeft ( Usul::Math::Vec2f ( _padding, prevBarLL + prevBarH + _padding ) );
+  pbar->setLowerLeft ( Usul::Math::Vec2f ( 0.0, 0.0 ) );
+  //if( numBars == 0 )
+  //  pbar->setLowerLeft ( Usul::Math::Vec2f ( _padding, _padding ) );
+  //else
+  //{
+  //  float prevBarLL = _bars.at( numBars - 1 )->getLowerLeft()[1];
+  //  float prevBarH = _bars.at( numBars - 1 )->getHeight();
+  //  //pbar->setLowerLeft ( Usul::Math::Vec2f ( _padding, prevBarLL + prevBarH + _padding ) );
+  //  pbar->setLowerLeft ( 
 
-  }
+  //}
   
   if ( _size[0] < pbar->getLength() + _padding )
     _size[0] = pbar->getLength() + _padding * 2;
@@ -342,3 +411,12 @@ void ThreadSafeProgressBarGroup::_addProgressBar ( ThreadSafeProgressBar * pbar 
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the positions of all the progress bars.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ThreadSafeProgressBarGroup::_updatePositions ()
+{
+}

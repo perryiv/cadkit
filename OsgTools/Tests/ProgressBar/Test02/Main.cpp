@@ -38,7 +38,7 @@ class ThreadSafeProgressBarGroupCallback : public osg::NodeCallback
   public:
   //typedef osg::Drawable::UpdateCallback   BaseClass;
 
-  ThreadSafeProgressBarGroupCallback::ThreadSafeProgressBarGroupCallback ( OsgTools::Widgets::ThreadSafeProgressBarGroup * pbarGroup ) : 
+  ThreadSafeProgressBarGroupCallback ( OsgTools::Widgets::ThreadSafeProgressBarGroup * pbarGroup ) :
   _pbarGroup ( pbarGroup )
   {
   }
@@ -53,7 +53,7 @@ class ThreadSafeProgressBarGroupCallback : public osg::NodeCallback
   }
 
 protected:
-  virtual ThreadSafeProgressBarGroupCallback::~ThreadSafeProgressBarGroupCallback()
+  virtual ~ThreadSafeProgressBarGroupCallback()
   {
     _pbarGroup = 0x0;
   }
@@ -61,34 +61,7 @@ private:
  
   OsgTools::Widgets::ThreadSafeProgressBarGroup * _pbarGroup;
 };
-//class ThreadSafeProgressBarGroupCallback : public osg::NodeCallback
-//{
-//  public:
-//  //typedef osg::Drawable::UpdateCallback   BaseClass;
-//
-//  ThreadSafeProgressBarGroupCallback::ThreadSafeProgressBarGroupCallback ( OsgTools::Widgets::ProgressBarGroup * pbarGroup ) : 
-//  _pbarGroup ( pbarGroup )
-//  {
-//  }
-//  
-//  virtual void operator() (osg::Node* node, osg::NodeVisitor* nv)
-//  {
-//    if( 0x0 != _pbarGroup )
-//    {
-//      _pbarGroup->update(); 
-//    }
-//    traverse(node,nv);
-//  }
-//
-//protected:
-//  virtual ThreadSafeProgressBarGroupCallback::~ThreadSafeProgressBarGroupCallback()
-//  {
-//    _pbarGroup = 0x0;
-//  }
-//private:
-// 
-//  OsgTools::Widgets::ProgressBarGroup * _pbarGroup;
-//};
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -125,8 +98,6 @@ void _test()
   osg::ref_ptr< osg::Group > root ( new osg::Group() );
 
   osg::ref_ptr< OsgTools::Widgets::ThreadSafeProgressBarGroup > progressBar ( new OsgTools::Widgets::ThreadSafeProgressBarGroup() );
-  //progressBar->setLocation ( OsgTools::Widgets::ProgressBarGroup::LOWER_LEFT );
-//  root->setUpdateCallback( new ProgressBarGroupCallback ( progressBar.get() ) );
   root->addChild( progressBar->getScene() );
   root->setUpdateCallback ( new ThreadSafeProgressBarGroupCallback ( progressBar.get() ) );
 
@@ -135,7 +106,6 @@ void _test()
 	viewer.setSceneData( root.get() );
 
   // Start the jobs.
-  
   for ( unsigned int i = 0; i < num; ++i )
   {
     Usul::Jobs::Job::RefPtr job ( new TestJob ( Detail::randomNumbers.at(i) ) );

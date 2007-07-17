@@ -114,42 +114,6 @@ OsgTools::Widgets::ThreadSafeProgressBarGroup::Bars ThreadSafeProgressBarGroup::
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Removes progress bar object at position pos
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ThreadSafeProgressBarGroup::remove ( unsigned int pos )
-{
-  USUL_TRACE_SCOPE;
-
-  ThreadSafeProgressBar::RefPtr bar ( _bars.at ( pos ) );
-  if ( _bars.size() > 0 )
-  {
-    if ( _bars.size() == 1 )
-    {
-      _size.set ( 0, 0 );
-    }
-    else
-    {
-      for ( unsigned int x = _bars.size() - 1; x > pos; --x)
-      {
-        _bars.at( x )->setLowerLeft (  Usul::Math::Vec2f ( _padding,
-                                       _bars.at( x - 1 )->getLowerLeft()[1] ) );
-      }
-      _size[1] -= bar->getHeight()  + _padding;
-      
-    }
-    
-    bar->clear();
-    _bars.erase( _bars.begin() + pos );
-    
-  }
-
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Remove all progress bars that are finished.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -166,7 +130,7 @@ void ThreadSafeProgressBarGroup::removeFinishedProgressBars ( )
 
   for( ProgressBars::iterator iter = bars.begin(); iter != bars.end(); ++iter )
   {
-    if(  (*iter)->isFinished() && !(*iter)->isAnimating() && !(*iter)->isVisible() )
+    if( (*iter)->isFinished() && !(*iter)->isAnimating() && !(*iter)->isVisible() )
     {
       doomed.push_back ( *iter );
     }
@@ -174,8 +138,6 @@ void ThreadSafeProgressBarGroup::removeFinishedProgressBars ( )
 
   for( ProgressBars::iterator iter = doomed.begin(); iter != doomed.end(); ++iter )
     this->_removeProgressBar ( *iter );
-
-  this->_updatePositions ();
 
   // We need to be rebuilt.
   this->_setDirty ( true );
@@ -230,17 +192,6 @@ void ThreadSafeProgressBarGroup::_setDirty ( bool d )
   _dirty = d;
 }
 
-void ThreadSafeProgressBarGroup::setBarValue ( int i, double v )
-{
-  Guard guard ( this->mutex() );
-  _bars.at(i)->value(v);
-  this->_setDirty( true );
-}
-double ThreadSafeProgressBarGroup::getBarValue( int i )
-{
-  Guard guard ( this->mutex() );
-  return _bars.at(i)->value();
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -348,7 +299,6 @@ osg::Node * ThreadSafeProgressBarGroup::buildScene()
       
       matrix->addChild ( m.get() );
 
-      //currentPosition.x() += _bar->size()[0];
       currentPosition.y() += _bar->size()[1];
     }
 
@@ -369,19 +319,7 @@ osg::Node * ThreadSafeProgressBarGroup::buildScene()
 
 void ThreadSafeProgressBarGroup::_addProgressBar ( ThreadSafeProgressBar * pbar )
 {
- 
-  unsigned int numBars = _bars.size();
   pbar->setLowerLeft ( Usul::Math::Vec2f ( 0.0, 0.0 ) );
-  //if( numBars == 0 )
-  //  pbar->setLowerLeft ( Usul::Math::Vec2f ( _padding, _padding ) );
-  //else
-  //{
-  //  float prevBarLL = _bars.at( numBars - 1 )->getLowerLeft()[1];
-  //  float prevBarH = _bars.at( numBars - 1 )->getHeight();
-  //  //pbar->setLowerLeft ( Usul::Math::Vec2f ( _padding, prevBarLL + prevBarH + _padding ) );
-  //  pbar->setLowerLeft ( 
-
-  //}
   
   if ( _size[0] < pbar->getLength() + _padding )
     _size[0] = pbar->getLength() + _padding * 2;
@@ -392,31 +330,5 @@ void ThreadSafeProgressBarGroup::_addProgressBar ( ThreadSafeProgressBar * pbar 
     _size[1] +=  pbar->getHeight() + _padding;
 
   _bars.push_back ( pbar );
-
-#ifdef _MSC_VER
-# ifdef _DEBUG
-  
- /* std::ostringstream os;
-  for ( unsigned int i = 0; i < _numBars; ++i )
-  {
-    os << "bar #" << i << " "
-       << " LL: " << _bars.at(i)->getLowerLeft()[0] << " " << _bars.at(i)->getLowerLeft()[1]
-       << " HL: " << _bars.at(i)->getHeight() << " " << _bars.at(i)->getLength()
-       << std::endl;
-    ::OutputDebugStringA ( os.str().c_str() ); 
-  }*/
-# endif
-#endif
- 
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Update the positions of all the progress bars.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ThreadSafeProgressBarGroup::_updatePositions ()
-{
-}

@@ -52,20 +52,15 @@ public:
   osg::Node *                             getScene();
   int                                     getNumBars();
   
-  void                                    remove ( unsigned int pos );
   void                                    removeFinishedProgressBars ( );
   
   Bars                                    getBars();
-
-  void                                    setBarValue ( int i, double v );
-  double                                  getBarValue( int i ); 
 
 protected:
 	
   virtual                                 ~ThreadSafeProgressBarGroup();
   void                                    _addProgressBar    ( ThreadSafeProgressBar * bar );
   void                                    _removeProgressBar ( ThreadSafeProgressBar * bar );
-  void                                    _updatePositions ();
 private:
 
   // No copying or assignment.

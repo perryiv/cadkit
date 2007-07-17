@@ -152,16 +152,18 @@ void SceneDelegateComponent::createDefaultGUI ( Usul::Documents::Document *docum
 
 void SceneDelegateComponent::refreshView ( Usul::Documents::Document *document, Usul::Interfaces::IViewer *viewer )
 {
-  Usul::Interfaces::IHeliosView::QueryPtr HeliosView ( viewer );
+  Usul::Interfaces::IHeliosView::QueryPtr hv ( viewer );
 
-  if ( HeliosView.valid() )
+  if ( true == hv.valid() && 0x0 != hv->heliosView() )
   {
-    OsgTools::Render::Viewer* canvas ( HeliosView->HeliosView() );
+    OsgTools::Render::Viewer* canvas ( hv->heliosView() );
 
     Usul::Interfaces::IBuildScene::QueryPtr build ( document );
 
     if ( build.valid () )
+    {
       canvas->scene ( build->buildScene ( document->options(), viewer ) );
+    }
   }
 }
 

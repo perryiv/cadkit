@@ -71,7 +71,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Helios Qt Views
 		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Qt Scene Delegate", "Plugins\SceneDelegate\SceneDelegate.vcproj", "{56404183-F480-4893-8D47-53CD47BA8418}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Scene Delegate Qt", "Plugins\SceneDelegate\SceneDelegate.vcproj", "{56404183-F480-4893-8D47-53CD47BA8418}"
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{D8524F0F-9938-4BFA-820A-924092ED40AD} = {D8524F0F-9938-4BFA-820A-924092ED40AD}
@@ -90,6 +90,24 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Scene Tree Qt", "Plug
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Snap Shot Qt", "Plugins\SnapShot\SnapShotQt.vcproj", "{0788D5CE-E283-4103-86F2-C18C3AE61B66}"
 	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Star System Model", "..\Plugins\StarSystemModel\StarSystemModel.vcproj", "{09C42E41-5FB5-4C19-992B-11CF3C1E2D1C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+		{E4BCE338-0E12-4E07-9F45-A59F294F21DA} = {E4BCE338-0E12-4E07-9F45-A59F294F21DA}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit StarSystem", "..\..\Experimental\StarSystem\StarSystem.vcproj", "{E4BCE338-0E12-4E07-9F45-A59F294F21DA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Star System Delegate Qt", "Plugins\StarSystemDelegate\StarSystemDelegate.vcproj", "{334421AE-4829-4A52-B284-21FAAFAC9CE5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D8524F0F-9938-4BFA-820A-924092ED40AD} = {D8524F0F-9938-4BFA-820A-924092ED40AD}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
@@ -167,6 +185,18 @@ Global
 		{0788D5CE-E283-4103-86F2-C18C3AE61B66}.Debug|Win32.Build.0 = Debug|Win32
 		{0788D5CE-E283-4103-86F2-C18C3AE61B66}.Release|Win32.ActiveCfg = Release|Win32
 		{0788D5CE-E283-4103-86F2-C18C3AE61B66}.Release|Win32.Build.0 = Release|Win32
+		{09C42E41-5FB5-4C19-992B-11CF3C1E2D1C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{09C42E41-5FB5-4C19-992B-11CF3C1E2D1C}.Debug|Win32.Build.0 = Debug|Win32
+		{09C42E41-5FB5-4C19-992B-11CF3C1E2D1C}.Release|Win32.ActiveCfg = Release|Win32
+		{09C42E41-5FB5-4C19-992B-11CF3C1E2D1C}.Release|Win32.Build.0 = Release|Win32
+		{E4BCE338-0E12-4E07-9F45-A59F294F21DA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E4BCE338-0E12-4E07-9F45-A59F294F21DA}.Debug|Win32.Build.0 = Debug|Win32
+		{E4BCE338-0E12-4E07-9F45-A59F294F21DA}.Release|Win32.ActiveCfg = Release|Win32
+		{E4BCE338-0E12-4E07-9F45-A59F294F21DA}.Release|Win32.Build.0 = Release|Win32
+		{334421AE-4829-4A52-B284-21FAAFAC9CE5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{334421AE-4829-4A52-B284-21FAAFAC9CE5}.Debug|Win32.Build.0 = Debug|Win32
+		{334421AE-4829-4A52-B284-21FAAFAC9CE5}.Release|Win32.ActiveCfg = Release|Win32
+		{334421AE-4829-4A52-B284-21FAAFAC9CE5}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

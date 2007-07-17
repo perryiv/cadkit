@@ -188,16 +188,18 @@ void VolumeDelegateComponent::createDefaultGUI ( Usul::Documents::Document *docu
 
 void VolumeDelegateComponent::refreshView  ( Usul::Documents::Document *document, Usul::Interfaces::IViewer *viewer )
 {
-  Usul::Interfaces::IHeliosView::QueryPtr HeliosView ( viewer );
+  Usul::Interfaces::IHeliosView::QueryPtr hv ( viewer );
 
-  if( HeliosView.valid() )
+  if ( true == hv.valid() && 0x0 != hv->heliosView() )
   {
-    OsgTools::Render::Viewer* canvas ( HeliosView->HeliosView() );
+    OsgTools::Render::Viewer* canvas ( hv->HeliosView() );
 
     Usul::Interfaces::IBuildScene::QueryPtr buildScene ( document );
 
-    if( buildScene.valid() )
+    if ( buildScene.valid() )
+    {
       canvas->scene( buildScene->buildScene( document->options() ) );
+    }
   }
 }
 

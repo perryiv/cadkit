@@ -231,11 +231,35 @@
 				>
 			</File>
 			<File
+				RelativePath=".\InsertDocument.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\InsertDocument.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OpenDocument.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\OpenDocument.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SaveAsDocument.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SaveAsDocument.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SaveDocument.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SaveDocument.h"
 				>
 			</File>
 		</Filter>

@@ -18,6 +18,9 @@
 #include "Helios/Qt/Core/Constants.h"
 #include "Helios/Qt/Commands/Action.h"
 #include "Helios/Qt/Commands/OpenDocument.h"
+#include "Helios/Qt/Commands/InsertDocument.h"
+#include "Helios/Qt/Commands/SaveDocument.h"
+#include "Helios/Qt/Commands/SaveAsDocument.h"
 #include "Helios/Qt/Commands/ExportImage.h"
 #include "Helios/Qt/Commands/ExitApplication.h"
 #include "Helios/Qt/Tools/Image.h"
@@ -306,6 +309,21 @@ void MainWindow::_buildMenu()
       _actions.insert ( action );
       menu->addAction ( action.get() );
     }
+    {
+      CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::InsertDocument> ( this ) );
+      _actions.insert ( action );
+      menu->addAction ( action.get() );
+    }
+    {
+      CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::SaveDocument> ( this ) );
+      _actions.insert ( action );
+      menu->addAction ( action.get() );
+    }
+    {
+      CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::SaveAsDocument> ( this ) );
+      _actions.insert ( action );
+      menu->addAction ( action.get() );
+    }
     menu->addSeparator();
     {
       CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::ExportImage> ( this ) );
@@ -357,6 +375,11 @@ void MainWindow::_buildToolBar()
   // Add buttons.
   {
     CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::OpenDocument> ( this ) );
+    _actions.insert ( action );
+    toolBar->addAction ( action.get() );
+  }
+  {
+    CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::SaveDocument> ( this ) );
     _actions.insert ( action );
     toolBar->addAction ( action.get() );
   }

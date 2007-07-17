@@ -24,7 +24,6 @@
 
 #include "OsgTools/Triangles/LoopSplitter.h"
 
-#include "Usul/Interfaces/IActiveView.h"
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/GUI/ICancelButton.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
@@ -34,6 +33,7 @@
 #include "Usul/Interfaces/ISubdivideTriangles.h"
 
 #include "Usul/Components/Manager.h"
+#include "Usul/Documents/Manager.h"
 
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
@@ -440,10 +440,8 @@ void TriangleDocument::findLoops ( Usul::Interfaces::IUnknown* caller )
   typedef OsgTools::Triangles::SharedVertex SharedVertex;
   typedef Usul::Polygons::TriangleTest AdjacencyTest;
 
-  Usul::Interfaces::IActiveView::ValidQueryPtr activeView ( caller );
-
   // Get needed interfaces
-  Usul::Interfaces::IRedraw::QueryPtr redraw ( activeView->getActiveView() );
+  Usul::Interfaces::IRedraw::QueryPtr redraw ( Usul::Documents::Manager::instance().activeView() );
 
   // Turn off stats updating on the status bar.
   Usul::Interfaces::IRedraw::ResetStatsDisplay resetStats ( redraw.get(), false, true  );

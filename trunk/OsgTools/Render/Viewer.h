@@ -660,8 +660,8 @@ protected:
   virtual void                  setStatsDisplay ( bool b );
 
   /// Usul::Interfaces::IHeliosView
-  virtual OsgTools::Render::Viewer*            HeliosView()       { return this; }
-  virtual const OsgTools::Render::Viewer*      HeliosView() const { return this; }
+  virtual OsgTools::Render::Viewer*            heliosView()       { return this; }
+  virtual const OsgTools::Render::Viewer*      heliosView() const { return this; }
 
   /// Usul::Interfaces::ILights
   virtual void                  setLights ( bool );

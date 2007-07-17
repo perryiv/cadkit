@@ -40,6 +40,7 @@ public:
   typedef Vectors::size_type size_type;
 
   Mesh();
+  Mesh ( unsigned int rows, unsigned int columns );
   Mesh ( const Mesh & );
   Mesh &operator = ( const Mesh & );
 

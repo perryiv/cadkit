@@ -199,6 +199,10 @@
 				Name="Policies"
 				>
 				<File
+					RelativePath=".\Policies\Gray8.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Policies\RGB8.h"
 					>
 				</File>

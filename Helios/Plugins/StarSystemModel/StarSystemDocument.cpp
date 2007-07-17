@@ -9,6 +9,7 @@
 
 #include "StarSystemDocument.h"
 
+#include "StarSystem/BuildScene.h"
 #include "StarSystem/System.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
@@ -243,9 +244,22 @@ osg::Node *StarSystemDocument::buildScene ( const BaseClass::Options &options, U
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
 #if 1
-  return ( ( 0x0 == _system ) ? ( new osg::Group() ) : _system->buildScene ( options, caller ) );
+
+  if ( 0x0 == _system )
+    return new osg::Group();
+
+  osg::ref_ptr<osg::Node> node ( 0x0 );
+  {
+    StarSystem::BuildScene::RefPtr builder ( new StarSystem::BuildScene ( options, caller ) );
+    _system->accept ( *builder );
+    node = builder->scene();
+  }
+  return node.release();
+
 #else
+
   osg::ref_ptr<osg::Group> group ( new osg::Group() );
   for ( unsigned int i = 0; i < 10; ++i )
   {
@@ -256,6 +270,7 @@ osg::Node *StarSystemDocument::buildScene ( const BaseClass::Options &options, U
     group->addChild ( matrix.get() );
   }
   return group.release();
+
 #endif
 }
 

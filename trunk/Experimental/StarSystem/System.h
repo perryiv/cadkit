@@ -43,9 +43,6 @@ public:
   const Body *              body() const;
   Body *                    body();
 
-  // Build the scene.
-  osg::Node *               buildScene ( const BuildOptions &options, Usul::Interfaces::IUnknown *caller );
-
   // Set/get the satellites.
   void                      satellites ( Group * );
   const Group *             satellites() const;

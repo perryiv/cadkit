@@ -10,59 +10,64 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Node class.
+//  Base visitor class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _STAR_SYSTEM_BASE_NODE_CLASS_H_
-#define _STAR_SYSTEM_BASE_NODE_CLASS_H_
+#ifndef _STAR_SYSTEM_BUILD_SCENE_VISITOR_CLASS_H_
+#define _STAR_SYSTEM_BUILD_SCENE_VISITOR_CLASS_H_
 
-#include "StarSystem/Export.h"
-#include "StarSystem/Macros.h"
+#include "StarSystem/Visitor.h"
 
-#include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IUnknown.h"
 
 #include <map>
 #include <string>
 
-namespace StarSystem { class Visitor; }
-namespace osg { class Node; }
+namespace osg { class Group; }
 
 
 namespace StarSystem {
 
 
-class STAR_SYSTEM_EXPORT Node : public Usul::Base::Object
+class STAR_SYSTEM_EXPORT BuildScene : public Visitor
 {
 public:
 
   // Useful typedefs.
-  typedef Usul::Base::Object BaseClass;
+  typedef Visitor BaseClass;
   typedef std::map<std::string,std::string> BuildOptions;
+  typedef Usul::Interfaces::IUnknown IUnknown;
 
   // Helper macro for repeated code.
-  STAR_SYSTEM_DEFINE_NODE_CLASS ( Node );
+  STAR_SYSTEM_DEFINE_VISITOR_CLASS ( BuildScene );
+
+  // Constructor
+  BuildScene ( const BuildOptions &options = BuildOptions(), IUnknown *caller = 0x0 );
+
+  // Get the scene.
+  osg::Group *              scene();
 
 protected:
 
-  // Constructor
-  Node();
-
   // Use reference counting.
-  virtual ~Node();
+  virtual ~BuildScene();
 
 private:
 
   // No copying or assignment.
-  Node ( const Node & );
-  Node &operator = ( const Node & );
+  BuildScene ( const BuildScene & );
+  BuildScene &operator = ( const BuildScene & );
 
   void                      _destroy();
+
+  osg::Group *_scene;
+  BuildOptions _options;
+  IUnknown::RefPtr _caller;
 };
 
 
 } // namespace StarSystem
 
 
-#endif // _STAR_SYSTEM_BASE_NODE_CLASS_H_
+#endif // _STAR_SYSTEM_BUILD_SCENE_VISITOR_CLASS_H_

@@ -258,6 +258,10 @@ void MainWindow::_loadSettings()
     const QRect rect ( _settings.value ( CadKit::Helios::Core::Registry::Keys::GEOMETRY.c_str(), CadKit::Helios::Core::Registry::Defaults::GEOMETRY ).value<QRect>() );
     this->setGeometry ( rect );
 
+    // This is what we want...
+    //this->setGeometry ( Usul::Registry::Database::instance().get<QRect> 
+    //  ( CadKit::Helios::Core::Registry::Keys::GEOMETRY, CadKit::Helios::Core::Registry::Defaults::GEOMETRY ) );
+
     // also add to usul preferences...
   }
 }
@@ -1188,10 +1192,10 @@ const QWorkspace* MainWindow::workspace() const
 
 void MainWindow::notifyDocumentFinishedLoading ( Usul::Documents::Document* document )
 {
-  if( 0x0 != document )
+  if ( 0x0 != document )
   {
     // Reference the document.  Some care will have to be taken since the proxy has a raw pointer.
-    // The proxies aren't being deleted, which is why a raw pointer need to be used.
+    // The proxies aren't being deleted, which is why a raw pointer needs to be used.
     document->ref();
 
     DocumentProxy proxy ( document );
@@ -1205,52 +1209,57 @@ void MainWindow::notifyDocumentFinishedLoading ( Usul::Documents::Document* docu
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  The document has finished loading.
+//  The document has finished loading. This function cannot throw!
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void MainWindow::_notifyDocumentFinishedLoading ( DocumentProxy proxy  )
 {
   USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1119473115" );
+
+  // If we get this far it should be the gui thread.
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
+  // Safely call the notification function.
+  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &MainWindow::_notifyFinishedLoading ), proxy.getDocument(), "3741587952" );
+
+  // Safely set the proxy's document to null.
+  typedef Usul::Documents::Document Document;
+  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( &proxy, &DocumentProxy::setDocument ), static_cast<Document *> ( 0x0 ), "2091388641" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The document has finished loading.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_notifyFinishedLoading ( Usul::Documents::Document *document )
+{
+  USUL_TRACE_SCOPE;
+
+  // If we get this far it should be the gui thread.
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
+  // Handle no document.
+  if ( 0x0 == document )
+    return;
 
   // Typedefs.
   typedef Usul::Documents::Document Document;
   typedef Document::Delegate        Delegate;
-  
-  Document* document ( proxy.document() );
 
-  // If we have a vaild document...
-  if( 0x0 != document )
+  // If there is a valid delegate...
+  Delegate::QueryPtr delegate ( document->delegate() );
+  if ( delegate.valid() );
   {
-    try
-    {
-      Delegate::QueryPtr delegate ( document->delegate() );
-
-      // If there is a valid delegate.
-      if( delegate.valid() );
-      {
-        // Create the GUI.
-        delegate->createDefaultGUI ( document, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-      }
-    }
-    catch ( const std::exception& e )
-    {
-      // Unreference and rethrow.
-      document->unref();
-      throw e;
-    }
-    catch ( ... )
-    {
-      // Unreference and throw.
-      document->unref();
-      throw;
-    }
+    // Create the GUI.
+    delegate->createDefaultGUI ( document, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
   }
 
   // Unreference.
   document->unref();
-  proxy.document ( 0x0 );
 }
 
 

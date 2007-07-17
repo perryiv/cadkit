@@ -291,7 +291,7 @@ SceneDocument::Filters SceneDocument::filtersInsert() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node *SceneDocument::buildScene ( const BaseClass::Options &opt, Unknown *caller )
+osg::Node *SceneDocument::buildScene ( const BaseClass::Options &options, Unknown *caller )
 {
   // Return the scene
   return _scene.get();

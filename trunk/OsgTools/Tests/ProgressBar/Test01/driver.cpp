@@ -4,7 +4,7 @@
 #include "Threads/OpenThreads/Mutex.h"
 #include "Threads/OpenThreads/Thread.h"
 
-#include "OsgTools/Widgets/ThreadSafeProgressBarGroup.h"
+#include "OsgTools/Widgets/ThreadSafeProgressBar.h"
 
 #include <osg/Geode>
 #include <osg/Node>
@@ -20,7 +20,7 @@ class ThreadSafeProgressBarGroupCallback : public osg::NodeCallback
   public:
   //typedef osg::Drawable::UpdateCallback   BaseClass;
 
-  ThreadSafeProgressBarGroupCallback::ThreadSafeProgressBarGroupCallback ( OsgTools::Widgets::ThreadSafeProgressBarGroup * pbarGroup ) : 
+  ThreadSafeProgressBarGroupCallback ( OsgTools::Widgets::ThreadSafeProgressBar * pbarGroup ) : 
   _pbarGroup ( pbarGroup )
   {
   }
@@ -35,20 +35,20 @@ class ThreadSafeProgressBarGroupCallback : public osg::NodeCallback
   }
 
 protected:
-  virtual ThreadSafeProgressBarGroupCallback::~ThreadSafeProgressBarGroupCallback()
+  virtual ~ThreadSafeProgressBarGroupCallback()
   {
     _pbarGroup = 0x0;
   }
 private:
  
-  OsgTools::Widgets::ThreadSafeProgressBarGroup * _pbarGroup;
+  OsgTools::Widgets::ThreadSafeProgressBar * _pbarGroup;
 };
 
 class DriverEventHandler : public osgGA::GUIEventHandler
 {
 public:
     
-  DriverEventHandler( OsgTools::Widgets::ThreadSafeProgressBarGroup* b ):
+  DriverEventHandler( OsgTools::Widgets::ThreadSafeProgressBar* b ):
       _bar( b ), _speed ( 3.5f ), _barToChange ( 0 )
              {}
     
@@ -58,20 +58,6 @@ public:
             {
               case(osgGA::GUIEventAdapter::KEYDOWN):
 		          {
-                if ( ea.getKey() == osgGA::GUIEventAdapter::KEY_Home )
-		            {
-			           /* if(_bar->isVisible( _barToChange ) )
-			            {
-				            _bar->hideProgressBar( _barToChange );
-				            
-			            }
-			            else
-			            {
-				            _bar->showProgressBar( _barToChange );
-				            
-			            }*/
-
-		            }
                 if( ea.getKey() == osgGA::GUIEventAdapter::KEY_Insert )
                 {
                   _speed += 0.5f;
@@ -82,46 +68,14 @@ public:
                   _speed -= 0.5f;
                   
                 }
-                if( ea.getKey() == osgGA::GUIEventAdapter::KEY_End )
-                {
-                 /* if( _bar->isRelativeToAbsolute() )
-                    _bar->setRelativeToAbsolute( false );
-                  else
-                    _bar->setRelativeToAbsolute( true );*/
-                }
-                if( ea.getKey() == osgGA::GUIEventAdapter::KEY_Page_Down  )
-                {
-                  //_bar->add ( "Additional Bar" , 0, 100 );
-                  _bar->append();
-                }
-                if( ea.getKey() == osgGA::GUIEventAdapter::KEY_Page_Up  )
-                {
-                 /* if(_bar->getNumItems() > 0)
-                    _bar->remove ( _barToChange );
-
-                  if( _barToChange > 0 )
-                     _barToChange -= 1;*/
-                }
                 if( ea.getKey() == osgGA::GUIEventAdapter::KEY_Left )
                 {
-                  if( _bar->getNumBars() > 0 )
-                    _bar->setBarValue( _barToChange, _bar->getBarValue( _barToChange ) - _speed );
+                   _bar->value( _bar->value( ) - _speed );
                   
                 }
                 if( ea.getKey() == osgGA::GUIEventAdapter::KEY_Right )
                 {
-                  if( _bar->getNumBars() > 0 )
-                   _bar->setBarValue( _barToChange, _bar->getBarValue( _barToChange ) + _speed );
-                }
-                if( ea.getKey() == osgGA::GUIEventAdapter::KEY_Up  )
-                {
-                  if( _barToChange < _bar->getNumBars() - 1 )
-                    ++_barToChange;
-                }
-                if( ea.getKey() == osgGA::GUIEventAdapter::KEY_Down )
-                {
-                  if( _barToChange > 0 )
-                    --_barToChange;
+                   _bar->value( _bar->value( ) + _speed );
                 }
                 
                 return false;
@@ -131,7 +85,7 @@ public:
             }
         }
         
-		osg::ref_ptr< OsgTools::Widgets::ThreadSafeProgressBarGroup > _bar;
+		osg::ref_ptr< OsgTools::Widgets::ThreadSafeProgressBar > _bar;
     float _speed;
     int _barToChange;
         
@@ -146,16 +100,13 @@ int main(int argc , char ** argv)
 	
 	osg::ref_ptr< osg::Group > render_group ( new osg::Group() );
 
-  OsgTools::Widgets::ThreadSafeProgressBarGroup::RefPtr pbar ( new OsgTools::Widgets::ThreadSafeProgressBarGroup() );
-  //pbar->setLocation ( OsgTools::Widgets::ProgressBarGroup::LOWER_RIGHT );
-  pbar->append ();
-  //OsgTools::Widgets::ThreadSafeProgressBar::RefPtr bar ( new OsgTools::Widgets::ThreadSafeProgressBar ( 0 ) );
+  OsgTools::Widgets::ThreadSafeProgressBar::RefPtr pbar ( new OsgTools::Widgets::ThreadSafeProgressBar() );
+  pbar->setLowerLeft ( Usul::Math::Vec2f ( 0.0, 0.0 ) );
 
   render_group->setUpdateCallback ( new ThreadSafeProgressBarGroupCallback ( pbar.get() ) );
   pbar->buildScene();
-  //osg::ref_ptr<osg::Node> node = pbar->getScene();
-  //node->setUpdateCallback( new ThreadSafeProgressBarGroupCallback ( pbar.get() ) );
-  render_group->addChild( pbar->getScene() );
+
+  render_group->addChild( pbar->buildScene() );
 
   int result ( 1 );
   {

@@ -31,11 +31,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* buildBoundingBox()
+osg::Node* buildBoundingBox( const osg::BoundingBox& bb )
 {
-  // Draw the bounding box.
-  osg::BoundingBox bb ( osg::Vec3 ( -1.0, -1.0, -1.0 ), osg::Vec3 ( 1.0, 1.0, 1.0 ) );
-
   OsgTools::ColorBox box ( bb );
   box.color_policy().color ( osg::Vec4 ( 1, 1, 1, 1 ) );
 
@@ -68,11 +65,14 @@ int main( int argc, char **argv )
 
   osg::ref_ptr < osg::Group > root ( new osg::Group );
 
-  root->addChild ( buildBoundingBox() );
+  osg::BoundingBox bb ( -1.0, -1.0, -1.0, 1.0, 1.0, 1.0 );
+
+  root->addChild ( buildBoundingBox( bb ) );
 
   osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
   osg::ref_ptr < Drawable > drawable ( new Drawable );
   drawable->numPlanes ( 1024 );
+  drawable->boundingBox ( bb );
 
   OsgTools::State::StateSet::setPolygonsLines ( geode.get(), true );
   OsgTools::State::StateSet::setLighting      ( drawable->getOrCreateStateSet(), false );

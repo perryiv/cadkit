@@ -108,7 +108,7 @@ int main( int argc, char **argv )
 
   osg::ref_ptr < osg::Group > root ( new osg::Group );
 
-  osg::BoundingBox bb ( osg::Vec3 ( -4.0, -2.0, -1.0 ), osg::Vec3 ( 4.0, 2.0, 1.0 ) );
+  osg::BoundingBox bb ( osg::Vec3 ( -1.0, -1.0, -1.0 ), osg::Vec3 ( 1.0, 1.0, 1.0 ) );
 
   root->addChild ( buildBoundingBox( bb ) );
   root->addChild ( buildVolume( bb ) );

@@ -10,9 +10,11 @@
 #include "ShapeFactory.h"
 
 #include "Usul/Algorithms/Sphere.h"
+#include "Usul/Algorithms/Cylinder.h"
 #include "Usul/Errors/Assert.h"
 
 #include <vector>
+#include <algorithm>
 
 using namespace OsgTools;
 
@@ -49,7 +51,8 @@ ShapeFactory& ShapeFactorySingleton::instance()
 ShapeFactory::ShapeFactory() : BaseClass(),
   _latLongSpheres(),
   _cubes(),
-  _cylinders()
+  _cylinders(),
+  _cylindersTriangles()
 {
 }
 
@@ -259,6 +262,50 @@ osg::Geometry* ShapeFactory::sphere ( const osg::Vec3 &trans,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Functor to multiply by a matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct MatrixFunctor
+  {
+    MatrixFunctor ( const osg::Matrix& m ) : _m ( m ) { }
+
+    template < class T >
+    void operator () ( T& t ) const
+    {
+      t = t * _m;
+    }
+
+  private:
+    osg::Matrix _m;
+  };
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Functor to normalize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct NormalizeFunctor
+  {
+    NormalizeFunctor ( ) { }
+
+    template < class T >
+    void operator () ( T& t ) const
+    {
+      t.normalize();
+    }
+  };
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Create a cylinder. If one was already created with these inputs, then that 
 //  same cylinder is returned.
 //
@@ -267,7 +314,23 @@ osg::Geometry* ShapeFactory::sphere ( const osg::Vec3 &trans,
 osg::Geometry * ShapeFactory::cylinder ( float radius, 
                                          unsigned int sides, 
                                          const osg::Vec3& pointOne,
-                                         const osg::Vec3& pointTwo )
+                                         const osg::Vec3& pointTwo,
+                                         bool triStrip )
+{
+  if ( triStrip )
+    return this->_cylinderTriStrips ( radius, sides, pointOne, pointTwo );
+  
+  return this->_cylinderTriangles ( radius, sides, pointOne, pointTwo );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build a cylinder with tri-strips.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Geometry * ShapeFactory::_cylinderTriStrips ( float radius, unsigned int sides, const osg::Vec3& pointOne, const osg::Vec3& pointTwo )
 {
   CylinderProperties key ( CylinderSize( radius, sides ), CylinderPoints( pointOne, pointTwo ) );
   Cylinders::iterator iter = _cylinders.find ( key );
@@ -277,102 +340,195 @@ osg::Geometry * ShapeFactory::cylinder ( float radius,
   Geometry geometry ( new osg::Geometry );
   osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
   osg::ref_ptr< osg::Vec3Array > normals  ( new osg::Vec3Array );
+  
+  // Reserve enough room.
+  vertices->reserve ( sides * 4 + 2 );
+  normals->reserve  ( sides * 4 + 2 );
 
-  //build a unit cylinder
-  osg::Vec3 unPoint1 (0,0,0);
-  osg::Vec3 unPoint2 (0,1,0);
+  Usul::Algorithms::Cylinder cylinder;
+  cylinder.sides ( sides );
+  cylinder.radius ( radius );
 
-  //get distance
-  osg::Vec3 dist = pointTwo - pointOne;
-  float d = dist.length();
+  // Make the body.
+  cylinder ( *vertices, *normals );
+
+  // Get distance.
+  osg::Vec3 dist ( pointTwo - pointOne );
+  float d ( dist.length() );
   dist.normalize();
 
-  osg::Matrix scale, rotate, translate, temp;
-  scale = temp.scale( osg::Vec3(1, d, 1) );
-  rotate.makeRotate(unPoint2, dist);
-  translate.setTrans(pointOne);
+  // Scale to the right size.
+  osg::Matrix scale     ( osg::Matrix::scale ( 1, d, 1 ) );
+
+  // Rotate from y-axis to proper orientation.
+  osg::Matrix rotate    ( osg::Matrix::rotate ( osg::Vec3 ( 0.0, 1.0, 0.0 ), dist ) );
+
+  // Translate to the correct location.
+  osg::Matrix translate ( osg::Matrix::translate ( pointOne ) );
 
   osg::Matrix matrix ( scale * rotate * translate );
 
-  float c = 3.14159 / 180.0;
-  float x, z;
+  // Move the vertices into the right location.
+  std::for_each ( vertices->begin(), vertices->end(), Detail::MatrixFunctor ( matrix ) );
 
-  osg::ref_ptr< osg::Vec3Array > topVertices ( new osg::Vec3Array );
-  osg::ref_ptr< osg::Vec3Array > topNormals  ( new osg::Vec3Array );
+  // Calculate the normals for the tri-strips.
+  std::for_each ( normals->begin(), normals->end(), Detail::NormalizeFunctor () );
+  std::for_each ( normals->begin(), normals->end(), Detail::MatrixFunctor ( rotate ) );
 
-  topVertices->push_back( unPoint2 );
-  topNormals->push_back( osg::Vec3 ( 0.0, 1.0, 0.0 ) );
-
-  osg::ref_ptr< osg::Vec3Array > bottomVertices ( new osg::Vec3Array );
-  osg::ref_ptr< osg::Vec3Array > bottomNormals  ( new osg::Vec3Array );
-
-  bottomVertices->push_back( unPoint1 );
-  bottomNormals->push_back( osg::Vec3 ( 0.0, -1.0, 0.0 ) );
-
-  //calculate the point for the unit cylinder then multiply it by the transform matrix
-  for( unsigned int i = 0; i < sides; ++i )
-  {
-    float u = (float) i / (float) (sides - 1);
-    float theta = u * 360.0;
-    x = radius * sin( c * theta );
-    z = radius * cos( c * theta );
-
-    osg::Vec3 v0 ( x, 0.0, z );
-
-    normals->push_back( v0 );
-    vertices->push_back( v0 + unPoint1 );
-
-    bottomVertices->push_back( v0 + unPoint1 );
-    bottomNormals->push_back( osg::Vec3 ( 0.0, -1.0, 0.0 ) );
-
-    x = radius * sin( c * theta );
-    z = radius * cos( c * theta );
-
-    osg::Vec3 v1 ( x, 0.0, z );
-
-    normals->push_back( v1 );
-    vertices->push_back( v1 + unPoint2 );
-
-    topVertices->push_back( v1 + unPoint2 );
-    topNormals->push_back( osg::Vec3 ( 0.0, 1.0, 0.0 ) );
-  }
-
-  // Add the body.
-  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLE_STRIP, 0, vertices->size() ) );
+  // Save the size.
+  unsigned int size    ( vertices->size() );
+  unsigned int fanSize ( sides + 1 );
 
   // Add the top fan
-  geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLE_FAN, vertices->size(), topVertices->size() ) );
-  vertices->insert( vertices->end(), topVertices->begin(), topVertices->end() );
-  normals->insert( normals->end(), topNormals->begin(), topNormals->end() );
+  vertices->push_back ( pointTwo );
+  for ( unsigned int i = 1; i < size; i += 2 )
+    vertices->push_back ( vertices->at ( i ) );
 
   // Add the bottom fan.
-  geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLE_FAN, vertices->size(), topVertices->size() ) );
-  vertices->insert( vertices->end(), bottomVertices->begin(), bottomVertices->end() );
-  normals->insert( normals->end(), bottomNormals->begin(), bottomNormals->end() );
+  vertices->push_back ( pointOne );
+  for ( unsigned int i = 0; i < size; i += 2 )
+    vertices->push_back ( vertices->at ( i ) );
 
-  // Calculate the normals for the tri-strips
-  for( osg::Vec3Array::iterator i = normals->begin(); i != normals->end(); ++i )
-  {
-    osg::Vec3 normal ( *i );
-    normal.normalize();
-    normal = normal * rotate;
-    *i = normal;
-  }
-
-  // Move the vertices into the right location.
-  for(osg::Vec3Array::iterator i = vertices->begin(); i != vertices->end(); ++ i)
-  {
-    *i = *i * matrix;
-  }
+  // Insert the normals for the fans.
+  normals->insert ( normals->end(), fanSize, osg::Vec3 ( 0.0, 1.0, 0.0 )  * rotate );
+  normals->insert ( normals->end(), fanSize, osg::Vec3 ( 0.0, -1.0, 0.0 ) * rotate );
 
   // Set the vertices and normals.
   geometry->setVertexArray ( vertices.get() );
   geometry->setNormalArray( normals.get() );
   geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
 
+  // Add the primitive sets.
+  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLE_STRIP, 0, size ) );
+  geometry->addPrimitiveSet ( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLE_FAN, size, fanSize ) );
+  geometry->addPrimitiveSet ( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLE_FAN, size + fanSize, fanSize ) );
+
   _cylinders[key] = geometry;
   return geometry.get();
+}
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build a cylinder with triangles.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Geometry * ShapeFactory::_cylinderTriangles ( float radius, unsigned int sides, const osg::Vec3& pointOne, const osg::Vec3& pointTwo )
+{
+  CylinderProperties key ( CylinderSize( radius, sides ), CylinderPoints( pointOne, pointTwo ) );
+  Cylinders::iterator iter = _cylindersTriangles.find ( key );
+  if ( _cylindersTriangles.end() != iter )
+    return iter->second.get();
+
+  Geometry geometry ( new osg::Geometry );
+  osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
+  osg::ref_ptr< osg::Vec3Array > normals  ( new osg::Vec3Array );
+  
+  // Reserve enough room.
+  vertices->reserve ( sides * 4 + 2 );
+  normals->reserve  ( sides * 4 + 2 );
+
+  Usul::Algorithms::Cylinder cylinder;
+  cylinder.sides ( sides );
+  cylinder.radius ( radius );
+
+  // Make the body.
+  cylinder ( *vertices, *normals );
+
+  // Get distance.
+  osg::Vec3 dist ( pointTwo - pointOne );
+  float d ( dist.length() );
+  dist.normalize();
+
+  // Scale to the right size.
+  osg::Matrix scale     ( osg::Matrix::scale ( 1, d, 1 ) );
+
+  // Rotate from y-axis to proper orientation.
+  osg::Matrix rotate    ( osg::Matrix::rotate ( osg::Vec3 ( 0.0, 1.0, 0.0 ), dist ) );
+
+  // Translate to the correct location.
+  osg::Matrix translate ( osg::Matrix::translate ( pointOne ) );
+
+  osg::Matrix matrix ( scale * rotate * translate );
+
+  // Move the vertices into the right location.
+  std::for_each ( vertices->begin(), vertices->end(), Detail::MatrixFunctor ( matrix ) );
+
+  // Calculate the normals for the tri-strips
+  std::for_each ( normals->begin(), normals->end(), Detail::NormalizeFunctor () );
+  std::for_each ( normals->begin(), normals->end(), Detail::MatrixFunctor ( rotate ) );
+
+  osg::ref_ptr< osg::Vec3Array > triangleVertices ( new osg::Vec3Array );
+  osg::ref_ptr< osg::Vec3Array > triangleNormals  ( new osg::Vec3Array );
+
+  // Save the size.
+  unsigned int size    ( vertices->size() );
+  unsigned int fanSize ( sides + 1 );
+
+  // Convert tri-strip to triangles.
+  for ( unsigned int i = 0; i < size - 2; ++i )
+  {
+    unsigned int i0, i1, i2;
+    if( i % 2 )
+    {
+      i0 = i;
+      i1 = i + 2;
+      i2 = i + 1;
+    }
+    else
+    {
+      i0 = i;
+      i1 = i + 1;
+      i2 = i + 2;
+    }
+
+    triangleVertices->push_back ( vertices->at ( i0 ) );
+    triangleVertices->push_back ( vertices->at ( i1 ) );
+    triangleVertices->push_back ( vertices->at ( i2 ) );
+
+    triangleNormals->push_back ( normals->at ( i0 ) );
+    triangleNormals->push_back ( normals->at ( i1 ) );
+    triangleNormals->push_back ( normals->at ( i2 ) );
+  }
+
+  osg::Vec3 topNormal    ( osg::Vec3 ( 0.0, 1.0, 0.0 )  * rotate );
+  osg::Vec3 bottomNormal ( osg::Vec3 ( 0.0, -1.0, 0.0 ) * rotate );
+
+  // Add the top fan
+  for ( unsigned int i = 1; i < size - 2; i += 2 )
+  {
+    triangleVertices->push_back ( pointTwo );
+    triangleVertices->push_back ( vertices->at ( i ) );
+    triangleVertices->push_back ( vertices->at ( i + 2 ) );
+
+    triangleNormals->push_back ( topNormal );
+    triangleNormals->push_back ( topNormal );
+    triangleNormals->push_back ( topNormal );
+  }
+
+  // Add the bottom fan.
+  for ( unsigned int i = 0; i < size - 2; i += 2 )
+  {
+    triangleVertices->push_back ( pointOne );
+    triangleVertices->push_back ( vertices->at ( i ) );
+    triangleVertices->push_back ( vertices->at ( i + 2 ) );
+
+    triangleNormals->push_back ( bottomNormal );
+    triangleNormals->push_back ( bottomNormal );
+    triangleNormals->push_back ( bottomNormal );
+  }
+
+  // Set the vertices and normals.
+  geometry->setVertexArray ( triangleVertices.get() );
+  geometry->setNormalArray( triangleNormals.get() );
+  geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
+
+  // Add the primitive sets.
+  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLES, 0, triangleVertices->size() ) );
+
+  _cylindersTriangles[key] = geometry;
+  return geometry.get();
 }
 
 

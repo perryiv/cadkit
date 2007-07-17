@@ -60,11 +60,12 @@ public:
   osg::Geometry *         cube ( const osg::Vec3 &size = osg::Vec3 ( 1.0f, 1.0f, 1.0f ) );
 
   /// Create a cylinder. If one was already created with these inputs, then that 
-  /// same cylinder is returned.
+  /// same cylinder is returned.  Can be built with or without tristrips.
   osg::Geometry *         cylinder ( float radius, 
                                      unsigned int sides, 
                                      const osg::Vec3& pointOne = osg::Vec3( 0.0, 0.0, 0.0 ),
-                                     const osg::Vec3& pointTwo = osg::Vec3( 0.0, 1.0, 0.0 ) );
+                                     const osg::Vec3& pointTwo = osg::Vec3( 0.0, 1.0, 0.0 ),
+                                     bool triStrip = true );
 
   /// Clear the internal maps.
   void                    clear();
@@ -73,6 +74,9 @@ protected:
 
   // use reference counting.
   virtual ~ShapeFactory();
+
+  osg::Geometry *         _cylinderTriStrips ( float radius, unsigned int sides, const osg::Vec3& pointOne, const osg::Vec3& pointTwo );
+  osg::Geometry *         _cylinderTriangles ( float radius, unsigned int sides, const osg::Vec3& pointOne, const osg::Vec3& pointTwo );
 
 private:
 
@@ -91,6 +95,7 @@ private:
   LatLongSpheres _latLongSpheres;
   Cubes _cubes;
   Cylinders _cylinders;
+  Cylinders _cylindersTriangles;
 };
 
 

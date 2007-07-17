@@ -41,8 +41,9 @@ public:
   // Constructor
   Body();
 
-  // Build the scene.
-  osg::Node *               buildScene ( const BuildOptions &options, Usul::Interfaces::IUnknown *caller );
+  // Get the planet.
+  const ossimPlanet *       planet() const;
+  ossimPlanet *             planet();
 
   // Get the database pager.
   Pager *                   databasePager();

@@ -227,6 +227,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\BuildScene.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\BuildScene.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Export.h"
 				>
 			</File>

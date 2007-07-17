@@ -40,13 +40,13 @@ public:
   // Constructor
   Group();
 
+  // Is the group empty?
+  bool                      empty() const;
+
   // Set/get the nodes.
   void                      nodes ( Nodes & );
   const Nodes &             nodes() const;
   Nodes &                   nodes();
-
-  // Build the scene.
-  osg::Node *               buildScene ( const BuildOptions &options, Usul::Interfaces::IUnknown *caller );
 
 protected:
 

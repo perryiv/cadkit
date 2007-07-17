@@ -21,8 +21,6 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Trace/Trace.h"
 
-#include "ossim/init/ossimInit.h"
-
 using namespace StarSystem;
 
 STAR_SYSTEM_IMPLEMENT_VISITOR_CLASS ( Visitor );
@@ -98,6 +96,8 @@ void Visitor::visit ( Body & )
 void Visitor::visit ( Group &group )
 {
   USUL_TRACE_SCOPE;
+  Guard guard1 ( this->mutex() );
+  Guard guard2 ( group.mutex() );
 
   if ( false == group.nodes().empty() )
   {
@@ -105,6 +105,7 @@ void Visitor::visit ( Group &group )
     for ( Group::Nodes::iterator i = nodes.begin(); i != nodes.end(); ++i )
     {
       Node::RefPtr &node ( *i );
+      Guard guard3 ( node->mutex() );
       if ( true == node.valid() )
       {
         node->accept ( *this );
@@ -123,13 +124,15 @@ void Visitor::visit ( Group &group )
 void Visitor::visit ( System &system )
 {
   USUL_TRACE_SCOPE;
+  Guard guard1 ( this->mutex() );
+  Guard guard2 ( system.mutex() );
 
   if ( 0x0 != system.body() )
   {
     system.body()->accept ( *this );
   }
 
-  if ( 0x0 != system.satellites() )
+  if ( 0x0 != system.satellites() && false == system.satellites()->empty() )
   {
     system.satellites()->accept ( *this );
   }

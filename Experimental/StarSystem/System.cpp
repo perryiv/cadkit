@@ -73,24 +73,6 @@ void System::_destroy()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node *System::buildScene ( const System::BuildOptions &options, Usul::Interfaces::IUnknown *caller )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  osg::ref_ptr<osg::Group> group ( new osg::Group() );
-  group->addChild ( ( true == _body.valid() ) ?       ( _body->buildScene       ( options, caller ) ) : ( new osg::Group() ) );
-  group->addChild ( ( true == _satellites.valid() ) ? ( _satellites->buildScene ( options, caller ) ) : ( new osg::Group() ) );
-  return group.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the satellites.
 //
 ///////////////////////////////////////////////////////////////////////////////

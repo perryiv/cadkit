@@ -71,32 +71,6 @@ void Group::_destroy()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node *Group::buildScene ( const Group::BuildOptions &options, Usul::Interfaces::IUnknown *caller )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  osg::ref_ptr<osg::Group> group ( new osg::Group() );
-
-  for ( Nodes::iterator i = _nodes.begin(); i != _nodes.end(); ++i )
-  {
-    Node::RefPtr &base ( *i );
-    if ( true == base.valid() )
-    {
-      group->addChild ( base->buildScene ( options, caller ) );
-    }
-  }
-
-  return group.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the nodes.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -134,4 +108,18 @@ const Group::Nodes &Group::nodes() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _nodes;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the group empty?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Group::empty() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _nodes.empty();
 }

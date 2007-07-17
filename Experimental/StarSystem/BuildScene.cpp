@@ -10,27 +10,25 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Body class.
+//  Base visitor class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "StarSystem/Body.h"
-#include "StarSystem/Visitor.h"
+#include "StarSystem/BuildScene.h"
+#include "StarSystem/System.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Scope/Reset.h"
 #include "Usul/Trace/Trace.h"
 
 #include "ossimPlanet/ossimPlanet.h"
-#include "ossimPlanet/ossimPlanetLand.h"
-
-#include "osgDB/DatabasePager"
 
 #include "osg/Group"
 
 using namespace StarSystem;
 
-STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( Body );
+STAR_SYSTEM_IMPLEMENT_VISITOR_CLASS ( BuildScene );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -39,31 +37,13 @@ STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( Body );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Body::Body() : BaseClass(),
-  _planet ( new ossimPlanet() ),
-  _pager  ( new osgDB::DatabasePager() )
+BuildScene::BuildScene ( const BuildOptions &options, IUnknown *caller ) : BaseClass(),
+  _scene   ( new osg::Group() ),
+  _options ( options ),
+  _caller  ( caller )
 {
   USUL_TRACE_SCOPE;
-
-  // Not using smart pointers.
-  _planet->ref();
-
-  // Set the default attributes.
-  _planet->getLand()->setLandType ( ossimPlanetLandType_NORMALIZED_ELLIPSOID );
-  _planet->getLand()->setElevationEnabledFlag ( true );
-  _planet->getLand()->setHeightExag ( 1.0 );
-  _planet->getLand()->setElevationPatchSize ( 16 );
-  _planet->getLand()->setMaxLevelDetail ( 32 );
-  _planet->setEnableEphemerisFlag ( false );
-  _planet->setEnableHudFlag ( true );
-  _planet->getLand()->resetGraph();
-
-  // Initialize the database pager.
-  _pager->ref();
-  _pager->setExpiryDelay ( 0 );
-  _pager->setUseFrameBlock ( true );
-  _pager->setAcceptNewDatabaseRequests ( true );
-  _pager->setDatabasePagerThreadPause ( false );
+  _scene->ref();
 }
 
 
@@ -73,10 +53,10 @@ Body::Body() : BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Body::~Body()
+BuildScene::~BuildScene()
 {
   USUL_TRACE_SCOPE;
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Body::_destroy ), "3973302267" );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &BuildScene::_destroy ), "2031752355" );
 }
 
 
@@ -86,51 +66,91 @@ Body::~Body()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Body::_destroy()
+void BuildScene::_destroy()
 {
   USUL_TRACE_SCOPE;
-  _planet->unref(); _planet = 0x0;
-  _pager->unref(); _pager = 0x0;
+  _scene->unref(); _scene = 0x0;
+  _options.clear();
+  _caller = 0x0;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the planet.
+//  Visit the node.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const ossimPlanet *Body::planet() const
+void BuildScene::visit ( Node &node )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _planet;
+  BaseClass::visit ( node );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the planet.
+//  Visit the node.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ossimPlanet *Body::planet()
+void BuildScene::visit ( Body &body )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return _planet;
+
+  // Add planet to the scene.
+  _scene->addChild ( body.planet() );
+
+  // Call the base class's function.
+  BaseClass::visit ( body );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the database pager.
+//  Visit the node.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osgDB::DatabasePager *Body::databasePager()
+void BuildScene::visit ( Group &group )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return _pager;
+
+  // Make new current group.
+  osg::ref_ptr<osg::Group> current ( new osg::Group() );
+  _scene->addChild ( current.get() );
+
+  // Make sure the original group gets reset.
+  Usul::Scope::Reset<osg::Group *> reset ( _scene, current.get(), _scene );
+
+  // Call the base class's function.
+  BaseClass::visit ( group );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Visit the node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BuildScene::visit ( System &system )
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::visit ( system );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Group *BuildScene::scene()
+{
+  USUL_TRACE_SCOPE;
+  return _scene;
 }

@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="plug: Qt Scene Delegate"
+	Name="plug: Scene Delegate Qt"
 	ProjectGUID="{56404183-F480-4893-8D47-53CD47BA8418}"
 	>
 	<Platforms>

@@ -31,6 +31,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/IO/Redirect.h"
 #include "Usul/IO/StreamSink.h"
+#include "Usul/Registry/Database.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Mutex.h"
@@ -75,6 +76,9 @@ namespace Program
 
     // Clear the map of named threads.
     Usul::Threads::Named::clear();
+
+    // Clear the registry.
+    Usul::Registry::Database::destroy();
   }
 }
 
@@ -147,6 +151,10 @@ namespace Program
     {
       // For cleaning.
       Helper::Clean clean;
+
+      // Read the registry.
+      //XmlTree::RegistryReader reader ( new XmlTree::RegistryReader() );
+      //Usul::Registry::Database::instance().accept ( visitor );
 
       // Declare application.
       QApplication app ( argc, argv );

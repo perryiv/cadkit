@@ -535,7 +535,7 @@ std::string Controller::aboutMessage ( )
 
 void Controller::documentInsert ( Usul::Interfaces::IUnknown* caller )
 {
-    // Set busy to true, make sure it resets
+  // Set busy to true, make sure it resets
   Usul::State::Busy busy;
 
   // Insert some files.

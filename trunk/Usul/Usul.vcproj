@@ -226,6 +226,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Algorithms\Cylinder.h"
+					>
+				</File>
+				<File
 					RelativePath="Algorithms\Extract.h"
 					>
 				</File>

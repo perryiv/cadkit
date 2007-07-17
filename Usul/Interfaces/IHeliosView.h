@@ -32,8 +32,8 @@ struct IHeliosView : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2445428656u };
 
-  virtual OsgTools::Render::Viewer*       HeliosView() = 0;
-  virtual const OsgTools::Render::Viewer* HeliosView() const = 0;
+  virtual OsgTools::Render::Viewer*       heliosView() = 0;
+  virtual const OsgTools::Render::Viewer* heliosView() const = 0;
 }; // struct IHeliosView
 
 

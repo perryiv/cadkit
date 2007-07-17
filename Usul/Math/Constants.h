@@ -27,6 +27,7 @@ const float  DEG_TO_RAD             ( 0.01745329252f );
 
 // Trig.
 const float  PIE                    ( 3.14159265358979323846f );
+const float  PIE_OVER_2             ( PIE / 2.0f );
 
 // Square Root.
 const float  SQRT_2                 ( 1.41421356237309504880f );

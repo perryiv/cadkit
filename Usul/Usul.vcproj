@@ -2187,6 +2187,30 @@
 					RelativePath=".\Registry\Constants.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Registry\Database.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Registry\Database.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Registry\Node.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Registry\Node.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Registry\Visitor.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Registry\Visitor.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Trace"

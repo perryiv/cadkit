@@ -199,6 +199,8 @@ private:
 
   void                              _destroy();
 
+  void                              _notifyFinishedLoading ( Usul::Documents::Document * );
+
   mutable Mutex *_mutex;
   QSettings _settings;
   Actions _actions;

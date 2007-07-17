@@ -83,7 +83,7 @@ DocumentProxy::~DocumentProxy()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Documents::Document* DocumentProxy::document()
+Usul::Documents::Document* DocumentProxy::getDocument()
 {
   return _document;
 }
@@ -95,7 +95,7 @@ Usul::Documents::Document* DocumentProxy::document()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DocumentProxy::document ( Document* document )
+void DocumentProxy::setDocument ( Document* document )
 {
   _document = document;
 }

@@ -51,8 +51,8 @@ public:
   ~DocumentProxy ();
 
   /// Get/Set the document.
-  Document*                document ();
-  void                     document ( Document* document );
+  Document*                getDocument();
+  void                     setDocument ( Document* document );
 
 private:
   Document* _document;

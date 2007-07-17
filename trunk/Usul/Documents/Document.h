@@ -20,7 +20,7 @@
 
 #include "Usul/Documents/FileInfo.h"
 
-#include "Usul/Base/Referenced.h"
+#include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/IDocument.h"
@@ -49,7 +49,7 @@ namespace Usul {
 namespace Documents {
 
 
-class USUL_EXPORT Document : public Usul::Base::Referenced,
+class USUL_EXPORT Document : public Usul::Base::Object,
                              public Usul::Interfaces::IDocument,
                              public Usul::Interfaces::ISendMessage,
                              public Usul::Interfaces::IRead,
@@ -61,7 +61,7 @@ class USUL_EXPORT Document : public Usul::Base::Referenced,
 public:
 
   /// Typedefs.
-  typedef Usul::Base::Referenced                BaseClass;
+  typedef Usul::Base::Object                    BaseClass;
   typedef Usul::Interfaces::IUnknown            Unknown;
   typedef Usul::Interfaces::IWindow             Window;
   typedef Window::ValidRefPtr                   WindowPtr;
@@ -254,6 +254,7 @@ protected:
   /// Usul::Interfaces::IModifiedSubject
   virtual void addModifiedObserver    ( Usul::Interfaces::IModifiedObserver* observer );
   virtual void removeModifiedObserver ( Usul::Interfaces::IModifiedObserver* observer );
+
 private:
 
   typedef Usul::Interfaces::IModifiedObserver::ValidRefPtr ModifiedObserverPtr;
@@ -264,11 +265,7 @@ private:
   Views   _views;
   std::string _typeName;
   Delegate::RefPtr _delegate;
-
-  //typedef std::map < Usul::Interfaces::IViewer*, Options > OptionMap;
-  //mutable OptionMap     _options;
   Options _options;
-
   ModifiedObservers _modifiedObservers;
 };
 

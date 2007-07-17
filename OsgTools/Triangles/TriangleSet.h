@@ -124,7 +124,7 @@ public:
   BlocksConstIterator     blocksEnd() const  { return _blocks.end(); }
 
   // Build the scene
-  osg::Node*              buildScene ( const Options &opt, Unknown *caller );
+  osg::Node*              buildScene ( const Options &options, Unknown *caller );
 
   // Perform exhaustive check of internal state.
   void                    checkStatus() const;

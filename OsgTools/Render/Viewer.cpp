@@ -435,7 +435,8 @@ void Viewer::render()
   if( _databasePager.valid() )
   {
     // clean up  and compile gl objects with a specified limit       
-    double availableTime = 0.0025; // 2.5 ms
+    //double availableTime = 0.0025; // 2.5 ms
+    double availableTime = 50000; // 2.5 ms
 
     // compile any GL objects that are required.
     _databasePager->compileGLObjects(*(this->viewer()->getState()),availableTime);

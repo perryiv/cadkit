@@ -92,7 +92,7 @@ LineLayer::~LineLayer()
 
 void LineLayer::lineWidth( float width )
 {
-  Guard guard( _mutex );
+  Guard guard( this->mutex() );
   _lineWidth = width;
 }
 
@@ -105,6 +105,7 @@ void LineLayer::lineWidth( float width )
 
 float LineLayer::lineWidth() const
 {
+  Guard guard( this->mutex() );
   return _lineWidth;
 }
 
@@ -118,7 +119,7 @@ float LineLayer::lineWidth() const
 void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 {
   // Lock the mutex.
-  Guard guard( _mutex );
+  Guard guard( this->mutex() );
 
   Minerva::Core::DB::Connection::ScopedConnection scopedConnection ( *this->connection() );
 

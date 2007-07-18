@@ -18,7 +18,7 @@
 #include "Minerva/Core/DB/Connection.h"
 
 #include "Usul/Interfaces/IUnknown.h"
-#include "Usul/Base/Referenced.h"
+#include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
@@ -49,7 +49,7 @@ namespace Core {
 
 namespace Layers {
 
-class MINERVA_EXPORT Layer : public Usul::Base::Referenced,
+class MINERVA_EXPORT Layer : public Usul::Base::Object,
                              public Usul::Interfaces::ILayer,
                              public Usul::Interfaces::IVectorLayer,
                              public Usul::Interfaces::IAddRowLegend,
@@ -59,12 +59,10 @@ class MINERVA_EXPORT Layer : public Usul::Base::Referenced,
 {
 public:
   /// Typedefs.
-  typedef Usul::Base::Referenced                    BaseClass;
+  typedef Usul::Base::Object                        BaseClass;
   typedef Minerva::Core::DataObjects::DataObject    DataObject;
   typedef DataObject::RefPtr                        DataObjectPtr;
   typedef std::vector< DataObjectPtr >	            DataObjects;
-  typedef Usul::Threads::RecursiveMutex             Mutex;
-  typedef Usul::Threads::Guard<Mutex>               Guard;
   typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;
 
   /// Smart-pointer definitions.
@@ -166,6 +164,10 @@ public:
   void                        legendText( const std::string& text );
   const std::string&          legendText() const;
 
+  /// Get/Set flag to show layer in legend.
+  void                        showInLegend ( bool b );
+  bool                        showInLegend () const;
+
   /// Get/Set show layer
   void                        showLayer( bool b );
   bool                        showLayer() const;
@@ -199,6 +201,10 @@ public:
   void                        showMaxLegend( bool b );
   bool                        showMaxLegend () const;
 
+  /// Get/Set the alpha value.
+  void                        alpha ( float a );
+  float                       alpha () const;
+
 protected:
 
   /// Use reference counting.
@@ -206,9 +212,6 @@ protected:
 
   /// Copy constructor.
   Layer( const Layer& layer );
-
-  // The mutex.
-  Mutex _mutex;
 
   void                        _addDataObject ( DataObject *dataObject );
   void                        _clearDataObjects ();
@@ -259,6 +262,7 @@ private:
   DB::Connection::RefPtr _connection;
   Functors::BaseColorFunctor::RefPtr _colorFunctor;
   std::string                  _legendText;
+  bool                         _showInLegend;
   bool                         _showLabel;
   bool                         _shown;
   osg::Vec4                    _labelColor;
@@ -268,6 +272,7 @@ private:
   bool                         _customQuery;
   unsigned int                 _legendFlags;
   std::pair < double, double > _minMax;
+  float                        _alpha;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME ( Layer );
@@ -310,6 +315,7 @@ osg::Vec4 Layer::_color ( const T& iter )
     std::cout << "Error 2909352868: " << e.what() << std::endl;
   }
 
+  color.w() = this->alpha();
   return color;
 }
 

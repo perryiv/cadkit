@@ -214,14 +214,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\ConfigFiles.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\ConfigFiles.h"
-					>
-				</File>
-				<File
 					RelativePath="Constants.h"
 					>
 				</File>

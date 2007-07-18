@@ -17,7 +17,6 @@ ${CADKIT_ROOT_DIR}/Usul
 ${CADKIT_ROOT_DIR}/Threads/OpenThreads
 ${CADKIT_ROOT_DIR}/OsgTools
 ${CADKIT_ROOT_DIR}/XmlTree
-${CADKIT_ROOT_DIR}/VRV/Prefs
 ${CADKIT_ROOT_DIR}/MenuKit
 ${CADKIT_ROOT_DIR}/MenuKit/OSG
 ${CADKIT_ROOT_DIR}/CadViewer/Plugins/scene_operations
@@ -62,7 +61,6 @@ SET (SOURCES
 ./AppCallbacks.cpp
 ./main.cpp
 ./Application.cpp
-./ConfigFiles.cpp
 )
 
 
@@ -76,7 +74,7 @@ ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
 ADD_EXECUTABLE( ${TARGET} ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( ${TARGET} Usul OpenThreadsEx OsgTools VRV VRVPrefs MenuKit MenuKit_OSG XmlTree )
+LINK_CADKIT( ${TARGET} Usul OpenThreadsEx OsgTools VRV MenuKit MenuKit_OSG XmlTree )
 TARGET_LINK_LIBRARIES( ${TARGET} 
   ${VR_JUGGLER_LIBS}
   ${VJ_DEPS_LIBS}

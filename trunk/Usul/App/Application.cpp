@@ -10,6 +10,9 @@
 
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
+#include "Usul/System/Directory.h"
+
+#include <algorithm>
 
 using namespace Usul::App;
 
@@ -44,7 +47,9 @@ Application& Application::instance()
 ///////////////////////////////////////////////////////////////////////////////
 
 Application::Application() :
-	_splashImage ()
+	_splashImage (),
+  _vendor (),
+  _program ()
 {
 }
 
@@ -108,4 +113,71 @@ const std::string & Application::splashImage() const
 std::string Application::splashImagePath() const
 {
 	return this->iconDirectory() + this->splashImage();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the vender.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::vendor ( const std::string& vendor )
+{
+  _vendor = vendor;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the vender.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& Application::vendor () const
+{
+  return _vendor;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the program name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::program ( const std::string& program )
+{
+  _program = program;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the program name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& Application::program () const
+{
+  return _program;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build a full path for a config file.  Will have the extention .xml
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Application::configFile ( const std::string& name )
+{
+  std::string home ( Usul::System::Directory::home( true ) );
+
+  std::string programName ( this->program() );
+  std::transform ( programName.begin(), programName.end(), programName.begin(), ::tolower );
+
+  std::string filename ( home + "/." + programName + "/" + name + ".xml" );
+
+  return filename;
 }

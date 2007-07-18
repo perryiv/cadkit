@@ -12,6 +12,7 @@
 #define __VRV_CORE_APPLICATION_H__
 
 #include "VRV/Export.h"
+#include "VRV/Prefs/Settings.h"
 #include "VRV/Core/SharedDouble.h"
 #include "VRV/Interfaces/IModelAdd.h"
 #include "VRV/Interfaces/IClippingDistance.h"
@@ -82,6 +83,7 @@ public:
   typedef OsgTools::Widgets::ThreadSafeProgressBarGroup  ProgressBars;
   typedef Usul::Math::Matrix44f                Matrix44f;
   typedef std::vector < std::string >          Filenames;
+  typedef VRV::Prefs::Settings                 Preferences;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -136,6 +138,10 @@ public:
   /// Set the number of rendering passes
   void                    numRenderPasses ( unsigned int num );
 
+  /// Get the Preferences.
+  Preferences *           preferences ();
+  const Preferences *     preferences () const;
+
 protected:
 
   /// VR Juggler methods.
@@ -175,6 +181,9 @@ protected:
   // Get the scene root.
   osg::Group*             _sceneRoot();
   const osg::Group*       _sceneRoot() const;
+
+  // Read the user's preferences.
+  void                    _readUserPreferences();
 
   /// VRV::Interfaces::IClippingDistanceFloat
   /// Get/set the clipping distances.
@@ -254,6 +263,8 @@ private:
   osg::Vec2                              _clipDist;
 
   bool                                   _exportImage;
+
+  Preferences::RefPtr                    _preferences;
 
   unsigned int                           _refCount;
 };

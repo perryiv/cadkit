@@ -41,6 +41,17 @@ public:
 	/// Get the path to the splash screen image.
 	std::string                          splashImagePath() const;
 	
+  /// Get/Set the vender.
+  void                                 vendor ( const std::string& );
+  const std::string&                   vendor () const;
+
+  /// Get/Set the program name.
+  void                                 program ( const std::string& );
+  const std::string&                   program () const;
+
+  /// Build a full path for a config file.  Will have the extention .xml
+  std::string                          configFile ( const std::string& name );
+
 private:
 	Application();
 	~Application();
@@ -48,6 +59,8 @@ private:
 	static Application *_instance;
 	
 	std::string         _splashImage;
+  std::string         _vendor;
+  std::string         _program;
 };
 
 }

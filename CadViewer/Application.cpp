@@ -32,6 +32,7 @@
 #include "VRV/Interfaces/IMenuRead.h"
 #include "VRV/Interfaces/IMenuGet.h"
 
+#include "Usul/App/Application.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Components/Manager.h"
@@ -228,7 +229,6 @@ Application::Application ( Args &args ) :
   _menu           ( new MenuKit::OSG::Menu() ),
   _statusBar      ( new MenuKit::OSG::Menu() ),
   _buttonMap      (),
-  _prefs          ( new VRV::Prefs::Settings ),
   _home           ( osg::Matrixf::identity() ),
   _colorMap       (),
   _textures       ( true )
@@ -384,10 +384,10 @@ void Application::_init()
   BaseClass::init();
   
   // Set the global GL_NORMALIZE flag.
-  this->normalize ( _prefs->normalizeVertexNormalsGlobal() );
+  this->normalize ( this->preferences()->normalizeVertexNormalsGlobal() );
   
   // Set the background color.
-  const Preferences::Vec4f &bc = _prefs->backgroundColor();
+  const Preferences::Vec4f &bc = this->preferences()->backgroundColor();
   this->setBackgroundColor ( osg::Vec4 ( bc[0], bc[1], bc[2], bc[3] ) );
 
   // Initialize the button group by adding the individual buttons.
@@ -527,20 +527,20 @@ void Application::_initGrid ( osg::Node *node )
   _gridFunctors.clear();
 
   // Set the properties.
-  for( int i = 0; i < _prefs->numGrids(); ++i )
+  for( int i = 0; i < this->preferences()->numGrids(); ++i )
   {
     OsgTools::Grid grid;
-    grid.numBlocks ( _prefs->numGridBlocks( i ) );
-    grid.size ( r * _prefs->gridScale( i ) );
-    grid.color ( _prefs->gridColor( i ) );
-    grid.fillColor ( _prefs->gridFillColor( i ) );
+    grid.numBlocks ( this->preferences()->numGridBlocks( i ) );
+    grid.size ( r * this->preferences()->gridScale( i ) );
+    grid.color ( this->preferences()->gridColor( i ) );
+    grid.fillColor ( this->preferences()->gridFillColor( i ) );
     Usul::Math::Matrix44f o;
-    o.makeRotation ( _prefs->gridRotationAngleRad( static_cast < int > ( i ) ), _prefs->gridRotationVector( i ) );
+    o.makeRotation ( this->preferences()->gridRotationAngleRad( static_cast < int > ( i ) ), this->preferences()->gridRotationVector( i ) );
     grid.orientation ( o );
 
     // Move the center so that it is below the bounding sphere of the node.
     osg::Vec3 c ( bs.center() );
-    if(_prefs->offsetGrid( static_cast < int > ( i ) )) 
+    if(this->preferences()->offsetGrid( static_cast < int > ( i ) )) 
     	c[1] = -r;
     
     grid.center ( Usul::Math::Vec3f ( c[0], c[1], c[2] ) );
@@ -582,8 +582,8 @@ void Application::_initLight()
   osg::Vec3 ld;
   osg::Vec4 lp;
 
-  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( _prefs->lightPosition(), lp, 4 );
-  OsgTools::Convert::vector<Usul::Math::Vec3f,osg::Vec3>( _prefs->lightDirection(), ld, 3 );
+  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->lightPosition(), lp, 4 );
+  OsgTools::Convert::vector<Usul::Math::Vec3f,osg::Vec3>( this->preferences()->lightDirection(), ld, 3 );
 
   light->setPosition( lp );
   light->setDirection( ld );
@@ -614,23 +614,23 @@ void Application::_initMenu()
   ErrorChecker ( 1155745824u, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 2049202602u, _menu.valid() );
   
-  // Set menu's background and text colors from preferences.xml stored in VRV::Prefs::Settings _prefs
-  const float* BNarrayf = _prefs->menuBgColorNorm().get();
+  // Set menu's background and text colors from preferences.xml stored in VRV::Prefs::Settings this->preferences()
+  const float* BNarrayf = this->preferences()->menuBgColorNorm().get();
   _menu->skin()->bg_color_normal( osg::Vec4(BNarrayf[0], BNarrayf[1], BNarrayf[2], BNarrayf[3]) );
-  const float* BHarrayf = _prefs->menuBgColorHLght().get();
+  const float* BHarrayf = this->preferences()->menuBgColorHLght().get();
   _menu->skin()->bg_color_highlight( osg::Vec4(BHarrayf[0], BHarrayf[1], BHarrayf[2], BHarrayf[3]) );
-  const float* BDarrayf = _prefs->menuBgColorDsabl().get();
+  const float* BDarrayf = this->preferences()->menuBgColorDsabl().get();
   _menu->skin()->bg_color_disabled( osg::Vec4(BDarrayf[0], BDarrayf[1], BDarrayf[2], BDarrayf[3]) );
-  const float* TNarrayf = _prefs->menuTxtColorNorm().get();
+  const float* TNarrayf = this->preferences()->menuTxtColorNorm().get();
   _menu->skin()->text_color_normal( osg::Vec4(TNarrayf[0], TNarrayf[1], TNarrayf[2], TNarrayf[3]) );
-  const float* THarrayf = _prefs->menuTxtColorHLght().get();
+  const float* THarrayf = this->preferences()->menuTxtColorHLght().get();
   _menu->skin()->text_color_highlight( osg::Vec4(THarrayf[0], THarrayf[1], THarrayf[2], THarrayf[3]) );
-  const float* TDarrayf = _prefs->menuTxtColorDsabl().get();
+  const float* TDarrayf = this->preferences()->menuTxtColorDsabl().get();
   _menu->skin()->text_color_disabled( osg::Vec4(TDarrayf[0], TDarrayf[1], TDarrayf[2], TDarrayf[3]) );
 
   // Set the menu scene.
   osg::Matrixf mm;
-  OsgTools::Convert::matrix ( _prefs->menuMatrix(), mm );
+  OsgTools::Convert::matrix ( this->preferences()->menuMatrix(), mm );
   _menuBranch->setMatrix ( mm );
   _menu->scene ( _menuBranch.get() );
 
@@ -720,7 +720,7 @@ void Application::_initMenu()
   VRV::Interfaces::IMenuRead::QueryPtr reader ( Usul::Components::Manager::instance().getInterface ( VRV::Interfaces::IMenuRead::IID ) );
 
   // Find the path to the config file.
-  std::string filename ( CV::Config::filename ( "menu" ) );
+  std::string filename ( Usul::App::Application::instance().configFile ( "menu" ) );
 
   // Read the configuration file.
   if( reader.valid() )
@@ -817,13 +817,13 @@ void Application::_initStatusBar()
 
   // Set the status-bar scene.
   osg::Matrixf sbm;
-  OsgTools::Convert::matrix ( _prefs->statusBarMatrix(), sbm );
+  OsgTools::Convert::matrix ( this->preferences()->statusBarMatrix(), sbm );
   _statusBranch->setMatrix ( sbm );
   _statusBar->scene ( _statusBranch.get() );
 
   // Set the status-bar's properties.
   _statusBar->menu()->append ( new MenuKit::Button );
-  _statusBar->menu()->expanded ( _prefs->statusBarVisibleAtStartup() );
+  _statusBar->menu()->expanded ( this->preferences()->statusBarVisibleAtStartup() );
   _statusBar->updateScene();
 
   // Make the status-bar always draw on top (last). See osgfxbrowser.cpp.
@@ -1972,45 +1972,6 @@ void Application::_updateAnalogText()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Read the user's preferences.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_readUserPreferences()
-{
-  ErrorChecker ( 1074032451u, isMainThread() );
-
-  // If the file is missing then it throws.
-  try
-  {
-    // Find the path to the preference file.
-    std::string filename ( CV::Config::filename ( "preferences" ) );
-                                                        // searches for preferences.xml in $HOME/.cadviewer/ ...
-                                                        // ... returns full path if file is found
-
-    // Read the preferences.
-    _prefs->read ( filename );
-  }
-
-  // Catch expected exceptions.
-  catch ( const std::exception &e )
-  {
-    std::ostringstream message;
-    message << "Warning 1083877168, exception generated when attempting "
-            << "to read user-preferences file."
-            << "\n\t" << e.what();
-    this->_update ( *_msgText, message.str() );
-  }
-
-  // Make sure there is a writer-machine.
-  WarningChecker ( 2816534029u,
-                   !_prefs->fileWriterMachineName().empty(), 
-                   "No machine specified as the file-writer in user-preferences." );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Update the cursor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2144,7 +2105,7 @@ void Application::_writeScene ( const std::string &filename, const osg::Node *no
 
   // If the machine name is the same as the writer...
   const std::string host    ( Usul::System::Host::name() );
-  const std::string &writer = _prefs->fileWriterMachineName();
+  const std::string &writer = this->preferences()->fileWriterMachineName();
 
   // Make sure there is a writer-machine.
   ErrorChecker ( 2519309141u, !writer.empty(), 
@@ -2362,7 +2323,7 @@ bool Application::_isHeadNode() const
 #ifdef _MSC_VER
   return true;
 #else
-  return Usul::System::Host::name() == _prefs->headNodeMachineName();
+  return Usul::System::Host::name() == this->preferences()->headNodeMachineName();
 #endif
 }
 

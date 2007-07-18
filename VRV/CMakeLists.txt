@@ -42,6 +42,8 @@ SET (SOURCES
   ./Functors/Matrix/IdentityMatrix.cpp
   ./Functors/Matrix/MatrixPair.cpp
   ./Functors/Matrix/InverseMatrix.cpp
+  ./Prefs/Parser.cpp
+  ./Prefs/Settings.cpp
 )
 
 # Create a Shared Library

@@ -344,7 +344,7 @@ void Application::_hTransWandPosX ( MenuKit::Message m, MenuKit::Item *item )
 
   // Call the common function.
   const unsigned int id ( 1084141815u );
-  float speed ( _prefs->translationSpeed() );
+  float speed ( this->preferences()->translationSpeed() );
   CV::Functors::Direction::Vector dir ( 1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
 
@@ -373,7 +373,7 @@ void Application::_hTransGlobalPosX ( MenuKit::Message m, MenuKit::Item *item )
 
   // Call the common function.
   const unsigned int id ( 3196018430u );
-  float speed ( _prefs->translationSpeed() );
+  float speed ( this->preferences()->translationSpeed() );
   CV::Functors::Direction::Vector dir ( 1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
 
@@ -402,7 +402,7 @@ void Application::_hTransWandNegX ( MenuKit::Message m, MenuKit::Item *item )
 
   // Call the common function.
   const unsigned int id ( 2934209123u );
-  float speed ( _prefs->translationSpeed() );
+  float speed ( this->preferences()->translationSpeed() );
   CV::Functors::Direction::Vector dir ( -1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
 
@@ -431,7 +431,7 @@ void Application::_hTransGlobalNegX ( MenuKit::Message m, MenuKit::Item *item )
 
   // Call the common function.
   const unsigned int id ( 3848661010u );
-  float speed ( _prefs->translationSpeed() );
+  float speed ( this->preferences()->translationSpeed() );
   CV::Functors::Direction::Vector dir ( -1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
 
@@ -460,7 +460,7 @@ void Application::_vTransWandPosY ( MenuKit::Message m, MenuKit::Item *item )
 
   // Call the common function.
   const unsigned int id ( 1084444803u );
-  float speed ( _prefs->translationSpeed() );
+  float speed ( this->preferences()->translationSpeed() );
   CV::Functors::Direction::Vector dir ( 0, 1, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
 
@@ -489,7 +489,7 @@ void Application::_vTransWandPosZ ( MenuKit::Message m, MenuKit::Item *item )
 
   // Call the common function.
   const unsigned int id ( 1084143905u );
-  float speed ( _prefs->translationSpeed() );
+  float speed ( this->preferences()->translationSpeed() );
   CV::Functors::Direction::Vector dir ( 0, 0, -1 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
 
@@ -518,7 +518,7 @@ void Application::_vTransGlobalPosZ ( MenuKit::Message m, MenuKit::Item *item )
 
   // Call the common function.
   const unsigned int id ( 3775941120u );
-  float speed ( _prefs->translationSpeed() );
+  float speed ( this->preferences()->translationSpeed() );
   CV::Functors::Direction::Vector dir ( 0, 0, -1 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
 
@@ -547,7 +547,7 @@ void Application::_vTransWandNegZ ( MenuKit::Message m, MenuKit::Item *item )
 
   // The id for this navigator.
   const unsigned int id ( 1084143896u );
-  float speed ( _prefs->translationSpeed() );
+  float speed ( this->preferences()->translationSpeed() );
   CV::Functors::Direction::Vector dir ( 0, 0, 1 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
 
@@ -576,7 +576,7 @@ void Application::_vTransGlobalNegZ ( MenuKit::Message m, MenuKit::Item *item )
 
   // The id for this navigator.
   const unsigned int id ( 3683303793u );
-  float speed ( _prefs->translationSpeed() );
+  float speed ( this->preferences()->translationSpeed() );
   CV::Functors::Direction::Vector dir ( 0, 0, 1 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
 
@@ -605,7 +605,7 @@ void Application::_hRotWandPosY ( MenuKit::Message m, MenuKit::Item *item )
 
   // The id for this navigator.
   const unsigned int id ( 2200874009u );
-  float speed ( _prefs->rotationSpeed() );
+  float speed ( this->preferences()->rotationSpeed() );
   CV::Functors::Direction::Vector dir ( 0, 1, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
 
@@ -633,7 +633,7 @@ void Application::_hRotGlobalPosY ( MenuKit::Message m, MenuKit::Item *item )
 
   // The id for this navigator.
   const unsigned int id ( 2093083320u );
-  float speed ( _prefs->rotationSpeed() );
+  float speed ( this->preferences()->rotationSpeed() );
   CV::Functors::Direction::Vector dir ( 0, 1, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
 
@@ -661,7 +661,7 @@ void Application::_vRotWandPosX ( MenuKit::Message m, MenuKit::Item *item )
 
   // The id for this navigator.
   const unsigned int id ( 3106060360u );
-  float speed ( _prefs->rotationSpeed() );
+  float speed ( this->preferences()->rotationSpeed() );
   CV::Functors::Direction::Vector dir ( 1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
 
@@ -689,7 +689,7 @@ void Application::_vRotGlobalPosX ( MenuKit::Message m, MenuKit::Item *item )
 
   // The id for this navigator.
   const unsigned int id ( 2513007202u );
-  float speed ( _prefs->rotationSpeed() );
+  float speed ( this->preferences()->rotationSpeed() );
   CV::Functors::Direction::Vector dir ( 1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
 
@@ -717,7 +717,7 @@ void Application::_vTransGlobalPosY ( MenuKit::Message m, MenuKit::Item *item )
 
   // The id for this navigator.
   const unsigned int id ( 1084438318u );
-  float speed ( _prefs->translationSpeed() );
+  float speed ( this->preferences()->translationSpeed() );
   CV::Functors::Direction::Vector dir ( 0, 1, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
 
@@ -775,7 +775,7 @@ void Application::_raySelector ( MenuKit::Message m, MenuKit::Item *item )
 
         // Set the selection-material.
         osg::ref_ptr<osg::Material> mat ( new osg::Material );
-        const VRV::Prefs::Settings::Color &c = _prefs->selectionColor();
+        const VRV::Prefs::Settings::Color &c = this->preferences()->selectionColor();
         osg::Vec4 color ( c[0], c[1], c[2], c[3] );
         mat->setAmbient ( osg::Material::FRONT, color );
         mat->setDiffuse ( osg::Material::FRONT, color );
@@ -1030,7 +1030,7 @@ void Application::_viewWorld ( MenuKit::Message m, MenuKit::Item *item )
     osg::Matrix original ( this->models()->getMatrix() );
 
     // Perform the "view all" on the model's branch.
-    this->viewAll ( this->models(), _prefs->viewAllScaleZ() );
+    this->viewAll ( this->models(), this->preferences()->viewAllScaleZ() );
 
     // Move the navigation branch.
     this->_navigationMatrix ( this->models()->getMatrix() );
@@ -1056,7 +1056,7 @@ void Application::_viewScene ( MenuKit::Message m, MenuKit::Item *item )
 
   if ( MenuKit::MESSAGE_SELECTED == m )
   {
-    this->viewAll ( this->navigationScene(), _prefs->viewAllScaleZ() );
+    this->viewAll ( this->navigationScene(), this->preferences()->viewAllScaleZ() );
     this->_setNearAndFarClippingPlanes();
   }
 }
@@ -1096,7 +1096,7 @@ void Application::_vScaleWorld ( MenuKit::Message m, MenuKit::Item *item )
   const unsigned int id ( 2747412269u );
 
   // The scale "directions" and the speed.
-  float speed ( _prefs->scaleSpeed() );
+  float speed ( this->preferences()->scaleSpeed() );
   Tool::Vector scale ( 1, 1, 1 );
 
   // Put the models-branch in a vector.
@@ -1130,7 +1130,7 @@ void Application::_vScaleSelected ( MenuKit::Message m, MenuKit::Item *item )
   const unsigned int id ( 1612324357u );
 
   // The scale "directions" and the speed.
-  float speed ( _prefs->scaleSpeed() );
+  float speed ( this->preferences()->scaleSpeed() );
   Tool::Vector scale ( 1, 1, 1 );
 
   // Get the vector of selected matrix-transforms.
@@ -1179,7 +1179,7 @@ void Application::_wMoveSelLocal ( MenuKit::Message m, MenuKit::Item *item )
     else
     {
       ValidUnknown unknown ( this );
-      float speed ( _prefs->scaleSpeed() );
+      float speed ( this->preferences()->scaleSpeed() );
 
       JH::ValidRefPtr hai ( new JH ( unknown ) );
       JV::ValidRefPtr vai ( new JV ( unknown ) );
@@ -1243,7 +1243,7 @@ void Application::_wMoveTopLocal ( MenuKit::Message m, MenuKit::Item *item )
     else
     {
       ValidUnknown unknown ( this );
-      float speed ( _prefs->scaleSpeed() );
+      float speed ( this->preferences()->scaleSpeed() );
 
       JH::ValidRefPtr hai ( new JH ( unknown ) );
       JV::ValidRefPtr vai ( new JV ( unknown ) );
@@ -1348,7 +1348,7 @@ void Application::_selectionColor ( MenuKit::Message m, MenuKit::Item *item )
   {
     // Get the color from the string and set the preferences.
     const osg::Vec4& c = this->_getColor ( item->text() );
-    _prefs->selectionColor ( c[0], c[1], c[2], c[3] );
+    this->preferences()->selectionColor ( c[0], c[1], c[2], c[3] );
 
     // See if there is a selector.
     CV::Pick::Select* select = dynamic_cast<CV::Pick::Select*>( _intersector.get() );
@@ -1778,7 +1778,7 @@ void Application::_increaseSpeed    ( MenuKit::Message m, MenuKit::Item *item )
   switch( m )
   {
   case MenuKit::MESSAGE_SELECTED:
-    _prefs->translationSpeed ( _prefs->translationSpeed() * 2 );
+    this->preferences()->translationSpeed ( this->preferences()->translationSpeed() * 2 );
   }
 }
 
@@ -1795,7 +1795,7 @@ void Application::_decreaseSpeed    ( MenuKit::Message m, MenuKit::Item *item )
   switch( m )
   {
   case MenuKit::MESSAGE_SELECTED:
-    _prefs->translationSpeed ( _prefs->translationSpeed() / 2 );
+    this->preferences()->translationSpeed ( this->preferences()->translationSpeed() / 2 );
   }
 }
 

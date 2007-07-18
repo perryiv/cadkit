@@ -9,7 +9,6 @@
 
 #include "Precompiled.h"
 #include "Application.h"
-#include "ConfigFiles.h"
 
 #ifdef __GNUC__
 # include "Signals.h"
@@ -55,7 +54,7 @@ int main ( int argc, char **argv )
     CV::registerSignalHandlers ( argv[0] );
     #endif
 
-    VRV::Core::Program < CV::Application > program;
+    VRV::Core::Program < CV::Application > program ( "CadViewer" );
 
     // Isolate application run inside this function.
     result = program.run ( argc, argv );

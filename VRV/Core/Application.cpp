@@ -13,6 +13,7 @@
 #include "VRV/Core/Exceptions.h"
 #include "VRV/Jobs/LoadModel.h"
 
+#include "Usul/App/Application.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
@@ -61,6 +62,7 @@ using namespace VRV::Core;
   _progressBars    ( new ProgressBars ), \
   _clipDist        ( 0, 0 ), \
   _exportImage     ( false ), \
+  _preferences     ( new Preferences ), \
   _refCount        ( 0 )
 
 
@@ -1279,5 +1281,61 @@ void Application::numRenderPasses ( unsigned int num )
   for( Renderers::iterator iter = _renderers.begin(); iter != _renderers.end(); ++iter )
   {
     (*iter)->numRenderPasses ( num );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the preferences.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::Preferences * Application::preferences ()
+{
+  USUL_TRACE_SCOPE;
+  return _preferences.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the preferences.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Application::Preferences *  Application::preferences () const
+{
+  USUL_TRACE_SCOPE;
+  return _preferences.get();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the user's preferences.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_readUserPreferences()
+{
+  // If the file is missing then it throws.
+  try
+  {
+    // Find the path to the preference file.
+    std::string filename ( Usul::App::Application::instance().configFile ( "preferences" ) );
+
+    // Read the preferences.
+    _preferences->read ( filename );
+  }
+
+  // Catch expected exceptions.
+  catch ( const std::exception &e )
+  {
+    std::ostringstream message;
+    message << "Warning 1083877168, exception generated when attempting "
+            << "to read user-preferences file."
+            << "\n\t" << e.what();
+    //this->_update ( *_msgText, message.str() );
+    std::cout << message << std::endl;
   }
 }

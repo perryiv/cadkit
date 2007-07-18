@@ -13,6 +13,7 @@
 
 #include "Threads/OpenThreads/Thread.h"
 
+#include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Components/Loader.h"
 #include "Usul/Components/Manager.h"
@@ -31,11 +32,15 @@ template < class Application >
 class Program
 {
 public:
-  Program() : 
+  Program( const std::string& program = "VRV" ) : 
     _trace ( 0x0 )
   {
     std::string filename ( Usul::System::Host::name() + "_trace.csv" );
     _trace = new std::ofstream ( filename.c_str() );
+
+    // Set the vendor and program.
+    Usul::App::Application::instance().vendor ( "CadKit" );
+    Usul::App::Application::instance().program ( program );
 
     // Set the Thread factory.
     Usul::Threads::Manager::instance().factory ( &Threads::OT::newOpenThreadsThread );
@@ -45,6 +50,7 @@ public:
 
     // Use 5 threads.
     Usul::Jobs::Manager::instance().poolResize ( 5 );
+
   }
 
   ~Program()
@@ -75,7 +81,7 @@ public:
 
     // Load the plugins.
     Usul::Components::Loader < XmlTree::Document > loader;
-    loader.parse ( CV::Config::filename ( "registry" ) );
+    loader.parse ( Usul::App::Application::instance().configFile ( "registry" ) );
     loader.load ( feedback->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 
     // Print what we found.

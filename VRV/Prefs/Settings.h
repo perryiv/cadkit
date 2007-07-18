@@ -16,7 +16,7 @@
 #ifndef _VRV_SETTINGS_CLASS_H_
 #define _VRV_SETTINGS_CLASS_H_
 
-#include "VRV/Prefs/Export.h"
+#include "VRV/Export.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
@@ -46,7 +46,7 @@ class Grids
 };
 
 
-class VRV_PREFS_EXPORT Settings : public Usul::Base::Referenced
+class VRV_EXPORT Settings : public Usul::Base::Referenced
 {
 public:
 

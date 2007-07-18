@@ -32,7 +32,6 @@
 #include "VRV/Interfaces/IRequestRead.h"
 #include "VRV/Interfaces/IButtonCallback.h"
 #include "VRV/Interfaces/IMenuCallback.h"
-#include "VRV/Prefs/Settings.h"
 
 #include "VRV/Core/Application.h"
 #include "VRV/Functors/Matrix/MatrixFunctor.h"
@@ -249,9 +248,6 @@ protected:
   virtual void                  postFrame();
   void                          _postFrame();
 
-  // Read the user's preferences.
-  void                          _readUserPreferences();
-
   // Seek to the intersected point, if any.
   void                          _seek();
 
@@ -378,8 +374,6 @@ protected:
   typedef Interfaces::IMaterialStack::QueryPtr          IMaterialStackPtr;
   typedef USUL_VALID_REF_POINTER(MenuKit::OSG::Menu)    MenuPtr;
   typedef std::map<std::string,MenuKit::Callback::Ptr>  ButtonMap;
-  typedef VRV::Prefs::Settings                          Preferences;
-  typedef Preferences::ValidRefPtr                      PrefsPtr;
   typedef std::map<std::string,osg::Vec4>               ColorMap;
 
   // Data members.
@@ -415,7 +409,6 @@ protected:
   MenuPtr           _menu;
   MenuPtr           _statusBar;
   ButtonMap         _buttonMap;
-  PrefsPtr          _prefs;
   osg::Matrixf      _home;
   ColorMap          _colorMap;
   std::vector<OsgTools::Grid> _gridFunctors;

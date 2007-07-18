@@ -1064,7 +1064,7 @@ double Application::worldRadius() const
   Guard guard ( this->mutex() );
 
   // Use the whole scene or just the navBranch?
-  return _sceneManager->scene()->getBound().radius();
+  return _navBranch->getBound().radius();
 }
 
 

@@ -104,6 +104,9 @@ public:
   void                  rowId( int id );
   int                   rowId() const;
 
+  /// Is the data object transparent?
+  bool                  transparent() const;
+
   /// Get/Set the database connection.
   void                                  connection( Minerva::Core::DB::Connection* );
   Minerva::Core::DB::Connection *       connection();
@@ -118,16 +121,16 @@ protected:
 
 private:
 
-  bool _dirty;
+  bool         _dirty;
   unsigned int _renderBin;
-  osg::Vec4 _color;
-  std::string _tableName;
-  int _rowId;
-  std::string _label;
-  osg::Vec3 _labelPosition;
-  osg::Vec4 _labelColor;
-  float _labelSize;
-  bool _showLabel;
+  osg::Vec4    _color;
+  std::string  _tableName;
+  int          _rowId;
+  std::string  _label;
+  osg::Vec3    _labelPosition;
+  osg::Vec4    _labelColor;
+  float        _labelSize;
+  bool         _showLabel;
   Unknown::QueryPtr _geometry;
   Minerva::Core::DB::Connection::RefPtr _connection;
 

@@ -116,7 +116,7 @@ PointLayer::~PointLayer()
 void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 {
   // Lock the mutex.
-  Guard guard( _mutex );
+  Guard guard( this->mutex() );
 
   Minerva::Core::DB::Connection::ScopedConnection scopedConnection ( *this->connection() );
 

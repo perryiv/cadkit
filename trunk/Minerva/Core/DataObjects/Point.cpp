@@ -24,6 +24,7 @@
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Trace/Trace.h"
 
+#include "OsgTools/Callbacks/SortBackToFront.h"
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Font.h"
 
@@ -212,13 +213,17 @@ osg::Node* Point::buildScene()
     if( 1.0f == this->color().w() )
     {
       ss->setMode ( GL_BLEND,      osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
-      ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON  | osg::StateAttribute::OVERRIDE );
+      //ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON  | osg::StateAttribute::OVERRIDE );
     }
     else
     {
-      _material->setTransparency( osg::Material::FRONT_AND_BACK, this->color().w() );
+      _material->setTransparency( osg::Material::FRONT_AND_BACK, 1.0f - this->color().w() );
       ss->setMode ( GL_BLEND,      osg::StateAttribute::ON  | osg::StateAttribute::OVERRIDE );
-      ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
+
+      // If we don't have a render bin assigned, use the transparent bin.
+      if( 0 == this->renderBin() )
+        ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
+      //ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
     }
 
     // Set the material.
@@ -504,7 +509,14 @@ osg::Node* Point::_buildCylinder()
     // Convert to earth coordinates.
 
     unsigned int sides ( static_cast < unsigned int > ( 20 * this->quality() ) );
-    geode->addDrawable( BaseClass::shapeFactory()->cylinder( this->secondarySize(), sides, v0, v1 ) );
+    osg::ref_ptr < osg::Geometry > geometry ( BaseClass::shapeFactory()->cylinder( this->secondarySize(), sides, v0, v1, !this->transparent() ) );
+    geode->addDrawable( geometry.get() );
+
+    if( this->transparent() )
+    {
+      geode->setCullCallback ( new OsgTools::Callbacks::SortBackToFront );
+      geometry->setUseDisplayList ( false );
+    }
   }
 
   return geode.release();

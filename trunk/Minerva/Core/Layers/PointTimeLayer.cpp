@@ -165,7 +165,7 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
   USUL_TRACE_SCOPE;
 
   // Guard this section of code.
-  Guard guard ( _mutex);
+  Guard guard( this->mutex() );
 
   Minerva::Core::DB::Connection::ScopedConnection scopedConnection ( *this->connection() );
 
@@ -261,7 +261,7 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 void PointTimeLayer::modify( Usul::Interfaces::IUnknown *caller )
 {
   // Guard this section of code.
-  Guard guard ( _mutex);
+  Guard guard( this->mutex() );
 
   // Get the data objects.
   DataObjects &dataObjects ( this->_getDataObjects() );

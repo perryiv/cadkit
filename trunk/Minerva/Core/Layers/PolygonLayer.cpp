@@ -112,7 +112,7 @@ PolygonLayer::~PolygonLayer()
 void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 {
   // Guard this section of code.
-  Guard guard ( _mutex);
+  Guard guard( this->mutex() );
 
   Minerva::Core::DB::Connection::ScopedConnection scopedConnection ( *this->connection() );
 

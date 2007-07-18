@@ -48,7 +48,6 @@ SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 ///////////////////////////////////////////////////////////////////////////////
 
 Layer::Layer() : BaseClass(),
-_mutex(),
 _guid ( Usul::Functions::GUID::generate() ),
 _name( "Layer" ),
 _primaryKeyColumn( "id" ),
@@ -63,6 +62,7 @@ _dataObjects(),
 _connection(),
 _colorFunctor( 0x0 ),
 _legendText( "" ),
+_showInLegend ( true ),
 _showLabel ( false ),
 _shown ( true ),
 _labelColor( 1.0, 1.0, 1.0, 1.0 ),
@@ -72,6 +72,7 @@ _colorColumn(),
 _customQuery ( false ),
 _legendFlags ( 0x0 ),
 _minMax ( std::numeric_limits< double >::max(), std::numeric_limits< double >::min() ),
+_alpha ( 1.0f ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
   USUL_TRACE_SCOPE;
@@ -87,7 +88,6 @@ SERIALIZE_XML_INITIALIZER_LIST
 ///////////////////////////////////////////////////////////////////////////////
 
 Layer::Layer( const Layer& layer )  : BaseClass(),
-_mutex(),
 _guid ( layer._guid ),
 _name( layer._name ),
 _primaryKeyColumn( layer._primaryKeyColumn ),
@@ -102,6 +102,7 @@ _dataObjects( layer._dataObjects ),
 _connection( layer._connection ),
 _colorFunctor( 0x0 ),
 _legendText( layer._legendText ),
+_showInLegend ( layer._showInLegend ),
 _showLabel ( layer._showLabel ),
 _shown ( layer._shown ),
 _labelColor( layer._labelColor ),
@@ -110,7 +111,8 @@ _labelSize ( layer._labelSize ),
 _colorColumn( layer._colorColumn ),
 _customQuery( layer._customQuery ),
 _legendFlags ( layer._legendFlags ),
-_minMax( layer._minMax )
+_minMax( layer._minMax ),
+_alpha ( layer._alpha )
 {
   USUL_TRACE_SCOPE;
 
@@ -143,6 +145,7 @@ void Layer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _connection );
   SERIALIZE_XML_ADD_MEMBER ( _colorFunctor );
   SERIALIZE_XML_ADD_MEMBER ( _legendText );
+  SERIALIZE_XML_ADD_MEMBER ( _showInLegend );
   SERIALIZE_XML_ADD_MEMBER ( _showLabel );
   SERIALIZE_XML_ADD_MEMBER ( _shown );
   SERIALIZE_XML_ADD_MEMBER ( _labelColor );
@@ -151,6 +154,7 @@ void Layer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _colorColumn );
   SERIALIZE_XML_ADD_MEMBER ( _customQuery );
   SERIALIZE_XML_ADD_MEMBER ( _legendFlags );
+  SERIALIZE_XML_ADD_MEMBER ( _alpha );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -199,7 +203,7 @@ void Layer::traverse ( Minerva::Core::Visitor& visitor )
 
 void Layer::connection ( Minerva::Core::DB::Connection *connection )
 {
-  Guard guard( _mutex );
+  Guard guard( this->mutex() );
   _connection = connection;
 }
 
@@ -212,7 +216,7 @@ void Layer::connection ( Minerva::Core::DB::Connection *connection )
 
 Minerva::Core::DB::Connection* Layer::connection ()
 {
-  Guard guard( _mutex );
+  Guard guard( this->mutex() );
   return _connection;
 }
 
@@ -225,7 +229,7 @@ Minerva::Core::DB::Connection* Layer::connection ()
 
 void Layer::tablename( const std::string& table )
 {
-  Guard guard( _mutex );
+  Guard guard( this->mutex() );
   _tablename = table;
 }
 
@@ -238,6 +242,7 @@ void Layer::tablename( const std::string& table )
 
 const std::string& Layer::tablename() const
 {
+  Guard guard( this->mutex() );
   return _tablename;
 }
 
@@ -250,7 +255,7 @@ const std::string& Layer::tablename() const
 
 void Layer::labelColumn( const std::string& column )
 {
-  Guard guard( _mutex );
+  Guard guard( this->mutex() );
   _labelColumn = column;
 }
 
@@ -263,6 +268,7 @@ void Layer::labelColumn( const std::string& column )
 
 const std::string& Layer::labelColumn() const
 {
+  Guard guard( this->mutex() );
   return _labelColumn;
 }
 
@@ -275,7 +281,7 @@ const std::string& Layer::labelColumn() const
 
 void Layer::renderBin( Usul::Types::Uint32 bin )
 {
-  Guard guard( _mutex );
+  Guard guard( this->mutex() );
   _renderBin = bin;
 }
 
@@ -288,6 +294,7 @@ void Layer::renderBin( Usul::Types::Uint32 bin )
 
 Usul::Types::Uint32 Layer::renderBin( ) const
 {
+  Guard guard( this->mutex() );
   return _renderBin;
 }
 
@@ -300,20 +307,13 @@ Usul::Types::Uint32 Layer::renderBin( ) const
 
 void Layer::buildScene( osg::Group* parent )
 {
-  Guard guard( _mutex );
-  //std::for_each( _dataObjects.begin(), _dataObjects.end(), std::mem_fun( &DataObject::buildScene) );
+  Guard guard( this->mutex() );
 
   unsigned int size ( _dataObjects.size() );
 
   for( DataObjects::iterator iter = _dataObjects.begin(); iter != _dataObjects.end(); ++iter )
   {
     parent->addChild( (*iter)->buildScene() );
-
-#ifndef _MSC_VER
-    //unsigned int num ( iter - _dataObjects.begin() );
-    //if( num % 10 == 0 )
-    //  std::cout << this->name() << " " << num << std::endl;
-#endif
   }
 }
 
@@ -326,7 +326,7 @@ void Layer::buildScene( osg::Group* parent )
 
 void Layer::query ( const std::string& query )
 {
-  Guard guard( _mutex );
+  Guard guard( this->mutex() );
   _query = query;
 }
 
@@ -339,6 +339,7 @@ void Layer::query ( const std::string& query )
 
 const std::string& Layer::query ( ) const
 {
+  Guard guard( this->mutex() );
   return _query;
 }
 
@@ -399,6 +400,7 @@ bool Layer::isTemporal() const
 
 void Layer::colorFunctor( Minerva::Core::Functors::BaseColorFunctor *colorFunctor )
 {
+  Guard guard( this->mutex() );
   _colorFunctor = colorFunctor;
 }
 
@@ -411,6 +413,7 @@ void Layer::colorFunctor( Minerva::Core::Functors::BaseColorFunctor *colorFuncto
 
 Minerva::Core::Functors::BaseColorFunctor * Layer::colorFunctor()
 {
+  Guard guard( this->mutex() );
   return _colorFunctor.get();
 }
 
@@ -423,6 +426,7 @@ Minerva::Core::Functors::BaseColorFunctor * Layer::colorFunctor()
 
 const Minerva::Core::Functors::BaseColorFunctor * Layer::colorFunctor() const
 {
+  Guard guard( this->mutex() );
   return _colorFunctor.get();
 }
 
@@ -435,6 +439,7 @@ const Minerva::Core::Functors::BaseColorFunctor * Layer::colorFunctor() const
 
 void Layer::xOffset( float f )
 {
+  Guard guard( this->mutex() );
   _xOffset = f;
 }
 
@@ -447,6 +452,7 @@ void Layer::xOffset( float f )
 
 float Layer::xOffset( ) const
 {
+  Guard guard( this->mutex() );
   return _xOffset;
 }
 
@@ -458,6 +464,7 @@ float Layer::xOffset( ) const
 
 void Layer::yOffset( float f )
 {
+  Guard guard( this->mutex() );
   _yOffset = f;
 }
 
@@ -470,6 +477,7 @@ void Layer::yOffset( float f )
 
 float Layer::yOffset( ) const
 {
+  Guard guard( this->mutex() );
   return _yOffset;
 }
 
@@ -482,6 +490,7 @@ float Layer::yOffset( ) const
 
 void Layer::zOffset( float f )
 {
+  Guard guard( this->mutex() );
   _zOffset = f;
 }
 
@@ -494,6 +503,7 @@ void Layer::zOffset( float f )
 
 float Layer::zOffset( ) const
 {
+  Guard guard( this->mutex() );
   return _zOffset;
 }
 
@@ -506,6 +516,7 @@ float Layer::zOffset( ) const
 
 void Layer::legendText( const std::string& text )
 {
+  Guard guard( this->mutex() );
   _legendText = text;
 }
 
@@ -518,6 +529,7 @@ void Layer::legendText( const std::string& text )
 
 const std::string& Layer::legendText() const
 {
+  Guard guard( this->mutex() );
   return _legendText;
 }
 
@@ -530,6 +542,7 @@ const std::string& Layer::legendText() const
 
 void Layer::showLabel( bool b )
 {
+  Guard guard( this->mutex() );
   _showLabel = b;
 }
 
@@ -542,6 +555,7 @@ void Layer::showLabel( bool b )
 
 bool Layer::showLabel() const
 {
+  Guard guard( this->mutex() );
   return _showLabel;
 }
 
@@ -554,6 +568,7 @@ bool Layer::showLabel() const
 
 void Layer::showLayer( bool b )
 {
+  Guard guard( this->mutex() );
   _shown = b;
 }
 
@@ -566,6 +581,7 @@ void Layer::showLayer( bool b )
 
 bool Layer::showLayer() const
 {
+  Guard guard( this->mutex() );
   return _shown;
 }
 
@@ -578,6 +594,7 @@ bool Layer::showLayer() const
 
 void Layer::labelColor( const osg::Vec4& color )
 {
+  Guard guard( this->mutex() );
   _labelColor = color;
 }
 
@@ -590,6 +607,7 @@ void Layer::labelColor( const osg::Vec4& color )
 
 const osg::Vec4& Layer::labelColor() const
 {
+  Guard guard( this->mutex() );
   return _labelColor;
 }
 
@@ -602,6 +620,7 @@ const osg::Vec4& Layer::labelColor() const
 
 void Layer::labelZOffset( float offset )
 {
+  Guard guard( this->mutex() );
   _labelZOffset = offset;
 }
 
@@ -614,6 +633,7 @@ void Layer::labelZOffset( float offset )
 
 float Layer::labelZOffset() const
 {
+  Guard guard( this->mutex() );
   return _labelZOffset;
 }
 
@@ -626,6 +646,7 @@ float Layer::labelZOffset() const
 
 void  Layer::colorColumn( const std::string& column )
 {
+  Guard guard( this->mutex() );
   _colorColumn = column;
 }
 
@@ -638,6 +659,7 @@ void  Layer::colorColumn( const std::string& column )
 
 const std::string& Layer::colorColumn() const
 {
+  Guard guard( this->mutex() );
   return _colorColumn;
 }
 
@@ -714,6 +736,7 @@ void Layer::_labelDataObject ( Minerva::Core::DataObjects::DataObject* dataObjec
 
 void Layer::labelSize( float size )
 {
+  Guard guard( this->mutex() );
   _labelSize = size;
 }
 
@@ -726,6 +749,7 @@ void Layer::labelSize( float size )
 
 float Layer::labelSize() const
 {
+  Guard guard( this->mutex() );
   return _labelSize;
 }
 
@@ -738,6 +762,7 @@ float Layer::labelSize() const
 
 void Layer::name( const std::string& name )
 {
+  Guard guard( this->mutex() );
   _name = name;
 }
 
@@ -750,6 +775,7 @@ void Layer::name( const std::string& name )
 
 const std::string&  Layer::name() const
 {
+  Guard guard( this->mutex() );
   return _name;
 }
 
@@ -1009,7 +1035,7 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
       if( this->showCountLegend() )
       {
         unsigned int index ( row->addText ( new OsgTools::Legend::Text ( Usul::Functions::toString( this->number() ) ) ) );
-	row->at ( index )->alignment ( OsgTools::Legend::Text::RIGHT );
+	      row->at ( index )->alignment ( OsgTools::Legend::Text::RIGHT );
         row->percentage( index ) = 0.20;
       }
 
@@ -1101,4 +1127,56 @@ void Layer::_updateMinMax ( double value )
     _minMax.first = value;
   if ( value > _minMax.second )
     _minMax.second = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the alpha value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::alpha ( float a )
+{
+  Guard guard( this->mutex() );
+  _alpha = a;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the alpha value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float Layer::alpha () const
+{
+  Guard guard( this->mutex() );
+  return _alpha;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set flag to show layer in legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::showInLegend ( bool b )
+{
+  Guard guard( this->mutex() );
+  _showInLegend = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get flag to show layer in legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Layer::showInLegend () const
+{
+  Guard guard( this->mutex() );
+  return _showInLegend;
 }

@@ -202,7 +202,7 @@ void SceneManager::_buildLegend()
     for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
     {
       Usul::Interfaces::IAddRowLegend::QueryPtr addRow ( iter->second.get() );
-      if( iter->second->showLayer() && addRow.valid() )
+      if( iter->second->showLayer() && addRow.valid() && addRow->showInLegend() )
       {
         OsgTools::Legend::LegendObject::RefPtr row ( new OsgTools::Legend::LegendObject );
         addRow->addLegendRow( row.get() );

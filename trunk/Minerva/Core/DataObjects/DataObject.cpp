@@ -411,7 +411,7 @@ osg::Node* DataObject::_buildLabel()
   text->setFont( OsgTools::Font::defaultFont() );
   text->setColor( this->labelColor() );
   text->setPosition ( this->labelPosition() );
-  text->setAutoRotateToScreen(true);
+  text->setAutoRotateToScreen( true );
   text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
   text->setCharacterSize( this->labelSize() );
 
@@ -455,4 +455,16 @@ bool DataObject::showLabel () const
 
 void DataObject::preBuildScene()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this data object transparent?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DataObject::transparent() const
+{
+  return 1.0f != this->color().w();
 }

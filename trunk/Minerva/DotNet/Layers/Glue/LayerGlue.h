@@ -116,6 +116,12 @@ namespace DT
         ]
         PROPERTY_GET_SET(ColorColumn, System::String^);
 
+        /// Get/Set the alpha.
+        [
+          System::ComponentModel::Category("Color")
+        ]
+        PROPERTY_GET_SET(Alpha, float);
+
 
         /// Get/Set the legend text.
         [
@@ -141,6 +147,12 @@ namespace DT
           System::ComponentModel::Category("Legend")
         ]
         PROPERTY_GET_SET(ShowMaxLegend, bool);
+
+        /// Get/Set the show in legend flag
+        [
+          System::ComponentModel::Category("Legend")
+        ]
+        PROPERTY_GET_SET(ShowInLegend, bool);
 
         /// Get/Set show label.
         [

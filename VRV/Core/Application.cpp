@@ -447,6 +447,44 @@ void Application::_preDraw( OsgTools::Render::Renderer *renderer )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Write a image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class ImageWriteJob : public Usul::Jobs::Job
+{
+public:
+  typedef Usul::Jobs::Job BaseClass;
+
+  ImageWriteJob ( const std::string& filename, osg::Image *image ) : 
+    BaseClass (),
+    _filename ( filename ),
+    _image ( image )
+  {
+  }
+
+  virtual ~ImageWriteJob ()
+  {
+  }
+
+protected:
+
+  virtual void _started()
+  {
+    std::cout << " Writing image file: " << _filename << std::endl;
+
+    // Write the image to file.
+    osgDB::writeImageFile ( *_image, _filename );
+  }
+
+private:
+  std::string _filename;
+  osg::ref_ptr < osg::Image > _image;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Called before after happens.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -458,26 +496,28 @@ void Application::_postDraw( OsgTools::Render::Renderer *renderer )
   if( true == _exportImage )
   {
     /// Scales 1400 pixel to 4096.
-    const double multiplier ( 2.92f );
+    //const double multiplier ( 2.92f );
+    const double multiplier ( 6.0f );
 
     // Scale the width and height.
     unsigned int width  ( static_cast < unsigned int > ( _viewport->width()  * multiplier ) );
     unsigned int height ( static_cast < unsigned int > ( _viewport->height() * multiplier ) );
 
     // Capture image.
-    osg::ref_ptr<osg::Image> image ( renderer->screenCapture ( renderer->viewMatrix(), width, height ) );
+    osg::ref_ptr<osg::Image> image ( renderer->screenCapture ( multiplier, 1 ) );
 
     // How many images have we exported.
     static unsigned int count ( 0 );
 
     // Construct the filename.
     std::ostringstream filename;
-    filename << Usul::System::Directory::home( true ) << "screen_shots/" << count++ << "_" << Usul::System::Host::name() << "_" << ".bmp";
+    filename << "/array/cluster/data/screen_shots/" << count++ << "_" << Usul::System::Host::name() << "_" << ".bmp";
 
-    std::cout << " Writing image file: " << filename.str() << std::endl;
+    Usul::Jobs::Manager::instance().add ( new ImageWriteJob ( filename.str(), image.get() ) );
+    //std::cout << " Writing image file: " << filename.str() << std::endl;
 
     // Write the image to file.
-    osgDB::writeImageFile ( *image, filename.str() );
+    //osgDB::writeImageFile ( *image, filename.str() );
 
     // Don't export next time.
     _exportImage = false;
@@ -563,8 +603,8 @@ void Application::init()
   _sharedFrameTime.init ( guid, "viz0" );
 
   // Add the progress bars to the scene.
-  //osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
-  //group->addChild ( _progressBars->buildScene() );
+  osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
+  group->addChild ( _progressBars->buildScene() );
 }
 
 
@@ -591,7 +631,7 @@ void Application::preFrame()
   _frameStart = _timer.tick();
 
   // Update the progress bars.
-  //_progressBars->buildScene();
+  _progressBars->buildScene();
 
   // Purge.
   Usul::Jobs::Manager::instance().purge();

@@ -17,7 +17,6 @@
 #include "Application.h"
 #include "Constants.h"
 #include "ErrorChecker.h"
-#include "ConfigFiles.h"
 #include "SceneFunctors.h"
 #include "ScenePredicates.h"
 
@@ -581,12 +580,15 @@ void Application::_initLight()
   osg::ref_ptr<osg::Light> light ( new osg::Light );
   osg::Vec3 ld;
   osg::Vec4 lp;
+  osg::Vec4 ambient;
 
   OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->lightPosition(), lp, 4 );
   OsgTools::Convert::vector<Usul::Math::Vec3f,osg::Vec3>( this->preferences()->lightDirection(), ld, 3 );
+  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->ambientLightColor(), ambient, 4 );
 
   light->setPosition( lp );
   light->setDirection( ld );
+  light->setAmbient ( ambient );
 
   this->addLight ( light.get() );
 }

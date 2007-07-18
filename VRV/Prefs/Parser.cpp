@@ -124,6 +124,7 @@ void Parser::_read ( const std::string &filename )
   MemFun setGridRotationVector   ( this, &Parser::_setGridRotationVector   );
   MemFun offsetGrid        ( this, &Parser::_offsetGrid        );
   MemFun setNearClip       ( this, &Parser::_setNearClip       );
+  MemFun setFarMult        ( this, &Parser::_setFarMultiplier  );
   MemFun setViewAllScale   ( this, &Parser::_setViewAllScale   );
   MemFun setLightAmbient   ( this, &Parser::_setLightAmbient   );
   MemFun setLightDiffuse   ( this, &Parser::_setLightDiffuse   );
@@ -163,6 +164,7 @@ void Parser::_read ( const std::string &filename )
   Helper::add ( reader, start, "grid/rotation_vector",     setGridRotationVector   );
   Helper::add ( reader, start, "grid/offset",              offsetGrid        );
   Helper::add ( reader, start, "clipping_plane/near",      setNearClip       );
+  Helper::add ( reader, start, "clipping_plane/far_multiplier", setFarMult       );
   Helper::add ( reader, start, "view_all/scale",           setViewAllScale   );
   Helper::add ( reader, start, "light/ambient",            setLightAmbient   );
   Helper::add ( reader, start, "light/diffuse",            setLightDiffuse   );
@@ -383,6 +385,19 @@ void Parser::_setNearClip ( const std::string &s )
 {
   ErrorChecker ( 1083817590u, !s.empty() );
   _settings->nearClippingDistance ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the far clipping plane multiplier.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setFarMultiplier ( const std::string &s )
+{
+  ErrorChecker ( 1083817590u, !s.empty() );
+  _settings->farClippingPlaneMultiplier ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
 }
 
 

@@ -90,6 +90,10 @@ public:
   float                 nearClippingDistance() const { return _zNear; }
   void                  nearClippingDistance ( float zNear ) { _zNear = zNear; }
 
+  /// Far plane multiplier.
+  float                 farClippingPlaneMultiplier () const { return _zFarPlaneMultiplier; }
+  void                  farClippingPlaneMultiplier ( float value ) { _zFarPlaneMultiplier = value; }
+
   // The scale factor that is multiplied by the bounding-sphere radius. 
   // The resulting number is the distance in the z-direction the node 
   // is moved in order to make it visible.
@@ -206,6 +210,7 @@ private:
 
   std::vector<Grids> _grids;
   float _zNear;
+  float _zFarPlaneMultiplier;
   float _zScale;
   Color _ambientLight;
   Color _diffuseLight;

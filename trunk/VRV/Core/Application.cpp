@@ -1012,14 +1012,8 @@ void Application::_setNearAndFarClippingPlanes()
     radius = 1;
 
   // Set both distances.
-  _clipDist[0] = 0.1f;
-  _clipDist[1] = 5 * radius;
-
-  // Don't allow a far plane less that 40; it's just too small
-  if ( _clipDist[1] < 40 )
-  {
-    _clipDist[1] = 40.0f;
-  }
+  _clipDist[0] = this->preferences()->nearClippingDistance();
+  _clipDist[1] = radius * this->preferences()->farClippingPlaneMultiplier();
   
   // Set the clipping planes
   vrj::Projection::setNearFar ( _clipDist[0], _clipDist[1] );

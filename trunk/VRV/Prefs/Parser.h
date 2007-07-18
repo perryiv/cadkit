@@ -55,6 +55,7 @@ protected:
   void                  _setGridRotationVector   ( const std::string & );
   void                  _offsetGrid        ( const std::string & );
   void                  _setNearClip       ( const std::string & );
+  void                  _setFarMultiplier  ( const std::string & );
   void                  _setViewAllScale   ( const std::string & );
   void                  _setLightAmbient   ( const std::string & );
   void                  _setLightDiffuse   ( const std::string & );

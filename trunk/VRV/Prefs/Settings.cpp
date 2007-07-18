@@ -24,7 +24,8 @@ using namespace VRV::Prefs;
 
 // Constructor
 Settings::Settings()  : BaseClass(),
-                        _zNear          ( 0.1f ),
+                        _zNear               ( 0.1f ),
+                        _zFarPlaneMultiplier ( 1 ),
                         _zScale         ( 2 ),
                         _ambientLight   ( 0.2f, 0.2f, 0.2f, 1.0f ),
                         _diffuseLight   ( 1.0f, 1.0f, 1.0f, 1.0f ),

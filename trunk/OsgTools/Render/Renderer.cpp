@@ -112,6 +112,9 @@ Renderer::~Renderer()
 
 void Renderer::init()
 {
+  // Initialize the SceneView.
+  this->viewer()->init();
+
   // Set defaults for the global state set.
   this->getGlobalStateSet()->setGlobalDefaults();
 

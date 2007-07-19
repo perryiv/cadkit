@@ -21,7 +21,7 @@
 #include "Threads/OpenThreads/Thread.h"
 
 #include "OsgTools/Widgets/ProgressBarGroup.h"
-#include "OsgTools/Widgets/ThreadSafeProgressBarGroup.h"
+#include "OsgTools/Widgets/ProgressBarGroup.h"
 
 #include "osg/Group"
 #include "osgViewer/Viewer"
@@ -33,12 +33,12 @@ namespace Detail
   typedef std::vector<unsigned long> RandomNumbers;
   RandomNumbers randomNumbers;
 }
-class ThreadSafeProgressBarGroupCallback : public osg::NodeCallback
+class ProgressBarGroupCallback : public osg::NodeCallback
 {
   public:
   //typedef osg::Drawable::UpdateCallback   BaseClass;
 
-  ThreadSafeProgressBarGroupCallback ( OsgTools::Widgets::ThreadSafeProgressBarGroup * pbarGroup ) :
+  ProgressBarGroupCallback ( OsgTools::Widgets::ProgressBarGroup * pbarGroup ) :
   _pbarGroup ( pbarGroup )
   {
   }
@@ -53,13 +53,13 @@ class ThreadSafeProgressBarGroupCallback : public osg::NodeCallback
   }
 
 protected:
-  virtual ~ThreadSafeProgressBarGroupCallback()
+  virtual ~ProgressBarGroupCallback()
   {
     _pbarGroup = 0x0;
   }
 private:
  
-  OsgTools::Widgets::ThreadSafeProgressBarGroup * _pbarGroup;
+  OsgTools::Widgets::ProgressBarGroup * _pbarGroup;
 };
 
 
@@ -97,9 +97,9 @@ void _test()
   // Create the scene.
   osg::ref_ptr< osg::Group > root ( new osg::Group() );
 
-  osg::ref_ptr< OsgTools::Widgets::ThreadSafeProgressBarGroup > progressBar ( new OsgTools::Widgets::ThreadSafeProgressBarGroup() );
+  osg::ref_ptr< OsgTools::Widgets::ProgressBarGroup > progressBar ( new OsgTools::Widgets::ProgressBarGroup() );
   root->addChild( progressBar->getScene() );
-  root->setUpdateCallback ( new ThreadSafeProgressBarGroupCallback ( progressBar.get() ) );
+  root->setUpdateCallback ( new ProgressBarGroupCallback ( progressBar.get() ) );
 
   // Construct the viewer.
   osgViewer::Viewer viewer;

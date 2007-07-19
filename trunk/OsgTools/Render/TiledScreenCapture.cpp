@@ -280,12 +280,12 @@ void TiledScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& sc
   downSample.numSamples ( this->numSamples( ) );
   downSample.filterSize ( filterWidth, filterHeight );
 
-  typedef std::vector < std::string > Files;
-  Files files;
+  //typedef std::vector < std::string > Files;
+  //Files files;
 
-  // Create a temp file.
-  std::string filename ( Usul::File::Temp::file() );
-  files.push_back ( filename );
+  //// Create a temp file.
+  //std::string filename ( Usul::File::Temp::file() );
+  //files.push_back ( filename );
 
   unsigned int i ( 0 );
 
@@ -305,11 +305,11 @@ void TiledScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& sc
       // Downsample.
       //osg::ref_ptr < osg::Image > downTile ( downSample ( tile.get() ) );
 
-      std::ostringstream os;
+      /*std::ostringstream os;
       os << filename << "_" << i << "_" << j++ << ".bmp";
       files.push_back ( os.str() );
 
-      osgDB::writeImageFile ( *tile, os.str () );
+      osgDB::writeImageFile ( *tile, os.str () );*/
 
       // Add tile to answer image.
       this->_accumulate ( image, *tile, static_cast < unsigned int > ( x + firstX ), static_cast < unsigned int > ( y + firstY ) );
@@ -318,8 +318,8 @@ void TiledScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& sc
     ++i;
   }
 
-  for ( Files::iterator iter = files.begin(); iter != files.end(); ++iter )
-    Usul::File::remove ( *iter );
+  /*for ( Files::iterator iter = files.begin(); iter != files.end(); ++iter )
+    Usul::File::remove ( *iter );*/
 }
 
 

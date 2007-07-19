@@ -100,7 +100,7 @@ void BuildScene::visit ( Body &body )
   Guard guard ( this->mutex() );
 
   // Add planet to the scene.
-  _scene->addChild ( body.planet() );
+  _scene->addChild ( body.scene() );
 
   // Call the base class's function.
   BaseClass::visit ( body );

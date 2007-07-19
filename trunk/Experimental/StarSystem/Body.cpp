@@ -40,16 +40,22 @@ STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( Body );
 ///////////////////////////////////////////////////////////////////////////////
 
 Body::Body() : BaseClass(),
-  _planet ( new ossimPlanet() ),
-  _pager  ( new osgDB::DatabasePager() )
+  _planet    ( new ossimPlanet() ),
+  _pager     ( new osgDB::DatabasePager() ),
+  _transform ( new osg::MatrixTransform() )
 {
   USUL_TRACE_SCOPE;
 
   // Not using smart pointers.
   _planet->ref();
+  _pager->ref();
+  _transform->ref();
+
+  // Add the planet to the transform.
+  _transform->addChild ( _planet );
 
   // Set the default attributes.
-  _planet->getLand()->setLandType ( ossimPlanetLandType_NORMALIZED_ELLIPSOID );
+  _planet->getLand()->setLandType ( ossimPlanetLandType_ELLIPSOID );
   _planet->getLand()->setElevationEnabledFlag ( true );
   _planet->getLand()->setHeightExag ( 1.0 );
   _planet->getLand()->setElevationPatchSize ( 16 );
@@ -59,7 +65,6 @@ Body::Body() : BaseClass(),
   _planet->getLand()->resetGraph();
 
   // Initialize the database pager.
-  _pager->ref();
   _pager->setExpiryDelay ( 0 );
   _pager->setUseFrameBlock ( true );
   _pager->setAcceptNewDatabaseRequests ( true );
@@ -91,34 +96,35 @@ void Body::_destroy()
   USUL_TRACE_SCOPE;
   _planet->unref(); _planet = 0x0;
   _pager->unref(); _pager = 0x0;
+  _transform->unref(); _transform = 0x0;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the planet.
+//  Get the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const ossimPlanet *Body::planet() const
+const osg::Node *Body::scene() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return _planet;
+  return _transform;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the planet.
+//  Get the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ossimPlanet *Body::planet()
+osg::Node *Body::scene()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return _planet;
+  return _transform;
 }
 
 
@@ -133,4 +139,33 @@ osgDB::DatabasePager *Body::databasePager()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _pager;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the center.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::center ( Vec3d &c )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _transform->setMatrix ( osg::Matrix::translate ( c[0], c[1], c[2] ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the center.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Body::Vec3d Body::center() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  const osg::Vec3d c ( _transform->getMatrix().getTrans() );
+  return Vec3d ( c[0], c[1], c[2] );
 }

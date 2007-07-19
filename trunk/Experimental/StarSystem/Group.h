@@ -40,6 +40,9 @@ public:
   // Constructor
   Group();
 
+  // Add a node.
+  void                      add ( Node * );
+
   // Is the group empty?
   bool                      empty() const;
 

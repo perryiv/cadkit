@@ -31,6 +31,7 @@ public:
   // Useful typedefs.
   typedef Node BaseClass;
   typedef BaseClass::BuildOptions BuildOptions;
+  typedef Body::Vec3d Vec3d;
 
   // Helper macro for repeated code.
   STAR_SYSTEM_DEFINE_NODE_CLASS ( System );
@@ -38,10 +39,17 @@ public:
   // Constructor
   System();
 
+  // Add a satellite.
+  void                      add ( Node * );
+
   // Set/get the body.
   void                      body ( Body * );
   const Body *              body() const;
   Body *                    body();
+
+  // Set/get the center.
+  void                      center ( Vec3d & );
+  Usul::Math::Vec3d         center() const;
 
   // Set/get the satellites.
   void                      satellites ( Group * );

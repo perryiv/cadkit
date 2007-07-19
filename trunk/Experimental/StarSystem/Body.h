@@ -19,6 +19,9 @@
 
 #include "StarSystem/Node.h"
 
+#include "Usul/Math/Vector3.h"
+
+namespace osg { class MatrixTransform; }
 namespace osgDB { class DatabasePager; }
 class ossimPlanet;
 
@@ -34,6 +37,7 @@ public:
   typedef Node BaseClass;
   typedef BaseClass::BuildOptions BuildOptions;
   typedef osgDB::DatabasePager Pager;
+  typedef Usul::Math::Vec3d Vec3d;
 
   // Helper macro for repeated code.
   STAR_SYSTEM_DEFINE_NODE_CLASS ( Body );
@@ -41,9 +45,13 @@ public:
   // Constructor
   Body();
 
-  // Get the planet.
-  const ossimPlanet *       planet() const;
-  ossimPlanet *             planet();
+  // Set/get the center.
+  void                      center ( Vec3d & );
+  Usul::Math::Vec3d         center() const;
+
+  // Get the scene.
+  const osg::Node *         scene() const;
+  osg::Node *               scene();
 
   // Get the database pager.
   Pager *                   databasePager();
@@ -63,6 +71,7 @@ private:
 
   ossimPlanet *_planet;
   Pager *_pager;
+  osg::MatrixTransform *_transform;
 };
 
 

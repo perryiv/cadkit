@@ -326,6 +326,18 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="ArcAsciiGrid"
+					>
+					<File
+						RelativePath=".\TriangleReaderArcAsciiGrid.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\TriangleReaderArcAsciiGrid.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="DLL"

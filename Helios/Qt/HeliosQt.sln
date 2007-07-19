@@ -93,7 +93,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Snap Shot Qt", "Plugi
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Star System Model", "..\Plugins\StarSystemModel\StarSystemModel.vcproj", "{09C42E41-5FB5-4C19-992B-11CF3C1E2D1C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: StarSystem Model", "..\Plugins\StarSystemModel\StarSystemModel.vcproj", "{09C42E41-5FB5-4C19-992B-11CF3C1E2D1C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{E4BCE338-0E12-4E07-9F45-A59F294F21DA} = {E4BCE338-0E12-4E07-9F45-A59F294F21DA}
@@ -105,9 +105,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit StarSystem", ".
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Star System Delegate Qt", "Plugins\StarSystemDelegate\StarSystemDelegate.vcproj", "{334421AE-4829-4A52-B284-21FAAFAC9CE5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: StarSystem Delegate Qt", "Plugins\StarSystemDelegate\StarSystemDelegate.vcproj", "{334421AE-4829-4A52-B284-21FAAFAC9CE5}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D8524F0F-9938-4BFA-820A-924092ED40AD} = {D8524F0F-9938-4BFA-820A-924092ED40AD}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Triangle Model", "..\Plugins\TriangleModel\TriangleModel.vcproj", "{BA05EE0D-7CCA-42FF-8306-7460502ED650}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
@@ -197,6 +203,10 @@ Global
 		{334421AE-4829-4A52-B284-21FAAFAC9CE5}.Debug|Win32.Build.0 = Debug|Win32
 		{334421AE-4829-4A52-B284-21FAAFAC9CE5}.Release|Win32.ActiveCfg = Release|Win32
 		{334421AE-4829-4A52-B284-21FAAFAC9CE5}.Release|Win32.Build.0 = Release|Win32
+		{BA05EE0D-7CCA-42FF-8306-7460502ED650}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BA05EE0D-7CCA-42FF-8306-7460502ED650}.Debug|Win32.Build.0 = Debug|Win32
+		{BA05EE0D-7CCA-42FF-8306-7460502ED650}.Release|Win32.ActiveCfg = Release|Win32
+		{BA05EE0D-7CCA-42FF-8306-7460502ED650}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -123,3 +123,21 @@ bool Group::empty() const
   Guard guard ( this->mutex() );
   return _nodes.empty();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Group::add ( Node *node )
+{
+  USUL_TRACE_SCOPE;
+
+  if ( 0x0 != node )
+  {
+    Guard guard ( this->mutex() );
+    _nodes.push_back ( node );
+  }
+}

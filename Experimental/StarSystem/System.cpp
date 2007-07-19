@@ -153,3 +153,56 @@ const Body *System::body() const
   Guard guard ( this->mutex() );
   return _body.get();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a satellite.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void System::add ( Node *node )
+{
+  USUL_TRACE_SCOPE;
+
+  if ( 0x0 != node )
+  {
+    Guard guard ( this->mutex() );
+    if ( true == _satellites.valid() )
+    {
+      _satellites->add ( node );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the center.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void System::center ( Vec3d &c )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  if ( true == _body.valid() )
+  {
+    _body->center ( c );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the center.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+System::Vec3d System::center() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return ( ( true == _body.valid() ) ? _body->center() : System::Vec3d ( 0, 0, 0 ) ); // TODO
+}

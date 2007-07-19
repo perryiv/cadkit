@@ -197,6 +197,14 @@ public:
   void                  selectionColor ( const Color &c ) { _selectColor = c; }
   void                  selectionColor ( float r, float g, float b, float a ) { _selectColor.set ( r, g, b, a ); }  
   
+  /// Get/Set the frame scale multiplier.
+  void                  frameScale ( float f ) { _frameScale = f; }
+  float                 frameScale () const { return _frameScale; }
+
+  /// Get/Set the image export extension.
+  void                  imageExportExtension ( const std::string& ext ) { _imageExportExtension = ext; }
+  const std::string&    imageExportExtension ( ) const { return _imageExportExtension; }
+
 protected:
 
   // Use reference counting.
@@ -238,6 +246,8 @@ private:
   float _rotSpeed;
   float _scaleSpeed;
   Color _selectColor;
+  float _frameScale;
+  std::string _imageExportExtension;
 };
 
 

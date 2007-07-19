@@ -82,6 +82,8 @@ protected:
   void                  _setTransSpeed     ( const std::string & );
   void                  _setRotSpeed       ( const std::string & );
   void                  _setScaleSpeed     ( const std::string & );
+  void                  _setFrameScale     ( const std::string & );
+  void                  _setImageExportExt ( const std::string & );
 
 private:
 

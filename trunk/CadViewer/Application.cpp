@@ -711,6 +711,8 @@ void Application::_initMenu()
   CV_REGISTER ( _dropToFloor,      "drop_to_floor" );
   CV_REGISTER ( _increaseSpeed,    "increase_speed" );
   CV_REGISTER ( _decreaseSpeed,    "decrease_speed" );
+  CV_REGISTER ( _increaseSpeedTen,    "increase_speed_ten" );
+  CV_REGISTER ( _decreaseSpeedTen,    "decrease_speed_ten" );
   CV_REGISTER ( _exportImage,      "export_image" );
   CV_REGISTER ( _renderPassesOne,     "render_passes_one" );
   CV_REGISTER ( _renderPassesThree,   "render_passes_three" );

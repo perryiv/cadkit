@@ -1332,3 +1332,27 @@ void Application::_readUserPreferences()
     std::cout << message << std::endl;
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Increase speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_increaseTranslateSpeed ( double amount )
+{
+  this->preferences()->translationSpeed ( this->preferences()->translationSpeed() * amount );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Decrease speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_decreaseTranslateSpeed ( double amount )
+{
+  this->preferences()->translationSpeed ( this->preferences()->translationSpeed() / amount );
+}

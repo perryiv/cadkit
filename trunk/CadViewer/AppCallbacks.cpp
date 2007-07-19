@@ -1778,7 +1778,7 @@ void Application::_increaseSpeed    ( MenuKit::Message m, MenuKit::Item *item )
   switch( m )
   {
   case MenuKit::MESSAGE_SELECTED:
-    this->preferences()->translationSpeed ( this->preferences()->translationSpeed() * 2 );
+    this->_increaseTranslateSpeed ( 2.0 );
   }
 }
 
@@ -1795,9 +1795,50 @@ void Application::_decreaseSpeed    ( MenuKit::Message m, MenuKit::Item *item )
   switch( m )
   {
   case MenuKit::MESSAGE_SELECTED:
-    this->preferences()->translationSpeed ( this->preferences()->translationSpeed() / 2 );
+    this->_decreaseTranslateSpeed ( 2.0 );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Increase speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_increaseSpeedTen    ( MenuKit::Message m, MenuKit::Item *item )
+{
+  // Process the message.
+  switch( m )
+  {
+  case MenuKit::MESSAGE_SELECTED:
+    this->_increaseTranslateSpeed ( 10.0 );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Decrease speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_decreaseSpeedTen    ( MenuKit::Message m, MenuKit::Item *item )
+{
+  // Process the message.
+  switch( m )
+  {
+  case MenuKit::MESSAGE_SELECTED:
+    this->_decreaseTranslateSpeed ( 10.0 );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of rendering passes to one.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void Application::_renderPassesOne      ( MenuKit::Message m, MenuKit::Item *item )
 {
@@ -1809,6 +1850,13 @@ void Application::_renderPassesOne      ( MenuKit::Message m, MenuKit::Item *ite
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of rendering passes to three.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void Application::_renderPassesThree    ( MenuKit::Message m, MenuKit::Item *item )
 {
   // Process the message.
@@ -1819,6 +1867,13 @@ void Application::_renderPassesThree    ( MenuKit::Message m, MenuKit::Item *ite
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of rendering passes to nine.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void  Application::_renderPassesNine     ( MenuKit::Message m, MenuKit::Item *item )
 {
   // Process the message.
@@ -1828,6 +1883,13 @@ void  Application::_renderPassesNine     ( MenuKit::Message m, MenuKit::Item *it
     this->numRenderPasses ( 9 );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of rendering passes to tweleve.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void  Application::_renderPassesTweleve  ( MenuKit::Message m, MenuKit::Item *item )
 {

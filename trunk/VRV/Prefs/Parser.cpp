@@ -151,7 +151,9 @@ void Parser::_read ( const std::string &filename )
   MemFun setTransSpeed     ( this, &Parser::_setTransSpeed     );
   MemFun setRotSpeed       ( this, &Parser::_setRotSpeed       );
   MemFun setScaleSpeed     ( this, &Parser::_setScaleSpeed     );
-  
+  MemFun setFrameScale     ( this, &Parser::_setFrameScale     );
+  MemFun setImageExportExt ( this, &Parser::_setImageExportExt  );
+
   // Declare the reader and add the callbacks.
   XmlReader reader;
   XmlReader::WhichCallback start ( XmlReader::NODE_START );
@@ -191,6 +193,8 @@ void Parser::_read ( const std::string &filename )
   Helper::add ( reader, start, "speed/translate",          setTransSpeed     );
   Helper::add ( reader, start, "speed/rotate",             setRotSpeed       );
   Helper::add ( reader, start, "speed/scale",              setScaleSpeed     );
+  Helper::add ( reader, start, "image/frame_scale",        setFrameScale     );
+  Helper::add ( reader, start, "image/ext",                setImageExportExt );
   
   // Read the file.
   try
@@ -743,3 +747,27 @@ void Parser::_setScaleSpeed ( const std::string &s )
   _settings->scaleSpeed ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the frame scale for image exporting.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setFrameScale ( const std::string & s )
+{
+  ErrorChecker ( 2973371103u, !s.empty() );
+  _settings->frameScale ( float ( Usul::Math::absolute ( ::atof ( s.c_str() ) ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the extension for image exporting.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_setImageExportExt ( const std::string & s )
+{
+  _settings->imageExportExtension ( s );
+}

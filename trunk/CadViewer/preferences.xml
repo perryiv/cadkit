@@ -106,5 +106,9 @@
       </comment>
       <scale>      0.75 </scale>
     </speed>
+    <image>
+      <frame_scale>6.0</frame_scale>
+      <ext>.bmp</ext>
+    </image>
   </preferences>
 </cv>

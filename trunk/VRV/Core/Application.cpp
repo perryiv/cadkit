@@ -497,9 +497,8 @@ void Application::_postDraw( OsgTools::Render::Renderer *renderer )
 
   if( true == _exportImage )
   {
-    /// Scales 1400 pixel to 4096.
-    //const double multiplier ( 2.92f );
-    const double multiplier ( 6.0f );
+    // Get frame scale from the preferences.
+    const double multiplier ( this->preferences()->frameScale() );
 
     // Scale the width and height.
     unsigned int width  ( static_cast < unsigned int > ( _viewport->width()  * multiplier ) );
@@ -511,15 +510,14 @@ void Application::_postDraw( OsgTools::Render::Renderer *renderer )
     // How many images have we exported.
     static unsigned int count ( 0 );
 
+    // Get the extension from the preferences.
+    const std::string ext ( this->preferences()->imageExportExtension() );
+
     // Construct the filename.
     std::ostringstream filename;
-    filename << "/array/cluster/data/screen_shots/" << count++ << "_" << Usul::System::Host::name() << "_" << ".bmp";
+    filename << "/array/cluster/data/screen_shots/" << count++ << "_" << Usul::System::Host::name() << ext;
 
     Usul::Jobs::Manager::instance().add ( new ImageWriteJob ( filename.str(), image.get() ) );
-    //std::cout << " Writing image file: " << filename.str() << std::endl;
-
-    // Write the image to file.
-    //osgDB::writeImageFile ( *image, filename.str() );
 
     // Don't export next time.
     _exportImage = false;
@@ -1303,6 +1301,7 @@ const Application::Preferences *  Application::preferences () const
   USUL_TRACE_SCOPE;
   return _preferences.get();
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

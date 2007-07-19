@@ -208,7 +208,7 @@ osg::Image* FBOScreenCapture::operator () ( osgUtil::SceneView& sceneView, const
   osg::ref_ptr < osg::Image > image ( new osg::Image );
 
   // Make enough space
-  image->allocateImage ( _size [ 0 ], _size [ 1 ], 1, GL_RGBA, GL_UNSIGNED_BYTE );
+  image->allocateImage ( _size [ 0 ], _size [ 1 ], 1, GL_RGB, GL_UNSIGNED_BYTE );
 
   (*this ) ( *image, sceneView, projection );
 

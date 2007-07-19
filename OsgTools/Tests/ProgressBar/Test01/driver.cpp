@@ -4,7 +4,7 @@
 #include "Threads/OpenThreads/Mutex.h"
 #include "Threads/OpenThreads/Thread.h"
 
-#include "OsgTools/Widgets/ThreadSafeProgressBar.h"
+#include "OsgTools/Widgets/ProgressBar.h"
 
 #include <osg/Geode>
 #include <osg/Node>
@@ -15,12 +15,12 @@
 
 #include <osg/Math>
 
-class ThreadSafeProgressBarGroupCallback : public osg::NodeCallback
+class ProgressBarGroupCallback : public osg::NodeCallback
 {
   public:
   //typedef osg::Drawable::UpdateCallback   BaseClass;
 
-  ThreadSafeProgressBarGroupCallback ( OsgTools::Widgets::ThreadSafeProgressBar * pbarGroup ) : 
+  ProgressBarGroupCallback ( OsgTools::Widgets::ProgressBar * pbarGroup ) : 
   _pbarGroup ( pbarGroup )
   {
   }
@@ -35,20 +35,20 @@ class ThreadSafeProgressBarGroupCallback : public osg::NodeCallback
   }
 
 protected:
-  virtual ~ThreadSafeProgressBarGroupCallback()
+  virtual ~ProgressBarGroupCallback()
   {
     _pbarGroup = 0x0;
   }
 private:
  
-  OsgTools::Widgets::ThreadSafeProgressBar * _pbarGroup;
+  OsgTools::Widgets::ProgressBar * _pbarGroup;
 };
 
 class DriverEventHandler : public osgGA::GUIEventHandler
 {
 public:
     
-  DriverEventHandler( OsgTools::Widgets::ThreadSafeProgressBar* b ):
+  DriverEventHandler( OsgTools::Widgets::ProgressBar* b ):
       _bar( b ), _speed ( 3.5f ), _barToChange ( 0 )
              {}
     
@@ -85,7 +85,7 @@ public:
             }
         }
         
-		osg::ref_ptr< OsgTools::Widgets::ThreadSafeProgressBar > _bar;
+		osg::ref_ptr< OsgTools::Widgets::ProgressBar > _bar;
     float _speed;
     int _barToChange;
         
@@ -100,10 +100,10 @@ int main(int argc , char ** argv)
 	
 	osg::ref_ptr< osg::Group > render_group ( new osg::Group() );
 
-  OsgTools::Widgets::ThreadSafeProgressBar::RefPtr pbar ( new OsgTools::Widgets::ThreadSafeProgressBar() );
+  OsgTools::Widgets::ProgressBar::RefPtr pbar ( new OsgTools::Widgets::ProgressBar() );
   pbar->setLowerLeft ( Usul::Math::Vec2f ( 0.0, 0.0 ) );
 
-  render_group->setUpdateCallback ( new ThreadSafeProgressBarGroupCallback ( pbar.get() ) );
+  render_group->setUpdateCallback ( new ProgressBarGroupCallback ( pbar.get() ) );
   pbar->buildScene();
 
   render_group->addChild( pbar->buildScene() );

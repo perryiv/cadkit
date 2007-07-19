@@ -13,6 +13,7 @@
 #include "StarSystem/System.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Adaptors/Random.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Case.h"
@@ -162,6 +163,18 @@ void StarSystemDocument::read ( const std::string &name, Unknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
+#if 1
+
+  Usul::Adaptors::Random<double> random ( 0, 500000000 );
+  for ( unsigned int i = 0; i < 2; ++i )
+  {
+    StarSystem::System::ValidRefPtr system ( new StarSystem::System() );
+    system->center ( StarSystem::System::Vec3d ( random(), random(), random() ) );
+    _system->add ( system.get() );
+  }
+
+#endif
 }
 
 

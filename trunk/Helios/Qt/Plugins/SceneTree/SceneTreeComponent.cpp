@@ -26,10 +26,11 @@
 #include "osg/Group"
 #include "osg/Geode"
 
-#include "QtGui/QTreeWidget"
-#include "QtGui/QMainWindow"
 #include "QtGui/QDockWidget"
 #include "QtGui/QHeaderView"
+#include "QtGui/QMainWindow"
+#include "QtGui/QMenu"
+#include "QtGui/QTreeWidget"
 
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( SceneTreeComponent , SceneTreeComponent::BaseClass );
@@ -124,9 +125,9 @@ void SceneTreeComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
 
   Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
 
-  if( mainWindow.valid() )
+  if ( mainWindow.valid() )
   {
-    QMainWindow * main  ( mainWindow->mainWindow() );
+    QMainWindow * main ( mainWindow->mainWindow() );
 
     // Build the docking window.
     _dock = new QDockWidget ( QObject::tr ( "Scene" ), main );
@@ -141,6 +142,11 @@ void SceneTreeComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
     // Add the dock to the main window.
     _dock->setWidget( _sceneTree );
     main->addDockWidget ( Qt::LeftDockWidgetArea, _dock );
+
+    // Add toggle to the menu. TODO: Not working, and not the best way to do this...
+    QMenu *menu = main->findChild<QMenu*> ( "Docking Windows" );
+    if ( 0x0 != menu )
+      menu->addAction ( _dock->toggleViewAction() );
   } 
 }
 

@@ -226,7 +226,7 @@ void TriangleReaderSTL::_readAscii()
     {
       // Add the triangle.  Mark as orginal.
       OsgTools::Triangles::Triangle* t ( _document->addTriangle ( v0, v1, v2, n, false ) );
-      t->original( true );
+      t->original ( true );
 
       // Show progress.
       _document->setProgressBar ( elapsed(), in, fileSize );

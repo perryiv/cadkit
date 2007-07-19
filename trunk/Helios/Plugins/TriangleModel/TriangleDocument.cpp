@@ -20,6 +20,7 @@
 #include "TriangleReaderTDF.h"
 #include "TriangleWriterTDF.h"
 #include "TriangleReaderR3D.h"
+#include "TriangleReaderArcAsciiGrid.h"
 #include "ParadisReader.h"
 
 #include "OsgTools/Triangles/LoopSplitter.h"
@@ -178,7 +179,7 @@ bool TriangleDocument::canInsert ( const std::string &file ) const
 bool TriangleDocument::canOpen ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "stl" || ext == "r3d" || ext == "tdf" /*|| ext == "prds"*/ );
+  return ( ext == "stl" || ext == "r3d" || ext == "tdf" || ext == "asc" /*|| ext == "prds"*/ );
 }
 
 
@@ -218,6 +219,11 @@ void TriangleDocument::read ( const std::string &name, Unknown *caller )
   else if ( "tdf" == ext )
   {
     TriangleReaderTDF reader ( name, caller, this );
+    reader();
+  } 
+  else if ( "asc" == ext )
+  {
+    TriangleReaderArcAsciiGrid reader ( name, caller, this );
     reader();
   } 
 #if 0
@@ -305,6 +311,7 @@ TriangleDocument::Filters TriangleDocument::filtersOpen() const
   filters.push_back ( Filter ( "Triangle Document Format (*.tdf)", "*.tdf" ) );
   filters.push_back ( Filter ( "Stereolithography (*.stl)", "*.stl" ) );
   filters.push_back ( Filter ( "RoboMet 3D (*.r3d)", "*.r3d" ) );
+  filters.push_back ( Filter ( "Arc ASCII Grid (*.asc)", "*.asc" ) );
   return filters;
 }
 

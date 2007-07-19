@@ -68,6 +68,7 @@ SET (SOURCES
   GlassBoundingBox.cpp
   Grid.cpp
   Group.cpp
+  Images/DownSample.cpp
   Images/EdgeDetect.cpp
   Images/Grayscale.cpp
   Images/Histogram.cpp
@@ -128,12 +129,12 @@ SET (SOURCES
   Utilities/Intersect.cpp
   Widgets/Axes.cpp
   Widgets/ClipPlane.cpp
-  Widgets/ThreadSafeProgressBar.cpp
-  Widgets/ThreadSafeProgressBarGroup.cpp
+  Widgets/ProgressBar.cpp
+  Widgets/ProgressBarGroup.cpp
   Widgets/Helper/ThreadSafeText.cpp
   Widgets/Helper/UpdateProgress.cpp
-  Volume/PlanarProxyGeometry.cpp
-  Volume/Texture3DVolume.cpp
+  #Volume/PlanarProxyGeometry.cpp
+  #Volume/Texture3DVolume.cpp
 )
 
 # Create a Shared Library

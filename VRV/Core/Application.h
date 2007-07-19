@@ -185,6 +185,10 @@ protected:
   // Read the user's preferences.
   void                    _readUserPreferences();
 
+  /// Increase/Decrease speed.
+  void                    _increaseTranslateSpeed ( double amount );
+  void                    _decreaseTranslateSpeed ( double amount );
+
   /// VRV::Interfaces::IClippingDistanceFloat
   /// Get/set the clipping distances.
   virtual void            getClippingDistances ( float &nearDist, float &farDist ) const;

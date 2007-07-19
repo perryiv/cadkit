@@ -349,6 +349,8 @@ protected:
   void                          _dropToFloor      ( MenuKit::Message m, MenuKit::Item *item );
   void                          _increaseSpeed    ( MenuKit::Message m, MenuKit::Item *item );
   void                          _decreaseSpeed    ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _increaseSpeedTen ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _decreaseSpeedTen ( MenuKit::Message m, MenuKit::Item *item );
   void                          _exportImage      ( MenuKit::Message m, MenuKit::Item *item );
   void                          _renderPassesOne      ( MenuKit::Message m, MenuKit::Item *item );
   void                          _renderPassesThree    ( MenuKit::Message m, MenuKit::Item *item );

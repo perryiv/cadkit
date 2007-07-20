@@ -11,6 +11,7 @@
   <plugin alias="Scene Operations" file="scene_operations.cvplug" />
   <plugin alias="Restart File Parser" file="vrv_io.vrplug" />
   <plugin alias="Graphical User Interface" file="vrv_gui.vrplug" />
+  <plugin file="SceneModel.plug" />
 
 </plugins>
 

@@ -77,6 +77,8 @@ public:
 
 protected:
 
+  osg::Node*                  _loadModel ( const std::string& filename, Usul::Interfaces::IUnknown* caller );
+
   /// Do not copy.
   SceneDocument ( const SceneDocument & );
   SceneDocument &operator = ( const SceneDocument & );

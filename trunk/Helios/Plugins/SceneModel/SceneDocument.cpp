@@ -15,9 +15,13 @@
 #include "OsgTools/ReadModel.h"
 #include "OsgTools/ForEach.h"
 #include "OsgTools/FlipNormals.h"
+#include "OsgTools/IO/Reader.h"
 
+#include "Usul/Trace/Trace.h"
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
+#include "Usul/System/Directory.h"
+#include "Usul/Adaptors/MemberFunction.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
@@ -131,6 +135,39 @@ bool SceneDocument::canSave ( const std::string &file ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Update the progress.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct ProgressHelper
+  {
+    ProgressHelper ( Usul::Interfaces::IUnknown *caller ) : _caller ( caller ) { }
+
+    void updateProgressCallback ( const std::string& filename, unsigned long bytes, unsigned long total )
+    {
+      USUL_TRACE_SCOPE;
+
+      Usul::Interfaces::IProgressBar::QueryPtr progressBar ( _caller );
+
+      // Report progress.
+      if ( progressBar.valid() )
+      {
+        const double n ( static_cast < double > ( bytes ) );
+        const double d ( static_cast < double > ( total ) );
+        const float fraction ( n / d );
+        progressBar->updateProgressBar ( static_cast < unsigned int > ( fraction * 100 ) );
+      }
+    }
+
+  private:
+    Usul::Interfaces::IUnknown::QueryPtr _caller;
+  };
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Write the document to given file name.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -182,7 +219,7 @@ void SceneDocument::write ( const std::string &name, Unknown *caller  ) const
 
 void SceneDocument::read ( const std::string &name, Unknown *caller )
 {
-  osg::ref_ptr< osg::Node > node ( OsgTools::readModel ( name ) );
+  osg::ref_ptr< osg::Node > node ( this->_loadModel ( name, caller ) );
 
   // If the root hasn't been created...
   if ( !_scene )
@@ -206,6 +243,51 @@ void SceneDocument::read ( const std::string &name, Unknown *caller )
 
   osg::Material *mat ( new osg::Material );
   _scene->getOrCreateStateSet()->setAttribute( mat, osg::StateAttribute::ON );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the model..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* SceneDocument::_loadModel( const std::string& filename, Usul::Interfaces::IUnknown* caller )
+{
+  USUL_TRACE_SCOPE;
+
+  typedef void (Detail::ProgressHelper::*Function) ( const std::string &, unsigned long, unsigned long ); 
+  typedef Usul::Adaptors::MemberFunction < Detail::ProgressHelper*, Function > MemFun;
+  typedef OsgTools::IO::Reader::ReaderCallback < MemFun > Callback;
+
+  std::string directory ( Usul::File::directory ( filename, false ) );
+
+  // Scope the directory change.
+  Usul::System::Directory::ScopedCwd cwd ( directory );
+
+  // Node to return.
+  osg::ref_ptr < osg::Node > node ( 0x0 );
+
+  // Scoped to make sure reader lets goes of the node.
+  {
+    // Make the reader.
+    OsgTools::IO::Reader reader;
+
+    // Make the progress update helpers.
+    Detail::ProgressHelper helper ( caller );
+
+    // Set the callback.
+    Callback callback ( MemFun ( &helper, &Detail::ProgressHelper::updateProgressCallback ) );
+    reader.callback ( &callback );
+
+    // Read the file.
+    reader.read( filename );
+
+    // Return the node.
+    node = reader.node();
+  }
+
+  return node.release();
 }
 
 
@@ -337,3 +419,4 @@ void SceneDocument::notify ( unsigned short message )
 {
   BaseClass::notify ( message );
 }
+

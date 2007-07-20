@@ -17,6 +17,7 @@
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Components/Loader.h"
 #include "Usul/Components/Manager.h"
+#include "Usul/Documents/Manager.h"
 #include "Usul/Console/Feedback.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Threads/Manager.h"
@@ -105,9 +106,42 @@ public:
 
     // There should not be any threads running.
     Usul::Threads::Manager::instance().wait();
+    
+    // Clear any documents.
+    this->_clearDocuments();
 
     // Successs.
     return 0;
+  }
+
+
+protected:
+  //  Clear all the documents.
+  void _clearDocuments()
+  {
+    // Typedefs.
+    typedef Usul::Documents::Manager::Documents  Documents;
+    typedef Usul::Documents::Document            Document;
+
+    {
+      // Make a copy because as the documents are closing, they remove themselves from the document manager.
+      Documents copy ( Usul::Documents::Manager::instance().documents() );
+
+      // Tell the remaining open documents that the application is about to close.
+      // This allows the document to clean up any circular references.
+      for ( Documents::iterator i = copy.begin(); i != copy.end(); ++i )
+      {
+        // Grab the document in a smart pointer so it doesn't get deleted out from under us.
+        Document::RefPtr doc ( *i );
+        doc->applicationClosing( 0x0 );
+      }
+    }
+
+    // Clear documents.
+    Usul::Documents::Manager::instance().documents().clear();
+
+    // Reset the document manager.
+    Usul::Documents::Manager::reset();
   }
 
 private:

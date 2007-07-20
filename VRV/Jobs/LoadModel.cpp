@@ -14,13 +14,15 @@
 
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
-#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Components/Manager.h"
+#include "Usul/Documents/Manager.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/System/Directory.h"
 #include "Usul/File/Path.h"
 
-#include "OsgTools/IO/Reader.h"
+#include "osg/ref_ptr"
+#include "osg/Node"
 
 #include <iostream>
 
@@ -67,16 +69,21 @@ void LoadModel::_started()
 {
   USUL_TRACE_SCOPE;
 
+  /// Progress.
   Usul::Interfaces::IProgressBar::ShowHide showHide  ( this->progress()   );
   Usul::Interfaces::IProgressBar::ShowHide showHide2 ( _secondProgressBar.get() );
 
   // Set the label.
   this->_setLabel ( "Total file loading progress..." );
 
+  // Loop through each file and insert them into the document.
   for ( Filenames::iterator iter = _filenames.begin(); iter != _filenames.end(); ++iter )
   {
+    // The filename
+    const std::string filename ( *iter );
+
     // Load the model.
-    this->_loadModel ( *iter );
+    this->_loadModel ( filename );
 
     // Update for progress.
     this->_updateProgress ( iter - _filenames.begin(), _filenames.size(), true );
@@ -94,31 +101,28 @@ void LoadModel::_loadModel( const std::string& filename )
 {
   USUL_TRACE_SCOPE;
 
-  typedef void (LoadModel::*Function) ( const std::string &, unsigned long, unsigned long ); 
-  typedef Usul::Adaptors::MemberFunction < LoadModel*, Function > MemFun;
-  typedef OsgTools::IO::Reader::ReaderCallback < MemFun > Callback;
+  // Find a document that can load the first filename.
+  Usul::Documents::Document::RefPtr document ( Usul::Documents::Manager::instance().find ( filename ).document );
 
-  std::string directory ( Usul::File::directory ( filename, false ) );
+  if ( 0x0 == document.get() )
+    return;
 
-  // Scope the directory change.
-  Usul::System::Directory::ScopedCwd cwd ( directory );
+  Usul::Interfaces::IBuildScene::QueryPtr buildScene ( document );
+
+  // Make sure the document can build a scene.
+  if ( false == buildScene.valid() )
+    return;
 
   // Set the label.
   Usul::Interfaces::IStatusBar::UpdateStatusBar label ( _secondProgressBar.get() );
   label ( "Loading filename: " + filename, true );
 
-  // Make the reader.
-  OsgTools::IO::Reader reader;
-
-  // Set the callback.
-  Callback callback ( MemFun ( this, &LoadModel::_updateProgressCallback ) );
-  reader.callback ( &callback );
-
-  // Read the file.
-  reader.read( filename );
+  if ( document->canOpen ( filename ) )
+    document->read ( filename, _secondProgressBar.get() );
 
   // Get the node.
-  osg::ref_ptr < osg::Node > model ( reader.node() );
+  Usul::Interfaces::IBuildScene::Options options;
+  osg::ref_ptr < osg::Node > model ( buildScene->buildScene ( options ) );
 
   // Do any post-processing.
   this->_postProcessModelLoad ( filename, model.get() );
@@ -129,40 +133,9 @@ void LoadModel::_loadModel( const std::string& filename )
   // Add the model.
   if ( modelAdd.valid() )
     modelAdd->addModel ( model.get(), filename );
-}
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Job has finished.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LoadModel::_finished()
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Update the progress.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LoadModel::_updateProgressCallback ( const std::string& filename, unsigned long bytes, unsigned long total )
-{
-  USUL_TRACE_SCOPE;
-
-  Usul::Interfaces::IProgressBar::QueryPtr progressBar ( _secondProgressBar );
-
-  // Report progress.
-  if ( progressBar.valid() )
-  {
-    const double n ( static_cast < double > ( bytes ) );
-    const double d ( static_cast < double > ( total ) );
-    const float fraction ( n / d );
-    progressBar->updateProgressBar ( static_cast < unsigned int > ( fraction * 100 ) );
-  }
+  // Add the document.
+  Usul::Documents::Manager::instance().add ( document );
 }
 
 

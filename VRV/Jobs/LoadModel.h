@@ -33,15 +33,11 @@ protected:
   virtual ~LoadModel();
 
   virtual void              _started();
-  virtual void              _finished();
 
-  virtual void              _loadModel ( const std::string& filename );
+  void                      _loadModel ( const std::string& filename );
 
   // Post-process the model loading.
   void                      _postProcessModelLoad ( const std::string &filename, osg::Node *model );
-
-  // Update the progress.
-  void                      _updateProgressCallback ( const std::string& filename, unsigned long bytes, unsigned long total );
 
 private:
   Filenames _filenames;

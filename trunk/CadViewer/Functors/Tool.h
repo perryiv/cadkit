@@ -16,8 +16,8 @@
 #ifndef _CV_TOOL_FUNCTOR_H_
 #define _CV_TOOL_FUNCTOR_H_
 
-#include "CadViewer/Functors/AnalogInput.h"
-#include "CadViewer/Functors/Direction.h"
+#include "VRV/Functors/Input/AnalogInput.h"
+#include "VRV/Functors/Navigate/Direction.h"
 
 #include "VRV/Interfaces/IFrameInfo.h"
 #include "VRV/Interfaces/IWorldInfo.h"
@@ -42,8 +42,8 @@ public:
   typedef VRV::Functors::BaseFunctor BaseClass;
   typedef BaseClass::Unknown Unknown;
   typedef Usul::Math::Matrix44f Matrix;
-  typedef CV::Functors::AnalogInput AnalogInput;
-  typedef CV::Functors::Direction Direction;
+  typedef VRV::Functors::AnalogInput AnalogInput;
+  typedef VRV::Functors::Direction Direction;
   typedef Direction::Vector Vector;
   typedef VRV::Interfaces::IFrameInfo FrameInfo;
   typedef VRV::Interfaces::IWorldInfo WorldInfo;

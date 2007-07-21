@@ -16,7 +16,7 @@
 #ifndef _CV_INTERSECT_FUNCTORS_H_
 #define _CV_INTERSECT_FUNCTORS_H_
 
-#include "CadViewer/Functors/Direction.h"
+#include "VRV/Functors/Navigate/Direction.h"
 #include "CadViewer/Interfaces/IAuxiliaryScene.h"
 #include "VRV/Interfaces/INavigationScene.h"
 #include "VRV/Interfaces/IModelsScene.h"
@@ -51,7 +51,7 @@ protected:
 
   typedef osg::NodePath Path;
   typedef Usul::Interfaces::IUnknown Unknown;
-  typedef CV::Functors::Direction Direction;
+  typedef VRV::Functors::Direction Direction;
   typedef CV::Interfaces::IAuxiliaryScene AuxiliaryScene;
   typedef VRV::Interfaces::INavigationScene NavigationScene;
   typedef VRV::Interfaces::IModelsScene ModelsScene;

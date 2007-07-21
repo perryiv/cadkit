@@ -188,7 +188,7 @@ protected:
   // Navigate if we are supposed to.
   void                          _navigate();
 
-    // Get the number of selected
+  // Get the number of selected
   unsigned int                  _numSelected();
 
   // Parse the command-line arguments.

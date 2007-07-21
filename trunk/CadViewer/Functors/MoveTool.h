@@ -17,7 +17,7 @@
 #define _CV_MOVE_TOOL_FUNCTOR_H_
 
 #include "CadViewer/Functors/Tool.h"
-#include "CadViewer/Functors/Direction.h"
+#include "VRV/Functors/Navigate/Direction.h"
 
 #include "Usul/Math/Vector3.h"
 
@@ -33,7 +33,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( MoveTool );
   typedef Tool BaseClass;
   typedef Usul::Math::Vec3f Vector;
-  typedef CV::Functors::Direction Direction;
+  typedef VRV::Functors::Direction Direction;
 
   MoveTool ( Unknown *unknown, 
              Direction *dir, 

@@ -17,7 +17,7 @@
 #define _CV_NAVIGATION_CALLBACK_FUNCTIONS_H_
 
 #include "CadViewer/NavFactory.h"
-#include "CadViewer/Functors/Direction.h"
+#include "VRV/Functors/Navigate/Direction.h"
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -43,7 +43,7 @@ struct NavCB
 {
   typedef MenuKit::Item Item;
   typedef MenuKit::Message Message;
-  typedef CV::Functors::Direction Dir;
+  typedef VRV::Functors::Direction Dir;
   typedef Dir::Vector Vec;
   typedef CV::NavFactory<Analog,Dir,Mat,Nav> Factory;
 

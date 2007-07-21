@@ -262,42 +262,6 @@
 				Name="Functors"
 				>
 				<Filter
-					Name="Navigate"
-					>
-					<File
-						RelativePath="Functors\Rotate.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Functors\Rotate.h"
-						>
-					</File>
-					<File
-						RelativePath="Functors\Transform.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Functors\Transform.h"
-						>
-					</File>
-					<File
-						RelativePath="Functors\TransformPair.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Functors\TransformPair.h"
-						>
-					</File>
-					<File
-						RelativePath="Functors\Translate.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Functors\Translate.h"
-						>
-					</File>
-				</Filter>
-				<Filter
 					Name="Pick"
 					>
 					<File
@@ -322,42 +286,6 @@
 					</File>
 					<File
 						RelativePath="Pick\Select.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Misc Functors"
-					>
-					<File
-						RelativePath="Functors\AnalogInput.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Functors\AnalogInput.h"
-						>
-					</File>
-					<File
-						RelativePath="Functors\Direction.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Functors\Direction.h"
-						>
-					</File>
-					<File
-						RelativePath="Functors\JoystickHorizontal.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Functors\JoystickHorizontal.h"
-						>
-					</File>
-					<File
-						RelativePath="Functors\JoystickVertical.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Functors\JoystickVertical.h"
 						>
 					</File>
 				</Filter>
@@ -447,10 +375,6 @@
 				</File>
 				<File
 					RelativePath="Interfaces\IMaterialStack.h"
-					>
-				</File>
-				<File
-					RelativePath="Interfaces\IMatrixMultiply.h"
 					>
 				</File>
 				<File

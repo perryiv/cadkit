@@ -122,7 +122,7 @@ float Tool::_analog()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Direction::Vector &Tool::_direction()
+const VRV::Functors::Direction::Vector &Tool::_direction()
 {
   if ( _di.valid() )
   {

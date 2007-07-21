@@ -17,7 +17,7 @@
 #define _CV_TOOL_CALLBACK_FUNCTIONS_H_
 
 #include "CadViewer/ToolFactory.h"
-#include "CadViewer/Functors/Direction.h"
+#include "VRV/Functors/Navigate/Direction.h"
 
 #include "Usul/Interfaces/IUnknown.h"
 

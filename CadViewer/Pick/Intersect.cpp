@@ -18,7 +18,7 @@
 
 #include "CadViewer/ErrorChecker.h"
 #include "CadViewer/Constants.h"
-#include "CadViewer/Functors/Direction.h"
+#include "VRV/Functors/Navigate/Direction.h"
 
 #include "Usul/Math/Vector4.h"
 

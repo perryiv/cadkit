@@ -25,14 +25,14 @@
 #include "ScenePredicates.h"
 
 #include "VRV/Functors/Matrix/IdentityMatrix.h"
-#include "CadViewer/Functors/Translate.h"
-#include "CadViewer/Functors/Rotate.h"
-#include "CadViewer/Functors/Direction.h"
-#include "CadViewer/Functors/AnalogInput.h"
+#include "VRV/Functors/Navigate/Translate.h"
+#include "VRv/Functors/Navigate/Rotate.h"
+#include "VRV/Functors/Navigate/Direction.h"
 #include "CadViewer/Functors/WandRotation.h"
 #include "CadViewer/Functors/WandPosition.h"
-#include "CadViewer/Functors/JoystickHorizontal.h"
-#include "CadViewer/Functors/JoystickVertical.h"
+#include "VRV/Functors/Input/AnalogInput.h"
+#include "VRV/Functors/Input/JoystickHorizontal.h"
+#include "VRV/Functors/Input/JoystickVertical.h"
 #include "CadViewer/Functors/ScaleTool.h"
 #include "CadViewer/Functors/MoveTool.h"
 #include "CadViewer/Functors/ToolPair.h"
@@ -339,14 +339,14 @@ void Application::_hTransWandPosX ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 1083968782u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickHorizontal Analog;
+  typedef VRV::Functors::JoystickHorizontal Analog;
   typedef CV::Functors::WandRotation Mat;
-  typedef CV::Functors::Translate Nav;
+  typedef VRV::Functors::Translate Nav;
 
   // Call the common function.
   const unsigned int id ( 1084141815u );
   float speed ( this->preferences()->translationSpeed() );
-  CV::Functors::Direction::Vector dir ( 1, 0, 0 );
+  VRV::Functors::Direction::Vector dir ( 1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
 
   if ( MenuKit::MESSAGE_SELECTED == m )
@@ -368,14 +368,14 @@ void Application::_hTransGlobalPosX ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 2438291348u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickHorizontal Analog;
+  typedef VRV::Functors::JoystickHorizontal Analog;
   typedef VRV::Functors::Matrix::IdentityMatrix Mat;
-  typedef CV::Functors::Translate Nav;
+  typedef VRV::Functors::Translate Nav;
 
   // Call the common function.
   const unsigned int id ( 3196018430u );
   float speed ( this->preferences()->translationSpeed() );
-  CV::Functors::Direction::Vector dir ( 1, 0, 0 );
+  VRV::Functors::Direction::Vector dir ( 1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
 
   if ( MenuKit::MESSAGE_SELECTED == m )
@@ -397,14 +397,14 @@ void Application::_hTransWandNegX ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 1084116071u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickHorizontal Analog;
+  typedef VRV::Functors::JoystickHorizontal Analog;
   typedef CV::Functors::WandRotation Mat;
-  typedef CV::Functors::Translate Nav;
+  typedef VRV::Functors::Translate Nav;
 
   // Call the common function.
   const unsigned int id ( 2934209123u );
   float speed ( this->preferences()->translationSpeed() );
-  CV::Functors::Direction::Vector dir ( -1, 0, 0 );
+  VRV::Functors::Direction::Vector dir ( -1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
 
   if ( MenuKit::MESSAGE_SELECTED == m )
@@ -426,14 +426,14 @@ void Application::_hTransGlobalNegX ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 4137765741u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickHorizontal Analog;
+  typedef VRV::Functors::JoystickHorizontal Analog;
   typedef VRV::Functors::Matrix::IdentityMatrix Mat;
-  typedef CV::Functors::Translate Nav;
+  typedef VRV::Functors::Translate Nav;
 
   // Call the common function.
   const unsigned int id ( 3848661010u );
   float speed ( this->preferences()->translationSpeed() );
-  CV::Functors::Direction::Vector dir ( -1, 0, 0 );
+  VRV::Functors::Direction::Vector dir ( -1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
 
   if ( MenuKit::MESSAGE_SELECTED == m )
@@ -455,14 +455,14 @@ void Application::_vTransWandPosY ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 1084444802u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickVertical Analog;
+  typedef VRV::Functors::JoystickVertical Analog;
   typedef CV::Functors::WandRotation Mat;
-  typedef CV::Functors::Translate Nav;
+  typedef VRV::Functors::Translate Nav;
 
   // Call the common function.
   const unsigned int id ( 1084444803u );
   float speed ( this->preferences()->translationSpeed() );
-  CV::Functors::Direction::Vector dir ( 0, 1, 0 );
+  VRV::Functors::Direction::Vector dir ( 0, 1, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
 
   if ( MenuKit::MESSAGE_SELECTED == m )
@@ -484,14 +484,14 @@ void Application::_vTransWandPosZ ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 1083973896u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickVertical Analog;
+  typedef VRV::Functors::JoystickVertical Analog;
   typedef CV::Functors::WandRotation Mat;
-  typedef CV::Functors::Translate Nav;
+  typedef VRV::Functors::Translate Nav;
 
   // Call the common function.
   const unsigned int id ( 1084143905u );
   float speed ( this->preferences()->translationSpeed() );
-  CV::Functors::Direction::Vector dir ( 0, 0, -1 );
+  VRV::Functors::Direction::Vector dir ( 0, 0, -1 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
 
   if ( MenuKit::MESSAGE_SELECTED == m )
@@ -513,14 +513,14 @@ void Application::_vTransGlobalPosZ ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 4190151089u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickVertical Analog;
+  typedef VRV::Functors::JoystickVertical Analog;
   typedef VRV::Functors::Matrix::IdentityMatrix Mat;
-  typedef CV::Functors::Translate Nav;
+  typedef VRV::Functors::Translate Nav;
 
   // Call the common function.
   const unsigned int id ( 3775941120u );
   float speed ( this->preferences()->translationSpeed() );
-  CV::Functors::Direction::Vector dir ( 0, 0, -1 );
+  VRV::Functors::Direction::Vector dir ( 0, 0, -1 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
 
   if ( MenuKit::MESSAGE_SELECTED == m )
@@ -542,14 +542,14 @@ void Application::_vTransWandNegZ ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 1084116072u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickVertical Analog;
+  typedef VRV::Functors::JoystickVertical Analog;
   typedef CV::Functors::WandRotation Mat;
-  typedef CV::Functors::Translate Nav;
+  typedef VRV::Functors::Translate Nav;
 
   // The id for this navigator.
   const unsigned int id ( 1084143896u );
   float speed ( this->preferences()->translationSpeed() );
-  CV::Functors::Direction::Vector dir ( 0, 0, 1 );
+  VRV::Functors::Direction::Vector dir ( 0, 0, 1 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
 
   if ( MenuKit::MESSAGE_SELECTED == m )
@@ -571,14 +571,14 @@ void Application::_vTransGlobalNegZ ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 1948086238u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickVertical Analog;
+  typedef VRV::Functors::JoystickVertical Analog;
   typedef VRV::Functors::Matrix::IdentityMatrix Mat;
-  typedef CV::Functors::Translate Nav;
+  typedef VRV::Functors::Translate Nav;
 
   // The id for this navigator.
   const unsigned int id ( 3683303793u );
   float speed ( this->preferences()->translationSpeed() );
-  CV::Functors::Direction::Vector dir ( 0, 0, 1 );
+  VRV::Functors::Direction::Vector dir ( 0, 0, 1 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
 
   if ( MenuKit::MESSAGE_SELECTED == m )
@@ -600,14 +600,14 @@ void Application::_hRotWandPosY ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 1034318421u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickHorizontal Analog;
+  typedef VRV::Functors::JoystickHorizontal Analog;
   typedef CV::Functors::WandRotation Mat;
-  typedef CV::Functors::Rotate Nav;
+  typedef VRV::Functors::Rotate Nav;
 
   // The id for this navigator.
   const unsigned int id ( 2200874009u );
   float speed ( this->preferences()->rotationSpeed() );
-  CV::Functors::Direction::Vector dir ( 0, 1, 0 );
+  VRV::Functors::Direction::Vector dir ( 0, 1, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
 
   if ( MenuKit::MESSAGE_SELECTED == m )
@@ -628,14 +628,14 @@ void Application::_hRotGlobalPosY ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 2075689222u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickHorizontal Analog;
+  typedef VRV::Functors::JoystickHorizontal Analog;
   typedef VRV::Functors::Matrix::IdentityMatrix Mat;
-  typedef CV::Functors::Rotate Nav;
+  typedef VRV::Functors::Rotate Nav;
 
   // The id for this navigator.
   const unsigned int id ( 2093083320u );
   float speed ( this->preferences()->rotationSpeed() );
-  CV::Functors::Direction::Vector dir ( 0, 1, 0 );
+  VRV::Functors::Direction::Vector dir ( 0, 1, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
 
   if ( MenuKit::MESSAGE_SELECTED == m )
@@ -656,14 +656,14 @@ void Application::_vRotWandPosX ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 3306102879u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickVertical Analog;
+  typedef VRV::Functors::JoystickVertical Analog;
   typedef CV::Functors::WandRotation Mat;
-  typedef CV::Functors::Rotate Nav;
+  typedef VRV::Functors::Rotate Nav;
 
   // The id for this navigator.
   const unsigned int id ( 3106060360u );
   float speed ( this->preferences()->rotationSpeed() );
-  CV::Functors::Direction::Vector dir ( 1, 0, 0 );
+  VRV::Functors::Direction::Vector dir ( 1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
 
   if ( MenuKit::MESSAGE_SELECTED == m )
@@ -684,14 +684,14 @@ void Application::_vRotGlobalPosX ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 3834691556u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickVertical Analog;
+  typedef VRV::Functors::JoystickVertical Analog;
   typedef VRV::Functors::Matrix::IdentityMatrix Mat;
-  typedef CV::Functors::Rotate Nav;
+  typedef VRV::Functors::Rotate Nav;
 
   // The id for this navigator.
   const unsigned int id ( 2513007202u );
   float speed ( this->preferences()->rotationSpeed() );
-  CV::Functors::Direction::Vector dir ( 1, 0, 0 );
+  VRV::Functors::Direction::Vector dir ( 1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
 
   if ( MenuKit::MESSAGE_SELECTED == m )
@@ -712,14 +712,14 @@ void Application::_vTransGlobalPosY ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 1084438317u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickVertical Analog;
+  typedef VRV::Functors::JoystickVertical Analog;
   typedef VRV::Functors::Matrix::IdentityMatrix Mat;
-  typedef CV::Functors::Translate Nav;
+  typedef VRV::Functors::Translate Nav;
 
   // The id for this navigator.
   const unsigned int id ( 1084438318u );
   float speed ( this->preferences()->translationSpeed() );
-  CV::Functors::Direction::Vector dir ( 0, 1, 0 );
+  VRV::Functors::Direction::Vector dir ( 0, 1, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
 
   if ( MenuKit::MESSAGE_SELECTED == m )
@@ -741,7 +741,7 @@ void Application::_raySelector ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 3690175917u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten up the lines.
-  typedef CV::Functors::Direction Dir;
+  typedef VRV::Functors::Direction Dir;
   typedef Dir::Vector Vec;
   typedef CV::Functors::WandRotation MF;
   typedef CV::Pick::Select Selector;
@@ -1089,7 +1089,7 @@ void Application::_vScaleWorld ( MenuKit::Message m, MenuKit::Item *item )
   ErrorChecker ( 2053584659u, isAppThread(), CV::NOT_APP_THREAD );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickVertical Analog;
+  typedef VRV::Functors::JoystickVertical Analog;
   typedef CV::Functors::ScaleTool Tool;
   typedef Tool::Vector Vector;
 
@@ -1123,7 +1123,7 @@ void Application::_vScaleSelected ( MenuKit::Message m, MenuKit::Item *item )
     item->enabled( 0 != this->_numSelected() );
 
   // To shorten the lines.
-  typedef CV::Functors::JoystickVertical Analog;
+  typedef VRV::Functors::JoystickVertical Analog;
   typedef CV::Functors::ScaleTool Tool;
   typedef Tool::Vector Vector;
 
@@ -1157,10 +1157,10 @@ void Application::_wMoveSelLocal ( MenuKit::Message m, MenuKit::Item *item )
   typedef VRV::Functors::Matrix::MatrixFunctor MF;
   typedef CV::Functors::ToolPair ToolPair;
   typedef CV::Functors::MoveTool MoveTool;
-  typedef CV::Functors::JoystickHorizontal JH;
-  typedef CV::Functors::JoystickVertical JV;
+  typedef VRV::Functors::JoystickHorizontal JH;
+  typedef VRV::Functors::JoystickVertical JV;
   typedef CV::Functors::WandRotation WR;
-  typedef CV::Functors::Direction Dir;
+  typedef VRV::Functors::Direction Dir;
   typedef Dir::Vector Vec;
 
   const unsigned int id ( 3210541994u );
@@ -1220,11 +1220,11 @@ void Application::_wMoveTopLocal ( MenuKit::Message m, MenuKit::Item *item )
 
   typedef CV::Functors::ToolPair ToolPair;
   typedef CV::Functors::MoveTool MoveTool;
-  typedef CV::Functors::JoystickHorizontal JH;
-  typedef CV::Functors::JoystickVertical JV;
+  typedef VRV::Functors::JoystickHorizontal JH;
+  typedef VRV::Functors::JoystickVertical JV;
   typedef VRV::Functors::Matrix::MatrixFunctor MF;
   typedef CV::Functors::WandRotation WR;
-  typedef CV::Functors::Direction Dir;
+  typedef VRV::Functors::Direction Dir;
   typedef Dir::Vector Vec;
 
   const unsigned int id ( 1084528455u );

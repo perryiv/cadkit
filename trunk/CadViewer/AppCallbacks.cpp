@@ -75,8 +75,9 @@ void Application::_setAnalogTrim ( MenuKit::Message m, MenuKit::Item *item )
   switch ( m )
   {
     case MenuKit::MESSAGE_SELECTED:
-      _analogTrim[0] = 0.5f - this->joystick()->horizontal();
-      _analogTrim[1] = 0.5f - this->joystick()->vertical();
+      float x ( 0.5f - this->joystick()->horizontal() );
+      float y ( 0.5f - this->joystick()->vertical() );
+      this->analogTrim ( x, y );
       break;
   }
 }

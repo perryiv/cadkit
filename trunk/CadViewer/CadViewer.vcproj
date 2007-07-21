@@ -446,10 +446,6 @@
 					>
 				</File>
 				<File
-					RelativePath="Interfaces\IJoystick.h"
-					>
-				</File>
-				<File
 					RelativePath="Interfaces\IMaterialStack.h"
 					>
 				</File>
@@ -467,10 +463,6 @@
 				</File>
 				<File
 					RelativePath="Interfaces\IVisibility.h"
-					>
-				</File>
-				<File
-					RelativePath="Interfaces\IWandState.h"
 					>
 				</File>
 			</Filter>

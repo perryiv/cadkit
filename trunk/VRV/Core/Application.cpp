@@ -66,6 +66,8 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _buttons         ( new VRV::Devices::ButtonGroup ),
   _tracker         ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
   _joystick        ( new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" ) ),
+  _analogTrim      ( 0, 0 ),
+  _wandOffset      ( 0, 0, 0 ), // feet (used to be z=-4)
   _refCount        ( 0 )
 {
   USUL_TRACE_SCOPE;
@@ -145,6 +147,10 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < VRV::Interfaces::INavigationScene* > ( this );
   case VRV::Interfaces::IMatrixMultiplyFloat::IID:
     return static_cast < VRV::Interfaces::IMatrixMultiplyFloat * > ( this );
+  case VRV::Interfaces::IJoystickFloat::IID:
+    return static_cast< VRV::Interfaces::IJoystickFloat * > ( this );
+  case VRV::Interfaces::IWandStateFloat::IID:
+    return static_cast< VRV::Interfaces::IWandStateFloat * > ( this );
   case Usul::Interfaces::IProgressBarFactory::IID:
     return static_cast < Usul::Interfaces::IProgressBarFactory* > ( this );
   default:
@@ -1426,3 +1432,148 @@ const VRV::Devices::JoystickDevice *  Application::joystick () const
   return _joystick.get();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the analog input in the range [-1,1].
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float Application::joystickHorizontal() const
+{
+  USUL_TRACE_SCOPE;
+  return 2.0f * ( this->joystick()->horizontal() + _analogTrim[0] ) - 1.0f;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the analog input in the range [-1,1].
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float Application::joystickVertical() const
+{
+  USUL_TRACE_SCOPE;
+  return 2.0f * ( this->joystick()->vertical() + _analogTrim[1] ) - 1.0f;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the wand's position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::wandPosition ( Usul::Math::Vec3f &p ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Get the wand's offset.
+  Usul::Math::Vec3f offset;
+  this->wandOffset ( offset );
+
+  // Set the vector from the wand's position plus the offset.
+  p[0] = this->tracker()->x() + offset[0];
+  p[1] = this->tracker()->y() + offset[1];
+  p[2] = this->tracker()->z() + offset[2];
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the wand's matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::wandMatrix ( Matrix44f &W ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Set the given matrix from the wand's matrix.
+  W.set ( this->tracker()->matrix().getData() );
+
+  // Get the wand's offset.
+  Usul::Math::Vec3f offset;
+  this->wandOffset ( offset );
+
+  // Translate by our wand's offset.
+  Matrix44f T;
+  T.makeTranslation ( offset );
+  W = T * W;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the wand's offset.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::wandOffset ( Usul::Math::Vec3f &v ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  v = _wandOffset;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the wand's offset.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::wandOffset ( const Usul::Math::Vec3f &v )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _wandOffset = v;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the rotation portion of the wand's matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::wandRotation ( Matrix44f &W ) const
+{
+  USUL_TRACE_SCOPE;
+
+  // Get the wand's matrix.
+  this->wandMatrix ( W );
+
+  // Zero-out the translations.
+  W.setTranslation ( Usul::Math::Vec3f ( 0, 0, 0 ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the analog trim.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Usul::Math::Vec2f& Application::analogTrim () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _analogTrim;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the analog trim.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::analogTrim ( float x, float y )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _analogTrim.set ( x, y );
+}

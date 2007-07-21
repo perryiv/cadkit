@@ -192,14 +192,12 @@ Application::Application ( Args &args ) :
   _navigatorV     ( 0x0 ),
   _sceneTool      ( 0x0 ),
   _intersector    ( 0x0 ),
-  _analogTrim     ( 0, 0 ),
   _rotCenter      ( 0, 0, 0 ),
   _pickText       ( new OsgTools::Text ),
   _navText        ( new OsgTools::Text ),
   _frameText      ( new OsgTools::Text ),
   _msgText        ( new OsgTools::Text ),
   _flags          ( 0 ),
-  _wandOffset     ( 0, 0, 0 ), // feet (used to be z=-4)
   _cursorMatrix   ( 0x0 ),
   _iVisibility    ( static_cast < CV::Interfaces::IVisibility* >    ( 0x0 ) ),
   _iSelection     ( static_cast < CV::Interfaces::ISelection* >     ( 0x0 ) ),
@@ -1643,30 +1641,6 @@ bool Application::isMainThread()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the analog input in the range [-1,1].
-//
-///////////////////////////////////////////////////////////////////////////////
-
-float Application::joystickHorizontal() const
-{
-  return 2.0f * ( this->joystick()->horizontal() + _analogTrim[0] ) - 1.0f;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the analog input in the range [-1,1].
-//
-///////////////////////////////////////////////////////////////////////////////
-
-float Application::joystickVertical() const
-{
-  return 2.0f * ( this->joystick()->vertical() + _analogTrim[1] ) - 1.0f;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Navigate if we are supposed to.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1765,95 +1739,6 @@ void Application::_update ( OsgTools::Text &t, const std::string &s )
   // Dump text to stdout if this is the message-text or the pick-text.
   if ( &t == _pickText.get() || &t == _msgText.get() )
     std::cout << s << std::endl;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the wand's position.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::wandPosition ( Usul::Math::Vec3f &p ) const
-{
-  ErrorChecker ( 1069036812, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Get the wand's offset.
-  Usul::Math::Vec3f offset;
-  this->wandOffset ( offset );
-
-  // Set the vector from the wand's position plus the offset.
-  p[0] = this->tracker()->x() + offset[0];
-  p[1] = this->tracker()->y() + offset[1];
-  p[2] = this->tracker()->z() + offset[2];
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the wand's matrix.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::wandMatrix ( Matrix44f &W ) const
-{
-  ErrorChecker ( 1068004399, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Set the given matrix from the wand's matrix.
-  W.set ( this->tracker()->matrix().getData() );
-
-  // Get the wand's offset.
-  Usul::Math::Vec3f offset;
-  this->wandOffset ( offset );
-
-  // Translate by our wand's offset.
-  Matrix44f T;
-  T.makeTranslation ( offset );
-  W = T * W;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the wand's offset.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::wandOffset ( Usul::Math::Vec3f &v ) const
-{
-  ErrorChecker ( 4218812392u, isAppThread(), CV::NOT_APP_THREAD );
-  v = _wandOffset;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the wand's offset.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::wandOffset ( const Usul::Math::Vec3f &v )
-{
-  ErrorChecker ( 3731142380u, isAppThread(), CV::NOT_APP_THREAD );
-  _wandOffset = v;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the rotation portion of the wand's matrix.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::wandRotation ( Matrix44f &W ) const
-{
-  ErrorChecker ( 1068242095, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Get the wand's matrix.
-  this->wandMatrix ( W );
-
-  // Zero-out the translations.
-  W.setTranslation ( Usul::Math::Vec3f ( 0, 0, 0 ) );
 }
 
 
@@ -2033,10 +1918,6 @@ Usul::Interfaces::IUnknown *Application::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IUnknown::IID:
   case CV::Interfaces::IAuxiliaryScene::IID:
     return static_cast<CV::Interfaces::IAuxiliaryScene *>(this);
-  case CV::Interfaces::IWandStateFloat::IID:
-    return static_cast<CV::Interfaces::IWandStateFloat *>(this);
-  case CV::Interfaces::IJoystickFloat::IID:
-    return static_cast<CV::Interfaces::IJoystickFloat *>(this);
   case VRV::Interfaces::IRequestRead::IID:
     return static_cast<VRV::Interfaces::IRequestRead *>(this);
   case VRV::Interfaces::IButtonCallback::IID:

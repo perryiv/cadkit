@@ -21,8 +21,6 @@
 #include "CadViewer/Interfaces/IMaterialStack.h"
 #include "CadViewer/Interfaces/ISelection.h"
 #include "CadViewer/Interfaces/IAuxiliaryScene.h"
-#include "CadViewer/Interfaces/IWandState.h"
-#include "CadViewer/Interfaces/IJoystick.h"
 #include "CadViewer/Functors/Tool.h"
 #include "CadViewer/Pick/Intersect.h"
 
@@ -52,8 +50,6 @@ namespace CV {
 // The CadViewer application
 class Application : public VRV::Core::Application,
                     public CV::Interfaces::IAuxiliaryScene,
-                    public CV::Interfaces::IWandStateFloat,
-                    public CV::Interfaces::IJoystickFloat,
                     public VRV::Interfaces::IRequestRead,
                     public VRV::Interfaces::IButtonCallback,
                     public VRV::Interfaces::IMenuCallback
@@ -83,35 +79,6 @@ public:
   // Get the auxiliary scene.
   virtual const osg::Group *    auxiliaryScene() const;
   virtual osg::Group *          auxiliaryScene();
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  CV::Interfaces::IWandStateFloat
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Get the wand's position.
-  virtual void                  wandPosition ( Usul::Math::Vec3f &p ) const;
-
-  // Get the wand's rotation matrix.
-  virtual void                  wandRotation ( Matrix44f &R ) const;
-
-  // Get the wand's matrix.
-  virtual void                  wandMatrix ( Matrix44f &M ) const;
-
-  // Get/set the wand's offset.
-  virtual void                  wandOffset ( Usul::Math::Vec3f &v ) const;
-  virtual void                  wandOffset ( const Usul::Math::Vec3f &v );
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  CV::Interfaces::IJoystickFloat
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Get the joystick value in the range [-1,1].
-  virtual float                 joystickHorizontal() const;
-  virtual float                 joystickVertical()   const;
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -386,14 +353,12 @@ protected:
   FunctorPtr        _navigatorV;
   FunctorPtr        _sceneTool;
   FunctorPtr        _intersector;
-  osg::Vec2         _analogTrim;
   osg::Vec3         _rotCenter;
   TextPtr           _pickText;
   TextPtr           _navText;
   TextPtr           _frameText;
   TextPtr           _msgText;
   unsigned int      _flags;
-  Usul::Math::Vec3f _wandOffset;
   MatrixFunctorPtr  _cursorMatrix;
   IVisibilityPtr    _iVisibility;
   ISelectionPtr     _iSelection;

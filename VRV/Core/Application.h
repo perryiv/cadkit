@@ -25,6 +25,8 @@
 #include "VRV/Interfaces/INavigationScene.h"
 #include "VRV/Interfaces/IModelsScene.h"
 #include "VRV/Interfaces/IMatrixMultiply.h"
+#include "VRV/Interfaces/IJoystick.h"
+#include "VRV/Interfaces/IWandState.h"
 
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Threads/RecursiveMutex.h"
@@ -73,6 +75,8 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public VRV::Interfaces::INavigationScene,
                                public VRV::Interfaces::IModelsScene,
                                public VRV::Interfaces::IMatrixMultiplyFloat,
+                               public VRV::Interfaces::IJoystickFloat,
+                               public VRV::Interfaces::IWandStateFloat,
                                public Usul::Interfaces::IProgressBarFactory
 {
 public:
@@ -159,6 +163,10 @@ public:
   /// Get the joystick.
   Joystick *              joystick ();
   const Joystick *        joystick () const;
+
+  /// Get/Set the analog trim.
+  const Usul::Math::Vec2f&    analogTrim () const;
+  void                        analogTrim ( float x, float y );
 
 protected:
 
@@ -248,6 +256,30 @@ protected:
   /// Usul::Interfaces::IProgressBarFactory
   virtual Usul::Interfaces::IUnknown*   createProgressBar();
 
+  //  VRV::Interfaces::IJoystickFloat
+  // Get the joystick value in the range [-1,1].
+  virtual float                 joystickHorizontal() const;
+  virtual float                 joystickVertical()   const;
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  VRV::Interfaces::IWandStateFloat
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the wand's position.
+  virtual void                  wandPosition ( Usul::Math::Vec3f &p ) const;
+
+  // Get the wand's rotation matrix.
+  virtual void                  wandRotation ( Matrix44f &R ) const;
+
+  // Get the wand's matrix.
+  virtual void                  wandMatrix ( Matrix44f &M ) const;
+
+  // Get/set the wand's offset.
+  virtual void                  wandOffset ( Usul::Math::Vec3f &v ) const;
+  virtual void                  wandOffset ( const Usul::Math::Vec3f &v );
+
   /// No copying.
   Application ( const Application& );
   Application& operator = (const Application&);
@@ -295,6 +327,9 @@ private:
   ButtonsPtr                             _buttons;
   TrackerPtr                             _tracker;
   JoystickPtr                            _joystick;
+
+  Usul::Math::Vec2f                      _analogTrim;
+  Usul::Math::Vec3f                      _wandOffset;
 
   unsigned int                           _refCount;
 };

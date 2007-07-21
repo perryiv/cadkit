@@ -17,7 +17,7 @@
 #define _CV_JOYSTICK_HORIZONTAL_INPUT_FUNCTOR_H_
 
 #include "CadViewer/Functors/AnalogInput.h"
-#include "CadViewer/Interfaces/IJoystick.h"
+#include "VRV/Interfaces/IJoystick.h"
 
 
 namespace CV {
@@ -32,7 +32,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( JoystickHorizontal );
   typedef AnalogInput BaseClass;
   typedef BaseClass::Unknown Unknown;
-  typedef CV::Interfaces::IJoystickFloat Joystick;
+  typedef VRV::Interfaces::IJoystickFloat Joystick;
 
   explicit JoystickHorizontal ( Unknown *unknown );
   JoystickHorizontal ( const JoystickHorizontal &a );

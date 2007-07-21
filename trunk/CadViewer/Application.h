@@ -36,10 +36,6 @@
 #include "VRV/Core/Application.h"
 #include "VRV/Functors/Matrix/MatrixFunctor.h"
 
-#include "VRV/Devices/JoystickDevice.h"
-#include "VRV/Devices/ButtonGroup.h"
-#include "VRV/Devices/TrackerDevice.h"
-
 #include "MenuKit/OSG/Menu.h"
 
 #include "OsgTools/Grid.h"
@@ -366,9 +362,6 @@ protected:
   typedef osg::ref_ptr<osg::Node>                       NodePtr;
   typedef osg::ref_ptr<osg::Projection>                 ProjectPtr;
   typedef VRV::Functors::BaseFunctor::RefPtr            FunctorPtr;
-  typedef VRV::Devices::ButtonGroup::ValidRefPtr        ButtonsPtr;
-  typedef VRV::Devices::TrackerDevice::ValidRefPtr      TrackerPtr;
-  typedef VRV::Devices::JoystickDevice::ValidRefPtr     JoystickPtr;
   typedef std::auto_ptr<OsgTools::Text>                 TextPtr;
   typedef VRV::Functors::Matrix::MatrixFunctor::RefPtr  MatrixFunctorPtr;
   typedef Interfaces::IVisibility::QueryPtr             IVisibilityPtr;
@@ -393,9 +386,6 @@ protected:
   FunctorPtr        _navigatorV;
   FunctorPtr        _sceneTool;
   FunctorPtr        _intersector;
-  ButtonsPtr        _buttons;
-  TrackerPtr        _tracker;
-  JoystickPtr       _joystick;
   osg::Vec2         _analogTrim;
   osg::Vec3         _rotCenter;
   TextPtr           _pickText;

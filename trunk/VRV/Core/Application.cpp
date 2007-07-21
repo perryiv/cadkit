@@ -38,56 +38,35 @@ using namespace VRV::Core;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Initializer list.
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define CONSTRUCTOR_INITIALIZER_LIST\
-  _mutex           (), \
-  _root            ( new osg::Group ), \
-  _navBranch       ( new osg::MatrixTransform ), \
-  _models          ( new osg::MatrixTransform ), \
-  _timer           (), \
-  _framestamp      ( 0x0 ),\
-  _viewport        ( 0x0 ),\
-  _backgroundColor ( 0, 0, 0, 1 ),\
-  _dirty           ( false ),\
-  _initialTime     ( static_cast < osg::Timer_t > ( 0.0 ) ),\
-  _frameStart      ( static_cast < osg::Timer_t > ( 0.0 ) ), \
-  _sharedFrameTime (),\
-  _frameTime       ( 1 ), \
-  _renderer        (), \
-  _renderers       (), \
-  _sceneManager    ( new OsgTools::Render::SceneManager ), \
-  _progressBars    ( new ProgressBars ), \
-  _clipDist        ( 0, 0 ), \
-  _exportImage     ( false ), \
-  _preferences     ( new Preferences ), \
+Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
+  _mutex           (),
+  _root            ( new osg::Group ),
+  _navBranch       ( new osg::MatrixTransform ),
+  _models          ( new osg::MatrixTransform ),
+  _timer           (),
+  _framestamp      ( 0x0 ),
+  _viewport        ( 0x0 ),
+  _backgroundColor ( 0, 0, 0, 1 ),
+  _dirty           ( false ),
+  _initialTime     ( static_cast < osg::Timer_t > ( 0.0 ) ),
+  _frameStart      ( static_cast < osg::Timer_t > ( 0.0 ) ),
+  _sharedFrameTime (),
+  _frameTime       ( 1 ),
+  _renderer        (),
+  _renderers       (),
+  _sceneManager    ( new OsgTools::Render::SceneManager ),
+  _progressBars    ( new ProgressBars ),
+  _clipDist        ( 0, 0 ),
+  _exportImage     ( false ),
+  _preferences     ( new Preferences ),
+  _buttons         ( new VRV::Devices::ButtonGroup ),
+  _tracker         ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
+  _joystick        ( new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" ) ),
   _refCount        ( 0 )
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Application::Application() : vrj::GlApp(),
-  CONSTRUCTOR_INITIALIZER_LIST
-{
-  USUL_TRACE_SCOPE;
-  this->_construct();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Application::Application( vrj::Kernel* kern ) : vrj::GlApp( kern ),
-  CONSTRUCTOR_INITIALIZER_LIST
 {
   USUL_TRACE_SCOPE;
   this->_construct();
@@ -650,6 +629,14 @@ void Application::latePreFrame()
 
   // Get the frame time.
   _frameTime = _sharedFrameTime->data;
+
+  // Update these input devices.
+  _buttons->update();
+  _tracker->update();
+  _joystick->update();
+
+  // Send any notifications.
+  _joystick->notify();
 }
 
 
@@ -1311,6 +1298,8 @@ const Application::Preferences *  Application::preferences () const
 
 void Application::_readUserPreferences()
 {
+  USUL_TRACE_SCOPE;
+
   // If the file is missing then it throws.
   try
   {
@@ -1342,6 +1331,7 @@ void Application::_readUserPreferences()
 
 void Application::_increaseTranslateSpeed ( double amount )
 {
+  USUL_TRACE_SCOPE;
   this->preferences()->translationSpeed ( this->preferences()->translationSpeed() * amount );
 }
 
@@ -1354,5 +1344,85 @@ void Application::_increaseTranslateSpeed ( double amount )
 
 void Application::_decreaseTranslateSpeed ( double amount )
 {
+  USUL_TRACE_SCOPE;
   this->preferences()->translationSpeed ( this->preferences()->translationSpeed() / amount );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the buttons.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VRV::Devices::ButtonGroup * Application::buttons ()
+{
+  USUL_TRACE_SCOPE;
+  return _buttons.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the buttons.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const VRV::Devices::ButtonGroup * Application::buttons () const
+{
+  USUL_TRACE_SCOPE;
+  return _buttons.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the tracker.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VRV::Devices::TrackerDevice * Application::tracker ()
+{
+  USUL_TRACE_SCOPE;
+  return _tracker.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the tracker.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const VRV::Devices::TrackerDevice * Application::tracker () const
+{
+  USUL_TRACE_SCOPE;
+  return _tracker.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the joystick.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VRV::Devices::JoystickDevice * Application::joystick ()
+{
+  USUL_TRACE_SCOPE;
+  return _joystick.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the joystick.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const VRV::Devices::JoystickDevice *  Application::joystick () const
+{
+  USUL_TRACE_SCOPE;
+  return _joystick.get();
+}
+

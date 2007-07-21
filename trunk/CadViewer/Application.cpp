@@ -99,24 +99,6 @@ namespace CV
   const unsigned long BUTTON_TRIGGER  = CV::BUTTON5;
 
   // Button combinations.
-/*#if 0
-  const unsigned long COMMAND_QUIT             = BUTTON_RED | BUTTON_YELLOW | BUTTON_GREEN;
-  const unsigned long COMMAND_RESET_WORLD      = BUTTON_RED | BUTTON_BLUE;
-  const unsigned long COMMAND_NAVIGATION       = BUTTON_JOYSTICK;
-  const unsigned long COMMAND_SEEK             = 0xffffffff; // Disable for now.
-  const unsigned long COMMAND_ANALOG_TRIM      = BUTTON_RED | BUTTON_GREEN;
-  const unsigned long COMMAND_HIDE_SELECTED    = BUTTON_YELLOW;
-  const unsigned long COMMAND_UNSELECT_VISIBLE = BUTTON_GREEN;
-  const unsigned long COMMAND_SHOW_ALL         = BUTTON_RED;
-#else
-  const unsigned long COMMAND_MENU_TOGGLE      = BUTTON_JOYSTICK;
-  const unsigned long COMMAND_MENU_SELECT      = BUTTON_TRIGGER;
-  const unsigned long COMMAND_MENU_LEFT        = BUTTON_RED;
-  const unsigned long COMMAND_MENU_RIGHT       = BUTTON_BLUE;
-  const unsigned long COMMAND_MENU_UP          = BUTTON_YELLOW;
-  const unsigned long COMMAND_MENU_DOWN        = BUTTON_GREEN;
-  const unsigned long COMMAND_SELECT           = BUTTON_TRIGGER;
-#endif*/
   const unsigned long COMMAND_MENU_TOGGLE      = BUTTON_JOYSTICK;
   const unsigned long COMMAND_MENU_SELECT      = BUTTON_TRIGGER;
   const unsigned long COMMAND_MENU_LEFT        = BUTTON_RED;
@@ -197,7 +179,7 @@ unsigned long Application::_mainThread = 0;
 ///////////////////////////////////////////////////////////////////////////////
 
 Application::Application ( Args &args ) :
-  BaseClass       ( vrj::Kernel::instance() ),
+  BaseClass       ( ),
   _parser         ( new Parser ( args.begin(), args.end() ) ),
   _gridBranch     ( new osg::MatrixTransform ),
   _cursor         ( new osg::MatrixTransform ),
@@ -210,9 +192,6 @@ Application::Application ( Args &args ) :
   _navigatorV     ( 0x0 ),
   _sceneTool      ( 0x0 ),
   _intersector    ( 0x0 ),
-  _buttons        ( new VRV::Devices::ButtonGroup ),
-  _tracker        ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
-  _joystick       ( new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" ) ),
   _analogTrim     ( 0, 0 ),
   _rotCenter      ( 0, 0, 0 ),
   _pickText       ( new OsgTools::Text ),
@@ -273,10 +252,10 @@ Application::Application ( Args &args ) :
 
   // Hook up the joystick callbacks.
   JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
-  _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
-  _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
-  _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
-  _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
+  this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
+  this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
+  this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
+  this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
 
   // Have to load the config files now. Remove them from the arguments.
   Parser::Args configs = _parser->files ( ".jconf", true );
@@ -390,12 +369,12 @@ void Application::_init()
   this->setBackgroundColor ( osg::Vec4 ( bc[0], bc[1], bc[2], bc[3] ) );
 
   // Initialize the button group by adding the individual buttons.
-  _buttons->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON0, "VJButton0" ) );
-  _buttons->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON1, "VJButton1" ) );
-  _buttons->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON2, "VJButton2" ) );
-  _buttons->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON3, "VJButton3" ) );
-  _buttons->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON4, "VJButton4" ) );
-  _buttons->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON5, "VJButton5" ) );
+  this->buttons()->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON0, "VJButton0" ) );
+  this->buttons()->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON1, "VJButton1" ) );
+  this->buttons()->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON2, "VJButton2" ) );
+  this->buttons()->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON3, "VJButton3" ) );
+  this->buttons()->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON4, "VJButton4" ) );
+  this->buttons()->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON5, "VJButton5" ) );
 
   // Set up lights.
   this->_initLight();
@@ -976,14 +955,6 @@ void Application::_latePreFrame()
   
   // Call the base class's function.
   BaseClass::latePreFrame();
-  
-  // Update these input devices.
-  _buttons->update();
-  _tracker->update();
-  _joystick->update();
-
-  // Send any notifications.
-  _joystick->notify();
 
   // Update the cursor.
   this->_updateCursor();
@@ -1019,7 +990,7 @@ void Application::_processButtons()
   ErrorChecker ( 1083961848u, isAppThread(), CV::NOT_APP_THREAD );
 
 #if 1
-  switch ( _buttons->pressed() )
+  switch ( this->buttons()->pressed() )
   {
     case CV::BUTTON0: std::cout << CV::BUTTON0 << " Button 0 pressed (YELLOW)" << std::endl; break;
     case CV::BUTTON1: std::cout << CV::BUTTON1 << " Button 1 pressed (RED)" << std::endl; break;
@@ -1055,7 +1026,7 @@ bool Application::_handleMenuEvent()
   ErrorChecker ( 1071559313u, isAppThread(), CV::NOT_APP_THREAD );
 
   // First see if you are supposed to show or hide it. Always do this first.
-  if ( COMMAND_MENU_TOGGLE == _buttons->released() )
+  if ( COMMAND_MENU_TOGGLE == this->buttons()->released() )
   {
     _menu->toggleVisible();
     return true;
@@ -1069,7 +1040,7 @@ bool Application::_handleMenuEvent()
   bool handled ( true );
 
   // Process button states iff the menu is showing.
-  switch ( _buttons->released() )
+  switch ( this->buttons()->released() )
   {
     case COMMAND_MENU_SELECT:
       _menu->selectFocused();
@@ -1114,32 +1085,32 @@ bool Application::_handleIntersectionEvent()
   if(!_intersector) return false;
 
   // Process pressed states.
-  if ( COMMAND_SELECT == _buttons->down() )
+  if ( COMMAND_SELECT == this->buttons()->down() )
   {
     this->_intersect();
     return true;
   }
   
-  else if ( COMMAND_HIDE_SELECTED == _buttons->down() )
+  else if ( COMMAND_HIDE_SELECTED == this->buttons()->down() )
   {
     this->_hideSelected ( MenuKit::MESSAGE_SELECTED, NULL );
     return true;
   }
   
-  else if ( COMMAND_UNSELECT_VISIBLE == _buttons->down() )
+  else if ( COMMAND_UNSELECT_VISIBLE == this->buttons()->down() )
   {
     this->_unselectVisible ( MenuKit::MESSAGE_SELECTED, NULL );
     return true;
   }
   
-  else if ( COMMAND_SHOW_ALL == _buttons->down() )
+  else if ( COMMAND_SHOW_ALL == this->buttons()->down() )
   {
     this->_showAll ( MenuKit::MESSAGE_SELECTED, NULL );
     return true;
   }
 
   // Process released states.
-  if ( COMMAND_SELECT == _buttons->released() )
+  if ( COMMAND_SELECT == this->buttons()->released() )
   {
     this->_select();
     this->_updateSceneTool();
@@ -1167,7 +1138,7 @@ bool Application::_handleNavigationEvent( const unsigned long eventRequest )
   
   if(_intersector) return false;                              // skip this code if we're in an intersection mode
 
-  unsigned long mode ( _buttons->released() );                // Button release event
+  unsigned long mode ( this->buttons()->released() );                // Button release event
 
   if ( eventRequest )                                         // if mode NOT specified with function call ...
     mode = eventRequest;                                      // ... get information from buttons
@@ -1678,7 +1649,7 @@ bool Application::isMainThread()
 
 float Application::joystickHorizontal() const
 {
-  return 2.0f * ( _joystick->horizontal() + _analogTrim[0] ) - 1.0f;
+  return 2.0f * ( this->joystick()->horizontal() + _analogTrim[0] ) - 1.0f;
 }
 
 
@@ -1690,7 +1661,7 @@ float Application::joystickHorizontal() const
 
 float Application::joystickVertical() const
 {
-  return 2.0f * ( _joystick->vertical() + _analogTrim[1] ) - 1.0f;
+  return 2.0f * ( this->joystick()->vertical() + _analogTrim[1] ) - 1.0f;
 }
 
 
@@ -1812,9 +1783,9 @@ void Application::wandPosition ( Usul::Math::Vec3f &p ) const
   this->wandOffset ( offset );
 
   // Set the vector from the wand's position plus the offset.
-  p[0] = _tracker->x() + offset[0];
-  p[1] = _tracker->y() + offset[1];
-  p[2] = _tracker->z() + offset[2];
+  p[0] = this->tracker()->x() + offset[0];
+  p[1] = this->tracker()->y() + offset[1];
+  p[2] = this->tracker()->z() + offset[2];
 }
 
 
@@ -1829,7 +1800,7 @@ void Application::wandMatrix ( Matrix44f &W ) const
   ErrorChecker ( 1068004399, isAppThread(), CV::NOT_APP_THREAD );
 
   // Set the given matrix from the wand's matrix.
-  W.set ( _tracker->matrix().getData() );
+  W.set ( this->tracker()->matrix().getData() );
 
   // Get the wand's offset.
   Usul::Math::Vec3f offset;

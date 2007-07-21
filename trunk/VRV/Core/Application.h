@@ -14,6 +14,10 @@
 #include "VRV/Export.h"
 #include "VRV/Prefs/Settings.h"
 #include "VRV/Core/SharedDouble.h"
+#include "VRV/Devices/JoystickDevice.h"
+#include "VRV/Devices/ButtonGroup.h"
+#include "VRV/Devices/TrackerDevice.h"
+#include "VRV/Functors/BaseFunctor.h"
 #include "VRV/Interfaces/IModelAdd.h"
 #include "VRV/Interfaces/IClippingDistance.h"
 #include "VRV/Interfaces/IFrameInfo.h"
@@ -84,12 +88,14 @@ public:
   typedef Usul::Math::Matrix44f                Matrix44f;
   typedef std::vector < std::string >          Filenames;
   typedef VRV::Prefs::Settings                 Preferences;
+  typedef VRV::Devices::ButtonGroup            Buttons;
+  typedef VRV::Devices::TrackerDevice          Tracker;
+  typedef VRV::Devices::JoystickDevice         Joystick;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   // Constructors.
   Application();
-  Application( vrj::Kernel* );
 
   // Destructor.
   virtual ~Application();
@@ -141,6 +147,18 @@ public:
   /// Get the Preferences.
   Preferences *           preferences ();
   const Preferences *     preferences () const;
+
+  /// Get the buttons.
+  Buttons *               buttons ();
+  const Buttons *         buttons () const;
+
+  /// Get the tracker.
+  Tracker *               tracker ();
+  const Tracker *         tracker () const;
+
+  /// Get the joystick.
+  Joystick *              joystick ();
+  const Joystick *        joystick () const;
 
 protected:
 
@@ -238,6 +256,10 @@ private:
   // Typedefs.
   typedef osg::ref_ptr < osg::MatrixTransform >            MatTransPtr;
   typedef osg::ref_ptr < osg::Group >                      GroupPtr;
+  typedef VRV::Functors::BaseFunctor::RefPtr               FunctorPtr;
+  typedef VRV::Devices::ButtonGroup::ValidRefPtr           ButtonsPtr;
+  typedef VRV::Devices::TrackerDevice::ValidRefPtr         TrackerPtr;
+  typedef VRV::Devices::JoystickDevice::ValidRefPtr        JoystickPtr;
 
   // Data members.
   mutable Mutex                          _mutex;
@@ -269,6 +291,10 @@ private:
   bool                                   _exportImage;
 
   Preferences::RefPtr                    _preferences;
+
+  ButtonsPtr                             _buttons;
+  TrackerPtr                             _tracker;
+  JoystickPtr                            _joystick;
 
   unsigned int                           _refCount;
 };

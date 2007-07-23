@@ -44,6 +44,8 @@
 #include "osg/Matrix"
 #include "osg/Timer"
 
+#include "osgDB/DatabasePager"
+
 #include <list>
 #include <string>
 
@@ -330,6 +332,8 @@ private:
 
   Usul::Math::Vec2f                      _analogTrim;
   Usul::Math::Vec3f                      _wandOffset;
+
+  osg::ref_ptr < osgDB::DatabasePager >  _databasePager;
 
   unsigned int                           _refCount;
 };

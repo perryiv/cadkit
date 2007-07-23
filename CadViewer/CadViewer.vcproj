@@ -290,34 +290,6 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="Matrix Functors"
-					>
-					<File
-						RelativePath="Functors\WandMatrix.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Functors\WandMatrix.h"
-						>
-					</File>
-					<File
-						RelativePath="Functors\WandPosition.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Functors\WandPosition.h"
-						>
-					</File>
-					<File
-						RelativePath="Functors\WandRotation.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Functors\WandRotation.h"
-						>
-					</File>
-				</Filter>
-				<Filter
 					Name="Tool"
 					>
 					<File

@@ -462,6 +462,34 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Wand"
+					>
+					<File
+						RelativePath="..\Functors\Wand\WandMatrix.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Functors\Wand\WandMatrix.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Functors\Wand\WandPosition.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Functors\Wand\WandPosition.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Functors\Wand\WandRotation.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Functors\Wand\WandRotation.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Common"

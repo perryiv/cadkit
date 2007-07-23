@@ -28,8 +28,8 @@
 #include "VRV/Functors/Navigate/Translate.h"
 #include "VRv/Functors/Navigate/Rotate.h"
 #include "VRV/Functors/Navigate/Direction.h"
-#include "CadViewer/Functors/WandRotation.h"
-#include "CadViewer/Functors/WandPosition.h"
+#include "VRV/Functors/Wand/WandRotation.h"
+#include "VRV/Functors/Wand/WandPosition.h"
 #include "VRV/Functors/Input/AnalogInput.h"
 #include "VRV/Functors/Input/JoystickHorizontal.h"
 #include "VRV/Functors/Input/JoystickVertical.h"
@@ -340,7 +340,7 @@ void Application::_hTransWandPosX ( MenuKit::Message m, MenuKit::Item *item )
 
   // To shorten the lines.
   typedef VRV::Functors::JoystickHorizontal Analog;
-  typedef CV::Functors::WandRotation Mat;
+  typedef VRV::Functors::WandRotation Mat;
   typedef VRV::Functors::Translate Nav;
 
   // Call the common function.
@@ -398,7 +398,7 @@ void Application::_hTransWandNegX ( MenuKit::Message m, MenuKit::Item *item )
 
   // To shorten the lines.
   typedef VRV::Functors::JoystickHorizontal Analog;
-  typedef CV::Functors::WandRotation Mat;
+  typedef VRV::Functors::WandRotation Mat;
   typedef VRV::Functors::Translate Nav;
 
   // Call the common function.
@@ -456,7 +456,7 @@ void Application::_vTransWandPosY ( MenuKit::Message m, MenuKit::Item *item )
 
   // To shorten the lines.
   typedef VRV::Functors::JoystickVertical Analog;
-  typedef CV::Functors::WandRotation Mat;
+  typedef VRV::Functors::WandRotation Mat;
   typedef VRV::Functors::Translate Nav;
 
   // Call the common function.
@@ -485,7 +485,7 @@ void Application::_vTransWandPosZ ( MenuKit::Message m, MenuKit::Item *item )
 
   // To shorten the lines.
   typedef VRV::Functors::JoystickVertical Analog;
-  typedef CV::Functors::WandRotation Mat;
+  typedef VRV::Functors::WandRotation Mat;
   typedef VRV::Functors::Translate Nav;
 
   // Call the common function.
@@ -543,7 +543,7 @@ void Application::_vTransWandNegZ ( MenuKit::Message m, MenuKit::Item *item )
 
   // To shorten the lines.
   typedef VRV::Functors::JoystickVertical Analog;
-  typedef CV::Functors::WandRotation Mat;
+  typedef VRV::Functors::WandRotation Mat;
   typedef VRV::Functors::Translate Nav;
 
   // The id for this navigator.
@@ -601,7 +601,7 @@ void Application::_hRotWandPosY ( MenuKit::Message m, MenuKit::Item *item )
 
   // To shorten the lines.
   typedef VRV::Functors::JoystickHorizontal Analog;
-  typedef CV::Functors::WandRotation Mat;
+  typedef VRV::Functors::WandRotation Mat;
   typedef VRV::Functors::Rotate Nav;
 
   // The id for this navigator.
@@ -657,7 +657,7 @@ void Application::_vRotWandPosX ( MenuKit::Message m, MenuKit::Item *item )
 
   // To shorten the lines.
   typedef VRV::Functors::JoystickVertical Analog;
-  typedef CV::Functors::WandRotation Mat;
+  typedef VRV::Functors::WandRotation Mat;
   typedef VRV::Functors::Rotate Nav;
 
   // The id for this navigator.
@@ -743,7 +743,7 @@ void Application::_raySelector ( MenuKit::Message m, MenuKit::Item *item )
   // To shorten up the lines.
   typedef VRV::Functors::Direction Dir;
   typedef Dir::Vector Vec;
-  typedef CV::Functors::WandRotation MF;
+  typedef VRV::Functors::WandRotation MF;
   typedef CV::Pick::Select Selector;
 
   // Local id.
@@ -1159,7 +1159,7 @@ void Application::_wMoveSelLocal ( MenuKit::Message m, MenuKit::Item *item )
   typedef CV::Functors::MoveTool MoveTool;
   typedef VRV::Functors::JoystickHorizontal JH;
   typedef VRV::Functors::JoystickVertical JV;
-  typedef CV::Functors::WandRotation WR;
+  typedef VRV::Functors::WandRotation WR;
   typedef VRV::Functors::Direction Dir;
   typedef Dir::Vector Vec;
 
@@ -1223,7 +1223,7 @@ void Application::_wMoveTopLocal ( MenuKit::Message m, MenuKit::Item *item )
   typedef VRV::Functors::JoystickHorizontal JH;
   typedef VRV::Functors::JoystickVertical JV;
   typedef VRV::Functors::Matrix::MatrixFunctor MF;
-  typedef CV::Functors::WandRotation WR;
+  typedef VRV::Functors::WandRotation WR;
   typedef VRV::Functors::Direction Dir;
   typedef Dir::Vector Vec;
 

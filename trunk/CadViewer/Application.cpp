@@ -20,8 +20,8 @@
 #include "SceneFunctors.h"
 #include "ScenePredicates.h"
 
-#include "CadViewer/Functors/WandMatrix.h"
-#include "CadViewer/Functors/WandRotation.h"
+#include "VRV/Functors/Wand/WandMatrix.h"
+#include "VRV/Functors/Wand/WandRotation.h"
 #include "CadViewer/Functors/ToolPair.h"
 
 #include "CadViewer/Pick/Select.h"
@@ -388,7 +388,7 @@ void Application::_init()
   this->_setHome();
 
   // Set a default cursor matrix functor.
-  this->_setCursorMatrixFunctor ( new CV::Functors::WandMatrix ( this->_thisUnknown() ) );
+  this->_setCursorMatrixFunctor ( new VRV::Functors::WandMatrix ( this->_thisUnknown() ) );
 
   // Based on the scene size, set the near and far clipping plane distances.
   this->_setNearAndFarClippingPlanes();

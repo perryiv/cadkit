@@ -42,6 +42,17 @@ SET (SOURCES
   ./Functors/Matrix/IdentityMatrix.cpp
   ./Functors/Matrix/MatrixPair.cpp
   ./Functors/Matrix/InverseMatrix.cpp
+  ./Functors/Wand/WandRotation.cpp
+  ./Functors/Wand/WandMatrix.cpp
+  ./Functors/Wand/WandPosition.cpp
+  ./Functors/Input/JoystickHorizontal.cpp
+  ./Functors/Input/JoystickVertical.cpp
+  ./Functors/Input/AnalogInput.cpp
+  ./Functors/Navigate/TransformPair.cpp
+  ./Functors/Navigate/Translate.cpp
+  ./Functors/Navigate/Rotate.cpp
+  ./Functors/Navigate/Transform.cpp
+  ./Functors/Navigate/Direction.cpp
   ./Prefs/Parser.cpp
   ./Prefs/Settings.cpp
 )

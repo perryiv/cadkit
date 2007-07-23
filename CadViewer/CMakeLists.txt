@@ -19,11 +19,12 @@ ${CADKIT_ROOT_DIR}/OsgTools
 ${CADKIT_ROOT_DIR}/XmlTree
 ${CADKIT_ROOT_DIR}/MenuKit
 ${CADKIT_ROOT_DIR}/MenuKit/OSG
+${CADKIT_ROOT_DIR}/VRV
 ${CADKIT_ROOT_DIR}/CadViewer/Plugins/scene_operations
 ${CADKIT_ROOT_DIR}/CadViewer/Plugins/display_scene_stats
 ${CADKIT_ROOT_DIR}/VRV/GUI
 ${CADKIT_ROOT_DIR}/VRV/IO
-${CADKIT_ROOT_DIR}/VRV
+${CADKIT_ROOT_DIR}/Helios/Plugins/SceneModel
 )
 
 # ------------ Set Include Folders ----------------------
@@ -40,21 +41,10 @@ INCLUDE_DIRECTORIES(
 
 #List the Sources
 SET (SOURCES
-./Functors/WandRotation.cpp
-./Functors/JoystickHorizontal.cpp
-./Functors/WandMatrix.cpp
-./Functors/AnalogInput.cpp
-./Functors/TransformPair.cpp
-./Functors/Translate.cpp
 ./Functors/ToolPair.cpp
-./Functors/Rotate.cpp
 ./Functors/MoveTool.cpp
-./Functors/Transform.cpp
 ./Functors/Tool.cpp
-./Functors/WandPosition.cpp
-./Functors/Direction.cpp
 ./Functors/ScaleTool.cpp
-./Functors/JoystickVertical.cpp
 ./Pick/Intersect.cpp
 ./Pick/Select.cpp
 ./Pick/Seek.cpp

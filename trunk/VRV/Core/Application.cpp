@@ -68,6 +68,7 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _joystick        ( new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" ) ),
   _analogTrim      ( 0, 0 ),
   _wandOffset      ( 0, 0, 0 ), // feet (used to be z=-4)
+  _databasePager   ( new osgDB::DatabasePager ),
   _refCount        ( 0 )
 {
   USUL_TRACE_SCOPE;
@@ -104,6 +105,13 @@ void Application::_construct()
   m.makeRotate ( -osg::PI / 2, osg::Vec3 ( 1, 0, 0 ) );
 
   _models->setMatrix( m );
+
+  _databasePager->registerPagedLODs( _sceneManager->scene() ); 
+
+  _databasePager->setAcceptNewDatabaseRequests( true );
+  _databasePager->setDatabasePagerThreadPause( false );
+  
+  _databasePager->setUseFrameBlock( false );
 }
 
 
@@ -220,6 +228,10 @@ void Application::contextInit()
   unsigned int uniqueContextId ( vrj::GlDrawManager::instance()->getCurrentContext() );
 
   renderer->uniqueID( uniqueContextId );
+
+  // Hook up database pager.
+  renderer->viewer()->getCullVisitor()->setDatabaseRequestHandler( _databasePager.get() );
+  renderer->viewer()->getUpdateVisitor()->setDatabaseRequestHandler( _databasePager.get() );
 
   // Turn off the default light.
   renderer->viewer()->setLightingMode ( osgUtil::SceneView::NO_SCENEVIEW_LIGHT );
@@ -643,6 +655,12 @@ void Application::latePreFrame()
 
   // Send any notifications.
   _joystick->notify();
+
+  // tell the DatabasePager the frame number of that the scene graph is being actively used to render a frame
+  _databasePager->signalBeginFrame( _framestamp.get() );
+
+  // syncronize changes required by the DatabasePager thread to the scene graph
+  _databasePager->updateSceneGraph( _framestamp->getReferenceTime() );
 }
 
 
@@ -658,6 +676,9 @@ void Application::postFrame()
 
   // Capture the frame time.
   _frameTime = _timer.delta_s( _frameStart, _timer.tick() );
+
+  // tell the DatabasePager that the frame is complete and that scene graph is no longer be activity traversed.
+  _databasePager->signalEndFrame();
 }
 
 

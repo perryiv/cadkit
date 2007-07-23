@@ -26,7 +26,7 @@
 
 #include "VRV/Functors/Matrix/IdentityMatrix.h"
 #include "VRV/Functors/Navigate/Translate.h"
-#include "VRv/Functors/Navigate/Rotate.h"
+#include "VRV/Functors/Navigate/Rotate.h"
 #include "VRV/Functors/Navigate/Direction.h"
 #include "VRV/Functors/Wand/WandRotation.h"
 #include "VRV/Functors/Wand/WandPosition.h"

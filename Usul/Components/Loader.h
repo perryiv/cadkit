@@ -65,13 +65,11 @@ protected:
   {
     PluginInfo() :
       name ( "" ),
-      alias ( "" ),
       load ( true )
     {
     }
     
     std::string name;
-    std::string alias;
     bool load;
   };
 
@@ -192,10 +190,6 @@ inline void Loader< Document >::_addPlugin ( Node &node )
     {
       plugin.name = iter->second;
     }
-    else if ( "alias" == iter->first )
-    {
-      plugin.name = iter->second;
-    }
     else if ( "load" == iter->first )
     {
       std::string load ( iter->second );
@@ -284,16 +278,13 @@ inline void Loader< Document >::load ( Usul::Interfaces::IUnknown *caller )
  
       // Prepend the directory if we have one...
       if( false == _directory.empty() )
-	name = _directory + name;
+	      name = _directory + name;
       
       // Let the user know what plugin we are loading.
       status ( "Loading " + name + "...", true );
 
-      // Get the alias.
-      std::string alias ( iter->alias );
-
       // Load the plugin.
-      Usul::Components::Manager::instance().load ( Usul::Interfaces::IPlugin::IID, name, alias );
+      Usul::Components::Manager::instance().load ( Usul::Interfaces::IPlugin::IID, name );
     }
  
     // Update progress.

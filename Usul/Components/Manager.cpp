@@ -175,8 +175,7 @@ Manager& Manager::instance()
 Manager::Manager() :
   _unknowns(),
   _plugExts(),
-  _directories(),
-  _aliases()
+  _directories()
 {
   USUL_TRACE_SCOPE;
 }
@@ -288,7 +287,7 @@ void Manager::load ( unsigned long iid, const Strings &plugins, bool keepGoingIf
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::load ( unsigned long iid, const std::string& file, const std::string& alias )
+void Manager::load ( unsigned long iid, const std::string& file )
 {
   USUL_TRACE_SCOPE;
 
@@ -304,10 +303,6 @@ void Manager::load ( unsigned long iid, const std::string& file, const std::stri
     if ( unknown.valid() )
     {
     	_unknowns.insert ( unknown.get() );
-
-      // Only add if we have a valid alias.
-      if ( false == alias.empty() )
-        _aliases.insert ( Aliases::value_type ( alias, unknown.get() ) );
     }
 	}
 	catch ( const std::exception& e )
@@ -335,7 +330,7 @@ void Manager::clear ( std::ostream *out )
   if ( 0x0 == out )
   {
     _unknowns.clear(); 
-    _aliases.clear();
+    //_aliases.clear();
     Helper::_pool.clear();
     return;
   }
@@ -375,24 +370,6 @@ Usul::Interfaces::IUnknown* Manager::getInterface( unsigned long iid )
     if( u->queryInterface( iid ) )
       return (*i).get();
   }
-
-  return 0x0;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Find Unknown with given alias.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown* Manager::getInterface( const std::string& alias )
-{
-  USUL_TRACE_SCOPE;
-
-  Aliases::const_iterator iter = _aliases.find ( alias );
-  if ( iter != _aliases.end() )
-    return iter->second.get();
 
   return 0x0;
 }

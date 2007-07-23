@@ -40,7 +40,6 @@ public:
   typedef std::list < std::string >              Strings;
   typedef std::set < std::string >               PluginExtensions;
   typedef std::set < std::string >               Directories;
-  typedef std::map < std::string, UnknownPtr >   Aliases;
 
   static Manager& instance();
 
@@ -62,7 +61,7 @@ public:
   // Load the plugins.
   void                          load ( unsigned long iid, const Strings &plugins, bool keepGoingIfException = true );
   void                          load ( unsigned long iid, bool keepGoingIfException = true );
-  void                          load ( unsigned long iid, const std::string& file, const std::string& alias = "" );
+  void                          load ( unsigned long iid, const std::string& file );
 
   // Return list of plugin names. This queries each unknown pointer for IPlugin.
   Strings                       names() const;
@@ -75,7 +74,6 @@ public:
 
   // Get a single IUnknown
   Usul::Interfaces::IUnknown*   getInterface( unsigned long iid );
-  Usul::Interfaces::IUnknown*   getInterface( const std::string& alias );
 
   // Get a set of IUnknowns
   UnknownSet                    getInterfaces( unsigned long iid );
@@ -93,7 +91,6 @@ private:
   UnknownSet            _unknowns;
   PluginExtensions      _plugExts;
   Directories           _directories;
-  Aliases               _aliases;
   static Manager *      _instance;
 };
 

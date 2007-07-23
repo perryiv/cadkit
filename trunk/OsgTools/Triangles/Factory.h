@@ -54,6 +54,8 @@ public:
   void                    reserveTriangles ( unsigned int num );
   void                    reserveSharedVertices ( unsigned int num );
 
+  void                    usePool ( bool );
+
 protected:
 
   virtual ~Factory();

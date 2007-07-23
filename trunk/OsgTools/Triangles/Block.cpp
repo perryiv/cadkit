@@ -11,6 +11,8 @@
 #include "OsgTools/Triangles/TriangleSet.h"
 #include "OsgTools/HasOption.h"
 
+#include "OsgTools/MaterialFactory.h"
+
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Shared/Preferences.h"
@@ -324,7 +326,12 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
     _geometry->setColorBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
   }
 #endif
+#if 0
+  static osg::ref_ptr < OsgTools::MaterialFactory > mf ( new OsgTools::MaterialFactory );
 
+  osg::ref_ptr < osg::StateSet > ss ( _geometry->getOrCreateStateSet() );
+  ss->setAttribute ( mf->create(), osg::StateAttribute::ON );
+#endif
   // Return the geometry.
   return _geometry.get();
 }

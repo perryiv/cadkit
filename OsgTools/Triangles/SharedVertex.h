@@ -63,7 +63,7 @@ public:
   TriangleItr           begin()       { return _triangles.begin(); }
 
   // Return the current triangle capacity.
-  unsigned int          capacity() const { return _triangles.capacity(); }
+  unsigned int          capacity() const { return static_cast<unsigned int> ( _triangles.capacity() ); }
 
   // Set/get dirty flags.
   void                  dirtyColor ( bool );

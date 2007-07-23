@@ -99,12 +99,18 @@ private:
   typedef osg::ref_ptr < osg::Vec3Array > Normals;
   typedef osg::ref_ptr < osg::Vec4Array > Colors;
 
+  // Added by Jeff Conner -- developmental
+  typedef osg::ref_ptr < osg::Vec2Array > Texcoords;
+
   osg::BoundingBox _bbox;
   ElementsPtr _elements;
   GeometryPtr _geometry;
   Triangles _triangles;
   Normals _normalsT;
   Colors _colorsT;
+
+  // Added by Jeff Conner -- developmental
+  Texcoords _texcoordsV;
 };
 
 

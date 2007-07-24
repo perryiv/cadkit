@@ -17,10 +17,6 @@ INCLUDE(${CMakeModules}/FindXerces.cmake)
 SET ( Boost_USE_DATE_TIME TRUE )
 INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
-FIND_LIBRARY(VJCINEMA_LIB VrjCinema
- "$ENV{VRJCINEMA_ROOT_DIR}/lib"
-)
-
 INCLUDE(${CMakeModules}/FindVRJuggler.cmake)
 
 SUBDIRS(
@@ -31,7 +27,8 @@ ${CADKIT_ROOT_DIR}/XmlTree
 ${CADKIT_ROOT_DIR}/Serialize/XML
 ${CADKIT_ROOT_DIR}/Magrathea
 ${CADKIT_ROOT_DIR}/Minerva/Core
-# ---- PlugIns -------
+${CADKIT_ROOT_DIR}/VRV
+# ---- Plug-ins -------
 ${CADKIT_ROOT_DIR}/Minerva/Plugins/ProjectionManager
 ${CADKIT_ROOT_DIR}/Minerva/Plugins/ComputeNormals
 ${CADKIT_ROOT_DIR}/Minerva/Plugins/TriangulateCGAL
@@ -40,7 +37,6 @@ ${CADKIT_ROOT_DIR}/Minerva/Plugins/TriangulateCGAL
 # ------------ Set Include Folders ----------------------
 INCLUDE_DIRECTORIES( 
 		     ${CADKIT_INC_DIR}
-		     "${CADKIT_INC_DIR}/Experimental"
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
 		     ${WMS_INC_DIR}
@@ -48,7 +44,6 @@ INCLUDE_DIRECTORIES(
 		     ${OSG_EPHEMERIS_INC_DIR}
 		     ${OSSIM_PLANET_INC_DIR}
 		     $ENV{PQXX_INC_DIR}
-		     "$ENV{VRJCINEMA_ROOT_DIR}/src"
 		     ${VRJ_INC_DIR}
 		     "${VRJ_INC_DIR}/tweek/CORBA"
 		     "${VRJ_INC_DIR}/tweek/idl"
@@ -75,7 +70,7 @@ ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
 ADD_EXECUTABLE( ${TARGET} ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( ${TARGET} Usul OpenThreadsEx OsgTools Magrathea Minerva )
+LINK_CADKIT( ${TARGET} Usul OpenThreadsEx OsgTools Magrathea Minerva VRV )
 TARGET_LINK_LIBRARIES( ${TARGET} 
   ${VJCINEMA_LIB}
   ${VR_JUGGLER_LIBS}
@@ -86,6 +81,7 @@ TARGET_LINK_LIBRARIES( ${TARGET}
   ${OSG_TEXT_LIB}
   ${OSG_UTIL_LIB}
   ${OSG_FX_LIB}
+  ${PRODUCER_LIB}
   ${OPENGL_LIBRARIES}
   ${OSSIM_LIB}
   ${OSSIM_PLANET_LIB}

@@ -10,17 +10,11 @@
 
 #include "MinervaVR.h"
 
-#include "vrj/Kernel/Kernel.h"
+#include "VRV/Core/Program.h"
 
-#include "Usul/CommandLine/Arguments.h"
-#include "Usul/Components/Manager.h"
-#include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Threads/SetThreadFactory.h"
-#include "Usul/Trace/Print.h"
-#include "Usul/System/Host.h"
 
 #include "Threads/OpenThreads/Mutex.h"
-#include "Threads/OpenThreads/Thread.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -31,61 +25,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 Usul::Threads::SetMutexFactory  mutexFactory  ( &Threads::OT::newOpenThreadsMutex );
-Usul::Threads::SetThreadFactory threadFactory ( &Threads::OT::newOpenThreadsThread );
 
 int main( int argc, char* argv[] )
 {
-  // Set the trace stream.
-#ifdef _DEBUG
-  std::string filename ( Usul::System::Host::name() + "_log.txt" );
-  std::ofstream out ( filename.c_str() );
-  Usul::Trace::Print::init ( &out );
-#endif
-
-  // Set the command line arguments.
-  Usul::CommandLine::Arguments::instance().set ( argc, argv );
-
-  // Add some plugin extensions.
-#ifdef _DEBUG
-  Usul::Components::Manager::instance().addPluginExtension ( "plugd" );
-#else
-  Usul::Components::Manager::instance().addPluginExtension ( "plug" );
-#endif
- 
-  // Get the directory where the application lives.
-  const std::string dir ( Usul::CommandLine::Arguments::instance().directory() );
-   
-  Usul::Components::Manager::instance().addDirectory( dir );
-   
-  // Load all plugins.
-  Usul::Components::Manager::instance().load ( Usul::Interfaces::IPlugin::IID );
-
-  std::cerr << "Loading plugins...." << std::endl;
-
-  // Feedback about plugins.
-  Usul::Components::Manager::instance().print ( std::cout );
-
-  vrj::Kernel* kernel		= vrj::Kernel::instance();
-  MinervaVR* application	= new MinervaVR(kernel, argc, argv);	
-  
-  // Number of argumets should be more than 1 :: Needs atleast one config file ::
-  if( argc < 2 )
-  {
-    std::cerr << " Test: " << std::endl;
-    //printUsageInformation();
-    std::exit(1);
-  }
-
-  for( int i = 1; i < argc; ++i )
-  {
-    kernel->loadConfigFile( argv[i] );
-  }
-
-  kernel->start();
-  kernel->setApplication( application );
-  kernel->waitForKernelStop();
-
-  return 0;
+  VRV::Core::Program < MinervaVR > program ( "Minerva" );
+  return program.run ( argc, argv );
 }
-
-

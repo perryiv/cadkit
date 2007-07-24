@@ -72,6 +72,9 @@ TriangleDocument::TriangleDocument() : BaseClass ( "Triangle Document" ),
   _uncapped (),
   _capped ()
 {
+#if 1
+  _triangles->factory()->usePool ( false );
+#endif
 }
 
 
@@ -225,7 +228,7 @@ void TriangleDocument::read ( const std::string &name, Unknown *caller )
   {
     TriangleReaderArcAsciiGrid reader ( name, caller, this );
     reader();
-  } 
+  }
 #if 0
   else if ( "prds" == ext )
   {
@@ -307,7 +310,7 @@ TriangleDocument::Filters TriangleDocument::filtersInsert() const
 TriangleDocument::Filters TriangleDocument::filtersOpen() const
 {
   Filters filters;
-  filters.push_back ( Filter ( "All Triangle Files (*.tdf *.stl *.r3d)", "*.tdf;*.stl;*.r3d" ) );
+  filters.push_back ( Filter ( "All Triangle Files (*.tdf *.stl *.r3d *.asc)", "*.tdf;*.stl;*.r3d;*.asc" ) );
   filters.push_back ( Filter ( "Triangle Document Format (*.tdf)", "*.tdf" ) );
   filters.push_back ( Filter ( "Stereolithography (*.stl)", "*.stl" ) );
   filters.push_back ( Filter ( "RoboMet 3D (*.r3d)", "*.r3d" ) );

@@ -93,8 +93,8 @@ void TriangleWriterTDF::operator()()
     file.stream().write( (char*) &FileFormat::Header::ID, sizeof(FileFormat::Header::ID)  );
     file.stream().write( (char*) &FileFormat::Header::ENDIAN_LITTLE, sizeof(FileFormat::Header::ENDIAN_LITTLE) );
 
-     WRITE_SCALAR ( FileFormat::Header::VERSION_MAJOR );
-     WRITE_SCALAR ( FileFormat::Header::VERSION_MINOR );
+    WRITE_SCALAR ( FileFormat::Header::VERSION_MAJOR );
+    WRITE_SCALAR ( FileFormat::Header::VERSION_MINOR );
   }
 
   // Write some meaningful meta data.

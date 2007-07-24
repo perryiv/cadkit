@@ -22,7 +22,6 @@
 #include "Usul/Math/Vector3.h"
 
 namespace osg { class MatrixTransform; }
-namespace osgDB { class DatabasePager; }
 class ossimPlanet;
 
 
@@ -36,7 +35,6 @@ public:
   // Useful typedefs.
   typedef Node BaseClass;
   typedef BaseClass::BuildOptions BuildOptions;
-  typedef osgDB::DatabasePager Pager;
   typedef Usul::Math::Vec3d Vec3d;
 
   // Helper macro for repeated code.
@@ -47,14 +45,11 @@ public:
 
   // Set/get the center.
   void                      center ( Vec3d & );
-  Usul::Math::Vec3d         center() const;
+  Vec3d                     center() const;
 
   // Get the scene.
   const osg::Node *         scene() const;
   osg::Node *               scene();
-
-  // Get the database pager.
-  Pager *                   databasePager();
 
 protected:
 
@@ -70,7 +65,6 @@ private:
   void                      _destroy();
 
   ossimPlanet *_planet;
-  Pager *_pager;
   osg::MatrixTransform *_transform;
 };
 

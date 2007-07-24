@@ -49,7 +49,7 @@ public:
 
   // Set/get the center.
   void                      center ( Vec3d & );
-  Usul::Math::Vec3d         center() const;
+  Vec3d                     center() const;
 
   // Set/get the satellites.
   void                      satellites ( Group * );

@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test: CadKit ToTDF", "ToTDF.vcproj", "{BE3843F6-2FB3-42BF-AFD6-3414976B4E5E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Usul", "..\..\Usul\Usul.vcproj", "{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Triangle Model", "..\..\Helios\Plugins\TriangleModel\TriangleModel.vcproj", "{BA05EE0D-7CCA-42FF-8306-7460502ED650}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit OsgTools", "..\..\OsgTools\OsgTools.vcproj", "{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE3843F6-2FB3-42BF-AFD6-3414976B4E5E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BE3843F6-2FB3-42BF-AFD6-3414976B4E5E}.Debug|Win32.Build.0 = Debug|Win32
+		{BE3843F6-2FB3-42BF-AFD6-3414976B4E5E}.Release|Win32.ActiveCfg = Release|Win32
+		{BE3843F6-2FB3-42BF-AFD6-3414976B4E5E}.Release|Win32.Build.0 = Release|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Debug|Win32.ActiveCfg = Debug|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Debug|Win32.Build.0 = Debug|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Release|Win32.ActiveCfg = Release|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Release|Win32.Build.0 = Release|Win32
+		{BA05EE0D-7CCA-42FF-8306-7460502ED650}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BA05EE0D-7CCA-42FF-8306-7460502ED650}.Debug|Win32.Build.0 = Debug|Win32
+		{BA05EE0D-7CCA-42FF-8306-7460502ED650}.Release|Win32.ActiveCfg = Release|Win32
+		{BA05EE0D-7CCA-42FF-8306-7460502ED650}.Release|Win32.Build.0 = Release|Win32
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Debug|Win32.Build.0 = Debug|Win32
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Release|Win32.ActiveCfg = Release|Win32
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

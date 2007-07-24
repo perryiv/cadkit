@@ -164,6 +164,9 @@ void TriangleReaderArcAsciiGrid::_read()
     in >> label >> noDataValue;
   }
 
+  // Determine upper left.
+  Usul::Math::Vec2d upperLeft ( lowerLeft[0], lowerLeft[1] + gridSize[1] * cellSize );
+
   // Useful typedefs.
   typedef std::vector<float> Values;
   typedef osg::Vec3f Vec3;
@@ -197,45 +200,74 @@ void TriangleReaderArcAsciiGrid::_read()
     std::for_each ( row1.begin(), row1.end(), Helper::ReadStream ( _file.first, in ) );
 
     // Shortcuts.
-    const Values::value_type y0 ( lowerLeft[1] + ( ( i     ) * cellSize ) );
-    const Values::value_type y1 ( lowerLeft[1] + ( ( i + 1 ) * cellSize ) );
+    const Values::value_type xa ( upperLeft[1] + ( ( i     ) * cellSize ) );
+    const Values::value_type xb ( upperLeft[1] + ( ( i + 1 ) * cellSize ) );
 
     // Loop over the columns.
     const unsigned int stopC ( gridSize[1] - 1 );
     for ( unsigned int j = 0; j < stopC; ++j )
     {
       // Shortcuts.
-      const Values::value_type xa ( lowerLeft[0] + ( ( j     ) * cellSize ) );
-      const Values::value_type xb ( lowerLeft[0] + ( ( j + 1 ) * cellSize ) );
+      const Values::value_type y0 ( upperLeft[0] + ( ( j     ) * cellSize ) );
+      const Values::value_type y1 ( upperLeft[0] + ( ( j + 1 ) * cellSize ) );
 
       // Calculate vertices of current triangles.
-      const Vec3 a ( xa, y1, row1.at ( j     ) );
+      /*const Vec3 a ( xa, y1, row1.at ( j     ) );
       const Vec3 b ( xb, y1, row1.at ( j + 1 ) );
       const Vec3 c ( xa, y0, row0.at ( j     ) );
-      const Vec3 d ( xb, y0, row0.at ( j + 1 ) );
+      const Vec3 d ( xb, y0, row0.at ( j + 1 ) );*/
+
+      // Calculate vertices of current triangles.
+      const Vec3 a ( xa, y0, row0.at ( j     ) );
+      const Vec3 b ( xa, y1, row0.at ( j + 1 ) );
+      const Vec3 c ( xb, y0, row1.at ( j     ) );
+      const Vec3 d ( xb, y1, row1.at ( j + 1 ) );
 
       // See if points are close to "no data".
-      if ( false == close ( b[2], noDataValue ) &&
-           false == close ( c[2], noDataValue ) )
+      if ( false == close ( d[2], noDataValue ) &&
+           false == close ( a[2], noDataValue ) )
       {
         // Add first triangle.
-        if ( false == close ( a[2], noDataValue ) )
+        if ( false == close ( c[2], noDataValue ) )
         {
-          Vec3 n ( ( b - a ) ^ ( c - a ) );
+          Vec3 n ( ( d - c ) ^ ( a - c ) );
           n.normalize();
-          OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( a, b, c, n, false ) );
+          OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( d, a, c, n, false ) );
           t->original ( true );
         }
 
         // Add second triangle.
-        if ( false == close ( d[2], noDataValue ) )
+        if ( false == close ( b[2], noDataValue ) )
         {
-          Vec3 n ( ( d - b ) ^ ( c - b ) );
+          Vec3 n ( ( b - d ) ^ ( a - d ) );
           n.normalize();
-          OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( b, d, c, n, false ) );
+          OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( d, a, b, n, false ) );
           t->original ( true );
         }
       }
+
+      //// See if points are close to "no data".
+      //if ( false == close ( b[2], noDataValue ) &&
+      //     false == close ( c[2], noDataValue ) )
+      //{
+      //  // Add first triangle.
+      //  if ( false == close ( a[2], noDataValue ) )
+      //  {
+      //    Vec3 n ( ( b - a ) ^ ( c - a ) );
+      //    n.normalize();
+      //    OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( a, b, c, n, false ) );
+      //    t->original ( true );
+      //  }
+
+      //  // Add second triangle.
+      //  if ( false == close ( d[2], noDataValue ) )
+      //  {
+      //    Vec3 n ( ( d - b ) ^ ( c - b ) );
+      //    n.normalize();
+      //    OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( b, d, c, n, false ) );
+      //    t->original ( true );
+      //  }
+      //}
 
       // Feedback.
       this->_incrementProgress ( update() );

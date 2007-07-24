@@ -19,6 +19,7 @@
 #include "Usul/Interfaces/IUnknown.h"
 
 #include <string>
+#include <iosfwd>
 #include <utility>
 #include <vector>
 
@@ -87,10 +88,10 @@ struct IDocument : public Usul::Interfaces::IUnknown
   virtual void                          modified ( bool ) = 0;
 
   /// Save the document to existing file name.
-  virtual void                          save ( Unknown *caller = 0x0 ) = 0;
+  virtual void                          save ( Unknown *caller = 0x0, std::ostream *out = 0x0 ) = 0;
 
   /// Always prompts for new file name.
-  virtual void                          saveAs ( Unknown *caller = 0x0 ) = 0;
+  virtual void                          saveAs ( Unknown *caller = 0x0, std::ostream *out = 0x0 ) = 0;
 
   /// Refresh the view
   virtual void                          refreshView ( Usul::Interfaces::IViewer * ) = 0;

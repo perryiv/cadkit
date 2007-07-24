@@ -36,6 +36,7 @@
 #include "Usul/Interfaces/IModifiedSubject.h"
 #include "Usul/Interfaces/IModifiedObserver.h"
 #include "Usul/Interfaces/IHandleMessage.h"
+#include "Usul/Interfaces/IRenderListener.h"
 
 #include <string>
 #include <list>
@@ -56,7 +57,8 @@ class USUL_EXPORT Document : public Usul::Base::Object,
                              public Usul::Interfaces::IGetTitle,
                              public Usul::Interfaces::ICanClose,
                              public Usul::Interfaces::ICanInsert,
-                             public Usul::Interfaces::IModifiedSubject
+                             public Usul::Interfaces::IModifiedSubject,
+                             public Usul::Interfaces::IRenderListener
 {
 public:
 
@@ -93,7 +95,7 @@ public:
   virtual void                addView     ( View   *view   );
 
   /// The application is about to close.
-  virtual void                applicationClosing ( Usul::Interfaces::IUnknown *caller = 0x0 );
+  virtual void                applicationClosing ( Unknown *caller = 0x0 );
 
   /// The given window is closing
   virtual void                closing     ( Window *window );
@@ -120,7 +122,7 @@ public:
   virtual void                clear ( Unknown *caller = 0x0 ) = 0;
 
   /// Close all referenced windows except one specified
-  bool                        closeWindows( Usul::Interfaces::IUnknown *caller = 0x0, const Window* skip = 0x0 );
+  bool                        closeWindows( Unknown *caller = 0x0, const Window* skip = 0x0 );
 
   /// Create default GUI
   virtual void                createDefaultGUI ( Unknown *caller = 0x0 );
@@ -168,8 +170,8 @@ public:
   virtual void                notify ( unsigned short message );
 
   /// Return the number of windows.
-  unsigned int                numWindows()   const { return _windows.size();   }
-  unsigned int                numViews()     const { return _views.size();     }
+  unsigned int                numWindows()   const { return ( static_cast<unsigned int> ( _windows.size() ) );   }
+  unsigned int                numViews()     const { return ( static_cast<unsigned int> ( _views.size() ) );     }
 
   /// Open the file. Clears any data this document already has.
   void                        open ( const std::string &filename, Unknown *caller = 0x0 );
@@ -193,17 +195,17 @@ public:
   virtual void                removeView     ( View   *view   );
 
   /// Save the document to existing file name.
-  void                        save ( Unknown *caller = 0x0 );
+  void                        save ( Unknown *caller = 0x0, std::ostream *out = 0x0 );
 
   /// Always prompts for new file name.
-  void                        saveAs ( Unknown *caller = 0x0 );
+  void                        saveAs ( Unknown *caller = 0x0, std::ostream *out = 0x0 );
 
   /// Use given filename.
-  void                        saveAs ( const std::string& filename, Unknown *caller = 0x0 );
+  void                        saveAs ( const std::string& filename, Unknown *caller = 0x0, std::ostream *out = 0x0 );
 
   /// Convenience function to set progress bar and flush events.
-  void                        setProgressBar ( bool state, unsigned int numerator, unsigned int denominator );
-  void                        setProgressBar ( bool state, std::istream &in, unsigned int fileSize );
+  void                        setProgressBar ( bool state, unsigned int numerator, unsigned int denominator, Unknown *caller = 0x0 );
+  void                        setProgressBar ( bool state, std::istream &in, unsigned int fileSize, Unknown *caller = 0x0 );
 
   /// Convenience function to set status bar and flush events.
   void                        setStatusBar ( const std::string &text );
@@ -238,7 +240,7 @@ protected:
 
   std::string                 _getSaveAsFileName ( Options &options, Unknown *caller = 0x0 );
 
-  void                        _save ( const std::string &filename, Unknown *caller, const Options &options = Options() );
+  void                        _save ( const std::string &filename, Unknown *caller, const Options &options = Options(), std::ostream *out = 0x0 );
 
   ///  Send the message to all windows except for one specified.
   template < class Listeners, class Skip >
@@ -252,8 +254,12 @@ protected:
   virtual std::string         getTitle ( Window* );
 
   /// Usul::Interfaces::IModifiedSubject
-  virtual void addModifiedObserver    ( Usul::Interfaces::IModifiedObserver* observer );
-  virtual void removeModifiedObserver ( Usul::Interfaces::IModifiedObserver* observer );
+  virtual void                addModifiedObserver    ( Usul::Interfaces::IModifiedObserver* observer );
+  virtual void                removeModifiedObserver ( Usul::Interfaces::IModifiedObserver* observer );
+
+  /// Usul::Interfaces::IRenderListener
+  virtual void                postRenderNotify ( Unknown *caller );
+  virtual void                preRenderNotify ( Unknown *caller );
 
 private:
 

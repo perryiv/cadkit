@@ -46,7 +46,7 @@
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
 				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(CADKIT_ROOT_DIR)/Experimental;$(OSG_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM_MODEL;"
+				PreprocessorDefinitions="_USUL_TRACE;WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM_MODEL;"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -147,7 +147,7 @@
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(CADKIT_ROOT_DIR)/Experimental;$(OSG_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM_MODEL;"
+				PreprocessorDefinitions="_USUL_TRACE;WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM_MODEL;"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -223,6 +223,10 @@
 				Name="Implementation"
 				>
 				<File
+					RelativePath=".\CompileGuard.h"
+					>
+				</File>
+				<File
 					RelativePath=".\StarSystemComponent.cpp"
 					>
 				</File>
@@ -244,10 +248,6 @@
 				</File>
 				<File
 					RelativePath=".\StarSystemFactory.h"
-					>
-				</File>
-				<File
-					RelativePath=".\CompileGuard.h"
 					>
 				</File>
 			</Filter>

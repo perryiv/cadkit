@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Document for scene files
+//  Document for star-systems.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -46,6 +46,9 @@ public:
   // Construction.
   StarSystemDocument();
 
+  // Add the view to the document.
+  virtual void                addView ( Usul::Interfaces::IView *view );
+
   // Build the scene.
   virtual osg::Node *         buildScene ( const BaseClass::Options &options, Unknown *caller = 0x0 );
 
@@ -69,6 +72,13 @@ public:
 
   // Read the document.
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0 );
+
+  // Remove the view from the document.
+  virtual void                removeView ( Usul::Interfaces::IView *view );
+
+  /// Usul::Interfaces::IRenderListener inherited from base class.
+  virtual void                postRenderNotify ( Unknown *caller );
+  virtual void                preRenderNotify ( Unknown *caller );
 
   // Write the document to given file name.
   virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const;

@@ -18,17 +18,17 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
+#include "Usul/CommandLine/Parser.h"
 
 #include "OsgTools/Builders/Compass.h"
 
-#include "VrjCore/OssimInteraction.h"
-
-#include <fstream>
-
-#include <osg/Group>
-#include <osg/Node>
+#include "osg/Group"
+#include "osg/Node"
 
 #include "osgDB/WriteFile"
+#include "osgDB/Registry"
+
+#include <fstream>
 
 #if _MSC_VER
 #include <direct.h>
@@ -52,6 +52,7 @@ const std::string HOME          = "home";
 const std::string HOME_LOOK     = "home_look";
 const std::string BACKGROUND    = "background";
 const std::string EPHEMERIS     = "ephemeris";
+const std::string NEAR_FAR      = "near_far";
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -59,19 +60,20 @@ const std::string EPHEMERIS     = "ephemeris";
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) : 
-  OsgVJApp( kern, argc, argv ),
+MinervaVR::MinervaVR( Args& args ) : 
+  BaseClass( ),
   _dbManager ( 0x0 ),
   _sceneManager ( new Minerva::Core::Scene::SceneManager ),
   _planet ( new Magrathea::Planet ),
   _options(),
   _background( 0.0, 0.0, 0.0, 1.0 ),
-  _update( ),
   _updateThread ( 0x0 ),
-  _mutex(),
   _rand ( 0, 5 ),
-  _commandQueue ()
+  _commandQueue (),
+  _navigator ( 0x0 )
 {
+  USUL_TRACE_SCOPE;
+
   _dbManager = new Minerva::Core::Viz::Controller ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 
   // Initialize random numbers
@@ -91,8 +93,9 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
     std::cerr << " [MinervaVR] Warning: No Minerva config file found. " << std::endl;
   }
 
-  // Make room for 2 Jobs.
-  Usul::Jobs::Manager::instance().poolResize ( 2 );
+  Usul::CommandLine::Parser parser ( args.begin(), args.end() );
+  Usul::CommandLine::Parser::Args configs ( parser.files ( ".jconf", true ) );
+  this->_loadConfigFiles ( configs );
 }
 
 
@@ -104,6 +107,8 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
 
 MinervaVR::~MinervaVR()
 {
+  USUL_TRACE_SCOPE;
+
   // Kill the update thread.
   if( _updateThread.valid() )
     _updateThread->kill();
@@ -122,19 +127,19 @@ MinervaVR::~MinervaVR()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaVR::appInit()
+void MinervaVR::init()
 {
+  USUL_TRACE_SCOPE;
+
+  /// Initialize base class.
+  BaseClass::init ();
+
   std::cerr << " [MinervaVR] app init starts: " << std::endl;
 
   // Initalize clock.
   ::clock();
 
-  // Set all the properties here
-  setDevice(ALL, OFF);	
-
-  //vpr::GUID guid ( "6D4B401D-C3FD-429e-84DB-1F9DCC9A2A5C" );
-  //_update.init( guid, "viz1" );
-
+  // Create the application connection.
   Minerva::Core::DB::Connection::RefPtr applicationConnection ( new Minerva::Core::DB::Connection );
   applicationConnection->username( _options.value( USERNAME ) );
   applicationConnection->password( _options.value( PASSWORD ) );
@@ -158,17 +163,30 @@ void MinervaVR::appInit()
     in >> _background[0] >> _background[1] >> _background[2] >> _background[3];
   }
 
-  setBackgroundColor( gmtl::Vec4f( _background[0], _background[1], _background[2], _background[3] ).getData());
+  this->setBackgroundColor( _background );
 
-  //vrj::Projection::setNearFar(0.000001, 15.0);
-  vrj::Projection::setNearFar(0.001, 15.0);
+  float near ( 0.000001 ), far ( 15.0 );
 
-  setSceneInitialPosition( osg::Vec3f( 0.0, 10.0, 0.0 ) );
+  if ( _options.option ( NEAR_FAR ) )
+  {
+    std::istringstream in ( _options.value ( NEAR_FAR ) );
+    in >> near >> far;
+  }
 
+  // Set the near and far planes.
+  this->setClippingDistances ( near, far );
+
+  // Initialize the legend.
   this->_initLegend();
 
   // Launch the update thread.
   this->_launchUpdateThread();
+
+  // Initialize the scene.
+  this->_initScene ();
+
+  // Initialize the light.
+  this->_initLight ();
   
   std::cerr << " [MinervaVR] app init ends: " << std::endl;
 }
@@ -182,6 +200,8 @@ void MinervaVR::appInit()
 
 void MinervaVR::_initLegend()
 {
+  USUL_TRACE_SCOPE;
+
   _sceneManager->showLegend ( false );
 
   if( _options.option( LEGEND_NODE ) )
@@ -208,6 +228,8 @@ void MinervaVR::_initLegend()
 
 void MinervaVR::_launchUpdateThread()
 {
+  USUL_TRACE_SCOPE;
+
   // Create a new thread to update in.
   _updateThread = Usul::Threads::Manager::instance().create();
   
@@ -227,32 +249,16 @@ void MinervaVR::_launchUpdateThread()
 
 void MinervaVR::preFrame()
 {
-  /// Check to see if we have data.
-  //if( _update.isLocal() )
-  //  _update->dataAvailable ( _dbManager->hasEvents() );
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
 
   BaseClass::preFrame();
-}
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Drawing is about to happen. 
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaVR::appPreOsgDraw()
-{
-  Guard guard ( this->mutex() );
   static bool sizeSet ( false );
 
   if( false == sizeSet )
   {
-    GLint viewport[4];
-
-    ::glGetIntegerv( GL_VIEWPORT, viewport );
-
-    _sceneManager->resize ( viewport[2], viewport[3] );
+    _sceneManager->resize ( this->viewport()->width(), this->viewport()->height() );
     
     sizeSet = true;
   }
@@ -278,8 +284,37 @@ void MinervaVR::appPreOsgDraw()
 
 void MinervaVR::draw()
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   BaseClass::draw();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Frame has finished.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaVR::postFrame()
+{
+  USUL_TRACE_SCOPE;
+
+  try
+  {
+    BaseClass::postFrame();
+
+    this->_processCommands();
+  }
+  catch ( const std::exception& e )
+  {
+    std::cerr << "Error 1632458424: Standard exception caught in post frame." << std::endl;
+    std::cerr << "Message: " << e.what() << std::endl;
+  }
+  catch ( ... )
+  {
+    std::cerr << "Error 2681275507: Unknown exception caught in post frame." << std::endl;
+  }
 }
 
 
@@ -289,15 +324,16 @@ void MinervaVR::draw()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaVR::appSceneInit()
+void MinervaVR::_initScene()
 {	
+  USUL_TRACE_SCOPE;
+
   std::cerr << " [MinervaVR] Scene init starts: " << std::endl;
 
   _planet->init();
 
   std::cerr << " [MinervaVR] planet initialized: " << std::endl;
 
-  mOsgDatabasePager = _planet->databasePager();
   _planet->root()->addChild( _sceneManager->root() );
 
   std::cerr << " [MinervaVR] begin reading kwl: " << std::endl;
@@ -323,19 +359,16 @@ void MinervaVR::appSceneInit()
     _planet->ephemerisFlag( useEphemeris );
   }
 
-  mModelGroupNode->addChild ( _planet->root() );
-
-  
-  
-  std::cerr << " [MinervaVR] Root set: " << std::endl;
+  this->models()->addChild ( _planet->root() );
 
   // Create and set-up the interactor.
-  VrjCore::OssimInteraction *interactor = new VrjCore::OssimInteraction();
+  //VrjCore::OssimInteraction *interactor = new VrjCore::OssimInteraction();
 
   
-  if( "viz0" == Usul::System::Host::name() )
-    mModelGroupNode->addChild ( interactor->compass() );
+  //if( "viz0" == Usul::System::Host::name() )
+  //  mModelGroupNode->addChild ( interactor->compass() );
 
+  /*
   if( ossimPlanet* planet = dynamic_cast< ossimPlanet* >( _planet->root() ) )
   {
     interactor->planet( planet );
@@ -359,12 +392,10 @@ void MinervaVR::appSceneInit()
     }
 
     setEngine( interactor );
-#ifndef _MSC_VER
-    interactor->dumpFilename ( Usul::System::Host::name() );
-#endif
 
     interactor->goHome();
   }
+  */
 
   // TODO: This should be done in a environment variable.
   // get the existing high level path list
@@ -450,50 +481,26 @@ void MinervaVR::_buildScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaVR::addSceneLight()
+void MinervaVR::_initLight()
 {
+  USUL_TRACE_SCOPE;
+
   osg::ref_ptr < osg::Light > light ( new osg::Light );
   light->setDiffuse( osg::Vec4 ( 0.8f, 0.8f, 0.8f, 1.0f ) );
   light->setPosition( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
   light->setLightNum ( 0 );
 
-  osg::ref_ptr < osg::LightSource > lightSource ( new osg::LightSource );
+  this->addLight ( light.get() );
 
-  lightSource->setLight ( light.get() );
-  lightSource->setReferenceFrame ( osg::LightSource::ABSOLUTE_RF );
+  //osg::ref_ptr < osg::LightSource > lightSource ( new osg::LightSource );
 
-  mLightGroup->addChild ( lightSource.get() );
+  //lightSource->setLight ( light.get() );
+  //lightSource->setReferenceFrame ( osg::LightSource::ABSOLUTE_RF );
 
-  osg::ref_ptr < osg::StateSet > ss ( mSceneRoot->getOrCreateStateSet() );
-  lightSource->setStateSetModes( *ss.get(), osg::StateAttribute::ON );
-}
+  //mLightGroup->addChild ( lightSource.get() );
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Frame has finished.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaVR::postFrame()
-{
-  USUL_TRACE_SCOPE;
-
-  try
-  {
-    BaseClass::postFrame();
-
-    this->_processCommands();
-  }
-  catch ( const std::exception& e )
-  {
-    std::cerr << "Error 1632458424: Standard exception caught in post frame." << std::endl;
-    std::cerr << "Message: " << e.what() << std::endl;
-  }
-  catch ( ... )
-  {
-    std::cerr << "Error 2681275507: Unknown exception caught in post frame." << std::endl;
-  }
+  //osg::ref_ptr < osg::StateSet > ss ( mSceneRoot->getOrCreateStateSet() );
+  //lightSource->setStateSetModes( *ss.get(), osg::StateAttribute::ON );
 }
 
 

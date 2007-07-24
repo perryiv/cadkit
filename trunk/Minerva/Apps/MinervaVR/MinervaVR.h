@@ -11,8 +11,8 @@
 #ifndef __MINERVA_VR_H__
 #define __MINERVA_VR_H__
 
-#include "VrjCore/OsgVJApp.h"
-#include "SharedUpdateData.h"
+#include "VRV/Core/Application.h"
+#include "VRV/Functors/BaseFunctor.h"
 
 #include "Minerva/Core/Viz/Controller.h"
 #include "Minerva/Core/Scene/SceneManager.h"
@@ -30,39 +30,37 @@
 
 #include <list>
 
-class MinervaVR : public VrjCore::OsgVJApp,
+class MinervaVR : public VRV::Core::Application,
                   public Minerva::Interfaces::IAnimationControl,
                   public Usul::Interfaces::ICommandQueueAdd
 {
 public:
   // Typedefs.
-  typedef VrjCore::OsgVJApp                  BaseClass;
+  typedef VRV::Core::Application             BaseClass;
   typedef Usul::Threads::RecursiveMutex      Mutex;
   typedef Usul::Threads::Guard<Mutex>        Guard;
   typedef Usul::Threads::Thread              Thread;
   typedef Usul::Interfaces::ICommand         Command;
   typedef Command::QueryPtr                  CommandPtr;
   typedef std::list < CommandPtr >           CommandQueue;
+  typedef std::list < std::string >          Args;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   /// Construction/Destruction.
-  MinervaVR( vrj::Kernel* kern, int& argc, char** argv );
+  MinervaVR( Args& args );
   virtual ~MinervaVR();		
 
-  Mutex&       mutex() const { return _mutex; }
-
  protected:
-  virtual void appInit();
+  virtual void init();
   
   virtual void preFrame();
-  virtual void appSceneInit();
-  virtual void appPreOsgDraw();
   virtual void draw();
   virtual void postFrame();
-  virtual void addSceneLight();
 
-  void         _initLegend();
+  void         _initLight ();
+  void         _initScene ();
+  void         _initLegend ();
 
   void         _updateScene( Usul::Threads::Thread *thread = 0x0 );
   void         _buildScene();
@@ -88,18 +86,19 @@ public:
   /// Usul::Interfaces::ICommandQueueAdd
   virtual void                 addCommand ( Usul::Interfaces::ICommand* command );
 
- private:	
+ private:
+  typedef VRV::Functors::BaseFunctor           Functor;
+  typedef Functor::RefPtr                      FunctorPtr;
 
   Minerva::Core::Viz::Controller::RefPtr       _dbManager;
   Minerva::Core::Scene::SceneManager::RefPtr   _sceneManager;
   osg::ref_ptr < Magrathea::Planet >           _planet;
   Usul::CommandLine::Options                   _options;
   osg::Vec4f                                   _background;
-  cluster::UserData< SharedUpdateData >        _update;
   Thread::RefPtr                               _updateThread;
-  mutable Mutex                                _mutex;
   Usul::Adaptors::Random < double >            _rand;
   CommandQueue                                 _commandQueue;
+  FunctorPtr                                   _navigator;
 };
 
 #endif // _MINERVA_VR_H_

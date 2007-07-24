@@ -59,9 +59,8 @@ WriteEPS::~WriteEPS()
 //
 /////////////////////////////////////////////////////////////////////////////
 
-bool WriteEPS::write( OsgTools::Render::Viewer& viewer )
+bool WriteEPS::write ( OsgTools::Render::Viewer& viewer )
 {
-
 	// Initialize.
 	_currentMaxBufSize = 1024;
 

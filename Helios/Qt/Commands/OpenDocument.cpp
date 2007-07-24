@@ -210,7 +210,11 @@ void OpenDocument::Job::_started()
   if( _document.valid() )
   {
     // Feedback.
-    std::cout << Usul::Strings::format ( "Opening file: ", _name, ", thread = ", this->thread()->id() ) << Usul::Resources::TextWindow::endl;
+    std::cout << Usul::Strings::format ( "Opening file: ", _name );
+    #ifdef _DEBUG
+    std::cout << Usul::Strings::format ( ", thread = ", this->thread()->id() );
+    #endif
+    std::cout << Usul::Resources::TextWindow::endl;
     
     // Initialize start time.
     Usul::Types::Uint64 start ( Usul::System::Clock::milliseconds() );
@@ -219,7 +223,8 @@ void OpenDocument::Job::_started()
     _document->open ( _name, _caller );
 
     // Feedback.
-    ::printf ( "%8.4f seconds .... Total time to open new document.\n", static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 ); ::fflush ( stdout );
+    const double seconds ( static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 );
+    std::cout << Usul::Strings::format ( seconds, " seconds .... Total time to open new document.\n" ) << Usul::Resources::TextWindow::endl;
 
     // See if the caller wants to be notified with the document finishes loading.
     Usul::Interfaces::IGUIDelegateNotify::QueryPtr notify ( _caller );

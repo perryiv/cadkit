@@ -20,6 +20,7 @@
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Predicates/CloseFloat.h"
+#include "Usul/Policies/Update.h"
 
 #include "osg/Vec3"
 
@@ -172,6 +173,7 @@ void TriangleReaderArcAsciiGrid::_read()
   const unsigned int numPoints ( gridSize[0] * gridSize[1] );
   Vec3 a0 ( 0, 0, 0 ), a1 ( 0, 0, 0 ), b0 ( 0, 0, 0 ), b1 ( 0, 0, 0 );
   Close close ( 5 ); // Reasonable?
+  Usul::Policies::TimeBased update ( 1000 ); // Every second.
 
   // Allocate two rows.
   Values row0 ( gridSize[1] );
@@ -180,6 +182,9 @@ void TriangleReaderArcAsciiGrid::_read()
   // Set the progress numbers.
   _progress.first = 0;
   _progress.second = numPoints;
+
+  // Reserve triangles.
+  _document->reserveTriangles ( gridSize[0] * gridSize[1] );
 
   // Grab the first row.
   std::for_each ( row0.begin(), row0.end(), Helper::ReadStream ( _file.first, in ) );
@@ -231,11 +236,17 @@ void TriangleReaderArcAsciiGrid::_read()
           t->original ( true );
         }
       }
+
+      // Feedback.
+      this->_incrementProgress ( update() );
     }
 
     // Swap rows.
     row0.swap ( row1 );
   }
+
+  // Trim the size down.
+  _document->purge();
 }
 
 

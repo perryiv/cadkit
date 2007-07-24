@@ -10,6 +10,7 @@
 #include "StarSystemDocument.h"
 
 #include "StarSystem/BuildScene.h"
+#include "StarSystem/Pager.h"
 #include "StarSystem/System.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
@@ -166,6 +167,15 @@ void StarSystemDocument::read ( const std::string &name, Unknown *caller )
 
 #if 1
 
+  StarSystem::Body::ValidRefPtr body ( new StarSystem::Body() );
+  const Usul::Math::Vec3d c ( _system->center() );
+  body->center ( Usul::Math::Vec3d ( c[0] + 50000000, c[1], c[2] ) );
+  _system->add ( body.get() );
+
+#endif
+
+#if 0
+
   Usul::Adaptors::Random<double> random ( 0, 500000000 );
   for ( unsigned int i = 0; i < 2; ++i )
   {
@@ -258,8 +268,6 @@ osg::Node *StarSystemDocument::buildScene ( const BaseClass::Options &options, U
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-#if 1
-
   if ( 0x0 == _system )
     return new osg::Group();
 
@@ -270,34 +278,6 @@ osg::Node *StarSystemDocument::buildScene ( const BaseClass::Options &options, U
     node = builder->scene();
   }
   return node.release();
-
-#else
-
-  osg::ref_ptr<osg::Group> group ( new osg::Group() );
-  for ( unsigned int i = 0; i < 10; ++i )
-  {
-    osg::ref_ptr<osg::MatrixTransform> matrix ( new osg::MatrixTransform() );
-    matrix->setMatrix ( osg::Matrix::translate ( 10 * i, 0, 0 ) );
-    StarSystem::Ball::ValidRefPtr ball ( new StarSystemMaker::Ball() );
-    matrix->addChild ( ball->buildScene ( options, caller ) );
-    group->addChild ( matrix.get() );
-  }
-  return group.release();
-
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Notify this document of the message.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void StarSystemDocument::notify ( unsigned short message )
-{
-  USUL_TRACE_SCOPE;
-  BaseClass::notify ( message );
 }
 
 
@@ -313,6 +293,6 @@ osgDB::DatabasePager *StarSystemDocument::getDatabasePager()
   Guard guard ( this->mutex() );
 
   // Return the database pager of the system's main body.
-  // TODO: Mode database pager to the cull-callback for the planet.
-  return ( ( 0x0 != _system && 0x0 != _system->body() ) ? _system->body()->databasePager() : 0x0 );
+  // TODO: Move database pager to the cull-callback for the planet.
+  return StarSystem::Pager::instance().instance().pager();
 }

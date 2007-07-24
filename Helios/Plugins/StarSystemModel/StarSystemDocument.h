@@ -67,9 +67,6 @@ public:
   // Get the database pager.
   virtual Pager *             getDatabasePager();
 
-  // Notify this document of the message.
-  virtual void                notify ( unsigned short message );
-
   // Read the document.
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0 );
 

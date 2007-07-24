@@ -11,6 +11,8 @@
 #ifndef __VRV_CORE_PROGRAM_H__
 #define __VRV_CORE_PROGRAM_H__
 
+#include "VRV/Core/Exceptions.h"
+
 #include "Threads/OpenThreads/Thread.h"
 
 #include "Usul/App/Application.h"
@@ -73,6 +75,40 @@ public:
   }
 
   int run ( int argc, char ** argv )
+  {
+    // Initialize the return value.
+    int result ( 1 );
+
+    // Be safe...
+    try
+    {
+      // Isolate application run inside this function.
+      result = this->_run ( argc, argv );
+    }
+
+    // Catch local exceptions.
+    catch ( const VRV::Core::Exceptions::UserInput &e )
+    {
+      std::cout << "Input Error:\n" << e.what() << std::endl;
+      Application::usage ( argv[0], std::cout );
+    }
+
+    // Catch standard exceptions.
+    catch ( const std::exception &e )
+    {
+      std::cout << "Exception caught:\n" << e.what() << std::endl;
+    }
+
+    // Catch all other exceptions.
+    catch ( ... )
+    {
+      std::cout << "Unknown exception caught" << std::endl;
+    }
+
+    return result;
+  }
+
+  int _run ( int argc, char ** argv )
   {
     // Set the arguments.
     Usul::CommandLine::Arguments::instance().set ( argc, argv );

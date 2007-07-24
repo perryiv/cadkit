@@ -170,6 +170,9 @@ public:
   const Usul::Math::Vec2f&    analogTrim () const;
   void                        analogTrim ( float x, float y );
 
+  // Print the usage string.
+  static void                   usage ( const std::string &exe, std::ostream &out );
+
 protected:
 
   /// VR Juggler methods.

@@ -1598,3 +1598,18 @@ void Application::analogTrim ( float x, float y )
   Guard guard ( this->mutex() );
   _analogTrim.set ( x, y );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Print the usage string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::usage ( const std::string &exe, std::ostream &out )
+{
+  out << "usage: " << exe << ' ';
+  out << "<juggler1.config> [juggler2.config ... jugglerN.config] ";
+  out << "[document0, document1, ..., documentN] ";
+  out << '\n';
+}

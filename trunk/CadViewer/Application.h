@@ -114,9 +114,6 @@ public:
   const osg::Vec3 &             rotationCenter() const { return _rotCenter; }
   void                          rotationCenter ( const osg::Vec3 & );
 
-  // Print the usage string.
-  static void                   usage ( const std::string &exe, std::ostream &out );
-
   // Is this the application or main thread?
   static bool                   isAppThread();
   static bool                   isMainThread();

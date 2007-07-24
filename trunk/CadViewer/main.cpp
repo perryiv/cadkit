@@ -18,12 +18,7 @@
 
 #include "Usul/Threads/Mutex.h"
 
-#include "VRV/Core/Exceptions.h"
 #include "VRV/Core/Program.h"
-
-#include <iostream>
-#include <string>
-#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -43,42 +38,13 @@ Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
 
 int main ( int argc, char **argv )
 {
-  // Initialize the return value.
-  int result ( 1 );
+  #ifdef __GNUC__
+  // Register the signal handlers.
+  CV::registerSignalHandlers ( argv[0] );
+  #endif
 
-  // Be safe...
-  try
-  {
-    #ifdef __GNUC__
-    // Register the signal handlers.
-    CV::registerSignalHandlers ( argv[0] );
-    #endif
+  VRV::Core::Program < CV::Application > program ( "CadViewer" );
 
-    VRV::Core::Program < CV::Application > program ( "CadViewer" );
-
-    // Isolate application run inside this function.
-    result = program.run ( argc, argv );
-  }
-
-  // Catch local exceptions.
-  catch ( const VRV::Core::Exceptions::UserInput &e )
-  {
-    std::cout << "Input Error:\n" << e.what() << std::endl;
-    CV::Application::usage ( argv[0], std::cout );
-  }
-
-  // Catch standard exceptions.
-  catch ( const std::exception &e )
-  {
-    std::cout << "Exception caught:\n" << e.what() << std::endl;
-  }
-
-  // Catch all other exceptions.
-  catch ( ... )
-  {
-    std::cout << "Unknown exception caught" << std::endl;
-  }
-
-  // Return the result.
-  return result;
+  // Isolate application run inside this function.
+  return program.run ( argc, argv );
 }

@@ -7,6 +7,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Document for star-systems.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #include "StarSystemDocument.h"
 
 #include "StarSystem/BuildScene.h"
@@ -290,9 +296,57 @@ osg::Node *StarSystemDocument::buildScene ( const BaseClass::Options &options, U
 osgDB::DatabasePager *StarSystemDocument::getDatabasePager()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  return 0x0; // StarSystem::Pager::instance().pager();
+}
 
-  // Return the database pager of the system's main body.
-  // TODO: Move database pager to the cull-callback for the planet.
-  return StarSystem::Pager::instance().instance().pager();
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notification that a renderer just rendered.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StarSystemDocument::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  StarSystem::Pager::instance().preRender ( caller );
+  BaseClass::preRenderNotify ( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notification that a renderer is about to render.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StarSystemDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::postRenderNotify ( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a view to this document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StarSystemDocument::addView ( Usul::Interfaces::IView *view )
+{
+  BaseClass::addView ( view );
+  StarSystem::Pager::instance().initVisitors ( view );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the view from this document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StarSystemDocument::removeView ( Usul::Interfaces::IView *view )
+{
+  BaseClass::removeView ( view );
 }

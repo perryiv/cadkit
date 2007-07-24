@@ -143,7 +143,7 @@ void TriangleWriterTDF::operator()()
     for ( osg::Vec3Array::size_type i = 0; i < numVertices; ++i )
     {
       WRITE_VEC3 ( vertices[i] );
-      _document->setProgressBar ( update(), count++, total );
+      _document->setProgressBar ( update(), count++, total, _caller );
     }
   }
 
@@ -167,7 +167,7 @@ void TriangleWriterTDF::operator()()
     for ( SharedVertices::const_iterator i = sv.begin(); i != sv.end(); ++i )
     {
       WRITE_SCALAR ( static_cast < unsigned int > ( i->second->index() ) );
-      _document->setProgressBar ( update(), count++, total );
+      _document->setProgressBar ( update(), count++, total, _caller );
     }
   }
 
@@ -188,7 +188,7 @@ void TriangleWriterTDF::operator()()
     for ( osg::Vec3Array::size_type i = 0; i < numNormals; ++i )
     {
       WRITE_VEC3 ( normals[i] );
-      _document->setProgressBar ( update(), count++, total );
+      _document->setProgressBar ( update(), count++, total, _caller );
     }
   }
 
@@ -211,7 +211,7 @@ void TriangleWriterTDF::operator()()
       for ( osg::Vec3Array::size_type i = 0; i < numNormals; ++i )
       {
         WRITE_VEC3 ( normals[i] );
-        _document->setProgressBar ( update(), count++, total );
+        _document->setProgressBar ( update(), count++, total, _caller );
       }
     }
   }
@@ -237,7 +237,7 @@ void TriangleWriterTDF::operator()()
       WRITE_SCALAR ( triangle.vertex0()->index() );
       WRITE_SCALAR ( triangle.vertex1()->index() );
       WRITE_SCALAR ( triangle.vertex2()->index() );
-      _document->setProgressBar ( update(), count++, total );
+      _document->setProgressBar ( update(), count++, total, _caller );
     }
   }
 

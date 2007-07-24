@@ -149,11 +149,11 @@ void OpenDocument::_startJob ( const std::string& file )
   DocumentInfo info ( Manager::instance().find ( file, this->caller() ) );
 
   // Make sure a document was found.
-  if( 0x0 == info.document.get() )
+  if ( false == info.document.valid() )
     Usul::Exceptions::Thrower < std::runtime_error > ( "Error 2771743457: Could not find document for file: ", file );
 
   // Make sure a delegate was found.
-  if( 0x0 == info.delegate.get() )
+  if ( false == info.delegate.valid() )
     Usul::Exceptions::Thrower < std::runtime_error > ( "Error 4522012370: Could not find delegate for file: ", file );
 
   // If the document is loaded, pop the windows of the document forward.
@@ -224,9 +224,9 @@ void OpenDocument::Job::_started()
 
     // Feedback.
     const double seconds ( static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 );
-    std::cout << Usul::Strings::format ( seconds, " seconds .... Total time to open new document.\n" ) << Usul::Resources::TextWindow::endl;
+    std::cout << Usul::Strings::format ( seconds, " seconds ... Time to open ", _name ) << Usul::Resources::TextWindow::endl;
 
-    // See if the caller wants to be notified with the document finishes loading.
+    // See if the caller wants to be notified when the document finishes loading.
     Usul::Interfaces::IGUIDelegateNotify::QueryPtr notify ( _caller );
 
     // Notify.

@@ -47,7 +47,7 @@
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
 				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(CADKIT_ROOT_DIR)/Experimental;$(OSG_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSSIM_INC_DIR);$(BOOST_ROOT_DIR)"
-				PreprocessorDefinitions="_STAR_SYSTEM_TRACE;WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM"
+				PreprocessorDefinitions="_USUL_TRACE;WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -147,7 +147,7 @@
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(CADKIT_ROOT_DIR)/Experimental;$(OSG_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSSIM_INC_DIR);$(BOOST_ROOT_DIR)"
-				PreprocessorDefinitions="_STAR_SYSTEM_TRACE;WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM"
+				PreprocessorDefinitions="_USUL_TRACE;WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -256,6 +256,14 @@
 			</File>
 			<File
 				RelativePath=".\Node.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Pager.h"
 				>
 			</File>
 			<File

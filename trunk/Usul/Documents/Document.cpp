@@ -16,9 +16,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Document.h"
-#include "Manager.h"
-
+#include "Usul/Documents/Document.h"
+#include "Usul/Documents/Manager.h"
 #include "Usul/Exceptions/Canceled.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
@@ -29,11 +28,11 @@
 #include "Usul/Interfaces/GUI/IQuestion.h"
 #include "Usul/Interfaces/GUI/IUpdateGUI.h"
 #include "Usul/Interfaces/IHandleMessage.h"
-
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Resources/EventQueue.h"
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/TextWindow.h"
+#include "Usul/Trace/Trace.h"
 
 #include <sstream>
 #include <algorithm>
@@ -44,6 +43,15 @@ using namespace Usul;
 using namespace Usul::Documents;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Document, Document::BaseClass );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macro for printing if there is a stream.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define OUTPUT(stream) if ( 0x0 != stream ) (*stream)
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -200,6 +208,8 @@ Usul::Interfaces::IUnknown *Document::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ICanClose* > ( this );
   case Usul::Interfaces::IModifiedSubject::IID:
     return static_cast < Usul::Interfaces::IModifiedSubject* > ( this );
+  case Usul::Interfaces::IRenderListener::IID:
+    return static_cast < Usul::Interfaces::IRenderListener* > ( this );
   default:
     return 0x0;
   }
@@ -228,15 +238,15 @@ void Document::open ( const std::string &file, Usul::Interfaces::IUnknown *calle
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::save ( Usul::Interfaces::IUnknown *caller )
+void Document::save ( Usul::Interfaces::IUnknown *caller, std::ostream *out )
 {
   // If the filename is valid...
   if ( this->fileValid() )
-    this->_save ( this->fileName(), caller, this->options() );
+    this->_save ( this->fileName(), caller, this->options(), out );
 
   // Otherwise...
   else
-    this->saveAs ( caller );
+    this->saveAs ( caller, out );
 }
 
 
@@ -246,7 +256,7 @@ void Document::save ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::saveAs ( Usul::Interfaces::IUnknown *caller )
+void Document::saveAs ( Usul::Interfaces::IUnknown *caller, std::ostream *out )
 {
   // Ask for file name.
   const std::string name ( this->_getSaveAsFileName( this->options(), caller ) );
@@ -256,7 +266,7 @@ void Document::saveAs ( Usul::Interfaces::IUnknown *caller )
   if ( name.empty() )
     throw Usul::Exceptions::Canceled ( "User cancelled the save-as operation" );
 
-  this->saveAs( name, caller );
+  this->saveAs ( name, caller, out );
 }
 
 
@@ -266,13 +276,13 @@ void Document::saveAs ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::saveAs ( const std::string& filename, Unknown *caller )
+void Document::saveAs ( const std::string& filename, Unknown *caller, std::ostream *out )
 {
   // Save the document.
-  this->_save ( filename, caller, this->options() );
+  this->_save ( filename, caller, this->options(), out );
 
-  //Since the filename changed, update titles
-  this->updateWindowTitles ();
+  // Since the filename changed, update titles
+  this->updateWindowTitles();
 }
 
 
@@ -321,12 +331,12 @@ std::string Document::_getSaveAsFileName ( Options &options, Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::_save ( const std::string &name, Unknown *caller, const Options &options )
+void Document::_save ( const std::string &name, Unknown *caller, const Options &options, std::ostream *out )
 {
   // Write the document.
-  std::cout << "Saving file: " << name << " ... " << Usul::Resources::TextWindow::flush;
+  OUTPUT(out) << "Saving file: " << name << " ... " << Usul::Resources::TextWindow::flush;
   this->write ( name, caller );
-  std::cout << "done" << Usul::Resources::TextWindow::endl;
+  OUTPUT(out) << "done" << Usul::Resources::TextWindow::endl;
 
   // Set the file name.
   this->fileName ( name );
@@ -546,13 +556,13 @@ void Document::flushEvents()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::setProgressBar ( bool state, unsigned int numerator, unsigned int denominator )
+void Document::setProgressBar ( bool state, unsigned int numerator, unsigned int denominator, Usul::Interfaces::IUnknown *caller )
 {
   // If we should...
   if ( state )
   {
     // Report progress.
-    Usul::Interfaces::IProgressBar::QueryPtr progress ( Usul::Resources::progressBar() );
+    Usul::Interfaces::IProgressBar::QueryPtr progress ( ( 0x0 == caller ) ? Usul::Resources::progressBar() : caller );
     if ( progress.valid() )
     {
       const float n ( static_cast < float > ( numerator ) );
@@ -573,10 +583,10 @@ void Document::setProgressBar ( bool state, unsigned int numerator, unsigned int
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::setProgressBar ( bool state, std::istream &in, unsigned int fileSize )
+void Document::setProgressBar ( bool state, std::istream &in, unsigned int fileSize, Usul::Interfaces::IUnknown *caller )
 {
   if ( state )
-    this->setProgressBar ( state, in.tellg(), fileSize );
+    this->setProgressBar ( state, in.tellg(), fileSize, caller );
 }
 
 
@@ -875,4 +885,28 @@ void Document::updateWindowTitles ()
     std::string title ( this->getTitle ( *iter ) );
     (*iter)->setTitle ( title );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notification that a renderer just rendered.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notification that a renderer is about to render.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
 }

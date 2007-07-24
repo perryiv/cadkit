@@ -959,6 +959,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\ICullSceneVisitor.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IFrameStamp.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\IGetBoundingBox.h"
 						>
 					</File>
@@ -991,11 +999,23 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\IRenderListener.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IRenderNotify.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\ISpin.h"
 						>
 					</File>
 					<File
 						RelativePath=".\Interfaces\IStereo.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IUpdateSceneVisitor.h"
 						>
 					</File>
 					<File

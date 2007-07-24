@@ -80,6 +80,7 @@ public:
 
   ~Pool()
   {
+    _blocks.clear();
   }
 
 

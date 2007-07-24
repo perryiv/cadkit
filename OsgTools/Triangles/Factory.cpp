@@ -16,7 +16,9 @@
 #ifdef _MSC_VER
 #pragma warning ( disable : 4800 ) // Forcing value to bool 'true' or 'false'
 #define WIN32_LEAN_AND_MEAN        // Exclude rarely-used stuff from Windows headers.
-// #define NOMINMAX                   // Do not define min and max as macros.
+# ifndef NOMINMAX
+#  define NOMINMAX                 // Do not define min and max as macros.
+# endif
 #endif
 
 #include "OsgTools/Triangles/Factory.h"

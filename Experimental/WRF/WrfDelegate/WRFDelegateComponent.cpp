@@ -1,0 +1,138 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2005, Perry L Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The component class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "WRFDelegateComponent.h"
+
+#include "Usul/Documents/Document.h"
+#include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/Qt/IWorkspace.h"
+
+#include "Usul/Shared/Preferences.h"
+#include "Usul/Registry/Constants.h"
+
+#include "Helios/Qt/Views/OSG/Viewer.h"
+#include "Helios/Qt/Views/OSG/Format.h"
+
+#include "QtGui/QWorkspace"
+
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WRFDelegateComponent , WRFDelegateComponent::BaseClass );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+WRFDelegateComponent::WRFDelegateComponent() : BaseClass()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+WRFDelegateComponent::~WRFDelegateComponent()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown *WRFDelegateComponent::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IPlugin::IID:
+    return static_cast < Usul::Interfaces::IPlugin*>(this);
+  case Usul::Interfaces::IGUIDelegate::IID:
+    return static_cast < Usul::Interfaces::IGUIDelegate*>(this);
+  default:
+    return 0x0;
+  }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Does this delegate handle the given token
+//
+/////////////////////////////////////////////////////////////////////////////
+
+bool WRFDelegateComponent::doesHandle( const std::string& token ) const
+{
+  return ( token ==    "WRF Document" );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Build the default GUI
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void WRFDelegateComponent::createDefaultGUI ( Usul::Documents::Document *document, Usul::Interfaces::IUnknown* caller )
+{
+  typedef CadKit::Helios::Views::OSG::Viewer QtViewer;
+
+  // Non-ref'ing smart-pointers that throw if given null.
+  typedef Usul::Pointers::Configs::NoRefCountingNullThrows Policy;
+  typedef Usul::Pointers::SmartPointer < QtViewer, Policy > QtViewerPtr;
+
+  Usul::Interfaces::Qt::IWorkspace::QueryPtr workspace ( caller );
+
+  if( workspace.valid() )
+  {
+    QWorkspace *parent ( workspace->workspace() );
+    QtViewerPtr viewer ( new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent ) );
+    parent->addWindow ( viewer.get() );
+
+    this->refreshView ( document, viewer->viewer() );
+
+    viewer->show();
+  }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Refresh the view
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void WRFDelegateComponent::refreshView ( Usul::Documents::Document *document, Usul::Interfaces::IViewer *viewer )
+{
+  Usul::Interfaces::IHeliosView::QueryPtr hv ( viewer );
+
+  if ( true == hv.valid() && 0x0 != hv->heliosView() )
+  {
+    OsgTools::Render::Viewer* canvas ( hv->heliosView() );
+
+    Usul::Interfaces::IBuildScene::QueryPtr build ( document );
+
+    if ( build.valid () )
+    {
+      canvas->scene ( build->buildScene ( document->options(), viewer ) );
+    }
+  }
+}

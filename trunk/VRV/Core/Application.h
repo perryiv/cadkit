@@ -29,6 +29,8 @@
 #include "VRV/Interfaces/IWandState.h"
 
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
+#include "Usul/Interfaces/IUpdateSubject.h"
+#include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 
@@ -79,7 +81,8 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public VRV::Interfaces::IMatrixMultiplyFloat,
                                public VRV::Interfaces::IJoystickFloat,
                                public VRV::Interfaces::IWandStateFloat,
-                               public Usul::Interfaces::IProgressBarFactory
+                               public Usul::Interfaces::IProgressBarFactory,
+                               public Usul::Interfaces::IUpdateSubject
 {
 public:
   // Typedefs.
@@ -220,6 +223,9 @@ protected:
   void                    _increaseTranslateSpeed ( double amount );
   void                    _decreaseTranslateSpeed ( double amount );
 
+  /// Update notify.
+  void                    _updateNotify ();
+
   /// VRV::Interfaces::IClippingDistanceFloat
   /// Get/set the clipping distances.
   virtual void            getClippingDistances ( float &nearDist, float &farDist ) const;
@@ -285,6 +291,10 @@ protected:
   virtual void                  wandOffset ( Usul::Math::Vec3f &v ) const;
   virtual void                  wandOffset ( const Usul::Math::Vec3f &v );
 
+  /// Add/Remove a update listener.
+  virtual void addUpdateListener    ( Usul::Interfaces::IUnknown *caller = 0x0 );
+  virtual void removeUpdateListener ( Usul::Interfaces::IUnknown *caller = 0x0 );
+
   /// No copying.
   Application ( const Application& );
   Application& operator = (const Application&);
@@ -297,6 +307,8 @@ private:
   typedef VRV::Devices::ButtonGroup::ValidRefPtr           ButtonsPtr;
   typedef VRV::Devices::TrackerDevice::ValidRefPtr         TrackerPtr;
   typedef VRV::Devices::JoystickDevice::ValidRefPtr        JoystickPtr;
+  typedef Usul::Interfaces::IUpdateListener                UpdateListener;
+  typedef std::vector < UpdateListener::RefPtr >           UpdateListeners;
 
   // Data members.
   mutable Mutex                          _mutex;
@@ -337,6 +349,8 @@ private:
   Usul::Math::Vec3f                      _wandOffset;
 
   osg::ref_ptr < osgDB::DatabasePager >  _databasePager;
+
+  UpdateListeners                        _updateListeners;
 
   unsigned int                           _refCount;
 };

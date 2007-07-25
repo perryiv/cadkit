@@ -69,6 +69,7 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _analogTrim      ( 0, 0 ),
   _wandOffset      ( 0, 0, 0 ), // feet (used to be z=-4)
   _databasePager   ( new osgDB::DatabasePager ),
+  _updateListeners ( ),
   _refCount        ( 0 )
 {
   USUL_TRACE_SCOPE;
@@ -161,6 +162,8 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast< VRV::Interfaces::IWandStateFloat * > ( this );
   case Usul::Interfaces::IProgressBarFactory::IID:
     return static_cast < Usul::Interfaces::IProgressBarFactory* > ( this );
+  case Usul::Interfaces::IUpdateSubject::IID:
+    return static_cast < Usul::Interfaces::INotifySubject* > ( this );
   default:
     return 0x0;
   }
@@ -629,6 +632,9 @@ void Application::preFrame()
 
   // Update the progress bars.
   _progressBars->buildScene();
+
+  // Notify that it's ok to update.
+  this->_updateNotify();
 
   // Purge.
   Usul::Jobs::Manager::instance().purge();
@@ -1612,4 +1618,65 @@ void Application::usage ( const std::string &exe, std::ostream &out )
   out << "<juggler1.config> [juggler2.config ... jugglerN.config] ";
   out << "[document0, document1, ..., documentN] ";
   out << '\n';
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Add a update listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::addUpdateListener ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Don't add twice.
+  this->removeUpdateListener ( caller );
+
+  // See if it's an update listener.
+  UpdateListener::QueryPtr listener ( caller );
+  if( listener.valid( ) )
+  {
+    Guard guard ( this->mutex() );
+    _updateListeners.push_back ( listener );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Remove a update listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::removeUpdateListener ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // See if it's an update listener.
+  UpdateListener::QueryPtr listener ( caller );
+  if ( listener.valid() )
+  {
+    Guard guard ( this->mutex() );
+    UpdateListener::RefPtr value ( listener.get() );
+    UpdateListeners::iterator doomed ( std::remove ( _updateListeners.begin(), _updateListeners.end(), value ) );
+    _updateListeners.erase ( doomed, _updateListeners.end() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update notify.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_updateNotify ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+  std::for_each ( _updateListeners.begin(), _updateListeners.end(), std::bind2nd ( std::mem_fun ( &UpdateListener::updateNotify ), me.get() ) );
 }

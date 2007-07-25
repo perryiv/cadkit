@@ -532,6 +532,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\ITimestepAnimation.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\ITimeVaryingData.h"
 					>
 				</File>
@@ -1015,7 +1019,15 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\IUpdateListener.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\IUpdateSceneVisitor.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Interfaces\IUpdateSubject.h"
 						>
 					</File>
 					<File
@@ -1875,6 +1887,10 @@
 				>
 				<File
 					RelativePath=".\Strings\Case.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Strings\Convert.h"
 					>
 				</File>
 				<File

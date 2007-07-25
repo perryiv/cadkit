@@ -23,10 +23,10 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct INotifySubject : public Usul::Interfaces::IUnknown
+struct IUpdateSubject : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( INotifySubject );
+  USUL_DECLARE_QUERY_POINTERS ( IUpdateSubject );
 
   /// Id for this interface.
   enum { IID = 2658302544u };
@@ -34,7 +34,7 @@ struct INotifySubject : public Usul::Interfaces::IUnknown
   virtual void addUpdateListener    ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
   virtual void removeUpdateListener ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
 
-}; // struct INotifySubject
+}; // struct IUpdateSubject
 
 
 } // end namespace Interfaces

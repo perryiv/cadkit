@@ -14,6 +14,7 @@
 
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
+#include "Usul/Interfaces/IUpdateSubject.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
@@ -136,6 +137,11 @@ void LoadModel::_loadModel( const std::string& filename )
 
   // Add the document.
   Usul::Documents::Manager::instance().add ( document );
+
+  // See if the caller is an update subject.
+  Usul::Interfaces::IUpdateSubject::QueryPtr subject ( _caller );
+  if ( subject.valid () )
+    subject->addUpdateListener ( document->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 }
 
 

@@ -8,18 +8,19 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  OSG viewer class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #ifndef __OSG_TOOLS_RENDER_VIEWER_H__
 #define __OSG_TOOLS_RENDER_VIEWER_H__
 
 #include "OsgTools/Export.h"
 
-#include "Usul/Base/Referenced.h"
+#include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IDocument.h"
-#include "Usul/Threads/Guard.h"
-#include "Usul/Threads/Variable.h"
-#include "Usul/Errors/Stack.h"
-#include "Usul/Bits/Bits.h"
-
 #include "Usul/Interfaces/ICamera.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IShadeModel.h"
@@ -58,6 +59,11 @@
 #include "Usul/Interfaces/IScreenCapture.h"
 #include "Usul/Interfaces/ISnapShot.h"
 #include "Usul/Interfaces/IView.h"
+#include "Usul/Interfaces/IRenderListener.h"
+#include "Usul/Interfaces/IRenderNotify.h"
+#include "Usul/Interfaces/IFrameStamp.h"
+#include "Usul/Interfaces/IUpdateSceneVisitor.h"
+#include "Usul/Interfaces/ICullSceneVisitor.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
@@ -84,19 +90,18 @@
 
 #include <list>
 #include <string>
+#include <vector>
 
-namespace osg { class ClipPlane; }
+namespace osg { class ClipPlane; class NodeVisitor; }
+namespace osgUtil { class Hit; class CullVisitor; }
+namespace OsgTools { namespace Render { class Trackball; struct ActionAdapter; class EventAdapter; } }
 
-namespace osgUtil { class Hit; }
 
 namespace OsgTools {
 namespace Render {
 
-class Trackball; 
-struct ActionAdapter; 
-class EventAdapter;
 
-class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
+class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IViewMatrix,
                                 public Usul::Interfaces::IShadeModel,
                                 public Usul::Interfaces::IPolygonMode,
@@ -129,7 +134,11 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Referenced,
                                 public Usul::Interfaces::ICenterOfRotation,
                                 public Usul::Interfaces::IScreenCapture,
                                 public Usul::Interfaces::ISnapShot,
-                                public Usul::Interfaces::IView
+                                public Usul::Interfaces::IView,
+                                public Usul::Interfaces::IRenderNotify,
+                                public Usul::Interfaces::IFrameStamp,
+                                public Usul::Interfaces::IUpdateSceneVisitor,
+                                public Usul::Interfaces::ICullSceneVisitor
 {
 public:
 
@@ -140,7 +149,7 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   // Useful typedefs.
-  typedef Usul::Base::Referenced BaseClass;
+  typedef Usul::Base::Object BaseClass;
   typedef osgUtil::SceneView SceneView;
   typedef osg::Node Node;
   typedef osg::Group Group;
@@ -165,6 +174,12 @@ public:
   typedef FrameDump::Names Filenames;
   typedef OsgTools::Builders::GradientBackground GradientBackground;
   typedef GradientBackground::Corners Corners;
+  typedef BaseClass::Mutex Mutex;
+  typedef BaseClass::Guard Guard;
+  typedef Usul::Interfaces::IRenderListener IRenderListener;
+  typedef std::vector<IRenderListener::RefPtr> RenderListeners;
+  typedef osgUtil::CullVisitor CullVisitor;
+  typedef osg::NodeVisitor NodeVisitor;
 
   enum ViewMode
   {
@@ -187,7 +202,7 @@ public:
   void                  setBackground ( const osg::Vec4 & );
 
   // Get/Set show axes state.
-  void                  axes( bool );
+  void                  axes ( bool );
   bool                  axes() const;
 
   // Set/get the background color. Throws if getting color from a null viewer.
@@ -436,8 +451,8 @@ public:
   void                  updateStatusBar();
 
   // Set/get the flags that says to update the recorded times.
-  void                  updateTimes ( bool state ) { _flags = Usul::Bits::add < unsigned int, unsigned int > ( _flags, _UPDATE_TIMES ); }
-  bool                  updateTimes() const { return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _UPDATE_TIMES ); }
+  void                  updateTimes ( bool state );
+  bool                  updateTimes() const;
 
   /// Set/Get the view matrix
   void                  viewMatrix ( const osg::Matrixf& );
@@ -507,6 +522,8 @@ protected:
 
   void                  _findDragger ( const osgUtil::Hit &hit );
 
+  void                  _hiddenLineRender();
+
   virtual  bool         _intersect ( float x, float y, osg::Node *scene, osgUtil::Hit &hit, bool useWindowCoords = false );
   bool                  _lineSegment ( float mouseX, float mouseY, osg::Vec3 &pt0, osg::Vec3 &pt1, bool useWindowCoords = false );
 
@@ -535,6 +552,10 @@ protected:
   void                  _addSceneStage();
   void                  _removeSceneStage();
 
+  // Notify of rendering.
+  void                  _preRenderNotify();
+  void                  _postRenderNotify();
+
   /// Usul::Interfaces::IViewMatrix
   virtual void                      setViewMatrix ( const osg::Matrixf& );
   virtual void                      setViewMatrix ( const osg::Matrixd& );
@@ -548,7 +569,7 @@ protected:
   virtual void                      setAxes ( bool );
   virtual bool                      hasAxes ( ) const;
 
-  ///  Usul::Interfaces::IOpenSceneGraph
+  /// Usul::Interfaces::IOpenSceneGraph
   /// Get the pointer to the base class for all OSG objects.
   virtual const osg::Referenced *   osgReferenced() const;
   virtual osg::Referenced *         osgReferenced();
@@ -688,6 +709,25 @@ protected:
   /// Usul::Interfaces::ISnapShot
   virtual void                  takePicture ( const std::string& filename, float frameSizeScale, unsigned int numSamples );
 
+  // Add the listener (IRenderListener).
+  virtual void                  addRenderListener ( IUnknown *listener );
+
+  // Remove all render listeners.
+  virtual void                  clearRenderListeners();
+
+  // Remove the listener (IRenderListener).
+  virtual void                  removeRenderListener ( IUnknown *caller );
+
+  // Usul::Interfaces::IFrameStamp
+  const osg::FrameStamp *       frameStamp() const;
+  osg::FrameStamp *             frameStamp();
+
+  // Usul::Interfaces::ICullSceneVisitor.
+  virtual CullVisitor *         getCullSceneVisitor ( Usul::Interfaces::IUnknown *caller );
+
+  // Usul::Interfaces::IUpdateSceneVisitor.
+  virtual NodeVisitor *         getUpdateSceneVisitor ( Usul::Interfaces::IUnknown *caller );
+
 private:
 
   // Do not copy.
@@ -713,19 +753,19 @@ private:
     _ANIMATION_DURATION_MILLISECONDS = 500 // Half a second.
   };
 
-  typedef Usul::Threads::Mutex Mutex;
-  typedef Usul::Threads::Guard<Mutex> Guard;
-  typedef osg::ref_ptr<osg::LOD> LodPtr;
-  typedef osg::ref_ptr< osg::Geode > GeodePtr;
-  typedef osg::ref_ptr<Node> NodePtr;
-  typedef osg::ref_ptr<Group> GroupPtr;
+  //typedef Usul::Threads::Mutex Mutex;
+  //typedef Usul::Threads::Guard<Mutex> Guard;
+  typedef osg::ref_ptr < osg::LOD > LodPtr;
+  typedef osg::ref_ptr < osg::Geode > GeodePtr;
+  typedef osg::ref_ptr < Node > NodePtr;
+  typedef osg::ref_ptr < Group > GroupPtr;
   typedef osg::ref_ptr < osgText::Text > TextPtr;
-  typedef std::pair < bool,osg::Matrixd > CameraBuffer;
+  typedef std::pair < bool, osg::Matrixd > CameraBuffer;
   typedef Document::RefPtr DocumentPtr;
-  typedef std::map< osg::Geode *, osg::Light * > LightEditors;
-  typedef std::vector<LodPtr> LodList;
-  typedef std::pair<bool,LodList> Lods;
-  typedef std::pair<bool,bool> UseDisplayLists;
+  typedef std::map < osg::Geode *, osg::Light * > LightEditors;
+  typedef std::vector < LodPtr > LodList;
+  typedef std::pair < bool, LodList > Lods;
+  typedef std::pair < bool, bool > UseDisplayLists;
 
   static CameraBuffer _cameraCopyBuffer;
   static MatrixManipPtr _navManipCopyBuffer;
@@ -751,6 +791,7 @@ private:
   unsigned int _corners;
   UseDisplayLists _useDisplayList;
   osg::ref_ptr < osgDB::DatabasePager > _databasePager;
+  RenderListeners _renderListeners;
 };
 
 }

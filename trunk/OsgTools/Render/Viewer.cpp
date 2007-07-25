@@ -8,6 +8,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  OSG viewer class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 // Disable deprecated warning in Visual Studio 8 
 #if defined ( _MSC_VER ) && _MSC_VER == 1400
 #pragma warning ( disable : 4996 )
@@ -16,7 +22,6 @@
 #include "OsgTools/Render/Viewer.h"
 #include "OsgTools/Render/Defaults.h"
 #include "OsgTools/Render/LightCallback.h"
-
 #include "OsgTools/Group.h"
 #include "OsgTools/ScopedOptions.h"
 #include "OsgTools/Box.h"
@@ -43,7 +48,6 @@
 #include "OsgTools/IO/WriteEPS.h"
 #include "OsgTools/Callbacks/HiddenLines.h"
 #include "OsgTools/Font.h"
-
 #include "OsgTools/Draggers/Trackball.h"
 
 #include "Usul/Errors/Checker.h"
@@ -67,6 +71,7 @@
 #include "Usul/Interfaces/IDatabasePager.h"
 #include "Usul/Interfaces/ISceneUpdate.h"
 #include "Usul/Interfaces/IToolLifeTime.h"
+#include "Usul/Interfaces/IRenderListener.h"
 
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/ReportErrors.h"
@@ -75,12 +80,14 @@
 #include "Usul/System/Clock.h"
 #include "Usul/Predicates/Tolerance.h"
 #include "Usul/Functors/Delete.h"
+#include "Usul/Scope/Caller.h"
 #include "Usul/Scope/Reset.h"
 #include "Usul/Cast/Cast.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/File/Path.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Math/Absolute.h"
+#include "Usul/Trace/Trace.h"
 
 #include "osg/MatrixTransform"
 #include "osg/NodeVisitor"
@@ -102,6 +109,7 @@
 #include "osg/GL"
 #include "osg/GLU"
 
+#include "osgUtil/CullVisitor"
 #include "osgUtil/UpdateVisitor"
 #include "osgUtil/IntersectVisitor"
 
@@ -121,13 +129,13 @@ using namespace OsgTools::Render;
 
 namespace Detail
 {
-  void checkForErrors( unsigned int id )
+  void checkForErrors ( unsigned int id )
   {
     GLenum error = ::glGetError();
     if ( GL_NO_ERROR != error )
     {
       std::cout << "Error " << id << ": OpenGL error detected." << std::endl
-        << "Message: " << ::gluErrorString( error ) << std::endl;
+        << "Message: " << ::gluErrorString ( error ) << std::endl;
     }
   }
 }
@@ -171,10 +179,11 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   _gradient        (),
   _corners         ( Corners::ALL ),
   _useDisplayList  ( false, true ),
-  _databasePager   ( 0x0 )
+  _databasePager   ( 0x0 ),
+  _renderListeners ()
 {
   // Add the document
-  this->document( doc );
+  this->document ( doc );
 
   // Light so that other lights don't alter geometry under the projection node.
   // Note...
@@ -287,12 +296,15 @@ void Viewer::clear()
   _timeoutSpin = static_cast < Usul::Interfaces::ITimeoutSpin* > ( 0x0 );
   _caller = static_cast < Usul::Interfaces::IUnknown* > ( 0x0 );
 
-  if( _databasePager.valid() )
+  if ( _databasePager.valid() )
   {
     _databasePager->setAcceptNewDatabaseRequests(false);
     //_databasePager->clear();
     //_databasePager->setDatabasePagerThreadPause(true);
   }
+
+  // Remove render listeners.
+  this->clearRenderListeners();
 }
 
 
@@ -334,8 +346,8 @@ void Viewer::render()
 
   // Update the scene.
   Usul::Interfaces::ISceneUpdate::QueryPtr sceneUpdate ( _document );
-  if ( sceneUpdate.valid() )
-    sceneUpdate->sceneUpdate( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
+  if ( true == sceneUpdate.valid() )
+    sceneUpdate->sceneUpdate ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 
   // Make this context current.
   if ( _context.valid() )
@@ -348,119 +360,114 @@ void Viewer::render()
   ::glGetError();
 
   // Check for errors.
-  Detail::checkForErrors( 1491085606 );
+  Detail::checkForErrors ( 1491085606 );
 
-  if( _databasePager.valid() )
   {
-    // tell the DatabasePager the frame number of that the scene graph is being actively used to render a frame
-    _databasePager->signalBeginFrame( _renderer->framestamp() );
+    Usul::Scope::Caller::RefPtr preAndPostCall ( Usul::Scope::makeCaller ( 
+      Usul::Adaptors::memberFunction ( this, &Viewer::_preRenderNotify ), 
+      Usul::Adaptors::memberFunction ( this, &Viewer::_postRenderNotify ) ) );
 
-    // syncronize changes required by the DatabasePager thread to the scene graph
-    _databasePager->updateSceneGraph( _renderer->framestamp()->getReferenceTime() );
-  }
+    // Set the axes.
+    this->_setAxes();
 
-  // Set the axes.
-  this->_setAxes();
+    // Set the lights
+    this->_setLights();
 
-  // Set the lights
-  this->_setLights();
+    // Set the center of rotation
+    this->_setCenterOfRotation();
 
-  // Set the center of rotation
-  this->_setCenterOfRotation();
+    // Set high lod callbacks if we should
+    if ( Usul::Shared::Preferences::instance().getBool( Usul::Registry::Keys::HIGH_LODS ) )
+      this->_setLodCullCallback ( new OsgTools::Render::HighLodCallback );
 
-  // Set high lod callbacks if we should
-  if ( Usul::Shared::Preferences::instance().getBool( Usul::Registry::Keys::HIGH_LODS ) )
-    this->_setLodCullCallback ( new OsgTools::Render::HighLodCallback );
+    // Check for errors.
+    Detail::checkForErrors ( 774712060 );
 
-  // Check for errors.
-  Detail::checkForErrors( 774712060 );
-
-  // If we are doing hidden-line rendering...
-  if ( this->hasHiddenLines() && ( 0x0 != _sceneManager->model() ) )
-  {
-    // Temporarily re-structure the scene. Better to do/undo this than keep 
-    // it altered. An altered scene may mess up intersections.
-    osg::ref_ptr<osg::Node> model ( _sceneManager->model() );
-    osg::ref_ptr<osg::Group> root   ( new osg::Group );
-    osg::ref_ptr<osg::Group> normal ( new osg::Group );
-    osg::ref_ptr<osg::Group> hidden ( new osg::Group );
-    root->addChild ( normal.get() );
-    root->addChild ( hidden.get() );
-    normal->addChild ( model.get() );
-    hidden->addChild ( model.get() );
-
-    // Safely...
-    try
+    // If we are doing hidden-line rendering...
+    if ( this->hasHiddenLines() && ( 0x0 != _sceneManager->model() ) )
     {
-      // Set the new scene.
-      _sceneManager->model ( root.get() );
-
-      // Set the state-sets for the branches.
-      OsgTools::State::StateSet::hiddenLines ( this->backgroundColor(), normal->getOrCreateStateSet(), hidden->getOrCreateStateSet() );
-
-      // Draw.
+      // Special path for hidden lines.
+      this->_hiddenLineRender();
+    }
+    else
+    {
+      // Regular rendering.
       this->_render();
     }
 
-    // Catch all exceptions.
-    catch ( ... )
-    {
-      // Restore the scene and re-throw.
-      _sceneManager->model ( model.get() );
-      throw;
-    }
-
-    // Restore the scene.
-    _sceneManager->model ( model.get() );
-  }
-  else
-  {
-    // Draw.
-    this->_render();
-  }
-
-  // Check for errors.
-  Detail::checkForErrors( 840649560 );
-
-  if( _databasePager.valid() )
-  {
-    // tell the DatabasePager that the frame is complete and that scene graph is no longer be activity traversed.
-    _databasePager->signalEndFrame();
+    // Check for errors.
+    Detail::checkForErrors ( 840649560 );
   }
 
   // Swap the buffers.
   if ( _context.valid() )
     _context->swapBuffers();
 
-  if( _databasePager.valid() )
-  {
-    // clean up and compile gl objects with a specified limit       
-#ifdef _DEBUG
-    double availableTime = 0.0025; // 2.5 ms
-#else
-    double availableTime = 5; // seconds
-#endif
-
-    // compile any GL objects that are required.
-    _databasePager->compileGLObjects(*(this->viewer()->getState()),availableTime);
-
-    // flush deleted GL objects.
-    this->viewer()->flushDeletedGLObjects(availableTime);
-  }
+  // Flush deleted GL objects.
+  this->viewer()->flushAllDeletedGLObjects();
 
   // Check for errors.
-  Detail::checkForErrors( 896118310 );
+  Detail::checkForErrors ( 896118310 );
 
   // Dump the current frame.
   this->_dumpFrame();
 
   // Check for errors.
-  Detail::checkForErrors( 952680810 );
+  Detail::checkForErrors ( 952680810 );
 
   // Update the status-bar. Do not put this in onPaint() because you want 
   // it called every time the window is redrawn.
   if ( this->updateTimes() )
     this->updateStatusBar();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Render hidden-line mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_hiddenLineRender()
+{
+  // If we are doing hidden-line rendering...
+  if ( ( false == this->hasHiddenLines() ) || ( 0x0 == _sceneManager->model() ) )
+    return;
+
+  // Temporarily re-structure the scene. Better to do/undo this than keep 
+  // it altered. An altered scene may mess up intersections.
+  osg::ref_ptr<osg::Node> model ( _sceneManager->model() );
+  osg::ref_ptr<osg::Group> root   ( new osg::Group );
+  osg::ref_ptr<osg::Group> normal ( new osg::Group );
+  osg::ref_ptr<osg::Group> hidden ( new osg::Group );
+  root->addChild ( normal.get() );
+  root->addChild ( hidden.get() );
+  normal->addChild ( model.get() );
+  hidden->addChild ( model.get() );
+
+  // Safely...
+  try
+  {
+    // Set the new scene.
+    _sceneManager->model ( root.get() );
+
+    // Set the state-sets for the branches.
+    OsgTools::State::StateSet::hiddenLines ( this->backgroundColor(), normal->getOrCreateStateSet(), hidden->getOrCreateStateSet() );
+
+    // Draw.
+    this->_render();
+  }
+
+  // Catch all exceptions.
+  catch ( ... )
+  {
+    // Restore the scene and re-throw.
+    _sceneManager->model ( model.get() );
+    throw;
+  }
+
+  // Restore the scene.
+  _sceneManager->model ( model.get() );
 }
 
 
@@ -1949,23 +1956,30 @@ Viewer::Document *Viewer::document()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::document( Document *document )
+void Viewer::document ( Document *document )
 {
   _document = document;
 
   // Add this view to the document.
-  if( _document )
+  if ( true == _document.valid() )
+  {
     _document->addView ( this );
+  }
 
   Usul::Interfaces::IMatrixManipulator::QueryPtr mm ( _document );
-
-  if( mm.valid() )
-    this->navManip( mm->getMatrixManipulator() );
+  if ( true == mm.valid() )
+  {
+    this->navManip ( mm->getMatrixManipulator() );
+  }
 
   Usul::Interfaces::IDatabasePager::QueryPtr dp ( _document );
+  if ( true == dp.valid() )
+  {
+    this->databasePager ( dp->getDatabasePager() );
+  }
 
-  if( dp.valid() )
-    this->databasePager( dp->getDatabasePager() );
+  // Add the document as a listener.
+  this->addRenderListener ( document->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 }
 
 
@@ -2337,6 +2351,14 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ISnapShot* > ( this );
   case Usul::Interfaces::IView::IID:
     return static_cast < Usul::Interfaces::IView * > ( this );
+  case Usul::Interfaces::IRenderNotify::IID:
+    return static_cast < Usul::Interfaces::IRenderNotify * > ( this );
+  case Usul::Interfaces::IFrameStamp::IID:
+    return static_cast < Usul::Interfaces::IFrameStamp * > ( this );
+  case Usul::Interfaces::IUpdateSceneVisitor::IID:
+    return static_cast < Usul::Interfaces::IUpdateSceneVisitor * > ( this );
+  case Usul::Interfaces::ICullSceneVisitor::IID:
+    return static_cast < Usul::Interfaces::ICullSceneVisitor * > ( this );
   default:
     return 0x0;
   }
@@ -5096,20 +5118,19 @@ const osg::Light *Viewer::light() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::databasePager( osgDB::DatabasePager* dbPager )
+void Viewer::databasePager ( osgDB::DatabasePager* dbPager )
 {
   _databasePager = dbPager;
-  //osgDB::Registry::instance()->setDatabasePager( dbPager );
 
-  _databasePager->registerPagedLODs( this->scene() ); 
+  if ( false == _databasePager.valid() )
+    return;
 
-  _databasePager->setAcceptNewDatabaseRequests(true);
-  _databasePager->setDatabasePagerThreadPause(false);
-  
-  _databasePager->setUseFrameBlock( false );
+  _databasePager->setAcceptNewDatabaseRequests ( true );
+  _databasePager->setDatabasePagerThreadPause ( false );
+  _databasePager->setUseFrameBlock ( false );
 
-  this->viewer()->getCullVisitor()->setDatabaseRequestHandler( dbPager );
-  this->viewer()->getUpdateVisitor()->setDatabaseRequestHandler( dbPager );
+  this->viewer()->getCullVisitor()->setDatabaseRequestHandler ( dbPager );
+  this->viewer()->getUpdateVisitor()->setDatabaseRequestHandler ( dbPager );
 }
 
 
@@ -5220,8 +5241,184 @@ void Viewer::forceDetail()
 }
 
 
-/// Add/Remove group from projection node
-osg::Group*           Viewer::projectionGroupGet    ( const std::string& key )
+///////////////////////////////////////////////////////////////////////////////
+//
+// Add/Remove group from projection node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Group* Viewer::projectionGroupGet ( const std::string& key )
 {
   return _sceneManager->projectionGroupGet ( key );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::addRenderListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Don't add twice.
+  this->removeRenderListener ( caller );
+
+  IRenderListener::QueryPtr listener ( caller );
+  if ( true == listener.valid() )
+  {
+    Guard guard ( this->mutex() );
+    _renderListeners.push_back ( IRenderListener::RefPtr ( listener.get() ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove all render listeners.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::clearRenderListeners()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _renderListeners.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::removeRenderListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  IRenderListener::QueryPtr listener ( caller );
+  if ( true == listener.valid() )
+  {
+    Guard guard ( this->mutex() );
+    IRenderListener::RefPtr value ( listener.get() );
+    RenderListeners::iterator end ( std::remove ( _renderListeners.begin(), _renderListeners.end(), value ) );
+    _renderListeners.erase ( end, _renderListeners.end() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify of rendering.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_preRenderNotify()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  std::for_each ( _renderListeners.begin(), _renderListeners.end(), std::bind2nd ( std::mem_fun ( &IRenderListener::preRenderNotify ), unknown.get() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify of rendering.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_postRenderNotify()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  std::for_each ( _renderListeners.begin(), _renderListeners.end(), std::bind2nd ( std::mem_fun ( &IRenderListener::postRenderNotify ), unknown.get() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flags that says to update the recorded times.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::updateTimes ( bool state )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _flags = Usul::Bits::add < unsigned int, unsigned int > ( _flags, _UPDATE_TIMES );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the flags that says to update the recorded times.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::updateTimes() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _UPDATE_TIMES );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the frame stamp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::FrameStamp *Viewer::frameStamp()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return ( ( true == _renderer.valid() ) ? _renderer->framestamp() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the frame stamp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::FrameStamp *Viewer::frameStamp() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return ( ( true == _renderer.valid() ) ? _renderer->framestamp() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the cull visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osgUtil::CullVisitor *Viewer::getCullSceneVisitor ( Usul::Interfaces::IUnknown * )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return ( ( 0x0 != this->viewer() ) ? this->viewer()->getCullVisitor() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the update visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::NodeVisitor *Viewer::getUpdateSceneVisitor ( Usul::Interfaces::IUnknown * )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return ( ( 0x0 != this->viewer() ) ? this->viewer()->getUpdateVisitor() : 0x0 );
 }

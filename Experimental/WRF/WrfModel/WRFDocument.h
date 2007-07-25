@@ -22,8 +22,12 @@
 #include "Usul/Documents/Document.h"
 
 #include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/ITimestepAnimation.h"
+#include "Usul/Interfaces/ITimeVaryingData.h"
+#include "Usul/Interfaces/IUpdateListener.h"
 
 #include "osg/BoundingBox"
+#include "osg/MatrixTransform"
 
 #include <string>
 #include <vector>
@@ -31,7 +35,10 @@
 namespace XmlTree { class Node; }
 
 class WRFDocument : public Usul::Documents::Document,
-                    public Usul::Interfaces::IBuildScene
+                    public Usul::Interfaces::IBuildScene,
+                    public Usul::Interfaces::ITimestepAnimation,
+                    public Usul::Interfaces::ITimeVaryingData,
+                    public Usul::Interfaces::IUpdateListener
 {
 public:
 
@@ -78,6 +85,21 @@ protected:
 
   osg::Node*                  _buildVolume( const osg::BoundingBox& bb, const std::vector < unsigned char >& data );
 
+  void                        _buildScene ();
+
+  /// Usul::Interfaces::ITimestepAnimation
+  virtual void                startTimestepAnimation ();
+  virtual void                stopTimestepAnimation ();
+
+  /// Usul::Interfaces::ITimeVaryingData
+  virtual void             setCurrentTimeStep ( unsigned int current );
+  virtual unsigned int     getCurrentTimeStep () const;
+
+  virtual unsigned int     getNumberOfTimeSteps () const;
+
+  /// Usul::Interfaces::IUpdateListener
+  virtual void             updateNotify ( Usul::Interfaces::IUnknown *caller );
+
   /// Do not copy.
   WRFDocument ( const WRFDocument & );
   WRFDocument &operator = ( const WRFDocument & );
@@ -107,6 +129,7 @@ private:
   unsigned int _y;
   unsigned int _z;
   std::vector < ChannelInfo > _channelInfo;
+  osg::ref_ptr < osg::MatrixTransform > _root;
 };
 
 

@@ -41,7 +41,8 @@ WRFDocument::WRFDocument() : BaseClass ( "WRF Document" ),
   _x ( 0 ),
   _y ( 0 ),
   _z ( 0 ),
-  _channelInfo ()
+  _channelInfo (),
+  _root ( new osg::MatrixTransform )
 {
 }
 
@@ -69,6 +70,12 @@ Usul::Interfaces::IUnknown *WRFDocument::queryInterface ( unsigned long iid )
   {
   case Usul::Interfaces::IBuildScene::IID:
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
+  case Usul::Interfaces::ITimestepAnimation::IID:
+    return static_cast < Usul::Interfaces::ITimestepAnimation * > ( this );
+  case Usul::Interfaces::ITimeVaryingData::IID:
+    return static_cast < Usul::Interfaces::ITimeVaryingData * > ( this );
+  case Usul::Interfaces::IUpdateListener::IID:
+    return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -390,6 +397,20 @@ namespace Detail
 
 osg::Node *WRFDocument::buildScene ( const BaseClass::Options &options, Unknown *caller )
 {
+  this->_buildScene();
+
+  return _root.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::_buildScene ( )
+{
   Parser::Data data;
 
   _parser.data ( data, _currentChannel, _currentTimestep );
@@ -417,12 +438,9 @@ osg::Node *WRFDocument::buildScene ( const BaseClass::Options &options, Unknown 
 
   osg::BoundingBox bb ( -xHalf, -yHalf, -zHalf, xHalf, yHalf, zHalf );
 
-  osg::ref_ptr < osg::MatrixTransform > root ( new osg::MatrixTransform );
-  root->addChild ( this->_buildVolume ( bb, chars ) );
-
-  return root.release();
+  _root->removeChild ( 0, _root->getNumChildren() );
+  _root->addChild ( this->_buildVolume ( bb, chars ) );
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -462,4 +480,72 @@ osg::Node* WRFDocument::_buildVolume( const osg::BoundingBox& bb, const std::vec
   volume->transferFunction ( Detail::buildTransferFunction() );
 
   return volume.release();
+}
+
+
+/// Usul::Interfaces::ITimestepAnimation
+void WRFDocument::startTimestepAnimation ()
+{
+}
+
+void WRFDocument::stopTimestepAnimation ()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the current timestep.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::setCurrentTimeStep ( unsigned int current )
+{
+  _currentTimestep = current;
+  this->modified ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the current timestep.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int WRFDocument::getCurrentTimeStep () const
+{
+  return _currentTimestep;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of timesteps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int WRFDocument::getNumberOfTimeSteps () const
+{
+  return _timesteps;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  static unsigned int num ( 0 );
+  ++num;
+  if ( num % 120 )
+  {
+    ++_currentTimestep;
+    if ( _currentTimestep >= _timesteps )
+      _currentTimestep = 0;
+
+    this->_buildScene();
+  }
 }

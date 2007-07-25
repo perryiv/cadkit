@@ -30,7 +30,7 @@ struct ISceneUpdate : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3574234282u };
 
-  virtual void sceneUpdate( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
+  virtual void sceneUpdate ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
 
 }; // struct ISceneUpdate
 

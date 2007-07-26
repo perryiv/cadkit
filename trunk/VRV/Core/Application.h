@@ -143,7 +143,7 @@ public:
   /// Get the mutex.
   Mutex&                  mutex() const { return _mutex; }
 
-  /// Get/Set the viewport.
+  /// Get the viewport.
   osg::Viewport*          viewport()       { return _viewport.get(); }
   const osg::Viewport*    viewport() const { return _viewport.get(); }
 

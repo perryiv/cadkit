@@ -14,6 +14,13 @@
 #include "OsgTools/Export.h"
 
 #include "osg/Drawable"
+#include "osg/Version"
+
+#if OSG_VERSION_MAJOR <= 1 && OSG_VERSION_MINOR <= 2
+#define DrawArgs osg::State& state
+#else
+#define DrawArgs osg::RenderInfo& info
+#endif
 
 namespace OsgTools {
 namespace Volume {
@@ -39,7 +46,7 @@ public:
   virtual osg::Object         *cloneType() const;
 
   // Draw.
-  virtual void                drawImplementation( osg::RenderInfo& renderInfo ) const;
+  virtual void                drawImplementation( DrawArgs ) const;
 
   // Set/Get the bounding box.
   void                        boundingBox ( const osg::BoundingBox& bb );
@@ -56,7 +63,7 @@ protected:
 
   virtual osg::BoundingBox    computeBound() const;
 
-  void                        _drawImplementation( osg::RenderInfo& renderInfo ) const;
+  void                        _drawImplementation( osg::State& state ) const;
   void                        _initCornersAndEdges();
 
 private:

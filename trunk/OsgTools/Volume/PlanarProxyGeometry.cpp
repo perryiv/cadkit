@@ -148,11 +148,15 @@ void PlanarProxyGeometry::_initCornersAndEdges ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PlanarProxyGeometry::drawImplementation( osg::RenderInfo& renderInfo ) const
+void PlanarProxyGeometry::drawImplementation( DrawArgs ) const
 {
   try
   {
-    this->_drawImplementation ( renderInfo );
+#if OSG_VERSION_MAJOR <= 1 && OSG_VERSION_MINOR <= 2
+    this->_drawImplementation ( state );
+#else
+    this->_drawImplementation ( *info.getState() );
+#endif
   }
 
   catch ( const std::exception &e )
@@ -189,6 +193,32 @@ namespace Detail
 	}; 
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class to push and pop the state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  class PushPopStateSet
+  {
+  public:
+    PushPopStateSet ( const osg::StateSet* ss, osg::State& state ) :
+    _state ( state )
+    {
+      _state.pushStateSet ( ss );
+    }
+    ~PushPopStateSet ()
+    {
+      _state.popStateSet();
+    }
+
+  private:
+    osg::State & _state;
+  };
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -196,14 +226,13 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PlanarProxyGeometry::_drawImplementation( osg::RenderInfo& renderInfo ) const
+void PlanarProxyGeometry::_drawImplementation( osg::State& state ) const
 {
-  // Get and apply the state.
-  osg::ref_ptr < osg::State > state ( renderInfo.getState() );
-  state->pushStateSet( this->getStateSet() );
+  // Apply the state.
+  Detail::PushPopStateSet pushPopState ( this->getStateSet(), state );
 
   // Get the vector of the view direction.
-  osg::Matrix matrix ( state->getModelViewMatrix() );
+  osg::Matrix matrix ( state.getModelViewMatrix() );
   osg::Vec4f  viewVec ( -matrix( 0, 2 ),-matrix( 1, 2 ), -matrix( 2, 2 ), 0.0 );
 
   // Min and Max distance of the box from the eye point.
@@ -306,7 +335,7 @@ void PlanarProxyGeometry::_drawImplementation( osg::RenderInfo& renderInfo ) con
    
     for( unsigned int k = 0; k < 6; ++k )
     {
-#ifdef _DEBUG
+#if 0
       float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
       float c ( 1.0 - ( float ( n ) / _numPlanes ) );
       Usul::Functions::hsvToRgb  ( r, g, b, c * 360.0f, 1.0f, 1.0f );
@@ -318,8 +347,6 @@ void PlanarProxyGeometry::_drawImplementation( osg::RenderInfo& renderInfo ) con
 
     ::glEnd();
   }
-
-  state->popStateSet();
 }
 
 

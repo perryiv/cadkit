@@ -163,7 +163,7 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IProgressBarFactory::IID:
     return static_cast < Usul::Interfaces::IProgressBarFactory* > ( this );
   case Usul::Interfaces::IUpdateSubject::IID:
-    return static_cast < Usul::Interfaces::INotifySubject* > ( this );
+    return static_cast < Usul::Interfaces::IUpdateSubject* > ( this );
   default:
     return 0x0;
   }

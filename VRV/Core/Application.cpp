@@ -596,11 +596,17 @@ void Application::init()
   // Set the scene-viewer's scene.
   this->setSceneData ( _root.get() );
 
+  USUL_TRACE_1 ( "Setting initial time." );
+
   _initialTime = _timer.tick();
+
+  USUL_TRACE_1 ( "Initializing shared frame time." );
 
   // Initialize the shared frame time data.
   vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
   _sharedFrameTime.init ( guid, "viz0" );
+
+  USUL_TRACE_1 ( "Building progress bars.." );
 
   // Add the progress bars to the scene.
   osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
@@ -662,15 +668,18 @@ void Application::latePreFrame()
   // Send any notifications.
   _joystick->notify();
 
-  // tell the DatabasePager the frame number of that the scene graph is being actively used to render a frame
-  _databasePager->signalBeginFrame( _framestamp.get() );
+  if ( _databasePager.valid () && _framestamp.valid() )
+  {
+    // tell the DatabasePager the frame number of that the scene graph is being actively used to render a frame
+    _databasePager->signalBeginFrame( _framestamp.get() );
 
-  // syncronize changes required by the DatabasePager thread to the scene graph
-  _databasePager->updateSceneGraph( _framestamp->getReferenceTime() );
+    // syncronize changes required by the DatabasePager thread to the scene graph
+    _databasePager->updateSceneGraph( _framestamp->getReferenceTime() );
+  }
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////b///////////////
 //
 //  Called when the frame is done.
 //
@@ -683,8 +692,11 @@ void Application::postFrame()
   // Capture the frame time.
   _frameTime = _timer.delta_s( _frameStart, _timer.tick() );
 
-  // tell the DatabasePager that the frame is complete and that scene graph is no longer be activity traversed.
-  _databasePager->signalEndFrame();
+  if ( _databasePager.valid () )
+  {
+    // tell the DatabasePager that the frame is complete and that scene graph is no longer be activity traversed.
+    _databasePager->signalEndFrame();
+  }
 }
 
 

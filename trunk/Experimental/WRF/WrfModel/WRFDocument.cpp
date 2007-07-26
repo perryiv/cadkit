@@ -18,6 +18,9 @@
 
 #include "XmlTree/Document.h"
 
+#include "OsgTools/Box.h"
+#include "OsgTools/State/StateSet.h"
+
 #include "OsgTools/Volume/Texture3DVolume.h"
 
 #include "osg/MatrixTransform"
@@ -397,9 +400,22 @@ namespace Detail
 
 osg::Node *WRFDocument::buildScene ( const BaseClass::Options &options, Unknown *caller )
 {
-  this->_buildScene();
+  try
+  {
+    this->_buildScene();
 
-  return _root.get();
+    return _root.get();
+  }
+  catch ( const std::exception& e )
+  {
+    std::cout << "Error 2642125610: Standard exceptiong caught: " << e.what() << std::endl;
+  }
+  catch ( ... )
+  {
+    std::cout << "Error 5186009000: Unknown exceptiong caught: " << std::endl;
+  }
+
+  return 0x0;
 }
 
 
@@ -426,11 +442,11 @@ void WRFDocument::_buildScene ( )
   double yLength ( _y * 10 );
   double zLength ( _z * 3 );
 
-  double d ( xLength );
+  /*double d ( xLength );
 
   xLength /= d;
   yLength /= d;
-  zLength /= d;
+  zLength /= d;*/
 
   float xHalf ( static_cast < float > ( xLength ) / 2.0f );
   float yHalf ( static_cast < float > ( yLength ) / 2.0f );
@@ -438,8 +454,17 @@ void WRFDocument::_buildScene ( )
 
   osg::BoundingBox bb ( -xHalf, -yHalf, -zHalf, xHalf, yHalf, zHalf );
 
+  OsgTools::ColorBox box ( bb );
+  box.color_policy().color ( osg::Vec4 ( 0, 0, 1, 1 ) );
+
   _root->removeChild ( 0, _root->getNumChildren() );
   _root->addChild ( this->_buildVolume ( bb, chars ) );
+  _root->setMatrix ( osg::Matrix::translate ( bb.center() ) );
+  _root->addChild ( box() );
+
+  // Wire-frame.
+  OsgTools::State::StateSet::setPolygonsLines ( _root.get(), true );
+  OsgTools::State::StateSet::setLighting ( _root.get(), false );
 }
 
 ///////////////////////////////////////////////////////////////////////////////

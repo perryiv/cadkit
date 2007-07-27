@@ -182,7 +182,6 @@ Application::Application ( Args &args ) :
   BaseClass       ( ),
   _parser         ( new Parser ( args.begin(), args.end() ) ),
   _gridBranch     ( new osg::MatrixTransform ),
-  _cursor         ( new osg::MatrixTransform ),
   _menuBranch     ( new osg::MatrixTransform ),
   _statusBranch   ( new osg::MatrixTransform ),
   _origin         ( new osg::Group ),
@@ -198,7 +197,6 @@ Application::Application ( Args &args ) :
   _frameText      ( new OsgTools::Text ),
   _msgText        ( new OsgTools::Text ),
   _flags          ( 0 ),
-  _cursorMatrix   ( 0x0 ),
   _iVisibility    ( static_cast < CV::Interfaces::IVisibility* >    ( 0x0 ) ),
   _iSelection     ( static_cast < CV::Interfaces::ISelection* >     ( 0x0 ) ),
   _iMaterialStack ( static_cast < CV::Interfaces::IMaterialStack* > ( 0x0 ) ),
@@ -213,7 +211,6 @@ Application::Application ( Args &args ) :
   ErrorChecker ( 2970484549u, 0 == _mainThread );
   ErrorChecker ( 1074058928u, 0x0 != _parser.get() );
   ErrorChecker ( 1067094628u, _gridBranch.valid() );
-  ErrorChecker ( 1067094631u, _cursor.valid() );
   ErrorChecker ( 1325879383u, _menuBranch.valid() );
   ErrorChecker ( 3423749732u, _statusBranch.valid() );
   ErrorChecker ( 1068249416u, _origin.valid() );
@@ -231,7 +228,6 @@ Application::Application ( Args &args ) :
   this->_readUserPreferences();
 
   // Hook up the branches.
-  this->_sceneRoot()->addChild      ( _cursor.get()       );
   this->_sceneRoot()->addChild      ( _menuBranch.get()   );
   this->_sceneRoot()->addChild      ( _statusBranch.get() );
   this->_sceneRoot()->addChild      ( _origin.get()       );
@@ -241,7 +237,6 @@ Application::Application ( Args &args ) :
 
   // Name the branches.
   _gridBranch->setName   ( "_gridBranch"   );
-  _cursor->setName       ( "_cursor"       );
   _menuBranch->setName   ( "_menuBranch"   );
   _statusBranch->setName ( "_statusBranch" );
   _origin->setName       ( "_origin"       );
@@ -387,9 +382,6 @@ void Application::_init()
   // Save the "home" position.
   this->_setHome();
 
-  // Set a default cursor matrix functor.
-  this->_setCursorMatrixFunctor ( new VRV::Functors::WandMatrix ( this->_thisUnknown() ) );
-
   // Based on the scene size, set the near and far clipping plane distances.
   this->_setNearAndFarClippingPlanes();
 
@@ -415,6 +407,7 @@ void Application::_init()
 
 void Application::_initText()
 {
+#if 1
   ErrorChecker ( 1071444744, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 1071444745, _textBranch.valid() );
   ErrorChecker ( 1071444746, 0x0 != _pickText.get() );
@@ -476,7 +469,7 @@ void Application::_initText()
   _frameText->text ( "_frameText" );
   _pickText->text  ( "_pickText"  );
 #endif
-
+#endif
   // Set the flag that says the text is initialized.
   _flags = Usul::Bits::add ( _flags, Detail::_TEXT_IS_INITIALIZED );
 }
@@ -949,13 +942,9 @@ void Application::latePreFrame()
 void Application::_latePreFrame()
 {
   ErrorChecker ( 1067093580, isAppThread(), CV::NOT_APP_THREAD );
-  ErrorChecker ( 1067222382, _cursor.valid() );
   
   // Call the base class's function.
   BaseClass::latePreFrame();
-
-  // Update the cursor.
-  this->_updateCursor();
 
   // Update the frame-rate's text.
   this->_updateFrameRateDisplay();
@@ -1027,8 +1016,13 @@ bool Application::_handleMenuEvent()
   if ( COMMAND_MENU_TOGGLE == this->buttons()->released() )
   {
     _menu->toggleVisible();
+
     return true;
   }
+
+  unsigned int mask ( _menu->isVisible() ? 0 : 0xffffffff );
+
+  this->modelsScene ( )->setNodeMask ( mask );
 
   // If we are not expanded then we should not handle button events.
   if ( !_menu->menu()->expanded() )
@@ -1493,38 +1487,6 @@ void Application::_setNavigator()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the cursor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_setCursor ( unsigned int state )
-{
-  ErrorChecker ( 1072722817u, isAppThread(), CV::NOT_APP_THREAD );
-
-  OsgTools::Axes axes;
-  axes.length ( 0.5f );
-  axes.lineWidth ( 0.05f * axes.length() );
-  axes.state ( state );
-
-  OsgTools::Group::removeAllChildren ( _cursor.get() );
-  _cursor->addChild ( axes() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the cursor's matrix functor.
-//
-///////////////////////////////////////////////////////////////////////////////
-//
-void Application::_setCursorMatrixFunctor ( VRV::Functors::Matrix::MatrixFunctor *f )
-{
-  _cursorMatrix = f;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Load the restart file.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1827,30 +1789,6 @@ void Application::_updateAnalogText()
 
   // Set the text.
   this->_update ( *_navText, std::string ( buffer ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Update the cursor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_updateCursor()
-{
-  ErrorChecker ( 1074207542u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // If we have a matrix functor...
-  if ( _cursorMatrix.valid() )
-  {
-    // Update the internal matrix.
-    (*_cursorMatrix)();
-
-    // Set the cursor's matrix.
-    osg::Matrixf M;
-    OsgTools::Convert::matrix ( _cursorMatrix->matrix(), M );
-    _cursor->setMatrix ( M );
-  }
 }
 
 
@@ -2181,5 +2119,20 @@ void Application::_exportImage ( MenuKit::Message m, MenuKit::Item *item )
   {
     case MenuKit::MESSAGE_SELECTED:
       this->exportNextFrame ();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Only notify if the menu is not shown..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_updateNotify ()
+{
+  if ( false == _menu->isVisible () )
+  {
+    BaseClass::_updateNotify ();
   }
 }

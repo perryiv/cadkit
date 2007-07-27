@@ -218,10 +218,6 @@ protected:
   // Fill the given vector with the selected matrix-transforms.
   void                          _selected ( CV::Functors::Tool::Transforms &vt );
 
-  // Set the cursor and its matrix functor.
-  void                          _setCursor ( unsigned int );
-  void                          _setCursorMatrixFunctor ( VRV::Functors::Matrix::MatrixFunctor * );
-
   // Set the current "camera" position as "home".
   void                          _setHome();
 
@@ -246,6 +242,9 @@ protected:
 
   // Write the scene to file.
   void                          _writeScene ( const std::string &filename, const osg::Node *node ) const;
+
+  /// Update notify.
+  virtual void                  _updateNotify ();
 
   // Button callbacks.
   void                          _defaultCallback  ( MenuKit::Message m, MenuKit::Item *item );
@@ -340,7 +339,6 @@ protected:
   static ThreadId   _mainThread;
   ParserPtr         _parser;
   MatTransPtr       _gridBranch;
-  MatTransPtr       _cursor;
   MatTransPtr       _menuBranch;
   MatTransPtr       _statusBranch;
   GroupPtr          _origin;
@@ -356,7 +354,6 @@ protected:
   TextPtr           _frameText;
   TextPtr           _msgText;
   unsigned int      _flags;
-  MatrixFunctorPtr  _cursorMatrix;
   IVisibilityPtr    _iVisibility;
   ISelectionPtr     _iSelection;
   IMaterialStackPtr _iMaterialStack;

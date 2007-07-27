@@ -48,6 +48,9 @@ public:
   // Update the scene.
   void                    updateScene();
 
+  /// Is the menu visible?
+  bool                    isVisible () const;
+
 protected:
 
   virtual ~Menu();

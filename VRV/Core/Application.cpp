@@ -610,6 +610,7 @@ void Application::init()
 
   // Add the progress bars to the scene.
   osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
+  _progressBars->position ( Usul::Math::Vec3f ( -0.95, -0.7, -3.0 ) );
   group->addChild ( _progressBars->buildScene() );
 }
 

@@ -73,10 +73,9 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 
 ProgressBarGroup::ProgressBarGroup() : BaseClass(),
-  _bars     (),
-  _size     ( 0.0f, 0.0f ),
-  _groupBarSize ( 1.0f, 0.03f ),
-  _pos      (  0.0f, 0.0, -3.0f ),
+  _bars         (),
+  _defaultProgressBarSize ( 1.9f, 0.03f ),
+  _position     (  0.0f, 0.0, -3.0f ),
   _dirty    ( true ),
   _isRelativeToAbsolute ( true ),
   _root     ( new osg::Group ),
@@ -99,6 +98,31 @@ ProgressBarGroup::~ProgressBarGroup()
   _root = 0x0;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarGroup::position ( const Usul::Math::Vec3f& p )
+{
+  Guard guard ( this->mutex() );
+  _position = p;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec3f  ProgressBarGroup::position () const
+{
+  Guard guard ( this->mutex() );
+  return _position;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -214,9 +238,8 @@ Usul::Interfaces::IUnknown* ProgressBarGroup::append (  )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  ProgressBar::RefPtr pbar = new ProgressBar();
+  ProgressBar::RefPtr pbar ( new ProgressBar() );
 
-  pbar->setBarLengthAndHeight ( _groupBarSize );
   this->_addProgressBar ( pbar.get() );
   this->_setDirty ( true );
   return pbar->queryInterface ( Usul::Interfaces::IUnknown::IID );
@@ -275,7 +298,7 @@ osg::Node * ProgressBarGroup::buildScene()
 
     osg::ref_ptr< osg::MatrixTransform > matrix ( new osg::MatrixTransform() );
 
-    matrix->setMatrix ( osg::Matrix::translate( _pos[0], _pos[1], _pos[2] ) );
+    matrix->setMatrix ( osg::Matrix::translate( _position[0], _position[1], _position[2] ) );
     if ( _isRelativeToAbsolute )
     matrix->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
 
@@ -320,14 +343,7 @@ osg::Node * ProgressBarGroup::buildScene()
 void ProgressBarGroup::_addProgressBar ( ProgressBar * pbar )
 {
   pbar->setLowerLeft ( Usul::Math::Vec2f ( 0.0, 0.0 ) );
-  
-  if ( _size[0] < pbar->getLength() + _padding )
-    _size[0] = pbar->getLength() + _padding * 2;
-
-  if( _size[1] == 0 )
-    _size[1] +=  pbar->getHeight() + _padding * 2;
-  else
-    _size[1] +=  pbar->getHeight() + _padding;
+  pbar->setBarLengthAndHeight ( _defaultProgressBarSize );
 
   _bars.push_back ( pbar );
 }

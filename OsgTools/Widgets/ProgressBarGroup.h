@@ -56,6 +56,9 @@ public:
   
   Bars                                    getBars();
 
+  void                                    position ( const Usul::Math::Vec3f& position );
+  Usul::Math::Vec3f                       position () const;
+
 protected:
 	
   virtual                                 ~ProgressBarGroup();
@@ -71,9 +74,8 @@ private:
   bool                                  _isDirty() const;
 
   Bars                                  _bars;
-  Usul::Math::Vec2f                     _size;
-  Usul::Math::Vec2f                     _groupBarSize;
-  Usul::Math::Vec3f                     _pos;
+  Usul::Math::Vec2f                     _defaultProgressBarSize;
+  Usul::Math::Vec3f                     _position;
   bool                                  _dirty;
   bool                                  _isRelativeToAbsolute;
   osg::ref_ptr<osg::Group>              _root;

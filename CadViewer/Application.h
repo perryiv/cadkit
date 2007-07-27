@@ -26,10 +26,9 @@
 
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/CommandLine/Parser.h"
+#include "Usul/Interfaces/IActiveDocumentListener.h"
 
 #include "VRV/Interfaces/IRequestRead.h"
-#include "VRV/Interfaces/IButtonCallback.h"
-#include "VRV/Interfaces/IMenuCallback.h"
 
 #include "VRV/Core/Application.h"
 #include "VRV/Functors/Matrix/MatrixFunctor.h"
@@ -51,8 +50,7 @@ namespace CV {
 class Application : public VRV::Core::Application,
                     public CV::Interfaces::IAuxiliaryScene,
                     public VRV::Interfaces::IRequestRead,
-                    public VRV::Interfaces::IButtonCallback,
-                    public VRV::Interfaces::IMenuCallback
+                    public Usul::Interfaces::IActiveDocumentListener
 {
 public:
 
@@ -89,26 +87,6 @@ public:
 
   // Read the model from the named source and position it using the matrix.
   virtual void                  requestRead ( const std::string &source, const Matrix44f &m );
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  VRV::Interfaces::IButtonCallback
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Set the button callback specified by the string.
-  virtual void                  setCallback ( const std::string &id, MenuKit::Button *button );
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  VRV::Interfaces::IMenuCallback
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Set the menu callback specified by the string.
-  virtual void                  setCallback ( const std::string &id, MenuKit::Menu *menu );
-
-  /////////////////////////////////////////////////////////////////////////////
 
   // Get/set the center of rotation.
   const osg::Vec3 &             rotationCenter() const { return _rotCenter; }
@@ -166,6 +144,20 @@ protected:
   void                          _initText();
   void                          _initMenu();
   void                          _initStatusBar();
+
+  // Initialize the menus.
+  void                          _initFileMenu     ( MenuKit::Menu* menu );
+  void                          _initEditMenu     ( MenuKit::Menu* menu );
+  void                          _initViewMenu     ( MenuKit::Menu* menu );
+  void                          _initNavigateMenu ( MenuKit::Menu* menu );
+  void                          _initToolsMenu    ( MenuKit::Menu* menu );
+  void                          _initOptionsMenu  ( MenuKit::Menu* menu );
+
+  // Create a button.
+  MenuKit::Button*              _createButton    ( const std::string& name, MenuKit::Callback* );
+  MenuKit::Button*              _createRadio     ( const std::string& name, MenuKit::Callback* );
+  MenuKit::Button*              _createToggle    ( const std::string& name, MenuKit::Callback* );
+  MenuKit::Button*              _createSeperator ( );
 
   // Called once for each display to initialize the OpenGL context.
   virtual void                  contextInit();
@@ -245,6 +237,10 @@ protected:
 
   /// Update notify.
   virtual void                  _updateNotify ();
+
+  /// Usul::Interfaces::IActiveDocumentChanged
+  /// The active document has changed.
+  virtual void                  activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc );
 
   // Button callbacks.
   void                          _defaultCallback  ( MenuKit::Message m, MenuKit::Item *item );
@@ -331,7 +327,6 @@ protected:
   typedef Interfaces::ISelection::QueryPtr              ISelectionPtr;
   typedef Interfaces::IMaterialStack::QueryPtr          IMaterialStackPtr;
   typedef USUL_VALID_REF_POINTER(MenuKit::OSG::Menu)    MenuPtr;
-  typedef std::map<std::string,MenuKit::Callback::Ptr>  ButtonMap;
   typedef std::map<std::string,osg::Vec4>               ColorMap;
 
   // Data members.
@@ -359,7 +354,6 @@ protected:
   IMaterialStackPtr _iMaterialStack;
   MenuPtr           _menu;
   MenuPtr           _statusBar;
-  ButtonMap         _buttonMap;
   osg::Matrixf      _home;
   ColorMap          _colorMap;
   std::vector<OsgTools::Grid> _gridFunctors;

@@ -44,6 +44,7 @@
 #include "Usul/Predicates/UnaryPair.h"
 #include "Usul/File/Path.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/Interfaces/ICommandList.h"
 
 #include "vrj/Kernel/Kernel.h"
 #include "vrj/Display/Projection.h"
@@ -575,9 +576,6 @@ void Application::_initLight()
 
 void Application::_initMenu()
 {
-  ErrorChecker ( 1155745824u, isAppThread(), CV::NOT_APP_THREAD );
-  ErrorChecker ( 2049202602u, _menu.valid() );
-
   typedef VRV::Prefs::Settings::Color Color;
 
   osg::Vec4 bgNormal,   bgHighlight,   bgDisabled;
@@ -591,33 +589,40 @@ void Application::_initMenu()
   OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuTxtColorHLght(), textHighlight, 4 );
   OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuTxtColorDsabl(), textDisabled,  4 );
 
-  _menu->skin()->bg_color_normal      ( bgNormal );
-  _menu->skin()->bg_color_highlight   ( bgHighlight );
-  _menu->skin()->bg_color_disabled    ( bgDisabled );
-  _menu->skin()->text_color_normal    ( textNormal );
-  _menu->skin()->text_color_highlight ( textHighlight );
-  _menu->skin()->text_color_disabled  ( textDisabled );
+  MenuPtr osgMenu ( new MenuKit::OSG::Menu );
 
-  // Set the menu scene.
-  osg::Matrixf mm;
-  OsgTools::Convert::matrix ( this->preferences()->menuMatrix(), mm );
-  _menuBranch->setMatrix ( mm );
-  _menu->scene ( _menuBranch.get() );
+  osgMenu->skin()->bg_color_normal      ( bgNormal );
+  osgMenu->skin()->bg_color_highlight   ( bgHighlight );
+  osgMenu->skin()->bg_color_disabled    ( bgDisabled );
+  osgMenu->skin()->text_color_normal    ( textNormal );
+  osgMenu->skin()->text_color_highlight ( textHighlight );
+  osgMenu->skin()->text_color_disabled  ( textDisabled );
 
-  // Make the menu always draw on top (last). See osgfxbrowser.cpp.
-	osg::ref_ptr < osg::StateSet > ss ( _menuBranch->getOrCreateStateSet() );
-
-  // The line above should always return a valid state set.  Check just to make sure.
-  if( ss.valid() )
+  // Need to guard changing items in the scene because we may be rendering.
   {
-	  ss->setRenderBinDetails ( 100, "RenderBin" );
-	  ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+    Guard guard ( this->mutex () );
 
-    // take lighting off of the menu
-    ss->setMode( GL_LIGHTING , osg::StateAttribute::OFF );
+    // Set the menu scene.
+    osg::Matrixf mm;
+    OsgTools::Convert::matrix ( this->preferences()->menuMatrix(), mm );
+    _menuBranch->setMatrix ( mm );
+    osgMenu->scene ( _menuBranch.get() );
 
-    // set the stateset
-    _menuBranch->setStateSet( ss.get() );
+    // Make the menu always draw on top (last). See osgfxbrowser.cpp.
+	  osg::ref_ptr < osg::StateSet > ss ( _menuBranch->getOrCreateStateSet() );
+
+    // The line above should always return a valid state set.  Check just to make sure.
+    if( ss.valid() )
+    {
+	    ss->setRenderBinDetails ( 100, "RenderBin" );
+	    ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+
+      // take lighting off of the menu
+      ss->setMode( GL_LIGHTING , osg::StateAttribute::OFF );
+
+      // set the stateset
+      _menuBranch->setStateSet( ss.get() );
+    }
   }
 
   // Make the menu.
@@ -679,7 +684,13 @@ void Application::_initMenu()
   }
 
   // Set the menu.
-  _menu->menu ( menu.get() );
+  osgMenu->menu ( menu.get() );
+
+  // Swap the menu.
+  {
+    Guard guard ( this->mutex() );
+    _menu = osgMenu.get();
+  }
 
   // Default settings, so that the menu has the correct toggle's checked.
   OsgTools::State::StateSet::setPolygonsFilled ( this->models(), false );
@@ -875,6 +886,17 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
 
 void Application::_initToolsMenu ( MenuKit::Menu* menu )
 {
+  typedef Usul::Interfaces::ICommandList::CommandList Commands;
+  Usul::Interfaces::ICommandList::QueryPtr commandList ( Usul::Documents::Manager::instance().active() );
+
+  if ( commandList.valid() )
+  {
+    Commands commands ( commandList->getCommandList() );
+    for ( Commands::iterator iter = commands.begin(); iter != commands.end(); ++iter )
+    {
+      menu->append ( this->_createButton ( (*iter).get() ) );
+    }
+  }
 }
 
 
@@ -889,6 +911,56 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
   /*CV_REGISTER ( _backgroundColor,  "background_color" );
   CV_REGISTER ( _selectionColor,   "selection_color" );
   CV_REGISTER ( _setAnalogTrim,    "calibrate_joystick" );*/
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Callback to execute a command.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace CV 
+{
+  namespace Detail
+  {
+    class CommandCallback : public MenuKit::Callback
+    {
+    public:
+      typedef MenuKit::Callback BaseClass;
+
+      CommandCallback ( Usul::Commands::Command * command ) : BaseClass (), _command ( command )
+      {
+      }
+
+      virtual void operator () ( MenuKit::Message m, MenuKit::Item *item )
+      {
+        _command->execute( 0x0 );
+      }
+
+    private:
+      Usul::Commands::Command::RefPtr _command;
+    };
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a button.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MenuKit::Button* Application::_createButton ( Usul::Commands::Command* command )
+{
+  MenuKit::Button* button ( new MenuKit::Button );
+
+  // Set the text.
+  button->text ( command->text() );
+
+  // Set the callback.
+  button->callback ( MenuKit::MESSAGE_UPDATE, new Detail::CommandCallback ( command ) );
+
+  return button;
 }
 
 
@@ -2328,4 +2400,6 @@ void Application::_updateNotify ()
 
 void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
 {
+  // Rebuild the menu.
+  this->_initMenu ();
 }

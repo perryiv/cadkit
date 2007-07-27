@@ -446,6 +446,12 @@ void Application::_draw ( OsgTools::Render::Renderer *renderer )
 void Application::_preDraw( OsgTools::Render::Renderer *renderer )
 {
   USUL_TRACE_SCOPE;
+
+  if ( true == _exportImage )
+  {
+    // Always set the mask.
+    this->modelsScene ( )->setNodeMask ( 0xffffffff );
+  }
 }
 
 

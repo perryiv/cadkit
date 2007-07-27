@@ -989,7 +989,14 @@ void Application::_processButtons()
 #endif
   
   // Let the menu process first.
-  if ( this->_handleMenuEvent() )
+  bool menuHandled ( this->_handleMenuEvent() );
+  
+  // Always set the mask.
+  unsigned int mask ( _menu->isVisible() ? 0 : 0xffffffff );
+  this->modelsScene ( )->setNodeMask ( mask );
+
+  // Return now if the menu was handled.
+  if ( menuHandled )
     return;
 
   // Now process the intersector buttons.
@@ -1016,13 +1023,8 @@ bool Application::_handleMenuEvent()
   if ( COMMAND_MENU_TOGGLE == this->buttons()->released() )
   {
     _menu->toggleVisible();
-
     return true;
   }
-
-  unsigned int mask ( _menu->isVisible() ? 0 : 0xffffffff );
-
-  this->modelsScene ( )->setNodeMask ( mask );
 
   // If we are not expanded then we should not handle button events.
   if ( !_menu->menu()->expanded() )

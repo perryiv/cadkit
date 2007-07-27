@@ -160,6 +160,8 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast< VRV::Interfaces::IJoystickFloat * > ( this );
   case VRV::Interfaces::IWandStateFloat::IID:
     return static_cast< VRV::Interfaces::IWandStateFloat * > ( this );
+  case VRV::Interfaces::ITranslationSpeed::IID:
+    return static_cast < VRV::Interfaces::ITranslationSpeed * > ( this );
   case Usul::Interfaces::IProgressBarFactory::IID:
     return static_cast < Usul::Interfaces::IProgressBarFactory* > ( this );
   case Usul::Interfaces::IUpdateSubject::IID:
@@ -638,10 +640,10 @@ void Application::preFrame()
   _frameStart = _timer.tick();
 
   // Update the progress bars.
-  _progressBars->buildScene();
+  //_progressBars->buildScene();
 
   // Notify that it's ok to update.
-  this->_updateNotify();
+  //this->_updateNotify();
 
   // Purge.
   Usul::Jobs::Manager::instance().purge();
@@ -1319,6 +1321,7 @@ void Application::numRenderPasses ( unsigned int num )
 Application::Preferences * Application::preferences ()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _preferences.get();
 }
 
@@ -1332,6 +1335,7 @@ Application::Preferences * Application::preferences ()
 const Application::Preferences *  Application::preferences () const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _preferences.get();
 }
 
@@ -1692,4 +1696,17 @@ void Application::_updateNotify ()
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
   std::for_each ( _updateListeners.begin(), _updateListeners.end(), std::bind2nd ( std::mem_fun ( &UpdateListener::updateNotify ), me.get() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the translation speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float Application::translationSpeed () const
+{
+  USUL_TRACE_SCOPE;
+  return this->preferences()->translationSpeed();
 }

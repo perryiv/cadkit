@@ -323,6 +323,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Interfaces\ITranslationSpeed.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Interfaces\IWandState.h"
 					>
 				</File>

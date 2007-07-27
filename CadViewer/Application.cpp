@@ -1993,6 +1993,8 @@ Usul::Interfaces::IUnknown *Application::queryInterface ( unsigned long iid )
     return _iSelection.get();
   case CV::Interfaces::IMaterialStack::IID:
     return _iMaterialStack.get();
+  case Usul::Interfaces::IActiveDocumentListener::IID:
+    return static_cast < Usul::Interfaces::IActiveDocumentListener * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }

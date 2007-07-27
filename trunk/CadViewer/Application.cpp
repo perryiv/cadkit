@@ -43,6 +43,7 @@
 #include "Usul/Functors/If.h"
 #include "Usul/Predicates/UnaryPair.h"
 #include "Usul/File/Path.h"
+#include "Usul/Documents/Manager.h"
 
 #include "vrj/Kernel/Kernel.h"
 #include "vrj/Display/Projection.h"
@@ -202,7 +203,6 @@ Application::Application ( Args &args ) :
   _iMaterialStack ( static_cast < CV::Interfaces::IMaterialStack* > ( 0x0 ) ),
   _menu           ( new MenuKit::OSG::Menu() ),
   _statusBar      ( new MenuKit::OSG::Menu() ),
-  _buttonMap      (),
   _home           ( osg::Matrixf::identity() ),
   _colorMap       (),
   _textures       ( true )
@@ -270,6 +270,9 @@ Application::Application ( Args &args ) :
   _iVisibility    = Manager::instance().getInterface( CV::Interfaces::IVisibility::IID );
   _iSelection     = Manager::instance().getInterface( CV::Interfaces::ISelection::IID );
   _iMaterialStack = Manager::instance().getInterface( CV::Interfaces::IMaterialStack::IID );
+
+  // Add our selfs to the list of active document listeners.
+  Usul::Documents::Manager::instance().addActiveDocumentListener ( this );
 }
 
 
@@ -566,17 +569,6 @@ void Application::_initLight()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Macro to register callbacks in the map.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define CV_REGISTER(member_function,name) \
-  _buttonMap[name] = MenuKit::memFunCB2 \
-    ( this, &Application::member_function )
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Initialize the menu.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -585,20 +577,26 @@ void Application::_initMenu()
 {
   ErrorChecker ( 1155745824u, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 2049202602u, _menu.valid() );
+
+  typedef VRV::Prefs::Settings::Color Color;
+
+  osg::Vec4 bgNormal,   bgHighlight,   bgDisabled;
+  osg::Vec4 textNormal, textHighlight, textDisabled;
   
-  // Set menu's background and text colors from preferences.xml stored in VRV::Prefs::Settings this->preferences()
-  const float* BNarrayf = this->preferences()->menuBgColorNorm().get();
-  _menu->skin()->bg_color_normal( osg::Vec4(BNarrayf[0], BNarrayf[1], BNarrayf[2], BNarrayf[3]) );
-  const float* BHarrayf = this->preferences()->menuBgColorHLght().get();
-  _menu->skin()->bg_color_highlight( osg::Vec4(BHarrayf[0], BHarrayf[1], BHarrayf[2], BHarrayf[3]) );
-  const float* BDarrayf = this->preferences()->menuBgColorDsabl().get();
-  _menu->skin()->bg_color_disabled( osg::Vec4(BDarrayf[0], BDarrayf[1], BDarrayf[2], BDarrayf[3]) );
-  const float* TNarrayf = this->preferences()->menuTxtColorNorm().get();
-  _menu->skin()->text_color_normal( osg::Vec4(TNarrayf[0], TNarrayf[1], TNarrayf[2], TNarrayf[3]) );
-  const float* THarrayf = this->preferences()->menuTxtColorHLght().get();
-  _menu->skin()->text_color_highlight( osg::Vec4(THarrayf[0], THarrayf[1], THarrayf[2], THarrayf[3]) );
-  const float* TDarrayf = this->preferences()->menuTxtColorDsabl().get();
-  _menu->skin()->text_color_disabled( osg::Vec4(TDarrayf[0], TDarrayf[1], TDarrayf[2], TDarrayf[3]) );
+  // Set menu's background and text colors from preferences.xml stored in VRV::Prefs::Settings
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuBgColorNorm(),   bgNormal,      4 );
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuBgColorHLght(),  bgHighlight,   4 );
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuBgColorDsabl(),  bgDisabled,    4 );
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuTxtColorNorm(),  textNormal,    4 );
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuTxtColorHLght(), textHighlight, 4 );
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuTxtColorDsabl(), textDisabled,  4 );
+
+  _menu->skin()->bg_color_normal      ( bgNormal );
+  _menu->skin()->bg_color_highlight   ( bgHighlight );
+  _menu->skin()->bg_color_disabled    ( bgDisabled );
+  _menu->skin()->text_color_normal    ( textNormal );
+  _menu->skin()->text_color_highlight ( textHighlight );
+  _menu->skin()->text_color_disabled  ( textDisabled );
 
   // Set the menu scene.
   osg::Matrixf mm;
@@ -622,17 +620,191 @@ void Application::_initMenu()
     _menuBranch->setStateSet( ss.get() );
   }
 
-  // Fill the callback map.
-  CV_REGISTER ( _quitCallback,     "exit" );
-  CV_REGISTER ( _quitCallback,     "quit" );
-  CV_REGISTER ( _hideSelected,     "hide_selected" );
+  // Make the menu.
+  MenuKit::Menu::Ptr menu ( new MenuKit::Menu );
+  menu->layout ( MenuKit::Menu::HORIZONTAL );
+
+  // The file menu.
+  {
+    MenuKit::Menu::Ptr file ( new MenuKit::Menu );
+    file->layout ( MenuKit::Menu::VERTICAL );
+    file->text ( "File" );
+    this->_initFileMenu ( file.get() );
+    menu->append ( file.get() );
+  }
+
+  // The edit menu.
+  {
+    MenuKit::Menu::Ptr edit ( new MenuKit::Menu );
+    edit->layout ( MenuKit::Menu::VERTICAL );
+    edit->text ( "Edit" );
+    this->_initEditMenu ( edit.get() );
+    menu->append ( edit.get() );
+  }
+
+  // The view menu.
+  {
+    MenuKit::Menu::Ptr view ( new MenuKit::Menu );
+    view->layout ( MenuKit::Menu::VERTICAL );
+    view->text ( "View" );
+    this->_initEditMenu ( view.get() );
+    menu->append ( view.get() );
+  }
+
+  // The navigate menu.
+  {
+    MenuKit::Menu::Ptr navigate ( new MenuKit::Menu );
+    navigate->layout ( MenuKit::Menu::VERTICAL );
+    navigate->text ( "Navigate" );
+    this->_initNavigateMenu ( navigate.get() );
+    menu->append ( navigate.get() );
+  }
+
+  // The options menu.
+  {
+    MenuKit::Menu::Ptr options ( new MenuKit::Menu );
+    options->layout ( MenuKit::Menu::VERTICAL );
+    options->text ( "Options" );
+    this->_initOptionsMenu ( options.get() );
+    menu->append ( options.get() );
+  }
+
+  // The tools menu.
+  {
+    MenuKit::Menu::Ptr tools ( new MenuKit::Menu );
+    tools->layout ( MenuKit::Menu::VERTICAL );
+    tools->text ( "Tools" );
+    this->_initToolsMenu ( tools.get() );
+    menu->append ( tools.get() );
+  }
+
+  // Set the menu.
+  _menu->menu ( menu.get() );
+
+  // Default settings, so that the menu has the correct toggle's checked.
+  OsgTools::State::StateSet::setPolygonsFilled ( this->models(), false );
+  OsgTools::State::StateSet::setPolygonsSmooth ( this->models() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the file menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initFileMenu     ( MenuKit::Menu* menu )
+{
+  // The export sub-menu.
+  {
+    MenuKit::Menu::Ptr exportMenu ( new MenuKit::Menu );
+    exportMenu->layout ( MenuKit::Menu::VERTICAL );
+    exportMenu->text ( "Export" );
+    menu->append ( exportMenu.get() );
+
+    exportMenu->append ( this->_createButton ( "Image", MenuKit::memFunCB2 ( this, &Application::_exportImage ) ) );
+    exportMenu->append ( this->_createButton ( "Models", MenuKit::memFunCB2 ( this, &Application::_exportWorld ) ) );
+    exportMenu->append ( this->_createButton ( "Scene", MenuKit::memFunCB2 ( this, &Application::_exportScene ) ) );
+  }
+
+  menu->append ( this->_createSeperator () );
+  menu->append ( this->_createButton ( "Exit", MenuKit::memFunCB2 ( this, &Application::_quitCallback ) ) );
+  
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the edit menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initEditMenu     ( MenuKit::Menu* menu )
+{
+  /*CV_REGISTER ( _hideSelected,     "hide_selected" );
   CV_REGISTER ( _showAll,          "show_all" );
   CV_REGISTER ( _unselectVisible,  "unselect_visible" );
-  CV_REGISTER ( _exportSelected,   "export_selected" );
-  CV_REGISTER ( _exportWorld,      "export_world" );
-  CV_REGISTER ( _exportScene,      "export_scene" );
-  CV_REGISTER ( _normScene,        "normalize_scene" );
-  CV_REGISTER ( _normSelected,     "normalize_selected" );
+
+  
+  CV_REGISTER ( _vScaleWorld,      "vertical_scale_world" );
+  CV_REGISTER ( _vScaleSelected,   "vertical_scale_selected" );
+  CV_REGISTER ( _wMoveSelLocal,    "move_selected_local_wand" );
+  CV_REGISTER ( _wMoveTopLocal,    "move_world_local_wand" );
+  CV_REGISTER ( _raySelector,      "ray_selection" );*/
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the view menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initViewMenu     ( MenuKit::Menu* menu )
+{
+  menu->append ( this->_createButton ( "Reset Clipping", MenuKit::memFunCB2 ( this, &Application::_resetClipping ) ) );
+  menu->append ( this->_createSeperator () );
+
+  // Rendering passes menu.
+  {
+    MenuKit::Menu::Ptr passes ( new MenuKit::Menu );
+    passes->layout ( MenuKit::Menu::VERTICAL );
+    passes->text ( "Rendering Passes" );
+    menu->append ( passes.get() );
+
+    passes->append ( this->_createButton ( "1", MenuKit::memFunCB2 ( this, &Application::_renderPassesOne ) ) );
+    passes->append ( this->_createButton ( "3", MenuKit::memFunCB2 ( this, &Application::_renderPassesThree ) ) );
+    passes->append ( this->_createButton ( "9", MenuKit::memFunCB2 ( this, &Application::_renderPassesNine ) ) );
+    passes->append ( this->_createButton ( "12", MenuKit::memFunCB2 ( this, &Application::_renderPassesTweleve ) ) );
+  }
+
+  // Goto menu.
+  {
+    MenuKit::Menu::Ptr gotoMenu ( new MenuKit::Menu );
+    gotoMenu->layout ( MenuKit::Menu::VERTICAL );
+    gotoMenu->text ( "Goto" );
+    menu->append ( gotoMenu.get() );
+
+    gotoMenu->append ( this->_createButton ( "Home", MenuKit::memFunCB2 ( this, &Application::_viewHome ) ) );
+    gotoMenu->append ( this->_createButton ( "Front",  MenuKit::memFunCB2 ( this, &Application::_gotoViewFront ) ) );
+    gotoMenu->append ( this->_createButton ( "Back",   MenuKit::memFunCB2 ( this, &Application::_gotoViewBack ) ) );
+    gotoMenu->append ( this->_createButton ( "Top",    MenuKit::memFunCB2 ( this, &Application::_gotoViewTop ) ) );
+    gotoMenu->append ( this->_createButton ( "Bottom", MenuKit::memFunCB2 ( this, &Application::_gotoViewBottom ) ) );
+    gotoMenu->append ( this->_createButton ( "Left",   MenuKit::memFunCB2 ( this, &Application::_gotoViewRight ) ) );
+    gotoMenu->append ( this->_createButton ( "Right",  MenuKit::memFunCB2 ( this, &Application::_gotoViewLeft ) ) );
+  }
+
+  //CV_REGISTER ( _setAsHome,        "set_as_home_view" );
+
+  // Polygons menu.
+  {
+    MenuKit::Menu::Ptr polygons ( new MenuKit::Menu );
+    polygons->layout ( MenuKit::Menu::VERTICAL );
+    polygons->text ( "Polygons" );
+    menu->append ( polygons.get() );
+
+    polygons->append ( this->_createRadio ( "Smooth",    MenuKit::memFunCB2 ( this, &Application::_polysSmooth ) ) );
+    polygons->append ( this->_createRadio ( "Flat",      MenuKit::memFunCB2 ( this, &Application::_polysFlat ) ) );
+    polygons->append ( this->_createRadio ( "Wireframe", MenuKit::memFunCB2 ( this, &Application::_polysWireframe ) ) );
+    polygons->append ( this->_createRadio ( "Points",    MenuKit::memFunCB2 ( this, &Application::_polysPoints ) ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the navigate menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initNavigateMenu ( MenuKit::Menu* menu )
+{
+  /*CV_REGISTER ( _hvTransWandXZ,    "hv_trans_wand_xz" );
+  CV_REGISTER ( _hvTransGlobalXZ,  "hv_trans_global_xz" );
+  CV_REGISTER ( _poleNav,          "hy_rotate_vy_trans_global" );
+
+
   CV_REGISTER ( _hTransWandPosX,   "horizontal_translate_wand_positive_x" );
   CV_REGISTER ( _hTransWandNegX,   "horizontal_translate_wand_negative_x" );
   CV_REGISTER ( _vTransWandPosY,   "vertical_translate_wand_positive_y" );
@@ -647,134 +819,104 @@ void Application::_initMenu()
   CV_REGISTER ( _hRotGlobalPosY,   "horizontal_rotate_global_clockwise_y" );
   CV_REGISTER ( _vRotWandPosX,     "vertical_rotate_wand_clockwise_x" );
   CV_REGISTER ( _vRotGlobalPosX,   "vertical_rotate_global_clockwise_x" );
-  CV_REGISTER ( _vScaleWorld,      "vertical_scale_world" );
-  CV_REGISTER ( _vScaleSelected,   "vertical_scale_selected" );
-  CV_REGISTER ( _wMoveSelLocal,    "move_selected_local_wand" );
-  CV_REGISTER ( _wMoveTopLocal,    "move_world_local_wand" );
-  CV_REGISTER ( _raySelector,      "ray_selection" );
-  CV_REGISTER ( _setAnalogTrim,    "calibrate_joystick" );
-  CV_REGISTER ( _polysSmooth,      "polygons_smooth" );
-  CV_REGISTER ( _polysFlat,        "polygons_flat" );
-  CV_REGISTER ( _polysWireframe,   "polygons_wireframe" );
-  CV_REGISTER ( _polysPoints,      "polygons_points" );
-  CV_REGISTER ( _gridVisibility,   "grid_visibility" );
-  CV_REGISTER ( _statusBarVis,     "status_bar_visibility" );
-  CV_REGISTER ( _viewHome,         "camera_view_home" );
-  CV_REGISTER ( _viewWorld,        "camera_view_world" );
-  CV_REGISTER ( _viewScene,        "camera_view_scene" );
-  CV_REGISTER ( _setAsHome,        "set_as_home_view" );
-  CV_REGISTER ( _resizeGrid,       "resize_grid" );
-  CV_REGISTER ( _backgroundColor,  "background_color" );
-  CV_REGISTER ( _gridColor,        "grid_color" );
-  CV_REGISTER ( _selectionColor,   "selection_color" );
-  CV_REGISTER ( _resetClipping,    "reset_clipping" );
-  CV_REGISTER ( _hvTransWandXZ,    "hv_trans_wand_xz" );
-  CV_REGISTER ( _hvTransGlobalXZ,  "hv_trans_global_xz" );
-  CV_REGISTER ( _poleNav,          "hy_rotate_vy_trans_global" );
-  CV_REGISTER ( _gotoViewFront,    "goto_front_view" );
-  CV_REGISTER ( _gotoViewBack,     "goto_back_view" );
-  CV_REGISTER ( _gotoViewTop,      "goto_top_view" );
-  CV_REGISTER ( _gotoViewBottom,   "goto_bottom_view" );
-  CV_REGISTER ( _gotoViewRight,    "goto_right_view" );
-  CV_REGISTER ( _gotoViewLeft,     "goto_left_view" );
-  CV_REGISTER ( _rotateWorld,      "rotate_world" );
-  CV_REGISTER ( _dropToFloor,      "drop_to_floor" );
+
   CV_REGISTER ( _increaseSpeed,    "increase_speed" );
   CV_REGISTER ( _decreaseSpeed,    "decrease_speed" );
   CV_REGISTER ( _increaseSpeedTen,    "increase_speed_ten" );
-  CV_REGISTER ( _decreaseSpeedTen,    "decrease_speed_ten" );
-  CV_REGISTER ( _exportImage,      "export_image" );
-  CV_REGISTER ( _renderPassesOne,     "render_passes_one" );
-  CV_REGISTER ( _renderPassesThree,   "render_passes_three" );
-  CV_REGISTER ( _renderPassesNine,    "render_passes_nine" );
-  CV_REGISTER ( _renderPassesTweleve, "render_passes_tweleve" );
-  //CV_REGISTER ( _saveView,         "save_camera_view" );
-
-  // Get the component.
-  VRV::Interfaces::IMenuRead::QueryPtr reader ( Usul::Components::Manager::instance().getInterface ( VRV::Interfaces::IMenuRead::IID ) );
-
-  // Find the path to the config file.
-  std::string filename ( Usul::App::Application::instance().configFile ( "menu" ) );
-
-  // Read the configuration file.
-  if( reader.valid() )
-    reader->readMenuFile ( filename, ValidUnknown ( this ) );
-
-  // Set the menu.
-  VRV::Interfaces::IMenuGet::QueryPtr menu ( reader );
-
-  if( menu.valid() )
-    _menu->menu ( menu->getMenu() );
-
-  // Default settings, so that the menu has the correct toggle's checked.
-  OsgTools::State::StateSet::setPolygonsFilled ( this->models(), false );
-  OsgTools::State::StateSet::setPolygonsSmooth ( this->models() );
+  CV_REGISTER ( _decreaseSpeedTen,    "decrease_speed_ten" );*/
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the button callback specified by the string.
+//  Initialize the Tools menu.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::setCallback ( const std::string &id, Button *button )
+void Application::_initToolsMenu    ( MenuKit::Menu* menu )
 {
-  ErrorChecker ( 4127973658u, isAppThread(), CV::NOT_APP_THREAD );
+}
 
-  // Handle bad input.
-  if ( 0x0 == button )
-    return;
 
-  // Make sure it is lower case.
-  std::string cb ( id );
-  std::transform ( cb.begin(), cb.end(), cb.begin(), ::tolower );
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the options menu.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-  // Get the button.
-  ButtonMap::const_iterator i = _buttonMap.find ( cb );
+void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
+{
+  /*CV_REGISTER ( _backgroundColor,  "background_color" );
+  CV_REGISTER ( _selectionColor,   "selection_color" );
+  CV_REGISTER ( _setAnalogTrim,    "calibrate_joystick" );*/
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a button.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MenuKit::Button* Application::_createButton ( const std::string& text, MenuKit::Callback* cb )
+{
+  // Raw pointer.  Need to switch to MenuKit to Usul::Base::Referenced.
+  MenuKit::Button* button ( new MenuKit::Button );
+
+  // Set the text.
+  button->text ( text );
 
   // Hook up the default callback.
   MenuKit::Callback::Ptr dcb ( MenuKit::memFunCB2 ( this, &Application::_defaultCallback ) );
   button->callback ( MenuKit::MESSAGE_FOCUS_ON, dcb );
+  
+  // Set the callbacks.
+  button->callback ( MenuKit::MESSAGE_SELECTED, cb );
+  button->callback ( MenuKit::MESSAGE_UPDATE,   cb );
 
-  // See if it is a known button.
-  if ( _buttonMap.end() != i )
-  {
-    // Set the callbacks.
-    button->callback ( MenuKit::MESSAGE_SELECTED,  i->second.get() );
-    button->callback ( MenuKit::MESSAGE_UPDATE,    i->second.get() );
-  }
-
-  // Otherwise...
-  else
-  {
-    // Hook up the default callback.
-    MenuKit::Callback::Ptr cb ( MenuKit::memFunCB2 ( this, &Application::_defaultCallback ) );
-    button->callback ( MenuKit::MESSAGE_SELECTED, dcb );
-    button->callback ( MenuKit::MESSAGE_UPDATE,   dcb );
-  }
+  return button;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the menu callback specified by the string.
+//  Create a radio button.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::setCallback ( const std::string &, MenuKit::Menu *menu )
+MenuKit::Button* Application::_createRadio ( const std::string& name, MenuKit::Callback* cb )
 {
-  ErrorChecker ( 2386250199u, isAppThread(), CV::NOT_APP_THREAD );
+  MenuKit::Button* button ( this->_createButton ( name, cb ) );
+  button->radio ( true );
+  return button;
+}
 
-  // Handle bad input.
-  if ( 0x0 == menu )
-    return;
 
-  // Hook up the default callback.
-  MenuKit::Callback::Ptr cb ( MenuKit::memFunCB2 ( this, &Application::_defaultCallback ) );
-  menu->callback ( MenuKit::MESSAGE_SELECTED,  cb );
-  menu->callback ( MenuKit::MESSAGE_UPDATE,    cb );
-  menu->callback ( MenuKit::MESSAGE_FOCUS_ON,  cb );
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a toggle button.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MenuKit::Button* Application::_createToggle    ( const std::string& name, MenuKit::Callback* cb )
+{
+  MenuKit::Button* button ( this->_createButton ( name, cb ) );
+  button->toggle ( true );
+  return button;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a seperator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MenuKit::Button* Application::_createSeperator ( )
+{
+  MenuKit::Button* button ( new MenuKit::Button );
+  button->separator ( true );
+  return button;
 }
 
 
@@ -1845,10 +1987,6 @@ Usul::Interfaces::IUnknown *Application::queryInterface ( unsigned long iid )
     return static_cast<CV::Interfaces::IAuxiliaryScene *>(this);
   case VRV::Interfaces::IRequestRead::IID:
     return static_cast<VRV::Interfaces::IRequestRead *>(this);
-  case VRV::Interfaces::IButtonCallback::IID:
-    return static_cast<VRV::Interfaces::IButtonCallback *>(this);
-  case VRV::Interfaces::IMenuCallback::IID:
-    return static_cast<VRV::Interfaces::IMenuCallback *>(this);
   case CV::Interfaces::IVisibility::IID:
     return _iVisibility.get();
   case CV::Interfaces::ISelection::IID:
@@ -2137,4 +2275,15 @@ void Application::_updateNotify ()
   {
     BaseClass::_updateNotify ();
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The active document has changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
+{
 }

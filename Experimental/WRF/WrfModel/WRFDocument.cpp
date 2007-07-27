@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "WRFDocument.h"
+#include "ChannelCommand.h"
 
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
@@ -79,6 +80,8 @@ Usul::Interfaces::IUnknown *WRFDocument::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ITimeVaryingData * > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
+  case Usul::Interfaces::ICommandList::IID:
+    return static_cast < Usul::Interfaces::ICommandList * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -573,4 +576,23 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
     this->_buildScene();
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get a list of avialable commands.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+WRFDocument::CommandList WRFDocument::getCommandList ()
+{
+  CommandList commands;
+
+  for ( ChannelInfos::iterator iter = _channelInfo.begin(); iter != _channelInfo.end(); ++ iter )
+  {
+    commands.push_back ( new ChannelCommand ( iter->name, iter->index, this ) );
+  }
+
+  return commands;
 }

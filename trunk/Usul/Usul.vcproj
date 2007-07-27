@@ -1299,6 +1299,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Interfaces\ICommandList.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Interfaces\ICommandQueueAdd.h"
 						>
 					</File>

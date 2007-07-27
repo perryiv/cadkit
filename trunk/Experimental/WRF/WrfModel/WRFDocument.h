@@ -25,6 +25,7 @@
 #include "Usul/Interfaces/ITimestepAnimation.h"
 #include "Usul/Interfaces/ITimeVaryingData.h"
 #include "Usul/Interfaces/IUpdateListener.h"
+#include "Usul/Interfaces/ICommandList.h"
 
 #include "osg/BoundingBox"
 #include "osg/MatrixTransform"
@@ -38,7 +39,8 @@ class WRFDocument : public Usul::Documents::Document,
                     public Usul::Interfaces::IBuildScene,
                     public Usul::Interfaces::ITimestepAnimation,
                     public Usul::Interfaces::ITimeVaryingData,
-                    public Usul::Interfaces::IUpdateListener
+                    public Usul::Interfaces::IUpdateListener,
+                    public Usul::Interfaces::ICommandList
 {
 public:
 
@@ -100,6 +102,9 @@ protected:
   /// Usul::Interfaces::IUpdateListener
   virtual void             updateNotify ( Usul::Interfaces::IUnknown *caller );
 
+  /// Usul::Interfaces::ICommandList
+  virtual CommandList      getCommandList ();
+
   /// Do not copy.
   WRFDocument ( const WRFDocument & );
   WRFDocument &operator = ( const WRFDocument & );
@@ -119,6 +124,8 @@ private:
     double min, max;
   };
 
+  typedef std::vector < ChannelInfo > ChannelInfos;
+
   Parser _parser;
   std::string _filename;
   unsigned int _currentTimestep;
@@ -128,7 +135,7 @@ private:
   unsigned int _x;
   unsigned int _y;
   unsigned int _z;
-  std::vector < ChannelInfo > _channelInfo;
+  ChannelInfos _channelInfo;
   osg::ref_ptr < osg::MatrixTransform > _root;
 };
 

@@ -31,6 +31,7 @@ Translate::Translate (
   float speed,
   unsigned int id ) : 
   BaseClass ( unknown, dir, ai, id ),
+  _translateSpeed ( unknown ),
   _speed ( speed )
 {
 }
@@ -76,13 +77,16 @@ void Translate::operator()()
   // This is the number of seconds since the last time we were here.
   float interval ( this->_frameTime() ); // seconds
 
+  // Get the speed.
+  float speed ( _translateSpeed.valid() ? _translateSpeed->translationSpeed () : _speed );
+
   // The distance to translate should be in units of feet.
   //
   //         feet  no-units  no-units  seconds
   // feet =  ----  --------  --------  -------
   //          1    no-units  seconds      1
   //
-  float dist ( radius * stick * -_speed * interval ); // feet
+  float dist ( radius * stick * - speed * interval ); // feet
 
   // Get the direction vector.
   Direction::Vector dir ( this->_direction() );

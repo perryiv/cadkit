@@ -27,6 +27,7 @@
 #include "VRV/Interfaces/IMatrixMultiply.h"
 #include "VRV/Interfaces/IJoystick.h"
 #include "VRV/Interfaces/IWandState.h"
+#include "VRV/Interfaces/ITranslationSpeed.h"
 
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/IUpdateSubject.h"
@@ -81,6 +82,7 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public VRV::Interfaces::IMatrixMultiplyFloat,
                                public VRV::Interfaces::IJoystickFloat,
                                public VRV::Interfaces::IWandStateFloat,
+                               public VRV::Interfaces::ITranslationSpeed,
                                public Usul::Interfaces::IProgressBarFactory,
                                public Usul::Interfaces::IUpdateSubject
 {
@@ -290,6 +292,9 @@ protected:
   // Get/set the wand's offset.
   virtual void                  wandOffset ( Usul::Math::Vec3f &v ) const;
   virtual void                  wandOffset ( const Usul::Math::Vec3f &v );
+
+  /// VRV::Interfaces::ITranslationSpeed.
+  virtual float                 translationSpeed () const;
 
   /// Add/Remove a update listener.
   virtual void addUpdateListener    ( Usul::Interfaces::IUnknown *caller = 0x0 );

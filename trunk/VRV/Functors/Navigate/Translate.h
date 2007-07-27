@@ -19,6 +19,7 @@
 #include "VRV/Export.h"
 #include "VRV/Functors/Navigate/Transform.h"
 
+#include "VRV/Interfaces/ITranslationSpeed.h"
 
 namespace VRV {
 namespace Functors {
@@ -55,6 +56,7 @@ protected:
 
 private:
 
+  VRV::Interfaces::ITranslationSpeed::QueryPtr _translateSpeed;
   float _speed;
 };
 

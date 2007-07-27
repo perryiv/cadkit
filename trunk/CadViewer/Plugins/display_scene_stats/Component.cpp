@@ -199,9 +199,9 @@ void Component::_accumulateStatsGeode ( osg::Geode *geode )
         CV::ErrorChecker ( 1075457359, 0x0 != vertexSet );
 
         // Make sure the mode falls within our index range.
-        unsigned int mode ( vertexSet->getMode() );
-        CV::ErrorChecker ( 1075503364, mode >= Detail::MIN_PRIM_MODE );
-        CV::ErrorChecker ( 1075503365, mode <= Detail::MAX_PRIM_MODE );
+        unsigned long mode ( vertexSet->getMode() );
+        CV::ErrorChecker ( 1075503364u, mode >= Detail::MIN_PRIM_MODE );
+        CV::ErrorChecker ( 1075503365u, mode <= Detail::MAX_PRIM_MODE );
 
         // Get the number of primitives in this vertex-set. If the set is a 
         // tri-strip, then the number of primitives will be 1. If the set is

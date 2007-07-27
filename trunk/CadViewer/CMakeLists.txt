@@ -21,10 +21,11 @@ ${CADKIT_ROOT_DIR}/MenuKit
 ${CADKIT_ROOT_DIR}/MenuKit/OSG
 ${CADKIT_ROOT_DIR}/VRV
 ${CADKIT_ROOT_DIR}/CadViewer/Plugins/scene_operations
-${CADKIT_ROOT_DIR}/CadViewer/Plugins/display_scene_stats
 ${CADKIT_ROOT_DIR}/VRV/GUI
 ${CADKIT_ROOT_DIR}/VRV/IO
 ${CADKIT_ROOT_DIR}/Helios/Plugins/SceneModel
+${CADKIT_ROOT_DIR}/Experimental/WRF/WrfModel
+${CADKIT_ROOT_DIR}/CadViewer/Plugins/display_scene_stats
 )
 
 # ------------ Set Include Folders ----------------------

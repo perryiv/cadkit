@@ -14,7 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Factory.h"
-#include "Component.h"
+#include "SceneOperationsComponent.h"
 
 using namespace CV;
 using namespace CV::Plugins;

@@ -22,6 +22,8 @@
 #include "Usul/System/Directory.h"
 #include "Usul/File/Path.h"
 
+#include "OsgTools/DisplayLists.h"
+
 #include "osg/ref_ptr"
 #include "osg/Node"
 
@@ -142,6 +144,10 @@ void LoadModel::_loadModel( const std::string& filename )
   Usul::Interfaces::IUpdateSubject::QueryPtr subject ( _caller );
   if ( subject.valid () )
     subject->addUpdateListener ( document->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+
+  // Turn off display lits.
+  //OsgTools::DisplayLists dl ( false );
+  //dl ( model.get() );
 }
 
 

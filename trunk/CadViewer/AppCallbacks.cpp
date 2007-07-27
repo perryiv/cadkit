@@ -348,12 +348,6 @@ void Application::_hTransWandPosX ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( 1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    this->_setCursor ( OsgTools::Axes::POSITIVE_X |
-                       OsgTools::Axes::NEGATIVE_X );
-  }
 }
 
 
@@ -377,12 +371,6 @@ void Application::_hTransGlobalPosX ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( 1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    this->_setCursor ( OsgTools::Axes::POSITIVE_X |
-                       OsgTools::Axes::NEGATIVE_X );
-  }
 }
 
 
@@ -406,12 +394,6 @@ void Application::_hTransWandNegX ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( -1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    this->_setCursor ( OsgTools::Axes::POSITIVE_X |
-                       OsgTools::Axes::NEGATIVE_X );
-  }
 }
 
 
@@ -435,12 +417,6 @@ void Application::_hTransGlobalNegX ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( -1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    this->_setCursor ( OsgTools::Axes::POSITIVE_X |
-                       OsgTools::Axes::NEGATIVE_X );
-  }
 }
 
 
@@ -464,12 +440,6 @@ void Application::_vTransWandPosY ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( 0, 1, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    this->_setCursor ( OsgTools::Axes::POSITIVE_Y |
-                       OsgTools::Axes::NEGATIVE_Y );
-  }
 }
 
 
@@ -493,12 +463,6 @@ void Application::_vTransWandPosZ ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( 0, 0, -1 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    this->_setCursor ( OsgTools::Axes::POSITIVE_Z |
-                       OsgTools::Axes::NEGATIVE_Z );
-  }
 }
 
 
@@ -522,12 +486,6 @@ void Application::_vTransGlobalPosZ ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( 0, 0, -1 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    this->_setCursor ( OsgTools::Axes::POSITIVE_Z |
-                       OsgTools::Axes::NEGATIVE_Z );
-  }
 }
 
 
@@ -551,12 +509,6 @@ void Application::_vTransWandNegZ ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( 0, 0, 1 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    this->_setCursor ( OsgTools::Axes::POSITIVE_Z |
-                       OsgTools::Axes::NEGATIVE_Z );
-  }
 }
 
 
@@ -580,12 +532,6 @@ void Application::_vTransGlobalNegZ ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( 0, 0, 1 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    this->_setCursor ( OsgTools::Axes::POSITIVE_Z |
-                       OsgTools::Axes::NEGATIVE_Z );
-  }
 }
 
 
@@ -609,11 +555,6 @@ void Application::_hRotWandPosY ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( this->preferences()->rotationSpeed() );
   VRV::Functors::Direction::Vector dir ( 0, 1, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    this->_setCursor ( OsgTools::Axes::ROTATE_Y );
-  }
 }
 
 
@@ -637,11 +578,6 @@ void Application::_hRotGlobalPosY ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( this->preferences()->rotationSpeed() );
   VRV::Functors::Direction::Vector dir ( 0, 1, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    this->_setCursor ( OsgTools::Axes::ROTATE_Y );
-  }
 }
 
 
@@ -665,11 +601,6 @@ void Application::_vRotWandPosX ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( this->preferences()->rotationSpeed() );
   VRV::Functors::Direction::Vector dir ( 1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    this->_setCursor ( OsgTools::Axes::ROTATE_X );
-  }
 }
 
 
@@ -693,11 +624,6 @@ void Application::_vRotGlobalPosX ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( this->preferences()->rotationSpeed() );
   VRV::Functors::Direction::Vector dir ( 1, 0, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    this->_setCursor ( OsgTools::Axes::ROTATE_X );
-  }
 }
 
 
@@ -721,12 +647,6 @@ void Application::_vTransGlobalPosY ( MenuKit::Message m, MenuKit::Item *item )
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( 0, 1, 0 );
   CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    this->_setCursor ( OsgTools::Axes::POSITIVE_Y |
-                       OsgTools::Axes::NEGATIVE_Y  );
-  }
 }
 
 

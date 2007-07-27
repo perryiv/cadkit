@@ -1,12 +1,12 @@
 
-project (SceneOperations)
+PROJECT (SceneOperations)
 
 SET(PLUGIN_NAME "SceneOperations")
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
-set(COMPILE_GUARD "_COMPILING_SCENE_OPERATIONS")
+SET (COMPILE_GUARD "_COMPILING_SCENE_OPERATIONS")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
 INCLUDE ( ${CMakeModules}/FindOSG.cmake)
@@ -16,9 +16,9 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 # ------------ Set Include Folders ----------------------
 INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" )
 
-set (SOURCES
+SET (SOURCES
 ./UserDataState.cpp
-./Component.cpp
+./SceneOperationsComponent.cpp
 ./UserDataBase.cpp
 ./UserDataMap.cpp
 ./Factory.cpp

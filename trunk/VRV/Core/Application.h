@@ -224,7 +224,7 @@ protected:
   void                    _decreaseTranslateSpeed ( double amount );
 
   /// Update notify.
-  void                    _updateNotify ();
+  virtual void            _updateNotify ();
 
   /// VRV::Interfaces::IClippingDistanceFloat
   /// Get/set the clipping distances.

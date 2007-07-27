@@ -13,7 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Component.h"
+#include "SceneOperationsComponent.h"
 #include "UserDataTool.h"
 #include "UserDataState.h"
 #include "UserDataSelected.h"
@@ -61,14 +61,13 @@ Usul::Interfaces::IUnknown *Component::queryInterface ( unsigned long iid )
 {
   switch ( iid )
   {
+  case Usul::Interfaces::IUnknown::IID:
   case Interfaces::IMaterialStack::IID:
     return static_cast<Interfaces::IMaterialStack*>(this);
   case Interfaces::ISelection::IID:
     return static_cast<Interfaces::ISelection*>(this);
   case Interfaces::IVisibility::IID:
     return static_cast<Interfaces::IVisibility*>(this);
-  case Usul::Interfaces::IUnknown::IID:
-    return static_cast<Usul::Interfaces::IUnknown*>(static_cast<Interfaces::IMaterialStack*>(this));
   case Usul::Interfaces::IPlugin::IID:
     return static_cast < Usul::Interfaces::IPlugin * > ( this );    
   default:

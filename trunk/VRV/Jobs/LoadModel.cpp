@@ -140,6 +140,9 @@ void LoadModel::_loadModel( const std::string& filename )
   // Add the document.
   Usul::Documents::Manager::instance().add ( document );
 
+  // Make the document active.
+  Usul::Documents::Manager::instance().active ( document );
+
   // See if the caller is an update subject.
   Usul::Interfaces::IUpdateSubject::QueryPtr subject ( _caller );
   if ( subject.valid () )

@@ -12,7 +12,8 @@
 #define __USUL_INTERFACES_ICOMMAND_LIST_H__
 
 #include "Usul/Interfaces/IUnknown.h"
-#include "Usul/Interfaces/ICommand.h"
+
+#include "Usul/Commands/Command.h"
 
 #include <vector>
 
@@ -22,8 +23,8 @@ namespace Interfaces {
 struct ICommandList : public Usul::Interfaces::IUnknown
 {
   /// Typedefs
-  typedef Usul::Interfaces::ICommand       ICommand;
-  typedef std::vector < ICommand::RefPtr > CommandList;
+  typedef Usul::Commands::Command          Command;
+  typedef std::vector < Command::RefPtr >  CommandList;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( ICommandList );

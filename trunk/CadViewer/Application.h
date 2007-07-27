@@ -42,6 +42,7 @@
 #include <list>
 #include <fstream>
 
+namespace Usul { namespace Commands { class Command; } }
 
 namespace CV {
 
@@ -154,6 +155,7 @@ protected:
   void                          _initOptionsMenu  ( MenuKit::Menu* menu );
 
   // Create a button.
+  MenuKit::Button*              _createButton    ( Usul::Commands::Command* command );
   MenuKit::Button*              _createButton    ( const std::string& name, MenuKit::Callback* );
   MenuKit::Button*              _createRadio     ( const std::string& name, MenuKit::Callback* );
   MenuKit::Button*              _createToggle    ( const std::string& name, MenuKit::Callback* );

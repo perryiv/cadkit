@@ -42,6 +42,9 @@ _transferFunction ( 0x0, 0 )
 	blendFunc->setFunction( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 	ss->setAttributeAndModes( blendFunc.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
 
+  // Turn off back face culling
+  ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
+
   // Add the planes.
   this->addDrawable ( _geometry.get() );
 }

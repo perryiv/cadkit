@@ -18,6 +18,8 @@
 
 #include "Usul/Functions/Color.h"
 
+#include "osg/Notify"
+
 using namespace OsgTools::Volume;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -26,14 +28,20 @@ using namespace OsgTools::Volume;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PlanarProxyGeometry::PlanarProxyGeometry() : BaseClass(),
+PlanarProxyGeometry::PlanarProxyGeometry() : 
+  BaseClass(),
   _numPlanes ( 8 ),
   _bbox      ( osg::Vec3 ( -1, -1, -1 ), osg::Vec3 ( 1, 1, 1 ) ),
   _corners   ( 8 ),
-  _edges     ( 12 )
+  _edges     ( 12 ),
+  _vertices  (),
+  _indices   ( 6 )
 {
   this->_initCornersAndEdges();
   this->setUseDisplayList( false );
+
+  for ( unsigned int i = 0; i < 6; ++i )
+    _indices[ i ] = i;
 }
 
 
@@ -48,7 +56,9 @@ PlanarProxyGeometry::PlanarProxyGeometry ( const PlanarProxyGeometry &d, const o
   _numPlanes ( d._numPlanes ),
   _bbox      ( d._bbox      ),
   _corners   ( d._corners   ),
-  _edges     ( d._edges     )
+  _edges     ( d._edges     ),
+  _vertices  ( d._vertices  ),
+  _indices   ( d._indices   )
 {
 }
 
@@ -65,6 +75,8 @@ PlanarProxyGeometry &PlanarProxyGeometry::operator = ( const PlanarProxyGeometry
   _bbox      = d._bbox;
   _corners   = d._corners;
   _edges     = d._edges;
+  _vertices  = d._vertices;
+  _indices   = d._indices;
   return *this;
 }
 
@@ -208,9 +220,11 @@ namespace Detail
     _state ( state )
     {
       _state.pushStateSet ( ss );
+      ::glEnableClientState ( GL_VERTEX_ARRAY );
     }
     ~PushPopStateSet ()
     {
+      ::glDisableClientState ( GL_VERTEX_ARRAY );
       _state.popStateSet();
     }
 
@@ -293,11 +307,13 @@ void PlanarProxyGeometry::_drawImplementation( osg::State& state ) const
 	}
 
   float lmb [ 12 ];
-  osg::Vec3f intersection [ 6 ];
+  
 
   // Create the slices.
 	for( int n = _numPlanes - 1; n >= 0; --n ) 
 	{
+    Vertices& intersection ( const_cast < Vertices& > ( _vertices.at ( n ) ) );
+
 		for( int e = 0; e < 12; e++ ) 
     {
 			lmb[ e ] = lambda[ e ] + n * lambdaInc[ e ];
@@ -331,6 +347,7 @@ void PlanarProxyGeometry::_drawImplementation( osg::State& state ) const
 		else if ( ( lmb[ 9 ] >= 0.0 ) && ( lmb[ 9 ] < 1.0 ) ) intersection[ 5 ] = vecStart[ 9 ] + vecDir[ 9 ]  * lmb[ 9 ];
 		else intersection[ 5 ] = vecStart[ 11 ]+ vecDir[ 11 ] * lmb[ 11 ];
 
+# if 0
     ::glBegin ( GL_TRIANGLE_FAN );
    
     for( unsigned int k = 0; k < 6; ++k )
@@ -346,6 +363,11 @@ void PlanarProxyGeometry::_drawImplementation( osg::State& state ) const
     }
 
     ::glEnd();
+#endif
+    
+    ::glVertexPointer ( 3, GL_FLOAT, 0, &intersection.front() );
+    ::glDrawElements ( GL_TRIANGLE_FAN, 6, GL_UNSIGNED_SHORT, &_indices.front() );
+    
   }
 }
 
@@ -384,4 +406,19 @@ void PlanarProxyGeometry::boundingBox ( const osg::BoundingBox& bb )
 const osg::BoundingBox& PlanarProxyGeometry::boundingBox () const
 {
   return _bbox;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of planes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PlanarProxyGeometry::numPlanes ( unsigned int num )
+{
+  _numPlanes = num;
+  _vertices.resize ( num );
+  for ( std::vector < Vertices >::iterator iter = _vertices.begin(); iter != _vertices.end(); ++iter )
+    iter->resize ( 6 );
 }

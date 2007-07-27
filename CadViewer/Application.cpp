@@ -800,11 +800,34 @@ void Application::_initViewMenu     ( MenuKit::Menu* menu )
 
 void Application::_initNavigateMenu ( MenuKit::Menu* menu )
 {
-  /*CV_REGISTER ( _hvTransWandXZ,    "hv_trans_wand_xz" );
-  CV_REGISTER ( _hvTransGlobalXZ,  "hv_trans_global_xz" );
-  CV_REGISTER ( _poleNav,          "hy_rotate_vy_trans_global" );
+  // Favorites menu
+  {
+    MenuKit::Menu::Ptr favorites ( new MenuKit::Menu );
+    favorites->layout ( MenuKit::Menu::VERTICAL );
+    favorites->text ( "Favorites" );
+    menu->append ( favorites.get() );
 
+    favorites->append ( this->_createButton ( "Fly", MenuKit::memFunCB2 ( this, &Application::_hvTransWandXZ ) ) );
+    favorites->append ( this->_createButton ( "Walk", MenuKit::memFunCB2 ( this, &Application::_hvTransGlobalXZ ) ) );
+    favorites->append ( this->_createButton ( "Pole", MenuKit::memFunCB2 ( this, &Application::_poleNav ) ) );
+  }
 
+  // Horizontal joystick menu
+  {
+    MenuKit::Menu::Ptr horizontal ( new MenuKit::Menu );
+    horizontal->layout ( MenuKit::Menu::VERTICAL );
+    horizontal->text ( "Horizontal Joystick" );
+    menu->append ( horizontal.get() );
+  }
+
+  // Vertical joystick menu
+  {
+    MenuKit::Menu::Ptr vertical ( new MenuKit::Menu );
+    vertical->layout ( MenuKit::Menu::VERTICAL );
+    vertical->text ( "Vertical Joystick" );
+    menu->append ( vertical.get() );
+  }
+/*
   CV_REGISTER ( _hTransWandPosX,   "horizontal_translate_wand_positive_x" );
   CV_REGISTER ( _hTransWandNegX,   "horizontal_translate_wand_negative_x" );
   CV_REGISTER ( _vTransWandPosY,   "vertical_translate_wand_positive_y" );
@@ -819,11 +842,13 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
   CV_REGISTER ( _hRotGlobalPosY,   "horizontal_rotate_global_clockwise_y" );
   CV_REGISTER ( _vRotWandPosX,     "vertical_rotate_wand_clockwise_x" );
   CV_REGISTER ( _vRotGlobalPosX,   "vertical_rotate_global_clockwise_x" );
+*/
 
-  CV_REGISTER ( _increaseSpeed,    "increase_speed" );
-  CV_REGISTER ( _decreaseSpeed,    "decrease_speed" );
-  CV_REGISTER ( _increaseSpeedTen,    "increase_speed_ten" );
-  CV_REGISTER ( _decreaseSpeedTen,    "decrease_speed_ten" );*/
+  menu->append ( this->_createSeperator () );
+  menu->append ( this->_createButton ( "Translate Speed x 10", MenuKit::memFunCB2 ( this, &Application::_increaseSpeedTen ) ) );
+  menu->append ( this->_createButton ( "Translate Speed x 2", MenuKit::memFunCB2 ( this, &Application::_increaseSpeed ) ) );
+  menu->append ( this->_createButton ( "Translate Speed / 2", MenuKit::memFunCB2 ( this, &Application::_decreaseSpeed ) ) );
+  menu->append ( this->_createButton ( "Translate Speed / 10", MenuKit::memFunCB2 ( this, &Application::_decreaseSpeedTen ) ) );
 }
 
 

@@ -647,7 +647,7 @@ void Application::_initMenu()
     MenuKit::Menu::Ptr view ( new MenuKit::Menu );
     view->layout ( MenuKit::Menu::VERTICAL );
     view->text ( "View" );
-    this->_initEditMenu ( view.get() );
+    this->_initViewMenu ( view.get() );
     menu->append ( view.get() );
   }
 
@@ -741,7 +741,7 @@ void Application::_initEditMenu     ( MenuKit::Menu* menu )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_initViewMenu     ( MenuKit::Menu* menu )
+void Application::_initViewMenu ( MenuKit::Menu* menu )
 {
   menu->append ( this->_createButton ( "Reset Clipping", MenuKit::memFunCB2 ( this, &Application::_resetClipping ) ) );
   menu->append ( this->_createSeperator () );
@@ -807,9 +807,9 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
     favorites->text ( "Favorites" );
     menu->append ( favorites.get() );
 
-    favorites->append ( this->_createButton ( "Fly", MenuKit::memFunCB2 ( this, &Application::_hvTransWandXZ ) ) );
-    favorites->append ( this->_createButton ( "Walk", MenuKit::memFunCB2 ( this, &Application::_hvTransGlobalXZ ) ) );
-    favorites->append ( this->_createButton ( "Pole", MenuKit::memFunCB2 ( this, &Application::_poleNav ) ) );
+    favorites->append ( this->_createRadio ( "Fly", MenuKit::memFunCB2 ( this, &Application::_hvTransWandXZ ) ) );
+    favorites->append ( this->_createRadio ( "Walk", MenuKit::memFunCB2 ( this, &Application::_hvTransGlobalXZ ) ) );
+    favorites->append ( this->_createRadio ( "Pole", MenuKit::memFunCB2 ( this, &Application::_poleNav ) ) );
   }
 
   // Horizontal joystick menu
@@ -818,6 +818,19 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
     horizontal->layout ( MenuKit::Menu::VERTICAL );
     horizontal->text ( "Horizontal Joystick" );
     menu->append ( horizontal.get() );
+
+    horizontal->append ( this->_createRadio ( "Translate Wand +X", MenuKit::memFunCB2 ( this, &Application::_hTransWandPosX ) ) );
+    horizontal->append ( this->_createRadio ( "Translate Wand -X", MenuKit::memFunCB2 ( this, &Application::_hTransWandNegX ) ) );
+
+    horizontal->append ( this->_createSeperator () );
+
+    horizontal->append ( this->_createRadio ( "Translate Global +X", MenuKit::memFunCB2 ( this, &Application::_hTransGlobalPosX ) ) );
+    horizontal->append ( this->_createRadio ( "Translate Global -X", MenuKit::memFunCB2 ( this, &Application::_hTransGlobalNegX ) ) );
+
+    horizontal->append ( this->_createSeperator () );
+
+    horizontal->append ( this->_createRadio ( "Rotate Wand Y", MenuKit::memFunCB2 ( this, &Application::_hRotWandPosY ) ) );
+    horizontal->append ( this->_createRadio ( "Rotate Global Y", MenuKit::memFunCB2 ( this, &Application::_hRotGlobalPosY ) ) );
   }
 
   // Vertical joystick menu
@@ -826,23 +839,25 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
     vertical->layout ( MenuKit::Menu::VERTICAL );
     vertical->text ( "Vertical Joystick" );
     menu->append ( vertical.get() );
+
+    vertical->append ( this->_createRadio ( "Translate Wand +Z", MenuKit::memFunCB2 ( this, &Application::_vTransWandPosZ ) ) );
+    vertical->append ( this->_createRadio ( "Translate Wand -Z", MenuKit::memFunCB2 ( this, &Application::_vTransWandNegZ ) ) );
+
+    vertical->append ( this->_createSeperator () );
+
+    vertical->append ( this->_createRadio ( "Translate Global +Z", MenuKit::memFunCB2 ( this, &Application::_vTransGlobalPosZ ) ) );
+    vertical->append ( this->_createRadio ( "Translate Global -Z", MenuKit::memFunCB2 ( this, &Application::_vTransGlobalNegZ ) ) );
+
+    vertical->append ( this->_createSeperator () );
+
+    vertical->append ( this->_createRadio ( "Translate Wand Y", MenuKit::memFunCB2 ( this, &Application::_vTransWandPosY ) ) );
+    vertical->append ( this->_createRadio ( "Translate Global Y", MenuKit::memFunCB2 ( this, &Application::_vTransGlobalPosY ) ) );
+
+    vertical->append ( this->_createSeperator () );
+
+    vertical->append ( this->_createRadio ( "Rotate Wand X", MenuKit::memFunCB2 ( this, &Application::_vRotWandPosX ) ) );
+    vertical->append ( this->_createRadio ( "Rotate Global X", MenuKit::memFunCB2 ( this, &Application::_vRotGlobalPosX ) ) );
   }
-/*
-  CV_REGISTER ( _hTransWandPosX,   "horizontal_translate_wand_positive_x" );
-  CV_REGISTER ( _hTransWandNegX,   "horizontal_translate_wand_negative_x" );
-  CV_REGISTER ( _vTransWandPosY,   "vertical_translate_wand_positive_y" );
-  CV_REGISTER ( _vTransWandPosZ,   "vertical_translate_wand_positive_z" );
-  CV_REGISTER ( _vTransWandNegZ,   "vertical_translate_wand_negative_z" );
-  CV_REGISTER ( _hTransGlobalPosX, "horizontal_translate_global_positive_x" );
-  CV_REGISTER ( _hTransGlobalNegX, "horizontal_translate_global_negative_x" );
-  CV_REGISTER ( _vTransGlobalPosY, "vertical_translate_global_positive_y" );
-  CV_REGISTER ( _vTransGlobalPosZ, "vertical_translate_global_positive_z" );
-  CV_REGISTER ( _vTransGlobalNegZ, "vertical_translate_global_negative_z" );
-  CV_REGISTER ( _hRotWandPosY,     "horizontal_rotate_wand_clockwise_y" );
-  CV_REGISTER ( _hRotGlobalPosY,   "horizontal_rotate_global_clockwise_y" );
-  CV_REGISTER ( _vRotWandPosX,     "vertical_rotate_wand_clockwise_x" );
-  CV_REGISTER ( _vRotGlobalPosX,   "vertical_rotate_global_clockwise_x" );
-*/
 
   menu->append ( this->_createSeperator () );
   menu->append ( this->_createButton ( "Translate Speed x 10", MenuKit::memFunCB2 ( this, &Application::_increaseSpeedTen ) ) );
@@ -858,7 +873,7 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_initToolsMenu    ( MenuKit::Menu* menu )
+void Application::_initToolsMenu ( MenuKit::Menu* menu )
 {
 }
 

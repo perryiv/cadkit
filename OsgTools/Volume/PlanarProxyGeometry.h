@@ -54,7 +54,7 @@ public:
 
   // Set/get the number of planes used.
   unsigned int                numPlanes() const { return _numPlanes; }
-  void                        numPlanes ( unsigned int num ) { _numPlanes = num; }
+  void                        numPlanes ( unsigned int num );
 
 protected:
 
@@ -67,11 +67,15 @@ protected:
   void                        _initCornersAndEdges();
 
 private:
+  typedef std::vector < osg::Vec3 > Vertices;
+  typedef std::vector < unsigned short > Indices;
 
   unsigned int      _numPlanes;
   osg::BoundingBox  _bbox;
   Corners           _corners;
   Edges             _edges;
+  std::vector < Vertices > _vertices;
+  Indices           _indices;
 };
 
 }

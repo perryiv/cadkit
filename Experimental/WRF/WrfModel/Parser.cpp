@@ -143,7 +143,7 @@ unsigned int Parser::channels () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Parser::data ( Data& data, unsigned int channel, unsigned int timestep )
+void Parser::data ( Data& data, unsigned int timestep, unsigned int channel )
 {
   // Open a file.
   if ( 0x0 == _fp )

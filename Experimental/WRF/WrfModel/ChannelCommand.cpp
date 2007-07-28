@@ -25,6 +25,7 @@ ChannelCommand::ChannelCommand ( const std::string& name, unsigned int index, WR
   _index ( index ),
   _document ( doc )
 {
+  USUL_TRACE_SCOPE;
   this->text ( "Switch to " + name );
 }
 
@@ -37,6 +38,7 @@ ChannelCommand::ChannelCommand ( const std::string& name, unsigned int index, WR
 
 ChannelCommand::~ChannelCommand ()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -48,6 +50,7 @@ ChannelCommand::~ChannelCommand ()
 
 void ChannelCommand::_execute ()
 {
+  USUL_TRACE_SCOPE;
   if ( _document.valid () )
     _document->currentChannel ( _index );
 }

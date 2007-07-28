@@ -23,6 +23,7 @@ PreviousTimestep::PreviousTimestep ( WRFDocument* doc ) :
   BaseClass ( 0x0 ),
   _document ( doc )
 {
+  USUL_TRACE_SCOPE;
   this->text ( "Previous Timestep" );
 }
 
@@ -35,6 +36,7 @@ PreviousTimestep::PreviousTimestep ( WRFDocument* doc ) :
 
 PreviousTimestep::~PreviousTimestep()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -46,6 +48,7 @@ PreviousTimestep::~PreviousTimestep()
 
 void PreviousTimestep::_execute ()
 {
+  USUL_TRACE_SCOPE;
   if ( _document.valid () )
   {
     unsigned int current ( _document->getCurrentTimeStep () );

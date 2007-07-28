@@ -41,7 +41,7 @@ public:
   unsigned int                   channels () const;
 
   /// Get the data for the given channel and timestep
-  void                           data ( Data& data, unsigned int channel, unsigned int timestep );
+  void                           data ( Data& data, unsigned int timestep, unsigned int channel );
 
 private:
   std::string   _filename;

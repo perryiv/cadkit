@@ -29,6 +29,7 @@
 
 #include "osg/BoundingBox"
 #include "osg/MatrixTransform"
+#include "osg/Image"
 
 #include <string>
 #include <vector>
@@ -103,7 +104,9 @@ protected:
   void                        _read ( XmlTree::Node &node );
   void                        _parseChannel ( XmlTree::Node &node );
 
-  osg::Node*                  _buildVolume( const osg::BoundingBox& bb, const std::vector < unsigned char >& data );
+  osg::Image *                _volume ( unsigned int timestep, unsigned int channel );
+  osg::Node*                  _buildVolume( osg::Image* image );
+  void                        _initBoundingBox ();
 
   void                        _buildScene ();
 
@@ -136,7 +139,10 @@ private:
     double min, max;
   };
 
-  typedef std::vector < ChannelInfo > ChannelInfos;
+  typedef std::vector < ChannelInfo >    ChannelInfos;
+  typedef osg::ref_ptr < osg::Image >    ImagePtr;
+  typedef std::vector < ImagePtr >       ChannelVolumes;
+  typedef std::vector < ChannelVolumes > TimestepsData;
 
   Parser _parser;
   std::string _filename;
@@ -147,10 +153,12 @@ private:
   unsigned int _x;
   unsigned int _y;
   unsigned int _z;
+  unsigned int _numPlanes;
   ChannelInfos _channelInfo;
   osg::ref_ptr < osg::MatrixTransform > _root;
+  osg::BoundingBox _bb;
   bool _dirty;
-  unsigned int _numPlanes;
+  TimestepsData _data;
 };
 
 

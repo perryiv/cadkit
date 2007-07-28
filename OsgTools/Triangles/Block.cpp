@@ -17,6 +17,8 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Shared/Preferences.h"
 
+#include "osg/Texture2D"
+
 #include <iostream>
 
 using namespace std;
@@ -311,14 +313,35 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
     _geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
   }
 
-#if 0
+  // Set texture coordinates
+  //osg::ref_ptr< osg::Vec2Array > texcoords ( ts->texCoordsV( false ) );
+  //int vsize = vertices->size();
+  //int tsize = texcoords->size();
+  //if( vertices->size() == texcoords->size() )
+  //{
+  //  osg::ref_ptr< osg::StateSet > stateset ( _geometry->getOrCreateStateSet() );
+  //  osg::ref_ptr< osg::Texture2D > texture ( new osg::Texture2D() ); 
+	 // texture->setImage ( ts->getTexImage() );
+  //  //texture->setWrap( osg::Texture2D::WRAP_S, osg::Texture2D::CLAMP_TO_EDGE );
+  //  //texture->setWrap( osg::Texture2D::WRAP_T, osg::Texture2D::CLAMP_TO_EDGE );
+  //  texture->setFilter( osg::Texture2D::MIN_FILTER, osg::Texture2D::NEAREST );
+  //  texture->setFilter( osg::Texture2D::MAG_FILTER, osg::Texture2D::NEAREST );
+	 // stateset->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+  //
+  //  _geometry->setStateSet( stateset.get() );
+  //  _geometry->setTexCoordArray( 0, texcoords.get() );
+  //}
+#if 1
   // Set the correct colors.
   if ( OsgTools::Options::has ( options, "colors", "per-vertex" ) )
   {
     osg::ref_ptr<osg::Vec4Array> colors ( ts->colorsV() );
-    USUL_ASSERT ( vertices->size() == colors->size() );
-    _geometry->setColorArray ( colors.get() );
-    _geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+    if( true == colors.valid() && vertices->size() == colors->size())
+    {
+      unsigned int csize = colors->size();
+      _geometry->setColorArray ( colors.get() );
+      _geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+    }
   }
   else
   {

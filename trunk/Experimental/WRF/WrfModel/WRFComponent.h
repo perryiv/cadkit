@@ -48,7 +48,7 @@ public:
   WRFComponent();
 
   /// Usul::Interfaces::IPlugin
-  virtual std::string         getPluginName() const { return "Scene Model"; }
+  virtual std::string         getPluginName() const { return "WRF Model"; }
 
   /// Usul::Interfaces::IDocumentCreate
   virtual Document *           createDocument ( Unknown *caller = 0x0 );

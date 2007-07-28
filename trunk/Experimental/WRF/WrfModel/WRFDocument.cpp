@@ -10,6 +10,9 @@
 
 #include "WRFDocument.h"
 #include "ChannelCommand.h"
+#include "NextTimestep.h"
+#include "PreviousTimestep.h"
+#include "ChangeNumPlanes.h"
 
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
@@ -21,7 +24,8 @@
 
 #include "OsgTools/Box.h"
 #include "OsgTools/State/StateSet.h"
-
+#include "OsgTools/ShapeFactory.h"
+#include "OsgTools/GlassBoundingBox.h"
 #include "OsgTools/Volume/Texture3DVolume.h"
 
 #include "osg/MatrixTransform"
@@ -35,7 +39,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WRFDocument, WRFDocument::BaseClass );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-WRFDocument::WRFDocument() : BaseClass ( "WRF Document" ),
+WRFDocument::WRFDocument() : 
+  BaseClass ( "WRF Document" ),
   _parser (),
   _filename ( "" ),
   _currentTimestep ( 0 ),
@@ -46,7 +51,9 @@ WRFDocument::WRFDocument() : BaseClass ( "WRF Document" ),
   _y ( 0 ),
   _z ( 0 ),
   _channelInfo (),
-  _root ( new osg::MatrixTransform )
+  _root ( new osg::MatrixTransform ),
+  _dirty ( true ),
+  _numPlanes ( 256 )
 {
 }
 
@@ -430,6 +437,7 @@ osg::Node *WRFDocument::buildScene ( const BaseClass::Options &options, Unknown 
 
 void WRFDocument::_buildScene ( )
 {
+#if 1
   Parser::Data data;
 
   _parser.data ( data, _currentChannel, _currentTimestep );
@@ -457,17 +465,33 @@ void WRFDocument::_buildScene ( )
 
   osg::BoundingBox bb ( -xHalf, -yHalf, -zHalf, xHalf, yHalf, zHalf );
 
-  OsgTools::ColorBox box ( bb );
-  box.color_policy().color ( osg::Vec4 ( 0, 0, 1, 1 ) );
+  //OsgTools::ColorBox box ( bb );
+  //box.color_policy().color ( osg::Vec4 ( 0, 0, 1, 1 ) );
 
   _root->removeChild ( 0, _root->getNumChildren() );
   _root->addChild ( this->_buildVolume ( bb, chars ) );
-  _root->setMatrix ( osg::Matrix::translate ( bb.center() ) );
-  _root->addChild ( box() );
+
+  //osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+  //mt->setMatrix ( osg::Matrix::translate ( bb.center() ) );
+  //mt->addChild ( box() );
+  //_root->addChild ( mt.get() );
 
   // Wire-frame.
-  OsgTools::State::StateSet::setPolygonsLines ( _root.get(), true );
-  OsgTools::State::StateSet::setLighting ( _root.get(), false );
+  //OsgTools::State::StateSet::setPolygonsLines ( mt.get(), true );
+  //OsgTools::State::StateSet::setLighting ( mt.get(), false );
+
+  //OsgTools::GlassBoundingBox gbb ( bb );
+  //gbb ( _root.get(), true, false, false );
+#else
+  _root->removeChild ( 0, _root->getNumChildren() );
+  osg::ref_ptr < osg::Geode> geode ( new osg::Geode );
+  //OsgTools::ShapeFactory::Mesh mesh ( 20, 20 );
+  geode->addDrawable ( OsgTools::ShapeFactorySingleton::instance().sphere ( 10000000.0 ) );
+  _root->addChild ( geode.get() );
+#endif
+
+  // No longer dirty
+  this->dirty ( false );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -502,7 +526,7 @@ osg::Node* WRFDocument::_buildVolume( const osg::BoundingBox& bb, const std::vec
   }
 
   osg::ref_ptr < OsgTools::Volume::Texture3DVolume > volume ( new OsgTools::Volume::Texture3DVolume );
-  volume->numPlanes ( 256 );
+  volume->numPlanes ( _numPlanes );
   volume->image ( scaled.get() );
   volume->boundingBox ( bb );
   volume->transferFunction ( Detail::buildTransferFunction() );
@@ -530,7 +554,9 @@ void WRFDocument::stopTimestepAnimation ()
 void WRFDocument::setCurrentTimeStep ( unsigned int current )
 {
   _currentTimestep = current;
-  this->modified ( true );
+  if ( _currentTimestep >= _timesteps )
+      _currentTimestep = 0;
+  this->dirty ( true );
 }
 
 
@@ -566,9 +592,13 @@ unsigned int WRFDocument::getNumberOfTimeSteps () const
 
 void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
+  if ( this->dirty () )
+    this->_buildScene();
+
+#if 0
   static unsigned int num ( 0 );
   ++num;
-  if ( num % 120 )
+  if ( num % 60 == 0 )
   {
     ++_currentTimestep;
     if ( _currentTimestep >= _timesteps )
@@ -576,6 +606,7 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
     this->_buildScene();
   }
+#endif
 }
 
 
@@ -589,10 +620,92 @@ WRFDocument::CommandList WRFDocument::getCommandList ()
 {
   CommandList commands;
 
+  commands.push_back ( new NextTimestep ( this ) );
+  commands.push_back ( new PreviousTimestep ( this ) );
+
   for ( ChannelInfos::iterator iter = _channelInfo.begin(); iter != _channelInfo.end(); ++ iter )
   {
     commands.push_back ( new ChannelCommand ( iter->name, iter->index, this ) );
   }
 
+  commands.push_back ( new ChangeNumPlanes ( 4.0, this ) );
+  commands.push_back ( new ChangeNumPlanes ( 2.0, this ) );
+  commands.push_back ( new ChangeNumPlanes ( 0.5, this ) );
+  commands.push_back ( new ChangeNumPlanes ( 0.25, this ) );
+
   return commands;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the current channel.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::currentChannel ( unsigned int value )
+{
+  _currentChannel = value;
+  this->dirty ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the current channel.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int WRFDocument::currentChannel () const
+{
+  return _currentChannel;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::dirty ( bool b )
+{
+  _dirty = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool WRFDocument::dirty () const
+{
+  return _dirty;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of planes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::numPlanes ( unsigned int numPlanes )
+{
+  _numPlanes = numPlanes;
+  this->dirty ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of planes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int WRFDocument::numPlanes () const
+{
+  return _numPlanes;
 }

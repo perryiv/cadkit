@@ -80,6 +80,24 @@ public:
   /// Write the document to given file name.
   virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const;
 
+  /// Get/Set the current channel.
+  void                        currentChannel ( unsigned int value );
+  unsigned int                currentChannel () const;
+
+  /// Get/Set the dirty flag.
+  void                        dirty ( bool b );
+  bool                        dirty () const;
+
+  /// Usul::Interfaces::ITimeVaryingData
+  virtual void                setCurrentTimeStep ( unsigned int current );
+  virtual unsigned int        getCurrentTimeStep () const;
+
+  virtual unsigned int        getNumberOfTimeSteps () const;
+
+  /// Get/Set the number of planes.
+  void                        numPlanes ( unsigned int numPlanes );
+  unsigned int                numPlanes () const;
+
 protected:
 
   void                        _read ( XmlTree::Node &node );
@@ -93,14 +111,8 @@ protected:
   virtual void                startTimestepAnimation ();
   virtual void                stopTimestepAnimation ();
 
-  /// Usul::Interfaces::ITimeVaryingData
-  virtual void             setCurrentTimeStep ( unsigned int current );
-  virtual unsigned int     getCurrentTimeStep () const;
-
-  virtual unsigned int     getNumberOfTimeSteps () const;
-
   /// Usul::Interfaces::IUpdateListener
-  virtual void             updateNotify ( Usul::Interfaces::IUnknown *caller );
+  virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 
   /// Usul::Interfaces::ICommandList
   virtual CommandList      getCommandList ();
@@ -137,6 +149,8 @@ private:
   unsigned int _z;
   ChannelInfos _channelInfo;
   osg::ref_ptr < osg::MatrixTransform > _root;
+  bool _dirty;
+  unsigned int _numPlanes;
 };
 
 

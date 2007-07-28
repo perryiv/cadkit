@@ -714,8 +714,10 @@ void Application::_initFileMenu     ( MenuKit::Menu* menu )
     menu->append ( exportMenu.get() );
 
     exportMenu->append ( this->_createButton ( "Image", MenuKit::memFunCB2 ( this, &Application::_exportImage ) ) );
-    exportMenu->append ( this->_createButton ( "Models", MenuKit::memFunCB2 ( this, &Application::_exportWorld ) ) );
-    exportMenu->append ( this->_createButton ( "Scene", MenuKit::memFunCB2 ( this, &Application::_exportScene ) ) );
+    exportMenu->append ( this->_createButton ( "Models ASCII", MenuKit::memFunCB2 ( this, &Application::_exportWorld ) ) );
+    exportMenu->append ( this->_createButton ( "Models Binary", MenuKit::memFunCB2 ( this, &Application::_exportWorldBinary ) ) );
+    exportMenu->append ( this->_createButton ( "Scene ASCII", MenuKit::memFunCB2 ( this, &Application::_exportScene ) ) );
+    exportMenu->append ( this->_createButton ( "Scene Binary", MenuKit::memFunCB2 ( this, &Application::_exportSceneBinary ) ) );
   }
 
   menu->append ( this->_createSeperator () );
@@ -908,9 +910,19 @@ void Application::_initToolsMenu ( MenuKit::Menu* menu )
 
 void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
 {
-  /*CV_REGISTER ( _backgroundColor,  "background_color" );
-  CV_REGISTER ( _selectionColor,   "selection_color" );
-  CV_REGISTER ( _setAnalogTrim,    "calibrate_joystick" );*/
+  // Create a sub-menu for background color
+  MenuKit::Menu::Ptr background ( new MenuKit::Menu );
+  background->layout ( MenuKit::Menu::VERTICAL );
+  background->text ( "Background Color" );
+  menu->append ( background.get() );
+
+  // Add a button for each of our colors.
+  for ( ColorMap::const_iterator iter = _colorMap.begin(); iter != _colorMap.end(); ++iter )
+    background->append ( this->_createButton ( iter->first, MenuKit::memFunCB2 ( this, &Application::_backgroundColor ) ) );
+
+  /*CV_REGISTER ( _selectionColor,   "selection_color" );;*/
+
+  menu->append ( this->_createButton ( "Calibrate Joystick", MenuKit::memFunCB2 ( this, &Application::_setAnalogTrim ) ) );
 }
 
 
@@ -958,7 +970,7 @@ MenuKit::Button* Application::_createButton ( Usul::Commands::Command* command )
   button->text ( command->text() );
 
   // Set the callback.
-  button->callback ( MenuKit::MESSAGE_UPDATE, new Detail::CommandCallback ( command ) );
+  button->callback ( MenuKit::MESSAGE_SELECTED, new Detail::CommandCallback ( command ) );
 
   return button;
 }

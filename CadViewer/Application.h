@@ -251,7 +251,9 @@ protected:
   void                          _unselectVisible  ( MenuKit::Message m, MenuKit::Item *item );
   void                          _exportSelected   ( MenuKit::Message m, MenuKit::Item *item );
   void                          _exportWorld      ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _exportScene      ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _exportWorldBinary ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _exportScene       ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _exportSceneBinary ( MenuKit::Message m, MenuKit::Item *item );
   void                          _quitCallback     ( MenuKit::Message m, MenuKit::Item *item );
   void                          _statusBarVis     ( MenuKit::Message m, MenuKit::Item *item );
   void                          _gridVisibility   ( MenuKit::Message m, MenuKit::Item *item );

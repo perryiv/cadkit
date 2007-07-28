@@ -26,6 +26,7 @@ ChangeNumPlanes::ChangeNumPlanes ( double multiplier, WRFDocument* doc ) :
   _multiplier ( multiplier ),
   _document ( doc )
 {
+  USUL_TRACE_SCOPE;
   this->text ( "Multiply planes x " + Usul::Strings::toString ( multiplier ) );
 }
 
@@ -38,6 +39,7 @@ ChangeNumPlanes::ChangeNumPlanes ( double multiplier, WRFDocument* doc ) :
 
 ChangeNumPlanes::~ChangeNumPlanes ()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -49,6 +51,7 @@ ChangeNumPlanes::~ChangeNumPlanes ()
 
 void ChangeNumPlanes::_execute ()
 {
+  USUL_TRACE_SCOPE;
   if ( _document.valid () )
   {
     unsigned int numPlanes ( _document->numPlanes () );

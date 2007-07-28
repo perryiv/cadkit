@@ -50,10 +50,12 @@ WRFDocument::WRFDocument() :
   _x ( 0 ),
   _y ( 0 ),
   _z ( 0 ),
+  _numPlanes ( 256 ),
   _channelInfo (),
   _root ( new osg::MatrixTransform ),
+  _bb (),
   _dirty ( true ),
-  _numPlanes ( 256 )
+  _data ()
 {
 }
 
@@ -233,6 +235,15 @@ void WRFDocument::_read ( XmlTree::Node &node )
       this->_parseChannel ( *node );
     }
   }
+
+  // Initialize the bounding box.
+  this->_initBoundingBox ();
+
+  // Make room for the volumes.
+  _data.resize ( _timesteps );
+  //std::for_each ( _data.begin(), _data.end(), std::bind2nd ( std::mem_fun ( &ChannelVolumes::resize ), 4 ) );
+  for ( TimestepsData::iterator iter = _data.begin(); iter != _data.end(); ++iter )
+    iter->resize ( 4 );
 }
 
 
@@ -437,82 +448,58 @@ osg::Node *WRFDocument::buildScene ( const BaseClass::Options &options, Unknown 
 
 void WRFDocument::_buildScene ( )
 {
-#if 1
-  Parser::Data data;
-
-  _parser.data ( data, _currentChannel, _currentTimestep );
-
-  ChannelInfo info ( _channelInfo.at ( _currentChannel ) );
-
-  // Normalize the data to unsigned char.
-  std::vector < unsigned char > chars;
-  Detail::normalize ( chars, data, info.min, info.max );
-
-  // Create the bounding box.
-  double xLength ( _x * 10 );
-  double yLength ( _y * 10 );
-  double zLength ( _z * 3 );
-
-  /*double d ( xLength );
-
-  xLength /= d;
-  yLength /= d;
-  zLength /= d;*/
-
-  float xHalf ( static_cast < float > ( xLength ) / 2.0f );
-  float yHalf ( static_cast < float > ( yLength ) / 2.0f );
-  float zHalf ( static_cast < float > ( zLength ) / 2.0f );
-
-  osg::BoundingBox bb ( -xHalf, -yHalf, -zHalf, xHalf, yHalf, zHalf );
-
-  //OsgTools::ColorBox box ( bb );
-  //box.color_policy().color ( osg::Vec4 ( 0, 0, 1, 1 ) );
+  ImagePtr image ( this->_volume ( _currentTimestep, _currentChannel ) );
 
   _root->removeChild ( 0, _root->getNumChildren() );
-  _root->addChild ( this->_buildVolume ( bb, chars ) );
-
-  //osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-  //mt->setMatrix ( osg::Matrix::translate ( bb.center() ) );
-  //mt->addChild ( box() );
-  //_root->addChild ( mt.get() );
-
-  // Wire-frame.
-  //OsgTools::State::StateSet::setPolygonsLines ( mt.get(), true );
-  //OsgTools::State::StateSet::setLighting ( mt.get(), false );
+  _root->addChild ( this->_buildVolume ( image.get() ) );
 
   //OsgTools::GlassBoundingBox gbb ( bb );
   //gbb ( _root.get(), true, false, false );
-#else
-  _root->removeChild ( 0, _root->getNumChildren() );
-  osg::ref_ptr < osg::Geode> geode ( new osg::Geode );
-  //OsgTools::ShapeFactory::Mesh mesh ( 20, 20 );
-  geode->addDrawable ( OsgTools::ShapeFactorySingleton::instance().sphere ( 10000000.0 ) );
-  _root->addChild ( geode.get() );
-#endif
 
   // No longer dirty
   this->dirty ( false );
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the volume.
+//  Get the volume at the timestep and channel.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* WRFDocument::_buildVolume( const osg::BoundingBox& bb, const std::vector < unsigned char >& data )
+osg::Image * WRFDocument::_volume ( unsigned int timestep, unsigned int channel )
 {
+  osg::ref_ptr < osg::Image > image ( 0x0 );
+
+  {
+    Guard guard ( this->mutex() );
+    image = _data [ timestep ] [ channel ];
+  }
+
+  if ( image.valid() )
+    return image.get();
+
+  Parser::Data data;
+
+  _parser.data ( data, timestep, channel );
+
+  ChannelInfo info ( _channelInfo.at ( channel ) );
+
+  // Normalize the data to unsigned char.
+  std::vector < unsigned char > chars;
+  Detail::normalize ( chars, data, info.min, info.max );
+
   unsigned int width ( _y ), height ( _x ), depth ( _z );
 
-  osg::ref_ptr < osg::Image > image ( new osg::Image );
+  image = new osg::Image;
   image->allocateImage ( width, height, depth, GL_LUMINANCE, GL_UNSIGNED_BYTE );
 
   unsigned char *pixels ( image->data() );
-  std::copy ( data.begin(), data.end(), pixels );
+  std::copy ( chars.begin(), chars.end(), pixels );
 
   osg::ref_ptr < osg::Image > scaled ( new osg::Image );
-  scaled->allocateImage ( 256, 256, 256, GL_LUMINANCE, GL_UNSIGNED_BYTE );
-  ::memset ( scaled->data(), 0, 256 * 256 * 256 );
+  scaled->allocateImage ( 256, 256, 128, GL_LUMINANCE, GL_UNSIGNED_BYTE );
+  ::memset ( scaled->data(), 0, 256 * 256 * 128 );
 
   for ( unsigned int r = 0; r < depth; ++r )
   {
@@ -525,13 +512,52 @@ osg::Node* WRFDocument::_buildVolume( const osg::BoundingBox& bb, const std::vec
     }
   }
 
+  // Cache the results.
+  {
+    Guard guard ( this->mutex() );
+    _data [ timestep ] [ channel ] = scaled;
+  }
+
+  return scaled.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the volume.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* WRFDocument::_buildVolume( osg::Image* image )
+{
   osg::ref_ptr < OsgTools::Volume::Texture3DVolume > volume ( new OsgTools::Volume::Texture3DVolume );
   volume->numPlanes ( _numPlanes );
-  volume->image ( scaled.get() );
-  volume->boundingBox ( bb );
+  volume->image ( image );
+  volume->boundingBox ( _bb );
   volume->transferFunction ( Detail::buildTransferFunction() );
 
   return volume.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the bounding box.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::_initBoundingBox ()
+{
+  // Create the bounding box.
+  double xLength ( _x * 10 );
+  double yLength ( _y * 10 );
+  double zLength ( _z * 3 );
+
+  float xHalf ( static_cast < float > ( xLength ) / 2.0f );
+  float yHalf ( static_cast < float > ( yLength ) / 2.0f );
+  float zHalf ( static_cast < float > ( zLength ) / 2.0f );
+
+  _bb.set ( -xHalf, -yHalf, -zHalf, xHalf, yHalf, zHalf );
 }
 
 

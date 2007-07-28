@@ -15,7 +15,7 @@ template < class T > struct A
 
 template < class T > class B : A < T >
 {
-  B() : A(){}
+  B() : A < T >(){}
 };
 
 
@@ -29,7 +29,7 @@ template < class T > struct C
 
 template < class T > struct D : C < T >
 {
-  D() : C(){}
+  D() : C < T >(){}
   virtual ~D(){}
 };
 

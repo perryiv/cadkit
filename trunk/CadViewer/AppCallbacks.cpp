@@ -264,6 +264,30 @@ void Application::_exportWorld ( MenuKit::Message m, MenuKit::Item *item )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Export the current world's geometry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_exportWorldBinary ( MenuKit::Message m, MenuKit::Item *item )
+{
+  ErrorChecker ( 3764107981u, isAppThread(), CV::NOT_APP_THREAD );
+
+  switch ( m )
+  {
+    case MenuKit::MESSAGE_SELECTED:
+    {
+      static unsigned int count ( 0 );
+      std::string number ( this->_counter ( ++count ) );
+      std::string filename ( "cv_world_" + number + ".ive" );
+      this->_writeScene ( filename, this->models() );
+      break;
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Export the current world's entire scene geometry.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -279,6 +303,27 @@ void Application::_exportScene ( MenuKit::Message m, MenuKit::Item *item )
       static unsigned int count ( 0 );
       std::string number ( this->_counter ( ++count ) );
       std::string filename ( "cv_scene_" + number + ".osg" );
+      this->_writeScene ( filename, this->_sceneRoot() );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export the current world's entire scene geometry as binary osg.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_exportSceneBinary ( MenuKit::Message m, MenuKit::Item *item )
+{
+  switch ( m )
+  {
+    case MenuKit::MESSAGE_SELECTED:
+    {
+      static unsigned int count ( 0 );
+      std::string number ( this->_counter ( ++count ) );
+      std::string filename ( "cv_scene_" + number + ".ive" );
       this->_writeScene ( filename, this->_sceneRoot() );
     }
   }

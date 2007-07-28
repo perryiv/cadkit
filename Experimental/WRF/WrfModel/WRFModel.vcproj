@@ -223,14 +223,6 @@
 				Name="Implementation"
 				>
 				<File
-					RelativePath=".\ChannelCommand.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\ChannelCommand.h"
-					>
-				</File>
-				<File
 					RelativePath=".\CompileGuard.h"
 					>
 				</File>
@@ -266,6 +258,42 @@
 					RelativePath=".\WRFFactory.h"
 					>
 				</File>
+				<Filter
+					Name="Commands"
+					>
+					<File
+						RelativePath=".\ChangeNumPlanes.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\ChangeNumPlanes.h"
+						>
+					</File>
+					<File
+						RelativePath=".\ChannelCommand.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\ChannelCommand.h"
+						>
+					</File>
+					<File
+						RelativePath=".\NextTimestep.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\NextTimestep.h"
+						>
+					</File>
+					<File
+						RelativePath=".\PreviousTimestep.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\PreviousTimestep.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="DLL"

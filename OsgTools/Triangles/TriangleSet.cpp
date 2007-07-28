@@ -96,7 +96,7 @@ TriangleSet::TriangleSet() : BaseClass(),
   _vertices  ( new osg::Vec3Array ),
   _normalsV  ( new osg::Vec3Array ),
   _normalsT  ( new osg::Vec3Array ),
-  _colorsV   ( 0x0 ), // Make colors as needed.  Use materials as the default.
+  _colorsV   ( 0x0 ),
   _flags     ( Dirty::NORMALS_V | Dirty::COLORS_V | Dirty::BLOCKS ),
   _bbox      (),
   _factory   ( new Factory ),
@@ -187,7 +187,7 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
   this->normalsV()->clear();
   this->normalsT()->clear();
 
-  if( _colorsV.valid() )
+  if ( _colorsV.valid() )
     _colorsV->clear();
 
   // Reset the bounding box.
@@ -211,6 +211,7 @@ void TriangleSet::reserve ( unsigned int num )
 
   if ( _colorsV.valid() )
     _colorsV->reserve ( num );
+
   _factory->reserveTriangles ( num );
   _factory->reserveSharedVertices ( num );
 }
@@ -550,7 +551,7 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f &v, bool look )
   // Should always be true.
   USUL_ASSERT ( _shared.size() == _vertices->size() );
   USUL_ASSERT ( _shared.size() == _normalsV->size() );
-  //USUL_ASSERT ( _shared.size() == _colorsV->size() );
+  USUL_ASSERT ( ( _shared.size() == _colorsV->size() ) || ( true == _colorsV->empty() ) );
 
   // Look for an existing shared vertex if we are supposed to.
   if ( look )
@@ -563,7 +564,7 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f &v, bool look )
   // Should always be true.
   USUL_ASSERT ( _shared.size() == _vertices->size() );
   USUL_ASSERT ( _shared.size() == _normalsV->size() );
-  //USUL_ASSERT ( _shared.size() == _colorsV->size() );
+  USUL_ASSERT ( ( _shared.size() == _colorsV->size() ) || ( true == _colorsV->empty() ) );
 
   // If we get to here then make shared vertex with proper index.
   SharedVertex::ValidRefPtr sv ( this->newSharedVertex ( _vertices->size() ) );
@@ -584,7 +585,7 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f &v, bool look )
     _normalsV->push_back ( OsgTools::Triangles::DEFAULT_NORMAL );
 
     // For similar reasons as above, add default color.
-    if( _colorsV.valid() )
+    if ( _colorsV.valid() )
       _colorsV->push_back ( OsgTools::Triangles::DEFAULT_COLOR );
 
     // Set appropriate dirty-flags.
@@ -607,7 +608,7 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f &v, bool look )
 
     // Should be true.
     USUL_ASSERT ( sv->index() < _vertices->size() );
-    //USUL_ASSERT ( sv->index() < _colorsV->size() );
+    USUL_ASSERT ( ( false == _colorsV->empty() ) ? ( sv->index() < _colorsV->size() ) : true );
 
     // Flag it.
     sv->problem ( true );
@@ -616,7 +617,7 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f &v, bool look )
   // Should always be true.
   USUL_ASSERT ( _shared.size() == _vertices->size() );
   USUL_ASSERT ( _shared.size() == _normalsV->size() );
-  //USUL_ASSERT ( _shared.size() == _colorsV->size() );
+  USUL_ASSERT ( ( _shared.size() == _colorsV->size() ) || ( true == _colorsV->empty() ) );
 
   // Return the new shared vertex.
   return sv.get();
@@ -800,8 +801,8 @@ const osg::Vec3f& TriangleSet::getVertex ( unsigned int index ) const
 void TriangleSet::checkStatus() const
 {
   USUL_ERROR_CHECKER ( _shared.size() == _vertices->size() );
-  //USUL_ERROR_CHECKER ( _shared.size() == _colorsV->size() );
   USUL_ERROR_CHECKER ( _shared.size() == _normalsV->size() );
+  USUL_ASSERT ( ( _shared.size() == _colorsV->size() ) || ( true == _colorsV->empty() ) );
 
   // Check every triangle's vertices.
   {
@@ -873,8 +874,8 @@ void TriangleSet::checkStatus() const
 void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnknown *caller )
 {
   USUL_ASSERT ( _shared.size() == _vertices->size() );
-  //USUL_ASSERT ( _shared.size() == _colorsV->size() );
   USUL_ASSERT ( _shared.size() == _normalsV->size() );
+  USUL_ASSERT ( ( _shared.size() == _colorsV->size() ) || ( true == _colorsV->empty() ) );
 
   // Handle trivial case.
   if ( keepers.size() == _triangles.size() )
@@ -973,7 +974,7 @@ void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnk
       // Add normal vector and color using original index.
       normalsV->push_back ( this->normalsV()->at ( sv->index() ) );
 
-      if( _colorsV.valid() )
+      if ( _colorsV.valid() )
         colors->push_back ( _colorsV->at ( sv->index() ) );
 
       // Update the shared-vertex's index.
@@ -989,7 +990,7 @@ void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnk
     _normalsV = normalsV.get(); // Important!
 
     // Only set colors if we had colors before.
-    if( _colorsV.valid() )
+    if ( _colorsV.valid() )
       _colorsV = colors.get();    // Important!
     this->dirtyNormalsV ( false );
     this->dirtyColorsV ( false );
@@ -1412,7 +1413,7 @@ void TriangleSet::_updateColorsV()
   if ( false == this->dirtyColorsV() )
     return;
 
-  if( !_colorsV.valid() )
+  if ( !_colorsV.valid() )
     return;
 
   // User feedback.
@@ -2172,7 +2173,6 @@ void TriangleSet::groupTriangles ( Usul::Interfaces::IUnknown *caller )
   std::cout << "Number of Islands Found: " << islands.size() << std::endl;
   
   status ( "Grouping of Triangles Complete", true);
-
 }
 
 

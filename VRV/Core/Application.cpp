@@ -646,10 +646,10 @@ void Application::preFrame()
   _frameStart = _timer.tick();
 
   // Update the progress bars.
-  //_progressBars->buildScene();
+  _progressBars->buildScene();
 
   // Notify that it's ok to update.
-  //this->_updateNotify();
+  this->_updateNotify();
 
   // Purge.
   Usul::Jobs::Manager::instance().purge();

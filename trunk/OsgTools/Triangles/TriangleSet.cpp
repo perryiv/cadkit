@@ -1421,7 +1421,8 @@ void TriangleSet::_updateColorsV()
 
   // Make room.
   const unsigned int numVertices ( _shared.size() );
-  _colorsV->resize ( numVertices, OsgTools::Triangles::DEFAULT_COLOR );
+  if ( numVertices != _colorsV->size() )
+    _colorsV->resize ( numVertices, OsgTools::Triangles::DEFAULT_COLOR );
 
   // Loop through the shared vertices and update the colors.
   for ( SharedVertices::iterator i = _shared.begin(); i != _shared.end(); ++i )
@@ -2172,5 +2173,26 @@ void TriangleSet::groupTriangles ( Usul::Interfaces::IUnknown *caller )
   
   status ( "Grouping of Triangles Complete", true);
 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create and allocate the set of colors per vertex
+//  added by Jeff Conner (2007)
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec4Array * TriangleSet::getColorsV ( bool reserve )
+{
+  if ( false == _colorsV.valid() )
+  {
+    _colorsV = new osg::Vec4Array();
+    if ( reserve )
+    {
+      _colorsV->reserve( _vertices->size() );
+    }
+  }
+  return _colorsV.get();
 }
 

@@ -183,6 +183,9 @@ public:
   // Get the bounding box.
   osg::BoundingBox        getBoundingBox() const;
 
+  // Get the color values per vertex
+  osg::Vec4Array *        getColorsV ( bool reserve );
+
   // Get the vertex at the index.
   const osg::Vec3f&       getVertex ( unsigned int index ) const;
 
@@ -319,7 +322,7 @@ private:
     {
       NORMALS_V = 0x00000001,
       COLORS_V  = 0x00000002,
-      BLOCKS    = 0x00000004,
+      BLOCKS    = 0x00000004
     };
   };
 

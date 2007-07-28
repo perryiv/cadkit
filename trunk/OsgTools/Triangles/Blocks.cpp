@@ -52,9 +52,12 @@ Blocks::Blocks ( const osg::BoundingBox &box, unsigned int times, unsigned int r
   // Subdivide into blocks.
   this->_subdivide ( times, reserve );
 
+  // TODO: Materials override colors... think of a better way.
+#if 0
   osg::ref_ptr< osg::StateSet > ss ( _geode->getOrCreateStateSet() );
 
-  osg::Vec4 diffuse ( 20.0 / 255.0f, 100.0f / 255.0f, 140.0f / 255.0f, 1.0f );
+  //osg::Vec4 diffuse ( 20.0 / 255.0f, 100.0f / 255.0f, 140.0f / 255.0f, 1.0f );
+  osg::Vec4 diffuse ( 255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, 1.0f );
   osg::Vec4 ambient ( diffuse );
 
   _material->setAmbient ( osg::Material::BACK,  ambient );
@@ -63,10 +66,8 @@ Blocks::Blocks ( const osg::BoundingBox &box, unsigned int times, unsigned int r
   _material->setDiffuse ( osg::Material::BACK,  diffuse );
   _material->setDiffuse ( osg::Material::FRONT, diffuse );
 
-  //_material->setSpecular ( osg::Material::FRONT, osg::Vec4  ( 200.0f / 255.0f, 200.0f / 255.0f, 200.0f / 255.0f, 1.0f ) );
-  //_material->setShininess ( osg::Material::FRONT, 120 );
-
   ss->setAttribute ( _material.get(), osg::StateAttribute::ON );
+#endif
 }
 
 

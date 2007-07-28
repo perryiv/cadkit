@@ -8,25 +8,26 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ChannelCommand.h"
+#include "NextTimestep.h"
 
 #include "Usul/Trace/Trace.h"
 
-ChannelCommand::ChannelCommand ( const std::string& name, unsigned int index, WRFDocument* doc ) :
+NextTimestep::NextTimestep ( WRFDocument* doc ) :
   BaseClass ( 0x0 ),
-  _name ( name ),
-  _index ( index ),
   _document ( doc )
 {
-  this->text ( "Switch to " + name );
+  this->text ( "Next Timestep" );
 }
 
-ChannelCommand::~ChannelCommand ()
+NextTimestep::~NextTimestep ()
 {
 }
 
-void ChannelCommand::_execute ()
+void NextTimestep::_execute ()
 {
   if ( _document.valid () )
-    _document->currentChannel ( _index );
+  {
+    unsigned int current ( _document->getCurrentTimeStep () );
+    _document->setCurrentTimeStep ( ++current );
+  }
 }

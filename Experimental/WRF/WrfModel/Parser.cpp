@@ -13,6 +13,7 @@
 #include "OsgTools/Images/Matrix.h"
 #include "Usul/Exceptions/Thrower.h"
 
+#include <stdexcept>
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -166,7 +167,11 @@ void Parser::data ( Data& data, unsigned int channel, unsigned int timestep )
   Usul::Types::Uint64 offset ( ( timestepSize * timestep ) + ( channelSizeBytes * channel ) );
 
   // Jump to the correct location.
+#ifdef _MSC_VER
   Usul::Types::Uint64 result ( ::_fseeki64 ( _fp, offset, SEEK_SET ) );
+#else
+  Usul::Types::Uint64 result ( ::fseek ( _fp, offset, SEEK_SET ) );
+#endif
 
   if ( result != 0 )
     Usul::Exceptions::Thrower < std::runtime_error > ( "Error 1556671836: Could not seek in file: ", _filename, " to location: ", offset );

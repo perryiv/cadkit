@@ -23,15 +23,26 @@
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Adaptors/Boost.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/GUI/IProgressBarFactory.h"
+#include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Documents/Manager.h"
 
 #include "XmlTree/Document.h"
 
 #include "OsgTools/Font.h"
 #include "OsgTools/GlassBoundingBox.h"
 #include "OsgTools/Volume/Texture3DVolume.h"
+#include "OsgTools/DisplayLists.h"
 
 #include "osgText/Text"
 #include "osg/Geode"
+
+#include "osgDB/ReadFile"
+
+#include "boost/filesystem/operations.hpp"
+#include "Usul/File/Boost.h"
 
 #include <limits>
 
@@ -60,13 +71,15 @@ WRFDocument::WRFDocument() :
   _numPlanes ( 256 ),
   _channelInfo (),
   _root ( new osg::MatrixTransform ),
+  _geometry ( new osg::Group ),
   _bb (),
   _dirty ( true ),
   _data (),
   _requests (),
   _jobForScene ( 0x0 ),
   _lastTimestepLoaded ( INVALID_TIMESTEP ),
-  _animating ( false )
+  _animating ( false ),
+  _offset ()
 {
 }
 
@@ -182,7 +195,7 @@ void WRFDocument::read ( const std::string &name, Unknown *caller )
 
   if ( "wrf" == document->name() )
   {
-    this->_read ( *document );
+    this->_read ( *document, caller );
   }
 }
 
@@ -193,7 +206,7 @@ void WRFDocument::read ( const std::string &name, Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WRFDocument::_read ( XmlTree::Node &node )
+void WRFDocument::_read ( XmlTree::Node &node, Unknown *caller )
 {
   typedef XmlTree::Document::Attributes Attributes;
   typedef XmlTree::Document::Children Children;
@@ -243,7 +256,15 @@ void WRFDocument::_read ( XmlTree::Node &node )
     XmlTree::Node::RefPtr node ( *iter );
     if ( "channel" == node->name() )
     {
-      this->_parseChannel ( *node );
+      this->_parseChannel ( *node, caller );
+    }
+    if ( "geometry" == node->name() )
+    {
+      this->_parseGeometry ( *node, caller );
+    }
+    if ( "offset" == node->name() )
+    {
+      this->_parseOffset ( *node, caller );
     }
   }
 
@@ -264,7 +285,7 @@ void WRFDocument::_read ( XmlTree::Node &node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WRFDocument::_parseChannel ( XmlTree::Node &node )
+void WRFDocument::_parseChannel ( XmlTree::Node &node, Unknown *caller )
 {
   typedef XmlTree::Document::Attributes Attributes;
 
@@ -292,6 +313,80 @@ void WRFDocument::_parseChannel ( XmlTree::Node &node )
   }
 
   _channelInfo.at ( info.index ) = info;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse any external geometry..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::_parseGeometry ( XmlTree::Node &node, Unknown *caller )
+{
+  std::string directory ( node.value () );
+
+  typedef std::vector < std::string > Filenames;
+  Filenames filenames;
+
+  if ( boost::filesystem::is_directory ( directory ) )
+  {
+    Usul::File::findFiles ( directory, "osga", filenames );
+    Usul::File::findFiles ( directory, "osg", filenames );
+    Usul::File::findFiles ( directory, "ive", filenames );
+
+    for ( Filenames::const_iterator iter = filenames.begin(); iter != filenames.end(); ++iter )
+    {
+      const std::string filename ( *iter );
+
+      // Find a document that can load the first filename.
+      Usul::Documents::Document::RefPtr document ( Usul::Documents::Manager::instance().find ( filename ).document );
+      Usul::Interfaces::IBuildScene::QueryPtr buildScene ( document );
+
+      // Make sure the document can build a scene.
+      if ( document.valid() && buildScene.valid() )
+      {
+        // Set the label.
+        Usul::Interfaces::IStatusBar::UpdateStatusBar label ( caller );
+        label ( "Loading filename: " + filename, true );
+
+        if ( document->canOpen ( filename ) )
+          document->read ( filename, caller );
+
+        // Get the node.
+        Usul::Interfaces::IBuildScene::Options options;
+        _geometry->addChild ( buildScene->buildScene ( options ) );
+      }
+    }
+  }
+  else
+  {
+    _geometry->addChild ( osgDB::readNodeFile ( directory ) );
+  }
+
+  // Turn off display lits.
+  //OsgTools::DisplayLists dl ( false );
+  //dl ( _geometry.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse any offset.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::_parseOffset ( XmlTree::Node &node, Unknown *caller )
+{
+  std::string offset ( node.value() );
+
+  if ( false == offset.empty() )
+  {
+    std::istringstream in ( offset );
+    double x ( 0.0 ), y ( 0.0 ), z ( 0.0 );
+    in >> x >> y >> z;
+    _offset.set ( x, y, z );
+  }
 }
 
 
@@ -465,6 +560,7 @@ void WRFDocument::_buildScene ( )
   {
     Guard guard ( this->mutex() );
     _root->removeChild ( 0, _root->getNumChildren() );
+    _root->addChild ( _geometry.get() );
   }
 
   // If we don't have the data already...
@@ -525,7 +621,12 @@ void WRFDocument::_buildScene ( )
     // Add the volume to the scene.
     {
       Guard guard ( this->mutex() );
-      _root->addChild ( this->_buildVolume ( image.get() ) );
+      osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+      mt->setMatrix ( osg::Matrix::rotate ( -osg::PI_2, osg::Y_AXIS ) * osg::Matrix::translate ( _offset ) );
+      mt->addChild ( this->_buildVolume ( image.get() ) );
+      _root->addChild ( mt.get() );
+      OsgTools::GlassBoundingBox gbb ( _bb );
+      gbb ( mt.get(), true, false, false );
     }
   }
 
@@ -622,9 +723,9 @@ void WRFDocument::_initBoundingBox ()
   USUL_TRACE_SCOPE;
 
   // Create the bounding box.
-  double xLength ( _x * 10 );
-  double yLength ( _y * 10 );
-  double zLength ( _z * 3 );
+  double xLength ( _x * 1000 );
+  double yLength ( _y * 1000 );
+  double zLength ( _z * 300 );
 
   float xHalf ( static_cast < float > ( xLength ) / 2.0f );
   float yHalf ( static_cast < float > ( yLength ) / 2.0f );

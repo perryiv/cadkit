@@ -112,8 +112,10 @@ public:
 
 protected:
 
-  void                        _read ( XmlTree::Node &node );
-  void                        _parseChannel ( XmlTree::Node &node );
+  void                        _read ( XmlTree::Node &node, Unknown *caller );
+  void                        _parseChannel ( XmlTree::Node &node, Unknown *caller );
+  void                        _parseGeometry ( XmlTree::Node &node, Unknown *caller );
+  void                        _parseOffset ( XmlTree::Node &node, Unknown *caller );
 
   void                        _processReadRequests ( Usul::Threads::Thread *);
   osg::Image *                _volume ( unsigned int timestep, unsigned int channel );
@@ -202,6 +204,7 @@ private:
   unsigned int _numPlanes;
   ChannelInfos _channelInfo;
   osg::ref_ptr < osg::MatrixTransform > _root;
+  osg::ref_ptr < osg::Group > _geometry;
   osg::BoundingBox _bb;
   bool _dirty;
   TimestepsData _data;
@@ -209,6 +212,7 @@ private:
   Usul::Jobs::Job::RefPtr _jobForScene;
   unsigned int _lastTimestepLoaded;
   bool _animating;
+  osg::Vec3 _offset;
 };
 
 

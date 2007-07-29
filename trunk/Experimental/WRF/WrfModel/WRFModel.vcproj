@@ -262,6 +262,14 @@
 					Name="Commands"
 					>
 					<File
+						RelativePath=".\AnimateCommand.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\AnimateCommand.h"
+						>
+					</File>
+					<File
 						RelativePath=".\ChangeNumPlanes.cpp"
 						>
 					</File>

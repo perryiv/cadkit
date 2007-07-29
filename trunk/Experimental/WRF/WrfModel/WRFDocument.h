@@ -107,6 +107,9 @@ public:
   /// Load job has finished.
   void                        loadJobFinished ( Usul::Jobs::Job* job );
 
+  /// Are we animating?
+  bool                        animating () const;
+
 protected:
 
   void                        _read ( XmlTree::Node &node );
@@ -205,6 +208,7 @@ private:
   Requests _requests;
   Usul::Jobs::Job::RefPtr _jobForScene;
   unsigned int _lastTimestepLoaded;
+  bool _animating;
 };
 
 

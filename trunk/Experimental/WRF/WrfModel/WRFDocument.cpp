@@ -13,6 +13,7 @@
 #include "NextTimestep.h"
 #include "PreviousTimestep.h"
 #include "ChangeNumPlanes.h"
+#include "AnimateCommand.h"
 
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
@@ -64,7 +65,8 @@ WRFDocument::WRFDocument() :
   _data (),
   _requests (),
   _jobForScene ( 0x0 ),
-  _lastTimestepLoaded ( INVALID_TIMESTEP )
+  _lastTimestepLoaded ( INVALID_TIMESTEP ),
+  _animating ( false )
 {
 }
 
@@ -664,13 +666,35 @@ osg::Node * WRFDocument::_buildProxyGeometry ()
 }
 
 
-/// Usul::Interfaces::ITimestepAnimation
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start timestep animation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void WRFDocument::startTimestepAnimation ()
 {
+  USUL_TRACE_SCOPE;
+  {
+    Guard guard ( this->mutex() );
+    _animating = true;
+  }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Stop timestep animation.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void WRFDocument::stopTimestepAnimation ()
 {
+  USUL_TRACE_SCOPE;
+  {
+    Guard guard ( this->mutex() );
+    _animating = false;
+  }
 }
 
 
@@ -774,18 +798,15 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   if ( this->dirty () )
     this->_buildScene();
 
-#if 0
   static unsigned int num ( 0 );
   ++num;
-  if ( num % 60 == 0 )
+  if ( this->animating() && num % 2 == 0 )
   {
-    ++_currentTimestep;
-    if ( _currentTimestep >= _timesteps )
-      _currentTimestep = 0;
+    unsigned int currentTimestep ( this->getCurrentTimeStep () );
+    this->setCurrentTimeStep ( ++currentTimestep );
 
     this->_buildScene();
   }
-#endif
 }
 
 
@@ -798,6 +819,8 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 WRFDocument::CommandList WRFDocument::getCommandList ()
 {
   USUL_TRACE_SCOPE;
+
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   CommandList commands;
 
@@ -813,6 +836,9 @@ WRFDocument::CommandList WRFDocument::getCommandList ()
   commands.push_back ( new ChangeNumPlanes ( 2.0, this ) );
   commands.push_back ( new ChangeNumPlanes ( 0.5, this ) );
   commands.push_back ( new ChangeNumPlanes ( 0.25, this ) );
+
+  commands.push_back ( new AnimateCommand ( true, me.get() ) );
+  commands.push_back ( new AnimateCommand ( false, me.get() ) );
 
   return commands;
 }
@@ -1017,16 +1043,11 @@ osg::Image*  WRFDocument::LoadDataJob::_createImage ( const ReadRequest& request
   std::vector < unsigned char > chars;
   Detail::normalize ( chars, data, info.min, info.max );
 
-  std::cout << " Number of scalar values: " << data.size () << std::endl;
-  std::cout << " Number of normalized charaters: " << chars.size () << std::endl;
-
   unsigned int width ( _y ), height ( _x ), depth ( _z );
 
-  std::cout << "Allocating image: " << width << " " << height << " " << depth << std::endl;
   osg::ref_ptr < osg::Image > image ( new osg::Image );
   image->allocateImage ( width, height, depth, GL_LUMINANCE, GL_UNSIGNED_BYTE );
 
-  std::cout << "Copying pixels..." << std::endl;
   unsigned char *pixels ( image->data() );
   std::copy ( chars.begin(), chars.end(), pixels );
 
@@ -1065,4 +1086,18 @@ void WRFDocument::loadJobFinished ( Usul::Jobs::Job* job )
     _jobForScene = 0x0;
     this->dirty ( true );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are we animating?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool WRFDocument::animating () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _animating;
 }

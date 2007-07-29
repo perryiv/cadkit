@@ -31,6 +31,7 @@
 #include "VRV/Interfaces/IMenuRead.h"
 #include "VRV/Interfaces/IMenuGet.h"
 
+#include "Usul/Adaptors/Boost.h"
 #include "Usul/App/Application.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
@@ -75,6 +76,7 @@
 #include "MenuKit/MemFunCallback.h"
 
 #include "boost/filesystem/operations.hpp"
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -272,7 +274,7 @@ Application::Application ( Args &args ) :
   _iSelection     = Manager::instance().getInterface( CV::Interfaces::ISelection::IID );
   _iMaterialStack = Manager::instance().getInterface( CV::Interfaces::IMaterialStack::IID );
 
-  // Add our selfs to the list of active document listeners.
+  // Add our self to the list of active document listeners.
   Usul::Documents::Manager::instance().addActiveDocumentListener ( this );
 }
 
@@ -285,6 +287,9 @@ Application::Application ( Args &args ) :
 
 Application::~Application()
 {  
+  // Remove our self from the list of active document listeners.
+  Usul::Documents::Manager::instance().removeActiveDocumentListener ( this );
+
   _gridFunctors.clear();
 }
 
@@ -364,14 +369,6 @@ void Application::_init()
   // Set the background color.
   const Preferences::Vec4f &bc = this->preferences()->backgroundColor();
   this->setBackgroundColor ( osg::Vec4 ( bc[0], bc[1], bc[2], bc[3] ) );
-
-  // Initialize the button group by adding the individual buttons.
-  this->buttons()->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON0, "VJButton0" ) );
-  this->buttons()->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON1, "VJButton1" ) );
-  this->buttons()->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON2, "VJButton2" ) );
-  this->buttons()->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON3, "VJButton3" ) );
-  this->buttons()->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON4, "VJButton4" ) );
-  this->buttons()->add ( new VRV::Devices::ButtonDevice ( CV::BUTTON5, "VJButton5" ) );
 
   // Set up lights.
   this->_initLight();
@@ -1104,16 +1101,18 @@ namespace CV
       Iterator end;
       for( ; iter != end; ++iter )
       {
+        const boost::filesystem::path &path = BOOST_FILE_SYSTEM_ITERATOR_TO_PATH ( iter );
+
         // Make a recursive call if its a directory.
-        if( boost::filesystem::is_directory ( iter->status() ) )
+        if ( boost::filesystem::is_directory ( BOOST_FILE_SYSTEM_ITERATOR_TO_STATUS ( iter ) ) )
         {
-          findFiles ( iter->path(), ext, c );
+          findFiles ( path, ext, c );
         }
 
         // Add it to our list if its a file and the extenstion matches.
         else if ( Usul::File::extension ( iter->leaf() ) == ext )
         {
-          c.push_back ( iter->path().native_directory_string() );
+          c.push_back ( path.native_directory_string() );
         }
       }
     }
@@ -1245,15 +1244,15 @@ void Application::_processButtons()
 #if 1
   switch ( this->buttons()->pressed() )
   {
-    case CV::BUTTON0: std::cout << CV::BUTTON0 << " Button 0 pressed (YELLOW)" << std::endl; break;
-    case CV::BUTTON1: std::cout << CV::BUTTON1 << " Button 1 pressed (RED)" << std::endl; break;
-    case CV::BUTTON2: std::cout << CV::BUTTON2 << " Button 2 pressed (GREEN)" << std::endl; break;
-    case CV::BUTTON3: std::cout << CV::BUTTON3 << " Button 3 pressed (BLUE)" << std::endl; break;
+    case CV::BUTTON0: std::cout << CV::BUTTON0 << " Button 0 pressed (YELLOW)"   << std::endl; break;
+    case CV::BUTTON1: std::cout << CV::BUTTON1 << " Button 1 pressed (RED)"      << std::endl; break;
+    case CV::BUTTON2: std::cout << CV::BUTTON2 << " Button 2 pressed (GREEN)"    << std::endl; break;
+    case CV::BUTTON3: std::cout << CV::BUTTON3 << " Button 3 pressed (BLUE)"     << std::endl; break;
     case CV::BUTTON4: std::cout << CV::BUTTON4 << " Button 4 pressed (JOYSTICK)" << std::endl; break;
-    case CV::BUTTON5: std::cout << CV::BUTTON5 << " Button 5 pressed (TRIGGER)" << std::endl; break;
+    case CV::BUTTON5: std::cout << CV::BUTTON5 << " Button 5 pressed (TRIGGER)"  << std::endl; break;
   }
 #endif
-  
+
   // Let the menu process first.
   bool menuHandled ( this->_handleMenuEvent() );
   

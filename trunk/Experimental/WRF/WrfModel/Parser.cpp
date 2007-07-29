@@ -62,7 +62,7 @@ Parser::Parser( const Parser& parser ) :
   _fp             ( 0x0 ),
   _xSize          ( parser._xSize ),
   _ySize          ( parser._ySize ),
-  _zSize          ( parser._xSize ),
+  _zSize          ( parser._zSize ),
   _numTimesteps   ( parser._numTimesteps ),
   _numChannels    ( parser._numChannels )
 {

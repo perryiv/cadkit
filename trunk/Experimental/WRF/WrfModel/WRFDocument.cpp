@@ -254,7 +254,7 @@ void WRFDocument::_read ( XmlTree::Node &node )
   _data.resize ( _timesteps );
   //std::for_each ( _data.begin(), _data.end(), std::bind2nd ( std::mem_fun ( &ChannelVolumes::resize ), 4 ) );
   for ( TimestepsData::iterator iter = _data.begin(); iter != _data.end(); ++iter )
-    iter->resize ( 4 );
+    iter->resize ( _channels );
 }
 
 

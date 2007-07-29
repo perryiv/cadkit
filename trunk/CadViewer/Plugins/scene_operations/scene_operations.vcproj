@@ -225,14 +225,6 @@
 				>
 			</File>
 			<File
-				RelativePath="Component.cpp"
-				>
-			</File>
-			<File
-				RelativePath="Component.h"
-				>
-			</File>
-			<File
 				RelativePath="Export.def"
 				>
 			</File>
@@ -242,6 +234,14 @@
 			</File>
 			<File
 				RelativePath="Factory.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SceneOperationsComponent.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SceneOperationsComponent.h"
 				>
 			</File>
 			<File

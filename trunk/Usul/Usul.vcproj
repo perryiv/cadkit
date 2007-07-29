@@ -2320,6 +2320,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Adaptors\Boost.h"
+					>
+				</File>
+				<File
 					RelativePath="Adaptors\MemberFunction.h"
 					>
 				</File>

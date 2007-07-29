@@ -65,6 +65,7 @@
 				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
 				CompileAs="0"
+				DisableSpecificWarnings="4290"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -164,6 +165,7 @@
 				WarnAsError="true"
 				SuppressStartupBanner="true"
 				CompileAs="0"
+				DisableSpecificWarnings="4290"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

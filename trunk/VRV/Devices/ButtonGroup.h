@@ -19,20 +19,19 @@
 #include "VRV/Export.h"
 #include "VRV/Devices/ButtonDevice.h"
 
-#include "Usul/Base/Referenced.h"
-#include "Usul/Pointers/Pointers.h"
+#include "Usul/Base/Object.h"
 
 #include <vector>
 
 namespace VRV {
 namespace Devices {
 
-class VRV_EXPORT ButtonGroup : public Usul::Base::Referenced
+class VRV_EXPORT ButtonGroup : public Usul::Base::Object
 {
 public:
   
   // Useful typedefs.
-  typedef Usul::Base::Referenced BaseClass;
+  typedef Usul::Base::Object BaseClass;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ButtonGroup );
@@ -46,18 +45,20 @@ public:
   // Return bitmask of buttons that are down.
   unsigned long   down() const { return _down; }
 
+  // Notify listeners if state changed.
+  void            notify();
+
   // Return bitmask of buttons just pressed.
   unsigned long   pressed() const { return _pressed; }
 
   // Return bitmask of buttons just released.
   unsigned long   released() const { return _released; }
 
-  // Update the internal state.
-  void            update();
-
 protected:
 
   virtual ~ButtonGroup();
+
+  void            _update();
 
 private:
 

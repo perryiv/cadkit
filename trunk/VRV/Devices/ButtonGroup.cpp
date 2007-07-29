@@ -15,6 +15,7 @@
 
 #include "ButtonGroup.h"
 
+#include <algorithm>
 #include <sstream>
 #include <stdexcept>
 
@@ -49,12 +50,32 @@ ButtonGroup::~ButtonGroup()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Notify listeners if state changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ButtonGroup::notify()
+{
+  Guard guard ( this->mutex() );
+
+  // First update state.
+  this->_update();
+
+  // Tell every button to notify.
+  std::for_each ( _buttons.begin(), _buttons.end(), std::mem_fun ( &ButtonDevice::notify ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Update the internal state.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ButtonGroup::update()
+void ButtonGroup::_update()
 {
+  Guard guard ( this->mutex() );
+
   // Initialize.
   _down = _pressed = _released = 0;
 
@@ -123,6 +144,8 @@ void ButtonGroup::add ( ButtonDevice *b )
   // Only valid pointers.
   if ( 0x0 == b )
     throw std::invalid_argument ( "Error 3629364095: Null pointer." );
+
+  Guard guard ( this->mutex() );
 
   // See if another button with the same mask is already in the group.
   if ( _buttons.end() != std::find_if ( _buttons.begin(), _buttons.end(), Detail::SameMask ( b->mask() ) ) )

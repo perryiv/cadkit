@@ -11,6 +11,7 @@
 #include "VRV/Core/Application.h"
 #include "VRV/Core/JugglerFunctors.h"
 #include "VRV/Core/Exceptions.h"
+#include "VRV/Common/Buttons.h"
 #include "VRV/Jobs/LoadModel.h"
 
 #include "Usul/App/Application.h"
@@ -620,6 +621,14 @@ void Application::init()
   osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
   _progressBars->position ( Usul::Math::Vec3f ( -0.95, -0.7, -3.0 ) );
   group->addChild ( _progressBars->buildScene() );
+
+  // Initialize the button group by adding the individual buttons.
+  _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON0, "VJButton0" ) );
+  _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON1, "VJButton1" ) );
+  _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON2, "VJButton2" ) );
+  _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON3, "VJButton3" ) );
+  _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON4, "VJButton4" ) );
+  _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON5, "VJButton5" ) );
 }
 
 
@@ -670,7 +679,7 @@ void Application::latePreFrame()
   _frameTime = _sharedFrameTime->data;
 
   // Update these input devices.
-  _buttons->update();
+  _buttons->notify();
   _tracker->update();
   _joystick->update();
 

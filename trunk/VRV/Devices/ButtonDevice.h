@@ -18,8 +18,7 @@
 
 #include "VRV/Export.h"
 
-#include "Usul/Base/Referenced.h"
-#include "Usul/Pointers/Pointers.h"
+#include "Usul/Base/Object.h"
 
 #include "gadget/Type/DigitalInterface.h"
 
@@ -29,12 +28,12 @@
 namespace VRV {
 namespace Devices {
 
-class VRV_EXPORT ButtonDevice : public Usul::Base::Referenced
+class VRV_EXPORT ButtonDevice : public Usul::Base::Object
 {
 public:
 
   // Useful typedefs.
-  typedef Usul::Base::Referenced BaseClass;
+  typedef Usul::Base::Object BaseClass;
   typedef gadget::DigitalInterface DI;
 
   /// Smart-pointer definitions.
@@ -45,6 +44,9 @@ public:
 
   // Get the bit-mask for this button.
   unsigned long         mask() const { return _mask; }
+
+  // Notify listeners if state changed.
+  void                  notify();
 
   // Get the device state.
   unsigned long         state() const;

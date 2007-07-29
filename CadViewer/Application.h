@@ -28,8 +28,6 @@
 #include "Usul/CommandLine/Parser.h"
 #include "Usul/Interfaces/IActiveDocumentListener.h"
 
-#include "VRV/Interfaces/IRequestRead.h"
-
 #include "VRV/Core/Application.h"
 #include "VRV/Functors/Matrix/MatrixFunctor.h"
 
@@ -50,7 +48,6 @@ namespace CV {
 // The CadViewer application
 class Application : public VRV::Core::Application,
                     public CV::Interfaces::IAuxiliaryScene,
-                    public VRV::Interfaces::IRequestRead,
                     public Usul::Interfaces::IActiveDocumentListener
 {
 public:
@@ -78,16 +75,6 @@ public:
   // Get the auxiliary scene.
   virtual const osg::Group *    auxiliaryScene() const;
   virtual osg::Group *          auxiliaryScene();
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  VRV::Interfaces::IRequestRead
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Read the model from the named source and position it using the matrix.
-  virtual void                  requestRead ( const std::string &source, const Matrix44f &m );
 
   // Get/set the center of rotation.
   const osg::Vec3 &             rotationCenter() const { return _rotCenter; }
@@ -185,18 +172,12 @@ protected:
   // Parse the command-line arguments.
   void                          _parseCommandLine();
 
-  // Load the file(s).
-  void                          _loadRestartFile ( const std::string &filename );
-
   // Called by the kernel before the frame.
   virtual void                  latePreFrame();
   void                          _latePreFrame();
   
   // Process the button states.
   void                          _processButtons();
-
-  // Process the command queue.
-  void                          _processCommands();
 
   // Called by the kernel after the frame.
   virtual void                  postFrame();
@@ -326,7 +307,6 @@ protected:
   typedef osg::ref_ptr<osg::Projection>                 ProjectPtr;
   typedef VRV::Functors::BaseFunctor::RefPtr            FunctorPtr;
   typedef std::auto_ptr<OsgTools::Text>                 TextPtr;
-  typedef VRV::Functors::Matrix::MatrixFunctor::RefPtr  MatrixFunctorPtr;
   typedef Interfaces::IVisibility::QueryPtr             IVisibilityPtr;
   typedef Interfaces::ISelection::QueryPtr              ISelectionPtr;
   typedef Interfaces::IMaterialStack::QueryPtr          IMaterialStackPtr;

@@ -32,6 +32,10 @@
 #include "osgText/Text"
 #include "osg/Geode"
 
+#include <limits>
+
+#define INVALID_TIMESTEP std::numeric_limits < unsigned int >::max()
+
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WRFDocument, WRFDocument::BaseClass );
 
 
@@ -59,7 +63,8 @@ WRFDocument::WRFDocument() :
   _dirty ( true ),
   _data (),
   _requests (),
-  _jobForScene ( 0x0 )
+  _jobForScene ( 0x0 ),
+  _lastTimestepLoaded ( INVALID_TIMESTEP )
 {
 }
 
@@ -489,6 +494,11 @@ void WRFDocument::_buildScene ( )
 
       _jobForScene = job.get();
 
+      {
+        Guard guard ( this->mutex() );
+        _requests.insert ( Requests::value_type ( Request ( _currentTimestep, _currentChannel ), job.get() ) );
+      }
+
       Usul::Jobs::Manager::instance().add ( job.get() );
     }
 
@@ -721,6 +731,45 @@ unsigned int WRFDocument::getNumberOfTimeSteps () const
 void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+
+  if ( _requests.empty() )
+  {
+    unsigned int timestepToLoad ( 0 );
+
+    if ( INVALID_TIMESTEP != _lastTimestepLoaded )
+    {
+      timestepToLoad = _lastTimestepLoaded + 1;
+    }
+
+    _lastTimestepLoaded = timestepToLoad;
+
+    if ( timestepToLoad < _timesteps )
+    {
+      typedef LoadDataJob::ReadRequest ReadRequest;
+      typedef LoadDataJob::ReadRequests ReadRequests;
+
+      ReadRequests requests;
+
+      for ( unsigned int i = 0; i < _channels; ++ i )
+      {
+        ChannelInfo info ( _channelInfo.at ( i ) );
+
+        ReadRequest request ( timestepToLoad, info );
+        requests.push_back ( request );
+      }
+
+      LoadDataJob::RefPtr job ( new LoadDataJob ( requests, this, _parser ) );
+      job->setSize ( _x, _y, _z );
+
+      for ( ReadRequests::const_iterator iter = requests.begin(); iter != requests.end(); ++iter )
+      {
+        Guard guard ( this->mutex() );
+        _requests.insert ( Requests::value_type ( Request ( iter->first, iter->second.index ), job.get() ) );
+      }
+
+      Usul::Jobs::Manager::instance().add ( job.get() );
+    }
+  }
 
   if ( this->dirty () )
     this->_buildScene();
@@ -977,8 +1026,7 @@ osg::Image*  WRFDocument::LoadDataJob::_createImage ( const ReadRequest& request
   osg::ref_ptr < osg::Image > image ( new osg::Image );
   image->allocateImage ( width, height, depth, GL_LUMINANCE, GL_UNSIGNED_BYTE );
 
-#if 1
-   std::cout << "Copying pixels..." << std::endl;
+  std::cout << "Copying pixels..." << std::endl;
   unsigned char *pixels ( image->data() );
   std::copy ( chars.begin(), chars.end(), pixels );
 
@@ -999,9 +1047,6 @@ osg::Image*  WRFDocument::LoadDataJob::_createImage ( const ReadRequest& request
   }
 
   return scaled.release ();
-#else
-  return image.release();
-#endif
 }
 
 

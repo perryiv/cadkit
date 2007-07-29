@@ -24,6 +24,8 @@ public:
 
   Parser( );
   Parser( const std::string & filename );
+  Parser( const Parser& );
+  ~Parser ();
 
   /// Get/Set the filename.
   void                           filename ( const std::string& filename );

@@ -20,6 +20,7 @@
 #include "Parser.h"
 
 #include "Usul/Documents/Document.h"
+#include "Usul/Jobs/Job.h"
 
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ITimestepAnimation.h"
@@ -33,6 +34,7 @@
 
 #include <string>
 #include <vector>
+#include <list>
 
 namespace XmlTree { class Node; }
 
@@ -99,14 +101,25 @@ public:
   void                        numPlanes ( unsigned int numPlanes );
   unsigned int                numPlanes () const;
 
+  /// Add volume
+  void                        addVolume ( osg::Image* image, unsigned int timestep, unsigned int channel );
+
+  /// Load job has finished.
+  void                        loadJobFinished ( Usul::Jobs::Job* job );
+
 protected:
 
   void                        _read ( XmlTree::Node &node );
   void                        _parseChannel ( XmlTree::Node &node );
 
+  void                        _processReadRequests ( Usul::Threads::Thread *);
   osg::Image *                _volume ( unsigned int timestep, unsigned int channel );
   osg::Node*                  _buildVolume( osg::Image* image );
   void                        _initBoundingBox ();
+  osg::Node *                 _buildProxyGeometry ();
+
+  bool                        _dataCached ( unsigned int timestep, unsigned int channel );
+  bool                        _dataRequested ( unsigned int timestep, unsigned int channel );
 
   void                        _buildScene ();
 
@@ -118,7 +131,7 @@ protected:
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 
   /// Usul::Interfaces::ICommandList
-  virtual CommandList      getCommandList ();
+  virtual CommandList         getCommandList ();
 
   /// Do not copy.
   WRFDocument ( const WRFDocument & );
@@ -128,6 +141,7 @@ protected:
   virtual ~WRFDocument();
 
 private:
+
   struct ChannelInfo
   {
     ChannelInfo () : name ( "" ), index ( 0 ), min ( 0 ), max ( 0 )
@@ -139,10 +153,38 @@ private:
     double min, max;
   };
 
-  typedef std::vector < ChannelInfo >    ChannelInfos;
-  typedef osg::ref_ptr < osg::Image >    ImagePtr;
-  typedef std::vector < ImagePtr >       ChannelVolumes;
-  typedef std::vector < ChannelVolumes > TimestepsData;
+  /// Typedefs.
+  typedef std::vector < ChannelInfo >               ChannelInfos;
+  typedef osg::ref_ptr < osg::Image >               ImagePtr;
+  typedef std::vector < ImagePtr >                  ChannelVolumes;
+  typedef std::vector < ChannelVolumes >            TimestepsData;
+  typedef std::pair < unsigned int, unsigned int >  Request;
+
+  // Internal job to load data from file.
+  class LoadDataJob : public Usul::Jobs::Job
+  {
+  public:
+    typedef Usul::Jobs::Job                           BaseClass;
+    typedef std::pair < unsigned int, ChannelInfo >   ReadRequest;
+    typedef std::list < ReadRequest >                 ReadRequests;
+
+    USUL_DECLARE_REF_POINTERS ( LoadDataJob );
+
+    LoadDataJob ( const ReadRequests& requests, WRFDocument* document, const Parser& parser );
+
+    void setSize ( unsigned int x, unsigned int y, unsigned int z );
+  protected:
+    virtual void _started ();
+    virtual void _finished ();
+    osg::Image*  _createImage ( const ReadRequest& request );
+
+    ReadRequests _requests;
+    WRFDocument::RefPtr _document;
+    Parser _parser;
+    unsigned int _x;
+    unsigned int _y;
+    unsigned int _z;
+  };
 
   Parser _parser;
   std::string _filename;
@@ -159,6 +201,8 @@ private:
   osg::BoundingBox _bb;
   bool _dirty;
   TimestepsData _data;
+  std::map < Request, Usul::Jobs::Job::RefPtr > _requests;
+  Usul::Jobs::Job::RefPtr _jobForScene;
 };
 
 

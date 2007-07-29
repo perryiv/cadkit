@@ -19,16 +19,18 @@
 #include "Usul/Strings/Convert.h"
 #include "Usul/Predicates/CloseFloat.h"
 #include "Usul/Functions/Color.h"
+#include "Usul/Jobs/Manager.h"
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Trace/Trace.h"
 
 #include "XmlTree/Document.h"
 
-#include "OsgTools/Box.h"
-#include "OsgTools/State/StateSet.h"
-#include "OsgTools/ShapeFactory.h"
+#include "OsgTools/Font.h"
 #include "OsgTools/GlassBoundingBox.h"
 #include "OsgTools/Volume/Texture3DVolume.h"
 
-#include "osg/MatrixTransform"
+#include "osgText/Text"
+#include "osg/Geode"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WRFDocument, WRFDocument::BaseClass );
 
@@ -55,7 +57,9 @@ WRFDocument::WRFDocument() :
   _root ( new osg::MatrixTransform ),
   _bb (),
   _dirty ( true ),
-  _data ()
+  _data (),
+  _requests (),
+  _jobForScene ( 0x0 )
 {
 }
 
@@ -448,16 +452,116 @@ osg::Node *WRFDocument::buildScene ( const BaseClass::Options &options, Unknown 
 
 void WRFDocument::_buildScene ( )
 {
-  ImagePtr image ( this->_volume ( _currentTimestep, _currentChannel ) );
+  USUL_TRACE_SCOPE;
 
-  _root->removeChild ( 0, _root->getNumChildren() );
-  _root->addChild ( this->_buildVolume ( image.get() ) );
+  // Remove what we have.
+  {
+    Guard guard ( this->mutex() );
+    _root->removeChild ( 0, _root->getNumChildren() );
+  }
 
-  //OsgTools::GlassBoundingBox gbb ( bb );
-  //gbb ( _root.get(), true, false, false );
+  // If we don't have the data already...
+  if ( false == this->_dataCached ( _currentTimestep, _currentChannel ) )
+  {
+    if ( true == this->_dataRequested ( _currentTimestep, _currentChannel ) )
+    {
+      // Keep a handle the job to wait for.
+      {
+        Guard guard ( this->mutex() );
+        _jobForScene = _requests [ Request ( _currentTimestep, _currentChannel ) ];
+      }
+    }
+
+    // Launch a job to read the data.
+    else
+    {
+      typedef LoadDataJob::ReadRequest ReadRequest;
+      typedef LoadDataJob::ReadRequests ReadRequests;
+
+      ChannelInfo info ( _channelInfo.at ( _currentChannel ) );
+
+      ReadRequest request ( _currentTimestep, info );
+      ReadRequests requests;
+      requests.push_back ( request );
+
+      LoadDataJob::RefPtr job ( new LoadDataJob ( requests, this, _parser ) );
+      job->setSize ( _x, _y, _z );
+
+      _jobForScene = job.get();
+
+      Usul::Jobs::Manager::instance().add ( job.get() );
+    }
+
+    // Build proxy geometry.
+    {
+      Guard guard ( this->mutex() );
+      _root->addChild ( this->_buildProxyGeometry() );
+    }
+  }
+  
+  // We have the data ...
+  else
+  {
+    // We no longer need to wait for any job.
+    {
+      Guard guard ( this->mutex() );
+      _jobForScene = 0x0;
+    }
+
+    ImagePtr image ( this->_volume ( _currentTimestep, _currentChannel ) );
+
+    // Add the volume to the scene.
+    {
+      Guard guard ( this->mutex() );
+      _root->addChild ( this->_buildVolume ( image.get() ) );
+    }
+  }
 
   // No longer dirty
   this->dirty ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the requested data cached?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool WRFDocument::_dataCached ( unsigned int timestep, unsigned int channel )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _data [ timestep ] [ channel ].valid();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Has the data been requested?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool WRFDocument::_dataRequested ( unsigned int timestep, unsigned int channel )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _requests.end() != _requests.find ( Request ( timestep, channel ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add volume to the cache.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::addVolume ( osg::Image* image, unsigned int timestep, unsigned int channel )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _data [ timestep ] [ channel ] = image;
+  _requests.erase ( Request ( timestep, channel ) );
 }
 
 
@@ -469,56 +573,9 @@ void WRFDocument::_buildScene ( )
 
 osg::Image * WRFDocument::_volume ( unsigned int timestep, unsigned int channel )
 {
-  osg::ref_ptr < osg::Image > image ( 0x0 );
-
-  {
-    Guard guard ( this->mutex() );
-    image = _data [ timestep ] [ channel ];
-  }
-
-  if ( image.valid() )
-    return image.get();
-
-  Parser::Data data;
-
-  _parser.data ( data, timestep, channel );
-
-  ChannelInfo info ( _channelInfo.at ( channel ) );
-
-  // Normalize the data to unsigned char.
-  std::vector < unsigned char > chars;
-  Detail::normalize ( chars, data, info.min, info.max );
-
-  unsigned int width ( _y ), height ( _x ), depth ( _z );
-
-  image = new osg::Image;
-  image->allocateImage ( width, height, depth, GL_LUMINANCE, GL_UNSIGNED_BYTE );
-
-  unsigned char *pixels ( image->data() );
-  std::copy ( chars.begin(), chars.end(), pixels );
-
-  osg::ref_ptr < osg::Image > scaled ( new osg::Image );
-  scaled->allocateImage ( 256, 256, 128, GL_LUMINANCE, GL_UNSIGNED_BYTE );
-  ::memset ( scaled->data(), 0, 256 * 256 * 128 );
-
-  for ( unsigned int r = 0; r < depth; ++r )
-  {
-    for ( unsigned int t = 0; t < height; ++ t )
-    {
-      for ( unsigned int s = 0; s < width; ++ s )
-      {
-        *scaled->data ( s, t, r ) = *image->data ( s, t, r );
-      }
-    }
-  }
-
-  // Cache the results.
-  {
-    Guard guard ( this->mutex() );
-    _data [ timestep ] [ channel ] = scaled;
-  }
-
-  return scaled.get();
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _data [ timestep ] [ channel ].get();
 }
 
 
@@ -530,6 +587,8 @@ osg::Image * WRFDocument::_volume ( unsigned int timestep, unsigned int channel 
 
 osg::Node* WRFDocument::_buildVolume( osg::Image* image )
 {
+  USUL_TRACE_SCOPE;
+
   osg::ref_ptr < OsgTools::Volume::Texture3DVolume > volume ( new OsgTools::Volume::Texture3DVolume );
   volume->numPlanes ( _numPlanes );
   volume->image ( image );
@@ -548,6 +607,8 @@ osg::Node* WRFDocument::_buildVolume( osg::Image* image )
 
 void WRFDocument::_initBoundingBox ()
 {
+  USUL_TRACE_SCOPE;
+
   // Create the bounding box.
   double xLength ( _x * 10 );
   double yLength ( _y * 10 );
@@ -558,6 +619,38 @@ void WRFDocument::_initBoundingBox ()
   float zHalf ( static_cast < float > ( zLength ) / 2.0f );
 
   _bb.set ( -xHalf, -yHalf, -zHalf, xHalf, yHalf, zHalf );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the proxy geometry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node * WRFDocument::_buildProxyGeometry ()
+{
+  USUL_TRACE_SCOPE;
+
+  osg::ref_ptr < osg::Group > group ( new osg::Group );
+  OsgTools::GlassBoundingBox gbb ( _bb );
+  gbb ( group.get(), true, false, false );
+
+  osg::ref_ptr< osgText::Text > text ( new osgText::Text );
+  text->setFont( OsgTools::Font::defaultFont());
+  text->setColor( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+  text->setCharacterSize( 25 );
+  text->setPosition ( _bb.center() );
+  text->setText( "Loading..." );
+  text->setAutoRotateToScreen( true );
+  text->setFontResolution( 40, 40 );
+
+  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+  geode->addDrawable ( text.get () );
+
+  group->addChild ( geode.get() );
+
+  return group.release();
 }
 
 
@@ -579,9 +672,14 @@ void WRFDocument::stopTimestepAnimation ()
 
 void WRFDocument::setCurrentTimeStep ( unsigned int current )
 {
-  _currentTimestep = current;
-  if ( _currentTimestep >= _timesteps )
+  USUL_TRACE_SCOPE;
+  {
+    Guard guard ( this->mutex() );
+
+    _currentTimestep = current;
+    if ( _currentTimestep >= _timesteps )
       _currentTimestep = 0;
+  }
   this->dirty ( true );
 }
 
@@ -594,6 +692,8 @@ void WRFDocument::setCurrentTimeStep ( unsigned int current )
 
 unsigned int WRFDocument::getCurrentTimeStep () const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _currentTimestep;
 }
 
@@ -606,6 +706,8 @@ unsigned int WRFDocument::getCurrentTimeStep () const
 
 unsigned int WRFDocument::getNumberOfTimeSteps () const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _timesteps;
 }
 
@@ -618,6 +720,8 @@ unsigned int WRFDocument::getNumberOfTimeSteps () const
 
 void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
+
   if ( this->dirty () )
     this->_buildScene();
 
@@ -644,6 +748,8 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
 WRFDocument::CommandList WRFDocument::getCommandList ()
 {
+  USUL_TRACE_SCOPE;
+
   CommandList commands;
 
   commands.push_back ( new NextTimestep ( this ) );
@@ -671,7 +777,11 @@ WRFDocument::CommandList WRFDocument::getCommandList ()
 
 void WRFDocument::currentChannel ( unsigned int value )
 {
-  _currentChannel = value;
+  USUL_TRACE_SCOPE;
+  {
+    Guard guard ( this->mutex() );
+    _currentChannel = value;
+  }
   this->dirty ( true );
 }
 
@@ -684,6 +794,8 @@ void WRFDocument::currentChannel ( unsigned int value )
 
 unsigned int WRFDocument::currentChannel () const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _currentChannel;
 }
 
@@ -696,6 +808,8 @@ unsigned int WRFDocument::currentChannel () const
 
 void WRFDocument::dirty ( bool b )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _dirty = b;
 }
 
@@ -708,6 +822,8 @@ void WRFDocument::dirty ( bool b )
 
 bool WRFDocument::dirty () const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _dirty;
 }
 
@@ -720,7 +836,13 @@ bool WRFDocument::dirty () const
 
 void WRFDocument::numPlanes ( unsigned int numPlanes )
 {
-  _numPlanes = numPlanes;
+  USUL_TRACE_SCOPE;
+
+  {
+    Guard guard ( this->mutex() );
+    _numPlanes = numPlanes;
+  }
+
   this->dirty ( true );
 }
 
@@ -733,5 +855,169 @@ void WRFDocument::numPlanes ( unsigned int numPlanes )
 
 unsigned int WRFDocument::numPlanes () const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _numPlanes;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+WRFDocument::LoadDataJob::LoadDataJob ( const ReadRequests& requests, WRFDocument* document, const Parser& parser ) :
+  BaseClass (),
+  _requests ( requests ),
+  _document ( document ),
+  _parser ( parser ),
+  _x ( 0 ),
+  _y ( 0 ),
+  _z ( 0 )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::LoadDataJob::_started ()
+{
+  USUL_TRACE_SCOPE;
+
+  // Return if we don't have any.
+  if ( _requests.empty() || false == _document.valid() )
+    return;
+
+
+  // Process all the requests.
+  while ( false == _requests.empty() )
+  {
+    ReadRequest request ( _requests.front() );
+    _requests.pop_front ();
+
+    osg::ref_ptr < osg::Image > image ( this->_createImage ( request ) );
+
+    unsigned int timestep ( request.first );
+    unsigned int channel ( request.second.index );
+
+    _document->addVolume ( image.get(), timestep, channel );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  All done.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::LoadDataJob::_finished ()
+{
+  USUL_TRACE_SCOPE;
+
+  if ( _document.valid() )
+    _document->loadJobFinished ( this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the sizes..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::LoadDataJob::setSize ( unsigned int x, unsigned int y, unsigned int z )
+{
+  USUL_TRACE_SCOPE;
+
+  _x = x;
+  _y = y;
+  _z = z;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create the image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Image*  WRFDocument::LoadDataJob::_createImage ( const ReadRequest& request )
+{
+  USUL_TRACE_SCOPE;
+
+  ChannelInfo info ( request.second );
+  unsigned int timestep ( request.first );
+  unsigned int channel ( info.index );
+
+  Parser::Data data;
+
+  std::cout << "Reading data.  Timestep: " << timestep << " Channel: " << channel << std::endl;
+
+  _parser.data ( data, timestep, channel );
+
+  // Normalize the data to unsigned char.
+  std::vector < unsigned char > chars;
+  Detail::normalize ( chars, data, info.min, info.max );
+
+  std::cout << " Number of scalar values: " << data.size () << std::endl;
+  std::cout << " Number of normalized charaters: " << chars.size () << std::endl;
+
+  unsigned int width ( _y ), height ( _x ), depth ( _z );
+
+  std::cout << "Allocating image: " << width << " " << height << " " << depth << std::endl;
+  osg::ref_ptr < osg::Image > image ( new osg::Image );
+  image->allocateImage ( width, height, depth, GL_LUMINANCE, GL_UNSIGNED_BYTE );
+
+#if 1
+   std::cout << "Copying pixels..." << std::endl;
+  unsigned char *pixels ( image->data() );
+  std::copy ( chars.begin(), chars.end(), pixels );
+
+   std::cout << "Scaling image..." << std::endl;
+  osg::ref_ptr < osg::Image > scaled ( new osg::Image );
+  scaled->allocateImage ( 256, 256, 128, GL_LUMINANCE, GL_UNSIGNED_BYTE );
+  ::memset ( scaled->data(), 0, 256 * 256 * 128 );
+
+  for ( unsigned int r = 0; r < depth; ++r )
+  {
+    for ( unsigned int t = 0; t < height; ++ t )
+    {
+      for ( unsigned int s = 0; s < width; ++ s )
+      {
+        *scaled->data ( s, t, r ) = *image->data ( s, t, r );
+      }
+    }
+  }
+
+  return scaled.release ();
+#else
+  return image.release();
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load job has finished.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::loadJobFinished ( Usul::Jobs::Job* job )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if ( job == _jobForScene.get () )
+  {
+    _jobForScene = 0x0;
+    this->dirty ( true );
+  }
 }

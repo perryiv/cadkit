@@ -55,7 +55,27 @@ ButtonDevice::~ButtonDevice()
 
 unsigned long ButtonDevice::state() const
 {
+  Guard guard ( this->mutex() );
+
   // Jump through these hoops because getData() is not const.
   DI &di = const_cast < DI & > ( _di );
   return static_cast < unsigned long > ( di->getData() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify listeners if state changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ButtonDevice::notify()
+{
+  Guard guard ( this->mutex() );
+
+  // First update state.
+  this->state();
+
+  // Tell every button to notify.
+  //std::for_each ( _buttons.begin(), _buttons.end(), std::mem_fun ( &ButtonDevice::notify ) );
 }

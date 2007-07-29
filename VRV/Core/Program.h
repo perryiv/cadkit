@@ -15,12 +15,14 @@
 
 #include "Threads/OpenThreads/Thread.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Components/Loader.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Console/Feedback.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Trace/Trace.h"
@@ -56,23 +58,40 @@ public:
 
   }
 
+
   ~Program()
   {
+    // Wait for all jobs to finish
+    Usul::Jobs::Manager::instance().wait();
+
+    // Clear any documents.
+    this->_clearDocuments();
+
+    // Delete the job manager.
+    Usul::Jobs::Manager::destroy();
+
+    // There should not be any threads running.
+    Usul::Threads::Manager::instance().wait();
+
+    // Delete all thread objects.
+    Usul::Threads::Manager::instance().purge();
+
+    // Release all libraries that loaded during component creation. 
+    // Note: We should be able to safely do this now that all components 
+    // should have been destroyed.
+    Usul::Components::Manager::instance().clear ( &std::cout );
+
     // Set the mutex factory to null so that we can find late uses of it.
     Usul::Threads::Mutex::createFunction ( 0x0 );
 
     // Clean up the thread manager.
     Usul::Threads::Manager::destroy();
 
-    // Release all libraries that loaded during component creation. 
-    // Note: We should be able to safely do this now that all components 
-    // should have been destroyed.
-    Usul::Components::Manager::instance().clear( &std::cout );
-
     // Delete ostream.
     if ( 0x0 != _trace )
       delete _trace;
   }
+
 
   int run ( int argc, char ** argv )
   {
@@ -108,18 +127,14 @@ public:
     return result;
   }
 
+
   int _run ( int argc, char ** argv )
   {
     // Set the arguments.
     Usul::CommandLine::Arguments::instance().set ( argc, argv );
 
-    // Console Feedback.
-    Usul::Console::Feedback::RefPtr feedback ( new Usul::Console::Feedback );
-
-    // Load the plugins.
-    Usul::Components::Loader < XmlTree::Document > loader;
-    loader.parse ( Usul::App::Application::instance().configFile ( "registry" ) );
-    loader.load ( feedback->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+    // Load the plugins. Not a big deal if it throws.
+    Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Program::_loadPlugins ), "1701127221" );
 
     // Print what we found.
     Usul::Components::Manager::instance().print ( std::cout );
@@ -134,24 +149,24 @@ public:
     // Run the application.
     app.run();
 
-    // Wait for all jobs to finish
-    Usul::Jobs::Manager::instance().wait();
-
-    // The job manager has a thread-pool.
-    Usul::Jobs::Manager::destroy();
-
-    // There should not be any threads running.
-    Usul::Threads::Manager::instance().wait();
-    
-    // Clear any documents.
-    this->_clearDocuments();
-
     // Successs.
     return 0;
   }
 
 
+  void _loadPlugins()
+  {
+    // Console Feedback.
+    Usul::Console::Feedback::RefPtr feedback ( new Usul::Console::Feedback );
+
+    // Load the plugins.
+    Usul::Components::Loader < XmlTree::Document > loader;
+    loader.parse ( Usul::App::Application::instance().configFile ( "registry" ) );
+    loader.load ( feedback->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  }
+
 protected:
+
   //  Clear all the documents.
   void _clearDocuments()
   {

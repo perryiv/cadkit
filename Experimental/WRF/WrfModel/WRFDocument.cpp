@@ -622,7 +622,7 @@ void WRFDocument::_buildScene ( )
     {
       Guard guard ( this->mutex() );
       osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-      mt->setMatrix ( osg::Matrix::rotate ( -osg::PI_2, osg::Y_AXIS ) * osg::Matrix::translate ( _offset ) );
+      mt->setMatrix ( osg::Matrix::rotate ( -osg::PI_2, osg::Z_AXIS ) * osg::Matrix::translate ( _offset ) );
       mt->addChild ( this->_buildVolume ( image.get() ) );
       _root->addChild ( mt.get() );
       OsgTools::GlassBoundingBox gbb ( _bb );

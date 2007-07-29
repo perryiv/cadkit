@@ -776,10 +776,13 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
       for ( unsigned int i = 0; i < _channels; ++ i )
       {
-        ChannelInfo info ( _channelInfo.at ( i ) );
-
-        ReadRequest request ( timestepToLoad, info );
-        requests.push_back ( request );
+        // Only make a request if we don't alreay have the data.
+        if ( false == this->_dataCached ( timestepToLoad, i ) )
+        {
+          ChannelInfo info ( _channelInfo.at ( i ) );
+          ReadRequest request ( timestepToLoad, info );
+          requests.push_back ( request );
+        }
       }
 
       LoadDataJob::RefPtr job ( new LoadDataJob ( requests, this, _parser ) );
@@ -1051,7 +1054,6 @@ osg::Image*  WRFDocument::LoadDataJob::_createImage ( const ReadRequest& request
   unsigned char *pixels ( image->data() );
   std::copy ( chars.begin(), chars.end(), pixels );
 
-   std::cout << "Scaling image..." << std::endl;
   osg::ref_ptr < osg::Image > scaled ( new osg::Image );
   scaled->allocateImage ( 256, 256, 128, GL_LUMINANCE, GL_UNSIGNED_BYTE );
   ::memset ( scaled->data(), 0, 256 * 256 * 128 );

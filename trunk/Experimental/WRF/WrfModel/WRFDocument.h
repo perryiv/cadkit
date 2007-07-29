@@ -159,6 +159,7 @@ private:
   typedef std::vector < ImagePtr >                  ChannelVolumes;
   typedef std::vector < ChannelVolumes >            TimestepsData;
   typedef std::pair < unsigned int, unsigned int >  Request;
+  typedef std::map < Request, Usul::Jobs::Job::RefPtr > Requests;
 
   // Internal job to load data from file.
   class LoadDataJob : public Usul::Jobs::Job
@@ -201,8 +202,9 @@ private:
   osg::BoundingBox _bb;
   bool _dirty;
   TimestepsData _data;
-  std::map < Request, Usul::Jobs::Job::RefPtr > _requests;
+  Requests _requests;
   Usul::Jobs::Job::RefPtr _jobForScene;
+  unsigned int _lastTimestepLoaded;
 };
 
 

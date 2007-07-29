@@ -31,7 +31,6 @@
 #include "VRV/Interfaces/IMenuRead.h"
 #include "VRV/Interfaces/IMenuGet.h"
 
-#include "Usul/Adaptors/Boost.h"
 #include "Usul/App/Application.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
@@ -76,7 +75,7 @@
 #include "MenuKit/MemFunCallback.h"
 
 #include "boost/filesystem/operations.hpp"
-
+#include "Usul/File/Boost.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1075,53 +1074,6 @@ void Application::_initStatusBar()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Predicate to test for a directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace CV 
-{
-  namespace Detail
-  {
-    struct IsDirectory
-    {
-      template < class T >
-      bool operator () ( const T& t ) const
-      {
-        return boost::filesystem::is_directory ( t );
-      }
-    };
-
-    template < class Container >
-    void findFiles ( const boost::filesystem::path & path, const std::string& ext, Container& c )
-    {
-      typedef boost::filesystem::directory_iterator Iterator;
-
-      Iterator iter ( path );
-      Iterator end;
-      for( ; iter != end; ++iter )
-      {
-        const boost::filesystem::path &path = BOOST_FILE_SYSTEM_ITERATOR_TO_PATH ( iter );
-
-        // Make a recursive call if its a directory.
-        if ( boost::filesystem::is_directory ( BOOST_FILE_SYSTEM_ITERATOR_TO_STATUS ( iter ) ) )
-        {
-          findFiles ( path, ext, c );
-        }
-
-        // Add it to our list if its a file and the extenstion matches.
-        else if ( Usul::File::extension ( iter->leaf() ) == ext )
-        {
-          c.push_back ( path.native_directory_string() );
-        }
-      }
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Parse the command-line arguments.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1130,14 +1082,6 @@ void Application::_parseCommandLine()
 {
   ErrorChecker ( 1067093692u, isAppThread(), CV::NOT_APP_THREAD );
 
-  // Extract the restart-files and remove them from the remaining arguments.
-  Parser::Args restart = _parser->files ( ".cv", true );
-
-  // Load the restart files.
-  std::for_each ( restart.begin(),
-                  restart.end(), 
-                  Usul::Adaptors::memberFunction ( this, &Application::_loadRestartFile ) );
-
   // The filenames to load.
   Filenames filenames;
 
@@ -1145,7 +1089,7 @@ void Application::_parseCommandLine()
   Parser::Args directories;
 
   // Extract the files with the given extension.
-  Usul::Algorithms::extract ( Detail::IsDirectory(),
+  Usul::Algorithms::extract ( Usul::File::IsDirectory(),
                               _parser->args(),
                               directories,
                               true );
@@ -1153,8 +1097,8 @@ void Application::_parseCommandLine()
   for ( Parser::Args::iterator iter = directories.begin(); iter != directories.end(); ++ iter )
   {
     // Find the files that we can load.
-    Detail::findFiles ( *iter, "osg", filenames );
-    Detail::findFiles ( *iter, "ive", filenames );
+    Usul::File::findFiles ( *iter, "osg", filenames );
+    Usul::File::findFiles ( *iter, "ive", filenames );
   }
 
   // Extract the model files and remove them from the remaining arguments.
@@ -1216,9 +1160,6 @@ void Application::_latePreFrame()
 
   // Update the analog-input text.
   this->_updateAnalogText();
-
-  // See if there are any commands in the queue.
-  this->_processCommands();
 
   // Process button states.
   this->_processButtons();
@@ -1754,73 +1695,6 @@ void Application::_setNavigator()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Load the restart file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_loadRestartFile ( const std::string &filename )
-{
-  ErrorChecker ( 1071091051u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // The reader type.
-  typedef VRV::Interfaces::IParseRestart Reader;
-
-  // Declare a restart-file reader.
-  Reader::QueryPtr reader ( Usul::Components::Manager::instance().getInterface ( Reader::IID ) );
-
-  if( reader.valid() )
-  {
-    // User feedback.
-    this->_update ( *_msgText, "Reading file: " + filename );
-
-    // Read the file.
-    reader->parseRestartFile ( filename, ValidUnknown ( this ) );
-
-    // User feedback.
-    this->_update ( *_msgText, "Done reading: " + filename );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Read the model from the named source and position it using the matrix.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::requestRead ( const std::string &filename, const Matrix44f &matrix )
-{
-  ErrorChecker ( 1584829920u, isAppThread(), CV::NOT_APP_THREAD );
-
-  try
-  {
-    // Is this function ever called?
-    USUL_ASSERT ( false );
-    // Read the model.
-    //this->_readModel ( filename, matrix );
-  }
-
-  catch ( const std::exception &e )
-  {
-    std::ostringstream out;
-    out << "Error 2802808344: Exception caught when loading file."
-        << "\n\tWhat: " << e.what()
-        << "\n\tFile: " << filename;
-    this->_update ( *_msgText, out.str() );
-  }
-
-  catch ( ... )
-  {
-    std::ostringstream out;
-    out << "Error 4225577750: Unknown exception caught when loading file."
-        << "\n\tFile: " << filename;
-    this->_update ( *_msgText, out.str() );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Run the program.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2061,18 +1935,6 @@ void Application::_updateAnalogText()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Process the command queue.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_processCommands()
-{
-  ErrorChecker ( 1075270955, isAppThread(), CV::NOT_APP_THREAD );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Reference.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2108,8 +1970,6 @@ Usul::Interfaces::IUnknown *Application::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IUnknown::IID:
   case CV::Interfaces::IAuxiliaryScene::IID:
     return static_cast<CV::Interfaces::IAuxiliaryScene *>(this);
-  case VRV::Interfaces::IRequestRead::IID:
-    return static_cast<VRV::Interfaces::IRequestRead *>(this);
   case CV::Interfaces::IVisibility::IID:
     return _iVisibility.get();
   case CV::Interfaces::ISelection::IID:

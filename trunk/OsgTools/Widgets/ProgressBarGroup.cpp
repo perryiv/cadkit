@@ -300,14 +300,13 @@ osg::Node * ProgressBarGroup::buildScene()
 
     matrix->setMatrix ( osg::Matrix::translate( _position[0], _position[1], _position[2] ) );
     if ( _isRelativeToAbsolute )
-    matrix->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
+      matrix->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
 
     // Get a copy of the bars.
     Bars bars;
     {
       Guard guard ( this->mutex() );
       bars = _bars;
-     
     }
 
     osg::Vec3 currentPosition ( _padding, _padding, 0.0 );

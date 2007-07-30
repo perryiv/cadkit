@@ -11,6 +11,7 @@
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/System/Directory.h"
+#include "Usul/Predicates/FileExists.h"
 
 #include <algorithm>
 
@@ -172,6 +173,12 @@ const std::string& Application::program () const
 
 std::string Application::configFile ( const std::string& name )
 {
+  {
+    std::string filename ( Usul::CommandLine::Arguments::instance().directory() + "/" + name + ".xml" );
+    if( Usul::Predicates::FileExists::test ( filename ) )
+      return filename;
+  }
+
   std::string home ( Usul::System::Directory::home( true ) );
 
   std::string programName ( this->program() );

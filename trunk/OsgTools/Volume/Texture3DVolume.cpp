@@ -45,6 +45,8 @@ _transferFunction ( 0x0, 0 )
   // Turn off back face culling
   ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
 
+  ss->setRenderBinDetails ( 1000, "RenderBin" );
+
   // Add the planes.
   this->addDrawable ( _geometry.get() );
 }

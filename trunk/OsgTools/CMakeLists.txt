@@ -133,8 +133,8 @@ SET (SOURCES
   Widgets/ProgressBarGroup.cpp
   Widgets/Helper/ThreadSafeText.cpp
   Widgets/Helper/UpdateProgress.cpp
-  #Volume/PlanarProxyGeometry.cpp
-  #Volume/Texture3DVolume.cpp
+  Volume/PlanarProxyGeometry.cpp
+  Volume/Texture3DVolume.cpp
 )
 
 # Create a Shared Library

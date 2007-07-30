@@ -1,11 +1,12 @@
-/*
- *  GlassBoundingBox.h
- *  OsgTools
- *
- *  Created by Michael A Jackson on 7/27/05.
- *  Copyright 2005 __MyCompanyName__. All rights reserved.
- *
- */
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2005, Mike Jackson
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by Michael A Jackson on 7/27/05.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 #ifndef _OSG_TOOLS_GLASS_BOUNDING_BOX_H_
 #define _OSG_TOOLS_GLASS_BOUNDING_BOX_H_
@@ -33,12 +34,13 @@ public:
   
   //Construction
   GlassBoundingBox();
-  GlassBoundingBox(const float xMin, const float yMin, float const zMin,
-                   const float xMax, const float yMax, float const zMax);
+  GlassBoundingBox( const float xMin, const float yMin, float const zMin,
+                    const float xMax, const float yMax, float const zMax );
   GlassBoundingBox( const osg::BoundingBox& );
   
   //Get the OSG Node to render
   void        operator() ( osg::Group *root, bool outline, bool glass, bool numbers = false );
+  osg::Node*  operator() ( bool outline, bool glass, bool numbers = false );
   
     //Get/Set the Max and Min Values for the XYZ coordinates
   void                    xMax ( float );
@@ -63,14 +65,6 @@ protected:
   osg::Node*          _makeNumbers    ( );
   osg::Drawable*      _makeNumber     ( const std::string& name, const osg::Vec3& pos, const osg::Vec4& color, float size );
   osg::Drawable*      _makeNumber     ( float number, const osg::Vec3& pos, const osg::Vec4& color, float size );
-
-  //init each of the six sides of the Cube;
-  osg::Node*          _initXYMax();
-  osg::Node*          _initXYMin();
-  osg::Node*          _initXZMax();
-  osg::Node*          _initXZMin();
-  osg::Node*          _initYZMax();
-  osg::Node*          _initYZMin();
 
 private:
   float _xMax;

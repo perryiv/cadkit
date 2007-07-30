@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2005, Mike Jackson
@@ -14,6 +15,8 @@
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Callbacks/SortBackToFront.h"
 #include "OsgTools/Font.h"
+#include "OsgTools/ShapeFactory.h"
+#include "OsgTools/DisplayLists.h"
 
 #include "osg/Group"
 #include "osg/Geode"
@@ -23,6 +26,8 @@
 #include "osg/StateSet"
 #include "osg/AlphaFunc"
 #include "osg/StateSet"
+#include "osg/Material"
+#include "osg/MatrixTransform"
 
 #include "osgText/Text"
 
@@ -103,8 +108,6 @@ void GlassBoundingBox::operator() ( osg::Group *root, bool outline, bool glass, 
   // Fill the vertices
   for( unsigned int i = 0; i < 8; ++i )
     vertices->push_back ( bb.corner( i ) );
-  
-  
 
   if( outline )
     root->addChild ( this->_makeBoxOutline ( *vertices ) );
@@ -119,6 +122,21 @@ void GlassBoundingBox::operator() ( osg::Group *root, bool outline, bool glass, 
     root->addChild( this->_makeNumbers() );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create the node
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* GlassBoundingBox::operator() ( bool outline, bool glass, bool numbers )
+{
+  osg::ref_ptr < osg::Group > group ( new osg::Group );
+  ( *this ) ( group.get(), outline, glass, numbers );
+  return group.release ();
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Creates the "Box" outline
@@ -127,6 +145,9 @@ void GlassBoundingBox::operator() ( osg::Group *root, bool outline, bool glass, 
 
 osg::Node* GlassBoundingBox::_makeBoxOutline ( osg::Vec3Array& vertices )
 {
+  osg::Vec4 yellow ( 1.0f, 1.0f, 0.0f, 1.0f );
+
+#if 1
   typedef osg::DrawElementsUInt DrawElements;
   
   osg::ref_ptr< DrawElements > lines  ( new DrawElements ( osg::PrimitiveSet::LINES, 0 ) );
@@ -173,7 +194,6 @@ osg::Node* GlassBoundingBox::_makeBoxOutline ( osg::Vec3Array& vertices )
   
   colors->resize ( 12 );
 
-  osg::Vec4 yellow (1.0f, 1.0f, 0.0f, 1.0f);
   std::fill( colors->begin(), colors->end(), yellow );
   
   geometry->setColorArray ( colors.get() );
@@ -187,7 +207,71 @@ osg::Node* GlassBoundingBox::_makeBoxOutline ( osg::Vec3Array& vertices )
   
   geode->addDrawable ( geometry.get() );
 
+  osg::ref_ptr < osg::StateSet > ss ( geode->getOrCreateStateSet() );
+
+  // Turn off back face culling
+  //ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
+
   return geode.release();
+#else
+  osg::BoundingBox bb( _xMin,_yMin,_zMin,_xMax,_yMax,_zMax );
+
+  osg::ref_ptr < osg::Group > group ( new osg::Group );
+  osg::StateSet *ss ( group->getOrCreateStateSet () );
+
+  osg::Material *mat ( new osg::Material );
+  //mat->setDiffuse ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 255.0 / 255.0, 164.5 / 255.0, 85.0 / 255.0, 1 ) );
+  mat->setDiffuse ( osg::Material::FRONT_AND_BACK, yellow );
+  mat->setAmbient ( osg::Material::FRONT_AND_BACK, yellow );
+
+  ss->setAttribute( mat, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+
+  // Turn on lighting.
+  OsgTools::State::StateSet::setLighting ( group.get(), true );
+
+  float radius ( 100.0f );
+
+  osg::ref_ptr< OsgTools::ShapeFactory > sf ( new OsgTools::ShapeFactory );
+  osg::Geode *geode ( new osg::Geode );
+  geode->addDrawable ( sf->cylinder ( radius, 20, bb.corner( 4 ), bb.corner( 5 ) ) );
+  geode->addDrawable ( sf->cylinder ( radius, 20, bb.corner( 5 ), bb.corner( 7 ) ) );
+  geode->addDrawable ( sf->cylinder ( radius, 20, bb.corner( 7 ), bb.corner( 6 ) ) );
+  geode->addDrawable ( sf->cylinder ( radius, 20, bb.corner( 6 ), bb.corner( 4 ) ) );
+  geode->addDrawable ( sf->cylinder ( radius, 20, bb.corner( 3 ), bb.corner( 7 ) ) );
+  geode->addDrawable ( sf->cylinder ( radius, 20, bb.corner( 1 ), bb.corner( 5 ) ) );
+  geode->addDrawable ( sf->cylinder ( radius, 20, bb.corner( 3 ), bb.corner( 2 ) ) );
+  geode->addDrawable ( sf->cylinder ( radius, 20, bb.corner( 1 ), bb.corner( 0 ) ) );
+  geode->addDrawable ( sf->cylinder ( radius, 20, bb.corner( 3 ), bb.corner( 1 ) ) );
+  geode->addDrawable ( sf->cylinder ( radius, 20, bb.corner( 2 ), bb.corner( 0 ) ) );
+  geode->addDrawable ( sf->cylinder ( radius, 20, bb.corner( 2 ), bb.corner( 6 ) ) );
+  geode->addDrawable ( sf->cylinder ( radius, 20, bb.corner( 4 ), bb.corner( 0 ) ) );
+
+  group->addChild ( geode );
+  
+  for ( unsigned int i = 0; i < 8; ++i )
+  {
+    osg::ref_ptr < osg::Geode > g ( new osg::Geode );
+    osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+    mt->setMatrix ( osg::Matrix::translate ( bb.corner( i ) ) );
+
+    mt->addChild ( g.get () );
+    group->addChild ( mt.get() );
+
+    OsgTools::ShapeFactory::MeshSize size ( 20, 20 );
+    g->addDrawable ( sf->sphere ( radius * 1.2f , size ) );
+  }
+  
+  OsgTools::State::StateSet::setLighting ( group.get(), true );
+
+  // Turn off back face culling
+  ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
+
+  // Turn off display lits.
+  //OsgTools::DisplayLists dl ( false );
+  //dl ( group.get() );
+
+  return group.release( );
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -287,375 +371,6 @@ osg::Node* GlassBoundingBox::_makeBoxGlass   ( osg::Vec3Array& vertices )
   geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
 
   geode->addDrawable( geometry.get() );
-
-  return geode.release();
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Init the Plane that is parallel with the XY Axis, and set at the Min Z
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* GlassBoundingBox::_initXYMin()
-{
-  osg::ref_ptr < osg::Geometry > polyGeom ( new osg::Geometry );
-  osg::Vec3 myCoords[] =
-  {
-    osg::Vec3(_xMin, _yMin, _zMin),
-    osg::Vec3(_xMin, _yMax, _zMin),
-    osg::Vec3(_xMax, _yMax, _zMin),
-    osg::Vec3(_xMax, _yMin, _zMin)
-  };
-  
-  int numCoords = sizeof(myCoords)/sizeof(osg::Vec3);
-  
-  osg::Vec3Array* vertices = new osg::Vec3Array(numCoords, myCoords);
-  osg::ref_ptr<osg::Vec4Array> shared_colors = new osg::Vec4Array;
-  shared_colors->push_back(osg::Vec4(0.05f,0.05f,0.05f,0.25f));
-  
-    // same trick for shared normal.
-  osg::ref_ptr<osg::Vec3Array> shared_normals = new osg::Vec3Array;
-  shared_normals->push_back(osg::Vec3(0.0f,0.0f,-1.0f));
-        // pass the created vertex array to the points geometry object.
-  polyGeom->setVertexArray(vertices);
-  
-        // use the color array.
-  polyGeom->setColorArray(shared_colors.get());
-  polyGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
-  
-        // use the normal array.
-  polyGeom->setNormalArray(shared_normals.get());
-  polyGeom->setNormalBinding(osg::Geometry::BIND_OVERALL);
-  
-        // This time we simply use primitive, and hardwire the number of coords to use 
-        // since we know up front,
-  polyGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::POLYGON,0,numCoords));
-  
-    // add the points geomtry to the geode.
-  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-  osg::StateSet* stateset = polyGeom->getOrCreateStateSet();
-  
-  stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
-  osg::AlphaFunc* alphaFunc = new osg::AlphaFunc;
-  alphaFunc->setFunction(osg::AlphaFunc::GEQUAL,0.05f);
-  stateset->setAttributeAndModes( alphaFunc,osg::StateAttribute::ON );
-  stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-  stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-  polyGeom->setStateSet(stateset);
-  
-  geode->addDrawable( polyGeom.get() );
-
-  osg::ref_ptr< osg::StateSet > ss ( geode->getOrCreateStateSet() );
-  ss->setMode(GL_CULL_FACE,osg::StateAttribute::ON );
-
-  return geode.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Init the Plane that is parallel with the XY Axis, and set at the Max Z
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* GlassBoundingBox::_initXYMax()
-{
-    osg::ref_ptr < osg::Geometry > polyGeom ( new osg::Geometry );
-    osg::Vec3 myCoords[] =
-  {
-    osg::Vec3(_xMax, _yMin, _zMax),
-    osg::Vec3(_xMax, _yMax, _zMax),
-    osg::Vec3(_xMin, _yMax, _zMax),
-    osg::Vec3(_xMin, _yMin, _zMax)
-  };
-
-  int numCoords = sizeof(myCoords)/sizeof(osg::Vec3);
-
-  osg::Vec3Array* vertices = new osg::Vec3Array(numCoords, myCoords);
-  osg::ref_ptr<osg::Vec4Array> shared_colors = new osg::Vec4Array;
-  shared_colors->push_back(osg::Vec4(0.05f,0.05f,0.05f,0.25f));
-
-      // same trick for shared normal.
-  osg::ref_ptr<osg::Vec3Array> shared_normals = new osg::Vec3Array;
-  shared_normals->push_back(osg::Vec3(0.0f,0.0f,1.0f));
-          // pass the created vertex array to the points geometry object.
-  polyGeom->setVertexArray(vertices);
-
-          // use the color array.
-  polyGeom->setColorArray(shared_colors.get());
-  polyGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
-
-          // use the normal array.
-  polyGeom->setNormalArray(shared_normals.get());
-  polyGeom->setNormalBinding(osg::Geometry::BIND_OVERALL);
-
-          // This time we simply use primitive, and hardwire the number of coords to use 
-          // since we know up front,
-  polyGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::POLYGON,0,numCoords));
-
-      // add the points geomtry to the geode.
-  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-  osg::StateSet* stateset = polyGeom->getOrCreateStateSet();
-
-  stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
-  osg::AlphaFunc* alphaFunc = new osg::AlphaFunc;
-  alphaFunc->setFunction(osg::AlphaFunc::GEQUAL,0.05f);
-  stateset->setAttributeAndModes( alphaFunc,osg::StateAttribute::ON );
-  stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-  stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-  polyGeom->setStateSet(stateset);
-
-  geode->addDrawable( polyGeom.get() );
-
-  osg::ref_ptr< osg::StateSet > ss ( geode->getOrCreateStateSet() );
-  ss->setMode(GL_CULL_FACE,osg::StateAttribute::ON );
-
-  return geode.release();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Init the Plane that is parallel with the XZ Axis, and set at the Min Y
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* GlassBoundingBox::_initXZMin()
-{
-  osg::ref_ptr < osg::Geometry > polyGeom ( new osg::Geometry );
-  osg::Vec3 myCoords[] =
-  {
-    osg::Vec3(_xMax, _yMin, _zMax),
-    osg::Vec3(_xMin, _yMin, _zMax),
-    osg::Vec3(_xMin, _yMin, _zMin),
-    osg::Vec3(_xMax, _yMin, _zMin)
-  };
-
-  int numCoords = sizeof(myCoords)/sizeof(osg::Vec3);
-
-  osg::Vec3Array* vertices = new osg::Vec3Array(numCoords, myCoords);
-  osg::ref_ptr<osg::Vec4Array> shared_colors = new osg::Vec4Array;
-  shared_colors->push_back(osg::Vec4(0.20f,0.00f,0.00f,0.25f));
-
-  // same trick for shared normal.
-  osg::ref_ptr<osg::Vec3Array> shared_normals = new osg::Vec3Array;
-  shared_normals->push_back(osg::Vec3(0.0f,-1.0f,0.0f));
-  // pass the created vertex array to the points geometry object.
-  polyGeom->setVertexArray(vertices);
-
-  // use the color array.
-  polyGeom->setColorArray(shared_colors.get());
-  polyGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
-
-  // use the normal array.
-  polyGeom->setNormalArray(shared_normals.get());
-  polyGeom->setNormalBinding(osg::Geometry::BIND_OVERALL);
-
-  // This time we simply use primitive, and hardwire the number of coords to use 
-  // since we know up front,
-  polyGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::POLYGON,0,numCoords));
-
-  // add the points geomtry to the geode.
-  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-  osg::StateSet* stateset = polyGeom->getOrCreateStateSet();
-
-  stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
-  osg::AlphaFunc* alphaFunc = new osg::AlphaFunc;
-  alphaFunc->setFunction(osg::AlphaFunc::GEQUAL,0.05f);
-  stateset->setAttributeAndModes( alphaFunc,osg::StateAttribute::ON );
-  stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-  stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-  polyGeom->setStateSet(stateset);
-
-  geode->addDrawable( polyGeom.get() );
-
-  osg::ref_ptr< osg::StateSet > ss ( geode->getOrCreateStateSet() );
-  ss->setMode(GL_CULL_FACE,osg::StateAttribute::ON );
-
-  return geode.release();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Init the Plane that is parallel with the XZ Axis, and set at the Max Y
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* GlassBoundingBox::_initXZMax()
-{
-    osg::ref_ptr < osg::Geometry > polyGeom ( new osg::Geometry );
-    osg::Vec3 myCoords[] =
-  {
-    osg::Vec3(_xMax, _yMax, _zMin),
-    osg::Vec3(_xMin, _yMax, _zMin),
-    osg::Vec3(_xMin, _yMax, _zMax),
-    osg::Vec3(_xMax, _yMax, _zMax)
-  };
-
-  int numCoords = sizeof(myCoords)/sizeof(osg::Vec3);
-
-  osg::Vec3Array* vertices = new osg::Vec3Array(numCoords, myCoords);
-  osg::ref_ptr<osg::Vec4Array> shared_colors = new osg::Vec4Array;
-  shared_colors->push_back(osg::Vec4(0.20f,0.00f,0.00f,0.25f));
-
-        // same trick for shared normal.
-  osg::ref_ptr<osg::Vec3Array> shared_normals = new osg::Vec3Array;
-  shared_normals->push_back(osg::Vec3(0.0f,-1.0f,0.0f));
-            // pass the created vertex array to the points geometry object.
-  polyGeom->setVertexArray(vertices);
-
-            // use the color array.
-  polyGeom->setColorArray(shared_colors.get());
-  polyGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
-
-            // use the normal array.
-  polyGeom->setNormalArray(shared_normals.get());
-  polyGeom->setNormalBinding(osg::Geometry::BIND_OVERALL);
-
-            // This time we simply use primitive, and hardwire the number of coords to use 
-            // since we know up front,
-  polyGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::POLYGON,0,numCoords));
-
-        // add the points geomtry to the geode.
-  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-  osg::StateSet* stateset = polyGeom->getOrCreateStateSet();
-
-  stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
-  osg::AlphaFunc* alphaFunc = new osg::AlphaFunc;
-  alphaFunc->setFunction(osg::AlphaFunc::GEQUAL,0.05f);
-  stateset->setAttributeAndModes( alphaFunc,osg::StateAttribute::ON );
-  stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-  stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-  polyGeom->setStateSet(stateset);
-
-  geode->addDrawable( polyGeom.get() );
-
-  osg::ref_ptr< osg::StateSet > ss ( geode->getOrCreateStateSet() );
-  ss->setMode(GL_CULL_FACE,osg::StateAttribute::ON );
-
-  return geode.release();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Init the Plane that is parallel with the YZ Axis, and set at the Min X
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* GlassBoundingBox::_initYZMin()
-{
-  osg::ref_ptr < osg::Geometry > polyGeom ( new osg::Geometry );
-  osg::Vec3 myCoords[] =
-  {
-    osg::Vec3(_xMin, _yMax, _zMin),  
-    osg::Vec3(_xMin, _yMin, _zMin),
-    osg::Vec3(_xMin, _yMin, _zMax),
-    osg::Vec3(_xMin, _yMax, _zMax)
-  };
-
-  int numCoords = sizeof(myCoords)/sizeof(osg::Vec3);
-
-  osg::Vec3Array* vertices = new osg::Vec3Array(numCoords, myCoords);
-  osg::ref_ptr<osg::Vec4Array> shared_colors = new osg::Vec4Array;
-  shared_colors->push_back(osg::Vec4(0.0f,0.00f,0.20f,0.25f));
-
-        // same trick for shared normal.
-  osg::ref_ptr<osg::Vec3Array> shared_normals = new osg::Vec3Array;
-  shared_normals->push_back(osg::Vec3(-1.0f,0.0f,0.0f));
-            // pass the created vertex array to the points geometry object.
-  polyGeom->setVertexArray(vertices);
-
-            // use the color array.
-  polyGeom->setColorArray(shared_colors.get());
-  polyGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
-
-            // use the normal array.
-  polyGeom->setNormalArray(shared_normals.get());
-  polyGeom->setNormalBinding(osg::Geometry::BIND_OVERALL);
-
-            // This time we simply use primitive, and hardwire the number of coords to use 
-            // since we know up front,
-  polyGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::POLYGON,0,numCoords));
-
-        // add the points geomtry to the geode.
-  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-  osg::StateSet* stateset = polyGeom->getOrCreateStateSet();
-
-  stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
-  osg::AlphaFunc* alphaFunc = new osg::AlphaFunc;
-  alphaFunc->setFunction(osg::AlphaFunc::GEQUAL,0.05f);
-  stateset->setAttributeAndModes( alphaFunc,osg::StateAttribute::ON );
-  stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-  stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-  polyGeom->setStateSet(stateset);
-
-  geode->addDrawable( polyGeom.get() );
-
-  osg::ref_ptr< osg::StateSet > ss ( geode->getOrCreateStateSet() );
-  ss->setMode(GL_CULL_FACE,osg::StateAttribute::ON );
-
-  return geode.release();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Init the Plane that is parallel with the YZ Axis, and set at the Max X
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* GlassBoundingBox::_initYZMax()
-{
-  osg::ref_ptr < osg::Geometry > polyGeom ( new osg::Geometry );
-  osg::Vec3 myCoords[] =
-  {
-  osg::Vec3(_xMax, _yMax, _zMax),
-  osg::Vec3(_xMax, _yMin, _zMax),
-  osg::Vec3(_xMax, _yMin, _zMin),
-  osg::Vec3(_xMax, _yMax, _zMin)
-  };
-
-  int numCoords = sizeof(myCoords)/sizeof(osg::Vec3);
-
-  osg::Vec3Array* vertices = new osg::Vec3Array(numCoords, myCoords);
-  osg::ref_ptr<osg::Vec4Array> shared_colors = new osg::Vec4Array;
-  shared_colors->push_back(osg::Vec4(0.00f,0.00f,0.20f,0.25f));
-
-  // same trick for shared normal.
-  osg::ref_ptr<osg::Vec3Array> shared_normals = new osg::Vec3Array;
-  shared_normals->push_back(osg::Vec3(1.0f,0.0f,0.0f));
-  // pass the created vertex array to the points geometry object.
-  polyGeom->setVertexArray(vertices);
-
-  // use the color array.
-  polyGeom->setColorArray(shared_colors.get());
-  polyGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
-
-  // use the normal array.
-  polyGeom->setNormalArray(shared_normals.get());
-  polyGeom->setNormalBinding(osg::Geometry::BIND_OVERALL);
-
-  // This time we simply use primitive, and hardwire the number of coords to use 
-  // since we know up front,
-  polyGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::POLYGON,0,numCoords));
-
-  // add the points geomtry to the geode.
-  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-  osg::StateSet* stateset = polyGeom->getOrCreateStateSet();
-
-  stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
-  osg::AlphaFunc* alphaFunc = new osg::AlphaFunc;
-  alphaFunc->setFunction(osg::AlphaFunc::GEQUAL,0.05f);
-  stateset->setAttributeAndModes( alphaFunc,osg::StateAttribute::ON );
-  stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-  stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-  polyGeom->setStateSet(stateset);
-
-  geode->addDrawable( polyGeom.get() );
-
-  osg::ref_ptr< osg::StateSet > ss ( geode->getOrCreateStateSet() );
-  ss->setMode(GL_CULL_FACE,osg::StateAttribute::ON );
 
   return geode.release();
 }

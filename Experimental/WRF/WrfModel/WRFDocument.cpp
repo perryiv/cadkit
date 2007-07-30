@@ -616,17 +616,22 @@ void WRFDocument::_buildScene ( )
       _jobForScene = 0x0;
     }
 
+    // Get the 3D image for the volume.
     ImagePtr image ( this->_volume ( _currentTimestep, _currentChannel ) );
+
+    // Matrix transform to place the volume.
+    osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+    mt->setMatrix ( osg::Matrix::rotate ( -osg::PI_2, osg::Z_AXIS ) * osg::Matrix::translate ( _offset ) );
+    mt->addChild ( this->_buildVolume ( image.get() ) );
+
+    // Make a bounding box around the volume.
+    OsgTools::GlassBoundingBox gbb ( _bb );
+    gbb ( mt.get(), true, false, false );
 
     // Add the volume to the scene.
     {
-      Guard guard ( this->mutex() );
-      osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-      mt->setMatrix ( osg::Matrix::rotate ( -osg::PI_2, osg::Z_AXIS ) * osg::Matrix::translate ( _offset ) );
-      mt->addChild ( this->_buildVolume ( image.get() ) );
+      Guard guard ( this->mutex() );      
       _root->addChild ( mt.get() );
-      OsgTools::GlassBoundingBox gbb ( _bb );
-      gbb ( mt.get(), true, false, false );
     }
   }
 
@@ -750,12 +755,14 @@ osg::Node * WRFDocument::_buildProxyGeometry ()
   gbb ( group.get(), true, false, false );
 
   osg::ref_ptr< osgText::Text > text ( new osgText::Text );
-  text->setFont( OsgTools::Font::defaultFont());
+  text->setFont( OsgTools::Font::defaultFont() );
   text->setColor( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
-  text->setCharacterSize( 25 );
+  text->setCharacterSize( 50 );
+  text->setCharacterSizeMode ( osgText::Text::SCREEN_COORDS );
   text->setPosition ( _bb.center() );
   text->setText( "Loading..." );
   text->setAutoRotateToScreen( true );
+  text->setUseDisplayList ( false );
   text->setFontResolution( 40, 40 );
 
   osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
@@ -904,7 +911,7 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
   static unsigned int num ( 0 );
   ++num;
-  if ( this->animating() && num % 2 == 0 )
+  if ( this->animating() && num % 60 == 0 )
   {
     unsigned int currentTimestep ( this->getCurrentTimeStep () );
     this->setCurrentTimeStep ( ++currentTimestep );

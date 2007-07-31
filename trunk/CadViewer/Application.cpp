@@ -1976,8 +1976,6 @@ Usul::Interfaces::IUnknown *Application::queryInterface ( unsigned long iid )
     return _iSelection.get();
   case CV::Interfaces::IMaterialStack::IID:
     return _iMaterialStack.get();
-  case Usul::Interfaces::IActiveDocumentListener::IID:
-    return static_cast < Usul::Interfaces::IActiveDocumentListener * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -2254,11 +2252,11 @@ void Application::_exportImage ( MenuKit::Message m, MenuKit::Item *item )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_updateNotify ()
+void Application::_updateNotify()
 {
-  if ( false == _menu->isVisible () )
+  if ( true == _menu.valid() && false == _menu->isVisible() )
   {
-    BaseClass::_updateNotify ();
+    BaseClass::_updateNotify();
   }
 }
 
@@ -2271,6 +2269,9 @@ void Application::_updateNotify ()
 
 void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
 {
+  // Redirect first.
+  BaseClass::activeDocumentChanged ( oldDoc, newDoc );
+
   // Rebuild the menu.
-  this->_initMenu ();
+  this->_initMenu();
 }

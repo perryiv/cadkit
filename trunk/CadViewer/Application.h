@@ -26,7 +26,6 @@
 
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/CommandLine/Parser.h"
-#include "Usul/Interfaces/IActiveDocumentListener.h"
 
 #include "VRV/Core/Application.h"
 #include "VRV/Functors/Matrix/MatrixFunctor.h"
@@ -47,8 +46,7 @@ namespace CV {
 	
 // The CadViewer application
 class Application : public VRV::Core::Application,
-                    public CV::Interfaces::IAuxiliaryScene,
-                    public Usul::Interfaces::IActiveDocumentListener
+                    public CV::Interfaces::IAuxiliaryScene
 {
 public:
 
@@ -221,7 +219,7 @@ protected:
   /// Update notify.
   virtual void                  _updateNotify ();
 
-  /// Usul::Interfaces::IActiveDocumentChanged
+  /// Usul::Interfaces::IActiveDocumentListener
   /// The active document has changed.
   virtual void                  activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc );
 

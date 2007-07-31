@@ -69,7 +69,6 @@ MinervaVR::MinervaVR( Args& args ) :
   _background( 0.0, 0.0, 0.0, 1.0 ),
   _updateThread ( 0x0 ),
   _rand ( 0, 5 ),
-  _commandQueue (),
   _navigator ( 0x0 )
 {
   USUL_TRACE_SCOPE;
@@ -112,12 +111,6 @@ MinervaVR::~MinervaVR()
   // Kill the update thread.
   if( _updateThread.valid() )
     _updateThread->kill();
-
-  // Clear the thread pool
-  Usul::Jobs::Manager::destroy();
-
-  // Wait until all threads are done.
-  Usul::Threads::Manager::instance().wait();
 }
 
 
@@ -165,16 +158,16 @@ void MinervaVR::init()
 
   this->setBackgroundColor( _background );
 
-  float near ( 0.000001 ), far ( 15.0 );
+  float zNear ( 0.000001 ), zFar ( 15.0 );
 
   if ( _options.option ( NEAR_FAR ) )
   {
     std::istringstream in ( _options.value ( NEAR_FAR ) );
-    in >> near >> far;
+    in >> zNear >> zFar;
   }
 
   // Set the near and far planes.
-  this->setClippingDistances ( near, far );
+  this->setClippingDistances ( zNear, zFar );
 
   // Initialize the legend.
   this->_initLegend();
@@ -263,9 +256,6 @@ void MinervaVR::preFrame()
     sizeSet = true;
   }
 
-  // Purge any threads that may be finished.
-  Usul::Threads::Manager::instance().purge();
-
   // Launch the update thread if it stopped.
   if( _updateThread->isIdle() )
   {
@@ -303,8 +293,6 @@ void MinervaVR::postFrame()
   try
   {
     BaseClass::postFrame();
-
-    this->_processCommands();
   }
   catch ( const std::exception& e )
   {
@@ -506,47 +494,6 @@ void MinervaVR::_initLight()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Process commands in the queue.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaVR::_processCommands ()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  while ( false == _commandQueue.empty() )
-  {
-    // Get the first command.
-    CommandPtr command ( _commandQueue.front() );
-
-    // Remove it from the list.
-    _commandQueue.pop_front();
-
-    // Execute the command.
-    if( command.valid() )
-      command->execute ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add a command.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaVR::addCommand ( Usul::Interfaces::ICommand* command )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  _commandQueue.push_back ( command );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Query for an interface.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -558,10 +505,8 @@ Usul::Interfaces::IUnknown* MinervaVR::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IUnknown::IID:
   case Minerva::Interfaces::IAnimationControl::IID:
     return static_cast < Minerva::Interfaces::IAnimationControl * > ( this );
-  case Usul::Interfaces::ICommandQueueAdd::IID:
-    return static_cast < Usul::Interfaces::ICommandQueueAdd * > ( this );
   default:
-    return 0x0;
+    return BaseClass::queryInterface ( iid );
   }
 }
 

@@ -27,10 +27,6 @@
 #include "CadViewer/Pick/Select.h"
 #include "CadViewer/Pick/Seek.h"
 
-#include "VRV/Interfaces/IParseRestart.h"
-#include "VRV/Interfaces/IMenuRead.h"
-#include "VRV/Interfaces/IMenuGet.h"
-
 #include "Usul/App/Application.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
@@ -272,9 +268,6 @@ Application::Application ( Args &args ) :
   _iVisibility    = Manager::instance().getInterface( CV::Interfaces::IVisibility::IID );
   _iSelection     = Manager::instance().getInterface( CV::Interfaces::ISelection::IID );
   _iMaterialStack = Manager::instance().getInterface( CV::Interfaces::IMaterialStack::IID );
-
-  // Add our self to the list of active document listeners.
-  Usul::Documents::Manager::instance().addActiveDocumentListener ( this );
 }
 
 
@@ -286,9 +279,6 @@ Application::Application ( Args &args ) :
 
 Application::~Application()
 {  
-  // Remove our self from the list of active document listeners.
-  Usul::Documents::Manager::instance().removeActiveDocumentListener ( this );
-
   _gridFunctors.clear();
 }
 

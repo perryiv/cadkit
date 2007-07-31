@@ -10,8 +10,14 @@
 #include "Magrathea/Planet.h"
 
 #include "Usul/Interfaces/IViewMatrix.h"
+#include "Usul/Interfaces/ICullSceneVisitor.h"
+#include "Usul/Interfaces/IFrameStamp.h"
+#include "Usul/Interfaces/IUpdateSceneVisitor.h"
+#include "Usul/Trace/Trace.h"
 
 #include "osgDB/Registry"
+#include "osgUtil/CullVisitor"
+#include "osgUtil/UpdateVisitor"
 
 #include "ossimPlanet/ossimPlanetDatabasePager.h"
 #include "ossimPlanet/ossimPlanetTextureLayerRegistry.h"
@@ -678,4 +684,75 @@ void Planet::absoluteDifference()
 void Planet::falseColorReplacement()
 {
   _layerManipulator->falseColorReplacement();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Pre-render notification.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::preRender ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
+  if ( ( true == fs.valid() ) && ( 0x0 != fs->frameStamp() ) )
+  {
+    _databasePager->signalBeginFrame ( fs->frameStamp() );
+    _databasePager->updateSceneGraph ( fs->frameStamp()->getReferenceTime() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Pre-render notification.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::postRender ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+ 
+  _databasePager->signalEndFrame();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the cull and update visitors of the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::initVisitors ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Set cull visitor's database pager.
+  {
+    Usul::Interfaces::ICullSceneVisitor::QueryPtr getVisitor ( caller );
+    if ( true == getVisitor.valid() )
+    {
+      osg::ref_ptr<osgUtil::CullVisitor> visitor ( getVisitor->getCullSceneVisitor ( 0x0 ) );
+      if ( true == visitor.valid() )
+      {
+        visitor->setDatabaseRequestHandler ( _databasePager.get() );
+      }
+    }
+  }
+
+  // Set update visitor's database pager.
+  {
+    Usul::Interfaces::IUpdateSceneVisitor::QueryPtr getVisitor ( caller );
+    if ( true == getVisitor.valid() )
+    {
+      osg::ref_ptr<osg::NodeVisitor> visitor ( getVisitor->getUpdateSceneVisitor ( 0x0 ) );
+      if ( true == visitor.valid() )
+      {
+        visitor->setDatabaseRequestHandler ( _databasePager.get() );
+      }
+    }
+  }
 }

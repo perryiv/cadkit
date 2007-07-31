@@ -13,7 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "TrackerDevice.h"
+#include "VRV/Devices/TrackerDevice.h"
 
 using namespace VRV::Devices;
 

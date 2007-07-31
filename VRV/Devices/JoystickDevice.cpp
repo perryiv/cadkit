@@ -13,7 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "JoystickDevice.h"
+#include "VRV/Devices/JoystickDevice.h"
 
 using namespace VRV::Devices;
 

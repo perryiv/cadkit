@@ -219,7 +219,6 @@ protected:
   /// Update notify.
   virtual void                  _updateNotify ();
 
-  /// Usul::Interfaces::IActiveDocumentListener
   /// The active document has changed.
   virtual void                  activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc );
 

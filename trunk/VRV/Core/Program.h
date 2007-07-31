@@ -127,6 +127,7 @@ public:
     return result;
   }
 
+protected:
 
   int _run ( int argc, char ** argv )
   {
@@ -164,8 +165,6 @@ public:
     loader.parse ( Usul::App::Application::instance().configFile ( "registry" ) );
     loader.load ( feedback->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
   }
-
-protected:
 
   //  Clear all the documents.
   void _clearDocuments()

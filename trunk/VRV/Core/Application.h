@@ -32,8 +32,12 @@
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/IUpdateSubject.h"
 #include "Usul/Interfaces/IUpdateListener.h"
+#include "Usul/Interfaces/ICommand.h"
+#include "Usul/Interfaces/ICommandQueueAdd.h"
+#include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
+#include "Usul/Threads/Queue.h"
 
 #include "OsgTools/Render/Renderer.h"
 #include "OsgTools/Render/SceneManager.h"
@@ -51,7 +55,7 @@
 
 #include <list>
 #include <string>
-
+#include <queue>
 
 // Forward declarations.
 namespace vrj
@@ -84,7 +88,9 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public VRV::Interfaces::IWandStateFloat,
                                public VRV::Interfaces::ITranslationSpeed,
                                public Usul::Interfaces::IProgressBarFactory,
-                               public Usul::Interfaces::IUpdateSubject
+                               public Usul::Interfaces::IUpdateSubject,
+                               public Usul::Interfaces::ICommandQueueAdd,
+                               public Usul::Interfaces::IActiveDocumentListener
 {
 public:
   // Typedefs.
@@ -228,6 +234,9 @@ protected:
   /// Update notify.
   virtual void            _updateNotify ();
 
+  /// Process commands.
+  void                    _processCommands ();
+
   /// VRV::Interfaces::IClippingDistanceFloat
   /// Get/set the clipping distances.
   virtual void            getClippingDistances ( float &nearDist, float &farDist ) const;
@@ -297,8 +306,15 @@ protected:
   virtual float                 translationSpeed () const;
 
   /// Add/Remove a update listener.
-  virtual void addUpdateListener    ( Usul::Interfaces::IUnknown *caller = 0x0 );
-  virtual void removeUpdateListener ( Usul::Interfaces::IUnknown *caller = 0x0 );
+  virtual void                  addUpdateListener    ( Usul::Interfaces::IUnknown *caller = 0x0 );
+  virtual void                  removeUpdateListener ( Usul::Interfaces::IUnknown *caller = 0x0 );
+
+  /// Usul::Interfaces::ICommandQueueAdd
+  virtual void                  addCommand ( Usul::Interfaces::ICommand* command );
+
+  /// Usul::Interfaces::IActiveDocumentListener
+  /// The active document has changed.
+  virtual void                  activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc );
 
   /// No copying.
   Application ( const Application& );
@@ -314,6 +330,11 @@ private:
   typedef VRV::Devices::JoystickDevice::ValidRefPtr        JoystickPtr;
   typedef Usul::Interfaces::IUpdateListener                UpdateListener;
   typedef std::vector < UpdateListener::RefPtr >           UpdateListeners;
+  typedef Usul::Interfaces::ICommand                       Command;
+  typedef Command::QueryPtr                                CommandPtr;
+  typedef std::queue< CommandPtr >                         CommandQueue_;
+  USUL_DECLARE_QUEUE_CONFIG ( QueueConfig, Mutex, Guard, CommandQueue_ );
+  typedef Usul::Threads::Queue<QueueConfig>                CommandQueue;
 
   // Data members.
   mutable Mutex                          _mutex;
@@ -356,6 +377,8 @@ private:
   osg::ref_ptr < osgDB::DatabasePager >  _databasePager;
 
   UpdateListeners                        _updateListeners;
+
+  CommandQueue                           _commandQueue;
 
   unsigned int                           _refCount;
 };

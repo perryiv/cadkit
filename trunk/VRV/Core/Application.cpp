@@ -18,8 +18,10 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
+#include "Usul/Threads/Manager.h"
 #include "Usul/System/Host.h"
 #include "Usul/System/Directory.h"
+#include "Usul/Documents/Manager.h"
 
 #include "OsgTools/State/StateSet.h"
 
@@ -71,10 +73,14 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _wandOffset      ( 0, 0, 0 ), // feet (used to be z=-4)
   _databasePager   ( new osgDB::DatabasePager ),
   _updateListeners ( ),
+  _commandQueue    (),
   _refCount        ( 0 )
 {
   USUL_TRACE_SCOPE;
   this->_construct();
+
+  // Add our self to the list of active document listeners.
+  Usul::Documents::Manager::instance().addActiveDocumentListener ( this );
 }
 
 
@@ -127,6 +133,9 @@ Application::~Application()
 {
   USUL_TRACE_SCOPE;
 
+  // Remove our self from the list of active document listeners.
+  Usul::Documents::Manager::instance().removeActiveDocumentListener ( this );
+
   // Make sure we don't have any references hanging around.
   USUL_ASSERT ( 0 == _refCount );
 }
@@ -167,6 +176,10 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IProgressBarFactory* > ( this );
   case Usul::Interfaces::IUpdateSubject::IID:
     return static_cast < Usul::Interfaces::IUpdateSubject* > ( this );
+  case Usul::Interfaces::ICommandQueueAdd::IID:
+    return static_cast < Usul::Interfaces::ICommandQueueAdd * > ( this );
+  case Usul::Interfaces::IActiveDocumentListener::IID:
+    return static_cast < Usul::Interfaces::IActiveDocumentListener * > ( this );
   default:
     return 0x0;
   }
@@ -660,8 +673,11 @@ void Application::preFrame()
   // Notify that it's ok to update.
   this->_updateNotify();
 
-  // Purge.
+  // Purge the job manager.
   Usul::Jobs::Manager::instance().purge();
+
+  // Purge any threads that may be finished.
+  Usul::Threads::Manager::instance().purge();
 }
 
 
@@ -706,6 +722,9 @@ void Application::latePreFrame()
 void Application::postFrame()
 {
   USUL_TRACE_SCOPE;
+
+  // Process any commands that may be in the queue.
+  this->_processCommands();
 
   // Capture the frame time.
   _frameTime = _timer.delta_s( _frameStart, _timer.tick() );
@@ -1724,4 +1743,51 @@ float Application::translationSpeed () const
 {
   USUL_TRACE_SCOPE;
   return this->preferences()->translationSpeed();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process commands in the queue.  No need to guard.  _commandQueue contains it's own mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_processCommands ()
+{
+  USUL_TRACE_SCOPE;
+
+  while ( false == _commandQueue.empty() )
+  {
+    // Get the first command.
+    CommandPtr command ( _commandQueue.next() );
+
+    // Execute the command.
+    if( command.valid() )
+      command->execute ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a command.  No need to guard.  _commandQueue contains it's own mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::addCommand ( Usul::Interfaces::ICommand* command )
+{
+  USUL_TRACE_SCOPE;
+  _commandQueue.add ( command );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The active document has changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
+{
+  // Nothing to do for now.
 }

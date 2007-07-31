@@ -67,6 +67,13 @@ public:
 
   MinervaDocument();
 
+  /// Add the view to the document.
+  virtual void                addView ( Usul::Interfaces::IView *view );
+
+  /// Usul::Interfaces::IRenderListener inherited from base class.
+  virtual void                postRenderNotify ( Unknown *caller );
+  virtual void                preRenderNotify ( Unknown *caller );
+
   /// Build the scene.
   virtual osg::Node *         buildScene ( const BaseClass::Options &options, Unknown *caller = 0x0 );
 

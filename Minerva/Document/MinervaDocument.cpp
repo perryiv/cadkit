@@ -24,6 +24,7 @@
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/IClonable.h"
 #include "Usul/Interfaces/ICommand.h"
+#include "Usul/Trace/Trace.h"
 
 using namespace Minerva::Document;
 
@@ -1203,4 +1204,46 @@ void MinervaDocument::animateSpeed ( double speed )
 double MinervaDocument::animateSpeed () const
 {
   return _sceneManager->animationSpeed ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notification that a renderer is about to render.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  _planet->preRender ( caller );
+  BaseClass::preRenderNotify ( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notification that a renderer just rendered.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  _planet->postRender ( caller );
+  BaseClass::postRenderNotify ( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a view to this document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::addView ( Usul::Interfaces::IView *view )
+{
+  USUL_TRACE_SCOPE;
+  _planet->initVisitors ( view );
+  BaseClass::addView ( view );
 }

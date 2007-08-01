@@ -208,6 +208,7 @@ private:
   unsigned int _numPlanes;
   ChannelInfos _channelInfo;
   osg::ref_ptr < osg::MatrixTransform > _root;
+  osg::ref_ptr < osg::MatrixTransform > _volumeTransform;
   osg::ref_ptr < osg::Group > _geometry;
   osg::BoundingBox _bb;
   bool _dirty;

@@ -72,6 +72,7 @@ WRFDocument::WRFDocument() :
   _numPlanes ( 256 ),
   _channelInfo (),
   _root ( new osg::MatrixTransform ),
+  _volumeTransform ( new osg::MatrixTransform ),
   _geometry ( new osg::Group ),
   _bb (),
   _dirty ( true ),
@@ -282,6 +283,8 @@ void WRFDocument::_read ( XmlTree::Node &node, Unknown *caller )
 
   // Build the topography.
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &WRFDocument::_buildTopography ), "3345743110" );
+
+  _volumeTransform->setMatrix ( osg::Matrix::rotate ( -osg::PI_2, osg::Z_AXIS ) * osg::Matrix::translate ( _offset ) );
 }
 
 
@@ -567,6 +570,9 @@ void WRFDocument::_buildScene ( )
     Guard guard ( this->mutex() );
     _root->removeChild ( 0, _root->getNumChildren() );
     _root->addChild ( _geometry.get() );
+    _volumeTransform->removeChild ( 0, _volumeTransform->getNumChildren () );
+    _volumeTransform->addChild ( _topography.get() );
+    _root->addChild ( _volumeTransform.get() );
   }
 
   // If we don't have the data already...
@@ -626,19 +632,16 @@ void WRFDocument::_buildScene ( )
     ImagePtr image ( this->_volume ( _currentTimestep, _currentChannel ) );
 
     // Matrix transform to place the volume.
-    osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-    mt->setMatrix ( osg::Matrix::rotate ( -osg::PI_2, osg::Z_AXIS ) * osg::Matrix::translate ( _offset ) );
-    mt->addChild ( this->_buildVolume ( image.get() ) );
+    
 
     // Make a bounding box around the volume.
-    OsgTools::GlassBoundingBox gbb ( _bb );
-    gbb ( mt.get(), true, false, false );
+    /*OsgTools::GlassBoundingBox gbb ( _bb );
+    gbb ( mt.get(), true, false, false );*/
 
     // Add the volume to the scene.
     {
       Guard guard ( this->mutex() );
-      mt->addChild ( _topography.get() );
-      _root->addChild ( mt.get() );
+      _volumeTransform->addChild ( this->_buildVolume ( image.get() ) );
     }
   }
 

@@ -191,208 +191,136 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<Filter
-				Name="Visitors"
-				>
-				<File
-					RelativePath=".\CloseVisitor.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CloseVisitor.h"
-					>
-				</File>
-				<File
-					RelativePath=".\FlagsVisitor.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\FlagsVisitor.h"
-					>
-				</File>
-				<File
-					RelativePath=".\MessageVisitor.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\MessageVisitor.h"
-					>
-				</File>
-				<File
-					RelativePath=".\StreamVisitor.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\StreamVisitor.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Visitor.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Visitor.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Items"
-				>
-				<File
-					RelativePath=".\Button.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Button.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Item.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Item.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Menu.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Menu.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Misc"
-				>
-				<File
-					RelativePath=".\Algorithms.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Behavior.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Behavior.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Bits.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Box.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Callback.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Callback.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Errors.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Errors.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Export.h"
-					>
-				</File>
-				<File
-					RelativePath=".\MemFunCallback.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Messages.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Referenced.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Referenced.h"
-					>
-				</File>
-				<File
-					RelativePath=".\SampleMenu.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\SampleMenu.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Stack.h"
-					>
-				</File>
-				<File
-					RelativePath=".\WidestItemFinder.h"
-					>
-				</File>
-			</Filter>
-		</Filter>
-		<Filter
-			Name="OSG"
-			>
 			<File
-				RelativePath=".\Osg\Arrow.h"
+				RelativePath=".\Algorithms.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Osg\Border.h"
+				RelativePath=".\Behavior.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Osg\ColorTheme.h"
+				RelativePath=".\Behavior.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Osg\Disk.h"
+				RelativePath=".\Bits.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Osg\DrawableFunctor.h"
+				RelativePath=".\Box.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Osg\FlatBox.h"
+				RelativePath=".\Button.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Osg\ThemeSkin.h"
+				RelativePath=".\Button.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Osg\ThemeSkinTile.h"
+				RelativePath=".\Callback.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Osg\ThemeTile.h"
+				RelativePath=".\Callback.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Osg\TileFunctor.h"
+				RelativePath=".\CloseVisitor.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Osg\TileMason.h"
+				RelativePath=".\CloseVisitor.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Osg\VisualThemeSkin.h"
+				RelativePath=".\Errors.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Osg\Word.h"
+				RelativePath=".\Errors.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Export.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FlagsVisitor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FlagsVisitor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Item.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Item.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MemFunCallback.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Menu.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Menu.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Messages.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MessageVisitor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MessageVisitor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Referenced.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Referenced.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SampleMenu.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SampleMenu.h"
+				>
+			</File>
+			<File
+				RelativePath=".\StreamVisitor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\StreamVisitor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Visitor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Visitor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WidestItemFinder.h"
 				>
 			</File>
 		</Filter>

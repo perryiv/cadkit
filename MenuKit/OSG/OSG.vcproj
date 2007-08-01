@@ -196,6 +196,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\Arrow.h"
+				>
+			</File>
+			<File
 				RelativePath=".\BackgroundBox.cpp"
 				>
 			</File>
@@ -212,7 +216,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\BaseTileFunctor.h"
+				>
+			</File>
+			<File
 				RelativePath=".\BasicTheme.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Border.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ColorTheme.h"
 				>
 			</File>
 			<File
@@ -224,11 +240,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Disk.h"
+				>
+			</File>
+			<File
 				RelativePath=".\DrawableFunctor.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Export.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FlatBox.h"
 				>
 			</File>
 			<File
@@ -268,11 +292,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ThemeSkinTile.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ThemeTile.h"
+				>
+			</File>
+			<File
 				RelativePath=".\TileFunctor.h"
 				>
 			</File>
 			<File
 				RelativePath=".\TileLayer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TileMason.h"
+				>
+			</File>
+			<File
+				RelativePath=".\VisualThemeSkin.h"
 				>
 			</File>
 			<File

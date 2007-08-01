@@ -618,17 +618,12 @@ void Application::init()
   // Set the scene-viewer's scene.
   this->setSceneData ( _root.get() );
 
-  USUL_TRACE_1 ( "Setting initial time." );
-
+  // Set the initial time.
   _initialTime = _timer.tick();
-
-  USUL_TRACE_1 ( "Initializing shared frame time." );
 
   // Initialize the shared frame time data.
   vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
   _sharedFrameTime.init ( guid, "viz0" );
-
-  USUL_TRACE_1 ( "Building progress bars.." );
 
   // Add the progress bars to the scene.
   osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );

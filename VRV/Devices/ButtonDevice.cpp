@@ -13,11 +13,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ButtonDevice.h"
+#include "VRV/Devices/ButtonDevice.h"
+
+#include "Usul/Trace/Trace.h"
 
 #include "gadget/Type/Digital.h"
 
 using namespace VRV::Devices;
+
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ButtonDevice, ButtonDevice::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -29,8 +33,12 @@ using namespace VRV::Devices;
 ButtonDevice::ButtonDevice ( unsigned long mask, const std::string &name ) : 
   BaseClass(),
   _di(),
-  _mask ( mask )
+  _mask ( mask ),
+  _pressed(),
+  _released()
 {
+  USUL_TRACE_SCOPE;
+
   // Initialize.
   _di.init ( name );
 }
@@ -44,6 +52,23 @@ ButtonDevice::ButtonDevice ( unsigned long mask, const std::string &name ) :
 
 ButtonDevice::~ButtonDevice()
 {
+  USUL_TRACE_SCOPE;
+  this->clearButtonPressListeners();
+  this->clearButtonReleaseListeners();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the device mask.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned long ButtonDevice::mask () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _mask;
 }
 
 
@@ -55,11 +80,34 @@ ButtonDevice::~ButtonDevice()
 
 unsigned long ButtonDevice::state() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
   // Jump through these hoops because getData() is not const.
   DI &di = const_cast < DI & > ( _di );
   return static_cast < unsigned long > ( di->getData() );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* ButtonDevice::queryInterface ( unsigned long iid )
+{
+  USUL_TRACE_SCOPE;
+
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IButtonPressSubject::IID:
+    return static_cast < Usul::Interfaces::IButtonPressSubject* > ( this );
+  case Usul::Interfaces::IButtonReleaseSubject::IID:
+    return static_cast < Usul::Interfaces::IButtonReleaseSubject* > ( this );
+  default:
+    return 0x0;
+  }
 }
 
 
@@ -71,11 +119,174 @@ unsigned long ButtonDevice::state() const
 
 void ButtonDevice::notify()
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  // First update state.
-  this->state();
+  // Get state.
+  unsigned long state ( static_cast < unsigned long > ( _di->getData() ) );
 
-  // Tell every button to notify.
-  //std::for_each ( _buttons.begin(), _buttons.end(), std::mem_fun ( &ButtonDevice::notify ) );
+  // Notify pressed listeners.
+  if ( gadget::Digital::TOGGLE_ON == state )
+    this->_notifyPressed();
+
+  // Notify released listeners.
+  if ( gadget::Digital::TOGGLE_OFF == state )
+    this->_notifyReleased();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify of button press.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ButtonDevice::_notifyPressed()
+{
+  USUL_TRACE_SCOPE;
+
+  ButtonPressListeners pressed;
+  {
+    Guard guard ( this->mutex() );
+    pressed = _pressed;
+  }
+
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  std::for_each ( pressed.begin(), pressed.end(), std::bind2nd ( std::mem_fun ( &IButtonPressListener::buttonPressNotify ), unknown.get() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify of button release.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ButtonDevice::_notifyReleased()
+{
+  USUL_TRACE_SCOPE;
+
+  ButtonReleaseListeners released;
+  {
+    Guard guard ( this->mutex() );
+    released = _released;
+  }
+
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  std::for_each ( released.begin(), released.end(), std::bind2nd ( std::mem_fun ( &IButtonReleaseListener::buttonReleaseNotify ), unknown.get() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ButtonDevice::addButtonPressListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Don't add twice.
+  this->removeButtonPressListener ( caller );
+
+  IButtonPressListener::QueryPtr listener ( caller );
+  if ( true == listener.valid() )
+  {
+    Guard guard ( this->mutex() );
+    _pressed.push_back ( IButtonPressListener::RefPtr ( listener.get() ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ButtonDevice::addButtonReleaseListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Don't add twice.
+  this->removeButtonReleaseListener ( caller );
+
+  IButtonReleaseListener::QueryPtr listener ( caller );
+  if ( true == listener.valid() )
+  {
+    Guard guard ( this->mutex() );
+    _released.push_back ( IButtonReleaseListener::RefPtr ( listener.get() ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove all render listeners.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ButtonDevice::clearButtonPressListeners()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _pressed.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove all render listeners.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ButtonDevice::clearButtonReleaseListeners()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _released.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ButtonDevice::removeButtonPressListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  IButtonPressListener::QueryPtr listener ( caller );
+  if ( true == listener.valid() )
+  {
+    Guard guard ( this->mutex() );
+    IButtonPressListener::RefPtr value ( listener.get() );
+    ButtonPressListeners::iterator end ( std::remove ( _pressed.begin(), _pressed.end(), value ) );
+    _pressed.erase ( end, _pressed.end() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ButtonDevice::removeButtonReleaseListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  IButtonReleaseListener::QueryPtr listener ( caller );
+  if ( true == listener.valid() )
+  {
+    Guard guard ( this->mutex() );
+    IButtonReleaseListener::RefPtr value ( listener.get() );
+    ButtonReleaseListeners::iterator end ( std::remove ( _released.begin(), _released.end(), value ) );
+    _released.erase ( end, _released.end() );
+  }
+}
+

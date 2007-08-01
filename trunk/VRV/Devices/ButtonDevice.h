@@ -19,41 +19,70 @@
 #include "VRV/Export.h"
 
 #include "Usul/Base/Object.h"
+#include "Usul/Interfaces/IButtonPressSubject.h"
+#include "Usul/Interfaces/IButtonPressListener.h"
+#include "Usul/Interfaces/IButtonReleaseSubject.h"
+#include "Usul/Interfaces/IButtonReleaseListener.h"
 
 #include "gadget/Type/DigitalInterface.h"
 
 #include <string>
+#include <vector>
 
 
 namespace VRV {
 namespace Devices {
 
-class VRV_EXPORT ButtonDevice : public Usul::Base::Object
+class VRV_EXPORT ButtonDevice : public Usul::Base::Object,
+                                public Usul::Interfaces::IButtonPressSubject,
+                                public Usul::Interfaces::IButtonReleaseSubject
 {
 public:
 
   // Useful typedefs.
   typedef Usul::Base::Object BaseClass;
   typedef gadget::DigitalInterface DI;
+  typedef Usul::Interfaces::IButtonPressListener IButtonPressListener;
+  typedef Usul::Interfaces::IButtonReleaseListener IButtonReleaseListener;
+  typedef std::vector<IButtonPressListener::RefPtr> ButtonPressListeners;
+  typedef std::vector<IButtonReleaseListener::RefPtr> ButtonReleaseListeners;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ButtonDevice );
 
+  /// Usul::Interfaces::IUnknown members.
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
+
   // Constructor.
   ButtonDevice ( unsigned long mask, const std::string &name );
 
+  // Add the listener.
+  virtual void          addButtonPressListener ( Usul::Interfaces::IUnknown * );
+  virtual void          addButtonReleaseListener ( Usul::Interfaces::IUnknown * );
+
+  // Remove all listeners.
+  virtual void          clearButtonPressListeners();
+  virtual void          clearButtonReleaseListeners();
+
   // Get the bit-mask for this button.
-  unsigned long         mask() const { return _mask; }
+  unsigned long         mask() const;
 
   // Notify listeners if state changed.
   void                  notify();
 
-  // Get the device state.
+  // Remove the listener.
+  virtual void          removeButtonPressListener ( Usul::Interfaces::IUnknown * );
+  virtual void          removeButtonReleaseListener ( Usul::Interfaces::IUnknown * );
+
+  ///  Get the device state.
   unsigned long         state() const;
 
 protected:
 
   virtual ~ButtonDevice();
+
+  void                  _notifyPressed();
+  void                  _notifyReleased();
 
 private:
 
@@ -63,6 +92,8 @@ private:
 
   DI _di;
   unsigned long _mask;
+  ButtonPressListeners _pressed;
+  ButtonReleaseListeners _released;
 };
 
 } // namespace Devices

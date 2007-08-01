@@ -13,7 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ButtonGroup.h"
+#include "VRV/Devices/ButtonGroup.h"
 
 #include <algorithm>
 #include <sstream>

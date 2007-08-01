@@ -27,6 +27,9 @@ public:
   Parser( const Parser& );
   ~Parser ();
 
+  /// Assignment.
+  Parser& operator = ( const Parser& parser );
+
   /// Get/Set the filename.
   void                           filename ( const std::string& filename );
   const std::string&             filename () const;
@@ -45,7 +48,19 @@ public:
   /// Get the data for the given channel and timestep
   void                           data ( Data& data, unsigned int timestep, unsigned int channel );
 
+  /// Get the topography for the data set.
+  void                           topography ( Data& data );
+
 private:
+  /// Open the file.
+  void                           _open ();
+
+  /// Seek.
+  void                           _seek ( Usul::Types::Int64 offset );
+
+  /// Read a 2D slice.
+  void                           _readSlice ( Data::value_type* buffer );
+
   std::string   _filename;
   FILE         *_fp;
   unsigned int  _xSize;

@@ -1,11 +1,11 @@
-#include "Skin.h"
+#include "MenuKit/OSG/Skin.h"
 
-#include "DrawableFunctor.h"
-#include "BackgroundBox.h"
-#include "Word.h"
+#include "MenuKit/OSG/DrawableFunctor.h"
+#include "MenuKit/OSG/BackgroundBox.h"
+#include "MenuKit/OSG/Word.h"
 
-#include "../Menu.h"
-#include "../Button.h"
+#include "MenuKit/Menu.h"
+#include "MenuKit/Button.h"
 
 #include "osg/MatrixTransform"
 #include "osg/Group"

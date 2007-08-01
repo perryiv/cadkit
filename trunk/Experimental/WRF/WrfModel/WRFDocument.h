@@ -28,6 +28,8 @@
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/ICommandList.h"
 
+#include "OsgTools/Triangles/TriangleSet.h"
+
 #include "osg/BoundingBox"
 #include "osg/MatrixTransform"
 #include "osg/Image"
@@ -122,6 +124,7 @@ protected:
   osg::Node*                  _buildVolume( osg::Image* image );
   void                        _initBoundingBox ();
   osg::Node *                 _buildProxyGeometry ();
+  void                        _buildTopography ();
 
   bool                        _dataCached ( unsigned int timestep, unsigned int channel );
   bool                        _dataRequested ( unsigned int timestep, unsigned int channel );
@@ -159,12 +162,13 @@ private:
   };
 
   /// Typedefs.
-  typedef std::vector < ChannelInfo >               ChannelInfos;
-  typedef osg::ref_ptr < osg::Image >               ImagePtr;
-  typedef std::vector < ImagePtr >                  ChannelVolumes;
-  typedef std::vector < ChannelVolumes >            TimestepsData;
-  typedef std::pair < unsigned int, unsigned int >  Request;
+  typedef std::vector < ChannelInfo >                   ChannelInfos;
+  typedef osg::ref_ptr < osg::Image >                   ImagePtr;
+  typedef std::vector < ImagePtr >                      ChannelVolumes;
+  typedef std::vector < ChannelVolumes >                TimestepsData;
+  typedef std::pair < unsigned int, unsigned int >      Request;
   typedef std::map < Request, Usul::Jobs::Job::RefPtr > Requests;
+  typedef OsgTools::Triangles::TriangleSet              TriangleSet;
 
   // Internal job to load data from file.
   class LoadDataJob : public Usul::Jobs::Job
@@ -213,6 +217,8 @@ private:
   unsigned int _lastTimestepLoaded;
   bool _animating;
   osg::Vec3 _offset;
+  TriangleSet::RefPtr        _triangleSet;
+  osg::ref_ptr < osg::Node > _topography;
 };
 
 

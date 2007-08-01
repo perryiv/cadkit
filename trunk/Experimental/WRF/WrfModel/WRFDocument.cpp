@@ -28,6 +28,7 @@
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/Functions/SafeCall.h"
 
 #include "XmlTree/Document.h"
 
@@ -79,7 +80,9 @@ WRFDocument::WRFDocument() :
   _jobForScene ( 0x0 ),
   _lastTimestepLoaded ( INVALID_TIMESTEP ),
   _animating ( false ),
-  _offset ()
+  _offset (),
+  _triangleSet ( 0x0 ),
+  _topography ( 0x0 )
 {
 }
 
@@ -276,6 +279,9 @@ void WRFDocument::_read ( XmlTree::Node &node, Unknown *caller )
   //std::for_each ( _data.begin(), _data.end(), std::bind2nd ( std::mem_fun ( &ChannelVolumes::resize ), 4 ) );
   for ( TimestepsData::iterator iter = _data.begin(); iter != _data.end(); ++iter )
     iter->resize ( _channels );
+
+  // Build the topography.
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &WRFDocument::_buildTopography ), "3345743110" );
 }
 
 
@@ -561,6 +567,7 @@ void WRFDocument::_buildScene ( )
     Guard guard ( this->mutex() );
     _root->removeChild ( 0, _root->getNumChildren() );
     _root->addChild ( _geometry.get() );
+    _root->addChild ( _topography.get() );
   }
 
   // If we don't have the data already...
@@ -728,9 +735,9 @@ void WRFDocument::_initBoundingBox ()
   USUL_TRACE_SCOPE;
 
   // Create the bounding box.
-  double xLength ( _x * 1000 );
-  double yLength ( _y * 1000 );
-  double zLength ( _z * 300 );
+  double xLength ( _x * 10 );
+  double yLength ( _y * 10 );
+  double zLength ( _z * 3 );
 
   float xHalf ( static_cast < float > ( xLength ) / 2.0f );
   float yHalf ( static_cast < float > ( yLength ) / 2.0f );
@@ -1210,4 +1217,89 @@ bool WRFDocument::animating () const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _animating;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the topography.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::_buildTopography ()
+{
+  USUL_TRACE_SCOPE;
+
+  // Make a copy of the parser.
+  Parser parser ( _parser );
+
+  // Get the topograpy.
+  Parser::Data data;
+  parser.topography ( data );
+
+  // Make a triangle set.
+  TriangleSet::RefPtr triangles ( new TriangleSet );
+
+  const unsigned int width ( _y ), height ( _x );
+
+  double xCellSize ( 10.0 );
+  double yCellSize ( 10.0 );
+  double zCellSize ( 3.0 );
+
+  double xLength ( width  * xCellSize );
+  double yLength ( height * yCellSize );
+  double zLength ( _z * zCellSize );
+
+  double xHalf ( xLength / 2.0 );
+  double yHalf ( yLength / 2.0 );
+  double zHalf ( zLength / 2.0 );
+
+  // Loop over the rows
+  for ( unsigned int i = 0; i < height - 1; ++i )
+  {
+    float xa ( -xHalf + ( ( i     ) * xCellSize ) );
+    float xb ( -xHalf + ( ( i + 1 ) * xCellSize ) );
+
+    // Loop over the columns.
+    for ( unsigned int j = 0; j < width - 1; ++j )
+    {
+      float y0 ( -yHalf + ( ( j     ) * yCellSize ) );
+      float y1 ( -yHalf + ( ( j + 1 ) * yCellSize ) );
+
+      // Calculate vertices of current triangles.
+      const osg::Vec3 a ( xa, y0, ( data.at ( ( ( i     ) * width ) + j     ) / 100.0 ) - zHalf );
+      const osg::Vec3 b ( xa, y1, ( data.at ( ( ( i     ) * width ) + j + 1 ) / 100.0 ) - zHalf );
+      const osg::Vec3 c ( xb, y0, ( data.at ( ( ( i + 1 ) * width ) + j     ) / 100.0 ) - zHalf );
+      const osg::Vec3 d ( xb, y1, ( data.at ( ( ( i + 1 ) * width ) + j + 1 ) / 100.0 ) - zHalf );
+
+      // Add first triangle.
+      {
+        osg::Vec3 n ( ( d - c ) ^ ( a - c ) );
+        n.normalize();
+        OsgTools::Triangles::Triangle::RefPtr t ( triangles->addTriangle ( d, a, c, n, false ) );
+        t->original ( true );
+      }
+
+      // Add second triangle.
+      {
+        osg::Vec3 n ( ( b - d ) ^ ( a - d ) );
+        n.normalize();
+        OsgTools::Triangles::Triangle::RefPtr t ( triangles->addTriangle ( d, a, b, n, false ) );
+        t->original ( true );
+      }
+    }
+  }
+
+  // Build the scene.
+  TriangleSet::Options options;
+  options [ "normals" ] = "per-vertex";
+
+  osg::ref_ptr < osg::Node > node ( triangles->buildScene ( options, 0x0 ) );
+
+  // Set the data members.
+  {
+    Guard guard ( this->mutex() );
+    _triangleSet = triangles;
+    _topography = node;
+  }
 }

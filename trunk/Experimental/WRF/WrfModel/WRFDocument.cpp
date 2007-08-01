@@ -39,6 +39,7 @@
 
 #include "osgText/Text"
 #include "osg/Geode"
+#include "osg/LightModel"
 
 #include "osgDB/ReadFile"
 
@@ -519,7 +520,7 @@ namespace Detail
       *data++ = static_cast < unsigned char > ( r * 255 );
       *data++ = static_cast < unsigned char > ( g * 255 );
       *data++ = static_cast < unsigned char > ( b * 255 );
-      *data++ = ( i < 10 ? 0 : 10 );
+      *data++ = ( i == 0 ? 0 : 10 );
   #endif
     }
 
@@ -635,8 +636,8 @@ void WRFDocument::_buildScene ( )
     
 
     // Make a bounding box around the volume.
-    /*OsgTools::GlassBoundingBox gbb ( _bb );
-    gbb ( mt.get(), true, false, false );*/
+    //OsgTools::GlassBoundingBox gbb ( _bb );
+    //gbb ( _volumeTransform.get(), true, false, false );
 
     // Add the volume to the scene.
     {
@@ -1171,7 +1172,7 @@ osg::Image*  WRFDocument::LoadDataJob::_createImage ( const ReadRequest& request
 
   unsigned char *pixels ( image->data() );
   std::copy ( chars.begin(), chars.end(), pixels );
-
+#if 0
   osg::ref_ptr < osg::Image > scaled ( new osg::Image );
   scaled->allocateImage ( 256, 256, 128, GL_LUMINANCE, GL_UNSIGNED_BYTE );
   ::memset ( scaled->data(), 0, 256 * 256 * 128 );
@@ -1188,6 +1189,9 @@ osg::Image*  WRFDocument::LoadDataJob::_createImage ( const ReadRequest& request
   }
 
   return scaled.release ();
+#else
+  return image.release();
+#endif
 }
 
 
@@ -1243,7 +1247,7 @@ void WRFDocument::_buildTopography ()
   // Make a triangle set.
   TriangleSet::RefPtr triangles ( new TriangleSet );
 
-  const unsigned int width ( _x ), height ( _y );
+  const unsigned int width ( _y ), height ( _x );
 
   double xCellSize ( 10.0 );
   double yCellSize ( 10.0 );
@@ -1257,17 +1261,20 @@ void WRFDocument::_buildTopography ()
   double yHalf ( yLength / 2.0 );
   double zHalf ( zLength / 2.0 );
 
+  osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array );
+  osg::ref_ptr < osg::Vec3Array > normals ( new osg::Vec3Array );
+
   // Loop over the rows
   for ( unsigned int i = 0; i < height - 1; ++i )
   {
-    float xa ( -xHalf + ( ( i     ) * xCellSize ) );
-    float xb ( -xHalf + ( ( i + 1 ) * xCellSize ) );
+    float xa ( -yHalf + ( ( i     ) * xCellSize ) );
+    float xb ( -yHalf + ( ( i + 1 ) * xCellSize ) );
 
     // Loop over the columns.
     for ( unsigned int j = 0; j < width - 1; ++j )
     {
-      float y0 ( -yHalf + ( ( j     ) * yCellSize ) );
-      float y1 ( -yHalf + ( ( j + 1 ) * yCellSize ) );
+      float y0 ( -xHalf + ( ( j     ) * yCellSize ) );
+      float y1 ( -xHalf + ( ( j + 1 ) * yCellSize ) );
 
       // Calculate vertices of current triangles.
       const osg::Vec3 a ( xa, y0, ( data.at ( ( ( i     ) * width ) + j     ) / 100.0 ) - zHalf );
@@ -1279,30 +1286,81 @@ void WRFDocument::_buildTopography ()
       {
         osg::Vec3 n ( ( d - c ) ^ ( a - c ) );
         n.normalize();
-        OsgTools::Triangles::Triangle::RefPtr t ( triangles->addTriangle ( d, a, c, n, false ) );
-        t->original ( true );
+        //OsgTools::Triangles::Triangle::RefPtr t ( triangles->addTriangle ( d, a, c, n, false ) );
+        //t->original ( true );
+        vertices->push_back ( a );
+        vertices->push_back ( c );
+        vertices->push_back ( d );
+        normals->push_back ( n );
       }
 
       // Add second triangle.
       {
         osg::Vec3 n ( ( b - d ) ^ ( a - d ) );
         n.normalize();
-        OsgTools::Triangles::Triangle::RefPtr t ( triangles->addTriangle ( d, a, b, n, false ) );
-        t->original ( true );
+        //OsgTools::Triangles::Triangle::RefPtr t ( triangles->addTriangle ( d, a, b, n, false ) );
+        //t->original ( true );
+
+        vertices->push_back ( a );
+        vertices->push_back ( d );
+        vertices->push_back ( b );
+        normals->push_back ( n );
       }
     }
   }
 
-  // Build the scene.
-  TriangleSet::Options options;
-  options [ "normals" ] = "per-vertex";
+  // Turn off display lists.
+  //triangles->displayList ( false );
 
-  osg::ref_ptr < osg::Node > node ( triangles->buildScene ( options, 0x0 ) );
+  // Build the scene.
+  //TriangleSet::Options options;
+  //options [ "normals" ] = "per-vertex";
+
+  //osg::ref_ptr < osg::Node > node ( triangles->buildScene ( options, 0x0 ) );
+
+  osg::ref_ptr < osg::Geode > node ( new osg::Geode );
+  osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
+  geometry->setUseDisplayList ( false );
+
+  geometry->setVertexArray ( vertices.get() );
+  geometry->setNormalArray ( normals.get() );
+  geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+
+  geometry->addPrimitiveSet ( new osg::DrawArrays ( GL_TRIANGLES, 0, vertices->size() ) );
+
+  node->addDrawable ( geometry.get() );
+
+  osg::ref_ptr < osg::StateSet > ss ( node->getOrCreateStateSet () );
+  
+  // Make a light-model.
+  osg::ref_ptr<osg::LightModel> lm ( new osg::LightModel );
+  lm->setTwoSided( true );
+ 
+  // Set the state. Make it override any other similar states.
+  typedef osg::StateAttribute Attribute;
+  ss->setAttributeAndModes ( lm.get(), Attribute::OVERRIDE | Attribute::ON );
+
+  // Turn off back face culling
+  ss->setMode ( GL_CULL_FACE, Attribute::OVERRIDE | Attribute::OFF );
+
+  //osg::Vec4 frontDiffuse ( 20.0 / 255.0f, 100.0f / 255.0f, 140.0f / 255.0f, 1.0f );
+  osg::Vec4 frontDiffuse ( 80.0 / 255.0f, 56.0f / 255.0f, 28.0f / 255.0f, 1.0f );
+  osg::Vec4 backDiffuse ( 255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, 1.0f );
+  //osg::Vec4 ambient ( diffuse );
+
+  osg::ref_ptr < osg::Material > material ( new osg::Material );
+  material->setAmbient ( osg::Material::BACK,  backDiffuse );
+  material->setAmbient ( osg::Material::FRONT, frontDiffuse );
+
+  material->setDiffuse ( osg::Material::BACK,  backDiffuse );
+  material->setDiffuse ( osg::Material::FRONT, frontDiffuse );
+
+  ss->setAttribute ( material.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
 
   // Set the data members.
   {
     Guard guard ( this->mutex() );
     _triangleSet = triangles;
-    _topography = node;
+    _topography = node.get();
   }
 }

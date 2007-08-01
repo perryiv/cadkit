@@ -1,17 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <plugins>
-  <comment>
-    This is the CadViewer component registry. This file is necessary
-    for CadViewer to run properly. DO NOT DELETE THIS FILE!
-  </comment>
-  
-  
-  <!--<directory>C:\src\png\bin</directory>-->
-  <plugin alias="Display Scene Stats" file="display_scene_stats.cvplug" />
-  <plugin alias="Scene Operations" file="scene_operations.cvplug" />
-  <plugin alias="Restart File Parser" file="vrv_io.vrplug" />
-  <plugin alias="Graphical User Interface" file="vrv_gui.vrplug" />
+  <plugin file="display_scene_stats.cvplug" />
+  <plugin file="scene_operations.cvplug" />
   <plugin file="SceneModel.plug" />
-
+  <plugin file="WRFModel.plug" />
+  <plugin file="DynamicLandModel.plug" />
 </plugins>
-

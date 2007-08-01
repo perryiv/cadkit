@@ -567,7 +567,6 @@ void WRFDocument::_buildScene ( )
     Guard guard ( this->mutex() );
     _root->removeChild ( 0, _root->getNumChildren() );
     _root->addChild ( _geometry.get() );
-    _root->addChild ( _topography.get() );
   }
 
   // If we don't have the data already...
@@ -637,7 +636,8 @@ void WRFDocument::_buildScene ( )
 
     // Add the volume to the scene.
     {
-      Guard guard ( this->mutex() );      
+      Guard guard ( this->mutex() );
+      mt->addChild ( _topography.get() );
       _root->addChild ( mt.get() );
     }
   }
@@ -1240,7 +1240,7 @@ void WRFDocument::_buildTopography ()
   // Make a triangle set.
   TriangleSet::RefPtr triangles ( new TriangleSet );
 
-  const unsigned int width ( _y ), height ( _x );
+  const unsigned int width ( _x ), height ( _y );
 
   double xCellSize ( 10.0 );
   double yCellSize ( 10.0 );

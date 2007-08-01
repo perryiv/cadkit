@@ -220,23 +220,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\BasicTheme.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Border.h"
 				>
 			</File>
 			<File
 				RelativePath=".\ColorTheme.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ColorThemeSkin.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ColorThemeSkinTile.h"
 				>
 			</File>
 			<File
@@ -301,10 +289,6 @@
 			</File>
 			<File
 				RelativePath=".\TileFunctor.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TileLayer.h"
 				>
 			</File>
 			<File

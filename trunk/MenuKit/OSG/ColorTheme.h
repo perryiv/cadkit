@@ -1,7 +1,11 @@
+
+///////////////////////////////////////////////////////////////////////////////
 //
-// Author: John K. Grant
-// All rights reserved.
+//  Copyright (c) 2004, John K. Grant.
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
+///////////////////////////////////////////////////////////////////////////////
 
 #ifndef _menukit_osg_colortheme_h_
 #define _menukit_osg_colortheme_h_

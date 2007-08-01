@@ -270,6 +270,9 @@ public:
   void                    updateBounds ( SharedVertex *v );
   void                    updateBounds ( const osg::Vec3f &v );
 
+  /// Set the use material flag.
+  void                    useMaterial ( bool b );
+
   // Get vertex pool. Use with caution.
   const osg::Vec3Array *  vertices() const;
   osg::Vec3Array *        vertices();

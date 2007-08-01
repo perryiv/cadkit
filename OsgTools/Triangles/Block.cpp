@@ -315,15 +315,15 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
   // Set the correct colors.
   if ( OsgTools::Options::has ( options, "colors", "per-vertex" ) )
   {
-    osg::ref_ptr<osg::Vec4Array> colors ( ts->colorsV() );
-    if( true == colors.valid() && vertices->size() == colors->size())
+    osg::ref_ptr< osg::Vec4Array > colors ( ts->colorsV() );
+    if( true == colors.valid() && vertices->size() == colors->size() )
     {
-      unsigned int csize = colors->size();
+      unsigned int csize ( colors->size() );
       _geometry->setColorArray ( colors.get() );
       _geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
     }
   }
-  else
+  else if ( _colorsT.valid () && _colorsT->size () == _triangles.size() )
   {
     _geometry->setColorArray ( _colorsT.get() );
     _geometry->setColorBinding ( osg::Geometry::BIND_PER_PRIMITIVE );

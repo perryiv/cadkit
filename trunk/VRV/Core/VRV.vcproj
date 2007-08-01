@@ -293,10 +293,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Interfaces\IModelCaching.h"
-					>
-				</File>
-				<File
 					RelativePath="..\Interfaces\IModelsScene.h"
 					>
 				</File>
@@ -310,10 +306,6 @@
 				</File>
 				<File
 					RelativePath="..\Interfaces\IPostModelLoad.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Interfaces\IRequestRead.h"
 					>
 				</File>
 				<File

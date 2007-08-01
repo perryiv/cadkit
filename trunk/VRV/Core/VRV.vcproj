@@ -273,14 +273,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Interfaces\IButtonPress.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Interfaces\IButtonRelease.h"
-					>
-				</File>
-				<File
 					RelativePath="..\Interfaces\IClippingDistance.h"
 					>
 				</File>

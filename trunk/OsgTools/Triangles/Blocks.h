@@ -80,6 +80,9 @@ public:
   /// Get the indices of the triangles in the Blocks.
   void                      triangleIndices ( TriangleIndices& ) const;
 
+  /// Set the use material flag.
+  void                      useMaterial ( bool b );
+
   /// Usul::Interfaces::ISceneElement. Public for now.
 
   /// Set the visiblity flag.

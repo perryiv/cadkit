@@ -551,7 +551,6 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f &v, bool look )
   // Should always be true.
   USUL_ASSERT ( _shared.size() == _vertices->size() );
   USUL_ASSERT ( _shared.size() == _normalsV->size() );
-  USUL_ASSERT ( ( _shared.size() == _colorsV->size() ) || ( true == _colorsV->empty() ) );
 
   // Look for an existing shared vertex if we are supposed to.
   if ( look )
@@ -564,7 +563,6 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f &v, bool look )
   // Should always be true.
   USUL_ASSERT ( _shared.size() == _vertices->size() );
   USUL_ASSERT ( _shared.size() == _normalsV->size() );
-  USUL_ASSERT ( ( _shared.size() == _colorsV->size() ) || ( true == _colorsV->empty() ) );
 
   // If we get to here then make shared vertex with proper index.
   SharedVertex::ValidRefPtr sv ( this->newSharedVertex ( _vertices->size() ) );
@@ -608,7 +606,6 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f &v, bool look )
 
     // Should be true.
     USUL_ASSERT ( sv->index() < _vertices->size() );
-    USUL_ASSERT ( ( false == _colorsV->empty() ) ? ( sv->index() < _colorsV->size() ) : true );
 
     // Flag it.
     sv->problem ( true );
@@ -617,7 +614,6 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f &v, bool look )
   // Should always be true.
   USUL_ASSERT ( _shared.size() == _vertices->size() );
   USUL_ASSERT ( _shared.size() == _normalsV->size() );
-  USUL_ASSERT ( ( _shared.size() == _colorsV->size() ) || ( true == _colorsV->empty() ) );
 
   // Return the new shared vertex.
   return sv.get();
@@ -2196,3 +2192,15 @@ osg::Vec4Array * TriangleSet::getColorsV ( bool reserve )
   return _colorsV.get();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the use material flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::useMaterial ( bool b )
+{
+  // Set all the blocks' use material flag.
+  std::for_each ( _blocks.begin(), _blocks.end(), std::bind2nd ( std::mem_fun ( &Blocks::useMaterial ), b ) );
+}

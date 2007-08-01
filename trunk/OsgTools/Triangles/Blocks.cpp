@@ -52,8 +52,6 @@ Blocks::Blocks ( const osg::BoundingBox &box, unsigned int times, unsigned int r
   // Subdivide into blocks.
   this->_subdivide ( times, reserve );
 
-  // TODO: Materials override colors... think of a better way.
-#if 0
   osg::ref_ptr< osg::StateSet > ss ( _geode->getOrCreateStateSet() );
 
   //osg::Vec4 diffuse ( 20.0 / 255.0f, 100.0f / 255.0f, 140.0f / 255.0f, 1.0f );
@@ -66,8 +64,7 @@ Blocks::Blocks ( const osg::BoundingBox &box, unsigned int times, unsigned int r
   _material->setDiffuse ( osg::Material::BACK,  diffuse );
   _material->setDiffuse ( osg::Material::FRONT, diffuse );
 
-  ss->setAttribute ( _material.get(), osg::StateAttribute::ON );
-#endif
+  ss->setAttribute ( _material.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
 }
 
 
@@ -728,4 +725,18 @@ float Blocks::getTransparency () const
   //float te ( _material->getEmissive( osg::Material::FRONT_AND_BACK ).w() );
 
   return td;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the use material flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Blocks::useMaterial ( bool b )
+{
+  osg::StateAttribute::OverrideValue value ( ( b ? osg::StateAttribute::ON : osg::StateAttribute::OFF ) | osg::StateAttribute::PROTECTED );
+  osg::ref_ptr< osg::StateSet > ss ( _geode->getOrCreateStateSet() );
+  ss->setAttribute ( _material.get(), value );
 }

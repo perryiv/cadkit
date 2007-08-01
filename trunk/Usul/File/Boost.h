@@ -28,7 +28,14 @@ namespace Usul
       template < class T >
       bool operator () ( const T& t ) const
       {
-        return boost::filesystem::is_directory ( t );
+        try
+        {
+          return boost::filesystem::is_directory ( t );
+        }
+        catch ( ... )
+        {
+          return false;
+        }
       }
     };
 

@@ -558,9 +558,7 @@ void Application::_initLight()
 
 void Application::_initMenu()
 {
-  if ( false == this->_isHeadNode() )
-    return;
-
+  
   typedef VRV::Prefs::Settings::Color Color;
 
   osg::Vec4 bgNormal,   bgHighlight,   bgDisabled;
@@ -591,9 +589,13 @@ void Application::_initMenu()
   osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
   mt->setMatrix ( mm );
   mt->setName ( "MenuBranch" );
-  osgMenu->scene ( mt.get() );
 
-  // Make the menu always draw on top (last). See osgfxbrowser.cpp.
+  if ( true == this->_isHeadNode() )
+  {
+    osgMenu->scene ( mt.get() );
+  }
+
+  // Get the state set.
   osg::ref_ptr < osg::StateSet > ss ( mt->getOrCreateStateSet() );
 
   // take lighting off of the menu

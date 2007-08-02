@@ -182,7 +182,7 @@
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/TriangleModel.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(FOX_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(FOX_LIB_DIR);$(BOOST_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
 				ProgramDatabaseFile=".\Release\TriangleModel.pdb"
 				ImportLibrary=".\Release\TriangleModel.lib"

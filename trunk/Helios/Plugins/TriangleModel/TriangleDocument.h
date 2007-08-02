@@ -42,6 +42,11 @@
 #include "Usul/Interfaces/IDecimateModel.h"
 #include "Usul/Interfaces/ISubdivideModel.h"
 #include "Usul/Interfaces/IShowNewPrimitives.h"
+#include "Usul/Interfaces/IVertices.h"
+#include "Usul/Interfaces/IMaterials.h"
+#include "Usul/Interfaces/IDisplaylists.h"
+#include "Usul/Interfaces/IColorsPerVertex.h"
+#include "Usul/Interfaces/IMemoryPool.h"
 
 #include "Usul/Types/Types.h"
 
@@ -72,7 +77,12 @@ class TriangleDocument : public Usul::Documents::Document,
                          public Usul::Interfaces::ISmoothModel,
                          public Usul::Interfaces::IDecimateModel,
                          public Usul::Interfaces::ISubdivideModel,
-                         public Usul::Interfaces::IShowNewPrimitives
+                         public Usul::Interfaces::IShowNewPrimitives,
+                         public Usul::Interfaces::IVertices,
+                         public Usul::Interfaces::IColorsPerVertex,
+                         public Usul::Interfaces::IMemoryPool,
+                         public Usul::Interfaces::IMaterials,
+                         public Usul::Interfaces::IDisplaylists
 {
 public:
 
@@ -107,6 +117,12 @@ public:
   /// Add an entire triangle set. Assumes the triangle set has been constructed properly.
   void                        addTriangleSet ( TriangleSet * );
 
+  // Set the dirty flag.
+  virtual void                dirtyColorsV ( bool );
+
+  // Get the color values per vertex
+  virtual osg::Vec4Array *    getColorsV ( bool reserve );
+
   /// Build the scene.
   virtual osg::Node *         buildScene ( const BaseClass::Options &options, Unknown *caller = 0x0 );
 
@@ -127,6 +143,10 @@ public:
 
   // Usul::Interfaces::IDeletePrimitive
   virtual void                deletePrimitive ( const osgUtil::Hit& hit );
+  
+  // Usul::Interfaces::IDisplaylists
+  virtual bool                displayList () const;
+  virtual void                displayList ( bool );
 
   /// Get the filters that correspond to what this document can read and write.
   virtual Filters             filtersExport() const;
@@ -152,8 +172,8 @@ public:
   // Get normal for the i'th vertex and triangle.
   virtual const osg::Vec3f&   getTriangleNormal ( unsigned int index ) const;
   virtual const osg::Vec3f&   getVertexNormal   ( unsigned int index ) const;
-      
-  /// Notify this document of the message.
+
+  // Notify this document of the message.
   virtual void                notify ( unsigned short message );
 
   // Access the containers of normals. Use with caution.
@@ -191,6 +211,12 @@ public:
 
   // Update the bounding box.
   void                        updateBounds ( const osg::Vec3f &v );
+
+  // Use memory pool
+  void                        usePool ( bool use );
+
+  // Usul::Interfaces::Materials
+  virtual void                useMaterial( bool use );
 
   // Get vertex pool. Use with caution.
   const osg::Vec3Array *      vertices() const { return _triangles->vertices(); }

@@ -33,6 +33,7 @@
 #include "Usul/Interfaces/IDecimateTriangles.h"
 #include "Usul/Interfaces/ISubdivideTriangles.h"
 
+
 #include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
 
@@ -143,6 +144,16 @@ Usul::Interfaces::IUnknown *TriangleDocument::queryInterface ( unsigned long iid
     return static_cast < Usul::Interfaces::ISubdivideModel* > ( this );
   case Usul::Interfaces::IShowNewPrimitives::IID:
     return static_cast < Usul::Interfaces::IShowNewPrimitives* > ( this );
+  case Usul::Interfaces::IVertices::IID:
+    return static_cast < Usul::Interfaces::IVertices* > ( this );
+  case Usul::Interfaces::IColorsPerVertex::IID:
+    return static_cast < Usul::Interfaces::IColorsPerVertex* > ( this );
+  case Usul::Interfaces::IMemoryPool::IID:
+    return static_cast < Usul::Interfaces::IMemoryPool* > ( this );
+  case Usul::Interfaces::IMaterials::IID:
+    return static_cast < Usul::Interfaces::IMaterials* > ( this );
+  case Usul::Interfaces::IDisplaylists::IID:
+    return static_cast < Usul::Interfaces::IDisplaylists* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -902,4 +913,78 @@ void TriangleDocument::subdivideModel ( unsigned int numSubdivisions )
 osg::Node* TriangleDocument::getNewPrimitives ( )
 {
   return _triangles->showNewTriangles();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create and allocate the set of colors per vertex
+//  added by Jeff Conner (2007)
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec4Array * TriangleDocument::getColorsV ( bool reserve )
+{
+  return _triangles->getColorsV ( reserve );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleDocument::dirtyColorsV ( bool flag )
+{
+  _triangles->dirtyColorsV ( flag );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Use memory pool
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleDocument::usePool ( bool use )
+{
+  _triangles->factory()->usePool ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Use memory pool
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleDocument::useMaterial ( bool use )
+{
+  _triangles->useMaterial ( false );
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get display list state
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool TriangleDocument::displayList () const
+{
+  return _triangles->displayList();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Use display lists
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleDocument::displayList ( bool use )
+{
+  _triangles->displayList( use );
 }

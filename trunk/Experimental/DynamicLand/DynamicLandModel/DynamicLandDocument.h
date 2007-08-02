@@ -21,6 +21,7 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/IDldNavigator.h"
+#include "Usul/Jobs/Job.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Policies/Update.h"
@@ -78,7 +79,10 @@ public:
   virtual Filters             filtersExport() const;
 
   // Load a model file
-  bool                        load ( const std::string& filename );
+  bool                        load ( const std::string& filename, Usul::Interfaces::IUnknown *caller );
+
+  // Set whether or not to load the current model
+
 
   /// Read the document.
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0 );
@@ -87,12 +91,12 @@ public:
   virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const;
   
   // Write a TDF file
-  bool                        writeTDF ( const std::string& filename );
+  bool                        writeTDF ( const std::string& filename, Usul::Interfaces::IUnknown *caller );
 
   // Usul::Interfaces::IDldNavigator
   void                        decrementFilePosition ();
   void                        incrementFilePosition ();
-  void                        loadCurrentFile();
+  void                        loadCurrentFile( bool loadFile );
 
 
 protected:
@@ -101,9 +105,9 @@ protected:
   DynamicLandDocument ( const DynamicLandDocument & );
   DynamicLandDocument &operator = ( const DynamicLandDocument & );
 
-  bool                        _load ( const std::string& filename );
-  bool                        _loadTexture ( const std::string& filename );
-  void                        _openDocument ( const std::string &file, Usul::Documents::Document *document );
+  bool                        _load ( const std::string& filename, Usul::Interfaces::IUnknown *caller );
+  bool                        _loadTexture ( const std::string& filename, Usul::Interfaces::IUnknown *caller );
+  void                        _openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller );
   void                        _buildScene();
   bool                        _readParameterFile( XmlTree::Node &node, Unknown *caller );
   void                        _parseHeader( XmlTree::Node &node, Unknown *caller );
@@ -132,6 +136,23 @@ private:
   std::string                     _dir;
   std::string                     _ext;
   std::string                     _prefix;
+
+  class LoadDataJob : public Usul::Jobs::Job
+  {
+  public:
+    typedef Usul::Jobs::Job                           BaseClass;
+
+    USUL_DECLARE_REF_POINTERS ( LoadDataJob );
+
+    LoadDataJob ( DynamicLandDocument* document, const std::string& filename, Usul::Interfaces::IUnknown *caller );
+
+  protected:
+
+    virtual void _started ();
+    DynamicLandDocument::RefPtr _document;
+    std::string _filename;
+    Usul::Interfaces::IUnknown::QueryPtr _caller;
+  };
 
 
 };

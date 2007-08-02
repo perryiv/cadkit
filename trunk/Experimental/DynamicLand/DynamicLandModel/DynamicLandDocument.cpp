@@ -22,6 +22,7 @@
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Case.h"
+#include "Usul/Jobs/Manager.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/File/Path.h"
 #include "Usul/File/Find.h"
@@ -176,12 +177,13 @@ Usul::Interfaces::IUnknown *DynamicLandDocument::queryInterface ( unsigned long 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-  void DynamicLandDocument::loadCurrentFile()
+  void DynamicLandDocument::loadCurrentFile( bool loadFile )
   {
     if ( _files.size() > 0 )
     {
-      _loadNewMap = true;
-      std::cout << "\nLoading file: " << _files.at( _currFileNum ) << "..." << std::endl;
+      _loadNewMap = loadFile;
+      if( loadFile )
+        std::cout << "\nLoading file: " << _files.at( _currFileNum ) << "..." << std::endl;
     }
   }
 
@@ -440,7 +442,7 @@ void DynamicLandDocument::_buildScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DynamicLandDocument::writeTDF ( const std::string& filename )
+bool DynamicLandDocument::writeTDF ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
   // Ask the document write a TDF file.
   if( !Usul::Predicates::FileExists::test ( filename + ".tdf" ) )
@@ -473,7 +475,7 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     // If the wait time has expired...
     if( _tb() )
     {
-      
+        
       // Get a list of files in the directory _dir, with the extension _ext
       Files files;
       Usul::File::find( _dir, _ext, files );
@@ -495,75 +497,61 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
       {
         // get the number of files in the directory
         _numFilesInDirectory = files.size();
-      
-	std::string slash ( Usul::File::slash() );
+        
+	      std::string slash ( Usul::File::slash() );
 
-	#ifdef _MSC_VER
-	std::string search ( _dir + slash + _prefix );
-	#else
-	std::string search ( _prefix );
-	#endif
+	      #ifdef _MSC_VER
+	        std::string search ( _dir + slash + _prefix );
+	      #else
+	        std::string search ( _prefix );
+	      #endif
 
         // Get all files with the prefix name.
-	std::cout << "Checking directory: " << _dir + slash << " for files with prefix: " << _prefix << std::endl;
+	      std::cout << "Checking directory: " << _dir + slash << " for files with prefix: " << _prefix << std::endl;
 
         StringVector::iterator end ( std::remove_if 
-                                   ( files.begin(), files.end(),  
-                                   std::not1( StartsWith( search ) ) ) );
+                                     ( files.begin(), files.end(),  
+                                     std::not1( StartsWith( search ) ) ) );
 
-        
+          
         // Remove the files that don't match our sort criteria
         files.erase ( end, files.end() );
 
         // Sort the names.
         std::sort ( files.begin(), files.end() );
-	if ( false == files.empty() )
-	{
+	      if ( false == files.empty() )
+	      {
           if( _currFileNum > files.size() )
-              _currFileNum = files.size();
-        
-          std::swap( files, _files );
-        
-          std::cout << "\nNumber of files loaded: " << _files.size() << std::endl;
-          std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
-	}
-	else
-	{
-	  std::cout << "\nNo Files found matching search criteria" << std::endl;
-	}
+            _currFileNum = files.size();
+                
+           std::swap( files, _files );
+                
+           std::cout << "\nNumber of files loaded: " << _files.size() << std::endl;
+           std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
+	      }
+	      else
+	      {
+	        std::cout << "\nNo Files found matching search criteria" << std::endl;
+	      }
 
       }
    
       if( _loadNewMap && _files.size() > 0 )
       {
+        // Do not load a anther map
+        this->loadCurrentFile( false );
+
         // Get the file name
         std::string filename = _files.at( _currFileNum );
 
         // strip the extension from the map file name
         std::string root = filename.substr( 0, filename.size() - 4 );
-
+            
         // load the map file
-        bool valid = this->load( root );
-
-        // if the map file is valid, load the image file for coloring
-        if ( valid )
-        {
-          // load the image file
-          this->_loadTexture( root + ".png" );
-
-          // write a tdf of the loaded terrain for faster loading on revisit
-          //this->writeTDF ( root );
-
-          // build our scene
-          this->_buildScene();
-        }
-
-        // Do not load a anther map
-        _loadNewMap = false;
-      }
-      
+        LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, caller ) );
+        Usul::Jobs::Manager::instance().add ( job.get() );  
+      } 
     }
-
 }
 
 
@@ -573,7 +561,7 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DynamicLandDocument::load ( const std::string& filename )
+bool DynamicLandDocument::load ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
   #ifdef _MSC_VER
     std::string file ( filename );
@@ -584,19 +572,19 @@ bool DynamicLandDocument::load ( const std::string& filename )
   if( Usul::Predicates::FileExists::test ( file + ".tdf" ) )
   {
     std::cout << "\nFound " << file + ".tdf" << std::endl;
-    this->_load( file + ".tdf" );
+    this->_load( file + ".tdf", caller );
   }
   else
   {
     std::cout << "\n" << file + ".tdf" << " not found." << std::endl;
-    this->_load( file + ".asc" );
+    this->_load( file + ".asc", caller );
   }
 
   return true;
 }
 
 
-bool DynamicLandDocument::_load( const std::string& filename )
+bool DynamicLandDocument::_load( const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
 #ifdef _DEBUG
   const std::string pluginName ( "TriangleModel.plugd" );
@@ -611,7 +599,7 @@ bool DynamicLandDocument::_load( const std::string& filename )
   Usul::Components::Manager::instance().load ( Usul::Interfaces::IPlugin::IID, pluginPath );
 
   // This will create a new document.
-  Info info ( DocManager::instance().find ( filename, 0x0 ) );
+  Info info ( DocManager::instance().find ( filename, caller ) );
   Document::RefPtr document ( info.document );
 
   // Check to see if we created a document.
@@ -625,7 +613,7 @@ bool DynamicLandDocument::_load( const std::string& filename )
   pool->usePool( false );
 
   // Ask the document to open the file.
-  this->_openDocument ( filename, document.get() );
+  this->_openDocument ( filename, document.get(), caller );
 
   _document = document;
 
@@ -639,13 +627,13 @@ bool DynamicLandDocument::_load( const std::string& filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DynamicLandDocument::_openDocument ( const std::string &file, Usul::Documents::Document *document )
+void DynamicLandDocument::_openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller )
 {
   if ( 0x0 == document )
     return;
 
   std::cout << "Opening file: " << file << " ... " << std::endl;
-  document->open ( file, 0x0 );
+  document->open ( file, caller );
   std::cout << "Done" << std::endl;
 }
 
@@ -659,7 +647,7 @@ void DynamicLandDocument::_openDocument ( const std::string &file, Usul::Documen
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DynamicLandDocument::_loadTexture ( const std::string& filename )
+bool DynamicLandDocument::_loadTexture ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
   if( Usul::Predicates::FileExists::test ( filename ) )
   {
@@ -795,5 +783,58 @@ bool DynamicLandDocument::_readParameterFile( XmlTree::Node &node, Unknown *call
   }
   
   return true;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Dynamic Land Model Job Constructor..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DynamicLandDocument::LoadDataJob::LoadDataJob ( DynamicLandDocument* document, const std::string& filename, Usul::Interfaces::IUnknown *caller ) :
+  BaseClass (),
+  _document ( document ),
+  _filename ( filename ),
+  _caller ( caller )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::LoadDataJob::_started ()
+{
+  USUL_TRACE_SCOPE;
+  Usul::Interfaces::IProgressBar::ShowHide showHide  ( this->progress()   );
+  
+  // Set the label.
+  this->_setLabel ( "Loading file: " + _filename );
+  
+
+  // Process all the requests.
+  bool valid = _document->load( _filename, _caller.get() );
+
+        // if the map file is valid, load the image file for coloring
+  if ( valid )
+  {
+    // load the image file
+    _document->_loadTexture( _filename + ".png", _caller.get() );
+
+    // write a tdf of the loaded terrain for faster loading on revisit
+    //this->writeTDF ( root );
+
+    // build our scene
+    _document->_buildScene();
+  }
+
+  
+  
 }
 

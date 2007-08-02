@@ -227,7 +227,7 @@ void TriangleReaderArcAsciiGrid::_read()
         {
           Vec3 n ( ( d - c ) ^ ( a - c ) );
           n.normalize();
-          OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( d, a, c, n, false ) );
+          OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( a, c, d, n, false ) );
           t->original ( true );
         }
 

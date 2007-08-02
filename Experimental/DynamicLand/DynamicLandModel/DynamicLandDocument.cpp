@@ -25,12 +25,14 @@
 #include "Usul/Trace/Trace.h"
 #include "Usul/File/Path.h"
 #include "Usul/File/Find.h"
+#include "Usul/File/Slash.h"
 
 #include "OsgTools/DisplayLists.h"
 
 #include "osgDB/ReadFile"
 #include "osg/Group"
 
+#include <iterator>
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( DynamicLandDocument, DynamicLandDocument::BaseClass );
 
@@ -46,6 +48,7 @@ struct StartsWith : std::unary_function<std::string,bool>
   StartsWith ( const std::string &s ) : _s ( s ){} 
   bool operator () ( const std::string &s ) const
   {
+    std::cout << "Comparing " << s << " with " << _s << std::endl;
     if ( s.size() < _s.size() )
       return false;
     const std::string temp ( s.begin(), s.begin() + _s.size() );
@@ -401,8 +404,8 @@ void DynamicLandDocument::_buildScene()
     mat->useMaterial( false );*/
 
     // Turn off display lits.
-     Usul::Interfaces::IDisplaylists::QueryPtr dl ( _document );
-    dl->displayList( false );
+     //Usul::Interfaces::IDisplaylists::QueryPtr dl ( _document );
+    //dl->displayList( false );
 
     // Done with opt.
     {
@@ -481,7 +484,11 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
         this->clear();
         _numFilesInDirectory = 0;
       }
-      
+
+      // Debugging -- output the files found in the given directory
+      //std::copy ( files.begin(), files.end(), std::ostream_iterator<std::string> ( std::cout, "; " ) );
+      //std::cout << std::endl;
+
       // Make sure we have some files and that they are different from our last look
       // at the directory.
       if( files.size() != _numFilesInDirectory && files.size() > 0 )
@@ -489,23 +496,41 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
         // get the number of files in the directory
         _numFilesInDirectory = files.size();
       
+	std::string slash ( Usul::File::slash() );
+
+	#ifdef _MSC_VER
+	std::string search ( _dir + slash + _prefix );
+	#else
+	std::string search ( _prefix );
+	#endif
+
         // Get all files with the prefix name.
+	std::cout << "Checking directory: " << _dir + slash << " for files with prefix: " << _prefix << std::endl;
+
         StringVector::iterator end ( std::remove_if 
                                    ( files.begin(), files.end(),  
-                                   std::not1( StartsWith( _dir + "\\"+_prefix ) ) ) );
+                                   std::not1( StartsWith( search ) ) ) );
+
         
         // Remove the files that don't match our sort criteria
         files.erase ( end, files.end() );
 
         // Sort the names.
         std::sort ( files.begin(), files.end() );
-        if( _currFileNum > files.size() )
-            _currFileNum = files.size();
+	if ( false == files.empty() )
+	{
+          if( _currFileNum > files.size() )
+              _currFileNum = files.size();
         
-        std::swap( files, _files );
+          std::swap( files, _files );
         
-        std::cout << "\nNumber of files loaded: " << _files.size() << std::endl;
-        std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
+          std::cout << "\nNumber of files loaded: " << _files.size() << std::endl;
+          std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
+	}
+	else
+	{
+	  std::cout << "\nNo Files found matching search criteria" << std::endl;
+	}
 
       }
    
@@ -527,7 +552,7 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
           this->_loadTexture( root + ".png" );
 
           // write a tdf of the loaded terrain for faster loading on revisit
-          this->writeTDF ( root );
+          //this->writeTDF ( root );
 
           // build our scene
           this->_buildScene();
@@ -550,16 +575,21 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
 bool DynamicLandDocument::load ( const std::string& filename )
 {
-  
-  if( Usul::Predicates::FileExists::test ( filename + ".tdf" ) )
+  #ifdef _MSC_VER
+    std::string file ( filename );
+  #else
+    std::string slash ( Usul::File::slash() );
+    std::string file ( _dir + slash + filename );
+  #endif
+  if( Usul::Predicates::FileExists::test ( file + ".tdf" ) )
   {
-    std::cout << "Found " << filename + ".tdf" << std::endl;
-    this->_load( filename + ".tdf" );
+    std::cout << "\nFound " << file + ".tdf" << std::endl;
+    this->_load( file + ".tdf" );
   }
   else
   {
-    std::cout << filename + ".tdf" << " not found." << std::endl;
-    this->_load( filename + ".asc" );
+    std::cout << "\n" << file + ".tdf" << " not found." << std::endl;
+    this->_load( file + ".asc" );
   }
 
   return true;
@@ -659,8 +689,8 @@ bool DynamicLandDocument::_loadTexture ( const std::string& filename )
       float csize = ( float ( _gridSize[1] ) * _cellSize ) - 1;
       
       // get the color information from the image for the point at index i
-      unsigned int pixelRow = unsigned int ( ( rsize - vi ) / _cellSize );
-      unsigned int pixelCol = unsigned int ( vj / _cellSize );
+      unsigned int pixelRow = static_cast < unsigned int >( ( rsize - vi ) / _cellSize );
+      unsigned int pixelCol = static_cast < unsigned int >( vj / _cellSize );
       unsigned char * pixel = tex->data(  pixelCol, pixelRow  );
 
       // get the color values to use

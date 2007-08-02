@@ -546,7 +546,7 @@ namespace Detail
   #else
       float value ( static_cast < float > ( i ) / 255 );
       float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
-      Usul::Functions::hsvToRgb ( r, g, b, ( 300 - ( value * 300 ) ), 1.0f, 1.0f );
+      Usul::Functions::hsvToRgb ( r, g, b, value * 360, 1.0f, 1.0f );
       *data++ = static_cast < unsigned char > ( r * 255 );
       *data++ = static_cast < unsigned char > ( g * 255 );
       *data++ = static_cast < unsigned char > ( b * 255 );

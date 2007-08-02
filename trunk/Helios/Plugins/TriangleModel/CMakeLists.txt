@@ -23,6 +23,7 @@ set (SOURCES
 	TriangleDocument.cpp
 	TriangleComponent.cpp
 	ParadisReader.cpp
+	./TriangleReaderArcAsciiGrid.cpp
 )
 
 # ---------- Create a Shared Library

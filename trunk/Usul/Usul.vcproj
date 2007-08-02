@@ -688,7 +688,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IDisplaylists.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IDistributedVR.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IDldNavigator.h"
 					>
 				</File>
 				<File
@@ -917,6 +925,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\GUI\IMaterialEditor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IMaterials.h"
 					>
 				</File>
 				<File

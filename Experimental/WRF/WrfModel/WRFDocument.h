@@ -118,6 +118,7 @@ protected:
   void                        _parseChannel ( XmlTree::Node &node, Unknown *caller );
   void                        _parseGeometry ( XmlTree::Node &node, Unknown *caller );
   void                        _parseOffset ( XmlTree::Node &node, Unknown *caller );
+  void                        _parseVectorField ( XmlTree::Node &node, Unknown *caller );
 
   void                        _processReadRequests ( Usul::Threads::Thread *);
   osg::Image *                _volume ( unsigned int timestep, unsigned int channel );
@@ -125,6 +126,7 @@ protected:
   void                        _initBoundingBox ();
   osg::Node *                 _buildProxyGeometry ();
   void                        _buildTopography ();
+  osg::Node *                 _buildVectorField ( unsigned int timestep, unsigned int channel0, unsigned int channel1 );
 
   bool                        _dataCached ( unsigned int timestep, unsigned int channel );
   bool                        _dataRequested ( unsigned int timestep, unsigned int channel );
@@ -161,7 +163,18 @@ private:
     double min, max;
   };
 
+  struct VectorField
+  {
+    VectorField ( ) : name ( "" ), u ( 0 ), v ( 0 )
+    {
+    }
+
+    std::string name;
+    unsigned int u, v;
+  };
+
   /// Typedefs.
+  typedef std::vector < VectorField >                   VectorFields;
   typedef std::vector < ChannelInfo >                   ChannelInfos;
   typedef osg::ref_ptr < osg::Image >                   ImagePtr;
   typedef std::vector < ImagePtr >                      ChannelVolumes;

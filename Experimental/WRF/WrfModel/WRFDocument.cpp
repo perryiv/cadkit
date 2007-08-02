@@ -271,6 +271,10 @@ void WRFDocument::_read ( XmlTree::Node &node, Unknown *caller )
     {
       this->_parseOffset ( *node, caller );
     }
+    if ( "vector_field" == node->name () )
+    {
+      this->_parseVectorField ( *node, caller );
+    }
   }
 
   // Initialize the bounding box.
@@ -278,7 +282,7 @@ void WRFDocument::_read ( XmlTree::Node &node, Unknown *caller )
 
   // Make room for the volumes.
   _data.resize ( _timesteps );
-  //std::for_each ( _data.begin(), _data.end(), std::bind2nd ( std::mem_fun ( &ChannelVolumes::resize ), 4 ) );
+  //std::for_each ( _data.begin(), _data.end(), std::bind2nd ( std::mem_fun ( &ChannelVolumes::resize ), _channels ) );
   for ( TimestepsData::iterator iter = _data.begin(); iter != _data.end(); ++iter )
     iter->resize ( _channels );
 
@@ -396,6 +400,32 @@ void WRFDocument::_parseOffset ( XmlTree::Node &node, Unknown *caller )
     double x ( 0.0 ), y ( 0.0 ), z ( 0.0 );
     in >> x >> y >> z;
     _offset.set ( x, y, z );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse any vector field information.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::_parseVectorField ( XmlTree::Node& node, Unknown *caller )
+{
+  typedef XmlTree::Document::Attributes Attributes;
+
+  Attributes& attributes ( node.attributes() );
+  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+  {
+    if ( "name" == iter->first )
+    {
+    }
+    if ( "u" == iter->first )
+    {
+    }
+    if ( "v" == iter->first )
+    {
+    }
   }
 }
 
@@ -1286,38 +1316,39 @@ void WRFDocument::_buildTopography ()
       {
         osg::Vec3 n ( ( d - c ) ^ ( a - c ) );
         n.normalize();
-        //OsgTools::Triangles::Triangle::RefPtr t ( triangles->addTriangle ( d, a, c, n, false ) );
-        //t->original ( true );
-        vertices->push_back ( a );
-        vertices->push_back ( c );
-        vertices->push_back ( d );
-        normals->push_back ( n );
+        OsgTools::Triangles::Triangle::RefPtr t ( triangles->addTriangle ( a, c, d, n, false ) );
+        t->original ( true );
+        //vertices->push_back ( a );
+        //vertices->push_back ( c );
+        //vertices->push_back ( d );
+        //normals->push_back ( n );
       }
 
       // Add second triangle.
       {
         osg::Vec3 n ( ( b - d ) ^ ( a - d ) );
         n.normalize();
-        //OsgTools::Triangles::Triangle::RefPtr t ( triangles->addTriangle ( d, a, b, n, false ) );
-        //t->original ( true );
+        OsgTools::Triangles::Triangle::RefPtr t ( triangles->addTriangle ( a, d, b, n, false ) );
+        t->original ( true );
 
-        vertices->push_back ( a );
-        vertices->push_back ( d );
-        vertices->push_back ( b );
-        normals->push_back ( n );
+        //vertices->push_back ( a );
+        //vertices->push_back ( d );
+        //vertices->push_back ( b );
+        //normals->push_back ( n );
       }
     }
   }
 
-  // Turn off display lists.
-  //triangles->displayList ( false );
-
+#if 1
   // Build the scene.
-  //TriangleSet::Options options;
-  //options [ "normals" ] = "per-vertex";
+  TriangleSet::Options options;
+  options [ "normals" ] = "per-vertex";
 
-  //osg::ref_ptr < osg::Node > node ( triangles->buildScene ( options, 0x0 ) );
+  osg::ref_ptr < osg::Node > node ( triangles->buildScene ( options, 0x0 ) );
 
+  // Turn off display lists.
+  triangles->displayList ( true );
+#else
   osg::ref_ptr < osg::Geode > node ( new osg::Geode );
   osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
   geometry->setUseDisplayList ( false );
@@ -1356,11 +1387,23 @@ void WRFDocument::_buildTopography ()
   material->setDiffuse ( osg::Material::FRONT, frontDiffuse );
 
   ss->setAttribute ( material.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-
+#endif
   // Set the data members.
   {
     Guard guard ( this->mutex() );
     _triangleSet = triangles;
     _topography = node.get();
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build a vector field.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int channel0, unsigned int channel1 )
+{
+  return 0x0;
 }

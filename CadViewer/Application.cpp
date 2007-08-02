@@ -181,7 +181,6 @@ Application::Application ( Args &args ) :
   BaseClass       ( ),
   _parser         ( new Parser ( args.begin(), args.end() ) ),
   _gridBranch     ( new osg::MatrixTransform ),
-  _menuBranch     ( new osg::MatrixTransform ),
   _statusBranch   ( new osg::MatrixTransform ),
   _origin         ( new osg::Group ),
   _auxiliary      ( new osg::Group ),
@@ -209,7 +208,6 @@ Application::Application ( Args &args ) :
   ErrorChecker ( 2970484549u, 0 == _mainThread );
   ErrorChecker ( 1074058928u, 0x0 != _parser.get() );
   ErrorChecker ( 1067094628u, _gridBranch.valid() );
-  ErrorChecker ( 1325879383u, _menuBranch.valid() );
   ErrorChecker ( 3423749732u, _statusBranch.valid() );
   ErrorChecker ( 1068249416u, _origin.valid() );
   ErrorChecker ( 1069021589u, _auxiliary.valid() );
@@ -226,7 +224,6 @@ Application::Application ( Args &args ) :
   this->_readUserPreferences();
 
   // Hook up the branches.
-  this->_sceneRoot()->addChild      ( _menuBranch.get()   );
   this->_sceneRoot()->addChild      ( _statusBranch.get() );
   this->_sceneRoot()->addChild      ( _origin.get()       );
   this->_sceneRoot()->addChild      ( _auxiliary.get()    );
@@ -235,7 +232,6 @@ Application::Application ( Args &args ) :
 
   // Name the branches.
   _gridBranch->setName   ( "_gridBranch"   );
-  _menuBranch->setName   ( "_menuBranch"   );
   _statusBranch->setName ( "_statusBranch" );
   _origin->setName       ( "_origin"       );
   _auxiliary->setName    ( "_auxiliary"    );
@@ -562,6 +558,9 @@ void Application::_initLight()
 
 void Application::_initMenu()
 {
+  if ( false == this->_isHeadNode() )
+    return;
+
   typedef VRV::Prefs::Settings::Color Color;
 
   osg::Vec4 bgNormal,   bgHighlight,   bgDisabled;
@@ -585,31 +584,24 @@ void Application::_initMenu()
   osgMenu->skin()->text_color_disabled  ( textDisabled );
 
   // Need to guard changing items in the scene because we may be rendering.
-  {
-    Guard guard ( this->mutex () );
 
-    // Set the menu scene.
-    osg::Matrixf mm;
-    OsgTools::Convert::matrix ( this->preferences()->menuMatrix(), mm );
-    _menuBranch->setMatrix ( mm );
-    osgMenu->scene ( _menuBranch.get() );
+  // Set the menu scene.
+  osg::Matrixf mm;
+  OsgTools::Convert::matrix ( this->preferences()->menuMatrix(), mm );
+  osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+  mt->setMatrix ( mm );
+  mt->setName ( "MenuBranch" );
+  osgMenu->scene ( mt.get() );
 
-    // Make the menu always draw on top (last). See osgfxbrowser.cpp.
-	  osg::ref_ptr < osg::StateSet > ss ( _menuBranch->getOrCreateStateSet() );
+  // Make the menu always draw on top (last). See osgfxbrowser.cpp.
+  osg::ref_ptr < osg::StateSet > ss ( mt->getOrCreateStateSet() );
 
-    // The line above should always return a valid state set.  Check just to make sure.
-    if( ss.valid() )
-    {
-	    ss->setRenderBinDetails ( 100, "RenderBin" );
-	    ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+  // take lighting off of the menu
+  ss->setMode( GL_LIGHTING , osg::StateAttribute::OFF );
 
-      // take lighting off of the menu
-      ss->setMode( GL_LIGHTING , osg::StateAttribute::OFF );
-
-      // set the stateset
-      _menuBranch->setStateSet( ss.get() );
-    }
-  }
+  this->projectionGroupRemove ( "VRV_MENU" );
+  osg::ref_ptr < osg::Group > group ( this->projectionGroupGet ( "VRV_MENU" ) );
+  group->addChild ( mt.get( ) );
 
   // Make the menu.
   MenuKit::Menu::Ptr menu ( new MenuKit::Menu );
@@ -906,7 +898,7 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
   for ( ColorMap::const_iterator iter = _colorMap.begin(); iter != _colorMap.end(); ++iter )
     background->append ( this->_createButton ( iter->first, MenuKit::memFunCB2 ( this, &Application::_backgroundColor ) ) );
 
-  /*CV_REGISTER ( _selectionColor,   "selection_color" );;*/
+  /*CV_REGISTER ( _selectionColor,   "selection_color" );*/
 
   menu->append ( this->_createButton ( "Calibrate Joystick", MenuKit::memFunCB2 ( this, &Application::_setAnalogTrim ) ) );
 }
@@ -1997,7 +1989,7 @@ void Application::_writeScene ( const std::string &filename, const osg::Node *no
 
   // If the machine name is the same as the writer...
   const std::string host    ( Usul::System::Host::name() );
-  const std::string &writer = this->preferences()->fileWriterMachineName();
+  const std::string &writer ( this->preferences()->fileWriterMachineName() );
 
   // Make sure there is a writer-machine.
   ErrorChecker ( 2519309141u, !writer.empty(), 

@@ -38,6 +38,11 @@ SceneManager::SceneManager() :
   _scene->addChild ( _projectionNode.get() );
   _scene->addChild ( _clipNode.get() );
   _scene->addChild ( _lightNode.get() );
+
+  // Make sure it draws last and without depth testing.
+  osg::ref_ptr< osg::StateSet > ss ( _projectionNode->getOrCreateStateSet() );
+  ss->setRenderBinDetails( 2000, "RenderBin" );
+  ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
 }
 
 

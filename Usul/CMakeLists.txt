@@ -71,6 +71,7 @@ SET (SOURCES
 	State/Busy.cpp
 	System/Clock.cpp
 	System/DateTime.cpp
+	System/Directory.cpp
 	System/Environment.cpp
 	System/Host.cpp
 	System/LastError.cpp

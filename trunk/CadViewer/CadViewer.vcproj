@@ -160,10 +160,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib Juggler.lib Juggler_ogl.lib gadget.lib jccl.lib vpr.lib osg.lib osgDB.lib osgText.lib osgUtil.lib"
+				AdditionalDependencies="opengl32.lib vrj.lib vrj_ogl.lib gadget.lib jccl.lib vpr.lib osg.lib osgDB.lib osgText.lib osgUtil.lib"
 				OutputFile="../bin/CadViewer.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(VJ_BASE_DIR)/lib,$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(BOOST_LIB_DIR);&quot;$(VJ_BASE_DIR)/lib&quot;;&quot;$(OSG_LIB_DIR)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

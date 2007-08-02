@@ -75,6 +75,7 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _databasePager   ( new osgDB::DatabasePager ),
   _updateListeners ( ),
   _commandQueue    (),
+  _camera          ( new osg::Camera ),
   _refCount        ( 0 )
 {
   USUL_TRACE_SCOPE;
@@ -287,6 +288,7 @@ void Application::contextInit()
 
   // Set the projection.
   _sceneManager->projection()->setMatrix ( osg::Matrix::ortho2D ( _viewport->x(), _viewport->width(), _viewport->y(), _viewport->height() ) );
+  _sceneManager->projection()->dirtyBound ();
 
   // Add this renderer to our list.
   _renderers.push_back ( renderer );
@@ -629,6 +631,7 @@ void Application::init()
   // Add the progress bars to the scene.
   osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
   _progressBars->position ( Usul::Math::Vec3f ( -0.95, -0.7, -3.0 ) );
+  //_progressBars->position ( Usul::Math::Vec3f ( 100, 50, 1.0 ) );
   group->addChild ( _progressBars->buildScene() );
 
   // Initialize the button group by adding the individual buttons.
@@ -1786,4 +1789,46 @@ void Application::addCommand ( Usul::Interfaces::ICommand* command )
 void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
 {
   // Nothing to do for now.
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get a group from the projection node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Group* Application::projectionGroupGet ( const std::string& name )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _sceneManager->projectionGroupGet ( name );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a group from the projection node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::projectionGroupRemove ( const std::string& name )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _sceneManager->projectionGroupRemove ( name );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the group under the projection node?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::projectionGroupHas    ( const std::string& name ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _sceneManager->projectionGroupHas ( name );
 }

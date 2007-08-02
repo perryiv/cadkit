@@ -621,26 +621,7 @@ void WRFDocument::_buildScene ( )
     // Launch a job to read the data.
     else
     {
-      typedef LoadDataJob::ReadRequest ReadRequest;
-      typedef LoadDataJob::ReadRequests ReadRequests;
-
-      ChannelInfo info ( _channelInfo.at ( _currentChannel ) );
-
-      ReadRequest request ( _currentTimestep, info );
-      ReadRequests requests;
-      requests.push_back ( request );
-
-      LoadDataJob::RefPtr job ( new LoadDataJob ( requests, this, _parser ) );
-      job->setSize ( _x, _y, _z );
-
-      _jobForScene = job.get();
-
-      {
-        Guard guard ( this->mutex() );
-        _requests.insert ( Requests::value_type ( Request ( _currentTimestep, _currentChannel ), job.get() ) );
-      }
-
-      Usul::Jobs::Manager::instance().add ( job.get() );
+      this->_requestData ( _currentTimestep, _currentChannel, true );
     }
 
     // Build proxy geometry.
@@ -1405,5 +1386,52 @@ void WRFDocument::_buildTopography ()
 
 osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int channel0, unsigned int channel1 )
 {
+  if ( false == this->_dataCached ( timestep, channel0 ) )
+  {
+  }
+
+  if ( false == this->_dataCached ( timestep, channel1 ) )
+  {
+  }
+
   return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Request the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::_requestData ( unsigned int timestep, unsigned int channel, bool wait )
+{
+  USUL_TRACE_SCOPE;
+
+  typedef LoadDataJob::ReadRequest ReadRequest;
+  typedef LoadDataJob::ReadRequests ReadRequests;
+
+  ChannelInfo info ( _channelInfo.at ( channel ) );
+
+  ReadRequest request ( timestep, info );
+  ReadRequests requests;
+  requests.push_back ( request );
+
+  LoadDataJob::RefPtr job ( new LoadDataJob ( requests, this, _parser ) );
+  job->setSize ( _x, _y, _z );
+
+  {
+    Guard guard ( this->mutex() );    
+    _requests.insert ( Requests::value_type ( Request ( _currentTimestep, _currentChannel ), job.get() ) );
+  }
+
+  // If we need to wait for this job...
+  if ( wait )
+  {
+    Guard guard ( this->mutex() );
+    _jobForScene = job.get();
+  }
+
+  // Add the job to the job manager.
+  Usul::Jobs::Manager::instance().add ( job.get() );
 }

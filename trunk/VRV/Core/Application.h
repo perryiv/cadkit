@@ -50,6 +50,7 @@
 #include "osg/Referenced"
 #include "osg/Matrix"
 #include "osg/Timer"
+#include "osg/Camera"
 
 #include "osgDB/DatabasePager"
 
@@ -184,6 +185,10 @@ public:
   // Print the usage string.
   static void                   usage ( const std::string &exe, std::ostream &out );
 
+  /// Add/Remove group from projection node
+  osg::Group*             projectionGroupGet    ( const std::string& );
+  void                    projectionGroupRemove ( const std::string& );
+  bool                    projectionGroupHas    ( const std::string& ) const;
 protected:
 
   /// VR Juggler methods.
@@ -379,6 +384,8 @@ private:
   UpdateListeners                        _updateListeners;
 
   CommandQueue                           _commandQueue;
+
+  osg::ref_ptr < osg::Camera >           _camera;
 
   unsigned int                           _refCount;
 };

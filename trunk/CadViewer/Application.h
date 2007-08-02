@@ -315,7 +315,6 @@ protected:
   static ThreadId   _mainThread;
   ParserPtr         _parser;
   MatTransPtr       _gridBranch;
-  MatTransPtr       _menuBranch;
   MatTransPtr       _statusBranch;
   GroupPtr          _origin;
   GroupPtr          _auxiliary;

@@ -130,6 +130,7 @@ protected:
 
   bool                        _dataCached ( unsigned int timestep, unsigned int channel );
   bool                        _dataRequested ( unsigned int timestep, unsigned int channel );
+  void                        _requestData ( unsigned int timestep, unsigned int channel, bool wait );
 
   void                        _buildScene ();
 

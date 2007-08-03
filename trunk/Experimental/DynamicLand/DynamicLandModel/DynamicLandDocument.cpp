@@ -149,17 +149,23 @@ Usul::Interfaces::IUnknown *DynamicLandDocument::queryInterface ( unsigned long 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-  void DynamicLandDocument::incrementFilePosition ()
+  bool DynamicLandDocument::incrementFilePosition ()
   {
     if( true == _files.empty() )
+    {
       std::cout << "_files invalid" << std::endl;
+      return false;
+    }
     else
     {
       if( _currFileNum < _files.size() - 1 && _files.size() > 0 )
       {
         ++_currFileNum;
         std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
+        return true;
       }
+      else
+        return false;
     }
 
   }
@@ -171,12 +177,23 @@ Usul::Interfaces::IUnknown *DynamicLandDocument::queryInterface ( unsigned long 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-  void DynamicLandDocument::decrementFilePosition ()
+  bool DynamicLandDocument::decrementFilePosition ()
   {
-    if( _currFileNum > 0 && _files.size() > 0 )
+    if( true == _files.empty() )
     {
-      --_currFileNum;
-      std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
+      std::cout << "_files invalid" << std::endl;
+      return false;
+    }
+    else
+    {
+      if( _currFileNum > 0 && _files.size() > 0 )
+      {
+        --_currFileNum;
+        std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
+        return true;
+      }
+      else
+        return false;
     }
   }
 
@@ -187,14 +204,17 @@ Usul::Interfaces::IUnknown *DynamicLandDocument::queryInterface ( unsigned long 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-  void DynamicLandDocument::loadCurrentFile( bool loadFile )
+  bool DynamicLandDocument::loadCurrentFile( bool loadFile )
   {
-    if ( _files.size() > 0 )
+    if ( _files.size() > 0 && _currFileNum < _files.size() )
     {
       _loadNewMap = loadFile;
       if( loadFile )
         std::cout << "\nLoading file: " << _files.at( _currFileNum ) << "..." << std::endl;
+      return true;
     }
+    else
+      return false;
   }
 
 

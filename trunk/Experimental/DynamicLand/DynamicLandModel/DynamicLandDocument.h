@@ -96,9 +96,9 @@ public:
   bool                        writeTDF ( const std::string& filename, Usul::Interfaces::IUnknown *caller );
 
   // Usul::Interfaces::IDldNavigator
-  void                        decrementFilePosition ();
-  void                        incrementFilePosition ();
-  void                        loadCurrentFile( bool loadFile );
+  bool                        decrementFilePosition ();
+  bool                        incrementFilePosition ();
+  bool                        loadCurrentFile( bool loadFile );
 
 
 protected:

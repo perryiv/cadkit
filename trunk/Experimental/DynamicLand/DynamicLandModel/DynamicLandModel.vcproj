@@ -250,6 +250,14 @@
 					RelativePath=".\DynamicLandFactory.h"
 					>
 				</File>
+				<File
+					RelativePath=".\NextTimestep.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\NextTimestep.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

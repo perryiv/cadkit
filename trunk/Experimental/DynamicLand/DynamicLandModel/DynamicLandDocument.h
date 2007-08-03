@@ -25,6 +25,7 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Policies/Update.h"
+#include "Usul/Interfaces/ICommandList.h"
 
 #include "OsgTools/Triangles/TriangleSet.h"
 
@@ -38,7 +39,8 @@ namespace osg { class Node; }
 class DynamicLandDocument : public Usul::Documents::Document,
                             public Usul::Interfaces::IBuildScene,
                             public Usul::Interfaces::IUpdateListener,
-                            public Usul::Interfaces::IDldNavigator
+                            public Usul::Interfaces::IDldNavigator,
+			    public Usul::Interfaces::ICommandList
 {
 public:
 
@@ -115,6 +117,7 @@ protected:
   /// Usul::Interfaces::IUpdateListener
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 
+  CommandList                 getCommandList();
 
   /// Use reference counting.
   virtual ~DynamicLandDocument();

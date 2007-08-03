@@ -8,9 +8,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "DynamicLandDocument.h"
+#include "Experimental/DynamicLand/DynamicLandModel/DynamicLandDocument.h"
 
-#include "NextTimestep.h"
+#include "Experimental/DynamicLand/DynamicLandModel/NextTimestep.h"
 
 #include "Usul/Interfaces/IColorsPerVertex.h"
 #include "Usul/Interfaces/IDisplaylists.h"
@@ -151,6 +151,7 @@ Usul::Interfaces::IUnknown *DynamicLandDocument::queryInterface ( unsigned long 
 
   bool DynamicLandDocument::incrementFilePosition ()
   {
+    USUL_TRACE_SCOPE;
     if( true == _files.empty() )
     {
       std::cout << "_files invalid" << std::endl;
@@ -179,6 +180,7 @@ Usul::Interfaces::IUnknown *DynamicLandDocument::queryInterface ( unsigned long 
 
   bool DynamicLandDocument::decrementFilePosition ()
   {
+    USUL_TRACE_SCOPE;
     if( true == _files.empty() )
     {
       std::cout << "_files invalid" << std::endl;
@@ -206,6 +208,7 @@ Usul::Interfaces::IUnknown *DynamicLandDocument::queryInterface ( unsigned long 
 
   bool DynamicLandDocument::loadCurrentFile( bool loadFile )
   {
+    USUL_TRACE_SCOPE;
     if ( _files.size() > 0 && _currFileNum < _files.size() )
     {
       _loadNewMap = loadFile;
@@ -422,10 +425,6 @@ void DynamicLandDocument::_buildScene()
     opt[ "normals" ] = "per-vertex";
     opt[ "colors" ]  = "per-vertex";
 
-    
-
-    
-
     // tell Triangle set to build its scene and assign the resulting node
     // to our internal node.
     _terrain->addChild( build->buildScene( opt, 0x0 ) );
@@ -436,8 +435,10 @@ void DynamicLandDocument::_buildScene()
     mat->useMaterial( false );*/
 
     // Turn off display lits.
-    Usul::Interfaces::IDisplaylists::QueryPtr dl ( _document );
-    dl->displayList( false );
+    //Usul::Interfaces::IDisplaylists::QueryPtr dl ( _document );
+    //dl->displayList( false );
+    OsgTools::DisplayLists dl( false );
+    dl( _terrain.get() );
 
     // Done with opt.
     {
@@ -474,6 +475,7 @@ void DynamicLandDocument::_buildScene()
 
 bool DynamicLandDocument::writeTDF ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
   // Ask the document write a TDF file.
   if( !Usul::Predicates::FileExists::test ( filename + ".tdf" ) )
   {
@@ -593,6 +595,7 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
 bool DynamicLandDocument::load ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
   #ifdef _MSC_VER
     std::string file ( filename );
   #else
@@ -616,6 +619,7 @@ bool DynamicLandDocument::load ( const std::string& filename, Usul::Interfaces::
 
 bool DynamicLandDocument::_load( const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
 #ifdef _DEBUG
   const std::string pluginName ( "TriangleModel.plugd" );
 #else
@@ -659,6 +663,7 @@ bool DynamicLandDocument::_load( const std::string& filename, Usul::Interfaces::
 
 void DynamicLandDocument::_openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
   if ( 0x0 == document )
     return;
 
@@ -679,6 +684,7 @@ void DynamicLandDocument::_openDocument ( const std::string &file, Usul::Documen
 
 bool DynamicLandDocument::_loadTexture ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
   #ifdef _MSC_VER
     std::string file ( filename );
   #else
@@ -751,6 +757,7 @@ bool DynamicLandDocument::_loadTexture ( const std::string& filename, Usul::Inte
 
 void DynamicLandDocument::_parseHeader( XmlTree::Node &node, Unknown *caller )
 {
+  USUL_TRACE_SCOPE;
   typedef XmlTree::Document::Attributes Attributes;
   Attributes& attributes ( node.attributes() );
 
@@ -786,6 +793,7 @@ void DynamicLandDocument::_parseHeader( XmlTree::Node &node, Unknown *caller )
 
 bool DynamicLandDocument::_readParameterFile( XmlTree::Node &node, Unknown *caller )
 {
+  USUL_TRACE_SCOPE;
   typedef XmlTree::Document::Attributes Attributes;
   typedef XmlTree::Document::Children Children;
 
@@ -878,9 +886,13 @@ void DynamicLandDocument::LoadDataJob::_started ()
 
 DynamicLandDocument::CommandList DynamicLandDocument::getCommandList()
 {
+  USUL_TRACE_SCOPE;
   CommandList cl;
 
-  cl.push_back( new NextTimestep( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+  std::cout << me.get () << std::endl;
+
+  cl.push_back( new NextTimestep( me.get() ) );
   return cl;
 
 }

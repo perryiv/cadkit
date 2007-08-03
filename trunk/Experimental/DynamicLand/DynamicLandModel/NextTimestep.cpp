@@ -23,7 +23,7 @@ NextTimestep::NextTimestep ( Usul::Interfaces::IUnknown * caller ) :
   BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
-  this->text ( "Next Timestep" );
+  this->text ( "Next Timestep 2" );
 }
 
 
@@ -48,8 +48,12 @@ NextTimestep::~NextTimestep ()
 void NextTimestep::_execute ()
 {
   USUL_TRACE_SCOPE;
+  //this->_dummy();
+#if 1
+  std::cerr << "Trace Call" << std::endl;
+  std::cerr << "After Trace, Before QueryPtr Call" << std::endl;
   Usul::Interfaces::IDldNavigator::QueryPtr nav ( this->caller() );
-
+  std::cerr << "After QueryPtr Call" << std::endl;
   if ( nav.valid () )
   {
     bool value = nav->incrementFilePosition();
@@ -58,4 +62,11 @@ void NextTimestep::_execute ()
       nav->loadCurrentFile( true );
     }
   }
+#endif
+}
+
+void NextTimestep::_dummy ()
+{
+  USUL_TRACE_SCOPE;
+  std::cout << "In Dummy" << std::endl;
 }

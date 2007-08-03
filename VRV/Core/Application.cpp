@@ -143,6 +143,13 @@ Application::~Application()
   // Remove our self from the list of active document listeners.
   Usul::Documents::Manager::instance().removeActiveDocumentListener ( this );
 
+  // Remove all button listeners.
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->clearButtonPressListeners ();
+    (*iter)->clearButtonReleaseListeners ();
+  }
+
   // Make sure we don't have any references hanging around.
   USUL_ASSERT ( 0 == _refCount );
 }
@@ -187,6 +194,10 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ICommandQueueAdd * > ( this );
   case Usul::Interfaces::IActiveDocumentListener::IID:
     return static_cast < Usul::Interfaces::IActiveDocumentListener * > ( this );
+  case Usul::Interfaces::IButtonPressListener::IID:
+    return static_cast < Usul::Interfaces::IButtonPressListener * > ( this );
+  case Usul::Interfaces::IButtonReleaseListener::IID:
+    return static_cast < Usul::Interfaces::IButtonReleaseListener * > ( this );
   default:
     return 0x0;
   }
@@ -237,7 +248,7 @@ void Application::viewAll ( osg::Node* node, osg::Matrix::value_type zScale )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Called after the context is initalized.
+//  Called once for each display ( or draw thread ) to initialize the OpenGL context.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -665,6 +676,15 @@ void Application::init()
   _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON3, "VJButton3" ) );
   _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON4, "VJButton4" ) );
   _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON5, "VJButton5" ) );
+
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+
+  // Add our self as button listeners.
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->addButtonPressListener ( me.get() );
+    (*iter)->addButtonReleaseListener ( me.get() );
+  }
 }
 
 
@@ -1103,7 +1123,7 @@ void Application::_setNearAndFarClippingPlanes()
 
   // Set both distances.
   _clipDist[0] = this->preferences()->nearClippingDistance();
-  _clipDist[1] = radius * this->preferences()->farClippingPlaneMultiplier();
+  _clipDist[1] = 2 * radius * this->preferences()->farClippingPlaneMultiplier();
   
   // Set the clipping planes
   vrj::Projection::setNearFar ( _clipDist[0], _clipDist[1] );
@@ -1883,4 +1903,28 @@ bool Application::frameDump () const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _frameDump.dump ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when button is pressed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::buttonPressNotify ( Usul::Interfaces::IUnknown * )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when button is released.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::buttonReleaseNotify ( Usul::Interfaces::IUnknown * )
+{
+  USUL_TRACE_SCOPE;
 }

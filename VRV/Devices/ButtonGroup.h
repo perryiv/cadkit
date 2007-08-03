@@ -32,6 +32,8 @@ public:
   
   // Useful typedefs.
   typedef Usul::Base::Object BaseClass;
+  typedef std::vector< ButtonDevice::RefPtr > Buttons;
+  typedef Buttons::iterator iterator;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ButtonGroup );
@@ -41,6 +43,9 @@ public:
 
   // Add a button device.
   void            add ( ButtonDevice * );
+
+  iterator        begin () { return _buttons.begin (); }
+  iterator        end ()   { return _buttons.end(); }
 
   // Return bitmask of buttons that are down.
   unsigned long   down() const { return _down; }
@@ -66,7 +71,6 @@ private:
   ButtonGroup ( const ButtonGroup & );
   ButtonGroup& operator = ( const ButtonGroup & );
 
-  typedef std::vector<ButtonDevice::RefPtr> Buttons;
   Buttons _buttons;
   unsigned long _down;
   unsigned long _pressed;

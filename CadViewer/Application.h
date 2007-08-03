@@ -146,13 +146,10 @@ protected:
   MenuKit::Button*              _createToggle    ( const std::string& name, MenuKit::Callback* );
   MenuKit::Button*              _createSeperator ( );
 
-  // Called once for each display to initialize the OpenGL context.
-  virtual void                  contextInit();
-
   // Handle the events, if any.
-  bool                          _handleMenuEvent();
-  bool                          _handleIntersectionEvent();
-  bool                          _handleNavigationEvent( const unsigned long event_request = 0 );
+  bool                          _handleMenuEvent ( unsigned long id );
+  bool                          _handleIntersectionEvent ( unsigned long id );
+  bool                          _handleNavigationEvent ( unsigned long id );
 
   // Called by the kernel to initialize this instance.
   virtual void                  init();
@@ -173,9 +170,6 @@ protected:
   // Called by the kernel before the frame.
   virtual void                  latePreFrame();
   void                          _latePreFrame();
-  
-  // Process the button states.
-  void                          _processButtons();
 
   // Called by the kernel after the frame.
   virtual void                  postFrame();
@@ -221,6 +215,12 @@ protected:
 
   /// The active document has changed.
   virtual void                  activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc );
+
+  /// Called when button is pressed.
+  virtual void                  buttonPressNotify ( Usul::Interfaces::IUnknown * );
+
+  /// Called when button is released.
+  virtual void                  buttonReleaseNotify ( Usul::Interfaces::IUnknown * );
 
   // Button callbacks.
   void                          _defaultCallback  ( MenuKit::Message m, MenuKit::Item *item );

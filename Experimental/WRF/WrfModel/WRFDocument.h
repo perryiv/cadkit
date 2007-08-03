@@ -49,6 +49,7 @@ public:
 
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
+  typedef Parser::Data::value_type  DataType;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( WRFDocument );
@@ -102,7 +103,7 @@ public:
   unsigned int                numPlanes () const;
 
   /// Add volume
-  void                        addVolume ( osg::Image* image, unsigned int timestep, unsigned int channel );
+  void                        addVolume ( const Parser::Data& data, osg::Image* image, unsigned int timestep, unsigned int channel );
 
   /// Load job has finished.
   void                        loadJobFinished ( Usul::Jobs::Job* job );
@@ -126,6 +127,7 @@ protected:
   osg::Node *                 _buildProxyGeometry ();
   void                        _buildTopography ();
   osg::Node *                 _buildVectorField ( unsigned int timestep, unsigned int channel0, unsigned int channel1 );
+  DataType                    _value ( unsigned int timestep, unsigned int channel, unsigned int i, unsigned int j, unsigned int k );
 
   bool                        _dataCached ( unsigned int timestep, unsigned int channel );
   bool                        _dataRequested ( unsigned int timestep, unsigned int channel );
@@ -174,13 +176,13 @@ private:
   };
 
   /// Typedefs.
-  typedef std::vector < VectorField >                   VectorFields;
-  typedef std::vector < ChannelInfo >                   ChannelInfos;
-  typedef osg::ref_ptr < osg::Image >                   ImagePtr;
-  typedef std::vector < ImagePtr >                      ChannelVolumes;
-  typedef std::vector < ChannelVolumes >                TimestepsData;
-  typedef std::pair < unsigned int, unsigned int >      Request;
-  typedef std::map < Request, Usul::Jobs::Job::RefPtr > Requests;
+  typedef std::vector < VectorField >                                  VectorFields;
+  typedef std::vector < ChannelInfo >                                  ChannelInfos;
+  typedef osg::ref_ptr < osg::Image >                                  ImagePtr;
+  typedef std::vector < std::pair < Parser::Data, ImagePtr >  >        ChannelData;
+  typedef std::vector < ChannelData >                                  TimestepsData;
+  typedef std::pair < unsigned int, unsigned int >                     Request;
+  typedef std::map < Request, Usul::Jobs::Job::RefPtr >                Requests;
 
   // Internal job to load data from file.
   class LoadDataJob : public Usul::Jobs::Job
@@ -198,7 +200,7 @@ private:
   protected:
     virtual void _started ();
     virtual void _finished ();
-    osg::Image*  _createImage ( const ReadRequest& request );
+    osg::Image*  _createImage ( const ReadRequest& request, Parser::Data& data );
 
     ReadRequests _requests;
     WRFDocument::RefPtr _document;
@@ -232,6 +234,8 @@ private:
   osg::Vec3 _offset;
   osg::ref_ptr < osg::Node > _topography;
   std::string _textureFile;
+  VectorFields _vectorFields;
+  osg::Vec3 _cellSize;
 };
 
 

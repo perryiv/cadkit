@@ -30,6 +30,7 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/Math/MinMax.h"
 
 #include "XmlTree/Document.h"
 
@@ -37,6 +38,7 @@
 #include "OsgTools/GlassBoundingBox.h"
 #include "OsgTools/Volume/Texture3DVolume.h"
 #include "OsgTools/DisplayLists.h"
+#include "OsgTools/Builders/Arrow.h"
 
 #include "osgText/Text"
 #include "osg/Geode"
@@ -88,7 +90,8 @@ WRFDocument::WRFDocument() :
   _animating ( false ),
   _offset (),
   _topography ( 0x0 ),
-  _textureFile ( "" )
+  _textureFile ( "" ),
+  _cellSize ( 10.0, 10.0, 3.0 )
 {
 }
 
@@ -420,19 +423,26 @@ void WRFDocument::_parseVectorField ( XmlTree::Node& node, Unknown *caller )
 {
   typedef XmlTree::Document::Attributes Attributes;
 
-  Attributes& attributes ( node.attributes() );
-  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+  VectorField field;
+
+  const Attributes& attributes ( node.attributes() );
+  for ( Attributes::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
     if ( "name" == iter->first )
     {
+      field.name = iter->second;
     }
     if ( "u" == iter->first )
     {
+      Usul::Strings::fromString ( iter->second, field.u );
     }
     if ( "v" == iter->first )
     {
+      Usul::Strings::fromString ( iter->second, field.v );
     }
   }
+
+  _vectorFields.push_back ( field );
 }
 
 
@@ -619,8 +629,12 @@ void WRFDocument::_buildScene ( )
   {
     Guard guard ( this->mutex() );
     _root->removeChild ( 0, _root->getNumChildren() );
-    _root->addChild ( _geometry.get() );
     _volumeTransform->removeChild ( 0, _volumeTransform->getNumChildren () );
+
+    // Add any extra geometry.
+    _root->addChild ( _geometry.get() );
+
+    // Add the topography back.
     _volumeTransform->addChild ( _topography.get() );
     _root->addChild ( _volumeTransform.get() );
   }
@@ -631,10 +645,8 @@ void WRFDocument::_buildScene ( )
     if ( true == this->_dataRequested ( _currentTimestep, _currentChannel ) )
     {
       // Keep a handle the job to wait for.
-      {
-        Guard guard ( this->mutex() );
-        _jobForScene = _requests [ Request ( _currentTimestep, _currentChannel ) ];
-      }
+      Guard guard ( this->mutex() );
+      _jobForScene = _requests [ Request ( _currentTimestep, _currentChannel ) ];
     }
 
     // Launch a job to read the data.
@@ -662,9 +674,6 @@ void WRFDocument::_buildScene ( )
     // Get the 3D image for the volume.
     ImagePtr image ( this->_volume ( _currentTimestep, _currentChannel ) );
 
-    // Matrix transform to place the volume.
-    
-
     // Make a bounding box around the volume.
     //OsgTools::GlassBoundingBox gbb ( _bb );
     //gbb ( _volumeTransform.get(), true, false, false );
@@ -672,7 +681,8 @@ void WRFDocument::_buildScene ( )
     // Add the volume to the scene.
     {
       Guard guard ( this->mutex() );
-      _volumeTransform->addChild ( this->_buildVolume ( image.get() ) );
+      //_volumeTransform->addChild ( this->_buildVolume ( image.get() ) );
+      _volumeTransform->addChild ( this->_buildVectorField ( _currentTimestep, _currentChannel, _currentChannel + 1 ) );
     }
   }
 
@@ -691,7 +701,7 @@ bool WRFDocument::_dataCached ( unsigned int timestep, unsigned int channel )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return _data [ timestep ] [ channel ].valid();
+  return _data [ timestep ] [ channel ].second.valid();
 }
 
 
@@ -715,11 +725,12 @@ bool WRFDocument::_dataRequested ( unsigned int timestep, unsigned int channel )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WRFDocument::addVolume ( osg::Image* image, unsigned int timestep, unsigned int channel )
+void WRFDocument::addVolume ( const Parser::Data& data, osg::Image* image, unsigned int timestep, unsigned int channel )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  _data [ timestep ] [ channel ] = image;
+  _data [ timestep ] [ channel ].first = data;
+  _data [ timestep ] [ channel ].second = image;
   _requests.erase ( Request ( timestep, channel ) );
 }
 
@@ -734,7 +745,7 @@ osg::Image * WRFDocument::_volume ( unsigned int timestep, unsigned int channel 
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return _data [ timestep ] [ channel ].get();
+  return _data [ timestep ] [ channel ].second.get();
 }
 
 
@@ -905,6 +916,7 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
 
+#ifndef _MSC_VER
   if ( _requests.empty() )
   {
     unsigned int timestepToLoad ( 0 );
@@ -946,6 +958,7 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
       Usul::Jobs::Manager::instance().add ( job.get() );
     }
   }
+#endif
 
   if ( this->dirty () )
     this->_buildScene();
@@ -1130,12 +1143,15 @@ void WRFDocument::LoadDataJob::_started ()
     ReadRequest request ( _requests.front() );
     _requests.pop_front ();
 
-    osg::ref_ptr < osg::Image > image ( this->_createImage ( request ) );
+    // Vector for raw floating point data.
+    Parser::Data data;
+
+    osg::ref_ptr < osg::Image > image ( this->_createImage ( request, data ) );
 
     unsigned int timestep ( request.first );
     unsigned int channel ( request.second.index );
 
-    _document->addVolume ( image.get(), timestep, channel );
+    _document->addVolume ( data, image.get(), timestep, channel );
   }
 }
 
@@ -1177,15 +1193,13 @@ void WRFDocument::LoadDataJob::setSize ( unsigned int x, unsigned int y, unsigne
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image*  WRFDocument::LoadDataJob::_createImage ( const ReadRequest& request )
+osg::Image*  WRFDocument::LoadDataJob::_createImage ( const ReadRequest& request, Parser::Data& data )
 {
   USUL_TRACE_SCOPE;
 
   ChannelInfo info ( request.second );
   unsigned int timestep ( request.first );
   unsigned int channel ( info.index );
-
-  Parser::Data data;
 
   std::cout << "Reading data.  Timestep: " << timestep << " Channel: " << channel << std::endl;
 
@@ -1429,15 +1443,134 @@ void WRFDocument::_buildTopography ()
 
 osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int channel0, unsigned int channel1 )
 {
+  // Check the first channel.
   if ( false == this->_dataCached ( timestep, channel0 ) )
   {
+    if ( true == this->_dataRequested ( timestep, channel0 ) )
+    {
+      // Keep a handle the job to wait for.
+      Guard guard ( this->mutex() );
+      _jobForScene = _requests [ Request ( timestep, channel0 ) ];
+    }
+
+    // Launch a job to read the data.
+    else
+    {
+      this->_requestData ( timestep, channel0, true );
+    }
+
+    return this->_buildProxyGeometry();
   }
 
+  // Check the second channel.
   if ( false == this->_dataCached ( timestep, channel1 ) )
   {
+    if ( true == this->_dataRequested ( timestep, channel1 ) )
+    {
+      // Keep a handle the job to wait for.
+      Guard guard ( this->mutex() );
+      _jobForScene = _requests [ Request ( timestep, channel1 ) ];
+    }
+
+    // Launch a job to read the data.
+    else
+    {
+      this->_requestData ( timestep, channel1, true );
+    }
+
+    return this->_buildProxyGeometry();
   }
 
-  return 0x0;
+  // If we get here, we have the data we need.
+  const unsigned int width ( _y ), height ( _x );
+
+  double xLength ( width  * _cellSize.x() );
+  double yLength ( height * _cellSize.y() );
+  double zLength ( _z * _cellSize.z() );
+
+  double xHalf ( xLength / 2.0 );
+  double yHalf ( yLength / 2.0 );
+  double zHalf ( zLength / 2.0 );
+
+  // Group to return.
+  osg::ref_ptr < osg::Group > group ( new osg::Group );
+
+  Usul::Predicates::CloseFloat < float > close ( 10 );
+
+  double min ( Usul::Math::minimum ( _channelInfo.at ( channel0 ).min, _channelInfo.at ( channel1 ).min ) );
+  double max ( Usul::Math::maximum ( _channelInfo.at ( channel0 ).max, _channelInfo.at ( channel1 ).max ) );
+
+  double magnitude ( ::sqrt ( ( min * min ) + ( max * max ) ) );
+
+  // Loop over the rows.
+  for ( unsigned int i = 0; i < height; i += 10 )
+  {
+    float x ( -yHalf + ( i * _cellSize.x() ) );
+
+    // Loop over the columns.
+    for ( unsigned int j = 0; j < width; j += 10 )
+    {
+      float y ( -xHalf + ( j * _cellSize.y() ) );
+
+      // Loop over the depth
+      for ( unsigned int k = 0; k < _z; k += 10 )
+      {
+        float z ( -zHalf + ( k * _cellSize.z() ) );
+
+        float u ( this->_value ( timestep, channel0, i, j, k ) );
+        float v ( this->_value ( timestep, channel1, i, j, k ) );
+
+        if ( false == close ( u, 1.0e+035f ) && false == close ( v, 1.0e+035f ) )
+        {
+          osg::Vec3 vector ( u, v, 0.0 );
+
+          osg::Vec3 translate ( x, y, z );
+          translate += ( _cellSize / 2.0 );
+
+          double value ( vector.length() / magnitude );
+          vector.normalize();
+
+          OsgTools::Builders::Arrow arrow;
+          arrow.start ( osg::Vec3 ( 0.0, 0.0, 0.0 ) );
+          arrow.end ( vector * 30 );
+          arrow.radius ( 0.75 );
+          arrow.height ( 6.0 );
+
+          float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
+          Usul::Functions::hsvToRgb ( r, g, b, static_cast < float > ( value * 300 ), 1.0f, 1.0f );
+          arrow.color ( osg::Vec4 ( r, g, b, 1.0 ) );
+
+          arrow.tessellation ( 0.25f );
+
+          osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+          mt->setMatrix ( osg::Matrix::translate ( translate ) );
+          mt->addChild ( arrow () );
+
+          group->addChild ( mt.get() );
+        }
+      }
+    }
+  }
+
+  return group.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get data at given index.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+WRFDocument::DataType WRFDocument::_value ( unsigned int timestep, unsigned int channel, unsigned int i, unsigned int j, unsigned int k )
+{
+  USUL_TRACE_SCOPE;
+
+  unsigned int sliceSize ( _x * _y );
+  unsigned int index ( sliceSize * k + ( _y * i ) + j );
+  
+  Guard guard ( this->mutex () );
+  return _data [ timestep ] [ channel ].first [ index ];
 }
 
 

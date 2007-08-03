@@ -52,7 +52,10 @@ void NextTimestep::_execute ()
 
   if ( nav.valid () )
   {
-    nav->incrementFilePosition();
-    //nav->loadCurrentFile( true );
+    bool value = nav->incrementFilePosition();
+    if( true == value )
+    {
+      nav->loadCurrentFile( true );
+    }
   }
 }

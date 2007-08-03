@@ -29,6 +29,7 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Predicates/FileExists.h"
 
 #include "XmlTree/Document.h"
 
@@ -39,7 +40,10 @@
 
 #include "osgText/Text"
 #include "osg/Geode"
+#include "osg/Geometry"
+#include "osg/Material"
 #include "osg/LightModel"
+#include "osg/Texture2D"
 
 #include "osgDB/ReadFile"
 
@@ -83,8 +87,8 @@ WRFDocument::WRFDocument() :
   _lastTimestepLoaded ( INVALID_TIMESTEP ),
   _animating ( false ),
   _offset (),
-  _triangleSet ( 0x0 ),
-  _topography ( 0x0 )
+  _topography ( 0x0 ),
+  _textureFile ( "" )
 {
 }
 
@@ -275,6 +279,8 @@ void WRFDocument::_read ( XmlTree::Node &node, Unknown *caller )
     {
       this->_parseVectorField ( *node, caller );
     }
+    if ( "texture" == node->name() )
+      this->_parseTexture ( *node, caller );
   }
 
   // Initialize the bounding box.
@@ -427,6 +433,19 @@ void WRFDocument::_parseVectorField ( XmlTree::Node& node, Unknown *caller )
     {
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse any texture information.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::_parseTexture ( XmlTree::Node& node, Unknown *caller )
+{
+  std::string texture ( node.value() );
+  _textureFile = texture;
 }
 
 
@@ -1255,9 +1274,6 @@ void WRFDocument::_buildTopography ()
   Parser::Data data;
   parser.topography ( data );
 
-  // Make a triangle set.
-  TriangleSet::RefPtr triangles ( new TriangleSet );
-
   const unsigned int width ( _y ), height ( _x );
 
   double xCellSize ( 10.0 );
@@ -1274,6 +1290,12 @@ void WRFDocument::_buildTopography ()
 
   osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array );
   osg::ref_ptr < osg::Vec3Array > normals ( new osg::Vec3Array );
+  osg::ref_ptr < osg::Vec2Array > coords  ( new osg::Vec2Array );
+
+  unsigned int numPoints ( height * width );
+  vertices->reserve ( numPoints );
+  normals->reserve  ( numPoints / 3 );
+  coords->reserve   ( numPoints );
 
   // Loop over the rows
   for ( unsigned int i = 0; i < height - 1; ++i )
@@ -1293,43 +1315,43 @@ void WRFDocument::_buildTopography ()
       const osg::Vec3 c ( xb, y0, ( data.at ( ( ( i + 1 ) * width ) + j     ) / 100.0 ) - zHalf );
       const osg::Vec3 d ( xb, y1, ( data.at ( ( ( i + 1 ) * width ) + j + 1 ) / 100.0 ) - zHalf );
 
+      const osg::Vec2 ta ( static_cast < double > ( i     ) / height, static_cast < double > ( j     ) / width );
+      const osg::Vec2 tb ( static_cast < double > ( i     ) / height, static_cast < double > ( j + 1 ) / width );
+      const osg::Vec2 tc ( static_cast < double > ( i + 1 ) / height, static_cast < double > ( j     ) / width );
+      const osg::Vec2 td ( static_cast < double > ( i + 1 ) / height, static_cast < double > ( j + 1 ) / width );
+
       // Add first triangle.
       {
         osg::Vec3 n ( ( d - c ) ^ ( a - c ) );
         n.normalize();
-        OsgTools::Triangles::Triangle::RefPtr t ( triangles->addTriangle ( a, c, d, n, false ) );
-        t->original ( true );
-        //vertices->push_back ( a );
-        //vertices->push_back ( c );
-        //vertices->push_back ( d );
-        //normals->push_back ( n );
+
+        vertices->push_back ( a );
+        vertices->push_back ( c );
+        vertices->push_back ( d );
+        normals->push_back ( n );
+
+        coords->push_back ( ta );
+        coords->push_back ( tc );
+        coords->push_back ( td );
       }
 
       // Add second triangle.
       {
         osg::Vec3 n ( ( b - d ) ^ ( a - d ) );
         n.normalize();
-        OsgTools::Triangles::Triangle::RefPtr t ( triangles->addTriangle ( a, d, b, n, false ) );
-        t->original ( true );
 
-        //vertices->push_back ( a );
-        //vertices->push_back ( d );
-        //vertices->push_back ( b );
-        //normals->push_back ( n );
+        vertices->push_back ( a );
+        vertices->push_back ( d );
+        vertices->push_back ( b );
+        normals->push_back ( n );
+
+        coords->push_back ( ta );
+        coords->push_back ( td );
+        coords->push_back ( tb );
       }
     }
   }
 
-#if 1
-  // Build the scene.
-  TriangleSet::Options options;
-  options [ "normals" ] = "per-vertex";
-
-  osg::ref_ptr < osg::Node > node ( triangles->buildScene ( options, 0x0 ) );
-
-  // Turn off display lists.
-  triangles->displayList ( true );
-#else
   osg::ref_ptr < osg::Geode > node ( new osg::Geode );
   osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
   geometry->setUseDisplayList ( false );
@@ -1337,6 +1359,28 @@ void WRFDocument::_buildTopography ()
   geometry->setVertexArray ( vertices.get() );
   geometry->setNormalArray ( normals.get() );
   geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+
+  if ( Usul::Predicates::FileExists::test ( _textureFile ) )
+  {
+    osg::ref_ptr < osg::Image > image ( osgDB::readImageFile ( _textureFile ) );
+
+    if ( image.valid() )
+    {
+      osg::ref_ptr < osg::Texture2D > texture ( new osg::Texture2D );
+      texture->setImage( image.get() );
+
+      texture->setFilter( osg::Texture::MIN_FILTER, osg::Texture::NEAREST );
+      texture->setFilter( osg::Texture::MAG_FILTER, osg::Texture::NEAREST );
+      texture->setWrap  ( osg::Texture::WRAP_S, osg::Texture::CLAMP );
+      texture->setWrap  ( osg::Texture::WRAP_T, osg::Texture::CLAMP );
+      texture->setInternalFormatMode ( osg::Texture::USE_IMAGE_DATA_FORMAT );
+
+      // Get the state set.
+      osg::ref_ptr< osg::StateSet > ss ( node->getOrCreateStateSet() );
+      ss->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON );
+      geometry->setTexCoordArray ( 0, coords.get() );
+    }
+  }
 
   geometry->addPrimitiveSet ( new osg::DrawArrays ( GL_TRIANGLES, 0, vertices->size() ) );
 
@@ -1368,11 +1412,10 @@ void WRFDocument::_buildTopography ()
   material->setDiffuse ( osg::Material::FRONT, frontDiffuse );
 
   ss->setAttribute ( material.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-#endif
+
   // Set the data members.
   {
     Guard guard ( this->mutex() );
-    _triangleSet = triangles;
     _topography = node.get();
   }
 }

@@ -184,7 +184,6 @@ Application::Application ( Args &args ) :
   _statusBranch   ( new osg::MatrixTransform ),
   _origin         ( new osg::Group ),
   _auxiliary      ( new osg::Group ),
-  _textBranch     ( new osg::Projection ),
   _navigatorH     ( 0x0 ),
   _navigatorV     ( 0x0 ),
   _sceneTool      ( 0x0 ),
@@ -211,7 +210,6 @@ Application::Application ( Args &args ) :
   ErrorChecker ( 3423749732u, _statusBranch.valid() );
   ErrorChecker ( 1068249416u, _origin.valid() );
   ErrorChecker ( 1069021589u, _auxiliary.valid() );
-  ErrorChecker ( 1071446158u, _textBranch.valid() );
   ErrorChecker ( 1071551353u, 0x0 != _pickText.get() );
   ErrorChecker ( 1071551354u, 0x0 != _navText.get() );
   ErrorChecker ( 1071551355u, 0x0 != _frameText.get() );
@@ -227,7 +225,6 @@ Application::Application ( Args &args ) :
   this->_sceneRoot()->addChild      ( _statusBranch.get() );
   this->_sceneRoot()->addChild      ( _origin.get()       );
   this->_sceneRoot()->addChild      ( _auxiliary.get()    );
-  this->_sceneRoot()->addChild      ( _textBranch.get()   );
   //_navBranch->addChild ( _gridBranch.get()   );
 
   // Name the branches.
@@ -235,7 +232,6 @@ Application::Application ( Args &args ) :
   _statusBranch->setName ( "_statusBranch" );
   _origin->setName       ( "_origin"       );
   _auxiliary->setName    ( "_auxiliary"    );
-  _textBranch->setName   ( "_textBranch"   );
 
   // Hook up the joystick callbacks.
   JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
@@ -394,17 +390,20 @@ void Application::_init()
 void Application::_initText()
 {
 #if 1
+  // Removing anything we may have already.
+  this->projectionGroupRemove ( "VRV_TEXT" );
+
   ErrorChecker ( 1071444744, isAppThread(), CV::NOT_APP_THREAD );
-  ErrorChecker ( 1071444745, _textBranch.valid() );
   ErrorChecker ( 1071444746, 0x0 != _pickText.get() );
   ErrorChecker ( 1071444747, 0x0 != _navText.get() );
   ErrorChecker ( 1071444748, 0x0 != _frameText.get() );
   ErrorChecker ( 1071444749, 0x0 != _msgText.get() );
   ErrorChecker ( 1071556909, false == Usul::Bits::has ( _flags, Detail::_TEXT_IS_INITIALIZED ) );
-  ErrorChecker ( 1071558814, 0 == _textBranch->getNumChildren() );
 
   if( !this->_isHeadNode() )
     return;
+
+  osg::ref_ptr < osg::Group > group ( this->projectionGroupGet ( "VRV_TEXT" ) );
 
   // Create a matrix-transform relative to the global coordinate system.
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
@@ -412,6 +411,7 @@ void Application::_initText()
 
   mt->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
   mt->setMatrix ( osg::Matrix::identity() );
+  mt->setName ( "TextBranch" );
 
   // Make the text branch an orthographic projection.
   osg::ref_ptr < osg::Viewport > vp ( this->viewport() );
@@ -419,7 +419,6 @@ void Application::_initText()
   float y ( vp->y()      );
   float w ( vp->width()  );
   float h ( vp->height() );
-  _textBranch->setMatrix ( osg::Matrix::ortho2D ( x, w, y, h ) );
 
   // Set the text font.
   std::string f ( OsgTools::Font::fontfile ( "courbd" ) ); // Courier New Bold
@@ -447,7 +446,8 @@ void Application::_initText()
   mt->addChild ( (*_navText)  () );
   mt->addChild ( (*_frameText)() );
   mt->addChild ( (*_msgText)  () );
-  _textBranch->addChild ( mt.get() );
+  //_textBranch->addChild ( mt.get() );
+  group->addChild ( mt.get() );
 
 #if 0 // Use for debugging their placement.
   _navText->text   ( "_navText"   );

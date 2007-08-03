@@ -318,7 +318,6 @@ protected:
   MatTransPtr       _statusBranch;
   GroupPtr          _origin;
   GroupPtr          _auxiliary;
-  ProjectPtr        _textBranch;
   FunctorPtr        _navigatorH;
   FunctorPtr        _navigatorV;
   FunctorPtr        _sceneTool;

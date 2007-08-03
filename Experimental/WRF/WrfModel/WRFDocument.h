@@ -28,8 +28,6 @@
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/ICommandList.h"
 
-#include "OsgTools/Triangles/TriangleSet.h"
-
 #include "osg/BoundingBox"
 #include "osg/MatrixTransform"
 #include "osg/Image"
@@ -119,6 +117,7 @@ protected:
   void                        _parseGeometry ( XmlTree::Node &node, Unknown *caller );
   void                        _parseOffset ( XmlTree::Node &node, Unknown *caller );
   void                        _parseVectorField ( XmlTree::Node &node, Unknown *caller );
+  void                        _parseTexture ( XmlTree::Node& node, Unknown *caller );
 
   void                        _processReadRequests ( Usul::Threads::Thread *);
   osg::Image *                _volume ( unsigned int timestep, unsigned int channel );
@@ -182,7 +181,6 @@ private:
   typedef std::vector < ChannelVolumes >                TimestepsData;
   typedef std::pair < unsigned int, unsigned int >      Request;
   typedef std::map < Request, Usul::Jobs::Job::RefPtr > Requests;
-  typedef OsgTools::Triangles::TriangleSet              TriangleSet;
 
   // Internal job to load data from file.
   class LoadDataJob : public Usul::Jobs::Job
@@ -232,8 +230,8 @@ private:
   unsigned int _lastTimestepLoaded;
   bool _animating;
   osg::Vec3 _offset;
-  TriangleSet::RefPtr        _triangleSet;
   osg::ref_ptr < osg::Node > _topography;
+  std::string _textureFile;
 };
 
 

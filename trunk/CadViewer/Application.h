@@ -293,7 +293,7 @@ protected:
   void                          _renderPassesThree    ( MenuKit::Message m, MenuKit::Item *item );
   void                          _renderPassesNine     ( MenuKit::Message m, MenuKit::Item *item );
   void                          _renderPassesTweleve  ( MenuKit::Message m, MenuKit::Item *item );
-  
+  void                          _dumpFrames           ( MenuKit::Message m, MenuKit::Item *item );
 
   // For readability.
   typedef unsigned long                                 ThreadId;

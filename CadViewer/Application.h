@@ -316,7 +316,6 @@ protected:
   ParserPtr         _parser;
   MatTransPtr       _gridBranch;
   MatTransPtr       _statusBranch;
-  GroupPtr          _origin;
   GroupPtr          _auxiliary;
   FunctorPtr        _navigatorH;
   FunctorPtr        _navigatorV;

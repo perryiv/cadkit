@@ -47,6 +47,7 @@
 #include "vrj/Kernel/Kernel.h"
 #include "vrj/Display/Projection.h"
 
+#include "VRV/Common/Buttons.h"
 #include "VRV/Devices/ButtonGroup.h"
 #include "VRV/Devices/TrackerDevice.h"
 
@@ -83,21 +84,13 @@
 
 namespace CV
 {
-  // Buttons.
-  const unsigned long BUTTON0 = 0x00000001;
-  const unsigned long BUTTON1 = 0x00000002;
-  const unsigned long BUTTON2 = 0x00000004;
-  const unsigned long BUTTON3 = 0x00000008;
-  const unsigned long BUTTON4 = 0x00000010;
-  const unsigned long BUTTON5 = 0x00000020;
-
   // For convenience.
-  const unsigned long BUTTON_RED      = CV::BUTTON1;
-  const unsigned long BUTTON_YELLOW   = CV::BUTTON0;
-  const unsigned long BUTTON_GREEN    = CV::BUTTON2;
-  const unsigned long BUTTON_BLUE     = CV::BUTTON3;
-  const unsigned long BUTTON_JOYSTICK = CV::BUTTON4;
-  const unsigned long BUTTON_TRIGGER  = CV::BUTTON5;
+  const unsigned long BUTTON_RED      = VRV::BUTTON1;
+  const unsigned long BUTTON_YELLOW   = VRV::BUTTON0;
+  const unsigned long BUTTON_GREEN    = VRV::BUTTON2;
+  const unsigned long BUTTON_BLUE     = VRV::BUTTON3;
+  const unsigned long BUTTON_JOYSTICK = VRV::BUTTON4;
+  const unsigned long BUTTON_TRIGGER  = VRV::BUTTON5;
 
   // Button combinations.
   const unsigned long COMMAND_MENU_TOGGLE      = BUTTON_JOYSTICK;
@@ -184,7 +177,6 @@ Application::Application ( Args &args ) :
   _parser         ( new Parser ( args.begin(), args.end() ) ),
   _gridBranch     ( new osg::MatrixTransform ),
   _statusBranch   ( new osg::MatrixTransform ),
-  _origin         ( new osg::Group ),
   _auxiliary      ( new osg::Group ),
   _navigatorH     ( 0x0 ),
   _navigatorV     ( 0x0 ),
@@ -210,7 +202,6 @@ Application::Application ( Args &args ) :
   ErrorChecker ( 1074058928u, 0x0 != _parser.get() );
   ErrorChecker ( 1067094628u, _gridBranch.valid() );
   ErrorChecker ( 3423749732u, _statusBranch.valid() );
-  ErrorChecker ( 1068249416u, _origin.valid() );
   ErrorChecker ( 1069021589u, _auxiliary.valid() );
   ErrorChecker ( 1071551353u, 0x0 != _pickText.get() );
   ErrorChecker ( 1071551354u, 0x0 != _navText.get() );
@@ -225,14 +216,12 @@ Application::Application ( Args &args ) :
 
   // Hook up the branches.
   this->_sceneRoot()->addChild      ( _statusBranch.get() );
-  this->_sceneRoot()->addChild      ( _origin.get()       );
   this->_sceneRoot()->addChild      ( _auxiliary.get()    );
   //_navBranch->addChild ( _gridBranch.get()   );
 
   // Name the branches.
   _gridBranch->setName   ( "_gridBranch"   );
   _statusBranch->setName ( "_statusBranch" );
-  _origin->setName       ( "_origin"       );
   _auxiliary->setName    ( "_auxiliary"    );
 
   // Hook up the joystick callbacks.
@@ -538,7 +527,6 @@ void Application::_initLight()
 
 void Application::_initMenu()
 {
-  
   typedef VRV::Prefs::Settings::Color Color;
 
   osg::Vec4 bgNormal,   bgHighlight,   bgDisabled;
@@ -560,8 +548,6 @@ void Application::_initMenu()
   osgMenu->skin()->text_color_normal    ( textNormal );
   osgMenu->skin()->text_color_highlight ( textHighlight );
   osgMenu->skin()->text_color_disabled  ( textDisabled );
-
-  // Need to guard changing items in the scene because we may be rendering.
 
   // Set the menu scene.
   osg::Matrixf mm;
@@ -718,6 +704,7 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
 {
   menu->append ( this->_createToggle ( "Frame Dump", MenuKit::memFunCB2 ( this, &Application::_dumpFrames ) ) );
   menu->append ( this->_createButton ( "Reset Clipping", MenuKit::memFunCB2 ( this, &Application::_resetClipping ) ) );
+  menu->append ( this->_createToggle ( "Set Home", MenuKit::memFunCB2 ( this, &Application::_setAsHome ) ) );
   menu->append ( this->_createSeperator () );
 
   // Rendering passes menu.
@@ -748,8 +735,6 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
     gotoMenu->append ( this->_createButton ( "Left",   MenuKit::memFunCB2 ( this, &Application::_gotoViewRight ) ) );
     gotoMenu->append ( this->_createButton ( "Right",  MenuKit::memFunCB2 ( this, &Application::_gotoViewLeft ) ) );
   }
-
-  //CV_REGISTER ( _setAsHome,        "set_as_home_view" );
 
   // Polygons menu.
   {
@@ -2002,6 +1987,7 @@ void Application::_setHome()
 {
   ErrorChecker ( 3948236564u, isAppThread(), CV::NOT_APP_THREAD );
   _home = this->_navigationMatrix();
+  Usul::Print::matrix ( "Matrix:", _home.ptr(), std::cout );
 }
 
 
@@ -2218,12 +2204,12 @@ void Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
 
     switch ( id )
     {
-      case CV::BUTTON0: std::cout << CV::BUTTON0 << " Button 0 pressed (YELLOW)"   << std::endl; break;
-      case CV::BUTTON1: std::cout << CV::BUTTON1 << " Button 1 pressed (RED)"      << std::endl; break;
-      case CV::BUTTON2: std::cout << CV::BUTTON2 << " Button 2 pressed (GREEN)"    << std::endl; break;
-      case CV::BUTTON3: std::cout << CV::BUTTON3 << " Button 3 pressed (BLUE)"     << std::endl; break;
-      case CV::BUTTON4: std::cout << CV::BUTTON4 << " Button 4 pressed (JOYSTICK)" << std::endl; break;
-      case CV::BUTTON5: std::cout << CV::BUTTON5 << " Button 5 pressed (TRIGGER)"  << std::endl; break;
+      case VRV::BUTTON0: std::cout << VRV::BUTTON0 << " Button 0 pressed (YELLOW)"   << std::endl; break;
+      case VRV::BUTTON1: std::cout << VRV::BUTTON1 << " Button 1 pressed (RED)"      << std::endl; break;
+      case VRV::BUTTON2: std::cout << VRV::BUTTON2 << " Button 2 pressed (GREEN)"    << std::endl; break;
+      case VRV::BUTTON3: std::cout << VRV::BUTTON3 << " Button 3 pressed (BLUE)"     << std::endl; break;
+      case VRV::BUTTON4: std::cout << VRV::BUTTON4 << " Button 4 pressed (JOYSTICK)" << std::endl; break;
+      case VRV::BUTTON5: std::cout << VRV::BUTTON5 << " Button 5 pressed (TRIGGER)"  << std::endl; break;
     }
 
     // Let the menu process first.

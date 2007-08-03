@@ -59,7 +59,7 @@ void ButtonGroup::notify()
   Guard guard ( this->mutex() );
 
   // First update state.
-  this->_update();
+  //this->_update();
 
   // Tell every button to notify.
   std::for_each ( _buttons.begin(), _buttons.end(), std::mem_fun ( &ButtonDevice::notify ) );

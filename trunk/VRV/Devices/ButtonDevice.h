@@ -23,6 +23,7 @@
 #include "Usul/Interfaces/IButtonPressListener.h"
 #include "Usul/Interfaces/IButtonReleaseSubject.h"
 #include "Usul/Interfaces/IButtonReleaseListener.h"
+#include "Usul/Interfaces/IButtonID.h"
 
 #include "gadget/Type/DigitalInterface.h"
 
@@ -35,7 +36,8 @@ namespace Devices {
 
 class VRV_EXPORT ButtonDevice : public Usul::Base::Object,
                                 public Usul::Interfaces::IButtonPressSubject,
-                                public Usul::Interfaces::IButtonReleaseSubject
+                                public Usul::Interfaces::IButtonReleaseSubject,
+                                public Usul::Interfaces::IButtonID
 {
 public:
 
@@ -76,6 +78,9 @@ public:
 
   ///  Get the device state.
   unsigned long         state() const;
+
+  /// Get the button ID.
+  unsigned long         buttonID () const;
 
 protected:
 

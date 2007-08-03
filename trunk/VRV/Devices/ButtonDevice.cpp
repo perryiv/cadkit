@@ -105,6 +105,8 @@ Usul::Interfaces::IUnknown* ButtonDevice::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IButtonPressSubject* > ( this );
   case Usul::Interfaces::IButtonReleaseSubject::IID:
     return static_cast < Usul::Interfaces::IButtonReleaseSubject* > ( this );
+  case Usul::Interfaces::IButtonID::IID:
+    return static_cast < Usul::Interfaces::IButtonID * > ( this );
   default:
     return 0x0;
   }
@@ -290,3 +292,16 @@ void ButtonDevice::removeButtonReleaseListener ( IUnknown *caller )
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the button id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned long ButtonDevice::buttonID () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _mask;
+}

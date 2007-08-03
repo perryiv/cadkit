@@ -35,6 +35,8 @@
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/ICommandQueueAdd.h"
 #include "Usul/Interfaces/IActiveDocumentListener.h"
+#include "Usul/Interfaces/IButtonPressListener.h"
+#include "Usul/Interfaces/IButtonReleaseListener.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Queue.h"
@@ -92,7 +94,9 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public Usul::Interfaces::IProgressBarFactory,
                                public Usul::Interfaces::IUpdateSubject,
                                public Usul::Interfaces::ICommandQueueAdd,
-                               public Usul::Interfaces::IActiveDocumentListener
+                               public Usul::Interfaces::IActiveDocumentListener,
+                               public Usul::Interfaces::IButtonPressListener,
+                               public Usul::Interfaces::IButtonReleaseListener
 {
 public:
   // Typedefs.
@@ -327,6 +331,14 @@ protected:
   /// The active document has changed.
   virtual void                  activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc );
 
+  /// Usul::Interfaces::IButtonPressListener
+  /// Called when button is pressed.
+  virtual void                  buttonPressNotify ( Usul::Interfaces::IUnknown * );
+
+  /// Usul::Interfaces::IButtonReleaseListener
+  /// Called when button is released.
+  virtual void                  buttonReleaseNotify ( Usul::Interfaces::IUnknown * );
+
   /// No copying.
   Application ( const Application& );
   Application& operator = (const Application&);
@@ -336,6 +348,7 @@ private:
   typedef osg::ref_ptr < osg::MatrixTransform >            MatTransPtr;
   typedef osg::ref_ptr < osg::Group >                      GroupPtr;
   typedef VRV::Functors::BaseFunctor::RefPtr               FunctorPtr;
+  typedef VRV::Devices::ButtonGroup                        ButtonGroup;
   typedef VRV::Devices::ButtonGroup::ValidRefPtr           ButtonsPtr;
   typedef VRV::Devices::TrackerDevice::ValidRefPtr         TrackerPtr;
   typedef VRV::Devices::JoystickDevice::ValidRefPtr        JoystickPtr;

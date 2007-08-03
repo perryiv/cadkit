@@ -40,7 +40,9 @@
 #include "Usul/Predicates/UnaryPair.h"
 #include "Usul/File/Path.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/ICommandList.h"
+#include "Usul/Interfaces/IButtonID.h"
 
 #include "vrj/Kernel/Kernel.h"
 #include "vrj/Display/Projection.h"
@@ -277,21 +279,6 @@ Application::~Application()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Called once for each display to initialize the OpenGL context.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::contextInit()
-{
-  ErrorChecker ( 1071202040u, !isAppThread() );
-
-  // Call the base class's function first.
-  BaseClass::contextInit();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Initialize this instance.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -357,15 +344,8 @@ void Application::_init()
   // Parse the command-line arguments.
   this->_parseCommandLine();
 
-  // Now that the models are centered, draw a grid in proportion to the size 
-  // of the models.
-  this->_initGrid ( this->models() );
-
   // Save the "home" position.
   this->_setHome();
-
-  // Based on the scene size, set the near and far clipping plane distances.
-  this->_setNearAndFarClippingPlanes();
 
   // Initialize the menu.
   this->_initMenu();
@@ -389,7 +369,7 @@ void Application::_init()
 
 void Application::_initText()
 {
-#if 1
+#if 0
   // Removing anything we may have already.
   this->projectionGroupRemove ( "VRV_TEXT" );
 
@@ -1146,9 +1126,6 @@ void Application::_latePreFrame()
   // Update the analog-input text.
   this->_updateAnalogText();
 
-  // Process button states.
-  this->_processButtons();
-
   // Use the scene-tool if we are supposed to.
   this->_useSceneTool();
 
@@ -1159,59 +1136,17 @@ void Application::_latePreFrame()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Process the button states.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_processButtons()
-{
-  ErrorChecker ( 1083961848u, isAppThread(), CV::NOT_APP_THREAD );
-
-#if 1
-  switch ( this->buttons()->pressed() )
-  {
-    case CV::BUTTON0: std::cout << CV::BUTTON0 << " Button 0 pressed (YELLOW)"   << std::endl; break;
-    case CV::BUTTON1: std::cout << CV::BUTTON1 << " Button 1 pressed (RED)"      << std::endl; break;
-    case CV::BUTTON2: std::cout << CV::BUTTON2 << " Button 2 pressed (GREEN)"    << std::endl; break;
-    case CV::BUTTON3: std::cout << CV::BUTTON3 << " Button 3 pressed (BLUE)"     << std::endl; break;
-    case CV::BUTTON4: std::cout << CV::BUTTON4 << " Button 4 pressed (JOYSTICK)" << std::endl; break;
-    case CV::BUTTON5: std::cout << CV::BUTTON5 << " Button 5 pressed (TRIGGER)"  << std::endl; break;
-  }
-#endif
-
-  // Let the menu process first.
-  bool menuHandled ( this->_handleMenuEvent() );
-  
-  // Always set the mask.
-  unsigned int mask ( _menu->isVisible() ? 0 : 0xffffffff );
-  this->modelsScene ( )->setNodeMask ( mask );
-
-  // Return now if the menu was handled.
-  if ( menuHandled )
-    return;
-
-  // Now process the intersector buttons.
-  if ( this->_handleIntersectionEvent() )
-    return;
-
-  if ( this->_handleNavigationEvent() )
-    return;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Process the button states and apply to the menu.
 //  Returns true if the event was handled.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Application::_handleMenuEvent()
+bool Application::_handleMenuEvent( unsigned long id )
 {
   ErrorChecker ( 1071559313u, isAppThread(), CV::NOT_APP_THREAD );
 
   // First see if you are supposed to show or hide it. Always do this first.
-  if ( COMMAND_MENU_TOGGLE == this->buttons()->released() )
+  if ( COMMAND_MENU_TOGGLE == id )
   {
     _menu->toggleVisible();
     return true;
@@ -1225,7 +1160,7 @@ bool Application::_handleMenuEvent()
   bool handled ( true );
 
   // Process button states iff the menu is showing.
-  switch ( this->buttons()->released() )
+  switch ( id )
   {
     case COMMAND_MENU_SELECT:
       _menu->selectFocused();
@@ -1263,39 +1198,39 @@ bool Application::_handleMenuEvent()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Application::_handleIntersectionEvent()
+bool Application::_handleIntersectionEvent( unsigned long id )
 {
   ErrorChecker ( 2588614392u, isAppThread(), CV::NOT_APP_THREAD );
 
   if(!_intersector) return false;
 
   // Process pressed states.
-  if ( COMMAND_SELECT == this->buttons()->down() )
+  if ( COMMAND_SELECT == id )
   {
     this->_intersect();
     return true;
   }
   
-  else if ( COMMAND_HIDE_SELECTED == this->buttons()->down() )
+  else if ( COMMAND_HIDE_SELECTED == id )
   {
     this->_hideSelected ( MenuKit::MESSAGE_SELECTED, NULL );
     return true;
   }
   
-  else if ( COMMAND_UNSELECT_VISIBLE == this->buttons()->down() )
+  else if ( COMMAND_UNSELECT_VISIBLE == id )
   {
     this->_unselectVisible ( MenuKit::MESSAGE_SELECTED, NULL );
     return true;
   }
   
-  else if ( COMMAND_SHOW_ALL == this->buttons()->down() )
+  else if ( COMMAND_SHOW_ALL == id )
   {
     this->_showAll ( MenuKit::MESSAGE_SELECTED, NULL );
     return true;
   }
 
   // Process released states.
-  if ( COMMAND_SELECT == this->buttons()->released() )
+  if ( COMMAND_SELECT == id )
   {
     this->_select();
     this->_updateSceneTool();
@@ -1314,7 +1249,7 @@ bool Application::_handleIntersectionEvent()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Application::_handleNavigationEvent( const unsigned long eventRequest )
+bool Application::_handleNavigationEvent( unsigned long id )
 {
   MenuKit::Message nav_message = MenuKit::MESSAGE_SELECTED;   // simulate message/item from MenuKit
   MenuKit::Item *nav_item (0x0);                              // NULL b/c it's never needed
@@ -1323,10 +1258,10 @@ bool Application::_handleNavigationEvent( const unsigned long eventRequest )
   
   if(_intersector) return false;                              // skip this code if we're in an intersection mode
 
-  unsigned long mode ( this->buttons()->released() );                // Button release event
+  unsigned long mode ( id );                                  // Button release event
 
-  if ( eventRequest )                                         // if mode NOT specified with function call ...
-    mode = eventRequest;                                      // ... get information from buttons
+  if ( id )                                                   // if mode NOT specified with function call ...
+    mode = id;                                                // ... get information from buttons
 
   switch ( mode )                                             // which button was used???
   {
@@ -2259,4 +2194,77 @@ void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Us
 
   // Rebuild the menu.
   this->_initMenu();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when button is pressed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Redirect.
+  BaseClass::buttonPressNotify ( caller );
+
+  // Get the button id.
+  Usul::Interfaces::IButtonID::QueryPtr button ( caller );
+  if ( button.valid () )
+  {
+    unsigned long id ( button->buttonID () );
+
+    switch ( id )
+    {
+      case CV::BUTTON0: std::cout << CV::BUTTON0 << " Button 0 pressed (YELLOW)"   << std::endl; break;
+      case CV::BUTTON1: std::cout << CV::BUTTON1 << " Button 1 pressed (RED)"      << std::endl; break;
+      case CV::BUTTON2: std::cout << CV::BUTTON2 << " Button 2 pressed (GREEN)"    << std::endl; break;
+      case CV::BUTTON3: std::cout << CV::BUTTON3 << " Button 3 pressed (BLUE)"     << std::endl; break;
+      case CV::BUTTON4: std::cout << CV::BUTTON4 << " Button 4 pressed (JOYSTICK)" << std::endl; break;
+      case CV::BUTTON5: std::cout << CV::BUTTON5 << " Button 5 pressed (TRIGGER)"  << std::endl; break;
+    }
+
+    // Let the menu process first.
+    bool menuHandled ( this->_handleMenuEvent( id ) );
+    
+    // Always set the mask.
+    unsigned int mask ( _menu->isVisible() ? 0 : 0xffffffff );
+    this->modelsScene ( )->setNodeMask ( mask );
+
+    // Return now if the menu was handled.
+    if ( menuHandled )
+      return;
+
+    // Now process the intersector buttons.
+    if ( this->_handleIntersectionEvent( id ) )
+      return;
+
+    // Handle the navigation mode.
+    if ( this->_handleNavigationEvent( id ) )
+      return;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when button is released.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::buttonReleaseNotify ( Usul::Interfaces::IUnknown * caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Redirect.
+  BaseClass::buttonReleaseNotify ( caller );
+
+  // Get the button id.
+  Usul::Interfaces::IButtonID::QueryPtr button ( caller );
+  if ( button.valid () )
+  {
+    unsigned long id ( button->buttonID () );
+  }
 }

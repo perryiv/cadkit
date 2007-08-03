@@ -564,6 +564,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IButtonID.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IButtonPressListener.h"
 					>
 				</File>

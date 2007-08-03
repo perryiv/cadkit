@@ -75,11 +75,16 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _databasePager   ( new osgDB::DatabasePager ),
   _updateListeners ( ),
   _commandQueue    (),
-  _camera          ( new osg::Camera ),
+  _frameDump       (),
   _refCount        ( 0 )
 {
   USUL_TRACE_SCOPE;
   this->_construct();
+
+  _frameDump.dir ( "/array/cluster/data/screen_shots/" );
+  _frameDump.base ( "file_" );
+  _frameDump.ext ( ".jpg" );
+  _frameDump.digits ( 10 );
 
   // Add our self to the list of active document listeners.
   Usul::Documents::Manager::instance().addActiveDocumentListener ( this );
@@ -468,6 +473,25 @@ void Application::_preDraw( OsgTools::Render::Renderer *renderer )
   {
     // Always set the mask.
     this->modelsScene ( )->setNodeMask ( 0xffffffff );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called after the frame draws, but while the context is still current.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::contextPostDraw()
+{
+  USUL_TRACE_SCOPE;
+
+  if ( _frameDump.dump () )
+  {
+    osg::ref_ptr < osg::Viewport > vp ( this->viewport() );
+    osg::ref_ptr < osg::Image > image ( new osg::Image () );
+    image->readPixels ( vp->x(), vp->width(), vp->y(), vp->height(), GL_RGB, GL_UNSIGNED_BYTE );
   }
 }
 
@@ -1831,4 +1855,32 @@ bool Application::projectionGroupHas    ( const std::string& name ) const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _sceneManager->projectionGroupHas ( name );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the frame dump flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::frameDump ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _frameDump.dump ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the frame dump flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::frameDump () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _frameDump.dump ();
 }

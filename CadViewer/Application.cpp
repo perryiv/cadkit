@@ -736,6 +736,7 @@ void Application::_initEditMenu     ( MenuKit::Menu* menu )
 
 void Application::_initViewMenu ( MenuKit::Menu* menu )
 {
+  menu->append ( this->_createToggle ( "Frame Dump", MenuKit::memFunCB2 ( this, &Application::_dumpFrames ) ) );
   menu->append ( this->_createButton ( "Reset Clipping", MenuKit::memFunCB2 ( this, &Application::_resetClipping ) ) );
   menu->append ( this->_createSeperator () );
 

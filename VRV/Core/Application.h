@@ -41,6 +41,7 @@
 
 #include "OsgTools/Render/Renderer.h"
 #include "OsgTools/Render/SceneManager.h"
+#include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Widgets/ProgressBarGroup.h"
 
 #include "vrj/Draw/OGL/GlApp.h"
@@ -189,6 +190,10 @@ public:
   osg::Group*             projectionGroupGet    ( const std::string& );
   void                    projectionGroupRemove ( const std::string& );
   bool                    projectionGroupHas    ( const std::string& ) const;
+
+  /// Get/Set the frame dump flag.
+  void                    frameDump ( bool b );
+  bool                    frameDump () const;
 protected:
 
   /// VR Juggler methods.
@@ -196,6 +201,7 @@ protected:
   virtual void            preFrame();
   virtual void            latePreFrame();
   virtual void            contextPreDraw();
+  virtual void            contextPostDraw();
   virtual void            draw();
   virtual void            postFrame();
   virtual void            contextClose();
@@ -385,7 +391,7 @@ private:
 
   CommandQueue                           _commandQueue;
 
-  osg::ref_ptr < osg::Camera >           _camera;
+  OsgTools::Render::FrameDump            _frameDump;
 
   unsigned int                           _refCount;
 };

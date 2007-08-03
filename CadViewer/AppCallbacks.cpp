@@ -1857,12 +1857,33 @@ void  Application::_renderPassesNine     ( MenuKit::Message m, MenuKit::Item *it
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void  Application::_renderPassesTweleve  ( MenuKit::Message m, MenuKit::Item *item )
+void Application::_renderPassesTweleve  ( MenuKit::Message m, MenuKit::Item *item )
 {
   // Process the message.
   switch( m )
   {
   case MenuKit::MESSAGE_SELECTED:
     this->numRenderPasses ( 12 );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Toggle dump frames.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_dumpFrames ( MenuKit::Message m, MenuKit::Item *item )
+{
+  // Process the message.
+  switch( m )
+  {
+  case MenuKit::MESSAGE_UPDATE:
+    item->checked ( this->frameDump() );
+    break;
+  case MenuKit::MESSAGE_SELECTED:
+    this->frameDump ( !this->frameDump() );
+    break;
   }
 }

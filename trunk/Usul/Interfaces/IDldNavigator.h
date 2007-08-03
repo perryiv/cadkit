@@ -33,7 +33,7 @@ struct IDldNavigator : public Usul::Interfaces::IUnknown
   virtual void              incrementFilePosition () = 0;
 
   // send the signal to load the file in the current file position
-  virtual void              loadCurrentFile() = 0;
+  virtual void              loadCurrentFile( bool loadFile ) = 0;
 
 
 }; //struct IVertices

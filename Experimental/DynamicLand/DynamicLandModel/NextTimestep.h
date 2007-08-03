@@ -28,6 +28,7 @@ protected:
   virtual ~NextTimestep ();
 
   virtual void _execute ();
+  virtual void _dummy ();
 
 
 };

@@ -794,7 +794,7 @@ bool DynamicLandDocument::_readParameterFile( XmlTree::Node &node, Unknown *call
 ///////////////////////////////////////////////////////////////////////////////
 
 DynamicLandDocument::LoadDataJob::LoadDataJob ( DynamicLandDocument* document, const std::string& filename, Usul::Interfaces::IUnknown *caller ) :
-  BaseClass (),
+  BaseClass ( caller ),
   _document ( document ),
   _filename ( filename ),
   _caller ( caller )
@@ -819,7 +819,7 @@ void DynamicLandDocument::LoadDataJob::_started ()
   
 
   // Process all the requests.
-  bool valid = _document->load( _filename, _caller.get() );
+  bool valid = _document->load( _filename, this->progress() );
 
         // if the map file is valid, load the image file for coloring
   if ( valid )

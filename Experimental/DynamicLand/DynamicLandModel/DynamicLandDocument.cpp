@@ -10,6 +10,8 @@
 
 #include "DynamicLandDocument.h"
 
+#include "NextTimestep.h"
+
 #include "Usul/Interfaces/IColorsPerVertex.h"
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -131,6 +133,8 @@ Usul::Interfaces::IUnknown *DynamicLandDocument::queryInterface ( unsigned long 
     return static_cast < Usul::Interfaces::IUpdateListener* > ( this );
   case Usul::Interfaces::IDldNavigator::IID:
     return static_cast < Usul::Interfaces::IDldNavigator* > ( this );
+  case Usul::Interfaces::ICommandList::IID:
+    return static_cast < Usul::Interfaces::ICommandList* > ( this ); 
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -147,11 +151,17 @@ Usul::Interfaces::IUnknown *DynamicLandDocument::queryInterface ( unsigned long 
 
   void DynamicLandDocument::incrementFilePosition ()
   {
-    if( _currFileNum < _files.size() - 1 && _files.size() > 0 )
+    if( true == _files.empty() )
+      std::cout << "_files invalid" << std::endl;
+    else
     {
-      ++_currFileNum;
-      std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
+      if( _currFileNum < _files.size() - 1 && _files.size() > 0 )
+      {
+        ++_currFileNum;
+        std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
+      }
     }
+
   }
 
 
@@ -406,8 +416,8 @@ void DynamicLandDocument::_buildScene()
     mat->useMaterial( false );*/
 
     // Turn off display lits.
-     //Usul::Interfaces::IDisplaylists::QueryPtr dl ( _document );
-    //dl->displayList( false );
+    Usul::Interfaces::IDisplaylists::QueryPtr dl ( _document );
+    dl->displayList( false );
 
     // Done with opt.
     {
@@ -649,7 +659,13 @@ void DynamicLandDocument::_openDocument ( const std::string &file, Usul::Documen
 
 bool DynamicLandDocument::_loadTexture ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
-  if( Usul::Predicates::FileExists::test ( filename ) )
+  #ifdef _MSC_VER
+    std::string file ( filename );
+  #else
+    std::string slash ( Usul::File::slash() );
+    std::string file ( _dir + slash + filename );
+  #endif
+  if( Usul::Predicates::FileExists::test ( file ) )
   {
     // Get color array
     Usul::Interfaces::IColorsPerVertex::QueryPtr colorsV ( _document );
@@ -664,9 +680,9 @@ bool DynamicLandDocument::_loadTexture ( const std::string& filename, Usul::Inte
 
     // load the image
     osg::ref_ptr< osg::Image > tex ( new osg::Image );
-    tex = osgDB::readImageFile( filename );
+    tex = osgDB::readImageFile( file );
     
-    std::cout << "Reading texture image file: " << filename << std::endl;
+    std::cout << "Reading texture image file: " << file << std::endl;
 
     for( unsigned int i = 0; i < v->size(); ++i )
     {
@@ -700,7 +716,7 @@ bool DynamicLandDocument::_loadTexture ( const std::string& filename, Usul::Inte
     }
   else
   {
-    std::cout << "Unable to load image file:" << filename << ".  File does not exist!" << std::endl;
+    std::cout << "Unable to load image file:" << file << ".  File does not exist!" << std::endl;
     return false;
   }
 }
@@ -824,11 +840,12 @@ void DynamicLandDocument::LoadDataJob::_started ()
         // if the map file is valid, load the image file for coloring
   if ( valid )
   {
+
     // load the image file
-    _document->_loadTexture( _filename + ".png", _caller.get() );
+    _document->_loadTexture( _filename + ".png", this->progress() );
 
     // write a tdf of the loaded terrain for faster loading on revisit
-    //this->writeTDF ( root );
+    //this->writeTDF ( _filename );
 
     // build our scene
     _document->_buildScene();
@@ -838,3 +855,12 @@ void DynamicLandDocument::LoadDataJob::_started ()
   
 }
 
+
+DynamicLandDocument::CommandList DynamicLandDocument::getCommandList()
+{
+  CommandList cl;
+
+  cl.push_back( new NextTimestep( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
+  return cl;
+
+}

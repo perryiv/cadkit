@@ -27,13 +27,13 @@ struct IDldNavigator : public Usul::Interfaces::IUnknown
   enum { IID = 2919146659u };
 
   // decrement file position counter
-  virtual void              decrementFilePosition () = 0;
+  virtual bool              decrementFilePosition () = 0;
 
   // increment file position counter
-  virtual void              incrementFilePosition () = 0;
+  virtual bool              incrementFilePosition () = 0;
 
   // send the signal to load the file in the current file position
-  virtual void              loadCurrentFile( bool loadFile ) = 0;
+  virtual bool              loadCurrentFile( bool loadFile ) = 0;
 
 
 }; //struct IVertices

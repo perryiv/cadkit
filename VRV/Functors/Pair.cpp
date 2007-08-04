@@ -9,11 +9,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Transform pair.
+//  Functor pair.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "TransformPair.h"
+#include "Pair.h"
 
 using namespace VRV::Functors;
 
@@ -24,10 +24,10 @@ using namespace VRV::Functors;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TransformPair::TransformPair ( 
+Pair::Pair ( 
   Unknown *unknown, 
-  Transform *c1, 
-  Transform *c2,
+  BaseFunctor *c1, 
+  BaseFunctor *c2,
   unsigned int id ) : 
   BaseClass ( unknown, id ),
   _c1 ( c1 ),
@@ -42,7 +42,7 @@ TransformPair::TransformPair (
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TransformPair::TransformPair ( const TransformPair &cb ) : BaseClass ( cb ),
+Pair::Pair ( const Pair &cb ) : BaseClass ( cb ),
   _c1 ( cb._c1 ),
   _c2 ( cb._c2 )
 {
@@ -55,7 +55,7 @@ TransformPair::TransformPair ( const TransformPair &cb ) : BaseClass ( cb ),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TransformPair::~TransformPair()
+Pair::~Pair()
 {
 }
 
@@ -66,7 +66,7 @@ TransformPair::~TransformPair()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TransformPair::operator()()
+void Pair::operator()()
 {
   if ( _c1.valid() )
     (*_c1)();

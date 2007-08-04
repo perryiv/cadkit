@@ -340,6 +340,14 @@
 					RelativePath="..\Functors\BaseFunctor.h"
 					>
 				</File>
+				<File
+					RelativePath="..\Functors\Pair.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Functors\Pair.h"
+					>
+				</File>
 				<Filter
 					Name="Matrix"
 					>
@@ -429,14 +437,6 @@
 					</File>
 					<File
 						RelativePath="..\Functors\Navigate\Transform.h"
-						>
-					</File>
-					<File
-						RelativePath="..\Functors\Navigate\TransformPair.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\Functors\Navigate\TransformPair.h"
 						>
 					</File>
 					<File

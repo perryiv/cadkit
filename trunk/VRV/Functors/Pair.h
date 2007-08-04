@@ -9,46 +9,46 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Transform pair.
+//  Functor pair.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _VRV_TRANFORM_PAIR_CALLBACK_H_
-#define _VRV_TRANFORM_PAIR_CALLBACK_H_
+#ifndef _VRV_FUNCTOR_PAIR_CALLBACK_H_
+#define _VRV_FUNCTOR_PAIR_CALLBACK_H_
 
 #include "VRV/Export.h"
-#include "VRV/Functors/Navigate/Transform.h"
+#include "VRV/Functors/BaseFunctor.h"
 
 
 namespace VRV {
 namespace Functors {
 
 
-class VRV_EXPORT TransformPair : public VRV::Functors::BaseFunctor
+class VRV_EXPORT Pair : public VRV::Functors::BaseFunctor
 {
 public:
 
   // Useful typedef(s).
-  USUL_DECLARE_REF_POINTERS ( TransformPair );
+  USUL_DECLARE_REF_POINTERS ( Pair );
   typedef VRV::Functors::BaseFunctor BaseClass;
   typedef BaseClass::Unknown Unknown;
 
-  TransformPair ( 
+  Pair ( 
     Unknown *unknown, 
-    Transform *c1, 
-    Transform *c2,
+    BaseFunctor *c1, 
+    BaseFunctor *c2,
     unsigned int id );
-  TransformPair ( const TransformPair &tp );
+  Pair ( const Pair &tp );
 
   // Have the transforms do their thing.
   virtual void          operator()();
 
 protected:
 
-  virtual ~TransformPair();
+  virtual ~Pair();
 
-  Transform::ValidRefPtr _c1;
-  Transform::ValidRefPtr _c2;
+  BaseFunctor::RefPtr _c1;
+  BaseFunctor::RefPtr _c2;
 };
 
 
@@ -56,4 +56,4 @@ protected:
 } // namespace VRV
 
 
-#endif // _VRV_TRANFORM_PAIR_CALLBACK_H_
+#endif // _VRV_FUNCTOR_PAIR_CALLBACK_H_

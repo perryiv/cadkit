@@ -9,12 +9,12 @@
 ###############################################################################
 
 rpm -ivh http://rpm.livna.org/livna-release-7.rpm
-yum install gstreamer-plugins-ugly ffmpeg
-yum install xmms xmms-mp3 xmms-skins
-yum install xine xine-lib libdvdcss xine-lib-extras-nonfree gxine
-yum install vlc
-yum remove totem totem-plparser
-yum install totem-xine libdvdnav
-yum install mplayer mplayer-gui mplayerplug-in
-yum install amarok amarok-extras-nonfree
+yum -y install gstreamer-plugins-ugly ffmpeg
+yum -y install xmms xmms-mp3 xmms-skins
+yum -y install xine xine-lib libdvdcss xine-lib-extras-nonfree gxine
+yum -y install vlc
+yum -y remove totem totem-plparser
+yum -y install totem-xine libdvdnav
+yum -y install mplayer mplayer-gui mplayerplug-in
+yum -y install amarok amarok-extras-nonfree
 

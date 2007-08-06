@@ -1,23 +1,23 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2007, Arizona State University
+//  Copyright (c) 2005, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  ProjectionManagerFactory class.
+//  Factory class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Plugins/ProjectionManager/CompileGuard.h"
-#include "Minerva/Plugins/ProjectionManager/ProjectionManagerComponent.h"
+#include "Minerva/Plugins/Document/CompileGuard.h"
+#include "Minerva/Plugins/Document/MinervaComponent.h"
 
 #include "Usul/Components/Factory.h"
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -43,6 +43,6 @@ extern "C" bool usul_is_debug_build()
 
 extern "C" Usul::Interfaces::IClassFactory *usul_get_class_factory()
 {
-  Usul::Interfaces::IClassFactory::ValidRefPtr factory ( new Usul::Components::Factory < ProjectionManagerComponent > () );
+  Usul::Interfaces::IClassFactory::ValidRefPtr factory ( new Usul::Components::Factory < MinervaComponent > () );
   return factory.release();
 }

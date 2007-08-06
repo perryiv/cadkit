@@ -96,6 +96,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IDistributedVR* > ( this );
   case Usul::Interfaces::IGroup::IID:
     return static_cast < Usul::Interfaces::IGroup* > ( this );
+  case Usul::Interfaces::IUpdateListener::IID:
+    return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
   case Minerva::Interfaces::IAnimationControl::IID:
     return static_cast < Minerva::Interfaces::IAnimationControl * > ( this );
   default:
@@ -1246,4 +1248,22 @@ void MinervaDocument::addView ( Usul::Interfaces::IView *view )
   USUL_TRACE_SCOPE;
   _planet->initVisitors ( view );
   BaseClass::addView ( view );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  if ( _sceneManager->dirty () )
+  {
+    _sceneManager->buildScene ( caller );
+    _sceneManager->dirty ( false );
+  }
 }

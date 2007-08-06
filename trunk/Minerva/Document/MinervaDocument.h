@@ -22,6 +22,7 @@
 #include "Usul/Interfaces/IDistributedVR.h"
 #include "Usul/Interfaces/IGroup.h"
 #include "Usul/Interfaces/ILayer.h"
+#include "Usul/Interfaces/IUpdateListener.h"
 
 #include "Minerva/Core/Scene/SceneManager.h"
 #include "Minerva/Core/GUI/Controller.h"
@@ -46,6 +47,7 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::IMatrixManipulator,
                                                 public Usul::Interfaces::IDistributedVR, 
                                                 public Usul::Interfaces::IGroup,
+                                                public Usul::Interfaces::IUpdateListener,
                                                 public Minerva::Interfaces::IAnimationControl
 {
 public:
@@ -209,6 +211,9 @@ protected:
   virtual osg::Group*  getGroup    ( const std::string& );
   virtual void         removeGroup ( const std::string& );
   virtual bool         hasGroup    ( const std::string& );
+
+  /// Usul::Interfaces::IUpdateListener.
+  virtual void         updateNotify ( Usul::Interfaces::IUnknown *caller );
 
 private:
   typedef osg::ref_ptr< osg::Group >         GroupPtr;

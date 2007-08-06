@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="plug: ProjectionManager"
-	ProjectGUID="{EE125749-B664-4962-A4E5-81BB0B0E5400}"
+	Name="plug: Minerva Model"
+	ProjectGUID="{5C265DE8-237C-4F00-B7FB-546A6F9C595D}"
 	>
 	<Platforms>
 		<Platform
@@ -39,14 +39,14 @@
 				PreprocessorDefinitions="_DEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/ProjectionManager.tlb"
+				TypeLibraryName=".\Debug/MinervaModel.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(OSSIM_INC_DIR);$(OPENTHREADS_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_PROJECTION_MANAGER;"
+				AdditionalIncludeDirectories="../../../;../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSSIM_INC_DIR)"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_MINERVA_MODEL;"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -79,15 +79,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="ossimd.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/ProjectionManager.plugd"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/MinervaModel.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSSIM_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug\ProjectionManagerd.pdb"
-				ImportLibrary=".\Debug\ProjectionManagerd.lib"
+				ProgramDatabaseFile=".\Debug\MinervaModeld.pdb"
+				ImportLibrary=".\Debug\MinervaModeld.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -140,14 +140,14 @@
 				PreprocessorDefinitions="NDEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/ProjectionManager.tlb"
+				TypeLibraryName=".\Release/MinervaModel.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(OSSIM_INC_DIR);$(OPENTHREADS_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_PROJECTION_MANAGER;"
+				AdditionalIncludeDirectories="../../../;../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSSIM_INC_DIR)"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_MINERVA_MODEL;"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -178,14 +178,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="ossim.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/ProjectionManager.plug"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/MinervaModel.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSSIM_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
-				ProgramDatabaseFile=".\Release\ProjectionManager.pdb"
-				ImportLibrary=".\Release\ProjectionManager.lib"
+				ProgramDatabaseFile=".\Release\MinervaModel.pdb"
+				ImportLibrary=".\Release\MinervaModel.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -227,15 +227,15 @@
 					>
 				</File>
 				<File
-					RelativePath=".\ProjectionManagerComponent.cpp"
+					RelativePath=".\MinervaComponent.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\ProjectionManagerComponent.h"
+					RelativePath=".\MinervaComponent.h"
 					>
 				</File>
 				<File
-					RelativePath=".\ProjectionManagerFactory.cpp"
+					RelativePath=".\MinervaFactory.cpp"
 					>
 				</File>
 			</Filter>

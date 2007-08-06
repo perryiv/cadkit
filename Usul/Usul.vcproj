@@ -352,6 +352,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Components\Factory.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Components\Loader.h"
 					>
 				</File>

@@ -38,6 +38,7 @@ SET (SOURCES
   ./Devices/TrackerDevice.cpp
   ./Devices/Callback.cpp
   ./Functors/BaseFunctor.cpp
+  ./Functors/Pair.cpp
   ./Functors/Matrix/MatrixFunctor.cpp
   ./Functors/Matrix/IdentityMatrix.cpp
   ./Functors/Matrix/MatrixPair.cpp
@@ -48,7 +49,6 @@ SET (SOURCES
   ./Functors/Input/JoystickHorizontal.cpp
   ./Functors/Input/JoystickVertical.cpp
   ./Functors/Input/AnalogInput.cpp
-  ./Functors/Navigate/TransformPair.cpp
   ./Functors/Navigate/Translate.cpp
   ./Functors/Navigate/Rotate.cpp
   ./Functors/Navigate/Transform.cpp

@@ -22,7 +22,6 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
-#include "Usul/Interfaces/ISceneUpdate.h"
 #include "Usul/Interfaces/ILayer.h"
 
 #include "OsgTools/Legend/Legend.h"
@@ -41,8 +40,7 @@ namespace Minerva {
 namespace Core {
 namespace Scene {
 
-class MINERVA_EXPORT SceneManager : public Usul::Base::Referenced,
-                                    public Usul::Interfaces::ISceneUpdate
+class MINERVA_EXPORT SceneManager : public Usul::Base::Referenced
 {
 public:
 
@@ -54,9 +52,6 @@ public:
  
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( SceneManager );
-
-  // Usul::Interfaces::IUnknown members.
-  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   /// Constructor.
   SceneManager();
@@ -145,8 +140,6 @@ public:
 protected:
 
   virtual ~SceneManager();
-
-  virtual void               sceneUpdate( Usul::Interfaces::IUnknown *caller = 0x0 );
   
   void                       _setUpAnimationNode();
   void                       _buildLegend();

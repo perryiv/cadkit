@@ -1116,10 +1116,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\ISceneUpdate.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IScreenCapture.h"
 					>
 				</File>

@@ -64,6 +64,8 @@
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/IUpdateSceneVisitor.h"
 #include "Usul/Interfaces/ICullSceneVisitor.h"
+#include "Usul/Interfaces/IUpdateSubject.h"
+#include "Usul/Interfaces/IUpdateListener.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
@@ -138,7 +140,8 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IRenderNotify,
                                 public Usul::Interfaces::IFrameStamp,
                                 public Usul::Interfaces::IUpdateSceneVisitor,
-                                public Usul::Interfaces::ICullSceneVisitor
+                                public Usul::Interfaces::ICullSceneVisitor,
+                                public Usul::Interfaces::IUpdateSubject
 {
 public:
 
@@ -180,6 +183,8 @@ public:
   typedef std::vector<IRenderListener::RefPtr> RenderListeners;
   typedef osgUtil::CullVisitor CullVisitor;
   typedef osg::NodeVisitor NodeVisitor;
+  typedef Usul::Interfaces::IUpdateListener IUpdateListener;
+  typedef std::vector<IUpdateListener::RefPtr> UpdateListeners;
 
   enum ViewMode
   {
@@ -445,7 +450,7 @@ public:
   void                  updateCursor();
 
   // Update the scene.
-  void                  updateScene();
+  void                  update();
 
   // Update the status-bar.
   void                  updateStatusBar();
@@ -728,6 +733,14 @@ protected:
   // Usul::Interfaces::IUpdateSceneVisitor.
   virtual NodeVisitor *         getUpdateSceneVisitor ( Usul::Interfaces::IUnknown *caller );
 
+  /// Add an update listener ( IUpdateListener ).
+  virtual void                  addUpdateListener ( Usul::Interfaces::IUnknown *caller = 0x0 );
+
+  /// Remove an update listener ( IUpdateListener ).
+  virtual void                  removeUpdateListener ( Usul::Interfaces::IUnknown *caller = 0x0 );
+
+  /// Clear update listeners.
+  void                          _clearUpdateListeners ();
 private:
 
   // Do not copy.
@@ -792,6 +805,7 @@ private:
   UseDisplayLists _useDisplayList;
   osg::ref_ptr < osgDB::DatabasePager > _databasePager;
   RenderListeners _renderListeners;
+  UpdateListeners _updateListeners;
 };
 
 }

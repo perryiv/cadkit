@@ -42,7 +42,7 @@ namespace Detail
       _center /= 3;
     }
 
-    Triangle::Triangle ( const Triangle &rhs ) :
+    Triangle ( const Triangle &rhs ) :
       _index0 ( rhs._index0 ),
       _index1 ( rhs._index1 ),
       _index2 ( rhs._index2 ),

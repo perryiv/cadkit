@@ -502,7 +502,11 @@ void Application::contextPostDraw()
   {
     osg::ref_ptr < osg::Viewport > vp ( this->viewport() );
     osg::ref_ptr < osg::Image > image ( new osg::Image () );
-    image->readPixels ( vp->x(), vp->width(), vp->y(), vp->height(), GL_RGB, GL_UNSIGNED_BYTE );
+    image->readPixels ( static_cast < int > ( vp->x() ), 
+                        static_cast < int > ( vp->width() ), 
+                        static_cast < int > ( vp->y() ), 
+                        static_cast < int > ( vp->height() ), 
+                        GL_RGB, GL_UNSIGNED_BYTE );
   }
 }
 

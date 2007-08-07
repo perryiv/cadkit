@@ -69,7 +69,6 @@
 #include "Usul/Interfaces/IAnimate.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
 #include "Usul/Interfaces/IDatabasePager.h"
-#include "Usul/Interfaces/ISceneUpdate.h"
 #include "Usul/Interfaces/IToolLifeTime.h"
 #include "Usul/Interfaces/IRenderListener.h"
 
@@ -180,7 +179,8 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   _corners         ( Corners::ALL ),
   _useDisplayList  ( false, true ),
   _databasePager   ( 0x0 ),
-  _renderListeners ()
+  _renderListeners (),
+  _updateListeners ()
 {
   // Add the document
   this->document ( doc );
@@ -305,6 +305,9 @@ void Viewer::clear()
 
   // Remove render listeners.
   this->clearRenderListeners();
+
+  // Remove update listeners.
+  this->_clearUpdateListeners ();
 }
 
 
@@ -326,8 +329,16 @@ void Viewer::defaultBackground()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::updateScene()
+void Viewer::update()
 {
+  // Notify our listeners to update.
+  {
+    Guard guard ( this->mutex() );
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+    std::for_each ( _updateListeners.begin(), _updateListeners.end(), std::bind2nd ( std::mem_fun ( &IUpdateListener::updateNotify ), unknown.get() ) );
+  }
+
+  // Have the renderer update.
   _renderer->update();
 }
 
@@ -343,11 +354,6 @@ void Viewer::render()
   // Handle no viewer or scene.
   if ( !this->viewer() || !this->viewer()->getSceneData() || false == _context.valid() )
     return;
-
-  // Update the scene.
-  Usul::Interfaces::ISceneUpdate::QueryPtr sceneUpdate ( _document );
-  if ( true == sceneUpdate.valid() )
-    sceneUpdate->sceneUpdate ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 
   // Make this context current.
   if ( _context.valid() )
@@ -480,7 +486,7 @@ void Viewer::_hiddenLineRender()
 void Viewer::_render()
 {
   // Update.
-  _renderer->update();
+  this->update();
 
   // Draw.
   _renderer->render();
@@ -1978,8 +1984,11 @@ void Viewer::document ( Document *document )
     this->databasePager ( dp->getDatabasePager() );
   }
 
-  // Add the document as a listener.
+  // Add the document as a render listener.
   this->addRenderListener ( document->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+
+  // Add the document as an update listener.
+  this->addUpdateListener ( document->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 }
 
 
@@ -2359,6 +2368,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IUpdateSceneVisitor * > ( this );
   case Usul::Interfaces::ICullSceneVisitor::IID:
     return static_cast < Usul::Interfaces::ICullSceneVisitor * > ( this );
+  case Usul::Interfaces::IUpdateSubject::IID:
+    return static_cast < Usul::Interfaces::IUpdateSubject * > ( this );
   default:
     return 0x0;
   }
@@ -5421,4 +5432,61 @@ osg::NodeVisitor *Viewer::getUpdateSceneVisitor ( Usul::Interfaces::IUnknown * )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return ( ( 0x0 != this->viewer() ) ? this->viewer()->getUpdateVisitor() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the update listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::addUpdateListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Don't add twice.
+  this->removeUpdateListener ( caller );
+
+  IUpdateListener::QueryPtr listener ( caller );
+  if ( true == listener.valid() )
+  {
+    Guard guard ( this->mutex() );
+    _updateListeners.push_back ( IUpdateListener::RefPtr ( listener.get() ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::removeUpdateListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  IUpdateListener::QueryPtr listener ( caller );
+  if ( true == listener.valid() )
+  {
+    Guard guard ( this->mutex() );
+    IUpdateListener::RefPtr value ( listener.get() );
+    UpdateListeners::iterator end ( std::remove ( _updateListeners.begin(), _updateListeners.end(), value ) );
+    _updateListeners.erase ( end, _updateListeners.end() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove all update listeners.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_clearUpdateListeners()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _updateListeners.clear();
 }

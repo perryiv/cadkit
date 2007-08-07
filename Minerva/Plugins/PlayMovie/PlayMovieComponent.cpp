@@ -18,6 +18,7 @@
 #include <sstream>
 
 #include "Minerva/Plugins/PlayMovie/PlayMovieComponent.h"
+#include "Minerva/Core/Layers/Layer.h"
 
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/ISceneIntersect.h"
@@ -42,6 +43,65 @@ using namespace osg;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PlayMovieComponent, PlayMovieComponent::BaseClass );
 
+// TODO: This should be moved into it's own file.
+class MovieLayer : public Minerva::Core::Layers::Layer
+{
+	public:
+
+	typedef Minerva::Core::Layers::Layer	BaseClass;
+
+	USUL_DECLARE_REF_POINTERS ( MovieLayer );
+
+	MovieLayer() : BaseClass(), 
+		_position( 0.0, 0.0, 0.0 ),
+		_width( 0.0, 0.0, 0.0 ),
+		_height( 0.0, 0.0, 0.0 ), 
+		_fileName( std::string( "" ) )		
+	{					
+	}
+
+	virtual Usul::Interfaces::IUnknown* clone() const 
+	{
+    MovieLayer::RefPtr layer ( new MovieLayer );                  // Reference count is now 1
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( layer.get() ); // Reference count is now 2
+    layer.release();                                              // Reference count is now 1
+    return unknown.release();                                     // Reference count is now 0
+	}	  
+
+	void buildDataObjects( Usul::Interfaces::IUnknown* ){}
+
+	void modify( Usul::Interfaces::IUnknown* ){} 
+
+	void buildScene( osg::Group* gr )
+	{
+    if( gr )
+    {
+      // Call play movie function and pass in group, width, height, position, and path.
+      Usul::Interfaces::IPlayMovie::QueryPtr playMoviePlug ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlayMovie::IID ) );
+
+      if( playMoviePlug.valid() )
+      {
+        gr->addChild( playMoviePlug->playMovie( _position, _width, _height, _fileName ) );
+      }
+    }	
+	}
+
+	void setValues( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& fileName )
+	{
+		_position = position;
+		_width    = width;
+		_height   = height;
+		_fileName = fileName;
+	}  
+
+	protected:
+	
+	osg::Vec3f  _position;
+	osg::Vec3f  _width;
+	osg::Vec3f  _height;
+
+	std::string _fileName;	 
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 //

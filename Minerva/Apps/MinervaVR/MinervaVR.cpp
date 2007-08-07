@@ -479,16 +479,6 @@ void MinervaVR::_initLight()
   light->setLightNum ( 0 );
 
   this->addLight ( light.get() );
-
-  //osg::ref_ptr < osg::LightSource > lightSource ( new osg::LightSource );
-
-  //lightSource->setLight ( light.get() );
-  //lightSource->setReferenceFrame ( osg::LightSource::ABSOLUTE_RF );
-
-  //mLightGroup->addChild ( lightSource.get() );
-
-  //osg::ref_ptr < osg::StateSet > ss ( mSceneRoot->getOrCreateStateSet() );
-  //lightSource->setStateSetModes( *ss.get(), osg::StateAttribute::ON );
 }
 
 

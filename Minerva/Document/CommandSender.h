@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __GUI_CONTROLLER_H__
-#define __GUI_CONTROLLER_H__
+#ifndef __MINERVA_COMMAND_SENDER_H__
+#define __MINERVA_COMMAND_SENDER_H__
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/DB/Connection.h"
@@ -18,8 +18,7 @@
 
 #include "Serialize/XML/Macros.h"
 
-#include "Usul/Threads/RecursiveMutex.h"
-#include "Usul/Threads/Guard.h"
+#include "Usul/Base/Object.h"
 
 #include <vector>
 #include <string>
@@ -28,21 +27,19 @@ namespace osg { class Vec3f; }
 namespace Usul { namespace Interfaces { struct ILayer; struct ICommand; } }
 
 namespace Minerva {
-namespace Core {
-namespace GUI {
+namespace Document {
 
-class MINERVA_EXPORT Controller : public Usul::Base::Referenced
+class CommandSender : public Usul::Base::Object
 {
 public:
   /// Typedef(s).
-  typedef std::vector<std::string>                  Strings;
-  typedef Usul::Threads::RecursiveMutex             Mutex;
-  typedef Usul::Threads::Guard<Mutex>               Guard;
+  typedef Usul::Base::Object            BaseClass;
+  typedef std::vector < std::string >   Strings;
 
-  USUL_DECLARE_REF_POINTERS ( Controller );
+  USUL_DECLARE_REF_POINTERS ( CommandSender );
 
-  Controller();
-  Controller(const std::string& database, const std::string& user, const std::string& password, const std::string& host );
+  CommandSender ();
+  CommandSender ( const std::string& database, const std::string& user, const std::string& password, const std::string& host );
 
   /// Are we connected to the session?
   bool             connected() const;
@@ -59,45 +56,24 @@ public:
   /// Send a command.
   void             sendCommand ( Usul::Interfaces::ICommand *command );
 
-  /// Remove layer with given id.
-  void             removeLayer( Usul::Interfaces::ILayer *Layer );
-
-  /// Show layer.
-  int              showLayer ( Usul::Interfaces::ILayer *Layer );
-
-  /// Modify polygon data.
-  void             modifyLayer( Usul::Interfaces::ILayer *layer );
-
-  /// Play a movie.
-  void             playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path );
-
-  /// Get the mutex.
-  Mutex&           mutex() const { return _mutex; }
 protected:
-  virtual ~Controller();
+  virtual ~CommandSender();
 
   /// Delete everything in given table name.
   void             _clearTable( const std::string& tableName );
-
-  /// Build a query for the draw command table
-  int              _executeLayerQuery( Usul::Interfaces::ILayer *Layer );
-
-  /// Add an event.
-  void             _executeEventTableQuery( int type, int eventId );
 
 private:
 
   Minerva::Core::DB::Connection::RefPtr _connection;
   unsigned int _sessionID;
   bool _connected;
-  mutable Mutex _mutex;
 
   SERIALIZE_XML_DEFINE_MAP;
-  SERIALIZE_XML_DEFINE_MEMBERS ( Controller );
+  SERIALIZE_XML_DEFINE_MEMBERS ( CommandSender );
 };
 
-}
+
 }
 }
 
-#endif // __GUI_CONTROLLER_H__
+#endif // __MINERVA_COMMAND_SENDER_H__

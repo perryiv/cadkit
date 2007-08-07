@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(OSSIM_PLANET_INC_DIR)&quot;;&quot;$(OSG_EPHEMERIS_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(WMS_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(OSSIM_PLANET_INC_DIR)&quot;;&quot;$(OSG_EPHEMERIS_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(WMS_INC_DIR)&quot;;$(PQXX_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_MINERVA_DOCUMENT;_CRT_SECURE_NO_DEPRECATE"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -146,7 +146,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(OSSIM_PLANET_INC_DIR)&quot;;&quot;$(OSG_EPHEMERIS_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(WMS_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(OSSIM_PLANET_INC_DIR)&quot;;&quot;$(OSG_EPHEMERIS_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(WMS_INC_DIR)&quot;;$(PQXX_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_MINERVA_DOCUMENT;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -218,6 +218,22 @@
 		<Filter
 			Name="Source"
 			>
+			<File
+				RelativePath=".\CommandReceiver.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CommandReceiver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CommandSender.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CommandSender.h"
+				>
+			</File>
 			<File
 				RelativePath=".\Export.h"
 				>

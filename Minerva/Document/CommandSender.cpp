@@ -8,7 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/GUI/Controller.h"
+#include "Minerva/Document/CommandSender.h"
+
 #include "Minerva/Core/Serialize.h"
 
 #include "Usul/Interfaces/ICommand.h"
@@ -25,7 +26,7 @@
 
 #include <iostream>
 
-using namespace Minerva::Core::GUI;
+using namespace Minerva::Document;
 
 std::ostream& operator<<( std::ostream& os, const osg::Vec3f& v )
 {
@@ -50,11 +51,11 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Controller::Controller( ) :
+CommandSender::CommandSender( ) :
+BaseClass (),
 _connection ( new Minerva::Core::DB::Connection ),
 _sessionID( 0 ),
-_connected ( false ),
-_mutex()
+_connected ( false )
 {
   SERIALIZE_XML_ADD_MEMBER ( _connection );
 }
@@ -66,11 +67,11 @@ _mutex()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Controller::Controller( const std::string& database, const std::string& user, const std::string& password, const std::string& host ) :
+CommandSender::CommandSender( const std::string& database, const std::string& user, const std::string& password, const std::string& host ) :
+BaseClass (),
 _connection ( new Minerva::Core::DB::Connection ),
 _sessionID( 0 ),
-_connected ( false ),
-_mutex()
+_connected ( false )
 {
   _connection->database( database );
   _connection->hostname( host );
@@ -89,7 +90,7 @@ _mutex()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Controller::~Controller()
+CommandSender::~CommandSender()
 {
   _connection->disconnect();
 }
@@ -101,7 +102,7 @@ Controller::~Controller()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Controller::connected() const
+bool CommandSender::connected() const
 {
   return _connected;
 }
@@ -113,7 +114,7 @@ bool Controller::connected() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Controller::connectToSession( const std::string& name )
+int CommandSender::connectToSession( const std::string& name )
 {
   Guard guard ( this->mutex() );
 
@@ -150,15 +151,11 @@ int Controller::connectToSession( const std::string& name )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Controller::deleteSession()
+void CommandSender::deleteSession()
 {
   Guard guard ( this->mutex() );
 
   this->_clearTable ( "commands" );
-  this->_clearTable ( "play_movie" );
-  this->_clearTable ( "wnv_layers" );
-  this->_clearTable ( "wnv_event_table" );
-  this->_clearTable ( "wnv_animate_table" );
 }
 
 
@@ -168,7 +165,7 @@ void Controller::deleteSession()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Controller::Strings Controller::getAvailableSessions()
+CommandSender::Strings CommandSender::getAvailableSessions()
 {
   Guard guard ( this->mutex() );
 
@@ -193,7 +190,7 @@ Controller::Strings Controller::getAvailableSessions()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Controller::_clearTable( const std::string& tableName )
+void CommandSender::_clearTable( const std::string& tableName )
 {
   Guard guard ( this->mutex() );
 
@@ -206,128 +203,11 @@ void Controller::_clearTable( const std::string& tableName )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add an event.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Controller::_executeEventTableQuery( int type, int eventId )
-{
-  Guard guard ( this->mutex() );
-
-  typedef Minerva::Core::DB::Connection::Values Values;
-  Values values;
-  values.push_back ( Values::value_type ( "type", Detail::toString ( type ) ) );
-  values.push_back ( Values::value_type ( "event_id", Detail::toString ( eventId ) ) );
-  values.push_back ( Values::value_type ( "session_id", Detail::toString ( _sessionID ) ) );
-
-  _connection->executeInsertQuery("wnv_event_table", values);
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove layer with given id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Controller::removeLayer( Usul::Interfaces::ILayer *layer )
-{
-  Guard guard ( this->mutex() );
-
-  int eventId ( this->_executeLayerQuery( layer ) );
-
-  this->_executeEventTableQuery(3, eventId);
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Modify polygon data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Controller::modifyLayer( Usul::Interfaces::ILayer *layer )
-{
-  Guard guard ( this->mutex() );
-
-  this->showLayer( layer );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build a query for the draw command table.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-int Controller::_executeLayerQuery( Usul::Interfaces::ILayer *layer )
-{
-  Guard guard ( this->mutex() );
-
-  // Create the xml string.
-  std::string xml ( Minerva::Core::serialize( layer ) );
-  
-  // Enter the data into the database.
-  typedef Minerva::Core::DB::Connection::Values Values;
-  Values values;
-  values.push_back( Values::value_type ( "session_id",  Detail::toString ( _sessionID ) ) );
-  values.push_back( Values::value_type ( "xml_data",    xml ) );
-
-  int id ( _connection->executeInsertQuery("wnv_layers", values ) );
-  return id;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Show layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-int Controller::showLayer ( Usul::Interfaces::ILayer *layer )
-{
-  Guard guard ( this->mutex() );
-
-  int eventId ( this->_executeLayerQuery( layer ) );
-
-  this->_executeEventTableQuery(1, eventId);
-
-  return eventId;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Play Movie.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Controller::playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path )
-{
-  Guard guard ( this->mutex() );
-
-  typedef Minerva::Core::DB::Connection::Values Values;
-  Values values;
-
-  values.push_back ( Values::value_type ( "session_id", Detail::toString ( _sessionID ) ) );
-  values.push_back ( Values::value_type ( "the_position", Detail::toString ( position ) ) );
-  values.push_back ( Values::value_type ( "width", Detail::toString ( width ) ) );
-  values.push_back ( Values::value_type ( "height", Detail::toString ( height ) ) );
-  values.push_back ( Values::value_type ( "path", Detail::toString ( path ) ) );
-
-  int eventId ( _connection->executeInsertQuery("play_movie", values) );
-
-  this->_executeEventTableQuery(4, eventId);
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Send a command.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Controller::sendCommand ( Usul::Interfaces::ICommand *command )
+void CommandSender::sendCommand ( Usul::Interfaces::ICommand *command )
 {
   Guard guard ( this->mutex() );
 

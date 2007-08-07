@@ -17,7 +17,7 @@
 #ifndef _WRF_MODEL_DOCUMENT_H_
 #define _WRF_MODEL_DOCUMENT_H_
 
-#include "Parser.h"
+#include "Experimental/WRF/WrfModel/Parser.h"
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Jobs/Job.h"

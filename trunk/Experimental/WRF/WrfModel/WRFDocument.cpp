@@ -8,12 +8,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "WRFDocument.h"
-#include "ChannelCommand.h"
-#include "NextTimestep.h"
-#include "PreviousTimestep.h"
-#include "ChangeNumPlanes.h"
-#include "AnimateCommand.h"
+#include "Experimental/WRF/WrfModel/WRFDocument.h"
+#include "Experimental/WRF/WrfModel/ChannelCommand.h"
+#include "Experimental/WRF/WrfModel/NextTimestep.h"
+#include "Experimental/WRF/WrfModel/PreviousTimestep.h"
+#include "Experimental/WRF/WrfModel/ChangeNumPlanes.h"
+#include "Experimental/WRF/WrfModel/AnimateCommand.h"
 
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
@@ -1443,6 +1443,8 @@ void WRFDocument::_buildTopography ()
 
 osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int channel0, unsigned int channel1 )
 {
+  USUL_TRACE_SCOPE;
+
   // Check the first channel.
   if ( false == this->_dataCached ( timestep, channel0 ) )
   {

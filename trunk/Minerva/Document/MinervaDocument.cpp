@@ -47,6 +47,7 @@ _planet ( new Magrathea::Planet ),
 _useDistributed ( false ),
 _sessionName(),
 _distributed ( new Minerva::Core::GUI::Controller ),
+_connection ( 0x0 ),
 _groupMap(),
 SERIALIZE_XML_INITIALIZER_LIST
 {
@@ -86,8 +87,6 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
   {
   case Usul::Interfaces::IBuildScene::IID:
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
-  case Usul::Interfaces::ISceneUpdate::IID:
-    return static_cast < Usul::Interfaces::ISceneUpdate* > ( this );
   case Usul::Interfaces::IDatabasePager::IID:
     return static_cast < Usul::Interfaces::IDatabasePager* > ( this );
   case Usul::Interfaces::IMatrixManipulator::IID:
@@ -707,18 +706,6 @@ osgGA::MatrixManipulator * MinervaDocument::getMatrixManipulator ()
 osgDB::DatabasePager * MinervaDocument::getDatabasePager ()
 {
   return _planet->databasePager();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Update the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::sceneUpdate( Usul::Interfaces::IUnknown *caller )
-{
-  _sceneManager->buildScene( caller );
 }
 
 

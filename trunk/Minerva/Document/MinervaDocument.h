@@ -16,7 +16,6 @@
 #include "Usul/Documents/Document.h"
 
 #include "Usul/Interfaces/IBuildScene.h"
-#include "Usul/Interfaces/ISceneUpdate.h"
 #include "Usul/Interfaces/IDatabasePager.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
 #include "Usul/Interfaces/IDistributedVR.h"
@@ -26,6 +25,7 @@
 
 #include "Minerva/Core/Scene/SceneManager.h"
 #include "Minerva/Core/GUI/Controller.h"
+#include "Minerva/Core/DB/Connection.h"
 #include "Minerva/Core/Layers/Layer.h"
 #include "Minerva/Interfaces/IAnimationControl.h"
 
@@ -42,7 +42,6 @@ namespace Document {
 
 class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document,
                                                 public Usul::Interfaces::IBuildScene,
-                                                public Usul::Interfaces::ISceneUpdate,
                                                 public Usul::Interfaces::IDatabasePager,
                                                 public Usul::Interfaces::IMatrixManipulator,
                                                 public Usul::Interfaces::IDistributedVR, 
@@ -173,9 +172,6 @@ protected:
   /// Usul::Interfaces::IDatabasePager
   virtual osgDB::DatabasePager *           getDatabasePager ();
 
-  /// Usul::Interfaces::IUpdateScene
-  virtual void                             sceneUpdate( Usul::Interfaces::IUnknown *caller = 0x0 );
-
   /// Distributed functions.
   void                                     _connectToDistributedSession();
 
@@ -227,6 +223,7 @@ private:
   bool _useDistributed;
   std::string _sessionName;
   Minerva::Core::GUI::Controller::RefPtr _distributed;
+  Minerva::Core::DB::Connection::RefPtr _connection;
   GroupMap _groupMap;
 
   SERIALIZE_XML_DEFINE_MAP;

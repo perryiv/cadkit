@@ -17,8 +17,6 @@
 #include "WRFDocument.h"
 
 
-#include <algorithm>
-
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WRFComponent , WRFComponent::BaseClass );
 
 

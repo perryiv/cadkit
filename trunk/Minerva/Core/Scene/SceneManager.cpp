@@ -32,8 +32,6 @@
 
 using namespace Minerva::Core::Scene;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( SceneManager , SceneManager::BaseClass );
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -568,36 +566,6 @@ SceneManager::Layer *  SceneManager::getLayer ( const std::string& guid )
   throw std::runtime_error( "Error 284022903: could not find layer id." );
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Query for the interface.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown *SceneManager::queryInterface ( unsigned long iid )
-{
-  switch ( iid )
-  {
-  case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::ISceneUpdate::IID:
-    return static_cast < Usul::Interfaces::ISceneUpdate * > ( this );
-  default:
-    return 0x0;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Update the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::sceneUpdate( Usul::Interfaces::IUnknown* caller )
-{
-  this->buildScene( caller );
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////

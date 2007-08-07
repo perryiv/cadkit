@@ -8,16 +8,19 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Commands/AnimationSpeed.h"
+#include "Minerva/Core/Commands/HideLayer.h"
 
-#include "Minerva/Interfaces/IAnimationControl.h"
+#include "Minerva/Interfaces/IDirtyScene.h"
+
+#include "Usul/Documents/Manager.h"
 
 #include "Serialize/XML/RegisterCreator.h"
 
 using namespace Minerva::Core::Commands;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( AnimationSpeed, AnimationSpeed::BaseClass );
-SERIALIZE_XML_REGISTER_CREATOR ( AnimationSpeed );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( HideLayer, HideLayer::BaseClass );
+SERIALIZE_XML_REGISTER_CREATOR ( HideLayer );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -25,11 +28,10 @@ SERIALIZE_XML_REGISTER_CREATOR ( AnimationSpeed );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AnimationSpeed::AnimationSpeed ( ) : 
-  BaseClass ( 0x0 ),
-  _speed    ( 0.0 )
+HideLayer::HideLayer ( ) : 
+  BaseClass( 0x0 )
 {
-  this->_addMember ( "speed", _speed );
+  this->_addMember ( "layer", _layer );
 }
 
 
@@ -39,11 +41,11 @@ AnimationSpeed::AnimationSpeed ( ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AnimationSpeed::AnimationSpeed ( double speed ) : 
-  BaseClass ( 0x0 ),
-  _speed    ( speed )
+  HideLayer::HideLayer ( Usul::Interfaces::ILayer* layer ) : 
+  BaseClass( 0x0 ),
+  _layer ( layer )
 {
-  this->_addMember ( "speed", _speed );
+  this->_addMember ( "layer", _layer );
 }
 
 
@@ -53,7 +55,7 @@ AnimationSpeed::AnimationSpeed ( double speed ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AnimationSpeed::~AnimationSpeed()
+HideLayer::~HideLayer()
 {
 }
 
@@ -64,12 +66,17 @@ AnimationSpeed::~AnimationSpeed()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AnimationSpeed::_execute ()
+void HideLayer::_execute ()
 {
-  Minerva::Interfaces::IAnimationControl::QueryPtr control ( this->caller() );
+  Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( Usul::Documents::Manager::instance().active () );
+  
+  // Hide the layer.
+  if ( _layer.valid () )
+    _layer->showLayer ( false );
 
-  if ( control.valid() )
-    control->animateSpeed ( _speed );
+  // Dirty the scene.
+  if ( dirty.valid () )
+    dirty->dirtyScene ();
 }
 
 
@@ -79,7 +86,7 @@ void AnimationSpeed::_execute ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* AnimationSpeed::queryInterface( unsigned long iid )
+Usul::Interfaces::IUnknown* HideLayer::queryInterface( unsigned long iid )
 {
   switch ( iid )
   {
@@ -90,4 +97,3 @@ Usul::Interfaces::IUnknown* AnimationSpeed::queryInterface( unsigned long iid )
     return BaseClass::queryInterface ( iid );
   }
 }
-

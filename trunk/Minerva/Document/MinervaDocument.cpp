@@ -16,6 +16,10 @@
 #include "Minerva/Core/Commands/StartAnimation.h"
 #include "Minerva/Core/Commands/PauseAnimation.h"
 #include "Minerva/Core/Commands/AnimationSpeed.h"
+#include "Minerva/Core/Commands/AddLayer.h"
+#include "Minerva/Core/Commands/RemoveLayer.h"
+#include "Minerva/Core/Commands/ShowLayer.h"
+#include "Minerva/Core/Commands/HideLayer.h"
 
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
@@ -46,9 +50,8 @@ _sceneManager ( new Minerva::Core::Scene::SceneManager ),
 _planet ( new Magrathea::Planet ),
 _useDistributed ( false ),
 _sessionName(),
-_distributed ( new Minerva::Core::GUI::Controller ),
+_distributed ( new CommandSender ),
 _connection ( 0x0 ),
-_groupMap(),
 SERIALIZE_XML_INITIALIZER_LIST
 {
   // Initialize the planet.
@@ -91,14 +94,16 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IDatabasePager* > ( this );
   case Usul::Interfaces::IMatrixManipulator::IID:
     return static_cast < Usul::Interfaces::IMatrixManipulator* > ( this );
-  case Usul::Interfaces::IDistributedVR::IID:
-    return static_cast < Usul::Interfaces::IDistributedVR* > ( this );
-  case Usul::Interfaces::IGroup::IID:
-    return static_cast < Usul::Interfaces::IGroup* > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
   case Minerva::Interfaces::IAnimationControl::IID:
     return static_cast < Minerva::Interfaces::IAnimationControl * > ( this );
+  case Minerva::Interfaces::IAddLayer::IID:
+    return static_cast < Minerva::Interfaces::IAddLayer * > ( this );
+  case Minerva::Interfaces::IRemoveLayer::IID:
+    return static_cast < Minerva::Interfaces::IRemoveLayer * > ( this );
+  case Minerva::Interfaces::IDirtyScene::IID:
+    return static_cast < Minerva::Interfaces::IDirtyScene * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -113,7 +118,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
 
 bool MinervaDocument::canExport ( const std::string &file ) const
 {
-  return this->canSave ( file );
+  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
+  return ( ext == "minerva" || ext == "kml" || ext == "kmz" );
 }
 
 
@@ -163,7 +169,11 @@ bool MinervaDocument::canSave ( const std::string &file ) const
 
 MinervaDocument::Filters MinervaDocument::filtersExport() const
 {
-  return this->filtersSave();
+  Filters filters;
+  filters.push_back ( Filter ( "Minerva (*.minerva)", "*.minerva" ) );
+  filters.push_back ( Filter ( "Google Earth (*.kml)", "*.kml" ) );
+  filters.push_back ( Filter ( "Google Earth Archive (*.kmz)", "*.kmz" ) );
+  return filters;
 }
 
 
@@ -803,150 +813,6 @@ void MinervaDocument::_connectToDistributedSession()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Remove layer with given id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::_removeLayerDistributed( Usul::Interfaces::ILayer *layer )
-{
-  if( _useDistributed )
-  {
-    // Lazy connection.
-    this->_connectToDistributedSession();
-
-    _distributed->removeLayer( layer );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Show layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::_showLayerDistributed ( Usul::Interfaces::ILayer *Layer )
-{
-  if ( _useDistributed )
-  {
-    // Lazy connection.
-    this->_connectToDistributedSession();
-
-    _distributed->showLayer( Layer );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Modify layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::_modifyLayerDistributed ( Usul::Interfaces::ILayer *layer )
-{
-  if ( _useDistributed )
-  {
-    // Lazy connection.
-    this->_connectToDistributedSession();
-
-    _distributed->modifyLayer( layer );  
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Play a movie.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path )
-{
-  if( _useDistributed )
-  {
-    // Lazy connection.
-    this->_connectToDistributedSession();
-
-    _distributed->playMovie ( position, width, height, path );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Pause a movie.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::pause( )
-{
-  if( _useDistributed )
-  {
-    // Lazy connection.
-    this->_connectToDistributedSession();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get group with given key.  Creates one if doesn't exist
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Group* MinervaDocument::getGroup ( const std::string &key )
-{
-  osg::ref_ptr<osg::Group> &group = _groupMap[ key ];
-
-  // Has the group been created
-  if ( !group.valid() )
-  {
-    // Make a new group
-    group = new osg::Group;
-
-    // Set the name
-    group->setName( key );
-
-    // Add the group to the scene
-    _planet->root()->addChild( group.get() );
-  }
-
-  return group.get();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove group with given key
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::removeGroup( const std::string &key )
-{
-  osg::ref_ptr<osg::Group> &group = _groupMap[key];
-  _planet->root()->removeChild ( group.get() );
-  group = 0x0;
-
-  // Remove key from group map.
-  _groupMap.erase ( key );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is the group created?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool MinervaDocument::hasGroup ( const std::string& key )
-{
-  GroupMap::const_iterator i = _groupMap.find ( key );
-  return i != _groupMap.end();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Remove a layer.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -960,8 +826,8 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
   }
   else
   {
-    this->_removeLayerDistributed( layer );
     _sceneManager->removeLayer( layer->guid() );
+    _sceneManager->dirty ( true );
   }
 
   Layers::iterator doomed ( std::find( _layers.begin(), _layers.end(), Usul::Interfaces::ILayer::QueryPtr ( layer ) ) );
@@ -974,52 +840,11 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Hide a layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::hideLayer   ( Usul::Interfaces::ILayer * layer )
-{
-  this->_removeLayerDistributed( layer );
-  layer->showLayer( false );
-  _sceneManager->dirty( true );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Show a layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::showLayer   ( Usul::Interfaces::ILayer * layer )
-{
-  this->_showLayerDistributed( layer );
-  layer->showLayer ( true );
-  _sceneManager->dirty( true );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Add a layer.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer, Unknown *caller )
-{
-  this->_addLayer( layer, caller );
-  _layers.push_back( layer );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add a layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void  MinervaDocument::_addLayer ( Usul::Interfaces::ILayer * layer, Unknown *caller )
+void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
 {
   try
   {
@@ -1030,15 +855,12 @@ void  MinervaDocument::_addLayer ( Usul::Interfaces::ILayer * layer, Unknown *ca
     }
     else
     {
-      this->_showLayerDistributed( layer );
-
-      Usul::Interfaces::IVectorLayer::QueryPtr vector ( layer );
-      if( vector.valid() )
-      {
-        vector->buildVectorData( caller );
-        _sceneManager->addLayer( layer );  
-      }
+      _sceneManager->addLayer( layer );
+      _sceneManager->dirty ( true );
     }
+
+    // Add the layer to our list.
+    _layers.push_back( layer );
   }
   catch ( const std::exception& e )
   {
@@ -1053,19 +875,70 @@ void  MinervaDocument::_addLayer ( Usul::Interfaces::ILayer * layer, Unknown *ca
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Modify a layer.
+//  Add a layer.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::modifyLayer ( Usul::Interfaces::ILayer * layer, Unknown *caller )
+void MinervaDocument::addLayerCommand ( Usul::Interfaces::ILayer * layer )
 {
-  Usul::Interfaces::IVectorLayer::QueryPtr vector ( layer );
-  if( vector.valid() )
-  {
-    this->_modifyLayerDistributed( layer );
-    vector->modifyVectorData ( caller );
-    _sceneManager->dirty( true );
-  }
+  Minerva::Core::Commands::AddLayer::RefPtr command ( new Minerva::Core::Commands::AddLayer ( layer ) );
+  this->_executeCommand ( command.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::removeLayerCommand ( Usul::Interfaces::ILayer * layer )
+{
+  Minerva::Core::Commands::RemoveLayer::RefPtr command ( new Minerva::Core::Commands::RemoveLayer ( layer ) );
+  this->_executeCommand ( command.get() );
+}
+  
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Modify a layer.  Does a remove and then an add.  This isn't the most
+//  efficient way of doing things, but it ensures that the scene reflects 
+//  the state of the layer.  This is especially true on the VR side.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::modifyLayerCommand ( Usul::Interfaces::ILayer * layer )
+{
+  // Remove.
+  this->removeLayerCommand ( layer );
+
+  // Add.
+  this->addLayerCommand ( layer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show the layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::showLayerCommand ( Usul::Interfaces::ILayer * layer )
+{
+  Minerva::Core::Commands::ShowLayer::RefPtr command ( new Minerva::Core::Commands::ShowLayer ( layer ) );
+  this->_executeCommand ( command.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Hide the layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::hideLayerCommand ( Usul::Interfaces::ILayer * layer )
+{
+  Minerva::Core::Commands::HideLayer::RefPtr command ( new Minerva::Core::Commands::HideLayer ( layer ) );
+  this->_executeCommand ( command.get() );
 }
 
 
@@ -1081,7 +954,7 @@ void MinervaDocument::deserialize ( const XmlTree::Node &node )
 
   for( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
   {
-    this->_addLayer( (*iter).get() );
+    this->addLayer( (*iter).get() );
   }
 }
 
@@ -1253,4 +1126,16 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     _sceneManager->buildScene ( caller );
     _sceneManager->dirty ( false );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Dirty the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::dirtyScene ()
+{
+  _sceneManager->dirty ( true );
 }

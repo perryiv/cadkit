@@ -238,56 +238,6 @@
 					>
 				</File>
 				<Filter
-					Name="GUI"
-					>
-					<File
-						RelativePath=".\GUI\Controller.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\GUI\Controller.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Viz"
-					>
-					<File
-						RelativePath=".\Viz\AddLayerJob.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Viz\AddLayerJob.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Viz\Controller.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath=".\Viz\Controller.h"
-						>
-					</File>
-				</Filter>
-				<Filter
 					Name="DataObjects"
 					>
 					<File
@@ -585,6 +535,14 @@
 					Name="Commands"
 					>
 					<File
+						RelativePath=".\Commands\AddLayer.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\AddLayer.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Commands\AnimationSpeed.cpp"
 						>
 					</File>
@@ -593,19 +551,11 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Commands\MaxDateShown.cpp"
+						RelativePath=".\Commands\HideLayer.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\Commands\MaxDateShown.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Commands\MinDateShown.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Commands\MinDateShown.h"
+						RelativePath=".\Commands\HideLayer.h"
 						>
 					</File>
 					<File
@@ -617,11 +567,19 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Commands\ShowPastCases.cpp"
+						RelativePath=".\Commands\RemoveLayer.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\Commands\ShowPastCases.h"
+						RelativePath=".\Commands\RemoveLayer.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\ShowLayer.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\ShowLayer.h"
 						>
 					</File>
 					<File
@@ -640,37 +598,25 @@
 						RelativePath=".\Commands\StopAnimation.h"
 						>
 					</File>
-					<File
-						RelativePath=".\Commands\TimestepAmount.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Commands\TimestepAmount.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Commands\TimestepType.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Commands\TimestepType.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Commands\TimeWindow.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Commands\TimeWindow.h"
-						>
-					</File>
 				</Filter>
 			</Filter>
 			<Filter
 				Name="Interfaces"
 				>
 				<File
+					RelativePath="..\Interfaces\IAddLayer.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Interfaces\IAnimationControl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IDirtyScene.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IRemoveLayer.h"
 					>
 				</File>
 			</Filter>

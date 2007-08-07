@@ -8,16 +8,19 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Commands/AnimationSpeed.h"
+#include "Minerva/Core/Commands/RemoveLayer.h"
 
-#include "Minerva/Interfaces/IAnimationControl.h"
+#include "Minerva/Interfaces/IRemoveLayer.h"
+
+#include "Usul/Documents/Manager.h"
 
 #include "Serialize/XML/RegisterCreator.h"
 
 using namespace Minerva::Core::Commands;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( AnimationSpeed, AnimationSpeed::BaseClass );
-SERIALIZE_XML_REGISTER_CREATOR ( AnimationSpeed );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( RemoveLayer, RemoveLayer::BaseClass );
+SERIALIZE_XML_REGISTER_CREATOR ( RemoveLayer );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -25,11 +28,10 @@ SERIALIZE_XML_REGISTER_CREATOR ( AnimationSpeed );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AnimationSpeed::AnimationSpeed ( ) : 
-  BaseClass ( 0x0 ),
-  _speed    ( 0.0 )
+RemoveLayer::RemoveLayer ( ) : 
+  BaseClass( 0x0 )
 {
-  this->_addMember ( "speed", _speed );
+  this->_addMember ( "layer", _layer );
 }
 
 
@@ -39,11 +41,11 @@ AnimationSpeed::AnimationSpeed ( ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AnimationSpeed::AnimationSpeed ( double speed ) : 
-  BaseClass ( 0x0 ),
-  _speed    ( speed )
+RemoveLayer::RemoveLayer ( Usul::Interfaces::ILayer* layer ) : 
+  BaseClass( 0x0 ),
+  _layer ( layer )
 {
-  this->_addMember ( "speed", _speed );
+  this->_addMember ( "layer", _layer );
 }
 
 
@@ -53,7 +55,7 @@ AnimationSpeed::AnimationSpeed ( double speed ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AnimationSpeed::~AnimationSpeed()
+RemoveLayer::~RemoveLayer()
 {
 }
 
@@ -64,12 +66,13 @@ AnimationSpeed::~AnimationSpeed()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AnimationSpeed::_execute ()
+void RemoveLayer::_execute ()
 {
-  Minerva::Interfaces::IAnimationControl::QueryPtr control ( this->caller() );
+  Minerva::Interfaces::IRemoveLayer::QueryPtr remove ( Usul::Documents::Manager::instance().active () );
 
-  if ( control.valid() )
-    control->animateSpeed ( _speed );
+  // Remove the layer.
+  if ( remove.valid () )
+    remove->removeLayer ( _layer );
 }
 
 
@@ -79,7 +82,7 @@ void AnimationSpeed::_execute ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* AnimationSpeed::queryInterface( unsigned long iid )
+Usul::Interfaces::IUnknown* RemoveLayer::queryInterface( unsigned long iid )
 {
   switch ( iid )
   {
@@ -90,4 +93,3 @@ Usul::Interfaces::IUnknown* AnimationSpeed::queryInterface( unsigned long iid )
     return BaseClass::queryInterface ( iid );
   }
 }
-

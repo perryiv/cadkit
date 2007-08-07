@@ -8,10 +8,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_CORE_COMMANDS_SHOW_PAST_EVENTS_H__
-#define __MINERVA_CORE_COMMANDS_SHOW_PAST_EVENTS_H__
+#ifndef __MINERVA_CORE_COMMANDS_REMOVE_LAYER_H__
+#define __MINERVA_CORE_COMMANDS_REMOVE_LAYER_H__
 
 #include "Minerva/Core/Export.h"
+#include "Minerva/Core/Layers/Layer.h"
 
 #include "Usul/Commands/Command.h"
 #include "Usul/Interfaces/ISerialize.h"
@@ -22,34 +23,33 @@ namespace Minerva {
 namespace Core {
 namespace Commands {
 
-class MINERVA_EXPORT ShowPastEvents : public Usul::Commands::Command,
-                                      public Usul::Interfaces::ISerialize
+class MINERVA_EXPORT RemoveLayer : public Usul::Commands::Command,
+                                   public Usul::Interfaces::ISerialize
 {
 public:
-  // Typedef(s)
+  // typedef(s)
   typedef Usul::Commands::Command BaseClass;
 
-  USUL_DECLARE_REF_POINTERS ( ShowPastEvents );
+  USUL_DECLARE_QUERY_POINTERS ( RemoveLayer );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  ShowPastEvents ( );
-  ShowPastEvents ( bool show );
+  RemoveLayer ();
+  RemoveLayer ( Usul::Interfaces::ILayer* layer );
 
 protected:
-  virtual ~ShowPastEvents();
+  virtual ~RemoveLayer();
 
   virtual void                _execute();
 
 private:
-
-  bool _show;
+  Usul::Interfaces::ILayer::QueryPtr _layer;
 
   SERIALIZE_XML_DEFINE_MAP;
-  SERIALIZE_XML_DEFINE_MEMBERS( ShowPastEvents );
+  SERIALIZE_XML_DEFINE_MEMBERS( RemoveLayer );
 };
 
 }
 }
 }
 
-#endif // __MINERVA_CORE_COMMANDS_SHOW_PAST_EVENTS_H__
+#endif // __MINERVA_CORE_COMMANDS_REMOVE_LAYER_H__

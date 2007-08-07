@@ -96,7 +96,7 @@ void DllGlue::removeLayer( CadKit::Interfaces::ILayer ^layer )
     if( nullptr != layerPtr )
     {
       Usul::Interfaces::ILayer::QueryPtr base ( reinterpret_cast < Usul::Interfaces::ILayer * > ( layerPtr->nativeIntPtr().ToPointer() ) );
-      _document->removeLayer( base.get() );
+      _document->removeLayerCommand( base.get() );
     }
   }
   catch ( System::Exception ^e )
@@ -121,7 +121,7 @@ void DllGlue::hideLayer( CadKit::Interfaces::ILayer ^layer )
     if( nullptr != layerPtr )
     {
       Usul::Interfaces::ILayer::QueryPtr base ( reinterpret_cast < Usul::Interfaces::ILayer * > ( layerPtr->nativeIntPtr().ToPointer() ) );
-      _document->hideLayer( base.get() );
+      _document->hideLayerCommand ( base.get() );
     }
   }
   catch ( System::Exception ^e )
@@ -149,7 +149,7 @@ void DllGlue::showLayer( CadKit::Interfaces::ILayer ^layer )
       Usul::Interfaces::IUnknown *unknown ( reinterpret_cast < Usul::Interfaces::IUnknown * > ( ptr ) );
       //Usul::Interfaces::ILayer::QueryPtr base ( unknown );
       if( 0x0 != unknown && 0x0 != unknown->queryInterface( Usul::Interfaces::ILayer::IID ) )
-        _document->showLayer( static_cast < Usul::Interfaces::ILayer* > ( unknown ) );
+        _document->showLayerCommand ( static_cast < Usul::Interfaces::ILayer* > ( unknown ) );
     }
   }
   catch ( System::Exception ^e )
@@ -183,7 +183,7 @@ void DllGlue::modifyLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::J
         queryPtr = p.unmanagedProgress();
       }
 
-      _document->modifyLayer( base, queryPtr.get() );
+      _document->modifyLayerCommand( base.get() );
     }
   }
   catch ( System::Exception ^e )
@@ -212,7 +212,7 @@ void DllGlue::addLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs
       // Managed/Unmanged progress interop class.
       Progress p ( progress );
 
-      _document->addLayer( base.get(), p.unmanagedProgress() );
+      _document->addLayerCommand ( base.get() );
     }
   }
   catch ( System::Exception ^e )

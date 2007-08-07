@@ -11,23 +11,24 @@
 #ifndef __MINERVA_DOCUMENT_H__
 #define __MINERVA_DOCUMENT_H__
 
-#include "Export.h"
+#include "Minerva/Document/Export.h"
+#include "Minerva/Document/CommandSender.h"
 
 #include "Usul/Documents/Document.h"
 
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IDatabasePager.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
-#include "Usul/Interfaces/IDistributedVR.h"
-#include "Usul/Interfaces/IGroup.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 
 #include "Minerva/Core/Scene/SceneManager.h"
-#include "Minerva/Core/GUI/Controller.h"
 #include "Minerva/Core/DB/Connection.h"
 #include "Minerva/Core/Layers/Layer.h"
 #include "Minerva/Interfaces/IAnimationControl.h"
+#include "Minerva/Interfaces/IAddLayer.h"
+#include "Minerva/Interfaces/IRemoveLayer.h"
+#include "Minerva/Interfaces/IDirtyScene.h"
 
 #include "Magrathea/Planet.h"
 
@@ -44,10 +45,11 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::IBuildScene,
                                                 public Usul::Interfaces::IDatabasePager,
                                                 public Usul::Interfaces::IMatrixManipulator,
-                                                public Usul::Interfaces::IDistributedVR, 
-                                                public Usul::Interfaces::IGroup,
                                                 public Usul::Interfaces::IUpdateListener,
-                                                public Minerva::Interfaces::IAnimationControl
+                                                public Minerva::Interfaces::IAnimationControl,
+                                                public Minerva::Interfaces::IAddLayer,
+                                                public Minerva::Interfaces::IRemoveLayer,
+                                                public Minerva::Interfaces::IDirtyScene
 {
 public:
   /// Useful typedefs.
@@ -99,12 +101,6 @@ public:
   /// Clear any existing data.
   virtual void                clear ( Unknown *caller = 0x0 );
 
-  void                        removeLayer ( Usul::Interfaces::ILayer * layer );
-  void                        hideLayer   ( Usul::Interfaces::ILayer * layer );
-  void                        showLayer   ( Usul::Interfaces::ILayer * layer );
-  void                        addLayer    ( Usul::Interfaces::ILayer * layer, Unknown *caller = 0x0 );
-  void                        modifyLayer ( Usul::Interfaces::ILayer * layer, Unknown *caller = 0x0 );
-
   void                        viewLayerExtents ( Usul::Interfaces::IUnknown * layer );
 
   void                        setLayerOperation( const std::string&, int val, Usul::Interfaces::IUnknown * layer );
@@ -117,6 +113,12 @@ public:
   void                        stopAnimationCommand();
   void                        pauseAnimationCommand();
   void                        animationSpeedCommand ( double value );
+
+  void                        addLayerCommand ( Usul::Interfaces::ILayer * layer );
+  void                        removeLayerCommand ( Usul::Interfaces::ILayer * layer );
+  void                        modifyLayerCommand ( Usul::Interfaces::ILayer * layer );
+  void                        showLayerCommand ( Usul::Interfaces::ILayer * layer );
+  void                        hideLayerCommand ( Usul::Interfaces::ILayer * layer );
 
   void                        resize ( unsigned int width, unsigned int height );
 
@@ -175,19 +177,17 @@ protected:
   /// Distributed functions.
   void                                     _connectToDistributedSession();
 
-  void                                     _addLayer    ( Usul::Interfaces::ILayer * layer, Unknown *caller = 0x0 );
-
-  /// Remove layer with given id.
-  void                                     _removeLayerDistributed( Usul::Interfaces::ILayer *Layer );
-
-  /// Show layer.
-  void                                     _showLayerDistributed ( Usul::Interfaces::ILayer *Layer );
-
-  /// Modify polygon data.
-  void                                     _modifyLayerDistributed ( Usul::Interfaces::ILayer *layer );
-
   /// Execute a command.
   void                                     _executeCommand ( Usul::Interfaces::ICommand* command );
+
+  /// Minerva::Interfaces::IAddLayer
+  virtual void                             addLayer ( Usul::Interfaces::ILayer * layer );
+
+  /// Minerva::Interfaces::IRemoveLayer
+  virtual void                             removeLayer ( Usul::Interfaces::ILayer * layer );
+
+  /// Dirty the scene ( Minerva::Interfaces::IDirtyScene ).
+  virtual void                             dirtyScene ();
 
   /// Minerva::Interfaces::IAnimationControl
   /// Start the animation.
@@ -199,21 +199,10 @@ protected:
   virtual void                             animateSpeed ( double speed );
   virtual double                           animateSpeed () const;
 
-  /// Usul::Interfaces::IDistributedVR
-  virtual void playMovie ( const osg::Vec3f& position, const osg::Vec3f& width, const osg::Vec3f& height, const std::string& path );
-  virtual void pause     ( );
-
-  /// Implementing IGroup interface. 
-  virtual osg::Group*  getGroup    ( const std::string& );
-  virtual void         removeGroup ( const std::string& );
-  virtual bool         hasGroup    ( const std::string& );
-
   /// Usul::Interfaces::IUpdateListener.
-  virtual void         updateNotify ( Usul::Interfaces::IUnknown *caller );
+  virtual void                             updateNotify ( Usul::Interfaces::IUnknown *caller );
 
 private:
-  typedef osg::ref_ptr< osg::Group >         GroupPtr;
-  typedef std::map < std::string, GroupPtr > GroupMap;
 
   Layers _layers;
   Favorites _favorites;
@@ -222,9 +211,8 @@ private:
 
   bool _useDistributed;
   std::string _sessionName;
-  Minerva::Core::GUI::Controller::RefPtr _distributed;
+  CommandSender::RefPtr _distributed;
   Minerva::Core::DB::Connection::RefPtr _connection;
-  GroupMap _groupMap;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME(MinervaDocument);

@@ -1,39 +1,28 @@
-project (SceneModel)
+project (MinervaModel)
 
-# Set the name.  Needed for the macros to set up plugin properties.
-SET(PLUGIN_NAME "SceneModel")
+SET(PLUGIN_NAME "MinervaModel")
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
-# ------------ Find OpenSceneGraph Libraries ----------------------
-INCLUDE ( ${CMakeModules}/FindOSG.cmake)
-
-# Set the compile guard.
-set(COMPILE_GUARD "_COMPILING_SCENE_MODEL")
+set(COMPILE_GUARD "_COMPILING_MINERVA_MODEL")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
-# ------------ Set Include Folders ----------------------
-#Include the Top Level Directory
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR} )
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
-# Set the sources to compile.
+# ------------ Set Include Folders ----------------------
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" )
+
 set (SOURCES
-	SceneFactory.cpp
-	SceneComponent.cpp
-	SceneDocument.cpp
+./MinervaComponent.cpp
+./MinervaFactory.cpp
 )
 
 # ---------- Create a Shared Library
-ADD_LIBRARY(${PLUGIN_NAME} SHARED ${SOURCES} )
+ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} )
 
 CADKIT_PLUGIN()
 
-# Link the Library with Cadkit Libraries.
-LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools )
+# Link the Library
+LINK_CADKIT( ${PLUGIN_NAME} Usul MinervaDocument )
 
-# Link the Library	
-TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} 
-  ${OPENTHREADS_LIB}
-	${OSG_LIB}
-)

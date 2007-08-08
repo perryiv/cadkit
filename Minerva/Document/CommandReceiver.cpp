@@ -32,10 +32,11 @@ using namespace Minerva::Document;
 ///////////////////////////////////////////////////////////////////////////////
 
 CommandReceiver::CommandReceiver( ) :
-_applicationConnection ( 0x0 ),
+_connection ( 0x0 ),
 _sessionID( 0 ),
 _lastCommandID ( 0 ),
-_timeout ( 60 )
+_timeout ( 60 ),
+_connected ( false )
 {
 }
 
@@ -57,9 +58,21 @@ CommandReceiver::~CommandReceiver()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CommandReceiver::applicationConnection( Minerva::Core::DB::Connection *connection )
+void CommandReceiver::connection( Minerva::Core::DB::Connection *connection )
 {
-  _applicationConnection = connection;
+  _connection = connection;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are we connected to the session?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool CommandReceiver::connected() const
+{
+  return _connected;
 }
 
 
@@ -74,11 +87,12 @@ void CommandReceiver::connectToSession( const std::string& name )
   std::ostringstream query;
   query << "SELECT * FROM wnv_sessions WHERE name = '" << name << "'";
 
-  pqxx::result result ( _applicationConnection->executeQuery ( query.str() ) );
+  pqxx::result result ( _connection->executeQuery ( query.str() ) );
 
   if ( !result.empty() )
   {
     _sessionID = result[0]["id"].as < unsigned int > ();
+    _connected = true;
   }
   else
   {
@@ -87,7 +101,7 @@ void CommandReceiver::connectToSession( const std::string& name )
 
     query << "INSERT INTO wnv_sessions ( name ) VALUES ( '" << name << "' )";
 
-    _applicationConnection->executeQuery( query.str() );
+    _connection->executeQuery( query.str() );
 
     // Try and connect again.
     this->connectToSession ( name );
@@ -136,7 +150,7 @@ void CommandReceiver::_processCommands ( Usul::Interfaces::IUnknown *caller )
   query << "SELECT * FROM commands WHERE id > " << _lastCommandID << " AND session_id = " << _sessionID;
 
   // Get the result.
-  pqxx::result result ( _applicationConnection->executeQuery ( query.str(), _timeout ) );
+  pqxx::result result ( _connection->executeQuery ( query.str(), _timeout ) );
 
   // While we have more work to do...
   for ( pqxx::result::const_iterator iter = result.begin(); iter != result.end(); ++iter )

@@ -28,11 +28,6 @@
 
 using namespace Minerva::Document;
 
-std::ostream& operator<<( std::ostream& os, const osg::Vec3f& v )
-{
-  os << v.x() << " " << v.y() << " " << v.z();
-  return os;
-}
 
 namespace Detail
 {
@@ -57,30 +52,6 @@ _connection ( new Minerva::Core::DB::Connection ),
 _sessionID( 0 ),
 _connected ( false )
 {
-  SERIALIZE_XML_ADD_MEMBER ( _connection );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-CommandSender::CommandSender( const std::string& database, const std::string& user, const std::string& password, const std::string& host ) :
-BaseClass (),
-_connection ( new Minerva::Core::DB::Connection ),
-_sessionID( 0 ),
-_connected ( false )
-{
-  _connection->database( database );
-  _connection->hostname( host );
-  _connection->username ( user );
-  _connection->password( password );
-  
-  _connection->connect();
-
-  SERIALIZE_XML_ADD_MEMBER ( _connection );
 }
 
 
@@ -92,7 +63,6 @@ _connected ( false )
 
 CommandSender::~CommandSender()
 {
-  _connection->disconnect();
 }
 
 
@@ -114,7 +84,7 @@ bool CommandSender::connected() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int CommandSender::connectToSession( const std::string& name )
+void CommandSender::connectToSession( const std::string& name )
 {
   Guard guard ( this->mutex() );
 
@@ -126,6 +96,7 @@ int CommandSender::connectToSession( const std::string& name )
   if ( !result.empty() )
   {
     _sessionID = result[0]["id"].as < unsigned int > ();
+    _connected = true;
   }
   else
   {
@@ -139,9 +110,6 @@ int CommandSender::connectToSession( const std::string& name )
     // Try and connect again.
     this->connectToSession ( name );
   }
-
-  _connected = true;
-  return _sessionID;
 }
 
 
@@ -226,4 +194,17 @@ void CommandSender::sendCommand ( Usul::Interfaces::ICommand *command )
 
     _connection->executeInsertQuery( "commands", values );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the connection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CommandSender::connection ( Minerva::Core::DB::Connection * connection )
+{
+  Guard guard ( this->mutex () );
+  _connection = connection;
 }

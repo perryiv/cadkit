@@ -13,8 +13,11 @@
 
 #include "Minerva/Document/Export.h"
 #include "Minerva/Document/CommandSender.h"
+#include "Minerva/Document/CommandReceiver.h"
 
 #include "Usul/Documents/Document.h"
+#include "Usul/Policies/Update.h"
+#include "Usul/Jobs/Job.h"
 
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IDatabasePager.h"
@@ -58,6 +61,7 @@ public:
   typedef std::map < std::string, Usul::Interfaces::ILayer::QueryPtr > Favorites;
   typedef OsgTools::Animate::Settings Settings;
   typedef std::vector < Usul::Interfaces::ILayer::QueryPtr > Layers;
+  typedef Minerva::Core::Scene::SceneManager SceneManager;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( MinervaDocument );
@@ -149,18 +153,47 @@ public:
   bool                        showLegend() const;
   void                        showLegend( bool b );
 
-  void                        percentScreenWidth ( float );
-  float                       percentScreenWidth();
+  /// Get/Set the percentage of screen the legend uses.
+  void                                     percentScreenWidth ( float );
+  float                                    percentScreenWidth();
 
   /// For now
-  void                              viewer( Usul::Interfaces::IUnknown* viewer );
+  void                                     viewer ( Usul::Interfaces::IUnknown* viewer );
 
-  void                              addToFavorites( Usul::Interfaces::IUnknown* layer );
-  Usul::Interfaces::IUnknown *      createFavorite( const std::string& name ) const;
-  Names                             favorites() const;
+  void                                     addToFavorites( Usul::Interfaces::IUnknown* layer );
+  Usul::Interfaces::IUnknown *             createFavorite( const std::string& name ) const;
+  Names                                    favorites() const;
 
-  Layers&                           layers();
-  const Layers&                     layers() const;
+  Layers&                                  layers();
+  const Layers&                            layers() const;
+
+  /// Get/Set the connection.
+  void                                     connection ( Minerva::Core::DB::Connection* connection );
+  Minerva::Core::DB::Connection*           connection ();
+
+  /// Get/Set the session.
+  void                                     session ( const std::string& session );
+  const std::string &                      session () const;
+
+  /// Connect to the session.
+  void                                     connectToSession ();
+
+  /// Update (Usul::Interfaces::IUpdateListener).
+  virtual void                             updateNotify ( Usul::Interfaces::IUnknown *caller );
+
+  /// Get/Set the commands receive flag.
+  void                                     commandsReceive ( bool b );
+  bool                                     commandsReceive () const;
+
+  /// Get the scene manager.
+  SceneManager *                           sceneManager ();
+  const SceneManager *                     sceneManager () const;
+
+  /// Get the planet.
+  Magrathea::Planet*                       planet ();
+
+  /// Get the database pager (Usul::Interfaces::IDatabasePager).
+  virtual osgDB::DatabasePager *           getDatabasePager ();
 
 protected:
   virtual ~MinervaDocument();
@@ -171,11 +204,11 @@ protected:
   /// Usul::Interfaces::IMatrixManipulator
   virtual osgGA::MatrixManipulator *       getMatrixManipulator ();
 
-  /// Usul::Interfaces::IDatabasePager
-  virtual osgDB::DatabasePager *           getDatabasePager ();
-
   /// Distributed functions.
   void                                     _connectToDistributedSession();
+
+  /// Add a layer.
+  void                                     _addLayer ( Usul::Interfaces::ILayer * layer );
 
   /// Execute a command.
   void                                     _executeCommand ( Usul::Interfaces::ICommand* command );
@@ -199,9 +232,6 @@ protected:
   virtual void                             animateSpeed ( double speed );
   virtual double                           animateSpeed () const;
 
-  /// Usul::Interfaces::IUpdateListener.
-  virtual void                             updateNotify ( Usul::Interfaces::IUnknown *caller );
-
 private:
 
   Layers _layers;
@@ -209,13 +239,17 @@ private:
   Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
   osg::ref_ptr < Magrathea::Planet > _planet;
 
-  bool _useDistributed;
+  bool _commandsSend;
+  bool _commandsReceive;
   std::string _sessionName;
-  CommandSender::RefPtr _distributed;
+  CommandSender::RefPtr _sender;
+  CommandReceiver::RefPtr _receiver;
   Minerva::Core::DB::Connection::RefPtr _connection;
+  Usul::Policies::TimeBased _commandUpdate;
+  Usul::Jobs::Job::RefPtr _commandJob;
 
   SERIALIZE_XML_DEFINE_MAP;
-  SERIALIZE_XML_CLASS_NAME(MinervaDocument);
+  SERIALIZE_XML_CLASS_NAME( MinervaDocument );
   SERIALIZE_XML_SERIALIZE_FUNCTION;
   virtual void deserialize ( const XmlTree::Node &node );
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;

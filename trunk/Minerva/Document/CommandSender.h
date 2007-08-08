@@ -14,8 +14,6 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/DB/Connection.h"
 
-#include "OsgTools/Animate/Settings.h"
-
 #include "Serialize/XML/Macros.h"
 
 #include "Usul/Base/Object.h"
@@ -39,13 +37,15 @@ public:
   USUL_DECLARE_REF_POINTERS ( CommandSender );
 
   CommandSender ();
-  CommandSender ( const std::string& database, const std::string& user, const std::string& password, const std::string& host );
+
+  /// Set the connection.
+  void             connection ( Minerva::Core::DB::Connection * connection );
 
   /// Are we connected to the session?
-  bool             connected() const;
+  bool             connected () const;
 
   /// Connect to a session.
-  int              connectToSession( const std::string& name );
+  void             connectToSession( const std::string& name );
 
   /// Delete the session.
   void             deleteSession();
@@ -67,9 +67,6 @@ private:
   Minerva::Core::DB::Connection::RefPtr _connection;
   unsigned int _sessionID;
   bool _connected;
-
-  SERIALIZE_XML_DEFINE_MAP;
-  SERIALIZE_XML_DEFINE_MEMBERS ( CommandSender );
 };
 
 

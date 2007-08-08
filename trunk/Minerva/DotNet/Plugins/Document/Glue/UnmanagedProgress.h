@@ -9,8 +9,16 @@
 
 #pragma once
 
+#ifdef __CLR_VER
+#undef __CLR_VER
+#endif
+
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
+
+#ifndef __CLR_VER
+#define __CLR_VER
+#endif
 
 namespace DT
 {

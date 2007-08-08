@@ -12,7 +12,15 @@
 
 #pragma warning ( disable : 4561 )
 
+#ifdef __CLR_VER
+#undef __CLR_VER
+#endif
+
 #include "Minerva/Document/MinervaDocument.h"
+
+#ifndef __CLR_VER
+#define __CLR_VER
+#endif
 
 using namespace System;
 

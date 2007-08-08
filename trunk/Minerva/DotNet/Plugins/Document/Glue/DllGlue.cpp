@@ -11,10 +11,13 @@
 #include "DllGlue.h"
 #include "Progress.h"
 
+#ifdef __CLR_VER
+#undef __CLR_VER
+#endif
+
 #include "Usul/Pointers/Pointers.h"
 #include "Threads/OpenThreads/Mutex.h"
 #include "Usul/Threads/Mutex.h"
-#include "Usul/Strings/Managed.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/IPlayMovie.h"
@@ -26,6 +29,12 @@
 #include "Minerva/Core/Layers/Layer.h"
 
 #include <string>
+
+#ifndef __CLR_VER
+#define __CLR_VER
+#endif
+
+#include "Usul/Strings/Managed.h"
 
 using namespace DT::Minerva::Plugins::Document::Glue;
 

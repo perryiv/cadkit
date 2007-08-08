@@ -11,53 +11,54 @@
 #ifndef __MINERVA_VR_H__
 #define __MINERVA_VR_H__
 
-#include "VRV/Core/Application.h"
-#include "VRV/Functors/BaseFunctor.h"
+#include "VrjCore/OsgVJApp.h"
 
-#include "Minerva/Core/Viz/Controller.h"
-#include "Minerva/Core/Scene/SceneManager.h"
+#include "Minerva/Document/MinervaDocument.h"
 #include "Minerva/Interfaces/IAnimationControl.h"
 
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
-#include "Usul/Threads/Thread.h"
 #include "Usul/CommandLine/Options.h"
 #include "Usul/Adaptors/Random.h"
-
-#include "Magrathea/Planet.h"
+#include "Usul/Interfaces/ICommand.h"
+#include "Usul/Interfaces/ICommandQueueAdd.h"
 
 #include <list>
 
-class MinervaVR : public VRV::Core::Application,
-                  public Minerva::Interfaces::IAnimationControl
+class MinervaVR : public VrjCore::OsgVJApp,
+                  public Minerva::Interfaces::IAnimationControl,
+                  public Usul::Interfaces::ICommandQueueAdd
 {
 public:
   // Typedefs.
-  typedef VRV::Core::Application             BaseClass;
-  typedef Usul::Threads::Thread              Thread;
-  typedef std::list < std::string >          Args;
+  typedef VrjCore::OsgVJApp                  BaseClass;
+  typedef Usul::Threads::RecursiveMutex      Mutex;
+  typedef Usul::Threads::Guard<Mutex>        Guard;
+  typedef Usul::Interfaces::ICommand         Command;
+  typedef Command::QueryPtr                  CommandPtr;
+  typedef std::list < CommandPtr >           CommandQueue;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   /// Construction/Destruction.
-  MinervaVR( Args& args );
-  virtual ~MinervaVR();		
+  MinervaVR( vrj::Kernel* kern, int& argc, char** argv );
+  virtual ~MinervaVR();
+
+  Mutex&                       mutex() const { return _mutex; }
 
  protected:
-  virtual void                 init();
+  virtual void                 appInit();
   
   virtual void                 preFrame();
+  virtual void                 appSceneInit();
+  virtual void                 appPreOsgDraw();
   virtual void                 draw();
   virtual void                 postFrame();
+  virtual void                 addSceneLight();
 
-  void                         _initLight ();
-  void                         _initScene ();
-  void                         _initLegend ();
+  void                         _initLegend();
 
-  void                         _updateScene( Usul::Threads::Thread *thread = 0x0 );
-  void                         _buildScene();
-
-  void                         _launchUpdateThread();
+  void                         _processCommands ();
 
   /// Minerva::Interfaces::IAnimationControl
   /// Start the animation.
@@ -73,18 +74,16 @@ public:
   virtual void                 animateSpeed ( double speed );
   virtual double               animateSpeed () const;
 
- private:
-  typedef VRV::Functors::BaseFunctor           Functor;
-  typedef Functor::RefPtr                      FunctorPtr;
+  /// Usul::Interfaces::ICommandQueueAdd
+  virtual void                 addCommand ( Usul::Interfaces::ICommand* command );
 
-  Minerva::Core::Viz::Controller::RefPtr       _dbManager;
-  Minerva::Core::Scene::SceneManager::RefPtr   _sceneManager;
-  osg::ref_ptr < Magrathea::Planet >           _planet;
+private:	
+
+  Minerva::Document::MinervaDocument::RefPtr   _document;
   Usul::CommandLine::Options                   _options;
   osg::Vec4f                                   _background;
-  Thread::RefPtr                               _updateThread;
-  Usul::Adaptors::Random < double >            _rand;
-  FunctorPtr                                   _navigator;
+  mutable Mutex                                _mutex;
+  CommandQueue                                 _commandQueue;
 };
 
 #endif // _MINERVA_VR_H_

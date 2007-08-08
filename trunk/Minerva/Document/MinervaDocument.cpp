@@ -24,11 +24,11 @@
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Interfaces/IOssimPlanetLayer.h"
-#include "Usul/Interfaces/IPlayMovie.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/IClonable.h"
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Jobs/Manager.h"
 
 using namespace Minerva::Document;
 
@@ -48,10 +48,14 @@ _layers(),
 _favorites(),
 _sceneManager ( new Minerva::Core::Scene::SceneManager ),
 _planet ( new Magrathea::Planet ),
-_useDistributed ( false ),
+_commandsSend ( false ),
+_commandsReceive ( false ),
 _sessionName(),
-_distributed ( new CommandSender ),
+_sender ( new CommandSender ),
+_receiver ( new CommandReceiver ),
 _connection ( 0x0 ),
+_commandUpdate ( 5000 ),
+_commandJob ( 0x0 ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
   // Initialize the planet.
@@ -60,9 +64,10 @@ SERIALIZE_XML_INITIALIZER_LIST
 
   SERIALIZE_XML_ADD_MEMBER ( _layers );
   SERIALIZE_XML_ADD_MEMBER ( _favorites );
-  SERIALIZE_XML_ADD_MEMBER ( _useDistributed );
+  SERIALIZE_XML_ADD_MEMBER ( _commandsSend );
+  SERIALIZE_XML_ADD_MEMBER ( _commandsReceive );
   SERIALIZE_XML_ADD_MEMBER ( _sessionName );
-  SERIALIZE_XML_ADD_MEMBER ( _distributed );
+  SERIALIZE_XML_ADD_MEMBER ( _connection );
 }
 
 
@@ -74,7 +79,7 @@ SERIALIZE_XML_INITIALIZER_LIST
 
 MinervaDocument::~MinervaDocument()
 {
-  _distributed->deleteSession();
+  _sender->deleteSession();
 }
 
 
@@ -274,7 +279,7 @@ void MinervaDocument::clear ( Unknown *caller )
   _favorites.clear();
   _sceneManager->clear();
   this->_connectToDistributedSession();
-  _distributed->deleteSession();
+  _sender->deleteSession();
 }
 
 
@@ -804,9 +809,16 @@ MinervaDocument::Names MinervaDocument::favorites() const
 
 void MinervaDocument::_connectToDistributedSession()
 {
-  if ( _useDistributed && !_distributed->connected() )
+  if ( _commandsSend && !_sender->connected() )
   {
-    _distributed->connectToSession ( _sessionName );
+    _sender->connection ( _connection.get() );
+    _sender->connectToSession ( _sessionName );
+  }
+
+  if ( _commandsReceive && !_receiver->connected() )
+  {
+    _receiver->connection ( _connection.get() );
+    _receiver->connectToSession ( _sessionName );
   }
 }
 
@@ -846,6 +858,21 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
 
 void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
 {
+  this->_addLayer ( layer );
+
+  // Add the layer to our list.
+  _layers.push_back( layer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_addLayer ( Usul::Interfaces::ILayer * layer )
+{
   try
   {
     Usul::Interfaces::IOssimPlanetLayer::QueryPtr ossim ( layer );
@@ -858,9 +885,6 @@ void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
       _sceneManager->addLayer( layer );
       _sceneManager->dirty ( true );
     }
-
-    // Add the layer to our list.
-    _layers.push_back( layer );
   }
   catch ( const std::exception& e )
   {
@@ -897,7 +921,8 @@ void MinervaDocument::removeLayerCommand ( Usul::Interfaces::ILayer * layer )
   Minerva::Core::Commands::RemoveLayer::RefPtr command ( new Minerva::Core::Commands::RemoveLayer ( layer ) );
   this->_executeCommand ( command.get() );
 }
-  
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Modify a layer.  Does a remove and then an add.  This isn't the most
@@ -952,10 +977,14 @@ void MinervaDocument::deserialize ( const XmlTree::Node &node )
 {
   _dataMemberMap.deserialize ( node );
 
+  // Add the layers to the scene.
   for( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
   {
-    this->addLayer( (*iter).get() );
+    this->_addLayer( (*iter).get() );
   }
+
+  // Connect.
+  this->_connectToDistributedSession ();
 }
 
 
@@ -994,13 +1023,10 @@ void MinervaDocument::_executeCommand ( Usul::Interfaces::ICommand* command )
   if ( 0x0 != command )
   { 
     // Send the command to the distributed client.
-    if ( _distributed.valid() && _useDistributed )
+    if ( _sender.valid() && _commandsSend )
     {
-      // Lazy connection.
-      this->_connectToDistributedSession();
-
       // Send the command.
-      _distributed->sendCommand ( command );
+      _sender->sendCommand ( command );
     }
 
     // Execute the command.
@@ -1113,6 +1139,41 @@ void MinervaDocument::addView ( Usul::Interfaces::IView *view )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Job to check for new commands.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  class CheckForCommands : public Usul::Jobs::Job
+  {
+  public:
+    typedef Usul::Jobs::Job BaseClass;
+
+    CheckForCommands ( Usul::Interfaces::IUnknown* caller, CommandReceiver *receiver ) : 
+      BaseClass ( caller ),
+      _caller ( caller ),
+      _receiver ( receiver )
+    {
+    }
+  protected:
+
+    virtual ~CheckForCommands () { }
+
+    virtual void _started ()
+    {
+      if ( _receiver.valid () )
+        _receiver->processCommands ( _caller.get () );
+    }
+
+  private:
+    Usul::Interfaces::IUnknown::QueryPtr _caller;
+    CommandReceiver::RefPtr _receiver;
+  };
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Update.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1121,10 +1182,19 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
 
+  // Rebuild the scene if it's dirty.
   if ( _sceneManager->dirty () )
   {
     _sceneManager->buildScene ( caller );
     _sceneManager->dirty ( false );
+  }
+
+  bool jobFinished ( _commandJob.valid() ? _commandJob->isDone () : true );
+
+  // Check to see if we should receive commands...
+  if ( _commandsReceive && _commandUpdate () && jobFinished )
+  {
+    Usul::Jobs::Manager::instance().add ( new Detail::CheckForCommands ( caller, _receiver.get() ) );
   }
 }
 
@@ -1138,4 +1208,142 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 void MinervaDocument::dirtyScene ()
 {
   _sceneManager->dirty ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the connection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::connection ( Minerva::Core::DB::Connection* connection )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _connection = connection;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the connection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Minerva::Core::DB::Connection* MinervaDocument::connection ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _connection;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the session.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::session ( const std::string& session )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _sessionName = session;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the session.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string & MinervaDocument::session () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _sessionName;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Connect to the session.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::connectToSession ()
+{
+  this->_connectToDistributedSession ();
+}
+
+ 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the commands receive flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::commandsReceive ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _commandsReceive = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the commands receive flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::commandsReceive () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _commandsReceive;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scene manager.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Minerva::Core::Scene::SceneManager * MinervaDocument::sceneManager ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _sceneManager.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scene manager.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Minerva::Core::Scene::SceneManager * MinervaDocument::sceneManager () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _sceneManager.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the planet.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Magrathea::Planet* MinervaDocument::planet ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _planet.get();
 }

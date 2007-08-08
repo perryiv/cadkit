@@ -34,7 +34,10 @@ public:
   CommandReceiver ( );
 
   // Set the application connection.
-  void applicationConnection( Minerva::Core::DB::Connection * );
+  void connection ( Minerva::Core::DB::Connection * );
+
+  /// Are we connected to the session?
+  bool connected () const;
 
   // Connect to a session.
   void connectToSession( const std::string& name );
@@ -49,10 +52,11 @@ protected:
   void _processCommands( Usul::Interfaces::IUnknown *caller );
 
 private:
-  Minerva::Core::DB::Connection::RefPtr _applicationConnection;
+  Minerva::Core::DB::Connection::RefPtr _connection;
   unsigned int _sessionID;
   unsigned int _lastCommandID;
   unsigned int _timeout;
+  bool _connected;
 };
 
 

@@ -14,12 +14,12 @@ foreach $input ( @ARGV )
 
   my $command = "convert_movie.pl $input $output";
 
-  `$command`
+  `$command`;
 
   if ( "flv" == $extension )
   {
     $command = "flvtool2 -U $output";
-    `$command`
+    `$command`;
   }
 }
 

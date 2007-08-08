@@ -81,8 +81,8 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   USUL_TRACE_SCOPE;
   this->_construct();
 
-  _frameDump.dir ( "/array/cluster/data/screen_shots/" );
-  _frameDump.base ( "file_" );
+  _frameDump.dir ( "/array/cluster/data/screen_shots" );
+  _frameDump.base ( "_file_" + Usul::System::Host::name() );
   _frameDump.ext ( ".jpg" );
   _frameDump.digits ( 10 );
 
@@ -497,17 +497,21 @@ void Application::_preDraw( OsgTools::Render::Renderer *renderer )
 void Application::contextPostDraw()
 {
   USUL_TRACE_SCOPE;
-
+#if 1
   if ( _frameDump.dump () )
   {
     osg::ref_ptr < osg::Viewport > vp ( this->viewport() );
     osg::ref_ptr < osg::Image > image ( new osg::Image () );
+
     image->readPixels ( static_cast < int > ( vp->x() ), 
-                        static_cast < int > ( vp->width() ), 
                         static_cast < int > ( vp->y() ), 
+                        static_cast < int > ( vp->width() ), 
                         static_cast < int > ( vp->height() ), 
                         GL_RGB, GL_UNSIGNED_BYTE );
+
+    osgDB::writeImageFile ( *image, _frameDump.file() );
   }
+#endif
 }
 
 
@@ -586,6 +590,15 @@ void Application::_postDraw( OsgTools::Render::Renderer *renderer )
     // Don't export next time.
     _exportImage = false;
   }
+#if 0
+  if ( _frameDump.dump () )
+  {
+    osg::ref_ptr < osg::Viewport > vp ( this->viewport() );
+    osg::ref_ptr < osg::Image > image ( new osg::Image () );
+    image->readPixels ( vp->x(), vp->width(), vp->y(), vp->height(), GL_RGB, GL_UNSIGNED_BYTE );
+    osgDB::writeImageFile ( *image, _frameDump.file() );
+  }
+#endif
 }
 
 

@@ -52,6 +52,9 @@ _planet ( 0x0 )
 
 Navigator::~Navigator()
 {
+  _landModel = 0x0;
+  _primary = 0x0;
+  _planet = 0x0;
 }
 
 

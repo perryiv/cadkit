@@ -126,6 +126,8 @@ namespace DT
 
             bool                  isPaused();
 
+            void                  setActive ( bool b );
+
           private:
             ::Minerva::Document::MinervaDocument *_document;
 	        };

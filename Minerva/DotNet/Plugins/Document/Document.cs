@@ -48,6 +48,7 @@ namespace DT.Minerva.Plugins.Document
     public Document()
       : base()
     {
+      CadKit.Documents.Manager.Instance.ActiveDocumentChanged += new CadKit.Documents.Manager.ActiveDocumentChangedDelegate(_activeDocumentChanged);
     }
 
 
@@ -56,6 +57,7 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     ~Document()
     {
+      CadKit.Documents.Manager.Instance.ActiveDocumentChanged -= _activeDocumentChanged;
       //this._cleanup();
     }
 
@@ -100,6 +102,8 @@ namespace DT.Minerva.Plugins.Document
         cwd = System.IO.Directory.GetCurrentDirectory();
         System.IO.FileInfo info = new System.IO.FileInfo(name);
         System.IO.Directory.SetCurrentDirectory(info.DirectoryName);
+
+        _dll.setActive(true);
 
         // Read the file.
         _dll.open(name);
@@ -243,6 +247,7 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
+        _dll.setActive(true);
         if (layer is CadKit.Interfaces.IOssimLayer)
           _dll.addLayer(layer, null);
         else
@@ -274,6 +279,7 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
+        _dll.setActive(true);
         _dll.hideLayer(layer);
         this.Modified = true;
       }
@@ -287,6 +293,7 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
+        _dll.setActive(true);
         _dll.showLayer(layer);
         this.Modified = true;
       }
@@ -300,6 +307,7 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
+        _dll.setActive(true);
         _layers.Remove(layer);
         _dll.removeLayer(layer);
         this.Modified = true;
@@ -356,6 +364,7 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
+        _dll.setActive(true);
         DT.Minerva.Plugins.Document.AddLayerJob job = new DT.Minerva.Plugins.Document.AddLayerJob(layer, _dll);
         job.Name = "Adding " + layer.Name;
         job.Start += job._showLayer;
@@ -372,6 +381,7 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
+        _dll.setActive(true);
         DT.Minerva.Plugins.Document.ModifyLayerJob job = new DT.Minerva.Plugins.Document.ModifyLayerJob(layer, _dll);
         job.Name = "Modifying " + layer.Name;
         job.Start += job._showLayer;
@@ -607,6 +617,12 @@ namespace DT.Minerva.Plugins.Document
     bool CadKit.Interfaces.IMovieMode.isPaused()
     {
       return _dll.isPaused();
+    }
+
+    void _activeDocumentChanged(CadKit.Interfaces.IDocument oldDoc, CadKit.Interfaces.IDocument newDoc)
+    {
+      //bool active = ( this == newDoc );
+      //_dll.setActive ( active );
     }
   }  
 }

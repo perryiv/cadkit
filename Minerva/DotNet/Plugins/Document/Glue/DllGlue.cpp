@@ -23,6 +23,7 @@
 #include "Usul/Interfaces/IPlayMovie.h"
 #include "Usul/Interfaces/IOssimPlanetLayer.h"
 #include "Usul/Components/Manager.h"
+#include "Usul/Documents/Manager.h"
 
 #include "OsgTools/Render/Viewer.h"
 
@@ -935,4 +936,16 @@ array<CadKit::Interfaces::ILayer^ > ^ DllGlue::Layers::get()
   }
 
   return managedLayers;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the document as active?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DllGlue::setActive ( bool b )
+{
+  Usul::Documents::Manager::instance().active ( b ? _document : 0x0 );
 }

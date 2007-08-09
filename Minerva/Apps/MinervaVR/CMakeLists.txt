@@ -17,6 +17,8 @@ INCLUDE(${CMakeModules}/FindXerces.cmake)
 SET ( Boost_USE_DATE_TIME TRUE )
 INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
+FIND_LIBRARY ( VJCINEMA_LIB VrjCinema "$ENV{VRJCINEMA_ROOT_DIR}/lib" )
+
 INCLUDE(${CMakeModules}/FindVRJuggler.cmake)
 
 SUBDIRS(
@@ -27,6 +29,7 @@ ${CADKIT_ROOT_DIR}/XmlTree
 ${CADKIT_ROOT_DIR}/Serialize/XML
 ${CADKIT_ROOT_DIR}/Magrathea
 ${CADKIT_ROOT_DIR}/Minerva/Core
+${CADKIT_ROOT_DIR}/Minerva/Document
 ${CADKIT_ROOT_DIR}/VRV
 # ---- Plug-ins -------
 ${CADKIT_ROOT_DIR}/Minerva/Plugins/ProjectionManager
@@ -50,6 +53,7 @@ INCLUDE_DIRECTORIES(
 		     ${PRODUCER_INC_DIR}
 		     ${XERCESC_INCLUDE_DIR}
 		     "$ENV{VJ_DEPS_DIR}/include"
+         "$ENV{VJCINEMA}/src"
 		     )
 
 #List the Sources
@@ -70,7 +74,7 @@ ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
 ADD_EXECUTABLE( ${TARGET} ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( ${TARGET} Usul OpenThreadsEx OsgTools Magrathea Minerva VRV )
+LINK_CADKIT( ${TARGET} Usul OpenThreadsEx OsgTools Magrathea Minerva VRV MinervaDocument )
 TARGET_LINK_LIBRARIES( ${TARGET} 
   ${VJCINEMA_LIB}
   ${VR_JUGGLER_LIBS}

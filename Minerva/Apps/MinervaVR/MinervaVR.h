@@ -32,6 +32,7 @@ class MinervaVR : public VrjCore::OsgVJApp,
 public:
   // Typedefs.
   typedef VrjCore::OsgVJApp                  BaseClass;
+  typedef std::list<std::string>             Args;
   typedef Usul::Threads::RecursiveMutex      Mutex;
   typedef Usul::Threads::Guard<Mutex>        Guard;
   typedef Usul::Interfaces::ICommand         Command;
@@ -41,10 +42,16 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   /// Construction/Destruction.
-  MinervaVR( vrj::Kernel* kern, int& argc, char** argv );
+  MinervaVR( const Args& args );
   virtual ~MinervaVR();
 
   Mutex&                       mutex() const { return _mutex; }
+
+  // Run the program.
+  void                         run();
+
+  // Print the usage string.
+  static void                  usage ( const std::string &exe, std::ostream &out );
 
  protected:
   virtual void                 appInit();

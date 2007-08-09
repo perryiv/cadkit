@@ -19,8 +19,11 @@
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/CommandLine/Parser.h"
 
 #include "OsgTools/Builders/Compass.h"
+
+#include "VRV/Core/JugglerFunctors.h"
 
 #include "VrjCore/OssimInteraction.h"
 
@@ -61,8 +64,10 @@ const std::string NEAR_FAR      = "near_far";
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) : 
-  BaseClass ( kern, argc, argv ),
+MinervaVR::MinervaVR( const Args& args ) : 
+  BaseClass ( vrj::Kernel::instance(), 
+              Usul::CommandLine::Arguments::instance().argc(), 
+              Usul::CommandLine::Arguments::instance().argv() ),
   _document ( new Minerva::Document::MinervaDocument ),
   _options(),
   _background( 0.0, 0.0, 0.0, 1.0 ),
@@ -89,8 +94,13 @@ MinervaVR::MinervaVR( vrj::Kernel* kern, int& argc, char** argv ) :
     std::cerr << " [MinervaVR] Warning: No Minerva config file found. " << std::endl;
   }
 
-  // Make room for 2 Jobs.
-  Usul::Jobs::Manager::instance().poolResize ( 2 );
+  typedef Usul::CommandLine::Parser Parser;
+  Parser parser ( args.begin (), args.end () );
+
+  Parser::Args configs = parser.files ( ".jconf", true );
+
+  // Load the config files.
+  std::for_each ( configs.begin(), configs.end(), VRV::Core::Detail::LoadConfigFile() );
 }
 
 
@@ -545,4 +555,37 @@ void MinervaVR::animateSpeed ( double speed )
 double MinervaVR::animateSpeed () const
 {
   return _document->sceneManager()->animationSpeed ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Run the program.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaVR::run()
+{
+  // Tell the kernel that we are the app.
+  vrj::Kernel::instance()->setApplication ( this );
+
+  // Start the kernel.
+  vrj::Kernel::instance()->start();
+
+  // Wait for events.
+  vrj::Kernel::instance()->waitForKernelStop();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Print the usage string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaVR::usage ( const std::string &exe, std::ostream &out )
+{
+  out << "usage: " << exe << ' ';
+  out << "<juggler1.config> [juggler2.config ... jugglerN.config] ";
+  out << '\n';
 }

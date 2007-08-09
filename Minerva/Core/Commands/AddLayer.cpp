@@ -109,6 +109,12 @@ AddLayer::AddLayerJob::AddLayerJob ( Usul::Interfaces::ILayer* layer, Usul::Inte
 {
   // Capture the active document.
   _document = Usul::Documents::Manager::instance().active();
+
+  Minerva::Interfaces::IAddLayer::QueryPtr addLayer ( _document );
+
+  // Add the layer.
+  if( addLayer.valid () )
+    addLayer->addLayer ( _layer );
 }
 
 
@@ -133,15 +139,10 @@ void AddLayer::AddLayerJob::_started()
 {
   // Query for needed interfaces.
   Usul::Interfaces::IVectorLayer::QueryPtr vector ( _layer );
-  Minerva::Interfaces::IAddLayer::QueryPtr addLayer ( _document );
 
   // Build the vector data.
   if ( vector.valid () )
     vector->buildVectorData ( this->progress() );
-
-  // Add the layer.
-  if( addLayer.valid () )
-    addLayer->addLayer ( _layer );
 }
 
 

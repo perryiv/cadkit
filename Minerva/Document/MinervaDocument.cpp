@@ -80,6 +80,13 @@ SERIALIZE_XML_INITIALIZER_LIST
 MinervaDocument::~MinervaDocument()
 {
   _sender->deleteSession();
+
+  _sceneManager = 0x0;
+  _planet = 0x0;
+
+  _sender = 0x0;
+  _receiver = 0x0;
+
 }
 
 
@@ -977,14 +984,20 @@ void MinervaDocument::deserialize ( const XmlTree::Node &node )
 {
   _dataMemberMap.deserialize ( node );
 
-  // Add the layers to the scene.
-  for( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
-  {
-    this->_addLayer( (*iter).get() );
-  }
-
   // Connect.
   this->_connectToDistributedSession ();
+
+  // Make a copy.
+  Layers layers ( _layers );
+
+  // Clear what we have.
+  _layers.clear ();
+
+  // Re-add as commands.  This will send them to the database if we should.
+  for( Layers::iterator iter = layers.begin(); iter != layers.end(); ++iter )
+  {
+    this->addLayerCommand ( *iter );
+  }
 }
 
 

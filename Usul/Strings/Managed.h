@@ -22,19 +22,19 @@ namespace Usul {
 namespace Strings {
 
 
-inline std::string convert ( System::String^ source )
+inline std::string convert ( ::System::String^ source )
 {
   std::string answer;
-  System::IntPtr ptr ( 0 );
+  ::System::IntPtr ptr ( 0 );
   try
   {
-    ptr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi( source );
+    ptr = ::System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi( source );
     char* s = (char*)(void*) ptr;
     answer.assign ( s );
   }
   finally
   {
-    System::Runtime::InteropServices::Marshal::FreeHGlobal( ptr );
+    ::System::Runtime::InteropServices::Marshal::FreeHGlobal( ptr );
   }
   return answer;
 }

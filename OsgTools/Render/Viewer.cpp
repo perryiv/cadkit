@@ -1966,11 +1966,12 @@ void Viewer::document ( Document *document )
 {
   _document = document;
 
+  // Return now if we don't have a valid document.
+  if ( false == _document.valid() )
+    return;
+  
   // Add this view to the document.
-  if ( true == _document.valid() )
-  {
-    _document->addView ( this );
-  }
+  _document->addView ( this );
 
   Usul::Interfaces::IMatrixManipulator::QueryPtr mm ( _document );
   if ( true == mm.valid() )

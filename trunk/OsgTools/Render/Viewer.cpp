@@ -1985,11 +1985,15 @@ void Viewer::document ( Document *document )
     this->databasePager ( dp->getDatabasePager() );
   }
 
-  // Add the document as a render listener.
-  this->addRenderListener ( document->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( _document );
+  if ( true == unknown.valid() )
+  {
+    // Add the document as a render listener.
+    this->addRenderListener ( unknown.get() );
 
-  // Add the document as an update listener.
-  this->addUpdateListener ( document->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+    // Add the document as an update listener.
+    this->addUpdateListener ( unknown.get() );
+  }
 }
 
 

@@ -98,7 +98,17 @@ Planet::~Planet()
   if( 0 == _planetCount )
     wmsFinalize();
 
-  _databasePager->cancel();
+  // Delete the manipulator.
+  _manipulator = 0x0;
+
+  // Remove all children.
+  _planet->removeChild ( 0, _planet->getNumChildren () );
+  _planet = 0x0;
+
+  // Cancel the database pager.
+  if ( _databasePager.valid () )
+    _databasePager->cancel();
+
   _databasePager = 0x0;
 }
 

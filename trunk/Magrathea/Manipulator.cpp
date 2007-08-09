@@ -44,6 +44,7 @@ _navigator ( 0x0 )
 
 Manipulator::~Manipulator()
 {
+  _navigator = 0x0;
 }
 
 void Manipulator::gotoLocation( double lat, double lon, double height )

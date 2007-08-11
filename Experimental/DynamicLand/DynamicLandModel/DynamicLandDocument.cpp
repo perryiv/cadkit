@@ -31,6 +31,7 @@
 #include "Usul/File/Slash.h"
 
 #include "OsgTools/DisplayLists.h"
+#include "OsgTools/Group.h"
 
 #include "osgDB/ReadFile"
 #include "osg/Group"
@@ -51,7 +52,7 @@ struct StartsWith : std::unary_function<std::string,bool>
   StartsWith ( const std::string &s ) : _s ( s ){} 
   bool operator () ( const std::string &s ) const
   {
-    std::cout << "Comparing " << s << " with " << _s << std::endl;
+    
     if ( s.size() < _s.size() )
       return false;
     const std::string temp ( s.begin(), s.begin() + _s.size() );
@@ -75,7 +76,8 @@ DynamicLandDocument::DynamicLandDocument() :
   _noDataValue ( 0 ),
   _gridSize ( 0, 0 ),
   _ll ( 0, 0 ),
-  _document ( 0x0 ),
+  _currentDocument ( 0x0 ),
+  _newDocument ( 0x0 ),
   _terrain ( new osg::Group ),
   _tb ( 1000 ),
   _currFileNum ( 0 ),
@@ -152,6 +154,7 @@ Usul::Interfaces::IUnknown *DynamicLandDocument::queryInterface ( unsigned long 
   bool DynamicLandDocument::incrementFilePosition ()
   {
     USUL_TRACE_SCOPE;
+    Guard guard ( this->mutex() );
     if( true == _files.empty() )
     {
       std::cout << "_files invalid" << std::endl;
@@ -181,6 +184,7 @@ Usul::Interfaces::IUnknown *DynamicLandDocument::queryInterface ( unsigned long 
   bool DynamicLandDocument::decrementFilePosition ()
   {
     USUL_TRACE_SCOPE;
+    Guard guard ( this->mutex() );
     if( true == _files.empty() )
     {
       std::cout << "_files invalid" << std::endl;
@@ -209,6 +213,7 @@ Usul::Interfaces::IUnknown *DynamicLandDocument::queryInterface ( unsigned long 
   bool DynamicLandDocument::loadCurrentFile( bool loadFile )
   {
     USUL_TRACE_SCOPE;
+    Guard guard ( this->mutex() );
     if ( _files.size() > 0 && _currFileNum < _files.size() )
     {
       _loadNewMap = loadFile;
@@ -377,12 +382,15 @@ DynamicLandDocument::Filters DynamicLandDocument::filtersInsert() const
 osg::Node *DynamicLandDocument::buildScene ( const BaseClass::Options &options, Unknown *caller )
 {
   USUL_TRACE_SCOPE;
-
+  
   try
   {
-    this->_buildScene();
-
-    return _terrain.get();
+    
+    //this->_buildScene();
+    {
+      Guard guard ( this->mutex() );
+      return _terrain.get();
+    }
   }
   catch ( const std::exception& e )
   {
@@ -406,28 +414,44 @@ osg::Node *DynamicLandDocument::buildScene ( const BaseClass::Options &options, 
 void DynamicLandDocument::_buildScene()
 {
   USUL_TRACE_SCOPE;
+#if 0
   Guard guard ( this->mutex() );
 
   // Disable materials in the TriangleSet
 
+
+  //Debugging...
+  std::cout << "Query Interface..." << std::endl;
 
    // Get interface to build scene.
   Usul::Interfaces::IBuildScene::QueryPtr build ( _document );
   
   if ( true == build.valid() )
   {
- 
+    //Debugging...
+    std::cout << "Build Valid... Removing Children..." << std::endl;
     //Remove the old triangle set from the group
-    _terrain->removeChild( 0, _terrain->getNumChildren() );
-
+    {
+      Guard guard ( this->mutex() );
+      _terrain->removeChild( 0, _terrain->getNumChildren() );
+    }
+    
+    //Debugging...
+    std::cout << "Children removed.  Setting options..." << std::endl;
     // enable shading-per-vertex options to pass to the TriangleSet
     OsgTools::Triangles::TriangleSet::Options opt;
     opt[ "normals" ] = "per-vertex";
     opt[ "colors" ]  = "per-vertex";
 
+    //Debugging...
+    std::cout << "Options set. Adding children..." << std::endl;
+
     // tell Triangle set to build its scene and assign the resulting node
     // to our internal node.
-    _terrain->addChild( build->buildScene( opt, 0x0 ) );
+    {
+      Guard guard ( this->mutex() );
+      _terrain->addChild( build->buildScene( opt, 0x0 ) );
+    }
 
     // Disable Material Usage
     /*Usul::Interfaces::IMaterials::QueryPtr mat ( _document );
@@ -437,8 +461,12 @@ void DynamicLandDocument::_buildScene()
     // Turn off display lits.
     //Usul::Interfaces::IDisplaylists::QueryPtr dl ( _document );
     //dl->displayList( false );
-    OsgTools::DisplayLists dl( false );
-    dl( _terrain.get() );
+
+    //OsgTools::DisplayLists dl( false );
+    //dl( _terrain.get() );
+
+    //Debugging...
+    std::cout << "Children added.  Deleting options..." << std::endl;
 
     // Done with opt.
     {
@@ -446,7 +474,8 @@ void DynamicLandDocument::_buildScene()
       std::swap( temp, opt );
     }
 
-    
+    //Debugging...
+    std::cout << "Done with buildscene!" << std::endl;
     //std::cout << "\nNumber of triangles loaded: " << _triangles->numTriangles() << std::endl;
 
 #if 0 // Show normals
@@ -461,7 +490,7 @@ void DynamicLandDocument::_buildScene()
  
  
   }
-  
+#endif
 }
 
 
@@ -476,6 +505,8 @@ void DynamicLandDocument::_buildScene()
 bool DynamicLandDocument::writeTDF ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+#if 0
+  Guard guard ( this->mutex() );
   // Ask the document write a TDF file.
   if( !Usul::Predicates::FileExists::test ( filename + ".tdf" ) )
   {
@@ -484,12 +515,12 @@ bool DynamicLandDocument::writeTDF ( const std::string& filename, Usul::Interfac
       return false;
 
     std::cout << "Saving file: " << output << " ... " << std::endl;
-    _document->saveAs ( output, 0x0 );
+    _newDocument->saveAs ( output, 0x0 );
     std::cout << "Done" << std::endl;
   }
   else
     std::cout << filename + ".tdf" << " already exists." << std::endl;
-
+#endif
   return true;
 }
 
@@ -503,87 +534,133 @@ bool DynamicLandDocument::writeTDF ( const std::string& filename, Usul::Interfac
 void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+  
+  // If the wait time has expired...
+  if ( false == _tb() )
+    return;
 
-    // If the wait time has expired...
-    if( _tb() )
+  // Check for new document.
+  if ( true == _newDocument.valid() )
+  {
+    Guard guard ( this->mutex() );
+    _currentDocument = _newDocument;
+    _newDocument = 0x0;
+    Usul::Interfaces::IBuildScene::QueryPtr build ( _currentDocument );
+    if ( true == build.valid() )
     {
-        
-      // Get a list of files in the directory _dir, with the extension _ext
-      Files files;
-      Usul::File::find( _dir, _ext, files );
-
-      // If we don't find any files matching our search criteria ...
-      if( 0 == files.size() )
-      {
-        this->clear();
-        _numFilesInDirectory = 0;
-      }
-
-      // Debugging -- output the files found in the given directory
-      //std::copy ( files.begin(), files.end(), std::ostream_iterator<std::string> ( std::cout, "; " ) );
-      //std::cout << std::endl;
-
-      // Make sure we have some files and that they are different from our last look
-      // at the directory.
-      if( files.size() != _numFilesInDirectory && files.size() > 0 )
-      {
-        // get the number of files in the directory
-        _numFilesInDirectory = files.size();
-        
-	      std::string slash ( Usul::File::slash() );
-
-	      #ifdef _MSC_VER
-	        std::string search ( _dir + slash + _prefix );
-	      #else
-	        std::string search ( _prefix );
-	      #endif
-
-        // Get all files with the prefix name.
-	      std::cout << "Checking directory: " << _dir + slash << " for files with prefix: " << _prefix << std::endl;
-
-        StringVector::iterator end ( std::remove_if 
-                                     ( files.begin(), files.end(),  
-                                     std::not1( StartsWith( search ) ) ) );
-
-          
-        // Remove the files that don't match our sort criteria
-        files.erase ( end, files.end() );
-
-        // Sort the names.
-        std::sort ( files.begin(), files.end() );
-	      if ( false == files.empty() )
-	      {
-          if( _currFileNum > files.size() )
-            _currFileNum = files.size();
-                
-           std::swap( files, _files );
-                
-           std::cout << "\nNumber of files loaded: " << _files.size() << std::endl;
-           std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
-	      }
-	      else
-	      {
-	        std::cout << "\nNo Files found matching search criteria" << std::endl;
-	      }
-
-      }
-   
-      if( _loadNewMap && _files.size() > 0 )
-      {
-        // Do not load a anther map
-        this->loadCurrentFile( false );
-
-        // Get the file name
-        std::string filename = _files.at( _currFileNum );
-
-        // strip the extension from the map file name
-        std::string root = filename.substr( 0, filename.size() - 4 );
-            
-        // load the map file
-        LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, caller ) );
-        Usul::Jobs::Manager::instance().add ( job.get() );  
-      } 
+      OsgTools::Group::removeAllChildren ( _terrain.get() );
+      OsgTools::Triangles::TriangleSet::Options opt;
+      opt[ "normals" ] = "per-vertex";
+      opt[ "colors" ]  = "per-vertex";
+      _terrain->addChild ( build->buildScene ( opt, caller ) );
     }
+    return;
+  }
+
+  //Guard guard ( this->mutex() );      
+  // Get a list of files in the directory _dir, with the extension _ext
+  std::string dir, ext, prefix;
+  Files files;
+  {
+    Guard guard ( this->mutex() );
+    dir = _dir;
+    ext = _ext;
+    prefix = _prefix;
+  }
+  Usul::File::find( dir, ext, files );
+
+  // If we don't find any files matching our search criteria ...
+  if( 0 == files.size() )
+  {
+    this->clear();
+    Guard guard ( this->mutex() );
+    _numFilesInDirectory = 0;
+  }
+
+  // Debugging -- output the files found in the given directory
+  //std::copy ( files.begin(), files.end(), std::ostream_iterator<std::string> ( std::cout, "; " ) );
+  //std::cout << std::endl;
+
+  // Make sure we have some files and that they are different from our last look
+  // at the directory.
+  
+  if( files.size() != _numFilesInDirectory && files.size() > 0 )
+  {
+    // get the number of files in the directory
+    {
+      Guard guard ( this->mutex() );
+      _numFilesInDirectory = files.size();
+    }
+
+    std::string slash ( Usul::File::slash() );
+    #ifdef _MSC_VER
+      std::string search ( dir + slash + prefix );
+    #else
+      std::string search ( prefix );
+    #endif
+
+    // Get all files with the prefix name.
+    std::cout << "Checking directory: " << dir + slash << " for files with prefix: " << prefix << std::endl;
+
+    StringVector::iterator end ( std::remove_if 
+                                 ( files.begin(), files.end(),  
+                                 std::not1( StartsWith( search ) ) ) );
+
+      
+    // Remove the files that don't match our sort criteria
+    files.erase ( end, files.end() );
+
+    // Sort the names.
+    std::sort ( files.begin(), files.end() );
+    if ( false == files.empty() )
+    {
+      // set the file size to the current number of files that 
+      // match our parameters from the directory search
+      {
+        Guard guard ( this->mutex() );
+        if( _currFileNum > files.size() )
+        {
+          _currFileNum = files.size();
+        }
+      
+       std::swap( files, _files );
+      
+       std::cout << "\nNumber of files loaded: " << _files.size() << std::endl;
+       std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
+      }
+    }
+    else
+    {
+      std::cout << "\nNo Files found matching search criteria" << std::endl;
+    }
+
+  }
+  {
+    Files tempFiles;
+    unsigned int currFileNum = 0;
+    bool loadNewMap;
+    {
+      Guard guard ( this->mutex() );
+      tempFiles = _files;
+      currFileNum = _currFileNum;
+      loadNewMap = _loadNewMap;
+    }
+    if( loadNewMap && tempFiles.size() > 0 )
+    {
+      // Do not load a anther map
+      this->loadCurrentFile( false );
+
+      // Get the file name
+      std::string filename = tempFiles.at( currFileNum );
+
+      // strip the extension from the map file name
+      std::string root = filename.substr( 0, filename.size() - 4 );
+          
+      // load the map file
+      LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, caller ) );
+      Usul::Jobs::Manager::instance().add ( job.get() );  
+    } 
+  }
 }
 
 
@@ -620,6 +697,14 @@ bool DynamicLandDocument::load ( const std::string& filename, Usul::Interfaces::
 bool DynamicLandDocument::_load( const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+
+  if ( true == _newDocument.valid() )
+  {
+    USUL_ASSERT ( false );
+    return false;
+  }
+
+#if 0
 #ifdef _DEBUG
   const std::string pluginName ( "TriangleModel.plugd" );
 #else
@@ -631,7 +716,7 @@ bool DynamicLandDocument::_load( const std::string& filename, Usul::Interfaces::
 
   // Load the plugin
   Usul::Components::Manager::instance().load ( Usul::Interfaces::IPlugin::IID, pluginPath );
-
+#endif
   // This will create a new document.
   Info info ( DocManager::instance().find ( filename, caller ) );
   Document::RefPtr document ( info.document );
@@ -649,7 +734,10 @@ bool DynamicLandDocument::_load( const std::string& filename, Usul::Interfaces::
   // Ask the document to open the file.
   this->_openDocument ( filename, document.get(), caller );
 
-  _document = document;
+  {
+    Guard guard ( this->mutex() );
+    _newDocument = document;
+  }
 
   return true;
 }
@@ -664,6 +752,7 @@ bool DynamicLandDocument::_load( const std::string& filename, Usul::Interfaces::
 void DynamicLandDocument::_openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+  //Guard guard ( this->mutex() );
   if ( 0x0 == document )
     return;
 
@@ -685,6 +774,12 @@ void DynamicLandDocument::_openDocument ( const std::string &file, Usul::Documen
 bool DynamicLandDocument::_loadTexture ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if( false == _newDocument.valid() )
+  {
+    USUL_ASSERT ( false );
+    return false;
+  }
   #ifdef _MSC_VER
     std::string file ( filename );
   #else
@@ -693,12 +788,13 @@ bool DynamicLandDocument::_loadTexture ( const std::string& filename, Usul::Inte
   #endif
   if( Usul::Predicates::FileExists::test ( file ) )
   {
+   
     // Get color array
-    Usul::Interfaces::IColorsPerVertex::QueryPtr colorsV ( _document );
+    Usul::Interfaces::IColorsPerVertex::QueryPtr colorsV ( _newDocument );
     osg::ref_ptr< osg::Vec4Array > colors = colorsV->getColorsV ( true );
 
     // Get vertices
-    Usul::Interfaces::IVertices::QueryPtr vertices ( _document );
+    Usul::Interfaces::IVertices::QueryPtr vertices ( _newDocument );
     osg::ref_ptr< osg::Vec3Array > v = vertices->vertices();
 
     // make sure the number of colors is correct.
@@ -707,20 +803,27 @@ bool DynamicLandDocument::_loadTexture ( const std::string& filename, Usul::Inte
     // load the image
     osg::ref_ptr< osg::Image > tex ( new osg::Image );
     tex = osgDB::readImageFile( file );
-    
+    Usul::Math::Vec2f ll;
+    Usul::Math::Vec2ui gridSize;
+    float cellSize;
     std::cout << "Reading texture image file: " << file << std::endl;
-
+    {
+      Guard guard ( this->mutex() );
+      ll = _ll;
+      gridSize = _gridSize;
+      cellSize = _cellSize;
+    }
     for( unsigned int i = 0; i < v->size(); ++i )
     {
       // get the current grid location of the point at index i
-      float vi = v->at(i)[0] - _ll[1];
-      float vj = v->at(i)[1] - _ll[0];
-      float rsize = ( float ( _gridSize[0] ) * _cellSize ) - 1;
-      float csize = ( float ( _gridSize[1] ) * _cellSize ) - 1;
+      float vi = v->at(i)[0] - ll[1];
+      float vj = v->at(i)[1] - ll[0];
+      float rsize = ( float ( gridSize[0] ) * cellSize ) - 1;
+      float csize = ( float ( gridSize[1] ) * cellSize ) - 1;
       
       // get the color information from the image for the point at index i
-      unsigned int pixelRow = static_cast < unsigned int >( ( rsize - vi ) / _cellSize );
-      unsigned int pixelCol = static_cast < unsigned int >( vj / _cellSize );
+      unsigned int pixelRow = static_cast < unsigned int >( ( rsize - vi ) / cellSize );
+      unsigned int pixelCol = static_cast < unsigned int >( vj / cellSize );
       unsigned char * pixel = tex->data(  pixelCol, pixelRow  );
 
       // get the color values to use
@@ -758,6 +861,7 @@ bool DynamicLandDocument::_loadTexture ( const std::string& filename, Usul::Inte
 void DynamicLandDocument::_parseHeader( XmlTree::Node &node, Unknown *caller )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   typedef XmlTree::Document::Attributes Attributes;
   Attributes& attributes ( node.attributes() );
 
@@ -794,6 +898,7 @@ void DynamicLandDocument::_parseHeader( XmlTree::Node &node, Unknown *caller )
 bool DynamicLandDocument::_readParameterFile( XmlTree::Node &node, Unknown *caller )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   typedef XmlTree::Document::Attributes Attributes;
   typedef XmlTree::Document::Children Children;
 
@@ -860,27 +965,19 @@ void DynamicLandDocument::LoadDataJob::_started ()
   
   // Set the label.
   this->_setLabel ( "Loading file: " + _filename );
-  
 
   // Process all the requests.
   bool valid = _document->load( _filename, this->progress() );
 
-        // if the map file is valid, load the image file for coloring
+  // if the map file is valid, load the image file for coloring
   if ( valid )
   {
-
     // load the image file
     _document->_loadTexture( _filename + ".png", this->progress() );
 
     // write a tdf of the loaded terrain for faster loading on revisit
     //this->writeTDF ( _filename );
-
-    // build our scene
-    _document->_buildScene();
   }
-
-  
-  
 }
 
 

@@ -40,7 +40,7 @@ class DynamicLandDocument : public Usul::Documents::Document,
                             public Usul::Interfaces::IBuildScene,
                             public Usul::Interfaces::IUpdateListener,
                             public Usul::Interfaces::IDldNavigator,
-			    public Usul::Interfaces::ICommandList
+			                      public Usul::Interfaces::ICommandList
 {
 public:
 
@@ -127,7 +127,8 @@ private:
   float                           _noDataValue;
   Usul::Math::Vec2ui              _gridSize;
   Usul::Math::Vec2f               _ll;
-  Document::RefPtr                _document;
+  Document::RefPtr                _currentDocument;
+  Document::RefPtr                _newDocument;
   osg::ref_ptr< osg::Group >      _terrain;
 
   // Update variables

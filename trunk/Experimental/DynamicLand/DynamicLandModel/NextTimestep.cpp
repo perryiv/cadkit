@@ -23,7 +23,7 @@ NextTimestep::NextTimestep ( Usul::Interfaces::IUnknown * caller ) :
   BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
-  this->text ( "Next Timestep 2" );
+  this->text ( "Next Year" );
 }
 
 

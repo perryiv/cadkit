@@ -204,10 +204,10 @@ ProgressBar::ProgressBar() : BaseClass(),
   _borderLH ( 0, 0 ),
   _percentPos ( 0, 0, 0 ),
   _labelPos ( 0, 0, 0 ),
-  _animationCurEndStep ( 0, 1, .05 ),
+  _animationCurEndStep ( 1, 1, .05 ),
   _root ( new osg::Group ),
   _dirty   ( true ),
-  _isVisible ( false ),
+  _isVisible ( true ),
   _isAnimating ( false ),
   _isFinished ( false )
 {

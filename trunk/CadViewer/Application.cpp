@@ -251,6 +251,8 @@ Application::Application ( Args &args ) :
   _iVisibility    = Manager::instance().getInterface( CV::Interfaces::IVisibility::IID );
   _iSelection     = Manager::instance().getInterface( CV::Interfaces::ISelection::IID );
   _iMaterialStack = Manager::instance().getInterface( CV::Interfaces::IMaterialStack::IID );
+
+
 }
 
 
@@ -333,8 +335,31 @@ void Application::_init()
   // Parse the command-line arguments.
   this->_parseCommandLine();
 
-  // Save the "home" position.
-  this->_setHome();
+  // Experimental: 
+  #if 1 // Experimental
+  std::ostringstream out;
+  out << Usul::System::Host::name() << "_home_position.txt";
+  {
+    std::ifstream file ( out.str().c_str() );
+    if ( true == file.is_open() )
+    {
+      osg::Matrixf::value_type *m = _home.ptr();
+      file >> m[0] >> m[4] >> m[8]  >> m[12];
+      file >> m[1] >> m[5] >> m[9]  >> m[13];
+      file >> m[2] >> m[6] >> m[10] >> m[14];
+      file >> m[3] >> m[7] >> m[11] >> m[15];
+    }
+  }
+
+  // Always set the navigation matrix.
+  this->_navigationMatrix ( _home );
+
+  #else
+    // Save the "home" position.
+    this->_setHome();
+  #endif
+
+  
 
   // Initialize the menu.
   this->_initMenu();
@@ -358,7 +383,7 @@ void Application::_init()
 
 void Application::_initText()
 {
-#if 0
+#if 1
   // Removing anything we may have already.
   this->projectionGroupRemove ( "VRV_TEXT" );
 
@@ -553,13 +578,15 @@ void Application::_initMenu()
   osg::Matrixf mm;
   OsgTools::Convert::matrix ( this->preferences()->menuMatrix(), mm );
   osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+  
   mt->setMatrix ( mm );
+ // mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
   mt->setName ( "MenuBranch" );
 
-  if ( true == this->_isHeadNode() )
-  {
+  //if ( true == this->_isHeadNode() )
+  //{
     osgMenu->scene ( mt.get() );
-  }
+  //}
 
   // Get the state set.
   osg::ref_ptr < osg::StateSet > ss ( mt->getOrCreateStateSet() );
@@ -1985,9 +2012,20 @@ void Application::_updateStatusBar ( const std::string &s )
 
 void Application::_setHome()
 {
-  ErrorChecker ( 3948236564u, isAppThread(), CV::NOT_APP_THREAD );
+  Guard guard ( this->mutex() );
+  ErrorChecker ( 3948236564u, Application::isAppThread(), CV::NOT_APP_THREAD );
   _home = this->_navigationMatrix();
   Usul::Print::matrix ( "Matrix:", _home.ptr(), std::cout );
+
+#if 1 // Experimental
+  std::ostringstream out;
+  out << Usul::System::Host::name() << "_home_position.txt";
+  std::ofstream file ( out.str().c_str() );
+  if ( true == file.is_open() )
+  {
+    Usul::Print::matrix ( "", _home.ptr(), file );
+  }
+#endif
 }
 
 

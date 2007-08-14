@@ -208,6 +208,7 @@ osg::Node* Point::buildScene()
 
     // Set the material's diffuse color
     _material->setDiffuse ( osg::Material::FRONT_AND_BACK, this->color() );
+    _material->setAmbient ( osg::Material::FRONT_AND_BACK, this->color() );
 
     // Set proper state for transparency
     if( 1.0f == this->color().w() )
@@ -408,7 +409,7 @@ osg::Node* Point::_buildCone( bool invert )
   else
   {
     osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-    mt->setMatrix ( osg::Matrix::translate( v1 * ( height / 2.0 ) ) );
+    //mt->setMatrix ( osg::Matrix::translate( v1 * ( height / 2.0 ) ) );
     mt->addChild ( geode.get() );
     return mt.release();
   }

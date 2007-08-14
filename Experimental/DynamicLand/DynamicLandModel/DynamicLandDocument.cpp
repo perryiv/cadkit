@@ -11,6 +11,8 @@
 #include "Experimental/DynamicLand/DynamicLandModel/DynamicLandDocument.h"
 
 #include "Experimental/DynamicLand/DynamicLandModel/NextTimestep.h"
+#include "Experimental/DynamicLand/DynamicLandModel/PrevTimestep.h"
+#include "Experimental/DynamicLand/DynamicLandModel/LoadTimestep.h"
 
 #include "Usul/Interfaces/IColorsPerVertex.h"
 #include "Usul/Interfaces/IDisplaylists.h"
@@ -86,7 +88,13 @@ DynamicLandDocument::DynamicLandDocument() :
   _loadNewMap ( false ),
   _dir( "" ),
   _ext ( "" ),
-  _prefix ( "" )
+  _prefix ( "" ),
+  _stepForward ( false ),
+  _stepBackward ( false ),
+  _animateForward ( false ),
+  _animateBackward ( false ),
+  _timeStepPool ( 0x0 ),
+  _timeStepWindowSize ( 0 )
 {
   USUL_TRACE_SCOPE;
 }
@@ -508,10 +516,18 @@ bool DynamicLandDocument::writeTDF ( const std::string& filename, Usul::Interfac
 #if 0
   Guard guard ( this->mutex() );
   // Ask the document write a TDF file.
-  if( !Usul::Predicates::FileExists::test ( filename + ".tdf" ) )
+  std::string slash ( Usul::File::slash() );
+    #ifdef _MSC_VER
+      std::string file ( filename );
+    #else
+      std::string slash ( Usul::File::slash() );
+      std::string file ( _dir + slash + filename );
+    #endif
+
+  if( !Usul::Predicates::FileExists::test ( file + ".tdf" ) )
   {
-    const std::string output = filename + ".tdf";
-    if ( 0x0 == _document )
+    const std::string output = file + ".tdf";
+    if ( 0x0 == _newDocument )
       return false;
 
     std::cout << "Saving file: " << output << " ... " << std::endl;
@@ -539,24 +555,13 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   if ( false == _tb() )
     return;
 
-  // Check for new document.
-  if ( true == _newDocument.valid() )
+  // Check for new document
+  if (true == _newDocument.valid() )
   {
-    Guard guard ( this->mutex() );
-    _currentDocument = _newDocument;
-    _newDocument = 0x0;
-    Usul::Interfaces::IBuildScene::QueryPtr build ( _currentDocument );
-    if ( true == build.valid() )
-    {
-      OsgTools::Group::removeAllChildren ( _terrain.get() );
-      OsgTools::Triangles::TriangleSet::Options opt;
-      opt[ "normals" ] = "per-vertex";
-      opt[ "colors" ]  = "per-vertex";
-      _terrain->addChild ( build->buildScene ( opt, caller ) );
-    }
+    this->_loadCurrentFileFromDocument( caller );
     return;
   }
-
+  
   //Guard guard ( this->mutex() );      
   // Get a list of files in the directory _dir, with the extension _ext
   std::string dir, ext, prefix;
@@ -576,10 +581,6 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     Guard guard ( this->mutex() );
     _numFilesInDirectory = 0;
   }
-
-  // Debugging -- output the files found in the given directory
-  //std::copy ( files.begin(), files.end(), std::ostream_iterator<std::string> ( std::cout, "; " ) );
-  //std::cout << std::endl;
 
   // Make sure we have some files and that they are different from our last look
   // at the directory.
@@ -657,8 +658,10 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
       std::string root = filename.substr( 0, filename.size() - 4 );
           
       // load the map file
+      
       LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, caller ) );
-      Usul::Jobs::Manager::instance().add ( job.get() );  
+      Usul::Jobs::Manager::instance().add ( job.get() );
+    
     } 
   }
 }
@@ -934,6 +937,64 @@ bool DynamicLandDocument::_readParameterFile( XmlTree::Node &node, Unknown *call
   return true;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Dynamic Land Model Job Constructor..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::_loadCurrentFileFromDocument( Usul::Interfaces::IUnknown *caller )
+{
+  Guard guard ( this->mutex() );
+  _currentDocument = _newDocument;
+  _newDocument = 0x0;
+  Usul::Interfaces::IBuildScene::QueryPtr build ( _currentDocument );
+  if ( true == build.valid() )
+  {
+    OsgTools::Group::removeAllChildren ( _terrain.get() );
+    OsgTools::Triangles::TriangleSet::Options opt;
+    opt[ "normals" ] = "per-vertex";
+    opt[ "colors" ]  = "per-vertex";
+    _terrain->addChild ( build->buildScene ( opt, caller ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the next time step
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::_loadNextTimeStep()
+{
+ 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the previous time step  
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::_loadPrevTimeStep()
+{
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int DynamicLandDocument::currentFilePosition ()
+{
+  Guard guard ( this->mutex() );
+  return this->_currFileNum;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -976,7 +1037,20 @@ void DynamicLandDocument::LoadDataJob::_started ()
     _document->_loadTexture( _filename + ".png", this->progress() );
 
     // write a tdf of the loaded terrain for faster loading on revisit
-    //this->writeTDF ( _filename );
+    _document->writeTDF ( _filename, _caller );
+#if 0
+    Usul::Interfaces::IBuildScene::QueryPtr build ( _document );
+    if ( true == build.valid() )
+    {
+      OsgTools::Group::removeAllChildren ( _terrain.get() );
+      OsgTools::Triangles::TriangleSet::Options opt;
+      opt[ "normals" ] = "per-vertex";
+      opt[ "colors" ]  = "per-vertex";
+      _document->_timeStepPool.at ( _document->currentFilePosition() )->addChild ( build->buildScene ( opt, caller ) );
+    }
+    
+#endif
+
   }
 }
 
@@ -990,6 +1064,8 @@ DynamicLandDocument::CommandList DynamicLandDocument::getCommandList()
   std::cout << me.get () << std::endl;
 
   cl.push_back( new NextTimestep( me.get() ) );
+  cl.push_back( new PrevTimestep( me.get() ) );
+  cl.push_back( new LoadTimestep( me.get() ) );
   return cl;
 
 }

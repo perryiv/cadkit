@@ -57,6 +57,12 @@ public:
   OsgTools::Animate::Settings*         settings();
   const OsgTools::Animate::Settings*   settings() const;
 
+  /// Get the min date.
+  const OsgTools::Animate::Date &      minDate () { return _minDate; }
+
+  /// Get the max date.
+  const OsgTools::Animate::Date &      maxDate () { return _maxDate; }
+
 protected:
   virtual ~DateGroup();
 

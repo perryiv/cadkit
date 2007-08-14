@@ -369,9 +369,8 @@ void Application::_init()
   this->_initStatusBar();
 
   // Turn on navigation.
-  //this->_setNavigator(); // This breaks time-based navigation. TODO, fix.
-  this->_handleNavigationEvent( NAVIGATE_NO_NAV );   // activate default navigation
-                                                          // TODO: read from _pref
+  this->_handleNavigationEvent( NAVIGATE_NO_NAV );
+
   // Note: we cannot initialize the text yet because the viewport has not been set.
 }
 
@@ -581,13 +580,19 @@ void Application::_initMenu()
   osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
   
   mt->setMatrix ( mm );
- // mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+
+  // Make sure that we don't need this on linux before removing it.
+#ifndef _MSC_VER
+  mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+#endif
+
   mt->setName ( "MenuBranch" );
 
-  //if ( true == this->_isHeadNode() )
-  //{
+  // This needs to be here or it will show on every node.
+  if ( true == this->_isHeadNode() )
+  {
     osgMenu->scene ( mt.get() );
-  //}
+  }
 
   // Get the state set.
   osg::ref_ptr < osg::StateSet > ss ( mt->getOrCreateStateSet() );
@@ -732,7 +737,7 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
 {
   menu->append ( this->_createToggle ( "Frame Dump", MenuKit::memFunCB2 ( this, &Application::_dumpFrames ) ) );
   menu->append ( this->_createButton ( "Reset Clipping", MenuKit::memFunCB2 ( this, &Application::_resetClipping ) ) );
-  menu->append ( this->_createToggle ( "Set Home", MenuKit::memFunCB2 ( this, &Application::_setAsHome ) ) );
+  menu->append ( this->_createButton ( "Set Home", MenuKit::memFunCB2 ( this, &Application::_setAsHome ) ) );
   menu->append ( this->_createSeperator () );
 
   // Rendering passes menu.
@@ -1141,9 +1146,6 @@ void Application::_latePreFrame()
 
   // Use the scene-tool if we are supposed to.
   this->_useSceneTool();
-
-  // Navigate if we are supposed to.
-  this->_navigate();
 }
 
 
@@ -1269,16 +1271,14 @@ bool Application::_handleNavigationEvent( unsigned long id )
   const unsigned long walkID ( 1084438120u );                 // comes from AppCallback.cpp
   bool handled ( false );
   
-  if(_intersector) return false;                              // skip this code if we're in an intersection mode
+  // Return if we are in intersect mode.
+  if( _intersector.valid () )
+    return false;
 
-  unsigned long mode ( id );                                  // Button release event
-
-  if ( id )                                                   // if mode NOT specified with function call ...
-    mode = id;                                                // ... get information from buttons
-
-  switch ( mode )                                             // which button was used???
+  // Switch on button id.
+  switch ( id )
   {
-    case NAVIGATE_TOGGLE :                                    // BUTTON_YELLOW, if not walking, set walk ...
+    case NAVIGATE_TOGGLE:                                    // BUTTON_YELLOW, if not walking, set walk ...
       std::cout << "TOGGLE: ";                                //                if walking, set pole
       if ( _navigatorH.valid() &&                             // IF h and v control are valid
            _navigatorV.valid() &&                             // AND both set to walkID
@@ -1293,7 +1293,9 @@ bool Application::_handleNavigationEvent( unsigned long id )
         this->_poleNav ( nav_message, nav_item );             // activate navigation (POLE)
         handled = true;                                       // button event has been handled
       }
-      else                                                    // if anything else, set navigation to WALK
+
+      // Set to walk mode...
+      else
       {
         std::cout << "WALK" << std::endl;
         _navigatorH = 0x0;                                    // invalidate response to horizontal joystick
@@ -1323,7 +1325,7 @@ bool Application::_handleNavigationEvent( unsigned long id )
       handled = false;                                        // button event has NOT been handled
   };
 
-  return handled;  // if false, button event was not handled (doesn't effect navigation)
+  return handled;
 }
 
 
@@ -1692,6 +1694,9 @@ void Application::_navigate()
   // If we have a valid tool then we don't navigate.
   if ( _sceneTool.valid() )
     return;
+
+  // Call the base class
+  BaseClass::_navigate ();
 
   // Tell the horizontal-input navigator to execute.
   if ( _navigatorH.valid() )

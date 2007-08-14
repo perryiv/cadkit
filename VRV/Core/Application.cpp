@@ -13,6 +13,7 @@
 #include "VRV/Core/Exceptions.h"
 #include "VRV/Common/Buttons.h"
 #include "VRV/Jobs/LoadModel.h"
+#include "VRV/Functors/Pair.h"
 
 #include "Usul/App/Application.h"
 #include "Usul/Errors/Assert.h"
@@ -76,6 +77,7 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _updateListeners ( ),
   _commandQueue    (),
   _frameDump       (),
+  _navigator       ( 0x0 ),
   _refCount        ( 0 )
 {
   USUL_TRACE_SCOPE;
@@ -319,6 +321,8 @@ void Application::contextInit()
 
 void Application::contextClose()
 {
+  USUL_TRACE_SCOPE;
+
   RendererPtr renderer ( *_renderer );
 
   // Clean up context specific data.
@@ -761,6 +765,9 @@ void Application::latePreFrame()
 
   // Send any notifications.
   _joystick->notify();
+
+  // Navigate if we are supposed to.
+  this->_navigate ();
 
   if ( _databasePager.valid () && _framestamp.valid() )
   {
@@ -1944,4 +1951,203 @@ void Application::buttonPressNotify ( Usul::Interfaces::IUnknown * )
 void Application::buttonReleaseNotify ( Usul::Interfaces::IUnknown * )
 {
   USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Navigate if we are supposed to.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_navigate()
+{
+  USUL_TRACE_SCOPE;
+
+  // Tell the navigator to execute.
+  if ( _navigator.valid() )
+    (*_navigator)();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::navigator ( Functor * functor )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _navigator = functor;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::Functor * Application::navigator ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _navigator.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Application::Functor * Application::navigator () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _navigator.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the navigator as a pair.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_setNavigator ( Functor *first, Functor *second, unsigned int id )
+{
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+  this->navigator ( new VRV::Functors::Pair ( me.get(), first, second, id ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the first navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_firstNavigator ( Functor *first )
+{
+  // Get the current navigator.
+  FunctorPtr functor ( this->navigator () );
+
+  // Check to see if it's a pair.
+  if ( VRV::Functors::Pair *pair = dynamic_cast < VRV::Functors::Pair * > ( functor.get() ) )
+  {
+    pair->first ( first );
+  }
+  else
+  {
+    this->_setNavigator ( first, _navigator.get(), 0 );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the first navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::Functor * Application::_firstNavigator ()
+{
+  // Get the current navigator.
+  FunctorPtr functor ( this->navigator () );
+
+  // Check to see if it's a pair.
+  if ( VRV::Functors::Pair *pair = dynamic_cast < VRV::Functors::Pair * > ( functor.get() ) )
+  {
+    return pair->first ( );
+  }
+
+  // Not a pair.  Return navigator.
+  return this->navigator();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the first navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Application::Functor * Application::_firstNavigator () const
+{
+  // Check to see if it's a pair.
+  if ( const VRV::Functors::Pair *pair = dynamic_cast < const VRV::Functors::Pair * > ( this->navigator () ) )
+  {
+    return pair->first ( );
+  }
+
+  // Not a pair.  Return navigator.
+  return this->navigator();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the second navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_secondNavigator ( Functor *second )
+{
+  // Get the current navigator.
+  FunctorPtr functor ( this->navigator () );
+
+  // Check to see if it's a pair.
+  if ( VRV::Functors::Pair *pair = dynamic_cast < VRV::Functors::Pair * > ( functor.get() ) )
+  {
+    pair->second ( second );
+  }
+  else
+  {
+    this->_setNavigator ( _navigator.get(), second, 0 );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the second navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::Functor * Application::_secondNavigator ()
+{
+  // Get the current navigator.
+  FunctorPtr functor ( this->navigator () );
+
+  // Check to see if it's a pair.
+  if ( VRV::Functors::Pair *pair = dynamic_cast < VRV::Functors::Pair * > ( functor.get() ) )
+  {
+    return pair->second ( );
+  }
+
+  // Not a pair.  Return navigator.
+  return this->navigator();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the second navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Application::Functor * Application::_secondNavigator () const
+{
+  // Check to see if it's a pair.
+  if ( const VRV::Functors::Pair *pair = dynamic_cast < const VRV::Functors::Pair * > ( this->navigator ()  ) )
+  {
+    return pair->second ( );
+  }
+
+  // Not a pair.  Return navigator.
+  return this->navigator();
 }

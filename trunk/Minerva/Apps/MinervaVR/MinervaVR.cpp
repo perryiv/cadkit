@@ -25,7 +25,7 @@
 
 #include "VRV/Core/JugglerFunctors.h"
 
-#include "VrjCore/OssimInteraction.h"
+#include "OssimInteraction.h"
 
 #include <fstream>
 
@@ -311,7 +311,7 @@ void MinervaVR::appSceneInit()
   mModelGroupNode->addChild ( _document->buildScene( Usul::Documents::Document::Options () ) );
 
   // Create and set-up the interactor.
-  VrjCore::OssimInteraction *interactor = new VrjCore::OssimInteraction();
+  VrjCore::OssimInteraction *interactor = new VrjCore::OssimInteraction( _document );
 
   // Add the compass.
   //if( "viz0" == Usul::System::Host::name() )

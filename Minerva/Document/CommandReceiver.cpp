@@ -151,10 +151,15 @@ void CommandReceiver::_processCommands ( Usul::Interfaces::IUnknown *caller )
 
   // Get the result.
   pqxx::result result ( _connection->executeQuery ( query.str(), _timeout ) );
+ 
+  if ( result.size() > 0 )
+    std::cout << "Processing " << result.size() << " commands." << std::endl;
 
   // While we have more work to do...
   for ( pqxx::result::const_iterator iter = result.begin(); iter != result.end(); ++iter )
   {
+    std::cout << "Processing command " << iter - result.begin() << " of " << result.size() << " commands." << std::endl;
+
     // Get the id of the row we are processing.
     unsigned int rowId ( iter["id"].as < unsigned int > () );
 

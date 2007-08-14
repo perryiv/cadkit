@@ -865,10 +865,16 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
 
 void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
 {
+  USUL_TRACE_SCOPE;
+
   this->_addLayer ( layer );
 
-  // Add the layer to our list.
-  _layers.push_back( layer );
+  {
+    Guard guard ( this->mutex() );
+
+    // Add the layer to our list.
+    _layers.push_back( layer );
+  }
 }
 
 
@@ -889,8 +895,11 @@ void MinervaDocument::_addLayer ( Usul::Interfaces::ILayer * layer )
     }
     else
     {
-      _sceneManager->addLayer( layer );
-      _sceneManager->dirty ( true );
+      if ( _sceneManager.valid () )
+      {
+        _sceneManager->addLayer( layer );
+        _sceneManager->dirty ( true );
+      }
     }
   }
   catch ( const std::exception& e )
@@ -1176,7 +1185,10 @@ namespace Detail
     virtual void _started ()
     {
       if ( _receiver.valid () )
+      {
+        std::cout << "Processing Commands" << std::endl;
         _receiver->processCommands ( _caller.get () );
+      }
     }
 
   private:
@@ -1207,7 +1219,9 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   // Check to see if we should receive commands...
   if ( _commandsReceive && _commandUpdate () && jobFinished )
   {
-    Usul::Jobs::Manager::instance().add ( new Detail::CheckForCommands ( caller, _receiver.get() ) );
+    Usul::Jobs::Job::RefPtr job ( new Detail::CheckForCommands ( caller, _receiver.get() ) );
+    Usul::Jobs::Manager::instance().add ( job.get () );
+    _commandJob = job;
   }
 }
 

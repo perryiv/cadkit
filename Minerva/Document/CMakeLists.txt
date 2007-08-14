@@ -50,8 +50,8 @@ SET (SOURCES
 ADD_LIBRARY( MinervaDocument SHARED ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( MinervaDocument Usul OsgTools Magrathea SerializeXML XmlTree )
-TARGET_LINK_LIBRARIES(Minerva
+LINK_CADKIT( MinervaDocument Usul OsgTools Magrathea SerializeXML XmlTree Minerva )
+TARGET_LINK_LIBRARIES( MinervaDocument
 	${Boost_LIBRARIES}
 	${PQXX_LIB}
 	${OPENTHREADS_LIB}

@@ -76,6 +76,8 @@ namespace osg
   class Light;
 };
 
+namespace VRV { namespace Functors { class Transform; } }
+
 namespace VRV {
 namespace Core {
 
@@ -114,6 +116,8 @@ public:
   typedef VRV::Devices::ButtonGroup            Buttons;
   typedef VRV::Devices::TrackerDevice          Tracker;
   typedef VRV::Devices::JoystickDevice         Joystick;
+  typedef VRV::Functors::BaseFunctor           Functor;
+  typedef VRV::Functors::Transform             Transform;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -198,6 +202,12 @@ public:
   /// Get/Set the frame dump flag.
   void                    frameDump ( bool b );
   bool                    frameDump () const;
+
+  /// Get/Set the navigator.
+  void                    navigator ( Functor * );
+  Functor *               navigator ();
+  const Functor *         navigator () const;
+
 protected:
 
   /// VR Juggler methods.
@@ -251,6 +261,22 @@ protected:
 
   /// Process commands.
   void                    _processCommands ();
+
+  /// Navigate.
+  virtual void            _navigate ();
+
+  /// Set the navigator as a pair.
+  void                    _setNavigator ( Functor *first, Functor *second, unsigned int id );
+
+  /// Get/Set the first navigator.
+  void                    _firstNavigator ( Functor *first );
+  Functor *               _firstNavigator ();
+  const Functor *         _firstNavigator () const;
+
+  /// Get/Set the second navigator.
+  void                    _secondNavigator ( Functor *second );
+  Functor *               _secondNavigator ();
+  const Functor *         _secondNavigator () const;
 
   /// VRV::Interfaces::IClippingDistanceFloat
   /// Get/set the clipping distances.
@@ -405,6 +431,8 @@ private:
   CommandQueue                           _commandQueue;
 
   OsgTools::Render::FrameDump            _frameDump;
+
+  FunctorPtr                             _navigator;
 
   unsigned int                           _refCount;
 };

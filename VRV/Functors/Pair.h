@@ -43,6 +43,16 @@ public:
   // Have the transforms do their thing.
   virtual void          operator()();
 
+  /// Get/Set the first functor.
+  void                  first ( BaseFunctor *first );
+  BaseFunctor *         first ( );
+  const BaseFunctor *   first ( ) const;
+
+  /// Get/Set the second functor.
+  void                  second ( BaseFunctor *second );
+  BaseFunctor *         second ( );
+  const BaseFunctor *   second ( ) const;
+
 protected:
 
   virtual ~Pair();

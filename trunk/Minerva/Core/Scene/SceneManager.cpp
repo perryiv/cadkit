@@ -165,7 +165,7 @@ void SceneManager::_setUpAnimationNode()
   text->setPosition ( osg::Vec3( 5.0, _height - 25.0, 0.0 ) );
   text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
   text->setText ( "" );
-  text->setColor( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+  text->setColor( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
 
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
   geode->addDrawable( text.get() );
@@ -303,6 +303,7 @@ void SceneManager::dirty( bool b )
 
 void SceneManager::timestepType( Settings::TimestepType type )
 {
+  Guard guard ( _mutex );
   _animateNode->settings()->timestepType( type );
 }
 
@@ -315,6 +316,7 @@ void SceneManager::timestepType( Settings::TimestepType type )
 
 OsgTools::Animate::Settings::TimestepType SceneManager::timestepType( ) const
 {
+  Guard guard ( _mutex );
   return _animateNode->settings()->timestepType( );
 }
 
@@ -327,6 +329,7 @@ OsgTools::Animate::Settings::TimestepType SceneManager::timestepType( ) const
 
 void SceneManager::showPastEvents ( bool b )
 {
+  Guard guard ( _mutex );
   _animateNode->settings()->showPastDays ( b );
 }
 
@@ -339,6 +342,7 @@ void SceneManager::showPastEvents ( bool b )
 
 bool SceneManager::showPastEvents () const
 {
+  Guard guard ( _mutex );
   return _animateNode->settings()->showPastDays ();
 }
 
@@ -351,6 +355,7 @@ bool SceneManager::showPastEvents () const
 
 void SceneManager::timeWindow ( bool b )
 {
+  Guard guard ( _mutex );
   _animateNode->settings()->timeWindow ( b );
 }
 
@@ -363,6 +368,7 @@ void SceneManager::timeWindow ( bool b )
 
 bool SceneManager::timeWindow () const
 {
+  Guard guard ( _mutex );
   return _animateNode->settings()->timeWindow ();
 }
 
@@ -375,6 +381,7 @@ bool SceneManager::timeWindow () const
 
 void SceneManager::timeWindowDuration ( unsigned int days )
 {
+  Guard guard ( _mutex );
   _animateNode->settings()->windowLength ( days );
 }
 
@@ -387,6 +394,7 @@ void SceneManager::timeWindowDuration ( unsigned int days )
 
 unsigned int SceneManager::timeWindowDuration () const
 {
+  Guard guard ( _mutex );
   return _animateNode->settings()->windowLength ( );
 }
 
@@ -399,6 +407,7 @@ unsigned int SceneManager::timeWindowDuration () const
 
 void SceneManager::animationSpeed ( float speed )
 {
+  Guard guard ( _mutex );
   _animateNode->animationSpeed ( speed );
 }
 
@@ -411,6 +420,7 @@ void SceneManager::animationSpeed ( float speed )
 
 float SceneManager::animationSpeed () const
 {
+  Guard guard ( _mutex );
   return _animateNode->animationSpeed ();
 }
 
@@ -423,6 +433,7 @@ float SceneManager::animationSpeed () const
 
 void SceneManager::startAnimation()
 {
+  Guard guard ( _mutex );
   _animateNode->settings()->animate ( true );
 }
 
@@ -435,7 +446,10 @@ void SceneManager::startAnimation()
 
 void SceneManager::stopAnimation()
 {
+  Guard guard ( _mutex );
   _animateNode->settings()->animate ( false );
+  _animateNode->settings()->firstDate ( _animateNode->minDate () );
+  _animateNode->settings()->lastDate ( _animateNode->maxDate () );
 }
 
 
@@ -447,6 +461,7 @@ void SceneManager::stopAnimation()
 
 void SceneManager::pauseAnimation()
 {
+  Guard guard ( _mutex );
   _animateNode->settings()->pause ( true );
 }
 
@@ -474,12 +489,14 @@ void SceneManager::clear()
 
 void SceneManager::resize( unsigned int width, unsigned int height )
 {
-  Guard guard ( _mutex );
+  {
+    Guard guard ( _mutex );
 
-  _projectionNode->setMatrix( osg::Matrix::ortho2D( 0, width, 0, height ) );
+    _projectionNode->setMatrix( osg::Matrix::ortho2D( 0, width, 0, height ) );
 
-  _width = width;
-  _height = height;
+    _width = width;
+    _height = height;
+  }
 
   this->dirty( true );
 }
@@ -495,9 +512,11 @@ void SceneManager::addLayer ( Layer *layer )
 {
   USUL_TRACE_SCOPE;
 
-  Guard guard ( _mutex );
-
-  _layers[ layer->guid() ] = layer;
+  if( 0x0 != layer )
+  {
+    Guard guard ( _mutex );
+    _layers[ layer->guid() ] = layer;
+  }
 
   this->dirty( true );
 }
@@ -513,13 +532,14 @@ void SceneManager::removeLayer ( const std::string& guid )
 {
   USUL_TRACE_SCOPE;
 
-  Guard guard ( _mutex );
-
   Layers::iterator iter = _layers.find ( guid );
 
   if ( iter != _layers.end() )
   {
-    _layers.erase ( iter );
+    {
+      Guard guard ( _mutex );
+      _layers.erase ( iter );
+    }
     this->dirty ( true );
   }
 }
@@ -578,7 +598,10 @@ void SceneManager::showLegend( bool b )
 {
   if( b != _showLegend )
   {
-    _showLegend = b;
+    {
+      Guard guard ( _mutex );
+      _showLegend = b;
+    }
     this->dirty( true );
   }
 }
@@ -592,6 +615,7 @@ void SceneManager::showLegend( bool b )
 
 bool SceneManager::showLegend() const
 {
+  Guard guard ( _mutex );
   return _showLegend;
 }
 
@@ -604,6 +628,7 @@ bool SceneManager::showLegend() const
 
 void SceneManager::legendWidth ( float p )
 {
+  Guard guard ( _mutex );
   _legendWidth = p;
 }
 
@@ -616,6 +641,7 @@ void SceneManager::legendWidth ( float p )
 
 float SceneManager::legendWidth() const
 {
+  Guard guard ( _mutex );
   return _legendWidth;
 }
 
@@ -628,6 +654,7 @@ float SceneManager::legendWidth() const
 
 void SceneManager::legendPadding( const osg::Vec2& padding )
 {
+  Guard guard ( _mutex );
   _legendPadding = padding;
 }
 
@@ -640,6 +667,7 @@ void SceneManager::legendPadding( const osg::Vec2& padding )
 
 const osg::Vec2& SceneManager::legendPadding () const
 {
+  Guard guard ( _mutex );
   return _legendPadding;
 }
 
@@ -652,6 +680,7 @@ const osg::Vec2& SceneManager::legendPadding () const
 
 void SceneManager::legendHeightPerItem( unsigned int height )
 {
+  Guard guard ( _mutex );
   _legendHeightPerItem = height;
 }
 
@@ -664,6 +693,7 @@ void SceneManager::legendHeightPerItem( unsigned int height )
 
 unsigned int SceneManager::legendHeightPerItem() const
 {
+  Guard guard ( _mutex );
   return _legendHeightPerItem;
 }
 
@@ -676,6 +706,7 @@ unsigned int SceneManager::legendHeightPerItem() const
 
 void SceneManager::legendPosition ( LegendPosition position )
 {
+  Guard guard ( _mutex );
   _legendPosition = position;
 }
 
@@ -688,5 +719,6 @@ void SceneManager::legendPosition ( LegendPosition position )
 
 SceneManager::LegendPosition SceneManager::legendPosition () const
 {
+  Guard guard ( _mutex );
   return _legendPosition;
 }

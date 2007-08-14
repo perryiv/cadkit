@@ -31,7 +31,6 @@ INCLUDE_DIRECTORIES(
 		     ${OT_INC_DIR} 
 		     ${WMS_INC_DIR}
 		     ${OSSIM_INC_DIR}
-		     ${OSG_EPHEMERIS_INC_DIR}
 		     ${OSSIM_PLANET_INC_DIR}
 		     $ENV{PQXX_INC_DIR}
 		     )
@@ -42,13 +41,10 @@ SET (SOURCES
 ./Scene/SceneManager.cpp
 ./Functors/GradientColorFunctor.cpp
 ./Functors/SingleColorFunctor.cpp
-./Layers/RLayer.cpp
 ./Layers/PointTimeLayer.cpp
 ./Layers/LineLayer.cpp
 ./Layers/PolygonLayer.cpp
-./Layers/PolygonTimeLayer.cpp
 ./Layers/PointLayer.cpp
-./Layers/PatentLayer.cpp
 ./Layers/Layer.cpp
 ./DB/Connection.cpp
 ./DB/ConnectionPool.cpp

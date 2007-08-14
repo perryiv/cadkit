@@ -52,6 +52,7 @@ public:
   typedef OsgTools::Triangles::TriangleSet::RefPtr TriangleSetPtr;
   typedef std::vector < std::string > Files;
   typedef std::vector < std::string > StringVector;
+  typedef std::vector < osg::ref_ptr< osg::Group > > TimeStepPool;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( DynamicLandDocument );
@@ -98,6 +99,7 @@ public:
   // Usul::Interfaces::IDldNavigator
   bool                        decrementFilePosition ();
   bool                        incrementFilePosition ();
+  unsigned int                currentFilePosition ();
   bool                        loadCurrentFile( bool loadFile );
 
 
@@ -114,6 +116,11 @@ protected:
   bool                        _readParameterFile( XmlTree::Node &node, Unknown *caller );
   void                        _parseHeader( XmlTree::Node &node, Unknown *caller );
 
+  // Navigation and loading functions
+  void                        _loadCurrentFileFromDocument( Usul::Interfaces::IUnknown *caller );
+  void                        _loadNextTimeStep();
+  void                        _loadPrevTimeStep();
+
   /// Usul::Interfaces::IUpdateListener
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 
@@ -123,6 +130,7 @@ protected:
   virtual ~DynamicLandDocument();
 
 private:
+  
   float                           _cellSize;
   float                           _noDataValue;
   Usul::Math::Vec2ui              _gridSize;
@@ -141,6 +149,14 @@ private:
   std::string                     _ext;
   std::string                     _prefix;
 
+  // Navigation Variables
+  bool                            _stepForward;
+  bool                            _stepBackward;
+  bool                            _animateForward;
+  bool                            _animateBackward;
+  TimeStepPool                    _timeStepPool;
+  unsigned int                    _timeStepWindowSize;
+
   class LoadDataJob : public Usul::Jobs::Job
   {
   public:
@@ -153,9 +169,9 @@ private:
   protected:
 
     virtual void _started ();
-    DynamicLandDocument::RefPtr _document;
-    std::string _filename;
-    Usul::Interfaces::IUnknown::QueryPtr _caller;
+    DynamicLandDocument::RefPtr           _document;
+    std::string                           _filename;
+    Usul::Interfaces::IUnknown::QueryPtr  _caller;
   };
 
 

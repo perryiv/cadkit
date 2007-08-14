@@ -244,6 +244,7 @@ Application::Application ( Args &args ) :
   _colorMap["white"]  = osg::Vec4 ( 1.0,1.0,1.0,1.0 );
   _colorMap["grey"]   = osg::Vec4 ( 0.5,0.5,0.5,1.0 );
   _colorMap["black"]  = osg::Vec4 ( 0.0,0.0,0.0,1.0 );
+  _colorMap["sky_blue"] = osg::Vec4 ( 0.592156, 0.713725, 1.0, 1.0 );
 
   typedef Usul::Components::Manager Manager;
 

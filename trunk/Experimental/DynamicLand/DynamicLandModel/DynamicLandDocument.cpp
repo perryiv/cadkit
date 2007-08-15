@@ -10,6 +10,7 @@
 
 #include "Experimental/DynamicLand/DynamicLandModel/DynamicLandDocument.h"
 
+#include "Experimental/DynamicLand/DynamicLandModel/LoadNextTimestep.h"
 #include "Experimental/DynamicLand/DynamicLandModel/NextTimestep.h"
 #include "Experimental/DynamicLand/DynamicLandModel/PrevTimestep.h"
 #include "Experimental/DynamicLand/DynamicLandModel/LoadTimestep.h"
@@ -1063,6 +1064,7 @@ DynamicLandDocument::CommandList DynamicLandDocument::getCommandList()
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
   std::cout << me.get () << std::endl;
 
+  cl.push_back( new LoadNextTimestep( me.get() ) );
   cl.push_back( new NextTimestep( me.get() ) );
   cl.push_back( new PrevTimestep( me.get() ) );
   cl.push_back( new LoadTimestep( me.get() ) );

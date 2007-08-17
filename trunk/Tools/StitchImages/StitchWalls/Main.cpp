@@ -46,11 +46,11 @@ typedef Images::GIL::Actions::Stitcher<Policy> Stitcher;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Run the program.
+//  Stitch the walls.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void _run ( const Stitcher::Strings &files )
+void _stitch ( const Stitcher::Strings &files )
 {
   // Declare stitcher and add IO modules.
   Stitcher stitcher;
@@ -105,6 +105,34 @@ void _run ( const Stitcher::Strings &files )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Run the program.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int _run ( const std::string &name, Stitcher::Strings files )
+{
+  const unsigned int numFiles ( ( true == files.empty() ) ? 0 : ( ( 0 == files.size() % 7 ) ? 7 : ( ( 0 == files.size() % 5 ) ? 5 : 0 ) ) );
+  if ( 0 == numFiles )
+  {
+    std::cout << "Usage:" << name;
+    std::cout << "\n\t<infile1> <infile2> ... <infile5> [infile6 infile7]";
+    std::cout << "\n\tnumber of input files can also be multiples of 5 or 7" << std::endl;
+    return 0;
+  }
+
+  while ( false == files.empty() )
+  {
+    Stitcher::Strings input ( files.begin(), files.begin() + numFiles );
+    files.erase ( files.begin(), files.begin() + numFiles );
+    ::_stitch ( input );
+  }
+
+  return 1;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Main function.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -114,18 +142,11 @@ int main ( int argc, char **argv )
   int result ( 1 );
   const unsigned int numWalls ( static_cast<unsigned int> ( argc ) - 1 );
 
-  if ( 5 != numWalls && 7 != numWalls )
-  {
-    std::cout << "Usage:\n\t" << Usul::File::base ( argv[0] );
-    std::cout << " <infile1> <infile2> ... <infile5> [infile6 infile7]" << std::endl;
-    return result;
-  }
-
   try
   {
+    std::string name ( Usul::File::base ( argv[0] ) );
     Stitcher::Strings input ( argv + 1, argv + argc );
-    ::_run ( input );
-    result = 0;
+    result = ::_run ( name, input );
   }
 
   catch ( const std::exception &e )

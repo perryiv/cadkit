@@ -43,16 +43,33 @@ class DynamicLandDocument : public Usul::Documents::Document,
 			                      public Usul::Interfaces::ICommandList
 {
 public:
-
+  // Structs
+  struct HeaderInfo
+  {
+    float                           cellSize;
+    float                           noDataValue;
+    Usul::Math::Vec2ui              gridSize;
+    Usul::Math::Vec2f               ll;
+  };
+  
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
   typedef Usul::Documents::Document Document;
+  typedef Usul::Documents::Document::RefPtr DocumentPtr;
   typedef Usul::Documents::Manager DocManager;
   typedef DocManager::DocumentInfo Info;
   typedef OsgTools::Triangles::TriangleSet::RefPtr TriangleSetPtr;
   typedef std::vector < std::string > Files;
   typedef std::vector < std::string > StringVector;
-  typedef std::vector < osg::ref_ptr< osg::Group > > TimeStepPool;
+  typedef osg::ref_ptr< osg::Group > GroupPtr;
+  struct TimeStep
+  {
+    bool isValid, isLoading, isLoaded;
+    //DocumentPtr document;
+    GroupPtr group;
+  };
+  
+  typedef std::vector < TimeStep > TimeStepPool;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( DynamicLandDocument );
@@ -81,11 +98,9 @@ public:
   virtual Filters             filtersInsert() const;
   virtual Filters             filtersExport() const;
 
-  // Load a model file
-  bool                        load ( const std::string& filename, Usul::Interfaces::IUnknown *caller );
-
-  // Set whether or not to load the current model
-
+  
+  // toggle to denote that loading is taking place
+  void                        newFrameLoaded( bool l );  
 
   /// Read the document.
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0 );
@@ -94,14 +109,34 @@ public:
   virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const;
   
   // Write a TDF file
-  bool                        writeTDF ( const std::string& filename, Usul::Interfaces::IUnknown *caller );
+  bool                        writeTDF ( const std::string& filename, Usul::Interfaces::IUnknown *caller, Document* document );
 
   // Usul::Interfaces::IDldNavigator
   bool                        decrementFilePosition ();
   bool                        incrementFilePosition ();
   unsigned int                currentFilePosition ();
   bool                        loadCurrentFile( bool loadFile );
+  void                        animate( bool a );
+  void                        setCurrentFilePosition( unsigned int pos );
+  
+  // are we currently animating
+  bool                        isAnimating(){ return _isAnimating; };
 
+  DocumentPtr                 document();  
+
+  void                        setTimeStepFrame( unsigned int i, osg::Group * group );
+
+  HeaderInfo                  getHeaderInfo(){ return _header; };
+  bool                        isLoading( unsigned int pos );
+  void                        isLoading( unsigned int pos, bool loading );
+  bool                        isLoaded( unsigned int pos );
+  void                        isLoaded( unsigned int pos, bool loaded );
+  bool                        isValid( unsigned int pos );
+  void                        isValid( unsigned int pos, bool valid );
+  bool                        loadCurrentFile();
+  unsigned int                numFiles();
+  std::string                 getFilenameAtIndex( unsigned int index );
+  void                        removeTimeStepAtIndex( unsigned int index );
 
 protected:
 
@@ -109,9 +144,6 @@ protected:
   DynamicLandDocument ( const DynamicLandDocument & );
   DynamicLandDocument &operator = ( const DynamicLandDocument & );
 
-  bool                        _load ( const std::string& filename, Usul::Interfaces::IUnknown *caller );
-  bool                        _loadTexture ( const std::string& filename, Usul::Interfaces::IUnknown *caller );
-  void                        _openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller );
   void                        _buildScene();
   bool                        _readParameterFile( XmlTree::Node &node, Unknown *caller );
   void                        _parseHeader( XmlTree::Node &node, Unknown *caller );
@@ -120,6 +152,12 @@ protected:
   void                        _loadCurrentFileFromDocument( Usul::Interfaces::IUnknown *caller );
   void                        _loadNextTimeStep();
   void                        _loadPrevTimeStep();
+
+
+  // Animation Functions
+  bool                        _updateAnimationFrame();
+  void                        _updateAnimationFrame( bool u );
+ 
 
   /// Usul::Interfaces::IUpdateListener
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
@@ -131,16 +169,14 @@ protected:
 
 private:
   
-  float                           _cellSize;
-  float                           _noDataValue;
-  Usul::Math::Vec2ui              _gridSize;
-  Usul::Math::Vec2f               _ll;
+  HeaderInfo                      _header;
   Document::RefPtr                _currentDocument;
   Document::RefPtr                _newDocument;
   osg::ref_ptr< osg::Group >      _terrain;
 
   // Update variables
-  Usul::Policies::TimeBased       _tb;
+  Usul::Policies::TimeBased       _fileQueryDelay;
+  Usul::Policies::TimeBased       _animationDelay;
   unsigned int                    _currFileNum;
   unsigned int                    _numFilesInDirectory; 
   Files                           _files;
@@ -149,13 +185,16 @@ private:
   std::string                     _ext;
   std::string                     _prefix;
 
-  // Navigation Variables
+  // Navigation Variables 
   bool                            _stepForward;
   bool                            _stepBackward;
-  bool                            _animateForward;
-  bool                            _animateBackward;
   TimeStepPool                    _timeStepPool;
   unsigned int                    _timeStepWindowSize;
+  unsigned int                    _numTimeSteps;
+
+  //Animation Variables
+  bool                            _isAnimating;
+  bool                            _updateAnimation;
 
   class LoadDataJob : public Usul::Jobs::Job
   {
@@ -164,14 +203,27 @@ private:
 
     USUL_DECLARE_REF_POINTERS ( LoadDataJob );
 
-    LoadDataJob ( DynamicLandDocument* document, const std::string& filename, Usul::Interfaces::IUnknown *caller );
+    LoadDataJob ( DynamicLandDocument* document, const std::string& filename, Usul::Interfaces::IUnknown *caller, unsigned int i );
+    osg::Node* _buildScene( Usul::Documents::Document* document );
+    // Load a model file
+    bool       load ( Usul::Documents::Document::RefPtr document, const std::string& filename, Usul::Interfaces::IUnknown *caller );
+  
 
   protected:
 
-    virtual void _started ();
+    virtual void                          _started ();
+    bool                                  _load ( Usul::Documents::Document *document, const std::string& filename, Usul::Interfaces::IUnknown *caller );
+    void                                  _openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller );
+    bool                                  _loadTexture ( Usul::Documents::Document *document, const std::string& filename, Usul::Interfaces::IUnknown *caller );
+  
+  private:
+  
     DynamicLandDocument::RefPtr           _document;
+    Usul::Documents::Document::RefPtr     _triangleDocument;
     std::string                           _filename;
     Usul::Interfaces::IUnknown::QueryPtr  _caller;
+    unsigned int                          _index;
+    HeaderInfo                            _header;
   };
 
 

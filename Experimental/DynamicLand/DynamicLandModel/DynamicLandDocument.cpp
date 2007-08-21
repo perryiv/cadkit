@@ -14,6 +14,8 @@
 #include "Experimental/DynamicLand/DynamicLandModel/NextTimestep.h"
 #include "Experimental/DynamicLand/DynamicLandModel/PrevTimestep.h"
 #include "Experimental/DynamicLand/DynamicLandModel/LoadTimestep.h"
+#include "Experimental/DynamicLand/DynamicLandModel/StartAnimation.h"
+#include "Experimental/DynamicLand/DynamicLandModel/StopAnimation.h"
 
 #include "Usul/Interfaces/IColorsPerVertex.h"
 #include "Usul/Interfaces/IDisplaylists.h"
@@ -75,14 +77,11 @@ private:
 
 DynamicLandDocument::DynamicLandDocument() : 
   BaseClass ( "Dynamic Land Document" ),
-  _cellSize ( 0 ),
-  _noDataValue ( 0 ),
-  _gridSize ( 0, 0 ),
-  _ll ( 0, 0 ),
   _currentDocument ( 0x0 ),
   _newDocument ( 0x0 ),
   _terrain ( new osg::Group ),
-  _tb ( 1000 ),
+  _fileQueryDelay ( 1000 ),
+  _animationDelay ( 2000 ),
   _currFileNum ( 0 ),
   _numFilesInDirectory ( 0 ), 
   _files( 0x0 ),
@@ -92,12 +91,16 @@ DynamicLandDocument::DynamicLandDocument() :
   _prefix ( "" ),
   _stepForward ( false ),
   _stepBackward ( false ),
-  _animateForward ( false ),
-  _animateBackward ( false ),
   _timeStepPool ( 0x0 ),
-  _timeStepWindowSize ( 0 )
+  _timeStepWindowSize ( 1 ),
+  _isAnimating ( false ),
+  _updateAnimation ( false )
 {
   USUL_TRACE_SCOPE;
+  _header.cellSize = 0;
+  _header.noDataValue = 0;
+  _header.gridSize = Usul::Math::Vec2ui( 0, 0 );
+  _header.ll = Usul::Math::Vec2f( 0, 0 );
 }
 
 
@@ -152,36 +155,46 @@ Usul::Interfaces::IUnknown *DynamicLandDocument::queryInterface ( unsigned long 
 }
 
 
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Cycle up our list of files matching our search criteria
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-  bool DynamicLandDocument::incrementFilePosition ()
+bool DynamicLandDocument::incrementFilePosition ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if( true == _files.empty() )
   {
-    USUL_TRACE_SCOPE;
-    Guard guard ( this->mutex() );
-    if( true == _files.empty() )
+    std::cout << "_files invalid" << std::endl;
+    return false;
+  }
+  else
+  {
+    if( _currFileNum < _files.size() - 1 && _files.size() > 0 )
     {
-      std::cout << "_files invalid" << std::endl;
-      return false;
+      int index = this->currentFilePosition() - this->_timeStepWindowSize;
+      if( index < 0 )
+         index = this->numFiles() + index;
+      this->removeTimeStepAtIndex( static_cast< unsigned int > ( index ) );
+      ++_currFileNum;
+      std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
+      return true;
     }
     else
     {
-      if( _currFileNum < _files.size() - 1 && _files.size() > 0 )
+      if( _files.size() > 0 )
       {
-        ++_currFileNum;
-        std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
+        _currFileNum = 0;
         return true;
       }
       else
         return false;
     }
-
   }
+
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -190,27 +203,39 @@ Usul::Interfaces::IUnknown *DynamicLandDocument::queryInterface ( unsigned long 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-  bool DynamicLandDocument::decrementFilePosition ()
+bool DynamicLandDocument::decrementFilePosition ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if( true == _files.empty() )
   {
-    USUL_TRACE_SCOPE;
-    Guard guard ( this->mutex() );
-    if( true == _files.empty() )
+    std::cout << "_files invalid" << std::endl;
+    return false;
+  }
+  else
+  {
+    if( _currFileNum > 0 && _files.size() > 0 )
     {
-      std::cout << "_files invalid" << std::endl;
-      return false;
+      int index = this->currentFilePosition() + this->_timeStepWindowSize;
+      if( index > static_cast< int > ( this->numFiles() ) )
+         index = 0 + index - static_cast< int > ( this->numFiles() );
+      this->removeTimeStepAtIndex( static_cast< unsigned int > ( index ) );
+      --_currFileNum;
+      std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
+      return true;
     }
     else
     {
-      if( _currFileNum > 0 && _files.size() > 0 )
+      if( _files.size() > 0 )
       {
-        --_currFileNum;
-        std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
+        _currFileNum = _files.size() - 1;
         return true;
       }
       else
         return false;
     }
   }
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -233,6 +258,7 @@ Usul::Interfaces::IUnknown *DynamicLandDocument::queryInterface ( unsigned long 
     else
       return false;
   }
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -381,6 +407,14 @@ DynamicLandDocument::Filters DynamicLandDocument::filtersInsert() const
   return this->filtersOpen();
 }
 
+DynamicLandDocument::DocumentPtr DynamicLandDocument::document()
+{
+  Guard guard ( this->mutex() );
+  if( 0x0 != this->_newDocument )
+    return _newDocument.get();
+  else
+    return _currentDocument.get();
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -420,30 +454,28 @@ osg::Node *DynamicLandDocument::buildScene ( const BaseClass::Options &options, 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DynamicLandDocument::_buildScene()
+osg::Node* DynamicLandDocument::LoadDataJob::_buildScene( Usul::Documents::Document* document )
 {
   USUL_TRACE_SCOPE;
-#if 0
-  Guard guard ( this->mutex() );
-
+  osg::ref_ptr< osg::Group > group ( new osg::Group );
+#if 1
+  //Guard guard ( this->mutex() );
+  
   // Disable materials in the TriangleSet
-
+  
 
   //Debugging...
   std::cout << "Query Interface..." << std::endl;
 
    // Get interface to build scene.
-  Usul::Interfaces::IBuildScene::QueryPtr build ( _document );
+  Usul::Interfaces::IBuildScene::QueryPtr build ( document );
   
   if ( true == build.valid() )
   {
     //Debugging...
     std::cout << "Build Valid... Removing Children..." << std::endl;
     //Remove the old triangle set from the group
-    {
-      Guard guard ( this->mutex() );
-      _terrain->removeChild( 0, _terrain->getNumChildren() );
-    }
+    
     
     //Debugging...
     std::cout << "Children removed.  Setting options..." << std::endl;
@@ -457,10 +489,9 @@ void DynamicLandDocument::_buildScene()
 
     // tell Triangle set to build its scene and assign the resulting node
     // to our internal node.
-    {
-      Guard guard ( this->mutex() );
-      _terrain->addChild( build->buildScene( opt, 0x0 ) );
-    }
+    
+    group->addChild( build->buildScene( opt, 0x0 ) );
+    
 
     // Disable Material Usage
     /*Usul::Interfaces::IMaterials::QueryPtr mat ( _document );
@@ -500,6 +531,7 @@ void DynamicLandDocument::_buildScene()
  
   }
 #endif
+  return group.release();
 }
 
 
@@ -511,11 +543,11 @@ void DynamicLandDocument::_buildScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DynamicLandDocument::writeTDF ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
+bool DynamicLandDocument::writeTDF ( const std::string& filename, Usul::Interfaces::IUnknown *caller, Document* document )
 {
   USUL_TRACE_SCOPE;
-#if 0
-  Guard guard ( this->mutex() );
+#if 1
+  //Guard guard ( this->mutex() );
   // Ask the document write a TDF file.
   std::string slash ( Usul::File::slash() );
     #ifdef _MSC_VER
@@ -528,11 +560,11 @@ bool DynamicLandDocument::writeTDF ( const std::string& filename, Usul::Interfac
   if( !Usul::Predicates::FileExists::test ( file + ".tdf" ) )
   {
     const std::string output = file + ".tdf";
-    if ( 0x0 == _newDocument )
+    if ( 0x0 == document )
       return false;
 
     std::cout << "Saving file: " << output << " ... " << std::endl;
-    _newDocument->saveAs ( output, 0x0 );
+    document->saveAs ( output, caller );
     std::cout << "Done" << std::endl;
   }
   else
@@ -553,17 +585,33 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   USUL_TRACE_SCOPE;
   
   // If the wait time has expired...
-  if ( false == _tb() )
+  if ( false == _fileQueryDelay() )
     return;
 
+  if( true == _animationDelay() && true == this->_updateAnimationFrame() )
+  {    
+      if( false == this->incrementFilePosition() )
+      {
+        this->setCurrentFilePosition( 0 );
+      }
+      this->loadCurrentFile( true );
+      this->_updateAnimationFrame( false );
+   }
   // Check for new document
-  if (true == _newDocument.valid() )
+ /* if ( true == _newDocument.valid() )
   {
     this->_loadCurrentFileFromDocument( caller );
     return;
+  }*/
+
+
+  if( true == this->isValid( this->currentFilePosition() ) &&
+      false == this->isLoading( this->currentFilePosition() ) &&
+      true == this->loadCurrentFile() )
+  {
+    this->_loadNextTimeStep();
   }
-  
-  //Guard guard ( this->mutex() );      
+   
   // Get a list of files in the directory _dir, with the extension _ext
   std::string dir, ext, prefix;
   Files files;
@@ -638,6 +686,43 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
   }
   {
+    
+#if 1
+    //Load files...
+    int start = this->currentFilePosition() - this->_timeStepWindowSize;
+    int end = this->currentFilePosition() + this->_timeStepWindowSize;
+    for( int i = start; i <= end; ++i )
+    {
+      unsigned int index = 0;
+      if( i < 0 )
+      {
+        index = this->numFiles() + i;
+      }
+      else
+      {
+        if( i > static_cast< int > ( this->numFiles() ) )
+        {
+          index = 0 + i - this->numFiles();
+        }
+        else
+        {
+          index = static_cast< int > ( i );
+        }
+      }
+      if( false == this->isValid( index ) &&
+          false == this->isLoading( index ) &&
+          false == this->isLoaded( index ) )
+      {
+        // Get the file name
+        std::string filename = this->getFilenameAtIndex( index );
+        // strip the extension from the map file name
+        std::string root = filename.substr( 0, filename.size() - 4 );
+        this->isLoading( index, true );
+        LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, caller, index ) );
+        Usul::Jobs::Manager::instance().add ( job.get() );
+      }
+    }
+#else
     Files tempFiles;
     unsigned int currFileNum = 0;
     bool loadNewMap;
@@ -647,6 +732,7 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
       currFileNum = _currFileNum;
       loadNewMap = _loadNewMap;
     }
+
     if( loadNewMap && tempFiles.size() > 0 )
     {
       // Do not load a anther map
@@ -659,11 +745,19 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
       std::string root = filename.substr( 0, filename.size() - 4 );
           
       // load the map file
-      
-      LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, caller ) );
-      Usul::Jobs::Manager::instance().add ( job.get() );
+      if( this->isAnimating() )
+      {
+        LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, 0x0, this->currentFilePosition() ) );
+        Usul::Jobs::Manager::instance().add ( job.get() );
+      }
+      else
+      {
+        LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, caller, this->currentFilePosition() ) );
+        Usul::Jobs::Manager::instance().add ( job.get() );
+      }
     
     } 
+#endif
   }
 }
 
@@ -674,7 +768,7 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DynamicLandDocument::load ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
+bool DynamicLandDocument::LoadDataJob::load ( Usul::Documents::Document::RefPtr document, const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   #ifdef _MSC_VER
@@ -686,27 +780,26 @@ bool DynamicLandDocument::load ( const std::string& filename, Usul::Interfaces::
   if( Usul::Predicates::FileExists::test ( file + ".tdf" ) )
   {
     std::cout << "\nFound " << file + ".tdf" << std::endl;
-    this->_load( file + ".tdf", caller );
+    this->_load( document, file + ".tdf", caller );
   }
   else
   {
     std::cout << "\n" << file + ".tdf" << " not found." << std::endl;
-    this->_load( file + ".asc", caller );
+    this->_load( document, file + ".asc", caller );
   }
 
   return true;
 }
 
-
-bool DynamicLandDocument::_load( const std::string& filename, Usul::Interfaces::IUnknown *caller )
+bool DynamicLandDocument::LoadDataJob::_load( Usul::Documents::Document *document, const std::string &filename, Usul::Interfaces::IUnknown *caller ) 
 {
   USUL_TRACE_SCOPE;
 
-  if ( true == _newDocument.valid() )
-  {
-    USUL_ASSERT ( false );
-    return false;
-  }
+  //if ( 0x0 == document )
+  //{
+  //  USUL_ASSERT ( false );
+  //  return false;
+  //}
 
 #if 0
 #ifdef _DEBUG
@@ -723,24 +816,24 @@ bool DynamicLandDocument::_load( const std::string& filename, Usul::Interfaces::
 #endif
   // This will create a new document.
   Info info ( DocManager::instance().find ( filename, caller ) );
-  Document::RefPtr document ( info.document );
+  Document::RefPtr doc ( info.document );
 
   // Check to see if we created a document.
-  if ( false == document.valid() )
+  if ( false == doc.valid() )
   {
     throw std::runtime_error ( "Error: Could not find document for file: " + filename );
   }
 
   // Disable Memory pools
-  Usul::Interfaces::IMemoryPool::QueryPtr pool ( document );
+  Usul::Interfaces::IMemoryPool::QueryPtr pool ( doc );
   pool->usePool( false );
 
   // Ask the document to open the file.
-  this->_openDocument ( filename, document.get(), caller );
+  this->_openDocument ( filename, doc.get(), caller );
 
   {
     Guard guard ( this->mutex() );
-    _newDocument = document;
+    _triangleDocument = doc;
   }
 
   return true;
@@ -753,7 +846,7 @@ bool DynamicLandDocument::_load( const std::string& filename, Usul::Interfaces::
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DynamicLandDocument::_openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller )
+void DynamicLandDocument::LoadDataJob::_openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   //Guard guard ( this->mutex() );
@@ -775,11 +868,11 @@ void DynamicLandDocument::_openDocument ( const std::string &file, Usul::Documen
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DynamicLandDocument::_loadTexture ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
+bool DynamicLandDocument::LoadDataJob::_loadTexture ( Usul::Documents::Document *document, const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  if( false == _newDocument.valid() )
+  if( false == _triangleDocument.valid() )
   {
     USUL_ASSERT ( false );
     return false;
@@ -794,11 +887,11 @@ bool DynamicLandDocument::_loadTexture ( const std::string& filename, Usul::Inte
   {
    
     // Get color array
-    Usul::Interfaces::IColorsPerVertex::QueryPtr colorsV ( _newDocument );
+    Usul::Interfaces::IColorsPerVertex::QueryPtr colorsV ( _triangleDocument );
     osg::ref_ptr< osg::Vec4Array > colors = colorsV->getColorsV ( true );
 
     // Get vertices
-    Usul::Interfaces::IVertices::QueryPtr vertices ( _newDocument );
+    Usul::Interfaces::IVertices::QueryPtr vertices ( _triangleDocument );
     osg::ref_ptr< osg::Vec3Array > v = vertices->vertices();
 
     // make sure the number of colors is correct.
@@ -813,9 +906,9 @@ bool DynamicLandDocument::_loadTexture ( const std::string& filename, Usul::Inte
     std::cout << "Reading texture image file: " << file << std::endl;
     {
       Guard guard ( this->mutex() );
-      ll = _ll;
-      gridSize = _gridSize;
-      cellSize = _cellSize;
+      ll = _header.ll;
+      gridSize = _header.gridSize;
+      cellSize = _header.cellSize;
     }
     for( unsigned int i = 0; i < v->size(); ++i )
     {
@@ -858,7 +951,7 @@ bool DynamicLandDocument::_loadTexture ( const std::string& filename, Usul::Inte
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Parse a channel.
+//  Parse.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -873,27 +966,44 @@ void DynamicLandDocument::_parseHeader( XmlTree::Node &node, Unknown *caller )
   {
     if ( "ncols" == iter->first )
       {
-        Usul::Strings::fromString ( iter->second, _gridSize[1] );
+        Usul::Strings::fromString ( iter->second, _header.gridSize[1] );
       }
       if ( "nrows" == iter->first )
       {
-        Usul::Strings::fromString ( iter->second, _gridSize[0] );
+        Usul::Strings::fromString ( iter->second, _header.gridSize[0] );
       }
       if ( "xllcorner" == iter->first )
       {
-        Usul::Strings::fromString ( iter->second, _ll[0] );
+        Usul::Strings::fromString ( iter->second, _header.ll[0] );
       }
       if ( "yllcorner" == iter->first )
       {
-        Usul::Strings::fromString ( iter->second, _ll[1] );
+        Usul::Strings::fromString ( iter->second, _header.ll[1] );
       }
       if ( "cellsize" == iter->first )
       {
-        Usul::Strings::fromString ( iter->second, _cellSize);
+        Usul::Strings::fromString ( iter->second, _header.cellSize);
       }
       if ( "nodata" == iter->first )
       {
-        Usul::Strings::fromString ( iter->second, _noDataValue );
+        Usul::Strings::fromString ( iter->second, _header.noDataValue );
+      }
+      if ( "numsteps" == iter->first )
+      {
+        
+        Usul::Strings::fromString ( iter->second, this->_numTimeSteps );
+        _timeStepPool.resize( this->_numTimeSteps );
+        for( unsigned int i = 0; i < _numTimeSteps; i ++ )
+        {
+          TimeStep temp;
+          temp.isValid = false;
+          temp.isLoading = false;
+          temp.isLoaded = false;
+          temp.group = new osg::Group();
+
+          _timeStepPool.at( i ) = temp;
+        }
+
       }
   }
 }
@@ -933,6 +1043,7 @@ bool DynamicLandDocument::_readParameterFile( XmlTree::Node &node, Unknown *call
       this->_parseHeader( *node, caller );
     }
     
+    
   }
   
   return true;
@@ -946,8 +1057,12 @@ bool DynamicLandDocument::_readParameterFile( XmlTree::Node &node, Unknown *call
 
 void DynamicLandDocument::_loadCurrentFileFromDocument( Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+  std::cout << "Building Scene..." << std::endl;
+  //_currentDocument->clear();
   _currentDocument = _newDocument;
+  //_newDocument->clear();
   _newDocument = 0x0;
   Usul::Interfaces::IBuildScene::QueryPtr build ( _currentDocument );
   if ( true == build.valid() )
@@ -958,6 +1073,13 @@ void DynamicLandDocument::_loadCurrentFileFromDocument( Usul::Interfaces::IUnkno
     opt[ "colors" ]  = "per-vertex";
     _terrain->addChild ( build->buildScene ( opt, caller ) );
   }
+  else
+  {
+    std::cout << "Build Invalid!" << std::endl;
+  }
+  std::cout << "Scene Built!" << std::endl;
+  if( true == this->isAnimating() )
+    this->_updateAnimationFrame( true );
 }
 
 
@@ -969,7 +1091,16 @@ void DynamicLandDocument::_loadCurrentFileFromDocument( Usul::Interfaces::IUnkno
 
 void DynamicLandDocument::_loadNextTimeStep()
 {
- 
+  Guard guard ( this->mutex() );
+  _terrain->removeChild( 0, _terrain->getNumChildren() );
+  osg::ref_ptr< osg::Group > group ( new osg::Group );
+  group = _timeStepPool.at( this->currentFilePosition() ).group;
+  _terrain->addChild( group.release() );
+  _timeStepPool.at( this->currentFilePosition() ).isLoading = false;
+  _timeStepPool.at( this->currentFilePosition() ).isValid = true;
+  //_timeStepPool.at( this->currentFilePosition() ).group = new osg::Group();
+  this->loadCurrentFile ( false );
+  this->isLoaded( true );
 }
 
 
@@ -981,7 +1112,7 @@ void DynamicLandDocument::_loadNextTimeStep()
 
 void DynamicLandDocument::_loadPrevTimeStep()
 {
-
+  Guard guard ( this->mutex() );
 }
 
 
@@ -1000,17 +1131,233 @@ unsigned int DynamicLandDocument::currentFilePosition ()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// start/stop animation
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::animate( bool a )
+{
+  Guard guard ( this->mutex() );
+  _isAnimating = a;
+  this->_updateAnimationFrame( a );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Got to time step <pos>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::setCurrentFilePosition( unsigned int pos )
+{
+  Guard guard ( this->mutex() );
+  _currFileNum = pos;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Got to time step <pos>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::newFrameLoaded( bool l )
+{
+  Guard guard ( this->mutex() );
+  _updateAnimation = l;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Is TimeStep in position pos currently loading
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DynamicLandDocument::isLoading( unsigned int pos )
+{
+  Guard guard ( this->mutex() );
+  return this->_timeStepPool.at( pos ).isLoading;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set TimeStep in position pos to value of loading
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
+void DynamicLandDocument::isLoading( unsigned int pos, bool loading )
+{
+  Guard guard ( this->mutex() );
+  this->_timeStepPool.at( pos ).isLoading = loading;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Is current TimeStep valid
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DynamicLandDocument::isValid( unsigned int pos )
+{
+  Guard guard ( this->mutex() );
+  return this->_timeStepPool.at( pos ).isValid;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set TimeStep in position pos to value of loading
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::isValid( unsigned int pos, bool valid )
+{
+  Guard guard ( this->mutex() );
+  this->_timeStepPool.at( pos ).isValid = valid;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Check to see if we are supposed to load the current file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DynamicLandDocument::loadCurrentFile()
+{
+  Guard guard ( this->mutex() );
+  return this->_loadNewMap;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the number of files with the matching prefix
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int DynamicLandDocument::numFiles()
+{
+   Guard guard ( this->mutex() );
+   return _files.size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Clear out the time step at <index>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::removeTimeStepAtIndex( unsigned int index )
+{
+  Guard guard ( this->mutex() );
+  this->_timeStepPool.at( index ).isLoaded = false;
+  this->_timeStepPool.at( index ).isLoading = false;
+  this->_timeStepPool.at( index ).isValid = false;
+  this->_timeStepPool.at( index ).group = new osg::Group();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Return the filename at <index>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string DynamicLandDocument::getFilenameAtIndex( unsigned int index )
+{
+  Guard guard ( this->mutex() );
+  return this->_files.at( index );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Is the time step at pos loaded (is it the current time step)
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DynamicLandDocument::isLoaded( unsigned int pos )
+{
+  Guard guard ( this->mutex() );
+  return this->_timeStepPool.at( pos ).isLoaded;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the status of the time step at position pos as the current time step
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::isLoaded( unsigned int pos, bool loaded )
+{
+  Guard guard ( this->mutex() );
+  this->_timeStepPool.at( pos ).isLoaded = loaded;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Setup the current animation frame
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::setTimeStepFrame( unsigned int i, osg::Group * group )
+{
+  Guard guard ( this->mutex() );
+  _timeStepPool.at( i ).isValid = true;
+  _timeStepPool.at( i ).isLoading = false;
+  _timeStepPool.at( i ).group = group;
+
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Check to see if we need to update the animation frame
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DynamicLandDocument::_updateAnimationFrame()
+{
+  return _updateAnimation;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set to update the animation frame
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::_updateAnimationFrame( bool u)
+{
+  _updateAnimation = u;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Dynamic Land Model Job Constructor..
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DynamicLandDocument::LoadDataJob::LoadDataJob ( DynamicLandDocument* document, const std::string& filename, Usul::Interfaces::IUnknown *caller ) :
+DynamicLandDocument::LoadDataJob::LoadDataJob ( DynamicLandDocument* document, const std::string& filename, Usul::Interfaces::IUnknown *caller, unsigned int i ) :
   BaseClass ( caller ),
   _document ( document ),
+  _triangleDocument ( 0x0 ),
   _filename ( filename ),
-  _caller ( caller )
+  _caller ( caller ),
+  _index ( i )
 {
   USUL_TRACE_SCOPE;
+  _header = document->getHeaderInfo();
 }
 
 
@@ -1023,22 +1370,30 @@ DynamicLandDocument::LoadDataJob::LoadDataJob ( DynamicLandDocument* document, c
 void DynamicLandDocument::LoadDataJob::_started ()
 {
   USUL_TRACE_SCOPE;
-  Usul::Interfaces::IProgressBar::ShowHide showHide  ( this->progress()   );
-  
+  Usul::Interfaces::IProgressBar::ShowHide showHide( this->progress() );
+
   // Set the label.
   this->_setLabel ( "Loading file: " + _filename );
+  
 
-  // Process all the requests.
-  bool valid = _document->load( _filename, this->progress() );
+  Usul::Documents::Document::RefPtr document;
+  
+  // Process all the requests.   
+  bool valid = this->load( document.get(), _filename, this->progress() );
 
   // if the map file is valid, load the image file for coloring
   if ( valid )
   {
     // load the image file
-    _document->_loadTexture( _filename + ".png", this->progress() );
+    this->_loadTexture( document.get(), _filename + ".png", this->progress() );
 
+    
+    osg::ref_ptr< osg::Group > group ( new osg::Group );
+    group->addChild( this->_buildScene( _triangleDocument ) );
+    _document->setTimeStepFrame( _index, group.release() );
     // write a tdf of the loaded terrain for faster loading on revisit
-    _document->writeTDF ( _filename, _caller );
+    _document->writeTDF ( _filename, this->progress(), _triangleDocument.get() );
+
 #if 0
     Usul::Interfaces::IBuildScene::QueryPtr build ( _document );
     if ( true == build.valid() )
@@ -1068,6 +1423,8 @@ DynamicLandDocument::CommandList DynamicLandDocument::getCommandList()
   cl.push_back( new NextTimestep( me.get() ) );
   cl.push_back( new PrevTimestep( me.get() ) );
   cl.push_back( new LoadTimestep( me.get() ) );
+  cl.push_back( new StartAnimation( me.get() ) );
+  cl.push_back( new StopAnimation( me.get() ) );
   return cl;
 
 }

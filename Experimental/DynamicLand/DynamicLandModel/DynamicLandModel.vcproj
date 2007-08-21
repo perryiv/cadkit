@@ -250,6 +250,18 @@
 					RelativePath=".\DynamicLandFactory.h"
 					>
 				</File>
+			</Filter>
+			<Filter
+				Name="DLL"
+				>
+				<File
+					RelativePath="Export.def"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Commands"
+				>
 				<File
 					RelativePath=".\LoadNextTimestep.cpp"
 					>
@@ -282,12 +294,20 @@
 					RelativePath=".\PrevTimestep.h"
 					>
 				</File>
-			</Filter>
-			<Filter
-				Name="DLL"
-				>
 				<File
-					RelativePath="Export.def"
+					RelativePath=".\StartAnimation.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\StartAnimation.h"
+					>
+				</File>
+				<File
+					RelativePath=".\StopAnimation.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\StopAnimation.h"
 					>
 				</File>
 			</Filter>

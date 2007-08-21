@@ -28,6 +28,8 @@
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/ICommandList.h"
 
+#include "Serialize/XML/Macros.h"
+
 #include "osg/BoundingBox"
 #include "osg/MatrixTransform"
 #include "osg/Image"
@@ -235,7 +237,18 @@ private:
   osg::ref_ptr < osg::Node > _topography;
   std::string _textureFile;
   VectorFields _vectorFields;
+  std::vector < osg::ref_ptr < osg::Node > > _vectorCache;
   osg::Vec3 _cellSize;
+  osg::Vec3 _cellScale;
+  unsigned int _cacheSize;
+
+  SERIALIZE_XML_DEFINE_MAP;
+  SERIALIZE_XML_CLASS_NAME ( WRFDocument );
+  SERIALIZE_XML_SERIALIZE_FUNCTION;
+public:
+  virtual void deserialize ( const XmlTree::Node &node );
+
+  SERIALIZE_XML_ADD_MEMBER_FUNCTION;
 };
 
 

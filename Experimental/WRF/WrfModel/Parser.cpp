@@ -28,7 +28,9 @@ Parser::Parser(  ) :
   _ySize          ( 0 ),
   _zSize          ( 0 ),
   _numTimesteps   ( 0 ),
-  _numChannels    ( 0 )
+  _numChannels    ( 0 ),
+  _numFields2D    ( 0 ),
+  _headers        ( false )
 {
 }
 
@@ -46,7 +48,9 @@ Parser::Parser( const std::string & filename ) :
   _ySize          ( 0 ),
   _zSize          ( 0 ),
   _numTimesteps   ( 0 ),
-  _numChannels    ( 0 )
+  _numChannels    ( 0 ),
+  _numFields2D    ( 0 ),
+  _headers        ( true )
 {
 }
 
@@ -64,7 +68,9 @@ Parser::Parser( const Parser& parser ) :
   _ySize          ( parser._ySize ),
   _zSize          ( parser._zSize ),
   _numTimesteps   ( parser._numTimesteps ),
-  _numChannels    ( parser._numChannels )
+  _numChannels    ( parser._numChannels ),
+  _numFields2D    ( parser._numFields2D ),
+  _headers        ( parser._headers )
 {
 }
 
@@ -102,6 +108,8 @@ Parser& Parser::operator = ( const Parser& parser )
   _zSize        = parser._zSize;
   _numTimesteps = parser._numTimesteps;
   _numChannels  = parser._numChannels;
+  _numFields2D  = parser._numFields2D;
+  _headers      = parser._headers;
 
   return *this;
 }
@@ -195,6 +203,53 @@ unsigned int Parser::channels () const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the nubmer of 2D fields.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::numFields2D ( unsigned int value )
+{
+  _numFields2D = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the nubmer of 2D fields.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Parser::numFields2D () const
+{
+  return _numFields2D;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set if the file has headers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::headers ( bool b )
+{
+  _headers = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get if the file has headers
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Parser::headers () const
+{
+  return _headers;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the requested data.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -207,13 +262,13 @@ void Parser::data ( Data& data, unsigned int timestep, unsigned int channel )
   const unsigned int sliceSize ( _xSize * _ySize );
 
   /// The file has a 4 byte footer and header per 2D slice.
-  const unsigned int sliceSizeBytes ( sliceSize * sizeof ( Usul::Types::Float32 ) + 8 );
+  const unsigned int sliceSizeBytes ( sliceSize * sizeof ( Usul::Types::Float32 ) + this->_headerSize () );
 
   // Calculate the size of a channel.
   const unsigned int channelSizeBytes ( sliceSizeBytes * _zSize );
 
   // Calculate the size of one timestep.
-  const unsigned int timestepSize ( channelSizeBytes * _numChannels + ( sizeof ( Usul::Types::Float32 ) * sliceSize + 8 ) );
+  const unsigned int timestepSize ( channelSizeBytes * _numChannels + ( sliceSizeBytes * _numFields2D ) );
 
   // Calculate the file offset.
   const Usul::Types::Uint64 offset ( ( timestepSize * timestep ) + ( channelSizeBytes * channel ) );
@@ -249,7 +304,7 @@ void Parser::topography ( Data& data )
   const unsigned int sliceSize ( _xSize * _ySize );
 
   /// The file has a 4 byte footer and header per 2D slice.
-  const unsigned int sliceSizeBytes ( sliceSize * sizeof ( Usul::Types::Float32 ) + 8 );
+  const unsigned int sliceSizeBytes ( sliceSize * sizeof ( Usul::Types::Float32 ) + this->_headerSize () );
 
   // Calculate the size of a channel.
   const unsigned int channelSizeBytes ( sliceSizeBytes * _zSize );
@@ -319,11 +374,25 @@ void Parser::_readSlice ( Data::value_type* buffer )
   unsigned int footer ( 0 );
 
   // Read the header.
-  ::fread ( &header, sizeof ( unsigned int ), 1, _fp );
+  if ( this->headers () )
+    ::fread ( &header, sizeof ( unsigned int ), 1, _fp );
 
   // Read.
   ::fread ( buffer, sizeof ( Usul::Types::Float32 ), sliceSize, _fp );
 
   // Read the footer.
-  ::fread ( &footer, sizeof ( unsigned int ), 1, _fp );
+  if ( this->headers () )
+    ::fread ( &footer, sizeof ( unsigned int ), 1, _fp );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the size of a header.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Parser::_headerSize () const
+{
+  return this->headers () ? 8 : 0;
 }

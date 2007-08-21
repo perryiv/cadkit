@@ -70,7 +70,7 @@ WRFDocument::WRFDocument() :
   _parser (),
   _filename ( "" ),
   _currentTimestep ( 0 ),
-  _currentChannel ( 0 ),
+  _currentChannel ( 2 ),
   _timesteps ( 0 ),
   _channels ( 0 ),
   _x ( 0 ),
@@ -91,8 +91,19 @@ WRFDocument::WRFDocument() :
   _offset (),
   _topography ( 0x0 ),
   _textureFile ( "" ),
-  _cellSize ( 10.0, 10.0, 3.0 )
+  _vectorCache (),
+  _cellSize ( 10.0, 10.0, 3.0 ),
+  _cellScale ( 0.001, 0.001, 0.001 ),
+  _cacheSize ( 5 )
 {
+  this->_addMember ( "filename", _filename );
+  this->_addMember ( "num_timesteps", _timesteps );
+  this->_addMember ( "num_channels", _channels );
+  this->_addMember ( "x", _x );
+  this->_addMember ( "y", _y );
+  this->_addMember ( "z", _z );
+  this->_addMember ( "texture_file", _textureFile );
+  
 }
 
 
@@ -250,6 +261,12 @@ void WRFDocument::_read ( XmlTree::Node &node, Unknown *caller )
     {
       _filename = iter->second;
     }
+    if ( "fields" == iter->first )
+    {
+      unsigned int num ( 0 );
+      Usul::Strings::fromString ( iter->second, num );
+      _parser.numFields2D ( num );
+    }
   }
 
   // Set the parser's datamembers.
@@ -262,7 +279,7 @@ void WRFDocument::_read ( XmlTree::Node &node, Unknown *caller )
   _channelInfo.resize ( _channels );
 
   Children& children ( node.children() );
-	
+
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
@@ -283,7 +300,9 @@ void WRFDocument::_read ( XmlTree::Node &node, Unknown *caller )
       this->_parseVectorField ( *node, caller );
     }
     if ( "texture" == node->name() )
+    {
       this->_parseTexture ( *node, caller );
+    }
   }
 
   // Initialize the bounding box.
@@ -294,6 +313,9 @@ void WRFDocument::_read ( XmlTree::Node &node, Unknown *caller )
   //std::for_each ( _data.begin(), _data.end(), std::bind2nd ( std::mem_fun ( &ChannelVolumes::resize ), _channels ) );
   for ( TimestepsData::iterator iter = _data.begin(); iter != _data.end(); ++iter )
     iter->resize ( _channels );
+
+  // Make enough room for the cache.
+  _vectorCache.resize ( _timesteps );
 
   // Build the topography.
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &WRFDocument::_buildTopography ), "3345743110" );
@@ -567,15 +589,15 @@ namespace Detail
 
     for ( unsigned int i = 0; i < 256; ++i )
     {
-  #if 0
+  #if 1
       *data++ = i;
       *data++ = i;
       *data++ = i;
-      *data++ = i;//i == 0 ? 0 : 5;
+      *data++ = ( i == 0 ? 0 : 10 );
   #else
       float value ( static_cast < float > ( i ) / 255 );
       float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
-      Usul::Functions::hsvToRgb ( r, g, b, value * 360, 1.0f, 1.0f );
+      Usul::Functions::hsvToRgb ( r, g, b, value * 300, 1.0f, 1.0f );
       *data++ = static_cast < unsigned char > ( r * 255 );
       *data++ = static_cast < unsigned char > ( g * 255 );
       *data++ = static_cast < unsigned char > ( b * 255 );
@@ -681,8 +703,8 @@ void WRFDocument::_buildScene ( )
     // Add the volume to the scene.
     {
       Guard guard ( this->mutex() );
-      //_volumeTransform->addChild ( this->_buildVolume ( image.get() ) );
-      _volumeTransform->addChild ( this->_buildVectorField ( _currentTimestep, _currentChannel, _currentChannel + 1 ) );
+      _volumeTransform->addChild ( this->_buildVolume ( image.get() ) );
+      //_volumeTransform->addChild ( this->_buildVectorField ( _currentTimestep, 0, 1 ) );
     }
   }
 
@@ -965,7 +987,7 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
   static unsigned int num ( 0 );
   ++num;
-  if ( this->animating() && num % 60 == 0 )
+  if ( this->animating() && num % 10 == 0 )
   {
     unsigned int currentTimestep ( this->getCurrentTimeStep () );
     this->setCurrentTimeStep ( ++currentTimestep );
@@ -1420,10 +1442,10 @@ void WRFDocument::_buildTopography ()
 
   osg::ref_ptr < osg::Material > material ( new osg::Material );
   material->setAmbient ( osg::Material::BACK,  backDiffuse );
-  material->setAmbient ( osg::Material::FRONT, frontDiffuse );
+  material->setAmbient ( osg::Material::FRONT, backDiffuse );
 
   material->setDiffuse ( osg::Material::BACK,  backDiffuse );
-  material->setDiffuse ( osg::Material::FRONT, frontDiffuse );
+  material->setDiffuse ( osg::Material::FRONT, backDiffuse );
 
   ss->setAttribute ( material.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
 
@@ -1444,6 +1466,14 @@ void WRFDocument::_buildTopography ()
 osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int channel0, unsigned int channel1 )
 {
   USUL_TRACE_SCOPE;
+
+  // Check the cache.
+  {
+    Guard guard ( this->mutex () );
+    osg::ref_ptr < osg::Node > &node ( _vectorCache.at ( timestep ) );
+    if ( node.valid () )
+      return node.get();
+  }
 
   // Check the first channel.
   if ( false == this->_dataCached ( timestep, channel0 ) )
@@ -1505,17 +1535,17 @@ osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int
   double magnitude ( ::sqrt ( ( min * min ) + ( max * max ) ) );
 
   // Loop over the rows.
-  for ( unsigned int i = 0; i < height; i += 10 )
+  for ( unsigned int i = 0; i < height; i += 1 )
   {
     float x ( -yHalf + ( i * _cellSize.x() ) );
 
     // Loop over the columns.
-    for ( unsigned int j = 0; j < width; j += 10 )
+    for ( unsigned int j = 0; j < width; j += 1 )
     {
       float y ( -xHalf + ( j * _cellSize.y() ) );
 
       // Loop over the depth
-      for ( unsigned int k = 0; k < _z; k += 10 )
+      for ( unsigned int k = 0; k < _z; k += 1 )
       {
         float z ( -zHalf + ( k * _cellSize.z() ) );
 
@@ -1530,31 +1560,50 @@ osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int
           translate += ( _cellSize / 2.0 );
 
           double value ( vector.length() / magnitude );
-          vector.normalize();
-
-          OsgTools::Builders::Arrow arrow;
-          arrow.start ( osg::Vec3 ( 0.0, 0.0, 0.0 ) );
-          arrow.end ( vector * 30 );
-          arrow.radius ( 0.75 );
-          arrow.height ( 6.0 );
-
-          float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
-          Usul::Functions::hsvToRgb ( r, g, b, static_cast < float > ( value * 300 ), 1.0f, 1.0f );
-          arrow.color ( osg::Vec4 ( r, g, b, 1.0 ) );
-
-          arrow.tessellation ( 0.25f );
+          //vector.normalize();
 
           osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
           mt->setMatrix ( osg::Matrix::translate ( translate ) );
-          mt->addChild ( arrow () );
+#if 0
+          OsgTools::Builders::Arrow arrow;
+          arrow.start ( osg::Vec3 ( 0.0, 0.0, 0.0 ) );
+          arrow.end ( vector * 10 );
+          arrow.radius ( 1.75 );
+          arrow.height ( 9.0 );
 
+          //float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
+          //Usul::Functions::hsvToRgb ( r, g, b, static_cast < float > ( value * 300 ), 1.0f, 1.0f );
+          //arrow.color ( osg::Vec4 ( r, g, b, 1.0 ) );
+          arrow.color ( osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 ) );
+
+          arrow.tessellation ( 0.25f );
+          arrow.thickness ( 3.0f );
+
+          mt->addChild ( arrow () );
+#else
+          OsgTools::Ray ray;
+          ray.start ( osg::Vec3 ( 0.0, 0.0, 0.0 ) );
+          ray.end ( vector );
+
+          ray.color ( osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 ) );
+
+          ray.thickness ( 3.0f );
+
+          mt->addChild ( ray () );
+#endif
           group->addChild ( mt.get() );
         }
       }
     }
   }
 
-  return group.release();
+  // Cache.
+  {
+    Guard guard ( this->mutex () );
+    _vectorCache.at ( timestep ) = group.get();
+  }
+
+  return group.get();
 }
 
 
@@ -1612,4 +1661,10 @@ void WRFDocument::_requestData ( unsigned int timestep, unsigned int channel, bo
 
   // Add the job to the job manager.
   Usul::Jobs::Manager::instance().add ( job.get() );
+}
+
+
+void WRFDocument::deserialize ( const XmlTree::Node &node )
+{
+  _dataMemberMap.deserialize ( node );
 }

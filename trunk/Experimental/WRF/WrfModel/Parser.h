@@ -45,11 +45,19 @@ public:
   void                           channels ( unsigned int );
   unsigned int                   channels () const;
 
+  /// Get/Set the nubmer of 2D fields.
+  void                           numFields2D ( unsigned int );
+  unsigned int                   numFields2D () const;
+
   /// Get the data for the given channel and timestep
   void                           data ( Data& data, unsigned int timestep, unsigned int channel );
 
   /// Get the topography for the data set.
   void                           topography ( Data& data );
+
+  /// Set has header flag.
+  void                           headers ( bool b );
+  bool                           headers () const;
 
 private:
   /// Open the file.
@@ -61,6 +69,9 @@ private:
   /// Read a 2D slice.
   void                           _readSlice ( Data::value_type* buffer );
 
+  /// Get the size of a header.
+  unsigned int                   _headerSize () const;
+
   std::string   _filename;
   FILE         *_fp;
   unsigned int  _xSize;
@@ -68,6 +79,8 @@ private:
   unsigned int  _zSize;
   unsigned int  _numTimesteps;
   unsigned int  _numChannels;
+  unsigned int  _numFields2D;
+  bool          _headers;
 };
 
 

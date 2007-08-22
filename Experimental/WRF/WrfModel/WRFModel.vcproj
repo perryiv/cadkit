@@ -223,6 +223,14 @@
 				Name="Implementation"
 				>
 				<File
+					RelativePath=".\Channel.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Channel.h"
+					>
+				</File>
+				<File
 					RelativePath=".\CompileGuard.h"
 					>
 				</File>

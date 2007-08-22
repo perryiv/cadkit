@@ -18,6 +18,7 @@
 #define _WRF_MODEL_DOCUMENT_H_
 
 #include "Experimental/WRF/WrfModel/Parser.h"
+#include "Experimental/WRF/WrfModel/Channel.h"
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Jobs/Job.h"
@@ -115,13 +116,6 @@ public:
 
 protected:
 
-  void                        _read ( XmlTree::Node &node, Unknown *caller );
-  void                        _parseChannel ( XmlTree::Node &node, Unknown *caller );
-  void                        _parseGeometry ( XmlTree::Node &node, Unknown *caller );
-  void                        _parseOffset ( XmlTree::Node &node, Unknown *caller );
-  void                        _parseVectorField ( XmlTree::Node &node, Unknown *caller );
-  void                        _parseTexture ( XmlTree::Node& node, Unknown *caller );
-
   void                        _processReadRequests ( Usul::Threads::Thread *);
   osg::Image *                _volume ( unsigned int timestep, unsigned int channel );
   osg::Node*                  _buildVolume( osg::Image* image );
@@ -156,17 +150,6 @@ protected:
 
 private:
 
-  struct ChannelInfo
-  {
-    ChannelInfo () : name ( "" ), index ( 0 ), min ( 0 ), max ( 0 )
-    {
-    }
-
-    std::string name;
-    unsigned int index;
-    double min, max;
-  };
-
   struct VectorField
   {
     VectorField ( ) : name ( "" ), u ( 0 ), v ( 0 )
@@ -179,7 +162,7 @@ private:
 
   /// Typedefs.
   typedef std::vector < VectorField >                                  VectorFields;
-  typedef std::vector < ChannelInfo >                                  ChannelInfos;
+  typedef std::vector < Channel::RefPtr >                              ChannelInfos;
   typedef osg::ref_ptr < osg::Image >                                  ImagePtr;
   typedef std::vector < std::pair < Parser::Data, ImagePtr >  >        ChannelData;
   typedef std::vector < ChannelData >                                  TimestepsData;
@@ -190,9 +173,9 @@ private:
   class LoadDataJob : public Usul::Jobs::Job
   {
   public:
-    typedef Usul::Jobs::Job                           BaseClass;
-    typedef std::pair < unsigned int, ChannelInfo >   ReadRequest;
-    typedef std::list < ReadRequest >                 ReadRequests;
+    typedef Usul::Jobs::Job                             BaseClass;
+    typedef std::pair < unsigned int, Channel::RefPtr > ReadRequest;
+    typedef std::list < ReadRequest >                   ReadRequests;
 
     USUL_DECLARE_REF_POINTERS ( LoadDataJob );
 
@@ -221,6 +204,7 @@ private:
   unsigned int _x;
   unsigned int _y;
   unsigned int _z;
+  unsigned int _num2DFields;
   unsigned int _numPlanes;
   ChannelInfos _channelInfo;
   osg::ref_ptr < osg::MatrixTransform > _root;

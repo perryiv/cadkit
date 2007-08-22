@@ -35,6 +35,15 @@ struct IDldNavigator : public Usul::Interfaces::IUnknown
   // send the signal to load the file in the current file position
   virtual bool              loadCurrentFile( bool loadFile ) = 0;
 
+  // return the current file position
+  virtual unsigned int      currentFilePosition () = 0;
+
+  // start/stop animation
+  virtual void              animate( bool a ) = 0;
+
+  // set the current file position
+  virtual void              setCurrentFilePosition( unsigned int pos ) = 0;
+
 
 }; //struct IVertices
 

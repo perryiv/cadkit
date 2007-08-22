@@ -177,7 +177,11 @@ bool DynamicLandDocument::incrementFilePosition ()
       int index = this->currentFilePosition() - this->_timeStepWindowSize;
       if( index < 0 )
          index = this->numFiles() + index;
-      this->removeTimeStepAtIndex( static_cast< unsigned int > ( index ) );
+
+      //Spawn a job to kill the time step at <index>
+      KillJob::RefPtr job ( new KillJob ( this, 0x0, index ) );
+      Usul::Jobs::Manager::instance().add ( job.get() );
+
       ++_currFileNum;
       std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
       return true;
@@ -219,7 +223,11 @@ bool DynamicLandDocument::decrementFilePosition ()
       int index = this->currentFilePosition() + this->_timeStepWindowSize;
       if( index > static_cast< int > ( this->numFiles() ) )
          index = 0 + index - static_cast< int > ( this->numFiles() );
-      this->removeTimeStepAtIndex( static_cast< unsigned int > ( index ) );
+
+      //Spawn a job to kill the time step at <index>
+      KillJob::RefPtr job ( new KillJob ( this, 0x0, index ) );
+      Usul::Jobs::Manager::instance().add ( job.get() );
+
       --_currFileNum;
       std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
       return true;
@@ -1248,22 +1256,6 @@ unsigned int DynamicLandDocument::numFiles()
    return _files.size();
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Clear out the time step at <index>
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DynamicLandDocument::removeTimeStepAtIndex( unsigned int index )
-{
-  Guard guard ( this->mutex() );
-  this->_timeStepPool.at( index ).isLoaded = false;
-  this->_timeStepPool.at( index ).isLoading = false;
-  this->_timeStepPool.at( index ).isValid = false;
-  this->_timeStepPool.at( index ).group = new osg::Group();
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Return the filename at <index>
@@ -1427,4 +1419,63 @@ DynamicLandDocument::CommandList DynamicLandDocument::getCommandList()
   cl.push_back( new StopAnimation( me.get() ) );
   return cl;
 
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Clear out the time step at <index>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::removeTimeStepAtIndex( unsigned int index )
+{
+  Guard guard ( this->mutex() );
+  this->_timeStepPool.at( index ).isLoaded = false;
+  this->_timeStepPool.at( index ).isLoading = false;
+  this->_timeStepPool.at( index ).isValid = false;
+  this->_timeStepPool.at( index ).group = new osg::Group();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Clear out the time step at <index>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::KillJob::removeTimeStep()
+{
+  Guard guard ( this->mutex() );
+  std::cout << "Calling removeTimeStep() on index: " << _index << std::endl;
+  _document->removeTimeStepAtIndex( _index );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Dynamic Land Model Job Constructor..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DynamicLandDocument::KillJob::KillJob ( DynamicLandDocument* document, Usul::Interfaces::IUnknown *caller, unsigned int i ) :
+  BaseClass ( caller ),
+  _document ( document ),
+  _index ( i )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start the job.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::KillJob::_started ()
+{
+  while( true == _document->isLoading( _index ) )
+  {
+  }
+  this->removeTimeStep();
 }

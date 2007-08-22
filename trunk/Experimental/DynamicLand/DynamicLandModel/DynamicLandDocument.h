@@ -195,6 +195,24 @@ private:
   //Animation Variables
   bool                            _isAnimating;
   bool                            _updateAnimation;
+  class KillJob : public Usul::Jobs::Job
+  {
+    public:
+      typedef Usul::Jobs::Job                           BaseClass;
+
+      USUL_DECLARE_REF_POINTERS ( KillJob );
+
+      KillJob ( DynamicLandDocument* document, Usul::Interfaces::IUnknown *caller, unsigned int i );
+      void                                  removeTimeStep();
+      unsigned int                          index(){ return _index; };
+
+    protected:
+      virtual void                          _started ();
+
+    private:
+      DynamicLandDocument::RefPtr           _document;
+      unsigned int                          _index;
+  };
 
   class LoadDataJob : public Usul::Jobs::Job
   {

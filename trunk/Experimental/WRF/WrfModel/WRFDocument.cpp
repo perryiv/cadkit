@@ -32,13 +32,14 @@
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Math/MinMax.h"
 
-#include "XmlTree/Document.h"
-
 #include "OsgTools/Font.h"
 #include "OsgTools/GlassBoundingBox.h"
 #include "OsgTools/Volume/Texture3DVolume.h"
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/Builders/Arrow.h"
+
+#include "Serialize/XML/RegisterCreator.h"
+#include "Serialize/XML/Deserialize.h"
 
 #include "osgText/Text"
 #include "osg/Geode"
@@ -49,15 +50,13 @@
 
 #include "osgDB/ReadFile"
 
-#include "boost/filesystem/operations.hpp"
-#include "Usul/File/Boost.h"
-
 #include <limits>
 
 #define INVALID_TIMESTEP std::numeric_limits < unsigned int >::max()
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WRFDocument, WRFDocument::BaseClass );
 
+SERIALIZE_XML_REGISTER_CREATOR ( WRFDocument );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -76,6 +75,7 @@ WRFDocument::WRFDocument() :
   _x ( 0 ),
   _y ( 0 ),
   _z ( 0 ),
+  _num2DFields ( 0 ),
   _numPlanes ( 256 ),
   _channelInfo (),
   _root ( new osg::MatrixTransform ),
@@ -102,7 +102,9 @@ WRFDocument::WRFDocument() :
   this->_addMember ( "x", _x );
   this->_addMember ( "y", _y );
   this->_addMember ( "z", _z );
+  this->_addMember ( "num_2D_fields", _num2DFields );
   this->_addMember ( "texture_file", _textureFile );
+  this->_addMember ( "channels", _channelInfo );
   
 }
 
@@ -213,271 +215,7 @@ void WRFDocument::write ( const std::string &name, Unknown *caller  ) const
 
 void WRFDocument::read ( const std::string &name, Unknown *caller )
 {
-  XmlTree::Document::RefPtr document ( new XmlTree::Document );
-  document->load ( name );
-
-  if ( "wrf" == document->name() )
-  {
-    this->_read ( *document, caller );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Read the document.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void WRFDocument::_read ( XmlTree::Node &node, Unknown *caller )
-{
-  typedef XmlTree::Document::Attributes Attributes;
-  typedef XmlTree::Document::Children Children;
-
-  Attributes& attributes ( node.attributes() );
-  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-  {
-    if ( "timesteps" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, _timesteps );
-    }
-    if ( "channels" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, _channels );
-    }
-    if ( "x" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, _x );
-    }
-    if ( "y" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, _y );
-    }
-    if ( "z" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, _z );
-    }
-    if ( "file" == iter->first )
-    {
-      _filename = iter->second;
-    }
-    if ( "fields" == iter->first )
-    {
-      unsigned int num ( 0 );
-      Usul::Strings::fromString ( iter->second, num );
-      _parser.numFields2D ( num );
-    }
-  }
-
-  // Set the parser's datamembers.
-  _parser.filename ( _filename );
-  _parser.timesteps ( _timesteps );
-  _parser.channels ( _channels );
-  _parser.setSizes ( _x, _y, _z );
-
-  // Make enough room for the channel information.
-  _channelInfo.resize ( _channels );
-
-  Children& children ( node.children() );
-
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
-  {
-    XmlTree::Node::RefPtr node ( *iter );
-    if ( "channel" == node->name() )
-    {
-      this->_parseChannel ( *node, caller );
-    }
-    if ( "geometry" == node->name() )
-    {
-      this->_parseGeometry ( *node, caller );
-    }
-    if ( "offset" == node->name() )
-    {
-      this->_parseOffset ( *node, caller );
-    }
-    if ( "vector_field" == node->name () )
-    {
-      this->_parseVectorField ( *node, caller );
-    }
-    if ( "texture" == node->name() )
-    {
-      this->_parseTexture ( *node, caller );
-    }
-  }
-
-  // Initialize the bounding box.
-  this->_initBoundingBox ();
-
-  // Make room for the volumes.
-  _data.resize ( _timesteps );
-  //std::for_each ( _data.begin(), _data.end(), std::bind2nd ( std::mem_fun ( &ChannelVolumes::resize ), _channels ) );
-  for ( TimestepsData::iterator iter = _data.begin(); iter != _data.end(); ++iter )
-    iter->resize ( _channels );
-
-  // Make enough room for the cache.
-  _vectorCache.resize ( _timesteps );
-
-  // Build the topography.
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &WRFDocument::_buildTopography ), "3345743110" );
-
-  _volumeTransform->setMatrix ( osg::Matrix::rotate ( -osg::PI_2, osg::Z_AXIS ) * osg::Matrix::translate ( _offset ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Parse a channel.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void WRFDocument::_parseChannel ( XmlTree::Node &node, Unknown *caller )
-{
-  typedef XmlTree::Document::Attributes Attributes;
-
-  ChannelInfo info;
-
-  Attributes& attributes ( node.attributes() );
-  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-  {
-    if ( "name" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, info.name );
-    }
-    if ( "index" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, info.index );
-    }
-    if ( "min" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, info.min );
-    }
-    if ( "max" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, info.max );
-    }
-  }
-
-  _channelInfo.at ( info.index ) = info;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Parse any external geometry..
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void WRFDocument::_parseGeometry ( XmlTree::Node &node, Unknown *caller )
-{
-  std::string directory ( node.value () );
-
-  typedef std::vector < std::string > Filenames;
-  Filenames filenames;
-
-  if ( boost::filesystem::is_directory ( directory ) )
-  {
-    Usul::File::findFiles ( directory, "osga", filenames );
-    Usul::File::findFiles ( directory, "osg", filenames );
-    Usul::File::findFiles ( directory, "ive", filenames );
-
-    for ( Filenames::const_iterator iter = filenames.begin(); iter != filenames.end(); ++iter )
-    {
-      const std::string filename ( *iter );
-
-      // Find a document that can load the first filename.
-      Usul::Documents::Document::RefPtr document ( Usul::Documents::Manager::instance().find ( filename ).document );
-      Usul::Interfaces::IBuildScene::QueryPtr buildScene ( document );
-
-      // Make sure the document can build a scene.
-      if ( document.valid() && buildScene.valid() )
-      {
-        // Set the label.
-        Usul::Interfaces::IStatusBar::UpdateStatusBar label ( caller );
-        label ( "Loading filename: " + filename, true );
-
-        if ( document->canOpen ( filename ) )
-          document->read ( filename, caller );
-
-        // Get the node.
-        Usul::Interfaces::IBuildScene::Options options;
-        _geometry->addChild ( buildScene->buildScene ( options ) );
-      }
-    }
-  }
-  else
-  {
-    _geometry->addChild ( osgDB::readNodeFile ( directory ) );
-  }
-
-  // Turn off display lits.
-  //OsgTools::DisplayLists dl ( false );
-  //dl ( _geometry.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Parse any offset.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void WRFDocument::_parseOffset ( XmlTree::Node &node, Unknown *caller )
-{
-  std::string offset ( node.value() );
-
-  if ( false == offset.empty() )
-  {
-    std::istringstream in ( offset );
-    double x ( 0.0 ), y ( 0.0 ), z ( 0.0 );
-    in >> x >> y >> z;
-    _offset.set ( x, y, z );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Parse any vector field information.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void WRFDocument::_parseVectorField ( XmlTree::Node& node, Unknown *caller )
-{
-  typedef XmlTree::Document::Attributes Attributes;
-
-  VectorField field;
-
-  const Attributes& attributes ( node.attributes() );
-  for ( Attributes::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-  {
-    if ( "name" == iter->first )
-    {
-      field.name = iter->second;
-    }
-    if ( "u" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, field.u );
-    }
-    if ( "v" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, field.v );
-    }
-  }
-
-  _vectorFields.push_back ( field );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Parse any texture information.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void WRFDocument::_parseTexture ( XmlTree::Node& node, Unknown *caller )
-{
-  std::string texture ( node.value() );
-  _textureFile = texture;
+  Serialize::XML::deserialize ( name, *this );
 }
 
 
@@ -1016,7 +754,7 @@ WRFDocument::CommandList WRFDocument::getCommandList ()
 
   for ( ChannelInfos::iterator iter = _channelInfo.begin(); iter != _channelInfo.end(); ++ iter )
   {
-    commands.push_back ( new ChannelCommand ( iter->name, iter->index, this ) );
+    commands.push_back ( new ChannelCommand ( (*iter)->name (), (*iter)->index (), this ) );
   }
 
   commands.push_back ( new ChangeNumPlanes ( 4.0, this ) );
@@ -1171,7 +909,7 @@ void WRFDocument::LoadDataJob::_started ()
     osg::ref_ptr < osg::Image > image ( this->_createImage ( request, data ) );
 
     unsigned int timestep ( request.first );
-    unsigned int channel ( request.second.index );
+    unsigned int channel ( request.second->index () );
 
     _document->addVolume ( data, image.get(), timestep, channel );
   }
@@ -1219,9 +957,9 @@ osg::Image*  WRFDocument::LoadDataJob::_createImage ( const ReadRequest& request
 {
   USUL_TRACE_SCOPE;
 
-  ChannelInfo info ( request.second );
+  Channel::RefPtr info ( request.second );
   unsigned int timestep ( request.first );
-  unsigned int channel ( info.index );
+  unsigned int channel ( info->index () );
 
   std::cout << "Reading data.  Timestep: " << timestep << " Channel: " << channel << std::endl;
 
@@ -1229,7 +967,7 @@ osg::Image*  WRFDocument::LoadDataJob::_createImage ( const ReadRequest& request
 
   // Normalize the data to unsigned char.
   std::vector < unsigned char > chars;
-  Detail::normalize ( chars, data, info.min, info.max );
+  Detail::normalize ( chars, data, info->min (), info->max () );
 
   unsigned int width ( _y ), height ( _x ), depth ( _z );
 
@@ -1529,8 +1267,8 @@ osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int
 
   Usul::Predicates::CloseFloat < float > close ( 10 );
 
-  double min ( Usul::Math::minimum ( _channelInfo.at ( channel0 ).min, _channelInfo.at ( channel1 ).min ) );
-  double max ( Usul::Math::maximum ( _channelInfo.at ( channel0 ).max, _channelInfo.at ( channel1 ).max ) );
+  double min ( Usul::Math::minimum ( _channelInfo.at ( channel0 )->min (), _channelInfo.at ( channel1 )->min () ) );
+  double max ( Usul::Math::maximum ( _channelInfo.at ( channel0 )->max (), _channelInfo.at ( channel1 )->max () ) );
 
   double magnitude ( ::sqrt ( ( min * min ) + ( max * max ) ) );
 
@@ -1638,7 +1376,7 @@ void WRFDocument::_requestData ( unsigned int timestep, unsigned int channel, bo
   typedef LoadDataJob::ReadRequest ReadRequest;
   typedef LoadDataJob::ReadRequests ReadRequests;
 
-  ChannelInfo info ( _channelInfo.at ( channel ) );
+  Channel::RefPtr info ( _channelInfo.at ( channel ) );
 
   ReadRequest request ( timestep, info );
   ReadRequests requests;
@@ -1664,7 +1402,38 @@ void WRFDocument::_requestData ( unsigned int timestep, unsigned int channel, bo
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void WRFDocument::deserialize ( const XmlTree::Node &node )
 {
   _dataMemberMap.deserialize ( node );
+
+  // Set the parser's datamembers.
+  _parser.numFields2D ( _num2DFields );
+  _parser.filename ( _filename );
+  _parser.timesteps ( _timesteps );
+  _parser.channels ( _channels );
+  _parser.setSizes ( _x, _y, _z );
+  
+  // Initialize the bounding box.
+  this->_initBoundingBox ();
+
+  // Make room for the volumes.
+  _data.resize ( _timesteps );
+
+  for ( TimestepsData::iterator iter = _data.begin(); iter != _data.end(); ++iter )
+    iter->resize ( _channels );
+
+  // Make enough room for the cache.
+  _vectorCache.resize ( _timesteps );
+
+  // Build the topography.
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &WRFDocument::_buildTopography ), "3345743110" );
+
+  _volumeTransform->setMatrix ( osg::Matrix::rotate ( -osg::PI_2, osg::Z_AXIS ) * osg::Matrix::translate ( _offset ) );
+
 }

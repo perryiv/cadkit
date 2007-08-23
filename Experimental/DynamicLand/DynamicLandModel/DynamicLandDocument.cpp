@@ -567,8 +567,7 @@ bool DynamicLandDocument::writeTDF ( const std::string& filename, Usul::Interfac
   std::string slash ( Usul::File::slash() );
     #ifdef _MSC_VER
       std::string file ( filename );
-    #else
-      std::string slash ( Usul::File::slash() );
+    #else  
       std::string file ( _dir + slash + filename );
     #endif
 
@@ -801,8 +800,9 @@ bool DynamicLandDocument::LoadDataJob::load ( Usul::Documents::Document::RefPtr 
     std::string file ( filename );
   #else
     std::string slash ( Usul::File::slash() );
-    std::string file ( _dir + slash + filename );
+    std::string file ( _document->dir() + slash + filename );
   #endif
+    
   if( Usul::Predicates::FileExists::test ( file + ".tdf" ) )
   {
     std::cout << "\nFound " << file + ".tdf" << std::endl;
@@ -907,7 +907,7 @@ bool DynamicLandDocument::LoadDataJob::_loadTexture ( Usul::Documents::Document 
     std::string file ( filename );
   #else
     std::string slash ( Usul::File::slash() );
-    std::string file ( _dir + slash + filename );
+    std::string file ( _document->dir() + slash + filename );
   #endif
   if( Usul::Predicates::FileExists::test ( file ) )
   {
@@ -1518,4 +1518,17 @@ void DynamicLandDocument::_setThreadPoolSize( unsigned int size )
 {
    Guard guard ( this->mutex() );
     Usul::Jobs::Manager::instance().poolResize ( 3 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the directory where the files are
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string DynamicLandDocument::dir()
+{
+  Guard guard ( this->mutex() );
+  return _dir;
 }

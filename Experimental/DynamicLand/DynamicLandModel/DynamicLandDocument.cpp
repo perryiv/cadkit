@@ -718,18 +718,27 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
       if( i < 0 )
       {
         index = this->numFiles() + i;
+      	// Debugging on Linux...
+      	std::cout << "Index is: " << index << " i is: " << i << std::endl;
       }
       else
       {
         if( i > static_cast< int > ( this->numFiles() ) )
         {
-          index = 0 + i - this->numFiles();
+	  index = 0 + i - this->numFiles();
+	  // Debugging on Linux...
+      	  std::cout << "Index is: " << index << std::endl;
+          
         }
         else
         {
-          index = static_cast< int > ( i );
+          index = static_cast< unsigned int > ( i );
+	  // Debugging on Linux...
+      	  std::cout << "Index is: " << index << std::endl;
         }
       }
+      // Debugging on Linux...
+      std::cout << "Index is: " << index << std::endl;
       if( false == this->isValid( index ) &&
           false == this->isLoading( index ) &&
           false == this->isLoaded( index ) )
@@ -1121,6 +1130,7 @@ void DynamicLandDocument::_loadCurrentFileFromDocument( Usul::Interfaces::IUnkno
 
 void DynamicLandDocument::_loadNextTimeStep()
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _terrain->removeChild( 0, _terrain->getNumChildren() );
   osg::ref_ptr< osg::Group > group ( new osg::Group );
@@ -1142,6 +1152,7 @@ void DynamicLandDocument::_loadNextTimeStep()
 
 void DynamicLandDocument::_loadPrevTimeStep()
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 }
 
@@ -1154,6 +1165,7 @@ void DynamicLandDocument::_loadPrevTimeStep()
 
 unsigned int DynamicLandDocument::currentFilePosition ()
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return this->_currFileNum;
 }
@@ -1167,6 +1179,7 @@ unsigned int DynamicLandDocument::currentFilePosition ()
 
 void DynamicLandDocument::animate( bool a )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _isAnimating = a;
   this->_updateAnimationFrame( a );
@@ -1181,6 +1194,7 @@ void DynamicLandDocument::animate( bool a )
 
 void DynamicLandDocument::setCurrentFilePosition( unsigned int pos )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _currFileNum = pos;
 }
@@ -1194,6 +1208,7 @@ void DynamicLandDocument::setCurrentFilePosition( unsigned int pos )
 
 void DynamicLandDocument::newFrameLoaded( bool l )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _updateAnimation = l;
 }
@@ -1207,6 +1222,7 @@ void DynamicLandDocument::newFrameLoaded( bool l )
 
 bool DynamicLandDocument::isLoading( unsigned int pos )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return this->_timeStepPool.at( pos ).isLoading;
 }
@@ -1221,6 +1237,7 @@ bool DynamicLandDocument::isLoading( unsigned int pos )
 
 void DynamicLandDocument::isLoading( unsigned int pos, bool loading )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   this->_timeStepPool.at( pos ).isLoading = loading;
 }
@@ -1234,8 +1251,11 @@ void DynamicLandDocument::isLoading( unsigned int pos, bool loading )
 
 bool DynamicLandDocument::isValid( unsigned int pos )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return this->_timeStepPool.at( pos ).isValid;
+  std::cout << "Checking if position: " << pos << " is valid." << std::endl;
+  if( pos < _timeStepPool.size() )
+    return this->_timeStepPool.at( pos ).isValid;
 }
 
 
@@ -1247,6 +1267,7 @@ bool DynamicLandDocument::isValid( unsigned int pos )
 
 void DynamicLandDocument::isValid( unsigned int pos, bool valid )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   this->_timeStepPool.at( pos ).isValid = valid;
 }
@@ -1261,6 +1282,7 @@ void DynamicLandDocument::isValid( unsigned int pos, bool valid )
 
 bool DynamicLandDocument::loadCurrentFile()
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return this->_loadNewMap;
 }
@@ -1274,8 +1296,9 @@ bool DynamicLandDocument::loadCurrentFile()
 
 unsigned int DynamicLandDocument::numFiles()
 {
-   Guard guard ( this->mutex() );
-   return _files.size();
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _files.size();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1286,6 +1309,7 @@ unsigned int DynamicLandDocument::numFiles()
 
 std::string DynamicLandDocument::getFilenameAtIndex( unsigned int index )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return this->_files.at( index );
 }
@@ -1299,6 +1323,7 @@ std::string DynamicLandDocument::getFilenameAtIndex( unsigned int index )
 
 bool DynamicLandDocument::isLoaded( unsigned int pos )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return this->_timeStepPool.at( pos ).isLoaded;
 }
@@ -1312,6 +1337,7 @@ bool DynamicLandDocument::isLoaded( unsigned int pos )
 
 void DynamicLandDocument::isLoaded( unsigned int pos, bool loaded )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   this->_timeStepPool.at( pos ).isLoaded = loaded;
 }
@@ -1325,6 +1351,7 @@ void DynamicLandDocument::isLoaded( unsigned int pos, bool loaded )
 
 void DynamicLandDocument::setTimeStepFrame( unsigned int i, osg::Group * group )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _timeStepPool.at( i ).isValid = true;
   _timeStepPool.at( i ).isLoading = false;
@@ -1340,6 +1367,7 @@ void DynamicLandDocument::setTimeStepFrame( unsigned int i, osg::Group * group )
 
 bool DynamicLandDocument::_updateAnimationFrame()
 {
+  USUL_TRACE_SCOPE;
   return _updateAnimation;
 }
 
@@ -1352,6 +1380,7 @@ bool DynamicLandDocument::_updateAnimationFrame()
 
 void DynamicLandDocument::_updateAnimationFrame( bool u)
 {
+  USUL_TRACE_SCOPE;
   _updateAnimation = u;
 }
 
@@ -1456,6 +1485,7 @@ DynamicLandDocument::CommandList DynamicLandDocument::getCommandList()
 
 void DynamicLandDocument::removeTimeStepAtIndex( unsigned int index )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   this->_timeStepPool.at( index ).isLoaded = false;
   this->_timeStepPool.at( index ).isLoading = false;
@@ -1472,6 +1502,7 @@ void DynamicLandDocument::removeTimeStepAtIndex( unsigned int index )
 
 void DynamicLandDocument::KillJob::removeTimeStep()
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   std::cout << "Calling removeTimeStep() on index: " << _index << std::endl;
   _document->removeTimeStepAtIndex( _index );
@@ -1501,6 +1532,7 @@ DynamicLandDocument::KillJob::KillJob ( DynamicLandDocument* document, Usul::Int
 
 void DynamicLandDocument::KillJob::_started ()
 {
+  USUL_TRACE_SCOPE;
   while( true == _document->isLoading( _index ) )
   {
   }
@@ -1516,8 +1548,9 @@ void DynamicLandDocument::KillJob::_started ()
 
 void DynamicLandDocument::_setThreadPoolSize( unsigned int size )
 {
-   Guard guard ( this->mutex() );
-    Usul::Jobs::Manager::instance().poolResize ( 3 );
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  //Usul::Jobs::Manager::instance().poolResize ( 3 );
 }
 
 
@@ -1529,6 +1562,7 @@ void DynamicLandDocument::_setThreadPoolSize( unsigned int size )
 
 std::string DynamicLandDocument::dir()
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _dir;
 }

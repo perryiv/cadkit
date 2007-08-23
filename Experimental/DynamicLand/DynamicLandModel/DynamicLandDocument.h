@@ -164,6 +164,8 @@ protected:
 
   CommandList                 getCommandList();
 
+  void                        _setThreadPoolSize( unsigned int size );
+
   /// Use reference counting.
   virtual ~DynamicLandDocument();
 
@@ -195,6 +197,9 @@ private:
   //Animation Variables
   bool                            _isAnimating;
   bool                            _updateAnimation;
+
+  bool                            _setPoolSize;
+
   class KillJob : public Usul::Jobs::Job
   {
     public:

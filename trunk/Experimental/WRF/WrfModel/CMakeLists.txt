@@ -28,7 +28,7 @@ set (SOURCES
 ./WRFFactory.cpp
 ./Parser.cpp
 ./WRFDocument.cpp
-
+./Channel.cpp
 )
 
 # ---------- Create a Shared Library

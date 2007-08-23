@@ -94,7 +94,8 @@ WRFDocument::WRFDocument() :
   _vectorCache (),
   _cellSize ( 10.0, 10.0, 3.0 ),
   _cellScale ( 0.001, 0.001, 0.001 ),
-  _cacheSize ( 5 )
+  _maxCacheSize ( 50 ),
+  _headers ( true )
 {
   this->_addMember ( "filename", _filename );
   this->_addMember ( "num_timesteps", _timesteps );
@@ -105,7 +106,8 @@ WRFDocument::WRFDocument() :
   this->_addMember ( "num_2D_fields", _num2DFields );
   this->_addMember ( "texture_file", _textureFile );
   this->_addMember ( "channels", _channelInfo );
-  
+  this->_addMember ( "headers", _headers );
+  this->_addMember ( "cache_size", _maxCacheSize );
 }
 
 
@@ -677,6 +679,32 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   USUL_TRACE_SCOPE;
 
 #ifndef _MSC_VER
+  this->_updateCache ();
+#endif
+
+  if ( this->dirty () )
+    this->_buildScene();
+
+  static unsigned int num ( 0 );
+  ++num;
+  if ( this->animating() && num % 10 == 0 )
+  {
+    unsigned int currentTimestep ( this->getCurrentTimeStep () );
+    this->setCurrentTimeStep ( ++currentTimestep );
+
+    this->_buildScene();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the cached volume data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::_updateCache ()
+{
   if ( _requests.empty() )
   {
     unsigned int timestepToLoad ( 0 );
@@ -700,7 +728,7 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
         // Only make a request if we don't alreay have the data.
         if ( false == this->_dataCached ( timestepToLoad, i ) )
         {
-          ChannelInfo info ( _channelInfo.at ( i ) );
+          Channel::RefPtr info ( _channelInfo.at ( i ) );
           ReadRequest request ( timestepToLoad, info );
           requests.push_back ( request );
         }
@@ -712,25 +740,11 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
       for ( ReadRequests::const_iterator iter = requests.begin(); iter != requests.end(); ++iter )
       {
         Guard guard ( this->mutex() );
-        _requests.insert ( Requests::value_type ( Request ( iter->first, iter->second.index ), job.get() ) );
+        _requests.insert ( Requests::value_type ( Request ( iter->first, iter->second->index() ), job.get() ) );
       }
 
       Usul::Jobs::Manager::instance().add ( job.get() );
     }
-  }
-#endif
-
-  if ( this->dirty () )
-    this->_buildScene();
-
-  static unsigned int num ( 0 );
-  ++num;
-  if ( this->animating() && num % 10 == 0 )
-  {
-    unsigned int currentTimestep ( this->getCurrentTimeStep () );
-    this->setCurrentTimeStep ( ++currentTimestep );
-
-    this->_buildScene();
   }
 }
 
@@ -1418,6 +1432,7 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
   _parser.timesteps ( _timesteps );
   _parser.channels ( _channels );
   _parser.setSizes ( _x, _y, _z );
+  _parser.headers ( _headers );
   
   // Initialize the bounding box.
   this->_initBoundingBox ();

@@ -568,7 +568,7 @@ bool DynamicLandDocument::writeTDF ( const std::string& filename, Usul::Interfac
     #ifdef _MSC_VER
       std::string file ( filename );
     #else  
-      std::string file ( _dir + slash + filename );
+      std::string file ( _document->dir() + slash + filename );
     #endif
 
   if( !Usul::Predicates::FileExists::test ( file + ".tdf" ) )

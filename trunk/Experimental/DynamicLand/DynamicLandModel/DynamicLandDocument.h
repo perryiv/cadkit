@@ -133,6 +133,7 @@ public:
   void                        isLoaded( unsigned int pos, bool loaded );
   bool                        isValid( unsigned int pos );
   void                        isValid( unsigned int pos, bool valid );
+  std::string                 dir();
   bool                        loadCurrentFile();
   unsigned int                numFiles();
   std::string                 getFilenameAtIndex( unsigned int index );

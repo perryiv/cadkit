@@ -129,6 +129,8 @@ protected:
   bool                        _dataRequested ( unsigned int timestep, unsigned int channel );
   void                        _requestData ( unsigned int timestep, unsigned int channel, bool wait );
 
+  void                        _updateCache ();
+
   void                        _buildScene ();
 
   /// Usul::Interfaces::ITimestepAnimation
@@ -224,7 +226,8 @@ private:
   std::vector < osg::ref_ptr < osg::Node > > _vectorCache;
   osg::Vec3 _cellSize;
   osg::Vec3 _cellScale;
-  unsigned int _cacheSize;
+  unsigned int _maxCacheSize;
+  bool _headers;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME ( WRFDocument );

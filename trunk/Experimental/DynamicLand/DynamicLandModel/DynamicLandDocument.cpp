@@ -94,13 +94,15 @@ DynamicLandDocument::DynamicLandDocument() :
   _timeStepPool ( 0x0 ),
   _timeStepWindowSize ( 1 ),
   _isAnimating ( false ),
-  _updateAnimation ( false )
+  _updateAnimation ( false ),
+  _setPoolSize ( true )
 {
   USUL_TRACE_SCOPE;
   _header.cellSize = 0;
   _header.noDataValue = 0;
   _header.gridSize = Usul::Math::Vec2ui( 0, 0 );
   _header.ll = Usul::Math::Vec2f( 0, 0 );
+  
 }
 
 
@@ -174,13 +176,16 @@ bool DynamicLandDocument::incrementFilePosition ()
   {
     if( _currFileNum < _files.size() - 1 && _files.size() > 0 )
     {
-      int index = this->currentFilePosition() - this->_timeStepWindowSize;
-      if( index < 0 )
-         index = this->numFiles() + index;
+      if( ( this->_timeStepWindowSize * 2 ) + 1 < this->numFiles() )
+      {
+        int index = this->currentFilePosition() - this->_timeStepWindowSize;
+        if( index < 0 )
+           index = this->numFiles() + index;
 
-      //Spawn a job to kill the time step at <index>
-      KillJob::RefPtr job ( new KillJob ( this, 0x0, index ) );
-      Usul::Jobs::Manager::instance().add ( job.get() );
+        //Spawn a job to kill the time step at <index>
+        KillJob::RefPtr job ( new KillJob ( this, 0x0, index ) );
+        Usul::Jobs::Manager::instance().add ( job.get() );
+      }
 
       ++_currFileNum;
       std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
@@ -220,14 +225,16 @@ bool DynamicLandDocument::decrementFilePosition ()
   {
     if( _currFileNum > 0 && _files.size() > 0 )
     {
-      int index = this->currentFilePosition() + this->_timeStepWindowSize;
-      if( index > static_cast< int > ( this->numFiles() ) )
-         index = 0 + index - static_cast< int > ( this->numFiles() );
+      if( ( this->_timeStepWindowSize * 2 ) + 1 < this->numFiles() )
+      {
+        int index = this->currentFilePosition() + this->_timeStepWindowSize;
+        if( index > static_cast< int > ( this->numFiles() ) )
+           index = 0 + index - static_cast< int > ( this->numFiles() );
 
-      //Spawn a job to kill the time step at <index>
-      KillJob::RefPtr job ( new KillJob ( this, 0x0, index ) );
-      Usul::Jobs::Manager::instance().add ( job.get() );
-
+        //Spawn a job to kill the time step at <index>
+        KillJob::RefPtr job ( new KillJob ( this, 0x0, index ) );
+        Usul::Jobs::Manager::instance().add ( job.get() );
+      }
       --_currFileNum;
       std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
       return true;
@@ -591,7 +598,14 @@ bool DynamicLandDocument::writeTDF ( const std::string& filename, Usul::Interfac
 void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-  
+  {
+    Guard guard ( this->mutex() );
+    if( true == this->_setPoolSize )
+    {
+      this->_setThreadPoolSize( 3 );
+      _setPoolSize = false;
+    }
+  }
   // If the wait time has expired...
   if ( false == _fileQueryDelay() )
     return;
@@ -726,7 +740,11 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
         // strip the extension from the map file name
         std::string root = filename.substr( 0, filename.size() - 4 );
         this->isLoading( index, true );
+#if 0 // with progress bars
         LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, caller, index ) );
+#else // without progress bars
+        LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, 0x0, index ) );
+#endif
         Usul::Jobs::Manager::instance().add ( job.get() );
       }
     }
@@ -995,6 +1013,10 @@ void DynamicLandDocument::_parseHeader( XmlTree::Node &node, Unknown *caller )
       if ( "nodata" == iter->first )
       {
         Usul::Strings::fromString ( iter->second, _header.noDataValue );
+      }
+      if ( "windowsize" == iter->first )
+      {
+        Usul::Strings::fromString ( iter->second, this->_timeStepWindowSize ); 
       }
       if ( "numsteps" == iter->first )
       {
@@ -1362,16 +1384,20 @@ DynamicLandDocument::LoadDataJob::LoadDataJob ( DynamicLandDocument* document, c
 void DynamicLandDocument::LoadDataJob::_started ()
 {
   USUL_TRACE_SCOPE;
-  Usul::Interfaces::IProgressBar::ShowHide showHide( this->progress() );
 
+  Usul::Interfaces::IProgressBar::ShowHide showHide( this->progress() );
   // Set the label.
   this->_setLabel ( "Loading file: " + _filename );
-  
+
 
   Usul::Documents::Document::RefPtr document;
   
-  // Process all the requests.   
+// Process all the requests. 
+
+
   bool valid = this->load( document.get(), _filename, this->progress() );
+
+
 
   // if the map file is valid, load the image file for coloring
   if ( valid )
@@ -1383,6 +1409,7 @@ void DynamicLandDocument::LoadDataJob::_started ()
     osg::ref_ptr< osg::Group > group ( new osg::Group );
     group->addChild( this->_buildScene( _triangleDocument ) );
     _document->setTimeStepFrame( _index, group.release() );
+
     // write a tdf of the loaded terrain for faster loading on revisit
     _document->writeTDF ( _filename, this->progress(), _triangleDocument.get() );
 
@@ -1478,4 +1505,17 @@ void DynamicLandDocument::KillJob::_started ()
   {
   }
   this->removeTimeStep();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start the job.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::_setThreadPoolSize( unsigned int size )
+{
+   Guard guard ( this->mutex() );
+    Usul::Jobs::Manager::instance().poolResize ( 3 );
 }

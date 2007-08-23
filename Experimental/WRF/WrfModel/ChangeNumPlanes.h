@@ -11,10 +11,9 @@
 #ifndef __WRF_CHANGE_NUM_PLANES_COMMAND_H__
 #define __WRF_CHANGE_NUM_PLANES_COMMAND_H__
 
-#include "WRFDocument.h"
-
 #include "Usul/Commands/Command.h"
 
+class WRFDocument;
 
 class ChangeNumPlanes : public Usul::Commands::Command
 {
@@ -32,7 +31,7 @@ protected:
   virtual void _execute ();
 private:
   double _multiplier;
-  WRFDocument::RefPtr _document;
+  WRFDocument* _document;
 };
 
 

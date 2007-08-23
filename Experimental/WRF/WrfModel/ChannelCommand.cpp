@@ -8,7 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ChannelCommand.h"
+#include "Experimental/WRF/WrfModel/ChannelCommand.h"
+#include "Experimental/WRF/WrfModel/WRFDocument.h"
 
 #include "Usul/Trace/Trace.h"
 
@@ -27,6 +28,9 @@ ChannelCommand::ChannelCommand ( const std::string& name, unsigned int index, WR
 {
   USUL_TRACE_SCOPE;
   this->text ( "Switch to " + name );
+
+  if ( 0x0 != _document )
+    _document->ref ();
 }
 
 
@@ -39,6 +43,9 @@ ChannelCommand::ChannelCommand ( const std::string& name, unsigned int index, WR
 ChannelCommand::~ChannelCommand ()
 {
   USUL_TRACE_SCOPE;
+
+  if ( 0x0 != _document )
+    _document->unref ();
 }
 
 
@@ -51,6 +58,6 @@ ChannelCommand::~ChannelCommand ()
 void ChannelCommand::_execute ()
 {
   USUL_TRACE_SCOPE;
-  if ( _document.valid () )
+  if ( 0x0 != _document )
     _document->currentChannel ( _index );
 }

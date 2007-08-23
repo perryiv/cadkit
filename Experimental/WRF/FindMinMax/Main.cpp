@@ -8,13 +8,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Experimental/WRF/WRFModel/Parser.h"
+#include "Experimental/WRF/WrfModel/Parser.h"
 
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Predicates/CloseFloat.h"
 #include "Usul/Math/Finite.h"
-#include "Usul/Math/Nan.h"
+#include "Usul/Math/NaN.h"
 #include "Usul/Functions/Color.h"
 #include "Usul/Functions/SafeCall.h"
 
@@ -72,12 +72,16 @@ void _run ()
 
   Parser parser ( filename );
 
-  unsigned int xSize ( 219 ), ySize ( 201 ), zSize ( 98 ), numTimesteps ( 49 );
-  unsigned int numChannels ( 4 );
+  unsigned int xSize ( 507 ), ySize ( 504 ), zSize ( 101 ), numTimesteps ( 289 );
+  unsigned int numChannels ( 3 );
+  unsigned int numFields2D ( 3 );
+  bool headers ( false );
 
   parser.setSizes ( xSize, ySize, zSize );
   parser.timesteps ( numTimesteps );
   parser.channels ( numChannels );
+  parser.numFields2D ( numFields2D );
+  parser.headers ( headers );
 
   for ( unsigned int i = 0; i < numChannels; ++ i )
   {

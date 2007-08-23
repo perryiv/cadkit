@@ -29,6 +29,7 @@ set (SOURCES
 ./Parser.cpp
 ./WRFDocument.cpp
 ./Channel.cpp
+./LoadDataJob.cpp
 )
 
 # ---------- Create a Shared Library

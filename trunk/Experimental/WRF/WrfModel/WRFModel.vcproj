@@ -235,6 +235,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\LoadDataJob.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\LoadDataJob.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Parser.cpp"
 					>
 				</File>

@@ -11,10 +11,9 @@
 #ifndef __WRF_CHANNEL_COMMAND_H__
 #define __WRF_CHANNEL_COMMAND_H__
 
-#include "WRFDocument.h"
-
 #include "Usul/Commands/Command.h"
 
+class WRFDocument;
 
 class ChannelCommand : public Usul::Commands::Command
 {
@@ -33,7 +32,7 @@ protected:
 private:
   std::string _name;
   unsigned int _index;
-  WRFDocument::RefPtr _document;
+  WRFDocument* _document;
 };
 
 

@@ -39,8 +39,6 @@
 #include <vector>
 #include <list>
 
-namespace XmlTree { class Node; }
-
 class WRFDocument : public Usul::Documents::Document,
                     public Usul::Interfaces::IBuildScene,
                     public Usul::Interfaces::ITimestepAnimation,
@@ -129,7 +127,10 @@ protected:
   bool                        _dataRequested ( unsigned int timestep, unsigned int channel );
   void                        _requestData ( unsigned int timestep, unsigned int channel, bool wait );
 
+  void                        _purgeCache ();
   void                        _updateCache ();
+  void                        _launchNextCacheRequest ();
+  bool                        _cacheFull () const;
 
   void                        _buildScene ();
 
@@ -166,36 +167,10 @@ private:
   typedef std::vector < VectorField >                                  VectorFields;
   typedef std::vector < Channel::RefPtr >                              ChannelInfos;
   typedef osg::ref_ptr < osg::Image >                                  ImagePtr;
-  typedef std::vector < std::pair < Parser::Data, ImagePtr >  >        ChannelData;
-  typedef std::vector < ChannelData >                                  TimestepsData;
   typedef std::pair < unsigned int, unsigned int >                     Request;
   typedef std::map < Request, Usul::Jobs::Job::RefPtr >                Requests;
-
-  // Internal job to load data from file.
-  class LoadDataJob : public Usul::Jobs::Job
-  {
-  public:
-    typedef Usul::Jobs::Job                             BaseClass;
-    typedef std::pair < unsigned int, Channel::RefPtr > ReadRequest;
-    typedef std::list < ReadRequest >                   ReadRequests;
-
-    USUL_DECLARE_REF_POINTERS ( LoadDataJob );
-
-    LoadDataJob ( const ReadRequests& requests, WRFDocument* document, const Parser& parser );
-
-    void setSize ( unsigned int x, unsigned int y, unsigned int z );
-  protected:
-    virtual void _started ();
-    virtual void _finished ();
-    osg::Image*  _createImage ( const ReadRequest& request, Parser::Data& data );
-
-    ReadRequests _requests;
-    WRFDocument::RefPtr _document;
-    Parser _parser;
-    unsigned int _x;
-    unsigned int _y;
-    unsigned int _z;
-  };
+  typedef std::map < Request, ImagePtr >                               VolumeCache;
+  typedef std::map < Request, Parser::Data >                           DataCache;
 
   Parser _parser;
   std::string _filename;
@@ -212,21 +187,22 @@ private:
   osg::ref_ptr < osg::MatrixTransform > _root;
   osg::ref_ptr < osg::MatrixTransform > _volumeTransform;
   osg::ref_ptr < osg::Group > _geometry;
+  osg::ref_ptr < osg::Node > _topography;
   osg::BoundingBox _bb;
   bool _dirty;
-  TimestepsData _data;
   Requests _requests;
   Usul::Jobs::Job::RefPtr _jobForScene;
-  unsigned int _lastTimestepLoaded;
   bool _animating;
   osg::Vec3 _offset;
-  osg::ref_ptr < osg::Node > _topography;
   std::string _textureFile;
   VectorFields _vectorFields;
   std::vector < osg::ref_ptr < osg::Node > > _vectorCache;
   osg::Vec3 _cellSize;
   osg::Vec3 _cellScale;
   unsigned int _maxCacheSize;
+  bool _cacheRawData;
+  VolumeCache _volumeCache;
+  DataCache _dataCache;
   bool _headers;
 
   SERIALIZE_XML_DEFINE_MAP;

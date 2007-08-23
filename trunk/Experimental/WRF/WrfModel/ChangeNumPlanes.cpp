@@ -8,10 +8,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ChangeNumPlanes.h"
+#include "Experimental/WRF/WrfModel/ChangeNumPlanes.h"
+#include "Experimental/WRF/WrfModel/WRFDocument.h"
 
 #include "Usul/Trace/Trace.h"
-
 #include "Usul/Strings/Convert.h"
 
 
@@ -28,6 +28,9 @@ ChangeNumPlanes::ChangeNumPlanes ( double multiplier, WRFDocument* doc ) :
 {
   USUL_TRACE_SCOPE;
   this->text ( "Multiply planes x " + Usul::Strings::toString ( multiplier ) );
+
+  if ( 0x0 != _document )
+    _document->ref ();
 }
 
 
@@ -40,6 +43,9 @@ ChangeNumPlanes::ChangeNumPlanes ( double multiplier, WRFDocument* doc ) :
 ChangeNumPlanes::~ChangeNumPlanes ()
 {
   USUL_TRACE_SCOPE;
+
+  if ( 0x0 != _document )
+    _document->unref ();
 }
 
 
@@ -52,7 +58,7 @@ ChangeNumPlanes::~ChangeNumPlanes ()
 void ChangeNumPlanes::_execute ()
 {
   USUL_TRACE_SCOPE;
-  if ( _document.valid () )
+  if ( 0x0 != _document )
   {
     unsigned int numPlanes ( _document->numPlanes () );
     _document->numPlanes ( static_cast < unsigned int > ( numPlanes * _multiplier ) );

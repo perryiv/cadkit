@@ -14,6 +14,7 @@
 #include "Experimental/WRF/WrfModel/PreviousTimestep.h"
 #include "Experimental/WRF/WrfModel/ChangeNumPlanes.h"
 #include "Experimental/WRF/WrfModel/AnimateCommand.h"
+#include "Experimental/WRF/WrfModel/LoadDataJob.h"
 
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
@@ -23,7 +24,6 @@
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Trace/Trace.h"
-#include "Usul/Adaptors/Boost.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/IBuildScene.h"
@@ -52,8 +52,6 @@
 
 #include <limits>
 
-#define INVALID_TIMESTEP std::numeric_limits < unsigned int >::max()
-
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WRFDocument, WRFDocument::BaseClass );
 
 SERIALIZE_XML_REGISTER_CREATOR ( WRFDocument );
@@ -81,21 +79,23 @@ WRFDocument::WRFDocument() :
   _root ( new osg::MatrixTransform ),
   _volumeTransform ( new osg::MatrixTransform ),
   _geometry ( new osg::Group ),
+  _topography ( 0x0 ),
   _bb (),
   _dirty ( true ),
-  _data (),
   _requests (),
   _jobForScene ( 0x0 ),
-  _lastTimestepLoaded ( INVALID_TIMESTEP ),
   _animating ( false ),
   _offset (),
-  _topography ( 0x0 ),
   _textureFile ( "" ),
   _vectorCache (),
   _cellSize ( 10.0, 10.0, 3.0 ),
   _cellScale ( 0.001, 0.001, 0.001 ),
   _maxCacheSize ( 50 ),
-  _headers ( true )
+  _cacheRawData ( false ),
+  _volumeCache ( ),
+  _dataCache ( ),
+  _headers ( true ),
+  SERIALIZE_XML_INITIALIZER_LIST
 {
   this->_addMember ( "filename", _filename );
   this->_addMember ( "num_timesteps", _timesteps );
@@ -287,32 +287,6 @@ WRFDocument::Filters WRFDocument::filtersInsert() const
 
 namespace Detail
 {
-  ///////////////////////////////////////////////////////////////////////////////
-  //
-  //  Normalize.
-  //
-  ///////////////////////////////////////////////////////////////////////////////
-
-  void normalize ( std::vector < unsigned char >& out, const std::vector < float >& in, double min, double max )
-  {
-    out.resize ( in.size() );
-
-    Usul::Predicates::CloseFloat< double > close ( 10 );
-
-    for ( unsigned int i = 0; i < in.size(); ++i )
-    {
-      double value ( in.at( i ) );
-      bool inValid ( !Usul::Math::finite ( value ) || Usul::Math::nan ( value ) || close ( value, 1.0e+035f ) );
-      
-      if( false == inValid )
-      {
-        value = ( value - min ) / ( max - min );
-        out.at( i ) = static_cast < unsigned char > ( value * 255 );
-      }
-      else
-        out.at ( i ) = 0;
-    }
-  }
 
   ///////////////////////////////////////////////////////////////////////////////
   //
@@ -463,7 +437,7 @@ bool WRFDocument::_dataCached ( unsigned int timestep, unsigned int channel )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return _data [ timestep ] [ channel ].second.valid();
+  return _volumeCache.end() != _volumeCache.find ( Request ( timestep, channel ) );
 }
 
 
@@ -490,10 +464,22 @@ bool WRFDocument::_dataRequested ( unsigned int timestep, unsigned int channel )
 void WRFDocument::addVolume ( const Parser::Data& data, osg::Image* image, unsigned int timestep, unsigned int channel )
 {
   USUL_TRACE_SCOPE;
+
+  // For convienence.
+  Request request ( timestep, channel );
+
+  // Guard the rest of the function...
   Guard guard ( this->mutex() );
-  _data [ timestep ] [ channel ].first = data;
-  _data [ timestep ] [ channel ].second = image;
-  _requests.erase ( Request ( timestep, channel ) );
+
+  // Cache the volume.
+  _volumeCache [ request ] = image;
+
+  // Cache the raw data if we a suppose to.
+  if ( _cacheRawData )
+    _dataCache [ request ] = data;
+
+  // Erase the request from the list of jobs that are running.
+  _requests.erase ( request );
 }
 
 
@@ -507,7 +493,7 @@ osg::Image * WRFDocument::_volume ( unsigned int timestep, unsigned int channel 
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return _data [ timestep ] [ channel ].second.get();
+  return _volumeCache [ Request ( timestep, channel ) ].get();
 }
 
 
@@ -636,6 +622,10 @@ void WRFDocument::setCurrentTimeStep ( unsigned int current )
     if ( _currentTimestep >= _timesteps )
       _currentTimestep = 0;
   }
+
+  // Purge the cache.
+  this->_purgeCache ();
+
   this->dirty ( true );
 }
 
@@ -678,22 +668,118 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
 
-#ifndef _MSC_VER
+  // Update the cache.
   this->_updateCache ();
-#endif
 
+  // Only animate if we aren't waiting for data.
+  if ( false == _jobForScene.valid () )
+  {
+    static unsigned int num ( 0 );
+
+    ++num;
+    if ( this->animating() && num % 10 == 0 )
+    {
+      unsigned int currentTimestep ( this->getCurrentTimeStep () );
+      this->setCurrentTimeStep ( ++currentTimestep );
+
+      this->dirty ( true );
+    }
+  }
+
+  // Buid the scene if we need to.
   if ( this->dirty () )
     this->_buildScene();
+}
 
-  static unsigned int num ( 0 );
-  ++num;
-  if ( this->animating() && num % 10 == 0 )
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Purge the cache.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::_purgeCache ()
+{
+  if ( this->_cacheFull () )
   {
-    unsigned int currentTimestep ( this->getCurrentTimeStep () );
-    this->setCurrentTimeStep ( ++currentTimestep );
+    // Erase the first element in the cache.
+    Guard guard ( this->mutex () );
 
-    this->_buildScene();
+    Request r ( _volumeCache.begin()->first );
+    unsigned int timestep ( r.first );
+
+    VolumeCache::iterator iter = _volumeCache.upper_bound ( Request ( timestep, _channels ) );
+    _volumeCache.erase ( _volumeCache.begin(), iter );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the cache full?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool WRFDocument::_cacheFull () const
+{
+  unsigned int cacheSize ( 0 );
+  unsigned int maxCacheSize ( 0 );
+
+  {
+    Guard guard ( this->mutex () );
+    cacheSize = _volumeCache.size ();
+    maxCacheSize = _maxCacheSize;
+  }
+
+  return cacheSize > maxCacheSize;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find what timestep and channel to load next and launch job.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::_launchNextCacheRequest ()
+{
+  unsigned int timestepToLoad ( 0 );
+
+  if ( false == _volumeCache.empty () )
+  {
+    Request last ( ( --_volumeCache.end () )->first );
+    timestepToLoad = last.first + 1;
+  }
+
+  if ( timestepToLoad > _timesteps )
+    timestepToLoad = 0;
+
+  typedef LoadDataJob::ReadRequest ReadRequest;
+  typedef LoadDataJob::ReadRequests ReadRequests;
+
+  ReadRequests requests;
+
+  for ( unsigned int i = 0; i < _channels; ++ i )
+  {
+    // Only make a request if we don't alreay have the data.
+    if ( false == this->_dataCached ( timestepToLoad, i ) )
+    {
+      Channel::RefPtr info ( _channelInfo.at ( i ) );
+      ReadRequest request ( timestepToLoad, info );
+      requests.push_back ( request );
+    }
+  }
+
+  LoadDataJob::RefPtr job ( new LoadDataJob ( requests, this, _parser ) );
+  job->setSize ( _x, _y, _z );
+
+  for ( ReadRequests::const_iterator iter = requests.begin(); iter != requests.end(); ++iter )
+  {
+    Guard guard ( this->mutex() );
+    _requests.insert ( Requests::value_type ( Request ( iter->first, iter->second->index() ), job.get() ) );
+  }
+
+  Usul::Jobs::Manager::instance().add ( job.get() );
 }
 
 
@@ -705,47 +791,16 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
 void WRFDocument::_updateCache ()
 {
-  if ( _requests.empty() )
-  {
-    unsigned int timestepToLoad ( 0 );
+  // Return now if there are still requests pending...
+  if ( false == _requests.empty() )
+    return;
 
-    if ( INVALID_TIMESTEP != _lastTimestepLoaded )
-    {
-      timestepToLoad = _lastTimestepLoaded + 1;
-    }
-
-    _lastTimestepLoaded = timestepToLoad;
-
-    if ( timestepToLoad < _timesteps )
-    {
-      typedef LoadDataJob::ReadRequest ReadRequest;
-      typedef LoadDataJob::ReadRequests ReadRequests;
-
-      ReadRequests requests;
-
-      for ( unsigned int i = 0; i < _channels; ++ i )
-      {
-        // Only make a request if we don't alreay have the data.
-        if ( false == this->_dataCached ( timestepToLoad, i ) )
-        {
-          Channel::RefPtr info ( _channelInfo.at ( i ) );
-          ReadRequest request ( timestepToLoad, info );
-          requests.push_back ( request );
-        }
-      }
-
-      LoadDataJob::RefPtr job ( new LoadDataJob ( requests, this, _parser ) );
-      job->setSize ( _x, _y, _z );
-
-      for ( ReadRequests::const_iterator iter = requests.begin(); iter != requests.end(); ++iter )
-      {
-        Guard guard ( this->mutex() );
-        _requests.insert ( Requests::value_type ( Request ( iter->first, iter->second->index() ), job.get() ) );
-      }
-
-      Usul::Jobs::Manager::instance().add ( job.get() );
-    }
-  }
+  // Don't make any more requests if the cache is full and we are not animating.
+  if ( this->_cacheFull () && false == this->animating () )
+    return;
+  
+  // Make the next request.
+  this->_launchNextCacheRequest ();
 }
 
 
@@ -872,144 +927,6 @@ unsigned int WRFDocument::numPlanes () const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _numPlanes;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor..
-//
-///////////////////////////////////////////////////////////////////////////////
-
-WRFDocument::LoadDataJob::LoadDataJob ( const ReadRequests& requests, WRFDocument* document, const Parser& parser ) :
-  BaseClass (),
-  _requests ( requests ),
-  _document ( document ),
-  _parser ( parser ),
-  _x ( 0 ),
-  _y ( 0 ),
-  _z ( 0 )
-{
-  USUL_TRACE_SCOPE;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void WRFDocument::LoadDataJob::_started ()
-{
-  USUL_TRACE_SCOPE;
-
-  // Return if we don't have any.
-  if ( _requests.empty() || false == _document.valid() )
-    return;
-
-
-  // Process all the requests.
-  while ( false == _requests.empty() )
-  {
-    ReadRequest request ( _requests.front() );
-    _requests.pop_front ();
-
-    // Vector for raw floating point data.
-    Parser::Data data;
-
-    osg::ref_ptr < osg::Image > image ( this->_createImage ( request, data ) );
-
-    unsigned int timestep ( request.first );
-    unsigned int channel ( request.second->index () );
-
-    _document->addVolume ( data, image.get(), timestep, channel );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  All done.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void WRFDocument::LoadDataJob::_finished ()
-{
-  USUL_TRACE_SCOPE;
-
-  if ( _document.valid() )
-    _document->loadJobFinished ( this );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the sizes..
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void WRFDocument::LoadDataJob::setSize ( unsigned int x, unsigned int y, unsigned int z )
-{
-  USUL_TRACE_SCOPE;
-
-  _x = x;
-  _y = y;
-  _z = z;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create the image.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Image*  WRFDocument::LoadDataJob::_createImage ( const ReadRequest& request, Parser::Data& data )
-{
-  USUL_TRACE_SCOPE;
-
-  Channel::RefPtr info ( request.second );
-  unsigned int timestep ( request.first );
-  unsigned int channel ( info->index () );
-
-  std::cout << "Reading data.  Timestep: " << timestep << " Channel: " << channel << std::endl;
-
-  _parser.data ( data, timestep, channel );
-
-  // Normalize the data to unsigned char.
-  std::vector < unsigned char > chars;
-  Detail::normalize ( chars, data, info->min (), info->max () );
-
-  unsigned int width ( _y ), height ( _x ), depth ( _z );
-
-  osg::ref_ptr < osg::Image > image ( new osg::Image );
-  image->allocateImage ( width, height, depth, GL_LUMINANCE, GL_UNSIGNED_BYTE );
-
-  unsigned char *pixels ( image->data() );
-  std::copy ( chars.begin(), chars.end(), pixels );
-#if 0
-  osg::ref_ptr < osg::Image > scaled ( new osg::Image );
-  scaled->allocateImage ( 256, 256, 128, GL_LUMINANCE, GL_UNSIGNED_BYTE );
-  ::memset ( scaled->data(), 0, 256 * 256 * 128 );
-
-  for ( unsigned int r = 0; r < depth; ++r )
-  {
-    for ( unsigned int t = 0; t < height; ++ t )
-    {
-      for ( unsigned int s = 0; s < width; ++ s )
-      {
-        *scaled->data ( s, t, r ) = *image->data ( s, t, r );
-      }
-    }
-  }
-
-  return scaled.release ();
-#else
-  return image.release();
-#endif
 }
 
 
@@ -1278,7 +1195,7 @@ osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int
 
   // Group to return.
   osg::ref_ptr < osg::Group > group ( new osg::Group );
-
+#if 0
   Usul::Predicates::CloseFloat < float > close ( 10 );
 
   double min ( Usul::Math::minimum ( _channelInfo.at ( channel0 )->min (), _channelInfo.at ( channel1 )->min () ) );
@@ -1354,7 +1271,7 @@ osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int
     Guard guard ( this->mutex () );
     _vectorCache.at ( timestep ) = group.get();
   }
-
+#endif
   return group.get();
 }
 
@@ -1368,12 +1285,14 @@ osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int
 WRFDocument::DataType WRFDocument::_value ( unsigned int timestep, unsigned int channel, unsigned int i, unsigned int j, unsigned int k )
 {
   USUL_TRACE_SCOPE;
-
+#if 0
   unsigned int sliceSize ( _x * _y );
   unsigned int index ( sliceSize * k + ( _y * i ) + j );
   
   Guard guard ( this->mutex () );
   return _data [ timestep ] [ channel ].first [ index ];
+#endif
+  return 0.0f;
 }
 
 
@@ -1436,12 +1355,6 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
   
   // Initialize the bounding box.
   this->_initBoundingBox ();
-
-  // Make room for the volumes.
-  _data.resize ( _timesteps );
-
-  for ( TimestepsData::iterator iter = _data.begin(); iter != _data.end(); ++iter )
-    iter->resize ( _channels );
 
   // Make enough room for the cache.
   _vectorCache.resize ( _timesteps );

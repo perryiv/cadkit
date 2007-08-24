@@ -42,7 +42,7 @@ struct FindMinMax
     if ( !Usul::Math::finite ( value ) || Usul::Math::nan ( value ) )
       return;
 
-    if ( close ( value, 1.0e+035f ) )
+    if ( close ( static_cast < double > ( value ), static_cast < double > ( 1.0e+035 ) ) )
       return;
 
     if ( value < min )
@@ -52,7 +52,7 @@ struct FindMinMax
       max = value;
   }
 
-  Usul::Predicates::CloseFloat< float > close;
+  Usul::Predicates::CloseFloat< double > close;
   float min, max;
 };
 

@@ -112,8 +112,10 @@ void History::add ( ICommand *command )
 
 bool History::canRedo() const
 {
-	Guard guard ( this->mutex() );
-  Usul::Interfaces::ICanRedo::QueryPtr redo ( ( false == _undone.empty() ) ? _undone.top() : 0x0 );
+  Guard guard ( this->mutex() );
+	
+	Usul::Interfaces::IUnknown::QueryPtr unknown ( ( false == _undone.empty() ) ? _undone.top().get() : 0x0 ); 
+  Usul::Interfaces::ICanRedo::QueryPtr redo ( unknown.get () );
   return ( ( true == redo.valid() ) ? redo->canRedo() : false );
 }
 
@@ -127,7 +129,9 @@ bool History::canRedo() const
 bool History::canUndo() const
 {
 	Guard guard ( this->mutex() );
-  Usul::Interfaces::ICanUndo::QueryPtr undo ( ( false == _done.empty() ) ? _done.top() : 0x0 );
+	
+	Usul::Interfaces::IUnknown::QueryPtr unknown ( ( false == _done.empty() ) ? _done.top().get() : 0x0 );
+  Usul::Interfaces::ICanUndo::QueryPtr undo ( unknown.get () );
   return ( ( true == undo.valid() ) ? undo->canUndo() : false );
 }
 

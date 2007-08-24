@@ -118,14 +118,7 @@ void Command::execute ( Usul::Interfaces::IUnknown * caller )
   std::cout << this->text() << std::endl;
   
   // Execute the command.
-  try
-  {
-    this->_execute ();
-  }
-  catch ( ... )
-  {
-  }
-  //Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Command::_execute ), "3084410573" );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Command::_execute ), "3084410573" );
 }
 
 

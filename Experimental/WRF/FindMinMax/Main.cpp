@@ -72,10 +72,10 @@ void _run ()
 
   Parser parser ( filename );
 
-  unsigned int xSize ( 507 ), ySize ( 504 ), zSize ( 101 ), numTimesteps ( 289 );
+  unsigned int xSize ( 507 ), ySize ( 504 ), zSize ( 101 ), numTimesteps ( 5 );
   unsigned int numChannels ( 3 );
   unsigned int numFields2D ( 3 );
-  bool headers ( false );
+  bool headers ( true );
 
   parser.setSizes ( xSize, ySize, zSize );
   parser.timesteps ( numTimesteps );

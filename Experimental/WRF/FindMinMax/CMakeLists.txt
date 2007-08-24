@@ -5,14 +5,12 @@ SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 
-SUBDIRS(
-${CADKIT_ROOT_DIR}/Usul 
-)
-
 # ------------ Set Include Folders ----------------------
 INCLUDE_DIRECTORIES( 
 		     ${CADKIT_INC_DIR}
 		     )
+
+LINK_DIRECTORIES ( ${CADKIT_BIN_DIR} )
 
 #List the Sources
 SET (SOURCES

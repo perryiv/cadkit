@@ -82,7 +82,7 @@ void Thread::_destroy()
 
   if ( Thread::NOT_RUNNING != _state )
   {
-    std::cout << Usul::Strings::format ( "Error 4212506063: deleting running thread: ", this, ", id: ", _id, ", system thread: ", _systemId,  '\n' ) << std::flush;
+    std::cout << Usul::Strings::format ( "Error 4212506063: deleting running thread: ", this, ", id: ", _id, ", system thread: ", _systemId, '\n' ) << std::flush;
   }
 
   _cancelledCB = 0x0;

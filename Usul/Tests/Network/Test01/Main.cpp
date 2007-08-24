@@ -50,17 +50,18 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string BASE_URL   ( "base_url"  );
-const std::string BASE_FILE  ( "base_file" );
-const std::string LAT_MIN    ( "lat_min"   );
-const std::string LAT_MAX    ( "lat_max"   );
-const std::string LON_MIN    ( "lon_min"   );
-const std::string LON_MAX    ( "lon_max"   );
-const std::string NUM_ROWS   ( "num_rows"  );
-const std::string NUM_COLS   ( "num_cols"  );
-const std::string POOL_SIZE  ( "pool_size" );
-const unsigned int LAT_INDEX ( 0 );
-const unsigned int LON_INDEX ( 1 );
+const std::string BASE_URL      ( "base_url"  );
+const std::string BASE_FILE     ( "base_file" );
+const std::string LAT_MIN       ( "lat_min"   );
+const std::string LAT_MAX       ( "lat_max"   );
+const std::string LON_MIN       ( "lon_min"   );
+const std::string LON_MAX       ( "lon_max"   );
+const std::string NUM_ROWS      ( "num_rows"  );
+const std::string NUM_COLS      ( "num_cols"  );
+const std::string POOL_SIZE     ( "pool_size" );
+const std::string SKIP_EXISTING ( "skip_existing_files" );
+const unsigned int LAT_INDEX    ( 0 );
+const unsigned int LON_INDEX    ( 1 );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -96,6 +97,7 @@ private:
   Usul::Math::Vec2d _max;
   Usul::Math::Vec2ui _size;
   unsigned int _poolSize;
+  bool _skipExisting;
   Options _options;
   std::string _dir;
   Usul::Network::Curl::Life _curl;
@@ -115,6 +117,7 @@ Program::Program ( int argc, char **argv, std::ostream *trace ) :
   _max (  90,  180 ),
   _size ( 11, 34 ),
   _poolSize ( 10 ),
+  _skipExisting ( true ),
   _options(),
   _dir ( Usul::File::fullPath ( "./cache/" ) ),
   _curl()
@@ -146,15 +149,21 @@ Program::Program ( int argc, char **argv, std::ostream *trace ) :
   _options.insert ( options );
 
   // Get members from command-line.
-  _baseUrl  = _options.get ( BASE_URL,  _baseUrl  );
-  _baseFile = _options.get ( BASE_FILE, _baseFile );
-  _min[LAT_INDEX]   = _options.get ( LAT_MIN,   _min[LAT_INDEX]   );
-  _min[LON_INDEX]   = _options.get ( LON_MIN,   _min[LON_INDEX]   );
-  _max[LAT_INDEX]   = _options.get ( LAT_MAX,   _max[LAT_INDEX]   );
-  _max[LON_INDEX]   = _options.get ( LON_MAX,   _max[LON_INDEX]   );
-  _size[LAT_INDEX]  = _options.get ( NUM_ROWS,  _size[LAT_INDEX]  );
-  _size[LON_INDEX]  = _options.get ( NUM_COLS,  _size[LON_INDEX]  );
-  _poolSize         = _options.get ( POOL_SIZE, _poolSize         );
+  _baseUrl          = _options.get ( BASE_URL,      _baseUrl          );
+  _baseFile         = _options.get ( BASE_FILE,     _baseFile         );
+  _min[LAT_INDEX]   = _options.get ( LAT_MIN,       _min[LAT_INDEX]   );
+  _min[LON_INDEX]   = _options.get ( LON_MIN,       _min[LON_INDEX]   );
+  _max[LAT_INDEX]   = _options.get ( LAT_MAX,       _max[LAT_INDEX]   );
+  _max[LON_INDEX]   = _options.get ( LON_MAX,       _max[LON_INDEX]   );
+  _size[LAT_INDEX]  = _options.get ( NUM_ROWS,      _size[LAT_INDEX]  );
+  _size[LON_INDEX]  = _options.get ( NUM_COLS,      _size[LON_INDEX]  );
+  _poolSize         = _options.get ( POOL_SIZE,     _poolSize         );
+  _skipExisting     = _options.get ( SKIP_EXISTING, _skipExisting     );
+
+  // Print options.
+  std::cout << "Options:" << std::endl;
+  for ( Options::Map::const_iterator i = _options.begin(); i != _options.end(); ++i )
+    std::cout << i->first << '=' << i->second << std::endl;
 
   // Remove the url and file from the options.
   _options.remove ( BASE_URL );
@@ -288,9 +297,23 @@ void Program::run()
       // Add the bounding box.
       options["bbox"] = this->_makeBoundingBox ( minLat, minLon, maxLat, maxLon );
 
-      // Add the job.
-      Usul::Jobs::Job::RefPtr job ( new WmsJob ( manager.nextJobId(), _baseUrl, file, options ) );
-      manager.add ( job.get() );
+      // Make the job.
+      WmsJob::RefPtr job ( new WmsJob ( manager.nextJobId(), _baseUrl, file, options ) );
+
+      // Check if it exists.
+      const bool exists ( Usul::Predicates::FileExists::test ( job->file() ) );
+
+      // Should we download?
+      if ( true == exists && true == _skipExisting )
+      {
+        std::cout << Usul::Strings::format ( "Skipping existing file: ", job->file(), '\n' ) << std::flush;
+      }
+
+      // Otherwise...
+      else
+      {
+        manager.add ( job.get() );
+      }
 
       // Reset the min.
       minLon = maxLon;
@@ -329,11 +352,20 @@ void _test ( int argc, char **argv, std::ostream *trace )
 
 int main ( int argc, char **argv )
 {
+#ifdef _DEBUG
+
   // Trace file.
   std::ofstream trace ( "trace.csv" );
 
   // Call test function.
   Usul::Functions::safeCallV1V2V3 ( _test, argc, argv, &trace, "1894923704" );
+
+#else
+
+  // Call test function.
+  Usul::Functions::safeCallV1V2V3 ( _test, argc, argv, static_cast<std::ostream *> ( 0x0 ), "3470131298" );
+
+#endif
 
   return 0;
 }

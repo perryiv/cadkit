@@ -156,7 +156,7 @@ public:
 
     for ( unsigned int i = 0; i < maxNumAttempts; ++i )
     {
-      WMS_OUTPUT << "Attempt: " << i << ", file: " << file << ", url = " << url << std::endl;
+      WMS_OUTPUT << Usul::Strings::format ( "Attempt: ", i, ", file: ", file, ", url = ", url, '\n' ) << std::flush;
 
       // Use curl to download the file.
       Usul::Network::Curl curl ( url, file );

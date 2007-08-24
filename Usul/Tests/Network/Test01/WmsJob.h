@@ -31,13 +31,18 @@ public:
   typedef Usul::Network::WMS WMS;
   typedef WMS::Options Options;
 
+  // Smart-pointer definitions.
+  USUL_DECLARE_REF_POINTERS ( WmsJob );
+
   WmsJob ( unsigned long id, const std::string &url, const std::string &file, const Options &options );
 
-  virtual void              _started();
+  std::string               file() const;
 
 protected:
 
   virtual ~WmsJob();
+
+  virtual void              _started();
 
 private:
 

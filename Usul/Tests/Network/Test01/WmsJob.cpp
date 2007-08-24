@@ -54,6 +54,20 @@ WmsJob::~WmsJob()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the output file name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string WmsJob::file() const
+{
+  USUL_TRACE_SCOPE;
+  const std::string file ( Usul::Strings::format ( _wms.file(), '.', _wms.extension() ) );
+  return file;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Called when the job starts.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -62,7 +76,7 @@ void WmsJob::_started()
 {
   USUL_TRACE_SCOPE;
 
-  const std::string file ( Usul::Strings::format ( _wms.file(), '.', _wms.extension() ) );
+  const std::string file ( this->file() );
 
   for ( unsigned int i = 0; i < 10; ++i )
   {

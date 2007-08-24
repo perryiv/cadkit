@@ -44,9 +44,6 @@
 #include "Usul/Interfaces/ICommandList.h"
 #include "Usul/Interfaces/IButtonID.h"
 
-#include "vrj/Kernel/Kernel.h"
-#include "vrj/Display/Projection.h"
-
 #include "VRV/Common/Buttons.h"
 #include "VRV/Devices/ButtonGroup.h"
 #include "VRV/Devices/TrackerDevice.h"

@@ -16,6 +16,7 @@
 
 #include "Minerva/Core/DataObjects/Line.h"
 #include "Minerva/Core/DataObjects/UserData.h"
+#include "Minerva/Core/Visitor.h"
 
 #include "Usul/Interfaces/ILineData.h"
 
@@ -53,6 +54,18 @@ _node ( new osg::Group )
 
 Line::~Line()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Line::accept ( Minerva::Core::Visitor& visitor )
+{
+  visitor.visit ( *this );
 }
 
 

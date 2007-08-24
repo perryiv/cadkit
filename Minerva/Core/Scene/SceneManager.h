@@ -25,7 +25,6 @@
 #include "Usul/Interfaces/ILayer.h"
 
 #include "OsgTools/Legend/Legend.h"
-#include "OsgTools/Animate/DateGroup.h"
 
 #include "osg/ref_ptr"
 #include "osg/Group"
@@ -33,6 +32,8 @@
 #include "osg/Node"
 #include "osg/Projection"
 #include "osg/MatrixTransform"
+
+#include "osgText/Text"
 
 #include <map>
 
@@ -75,39 +76,8 @@ public:
   bool                       dirty() const;
   void                       dirty( bool );
 
-  typedef OsgTools::Animate::Settings Settings;
-
-  /// Get/Set the timestep type.
-  void                        timestepType( Settings::TimestepType type );
-  Settings::TimestepType      timestepType( ) const;
-
-  /// Get/Set show past events.
-  void                        showPastEvents ( bool b );
-  bool                        showPastEvents () const;
-
-  /// Get/Set the time window flag.
-  void                        timeWindow ( bool b );
-  bool                        timeWindow () const;
-
-  /// Get/Set the number of days in the time window.
-  void                        timeWindowDuration ( unsigned int days );
-  unsigned int                timeWindowDuration () const;
-
-  /// Get/Set the animation speed.
-  void                        animationSpeed ( float speed );
-  float                       animationSpeed () const;
-
-  /// Start the animation.
-  void                        startAnimation();
-
-  /// Stop the animation.
-  void                        stopAnimation();
-
-  /// Pause the animation
-  void                        pauseAnimation();
-
   /// Clear the internal state.
-  void                        clear();
+  void                       clear();
 
   enum LegendPosition
   {
@@ -137,11 +107,12 @@ public:
   void                       legendPadding( const osg::Vec2& padding );
   const osg::Vec2&           legendPadding() const;
 
+  /// Text for updating current date.
+  osgText::Text &            dateText ();
 protected:
 
   virtual ~SceneManager();
   
-  void                       _setUpAnimationNode();
   void                       _buildLegend();
 
   void                       _setLegendPosition ( unsigned int legendWidth );
@@ -153,10 +124,10 @@ private:
   mutable Mutex _mutex;
 
   // OSG nodes.
-  osg::ref_ptr < osg::Group >                    _root;			// The root node of the scene graph
-  osg::ref_ptr < osg::Group >                    _static_root;		// The parent node for all static data
+  osg::ref_ptr < osg::Group >                    _root;
+  osg::ref_ptr < osg::Group >                    _static_root;
   osg::ref_ptr < osg::Projection >               _projectionNode;
-  osg::ref_ptr < OsgTools::Animate::DateGroup >  _animateNode;
+  osg::ref_ptr < osgText::Text >                 _dateText;
 
   Layers _layers;
 

@@ -14,8 +14,7 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/PointLayer.h"
 #include "Minerva/Core/Interfaces.h"
-
-#include "OsgTools/Animate/Date.h"
+#include "Minerva/Core/Animate/Date.h"
 
 #include "Usul/Interfaces/IPointLayer.h"
 #include "Usul/Interfaces/ITemporalData.h"
@@ -32,11 +31,15 @@ class MINERVA_EXPORT PointTimeLayer : public Minerva::Core::Layers::PointLayer,
 {
 public:
   typedef Minerva::Core::Layers::PointLayer BaseClass;
+  typedef Minerva::Core::Animate::Date      Date;
 
   USUL_DECLARE_QUERY_POINTERS ( PointTimeLayer );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   PointTimeLayer();
+
+  /// Accept the visitor.
+  virtual void            accept ( Minerva::Core::Visitor& visitor );
 
   /// Get/Set First date column name.
   void                    firstDateColumn( const std::string& );
@@ -45,9 +48,6 @@ public:
   /// Get/Set last date column name.
   void                    lastDateColumn( const std::string& );
   const std::string&      lastDateColumn() const;
-
-  /// Build the scene.
-  virtual void            buildScene( osg::Group* parent );
 
   /// Build the data objects.
   virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller = 0x0 );
@@ -62,14 +62,14 @@ public:
   virtual std::string     defaultQuery() const;
 
   /// Get/Set the min date.
-  void                             minDate( const OsgTools::Animate::Date& date );
-  void                             minDate( unsigned int day, unsigned int month, unsigned int year );
-  const OsgTools::Animate::Date&   minDate() const;
+  void                    minDate( const Date& date );
+  void                    minDate( unsigned int day, unsigned int month, unsigned int year );
+  const Date&             minDate() const;
 
   /// Get/Set the max date.
-  void                             maxDate ( const OsgTools::Animate::Date& date );
-  void                             maxDate (unsigned int day, unsigned int month, unsigned int year );
-  const OsgTools::Animate::Date&   maxDate() const;
+  void                    maxDate ( const Date& date );
+  void                    maxDate (unsigned int day, unsigned int month, unsigned int year );
+  const Date&             maxDate() const;
 
 protected:
   virtual ~PointTimeLayer();
@@ -93,8 +93,8 @@ private:
   std::string _firstDateColumn;
   std::string _lastDateColumn;
   
-  OsgTools::Animate::Date _minDate;
-  OsgTools::Animate::Date _maxDate;
+  Date _minDate;
+  Date _maxDate;
 
   SERIALIZE_XML_CLASS_NAME ( PointTimeLayer );
 };

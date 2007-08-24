@@ -177,8 +177,6 @@ Layer::~Layer()
 void Layer::accept ( Minerva::Core::Visitor& visitor )
 {
   visitor.visit ( *this );
-
-  this->traverse ( visitor );
 }
 
 
@@ -308,8 +306,6 @@ Usul::Types::Uint32 Layer::renderBin( ) const
 void Layer::buildScene( osg::Group* parent )
 {
   Guard guard( this->mutex() );
-
-  unsigned int size ( _dataObjects.size() );
 
   for( DataObjects::iterator iter = _dataObjects.begin(); iter != _dataObjects.end(); ++iter )
   {

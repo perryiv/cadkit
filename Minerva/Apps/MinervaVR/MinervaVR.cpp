@@ -506,7 +506,7 @@ void MinervaVR::unref( bool )
 
 void MinervaVR::startAnimation ()
 {
-  _document->sceneManager()->startAnimation ();
+  _document->startAnimation ();
 }
 
 
@@ -518,7 +518,7 @@ void MinervaVR::startAnimation ()
 
 void MinervaVR::stopAnimation ()
 {
-  _document->sceneManager()->stopAnimation ();
+  _document->stopAnimation ();
 }
 
 
@@ -530,7 +530,7 @@ void MinervaVR::stopAnimation ()
 
 void MinervaVR::pauseAnimation ()
 {
-  _document->sceneManager()->pauseAnimation ();
+  _document->pauseAnimation ();
 }
 
 
@@ -542,7 +542,7 @@ void MinervaVR::pauseAnimation ()
 
 void MinervaVR::animateSpeed ( double speed )
 {
-  _document->sceneManager()->animationSpeed ( speed );
+  _document->animateSpeed ( speed );
 }
 
 
@@ -554,7 +554,7 @@ void MinervaVR::animateSpeed ( double speed )
 
 double MinervaVR::animateSpeed () const
 {
-  return _document->sceneManager()->animationSpeed ();
+  return _document->animateSpeed ();
 }
 
 

@@ -371,10 +371,6 @@
 			Name="Config"
 			>
 			<File
-				RelativePath=".\menu.xml"
-				>
-			</File>
-			<File
 				RelativePath=".\preferences.xml"
 				>
 			</File>

@@ -34,6 +34,9 @@ public:
 
   LineLayer();
 
+  /// Accept the visitor.
+  virtual void            accept ( Minerva::Core::Visitor& visitor );
+
   /// Build the data objects.
   virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller = 0x0 );
 

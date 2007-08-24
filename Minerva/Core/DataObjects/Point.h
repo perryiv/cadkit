@@ -54,6 +54,9 @@ public:
 
   Point();
 
+  /// Accept the visitor.
+  virtual void            accept ( Minerva::Core::Visitor& visitor );
+
   /// Get/Set the size.
   float                   size () const;
   void                    size ( float );
@@ -77,6 +80,9 @@ public:
   void                    autotransform ( bool b );
   bool                    autotransform () const;
 
+  /// Get/Set the visibilty flag.
+  void                    visibility ( bool b );
+  bool                    visibility ( ) const;
 protected:
 
   // Use reference counting

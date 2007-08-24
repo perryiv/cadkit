@@ -20,6 +20,8 @@
 #include "Minerva/Core/Commands/RemoveLayer.h"
 #include "Minerva/Core/Commands/ShowLayer.h"
 #include "Minerva/Core/Commands/HideLayer.h"
+#include "Minerva/Core/Visitors/TemporalAnimation.h"
+#include "Minerva/Core/Visitors/FindMinMaxDates.h"
 
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
@@ -27,6 +29,8 @@
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/IClonable.h"
 #include "Usul/Interfaces/ICommand.h"
+#include "Usul/Interfaces/IFrameStamp.h"
+#include "Usul/Interfaces/ITemporalData.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
 
@@ -56,6 +60,13 @@ _receiver ( new CommandReceiver ),
 _connection ( 0x0 ),
 _commandUpdate ( 5000 ),
 _commandJob ( 0x0 ),
+_animateSettings ( new Minerva::Core::Animate::Settings ),
+_datesDirty ( false ),
+_minDate ( boost::date_time::min_date_time ),
+_maxDate ( boost::date_time::max_date_time ),
+_lastDate ( boost::date_time::min_date_time ),
+_lastTime ( -1.0 ),
+_animationSpeed ( 0.5f ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
   // Initialize the planet.
@@ -387,7 +398,8 @@ void MinervaDocument::setLayerOperation( const std::string& optype, int val, Usu
 
 void MinervaDocument::timestepType( Settings::TimestepType type )
 {
-  _sceneManager->timestepType( type );
+  Guard guard ( this->mutex () );
+  _animateSettings->timestepType( type );
 }
 
 
@@ -397,9 +409,10 @@ void MinervaDocument::timestepType( Settings::TimestepType type )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OsgTools::Animate::Settings::TimestepType MinervaDocument::timestepType( ) const
+Minerva::Core::Animate::Settings::TimestepType MinervaDocument::timestepType( ) const
 {
-  return _sceneManager->timestepType();
+  Guard guard ( this->mutex () );
+  return _animateSettings->timestepType();
 }
 
 
@@ -853,6 +866,14 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
   if( doomed != _layers.end() )
     _layers.erase( doomed );
 
+  // If it's temporal, we need to find the min and max dates again.
+  Usul::Interfaces::ITemporalData::QueryPtr temporal ( layer );
+  if ( temporal.valid () )
+  {
+    Guard guard ( this->mutex() );
+    _datesDirty = true;
+  }
+
   this->modified( true );
 }
 
@@ -874,6 +895,14 @@ void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
 
     // Add the layer to our list.
     _layers.push_back( layer );
+  }
+
+  // If it's temporal, we need to find the min and max dates again.
+  Usul::Interfaces::ITemporalData::QueryPtr temporal ( layer );
+  if ( temporal.valid () )
+  {
+    Guard guard ( this->mutex() );
+    _datesDirty = true;
   }
 }
 
@@ -1065,7 +1094,8 @@ void MinervaDocument::_executeCommand ( Usul::Interfaces::ICommand* command )
 
 void MinervaDocument::startAnimation()
 {
-  _sceneManager->startAnimation();
+  Guard guard ( this->mutex () );
+  _animateSettings->animate ( true );
 }
 
 
@@ -1077,7 +1107,13 @@ void MinervaDocument::startAnimation()
 
 void MinervaDocument::stopAnimation()
 {
-  _sceneManager->stopAnimation();
+  {
+    Guard guard ( this->mutex () );
+    _animateSettings->animate ( false );
+  }
+  // Reset dates.
+  Minerva::Core::Visitors::TemporalAnimation::RefPtr visitor ( new Minerva::Core::Visitors::TemporalAnimation ( _minDate, _maxDate ) );
+  this->_acceptVisitor ( *visitor );
 }
 
 
@@ -1089,7 +1125,10 @@ void MinervaDocument::stopAnimation()
 
 void MinervaDocument::pauseAnimation()
 {
-  _sceneManager->pauseAnimation();
+  Guard guard ( this->mutex () );
+
+  // Stop animation, but don't send the visitor to reset what nodes are shown.
+  _animateSettings->animate ( false );
 }
 
 
@@ -1101,7 +1140,8 @@ void MinervaDocument::pauseAnimation()
 
 void MinervaDocument::animateSpeed ( double speed )
 {
-  _sceneManager->animationSpeed ( speed );
+  Guard guard ( this->mutex () );
+  _animationSpeed = speed;
 }
 
 
@@ -1113,7 +1153,8 @@ void MinervaDocument::animateSpeed ( double speed )
 
 double MinervaDocument::animateSpeed () const
 {
-  return _sceneManager->animationSpeed ();
+  Guard guard ( this->mutex () );
+  return _animationSpeed;
 }
 
 
@@ -1223,6 +1264,9 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     Usul::Jobs::Manager::instance().add ( job.get () );
     _commandJob = job;
   }
+
+  // Animate.
+  this->_animate ( caller );
 }
 
 
@@ -1373,4 +1417,119 @@ Magrathea::Planet* MinervaDocument::planet ()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _planet.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Animate.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
+{
+  bool datesDirty ( false );
+  {
+    Guard guard ( this->mutex () );
+    datesDirty = _datesDirty;
+  }
+
+  if ( _animateSettings->animate () )
+  {
+    if ( datesDirty )
+    {
+      Minerva::Core::Visitors::FindMinMaxDates::RefPtr findMinMax ( new Minerva::Core::Visitors::FindMinMaxDates );
+      this->_acceptVisitor ( *findMinMax );
+
+      _minDate = findMinMax->first ();
+      _maxDate = findMinMax->last ();
+      _lastDate = _minDate;
+
+  #ifdef _DEBUG
+      std::string min ( _minDate.toString() );
+      std::string max ( _maxDate.toString () );
+  #endif
+
+      Guard guard ( this->mutex () );
+      _datesDirty = false;
+    }
+
+    if ( false == _animateSettings->pause () )
+    {
+      Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
+      if ( fs.valid () )
+      {
+        osg::ref_ptr < osg::FrameStamp > frameStamp ( fs->frameStamp () );
+
+        double time ( frameStamp->getReferenceTime () );
+
+        // Set the last time if it hasn't been set.
+        if ( -1.0 == _lastTime )
+          _lastTime = time;
+
+        // Duration between last time the date was incremented.
+        double duration ( time - _lastTime );
+
+        Minerva::Core::Animate::Date lastDate ( _lastDate );
+
+        // Animate if we should.
+        if ( duration > _animationSpeed )
+        {
+          if( _animateSettings->timestepType() == Settings::DAY )
+            lastDate.incrementDay();
+          else if ( _animateSettings->timestepType() == Settings::MONTH )
+            lastDate.incrementMonth();
+          else if ( _animateSettings->timestepType() == Settings::YEAR )
+            lastDate.incrementYear();
+          _lastTime = time;
+
+          if( lastDate > _maxDate )
+          {
+            lastDate = _minDate;
+          }
+
+          Minerva::Core::Animate::Date firstDate ( lastDate );
+
+          if ( _animateSettings->showPastDays() )
+          {
+            firstDate = _minDate;
+          }
+
+          if( _animateSettings->timeWindow() )
+          {
+            firstDate = lastDate;
+            firstDate.moveBackNumDays( _animateSettings->windowLength() );
+          }
+
+#ifdef _DEBUG
+          std::string first ( firstDate.toString() );
+          std::string last ( lastDate.toString () );
+#endif
+
+          this->sceneManager()->dateText().setText( lastDate.toString() );
+          this->sceneManager()->dateText().update ();
+          _lastDate = lastDate;
+
+          Minerva::Core::Visitors::TemporalAnimation::RefPtr visitor ( new Minerva::Core::Visitors::TemporalAnimation ( firstDate, lastDate ) );
+          this->_acceptVisitor ( *visitor );
+        }
+      }
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Have visitor visit all layes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_acceptVisitor ( Minerva::Core::Visitor& visitor )
+{
+  for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
+  {
+    if ( Minerva::Core::Layers::Layer *layer = dynamic_cast < Minerva::Core::Layers::Layer * > ( (*iter).get() ) )
+      layer->accept ( visitor );
+  }
 }

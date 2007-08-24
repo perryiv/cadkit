@@ -11,6 +11,7 @@
 #include "Minerva/Core/Layers/PolygonLayer.h"
 #include "Minerva/Core/postGIS/Polygon.h"
 #include "Minerva/Core/DataObjects/Polygon.h"
+#include "Minerva/Core/Visitor.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 
@@ -76,6 +77,18 @@ void PolygonLayer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _showBorder );
   SERIALIZE_XML_ADD_MEMBER ( _borderColor );
   SERIALIZE_XML_ADD_MEMBER ( _borderWidth );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PolygonLayer::accept ( Minerva::Core::Visitor& visitor )
+{
+  visitor.visit ( *this );
 }
 
 

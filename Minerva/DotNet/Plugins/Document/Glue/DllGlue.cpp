@@ -240,7 +240,7 @@ void DllGlue::addLayer( CadKit::Interfaces::ILayer ^layer, CadKit::Threads::Jobs
 
 void DllGlue::timestepType ( CadKit::Interfaces::AnimateTimestep type )
 {
- _document->timestepType( static_cast < OsgTools::Animate::Settings::TimestepType > ( type ) );
+  _document->timestepType( static_cast < ::Minerva::Core::Animate::Settings::TimestepType > ( type ) );
 }
 
 

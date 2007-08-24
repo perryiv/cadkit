@@ -15,6 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/DataObjects/PointTime.h"
+#include "Minerva/Core/Visitor.h"
 
 using namespace Minerva::Core::DataObjects;
 
@@ -45,11 +46,23 @@ PointTime::~PointTime()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointTime::accept ( Minerva::Core::Visitor& visitor )
+{
+  visitor.visit ( *this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the first date.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const OsgTools::Animate::Date& PointTime::firstDate() const
+const Minerva::Core::Animate::Date& PointTime::firstDate() const
 {
   return _firstDate;
 }
@@ -61,7 +74,7 @@ const OsgTools::Animate::Date& PointTime::firstDate() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const OsgTools::Animate::Date& PointTime::lastDate() const
+const Minerva::Core::Animate::Date& PointTime::lastDate() const
 {
   return _lastDate;
 }

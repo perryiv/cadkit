@@ -167,7 +167,6 @@ public:
 
   void options ( Options &o )
   {
-
     for ( Args::const_iterator iter = _args.begin(); iter != _args.end(); ++iter )
     {
       // Option in the form of -option value
@@ -181,16 +180,16 @@ public:
 
       // Option in the form of option=value
       else 
+      {
+        std::string::size_type pos = iter->find_first_of ( '=' );
+        if ( pos != std::string::npos )
         {
-          std::string::size_type pos = iter->find_first_of ( '=' );
-          if ( pos != std::string::npos )
-            {
-              std::string option ( iter->begin(), iter->begin() + pos );
-              std::transform ( option.begin(), option.end(), option.begin(), ::tolower );
-              std::string value ( iter->begin() + pos + 1, iter->end() );
-              o.insert( option, value );
-            }
+          std::string option ( iter->begin(), iter->begin() + pos );
+          std::transform ( option.begin(), option.end(), option.begin(), ::tolower );
+          std::string value ( iter->begin() + pos + 1, iter->end() );
+          o.insert( option, value );
         }
+      }
     }
   }
 

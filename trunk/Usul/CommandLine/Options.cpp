@@ -34,7 +34,19 @@ Options::Options() : _options()
 
 void Options::insert ( const std::string& option, const std::string& value )
 {
-  _options.insert( Map::value_type ( option, value ) );
+  _options.insert ( Map::value_type ( option, value ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Insert given options.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Options::insert ( const Options& options )
+{
+  _options.insert ( options.begin(), options.end() );
 }
 
 
@@ -44,9 +56,9 @@ void Options::insert ( const std::string& option, const std::string& value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Options::option( const std::string& option ) const
+bool Options::option ( const std::string& option ) const
 {
-  Map::const_iterator iter = _options.find( option );
+  Map::const_iterator iter = _options.find ( option );
   return ( iter != _options.end() );
 }
 
@@ -57,24 +69,19 @@ bool Options::option( const std::string& option ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Options::value ( const std::string& option ) const
+std::string Options::value ( const std::string& option, const std::string &defaultValue ) const
 {
-  Map::const_iterator iter = _options.find( option );
-  if( iter != _options.end() )
-    return iter->second;
-  return "";
+  return this->stringValue ( option, defaultValue );
 }
 
 
 // -----------------------------------------------------------------------------
 // The value as a string
 // -----------------------------------------------------------------------------
-std::string Options::stringValue ( const std::string& option ) const
+std::string Options::stringValue ( const std::string& option, const std::string &defaultValue ) const
 {
-  Map::const_iterator iter = _options.find( option );
-  if( iter != _options.end() )
-    return iter->second;
-  return "";
+  Map::const_iterator iter = _options.find ( option );
+  return ( ( iter != _options.end() ) ? iter->second : defaultValue );
 }
 
 
@@ -84,13 +91,12 @@ std::string Options::stringValue ( const std::string& option ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
  
-unsigned long int Options::intValue (const std::string& option) const
+unsigned long Options::longValue ( const std::string& option, unsigned long defaultValue ) const
 {
-  unsigned long int value ( 0 );
-  std::istringstream in ( this->stringValue(option) );
-  in >> value;
-  return value;
+  Map::const_iterator iter = _options.find ( option );
+  return ( ( iter != _options.end() ) ? Usul::Strings::fromString<unsigned long> ( iter->second ) : defaultValue );
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -98,12 +104,10 @@ unsigned long int Options::intValue (const std::string& option) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Options::floatValue(const std::string& option) const
+float Options::floatValue ( const std::string& option, float defaultValue ) const
 {
-  float value ( 0 );
-  std::istringstream in ( this->stringValue(option) );
-  in >> value;
-  return value;
+  Map::const_iterator iter = _options.find ( option );
+  return ( ( iter != _options.end() ) ? Usul::Strings::fromString<float> ( iter->second ) : defaultValue );
 }
 
 

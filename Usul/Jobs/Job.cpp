@@ -14,7 +14,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Jobs/Job.h"
-#include "Usul/Jobs/Manager.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Scope/Caller.h"
@@ -30,8 +29,8 @@ using namespace Usul::Jobs;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Job::Job( Usul::Interfaces::IUnknown * caller ) : BaseClass(),
-  _id          ( Usul::Jobs::Manager::instance().nextJobId() ),
+Job::Job ( unsigned long id, Usul::Interfaces::IUnknown *caller ) : BaseClass(),
+  _id          ( id ),
   _cancelledCB ( 0x0 ),
   _errorCB     ( 0x0 ),
   _finishedCB  ( 0x0 ),

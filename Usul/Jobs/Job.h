@@ -66,7 +66,7 @@ public:
 protected:
 
   // Constructor
-  Job( Usul::Interfaces::IUnknown* caller = 0x0 );
+  Job ( unsigned long id, Usul::Interfaces::IUnknown* caller = 0x0 );
 
   // Use reference counting.
   virtual ~Job();

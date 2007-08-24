@@ -37,6 +37,11 @@ public:
   typedef Usul::Threads::Pool ThreadPool;
   typedef std::list<Job::RefPtr> JobList;
 
+  // Constructor and destructor. Use as a singleton or as individual objects.
+  Manager();
+  Manager ( unsigned int poolSize );
+  ~Manager();
+
   // Add a job to the list.
   void                    add ( Job * );
 
@@ -70,10 +75,6 @@ public:
   void                    wait ( unsigned long timeout );
 
 private:
-
-  // Constructor and destructor.
-  Manager();
-  ~Manager();
 
   // No copying or assigning.
   Manager ( const Manager & );

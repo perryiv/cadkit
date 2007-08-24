@@ -2350,6 +2350,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Network"
+				>
+				<File
+					RelativePath=".\Network\Curl.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Network\WMS.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

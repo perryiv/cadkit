@@ -86,14 +86,14 @@ ENDIF(WIN32)
 # Add in some path suffixes. These will have to be updated whenever a new Boost version comes out.
 SET(SUFFIX_FOR_PATH
  boost-1_34_1
- boost-1_34_0
+ boost-1_34
  boost-1_33_1
  boost-1_33_0
 )
 
 SET (Boost_LIBRARIES "")
 SET (BOOST "boost")
-SET (Boost_VERSION "-1_33_1")
+SET (Boost_VERSION "-1_34")
 SET (Boost_DEBUG "-d")
 SET (Boost_COMPILER "")
 SET (Boost_MUTLI_THREAD "-mt")
@@ -105,7 +105,7 @@ ENDIF (MINGW)
 
 IF ( NOT APPLE )
   IF(CMAKE_COMPILER_IS_GNUCC)
-  	SET(Boost_COMPILER "-gcc")
+  	SET(Boost_COMPILER "-gcc34")
   ENDIF(CMAKE_COMPILER_IS_GNUCC)
 ENDIF ( NOT APPLE )
 

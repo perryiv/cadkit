@@ -27,7 +27,16 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef _USUL_TRACE
+#define USUL_TRACE_1(exp)
+#define USUL_TRACE_SCOPE
+#define USUL_TRACE_SCOPE_STATIC
+
+#ifdef _USUL_TRACE 
+#ifndef _COMPILING_USUL
+
+#undef USUL_TRACE_1
+#undef USUL_TRACE_SCOPE
+#undef USUL_TRACE_SCOPE_STATIC
 
 #define USUL_TRACE_1(exp)\
   Usul::Trace::Print::execute ( exp )
@@ -38,12 +47,7 @@
 #define USUL_TRACE_SCOPE_STATIC\
   Usul::Trace::Scope trace_scope ( __FUNCTION__ )
 
-#else
-
-#define USUL_TRACE_1(exp)
-#define USUL_TRACE_SCOPE
-#define USUL_TRACE_SCOPE_STATIC
-
+#endif
 #endif
 
 

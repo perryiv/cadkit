@@ -64,7 +64,7 @@ Blocks::Blocks ( const osg::BoundingBox &box, unsigned int times, unsigned int r
   _material->setDiffuse ( osg::Material::BACK,  diffuse );
   _material->setDiffuse ( osg::Material::FRONT, diffuse );
 
-  ss->setAttribute ( _material.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+  //ss->setAttribute ( _material.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
 }
 
 

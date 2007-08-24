@@ -113,9 +113,19 @@ void Command::execute ( Usul::Interfaces::IUnknown * caller )
   // If we don't already have a caller, and we are given a valid one, set our internal caller.
   if( false == _caller.valid() && 0x0 != caller )
     _caller = caller;
-
+  std::cout << _caller.get() << std::endl;
+  std::cout << this << std::endl;
+  std::cout << this->text() << std::endl;
+  
   // Execute the command.
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Command::_execute ), "3084410573" );
+  try
+  {
+    this->_execute ();
+  }
+  catch ( ... )
+  {
+  }
+  //Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Command::_execute ), "3084410573" );
 }
 
 

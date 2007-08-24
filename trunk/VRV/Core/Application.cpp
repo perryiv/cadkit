@@ -531,7 +531,7 @@ public:
   typedef Usul::Jobs::Job BaseClass;
 
   ImageWriteJob ( const std::string& filename, osg::Image *image ) : 
-    BaseClass (),
+    BaseClass ( Usul::Jobs::Manager::instance().nextJobId() ),
     _filename ( filename ),
     _image ( image )
   {

@@ -19,8 +19,12 @@ namespace Usul
   namespace Strings
   {
     /// Convert t to a string.
+    inline std::string toString ( bool t )
+    {
+      return ( ( t ) ? "true" : "false" );
+    }
     template < typename T >
-    std::string toString( const T& t )
+    inline std::string toString ( const T& t )
     {
       std::ostringstream os;
       os << t;
@@ -28,11 +32,26 @@ namespace Usul
     }
 
     /// Convert a string to type T.
+    inline void fromString ( const std::string& s, bool& t )
+    {
+      t = ( ( s == "0" || s == "false" || s == "FALSE" ) ? false : true );
+    }
+
+    /// Convert a string to type T.
     template < typename T >
-    void fromString ( const std::string& s, T& t )
+    inline void fromString ( const std::string& s, T& t )
     {
       std::istringstream in ( s );
       in >> t;
+    }
+
+    /// Convert a string to type T.
+    template < typename T >
+    inline T fromString ( const std::string& s )
+    {
+      T t;
+      Usul::Strings::fromString ( s, t );
+      return t;
     }
   }
 }

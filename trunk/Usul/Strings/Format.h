@@ -71,6 +71,20 @@ inline std::string format ( const T1 &t1, const T2 &t2, const T3 &t3, const T4 &
   out << t1 << t2 << t3 << t4 << t5 << t6 << t7;
   return out.str();
 }
+template < class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12 > 
+inline std::string format ( const T1 &t1, const T2 &t2, const T3 &t3, const T4 &t4, const T5 &t5, const T6 &t6, const T7 &t7, const T8 &t8, const T9 &t9, const T10 &t10, const T11 &t11, const T12 &t12 )
+{
+  std::ostringstream out;
+  out << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8 << t9 << t10 << t11 << t12;
+  return out.str();
+}
+template < class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10, class T11, class T12, class T13 > 
+inline std::string format ( const T1 &t1, const T2 &t2, const T3 &t3, const T4 &t4, const T5 &t5, const T6 &t6, const T7 &t7, const T8 &t8, const T9 &t9, const T10 &t10, const T11 &t11, const T12 &t12, const T13 &t13 )
+{
+  std::ostringstream out;
+  out << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8 << t9 << t10 << t11 << t12 << t13;
+  return out.str();
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////

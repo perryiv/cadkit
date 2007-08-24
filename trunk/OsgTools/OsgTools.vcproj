@@ -364,6 +364,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\DisplayLists.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DisplayLists.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Utilities\FindNormals.cpp"
 					>
 				</File>
@@ -1230,42 +1238,6 @@
 				</File>
 				<File
 					RelativePath=".\Animate\AnimationCallback.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Animate\Date.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Animate\Date.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Animate\DateCallback.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Animate\DateCallback.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Animate\DateGroup.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Animate\DateGroup.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Animate\Functor.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Animate\Settings.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Animate\Settings.h"
 					>
 				</File>
 			</Filter>

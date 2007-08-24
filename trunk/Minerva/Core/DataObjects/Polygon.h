@@ -39,6 +39,9 @@ public:
 
   Polygon();
 
+  /// Accept the visitor.
+  virtual void          accept ( Minerva::Core::Visitor& visitor );
+
   /// Build the scene branch for the data object.
   virtual osg::Node*    buildScene();
   virtual void          preBuildScene();

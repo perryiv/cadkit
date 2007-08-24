@@ -45,7 +45,7 @@ _mutex(),
 _root ( new osg::Group ),
 _static_root( new osg::Group ),
 _projectionNode ( new osg::Projection ),
-_animateNode ( new OsgTools::Animate::DateGroup ),
+_dateText ( new osgText::Text ),
 _layers(),
 _dirty ( false ),
 _width( 0 ),
@@ -71,6 +71,11 @@ _legendPosition ( LEGEND_BOTTOM_RIGHT )
     //osg::ref_ptr < osg::StateSet > ss ( _root->getOrCreateStateSet() );
     ss->setAttributeAndModes ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
   }
+
+  _dateText->setFont( OsgTools::Font::defaultFont() );
+  _dateText->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
+  _dateText->setText ( "" );
+  _dateText->setColor( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
 }
 
 
@@ -106,10 +111,6 @@ void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
     _root->removeChild( 0, _root->getNumChildren() );
     _static_root->removeChild( 0, _static_root->getNumChildren() );
     _projectionNode->removeChild ( 0, _projectionNode->getNumChildren() );
-    _animateNode->removeChild ( 0, _animateNode->getNumChildren() );
-
-    // Set up animation node.
-    this->_setUpAnimationNode();
 
     // Loop throught the layers
     for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
@@ -119,28 +120,31 @@ void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
         Usul::Interfaces::IVectorLayer::QueryPtr vector ( iter->second.get() );
         if( vector.valid() )
         {
-          Usul::Interfaces::ITemporalData::QueryPtr temporal ( vector );
-
-          if( temporal.valid() )
-          {
-            vector->buildScene ( _animateNode.get() );
-          }
-          else
-          {
-            osg::ref_ptr< osg::Group > group ( new osg::Group );
-            vector->buildScene( group.get() );
-            _static_root->addChild( group.get() );
-          }
+          osg::ref_ptr< osg::Group > group ( new osg::Group );
+          vector->buildScene( group.get() );
+          _static_root->addChild( group.get() );
         }
       }
     }
 
-    _root->addChild( _animateNode.get() );
     _root->addChild( _static_root.get() );
     _root->addChild ( _projectionNode.get() );
 
     /// Build the legend.
     this->_buildLegend();
+
+    // Set the date text's position.
+    _dateText->setPosition ( osg::Vec3( 5.0, _height - 25.0, 0.0 ) );
+
+    // Add the date text.
+    osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+    geode->addDrawable( _dateText.get() );
+
+    osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+    mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+    mt->addChild ( geode.get() );
+
+    _projectionNode->addChild ( mt.get() );
 
     _root->dirtyBound();
     _static_root->dirtyBound();
@@ -150,34 +154,6 @@ void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
   this->dirty( false );
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set up the animation node.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::_setUpAnimationNode()
-{
-  osg::ref_ptr < osgText::Text > text ( new osgText::Text );
-
-  text->setFont( OsgTools::Font::defaultFont() );
-  text->setPosition ( osg::Vec3( 5.0, _height - 25.0, 0.0 ) );
-  text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
-  text->setText ( "" );
-  text->setColor( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
-
-  osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  geode->addDrawable( text.get() );
-
-  osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-  mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-  mt->addChild( geode.get() );
-
-  _projectionNode->addChild ( mt.get() );
-
-  _animateNode->setText( text.get() );
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -292,177 +268,6 @@ void SceneManager::dirty( bool b )
   Guard guard ( _mutex );
 
   _dirty = b;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the timestep type.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::timestepType( Settings::TimestepType type )
-{
-  Guard guard ( _mutex );
-  _animateNode->settings()->timestepType( type );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the timestep type.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-OsgTools::Animate::Settings::TimestepType SceneManager::timestepType( ) const
-{
-  Guard guard ( _mutex );
-  return _animateNode->settings()->timestepType( );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Show past events.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::showPastEvents ( bool b )
-{
-  Guard guard ( _mutex );
-  _animateNode->settings()->showPastDays ( b );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Show past events.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool SceneManager::showPastEvents () const
-{
-  Guard guard ( _mutex );
-  return _animateNode->settings()->showPastDays ();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the time window flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::timeWindow ( bool b )
-{
-  Guard guard ( _mutex );
-  _animateNode->settings()->timeWindow ( b );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the time window flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool SceneManager::timeWindow () const
-{
-  Guard guard ( _mutex );
-  return _animateNode->settings()->timeWindow ();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the number of days in the time window.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::timeWindowDuration ( unsigned int days )
-{
-  Guard guard ( _mutex );
-  _animateNode->settings()->windowLength ( days );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the number of days in the time window.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int SceneManager::timeWindowDuration () const
-{
-  Guard guard ( _mutex );
-  return _animateNode->settings()->windowLength ( );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the animation speed.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::animationSpeed ( float speed )
-{
-  Guard guard ( _mutex );
-  _animateNode->animationSpeed ( speed );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the animation speed.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-float SceneManager::animationSpeed () const
-{
-  Guard guard ( _mutex );
-  return _animateNode->animationSpeed ();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Start the animation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::startAnimation()
-{
-  Guard guard ( _mutex );
-  _animateNode->settings()->animate ( true );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Stop the animation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::stopAnimation()
-{
-  Guard guard ( _mutex );
-  _animateNode->settings()->animate ( false );
-  _animateNode->settings()->firstDate ( _animateNode->minDate () );
-  _animateNode->settings()->lastDate ( _animateNode->maxDate () );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Pause the animation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::pauseAnimation()
-{
-  Guard guard ( _mutex );
-  _animateNode->settings()->pause ( true );
 }
 
 
@@ -721,4 +526,17 @@ SceneManager::LegendPosition SceneManager::legendPosition () const
 {
   Guard guard ( _mutex );
   return _legendPosition;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the date text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osgText::Text& SceneManager::dateText ()
+{
+  Guard guard ( _mutex );
+  return *_dateText;
 }

@@ -206,14 +206,14 @@ namespace VrjCore
 
 			virtual void joystickButton7GlobalAction(DeviceData d_data)
         {
-          double speed ( _document->sceneManager()->animationSpeed () );
-          _document->sceneManager()->animationSpeed ( speed * 2.0 );
+          double speed ( _document->animateSpeed () );
+          _document->animateSpeed ( speed * 2.0 );
         }
 
 			virtual void joystickButton8GlobalAction(DeviceData d_data)
         {
-          double speed ( _document->sceneManager()->animationSpeed () );
-          _document->sceneManager()->animationSpeed ( speed / 2.0 );
+          double speed ( _document->animateSpeed () );
+          _document->animateSpeed ( speed / 2.0 );
         }
 
     protected:      

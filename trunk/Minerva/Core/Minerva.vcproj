@@ -599,6 +599,46 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Visitors"
+					>
+					<File
+						RelativePath=".\Visitors\FindMinMaxDates.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Visitors\FindMinMaxDates.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Visitors\TemporalAnimation.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Visitors\TemporalAnimation.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Animate"
+					>
+					<File
+						RelativePath=".\Animate\Date.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Animate\Date.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Animate\Settings.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Animate\Settings.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Interfaces"

@@ -204,7 +204,7 @@ void PointTimeLayerGlue::LastDateColumn::set( System::String^ s )
 
 System::DateTime PointTimeLayerGlue::FirstDate::get() 
 {
-  OsgTools::Animate::Date date ( _pointTimeLayer->minDate() );
+  ::Minerva::Core::Animate::Date date ( _pointTimeLayer->minDate() );
   System::DateTime dateTime ( date.year(), date.month(), date.day() );
   return dateTime;
 }
@@ -230,7 +230,7 @@ void PointTimeLayerGlue::FirstDate::set ( System::DateTime value )
 
 System::DateTime PointTimeLayerGlue::LastDate::get ()
 {
-  OsgTools::Animate::Date date ( _pointTimeLayer->maxDate() );
+  ::Minerva::Core::Animate::Date date ( _pointTimeLayer->maxDate() );
   System::DateTime dateTime ( date.year(), date.month(), date.day() );
   return dateTime;
 }

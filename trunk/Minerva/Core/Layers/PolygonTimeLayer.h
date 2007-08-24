@@ -15,7 +15,7 @@
 #include "Minerva/Core/Layers/Layer.h"
 #include "Minerva/Core/Layers/PolygonLayer.h"
 
-#include "OsgTools/Animate/Date.h"
+#include "Minerva/Core/Animate/Date.h"
 
 #include <string>
 #include <map>
@@ -93,7 +93,7 @@ protected:
 
 private:
 
-  typedef std::map < OsgTools::Animate::Date, DataObjects > TemporalMap;
+  typedef std::map < Minerva::Core::Animate::Date, DataObjects > TemporalMap;
   typedef std::map < int, DataObjects > NumberMap;
 
   Mode _mode;

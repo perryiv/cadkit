@@ -19,8 +19,7 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/DataObjects/Point.h"
-
-#include "OsgTools/Animate/Date.h"
+#include "Minerva/Core/Animate/Date.h"
 
 #include <string>
 
@@ -38,19 +37,22 @@ public:
 
   PointTime( const std::string& first, const std::string& last );
 
+  /// Accept the visitor.
+  virtual void                      accept ( Minerva::Core::Visitor& visitor );
+
   /// Get the first date.
-  const OsgTools::Animate::Date&    firstDate() const;
+  const Minerva::Core::Animate::Date&    firstDate() const;
 
   /// Get the last date.
-  const OsgTools::Animate::Date&    lastDate() const;
+  const Minerva::Core::Animate::Date&    lastDate() const;
 
 protected:
   /// Use reference counting
   virtual ~PointTime();
 
 private:
-  OsgTools::Animate::Date _firstDate;
-  OsgTools::Animate::Date _lastDate;
+  Minerva::Core::Animate::Date _firstDate;
+  Minerva::Core::Animate::Date _lastDate;
 };
 
 }

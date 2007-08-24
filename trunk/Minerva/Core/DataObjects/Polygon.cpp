@@ -16,6 +16,7 @@
 
 #include "Minerva/Core/DataObjects/Polygon.h"
 #include "Minerva/Core/DataObjects/UserData.h"
+#include "Minerva/Core/Visitor.h"
 
 #include "Usul/Interfaces/IPolygonData.h"
 
@@ -51,6 +52,18 @@ _showInterior ( true )
 
 Polygon::~Polygon()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Polygon::accept ( Minerva::Core::Visitor& visitor )
+{
+  visitor.visit ( *this );
 }
 
 

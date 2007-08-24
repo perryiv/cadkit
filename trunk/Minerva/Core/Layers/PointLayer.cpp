@@ -12,6 +12,7 @@
 #include "Minerva/Core/postGIS/Geometry.h"
 #include "Minerva/Core/postGIS/Factory.h"
 #include "Minerva/Core/DataObjects/Point.h"
+#include "Minerva/Core/Visitor.h"
 
 #include "Serialize/XML/RegisterCreator.h"
 
@@ -80,6 +81,18 @@ void PointLayer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _quality );
   SERIALIZE_XML_ADD_MEMBER ( _primitiveSizeColumn );
   SERIALIZE_XML_ADD_MEMBER ( _autotransform );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointLayer::accept ( Minerva::Core::Visitor& visitor )
+{
+  visitor.visit ( *this );
 }
 
 

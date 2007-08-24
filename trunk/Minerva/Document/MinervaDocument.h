@@ -25,6 +25,7 @@
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 
+#include "Minerva/Core/Animate/Settings.h"
 #include "Minerva/Core/Scene/SceneManager.h"
 #include "Minerva/Core/DB/Connection.h"
 #include "Minerva/Core/Layers/Layer.h"
@@ -40,6 +41,8 @@
 class ossimPlanetTextureLayer;
 
 namespace Usul { namespace Interfaces { struct ICommand; } }
+
+namespace Minerva { namespace Core { class Visitor; } }
 
 namespace Minerva {
 namespace Document {
@@ -59,9 +62,9 @@ public:
   typedef Usul::Documents::Document BaseClass;
   typedef std::vector< std::string > Names;
   typedef std::map < std::string, Usul::Interfaces::ILayer::QueryPtr > Favorites;
-  typedef OsgTools::Animate::Settings Settings;
   typedef std::vector < Usul::Interfaces::ILayer::QueryPtr > Layers;
   typedef Minerva::Core::Scene::SceneManager SceneManager;
+  typedef Minerva::Core::Animate::Settings Settings;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( MinervaDocument );
@@ -195,6 +198,14 @@ public:
   /// Get the database pager (Usul::Interfaces::IDatabasePager).
   virtual osgDB::DatabasePager *           getDatabasePager ();
 
+  /// Start the animation (Minerva::Interfaces::IAnimationControl).
+  virtual void                             startAnimation ();
+  virtual void                             stopAnimation();
+  virtual void                             pauseAnimation();
+
+  /// Get/Set the animate speed (Minerva::Interfaces::IAnimationControl).
+  virtual void                             animateSpeed ( double speed );
+  virtual double                           animateSpeed () const;
 protected:
   virtual ~MinervaDocument();
 
@@ -213,6 +224,12 @@ protected:
   /// Execute a command.
   void                                     _executeCommand ( Usul::Interfaces::ICommand* command );
 
+  /// Animate.
+  void                                     _animate ( Usul::Interfaces::IUnknown *caller );
+
+  /// Have visitor visit all layes.
+  void                                     _acceptVisitor ( Minerva::Core::Visitor& visitor );
+
   /// Minerva::Interfaces::IAddLayer
   virtual void                             addLayer ( Usul::Interfaces::ILayer * layer );
 
@@ -222,16 +239,6 @@ protected:
   /// Dirty the scene ( Minerva::Interfaces::IDirtyScene ).
   virtual void                             dirtyScene ();
 
-  /// Minerva::Interfaces::IAnimationControl
-  /// Start the animation.
-  virtual void                             startAnimation ();
-  virtual void                             stopAnimation();
-  virtual void                             pauseAnimation();
-
-  /// Get/Set the animate speed.
-  virtual void                             animateSpeed ( double speed );
-  virtual double                           animateSpeed () const;
-
 private:
 
   Layers _layers;
@@ -239,14 +246,24 @@ private:
   Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
   osg::ref_ptr < Magrathea::Planet > _planet;
 
+  /// Command members.
   bool _commandsSend;
   bool _commandsReceive;
   std::string _sessionName;
-  CommandSender::RefPtr _sender;
+  CommandSender::RefPtr   _sender;
   CommandReceiver::RefPtr _receiver;
   Minerva::Core::DB::Connection::RefPtr _connection;
-  Usul::Policies::TimeBased _commandUpdate;
-  Usul::Jobs::Job::RefPtr _commandJob;
+  Usul::Policies::TimeBased  _commandUpdate;
+  Usul::Jobs::Job::RefPtr    _commandJob;
+
+  /// Animation members.
+  Minerva::Core::Animate::Settings::RefPtr  _animateSettings;
+  Minerva::Core::Animate::Date _minDate;
+  Minerva::Core::Animate::Date _maxDate;
+  Minerva::Core::Animate::Date _lastDate;
+  bool _datesDirty;
+  double _lastTime;
+  double _animationSpeed;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME( MinervaDocument );

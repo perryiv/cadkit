@@ -168,3 +168,20 @@ void ProjectionManagerComponent::convertToPlanet ( const Usul::Math::Vec3d& orgi
 
   //planetPoint /= WGS_84_RADIUS_EQUATOR;
 }
+
+
+void ProjectionManagerComponent::convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const
+{
+  ossimEcefPoint ecef;
+  ossimGpt dummy;
+  ecef = dummy;
+  double normalizationFactor = ecef.getMagnitude();
+
+  ecef = ossimEcefPoint( planetPoint [ 0 ] * normalizationFactor, planetPoint [ 1 ] * normalizationFactor, planetPoint [ 2 ] * normalizationFactor );
+
+  ossimGpt gpt ( ecef );
+
+  latLonPoint [ 0 ] = gpt.lon;
+  latLonPoint [ 1 ] = gpt.lat;
+  latLonPoint [ 2 ] = gpt.hgt;
+}

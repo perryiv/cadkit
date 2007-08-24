@@ -11,6 +11,7 @@
 #include "Minerva/Core/Layers/LineLayer.h"
 #include "Minerva/Core/DataObjects/Line.h"
 #include "Minerva/Core/postGIS/Line.h"
+#include "Minerva/Core/Visitor.h"
 
 #include "Serialize/XML/RegisterCreator.h"
 
@@ -57,6 +58,18 @@ _lineWidth ( layer._lineWidth )
 void LineLayer::_registerMembers()
 {
   SERIALIZE_XML_ADD_MEMBER ( _lineWidth );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LineLayer::accept ( Minerva::Core::Visitor& visitor )
+{
+  visitor.visit ( *this );
 }
 
 

@@ -16,6 +16,7 @@
 
 #include "Minerva/Core/DataObjects/Point.h"
 #include "Minerva/Core/DataObjects/UserData.h"
+#include "Minerva/Core/Visitor.h"
 
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IPointData.h"
@@ -70,6 +71,18 @@ _group ( new osg::Group )
 
 Point::~Point()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Point::accept ( Minerva::Core::Visitor& visitor )
+{
+  visitor.visit ( *this );
 }
 
 
@@ -509,6 +522,18 @@ osg::Node* Point::_buildCylinder()
     // Offset center by height m.
     // Convert to earth coordinates.
 
+    Usul::Interfaces::IPlanetCoordinates::QueryPtr  planet  ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlanetCoordinates::IID ) );
+
+    Usul::Math::Vec3d earth;
+    earth.set ( v1[0], v1[1], v1[2] );
+
+    Usul::Math::Vec3d latLon;
+
+    if( planet.valid() )
+    {
+      planet->convertFromPlanet( earth, latLon );
+    }
+
     unsigned int sides ( static_cast < unsigned int > ( 20 * this->quality() ) );
     osg::ref_ptr < osg::Geometry > geometry ( BaseClass::shapeFactory()->cylinder( this->secondarySize(), sides, v0, v1, !this->transparent() ) );
     geode->addDrawable( geometry.get() );
@@ -570,3 +595,32 @@ bool Point::autotransform () const
 {
   return _autotransform;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the visibilty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Point::visibility ( bool b )
+{
+  if ( _group.valid () )
+  {
+    unsigned int nodeMask ( b ? 0xffffffff : 0x0 );
+    _group->setNodeMask ( nodeMask );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the visibilty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Point::visibility ( ) const
+{
+  return _group.valid () ? ( _group->getNodeMask () != 0x0 ) : false;
+}
+

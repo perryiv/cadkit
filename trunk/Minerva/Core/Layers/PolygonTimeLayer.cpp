@@ -16,8 +16,6 @@
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 
-#include "OsgTools/Animate/DateGroup.h"
-
 #include "Serialize/XML/RegisterCreator.h"
 
 #include "osg/MatrixTransform"
@@ -225,7 +223,7 @@ void PolygonTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       if( _mode == DATE )
       {
         std::string date ( iter[this->stepColumn()].as < std::string > () );
-        _temporalMap[OsgTools::Animate::Date ( date )].push_back ( data.get() );
+        _temporalMap[Minerva::Core::Animate::Date ( date )].push_back ( data.get() );
       }
       else if ( _mode == NUMBER )
       {
@@ -251,7 +249,7 @@ void PolygonTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       if( _mode == DATE )
       {
         std::string date ( iter[this->stepColumn()].as < std::string > () );
-        _temporalMap[OsgTools::Animate::Date ( date )].push_back ( data.get() );
+        _temporalMap[Minerva::Core::Animate::Date ( date )].push_back ( data.get() );
       }
       else if ( _mode == NUMBER )
       {

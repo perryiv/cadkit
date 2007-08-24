@@ -12,12 +12,10 @@
 #include "Minerva/Core/DataObjects/PointTime.h"
 #include "Minerva/Core/postGIS/Point.h"
 #include "Minerva/Core/postGIS/Factory.h"
+#include "Minerva/Core/Visitor.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Trace/Trace.h"
-
-#include "OsgTools/Animate/DateGroup.h"
-#include "OsgTools/Animate/DateCallback.h"
 
 #include "Serialize/XML/RegisterCreator.h"
 
@@ -29,7 +27,7 @@ using namespace Minerva::Core::Layers;
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( PointTimeLayer, PointTimeLayer::BaseClass );
 SERIALIZE_XML_REGISTER_CREATOR ( PointTimeLayer );
 
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER( OsgTools::Animate::Date );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER( Minerva::Core::Animate::Date );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -113,44 +111,13 @@ PointTimeLayer::~PointTimeLayer()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the scene.
+//  Accept the visitor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointTimeLayer::buildScene( osg::Group* parent )
+void PointTimeLayer::accept ( Minerva::Core::Visitor& visitor )
 {
-  try
-  {
-    if ( OsgTools::Animate::DateGroup *dateGroup = dynamic_cast < OsgTools::Animate::DateGroup* > ( parent ) )
-    {
-      // Get the data objects.
-      DataObjects &dataObjects ( this->_getDataObjects() );
-
-      for ( DataObjects::iterator iter = dataObjects.begin(); iter != dataObjects.end(); ++iter )
-      {
-	      osg::ref_ptr< osg::Node > node ( (*iter)->buildScene() );
-
-	      Minerva::Core::DataObjects::PointTime *pt ( static_cast < Minerva::Core::DataObjects::PointTime* >( iter->get() ) );
-
-      	typedef OsgTools::Animate::DateCallback Callback;
-	      osg::ref_ptr < Callback > cb ( new Callback ( dateGroup->settings(), pt->firstDate(), pt->lastDate() ) );
-	      node->setCullCallback( cb.get() );
-	      parent->addChild( node.get() );
-
-        // Update min and max.
-        dateGroup->updateMinMax ( pt->firstDate(), pt->lastDate() );
-      }
-    }
-  }
-  catch ( const std::exception &e )
-  {
-    std::cerr << "Standard exception caught while processing layer: " << this->name() << std::endl;
-    std::cerr << "Message: " << e.what() << std::endl;
-  }
-  catch ( ... )
-  {
-    std::cerr << "Unknown exception caught while processing layer: " << this->name() << std::endl;
-  }
+  visitor.visit ( *this );
 }
 
 
@@ -405,7 +372,7 @@ std::string PointTimeLayer::_whereClause() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointTimeLayer::minDate( const OsgTools::Animate::Date& date )
+void PointTimeLayer::minDate( const Date& date )
 {
   _minDate = date;
 }
@@ -421,7 +388,7 @@ void PointTimeLayer::minDate( unsigned int day, unsigned int month, unsigned int
 {
   std::ostringstream os;
   os << year << "/" << month << "/" << day;
-  _minDate = OsgTools::Animate::Date( os.str() );
+  _minDate = Date( os.str() );
 }
 
 
@@ -431,7 +398,7 @@ void PointTimeLayer::minDate( unsigned int day, unsigned int month, unsigned int
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const OsgTools::Animate::Date& PointTimeLayer::minDate() const
+const PointTimeLayer::Date& PointTimeLayer::minDate() const
 {
   return _minDate;
 }
@@ -443,7 +410,7 @@ const OsgTools::Animate::Date& PointTimeLayer::minDate() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointTimeLayer::maxDate ( const OsgTools::Animate::Date& date )
+void PointTimeLayer::maxDate ( const Date& date )
 {
   _maxDate = date;
 }
@@ -459,7 +426,7 @@ void PointTimeLayer::maxDate (unsigned int day, unsigned int month, unsigned int
 {
   std::ostringstream os;
   os << year << "/" << month << "/" << day;
-  _maxDate = OsgTools::Animate::Date( os.str() );
+  _maxDate = Date( os.str() );
 }
 
 
@@ -469,7 +436,7 @@ void PointTimeLayer::maxDate (unsigned int day, unsigned int month, unsigned int
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const OsgTools::Animate::Date& PointTimeLayer::maxDate() const
+const PointTimeLayer::Date& PointTimeLayer::maxDate() const
 {
   return _maxDate;
 }
@@ -527,8 +494,8 @@ const PointTimeLayer* PointTimeLayer::getRawPointer() const
 
 void PointTimeLayer::_updateMinMaxDate ( const std::string& min, const std::string& max )
 {
-  OsgTools::Animate::Date d0 ( min );
-  OsgTools::Animate::Date d1 ( max );
+  Date d0 ( min );
+  Date d1 ( max );
 
   if( d0 < _minDate )
     _minDate = d0;

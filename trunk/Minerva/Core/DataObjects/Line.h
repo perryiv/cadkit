@@ -37,6 +37,9 @@ public:
 
   Line();
 
+  /// Accept the visitor.
+  virtual void          accept ( Minerva::Core::Visitor& visitor );
+
   /// Get/Set the width
   float                 width() const;
   void                  width( float );

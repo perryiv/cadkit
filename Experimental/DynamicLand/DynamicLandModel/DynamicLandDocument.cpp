@@ -1392,7 +1392,7 @@ void DynamicLandDocument::_updateAnimationFrame( bool u)
 ///////////////////////////////////////////////////////////////////////////////
 
 DynamicLandDocument::LoadDataJob::LoadDataJob ( DynamicLandDocument* document, const std::string& filename, Usul::Interfaces::IUnknown *caller, unsigned int i ) :
-  BaseClass ( caller ),
+  BaseClass ( Usul::Jobs::Manager::instance().nextJobId(), caller ),
   _document ( document ),
   _triangleDocument ( 0x0 ),
   _filename ( filename ),
@@ -1516,7 +1516,7 @@ void DynamicLandDocument::KillJob::removeTimeStep()
 ///////////////////////////////////////////////////////////////////////////////
 
 DynamicLandDocument::KillJob::KillJob ( DynamicLandDocument* document, Usul::Interfaces::IUnknown *caller, unsigned int i ) :
-  BaseClass ( caller ),
+  BaseClass ( Usul::Jobs::Manager::instance().nextJobId(), caller ),
   _document ( document ),
   _index ( i )
 {

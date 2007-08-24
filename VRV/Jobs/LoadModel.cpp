@@ -19,6 +19,7 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Jobs/Manager.h"
 #include "Usul/System/Directory.h"
 #include "Usul/File/Path.h"
 
@@ -39,7 +40,7 @@ using namespace VRV::Jobs;
 ///////////////////////////////////////////////////////////////////////////////
 
 LoadModel::LoadModel( const Filenames& filenames, Usul::Interfaces::IUnknown *caller ) :
-  BaseClass( caller ),
+  BaseClass( Usul::Jobs::Manager::instance().nextJobId(), caller ),
   _filenames ( filenames ),
   _caller ( caller ),
   _secondProgressBar ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) )

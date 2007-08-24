@@ -39,7 +39,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TestJob::TestJob ( unsigned long sleep ) : BaseClass(), 
+TestJob::TestJob ( unsigned long id, unsigned long sleep ) : BaseClass ( id ), 
   _sleep ( sleep )
 {
   USUL_TRACE_SCOPE;

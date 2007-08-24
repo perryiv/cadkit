@@ -14,35 +14,34 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_TEST_JOBS_JOB_CLASS_H_
-#define _USUL_TEST_JOBS_JOB_CLASS_H_
+#ifndef _USUL_TEST_WMS_JOB_CLASS_H_
+#define _USUL_TEST_WMS_JOB_CLASS_H_
 
 #include "Usul/Jobs/Job.h"
+#include "Usul/Network/WMS.h"
+
+namespace Usul { namespace Network { class WMS; } }
 
 
-class TestJob : public Usul::Jobs::Job
+class WmsJob : public Usul::Jobs::Job
 {
 public:
 
   typedef Usul::Jobs::Job BaseClass;
+  typedef Usul::Network::WMS WMS;
+  typedef WMS::Options Options;
 
-  TestJob ( unsigned long id, unsigned long sleep );
-
-  virtual void              _cancelled();
-
-  virtual void              _error();
-
-  virtual void              _finished();
+  WmsJob ( unsigned long id, const std::string &url, const std::string &file, const Options &options );
 
   virtual void              _started();
 
 protected:
 
-  virtual ~TestJob();
+  virtual ~WmsJob();
 
 private:
 
-  unsigned long _sleep;
+  WMS _wms;
 };
 
 
@@ -57,4 +56,4 @@ private:
   std::cout << exp << std::flush
 
 
-#endif // _USUL_TEST_JOBS_JOB_CLASS_H_
+#endif // _USUL_TEST_WMS_JOB_CLASS_H_

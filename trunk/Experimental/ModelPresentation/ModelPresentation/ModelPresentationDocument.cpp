@@ -375,7 +375,11 @@ void ModelPresentationDocument::_parseStatic( XmlTree::Node &node, Unknown *call
       _static->addChild( this->_parseModel( *node, caller ) );
     }  
   }
-  
+#if 1
+  // Turn off display lists
+  OsgTools::DisplayLists dl( false );
+  dl( _static.get() );
+#endif
 }
 
 
@@ -421,7 +425,13 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller 
     }
   }
   switchNode->setValue( 0, true );
-  
+
+#if 1
+  // Turn off display lists
+  OsgTools::DisplayLists dl( false );
+  dl( switchNode.get() );
+#endif
+
   this->_sets.push_back( set );
   this->_sceneTree.push_back( switchNode.release() );
 }
@@ -532,6 +542,7 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
+
   std::cout << dir << " directory loading..." << std::endl;
   Files osgfiles;
   Usul::File::find( dir, "osg", osgfiles );
@@ -540,16 +551,25 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
   Usul::File::find( dir, "ive", ivefiles );
   
   osg::ref_ptr< osg::Group> group ( new osg::Group );
+  std::cout << "Found " << osgfiles.size() << " files in " << dir << std::endl;
   for( unsigned int i = 0; i < osgfiles.size(); ++i )
   {
     std::cout << "\tLoading file: " << osgfiles.at(i).c_str() << std::endl;
+#ifdef MSC_VER
     osg::ref_ptr< osg::Node > loadedModel = osgDB::readNodeFile( osgfiles.at(i).c_str() );
+#else
+    osg::ref_ptr< osg::Node > loadedModel = osgDB::readNodeFile( dir + osgfiles.at(i).c_str() );
+#endif
     group->addChild( loadedModel.release() );
   }
   for( unsigned int i = 0; i < ivefiles.size(); ++i )
   {
     std::cout << "\tLoading file: " << osgfiles.at(i).c_str() << std::endl;
+#ifdef MSC_VER
     osg::ref_ptr< osg::Node > loadedModel = osgDB::readNodeFile( ivefiles.at(i).c_str() );
+#else
+    osg::ref_ptr< osg::Node > loadedModel = osgDB::readNodeFile( dir + ivefiles.at(i).c_str() );
+#endif
     group->addChild( loadedModel.release() );
   }
 

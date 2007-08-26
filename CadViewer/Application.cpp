@@ -73,6 +73,8 @@
 #include "boost/filesystem/operations.hpp"
 #include "Usul/File/Boost.h"
 
+#include "vrj/Kernel/Kernel.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Button mappings.

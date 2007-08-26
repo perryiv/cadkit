@@ -338,9 +338,6 @@ protected:
   ColorMap          _colorMap;
   std::vector<OsgTools::Grid> _gridFunctors;
   bool              _textures;
-
-  // Toggle whether or not the scene is shown when the menu is visible
-  bool              _hideScene;
 };
 
 

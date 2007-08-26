@@ -78,7 +78,8 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _commandQueue    (),
   _frameDump       (),
   _navigator       ( 0x0 ),
-  _refCount        ( 0 )
+  _refCount        ( 0 ),
+  _menuSceneShowHide ( true )
 {
   USUL_TRACE_SCOPE;
   this->_construct();
@@ -2150,4 +2151,35 @@ const Application::Functor * Application::_secondNavigator () const
 
   // Not a pair.  Return navigator.
   return this->navigator();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Toggle the showing/hiding of the scene when the menu is visible
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::toggleMenuSceneShowHide( bool show )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  _menuSceneShowHide = show;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Toggle the showing/hiding of the scene when the menu is visible
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::menuSceneShowHide()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  return _menuSceneShowHide;
 }

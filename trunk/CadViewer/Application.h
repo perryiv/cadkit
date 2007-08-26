@@ -294,6 +294,8 @@ protected:
   void                          _renderPassesNine     ( MenuKit::Message m, MenuKit::Item *item );
   void                          _renderPassesTweleve  ( MenuKit::Message m, MenuKit::Item *item );
   void                          _dumpFrames           ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _toggleMenuSceneHideShow    ( MenuKit::Message m, MenuKit::Item *item );
+  
 
   // For readability.
   typedef unsigned long                                 ThreadId;
@@ -336,6 +338,9 @@ protected:
   ColorMap          _colorMap;
   std::vector<OsgTools::Grid> _gridFunctors;
   bool              _textures;
+
+  // Toggle whether or not the scene is shown when the menu is visible
+  bool              _hideScene;
 };
 
 

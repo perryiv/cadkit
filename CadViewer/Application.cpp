@@ -192,7 +192,8 @@ Application::Application ( Args &args ) :
   _statusBar      ( new MenuKit::OSG::Menu() ),
   _home           ( osg::Matrixf::identity() ),
   _colorMap       (),
-  _textures       ( true )
+  _textures       ( true ),
+  _hideScene      ( true )
 {
   ErrorChecker ( 1067097070u, 0 == _appThread );
   ErrorChecker ( 2970484549u, 0 == _mainThread );
@@ -899,6 +900,8 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
   /*CV_REGISTER ( _selectionColor,   "selection_color" );*/
 
   menu->append ( this->_createButton ( "Calibrate Joystick", MenuKit::memFunCB2 ( this, &Application::_setAnalogTrim ) ) );
+  menu->append ( this->_createButton ( "Toggle Hide Scene", MenuKit::memFunCB2 ( this, &Application::_toggleMenuSceneHideShow ) ) );
+
 }
 
 
@@ -2257,8 +2260,18 @@ void Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
     bool menuHandled ( this->_handleMenuEvent( id ) );
     
     // Always set the mask.
-    unsigned int mask ( _menu->isVisible() ? 0 : 0xffffffff );
-    this->modelsScene ( )->setNodeMask ( mask );
+    // Edit by Jeff
+    // Check to see if we are supposed to hide the scene when the menu is visible
+    if( true == this->menuSceneShowHide() )
+    {
+      unsigned int mask ( _menu->isVisible() ? 0 : 0xffffffff );
+      this->modelsScene ( )->setNodeMask ( mask );
+    }
+    else
+    {
+      unsigned int mask ( 0xffffffff );
+      this->modelsScene ( )->setNodeMask ( mask );
+    }
 
     // Return now if the menu was handled.
     if ( menuHandled )

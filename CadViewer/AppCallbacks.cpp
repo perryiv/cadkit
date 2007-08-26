@@ -1887,3 +1887,22 @@ void Application::_dumpFrames ( MenuKit::Message m, MenuKit::Item *item )
     break;
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Toggle whether or not to hide or show the scene when the menu is visible
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_toggleMenuSceneHideShow ( MenuKit::Message m, MenuKit::Item *item )
+{
+  // Process the message.
+  if ( MenuKit::MESSAGE_SELECTED == m )
+  {
+    if( true == this->menuSceneShowHide() )
+      this->toggleMenuSceneShowHide( false );
+    else
+      this->toggleMenuSceneShowHide( true );
+  }
+}

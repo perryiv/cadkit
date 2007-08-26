@@ -192,8 +192,7 @@ Application::Application ( Args &args ) :
   _statusBar      ( new MenuKit::OSG::Menu() ),
   _home           ( osg::Matrixf::identity() ),
   _colorMap       (),
-  _textures       ( true ),
-  _hideScene      ( true )
+  _textures       ( true )
 {
   ErrorChecker ( 1067097070u, 0 == _appThread );
   ErrorChecker ( 2970484549u, 0 == _mainThread );

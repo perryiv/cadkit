@@ -208,6 +208,10 @@ public:
   Functor *               navigator ();
   const Functor *         navigator () const;
 
+  // Menu scene hiding functions
+  bool                    menuSceneShowHide();
+  void                    toggleMenuSceneShowHide( bool show );
+
 protected:
 
   /// VR Juggler methods.
@@ -435,6 +439,8 @@ private:
   FunctorPtr                             _navigator;
 
   unsigned int                           _refCount;
+
+  bool                                  _menuSceneShowHide;
 };
 
 }

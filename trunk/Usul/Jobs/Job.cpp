@@ -25,7 +25,7 @@ using namespace Usul::Jobs;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Constructor
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -42,45 +42,6 @@ Job::Job ( Usul::Interfaces::IUnknown *caller ) : BaseClass(),
 {
   USUL_TRACE_SCOPE;
 
-  // Set the id.
-  static unsigned int id ( 0 );
-  _id = id++;
-
-  this->_construct ( caller );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Job::Job ( unsigned long id, Usul::Interfaces::IUnknown *caller ) : BaseClass(),
-  _id          ( id ),
-  _cancelledCB ( 0x0 ),
-  _errorCB     ( 0x0 ),
-  _finishedCB  ( 0x0 ),
-  _startedCB   ( 0x0 ),
-  _thread      ( 0x0 ),
-  _done        ( false ),
-  _progress    ( static_cast < ProgressBar * > ( 0x0 ) ),
-  _label       ( static_cast < StatusBar  * > ( 0x0 ) )
-{
-  USUL_TRACE_SCOPE;
-
-  this->_construct ( caller );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Construct.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Job::_construct ( Usul::Interfaces::IUnknown *caller )
-{
   _cancelledCB = Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Job::_threadCancelled ) );
   _errorCB     = Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Job::_threadError     ) );
   _finishedCB  = Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Job::_threadFinished  ) );
@@ -355,6 +316,20 @@ unsigned long Job::id() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _id;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set this job's id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Job::id( unsigned int value )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _id = value;
 }
 
 

@@ -107,8 +107,11 @@ ProgressBarGroup::~ProgressBarGroup()
 
 void ProgressBarGroup::position ( const Usul::Math::Vec3f& p )
 {
-  Guard guard ( this->mutex() );
-  _position = p;
+  {
+    Guard guard ( this->mutex() );
+    _position = p;
+  }
+  this->_setDirty ( true );
 }
 
 

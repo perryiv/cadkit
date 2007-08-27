@@ -2260,11 +2260,11 @@ void Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
     // Let the menu process first.
     bool menuHandled ( this->_handleMenuEvent( id ) );
 
-    // Hide the menu if we are suppose to and it's currently visible.
-    bool hideMenu ( this->menuSceneShowHide() && _menu->isVisible() );
+    // Hide the scene if we are suppose to and it's currently visible.
+    bool hideScene ( this->menuSceneShowHide() && _menu->isVisible() );
     
     // The node mask.
-    unsigned int mask ( hideMenu ? 0 : 0xffffffff );
+    unsigned int mask ( hideScene ? 0 : 0xffffffff );
 
     // Always set the mask.
     this->modelsScene ( )->setNodeMask ( mask );

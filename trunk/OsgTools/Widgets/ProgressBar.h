@@ -36,8 +36,8 @@ namespace Widgets {
 
 
 class OSG_TOOLS_EXPORT ProgressBar : public Usul::Base::Object,
-							                                 public Usul::Interfaces::IStatusBar,
-							                                 public Usul::Interfaces::IProgressBar
+							                       public Usul::Interfaces::IStatusBar,
+							                       public Usul::Interfaces::IProgressBar
 {
 public:
   

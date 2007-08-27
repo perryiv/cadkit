@@ -14,6 +14,7 @@
 #include "Usul/Exceptions/Thrower.h"
 
 #include <stdexcept>
+#include <iostream>
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -268,14 +269,27 @@ void Parser::data ( Data& data, unsigned int timestep, unsigned int channel )
   const unsigned int channelSizeBytes ( sliceSizeBytes * _zSize );
 
   // Calculate the size of one timestep.
-  const unsigned int timestepSize ( channelSizeBytes * _numChannels + ( sliceSizeBytes * _numFields2D ) );
+  const Usul::Types::Uint64 timestepSize ( ( channelSizeBytes * _numChannels ) + ( sliceSizeBytes * _numFields2D ) );
+
+#if 0
+  const Usul::Types::Uint64 timestepOffset ( timestepSize * timestep );
+
+  const Usul::Types::Uint64 channelOffset ( channelSizeBytes * channel );
 
   // Calculate the file offset.
-  const Usul::Types::Uint64 offset ( ( timestepSize * timestep ) + ( channelSizeBytes * channel ) );
+  const Usul::Types::Uint64 offset ( timestepOffset + channelOffset );
 
   // Jump to the correct location.
   this->_seek ( offset );
+#else
+  // Jump to the begining.
+  this->_seek ( 0 );
 
+  for ( unsigned int i = 0; i < timestep; ++i )
+    this->_seek ( timestepSize, SEEK_CUR );
+
+  this->_seek ( channelSizeBytes * channel, SEEK_CUR );
+#endif
   // Make enough room.
   data.resize ( sliceSize * _zSize );
 
@@ -351,6 +365,25 @@ void Parser::_seek ( Usul::Types::Int64 offset )
   Usul::Types::Uint64 result ( ::_fseeki64 ( _fp, offset, SEEK_SET ) );
 #else
   Usul::Types::Uint64 result ( ::fseek ( _fp, offset, SEEK_SET ) );
+#endif
+
+  if ( result != 0 )
+    Usul::Exceptions::Thrower < std::runtime_error > ( "Error 1556671836: Could not seek in file: ", _filename, " to location: ", offset );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Seek.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_seek ( Usul::Types::Int64 offset, int whence )
+{
+#ifdef _MSC_VER
+  Usul::Types::Uint64 result ( ::_fseeki64 ( _fp, offset, whence ) );
+#else
+  Usul::Types::Uint64 result ( ::fseek ( _fp, offset, whence ) );
 #endif
 
   if ( result != 0 )

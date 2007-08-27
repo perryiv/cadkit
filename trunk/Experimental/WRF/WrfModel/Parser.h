@@ -66,6 +66,9 @@ private:
   /// Seek.
   void                           _seek ( Usul::Types::Int64 offset );
 
+  /// Seek.
+  void                           _seek ( Usul::Types::Int64 offset, int whence );
+
   /// Read a 2D slice.
   void                           _readSlice ( Data::value_type* buffer );
 

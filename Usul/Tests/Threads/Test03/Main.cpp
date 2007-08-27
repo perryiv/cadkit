@@ -71,7 +71,7 @@ void _test()
   // Start the jobs.
   for ( unsigned int i = 0; i < num; ++i )
   {
-    Usul::Jobs::Job::RefPtr job ( new TestJob ( Usul::Jobs::Manager::instance().nextJobId(), Detail::randomNumbers.at(i) ) );
+    Usul::Jobs::Job::RefPtr job ( new TestJob ( Detail::randomNumbers.at(i) ) );
     Usul::Jobs::Manager::instance().add ( job.get() );
   }
 

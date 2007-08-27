@@ -67,13 +67,12 @@ protected:
 
   // Constructors
   Job ( Usul::Interfaces::IUnknown* caller = 0x0 );
-  Job ( unsigned long id, Usul::Interfaces::IUnknown* caller = 0x0 );
 
   // Use reference counting.
   virtual ~Job();
 
-  // Construct.
-  void                      _construct ( Usul::Interfaces::IUnknown *caller );
+  // Set the id.  Protected so only the Job Manager can set it.
+  void                      id ( unsigned int value );
 
   // Called when the job is cancelled.
   virtual void              _cancelled();

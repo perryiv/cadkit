@@ -26,7 +26,7 @@ public:
 
   typedef Usul::Jobs::Job BaseClass;
 
-  TestJob ( unsigned long id, unsigned long sleep );
+  TestJob ( unsigned long sleep );
 
   virtual void              _cancelled();
 

@@ -323,10 +323,21 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
       _geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
     }
   }
-  else if ( _colorsT.valid () && _colorsT->size () == _triangles.size() )
+  else if ( OsgTools::Options::has ( options, "colors", "per-triangle" ) )
   {
-    _geometry->setColorArray ( _colorsT.get() );
-    _geometry->setColorBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+
+    if( true == _colorsT.valid () && _colorsT->size () == _triangles.size() )
+    {
+      _geometry->setColorArray ( _colorsT.get() );
+      _geometry->setColorBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+    }
+  }
+  else
+  {
+    // Use Materials
+    
+
+    
   }
 #endif
 #if 0

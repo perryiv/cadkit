@@ -39,6 +39,7 @@
 #include "OsgTools/Group.h"
 
 #include "osgDB/ReadFile"
+#include "osgDB/WriteFile"
 #include "osg/Group"
 
 #include <iterator>
@@ -625,7 +626,7 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     return;
   }*/
 
-
+  
   if( true == this->isValid( this->currentFilePosition() ) &&
       false == this->isLoading( this->currentFilePosition() ) &&
       true == this->loadCurrentFile() )
@@ -642,8 +643,10 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     ext = _ext;
     prefix = _prefix;
   }
+  // Get all the files in the directory "dir"
+  //std::cout << "Checking " << dir << " for files with extension " << ext << std::endl;
   Usul::File::find( dir, ext, files );
-
+  //std::cout << files.size() << " file(s) found" << std::endl;
   // If we don't find any files matching our search criteria ...
   if( 0 == files.size() )
   {
@@ -651,6 +654,7 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     Guard guard ( this->mutex() );
     _numFilesInDirectory = 0;
   }
+  
 
   // Make sure we have some files and that they are different from our last look
   // at the directory.
@@ -671,7 +675,7 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     #endif
 
     // Get all files with the prefix name.
-    std::cout << "Checking directory: " << dir + slash << " for files with prefix: " << prefix << std::endl;
+    //std::cout << "Checking directory: " << dir + slash << " for files with prefix: " << prefix << std::endl;
 
     StringVector::iterator end ( std::remove_if 
                                  ( files.begin(), files.end(),  
@@ -706,6 +710,7 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     }
 
   }
+  if( this->numFiles() > 0 )
   {
     
 #if 1
@@ -719,7 +724,7 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
       {
         index = this->numFiles() + i;
       	// Debugging on Linux...
-      	std::cout << "Index is: " << index << " i is: " << i << std::endl;
+      	//std::cout << "Index is: " << index << " i is: " << i << std::endl;
       }
       else
       {
@@ -727,26 +732,29 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
         {
 	  index = 0 + i - this->numFiles();
 	  // Debugging on Linux...
-      	  std::cout << "Index is: " << index << std::endl;
+      	  //std::cout << "Index is: " << index << std::endl;
           
         }
         else
         {
           index = static_cast< unsigned int > ( i );
 	  // Debugging on Linux...
-      	  std::cout << "Index is: " << index << std::endl;
+      	  //std::cout << "Index is: " << index << std::endl;
         }
       }
       // Debugging on Linux...
-      std::cout << "Index is: " << index << std::endl;
+      // std::cout << "Index is: " << index << std::endl;
       if( false == this->isValid( index ) &&
           false == this->isLoading( index ) &&
           false == this->isLoaded( index ) )
       {
         // Get the file name
+	//std::cout << "Getting filename at index: " << index << std::endl;
         std::string filename = this->getFilenameAtIndex( index );
         // strip the extension from the map file name
+	//std::cout << "Filename is: " << filename << ". Triming extension... " << std::endl;
         std::string root = filename.substr( 0, filename.size() - 4 );
+	//std::cout << "Root of filename is: " << root << "\n Setting loading flag..." << std::endl;
         this->isLoading( index, true );
 #if 0 // with progress bars
         LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, caller, index ) );
@@ -793,6 +801,8 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     } 
 #endif
   }
+  else
+    std::cout << "No files to load!" << std::endl;
 }
 
 
@@ -1119,6 +1129,7 @@ void DynamicLandDocument::_loadCurrentFileFromDocument( Usul::Interfaces::IUnkno
   std::cout << "Scene Built!" << std::endl;
   if( true == this->isAnimating() )
     this->_updateAnimationFrame( true );
+  
 }
 
 
@@ -1130,6 +1141,7 @@ void DynamicLandDocument::_loadCurrentFileFromDocument( Usul::Interfaces::IUnkno
 
 void DynamicLandDocument::_loadNextTimeStep()
 {
+
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _terrain->removeChild( 0, _terrain->getNumChildren() );
@@ -1141,8 +1153,9 @@ void DynamicLandDocument::_loadNextTimeStep()
   //_timeStepPool.at( this->currentFilePosition() ).group = new osg::Group();
   this->loadCurrentFile ( false );
   this->isLoaded( true );
+  std::cout << "Number of children in terrain is: " << _terrain->getNumChildren() << std::endl;
+  osgDB::writeNodeFile( *_terrain, "terrain_group.osg" );
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1253,7 +1266,7 @@ bool DynamicLandDocument::isValid( unsigned int pos )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  std::cout << "Checking if position: " << pos << " is valid." << std::endl;
+  //std::cout << "Checking if position: " << pos << " is valid." << std::endl;
   if( pos < _timeStepPool.size() )
     return this->_timeStepPool.at( pos ).isValid;
 
@@ -1300,6 +1313,7 @@ unsigned int DynamicLandDocument::numFiles()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+  //std::cout << "Number of files is: " << _files.size() << std::endl;
   return _files.size();
 }
 
@@ -1313,6 +1327,8 @@ std::string DynamicLandDocument::getFilenameAtIndex( unsigned int index )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+  //this->numFiles();
+  //std::cout << "Found filename: " << this->_files.at( index ) << " at index: " << index << std::endl;
   return this->_files.at( index );
 }
 

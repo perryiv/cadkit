@@ -32,6 +32,7 @@
 #include "Usul/Shared/Preferences.h"
 #include "Usul/Algorithms/FindAllConnected.h"
 #include "Usul/Polygons/Triangle.h"
+#include "Usul/Trace/Trace.h"
 
 #include "Usul/Scope/Timer.h"
 
@@ -183,12 +184,20 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
   _triangles.clear();
 
   // Clear the vertices, normals, and colors.
+  //Experimenting with retaining the scene while discarding the triangle set
+#if 0
   _vertices->clear();
   this->normalsV()->clear();
   this->normalsT()->clear();
-
   if ( _colorsV.valid() )
     _colorsV->clear();
+#else
+  _vertices = new osg::Vec3Array;
+  _normalsV = new osg::Vec3Array;
+  _normalsT = new osg::Vec3Array;
+  if ( _colorsV.valid() )
+    _colorsV = new osg::Vec4Array;
+#endif
 
   // Reset the bounding box.
   _bbox.init();
@@ -1486,6 +1495,7 @@ void TriangleSet::_buildDecorations ( const Options &options, osg::Group *root )
 
 osg::Node *TriangleSet::buildScene ( const Options &options, Unknown * )
 {
+  USUL_TRACE_SCOPE;
   // Clear the root.
   _root->removeChild( 0, _root->getNumChildren() );
 

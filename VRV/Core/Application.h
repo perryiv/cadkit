@@ -28,6 +28,7 @@
 #include "VRV/Interfaces/IJoystick.h"
 #include "VRV/Interfaces/IWandState.h"
 #include "VRV/Interfaces/ITranslationSpeed.h"
+#include "VRV/Animate/Path.h"
 
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/IUpdateSubject.h"
@@ -37,6 +38,8 @@
 #include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Interfaces/IButtonPressListener.h"
 #include "Usul/Interfaces/IButtonReleaseListener.h"
+#include "Usul/Interfaces/IFrameStamp.h"
+#include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Queue.h"
@@ -98,7 +101,9 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public Usul::Interfaces::ICommandQueueAdd,
                                public Usul::Interfaces::IActiveDocumentListener,
                                public Usul::Interfaces::IButtonPressListener,
-                               public Usul::Interfaces::IButtonReleaseListener
+                               public Usul::Interfaces::IButtonReleaseListener,
+                               public Usul::Interfaces::IFrameStamp,
+                               public Usul::Interfaces::IViewMatrix
 {
 public:
   // Typedefs.
@@ -137,9 +142,9 @@ public:
   void                    setBackgroundColor( const osg::Vec4& bg );
   const osg::Vec4&        getBackgroundColor() const;
 
-  /// Get/Set the framestamp.
-  osg::FrameStamp*        getFrameStamp();
-  const osg::FrameStamp*  getFrameStamp() const;
+  /// Get/Set the framestamp ( Usul::Interfaces::IFrameStamp ).
+  osg::FrameStamp*        frameStamp();
+  const osg::FrameStamp*  frameStamp() const;
 
   /// Get/Set the scene data.
   osg::Node*              getSceneData();
@@ -212,6 +217,11 @@ public:
   bool                    menuSceneShowHide();
   void                    toggleMenuSceneShowHide( bool show );
 
+  /// Append current camera.
+  void                    appendCamera ();
+
+  /// Start the animation.
+  void                    startAnimation ();
 protected:
 
   /// VR Juggler methods.
@@ -369,6 +379,15 @@ protected:
   /// Called when button is released.
   virtual void                  buttonReleaseNotify ( Usul::Interfaces::IUnknown * );
 
+  /// Set the view matrix ( Usul::Interfaces::IViewMatrix ).
+  /// Note: In this implementation, the navigation matrix is set.
+  virtual void                  setViewMatrix ( const osg::Matrixf& );
+  virtual void                  setViewMatrix ( const osg::Matrixd& );
+
+  /// Get the view matrix ( Usul::Interfaces::IViewMatrix ).
+  /// Note: In this implementation, the navigation matrix is set.
+  virtual const osg::Matrixd&   getViewMatrix (  ) const;
+
   /// No copying.
   Application ( const Application& );
   Application& operator = (const Application&);
@@ -409,6 +428,7 @@ private:
   osg::Timer_t                           _frameStart;
   double                                 _frameTime;
   cluster::UserData < SharedDouble >     _sharedFrameTime;
+  cluster::UserData < SharedDouble >     _sharedFrameStart;
 
   vrj::GlContextData< RendererPtr >      _renderer;
   Renderers                              _renderers;
@@ -440,7 +460,9 @@ private:
 
   unsigned int                           _refCount;
 
-  bool                                  _menuSceneShowHide;
+  bool                                   _menuSceneShowHide;
+
+  VRV::Animate::Path::RefPtr             _path;
 };
 
 }

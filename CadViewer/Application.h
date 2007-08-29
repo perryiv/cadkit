@@ -138,6 +138,7 @@ protected:
   void                          _initNavigateMenu ( MenuKit::Menu* menu );
   void                          _initToolsMenu    ( MenuKit::Menu* menu );
   void                          _initOptionsMenu  ( MenuKit::Menu* menu );
+  void                          _initAnimateMenu  ( MenuKit::Menu* menu );
 
   // Create a button.
   MenuKit::Button*              _createButton    ( Usul::Commands::Command* command );
@@ -295,6 +296,8 @@ protected:
   void                          _renderPassesTweleve  ( MenuKit::Message m, MenuKit::Item *item );
   void                          _dumpFrames           ( MenuKit::Message m, MenuKit::Item *item );
   void                          _toggleMenuSceneHideShow    ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _appendCurrentCamera        ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _toggleStartAnimation       ( MenuKit::Message m, MenuKit::Item *item );
   
 
   // For readability.

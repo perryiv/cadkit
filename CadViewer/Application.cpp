@@ -2030,7 +2030,7 @@ void Application::_setHome()
   std::ofstream file ( out.str().c_str() );
   if ( true == file.is_open() )
   {
-    Usul::Print::matrix ( "", _home.ptr(), file );
+    Usul::Print::matrix ( "", _home.ptr(), file, 20 );
   }
 #endif
 }

@@ -48,38 +48,40 @@ using namespace VRV::Core;
 ///////////////////////////////////////////////////////////////////////////////
 
 Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
-  _mutex           (),
-  _root            ( new osg::Group ),
-  _navBranch       ( new osg::MatrixTransform ),
-  _models          ( new osg::MatrixTransform ),
-  _timer           (),
-  _framestamp      ( 0x0 ),
-  _viewport        ( 0x0 ),
-  _backgroundColor ( 0, 0, 0, 1 ),
-  _dirty           ( false ),
-  _initialTime     ( static_cast < osg::Timer_t > ( 0.0 ) ),
-  _frameStart      ( static_cast < osg::Timer_t > ( 0.0 ) ),
-  _sharedFrameTime (),
-  _frameTime       ( 1 ),
-  _renderer        (),
-  _renderers       (),
-  _sceneManager    ( new OsgTools::Render::SceneManager ),
-  _progressBars    ( new ProgressBars ),
-  _clipDist        ( 0, 0 ),
-  _exportImage     ( false ),
-  _preferences     ( new Preferences ),
-  _buttons         ( new VRV::Devices::ButtonGroup ),
-  _tracker         ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
-  _joystick        ( new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" ) ),
-  _analogTrim      ( 0, 0 ),
-  _wandOffset      ( 0, 0, 0 ), // feet (used to be z=-4)
-  _databasePager   ( new osgDB::DatabasePager ),
-  _updateListeners ( ),
-  _commandQueue    (),
-  _frameDump       (),
-  _navigator       ( 0x0 ),
-  _refCount        ( 0 ),
-  _menuSceneShowHide ( true )
+  _mutex             (),
+  _root              ( new osg::Group ),
+  _navBranch         ( new osg::MatrixTransform ),
+  _models            ( new osg::MatrixTransform ),
+  _timer             (),
+  _framestamp        ( 0x0 ),
+  _viewport          ( 0x0 ),
+  _backgroundColor   ( 0, 0, 0, 1 ),
+  _dirty             ( false ),
+  _initialTime       ( static_cast < osg::Timer_t > ( 0.0 ) ),
+  _frameStart        ( static_cast < osg::Timer_t > ( 0.0 ) ),
+  _sharedFrameTime   (),
+  _sharedFrameStart  (),
+  _frameTime         ( 1 ),
+  _renderer          (),
+  _renderers         (),
+  _sceneManager      ( new OsgTools::Render::SceneManager ),
+  _progressBars      ( new ProgressBars ),
+  _clipDist          ( 0, 0 ),
+  _exportImage       ( false ),
+  _preferences       ( new Preferences ),
+  _buttons           ( new VRV::Devices::ButtonGroup ),
+  _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
+  _joystick          ( new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" ) ),
+  _analogTrim        ( 0, 0 ),
+  _wandOffset        ( 0, 0, 0 ), // feet (used to be z=-4)
+  _databasePager     ( new osgDB::DatabasePager ),
+  _updateListeners   ( ),
+  _commandQueue      ( ),
+  _frameDump         (),
+  _navigator         ( 0x0 ),
+  _refCount          ( 0 ),
+  _menuSceneShowHide ( true ),
+  _path              ( new VRV::Animate::Path )
 {
   USUL_TRACE_SCOPE;
   this->_construct();
@@ -201,6 +203,10 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IButtonPressListener * > ( this );
   case Usul::Interfaces::IButtonReleaseListener::IID:
     return static_cast < Usul::Interfaces::IButtonReleaseListener * > ( this );
+  case Usul::Interfaces::IFrameStamp::IID:
+    return static_cast < Usul::Interfaces::IFrameStamp * > ( this );
+  case Usul::Interfaces::IViewMatrix::IID:
+    return static_cast < Usul::Interfaces::IViewMatrix * > ( this );
   default:
     return 0x0;
   }
@@ -682,8 +688,16 @@ void Application::init()
   _initialTime = _timer.tick();
 
   // Initialize the shared frame time data.
-  vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
-  _sharedFrameTime.init ( guid, "viz0" );
+  {
+    vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
+    _sharedFrameTime.init ( guid, "viz0" );
+  }
+
+  // Initialize the shared frame start data.
+  {
+    vpr::GUID guid ( "2E3E374B-B232-476f-A870-F854E717F61A" );
+    _sharedFrameStart.init ( guid, "viz0" );
+  }
 
   // Add the progress bars to the scene.
   osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
@@ -720,6 +734,9 @@ void Application::preFrame()
 {
   USUL_TRACE_SCOPE;
 
+  // Mark the start of the frame.
+  _frameStart = _timer.tick();
+
   // Write the frame time if we've suppose to.
   if( _sharedFrameTime.isLocal() )
   {
@@ -727,16 +744,14 @@ void Application::preFrame()
     _sharedFrameTime->data = _frameTime;
   }
 
-  // TODO: Write FrameStamp data.
-
-  // Mark the start of the frame.
-  _frameStart = _timer.tick();
+  // Write out the start of the frame.
+  if ( _sharedFrameStart.isLocal () )
+  {
+    _sharedFrameStart->data = _frameStart;
+  }
 
   // Update the progress bars.
   _progressBars->buildScene();
-
-  // Notify that it's ok to update.
-  this->_updateNotify();
 
   // Purge the job manager.
   Usul::Jobs::Manager::instance().purge();
@@ -759,6 +774,9 @@ void Application::latePreFrame()
   // Get the frame time.
   _frameTime = _sharedFrameTime->data;
 
+  // Set the reference time.
+  this->frameStamp()->setReferenceTime ( _sharedFrameStart->data );
+
   // Update these input devices.
   _buttons->notify();
   _tracker->update();
@@ -769,6 +787,12 @@ void Application::latePreFrame()
 
   // Navigate if we are supposed to.
   this->_navigate ();
+
+  // Animate if we are suppose to.
+  _path->animate ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+
+  // Notify that it's ok to update.
+  this->_updateNotify();
 
   if ( _databasePager.valid () && _framestamp.valid() )
   {
@@ -875,7 +899,7 @@ bool Application::normalize() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::FrameStamp* Application::getFrameStamp()
+osg::FrameStamp* Application::frameStamp()
 {
   USUL_TRACE_SCOPE;
   return _framestamp.get();
@@ -888,7 +912,7 @@ osg::FrameStamp* Application::getFrameStamp()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::FrameStamp* Application::getFrameStamp() const
+const osg::FrameStamp* Application::frameStamp() const
 {
   USUL_TRACE_SCOPE;
   return _framestamp.get();
@@ -2182,4 +2206,77 @@ bool Application::menuSceneShowHide()
   Guard guard ( this->mutex() );
 
   return _menuSceneShowHide;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the view matrix ( Usul::Interfaces::IViewMatrix ).
+//  Note: In this implementation, the navigation matrix is set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::setViewMatrix ( const osg::Matrixf& m )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _navBranch->setMatrix ( m );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the view matrix ( Usul::Interfaces::IViewMatrix ).
+//  Note: In this implementation, the navigation matrix is set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::setViewMatrix ( const osg::Matrixd& m )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _navBranch->setMatrix ( m );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the view matrix ( Usul::Interfaces::IViewMatrix ).
+//  Note: In this implementation, the navigation matrix is set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Matrixd& Application::getViewMatrix (  ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _navBranch->getMatrix ( );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append current camera.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::appendCamera ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _path->append ( new VRV::Animate::Frame ( this->getViewMatrix () ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start the animation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::startAnimation ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _path->start ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 }

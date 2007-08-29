@@ -652,6 +652,15 @@ void Application::_initMenu()
     menu->append ( options.get() );
   }
 
+  // The animate menu.
+  {
+    MenuKit::Menu::Ptr animate ( new MenuKit::Menu );
+    animate->layout ( MenuKit::Menu::VERTICAL );
+    animate->text ( "Animate" );
+    this->_initAnimateMenu ( animate.get() );
+    menu->append ( animate.get() );
+  }
+
   // The tools menu.
   {
     MenuKit::Menu::Ptr tools ( new MenuKit::Menu );
@@ -903,6 +912,19 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
   menu->append ( this->_createButton ( "Calibrate Joystick", MenuKit::memFunCB2 ( this, &Application::_setAnalogTrim ) ) );
   menu->append ( this->_createButton ( "Toggle Hide Scene", MenuKit::memFunCB2 ( this, &Application::_toggleMenuSceneHideShow ) ) );
 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the animate menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initAnimateMenu  ( MenuKit::Menu* menu )
+{
+  menu->append ( this->_createButton ( "Append", MenuKit::memFunCB2 ( this, &Application::_appendCurrentCamera ) ) );
+  menu->append ( this->_createButton ( "Animate", MenuKit::memFunCB2 ( this, &Application::_toggleStartAnimation ) ) );
 }
 
 
@@ -1414,8 +1436,8 @@ void Application::_postFrame()
   // contextInit() has to be called first.
   if ( false == Usul::Bits::has ( _flags, Detail::_TEXT_IS_INITIALIZED ) )
   {
-    osg::ref_ptr < osg::FrameStamp > framestamp ( this->getFrameStamp() );
-    if ( 0x0 != framestamp.get() && this->getFrameStamp()->getFrameNumber() > 10 )
+    osg::ref_ptr < osg::FrameStamp > framestamp ( this->frameStamp() );
+    if ( 0x0 != framestamp.get() && framestamp->getFrameNumber() > 10 )
       this->_initText();
   }
 }

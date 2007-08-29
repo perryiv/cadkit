@@ -1891,7 +1891,7 @@ void Application::_dumpFrames ( MenuKit::Message m, MenuKit::Item *item )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Toggle whether or not to hide or show the scene when the menu is visible
+//   Toggle whether or not to hide or show the scene when the menu is visible
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1905,4 +1905,30 @@ void Application::_toggleMenuSceneHideShow ( MenuKit::Message m, MenuKit::Item *
     else
       this->toggleMenuSceneShowHide( true );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append current frame.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_appendCurrentCamera ( MenuKit::Message m, MenuKit::Item *item )
+{
+  if ( MenuKit::MESSAGE_SELECTED == m )
+    this->appendCamera ( );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start the animation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_toggleStartAnimation ( MenuKit::Message m, MenuKit::Item *item )
+{
+  if ( MenuKit::MESSAGE_SELECTED == m )
+    this->startAnimation ( );
 }

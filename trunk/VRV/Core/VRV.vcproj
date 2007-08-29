@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(BOOST_INC_DIR)&quot;;../../;&quot;$(VJ_BASE_DIR)/include&quot;;&quot;$(VJ_DEPS_DIR)/include&quot;;&quot;$(OSG_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(BOOST_INC_DIR)&quot;;../../;&quot;$(VJ_BASE_DIR)/include&quot;;&quot;$(VJ_DEPS_DIR)/include&quot;;&quot;$(OSG_INC_DIR)&quot;;$(CADKIT_ROOT_DIR)/GenericNurbs"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_VRV"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -148,7 +148,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;$(BOOST_INC_DIR)&quot;;../../;&quot;$(VJ_BASE_DIR)/include&quot;;&quot;$(VJ_DEPS_DIR)/include&quot;;&quot;$(OSG_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(BOOST_INC_DIR)&quot;;../../;&quot;$(VJ_BASE_DIR)/include&quot;;&quot;$(VJ_DEPS_DIR)/include&quot;;&quot;$(OSG_INC_DIR)&quot;;$(CADKIT_ROOT_DIR)/GenericNurbs"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_VRV"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -221,6 +221,10 @@
 		<Filter
 			Name="Source"
 			>
+			<File
+				RelativePath="..\Export.h"
+				>
+			</File>
 			<Filter
 				Name="Core"
 				>
@@ -234,10 +238,6 @@
 				</File>
 				<File
 					RelativePath=".\Exceptions.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Export.h"
 					>
 				</File>
 				<File
@@ -546,6 +546,26 @@
 				</File>
 				<File
 					RelativePath="..\Prefs\Settings.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Animate"
+				>
+				<File
+					RelativePath="..\Animate\Frame.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Animate\Frame.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Animate\Path.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Animate\Path.h"
 					>
 				</File>
 			</Filter>

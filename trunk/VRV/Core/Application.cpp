@@ -22,7 +22,6 @@
 #include "Usul/Threads/Manager.h"
 #include "Usul/System/Host.h"
 #include "Usul/System/Directory.h"
-#include "Usul/Threads/Manager.h"
 #include "Usul/Documents/Manager.h"
 
 #include "OsgTools/State/StateSet.h"
@@ -775,7 +774,8 @@ void Application::latePreFrame()
   _frameTime = _sharedFrameTime->data;
 
   // Set the reference time.
-  this->frameStamp()->setReferenceTime ( _sharedFrameStart->data );
+  if ( 0x0 != this->frameStamp () )
+    this->frameStamp()->setReferenceTime ( _sharedFrameStart->data );
 
   // Update these input devices.
   _buttons->notify();

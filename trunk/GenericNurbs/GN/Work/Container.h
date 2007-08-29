@@ -169,7 +169,7 @@ public:
     return _c[i];
   }
 
-#ifndef __APPLE__
+#ifdef _MSC_VER
 
   reference operator [] ( difference_type i )
   {

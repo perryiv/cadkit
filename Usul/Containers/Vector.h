@@ -228,7 +228,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-#ifdef __APPLE__
+#ifndef _MSC_VER
   
   reference at ( unsigned int i )
   {
@@ -283,7 +283,7 @@ public:
       return this->at ( i );
   }
 
-#ifndef __APPLE__
+#ifdef _MSC_VER
 
   reference operator [] ( difference_type i )
   {

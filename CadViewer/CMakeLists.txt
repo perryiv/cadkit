@@ -23,7 +23,7 @@ ${CADKIT_ROOT_DIR}/VRV
 ${CADKIT_ROOT_DIR}/CadViewer/Plugins/scene_operations
 ${CADKIT_ROOT_DIR}/Helios/Plugins/SceneModel
 ${CADKIT_ROOT_DIR}/Helios/Plugins/TriangleModel
-#${CADKIT_ROOT_DIR}/Experimental/WRF/WrfModel
+${CADKIT_ROOT_DIR}/Experimental/WRF/WrfModel
 ${CADKIT_ROOT_DIR}/CadViewer/Plugins/display_scene_stats
 ${CADKIT_ROOT_DIR}/Experimental/DynamicLand/DynamicLandModel
 ${CADKIT_ROOT_DIR}/Experimental/ModelPresentation/ModelPresentation
@@ -33,6 +33,7 @@ ${CADKIT_ROOT_DIR}/Experimental/ModelPresentation/ModelPresentation
 INCLUDE_DIRECTORIES( 
 		     ${CADKIT_INC_DIR}
 		     "${CADKIT_INC_DIR}/CadViewer"
+         "${CADKIT_INC_DIR}/GenericNurbs"
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
 		     ${VRJ_INC_DIR}

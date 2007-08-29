@@ -19,6 +19,7 @@ ADD_DEFINITIONS("-D_COMPILING_VRV")
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
 		     ${CADKIT_INC_DIR}
+         "${CADKIT_INC_DIR}/GenericNurbs"
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
 		     ${VRJ_INC_DIR}
@@ -28,6 +29,8 @@ INCLUDE_DIRECTORIES(
 
 #List the Sources
 SET (SOURCES
+  ./Animate/Frame.cpp
+  ./Animate/Path.cpp
   ./Core/Application.cpp
   ./Core/SharedDouble.cpp
   ./Core/SharedMatrix.cpp

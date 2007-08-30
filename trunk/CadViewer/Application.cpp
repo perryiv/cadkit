@@ -937,6 +937,10 @@ void Application::_initAnimateMenu  ( MenuKit::Menu* menu )
     steps->append ( this->_createRadio ( "20",  MenuKit::memFunCB2 ( this, &Application::_animationSteps20 ) ) );
     steps->append ( this->_createRadio ( "50",  MenuKit::memFunCB2 ( this, &Application::_animationSteps50 ) ) );
     steps->append ( this->_createRadio ( "100", MenuKit::memFunCB2 ( this, &Application::_animationSteps100 ) ) );
+
+    steps->append ( this->_createSeperator () );
+    menu->append ( this->_createButton ( "Steps x 2", MenuKit::memFunCB2 ( this, &Application::_animationStepsDouble ) ) );
+    menu->append ( this->_createButton ( "Steps / 2", MenuKit::memFunCB2 ( this, &Application::_animationStepsHalf ) ) );
   }
 
   menu->append ( this->_createSeperator () );

@@ -60,7 +60,9 @@ def createSqlInsert( row, tablename ):
 
     for i in range( length ):
         value = string.strip(str( row[i] ))
-        if len(value) > 0:
+        if value == 'NULL':
+            sql = sql + 'NULL'
+        elif len(value) > 0:
             sql = sql + '\'' + string.strip(str( row[i] )) + '\''
         else:
             sql = sql + 'NULL'
@@ -163,8 +165,10 @@ def main():
 
     # Create the create table statement.
     sql = 'CREATE TABLE %s\n(' % (tablename)
+    i = 0
     for col in cols:
-        sql = sql + ('\n\t%s NVARCHAR(%s) NULL,' % (col[0],col[1]))
+        sql = sql + ('\n\t%s %s NULL,' % (col[0],col_types[i]))
+        i = i + 1
     sql = sql[:len(sql)-1] + '\n);'
 
     sqlfile = open(outfile,'w')

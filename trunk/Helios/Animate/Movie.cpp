@@ -1030,7 +1030,6 @@ void  Movie::_interpolate ( Iter begin, Iter end, DoubleCurve &curve, DependentC
   typedef DoubleCurve::IndependentType IndependentType;
   typedef DoubleCurve::SizeType SizeType;
   typedef DoubleCurve::ErrorCheckerType ErrorCheckerType;
-  typedef DoubleCurve::Power PowerFunctor;
   typedef GN::Algorithms::KnotVector < IndependentSequence, ErrorCheckerType > KnotVectorBuilder;
 
   // Container for the data.

@@ -20,10 +20,13 @@
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 #include "osg/FrameStamp"
 
 using namespace VRV::Animate;
 
+SERIALIZE_XML_REGISTER_CREATOR_WITH_NAME ( "MatrixPath", Path );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -45,6 +48,7 @@ Path::Path () :
   _startTime ( -1.0 ),
   _animating( false )
 {
+  this->_addMember ( "Frames", _frames );
 }
 
 

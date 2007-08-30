@@ -10,8 +10,12 @@
 
 #include "VRV/Animate/Frame.h"
 
+#include "Serialize/XML/RegisterCreator.h"
+
 using namespace VRV::Animate;
 
+SERIALIZE_XML_DECLARE_MATRIX_4_4_WRAPPER(osg::Matrix);
+SERIALIZE_XML_REGISTER_CREATOR_WITH_NAME ( "MatrixFrame", Frame );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -23,6 +27,7 @@ Frame::Frame () :
   BaseClass (),
   _m ()
 {
+  this->_addMember ( "Matrix", _m );
 }
 
 

@@ -7,7 +7,7 @@ use strict;
 my $input  = shift @ARGV;
 my $output = shift @ARGV;
 
-my $command = "ffmpeg -i ".$input." -sameq ".$output;
+my $command = "ffmpeg -y -i ".$input." -sameq ".$output;
 
 `$command`;
 

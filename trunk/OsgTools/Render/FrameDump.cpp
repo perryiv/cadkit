@@ -145,7 +145,7 @@ std::string FrameDump::file() const
 {
   // Make the file name.
   std::ostringstream fn;
-  fn << _dir << '/' << _base << std::setw ( _digits ) << _current << _ext;
+  fn << _dir << '/' << std::setw ( _digits ) << _current << _base << _ext;
   std::string name ( fn.str() );
   std::replace ( name.begin(), name.end(), ' ', '0' );
 

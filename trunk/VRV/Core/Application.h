@@ -222,6 +222,9 @@ public:
 
   /// Start the animation.
   void                    startAnimation ();
+
+  /// Clear animation.
+  void                    clearAnimation ();
 protected:
 
   /// VR Juggler methods.
@@ -428,7 +431,7 @@ private:
   osg::Timer_t                           _frameStart;
   double                                 _frameTime;
   cluster::UserData < SharedDouble >     _sharedFrameTime;
-  cluster::UserData < SharedDouble >     _sharedFrameStart;
+  cluster::UserData < SharedDouble >     _sharedReferenceTime;
 
   vrj::GlContextData< RendererPtr >      _renderer;
   Renderers                              _renderers;

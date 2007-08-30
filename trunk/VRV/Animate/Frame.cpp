@@ -84,13 +84,8 @@ const osg::Matrix& Frame::matrix () const
 
 osg::Quat Frame::rotation () const
 {
-  osg::Quat q;
-  
-  {
-    Guard guard ( this->mutex () );
-    q.set ( _m );
-  }
-  return q;
+  Guard guard ( this->mutex () );
+  return _m.getRotate ();
 }
 
 

@@ -15,6 +15,8 @@
 
 #include "Usul/Base/Object.h"
 
+#include "Serialize/XML/Macros.h"
+
 #include "osg/Matrix"
 #include "osg/Quat"
 #include "osg/Vec3"
@@ -48,6 +50,9 @@ protected:
 
 private:
   osg::Matrix _m;
+
+  SERIALIZE_XML_DEFINE_MAP;
+  SERIALIZE_XML_DEFINE_MEMBERS ( Frame );
 };
 
 }

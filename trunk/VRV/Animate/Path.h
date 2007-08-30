@@ -47,6 +47,9 @@ public:
   /// Append a frame.
   void              append ( Frame *frame );
 
+  /// Clear.
+  void              clear ();
+
   /// Get/Set the dirty flag.
   void              dirty ( bool );
   bool              dirty () const;
@@ -67,8 +70,10 @@ protected:
 private:
   bool                _dirty;
   Frames              _frames;
-  Parameter           _segTime;
-  Parameter           _lastU;
+  unsigned int        _numberSteps;
+  unsigned int        _currentStep;
+  //Parameter           _segTime;
+  //Parameter           _lastU;
   IndependentSequence _params;
   DependentContainer  _rotations;
   DoubleCurve         _curve;

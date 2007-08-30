@@ -298,7 +298,7 @@ protected:
   void                          _toggleMenuSceneHideShow    ( MenuKit::Message m, MenuKit::Item *item );
   void                          _appendCurrentCamera        ( MenuKit::Message m, MenuKit::Item *item );
   void                          _toggleStartAnimation       ( MenuKit::Message m, MenuKit::Item *item );
-  
+  void                          _clearAnimation             ( MenuKit::Message m, MenuKit::Item *item );
 
   // For readability.
   typedef unsigned long                                 ThreadId;

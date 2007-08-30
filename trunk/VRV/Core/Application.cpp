@@ -22,6 +22,7 @@
 #include "Usul/Threads/Manager.h"
 #include "Usul/System/Host.h"
 #include "Usul/System/Directory.h"
+#include "Usul/System/Clock.h"
 #include "Usul/Documents/Manager.h"
 
 #include "OsgTools/State/StateSet.h"
@@ -59,7 +60,7 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _initialTime       ( static_cast < osg::Timer_t > ( 0.0 ) ),
   _frameStart        ( static_cast < osg::Timer_t > ( 0.0 ) ),
   _sharedFrameTime   (),
-  _sharedFrameStart  (),
+  _sharedReferenceTime  (),
   _frameTime         ( 1 ),
   _renderer          (),
   _renderers         (),
@@ -695,7 +696,7 @@ void Application::init()
   // Initialize the shared frame start data.
   {
     vpr::GUID guid ( "2E3E374B-B232-476f-A870-F854E717F61A" );
-    _sharedFrameStart.init ( guid, "viz0" );
+    _sharedReferenceTime.init ( guid, "viz0" );
   }
 
   // Add the progress bars to the scene.
@@ -744,9 +745,9 @@ void Application::preFrame()
   }
 
   // Write out the start of the frame.
-  if ( _sharedFrameStart.isLocal () )
+  if ( _sharedReferenceTime.isLocal () )
   {
-    _sharedFrameStart->data = _frameStart;
+    _sharedReferenceTime->data = static_cast < double > ( _frameStart - _initialTime );
   }
 
   // Update the progress bars.
@@ -775,7 +776,7 @@ void Application::latePreFrame()
 
   // Set the reference time.
   if ( 0x0 != this->frameStamp () )
-    this->frameStamp()->setReferenceTime ( _sharedFrameStart->data );
+    this->frameStamp()->setReferenceTime ( _sharedReferenceTime->data );
 
   // Update these input devices.
   _buttons->notify();
@@ -2279,4 +2280,18 @@ void Application::startAnimation ()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _path->start ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the animation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::clearAnimation ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _path->clear ();
 }

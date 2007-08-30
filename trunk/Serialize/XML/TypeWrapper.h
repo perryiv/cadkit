@@ -30,7 +30,7 @@
 #include "Usul/Interfaces/ISerialize.h"
 
 #include <sstream>
-
+#include <iomanip>
 
 namespace Serialize {
 namespace XML {
@@ -366,5 +366,58 @@ SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( Usul::Math::Vec3f );
 SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2d );
 SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2f );
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macros to declare stream operators for 4 by 4 matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_MATRIX_4_4(the_type)\
+inline std::ostream &operator << ( std::ostream &out, const the_type &m )\
+{\
+  int w ( 10 );\
+  int p ( 4 );\
+\
+  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 0, 0 );\
+  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 1, 0 );\
+  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 2, 0 );\
+  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 3, 0 );\
+  out << std::endl;\
+  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 0, 1 );\
+  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 1, 1 );\
+  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 2, 1 );\
+  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 3, 1 );\
+  out << std::endl;\
+  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 0, 2 );\
+  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 1, 2 );\
+  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 2, 2 );\
+  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 3, 2 );\
+  out << std::endl;\
+  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 0, 3 );\
+  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 1, 3 );\
+  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 2, 3 );\
+  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 3, 3 );\
+\
+  return out;\
+}\
+inline std::istream &operator >> ( std::istream &in, the_type &m )\
+{\
+  in >> m( 0, 0 ) >> m( 1, 0 ) >> m( 2, 0 )  >> m( 3, 0 )\
+     >> m( 0, 1 ) >> m( 1, 1 ) >> m( 2, 1 )  >> m( 3, 1 )\
+     >> m( 0, 2 ) >> m( 1, 2 ) >> m( 2, 2 )  >> m( 3, 2 )\
+     >> m( 0, 3 ) >> m( 1, 3 ) >> m( 2, 3 )  >> m( 3, 3 );\
+  return in;\
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macros to declare all plumbing for matrix types.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define SERIALIZE_XML_DECLARE_MATRIX_4_4_WRAPPER(the_type)\
+  SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_MATRIX_4_4(the_type);\
+  SERIALIZE_XML_DECLARE_TYPE_WRAPPER(the_type);
 
 #endif // _SERIALIZE_XML_SET_VALUE_H_

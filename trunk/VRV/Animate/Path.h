@@ -16,6 +16,8 @@
 
 #include "Usul/Base/Object.h"
 
+#include "Serialize/XML/Macros.h"
+
 #include "GN/Config/UsulConfig.h"
 #include "GN/Splines/Curve.h"
 #include "GN/Evaluate/Point.h"
@@ -79,6 +81,9 @@ private:
   DoubleCurve         _curve;
   double              _startTime;
   bool                _animating;
+
+  SERIALIZE_XML_DEFINE_MAP;
+  SERIALIZE_XML_DEFINE_MEMBERS ( Path );
 };
 
 }

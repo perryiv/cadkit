@@ -148,6 +148,8 @@ void Renderer::init()
   cv->setCullingMode ( Usul::Bits::remove ( cv->getCullingMode(), osg::CullingSet::SMALL_FEATURE_CULLING ) );
 
   this->viewer()->setCullingMode ( cv->getCullingMode() );
+
+  cv->setFrameStamp ( _framestamp.get () );
 }
 
 

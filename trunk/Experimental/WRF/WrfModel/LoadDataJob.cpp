@@ -168,7 +168,7 @@ osg::Image* LoadDataJob::_createImage ( const ReadRequest& request, Parser::Data
   std::vector < unsigned char > chars;
   Detail::normalize ( chars, data, info->min (), info->max () );
 
-  unsigned int width ( _y ), height ( _x ), depth ( _z );
+  unsigned int width ( _x ), height ( _y ), depth ( _z );
 
   osg::ref_ptr < osg::Image > image ( new osg::Image );
   image->allocateImage ( width, height, depth, GL_LUMINANCE, GL_UNSIGNED_BYTE );

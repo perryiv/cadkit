@@ -303,15 +303,16 @@ namespace Detail
 
     for ( unsigned int i = 0; i < 256; ++i )
     {
+      float value ( static_cast < float > ( i ) / 255 );
   #if 1
-      *data++ = i;
-      *data++ = i;
-      *data++ = i;
+      unsigned char c ( 180 - ( static_cast < unsigned int > ( value * 180 ) ) );
+      *data++ = c;
+      *data++ = c;
+      *data++ = c;
       *data++ = ( i == 0 ? 0 : 10 );
   #else
-      float value ( static_cast < float > ( i ) / 255 );
       float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
-      Usul::Functions::hsvToRgb ( r, g, b, value * 300, 1.0f, 1.0f );
+      Usul::Functions::hsvToRgb ( r, g, b, 300 - ( value * 300 ), 1.0f, 1.0f );
       *data++ = static_cast < unsigned char > ( r * 255 );
       *data++ = static_cast < unsigned char > ( g * 255 );
       *data++ = static_cast < unsigned char > ( b * 255 );
@@ -672,12 +673,12 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   this->_updateCache ();
 
   // Only animate if we aren't waiting for data.
-  if ( false == _jobForScene.valid () )
+  //if ( false == _jobForScene.valid () )
   {
     static unsigned int num ( 0 );
 
     ++num;
-    if ( this->animating() && num % 10 == 0 )
+    if ( this->animating() && num % 2 == 0 )
     {
       unsigned int currentTimestep ( this->getCurrentTimeStep () );
       this->setCurrentTimeStep ( ++currentTimestep );
@@ -759,27 +760,37 @@ void WRFDocument::_launchNextCacheRequest ()
 
   ReadRequests requests;
 
-  for ( unsigned int i = 0; i < _channels; ++ i )
+  // If we are animation only request data for the current channel.
+  //if ( this->animating () )
   {
-    // Only make a request if we don't alreay have the data.
-    if ( false == this->_dataCached ( timestepToLoad, i ) )
+    this->_requestData ( timestepToLoad, _currentChannel, false );
+  }
+#if 0
+  else
+  {
+    for ( unsigned int i = 0; i < _channels; ++ i )
     {
-      Channel::RefPtr info ( _channelInfo.at ( i ) );
-      ReadRequest request ( timestepToLoad, info );
-      requests.push_back ( request );
+      // Only make a request if we don't alreay have the data.
+      if ( false == this->_dataCached ( timestepToLoad, i ) )
+      {
+        Channel::RefPtr info ( _channelInfo.at ( i ) );
+        ReadRequest request ( timestepToLoad, info );
+        requests.push_back ( request );
+      }
     }
+
+    LoadDataJob::RefPtr job ( new LoadDataJob ( requests, this, _parser ) );
+    job->setSize ( _x, _y, _z );
+
+    for ( ReadRequests::const_iterator iter = requests.begin(); iter != requests.end(); ++iter )
+    {
+      Guard guard ( this->mutex() );
+      _requests.insert ( Requests::value_type ( Request ( iter->first, iter->second->index() ), job.get() ) );
+    }
+
+    Usul::Jobs::Manager::instance().add ( job.get() );
   }
-
-  LoadDataJob::RefPtr job ( new LoadDataJob ( requests, this, _parser ) );
-  job->setSize ( _x, _y, _z );
-
-  for ( ReadRequests::const_iterator iter = requests.begin(); iter != requests.end(); ++iter )
-  {
-    Guard guard ( this->mutex() );
-    _requests.insert ( Requests::value_type ( Request ( iter->first, iter->second->index() ), job.get() ) );
-  }
-
-  Usul::Jobs::Manager::instance().add ( job.get() );
+#endif
 }
 
 
@@ -979,7 +990,7 @@ void WRFDocument::_buildTopography ()
   Parser::Data data;
   parser.topography ( data );
 
-  const unsigned int width ( _y ), height ( _x );
+  const unsigned int width ( _x ), height ( _y );
 
   double xCellSize ( 10.0 );
   double yCellSize ( 10.0 );
@@ -1320,7 +1331,7 @@ void WRFDocument::_requestData ( unsigned int timestep, unsigned int channel, bo
 
   {
     Guard guard ( this->mutex() );    
-    _requests.insert ( Requests::value_type ( Request ( _currentTimestep, _currentChannel ), job.get() ) );
+    _requests.insert ( Requests::value_type ( Request ( timestep, channel ), job.get() ) );
   }
 
   // If we need to wait for this job...
@@ -1362,6 +1373,6 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
   // Build the topography.
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &WRFDocument::_buildTopography ), "3345743110" );
 
-  _volumeTransform->setMatrix ( osg::Matrix::rotate ( -osg::PI_2, osg::Z_AXIS ) * osg::Matrix::translate ( _offset ) );
+  //_volumeTransform->setMatrix ( osg::Matrix::rotate ( osg::PI_2, osg::Z_AXIS ) * osg::Matrix::translate ( _offset ) );
 
 }

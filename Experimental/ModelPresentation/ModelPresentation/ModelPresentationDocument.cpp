@@ -555,7 +555,7 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
   for( unsigned int i = 0; i < osgfiles.size(); ++i )
   {
     std::cout << "\tLoading file: " << osgfiles.at(i).c_str() << std::endl;
-#ifdef MSC_VER
+#ifdef _MSC_VER
     osg::ref_ptr< osg::Node > loadedModel = osgDB::readNodeFile( osgfiles.at(i).c_str() );
 #else
     osg::ref_ptr< osg::Node > loadedModel = osgDB::readNodeFile( dir + osgfiles.at(i).c_str() );

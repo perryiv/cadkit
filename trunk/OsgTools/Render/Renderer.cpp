@@ -637,6 +637,7 @@ void Renderer::update()
   // Handle particles and osg-animations.
   _framestamp->setFrameNumber ( _framestamp->getFrameNumber() + 1 );
   _framestamp->setReferenceTime ( _timer.delta_s( _start_tick, _timer.tick() ) );
+  _framestamp->setSimulationTime ( _framestamp->getReferenceTime () );
 
   _sceneView->getUpdateVisitor()->setTraversalNumber(_framestamp->getFrameNumber());
 

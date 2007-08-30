@@ -52,8 +52,8 @@ public:
   /// Get the data for the given channel and timestep
   void                           data ( Data& data, unsigned int timestep, unsigned int channel );
 
-  /// Get the topography for the data set.
-  void                           topography ( Data& data );
+  /// Get the i'th 2D field.
+  void                           field2D ( Data& data, unsigned int i );
 
   /// Set has header flag.
   void                           headers ( bool b );

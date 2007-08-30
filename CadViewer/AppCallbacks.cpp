@@ -2008,3 +2008,29 @@ void Application::_animationSteps100 ( MenuKit::Message m, MenuKit::Item *item )
     break;
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Double the number of animation steps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animationStepsDouble ( MenuKit::Message m, MenuKit::Item *item )
+{
+  if ( MenuKit::MESSAGE_SELECTED == m )
+    this->animationSteps ( this->animationSteps () * 2 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Half the number of animation steps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animationStepsHalf ( MenuKit::Message m, MenuKit::Item *item )
+{
+  if ( MenuKit::MESSAGE_SELECTED == m )
+    this->animationSteps ( this->animationSteps () / 2 );
+}

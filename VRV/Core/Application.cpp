@@ -2264,7 +2264,6 @@ const osg::Matrixd& Application::getViewMatrix (  ) const
 void Application::appendCamera ()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
   _path->append ( new VRV::Animate::Frame ( this->getViewMatrix () ) );
 }
 
@@ -2278,7 +2277,6 @@ void Application::appendCamera ()
 void Application::startAnimation ()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
   _path->start ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 }
 
@@ -2292,6 +2290,31 @@ void Application::startAnimation ()
 void Application::clearAnimation ()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
   _path->clear ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of animation steps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::animationSteps ( unsigned int steps )
+{
+  USUL_TRACE_SCOPE;
+  _path->steps ( steps );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of animation steps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Application::animationSteps ( ) const
+{
+  USUL_TRACE_SCOPE;
+  return _path->steps ( );
 }

@@ -167,7 +167,7 @@ void Path::animate ( Usul::Interfaces::IUnknown * caller )
 
     //const double current ( frameStamp->getReferenceTime () );
 
-    unsigned int totalNumberSteps ( _numberSteps * _params.size() );
+    unsigned int totalNumberSteps ( this->steps () * _params.size() );
 
     // The independent variable. Ensure we do not step past end of curve.
     //Parameter u ( std::min ( ( ( current - _startTime ) / duration ), _curve.lastKnot() ) );
@@ -217,22 +217,10 @@ void Path::animate ( Usul::Interfaces::IUnknown * caller )
     const osg::Vec3 center ( pos.at(0), pos.at(1), pos.at( 2 ) );
 
     // The matrix.
-    //osg::Matrix R, T;
-    //R.setRotate ( quat );
-    //T.setTrans ( center );
-
-    //osg::Matrix m ( R * T );
-
-#if 0
-    osg::Matrix m;
-    m.preMult ( osg::Matrix::rotate ( quat.inverse () ) );
-    m.preMult ( osg::Matrix::translate ( -center ) );
-#else
     osg::Matrix m;
     m.postMult ( osg::Matrix::rotate ( quat ) );
     m.postMult ( osg::Matrix::translate ( center ) );
-#endif
-    //vm->setViewMatrix ( osg::Matrix::rotate ( quat ) * osg::Matrix::translate ( center ) );
+
     vm->setViewMatrix ( m );
 
     _currentStep++;
@@ -355,10 +343,38 @@ void Path::_interpolate ( )
 
 void Path::clear ()
 {
-  Guard guard ( this->mutex () );
-  _frames.clear();
-  _curve.clear();
-  _params.clear();
-  _rotations.clear();
+  {
+    Guard guard ( this->mutex () );
+    _frames.clear();
+    _curve.clear();
+    _params.clear();
+    _rotations.clear();
+  }
   this->dirty ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of animation steps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Path::steps ( unsigned int value )
+{
+  Guard guard ( this->mutex () );
+  _numberSteps = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of animation steps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Path::steps ( ) const
+{
+  Guard guard ( this->mutex () );
+  return _numberSteps;
 }

@@ -928,6 +928,19 @@ void Application::_initAnimateMenu  ( MenuKit::Menu* menu )
 
   menu->append ( this->_createSeperator () );
 
+  {
+    MenuKit::Menu::Ptr steps ( new MenuKit::Menu );
+    steps->layout ( MenuKit::Menu::VERTICAL );
+    steps->text ( "Steps" );
+    menu->append ( steps.get() );
+
+    steps->append ( this->_createRadio ( "20",  MenuKit::memFunCB2 ( this, &Application::_animationSteps20 ) ) );
+    steps->append ( this->_createRadio ( "50",  MenuKit::memFunCB2 ( this, &Application::_animationSteps50 ) ) );
+    steps->append ( this->_createRadio ( "100", MenuKit::memFunCB2 ( this, &Application::_animationSteps100 ) ) );
+  }
+
+  menu->append ( this->_createSeperator () );
+
   menu->append ( this->_createButton ( "Clear", MenuKit::memFunCB2 ( this, &Application::_clearAnimation ) ) );
 }
 

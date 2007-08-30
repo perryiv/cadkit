@@ -404,12 +404,13 @@ void Parser::_readSlice ( Data::value_type* buffer )
   const unsigned int sliceSize ( _xSize * _ySize );
 
   // Header and footer for the slice.
-  unsigned int header ( 0 );
-  unsigned int footer ( 0 );
+  typedef Usul::Types::Uint32 HeaderFooterType;
+  HeaderFooterType header ( 0 );
+  HeaderFooterType footer ( 0 );
 
   // Read the header.
   if ( this->headers () )
-    ::fread ( &header, sizeof ( unsigned int ), 1, _fp );
+    ::fread ( &header, sizeof ( HeaderFooterType ), 1, _fp );
   
 #if 1
   // Read.
@@ -426,7 +427,7 @@ void Parser::_readSlice ( Data::value_type* buffer )
 #endif
   // Read the footer.
   if ( this->headers () )
-    ::fread ( &footer, sizeof ( unsigned int ), 1, _fp );
+    ::fread ( &footer, sizeof ( HeaderFooterType ), 1, _fp );
 
   if ( this->headers () && header != footer )
   {

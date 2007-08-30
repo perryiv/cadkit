@@ -225,6 +225,10 @@ public:
 
   /// Clear animation.
   void                    clearAnimation ();
+
+  /// Get/Set the number of animation steps.
+  void                    animationSteps ( unsigned int steps );
+  unsigned int            animationSteps ( ) const;
 protected:
 
   /// VR Juggler methods.

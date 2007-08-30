@@ -1945,3 +1945,66 @@ void Application::_clearAnimation ( MenuKit::Message m, MenuKit::Item *item )
   if ( MenuKit::MESSAGE_SELECTED == m )
     this->clearAnimation ( );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of animation steps to 20.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animationSteps20 ( MenuKit::Message m, MenuKit::Item *item )
+{
+  // Process the message.
+  switch( m )
+  {
+  case MenuKit::MESSAGE_UPDATE:
+    item->checked ( 20 == this->animationSteps () );
+    break;
+  case MenuKit::MESSAGE_SELECTED:
+    this->animationSteps ( 20 );
+    break;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of animation steps to 50.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animationSteps50 ( MenuKit::Message m, MenuKit::Item *item )
+{
+  // Process the message.
+  switch( m )
+  {
+  case MenuKit::MESSAGE_UPDATE:
+    item->checked ( 50 == this->animationSteps () );
+    break;
+  case MenuKit::MESSAGE_SELECTED:
+    this->animationSteps ( 50 );
+    break;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of animation steps to 100.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animationSteps100 ( MenuKit::Message m, MenuKit::Item *item )
+{
+  // Process the message.
+  switch( m )
+  {
+  case MenuKit::MESSAGE_UPDATE:
+    item->checked ( 100 == this->animationSteps () );
+    break;
+  case MenuKit::MESSAGE_SELECTED:
+    this->animationSteps ( 100 );
+    break;
+  }
+}

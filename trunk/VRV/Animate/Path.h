@@ -64,6 +64,10 @@ public:
 
   /// Are we animating?
   bool              animating () const;
+
+  /// Get/Set the number of animation steps.
+  void              steps ( unsigned int value );
+  unsigned int      steps ( ) const;
 protected:
   virtual ~Path ();
 

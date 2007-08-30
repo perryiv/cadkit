@@ -22,6 +22,7 @@
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/IDldNavigator.h"
 #include "Usul/Jobs/Job.h"
+#include "Usul/Jobs/Manager.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Policies/Update.h"
@@ -57,6 +58,7 @@ public:
   typedef Usul::Documents::Document Document;
   typedef Usul::Documents::Document::RefPtr DocumentPtr;
   typedef Usul::Documents::Manager DocManager;
+  typedef Usul::Jobs::Manager JobManager;
   typedef DocManager::DocumentInfo Info;
   typedef OsgTools::Triangles::TriangleSet::RefPtr TriangleSetPtr;
   typedef std::vector < std::string > Files;
@@ -138,6 +140,7 @@ public:
   unsigned int                numFiles();
   std::string                 getFilenameAtIndex( unsigned int index );
   void                        removeTimeStepAtIndex( unsigned int index );
+  unsigned int                timeStepWindowSize();
 
 protected:
 
@@ -166,6 +169,9 @@ protected:
   CommandList                 getCommandList();
 
   void                        _setThreadPoolSize( unsigned int size );
+
+  void                        _findFiles();
+  void                        _loadJobs( Usul::Interfaces::IUnknown *caller );
 
   /// Use reference counting.
   virtual ~DynamicLandDocument();
@@ -200,6 +206,7 @@ private:
   bool                            _updateAnimation;
 
   bool                            _setPoolSize;
+  JobManager                      _jobManager;
 
   class KillJob : public Usul::Jobs::Job
   {
@@ -248,6 +255,7 @@ private:
     Usul::Interfaces::IUnknown::QueryPtr  _caller;
     unsigned int                          _index;
     HeaderInfo                            _header;
+
   };
 
 

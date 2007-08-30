@@ -96,7 +96,8 @@ DynamicLandDocument::DynamicLandDocument() :
   _timeStepWindowSize ( 1 ),
   _isAnimating ( false ),
   _updateAnimation ( false ),
-  _setPoolSize ( true )
+  _setPoolSize ( true ),
+  _jobManager ( 1 )
 {
   USUL_TRACE_SCOPE;
   _header.cellSize = 0;
@@ -186,6 +187,7 @@ bool DynamicLandDocument::incrementFilePosition ()
         //Spawn a job to kill the time step at <index>
         KillJob::RefPtr job ( new KillJob ( this, 0x0, index ) );
         Usul::Jobs::Manager::instance().add ( job.get() );
+        
       }
 
       ++_currFileNum;
@@ -598,42 +600,115 @@ bool DynamicLandDocument::writeTDF ( const std::string& filename, Usul::Interfac
 void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-  {
-    Guard guard ( this->mutex() );
-    if( true == this->_setPoolSize )
-    {
-      this->_setThreadPoolSize( 3 );
-      _setPoolSize = false;
-    }
-  }
+  
   // If the wait time has expired...
   if ( false == _fileQueryDelay() )
     return;
 
   if( true == _animationDelay() && true == this->_updateAnimationFrame() )
   {    
-      if( false == this->incrementFilePosition() )
-      {
-        this->setCurrentFilePosition( 0 );
-      }
+      this->incrementFilePosition();
       this->loadCurrentFile( true );
       this->_updateAnimationFrame( false );
    }
-  // Check for new document
- /* if ( true == _newDocument.valid() )
-  {
-    this->_loadCurrentFileFromDocument( caller );
-    return;
-  }*/
-
   
   if( true == this->isValid( this->currentFilePosition() ) &&
       false == this->isLoading( this->currentFilePosition() ) &&
       true == this->loadCurrentFile() )
   {
+    // current time step is ready to be shown
     this->_loadNextTimeStep();
   }
-   
+  
+  // Search for files matching our criteria
+  this->_findFiles();
+
+  // Start jobs to load time steps in the background
+  this->_loadJobs( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Launch Jobs to load time steps
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::_loadJobs( Usul::Interfaces::IUnknown *caller )
+{
+  if( this->numFiles() > 0 )
+  {
+    //Load files...
+    int start = this->currentFilePosition() - this->_timeStepWindowSize;
+    int end = this->currentFilePosition() + this->_timeStepWindowSize;
+    //first job checked and loaded should always be the current position.
+    if( false == this->isValid( this->currentFilePosition() ) &&
+          false == this->isLoading( this->currentFilePosition() ) &&
+          false == this->isLoaded( this->currentFilePosition() ) )
+    {
+      // Get the file name
+      std::string filename = this->getFilenameAtIndex( this->currentFilePosition() );
+      // strip the extension from the map file name
+      std::string root = filename.substr( 0, filename.size() - 4 );
+      this->isLoading( this->currentFilePosition(), true );
+      #if 1 // with progress bars
+        LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, caller, this->currentFilePosition() ) );
+      #else // without progress bars
+        LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, 0x0, this->currentFilePosition() ) );
+      #endif
+      _jobManager.add( job.get() );
+      
+    }
+    for( int i = start; i <= end; ++i )
+    {
+      unsigned int index = 0;
+      if( i < 0 )
+      {
+        index = this->numFiles() + i;
+      }
+      else
+      {
+        if( i > static_cast< int > ( this->numFiles() ) )
+        {
+	        index = 0 + i - this->numFiles(); 
+        }
+        else
+        {
+          index = static_cast< unsigned int > ( i );
+	      }
+      }
+      if( false == this->isValid( index ) &&
+          false == this->isLoading( index ) &&
+          false == this->isLoaded( index ) )
+      {
+        // Get the file name
+        std::string filename = this->getFilenameAtIndex( index );
+        // strip the extension from the map file name
+        std::string root = filename.substr( 0, filename.size() - 4 );
+        this->isLoading( index, true );
+        #if 1 // with progress bars
+          LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, caller, index ) );
+        #else // without progress bars
+          LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, 0x0, index ) );
+        #endif
+        _jobManager.add( job.get() );
+        //Usul::Jobs::Manager::instance().add ( job.get() );
+      }
+    }
+  }
+  else
+    std::cout << "No files to load!" << std::endl;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Search for files matching the search criteria
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::_findFiles()
+{
   // Get a list of files in the directory _dir, with the extension _ext
   std::string dir, ext, prefix;
   Files files;
@@ -710,99 +785,6 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     }
 
   }
-  if( this->numFiles() > 0 )
-  {
-    
-#if 1
-    //Load files...
-    int start = this->currentFilePosition() - this->_timeStepWindowSize;
-    int end = this->currentFilePosition() + this->_timeStepWindowSize;
-    for( int i = start; i <= end; ++i )
-    {
-      unsigned int index = 0;
-      if( i < 0 )
-      {
-        index = this->numFiles() + i;
-      	// Debugging on Linux...
-      	//std::cout << "Index is: " << index << " i is: " << i << std::endl;
-      }
-      else
-      {
-        if( i > static_cast< int > ( this->numFiles() ) )
-        {
-	  index = 0 + i - this->numFiles();
-	  // Debugging on Linux...
-      	  //std::cout << "Index is: " << index << std::endl;
-          
-        }
-        else
-        {
-          index = static_cast< unsigned int > ( i );
-	  // Debugging on Linux...
-      	  //std::cout << "Index is: " << index << std::endl;
-        }
-      }
-      // Debugging on Linux...
-      // std::cout << "Index is: " << index << std::endl;
-      if( false == this->isValid( index ) &&
-          false == this->isLoading( index ) &&
-          false == this->isLoaded( index ) )
-      {
-        // Get the file name
-	//std::cout << "Getting filename at index: " << index << std::endl;
-        std::string filename = this->getFilenameAtIndex( index );
-        // strip the extension from the map file name
-	//std::cout << "Filename is: " << filename << ". Triming extension... " << std::endl;
-        std::string root = filename.substr( 0, filename.size() - 4 );
-	//std::cout << "Root of filename is: " << root << "\n Setting loading flag..." << std::endl;
-        this->isLoading( index, true );
-#if 0 // with progress bars
-        LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, caller, index ) );
-#else // without progress bars
-        LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, 0x0, index ) );
-#endif
-        Usul::Jobs::Manager::instance().add ( job.get() );
-      }
-    }
-#else
-    Files tempFiles;
-    unsigned int currFileNum = 0;
-    bool loadNewMap;
-    {
-      Guard guard ( this->mutex() );
-      tempFiles = _files;
-      currFileNum = _currFileNum;
-      loadNewMap = _loadNewMap;
-    }
-
-    if( loadNewMap && tempFiles.size() > 0 )
-    {
-      // Do not load a anther map
-      this->loadCurrentFile( false );
-
-      // Get the file name
-      std::string filename = tempFiles.at( currFileNum );
-
-      // strip the extension from the map file name
-      std::string root = filename.substr( 0, filename.size() - 4 );
-          
-      // load the map file
-      if( this->isAnimating() )
-      {
-        LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, 0x0, this->currentFilePosition() ) );
-        Usul::Jobs::Manager::instance().add ( job.get() );
-      }
-      else
-      {
-        LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, caller, this->currentFilePosition() ) );
-        Usul::Jobs::Manager::instance().add ( job.get() );
-      }
-    
-    } 
-#endif
-  }
-  else
-    std::cout << "No files to load!" << std::endl;
 }
 
 
@@ -835,6 +817,13 @@ bool DynamicLandDocument::LoadDataJob::load ( Usul::Documents::Document::RefPtr 
 
   return true;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load a model
+//
+///////////////////////////////////////////////////////////////////////////////
 
 bool DynamicLandDocument::LoadDataJob::_load( Usul::Documents::Document *document, const std::string &filename, Usul::Interfaces::IUnknown *caller ) 
 {
@@ -1150,11 +1139,10 @@ void DynamicLandDocument::_loadNextTimeStep()
   _terrain->addChild( group.release() );
   _timeStepPool.at( this->currentFilePosition() ).isLoading = false;
   _timeStepPool.at( this->currentFilePosition() ).isValid = true;
-  //_timeStepPool.at( this->currentFilePosition() ).group = new osg::Group();
   this->loadCurrentFile ( false );
   this->isLoaded( true );
-  std::cout << "Number of children in terrain is: " << _terrain->getNumChildren() << std::endl;
-  osgDB::writeNodeFile( *_terrain, "terrain_group.osg" );
+  if( true == this->isAnimating() )
+    this->_updateAnimationFrame( true );
 }
 
 ///////////////////////////////////////////////////////////////////////////////

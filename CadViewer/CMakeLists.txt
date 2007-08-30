@@ -67,7 +67,7 @@ ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
 ADD_EXECUTABLE( ${TARGET} ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( ${TARGET} Usul OpenThreadsEx OsgTools VRV MenuKit MenuKit_OSG XmlTree )
+LINK_CADKIT( ${TARGET} Usul OpenThreadsEx OsgTools VRV MenuKit MenuKit_OSG XmlTree SerializeXML )
 TARGET_LINK_LIBRARIES( ${TARGET} 
   ${VR_JUGGLER_LIBS}
   ${VJ_DEPS_LIBS}

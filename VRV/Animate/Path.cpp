@@ -31,16 +31,19 @@ using namespace VRV::Animate;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Path::Path () : BaseClass (),
-_dirty ( false ),
-_frames (),
-_segTime ( 2000.0 ),
-_lastU ( 0.0 ),
-_params (),
-_rotations (),
-_curve (),
-_startTime ( -1.0 ),
-_animating ( false )
+Path::Path () : 
+  BaseClass (),
+  _dirty ( false ),
+  _frames (),
+  _numberSteps ( 50 ),
+  _currentStep ( 0 ),
+  //_segTime ( 10000000.0 ),
+  //_lastU ( 0.0 ),
+  _params (),
+  _rotations (),
+  _curve (),
+  _startTime ( -1.0 ),
+  _animating( false )
 {
 }
 
@@ -114,7 +117,7 @@ void Path::start ( Usul::Interfaces::IUnknown * caller )
 
   {
     Guard guard ( this->mutex () );
-    _lastU = 0.0;
+    _currentStep = 0;;
   }
 
   Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
@@ -122,6 +125,11 @@ void Path::start ( Usul::Interfaces::IUnknown * caller )
   {
     Guard guard ( this->mutex () );
     _startTime = fs->frameStamp ()->getReferenceTime ();
+  }
+
+  {
+    Guard guard ( this->mutex () );
+    _animating = true;
   }
 }
 
@@ -134,7 +142,7 @@ void Path::start ( Usul::Interfaces::IUnknown * caller )
 
 void Path::animate ( Usul::Interfaces::IUnknown * caller )
 {
-  if ( false == this->animating () )
+  if ( false == this->animating () || _params.empty () || false == _curve.valid() )
     return;
 
   Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
@@ -151,19 +159,25 @@ void Path::animate ( Usul::Interfaces::IUnknown * caller )
     typedef std::greater<Parameter> IsGreater;
 
     // Determine times.
-    Parameter duration ( _segTime * _params.size() );
+    //Parameter duration ( _segTime * _params.size() );
 
-    const double current ( frameStamp->getReferenceTime () );
+    //const double current ( frameStamp->getReferenceTime () );
+
+    unsigned int totalNumberSteps ( _numberSteps * _params.size() );
 
     // The independent variable. Ensure we do not step past end of curve.
-    Parameter u ( std::min ( ( ( current - _startTime ) / duration ), _curve.lastKnot() ) );
+    //Parameter u ( std::min ( ( ( current - _startTime ) / duration ), _curve.lastKnot() ) );
+    Parameter u ( static_cast < double > ( _currentStep ) / static_cast < double > ( totalNumberSteps - 1 ) );
+    //Parameter u ( std::min ( f, _curve.lastKnot() ) );
+
+    std::cout << "u: " << u << std::endl;
 
     // Make a point for the position and rotation.
     Point pos ( _curve.dimension() );
     DependentSequence r0 ( _rotations.size(), 0 );
     DependentSequence r1 ( _rotations.size(), 0 );
 
-    _lastU = u;
+    //_lastU = u;
 
     // Evaluate the point.
     GN::Evaluate::point ( _curve, u, pos );
@@ -199,13 +213,27 @@ void Path::animate ( Usul::Interfaces::IUnknown * caller )
     const osg::Vec3 center ( pos.at(0), pos.at(1), pos.at( 2 ) );
 
     // The matrix.
-    osg::Matrix m;
-    m.setRotate ( quat );
-    m.setTrans ( center );
+    //osg::Matrix R, T;
+    //R.setRotate ( quat );
+    //T.setTrans ( center );
 
+    //osg::Matrix m ( R * T );
+
+#if 0
+    osg::Matrix m;
+    m.preMult ( osg::Matrix::rotate ( quat.inverse () ) );
+    m.preMult ( osg::Matrix::translate ( -center ) );
+#else
+    osg::Matrix m;
+    m.postMult ( osg::Matrix::rotate ( quat ) );
+    m.postMult ( osg::Matrix::translate ( center ) );
+#endif
+    //vm->setViewMatrix ( osg::Matrix::rotate ( quat ) * osg::Matrix::translate ( center ) );
     vm->setViewMatrix ( m );
 
-    if ( u >= 1.0 )
+    _currentStep++;
+
+    if ( _currentStep == ( totalNumberSteps - 1 ) )
     {
       Guard guard ( this->mutex () );
       _animating = false;
@@ -260,7 +288,6 @@ void Path::_interpolate ( )
 
     if ( r != osg::Quat ( 0.0, 0.0, 0.0, 0.0 ) ) // TODO, is this needed?
     {
-      // We push_back because we skip frames that are not trackballs.
       DependentSequence point;
       point.push_back ( c[0] );
       point.push_back ( c[1] );
@@ -305,12 +332,29 @@ void Path::_interpolate ( )
 
   // Trim the two containers of data. Note: the 4 is related to the 
   // container dimension (see above), not the order.
-  pos.erase ( pos.begin() + 4, pos.end() );
-  _rotations.erase ( _rotations.begin(), _rotations.begin() + 4 );
+  pos.erase ( pos.begin() + 3, pos.end() );
+  _rotations.erase ( _rotations.begin(), _rotations.begin() + 3 );
 
   // Note: rot.at(0) should point to the 4 components of the quaternian.
   Usul::Math::transpose ( _rotations );
 
   // Interpolate the positions.
   GN::Interpolate::global ( order, _params, knots, pos, _curve );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Path::clear ()
+{
+  Guard guard ( this->mutex () );
+  _frames.clear();
+  _curve.clear();
+  _params.clear();
+  _rotations.clear();
+  this->dirty ( true );
 }

@@ -1932,3 +1932,16 @@ void Application::_toggleStartAnimation ( MenuKit::Message m, MenuKit::Item *ite
   if ( MenuKit::MESSAGE_SELECTED == m )
     this->startAnimation ( );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start the animation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_clearAnimation ( MenuKit::Message m, MenuKit::Item *item )
+{
+  if ( MenuKit::MESSAGE_SELECTED == m )
+    this->clearAnimation ( );
+}

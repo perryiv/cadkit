@@ -925,6 +925,10 @@ void Application::_initAnimateMenu  ( MenuKit::Menu* menu )
 {
   menu->append ( this->_createButton ( "Append", MenuKit::memFunCB2 ( this, &Application::_appendCurrentCamera ) ) );
   menu->append ( this->_createButton ( "Animate", MenuKit::memFunCB2 ( this, &Application::_toggleStartAnimation ) ) );
+
+  menu->append ( this->_createSeperator () );
+
+  menu->append ( this->_createButton ( "Clear", MenuKit::memFunCB2 ( this, &Application::_clearAnimation ) ) );
 }
 
 

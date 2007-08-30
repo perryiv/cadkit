@@ -122,7 +122,7 @@ bool SceneDocument::canInsert ( const std::string &file ) const
 bool SceneDocument::canOpen ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "ive" || ext == "osg" || ext == "yarn" || ext == "flt" || ext == "crss" );
+  return ( ext == "osga" || ext == "ive" || ext == "osg" || ext == "yarn" || ext == "flt" || ext == "crss" );
 }
 
 

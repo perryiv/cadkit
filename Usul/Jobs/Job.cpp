@@ -411,8 +411,8 @@ void Job::_updateProgress ( unsigned int numerator, unsigned int denominator, bo
     // Report progress.
     if ( _progress.valid() )
     {
-      const float n ( static_cast < float > ( numerator ) );
-      const float d ( static_cast < float > ( denominator ) );
+      const double n ( static_cast < double > ( numerator ) );
+      const double d ( static_cast < double > ( denominator ) );
       const float fraction ( n / d );
       _progress->updateProgressBar ( static_cast < unsigned int > ( fraction * 100 ) );
     }

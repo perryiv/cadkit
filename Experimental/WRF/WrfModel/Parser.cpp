@@ -11,10 +11,11 @@
 #include "Experimental/WRF/WrfModel/Parser.h"
 
 #include "OsgTools/Images/Matrix.h"
+
 #include "Usul/Exceptions/Thrower.h"
+//#include "Usul/Math/Transpose.h"
 
 #include <stdexcept>
-#include <iostream>
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -266,15 +267,15 @@ void Parser::data ( Data& data, unsigned int timestep, unsigned int channel )
   const unsigned int sliceSizeBytes ( sliceSize * sizeof ( Usul::Types::Float32 ) + this->_headerSize () );
 
   // Calculate the size of a channel.
-  const unsigned int channelSizeBytes ( sliceSizeBytes * _zSize );
+  const Usul::Types::Uint64 channelSizeBytes ( sliceSizeBytes * _zSize );
 
   // Calculate the size of one timestep.
   const Usul::Types::Uint64 timestepSize ( ( channelSizeBytes * _numChannels ) + ( sliceSizeBytes * _numFields2D ) );
 
-#if 0
-  const Usul::Types::Uint64 timestepOffset ( timestepSize * timestep );
+#if 1
+  const Usul::Types::Uint64 timestepOffset ( timestepSize * static_cast < Usul::Types::Uint64 > ( timestep ) );
 
-  const Usul::Types::Uint64 channelOffset ( channelSizeBytes * channel );
+  const Usul::Types::Uint64 channelOffset ( channelSizeBytes * static_cast < Usul::Types::Uint64 > ( channel ) );
 
   // Calculate the file offset.
   const Usul::Types::Uint64 offset ( timestepOffset + channelOffset );
@@ -292,7 +293,7 @@ void Parser::data ( Data& data, unsigned int timestep, unsigned int channel )
 #endif
   // Make enough room.
   data.resize ( sliceSize * _zSize );
-
+  
   for ( unsigned int z = 0; z < _zSize; ++z )
   {
     // Offset for our current slice.
@@ -310,7 +311,7 @@ void Parser::data ( Data& data, unsigned int timestep, unsigned int channel )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Parser::topography ( Data& data )
+void Parser::field2D ( Data& data, unsigned int i )
 {
   // Open the file.
   this->_open ();
@@ -324,7 +325,7 @@ void Parser::topography ( Data& data )
   const unsigned int channelSizeBytes ( sliceSizeBytes * _zSize );
 
   // Calculate the file offset.
-  const Usul::Types::Uint64 offset ( channelSizeBytes * _numChannels );
+  const Usul::Types::Uint64 offset ( ( channelSizeBytes * _numChannels ) + ( sliceSizeBytes * i ) );
 
   // Jump to the correct location.
   this->_seek ( offset );
@@ -332,7 +333,7 @@ void Parser::topography ( Data& data )
   // Make enough room.
   data.resize ( sliceSize );
 
-  // Read the topography.
+  // Read the slice.
   this->_readSlice ( &data.front() );
 }
 
@@ -409,10 +410,20 @@ void Parser::_readSlice ( Data::value_type* buffer )
   // Read the header.
   if ( this->headers () )
     ::fread ( &header, sizeof ( unsigned int ), 1, _fp );
-
+  
+#if 1
   // Read.
   ::fread ( buffer, sizeof ( Usul::Types::Float32 ), sliceSize, _fp );
+#else
+  // Create temp buffer.
+  Data temp ( sliceSize );
 
+  // Read.
+  ::fread ( &temp.front(), sizeof ( Usul::Types::Float32 ), sliceSize, _fp );
+
+  // Transpose.
+  Usul::Math::transpose ( &temp.front(), buffer, _xSize, _ySize );
+#endif
   // Read the footer.
   if ( this->headers () )
     ::fread ( &footer, sizeof ( unsigned int ), 1, _fp );

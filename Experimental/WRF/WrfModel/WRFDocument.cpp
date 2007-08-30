@@ -58,7 +58,7 @@ SERIALIZE_XML_REGISTER_CREATOR ( WRFDocument );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Constructor
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -372,7 +372,7 @@ void WRFDocument::_buildScene ( )
     _root->addChild ( _geometry.get() );
 
     // Add the topography back.
-    _volumeTransform->addChild ( _topography.get() );
+    //_volumeTransform->addChild ( _topography.get() );
     _root->addChild ( _volumeTransform.get() );
   }
 
@@ -670,7 +670,7 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   USUL_TRACE_SCOPE;
 
   // Update the cache.
-  this->_updateCache ();
+  //this->_updateCache ();
 
   // Only animate if we aren't waiting for data.
   //if ( false == _jobForScene.valid () )
@@ -988,7 +988,7 @@ void WRFDocument::_buildTopography ()
 
   // Get the topograpy.
   Parser::Data data;
-  parser.topography ( data );
+  parser.field2D ( data, 0 );
 
   const unsigned int width ( _x ), height ( _y );
 
@@ -1372,7 +1372,4 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
 
   // Build the topography.
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &WRFDocument::_buildTopography ), "3345743110" );
-
-  //_volumeTransform->setMatrix ( osg::Matrix::rotate ( osg::PI_2, osg::Z_AXIS ) * osg::Matrix::translate ( _offset ) );
-
 }

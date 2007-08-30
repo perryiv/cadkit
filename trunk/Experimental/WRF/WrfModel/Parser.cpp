@@ -416,6 +416,11 @@ void Parser::_readSlice ( Data::value_type* buffer )
   // Read the footer.
   if ( this->headers () )
     ::fread ( &footer, sizeof ( unsigned int ), 1, _fp );
+
+  if ( this->headers () && header != footer )
+  {
+    Usul::Exceptions::Thrower < std::runtime_error > ( "Error 3056859569: Header and footers are of different sizes." );
+  }
 }
 
 

@@ -27,7 +27,6 @@ FIND_PACKAGE(OpenGL)
 INCLUDE ( ${CMakeModules}/FindOSG.cmake)
 
 # ------------ Find Boost ----------------------
-SET (Boost_USE_DATE_TIME TRUE)
 INCLUDE ( ${CMakeModules}/FindBoost.cmake)
 # Note that the Boost Include path will automatically get added
 
@@ -41,10 +40,6 @@ INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR} ${OT_INC_DIR} )
 #List the Sources
 SET (SOURCES
   Animate/AnimationCallback.cpp
-  Animate/Date.cpp
-  Animate/DateCallback.cpp
-  Animate/DateGroup.cpp
-  Animate/Settings.cpp
   Axes.cpp
   Builders/Arrow.cpp
   Builders/GradientBackground.cpp

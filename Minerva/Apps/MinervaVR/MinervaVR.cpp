@@ -470,6 +470,8 @@ Usul::Interfaces::IUnknown* MinervaVR::queryInterface ( unsigned long iid )
     return static_cast < Minerva::Interfaces::IAnimationControl * > ( this );
   case Usul::Interfaces::ICommandQueueAdd::IID:
     return static_cast < Usul::Interfaces::ICommandQueueAdd * > ( this );
+  case Usul::Interfaces::IFrameStamp::IID:
+    return static_cast < Usul::Interfaces::IFrameStamp * > ( this );
   default:
     return 0x0;
   }
@@ -588,4 +590,28 @@ void MinervaVR::usage ( const std::string &exe, std::ostream &out )
   out << "usage: " << exe << ' ';
   out << "<juggler1.config> [juggler2.config ... jugglerN.config] ";
   out << '\n';
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the frame stamp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::FrameStamp * MinervaVR::frameStamp()
+{
+  return mFrameStamp.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the frame stamp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::FrameStamp * MinervaVR::frameStamp() const
+{
+  return mFrameStamp.get();
 }

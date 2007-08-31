@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <plugins>
-  <plugin load="true" file="TriangulateCGAL.plug" />
-  <plugin load="true" file="ComputeNormals.plug" />
-  <plugin load="true" file="ProjectionManager.plug" />
-  <plugin load="true" file="SceneModel.plug" />
-  <plugin load="true" file="QtSceneDelegate.plug" />
-  <plugin load="true" file="VolumeModel.plug" />
-  <plugin load="true" file="SceneTreeQt.plug" />
-  <plugin load="true" file="SnapShotQt.plug" />
+  <plugin file="TriangulateCGAL.plug" />
+  <plugin file="ComputeNormals.plug" />
+  <plugin file="ProjectionManager.plug" />
+  <plugin file="SceneModel.plug" />
+  <plugin file="QtSceneDelegate.plug" />
+  <plugin file="VolumeModel.plug" />
+  <plugin file="SceneTreeQt.plug" />
+  <plugin file="SnapShotQt.plug" />
+  <plugin file="MinervaModel.plug" />
+  <plugin file="ProjectionManager.plug" />
 </plugins>

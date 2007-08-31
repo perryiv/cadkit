@@ -103,7 +103,8 @@ MainWindow::MainWindow ( const std::string &vendor,
   _workSpace   ( 0x0 ),
   _textWindow  ( 0x0, StreamQueuePtr ( new StreamQueue() ) ),
   _dockMenu    ( 0x0 ),
-  _idleTimer   ( 0x0 )
+  _idleTimer   ( 0x0 ),
+  _progressBars ( new ProgressBarDock )
 {
   USUL_TRACE_SCOPE;
 
@@ -140,6 +141,9 @@ MainWindow::MainWindow ( const std::string &vendor,
 
   // Build the text window.
   this->_buildTextWindow();
+
+  // Build the progress bar window.
+  this->_buildProgressBarWindow();
 
   // Set the text window resource.
   Usul::Resources::textWindow ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
@@ -425,6 +429,31 @@ void MainWindow::_buildTextWindow()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Build the progress bar window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_buildProgressBarWindow()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1230652240" );
+
+  // Build the docking window.
+  QDockWidget *dock = new QDockWidget ( tr ( "Progress Bars" ), this );
+  dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
+
+  // Dock it.
+  dock->setWidget ( ( *_progressBars ) ( dock ) );
+  this->addDockWidget ( Qt::BottomDockWidgetArea, dock );
+
+  // Add toggle to the menu.
+  if ( 0x0 != _dockMenu )
+    _dockMenu->addAction ( dock->toggleViewAction() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the settings.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -514,6 +543,8 @@ Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IGUIDelegateNotify* > ( this );
   case Usul::Interfaces::IStreamListenerChar::IID:
     return static_cast < Usul::Interfaces::IStreamListenerChar* > ( this );
+  case Usul::Interfaces::IProgressBarFactory::IID:
+    return static_cast < Usul::Interfaces::IProgressBarFactory * > ( this );
   default:
     return 0x0;
   }
@@ -1302,6 +1333,8 @@ void MainWindow::notify ( Usul::Interfaces::IUnknown *caller, const char *values
 
 void MainWindow::initPlugins()
 {
+  USUL_TRACE_SCOPE;
+
   // Have the plugins build any dock widgets.
   this->_buildPluginDockWidgets();
 }
@@ -1315,6 +1348,8 @@ void MainWindow::initPlugins()
 
 void MainWindow::_buildPluginDockWidgets()
 {
+  USUL_TRACE_SCOPE;
+
   typedef Usul::Components::Manager Manager;
   typedef Manager::UnknownSet       Unknowns;
 
@@ -1343,7 +1378,22 @@ void MainWindow::_buildPluginDockWidgets()
 
 void MainWindow::closeEvent ( QCloseEvent* event )
 {
+  USUL_TRACE_SCOPE;
+
   _workSpace->closeAllWindows();
   
   BaseClass::closeEvent ( event );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* MainWindow::createProgressBar()
+{
+  USUL_TRACE_SCOPE;
+  return _progressBars->createProgressBar ();
 }

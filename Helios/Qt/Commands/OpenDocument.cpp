@@ -71,8 +71,8 @@ OpenDocument::~OpenDocument()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OpenDocument::Job::Job ( Document *doc, const std::string &name, Usul::Interfaces::IUnknown *caller ) : 
-  OpenDocument::Job::BaseClass(),
+OpenDocument::Job::Job ( Document *doc, const std::string &name, IUnknown *caller ) : 
+  OpenDocument::Job::BaseClass( caller ),
   _document ( doc ),
   _name     ( name ),
   _caller   ( caller )
@@ -220,7 +220,7 @@ void OpenDocument::Job::_started()
     Usul::Types::Uint64 start ( Usul::System::Clock::milliseconds() );
 
     // Lets open the document.
-    _document->open ( _name, _caller );
+    _document->open ( _name, _caller, this->progress () );
 
     // Feedback.
     const double seconds ( static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 );

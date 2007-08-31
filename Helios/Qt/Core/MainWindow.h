@@ -20,6 +20,7 @@
 #include "Helios/Qt/Core/Export.h"
 #include "Helios/Qt/Core/SplashScreen.h"
 #include "Helios/Qt/Core/DocumentProxy.h"
+#include "Helios/Qt/Core/ProgressBarDock.h"
 #include "Helios/Qt/Commands/BaseAction.h"
 
 #include "Usul/Interfaces/IStreamListener.h"
@@ -27,6 +28,7 @@
 #include "Usul/Interfaces/GUI/ISaveFileDialog.h"
 #include "Usul/Interfaces/GUI/IUpdateTextWindow.h"
 #include "Usul/Interfaces/GUI/IGUIDelegateNotify.h"
+#include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 #include "Usul/Interfaces/Qt/IWorkspace.h"
 #include "Usul/Threads/Guard.h"
@@ -64,7 +66,8 @@ class HELIOS_QT_CORE_EXPORT MainWindow :
   public Usul::Interfaces::Qt::IMainWindow,
   public Usul::Interfaces::Qt::IWorkspace,
   public Usul::Interfaces::IGUIDelegateNotify,
-  public Usul::Interfaces::IStreamListenerChar
+  public Usul::Interfaces::IStreamListenerChar,
+  public Usul::Interfaces::IProgressBarFactory
 {
   Q_OBJECT
 
@@ -82,6 +85,7 @@ public:
   typedef ILoadFileDialog::FilesResult          FilesResult;
   typedef ILoadFileDialog::Filters              Filters;
   typedef std::vector<std::string>              PluginFiles;
+  typedef Usul::Interfaces::IUnknown            Unknown;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( MainWindow );
@@ -146,6 +150,7 @@ protected:
 
   void                              _buildMenu();
   void                              _buildTextWindow();
+  void                              _buildProgressBarWindow();
   void                              _buildToolBar();
   void                              _buildPluginDockWidgets();
 
@@ -177,6 +182,8 @@ protected:
   // Usul::Interfaces::IStreamListenerChar
   virtual void                      notify ( Usul::Interfaces::IUnknown *caller, const char *values, unsigned int numValues );
 
+  // Create a progress bar (Usul::Interfaces::IProgressBarFactory).
+  virtual Unknown*                  createProgressBar();
 private slots:
 
   void                              _idleProcess();
@@ -217,6 +224,7 @@ private:
   TextWindow _textWindow;
   QMenu *_dockMenu;
   QTimer *_idleTimer;
+  ProgressBarDock::RefPtr _progressBars;
 };
 
 

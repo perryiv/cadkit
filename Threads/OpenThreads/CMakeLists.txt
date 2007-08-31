@@ -4,18 +4,14 @@ PROJECT(OpenThreadsEx)
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
-# is this just a Apple thing or just a gcc thing?
-SET (CMAKE_SKIP_RPATH OFF)
-
-
-#setup output Directories
+# Setup output Directories
 SET (LIBRARY_OUTPUT_PATH
 ${CADKIT_BIN_DIR}
 CACHE PATH
 "Single Directory for all Libraries"
 )
 
-#setup the Executable output Directory
+# Setup the Executable output Directory
 SET (EXECUTABLE_OUTPUT_PATH
 ${CADKIT_BIN_DIR}
 CACHE PATH
@@ -24,19 +20,11 @@ CACHE PATH
 
 
 # ------------ Find OpenThreads Library ----------------------
-IF(NOT OPENTHREADS_LIB)
-       INCLUDE(${CMakeModules}/FindOSG.cmake)
-ENDIF( NOT OPENTHREADS_LIB )
+INCLUDE(${CMakeModules}/FindOSG.cmake)
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "$ENV{CADKIT_ROOT_DIR}" )
-
-IF ( OT_INC_DIR )
-INCLUDE_DIRECTORIES( "$ENV{OPENTHREADS_INC_DIR}" )
-ENDIF ( OT_INC_DIR )
-
-INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../../" )
+INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../../" "$ENV{CADKIT_ROOT_DIR}" ${OT_INC_DIR} )
 
 ADD_DEFINITIONS("-D_COMPILING_OPEN_THREADS_EXTENSIONS")
 

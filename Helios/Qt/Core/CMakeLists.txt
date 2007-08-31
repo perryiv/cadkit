@@ -16,6 +16,7 @@ SET (SOURCES
     DocumentProxy.cpp
     MainWindow.cpp
     SplashScreen.cpp
+    ProgressBarDock.cpp
 )
 
 SET(MOC_HDRS

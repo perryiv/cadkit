@@ -1,4 +1,5 @@
 
+
 PROJECT(HeliosQtCommands)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
@@ -20,7 +21,10 @@ SET (SOURCES
     Command.cpp
     ExitApplication.cpp
     ExportImage.cpp
+    InsertDocument.cpp
     OpenDocument.cpp
+    SaveDocument.cpp
+    SaveAsDocument.cpp
 )
 
 SET(MOC_HDRS

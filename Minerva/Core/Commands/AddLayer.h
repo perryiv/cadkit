@@ -53,6 +53,8 @@ protected:
     // Use reference counting.
     virtual ~AddLayerJob();
 
+    bool               _addLayer ( Usul::Interfaces::IUnknown *caller );
+
     // Do the work here.
     virtual void       _started();
     virtual void       _finished();

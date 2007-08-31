@@ -131,20 +131,36 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
 
-  // Guard this section of code.
-  Guard guard( this->mutex() );
+  // Throw now if there is no connection.
+  if ( 0x0 == this->connection () )
+    throw std::runtime_error ( "Error 1770160824: A valid connection is needed to build data objects for point time layer." );
 
   Minerva::Core::DB::Connection::ScopedConnection scopedConnection ( *this->connection() );
 
   Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
 
-  const std::string tableName ( this->tablename() );
+  // Make copies of data needed in loop.
+  const std::string  tableName ( this->tablename() );
+  const std::string  firstDateColumn ( this->firstDateColumn () );
+  const std::string  lastDateColumn ( this->lastDateColumn () );
+  const std::string  primitiveSizeColumn ( this->primitiveSizeColumn () );
   
+  const osg::Vec3    offset ( this->xOffset(), this->yOffset(), this->zOffset() );
+
+  const float        size ( this->size () );
+  const unsigned int primitiveID ( this->primitiveID () );
+  const unsigned int renderBin ( this->renderBin () );
+  const float        quality ( this->quality () );
+  const bool         autotransform ( this->autotransform () );
+  const float        secondarySize ( this->secondarySize () );
+
+  // Execute the query.
   pqxx::result geometryResult ( this->connection()->executeQuery ( this->query() ) );
 
   if( progress.valid() )
     progress->setTotalProgressBar( geometryResult.size() );
 
+  // Go through out results.
   for ( pqxx::result::const_iterator i = geometryResult.begin(); i != geometryResult.end(); ++ i )
   {
     try
@@ -152,8 +168,8 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       if ( false == i["srid"].is_null() || false == i["geom"].is_null() )
       {
         // get date and id.
-        std::string firstDate ( i[this->firstDateColumn()].as < std::string > () );
-        std::string lastDate ( i[this->lastDateColumn()].as < std::string > () );
+        std::string firstDate ( i[ firstDateColumn ].as < std::string > () );
+        std::string lastDate  ( i[ lastDateColumn  ].as < std::string > () );
 
         // Update min max.
         this->_updateMinMaxDate( firstDate, lastDate );
@@ -168,11 +184,11 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
         Geometry::RefPtr geometry ( GeometryFactory::instance().createFromBinary ( &buffer.front() ) );
         geometry->srid( srid );
 
-        Usul::Interfaces::IOffset::QueryPtr offset ( geometry );
+        Usul::Interfaces::IOffset::QueryPtr so ( geometry );
 
-        if( offset.valid () )
+        if( so.valid () )
         {
-          offset->spatialOffset( osg::Vec3f ( this->xOffset(), this->yOffset(), this->zOffset() ) );
+          so->spatialOffset( offset );
         }
 
         if( geometry.valid() )
@@ -180,20 +196,20 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
           Minerva::Core::DataObjects::PointTime::RefPtr data ( new Minerva::Core::DataObjects::PointTime( firstDate, lastDate ) );
           data->geometry( geometry->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
           data->color ( this->_color ( i ) );
-          data->size ( this->size() );
-          data->primitiveId ( this->primitiveID() );
-          data->renderBin ( this->renderBin() );
+          data->size ( size );
+          data->primitiveId ( primitiveID );
+          data->renderBin ( renderBin );
           data->connection ( this->connection() );
-          data->tableName ( this->tablename() );
+          data->tableName ( tableName );
           data->rowId ( id );
-          data->quality ( this->quality() );
-          data->autotransform ( this->autotransform () );
-          data->secondarySize ( this->secondarySize() );
+          data->quality ( quality );
+          data->autotransform ( autotransform );
+          data->secondarySize ( secondarySize );
 
-          if( this->primitiveSizeColumn().size() > 0 )
+          if( primitiveSizeColumn.size() > 0 )
           {
-            float value ( i [ this->primitiveSizeColumn() ].as < float > () );
-            data->size( this->size() * value );
+            float value ( i [ primitiveSizeColumn ].as < float > () );
+            data->size( size * value );
             this->_updateMinMax( value );
           }
 

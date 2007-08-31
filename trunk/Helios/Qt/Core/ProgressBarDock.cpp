@@ -112,6 +112,13 @@ namespace Detail
     virtual ~ProgressBar ()
     {
       this->hideProgressBar ();
+
+      // Defer this delete for the main thread to take care of.
+      if ( 0x0 != _progressBar )
+      {
+        _progressBar->deleteLater ();
+        _progressBar = 0x0;
+      }
     }
 
     // Usul::Interfaces::IProgressBar.h

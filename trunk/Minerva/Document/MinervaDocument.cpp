@@ -1195,8 +1195,13 @@ void MinervaDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
 void MinervaDocument::addView ( Usul::Interfaces::IView *view )
 {
   USUL_TRACE_SCOPE;
-  _planet->initVisitors ( view );
+
+  // Call the base classes on first.
   BaseClass::addView ( view );
+
+  // Initalize the OSG visitors.
+  _planet->initVisitors ( view );
+  
 }
 
 
@@ -1445,11 +1450,6 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
       _maxDate = findMinMax->last ();
       _lastDate = _minDate;
 
-  #ifdef _DEBUG
-      std::string min ( _minDate.toString() );
-      std::string max ( _maxDate.toString () );
-  #endif
-
       Guard guard ( this->mutex () );
       _datesDirty = false;
     }
@@ -1500,11 +1500,6 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
             firstDate = lastDate;
             firstDate.moveBackNumDays( _animateSettings->windowLength() );
           }
-
-#ifdef _DEBUG
-          std::string first ( firstDate.toString() );
-          std::string last ( lastDate.toString () );
-#endif
 
           this->sceneManager()->dateText().setText( lastDate.toString() );
           this->sceneManager()->dateText().update ();

@@ -70,14 +70,14 @@ public:
   virtual void                notify ( unsigned short message );
 
   /// Read the document.
-  virtual void                read ( const std::string &filename, Unknown *caller = 0x0 );
+  virtual void                read ( const std::string &filename, Unknown *caller, Unknown *progress );
 
   /// Write the document to given file name.
   virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const;
 
 protected:
 
-  osg::Node*                  _loadModel ( const std::string& filename, Usul::Interfaces::IUnknown* caller );
+  osg::Node*                  _loadModel ( const std::string& filename, Unknown* caller, Unknown *progress );
 
   /// Do not copy.
   SceneDocument ( const SceneDocument & );

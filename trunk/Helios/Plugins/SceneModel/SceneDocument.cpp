@@ -223,9 +223,9 @@ void SceneDocument::write ( const std::string &name, Unknown *caller  ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SceneDocument::read ( const std::string &name, Unknown *caller )
+void SceneDocument::read ( const std::string &name, Unknown *caller, Unknown *progress )
 {
-  osg::ref_ptr< osg::Node > node ( this->_loadModel ( name, caller ) );
+  osg::ref_ptr< osg::Node > node ( this->_loadModel ( name, caller, progress ) );
 
   // If the root hasn't been created...
   if ( !_scene )
@@ -258,7 +258,7 @@ void SceneDocument::read ( const std::string &name, Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* SceneDocument::_loadModel( const std::string& filename, Usul::Interfaces::IUnknown* caller )
+osg::Node* SceneDocument::_loadModel( const std::string& filename, Unknown* caller, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
 
@@ -280,7 +280,7 @@ osg::Node* SceneDocument::_loadModel( const std::string& filename, Usul::Interfa
     OsgTools::IO::Reader reader;
 
     // Make the progress update helpers.
-    Detail::ProgressHelper helper ( caller );
+    Detail::ProgressHelper helper ( progress );
 
     // Set the callback.
     Callback callback ( MemFun ( &helper, &Detail::ProgressHelper::updateProgressCallback ) );

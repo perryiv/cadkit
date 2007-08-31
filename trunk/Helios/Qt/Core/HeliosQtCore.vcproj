@@ -227,6 +227,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\ProgressBarDock.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ProgressBarDock.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SplashScreen.cpp"
 				>
 			</File>

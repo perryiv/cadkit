@@ -201,7 +201,7 @@ void Layer::traverse ( Minerva::Core::Visitor& visitor )
 
 void Layer::connection ( Minerva::Core::DB::Connection *connection )
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   _connection = connection;
 }
 
@@ -214,7 +214,7 @@ void Layer::connection ( Minerva::Core::DB::Connection *connection )
 
 Minerva::Core::DB::Connection* Layer::connection ()
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _connection;
 }
 
@@ -227,7 +227,7 @@ Minerva::Core::DB::Connection* Layer::connection ()
 
 void Layer::tablename( const std::string& table )
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   _tablename = table;
 }
 
@@ -348,6 +348,7 @@ const std::string& Layer::query ( ) const
 
 void Layer::_addDataObject ( Minerva::Core::DataObjects::DataObject *dataObject )
 {
+  Guard guard ( this->mutex() );
   _dataObjects.push_back( dataObject );
 }
 
@@ -360,6 +361,7 @@ void Layer::_addDataObject ( Minerva::Core::DataObjects::DataObject *dataObject 
 
 void Layer::_clearDataObjects ()
 {
+  Guard guard ( this->mutex() );
   _dataObjects.clear();
 }
 
@@ -396,7 +398,7 @@ bool Layer::isTemporal() const
 
 void Layer::colorFunctor( Minerva::Core::Functors::BaseColorFunctor *colorFunctor )
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   _colorFunctor = colorFunctor;
 }
 
@@ -409,7 +411,7 @@ void Layer::colorFunctor( Minerva::Core::Functors::BaseColorFunctor *colorFuncto
 
 Minerva::Core::Functors::BaseColorFunctor * Layer::colorFunctor()
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _colorFunctor.get();
 }
 
@@ -422,7 +424,7 @@ Minerva::Core::Functors::BaseColorFunctor * Layer::colorFunctor()
 
 const Minerva::Core::Functors::BaseColorFunctor * Layer::colorFunctor() const
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _colorFunctor.get();
 }
 
@@ -435,7 +437,7 @@ const Minerva::Core::Functors::BaseColorFunctor * Layer::colorFunctor() const
 
 void Layer::xOffset( float f )
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   _xOffset = f;
 }
 
@@ -448,7 +450,7 @@ void Layer::xOffset( float f )
 
 float Layer::xOffset( ) const
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _xOffset;
 }
 
@@ -460,7 +462,7 @@ float Layer::xOffset( ) const
 
 void Layer::yOffset( float f )
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   _yOffset = f;
 }
 
@@ -473,7 +475,7 @@ void Layer::yOffset( float f )
 
 float Layer::yOffset( ) const
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _yOffset;
 }
 
@@ -486,7 +488,7 @@ float Layer::yOffset( ) const
 
 void Layer::zOffset( float f )
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   _zOffset = f;
 }
 
@@ -499,7 +501,7 @@ void Layer::zOffset( float f )
 
 float Layer::zOffset( ) const
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _zOffset;
 }
 
@@ -512,7 +514,7 @@ float Layer::zOffset( ) const
 
 void Layer::legendText( const std::string& text )
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   _legendText = text;
 }
 
@@ -525,7 +527,7 @@ void Layer::legendText( const std::string& text )
 
 const std::string& Layer::legendText() const
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _legendText;
 }
 
@@ -538,7 +540,7 @@ const std::string& Layer::legendText() const
 
 void Layer::showLabel( bool b )
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   _showLabel = b;
 }
 
@@ -551,7 +553,7 @@ void Layer::showLabel( bool b )
 
 bool Layer::showLabel() const
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _showLabel;
 }
 
@@ -564,7 +566,7 @@ bool Layer::showLabel() const
 
 void Layer::showLayer( bool b )
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   _shown = b;
 }
 
@@ -577,7 +579,7 @@ void Layer::showLayer( bool b )
 
 bool Layer::showLayer() const
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _shown;
 }
 
@@ -590,7 +592,7 @@ bool Layer::showLayer() const
 
 void Layer::labelColor( const osg::Vec4& color )
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   _labelColor = color;
 }
 
@@ -603,7 +605,7 @@ void Layer::labelColor( const osg::Vec4& color )
 
 const osg::Vec4& Layer::labelColor() const
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _labelColor;
 }
 
@@ -616,7 +618,7 @@ const osg::Vec4& Layer::labelColor() const
 
 void Layer::labelZOffset( float offset )
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   _labelZOffset = offset;
 }
 
@@ -629,7 +631,7 @@ void Layer::labelZOffset( float offset )
 
 float Layer::labelZOffset() const
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _labelZOffset;
 }
 
@@ -642,7 +644,7 @@ float Layer::labelZOffset() const
 
 void  Layer::colorColumn( const std::string& column )
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   _colorColumn = column;
 }
 
@@ -655,7 +657,7 @@ void  Layer::colorColumn( const std::string& column )
 
 const std::string& Layer::colorColumn() const
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _colorColumn;
 }
 

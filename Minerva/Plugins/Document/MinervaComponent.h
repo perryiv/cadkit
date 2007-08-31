@@ -46,7 +46,7 @@ public:
   MinervaComponent();
 
   /// Usul::Interfaces::IPlugin
-  virtual std::string         getPluginName() const { return "Scene Model"; }
+  virtual std::string         getPluginName() const { return "Minerva Document"; }
 
   /// Usul::Interfaces::IDocumentCreate
   virtual Document *           createDocument ( Unknown *caller = 0x0 );

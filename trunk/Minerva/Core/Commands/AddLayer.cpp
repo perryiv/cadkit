@@ -110,11 +110,9 @@ AddLayer::AddLayerJob::AddLayerJob ( Usul::Interfaces::ILayer* layer, Usul::Inte
   // Capture the active document.
   _document = Usul::Documents::Manager::instance().active();
 
-  Minerva::Interfaces::IAddLayer::QueryPtr addLayer ( _document );
-
-  // Add the layer.
-  if( addLayer.valid () )
-    addLayer->addLayer ( _layer );
+  // Try adding the layer with the caller first.  If that fails, try the active document.
+  if ( false == this->_addLayer ( caller ) )
+    this->_addLayer ( _document );
 }
 
 
@@ -126,6 +124,27 @@ AddLayer::AddLayerJob::AddLayerJob ( Usul::Interfaces::ILayer* layer, Usul::Inte
 
 AddLayer::AddLayerJob::~AddLayerJob()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool AddLayer::AddLayerJob::_addLayer ( Usul::Interfaces::IUnknown *caller )
+{
+  Minerva::Interfaces::IAddLayer::QueryPtr addLayer ( caller );
+
+  // Add the layer.
+  if( addLayer.valid () )
+  {
+    addLayer->addLayer ( _layer );
+    return true;
+  }
+
+  return false;
 }
 
 

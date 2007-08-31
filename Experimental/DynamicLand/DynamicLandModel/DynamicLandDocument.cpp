@@ -794,7 +794,7 @@ void DynamicLandDocument::_findFiles()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DynamicLandDocument::LoadDataJob::load ( Usul::Documents::Document::RefPtr document, const std::string& filename, Usul::Interfaces::IUnknown *caller )
+Usul::Documents::Document *DynamicLandDocument::LoadDataJob::load (  const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   #ifdef _MSC_VER
@@ -807,15 +807,15 @@ bool DynamicLandDocument::LoadDataJob::load ( Usul::Documents::Document::RefPtr 
   if( Usul::Predicates::FileExists::test ( file + ".tdf" ) )
   {
     std::cout << "\nFound " << file + ".tdf" << std::endl;
-    this->_load( document, file + ".tdf", caller );
+    return this->_load( file + ".tdf", caller );
   }
   else
   {
     std::cout << "\n" << file + ".tdf" << " not found." << std::endl;
-    this->_load( document, file + ".asc", caller );
+    return this->_load( file + ".asc", caller );
   }
 
-  return true;
+  return 0x0;
 }
 
 
@@ -825,15 +825,10 @@ bool DynamicLandDocument::LoadDataJob::load ( Usul::Documents::Document::RefPtr 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DynamicLandDocument::LoadDataJob::_load( Usul::Documents::Document *document, const std::string &filename, Usul::Interfaces::IUnknown *caller ) 
+Usul::Documents::Document * DynamicLandDocument::LoadDataJob::_load( const std::string &filename, Usul::Interfaces::IUnknown *caller ) 
 {
   USUL_TRACE_SCOPE;
 
-  //if ( 0x0 == document )
-  //{
-  //  USUL_ASSERT ( false );
-  //  return false;
-  //}
 
 #if 0
 #ifdef _DEBUG
@@ -850,27 +845,24 @@ bool DynamicLandDocument::LoadDataJob::_load( Usul::Documents::Document *documen
 #endif
   // This will create a new document.
   Info info ( DocManager::instance().find ( filename, caller ) );
-  Document::RefPtr doc ( info.document );
 
   // Check to see if we created a document.
-  if ( false == doc.valid() )
+  if ( false == info.document.valid() )
   {
     throw std::runtime_error ( "Error: Could not find document for file: " + filename );
   }
 
   // Disable Memory pools
-  Usul::Interfaces::IMemoryPool::QueryPtr pool ( doc );
-  pool->usePool( false );
-
-  // Ask the document to open the file.
-  this->_openDocument ( filename, doc.get(), caller );
-
   {
-    Guard guard ( this->mutex() );
-    _triangleDocument = doc;
+    Usul::Interfaces::IMemoryPool::QueryPtr pool ( info.document );
+    pool->usePool ( false );
   }
 
-  return true;
+  // Ask the document to open the file.
+  this->_openDocument ( filename, info.document.get(), caller );
+
+  // Reference count should go from 1->0 but not delete.
+  return info.document.release();
 }
 
 
@@ -906,7 +898,7 @@ bool DynamicLandDocument::LoadDataJob::_loadTexture ( Usul::Documents::Document 
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  if( false == _triangleDocument.valid() )
+  if( 0x0 == document )
   {
     USUL_ASSERT ( false );
     return false;
@@ -921,11 +913,11 @@ bool DynamicLandDocument::LoadDataJob::_loadTexture ( Usul::Documents::Document 
   {
    
     // Get color array
-    Usul::Interfaces::IColorsPerVertex::QueryPtr colorsV ( _triangleDocument );
+    Usul::Interfaces::IColorsPerVertex::QueryPtr colorsV ( document );
     osg::ref_ptr< osg::Vec4Array > colors = colorsV->getColorsV ( true );
 
     // Get vertices
-    Usul::Interfaces::IVertices::QueryPtr vertices ( _triangleDocument );
+    Usul::Interfaces::IVertices::QueryPtr vertices ( document );
     osg::ref_ptr< osg::Vec3Array > v = vertices->vertices();
 
     // make sure the number of colors is correct.
@@ -1361,8 +1353,8 @@ void DynamicLandDocument::setTimeStepFrame( unsigned int i, osg::Group * group )
   Guard guard ( this->mutex() );
   _timeStepPool.at( i ).isValid = true;
   _timeStepPool.at( i ).isLoading = false;
-  _timeStepPool.at( i ).group = group;
-
+  //_timeStepPool.at( i ).group = group;
+  _timeStepPool.at( i ).group = dynamic_cast<osg::Group *> ( group->clone ( osg::CopyOp::DEEP_COPY_ALL ) );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1400,7 +1392,6 @@ void DynamicLandDocument::_updateAnimationFrame( bool u)
 DynamicLandDocument::LoadDataJob::LoadDataJob ( DynamicLandDocument* document, const std::string& filename, Usul::Interfaces::IUnknown *caller, unsigned int i ) :
   BaseClass ( caller ),
   _document ( document ),
-  _triangleDocument ( 0x0 ),
   _filename ( filename ),
   _caller ( caller ),
   _index ( i )
@@ -1425,28 +1416,25 @@ void DynamicLandDocument::LoadDataJob::_started ()
   this->_setLabel ( "Loading file: " + _filename );
 
 
-  Usul::Documents::Document::RefPtr document;
-  
+ 
 // Process all the requests. 
 
 
-  bool valid = this->load( document.get(), _filename, this->progress() );
-
-
+  Usul::Documents::Document::RefPtr document = this->load( _filename, this->progress() );
 
   // if the map file is valid, load the image file for coloring
-  if ( valid )
+  if ( true == document.valid() )
   {
     // load the image file
     this->_loadTexture( document.get(), _filename + ".png", this->progress() );
 
     
     osg::ref_ptr< osg::Group > group ( new osg::Group );
-    group->addChild( this->_buildScene( _triangleDocument ) );
-    _document->setTimeStepFrame( _index, group.release() );
+    group->addChild( this->_buildScene( document.get() ) );
+    _document->setTimeStepFrame( _index, group.get() );
 
     // write a tdf of the loaded terrain for faster loading on revisit
-    _document->writeTDF ( _filename, this->progress(), _triangleDocument.get() );
+    //_document->writeTDF ( _filename, this->progress(), document.get() );
 
 #if 0
     Usul::Interfaces::IBuildScene::QueryPtr build ( _document );

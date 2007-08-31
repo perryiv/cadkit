@@ -22,12 +22,14 @@
 #include "Usul/Adaptors/Random.h"
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/ICommandQueueAdd.h"
+#include "Usul/Interfaces/IFrameStamp.h"
 
 #include <list>
 
 class MinervaVR : public VrjCore::OsgVJApp,
                   public Minerva::Interfaces::IAnimationControl,
-                  public Usul::Interfaces::ICommandQueueAdd
+                  public Usul::Interfaces::ICommandQueueAdd,
+                  public Usul::Interfaces::IFrameStamp
 {
 public:
   // Typedefs.
@@ -84,6 +86,9 @@ public:
   /// Usul::Interfaces::ICommandQueueAdd
   virtual void                 addCommand ( Usul::Interfaces::ICommand* command );
 
+  /// Get the frame stamp (IFrameStamp).
+  virtual osg::FrameStamp *         frameStamp();
+  virtual const osg::FrameStamp *   frameStamp() const;
 private:	
 
   Minerva::Document::MinervaDocument::RefPtr   _document;

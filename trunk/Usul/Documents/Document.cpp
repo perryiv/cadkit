@@ -222,10 +222,10 @@ Usul::Interfaces::IUnknown *Document::queryInterface ( unsigned long iid )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::open ( const std::string &file, Usul::Interfaces::IUnknown *caller )
+void Document::open ( const std::string &file, Usul::Interfaces::IUnknown *caller, Unknown *progress )
 {
   this->clear();
-  this->read ( file, caller );
+  this->read ( file, caller, progress );
   this->fileName ( file );
   this->fileValid ( true );
   this->modified ( false );
@@ -909,4 +909,28 @@ void Document::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
 void Document::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the file and add it to existing document's data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::read ( const std::string &filename, Unknown *caller, Unknown *progress )
+{
+  // Call the other read.
+  this->read ( filename, caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the file and add it to existing document's data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::read ( const std::string &filename, Unknown *caller )
+{
 }

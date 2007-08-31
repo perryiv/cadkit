@@ -1495,7 +1495,7 @@ void Application::_readUserPreferences()
             << "to read user-preferences file."
             << "\n\t" << e.what();
     //this->_update ( *_msgText, message.str() );
-    std::cout << message << std::endl;
+    std::cout << message.str() << std::endl;
   }
 }
 

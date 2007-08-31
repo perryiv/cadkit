@@ -45,13 +45,15 @@ SharedMatrix::~SharedMatrix()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-vpr::ReturnStatus SharedMatrix::readObject ( vpr::ObjectReader *reader )
+RETURN_TYPE SharedMatrix::readObject ( vpr::ObjectReader *reader )
 {
   osg::Matrixd::value_type *ptr ( _matrix.ptr() );
   for ( unsigned int i = 0; i < 16; ++i )
     reader->readDouble( ptr[i] );
 
+#if __VPR_version < 1001005
   return vpr::ReturnStatus::Succeed;
+#endif
 }
 
 
@@ -61,11 +63,13 @@ vpr::ReturnStatus SharedMatrix::readObject ( vpr::ObjectReader *reader )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-vpr::ReturnStatus SharedMatrix::writeObject ( vpr::ObjectWriter *writer )
+RETURN_TYPE SharedMatrix::writeObject ( vpr::ObjectWriter *writer )
 {
   const osg::Matrixd::value_type *ptr ( _matrix.ptr() );
   for ( unsigned int i = 0; i < 16; ++i )
     writer->writeDouble( ptr[i] );
 
+#if __VPR_version < 1001005
   return vpr::ReturnStatus::Succeed;
+#endif
 }

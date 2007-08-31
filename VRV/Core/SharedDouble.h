@@ -23,6 +23,12 @@
 
 namespace vpr { class ObjectReader; class ObjectWriter; }
 
+#if __VPR_version < 1001005
+#define RETURN_TYPE vpr::ReturnStatus
+#else
+#define RETURN_TYPE void
+#endif
+
 namespace VRV {
 namespace Core {
 
@@ -33,8 +39,8 @@ public:
 
   SharedDouble();
 
-  virtual vpr::ReturnStatus readObject ( vpr::ObjectReader *reader );
-  virtual vpr::ReturnStatus writeObject ( vpr::ObjectWriter *writer );
+  virtual RETURN_TYPE readObject ( vpr::ObjectReader *reader );
+  virtual RETURN_TYPE writeObject ( vpr::ObjectWriter *writer );
 
   double data;
 };

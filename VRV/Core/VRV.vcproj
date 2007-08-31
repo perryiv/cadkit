@@ -81,7 +81,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="vrj_d.lib vpr_d.lib cppdom_d.lib osgd.lib osgDBd.lib osgUtild.lib OpenThreadsd.lib opengl32.lib"
+				AdditionalDependencies="vrj_d-2_2.lib vpr_d-2_0.lib cppdom_d-0_7_10.lib osgd.lib osgDBd.lib osgUtild.lib OpenThreadsd.lib opengl32.lib"
 				OutputFile="../../bin/VRVd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -181,7 +181,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="vrj.lib vpr.lib cppdom.lib osg.lib osgDB.lib osgUtil.lib OpenThreads.lib opengl32.lib"
+				AdditionalDependencies="vrj-2_2.lib vpr-2_0.lib cppdom-0_7_10.lib osg.lib osgDB.lib osgUtil.lib OpenThreads.lib opengl32.lib"
 				OutputFile="../../bin/VRV.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

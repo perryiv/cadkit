@@ -175,7 +175,6 @@ Application::Application ( Args &args ) :
   BaseClass       ( ),
   _parser         ( new Parser ( args.begin(), args.end() ) ),
   _gridBranch     ( new osg::MatrixTransform ),
-  _statusBranch   ( new osg::MatrixTransform ),
   _auxiliary      ( new osg::Group ),
   _navigatorH     ( 0x0 ),
   _navigatorV     ( 0x0 ),
@@ -200,7 +199,6 @@ Application::Application ( Args &args ) :
   ErrorChecker ( 2970484549u, 0 == _mainThread );
   ErrorChecker ( 1074058928u, 0x0 != _parser.get() );
   ErrorChecker ( 1067094628u, _gridBranch.valid() );
-  ErrorChecker ( 3423749732u, _statusBranch.valid() );
   ErrorChecker ( 1069021589u, _auxiliary.valid() );
   ErrorChecker ( 1071551353u, 0x0 != _pickText.get() );
   ErrorChecker ( 1071551354u, 0x0 != _navText.get() );
@@ -214,13 +212,11 @@ Application::Application ( Args &args ) :
   this->_readUserPreferences();
 
   // Hook up the branches.
-  this->_sceneRoot()->addChild      ( _statusBranch.get() );
   this->_sceneRoot()->addChild      ( _auxiliary.get()    );
   //_navBranch->addChild ( _gridBranch.get()   );
 
   // Name the branches.
   _gridBranch->setName   ( "_gridBranch"   );
-  _statusBranch->setName ( "_statusBranch" );
   _auxiliary->setName    ( "_auxiliary"    );
 
   // Hook up the joystick callbacks.
@@ -526,7 +522,7 @@ void Application::_initLight()
 {
   ErrorChecker ( 1067093691, isAppThread(), CV::NOT_APP_THREAD );
 
-  osg::ref_ptr<osg::Light> light ( new osg::Light );
+  osg::ref_ptr< osg::Light > light ( new osg::Light );
   osg::Vec3 ld;
   osg::Vec4 lp;
   osg::Vec4 ambient;
@@ -1078,24 +1074,38 @@ void Application::_initStatusBar()
   ErrorChecker ( 2652041460u, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 1890904769u, _statusBar.valid() );
 
-  // Set the status-bar scene.
-  osg::Matrixf sbm;
-  OsgTools::Convert::matrix ( this->preferences()->statusBarMatrix(), sbm );
-  _statusBranch->setMatrix ( sbm );
-  _statusBar->scene ( _statusBranch.get() );
+  // Remove what we may have.
+  this->projectionGroupRemove ( "VRV_STATUS_BAR" );
+
+  // TODO:  Have a seperate entry for node to show status bar in the preferences.
+  if ( false == this->_isHeadNode () )
+    return;
+
+  // Get the matrix.
+  osg::Matrixf m;
+  OsgTools::Convert::matrix ( this->preferences()->statusBarMatrix(), m );
+
+  // Make a matrix transform.
+  osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+  mt->setMatrix ( m );
+  mt->setName ( "StatusBar" );
+
+  // Set the status bar's scene.
+  _statusBar->scene ( mt.get() );
 
   // Set the status-bar's properties.
   _statusBar->menu()->append ( new MenuKit::Button );
   _statusBar->menu()->expanded ( this->preferences()->statusBarVisibleAtStartup() );
   _statusBar->updateScene();
 
+  // Add status bar to main scene.
+  osg::ref_ptr < osg::Group > group ( this->projectionGroupGet ( "VRV_STATUS_BAR" ) );
+  group->addChild ( mt.get( ) );
+
   // Make the status-bar always draw on top (last). See osgfxbrowser.cpp.
-  osg::ref_ptr < osg::StateSet > ss ( _statusBranch->getOrCreateStateSet() );
-  if( ss.valid() )
-  {
-    ss->setRenderBinDetails ( 100, "RenderBin" );
-    ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
-  }
+  osg::ref_ptr < osg::StateSet > ss ( mt->getOrCreateStateSet() );
+  ss->setRenderBinDetails ( 100, "RenderBin" );
+  ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
 }
 
 

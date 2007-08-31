@@ -325,7 +325,6 @@ protected:
   static ThreadId   _mainThread;
   ParserPtr         _parser;
   MatTransPtr       _gridBranch;
-  MatTransPtr       _statusBranch;
   GroupPtr          _auxiliary;
   FunctorPtr        _navigatorH;
   FunctorPtr        _navigatorV;

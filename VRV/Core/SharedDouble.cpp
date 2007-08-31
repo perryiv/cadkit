@@ -33,10 +33,13 @@ SharedDouble::SharedDouble() : data ( 0.0 )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-vpr::ReturnStatus SharedDouble::readObject ( vpr::ObjectReader *reader )
+RETURN_TYPE SharedDouble::readObject ( vpr::ObjectReader *reader )
 {
   reader->readDouble ( data );
+  
+#if __VPR_version < 1001005
   return vpr::ReturnStatus::Succeed;
+#endif
 }
 
 
@@ -46,8 +49,11 @@ vpr::ReturnStatus SharedDouble::readObject ( vpr::ObjectReader *reader )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-vpr::ReturnStatus SharedDouble::writeObject ( vpr::ObjectWriter *writer )
+RETURN_TYPE SharedDouble::writeObject ( vpr::ObjectWriter *writer )
 {
   writer->writeDouble( data );
+
+#if __VPR_version < 1001005
   return vpr::ReturnStatus::Succeed;
+#endif
 }

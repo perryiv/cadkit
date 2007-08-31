@@ -59,6 +59,9 @@ SET (SOURCES
 	Jobs/Manager.cpp
 	ID/GUID.cpp
 	Predicates/CanWrite.cpp
+  Registry/Node.cpp
+  Registry/Visitor.cpp
+  Registry/Database.cpp
 	Resources/CancelButton.cpp
 	Resources/EventQueue.cpp
 	Resources/MenuBar.cpp
@@ -102,4 +105,4 @@ ADD_LIBRARY(${LIBNAME} SHARED ${SOURCES} )
 
 
 # Link the Library	
-TARGET_LINK_LIBRARIES(Usul)
+TARGET_LINK_LIBRARIES( Usul dl )

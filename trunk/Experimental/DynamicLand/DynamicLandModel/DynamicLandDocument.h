@@ -237,20 +237,19 @@ private:
     LoadDataJob ( DynamicLandDocument* document, const std::string& filename, Usul::Interfaces::IUnknown *caller, unsigned int i );
     osg::Node* _buildScene( Usul::Documents::Document* document );
     // Load a model file
-    bool       load ( Usul::Documents::Document::RefPtr document, const std::string& filename, Usul::Interfaces::IUnknown *caller );
+    Usul::Documents::Document *       load ( const std::string& filename, Usul::Interfaces::IUnknown *caller );
   
 
   protected:
 
     virtual void                          _started ();
-    bool                                  _load ( Usul::Documents::Document *document, const std::string& filename, Usul::Interfaces::IUnknown *caller );
+    Usul::Documents::Document *           _load ( const std::string& filename, Usul::Interfaces::IUnknown *caller );
     void                                  _openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller );
     bool                                  _loadTexture ( Usul::Documents::Document *document, const std::string& filename, Usul::Interfaces::IUnknown *caller );
   
   private:
   
     DynamicLandDocument::RefPtr           _document;
-    Usul::Documents::Document::RefPtr     _triangleDocument;
     std::string                           _filename;
     Usul::Interfaces::IUnknown::QueryPtr  _caller;
     unsigned int                          _index;

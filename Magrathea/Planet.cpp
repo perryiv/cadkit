@@ -125,7 +125,7 @@ void Planet::setDefaults()
 
   const bool  elevEnabled    ( true  );
   const bool  ephemerisFlag  ( false );
-  const bool  hudEnabled     ( false );
+  const bool  hudEnabled     ( true );
   const float elevExag       ( 1.0   );
   const int   elevEstimate   ( 16    );    
   const int   levelDetail    ( 16    );    
@@ -739,7 +739,7 @@ void Planet::postRender ( Usul::Interfaces::IUnknown *caller )
 void Planet::initVisitors ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-
+#if 0
   // Set cull visitor's database pager.
   {
     Usul::Interfaces::ICullSceneVisitor::QueryPtr getVisitor ( caller );
@@ -765,4 +765,5 @@ void Planet::initVisitors ( Usul::Interfaces::IUnknown *caller )
       }
     }
   }
+#endif
 }

@@ -103,8 +103,8 @@ template < class SplineType > struct XML
   template < class OutType, class StringType >
   static void write ( const SplineClass &s, const StringType &indent, OutType &out )
   {
-    const std::size_t bufSize ( 1023 );
-    char buffer[bufSize+1];
+    const SizeType bufSize ( 1023 );
+    char buffer[ bufSize+1 ];
 
     // Determine format string for maximum precision.
     std::pair<std::string,std::string> format;

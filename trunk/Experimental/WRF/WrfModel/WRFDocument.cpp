@@ -108,6 +108,9 @@ WRFDocument::WRFDocument() :
   this->_addMember ( "channels", _channelInfo );
   this->_addMember ( "headers", _headers );
   this->_addMember ( "cache_size", _maxCacheSize );
+  this->_addMember ( "starting_timestep",  _currentTimestep );
+  this->_addMember ( "starting_channel",  _currentChannel );
+
 }
 
 
@@ -305,7 +308,7 @@ namespace Detail
     {
       float value ( static_cast < float > ( i ) / 255 );
   #if 1
-      unsigned char c ( 180 - ( static_cast < unsigned int > ( value * 180 ) ) );
+      unsigned char c ( 80 - ( static_cast < unsigned int > ( value * 80 ) ) );
       *data++ = c;
       *data++ = c;
       *data++ = c;
@@ -372,7 +375,7 @@ void WRFDocument::_buildScene ( )
     _root->addChild ( _geometry.get() );
 
     // Add the topography back.
-    //_volumeTransform->addChild ( _topography.get() );
+    _volumeTransform->addChild ( _topography.get() );
     _root->addChild ( _volumeTransform.get() );
   }
 
@@ -670,7 +673,7 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   USUL_TRACE_SCOPE;
 
   // Update the cache.
-  //this->_updateCache ();
+  this->_updateCache ();
 
   // Only animate if we aren't waiting for data.
   //if ( false == _jobForScene.valid () )

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 ################################################################################
 #
-# Removes every n'th file in the argument list.
+# Prints every n'th command-line argument.
 #
 ################################################################################
 
@@ -9,7 +9,20 @@ use strict;
 
 ( @ARGV > 1 ) || die "Usage: $0 <n> <file1> [file2] ... [fileN]\n";
 
-my $files = `print_every_nth_file.pl @ARGV`;
-my $command = "rm $files";
-print $command;
-`$command`;
+my $num = shift @ARGV;
+
+while ( @ARGV )
+{
+  my $file = shift @ARGV;
+
+  my $count = $num - 1;
+  while ( $count > 0 )
+  {
+    shift @ARGV;
+    $count = $count - 1;
+  }
+
+  print "$file ";
+}
+
+print "\n";

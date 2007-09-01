@@ -8,18 +8,14 @@
 
 use strict;
 
-( @ARGV > 1 ) || die "Usage: $0 <file1> [file2] ... [fileN]\n";
+( @ARGV > 1 ) || die "Usage: $0 <first_number> <file1> [file2] ... [fileN]\n";
 
-my $output = 0;
-my $digits = length ( @ARGV );
-print "digits = $digits\n";
-my $format = "\%0".$digits."d.jpg";
-print "format = $format\n";
+my $output = shift @ARGV;
 
 while ( @ARGV )
 {
   my $file = shift @ARGV;
-  my $command = sprintf ( "mv $file $format", $output );
+  my $command = sprintf ( "mv $file %09d.jpg", $output );
   print "$command\n";
   `$command`;
   $output++;

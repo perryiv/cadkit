@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="plug: ComputeNormals"
+	Name="plug: Minerva ComputeNormals"
 	ProjectGUID="{DC7B6214-8948-47C0-BA31-ADFE358FBCAD}"
 	>
 	<Platforms>

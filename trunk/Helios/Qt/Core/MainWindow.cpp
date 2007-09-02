@@ -555,6 +555,8 @@ Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IStreamListenerChar* > ( this );
   case Usul::Interfaces::IProgressBarFactory::IID:
     return static_cast < Usul::Interfaces::IProgressBarFactory * > ( this );
+  case Usul::Interfaces::IQtDockWidgetMenu::IID:
+    return static_cast < Usul::Interfaces::IQtDockWidgetMenu * > ( this );
   default:
     return 0x0;
   }
@@ -1423,4 +1425,17 @@ void MainWindow::restoreDockWindows ()
   CadKit::Helios::Tools::SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::MAIN_WINDOW, _settings );  
   QByteArray positions ( _settings.value ( CadKit::Helios::Core::Registry::Keys::DOCK_WINDOW_POSITIONS.c_str() ).toByteArray() );
   this->restoreState ( positions );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add dock widget to menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::addDockWidgetMenu ( QDockWidget * dock )
+{
+  if ( 0x0 != _dockMenu && 0x0 != dock )
+    _dockMenu->addAction ( dock->toggleViewAction() );
 }

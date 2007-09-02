@@ -31,6 +31,7 @@
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 #include "Usul/Interfaces/Qt/IWorkspace.h"
+#include "Usul/Interfaces/IQtDockWidgetMenu.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Queue.h"
@@ -67,7 +68,8 @@ class HELIOS_QT_CORE_EXPORT MainWindow :
   public Usul::Interfaces::Qt::IWorkspace,
   public Usul::Interfaces::IGUIDelegateNotify,
   public Usul::Interfaces::IStreamListenerChar,
-  public Usul::Interfaces::IProgressBarFactory
+  public Usul::Interfaces::IProgressBarFactory,
+  public Usul::Interfaces::IQtDockWidgetMenu
 {
   Q_OBJECT
 
@@ -186,6 +188,9 @@ protected:
 
   // Create a progress bar (Usul::Interfaces::IProgressBarFactory).
   virtual Unknown*                  createProgressBar();
+
+  // Add dock widget to menu.
+  virtual void                      addDockWidgetMenu ( QDockWidget * dock );
 private slots:
 
   void                              _idleProcess();

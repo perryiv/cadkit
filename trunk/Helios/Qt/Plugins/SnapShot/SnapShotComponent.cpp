@@ -18,6 +18,7 @@
 #include "SnapShotWidget.h"
 
 #include "Usul/Interfaces/Qt/IMainWindow.h"
+#include "Usul/Interfaces/IQtDockWidgetMenu.h"
 
 #include "Usul/Documents/Manager.h"
 
@@ -118,6 +119,14 @@ void SnapShotComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
     // Add the dock to the main window.
     _dock->setWidget( widget );
     main->addDockWidget ( Qt::BottomDockWidgetArea, _dock );
+
+    // Set the object name.
+    _dock->setObjectName ( "SnapShotDockWidget" );
+
+    // Add toggle to the menu.
+    Usul::Interfaces::IQtDockWidgetMenu::QueryPtr dwm ( caller );
+    if ( dwm.valid () )
+      dwm->addDockWidgetMenu ( _dock );
   } 
 }
 

@@ -73,6 +73,9 @@ public:
   // Add document to internal list
   void                  add ( Document * );
 
+  /// Is there a document that can open this file?
+  bool                  canOpen ( const std::string& file ) const;
+
   // Close the document.  Does nothing if there are referenced windows
   void                  close ( Document* );
 

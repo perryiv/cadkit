@@ -52,7 +52,8 @@ _size ( 1.0 ),
 _secondarySize ( 1.0 ),
 _primitiveId ( 1 ),
 _quality ( 0.80f ),
-_center(),
+_center (),
+_centerEarth(),
 _autotransform ( true ),
 _material ( new osg::Material ),
 _group ( new osg::Group )
@@ -256,11 +257,15 @@ osg::Node* Point::buildScene()
     /// Get the center from our data source.
     if( pointData.valid () )
       center = pointData->pointData( );
+
+    // Save the center in lat/lon coordinates.
+    _center.set ( center [ 0 ], center [ 1 ], center [ 2 ] );
     
+    // Convert to planet coordinates.
     Detail::convertToPlanet ( center );
 
     // Convert from Usul's Vec3d to a osg::Vec3
-    _center.set( center[0], center[1], center[2] );
+    _centerEarth.set( center[0], center[1], center[2] );
 
     _group->addChild( this->_buildGeometry() );
 
@@ -314,7 +319,7 @@ osg::Node* Point::_buildPoint()
   osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
 
   osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
-  vertices->push_back ( _center );
+  vertices->push_back ( _centerEarth );
 
   geometry->setVertexArray( vertices.get() );
 
@@ -362,7 +367,7 @@ osg::Node* Point::_buildSphere()
 
   geode->addDrawable( BaseClass::shapeFactory()->sphere ( _size, meshSize, latRange, longRange  ) );
 
-  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _center ) );
+  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _centerEarth ) );
   autoTransform->addChild ( geode.get() );
 
   return autoTransform.release();
@@ -389,10 +394,10 @@ osg::Node* Point::_buildCone( bool invert )
   if( this->autotransform() )
     cone = new osg::Cone( osg::Vec3( 0.0, 0.0, height/2.0 ), radius, height );
   else
-    cone = new osg::Cone( osg::Vec3( _center ), radius, height );
+    cone = new osg::Cone( osg::Vec3( _centerEarth ), radius, height );
 
   // v1 is also a vector from the center of the sphere, to the point on the sphere.
-  osg::Vec3 v1 ( _center );
+  osg::Vec3 v1 ( _centerEarth );
   v1.normalize();
 
   // Figure out the needed rotation to place the cone on the earth.
@@ -415,7 +420,7 @@ osg::Node* Point::_buildCone( bool invert )
   // Use an auto transform if we should.
   if( this->autotransform() )
   {
-    osg::ref_ptr < osg::AutoTransform > at ( Detail::createAutoTransform( _center ) );
+    osg::ref_ptr < osg::AutoTransform > at ( Detail::createAutoTransform( _centerEarth ) );
     at->addChild ( geode.get() );
     return at.release();
   }
@@ -446,7 +451,7 @@ osg::Node* Point::_buildDisk()
   // For now use a short cylinder.  Ellipsoid would be better.
   osg::ref_ptr < osg::Cylinder > cylinder ( new osg::Cylinder( osg::Vec3( 0.0, 0.0, 0.0 ), _size, _size * 0.25 ) );
 
-  osg::Vec3 v1 ( _center );
+  osg::Vec3 v1 ( _centerEarth );
   v1.normalize();
 
   osg::Quat rotation;
@@ -457,7 +462,7 @@ osg::Node* Point::_buildDisk()
 
   geode->addDrawable ( sd.get() );
 
-  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _center ) );
+  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _centerEarth ) );
   autoTransform->addChild ( geode.get() );
 
   return autoTransform.release();
@@ -477,7 +482,7 @@ osg::Node* Point::_buildCube()
 
   geode->addDrawable( BaseClass::shapeFactory()->cube ( osg::Vec3 ( _size, _size, _size )  ) );
 
-  osg::Vec3 v1 ( _center );
+  osg::Vec3 v1 ( _centerEarth );
   v1.normalize();
 
   osg::Quat rotation;
@@ -488,7 +493,7 @@ osg::Node* Point::_buildCube()
   mt->setMatrix ( matrix );
   mt->addChild( geode.get() );
 
-  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _center ) );
+  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _centerEarth ) );
   autoTransform->addChild ( mt.get() );
 
   return autoTransform.release();
@@ -510,7 +515,7 @@ osg::Node* Point::_buildCylinder()
 
   if( this->size() > 0 )
   {
-    osg::Vec3 v0 ( _center );
+    osg::Vec3 v0 ( _centerEarth );
 
     osg::Vec3 v1 ( v0 );
     v1.normalize();
@@ -624,3 +629,14 @@ bool Point::visibility ( ) const
   return _group.valid () ? ( _group->getNodeMask () != 0x0 ) : false;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the center.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec3 Point::center () const
+{
+  return _center;
+}

@@ -57,6 +57,9 @@ public:
   /// Accept the visitor.
   virtual void            accept ( Minerva::Core::Visitor& visitor );
 
+  /// Get the center.
+  osg::Vec3               center () const;
+
   /// Get/Set the size.
   float                   size () const;
   void                    size ( float );
@@ -103,6 +106,7 @@ private:
   unsigned int _primitiveId;
   float        _quality;
   osg::Vec3    _center;
+  osg::Vec3    _centerEarth;
   bool         _autotransform;
 
   osg::ref_ptr < osg::Material >         _material;

@@ -171,6 +171,10 @@ protected:
   void                              _clearDocuments();
 
   virtual void                      closeEvent ( QCloseEvent *event );
+
+  /// Drag events.
+  virtual void                      dragEnterEvent ( QDragEnterEvent *event );
+  virtual void                      dropEvent      ( QDropEvent      *event );
  
   // Usul::Interfaces::Qt::IMainWindow
   virtual QMainWindow *             mainWindow();
@@ -189,7 +193,7 @@ protected:
   // Create a progress bar (Usul::Interfaces::IProgressBarFactory).
   virtual Unknown*                  createProgressBar();
 
-  // Add dock widget to menu.
+  // Add dock widget to menu (Usul::Interfaces::IQtDockWidgetMenu).
   virtual void                      addDockWidgetMenu ( QDockWidget * dock );
 private slots:
 

@@ -54,6 +54,10 @@ public:
   // Constructor.
   OpenDocument ( IUnknown *caller );
 
+  /// Get/Set the filename to open.
+  void                filename ( const std::string& filename );
+  const std::string&  filename () const;
+
 protected:
 
   // Use reference counting.
@@ -85,6 +89,8 @@ private:
   // No copying or assignment.
   OpenDocument ( const OpenDocument & );
   OpenDocument &operator = ( const OpenDocument & );
+
+  std::string _filename;
 };
 
 

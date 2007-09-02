@@ -17,6 +17,7 @@
 #include "SceneTreeComponent.h"
 
 #include "Usul/Interfaces/Qt/IMainWindow.h"
+#include "Usul/Interfaces/IQtDockWidgetMenu.h"
 #include "Usul/Interfaces/IOpenSceneGraph.h"
 
 #include "Usul/Documents/Manager.h"
@@ -29,7 +30,6 @@
 #include "QtGui/QDockWidget"
 #include "QtGui/QHeaderView"
 #include "QtGui/QMainWindow"
-#include "QtGui/QMenu"
 #include "QtGui/QTreeWidget"
 
 
@@ -143,10 +143,13 @@ void SceneTreeComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
     _dock->setWidget( _sceneTree );
     main->addDockWidget ( Qt::LeftDockWidgetArea, _dock );
 
-    // Add toggle to the menu. TODO: Not working, and not the best way to do this...
-    QMenu *menu = main->findChild<QMenu*> ( "Docking Windows" );
-    if ( 0x0 != menu )
-      menu->addAction ( _dock->toggleViewAction() );
+    // Set the object name.
+    _dock->setObjectName ( "SceneDockWidget" );
+
+    // Add toggle to the menu.
+    Usul::Interfaces::IQtDockWidgetMenu::QueryPtr dwm ( caller );
+    if ( dwm.valid () )
+      dwm->addDockWidgetMenu ( _dock );
   } 
 }
 

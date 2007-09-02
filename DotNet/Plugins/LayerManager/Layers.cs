@@ -64,13 +64,6 @@ namespace CadKit.Plugins.LayerManager
       this._addToolbarButton(_toolstrip, new CadKit.Plugins.LayerManager.Commands.AddLayerToFavoritesCommand(this, this));
     }
 
-    enum Test
-    {
-      ZERO = 0,
-      ONE,
-      TWO
-    }
-
     protected void _buildComboBox()
     {
       this.operationType.Items.Add("Top");

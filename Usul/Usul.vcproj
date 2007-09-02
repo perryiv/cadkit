@@ -676,10 +676,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IDataObjects.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IDecimateModel.h"
 					>
 				</File>
@@ -1012,6 +1008,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IPlanetNode.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IPlugin.h"
 					>
 				</File>
@@ -1053,6 +1053,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IProjectCoordinates.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IQtDockWidgetMenu.h"
 					>
 				</File>
 				<File

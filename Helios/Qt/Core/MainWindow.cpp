@@ -66,7 +66,10 @@
 #include "QtGui/QTextEdit"
 #include "QtGui/QVBoxLayout"
 #include "QtGui/QWorkspace"
+#include "QtGui/QDragEnterEvent"
+#include "QtGui/QDropEvent"
 #include "QtCore/QMetaType"
+#include "QtCore/QUrl"
 
 #include <algorithm>
 #include <fstream>
@@ -162,6 +165,8 @@ MainWindow::MainWindow ( const std::string &vendor,
   _idleTimer = new QTimer ( this );
   QObject::connect ( _idleTimer, SIGNAL ( timeout() ), SLOT ( _idleProcess() ) );
   _idleTimer->start ( 1000 ); // Once every second.
+
+  this->setAcceptDrops ( true );
 
   // Register DocumentProxy for Usul::Documents::Document.
   qRegisterMetaType < DocumentProxy > ( );
@@ -1438,4 +1443,55 @@ void MainWindow::addDockWidgetMenu ( QDockWidget * dock )
 {
   if ( 0x0 != _dockMenu && 0x0 != dock )
     _dockMenu->addAction ( dock->toggleViewAction() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Dragging has entering window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::dragEnterEvent ( QDragEnterEvent *event )
+{
+  typedef QList < QUrl > Urls;
+  typedef Urls::const_iterator ConstIterator;
+
+  Urls urls ( event->mimeData()->urls () );
+
+  for ( ConstIterator i = urls.begin(); i != urls.end(); ++ i )
+  {
+    std::string file ( i->toLocalFile ().toStdString () );
+
+    if ( Usul::Documents::Manager::instance ().canOpen ( file ) )
+      event->acceptProposedAction();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Files have been dropped.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::dropEvent ( QDropEvent *event )
+{
+  typedef QList < QUrl > Urls;
+  typedef Urls::const_iterator ConstIterator;
+
+  Urls urls ( event->mimeData()->urls () );
+
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+
+  for ( ConstIterator i = urls.begin(); i != urls.end(); ++ i )
+  {
+    std::string file ( i->toLocalFile ().toStdString () );
+
+    CadKit::Helios::Commands::OpenDocument::RefPtr command ( new CadKit::Helios::Commands::OpenDocument ( me ) );
+    command->filename ( file );
+    command->execute ( 0x0 );
+  }
+
+  event->acceptProposedAction();
 }

@@ -42,7 +42,8 @@ USUL_IMPLEMENT_TYPE_ID ( OpenDocument );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OpenDocument::OpenDocument ( IUnknown *caller ) : BaseClass ( caller )
+OpenDocument::OpenDocument ( IUnknown *caller ) : BaseClass ( caller ),
+_filename ()
 {
   USUL_TRACE_SCOPE;
   this->text ( "&Open" );
@@ -107,25 +108,36 @@ void OpenDocument::_execute()
   USUL_TRACE_SCOPE;
   // Do not lock the mutex. This function is re-entrant.
 
-  // Get file names.
-  FileNames files ( this->_askForFileNames ( "Open Document" ) );
+  // Get the filename we have.  May be empty.
+  std::string file ( this->filename () );
 
-  // Loop through the files.
-  for ( FileNames::const_iterator i = files.begin(); i != files.end(); ++i )
+  // If we already have one, open it.
+  if ( false == file.empty () )
+    this->_startJob ( file );
+
+  // No filename.  Ask the user for filenames.
+  else
   {
-    const std::string file ( *i );
-    try
+    // Get file names.
+    FileNames files ( this->_askForFileNames ( "Open Document" ) );
+
+    // Loop through the files.
+    for ( FileNames::const_iterator i = files.begin(); i != files.end(); ++i )
     {
-      this->_startJob ( file );
-    }
-    catch ( const std::exception& e )
-    {
-      std::cout << "Error 7531978100: Standard exception caught while trying to create job for " << file << std::endl;
-      std::cout << "Message: " << e.what() << std::endl;
-    }
-    catch ( ... )
-    {
-      std::cout << "Error 2160956073: Unknown exception caught while trying to create job for " << file << std::endl;
+      const std::string file ( *i );
+      try
+      {
+        this->_startJob ( file );
+      }
+      catch ( const std::exception& e )
+      {
+        std::cout << "Error 7531978100: Standard exception caught while trying to create job for " << file << std::endl;
+        std::cout << "Message: " << e.what() << std::endl;
+      }
+      catch ( ... )
+      {
+        std::cout << "Error 2160956073: Unknown exception caught while trying to create job for " << file << std::endl;
+      }
     }
   }
 }
@@ -236,4 +248,30 @@ void OpenDocument::Job::_started()
     // Add the document to the manager.
     Usul::Documents::Manager::instance().add( _document );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the filename to open.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OpenDocument::filename ( const std::string& filename )
+{
+  Guard guard ( this->mutex () );
+  _filename = filename;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the filename to open.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& OpenDocument::filename () const
+{
+  Guard guard ( this->mutex () );
+  return _filename;
 }

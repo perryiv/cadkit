@@ -976,8 +976,6 @@ Usul::Interfaces::IUnknown* Layer::queryInterface( unsigned long iid )
     return static_cast < Usul::Interfaces::ISerialize* > ( this );
   case Usul::Interfaces::IClonable::IID:
     return static_cast < Usul::Interfaces::IClonable* > ( this );
-  case Usul::Interfaces::IDataObjects::IID:
-    return static_cast < Usul::Interfaces::IDataObjects* > ( this );
   default:
     return 0x0;
   }
@@ -1074,42 +1072,6 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
   {
     std::cout << "Error 4254986090: Unknown exception caught." << std::endl;
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the number of data objects.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int Layer::numberDataObjects() const
-{
-  return _dataObjects.size();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the data object.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Minerva::Core::DataObjects::DataObject * Layer::dataObject( unsigned int i )
-{
-  return _dataObjects.at ( i );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the data object.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Minerva::Core::DataObjects::DataObject * Layer::dataObject( unsigned int i ) const
-{
-  return _dataObjects.at ( i );
 }
 
 

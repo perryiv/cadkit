@@ -146,6 +146,8 @@ public:
   // Update these sub-windows.
   virtual void                      updateTextWindow ( bool force );
   
+  // Restore dock window positions.
+  void                              restoreDockWindows ();
 protected:
 
   void                              _buildMenu();

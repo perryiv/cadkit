@@ -17,6 +17,7 @@
 #include "QtGui/QDockWidget"
 #include "QtGui/QProgressBar"
 #include "QtGui/QVBoxLayout"
+#include "QtGui/QScrollArea"
 
 using namespace CadKit::Helios::Core;
 
@@ -52,7 +53,8 @@ ProgressBarDock::~ProgressBarDock ()
 
 QWidget* ProgressBarDock::operator () ( QDockWidget* parent )
 {
-  _widget = new QWidget ( parent );
+  //QScrollArea *scroll ( new QScrollArea ( parent ) );
+  _widget = new QScrollArea ( parent );
   _layout = new QVBoxLayout ( _widget );
 
   return _widget;

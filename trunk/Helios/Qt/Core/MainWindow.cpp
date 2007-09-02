@@ -287,6 +287,10 @@ void MainWindow::_saveSettings()
     CadKit::Helios::Tools::SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::MAIN_WINDOW, _settings );
     const QRect rect ( this->geometry() );
     _settings.setValue ( CadKit::Helios::Core::Registry::Keys::GEOMETRY.c_str(), rect );
+
+    // Save dock window positions.
+    QByteArray positions ( this->saveState () );
+    _settings.setValue ( CadKit::Helios::Core::Registry::Keys::DOCK_WINDOW_POSITIONS.c_str(), positions );
   }
 
   // Write to disk.
@@ -421,6 +425,9 @@ void MainWindow::_buildTextWindow()
   dock->setWidget ( _textWindow.first );
   this->addDockWidget ( Qt::BottomDockWidgetArea, dock );
 
+  // Set the object name.
+  dock->setObjectName ( "TextWindow" );
+
   // Add toggle to the menu.
   if ( 0x0 != _dockMenu )
     _dockMenu->addAction ( dock->toggleViewAction() );
@@ -445,6 +452,9 @@ void MainWindow::_buildProgressBarWindow()
   // Dock it.
   dock->setWidget ( ( *_progressBars ) ( dock ) );
   this->addDockWidget ( Qt::BottomDockWidgetArea, dock );
+
+  // Set the object name.
+  dock->setObjectName ( "ProgressBarsWindow" );
 
   // Add toggle to the menu.
   if ( 0x0 != _dockMenu )
@@ -1396,4 +1406,21 @@ Usul::Interfaces::IUnknown* MainWindow::createProgressBar()
 {
   USUL_TRACE_SCOPE;
   return _progressBars->createProgressBar ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Restore dock window positions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::restoreDockWindows ()
+{
+  USUL_TRACE_SCOPE;
+
+  // Restore dock window positions.
+  CadKit::Helios::Tools::SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::MAIN_WINDOW, _settings );  
+  QByteArray positions ( _settings.value ( CadKit::Helios::Core::Registry::Keys::DOCK_WINDOW_POSITIONS.c_str() ).toByteArray() );
+  this->restoreState ( positions );
 }

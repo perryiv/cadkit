@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="plug: Trianglulate CGAL"
+	Name="plug: Minerva Trianglulate CGAL"
 	ProjectGUID="{A46FB746-5481-453E-B2AB-402C3E7EA805}"
 	>
 	<Platforms>

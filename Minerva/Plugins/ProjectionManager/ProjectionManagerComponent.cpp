@@ -143,6 +143,20 @@ void ProjectionManagerComponent::projectToSpherical ( const Usul::Math::Vec3d& o
   latLonPoint[2] += orginal[2];
 }
 
+void ProjectionManagerComponent::convertToPlanetEllipsoid ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
+{
+  ossimEcefPoint ecef;
+  ossimGpt dummy;
+  ecef = dummy;
+
+  ossimGpt gpt ( orginal[1], orginal[0], orginal[2] );
+
+  ecef = gpt;
+  planetPoint[0] = ecef.x();
+  planetPoint[1] = ecef.y();
+  planetPoint[2] = ecef.z();
+}
+
 
 const double WGS_84_RADIUS_EQUATOR = 6378137.0;
 const double WGS_84_RADIUS_POLAR = 6356752.3142;

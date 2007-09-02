@@ -27,7 +27,6 @@
 #include "Usul/Interfaces/IAddRowLegend.h"
 #include "Usul/Interfaces/ISerialize.h"
 #include "Usul/Interfaces/IClonable.h"
-#include "Usul/Interfaces/IDataObjects.h"
 
 #include "Serialize/XML/Macros.h"
 
@@ -54,8 +53,7 @@ class MINERVA_EXPORT Layer : public Usul::Base::Object,
                              public Usul::Interfaces::IVectorLayer,
                              public Usul::Interfaces::IAddRowLegend,
                              public Usul::Interfaces::ISerialize,
-                             public Usul::Interfaces::IClonable,
-                             public Usul::Interfaces::IDataObjects
+                             public Usul::Interfaces::IClonable
 {
 public:
   /// Typedefs.
@@ -154,7 +152,7 @@ public:
   /// Build the data objects.
   virtual void                buildDataObjects( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
 
-  /// Modify data objects
+  /// Modify data objects.
   virtual void                modify( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
 
   /// Is this layer temporal.
@@ -168,7 +166,7 @@ public:
   void                        showInLegend ( bool b );
   bool                        showInLegend () const;
 
-  /// Get/Set show layer
+  /// Get/Set show layer.
   void                        showLayer( bool b );
   bool                        showLayer() const;
 
@@ -237,14 +235,6 @@ protected:
 
   /// Clone this layer.
   virtual Usul::Interfaces::IUnknown*                      clone() const = 0;
-
-  /// Usul::Interfaces::IDataObjects
-  /// Get the number of data objects.
-  virtual unsigned int                                     numberDataObjects() const;
-
-  /// Get the data object.
-  virtual Minerva::Core::DataObjects::DataObject *         dataObject( unsigned int i );
-  virtual const Minerva::Core::DataObjects::DataObject *   dataObject( unsigned int i ) const;
 
 private:
 

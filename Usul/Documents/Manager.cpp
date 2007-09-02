@@ -505,3 +505,39 @@ void Manager::removeActiveViewListener ( ActiveViewListener* listener )
                      Usul::Interfaces::IActiveViewListener::RefPtr::IsEqual ( listener ) ),
     _activeViewListeners.end() );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is there a document that can open this file?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Manager::canOpen ( const std::string& file ) const
+{
+  // Typedefs.
+  typedef Usul::Components::Manager PluginManager;
+  typedef PluginManager::UnknownSet PluginSet;
+  typedef PluginSet::iterator PluginItr;
+  typedef Usul::Interfaces::IDocumentCreate::ValidQueryPtr CreatorPtr;
+
+  // Ask for plugins that open documents.
+  PluginSet plugins ( PluginManager::instance().getInterfaces ( Usul::Interfaces::IDocumentCreate::IID ) );
+
+  Documents documentList;
+
+  // Loop through the plugins.
+  for ( PluginItr i = plugins.begin(); i != plugins.end(); ++i )
+  {
+    // Create the empty document.
+    CreatorPtr creator ( (*i).get() );
+    Document::RefPtr doc ( creator->createDocument ( ) );
+
+    // Can the document open the given file?
+    if ( doc.valid() && doc->canOpen ( file ) )
+     return true;
+  }
+
+  // If we get here, we couldn't find a document that can open file.
+  return false;
+}

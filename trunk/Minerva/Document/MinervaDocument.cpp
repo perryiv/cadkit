@@ -1113,7 +1113,7 @@ void MinervaDocument::stopAnimation()
   }
   // Reset dates.
   Minerva::Core::Visitors::TemporalAnimation::RefPtr visitor ( new Minerva::Core::Visitors::TemporalAnimation ( _minDate, _maxDate ) );
-  this->_acceptVisitor ( *visitor );
+  this->accept ( *visitor );
 }
 
 
@@ -1444,7 +1444,7 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
     if ( datesDirty )
     {
       Minerva::Core::Visitors::FindMinMaxDates::RefPtr findMinMax ( new Minerva::Core::Visitors::FindMinMaxDates );
-      this->_acceptVisitor ( *findMinMax );
+      this->accept ( *findMinMax );
 
       _minDate = findMinMax->first ();
       _maxDate = findMinMax->last ();
@@ -1506,7 +1506,7 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
           _lastDate = lastDate;
 
           Minerva::Core::Visitors::TemporalAnimation::RefPtr visitor ( new Minerva::Core::Visitors::TemporalAnimation ( firstDate, lastDate ) );
-          this->_acceptVisitor ( *visitor );
+          this->accept ( *visitor );
         }
       }
     }
@@ -1520,7 +1520,7 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::_acceptVisitor ( Minerva::Core::Visitor& visitor )
+void MinervaDocument::accept ( Minerva::Core::Visitor& visitor )
 {
   for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
   {

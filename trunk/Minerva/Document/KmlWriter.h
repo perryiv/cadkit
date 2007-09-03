@@ -11,7 +11,8 @@
 #ifndef __MINERVA_DOCUMENT_KML_WRITER_H__
 #define __MINERVA_DOCUMENT_KML_WRITER_H__
 
-#include "MinervaDocument.h"
+#include "Minerva/Document/MinervaDocument.h"
+#include "Minerva/Core/Visitor.h"
 
 #include <iosfwd>
 
@@ -30,13 +31,31 @@ public:
   void operator()();
 
 protected:
-  void               _writeHeader( std::ofstream& out ) const;
-  void               _writeFooter( std::ofstream& out ) const;
-  void               _writeLayer ( std::ofstream& out, Usul::Interfaces::ILayer* layer ) const;
-  void               _writeImageLayer     ( std::ofstream& out, Usul::Interfaces::ILayer* layer ) const;
-  void               _writeVectorLayer    ( std::ofstream& out, Usul::Interfaces::ILayer* layer ) const;
-  void               _writeDataObject     ( std::ofstream& out, Minerva::Core::DataObjects::DataObject * dataObject ) const;
-  
+
+  class Visitor : public Minerva::Core::Visitor
+  {
+  public:
+    typedef Minerva::Core::Visitor BaseClass;
+
+    USUL_DECLARE_REF_POINTERS ( Visitor );
+
+    Visitor ( const std::string & filename );
+
+    virtual void visit ( Minerva::Core::DataObjects::Line &line );
+    virtual void visit ( Minerva::Core::DataObjects::Point &point );
+    virtual void visit ( Minerva::Core::DataObjects::PointTime &pointTime );
+    virtual void visit ( Minerva::Core::DataObjects::Polygon &polygon );
+
+    virtual void visit ( Minerva::Core::Layers::Layer& layer );
+
+  protected:
+    virtual ~Visitor ();
+
+  private:
+    std::string _filename;
+    std::ofstream _out;
+  };
+
 private:
 
   // No copying.

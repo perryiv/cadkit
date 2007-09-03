@@ -43,6 +43,7 @@ Manager *Manager::_manager ( 0x0 );
 ///////////////////////////////////////////////////////////////////////////////
 
 Manager::Manager() :
+_mutex ( Mutex::create () ),
 _documents (),
 _activeDocument ( 0x0 ),
 _activeDocumentListeners (),
@@ -68,6 +69,9 @@ Manager::~Manager()
 
   // Sanity check.  Should be empty when manager is destroyed
   USUL_ASSERT ( _documents.empty() );
+
+  // Delete the mutex.
+  delete _mutex;
 }
 
 
@@ -210,19 +214,7 @@ Manager::Filters Manager::filtersOpen() const
 
 void Manager::active ( IDocument *document )
 {
-  // Return now if document is already active
-  if( document == _activeDocument.get() )
-    return;
-
-  // Save the old document.
-  IDocument::RefPtr oldDoc ( _activeDocument );
-
-  // Set the active document
-  _activeDocument = document;
-
-  // Notify any listeners we may have.
-  for ( ActiveDocumentListeners::iterator iter = _activeDocumentListeners.begin(); iter != _activeDocumentListeners.end(); ++iter )
-    (*iter)->activeDocumentChanged ( Usul::Interfaces::IUnknown::QueryPtr ( oldDoc.get() ), Usul::Interfaces::IUnknown::QueryPtr ( document ) );
+  this->activeDocument ( document );
 }
 
 
@@ -234,6 +226,53 @@ void Manager::active ( IDocument *document )
 
 Usul::Interfaces::IDocument* Manager::active()
 {
+  return this->activeDocument ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make this document active.  May be null.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::activeDocument ( IDocument* document )
+{
+    // Save the old document.
+  IDocument::RefPtr oldDoc ( this->activeDocument () );
+
+  // Return now if document is already active
+  if( document == oldDoc.get() )
+    return;
+
+  // Set the active document
+  {
+    Guard guard ( this->mutex () );
+    _activeDocument = document;
+  }
+
+  // Make a copy of the listeners.
+  ActiveDocumentListeners listeners;
+  {
+    Guard guard ( this->mutex () );
+    listeners = _activeDocumentListeners;
+  }
+
+  // Notify any listeners we may have.
+  for ( ActiveDocumentListeners::iterator iter = listeners.begin(); iter != listeners.end(); ++iter )
+    (*iter)->activeDocumentChanged ( Usul::Interfaces::IUnknown::QueryPtr ( oldDoc.get() ), Usul::Interfaces::IUnknown::QueryPtr ( document ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the active document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IDocument* Manager::activeDocument ()
+{
+  Guard guard ( this->mutex () );
   return _activeDocument.get();
 }
 
@@ -246,23 +285,33 @@ Usul::Interfaces::IDocument* Manager::active()
 
 void Manager::activeView ( View * view )
 {
+   // Save the old view.
+  View::RefPtr oldView ( this->activeView () );
+
   // Return now if the view is already active.
-  if( view == _activeView.get () )
+  if( view == oldView.get () )
     return;
 
-  // Save the old view.
-  View::RefPtr oldView ( _activeView );
-
   // Set the active view.
-  _activeView = view;
+  {
+    Guard guard ( this->mutex () );
+    _activeView = view;
+  }
 
   IDocument::RefPtr document ( view ? view->document() : 0x0 );
 
   // Set the active document.
   this->active ( document );
 
+  // Make a copy of the listeners.
+  ActiveViewListeners listeners;
+  {
+    Guard guard ( this->mutex () );
+    listeners = _activeViewListeners;
+  }
+
   // Notify any listeners we may have.
-  for ( ActiveViewListeners::iterator iter = _activeViewListeners.begin(); iter != _activeViewListeners.end(); ++iter )
+  for ( ActiveViewListeners::iterator iter = listeners.begin(); iter != listeners.end(); ++iter )
     (*iter)->activeViewChanged ( oldView.get(), view );
 }
 
@@ -275,6 +324,7 @@ void Manager::activeView ( View * view )
 
 Manager::View* Manager::activeView ()
 {
+  Guard guard ( this->mutex () );
   return _activeView.get();
 }
 
@@ -294,14 +344,17 @@ void Manager::close ( Document *document )
   Usul::Interfaces::IDocument::QueryPtr doc ( document );
 
   // Unset the active document if it is the one that is closing
-  if ( doc.get() == _activeDocument.get() )
+  if ( doc.get() == this->activeDocument () )
   {
     // Set the active document to null.  Call this instead of setting it directy.
     this->active ( 0x0 );
   }
 
   // Remove the document from the list
-  _documents.remove ( document );
+  {
+    Guard guard ( this->mutex () );
+    _documents.remove ( document );
+  }
 }
 
 
@@ -313,6 +366,7 @@ void Manager::close ( Document *document )
 
 void Manager::add ( Document *document )
 {
+  Guard guard ( this->mutex () );
   _documents.push_back( document );
 }
 
@@ -325,7 +379,15 @@ void Manager::add ( Document *document )
 
 void Manager::sendMessage ( unsigned short message, const Document *skip )
 {
-  for ( Documents::iterator i = _documents.begin(); i != _documents.end(); ++i )
+  // Make a copy of the documents;
+  Documents documents;
+  {
+    Guard guard ( this->mutex () );
+    documents = _documents;
+  }
+
+  // Send the message.
+  for ( Documents::iterator i = documents.begin(); i != documents.end(); ++i )
   {
     Document::RefPtr doc ( *i );
     if ( doc.valid() && ( skip != doc.get() ) )
@@ -402,14 +464,23 @@ Manager::DocumentInfo Manager::find ( const std::string& filename, Usul::Interfa
   // The document to open.
   Document::RefPtr document ( 0x0 );
 
-  // Check to see if there is a document already open with this filename.
-  for( Documents::iterator i = _documents.begin(); i != _documents.end(); ++ i )
   {
-    // Is a document open with this file name?
-    if( (*i)->fileName() == filename )
+    // Make a copy of the documents;
+    Documents documents;
     {
-      document = (*i).get();
-      loaded = true;
+      Guard guard ( this->mutex () );
+      documents = _documents;
+    }
+
+    // Check to see if there is a document already open with this filename.
+    for( Documents::iterator i = documents.begin(); i != documents.end(); ++ i )
+    {
+      // Is a document open with this file name?
+      if( (*i)->fileName() == filename )
+      {
+        document = (*i).get();
+        loaded = true;
+      }
     }
   }
 
@@ -459,6 +530,7 @@ Manager::DocumentInfo Manager::find ( const std::string& filename, Usul::Interfa
 
 void Manager::addActiveDocumentListener    ( ActiveDocumentListener* listener )
 {
+  Guard guard ( this->mutex () );
   _activeDocumentListeners.push_back ( listener );
 }
 
@@ -471,6 +543,7 @@ void Manager::addActiveDocumentListener    ( ActiveDocumentListener* listener )
 
 void Manager::removeActiveDocumentListener ( ActiveDocumentListener* listener )
 {
+  Guard guard ( this->mutex () );
   _activeDocumentListeners.erase ( 
     std::remove_if ( _activeDocumentListeners.begin(), 
                      _activeDocumentListeners.end(), 
@@ -487,6 +560,7 @@ void Manager::removeActiveDocumentListener ( ActiveDocumentListener* listener )
 
 void Manager::addActiveViewListener    ( ActiveViewListener* listener )
 {
+  Guard guard ( this->mutex () );
   _activeViewListeners.push_back ( listener );
 }
 
@@ -499,6 +573,7 @@ void Manager::addActiveViewListener    ( ActiveViewListener* listener )
 
 void Manager::removeActiveViewListener ( ActiveViewListener* listener )
 {
+  Guard guard ( this->mutex () );
   _activeViewListeners.erase ( 
     std::remove_if ( _activeViewListeners.begin(), 
                      _activeViewListeners.end(), 

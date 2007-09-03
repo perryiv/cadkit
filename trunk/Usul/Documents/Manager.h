@@ -18,6 +18,8 @@
 
 #include "Usul/Export/Export.h"
 #include "Usul/Documents/Document.h"
+#include "Usul/Threads/Mutex.h"
+#include "Usul/Threads/Guard.h"
 
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
@@ -48,6 +50,8 @@ public:
   typedef Usul::Interfaces::IView                         View;
   typedef Usul::Interfaces::IActiveViewListener           ActiveViewListener;
   typedef std::vector < ActiveViewListener::RefPtr >      ActiveViewListeners;
+  typedef Usul::Threads::Mutex                            Mutex;
+  typedef Usul::Threads::Guard < Mutex >                  Guard;
 
   // Struct that contains infomation on how to load a document.
   struct DocumentInfo
@@ -60,11 +64,13 @@ public:
   // Singleton.
   static Manager &      instance();
 
-  // Make this document active
+  /// Get/Set the active document.  Deprecated, use activeDocument.
   void                  active ( IDocument* );
-
-  // Get the active document
   IDocument*            active ();
+  
+  /// Get/Set the active document.
+  void                  activeDocument ( IDocument* );
+  IDocument*            activeDocument ();
 
   /// Get/Set the active view.
   void                  activeView ( View * );
@@ -117,6 +123,9 @@ protected:
   // Find a delegate for the given document.
   Delegate*             _findDelegate ( Document * document );
 
+  // Get the mutex.
+  Mutex&                mutex () { return *_mutex; }
+
 private:
 
   Manager();
@@ -124,7 +133,7 @@ private:
   Manager &operator = ( const Manager & );
   ~Manager();
 
-  
+  mutable Mutex           *_mutex;  
   Documents                _documents;
   IDocument::RefPtr        _activeDocument;
   ActiveDocumentListeners  _activeDocumentListeners;

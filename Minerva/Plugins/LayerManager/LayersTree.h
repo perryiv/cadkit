@@ -23,4 +23,4 @@ public:
 };
 
 
-#endif __MINERVA_PLUGINS_LAYERS_TREE_H__
+#endif // __MINERVA_PLUGINS_LAYERS_TREE_H__

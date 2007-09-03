@@ -15,11 +15,6 @@
 #include "Minerva/Core/DataObjects/Polygon.h"
 
 #include "Usul/Functions/Guid.h"
-#include "Usul/Interfaces/IVectorLayer.h"
-#include "Usul/Interfaces/IOssimPlanetLayer.h"
-#include "Usul/Interfaces/IDataObjects.h"
-#include "Usul/Interfaces/IPointData.h"
-#include "Usul/Interfaces/IOffset.h"
 
 #include <fstream>
 
@@ -59,228 +54,133 @@ KmlWriter::~KmlWriter()
 
 void KmlWriter::operator() ()
 {
-  std::ofstream out ( _filename.c_str(), std::fstream::binary | std::fstream::out );
+  Visitor::RefPtr visitor ( new Visitor ( _filename ) );
 
-  if( false == out.is_open() )
-    return;
-
-  typedef MinervaDocument::Layers Layers;
-  Layers& layers ( _document->layers() );
-
-  this->_writeHeader( out );
-
-  for( Layers::iterator iter = layers.begin(); iter != layers.end(); ++iter )
-  {
-    this->_writeLayer( out, (*iter).get() );
-  }
-
-  this->_writeFooter( out );
+  _document->accept ( *visitor );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Write the header.
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void KmlWriter::_writeHeader( std::ofstream& out ) const
+KmlWriter::Visitor::Visitor ( const std::string& filename ) : BaseClass (),
+_filename ( filename ),
+_out ( filename.c_str () )
 {
-  out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << std::endl;
-  out << "<kml xmlns=\"http://earth.google.com/kml/2.1\">" << std::endl;
+  _out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << std::endl;
+  _out << "<kml xmlns=\"http://earth.google.com/kml/2.1\">" << std::endl;
 
   // Start of the folder.
-  out << "\t<Folder id =\"" << Usul::Functions::GUID::generate() << "\">" << std::endl;
+  _out << "\t<Folder id =\"" << Usul::Functions::GUID::generate() << "\">" << std::endl;
 
   // Write the name.
-  out << "\t\t<name>" << _document->fileName() << "</name>" << std::endl;
+  _out << "\t\t<name>" << filename << "</name>" << std::endl;
 
   // Write the visibility.
-  out << "\t\t<visibility>1</visibility>" << std::endl;
+  _out << "\t\t<visibility>1</visibility>" << std::endl;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Write the footer.
+//  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void KmlWriter::_writeFooter( std::ofstream& out ) const
+KmlWriter::Visitor::~Visitor ()
 {
   // End of the folder.
-  out << "\t</Folder>" << std::endl;
+  _out << "\t</Folder>" << std::endl;
 
-  out << "</kml>" << std::endl;
+  _out << "</kml>" << std::endl;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Write a layer.
+//  Write out a line.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void KmlWriter::_writeLayer ( std::ofstream& out, Usul::Interfaces::ILayer* layer ) const
+void KmlWriter::Visitor::visit ( Minerva::Core::DataObjects::Line &line )
 {
-  Usul::Interfaces::IOssimPlanetLayer::QueryPtr image ( layer );
-  Usul::Interfaces::IVectorLayer::QueryPtr      vector ( layer );
-
-  // Start of the folder.
-  out << "\t<Folder id =\"" << layer->guid() << "\">" << std::endl;
-
-  // Write the name.
-  out << "\t\t<name>" << layer->name() << "</name>" << std::endl;
-
-  // Write the visibility.
-  out << "\t\t<visibility>" << layer->showLayer() << "</visibility>" << std::endl;
-
-  // Write an image layer.
-  if( image.valid() )
-    this->_writeImageLayer( out, layer );
-
-  // Write a vector layer.
-  if( vector.valid() )
-    this->_writeVectorLayer( out, layer );
-
-  // End of the folder.
-  out << "\t</Folder>" << std::endl;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Write an image layer.
+//  Write out a point.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void KmlWriter::_writeImageLayer     ( std::ofstream& out, Usul::Interfaces::ILayer* layer ) const
-{
-  // TODO.
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write a vector layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void KmlWriter::_writeVectorLayer    ( std::ofstream& out, Usul::Interfaces::ILayer* layer ) const
-{
-  Usul::Interfaces::IDataObjects::QueryPtr dataObjects ( layer );
-  if( dataObjects.valid() )
-  {
-    unsigned int size ( dataObjects->numberDataObjects () );
-    for ( unsigned int i = 0; i < size; ++i )
-    {
-      this->_writeDataObject( out, dataObjects->dataObject( i ) );
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write a point.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper
-{
-  void writePoint ( std::ofstream& out, Minerva::Core::DataObjects::Point * point )
-  {
-    Usul::Interfaces::IPointData::QueryPtr data ( point->geometry() );
-
-    if( data.valid() )
-    {
-      Usul::Math::Vec3d p ( data->pointData() );
-
-      /// Reset the offset if there is one.  This will negate any effect from terrain.
-      Usul::Interfaces::IOffset::QueryPtr offset ( data );
-      if( offset.valid() )
-        p[2] = offset->spatialOffset()[2];
-
-      out << "\t\t\t\t<Point>" << std::endl;
-      out << "\t\t\t\t\t<altitudeMode>relativeToGround</altitudeMode>" << std::endl;
-      out << "\t\t\t\t\t<coordinates>" << p[0] << "," << p[1] << "," << p[2] << "</coordinates>" << std::endl;
-      out << "\t\t\t\t</Point>" << std::endl;
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write a Line.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper
-{
-  void writeLine ( std::ofstream& out, Minerva::Core::DataObjects::Line * line )
-  {
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write a polygon.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper
-{
-  void writePolygon ( std::ofstream& out, Minerva::Core::DataObjects::Polygon * polygon )
-  {
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write a data object.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper
-{
-  void writeDataObject ( std::ofstream& out, Minerva::Core::DataObjects::DataObject * dataObject )
-  {
-    typedef Minerva::Core::DataObjects::Point    Point;
-    typedef Minerva::Core::DataObjects::Line     Line;
-    typedef Minerva::Core::DataObjects::Polygon  Polygon;
-
-    // Is it a polygon?  Because of the inheritance tree, polygon should be first.
-    if( Polygon *polygon = dynamic_cast < Polygon* > ( dataObject ) )
-      writePolygon( out, polygon );
-
-      // Is it a line?
-    else if( Line *line = dynamic_cast < Line* > ( dataObject ) )
-      writeLine( out, line );
-
-    // Is it a point?
-    else if( Point *point = dynamic_cast < Point* > ( dataObject ) )
-      writePoint( out, point );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write a data object.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void KmlWriter::_writeDataObject ( std::ofstream& out, Minerva::Core::DataObjects::DataObject * dataObject ) const
+void KmlWriter::Visitor::visit ( Minerva::Core::DataObjects::Point &point )
 {
   // Start of the the place mark.
-  out << "\t\t\t<Placemark>" << std::endl;
+  _out << "\t\t\t<Placemark>" << std::endl;
 
   /// Write the geometry.
-  Helper::writeDataObject( out, dataObject );
+  osg::Vec3 p ( point.center () );
+
+  /// Reset the offset if there is one.  This will negate any effect from terrain.
+  /*Usul::Interfaces::IOffset::QueryPtr offset ( data );
+  if( offset.valid() )
+    p[2] = offset->spatialOffset()[2];*/
+
+  _out << "\t\t\t\t<Point>" << std::endl;
+  _out << "\t\t\t\t\t<altitudeMode>relativeToGround</altitudeMode>" << std::endl;
+  _out << "\t\t\t\t\t<coordinates>" << p[0] << "," << p[1] << "," << p[2] << "</coordinates>" << std::endl;
+  _out << "\t\t\t\t</Point>" << std::endl;
 
   // End of the the place mark.
-  out << "\t\t\t</Placemark>" << std::endl;
+  _out << "\t\t\t</Placemark>" << std::endl;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write out a point time.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlWriter::Visitor::visit ( Minerva::Core::DataObjects::PointTime &pointTime )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write out a polygon.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlWriter::Visitor::visit ( Minerva::Core::DataObjects::Polygon &polygon )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write out a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlWriter::Visitor::visit ( Minerva::Core::Layers::Layer& layer )
+{
+  // Start of the folder.
+  _out << "\t<Folder id =\"" << layer.guid() << "\">" << std::endl;
+
+  // Write the name.
+  _out << "\t\t<name>" << layer.name() << "</name>" << std::endl;
+
+  // Write the visibility.
+  _out << "\t\t<visibility>" << layer.showLayer() << "</visibility>" << std::endl;
+
+  // Traverse
+  layer.traverse ( *this );
+
+  // End of the folder.
+  _out << "\t</Folder>" << std::endl;
 }

@@ -206,6 +206,9 @@ public:
   /// Get/Set the animate speed (Minerva::Interfaces::IAnimationControl).
   virtual void                             animateSpeed ( double speed );
   virtual double                           animateSpeed () const;
+
+  /// Have visitor visit all layes.
+  void                                     accept ( Minerva::Core::Visitor& visitor );
 protected:
   virtual ~MinervaDocument();
 
@@ -226,9 +229,6 @@ protected:
 
   /// Animate.
   void                                     _animate ( Usul::Interfaces::IUnknown *caller );
-
-  /// Have visitor visit all layes.
-  void                                     _acceptVisitor ( Minerva::Core::Visitor& visitor );
 
   /// Minerva::Interfaces::IAddLayer
   virtual void                             addLayer ( Usul::Interfaces::ILayer * layer );

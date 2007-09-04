@@ -1,50 +1,134 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Helios.App", "App\CadKit.Helios.App.csproj", "{F21F48D6-B182-46F1-9EEC-4DF35A852C16}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Helios.Lib", "Lib\CadKit.Helios.Lib.csproj", "{FEFE0DC2-5208-4F93-910A-2B4D78163AA3}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Persistence", "..\Persistence\CadKit.Persistence.csproj", "{DFD2710D-3AB3-4707-B74E-80F21E33A23F}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins", "..\Plugins\Manager\CadKit.Plugins.csproj", "{38E6CB43-88D0-4549-B27D-0F23F50CC395}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Documents.LargeTriangleDocument", "..\Plugins\Documents\LargeTriangleDocument\CadKit.Plugins.Documents.LargeTriangleDocument.csproj", "{82484E5E-E9B8-4BDA-AA3A-C84306FCB664}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Referenced", "..\Referenced\CadKit.Referenced.csproj", "{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Interfaces", "..\Interfaces\CadKit.Interfaces.csproj", "{233305C0-C997-440A-9AA2-BAFEF0D15156}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Images", "..\Images\CadKit.Images.csproj", "{7B2D553D-0909-4C86-94E4-3474BD8F8E69}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Tools", "..\Tools\CadKit.Tools.csproj", "{01EAAF17-D9EB-4303-A5BD-BE061F8E58F7}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Delegates.LargeTriangleDelegate", "..\Plugins\Delegates\LargeTriangleDelegate\CadKit.Plugins.Delegates.LargeTriangleDelegate.csproj", "{C88114AA-FF74-47A6-9C28-0D65564A5BB5}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Commands", "..\Commands\CadKit.Commands.csproj", "{4255A478-49D3-4250-B06A-AB16AEF9579E}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Documents", "..\Documents\CadKit.Documents.csproj", "{53DF6058-FBE2-4D41-8CE7-DF8ED0436EAE}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Win32", "..\Win32\CadKit.Win32.csproj", "{27AF0A5B-E349-4660-9603-F030860EDE0B}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Windows.OutputWindow", "..\Plugins\Windows\OutputWindow\CadKit.Plugins.Windows.OutputWindow.csproj", "{18637335-FD1F-459F-90E3-719C82300B24}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.OpenGL", "..\OpenGL\CadKit.OpenGL.csproj", "{038F5ACB-7D5D-4B9E-BA29-86F7526C7419}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Color", "..\Color\CadKit.Color.csproj", "{793217E5-29B9-4DC7-A8EB-19C511BDCF35}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Options.General", "..\Plugins\Options\General\CadKit.Plugins.Options.General.csproj", "{0C969388-CD2F-4EFE-B156-E61020DEECEC}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Database.Storage", "..\Plugins\Database\Storage\CadKit.Plugins.Database.Storage.csproj", "{080AFE28-4FE7-46E5-8AFF-01A0D36D4E81}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CadKit.OpenGL.Glue", "..\Glue\CadKit.Glue.vcproj", "{E32C5CEE-B56E-411F-B071-561AA05E55D9}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Viewer", "..\Viewer\CadKit.Viewer.csproj", "{E335C7FD-3AFA-487E-909C-5928F0EAE194}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CadKit.Viewer.Glue", "..\Viewer\Glue\Cadkit.Viewer.Glue.vcproj", "{74E03074-1991-4E02-B5F2-B9D98FAD14D0}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
@@ -53,56 +137,132 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CadKit.Viewer.Glue", "..\Vi
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit OsgTools", "..\..\OsgTools\OsgTools.vcproj", "{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Documents.SceneDocument", "..\Plugins\Documents\SceneDocument\CadKit.Plugins.Documents.SceneDocument.csproj", "{C79FE51F-7D75-4A3D-87CF-8B6182D90E56}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Delegates.SceneDelegate", "..\Plugins\Delegates\SceneDelegate\CadKit.Plugins.Delegates.SceneDelegate.csproj", "{3B124EEF-7970-4871-B8E3-AF81F1334C2C}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CadKit.Init.Glue", "..\Init\Cadkit.Init.Glue.vcproj", "{51E8E425-CEF2-4B84-BC7E-E8B187D8A524}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit OpenThreadsEx", "..\..\Threads\OpenThreads\OpenThreadsEx.vcproj", "{A4610909-A555-40C5-87A8-B95FEFF45CF5}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CadKit.OSG.Glue", "..\OSG\Glue\CadKit.OSG.Glue.vcproj", "{6F8548C1-32FA-44C9-8BDA-C7221B555065}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Threads.GUI", "..\Threads\GUI\CadKit.Threads.GUI.csproj", "{D7626B34-8931-44B1-A7B0-7ADFC3E6BEAF}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Threads.Jobs", "..\Threads\Jobs\CadKit.Threads.Jobs.csproj", "{A27CF288-D89D-4184-A413-011D6E4AD9F6}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Windows.JobWindow", "..\Plugins\Windows\JobWindow\CadKit.Plugins.Windows.JobWindow.csproj", "{8D68A27D-FB48-40F4-8094-E9B1F2CA4C8B}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Delegates", "..\Delegates\CadKit.Delegates.csproj", "{486271AE-53BE-4DF0-816C-E5A234DB4613}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Threads.Tools", "..\Threads\Tools\CadKit.Threads.Tools.csproj", "{EF977229-371D-4FB1-90C5-237DEE74D069}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Windows.ColorEditor", "..\Plugins\Windows\ColorEditor\CadKit.Plugins.Windows.ColorEditor.csproj", "{9BFA2511-F96D-4BD6-80B1-E7494824304E}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Windows.Properties", "..\Plugins\Windows\Properties\CadKit.Plugins.Windows.Properties.csproj", "{C731C436-DEE0-43E8-ADAC-BBDE3BD86A28}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Windows.SnapShot", "..\Plugins\Windows\SnapShot\CadKit.Plugins.Windows.SnapShot.csproj", "{D3A90F20-127D-4037-A4F1-333170E509F3}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Layers.Ossim.Image", "..\Plugins\Ossim\CadKit.Plugins.Layers.Ossim.Image.csproj", "{BCD63C40-E94F-4252-B969-182C70A8E1A9}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.LayerManager", "..\Plugins\LayerManager\CadKit.Plugins.LayerManager.csproj", "{89F05E45-BF87-4CF2-A7BD-3F7698FD7F74}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DT.Minerva.DB", "..\..\Minerva\DotNet\DB\DT.Minerva.DB.csproj", "{B4A38D25-7F1F-4A97-87D8-200AC443C906}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DT.Minerva.Interfaces", "..\..\Minerva\DotNet\Interfaces\DT.Minerva.Interfaces.csproj", "{35375870-CDDF-431E-B366-782D431BF6F6}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DT.Minerva.Glue", "..\..\Minerva\DotNet\Layers\Glue\DT.Minerva.Layers.Glue.vcproj", "{1CA9FE49-DA3F-42D7-878C-126B71CD3F8B}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
@@ -112,10 +272,22 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DT.Minerva.Glue", "..\..\Mi
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DT.Minerva.Plugins.Animate", "..\..\Minerva\DotNet\Plugins\Animate\DT.Minerva.Plugins.Animate.csproj", "{EAF644D3-1D13-4630-A532-553062BBB375}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DT.Minerva.Plugins.Document", "..\..\Minerva\DotNet\Plugins\Document\DT.Minerva.Plugins.Document.csproj", "{C4306B6D-7FE1-425B-981A-2A23594F9F4E}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DT.Minerva.Plugins.Document.Glue", "..\..\Minerva\DotNet\Plugins\Document\Glue\DT.Minerva.Plugins.Document.Glue.vcproj", "{130E13EB-FA43-41DB-BA55-FEACE9E7FB98}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93} = {BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
@@ -126,32 +298,58 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DT.Minerva.Plugins.Document
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DT.Minerva.Plugins.Layers.PostGIS", "..\..\Minerva\DotNet\Plugins\PostGIS\DT.Minerva.Plugins.Layers.PostGIS.csproj", "{306A67E8-58A8-4492-A721-10AB2E6D065B}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Options.Ossim", "..\Plugins\Options\Ossim\CadKit.Plugins.Options.Ossim.csproj", "{BA3F2EE9-0A5E-4015-95BE-5AC346CB5C56}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DT.Minerva.App", "..\..\Minerva\DotNet\App\DT.Minerva.App.csproj", "{99B0F85C-56B2-47C1-A8CC-6AB93918F276}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DT.Minerva.Plugins.Options", "..\..\Minerva\DotNet\Plugins\Options\DT.Minerva.Plugins.Options.csproj", "{7B6C9BCC-6FA4-4176-9422-A76D3C264FEB}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadKit.Plugins.Layers.Ossim.Wms", "..\Plugins\Ossim\Wms\CadKit.Plugins.Layers.Ossim.Wms.csproj", "{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Trianglulate", "..\..\Minerva\Plugins\TriangulateVTK\Triangulate.vcproj", "{C304EFFA-960F-4641-AECA-6CA35D1C2EEB}"
-	ProjectSection(ProjectDependencies) = postProject
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Trianglulate CGAL", "..\..\Minerva\Plugins\TriangulateCGAL\TriangulateCGAL.vcproj", "{A46FB746-5481-453E-B2AB-402C3E7EA805}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Minerva Trianglulate CGAL", "..\..\Minerva\Plugins\TriangulateCGAL\TriangulateCGAL.vcproj", "{A46FB746-5481-453E-B2AB-402C3E7EA805}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: ComputeNormals", "..\..\Minerva\Plugins\ComputeNormals\ComputeNormals.vcproj", "{DC7B6214-8948-47C0-BA31-ADFE358FBCAD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Minerva ComputeNormals", "..\..\Minerva\Plugins\ComputeNormals\ComputeNormals.vcproj", "{DC7B6214-8948-47C0-BA31-ADFE358FBCAD}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Minerva", "..\..\Minerva\Core\Minerva.vcproj", "{1F0BC334-B3D3-4553-8025-DA8B50D2FA99}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
@@ -160,12 +358,20 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Minerva", "..\..\Miner
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CadKit.OSSIMPlanet.Glue", "..\OssimPlanet\OssimPlanet.vcproj", "{5D7C06E0-F0B8-4EF0-953A-E25283F58435}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93} = {BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Minerva Document", "..\..\Minerva\Document\MinervaDocument.vcproj", "{0EC3F7B0-CAEC-47A6-8894-195C7BD09C5A}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
 		{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93} = {BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}
@@ -175,6 +381,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Minerva Document", "..
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Magrathea", "..\..\Magrathea\Magrathea.vcproj", "{BF5ADED8-B398-4C71-B475-5BAE2ABF2C93}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{2AFAFF2F-1967-4124-A178-5F1B703C016F} = {2AFAFF2F-1967-4124-A178-5F1B703C016F}
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
@@ -183,12 +393,28 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Magrathea", "..\..\Mag
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DT.Minerva.Layers.TypeConverters", "..\..\Minerva\DotNet\Layers\TypeConverters\DT.Minerva.Layers.TypeConverters.csproj", "{396B43D3-E25E-4AA2-983E-B567C1F9800E}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DT.Minerva.Layers.Colors", "..\..\Minerva\DotNet\Layers\Colors\DT.Minerva.Layers.Colors.csproj", "{CB1BEBA6-C9EF-4D00-A885-F9A43B1C1034}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DT.Minerva.Plugins.MoviePlayer", "..\..\Minerva\DotNet\Plugins\MoviePlayer\DT.Minerva.Plugins.MoviePlayer.csproj", "{B0DCB0AD-4933-4482-9705-10CDB0C449C9}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: PlayMovie", "..\..\Minerva\Plugins\PlayMovie\PlayMovie.vcproj", "{2616DA23-C132-4BAD-A1CE-B8C48D925D94}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{5C966754-058C-4E93-B73D-835F1C4D0B18} = {5C966754-058C-4E93-B73D-835F1C4D0B18}
@@ -196,26 +422,50 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: PlayMovie", "..\..\Mi
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Cinema", "..\..\Cinema\vs2005\Cinema.vcproj", "{5C966754-058C-4E93-B73D-835F1C4D0B18}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Serialize XML", "..\..\Serialize\XML\SerializeXML.vcproj", "{2AFAFF2F-1967-4124-A178-5F1B703C016F}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit XmlTree", "..\..\XmlTree\XmlTree.vcproj", "{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Usul", "..\..\Usul\Usul.vcproj", "{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: ProjectionManager", "..\..\Minerva\Plugins\ProjectionManager\ProjectionManager.vcproj", "{EE125749-B664-4962-A4E5-81BB0B0E5400}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Minerva ProjectionManager", "..\..\Minerva\Plugins\ProjectionManager\ProjectionManager.vcproj", "{EE125749-B664-4962-A4E5-81BB0B0E5400}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeifenLuo.WinFormsUI.Docking", "..\3rdParty\DockPanel\WinFormsUI\WeifenLuo.WinFormsUI.Docking.csproj", "{A8BBFA78-45B8-4F79-8AB7-AED482BCAB67}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -723,18 +973,6 @@ Global
 		{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}.Release|Win32.ActiveCfg = Release|Any CPU
-		{C304EFFA-960F-4641-AECA-6CA35D1C2EEB}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{C304EFFA-960F-4641-AECA-6CA35D1C2EEB}.Debug|Any CPU.Build.0 = Debug|Win32
-		{C304EFFA-960F-4641-AECA-6CA35D1C2EEB}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{C304EFFA-960F-4641-AECA-6CA35D1C2EEB}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{C304EFFA-960F-4641-AECA-6CA35D1C2EEB}.Debug|Win32.ActiveCfg = Debug|Win32
-		{C304EFFA-960F-4641-AECA-6CA35D1C2EEB}.Debug|Win32.Build.0 = Debug|Win32
-		{C304EFFA-960F-4641-AECA-6CA35D1C2EEB}.Release|Any CPU.ActiveCfg = Release|Win32
-		{C304EFFA-960F-4641-AECA-6CA35D1C2EEB}.Release|Any CPU.Build.0 = Release|Win32
-		{C304EFFA-960F-4641-AECA-6CA35D1C2EEB}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{C304EFFA-960F-4641-AECA-6CA35D1C2EEB}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{C304EFFA-960F-4641-AECA-6CA35D1C2EEB}.Release|Win32.ActiveCfg = Release|Win32
-		{C304EFFA-960F-4641-AECA-6CA35D1C2EEB}.Release|Win32.Build.0 = Release|Win32
 		{A46FB746-5481-453E-B2AB-402C3E7EA805}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{A46FB746-5481-453E-B2AB-402C3E7EA805}.Debug|Any CPU.Build.0 = Debug|Win32
 		{A46FB746-5481-453E-B2AB-402C3E7EA805}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32

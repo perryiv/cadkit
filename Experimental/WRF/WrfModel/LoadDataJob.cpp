@@ -175,10 +175,10 @@ osg::Image* LoadDataJob::_createImage ( const ReadRequest& request, Parser::Data
 
   unsigned char *pixels ( image->data() );
   std::copy ( chars.begin(), chars.end(), pixels );
-#if 0
+#if 1
   osg::ref_ptr < osg::Image > scaled ( new osg::Image );
-  scaled->allocateImage ( 256, 256, 128, GL_LUMINANCE, GL_UNSIGNED_BYTE );
-  ::memset ( scaled->data(), 0, 256 * 256 * 128 );
+  scaled->allocateImage ( 512, 512, 128, GL_LUMINANCE, GL_UNSIGNED_BYTE );
+  ::memset ( scaled->data(), 0, 512 * 512 * 128 );
 
   for ( unsigned int r = 0; r < depth; ++r )
   {

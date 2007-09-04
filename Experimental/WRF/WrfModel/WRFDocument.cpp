@@ -27,10 +27,13 @@
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/IPlanetNode.h"
+#include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Math/MinMax.h"
+#include "Usul/Components/Manager.h"
 
 #include "OsgTools/Font.h"
 #include "OsgTools/GlassBoundingBox.h"
@@ -77,6 +80,7 @@ WRFDocument::WRFDocument() :
   _numPlanes ( 256 ),
   _channelInfo (),
   _root ( new osg::MatrixTransform ),
+  _planet ( new osg::Group ),
   _volumeTransform ( new osg::MatrixTransform ),
   _geometry ( new osg::Group ),
   _topography ( 0x0 ),
@@ -88,13 +92,16 @@ WRFDocument::WRFDocument() :
   _offset (),
   _textureFile ( "" ),
   _vectorCache (),
-  _cellSize ( 10.0, 10.0, 3.0 ),
+  _cellSize ( 1000.0, 1000.0, 300.0 ),
   _cellScale ( 0.001, 0.001, 0.001 ),
   _maxCacheSize ( 50 ),
   _cacheRawData ( false ),
   _volumeCache ( ),
   _dataCache ( ),
   _headers ( true ),
+  _lowerLeft ( 0.0, 0.0 ),
+  _upperRight ( 0.0, 0.0 ),
+  _usePlanet ( true ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   this->_addMember ( "filename", _filename );
@@ -110,7 +117,9 @@ WRFDocument::WRFDocument() :
   this->_addMember ( "cache_size", _maxCacheSize );
   this->_addMember ( "starting_timestep",  _currentTimestep );
   this->_addMember ( "starting_channel",  _currentChannel );
-
+  this->_addMember ( "lower_left", _lowerLeft );
+  this->_addMember ( "upper_right", _upperRight );
+  this->_addMember ( "use_planet", _usePlanet );
 }
 
 
@@ -374,9 +383,13 @@ void WRFDocument::_buildScene ( )
     // Add any extra geometry.
     _root->addChild ( _geometry.get() );
 
+    // Add the planet.
+    if ( _usePlanet )
+      _root->addChild ( _planet.get() );
+
     // Add the topography back.
-    _volumeTransform->addChild ( _topography.get() );
-    _root->addChild ( _volumeTransform.get() );
+    else
+      _volumeTransform->addChild ( _topography.get() );
   }
 
   // If we don't have the data already...
@@ -415,8 +428,8 @@ void WRFDocument::_buildScene ( )
     ImagePtr image ( this->_volume ( _currentTimestep, _currentChannel ) );
 
     // Make a bounding box around the volume.
-    //OsgTools::GlassBoundingBox gbb ( _bb );
-    //gbb ( _volumeTransform.get(), true, false, false );
+    OsgTools::GlassBoundingBox gbb ( _bb );
+    gbb ( _volumeTransform.get(), true, false, false );
 
     // Add the volume to the scene.
     {
@@ -532,9 +545,9 @@ void WRFDocument::_initBoundingBox ()
   USUL_TRACE_SCOPE;
 
   // Create the bounding box.
-  double xLength ( _x * 10 );
-  double yLength ( _y * 10 );
-  double zLength ( _z * 3 );
+  double xLength ( _x * _cellSize [ 0 ] );
+  double yLength ( _y * _cellSize [ 1 ] );
+  double zLength ( _z * _cellSize [ 2 ] );
 
   float xHalf ( static_cast < float > ( xLength ) / 2.0f );
   float yHalf ( static_cast < float > ( yLength ) / 2.0f );
@@ -985,7 +998,7 @@ bool WRFDocument::animating () const
 void WRFDocument::_buildTopography ()
 {
   USUL_TRACE_SCOPE;
-
+#if 0
   // Make a copy of the parser.
   Parser parser ( _parser );
 
@@ -1137,6 +1150,9 @@ void WRFDocument::_buildTopography ()
     Guard guard ( this->mutex() );
     _topography = node.get();
   }
+#else
+
+#endif
 }
 
 
@@ -1373,6 +1389,47 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
   // Make enough room for the cache.
   _vectorCache.resize ( _timesteps );
 
+  if ( _usePlanet )
+  {
+    Usul::Interfaces::IPlanetNode::QueryPtr pn ( Usul::Components::Manager::instance ().getInterface ( Usul::Interfaces::IPlanetNode::IID  ) );
+
+    if ( pn.valid () )
+    {
+      Guard guard ( this->mutex () );
+      _planet = pn->planetNode ( _filename );
+    }
+
+    // Add the transform for the volume.
+    _planet->addChild ( _volumeTransform.get() );
+
+    Usul::Interfaces::IPlanetCoordinates::QueryPtr pc ( Usul::Components::Manager::instance ().getInterface ( Usul::Interfaces::IPlanetCoordinates::IID ) );
+
+    if ( pc.valid () )
+    {
+      Usul::Math::Vec2d center ( ( _lowerLeft + _upperRight ) );
+      center /= 2.0;
+
+      Usul::Math::Vec3d translate;
+
+      pc->convertToPlanetEllipsoid ( Usul::Math::Vec3d ( center [ 1 ], center [ 0 ], 0.0 ), translate );
+
+      osg::Matrix T ( osg::Matrix::translate ( translate [ 0 ], translate [ 1 ], translate [ 2 ] ) );
+
+      osg::Vec3 v0 ( translate [ 0 ], translate [ 1 ], translate [ 2 ] );
+
+      osg::Matrix R;
+      R.makeRotate ( osg::Vec3( 0.0, 0.0, 1.0 ), v0 );
+
+      osg::Matrix m;
+      m.postMult ( R );
+      m.postMult ( T );
+
+      _volumeTransform->setMatrix ( m );
+    }
+
+  }
+
   // Build the topography.
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &WRFDocument::_buildTopography ), "3345743110" );
+  else
+    Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &WRFDocument::_buildTopography ), "3345743110" );
 }

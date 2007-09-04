@@ -51,7 +51,7 @@
 #include "Usul/Shared/Preferences.h"
 #include "Usul/System/Clock.h"
 #include "Usul/Predicates/Tolerance.h"
-#include "Usul/Functors/Delete.h"
+#include "Usul/Functors/General/Delete.h"
 #include "Usul/Scope/Reset.h"
 #include "Usul/Devices/IKeyboardDevice.h"
 #include "Usul/Devices/Factory.h"
@@ -377,7 +377,7 @@ void Canvas::handleMenu ( float x, float y )
   this->runModalMenu ( menus.front(), (int)x, (int)y );
 
   // Delete the menus.
-  std::for_each ( menus.begin(), menus.end(), Usul::Functors::DeleteObject() );
+  std::for_each ( menus.begin(), menus.end(), Usul::Functors::General::DeleteObject() );
 }
 
 

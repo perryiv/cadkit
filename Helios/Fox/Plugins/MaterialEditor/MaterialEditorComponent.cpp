@@ -43,7 +43,7 @@
 
 #include "OsgTools/ShapeFactory.h"
 
-#include "Usul/Functors/If.h"
+#include "Usul/Functors/General/If.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Adaptors/Random.h"
 
@@ -237,20 +237,20 @@ void MaterialEditorComponent::_makeColorSelector ( FX::FXComposite *parent )
   Labels labels   ( GetLabels::get  ( selector.get(), true ) );
 
   // This should hide the custom-color palette.
-  std::for_each ( windows.begin(), windows.end(), Usul::Functors::ifThen ( IsMemberOf ( FXMETACLASS ( FX::FXHorizontalSeparator ), true, 0 ), std::mem_fun ( &FX::FXWindow::hide ) ) );
-  std::for_each ( windows.begin(), windows.end(), Usul::Functors::ifThen ( IsMemberOf ( FXMETACLASS ( FX::FXHorizontalFrame     ), true, 1 ), std::mem_fun ( &FX::FXWindow::hide ) ) );
+  std::for_each ( windows.begin(), windows.end(), Usul::Functors::General::ifThen ( IsMemberOf ( FXMETACLASS ( FX::FXHorizontalSeparator ), true, 0 ), std::mem_fun ( &FX::FXWindow::hide ) ) );
+  std::for_each ( windows.begin(), windows.end(), Usul::Functors::General::ifThen ( IsMemberOf ( FXMETACLASS ( FX::FXHorizontalFrame     ), true, 1 ), std::mem_fun ( &FX::FXWindow::hide ) ) );
 
   // Change these labels.
-  std::for_each ( labels.begin(), labels.end(), Usul::Functors::ifThen ( HasText ( "Red:"        ), SetText ( "R:" ) ) );
-  std::for_each ( labels.begin(), labels.end(), Usul::Functors::ifThen ( HasText ( "Green:"      ), SetText ( "G:" ) ) );
-  std::for_each ( labels.begin(), labels.end(), Usul::Functors::ifThen ( HasText ( "Blue:"       ), SetText ( "B:" ) ) );
-  std::for_each ( labels.begin(), labels.end(), Usul::Functors::ifThen ( HasText ( "Alpha:"      ), SetText ( "A:" ) ) );
-  std::for_each ( labels.begin(), labels.end(), Usul::Functors::ifThen ( HasText ( "Hue:"        ), SetText ( "H:" ) ) );
-  std::for_each ( labels.begin(), labels.end(), Usul::Functors::ifThen ( HasText ( "Saturation:" ), SetText ( "S:" ) ) );
-  std::for_each ( labels.begin(), labels.end(), Usul::Functors::ifThen ( HasText ( "Value:"      ), SetText ( "V:" ) ) );
-  std::for_each ( labels.begin(), labels.end(), Usul::Functors::ifThen ( HasText ( "Cyan:"       ), SetText ( "C:" ) ) );
-  std::for_each ( labels.begin(), labels.end(), Usul::Functors::ifThen ( HasText ( "Magenta:"    ), SetText ( "M:" ) ) );
-  std::for_each ( labels.begin(), labels.end(), Usul::Functors::ifThen ( HasText ( "Yellow:"     ), SetText ( "Y:" ) ) );
+  std::for_each ( labels.begin(), labels.end(), Usul::Functors::General::ifThen ( HasText ( "Red:"        ), SetText ( "R:" ) ) );
+  std::for_each ( labels.begin(), labels.end(), Usul::Functors::General::ifThen ( HasText ( "Green:"      ), SetText ( "G:" ) ) );
+  std::for_each ( labels.begin(), labels.end(), Usul::Functors::General::ifThen ( HasText ( "Blue:"       ), SetText ( "B:" ) ) );
+  std::for_each ( labels.begin(), labels.end(), Usul::Functors::General::ifThen ( HasText ( "Alpha:"      ), SetText ( "A:" ) ) );
+  std::for_each ( labels.begin(), labels.end(), Usul::Functors::General::ifThen ( HasText ( "Hue:"        ), SetText ( "H:" ) ) );
+  std::for_each ( labels.begin(), labels.end(), Usul::Functors::General::ifThen ( HasText ( "Saturation:" ), SetText ( "S:" ) ) );
+  std::for_each ( labels.begin(), labels.end(), Usul::Functors::General::ifThen ( HasText ( "Value:"      ), SetText ( "V:" ) ) );
+  std::for_each ( labels.begin(), labels.end(), Usul::Functors::General::ifThen ( HasText ( "Cyan:"       ), SetText ( "C:" ) ) );
+  std::for_each ( labels.begin(), labels.end(), Usul::Functors::General::ifThen ( HasText ( "Magenta:"    ), SetText ( "M:" ) ) );
+  std::for_each ( labels.begin(), labels.end(), Usul::Functors::General::ifThen ( HasText ( "Yellow:"     ), SetText ( "Y:" ) ) );
 
   // Get the color wheel and slider.
   ColorWheels cw ( GetColorWheels::get ( selector.get(), true ) );

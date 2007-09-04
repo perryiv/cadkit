@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="lib: CadKit VRV Core"
 	ProjectGUID="{2228A7FB-34E3-43F7-9C45-3C5F822245B2}"
+	RootNamespace="lib: CadKit VRV Core"
 	>
 	<Platforms>
 		<Platform
@@ -81,7 +82,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="vrj_d-2_2.lib vpr_d-2_0.lib cppdom_d-0_7_10.lib osgd.lib osgDBd.lib osgUtild.lib OpenThreadsd.lib opengl32.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib OpenThreadsd.lib opengl32.lib"
 				OutputFile="../../bin/VRVd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -181,7 +182,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="vrj-2_2.lib vpr-2_0.lib cppdom-0_7_10.lib osg.lib osgDB.lib osgUtil.lib OpenThreads.lib opengl32.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib OpenThreads.lib opengl32.lib"
 				OutputFile="../../bin/VRV.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -478,6 +479,10 @@
 				>
 				<File
 					RelativePath="..\Common\Buttons.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\Libraries.h"
 					>
 				</File>
 			</Filter>

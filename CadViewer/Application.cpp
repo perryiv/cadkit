@@ -20,6 +20,7 @@
 #include "SceneFunctors.h"
 #include "ScenePredicates.h"
 
+#include "VRV/Common/Libraries.h"
 #include "VRV/Functors/Wand/WandMatrix.h"
 #include "VRV/Functors/Wand/WandRotation.h"
 #include "CadViewer/Functors/ToolPair.h"

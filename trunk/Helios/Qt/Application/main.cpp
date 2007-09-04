@@ -184,7 +184,7 @@ namespace Program
           mw.initPlugins();
 
           // Restore the main window's state.
-          mw.restoreDockWindows ();
+          mw.restoreDockWindows();
 
           // Hide the splash screen and show the main window.
           mw.hideSplashScreen();

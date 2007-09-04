@@ -205,7 +205,7 @@ ModelPresentationDocument::Filters ModelPresentationDocument::filtersSave() cons
 {
   USUL_TRACE_SCOPE;
   Filters filters;
-  filters.push_back ( Filter ( "Model Presentation(*.mpd)", "*.mpd" ) );
+  filters.push_back ( Filter ( "Model Presentation (*.mpd)", "*.mpd" ) );
   return filters;
 }
 
@@ -234,7 +234,7 @@ ModelPresentationDocument::Filters ModelPresentationDocument::filtersOpen() cons
 {
   USUL_TRACE_SCOPE;
   Filters filters;
-  filters.push_back ( Filter ( "Model Presentation(*.mpd)", "*.mpd" ) );
+  filters.push_back ( Filter ( "Model Presentation (*.mpd)", "*.mpd" ) );
   return filters;
 }
 

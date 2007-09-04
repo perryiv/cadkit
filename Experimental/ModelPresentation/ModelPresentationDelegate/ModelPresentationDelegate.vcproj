@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="plug: Dynamic Land Delegate Qt"
-	ProjectGUID="{478e254f-0755-4125-9c0d-38e8db898732}"
+	Name="plug: Model Presentation Delegate Qt"
+	ProjectGUID="{478E254F-0755-4125-9C0D-38E8DB898732}"
 	>
 	<Platforms>
 		<Platform

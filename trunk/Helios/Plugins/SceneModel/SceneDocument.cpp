@@ -18,7 +18,6 @@
 #include "OsgTools/IO/STLWriter.h"
 
 #include "OsgTools/Visitor.h"
-#include "OsgTools/ReadModel.h"
 #include "OsgTools/ForEach.h"
 #include "OsgTools/FlipNormals.h"
 #include "OsgTools/IO/Reader.h"
@@ -121,8 +120,12 @@ bool SceneDocument::canInsert ( const std::string &file ) const
 
 bool SceneDocument::canOpen ( const std::string &file ) const
 {
+#if 0
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
   return ( ext == "osga" || ext == "ive" || ext == "osg" || ext == "yarn" || ext == "flt" || ext == "crss" );
+#else
+  return OsgTools::IO::Reader::hasReader ( file );
+#endif
 }
 
 
@@ -349,6 +352,10 @@ SceneDocument::Filters SceneDocument::filtersExport() const
 
 SceneDocument::Filters SceneDocument::filtersOpen() const
 {
+#if 0
+  // Not happy with this. It presents too many irrelevant options.
+  return OsgTools::IO::Reader::filters();
+#else
   Filters filters;
   filters.push_back ( Filter ( "OpenSceneGraph (*.osg *.ive)",  "*.osg;*.ive" ) );
   filters.push_back ( Filter ( "OpenSceneGraph ASCII (*.osg)",  "*.osg"       ) );
@@ -357,6 +364,7 @@ SceneDocument::Filters SceneDocument::filtersOpen() const
   filters.push_back ( Filter ( "CRSS (*.crss)",                 "*.crss"      ) );
   filters.push_back ( Filter ( "OpenFlight (*.flt)",            "*.flt"       ) );
   return filters;
+#endif
 }
 
 

@@ -64,7 +64,7 @@ void SnapShotWidget::_deleteFiles ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SnapShotWidget::on__snapShotButton_clicked ()
+void SnapShotWidget::_onSnapShotButtonClicked()
 {
   try
   {

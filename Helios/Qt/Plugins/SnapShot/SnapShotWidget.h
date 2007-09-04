@@ -33,7 +33,7 @@ protected:
   void             _deleteFiles ();
 
 private slots:
-  void             on__snapShotButton_clicked ();
+  void             _onSnapShotButtonClicked ();
 
 private:
   Files            _files;

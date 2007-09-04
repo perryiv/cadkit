@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="plug: Dynamic Land Delegate Qt"
-	ProjectGUID="{478e254f-0755-4125-9c0d-38e8db898732}"
+	ProjectGUID="{2399E77D-EC79-4E79-AD98-A4D9853F0C44}"
 	>
 	<Platforms>
 		<Platform

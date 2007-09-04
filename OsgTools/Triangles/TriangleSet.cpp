@@ -25,7 +25,7 @@
 #include "Usul/Policies/Update.h"
 #include "Usul/Predicates/EqualVector.h"
 #include "Usul/Bits/Bits.h"
-#include "Usul/Functors/Increment.h"
+#include "Usul/Functors/General/Increment.h"
 #include "Usul/Errors/Checker.h"
 #include "Usul/Types/Types.h"
 #include "Usul/Adaptors/Random.h"
@@ -1030,7 +1030,7 @@ void TriangleSet::removeTriangles ( Indices &doomed, Usul::Interfaces::IUnknown 
 
   // Build indices of existing triangles.
   Indices existing ( numTriangles );
-  std::generate ( existing.begin(), existing.end(), Usul::Functors::Increment<Indices::value_type> ( 0 ) );
+  std::generate ( existing.begin(), existing.end(), Usul::Functors::General::Increment<Indices::value_type> ( 0 ) );
 
   // We are going to keep these ones.
   Indices keepers ( numTriangles );

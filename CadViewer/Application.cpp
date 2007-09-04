@@ -1188,6 +1188,8 @@ void Application::latePreFrame()
 
 void Application::_latePreFrame()
 {
+  USUL_TRACE_SCOPE;
+
   ErrorChecker ( 1067093580, isAppThread(), CV::NOT_APP_THREAD );
   
   // Call the base class's function.
@@ -1213,6 +1215,8 @@ void Application::_latePreFrame()
 
 bool Application::_handleMenuEvent( unsigned long id )
 {
+  USUL_TRACE_SCOPE;
+
   ErrorChecker ( 1071559313u, isAppThread(), CV::NOT_APP_THREAD );
 
   // First see if you are supposed to show or hide it. Always do this first.
@@ -1392,6 +1396,10 @@ bool Application::_handleNavigationEvent( unsigned long id )
 
 void Application::JoystickCB::operator() ( VRV::Devices::Message m, Usul::Base::Referenced * )
 {
+  USUL_TRACE_SCOPE;
+
+  std::cout << "In Application::JoystickCB::operator()" << std::endl;
+
   ErrorChecker ( 1915253659u, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 4165917933u, 0x0 != _app );
 
@@ -1427,6 +1435,8 @@ void Application::JoystickCB::operator() ( VRV::Devices::Message m, Usul::Base::
 
 void Application::postFrame()
 {
+  USUL_TRACE_SCOPE;
+
   // For safety.
   try
   {
@@ -1459,6 +1469,8 @@ void Application::postFrame()
 
 void Application::_postFrame()
 {
+  USUL_TRACE_SCOPE;
+
   ErrorChecker ( 1071439494, isAppThread(), CV::NOT_APP_THREAD );
 
   // Call the base class's function.
@@ -1740,6 +1752,8 @@ bool Application::isMainThread()
 
 void Application::_navigate()
 {
+  USUL_TRACE_SCOPE;
+
   ErrorChecker ( 1068000936, isAppThread(), CV::NOT_APP_THREAD );
 
   // If the menu is showing then we don't navigate.
@@ -2046,8 +2060,12 @@ std::string Application::_counter ( unsigned int num ) const
 
 void Application::_updateStatusBar ( const std::string &s )
 {
+  USUL_TRACE_SCOPE;
+
   ErrorChecker ( 2977280421u, isAppThread(), CV::NOT_APP_THREAD );
-  ErrorChecker ( 1987011863u, !_statusBar->menu()->empty() );
+  
+  if ( true ==_statusBar->menu()->empty() )
+    return;
 
 #if 0 // Remove when confident.
   // If the menu is not expanded then punt.

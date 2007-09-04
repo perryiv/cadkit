@@ -37,7 +37,7 @@
 #include "Usul/Math/Constants.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/System/Host.h"
-#include "Usul/Functors/If.h"
+#include "Usul/Functors/General/If.h"
 #include "Usul/Predicates/UnaryPair.h"
 #include "Usul/File/Path.h"
 #include "Usul/Documents/Manager.h"
@@ -2163,8 +2163,8 @@ void Application::_selected ( CV::Functors::Tool::Transforms &vt )
   typedef CV::OSG::Predicates::IsVisible IsVisible;
   typedef Usul::Predicates::UnaryPair<IsVisible,std::logical_and<bool>,IsSelected> IsWanted;
   typedef CV::OSG::Functors::Append<MT> Append;
-  typedef Usul::Functors::IfThen<IsSelected,Append> IfThen;
-//  typedef Usul::Functors::IfThen<IsWanted,Append> IfThen;
+  typedef Usul::Functors::General::IfThen<IsSelected,Append> IfThen;
+//  typedef Usul::Functors::General::IfThen<IsWanted,Append> IfThen;
   typedef OsgTools::Visitor<MT,IfThen> Visitor;
 
   if( false == _iVisibility.valid() || false == _iSelection.valid () )

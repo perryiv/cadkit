@@ -53,8 +53,8 @@
 #include "OsgTools/Visitor.h"
 #include "OsgTools/Axes.h"
 
-#include "Usul/Functors/Pair.h"
-#include "Usul/Functors/If.h"
+#include "Usul/Functors/General/Pair.h"
+#include "Usul/Functors/General/If.h"
 #include "Usul/Math/Constants.h"
 
 using namespace CV;
@@ -125,9 +125,9 @@ void Application::_unselectVisible ( MenuKit::Message m, MenuKit::Item *item )
   // For readability.
   typedef CV::OSG::Functors::PopMaterial PopMaterial;
   typedef CV::OSG::Functors::Unselect Unselect;
-  typedef Usul::Functors::Pair<PopMaterial,Unselect> Restore;
+  typedef Usul::Functors::General::Pair<PopMaterial,Unselect> Restore;
   typedef CV::OSG::Predicates::IsVisible IsVisible;
-  typedef Usul::Functors::IfThen<IsVisible,Restore> IfThen;
+  typedef Usul::Functors::General::IfThen<IsVisible,Restore> IfThen;
   typedef OsgTools::Visitor<osg::MatrixTransform,IfThen> Visitor;
 
   // update the tool because different things are selected
@@ -171,7 +171,7 @@ void Application::_hideSelected ( MenuKit::Message m, MenuKit::Item *item )
   // For readability.
   typedef CV::OSG::Predicates::IsSelected IsSelected;
   typedef CV::OSG::Functors::Hide Hide;
-  typedef Usul::Functors::IfThen<IsSelected,Hide> IfThen;
+  typedef Usul::Functors::General::IfThen<IsSelected,Hide> IfThen;
   typedef OsgTools::Visitor<osg::MatrixTransform,IfThen> Visitor;
 
   if( false == _iVisibility.valid() || false == _iSelection.valid() )

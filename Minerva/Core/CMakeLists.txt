@@ -72,6 +72,8 @@ SET (SOURCES
 ./Commands/PauseAnimation.cpp
 ./Commands/AddLayer.cpp
 ./Commands/StopAnimation.cpp
+./Animate/Date.cpp
+./Animate/Settings.cpp
 )
 
 # Create a Shared Library

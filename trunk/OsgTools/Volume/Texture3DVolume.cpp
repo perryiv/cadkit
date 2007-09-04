@@ -161,15 +161,17 @@ namespace Detail
     "}\n"
   };
 
-  std::string buildVertexShader ( double xLength, double yLength, double zLength )
+  std::string buildVertexShader ( )
   {
     std::ostringstream os;
 
+    os << "uniform vec3 bb;\n";
+    os << "uniform vec3 bbHalf;\n";
     os << "void main(void)\n";
     os << "{\n";
-    os << "   gl_TexCoord[0].x =  ( gl_Vertex.x + " << xLength / 2.0f << " ) / " << xLength << ";\n";
-    os << "   gl_TexCoord[0].y =  ( gl_Vertex.y + " << yLength / 2.0f << " ) / " << yLength << ";\n";
-    os << "   gl_TexCoord[0].z =  ( gl_Vertex.z + " << zLength / 2.0f << " ) / " << zLength << ";\n";
+    os << "   gl_TexCoord[0].x =  ( gl_Vertex.x + bbHalf.x  ) / bb.x;\n";
+    os << "   gl_TexCoord[0].y =  ( gl_Vertex.y + bbHalf.y  ) / bb.y;\n";
+    os << "   gl_TexCoord[0].z =  ( gl_Vertex.z + bbHalf.z  ) / bb.z;\n";
     os << "   gl_TexCoord[0].w =  ( gl_Vertex.w + 1.0 ) / 2.0;\n";
     os << "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n";
     os << "}\n";
@@ -211,6 +213,24 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Add a uniform.  Performs a remove first.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  void addUniform ( osg::StateSet &ss, osg::Uniform *uniform )
+  {
+    if ( 0x0 != uniform )
+    {
+      ss.removeUniform ( uniform->getName () );
+      ss.addUniform ( uniform );
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Create the shaders.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -232,15 +252,17 @@ void Texture3DVolume::_createShaders ()
   double yLength ( max.y() - min.y() );
   double zLength ( max.z() - min.z() );
 
-  vertShader->setShaderSource( Detail::buildVertexShader ( xLength, yLength, zLength ) );
+  vertShader->setShaderSource( Detail::buildVertexShader (  ) );
   fragShader->setShaderSource( Detail::buildFagmentShader ( this->useTransferFunction() ) );
 
 	program->addShader( vertShader.get() );
 	program->addShader( fragShader.get() );
  
   ss->setAttributeAndModes( program.get(), osg::StateAttribute::ON );
-  ss->addUniform( new osg::Uniform( "Volume",           static_cast < int > ( _volume.second           ) ) );
-  ss->addUniform( new osg::Uniform( "TransferFunction", static_cast < int > ( _transferFunction.second ) ) );
+  Detail::addUniform ( *ss, new osg::Uniform ( "bb", osg::Vec3 ( xLength, yLength, zLength ) ) );
+  Detail::addUniform ( *ss, new osg::Uniform ( "bbHalf", osg::Vec3 ( xLength / 2.0, yLength / 2.0, zLength / 2.0 ) ) );
+  Detail::addUniform ( *ss, new osg::Uniform ( "Volume",           static_cast < int > ( _volume.second           ) ) );
+  Detail::addUniform ( *ss, new osg::Uniform ( "TransferFunction", static_cast < int > ( _transferFunction.second ) ) );
 }
 
 

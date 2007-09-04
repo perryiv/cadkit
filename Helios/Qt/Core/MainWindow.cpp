@@ -31,6 +31,7 @@
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Components/Loader.h"
+#include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/File/Contents.h"
 #include "Usul/File/Path.h"
@@ -47,11 +48,9 @@
 #include "Usul/Threads/Named.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
-#include "Usul/Documents/Manager.h"
 
 #include "XmlTree/Document.h"
 
-#include "QtCore/QFileSystemWatcher"
 #include "QtCore/QStringList"
 #include "QtCore/QTimer"
 #include "QtGui/QApplication"
@@ -91,22 +90,22 @@ MainWindow::MainWindow ( const std::string &vendor,
                          const std::string &icon,
                          const std::string &output,
                          bool showSplash ) : BaseClass(),
-  _mutex       ( new MainWindow::Mutex ),
-  _settings    ( QSettings::IniFormat, QSettings::UserScope, vendor.c_str(), program.c_str() ),
-  _actions     (),
-  _toolBars    (),
-  _refCount    ( 0 ),
-  _pluginFiles (),
-  _vendor      ( vendor ),
-  _url         ( url ),
-  _program     ( program ),
-  _icon        ( icon ),
-  _output      ( output ),
-  _splash      ( 0x0 ),
-  _workSpace   ( 0x0 ),
-  _textWindow  ( 0x0, StreamQueuePtr ( new StreamQueue() ) ),
-  _dockMenu    ( 0x0 ),
-  _idleTimer   ( 0x0 ),
+  _mutex        ( new MainWindow::Mutex ),
+  _settings     ( QSettings::IniFormat, QSettings::UserScope, vendor.c_str(), program.c_str() ),
+  _actions      (),
+  _toolBars     (),
+  _refCount     ( 0 ),
+  _pluginFiles  (),
+  _vendor       ( vendor ),
+  _url          ( url ),
+  _program      ( program ),
+  _icon         ( icon ),
+  _output       ( output ),
+  _splash       ( 0x0 ),
+  _workSpace    ( 0x0 ),
+  _textWindow   ( 0x0, StreamQueuePtr ( new StreamQueue() ) ),
+  _dockMenu     ( 0x0 ),
+  _idleTimer    ( 0x0 ),
   _progressBars ( new ProgressBarDock )
 {
   USUL_TRACE_SCOPE;
@@ -182,9 +181,9 @@ MainWindow::MainWindow ( const std::string &vendor,
 MainWindow::~MainWindow()
 {
   USUL_TRACE_SCOPE;
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MainWindow::_clearDocuments ),      "4010634300" );
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MainWindow::_saveSettings ),        "1772821423" );
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MainWindow::_destroy ),             "1934297230" );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MainWindow::_clearDocuments ), "4010634300" );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MainWindow::_saveSettings ),   "1772821423" );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MainWindow::_destroy ),        "1934297230" );
 }
 
 
@@ -294,7 +293,7 @@ void MainWindow::_saveSettings()
     _settings.setValue ( CadKit::Helios::Core::Registry::Keys::GEOMETRY.c_str(), rect );
 
     // Save dock window positions.
-    QByteArray positions ( this->saveState () );
+    QByteArray positions ( this->saveState ( Helios::Core::Constants::VERSION ) );
     _settings.setValue ( CadKit::Helios::Core::Registry::Keys::DOCK_WINDOW_POSITIONS.c_str(), positions );
   }
 
@@ -1142,7 +1141,7 @@ void MainWindow::_idleProcess()
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Jobs::Manager::instance()), &Usul::Jobs::Manager::purge ) );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Jobs::Manager::instance()),    &Usul::Jobs::Manager::purge    ) );
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Threads::Manager::instance()), &Usul::Threads::Manager::purge ) );
 }
 
@@ -1396,9 +1395,26 @@ void MainWindow::_buildPluginDockWidgets()
 void MainWindow::closeEvent ( QCloseEvent* event )
 {
   USUL_TRACE_SCOPE;
+  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &MainWindow::_closeEvent ), event, "1179334380" );
+}
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  A close event has been recieved.  Close any windows that the workspace has open.
+//  Calling in the destructor is too late because the event loop has exited.
+//  TODO:  Ask the documents if they need to save before calling the BaseClass' fucntion.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_closeEvent ( QCloseEvent* event )
+{
+  USUL_TRACE_SCOPE;
+
+  // Close child windows first.
   _workSpace->closeAllWindows();
-  
+
+  // Pass along to the base class.
   BaseClass::closeEvent ( event );
 }
 
@@ -1422,14 +1438,14 @@ Usul::Interfaces::IUnknown* MainWindow::createProgressBar()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::restoreDockWindows ()
+void MainWindow::restoreDockWindows()
 {
   USUL_TRACE_SCOPE;
 
   // Restore dock window positions.
   CadKit::Helios::Tools::SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::MAIN_WINDOW, _settings );  
   QByteArray positions ( _settings.value ( CadKit::Helios::Core::Registry::Keys::DOCK_WINDOW_POSITIONS.c_str() ).toByteArray() );
-  this->restoreState ( positions );
+  this->restoreState ( positions, Helios::Core::Constants::VERSION );
 }
 
 

@@ -59,7 +59,7 @@
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Resources/TextWindow.h"
-#include "Usul/Functors/Pair.h"
+#include "Usul/Functors/General/Pair.h"
 #include "Usul/Scope/Reset.h"
 
 #include <stdexcept>

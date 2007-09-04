@@ -24,10 +24,10 @@ public:
 
   IUnknownTest() :
   Usul::Base::Referenced(),
-    _hostname( Usul::Functions::generateGUID() ),
-    _database( Usul::Functions::generateGUID() ),
-    _username( Usul::Functions::generateGUID() ),
-    _password( Usul::Functions::generateGUID() )
+    _hostname( Usul::Functions::GUID::generate() ),
+    _database( Usul::Functions::GUID::generate() ),
+    _username( Usul::Functions::GUID::generate() ),
+    _password( Usul::Functions::GUID::generate() )
   {
   }
 

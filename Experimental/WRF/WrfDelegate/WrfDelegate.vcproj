@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="plug: WRF Delegate Qt"
-	ProjectGUID="{56404183-F480-4893-8D47-53CD47BA8418}"
+	ProjectGUID="{8F7CFFE4-EB5E-4AB7-ACA5-A418436B2540}"
 	>
 	<Platforms>
 		<Platform

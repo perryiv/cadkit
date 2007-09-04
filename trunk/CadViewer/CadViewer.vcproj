@@ -71,7 +71,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib vrj_d-2_2.lib vrj_ogl_d-2_2.lib gadget_d-1_2.lib jccl_d-1_2.lib vpr_d-2_0.lib osgd.lib osgDBd.lib osgTextd.lib osgUtild.lib osgFXd.lib"
+				AdditionalDependencies="opengl32.lib osgd.lib osgDBd.lib osgTextd.lib osgUtild.lib osgFXd.lib"
 				OutputFile="../bin/CadViewerd.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(BOOST_LIB_DIR);&quot;$(VJ_BASE_DIR)/lib&quot;;&quot;$(OSG_LIB_DIR)&quot;"
@@ -160,7 +160,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib vrj-2_2.lib vrj_ogl-2_2.lib gadget-1_2.lib jccl-1_2.lib vpr-2_0.lib osg.lib osgDB.lib osgText.lib osgUtil.lib"
+				AdditionalDependencies="opengl32.lib osg.lib osgDB.lib osgText.lib osgUtil.lib"
 				OutputFile="../bin/CadViewer.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(BOOST_LIB_DIR);&quot;$(VJ_BASE_DIR)/lib&quot;;&quot;$(OSG_LIB_DIR)&quot;"

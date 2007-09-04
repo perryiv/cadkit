@@ -8,6 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "VRV/Common/Libraries.h"
 #include "VRV/Core/Application.h"
 #include "VRV/Core/JugglerFunctors.h"
 #include "VRV/Core/Exceptions.h"

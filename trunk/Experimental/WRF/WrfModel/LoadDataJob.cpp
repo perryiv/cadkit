@@ -175,7 +175,7 @@ osg::Image* LoadDataJob::_createImage ( const ReadRequest& request, Parser::Data
 
   unsigned char *pixels ( image->data() );
   std::copy ( chars.begin(), chars.end(), pixels );
-#if 1
+#if _MSC_VER
   osg::ref_ptr < osg::Image > scaled ( new osg::Image );
   scaled->allocateImage ( 512, 512, 128, GL_LUMINANCE, GL_UNSIGNED_BYTE );
   ::memset ( scaled->data(), 0, 512 * 512 * 128 );

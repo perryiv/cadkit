@@ -185,6 +185,7 @@ private:
   unsigned int _numPlanes;
   ChannelInfos _channelInfo;
   osg::ref_ptr < osg::MatrixTransform > _root;
+  osg::ref_ptr < osg::Group > _planet;
   osg::ref_ptr < osg::MatrixTransform > _volumeTransform;
   osg::ref_ptr < osg::Group > _geometry;
   osg::ref_ptr < osg::Node > _topography;
@@ -204,6 +205,9 @@ private:
   VolumeCache _volumeCache;
   DataCache _dataCache;
   bool _headers;
+  Usul::Math::Vec2d _lowerLeft;
+  Usul::Math::Vec2d _upperRight;
+  bool _usePlanet;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME ( WRFDocument );

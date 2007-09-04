@@ -23,6 +23,7 @@
 
 namespace osg { class MatrixTransform; }
 class ossimPlanet;
+class ossimPlanetEllipsoidLandModel;
 
 
 namespace StarSystem {
@@ -47,6 +48,9 @@ public:
   void                      center ( Vec3d & );
   Vec3d                     center() const;
 
+  // Get the maximum radius.
+  double                    maxRadius() const;
+
   // Get the scene.
   const osg::Node *         scene() const;
   osg::Node *               scene();
@@ -65,6 +69,7 @@ private:
   void                      _destroy();
 
   ossimPlanet *_planet;
+  ossimPlanetEllipsoidLandModel *_landModel;
   osg::MatrixTransform *_transform;
 };
 

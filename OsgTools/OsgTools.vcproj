@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(BOOST_INC_DIR);$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR)"
 				PreprocessorDefinitions="_USUL_TRACE;WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_OSG_TOOLS;NOMINMAX;"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -147,7 +147,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(BOOST_INC_DIR);$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR);"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR);"
 				PreprocessorDefinitions="_USUL_TRACE;WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_OSG_TOOLS;NOMINMAX;"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -509,10 +509,6 @@
 				</File>
 				<File
 					RelativePath=".\Utilities\Transparency.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Utilities\Vec4Serialize.h"
 					>
 				</File>
 				<File

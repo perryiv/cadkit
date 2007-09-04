@@ -471,22 +471,26 @@
 			<Filter
 				Name="Functors"
 				>
-				<File
-					RelativePath=".\Functors\Delete.h"
+				<Filter
+					Name="General"
 					>
-				</File>
-				<File
-					RelativePath="Functors\If.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Functors\Increment.h"
-					>
-				</File>
-				<File
-					RelativePath="Functors\Pair.h"
-					>
-				</File>
+					<File
+						RelativePath=".\Functors\General\Delete.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Functors\General\If.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Functors\General\Increment.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Functors\General\Pair.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="ID"

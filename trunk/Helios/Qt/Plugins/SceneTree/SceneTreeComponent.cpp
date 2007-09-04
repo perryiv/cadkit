@@ -150,7 +150,7 @@ void SceneTreeComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
     Usul::Interfaces::IQtDockWidgetMenu::QueryPtr dwm ( caller );
     if ( dwm.valid () )
       dwm->addDockWidgetMenu ( _dock );
-  } 
+  }
 }
 
 

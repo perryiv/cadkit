@@ -11,6 +11,7 @@ FIND_PACKAGE(OpenGL)
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 INCLUDE(${CMakeModules}/FindBoost.cmake)
 INCLUDE(${CMakeModules}/FindVRJuggler.cmake)
+INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 
 SUBDIRS(
 ${CADKIT_ROOT_DIR}/Usul 
@@ -22,12 +23,27 @@ ${CADKIT_ROOT_DIR}/MenuKit
 ${CADKIT_ROOT_DIR}/MenuKit/OSG
 ${CADKIT_ROOT_DIR}/VRV
 ${CADKIT_ROOT_DIR}/CadViewer/Plugins/scene_operations
+${CADKIT_ROOT_DIR}/CadViewer/Plugins/display_scene_stats
+
+# ---- Document Plug-ins -------
 ${CADKIT_ROOT_DIR}/Helios/Plugins/SceneModel
 ${CADKIT_ROOT_DIR}/Helios/Plugins/TriangleModel
 ${CADKIT_ROOT_DIR}/Experimental/WRF/WrfModel
-${CADKIT_ROOT_DIR}/CadViewer/Plugins/display_scene_stats
 ${CADKIT_ROOT_DIR}/Experimental/DynamicLand/DynamicLandModel
 ${CADKIT_ROOT_DIR}/Experimental/ModelPresentation/ModelPresentation
+
+# ---- Minerva -------
+${CADKIT_ROOT_DIR}/Magrathea
+${CADKIT_ROOT_DIR}/Minerva/Core
+${CADKIT_ROOT_DIR}/Minerva/Document
+# ---- Minerva Plug-ins -------
+${CADKIT_ROOT_DIR}/Minerva/Plugins/ProjectionManager
+${CADKIT_ROOT_DIR}/Minerva/Plugins/ComputeNormals
+${CADKIT_ROOT_DIR}/Minerva/Plugins/TriangulateCGAL
+${CADKIT_ROOT_DIR}/Minerva/Plugins/Document
+
+#${CADKIT_ROOT_DIR}/Experimental/Planet
+
 )
 
 # ------------ Set Include Folders ----------------------

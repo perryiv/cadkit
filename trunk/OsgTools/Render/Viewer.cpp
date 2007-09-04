@@ -78,7 +78,6 @@
 #include "Usul/Shared/Preferences.h"
 #include "Usul/System/Clock.h"
 #include "Usul/Predicates/Tolerance.h"
-#include "Usul/Functors/Delete.h"
 #include "Usul/Scope/Caller.h"
 #include "Usul/Scope/Reset.h"
 #include "Usul/Cast/Cast.h"

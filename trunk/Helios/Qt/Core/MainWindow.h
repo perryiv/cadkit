@@ -158,6 +158,8 @@ protected:
   void                              _buildToolBar();
   void                              _buildPluginDockWidgets();
 
+  virtual void                      _closeEvent ( QCloseEvent* event );
+
   std::string                       _formatFilters ( const Filters &filters ) const;
 
   std::string                       _lastFileDialogDir ( const std::string &title ) const;
@@ -195,6 +197,7 @@ protected:
 
   // Add dock widget to menu (Usul::Interfaces::IQtDockWidgetMenu).
   virtual void                      addDockWidgetMenu ( QDockWidget * dock );
+
 private slots:
 
   void                              _idleProcess();

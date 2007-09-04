@@ -33,9 +33,11 @@ protected:
   void             _deleteFiles ();
 
 private slots:
-  void             _onSnapShotButtonClicked ();
+
+  void             on__snapShotButton_clicked();
 
 private:
+
   Files            _files;
   Ui::SnapShot     _snapShot;
 };

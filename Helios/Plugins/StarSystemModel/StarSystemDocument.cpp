@@ -176,7 +176,7 @@ void StarSystemDocument::read ( const std::string &name, Unknown *caller )
   StarSystem::Body::ValidRefPtr body ( new StarSystem::Body() );
   const Usul::Math::Vec3d c ( _system->center() );
   body->center ( Usul::Math::Vec3d ( c[0] + 50000000, c[1], c[2] ) );
-  _system->add ( body.get() );
+  //_system->add ( body.get() );
 
 #endif
 

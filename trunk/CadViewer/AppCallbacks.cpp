@@ -392,7 +392,10 @@ void Application::_hTransWandPosX ( MenuKit::Message m, MenuKit::Item *item )
   const unsigned int id ( 1084141815u );
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( 1, 0, 0 );
-  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
+
+  FunctorPtr functor ( this->_firstNavigator () );
+  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, functor, speed, dir, this );
+  this->_firstNavigator ( functor.get () );
 }
 
 
@@ -415,7 +418,10 @@ void Application::_hTransGlobalPosX ( MenuKit::Message m, MenuKit::Item *item )
   const unsigned int id ( 3196018430u );
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( 1, 0, 0 );
-  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
+
+  FunctorPtr functor ( this->_firstNavigator () );
+  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, functor, speed, dir, this );
+  this->_firstNavigator ( functor.get () );
 }
 
 
@@ -438,7 +444,10 @@ void Application::_hTransWandNegX ( MenuKit::Message m, MenuKit::Item *item )
   const unsigned int id ( 2934209123u );
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( -1, 0, 0 );
-  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
+
+  FunctorPtr functor ( this->_firstNavigator () );
+  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, functor, speed, dir, this );
+  this->_firstNavigator ( functor.get () );
 }
 
 
@@ -461,7 +470,10 @@ void Application::_hTransGlobalNegX ( MenuKit::Message m, MenuKit::Item *item )
   const unsigned int id ( 3848661010u );
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( -1, 0, 0 );
-  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
+
+  FunctorPtr functor ( this->_firstNavigator () );
+  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, functor, speed, dir, this );
+  this->_firstNavigator ( functor.get () );
 }
 
 
@@ -484,7 +496,10 @@ void Application::_vTransWandPosY ( MenuKit::Message m, MenuKit::Item *item )
   const unsigned int id ( 1084444803u );
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( 0, 1, 0 );
-  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
+
+  FunctorPtr functor ( this->_secondNavigator () );
+  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, functor, speed, dir, this );
+  this->_secondNavigator ( functor.get () );
 }
 
 
@@ -507,7 +522,10 @@ void Application::_vTransWandPosZ ( MenuKit::Message m, MenuKit::Item *item )
   const unsigned int id ( 1084143905u );
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( 0, 0, -1 );
-  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
+
+  FunctorPtr functor ( this->_secondNavigator () );
+  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, functor, speed, dir, this );
+  this->_secondNavigator ( functor.get () );
 }
 
 
@@ -530,7 +548,10 @@ void Application::_vTransGlobalPosZ ( MenuKit::Message m, MenuKit::Item *item )
   const unsigned int id ( 3775941120u );
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( 0, 0, -1 );
-  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
+
+  FunctorPtr functor ( this->_secondNavigator () );
+  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, functor, speed, dir, this );
+  this->_secondNavigator ( functor.get () );
 }
 
 
@@ -553,7 +574,10 @@ void Application::_vTransWandNegZ ( MenuKit::Message m, MenuKit::Item *item )
   const unsigned int id ( 1084143896u );
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( 0, 0, 1 );
-  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
+
+  FunctorPtr functor ( this->_secondNavigator () );
+  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, functor, speed, dir, this );
+  this->_secondNavigator ( functor.get () );
 }
 
 
@@ -576,7 +600,10 @@ void Application::_vTransGlobalNegZ ( MenuKit::Message m, MenuKit::Item *item )
   const unsigned int id ( 3683303793u );
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( 0, 0, 1 );
-  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
+
+  FunctorPtr functor ( this->_secondNavigator () );
+  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, functor, speed, dir, this );
+  this->_secondNavigator ( functor.get () );
 }
 
 
@@ -599,7 +626,10 @@ void Application::_hRotWandPosY ( MenuKit::Message m, MenuKit::Item *item )
   const unsigned int id ( 2200874009u );
   float speed ( this->preferences()->rotationSpeed() );
   VRV::Functors::Direction::Vector dir ( 0, 1, 0 );
-  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
+
+  FunctorPtr functor ( this->_firstNavigator () );
+  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, functor, speed, dir, this );
+  this->_firstNavigator ( functor.get () );
 }
 
 
@@ -622,7 +652,10 @@ void Application::_hRotGlobalPosY ( MenuKit::Message m, MenuKit::Item *item )
   const unsigned int id ( 2093083320u );
   float speed ( this->preferences()->rotationSpeed() );
   VRV::Functors::Direction::Vector dir ( 0, 1, 0 );
-  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorH, speed, dir, this );
+
+  FunctorPtr functor ( this->_firstNavigator () );
+  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, functor, speed, dir, this );
+  this->_firstNavigator ( functor.get () );
 }
 
 
@@ -645,7 +678,10 @@ void Application::_vRotWandPosX ( MenuKit::Message m, MenuKit::Item *item )
   const unsigned int id ( 3106060360u );
   float speed ( this->preferences()->rotationSpeed() );
   VRV::Functors::Direction::Vector dir ( 1, 0, 0 );
-  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
+
+  FunctorPtr functor ( this->_secondNavigator () );
+  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, functor, speed, dir, this );
+  this->_secondNavigator ( functor.get () );
 }
 
 
@@ -668,7 +704,10 @@ void Application::_vRotGlobalPosX ( MenuKit::Message m, MenuKit::Item *item )
   const unsigned int id ( 2513007202u );
   float speed ( this->preferences()->rotationSpeed() );
   VRV::Functors::Direction::Vector dir ( 1, 0, 0 );
-  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
+
+  FunctorPtr functor ( this->_secondNavigator () );
+  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, functor, speed, dir, this );
+  this->_secondNavigator ( functor.get () );
 }
 
 
@@ -691,7 +730,10 @@ void Application::_vTransGlobalPosY ( MenuKit::Message m, MenuKit::Item *item )
   const unsigned int id ( 1084438318u );
   float speed ( this->preferences()->translationSpeed() );
   VRV::Functors::Direction::Vector dir ( 0, 1, 0 );
-  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, _navigatorV, speed, dir, this );
+
+  FunctorPtr functor ( this->_secondNavigator () );
+  CV::NavCB<Analog,Mat,Nav>::execute ( id, m, item, functor, speed, dir, this );
+  this->_secondNavigator ( functor.get () );
 }
 
 
@@ -1358,44 +1400,19 @@ void Application::_resetClipping ( MenuKit::Message m, MenuKit::Item *item )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_hvTransWandXZ ( MenuKit::Message m, MenuKit::Item *item )
+void Application::_flyMode ( MenuKit::Message m, MenuKit::Item *item )
 {
   ErrorChecker ( 1084438123u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Local id.
-  const unsigned int id ( 1084438124u );
 
   // Process the message.
   switch ( m )
   {
     case MenuKit::MESSAGE_SELECTED:
-
-      // If the navigator matches the given id...
-      if ( _navigatorH.valid() && _navigatorV.valid() && 
-           id == _navigatorH->id() && id == _navigatorV->id() )
-      {
-        _navigatorH = 0x0;          // invalidate the _navigators ...
-        _navigatorV = 0x0;          // ... in other words, toggle them off
-      }
-
-      // Otherwise, set the navigator.
-      else
-      {
-        // Call the other functions.
-        this->_hTransWandPosX ( m, item );
-        this->_vTransWandPosZ ( m, item );
-
-        // Reset the ids.
-        _navigatorH->id ( id );
-        _navigatorV->id ( id );
-      }
-
+      this->flyMode ();
       break;
 
     case MenuKit::MESSAGE_UPDATE:
-
-      item->checked ( _navigatorH.valid() && id == _navigatorH->id() && 
-                      _navigatorV.valid() && id == _navigatorV->id() );
+      item->checked ( this->getFlyMode () );
       break;
   }
 }
@@ -1407,44 +1424,19 @@ void Application::_hvTransWandXZ ( MenuKit::Message m, MenuKit::Item *item )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_hvTransGlobalXZ ( MenuKit::Message m, MenuKit::Item *item )
+void Application::_walkMode ( MenuKit::Message m, MenuKit::Item *item )
 {
   ErrorChecker (1084438119u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Local id.
-  const unsigned int id ( 1084438120u );
 
   // Process the message.
   switch ( m )
   {
     case MenuKit::MESSAGE_SELECTED:
-
-      // If the navigator matches the given id...
-      if ( _navigatorH.valid() && _navigatorV.valid() &&
-           id == _navigatorH->id() && id == _navigatorV->id() )
-      {
-        _navigatorH = 0x0;
-        _navigatorV = 0x0;
-      }
-
-      // Otherwise, set the navigator.
-      else
-      {
-        // Call the other functions.
-        this->_hRotGlobalPosY   ( m, item );
-        this->_vTransGlobalPosZ ( m, item );
-
-        // Reset the ids.
-        _navigatorH->id ( id );
-        _navigatorV->id ( id );
-      }
-
+      this->walkMode ();
       break;
 
     case MenuKit::MESSAGE_UPDATE:
-
-      item->checked ( _navigatorH.valid() && id == _navigatorH->id() &&
-                      _navigatorV.valid() && id == _navigatorV->id() );
+      item->checked ( this->getWalkMode () );
       break;
   }
 }
@@ -1460,39 +1452,15 @@ void Application::_poleNav ( MenuKit::Message m, MenuKit::Item *item )
 {
   ErrorChecker ( 1084438121u, isAppThread(), CV::NOT_APP_THREAD );
 
-  // Local id.
-  const unsigned int id ( 1084438122u );
-
   // Process the message.
   switch ( m )
   {
     case MenuKit::MESSAGE_SELECTED:
-
-      // If the navigator matches the given id...
-      if ( _navigatorH.valid() && _navigatorV.valid() &&
-           id == _navigatorH->id() && id == _navigatorV->id() )
-      {
-        _navigatorH = 0x0;
-        _navigatorV = 0x0;
-      }
-
-      // Otherwise, set the navigator.
-      else
-      {
-        // Call the other functions.
-        this->_hRotGlobalPosY ( m, item );
-        this->_vTransGlobalPosY ( m, item );
-
-        // Reset the ids.
-        _navigatorH->id ( id );
-        _navigatorV->id ( id );
-      }
+      this->poleMode ();
       break;
 
     case MenuKit::MESSAGE_UPDATE:
-
-      item->checked ( _navigatorH.valid() && id == _navigatorH->id() &&
-                      _navigatorV.valid() && id == _navigatorV->id() );
+      item->checked ( this->getPoleMode () );
       break;
   }
 }

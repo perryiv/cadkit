@@ -15,6 +15,14 @@
 #include "VRV/Common/Buttons.h"
 #include "VRV/Jobs/LoadModel.h"
 #include "VRV/Functors/Pair.h"
+#include "VRV/Functors/Matrix/IdentityMatrix.h"
+#include "VRV/Functors/Navigate/Translate.h"
+#include "VRV/Functors/Navigate/Rotate.h"
+#include "VRV/Functors/Navigate/Direction.h"
+#include "VRV/Functors/Input/JoystickHorizontal.h"
+#include "VRV/Functors/Input/JoystickVertical.h"
+#include "VRV/Functors/Wand/WandRotation.h"
+#include "VRV/Common/Constants.h"
 
 #include "Usul/App/Application.h"
 #include "Usul/Errors/Assert.h"
@@ -158,6 +166,9 @@ Application::~Application()
     (*iter)->clearButtonPressListeners ();
     (*iter)->clearButtonReleaseListeners ();
   }
+
+  // Clear the navigator.
+  this->navigator ( 0x0 );
 
   // Make sure we don't have any references hanging around.
   USUL_ASSERT ( 0 == _refCount );
@@ -1487,8 +1498,16 @@ void Application::_readUserPreferences()
     // Find the path to the preference file.
     std::string filename ( Usul::App::Application::instance().configFile ( "preferences" ) );
 
+    // Create a new preferences classes to set defaults.
+    Preferences::RefPtr preferences ( new Preferences );
+
     // Read the preferences.
-    _preferences->read ( filename );
+    preferences->read ( filename );
+    
+    {
+      Guard guard ( this->mutex() );
+      _preferences = preferences;
+    }
   }
 
   // Catch expected exceptions.
@@ -2460,7 +2479,7 @@ void Application::_updateStatusBar ( const std::string &s )
   if ( !_statusBar->menu()->expanded() )
     return;
 #endif
-
+  
   // Get the button and set its text.
   MenuKit::Menu::iterator item = this->statusBar()->menu()->begin();
 
@@ -2486,3 +2505,187 @@ bool Application::_isHeadNode() const
   return Usul::System::Host::name() == this->preferences()->headNodeMachineName();
 #endif
 }
+
+
+// Leaving this here for now for reference.
+#if 0
+// These are the analog input functors.
+  CV::Functors::AnalogInput::ValidRefPtr hai ( new CV::Functors::JoystickHorizontal ( unknown ) );
+  CV::Functors::AnalogInput::ValidRefPtr vai ( new CV::Functors::JoystickVertical   ( unknown ) );
+
+  // These are the functors for getting matrices.
+  CV::Functors::MatrixFunctor::ValidRefPtr wm ( new CV::Functors::WandRotation   ( unknown ) );
+  CV::Functors::MatrixFunctor::ValidRefPtr im ( new CV::Functors::IdentityMatrix ( unknown ) );
+
+  // The three axes.
+  CV::Functors::Direction::Vector x ( 1, 0, 0 );
+  CV::Functors::Direction::Vector y ( 0, 1, 0 );
+  CV::Functors::Direction::Vector z ( 0, 0, 1 );
+
+  // For getting directions in the wand's coordinate system.
+  CV::Functors::Direction::ValidRefPtr pwx ( new CV::Functors::Direction ( unknown, x, wm ) );
+  CV::Functors::Direction::ValidRefPtr pwy ( new CV::Functors::Direction ( unknown, y, wm ) );
+  CV::Functors::Direction::ValidRefPtr pwz ( new CV::Functors::Direction ( unknown, z, wm ) );
+
+  // For getting directions in global coordinate system.
+  CV::Functors::Direction::ValidRefPtr pgx ( new CV::Functors::Direction ( unknown, x, im ) );
+  CV::Functors::Direction::ValidRefPtr pgy ( new CV::Functors::Direction ( unknown, y, im ) );
+  CV::Functors::Direction::ValidRefPtr pgz ( new CV::Functors::Direction ( unknown, z, im ) );
+
+  // Negative wand-space directions.
+  CV::Functors::Direction::ValidRefPtr nwx ( new CV::Functors::Direction ( unknown, -x, wm ) );
+  CV::Functors::Direction::ValidRefPtr nwy ( new CV::Functors::Direction ( unknown, -y, wm ) );
+  CV::Functors::Direction::ValidRefPtr nwz ( new CV::Functors::Direction ( unknown, -z, wm ) );
+
+  // Negative global directions.
+  CV::Functors::Direction::ValidRefPtr ngx ( new CV::Functors::Direction ( unknown, -x, im ) );
+  CV::Functors::Direction::ValidRefPtr ngy ( new CV::Functors::Direction ( unknown, -y, im ) );
+  CV::Functors::Direction::ValidRefPtr ngz ( new CV::Functors::Direction ( unknown, -z, im ) );
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set walk mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::walkMode ()
+{
+  // Feedback.
+  std::cout << "Walk Mode." << std::endl;
+
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( this );
+
+  // These are the analog input functors.
+  VRV::Functors::AnalogInput::ValidRefPtr hai ( new VRV::Functors::JoystickHorizontal ( unknown ) );
+  VRV::Functors::AnalogInput::ValidRefPtr vai ( new VRV::Functors::JoystickVertical   ( unknown ) );
+
+  // Identity matrix
+  VRV::Functors::Matrix::MatrixFunctor::ValidRefPtr im ( new VRV::Functors::Matrix::IdentityMatrix ( unknown ) );
+
+  VRV::Functors::Direction::Vector y ( 0, 1, 0 );
+  VRV::Functors::Direction::Vector z ( 0, 0, 1 );
+
+  VRV::Functors::Direction::RefPtr dirY    ( new VRV::Functors::Direction ( unknown, y, im ) );
+  VRV::Functors::Direction::RefPtr dirNegZ ( new VRV::Functors::Direction ( unknown, -z, im ) );
+
+  float rotateSpeed    ( this->preferences()->rotationSpeed() );
+  float translateSpeed ( this->preferences()->translationSpeed() );
+
+  this->navigator ( new VRV::Functors::Pair ( unknown,
+                                              new VRV::Functors::Rotate ( unknown, dirY, hai, rotateSpeed, 0 ),
+                                              new VRV::Functors::Translate ( unknown, dirNegZ, vai, translateSpeed, 0 ),
+                                              VRV::WALK_MODE_ID ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get walk mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::getWalkMode () const
+{
+  const Functor* functor ( this->navigator () );
+  return ( 0x0 != functor ? functor->id () == VRV::WALK_MODE_ID : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set pole mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::poleMode ()
+{
+  // Feedback.
+  std::cout << "Pole Mode." << std::endl;
+
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( this );
+
+  // These are the analog input functors.
+  VRV::Functors::AnalogInput::ValidRefPtr hai ( new VRV::Functors::JoystickHorizontal ( unknown ) );
+  VRV::Functors::AnalogInput::ValidRefPtr vai ( new VRV::Functors::JoystickVertical   ( unknown ) );
+
+  // Identity matrix
+  VRV::Functors::Matrix::MatrixFunctor::ValidRefPtr im ( new VRV::Functors::Matrix::IdentityMatrix ( unknown ) );
+
+  VRV::Functors::Direction::Vector y ( 0, 1, 0 );
+
+  VRV::Functors::Direction::RefPtr dirY    ( new VRV::Functors::Direction ( unknown, y, im ) );
+
+  float rotateSpeed    ( this->preferences()->rotationSpeed() );
+  float translateSpeed ( this->preferences()->translationSpeed() );
+
+  this->navigator ( new VRV::Functors::Pair ( unknown,
+                                              new VRV::Functors::Rotate ( unknown, dirY, hai, rotateSpeed, 0 ),
+                                              new VRV::Functors::Translate ( unknown, dirY, vai, translateSpeed, 0 ),
+                                              VRV::POLE_MODE_ID ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get pole mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::getPoleMode () const
+{
+  const Functor* functor ( this->navigator () );
+  return ( 0x0 != functor ? functor->id () == VRV::POLE_MODE_ID : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set fly mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::flyMode ()
+{
+  // Feedback.
+  std::cout << "Fly Mode." << std::endl;
+
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( this );
+
+  // These are the analog input functors.
+  VRV::Functors::AnalogInput::ValidRefPtr hai ( new VRV::Functors::JoystickHorizontal ( unknown ) );
+  VRV::Functors::AnalogInput::ValidRefPtr vai ( new VRV::Functors::JoystickVertical   ( unknown ) );
+
+  // Identity matrix
+  VRV::Functors::WandRotation::ValidRefPtr          wm ( new VRV::Functors::WandRotation   ( unknown ) );
+  VRV::Functors::Matrix::MatrixFunctor::ValidRefPtr im ( new VRV::Functors::Matrix::IdentityMatrix ( unknown ) );
+
+  VRV::Functors::Direction::Vector y ( 0, 1, 0 );
+  VRV::Functors::Direction::Vector z ( 0, 0, 1 );
+
+  VRV::Functors::Direction::RefPtr dirY    ( new VRV::Functors::Direction ( unknown, y, im ) );
+  VRV::Functors::Direction::RefPtr dirNegZ ( new VRV::Functors::Direction ( unknown, -z, wm ) );
+
+  float rotateSpeed    ( this->preferences()->rotationSpeed() );
+  float translateSpeed ( this->preferences()->translationSpeed() );
+
+  this->navigator ( new VRV::Functors::Pair ( unknown,
+                                              new VRV::Functors::Rotate ( unknown, dirY, hai, rotateSpeed, 0 ),
+                                              new VRV::Functors::Translate ( unknown, dirNegZ, vai, translateSpeed, 0 ),
+                                              VRV::POLE_MODE_ID ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get fly mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::getFlyMode () const
+{
+  const Functor* functor ( this->navigator () );
+  return ( 0x0 != functor ? functor->id () == VRV::FLY_MODE_ID : false );
+}
+

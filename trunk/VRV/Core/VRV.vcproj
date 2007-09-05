@@ -482,6 +482,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Common\Constants.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Common\Libraries.h"
 					>
 				</File>

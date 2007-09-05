@@ -925,16 +925,18 @@ void Application::_statusBarVis ( MenuKit::Message m, MenuKit::Item *item )
 {
   ErrorChecker ( 1552310702u, isAppThread(), CV::NOT_APP_THREAD );
 
+  MenuPtr status ( this->statusBar() );
+
   // Process the message.
   switch ( m )
   {
     case MenuKit::MESSAGE_UPDATE:
-      item->checked ( _statusBar->menu()->expanded() );
+      item->checked ( status->menu()->expanded() );
       break;
 
     case MenuKit::MESSAGE_SELECTED:
-      _statusBar->menu()->expanded ( !_statusBar->menu()->expanded() );
-      _statusBar->updateScene();
+      status->menu()->expanded ( !status->menu()->expanded() );
+      status->updateScene();
       break;
   }
 }

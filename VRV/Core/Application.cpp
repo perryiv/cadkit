@@ -27,6 +27,7 @@
 #include "Usul/Documents/Manager.h"
 
 #include "OsgTools/State/StateSet.h"
+#include "OsgTools/Convert.h"
 
 #include "osg/MatrixTransform"
 
@@ -82,7 +83,9 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _navigator         ( 0x0 ),
   _refCount          ( 0 ),
   _menuSceneShowHide ( true ),
-  _path              ( new VRV::Animate::Path )
+  _path              ( new VRV::Animate::Path ),
+  _menu              ( new Menu ),
+  _statusBar         ( new Menu )
 {
   USUL_TRACE_SCOPE;
   this->_construct();
@@ -2318,4 +2321,168 @@ unsigned int Application::animationSteps ( ) const
 {
   USUL_TRACE_SCOPE;
   return _path->steps ( );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::Menu * Application::menu ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _menu.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Application::Menu * Application::menu () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _menu.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::menu ( Menu *menu)
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  _menu = menu;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the status bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::Menu * Application::statusBar ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _statusBar.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the status bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Application::Menu * Application::statusBar () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _statusBar.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the status-bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initStatusBar()
+{
+  // Return now if we don't have a status bar.
+  if ( 0x0 == this->statusBar () )
+    return;
+
+  // Remove what we may have.
+  this->projectionGroupRemove ( "VRV_STATUS_BAR" );
+
+  // TODO:  Have a seperate entry for node to show status bar in the preferences.
+  if ( false == this->_isHeadNode () )
+    return;
+
+  // Get the matrix.
+  osg::Matrixf m;
+  OsgTools::Convert::matrix ( this->preferences()->statusBarMatrix(), m );
+
+  // Make a matrix transform.
+  osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+  mt->setMatrix ( m );
+  mt->setName ( "StatusBar" );
+
+  // Set the status bar's scene.
+  this->statusBar ()->scene ( mt.get() );
+
+  // Set the status-bar's properties.
+  this->statusBar ()->menu()->append ( new MenuKit::Button );
+  this->statusBar ()->menu()->expanded ( this->preferences()->statusBarVisibleAtStartup() );
+  this->statusBar ()->updateScene();
+
+  // Add status bar to main scene.
+  osg::ref_ptr < osg::Group > group ( this->projectionGroupGet ( "VRV_STATUS_BAR" ) );
+  group->addChild ( mt.get( ) );
+
+  // Make the status-bar always draw on top (last). See osgfxbrowser.cpp.
+  osg::ref_ptr < osg::StateSet > ss ( mt->getOrCreateStateSet() );
+  ss->setRenderBinDetails ( 100, "RenderBin" );
+  ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Update the status-bar. The status-bar is a menu with a single button.
+// This was done as a work-around for allignment issues.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_updateStatusBar ( const std::string &s )
+{
+  USUL_TRACE_SCOPE;
+
+  if ( true == this->statusBar()->menu()->empty() )
+    return;
+
+#if 0 // Remove when confident.
+  // If the menu is not expanded then punt.
+  if ( !_statusBar->menu()->expanded() )
+    return;
+#endif
+
+  // Get the button and set its text.
+  MenuKit::Menu::iterator item = this->statusBar()->menu()->begin();
+
+  if ( 0x0 != item->get() )
+    item->get()->text ( ( s.empty() ) ? "Ready" : s );
+
+  // Rebuild the scene.
+  this->statusBar()->updateScene();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this machine the head node?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_isHeadNode() const
+{
+#ifdef _MSC_VER
+  return true;
+#else
+  return Usul::System::Host::name() == this->preferences()->headNodeMachineName();
+#endif
 }

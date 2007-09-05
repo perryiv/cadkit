@@ -30,8 +30,6 @@
 #include "VRV/Core/Application.h"
 #include "VRV/Functors/Matrix/MatrixFunctor.h"
 
-#include "MenuKit/OSG/Menu.h"
-
 #include "OsgTools/Grid.h"
 
 #include <string>
@@ -112,9 +110,6 @@ protected:
   Application ( const Application &app );
   Application& operator = ( const Application &app );
 
-  // Is this the head node?
-  bool                          _isHeadNode() const;
-
   // Calculate the frame-rate.
   double                        _calculateFrameRate() const;
 
@@ -129,7 +124,6 @@ protected:
   void                          _initLight();
   void                          _initText();
   void                          _initMenu();
-  void                          _initStatusBar();
 
   // Initialize the menus.
   void                          _initFileMenu     ( MenuKit::Menu* menu );
@@ -202,7 +196,6 @@ protected:
   void                          _updateFrameRateDisplay();
   void                          _updateAnalogText();
   void                          _updateCursor();
-  void                          _updateStatusBar ( const std::string &text );
   void                          _updateSceneTool();
 
   // Use the scene tool if we are supposed to.
@@ -317,7 +310,6 @@ protected:
   typedef Interfaces::IVisibility::QueryPtr             IVisibilityPtr;
   typedef Interfaces::ISelection::QueryPtr              ISelectionPtr;
   typedef Interfaces::IMaterialStack::QueryPtr          IMaterialStackPtr;
-  typedef USUL_VALID_REF_POINTER(MenuKit::OSG::Menu)    MenuPtr;
   typedef std::map<std::string,osg::Vec4>               ColorMap;
 
   // Data members.
@@ -339,8 +331,6 @@ protected:
   IVisibilityPtr    _iVisibility;
   ISelectionPtr     _iSelection;
   IMaterialStackPtr _iMaterialStack;
-  MenuPtr           _menu;
-  MenuPtr           _statusBar;
   osg::Matrixf      _home;
   ColorMap          _colorMap;
   std::vector<OsgTools::Grid> _gridFunctors;

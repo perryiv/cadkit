@@ -242,6 +242,18 @@ public:
   /// Get the status bar.
   Menu *                  statusBar ();
   const Menu *            statusBar () const;
+
+  /// Get/Set walk mode.
+  void                          walkMode ();
+  bool                          getWalkMode () const;
+
+  /// Get/Set pole mode.
+  void                          poleMode ();
+  bool                          getPoleMode () const;
+
+  /// Get/Set fly mode.
+  void                          flyMode ();
+  bool                          getFlyMode () const;
 protected:
 
   /// VR Juggler methods.

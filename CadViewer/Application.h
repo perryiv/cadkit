@@ -267,8 +267,8 @@ protected:
   void                          _gridColor        ( MenuKit::Message m, MenuKit::Item *item );
   void                          _selectionColor   ( MenuKit::Message m, MenuKit::Item *item );
   void                          _resetClipping            ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _hvTransWandXZ            ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _hvTransGlobalXZ          ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _flyMode                  ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _walkMode                 ( MenuKit::Message m, MenuKit::Item *item );
   void                          _poleNav                  ( MenuKit::Message m, MenuKit::Item *item );
   void                          _gotoViewFront            ( MenuKit::Message m, MenuKit::Item *item );
   void                          _gotoViewBack             ( MenuKit::Message m, MenuKit::Item *item );
@@ -318,8 +318,6 @@ protected:
   ParserPtr         _parser;
   MatTransPtr       _gridBranch;
   GroupPtr          _auxiliary;
-  FunctorPtr        _navigatorH;
-  FunctorPtr        _navigatorV;
   FunctorPtr        _sceneTool;
   FunctorPtr        _intersector;
   osg::Vec3         _rotCenter;

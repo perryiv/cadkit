@@ -177,8 +177,6 @@ Application::Application ( Args &args ) :
   _parser         ( new Parser ( args.begin(), args.end() ) ),
   _gridBranch     ( new osg::MatrixTransform ),
   _auxiliary      ( new osg::Group ),
-  _navigatorH     ( 0x0 ),
-  _navigatorV     ( 0x0 ),
   _sceneTool      ( 0x0 ),
   _intersector    ( 0x0 ),
   _rotCenter      ( 0, 0, 0 ),
@@ -375,7 +373,7 @@ void Application::_init()
 
 void Application::_initText()
 {
-#if 0
+#if 1
   // Removing anything we may have already.
   this->projectionGroupRemove ( "VRV_TEXT" );
 
@@ -574,9 +572,9 @@ void Application::_initMenu()
   mt->setMatrix ( mm );
 
   // Make sure that we don't need this on linux before removing it.
-#ifndef _MSC_VER
+//#ifndef _MSC_VER
   mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-#endif
+//#endif
 
   mt->setName ( "MenuBranch" );
 
@@ -793,8 +791,8 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
     favorites->text ( "Favorites" );
     menu->append ( favorites.get() );
 
-    favorites->append ( this->_createRadio ( "Fly", MenuKit::memFunCB2 ( this, &Application::_hvTransWandXZ ) ) );
-    favorites->append ( this->_createRadio ( "Walk", MenuKit::memFunCB2 ( this, &Application::_hvTransGlobalXZ ) ) );
+    favorites->append ( this->_createRadio ( "Fly", MenuKit::memFunCB2 ( this, &Application::_flyMode ) ) );
+    favorites->append ( this->_createRadio ( "Walk", MenuKit::memFunCB2 ( this, &Application::_walkMode ) ) );
     favorites->append ( this->_createRadio ( "Pole", MenuKit::memFunCB2 ( this, &Application::_poleNav ) ) );
   }
 
@@ -1274,64 +1272,33 @@ bool Application::_handleIntersectionEvent( unsigned long id )
 
 bool Application::_handleNavigationEvent( unsigned long id )
 {
-  MenuKit::Message nav_message = MenuKit::MESSAGE_SELECTED;   // simulate message/item from MenuKit
-  MenuKit::Item *nav_item (0x0);                              // NULL b/c it's never needed
-  const unsigned long walkID ( 1084438120u );                 // comes from AppCallback.cpp
-  bool handled ( false );
-  
   // Return if we are in intersect mode.
   if( _intersector.valid () )
     return false;
 
-  // Switch on button id.
+  bool handled ( true );
+
   switch ( id )
   {
-    case NAVIGATE_TOGGLE:                                    // BUTTON_YELLOW, if not walking, set walk ...
-      std::cout << "TOGGLE: ";                                //                if walking, set pole
-      if ( _navigatorH.valid() &&                             // IF h and v control are valid
-           _navigatorV.valid() &&                             // AND both set to walkID
-           walkID == _navigatorV->id() &&
-           walkID == _navigatorH->id() )
-      {                                                       // if WALK, set navigation to POLE
-        std::cout << "POLE" << std::endl;
-        // Stop navigation first, to prevent menu style callbacks from toggling navigation off
-        _navigatorH = 0x0;                                    // invalidate response to horizontal joystick
-        _navigatorV = 0x0;                                    // invalidate response to vertical joystick
-        // Set navigation mode using 'simulated' call from menu
-        this->_poleNav ( nav_message, nav_item );             // activate navigation (POLE)
-        handled = true;                                       // button event has been handled
-      }
+  case NAVIGATE_TOGGLE:
+    if ( this->getWalkMode ( ) )
+      this->poleMode ();
+    else
+      this->walkMode ();
+    break;
 
-      // Set to walk mode...
-      else
-      {
-        std::cout << "WALK" << std::endl;
-        _navigatorH = 0x0;                                    // invalidate response to horizontal joystick
-        _navigatorV = 0x0;                                    // invalidate response to vertical joystick
-        this->_hvTransGlobalXZ ( nav_message, nav_item );     // activate navigation (WALK)
-        handled = true;                                       // button event has been handled
-      }
-      break;
-    case NAVIGATE_FLY :                                       // BUTTON_BLUE (FLY in the BLUE sky)
-      std::cout << "FLY" << std::endl;
-      // Stop navigation first.  This prevents toggling off when already in a nav mode
-      _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
-      _navigatorV = 0x0;                                      // invalidate response to vertical joystick
-      // set (or reset) navigation mode.  Simulated a call from the menu.
-      this->_hvTransWandXZ ( nav_message, nav_item );         // activate navigation (FLY)
-      handled = true;                                         // button event has been handled
-      break;
+  case NAVIGATE_FLY:
+    this->flyMode ();
+    break;
 
-    case NAVIGATE_NO_NAV :                                    // possibly called from _init()
-      std::cout << "STOP NAVIGATION" << std::endl;
-      _navigatorH = 0x0;                                      // invalidate response to horizontal joystick
-      _navigatorV = 0x0;                                      // invalidate response to vertical joystick
-      handled = true;                                         // button event has been handled
-      break;
+    // Turn off all navigation.
+  case NAVIGATE_NO_NAV:
+    this->navigator ( 0x0 );
+    break;
 
-    default :
-      handled = false;                                        // button event has NOT been handled
-  };
+  default :
+    handled = false;
+  }
 
   return handled;
 }
@@ -1355,21 +1322,21 @@ void Application::JoystickCB::operator() ( VRV::Devices::Message m, Usul::Base::
 
   switch ( m )
   {
-    case VRV::Devices::JOYSTICK_ENTERING_RIGHT:
-      menu->moveFocused ( MenuKit::Behavior::RIGHT );
-      break;
+  case VRV::Devices::JOYSTICK_ENTERING_RIGHT:
+    menu->moveFocused ( MenuKit::Behavior::RIGHT );
+    break;
 
-    case VRV::Devices::JOYSTICK_ENTERING_LEFT:
-      menu->moveFocused ( MenuKit::Behavior::LEFT );
-      break;
+  case VRV::Devices::JOYSTICK_ENTERING_LEFT:
+    menu->moveFocused ( MenuKit::Behavior::LEFT );
+    break;
 
-    case VRV::Devices::JOYSTICK_ENTERING_UP:
-      menu->moveFocused ( MenuKit::Behavior::UP );
-      break;
+  case VRV::Devices::JOYSTICK_ENTERING_UP:
+    menu->moveFocused ( MenuKit::Behavior::UP );
+    break;
 
-    case VRV::Devices::JOYSTICK_ENTERING_DOWN:
-      menu->moveFocused ( MenuKit::Behavior::DOWN );
-      break;
+  case VRV::Devices::JOYSTICK_ENTERING_DOWN:
+    menu->moveFocused ( MenuKit::Behavior::DOWN );
+    break;
   }
 }
 
@@ -1395,7 +1362,7 @@ void Application::postFrame()
   {
     std::ostringstream message;
     message << "Error 3956579158: Application::postFrame(): exception: "
-            << e.what();
+      << e.what();
     this->_update ( *_msgText, message.str() );
   }
 
@@ -1527,120 +1494,6 @@ void Application::_setSeeker()
 }
 #endif
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the navigator based on the current one and the button states.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#if 0
-void Application::_setNavigator()
-{
-  ErrorChecker ( 1068651354, isAppThread(), CV::NOT_APP_THREAD );
-
-  // This instance's unknown pointer.
-  Unknown::ValidRefPtr unknown ( this->_thisUnknown() );
-
-  // Initialize the transformation functor.
-  CV::Functors::BaseFunctor::RefPtr trans ( 0x0 );
-
-  // These are the analog input functors.
-  CV::Functors::AnalogInput::ValidRefPtr hai ( new CV::Functors::JoystickHorizontal ( unknown ) );
-  CV::Functors::AnalogInput::ValidRefPtr vai ( new CV::Functors::JoystickVertical   ( unknown ) );
-
-  // These are the functors for getting matrices.
-  CV::Functors::MatrixFunctor::ValidRefPtr wm ( new CV::Functors::WandRotation   ( unknown ) );
-  CV::Functors::MatrixFunctor::ValidRefPtr im ( new CV::Functors::IdentityMatrix ( unknown ) );
-
-  // The three axes.
-  CV::Functors::Direction::Vector x ( 1, 0, 0 );
-  CV::Functors::Direction::Vector y ( 0, 1, 0 );
-  CV::Functors::Direction::Vector z ( 0, 0, 1 );
-
-  // For getting directions in the wand's coordinate system.
-  CV::Functors::Direction::ValidRefPtr pwx ( new CV::Functors::Direction ( unknown, x, wm ) );
-  CV::Functors::Direction::ValidRefPtr pwy ( new CV::Functors::Direction ( unknown, y, wm ) );
-  CV::Functors::Direction::ValidRefPtr pwz ( new CV::Functors::Direction ( unknown, z, wm ) );
-
-  // For getting directions in global coordinate system.
-  CV::Functors::Direction::ValidRefPtr pgx ( new CV::Functors::Direction ( unknown, x, im ) );
-  CV::Functors::Direction::ValidRefPtr pgy ( new CV::Functors::Direction ( unknown, y, im ) );
-  CV::Functors::Direction::ValidRefPtr pgz ( new CV::Functors::Direction ( unknown, z, im ) );
-
-  // Negative wand-space directions.
-  CV::Functors::Direction::ValidRefPtr nwx ( new CV::Functors::Direction ( unknown, -x, wm ) );
-  CV::Functors::Direction::ValidRefPtr nwy ( new CV::Functors::Direction ( unknown, -y, wm ) );
-  CV::Functors::Direction::ValidRefPtr nwz ( new CV::Functors::Direction ( unknown, -z, wm ) );
-
-  // Negative global directions.
-  CV::Functors::Direction::ValidRefPtr ngx ( new CV::Functors::Direction ( unknown, -x, im ) );
-  CV::Functors::Direction::ValidRefPtr ngy ( new CV::Functors::Direction ( unknown, -y, im ) );
-  CV::Functors::Direction::ValidRefPtr ngz ( new CV::Functors::Direction ( unknown, -z, im ) );
-
-  // Get the id of the current navigator.
-  unsigned int id = ( _navigator.valid() ) ? _navigator->id() : NO_NAVIGATION;
-
-  switch ( id )
-  {
-    case NO_NAVIGATION:
-    case ROTATE_XY_LOCAL:
-      this->_update ( *_msgText, "Translate in local XZ-plane" );
-      trans = new CV::Functors::TransformPair 
-      (
-        unknown, 
-        new CV::Functors::Translate ( unknown, pwx, hai, CV::DEFAULT_MAX_RELATIVE_SPEED ), 
-        new CV::Functors::Translate ( unknown, nwz, vai, CV::DEFAULT_MAX_RELATIVE_SPEED ), 
-        TRANSLATE_XZ_LOCAL
-      );
-
-      this->_setCursor ( OsgTools::Axes::POSITIVE_X | OsgTools::Axes::NEGATIVE_X |
-                         OsgTools::Axes::POSITIVE_Z | OsgTools::Axes::NEGATIVE_Z |
-                         OsgTools::Axes::ORIGIN_CUBE );
-      this->_setCursorMatrixFunctor ( new CV::Functors::WandMatrix ( unknown ) );
-      break;
-
-    case TRANSLATE_XZ_LOCAL:
-      this->_update ( *_msgText, "Translate in global XZ-plane" );
-      trans = new CV::Functors::TransformPair 
-      (
-        unknown, 
-        new CV::Functors::Translate ( unknown, pgx, hai, CV::DEFAULT_MAX_RELATIVE_SPEED ), 
-        new CV::Functors::Translate ( unknown, ngz, vai, CV::DEFAULT_MAX_RELATIVE_SPEED ), 
-        TRANSLATE_XZ_GLOBAL
-      );
-
-      this->_setCursor ( OsgTools::Axes::POSITIVE_X | OsgTools::Axes::NEGATIVE_X |
-                         OsgTools::Axes::POSITIVE_Z | OsgTools::Axes::NEGATIVE_Z |
-                         OsgTools::Axes::ORIGIN_CUBE );
-      this->_setCursorMatrixFunctor ( new CV::Functors::WandPosition ( unknown ) );
-      break;
-
-    case TRANSLATE_XZ_GLOBAL:
-      this->_update ( *_msgText, "Rotate about and translate along the global Y-axis" );
-      trans = new CV::Functors::TransformPair
-      (
-        unknown,
-        new CV::Functors::Translate ( unknown, pgy, vai, CV::DEFAULT_MAX_RELATIVE_SPEED ),
-        new CV::Functors::Rotate    ( unknown, pgy, hai, CV::DEFAULT_MAX_ANGULAR_SPEED  ),
-        ROTATE_XY_LOCAL
-      );
-
-      this->_setCursor ( OsgTools::Axes::ROTATE_Y | 
-                         OsgTools::Axes::POSITIVE_Y | 
-                         OsgTools::Axes::NEGATIVE_Y );
-      this->_setCursorMatrixFunctor ( new CV::Functors::WandPosition ( unknown ) );
-      break;
-
-    default:
-      this->_update ( *_msgText, "Unknown navigation mode" );
-      break;
-  }
-
-  // Call the other one.
-  this->_setNavigator ( trans );
-}
-#endif
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1713,14 +1566,6 @@ void Application::_navigate()
 
   // Call the base class
   BaseClass::_navigate ();
-
-  // Tell the horizontal-input navigator to execute.
-  if ( _navigatorH.valid() )
-    (*_navigatorH)();
-
-  // Tell the vertical-input navigator to execute.
-  if ( _navigatorV.valid() )
-    (*_navigatorV)();
 }
 
 
@@ -1974,9 +1819,9 @@ void Application::_writeScene ( const std::string &filename, const osg::Node *no
     {
       Usul::Exceptions::Thrower<std::runtime_error>
         ( "Error 1421787869, failed to write file.",
-          "\n\tFile Name: ", filename,
-          "\n\tNode Name: ", node->getName(),
-          "\n\tAddress:   ", node );
+        "\n\tFile Name: ", filename,
+        "\n\tNode Name: ", node->getName(),
+        "\n\tAddress:   ", node );
     }
   }
 }
@@ -2079,7 +1924,7 @@ void Application::_selected ( CV::Functors::Tool::Transforms &vt )
   typedef Usul::Predicates::UnaryPair<IsVisible,std::logical_and<bool>,IsSelected> IsWanted;
   typedef CV::OSG::Functors::Append<MT> Append;
   typedef Usul::Functors::General::IfThen<IsSelected,Append> IfThen;
-//  typedef Usul::Functors::General::IfThen<IsWanted,Append> IfThen;
+  //  typedef Usul::Functors::General::IfThen<IsWanted,Append> IfThen;
   typedef OsgTools::Visitor<MT,IfThen> Visitor;
 
   if( false == _iVisibility.valid() || false == _iSelection.valid () )
@@ -2162,8 +2007,8 @@ void Application::_exportImage ( MenuKit::Message m, MenuKit::Item *item )
 {
   switch ( m )
   {
-    case MenuKit::MESSAGE_SELECTED:
-      this->exportNextFrame ();
+  case MenuKit::MESSAGE_SELECTED:
+    this->exportNextFrame ();
   }
 }
 
@@ -2221,12 +2066,12 @@ void Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
 
     switch ( id )
     {
-      case VRV::BUTTON0: std::cout << VRV::BUTTON0 << " Button 0 pressed (YELLOW)"   << std::endl; break;
-      case VRV::BUTTON1: std::cout << VRV::BUTTON1 << " Button 1 pressed (RED)"      << std::endl; break;
-      case VRV::BUTTON2: std::cout << VRV::BUTTON2 << " Button 2 pressed (GREEN)"    << std::endl; break;
-      case VRV::BUTTON3: std::cout << VRV::BUTTON3 << " Button 3 pressed (BLUE)"     << std::endl; break;
-      case VRV::BUTTON4: std::cout << VRV::BUTTON4 << " Button 4 pressed (JOYSTICK)" << std::endl; break;
-      case VRV::BUTTON5: std::cout << VRV::BUTTON5 << " Button 5 pressed (TRIGGER)"  << std::endl; break;
+    case VRV::BUTTON0: std::cout << VRV::BUTTON0 << " Button 0 pressed (YELLOW)"   << std::endl; break;
+    case VRV::BUTTON1: std::cout << VRV::BUTTON1 << " Button 1 pressed (RED)"      << std::endl; break;
+    case VRV::BUTTON2: std::cout << VRV::BUTTON2 << " Button 2 pressed (GREEN)"    << std::endl; break;
+    case VRV::BUTTON3: std::cout << VRV::BUTTON3 << " Button 3 pressed (BLUE)"     << std::endl; break;
+    case VRV::BUTTON4: std::cout << VRV::BUTTON4 << " Button 4 pressed (JOYSTICK)" << std::endl; break;
+    case VRV::BUTTON5: std::cout << VRV::BUTTON5 << " Button 5 pressed (TRIGGER)"  << std::endl; break;
     }
 
     // Let the menu process first.
@@ -2234,7 +2079,7 @@ void Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
 
     // Hide the scene if we are suppose to and it's currently visible.
     bool hideScene ( this->menuSceneShowHide() && this->menu()->isVisible() );
-    
+
     // The node mask.
     unsigned int mask ( hideScene ? 0 : 0xffffffff );
 
@@ -2252,6 +2097,12 @@ void Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
     // Handle the navigation mode.
     if ( this->_handleNavigationEvent( id ) )
       return;
+
+    if ( VRV::BUTTON5 == id )
+    {
+      this->_readUserPreferences ();
+      this->_initMenu ();
+    }
   }
 }
 

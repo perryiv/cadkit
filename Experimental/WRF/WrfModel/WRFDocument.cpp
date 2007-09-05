@@ -316,19 +316,20 @@ namespace Detail
     for ( unsigned int i = 0; i < 256; ++i )
     {
       float value ( static_cast < float > ( i ) / 255 );
+      unsigned int alpha ( 35 );
   #if 1
-      unsigned char c ( 80 - ( static_cast < unsigned int > ( value * 80 ) ) );
+      unsigned char c ( 120 - ( static_cast < unsigned int > ( value * 120 ) ) );
       *data++ = c;
       *data++ = c;
       *data++ = c;
-      *data++ = ( i == 0 ? 0 : 10 );
+      *data++ = ( i == 0 ? 0 : alpha );
   #else
       float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
       Usul::Functions::hsvToRgb ( r, g, b, 300 - ( value * 300 ), 1.0f, 1.0f );
       *data++ = static_cast < unsigned char > ( r * 255 );
       *data++ = static_cast < unsigned char > ( g * 255 );
       *data++ = static_cast < unsigned char > ( b * 255 );
-      *data++ = ( i == 0 ? 0 : 10 );
+      *data++ = ( i == 0 ? 0 : alpha );
   #endif
     }
 
@@ -389,7 +390,10 @@ void WRFDocument::_buildScene ( )
 
     // Add the topography back.
     else
+    {
+      _root->addChild ( _volumeTransform.get () );
       _volumeTransform->addChild ( _topography.get() );
+    }
   }
 
   // If we don't have the data already...
@@ -998,7 +1002,7 @@ bool WRFDocument::animating () const
 void WRFDocument::_buildTopography ()
 {
   USUL_TRACE_SCOPE;
-#if 0
+
   // Make a copy of the parser.
   Parser parser ( _parser );
 
@@ -1150,9 +1154,6 @@ void WRFDocument::_buildTopography ()
     Guard guard ( this->mutex() );
     _topography = node.get();
   }
-#else
-
-#endif
 }
 
 

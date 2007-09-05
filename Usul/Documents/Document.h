@@ -188,9 +188,6 @@ public:
   virtual void                read ( const std::string &filename, Unknown *caller, Unknown *progress );
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0 );
 
-  /// Refresh the view
-  virtual void                refreshView ( Usul::Interfaces::IViewer * );
-
   /// Remove a window from the proper set.
   virtual void                removeWindow   ( Window *window );
   virtual void                removeView     ( View   *view   );

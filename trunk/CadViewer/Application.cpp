@@ -63,8 +63,8 @@
 
 #include "OsgTools/Axes.h"
 #include "OsgTools/Text.h"
-#include "OsgTools/Group.h"
 #include "OsgTools/Convert.h"
+#include "OsgTools/Group.h"
 #include "OsgTools/Font.h"
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Visitor.h"
@@ -190,8 +190,6 @@ Application::Application ( Args &args ) :
   _iVisibility    ( static_cast < CV::Interfaces::IVisibility* >    ( 0x0 ) ),
   _iSelection     ( static_cast < CV::Interfaces::ISelection* >     ( 0x0 ) ),
   _iMaterialStack ( static_cast < CV::Interfaces::IMaterialStack* > ( 0x0 ) ),
-  _menu           ( new MenuKit::OSG::Menu() ),
-  _statusBar      ( new MenuKit::OSG::Menu() ),
   _home           ( osg::Matrixf::identity() ),
   _colorMap       (),
   _textures       ( true )
@@ -248,8 +246,6 @@ Application::Application ( Args &args ) :
   _iVisibility    = Manager::instance().getInterface( CV::Interfaces::IVisibility::IID );
   _iSelection     = Manager::instance().getInterface( CV::Interfaces::ISelection::IID );
   _iMaterialStack = Manager::instance().getInterface( CV::Interfaces::IMaterialStack::IID );
-
-
 }
 
 
@@ -561,7 +557,7 @@ void Application::_initMenu()
   OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuTxtColorHLght(), textHighlight, 4 );
   OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuTxtColorDsabl(), textDisabled,  4 );
 
-  MenuPtr osgMenu ( new MenuKit::OSG::Menu );
+  MenuPtr osgMenu ( new Menu );
 
   osgMenu->skin()->bg_color_normal      ( bgNormal );
   osgMenu->skin()->bg_color_highlight   ( bgHighlight );
@@ -614,13 +610,13 @@ void Application::_initMenu()
   }
 
   // The edit menu.
-  {
+  /*{
     MenuKit::Menu::Ptr edit ( new MenuKit::Menu );
     edit->layout ( MenuKit::Menu::VERTICAL );
     edit->text ( "Edit" );
     this->_initEditMenu ( edit.get() );
     menu->append ( edit.get() );
-  }
+  }*/
 
   // The view menu.
   {
@@ -660,21 +656,14 @@ void Application::_initMenu()
 
   // The tools menu.
   {
-    MenuKit::Menu::Ptr tools ( new MenuKit::Menu );
-    tools->layout ( MenuKit::Menu::VERTICAL );
-    tools->text ( "Tools" );
-    this->_initToolsMenu ( tools.get() );
-    menu->append ( tools.get() );
+    this->_initToolsMenu ( menu.get() );
   }
 
   // Set the menu.
   osgMenu->menu ( menu.get() );
 
   // Swap the menu.
-  {
-    Guard guard ( this->mutex() );
-    _menu = osgMenu.get();
-  }
+  this->menu ( osgMenu.get () );
 
   // Default settings, so that the menu has the correct toggle's checked.
   OsgTools::State::StateSet::setPolygonsFilled ( this->models(), false );
@@ -877,10 +866,15 @@ void Application::_initToolsMenu ( MenuKit::Menu* menu )
 
   if ( commandList.valid() )
   {
+    MenuKit::Menu::Ptr tools ( new MenuKit::Menu );
+    tools->layout ( MenuKit::Menu::VERTICAL );
+    tools->text ( "Tools" );
+    menu->append ( tools.get() );
+
     Commands commands ( commandList->getCommandList() );
     for ( Commands::iterator iter = commands.begin(); iter != commands.end(); ++iter )
     {
-      menu->append ( this->_createButton ( (*iter).get() ) );
+      tools->append ( this->_createButton ( (*iter).get() ) );
     }
   }
 }
@@ -967,7 +961,8 @@ namespace CV
 
       virtual void operator () ( MenuKit::Message m, MenuKit::Item *item )
       {
-        _command->execute( 0x0 );
+        if ( m == MenuKit::MESSAGE_SELECTED )
+          _command->execute( 0x0 );
       }
 
     private:
@@ -1061,52 +1056,6 @@ MenuKit::Button* Application::_createSeperator ( )
   MenuKit::Button* button ( new MenuKit::Button );
   button->separator ( true );
   return button;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize the status-bar.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_initStatusBar()
-{
-  ErrorChecker ( 2652041460u, isAppThread(), CV::NOT_APP_THREAD );
-  ErrorChecker ( 1890904769u, _statusBar.valid() );
-
-  // Remove what we may have.
-  this->projectionGroupRemove ( "VRV_STATUS_BAR" );
-
-  // TODO:  Have a seperate entry for node to show status bar in the preferences.
-  if ( false == this->_isHeadNode () )
-    return;
-
-  // Get the matrix.
-  osg::Matrixf m;
-  OsgTools::Convert::matrix ( this->preferences()->statusBarMatrix(), m );
-
-  // Make a matrix transform.
-  osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-  mt->setMatrix ( m );
-  mt->setName ( "StatusBar" );
-
-  // Set the status bar's scene.
-  _statusBar->scene ( mt.get() );
-
-  // Set the status-bar's properties.
-  _statusBar->menu()->append ( new MenuKit::Button );
-  _statusBar->menu()->expanded ( this->preferences()->statusBarVisibleAtStartup() );
-  _statusBar->updateScene();
-
-  // Add status bar to main scene.
-  osg::ref_ptr < osg::Group > group ( this->projectionGroupGet ( "VRV_STATUS_BAR" ) );
-  group->addChild ( mt.get( ) );
-
-  // Make the status-bar always draw on top (last). See osgfxbrowser.cpp.
-  osg::ref_ptr < osg::StateSet > ss ( mt->getOrCreateStateSet() );
-  ss->setRenderBinDetails ( 100, "RenderBin" );
-  ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF );
 }
 
 
@@ -1222,12 +1171,12 @@ bool Application::_handleMenuEvent( unsigned long id )
   // First see if you are supposed to show or hide it. Always do this first.
   if ( COMMAND_MENU_TOGGLE == id )
   {
-    _menu->toggleVisible();
+    this->menu()->toggleVisible();
     return true;
   }
 
   // If we are not expanded then we should not handle button events.
-  if ( !_menu->menu()->expanded() )
+  if ( !this->menu()->menu()->expanded() )
     return false;
 
   // Initialize.
@@ -1237,23 +1186,23 @@ bool Application::_handleMenuEvent( unsigned long id )
   switch ( id )
   {
     case COMMAND_MENU_SELECT:
-      _menu->selectFocused();
+      this->menu()->selectFocused();
       break;
 
     case COMMAND_MENU_LEFT:
-      _menu->moveFocused ( MenuKit::Behavior::LEFT );
+      this->menu()->moveFocused ( MenuKit::Behavior::LEFT );
       break;
 
     case COMMAND_MENU_RIGHT:
-      _menu->moveFocused ( MenuKit::Behavior::RIGHT );
+      this->menu()->moveFocused ( MenuKit::Behavior::RIGHT );
       break;
 
     case COMMAND_MENU_UP:
-      _menu->moveFocused ( MenuKit::Behavior::UP );
+      this->menu()->moveFocused ( MenuKit::Behavior::UP );
       break;
 
     case COMMAND_MENU_DOWN:
-      _menu->moveFocused ( MenuKit::Behavior::DOWN );
+      this->menu()->moveFocused ( MenuKit::Behavior::DOWN );
       break;
 
     default:
@@ -1398,12 +1347,10 @@ void Application::JoystickCB::operator() ( VRV::Devices::Message m, Usul::Base::
 {
   USUL_TRACE_SCOPE;
 
-  std::cout << "In Application::JoystickCB::operator()" << std::endl;
-
   ErrorChecker ( 1915253659u, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 4165917933u, 0x0 != _app );
 
-  MenuKit::OSG::Menu *menu = _app->_menu.get();
+  MenuKit::OSG::Menu *menu = _app->menu ();
   ErrorChecker ( 3990552070u, 0x0 != menu );
 
   switch ( m )
@@ -1757,7 +1704,7 @@ void Application::_navigate()
   ErrorChecker ( 1068000936, isAppThread(), CV::NOT_APP_THREAD );
 
   // If the menu is showing then we don't navigate.
-  if ( _menu->menu()->expanded() )
+  if ( this->menu()->menu()->expanded() )
     return;
 
   // If we have a valid tool then we don't navigate.
@@ -1788,7 +1735,7 @@ void Application::_useSceneTool()
   ErrorChecker ( 2860383896u, isAppThread(), CV::NOT_APP_THREAD );
 
   // If the menu is showing then we don't use the tool.
-  if ( _menu->menu()->expanded() )
+  if ( this->menu()->menu()->expanded() )
     return;
 
   // Tell it to execute.
@@ -1808,7 +1755,7 @@ void Application::_intersect()
   ErrorChecker ( 1069016548, isAppThread(), CV::NOT_APP_THREAD );
 
   // If the menu is showing then we don't use the tool.
-  if ( _menu->menu()->expanded() )
+  if ( this->menu()->menu()->expanded() )
     return;
 
   // If we have a valid intersector...
@@ -2053,38 +2000,6 @@ std::string Application::_counter ( unsigned int num ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Update the status-bar. The status-bar is a menu with a single button.
-// This was done as a work-around for allignment issues.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_updateStatusBar ( const std::string &s )
-{
-  USUL_TRACE_SCOPE;
-
-  ErrorChecker ( 2977280421u, isAppThread(), CV::NOT_APP_THREAD );
-  
-  if ( true ==_statusBar->menu()->empty() )
-    return;
-
-#if 0 // Remove when confident.
-  // If the menu is not expanded then punt.
-  if ( !_statusBar->menu()->expanded() )
-    return;
-#endif
-
-  // Get the button and set its text.
-  MenuKit::Menu::iterator item = _statusBar->menu()->begin();
-  ErrorChecker ( 3931363718u, 0x0 != item->get() );
-  item->get()->text ( ( s.empty() ) ? "Ready" : s );
-
-  // Rebuild the scene.
-  _statusBar->updateScene();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 // Set the current camera position as the home view.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2239,22 +2154,6 @@ void Application::_updateSceneTool()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Is this machine the head node?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::_isHeadNode() const
-{
-#ifdef _MSC_VER
-  return true;
-#else
-  return Usul::System::Host::name() == this->preferences()->headNodeMachineName();
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Export the next frame.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2277,7 +2176,8 @@ void Application::_exportImage ( MenuKit::Message m, MenuKit::Item *item )
 
 void Application::_updateNotify()
 {
-  if ( true == _menu.valid() && false == _menu->isVisible() )
+  MenuPtr m ( this->menu() );
+  if ( true == m.valid() && false == m->isVisible() )
   {
     BaseClass::_updateNotify();
   }
@@ -2333,7 +2233,7 @@ void Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
     bool menuHandled ( this->_handleMenuEvent( id ) );
 
     // Hide the scene if we are suppose to and it's currently visible.
-    bool hideScene ( this->menuSceneShowHide() && _menu->isVisible() );
+    bool hideScene ( this->menuSceneShowHide() && this->menu()->isVisible() );
     
     // The node mask.
     unsigned int mask ( hideScene ? 0 : 0xffffffff );

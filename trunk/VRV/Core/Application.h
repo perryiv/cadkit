@@ -49,6 +49,8 @@
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Widgets/ProgressBarGroup.h"
 
+#include "MenuKit/OSG/Menu.h"
+
 #include "vrj/Draw/OGL/GlApp.h"
 #include "vrj/Draw/OGL/GlContextData.h"
 #include "plugins/ApplicationDataManager/UserData.h"
@@ -123,6 +125,8 @@ public:
   typedef VRV::Devices::JoystickDevice         Joystick;
   typedef VRV::Functors::BaseFunctor           Functor;
   typedef VRV::Functors::Transform             Transform;
+  typedef MenuKit::OSG::Menu                   Menu;
+  typedef USUL_VALID_REF_POINTER(Menu)         MenuPtr;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -229,6 +233,15 @@ public:
   /// Get/Set the number of animation steps.
   void                    animationSteps ( unsigned int steps );
   unsigned int            animationSteps ( ) const;
+
+  /// Get/Set the menu.
+  Menu *                  menu ();
+  const Menu *            menu () const;
+  void                    menu ( Menu *);
+
+  /// Get the status bar.
+  Menu *                  statusBar ();
+  const Menu *            statusBar () const;
 protected:
 
   /// VR Juggler methods.
@@ -250,6 +263,9 @@ protected:
   virtual void            _setViewport ( osg::Viewport*, vrj::GlDrawManager* );
 
   void                    _construct();
+
+  // Is this the head node?
+  bool                    _isHeadNode() const;
 
   // Load VR Juggler config files.
   void                    _loadConfigFiles ( const std::vector < std::string > &configs );
@@ -299,20 +315,21 @@ protected:
   Functor *               _secondNavigator ();
   const Functor *         _secondNavigator () const;
 
-  /// VRV::Interfaces::IClippingDistanceFloat
-  /// Get/set the clipping distances.
+  void                    _initStatusBar();
+
+  void                    _updateStatusBar ( const std::string &text );
+
+  /// Get/set the clipping distances (VRV::Interfaces::IClippingDistanceFloat).
   virtual void            getClippingDistances ( float &nearDist, float &farDist ) const;
   virtual void            setClippingDistances ( float nearDist, float farDist );
 
   /// VRV::Interfaces::IModelAdd
   virtual void            addModel ( osg::Node *model, const std::string& filename );
 
-  /// VRV::Interfaces::IFrameInfo
-  /// Get the duration of the last frame in seconds.
+  /// Get the duration of the last frame in seconds (VRV::Interfaces::IFrameInfo).
   virtual double          frameTime() const;
 
-  /// VRV::Interfaces::IWorldInfo
-  /// Get the radius of the "world".
+  /// Get the radius of the "world" (VRV::Interfaces::IWorldInfo).
   virtual double          worldRadius() const;
 
   ///  VRV::Interfaces::INavigationScene
@@ -418,58 +435,41 @@ private:
 
   // Data members.
   mutable Mutex                          _mutex;
-
   GroupPtr                               _root;
   MatTransPtr                            _navBranch;
   MatTransPtr                            _models;
-
   osg::Timer                             _timer;
   osg::ref_ptr< osg::FrameStamp >        _framestamp;
   osg::ref_ptr< osg::Viewport >          _viewport;
-
   osg::Vec4                              _backgroundColor;
-
   bool                                   _dirty;
-  
   osg::Timer_t                           _initialTime;
   osg::Timer_t                           _frameStart;
   double                                 _frameTime;
   cluster::UserData < SharedDouble >     _sharedFrameTime;
   cluster::UserData < SharedDouble >     _sharedReferenceTime;
-
   vrj::GlContextData< RendererPtr >      _renderer;
   Renderers                              _renderers;
   OsgTools::Render::SceneManager::RefPtr _sceneManager;
   ProgressBars::RefPtr                   _progressBars;
-
   osg::Vec2                              _clipDist;
-
   bool                                   _exportImage;
-
   Preferences::RefPtr                    _preferences;
-
   ButtonsPtr                             _buttons;
   TrackerPtr                             _tracker;
   JoystickPtr                            _joystick;
-
   Usul::Math::Vec2f                      _analogTrim;
   Usul::Math::Vec3f                      _wandOffset;
-
   osg::ref_ptr < osgDB::DatabasePager >  _databasePager;
-
   UpdateListeners                        _updateListeners;
-
   CommandQueue                           _commandQueue;
-
   OsgTools::Render::FrameDump            _frameDump;
-
   FunctorPtr                             _navigator;
-
   unsigned int                           _refCount;
-
   bool                                   _menuSceneShowHide;
-
   VRV::Animate::Path::RefPtr             _path;
+  MenuPtr                                _menu;
+  MenuPtr                                _statusBar;
 };
 
 }

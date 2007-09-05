@@ -93,9 +93,6 @@ struct IDocument : public Usul::Interfaces::IUnknown
   /// Always prompts for new file name.
   virtual void                          saveAs ( Unknown *caller = 0x0, std::ostream *out = 0x0 ) = 0;
 
-  /// Refresh the view
-  virtual void                          refreshView ( Usul::Interfaces::IViewer * ) = 0;
-
   virtual void                          removeWindow   ( Usul::Interfaces::IWindow *window ) = 0;
   virtual void                          removeView     ( Usul::Interfaces::IView *view   ) = 0;
 

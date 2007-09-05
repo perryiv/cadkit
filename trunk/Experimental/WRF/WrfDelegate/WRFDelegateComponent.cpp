@@ -107,32 +107,13 @@ void WRFDelegateComponent::createDefaultGUI ( Usul::Documents::Document *documen
     QtViewerPtr viewer ( new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent ) );
     parent->addWindow ( viewer.get() );
 
-    this->refreshView ( document, viewer->viewer() );
-
-    viewer->show();
-  }
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Refresh the view
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void WRFDelegateComponent::refreshView ( Usul::Documents::Document *document, Usul::Interfaces::IViewer *viewer )
-{
-  Usul::Interfaces::IHeliosView::QueryPtr hv ( viewer );
-
-  if ( true == hv.valid() && 0x0 != hv->heliosView() )
-  {
-    OsgTools::Render::Viewer* canvas ( hv->heliosView() );
-
+    // Build the scene.
     Usul::Interfaces::IBuildScene::QueryPtr build ( document );
-
     if ( build.valid () )
     {
-      canvas->scene ( build->buildScene ( document->options(), viewer ) );
+      viewer->viewer()->scene ( build->buildScene ( document->options(), caller ) );
     }
+
+    viewer->show();
   }
 }

@@ -50,7 +50,6 @@ public:
   /// Usul::Interfaces::IGUIDelegate
   virtual bool                doesHandle( const std::string& token ) const;
   virtual void                createDefaultGUI ( Usul::Documents::Document *document, Usul::Interfaces::IUnknown* caller );
-  virtual void                refreshView      ( Usul::Documents::Document *document, Usul::Interfaces::IViewer  *viewer );
 
 protected: 
 

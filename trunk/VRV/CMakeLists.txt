@@ -34,7 +34,8 @@ SET (SOURCES
   ./Core/Application.cpp
   ./Core/SharedDouble.cpp
   ./Core/SharedMatrix.cpp
-  ./Jobs/LoadModel.cpp
+  ./Commands/LoadDocument.cpp
+  ./Jobs/SaveImage.cpp
   ./Devices/JoystickDevice.cpp
   ./Devices/ButtonGroup.cpp
   ./Devices/ButtonDevice.cpp

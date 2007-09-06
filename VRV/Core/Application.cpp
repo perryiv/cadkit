@@ -13,7 +13,7 @@
 #include "VRV/Core/JugglerFunctors.h"
 #include "VRV/Core/Exceptions.h"
 #include "VRV/Common/Buttons.h"
-#include "VRV/Jobs/LoadModel.h"
+#include "VRV/Commands/LoadDocument.h"
 #include "VRV/Functors/Pair.h"
 #include "VRV/Functors/Matrix/IdentityMatrix.h"
 #include "VRV/Functors/Navigate/Translate.h"
@@ -23,6 +23,7 @@
 #include "VRV/Functors/Input/JoystickVertical.h"
 #include "VRV/Functors/Wand/WandRotation.h"
 #include "VRV/Common/Constants.h"
+#include "VRV/Jobs/SaveImage.h"
 
 #include "Usul/App/Application.h"
 #include "Usul/Errors/Assert.h"
@@ -144,6 +145,9 @@ void Application::_construct()
   _databasePager->setDatabasePagerThreadPause( false );
   
   _databasePager->setUseFrameBlock( false );
+
+  // Read the user's preference file, if any.
+  this->_readUserPreferences();
 }
 
 
@@ -543,44 +547,6 @@ void Application::contextPostDraw()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Write a image.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-class ImageWriteJob : public Usul::Jobs::Job
-{
-public:
-  typedef Usul::Jobs::Job BaseClass;
-
-  ImageWriteJob ( const std::string& filename, osg::Image *image ) : 
-    BaseClass ( ),
-    _filename ( filename ),
-    _image ( image )
-  {
-  }
-
-  virtual ~ImageWriteJob ()
-  {
-  }
-
-protected:
-
-  virtual void _started()
-  {
-    std::cout << " Writing image file: " << _filename << std::endl;
-
-    // Write the image to file.
-    osgDB::writeImageFile ( *_image, _filename );
-  }
-
-private:
-  std::string _filename;
-  osg::ref_ptr < osg::Image > _image;
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Called before after happens.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -611,7 +577,7 @@ void Application::_postDraw( OsgTools::Render::Renderer *renderer )
     std::ostringstream filename;
     filename << "/array/cluster/data/screen_shots/" << count++ << "_" << Usul::System::Host::name() << ext;
 
-    Usul::Jobs::Manager::instance().add ( new ImageWriteJob ( filename.str(), image.get() ) );
+    Usul::Jobs::Manager::instance().add ( new VRV::Jobs::SaveImage ( filename.str(), image.get() ) );
 
     // Don't export next time.
     _exportImage = false;
@@ -1129,11 +1095,11 @@ void Application::_loadModelFiles  ( const Filenames& filenames )
 {
   USUL_TRACE_SCOPE;
 
-  // Create a job.
-  VRV::Jobs::LoadModel::RefPtr job ( new VRV::Jobs::LoadModel ( filenames, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
+  // Create a command.
+  VRV::Commands::LoadDocument::RefPtr command ( new VRV::Commands::LoadDocument ( filenames, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
 
-  // Add the job to the manager.
-  Usul::Jobs::Manager::instance().add ( job.get() );
+  // Add the command to the queue.
+  this->addCommand ( command.get () );
 }
 
 

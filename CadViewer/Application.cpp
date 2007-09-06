@@ -205,9 +205,6 @@ Application::Application ( Args &args ) :
   // Initialize the main thread.
   _mainThread = Usul::Threads::currentThreadId();
 
-  // Read the user's preference file, if any.
-  this->_readUserPreferences();
-
   // Hook up the branches.
   this->_sceneRoot()->addChild      ( _auxiliary.get()    );
   //_navBranch->addChild ( _gridBranch.get()   );
@@ -350,16 +347,14 @@ void Application::_init()
     this->_setHome();
   #endif
 
-  
-
   // Initialize the menu.
   this->_initMenu();
 
   // Initialize the status-bar.
   this->_initStatusBar();
 
-  // Turn on navigation.
-  this->_handleNavigationEvent( NAVIGATE_NO_NAV );
+  //// Turn on navigation.
+  //this->_handleNavigationEvent( NAVIGATE_NO_NAV );
 
   // Note: we cannot initialize the text yet because the viewport has not been set.
 }

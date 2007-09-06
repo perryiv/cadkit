@@ -318,11 +318,11 @@
 				Name="Jobs"
 				>
 				<File
-					RelativePath="..\Jobs\LoadModel.cpp"
+					RelativePath="..\Jobs\SaveImage.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\Jobs\LoadModel.h"
+					RelativePath="..\Jobs\SaveImage.h"
 					>
 				</File>
 			</Filter>
@@ -575,6 +575,18 @@
 				</File>
 				<File
 					RelativePath="..\Animate\Path.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Commands"
+				>
+				<File
+					RelativePath="..\Commands\LoadDocument.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Commands\LoadDocument.h"
 					>
 				</File>
 			</Filter>

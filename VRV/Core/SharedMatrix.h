@@ -48,7 +48,7 @@ public:
 
   /// Get/Set the matrix.
   const osg::Matrixd&       matrix() const            { return _matrix; }
-  void                      matrix( osg::Matrixd& m ) { _matrix = m ; }
+  void                      matrix( const osg::Matrixd& m ) { _matrix = m ; }
 
 private:
   osg::Matrixd _matrix;

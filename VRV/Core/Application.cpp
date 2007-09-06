@@ -76,6 +76,7 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _frameStart        ( static_cast < osg::Timer_t > ( 0.0 ) ),
   _sharedFrameTime   (),
   _sharedReferenceTime  (),
+  _sharedMatrix      ( ),
   _frameTime         ( 1 ),
   _renderer          (),
   _renderers         (),
@@ -688,6 +689,12 @@ void Application::init()
     _sharedReferenceTime.init ( guid, "viz0" );
   }
 
+  // Initialize the shared navigation matrix.
+  {
+    vpr::GUID guid ( "FEFB5D44-9EC3-4fe3-B2C7-43C394A49848" );
+    _sharedMatrix.init ( guid, "viz0" );
+  }
+
   // Add the progress bars to the scene.
   osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
   _progressBars->position ( Usul::Math::Vec3f ( -0.95, -0.7, -3.0 ) );
@@ -739,6 +746,23 @@ void Application::preFrame()
     _sharedReferenceTime->data = static_cast < double > ( _frameStart - _initialTime );
   }
 
+  // Update these input devices.
+  _buttons->notify();
+  _tracker->update();
+  _joystick->update();
+
+  // Send any notifications.
+  _joystick->notify();
+
+  // Navigate if we are supposed to.
+  this->_navigate ();
+
+  // Write out the navigation matrix.
+  if ( _sharedMatrix.isLocal () )
+  {
+    _sharedMatrix->matrix ( _navBranch->getMatrix () );
+  }
+
   // Update the progress bars.
   _progressBars->buildScene();
 
@@ -767,16 +791,8 @@ void Application::latePreFrame()
   if ( 0x0 != this->frameStamp () )
     this->frameStamp()->setReferenceTime ( _sharedReferenceTime->data );
 
-  // Update these input devices.
-  _buttons->notify();
-  _tracker->update();
-  _joystick->update();
-
-  // Send any notifications.
-  _joystick->notify();
-
-  // Navigate if we are supposed to.
-  this->_navigate ();
+  // Set the navigation matrix.
+  _navBranch->setMatrix ( _sharedMatrix->matrix () );
 
   // Animate if we are suppose to.
   _path->animate ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );

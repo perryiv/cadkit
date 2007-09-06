@@ -14,6 +14,7 @@
 #include "VRV/Export.h"
 #include "VRV/Prefs/Settings.h"
 #include "VRV/Core/SharedDouble.h"
+#include "VRV/Core/SharedMatrix.h"
 #include "VRV/Devices/JoystickDevice.h"
 #include "VRV/Devices/ButtonGroup.h"
 #include "VRV/Devices/TrackerDevice.h"
@@ -463,6 +464,7 @@ private:
   double                                 _frameTime;
   cluster::UserData < SharedDouble >     _sharedFrameTime;
   cluster::UserData < SharedDouble >     _sharedReferenceTime;
+  cluster::UserData < SharedMatrix >     _sharedMatrix;
   vrj::GlContextData< RendererPtr >      _renderer;
   Renderers                              _renderers;
   OsgTools::Render::SceneManager::RefPtr _sceneManager;

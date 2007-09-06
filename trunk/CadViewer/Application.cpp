@@ -39,27 +39,19 @@
 #include "Usul/System/Host.h"
 #include "Usul/Functors/General/If.h"
 #include "Usul/Predicates/UnaryPair.h"
-#include "Usul/File/Path.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/ICommandList.h"
 #include "Usul/Interfaces/IButtonID.h"
 
 #include "VRV/Common/Buttons.h"
-#include "VRV/Devices/ButtonGroup.h"
-#include "VRV/Devices/TrackerDevice.h"
 
 #include "osg/MatrixTransform"
 #include "osg/AutoTransform"
 #include "osg/Matrix"
-#include "osg/LightSource"
 #include "osg/Projection"
-#include "osg/Version"
-#include "osgFX/Scribe"
 
-#include "osgDB/ReadFile"
 #include "osgDB/WriteFile"
-#include "osgDB/ReaderWriter"
 
 #include "OsgTools/Axes.h"
 #include "OsgTools/Text.h"
@@ -70,9 +62,6 @@
 #include "OsgTools/Visitor.h"
 
 #include "MenuKit/MemFunCallback.h"
-
-#include "boost/filesystem/operations.hpp"
-#include "Usul/File/Boost.h"
 
 #include "vrj/Kernel/Kernel.h"
 
@@ -109,7 +98,7 @@ namespace CV
   const unsigned long STOP_NAV_TOOL   = BUTTON_RED;       // helps greatly in sim mode
   const unsigned long NAVIGATE_FLY    = BUTTON_BLUE;      // Joseph doesn't need it, but its handy if anybody else does
   const unsigned long TOOL_SCALE      = BUTTON_GREEN;
-  const unsigned long NAVIGATE_NO_NAV = 0x00000040;
+  const unsigned long NAVIGATE_NO_NAV = BUTTON_RED;
 };
 
 
@@ -172,9 +161,8 @@ unsigned long Application::_mainThread = 0;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Application::Application ( Args &args ) :
+Application::Application ( ) :
   BaseClass       ( ),
-  _parser         ( new Parser ( args.begin(), args.end() ) ),
   _gridBranch     ( new osg::MatrixTransform ),
   _auxiliary      ( new osg::Group ),
   _sceneTool      ( 0x0 ),
@@ -194,7 +182,6 @@ Application::Application ( Args &args ) :
 {
   ErrorChecker ( 1067097070u, 0 == _appThread );
   ErrorChecker ( 2970484549u, 0 == _mainThread );
-  ErrorChecker ( 1074058928u, 0x0 != _parser.get() );
   ErrorChecker ( 1067094628u, _gridBranch.valid() );
   ErrorChecker ( 1069021589u, _auxiliary.valid() );
   ErrorChecker ( 1071551353u, 0x0 != _pickText.get() );
@@ -219,10 +206,6 @@ Application::Application ( Args &args ) :
   this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
   this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
   this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
-
-  // Have to load the config files now. Remove them from the arguments.
-  Parser::Args configs = _parser->files ( ".jconf", true );
-  this->_loadConfigFiles ( configs );
 
   // populate the color map.  TODO: Read from config file.
   _colorMap["red"]    = osg::Vec4 ( 1.0,0.0,0.0,1.0 );
@@ -319,9 +302,6 @@ void Application::_init()
 
   // Set up lights.
   this->_initLight();
-
-  // Parse the command-line arguments.
-  this->_parseCommandLine();
 
   // Experimental: 
   #if 1 // Experimental
@@ -1054,49 +1034,6 @@ MenuKit::Button* Application::_createSeperator ( )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Parse the command-line arguments.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_parseCommandLine()
-{
-  ErrorChecker ( 1067093692u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // The filenames to load.
-  Filenames filenames;
-
-  // Find all directories.
-  Parser::Args directories;
-
-  // Extract the files with the given extension.
-  Usul::Algorithms::extract ( Usul::File::IsDirectory(),
-                              _parser->args(),
-                              directories,
-                              true );
-
-  for ( Parser::Args::iterator iter = directories.begin(); iter != directories.end(); ++ iter )
-  {
-    // Find the files that we can load.
-    Usul::File::findFiles ( *iter, "osg", filenames );
-    Usul::File::findFiles ( *iter, "ive", filenames );
-  }
-
-  // Extract the model files and remove them from the remaining arguments.
-  Parser::Args models = _parser->files ( true );
-
-  // Reserve enough room.
-  filenames.reserve ( filenames.size() + models.size() );
-
-  // Copy the model files into our list to load.
-  std::copy ( models.begin(), models.end(), std::back_inserter( filenames ) );
-
-  // Load the model files.
-  this->_loadModelFiles ( filenames );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Called before the frame is drawn.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1773,18 +1710,6 @@ Usul::Interfaces::IUnknown *Application::queryInterface ( unsigned long iid )
   default:
     return BaseClass::queryInterface ( iid );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return an unknown pointer to this instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown *Application::_thisUnknown()
-{
-  return this->queryInterface ( Usul::Interfaces::IUnknown::IID );
 }
 
 

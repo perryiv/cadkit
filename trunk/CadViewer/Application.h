@@ -25,7 +25,6 @@
 #include "CadViewer/Pick/Intersect.h"
 
 #include "Usul/Pointers/Pointers.h"
-#include "Usul/CommandLine/Parser.h"
 
 #include "VRV/Core/Application.h"
 #include "VRV/Functors/Matrix/MatrixFunctor.h"
@@ -50,11 +49,10 @@ public:
 
   // Useful typedefs
   typedef VRV::Core::Application BaseClass;
-  typedef std::list<std::string> Args;
   typedef Usul::Math::Matrix44f Matrix44f;
 
   // Constructor.
-  Application ( Args &args );
+  Application ( );
 
   // Destructor.
   virtual ~Application();
@@ -84,11 +82,7 @@ public:
   void                          run();
 
 protected:
-
-  // Typedefs needed below.
-  typedef Usul::CommandLine::Parser                     Parser;
-  typedef Parser::Args                                  ParserArgs;
-
+  
   // Joystick callbacks.
   struct JoystickCB : public VRV::Devices::Callback
   {
@@ -106,7 +100,6 @@ protected:
   typedef Unknown::ValidQueryPtr ValidUnknown;
 
   // These are not implemented by design.
-  Application();
   Application ( const Application &app );
   Application& operator = ( const Application &app );
 
@@ -159,9 +152,6 @@ protected:
   // Get the number of selected
   unsigned int                  _numSelected();
 
-  // Parse the command-line arguments.
-  void                          _parseCommandLine();
-
   // Called by the kernel before the frame.
   virtual void                  latePreFrame();
   void                          _latePreFrame();
@@ -182,9 +172,6 @@ protected:
 
   // Set the current "camera" position as "home".
   void                          _setHome();
-
-  // Return an unknown pointer to this instance.
-  Unknown *                     _thisUnknown();
 
   // rebuild the grid in case the _gridFunctor's state has been updated
   void                          _rebuildGrid();
@@ -300,7 +287,6 @@ protected:
 
   // For readability.
   typedef unsigned long                                 ThreadId;
-  typedef std::auto_ptr<Parser>                         ParserPtr;
   typedef osg::ref_ptr<osg::MatrixTransform>            MatTransPtr;
   typedef osg::ref_ptr<osg::Group>                      GroupPtr;
   typedef osg::ref_ptr<osg::Node>                       NodePtr;
@@ -315,7 +301,6 @@ protected:
   // Data members.
   static ThreadId   _appThread;
   static ThreadId   _mainThread;
-  ParserPtr         _parser;
   MatTransPtr       _gridBranch;
   GroupPtr          _auxiliary;
   FunctorPtr        _sceneTool;

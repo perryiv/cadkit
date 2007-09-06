@@ -67,6 +67,9 @@ public:
     // Clear any documents.
     this->_clearDocuments();
 
+    // Trim the job manager.
+    Usul::Jobs::Manager::instance().trim ();
+
     // Delete the job manager.
     Usul::Jobs::Manager::destroy();
 

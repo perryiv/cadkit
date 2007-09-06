@@ -70,6 +70,9 @@ public:
   // Purge all jobs that are ready to be deleted.
   void                    purge();
 
+  // Trim any jobs that are queued, but not running.
+  void                    trim ();
+
   // Wait for all jobs to complete.
   void                    wait();
   void                    wait ( unsigned long timeout );

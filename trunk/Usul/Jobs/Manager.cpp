@@ -272,3 +272,41 @@ void Manager::purge()
   // Remove all jobs that are ready.
   _jobs.remove_if ( std::mem_fun ( &Job::isDone ) );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Predicate for trimming job list.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct TrimJob
+  {
+    TrimJob ()
+    {
+    }
+
+    template < class T >
+    bool operator () ( const T& t ) const
+    {
+      return 0x0 != t->thread ();
+    }
+  };
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Trim any jobs that are queued, but not running.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::trim ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Trim all jobs that aren't running
+  _jobs.remove_if ( Detail::TrimJob () );
+}

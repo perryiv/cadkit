@@ -2567,15 +2567,15 @@ void Application::walkMode ()
   VRV::Functors::Direction::Vector y ( 0, 1, 0 );
   VRV::Functors::Direction::Vector z ( 0, 0, 1 );
 
-  VRV::Functors::Direction::RefPtr dirY    ( new VRV::Functors::Direction ( unknown, y, im ) );
-  VRV::Functors::Direction::RefPtr dirNegZ ( new VRV::Functors::Direction ( unknown, -z, im ) );
+  VRV::Functors::Direction::RefPtr pgy    ( new VRV::Functors::Direction ( unknown, y, im ) );
+  VRV::Functors::Direction::RefPtr ngz ( new VRV::Functors::Direction ( unknown, -z, im ) );
 
   float rotateSpeed    ( this->preferences()->rotationSpeed() );
   float translateSpeed ( this->preferences()->translationSpeed() );
 
   this->navigator ( new VRV::Functors::Pair ( unknown,
-                                              new VRV::Functors::Rotate ( unknown, dirY, hai, rotateSpeed, 0 ),
-                                              new VRV::Functors::Translate ( unknown, dirNegZ, vai, translateSpeed, 0 ),
+                                              new VRV::Functors::Rotate ( unknown, pgy, hai, rotateSpeed, 0 ),
+                                              new VRV::Functors::Translate ( unknown, ngz, vai, translateSpeed, 0 ),
                                               VRV::WALK_MODE_ID ) );
 }
 
@@ -2615,14 +2615,14 @@ void Application::poleMode ()
 
   VRV::Functors::Direction::Vector y ( 0, 1, 0 );
 
-  VRV::Functors::Direction::RefPtr dirY    ( new VRV::Functors::Direction ( unknown, y, im ) );
+  VRV::Functors::Direction::RefPtr pgw    ( new VRV::Functors::Direction ( unknown, y, im ) );
 
   float rotateSpeed    ( this->preferences()->rotationSpeed() );
   float translateSpeed ( this->preferences()->translationSpeed() );
 
   this->navigator ( new VRV::Functors::Pair ( unknown,
-                                              new VRV::Functors::Rotate ( unknown, dirY, hai, rotateSpeed, 0 ),
-                                              new VRV::Functors::Translate ( unknown, dirY, vai, translateSpeed, 0 ),
+                                              new VRV::Functors::Rotate ( unknown, pgw, hai, rotateSpeed, 0 ),
+                                              new VRV::Functors::Translate ( unknown, pgw, vai, translateSpeed, 0 ),
                                               VRV::POLE_MODE_ID ) );
 }
 
@@ -2664,15 +2664,15 @@ void Application::flyMode ()
   VRV::Functors::Direction::Vector y ( 0, 1, 0 );
   VRV::Functors::Direction::Vector z ( 0, 0, 1 );
 
-  VRV::Functors::Direction::RefPtr dirY    ( new VRV::Functors::Direction ( unknown, y, im ) );
-  VRV::Functors::Direction::RefPtr dirNegZ ( new VRV::Functors::Direction ( unknown, -z, wm ) );
+  VRV::Functors::Direction::RefPtr pgw ( new VRV::Functors::Direction ( unknown, y, im ) );
+  VRV::Functors::Direction::RefPtr nwz ( new VRV::Functors::Direction ( unknown, -z, wm ) );
 
   float rotateSpeed    ( this->preferences()->rotationSpeed() );
   float translateSpeed ( this->preferences()->translationSpeed() );
 
   this->navigator ( new VRV::Functors::Pair ( unknown,
-                                              new VRV::Functors::Rotate ( unknown, dirY, hai, rotateSpeed, 0 ),
-                                              new VRV::Functors::Translate ( unknown, dirNegZ, vai, translateSpeed, 0 ),
+                                              new VRV::Functors::Rotate ( unknown, pgw, hai, rotateSpeed, 0 ),
+                                              new VRV::Functors::Translate ( unknown, nwz, vai, translateSpeed, 0 ),
                                               VRV::POLE_MODE_ID ) );
 }
 

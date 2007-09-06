@@ -140,12 +140,8 @@ protected:
     // Print what we found.
     Usul::Components::Manager::instance().print ( std::cout );
 
-    // Put the arguments into a container.
-    typename Application::Args args;
-    std::copy ( argv + 1, argv + argc, std::back_inserter ( args ) );
-
     // Construct an application.
-    Application app ( args );
+    Application app;
 
     // Run the application.
     app.run();

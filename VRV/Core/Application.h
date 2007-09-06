@@ -331,6 +331,9 @@ protected:
 
   void                    _updateStatusBar ( const std::string &text );
 
+  // Parse the command-line arguments.
+  void                    _parseCommandLine();
+
   /// Get/set the clipping distances (VRV::Interfaces::IClippingDistanceFloat).
   virtual void            getClippingDistances ( float &nearDist, float &farDist ) const;
   virtual void            setClippingDistances ( float nearDist, float farDist );

@@ -26,14 +26,17 @@
 #include "VRV/Jobs/SaveImage.h"
 
 #include "Usul/App/Application.h"
+#include "Usul/CommandLine/Arguments.h"
+#include "Usul/CommandLine/Parser.h"
+#include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Assert.h"
-#include "Usul/Trace/Trace.h"
+#include "Usul/File/Path.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Threads/Manager.h"
+#include "Usul/Trace/Trace.h"
 #include "Usul/System/Host.h"
 #include "Usul/System/Directory.h"
 #include "Usul/System/Clock.h"
-#include "Usul/Documents/Manager.h"
 
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Convert.h"
@@ -46,6 +49,7 @@
 #include "vrj/Draw/OGL/GlWindow.h"
 
 #include "boost/filesystem/operations.hpp"
+#include "Usul/File/Boost.h"
 
 #include <stdexcept>
 
@@ -97,6 +101,10 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _statusBar         ( new Menu )
 {
   USUL_TRACE_SCOPE;
+
+  // Parse the command-line arguments.
+  this->_parseCommandLine();
+
   this->_construct();
 
   _frameDump.dir ( "/array/cluster/data/screen_shots" );
@@ -2655,3 +2663,57 @@ bool Application::getFlyMode () const
   return ( 0x0 != functor ? functor->id () == VRV::FLY_MODE_ID : false );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse the command-line arguments.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_parseCommandLine()
+{
+  // Typedefs.
+  typedef Usul::CommandLine::Parser    Parser;
+  typedef Usul::CommandLine::Arguments Arguments;
+
+  // Get the command line arguments.
+  Arguments::Args args ( Arguments::instance().args () );
+
+  // Make the parser.  Offset beginning by one to skip the application name.
+  Parser parser ( args.begin() + 1, args.end() );
+
+  // Have to load the config files now. Remove them from the arguments.
+  Parser::Args configs ( parser.files ( ".jconf", true ) );
+  this->_loadConfigFiles ( configs );
+
+  // The filenames to load.
+  Filenames filenames;
+
+  // Find all directories.
+  Parser::Args directories;
+
+  // Extract the files with the given extension.
+  Usul::Algorithms::extract ( Usul::File::IsDirectory(),
+                              parser.args(),
+                              directories,
+                              true );
+
+  for ( Parser::Args::iterator iter = directories.begin(); iter != directories.end(); ++ iter )
+  {
+    // Find the files that we can load.
+    Usul::File::findFiles ( *iter, "osg", filenames );
+    Usul::File::findFiles ( *iter, "ive", filenames );
+  }
+
+  // Extract the model files and remove them from the remaining arguments.
+  Parser::Args models ( parser.files ( true ) );
+
+  // Reserve enough room.
+  filenames.reserve ( filenames.size() + models.size() );
+
+  // Copy the model files into our list to load.
+  std::copy ( models.begin(), models.end(), std::back_inserter( filenames ) );
+
+  // Load the model files.
+  this->_loadModelFiles ( filenames );
+}

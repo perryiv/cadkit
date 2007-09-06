@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "VRV/Jobs/LoadModel.h"
+#include "VRV/Commands/LoadDocument.h"
 #include "VRV/Interfaces/IModelAdd.h"
 #include "VRV/Interfaces/IPostModelLoad.h"
 
@@ -18,6 +18,7 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/Jobs/Manager.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/System/Directory.h"
 #include "Usul/File/Path.h"
@@ -29,7 +30,7 @@
 
 #include <iostream>
 
-using namespace VRV::Jobs;
+using namespace VRV::Commands;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -38,7 +39,47 @@ using namespace VRV::Jobs;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LoadModel::LoadModel( const Filenames& filenames, Usul::Interfaces::IUnknown *caller ) :
+LoadDocument::LoadDocument ( const Filenames& filenames, Usul::Interfaces::IUnknown * caller ) : 
+BaseClass ( caller ),
+_filenames ( filenames )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+LoadDocument::~LoadDocument ()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Execute.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LoadDocument::_execute()
+{
+  // Create a job.
+  LoadJob::RefPtr job ( new LoadJob ( _filenames, this->caller() ) );
+
+  // Add the job to the manager.
+  Usul::Jobs::Manager::instance().add ( job.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+LoadDocument::LoadJob::LoadJob( const Filenames& filenames, Usul::Interfaces::IUnknown *caller ) :
   BaseClass( caller ),
   _filenames ( filenames ),
   _caller ( caller ),
@@ -57,7 +98,7 @@ LoadModel::LoadModel( const Filenames& filenames, Usul::Interfaces::IUnknown *ca
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LoadModel::~LoadModel()
+LoadDocument::LoadJob::~LoadJob()
 {
 }
 
@@ -68,7 +109,7 @@ LoadModel::~LoadModel()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LoadModel::_started()
+void LoadDocument::LoadJob::_started()
 {
   USUL_TRACE_SCOPE;
 
@@ -100,7 +141,7 @@ void LoadModel::_started()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LoadModel::_loadModel( const std::string& filename )
+void LoadDocument::LoadJob::_loadModel( const std::string& filename )
 {
   USUL_TRACE_SCOPE;
 
@@ -160,7 +201,7 @@ void LoadModel::_loadModel( const std::string& filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LoadModel::_postProcessModelLoad ( const std::string &filename, osg::Node *model )
+void LoadDocument::LoadJob::_postProcessModelLoad ( const std::string &filename, osg::Node *model )
 {
   USUL_TRACE_SCOPE;
 

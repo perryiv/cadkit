@@ -9,11 +9,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "MinervaWriter.h"
-
 #include "Minerva/Core/Serialize.h"
 
-#include "Serialize/XML/TypeCreator.h"
-#include "Serialize/XML/Factory.h"
+#include "Usul/Factory/RegisterCreator.h"
+#include "Usul/Factory/ObjectFactory.h"
+
 #include "Serialize/XML/Serialize.h"
 
 using namespace Minerva::Document;
@@ -51,6 +51,6 @@ MinervaWriter::~MinervaWriter()
 
 void MinervaWriter::operator()()
 {
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<MinervaDocument> ( "MinervaDocument" ) );
+  Usul::Factory::ObjectFactory::instance().add ( new Usul::Factory::TypeCreator<MinervaDocument> ( "MinervaDocument" ) );
   Serialize::XML::serialize( "MinervaDocument", *_document, _filename );
 }

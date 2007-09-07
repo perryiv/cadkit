@@ -9,17 +9,15 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Commands/RemoveLayer.h"
-
 #include "Minerva/Interfaces/IRemoveLayer.h"
 
 #include "Usul/Documents/Manager.h"
-
-#include "Serialize/XML/RegisterCreator.h"
+#include "Usul/Factory/RegisterCreator.h"
 
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( RemoveLayer, RemoveLayer::BaseClass );
-SERIALIZE_XML_REGISTER_CREATOR ( RemoveLayer );
+USUL_FACTORY_REGISTER_CREATOR ( RemoveLayer );
 
 
 ///////////////////////////////////////////////////////////////////////////////

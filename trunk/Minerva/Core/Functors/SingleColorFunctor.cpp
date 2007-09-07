@@ -15,8 +15,7 @@
 #include "Usul/Interfaces/IPointLayer.h"
 #include "Usul/Interfaces/ILineLayer.h"
 #include "Usul/Interfaces/IPolygonLayer.h"
-
-#include "Serialize/XML/RegisterCreator.h"
+#include "Usul/Factory/RegisterCreator.h"
 
 #include "osg/Geometry"
 #include "osg/Array"
@@ -24,7 +23,7 @@
 using namespace Minerva::Core::Functors;
 
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
-SERIALIZE_XML_REGISTER_CREATOR ( SingleColorFunctor );
+USUL_FACTORY_REGISTER_CREATOR ( SingleColorFunctor );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

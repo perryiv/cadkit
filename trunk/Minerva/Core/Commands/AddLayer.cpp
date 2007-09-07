@@ -9,19 +9,17 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Commands/AddLayer.h"
-
 #include "Minerva/Interfaces/IAddLayer.h"
 
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Interfaces/IVectorLayer.h"
-
-#include "Serialize/XML/RegisterCreator.h"
+#include "Usul/Factory/RegisterCreator.h"
 
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( AddLayer, AddLayer::BaseClass );
-SERIALIZE_XML_REGISTER_CREATOR ( AddLayer );
+USUL_FACTORY_REGISTER_CREATOR ( AddLayer );
 
 
 ///////////////////////////////////////////////////////////////////////////////

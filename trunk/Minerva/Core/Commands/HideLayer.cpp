@@ -9,17 +9,15 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Commands/HideLayer.h"
-
 #include "Minerva/Interfaces/IDirtyScene.h"
 
 #include "Usul/Documents/Manager.h"
-
-#include "Serialize/XML/RegisterCreator.h"
+#include "Usul/Factory/RegisterCreator.h"
 
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( HideLayer, HideLayer::BaseClass );
-SERIALIZE_XML_REGISTER_CREATOR ( HideLayer );
+USUL_FACTORY_REGISTER_CREATOR ( HideLayer );
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -13,14 +13,13 @@
 #include "Minerva/Core/postGIS/Line.h"
 #include "Minerva/Core/Visitor.h"
 
-#include "Serialize/XML/RegisterCreator.h"
-
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 
 using namespace Minerva::Core::Layers;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( LineLayer, LineLayer::BaseClass );
-SERIALIZE_XML_REGISTER_CREATOR ( LineLayer );
+USUL_FACTORY_REGISTER_CREATOR ( LineLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

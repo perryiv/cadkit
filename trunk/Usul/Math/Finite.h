@@ -134,8 +134,8 @@ namespace Usul { namespace Math { bool finite ( const vector_type &v ) \
 } }; }
 
 
-}; // namespace Math
-}; // namespace Usul
+} // namespace Math
+} // namespace Usul
 
 
 ///////////////////////////////////////////////////////////////////////////////

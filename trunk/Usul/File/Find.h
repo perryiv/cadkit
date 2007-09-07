@@ -128,8 +128,8 @@ inline void find ( const Dirs &dirs, const std::string &ext, Names &fl )
 }
 
 
-}; // namespace File
-}; // namespace Usul
+} // namespace File
+} // namespace Usul
 
 
 #endif // _USUL_FILE_FIND_FILES_H_

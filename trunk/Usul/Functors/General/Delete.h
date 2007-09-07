@@ -52,9 +52,9 @@ struct DeleteArray
 };
 
 
-}; // namespace General
-}; // namespace Functors
-}; // namespace Usul
+} // namespace General
+} // namespace Functors
+} // namespace Usul
 
 
 #endif // _USUL_FUNCTORS_DELETE_H_

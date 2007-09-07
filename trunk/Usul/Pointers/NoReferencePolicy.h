@@ -29,8 +29,8 @@ struct NoRefCountPolicy
 };
 
 
-}; // namespace Pointers
-}; // namespace Usul
+} // namespace Pointers
+} // namespace Usul
 
 
 #endif // _USUL_POINTERS_NO_REFERENCE_POLICY_H_

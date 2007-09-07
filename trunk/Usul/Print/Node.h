@@ -50,11 +50,11 @@ namespace OSG
           << '\n';
     }
   }
-}; // namespace OSG
+} // namespace OSG
 
 
-}; // namespace Print
-}; // namespace Usul
+} // namespace Print
+} // namespace Usul
 
 
 #endif // _USUL_PRINT_SCENE_GRAPH_NODES_H_

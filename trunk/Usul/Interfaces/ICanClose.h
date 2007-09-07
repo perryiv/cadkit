@@ -33,8 +33,8 @@ struct ICanClose : public Usul::Interfaces::IUnknown
 }; // class ICanClose
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_FOX_CAN_CLOSE_H_

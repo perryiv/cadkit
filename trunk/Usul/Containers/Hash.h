@@ -350,8 +350,8 @@ private:
 };
 
 
-}; // namespace Containers
-}; // namespace Usul
+} // namespace Containers
+} // namespace Usul
 
 
 #endif // _USUL_CONTAINERS_HASH_CLASS_H_

@@ -41,8 +41,8 @@ struct DoNothingPolicy
 };
 
 
-}; // namespace Errors
-}; // namespace Usul
+} // namespace Errors
+} // namespace Usul
 
 
 #endif // _USUL_ERROR_POLICY_DO_NOTHING_H_

@@ -97,8 +97,8 @@ template < typename T > inline T clamp ( const T& t1, const T &t2, const T& t3 )
   return min ( max ( t1, t2 ), t3 );
 }
 
-}; // namespace Math
-}; // namespace Usul
+} // namespace Math
+} // namespace Usul
 
 
 #endif // _USUL_MATH_MIN_MAX_H_

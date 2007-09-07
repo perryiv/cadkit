@@ -51,8 +51,8 @@ inline unsigned long currentThreadId()
 }
 
 
-}; // namespace Threads
-}; // namespace Usul
+} // namespace Threads
+} // namespace Usul
 
 
 #endif // _USUL_THREADS_THREAD_ID_CLASS_H_

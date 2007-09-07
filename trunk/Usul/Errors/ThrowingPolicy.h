@@ -53,8 +53,8 @@ template < class Exception_ > struct ThrowingPolicy
 };
 
 
-}; // namespace Errors
-}; // namespace Usul
+} // namespace Errors
+} // namespace Usul
 
 
 #endif // _USUL_ERROR_POLICY_THROWER_H_

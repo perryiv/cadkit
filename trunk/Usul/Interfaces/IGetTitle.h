@@ -33,8 +33,8 @@ struct IGetTitle : public Usul::Interfaces::IUnknown
 }; // class IGetTitle
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_GET_TITLE_H_

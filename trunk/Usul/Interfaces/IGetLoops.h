@@ -45,8 +45,8 @@ struct IGetLoops : public Usul::Interfaces::IUnknown
 }; // struct IGetLoops
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_GET_LOOPS_H_

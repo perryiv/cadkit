@@ -34,8 +34,8 @@ struct IGetDocument : public Usul::Interfaces::IUnknown
 }; // class IGetDocument
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_DOCUMENT_H_

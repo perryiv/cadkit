@@ -39,8 +39,8 @@ struct IImage : public Usul::Interfaces::IUnknown
 }; // struct IImage
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_IMAGE_H_

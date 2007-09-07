@@ -75,8 +75,8 @@ private:
 };
 
 
-}; // namespace Shared
-}; // namespace Usul
+} // namespace Shared
+} // namespace Usul
 
 
 #endif // _USUL_COMMAND_LINE_ARGUMENTS_CLASS_H_

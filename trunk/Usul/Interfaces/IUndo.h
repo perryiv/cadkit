@@ -36,8 +36,8 @@ struct IUndo : public Usul::Interfaces::IUnknown
 };
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_UNDO_COMMAND_H_

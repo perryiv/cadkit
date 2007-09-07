@@ -113,8 +113,8 @@ struct SetMutexFactory
 };
 
 
-}; // namespace Threads
-}; // namespace Usul
+} // namespace Threads
+} // namespace Usul
 
 
 #endif // _USUL_THREADS_MUTEX_CLASSES_H_

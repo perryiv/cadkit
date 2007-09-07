@@ -53,8 +53,8 @@ private:
 };
 
 
-}; // namespace Errors
-}; // namespace Usul
+} // namespace Errors
+} // namespace Usul
 
 
 #endif // _USUL_ERRORS_ERROR_CLASS_H_

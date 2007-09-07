@@ -38,8 +38,8 @@ struct ISceneIntersect : public Usul::Interfaces::IUnknown
 }; // class ISceneIntersect
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_SCENE_INTERSECT_H_

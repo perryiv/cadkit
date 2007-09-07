@@ -163,8 +163,8 @@ public:
 };
 
 
-}; // namespace Exceptions
-}; // namespace Usul
+} // namespace Exceptions
+} // namespace Usul
 
 
 #endif // _USUL_EXCEPTIONS_THROWER_CLASS_H_

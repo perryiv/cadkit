@@ -55,8 +55,8 @@ private:
 };
 
 
-}; // namespace Base
-}; // namespace Usul
+} // namespace Base
+} // namespace Usul
 
 
 #endif // _USUL_REFERENCED_INSTANCE_MANAGER_CLASS_H_

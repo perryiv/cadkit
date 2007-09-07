@@ -30,8 +30,8 @@ struct IUpdateTreeControls : public Usul::Interfaces::IUnknown
 }; // class IUpdateTreeControls
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_UPDATE_TREE_CONTROLS_H_

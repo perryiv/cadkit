@@ -38,8 +38,8 @@ struct IInitNewDocument : public Usul::Interfaces::IUnknown
 };
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_INIT_NEW_DOCUMENT_H_

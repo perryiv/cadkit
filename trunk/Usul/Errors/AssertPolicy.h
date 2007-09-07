@@ -49,8 +49,8 @@ struct AssertPolicy
 };
 
 
-}; // namespace Errors
-}; // namespace Usul
+} // namespace Errors
+} // namespace Usul
 
 
 #endif // _USUL_ERROR_POLICY_ASSERT_H_

@@ -63,8 +63,8 @@ inline void trimRightAll ( std::string &s, char c = ' ' )
 }
 
 
-}; // namespace Strings
-}; // namespace Usul
+} // namespace Strings
+} // namespace Usul
 
 
 #endif // _USUL_STRINGS_TRIM_H_

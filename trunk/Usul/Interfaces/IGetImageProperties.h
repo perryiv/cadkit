@@ -39,8 +39,8 @@ struct IGetImageProperties : public Usul::Interfaces::IUnknown
 };
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_GET_IMAGE_PROPERTIES_H_

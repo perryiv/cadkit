@@ -56,8 +56,8 @@ typedef IImageToGrayScale < 4100451875, Usul::Types::Float32 > IImageToGrayScale
 typedef IImageToGrayScale < 4100451876, Usul::Types::Float64 > IImageToGrayScaleFloat64;
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_IMAGE_TO_GRAY_SCALE_H_

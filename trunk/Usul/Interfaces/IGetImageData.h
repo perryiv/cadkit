@@ -59,8 +59,8 @@ typedef IGetImageData < 3227115360u, Usul::Types::Float32 > IGetImageDataFloat32
 typedef IGetImageData < 3894806559u, Usul::Types::Float64 > IGetImageDataFloat64;
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_GET_IMAGE_DATA_H_

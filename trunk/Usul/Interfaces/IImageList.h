@@ -42,8 +42,8 @@ struct IImageList : public Usul::Interfaces::IUnknown
 }; // struct IImageList
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_IMAGE_LIST_H_

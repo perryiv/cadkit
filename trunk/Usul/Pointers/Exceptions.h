@@ -60,9 +60,9 @@ struct NoInterface : public NullPointer
 };
 
 
-}; // namespace Exceptions
-}; // namespace Pointers
-}; // namespace Usul
+} // namespace Exceptions
+} // namespace Pointers
+} // namespace Usul
 
 
 #endif // _USUL_SMART_POINTERS_EXCEPTION_CLASSES_H_

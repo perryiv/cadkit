@@ -36,8 +36,8 @@ struct IButtonReleaseListener : public Usul::Interfaces::IUnknown
 };
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACES_BUTTON_RELEASE_LISTENER_H_

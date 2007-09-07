@@ -33,8 +33,8 @@ template < class T > inline T absolute ( T v )
 }
 
 
-}; // namespace Math
-}; // namespace Usul
+} // namespace Math
+} // namespace Usul
 
 
 #endif // _USUL_MATH_ABSOLUTE_VALUE_H_

@@ -198,9 +198,9 @@ public:
 };
 
 
-}; // namespace Configs
-}; // namespace Pointers
-}; // namespace Usul
+} // namespace Configs
+} // namespace Pointers
+} // namespace Usul
 
 
 

@@ -467,8 +467,8 @@ private:
 };
 
 
-}; // namespace Containers
-}; // namespace Usul
+} // namespace Containers
+} // namespace Usul
 
 
 ///////////////////////////////////////////////////////////////////////////////

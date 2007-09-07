@@ -67,8 +67,8 @@ inline UnaryPair < Pred1, Operation, Pred2 > unaryPair ( Pred1 p1, Operation op,
 }
 
 
-}; // namespace Predicates
-}; // namespace Usul
+} // namespace Predicates
+} // namespace Usul
 
 
 #endif // _USUL_PREDICATES_UNARY_PAIR_H_

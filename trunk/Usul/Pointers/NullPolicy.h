@@ -56,8 +56,8 @@ struct NullBadPolicy
 };
 
 
-}; // namespace Pointers
-}; // namespace Usul
+} // namespace Pointers
+} // namespace Usul
 
 
 #endif // _USUL_POINTERS_NULL_POLICY_H_

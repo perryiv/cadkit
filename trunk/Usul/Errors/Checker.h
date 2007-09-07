@@ -53,8 +53,8 @@ namespace Errors {
 #endif
 
 
-}; // namespace Errors
-}; // namespace Usul
+} // namespace Errors
+} // namespace Usul
 
 
 ///////////////////////////////////////////////////////////////////////////////

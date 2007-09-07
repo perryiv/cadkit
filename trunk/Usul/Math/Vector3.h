@@ -473,8 +473,8 @@ template < class T > Usul::Math::Vector3<T> cross ( const Usul::Math::Vector3<T>
 }
 
 
-}; // namespace Math
-}; // namespace Usul
+} // namespace Math
+} // namespace Usul
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -73,8 +73,8 @@ private:
 };
 
 
-}; // namespace Registry
-}; // namespace Usul
+} // namespace Registry
+} // namespace Usul
 
 
 #endif // _USUL_REGISTRY_DATABASE_CLASS_H_

@@ -62,8 +62,8 @@ template < class Matrix_ > inline void transpose ( Matrix_ &m )
 }
 
 
-}; // namespace Math
-}; // namespace Usul
+} // namespace Math
+} // namespace Usul
 
 
 #endif // _USUL_MATH_TRANSPOSE_FUNCTION_H_

@@ -37,8 +37,8 @@ struct IHeliosView : public Usul::Interfaces::IUnknown
 }; // struct IHeliosView
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_OSG_FOX_VIEW_H_

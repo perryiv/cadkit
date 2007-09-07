@@ -62,8 +62,8 @@ private:
 };
 
 
-}; // namespace Properties
-}; // namespace Usul
+} // namespace Properties
+} // namespace Usul
 
 
 #endif // _USUL_PROPERTIES_ATTRIBUTE_CLASSES_H_

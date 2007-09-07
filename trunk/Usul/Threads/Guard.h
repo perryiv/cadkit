@@ -43,8 +43,8 @@ protected:
 };
 
 
-}; // namespace Threads
-}; // namespace Usul
+} // namespace Threads
+} // namespace Usul
 
 
 #endif // _USUL_THREADS_GUARD_CLASS_H_

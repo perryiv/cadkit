@@ -40,8 +40,8 @@ struct USUL_EXPORT Loader
 };
 
 
-}; // namespace DLL
-}; // namespace Usul
+} // namespace DLL
+} // namespace Usul
 
 
 #endif // _USUL_DYNAMIC_LOAD_LIBRARY_LOADER_CLASS_H_

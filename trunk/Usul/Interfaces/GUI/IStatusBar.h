@@ -61,8 +61,8 @@ struct IStatusBar : public Usul::Interfaces::IUnknown
 
 }; // class IStatusBar
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_STATUS_BAR_H_

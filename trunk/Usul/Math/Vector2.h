@@ -345,8 +345,8 @@ typedef Vector2 < double         > Vec2d;
 typedef Vector2 < long double    > Vec2ld;
 
 
-}; // namespace Math
-}; // namespace Usul
+} // namespace Math
+} // namespace Usul
 
 
 ///////////////////////////////////////////////////////////////////////////////

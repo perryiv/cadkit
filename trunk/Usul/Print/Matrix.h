@@ -69,8 +69,8 @@ inline void matrix ( const StringType_ &message,
 }
 
 
-}; // namespace Print
-}; // namespace Usul
+} // namespace Print
+} // namespace Usul
 
 
 #endif // _USUL_PRINT_MATRIX_H_

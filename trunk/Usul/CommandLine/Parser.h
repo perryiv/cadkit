@@ -236,8 +236,8 @@ private:
 };
 
 
-}; // namespace CommandLine
-}; // namespace Usul
+} // namespace CommandLine
+} // namespace Usul
 
 
 #endif // _USUL_COMMAND_LINE_PARSER_CLASS_H_

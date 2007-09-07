@@ -51,8 +51,8 @@ template < class Check1_, class Check2_ > struct CompositePolicy
 };
 
 
-}; // namespace Errors
-}; // namespace Usul
+} // namespace Errors
+} // namespace Usul
 
 
 #endif // _USUL_ERROR_POLICY_COMPOSITE_H_

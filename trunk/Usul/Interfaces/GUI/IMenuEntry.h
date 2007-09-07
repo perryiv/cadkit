@@ -47,8 +47,8 @@ struct IMenuEntry : public Usul::Interfaces::IUnknown
 };
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_MENU_ENTRY_H_

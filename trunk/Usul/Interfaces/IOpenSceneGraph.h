@@ -39,8 +39,8 @@ struct IOpenSceneGraph : public Usul::Interfaces::IUnknown
 };
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_OPEN_SCENE_GRAPH_H_

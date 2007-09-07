@@ -42,8 +42,8 @@ struct IButtonPressSubject : public Usul::Interfaces::IUnknown
 };
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACES_BUTTON_PRESS_SUBJECT_H_

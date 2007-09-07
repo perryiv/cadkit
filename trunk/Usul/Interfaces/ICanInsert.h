@@ -31,8 +31,8 @@ struct ICanInsert : public Usul::Interfaces::IUnknown
 }; // class ICanInsert
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_CAN_INSERT_H_

@@ -36,8 +36,8 @@ struct GLBeginEnd
 };
 
 
-}; // namespace Scope
-}; // namespace Usul
+} // namespace Scope
+} // namespace Usul
 
 
 #endif // _USUL_SCOPE_GL_BEGIN_END_H_

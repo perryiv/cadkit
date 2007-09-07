@@ -32,8 +32,8 @@ template < class FindType_ > struct IsOfType : std::unary_function < FindType_, 
 };
 
 
-}; // namespace Predicates
-}; // namespace Usul
+} // namespace Predicates
+} // namespace Usul
 
 
 #endif // _USUL_PREDICATES_IS_OF_TYPE_H_

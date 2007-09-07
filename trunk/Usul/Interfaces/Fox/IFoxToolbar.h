@@ -37,8 +37,8 @@ struct IFoxToolbar : public Usul::Interfaces::IUnknown
 }; // class IFoxToolbar
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_FOX_TOOLBAR_H__

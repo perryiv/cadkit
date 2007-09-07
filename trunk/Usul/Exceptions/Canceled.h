@@ -67,8 +67,8 @@ private:
 typedef Canceled Cancelled;
 
 
-}; // namespace Exceptions
-}; // namespace Usul
+} // namespace Exceptions
+} // namespace Usul
 
 
 #undef CANCELED_MESSAGE_STRING

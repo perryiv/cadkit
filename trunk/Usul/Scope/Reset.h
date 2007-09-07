@@ -90,8 +90,8 @@ private:
 };
 #endif
 
-}; // namespace Scope
-}; // namespace Usul
+} // namespace Scope
+} // namespace Usul
 
 
 #endif // _USUL_SET_FOR_THIS_SCOPE_H_

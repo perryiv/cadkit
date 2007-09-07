@@ -57,8 +57,8 @@ template < class ScalarType > struct Angle < ScalarType, 3 >
 };
 
 
-}; // namespace Math
-}; // namespace Usul
+} // namespace Math
+} // namespace Usul
 
 
 #endif // _USUL_MATH_VECTOR_ANGLE_H_

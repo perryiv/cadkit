@@ -38,8 +38,8 @@ struct RefCountPolicy
 };
 
 
-}; // namespace Pointers
-}; // namespace Usul
+} // namespace Pointers
+} // namespace Usul
 
 
 #endif // _USUL_POINTERS_REFERENCE_COUNTING_POLICY_H_

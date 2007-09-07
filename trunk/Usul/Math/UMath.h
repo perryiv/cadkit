@@ -169,8 +169,8 @@ USUL_DECLARE_BINARY_SPECIALIZATIONS ( Power,       ::pow, pow );
 #undef USUL_DECLARE_BINARY_SPECIALIZATIONS
 
 
-}; // namespace Math
-}; // namespace Usul
+} // namespace Math
+} // namespace Usul
 
 
 #endif // _USUL_MATH_H_

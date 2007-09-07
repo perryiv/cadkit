@@ -133,8 +133,8 @@ public:
 };
 
 
-}; // namespace Pointers
-}; // namespace Usul
+} // namespace Pointers
+} // namespace Usul
 
 
 #endif // _USUL_QUERY_INTERFACE_POINTER_CLASS_H_

@@ -38,8 +38,8 @@ struct INotifyClose : public Usul::Interfaces::IUnknown
 };
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_CLOSE_NOTIFY_H_

@@ -83,8 +83,8 @@ typedef Writer < Usul::Endian::FromSystemToBig >    WriteBigEndian;
 typedef Writer < Usul::Endian::FromSystemToLittle > WriteLittleEndian;
 
 
-}; // namespace IO
-}; // namespace Usul
+} // namespace IO
+} // namespace Usul
 
 
 #endif // _USUL_IO_BINARY_WRITER_H_

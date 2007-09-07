@@ -91,8 +91,8 @@ private:
 };
 
 
-}; // namespace Shared
-}; // namespace Usul
+} // namespace Shared
+} // namespace Usul
 
 
 #endif // _USUL_PREFERENCES_H_

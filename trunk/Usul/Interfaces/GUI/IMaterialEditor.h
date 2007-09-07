@@ -41,8 +41,8 @@ struct IMaterialEditor : public Usul::Interfaces::IUnknown
 };
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_MATERIAL_EDITOR_H_

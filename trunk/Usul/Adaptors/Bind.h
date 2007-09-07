@@ -126,8 +126,8 @@ bind2 ( ArgumentType1 argument1, ArgumentType2 argument2, FunctionType function 
 }
 
 
-}; // namespace Adaptors
-}; // namespace Usul
+} // namespace Adaptors
+} // namespace Usul
 
 
 #endif // _USUL_ADAPTORS_BIND_H_

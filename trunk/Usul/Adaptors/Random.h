@@ -45,8 +45,8 @@ private:
 };
 
 
-}; // namespace Adaptors
-}; // namespace Usul
+} // namespace Adaptors
+} // namespace Usul
 
 
 #endif // __USUL_ADAPTORS_RANDOM_H__

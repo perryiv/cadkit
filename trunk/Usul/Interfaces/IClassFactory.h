@@ -37,8 +37,8 @@ struct IClassFactory : public IUnknown
 };
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_CLASS_FACTORY_H_

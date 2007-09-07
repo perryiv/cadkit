@@ -51,8 +51,8 @@ inline void extract ( const Pred &pred, Container &all, Container &sub, bool rem
 }
 
 
-}; // namespace Algorithms
-}; // namespace Usul
+} // namespace Algorithms
+} // namespace Usul
 
 
 #endif // _USUL_ALGORITHMS_EXTRACTION_H_

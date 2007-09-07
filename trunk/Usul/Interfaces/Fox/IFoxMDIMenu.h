@@ -33,8 +33,8 @@ struct IFoxMDIMenu : public Usul::Interfaces::IUnknown
 }; // class IFoxMDIMenu
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_FOX_MDI_MENU_H_

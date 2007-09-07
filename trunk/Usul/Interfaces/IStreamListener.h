@@ -44,8 +44,8 @@ struct IStreamListener : public Usul::Interfaces::IUnknown
 typedef IStreamListener < char, 1260209607u > IStreamListenerChar;
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_STREAM_LISTENER_H_

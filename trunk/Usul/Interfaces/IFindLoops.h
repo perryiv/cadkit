@@ -102,8 +102,8 @@ void operator () ( unsigned int numLoops, std::string str, unsigned int current,
 }; // struct IFindLoops
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_FIND_LOOPS_H_

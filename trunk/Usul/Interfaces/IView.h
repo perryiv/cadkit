@@ -37,8 +37,8 @@ struct IView : public Usul::Interfaces::IUnknown
 }; // class IView
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_VIEW_H_

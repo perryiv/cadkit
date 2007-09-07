@@ -68,9 +68,9 @@ inline Pair < F1, F2 > pair ( F1 f1, F2 f2 )
 }
 
 
-}; // namespace General
-}; // namespace Functors
-}; // namespace Usul
+} // namespace General
+} // namespace Functors
+} // namespace Usul
 
 
 #endif // _USUL_FUNCTORS_PAIR_H_

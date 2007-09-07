@@ -45,8 +45,8 @@ template < class T > inline T cube ( T v )
 }
 
 
-}; // namespace Math
-}; // namespace Usul
+} // namespace Math
+} // namespace Usul
 
 
 #endif // _USUL_MATH_POWER_H_

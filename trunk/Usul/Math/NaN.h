@@ -146,8 +146,8 @@ namespace Usul { namespace Math { bool nan ( const vector_type &v ) \
 } }; }
 
 
-}; // namespace Math
-}; // namespace Usul
+} // namespace Math
+} // namespace Usul
 
 
 ///////////////////////////////////////////////////////////////////////////////

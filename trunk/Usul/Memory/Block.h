@@ -145,8 +145,8 @@ private:
 };
 
 
-}; // namespace Memory
-}; // namespace Usul
+} // namespace Memory
+} // namespace Usul
 
 
 #endif // _USUL_LIBRARY_MEMORY_BLOCK_H_

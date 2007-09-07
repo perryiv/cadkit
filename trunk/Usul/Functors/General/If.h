@@ -90,9 +90,9 @@ private:
 };
 
 
-}; // namespace General
-}; // namespace Functors
-}; // namespace Usul
+} // namespace General
+} // namespace Functors
+} // namespace Usul
 
 
 #endif // _USUL_FUNCTORS_IF_H_

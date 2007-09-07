@@ -27,8 +27,8 @@ template < class T > struct TypeWrap
 };
 
 
-}; // namespace MPL
-}; // namespace Usul
+} // namespace MPL
+} // namespace Usul
 
 
 #endif // _USUL_MPL_TYPE_WRAPPER_H_

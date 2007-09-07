@@ -35,8 +35,8 @@ struct IFoxAddTab : public Usul::Interfaces::IUnknown
 }; // class IFoxAddTab
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_FOX_ADD_TAB_H_

@@ -329,8 +329,8 @@ void Document::_sendMessage ( Listeners &listeners, unsigned short message )
   }
 }
 
-}; // namespace Documents
-}; // namespace Usul
+} // namespace Documents
+} // namespace Usul
 
 
 #endif // _USUL_DOCUMENT_H_

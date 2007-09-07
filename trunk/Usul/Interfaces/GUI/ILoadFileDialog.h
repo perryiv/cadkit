@@ -48,8 +48,8 @@ struct ILoadFileDialog : public Usul::Interfaces::IUnknown
 };
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_LOAD_FILE_DIALOG_H_

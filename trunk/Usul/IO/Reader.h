@@ -86,8 +86,8 @@ typedef Reader < Usul::Endian::FromBigToSystem >    ReadBigEndian;
 typedef Reader < Usul::Endian::FromLittleToSystem > ReadLittleEndian;
 
 
-}; // namespace IO
-}; // namespace Usul
+} // namespace IO
+} // namespace Usul
 
 
 #endif // _USUL_IO_BINARY_READER_H_

@@ -11,13 +11,12 @@
 #include "Magrathea/WmsLayer.h"
 
 #include "Usul/Functions/Guid.h"
-
-#include "Serialize/XML/RegisterCreator.h"
+#include "Usul/Factory/RegisterCreator.h"
 
 using namespace Magrathea;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WmsLayer, WmsLayer::BaseClass );
-SERIALIZE_XML_REGISTER_CREATOR ( WmsLayer );
+USUL_FACTORY_REGISTER_CREATOR ( WmsLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

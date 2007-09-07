@@ -11,13 +11,12 @@
 #include "Magrathea/ImageTextureLayer.h"
 
 #include "Usul/Functions/Guid.h"
-
-#include "Serialize/XML/RegisterCreator.h"
+#include "Usul/Factory/RegisterCreator.h"
 
 using namespace Magrathea;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ImageTextureLayer, ImageTextureLayer::BaseClass );
-SERIALIZE_XML_REGISTER_CREATOR ( ImageTextureLayer );
+USUL_FACTORY_REGISTER_CREATOR ( ImageTextureLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

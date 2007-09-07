@@ -491,6 +491,182 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Interaction"
+					>
+					<Filter
+						Name="Common"
+						>
+						<File
+							RelativePath=".\Functors\Interaction\Common\BaseFunctor.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Common\BaseFunctor.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Common\Sequence.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Common\Sequence.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="Input"
+						>
+						<File
+							RelativePath=".\Functors\Interaction\Input\AnalogInput.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Input\AnalogInput.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Input\JoystickHorizontal.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Input\JoystickHorizontal.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Input\JoystickVertical.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Input\JoystickVertical.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Input\WandAngle.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Input\WandAngle.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Input\WandPitch.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Input\WandPitch.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Input\WandYaw.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Input\WandYaw.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="Matrix"
+						>
+						<File
+							RelativePath=".\Functors\Interaction\Matrix\IdentityMatrix.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Matrix\IdentityMatrix.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Matrix\InverseMatrix.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Matrix\InverseMatrix.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Matrix\MatrixFunctor.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Matrix\MatrixFunctor.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Matrix\MatrixPair.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Matrix\MatrixPair.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="Navigate"
+						>
+						<File
+							RelativePath=".\Functors\Interaction\Navigate\Direction.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Navigate\Direction.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Navigate\Rotate.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Navigate\Rotate.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Navigate\Transform.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Navigate\Transform.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Navigate\Translate.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Navigate\Translate.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="Wand"
+						>
+						<File
+							RelativePath=".\Functors\Interaction\Wand\WandMatrix.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Wand\WandMatrix.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Wand\WandPosition.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Wand\WandPosition.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Wand\WandRotation.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Wand\WandRotation.h"
+							>
+						</File>
+					</Filter>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="ID"
@@ -624,6 +800,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IChangeMenuBar.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IClassesFactory.h"
 					>
 				</File>
@@ -641,6 +821,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IClonable.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IColorsPerVertex.h"
 					>
 				</File>
 				<File
@@ -796,6 +980,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IFrameInfo.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IFrameStamp.h"
 					>
 				</File>
@@ -860,6 +1048,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IGuiInit.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\GUI\IGUIServer.h"
 					>
 				</File>
@@ -897,6 +1089,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IInitNewDocument.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IJoystick.h"
 					>
 				</File>
 				<File
@@ -944,6 +1140,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IMatrixMultiply.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IMemoryPool.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\Fox\IMenuBar.h"
 					>
 				</File>
@@ -961,6 +1165,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IModifiedSubject.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IMpdNavigator.h"
 					>
 				</File>
 				<File
@@ -1013,6 +1221,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IPlanetNode.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IPlayMovie.h"
 					>
 				</File>
 				<File
@@ -1156,6 +1368,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IShowNewPrimitives.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\ISmoothModel.h"
 					>
 				</File>
@@ -1232,6 +1448,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\ITranslationSpeed.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\ITriangle.h"
 					>
 				</File>
@@ -1288,6 +1508,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IVertices.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IView.h"
 					>
 				</File>
@@ -1300,11 +1524,23 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IWandState.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\GUI\IWindow.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Interfaces\Qt\IWorkspace.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IWorldInfo.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IWriteMovieFile.h"
 					>
 				</File>
 			</Filter>
@@ -2367,6 +2603,52 @@
 				</File>
 				<File
 					RelativePath=".\Network\WMS.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Factory"
+				>
+				<File
+					RelativePath=".\Factory\BaseCreator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Factory\BaseCreator.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Factory\ObjectFactory.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)2.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)2.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Factory\ObjectFactory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Factory\RegisterCreator.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Factory\TypeCreator.h"
 					>
 				</File>
 			</Filter>

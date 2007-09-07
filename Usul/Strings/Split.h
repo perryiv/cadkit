@@ -75,8 +75,8 @@ template < class StringContainer > void split ( const std::string &input, char d
 }
 
 
-}; // namespace Strings
-}; // namespace Usul
+} // namespace Strings
+} // namespace Usul
 
 
 #endif // _USUL_STRINGS_SPLIT_H_

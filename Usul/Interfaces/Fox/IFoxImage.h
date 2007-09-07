@@ -37,8 +37,8 @@ struct IFoxImage : public Usul::Interfaces::IUnknown
 }; // struct IFoxImage
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_FOX_IMAGE_H_

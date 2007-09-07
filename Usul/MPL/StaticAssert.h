@@ -31,8 +31,8 @@ template < bool T > struct StaticAssert;
 template <> struct StaticAssert < true >{};
 
 
-}; // namespace MPL
-}; // namespace Usul
+} // namespace MPL
+} // namespace Usul
 
 
 ///////////////////////////////////////////////////////////////////////////////

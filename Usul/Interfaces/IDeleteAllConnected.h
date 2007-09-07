@@ -38,8 +38,8 @@ struct IDeleteAllConnected : public Usul::Interfaces::IUnknown
 };
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_DELETE_ALL_CONNECTED_H_

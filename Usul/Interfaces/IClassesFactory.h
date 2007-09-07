@@ -40,8 +40,8 @@ struct IClassesFactory : public IUnknown
 };
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_CLASSES_FACTORY_H_

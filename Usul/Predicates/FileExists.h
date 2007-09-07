@@ -90,8 +90,8 @@ public:
 };
 
 
-}; // namespace Predicates
-}; // namespace Usul
+} // namespace Predicates
+} // namespace Usul
 
 
 #endif // _USUL_PREDICATES_FILE_EXISTS_H_

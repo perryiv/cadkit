@@ -32,8 +32,8 @@ struct IFoxClientArea : public Usul::Interfaces::IUnknown
 }; // class IFoxClientArea
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_FOX_CLIENT_AREA_H_

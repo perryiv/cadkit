@@ -330,8 +330,8 @@ struct FromLittleToSystem
 };
 
 
-}; // namespace Endian
-}; // namespace Usul
+} // namespace Endian
+} // namespace Usul
 
 
 #endif // _USUL_LIBRARY_ENDIAN_H_

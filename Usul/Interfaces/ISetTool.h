@@ -39,8 +39,8 @@ struct ISetTool : public Usul::Interfaces::IUnknown
 }; //  ISetTool
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_SET_TOOL_H_

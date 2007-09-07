@@ -32,8 +32,8 @@ struct USUL_EXPORT Typed
 };
 
 
-}; // namespace Base
-}; // namespace Usul
+} // namespace Base
+} // namespace Usul
 
 
 ///////////////////////////////////////////////////////////////////////////////

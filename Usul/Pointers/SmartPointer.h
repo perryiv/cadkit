@@ -354,8 +354,8 @@ private:
 };
 
 
-}; // namespace Pointers
-}; // namespace Usul
+} // namespace Pointers
+} // namespace Usul
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -35,8 +35,8 @@ struct IHandle : public Usul::Interfaces::IUnknown
 }; // struct IHandle
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_HANDLE_H_

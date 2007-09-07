@@ -47,8 +47,8 @@ typedef INotify < std::string,   1099894744u > INotifyString;
 typedef INotify < unsigned long, 1099894745u > INotifyULong;
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_NOTIFY_H_

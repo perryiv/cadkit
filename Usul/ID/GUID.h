@@ -53,8 +53,8 @@ private:
 };
 
 
-}; // namespace ID
-}; // namespace Usul
+} // namespace ID
+} // namespace Usul
 
 
 #endif // _USUL_GUID_CLASS_H_

@@ -93,8 +93,8 @@ memberFunction ( ObjectType object, FunctionType function )
 }
 
 
-}; // namespace Adaptors
-}; // namespace Usul
+} // namespace Adaptors
+} // namespace Usul
 
 
 #endif // _USUL_ADAPTORS_MEMBER_FUNCTION_H_

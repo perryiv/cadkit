@@ -39,8 +39,8 @@ protected:
 };
 
 
-}; // namespace Predicates
-}; // namespace Usul
+} // namespace Predicates
+} // namespace Usul
 
 
 #endif // _USUL_PREDICATES_FILE_NAME_ENDS_WITH_H_

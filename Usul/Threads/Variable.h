@@ -143,8 +143,8 @@ private:
 };
 
 
-}; // namespace Threads
-}; // namespace Usul
+} // namespace Threads
+} // namespace Usul
 
 
 #endif // _USUL_THREADS_VARIABLE_WITH_MUTEX_CLASS_H_

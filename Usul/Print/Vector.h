@@ -113,8 +113,8 @@ inline void vector ( const StringType_ &message,
 }
 
 
-}; // namespace Print
-}; // namespace Usul
+} // namespace Print
+} // namespace Usul
 
 
 #endif // _USUL_PRINT_VECTOR_H_

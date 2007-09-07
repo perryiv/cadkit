@@ -63,8 +63,8 @@ public:
 };
 
 
-}; // namespace Components
-}; // namespace Usul
+} // namespace Components
+} // namespace Usul
 
 
 #endif // _USUL_COMPONENT_CREATE_HELPER_CLASSES_H_

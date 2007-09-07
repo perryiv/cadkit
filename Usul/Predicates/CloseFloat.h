@@ -164,8 +164,8 @@ protected:
 };
 
 
-}; // namespace Predicates
-}; // namespace Usul
+} // namespace Predicates
+} // namespace Usul
 
 
 #endif // _USUL_PREDICATES_CLOSE_FLOAT_H_

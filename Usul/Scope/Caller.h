@@ -85,8 +85,8 @@ template < class F1, class F2 > inline Caller *makeCaller ( F1 f1, F2 f2 )
 }
 
 
-}; // namespace Scope
-}; // namespace Usul
+} // namespace Scope
+} // namespace Usul
 
 
 #endif // _USUL_SCOPE_CALLER_H_

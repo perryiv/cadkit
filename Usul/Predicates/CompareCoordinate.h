@@ -36,8 +36,8 @@ private:
 };
 
 
-}; // namespace Predicates
-}; // namespace Usul
+} // namespace Predicates
+} // namespace Usul
 
 
 #endif // _USUL_PREDICATES_COMPARE_COORDINATE_H_

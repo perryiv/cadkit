@@ -32,8 +32,8 @@ struct USUL_EXPORT Host
 };
 
 
-}; // namespace System
-}; // namespace Usul
+} // namespace System
+} // namespace Usul
 
 
 #endif // _USUL_SYSTEM_LOCAL_HOST_MACHINE_CLASS_H_

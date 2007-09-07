@@ -81,8 +81,8 @@ private:
 };
 
 
-}; // namespace Predicates
-}; // namespace Usul
+} // namespace Predicates
+} // namespace Usul
 
 
 #endif // _USUL_PREDICATES_LESS_VECTOR_H_

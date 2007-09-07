@@ -78,8 +78,8 @@ private:
 };
 
 
-}; // namespace File
-}; // namespace Usul
+} // namespace File
+} // namespace Usul
 
 
 #endif // _USUL_FILE_TEMPORARY_H_

@@ -76,8 +76,8 @@ void triStrip ( const Vertices &vertices, Indices &indices, Indices &strips )
 }
 
 
-}; // namespace Algorithms
-}; // namespace Usul
+} // namespace Algorithms
+} // namespace Usul
 
 
 #endif // _USUL_ALGORITHMS_TRI_STRIPPER_H_

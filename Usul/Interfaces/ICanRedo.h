@@ -36,8 +36,8 @@ struct ICanRedo : public Usul::Interfaces::IUnknown
 };
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_CAN_REDO_COMMAND_H_

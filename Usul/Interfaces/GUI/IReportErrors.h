@@ -44,8 +44,8 @@ struct IReportErrors : public Usul::Interfaces::IUnknown
 }; //  IReportsErrors
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_REPORT_ERRORS_H_

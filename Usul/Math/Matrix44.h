@@ -868,8 +868,8 @@ typedef Matrix44 < double         > Matrix44d;
 typedef Matrix44 < long double    > Matrix44ld;
 
 
-}; // namespace Math
-}; // namespace Usul
+} // namespace Math
+} // namespace Usul
 
 
 ///////////////////////////////////////////////////////////////////////////////

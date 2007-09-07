@@ -134,8 +134,8 @@ private:
 };
 
 
-}; // namespace Threads
-}; // namespace Usul
+} // namespace Threads
+} // namespace Usul
 
 
 #endif // _USUL_THREADS_POOL_CLASS_H_

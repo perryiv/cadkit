@@ -33,8 +33,8 @@ struct IFoxTabBook : public Usul::Interfaces::IUnknown
 }; // class IFoxTabBook
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_FOX_TAB_BOOK_H_

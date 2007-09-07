@@ -90,8 +90,8 @@ namespace Names
 }
 
 
-}; // namespace Threads
-}; // namespace Usul
+} // namespace Threads
+} // namespace Usul
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -34,8 +34,8 @@ struct SetThreadFactory
 };
 
 
-}; // namespace Threads
-}; // namespace Usul
+} // namespace Threads
+} // namespace Usul
 
 
 #endif // _USUL_THREADS_SET_THREAD_FACTORY_CLASS_H_

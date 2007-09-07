@@ -55,8 +55,8 @@ struct IRedraw : public Usul::Interfaces::IUnknown
 }; // struct IRedraw
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_REDRAW_H_

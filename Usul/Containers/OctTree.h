@@ -483,8 +483,8 @@ private:
 };
 
 
-}; // namespace Containers
-}; // namespace Usul
+} // namespace Containers
+} // namespace Usul
 
 
 #endif // _USUL_CONTAINERS_OCT_TREE_CLASS_H_

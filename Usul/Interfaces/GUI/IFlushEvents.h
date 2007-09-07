@@ -35,8 +35,8 @@ struct IFlushEvents : public Usul::Interfaces::IUnknown
 };
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_FLUSH_EVENT_QUEUE_H_

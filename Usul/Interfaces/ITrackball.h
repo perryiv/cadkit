@@ -43,8 +43,8 @@ struct ITrackball : public Usul::Interfaces::IUnknown
 }; // class ITrackball
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_TRACKBALL_H_

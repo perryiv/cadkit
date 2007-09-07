@@ -52,8 +52,8 @@ private:
 };
 
 
-}; // namespace Threads
-}; // namespace Usul
+} // namespace Threads
+} // namespace Usul
 
 
 #endif // _USUL_THREADS_RECURSIVE_MUTEX_CLASS_H_

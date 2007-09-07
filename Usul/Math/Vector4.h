@@ -383,8 +383,8 @@ typedef Vector4 < double         > Vec4d;
 typedef Vector4 < long double    > Vec4ld;
 
 
-}; // namespace Math
-}; // namespace Usul
+} // namespace Math
+} // namespace Usul
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -36,8 +36,8 @@ struct IFoxDockBar : public Usul::Interfaces::IUnknown
 }; // class IFoxDockBar
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_FOX_DOCKBAR_H__

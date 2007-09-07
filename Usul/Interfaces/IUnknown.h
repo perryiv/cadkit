@@ -42,8 +42,8 @@ struct IUnknown
 };
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 ///////////////////////////////////////////////////////////////////////////////

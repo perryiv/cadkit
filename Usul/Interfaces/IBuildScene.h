@@ -36,8 +36,8 @@ struct IBuildScene : public Usul::Interfaces::IUnknown
 }; // class IBuildScene
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_BUILD_SCENE_H_

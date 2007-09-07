@@ -38,8 +38,8 @@ struct ISetCursor : public Usul::Interfaces::IUnknown
 }; // class ISetCursor
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_SET_CURSOR_H__

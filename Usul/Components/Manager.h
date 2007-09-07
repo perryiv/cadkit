@@ -95,8 +95,8 @@ private:
 };
 
 
-}; // namespace Components
-}; // namespace Usul
+} // namespace Components
+} // namespace Usul
 
 
 #endif // __USUL_COMPONENT_MANAGER_H__

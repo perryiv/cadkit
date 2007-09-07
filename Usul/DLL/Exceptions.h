@@ -60,9 +60,9 @@ struct FailedToGetFilename : public Exception
 };
 
 
-}; // namespace Exceptions
-}; // namespace DLL
-}; // namespace Usul
+} // namespace Exceptions
+} // namespace DLL
+} // namespace Usul
 
 
 #endif // _USUL_DYNAMIC_LOAD_LIBRARY_EXCEPTION_CLASSES_H_

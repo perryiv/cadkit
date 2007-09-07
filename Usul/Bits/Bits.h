@@ -101,8 +101,8 @@ template < class N > inline void reverse ( N &n )
 }
 
 
-}; // namespace Bits
-}; // namespace Usul
+} // namespace Bits
+} // namespace Usul
 
 
 #endif // _USUL_BITS_H_

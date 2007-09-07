@@ -38,8 +38,8 @@ struct IImageView : public Usul::Interfaces::IUnknown
 }; // struct IImageView
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_IMAGE_VIEW_H_

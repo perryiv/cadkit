@@ -65,8 +65,8 @@ template < class T > struct IsSameType < T, T >
 #endif
 
 
-}; // namespace MPL
-}; // namespace Usul
+} // namespace MPL
+} // namespace Usul
 
 
 ///////////////////////////////////////////////////////////////////////////////

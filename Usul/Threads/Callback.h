@@ -108,8 +108,8 @@ template < class Function > Callback *newFunctionCallback ( Function f )
 }
 
 
-}; // namespace Threads
-}; // namespace Usul
+} // namespace Threads
+} // namespace Usul
 
 
 #endif // _USUL_THREADS_BASE_CALLBACK_CLASS_H_

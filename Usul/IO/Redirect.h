@@ -82,8 +82,8 @@ private:
 };
 
 
-}; // namespace IO
-}; // namespace Usul
+} // namespace IO
+} // namespace Usul
 
 
 #endif // _USUL_IO_REDIRECT_OUTPUT_H_

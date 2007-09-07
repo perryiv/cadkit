@@ -36,8 +36,8 @@ struct ObjectDeletePolicy
 };
 
 
-}; // namespace Pointers
-}; // namespace Usul
+} // namespace Pointers
+} // namespace Usul
 
 
 #endif // _USUL_POINTERS_OBJECT_DELETE_POLICY_H_

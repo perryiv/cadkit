@@ -34,8 +34,8 @@ const float  SQRT_2                 ( 1.41421356237309504880f );
 const float  SQRT_3                 ( 1.73205080757f );
 
 
-}; // namespace Math
-}; // namespace Usul
+} // namespace Math
+} // namespace Usul
 
 
 #endif // _USUL_MATH_CONSTANTS_H_

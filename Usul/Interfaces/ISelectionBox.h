@@ -38,8 +38,8 @@ struct ISelectionBox : public Usul::Interfaces::IUnknown
 }; // class ISelectionBox
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_SELECTION_BOX_H_

@@ -140,8 +140,8 @@ inline std::string base ( const std::string &path )
 }
 
 
-}; // namespace File
-}; // namespace Usul
+} // namespace File
+} // namespace Usul
 
 
 #endif // _USUL_FILE_PATH_H_

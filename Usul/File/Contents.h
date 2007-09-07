@@ -156,8 +156,8 @@ inline void contents ( const std::string &filename, std::string &file )
 }
 
 
-}; // namespace File
-}; // namespace Usul
+} // namespace File
+} // namespace Usul
 
 
 #endif // _USUL_FILE_CONTENTS_H_

@@ -144,8 +144,8 @@ private:
 };
 
 
-}; // namespace Documents
-}; // namespace Usul
+} // namespace Documents
+} // namespace Usul
 
 
 #endif // _USUL_DOCUMENT_MANAGER_H_

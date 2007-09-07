@@ -111,8 +111,8 @@ private:
 };
 
 
-}; // namespace Documents
-}; // namespace Usul
+} // namespace Documents
+} // namespace Usul
 
 
 #endif // _OPEN_SCENE_GRAPH_FOX_BINDING_FILE_INFO_H_

@@ -286,8 +286,8 @@ private:
 };
 
 
-}; // namespace Threads
-}; // namespace Usul
+} // namespace Threads
+} // namespace Usul
 
 
 #endif // _USUL_THREADS_GUARDED_MAP_CLASSES_H_

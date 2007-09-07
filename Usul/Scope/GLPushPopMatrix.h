@@ -41,8 +41,8 @@ private:
 
 
 
-}; // namespace Scope
-}; // namespace Usul
+} // namespace Scope
+} // namespace Usul
 
 
 #endif // _USUL_SCOPE_GL_PUSH_POP_MATRIX_H_

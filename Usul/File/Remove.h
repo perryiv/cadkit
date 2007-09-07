@@ -63,8 +63,8 @@ inline void remove ( const std::string &file, bool allowThrow = false )
 }
 #endif
 
-}; // namespace File
-}; // namespace Usul
+} // namespace File
+} // namespace Usul
 
 
 #endif // _USUL_FILE_REMOVE_H_

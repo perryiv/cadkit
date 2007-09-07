@@ -53,8 +53,8 @@ struct PrintingPolicy
 };
 
 
-}; // namespace Errors
-}; // namespace Usul
+} // namespace Errors
+} // namespace Usul
 
 
 #endif // _USUL_ERROR_POLICY_PRINT_H_

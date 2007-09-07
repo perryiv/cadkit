@@ -43,8 +43,8 @@ struct IOpenGLState : public Usul::Interfaces::IUnknown
 }; // class IOpenGLState
 
 
-}; // namespace Interfaces
-}; // namespace Usul
+} // namespace Interfaces
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACE_OPEN_GL_STATE_H_

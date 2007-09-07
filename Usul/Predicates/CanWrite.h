@@ -33,8 +33,8 @@ struct USUL_EXPORT CanWrite : public std::unary_function < const std::string &, 
 };
 
 
-}; // namespace Predicates
-}; // namespace Usul
+} // namespace Predicates
+} // namespace Usul
 
 
 #endif // _USUL_PREDICATES_CAN_WRITE_TO_FILE_H_

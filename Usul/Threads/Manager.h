@@ -98,8 +98,8 @@ private:
 };
 
 
-}; // namespace Threads
-}; // namespace Usul
+} // namespace Threads
+} // namespace Usul
 
 
 #endif // _USUL_THREADS_THREAD_MANAGER_CLASS_H_

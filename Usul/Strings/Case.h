@@ -78,8 +78,8 @@ inline std::string upperCase ( const std::string &in )
 }
 
 
-}; // namespace Strings
-}; // namespace Usul
+} // namespace Strings
+} // namespace Usul
 
 
 #endif // _USUL_STRINGS_CASE_H_

@@ -85,9 +85,9 @@ struct MismatchedBuildModes : public Exception
 };
 
 
-}; // namespace Exceptions
-}; // namespace Components
-}; // namespace Usul
+} // namespace Exceptions
+} // namespace Components
+} // namespace Usul
 
 
 #endif // _USUL_COMPONENT_OBJECT_EXCEPTION_CLASSES_H_

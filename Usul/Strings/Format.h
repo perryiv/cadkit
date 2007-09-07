@@ -110,8 +110,8 @@ inline std::string formatDate ( const std::string &d )
 }
 
 
-}; // namespace Strings
-}; // namespace Usul
+} // namespace Strings
+} // namespace Usul
 
 
 #endif // _USUL_STRINGS_FORMAT_H_

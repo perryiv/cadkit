@@ -94,8 +94,8 @@ private:
 };
 
 
-}; // namespace Jobs
-}; // namespace Usul
+} // namespace Jobs
+} // namespace Usul
 
 
 #endif // _USUL_JOBS_JOB_MANAGER_CLASS_H_

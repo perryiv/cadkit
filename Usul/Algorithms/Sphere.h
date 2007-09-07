@@ -119,7 +119,7 @@ namespace Detail
       }
     }
   };
-}; // namespace Detail
+} // namespace Detail
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -386,8 +386,8 @@ private:
 };
 
 
-}; // namespace Algorithms
-}; // namespace Usul
+} // namespace Algorithms
+} // namespace Usul
 
 
 #endif // _USUL_ALGORITHMS_SPHERE_SUB_DIVISION_H_

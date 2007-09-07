@@ -46,8 +46,8 @@ template < class T > inline bool operator != ( const T &a, typename T &b )
 }
 
 
-}; // namespace Math
-}; // namespace Usul
+} // namespace Math
+} // namespace Usul
 
 
 #endif // _USUL_MATH_TEMPLATE_EQUALITY_OPERATOR_H_

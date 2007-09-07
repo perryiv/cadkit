@@ -38,7 +38,7 @@ struct IFoxSubMenu : public Usul::Interfaces::IUnknown
 }; // class IFoxSubMenu
 
 }; //namespace Usul
-}; // namespace Interfaces
+} // namespace Interfaces
 
 #endif // __USUL_INTERFACES_FOX_SUB_MENU_H__
 

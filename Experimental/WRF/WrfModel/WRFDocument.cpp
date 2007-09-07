@@ -32,6 +32,7 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/Math/Angle.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Components/Manager.h"
 
@@ -58,6 +59,7 @@
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WRFDocument, WRFDocument::BaseClass );
 
 SERIALIZE_XML_REGISTER_CREATOR ( WRFDocument );
+SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec3 );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -120,6 +122,7 @@ WRFDocument::WRFDocument() :
   this->_addMember ( "lower_left", _lowerLeft );
   this->_addMember ( "upper_right", _upperRight );
   this->_addMember ( "use_planet", _usePlanet );
+  this->_addMember ( "cell_size", _cellSize );
 }
 
 
@@ -380,6 +383,7 @@ void WRFDocument::_buildScene ( )
     Guard guard ( this->mutex() );
     _root->removeChild ( 0, _root->getNumChildren() );
     _volumeTransform->removeChild ( 0, _volumeTransform->getNumChildren () );
+    _root->addChild ( _volumeTransform.get () );
 
     // Add any extra geometry.
     _root->addChild ( _geometry.get() );
@@ -390,9 +394,8 @@ void WRFDocument::_buildScene ( )
 
     // Add the topography back.
     else
-    {
-      _root->addChild ( _volumeTransform.get () );
-      _volumeTransform->addChild ( _topography.get() );
+    {      
+      _root->addChild ( _topography.get() );
     }
   }
 
@@ -415,7 +418,7 @@ void WRFDocument::_buildScene ( )
     // Build proxy geometry.
     {
       Guard guard ( this->mutex() );
-      _root->addChild ( this->_buildProxyGeometry() );
+      _volumeTransform->addChild ( this->_buildProxyGeometry() );
     }
   }
   
@@ -432,8 +435,8 @@ void WRFDocument::_buildScene ( )
     ImagePtr image ( this->_volume ( _currentTimestep, _currentChannel ) );
 
     // Make a bounding box around the volume.
-    OsgTools::GlassBoundingBox gbb ( _bb );
-    gbb ( _volumeTransform.get(), true, false, false );
+    //OsgTools::GlassBoundingBox gbb ( _bb );
+    //gbb ( _volumeTransform.get(), true, false, false );
 
     // Add the volume to the scene.
     {
@@ -1401,7 +1404,7 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
     }
 
     // Add the transform for the volume.
-    _planet->addChild ( _volumeTransform.get() );
+    //_planet->addChild ( _volumeTransform.get() );
 
     Usul::Interfaces::IPlanetCoordinates::QueryPtr pc ( Usul::Components::Manager::instance ().getInterface ( Usul::Interfaces::IPlanetCoordinates::IID ) );
 
@@ -1412,17 +1415,74 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
 
       Usul::Math::Vec3d translate;
 
-      pc->convertToPlanetEllipsoid ( Usul::Math::Vec3d ( center [ 1 ], center [ 0 ], 0.0 ), translate );
+      double height ( (_z * _cellSize [ 2 ] ) / 2.0 );
+
+      pc->convertToPlanetEllipsoid ( Usul::Math::Vec3d ( center [ 1 ], center [ 0 ], height ), translate );
 
       osg::Matrix T ( osg::Matrix::translate ( translate [ 0 ], translate [ 1 ], translate [ 2 ] ) );
 
       osg::Vec3 v0 ( translate [ 0 ], translate [ 1 ], translate [ 2 ] );
 
+      osg::Vec3 up ( v0 );
+      up.normalize();
+
       osg::Matrix R;
-      R.makeRotate ( osg::Vec3( 0.0, 0.0, 1.0 ), v0 );
+      R.makeRotate ( osg::Vec3( 0.0, 0.0, -1.0 ), up );
+
+      // Calculate the up vector of the bounding box.
+      osg::Vec3 bbUp ( R * osg::Vec3 ( 0.0, 0.0, -1.0 ) );
+      bbUp.normalize();
+
+      // Calculate the north vector.
+      Usul::Math::Vec3d v1;
+      pc->convertToPlanetEllipsoid ( Usul::Math::Vec3d ( center [ 1 ], center [ 0 ] + 0.1, height ), v1 );
+      Usul::Math::Vec3d diff ( v1 - translate );
+      diff.normalize();
+
+      osg::Vec3 north ( diff[0], diff[1], diff[2] );
+
+#if 0
+      {
+        OsgTools::Ray ray;
+        ray.start ( v0 );
+        ray.end ( v0 + ( north * 100000 ) );
+        ray.color ( osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 ) );
+        ray.thickness ( 15.0f );
+
+        _planet->addChild ( ray() );
+      }
+
+      {
+        OsgTools::Ray ray;
+        ray.start ( v0 );
+        ray.end ( v0 + ( bbUp * 100000 ) );
+        ray.color ( osg::Vec4 ( 0.0, 1.0, 0.0, 1.0 ) );
+        ray.thickness ( 15.0f );
+
+        _planet->addChild ( ray() );
+      }
+
+      {
+        OsgTools::Ray ray;
+        ray.start ( v0 );
+        ray.end ( v0 + ( up * 100000 ) );
+        ray.color ( osg::Vec4 ( 0.0, 0.0, 1.0, 1.0 ) );
+        ray.thickness ( 15.0f );
+
+        _planet->addChild ( ray() );
+      }
+#endif
+
+      typedef Usul::Math::Angle < double, 3 > Angle;
+
+      double angle ( Angle::get < osg::Vec3 > ( bbUp, north ) );
+
+      osg::Matrix R1;
+      R1.makeRotate ( angle, up );
 
       osg::Matrix m;
       m.postMult ( R );
+      m.postMult ( R1 );
       m.postMult ( T );
 
       _volumeTransform->setMatrix ( m );

@@ -13,8 +13,7 @@
 #include "Usul/Functions/Guid.h"
 #include "Usul/System/Directory.h"
 #include "Usul/File/Path.h"
-
-#include "Serialize/XML/RegisterCreator.h"
+#include "Usul/Factory/RegisterCreator.h"
 
 #include "ossim/base/ossimKeywordList.h"
 #include "ossimPlanet/ossimPlanetTextureLayerRegistry.h"
@@ -22,7 +21,7 @@
 using namespace Magrathea;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( KwlLayer, KwlLayer::BaseClass );
-SERIALIZE_XML_REGISTER_CREATOR ( KwlLayer );
+USUL_FACTORY_REGISTER_CREATOR ( KwlLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

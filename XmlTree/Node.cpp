@@ -249,3 +249,47 @@ XmlTree::Node *Node::_child ( unsigned int which, const std::string &name, bool 
   // If we get to here then something went wrong.
   throw std::runtime_error ( "Error 1232649218: Failed to add new child node" );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find all children with the given name. Pass true for "traverse" if you 
+//  want to search all children, false if just immediate children.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Node::find ( const std::string &name, bool traverse, Children &all ) const
+{
+  const Children &kids ( this->children() );
+  for ( Children::const_iterator i = kids.begin(); i != kids.end(); ++i )
+  {
+    Node::RefPtr node ( const_cast<Node *> ( i->get() ) );
+    if ( true == node.valid() )
+    {
+      if ( name == node->name() )
+      {
+        all.push_back ( node.get() );
+      }
+
+      if ( true == traverse )
+      {
+        node->find ( name, traverse, all );
+      }
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find all children with the given name. Pass true for "traverse" if you 
+//  want to search all children, false if just immediate children.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Node::Children Node::find ( const std::string &name, bool traverse ) const
+{
+  Children children;
+  this->find ( name, traverse, children );
+  return children;
+}

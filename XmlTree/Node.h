@@ -65,6 +65,11 @@ public:
   // Clear the document.
   void                    clear();
 
+  // Find all children with the given name. Pass true for "traverse" if you 
+  // want to search all children, false if just immediate children.
+  void                    find ( const std::string &name, bool traverse, Children & ) const;
+  Children                find ( const std::string &name, bool traverse ) const;
+
   // Access the name.
   const std::string &     name() const { return _name; }
   void                    name ( const std::string &n );

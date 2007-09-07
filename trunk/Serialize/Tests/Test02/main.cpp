@@ -10,11 +10,11 @@
 
 #include "Serialize/XML/Serialize.h"
 #include "Serialize/XML/Deserialize.h"
-#include "Serialize/XML/RegisterCreator.h"
 #include "Serialize/XML/SimpleDataMember.h"
 #include "Serialize/XML/DataMemberMap.h"
 #include "Serialize/XML/Macros.h"
 
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Threads/Mutex.h"
 
@@ -89,7 +89,7 @@ void _run()
 
 void _clean()
 {
-  Serialize::XML::Factory::instance ( 0x0 );
+  Usul::Factory::ObjectFactory::instance ( 0x0 );
 }
 
 

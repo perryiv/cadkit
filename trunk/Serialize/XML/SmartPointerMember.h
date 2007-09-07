@@ -19,6 +19,8 @@
 
 #include "Serialize/XML/MemberBase.h"
 
+#include "Usul/Factory/ObjectFactory.h"
+
 
 namespace Serialize {
 namespace XML {
@@ -30,6 +32,7 @@ public:
 
   USUL_DECLARE_REF_POINTERS ( SmartPointerMember );
   typedef MemberBase BaseClass;
+  typedef Usul::Factory::ObjectFactory Factory;
 
   // Need to be by reference so that the client can change it after this class it made.
   SmartPointerMember ( const std::string &name, T &value ) : BaseClass ( name ),

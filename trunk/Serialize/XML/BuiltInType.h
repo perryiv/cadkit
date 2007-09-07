@@ -14,34 +14,16 @@
 
 #include <sstream>
 
-//namespace Serialize {
-//namespace XML {
+
+///////////////////////////////////////////////////////////////////////////////
 //
-//template < class T >
-// inline void serialize ( const std::string& name, XmlTree::Node &parent, const T& value )
-// {
-//   std::ostringstream out;
-//   out << value;
+//  Macro to declare serialization and deserialization functions.
 //
-//   parent.children().push_back ( new XmlTree::Node ( name, out.str() ) );
-// }
-//
-//template < class T >
-// inline void deserialize ( const std::string& name, const XmlTree::Node &node, T& value )
-// {
-//   if ( name == node.name() )
-//   {
-//    std::istringstream in ( node.value() );
-//    in >> value;
-//  }
-// }
-//  
-//}
-//}
+///////////////////////////////////////////////////////////////////////////////
 
 #define SERIALIZE_XML_DECLARE_FUNCTIONS(TheType)\
-  namespace Serialize {\
-  namespace Xml {\
+namespace Serialize {\
+namespace Xml {\
 inline void serialize ( const std::string& name, XmlTree::Node &parent, const TheType& value )\
 {\
   std::ostringstream out; \
@@ -62,6 +44,7 @@ inline void deserialize ( const std::string& name, const XmlTree::Node &node, Th
 }\
 }\
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Specializations built-in types.
@@ -74,13 +57,10 @@ SERIALIZE_XML_DECLARE_FUNCTIONS ( int   );
 SERIALIZE_XML_DECLARE_FUNCTIONS ( long  );
 SERIALIZE_XML_DECLARE_FUNCTIONS ( bool  );
 
-
 SERIALIZE_XML_DECLARE_FUNCTIONS ( unsigned char  );
 SERIALIZE_XML_DECLARE_FUNCTIONS ( unsigned short );
 SERIALIZE_XML_DECLARE_FUNCTIONS ( unsigned int   );
 SERIALIZE_XML_DECLARE_FUNCTIONS ( unsigned long  );
-
-//SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Types::Uint32 );
 
 SERIALIZE_XML_DECLARE_FUNCTIONS ( float );
 SERIALIZE_XML_DECLARE_FUNCTIONS ( double );

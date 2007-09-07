@@ -244,34 +244,6 @@
 				>
 			</File>
 			<Filter
-				Name="Factory"
-				>
-				<File
-					RelativePath=".\BaseCreator.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\BaseCreator.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Factory.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Factory.h"
-					>
-				</File>
-				<File
-					RelativePath=".\RegisterCreator.h"
-					>
-				</File>
-				<File
-					RelativePath=".\TypeCreator.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="Members"
 				>
 				<File

@@ -17,17 +17,16 @@
 #ifndef _SERIALIZE_XML_SET_VALUE_H_
 #define _SERIALIZE_XML_SET_VALUE_H_
 
-#include "Serialize/XML/Factory.h"
-
 #include "XmlTree/Node.h"
 #include "XmlTree/ReplaceIllegalCharacters.h"
 
-#include "Usul/Pointers/Pointers.h"
-#include "Usul/Types/Types.h"
+#include "Usul/Factory/ObjectFactory.h"
+#include "Usul/Interfaces/ISerialize.h"
 #include "Usul/Math/Vector4.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector2.h"
-#include "Usul/Interfaces/ISerialize.h"
+#include "Usul/Pointers/Pointers.h"
+#include "Usul/Types/Types.h"
 
 #include <sstream>
 #include <iomanip>
@@ -109,6 +108,7 @@ template < class T, class C > struct TypeWrapper < Usul::Pointers::QueryPointer 
 {
   typedef Usul::Pointers::QueryPointer < T, C > PointerType;
   typedef typename PointerType::element_type ObjectType;
+  typedef Usul::Factory::ObjectFactory Factory;
 
   static void addAtribute ( const std::string &name, const std::string &value, XmlTree::Node &node )
   {
@@ -162,6 +162,7 @@ template < class T, class C > struct TypeWrapper < Usul::Pointers::SmartPointer 
 {
   typedef Usul::Pointers::SmartPointer < T, C > PointerType;
   typedef typename PointerType::element_type ObjectType;
+  typedef Usul::Factory::ObjectFactory Factory;
 
   static void addAtribute ( const std::string &name, const std::string &value, XmlTree::Node &node )
   {
@@ -217,6 +218,7 @@ namespace XML {\
 template <> struct TypeWrapper < TheType >\
 {\
   typedef TypeWrapper < TheType > ThisType;\
+  typedef Usul::Factory::ObjectFactory Factory;\
   static void addAtribute ( const std::string &name, const std::string &value, XmlTree::Node &node )\
   {\
   }\

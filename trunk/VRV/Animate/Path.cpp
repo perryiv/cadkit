@@ -19,14 +19,13 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/IViewMatrix.h"
-
-#include "Serialize/XML/RegisterCreator.h"
+#include "Usul/Factory/RegisterCreator.h"
 
 #include "osg/FrameStamp"
 
 using namespace VRV::Animate;
 
-SERIALIZE_XML_REGISTER_CREATOR_WITH_NAME ( "MatrixPath", Path );
+USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "MatrixPath", Path );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

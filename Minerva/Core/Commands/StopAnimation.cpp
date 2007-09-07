@@ -9,15 +9,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Commands/StopAnimation.h"
-
 #include "Minerva/Interfaces/IAnimationControl.h"
 
-#include "Serialize/XML/RegisterCreator.h"
+#include "Usul/Factory/RegisterCreator.h"
 
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StopAnimation, StopAnimation::BaseClass );
-SERIALIZE_XML_REGISTER_CREATOR ( StopAnimation );
+USUL_FACTORY_REGISTER_CREATOR ( StopAnimation );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

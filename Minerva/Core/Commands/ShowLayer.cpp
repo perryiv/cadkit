@@ -9,17 +9,15 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Commands/ShowLayer.h"
-
 #include "Minerva/Interfaces/IDirtyScene.h"
 
 #include "Usul/Documents/Manager.h"
-
-#include "Serialize/XML/RegisterCreator.h"
+#include "Usul/Factory/RegisterCreator.h"
 
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ShowLayer, ShowLayer::BaseClass );
-SERIALIZE_XML_REGISTER_CREATOR ( ShowLayer );
+USUL_FACTORY_REGISTER_CREATOR ( ShowLayer );
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -9,15 +9,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Commands/AnimationSpeed.h"
-
 #include "Minerva/Interfaces/IAnimationControl.h"
 
-#include "Serialize/XML/RegisterCreator.h"
+#include "Usul/Factory/RegisterCreator.h"
 
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( AnimationSpeed, AnimationSpeed::BaseClass );
-SERIALIZE_XML_REGISTER_CREATOR ( AnimationSpeed );
+USUL_FACTORY_REGISTER_CREATOR ( AnimationSpeed );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

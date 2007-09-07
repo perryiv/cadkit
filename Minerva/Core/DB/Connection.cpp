@@ -17,10 +17,9 @@
 #include "Usul/Threads/Manager.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/System/Sleep.h"
+#include "Usul/Factory/RegisterCreator.h"
 
 #include "boost/algorithm/string/find.hpp"
-
-#include "Serialize/XML/RegisterCreator.h"
 
 #include "pqxx/pqxx"
 
@@ -28,7 +27,7 @@
 
 using namespace Minerva::Core::DB;
 
-SERIALIZE_XML_REGISTER_CREATOR ( Connection );
+USUL_FACTORY_REGISTER_CREATOR ( Connection );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

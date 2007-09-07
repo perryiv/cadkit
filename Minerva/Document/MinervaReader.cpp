@@ -10,8 +10,9 @@
 
 #include "MinervaReader.h"
 
-#include "Serialize/XML/TypeCreator.h"
-#include "Serialize/XML/Factory.h"
+#include "Usul/Factory/RegisterCreator.h"
+#include "Usul/Factory/ObjectFactory.h"
+
 #include "Serialize/XML/Deserialize.h"
 
 using namespace Minerva::Document;
@@ -50,6 +51,6 @@ MinervaReader::~MinervaReader()
 
 void MinervaReader::operator()()
 {
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<MinervaDocument> ( "MinervaDocument" ) );
+  Usul::Factory::ObjectFactory::instance().add ( new Usul::Factory::TypeCreator<MinervaDocument> ( "MinervaDocument" ) );
   Serialize::XML::deserialize ( _filename, *_document );
 }

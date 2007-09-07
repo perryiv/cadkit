@@ -14,8 +14,7 @@
 #include "Minerva/Core/Visitor.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
-
-#include "Serialize/XML/RegisterCreator.h"
+#include "Usul/Factory/RegisterCreator.h"
 
 #include "osg/Group"
 
@@ -26,7 +25,7 @@ SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 using namespace Minerva::Core::Layers;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( PolygonLayer, PolygonLayer::BaseClass );
-SERIALIZE_XML_REGISTER_CREATOR ( PolygonLayer );
+USUL_FACTORY_REGISTER_CREATOR ( PolygonLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

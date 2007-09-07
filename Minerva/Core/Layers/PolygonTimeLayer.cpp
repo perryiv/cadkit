@@ -15,15 +15,14 @@
 #include "Minerva/Core/postGIS/Polygon.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
-
-#include "Serialize/XML/RegisterCreator.h"
+#include "Usul/Factory/RegisterCreator.h"
 
 #include "osg/MatrixTransform"
 #include "osg/Group"
 
 using namespace Minerva::Core::Layers;
 
-SERIALIZE_XML_REGISTER_CREATOR ( PolygonTimeLayer );
+USUL_FACTORY_REGISTER_CREATOR ( PolygonTimeLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

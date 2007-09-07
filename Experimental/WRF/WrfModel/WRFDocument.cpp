@@ -35,6 +35,7 @@
 #include "Usul/Math/Angle.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Components/Manager.h"
+#include "Usul/Factory/RegisterCreator.h"
 
 #include "OsgTools/Font.h"
 #include "OsgTools/GlassBoundingBox.h"
@@ -42,7 +43,6 @@
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/Builders/Arrow.h"
 
-#include "Serialize/XML/RegisterCreator.h"
 #include "Serialize/XML/Deserialize.h"
 
 #include "osgText/Text"
@@ -57,8 +57,8 @@
 #include <limits>
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WRFDocument, WRFDocument::BaseClass );
+USUL_FACTORY_REGISTER_CREATOR ( WRFDocument );
 
-SERIALIZE_XML_REGISTER_CREATOR ( WRFDocument );
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec3 );
 
 ///////////////////////////////////////////////////////////////////////////////

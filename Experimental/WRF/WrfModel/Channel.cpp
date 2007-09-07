@@ -10,9 +10,9 @@
 
 #include "Experimental/WRF/WrfModel/Channel.h"
 
-#include "Serialize/XML/RegisterCreator.h"
+#include "Usul/Factory/RegisterCreator.h"
 
-SERIALIZE_XML_REGISTER_CREATOR ( Channel );
+USUL_FACTORY_REGISTER_CREATOR ( Channel );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

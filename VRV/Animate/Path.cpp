@@ -40,8 +40,6 @@ Path::Path () :
   _frames (),
   _numberSteps ( 50 ),
   _currentStep ( 0 ),
-  //_segTime ( 10000000.0 ),
-  //_lastU ( 0.0 ),
   _params (),
   _rotations (),
   _curve (),
@@ -162,26 +160,18 @@ void Path::animate ( Usul::Interfaces::IUnknown * caller )
     typedef IndependentSequence::const_iterator ConstIterator;
     typedef std::greater<Parameter> IsGreater;
 
-    // Determine times.
-    //Parameter duration ( _segTime * _params.size() );
-
-    //const double current ( frameStamp->getReferenceTime () );
-
+    // Determine total number of steps to take..
     unsigned int totalNumberSteps ( this->steps () * _params.size() );
 
-    // The independent variable. Ensure we do not step past end of curve.
-    //Parameter u ( std::min ( ( ( current - _startTime ) / duration ), _curve.lastKnot() ) );
+    // The independent variable.
     Parameter u ( static_cast < double > ( _currentStep ) / static_cast < double > ( totalNumberSteps - 1 ) );
-    //Parameter u ( std::min ( f, _curve.lastKnot() ) );
 
-    std::cout << "u: " << u << std::endl;
+    //std::cout << "u: " << u << std::endl;
 
     // Make a point for the position and rotation.
     Point pos ( _curve.dimension() );
     DependentSequence r0 ( _rotations.size(), 0 );
     DependentSequence r1 ( _rotations.size(), 0 );
-
-    //_lastU = u;
 
     // Evaluate the point.
     GN::Evaluate::point ( _curve, u, pos );
@@ -225,7 +215,7 @@ void Path::animate ( Usul::Interfaces::IUnknown * caller )
 
     _currentStep++;
 
-    if ( _currentStep == ( totalNumberSteps - 1 ) )
+    if ( _currentStep == totalNumberSteps )
     {
       Guard guard ( this->mutex () );
       _animating = false;
@@ -315,6 +305,9 @@ void Path::_interpolate ( )
   IndependentSequence knots;
   const SizeType cubic ( 4 );
   const SizeType order ( std::min<SizeType> ( cubic, _params.size() ) );
+
+  std::cout << "Order: " << order << std::endl;
+
   knots.resize ( _params.size() + order );
   KnotVectorBuilder::build ( _params, order, knots );
 

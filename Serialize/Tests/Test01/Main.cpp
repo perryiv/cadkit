@@ -14,7 +14,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Serialize/XML/RegisterCreator.h"
 #include "Serialize/XML/SimpleDataMember.h"
 #include "Serialize/XML/DataMemberMap.h"
 #include "Serialize/XML/Macros.h"
@@ -24,6 +23,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Base/Referenced.h"
 #include "Usul/Errors/Assert.h"
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Contents.h"
 #include "Usul/File/Path.h"
 #include "Usul/File/Remove.h"
@@ -440,13 +440,13 @@ private:
 void _registerTypes()
 {
   // Now register creators.
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ClassA> ( "ClassA" ) );
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ClassB> ( "ClassB" ) );
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ClassC> ( "ClassC" ) );
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ClassD> ( "ClassD" ) );
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ClassE> ( "ClassE" ) );
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ClassF> ( "ClassF" ) );
-  Serialize::XML::Factory::instance().add ( new Serialize::XML::TypeCreator<ClassG> ( "ClassG" ) );
+  Usul::Factory::ObjectFactory::instance().add ( new Usul::Factory::TypeCreator<ClassA> ( "ClassA" ) );
+  Usul::Factory::ObjectFactory::instance().add ( new Usul::Factory::TypeCreator<ClassB> ( "ClassB" ) );
+  Usul::Factory::ObjectFactory::instance().add ( new Usul::Factory::TypeCreator<ClassC> ( "ClassC" ) );
+  Usul::Factory::ObjectFactory::instance().add ( new Usul::Factory::TypeCreator<ClassD> ( "ClassD" ) );
+  Usul::Factory::ObjectFactory::instance().add ( new Usul::Factory::TypeCreator<ClassE> ( "ClassE" ) );
+  Usul::Factory::ObjectFactory::instance().add ( new Usul::Factory::TypeCreator<ClassF> ( "ClassF" ) );
+  Usul::Factory::ObjectFactory::instance().add ( new Usul::Factory::TypeCreator<ClassG> ( "ClassG" ) );
 }
 
 
@@ -474,7 +474,7 @@ void _test1()
 
     for ( unsigned int i = 0; i < num; ++i )
     {
-      ClassA::RefPtr object ( dynamic_cast < ClassA * > ( Serialize::XML::Factory::instance().create ( names[i] ) ) );
+      ClassA::RefPtr object ( dynamic_cast < ClassA * > ( Usul::Factory::ObjectFactory::instance().create ( names[i] ) ) );
       if ( true == object.valid() )
       {
         objects.push_back ( object );
@@ -566,7 +566,7 @@ void _run()
 
 void _clean()
 {
-  Serialize::XML::Factory::instance ( 0x0 );
+  Usul::Factory::ObjectFactory::instance ( 0x0 );
 }
 
 

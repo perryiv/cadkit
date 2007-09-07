@@ -18,8 +18,8 @@
 #define _SERIALIZE_XML_QUERY_POINTER_DATA_MEMBER_CLASS_
 
 #include "Serialize/XML/MemberBase.h"
-#include "Serialize/XML/Factory.h"
 
+#include "Usul/Factory/ObjectFactory.h"
 #include "Usul/Interfaces/ISerialize.h"
 
 namespace Serialize {
@@ -32,6 +32,7 @@ public:
 
   USUL_DECLARE_REF_POINTERS ( QueryPointerMember );
   typedef MemberBase BaseClass;
+  typedef Usul::Factory::ObjectFactory Factory;
 
   // Need to be by reference so that the client can change it after this class it made.
   QueryPointerMember ( const std::string &name, T &value ) : BaseClass ( name ),

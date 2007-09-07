@@ -19,10 +19,11 @@
 
 #include "XmlTree/Document.h"
 #include "XmlTree/XercesLife.h"
-#include "Serialize/XML/Factory.h"
 
-#include "Usul/Predicates/FileExists.h"
+#include "Usul/Factory/ObjectFactory.h"
 #include "Usul/File/Temp.h"
+#include "Usul/Predicates/FileExists.h"
+
 
 namespace Serialize {
 namespace XML {
@@ -40,6 +41,7 @@ template < class T > inline void deserialize ( const XmlTree::Node &parent, std:
   typedef typename Container::value_type PointerType;
   typedef typename PointerType::element_type ObjectType;
   typedef typename XmlTree::Node::Children::const_iterator Itr;
+  typedef Usul::Factory::ObjectFactory Factory;
   for ( Itr i = parent.children().begin(); i != parent.children().end(); ++i )
   {
     XmlTree::Node::RefPtr node ( i->get() );

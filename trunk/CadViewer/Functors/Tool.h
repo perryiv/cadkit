@@ -19,9 +19,8 @@
 #include "VRV/Functors/Input/AnalogInput.h"
 #include "VRV/Functors/Navigate/Direction.h"
 
-#include "VRV/Interfaces/IFrameInfo.h"
-#include "VRV/Interfaces/IWorldInfo.h"
-
+#include "Usul/Interfaces/IFrameInfo.h"
+#include "Usul/Interfaces/IWorldInfo.h"
 #include "Usul/Math/Matrix44.h"
 
 #include "osg/MatrixTransform"
@@ -45,8 +44,8 @@ public:
   typedef VRV::Functors::AnalogInput AnalogInput;
   typedef VRV::Functors::Direction Direction;
   typedef Direction::Vector Vector;
-  typedef VRV::Interfaces::IFrameInfo FrameInfo;
-  typedef VRV::Interfaces::IWorldInfo WorldInfo;
+  typedef Usul::Interfaces::IFrameInfo FrameInfo;
+  typedef Usul::Interfaces::IWorldInfo WorldInfo;
   typedef osg::MatrixTransform Transform;
   typedef USUL_REF_POINTER(Transform) TransformPtr;
   typedef std::vector<TransformPtr> Transforms;

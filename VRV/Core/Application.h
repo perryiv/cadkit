@@ -21,14 +21,8 @@
 #include "VRV/Functors/BaseFunctor.h"
 #include "VRV/Interfaces/IModelAdd.h"
 #include "VRV/Interfaces/IClippingDistance.h"
-#include "VRV/Interfaces/IFrameInfo.h"
-#include "VRV/Interfaces/IWorldInfo.h"
 #include "VRV/Interfaces/INavigationScene.h"
 #include "VRV/Interfaces/IModelsScene.h"
-#include "VRV/Interfaces/IMatrixMultiply.h"
-#include "VRV/Interfaces/IJoystick.h"
-#include "VRV/Interfaces/IWandState.h"
-#include "VRV/Interfaces/ITranslationSpeed.h"
 #include "VRV/Animate/Path.h"
 
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
@@ -41,6 +35,12 @@
 #include "Usul/Interfaces/IButtonReleaseListener.h"
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/IViewMatrix.h"
+#include "Usul/Interfaces/IMatrixMultiply.h"
+#include "Usul/Interfaces/IJoystick.h"
+#include "Usul/Interfaces/IWandState.h"
+#include "Usul/Interfaces/ITranslationSpeed.h"
+#include "Usul/Interfaces/IFrameInfo.h"
+#include "Usul/Interfaces/IWorldInfo.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Queue.h"
@@ -91,14 +91,14 @@ namespace Core {
 class VRV_EXPORT Application : public vrj::GlApp,
                                public VRV::Interfaces::IModelAdd,
                                public VRV::Interfaces::IClippingDistanceFloat,
-                               public VRV::Interfaces::IFrameInfo,
-                               public VRV::Interfaces::IWorldInfo,
+                               public Usul::Interfaces::IFrameInfo,
+                               public Usul::Interfaces::IWorldInfo,
                                public VRV::Interfaces::INavigationScene,
                                public VRV::Interfaces::IModelsScene,
-                               public VRV::Interfaces::IMatrixMultiplyFloat,
-                               public VRV::Interfaces::IJoystickFloat,
-                               public VRV::Interfaces::IWandStateFloat,
-                               public VRV::Interfaces::ITranslationSpeed,
+                               public Usul::Interfaces::IMatrixMultiplyFloat,
+                               public Usul::Interfaces::IJoystickFloat,
+                               public Usul::Interfaces::IWandStateFloat,
+                               public Usul::Interfaces::ITranslationSpeed,
                                public Usul::Interfaces::IProgressBarFactory,
                                public Usul::Interfaces::IUpdateSubject,
                                public Usul::Interfaces::ICommandQueueAdd,

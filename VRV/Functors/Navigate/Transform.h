@@ -20,10 +20,9 @@
 #include "VRV/Functors/Input/AnalogInput.h"
 #include "VRV/Functors/Navigate/Direction.h"
 
-#include "VRV/Interfaces/IFrameInfo.h"
-#include "VRV/Interfaces/IWorldInfo.h"
-#include "VRV/Interfaces/IMatrixMultiply.h"
-
+#include "Usul/Interfaces/IFrameInfo.h"
+#include "Usul/Interfaces/IWorldInfo.h"
+#include "Usul/Interfaces/IMatrixMultiply.h"
 #include "Usul/Math/Matrix44.h"
 
 
@@ -46,9 +45,9 @@ protected:
   typedef VRV::Functors::AnalogInput AnalogInput;
   typedef Direction::Vector Vector;
   typedef Usul::Math::Matrix44f Matrix;
-  typedef VRV::Interfaces::IFrameInfo FrameInfo;
-  typedef VRV::Interfaces::IWorldInfo WorldInfo;
-  typedef VRV::Interfaces::IMatrixMultiplyFloat MatrixMultiply;
+  typedef Usul::Interfaces::IFrameInfo FrameInfo;
+  typedef Usul::Interfaces::IWorldInfo WorldInfo;
+  typedef Usul::Interfaces::IMatrixMultiplyFloat MatrixMultiply;
 
   Transform (
     Unknown *unknown,

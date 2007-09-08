@@ -203,22 +203,22 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < VRV::Interfaces::IModelAdd* > ( this );
   case VRV::Interfaces::IClippingDistanceFloat::IID:
     return static_cast < VRV::Interfaces::IClippingDistanceFloat* > ( this );
-  case VRV::Interfaces::IFrameInfo::IID:
-    return static_cast < VRV::Interfaces::IFrameInfo* > ( this );
-  case VRV::Interfaces::IWorldInfo::IID:
-    return static_cast < VRV::Interfaces::IWorldInfo* > ( this );
+  case Usul::Interfaces::IFrameInfo::IID:
+    return static_cast < Usul::Interfaces::IFrameInfo* > ( this );
+  case Usul::Interfaces::IWorldInfo::IID:
+    return static_cast < Usul::Interfaces::IWorldInfo* > ( this );
   case VRV::Interfaces::IModelsScene::IID:
     return static_cast < VRV::Interfaces::IModelsScene * > ( this );
   case VRV::Interfaces::INavigationScene::IID:
     return static_cast < VRV::Interfaces::INavigationScene* > ( this );
-  case VRV::Interfaces::IMatrixMultiplyFloat::IID:
-    return static_cast < VRV::Interfaces::IMatrixMultiplyFloat * > ( this );
-  case VRV::Interfaces::IJoystickFloat::IID:
-    return static_cast< VRV::Interfaces::IJoystickFloat * > ( this );
-  case VRV::Interfaces::IWandStateFloat::IID:
-    return static_cast< VRV::Interfaces::IWandStateFloat * > ( this );
-  case VRV::Interfaces::ITranslationSpeed::IID:
-    return static_cast < VRV::Interfaces::ITranslationSpeed * > ( this );
+  case Usul::Interfaces::IMatrixMultiplyFloat::IID:
+    return static_cast < Usul::Interfaces::IMatrixMultiplyFloat * > ( this );
+  case Usul::Interfaces::IJoystickFloat::IID:
+    return static_cast< Usul::Interfaces::IJoystickFloat * > ( this );
+  case Usul::Interfaces::IWandStateFloat::IID:
+    return static_cast< Usul::Interfaces::IWandStateFloat * > ( this );
+  case Usul::Interfaces::ITranslationSpeed::IID:
+    return static_cast < Usul::Interfaces::ITranslationSpeed * > ( this );
   case Usul::Interfaces::IProgressBarFactory::IID:
     return static_cast < Usul::Interfaces::IProgressBarFactory* > ( this );
   case Usul::Interfaces::IUpdateSubject::IID:

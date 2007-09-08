@@ -18,7 +18,8 @@
 
 #include "VRV/Export.h"
 #include "VRV/Functors/Input/AnalogInput.h"
-#include "VRV/Interfaces/IJoystick.h"
+
+#include "Usul/Interfaces/IJoystick.h"
 
 
 namespace VRV {
@@ -33,7 +34,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( JoystickVertical );
   typedef AnalogInput BaseClass;
   typedef BaseClass::Unknown Unknown;
-  typedef VRV::Interfaces::IJoystickFloat Joystick;
+  typedef Usul::Interfaces::IJoystickFloat Joystick;
 
   explicit JoystickVertical ( Unknown *unknown );
   JoystickVertical ( const JoystickVertical &a );

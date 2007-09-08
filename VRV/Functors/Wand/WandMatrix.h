@@ -18,7 +18,8 @@
 
 #include "VRV/Export.h"
 #include "VRV/Functors/Matrix/MatrixFunctor.h"
-#include "VRV/Interfaces/IWandState.h"
+
+#include "Usul/Interfaces/IWandState.h"
 
 
 namespace VRV {
@@ -33,7 +34,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( WandMatrix );
   typedef VRV::Functors::Matrix::MatrixFunctor BaseClass;
   typedef BaseClass::Unknown Unknown;
-  typedef VRV::Interfaces::IWandStateFloat WandState;
+  typedef Usul::Interfaces::IWandStateFloat WandState;
   typedef Usul::Math::Matrix44f Matrix;
 
   explicit WandMatrix ( Unknown *unknown );

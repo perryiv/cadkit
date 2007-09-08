@@ -18,7 +18,7 @@
 
 #include "Usul/Threads/Mutex.h"
 
-#include <set>
+#include <map>
 #include <string>
 
 
@@ -31,8 +31,10 @@ class InstanceManager
 {
 public:
 
-  typedef std::set < const Referenced * > ObjectSet;
-  typedef std::pair < ObjectSet::iterator, bool > Result;
+  typedef unsigned long CountType;
+  typedef std::pair < CountType, std::string > ObjectInfo;
+  typedef std::map < const Referenced *, ObjectInfo > ObjectMap;
+  typedef std::pair < ObjectMap::iterator, bool > Result;
 
   explicit InstanceManager();
   ~InstanceManager();
@@ -51,7 +53,8 @@ protected:
 private:
 
   Usul::Threads::Mutex *_imMutex;
-  ObjectSet _objects;
+  ObjectMap _objects;
+  CountType _count;
 };
 
 

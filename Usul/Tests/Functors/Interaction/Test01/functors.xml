@@ -59,9 +59,9 @@
       <transform type="rotate"    name="Rotate Wand -X"      speed="0.1" direction="Wand -X"   />
       <transform type="rotate"    name="Rotate Wand -Y"      speed="0.1" direction="Wand -Y"   />
       <transform type="rotate"    name="Rotate Wand -Z"      speed="0.1" direction="Wand -Z"   />
-      <transform type="rotate"    name="Rotate Global X"     speed="0.1" direction="Wand X"    />
-      <transform type="rotate"    name="Rotate Global Y"     speed="0.1" direction="Wand Y"    />
-      <transform type="rotate"    name="Rotate Global Z"     speed="0.1" direction="Wand Z"    />
+      <transform type="rotate"    name="Rotate Global X"     speed="0.1" direction="Global X"  />
+      <transform type="rotate"    name="Rotate Global Y"     speed="0.1" direction="Global Y"  />
+      <transform type="rotate"    name="Rotate Global Z"     speed="0.1" direction="Global Z"  />
       <transform type="rotate"    name="Rotate Global -X"    speed="0.1" direction="Global -X" />
       <transform type="rotate"    name="Rotate Global -Y"    speed="0.1" direction="Global -Y" />
       <transform type="rotate"    name="Rotate Global -Z"    speed="0.1" direction="Global -Z" />

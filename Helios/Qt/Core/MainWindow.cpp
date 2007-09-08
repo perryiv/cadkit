@@ -33,6 +33,7 @@
 #include "Usul/Components/Loader.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Stack.h"
+#include "Usul/Factory/ObjectFactory.h"
 #include "Usul/File/Contents.h"
 #include "Usul/File/Path.h"
 #include "Usul/File/Stats.h"
@@ -201,6 +202,10 @@ void MainWindow::_destroy()
   // Stop the idle timer.
   if ( 0x0 != _idleTimer )
     _idleTimer->stop();
+
+  // Clear the factory before releasing the plugins (some of them may 
+  // populate it but not clean up).
+  Usul::Factory::ObjectFactory::instance().clear();
 
   // Release all the plugins.
   this->releasePlugins();

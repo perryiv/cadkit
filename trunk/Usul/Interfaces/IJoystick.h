@@ -13,13 +13,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _VRV_INTERFACE_JOYSTICK_INPUT_H_
-#define _VRV_INTERFACE_JOYSTICK_INPUT_H_
+#ifndef _USUL_INTERFACE_JOYSTICK_INPUT_H_
+#define _USUL_INTERFACE_JOYSTICK_INPUT_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
 
-namespace VRV {
+namespace Usul {
 namespace Interfaces {
 
 
@@ -47,7 +47,7 @@ typedef IJoystick<1076051637,double> IJoystickDouble;
 
 
 }; // namespace Interfaces
-}; // namespace VRV
+}; // namespace Usul
 
 
-#endif // _VRV_INTERFACE_JOYSTICK_INPUT_H_
+#endif // _USUL_INTERFACE_JOYSTICK_INPUT_H_

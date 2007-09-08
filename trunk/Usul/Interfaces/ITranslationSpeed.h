@@ -37,7 +37,7 @@ struct ITranslationSpeed : public Usul::Interfaces::IUnknown
 
 
 } // namespace Interfaces
-} // namespace VRV
+} // namespace Usul
 
 
 #endif // _USUL_INTERFACES_TRANSLATION_SPEED_H_

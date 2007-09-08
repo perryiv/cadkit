@@ -21,7 +21,8 @@
 #include "VRV/Interfaces/INavigationScene.h"
 #include "VRV/Interfaces/IModelsScene.h"
 #include "VRV/Interfaces/IClippingDistance.h"
-#include "VRV/Interfaces/IWandState.h"
+
+#include "Usul/Interfaces/IWandState.h"
 
 #include "osg/Vec3"
 
@@ -55,7 +56,7 @@ protected:
   typedef CV::Interfaces::IAuxiliaryScene AuxiliaryScene;
   typedef VRV::Interfaces::INavigationScene NavigationScene;
   typedef VRV::Interfaces::IModelsScene ModelsScene;
-  typedef VRV::Interfaces::IWandStateFloat WandState;
+  typedef Usul::Interfaces::IWandStateFloat WandState;
   typedef VRV::Interfaces::IClippingDistanceFloat ClippingDistance;
 
   Intersect ( Unknown *unknown, Direction *dir, unsigned int id );

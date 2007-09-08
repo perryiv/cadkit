@@ -33,7 +33,7 @@ public:
   // Useful typedef(s).
   typedef AnalogInput BaseClass;
   typedef BaseClass::Unknown Unknown;
-  typedef VRV::Interfaces::IJoystickFloat Joystick;
+  typedef Usul::Interfaces::IJoystickFloat Joystick;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( JoystickHorizontal );

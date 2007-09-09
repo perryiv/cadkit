@@ -85,6 +85,7 @@ bool SceneDelegateComponent::doesHandle( const std::string& token ) const
            token == "Molecule Document" ||
            token ==    "Voxel Document" ||
            token ==  "Minerva Document" ||
+           token ==  "Modflow Document" ||
            token == "Triangle Document" );
 }
 

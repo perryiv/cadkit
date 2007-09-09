@@ -245,7 +245,7 @@ void TriangleReaderTDF::_readRecords ( std::ifstream &in )
     this->_readRecord ( in );
 
     // Feedback.
-    _document->setProgressBar ( update(), in, _file.second );
+    _document->setProgressBar ( update(), in, _file.second, _caller );
   }
 }
 
@@ -775,7 +775,7 @@ void TriangleReaderTDF::_incrementProgress ( bool state )
 {
   unsigned int &numerator   ( _progress.first  );
   unsigned int &denominator ( _progress.second );
-  _document->setProgressBar ( state, numerator, denominator );
+  _document->setProgressBar ( state, numerator, denominator, _caller );
   ++numerator;
   USUL_ASSERT ( numerator <= denominator );
 }

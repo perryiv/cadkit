@@ -76,6 +76,11 @@ struct OSG_TOOLS_EXPORT StateSet
   static void         setLineWidth ( osg::Node *node, float width );
   static float        getLineWidth ( osg::Node *node );
 
+  // Set/Get point size.
+  static void         setPointSize ( osg::StateSet *ss, float width );
+  static void         setPointSize ( osg::Node *node, float width );
+  static float        getPointSize ( osg::Node *node );
+
   // Set the states for hidden lines.
   static void         hiddenLines ( const osg::Vec4f &color, osg::StateSet *normal, osg::StateSet *hidden );
 };

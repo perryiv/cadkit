@@ -24,6 +24,7 @@
 #include "osg/ShadeModel"
 #include "osg/LightModel"
 #include "osg/LineWidth"
+#include "osg/Point"
 #include "osg/Material"
 
 #include <stdexcept>
@@ -612,8 +613,77 @@ float StateSet::getLineWidth ( osg::Node *node )
     return 1.0;
 
   // Get the line width
-
   return ( lw->getWidth() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to set the point size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  void setPointSize ( osg::StateSet* ss, float size )
+  {
+    osg::ref_ptr<osg::Point> pt ( new osg::Point );
+    pt->setSize ( size );
+
+    // Set the state. Make it override any other similar states.
+    typedef osg::StateAttribute Attribute;
+    ss->setAttributeAndModes ( pt.get(), Attribute::OVERRIDE | Attribute::ON );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set point size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StateSet::setPointSize ( osg::Node *node, float size )
+{
+  StateSet::setPointSize ( ( ( node ) ? node->getOrCreateStateSet() : 0x0 ), size );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set point size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StateSet::setPointSize ( osg::StateSet *ss, float size )
+{
+  Helper::setPointSize ( ss, size );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get point size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float StateSet::getPointSize ( osg::Node *node )
+{
+  // Get or create the state set.
+  osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
+
+  // Get the shade-model attribute, if any.
+  const osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::POINT );
+  if ( 0x0 == sa )
+    return 1.0f;
+
+  // Should be true.
+  const osg::Point *pt = dynamic_cast < const osg::Point * > ( sa );
+  if ( 0x0 == pt )
+    return 1.0f;
+
+  // Get the line width
+  return ( pt->getSize() );
 }
 
 

@@ -22,11 +22,10 @@
 #include "Usul/Math/Vector3.h"
 
 #include <iosfwd>
-#include <map>
 #include <string>
 #include <vector>
 
-namespace osg { class Node; }
+namespace osg { class Node; class Group; }
 
 
 class ModflowDocument : public Usul::Documents::Document,
@@ -39,9 +38,9 @@ public:
   typedef Usul::Math::Vec2ui Vec2ui;
   typedef Usul::Math::Vec2f Vec2f;
   typedef Usul::Math::Vec3f Vec3f;
-  typedef std::pair<std::string,std::string> GridInfo;
-  typedef std::vector<Vec3f> GridData;
-  typedef std::map<GridInfo,GridData> GridMap;
+  typedef std::vector<float> GridData;
+  typedef std::pair<std::string,GridData> GridInfo;
+  typedef std::vector<GridInfo> GridVector;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ModflowDocument );
@@ -78,13 +77,17 @@ public:
 
 protected:
 
+  osg::Node *                 _buildGrid ( unsigned int layer, GridData &grid, bool useBounds, Unknown *caller = 0x0 );
+
   void                        _destroy();
 
   void                        _incrementProgress ( bool state, Unknown *progress, unsigned int &numerator, unsigned int denominator );
 
-  void                        _readBasicPackageFile ( const std::string &name, Unknown *progress );
-  void                        _readDiscretizationFile ( const std::string &name, Unknown *progress );
-  void                        _readGrid ( const std::string &file, std::istream &in );
+  Vec2f                       _location ( unsigned int i ) const;
+
+  void                        _readBasicPackageFile ( const std::string &file, Unknown *progress );
+  void                        _readDiscretizationFile ( const std::string &file, Unknown *progress );
+  void                        _readGrid ( std::istream &in, GridInfo &grid );
 
   void                        _seekToLine ( const std::string &word, std::istream &in );
   void                        _skipLines ( char c, std::istream &in );
@@ -101,7 +104,10 @@ private:
   unsigned int _numLayers;
   Vec2ui _gridSize;
   Vec2f _cellSize;
-  GridMap _grids;
+  GridVector _bounds;
+  GridVector _startHeads;
+  GridInfo _landElev;
+  GridVector _bottomElev;
 };
 
 

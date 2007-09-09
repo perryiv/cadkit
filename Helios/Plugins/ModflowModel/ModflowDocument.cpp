@@ -68,7 +68,10 @@ ModflowDocument::ModflowDocument() : BaseClass ( "Modflow Document" ),
   _numLayers ( 0 ),
   _gridSize ( 0, 0 ),
   _cellSize ( 0.0f, 0.0f ),
-  _grids()
+  _bounds(),
+  _startHeads(),
+  _landElev(),
+  _bottomElev()
 {
 }
 
@@ -236,7 +239,7 @@ namespace Helper
         }
       }
     }
-    throw std::runtime_error ( "Error 9912656200: Failed to find file with extension: " + lookFor );
+    return std::string();
   }
 }
 
@@ -252,20 +255,12 @@ namespace Helper
   template < class ArrayType > inline void readAsciiArray 
     ( unsigned int numRows, unsigned int numCols, float cellX, float cellY, ArrayType &data, std::istream &in )
   {
-    data.resize ( numRows * numCols );
-    unsigned int index ( 0 );
-    for ( unsigned int i = 0; i < numRows; ++i )
+    const unsigned int num ( numRows * numCols );
+    data.resize ( num );
+    for ( unsigned int i = 0; i < num; ++i )
     {
-      const float y ( ( numRows - 1 - i ) * cellY );
-      for ( unsigned int j = 0; j < numCols; ++j )
-      {
-        Helper::checkStream ( in );
-        const float x ( j * cellX );
-        data[index][0] = x;
-        data[index][1] = y;
-        in >> data[index][2];
-        ++index;
-      }
+      Helper::checkStream ( in );
+      in >> data[i];
     }
   }
 }
@@ -294,46 +289,11 @@ void ModflowDocument::read ( const std::string &file, Unknown *caller, Unknown *
   // Find all important nodes.
   Children files ( document->find ( "file", true ) );
 
+  // Read the discretization file first, it has the number of layers.
+  this->_readDiscretizationFile ( Helper::findFileWithExtension ( files, "dis" ), progress );
+
   // Read the basic package file.
   this->_readBasicPackageFile ( Helper::findFileWithExtension ( files, "ba6" ), progress );
-
-  // Read the discretization file.
-  this->_readDiscretizationFile ( Helper::findFileWithExtension ( files, "dis" ), progress );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Read the basic package file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ModflowDocument::_readBasicPackageFile ( const std::string &file, Unknown *progress )
-{
-  Guard guard ( this->mutex() );
-
-  std::cout << "Reading: " << file << std::endl;
-
-  // Open the file.
-  Usul::System::LastError::init();
-  std::ifstream in ( file.c_str() );
-  if ( false == in.is_open() )
-    Usul::Exceptions::Thrower<std::runtime_error>
-      ( "Error 4171642072: failed to open file '", file, "', ", Usul::System::LastError::message() );
-
-  // Search entire file.
-  while ( false == in.eof() )
-  {
-    // Skip to the grid points.
-    this->_seekToLine ( "INTERNAL", in );
-
-    // Make sure we did not reach the end of the file.
-    if ( false == in.eof() )
-    {
-      // Read the grid.
-      this->_readGrid ( file, in );
-    }
-  }
 }
 
 
@@ -346,6 +306,10 @@ void ModflowDocument::_readBasicPackageFile ( const std::string &file, Unknown *
 void ModflowDocument::_readDiscretizationFile ( const std::string &file, Unknown *progress )
 {
   Guard guard ( this->mutex() );
+
+  // Ignore empty strings.
+  if ( true == file.empty() )
+    return;
 
   std::cout << "Reading: " << file << std::endl;
 
@@ -360,9 +324,8 @@ void ModflowDocument::_readDiscretizationFile ( const std::string &file, Unknown
   this->_skipLines ( '#', in );
 
   // Read the header.
-  unsigned int numLayers;
   Helper::checkStream ( in );
-  in >> numLayers >> _gridSize[0] >> _gridSize[1];
+  in >> _numLayers >> _gridSize[0] >> _gridSize[1];
 
   // Skip to the grid points.
   this->_seekToLine ( "CONSTANT", in );
@@ -373,18 +336,64 @@ void ModflowDocument::_readDiscretizationFile ( const std::string &file, Unknown
   in >> dummy >> _cellSize[0] >> dummy;
   in >> dummy >> _cellSize[1] >> dummy;
 
-  // For each layer...
-  while ( false == in.eof() )
-  {
-    // Skip to the grid points.
-    this->_seekToLine ( "INTERNAL", in );
+  // Read the land surface.
+  this->_seekToLine ( "INTERNAL", in );
+  Helper::checkStream ( in );
+  this->_readGrid ( in, _landElev );
 
-    // Make sure we did not reach the end of the file.
-    if ( false == in.eof() )
-    {
-      // Read the grid.
-      this->_readGrid ( file, in );
-    }
+  // For each layer...
+  _bottomElev.resize ( _numLayers );
+  for ( unsigned int i = 0; i < _numLayers; ++i )
+  {
+    // Read the grid.
+    this->_seekToLine ( "INTERNAL", in );
+    Helper::checkStream ( in );
+    this->_readGrid ( in, _bottomElev.at(i) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the basic package file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModflowDocument::_readBasicPackageFile ( const std::string &file, Unknown *progress )
+{
+  Guard guard ( this->mutex() );
+
+  // Ignore empty strings.
+  if ( true == file.empty() )
+    return;
+
+  std::cout << "Reading: " << file << std::endl;
+
+  // Open the file.
+  Usul::System::LastError::init();
+  std::ifstream in ( file.c_str() );
+  if ( false == in.is_open() )
+    Usul::Exceptions::Thrower<std::runtime_error>
+      ( "Error 4171642072: failed to open file '", file, "', ", Usul::System::LastError::message() );
+
+  // For each layer...
+  _bounds.resize ( _numLayers );
+  for ( unsigned int i = 0; i < _numLayers; ++i )
+  {
+    // Read the grid.
+    this->_seekToLine ( "INTERNAL", in );
+    Helper::checkStream ( in );
+    this->_readGrid ( in, _bounds.at(i) );
+  }
+
+  // For each layer...
+  _startHeads.resize ( _numLayers );
+  for ( unsigned int i = 0; i < _numLayers; ++i )
+  {
+    // Read the grid.
+    this->_seekToLine ( "INTERNAL", in );
+    Helper::checkStream ( in );
+    this->_readGrid ( in, _startHeads.at(i) );
   }
 }
 
@@ -395,7 +404,7 @@ void ModflowDocument::_readDiscretizationFile ( const std::string &file, Unknown
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModflowDocument::_readGrid ( const std::string &file, std::istream &in )
+void ModflowDocument::_readGrid ( std::istream &in, GridInfo &grid )
 {
   Guard guard ( this->mutex() );
 
@@ -407,8 +416,8 @@ void ModflowDocument::_readGrid ( const std::string &file, std::istream &in )
   boost::algorithm::trim ( name );
 
   // Make the map entry and get reference to data.
-  GridInfo info ( file, name );
-  GridData &data = _grids[info];
+  grid.first = name;
+  GridData &data = grid.second;
 
   // Read the grid points.
   const unsigned int numCells ( _gridSize[0] * _gridSize[1] );
@@ -485,10 +494,15 @@ void ModflowDocument::_skipLines ( char c, std::istream &in )
 void ModflowDocument::clear ( Usul::Interfaces::IUnknown * )
 {
   Guard guard ( this->mutex() );
+
   _numLayers = 0;
   _gridSize.set ( 0, 0 );
   _cellSize.set ( 0.0f, 0.0f );
-  _grids.clear();
+
+  _bounds.clear(),
+  _startHeads.clear(),
+  _landElev.second.clear(),
+  _bottomElev.clear();
 }
 
 
@@ -552,43 +566,70 @@ osg::Node *ModflowDocument::buildScene ( const BaseClass::Options &options, Unkn
 {
   Guard guard ( this->mutex() );
 
-  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
-  OsgTools::State::StateSet::setPointSize ( geode.get(), 2.0f );
+  osg::ref_ptr<osg::Group> group ( new osg::Group );
 
-  for ( GridMap::iterator i = _grids.begin(); i != _grids.end(); ++i )
+  // Add land surface.
+  //group->addChild ( this->_buildGrid ( 0, _landElev.second, false, caller ) );
+
+  // Add the water surfaces.
+  for ( unsigned int i = 0; i < _numLayers; ++i )
   {
-    GridData &data ( i->second );
-    const unsigned int numCells ( data.size() );
-
-    osg::ref_ptr<osg::Vec3Array> quads ( new osg::Vec3Array );
-    quads->reserve ( numCells * 4 );
-
-    osg::ref_ptr<osg::Vec3Array> normals ( new osg::Vec3Array );
-    normals->push_back ( osg::Vec3f ( 0.0f, 0.0f, 1.0f ) );
-
-    const osg::Vec2f half ( _cellSize[0] / 2.0f, _cellSize[1] / 2.0f );
-
-    for ( unsigned int j = 0; j < numCells; ++j )
-    {
-      const Vec3f &center = data.at(j);
-      quads->push_back ( osg::Vec3f ( center[0] - half[0], center[1] - half[1], center[2] ) );
-      quads->push_back ( osg::Vec3f ( center[0] + half[0], center[1] - half[1], center[2] ) );
-      quads->push_back ( osg::Vec3f ( center[0] + half[0], center[1] + half[1], center[2] ) );
-      quads->push_back ( osg::Vec3f ( center[0] - half[0], center[1] + half[1], center[2] ) );
-    }
-
-    // We often skip many cells above.
-    quads->trim();
-
-    osg::ref_ptr<osg::Geometry> geom ( new osg::Geometry );
-    geom->setVertexArray ( quads.get() );
-
-    geom->setNormalArray ( normals.get() );
-    geom->setNormalBinding ( osg::Geometry::BIND_OVERALL );
-
-    geom->addPrimitiveSet ( new osg::DrawArrays ( osg::DrawArrays::QUADS, 0, quads->size() ) );
-    geode->addDrawable ( geom.get() );
+    group->addChild ( this->_buildGrid ( i, _bottomElev.at(i).second, true, caller ) );
   }
+
+  return group.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the grid.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node *ModflowDocument::_buildGrid ( unsigned int layer, GridData &grid, bool useBounds, Unknown *caller )
+{
+  Guard guard ( this->mutex() );
+
+  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+
+  const unsigned int numCells ( grid.size() );
+  osg::ref_ptr<osg::Vec3Array> quads ( new osg::Vec3Array );
+  quads->reserve ( numCells * 4 );
+
+  osg::ref_ptr<osg::Vec3Array> normals ( new osg::Vec3Array );
+  normals->push_back ( osg::Vec3f ( 0.0f, 0.0f, 1.0f ) );
+
+  const osg::Vec2f size ( _cellSize[0] / 2.0f, _cellSize[1] / 2.0f );
+
+  // Make the cells.
+  for ( unsigned int j = 0; j < numCells; ++j )
+  {
+    if ( ( ( true == useBounds ) && ( 0.0f != _bounds.at(layer).second.at(j) ) ) || ( false == useBounds ) )
+    {
+      const Vec2f location ( this->_location ( j ) );
+      const Vec3f center ( location[0], location[1], grid.at(j) );
+      quads->push_back ( osg::Vec3f ( center[0] - size[0], center[1] - size[1], center[2] ) );
+      quads->push_back ( osg::Vec3f ( center[0] + size[0], center[1] - size[1], center[2] ) );
+      quads->push_back ( osg::Vec3f ( center[0] + size[0], center[1] + size[1], center[2] ) );
+      quads->push_back ( osg::Vec3f ( center[0] - size[0], center[1] + size[1], center[2] ) );
+    }
+  }
+
+  // We often skip many cells above.
+  quads->trim();
+
+  // Make geometry.
+  osg::ref_ptr<osg::Geometry> geom ( new osg::Geometry );
+  geom->setVertexArray ( quads.get() );
+
+  // Add vectors.
+  geom->setNormalArray ( normals.get() );
+  geom->setNormalBinding ( osg::Geometry::BIND_OVERALL );
+
+  // Add primitive set.
+  geom->addPrimitiveSet ( new osg::DrawArrays ( osg::DrawArrays::QUADS, 0, quads->size() ) );
+  geode->addDrawable ( geom.get() );
 
   return geode.release();
 }
@@ -605,4 +646,24 @@ void ModflowDocument::_incrementProgress ( bool state, Unknown *progress, unsign
   this->setProgressBar ( state, numerator, denominator, progress );
   ++numerator;
   USUL_ASSERT ( numerator <= denominator );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the location of the grid cell.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ModflowDocument::Vec2f ModflowDocument::_location ( unsigned int index ) const
+{
+  const unsigned int col ( index % _gridSize[1] );
+  const unsigned int row ( ( index - col ) / _gridSize[1] );
+
+  const float x ( _cellSize[0] * col );
+
+  const float height ( _cellSize[1] * _gridSize[1] );
+  const float y ( height - ( _cellSize[1] * row ) );
+
+  return Vec2f ( x, y );
 }

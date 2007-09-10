@@ -697,22 +697,39 @@ void WRFDocument::_purgeCache ()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the number of items in the cache.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int WRFDocument::cacheSize () const
+{
+  Guard guard ( this->mutex () );
+  return _volumeCache.size ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the maximium number of items in the cache.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int WRFDocument::maxCacheSize () const
+{
+  Guard guard ( this->mutex () );
+  return _maxCacheSize;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Is the cache full?
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 bool WRFDocument::_cacheFull () const
 {
-  unsigned int cacheSize ( 0 );
-  unsigned int maxCacheSize ( 0 );
-
-  {
-    Guard guard ( this->mutex () );
-    cacheSize = _volumeCache.size ();
-    maxCacheSize = _maxCacheSize;
-  }
-
-  return cacheSize > maxCacheSize;
+  return this->cacheSize () > this->maxCacheSize();
 }
 
 
@@ -743,7 +760,12 @@ void WRFDocument::_launchNextCacheRequest ()
   // If we are animation only request data for the current channel.
   //if ( this->animating () )
   {
-    this->_requestData ( timestepToLoad, _currentChannel, false );
+    // Get the current channel
+    unsigned int currentChannel ( this->currentChannel () );
+
+    // Only make the request if we don't already have it.
+    if ( false == this->_dataCached ( timestepToLoad, currentChannel ) )
+      this->_requestData ( timestepToLoad, currentChannel, false );
   }
 #if 0
   else

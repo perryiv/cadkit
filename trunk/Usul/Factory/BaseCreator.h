@@ -17,10 +17,12 @@
 #ifndef _USUL_FACTORY_BASE_CREATOR_CLASS_
 #define _USUL_FACTORY_BASE_CREATOR_CLASS_
 
-#include "Usul/Base/Object.h"
+#include "Usul/Export/Export.h"
+#include "Usul/Pointers/Pointers.h"
 
 #include <string>
 
+namespace Usul { namespace Base { class Referenced; } }
 
 namespace Usul {
 namespace Factory {
@@ -32,11 +34,9 @@ namespace Factory {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-class USUL_EXPORT BaseCreator : public Usul::Base::Object
+class USUL_EXPORT BaseCreator
 {
 public:
-
-  typedef Usul::Base::Object BaseClass;
 
   USUL_DECLARE_REF_POINTERS ( BaseCreator );
 
@@ -44,9 +44,17 @@ public:
 
   virtual Usul::Base::Referenced *  operator()() = 0;
 
+  const std::string &               name();
+
+  void                              ref ();
+  void                              unref ( bool allowDeletion = true );
+
 protected:
 
   virtual ~BaseCreator();
+
+  std::string  _name;
+  unsigned int _refCount;
 };
 
 

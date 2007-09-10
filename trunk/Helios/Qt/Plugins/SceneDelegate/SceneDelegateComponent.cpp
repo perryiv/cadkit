@@ -106,7 +106,7 @@ void SceneDelegateComponent::createDefaultGUI ( Usul::Documents::Document *docum
 
   Usul::Interfaces::Qt::IWorkspace::QueryPtr workspace ( caller );
 
-  if( workspace.valid() )
+  if ( workspace.valid() )
   {
     QWorkspace *parent ( workspace->workspace() );
     QtViewerPtr viewer ( new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent ) );
@@ -121,5 +121,8 @@ void SceneDelegateComponent::createDefaultGUI ( Usul::Documents::Document *docum
 
     // Show the window.
     viewer->show();
+
+    // Make sure the geometry is visible.
+    viewer->viewer()->camera ( OsgTools::Render::Viewer::FIT );
   }
 }

@@ -164,7 +164,7 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source"
+			Name="Source Files"
 			Filter="cpp;cxx;c;def"
 			UniqueIdentifier="{3fdfe9b9-2c0d-4bd9-b52a-972f8bb039c3}"
 			>
@@ -186,6 +186,36 @@
 			</File>
 			<File
 				RelativePath=".\Viewer.h"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing Viewer.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe  -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;.&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;.\Viewer.h&quot; -o &quot;.\GeneratedFiles\moc_Viewer.cpp&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\Viewer.h"
+						Outputs="&quot;.\GeneratedFiles\moc_Viewer.cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing Viewer.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe  -D_USUL_TRACE -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -I&quot;$(LOCAL_SRC_DIR)&quot; -I&quot;$(QTDIR)\include&quot; &quot;.\Viewer.h&quot; -o &quot;.\GeneratedFiles\moc_Viewer.cpp&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\Viewer.h"
+						Outputs="&quot;.\GeneratedFiles\moc_Viewer.cpp&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+		</Filter>
+		<Filter
+			Name="Generated Files"
+			>
+			<File
+				RelativePath=".\generatedfiles\moc_Viewer.cpp"
 				>
 			</File>
 		</Filter>

@@ -12,6 +12,7 @@
 
 #include "Usul/Documents/Manager.h"
 
+#include "QtCore/QTimer"
 #include "QtGui/QResizeEvent"
 
 using namespace CadKit::Helios::Views::OSG;
@@ -27,7 +28,8 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   BaseClass ( format, parent ),
   _document ( doc ),
   _viewer ( 0x0 ),
-  _refCount ( 0 )
+  _refCount ( 0 ),
+  _animationTimer ( 0x0 )
 {
   // For convienence;
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
@@ -54,7 +56,10 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   this->_initPlacement ();
 
   // Add this to the document
-  this->document()->addWindow   ( this );
+  this->document()->addWindow ( this );
+
+  // Initialize the timer.
+  _animationTimer = new QTimer ( this );
 }
 
 
@@ -66,16 +71,24 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
 
 Viewer::~Viewer()
 {
+  // Stop and delete the timer.
+  if ( 0x0 != _animationTimer )
+  {
+    _animationTimer->stop();
+    delete _animationTimer;
+    _animationTimer = 0x0;
+  }
+
   // Clear the viewer.
   _viewer->clear();
   _viewer = 0x0;
 
   // Remove this window from the document's sets.
-  this->document()->removeWindow   ( this );
+  this->document()->removeWindow ( this );
 
   // Tell the document this is closing.  
   // Make sure function is called after removeWindow is called.
-  this->document()->closing( this );
+  this->document()->closing ( this );
 
   // Better be zero
   USUL_ASSERT ( 0 == _refCount );
@@ -145,6 +158,8 @@ Usul::Interfaces::IUnknown * Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IOpenGLContext* > ( this );
   case Usul::Interfaces::IWindow::IID:
     return static_cast < Usul::Interfaces::IWindow* > ( this );
+  case Usul::Interfaces::ITimeoutAnimate::IID:
+    return static_cast < Usul::Interfaces::ITimeoutAnimate* > ( this );
   default:
     return 0x0;
   }
@@ -470,4 +485,39 @@ void Viewer::setFocus()
 void Viewer::setTitle ( const std::string& title )
 {
   this->setWindowTitle ( title.c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start the animation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::startAnimation ( double milliseconds )
+{
+  if ( 0x0 != _animationTimer )
+  {
+    this->connect ( _animationTimer, SIGNAL ( timeout() ), this, SLOT ( _onTimeoutAnimation() ) );
+    _animationTimer->start ( static_cast<int> ( milliseconds ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Callback that we are using for Animation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_onTimeoutAnimation()
+{
+  if ( 0x0 != this->viewer() )
+  {
+    // Set the matrix and see if we should continue.
+    if ( false == this->viewer()->timeoutAnimate() ) 
+    {
+      _animationTimer->stop();
+    }
+  }
 }

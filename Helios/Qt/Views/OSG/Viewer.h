@@ -17,6 +17,7 @@
 #include "Usul/Interfaces/GUI/IWindow.h"
 #include "Usul/Interfaces/IOpenGLContext.h"
 #include "Usul/Interfaces/ITimeoutAnimate.h"
+#include "Usul/Interfaces/ITimeoutSpin.h"
 
 #include "OsgTools/Render/Viewer.h"
 
@@ -34,7 +35,8 @@ namespace OSG {
 class HELIOS_QT_VIEWS_OSG_EXPORT Viewer : public QGLWidget,
                                           public Usul::Interfaces::IOpenGLContext,
                                           public Usul::Interfaces::IWindow,
-                                          public Usul::Interfaces::ITimeoutAnimate
+                                          public Usul::Interfaces::ITimeoutAnimate,
+                                          public Usul::Interfaces::ITimeoutSpin
 {
   Q_OBJECT
 
@@ -69,6 +71,10 @@ public:
   /// Usul::Interfaces::ITimeoutAnimate
   virtual void                            startAnimation ( double timeout );
 
+  /// Usul::Interfaces::ITimeoutSpin
+  virtual void                            stopSpin();
+  virtual void                            startSpin ( double timeout );
+
 protected:
 
   void                                    _initPlacement ();
@@ -86,13 +92,14 @@ protected:
 private slots:
 
   void                                    _onTimeoutAnimation();
+  void                                    _onTimeoutSpin();
 
 private:
 
   Document::RefPtr _document;
   OsgTools::Render::Viewer::RefPtr _viewer;
   unsigned int _refCount;
-  QTimer *_animationTimer;
+  QTimer *_timer;
 };
 
 

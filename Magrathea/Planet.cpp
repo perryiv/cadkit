@@ -26,6 +26,7 @@
 #include "wms/wms.h"
 
 #include "osg/PolygonOffset"
+#include "osg/Version"
 
 using namespace Magrathea;
 
@@ -165,9 +166,12 @@ void Planet::init()
 
     //osgDB::Registry::instance()->setDatabasePager( _databasePager.get() );
 	  _databasePager->setExpiryDelay(0);
-    _databasePager->setUseFrameBlock( true );
 	  _databasePager->setAcceptNewDatabaseRequests( true );
 	  _databasePager->setDatabasePagerThreadPause( false );	
+
+    #if ( OSG_VERSION_MAJOR < 2 )
+    _databasePager->setUseFrameBlock( true );
+    #endif
   }
   catch( const std::exception& e )
   {

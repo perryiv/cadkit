@@ -41,9 +41,10 @@
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Convert.h"
 
-#include "osg/MatrixTransform"
-
 #include "osgDB/WriteFile"
+
+#include "osg/MatrixTransform"
+#include "osg/Version"
 
 #include "vrj/Kernel/Kernel.h"
 #include "vrj/Draw/OGL/GlWindow.h"

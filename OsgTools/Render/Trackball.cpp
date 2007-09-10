@@ -85,11 +85,8 @@ osg::Matrixd Trackball::getInverseMatrix() const
 
 void Trackball::home ( const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa )
 {
-  // Get the scene.
-  const osg::Node *scene = this->getNode();
-
   // Handle no scene.
-  if ( !scene )
+  if ( 0x0 == this->getNode() )
     return;
 
   // Call the base class's function.

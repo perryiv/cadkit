@@ -103,6 +103,7 @@
 #include "osg/Notify"
 #include "osg/Stencil"
 #include "osg/AutoTransform"
+#include "osg/Version"
 
 #include "osg/GL"
 #include "osg/GLU"
@@ -552,10 +553,15 @@ void Viewer::camera ( CameraOption option )
     dist.second = trackball->distance();
   }
 
-  // Tell the manipulator to go home.
-  this->navManip()->home ( *ea, aa );
-
   typedef Usul::Interfaces::ICamera Camera;
+
+  // Is the request with respect to the current matrix?
+  if ( Camera::ROTATE_Y_N90 != option && Camera::ROTATE_Y_P90 != option &&
+       Camera::ROTATE_X_N90 != option && Camera::ROTATE_X_P90 != option )
+  {
+    // Tell the manipulator to go home.
+    this->navManip()->home ( *ea, aa );
+  }
 
   // If we are not resetting and we have a trackball...
   if ( Camera::RESET != option && trackball )
@@ -585,6 +591,21 @@ void Viewer::camera ( CameraOption option )
       case Camera::BOTTOM:
         adjust.makeRotate (  osg::PI_2, osg::Vec3 ( 1, 0, 0 ) );
         trackball->rotation ( trackball->rotation() * adjust );
+      case Camera::ROTATE_Y_N90:
+        adjust.makeRotate ( -osg::PI_2, osg::Vec3 ( 0, 1, 0 ) );
+        trackball->rotation ( adjust * trackball->rotation() );
+        break;
+      case Camera::ROTATE_Y_P90:
+        adjust.makeRotate (  osg::PI_2, osg::Vec3 ( 0, 1, 0 ) );
+        trackball->rotation ( adjust * trackball->rotation() );
+        break;
+      case Camera::ROTATE_X_N90:
+        adjust.makeRotate ( -osg::PI_2, osg::Vec3 ( 1, 0, 0 ) );
+        trackball->rotation ( adjust * trackball->rotation() );
+        break;
+      case Camera::ROTATE_X_P90:
+        adjust.makeRotate (  osg::PI_2, osg::Vec3 ( 1, 0, 0 ) );
+        trackball->rotation ( adjust * trackball->rotation() );
         break;
     }
   }
@@ -1254,7 +1275,7 @@ unsigned int Viewer::backgroundCorners() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Rotate the scene.
+//  Rotate the scene with no animation.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1266,8 +1287,7 @@ void Viewer::rotate ( const osg::Vec3 &axis, float radians )
 
   // Get the trackball.
   Trackball *tb = dynamic_cast < Trackball* > ( this->navManip( ) );
-
-  if( !tb )
+  if ( 0x0 == tb )
     return;
 
   // Get the current state.
@@ -1278,43 +1298,9 @@ void Viewer::rotate ( const osg::Vec3 &axis, float radians )
   dR.makeRotate ( radians, axis );
   R2 = dR * R1;
 
-  // Use low lods until this function returns.
-  Viewer::LowLods ll ( this );
-
-  // Animate for this many seconds.
-  const double duration ( this->_animationTime() );
-
-  // Get the starting and stopping times.
-  const double start ( Usul::System::Clock::milliseconds() );
-  const double stop ( start + duration );
-
-  // Loop until out of range.
-  while ( Usul::System::Clock::milliseconds() < stop )
-  {
-    // The independent variable.
-    const double current ( Usul::System::Clock::milliseconds() );
-    const double u ( ( current - start ) / duration );
-
-    // Linearly interpolate.
-    osg::Quat R;
-    R.slerp ( u, R1, R2 );
-
-    // Set the new rotation.
-    tb->rotation ( R );
-
-    // Set the viewer's matrix and redraw.
-    this->viewer()->setViewMatrix ( tb->getInverseMatrix() );
-    this->render();
-  }
-
-  // Ensure that we end up where we are supposed to be. If we don't do this, 
-  // then depending on how long things take in the above loop, the object may 
-  // not end up in the final position.
+  // Set the rotation.
   tb->rotation ( R2 );
   this->viewer()->setViewMatrix ( tb->getInverseMatrix() );
-
-  // Render the scene
-  this->render();
 }
 
 
@@ -1585,7 +1571,7 @@ void Viewer::_removeSelectionBox()
 
 double Viewer::_animationTime()
 { 
-  double animation ( Usul::Shared::Preferences::instance().getDouble ( Usul::Registry::Keys::ANIMATION_TIME ) );
+  double animation ( Usul::Shared::Preferences::instance().getDouble ( Usul::Registry::Keys::ANIMATION_TIME, _ANIMATION_TIMER_MILLISECONDS ) );
   return animation * OsgTools::Render::Defaults::TO_MILLISECONDS; 
 }
 
@@ -2202,7 +2188,6 @@ osg::ClipPlane* Viewer::addPlane ( const osg::Plane& plane, bool widget )
   _sceneManager->clipNode()->addClipPlane ( clipPlane.get() );
 
   this->changedScene();
-  this->render();
 
   return clipPlane.get();
 }
@@ -2236,7 +2221,6 @@ void Viewer::removePlane ( unsigned int index )
   group->removeChild ( index );
 
   this->changedScene();
-  this->render();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2269,7 +2253,6 @@ void Viewer::removePlanes()
   group->removeChild( 0, group->getNumChildren() );
   
   this->changedScene();
-  this->render();
 }
 
 
@@ -2984,11 +2967,11 @@ Usul::Interfaces::IUnknown *Viewer::getDocument()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get group with given key.  Creates one if doesn't exist
+//  Get group with given key. Creates one if doesn't exist
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Group*  Viewer::getGroup    ( const std::string& key )
+osg::Group* Viewer::getGroup ( const std::string& key )
 {
   return _sceneManager->groupGet ( key );
 }
@@ -3012,7 +2995,7 @@ void Viewer::removeGroup ( const std::string& key )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::hasGroup    ( const std::string& key )
+bool Viewer::hasGroup ( const std::string& key )
 {
   return _sceneManager->groupHas ( key );
 }
@@ -3937,12 +3920,12 @@ void Viewer::handleSeek ( float x, float y, bool left )
   if( _currentMode != SEEK || false == left )
     return;
 
-  //Find interface to animate, if one exists
+  // Find interface to animate, if one exists
   Usul::Interfaces::IAnimate::QueryPtr animate ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IAnimate::IID ) );
 
   osgUtil::Hit hit;
 
-  //Return if the click didn't intersect the scene
+  // Return if the click didn't intersect the scene
   if ( !this->intersect ( x, y, hit ) )
     return;
 
@@ -3952,8 +3935,8 @@ void Viewer::handleSeek ( float x, float y, bool left )
   const float distance ( this->getDistance() );
 
   osg::Matrix m ( osg::Matrixd::translate(0.0,0.0,distance)*
-                osg::Matrixd::rotate(rot)*
-                osg::Matrixd::translate(center) );
+                  osg::Matrixd::rotate(rot)*
+                  osg::Matrixd::translate(center) );
 
   osg::Vec3 eye, c, up;
 
@@ -3967,17 +3950,16 @@ void Viewer::handleSeek ( float x, float y, bool left )
 
   const float d2 ( axis2.length() );
 
-  //Use the animation interface if we found a valid one
-  if( animate.valid() )
+  // Use the animation interface if we found a valid one
+  if ( animate.valid() )
   {
     animate->animate ( c2, d2, rot );
   }
 
-  //If no animation interface exists, just set the trackball
+  // If no animation interface exists, just set the trackball
   else
   {
-    this->setTrackball( c2, d2, rot, true, true );
-
+    this->setTrackball ( c2, d2, rot, true, true );
     this->render();
   }
 }
@@ -4455,19 +4437,14 @@ bool Viewer::timeoutAnimate ()
 
 void Viewer::zoom ( double delta )
 {
-  if ( delta == 0.0 ) {
+  if ( delta == 0.0 )
     return;
-  }
   
   float distance ( this->getDistance() );
-
   osg::BoundingBox bb ( this->getBoundingBox() );
-
   distance += ( delta * ( .1 * bb.radius() ) ) / Usul::Math::absolute ( delta );
 
-  this->setDistance( distance );
-
-  this->render();
+  this->setDistance ( distance );
 }
 
 
@@ -5140,7 +5117,10 @@ void Viewer::databasePager ( osgDB::DatabasePager* dbPager )
 
   _databasePager->setAcceptNewDatabaseRequests ( true );
   _databasePager->setDatabasePagerThreadPause ( false );
+
+#if ( OSG_VERSION_MAJOR < 2 )
   _databasePager->setUseFrameBlock ( false );
+#endif
 
   this->viewer()->getCullVisitor()->setDatabaseRequestHandler ( dbPager );
   this->viewer()->getUpdateVisitor()->setDatabaseRequestHandler ( dbPager );

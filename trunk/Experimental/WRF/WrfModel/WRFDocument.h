@@ -115,6 +115,12 @@ public:
   /// Are we animating?
   bool                        animating () const;
 
+  /// Get the number of items in the cache.
+  unsigned int                cacheSize () const;
+
+  /// Get the maximium number of items in the cache.
+  unsigned int                maxCacheSize () const;
+
 protected:
 
   void                        _processReadRequests ( Usul::Threads::Thread *);

@@ -23,6 +23,8 @@
 
 #include "QtOpenGL/QGLWidget"
 
+#include <map>
+
 class QTimer;
 
 
@@ -43,8 +45,10 @@ class HELIOS_QT_VIEWS_OSG_EXPORT Viewer : public QGLWidget,
 public:
 
   /// Typedefs.
-  typedef QGLWidget                    BaseClass;
-  typedef Usul::Documents::Document    Document;
+  typedef QGLWidget BaseClass;
+  typedef Usul::Documents::Document Document;
+  typedef std::map<int,bool> KeyMap;
+  typedef OsgTools::Render::Viewer::ViewMode ViewMode;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -100,6 +104,8 @@ private:
   OsgTools::Render::Viewer::RefPtr _viewer;
   unsigned int _refCount;
   QTimer *_timer;
+  KeyMap _keys;
+  ViewMode _lastMode;
 };
 
 

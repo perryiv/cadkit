@@ -3672,7 +3672,6 @@ void Viewer::buttonPress ( float x, float y, bool left, bool middle, bool right 
 
   // Handle any tool events.
   this->handleTool ( left, middle, right, false, x, y, 0.0 );
-
 }
 
 
@@ -3917,7 +3916,7 @@ void Viewer::handleTool ( bool left, bool middle, bool right, bool motion, float
 void Viewer::handleSeek ( float x, float y, bool left )
 {
   // Retrun now if we aren't in seek mode.
-  if( _currentMode != SEEK || false == left )
+  if ( _currentMode != SEEK || false == left )
     return;
 
   // Find interface to animate, if one exists
@@ -3929,7 +3928,7 @@ void Viewer::handleSeek ( float x, float y, bool left )
   if ( !this->intersect ( x, y, hit ) )
     return;
 
-  //Make copy of trackball's current rotation
+  // Make copy of trackball's current rotation
   const osg::Quat rot ( this->getRotation() );
   const osg::Vec3 center ( this->getCenter() );
   const float distance ( this->getDistance() );

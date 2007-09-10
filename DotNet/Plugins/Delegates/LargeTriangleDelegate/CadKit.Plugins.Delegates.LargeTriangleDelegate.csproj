@@ -39,7 +39,6 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Delegate.cs" />
     <Compile Include="Viewer.cs">
-      <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>

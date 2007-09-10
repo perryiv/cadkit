@@ -25,7 +25,7 @@ struct ITimeoutAnimate : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 133794153u };
 
-  //Animate from one position and orientation to another.
+  // Animate from one position and orientation to another.
   virtual void startAnimation ( double timeout ) = 0;
 
 }; 

@@ -24,6 +24,7 @@
 #include "VRV/Functors/Wand/WandRotation.h"
 #include "VRV/Common/Constants.h"
 #include "VRV/Jobs/SaveImage.h"
+#include "VRV/Core/FunctorHelpers.h"
 
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
@@ -37,6 +38,9 @@
 #include "Usul/System/Host.h"
 #include "Usul/System/Directory.h"
 #include "Usul/System/Clock.h"
+
+#include "XmlTree/Document.h"
+#include "XmlTree/XercesLife.h"
 
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Convert.h"
@@ -96,11 +100,16 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _commandQueue      ( ),
   _frameDump         (),
   _navigator         ( 0x0 ),
+  _navigator2        ( 0x0 ),
   _refCount          ( 0 ),
   _menuSceneShowHide ( true ),
   _path              ( new VRV::Animate::Path ),
   _menu              ( new Menu ),
-  _statusBar         ( new Menu )
+  _statusBar         ( new Menu ),
+  _functorFilename   ( Usul::App::Application::instance ().configFile ( "functors" ) ),
+  _analogInputs      (),
+  _transformFunctors (),
+  _favoriteFunctors  ()
 {
   USUL_TRACE_SCOPE;
 
@@ -158,6 +167,9 @@ void Application::_construct()
 
   // Read the user's preference file, if any.
   this->_readUserPreferences();
+
+  // Read the user's functor file.
+  this->_readFunctorFile ();
 }
 
 
@@ -183,6 +195,12 @@ Application::~Application()
 
   // Clear the navigator.
   this->navigator ( 0x0 );
+  _navigator2 = 0x0;
+
+  // Clear the functor maps.
+  _analogInputs.clear ();
+  _transformFunctors.clear ();
+  _favoriteFunctors.clear ();
 
   // Make sure we don't have any references hanging around.
   USUL_ASSERT ( 0 == _refCount );
@@ -1997,6 +2015,9 @@ void Application::_navigate()
   // Tell the navigator to execute.
   if ( _navigator.valid() )
     (*_navigator)();
+
+  if ( _navigator2.valid () )
+    (*_navigator2) ();
 }
 
 
@@ -2723,4 +2744,122 @@ void Application::_parseCommandLine()
 
   // Load the model files.
   this->_loadModelFiles ( filenames );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the user's functor config file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_readFunctorFile ()
+{
+  USUL_TRACE_SCOPE;
+
+  // Local factory for functor creation.
+  Usul::Factory::ObjectFactory factory;
+
+  // Populate the factory.
+  factory.add ( new Usul::Factory::TypeCreator<JoystickHorizontal> ( "horizontal joystick" ) );
+  factory.add ( new Usul::Factory::TypeCreator<JoystickVertical>   ( "vertical joystick"   ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandPitch>          ( "wand pitch"          ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandYaw>            ( "wand yaw"            ) );
+
+  factory.add ( new Usul::Factory::TypeCreator<IdentityMatrix>     ( "identity matrix"     ) );
+  factory.add ( new Usul::Factory::TypeCreator<InverseMatrix>      ( "inverse matrix"      ) );
+  factory.add ( new Usul::Factory::TypeCreator<MatrixPair>         ( "matrix pair"         ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandMatrix>         ( "wand matrix"         ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandPosition>       ( "wand position"       ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandRotation>       ( "wand rotation"       ) );
+
+  factory.add ( new Usul::Factory::TypeCreator<DirectionFunctor>   ( "direction"           ) );
+
+  factory.add ( new Usul::Factory::TypeCreator<TranslateFunctor>   ( "translate"           ) );
+  factory.add ( new Usul::Factory::TypeCreator<RotateFunctor>      ( "rotate"              ) );
+
+  factory.add ( new Usul::Factory::TypeCreator<FavoriteFunctor>    ( "sequence"            ) );
+
+  // Initialize and finalize use of xerces.
+  XmlTree::XercesLife life;
+
+  // Open the input file.
+  const std::string file ( _functorFilename );
+  XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
+  document->load ( file );
+
+  // Initialize the caller.
+  Usul::Interfaces::IUnknown::QueryPtr caller ( this );
+
+  // Find all important functors.
+  Children analogs    ( document->find ( "analog",    true ) );
+  Children digitals   ( document->find ( "digital",   true ) );
+  Children matrices   ( document->find ( "matrix",    true ) );
+  Children directions ( document->find ( "direction", true ) );
+  Children transforms ( document->find ( "transform", true ) );
+  Children favorites  ( document->find ( "favorite",  true ) );
+
+  // The maps of the various functors.
+  MatrixFunctors matrixFunctors;
+  DirectionFunctors directionFunctors;
+
+  // Setters.
+  Helper::AnalogSetter analogSetter;
+  Helper::MatrixSetter matrixSetter;
+  Helper::DirectionSetter directionSetter ( matrixFunctors );
+  Helper::TransformSetter transformSetter ( directionFunctors );
+  Helper::FavoriteSetter favoriteSetter   ( _analogInputs, _transformFunctors );
+
+  // Make the functors.
+  Helper::add ( analogSetter,    factory, analogs,    _analogInputs, caller  );
+  Helper::add ( matrixSetter,    factory, matrices,   matrixFunctors, caller );
+  Helper::add ( directionSetter, factory, directions, directionFunctors, caller );
+  Helper::add ( transformSetter, factory, transforms, _transformFunctors, caller );
+  Helper::add ( favoriteSetter,  factory, favorites,  _favoriteFunctors, caller );
+}
+
+
+/// Get/Set the navigator.
+void Application::navigator2 ( Navigator2 * navigator )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  _navigator2 = navigator;
+}
+
+Application::Navigator2 * Application::navigator2 ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _navigator2;
+}
+
+const Application::Navigator2 * Application::navigator2 () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _navigator2;
+}
+
+// Get the begining of the favorites.
+Application::ConstFavoriteIterator Application::favoritesBegin () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _favoriteFunctors.begin();
+}
+
+// Get the end of the favorites.
+Application::ConstFavoriteIterator Application::favoritesEnd () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _favoriteFunctors.end();
+}
+
+Application::Navigator2* Application::favorite ( const std::string& name )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _favoriteFunctors [ name ];
 }

@@ -41,9 +41,10 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( BaseFunctor );
 
-  // Return the caller.
+  // Get/Set the caller.
   const Unknown *       caller() const;
   Unknown *             caller();
+  virtual void          caller ( Unknown* caller );
 
   // Exact functionality determined by inheriting class.
   virtual void          operator()() = 0;

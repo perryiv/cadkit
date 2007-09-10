@@ -236,3 +236,25 @@ void Transform::analog ( AnalogInput *ai )
   Guard guard ( this->mutex() );
   _ai = ai;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Transform::caller ( Unknown* caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Call the base class.
+  BaseClass::caller ( caller );
+
+  // Set our internal query pointer to caller.
+  Guard guard ( this->mutex() );
+  _fi = caller;
+  _wi = caller;
+  _mm = caller;
+}
+

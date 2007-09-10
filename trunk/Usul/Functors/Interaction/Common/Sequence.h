@@ -51,6 +51,9 @@ public:
   // Have the functors do their thing.
   virtual void          operator()();
 
+  // Set the caller.
+  virtual void          caller ( Unknown* caller );
+
 protected:
 
   virtual ~Sequence();

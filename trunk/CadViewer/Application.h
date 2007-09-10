@@ -284,6 +284,7 @@ protected:
   void                          _animationSteps100        ( MenuKit::Message m, MenuKit::Item *item );
   void                          _animationStepsDouble     ( MenuKit::Message m, MenuKit::Item *item );
   void                          _animationStepsHalf       ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _navigationFavorites      ( MenuKit::Message m, MenuKit::Item *item );
 
   // For readability.
   typedef unsigned long                                 ThreadId;

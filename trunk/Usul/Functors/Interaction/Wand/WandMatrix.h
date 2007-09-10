@@ -48,6 +48,9 @@ public:
   // Update the matrix.
   virtual void          operator()();
 
+  // Set the caller.
+  virtual void          caller ( Unknown* caller );
+
 protected:
 
   virtual ~WandMatrix();

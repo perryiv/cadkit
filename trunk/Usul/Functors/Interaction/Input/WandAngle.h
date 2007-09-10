@@ -44,6 +44,9 @@ public:
   explicit WandAngle ( Unknown *caller, const std::string &name );
   WandAngle ( const WandAngle &a );
 
+  // Set the caller.
+  virtual void          caller ( Unknown* caller );
+
 protected:
 
   virtual ~WandAngle();

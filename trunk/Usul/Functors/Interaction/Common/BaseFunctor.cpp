@@ -87,3 +87,17 @@ Usul::Interfaces::IUnknown *BaseFunctor::caller()
   Guard guard ( this->mutex() );
   return _caller.get();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseFunctor::caller( Unknown * caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _caller = caller;
+}

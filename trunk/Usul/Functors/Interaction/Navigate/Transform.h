@@ -55,6 +55,9 @@ public:
   float                 speed() const;
   void                  speed ( float );
 
+  // Set the caller.
+  virtual void          caller ( Unknown* caller );
+
 protected:
 
   typedef BaseClass::Unknown Unknown;

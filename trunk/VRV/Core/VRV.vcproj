@@ -242,6 +242,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\FunctorHelpers.h"
+					>
+				</File>
+				<File
 					RelativePath=".\JugglerFunctors.h"
 					>
 				</File>

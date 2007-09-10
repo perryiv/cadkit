@@ -2004,3 +2004,29 @@ void Application::_animationStepsHalf ( MenuKit::Message m, MenuKit::Item *item 
   if ( MenuKit::MESSAGE_SELECTED == m )
     this->animationSteps ( this->animationSteps () / 2 );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_navigationFavorites ( MenuKit::Message m, MenuKit::Item *item )
+{
+  const std::string name ( item->text () );
+
+  // Process the message.
+  switch( m )
+  {
+  case MenuKit::MESSAGE_UPDATE:
+    {
+      Navigator2::RefPtr nav ( this->navigator2 () );
+      item->checked ( nav.valid () ? name == nav->name () : false );
+    }
+    break;
+  case MenuKit::MESSAGE_SELECTED:
+    this->navigator2 ( this->favorite ( name ) );
+    break;
+  }
+}

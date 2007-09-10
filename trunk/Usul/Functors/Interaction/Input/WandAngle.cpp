@@ -98,3 +98,22 @@ float WandAngle::_calculateValue ( unsigned int zero )
 
   return value;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WandAngle::caller ( Unknown* caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Call the base class.
+  BaseClass::caller ( caller );
+
+  // Set our internal query pointer to caller.
+  Guard guard ( this->mutex() );
+  _wand = caller;
+}

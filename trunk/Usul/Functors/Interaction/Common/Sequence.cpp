@@ -97,3 +97,27 @@ void Sequence::append ( BaseClass *functor )
     _functors.push_back ( BaseFunctor::RefPtr ( functor ) );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Sequence::caller ( Unknown* caller )
+{
+  USUL_TRACE_SCOPE;
+
+  BaseClass::caller ( caller );
+
+  Guard guard ( this->mutex() );
+  for ( Functors::iterator i = _functors.begin(); i != _functors.end(); ++i )
+  {
+    BaseFunctor::RefPtr functor ( i->get() );
+    if ( true == functor.valid() )
+    {
+      functor->caller ( caller );
+    }
+  }
+}

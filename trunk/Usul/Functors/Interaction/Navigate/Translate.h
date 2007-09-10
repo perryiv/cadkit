@@ -60,6 +60,9 @@ public:
   // Get the current speed.
   float                 currentSpeed() const;
 
+  // Set the caller.
+  virtual void          caller ( Unknown* caller );
+
 protected:
 
   virtual ~Translate();

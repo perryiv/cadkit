@@ -14,23 +14,32 @@
 #include "Helios/Qt/Views/OSG/Export.h"
 
 #include "Usul/Documents/Document.h"
-#include "Usul/Interfaces/IOpenGLContext.h"
 #include "Usul/Interfaces/GUI/IWindow.h"
+#include "Usul/Interfaces/IOpenGLContext.h"
+#include "Usul/Interfaces/ITimeoutAnimate.h"
 
 #include "OsgTools/Render/Viewer.h"
 
 #include "QtOpenGL/QGLWidget"
+
+class QTimer;
+
 
 namespace CadKit {
 namespace Helios {
 namespace Views {
 namespace OSG {
 
+
 class HELIOS_QT_VIEWS_OSG_EXPORT Viewer : public QGLWidget,
                                           public Usul::Interfaces::IOpenGLContext,
-                                          public Usul::Interfaces::IWindow
+                                          public Usul::Interfaces::IWindow,
+                                          public Usul::Interfaces::ITimeoutAnimate
 {
+  Q_OBJECT
+
 public:
+
   /// Typedefs.
   typedef QGLWidget                    BaseClass;
   typedef Usul::Documents::Document    Document;
@@ -57,6 +66,9 @@ public:
   virtual void                            setFocus();
   virtual void                            setTitle ( const std::string& title );
 
+  /// Usul::Interfaces::ITimeoutAnimate
+  virtual void                            startAnimation ( double timeout );
+
 protected:
 
   void                                    _initPlacement ();
@@ -71,17 +83,23 @@ protected:
   virtual void                            keyPressEvent ( QKeyEvent * event );
   virtual void                            keyReleaseEvent ( QKeyEvent * event );
 
+private slots:
+
+  void                                    _onTimeoutAnimation();
+
 private:
 
-  Document::RefPtr                  _document;
-  OsgTools::Render::Viewer::RefPtr  _viewer;
-
-  unsigned int    _refCount;
+  Document::RefPtr _document;
+  OsgTools::Render::Viewer::RefPtr _viewer;
+  unsigned int _refCount;
+  QTimer *_animationTimer;
 };
 
+
 }
 }
 }
 }
+
 
 #endif // __CADKIT_HELIOS_QT_VIEWS_OSG_VIEWER_H__

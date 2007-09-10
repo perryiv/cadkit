@@ -39,9 +39,9 @@
 
 #include "OsgTools/Font.h"
 #include "OsgTools/GlassBoundingBox.h"
-#include "OsgTools/Volume/Texture3DVolume.h"
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/Builders/Arrow.h"
+#include "OsgTools/Volume/TransferFunction1D.h"
 
 #include "Serialize/XML/Deserialize.h"
 
@@ -84,7 +84,7 @@ WRFDocument::WRFDocument() :
   _root ( new osg::MatrixTransform ),
   _planet ( new osg::Group ),
   _volumeTransform ( new osg::MatrixTransform ),
-  _geometry ( new osg::Group ),
+  _volumeNode ( new OsgTools::Volume::Texture3DVolume ),
   _topography ( 0x0 ),
   _bb (),
   _dirty ( true ),
@@ -104,6 +104,7 @@ WRFDocument::WRFDocument() :
   _lowerLeft ( 0.0, 0.0 ),
   _upperRight ( 0.0, 0.0 ),
   _usePlanet ( true ),
+  _transferFunctions (),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   this->_addMember ( "filename", _filename );
@@ -300,47 +301,6 @@ WRFDocument::Filters WRFDocument::filtersInsert() const
 }
 
 
-namespace Detail
-{
-
-  ///////////////////////////////////////////////////////////////////////////////
-  //
-  //  Build the transferFunction.
-  //
-  ///////////////////////////////////////////////////////////////////////////////
-
-  osg::Image* buildTransferFunction ( )
-  {
-    osg::ref_ptr < osg::Image > image ( new osg::Image );
-    image->allocateImage ( 256, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE );
-
-    unsigned char *data ( image->data() );
-
-    for ( unsigned int i = 0; i < 256; ++i )
-    {
-      float value ( static_cast < float > ( i ) / 255 );
-      unsigned int alpha ( 35 );
-  #if 1
-      unsigned char c ( 120 - ( static_cast < unsigned int > ( value * 120 ) ) );
-      *data++ = c;
-      *data++ = c;
-      *data++ = c;
-      *data++ = ( i == 0 ? 0 : alpha );
-  #else
-      float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
-      Usul::Functions::hsvToRgb ( r, g, b, 300 - ( value * 300 ), 1.0f, 1.0f );
-      *data++ = static_cast < unsigned char > ( r * 255 );
-      *data++ = static_cast < unsigned char > ( g * 255 );
-      *data++ = static_cast < unsigned char > ( b * 255 );
-      *data++ = ( i == 0 ? 0 : alpha );
-  #endif
-    }
-
-    return image.release();
-  }
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Build the scene.
@@ -384,9 +344,6 @@ void WRFDocument::_buildScene ( )
     _root->removeChild ( 0, _root->getNumChildren() );
     _volumeTransform->removeChild ( 0, _volumeTransform->getNumChildren () );
     _root->addChild ( _volumeTransform.get () );
-
-    // Add any extra geometry.
-    _root->addChild ( _geometry.get() );
 
     // Add the planet.
     if ( _usePlanet )
@@ -531,13 +488,10 @@ osg::Node* WRFDocument::_buildVolume( osg::Image* image )
 {
   USUL_TRACE_SCOPE;
 
-  osg::ref_ptr < OsgTools::Volume::Texture3DVolume > volume ( new OsgTools::Volume::Texture3DVolume );
-  volume->numPlanes ( _numPlanes );
-  volume->image ( image );
-  volume->boundingBox ( _bb );
-  volume->transferFunction ( Detail::buildTransferFunction() );
+  _volumeNode->numPlanes ( _numPlanes );
+  _volumeNode->image ( image );
 
-  return volume.release();
+  return _volumeNode.get ();
 }
 
 
@@ -561,6 +515,9 @@ void WRFDocument::_initBoundingBox ()
   float zHalf ( static_cast < float > ( zLength ) / 2.0f );
 
   _bb.set ( -xHalf, -yHalf, -zHalf, xHalf, yHalf, zHalf );
+
+  // Set the volume nodes bounding box.
+  _volumeNode->boundingBox ( _bb );
 }
 
 
@@ -1312,26 +1269,6 @@ osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get data at given index.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-WRFDocument::DataType WRFDocument::_value ( unsigned int timestep, unsigned int channel, unsigned int i, unsigned int j, unsigned int k )
-{
-  USUL_TRACE_SCOPE;
-#if 0
-  unsigned int sliceSize ( _x * _y );
-  unsigned int index ( sliceSize * k + ( _y * i ) + j );
-  
-  Guard guard ( this->mutex () );
-  return _data [ timestep ] [ channel ].first [ index ];
-#endif
-  return 0.0f;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Request the data.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1389,6 +1326,12 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
   
   // Initialize the bounding box.
   this->_initBoundingBox ();
+
+  // Build default transfer functions.
+  this->_buildDefaultTransferFunctions ();
+
+  // Build the transfer function.
+  _volumeNode->transferFunction ( _transferFunctions.at ( 0 ).get() );
 
   // Make enough room for the cache.
   _vectorCache.resize ( _timesteps );
@@ -1493,4 +1436,45 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
   // Build the topography.
   else
     Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &WRFDocument::_buildTopography ), "3345743110" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the default transfer function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::_buildDefaultTransferFunctions ()
+{
+  // Typedefs.
+  typedef OsgTools::Volume::TransferFunction1D TransferFunction1D;
+  typedef TransferFunction1D::Colors           Colors;
+
+  const unsigned int size ( 256 );
+
+  Colors grayscale ( size );
+  Colors hsv       ( size );
+
+  for ( unsigned int i = 0; i < size; ++i )
+  {
+    float value ( static_cast < float > ( i ) / 255 );
+    unsigned int alpha ( 35 );
+
+    unsigned char c ( 120 - ( static_cast < unsigned int > ( value * 120 ) ) );
+    grayscale.at ( i ) [ 0 ] = c;
+    grayscale.at ( i ) [ 1 ] = c;
+    grayscale.at ( i ) [ 2 ] = c;
+    grayscale.at ( i ) [ 3 ] = ( i == 0 ? 0 : alpha );
+
+    float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
+    Usul::Functions::hsvToRgb ( r, g, b, 300 - ( value * 300 ), 1.0f, 1.0f );
+    hsv.at ( i ) [ 0 ] = static_cast < unsigned char > ( r * 255 );
+    hsv.at ( i ) [ 1 ] = static_cast < unsigned char > ( g * 255 );
+    hsv.at ( i ) [ 2 ] = static_cast < unsigned char > ( b * 255 );
+    hsv.at ( i ) [ 3 ] = ( i == 0 ? 0 : alpha );
+  }
+
+  _transferFunctions.push_back ( new TransferFunction1D ( grayscale ) );
+  _transferFunctions.push_back ( new TransferFunction1D ( hsv ) );
 }

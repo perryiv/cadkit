@@ -1256,6 +1256,22 @@
 					RelativePath=".\Volume\Texture3DVolume.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Volume\TransferFunction.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Volume\TransferFunction.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Volume\TransferFunction1D.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Volume\TransferFunction1D.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 	</Files>

@@ -13,6 +13,7 @@
 
 #include "OsgTools/Export.h"
 #include "OsgTools/Volume/PlanarProxyGeometry.h"
+#include "OsgTools/Volume/TransferFunction.h"
 
 #include "osg/Image"
 #include "osg/Geode"
@@ -29,6 +30,7 @@ public:
   typedef osg::ref_ptr < osg::Image >            ImagePtr;
   typedef unsigned int                           TextureUnit;
   typedef std::pair < ImagePtr, TextureUnit >    TexutreInfo;
+  typedef OsgTools::Volume::TransferFunction     TransferFunction;
 
   /// Construction.
   Texture3DVolume();
@@ -51,8 +53,8 @@ public:
   bool                             useTransferFunction () const;
   
   /// Get/Set the transfer function as an image.
-  void                             transferFunction ( osg::Image* tf, TextureUnit unit = 1 );
-  osg::Image*                      transferFunction () const;
+  void                             transferFunction ( TransferFunction* tf, TextureUnit unit = 1 );
+  TransferFunction*                 transferFunction () const;
 
 protected:
   virtual ~Texture3DVolume();
@@ -69,7 +71,8 @@ private:
   TexutreInfo                  _volume;
   osg::ref_ptr < Geometry >    _geometry;
   unsigned int                 _flags;
-  TexutreInfo                  _transferFunction;
+  TransferFunction::RefPtr     _transferFunction;
+  unsigned int                 _tfTextureUnit;
 };
 
 }

@@ -50,11 +50,32 @@ SET (SOURCES
 	Documents/Manager.cpp
 	Errors/Stack.cpp
 	Errors/Error.cpp
+  Factory/ObjectFactory.cpp
+  Factory/BaseCreator.cpp
 	File/Make.cpp
 	File/Remove.cpp
 	File/Temp.cpp
 	Functions/Color.cpp
 	Functions/Guid.cpp
+  Functors/Interaction/Input/JoystickHorizontal.cpp
+  Functors/Interaction/Input/WandAngle.cpp
+  Functors/Interaction/Input/AnalogInput.cpp
+  Functors/Interaction/Input/WandPitch.cpp
+  Functors/Interaction/Input/JoystickVertical.cpp
+  Functors/Interaction/Input/WandYaw.cpp
+  Functors/Interaction/Matrix/IdentityMatrix.cpp
+  Functors/Interaction/Matrix/InverseMatrix.cpp
+  Functors/Interaction/Matrix/MatrixPair.cpp
+  Functors/Interaction/Matrix/MatrixFunctor.cpp
+  Functors/Interaction/Common/Sequence.cpp
+  Functors/Interaction/Common/BaseFunctor.cpp
+  Functors/Interaction/Wand/WandMatrix.cpp
+  Functors/Interaction/Wand/WandPosition.cpp
+  Functors/Interaction/Wand/WandRotation.cpp
+  Functors/Interaction/Navigate/Direction.cpp
+  Functors/Interaction/Navigate/Rotate.cpp
+  Functors/Interaction/Navigate/Transform.cpp
+  Functors/Interaction/Navigate/Translate.cpp
 	Jobs/Job.cpp
 	Jobs/Manager.cpp
 	ID/GUID.cpp

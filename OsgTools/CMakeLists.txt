@@ -130,6 +130,8 @@ SET (SOURCES
   Widgets/Helper/UpdateProgress.cpp
   Volume/PlanarProxyGeometry.cpp
   Volume/Texture3DVolume.cpp
+  Volume/TransferFunction.cpp
+  Volume/TransferFunction1D.cpp
 )
 
 # Create a Shared Library

@@ -17,9 +17,7 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} ${XERCESC_INCLUDE_DIR} "${PROJECT_SOURCE_
 
 #List the Sources
 SET (SOURCES
-    Factory.cpp
     DataMemberMap.cpp
-    BaseCreator.cpp
     MemberBase.cpp
 )
 

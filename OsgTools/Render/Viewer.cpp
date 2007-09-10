@@ -524,7 +524,7 @@ const Viewer::SceneView *Viewer::viewer() const
 
 void Viewer::camera ( CameraOption option )
 {
- // For convenience.
+  // For convenience.
   SceneView *viewer = this->viewer();
 
   // If we don't have a viewer...
@@ -617,9 +617,7 @@ void Viewer::camera ( CameraOption option )
   osg::Quat R2; M2.get ( R2 );
 
   // Animate.
-  //this->animate ( T1, R1, T2, R2 );
   Usul::Interfaces::ITimeoutAnimate::QueryPtr animate ( _caller );
-
   if ( animate.valid() )
   {
     _animation.init ( T1, R1, T2, R2, _ANIMATION_DURATION_MILLISECONDS );

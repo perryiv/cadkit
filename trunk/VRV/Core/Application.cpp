@@ -536,7 +536,7 @@ void Application::_preDraw( OsgTools::Render::Renderer *renderer )
 void Application::contextPostDraw()
 {
   USUL_TRACE_SCOPE;
-#if 1
+
   if ( _frameDump.dump () )
   {
     osg::ref_ptr < osg::Viewport > vp ( this->viewport() );
@@ -550,7 +550,6 @@ void Application::contextPostDraw()
 
     osgDB::writeImageFile ( *image, _frameDump.file() );
   }
-#endif
 }
 
 
@@ -591,15 +590,6 @@ void Application::_postDraw( OsgTools::Render::Renderer *renderer )
     // Don't export next time.
     _exportImage = false;
   }
-#if 0
-  if ( _frameDump.dump () )
-  {
-    osg::ref_ptr < osg::Viewport > vp ( this->viewport() );
-    osg::ref_ptr < osg::Image > image ( new osg::Image () );
-    image->readPixels ( vp->x(), vp->width(), vp->y(), vp->height(), GL_RGB, GL_UNSIGNED_BYTE );
-    osgDB::writeImageFile ( *image, _frameDump.file() );
-  }
-#endif
 }
 
 

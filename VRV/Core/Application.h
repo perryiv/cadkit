@@ -378,22 +378,16 @@ protected:
   virtual float                 joystickHorizontal() const;
   virtual float                 joystickVertical()   const;
 
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  VRV::Interfaces::IWandStateFloat
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  // Get the wand's position.
+  // Get the wand's position (VRV::Interfaces::IWandStateFloat).
   virtual void                  wandPosition ( Usul::Math::Vec3f &p ) const;
 
-  // Get the wand's rotation matrix.
+  // Get the wand's rotation matrix (VRV::Interfaces::IWandStateFloat).
   virtual void                  wandRotation ( Matrix44f &R ) const;
 
-  // Get the wand's matrix.
+  // Get the wand's matrix (VRV::Interfaces::IWandStateFloat).
   virtual void                  wandMatrix ( Matrix44f &M ) const;
 
-  // Get/set the wand's offset.
+  // Get/set the wand's offset (VRV::Interfaces::IWandStateFloat).
   virtual void                  wandOffset ( Usul::Math::Vec3f &v ) const;
   virtual void                  wandOffset ( const Usul::Math::Vec3f &v );
 

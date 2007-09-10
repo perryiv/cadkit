@@ -36,7 +36,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Animate.cs">
-      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Animate.Designer.cs">
       <DependentUpon>Animate.cs</DependentUpon>

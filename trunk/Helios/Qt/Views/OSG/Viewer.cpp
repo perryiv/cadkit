@@ -29,7 +29,9 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   _document ( doc ),
   _viewer ( 0x0 ),
   _refCount ( 0 ),
-  _timer ( 0x0 )
+  _timer ( 0x0 ),
+  _keys(),
+  _lastMode ( OsgTools::Render::Viewer::NAVIGATION )
 {
   // For convienence;
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
@@ -60,6 +62,9 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
 
   // Initialize the timer.
   _timer = new QTimer ( this );
+
+  // Save the mode.
+  _lastMode = _viewer->getMode();
 }
 
 
@@ -89,6 +94,9 @@ Viewer::~Viewer()
   // Tell the document this is closing.  
   // Make sure function is called after removeWindow is called.
   this->document()->closing ( this );
+
+  // Clear the keys.
+  _keys.clear();
 
   // Better be zero
   USUL_ASSERT ( 0 == _refCount );
@@ -347,6 +355,9 @@ void Viewer::mousePressEvent ( QMouseEvent * event )
 
   this->viewer()->buttonPress ( x, y, left, middle, right );
 
+  // Does nothing unless in seek mode.
+  this->viewer()->handleSeek ( x, y, left );
+
   // Handle the events. Make sure you pick before you drag.
   this->viewer()->handlePicking  ( x, y, left, 1 );
   this->viewer()->handleDragging ( x, y, OsgTools::Draggers::Dragger::START );
@@ -412,6 +423,11 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
   // Stop any spin.
   this->viewer()->spin ( false );
 
+  if ( 0x0 == event )
+    return;
+
+  _keys[event->key()] = true;
+
   // Process the key.
   switch ( event->key() )
   {
@@ -473,6 +489,12 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
     Helper::togglePolygonMode ( *(this->viewer()), Usul::Interfaces::IPolygonMode::POINTS );
     this->viewer()->render();
     break;
+
+  // See if it was the s key...
+  case Qt::Key_S:
+    _lastMode = this->viewer()->getMode();
+    this->viewer()->setMode ( OsgTools::Render::Viewer::SEEK );
+    break;
   }
 }
 
@@ -485,6 +507,16 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
 
 void Viewer::keyReleaseEvent ( QKeyEvent * event )
 {
+  if ( 0x0 == event )
+    return;
+
+  _keys[event->key()] = false;
+
+  // See if it was the s key...
+  if ( Qt::Key_S == event->key() )
+  {
+    this->viewer()->setMode ( _lastMode );
+  }
 }
 
 

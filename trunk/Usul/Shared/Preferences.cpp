@@ -168,9 +168,18 @@ float Preferences::getFloat ( const std::string &key, float defaultValue )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-double Preferences::getDouble ( const std::string &key )
+double Preferences::getDouble ( const std::string &key, double defaultValue )
 {
-  return _doubles[key];
+  Doubles::iterator i ( _doubles.find ( key ) );
+  if ( _doubles.end() == i )
+  {
+    _doubles.insert ( Doubles::value_type ( key, defaultValue ) );
+    return defaultValue;
+  }
+  else
+  {
+    return i->second;
+  }
 }
 
 

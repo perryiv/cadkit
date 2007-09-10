@@ -29,7 +29,7 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   _document ( doc ),
   _viewer ( 0x0 ),
   _refCount ( 0 ),
-  _animationTimer ( 0x0 )
+  _timer ( 0x0 )
 {
   // For convienence;
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
@@ -59,7 +59,7 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   this->document()->addWindow ( this );
 
   // Initialize the timer.
-  _animationTimer = new QTimer ( this );
+  _timer = new QTimer ( this );
 }
 
 
@@ -72,11 +72,11 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
 Viewer::~Viewer()
 {
   // Stop and delete the timer.
-  if ( 0x0 != _animationTimer )
+  if ( 0x0 != _timer )
   {
-    _animationTimer->stop();
-    delete _animationTimer;
-    _animationTimer = 0x0;
+    _timer->stop();
+    delete _timer;
+    _timer = 0x0;
   }
 
   // Clear the viewer.
@@ -160,6 +160,8 @@ Usul::Interfaces::IUnknown * Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IWindow* > ( this );
   case Usul::Interfaces::ITimeoutAnimate::IID:
     return static_cast < Usul::Interfaces::ITimeoutAnimate* > ( this );
+  case Usul::Interfaces::ITimeoutSpin::IID:
+    return static_cast < Usul::Interfaces::ITimeoutSpin* > ( this );
   default:
     return 0x0;
   }
@@ -379,6 +381,28 @@ void Viewer::mouseReleaseEvent ( QMouseEvent * event )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to toggle the polygon mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  inline void togglePolygonMode ( OsgTools::Render::Viewer &v, const Usul::Interfaces::IPolygonMode::Mode &mode )
+  {
+    if ( mode == v.polygonMode() )
+    {
+      v.polygonMode ( Usul::Interfaces::IPolygonMode::NONE );
+    }
+    else
+    {
+      v.polygonMode ( mode );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Key pressed.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -391,14 +415,14 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
   // Process the key.
   switch ( event->key() )
   {
-    // See if it was the space-bar or the r-key...
+  // See if it was the space-bar or the r-key...
   case Qt::Key_Space:
   case Qt::Key_R:
     // Move the camera.
     this->viewer()->camera ( OsgTools::Render::Viewer::RESET );
     break;
 
-    // See if it was the f-key...
+  // See if it was the f-key...
   case Qt::Key_F:
     // Move the camera.
     this->viewer()->camera ( OsgTools::Render::Viewer::FIT );
@@ -408,45 +432,45 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
   case Qt::Key_Right:
 
     // Move the camera.
-    this->viewer()->rotate ( osg::Vec3 ( 0, 1, 0 ), -osg::PI_2 );
+    this->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_Y_N90 );
     break;
 
   // See if it was the left-arrow key...
   case Qt::Key_Left:
 
     // Move the camera.
-    this->viewer()->rotate ( osg::Vec3 ( 0, 1, 0 ), osg::PI_2 );
+    this->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_Y_P90 );
     break;
 
   // See if it was the up-arrow key...
   case Qt::Key_Up:
 
     // Move the camera.
-    this->viewer()->rotate ( osg::Vec3 ( 1, 0, 0 ), osg::PI_2 );
+    this->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_X_P90 );
     break;
 
   // See if it was the down-arrow key...
   case Qt::Key_Down:
 
     // Move the camera.
-    this->viewer()->rotate ( osg::Vec3 ( 1, 0, 0 ), -osg::PI_2 );
+    this->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_X_N90 );
     break;
 
-    // See if it was the h key...
+  // See if it was the h key...
   case Qt::Key_H:
-    if( this->viewer()->polygonMode() == Usul::Interfaces::IPolygonMode::HIDDEN_LINES )
-      this->viewer()->polygonMode( Usul::Interfaces::IPolygonMode::NONE );
-    else
-      this->viewer()->polygonMode( Usul::Interfaces::IPolygonMode::HIDDEN_LINES );
+    Helper::togglePolygonMode ( *(this->viewer()), Usul::Interfaces::IPolygonMode::HIDDEN_LINES );
     this->viewer()->render();
     break;
 
   // See if it was the w key...
   case Qt::Key_W:
-    if( this->viewer()->polygonMode() == Usul::Interfaces::IPolygonMode::WIRE_FRAME )
-      this->viewer()->polygonMode( Usul::Interfaces::IPolygonMode::NONE );
-    else
-      this->viewer()->polygonMode( Usul::Interfaces::IPolygonMode::WIRE_FRAME );
+    Helper::togglePolygonMode ( *(this->viewer()), Usul::Interfaces::IPolygonMode::WIRE_FRAME );
+    this->viewer()->render();
+    break;
+
+  // See if it was the p key...
+  case Qt::Key_P:
+    Helper::togglePolygonMode ( *(this->viewer()), Usul::Interfaces::IPolygonMode::POINTS );
     this->viewer()->render();
     break;
   }
@@ -496,10 +520,11 @@ void Viewer::setTitle ( const std::string& title )
 
 void Viewer::startAnimation ( double milliseconds )
 {
-  if ( 0x0 != _animationTimer )
+  if ( 0x0 != _timer )
   {
-    this->connect ( _animationTimer, SIGNAL ( timeout() ), this, SLOT ( _onTimeoutAnimation() ) );
-    _animationTimer->start ( static_cast<int> ( milliseconds ) );
+    _timer->stop();
+    this->connect ( _timer, SIGNAL ( timeout() ), this, SLOT ( _onTimeoutAnimation() ) );
+    _timer->start ( static_cast<int> ( milliseconds ) );
   }
 }
 
@@ -517,7 +542,54 @@ void Viewer::_onTimeoutAnimation()
     // Set the matrix and see if we should continue.
     if ( false == this->viewer()->timeoutAnimate() ) 
     {
-      _animationTimer->stop();
+      _timer->stop();
     }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called by the timer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_onTimeoutSpin()
+{
+  if ( 0x0 != this->viewer() )
+  {
+    this->viewer()->timeoutSpin();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Stop the spin timeout.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::stopSpin()
+{
+  if ( 0x0 != _timer )
+  {
+    _timer->stop();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start the spin timeout.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::startSpin ( double milliseconds )
+{
+  if ( 0x0 != _timer )
+  {
+    _timer->stop();
+    this->connect ( _timer, SIGNAL ( timeout() ), this, SLOT ( _onTimeoutSpin() ) );
+    _timer->start ( static_cast<int> ( milliseconds ) );
   }
 }

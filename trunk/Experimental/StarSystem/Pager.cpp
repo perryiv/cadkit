@@ -28,6 +28,7 @@
 
 #include "osgUtil/CullVisitor"
 #include "osgUtil/UpdateVisitor"
+#include "osg/Version"
 
 using namespace StarSystem;
 
@@ -81,7 +82,9 @@ Pager::Pager() :
   // Set the use of the frame block which, if enabled, blocks the 
   // DatabasePager from executing when the current frame is being drawn.
   // Note: Setting to "true" breaks it.
+#if ( OSG_VERSION_MAJOR < 2 )
   _pager->setUseFrameBlock ( false );
+#endif
 
   // Set whether new database request calls are accepted or ignored.
   _pager->setAcceptNewDatabaseRequests ( true );
@@ -115,7 +118,9 @@ void Pager::_destroy()
   USUL_TRACE_SCOPE;
 
   // Required in order to shut down.
+#if ( OSG_VERSION_MAJOR < 2 )
   _pager->setUseFrameBlock ( false );
+#endif
 
   // Tell the pager to not accept any more requests.
   _pager->setAcceptNewDatabaseRequests ( false );

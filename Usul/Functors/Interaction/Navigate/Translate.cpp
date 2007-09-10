@@ -132,3 +132,22 @@ float Translate::currentSpeed() const
   Guard guard ( this->mutex() );
   return ( ( true == _translateSpeed.valid() ) ? _translateSpeed->translationSpeed () : this->speed() );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Translate::caller ( Unknown* caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Call the base class.
+  BaseClass::caller ( caller );
+
+  // Set our internal query pointer to caller.
+  Guard guard ( this->mutex() );
+  _translateSpeed = caller;
+}

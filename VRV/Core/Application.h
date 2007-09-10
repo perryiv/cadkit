@@ -44,6 +44,9 @@
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Queue.h"
+#include "Usul/Functors/Interaction/Common/Sequence.h"
+#include "Usul/Functors/Interaction/Navigate/Transform.h"
+#include "Usul/Functors/Interaction/Input/AnalogInput.h"
 
 #include "OsgTools/Render/Renderer.h"
 #include "OsgTools/Render/SceneManager.h"
@@ -128,6 +131,15 @@ public:
   typedef VRV::Functors::Transform             Transform;
   typedef MenuKit::OSG::Menu                   Menu;
   typedef USUL_VALID_REF_POINTER(Menu)         MenuPtr;
+
+  typedef Usul::Functors::Interaction::Common::BaseFunctor   Navigator2;
+  typedef Usul::Functors::Interaction::Input::AnalogInput    AnalogInput;
+  typedef Usul::Functors::Interaction::Navigate::Transform   TransformFunctor;
+  typedef Usul::Functors::Interaction::Common::Sequence      FavoriteFunctor;
+  typedef std::map < std::string, AnalogInput::RefPtr >      AnalogInputs;
+  typedef std::map < std::string, TransformFunctor::RefPtr > TransformFunctors;
+  typedef std::map < std::string, FavoriteFunctor::RefPtr >  FavoriteFunctors;
+  typedef FavoriteFunctors::const_iterator                   ConstFavoriteIterator;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -218,6 +230,11 @@ public:
   Functor *               navigator ();
   const Functor *         navigator () const;
 
+  /// Get/Set the navigator.
+  void                    navigator2 ( Navigator2 * );
+  Navigator2 *            navigator2 ();
+  const Navigator2 *      navigator2 () const;
+
   // Menu scene hiding functions
   bool                    menuSceneShowHide();
   void                    toggleMenuSceneShowHide( bool show );
@@ -255,6 +272,14 @@ public:
   /// Get/Set fly mode.
   void                          flyMode ();
   bool                          getFlyMode () const;
+
+  // Get the begining of the favorites.
+  ConstFavoriteIterator         favoritesBegin () const;
+
+  // Get the end of the favorites.
+  ConstFavoriteIterator         favoritesEnd () const;
+
+  Navigator2*                   favorite ( const std::string& name );
 protected:
 
   /// VR Juggler methods.
@@ -301,6 +326,9 @@ protected:
 
   // Read the user's preferences.
   void                    _readUserPreferences();
+
+  // Read the user's functor config file.
+  void                    _readFunctorFile ();
 
   /// Increase/Decrease speed.
   void                    _increaseTranslateSpeed ( double amount );
@@ -476,11 +504,16 @@ private:
   CommandQueue                           _commandQueue;
   OsgTools::Render::FrameDump            _frameDump;
   FunctorPtr                             _navigator;
+  Navigator2::RefPtr                     _navigator2;
   unsigned int                           _refCount;
   bool                                   _menuSceneShowHide;
   VRV::Animate::Path::RefPtr             _path;
   MenuPtr                                _menu;
   MenuPtr                                _statusBar;
+  std::string                            _functorFilename;
+  AnalogInputs                           _analogInputs;
+  TransformFunctors                      _transformFunctors;
+  FavoriteFunctors                       _favoriteFunctors;
 };
 
 }

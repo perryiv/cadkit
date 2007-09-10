@@ -72,3 +72,22 @@ void JoystickHorizontal::operator()()
   Guard guard ( this->mutex() );
   _value = ( ( _j.valid() ) ? _j->joystickHorizontal() : _value );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void JoystickHorizontal::caller ( Unknown* caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Call the base class.
+  BaseClass::caller ( caller );
+
+  // Set our internal query pointer to caller.
+  Guard guard ( this->mutex() );
+  _j = caller;
+}

@@ -25,7 +25,7 @@
 
 using namespace VRV::Animate;
 
-USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "MatrixPath", Path );
+//USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "MatrixPath", Path );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

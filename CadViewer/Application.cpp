@@ -763,6 +763,17 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
   {
     MenuKit::Menu::Ptr favorites ( new MenuKit::Menu );
     favorites->layout ( MenuKit::Menu::VERTICAL );
+    favorites->text ( "Favorites2" );
+    menu->append ( favorites.get() );
+
+    for ( ConstFavoriteIterator iter = this->favoritesBegin(); iter != this->favoritesEnd (); ++iter )
+      favorites->append ( this->_createRadio ( iter->second->name(), MenuKit::memFunCB2 ( this, &Application::_navigationFavorites ) ) );
+  }
+
+  // Favorites menu
+  {
+    MenuKit::Menu::Ptr favorites ( new MenuKit::Menu );
+    favorites->layout ( MenuKit::Menu::VERTICAL );
     favorites->text ( "Favorites" );
     menu->append ( favorites.get() );
 

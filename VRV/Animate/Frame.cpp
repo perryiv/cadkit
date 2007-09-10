@@ -15,7 +15,7 @@
 using namespace VRV::Animate;
 
 SERIALIZE_XML_DECLARE_MATRIX_4_4_WRAPPER(osg::Matrix);
-USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "MatrixFrame", Frame );
+//USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "MatrixFrame", Frame );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

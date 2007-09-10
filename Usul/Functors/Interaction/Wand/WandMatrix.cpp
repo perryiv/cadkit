@@ -104,3 +104,22 @@ WandMatrix::WandState *WandMatrix::_wandState()
   Guard guard ( this->mutex() );
   return _ws.get();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WandMatrix::caller ( Unknown* caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Call the base class.
+  BaseClass::caller ( caller );
+
+  // Set our internal query pointer to caller.
+  Guard guard ( this->mutex() );
+  _ws = caller;
+}

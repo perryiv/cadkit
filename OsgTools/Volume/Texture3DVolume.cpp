@@ -32,7 +32,7 @@ Texture3DVolume::Texture3DVolume() : BaseClass (),
 _volume ( 0x0, 0 ),
 _geometry ( new Geometry ),
 _flags ( 0 ),
-_transferFunction ( 0x0, 0 )
+_transferFunction ( 0x0 )
 {
   // Get the state set.
   osg::ref_ptr < osg::StateSet > ss  ( this->getOrCreateStateSet() );
@@ -262,7 +262,9 @@ void Texture3DVolume::_createShaders ()
   Detail::addUniform ( *ss, new osg::Uniform ( "bb", osg::Vec3 ( xLength, yLength, zLength ) ) );
   Detail::addUniform ( *ss, new osg::Uniform ( "bbHalf", osg::Vec3 ( xLength / 2.0, yLength / 2.0, zLength / 2.0 ) ) );
   Detail::addUniform ( *ss, new osg::Uniform ( "Volume",           static_cast < int > ( _volume.second           ) ) );
-  Detail::addUniform ( *ss, new osg::Uniform ( "TransferFunction", static_cast < int > ( _transferFunction.second ) ) );
+
+  if ( _transferFunction.valid () )
+    Detail::addUniform ( *ss, new osg::Uniform ( "TransferFunction", static_cast < int > ( _transferFunction->textureUnit () ) ) );
 }
 
 
@@ -321,26 +323,17 @@ bool Texture3DVolume::useTransferFunction () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Texture3DVolume::transferFunction ( osg::Image* image, TextureUnit unit )
+void Texture3DVolume::transferFunction ( TransferFunction* tf, TextureUnit unit )
 {
-  if ( 0x0 != image )
+  if ( 0x0 != tf )
   {
     this->useTransferFunction ( true );
-    _transferFunction.first = image;
-    _transferFunction.second = unit;
-
-    // Create the 1D texture.
-    osg::ref_ptr < osg::Texture1D > texture1D ( new osg::Texture1D() );
-    texture1D->setImage( image );
-
-    texture1D->setFilter( osg::Texture::MIN_FILTER, osg::Texture::NEAREST );
-    texture1D->setFilter( osg::Texture::MAG_FILTER, osg::Texture::NEAREST );
-    texture1D->setWrap  ( osg::Texture::WRAP_S, osg::Texture::CLAMP );
-    texture1D->setInternalFormatMode ( osg::Texture::USE_IMAGE_DATA_FORMAT );
+    _transferFunction = tf;
+    _transferFunction->textureUnit ( unit );
 
     // Get the state set.
     osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
-    ss->setTextureAttributeAndModes ( unit, texture1D.get(), osg::StateAttribute::ON );
+    ss->setTextureAttributeAndModes ( unit, _transferFunction->texture (), osg::StateAttribute::ON );
 
     // Create the shaders.
     this->_createShaders ();
@@ -354,8 +347,8 @@ void Texture3DVolume::transferFunction ( osg::Image* image, TextureUnit unit )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* Texture3DVolume::transferFunction () const
+OsgTools::Volume::TransferFunction* Texture3DVolume::transferFunction () const
 {
-  return _transferFunction.first.get();
+  return _transferFunction.get();
 }
 

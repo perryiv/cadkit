@@ -31,6 +31,9 @@
 
 #include "Serialize/XML/Macros.h"
 
+#include "OsgTools/Volume/Texture3DVolume.h"
+#include "OsgTools/Volume/TransferFunction.h"
+
 #include "osg/BoundingBox"
 #include "osg/MatrixTransform"
 #include "osg/Image"
@@ -121,7 +124,7 @@ protected:
   osg::Node *                 _buildProxyGeometry ();
   void                        _buildTopography ();
   osg::Node *                 _buildVectorField ( unsigned int timestep, unsigned int channel0, unsigned int channel1 );
-  DataType                    _value ( unsigned int timestep, unsigned int channel, unsigned int i, unsigned int j, unsigned int k );
+  void                        _buildDefaultTransferFunctions ();
 
   bool                        _dataCached ( unsigned int timestep, unsigned int channel );
   bool                        _dataRequested ( unsigned int timestep, unsigned int channel );
@@ -164,13 +167,16 @@ private:
   };
 
   /// Typedefs.
-  typedef std::vector < VectorField >                                  VectorFields;
-  typedef std::vector < Channel::RefPtr >                              ChannelInfos;
-  typedef osg::ref_ptr < osg::Image >                                  ImagePtr;
-  typedef std::pair < unsigned int, unsigned int >                     Request;
-  typedef std::map < Request, Usul::Jobs::Job::RefPtr >                Requests;
-  typedef std::map < Request, ImagePtr >                               VolumeCache;
-  typedef std::map < Request, Parser::Data >                           DataCache;
+  typedef std::vector < VectorField >                           VectorFields;
+  typedef std::vector < Channel::RefPtr >                       ChannelInfos;
+  typedef osg::ref_ptr < osg::Image >                           ImagePtr;
+  typedef std::pair < unsigned int, unsigned int >              Request;
+  typedef std::map < Request, Usul::Jobs::Job::RefPtr >         Requests;
+  typedef std::map < Request, ImagePtr >                        VolumeCache;
+  typedef std::map < Request, Parser::Data >                    DataCache;
+  typedef OsgTools::Volume::TransferFunction                    TransferFunction;
+  typedef TransferFunction::RefPtr                              TransferFunctionPtr;
+  typedef std::vector < TransferFunctionPtr >                   TransferFunctions;
 
   Parser _parser;
   std::string _filename;
@@ -187,7 +193,7 @@ private:
   osg::ref_ptr < osg::MatrixTransform > _root;
   osg::ref_ptr < osg::Group > _planet;
   osg::ref_ptr < osg::MatrixTransform > _volumeTransform;
-  osg::ref_ptr < osg::Group > _geometry;
+  osg::ref_ptr < OsgTools::Volume::Texture3DVolume > _volumeNode;
   osg::ref_ptr < osg::Node > _topography;
   osg::BoundingBox _bb;
   bool _dirty;
@@ -208,6 +214,7 @@ private:
   Usul::Math::Vec2d _lowerLeft;
   Usul::Math::Vec2d _upperRight;
   bool _usePlanet;
+  TransferFunctions _transferFunctions;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME ( WRFDocument );

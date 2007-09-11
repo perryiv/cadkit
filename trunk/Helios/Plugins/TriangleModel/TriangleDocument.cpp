@@ -20,6 +20,7 @@
 #include "TriangleReaderTDF.h"
 #include "TriangleWriterTDF.h"
 #include "TriangleReaderR3D.h"
+#include "TriangleReaderGrassRaster.h"
 #include "TriangleReaderArcAsciiGrid.h"
 #include "ParadisReader.h"
 
@@ -51,6 +52,8 @@
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/CancelButton.h"
 #include "Usul/Errors/Assert.h"
+
+#include "Usul/Trace/Trace.h"
 
 #include "osg/Group"
 #include "osg/Geode"
@@ -193,7 +196,7 @@ bool TriangleDocument::canInsert ( const std::string &file ) const
 bool TriangleDocument::canOpen ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "stl" || ext == "r3d" || ext == "tdf" || ext == "asc" /*|| ext == "prds"*/ );
+  return ( ext == "stl" || ext == "r3d" || ext == "tdf" || ext == "asc" || ext == "grs"/*|| ext == "prds"*/ );
 }
 
 
@@ -238,6 +241,11 @@ void TriangleDocument::read ( const std::string &name, Unknown *caller )
   else if ( "asc" == ext )
   {
     TriangleReaderArcAsciiGrid reader ( name, caller, this );
+    reader();
+  }
+  else if ( "grs" == ext )
+  {
+    TriangleReaderGrassRaster reader ( name, caller, this );
     reader();
   }
 #if 0
@@ -297,6 +305,7 @@ void TriangleDocument::clear ( Usul::Interfaces::IUnknown *caller )
 
   // Clear the triangle set.
   _triangles->clear ( caller );
+  _triangles->purge();
 }
 
 
@@ -369,6 +378,7 @@ TriangleDocument::Filters TriangleDocument::filtersExport() const
 
 osg::Node *TriangleDocument::buildScene ( const BaseClass::Options &opt, Unknown *caller )
 {
+  USUL_TRACE_SCOPE;
   // Redirect to triangle set
   return _triangles->buildScene ( opt, caller );
 }

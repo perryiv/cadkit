@@ -21,6 +21,7 @@
 #include "Usul/Math/Vector2.h"
 #include "Usul/Predicates/CloseFloat.h"
 #include "Usul/Policies/Update.h"
+#include "Usul/Trace/Trace.h"
 
 #include "osg/Vec3"
 
@@ -138,6 +139,7 @@ namespace Helper
 
 void TriangleReaderArcAsciiGrid::_read()
 {
+  
   // Open a stream with a large buffer.
   const unsigned long int bufSize ( 4095 );
   char buffer[bufSize+1];
@@ -188,7 +190,9 @@ void TriangleReaderArcAsciiGrid::_read()
   _document->clear();
 
   // Reserve triangles.
-  _document->reserveTriangles ( gridSize[0] * gridSize[1] );
+  // NOTE: commented out this line to debug a bad_alloc error happening
+  //       in reserve, called by reserveTriangles( ... )
+  //_document->reserveTriangles ( gridSize[0] * gridSize[1] );
 
   // Grab the first row.
   std::for_each ( row0.begin(), row0.end(), Helper::ReadStream ( _file.first, in ) );
@@ -235,9 +239,7 @@ void TriangleReaderArcAsciiGrid::_read()
         if ( false == close ( b[2], noDataValue ) )
         {
           Vec3 n ( ( b - d ) ^ ( a - d ) );
-          //Vec3 n ( ( b - a ) ^ ( d - a ) );
           n.normalize();
-          //OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( d, a, b, n, false ) );
           OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( a, d, b, n, false ) );
           t->original ( true );
         }

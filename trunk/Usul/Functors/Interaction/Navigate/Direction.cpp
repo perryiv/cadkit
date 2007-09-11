@@ -148,3 +148,15 @@ void Direction::matrix ( MatrixFunctor *m )
   Guard guard ( this->mutex() );
   _mf = m;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clone.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Functors::Interaction::Common::BaseFunctor* Direction::clone()
+{
+  return new Direction ( *this );
+}

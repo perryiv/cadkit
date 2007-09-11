@@ -209,11 +209,11 @@ namespace Helper
         {
           const std::string name ( node->name() );
           const std::string transformName ( node->attributes()["transform"] );
-          TransformFunctor::RefPtr transform ( _transforms[transformName] );
+          TransformFunctor::RefPtr transform ( static_cast < TransformFunctor* > ( _transforms[transformName]->clone() ) );
           if ( true == transform.valid() )
           {
             const std::string inputName ( node->attributes()["input"] );
-            AnalogInput::RefPtr analog ( _inputs[inputName] );
+            AnalogInput::RefPtr analog ( static_cast < AnalogInput* > ( _inputs[inputName]->clone() ) );
             if ( true == analog.valid() )
             {
               transform->analog ( analog.get() );

@@ -49,6 +49,9 @@ public:
 
   // Set the caller.
   virtual void          caller ( Unknown* caller );
+  
+  // Clone this functor.
+  virtual BaseFunctor*  clone ();
 
 protected:
 

@@ -49,6 +49,9 @@ public:
   // Exact functionality determined by inheriting class.
   virtual void          operator()() = 0;
 
+  // Clone this functor.
+  virtual BaseFunctor*  clone () = 0;
+
 protected:
 
   BaseFunctor ( Unknown *caller, const std::string &name );

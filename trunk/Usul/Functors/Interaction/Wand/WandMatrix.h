@@ -48,6 +48,9 @@ public:
   // Update the matrix.
   virtual void          operator()();
 
+  // Clone this functor.
+  virtual BaseFunctor*  clone ();
+
   // Set the caller.
   virtual void          caller ( Unknown* caller );
 

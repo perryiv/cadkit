@@ -58,6 +58,9 @@ public:
   // Update the direction.
   virtual void          operator()();
 
+  // Clone this functor.
+  virtual BaseFunctor*  clone ();
+
   // Return the current direction.
   Vector                vector() const;
 

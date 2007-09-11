@@ -109,7 +109,8 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _functorFilename   ( Usul::App::Application::instance ().configFile ( "functors" ) ),
   _analogInputs      (),
   _transformFunctors (),
-  _favoriteFunctors  ()
+  _favoriteFunctors  (),
+  _translationSpeed  ( 1.0f )
 {
   USUL_TRACE_SCOPE;
 
@@ -167,6 +168,9 @@ void Application::_construct()
 
   // Read the user's preference file, if any.
   this->_readUserPreferences();
+
+  // Make a copy of the translation speed.
+  _translationSpeed = this->preferences()->translationSpeed ();
 
   // Read the user's functor file.
   this->_readFunctorFile ();
@@ -1531,7 +1535,8 @@ void Application::_readUserPreferences()
 void Application::_increaseTranslateSpeed ( double amount )
 {
   USUL_TRACE_SCOPE;
-  this->preferences()->translationSpeed ( this->preferences()->translationSpeed() * amount );
+  Guard guard ( this->mutex () );
+  _translationSpeed *= amount;
 }
 
 
@@ -1544,7 +1549,8 @@ void Application::_increaseTranslateSpeed ( double amount )
 void Application::_decreaseTranslateSpeed ( double amount )
 {
   USUL_TRACE_SCOPE;
-  this->preferences()->translationSpeed ( this->preferences()->translationSpeed() / amount );
+  Guard guard ( this->mutex () );
+  _translationSpeed /= amount;
 }
 
 
@@ -1857,7 +1863,8 @@ void Application::_updateNotify ()
 float Application::translationSpeed () const
 {
   USUL_TRACE_SCOPE;
-  return this->preferences()->translationSpeed();
+  Guard guard ( this->mutex () );
+  return _translationSpeed;
 }
 
 

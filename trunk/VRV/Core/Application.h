@@ -514,6 +514,7 @@ private:
   AnalogInputs                           _analogInputs;
   TransformFunctors                      _transformFunctors;
   FavoriteFunctors                       _favoriteFunctors;
+  float                                  _translationSpeed;
 };
 
 }

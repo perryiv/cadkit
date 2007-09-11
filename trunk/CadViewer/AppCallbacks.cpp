@@ -2015,18 +2015,22 @@ void Application::_animationStepsHalf ( MenuKit::Message m, MenuKit::Item *item 
 void Application::_navigationFavorites ( MenuKit::Message m, MenuKit::Item *item )
 {
   const std::string name ( item->text () );
+  Navigator2::RefPtr nav ( this->navigator2 () );
 
   // Process the message.
   switch( m )
   {
   case MenuKit::MESSAGE_UPDATE:
     {
-      Navigator2::RefPtr nav ( this->navigator2 () );
+      
       item->checked ( nav.valid () ? name == nav->name () : false );
     }
     break;
   case MenuKit::MESSAGE_SELECTED:
-    this->navigator2 ( this->favorite ( name ) );
+    if ( nav.valid () && name == nav->name () )
+      this->navigator2 ( 0x0 );
+    else
+      this->navigator2 ( this->favorite ( name ) );
     break;
   }
 }

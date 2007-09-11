@@ -94,6 +94,8 @@ float WandAngle::_calculateValue ( unsigned int zero )
     value = Usul::Math::minimum ( _value, 360.0f ); // [0,360]
     value = Usul::Math::maximum ( _value, 0.0f );   // [0,360]
     value -= -180.0f; // [-180,180];
+
+    value /= 180.0f * ( ( _range[1] - _range[0] ) / 2.0f );
   }
 
   return value;

@@ -91,3 +91,15 @@ void JoystickVertical::caller ( Unknown* caller )
   Guard guard ( this->mutex() );
   _j = caller;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clone.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Functors::Interaction::Common::BaseFunctor* JoystickVertical::clone()
+{
+  return new JoystickVertical ( *this );
+}

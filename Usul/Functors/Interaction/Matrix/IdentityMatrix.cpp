@@ -69,3 +69,15 @@ void IdentityMatrix::operator()()
   Guard guard ( this->mutex() );
   _matrix.identity(); // Probably already is identity...
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clone.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Functors::Interaction::Common::BaseFunctor* IdentityMatrix::clone()
+{
+  return new IdentityMatrix ( *this );
+}

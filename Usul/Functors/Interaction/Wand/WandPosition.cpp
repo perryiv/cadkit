@@ -79,3 +79,15 @@ void WandPosition::operator()()
   // Make a translation
   _matrix.makeTranslation ( p ); // Note: rotation should be identity.
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clone.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Functors::Interaction::Common::BaseFunctor* WandPosition::clone()
+{
+  return new WandPosition ( *this );
+}

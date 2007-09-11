@@ -52,6 +52,9 @@ public:
   // Translate.
   virtual void          operator()();
 
+  // Clone this functor.
+  virtual BaseFunctor*  clone ();
+
   // Set/get the maximum relative speed. The units are 
   // percentage-of-world-radius / seconds.
   void                  maxRelativeSpeed ( float s );

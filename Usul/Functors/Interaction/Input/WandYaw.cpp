@@ -72,3 +72,15 @@ void WandYaw::operator()()
   Guard guard ( this->mutex() );
   _value = this->_calculateValue ( 1 );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clone.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Functors::Interaction::Common::BaseFunctor* WandYaw::clone()
+{
+  return new WandYaw ( *this );
+}

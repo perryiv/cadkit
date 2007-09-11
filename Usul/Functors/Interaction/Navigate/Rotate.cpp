@@ -114,3 +114,16 @@ void Rotate::maxAngularSpeed ( float s )
   Guard guard ( this->mutex() );
   this->speed ( s );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clone.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Functors::Interaction::Common::BaseFunctor* Rotate::clone()
+{
+  return new Rotate ( *this );
+}
+

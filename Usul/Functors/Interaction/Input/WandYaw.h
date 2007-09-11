@@ -45,6 +45,9 @@ public:
   // Update the analog input.
   virtual void          operator()();
 
+  // Clone this functor.
+  virtual BaseFunctor*  clone ();
+
 protected:
 
   virtual ~WandYaw();

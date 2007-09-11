@@ -50,6 +50,9 @@ public:
   // Rotate.
   virtual void          operator()();
 
+  // Clone this functor.
+  virtual BaseFunctor*  clone ();
+
   // Set the maximum degrees/second.
   void                  maxAngularSpeed ( float s );
   float                 maxAngularSpeed() const { return this->speed(); }

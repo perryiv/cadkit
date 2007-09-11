@@ -123,3 +123,15 @@ void WandMatrix::caller ( Unknown* caller )
   Guard guard ( this->mutex() );
   _ws = caller;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clone.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Functors::Interaction::Common::BaseFunctor* WandMatrix::clone()
+{
+  return new WandMatrix ( *this );
+}

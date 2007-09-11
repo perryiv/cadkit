@@ -151,3 +151,15 @@ void Translate::caller ( Unknown* caller )
   Guard guard ( this->mutex() );
   _translateSpeed = caller;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clone.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Functors::Interaction::Common::BaseFunctor* Translate::clone()
+{
+  return new Translate ( *this );
+}

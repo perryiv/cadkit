@@ -49,6 +49,9 @@ public:
   // Update the matrix.
   virtual void          operator()();
 
+  // Clone this functor.
+  virtual BaseFunctor*  clone ();
+
 protected:
 
   virtual ~InverseMatrix();

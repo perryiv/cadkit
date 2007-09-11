@@ -72,3 +72,15 @@ void WandPitch::operator()()
   Guard guard ( this->mutex() );
   _value = this->_calculateValue ( 0 );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clone.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Functors::Interaction::Common::BaseFunctor* WandPitch::clone()
+{
+  return new WandPitch ( *this );
+}

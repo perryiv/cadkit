@@ -348,7 +348,7 @@ void Application::_init()
 
 void Application::_initText()
 {
-#if 0
+#if 1
   // Removing anything we may have already.
   this->projectionGroupRemove ( "VRV_TEXT" );
 

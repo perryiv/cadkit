@@ -2810,6 +2810,11 @@ void Application::_readFunctorFile ()
   Helper::TransformSetter transformSetter ( directionFunctors );
   Helper::FavoriteSetter favoriteSetter   ( _analogInputs, _transformFunctors );
 
+  // Clear what we have.
+  _analogInputs.clear();
+  _transformFunctors.clear();
+  _favoriteFunctors.clear();
+
   // Make the functors.
   Helper::add ( analogSetter,    factory, analogs,    _analogInputs, caller  );
   Helper::add ( matrixSetter,    factory, matrices,   matrixFunctors, caller );

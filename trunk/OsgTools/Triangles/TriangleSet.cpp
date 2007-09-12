@@ -185,7 +185,7 @@ void TriangleSet::clear ( Usul::Interfaces::IUnknown *caller )
 
   // Clear the vertices, normals, and colors.
   //Experimenting with retaining the scene while discarding the triangle set
-#if 1
+#if 0
   _vertices->clear();
   this->normalsV()->clear();
   this->normalsT()->clear();

@@ -29,10 +29,10 @@
 
 TriangleReaderGrassRaster::TriangleReaderGrassRaster( const std::string &file, Usul::Interfaces::IUnknown *caller, TriangleDocument *doc ):
 BaseClass(),
-_dir            ( "C:/data/grassraster/" ),
+_dir            ( "" ),
 _caller         ( caller ),
 //_file           ( "ziqlab_watersheds_15m_dem_clipped", Usul::File::size ( file ) ),
-_file           ( "zz15m", Usul::File::size ( "zz15m" ) ),
+_file           ( "", 0 ),
 _document       ( doc ),
 _xmlFilename    ( file )
 {
@@ -338,8 +338,13 @@ void TriangleReaderGrassRaster::_read()
   const unsigned long int bufSize ( 4095 );
   char buffer[bufSize+1];
   std::ifstream in;
+  std::string filename = "";
   in.rdbuf()->pubsetbuf ( buffer, bufSize );
-  std::string filename = _dir + "fcell/" + _file.first;
+  if( _header.format == -1 )
+    filename = _dir + "fcell/" + _file.first;
+  if( _header.format == 1 || _header.format == 0 )
+    filename = _dir + "cell/" + _file.first;
+
   in.open ( filename.c_str(), std::ios::in | std::ios::binary );
   //std::ifstream in ( filename.c_str(), std::ios::in | std::ios::binary );
   if ( !in.is_open() )

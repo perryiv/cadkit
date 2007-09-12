@@ -360,6 +360,7 @@ void DynamicLandDocument::read ( const std::string &name, Unknown *caller )
   XmlTree::Document::RefPtr document ( new XmlTree::Document );
   document->load ( name );
 
+  //TODO: change name to dld
   if ( "asc" == document->name() )
   {
     // if the parameter file is loaded correctly go ahead and load the 1st map
@@ -809,10 +810,22 @@ Usul::Documents::Document *DynamicLandDocument::LoadDataJob::load (  const std::
     std::cout << "\nFound " << file + ".tdf" << std::endl;
     return this->_load( file + ".tdf", caller );
   }
-  else
+  else if( Usul::Predicates::FileExists::test ( file + ".grs" ) ) 
   {
     std::cout << "\n" << file + ".tdf" << " not found." << std::endl;
+    std::cout << "\nFound " << file + ".grs" << std::endl;
+    return this->_load( file + ".grs", caller );
+  }
+  else if( Usul::Predicates::FileExists::test ( file + ".asc" ) )
+  {
+    std::cout << "\n" << file + ".tdf" << " not found." << std::endl;
+    std::cout << "\n" << file + ".grs" << " not found." << std::endl;
+    std::cout << "\nFound " << file + ".asc" << std::endl;
     return this->_load( file + ".asc", caller );
+  }
+  else
+  {
+    std::cout << "No suitable files found to load!" << std::endl;
   }
 
   return 0x0;
@@ -1353,8 +1366,8 @@ void DynamicLandDocument::setTimeStepFrame( unsigned int i, osg::Group * group )
   Guard guard ( this->mutex() );
   _timeStepPool.at( i ).isValid = true;
   _timeStepPool.at( i ).isLoading = false;
-  //_timeStepPool.at( i ).group = group;
-  _timeStepPool.at( i ).group = dynamic_cast<osg::Group *> ( group->clone ( osg::CopyOp::DEEP_COPY_ALL ) );
+  _timeStepPool.at( i ).group = group;
+  //_timeStepPool.at( i ).group = dynamic_cast<osg::Group *> ( group->clone ( osg::CopyOp::DEEP_COPY_ALL ) );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1427,7 +1440,6 @@ void DynamicLandDocument::LoadDataJob::_started ()
   {
     // load the image file
     this->_loadTexture( document.get(), _filename + ".png", this->progress() );
-
     
     osg::ref_ptr< osg::Group > group ( new osg::Group );
     group->addChild( this->_buildScene( document.get() ) );

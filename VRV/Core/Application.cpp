@@ -38,6 +38,7 @@
 #include "Usul/System/Host.h"
 #include "Usul/System/Directory.h"
 #include "Usul/System/Clock.h"
+#include "Usul/Math/Constants.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/XercesLife.h"
@@ -48,6 +49,7 @@
 #include "osgDB/WriteFile"
 
 #include "osg/MatrixTransform"
+#include "osg/Quat"
 #include "osg/Version"
 
 #include "vrj/Kernel/Kernel.h"
@@ -1744,9 +1746,30 @@ void Application::wandRotation ( Matrix44f &W ) const
 
   // Get the wand's matrix.
   this->wandMatrix ( W );
-
+  
   // Zero-out the translations.
   W.setTranslation ( Usul::Math::Vec3f ( 0, 0, 0 ) );
+  
+#if 0
+  osg::Matrixf m;
+  OsgTools::Convert::matrix ( W, m );
+  osg::Quat q ( m.getRotate () );
+
+  double yaw ( 0.0 ), pitch ( 0.0 ), roll ( 0.0 );
+
+  roll  = Usul::Math::atan ( ( 2 * ( q[0] * q[1] + q[2] * q[3] ) ) / ( 1 - ( 2 * ( q[1] * q[1] + q[2] * q[2] ) ) ) );
+  yaw   = Usul::Math::asin (   2 * ( q[0] * q[2] - q[3] * q[1] ) );
+  pitch = Usul::Math::atan ( ( 2 * ( q[0] * q[3] + q[1] * q[2] ) ) / ( 1 - ( 2 * ( q[2] * q[2] + q[3] * q[3] ) ) ) );
+
+  roll  *= Usul::Math::RAD_TO_DEG;
+  pitch *= Usul::Math::RAD_TO_DEG;
+  yaw   *= Usul::Math::RAD_TO_DEG;
+
+  std::cout << "Yaw: "    << std::setw ( 10 ) << static_cast<int> ( yaw )
+            << " Pitch: " << std::setw ( 10 ) << static_cast<int> ( pitch )
+            << " Roll: "  << std::setw ( 10 ) << static_cast<int> ( roll ) 
+            << std::endl;
+#endif
 }
 
 
@@ -2817,17 +2840,25 @@ void Application::_readFunctorFile ()
   Helper::TransformSetter transformSetter ( directionFunctors );
   Helper::FavoriteSetter favoriteSetter   ( _analogInputs, _transformFunctors );
 
+  // Save the name of our current navigator.
+  std::string name ( _navigator2.valid() ? _navigator2->name () : "" );
+
   // Clear what we have.
   _analogInputs.clear();
   _transformFunctors.clear();
   _favoriteFunctors.clear();
-
+  this->navigator2 ( 0x0 );
+  
   // Make the functors.
   Helper::add ( analogSetter,    factory, analogs,    _analogInputs, caller  );
   Helper::add ( matrixSetter,    factory, matrices,   matrixFunctors, caller );
   Helper::add ( directionSetter, factory, directions, directionFunctors, caller );
   Helper::add ( transformSetter, factory, transforms, _transformFunctors, caller );
   Helper::add ( favoriteSetter,  factory, favorites,  _favoriteFunctors, caller );
+
+  // Set the navigator.  Will be null if there isn't a favorite with this name.
+  if ( false == name.empty () )
+    this->navigator2 ( this->favorite ( name ) );
 }
 
 

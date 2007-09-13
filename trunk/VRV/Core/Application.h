@@ -26,6 +26,7 @@
 
 #include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/IUpdateSubject.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/ICommand.h"
@@ -93,11 +94,11 @@ namespace Core {
 
 class VRV_EXPORT Application : public vrj::GlApp,
                                public VRV::Interfaces::IModelAdd,
+                               public VRV::Interfaces::INavigationScene,
+                               public VRV::Interfaces::IModelsScene,
                                public Usul::Interfaces::IClippingDistance,
                                public Usul::Interfaces::IFrameInfo,
                                public Usul::Interfaces::IWorldInfo,
-                               public VRV::Interfaces::INavigationScene,
-                               public VRV::Interfaces::IModelsScene,
                                public Usul::Interfaces::IMatrixMultiplyFloat,
                                public Usul::Interfaces::IJoystickFloat,
                                public Usul::Interfaces::IWandStateFloat,
@@ -109,7 +110,8 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public Usul::Interfaces::IButtonPressListener,
                                public Usul::Interfaces::IButtonReleaseListener,
                                public Usul::Interfaces::IFrameStamp,
-                               public Usul::Interfaces::IViewMatrix
+                               public Usul::Interfaces::IViewMatrix,
+                               public Usul::Interfaces::IStatusBar
 {
 public:
   // Typedefs.
@@ -449,6 +451,9 @@ protected:
   /// Get the view matrix ( Usul::Interfaces::IViewMatrix ).
   /// Note: In this implementation, the navigation matrix is set.
   virtual const osg::Matrixd&   getViewMatrix (  ) const;
+
+  // Set the status bar text (IStatusBar).
+  virtual void                  setStatusBarText ( const std::string &text, bool force );
 
   /// No copying.
   Application ( const Application& );

@@ -511,6 +511,7 @@ private:
   MenuPtr                                _menu;
   MenuPtr                                _statusBar;
   std::string                            _functorFilename;
+  std::string                            _preferencesFilename;
   AnalogInputs                           _analogInputs;
   TransformFunctors                      _transformFunctors;
   FavoriteFunctors                       _favoriteFunctors;

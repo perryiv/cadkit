@@ -56,11 +56,8 @@ SET (SOURCES
 ./DataObjects/Point.cpp
 ./postGIS/Polygon.cpp
 ./postGIS/Geometry.cpp
-./postGIS/MultiLine.cpp
-./postGIS/MultiPoint.cpp
 ./postGIS/Factory.cpp
 ./postGIS/BinaryParser.cpp
-./postGIS/MultiPolygon.cpp
 ./postGIS/TextParser.cpp
 ./postGIS/Line.cpp
 ./postGIS/Point.cpp

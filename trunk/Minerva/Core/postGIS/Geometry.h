@@ -13,7 +13,6 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/DB/Connection.h"
-#include "Minerva/Core/postGIS/BinaryParser.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IGeometryCenter.h"
@@ -38,14 +37,11 @@ class MINERVA_EXPORT Geometry : public Usul::Base::Referenced,
 {
 public:
   typedef Usul::Base::Referenced    BaseClass;
-  typedef BinaryParser::Vertices    Vertices;
-  typedef BinaryParser::VertexList  VertexList;
 
   USUL_DECLARE_QUERY_POINTERS( Geometry );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   Geometry();
-  Geometry( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F );
 
   // Is it valid?
   bool                    valid() const;
@@ -69,10 +65,6 @@ protected:
   virtual const osg::Vec3f&   spatialOffset () const;
   virtual void                spatialOffset ( const osg::Vec3f& );
 
-  void _convertToLatLong ( const Vertices& vertices, std::vector< ossimGpt >& latLongPoints );
-
-  const VertexList& _vertices() const;
-
   Minerva::Core::DB::Connection::RefPtr _connection;
   std::string _tableName;
   int _id;
@@ -80,8 +72,6 @@ protected:
   osg::Vec3f _offset;
   bool _dirty;
 
-private:
-  VertexList _orginalVertices;
 };
 
 }

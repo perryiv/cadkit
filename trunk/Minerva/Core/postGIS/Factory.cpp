@@ -67,7 +67,7 @@ Factory::~Factory()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Geometry* Factory::createFromBinary ( const unsigned char *buffer ) const
+Factory::Geometries Factory::createFromBinary ( const unsigned char *buffer ) const
 {
   BinaryParser parser;
   return parser ( buffer );

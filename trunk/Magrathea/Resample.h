@@ -41,28 +41,29 @@ namespace Magrathea
 
     double u1 ( ( point0.u + point2.u ) * 0.50 );
 
-    double lat1 ( ( point0.p.latd() + point2.p.latd() ) * 0.50 );
-    double lon1 ( ( point0.p.lond() + point2.p.lond() ) * 0.50 );
-    double height1 ( ( point0.p.height() + point2.p.height() ) * 0.50 );
+    double lat1 ( ( point0.p[1] + point2.p[1] ) * 0.50 );
+    double lon1 ( ( point0.p[0] + point2.p[0] ) * 0.50 );
+    double height1 ( ( point0.p[2] + point2.p[2] ) * 0.50 );
 
     // Calculate the height of the mid-point.
-    typename Point::PointType point1 ( lat1, lon1 );
-    double deltaH(  ossimElevManager::instance()->getHeightAboveMSL( point1 ) );
-    if(deltaH == OSSIM_DBL_NAN)
+    
+    ossimGpt p1 ( lat1, lon1 );
+    double deltaH(  ossimElevManager::instance()->getHeightAboveMSL( p1 ) );
+    if( deltaH == OSSIM_DBL_NAN )
     {
       deltaH = 0.0;
     }
 
-    point1.height( deltaH + ossimGeoidManager::instance()->offsetFromEllipsoid( point1 ) );
+    p1.height( deltaH + ossimGeoidManager::instance()->offsetFromEllipsoid( p1 ) );
 
     /// one cm resolution
     double errorFactor ( 0.01 );
 
-    if( Usul::Math::absolute ( point1.height() - height1 ) < errorFactor )
+    if( Usul::Math::absolute ( p1.height() - height1 ) < errorFactor )
       return;
 
     Point midPoint;
-    midPoint.p = point1;
+    midPoint.p = typename Point::PointType ( p1.lon, p1.lat, p1.hgt );
     midPoint.u = u1;
 
     answer.push_back ( midPoint );

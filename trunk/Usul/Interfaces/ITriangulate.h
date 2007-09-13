@@ -10,7 +10,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for creating triangles from line loop.
+//  Interface for creating triangles from concave polygon.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -31,7 +31,6 @@ namespace Interfaces {
 struct ITriangulate : public Usul::Interfaces::IUnknown
 {
   // Useful typedefs.
-  typedef std::vector< Usul::Math::Vec2d >  Vertices;
   typedef std::vector< Usul::Math::Vec3d >  Vertices3D;
 
   /// Smart-pointer definitions.
@@ -40,10 +39,8 @@ struct ITriangulate : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2740627666u };
 
-  // Triangulate the loop.
-  virtual void triangulate ( const Vertices &in, Vertices &out, Vertices3D &normalsOut ) = 0;
-
-  virtual void triangulate3D ( const Vertices3D &in, Vertices3D &out, Vertices3D &normalsOut ) = 0;
+  // Triangulate.  The z component may be ignored by implementation.
+  virtual void triangulate ( const Vertices3D &in, Vertices3D &out, Vertices3D &normalsOut ) = 0;
 };
 
 

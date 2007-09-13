@@ -2353,6 +2353,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ICullSceneVisitor * > ( this );
   case Usul::Interfaces::IUpdateSubject::IID:
     return static_cast < Usul::Interfaces::IUpdateSubject * > ( this );
+  case Usul::Interfaces::IClippingDistance::IID:
+    return static_cast < Usul::Interfaces::IClippingDistance * > ( this );
   default:
     return 0x0;
   }
@@ -5169,4 +5171,38 @@ void Viewer::_clearUpdateListeners()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _updateListeners.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the clipping distances.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::getClippingDistances ( float &nearDist, float &farDist ) const
+{
+  double left ( 0.0 ), right ( 0.0 ), top ( 0.0 ), bottom ( 0.0 ), zNear ( 0.0 ), zFar ( 0.0 );
+  this->viewer ()->getProjectionMatrixAsFrustum ( left, right, bottom, top, zNear, zFar );
+
+  nearDist = zNear;
+  farDist  = zFar;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the clipping distances.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::setClippingDistances ( float nearDist, float farDist )
+{
+  // No longer compute near far.
+  this->computeNearFar ( false );
+
+  double left ( 0.0 ), right ( 0.0 ), top ( 0.0 ), bottom ( 0.0 ), zNear ( 0.0 ), zFar ( 0.0 );
+  if ( this->viewer ()->getProjectionMatrixAsFrustum ( left, right, bottom, top, zNear, zFar ) )
+  {
+    this->viewer()->setProjectionMatrixAsFrustum ( left, right, bottom, top, nearDist, farDist );
+  }
 }

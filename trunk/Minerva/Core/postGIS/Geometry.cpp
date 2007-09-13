@@ -30,30 +30,8 @@ _tableName ( ),
 _id ( -1 ),
 _srid ( 0 ) ,
 _offset( 0.0, 0.0, 0.0 ),
-_dirty ( false ),
-_orginalVertices()
+_dirty ( false )
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Geometry::Geometry( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F ) : BaseClass(),
-_connection ( connection ),
-_tableName ( tableName ),
-_id ( id ),
-_srid ( srid ),
-_offset( 0.0, 0.0, 0.0 ),
-_dirty ( false ),
-_orginalVertices()
-{
-  pqxx::binarystring buffer ( F );
-  BinaryParser parser;
-  _orginalVertices = parser.getVertices( &buffer.front() );
 }
 
 
@@ -74,24 +52,25 @@ Geometry::~Geometry()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Geometry::_convertToLatLong ( const Vertices& vertices, std::vector< ossimGpt >& latLongPoints )
-{
-  Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
-
-  if ( project.valid() )
-  {
-    for( Vertices::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter )
-    {
-      Usul::Math::Vec3d orginal ( (*iter)[0], (*iter)[1], 0.0 );
-      Usul::Math::Vec3d point;
-      project->projectToSpherical( orginal, _srid, point );
-
-      ossimGpt gpt ( point[1], point[0], point[2] ); // Lat is first agrument, long is second.
-      
-      latLongPoints.push_back( gpt );
-    }
-  }
-}
+//template < class Vertices >
+//void Geometry::_convertToLatLong ( const Vertices& vertices, std::vector< ossimGpt >& latLongPoints )
+//{
+//  Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
+//
+//  if ( project.valid() )
+//  {
+//    for( typename Vertices::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter )
+//    {
+//      Usul::Math::Vec3d orginal ( (*iter)[0], (*iter)[1], 0.0 );
+//      Usul::Math::Vec3d point;
+//      project->projectToSpherical( orginal, _srid, point );
+//
+//      ossimGpt gpt ( point[1], point[0], point[2] ); // Lat is first agrument, long is second.
+//      
+//      latLongPoints.push_back( gpt );
+//    }
+//  }
+//}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -175,7 +154,7 @@ const osg::Vec3f& Geometry::spatialOffset( ) const
 
 bool Geometry::valid() const
 {
-  return ( !_orginalVertices.empty() && _srid > 0 );
+  return ( _srid > 0 );
 }
 
 
@@ -221,16 +200,4 @@ Usul::Interfaces::IUnknown* Geometry::queryInterface( unsigned long iid )
   default:
     return 0x0;
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the orginal vertices from the parser.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Geometry::VertexList& Geometry::_vertices() const
-{
-  return _orginalVertices;
 }

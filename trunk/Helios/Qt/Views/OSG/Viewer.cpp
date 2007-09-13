@@ -37,13 +37,16 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   // Create the viewer.
-  _viewer = new OsgTools::Render::Viewer ( doc, me, me );
+  _viewer = new OsgTools::Render::Viewer ( 0x0, me, me );
 
   // Initialize openGL.
   this->initializeGL ();
 
   // Create the viewer.  This functions calls openGL functions.
   _viewer->create();
+
+  // Set the document.  Do this after create.
+  _viewer->document ( doc );
 
   // Set the focus policy.
   this->setFocusPolicy ( Qt::ClickFocus );

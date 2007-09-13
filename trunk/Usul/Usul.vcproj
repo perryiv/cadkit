@@ -816,6 +816,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IClippingDistance.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IClippingPlanes.h"
 					>
 				</File>

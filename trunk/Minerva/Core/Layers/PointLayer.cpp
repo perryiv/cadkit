@@ -155,41 +155,46 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       typedef Minerva::Core::postGIS::Geometry Geometry;
       typedef Minerva::Core::postGIS::Factory  GeometryFactory;
 
+      typedef Minerva::Core::postGIS::Factory Factory;
       pqxx::binarystring buffer ( iter["geom"] );
-      Geometry::RefPtr geometry ( GeometryFactory::instance().createFromBinary ( &buffer.front() ) );
-      geometry->srid( srid );
+      Factory::Geometries geometries ( Factory::instance ().createFromBinary ( &buffer.front() ) );
 
-      Usul::Interfaces::IOffset::QueryPtr offset ( geometry );
-
-      if( offset.valid () )
+      for ( Factory::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
       {
-        offset->spatialOffset( osg::Vec3f ( this->xOffset(), this->yOffset(), this->zOffset() ) );
+        (*geom)->srid( srid );
+        Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
+        Usul::Interfaces::IOffset::QueryPtr offset ( unknown );
+
+        if( offset.valid () )
+        {
+          offset->spatialOffset( osg::Vec3f ( this->xOffset(), this->yOffset(), this->zOffset() ) );
+        }
+
+        Minerva::Core::DataObjects::Point::RefPtr data ( new Minerva::Core::DataObjects::Point );
+        data->geometry( unknown.get() );
+        data->color( this->_color ( iter ) );
+        data->size ( this->size() );
+        data->primitiveId ( this->primitiveID() );
+        data->quality ( this->quality() );
+        data->renderBin( this->renderBin() );
+        data->connection ( this->connection() );
+        data->tableName ( dataTable );
+        data->rowId ( id );
+        data->autotransform ( this->autotransform () );
+        data->secondarySize ( this->secondarySize() );
+
+        if( this->primitiveSizeColumn().size() > 0 )
+        {
+          float value ( iter [ this->primitiveSizeColumn() ].as < float > () );
+          data->size( this->size() * value );
+          this->_updateMinMax( value );
+        }
+
+         /// Set the label.
+        this->_labelDataObject( data.get() );
+
+        this->_addDataObject( data.get() );
       }
-
-      Minerva::Core::DataObjects::Point::RefPtr data ( new Minerva::Core::DataObjects::Point );
-      data->geometry( geometry->queryInterface( Usul::Interfaces::IUnknown::IID ) );
-      data->color( this->_color ( iter ) );
-      data->size ( this->size() );
-      data->primitiveId ( this->primitiveID() );
-      data->quality ( this->quality() );
-      data->renderBin( this->renderBin() );
-      data->connection ( this->connection() );
-      data->tableName ( dataTable );
-      data->rowId ( id );
-      data->autotransform ( this->autotransform () );
-      data->secondarySize ( this->secondarySize() );
-
-      if( this->primitiveSizeColumn().size() > 0 )
-      {
-        float value ( iter [ this->primitiveSizeColumn() ].as < float > () );
-        data->size( this->size() * value );
-        this->_updateMinMax( value );
-      }
-
-       /// Set the label.
-      this->_labelDataObject( data.get() );
-
-      this->_addDataObject( data.get() );
     }
     catch ( const std::exception& e )
     {

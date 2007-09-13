@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Layers/PolygonLayer.h"
-#include "Minerva/Core/postGIS/Polygon.h"
+#include "Minerva/Core/postGIS/Factory.h"
 #include "Minerva/Core/DataObjects/Polygon.h"
 #include "Minerva/Core/Visitor.h"
 
@@ -147,33 +147,40 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       int srid ( iter["srid"].as < int > () );
 
       // Create the geometry.
-      Usul::Interfaces::IUnknown::QueryPtr geometry ( new Minerva::Core::postGIS::Polygon ( this->connection(), dataTable, id, srid, iter["geom"] ) );
+      typedef Minerva::Core::postGIS::Factory Factory;
+      pqxx::binarystring buffer ( iter["geom"] );
+      Factory::Geometries geometries ( Factory::instance ().createFromBinary ( &buffer.front() ) );
 
-      Usul::Interfaces::IOffset::QueryPtr offset ( geometry );
+      for ( Factory::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
+      {
+        (*geom)->srid( srid );
+        Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
+        Usul::Interfaces::IOffset::QueryPtr offset ( unknown );
 
-      if( offset.valid() )
-        offset->spatialOffset( osg::Vec3f ( 0.0, 0.0, this->zOffset() ) );
+        if( offset.valid() )
+          offset->spatialOffset( osg::Vec3f ( 0.0, 0.0, this->zOffset() ) );
 
-      // Create the Data Object.
-      Minerva::Core::DataObjects::Polygon::RefPtr data ( new Minerva::Core::DataObjects::Polygon );
+        // Create the Data Object.
+        Minerva::Core::DataObjects::Polygon::RefPtr data ( new Minerva::Core::DataObjects::Polygon );
 
-      data->width ( this->borderWidth() );
-      data->showBorder( this->showBorder() );
-      data->showInterior ( this->showInterior() );
-      data->geometry ( geometry.get() );
-      data->color( this->_color ( iter ) );
-      data->renderBin( this->renderBin() );
-      data->connection ( this->connection() );
-      data->tableName ( dataTable );
-      data->rowId ( id );
+        data->width ( this->borderWidth() );
+        data->showBorder( this->showBorder() );
+        data->showInterior ( this->showInterior() );
+        data->geometry ( unknown.get() );
+        data->color( this->_color ( iter ) );
+        data->renderBin( this->renderBin() );
+        data->connection ( this->connection() );
+        data->tableName ( dataTable );
+        data->rowId ( id );
 
-      /// Set the label.
-      this->_labelDataObject( data.get() );
+        /// Set the label.
+        this->_labelDataObject( data.get() );
 
-      // Pre build the scene.
-      data->preBuildScene();
+        // Pre build the scene.
+        data->preBuildScene();
 
-      this->_addDataObject( data.get() );
+        this->_addDataObject( data.get() );
+      }
     }
     catch ( const std::exception& e )
     {

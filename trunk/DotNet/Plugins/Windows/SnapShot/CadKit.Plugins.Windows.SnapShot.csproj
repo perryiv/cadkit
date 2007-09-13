@@ -38,6 +38,7 @@
     <Compile Include="Component.cs" />
     <Compile Include="Factory.cs" />
     <Compile Include="Panel.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Panel.Designer.cs">
       <DependentUpon>Panel.cs</DependentUpon>

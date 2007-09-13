@@ -29,14 +29,11 @@ class MINERVA_EXPORT Polygon : public Line,
 {
 public:
   typedef Line                             BaseClass;
-  typedef Usul::Math::Vec3d                Vertex;
-  typedef std::vector < Vertex >           Vertices;
 
   USUL_DECLARE_QUERY_POINTERS ( Polygon );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   Polygon ();
-  Polygon ( DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F );
 
 protected:
   virtual ~Polygon();
@@ -47,10 +44,8 @@ protected:
   virtual osg::Node*               buildPolygonData ();
 
 private:
-  typedef std::vector < ossimGpt > LatLongPoints;
-  typedef std::vector < LatLongPoints > PointsList;
 
-  PointsList _points;
+  Vertices _points;
 };
 
 }

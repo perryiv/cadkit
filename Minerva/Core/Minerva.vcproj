@@ -624,6 +624,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Interfaces\ILayerList.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Interfaces\IRemoveLayer.h"
 					>
 				</File>

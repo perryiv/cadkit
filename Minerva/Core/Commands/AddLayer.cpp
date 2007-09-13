@@ -15,6 +15,7 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/Interfaces/IVectorLayer.h"
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/Trace/Trace.h"
 
 using namespace Minerva::Core::Commands;
 
@@ -45,6 +46,7 @@ AddLayer::AddLayer ( Usul::Interfaces::ILayer* layer ) :
   BaseClass( 0x0 ),
   _layer ( layer )
 {
+  USUL_TRACE_SCOPE;
   this->_addMember ( "layer", _layer );
 }
 
@@ -57,6 +59,7 @@ AddLayer::AddLayer ( Usul::Interfaces::ILayer* layer ) :
 
 AddLayer::~AddLayer()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -68,6 +71,8 @@ AddLayer::~AddLayer()
 
 void AddLayer::_execute ()
 {
+  USUL_TRACE_SCOPE;
+
   // Create a job to add a layer.  It captures the active document.
   AddLayerJob::RefPtr job ( new AddLayerJob ( _layer, this->caller() ) );
   Usul::Jobs::Manager::instance().add ( job.get() );
@@ -105,6 +110,8 @@ AddLayer::AddLayerJob::AddLayerJob ( Usul::Interfaces::ILayer* layer, Usul::Inte
   _caller ( caller ),
   _document ( )
 {
+  USUL_TRACE_SCOPE;
+
   // Capture the active document.
   _document = Usul::Documents::Manager::instance().active();
 
@@ -122,6 +129,7 @@ AddLayer::AddLayerJob::AddLayerJob ( Usul::Interfaces::ILayer* layer, Usul::Inte
 
 AddLayer::AddLayerJob::~AddLayerJob()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -133,6 +141,8 @@ AddLayer::AddLayerJob::~AddLayerJob()
 
 bool AddLayer::AddLayerJob::_addLayer ( Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
+
   Minerva::Interfaces::IAddLayer::QueryPtr addLayer ( caller );
 
   // Add the layer.
@@ -154,6 +164,8 @@ bool AddLayer::AddLayerJob::_addLayer ( Usul::Interfaces::IUnknown *caller )
 
 void AddLayer::AddLayerJob::_started()
 {
+  USUL_TRACE_SCOPE;
+
   // Query for needed interfaces.
   Usul::Interfaces::IVectorLayer::QueryPtr vector ( _layer );
 
@@ -172,6 +184,8 @@ void AddLayer::AddLayerJob::_started()
 
 void AddLayer::AddLayerJob::_finished()
 {
+  USUL_TRACE_SCOPE;
+
   // No longer needed.  Unref.
   _layer = static_cast < Usul::Interfaces::ILayer *> ( 0x0 );
   _document = static_cast < Usul::Interfaces::IUnknown * > ( 0x0 );

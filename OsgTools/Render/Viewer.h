@@ -65,6 +65,7 @@
 #include "Usul/Interfaces/ICullSceneVisitor.h"
 #include "Usul/Interfaces/IUpdateSubject.h"
 #include "Usul/Interfaces/IUpdateListener.h"
+#include "Usul/Interfaces/IClippingDistance.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
@@ -139,7 +140,8 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IFrameStamp,
                                 public Usul::Interfaces::IUpdateSceneVisitor,
                                 public Usul::Interfaces::ICullSceneVisitor,
-                                public Usul::Interfaces::IUpdateSubject
+                                public Usul::Interfaces::IUpdateSubject,
+                                public Usul::Interfaces::IClippingDistance
 {
 public:
 
@@ -731,6 +733,10 @@ protected:
 
   /// Clear update listeners.
   void                          _clearUpdateListeners ();
+
+  /// Get/set the clipping distances (Usul::Interfaces::IClippingDistance).
+  virtual void            getClippingDistances ( float &nearDist, float &farDist ) const;
+  virtual void            setClippingDistances ( float nearDist, float farDist );
 private:
 
   // Do not copy.

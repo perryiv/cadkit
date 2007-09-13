@@ -33,7 +33,6 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   Line ();
-  Line ( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F );
 
   /// Get/Set the line data.
   void                       line( const Vertices& );
@@ -50,13 +49,9 @@ protected:
   virtual const Vertices&          lineData ();
 
 private:
-  typedef std::vector < ossimGpt > LatLongPoints;
-  typedef std::vector < LatLongPoints > PointsList;
 
   Vertices   _line;
   Vertices   _latLongPoints;
-
-  PointsList _points;
 };
 
 }

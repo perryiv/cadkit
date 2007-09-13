@@ -13,28 +13,23 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _VRV_INTERFACE_CLIPPING_DISTANCES_H_
-#define _VRV_INTERFACE_CLIPPING_DISTANCES_H_
+#ifndef _USUL_INTERFACE_CLIPPING_DISTANCES_H_
+#define _USUL_INTERFACE_CLIPPING_DISTANCES_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
 
-namespace VRV {
+namespace Usul {
 namespace Interfaces {
 
 
-template
-<
-  unsigned long iid,
-  class RealType
->
 struct IClippingDistance : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( IClippingDistance );
 
   /// Id for this interface.
-  enum { IID = iid };
+  enum { IID = 1961562116u };
 
   /// Get/set the clipping distances.
   virtual void            getClippingDistances ( float &nearDist, float &farDist ) const = 0;
@@ -42,12 +37,8 @@ struct IClippingDistance : public Usul::Interfaces::IUnknown
 };
 
 
-typedef IClippingDistance<3187721726u,float>  IClippingDistanceFloat;
-typedef IClippingDistance<1961562116u,double> IClippingDistanceDouble;
-
-
 } // namespace Interfaces
 } // namespace VRV
 
 
-#endif // _VRV_INTERFACE_CLIPPING_DISTANCES_H_
+#endif // _USUL_INTERFACE_CLIPPING_DISTANCES_H_

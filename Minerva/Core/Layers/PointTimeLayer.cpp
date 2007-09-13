@@ -179,41 +179,46 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
         typedef Minerva::Core::postGIS::Geometry Geometry;
         typedef Minerva::Core::postGIS::Factory  GeometryFactory;
 
+        typedef Minerva::Core::postGIS::Factory Factory;
         pqxx::binarystring buffer ( i["geom"] );
-        Geometry::RefPtr geometry ( GeometryFactory::instance().createFromBinary ( &buffer.front() ) );
-        geometry->srid( srid );
+        Factory::Geometries geometries ( Factory::instance ().createFromBinary ( &buffer.front() ) );
 
-        Usul::Interfaces::IOffset::QueryPtr so ( geometry );
-
-        if( so.valid () )
+        for ( Factory::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
         {
-          so->spatialOffset( offset );
-        }
+          (*geom)->srid( srid );
+          Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
+          Usul::Interfaces::IOffset::QueryPtr so ( unknown );
 
-        if( geometry.valid() )
-        {
-          Minerva::Core::DataObjects::PointTime::RefPtr data ( new Minerva::Core::DataObjects::PointTime( firstDate, lastDate ) );
-          data->geometry( geometry->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-          data->color ( this->_color ( i ) );
-          data->size ( size );
-          data->primitiveId ( primitiveID );
-          data->renderBin ( renderBin );
-          data->connection ( this->connection() );
-          data->tableName ( tableName );
-          data->rowId ( id );
-          data->quality ( quality );
-          data->autotransform ( autotransform );
-          data->secondarySize ( secondarySize );
-
-          if( primitiveSizeColumn.size() > 0 )
+          if( so.valid () )
           {
-            float value ( i [ primitiveSizeColumn ].as < float > () );
-            data->size( size * value );
-            this->_updateMinMax( value );
+            so->spatialOffset( offset );
           }
 
-          // Also add to the vector of data objects.  This allows for faster updating.
-          this->_addDataObject( data.get() );
+          if( unknown.valid() )
+          {
+            Minerva::Core::DataObjects::PointTime::RefPtr data ( new Minerva::Core::DataObjects::PointTime( firstDate, lastDate ) );
+            data->geometry( unknown.get () );
+            data->color ( this->_color ( i ) );
+            data->size ( size );
+            data->primitiveId ( primitiveID );
+            data->renderBin ( renderBin );
+            data->connection ( this->connection() );
+            data->tableName ( tableName );
+            data->rowId ( id );
+            data->quality ( quality );
+            data->autotransform ( autotransform );
+            data->secondarySize ( secondarySize );
+
+            if( primitiveSizeColumn.size() > 0 )
+            {
+              float value ( i [ primitiveSizeColumn ].as < float > () );
+              data->size( size * value );
+              this->_updateMinMax( value );
+            }
+
+            // Also add to the vector of data objects.  This allows for faster updating.
+            this->_addDataObject( data.get() );
+          }
         }
         if( progress.valid() )
         {

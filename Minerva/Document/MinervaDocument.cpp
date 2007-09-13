@@ -31,6 +31,7 @@
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/ITemporalData.h"
+#include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
 
@@ -1198,6 +1199,10 @@ void MinervaDocument::addView ( Usul::Interfaces::IView *view )
 
   // Call the base classes on first.
   BaseClass::addView ( view );
+
+  Usul::Interfaces::IClippingDistance::QueryPtr cd ( view );
+  if ( cd.valid () )
+    cd->setClippingDistances ( 0.001, 15 );
 
   // Initalize the OSG visitors.
   _planet->initVisitors ( view );

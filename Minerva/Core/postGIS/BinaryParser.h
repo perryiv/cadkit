@@ -27,6 +27,7 @@
 #define __MINERVA_POSTGIS_BINARY_PARSER_H__
 
 #include "Minerva/Core/Export.h"
+#include "Minerva/Core/postGIS/Geometry.h"
 
 #include "Usul/Math/Vector2.h"
 #include "Usul/Types/Types.h"
@@ -39,17 +40,13 @@ namespace Minerva {
 namespace Core {
 namespace postGIS {
 
-class Geometry;
-
 class MINERVA_EXPORT BinaryParser
 {
 public:
   BinaryParser();
   ~BinaryParser();
 
-  typedef Usul::Math::Vec2d                Vertex;
-  typedef std::vector < Vertex >           Vertices;
-  typedef std::vector < Vertices >         VertexList;
+  typedef std::vector < Geometry::RefPtr > Geometries;
 
   enum wkbGeometryType 
   {
@@ -68,19 +65,13 @@ public:
     wkbLittleEndian = 1
   };
 
-  VertexList              getVertices( const unsigned char* buffer );
-
-  Geometry*               operator() ( const unsigned char* buffer );
+  Geometries              operator() ( const unsigned char* buffer );
 
 protected:
 
   template < class Convert >
-	void _createGeometryEndian ( const unsigned char*& buffer, VertexList &vertexList );
-  void _createGeometry       ( const unsigned char*& buffer, VertexList &vertexList );
-
-  template < class Convert >
-	Geometry* _createGeometryEndian ( const unsigned char*& buffer );
-  Geometry* _createGeometry       ( const unsigned char*& buffer );
+	void _createGeometryEndian ( const unsigned char*& buffer, Geometries& );
+  void _createGeometry       ( const unsigned char*& buffer, Geometries& );
 
 };
 

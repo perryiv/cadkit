@@ -31,7 +31,6 @@ class TriangulateComponent : public Usul::Base::Referenced,
 public:
 
   /// Typedefs.
-  typedef Usul::Interfaces::ITriangulate::Vertices      Vertices;
   typedef Usul::Interfaces::ITriangulate::Vertices3D    Vertices3D;
   typedef Usul::Base::Referenced                        BaseClass;
   typedef Usul::Interfaces::IUnknown                    Unknown;
@@ -46,8 +45,7 @@ public:
   TriangulateComponent();
   
   /// Generate triangles.
-  virtual void triangulate ( const Vertices &in, Vertices &out, Vertices3D &normalsOut );
-  virtual void triangulate3D ( const Vertices3D &in, Vertices3D &out, Vertices3D &normalsOut );
+  virtual void triangulate ( const Vertices3D &in, Vertices3D &out, Vertices3D &normalsOut );
 
   /// Return name of plugin.
   virtual std::string           getPluginName() const;

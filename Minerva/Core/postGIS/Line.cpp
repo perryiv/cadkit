@@ -30,23 +30,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Line, Line::BaseClass );
 ///////////////////////////////////////////////////////////////////////////////
 
 Line::Line() : BaseClass(),
-_line(),
-_points()
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Line::Line ( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F ) :
-BaseClass( connection, tableName, id, srid, F ),
-_line(),
-_latLongPoints(),
-_points()
+_line (),
+_latLongPoints ()
 {
 }
 
@@ -70,7 +55,7 @@ Line::~Line()
 
 osg::Geometry* Line::buildLineData()
 {
-  if( _points.empty() )
+  if( _latLongPoints.empty() )
     this->_buildLatLongPoints();
 
   // Create the geometry
@@ -80,21 +65,18 @@ osg::Geometry* Line::buildLineData()
 
   osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
 
-  for( PointsList::iterator iter = _points.begin(); iter != _points.end(); ++iter )
-  {
-    LatLongPoints sampledPoints;
-    Magrathea::resample( *iter, sampledPoints );
+  Vertices sampledPoints;
+  Magrathea::resample( _latLongPoints, sampledPoints );
 
-    osg::ref_ptr< osg::Vec3Array > newVertices ( new osg::Vec3Array );
-    Magrathea::convertVerticesToEarthCoordinates( sampledPoints, *newVertices, this->spatialOffset().z() );
+  osg::ref_ptr< osg::Vec3Array > newVertices ( new osg::Vec3Array );
+  Magrathea::convertVerticesToEarthCoordinates( sampledPoints, *newVertices, this->spatialOffset().z() );
 
-    vertices->insert( vertices->end(), newVertices->begin(), newVertices->end() );
+  vertices->insert( vertices->end(), newVertices->begin(), newVertices->end() );
 
-    // Add the primitive set
-    geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINE_STRIP, num, newVertices->size() ) );
+  // Add the primitive set
+  geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINE_STRIP, num, newVertices->size() ) );
 
-    num += newVertices->size();
-  }
+  num += newVertices->size();
 
   // Set the vertices.
 	geometry->setVertexArray( vertices.get() );
@@ -134,16 +116,8 @@ void Line::_convertToLatLong ( const Vertices& vertices, Vertices& latLongPoints
 
 void Line::_buildLatLongPoints()
 {
-  _points.clear();
-
-  const VertexList& vertexList ( this->_vertices() );
-
-  for( VertexList::const_iterator iter = vertexList.begin(); iter != vertexList.end(); ++iter )
-  {
-    LatLongPoints latLongPoints;
-    BaseClass::_convertToLatLong( *iter, latLongPoints );
-    _points.push_back ( latLongPoints );
-  }
+  _latLongPoints.clear ();
+  this->_convertToLatLong( _line, _latLongPoints );
 }
 
 

@@ -226,8 +226,8 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IUnknown::IID:
   case VRV::Interfaces::IModelAdd::IID:
     return static_cast < VRV::Interfaces::IModelAdd* > ( this );
-  case VRV::Interfaces::IClippingDistanceFloat::IID:
-    return static_cast < VRV::Interfaces::IClippingDistanceFloat* > ( this );
+  case Usul::Interfaces::IClippingDistance::IID:
+    return static_cast < Usul::Interfaces::IClippingDistance* > ( this );
   case Usul::Interfaces::IFrameInfo::IID:
     return static_cast < Usul::Interfaces::IFrameInfo* > ( this );
   case Usul::Interfaces::IWorldInfo::IID:

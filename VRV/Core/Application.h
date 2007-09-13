@@ -20,11 +20,11 @@
 #include "VRV/Devices/TrackerDevice.h"
 #include "VRV/Functors/BaseFunctor.h"
 #include "VRV/Interfaces/IModelAdd.h"
-#include "VRV/Interfaces/IClippingDistance.h"
 #include "VRV/Interfaces/INavigationScene.h"
 #include "VRV/Interfaces/IModelsScene.h"
 #include "VRV/Animate/Path.h"
 
+#include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/IUpdateSubject.h"
 #include "Usul/Interfaces/IUpdateListener.h"
@@ -93,7 +93,7 @@ namespace Core {
 
 class VRV_EXPORT Application : public vrj::GlApp,
                                public VRV::Interfaces::IModelAdd,
-                               public VRV::Interfaces::IClippingDistanceFloat,
+                               public Usul::Interfaces::IClippingDistance,
                                public Usul::Interfaces::IFrameInfo,
                                public Usul::Interfaces::IWorldInfo,
                                public VRV::Interfaces::INavigationScene,

@@ -31,7 +31,6 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   Point ();
-  Point ( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F );
 
   /// Get/Set the point.
   void                              point( const Usul::Math::Vec3d & );

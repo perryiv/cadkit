@@ -274,19 +274,11 @@
 				Name="Interfaces"
 				>
 				<File
-					RelativePath="..\Interfaces\IClippingDistance.h"
-					>
-				</File>
-				<File
 					RelativePath="..\Interfaces\IFrameInfo.h"
 					>
 				</File>
 				<File
 					RelativePath="..\Interfaces\IJoystick.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Interfaces\IMatrixMultiply.h"
 					>
 				</File>
 				<File
@@ -303,14 +295,6 @@
 				</File>
 				<File
 					RelativePath="..\Interfaces\IPostModelLoad.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Interfaces\ITranslationSpeed.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Interfaces\IWandState.h"
 					>
 				</File>
 				<File

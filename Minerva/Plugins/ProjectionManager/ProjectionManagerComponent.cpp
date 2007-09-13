@@ -111,7 +111,14 @@ namespace Detail
   }
 }
 
-/// Project to lat/lon with elevation using given spatial reference id.
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Project to lat/lon with elevation using given spatial reference id.
+//  Note: Longitude is x and latidute is y.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void ProjectionManagerComponent::projectToSpherical ( const Usul::Math::Vec3d& orginal, unsigned int srid, Usul::Math::Vec3d& latLonPoint ) const
 {
   ossimKeywordlist kwl;
@@ -143,6 +150,14 @@ void ProjectionManagerComponent::projectToSpherical ( const Usul::Math::Vec3d& o
   latLonPoint[2] += orginal[2];
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Project to planet coordinates.  Values are not normalized.
+//  Note: Longitude is x and latidute is y.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void ProjectionManagerComponent::convertToPlanetEllipsoid ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
 {
   ossimEcefPoint ecef;
@@ -158,15 +173,15 @@ void ProjectionManagerComponent::convertToPlanetEllipsoid ( const Usul::Math::Ve
 }
 
 
-const double WGS_84_RADIUS_EQUATOR = 6378137.0;
-const double WGS_84_RADIUS_POLAR = 6356752.3142;
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Project to planet coordinates.  Values are normalized.
+//  Note: Longitude is x and latidute is y.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void ProjectionManagerComponent::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
 {
-  /*ossimEllipsoid model ( WGS_84_RADIUS_EQUATOR, WGS_84_RADIUS_POLAR );
-
-  model.latLonHeightToXYZ( orginal[0], orginal[1], orginal[2], planetPoint[0], planetPoint[1], planetPoint[2] );*/
-
   ossimEcefPoint ecef;
   ossimGpt dummy;
   ecef = dummy;
@@ -179,10 +194,14 @@ void ProjectionManagerComponent::convertToPlanet ( const Usul::Math::Vec3d& orgi
   planetPoint[0] = ecef.x()/normalizationFactor;
   planetPoint[1] = ecef.y()/normalizationFactor;
   planetPoint[2] = ecef.z()/normalizationFactor;
-
-  //planetPoint /= WGS_84_RADIUS_EQUATOR;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert from planet coordinats to lat/long.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void ProjectionManagerComponent::convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const
 {

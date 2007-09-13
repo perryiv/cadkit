@@ -203,7 +203,8 @@ namespace Magrathea
 
     for( typename Points::const_iterator iter = points.begin(); iter != points.end(); ++ iter )
     {
-      ossimGpt point ( *iter );
+      typename Points::value_type p ( *iter );
+      ossimGpt point ( p[ 1 ], p[0], p[2] );
       point.hgt += zOffset;
       ossimEcefPoint ecef ( point );
       //double normalizationFactor ( ecef.getMagnitude() );

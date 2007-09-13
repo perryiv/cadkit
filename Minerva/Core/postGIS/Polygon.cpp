@@ -41,19 +41,6 @@ _points()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Polygon::Polygon ( Minerva::Core::DB::Connection *connection, const std::string &tableName, int id, int srid, const pqxx::result::field &F ) :
-BaseClass( connection, tableName, id, srid, F ),
-_points()
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -75,7 +62,6 @@ void Polygon::_buildLatLongPoints()
 
   // Typedefs
   typedef Usul::Interfaces::ITriangulate              Triangulate;
-  typedef Triangulate::Vertices                       Vertices;
   typedef Triangulate::Vertices3D                     Vertices3D;
 
   // Find the needed plugins
@@ -84,28 +70,23 @@ void Polygon::_buildLatLongPoints()
   if( false == triangulate.valid() )
     return;
 
-  const VertexList& vertexList ( this->_vertices() );
+  const Line::Vertices& orginalVertices ( this->line() );
 
-  for( VertexList::const_iterator iter = vertexList.begin(); iter != vertexList.end(); ++iter )
-  {
-    Vertices     vertices;
-    Vertices3D   n;
+  Vertices3D   vertices;
+  Vertices3D   n;
 
-    // Create the triangles
-    triangulate->triangulate ( *iter, vertices, n );
+  // Create the triangles
+  triangulate->triangulate ( orginalVertices, vertices, n );
 
-    std::vector< ossimGpt > latLongPoints;
-    Geometry::_convertToLatLong( vertices, latLongPoints );
+  this->_convertToLatLong( vertices, _points );
 
 #if 0
-    std::vector< ossimGpt > subdividedPoints;
-    Magrathea::subdivide( latLongPoints, subdividedPoints );
+  std::vector< ossimGpt > subdividedPoints;
+  Magrathea::subdivide( latLongPoints, subdividedPoints );
 
-    _points.push_back ( subdividedPoints );
+  _points.push_back ( subdividedPoints );
 #else
-    _points.push_back ( latLongPoints );
 #endif
-  }
 }
 
 
@@ -133,45 +114,41 @@ osg::Node* Polygon::buildPolygonData()
   if( _points.empty() )
     this->_buildLatLongPoints();
 
-  for( PointsList::iterator iter = _points.begin(); iter != _points.end(); ++iter )
-  {
-    osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-    osg::ref_ptr < osg::Geometry > geom ( new osg::Geometry );
+  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+  osg::ref_ptr < osg::Geometry > geom ( new osg::Geometry );
 
-    Vertices earthVertices;
-    Normals  normals;
+  Vertices earthVertices;
+  Normals  normals;
 
-    // Convert vertices to earth coordinates.
-    Magrathea::convertVerticesToEarthCoordinates( *iter, earthVertices, this->spatialOffset().z() );
+  // Convert vertices to earth coordinates.
+  Magrathea::convertVerticesToEarthCoordinates( _points, earthVertices, this->spatialOffset().z() );
 
-    // Calculate the normals.
-    computeNormals->computeNormalsPerTriangle( earthVertices, normals );
+  // Calculate the normals.
+  computeNormals->computeNormalsPerTriangle( earthVertices, normals );
 
-    /// Copy the osg vertices
-    osg::ref_ptr< osg::Vec3Array > triangleVertices( new osg::Vec3Array );
-    triangleVertices->reserve( earthVertices.size() );
-    for( Normals::iterator iter = earthVertices.begin(); iter != earthVertices.end(); ++iter )
-      triangleVertices->push_back( osg::Vec3 ( (*iter)[0], (*iter)[1], (*iter)[2] ) );
+  /// Copy the osg vertices
+  osg::ref_ptr< osg::Vec3Array > triangleVertices ( new osg::Vec3Array );
+  triangleVertices->reserve( earthVertices.size() );
+  for( Normals::iterator iter = earthVertices.begin(); iter != earthVertices.end(); ++iter )
+    triangleVertices->push_back( osg::Vec3 ( (*iter)[0], (*iter)[1], (*iter)[2] ) );
 
+  /// Copy the osg normals.
+  osg::ref_ptr < osg::Vec3Array > triangleNormals ( new osg::Vec3Array() );
+  triangleNormals->reserve( normals.size() );
+  for( Normals::iterator iter = normals.begin(); iter != normals.end(); ++iter )
+    triangleNormals->push_back( osg::Vec3 ( (*iter)[0], (*iter)[1], (*iter)[2] ) );
 
-    /// Copy the osg normals.
-    osg::ref_ptr < osg::Vec3Array > triangleNormals ( new osg::Vec3Array() );
-    triangleNormals->reserve( normals.size() );
-    for( Normals::iterator iter = normals.begin(); iter != normals.end(); ++iter )
-      triangleNormals->push_back( osg::Vec3 ( (*iter)[0], (*iter)[1], (*iter)[2] ) );
+  geom->setVertexArray ( triangleVertices.get() );
+  geom->setNormalArray ( triangleNormals.get() );
+  geom->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
 
-    geom->setVertexArray ( triangleVertices.get() );
-    geom->setNormalArray ( triangleNormals.get() );
-    geom->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+  //geom->setUseDisplayList( true );
 
-    //geom->setUseDisplayList( true );
+  geom->addPrimitiveSet ( new osg::DrawArrays ( GL_TRIANGLES, 0, triangleVertices->size() ) );
 
-    geom->addPrimitiveSet ( new osg::DrawArrays ( GL_TRIANGLES, 0, triangleVertices->size() ) );
+  geode->addDrawable( geom.get() );
 
-    geode->addDrawable( geom.get() );
-
-    group->addChild ( geode.get() );
-  }
+  group->addChild ( geode.get() );
 
   return group.release();
 }

@@ -90,11 +90,11 @@ Usul::Interfaces::IUnknown *TriangulateComponent::queryInterface ( unsigned long
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//  Trianglulate.  The z component is ignored.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangulateComponent::triangulate ( const Vertices &in, Vertices &verticesOut, Vertices3D &normalsOut )
+void TriangulateComponent::triangulate ( const Vertices3D &in, Vertices3D &verticesOut, Vertices3D &normalsOut )
 {
   CDT cdt;
 
@@ -102,7 +102,7 @@ void TriangulateComponent::triangulate ( const Vertices &in, Vertices &verticesO
   std::vector < Vertex_handle > handles;
 
   // Copy vertices into proper data structure for triangulation.
-  for ( Vertices::const_iterator vertexIter = in.begin(); vertexIter != in.end(); ++vertexIter )
+  for ( Vertices3D::const_iterator vertexIter = in.begin(); vertexIter != in.end(); ++vertexIter )
   {
     handles.push_back ( cdt.insert( Point( (*vertexIter)[0], (*vertexIter)[1] ) ) );
   }
@@ -145,11 +145,11 @@ void TriangulateComponent::triangulate ( const Vertices &in, Vertices &verticesO
       Point p1 ( faceIter->vertex( 1 )->point() );
       Point p2 ( faceIter->vertex( 2 )->point() );
 
-      typedef Vertices::value_type Vertex;
+      typedef Vertices3D::value_type Vertex;
 
-      Vertex v0 ( p0.x(), p0.y() );
-      Vertex v1 ( p1.x(), p1.y() );
-      Vertex v2 ( p2.x(), p2.y() );
+      Vertex v0 ( p0.x(), p0.y(), 0.0 );
+      Vertex v1 ( p1.x(), p1.y(), 0.0 );
+      Vertex v2 ( p2.x(), p2.y(), 0.0 );
 
       verticesOut.push_back ( v0 );
       verticesOut.push_back ( v1 );
@@ -158,17 +158,6 @@ void TriangulateComponent::triangulate ( const Vertices &in, Vertices &verticesO
       normalsOut.push_back ( Vertices3D::value_type ( 0.0, 0.0, 1.0 ) );
     }
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TriangulateComponent::triangulate3D ( const Vertices3D &in, Vertices3D &out, Vertices3D &normalsOut )
-{
 }
 
 

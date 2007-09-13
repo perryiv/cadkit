@@ -10,7 +10,7 @@
 
 #include "Minerva/Core/Layers/LineLayer.h"
 #include "Minerva/Core/DataObjects/Line.h"
-#include "Minerva/Core/postGIS/Line.h"
+#include "Minerva/Core/postGIS/Factory.h"
 #include "Minerva/Core/Visitor.h"
 
 #include "Usul/Factory/RegisterCreator.h"
@@ -155,29 +155,36 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     int id ( iter["id"].as < int > () );
     int srid ( iter["srid"].as < int > () );
 
-    Usul::Interfaces::IUnknown::QueryPtr geometry ( new Minerva::Core::postGIS::Line ( this->connection(), dataTable, id, srid, iter["geom"] ) );
+    typedef Minerva::Core::postGIS::Factory Factory;
+    pqxx::binarystring buffer ( iter["geom"] );
+    Factory::Geometries geometries ( Factory::instance ().createFromBinary ( &buffer.front() ) );
 
-    Usul::Interfaces::IOffset::QueryPtr offset ( geometry );
+    for ( Factory::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
+    {
+      (*geom)->srid( srid );
+      Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
+      Usul::Interfaces::IOffset::QueryPtr offset ( geom->get() );
 
-    if( offset.valid() )
-      offset->spatialOffset( osg::Vec3f ( 0.0, 0.0, this->zOffset() ) );
+      if( offset.valid() )
+        offset->spatialOffset( osg::Vec3f ( 0.0, 0.0, this->zOffset() ) );
 
-    Minerva::Core::DataObjects::Line::RefPtr data ( new Minerva::Core::DataObjects::Line( ) );
-    data->color ( this->_color ( iter ) );
-    data->width( _lineWidth );
-    data->geometry( geometry );
-    data->renderBin( this->renderBin() );
-    data->connection ( this->connection() );
-    data->tableName ( dataTable );
-    data->rowId ( id );
+      Minerva::Core::DataObjects::Line::RefPtr data ( new Minerva::Core::DataObjects::Line( ) );
+      data->color ( this->_color ( iter ) );
+      data->width( _lineWidth );
+      data->geometry( unknown.get() );
+      data->renderBin( this->renderBin() );
+      data->connection ( this->connection() );
+      data->tableName ( dataTable );
+      data->rowId ( id );
 
-    /// Set the label.
-    this->_labelDataObject( data.get() );
+      /// Set the label.
+      this->_labelDataObject( data.get() );
 
-    data->buildScene();
+      data->buildScene();
 
-    // Add the data object.
-    this->_addDataObject( data.get() );
+      // Add the data object.
+      this->_addDataObject( data.get() );
+    }
 
     // Update progress.
     if( progress.valid() )

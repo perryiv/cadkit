@@ -348,14 +348,6 @@
 						RelativePath=".\Layers\PolygonLayer.h"
 						>
 					</File>
-					<File
-						RelativePath=".\Layers\PolygonTimeLayer.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\PolygonTimeLayer.h"
-						>
-					</File>
 				</Filter>
 				<Filter
 					Name="Scene"
@@ -444,30 +436,6 @@
 					</File>
 					<File
 						RelativePath=".\postGIS\Line.h"
-						>
-					</File>
-					<File
-						RelativePath=".\postGIS\MultiLine.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\postGIS\MultiLine.h"
-						>
-					</File>
-					<File
-						RelativePath=".\postGIS\MultiPoint.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\postGIS\MultiPoint.h"
-						>
-					</File>
-					<File
-						RelativePath=".\postGIS\MultiPolygon.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\postGIS\MultiPolygon.h"
 						>
 					</File>
 					<File

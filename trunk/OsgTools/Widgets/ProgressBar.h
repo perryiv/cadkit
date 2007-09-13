@@ -57,6 +57,7 @@ public:
   void                    value ( double );
   void                    stepAnimation();
   void                    clear();
+  void                    finished( bool value );
 
   bool                    isAnimating();
   bool                    isVisible();

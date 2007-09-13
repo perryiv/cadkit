@@ -147,6 +147,7 @@ OsgTools::Widgets::ProgressBarGroup::Bars ProgressBarGroup::getBars()
 
 void ProgressBarGroup::removeFinishedProgressBars ( )
 {
+  USUL_TRACE_SCOPE;
   typedef OsgTools::Widgets::ProgressBarGroup::Bars ProgressBars;
 
   // Make a copy.
@@ -190,6 +191,7 @@ void ProgressBarGroup::_removeProgressBar ( ProgressBar * bar )
                                  _bars.end(), 
                                  ProgressBar::RefPtr::IsEqual ( bar ) ), 
                   _bars.end() );
+    
   }
 }
 

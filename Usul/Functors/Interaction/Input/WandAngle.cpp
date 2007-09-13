@@ -17,6 +17,9 @@
 #include "Usul/Math/Constants.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Print/Matrix.h"
+#include "Usul/Math/Absolute.h"
+
 
 using namespace Usul::Functors::Interaction::Input;
 
@@ -68,7 +71,7 @@ WandAngle::~WandAngle()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float WandAngle::_calculateValue ( unsigned int zero )
+float WandAngle::_calculateValue ( unsigned int zero, unsigned int sign )
 {
   USUL_TRACE_SCOPE;
   float value ( 0.0f );
@@ -81,6 +84,9 @@ float WandAngle::_calculateValue ( unsigned int zero )
       _wand->wandRotation ( matrix );
     }
 
+    //std::cout << "---------------------------------------------------";
+    //Usul::Print::matrix ( "", matrix.get(), std::cout );
+    std::cout << std::endl;
     IWandState::Vector nz ( 0.0f, 0.0f, -1.0f );
     IWandState::Vector localDir ( nz );
     IWandState::Vector globalDir = matrix * localDir;
@@ -90,12 +96,18 @@ float WandAngle::_calculateValue ( unsigned int zero )
 
     value = globalDir.angle ( nz );
     value *= Usul::Math::RAD_TO_DEG;
-    value = ( ( _value < 0.0f ) ? ( _value + 360.0f ) : _value ); // [0,360]
-    value = Usul::Math::minimum ( _value, 360.0f ); // [0,360]
-    value = Usul::Math::maximum ( _value, 0.0f );   // [0,360]
-    value -= -180.0f; // [-180,180];
+    value = Usul::Math::absolute ( value );
+    value *= ( globalDir[sign] < 0.0 ? -1.0 : 1.0 );
+    value = Usul::Math::clamp ( -90.0f, 90.0f, value );
+    value += 90.0f;  // [0,180]
+    value /= 180.0f; // [0,1];
+    value *= ( _range[1] - _range[0] );
+    value = _range[0] + value; // [ _range[0], _range[1] ]
 
-    value /= 180.0f * ( ( _range[1] - _range[0] ) / 2.0f );
+    if ( 0 == zero )
+    {    
+      std::cout << "Angle: " << std::setw ( 8 ) << static_cast < int > ( value ) << std::endl;
+    }
   }
 
   return value;

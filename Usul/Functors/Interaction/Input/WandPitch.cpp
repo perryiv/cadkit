@@ -70,7 +70,7 @@ void WandPitch::operator()()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  _value = this->_calculateValue ( 0 );
+  _value = this->_calculateValue ( 0, 1 );
 }
 
 

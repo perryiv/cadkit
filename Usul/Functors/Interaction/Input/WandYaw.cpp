@@ -70,7 +70,7 @@ void WandYaw::operator()()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  _value = this->_calculateValue ( 1 );
+  _value = this->_calculateValue ( 1, 0 );
 }
 
 

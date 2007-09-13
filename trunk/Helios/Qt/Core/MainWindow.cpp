@@ -392,6 +392,7 @@ void MainWindow::_buildToolBar()
 
   // Set standard size.
   toolBar->setIconSize ( QSize ( 16, 16 ) );
+  toolBar->setObjectName ( standardToolBarName );
 
   // Add buttons.
   {

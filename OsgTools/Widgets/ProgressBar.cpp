@@ -64,7 +64,9 @@ public:
       		    
             }
             else
+            {
               _bar->setAnimation ( false );
+            }
           }
           else
           {
@@ -75,7 +77,9 @@ public:
             						
             }
             else
+            {
               _bar->setAnimation ( false );
+            }
           }
         }
       }   
@@ -283,6 +287,7 @@ void ProgressBar::hideProgressBar()
     this->_setupAnimation( 1.0f, 0.0f, -0.1f );
     _isAnimating = true;
     _isVisible = false;
+    this->finished( true );
   }
   
   
@@ -329,6 +334,20 @@ void ProgressBar::setStatusBarText ( const std::string &text, bool force )
 {
   USUL_TRACE_SCOPE;
   this->text ( text );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reset progress bar values to the starting parameters
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBar::finished( bool value )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _isFinished = value;
 }
 
 

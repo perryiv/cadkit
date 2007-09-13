@@ -54,7 +54,6 @@
 #include "Usul/Interfaces/ITimeoutAnimate.h"
 #include "Usul/Interfaces/GUI/ISetCursorType.h"
 #include "Usul/Interfaces/ITimeoutSpin.h"
-#include "Usul/Interfaces/ISceneStage.h"
 #include "Usul/Interfaces/ICenterOfRotation.h"
 #include "Usul/Interfaces/IScreenCapture.h"
 #include "Usul/Interfaces/ISnapShot.h"
@@ -132,7 +131,6 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IBackground,
                                 public Usul::Interfaces::IHeliosView,
                                 public Usul::Interfaces::ILights,
-                                public Usul::Interfaces::ISceneStage,
                                 public Usul::Interfaces::ICenterOfRotation,
                                 public Usul::Interfaces::IScreenCapture,
                                 public Usul::Interfaces::ISnapShot,
@@ -553,10 +551,6 @@ protected:
   bool                  _writeImageFile ( const std::string &filename ) const;
   bool                  _writeImageFile ( const std::string &filename, unsigned int width, unsigned int height ) const;
 
-  // Add/Remove scene stage.
-  void                  _addSceneStage();
-  void                  _removeSceneStage();
-
   // Notify of rendering.
   void                  _preRenderNotify();
   void                  _postRenderNotify();
@@ -693,10 +687,6 @@ protected:
   virtual void                  setLights ( bool );
   virtual bool                  hasLights ( ) const;
 
-  /// Usul::Interfaces::ISceneStage
-  virtual bool                  sceneStage() const;
-  virtual void                  sceneStage( bool b );
-
   /// Usul::Interfaces::IExport
   virtual bool                  canExport ( const std::string &filename );
   virtual Filters               filtersExport() const;
@@ -755,7 +745,6 @@ private:
     _SORT_BACK_TO_FRONT = 0x00000008,
     _SHOW_AXES          = 0x00000010,
     _SHOW_LIGHTS        = 0x00000020,
-    _SHOW_STAGE         = 0x00000040,
     _SHOW_COR           = 0x00000080
   };
 

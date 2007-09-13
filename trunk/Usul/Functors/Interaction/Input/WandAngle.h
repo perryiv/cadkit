@@ -51,7 +51,7 @@ protected:
 
   virtual ~WandAngle();
 
-  float                 _calculateValue ( unsigned int zero );
+  float                 _calculateValue ( unsigned int zero, unsigned int sign );
 
 private:
 

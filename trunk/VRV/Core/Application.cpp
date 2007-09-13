@@ -29,6 +29,7 @@
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/CommandLine/Parser.h"
+#include "Usul/CommandLine/Options.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/File/Path.h"
@@ -109,6 +110,7 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _menu              ( new Menu ),
   _statusBar         ( new Menu ),
   _functorFilename   ( Usul::App::Application::instance ().configFile ( "functors" ) ),
+  _preferencesFilename ( Usul::App::Application::instance().configFile ( "preferences" ) ),
   _analogInputs      (),
   _transformFunctors (),
   _favoriteFunctors  (),
@@ -1500,14 +1502,11 @@ void Application::_readUserPreferences()
   // If the file is missing then it throws.
   try
   {
-    // Find the path to the preference file.
-    std::string filename ( Usul::App::Application::instance().configFile ( "preferences" ) );
-
     // Create a new preferences classes to set defaults.
     Preferences::RefPtr preferences ( new Preferences );
 
     // Read the preferences.
-    preferences->read ( filename );
+    preferences->read ( _preferencesFilename );
     
     {
       Guard guard ( this->mutex() );
@@ -2739,6 +2738,13 @@ void Application::_parseCommandLine()
 
   // Make the parser.  Offset beginning by one to skip the application name.
   Parser parser ( args.begin() + 1, args.end() );
+
+  // Options class.
+  Usul::CommandLine::Options options ( parser.options() );
+
+  // Get new preferences and functor file from the command line.
+  _preferencesFilename   = options.get ( "preferences", _preferencesFilename );
+  _functorFilename       = options.get ( "functors",    _functorFilename     );
 
   // Have to load the config files now. Remove them from the arguments.
   Parser::Args configs ( parser.files ( ".jconf", true ) );

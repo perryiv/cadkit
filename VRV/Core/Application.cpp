@@ -262,6 +262,8 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IFrameStamp * > ( this );
   case Usul::Interfaces::IViewMatrix::IID:
     return static_cast < Usul::Interfaces::IViewMatrix * > ( this );
+  case Usul::Interfaces::IStatusBar::IID:
+    return static_cast < Usul::Interfaces::IStatusBar * > ( this );
   default:
     return 0x0;
   }
@@ -2469,6 +2471,7 @@ void Application::_initStatusBar()
 
   // Make a matrix transform.
   osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+  mt->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
   mt->setMatrix ( m );
   mt->setName ( "StatusBar" );
 
@@ -2519,6 +2522,18 @@ void Application::_updateStatusBar ( const std::string &s )
 
   // Rebuild the scene.
   this->statusBar()->updateScene();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the status bar text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::setStatusBarText ( const std::string &text, bool force )
+{
+  this->_updateStatusBar ( text );
 }
 
 

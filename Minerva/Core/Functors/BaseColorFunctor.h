@@ -18,8 +18,6 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 
-#include "boost/serialization/is_abstract.hpp"
-
 #include "Serialize/XML/Macros.h"
 
 namespace Usul { namespace Interfaces { struct IUnknown; } }
@@ -52,7 +50,5 @@ struct MINERVA_EXPORT BaseColorFunctor : public Usul::Base::Referenced
   }
 }
 }
-
-BOOST_IS_ABSTRACT(Minerva::Core::Functors::BaseColorFunctor)
 
 #endif

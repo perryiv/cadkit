@@ -128,6 +128,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Minerva::Interfaces::IRemoveLayer * > ( this );
   case Minerva::Interfaces::IDirtyScene::IID:
     return static_cast < Minerva::Interfaces::IDirtyScene * > ( this );
+  case Minerva::Interfaces::ILayerList::IID:
+    return static_cast < Minerva::Interfaces::ILayerList * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -916,6 +918,8 @@ void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
 
 void MinervaDocument::_addLayer ( Usul::Interfaces::ILayer * layer )
 {
+  USUL_TRACE_SCOPE;
+
   try
   {
     Usul::Interfaces::IOssimPlanetLayer::QueryPtr ossim ( layer );
@@ -951,6 +955,8 @@ void MinervaDocument::_addLayer ( Usul::Interfaces::ILayer * layer )
 
 void MinervaDocument::addLayerCommand ( Usul::Interfaces::ILayer * layer )
 {
+  USUL_TRACE_SCOPE;
+
   Minerva::Core::Commands::AddLayer::RefPtr command ( new Minerva::Core::Commands::AddLayer ( layer ) );
   this->_executeCommand ( command.get() );
 }
@@ -964,6 +970,8 @@ void MinervaDocument::addLayerCommand ( Usul::Interfaces::ILayer * layer )
 
 void MinervaDocument::removeLayerCommand ( Usul::Interfaces::ILayer * layer )
 {
+  USUL_TRACE_SCOPE;
+
   Minerva::Core::Commands::RemoveLayer::RefPtr command ( new Minerva::Core::Commands::RemoveLayer ( layer ) );
   this->_executeCommand ( command.get() );
 }
@@ -979,6 +987,8 @@ void MinervaDocument::removeLayerCommand ( Usul::Interfaces::ILayer * layer )
 
 void MinervaDocument::modifyLayerCommand ( Usul::Interfaces::ILayer * layer )
 {
+  USUL_TRACE_SCOPE;
+
   // Remove.
   this->removeLayerCommand ( layer );
 
@@ -995,6 +1005,8 @@ void MinervaDocument::modifyLayerCommand ( Usul::Interfaces::ILayer * layer )
 
 void MinervaDocument::showLayerCommand ( Usul::Interfaces::ILayer * layer )
 {
+  USUL_TRACE_SCOPE;
+
   Minerva::Core::Commands::ShowLayer::RefPtr command ( new Minerva::Core::Commands::ShowLayer ( layer ) );
   this->_executeCommand ( command.get() );
 }
@@ -1008,6 +1020,8 @@ void MinervaDocument::showLayerCommand ( Usul::Interfaces::ILayer * layer )
 
 void MinervaDocument::hideLayerCommand ( Usul::Interfaces::ILayer * layer )
 {
+  USUL_TRACE_SCOPE;
+
   Minerva::Core::Commands::HideLayer::RefPtr command ( new Minerva::Core::Commands::HideLayer ( layer ) );
   this->_executeCommand ( command.get() );
 }
@@ -1021,6 +1035,8 @@ void MinervaDocument::hideLayerCommand ( Usul::Interfaces::ILayer * layer )
 
 void MinervaDocument::deserialize ( const XmlTree::Node &node )
 {
+  USUL_TRACE_SCOPE;
+
   _dataMemberMap.deserialize ( node );
 
   // Connect.
@@ -1048,6 +1064,8 @@ void MinervaDocument::deserialize ( const XmlTree::Node &node )
 
 MinervaDocument::Layers& MinervaDocument::layers()
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
   return _layers;
 }
 
@@ -1060,6 +1078,8 @@ MinervaDocument::Layers& MinervaDocument::layers()
 
 const MinervaDocument::Layers& MinervaDocument::layers() const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
   return _layers;
 }
 
@@ -1532,4 +1552,32 @@ void MinervaDocument::accept ( Minerva::Core::Visitor& visitor )
     if ( Minerva::Core::Layers::Layer *layer = dynamic_cast < Minerva::Core::Layers::Layer * > ( (*iter).get() ) )
       layer->accept ( visitor );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int MinervaDocument::numberLayers () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _layers.size ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the layer at position i.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::ILayer* MinervaDocument::layer ( unsigned int i )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _layers.at ( i );
 }

@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(QTDIR)\include"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(QTDIR)\include;$(OSG_INC_DIR);$(BOOST_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_LAYER_MANAGER;"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -147,7 +147,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(QTDIR)\include"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(QTDIR)\include;$(OSG_INC_DIR);$(BOOST_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_LAYER_MANAGER;"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -246,6 +246,17 @@
 				<File
 					RelativePath=".\LayersTree.h"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing LayersTree.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\LayersTree.h&quot; -o &quot;.\GeneratedFiles\moc_LayersTree.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\LayersTree.h"
+							Outputs=".\GeneratedFiles\moc_LayersTree.cpp"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -253,6 +264,14 @@
 				>
 				<File
 					RelativePath="Export.def"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="GeneratedFiles"
+				>
+				<File
+					RelativePath=".\generatedfiles\moc_LayersTree.cpp"
 					>
 				</File>
 			</Filter>

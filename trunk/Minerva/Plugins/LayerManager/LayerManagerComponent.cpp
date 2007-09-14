@@ -135,7 +135,7 @@ void LayerManagerComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
     _dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
 
     // Create the tree for the scene graph.
-    _layers = new LayersTree ( _dock );
+    _layers = new LayersTree ( caller, _dock );
 
     // Add the dock to the main window.
     _dock->setWidget( _layers );

@@ -28,10 +28,10 @@ public:
   typedef Usul::Interfaces::ILayer                       Layer;
   typedef std::map < QTreeWidgetItem *, Layer::RefPtr >  LayerMap;
 
-  LayersTree ( QWidget *parent = 0x0 );
+  LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget *parent = 0x0 );
   virtual ~LayersTree ();
 
-  void     buildTree ( Usul::Interfaces::IUnknown * caller );
+  void     buildTree ( Usul::Interfaces::IUnknown * document );
 
 protected:
   void     _connectTreeViewSlots ();
@@ -47,6 +47,7 @@ private:
   QTreeWidget *_tree;
   LayerMap _layerMap;
   Usul::Interfaces::IUnknown::QueryPtr _caller;
+  Usul::Interfaces::IUnknown::QueryPtr _document;
 };
 
 

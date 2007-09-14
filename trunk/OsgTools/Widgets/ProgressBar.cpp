@@ -555,7 +555,7 @@ void ProgressBar::value ( double v )
   if( v >= range[1] )
   {
     v = range[1];
-    _isFinished = true;
+    //_isFinished = true;
   }
   if( v < range[0] )
     v = range[0];

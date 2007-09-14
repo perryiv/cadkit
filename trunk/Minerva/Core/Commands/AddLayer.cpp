@@ -32,6 +32,7 @@ USUL_FACTORY_REGISTER_CREATOR ( AddLayer );
 AddLayer::AddLayer ( ) : 
   BaseClass( 0x0 )
 {
+  USUL_TRACE_SCOPE;
   this->_addMember ( "layer", _layer );
 }
 

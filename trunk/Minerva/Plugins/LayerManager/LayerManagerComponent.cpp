@@ -109,6 +109,8 @@ std::string LayerManagerComponent::getPluginName() const
 
 void LayerManagerComponent::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
 {
+  if ( 0x0 != _layers )
+    _layers->buildTree ( newDoc );
 }
 
 

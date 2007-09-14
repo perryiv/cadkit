@@ -9,8 +9,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Plugins/LayerManager/LayersTree.h"
-#include "Minerva/Core/Commands/AddLayer.h"
-#include "Minerva/Core/Commands/RemoveLayer.h"
+#include "Minerva/Core/Commands/HideLayer.h"
+#include "Minerva/Core/Commands/ShowLayer.h"
+
 #include "Minerva/Interfaces/ILayerList.h"
 
 #include "QtGui/QTreeWidget"
@@ -24,11 +25,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LayersTree::LayersTree ( QWidget * parent ) : 
+LayersTree::LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget * parent ) : 
 BaseClass ( parent ),
 _tree ( 0x0 ),
 _layerMap (),
-_caller ()
+_caller ( caller ),
+_document ()
 {
   QVBoxLayout *topLayout ( new QVBoxLayout ( parent ) );
   this->setLayout ( topLayout );
@@ -74,6 +76,7 @@ LayersTree::~LayersTree()
 {
   _layerMap.clear ( );
   _caller = static_cast < Usul::Interfaces::IUnknown * > ( 0x0 );
+  _document = static_cast < Usul::Interfaces::IUnknown * > ( 0x0 );
 }
 
 
@@ -83,17 +86,17 @@ LayersTree::~LayersTree()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LayersTree::buildTree ( Usul::Interfaces::IUnknown * caller )
+void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
 {
-  // Save the caller;
-  _caller = caller;
+  // Save the document;
+  _document = document;
 
   // Clear anything we may have.
   _tree->clear();
   _layerMap.clear ( );
 
   // See if the correct interface is implemented.
-  Minerva::Interfaces::ILayerList::QueryPtr layers ( caller );
+  Minerva::Interfaces::ILayerList::QueryPtr layers ( document );
   if ( false == layers.valid() )
     return;
 
@@ -170,13 +173,13 @@ void LayersTree::_onItemChanged ( QTreeWidgetItem * item, int columnNumber )
     {
       if ( Qt::Checked == state )
       {
-        Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( layer ) );
-        addLayer->execute ( _caller );
+        Minerva::Core::Commands::ShowLayer::RefPtr show ( new Minerva::Core::Commands::ShowLayer ( layer ) );
+        show->execute ( _document );
       }
       else if ( Qt::Unchecked == state )
       {
-        Minerva::Core::Commands::RemoveLayer::RefPtr addLayer ( new Minerva::Core::Commands::RemoveLayer ( layer ) );
-        addLayer->execute ( _caller );
+        Minerva::Core::Commands::HideLayer::RefPtr hide ( new Minerva::Core::Commands::HideLayer ( layer ) );
+        hide->execute ( _document );
       }
     }
   }

@@ -35,6 +35,7 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   AddLayer ();
+  AddLayer ( Usul::Interfaces::IUnknown * caller, Usul::Interfaces::ILayer* layer );
   AddLayer ( Usul::Interfaces::ILayer* layer );
 
 protected:

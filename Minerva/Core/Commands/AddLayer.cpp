@@ -10,6 +10,7 @@
 
 #include "Minerva/Core/Commands/AddLayer.h"
 #include "Minerva/Interfaces/IAddLayer.h"
+#include "Minerva/Interfaces/IDirtyScene.h"
 
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Documents/Manager.h"
@@ -31,6 +32,21 @@ USUL_FACTORY_REGISTER_CREATOR ( AddLayer );
 
 AddLayer::AddLayer ( ) : 
   BaseClass( 0x0 )
+{
+  USUL_TRACE_SCOPE;
+  this->_addMember ( "layer", _layer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AddLayer::AddLayer ( Usul::Interfaces::IUnknown * caller, Usul::Interfaces::ILayer* layer ) : 
+  BaseClass( caller ),
+  _layer ( layer )
 {
   USUL_TRACE_SCOPE;
   this->_addMember ( "layer", _layer );
@@ -150,6 +166,7 @@ bool AddLayer::AddLayerJob::_addLayer ( Usul::Interfaces::IUnknown *caller )
   if( addLayer.valid () )
   {
     addLayer->addLayer ( _layer );
+    _caller = caller;
     return true;
   }
 
@@ -170,9 +187,16 @@ void AddLayer::AddLayerJob::_started()
   // Query for needed interfaces.
   Usul::Interfaces::IVectorLayer::QueryPtr vector ( _layer );
 
+  // Show the progess bar.  Hides in the destructor.
+  Usul::Interfaces::IProgressBar::ShowHide showHide ( this->progress () );
+
   // Build the vector data.
   if ( vector.valid () )
     vector->buildVectorData ( this->progress() );
+
+  Minerva::Interfaces::IDirtyScene::QueryPtr ds ( _caller );
+  if ( ds.valid ( ) )
+    ds->dirtyScene ();
 }
 
 

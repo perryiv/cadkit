@@ -178,7 +178,6 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   _gradient        (),
   _corners         ( Corners::ALL ),
   _useDisplayList  ( false, true ),
-  _databasePager   ( 0x0 ),
   _renderListeners (),
   _updateListeners ()
 {
@@ -295,13 +294,6 @@ void Viewer::clear()
   _setCursor = static_cast < Usul::Interfaces::ISetCursorType* > ( 0x0 );
   _timeoutSpin = static_cast < Usul::Interfaces::ITimeoutSpin* > ( 0x0 );
   _caller = static_cast < Usul::Interfaces::IUnknown* > ( 0x0 );
-
-  if ( _databasePager.valid() )
-  {
-    _databasePager->setAcceptNewDatabaseRequests(false);
-    //_databasePager->clear();
-    //_databasePager->setDatabasePagerThreadPause(true);
-  }
 
   // Remove render listeners.
   this->clearRenderListeners();
@@ -1960,12 +1952,6 @@ void Viewer::document ( Document *document )
   if ( true == mm.valid() )
   {
     this->navManip ( mm->getMatrixManipulator() );
-  }
-
-  Usul::Interfaces::IDatabasePager::QueryPtr dp ( _document );
-  if ( true == dp.valid() )
-  {
-    this->databasePager ( dp->getDatabasePager() );
   }
 
   Usul::Interfaces::IUnknown::QueryPtr unknown ( _document );
@@ -4804,55 +4790,6 @@ const osg::Light *Viewer::light() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the database pager.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::databasePager ( osgDB::DatabasePager* dbPager )
-{
-  _databasePager = dbPager;
-
-  if ( false == _databasePager.valid() )
-    return;
-
-  _databasePager->setAcceptNewDatabaseRequests ( true );
-  _databasePager->setDatabasePagerThreadPause ( false );
-
-#if ( OSG_VERSION_MAJOR < 2 )
-  _databasePager->setUseFrameBlock ( false );
-#endif
-
-  this->viewer()->getCullVisitor()->setDatabaseRequestHandler ( dbPager );
-  this->viewer()->getUpdateVisitor()->setDatabaseRequestHandler ( dbPager );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the database pager.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osgDB::DatabasePager* Viewer::databasePager()
-{
-  return _databasePager.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the database pager.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const osgDB::DatabasePager* Viewer::databasePager() const
-{
-  return _databasePager.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set compute near far mode.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -4886,6 +4823,7 @@ void Viewer::computeNearFar( bool b )
 
 void Viewer::forceDetail()
 {
+#if 0
   const osgDB::DatabasePager *db ( this->databasePager() );
   if ( 0x0 == db )
     return;
@@ -4893,7 +4831,6 @@ void Viewer::forceDetail()
   const unsigned int maxNum ( 10000 );
   unsigned int count ( 0 );
 
-#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR == 2
   while ( count < maxNum )
   {	
     const unsigned int requests  ( db->getFileRequestListSize()   );

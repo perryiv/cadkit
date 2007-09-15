@@ -114,8 +114,6 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
   {
   case Usul::Interfaces::IBuildScene::IID:
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
-  case Usul::Interfaces::IDatabasePager::IID:
-    return static_cast < Usul::Interfaces::IDatabasePager* > ( this );
   case Usul::Interfaces::IMatrixManipulator::IID:
     return static_cast < Usul::Interfaces::IMatrixManipulator* > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
@@ -1041,18 +1039,6 @@ void MinervaDocument::deserialize ( const XmlTree::Node &node )
 
   // Connect.
   this->_connectToDistributedSession ();
-
-  // Make a copy.
-  Layers layers ( _layers );
-
-  // Clear what we have.
-  _layers.clear ();
-
-  // Re-add as commands.  This will send them to the database if we should.
-  for( Layers::iterator iter = layers.begin(); iter != layers.end(); ++iter )
-  {
-    this->addLayerCommand ( *iter );
-  }
 }
 
 

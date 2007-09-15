@@ -233,6 +233,28 @@
 			<File
 				RelativePath=".\ProgressBarDock.h"
 				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing... ProgressBarDock.h"
+						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\ProgressBarDock.h&quot; -o &quot;.\GeneratedFiles\moc_ProgressBarDock.cpp&quot;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\ProgressBarDock.h"
+						Outputs=".\GeneratedFiles\moc_ProgressBarDock.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing... ProgressBarDock.h"
+						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\ProgressBarDock.h&quot; -o &quot;.\GeneratedFiles\moc_ProgressBarDock.cpp&quot;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\ProgressBarDock.h"
+						Outputs=".\GeneratedFiles\moc_ProgressBarDock.cpp"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\SplashScreen.cpp"
@@ -279,6 +301,10 @@
 			>
 			<File
 				RelativePath=".\GeneratedFiles\moc_MainWindow.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GeneratedFiles\moc_ProgressBarDock.cpp"
 				>
 			</File>
 			<File

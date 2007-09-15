@@ -35,7 +35,7 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   AddLayer ();
-  AddLayer ( Usul::Interfaces::IUnknown * caller, Usul::Interfaces::ILayer* layer );
+  AddLayer ( Usul::Interfaces::IUnknown * caller, Usul::Interfaces::ILayer* layer, Usul::Interfaces::IUnknown* progress = 0x0 );
   AddLayer ( Usul::Interfaces::ILayer* layer );
 
 protected:
@@ -67,6 +67,7 @@ protected:
   };
 
 private:
+  Usul::Interfaces::IUnknown::QueryPtr _progressBar;
   Usul::Interfaces::ILayer::QueryPtr _layer;
 
   SERIALIZE_XML_DEFINE_MAP;

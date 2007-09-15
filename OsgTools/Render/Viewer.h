@@ -88,8 +88,6 @@
 
 #include "osgGA/MatrixManipulator"
 
-#include "osgDB/DatabasePager"
-
 #include <list>
 #include <string>
 #include <vector>
@@ -252,11 +250,6 @@ public:
 
   // Clear
   void                  clear();
-
-  /// Get/Set the database pager.
-  void                          databasePager( osgDB::DatabasePager* dbPager );
-  osgDB::DatabasePager*         databasePager();
-  const osgDB::DatabasePager*   databasePager() const;
 
   // Set the default background.
   void                  defaultBackground();
@@ -798,7 +791,6 @@ private:
   GradientBackground _gradient;
   unsigned int _corners;
   UseDisplayLists _useDisplayList;
-  osg::ref_ptr < osgDB::DatabasePager > _databasePager;
   RenderListeners _renderListeners;
   UpdateListeners _updateListeners;
 };

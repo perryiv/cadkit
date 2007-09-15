@@ -15,8 +15,9 @@
 
 #include "Item.h"
 #include "Visitor.h"
-#include "Bits.h"
 #include "Errors.h"
+
+#include "Usul/Bits/Bits.h"
 
 ///\todo TODO: fix this! //#include "boost/mpl/assert_is_same.hpp"
 
@@ -254,7 +255,7 @@ void Item::flags ( unsigned int f )
 
 bool Item::checked() const
 {
-  return Bits<unsigned int>::has ( this->flags(), Item::CHECKED );
+  return Usul::Bits::has <unsigned int> ( this->flags(), Item::CHECKED );
 }
 
 
@@ -266,11 +267,10 @@ bool Item::checked() const
 
 void Item::checked ( bool e )
 {
-  typedef MenuKit::Bits<unsigned int> Bits;
   if ( e )
-    this->flags ( Bits::add    ( this->flags(), Item::CHECKED ) );
+    this->flags ( Usul::Bits::add <unsigned int>    ( this->flags(), Item::CHECKED ) );
   else
-    this->flags ( Bits::remove ( this->flags(), Item::CHECKED ) );
+    this->flags ( Usul::Bits::remove <unsigned int> ( this->flags(), Item::CHECKED ) );
 }
 
 
@@ -282,7 +282,7 @@ void Item::checked ( bool e )
 
 bool Item::toggle() const
 {
-  return Bits<unsigned int>::has ( this->flags(), Item::TOGGLE );
+  return Usul::Bits::has <unsigned int> ( this->flags(), Item::TOGGLE );
 }
 
 
@@ -294,11 +294,10 @@ bool Item::toggle() const
 
 void Item::toggle ( bool e )
 {
-  typedef MenuKit::Bits<unsigned int> Bits;
   if ( e )
-    this->flags ( Bits::add    ( this->flags(), Item::TOGGLE ) );
+    this->flags ( Usul::Bits::add    <unsigned int> ( this->flags(), Item::TOGGLE ) );
   else
-    this->flags ( Bits::remove ( this->flags(), Item::TOGGLE ) );
+    this->flags ( Usul::Bits::remove <unsigned int> ( this->flags(), Item::TOGGLE ) );
 }
 
 
@@ -310,7 +309,7 @@ void Item::toggle ( bool e )
 
 bool Item::radio() const
 {
-  return Bits<unsigned int>::has ( this->flags(), Item::RADIO );
+  return Usul::Bits::has <unsigned int> ( this->flags(), Item::RADIO );
 }
 
 
@@ -322,11 +321,10 @@ bool Item::radio() const
 
 void Item::radio ( bool e )
 {
-  typedef MenuKit::Bits<unsigned int> Bits;
   if ( e )
-    this->flags ( Bits::add    ( this->flags(), Item::RADIO ) );
+    this->flags ( Usul::Bits::add <unsigned int>    ( this->flags(), Item::RADIO ) );
   else
-    this->flags ( Bits::remove ( this->flags(), Item::RADIO ) );
+    this->flags ( Usul::Bits::remove <unsigned int> ( this->flags(), Item::RADIO ) );
 }
 
 
@@ -338,7 +336,7 @@ void Item::radio ( bool e )
 
 bool Item::enabled() const
 {
-  return Bits<unsigned int>::has ( this->flags(), Item::ENABLED );
+  return Usul::Bits::has <unsigned int> ( this->flags(), Item::ENABLED );
 }
 
 
@@ -350,11 +348,10 @@ bool Item::enabled() const
 
 void Item::enabled ( bool e )
 {
-  typedef MenuKit::Bits<unsigned int> Bits;
   if ( e )
-    this->flags ( Bits::add    ( this->flags(), Item::ENABLED ) );
+    this->flags ( Usul::Bits::add    <unsigned int> ( this->flags(), Item::ENABLED ) );
   else
-    this->flags ( Bits::remove ( this->flags(), Item::ENABLED ) );
+    this->flags ( Usul::Bits::remove <unsigned int> ( this->flags(), Item::ENABLED ) );
 }
 
 
@@ -366,7 +363,7 @@ void Item::enabled ( bool e )
 
 bool Item::separator() const
 {
-  return Bits<unsigned int>::has ( this->flags(), Item::SEPARATOR );
+  return Usul::Bits::has <unsigned int> ( this->flags(), Item::SEPARATOR );
 }
 
 
@@ -378,11 +375,10 @@ bool Item::separator() const
 
 void Item::separator ( bool e )
 {
-  typedef MenuKit::Bits<unsigned int> Bits;
   if ( e )
-    this->flags ( Bits::add    ( this->flags(), Item::SEPARATOR ) );
+    this->flags ( Usul::Bits::add    <unsigned int> ( this->flags(), Item::SEPARATOR ) );
   else
-    this->flags ( Bits::remove ( this->flags(), Item::SEPARATOR ) );
+    this->flags ( Usul::Bits::remove <unsigned int> ( this->flags(), Item::SEPARATOR ) );
 }
 
 
@@ -394,7 +390,7 @@ void Item::separator ( bool e )
 
 bool Item::expanded() const
 {
-  return Bits<unsigned int>::has ( this->flags(), Item::EXPANDED );
+  return Usul::Bits::has <unsigned int> ( this->flags(), Item::EXPANDED );
 }
 
 
@@ -406,11 +402,10 @@ bool Item::expanded() const
 
 void Item::expanded ( bool e )
 {
-  typedef MenuKit::Bits<unsigned int> Bits;
   if ( e )
-    this->flags ( Bits::add    ( this->flags(), Item::EXPANDED ) );
+    this->flags ( Usul::Bits::add    <unsigned int> ( this->flags(), Item::EXPANDED ) );
   else
-    this->flags ( Bits::remove ( this->flags(), Item::EXPANDED ) );
+    this->flags ( Usul::Bits::remove <unsigned int> ( this->flags(), Item::EXPANDED ) );
 }
 
 
@@ -422,7 +417,7 @@ void Item::expanded ( bool e )
 
 bool Item::marked() const
 {
-  return Bits<unsigned int>::has ( this->flags(), Item::MARKED );
+  return Usul::Bits::has <unsigned int> ( this->flags(), Item::MARKED );
 }
 
 
@@ -434,9 +429,8 @@ bool Item::marked() const
 
 void Item::marked ( bool e )
 {
-  typedef MenuKit::Bits<unsigned int> Bits;
   if ( e )
-    this->flags ( Bits::add    ( this->flags(), Item::MARKED ) );
+    this->flags ( Usul::Bits::add    <unsigned int> ( this->flags(), Item::MARKED ) );
   else
-    this->flags ( Bits::remove ( this->flags(), Item::MARKED ) );
+    this->flags ( Usul::Bits::remove <unsigned int> ( this->flags(), Item::MARKED ) );
 }

@@ -10,7 +10,6 @@
 
 #include "Helios/Qt/Core/ProgressBarDock.h"
 
-#include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Threads/Named.h"
 
 #include "QtGui/QWidget"
@@ -29,7 +28,8 @@ using namespace CadKit::Helios::Core;
 
 ProgressBarDock::ProgressBarDock () : BaseClass (),
 _widget ( 0x0 ),
-_layout ( 0x0 )
+_layout ( 0x0 ),
+_progressBars ()
 {
 }
 
@@ -67,107 +67,161 @@ QWidget* ProgressBarDock::operator () ( QDockWidget* parent )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace Detail
+ProgressBarDock::ProgressBar::ProgressBar () : BaseClass (), _progressBar ( 0x0 )
 {
-  class ProgressBar : public Usul::Base::Referenced,
-                      public Usul::Interfaces::IProgressBar
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reference.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarDock::ProgressBar::ref ()
+{
+  BaseClass::ref ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Unreference.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarDock::ProgressBar::unref ( bool allowDeletion )
+{
+  BaseClass::unref ( allowDeletion );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* ProgressBarDock::ProgressBar::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
   {
-  public:
-    typedef Usul::Base::Referenced BaseClass;
-
-    USUL_DECLARE_QUERY_POINTERS ( ProgressBar );
-
-    ProgressBar () : BaseClass (), _progressBar ( 0x0 )
-    {
-    }
-
-    void ref ()
-    {
-      BaseClass::ref ();
-    }
-
-    void unref ( bool allowDeletion = true )
-    {
-      BaseClass::unref ( allowDeletion );
-    }
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IProgressBar::IID:
+    return static_cast < Usul::Interfaces::IProgressBar *  > ( this );
+  default:
+    return 0x0;
+  }
+}
 
 
-    Usul::Interfaces::IUnknown* queryInterface ( unsigned long iid )
-    {
-	    switch ( iid )
-	    {
-	    case Usul::Interfaces::IUnknown::IID:
-	    case Usul::Interfaces::IProgressBar::IID:
-		    return static_cast < Usul::Interfaces::IProgressBar *  > ( this );
-	    default:
-		    return 0x0;
-	    }
-    }
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-    QWidget* operator () ( QWidget *parent )
-    {
-      _progressBar = new QProgressBar ( parent );
-      return _progressBar;
-    }
+QWidget* ProgressBarDock::ProgressBar::operator () ( QWidget *parent )
+{
+  _progressBar = new QProgressBar ( parent );
+  return _progressBar;
+}
 
-  protected:
-    virtual ~ProgressBar ()
-    {
-      this->hideProgressBar ();
 
-      // Defer this delete for the main thread to take care of.
-      if ( 0x0 != _progressBar )
-      {
-        _progressBar->deleteLater ();
-        _progressBar = 0x0;
-      }
-    }
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-    // Usul::Interfaces::IProgressBar.h
-	  // Show the progress bar
-    virtual void showProgressBar()
-    {
-      if ( 0x0 != _progressBar )
-      {
-        QMetaObject::invokeMethod ( _progressBar, "show", Qt::AutoConnection );
-      }
-    }
+void ProgressBarDock::ProgressBar::progressBar ( QProgressBar * bar )
+{
+  _progressBar = bar;
+}
 
-    // Set the total of progress bar
-    virtual void setTotalProgressBar ( unsigned int value )
-    {
-      if ( 0x0 != _progressBar )
-      {
-        QMetaObject::invokeMethod ( _progressBar, "setMaximum", Qt::AutoConnection, 
-                                Q_ARG ( int, static_cast < int > ( value ) ) );
 
-        QMetaObject::invokeMethod ( _progressBar, "setMinimum ", Qt::AutoConnection, 
-                                Q_ARG ( int, static_cast < int > ( 0 ) ) );
-      }
-    }
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-    // Update the progress bar
-    virtual void updateProgressBar ( unsigned int value )
-    {
-      if ( 0x0 != _progressBar )
-      {
-        QMetaObject::invokeMethod ( _progressBar, "setValue", Qt::AutoConnection, 
-                                Q_ARG ( int, static_cast < int > ( value ) ) );
-      }
-    }
+ProgressBarDock::ProgressBar::~ProgressBar ()
+{
+  this->hideProgressBar ();
 
-    // Hide the progress bar
-    virtual void hideProgressBar()
-    {
-      if ( 0x0 != _progressBar )
-      {
-        QMetaObject::invokeMethod ( _progressBar, "hide", Qt::AutoConnection );
-      }
-    }
+  // Defer this delete for the main thread to take care of.
+  if ( 0x0 != _progressBar )
+  {
+    _progressBar->deleteLater ();
+    _progressBar = 0x0;
+  }
+}
 
-  private:
-    QProgressBar *_progressBar;
-  };
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show the progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarDock::ProgressBar::showProgressBar()
+{
+  if ( 0x0 != _progressBar )
+  {
+    QMetaObject::invokeMethod ( _progressBar, "show", Qt::AutoConnection );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the total of progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarDock::ProgressBar::setTotalProgressBar ( unsigned int value )
+{
+  if ( 0x0 != _progressBar )
+  {
+    QMetaObject::invokeMethod ( _progressBar, "setMaximum", Qt::AutoConnection, 
+                            Q_ARG ( int, static_cast < int > ( value ) ) );
+
+    QMetaObject::invokeMethod ( _progressBar, "setMinimum ", Qt::AutoConnection, 
+                            Q_ARG ( int, static_cast < int > ( 0 ) ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarDock::ProgressBar::updateProgressBar ( unsigned int value )
+{
+  if ( 0x0 != _progressBar )
+  {
+    QMetaObject::invokeMethod ( _progressBar, "setValue", Qt::AutoConnection, 
+                            Q_ARG ( int, static_cast < int > ( value ) ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Hide the progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarDock::ProgressBar::hideProgressBar()
+{
+  if ( 0x0 != _progressBar )
+  {
+    QMetaObject::invokeMethod ( _progressBar, "hide", Qt::AutoConnection );
+  }
 }
 
 
@@ -179,16 +233,58 @@ namespace Detail
 
 Usul::Interfaces::IUnknown * ProgressBarDock::createProgressBar ()
 {
+  ProgressBar::RefPtr progress ( new ProgressBar );
+
   // Progress bars can only be created in the gui thread.
   if ( false == Usul::Threads::Named::instance().is ( Usul::Threads::Names::GUI ) )
-    return 0x0;
+  {
+    {
+      Guard guard ( this->mutex () );
+      _progressBars.push_back ( progress.get() );
+    }
 
-  Detail::ProgressBar::RefPtr progress ( new Detail::ProgressBar );
+    QMetaObject::invokeMethod ( this, "_updateProgressBars", Qt::QueuedConnection );
+    return progress.get();
+  }
+  else
+  {
+    QWidget *w ( ( *progress ) ( _widget ) );
+    
+    if ( 0x0 != _layout )
+      _layout->addWidget ( w );
 
-  QWidget *w ( ( *progress ) ( _widget ) );
-  
-  if ( 0x0 != _layout )
-    _layout->addWidget ( w );
+    return progress.release();
+  }
 
-  return progress.release();
+  return 0x0;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Give the wrappers actual progress bars.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarDock::_updateProgressBars ()
+{
+  ProgressBar::RefPtr first ( 0x0 );
+  {
+    Guard guard ( this->mutex () );
+    if ( false == _progressBars.empty () );
+    {
+      first = _progressBars.front();
+      _progressBars.pop_front();
+    }
+  }
+
+  if ( first.valid () )
+  {
+    QProgressBar *bar ( new QProgressBar ( _widget ) );
+    first->progressBar ( bar );
+  
+    if ( 0x0 != _layout )
+      _layout->addWidget ( bar );
+  }
+}
+

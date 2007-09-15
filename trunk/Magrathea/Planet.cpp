@@ -743,7 +743,7 @@ void Planet::postRender ( Usul::Interfaces::IUnknown *caller )
 void Planet::initVisitors ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-#if 0
+
   // Set cull visitor's database pager.
   {
     Usul::Interfaces::ICullSceneVisitor::QueryPtr getVisitor ( caller );
@@ -769,5 +769,4 @@ void Planet::initVisitors ( Usul::Interfaces::IUnknown *caller )
       }
     }
   }
-#endif
 }

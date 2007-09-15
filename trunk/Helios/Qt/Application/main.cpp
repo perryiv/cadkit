@@ -29,6 +29,7 @@
 #include "Usul/File/Temp.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Jobs/Manager.h"
 #include "Usul/IO/Redirect.h"
 #include "Usul/IO/StreamSink.h"
 #include "Usul/Registry/Database.h"
@@ -117,6 +118,9 @@ namespace Program
 
     // Set command-line arguments.
     Usul::CommandLine::Arguments::instance().set ( argc, argv );
+
+    // Turn down the number of jobs.
+    Usul::Jobs::Manager::instance().poolResize ( 4 );
 
     // Branding.
     const std::string program ( "Helios" );

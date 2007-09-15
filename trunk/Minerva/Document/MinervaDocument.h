@@ -20,7 +20,6 @@
 #include "Usul/Jobs/Job.h"
 
 #include "Usul/Interfaces/IBuildScene.h"
-#include "Usul/Interfaces/IDatabasePager.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IUpdateListener.h"
@@ -50,7 +49,6 @@ namespace Document {
 
 class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document,
                                                 public Usul::Interfaces::IBuildScene,
-                                                public Usul::Interfaces::IDatabasePager,
                                                 public Usul::Interfaces::IMatrixManipulator,
                                                 public Usul::Interfaces::IUpdateListener,
                                                 public Minerva::Interfaces::IAnimationControl,
@@ -197,7 +195,7 @@ public:
   /// Get the planet.
   Magrathea::Planet*                       planet ();
 
-  /// Get the database pager (Usul::Interfaces::IDatabasePager).
+  /// Get the database pager.
   virtual osgDB::DatabasePager *           getDatabasePager ();
 
   /// Start the animation (Minerva::Interfaces::IAnimationControl).

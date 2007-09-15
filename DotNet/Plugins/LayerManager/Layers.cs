@@ -15,7 +15,6 @@ namespace CadKit.Plugins.LayerManager
     CadKit.Interfaces.IDocumentView,
     CadKit.Interfaces.IPropertyGridObject
   {
-    private const float _offset = 0.0f;
     private CadKit.Interfaces.IDocument _document = null;
 
     class Nodes : System.Collections.Generic.Dictionary<System.Windows.Forms.TreeNode, string> { }

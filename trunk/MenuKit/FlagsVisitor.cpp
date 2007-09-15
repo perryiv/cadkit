@@ -16,7 +16,8 @@
 #include "FlagsVisitor.h"
 #include "Menu.h"
 #include "Button.h"
-#include "Bits.h"
+
+#include "Usul/Bits/Bits.h"
 
 #include <stdexcept>
 using namespace MenuKit;
@@ -54,18 +55,16 @@ FlagsVisitor::~FlagsVisitor()
 
 void FlagsVisitor::_apply ( Item &item )
 {
-  typedef MenuKit::Bits<unsigned int> Bits;
-
   switch ( _action )
   {
   case ADD:
-    item.flags ( Bits::add ( item.flags(), _flags ) );
+    item.flags ( Usul::Bits::add <unsigned int> ( item.flags(), _flags ) );
     break;
   case REMOVE:
-    item.flags ( Bits::remove ( item.flags(), _flags ) );
+    item.flags ( Usul::Bits::remove <unsigned int> ( item.flags(), _flags ) );
     break;
   case TOGGLE:
-    item.flags ( Bits::toggle ( item.flags(), _flags ) );
+    item.flags ( Usul::Bits::toggle <unsigned int> ( item.flags(), _flags ) );
     break;
   default:
     throw std::runtime_error ( "Error 2410737922, invalid '_action' member." );

@@ -17,9 +17,10 @@
 #include "Menu.h"
 #include "Button.h"
 #include "Errors.h"
-#include "Bits.h"
 #include "FlagsVisitor.h"
 #include "Algorithms.h"
+
+#include "Usul/Bits/Bits.h"
 
 #include <sstream>
 #include <stdexcept>
@@ -642,7 +643,7 @@ void Behavior::selectFocused()
 
   // If the focused item is a button and we are supposed to hide...
   Button::Ptr button ( dynamic_cast < Button * > ( focus.get() ) );
-  if ( button.get() && Bits<unsigned int>::has ( this->flags(), HIDE_ALL_IF_BUTTON_SELECTED ) )
+  if ( button.get() && Usul::Bits::has <unsigned int> ( this->flags(), HIDE_ALL_IF_BUTTON_SELECTED ) )
   {
     // Hide the whole tree.
     this->close ( this->root() );

@@ -16,7 +16,6 @@
 #include "MessageVisitor.h"
 #include "Menu.h"
 #include "Button.h"
-#include "Bits.h"
 
 #include <stdexcept>
 using namespace MenuKit;

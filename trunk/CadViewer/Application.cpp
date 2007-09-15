@@ -21,8 +21,6 @@
 #include "ScenePredicates.h"
 
 #include "VRV/Common/Libraries.h"
-#include "VRV/Functors/Wand/WandMatrix.h"
-#include "VRV/Functors/Wand/WandRotation.h"
 #include "CadViewer/Functors/ToolPair.h"
 
 #include "CadViewer/Pick/Select.h"
@@ -763,70 +761,11 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
   {
     MenuKit::Menu::Ptr favorites ( new MenuKit::Menu );
     favorites->layout ( MenuKit::Menu::VERTICAL );
-    favorites->text ( "Favorites2" );
+    favorites->text ( "Favorites" );
     menu->append ( favorites.get() );
 
     for ( ConstFavoriteIterator iter = this->favoritesBegin(); iter != this->favoritesEnd (); ++iter )
       favorites->append ( this->_createRadio ( iter->second->name(), MenuKit::memFunCB2 ( this, &Application::_navigationFavorites ) ) );
-  }
-
-  // Favorites menu
-  {
-    MenuKit::Menu::Ptr favorites ( new MenuKit::Menu );
-    favorites->layout ( MenuKit::Menu::VERTICAL );
-    favorites->text ( "Favorites" );
-    menu->append ( favorites.get() );
-
-    favorites->append ( this->_createRadio ( "Fly", MenuKit::memFunCB2 ( this, &Application::_flyMode ) ) );
-    favorites->append ( this->_createRadio ( "Walk", MenuKit::memFunCB2 ( this, &Application::_walkMode ) ) );
-    favorites->append ( this->_createRadio ( "Pole", MenuKit::memFunCB2 ( this, &Application::_poleNav ) ) );
-  }
-
-  // Horizontal joystick menu
-  {
-    MenuKit::Menu::Ptr horizontal ( new MenuKit::Menu );
-    horizontal->layout ( MenuKit::Menu::VERTICAL );
-    horizontal->text ( "Horizontal Joystick" );
-    menu->append ( horizontal.get() );
-
-    horizontal->append ( this->_createRadio ( "Translate Wand +X", MenuKit::memFunCB2 ( this, &Application::_hTransWandPosX ) ) );
-    horizontal->append ( this->_createRadio ( "Translate Wand -X", MenuKit::memFunCB2 ( this, &Application::_hTransWandNegX ) ) );
-
-    horizontal->append ( this->_createSeperator () );
-
-    horizontal->append ( this->_createRadio ( "Translate Global +X", MenuKit::memFunCB2 ( this, &Application::_hTransGlobalPosX ) ) );
-    horizontal->append ( this->_createRadio ( "Translate Global -X", MenuKit::memFunCB2 ( this, &Application::_hTransGlobalNegX ) ) );
-
-    horizontal->append ( this->_createSeperator () );
-
-    horizontal->append ( this->_createRadio ( "Rotate Wand Y", MenuKit::memFunCB2 ( this, &Application::_hRotWandPosY ) ) );
-    horizontal->append ( this->_createRadio ( "Rotate Global Y", MenuKit::memFunCB2 ( this, &Application::_hRotGlobalPosY ) ) );
-  }
-
-  // Vertical joystick menu
-  {
-    MenuKit::Menu::Ptr vertical ( new MenuKit::Menu );
-    vertical->layout ( MenuKit::Menu::VERTICAL );
-    vertical->text ( "Vertical Joystick" );
-    menu->append ( vertical.get() );
-
-    vertical->append ( this->_createRadio ( "Translate Wand +Z", MenuKit::memFunCB2 ( this, &Application::_vTransWandPosZ ) ) );
-    vertical->append ( this->_createRadio ( "Translate Wand -Z", MenuKit::memFunCB2 ( this, &Application::_vTransWandNegZ ) ) );
-
-    vertical->append ( this->_createSeperator () );
-
-    vertical->append ( this->_createRadio ( "Translate Global +Z", MenuKit::memFunCB2 ( this, &Application::_vTransGlobalPosZ ) ) );
-    vertical->append ( this->_createRadio ( "Translate Global -Z", MenuKit::memFunCB2 ( this, &Application::_vTransGlobalNegZ ) ) );
-
-    vertical->append ( this->_createSeperator () );
-
-    vertical->append ( this->_createRadio ( "Translate Wand Y", MenuKit::memFunCB2 ( this, &Application::_vTransWandPosY ) ) );
-    vertical->append ( this->_createRadio ( "Translate Global Y", MenuKit::memFunCB2 ( this, &Application::_vTransGlobalPosY ) ) );
-
-    vertical->append ( this->_createSeperator () );
-
-    vertical->append ( this->_createRadio ( "Rotate Wand X", MenuKit::memFunCB2 ( this, &Application::_vRotWandPosX ) ) );
-    vertical->append ( this->_createRadio ( "Rotate Global X", MenuKit::memFunCB2 ( this, &Application::_vRotGlobalPosX ) ) );
   }
 
   menu->append ( this->_createSeperator () );
@@ -1223,18 +1162,7 @@ bool Application::_handleNavigationEvent( unsigned long id )
 
   switch ( id )
   {
-  case NAVIGATE_TOGGLE:
-    if ( this->getWalkMode ( ) )
-      this->poleMode ();
-    else
-      this->walkMode ();
-    break;
-
-  case NAVIGATE_FLY:
-    this->flyMode ();
-    break;
-
-    // Turn off all navigation.
+  // Turn off all navigation.
   case NAVIGATE_NO_NAV:
     this->navigator ( 0x0 );
     break;

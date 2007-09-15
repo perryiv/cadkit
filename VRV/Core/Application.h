@@ -134,7 +134,7 @@ public:
   typedef MenuKit::OSG::Menu                   Menu;
   typedef USUL_VALID_REF_POINTER(Menu)         MenuPtr;
 
-  typedef Usul::Functors::Interaction::Common::BaseFunctor   Navigator2;
+  typedef Usul::Functors::Interaction::Common::BaseFunctor   Navigator;
   typedef Usul::Functors::Interaction::Input::AnalogInput    AnalogInput;
   typedef Usul::Functors::Interaction::Navigate::Transform   TransformFunctor;
   typedef Usul::Functors::Interaction::Common::Sequence      FavoriteFunctor;
@@ -228,14 +228,9 @@ public:
   bool                    frameDump () const;
 
   /// Get/Set the navigator.
-  void                    navigator ( Functor * );
-  Functor *               navigator ();
-  const Functor *         navigator () const;
-
-  /// Get/Set the navigator.
-  void                    navigator2 ( Navigator2 * );
-  Navigator2 *            navigator2 ();
-  const Navigator2 *      navigator2 () const;
+  void                    navigator ( Navigator * );
+  Navigator *             navigator ();
+  const Navigator *       navigator () const;
 
   // Menu scene hiding functions
   bool                    menuSceneShowHide();
@@ -263,25 +258,13 @@ public:
   Menu *                  statusBar ();
   const Menu *            statusBar () const;
 
-  /// Get/Set walk mode.
-  void                          walkMode ();
-  bool                          getWalkMode () const;
-
-  /// Get/Set pole mode.
-  void                          poleMode ();
-  bool                          getPoleMode () const;
-
-  /// Get/Set fly mode.
-  void                          flyMode ();
-  bool                          getFlyMode () const;
-
   // Get the begining of the favorites.
   ConstFavoriteIterator         favoritesBegin () const;
 
   // Get the end of the favorites.
   ConstFavoriteIterator         favoritesEnd () const;
 
-  Navigator2*                   favorite ( const std::string& name );
+  Navigator*                    favorite ( const std::string& name );
 protected:
 
   /// VR Juggler methods.
@@ -344,19 +327,6 @@ protected:
 
   /// Navigate.
   virtual void            _navigate ();
-
-  /// Set the navigator as a pair.
-  void                    _setNavigator ( Functor *first, Functor *second, unsigned int id );
-
-  /// Get/Set the first navigator.
-  void                    _firstNavigator ( Functor *first );
-  Functor *               _firstNavigator ();
-  const Functor *         _firstNavigator () const;
-
-  /// Get/Set the second navigator.
-  void                    _secondNavigator ( Functor *second );
-  Functor *               _secondNavigator ();
-  const Functor *         _secondNavigator () const;
 
   void                    _initStatusBar();
 
@@ -508,8 +478,7 @@ private:
   UpdateListeners                        _updateListeners;
   CommandQueue                           _commandQueue;
   OsgTools::Render::FrameDump            _frameDump;
-  FunctorPtr                             _navigator;
-  Navigator2::RefPtr                     _navigator2;
+  Navigator::RefPtr                      _navigator;
   unsigned int                           _refCount;
   bool                                   _menuSceneShowHide;
   VRV::Animate::Path::RefPtr             _path;

@@ -103,7 +103,6 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _commandQueue      ( ),
   _frameDump         (),
   _navigator         ( 0x0 ),
-  _navigator2        ( 0x0 ),
   _refCount          ( 0 ),
   _menuSceneShowHide ( true ),
   _path              ( new VRV::Animate::Path ),
@@ -203,7 +202,6 @@ Application::~Application()
 
   // Clear the navigator.
   this->navigator ( 0x0 );
-  _navigator2 = 0x0;
 
   // Clear the functor maps.
   _analogInputs.clear ();
@@ -2046,194 +2044,7 @@ void Application::_navigate()
   // Tell the navigator to execute.
   if ( _navigator.valid() )
     (*_navigator)();
-
-  if ( _navigator2.valid () )
-    (*_navigator2) ();
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the navigator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::navigator ( Functor * functor )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  _navigator = functor;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the navigator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Application::Functor * Application::navigator ()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _navigator.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the navigator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Application::Functor * Application::navigator () const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _navigator.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the navigator as a pair.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_setNavigator ( Functor *first, Functor *second, unsigned int id )
-{
-  Usul::Interfaces::IUnknown::QueryPtr me ( this );
-  this->navigator ( new VRV::Functors::Pair ( me.get(), first, second, id ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the first navigator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_firstNavigator ( Functor *first )
-{
-  // Get the current navigator.
-  FunctorPtr functor ( this->navigator () );
-
-  // Check to see if it's a pair.
-  if ( VRV::Functors::Pair *pair = dynamic_cast < VRV::Functors::Pair * > ( functor.get() ) )
-  {
-    pair->first ( first );
-  }
-  else
-  {
-    this->_setNavigator ( first, _navigator.get(), 0 );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the first navigator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Application::Functor * Application::_firstNavigator ()
-{
-  // Get the current navigator.
-  FunctorPtr functor ( this->navigator () );
-
-  // Check to see if it's a pair.
-  if ( VRV::Functors::Pair *pair = dynamic_cast < VRV::Functors::Pair * > ( functor.get() ) )
-  {
-    return pair->first ( );
-  }
-
-  // Not a pair.  Return navigator.
-  return this->navigator();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the first navigator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Application::Functor * Application::_firstNavigator () const
-{
-  // Check to see if it's a pair.
-  if ( const VRV::Functors::Pair *pair = dynamic_cast < const VRV::Functors::Pair * > ( this->navigator () ) )
-  {
-    return pair->first ( );
-  }
-
-  // Not a pair.  Return navigator.
-  return this->navigator();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the second navigator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_secondNavigator ( Functor *second )
-{
-  // Get the current navigator.
-  FunctorPtr functor ( this->navigator () );
-
-  // Check to see if it's a pair.
-  if ( VRV::Functors::Pair *pair = dynamic_cast < VRV::Functors::Pair * > ( functor.get() ) )
-  {
-    pair->second ( second );
-  }
-  else
-  {
-    this->_setNavigator ( _navigator.get(), second, 0 );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the second navigator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Application::Functor * Application::_secondNavigator ()
-{
-  // Get the current navigator.
-  FunctorPtr functor ( this->navigator () );
-
-  // Check to see if it's a pair.
-  if ( VRV::Functors::Pair *pair = dynamic_cast < VRV::Functors::Pair * > ( functor.get() ) )
-  {
-    return pair->second ( );
-  }
-
-  // Not a pair.  Return navigator.
-  return this->navigator();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the second navigator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Application::Functor * Application::_secondNavigator () const
-{
-  // Check to see if it's a pair.
-  if ( const VRV::Functors::Pair *pair = dynamic_cast < const VRV::Functors::Pair * > ( this->navigator ()  ) )
-  {
-    return pair->second ( );
-  }
-
-  // Not a pair.  Return navigator.
-  return this->navigator();
-}
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2553,189 +2364,6 @@ bool Application::_isHeadNode() const
 }
 
 
-// Leaving this here for now for reference.
-#if 0
-// These are the analog input functors.
-  CV::Functors::AnalogInput::ValidRefPtr hai ( new CV::Functors::JoystickHorizontal ( unknown ) );
-  CV::Functors::AnalogInput::ValidRefPtr vai ( new CV::Functors::JoystickVertical   ( unknown ) );
-
-  // These are the functors for getting matrices.
-  CV::Functors::MatrixFunctor::ValidRefPtr wm ( new CV::Functors::WandRotation   ( unknown ) );
-  CV::Functors::MatrixFunctor::ValidRefPtr im ( new CV::Functors::IdentityMatrix ( unknown ) );
-
-  // The three axes.
-  CV::Functors::Direction::Vector x ( 1, 0, 0 );
-  CV::Functors::Direction::Vector y ( 0, 1, 0 );
-  CV::Functors::Direction::Vector z ( 0, 0, 1 );
-
-  // For getting directions in the wand's coordinate system.
-  CV::Functors::Direction::ValidRefPtr pwx ( new CV::Functors::Direction ( unknown, x, wm ) );
-  CV::Functors::Direction::ValidRefPtr pwy ( new CV::Functors::Direction ( unknown, y, wm ) );
-  CV::Functors::Direction::ValidRefPtr pwz ( new CV::Functors::Direction ( unknown, z, wm ) );
-
-  // For getting directions in global coordinate system.
-  CV::Functors::Direction::ValidRefPtr pgx ( new CV::Functors::Direction ( unknown, x, im ) );
-  CV::Functors::Direction::ValidRefPtr pgy ( new CV::Functors::Direction ( unknown, y, im ) );
-  CV::Functors::Direction::ValidRefPtr pgz ( new CV::Functors::Direction ( unknown, z, im ) );
-
-  // Negative wand-space directions.
-  CV::Functors::Direction::ValidRefPtr nwx ( new CV::Functors::Direction ( unknown, -x, wm ) );
-  CV::Functors::Direction::ValidRefPtr nwy ( new CV::Functors::Direction ( unknown, -y, wm ) );
-  CV::Functors::Direction::ValidRefPtr nwz ( new CV::Functors::Direction ( unknown, -z, wm ) );
-
-  // Negative global directions.
-  CV::Functors::Direction::ValidRefPtr ngx ( new CV::Functors::Direction ( unknown, -x, im ) );
-  CV::Functors::Direction::ValidRefPtr ngy ( new CV::Functors::Direction ( unknown, -y, im ) );
-  CV::Functors::Direction::ValidRefPtr ngz ( new CV::Functors::Direction ( unknown, -z, im ) );
-#endif
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set walk mode.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::walkMode ()
-{
-  // Feedback.
-  std::cout << "Walk Mode." << std::endl;
-
-  Usul::Interfaces::IUnknown::QueryPtr unknown ( this );
-
-  // These are the analog input functors.
-  VRV::Functors::AnalogInput::ValidRefPtr hai ( new VRV::Functors::JoystickHorizontal ( unknown ) );
-  VRV::Functors::AnalogInput::ValidRefPtr vai ( new VRV::Functors::JoystickVertical   ( unknown ) );
-
-  // Identity matrix
-  VRV::Functors::Matrix::MatrixFunctor::ValidRefPtr im ( new VRV::Functors::Matrix::IdentityMatrix ( unknown ) );
-
-  VRV::Functors::Direction::Vector y ( 0, 1, 0 );
-  VRV::Functors::Direction::Vector z ( 0, 0, 1 );
-
-  VRV::Functors::Direction::RefPtr pgy    ( new VRV::Functors::Direction ( unknown, y, im ) );
-  VRV::Functors::Direction::RefPtr ngz ( new VRV::Functors::Direction ( unknown, -z, im ) );
-
-  float rotateSpeed    ( this->preferences()->rotationSpeed() );
-  float translateSpeed ( this->preferences()->translationSpeed() );
-
-  this->navigator ( new VRV::Functors::Pair ( unknown,
-                                              new VRV::Functors::Rotate ( unknown, pgy, hai, rotateSpeed, 0 ),
-                                              new VRV::Functors::Translate ( unknown, ngz, vai, translateSpeed, 0 ),
-                                              VRV::WALK_MODE_ID ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get walk mode.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::getWalkMode () const
-{
-  const Functor* functor ( this->navigator () );
-  return ( 0x0 != functor ? functor->id () == VRV::WALK_MODE_ID : false );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set pole mode.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::poleMode ()
-{
-  // Feedback.
-  std::cout << "Pole Mode." << std::endl;
-
-  Usul::Interfaces::IUnknown::QueryPtr unknown ( this );
-
-  // These are the analog input functors.
-  VRV::Functors::AnalogInput::ValidRefPtr hai ( new VRV::Functors::JoystickHorizontal ( unknown ) );
-  VRV::Functors::AnalogInput::ValidRefPtr vai ( new VRV::Functors::JoystickVertical   ( unknown ) );
-
-  // Identity matrix
-  VRV::Functors::Matrix::MatrixFunctor::ValidRefPtr im ( new VRV::Functors::Matrix::IdentityMatrix ( unknown ) );
-
-  VRV::Functors::Direction::Vector y ( 0, 1, 0 );
-
-  VRV::Functors::Direction::RefPtr pgw    ( new VRV::Functors::Direction ( unknown, y, im ) );
-
-  float rotateSpeed    ( this->preferences()->rotationSpeed() );
-  float translateSpeed ( this->preferences()->translationSpeed() );
-
-  this->navigator ( new VRV::Functors::Pair ( unknown,
-                                              new VRV::Functors::Rotate ( unknown, pgw, hai, rotateSpeed, 0 ),
-                                              new VRV::Functors::Translate ( unknown, pgw, vai, translateSpeed, 0 ),
-                                              VRV::POLE_MODE_ID ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get pole mode.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::getPoleMode () const
-{
-  const Functor* functor ( this->navigator () );
-  return ( 0x0 != functor ? functor->id () == VRV::POLE_MODE_ID : false );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set fly mode.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::flyMode ()
-{
-  // Feedback.
-  std::cout << "Fly Mode." << std::endl;
-
-  Usul::Interfaces::IUnknown::QueryPtr unknown ( this );
-
-  // These are the analog input functors.
-  VRV::Functors::AnalogInput::ValidRefPtr hai ( new VRV::Functors::JoystickHorizontal ( unknown ) );
-  VRV::Functors::AnalogInput::ValidRefPtr vai ( new VRV::Functors::JoystickVertical   ( unknown ) );
-
-  // Identity matrix
-  VRV::Functors::WandRotation::ValidRefPtr          wm ( new VRV::Functors::WandRotation   ( unknown ) );
-  VRV::Functors::Matrix::MatrixFunctor::ValidRefPtr im ( new VRV::Functors::Matrix::IdentityMatrix ( unknown ) );
-
-  VRV::Functors::Direction::Vector y ( 0, 1, 0 );
-  VRV::Functors::Direction::Vector z ( 0, 0, 1 );
-
-  VRV::Functors::Direction::RefPtr pgw ( new VRV::Functors::Direction ( unknown, y, im ) );
-  VRV::Functors::Direction::RefPtr nwz ( new VRV::Functors::Direction ( unknown, -z, wm ) );
-
-  float rotateSpeed    ( this->preferences()->rotationSpeed() );
-  float translateSpeed ( this->preferences()->translationSpeed() );
-
-  this->navigator ( new VRV::Functors::Pair ( unknown,
-                                              new VRV::Functors::Rotate ( unknown, pgw, hai, rotateSpeed, 0 ),
-                                              new VRV::Functors::Translate ( unknown, nwz, vai, translateSpeed, 0 ),
-                                              VRV::POLE_MODE_ID ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get fly mode.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::getFlyMode () const
-{
-  const Functor* functor ( this->navigator () );
-  return ( 0x0 != functor ? functor->id () == VRV::FLY_MODE_ID : false );
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Parse the command-line arguments.
@@ -2862,13 +2490,13 @@ void Application::_readFunctorFile ()
   Helper::FavoriteSetter favoriteSetter   ( _analogInputs, _transformFunctors );
 
   // Save the name of our current navigator.
-  std::string name ( _navigator2.valid() ? _navigator2->name () : "" );
+  std::string name ( _navigator.valid() ? _navigator->name () : "" );
 
   // Clear what we have.
   _analogInputs.clear();
   _transformFunctors.clear();
   _favoriteFunctors.clear();
-  this->navigator2 ( 0x0 );
+  this->navigator ( 0x0 );
   
   // Make the functors.
   Helper::add ( analogSetter,    factory, analogs,    _analogInputs, caller  );
@@ -2879,30 +2507,49 @@ void Application::_readFunctorFile ()
 
   // Set the navigator.  Will be null if there isn't a favorite with this name.
   if ( false == name.empty () )
-    this->navigator2 ( this->favorite ( name ) );
+    this->navigator ( this->favorite ( name ) );
 }
 
 
-/// Get/Set the navigator.
-void Application::navigator2 ( Navigator2 * navigator )
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::navigator ( Navigator * navigator )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
-  _navigator2 = navigator;
+  _navigator = navigator;
 }
 
-Application::Navigator2 * Application::navigator2 ()
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::Navigator * Application::navigator ()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
-  return _navigator2;
+  return _navigator;
 }
 
-const Application::Navigator2 * Application::navigator2 () const
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Application::Navigator * Application::navigator () const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
-  return _navigator2;
+  return _navigator;
 }
 
 // Get the begining of the favorites.
@@ -2921,7 +2568,7 @@ Application::ConstFavoriteIterator Application::favoritesEnd () const
   return _favoriteFunctors.end();
 }
 
-Application::Navigator2* Application::favorite ( const std::string& name )
+Application::Navigator* Application::favorite ( const std::string& name )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );

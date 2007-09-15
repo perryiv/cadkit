@@ -28,8 +28,8 @@ using namespace CV::Functors;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Tool::Tool ( Unknown *unknown, Direction *di, AnalogInput *ai, unsigned int id ) : 
-  BaseClass ( unknown, id ),
+Tool::Tool ( Unknown *unknown, Direction *di, AnalogInput *ai, const std::string& name ) : 
+  BaseClass ( unknown, name ),
   _di  ( di ),
   _dir ( 1, 0, 0 ),
   _ai  ( ai ),
@@ -122,7 +122,7 @@ float Tool::_analog()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const VRV::Functors::Direction::Vector &Tool::_direction()
+const Tool::Direction::Vector &Tool::_direction()
 {
   if ( _di.valid() )
   {

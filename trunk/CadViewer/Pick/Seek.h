@@ -38,7 +38,7 @@ public:
   Seek ( 
     Unknown *unknown, 
     Direction *dir,
-    unsigned int id );
+    const std::string& name );
   Seek ( const Seek &cb );
 
   // This actually does nothing.

@@ -25,9 +25,9 @@
 #include "CadViewer/Pick/Intersect.h"
 
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Functors/Interaction/Matrix/MatrixFunctor.h"
 
 #include "VRV/Core/Application.h"
-#include "VRV/Functors/Matrix/MatrixFunctor.h"
 
 #include "OsgTools/Grid.h"
 
@@ -270,17 +270,17 @@ protected:
   void                          _navigationFavorites      ( MenuKit::Message m, MenuKit::Item *item );
 
   // For readability.
-  typedef unsigned long                                 ThreadId;
-  typedef osg::ref_ptr<osg::MatrixTransform>            MatTransPtr;
-  typedef osg::ref_ptr<osg::Group>                      GroupPtr;
-  typedef osg::ref_ptr<osg::Node>                       NodePtr;
-  typedef osg::ref_ptr<osg::Projection>                 ProjectPtr;
-  typedef VRV::Functors::BaseFunctor::RefPtr            FunctorPtr;
-  typedef std::auto_ptr<OsgTools::Text>                 TextPtr;
-  typedef Interfaces::IVisibility::QueryPtr             IVisibilityPtr;
-  typedef Interfaces::ISelection::QueryPtr              ISelectionPtr;
-  typedef Interfaces::IMaterialStack::QueryPtr          IMaterialStackPtr;
-  typedef std::map<std::string,osg::Vec4>               ColorMap;
+  typedef unsigned long                                             ThreadId;
+  typedef osg::ref_ptr<osg::MatrixTransform>                        MatTransPtr;
+  typedef osg::ref_ptr<osg::Group>                                  GroupPtr;
+  typedef osg::ref_ptr<osg::Node>                                   NodePtr;
+  typedef osg::ref_ptr<osg::Projection>                             ProjectPtr;
+  typedef Usul::Functors::Interaction::Common::BaseFunctor::RefPtr  FunctorPtr;
+  typedef std::auto_ptr<OsgTools::Text>                             TextPtr;
+  typedef Interfaces::IVisibility::QueryPtr                         IVisibilityPtr;
+  typedef Interfaces::ISelection::QueryPtr                          ISelectionPtr;
+  typedef Interfaces::IMaterialStack::QueryPtr                      IMaterialStackPtr;
+  typedef std::map<std::string,osg::Vec4>                           ColorMap;
 
   // Data members.
   static ThreadId   _appThread;

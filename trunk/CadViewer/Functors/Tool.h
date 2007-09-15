@@ -16,8 +16,8 @@
 #ifndef _CV_TOOL_FUNCTOR_H_
 #define _CV_TOOL_FUNCTOR_H_
 
-#include "VRV/Functors/Input/AnalogInput.h"
-#include "VRV/Functors/Navigate/Direction.h"
+#include "Usul/Functors/Interaction/Input/AnalogInput.h"
+#include "Usul/Functors/Interaction/Navigate/Direction.h"
 
 #include "Usul/Interfaces/IFrameInfo.h"
 #include "Usul/Interfaces/IWorldInfo.h"
@@ -32,17 +32,17 @@ namespace CV {
 namespace Functors {
 
 
-class Tool : public VRV::Functors::BaseFunctor
+class Tool : public Usul::Functors::Interaction::Common::BaseFunctor
 {
 public:
 
   // Useful typedef(s).
   USUL_DECLARE_REF_POINTERS ( Tool );
-  typedef VRV::Functors::BaseFunctor BaseClass;
+  typedef Usul::Functors::Interaction::Common::BaseFunctor BaseClass;
   typedef BaseClass::Unknown Unknown;
   typedef Usul::Math::Matrix44f Matrix;
-  typedef VRV::Functors::AnalogInput AnalogInput;
-  typedef VRV::Functors::Direction Direction;
+  typedef Usul::Functors::Interaction::Input::AnalogInput AnalogInput;
+  typedef Usul::Functors::Interaction::Navigate::Direction Direction;
   typedef Direction::Vector Vector;
   typedef Usul::Interfaces::IFrameInfo FrameInfo;
   typedef Usul::Interfaces::IWorldInfo WorldInfo;
@@ -57,7 +57,7 @@ public:
 
 protected:
 
-  Tool ( Unknown *unknown, Direction *di, AnalogInput *ai, unsigned int id );
+  Tool ( Unknown *unknown, Direction *di, AnalogInput *ai, const std::string& name );
   Tool ( const Tool &cb );
   virtual ~Tool();
 

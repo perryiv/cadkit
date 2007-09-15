@@ -31,8 +31,8 @@ MoveTool::MoveTool (
   Direction *dir, 
   AnalogInput *ai, 
   float speed,
-  unsigned int id ) : 
-  BaseClass ( unknown, dir, ai, id ),
+  const std::string& name ) : 
+  BaseClass ( unknown, dir, ai, name ),
   _speed ( speed )
 {
 }

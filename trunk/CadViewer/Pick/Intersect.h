@@ -16,7 +16,7 @@
 #ifndef _CV_INTERSECT_FUNCTORS_H_
 #define _CV_INTERSECT_FUNCTORS_H_
 
-#include "VRV/Functors/Navigate/Direction.h"
+#include "Usul/Functors/Interaction/Navigate/Direction.h"
 #include "CadViewer/Interfaces/IAuxiliaryScene.h"
 #include "VRV/Interfaces/INavigationScene.h"
 #include "VRV/Interfaces/IModelsScene.h"
@@ -37,13 +37,13 @@ namespace CV {
 namespace Pick {
 
 
-class Intersect : public VRV::Functors::BaseFunctor
+class Intersect : public Usul::Functors::Interaction::Common::BaseFunctor
 {
 public:
 
   // Useful typedef(s).
   USUL_DECLARE_REF_POINTERS ( Intersect );
-  typedef VRV::Functors::BaseFunctor BaseClass;
+  typedef Usul::Functors::Interaction::Common::BaseFunctor BaseClass;
 
   // Reset any states.
   virtual void          reset();
@@ -52,14 +52,14 @@ protected:
 
   typedef osg::NodePath Path;
   typedef Usul::Interfaces::IUnknown Unknown;
-  typedef VRV::Functors::Direction Direction;
+  typedef Usul::Functors::Interaction::Navigate::Direction Direction;
   typedef CV::Interfaces::IAuxiliaryScene AuxiliaryScene;
   typedef VRV::Interfaces::INavigationScene NavigationScene;
   typedef VRV::Interfaces::IModelsScene ModelsScene;
   typedef Usul::Interfaces::IWandStateFloat WandState;
   typedef Usul::Interfaces::IClippingDistance ClippingDistance;
 
-  Intersect ( Unknown *unknown, Direction *dir, unsigned int id );
+  Intersect ( Unknown *unknown, Direction *dir, const std::string& name );
   Intersect ( const Intersect &cb );
   virtual ~Intersect();
 

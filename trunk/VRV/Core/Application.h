@@ -18,7 +18,6 @@
 #include "VRV/Devices/JoystickDevice.h"
 #include "VRV/Devices/ButtonGroup.h"
 #include "VRV/Devices/TrackerDevice.h"
-#include "VRV/Functors/BaseFunctor.h"
 #include "VRV/Interfaces/IModelAdd.h"
 #include "VRV/Interfaces/INavigationScene.h"
 #include "VRV/Interfaces/IModelsScene.h"
@@ -129,7 +128,6 @@ public:
   typedef VRV::Devices::ButtonGroup            Buttons;
   typedef VRV::Devices::TrackerDevice          Tracker;
   typedef VRV::Devices::JoystickDevice         Joystick;
-  typedef VRV::Functors::BaseFunctor           Functor;
   typedef VRV::Functors::Transform             Transform;
   typedef MenuKit::OSG::Menu                   Menu;
   typedef USUL_VALID_REF_POINTER(Menu)         MenuPtr;
@@ -433,7 +431,6 @@ private:
   // Typedefs.
   typedef osg::ref_ptr < osg::MatrixTransform >            MatTransPtr;
   typedef osg::ref_ptr < osg::Group >                      GroupPtr;
-  typedef VRV::Functors::BaseFunctor::RefPtr               FunctorPtr;
   typedef VRV::Devices::ButtonGroup                        ButtonGroup;
   typedef VRV::Devices::ButtonGroup::ValidRefPtr           ButtonsPtr;
   typedef VRV::Devices::TrackerDevice::ValidRefPtr         TrackerPtr;

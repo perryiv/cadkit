@@ -42,7 +42,7 @@ public:
   Select ( 
     Unknown *unknown, 
     Direction *dir,
-    unsigned int id );
+    const std::string& name);
   Select ( const Select &cb );
 
   // Select the intersected portion of the scene.

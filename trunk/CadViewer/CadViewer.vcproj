@@ -238,14 +238,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\NavCallback.h"
-					>
-				</File>
-				<File
-					RelativePath=".\NavFactory.h"
-					>
-				</File>
-				<File
 					RelativePath="Precompiled.h"
 					>
 				</File>

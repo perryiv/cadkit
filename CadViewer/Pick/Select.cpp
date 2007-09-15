@@ -50,8 +50,8 @@ using namespace CV::Pick;
 Select::Select ( 
   Unknown *unknown, 
   Direction *dir,
-  unsigned int id ) : 
-  BaseClass ( unknown, dir, id ),
+  const std::string& name ) : 
+  BaseClass ( unknown, dir, name ),
   _node ( 0x0 ),
   _material ( 0x0 )
 {
@@ -149,7 +149,7 @@ void Select::select()
     ++n;
 
   // Get the selection interface.
-  CV::Interfaces::ISelection::ValidQueryPtr iSelection ( this->_unknown() );
+  CV::Interfaces::ISelection::ValidQueryPtr iSelection ( this->caller () );
 
   // Find the first unselected parent with more than one child, 
   // or null if we are already at the top.
@@ -229,7 +229,7 @@ void Select::_select ( osg::Node *node )
   if ( node )
   {
     USUL_ASSERT ( node->getName() != std::string ( "_gridBranch" ) );
-    CV::Interfaces::ISelection::ValidQueryPtr iSelection ( this->_unknown() );
+    CV::Interfaces::ISelection::ValidQueryPtr iSelection ( this->caller () );
     iSelection->select ( node );
   }
 }
@@ -245,7 +245,7 @@ void Select::_unselect ( osg::Node *node )
 {
   if ( node )
   {
-    CV::Interfaces::ISelection::ValidQueryPtr iSelection ( this->_unknown() );
+    CV::Interfaces::ISelection::ValidQueryPtr iSelection ( this->caller () );
     iSelection->unselect ( node );
   }
 }
@@ -278,7 +278,7 @@ void Select::_pushMaterial ( const osg::Material* mat, osg::Node* node )
   ErrorChecker ( 1070922363, 0x0 != mat );
   ErrorChecker ( 1070922364, 0x0 != node );
 
-  CV::Interfaces::IMaterialStack::ValidQueryPtr materialStack ( this->_unknown() );
+  CV::Interfaces::IMaterialStack::ValidQueryPtr materialStack ( this->caller () );
   materialStack->pushMaterial ( mat, node );
 }
 
@@ -293,7 +293,7 @@ void Select::_popMaterial ( osg::Node* node )
 {
   if ( node )
   {
-    CV::Interfaces::IMaterialStack::ValidQueryPtr materialStack ( this->_unknown() );
+    CV::Interfaces::IMaterialStack::ValidQueryPtr materialStack ( this->caller () );
     materialStack->popMaterial ( node );
   }
 }

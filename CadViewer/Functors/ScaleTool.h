@@ -38,7 +38,7 @@ public:
               AnalogInput *ai, 
               const Vector &scale, 
               float speed,
-              unsigned int id );
+              const std::string& name );
   ScaleTool ( const ScaleTool &cb );
   virtual ~ScaleTool();
 

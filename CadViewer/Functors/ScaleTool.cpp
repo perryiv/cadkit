@@ -32,8 +32,8 @@ ScaleTool::ScaleTool (
   AnalogInput *ai, 
   const Vector &scale, 
   float speed,
-  unsigned int id ) : 
-  BaseClass ( unknown, dir, ai, id ),
+  const std::string& name ) : 
+  BaseClass ( unknown, dir, ai, name ),
   _scale ( scale ),
   _speed ( speed )
 {

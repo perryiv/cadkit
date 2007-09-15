@@ -23,13 +23,13 @@ namespace CV {
 namespace Functors {
 
 
-class ToolPair : public VRV::Functors::BaseFunctor
+  class ToolPair : public Usul::Functors::Interaction::Common::BaseFunctor
 {
 public:
 
   // Useful typedef(s).
   USUL_DECLARE_REF_POINTERS ( ToolPair );
-  typedef VRV::Functors::BaseFunctor BaseClass;
+  typedef Usul::Functors::Interaction::Common::BaseFunctor BaseClass;
   typedef BaseClass::Unknown Unknown;
   typedef Tool::Transforms Transforms;
 
@@ -37,7 +37,7 @@ public:
     Unknown *unknown, 
     Tool *c1, 
     Tool *c2,
-    unsigned int id );
+    const std::string& name );
   ToolPair ( const ToolPair &tp );
 
   // Have the Tools do their thing.

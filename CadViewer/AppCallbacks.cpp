@@ -17,22 +17,11 @@
 #include "Application.h"
 #include "Constants.h"
 #include "ErrorChecker.h"
-#include "NavFactory.h"
-#include "NavCallback.h"
 #include "ToolFactory.h"
 #include "ToolCallback.h"
 #include "SceneFunctors.h"
 #include "ScenePredicates.h"
 
-#include "VRV/Functors/Matrix/IdentityMatrix.h"
-#include "VRV/Functors/Navigate/Translate.h"
-#include "VRV/Functors/Navigate/Rotate.h"
-#include "VRV/Functors/Navigate/Direction.h"
-#include "VRV/Functors/Wand/WandRotation.h"
-#include "VRV/Functors/Wand/WandPosition.h"
-#include "VRV/Functors/Input/AnalogInput.h"
-#include "VRV/Functors/Input/JoystickHorizontal.h"
-#include "VRV/Functors/Input/JoystickVertical.h"
 #include "CadViewer/Functors/ScaleTool.h"
 #include "CadViewer/Functors/MoveTool.h"
 #include "CadViewer/Functors/ToolPair.h"
@@ -382,11 +371,11 @@ void Application::_normScene ( MenuKit::Message m, MenuKit::Item *item )
 void Application::_raySelector ( MenuKit::Message m, MenuKit::Item *item )
 {
   ErrorChecker ( 3690175917u, isAppThread(), CV::NOT_APP_THREAD );
-
+#if 0
   // To shorten up the lines.
-  typedef VRV::Functors::Direction Dir;
+  typedef Usul::Functors::Interaction::Navigate::Direction Dir;
+  typedef Usul::Functors::Interaction::Wand::WandRotation MF;
   typedef Dir::Vector Vec;
-  typedef VRV::Functors::WandRotation MF;
   typedef CV::Pick::Select Selector;
 
   // Local id.
@@ -431,6 +420,7 @@ void Application::_raySelector ( MenuKit::Message m, MenuKit::Item *item )
       break;
     }
   }
+#endif
 }
 
 
@@ -732,7 +722,7 @@ void Application::_setAsHome ( MenuKit::Message m, MenuKit::Item *item )
 void Application::_vScaleWorld ( MenuKit::Message m, MenuKit::Item *item )
 {
   ErrorChecker ( 2053584659u, isAppThread(), CV::NOT_APP_THREAD );
-
+#if 0
   // To shorten the lines.
   typedef VRV::Functors::JoystickVertical Analog;
   typedef CV::Functors::ScaleTool Tool;
@@ -751,6 +741,7 @@ void Application::_vScaleWorld ( MenuKit::Message m, MenuKit::Item *item )
 
   // Call the convenience function.
   CV::ScaleCB<Analog,Tool>::execute ( id, m, item, _sceneTool, vt, speed, scale, this );
+#endif
 }
 
 
@@ -763,7 +754,7 @@ void Application::_vScaleWorld ( MenuKit::Message m, MenuKit::Item *item )
 void Application::_vScaleSelected ( MenuKit::Message m, MenuKit::Item *item )
 {
   ErrorChecker ( 3794111793u, isAppThread(), CV::NOT_APP_THREAD );
-
+#if 0
   if( MenuKit::MESSAGE_UPDATE == m )
     item->enabled( 0 != this->_numSelected() );
 
@@ -786,6 +777,7 @@ void Application::_vScaleSelected ( MenuKit::Message m, MenuKit::Item *item )
 
   // Call the convenience function.
   CV::ScaleCB<Analog,Tool>::execute ( id, m, item, _sceneTool, vt, speed, scale, this );
+#endif
 }
 
 
@@ -798,7 +790,7 @@ void Application::_vScaleSelected ( MenuKit::Message m, MenuKit::Item *item )
 void Application::_wMoveSelLocal ( MenuKit::Message m, MenuKit::Item *item )
 {
   ErrorChecker ( 2457117960u, isAppThread(), CV::NOT_APP_THREAD );
-
+#if 0
   typedef VRV::Functors::Matrix::MatrixFunctor MF;
   typedef CV::Functors::ToolPair ToolPair;
   typedef CV::Functors::MoveTool MoveTool;
@@ -850,6 +842,7 @@ void Application::_wMoveSelLocal ( MenuKit::Message m, MenuKit::Item *item )
       _sceneTool = tool;
     }
   }
+#endif
 }
 
 
@@ -862,7 +855,7 @@ void Application::_wMoveSelLocal ( MenuKit::Message m, MenuKit::Item *item )
 void Application::_wMoveTopLocal ( MenuKit::Message m, MenuKit::Item *item )
 {
   ErrorChecker ( 1084528454u, isAppThread(), CV::NOT_APP_THREAD );
-
+#if 0
   typedef CV::Functors::ToolPair ToolPair;
   typedef CV::Functors::MoveTool MoveTool;
   typedef VRV::Functors::JoystickHorizontal JH;
@@ -915,6 +908,7 @@ void Application::_wMoveTopLocal ( MenuKit::Message m, MenuKit::Item *item )
       _sceneTool = tool;
     }
   }
+#endif
 }
 
 

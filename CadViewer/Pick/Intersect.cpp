@@ -18,7 +18,7 @@
 
 #include "CadViewer/ErrorChecker.h"
 #include "CadViewer/Constants.h"
-#include "VRV/Functors/Navigate/Direction.h"
+#include "Usul/Functors/Interaction/Navigate/Direction.h"
 
 #include "Usul/Math/Vector4.h"
 
@@ -42,8 +42,8 @@ using namespace CV::Pick;
 Intersect::Intersect ( 
   Unknown *unknown, 
   Direction *dir,
-  unsigned int id ) : 
-  BaseClass ( unknown, id ),
+  const std::string& name ) : 
+  BaseClass ( unknown, name ),
   _direction ( dir ),
   _auxScene  ( unknown ),
   _navScene  ( unknown ),

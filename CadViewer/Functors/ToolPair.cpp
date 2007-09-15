@@ -30,8 +30,8 @@ ToolPair::ToolPair (
   Unknown *unknown, 
   Tool *tool1, 
   Tool *tool2,
-  unsigned int id ) : 
-  BaseClass ( unknown, id ),
+  const std::string& name) : 
+  BaseClass ( unknown, name ),
   _tool1 ( tool1 ),
   _tool2 ( tool2 )
 {

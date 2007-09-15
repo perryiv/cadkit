@@ -31,8 +31,8 @@ using namespace CV::Pick;
 Seek::Seek ( 
   Unknown *unknown, 
   Direction *dir,
-  unsigned int id ) : 
-  BaseClass ( unknown, dir, id ),
+  const std::string& name ) : 
+  BaseClass ( unknown, dir, name ),
   _rc ( unknown )
 {
 }

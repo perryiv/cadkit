@@ -31,10 +31,10 @@ struct ILayer : public Usul::Interfaces::IUnknown
   virtual std::string                 guid() const = 0;
 
   /// Get the name.
-  virtual const std::string&          name() const = 0;
+  virtual std::string                 name() const = 0;
 
   /// Get/Set show layer
-  virtual void                        showLayer( bool b ) = 0;
+  virtual void                        showLayer ( bool b ) = 0;
   virtual bool                        showLayer() const = 0;
 
 }; // struct ILayer

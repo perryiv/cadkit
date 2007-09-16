@@ -22,13 +22,17 @@
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/ILayer.h"
+#include "Usul/Interfaces/IDocument.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Pointers/Pointers.h"
 
 #include "osg/Array"
+#include "osg/Group"
 
 #include <vector>
+
+class ModflowDocument;
 
 
 class Layer : public Usul::Base::Object,
@@ -45,6 +49,7 @@ public:
   typedef std::vector < Row > Rows;
   typedef Cell::Vector Data;
   typedef Usul::Interfaces::IUnknown Unknown;
+  typedef Usul::Interfaces::IDocument IDocument;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Layer );
@@ -82,14 +87,24 @@ public:
   // Clear the layer.
   void                    clear();
 
+  // Set the document.
+  void                    document ( Usul::Interfaces::IUnknown * );
+
   // Return the grid size.
   Vec2ui                  gridSize() const;
+
+  // Set modification flag.
+  void                    modified ( bool );
+
+  // Purge all the cells that are outside the bounds.
+  void                    purge ( const Data &bounds );
 
   // Set all the values for the given time step.
   void                    vector ( const std::string &name, unsigned int timeStep, const Data &heads );
 
-  // Purge all the cells that are outside the bounds.
-  void                    purge ( const Data &bounds );
+  // Set/get the visible flag.
+  bool                    visible() const { return this->showLayer(); }
+  void                    visible ( bool state ) { this->showLayer ( state ); }
 
   // Set cell's tops and bottoms.
   void                    zRange ( const Data &top, const Data &bottom );
@@ -97,7 +112,7 @@ public:
   // Usul::Interfaces::ILayer
   virtual std::string     guid() const;
   virtual std::string     name() const;
-  virtual void            showLayer ( bool b );
+  virtual void            showLayer ( bool );
   virtual bool            showLayer() const;
 
 protected:
@@ -118,6 +133,9 @@ private:
   Layer::RefPtr _above;
   Layer::RefPtr _below;
   std::string _guid;
+  osg::ref_ptr<osg::Group> _root;
+  unsigned int _flags;
+  IDocument::QueryPtr _document;
 };
 
 

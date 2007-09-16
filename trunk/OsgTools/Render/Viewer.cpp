@@ -119,6 +119,8 @@
 
 using namespace OsgTools::Render;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Viewer, Viewer::BaseClass );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -166,7 +168,6 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   _lods            (),
   _document        ( doc ),
   _frameDump       (),
-  _refCount        ( 0 ),
   _flags           ( _UPDATE_TIMES | _SHOW_AXES ),
   _animation       (),
   _navManip        ( 0x0 ),
@@ -230,7 +231,7 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
 Viewer::~Viewer()
 {
   // Better be zero
-  USUL_ASSERT ( 0 == _refCount );
+  USUL_ASSERT ( 0 == this->refCount() );
 }
 
 
@@ -2347,35 +2348,6 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
   
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Reference this instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::ref()
-{
-  // Keep track for debugging purposes.
-  ++_refCount;
-
-  BaseClass::ref();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Unreference this instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::unref ( bool allowDeletion )
-{
-  // Keep track for debugging purposes.
-  --_refCount;
-
-  BaseClass::unref(allowDeletion);
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -3354,7 +3326,7 @@ OsgTools::Render::Trackball* Viewer::_trackball()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::_editMaterial  ( osgUtil::Hit &hit )
+void Viewer::_editMaterial ( osgUtil::Hit &hit )
 {
   //First check the drawable's state set
   osg::ref_ptr < osg::StateSet > stateset ( hit._drawable->getOrCreateStateSet() );
@@ -3385,8 +3357,6 @@ void Viewer::_editMaterial  ( osgUtil::Hit &hit )
     stateset->setAttribute( mat.get() );
   }
 
-
-
   typedef Usul::Interfaces::IMaterialEditor Editor;
   typedef Usul::Components::Manager Manager;
   Editor::QueryPtr editor ( Manager::instance().getInterface ( Editor::IID ) );
@@ -3413,7 +3383,6 @@ void Viewer::_editMaterial  ( osgUtil::Hit &hit )
       stateset->setRenderingHint( osg::StateSet::DEFAULT_BIN );
     }
   }
-
 }
 
 
@@ -5119,12 +5088,15 @@ void Viewer::_clearUpdateListeners()
 
 void Viewer::getClippingDistances ( float &nearDist, float &farDist ) const
 {
+  USUL_TRACE_SCOPE;
+
   double left ( 0.0 ), right ( 0.0 ), top ( 0.0 ), bottom ( 0.0 ), zNear ( 0.0 ), zFar ( 0.0 );
-  this->viewer ()->getProjectionMatrixAsFrustum ( left, right, bottom, top, zNear, zFar );
+  this->viewer()->getProjectionMatrixAsFrustum ( left, right, bottom, top, zNear, zFar );
 
   nearDist = zNear;
   farDist  = zFar;
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -5134,11 +5106,17 @@ void Viewer::getClippingDistances ( float &nearDist, float &farDist ) const
 
 void Viewer::setClippingDistances ( float nearDist, float farDist )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  if ( 0x0 == this->viewer() )
+    return;
+
   // No longer compute near far.
   this->computeNearFar ( false );
 
   double left ( 0.0 ), right ( 0.0 ), top ( 0.0 ), bottom ( 0.0 ), zNear ( 0.0 ), zFar ( 0.0 );
-  if ( this->viewer ()->getProjectionMatrixAsFrustum ( left, right, bottom, top, zNear, zFar ) )
+  if ( this->viewer()->getProjectionMatrixAsFrustum ( left, right, bottom, top, zNear, zFar ) )
   {
     this->viewer()->setProjectionMatrixAsFrustum ( left, right, bottom, top, nearDist, farDist );
   }

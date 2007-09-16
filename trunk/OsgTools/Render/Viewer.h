@@ -191,9 +191,8 @@ public:
     SEEK
   };
 
-  // Construction/destruction.
+  // Construction
   Viewer ( Document *doc, IUnknown* context, IUnknown *caller );
-  virtual ~Viewer();
 
   // Add a chore.
   void                  addChoreRedraw();
@@ -500,8 +499,8 @@ public:
 
 protected:
 
-  // Do not use.
-  Viewer();
+  // Use reference counting.
+  virtual ~Viewer();
 
   void                  _showLights();
   void                  _removeLights();
@@ -728,11 +727,13 @@ protected:
   void                          _clearUpdateListeners ();
 
   /// Get/set the clipping distances (Usul::Interfaces::IClippingDistance).
-  virtual void            getClippingDistances ( float &nearDist, float &farDist ) const;
-  virtual void            setClippingDistances ( float nearDist, float farDist );
+  virtual void                  getClippingDistances ( float &nearDist, float &farDist ) const;
+  virtual void                  setClippingDistances ( float nearDist, float farDist );
+
 private:
 
-  // Do not copy.
+  // Do not use.
+  Viewer();
   Viewer ( const Viewer & );
   Viewer &operator = ( const Viewer & );
 
@@ -779,7 +780,6 @@ private:
   Lods _lods;
   DocumentPtr _document;
   FrameDump _frameDump;
-  unsigned int _refCount;
   unsigned int _flags;
   OsgTools::Render::Animation _animation;
   MatrixManipPtr _navManip;

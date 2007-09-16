@@ -23,6 +23,7 @@
 #include "Usul/Trace/Trace.h"
 
 #include "OsgTools/Callbacks/SortBackToFront.h"
+#include "OsgTools/Group.h"
 #include "OsgTools/State/StateSet.h"
 
 #include "osg/Geode"
@@ -47,7 +48,10 @@ Layer::Layer ( const std::string &name, unsigned int numRows, unsigned int numCo
   _cellSize ( cellSize ),
   _above ( 0x0 ),
   _below ( 0x0 ),
-  _guid ( Usul::Functions::GUID::generate() )
+  _guid ( Usul::Functions::GUID::generate() ),
+  _root ( new osg::Group ),
+  _flags ( Modflow::Flags::VISIBLE ),
+  _document()
 {
   USUL_TRACE_SCOPE;
 
@@ -82,7 +86,15 @@ Layer::Layer ( const std::string &name, unsigned int numRows, unsigned int numCo
 Layer::~Layer()
 {
   USUL_TRACE_SCOPE;
+
+  // Clear the layer.
   this->clear();
+
+  // Clear children now.
+  _root = 0x0;
+
+  // Set the document.
+  _document = static_cast < IDocument * > ( 0x0 );
 }
 
 
@@ -99,6 +111,7 @@ void Layer::clear()
   _above = 0x0;
   _below = 0x0;
   _rows.clear();
+  OsgTools::Group::removeAllChildren ( _root.get() );
 }
 
 
@@ -162,9 +175,27 @@ void Layer::zRange ( const Data &top, const Data &bottom )
 osg::Node *Layer::buildScene ( unsigned int flags, double scaleFactor, Unknown *caller ) const
 {
   USUL_TRACE_SCOPE;
-  osg::ref_ptr<osg::Group> group ( new osg::Group );
-  group->addChild ( this->_buildCubes ( flags, scaleFactor, caller ) );
-  return group.release();
+  Guard guard ( this->mutex() );
+
+  // Should never happen...
+  if ( false == _root.valid() )
+  {
+    Layer &me ( const_cast < Layer & > ( *this ) );
+    me._root = new osg::Group;
+  }
+
+  // Remove all the existing children.
+  OsgTools::Group::removeAllChildren ( _root.get() );
+
+  // If we are visible...
+  if ( true == Usul::Bits::has ( _flags, Modflow::Flags::VISIBLE ) )
+  {
+    // Add new scene.
+    _root->addChild ( this->_buildCubes ( flags, scaleFactor, caller ) );
+  }
+
+  // Return new scene.
+  return _root.get();
 }
 
 
@@ -179,6 +210,7 @@ osg::Node *Layer::_buildCubes ( unsigned int flags, double scaleFactor, Unknown 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
+  // Make the geode.
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
 
   // Always show both sides.
@@ -200,8 +232,8 @@ osg::Node *Layer::_buildCubes ( unsigned int flags, double scaleFactor, Unknown 
   // Determine cell spacing.
   const osg::Vec2d halfSize ( 0.5 * scaleFactor * _cellSize[0], 0.5 * scaleFactor * _cellSize[1] );
 
-  // Don't draw the bottom if there is a cell below us and we're supposed to draw the tops.
-  const unsigned int draw ( ( ( true == _below.valid() ) && Usul::Bits::has ( flags, Cell::Draw::TOP ) ) ? Usul::Bits::remove ( flags, Cell::Draw::BOTTOM ) : flags );
+  // Don't draw the bottom if there is a visible cell below us and we're supposed to draw the tops.
+  const unsigned int draw ( ( ( true == _below.valid() ) && ( true == _below->visible() ) && Usul::Bits::has ( flags, Modflow::Flags::TOP ) ) ? Usul::Bits::remove ( flags, Modflow::Flags::BOTTOM ) : flags );
 
   // Make the cells.
   for ( unsigned int i = 0; i < gridSize[0]; ++i )
@@ -214,13 +246,13 @@ osg::Node *Layer::_buildCubes ( unsigned int flags, double scaleFactor, Unknown 
       if ( true == cell.valid() )
       {
         // Add the boundary.
-        if ( Usul::Bits::has ( flags, Cell::Draw::BOUNDS ) )
+        if ( Usul::Bits::has ( flags, Modflow::Flags::BOUNDS ) )
         {
           BuildScene::addQuads ( draw, cell->x(), cell->y(), cell->top(), cell->bottom(), halfSize, vertices.get(), normals.get() );
         }
 
         // Add the starting head.
-        if ( Usul::Bits::has ( flags, Cell::Draw::HEADS ) )
+        if ( Usul::Bits::has ( flags, Modflow::Flags::HEADS ) )
         {
           // If there is a cell below us then skip.
           const bool skip ( ( true == _below.valid() ) && ( 0x0 != _below->cellBelow ( i, j ) ) );
@@ -523,9 +555,27 @@ std::string Layer::name() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::showLayer ( bool b )
+void Layer::showLayer ( bool state )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Don't set to same state.
+  if ( this->showLayer() == state )
+    return;
+
+  if ( true == _root.valid() )
+  {
+    // Set the mask.
+    const osg::Node::NodeMask mask ( ( state ) ? 0xffffffff : 0 );
+    _root->setNodeMask ( mask );
+
+    // Separate flag to support serialization.
+    _flags = Usul::Bits::set ( _flags, Modflow::Flags::VISIBLE, state );
+
+    // Set the flag that says we are modified.
+    this->modified ( true );
+  }
 }
 
 
@@ -538,5 +588,34 @@ void Layer::showLayer ( bool b )
 bool Layer::showLayer() const
 {
   USUL_TRACE_SCOPE;
-  return true;
+  return Usul::Bits::has ( _flags, Modflow::Flags::VISIBLE );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set modification flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::modified ( bool state )
+{
+  USUL_TRACE_SCOPE;
+  if ( true == _document.valid() )
+  {
+    _document->modified ( state );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::document ( Usul::Interfaces::IUnknown *doc )
+{
+  USUL_TRACE_SCOPE;
+  _document = doc;
 }

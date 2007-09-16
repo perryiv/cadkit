@@ -771,9 +771,9 @@ void Layer::name( const std::string& name )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string&  Layer::name() const
+std::string Layer::name() const
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _name;
 }
 

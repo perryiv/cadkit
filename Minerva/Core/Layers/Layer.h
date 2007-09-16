@@ -89,7 +89,7 @@ public:
 
   /// Get/Set the name.
   void                        name( const std::string& name );
-  const std::string&          name() const;
+  std::string                 name() const;
 
   /// Get/Set the connection.
   void                        connection ( DB::Connection *connection );

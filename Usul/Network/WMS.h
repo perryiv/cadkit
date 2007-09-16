@@ -50,6 +50,7 @@ namespace Names
   const std::string WIDTH       ( "width" );
   const std::string HEIGHT      ( "height" );
   const std::string LAYERS      ( "layers" );
+  const std::string BBOX        ( "bbox" );
 }
 
 
@@ -200,7 +201,7 @@ public:
   template < class T > T get ( const std::string &name, const T &defaultValue ) const
   {
     Options::const_iterator i ( _options.find ( name ) );
-    return ( ( _options.end() == i ) ? defaultValue : Usul::Strings::fromString ( i->second ) );
+    return ( ( _options.end() == i ) ? defaultValue : Usul::Strings::fromString<T> ( i->second ) );
   }
   std::string get ( const std::string &name, const std::string &defaultValue ) const
   {

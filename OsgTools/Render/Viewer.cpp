@@ -200,7 +200,7 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   Usul::System::Clock::milliseconds();
 
   // Add the manipulator
-  this->navManip( new Trackball );
+  this->navManip ( new Trackball );
 
   // Add axes to the scene.  
   // Make sure that this is called after the manipulator has been created.
@@ -209,11 +209,11 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   // Set the default fov
   Usul::Shared::Preferences::instance().setDouble( Usul::Registry::Keys::FOV, OsgTools::Render::Defaults::CAMERA_FOV_Y );
 
-  // Unique context id to uniquely identify this viewer in OSG.
+  // Unique context id to identify this viewer in OSG.
   static unsigned int count ( 0 );
   _contextId = ++count;
 
-  _renderer->scene( _sceneManager->scene() );
+  _renderer->scene ( _sceneManager->scene() );
 
 #ifdef _DEBUG
   //osg::setNotifyLevel ( osg::INFO );

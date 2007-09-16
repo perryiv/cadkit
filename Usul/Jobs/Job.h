@@ -63,6 +63,7 @@ public:
 
   /// Set the label.
   void                      label ( IUnknown* label );
+
 protected:
 
   // Constructors

@@ -22,9 +22,12 @@
 
 #include "WmsJob.h"
 
+#include "Usul/Math/Vector2.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Trace/Trace.h"
 
+#include <string>
+#include <vector>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -33,7 +36,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-WmsJob::WmsJob ( unsigned long id, const std::string &url, const std::string &file, const Options &options ) : BaseClass ( id ), 
+WmsJob::WmsJob ( unsigned long id, const std::string &url, const std::string &file, const Options &options ) : 
+  BaseClass(), 
   _wms ( url, file, options.begin(), options.end() )
 {
   USUL_TRACE_SCOPE;
@@ -83,6 +87,7 @@ void WmsJob::_started()
     try
     {
       _wms.download ( 100, &std::cout );
+      this->_writeGeomFile();
       break;
     }
     catch ( const std::exception &e )
@@ -90,4 +95,39 @@ void WmsJob::_started()
       std::cout << e.what() << std::endl;
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the OSSIM geom file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WmsJob::_writeGeomFile()
+{
+  USUL_TRACE_SCOPE;
+
+  // Get the lat/lon tie points.
+  double lonMin ( 0 ), latMin ( 0 ), lonMax ( 0 ), latMax ( 0 );
+  char comma;
+  const std::string bbox ( _wms.get<std::string> ( Usul::Network::Names::BBOX, "" ) );
+  std::istringstream in ( bbox );
+  in >> lonMin >> comma >> latMin >> comma >> lonMax >> comma >> latMax;
+  Usul::Math::Vec2d tiePoint ( latMax, lonMin );
+
+  // Get decimals per degree.
+  Usul::Math::Vec2d degreesPerPixel 
+    ( ( latMax - latMin ) / _wms.get<double> ( Usul::Network::Names::HEIGHT, 1 ), 
+      ( lonMax - lonMin ) / _wms.get<double> ( Usul::Network::Names::WIDTH,  1 ) );
+
+  // Write to file.
+  const std::string file ( Usul::Strings::format ( _wms.file(), ".geom" ) );
+  std::ofstream out ( file.c_str() );
+  out << "type: ossimLlxyProjection" << std::endl;
+  out << "decimal_degrees_per_pixel_lat: " << degreesPerPixel[0] << std::endl;
+  out << "decimal_degrees_per_pixel_lon: " << degreesPerPixel[1] << std::endl;
+  out << "tie_point_lat: " << tiePoint[0] << std::endl;
+  out << "tie_point_lon: " << tiePoint[1] << std::endl;
+  out << "datum: WGE" << std::endl;
 }

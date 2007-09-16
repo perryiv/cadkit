@@ -18,7 +18,7 @@
 
 #include "CompileGuard.h"
 
-#include "Usul/Base/Referenced.h"
+#include "Usul/Base/Object.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Pointers/Pointers.h"
@@ -30,12 +30,12 @@
 namespace osg { class Node; }
 
 
-class Cell : public Usul::Base::Referenced
+class Cell : public Usul::Base::Object
 {
 public:
 
   // Useful typedefs.
-  typedef Usul::Base::Referenced BaseClass;
+  typedef Usul::Base::Object BaseClass;
   typedef Usul::Math::Vec2d Vec2d;
   typedef Usul::Math::Vec3d Vec3d;
   typedef std::vector<double> Vector;
@@ -44,24 +44,6 @@ public:
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Cell );
-
-  // What to draw.
-  struct Draw
-  {
-    enum
-    {
-      TOP    = 0x00000001,
-      BOTTOM = 0x00000002,
-      EAST   = 0x00000004,
-      WEST   = 0x00000008,
-      NORTH  = 0x00000010,
-      SOUTH  = 0x00000020,
-      SIDES  = EAST | WEST | NORTH | SOUTH,
-      CUBE   = SIDES | TOP | BOTTOM,
-      BOUNDS = 0x00000040,
-      HEADS  = 0x00000080,
-    };
-  };
 
   // Construction.
   Cell ( double x, double y );

@@ -819,7 +819,7 @@ const Document::Options& Document::options( View* view ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::addModifiedObserver    ( Usul::Interfaces::IModifiedObserver* observer )
+void Document::addModifiedObserver ( Usul::Interfaces::IModifiedObserver* observer )
 {
   if ( 0x0 == observer )
     return;
@@ -836,7 +836,7 @@ void Document::addModifiedObserver    ( Usul::Interfaces::IModifiedObserver* obs
 void Document::removeModifiedObserver ( Usul::Interfaces::IModifiedObserver* observer )
 {
   if ( false == _modifiedObservers.empty() )
-    _modifiedObservers.erase( observer );
+    _modifiedObservers.erase ( observer );
 }
 
 
@@ -854,7 +854,7 @@ void Document::modified ( bool m )
   {
     // Need to make gcc happy.
     Usul::Interfaces::IModifiedObserver::RefPtr temp ( iter->get() );
-    temp->subjectModified( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
+    temp->subjectModified ( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
   }
 }
 
@@ -865,7 +865,7 @@ void Document::modified ( bool m )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::updateWindowTitles ()
+void Document::updateWindowTitles()
 {
   for ( Windows::iterator iter = _windows.begin(); iter != _windows.end(); ++iter )
   {

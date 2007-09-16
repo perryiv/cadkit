@@ -60,6 +60,7 @@ Cell::~Cell()
 void Cell::top ( double t )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _top = t;
 }
 
@@ -73,6 +74,7 @@ void Cell::top ( double t )
 double Cell::top() const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _top;
 }
 
@@ -86,6 +88,7 @@ double Cell::top() const
 void Cell::bottom ( double b )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _bottom = b;
 }
 
@@ -99,6 +102,7 @@ void Cell::bottom ( double b )
 double Cell::bottom() const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _bottom;
 }
 
@@ -112,6 +116,7 @@ double Cell::bottom() const
 double Cell::x() const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _x;
 }
 
@@ -125,6 +130,7 @@ double Cell::x() const
 void Cell::x ( double value )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _x = value;
 }
 
@@ -138,6 +144,7 @@ void Cell::x ( double value )
 double Cell::y() const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _y;
 }
 
@@ -151,6 +158,7 @@ double Cell::y() const
 void Cell::y ( double value )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _y = value;
 }
 
@@ -164,6 +172,7 @@ void Cell::y ( double value )
 Cell::Vec3d Cell::center() const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return Vec3d ( _x, _y, 0.5 * ( _top - _bottom ) );
 }
 
@@ -176,6 +185,8 @@ Cell::Vec3d Cell::center() const
 
 double Cell::value ( const std::string &name ) const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   Cell &me ( const_cast < Cell & > ( *this ) );
   return me._values[name];
 }
@@ -189,6 +200,8 @@ double Cell::value ( const std::string &name ) const
 
 void Cell::value ( const std::string &name, double v )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _values[name] = v;
 }
 
@@ -201,6 +214,8 @@ void Cell::value ( const std::string &name, double v )
 
 const Cell::Vector &Cell::vector ( const std::string &name ) const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   Cell &me ( const_cast < Cell & > ( *this ) );
   return me._vectors[name];
 }
@@ -214,6 +229,8 @@ const Cell::Vector &Cell::vector ( const std::string &name ) const
 
 Cell::Vector &Cell::vector ( const std::string &name )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _vectors[name];
 }
 
@@ -226,5 +243,7 @@ Cell::Vector &Cell::vector ( const std::string &name )
 
 void Cell::vector ( const std::string &name, const Vector &v )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _vectors[name] = v;
 }

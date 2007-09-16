@@ -22,6 +22,8 @@
 #include "Usul/Documents/Document.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/IModifiedObserver.h"
+#include "Usul/Interfaces/IModifiedSubject.h"
 #include "Usul/Interfaces/IQtDockWidgetMenu.h"
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 #include "Usul/Interfaces/Qt/IWorkspace.h"
@@ -165,6 +167,14 @@ void ModflowDelegateComponent::createDefaultGUI ( Usul::Documents::Document *doc
 
     // Make sure the geometry is visible.
     viewer->viewer()->camera ( OsgTools::Render::Viewer::FIT );
+
+    // Attach viewer as a listener to the document.
+    Usul::Interfaces::IModifiedObserver::QueryPtr observer ( viewer->viewer() );
+    Usul::Interfaces::IModifiedSubject::QueryPtr subject ( document );
+    if ( ( true == observer.valid() ) && ( true == subject.valid() ) )
+    {
+      subject->addModifiedObserver ( observer.get() );
+    }
   }
 }
 

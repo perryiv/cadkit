@@ -14,7 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "BuildScene.h"
-#include "Cell.h"
+#include "Constants.h"
 
 #include "Usul/Bits/Bits.h"
 #include "Usul/Trace/Trace.h"
@@ -34,7 +34,7 @@ void BuildScene::addQuads ( unsigned int flags, double x, double y, double top, 
   if ( 0x0 == vertices || 0x0 == normals )
     return;
 
-  if ( Usul::Bits::has ( flags, Cell::Draw::TOP ) )
+  if ( Usul::Bits::has ( flags, Modflow::Flags::TOP ) )
   {
     vertices->push_back ( osg::Vec3f ( x + half[0], y - half[1], top ) );
     vertices->push_back ( osg::Vec3f ( x + half[0], y + half[1], top ) );
@@ -45,7 +45,7 @@ void BuildScene::addQuads ( unsigned int flags, double x, double y, double top, 
     normals->push_back ( n ); normals->push_back ( n ); normals->push_back ( n ); normals->push_back ( n );
   }
 
-  if ( Usul::Bits::has ( flags, Cell::Draw::BOTTOM ) )
+  if ( Usul::Bits::has ( flags, Modflow::Flags::BOTTOM ) )
   {
     vertices->push_back ( osg::Vec3f ( x - half[0], y - half[1], bottom ) );
     vertices->push_back ( osg::Vec3f ( x - half[0], y + half[1], bottom ) );
@@ -56,7 +56,7 @@ void BuildScene::addQuads ( unsigned int flags, double x, double y, double top, 
     normals->push_back ( n ); normals->push_back ( n ); normals->push_back ( n ); normals->push_back ( n );
   }
 
-  if ( Usul::Bits::has ( flags, Cell::Draw::EAST ) )
+  if ( Usul::Bits::has ( flags, Modflow::Flags::EAST ) )
   {
     vertices->push_back ( osg::Vec3f ( x + half[0], y - half[1], bottom ) );
     vertices->push_back ( osg::Vec3f ( x + half[0], y + half[1], bottom ) );
@@ -67,7 +67,7 @@ void BuildScene::addQuads ( unsigned int flags, double x, double y, double top, 
     normals->push_back ( n ); normals->push_back ( n ); normals->push_back ( n ); normals->push_back ( n );
   }
 
-  if ( Usul::Bits::has ( flags, Cell::Draw::WEST ) )
+  if ( Usul::Bits::has ( flags, Modflow::Flags::WEST ) )
   {
     vertices->push_back ( osg::Vec3f ( x - half[0], y + half[1], bottom ) );
     vertices->push_back ( osg::Vec3f ( x - half[0], y - half[1], bottom ) );
@@ -78,7 +78,7 @@ void BuildScene::addQuads ( unsigned int flags, double x, double y, double top, 
     normals->push_back ( n ); normals->push_back ( n ); normals->push_back ( n ); normals->push_back ( n );
   }
 
-  if ( Usul::Bits::has ( flags, Cell::Draw::NORTH ) )
+  if ( Usul::Bits::has ( flags, Modflow::Flags::NORTH ) )
   {
     vertices->push_back ( osg::Vec3f ( x + half[0], y + half[1], bottom ) );
     vertices->push_back ( osg::Vec3f ( x - half[0], y + half[1], bottom ) );
@@ -89,7 +89,7 @@ void BuildScene::addQuads ( unsigned int flags, double x, double y, double top, 
     normals->push_back ( n ); normals->push_back ( n ); normals->push_back ( n ); normals->push_back ( n );
   }
 
-  if ( Usul::Bits::has ( flags, Cell::Draw::SOUTH ) )
+  if ( Usul::Bits::has ( flags, Modflow::Flags::SOUTH ) )
   {
     vertices->push_back ( osg::Vec3f ( x - half[0], y - half[1], bottom ) );
     vertices->push_back ( osg::Vec3f ( x + half[0], y - half[1], bottom ) );

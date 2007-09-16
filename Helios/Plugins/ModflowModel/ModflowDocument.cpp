@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "ModflowDocument.h"
+#include "Constants.h"
 #include "Discretization.h"
 #include "BasicPackage.h"
 #include "BlockCenteredFlow.h"
@@ -436,7 +437,7 @@ osg::Node *ModflowDocument::buildScene ( const BaseClass::Options &options, Unkn
 
   // Add the layers.
   const unsigned int num ( _layers.size() );
-  const unsigned int flags ( Cell::Draw::CUBE | Cell::Draw::BOUNDS );
+  const unsigned int flags ( Modflow::Flags::CUBE | Modflow::Flags::BOUNDS );
   for ( unsigned int i = 0; i < num; ++i )
   {
     const Layer::RefPtr &layer ( _layers.at(i) );
@@ -500,7 +501,13 @@ void ModflowDocument::layers ( Layers &layers )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
+  // Set layers.
   _layers = layers;
+
+  // Tell all layers they belong to this document.
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+  std::for_each ( _layers.begin(), _layers.end(), std::bind2nd ( std::mem_fun1 ( &Layer::document ), me.get() ) );
 }
 
 

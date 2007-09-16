@@ -11,6 +11,7 @@
 #include "Helios/Qt/Views/OSG/Viewer.h"
 
 #include "Usul/Documents/Manager.h"
+#include "Usul/Trace/Trace.h"
 
 #include "OsgTools/Render/Defaults.h"
 
@@ -33,8 +34,12 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   _refCount ( 0 ),
   _timer ( 0x0 ),
   _keys(),
-  _lastMode ( OsgTools::Render::Viewer::NAVIGATION )
+  _lastMode ( OsgTools::Render::Viewer::NAVIGATION ),
+  _mutex ( new Viewer::Mutex )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
   // For convienence;
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
@@ -73,14 +78,22 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   // Initalize the placement and size.
   this->_initPlacement ();
 
-  // Add this to the document
-  this->document()->addWindow ( this );
+  // Add this to the document.
+  if ( 0x0 != doc )
+    doc->addWindow ( this );
 
   // Initialize the timer.
   _timer = new QTimer ( this );
 
   // Save the mode.
   _lastMode = _viewer->getMode();
+
+  // Add ourselves as a modified listener.
+  Usul::Interfaces::IModifiedSubject::QueryPtr subject ( doc );
+  if ( true == subject.valid() )
+  {
+    subject->addModifiedObserver ( this );
+  }
 }
 
 
@@ -92,6 +105,8 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
 
 Viewer::~Viewer()
 {
+  USUL_TRACE_SCOPE;
+
   // Stop and delete the timer.
   if ( 0x0 != _timer )
   {
@@ -104,15 +119,30 @@ Viewer::~Viewer()
   _viewer->clear();
   _viewer = 0x0;
 
-  // Remove this window from the document's sets.
-  this->document()->removeWindow ( this );
+  // Get the document.
+  Viewer::Document::RefPtr document ( this->document() );
+  if ( true == document.valid() )
+  {
+    // Remove this window from the document's sets.
+    document->removeWindow ( this );
 
-  // Tell the document this is closing.  
-  // Make sure function is called after removeWindow is called.
-  this->document()->closing ( this );
+    // Tell the document this is closing.  
+    // Make sure function is called after removeWindow is called.
+    document->closing ( this );
+  }
+
+  // Remove ourselves as a modified listener.
+  Usul::Interfaces::IModifiedSubject::QueryPtr subject ( this->document() );
+  if ( true == subject.valid() )
+  {
+    subject->removeModifiedObserver ( this );
+  }
 
   // Clear the keys.
   _keys.clear();
+
+  // Now delete the mutex.
+  delete _mutex; _mutex = 0x0;
 
   // Better be zero
   USUL_ASSERT ( 0 == _refCount );
@@ -127,6 +157,8 @@ Viewer::~Viewer()
 
 Viewer::Document * Viewer::document()
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _document.get();
 }
 
@@ -139,6 +171,8 @@ Viewer::Document * Viewer::document()
 
 const Viewer::Document * Viewer::document() const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _document.get();
 }
 
@@ -151,6 +185,8 @@ const Viewer::Document * Viewer::document() const
 
 OsgTools::Render::Viewer* Viewer::viewer()
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _viewer.get();
 }
 
@@ -163,6 +199,8 @@ OsgTools::Render::Viewer* Viewer::viewer()
 
 const OsgTools::Render::Viewer* Viewer::viewer() const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _viewer.get();
 }
 
@@ -175,6 +213,8 @@ const OsgTools::Render::Viewer* Viewer::viewer() const
 
 Usul::Interfaces::IUnknown * Viewer::queryInterface ( unsigned long iid )
 {
+  USUL_TRACE_SCOPE;
+
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
@@ -186,6 +226,8 @@ Usul::Interfaces::IUnknown * Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ITimeoutAnimate* > ( this );
   case Usul::Interfaces::ITimeoutSpin::IID:
     return static_cast < Usul::Interfaces::ITimeoutSpin* > ( this );
+  case Usul::Interfaces::IModifiedObserver::IID:
+    return static_cast < Usul::Interfaces::IModifiedObserver * > ( this );
   default:
     return 0x0;
   }
@@ -200,6 +242,8 @@ Usul::Interfaces::IUnknown * Viewer::queryInterface ( unsigned long iid )
 
 void Viewer::ref()
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   ++_refCount;
 }
 
@@ -212,6 +256,8 @@ void Viewer::ref()
 
 void Viewer::unref ( bool )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   --_refCount;
 }
 
@@ -222,9 +268,12 @@ void Viewer::unref ( bool )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::paintEvent  ( QPaintEvent * event )
+void Viewer::paintEvent ( QPaintEvent * event )
 {
-  _viewer->render();
+  USUL_TRACE_SCOPE;
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  if ( true == viewer.valid() )
+    viewer->render();
 }
 
 
@@ -236,8 +285,13 @@ void Viewer::paintEvent  ( QPaintEvent * event )
 
 void Viewer::resizeEvent ( QResizeEvent * event )
 {
-  const QSize& size ( event->size() );
-  _viewer->resize ( static_cast < unsigned int > ( size.width() ), static_cast < unsigned int > ( size.height() ) );
+  USUL_TRACE_SCOPE;
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  if ( true == viewer.valid() )
+  {
+    const QSize& size ( event->size() );
+    viewer->resize ( static_cast < unsigned int > ( size.width() ), static_cast < unsigned int > ( size.height() ) );
+  }
 }
 
 
@@ -249,11 +303,13 @@ void Viewer::resizeEvent ( QResizeEvent * event )
 
 void Viewer::focusInEvent ( QFocusEvent * event )
 {
+  USUL_TRACE_SCOPE;
+
   // Call the base class first.
   BaseClass::focusInEvent ( event );
 
   // Make our view current.
-  Usul::Documents::Manager::instance ().activeView ( _viewer.get() );
+  Usul::Documents::Manager::instance().activeView ( this->viewer() );
 }
 
 
@@ -265,6 +321,7 @@ void Viewer::focusInEvent ( QFocusEvent * event )
 
 void Viewer::makeCurrent()
 {
+  USUL_TRACE_SCOPE;
   BaseClass::makeCurrent();
 }
 
@@ -277,6 +334,7 @@ void Viewer::makeCurrent()
 
 void Viewer::swapBuffers()
 {
+  USUL_TRACE_SCOPE;
   BaseClass::swapBuffers();
 }
 
@@ -287,9 +345,12 @@ void Viewer::swapBuffers()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::_initPlacement ()
+void Viewer::_initPlacement()
 {
-  if( QWidget* parent = dynamic_cast < QWidget* > ( this->parent() ) )
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  if ( QWidget* parent = dynamic_cast < QWidget* > ( this->parent() ) )
   {
     // Shortcuts.
     double percent ( 0.6 );
@@ -330,6 +391,11 @@ void Viewer::_initPlacement ()
 
 void Viewer::mouseMoveEvent ( QMouseEvent * event )
 {
+  USUL_TRACE_SCOPE;
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  if ( false == viewer.valid() )
+    return;
+
   bool left   ( event->buttons().testFlag ( Qt::LeftButton  ) );
   bool middle ( event->buttons().testFlag ( Qt::MidButton   ) );
   bool right  ( event->buttons().testFlag ( Qt::RightButton ) );
@@ -345,12 +411,12 @@ void Viewer::mouseMoveEvent ( QMouseEvent * event )
   EventAdapter::EventType type ( ( mouse ) ? EventAdapter::DRAG : EventAdapter::MOVE );
 
   // Handle the events. Make sure you pick before you drag.
-  this->viewer()->handleNavigation ( x, y, left, middle, right, type );
-  this->viewer()->handlePicking    ( x, y, false, 0 );
-  this->viewer()->handleDragging   ( x, y, OsgTools::Draggers::Dragger::MOVE );
+  viewer->handleNavigation ( x, y, left, middle, right, type );
+  viewer->handlePicking    ( x, y, false, 0 );
+  viewer->handleDragging   ( x, y, OsgTools::Draggers::Dragger::MOVE );
 
   // Handle tool.
-  this->viewer()->handleTool ( left, middle, right, true, x, y, 0.0 );
+  viewer->handleTool ( left, middle, right, true, x, y, 0.0 );
 }
 
 
@@ -362,6 +428,11 @@ void Viewer::mouseMoveEvent ( QMouseEvent * event )
 
 void Viewer::mousePressEvent ( QMouseEvent * event )
 {
+  USUL_TRACE_SCOPE;
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  if ( false == viewer.valid() )
+    return;
+
   bool left   ( event->buttons().testFlag ( Qt::LeftButton  ) );
   bool middle ( event->buttons().testFlag ( Qt::MidButton   ) );
   bool right  ( event->buttons().testFlag ( Qt::RightButton ) );
@@ -369,14 +440,14 @@ void Viewer::mousePressEvent ( QMouseEvent * event )
   float x ( event->x() );
   float y ( this->height() - event->y() );
 
-  this->viewer()->buttonPress ( x, y, left, middle, right );
+  viewer->buttonPress ( x, y, left, middle, right );
 
   // Does nothing unless in seek mode.
-  this->viewer()->handleSeek ( x, y, left );
+  viewer->handleSeek ( x, y, left );
 
   // Handle the events. Make sure you pick before you drag.
-  this->viewer()->handlePicking  ( x, y, left, 1 );
-  this->viewer()->handleDragging ( x, y, OsgTools::Draggers::Dragger::START );
+  viewer->handlePicking  ( x, y, left, 1 );
+  viewer->handleDragging ( x, y, OsgTools::Draggers::Dragger::START );
 }
 
 
@@ -388,6 +459,11 @@ void Viewer::mousePressEvent ( QMouseEvent * event )
 
 void Viewer::mouseReleaseEvent ( QMouseEvent * event )
 {
+  USUL_TRACE_SCOPE;
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  if ( false == viewer.valid() )
+    return;
+
   bool left   ( event->buttons().testFlag ( Qt::LeftButton  ) );
   bool middle ( event->buttons().testFlag ( Qt::MidButton   ) );
   bool right  ( event->buttons().testFlag ( Qt::RightButton ) );
@@ -395,11 +471,11 @@ void Viewer::mouseReleaseEvent ( QMouseEvent * event )
   float x ( event->x() );
   float y ( this->height() - event->y() );
 
-  this->viewer()->buttonRelease ( x, y, left, middle, right );
+  viewer->buttonRelease ( x, y, left, middle, right );
 
   // Handle the events. Make sure you pick before you drag.
-  this->viewer()->handlePicking  ( x, y, left, 1 );
-  this->viewer()->handleDragging ( x, y, OsgTools::Draggers::Dragger::START );
+  viewer->handlePicking  ( x, y, left, 1 );
+  viewer->handleDragging ( x, y, OsgTools::Draggers::Dragger::START );
 
   // Make sure.
   OsgTools::Draggers::Dragger::dragging ( 0x0, osg::Matrixd::identity() );
@@ -416,6 +492,7 @@ namespace Helper
 {
   inline void togglePolygonMode ( OsgTools::Render::Viewer &v, const Usul::Interfaces::IPolygonMode::Mode &mode )
   {
+    USUL_TRACE_SCOPE_STATIC;
     if ( mode == v.polygonMode() )
     {
       v.polygonMode ( Usul::Interfaces::IPolygonMode::NONE );
@@ -436,8 +513,13 @@ namespace Helper
 
 void Viewer::keyPressEvent ( QKeyEvent * event )
 {
+  USUL_TRACE_SCOPE;
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  if ( false == viewer.valid() )
+    return;
+
   // Stop any spin.
-  this->viewer()->spin ( false );
+  viewer->spin ( false );
 
   if ( 0x0 == event )
     return;
@@ -452,70 +534,70 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
   case Qt::Key_R:
 
     // Move the camera.
-    this->viewer()->camera ( OsgTools::Render::Viewer::RESET );
+    viewer->camera ( OsgTools::Render::Viewer::RESET );
     break;
 
   // See if it was the f-key...
   case Qt::Key_F:
 
     // Move the camera.
-    this->viewer()->camera ( OsgTools::Render::Viewer::FIT );
+    viewer->camera ( OsgTools::Render::Viewer::FIT );
     break;
 
   // See if it was the right-arrow key...
   case Qt::Key_Right:
 
     // Move the camera.
-    this->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_Y_N45 );
+    viewer->camera ( OsgTools::Render::Viewer::ROTATE_Y_N45 );
     break;
 
   // See if it was the left-arrow key...
   case Qt::Key_Left:
 
     // Move the camera.
-    this->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_Y_P45 );
+    viewer->camera ( OsgTools::Render::Viewer::ROTATE_Y_P45 );
     break;
 
   // See if it was the up-arrow key...
   case Qt::Key_Up:
 
     // Move the camera.
-    this->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_X_P45 );
+    viewer->camera ( OsgTools::Render::Viewer::ROTATE_X_P45 );
     break;
 
   // See if it was the down-arrow key...
   case Qt::Key_Down:
 
     // Move the camera.
-    this->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_X_N45 );
+    viewer->camera ( OsgTools::Render::Viewer::ROTATE_X_N45 );
     break;
 
   // See if it was the h key...
   case Qt::Key_H:
 
-    Helper::togglePolygonMode ( *(this->viewer()), Usul::Interfaces::IPolygonMode::HIDDEN_LINES );
-    this->viewer()->render();
+    Helper::togglePolygonMode ( *(viewer), Usul::Interfaces::IPolygonMode::HIDDEN_LINES );
+    viewer->render();
     break;
 
   // See if it was the w key...
   case Qt::Key_W:
 
-    Helper::togglePolygonMode ( *(this->viewer()), Usul::Interfaces::IPolygonMode::WIRE_FRAME );
-    this->viewer()->render();
+    Helper::togglePolygonMode ( *(viewer), Usul::Interfaces::IPolygonMode::WIRE_FRAME );
+    viewer->render();
     break;
 
   // See if it was the p key...
   case Qt::Key_P:
 
-    Helper::togglePolygonMode ( *(this->viewer()), Usul::Interfaces::IPolygonMode::POINTS );
-    this->viewer()->render();
+    Helper::togglePolygonMode ( *(viewer), Usul::Interfaces::IPolygonMode::POINTS );
+    viewer->render();
     break;
 
   // See if it was the s key...
   case Qt::Key_S:
 
-    _lastMode = this->viewer()->getMode();
-    this->viewer()->setMode ( OsgTools::Render::Viewer::SEEK );
+    _lastMode = viewer->getMode();
+    viewer->setMode ( OsgTools::Render::Viewer::SEEK );
     break;
   }
 }
@@ -529,6 +611,11 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
 
 void Viewer::keyReleaseEvent ( QKeyEvent * event )
 {
+  USUL_TRACE_SCOPE;
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  if ( false == viewer.valid() )
+    return;
+
   if ( 0x0 == event )
     return;
 
@@ -537,7 +624,7 @@ void Viewer::keyReleaseEvent ( QKeyEvent * event )
   // See if it was the s key...
   if ( Qt::Key_S == event->key() )
   {
-    this->viewer()->setMode ( _lastMode );
+    viewer->setMode ( _lastMode );
   }
 }
 
@@ -550,6 +637,7 @@ void Viewer::keyReleaseEvent ( QKeyEvent * event )
 
 void Viewer::setFocus()
 {
+  USUL_TRACE_SCOPE;
   BaseClass::setFocus();
 }
 
@@ -562,6 +650,7 @@ void Viewer::setFocus()
 
 void Viewer::setTitle ( const std::string& title )
 {
+  USUL_TRACE_SCOPE;
   this->setWindowTitle ( title.c_str() );
 }
 
@@ -574,6 +663,9 @@ void Viewer::setTitle ( const std::string& title )
 
 void Viewer::startAnimation ( double milliseconds )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
   if ( 0x0 != _timer )
   {
     _timer->stop();
@@ -591,13 +683,17 @@ void Viewer::startAnimation ( double milliseconds )
 
 void Viewer::_onTimeoutAnimation()
 {
-  if ( 0x0 != this->viewer() )
+  USUL_TRACE_SCOPE;
+
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  if ( false == viewer.valid() )
+    return;
+
+  // Set the matrix and see if we should continue.
+  if ( false == viewer->timeoutAnimate() ) 
   {
-    // Set the matrix and see if we should continue.
-    if ( false == this->viewer()->timeoutAnimate() ) 
-    {
-      _timer->stop();
-    }
+    Guard guard ( this->mutex() );
+    _timer->stop();
   }
 }
 
@@ -610,10 +706,13 @@ void Viewer::_onTimeoutAnimation()
 
 void Viewer::_onTimeoutSpin()
 {
-  if ( 0x0 != this->viewer() )
-  {
-    this->viewer()->timeoutSpin();
-  }
+  USUL_TRACE_SCOPE;
+
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  if ( false == viewer.valid() )
+    return;
+
+  viewer->timeoutSpin();
 }
 
 
@@ -625,6 +724,9 @@ void Viewer::_onTimeoutSpin()
 
 void Viewer::stopSpin()
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
   if ( 0x0 != _timer )
   {
     _timer->stop();
@@ -640,10 +742,41 @@ void Viewer::stopSpin()
 
 void Viewer::startSpin ( double milliseconds )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
   if ( 0x0 != _timer )
   {
     _timer->stop();
     this->connect ( _timer, SIGNAL ( timeout() ), this, SLOT ( _onTimeoutSpin() ) );
     _timer->start ( static_cast<int> ( milliseconds ) );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the document is modified (Usul::Interfaces::IModifiedObserver).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::subjectModified ( Usul::Interfaces::IUnknown * )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Queue a repaint.
+  this->update();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Viewer::Mutex &Viewer::mutex() const
+{
+  return *_mutex;
 }

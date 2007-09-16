@@ -18,6 +18,9 @@
 #include "Usul/Interfaces/IOpenGLContext.h"
 #include "Usul/Interfaces/ITimeoutAnimate.h"
 #include "Usul/Interfaces/ITimeoutSpin.h"
+#include "Usul/Interfaces/IModifiedObserver.h"
+#include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Threads/Guard.h"
 
 #include "OsgTools/Render/Viewer.h"
 
@@ -38,7 +41,8 @@ class HELIOS_QT_VIEWS_OSG_EXPORT Viewer : public QGLWidget,
                                           public Usul::Interfaces::IOpenGLContext,
                                           public Usul::Interfaces::IWindow,
                                           public Usul::Interfaces::ITimeoutAnimate,
-                                          public Usul::Interfaces::ITimeoutSpin
+                                          public Usul::Interfaces::ITimeoutSpin,
+                                          public Usul::Interfaces::IModifiedObserver
 {
   Q_OBJECT
 
@@ -49,6 +53,8 @@ public:
   typedef Usul::Documents::Document Document;
   typedef std::map<int,bool> KeyMap;
   typedef OsgTools::Render::Viewer::ViewMode ViewMode;
+  typedef Usul::Threads::RecursiveMutex Mutex;
+  typedef Usul::Threads::Guard<Mutex> Guard;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -57,12 +63,15 @@ public:
   virtual ~Viewer ();
 
   /// Get the document.
-  Document *                              document ();
-  const Document *                        document () const;
+  Document *                              document();
+  const Document *                        document() const;
+
+  // Get the mutex.
+  Mutex &                                 mutex() const;
 
   /// Get the viewer.
-  OsgTools::Render::Viewer*               viewer ();
-  const OsgTools::Render::Viewer*         viewer () const;
+  OsgTools::Render::Viewer*               viewer();
+  const OsgTools::Render::Viewer*         viewer() const;
 
   /// Usul::Interfaces::IOpenGLContext
   virtual void                            makeCurrent();
@@ -78,6 +87,9 @@ public:
   /// Usul::Interfaces::ITimeoutSpin
   virtual void                            stopSpin();
   virtual void                            startSpin ( double timeout );
+
+  /// Called when the document is modified (Usul::Interfaces::IModifiedObserver).
+  virtual void                            subjectModified ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
 protected:
 
@@ -106,6 +118,7 @@ private:
   QTimer *_timer;
   KeyMap _keys;
   ViewMode _lastMode;
+  mutable Mutex *_mutex;
 };
 
 

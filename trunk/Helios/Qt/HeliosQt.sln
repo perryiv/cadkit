@@ -355,6 +355,17 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Modflow Model", "..\P
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Modflow Delegate Qt", "Plugins\ModflowDelegate\ModflowDelegate.vcproj", "{996C1AA0-86B7-44A3-BBA6-DAA24137BA2D}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+		{D8524F0F-9938-4BFA-820A-924092ED40AD} = {D8524F0F-9938-4BFA-820A-924092ED40AD}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -501,6 +512,10 @@ Global
 		{A633C347-E8AD-491B-B351-094609A050FE}.Debug|Win32.Build.0 = Debug|Win32
 		{A633C347-E8AD-491B-B351-094609A050FE}.Release|Win32.ActiveCfg = Release|Win32
 		{A633C347-E8AD-491B-B351-094609A050FE}.Release|Win32.Build.0 = Release|Win32
+		{996C1AA0-86B7-44A3-BBA6-DAA24137BA2D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{996C1AA0-86B7-44A3-BBA6-DAA24137BA2D}.Debug|Win32.Build.0 = Debug|Win32
+		{996C1AA0-86B7-44A3-BBA6-DAA24137BA2D}.Release|Win32.ActiveCfg = Release|Win32
+		{996C1AA0-86B7-44A3-BBA6-DAA24137BA2D}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

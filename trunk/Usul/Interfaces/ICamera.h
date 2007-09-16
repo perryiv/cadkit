@@ -32,7 +32,7 @@ struct ICamera : public Usul::Interfaces::IUnknown
 
   // Camera placement flags.
   enum CameraOption { FIT, RESET, FRONT, BACK, LEFT, RIGHT, TOP, BOTTOM, 
-                      ROTATE_Y_N90, ROTATE_Y_P90, ROTATE_X_N90, ROTATE_X_P90 };
+                      ROTATE_Y_N45, ROTATE_Y_P45, ROTATE_X_N45, ROTATE_X_P45 };
 
   // Set the camera.
   virtual void          camera ( CameraOption option ) = 0;

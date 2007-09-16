@@ -34,7 +34,8 @@ Options::Options() : _options()
 
 void Options::insert ( const std::string& option, const std::string& value )
 {
-  _options.insert ( Map::value_type ( option, value ) );
+  // Using map's "insert" doesn't replace values.
+  _options[option] = value;
 }
 
 
@@ -46,7 +47,9 @@ void Options::insert ( const std::string& option, const std::string& value )
 
 void Options::insert ( const Options& options )
 {
-  _options.insert ( options.begin(), options.end() );
+  // Using map's "insert" doesn't replace values.
+  for ( Options::const_iterator i = options.begin(); i != options.end(); ++i )
+    this->insert ( i->first, i->second );
 }
 
 

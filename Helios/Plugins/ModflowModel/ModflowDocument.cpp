@@ -14,8 +14,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "ModflowDocument.h"
+#include "Discretization.h"
+#include "BasicPackage.h"
+#include "BlockCenteredFlow.h"
 
 #include "XmlTree/Document.h"
+#include "XmlTree/Predicates.h"
 #include "XmlTree/XercesLife.h"
 
 #include "OsgTools/State/StateSet.h"
@@ -23,6 +27,8 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Exceptions/Thrower.h"
+#include "Usul/Factory/ObjectFactory.h"
+#include "Usul/Factory/TypeCreator.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
@@ -31,6 +37,8 @@
 #include "Usul/System/Directory.h"
 #include "Usul/System/LastError.h"
 #include "Usul/Trace/Trace.h"
+
+#include "osgDB/WriteFile"
 
 #include "osg/Group"
 #include "osg/Geode"
@@ -48,31 +56,20 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModflowDocument, ModflowDocument::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Constants.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Modflow
-{
-  const unsigned int LINE_BUFFER_SIZE ( 512 );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Constructor
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 ModflowDocument::ModflowDocument() : BaseClass ( "Modflow Document" ),
-  _numLayers ( 0 ),
   _gridSize ( 0, 0 ),
   _cellSize ( 0.0f, 0.0f ),
   _bounds(),
   _startHeads(),
   _landElev(),
-  _bottomElev()
+  _bottomElev(),
+  _layers()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -84,6 +81,7 @@ ModflowDocument::ModflowDocument() : BaseClass ( "Modflow Document" ),
 
 ModflowDocument::~ModflowDocument()
 {
+  USUL_TRACE_SCOPE;
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &ModflowDocument::_destroy ), "2110190659" );
 }
 
@@ -96,6 +94,7 @@ ModflowDocument::~ModflowDocument()
 
 void ModflowDocument::_destroy()
 {
+  USUL_TRACE_SCOPE;
   this->clear();
 }
 
@@ -108,6 +107,7 @@ void ModflowDocument::_destroy()
 
 Usul::Interfaces::IUnknown *ModflowDocument::queryInterface ( unsigned long iid )
 {
+  USUL_TRACE_SCOPE;
   switch ( iid )
   {
   case Usul::Interfaces::IBuildScene::IID:
@@ -126,6 +126,7 @@ Usul::Interfaces::IUnknown *ModflowDocument::queryInterface ( unsigned long iid 
 
 bool ModflowDocument::canExport ( const std::string &file ) const
 {
+  USUL_TRACE_SCOPE;
   return false;
 }
 
@@ -138,6 +139,7 @@ bool ModflowDocument::canExport ( const std::string &file ) const
 
 bool ModflowDocument::canInsert ( const std::string &file ) const
 {
+  USUL_TRACE_SCOPE;
   return false;
 }
 
@@ -150,6 +152,7 @@ bool ModflowDocument::canInsert ( const std::string &file ) const
 
 bool ModflowDocument::canOpen ( const std::string &file ) const
 {
+  USUL_TRACE_SCOPE;
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
   return ( ext == "modflow" );
 }
@@ -163,6 +166,7 @@ bool ModflowDocument::canOpen ( const std::string &file ) const
 
 bool ModflowDocument::canSave ( const std::string &file ) const
 {
+  USUL_TRACE_SCOPE;
   return false;
 }
 
@@ -175,6 +179,7 @@ bool ModflowDocument::canSave ( const std::string &file ) const
 
 void ModflowDocument::write ( const std::string &name, Unknown *caller  ) const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   std::cout << "Warning 3910751487: writing Modflow documents is not implemented" << std::endl;
 }
@@ -190,28 +195,11 @@ namespace Helper
 {
   void checkStream ( std::istream &in )
   {
+    USUL_TRACE_SCOPE_STATIC;
     if ( true == in.eof() )
     {
       throw std::runtime_error ( "Error 1290634954: unexpected end-of-file encountered while reading file" );
     }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the line.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper
-{
-  std::string getLine ( std::istream &in )
-  {
-    Helper::checkStream ( in );
-    std::vector<char> buffer ( Modflow::LINE_BUFFER_SIZE, '\0' );
-    in.getline ( &buffer[0], buffer.size() - 1 );
-    return std::string ( &buffer[0] );
   }
 }
 
@@ -226,6 +214,7 @@ namespace Helper
 {
   inline std::string findFileWithExtension ( const XmlTree::Node::Children &files, const std::string &lookFor )
   {
+    USUL_TRACE_SCOPE_STATIC;
     typedef XmlTree::Node::Children Children;
     for ( Children::const_iterator i = files.begin(); i != files.end(); ++i )
     {
@@ -253,8 +242,9 @@ namespace Helper
 namespace Helper
 {
   template < class ArrayType > inline void readAsciiArray 
-    ( unsigned int numRows, unsigned int numCols, float cellX, float cellY, ArrayType &data, std::istream &in )
+    ( unsigned int numRows, unsigned int numCols, double cellX, double cellY, ArrayType &data, std::istream &in )
   {
+    USUL_TRACE_SCOPE_STATIC;
     const unsigned int num ( numRows * numCols );
     data.resize ( num );
     for ( unsigned int i = 0; i < num; ++i )
@@ -274,10 +264,17 @@ namespace Helper
 
 void ModflowDocument::read ( const std::string &file, Unknown *caller, Unknown *progress )
 {
+  USUL_TRACE_SCOPE;
   typedef XmlTree::Node::Children Children;
 
   // Scope the directory change.
   Usul::System::Directory::ScopedCwd cwd ( Usul::File::directory ( file, false ) );
+
+  // Add readers to a factory.
+  Usul::Factory::ObjectFactory factory;
+  factory.add ( new Usul::Factory::TypeCreator<Discretization>    ( "discretization"      ) );
+  factory.add ( new Usul::Factory::TypeCreator<BasicPackage>      ( "basic_package"       ) );
+  factory.add ( new Usul::Factory::TypeCreator<BlockCenteredFlow> ( "block_centered_flow" ) );
 
   // Initialize and finalize use of xerces.
   XmlTree::XercesLife life;
@@ -286,201 +283,58 @@ void ModflowDocument::read ( const std::string &file, Unknown *caller, Unknown *
   XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
   document->load ( file );
 
-  // Find all important nodes.
+  // Find all important files.
   Children files ( document->find ( "file", true ) );
 
-  // Read the discretization file first, it has the number of layers.
-  this->_readDiscretizationFile ( Helper::findFileWithExtension ( files, "dis" ), progress );
+  // Find discretization file.
+  Children::iterator discretization ( std::find_if ( files.begin(), files.end(), XmlTree::HasAttribute ( "type", "discretization" ) ) );
+  if ( files.end() == discretization )
+    Usul::Exceptions::Thrower<std::runtime_error> ( "Error 1994992467: Add discretization file to: ", file );
+  this->_read ( factory, discretization->get(), progress );
 
-  // Read the basic package file.
-  this->_readBasicPackageFile ( Helper::findFileWithExtension ( files, "ba6" ), progress );
-}
+  // Remove discretization file from list.
+  files.erase ( discretization );
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Read the discretization file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ModflowDocument::_readDiscretizationFile ( const std::string &file, Unknown *progress )
-{
-  Guard guard ( this->mutex() );
-
-  // Ignore empty strings.
-  if ( true == file.empty() )
-    return;
-
-  std::cout << "Reading: " << file << std::endl;
-
-  // Open the file.
-  Usul::System::LastError::init();
-  std::ifstream in ( file.c_str() );
-  if ( false == in.is_open() )
-    Usul::Exceptions::Thrower<std::runtime_error>
-      ( "Error 1126947177: failed to open file '", file, "', ", Usul::System::LastError::message() );
-
-  // Skip comment lines.
-  this->_skipLines ( '#', in );
-
-  // Read the header.
-  Helper::checkStream ( in );
-  in >> _numLayers >> _gridSize[0] >> _gridSize[1];
-
-  // Skip to the grid points.
-  this->_seekToLine ( "CONSTANT", in );
-
-  // Read the cell size.
-  std::string dummy;
-  Helper::checkStream ( in );
-  in >> dummy >> _cellSize[0] >> dummy;
-  in >> dummy >> _cellSize[1] >> dummy;
-
-  // Read the land surface.
-  this->_seekToLine ( "INTERNAL", in );
-  Helper::checkStream ( in );
-  this->_readGrid ( in, _landElev );
-
-  // For each layer...
-  _bottomElev.resize ( _numLayers );
-  for ( unsigned int i = 0; i < _numLayers; ++i )
+  // Read the remaining files.
+  for ( Children::iterator i = files.begin(); i != files.end(); ++i )
   {
-    // Read the grid.
-    this->_seekToLine ( "INTERNAL", in );
-    Helper::checkStream ( in );
-    this->_readGrid ( in, _bottomElev.at(i) );
+    this->_read ( factory, i->get(), progress );
   }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Read the basic package file.
+//  Read the file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModflowDocument::_readBasicPackageFile ( const std::string &file, Unknown *progress )
+void ModflowDocument::_read ( Factory &factory, XmlTree::Node *file, Unknown *progress )
 {
-  Guard guard ( this->mutex() );
-
-  // Ignore empty strings.
-  if ( true == file.empty() )
-    return;
-
-  std::cout << "Reading: " << file << std::endl;
-
-  // Open the file.
-  Usul::System::LastError::init();
-  std::ifstream in ( file.c_str() );
-  if ( false == in.is_open() )
-    Usul::Exceptions::Thrower<std::runtime_error>
-      ( "Error 4171642072: failed to open file '", file, "', ", Usul::System::LastError::message() );
-
-  // For each layer...
-  _bounds.resize ( _numLayers );
-  for ( unsigned int i = 0; i < _numLayers; ++i )
+  USUL_TRACE_SCOPE;
+  if ( 0x0 != file )
   {
-    // Read the grid.
-    this->_seekToLine ( "INTERNAL", in );
-    Helper::checkStream ( in );
-    this->_readGrid ( in, _bounds.at(i) );
-  }
-
-  // For each layer...
-  _startHeads.resize ( _numLayers );
-  for ( unsigned int i = 0; i < _numLayers; ++i )
-  {
-    // Read the grid.
-    this->_seekToLine ( "INTERNAL", in );
-    Helper::checkStream ( in );
-    this->_readGrid ( in, _startHeads.at(i) );
+    XmlTree::Node::Attributes &a ( file->attributes() );
+    this->_read ( factory, a["type"], a["name"], progress );
   }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Read the grid.
+//  Read the file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModflowDocument::_readGrid ( std::istream &in, GridInfo &grid )
+void ModflowDocument::_read ( Factory &factory, const std::string &type, const std::string &file, Unknown *progress )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  // Read the name.
-  std::string dummy;
-  in >> dummy >> dummy >> dummy >> dummy;
-  Helper::checkStream ( in );
-  std::string name ( Helper::getLine ( in ) );
-  boost::algorithm::trim ( name );
-
-  // Make the map entry and get reference to data.
-  grid.first = name;
-  GridData &data = grid.second;
-
-  // Read the grid points.
-  const unsigned int numCells ( _gridSize[0] * _gridSize[1] );
-  data.resize ( numCells );
-  Helper::readAsciiArray ( _gridSize[0], _gridSize[1], _cellSize[0], _cellSize[1], data, in );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Seek until you read the given word. Put cursor at beginning of the line.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ModflowDocument::_seekToLine ( const std::string &word, std::istream &in )
-{
-  Guard guard ( this->mutex() );
-
-  std::vector<char> buffer ( Modflow::LINE_BUFFER_SIZE, '\0' );
-  std::string s;
-
-  while ( false == in.eof() )
+  BaseReader::RefPtr reader ( dynamic_cast<BaseReader *> ( factory.create ( type ) ) );
+  if ( true == reader.valid() )
   {
-    std::fill ( buffer.begin(), buffer.end(), '\0' );
-
-    const std::istream::pos_type pos ( in.tellg() );
-    in.getline ( &buffer[0], buffer.size() - 1 );
-
-    std::istringstream line ( &buffer[0] );
-    line >> s;
-
-    if ( word == s )
-    {
-      in.seekg ( pos );
-      return;
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Seek past all lines that start with the given character.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ModflowDocument::_skipLines ( char c, std::istream &in )
-{
-  Guard guard ( this->mutex() );
-
-  std::vector<char> buffer ( Modflow::LINE_BUFFER_SIZE, '\0' );
-
-  while ( false == in.eof() )
-  {
-    const char next ( in.peek() );
-    if ( next == c )
-    {
-      in.getline ( &buffer[0], buffer.size() - 1 );
-    }
-    else
-    {
-      return;
-    }
+    reader->read ( this, file, progress );
   }
 }
 
@@ -493,9 +347,9 @@ void ModflowDocument::_skipLines ( char c, std::istream &in )
 
 void ModflowDocument::clear ( Usul::Interfaces::IUnknown * )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  _numLayers = 0;
   _gridSize.set ( 0, 0 );
   _cellSize.set ( 0.0f, 0.0f );
 
@@ -503,6 +357,10 @@ void ModflowDocument::clear ( Usul::Interfaces::IUnknown * )
   _startHeads.clear(),
   _landElev.second.clear(),
   _bottomElev.clear();
+
+  // Have to clear each layer first because they reference each other.
+  std::for_each ( _layers.begin(), _layers.end(), std::mem_fun ( &Layer::clear ) );
+  _layers.clear();
 }
 
 
@@ -514,6 +372,7 @@ void ModflowDocument::clear ( Usul::Interfaces::IUnknown * )
 
 ModflowDocument::Filters ModflowDocument::filtersSave() const
 {
+  USUL_TRACE_SCOPE;
   return Filters();
 }
 
@@ -526,6 +385,7 @@ ModflowDocument::Filters ModflowDocument::filtersSave() const
 
 ModflowDocument::Filters ModflowDocument::filtersExport() const
 {
+  USUL_TRACE_SCOPE;
   return Filters();
 }
 
@@ -538,6 +398,7 @@ ModflowDocument::Filters ModflowDocument::filtersExport() const
 
 ModflowDocument::Filters ModflowDocument::filtersOpen() const
 {
+  USUL_TRACE_SCOPE;
   Filters filters;
   filters.push_back ( Filter ( "Modflow Output (*.modflow)", "*.modflow" ) );
   return filters;
@@ -552,6 +413,7 @@ ModflowDocument::Filters ModflowDocument::filtersOpen() const
 
 ModflowDocument::Filters ModflowDocument::filtersInsert() const
 {
+  USUL_TRACE_SCOPE;
   return Filters();
 }
 
@@ -564,74 +426,29 @@ ModflowDocument::Filters ModflowDocument::filtersInsert() const
 
 osg::Node *ModflowDocument::buildScene ( const BaseClass::Options &options, Unknown *caller )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
   osg::ref_ptr<osg::Group> group ( new osg::Group );
+  double scaleFactor ( 0.95 );
 
-  // Add land surface.
-  //group->addChild ( this->_buildGrid ( 0, _landElev.second, false, caller ) );
-
-  // Add the water surfaces.
-  for ( unsigned int i = 0; i < _numLayers; ++i )
+  // Add the layers.
+  const unsigned int num ( _layers.size() );
+  const unsigned int flags ( Cell::Draw::CUBE | Cell::Draw::BOUNDS );
+  for ( unsigned int i = 0; i < num; ++i )
   {
-    group->addChild ( this->_buildGrid ( i, _bottomElev.at(i).second, true, caller ) );
+    const Layer::RefPtr &layer ( _layers.at(i) );
+    group->addChild ( layer->buildScene ( flags, scaleFactor, caller ) );
+    //scaleFactor -= 0.05;
   }
 
+#ifdef _DEBUG
+#if 0
+  const std::string file ( Usul::File::fullPath ( "modflow.osg" ) );
+  osgDB::writeNodeFile ( *group, file );
+#endif
+#endif
   return group.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the grid.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node *ModflowDocument::_buildGrid ( unsigned int layer, GridData &grid, bool useBounds, Unknown *caller )
-{
-  Guard guard ( this->mutex() );
-
-  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
-
-  const unsigned int numCells ( grid.size() );
-  osg::ref_ptr<osg::Vec3Array> quads ( new osg::Vec3Array );
-  quads->reserve ( numCells * 4 );
-
-  osg::ref_ptr<osg::Vec3Array> normals ( new osg::Vec3Array );
-  normals->push_back ( osg::Vec3f ( 0.0f, 0.0f, 1.0f ) );
-
-  const osg::Vec2f size ( _cellSize[0] / 2.0f, _cellSize[1] / 2.0f );
-
-  // Make the cells.
-  for ( unsigned int j = 0; j < numCells; ++j )
-  {
-    if ( ( ( true == useBounds ) && ( 0.0f != _bounds.at(layer).second.at(j) ) ) || ( false == useBounds ) )
-    {
-      const Vec2f location ( this->_location ( j ) );
-      const Vec3f center ( location[0], location[1], grid.at(j) );
-      quads->push_back ( osg::Vec3f ( center[0] - size[0], center[1] - size[1], center[2] ) );
-      quads->push_back ( osg::Vec3f ( center[0] + size[0], center[1] - size[1], center[2] ) );
-      quads->push_back ( osg::Vec3f ( center[0] + size[0], center[1] + size[1], center[2] ) );
-      quads->push_back ( osg::Vec3f ( center[0] - size[0], center[1] + size[1], center[2] ) );
-    }
-  }
-
-  // We often skip many cells above.
-  quads->trim();
-
-  // Make geometry.
-  osg::ref_ptr<osg::Geometry> geom ( new osg::Geometry );
-  geom->setVertexArray ( quads.get() );
-
-  // Add vectors.
-  geom->setNormalArray ( normals.get() );
-  geom->setNormalBinding ( osg::Geometry::BIND_OVERALL );
-
-  // Add primitive set.
-  geom->addPrimitiveSet ( new osg::DrawArrays ( osg::DrawArrays::QUADS, 0, quads->size() ) );
-  geode->addDrawable ( geom.get() );
-
-  return geode.release();
 }
 
 
@@ -643,6 +460,7 @@ osg::Node *ModflowDocument::_buildGrid ( unsigned int layer, GridData &grid, boo
 
 void ModflowDocument::_incrementProgress ( bool state, Unknown *progress, unsigned int &numerator, unsigned int denominator )
 {
+  USUL_TRACE_SCOPE;
   this->setProgressBar ( state, numerator, denominator, progress );
   ++numerator;
   USUL_ASSERT ( numerator <= denominator );
@@ -655,15 +473,101 @@ void ModflowDocument::_incrementProgress ( bool state, Unknown *progress, unsign
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ModflowDocument::Vec2f ModflowDocument::_location ( unsigned int index ) const
+ModflowDocument::Vec2d ModflowDocument::_location ( unsigned int index ) const
 {
+  USUL_TRACE_SCOPE;
   const unsigned int col ( index % _gridSize[1] );
   const unsigned int row ( ( index - col ) / _gridSize[1] );
 
-  const float x ( _cellSize[0] * col );
+  const double x ( _cellSize[0] * col );
 
-  const float height ( _cellSize[1] * _gridSize[1] );
-  const float y ( height - ( _cellSize[1] * row ) );
+  const double height ( _cellSize[1] * _gridSize[1] );
+  const double y ( height - ( _cellSize[1] * row ) );
 
-  return Vec2f ( x, y );
+  return Vec2d ( x, y );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModflowDocument::layers ( Layers &layers )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _layers = layers;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ModflowDocument::Layers &ModflowDocument::layers()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _layers;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const ModflowDocument::Layers &ModflowDocument::layers() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _layers;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int ModflowDocument::numLayers() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _layers.size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the grid size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ModflowDocument::Vec2ui ModflowDocument::gridSize() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Layer::RefPtr layer ( _layers.empty() ? 0x0 : _layers.front() );
+  return ( ( layer.valid() ) ? Vec2ui ( layer->gridSize() ) : Vec2ui ( 0, 0 ) );
+}
+
+
+#if 0
+  Need to register functors that map the type with a reader function.
+
+  Important!
+  -- Animate through time steps
+  -- Cutting planes
+
+  Would be good to...
+  -- Color control
+  -- Cell drawing control
+  -- Overlay data from PostGIS
+#endif

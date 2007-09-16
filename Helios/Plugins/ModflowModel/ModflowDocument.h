@@ -16,6 +16,12 @@
 #ifndef _MODFLOW_MODEL_DOCUMENT_H_
 #define _MODFLOW_MODEL_DOCUMENT_H_
 
+#include "CompileGuard.h"
+#include "BaseReader.h"
+#include "Layer.h"
+
+#include "XmlTree/Node.h"
+
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Math/Vector2.h"
@@ -26,6 +32,7 @@
 #include <vector>
 
 namespace osg { class Node; class Group; }
+namespace Usul { namespace Factory { class ObjectFactory; } }
 
 
 class ModflowDocument : public Usul::Documents::Document,
@@ -33,81 +40,88 @@ class ModflowDocument : public Usul::Documents::Document,
 {
 public:
 
-  /// Useful typedefs.
+  // Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
   typedef Usul::Math::Vec2ui Vec2ui;
-  typedef Usul::Math::Vec2f Vec2f;
+  typedef Usul::Math::Vec2d Vec2d;
   typedef Usul::Math::Vec3f Vec3f;
-  typedef std::vector<float> GridData;
+  typedef std::vector<double> GridData;
   typedef std::pair<std::string,GridData> GridInfo;
   typedef std::vector<GridInfo> GridVector;
+  typedef std::vector<Layer::RefPtr> Layers;
+  typedef Usul::Factory::ObjectFactory Factory;
 
-  /// Smart-pointer definitions.
+  // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ModflowDocument );
 
-  /// Usul::Interfaces::IUnknown members.
+  // Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  /// Construction.
+  // Construction.
   ModflowDocument();
 
-  /// Build the scene.
+  // Build the scene.
   virtual osg::Node *         buildScene ( const BaseClass::Options &options, Unknown *caller = 0x0 );
 
-  /// Return true if this document can do it.
+  // Return true if this document can do it.
   virtual bool                canExport ( const std::string &file ) const;
   virtual bool                canInsert ( const std::string &file ) const;
   virtual bool                canOpen   ( const std::string &file ) const;
   virtual bool                canSave   ( const std::string &file ) const;
 
-  /// Clear any existing data.
+  // Clear any existing data.
   virtual void                clear ( Unknown *caller = 0x0 );
 
-  /// Get the filters that correspond to what this document can read and write.
+  // Get the filters that correspond to what this document can read and write.
   virtual Filters             filtersOpen()   const;
   virtual Filters             filtersSave()   const;
   virtual Filters             filtersInsert() const;
   virtual Filters             filtersExport() const;
 
-  /// Read the document.
+  // Return the grid size.
+  Vec2ui                      gridSize() const;
+
+  // Set/get the layers.
+  void                        layers ( Layers & );
+  const Layers &              layers() const;
+  Layers &                    layers();
+
+  // Return number of layers.
+  unsigned int                numLayers() const;
+
+  // Read the document.
   virtual void                read ( const std::string &filename, Unknown *caller, Unknown *progress );
 
-  /// Write the document to given file name.
+  // Write the document to given file name.
   virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const;
 
 protected:
-
-  osg::Node *                 _buildGrid ( unsigned int layer, GridData &grid, bool useBounds, Unknown *caller = 0x0 );
 
   void                        _destroy();
 
   void                        _incrementProgress ( bool state, Unknown *progress, unsigned int &numerator, unsigned int denominator );
 
-  Vec2f                       _location ( unsigned int i ) const;
+  Vec2d                       _location ( unsigned int i ) const;
 
-  void                        _readBasicPackageFile ( const std::string &file, Unknown *progress );
-  void                        _readDiscretizationFile ( const std::string &file, Unknown *progress );
-  void                        _readGrid ( std::istream &in, GridInfo &grid );
+  void                        _read ( Factory &, XmlTree::Node *file, Unknown *progress );
+  void                        _read ( Factory &, const std::string &type, const std::string &file, Unknown *progress );
 
-  void                        _seekToLine ( const std::string &word, std::istream &in );
-  void                        _skipLines ( char c, std::istream &in );
-
-  /// Do not copy.
+  // Do not copy.
   ModflowDocument ( const ModflowDocument & );
   ModflowDocument &operator = ( const ModflowDocument & );
 
-  /// Use reference counting.
+  // Use reference counting.
   virtual ~ModflowDocument();
 
 private:
 
-  unsigned int _numLayers;
   Vec2ui _gridSize;
-  Vec2f _cellSize;
+  Vec2d _cellSize;
   GridVector _bounds;
   GridVector _startHeads;
   GridInfo _landElev;
   GridVector _bottomElev;
+  Layers _layers;
 };
 
 

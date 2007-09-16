@@ -33,7 +33,6 @@ public:
 
   // Construction.
   Button();
-  Button ( const std::string &name, const std::string &icon_file, Callback *cb, MenuKit::Message m );
   Button ( const std::string &name, const std::string &icon_file );
   Button ( const Button & );
 

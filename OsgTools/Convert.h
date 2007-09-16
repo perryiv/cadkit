@@ -94,8 +94,8 @@ void vector ( const F& from , T& to, unsigned int size )
 }
 
 
-}; // namespace Convert
-}; // namespace OsgTools
+} // namespace Convert
+} // namespace OsgTools
 
 
 #endif // _OSG_TOOLS_CONVERTERS_H_

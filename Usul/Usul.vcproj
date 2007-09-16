@@ -736,6 +736,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IBackgroundColor.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IBoundingBox.h"
 					>
 				</File>
@@ -1192,6 +1196,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\INavigationFunctor.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\INewDocumentCreate.h"
 					>
 				</File>
@@ -1313,6 +1321,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IRedraw.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IRenderingPasses.h"
 					>
 				</File>
 				<File
@@ -1485,6 +1497,14 @@
 				</File>
 				<File
 					RelativePath="Interfaces\IUnknown.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IUpdateCheck.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IUpdateEnable.h"
 					>
 				</File>
 				<File

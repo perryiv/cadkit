@@ -195,24 +195,24 @@ namespace Helper
 
 namespace Helper
 {
-  bool hasPolygonMode ( osg::Node *node, bool twoSided, osg::PolygonMode::Mode mode )
+  bool hasPolygonMode ( const osg::Node *node, bool twoSided, osg::PolygonMode::Mode mode )
   {
     // Handle bad input.
     if ( 0x0 == node )
       return false;
 
     // Get the state set.
-    osg::StateSet *ss = node->getStateSet();
+    const osg::StateSet *ss = node->getStateSet();
     if ( 0x0 == ss )
       return false;
 
     // Get the polygon-mode attribute, if any.
-    osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::POLYGONMODE );
+    const osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::POLYGONMODE );
     if ( 0x0 == sa )
       return false;
 
     // Should be true.
-    osg::PolygonMode *pm = dynamic_cast < osg::PolygonMode * > ( sa );
+    const osg::PolygonMode *pm = dynamic_cast < const osg::PolygonMode * > ( sa );
     if ( 0x0 == pm )
       return false;
 
@@ -266,24 +266,24 @@ namespace Helper
 
 namespace Helper
 {
-  bool hasShadeModel ( osg::Node *node, osg::ShadeModel::Mode mode )
+  bool hasShadeModel ( const osg::Node *node, osg::ShadeModel::Mode mode )
   {
     // Handle bad input.
     if ( 0x0 == node )
       return false;
 
     // Get the state set.
-    osg::StateSet *ss = node->getStateSet();
+    const osg::StateSet *ss = node->getStateSet();
     if ( 0x0 == ss )
       return false;
 
     // Get the shading attribute, if any.
-    osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::SHADEMODEL );
+    const osg::StateAttribute *sa = ss->getAttribute ( osg::StateAttribute::SHADEMODEL );
     if ( 0x0 == sa )
       return false;
 
     // Should be true.
-    osg::ShadeModel *sm = dynamic_cast < osg::ShadeModel * > ( sa );
+    const osg::ShadeModel *sm = dynamic_cast < const osg::ShadeModel * > ( sa );
     if ( 0x0 == sm )
       return false;
 
@@ -311,7 +311,7 @@ void StateSet::setPolygonsFilled ( osg::Node *node, bool twoSided )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool StateSet::getPolygonsFilled ( osg::Node *node, bool twoSided )
+bool StateSet::getPolygonsFilled ( const osg::Node *node, bool twoSided )
 {
   return Helper::hasPolygonMode ( node, twoSided, osg::PolygonMode::FILL );
 }
@@ -335,7 +335,7 @@ void StateSet::setPolygonsLines ( osg::Node *node, bool twoSided )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool StateSet::getPolygonsLines ( osg::Node *node, bool twoSided )
+bool StateSet::getPolygonsLines ( const osg::Node *node, bool twoSided )
 {
   return Helper::hasPolygonMode ( node, twoSided, osg::PolygonMode::LINE );
 }
@@ -359,7 +359,7 @@ void StateSet::setPolygonsPoints ( osg::Node *node, bool twoSided )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool StateSet::getPolygonsPoints ( osg::Node *node, bool twoSided )
+bool StateSet::getPolygonsPoints ( const osg::Node *node, bool twoSided )
 {
   return Helper::hasPolygonMode ( node, twoSided, osg::PolygonMode::POINT );
 }
@@ -383,7 +383,7 @@ void StateSet::setPolygonsSmooth ( osg::Node *node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool StateSet::getPolygonsSmooth ( osg::Node *node )
+bool StateSet::getPolygonsSmooth ( const osg::Node *node )
 {
   return Helper::hasShadeModel ( node, osg::ShadeModel::SMOOTH );
 }
@@ -407,7 +407,7 @@ void StateSet::setPolygonsFlat ( osg::Node *node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool StateSet::getPolygonsFlat ( osg::Node *node )
+bool StateSet::getPolygonsFlat ( const osg::Node *node )
 {
   return Helper::hasShadeModel ( node, osg::ShadeModel::FLAT );
 }

@@ -44,23 +44,23 @@ struct OSG_TOOLS_EXPORT StateSet
   static void         setNormalize ( osg::StateSet *ss, bool state );
 
   // Set/get the polygon state.
-  static bool         getPolygonsFilled ( osg::Node *node, bool twoSided );
+  static bool         getPolygonsFilled ( const osg::Node *node, bool twoSided );
   static void         setPolygonsFilled ( osg::Node *node, bool twoSided );
 
   // Make polygons draw with lines.
-  static bool         getPolygonsLines ( osg::Node *node, bool twoSided );
+  static bool         getPolygonsLines ( const osg::Node *node, bool twoSided );
   static void         setPolygonsLines ( osg::Node *node, bool twoSided );
 
   // Make polygons draw with points.
-  static bool         getPolygonsPoints ( osg::Node *node, bool twoSided );
+  static bool         getPolygonsPoints ( const osg::Node *node, bool twoSided );
   static void         setPolygonsPoints ( osg::Node *node, bool twoSided );
 
   // Make filled polygons draw with smooth shading.
-  static bool         getPolygonsSmooth ( osg::Node *node );
+  static bool         getPolygonsSmooth ( const osg::Node *node );
   static void         setPolygonsSmooth ( osg::Node *node );
 
   // Make filled polygons draw with flat shading.
-  static bool         getPolygonsFlat ( osg::Node *node );
+  static bool         getPolygonsFlat ( const osg::Node *node );
   static void         setPolygonsFlat ( osg::Node *node );
 
   // Make filled polygons draw with flat shading.

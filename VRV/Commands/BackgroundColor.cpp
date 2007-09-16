@@ -1,0 +1,86 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author(s): Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "VRV/Commands/BackgroundColor.h"
+#include "Usul/Interfaces/IBackgroundColor.h"
+
+using namespace VRV::Commands;
+
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( BackgroundColor, BackgroundColor::BaseClass );
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+BackgroundColor::BackgroundColor ( const std::string& name, const Usul::Math::Vec4f& color, Usul::Interfaces::IUnknown *caller ) : 
+BaseClass ( caller ),
+_color ( color )
+{
+  this->text ( name );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+BackgroundColor::~BackgroundColor ()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Execute.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BackgroundColor::_execute ()
+{
+  Usul::Interfaces::IBackgroundColor::QueryPtr bc ( this->caller () );
+
+  if ( bc.valid () )
+    bc->backgroundColor ( _color );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* BackgroundColor::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUpdateCheck::IID:
+    return static_cast < Usul::Interfaces::IUpdateCheck * > ( this );
+  default:
+    return BaseClass::queryInterface ( iid );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the check.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool BackgroundColor::updateCheck () const
+{
+  Usul::Interfaces::IBackgroundColor::QueryPtr bc ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller () ) );
+  return bc.valid () ? _color.equal( bc->backgroundColor () ) : false;
+}

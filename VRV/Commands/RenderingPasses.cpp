@@ -1,0 +1,86 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author(s): Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "VRV/Commands/RenderingPasses.h"
+#include "Usul/Interfaces/IRenderingPasses.h"
+
+using namespace VRV::Commands;
+
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( RenderingPasses, RenderingPasses::BaseClass );
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RenderingPasses::RenderingPasses ( const std::string& name, unsigned int passes, Usul::Interfaces::IUnknown *caller ) : 
+BaseClass ( caller ),
+_passes ( passes )
+{
+  this->text ( name );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RenderingPasses::~RenderingPasses ()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Execute.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RenderingPasses::_execute ()
+{
+  Usul::Interfaces::IRenderingPasses::QueryPtr rp ( this->caller () );
+
+  if ( rp.valid () )
+    rp->renderingPasses ( _passes );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* RenderingPasses::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUpdateCheck::IID:
+    return static_cast < Usul::Interfaces::IUpdateCheck * > ( this );
+  default:
+    return BaseClass::queryInterface ( iid );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the check.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool RenderingPasses::updateCheck () const
+{
+  Usul::Interfaces::IRenderingPasses::QueryPtr rp ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller () ) );
+  return rp.valid () ? _passes == rp->renderingPasses () : false;
+}

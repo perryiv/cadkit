@@ -43,6 +43,12 @@
 #include "Usul/Interfaces/IButtonID.h"
 
 #include "VRV/Common/Buttons.h"
+#include "VRV/Commands/Camera.h"
+#include "VRV/Commands/PolygonMode.h"
+#include "VRV/Commands/ShadeModel.h"
+#include "VRV/Commands/RenderingPasses.h"
+#include "VRV/Commands/Navigator.h"
+#include "VRV/Commands/BackgroundColor.h"
 
 #include "osg/MatrixTransform"
 #include "osg/AutoTransform"
@@ -174,7 +180,6 @@ Application::Application ( ) :
   _iVisibility    ( static_cast < CV::Interfaces::IVisibility* >    ( 0x0 ) ),
   _iSelection     ( static_cast < CV::Interfaces::ISelection* >     ( 0x0 ) ),
   _iMaterialStack ( static_cast < CV::Interfaces::IMaterialStack* > ( 0x0 ) ),
-  _home           ( osg::Matrixf::identity() ),
   _colorMap       (),
   _textures       ( true )
 {
@@ -206,15 +211,15 @@ Application::Application ( ) :
   this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
 
   // populate the color map.  TODO: Read from config file.
-  _colorMap["red"]    = osg::Vec4 ( 1.0,0.0,0.0,1.0 );
-  _colorMap["yellow"] = osg::Vec4 ( 1.0,1.0,0.0,1.0 );
-  _colorMap["green"]  = osg::Vec4 ( 0.0,1.0,0.0,1.0 );
-  _colorMap["teal"]   = osg::Vec4 ( 0.0,1.0,1.0,1.0 );
-  _colorMap["blue"]   = osg::Vec4 ( 0.0,0.0,1.0,1.0 );
-  _colorMap["white"]  = osg::Vec4 ( 1.0,1.0,1.0,1.0 );
-  _colorMap["grey"]   = osg::Vec4 ( 0.5,0.5,0.5,1.0 );
-  _colorMap["black"]  = osg::Vec4 ( 0.0,0.0,0.0,1.0 );
-  _colorMap["sky_blue"] = osg::Vec4 ( 0.592156, 0.713725, 1.0, 1.0 );
+  _colorMap["red"]    = Usul::Math::Vec4f ( 1.0,0.0,0.0,1.0 );
+  _colorMap["yellow"] = Usul::Math::Vec4f ( 1.0,1.0,0.0,1.0 );
+  _colorMap["green"]  = Usul::Math::Vec4f ( 0.0,1.0,0.0,1.0 );
+  _colorMap["teal"]   = Usul::Math::Vec4f ( 0.0,1.0,1.0,1.0 );
+  _colorMap["blue"]   = Usul::Math::Vec4f ( 0.0,0.0,1.0,1.0 );
+  _colorMap["white"]  = Usul::Math::Vec4f ( 1.0,1.0,1.0,1.0 );
+  _colorMap["grey"]   = Usul::Math::Vec4f ( 0.5,0.5,0.5,1.0 );
+  _colorMap["black"]  = Usul::Math::Vec4f ( 0.0,0.0,0.0,1.0 );
+  _colorMap["sky_blue"] = Usul::Math::Vec4f ( 0.592156, 0.713725, 1.0, 1.0 );
 
   typedef Usul::Components::Manager Manager;
 
@@ -295,44 +300,16 @@ void Application::_init()
   this->normalize ( this->preferences()->normalizeVertexNormalsGlobal() );
   
   // Set the background color.
-  const Preferences::Vec4f &bc = this->preferences()->backgroundColor();
-  this->setBackgroundColor ( osg::Vec4 ( bc[0], bc[1], bc[2], bc[3] ) );
+  this->backgroundColor ( this->preferences()->backgroundColor() );
 
   // Set up lights.
   this->_initLight();
-
-  // Experimental: 
-  #if 1 // Experimental
-  std::ostringstream out;
-  out << Usul::System::Host::name() << "_home_position.txt";
-  {
-    std::ifstream file ( out.str().c_str() );
-    if ( true == file.is_open() )
-    {
-      osg::Matrixf::value_type *m = _home.ptr();
-      file >> m[0] >> m[4] >> m[8]  >> m[12];
-      file >> m[1] >> m[5] >> m[9]  >> m[13];
-      file >> m[2] >> m[6] >> m[10] >> m[14];
-      file >> m[3] >> m[7] >> m[11] >> m[15];
-    }
-  }
-
-  // Always set the navigation matrix.
-  this->_navigationMatrix ( _home );
-
-  #else
-    // Save the "home" position.
-    this->_setHome();
-  #endif
 
   // Initialize the menu.
   this->_initMenu();
 
   // Initialize the status-bar.
   this->_initStatusBar();
-
-  //// Turn on navigation.
-  //this->_handleNavigationEvent( NAVIGATE_NO_NAV );
 
   // Note: we cannot initialize the text yet because the viewport has not been set.
 }
@@ -657,17 +634,15 @@ void Application::_initFileMenu     ( MenuKit::Menu* menu )
     exportMenu->text ( "Export" );
     menu->append ( exportMenu.get() );
 
-    exportMenu->append ( this->_createButton ( "Image", MenuKit::memFunCB2 ( this, &Application::_exportImage ) ) );
-    exportMenu->append ( this->_createButton ( "Models ASCII", MenuKit::memFunCB2 ( this, &Application::_exportWorld ) ) );
-    exportMenu->append ( this->_createButton ( "Models Binary", MenuKit::memFunCB2 ( this, &Application::_exportWorldBinary ) ) );
-    exportMenu->append ( this->_createButton ( "Scene ASCII", MenuKit::memFunCB2 ( this, &Application::_exportScene ) ) );
-    exportMenu->append ( this->_createButton ( "Scene Binary", MenuKit::memFunCB2 ( this, &Application::_exportSceneBinary ) ) );
+    exportMenu->append ( this->_createButton ( new BasicCommand ( "Image", ExecuteFunctor ( this, &Application::exportNextFrame ) ) ) );
+    exportMenu->append ( this->_createButton ( new BasicCommand ( "Models ASCII", ExecuteFunctor ( this, &Application::exportWorld ) ) ) );
+    exportMenu->append ( this->_createButton ( new BasicCommand ( "Models Binary", ExecuteFunctor ( this, &Application::exportWorldBinary ) ) ) );
+    exportMenu->append ( this->_createButton ( new BasicCommand ( "Scene ASCII", ExecuteFunctor ( this, &Application::exportScene ) ) ) );
+    exportMenu->append ( this->_createButton ( new BasicCommand ( "Scene Binary", ExecuteFunctor ( this, &Application::exportSceneBinary ) ) ) );
   }
 
   menu->append ( this->_createSeperator () );
-  menu->append ( this->_createButton ( "Exit", MenuKit::memFunCB2 ( this, &Application::_quitCallback ) ) );
-  
-  
+  menu->append ( this->_createButton ( new BasicCommand ( "Exit", ExecuteFunctor ( this, &Application::quit ) ) ) );
 }
 
 
@@ -700,10 +675,12 @@ void Application::_initEditMenu     ( MenuKit::Menu* menu )
 
 void Application::_initViewMenu ( MenuKit::Menu* menu )
 {
-  menu->append ( this->_createToggle ( "Frame Dump", MenuKit::memFunCB2 ( this, &Application::_dumpFrames ) ) );
-  menu->append ( this->_createButton ( "Reset Clipping", MenuKit::memFunCB2 ( this, &Application::_resetClipping ) ) );
-  menu->append ( this->_createButton ( "Set Home", MenuKit::memFunCB2 ( this, &Application::_setAsHome ) ) );
+  menu->append ( this->_createToggle ( new CheckCommand ( "Frame Dump", BoolFunctor ( this, &Application::frameDump ), CheckFunctor ( this, &Application::frameDump ) ) ) );
+  menu->append ( this->_createButton ( new BasicCommand ( "Reset Clipping", ExecuteFunctor ( this, &Application::_setNearAndFarClippingPlanes ) ) ) );
+  menu->append ( this->_createButton ( new BasicCommand ( "Set Home", ExecuteFunctor ( this, &Application::_setHome ) ) ) );
   menu->append ( this->_createSeperator () );
+
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   // Rendering passes menu.
   {
@@ -712,10 +689,12 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
     passes->text ( "Rendering Passes" );
     menu->append ( passes.get() );
 
-    passes->append ( this->_createButton ( "1", MenuKit::memFunCB2 ( this, &Application::_renderPassesOne ) ) );
-    passes->append ( this->_createButton ( "3", MenuKit::memFunCB2 ( this, &Application::_renderPassesThree ) ) );
-    passes->append ( this->_createButton ( "9", MenuKit::memFunCB2 ( this, &Application::_renderPassesNine ) ) );
-    passes->append ( this->_createButton ( "12", MenuKit::memFunCB2 ( this, &Application::_renderPassesTweleve ) ) );
+    typedef VRV::Commands::RenderingPasses RenderingPasses;
+
+    passes->append ( this->_createRadio ( new RenderingPasses ( "1", 1, me.get () ) ) );
+    passes->append ( this->_createRadio ( new RenderingPasses ( "3", 3, me.get () ) ) );
+    passes->append ( this->_createRadio ( new RenderingPasses ( "9", 9, me.get () ) ) );
+    passes->append ( this->_createRadio ( new RenderingPasses ( "12", 12, me.get () ) ) );
   }
 
   // Goto menu.
@@ -725,13 +704,15 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
     gotoMenu->text ( "Goto" );
     menu->append ( gotoMenu.get() );
 
-    gotoMenu->append ( this->_createButton ( "Home", MenuKit::memFunCB2 ( this, &Application::_viewHome ) ) );
-    gotoMenu->append ( this->_createButton ( "Front",  MenuKit::memFunCB2 ( this, &Application::_gotoViewFront ) ) );
-    gotoMenu->append ( this->_createButton ( "Back",   MenuKit::memFunCB2 ( this, &Application::_gotoViewBack ) ) );
-    gotoMenu->append ( this->_createButton ( "Top",    MenuKit::memFunCB2 ( this, &Application::_gotoViewTop ) ) );
-    gotoMenu->append ( this->_createButton ( "Bottom", MenuKit::memFunCB2 ( this, &Application::_gotoViewBottom ) ) );
-    gotoMenu->append ( this->_createButton ( "Left",   MenuKit::memFunCB2 ( this, &Application::_gotoViewRight ) ) );
-    gotoMenu->append ( this->_createButton ( "Right",  MenuKit::memFunCB2 ( this, &Application::_gotoViewLeft ) ) );
+    typedef VRV::Commands::Camera Camera;
+  
+    gotoMenu->append ( this->_createButton ( new Camera ( "Home",   ICamera::RESET,  me ) ) );
+    gotoMenu->append ( this->_createButton ( new Camera ( "Front",  ICamera::FRONT,  me ) ) );
+    gotoMenu->append ( this->_createButton ( new Camera ( "Back",   ICamera::BACK ,  me ) ) );
+    gotoMenu->append ( this->_createButton ( new Camera ( "Top",    ICamera::TOP,    me ) ) );
+    gotoMenu->append ( this->_createButton ( new Camera ( "Bottom", ICamera::BOTTOM, me ) ) );
+    gotoMenu->append ( this->_createButton ( new Camera ( "Left",   ICamera::LEFT,   me ) ) );
+    gotoMenu->append ( this->_createButton ( new Camera ( "Right",  ICamera::RIGHT,  me ) ) );
   }
 
   // Polygons menu.
@@ -741,10 +722,24 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
     polygons->text ( "Polygons" );
     menu->append ( polygons.get() );
 
-    polygons->append ( this->_createRadio ( "Smooth",    MenuKit::memFunCB2 ( this, &Application::_polysSmooth ) ) );
-    polygons->append ( this->_createRadio ( "Flat",      MenuKit::memFunCB2 ( this, &Application::_polysFlat ) ) );
-    polygons->append ( this->_createRadio ( "Wireframe", MenuKit::memFunCB2 ( this, &Application::_polysWireframe ) ) );
-    polygons->append ( this->_createRadio ( "Points",    MenuKit::memFunCB2 ( this, &Application::_polysPoints ) ) );
+    typedef VRV::Commands::PolygonMode PolygonMode;
+
+    polygons->append ( this->_createRadio ( new PolygonMode ( "Filled",    IPolygonMode::FILLED, me.get() ) ) );
+    polygons->append ( this->_createRadio ( new PolygonMode ( "Wireframe", IPolygonMode::WIRE_FRAME, me.get() ) ) );
+    polygons->append ( this->_createRadio ( new PolygonMode ( "Points",    IPolygonMode::POINTS, me.get() ) ) );
+  }
+
+  // Shading menu.
+  {
+    MenuKit::Menu::Ptr shading ( new MenuKit::Menu );
+    shading->layout ( MenuKit::Menu::VERTICAL );
+    shading->text ( "Shading" );
+    menu->append ( shading.get() );
+
+    typedef VRV::Commands::ShadeModel ShadeModel;
+
+    shading->append ( this->_createRadio ( new ShadeModel ( "Smooth", IShadeModel::SMOOTH, me.get() ) ) );
+    shading->append ( this->_createRadio ( new ShadeModel ( "Flat",   IShadeModel::FLAT, me.get() ) ) );
   }
 }
 
@@ -757,6 +752,7 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
 
 void Application::_initNavigateMenu ( MenuKit::Menu* menu )
 {
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
   // Favorites menu
   {
     MenuKit::Menu::Ptr favorites ( new MenuKit::Menu );
@@ -764,15 +760,16 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
     favorites->text ( "Favorites" );
     menu->append ( favorites.get() );
 
-    for ( ConstFavoriteIterator iter = this->favoritesBegin(); iter != this->favoritesEnd (); ++iter )
-      favorites->append ( this->_createRadio ( iter->second->name(), MenuKit::memFunCB2 ( this, &Application::_navigationFavorites ) ) );
+    typedef VRV::Commands::Navigator Navigator;
+    for ( FavoriteIterator iter = this->favoritesBegin(); iter != this->favoritesEnd (); ++iter )
+      favorites->append ( this->_createRadio ( new Navigator ( iter->second, me ) ) );
   }
 
   menu->append ( this->_createSeperator () );
-  menu->append ( this->_createButton ( "Translate Speed x 10", MenuKit::memFunCB2 ( this, &Application::_increaseSpeedTen ) ) );
-  menu->append ( this->_createButton ( "Translate Speed x 2", MenuKit::memFunCB2 ( this, &Application::_increaseSpeed ) ) );
-  menu->append ( this->_createButton ( "Translate Speed / 2", MenuKit::memFunCB2 ( this, &Application::_decreaseSpeed ) ) );
-  menu->append ( this->_createButton ( "Translate Speed / 10", MenuKit::memFunCB2 ( this, &Application::_decreaseSpeedTen ) ) );
+  menu->append ( this->_createButton ( new BasicCommand ( "Translate Speed x 10", ExecuteFunctor ( this, &Application::_increaseSpeedTen ) ) ) );
+  menu->append ( this->_createButton ( new BasicCommand ( "Translate Speed x 2", ExecuteFunctor ( this, &Application::_increaseSpeed ) ) ) );
+  menu->append ( this->_createButton ( new BasicCommand ( "Translate Speed / 2", ExecuteFunctor ( this, &Application::_decreaseSpeed ) ) ) );
+  menu->append ( this->_createButton ( new BasicCommand ( "Translate Speed / 10", ExecuteFunctor ( this, &Application::_decreaseSpeedTen ) ) ) );
 }
 
 
@@ -811,6 +808,8 @@ void Application::_initToolsMenu ( MenuKit::Menu* menu )
 
 void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
 {
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+
   // Create a sub-menu for background color
   MenuKit::Menu::Ptr background ( new MenuKit::Menu );
   background->layout ( MenuKit::Menu::VERTICAL );
@@ -818,14 +817,12 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
   menu->append ( background.get() );
 
   // Add a button for each of our colors.
+  typedef VRV::Commands::BackgroundColor BackgroundColor;
   for ( ColorMap::const_iterator iter = _colorMap.begin(); iter != _colorMap.end(); ++iter )
-    background->append ( this->_createButton ( iter->first, MenuKit::memFunCB2 ( this, &Application::_backgroundColor ) ) );
+    background->append ( this->_createButton ( new BackgroundColor ( iter->first, iter->second, me ) ) );
 
-  /*CV_REGISTER ( _selectionColor,   "selection_color" );*/
-
-  menu->append ( this->_createButton ( "Calibrate Joystick", MenuKit::memFunCB2 ( this, &Application::_setAnalogTrim ) ) );
-  menu->append ( this->_createButton ( "Toggle Hide Scene", MenuKit::memFunCB2 ( this, &Application::_toggleMenuSceneHideShow ) ) );
-
+  menu->append ( this->_createButton ( new BasicCommand ( "Calibrate Joystick", ExecuteFunctor ( this, &Application::analogTrim ) ) ) );
+  menu->append ( this->_createToggle ( new CheckCommand ( "Hide Scene", BoolFunctor ( this, &Application::menuSceneShowHide ), CheckFunctor ( this, &Application::menuSceneShowHide ) ) ) );
 }
 
 
@@ -837,8 +834,8 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
 
 void Application::_initAnimateMenu  ( MenuKit::Menu* menu )
 {
-  menu->append ( this->_createButton ( "Append", MenuKit::memFunCB2 ( this, &Application::_appendCurrentCamera ) ) );
-  menu->append ( this->_createButton ( "Animate", MenuKit::memFunCB2 ( this, &Application::_toggleStartAnimation ) ) );
+  menu->append ( this->_createButton ( new BasicCommand ( "Append", ExecuteFunctor ( this, &Application::appendCamera ) ) ) );
+  menu->append ( this->_createButton ( new BasicCommand ( "Animate", ExecuteFunctor ( this, &Application::startAnimation ) ) ) );
 
   menu->append ( this->_createSeperator () );
 
@@ -848,137 +845,18 @@ void Application::_initAnimateMenu  ( MenuKit::Menu* menu )
     steps->text ( "Steps" );
     menu->append ( steps.get() );
 
-    steps->append ( this->_createRadio ( "20",  MenuKit::memFunCB2 ( this, &Application::_animationSteps20 ) ) );
-    steps->append ( this->_createRadio ( "50",  MenuKit::memFunCB2 ( this, &Application::_animationSteps50 ) ) );
-    steps->append ( this->_createRadio ( "100", MenuKit::memFunCB2 ( this, &Application::_animationSteps100 ) ) );
+    steps->append ( this->_createRadio ( new CheckCommand ( "20",  BoolFunctor ( this, &Application::_animationSteps20 ), CheckFunctor ( this, &Application::_animationSteps20 ) ) ) );
+    steps->append ( this->_createRadio ( new CheckCommand ( "50",  BoolFunctor ( this, &Application::_animationSteps50 ), CheckFunctor ( this, &Application::_animationSteps50 ) ) ) );
+    steps->append ( this->_createRadio ( new CheckCommand ( "100", BoolFunctor ( this, &Application::_animationSteps100 ), CheckFunctor ( this, &Application::_animationSteps100 ) ) ) );
 
     steps->append ( this->_createSeperator () );
-    menu->append ( this->_createButton ( "Steps x 2", MenuKit::memFunCB2 ( this, &Application::_animationStepsDouble ) ) );
-    menu->append ( this->_createButton ( "Steps / 2", MenuKit::memFunCB2 ( this, &Application::_animationStepsHalf ) ) );
+    menu->append ( this->_createButton ( new BasicCommand ( "Steps x 2", ExecuteFunctor ( this, &Application::_animationStepsDouble ) ) ) );
+    menu->append ( this->_createButton ( new BasicCommand ( "Steps / 2", ExecuteFunctor ( this, &Application::_animationStepsHalf ) ) ) );
   }
 
   menu->append ( this->_createSeperator () );
 
-  menu->append ( this->_createButton ( "Clear", MenuKit::memFunCB2 ( this, &Application::_clearAnimation ) ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Callback to execute a command.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace CV 
-{
-  namespace Detail
-  {
-    class CommandCallback : public MenuKit::Callback
-    {
-    public:
-      typedef MenuKit::Callback BaseClass;
-
-      CommandCallback ( Usul::Commands::Command * command ) : BaseClass (), _command ( command )
-      {
-      }
-
-      virtual void operator () ( MenuKit::Message m, MenuKit::Item *item )
-      {
-        if ( m == MenuKit::MESSAGE_SELECTED )
-          _command->execute( 0x0 );
-      }
-
-    private:
-      Usul::Commands::Command::RefPtr _command;
-    };
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create a button.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-MenuKit::Button* Application::_createButton ( Usul::Commands::Command* command )
-{
-  MenuKit::Button* button ( new MenuKit::Button );
-
-  // Set the text.
-  button->text ( command->text() );
-
-  // Set the callback.
-  button->callback ( MenuKit::MESSAGE_SELECTED, new Detail::CommandCallback ( command ) );
-
-  return button;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create a button.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-MenuKit::Button* Application::_createButton ( const std::string& text, MenuKit::Callback* cb )
-{
-  // Raw pointer.  Need to switch to MenuKit to Usul::Base::Referenced.
-  MenuKit::Button* button ( new MenuKit::Button );
-
-  // Set the text.
-  button->text ( text );
-
-  // Hook up the default callback.
-  MenuKit::Callback::Ptr dcb ( MenuKit::memFunCB2 ( this, &Application::_defaultCallback ) );
-  button->callback ( MenuKit::MESSAGE_FOCUS_ON, dcb );
-  
-  // Set the callbacks.
-  button->callback ( MenuKit::MESSAGE_SELECTED, cb );
-  button->callback ( MenuKit::MESSAGE_UPDATE,   cb );
-
-  return button;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create a radio button.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-MenuKit::Button* Application::_createRadio ( const std::string& name, MenuKit::Callback* cb )
-{
-  MenuKit::Button* button ( this->_createButton ( name, cb ) );
-  button->radio ( true );
-  return button;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create a toggle button.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-MenuKit::Button* Application::_createToggle    ( const std::string& name, MenuKit::Callback* cb )
-{
-  MenuKit::Button* button ( this->_createButton ( name, cb ) );
-  button->toggle ( true );
-  return button;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create a seperator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-MenuKit::Button* Application::_createSeperator ( )
-{
-  MenuKit::Button* button ( new MenuKit::Button );
-  button->separator ( true );
-  return button;
+  menu->append ( this->_createButton ( new BasicCommand ( "Clear", ExecuteFunctor ( this, &Application::clearAnimation ) ) ) );
 }
 
 
@@ -1106,7 +984,7 @@ bool Application::_handleIntersectionEvent( unsigned long id )
   ErrorChecker ( 2588614392u, isAppThread(), CV::NOT_APP_THREAD );
 
   if(!_intersector) return false;
-
+#if 0
   // Process pressed states.
   if ( COMMAND_SELECT == id )
   {
@@ -1139,7 +1017,7 @@ bool Application::_handleIntersectionEvent( unsigned long id )
     this->_updateSceneTool();
     return true;
   }
-
+#endif
   // We didn't handle the event.
   return false;
 }
@@ -1704,53 +1582,6 @@ std::string Application::_counter ( unsigned int num ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Set the current camera position as the home view.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_setHome()
-{
-  Guard guard ( this->mutex() );
-  ErrorChecker ( 3948236564u, Application::isAppThread(), CV::NOT_APP_THREAD );
-  _home = this->_navigationMatrix();
-  Usul::Print::matrix ( "Matrix:", _home.ptr(), std::cout );
-
-#if 1 // Experimental
-  std::ostringstream out;
-  out << Usul::System::Host::name() << "_home_position.txt";
-  std::ofstream file ( out.str().c_str() );
-  if ( true == file.is_open() )
-  {
-    Usul::Print::matrix ( "", _home.ptr(), file, 20 );
-  }
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Get the color from the string.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const osg::Vec4& Application::_getColor ( const std::string& word ) const
-{
-  ErrorChecker ( 1084416660u, isAppThread(), CV::NOT_APP_THREAD );
-
-  std::string lc ( word );
-  std::transform ( lc.begin(), lc.end(), lc.begin(), ::tolower );
-  ColorMap::const_iterator iter = _colorMap.find ( lc );
-
-  if ( _colorMap.end() == iter )
-    return this->getBackgroundColor();
-
-  else
-    return iter->second;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Returns the number of selected
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1852,22 +1683,6 @@ void Application::_updateSceneTool()
         tool->transforms ( tr );
       }
     }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Export the next frame.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_exportImage ( MenuKit::Message m, MenuKit::Item *item )
-{
-  switch ( m )
-  {
-  case MenuKit::MESSAGE_SELECTED:
-    this->exportNextFrame ();
   }
 }
 
@@ -1987,3 +1802,286 @@ void Application::buttonReleaseNotify ( Usul::Interfaces::IUnknown * caller )
     unsigned long id ( button->buttonID () );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export the current world's geometry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::exportWorld ( )
+{
+  static unsigned int count ( 0 );
+  std::string number ( this->_counter ( ++count ) );
+  std::string filename ( "cv_world_" + number + ".osg" );
+  this->_writeScene ( filename, this->models() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export the current world's geometry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::exportWorldBinary ( )
+{
+  static unsigned int count ( 0 );
+  std::string number ( this->_counter ( ++count ) );
+  std::string filename ( "cv_world_" + number + ".ive" );
+  this->_writeScene ( filename, this->models() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export the current world's entire scene geometry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::exportScene ()
+{
+  static unsigned int count ( 0 );
+  std::string number ( this->_counter ( ++count ) );
+  std::string filename ( "cv_scene_" + number + ".osg" );
+  this->_writeScene ( filename, this->_sceneRoot() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export the current world's entire scene geometry as binary osg.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::exportSceneBinary ( )
+{
+  static unsigned int count ( 0 );
+  std::string number ( this->_counter ( ++count ) );
+  std::string filename ( "cv_scene_" + number + ".ive" );
+  this->_writeScene ( filename, this->_sceneRoot() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Quit the program.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::quit ( )
+{
+  vrj::Kernel::instance()->stop();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Move the camera such that the whole world is visible.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::viewWorld ( )
+{
+  ErrorChecker ( 2226820120u, isAppThread(), CV::NOT_APP_THREAD );
+
+  // Save current model-matrix.
+  osg::Matrix original ( this->models()->getMatrix() );
+
+  // Perform the "view all" on the model's branch.
+  this->viewAll ( this->models(), this->preferences()->viewAllScaleZ() );
+
+  // Move the navigation branch.
+  this->_navigationMatrix ( this->models()->getMatrix() );
+
+  // Restore the model's matrix.
+  this->models()->setMatrix ( original );
+
+  // make sure the scene is visible
+  this->_setNearAndFarClippingPlanes();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Move the camera such that the whole world is visible.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::viewScene ( )
+{
+  this->viewAll ( this->navigationScene(), this->preferences()->viewAllScaleZ() );
+  this->_setNearAndFarClippingPlanes();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the status-bar visibility.
+//
+///////////////////////////////////////////////////////////////////////////////
+#if 0
+void Application::_statusBarVis ( MenuKit::Message m, MenuKit::Item *item )
+{
+  ErrorChecker ( 1552310702u, isAppThread(), CV::NOT_APP_THREAD );
+
+  MenuPtr status ( this->statusBar() );
+
+  // Process the message.
+  switch ( m )
+  {
+    case MenuKit::MESSAGE_UPDATE:
+      item->checked ( status->menu()->expanded() );
+      break;
+
+    case MenuKit::MESSAGE_SELECTED:
+      status->menu()->expanded ( !status->menu()->expanded() );
+      status->updateScene();
+      break;
+  }
+}
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Increase speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_increaseSpeed ( )
+{
+  this->_increaseTranslateSpeed ( 2.0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Decrease speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_decreaseSpeed ( )
+{
+  this->_decreaseTranslateSpeed ( 2.0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Increase speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_increaseSpeedTen  ( )
+{
+  this->_increaseTranslateSpeed ( 10.0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Decrease speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_decreaseSpeedTen ( )
+{
+  this->_decreaseTranslateSpeed ( 10.0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of animation steps to 20.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animationSteps20 ( bool )
+{
+  this->animationSteps ( 20 );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the number of animation steps 20?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_animationSteps20 ( ) const
+{
+  return 20 == this->animationSteps ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of animation steps to 50.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animationSteps50 ( bool )
+{
+  this->animationSteps ( 50 );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the number of animation steps 50?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_animationSteps50 ( ) const
+{
+  return 50 == this->animationSteps ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of animation steps to 100.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animationSteps100 ( bool )
+{
+  this->animationSteps ( 100 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the number of animation steps 100?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_animationSteps100 ( ) const
+{
+  return 100 == this->animationSteps ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Double the number of animation steps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animationStepsDouble ( )
+{
+  this->animationSteps ( this->animationSteps () * 2 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Half the number of animation steps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animationStepsHalf ( )
+{
+  this->animationSteps ( this->animationSteps () / 2 );
+}
+
+

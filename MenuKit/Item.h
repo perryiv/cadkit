@@ -16,8 +16,9 @@
 #ifndef _MENUKIT_ITEM_
 #define _MENUKIT_ITEM_
 
-#include "MenuKit/Callback.h"
-#include "MenuKit/Messages.h"
+#include "MenuKit/Referenced.h"
+
+#include "Usul/Commands/Command.h"
 
 #include <string>
 #include <map>
@@ -33,7 +34,8 @@ class MENUKIT_EXPORT Item : public Referenced
 public:
 
   // Typedefs and smart-pointers.
-  typedef Referenced BaseClass;
+  typedef Referenced               BaseClass;
+  typedef Usul::Commands::Command  Command;
   MENUKIT_DECLARE_POINTER ( Item );
 
   // Possible flags.
@@ -50,7 +52,6 @@ public:
 
   // Construction.
   Item();
-  Item ( const std::string &name, const std::string &icon_file, Callback *cb, MenuKit::Message m );
   Item ( const std::string &name, const std::string &icon_file );
   Item ( const Item & );
   Item &operator = ( const Item & );
@@ -58,12 +59,10 @@ public:
   // Accept the visitor.
   virtual void          accept ( Visitor & ) = 0;
 
-  // Set/get the callback.
-  void                  callback ( MenuKit::Message m, Callback::Ptr c );
-  Callback *            callback ( MenuKit::Message m );
-
-  // Remove all occurances of the callback from the collection.
-  void                  removeAll ( Callback::Ptr c );
+  /// Get/Set the command.
+  void                  command ( Command * command );
+  Command *             command ();
+  const Command *       command () const;
 
   // Ste/get the icon filename.
   void                  iconFile ( const std::string &f ) { _iconFile = f; }
@@ -113,12 +112,8 @@ public:
   bool                  marked() const;
   void                  marked ( bool e );
 
-  // Send a message to the client.
-  void                  sendMessage ( MenuKit::Message m );
-
 protected:
 
-  typedef std::map<MenuKit::Message,Callback::Ptr> Callbacks;
   friend class Menu;
 
   // Use reference counting.
@@ -129,7 +124,7 @@ protected:
 
 private:
 
-  Callbacks _callbacks;
+  Command::RefPtr _command;
   std::string _text;
   std::string _info;
   std::string _iconFile;
@@ -138,7 +133,7 @@ private:
 };
 
 
-}; // namespace MenuKit
+} // namespace MenuKit
 
 
 #endif // _MENUKIT_ITEM_

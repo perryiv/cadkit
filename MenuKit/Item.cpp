@@ -35,7 +35,7 @@ using namespace MenuKit;
 ///////////////////////////////////////////////////////////////////////////////
 
 Item::Item(): Referenced(), 
-  _callbacks   (),
+  _command     ( 0x0 ),
   _text        (),
   _info        (),
   _iconFile    (),
@@ -51,27 +51,8 @@ Item::Item(): Referenced(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Item::Item ( const std::string &text, const std::string &iconFile, Callback *cb, MenuKit::Message m ) :
-  _callbacks   (),
-  _text        ( text ),
-  _info        (),
-  _iconFile    ( iconFile ),
-  _parent      ( 0x0 ),
-  _flags       ( Item::ENABLED )
-{
-  // Set the callback.
-  this->callback ( m, cb );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 Item::Item ( const std::string &text, const std::string &iconFile ) :
-  _callbacks   (),
+  _command     ( 0x0 ),
   _text        ( text ),
   _info        (),
   _iconFile    ( iconFile ),
@@ -88,7 +69,7 @@ Item::Item ( const std::string &text, const std::string &iconFile ) :
 ///////////////////////////////////////////////////////////////////////////////
 
 Item::Item ( const Item &i ) : Referenced ( i ),
-  _callbacks   ( i._callbacks ), 
+  _command     ( i._command ), 
   _text        ( i._text ), 
   _info        ( i._info ),
   _iconFile    ( i._iconFile ),
@@ -118,7 +99,7 @@ Item::~Item()
 Item& Item::operator = ( const Item &i )
 {
   BaseClass::operator = (i);
-  _callbacks   = i._callbacks;
+  _command     = i._command;
   _iconFile    = i._iconFile;
   _text        = i._text;
   _info        = i._info;
@@ -126,100 +107,6 @@ Item& Item::operator = ( const Item &i )
   _flags       = i._flags;
 
   return (*this);
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Send the message to the client.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Item::sendMessage ( MenuKit::Message m )
-{
-  Callback *cb = this->callback ( m );
-  if ( cb )
-  {
-    (*cb) ( m, this );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the callback.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Item::callback ( MenuKit::Message m, Callback::Ptr c )
-{
-  _callbacks[m] = c;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the callback.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Callback *Item::callback ( MenuKit::Message m )
-{
-  Callbacks::iterator i = _callbacks.find ( m );
-  return ( _callbacks.end() == i ) ? 0x0 : i->second.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Predicate to compare second element in a pair.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  template < class SecondType > struct IsSameAsSecond
-  {
-    IsSameAsSecond ( const SecondType &t ) : _t ( t ){}
-    template < class FirstType >
-    bool operator () ( const std::pair<FirstType,SecondType> &p )
-    {
-      return ( p.second == _t );
-    }
-  private:
-    const SecondType &_t;
-  };
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove all occurance of the callback.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Item::removeAll ( Callback::Ptr c )
-{
-  ///\todo TODO: this call was not in boost version 1_32: //BOOST_MPL_ASSERT_IS_SAME ( Callbacks::mapped_type, Callback::Ptr );
-
-  // Initialize.
-  bool loop ( true );
-  Detail::IsSameAsSecond<Callbacks::mapped_type> pred ( c );
-
-  // Loop until we are told to stop.
-  while ( loop )
-  {
-    // Find the first occurance.
-    Callbacks::iterator i = std::find_if ( _callbacks.begin(), _callbacks.end(), pred );
-
-    // If we did not find it then stop.
-    if ( _callbacks.end() == i )
-      loop = false;
-
-    // Otherwise, erase it.
-    else
-      _callbacks.erase ( i );
-  }
 }
 
 
@@ -433,4 +320,40 @@ void Item::marked ( bool e )
     this->flags ( Usul::Bits::add    <unsigned int> ( this->flags(), Item::MARKED ) );
   else
     this->flags ( Usul::Bits::remove <unsigned int> ( this->flags(), Item::MARKED ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the command.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Item::command ( Command * command )
+{
+  _command = command;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the command.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Commands::Command * Item::command ()
+{
+  return _command.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the command.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Usul::Commands::Command * Item::command () const
+{
+  return _command.get();
 }

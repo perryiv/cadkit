@@ -32,9 +32,12 @@
 #include "Usul/System/Directory.h"
 #include "Usul/System/Clock.h"
 #include "Usul/Math/Constants.h"
+#include "Usul/Print/Matrix.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/XercesLife.h"
+
+#include "MenuKit/Button.h"
 
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Convert.h"
@@ -52,6 +55,7 @@
 #include "Usul/File/Boost.h"
 
 #include <stdexcept>
+#include <fstream>
 
 using namespace VRV::Core;
 
@@ -105,7 +109,8 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _analogInputs      (),
   _transformFunctors (),
   _favoriteFunctors  (),
-  _translationSpeed  ( 1.0f )
+  _translationSpeed  ( 1.0f ),
+  _home              ( osg::Matrixf::identity() )
 {
   USUL_TRACE_SCOPE;
 
@@ -200,6 +205,9 @@ Application::~Application()
   _transformFunctors.clear ();
   _favoriteFunctors.clear ();
 
+  // Clear the menu.
+  this->menu ( 0x0 );
+
   // Make sure we don't have any references hanging around.
   USUL_ASSERT ( 0 == _refCount );
 }
@@ -254,6 +262,18 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IViewMatrix * > ( this );
   case Usul::Interfaces::IStatusBar::IID:
     return static_cast < Usul::Interfaces::IStatusBar * > ( this );
+  case Usul::Interfaces::ICamera::IID:
+    return static_cast < Usul::Interfaces::ICamera * > ( this );
+  case Usul::Interfaces::IPolygonMode::IID:
+    return static_cast < Usul::Interfaces::IPolygonMode * > ( this );
+  case Usul::Interfaces::IShadeModel::IID:
+    return static_cast < Usul::Interfaces::IShadeModel * > ( this );
+  case Usul::Interfaces::INavigationFunctor::IID:
+    return static_cast < Usul::Interfaces::INavigationFunctor * > ( this );
+  case Usul::Interfaces::IBackgroundColor::IID:
+    return static_cast < Usul::Interfaces::IBackgroundColor * > ( this );
+  case Usul::Interfaces::IRenderingPasses::IID:
+    return static_cast < Usul::Interfaces::IRenderingPasses * > ( this );
   default:
     return 0x0;
   }
@@ -348,7 +368,9 @@ void Application::contextInit()
   renderer->scene ( _sceneManager->scene() );
 
   // Set the background color.
-  renderer->backgroundColor ( _backgroundColor );
+  osg::Vec4 color;
+  OsgTools::Convert::vector ( _backgroundColor, color, 4 );
+  renderer->backgroundColor ( color );
 
   (*_renderer) = renderer.get();
 
@@ -726,6 +748,30 @@ void Application::init()
     (*iter)->addButtonPressListener ( me.get() );
     (*iter)->addButtonReleaseListener ( me.get() );
   }
+
+  // Experimental: 
+  #if 1 // Experimental
+  std::ostringstream out;
+  out << Usul::System::Host::name() << "_home_position.txt";
+  {
+    std::ifstream file ( out.str().c_str() );
+    if ( true == file.is_open() )
+    {
+      osg::Matrixf::value_type *m = _home.ptr();
+      file >> m[0] >> m[4] >> m[8]  >> m[12];
+      file >> m[1] >> m[5] >> m[9]  >> m[13];
+      file >> m[2] >> m[6] >> m[10] >> m[14];
+      file >> m[3] >> m[7] >> m[11] >> m[15];
+    }
+  }
+
+  // Always set the navigation matrix.
+  this->_navigationMatrix ( _home );
+
+  #else
+    // Save the "home" position.
+    this->_setHome();
+  #endif
 }
 
 
@@ -1406,16 +1452,18 @@ void Application::exportNextFrame()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::setBackgroundColor( const osg::Vec4& color )
+void Application::backgroundColor( const Usul::Math::Vec4f& color )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
   _backgroundColor = color;
+  osg::Vec4 c;
+  OsgTools::Convert::vector ( color, c, 4 );
 
   for( Renderers::iterator iter = _renderers.begin(); iter != _renderers.end(); ++iter )
   {
-    (*iter)->backgroundColor ( _backgroundColor );
+    (*iter)->backgroundColor ( c );
   }
 }
 
@@ -1426,11 +1474,10 @@ void Application::setBackgroundColor( const osg::Vec4& color )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec4& Application::getBackgroundColor() const
+Usul::Math::Vec4f Application::backgroundColor() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-
   return _backgroundColor;
 }
 
@@ -1441,7 +1488,7 @@ const osg::Vec4& Application::getBackgroundColor() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::numRenderPasses ( unsigned int num )
+void Application::renderingPasses ( unsigned int num )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -1450,6 +1497,24 @@ void Application::numRenderPasses ( unsigned int num )
   {
     (*iter)->numRenderPasses ( num );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of rendering passes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Application::renderingPasses ( ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  if ( false == _renderers.empty () )
+    return _renderers.front()->numRenderPasses ();
+  
+  return 0;
 }
 
 
@@ -1780,13 +1845,19 @@ const Usul::Math::Vec2f& Application::analogTrim () const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the analog trim.
+//  Set the trim. This assumes the user is not tilting the joystick one way 
+//  or the other. It records the value at the neutral position. If the value 
+//  is 0.5 (like it should be) then the "trim" will be zero.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::analogTrim ( float x, float y )
+void Application::analogTrim ( )
 {
   USUL_TRACE_SCOPE;
+
+  float x ( 0.5f - this->joystick()->horizontal() );
+  float y ( 0.5f - this->joystick()->vertical() );
+  
   Guard guard ( this->mutex() );
   _analogTrim.set ( x, y );
 }
@@ -2045,11 +2116,10 @@ void Application::_navigate()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::toggleMenuSceneShowHide( bool show )
+void Application::menuSceneShowHide ( bool show )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-
   _menuSceneShowHide = show;
 }
 
@@ -2060,11 +2130,10 @@ void Application::toggleMenuSceneShowHide( bool show )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Application::menuSceneShowHide()
+bool Application::menuSceneShowHide() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-
   return _menuSceneShowHide;
 }
 
@@ -2544,25 +2613,289 @@ const Application::Navigator * Application::navigator () const
   return _navigator;
 }
 
-// Get the begining of the favorites.
-Application::ConstFavoriteIterator Application::favoritesBegin () const
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the begining of the favorites.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::FavoriteIterator Application::favoritesBegin ()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
   return _favoriteFunctors.begin();
 }
 
-// Get the end of the favorites.
-Application::ConstFavoriteIterator Application::favoritesEnd () const
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the end of the favorites.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::FavoriteIterator Application::favoritesEnd ()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
   return _favoriteFunctors.end();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the favorite.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 Application::Navigator* Application::favorite ( const std::string& name )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
   return _favoriteFunctors [ name ];
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a button.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MenuKit::Button* Application::_createButton ( Usul::Commands::Command* command )
+{
+  MenuKit::Button* button ( new MenuKit::Button );
+
+  // Set the text.
+  button->text ( command->text() );
+
+  // Set the command.
+  button->command ( command );
+
+  return button;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a radio button.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MenuKit::Button* Application::_createRadio ( Usul::Commands::Command* command )
+{
+  MenuKit::Button* button ( this->_createButton ( command ) );
+  button->radio ( true );
+  return button;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a toggle button.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MenuKit::Button* Application::_createToggle    ( Usul::Commands::Command* command )
+{
+  MenuKit::Button* button ( this->_createButton ( command ) );
+  button->toggle ( true );
+  return button;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a seperator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MenuKit::Button* Application::_createSeperator ( )
+{
+  MenuKit::Button* button ( new MenuKit::Button );
+  button->separator ( true );
+  return button;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Goto camera position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::camera ( CameraOption option )
+{
+  // Get the bounding sphere.
+  const osg::BoundingSphere& bs ( this->models()->getBound() );
+
+  // Go to camera position.
+  switch ( option )
+  {
+  case RESET:
+    this->_navigationMatrix ( _home );
+    break;
+  case FRONT:
+    {
+      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius())-bs.center() ) );
+      this->_navigationMatrix ( trans );
+    }
+    break;
+  case BACK:
+    {
+      const osg::BoundingSphere& bs = this->models()->getBound();
+      osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI , osg::Y_AXIS ) );
+      osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
+      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
+      this->_navigationMatrix ( zero*rot*trans );
+    }
+    break;
+  case LEFT: 
+    {
+      osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI_2 , osg::Y_AXIS ) );
+      osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
+      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
+      this->_navigationMatrix ( zero*rot*trans );
+    }
+    break;
+  case RIGHT:
+    {
+      osg::Matrix rot  ( osg::Matrix::rotate   ( -osg::PI_2 , osg::Y_AXIS ) );
+      osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
+      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
+      this->_navigationMatrix ( zero*rot*trans );
+    }
+    break;
+  case TOP:
+    {
+      osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI_2 , osg::X_AXIS ) );
+      osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
+      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
+      this->_navigationMatrix ( zero*rot*trans );
+    }
+    break;
+  case BOTTOM:
+    {
+      osg::Matrix rot  ( osg::Matrix::rotate   ( -osg::PI_2 , osg::X_AXIS ) );
+      osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
+      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
+      this->_navigationMatrix ( zero*rot*trans );
+    }
+    break;
+  };
+
+  this->_setNearAndFarClippingPlanes();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the current camera position as the home view.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_setHome()
+{
+  Guard guard ( this->mutex() );
+  _home = this->_navigationMatrix();
+  Usul::Print::matrix ( "Matrix:", _home.ptr(), std::cout );
+
+#if 1 // Experimental
+  std::ostringstream out;
+  out << Usul::System::Host::name() << "_home_position.txt";
+  std::ofstream file ( out.str().c_str() );
+  if ( true == file.is_open() )
+  {
+    Usul::Print::matrix ( "", _home.ptr(), file, 20 );
+  }
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the polygon mode state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::polygonMode ( PolygonMode mode )
+{
+  switch ( mode )
+  {
+  case IPolygonMode::NONE:
+  case POINTS:
+    OsgTools::State::StateSet::setPolygonsPoints ( this->models(), true );
+      break;
+  case WIRE_FRAME: 
+    OsgTools::State::StateSet::setPolygonsLines ( this->models(), true );
+      break;
+  case HIDDEN_LINES:
+  case FILLED:
+    OsgTools::State::StateSet::setPolygonsFilled ( this->models(), true );
+    break;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the polygon mode state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::PolygonMode Application::polygonMode() const
+{
+  if ( OsgTools::State::StateSet::getPolygonsFilled ( this->models(), false ) )
+    return IPolygonMode::FILLED;
+
+  if ( OsgTools::State::StateSet::getPolygonsLines ( this->models(), false ) )
+    return IPolygonMode::WIRE_FRAME;
+
+  if ( OsgTools::State::StateSet::getPolygonsPoints ( this->models(), false ) )
+    return IPolygonMode::POINTS;
+
+  return IPolygonMode::NONE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the shade model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::shadeModel ( ShadeModel mode )
+{
+  switch ( mode )
+  {
+  case IShadeModel::NONE:
+    break;
+  case FLAT:
+    OsgTools::State::StateSet::setPolygonsFlat ( this->models() );
+    break;
+  case SMOOTH:
+    OsgTools::State::StateSet::setPolygonsSmooth ( this->models() );
+    break;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the shade model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::ShadeModel Application::shadeModel() const
+{
+  // Is there smooth shading?
+  if ( OsgTools::State::StateSet::getPolygonsSmooth ( this->models() ) )
+    return IShadeModel::SMOOTH;
+
+  // Is there flat shading?
+  if ( OsgTools::State::StateSet::getPolygonsFlat   ( this->models() ) )
+    return IShadeModel::FLAT;
+
+  // No shading.
+  return IShadeModel::NONE;
 }

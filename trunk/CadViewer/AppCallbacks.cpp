@@ -72,23 +72,7 @@ void Application::_setAnalogTrim ( MenuKit::Message m, MenuKit::Item *item )
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Quit the program.
-//
-///////////////////////////////////////////////////////////////////////////////
 
-void Application::_quitCallback ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1067094376u, isAppThread() );
-
-  switch ( m )
-  {
-    case MenuKit::MESSAGE_SELECTED:
-      vrj::Kernel::instance()->stop();
-      break;
-  }
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -209,157 +193,7 @@ void Application::_showAll ( MenuKit::Message m, MenuKit::Item *item )
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Export the selected geometry.
-//
-///////////////////////////////////////////////////////////////////////////////
 
-void Application::_exportSelected ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 4127973658u, isAppThread(), CV::NOT_APP_THREAD );
-
-  switch ( m )
-  {
-    case MenuKit::MESSAGE_SELECTED:
-      break; // TODO
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Export the current world's geometry.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_exportWorld ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 3764107981u, isAppThread(), CV::NOT_APP_THREAD );
-
-  switch ( m )
-  {
-    case MenuKit::MESSAGE_SELECTED:
-    {
-      static unsigned int count ( 0 );
-      std::string number ( this->_counter ( ++count ) );
-      std::string filename ( "cv_world_" + number + ".osg" );
-      this->_writeScene ( filename, this->models() );
-      break;
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Export the current world's geometry.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_exportWorldBinary ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 3764107981u, isAppThread(), CV::NOT_APP_THREAD );
-
-  switch ( m )
-  {
-    case MenuKit::MESSAGE_SELECTED:
-    {
-      static unsigned int count ( 0 );
-      std::string number ( this->_counter ( ++count ) );
-      std::string filename ( "cv_world_" + number + ".ive" );
-      this->_writeScene ( filename, this->models() );
-      break;
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Export the current world's entire scene geometry.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_exportScene ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 2629806851u, isAppThread(), CV::NOT_APP_THREAD );
-
-  switch ( m )
-  {
-    case MenuKit::MESSAGE_SELECTED:
-    {
-      static unsigned int count ( 0 );
-      std::string number ( this->_counter ( ++count ) );
-      std::string filename ( "cv_scene_" + number + ".osg" );
-      this->_writeScene ( filename, this->_sceneRoot() );
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Export the current world's entire scene geometry as binary osg.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_exportSceneBinary ( MenuKit::Message m, MenuKit::Item *item )
-{
-  switch ( m )
-  {
-    case MenuKit::MESSAGE_SELECTED:
-    {
-      static unsigned int count ( 0 );
-      std::string number ( this->_counter ( ++count ) );
-      std::string filename ( "cv_scene_" + number + ".ive" );
-      this->_writeScene ( filename, this->_sceneRoot() );
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Normalize the selected geometry.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_normSelected ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1176061494u, isAppThread(), CV::NOT_APP_THREAD );
-
-
-  switch ( m )
-  {
-    case MenuKit::MESSAGE_SELECTED:
-      break ; // TODO
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Normalize the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_normScene ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1084166743, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Process the message.
-  switch ( m )
-  {
-    case MenuKit::MESSAGE_UPDATE:
-      item->checked ( this->normalize() );
-      break;
-
-    case MenuKit::MESSAGE_SELECTED:
-      this->normalize ( !this->normalize() );
-      break;
-  }
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -367,11 +201,11 @@ void Application::_normScene ( MenuKit::Message m, MenuKit::Item *item )
 //  The ray-intersector callback.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
+#if 0
 void Application::_raySelector ( MenuKit::Message m, MenuKit::Item *item )
 {
   ErrorChecker ( 3690175917u, isAppThread(), CV::NOT_APP_THREAD );
-#if 0
+
   // To shorten up the lines.
   typedef Usul::Functors::Interaction::Navigate::Direction Dir;
   typedef Usul::Functors::Interaction::Wand::WandRotation MF;
@@ -420,108 +254,9 @@ void Application::_raySelector ( MenuKit::Message m, MenuKit::Item *item )
       break;
     }
   }
+}
 #endif
-}
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Draw polygons with smooth shading.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_polysSmooth ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1084120964u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Process the message.
-  switch ( m )
-  {
-    case MenuKit::MESSAGE_UPDATE:
-      item->checked ( OsgTools::State::StateSet::getPolygonsFilled ( this->models(), false ) &&
-                      OsgTools::State::StateSet::getPolygonsSmooth ( this->models() ) );
-      break;
-
-    case MenuKit::MESSAGE_SELECTED:
-      OsgTools::State::StateSet::setPolygonsFilled ( this->models(), false );
-      OsgTools::State::StateSet::setPolygonsSmooth ( this->models() );
-      break;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Draw polygons with flat shading.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_polysFlat ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1084120973u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Process the message.
-  switch ( m )
-  {
-    case MenuKit::MESSAGE_UPDATE:
-      item->checked ( OsgTools::State::StateSet::getPolygonsFilled ( this->models(), false ) &&
-                      OsgTools::State::StateSet::getPolygonsFlat   ( this->models() ) );
-      break;
-
-    case MenuKit::MESSAGE_SELECTED:
-      OsgTools::State::StateSet::setPolygonsFilled ( this->models(), false );
-      OsgTools::State::StateSet::setPolygonsFlat   ( this->models() );
-      break;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Draw polygons with wireframe.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_polysWireframe ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1084120981u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Process the message.
-  switch ( m )
-  {
-    case MenuKit::MESSAGE_UPDATE:
-      item->checked ( OsgTools::State::StateSet::getPolygonsLines ( this->models(), false ) );
-      break;
-
-    case MenuKit::MESSAGE_SELECTED:
-      OsgTools::State::StateSet::setPolygonsLines ( this->models(), true );
-      break;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Draw polygons as points.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_polysPoints ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1084120994u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Process the message.
-  switch ( m )
-  {
-    case MenuKit::MESSAGE_UPDATE:
-      item->checked ( OsgTools::State::StateSet::getPolygonsPoints ( this->models(), false ) );
-      break;
-
-    case MenuKit::MESSAGE_SELECTED:
-      OsgTools::State::StateSet::setPolygonsPoints ( this->models(), true );
-      break;
-  }
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -560,7 +295,7 @@ void Application::_polysTexture ( MenuKit::Message m, MenuKit::Item *item )
 // Set the grid visibility.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
+#if 0
 void Application::_gridVisibility ( MenuKit::Message m, MenuKit::Item *item )
 {
   ErrorChecker ( 1084126008u, isAppThread(), CV::NOT_APP_THREAD );
@@ -581,136 +316,8 @@ void Application::_gridVisibility ( MenuKit::Message m, MenuKit::Item *item )
       break;
   }*/
 }
+#endif
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Set the status-bar visibility.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_statusBarVis ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1552310702u, isAppThread(), CV::NOT_APP_THREAD );
-
-  MenuPtr status ( this->statusBar() );
-
-  // Process the message.
-  switch ( m )
-  {
-    case MenuKit::MESSAGE_UPDATE:
-      item->checked ( status->menu()->expanded() );
-      break;
-
-    case MenuKit::MESSAGE_SELECTED:
-      status->menu()->expanded ( !status->menu()->expanded() );
-      status->updateScene();
-      break;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Default callback for menu items.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_defaultCallback ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1411642884u, isAppThread(), CV::NOT_APP_THREAD );
-
-  if( MenuKit::MESSAGE_UPDATE == m )
-  {
-    if( dynamic_cast< MenuKit::Button* >( item ) )
-	    item->enabled( false );
-  }
-
-  // Update the status-bar.
-  if ( MenuKit::MESSAGE_FOCUS_ON == m )
-    this->_updateStatusBar ( item->info() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Move the camera to the home position.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_viewHome ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 2437985028u, isAppThread(), CV::NOT_APP_THREAD );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    this->_navigationMatrix ( _home );
-    this->_setNearAndFarClippingPlanes();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Move the camera such that the whole world is visible.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_viewWorld ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 2226820120u, isAppThread(), CV::NOT_APP_THREAD );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    // Save current model-matrix.
-    osg::Matrix original ( this->models()->getMatrix() );
-
-    // Perform the "view all" on the model's branch.
-    this->viewAll ( this->models(), this->preferences()->viewAllScaleZ() );
-
-    // Move the navigation branch.
-    this->_navigationMatrix ( this->models()->getMatrix() );
-
-    // Restore the model's matrix.
-    this->models()->setMatrix ( original );
-
-    // make sure the scene is visible
-    this->_setNearAndFarClippingPlanes();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Move the camera such that the whole world is visible.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_viewScene ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 3436039617u, isAppThread(), CV::NOT_APP_THREAD );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    this->viewAll ( this->navigationScene(), this->preferences()->viewAllScaleZ() );
-    this->_setNearAndFarClippingPlanes();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Set the current camera position as the home view.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_setAsHome ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 3328782636u, isAppThread(), CV::NOT_APP_THREAD );
-
-  if ( MenuKit::MESSAGE_SELECTED == m )
-    this->_setHome();
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -718,11 +325,11 @@ void Application::_setAsHome ( MenuKit::Message m, MenuKit::Item *item )
 // Scale the world with the vertical joystick.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
+#if 0
 void Application::_vScaleWorld ( MenuKit::Message m, MenuKit::Item *item )
 {
   ErrorChecker ( 2053584659u, isAppThread(), CV::NOT_APP_THREAD );
-#if 0
+
   // To shorten the lines.
   typedef VRV::Functors::JoystickVertical Analog;
   typedef CV::Functors::ScaleTool Tool;
@@ -741,9 +348,9 @@ void Application::_vScaleWorld ( MenuKit::Message m, MenuKit::Item *item )
 
   // Call the convenience function.
   CV::ScaleCB<Analog,Tool>::execute ( id, m, item, _sceneTool, vt, speed, scale, this );
-#endif
-}
 
+}
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -751,10 +358,11 @@ void Application::_vScaleWorld ( MenuKit::Message m, MenuKit::Item *item )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#if 0
 void Application::_vScaleSelected ( MenuKit::Message m, MenuKit::Item *item )
 {
   ErrorChecker ( 3794111793u, isAppThread(), CV::NOT_APP_THREAD );
-#if 0
+
   if( MenuKit::MESSAGE_UPDATE == m )
     item->enabled( 0 != this->_numSelected() );
 
@@ -779,7 +387,7 @@ void Application::_vScaleSelected ( MenuKit::Message m, MenuKit::Item *item )
   CV::ScaleCB<Analog,Tool>::execute ( id, m, item, _sceneTool, vt, speed, scale, this );
 #endif
 }
-
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -931,23 +539,6 @@ void Application::_resizeGrid ( MenuKit::Message m, MenuKit::Item *item )
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-// Set the background color
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_backgroundColor ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1084416659u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Process the message.
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    const osg::Vec4& color = this->_getColor( item->text() );
-    this->setBackgroundColor ( color );
-  }
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1023,159 +614,6 @@ void Application::_resetClipping ( MenuKit::Message m, MenuKit::Item *item )
   }
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Reset the navigation to the requested view
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_gotoViewFront ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1084522854u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Local id.
-  const unsigned int id ( 1084522855u );
-
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_SELECTED:
-    const osg::BoundingSphere& bs = this->models()->getBound();
-    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius())-bs.center() ) );
-    this->_navigationMatrix ( trans );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Reset the navigation to the requested view
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_gotoViewBack ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1084522856u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Local id.
-  const unsigned int id ( 1084522857u );
-
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_SELECTED:
-    const osg::BoundingSphere& bs = this->models()->getBound();
-    osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI , osg::Y_AXIS ) );
-    osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
-    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-    this->_navigationMatrix ( zero*rot*trans );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Reset the navigation to the requested view
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_gotoViewTop ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1084522858u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Local id.
-  const unsigned int id ( 1084522859u );
-
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_SELECTED:
-    const osg::BoundingSphere& bs = this->models()->getBound();
-    osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI_2 , osg::X_AXIS ) );
-    osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
-    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-    this->_navigationMatrix ( zero*rot*trans );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Reset the navigation to the requested view
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_gotoViewBottom ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1084522860u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Local id.
-  const unsigned int id ( 1084522861u );
-
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_SELECTED:
-    const osg::BoundingSphere& bs = this->models()->getBound();
-    osg::Matrix rot  ( osg::Matrix::rotate   ( -osg::PI_2 , osg::X_AXIS ) );
-    osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
-    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-    this->_navigationMatrix ( zero*rot*trans );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Reset the navigation to the requested view
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_gotoViewRight ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1084522862u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Local id.
-  const unsigned int id ( 1084522863u );
-
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_SELECTED:
-    const osg::BoundingSphere& bs = this->models()->getBound();
-    osg::Matrix rot  ( osg::Matrix::rotate   ( -osg::PI_2 , osg::Y_AXIS ) );
-    osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
-    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-    this->_navigationMatrix ( zero*rot*trans );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Reset the navigation to the requested view
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_gotoViewLeft ( MenuKit::Message m, MenuKit::Item *item )
-{
-  ErrorChecker ( 1084522864u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Local id.
-  const unsigned int id ( 1084522865u );
-
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_SELECTED:
-    const osg::BoundingSphere& bs = this->models()->getBound();
-    osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI_2 , osg::Y_AXIS ) );
-    osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
-    osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-    this->_navigationMatrix ( zero*rot*trans );
-  }
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1259,336 +697,3 @@ void Application::_dropToFloor ( MenuKit::Message m, MenuKit::Item *item )
   }
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Increase speed.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_increaseSpeed    ( MenuKit::Message m, MenuKit::Item *item )
-{
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_SELECTED:
-    this->_increaseTranslateSpeed ( 2.0 );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Decrease speed.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_decreaseSpeed    ( MenuKit::Message m, MenuKit::Item *item )
-{
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_SELECTED:
-    this->_decreaseTranslateSpeed ( 2.0 );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Increase speed.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_increaseSpeedTen    ( MenuKit::Message m, MenuKit::Item *item )
-{
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_SELECTED:
-    this->_increaseTranslateSpeed ( 10.0 );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Decrease speed.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_decreaseSpeedTen    ( MenuKit::Message m, MenuKit::Item *item )
-{
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_SELECTED:
-    this->_decreaseTranslateSpeed ( 10.0 );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the number of rendering passes to one.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_renderPassesOne      ( MenuKit::Message m, MenuKit::Item *item )
-{
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_SELECTED:
-    this->numRenderPasses ( 1 );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the number of rendering passes to three.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_renderPassesThree    ( MenuKit::Message m, MenuKit::Item *item )
-{
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_SELECTED:
-    this->numRenderPasses ( 3 );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the number of rendering passes to nine.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void  Application::_renderPassesNine     ( MenuKit::Message m, MenuKit::Item *item )
-{
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_SELECTED:
-    this->numRenderPasses ( 9 );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the number of rendering passes to tweleve.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_renderPassesTweleve  ( MenuKit::Message m, MenuKit::Item *item )
-{
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_SELECTED:
-    this->numRenderPasses ( 12 );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Toggle dump frames.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_dumpFrames ( MenuKit::Message m, MenuKit::Item *item )
-{
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_UPDATE:
-    item->checked ( this->frameDump() );
-    break;
-  case MenuKit::MESSAGE_SELECTED:
-    this->frameDump ( !this->frameDump() );
-    break;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//   Toggle whether or not to hide or show the scene when the menu is visible
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_toggleMenuSceneHideShow ( MenuKit::Message m, MenuKit::Item *item )
-{
-  // Process the message.
-  if ( MenuKit::MESSAGE_SELECTED == m )
-  {
-    if( true == this->menuSceneShowHide() )
-      this->toggleMenuSceneShowHide( false );
-    else
-      this->toggleMenuSceneShowHide( true );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Append current frame.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_appendCurrentCamera ( MenuKit::Message m, MenuKit::Item *item )
-{
-  if ( MenuKit::MESSAGE_SELECTED == m )
-    this->appendCamera ( );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Start the animation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_toggleStartAnimation ( MenuKit::Message m, MenuKit::Item *item )
-{
-  if ( MenuKit::MESSAGE_SELECTED == m )
-    this->startAnimation ( );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Start the animation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_clearAnimation ( MenuKit::Message m, MenuKit::Item *item )
-{
-  if ( MenuKit::MESSAGE_SELECTED == m )
-    this->clearAnimation ( );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the number of animation steps to 20.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_animationSteps20 ( MenuKit::Message m, MenuKit::Item *item )
-{
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_UPDATE:
-    item->checked ( 20 == this->animationSteps () );
-    break;
-  case MenuKit::MESSAGE_SELECTED:
-    this->animationSteps ( 20 );
-    break;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the number of animation steps to 50.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_animationSteps50 ( MenuKit::Message m, MenuKit::Item *item )
-{
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_UPDATE:
-    item->checked ( 50 == this->animationSteps () );
-    break;
-  case MenuKit::MESSAGE_SELECTED:
-    this->animationSteps ( 50 );
-    break;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the number of animation steps to 100.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_animationSteps100 ( MenuKit::Message m, MenuKit::Item *item )
-{
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_UPDATE:
-    item->checked ( 100 == this->animationSteps () );
-    break;
-  case MenuKit::MESSAGE_SELECTED:
-    this->animationSteps ( 100 );
-    break;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Double the number of animation steps.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_animationStepsDouble ( MenuKit::Message m, MenuKit::Item *item )
-{
-  if ( MenuKit::MESSAGE_SELECTED == m )
-    this->animationSteps ( this->animationSteps () * 2 );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Half the number of animation steps.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_animationStepsHalf ( MenuKit::Message m, MenuKit::Item *item )
-{
-  if ( MenuKit::MESSAGE_SELECTED == m )
-    this->animationSteps ( this->animationSteps () / 2 );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_navigationFavorites ( MenuKit::Message m, MenuKit::Item *item )
-{
-  const std::string name ( item->text () );
-  Navigator::RefPtr nav ( this->navigator () );
-
-  // Process the message.
-  switch( m )
-  {
-  case MenuKit::MESSAGE_UPDATE:
-    {
-      
-      item->checked ( nav.valid () ? name == nav->name () : false );
-    }
-    break;
-  case MenuKit::MESSAGE_SELECTED:
-    if ( nav.valid () && name == nav->name () )
-      this->navigator ( 0x0 );
-    else
-      this->navigator ( this->favorite ( name ) );
-    break;
-  }
-}

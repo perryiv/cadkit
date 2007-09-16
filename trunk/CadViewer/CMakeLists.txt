@@ -68,7 +68,6 @@ SET (SOURCES
 ./Pick/Intersect.cpp
 ./Pick/Select.cpp
 ./Pick/Seek.cpp
-./AppCallbacks.cpp
 ./main.cpp
 ./Application.cpp
 )

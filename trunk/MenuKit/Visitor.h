@@ -52,7 +52,7 @@ protected:
   Visitor ( Mode m );
 
   // Use reference counting.
-  ~Visitor();
+  virtual ~Visitor();
 
 private:
 

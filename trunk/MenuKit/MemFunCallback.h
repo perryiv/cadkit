@@ -18,82 +18,154 @@
 
 #include "MenuKit/Item.h"
 
+#include "Usul/Interfaces/IUpdateCheck.h"
 
 namespace MenuKit {
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Callback class for member functions that take two arguments.
+// Callback class for member functions that return a boolean.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class O, class F > class MemFunCallback2 : public MenuKit::Callback
+template < class O, class F > class MemFunCallbackReturn
 {
 public:
 
-  MemFunCallback2 ( O o, F f ) : _o ( o ), _f ( f )
+  MemFunCallbackReturn ( O o, F f ) : _o ( o ), _f ( f )
   {
   }
-  ~MemFunCallback2()
+  MemFunCallbackReturn ( const MemFunCallbackReturn & mf ) : _o ( mf._o ), _f ( mf._f ) { }
+  MemFunCallbackReturn &operator = ( const MemFunCallbackReturn & mf )
+  {
+    _o = mf._o;
+    _f = mf._f;
+    return *this;
+  }
+
+  ~MemFunCallbackReturn()
   {
   }
-  void operator () ( MenuKit::Message m, MenuKit::Item *item )
+  bool operator () ( ) const
   {
     if ( _o && _f )
-      ((*_o).*_f) ( m, item );
+      return ((*_o).*_f)();
+
+    return false;
   }
+
 protected:
-  MemFunCallback2 ( const MemFunCallback2 & );
-  MemFunCallback2 &operator = ( const MemFunCallback2 & );
   O _o;
   F _f;
 };
 
 
+template < class O, class F > MemFunCallbackReturn < O, F > memFunCBReturn ( O o, F f )
+{
+  return MemFunCallbackReturn < O, F > ( o, f );
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Callback class for member functions that do not take arguments.
+//  Helper command to execute a functor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class O, class F > class MemFunCallback0 : public MenuKit::Callback
+template < class ExecuteFunctor >
+class BasicCommand : public Usul::Commands::Command
 {
 public:
+  typedef Usul::Commands::Command BaseClass;
 
-  MemFunCallback0 ( O o, F f ) : _o ( o ), _f ( f )
+  USUL_DECLARE_REF_POINTERS  ( BasicCommand );
+
+  BasicCommand ( const std::string& name, ExecuteFunctor functor, Usul::Interfaces::IUnknown * caller = 0x0 ) : 
+    BaseClass ( caller ),
+    _functor ( functor )
   {
+    this->text ( name );
   }
-  ~MemFunCallback0()
-  {
-  }
-  void operator () ( MenuKit::Message m, MenuKit::Item *item )
-  {
-    if ( _o && _f )
-      ((*_o).*_f)();
-  }
+
 protected:
-  MemFunCallback0 ( const MemFunCallback0 & );
-  MemFunCallback0 &operator = ( const MemFunCallback0 & );
-  O _o;
-  F _f;
+  virtual ~BasicCommand ()
+  {
+  }
+
+  virtual void _execute ()
+  {
+    _functor ( );
+  }
+
+private:
+  ExecuteFunctor _functor;
 };
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Helper functions to create button callbacks.
+//  Helper command to execute a functor and update check box.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class O, class F > MemFunCallback2 < O, F > *memFunCB2 ( O o, F f )
+template < class ExecuteFunctor, class CheckFunctor >
+class CheckCommand : public Usul::Commands::Command,
+                     public Usul::Interfaces::IUpdateCheck
 {
-  return new MemFunCallback2 < O, F > ( o, f );
-}
-template < class O, class F > MemFunCallback0 < O, F > *memFunCB0 ( O o, F f )
-{
-  return new MemFunCallback0 < O, F > ( o, f );
-}
+public:
+  typedef Usul::Commands::Command BaseClass;
+
+  USUL_DECLARE_REF_POINTERS  ( CheckCommand );
+
+  CheckCommand ( const std::string& name, ExecuteFunctor functor, CheckFunctor check, Usul::Interfaces::IUnknown * caller = 0x0 ) : 
+    BaseClass ( caller ),
+    _functor ( functor ),
+    _check ( check )
+  {
+    this->text ( name );
+  }
+
+  void ref ()
+  {
+    BaseClass::ref ();
+  }
+
+  void unref ( bool allowDeletion = true )
+  {
+    BaseClass::unref ( allowDeletion );
+  }
+
+  Usul::Interfaces::IUnknown* queryInterface ( unsigned long iid )
+  {
+    switch ( iid )
+    {
+    case Usul::Interfaces::IUpdateCheck::IID:
+      return static_cast < Usul::Interfaces::IUpdateCheck * > ( this );
+    default:
+      return BaseClass::queryInterface ( iid );
+    }
+  }
+
+  virtual bool updateCheck () const
+  {
+    return _check ( );
+  }
+
+protected:
+  virtual ~CheckCommand ()
+  {
+  }
+
+  virtual void _execute ()
+  {
+    _functor ( !_check() );
+  }
+
+private:
+  ExecuteFunctor _functor;
+  CheckFunctor   _check;
+};
 
 
 }; // namespace MenuKit

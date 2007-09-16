@@ -24,12 +24,15 @@
 #include "CadViewer/Functors/Tool.h"
 #include "CadViewer/Pick/Intersect.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Functors/Interaction/Matrix/MatrixFunctor.h"
 
 #include "VRV/Core/Application.h"
 
 #include "OsgTools/Grid.h"
+
+#include "MenuKit/MemFunCallback.h"
 
 #include <string>
 #include <vector>
@@ -50,6 +53,15 @@ public:
   // Useful typedefs
   typedef VRV::Core::Application BaseClass;
   typedef Usul::Math::Matrix44f Matrix44f;
+
+  typedef void (Application::*VoidFunction) ();
+  typedef void (Application::*BoolFunction) ( bool );
+  typedef bool (Application::*CheckFunction) () const;
+  typedef Usul::Adaptors::MemberFunction < Application*, VoidFunction >   ExecuteFunctor;
+  typedef MenuKit::MemFunCallbackReturn < Application*, CheckFunction >   CheckFunctor;
+  typedef Usul::Adaptors::MemberFunction < Application*, BoolFunction >   BoolFunctor;
+  typedef MenuKit::BasicCommand < ExecuteFunctor >                        BasicCommand;
+  typedef MenuKit::CheckCommand < BoolFunctor, CheckFunctor >             CheckCommand;
 
   // Constructor.
   Application ( );
@@ -81,6 +93,18 @@ public:
   // Run the program.
   void                          run();
 
+  // Quit the program
+  void                          quit ();
+
+  // Export functions.
+  void                          exportWorld ();
+  void                          exportWorldBinary ();
+  void                          exportScene ();
+  void                          exportSceneBinary ();
+
+  // View functions.
+  void                          viewWorld ();
+  void                          viewScene ();
 protected:
   
   // Joystick callbacks.
@@ -109,9 +133,6 @@ protected:
   // Generate a string from the integer.
   std::string                   _counter ( unsigned int num ) const;
 
-  // get the color that corresponds to the string
-  const osg::Vec4&              _getColor ( const std::string& s ) const;
-
   // Initialize.
   void                          _initGrid ( osg::Node *node );
   void                          _initLight();
@@ -126,13 +147,6 @@ protected:
   void                          _initToolsMenu    ( MenuKit::Menu* menu );
   void                          _initOptionsMenu  ( MenuKit::Menu* menu );
   void                          _initAnimateMenu  ( MenuKit::Menu* menu );
-
-  // Create a button.
-  MenuKit::Button*              _createButton    ( Usul::Commands::Command* command );
-  MenuKit::Button*              _createButton    ( const std::string& name, MenuKit::Callback* );
-  MenuKit::Button*              _createRadio     ( const std::string& name, MenuKit::Callback* );
-  MenuKit::Button*              _createToggle    ( const std::string& name, MenuKit::Callback* );
-  MenuKit::Button*              _createSeperator ( );
 
   // Handle the events, if any.
   bool                          _handleMenuEvent ( unsigned long id );
@@ -170,9 +184,6 @@ protected:
   // Fill the given vector with the selected matrix-transforms.
   void                          _selected ( CV::Functors::Tool::Transforms &vt );
 
-  // Set the current "camera" position as "home".
-  void                          _setHome();
-
   // rebuild the grid in case the _gridFunctor's state has been updated
   void                          _rebuildGrid();
 
@@ -203,71 +214,22 @@ protected:
   /// Called when button is released.
   virtual void                  buttonReleaseNotify ( Usul::Interfaces::IUnknown * );
 
-  // Button callbacks.
-  void                          _defaultCallback  ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _hideSelected     ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _showAll          ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _unselectVisible  ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _exportSelected   ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _exportWorld      ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _exportWorldBinary ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _exportScene       ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _exportSceneBinary ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _quitCallback     ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _statusBarVis     ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _gridVisibility   ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _vScaleWorld      ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _vScaleSelected   ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _wMoveSelLocal    ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _wMoveTopLocal    ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _raySelector      ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _normScene        ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _normSelected     ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _polysSmooth      ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _polysFlat        ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _polysWireframe   ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _polysPoints      ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _polysTexture     ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _setAnalogTrim    ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _viewHome         ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _viewWorld        ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _viewScene        ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _viewSaved        ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _setAsHome        ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _saveView         ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _resizeGrid       ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _backgroundColor  ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _gridColor        ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _selectionColor   ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _resetClipping            ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _gotoViewFront            ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _gotoViewBack             ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _gotoViewTop              ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _gotoViewBottom           ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _gotoViewRight            ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _gotoViewLeft             ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _rotateWorld              ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _dropToFloor              ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _increaseSpeed            ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _decreaseSpeed            ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _increaseSpeedTen         ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _decreaseSpeedTen         ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _exportImage              ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _renderPassesOne          ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _renderPassesThree        ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _renderPassesNine         ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _renderPassesTweleve      ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _dumpFrames               ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _toggleMenuSceneHideShow  ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _appendCurrentCamera      ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _toggleStartAnimation     ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _clearAnimation           ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _animationSteps20         ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _animationSteps50         ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _animationSteps100        ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _animationStepsDouble     ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _animationStepsHalf       ( MenuKit::Message m, MenuKit::Item *item );
-  void                          _navigationFavorites      ( MenuKit::Message m, MenuKit::Item *item );
+  void                          _increaseSpeed ();
+  void                          _decreaseSpeed ();
+  void                          _increaseSpeedTen ();
+  void                          _decreaseSpeedTen ();
+
+  void                          _animationSteps20 ( bool );
+  bool                          _animationSteps20 () const;
+
+  void                          _animationSteps50 ( bool );
+  bool                          _animationSteps50 () const;
+
+  void                          _animationSteps100 ( bool );
+  bool                          _animationSteps100 () const;
+
+  void                          _animationStepsDouble ( );
+  void                          _animationStepsHalf ( );
 
   // For readability.
   typedef unsigned long                                             ThreadId;
@@ -280,7 +242,7 @@ protected:
   typedef Interfaces::IVisibility::QueryPtr                         IVisibilityPtr;
   typedef Interfaces::ISelection::QueryPtr                          ISelectionPtr;
   typedef Interfaces::IMaterialStack::QueryPtr                      IMaterialStackPtr;
-  typedef std::map<std::string,osg::Vec4>                           ColorMap;
+  typedef std::map<std::string, Usul::Math::Vec4f >                ColorMap;
 
   // Data members.
   static ThreadId   _appThread;
@@ -298,7 +260,6 @@ protected:
   IVisibilityPtr    _iVisibility;
   ISelectionPtr     _iSelection;
   IMaterialStackPtr _iMaterialStack;
-  osg::Matrixf      _home;
   ColorMap          _colorMap;
   std::vector<OsgTools::Grid> _gridFunctors;
   bool              _textures;

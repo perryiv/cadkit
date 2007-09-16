@@ -44,7 +44,6 @@ public:
 
   // Construction.
   Menu();
-  Menu ( const std::string &name, const std::string &icon_file, Layout layout, Callback *cb, MenuKit::Message m );
   Menu ( const std::string &name, const std::string &icon_file, Layout layout );
   Menu ( const Menu & );
 

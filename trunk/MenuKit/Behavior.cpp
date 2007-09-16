@@ -165,16 +165,8 @@ Item *Behavior::focus()
 
 void Behavior::focus ( Item *item )
 {
-  // If we already have an item then send a message.
-  if ( _focus.get() )
-    _focus->sendMessage ( MenuKit::MESSAGE_FOCUS_OFF );
-
   // Set the new item.
   _focus = ( this->root() == item ) ? 0x0 : item;
-
-  // If we have a valid item then send the message.
-  if ( _focus.get() )
-    _focus->sendMessage ( MenuKit::MESSAGE_FOCUS_ON );
 }
 
 
@@ -652,8 +644,10 @@ void Behavior::selectFocused()
     this->focus ( 0x0 );
   }
 
-  // Tell the focused item to notify its client.
-  focus->sendMessage ( MenuKit::MESSAGE_SELECTED );
+  // Execute the command.
+  Usul::Commands::Command::RefPtr command ( focus->command () );
+  if ( command.valid () )
+    command->execute ( 0x0 );
 }
 
 

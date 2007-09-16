@@ -41,6 +41,12 @@
 #include "Usul/Interfaces/ITranslationSpeed.h"
 #include "Usul/Interfaces/IFrameInfo.h"
 #include "Usul/Interfaces/IWorldInfo.h"
+#include "Usul/Interfaces/ICamera.h"
+#include "Usul/Interfaces/IPolygonMode.h"
+#include "Usul/Interfaces/IShadeModel.h"
+#include "Usul/Interfaces/INavigationFunctor.h"
+#include "Usul/Interfaces/IBackgroundColor.h"
+#include "Usul/Interfaces/IRenderingPasses.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Queue.h"
@@ -85,7 +91,7 @@ namespace osg
   class Light;
 };
 
-namespace VRV { namespace Functors { class Transform; } }
+namespace MenuKit { class Button; }
 
 namespace VRV {
 namespace Core {
@@ -110,7 +116,13 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public Usul::Interfaces::IButtonReleaseListener,
                                public Usul::Interfaces::IFrameStamp,
                                public Usul::Interfaces::IViewMatrix,
-                               public Usul::Interfaces::IStatusBar
+                               public Usul::Interfaces::IStatusBar,
+                               public Usul::Interfaces::ICamera,
+                               public Usul::Interfaces::IPolygonMode,
+                               public Usul::Interfaces::IShadeModel,
+                               public Usul::Interfaces::INavigationFunctor,
+                               public Usul::Interfaces::IBackgroundColor,
+                               public Usul::Interfaces::IRenderingPasses
 {
 public:
   // Typedefs.
@@ -128,9 +140,14 @@ public:
   typedef VRV::Devices::ButtonGroup            Buttons;
   typedef VRV::Devices::TrackerDevice          Tracker;
   typedef VRV::Devices::JoystickDevice         Joystick;
-  typedef VRV::Functors::Transform             Transform;
   typedef MenuKit::OSG::Menu                   Menu;
   typedef USUL_VALID_REF_POINTER(Menu)         MenuPtr;
+  typedef Usul::Interfaces::ICamera            ICamera;
+  typedef ICamera::CameraOption                CameraOption;
+  typedef Usul::Interfaces::IPolygonMode       IPolygonMode;
+  typedef IPolygonMode::Mode                   PolygonMode;
+  typedef Usul::Interfaces::IShadeModel        IShadeModel;
+  typedef IShadeModel::Mode                    ShadeModel;
 
   typedef Usul::Functors::Interaction::Common::BaseFunctor   Navigator;
   typedef Usul::Functors::Interaction::Input::AnalogInput    AnalogInput;
@@ -139,7 +156,7 @@ public:
   typedef std::map < std::string, AnalogInput::RefPtr >      AnalogInputs;
   typedef std::map < std::string, TransformFunctor::RefPtr > TransformFunctors;
   typedef std::map < std::string, FavoriteFunctor::RefPtr >  FavoriteFunctors;
-  typedef FavoriteFunctors::const_iterator                   ConstFavoriteIterator;
+  typedef FavoriteFunctors::iterator                         FavoriteIterator;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -156,8 +173,8 @@ public:
   void                    addLight ( osg::Light* light );
 
   /// Get/Set the background color.
-  void                    setBackgroundColor( const osg::Vec4& bg );
-  const osg::Vec4&        getBackgroundColor() const;
+  virtual void                backgroundColor ( const Usul::Math::Vec4f& color );
+  virtual Usul::Math::Vec4f   backgroundColor () const;
 
   /// Get/Set the framestamp ( Usul::Interfaces::IFrameStamp ).
   osg::FrameStamp*        frameStamp();
@@ -190,8 +207,9 @@ public:
   /// Export the next frame.
   void                    exportNextFrame ();
 
-  /// Set the number of rendering passes
-  void                    numRenderPasses ( unsigned int num );
+  /// Get/Set the number of rendering passes
+  virtual void            renderingPasses ( unsigned int number );
+  virtual unsigned int    renderingPasses () const;
 
   /// Get the Preferences.
   Preferences *           preferences ();
@@ -211,7 +229,7 @@ public:
 
   /// Get/Set the analog trim.
   const Usul::Math::Vec2f&    analogTrim () const;
-  void                        analogTrim ( float x, float y );
+  void                        analogTrim ();
 
   // Print the usage string.
   static void                   usage ( const std::string &exe, std::ostream &out );
@@ -231,8 +249,8 @@ public:
   const Navigator *       navigator () const;
 
   // Menu scene hiding functions
-  bool                    menuSceneShowHide();
-  void                    toggleMenuSceneShowHide( bool show );
+  bool                    menuSceneShowHide () const;
+  void                    menuSceneShowHide ( bool show );
 
   /// Append current camera.
   void                    appendCamera ();
@@ -257,12 +275,12 @@ public:
   const Menu *            statusBar () const;
 
   // Get the begining of the favorites.
-  ConstFavoriteIterator         favoritesBegin () const;
+  FavoriteIterator        favoritesBegin ();
 
   // Get the end of the favorites.
-  ConstFavoriteIterator         favoritesEnd () const;
+  FavoriteIterator        favoritesEnd ();
 
-  Navigator*                    favorite ( const std::string& name );
+  Navigator*              favorite ( const std::string& name );
 protected:
 
   /// VR Juggler methods.
@@ -332,6 +350,15 @@ protected:
 
   // Parse the command-line arguments.
   void                    _parseCommandLine();
+
+  // Create a button.
+  MenuKit::Button*              _createButton    ( Usul::Commands::Command* command );
+  MenuKit::Button*              _createRadio     ( Usul::Commands::Command* command );
+  MenuKit::Button*              _createToggle    ( Usul::Commands::Command* command );
+  MenuKit::Button*              _createSeperator ( );
+
+  // Set the current "camera" position as "home".
+  void                          _setHome();
 
   /// Get/set the clipping distances (VRV::Interfaces::IClippingDistanceFloat).
   virtual void            getClippingDistances ( float &nearDist, float &farDist ) const;
@@ -423,6 +450,17 @@ protected:
   // Set the status bar text (IStatusBar).
   virtual void                  setStatusBarText ( const std::string &text, bool force );
 
+  // Set the camera (ICamera).
+  virtual void                  camera ( CameraOption option );
+
+  /// Set/get the polygon mode state (IPolygonMode).
+  virtual void                  polygonMode ( PolygonMode mode );
+  virtual PolygonMode           polygonMode() const;
+
+  /// Set/get the shade model (IShadeModel).
+  virtual void                    shadeModel ( ShadeModel mode );
+  virtual ShadeModel              shadeModel() const;
+
   /// No copying.
   Application ( const Application& );
   Application& operator = (const Application&);
@@ -451,7 +489,7 @@ private:
   osg::Timer                             _timer;
   osg::ref_ptr< osg::FrameStamp >        _framestamp;
   osg::ref_ptr< osg::Viewport >          _viewport;
-  osg::Vec4                              _backgroundColor;
+  Usul::Math::Vec4f                      _backgroundColor;
   bool                                   _dirty;
   osg::Timer_t                           _initialTime;
   osg::Timer_t                           _frameStart;
@@ -487,6 +525,7 @@ private:
   TransformFunctors                      _transformFunctors;
   FavoriteFunctors                       _favoriteFunctors;
   float                                  _translationSpeed;
+  osg::Matrixf                           _home;
 };
 
 }

@@ -206,10 +206,6 @@
 				Name="CadViewer"
 				>
 				<File
-					RelativePath=".\AppCallbacks.cpp"
-					>
-				</File>
-				<File
 					RelativePath="Application.cpp"
 					>
 				</File>

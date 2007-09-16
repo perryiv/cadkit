@@ -17,7 +17,7 @@
 #include "GFX.h"
 
 #include "MenuKit/Errors.h"
-#include "MenuKit/MessageVisitor.h"
+#include "MenuKit/UpdateVisitor.h"
 
 using namespace MenuKit::OSG; // Just this one or name clashing occurs.
 
@@ -154,8 +154,7 @@ void Menu::updateScene()
 
 void Menu::updateMenu()
 {
-  MessageVisitor::Ptr visitor ( new MessageVisitor ( MenuKit::MESSAGE_UPDATE ) );
-  MENUKIT_CHECK_POINTER ( 1084156426u, visitor.get() );
+  MenuKit::UpdateVisitor::Ptr visitor ( new MenuKit::UpdateVisitor );
   this->menu()->accept ( *visitor );
 }
 

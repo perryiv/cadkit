@@ -42,15 +42,12 @@ SET (SOURCES
 ./Referenced.cpp
 ./Visitor.cpp
 ./Button.cpp
-./MessageVisitor.cpp
-./SampleMenu.cpp
 ./Errors.cpp
 ./StreamVisitor.cpp
 ./CloseVisitor.cpp
 ./Menu.cpp
 ./FlagsVisitor.cpp
-./Callback.cpp
-
+./UpdateVisitor.cpp
 )
 
 # Create a Shared Library

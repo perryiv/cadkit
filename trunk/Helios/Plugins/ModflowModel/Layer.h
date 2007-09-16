@@ -19,8 +19,9 @@
 #include "CompileGuard.h"
 #include "Cell.h"
 
-#include "Usul/Base/Referenced.h"
+#include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Interfaces/ILayer.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Pointers/Pointers.h"
@@ -30,12 +31,13 @@
 #include <vector>
 
 
-class Layer : public Usul::Base::Referenced
+class Layer : public Usul::Base::Object,
+              public Usul::Interfaces::ILayer
 {
 public:
 
   // Useful typedefs.
-  typedef Usul::Base::Referenced BaseClass;
+  typedef Usul::Base::Object BaseClass;
   typedef Usul::Math::Vec2d Vec2d;
   typedef Usul::Math::Vec3d Vec3d;
   typedef Usul::Math::Vec2ui Vec2ui;
@@ -47,8 +49,11 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Layer );
 
+  // Usul::Interfaces::IUnknown members.
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
+
   // Construction.
-  Layer ( unsigned int numRows, unsigned int numColumns, const Vec2d &cellSize );
+  Layer ( const std::string &name, unsigned int numRows, unsigned int numColumns, const Vec2d &cellSize );
 
   // Set/get the layer above.
   void                    above ( Layer * );
@@ -89,6 +94,12 @@ public:
   // Set cell's tops and bottoms.
   void                    zRange ( const Data &top, const Data &bottom );
 
+  // Usul::Interfaces::ILayer
+  virtual std::string     guid() const;
+  virtual std::string     name() const;
+  virtual void            showLayer ( bool b );
+  virtual bool            showLayer() const;
+
 protected:
 
   // Use reference counting.
@@ -106,6 +117,7 @@ private:
   Vec2d _cellSize;
   Layer::RefPtr _above;
   Layer::RefPtr _below;
+  std::string _guid;
 };
 
 

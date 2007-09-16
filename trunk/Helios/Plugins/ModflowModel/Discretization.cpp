@@ -16,6 +16,7 @@
 #include "Discretization.h"
 #include "ModflowDocument.h"
 
+#include "Usul/Strings/Format.h"
 #include "Usul/Trace/Trace.h"
 
 
@@ -54,11 +55,14 @@ namespace Helper
   inline void fill ( Discretization::Layers &layers, const Discretization::Vec2ui &gridSize, const Discretization::Vec2d &cellSize )
   {
     typedef Discretization::Layers Layers;
-    for ( Layers::iterator i = layers.begin(); i != layers.end(); ++i )
+    for ( unsigned int i = 0; i < layers.size(); ++i )
     {
+      // Make the name.
+      const std::string name ( Usul::Strings::format ( "Layer ", i + 1 ) );
+
       // This has to be by reference!
-      Layer::RefPtr &layer ( *i );
-      layer = new Layer ( gridSize[0], gridSize[1], cellSize );
+      Layer::RefPtr &layer ( layers.at ( i ) );
+      layer = new Layer ( name, gridSize[0], gridSize[1], cellSize );
     }
   }
 }

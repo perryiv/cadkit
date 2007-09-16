@@ -18,6 +18,7 @@
 #include "Constants.h"
 
 #include "Usul/Bits/Bits.h"
+#include "Usul/Functions/GUID.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Trace/Trace.h"
 
@@ -31,6 +32,8 @@
 #include <algorithm>
 #include <functional>
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Layer, Layer::BaseClass );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -38,13 +41,20 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Layer::Layer ( unsigned int numRows, unsigned int numColumns, const Vec2d &cellSize ) : BaseClass(),
+Layer::Layer ( const std::string &name, unsigned int numRows, unsigned int numColumns, const Vec2d &cellSize ) : 
+  BaseClass(),
   _rows ( numRows ),
   _cellSize ( cellSize ),
   _above ( 0x0 ),
-  _below ( 0x0 )
+  _below ( 0x0 ),
+  _guid ( Usul::Functions::GUID::generate() )
 {
   USUL_TRACE_SCOPE;
+
+  // Set the name.
+  BaseClass::name ( name );
+
+  // Make the cells and set their coordinates.
   const double maxY ( cellSize[1] * numRows );
   for ( unsigned int i = 0; i < numRows; ++i )
   {
@@ -85,9 +95,29 @@ Layer::~Layer()
 void Layer::clear()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _above = 0x0;
   _below = 0x0;
   _rows.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query the interfaces
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown *Layer::queryInterface ( unsigned long iid )
+{
+  USUL_TRACE_SCOPE;
+  switch ( iid )
+  {
+  case Usul::Interfaces::ILayer::IID:
+    return static_cast < Usul::Interfaces::ILayer* > ( this );
+  default:
+    return 0x0;
+  }
 }
 
 
@@ -100,6 +130,8 @@ void Layer::clear()
 void Layer::zRange ( const Data &top, const Data &bottom )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
   unsigned int index ( 0 );
   for ( Rows::iterator i = _rows.begin(); i != _rows.end(); ++i )
   {
@@ -145,6 +177,7 @@ osg::Node *Layer::buildScene ( unsigned int flags, double scaleFactor, Unknown *
 osg::Node *Layer::_buildCubes ( unsigned int flags, double scaleFactor, Unknown *caller ) const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
 
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
 
@@ -224,7 +257,7 @@ osg::Node *Layer::_buildCubes ( unsigned int flags, double scaleFactor, Unknown 
   geom->addPrimitiveSet ( new osg::DrawArrays ( osg::DrawArrays::QUADS, 0, vertices->size() ) );
   geode->addDrawable ( geom.get() );
 
-#if 1 // Transparency
+#if 0 // Transparency
 
   osg::ref_ptr < osg::Material > mat ( new osg::Material );
   osg::Vec4f color ( 51.0f / 255.0f, 204.0f / 255.0f, 204.0f / 255.0f, 1.0f );
@@ -255,8 +288,11 @@ osg::Node *Layer::_buildCubes ( unsigned int flags, double scaleFactor, Unknown 
 Layer::Vec2ui Layer::gridSize() const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
   const unsigned int numRows ( _rows.size() );
   const unsigned int numCols ( ( numRows > 0 ) ? _rows.at(0).size() : 0 );
+
   return Vec2ui ( numRows, numCols );
 }
 
@@ -270,6 +306,8 @@ Layer::Vec2ui Layer::gridSize() const
 void Layer::purge ( const Data &bounds )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
   unsigned int index ( 0 );
   for ( Rows::iterator i = _rows.begin(); i != _rows.end(); ++i )
   {
@@ -298,6 +336,8 @@ void Layer::purge ( const Data &bounds )
 void Layer::vector ( const std::string &name, unsigned int timeStep, const Data &heads )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
   unsigned int index ( 0 );
   for ( Rows::iterator i = _rows.begin(); i != _rows.end(); ++i )
   {
@@ -333,6 +373,7 @@ void Layer::vector ( const std::string &name, unsigned int timeStep, const Data 
 Layer::Vec2d Layer::cellSize() const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _cellSize;
 }
 
@@ -346,6 +387,7 @@ Layer::Vec2d Layer::cellSize() const
 void Layer::above ( Layer *above )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _above = above;
 }
 
@@ -359,6 +401,7 @@ void Layer::above ( Layer *above )
 Layer *Layer::above()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _above.get();
 }
 
@@ -372,6 +415,7 @@ Layer *Layer::above()
 const Layer *Layer::above() const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _above.get();
 }
 
@@ -385,6 +429,7 @@ const Layer *Layer::above() const
 void Layer::below ( Layer *below )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _below = below;
 }
 
@@ -398,6 +443,7 @@ void Layer::below ( Layer *below )
 Layer *Layer::below()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _below.get();
 }
 
@@ -411,6 +457,7 @@ Layer *Layer::below()
 const Layer *Layer::below() const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _below.get();
 }
 
@@ -424,6 +471,7 @@ const Layer *Layer::below() const
 const Cell *Layer::cell ( unsigned int row, unsigned int col ) const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _rows.at ( row ).at ( col ).get();
 }
 
@@ -439,4 +487,56 @@ const Cell *Layer::cellBelow ( unsigned int row, unsigned int col ) const
   USUL_TRACE_SCOPE;
   const Layer *below ( this->below() );
   return ( ( 0x0 == below ) ? 0x0 : below->cell ( row, col ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the guid.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Layer::guid() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _guid;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Layer::name() const
+{
+  USUL_TRACE_SCOPE;
+  return BaseClass::name();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show the layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::showLayer ( bool b )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the layer shown?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Layer::showLayer() const
+{
+  USUL_TRACE_SCOPE;
+  return true;
 }

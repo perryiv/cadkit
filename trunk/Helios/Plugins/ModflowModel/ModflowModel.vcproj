@@ -319,6 +319,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Misc Files"
+				>
+				<File
+					RelativePath=".\Notes.txt"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

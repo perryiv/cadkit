@@ -46,7 +46,7 @@ public:
   const std::string&                       filename() const;
 
   /// Get the name.
-  virtual const std::string&  name() const;
+  virtual std::string                      name() const;
 
   /// Get/Set show layer
   virtual void                             showLayer( bool b );

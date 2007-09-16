@@ -56,7 +56,7 @@ public:
   void                    transparentColor( unsigned int r, unsigned int g, unsigned int b );
 
   /// Get the name.
-  virtual const std::string&  name() const;
+  virtual std::string     name() const;
 
   /// Get/Set show layer
   virtual void            showLayer( bool b );

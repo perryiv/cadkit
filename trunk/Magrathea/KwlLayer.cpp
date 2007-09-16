@@ -221,7 +221,7 @@ void KwlLayer::layerExtents ( double &lat, double &lon, double& height ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string&  KwlLayer::name() const
+std::string KwlLayer::name() const
 {
   return this->filename();
 }

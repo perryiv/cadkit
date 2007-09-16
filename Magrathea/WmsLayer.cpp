@@ -306,7 +306,7 @@ void WmsLayer::deserialize ( const XmlTree::Node& node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string&  WmsLayer::name() const
+std::string WmsLayer::name() const
 {
   return this->server();
 }

@@ -179,7 +179,7 @@ void ImageTextureLayer::layerExtents ( double &lat, double &lon, double& height 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string&  ImageTextureLayer::name() const
+std::string  ImageTextureLayer::name() const
 {
   return this->filename();
 }

@@ -256,6 +256,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Predicates.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ReplaceIllegalCharacters.cpp"
 				>
 			</File>

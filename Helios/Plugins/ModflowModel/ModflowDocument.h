@@ -24,6 +24,7 @@
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/ILayerList.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 
@@ -36,7 +37,8 @@ namespace Usul { namespace Factory { class ObjectFactory; } }
 
 
 class ModflowDocument : public Usul::Documents::Document,
-                        public Usul::Interfaces::IBuildScene
+                        public Usul::Interfaces::IBuildScene,
+                        public Usul::Interfaces::ILayerList
 {
 public:
 
@@ -50,6 +52,7 @@ public:
   typedef std::vector<GridInfo> GridVector;
   typedef std::vector<Layer::RefPtr> Layers;
   typedef Usul::Factory::ObjectFactory Factory;
+  typedef Usul::Interfaces::ILayer ILayer;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ModflowDocument );
@@ -87,13 +90,17 @@ public:
   Layers &                    layers();
 
   // Return number of layers.
-  unsigned int                numLayers() const;
+  virtual unsigned int        numberLayers() const;
+  unsigned int                numLayers() const { return this->numberLayers(); }
 
   // Read the document.
   virtual void                read ( const std::string &filename, Unknown *caller, Unknown *progress );
 
   // Write the document to given file name.
   virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const;
+
+  // Get the layer at position i.
+  virtual ILayer *            layer ( unsigned int i );
 
 protected:
 

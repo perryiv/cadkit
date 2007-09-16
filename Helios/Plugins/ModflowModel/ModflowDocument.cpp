@@ -112,6 +112,8 @@ Usul::Interfaces::IUnknown *ModflowDocument::queryInterface ( unsigned long iid 
   {
   case Usul::Interfaces::IBuildScene::IID:
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
+  case Usul::Interfaces::ILayerList::IID:
+    return static_cast < Usul::Interfaces::ILayerList* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -536,7 +538,7 @@ const ModflowDocument::Layers &ModflowDocument::layers() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int ModflowDocument::numLayers() const
+unsigned int ModflowDocument::numberLayers() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -559,15 +561,16 @@ ModflowDocument::Vec2ui ModflowDocument::gridSize() const
 }
 
 
-#if 0
-  Need to register functors that map the type with a reader function.
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the layer at position i.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-  Important!
-  -- Animate through time steps
-  -- Cutting planes
-
-  Would be good to...
-  -- Color control
-  -- Cell drawing control
-  -- Overlay data from PostGIS
-#endif
+Usul::Interfaces::ILayer *ModflowDocument::layer ( unsigned int i )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Layer::RefPtr layer ( ( i >= _layers.size() ) ? 0x0 : _layers.at ( i ) );
+  return layer.get();
+}

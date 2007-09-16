@@ -170,7 +170,7 @@ public:
     for ( Args::const_iterator iter = _args.begin(); iter != _args.end(); ++iter )
     {
       // Option in the form of -option value
-      if ( iter->length() > 2 && iter->at ( 0 ) == '-' && iter->at( 1 ) != '-' )
+      if ( iter->length() > 2 && iter->at ( 0 ) == '-' && iter->at ( 1 ) != '-' )
       {
         std::string option ( iter->begin() + 1, iter->end() );
         std::transform ( option.begin(), option.end(), option.begin(), ::tolower );
@@ -187,7 +187,7 @@ public:
           std::string option ( iter->begin(), iter->begin() + pos );
           std::transform ( option.begin(), option.end(), option.begin(), ::tolower );
           std::string value ( iter->begin() + pos + 1, iter->end() );
-          o.insert( option, value );
+          o.insert ( option, value );
         }
       }
     }

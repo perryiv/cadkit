@@ -12,6 +12,8 @@
 
 #include "Usul/Documents/Manager.h"
 
+#include "OsgTools/Render/Defaults.h"
+
 #include "QtCore/QTimer"
 #include "QtGui/QResizeEvent"
 
@@ -40,13 +42,24 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   _viewer = new OsgTools::Render::Viewer ( 0x0, me, me );
 
   // Initialize openGL.
-  this->initializeGL ();
+  this->initializeGL();
 
-  // Create the viewer.  This functions calls openGL functions.
+  // Create the viewer. This functions calls openGL functions.
   _viewer->create();
 
-  // Set the document.  Do this after create.
+  // Set the document. Do this after create.
   _viewer->document ( doc );
+
+  // Set good default background.
+  _viewer->defaultBackground();
+
+  // Not working...
+#if 0
+  _viewer->backgroundCorners ( OsgTools::Render::Viewer::Corners::BOTTOM );
+  _viewer->backgroundColor ( _viewer->backgroundColor() );
+  _viewer->backgroundCorners ( OsgTools::Render::Viewer::Corners::TOP );
+  _viewer->backgroundColor ( OsgTools::Render::Defaults::CLEAR_COLOR );
+#endif
 
   // Set the focus policy.
   this->setFocusPolicy ( Qt::ClickFocus );
@@ -437,12 +450,14 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
   // See if it was the space-bar or the r-key...
   case Qt::Key_Space:
   case Qt::Key_R:
+
     // Move the camera.
     this->viewer()->camera ( OsgTools::Render::Viewer::RESET );
     break;
 
   // See if it was the f-key...
   case Qt::Key_F:
+
     // Move the camera.
     this->viewer()->camera ( OsgTools::Render::Viewer::FIT );
     break;
@@ -451,50 +466,54 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
   case Qt::Key_Right:
 
     // Move the camera.
-    this->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_Y_N90 );
+    this->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_Y_N45 );
     break;
 
   // See if it was the left-arrow key...
   case Qt::Key_Left:
 
     // Move the camera.
-    this->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_Y_P90 );
+    this->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_Y_P45 );
     break;
 
   // See if it was the up-arrow key...
   case Qt::Key_Up:
 
     // Move the camera.
-    this->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_X_P90 );
+    this->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_X_P45 );
     break;
 
   // See if it was the down-arrow key...
   case Qt::Key_Down:
 
     // Move the camera.
-    this->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_X_N90 );
+    this->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_X_N45 );
     break;
 
   // See if it was the h key...
   case Qt::Key_H:
+
     Helper::togglePolygonMode ( *(this->viewer()), Usul::Interfaces::IPolygonMode::HIDDEN_LINES );
     this->viewer()->render();
     break;
 
   // See if it was the w key...
   case Qt::Key_W:
+
     Helper::togglePolygonMode ( *(this->viewer()), Usul::Interfaces::IPolygonMode::WIRE_FRAME );
     this->viewer()->render();
     break;
 
   // See if it was the p key...
   case Qt::Key_P:
+
     Helper::togglePolygonMode ( *(this->viewer()), Usul::Interfaces::IPolygonMode::POINTS );
     this->viewer()->render();
     break;
 
   // See if it was the s key...
   case Qt::Key_S:
+
     _lastMode = this->viewer()->getMode();
     this->viewer()->setMode ( OsgTools::Render::Viewer::SEEK );
     break;

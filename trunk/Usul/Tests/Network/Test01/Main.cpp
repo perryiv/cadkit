@@ -295,7 +295,7 @@ void Program::run()
       const std::string file ( this->_makeFileName ( minLat, minLon, maxLat, maxLon ) );
 
       // Add the bounding box.
-      options["bbox"] = this->_makeBoundingBox ( minLat, minLon, maxLat, maxLon );
+      options[Usul::Network::Names::BBOX] = this->_makeBoundingBox ( minLat, minLon, maxLat, maxLon );
 
       // Make the job.
       WmsJob::RefPtr job ( new WmsJob ( manager.nextJobId(), _baseUrl, file, options ) );

@@ -44,6 +44,8 @@ protected:
 
   virtual void              _started();
 
+  void                      _writeGeomFile();
+
 private:
 
   WMS _wms;

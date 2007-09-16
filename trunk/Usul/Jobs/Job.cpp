@@ -325,7 +325,7 @@ unsigned long Job::id() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Job::id( unsigned int value )
+void Job::id ( unsigned int value )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );

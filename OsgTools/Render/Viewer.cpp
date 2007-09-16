@@ -548,8 +548,8 @@ void Viewer::camera ( CameraOption option )
   typedef Usul::Interfaces::ICamera Camera;
 
   // Is the request with respect to the current matrix?
-  if ( Camera::ROTATE_Y_N90 != option && Camera::ROTATE_Y_P90 != option &&
-       Camera::ROTATE_X_N90 != option && Camera::ROTATE_X_P90 != option )
+  if ( Camera::ROTATE_Y_N45 != option && Camera::ROTATE_Y_P45 != option &&
+       Camera::ROTATE_X_N45 != option && Camera::ROTATE_X_P45 != option )
   {
     // Tell the manipulator to go home.
     this->navManip()->home ( *ea, aa );
@@ -583,20 +583,20 @@ void Viewer::camera ( CameraOption option )
       case Camera::BOTTOM:
         adjust.makeRotate (  osg::PI_2, osg::Vec3 ( 1, 0, 0 ) );
         trackball->rotation ( trackball->rotation() * adjust );
-      case Camera::ROTATE_Y_N90:
-        adjust.makeRotate ( -osg::PI_2, osg::Vec3 ( 0, 1, 0 ) );
+      case Camera::ROTATE_Y_N45:
+        adjust.makeRotate ( -osg::PI_4, osg::Vec3 ( 0, 1, 0 ) );
         trackball->rotation ( adjust * trackball->rotation() );
         break;
-      case Camera::ROTATE_Y_P90:
-        adjust.makeRotate (  osg::PI_2, osg::Vec3 ( 0, 1, 0 ) );
+      case Camera::ROTATE_Y_P45:
+        adjust.makeRotate (  osg::PI_4, osg::Vec3 ( 0, 1, 0 ) );
         trackball->rotation ( adjust * trackball->rotation() );
         break;
-      case Camera::ROTATE_X_N90:
-        adjust.makeRotate ( -osg::PI_2, osg::Vec3 ( 1, 0, 0 ) );
+      case Camera::ROTATE_X_N45:
+        adjust.makeRotate ( -osg::PI_4, osg::Vec3 ( 1, 0, 0 ) );
         trackball->rotation ( adjust * trackball->rotation() );
         break;
-      case Camera::ROTATE_X_P90:
-        adjust.makeRotate (  osg::PI_2, osg::Vec3 ( 1, 0, 0 ) );
+      case Camera::ROTATE_X_P45:
+        adjust.makeRotate (  osg::PI_4, osg::Vec3 ( 1, 0, 0 ) );
         trackball->rotation ( adjust * trackball->rotation() );
         break;
     }

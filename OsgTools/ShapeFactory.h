@@ -56,7 +56,7 @@ public:
                                  float tessellation = 1.0f );
 
   /// Create a cube. If one was already created with these inputs, then that 
-  /// same sphere is returned.
+  /// same cube is returned.
   osg::Geometry *         cube ( const osg::Vec3 &size = osg::Vec3 ( 1.0f, 1.0f, 1.0f ) );
 
   /// Create a cylinder. If one was already created with these inputs, then that 

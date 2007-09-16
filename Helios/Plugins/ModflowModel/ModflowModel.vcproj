@@ -310,10 +310,6 @@
 					RelativePath=".\ModflowFactory.h"
 					>
 				</File>
-				<File
-					RelativePath=".\TemporalData.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

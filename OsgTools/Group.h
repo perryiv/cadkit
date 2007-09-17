@@ -25,6 +25,9 @@ namespace OsgTools {
 
 struct OSG_TOOLS_EXPORT Group
 {
+  // Add all children from the one group to the other.
+  static void           addAllChildren ( osg::Group *from, osg::Group *to );
+
   // Remove all the children from the node.
   static void           removeAllChildren ( osg::Group *group );
 

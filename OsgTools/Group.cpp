@@ -55,3 +55,22 @@ void Group::removeAllOccurances ( osg::Node *child, osg::Group *group )
   // Loop until the child is no longer under the group.
   while ( group->removeChild ( child ) ){}
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add all the children from the group to the other.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Group::addAllChildren ( osg::Group *from, osg::Group *to )
+{
+  if ( from && to )
+  {
+    const unsigned int numChildren ( from->getNumChildren() );
+    for ( unsigned int i = 0; i < numChildren; ++i )
+    {
+      to->addChild ( from->getChild ( i ) );
+    }
+  }
+}

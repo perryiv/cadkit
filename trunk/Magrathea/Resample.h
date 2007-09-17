@@ -13,6 +13,8 @@
 
 #include "Usul/Math/Absolute.h"
 
+#include "ossim/base/ossimConstants.h"
+
 #include <algorithm>
 
 namespace Magrathea

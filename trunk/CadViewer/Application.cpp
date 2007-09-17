@@ -148,9 +148,6 @@ namespace CV
 
 using namespace CV;
 
-USUL_IMPLEMENT_COMMAND ( Application::BasicCommand );
-USUL_IMPLEMENT_COMMAND ( Application::CheckCommand );
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -240,7 +237,7 @@ Application::Application ( ) :
 ///////////////////////////////////////////////////////////////////////////////
 
 Application::~Application()
-{  
+{
   _gridFunctors.clear();
 }
 
@@ -433,10 +430,10 @@ void Application::_initGrid ( osg::Node *node )
     // Move the center so that it is below the bounding sphere of the node.
     osg::Vec3 c ( bs.center() );
     if(this->preferences()->offsetGrid( static_cast < int > ( i ) )) 
-    	c[1] = -r;
-    
+      c[1] = -r;
+
     grid.center ( Usul::Math::Vec3f ( c[0], c[1], c[2] ) );
-	  _gridFunctors.push_back(grid);
+    _gridFunctors.push_back(grid);
   }
 
   _rebuildGrid();

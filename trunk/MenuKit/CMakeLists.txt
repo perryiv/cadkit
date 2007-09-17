@@ -42,8 +42,6 @@ SET (SOURCES
 ./Visitor.cpp
 ./Button.cpp
 ./Errors.cpp
-./StreamVisitor.cpp
-./CloseVisitor.cpp
 ./Menu.cpp
 ./FlagsVisitor.cpp
 ./UpdateVisitor.cpp

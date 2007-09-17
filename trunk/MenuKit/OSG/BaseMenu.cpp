@@ -46,9 +46,9 @@ BaseMenu::BaseMenu()  : BaseClass(),
 
   // Give the skin a font.
   osg::ref_ptr<osgText::Font> font ( osgText::readFontFile ( MenuKit::OSG::Font::filename ( "arial" ) ) );
-  
+
   if( font.valid() )
-	  _skin->font ( font.get() );
+    _skin->font ( font.get() );
 
   // Set the normal colors.
   _skin->bg_color_normal    ( osg::Vec4 ( 0.6f, 0.6f, 0.6f, 1.0f ) );

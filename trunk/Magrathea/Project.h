@@ -11,7 +11,7 @@
 #ifndef __OSSIM_PROJECT_H__
 #define __OSSIM_PROJECT_H__
 
-
+#include "ossim/base/ossimConstants.h"
 #include "ossim/base/ossimGpt.h"
 #include "ossim/base/ossimEcefPoint.h"
 #include "ossim/base/ossimGeoidManager.h"

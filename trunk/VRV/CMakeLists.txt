@@ -34,29 +34,19 @@ SET (SOURCES
   ./Core/Application.cpp
   ./Core/SharedDouble.cpp
   ./Core/SharedMatrix.cpp
+  ./Commands/BackgroundColor.cpp
+  ./Commands/Camera.cpp
   ./Commands/LoadDocument.cpp
+  ./Commands/Navigator.cpp
+  ./Commands/PolygonMode.cpp
+  ./Commands/RenderingPasses.cpp
+  ./Commands/ShadeModel.cpp
   ./Jobs/SaveImage.cpp
   ./Devices/JoystickDevice.cpp
   ./Devices/ButtonGroup.cpp
   ./Devices/ButtonDevice.cpp
   ./Devices/TrackerDevice.cpp
   ./Devices/Callback.cpp
-  ./Functors/BaseFunctor.cpp
-  ./Functors/Pair.cpp
-  ./Functors/Matrix/MatrixFunctor.cpp
-  ./Functors/Matrix/IdentityMatrix.cpp
-  ./Functors/Matrix/MatrixPair.cpp
-  ./Functors/Matrix/InverseMatrix.cpp
-  ./Functors/Wand/WandRotation.cpp
-  ./Functors/Wand/WandMatrix.cpp
-  ./Functors/Wand/WandPosition.cpp
-  ./Functors/Input/JoystickHorizontal.cpp
-  ./Functors/Input/JoystickVertical.cpp
-  ./Functors/Input/AnalogInput.cpp
-  ./Functors/Navigate/Translate.cpp
-  ./Functors/Navigate/Rotate.cpp
-  ./Functors/Navigate/Transform.cpp
-  ./Functors/Navigate/Direction.cpp
   ./Prefs/Parser.cpp
   ./Prefs/Settings.cpp
 )

@@ -35,18 +35,22 @@ ${PROJECT_SOURCE_DIR}/../Usul
 ${PROJECT_SOURCE_DIR}/../Threads/OpenThreads
 ${PROJECT_SOURCE_DIR}/../OsgTools 
 ${PROJECT_SOURCE_DIR}/../XmlTree 
-)
-
-
-# include base plugins
-SUBDIRS(
 #${PROJECT_SOURCE_DIR}/Animate
 #${PROJECT_SOURCE_DIR}/Plugins/About
 ${PROJECT_SOURCE_DIR}/Plugins/SceneModel
 #${PROJECT_SOURCE_DIR}/Plugins/SceneStatsOSG
 #${PROJECT_SOURCE_DIR}/Plugins/TriangleModel
 ${PROJECT_SOURCE_DIR}/Plugins/VolumeModel
+${CADKIT_ROOT_DIR}/Magrathea/
+${CADKIT_ROOT_DIR}/Minerva/Core
+${CADKIT_ROOT_DIR}/Minerva/Document
+# ---- Minerva Plug-ins -------
+${CADKIT_ROOT_DIR}/Minerva/Plugins/ProjectionManager
+${CADKIT_ROOT_DIR}/Minerva/Plugins/ComputeNormals
+${CADKIT_ROOT_DIR}/Minerva/Plugins/TriangulateCGAL
+${CADKIT_ROOT_DIR}/Minerva/Plugins/Document
 )
+
 
 #Check to see if we are building QT version of Helios
 IF( BUILD_HELIOS_QT )

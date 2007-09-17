@@ -635,7 +635,7 @@ void Behavior::selectFocused()
 
   // If the focused item is a button and we are supposed to hide...
   Button::RefPtr button ( dynamic_cast < Button * > ( focus.get() ) );
-  if ( button.get() && Usul::Bits::has <unsigned int> ( this->flags(), HIDE_ALL_IF_BUTTON_SELECTED ) )
+  if ( button.get() && Usul::Bits::has <unsigned int, unsigned int > ( this->flags(), HIDE_ALL_IF_BUTTON_SELECTED ) )
   {
     // Hide the whole tree.
     this->close ( this->root() );

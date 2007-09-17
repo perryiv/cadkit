@@ -2994,7 +2994,7 @@ void Viewer::clearScene()
 
 int Viewer::x() const
 {
-  return this->viewer()->getViewport()->x();
+  return static_cast < int > ( this->viewer()->getViewport()->x() );
 }
 
 
@@ -3006,7 +3006,7 @@ int Viewer::x() const
 
 int Viewer::y() const
 {
-  return this->viewer()->getViewport()->y();
+  return static_cast < int > ( this->viewer()->getViewport()->y() );
 }
 
 

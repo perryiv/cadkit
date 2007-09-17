@@ -20,7 +20,7 @@ public:
   typedef Usul::Commands::Command BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( PrevTimestep );
+  USUL_DECLARE_COMMAND ( PrevTimestep );
 
   PrevTimestep ( Usul::Interfaces::IUnknown* caller );
 

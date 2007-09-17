@@ -34,7 +34,7 @@ using namespace MenuKit;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Item::Item(): Referenced(), 
+Item::Item(): BaseClass (), 
   _command     ( 0x0 ),
   _text        (),
   _info        (),
@@ -68,7 +68,7 @@ Item::Item ( const std::string &text, const std::string &iconFile ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Item::Item ( const Item &i ) : Referenced ( i ),
+Item::Item ( const Item &i ) : BaseClass ( i ),
   _command     ( i._command ), 
   _text        ( i._text ), 
   _info        ( i._info ),

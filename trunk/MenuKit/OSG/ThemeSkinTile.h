@@ -35,7 +35,7 @@ namespace MenuKit
     public:
       typedef Tile base_class;
       typedef SkinType skin_type;
-      typedef typename skin_type::Ptr skin_ptr;
+      typedef typename skin_type::RefPtr skin_ptr;
       typedef SkinTile<skin_type> thisclass;
       MENUKIT_DECLARE_POINTER ( thisclass );
 

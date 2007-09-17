@@ -13,6 +13,8 @@
 #include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/IMpdNavigator.h"
 
+USUL_IMPLEMENT_COMMAND ( MpdMenuCommand );
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.

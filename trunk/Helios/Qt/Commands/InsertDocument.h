@@ -36,10 +36,7 @@ public:
   typedef Usul::Interfaces::IUnknown            IUnknown;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( InsertDocument );
-
-  // Type-id definition.
-  USUL_DECLARE_TYPE_ID ( InsertDocument );
+  USUL_DECLARE_COMMAND ( InsertDocument );
 
   // Constructor.
   InsertDocument ( IUnknown *caller );
@@ -51,11 +48,8 @@ protected:
   // Execute.
   virtual void              _execute();
 
-private:
-
-  // No copying or assignment.
-  InsertDocument ( const InsertDocument & );
-  InsertDocument &operator = ( const InsertDocument & );
+  // Update the enabled flag.
+  virtual bool              updateEnable () const;
 };
 
 }

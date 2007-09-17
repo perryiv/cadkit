@@ -205,7 +205,7 @@ void Behavior::moveFocused ( Direction d )
   MENUKIT_CHECK_POINTER ( 3203295262u, this->root() );
 
   // Get the item with focus.
-  Item::Ptr focus ( this->focus() );
+  Item::RefPtr focus ( this->focus() );
 
   // Handle specific case.
   if ( 0x0 == focus.get() )
@@ -219,7 +219,7 @@ void Behavior::moveFocused ( Direction d )
 
   // -- change the focus item -- //
   // See if the focused item is a menu.
-  Menu::Ptr menu ( dynamic_cast < Menu * > ( focus.get() ) );
+  Menu::RefPtr menu ( dynamic_cast < Menu * > ( focus.get() ) );
   if ( menu.get() )
   {
     _moveFocused ( d, menu.get() );
@@ -228,7 +228,7 @@ void Behavior::moveFocused ( Direction d )
   }
 
   // See if the focused item is a button.
-  Button::Ptr button ( dynamic_cast < Button * > ( focus.get() ) );
+  Button::RefPtr button ( dynamic_cast < Button * > ( focus.get() ) );
   if ( button.get() )
   {
     _moveFocused ( d, button.get() );
@@ -403,7 +403,7 @@ void Behavior::_moveRightFromLeaf ( Item *item )
 {
   MENUKIT_CHECK_POINTER ( 4208315504u, item );
 
-  Menu::Ptr menu ( this->_findFirstParentWithHorizontalParent ( item ) );
+  Menu::RefPtr menu ( this->_findFirstParentWithHorizontalParent ( item ) );
   if ( menu.get() )
   {
     this->_makeNextSiblingFocused ( menu.get() );
@@ -430,14 +430,14 @@ void Behavior::_moveLeft ( Item *item )
     return;
   }
 
-  Menu::Ptr parent ( item->parent() );
+  Menu::RefPtr parent ( item->parent() );
   if ( 0x0 == parent.get() )
     return;
 
   if ( this->_hasHorizontalParent ( parent.get() ) )
   {
     this->_makePrevSiblingFocused ( parent.get() );
-    Menu::Ptr focus ( ( dynamic_cast < Menu * > ( this->focus() ) ) );
+    Menu::RefPtr focus ( ( dynamic_cast < Menu * > ( this->focus() ) ) );
     if ( focus.get() )
       this->_makeFirstChildFocused ( focus.get() );
   }
@@ -461,17 +461,17 @@ void Behavior::_makeNextSiblingFocused ( Item *item )
   MENUKIT_CHECK_POINTER ( 3752332794u, item );
 
   // Get the parent.
-  Menu::Ptr parent ( item->parent() );
+  Menu::RefPtr parent ( item->parent() );
   if ( 0x0 == parent.get() )
     return;
 
   // Find the item in the parent's list. This should always work.
-  Menu::iterator ii = std::find ( parent->begin(), parent->end(), item );
+  Menu::iterator ii = std::find_if ( parent->begin(), parent->end(), Item::RefPtr::IsEqual ( item ) );
   if ( parent->end() == ii )
     return;
 
   // Get the next child (the sibling).
-  Item::Ptr next ( MenuKit::Algorithms::nextItem ( ii, parent->begin(), parent->end() ) );
+  Item::RefPtr next ( MenuKit::Algorithms::nextItem ( ii, parent->begin(), parent->end() ) );
   if ( 0x0 == next.get() )
     return;
 
@@ -494,17 +494,17 @@ void Behavior::_makePrevSiblingFocused ( Item *item )
   MENUKIT_CHECK_POINTER ( 2568630261u, item );
 
   // Get the parent.
-  Menu::Ptr parent ( item->parent() );
+  Menu::RefPtr parent ( item->parent() );
   if ( 0x0 == parent.get() )
     return;
 
   // Find the item in the parent's list. This should always work.
-  Menu::reverse_iterator ii = std::find ( parent->rbegin(), parent->rend(), item );
+  Menu::reverse_iterator ii = std::find_if ( parent->rbegin(), parent->rend(), Item::RefPtr::IsEqual ( item ) );
   if ( parent->rend() == ii )
     return;
 
   // Get the next child (the sibling).
-  Item::Ptr next ( MenuKit::Algorithms::nextItem ( ii, parent->rbegin(), parent->rend() ) );
+  Item::RefPtr next ( MenuKit::Algorithms::nextItem ( ii, parent->rbegin(), parent->rend() ) );
   if ( 0x0 == next.get() )
     return;
 
@@ -608,7 +608,7 @@ void Behavior::selectFocused()
   MENUKIT_CHECK_POINTER ( 1283245209u, this->root() );
 
   // Get the focused item.
-  Item::Ptr focus ( this->focus() );
+  Item::RefPtr focus ( this->focus() );
 
   // Handle specific case.
   if ( 0x0 == focus.get() )
@@ -619,7 +619,7 @@ void Behavior::selectFocused()
   }
 
   // Is the focused item a menu?
-  Menu::Ptr menu ( dynamic_cast < Menu * > ( focus.get() ) );
+  Menu::RefPtr menu ( dynamic_cast < Menu * > ( focus.get() ) );
   if ( menu.get() )
   {
     // If the menu is already expanded then just un-expand it.
@@ -634,7 +634,7 @@ void Behavior::selectFocused()
   }
 
   // If the focused item is a button and we are supposed to hide...
-  Button::Ptr button ( dynamic_cast < Button * > ( focus.get() ) );
+  Button::RefPtr button ( dynamic_cast < Button * > ( focus.get() ) );
   if ( button.get() && Usul::Bits::has <unsigned int> ( this->flags(), HIDE_ALL_IF_BUTTON_SELECTED ) )
   {
     // Hide the whole tree.
@@ -662,7 +662,7 @@ void Behavior::closeFocusedMenu()
   MENUKIT_CHECK_POINTER ( 3166814741u, this->root() );
 
   // Get the focused item.
-  Item::Ptr focus ( this->focus() );
+  Item::RefPtr focus ( this->focus() );
 
   // Handle special case.
   if ( 0x0 == focus.get() )
@@ -695,7 +695,7 @@ void Behavior::close ( Item *item )
   if ( 0x0 == item )
     return;
 
-  FlagsVisitor::Ptr v ( new FlagsVisitor ( FlagsVisitor::REMOVE, Item::EXPANDED ) );
+  FlagsVisitor::RefPtr v ( new FlagsVisitor ( FlagsVisitor::REMOVE, Item::EXPANDED ) );
   item->accept ( *v );
 }
 
@@ -711,7 +711,7 @@ void Behavior::ensureFocus()
   MENUKIT_CHECK_POINTER ( 1429505883u, this->root() );
 
   // Get the focused item.
-  Item::Ptr focus ( this->focus() );
+  Item::RefPtr focus ( this->focus() );
 
   // If we do not have an acvite item...
   if ( 0x0 == focus.get() )

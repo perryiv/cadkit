@@ -16,6 +16,7 @@
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( AnimationSpeed, AnimationSpeed::BaseClass );
+USUL_IMPLEMENT_COMMAND ( AnimationSpeed );
 USUL_FACTORY_REGISTER_CREATOR ( AnimationSpeed );
 
 ///////////////////////////////////////////////////////////////////////////////

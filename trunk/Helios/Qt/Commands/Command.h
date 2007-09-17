@@ -51,11 +51,10 @@ protected:
   // Use reference counting.
   virtual ~Command();
 
-private:
-
-  // No copying or assignment.
   Command ( const Command & );
   Command &operator = ( const Command & );
+
+private:
 
   void                      _destroy();
 };

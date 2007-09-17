@@ -14,6 +14,7 @@
 #include "Usul/Trace/Trace.h"
 #include "Usul/Strings/Convert.h"
 
+USUL_IMPLEMENT_COMMAND ( ChangeNumPlanes );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

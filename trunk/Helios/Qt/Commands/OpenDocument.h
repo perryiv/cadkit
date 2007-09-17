@@ -46,10 +46,7 @@ public:
   typedef Usul::Documents::Document             Document;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( OpenDocument );
-
-  // Type-id definition.
-  USUL_DECLARE_TYPE_ID ( OpenDocument );
+  USUL_DECLARE_COMMAND ( OpenDocument );
 
   // Constructor.
   OpenDocument ( IUnknown *caller );
@@ -62,6 +59,8 @@ protected:
 
   // Use reference counting.
   virtual ~OpenDocument();
+  OpenDocument ( const OpenDocument & );
+  OpenDocument &operator = ( const OpenDocument & );
 
   // Internal job class.
   class Job : public Usul::Jobs::Job
@@ -85,10 +84,6 @@ protected:
   void                      _startJob ( const std::string& filename );
 
 private:
-
-  // No copying or assignment.
-  OpenDocument ( const OpenDocument & );
-  OpenDocument &operator = ( const OpenDocument & );
 
   std::string _filename;
 };

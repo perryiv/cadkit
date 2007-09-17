@@ -20,7 +20,7 @@ public:
   typedef Usul::Commands::Command BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( MpdMenuCommand );
+  USUL_DECLARE_COMMAND ( MpdMenuCommand );
 
   MpdMenuCommand ( Usul::Interfaces::IUnknown * caller, const std::string text, unsigned int index );
 

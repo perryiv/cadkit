@@ -47,6 +47,45 @@ Command::Command ( IUnknown *caller ) : BaseClass(),
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Copy Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Command::Command ( const Command& c ) : BaseClass ( c ),
+  _caller ( c._caller ),
+  _text( c._text ),
+  _toolTip( c._toolTip ),
+  _statusTip( c._statusTip ),
+  _shortcut( c._shortcut ),
+  _iconPath( c._iconPath )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Assignment.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Command& Command::operator = ( const Command& c )
+{
+  USUL_TRACE_SCOPE;
+
+  BaseClass::operator = ( c );
+  _caller = c._caller;
+  _text = c._text;
+  _toolTip = c._toolTip;
+  _statusTip = c._statusTip;
+  _shortcut = c._shortcut;
+  _iconPath = c._iconPath;
+  return *this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -93,6 +132,8 @@ Usul::Interfaces::IUnknown *Command::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::ICommand*>(this);
   case Usul::Interfaces::IUnknown::IID:
     return static_cast<Usul::Interfaces::IUnknown*>(static_cast<Usul::Interfaces::ICommand*>(this));
+  case Usul::Interfaces::IUpdateEnable::IID:
+    return static_cast < Usul::Interfaces::IUpdateEnable * > ( this );
   default:
     return 0x0;
   }
@@ -284,4 +325,16 @@ std::string Command::iconPath() const
 	USUL_TRACE_SCOPE;
 	Guard guard ( this->mutex() );
   return std::string ( _iconPath.begin(), _iconPath.end() ); // More thread-safe?
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this command enabled?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Command::updateEnable () const
+{
+  return true;
 }

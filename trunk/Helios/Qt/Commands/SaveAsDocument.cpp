@@ -15,7 +15,7 @@
 
 using namespace CadKit::Helios::Commands;
 
-USUL_IMPLEMENT_TYPE_ID ( SaveAsDocument );
+USUL_IMPLEMENT_COMMAND ( SaveAsDocument );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -64,3 +64,18 @@ void SaveAsDocument::_execute ()
     document->saveAs( this->caller() );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are we enabled?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool SaveAsDocument::updateEnable () const
+{
+  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().active() );
+
+  return document.valid();
+}
+

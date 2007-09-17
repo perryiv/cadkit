@@ -545,12 +545,12 @@ void Application::_initMenu()
   group->addChild ( mt.get( ) );
 
   // Make the menu.
-  MenuKit::Menu::Ptr menu ( new MenuKit::Menu );
+  MenuKit::Menu::RefPtr menu ( new MenuKit::Menu );
   menu->layout ( MenuKit::Menu::HORIZONTAL );
 
   // The file menu.
   {
-    MenuKit::Menu::Ptr file ( new MenuKit::Menu );
+    MenuKit::Menu::RefPtr file ( new MenuKit::Menu );
     file->layout ( MenuKit::Menu::VERTICAL );
     file->text ( "File" );
     this->_initFileMenu ( file.get() );
@@ -568,7 +568,7 @@ void Application::_initMenu()
 
   // The view menu.
   {
-    MenuKit::Menu::Ptr view ( new MenuKit::Menu );
+    MenuKit::Menu::RefPtr view ( new MenuKit::Menu );
     view->layout ( MenuKit::Menu::VERTICAL );
     view->text ( "View" );
     this->_initViewMenu ( view.get() );
@@ -577,7 +577,7 @@ void Application::_initMenu()
 
   // The navigate menu.
   {
-    MenuKit::Menu::Ptr navigate ( new MenuKit::Menu );
+    MenuKit::Menu::RefPtr navigate ( new MenuKit::Menu );
     navigate->layout ( MenuKit::Menu::VERTICAL );
     navigate->text ( "Navigate" );
     this->_initNavigateMenu ( navigate.get() );
@@ -586,7 +586,7 @@ void Application::_initMenu()
 
   // The options menu.
   {
-    MenuKit::Menu::Ptr options ( new MenuKit::Menu );
+    MenuKit::Menu::RefPtr options ( new MenuKit::Menu );
     options->layout ( MenuKit::Menu::VERTICAL );
     options->text ( "Options" );
     this->_initOptionsMenu ( options.get() );
@@ -595,7 +595,7 @@ void Application::_initMenu()
 
   // The animate menu.
   {
-    MenuKit::Menu::Ptr animate ( new MenuKit::Menu );
+    MenuKit::Menu::RefPtr animate ( new MenuKit::Menu );
     animate->layout ( MenuKit::Menu::VERTICAL );
     animate->text ( "Animate" );
     this->_initAnimateMenu ( animate.get() );
@@ -629,7 +629,7 @@ void Application::_initFileMenu     ( MenuKit::Menu* menu )
 {
   // The export sub-menu.
   {
-    MenuKit::Menu::Ptr exportMenu ( new MenuKit::Menu );
+    MenuKit::Menu::RefPtr exportMenu ( new MenuKit::Menu );
     exportMenu->layout ( MenuKit::Menu::VERTICAL );
     exportMenu->text ( "Export" );
     menu->append ( exportMenu.get() );
@@ -684,7 +684,7 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
 
   // Rendering passes menu.
   {
-    MenuKit::Menu::Ptr passes ( new MenuKit::Menu );
+    MenuKit::Menu::RefPtr passes ( new MenuKit::Menu );
     passes->layout ( MenuKit::Menu::VERTICAL );
     passes->text ( "Rendering Passes" );
     menu->append ( passes.get() );
@@ -699,7 +699,7 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
 
   // Goto menu.
   {
-    MenuKit::Menu::Ptr gotoMenu ( new MenuKit::Menu );
+    MenuKit::Menu::RefPtr gotoMenu ( new MenuKit::Menu );
     gotoMenu->layout ( MenuKit::Menu::VERTICAL );
     gotoMenu->text ( "Goto" );
     menu->append ( gotoMenu.get() );
@@ -717,7 +717,7 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
 
   // Polygons menu.
   {
-    MenuKit::Menu::Ptr polygons ( new MenuKit::Menu );
+    MenuKit::Menu::RefPtr polygons ( new MenuKit::Menu );
     polygons->layout ( MenuKit::Menu::VERTICAL );
     polygons->text ( "Polygons" );
     menu->append ( polygons.get() );
@@ -731,7 +731,7 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
 
   // Shading menu.
   {
-    MenuKit::Menu::Ptr shading ( new MenuKit::Menu );
+    MenuKit::Menu::RefPtr shading ( new MenuKit::Menu );
     shading->layout ( MenuKit::Menu::VERTICAL );
     shading->text ( "Shading" );
     menu->append ( shading.get() );
@@ -755,7 +755,7 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
   // Favorites menu
   {
-    MenuKit::Menu::Ptr favorites ( new MenuKit::Menu );
+    MenuKit::Menu::RefPtr favorites ( new MenuKit::Menu );
     favorites->layout ( MenuKit::Menu::VERTICAL );
     favorites->text ( "Favorites" );
     menu->append ( favorites.get() );
@@ -786,7 +786,7 @@ void Application::_initToolsMenu ( MenuKit::Menu* menu )
 
   if ( commandList.valid() )
   {
-    MenuKit::Menu::Ptr tools ( new MenuKit::Menu );
+    MenuKit::Menu::RefPtr tools ( new MenuKit::Menu );
     tools->layout ( MenuKit::Menu::VERTICAL );
     tools->text ( "Tools" );
     menu->append ( tools.get() );
@@ -811,7 +811,7 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   // Create a sub-menu for background color
-  MenuKit::Menu::Ptr background ( new MenuKit::Menu );
+  MenuKit::Menu::RefPtr background ( new MenuKit::Menu );
   background->layout ( MenuKit::Menu::VERTICAL );
   background->text ( "Background Color" );
   menu->append ( background.get() );
@@ -840,7 +840,7 @@ void Application::_initAnimateMenu  ( MenuKit::Menu* menu )
   menu->append ( this->_createSeperator () );
 
   {
-    MenuKit::Menu::Ptr steps ( new MenuKit::Menu );
+    MenuKit::Menu::RefPtr steps ( new MenuKit::Menu );
     steps->layout ( MenuKit::Menu::VERTICAL );
     steps->text ( "Steps" );
     menu->append ( steps.get() );

@@ -21,7 +21,7 @@ public:
   typedef Usul::Commands::Command BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( ChangeNumPlanes );
+  USUL_DECLARE_COMMAND ( ChangeNumPlanes );
 
   ChangeNumPlanes ( double multiplier, WRFDocument* doc );
 

@@ -16,20 +16,21 @@
 #ifndef _MENUKIT_ITEM_VISITOR_
 #define _MENUKIT_ITEM_VISITOR_
 
-#include "MenuKit/Referenced.h"
+#include "MenuKit/Export.h"
+#include "Usul/Base/Object.h"
 
 namespace MenuKit {
 
 class Menu;
 class Button;
 
-class MENUKIT_EXPORT Visitor : public Referenced
+class MENUKIT_EXPORT Visitor : public Usul::Base::Object
 {
 public:
 
   // Typedefs and smart-pointers.
-  typedef Referenced BaseClass;
-  MENUKIT_DECLARE_POINTER ( Visitor );
+  typedef Usul::Base::Object BaseClass;
+  USUL_DECLARE_REF_POINTERS ( Visitor );
 
   // Possible modes.
   enum Mode { NONE, EXPANDED, ALL };

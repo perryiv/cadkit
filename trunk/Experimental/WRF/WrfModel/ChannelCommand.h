@@ -21,7 +21,7 @@ public:
   typedef Usul::Commands::Command BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( ChannelCommand );
+  USUL_DECLARE_COMMAND ( ChannelCommand );
 
   ChannelCommand ( const std::string& name, unsigned int index, WRFDocument* doc );
 

@@ -10,16 +10,13 @@
 #ifndef _menukit_osg_tilefunctor_h_
 #define _menukit_osg_tilefunctor_h_
 
-#include "MenuKit/Referenced.h"  // for base class
-#include "MenuKit/Box.h"         // dimension data member
+#include "MenuKit/Box.h"
+#include "MenuKit/Menu.h"
+#include "MenuKit/Button.h"
 
-#include "MenuKit/Menu.h"        // request support
-#include "MenuKit/Button.h"      // request support
+#include "Usul/Base/Object.h"
 
-namespace osg
-{
-  class Node;
-};
+namespace osg { class Node; }
 
 namespace MenuKit
 {
@@ -35,11 +32,11 @@ namespace MenuKit
       * the DisplayMode enumeration and Box class members are
       * both template requirements.
       */
-    class Tile : public Referenced
+    class Tile : public Usul::Base::Object
     {
     public:
-      typedef Referenced base_class;
-      MENUKIT_DECLARE_POINTER( Tile );
+      typedef Usul::Base::Object base_class;
+      USUL_DECLARE_REF_POINTERS ( Tile );
       enum DisplayMode { NORMAL, DISABLED, HIGHLIGHT };
 
       ///\todo make node_type a template requirement

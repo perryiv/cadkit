@@ -36,10 +36,7 @@ public:
   typedef Usul::Interfaces::IUnknown            IUnknown;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( ExportImage );
-
-  // Type-id definition.
-  USUL_DECLARE_TYPE_ID ( ExportImage );
+  USUL_DECLARE_COMMAND ( ExportImage );
 
   // Constructor.
   ExportImage ( IUnknown *caller );
@@ -51,11 +48,8 @@ protected:
   // Execute.
   virtual void              _execute();
 
-private:
-
-  // No copying or assignment.
-  ExportImage ( const ExportImage & );
-  ExportImage &operator = ( const ExportImage & );
+  // Update the enabled flag.
+  virtual bool              updateEnable () const;
 };
 
 }

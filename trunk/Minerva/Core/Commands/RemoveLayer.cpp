@@ -17,6 +17,7 @@
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( RemoveLayer, RemoveLayer::BaseClass );
+USUL_IMPLEMENT_COMMAND ( RemoveLayer );
 USUL_FACTORY_REGISTER_CREATOR ( RemoveLayer );
 
 

@@ -15,7 +15,7 @@
 
 using namespace CadKit::Helios::Commands;
 
-USUL_IMPLEMENT_TYPE_ID ( InsertDocument );
+USUL_IMPLEMENT_COMMAND ( InsertDocument );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -63,4 +63,18 @@ void InsertDocument::_execute ()
   {
     document->insert( this->caller() );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are we enabled?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool InsertDocument::updateEnable () const
+{
+  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().active() );
+
+  return document.valid();
 }

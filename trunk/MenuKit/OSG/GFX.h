@@ -10,10 +10,10 @@
 #ifndef _menukit_osg_gfx_functor_
 #define _menukit_osg_gfx_functor_
 
-#include "MenuKit/Referenced.h"
-
 #include "Export.h"
 #include "Skin.h"
+
+#include "Usul/Base/Object.h"
 
 #include "osg/Vec4"
 #include "osgText/Font"
@@ -32,15 +32,15 @@ namespace MenuKit
   {
 
     // abstract base class for all skins
-    class MENUKIT_OSG_EXPORT GFX : public Referenced
+    class MENUKIT_OSG_EXPORT GFX : public Usul::Base::Object
     {
     public:
-      typedef Referenced BaseClass;
+      typedef Usul::Base::Object BaseClass;
+      USUL_DECLARE_REF_POINTERS ( GFX );
+
       GFX ( Skin *skin, Item *active );
       GFX ( const GFX & );
       GFX& operator = (const GFX&);
-
-      MENUKIT_DECLARE_POINTER(GFX);
 
       void skin(Skin* s) { _skin = s; }
       const Skin* skin() { return _skin.get(); }
@@ -58,8 +58,8 @@ namespace MenuKit
       bool _isInActivePath ( const Item *item );
 
     private:
-      Skin::Ptr _skin;
-      Item::Ptr _active;
+      Skin::RefPtr _skin;
+      Item::RefPtr _active;
     };
 
   };

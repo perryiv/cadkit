@@ -16,8 +16,9 @@
 #ifndef _MENUKIT_ITEM_
 #define _MENUKIT_ITEM_
 
-#include "MenuKit/Referenced.h"
+#include "MenuKit/Export.h"
 
+#include "Usul/Base/Object.h"
 #include "Usul/Commands/Command.h"
 
 #include <string>
@@ -29,14 +30,14 @@ namespace MenuKit {
 class Visitor;
 class Menu;
 
-class MENUKIT_EXPORT Item : public Referenced
+class MENUKIT_EXPORT Item : public Usul::Base::Object
 {
 public:
 
   // Typedefs and smart-pointers.
-  typedef Referenced               BaseClass;
+  typedef Usul::Base::Object       BaseClass;
   typedef Usul::Commands::Command  Command;
-  MENUKIT_DECLARE_POINTER ( Item );
+  USUL_DECLARE_REF_POINTERS ( Item );
 
   // Possible flags.
   enum

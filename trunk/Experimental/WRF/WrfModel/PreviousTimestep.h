@@ -21,8 +21,8 @@ class PreviousTimestep : public Usul::Commands::Command
 public:
   typedef Usul::Commands::Command BaseClass;
 
-  // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( PreviousTimestep );
+  // Command definitions.
+  USUL_DECLARE_COMMAND ( PreviousTimestep );
 
   PreviousTimestep ( WRFDocument* doc );
 

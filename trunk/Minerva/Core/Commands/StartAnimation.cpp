@@ -16,6 +16,7 @@
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StartAnimation, StartAnimation::BaseClass );
+USUL_IMPLEMENT_COMMAND ( StartAnimation );
 USUL_FACTORY_REGISTER_CREATOR ( StartAnimation );
 
 ///////////////////////////////////////////////////////////////////////////////

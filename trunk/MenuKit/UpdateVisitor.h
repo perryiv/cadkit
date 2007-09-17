@@ -19,6 +19,7 @@ class MENUKIT_EXPORT UpdateVisitor : public MenuKit::Visitor
 {
 public:
   typedef MenuKit::Visitor BaseClass;
+  USUL_DECLARE_REF_POINTERS ( UpdateVisitor );
 
   UpdateVisitor ();
 

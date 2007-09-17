@@ -48,7 +48,7 @@ namespace MenuKit
     public:
       typedef Visitor base_class;
       typedef TileType tile_type;
-      typedef typename tile_type::Ptr tile_ptr;
+      typedef typename tile_type::RefPtr tile_ptr;
       typedef Mason<tile_type> thisclass;
       MENUKIT_DECLARE_POINTER ( thisclass );
       typedef Detail::Stack<float> FloatStack;

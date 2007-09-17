@@ -17,6 +17,7 @@
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ShowLayer, ShowLayer::BaseClass );
+USUL_IMPLEMENT_COMMAND ( ShowLayer );
 USUL_FACTORY_REGISTER_CREATOR ( ShowLayer );
 
 

@@ -33,10 +33,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Helios Qt Core"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
-		{70727975-A957-49F7-AE08-4A7FB01C40BD} = {70727975-A957-49F7-AE08-4A7FB01C40BD}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
+		{70727975-A957-49F7-AE08-4A7FB01C40BD} = {70727975-A957-49F7-AE08-4A7FB01C40BD}
 		{217A9958-2C1A-43FC-8B6B-7F23B716E844} = {217A9958-2C1A-43FC-8B6B-7F23B716E844}
+		{8B99160D-5504-4A93-89DC-F4AE949501A4} = {8B99160D-5504-4A93-89DC-F4AE949501A4}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Helios Qt Commands", "Commands\HeliosQtCommands.vcproj", "{70727975-A957-49F7-AE08-4A7FB01C40BD}"
@@ -366,6 +367,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Modflow Delegate Qt",
 		{D8524F0F-9938-4BFA-820A-924092ED40AD} = {D8524F0F-9938-4BFA-820A-924092ED40AD}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit MenuKit", "..\..\MenuKit\MenuKit.vcproj", "{8B99160D-5504-4A93-89DC-F4AE949501A4}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -516,6 +526,10 @@ Global
 		{996C1AA0-86B7-44A3-BBA6-DAA24137BA2D}.Debug|Win32.Build.0 = Debug|Win32
 		{996C1AA0-86B7-44A3-BBA6-DAA24137BA2D}.Release|Win32.ActiveCfg = Release|Win32
 		{996C1AA0-86B7-44A3-BBA6-DAA24137BA2D}.Release|Win32.Build.0 = Release|Win32
+		{8B99160D-5504-4A93-89DC-F4AE949501A4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8B99160D-5504-4A93-89DC-F4AE949501A4}.Debug|Win32.Build.0 = Debug|Win32
+		{8B99160D-5504-4A93-89DC-F4AE949501A4}.Release|Win32.ActiveCfg = Release|Win32
+		{8B99160D-5504-4A93-89DC-F4AE949501A4}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

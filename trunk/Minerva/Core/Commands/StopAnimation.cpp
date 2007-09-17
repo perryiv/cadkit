@@ -16,6 +16,7 @@
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StopAnimation, StopAnimation::BaseClass );
+USUL_IMPLEMENT_COMMAND ( StopAnimation );
 USUL_FACTORY_REGISTER_CREATOR ( StopAnimation );
 
 ///////////////////////////////////////////////////////////////////////////////

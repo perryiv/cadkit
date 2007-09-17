@@ -12,7 +12,7 @@
 #include "Minerva/Core/Commands/HideLayer.h"
 #include "Minerva/Core/Commands/ShowLayer.h"
 
-#include "Minerva/Interfaces/ILayerList.h"
+#include "Usul/Interfaces/ILayerList.h"
 
 #include "QtGui/QTreeWidget"
 #include "QtGui/QVBoxLayout"
@@ -96,7 +96,7 @@ void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
   _layerMap.clear ( );
 
   // See if the correct interface is implemented.
-  Minerva::Interfaces::ILayerList::QueryPtr layers ( document );
+  Usul::Interfaces::ILayerList::QueryPtr layers ( document );
   if ( false == layers.valid() )
     return;
 

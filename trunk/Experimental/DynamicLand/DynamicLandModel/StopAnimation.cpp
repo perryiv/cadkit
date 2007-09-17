@@ -13,6 +13,8 @@
 #include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/IDldNavigator.h"
 
+USUL_IMPLEMENT_COMMAND ( StopAnimation );
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.

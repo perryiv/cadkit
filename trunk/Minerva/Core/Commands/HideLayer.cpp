@@ -17,6 +17,7 @@
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( HideLayer, HideLayer::BaseClass );
+USUL_IMPLEMENT_COMMAND ( HideLayer );
 USUL_FACTORY_REGISTER_CREATOR ( HideLayer );
 
 

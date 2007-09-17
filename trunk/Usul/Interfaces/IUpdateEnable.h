@@ -25,7 +25,7 @@ struct IUpdateEnable : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1207541778u };
 
-  virtual bool               updateEnable () const;
+  virtual bool               updateEnable () const = 0;
 
 }; // struct IUpdateEnable
 

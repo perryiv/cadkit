@@ -34,10 +34,7 @@ public:
   typedef Usul::Interfaces::IUnknown IUnknown;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( ExitApplication );
-
-  // Type-id definition.
-  USUL_DECLARE_TYPE_ID ( ExitApplication );
+  USUL_DECLARE_COMMAND ( ExitApplication );
 
   // Constructor.
   ExitApplication ( IUnknown *caller );
@@ -49,11 +46,6 @@ protected:
 
   virtual void              _execute();
 
-private:
-
-  // No copying or assignment.
-  ExitApplication ( const ExitApplication & );
-  ExitApplication &operator = ( const ExitApplication & );
 };
 
 

@@ -23,6 +23,7 @@
 #include "Usul/Interfaces/IMatrixManipulator.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IUpdateListener.h"
+#include "Usul/Interfaces/ILayerList.h"
 
 #include "Minerva/Core/Animate/Settings.h"
 #include "Minerva/Core/Scene/SceneManager.h"
@@ -32,7 +33,6 @@
 #include "Minerva/Interfaces/IAddLayer.h"
 #include "Minerva/Interfaces/IRemoveLayer.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
-#include "Minerva/Interfaces/ILayerList.h"
 
 #include "Magrathea/Planet.h"
 
@@ -55,7 +55,7 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Minerva::Interfaces::IAddLayer,
                                                 public Minerva::Interfaces::IRemoveLayer,
                                                 public Minerva::Interfaces::IDirtyScene,
-                                                public Minerva::Interfaces::ILayerList
+                                                public Usul::Interfaces::ILayerList
 {
 public:
   /// Useful typedefs.
@@ -239,10 +239,10 @@ protected:
   /// Dirty the scene ( Minerva::Interfaces::IDirtyScene ).
   virtual void                             dirtyScene ();
 
-  /// Get the number of layers ( Minerva::Interfaces::ILayerList ).
+  /// Get the number of layers ( Usul::Interfaces::ILayerList ).
   virtual unsigned int                  numberLayers () const;
 
-  /// Get the layer at position i ( Minerva::Interfaces::ILayerList ).
+  /// Get the layer at position i ( Usul::Interfaces::ILayerList ).
   virtual Usul::Interfaces::ILayer*     layer ( unsigned int i );
 
 private:

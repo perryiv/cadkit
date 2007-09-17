@@ -39,7 +39,6 @@ INCLUDE_DIRECTORIES(
 SET (SOURCES
 ./Behavior.cpp
 ./Item.cpp
-./Referenced.cpp
 ./Visitor.cpp
 ./Button.cpp
 ./Errors.cpp

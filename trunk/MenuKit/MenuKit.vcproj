@@ -254,14 +254,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Referenced.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Referenced.h"
-				>
-			</File>
-			<File
 				RelativePath=".\UpdateVisitor.cpp"
 				>
 			</File>

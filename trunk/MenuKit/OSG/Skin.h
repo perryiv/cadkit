@@ -13,6 +13,8 @@
 #include "MenuKit/OSG/Export.h"
 #include "MenuKit/Menu.h"
 
+#include "Usul/Base/Object.h"
+
 #include "osg/Vec4"
 #include "osgText/Font"
 #include "osg/PrimitiveSet"
@@ -32,9 +34,11 @@ namespace MenuKit
   {
 
     // abstract base class for all skins
-    class MENUKIT_OSG_EXPORT Skin : public MenuKit::Referenced
+    class MENUKIT_OSG_EXPORT Skin : public Usul::Base::Object
     {
     public:
+      typedef Usul::Base::Object BaseClass;
+      USUL_DECLARE_REF_POINTERS ( Skin );
 
       // Mode.
       enum Mode { HIGHLIGHT, NORMAL, DISABLED };
@@ -46,7 +50,6 @@ namespace MenuKit
         BGDM_TRANSPARENT = osg::PrimitiveSet::LINE_LOOP
       };
 
-      typedef Referenced BaseClass;
       Skin ( osgText::Font* f,
              const osg::Vec4& tcn=osg::Vec4(1,0,0,1),
              const osg::Vec4& tca=osg::Vec4(0,1,0,1),
@@ -58,7 +61,8 @@ namespace MenuKit
              BGDM bgdm=BGDM_OPAQUE);
       Skin(const Skin&);
       Skin& operator= (const Skin&);
-      MENUKIT_DECLARE_POINTER(Skin);
+
+      
 
       virtual osg::Node* create(const MenuKit::Item*);
       virtual osg::Node* create_button(const MenuKit::Button*);

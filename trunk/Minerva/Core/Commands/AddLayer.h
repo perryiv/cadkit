@@ -31,7 +31,7 @@ public:
   // typedef(s)
   typedef Usul::Commands::Command BaseClass;
 
-  USUL_DECLARE_QUERY_POINTERS ( AddLayer );
+  USUL_DECLARE_COMMAND ( AddLayer );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   AddLayer ();

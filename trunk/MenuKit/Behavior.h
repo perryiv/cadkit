@@ -18,18 +18,19 @@
 
 #include "MenuKit/Menu.h"
 
+#include "Usul/Base/Object.h"
 
 namespace MenuKit {
 
 class Button;
 
-class MENUKIT_EXPORT Behavior : public Referenced
+class MENUKIT_EXPORT Behavior : public Usul::Base::Object
 {
 public:
 
   // Typedefs and smart-pointers.
-  typedef Referenced BaseClass;
-  MENUKIT_DECLARE_POINTER ( Behavior );
+  typedef Usul::Base::Object BaseClass;
+  USUL_DECLARE_REF_POINTERS ( Behavior );
 
   // Possible directions.
   enum Direction { RIGHT, LEFT, UP, DOWN };
@@ -103,8 +104,8 @@ protected:
 private:
 
   unsigned int _flags;
-  Menu::Ptr _root;
-  Item::Ptr _focus;
+  Menu::RefPtr _root;
+  Item::RefPtr _focus;
 };
 
 

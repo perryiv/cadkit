@@ -28,7 +28,7 @@ public:
   typedef Usul::Commands::Command BaseClass;
   typedef std::vector< std::string > Filenames;
 
-  USUL_DECLARE_REF_POINTERS ( LoadDocument );
+  USUL_DECLARE_COMMAND ( LoadDocument );
 
   LoadDocument ( const Filenames& filenames, Usul::Interfaces::IUnknown *caller = 0x0 );
 

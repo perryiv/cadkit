@@ -79,7 +79,7 @@ class BasicCommand : public Usul::Commands::Command
 public:
   typedef Usul::Commands::Command BaseClass;
 
-  USUL_DECLARE_REF_POINTERS  ( BasicCommand );
+  USUL_DECLARE_COMMAND  ( BasicCommand );
 
   BasicCommand ( const std::string& name, ExecuteFunctor functor, Usul::Interfaces::IUnknown * caller = 0x0 ) : 
     BaseClass ( caller ),
@@ -116,7 +116,7 @@ class CheckCommand : public Usul::Commands::Command,
 public:
   typedef Usul::Commands::Command BaseClass;
 
-  USUL_DECLARE_REF_POINTERS  ( CheckCommand );
+  USUL_DECLARE_COMMAND  ( CheckCommand );
 
   CheckCommand ( const std::string& name, ExecuteFunctor functor, CheckFunctor check, Usul::Interfaces::IUnknown * caller = 0x0 ) : 
     BaseClass ( caller ),

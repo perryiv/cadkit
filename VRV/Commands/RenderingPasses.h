@@ -25,7 +25,7 @@ class VRV_EXPORT RenderingPasses : public Usul::Commands::Command,
 public:
   typedef Usul::Commands::Command BaseClass;
 
-  USUL_DECLARE_REF_POINTERS ( RenderingPasses );
+  USUL_DECLARE_COMMAND ( RenderingPasses );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   RenderingPasses ( const std::string& name, unsigned int passes, Usul::Interfaces::IUnknown *caller = 0x0 );

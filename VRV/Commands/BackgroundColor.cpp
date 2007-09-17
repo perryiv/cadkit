@@ -14,6 +14,7 @@
 using namespace VRV::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( BackgroundColor, BackgroundColor::BaseClass );
+USUL_IMPLEMENT_COMMAND ( BackgroundColor );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

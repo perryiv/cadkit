@@ -26,7 +26,7 @@ class VRV_EXPORT BackgroundColor : public Usul::Commands::Command,
 public:
   typedef Usul::Commands::Command BaseClass;
 
-  USUL_DECLARE_REF_POINTERS ( BackgroundColor );
+  USUL_DECLARE_COMMAND ( BackgroundColor );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   BackgroundColor ( const std::string& name, const Usul::Math::Vec4f& color, Usul::Interfaces::IUnknown *caller = 0x0 );

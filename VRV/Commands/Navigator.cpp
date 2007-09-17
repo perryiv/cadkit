@@ -15,6 +15,7 @@
 using namespace VRV::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Navigator, Navigator::BaseClass );
+USUL_IMPLEMENT_COMMAND ( Navigator );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

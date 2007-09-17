@@ -13,6 +13,7 @@
 using namespace VRV::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PolygonMode, PolygonMode::BaseClass );
+USUL_IMPLEMENT_COMMAND ( PolygonMode );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

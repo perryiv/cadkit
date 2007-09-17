@@ -28,7 +28,7 @@ public:
   typedef Usul::Interfaces::IPolygonMode            IPolygonMode;
   typedef IPolygonMode::Mode                        Mode;
 
-  USUL_DECLARE_REF_POINTERS ( PolygonMode );
+  USUL_DECLARE_COMMAND ( PolygonMode );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   PolygonMode ( const std::string& name, Mode mode, Usul::Interfaces::IUnknown *caller = 0x0 );

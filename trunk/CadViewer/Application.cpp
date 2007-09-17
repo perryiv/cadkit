@@ -148,6 +148,9 @@ namespace CV
 
 using namespace CV;
 
+USUL_IMPLEMENT_COMMAND ( Application::BasicCommand );
+USUL_IMPLEMENT_COMMAND ( Application::CheckCommand );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

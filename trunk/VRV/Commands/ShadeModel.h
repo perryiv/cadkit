@@ -28,7 +28,7 @@ public:
   typedef Usul::Interfaces::IShadeModel            IShadeModel;
   typedef IShadeModel::Mode                        Mode;
 
-  USUL_DECLARE_REF_POINTERS ( ShadeModel );
+  USUL_DECLARE_COMMAND ( ShadeModel );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   ShadeModel ( const std::string& name, Mode mode, Usul::Interfaces::IUnknown *caller = 0x0 );

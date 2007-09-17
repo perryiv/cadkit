@@ -26,7 +26,7 @@ public:
   typedef Usul::Interfaces::ICamera            ICamera;
   typedef ICamera::CameraOption                CameraOption;
 
-  USUL_DECLARE_REF_POINTERS ( Camera );
+  USUL_DECLARE_COMMAND ( Camera );
 
   Camera ( const std::string& name, CameraOption option, Usul::Interfaces::IUnknown *caller = 0x0 );
 

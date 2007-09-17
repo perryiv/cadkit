@@ -16,6 +16,7 @@
 
 #include "Helios/Qt/Core/MainWindow.h"
 #include "Helios/Qt/Core/Constants.h"
+#include "Helios/Qt/Core/Menu.h"
 #include "Helios/Qt/Commands/Action.h"
 #include "Helios/Qt/Commands/OpenDocument.h"
 #include "Helios/Qt/Commands/InsertDocument.h"
@@ -51,6 +52,8 @@
 #include "Usul/Trace/Trace.h"
 
 #include "XmlTree/Document.h"
+
+#include "MenuKit/Button.h"
 
 #include "QtCore/QStringList"
 #include "QtCore/QTimer"
@@ -107,7 +110,9 @@ MainWindow::MainWindow ( const std::string &vendor,
   _textWindow   ( 0x0, StreamQueuePtr ( new StreamQueue() ) ),
   _dockMenu     ( 0x0 ),
   _idleTimer    ( 0x0 ),
-  _progressBars ( new ProgressBarDock )
+  _progressBars ( new ProgressBarDock ),
+  _menu         ( 0x0 ),
+  _menus        ()
 {
   USUL_TRACE_SCOPE;
 
@@ -232,6 +237,9 @@ void MainWindow::_destroy()
   // Unset the text window resource.
   Usul::Resources::textWindow ( 0x0 );
 
+  // Clear the menu bar.
+  this->_clearMenuBar ();
+
   // Should be true.
   USUL_ASSERT ( 0 == _refCount );
 
@@ -319,48 +327,40 @@ void MainWindow::_buildMenu()
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2357339900" );
 
   // Handle repeated calls.
-  this->menuBar()->clear();
-  _dockMenu = 0x0;
+  this->_clearMenuBar ();
 
   // Add file menu.
   {
-    QMenu *menu = this->menuBar()->addMenu ( tr ( "&File" ) );
-    {
-      CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::OpenDocument> ( this ) );
-      _actions.insert ( action );
-      menu->addAction ( action.get() );
-    }
-    {
-      CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::InsertDocument> ( this ) );
-      _actions.insert ( action );
-      menu->addAction ( action.get() );
-    }
-    {
-      CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::SaveDocument> ( this ) );
-      _actions.insert ( action );
-      menu->addAction ( action.get() );
-    }
-    {
-      CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::SaveAsDocument> ( this ) );
-      _actions.insert ( action );
-      menu->addAction ( action.get() );
-    }
+    Usul::Interfaces::IUnknown::QueryPtr me ( this );
+    MenuKit::Menu::RefPtr menu ( new MenuKit::Menu );
+    menu->name ( "&File" );
+    menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::OpenDocument ( me ) ) );
+    menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::InsertDocument ( me ) ) );
+    menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::SaveDocument ( me ) ) );
+    menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::SaveAsDocument ( me ) ) );
     menu->addSeparator();
-    {
-      CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::ExportImage> ( this ) );
-      _actions.insert ( action );
-      menu->addAction ( action.get() );
-    }
+    menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::ExportImage ( me ) ) );
     menu->addSeparator();
-    {
-      CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::ExitApplication> ( this ) );
-      _actions.insert ( action );
-      menu->addAction ( action.get() );
-    }
+    menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::ExitApplication ( me ) ) );
+
+    _menu->append ( menu );
   }
 
   // Add edit menu.
   {
+  }
+
+  // Build the qt menu.
+  for ( MenuKit::Menu::iterator iter = _menu->begin(); iter != _menu->end (); ++iter )
+  {
+    // We only have top level items that are menus.
+    if ( MenuKit::Menu *menu = dynamic_cast < MenuKit::Menu* > ( iter->get() ) )
+    {
+      CadKit::Helios::Core::Menu* qtMenu ( new CadKit::Helios::Core::Menu ( tr ( menu->name ().c_str() ) ) );
+      qtMenu->menu ( menu );
+      this->menuBar()->addMenu ( qtMenu );
+      _menus.push_back ( qtMenu );
+    }
   }
 
   // Add view menu.
@@ -370,6 +370,26 @@ void MainWindow::_buildMenu()
       _dockMenu = menu->addMenu ( "Docking Windows" );
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the menu bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_clearMenuBar ()
+{
+  this->menuBar()->clear();
+  _dockMenu = 0x0;
+  _menu = new MenuKit::Menu;
+
+  // Delete the menus we created.
+  for ( Menus::iterator iter = _menus.begin(); iter != _menus.end(); ++iter )
+    delete *iter;
+
+  _menus.clear ();
 }
 
 

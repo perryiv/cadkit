@@ -31,7 +31,7 @@ public:
 
   // Typedefs and smart-pointers.
   typedef Visitor BaseClass;
-  MENUKIT_DECLARE_POINTER ( FlagsVisitor );
+  USUL_DECLARE_REF_POINTERS ( FlagsVisitor );
 
   // The action to take.
   enum Action { ADD, REMOVE, TOGGLE };

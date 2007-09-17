@@ -29,7 +29,7 @@ public:
   // Typedef(s)
   typedef Usul::Commands::Command BaseClass;
 
-  USUL_DECLARE_REF_POINTERS ( AnimationSpeed );
+  USUL_DECLARE_COMMAND ( AnimationSpeed );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   AnimationSpeed ( );

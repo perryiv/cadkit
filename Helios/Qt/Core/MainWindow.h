@@ -20,6 +20,7 @@
 #include "Helios/Qt/Core/Export.h"
 #include "Helios/Qt/Core/SplashScreen.h"
 #include "Helios/Qt/Core/DocumentProxy.h"
+#include "Helios/Qt/Core/Menu.h"
 #include "Helios/Qt/Core/ProgressBarDock.h"
 #include "Helios/Qt/Commands/BaseAction.h"
 
@@ -171,6 +172,7 @@ protected:
   void                              _saveSettings();
 
   void                              _clearDocuments();
+  void                              _clearMenuBar ();
 
   virtual void                      closeEvent ( QCloseEvent *event );
 
@@ -213,6 +215,7 @@ private:
   typedef Usul::Threads::Queue<QueueConfig> StreamQueue;
   typedef boost::shared_ptr<StreamQueue> StreamQueuePtr;
   typedef std::pair<QTextEdit*,StreamQueuePtr> TextWindow;
+  typedef std::vector < Menu* > Menus;
 
   // No copying or assignment.
   MainWindow ( const MainWindow & );
@@ -239,6 +242,8 @@ private:
   QMenu *_dockMenu;
   QTimer *_idleTimer;
   ProgressBarDock::RefPtr _progressBars;
+  MenuKit::Menu::RefPtr _menu;
+  Menus _menus;
 };
 
 

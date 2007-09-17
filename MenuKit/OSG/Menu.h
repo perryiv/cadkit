@@ -28,7 +28,7 @@ class MENUKIT_OSG_EXPORT Menu : public MenuKit::OSG::BaseMenu
 public:
 
   // Useful typedefs
-  MENUKIT_DECLARE_POINTER ( Menu );
+  USUL_DECLARE_REF_POINTERS ( Menu );
   typedef MenuKit::OSG::BaseMenu  BaseClass;
 
   // Constructor.

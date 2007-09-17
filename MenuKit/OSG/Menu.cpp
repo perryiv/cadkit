@@ -134,7 +134,7 @@ void Menu::updateScene()
     return;
 
   // Make the scene-builder.
-  GFX::Ptr gfx ( new MenuKit::OSG::GFX ( this->skin(), this->behavior()->focus() ) );
+  GFX::RefPtr gfx ( new MenuKit::OSG::GFX ( this->skin(), this->behavior()->focus() ) );
   MENUKIT_CHECK_POINTER ( 2151962067u, gfx.get() );
 
   // Generate a scene from the menu.
@@ -154,7 +154,7 @@ void Menu::updateScene()
 
 void Menu::updateMenu()
 {
-  MenuKit::UpdateVisitor::Ptr visitor ( new MenuKit::UpdateVisitor );
+  MenuKit::UpdateVisitor::RefPtr visitor ( new MenuKit::UpdateVisitor );
   this->menu()->accept ( *visitor );
 }
 

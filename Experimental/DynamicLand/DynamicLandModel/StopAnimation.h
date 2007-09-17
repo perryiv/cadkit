@@ -20,7 +20,7 @@ public:
   typedef Usul::Commands::Command BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( StopAnimation );
+  USUL_DECLARE_COMMAND ( StopAnimation );
 
   StopAnimation ( Usul::Interfaces::IUnknown* caller );
 

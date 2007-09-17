@@ -22,7 +22,7 @@
 
 using namespace CadKit::Helios::Commands;
 
-USUL_IMPLEMENT_TYPE_ID ( ExitApplication );
+USUL_IMPLEMENT_COMMAND ( ExitApplication );
 
 
 ///////////////////////////////////////////////////////////////////////////////

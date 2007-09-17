@@ -29,7 +29,7 @@ public:
   // typedef(s)
   typedef Usul::Commands::Command BaseClass;
 
-  USUL_DECLARE_QUERY_POINTERS ( StartAnimation );
+  USUL_DECLARE_COMMAND ( StartAnimation );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   StartAnimation ( );

@@ -17,7 +17,7 @@
 
 using namespace CadKit::Helios::Commands;
 
-USUL_IMPLEMENT_TYPE_ID ( ExportImage );
+USUL_IMPLEMENT_COMMAND ( ExportImage );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -85,3 +85,16 @@ void ExportImage::_execute ()
     imageExport->writeImageFile ( filename );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are we enabled?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ExportImage::updateEnable () const
+{
+  return 0x0 != Usul::Documents::Manager::instance().activeView();
+}
+

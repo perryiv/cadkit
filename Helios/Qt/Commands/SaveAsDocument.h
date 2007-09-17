@@ -36,10 +36,7 @@ public:
   typedef Usul::Interfaces::IUnknown            IUnknown;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( SaveAsDocument );
-
-  // Type-id definition.
-  USUL_DECLARE_TYPE_ID ( SaveAsDocument );
+  USUL_DECLARE_COMMAND ( SaveAsDocument );
 
   // Constructor.
   SaveAsDocument ( IUnknown *caller );
@@ -51,11 +48,8 @@ protected:
   // Execute.
   virtual void              _execute();
 
-private:
-
-  // No copying or assignment.
-  SaveAsDocument ( const SaveAsDocument & );
-  SaveAsDocument &operator = ( const SaveAsDocument & );
+  // Update the enabled flag.
+  virtual bool              updateEnable () const;
 };
 
 }

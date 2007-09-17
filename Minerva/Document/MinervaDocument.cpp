@@ -126,8 +126,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Minerva::Interfaces::IRemoveLayer * > ( this );
   case Minerva::Interfaces::IDirtyScene::IID:
     return static_cast < Minerva::Interfaces::IDirtyScene * > ( this );
-  case Minerva::Interfaces::ILayerList::IID:
-    return static_cast < Minerva::Interfaces::ILayerList * > ( this );
+  case Usul::Interfaces::ILayerList::IID:
+    return static_cast < Usul::Interfaces::ILayerList * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }

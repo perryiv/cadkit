@@ -22,6 +22,8 @@
 #include "MenuKit/Button.h"
 #include "MenuKit/Behavior.h"
 
+#include "Usul/Base/Object.h"
+
 #include "osg/MatrixTransform"
 
 
@@ -29,16 +31,17 @@ namespace MenuKit {
 namespace OSG {
 
 
-class MENUKIT_OSG_EXPORT BaseMenu : public MenuKit::Referenced
+class MENUKIT_OSG_EXPORT BaseMenu : public Usul::Base::Object
 {
 public:
 
   // Useful typedefs
-  MENUKIT_DECLARE_POINTER ( BaseMenu );
-  typedef MenuKit::Referenced  BaseClass;
+  typedef Usul::Base::Object  BaseClass;
   typedef osg::MatrixTransform MT;
   typedef MenuKit::OSG::Skin Skin;
   typedef MenuKit::Behavior Behavior;
+
+  USUL_DECLARE_REF_POINTERS ( BaseMenu );
 
   // Set/get the menu.
   const MenuKit::Menu *   menu() const;
@@ -67,12 +70,12 @@ protected:
 
 private:
 
-  typedef MenuKit::Item::Ptr    ItemPtr;
-  typedef MenuKit::Button::Ptr  ButtonPtr;
-  typedef MenuKit::Menu::Ptr    MenuPtr;
-  typedef Behavior::Ptr         BehaviorPtr;
-  typedef Skin::Ptr             SkinPtr;
-  typedef osg::ref_ptr<MT>      TransformPtr;
+  typedef MenuKit::Item::RefPtr    ItemPtr;
+  typedef MenuKit::Button::RefPtr  ButtonPtr;
+  typedef MenuKit::Menu::RefPtr    MenuPtr;
+  typedef Behavior::RefPtr         BehaviorPtr;
+  typedef Skin::RefPtr             SkinPtr;
+  typedef osg::ref_ptr<MT>         TransformPtr;
 
   MenuPtr       _menu;
   SkinPtr       _skin;

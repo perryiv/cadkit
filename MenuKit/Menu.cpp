@@ -172,3 +172,17 @@ void Menu::traverse ( Visitor &v )
     } break;
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a separator to the end.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Menu::addSeparator ()
+{
+  MenuKit::Button::RefPtr button ( new MenuKit::Button );
+  button->separator ( true );
+  this->append ( button.get() );
+}

@@ -16,6 +16,7 @@
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PauseAnimation, PauseAnimation::BaseClass );
+USUL_IMPLEMENT_COMMAND ( PauseAnimation );
 USUL_FACTORY_REGISTER_CREATOR ( PauseAnimation );
 
 ///////////////////////////////////////////////////////////////////////////////

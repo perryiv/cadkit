@@ -31,13 +31,13 @@ public:
 
   // Typedefs and smart-pointers.
   typedef Item                              BaseClass;
-  typedef std::vector<Item::Ptr>            Items;
+  typedef std::vector<Item::RefPtr>         Items;
   typedef Items::iterator                   iterator;
   typedef Items::const_iterator             const_iterator;
   typedef Items::reverse_iterator           reverse_iterator;
   typedef Items::const_reverse_iterator     const_reverse_iterator;
   typedef Items::size_type                  size_type;
-  MENUKIT_DECLARE_POINTER ( Menu );
+  USUL_DECLARE_REF_POINTERS ( Menu );
 
   // Possible layout.
   enum Layout { VERTICAL, HORIZONTAL };
@@ -85,6 +85,9 @@ public:
 
   // Traverse the children.
   virtual void              traverse ( Visitor & );
+
+  // Add a separator to the end.
+  void                      addSeparator ();
 
 protected:
 

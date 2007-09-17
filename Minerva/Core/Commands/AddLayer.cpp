@@ -21,6 +21,7 @@
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( AddLayer, AddLayer::BaseClass );
+USUL_IMPLEMENT_COMMAND ( AddLayer );
 USUL_FACTORY_REGISTER_CREATOR ( AddLayer );
 
 

@@ -33,7 +33,7 @@
 
 using namespace CadKit::Helios::Commands;
 
-USUL_IMPLEMENT_TYPE_ID ( OpenDocument );
+USUL_IMPLEMENT_COMMAND ( OpenDocument );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -51,6 +51,34 @@ _filename ()
   this->statusTip ( "Open existing document" );
   this->toolTip ( "Open existing document" );
   this->iconPath ( "openDocument.png" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copy Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OpenDocument::OpenDocument ( const OpenDocument& rhs ) : BaseClass ( rhs ),
+_filename ( rhs._filename )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Assignment.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OpenDocument& OpenDocument::operator = ( const OpenDocument& rhs ) 
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::operator = ( rhs );
+  _filename = rhs._filename;
+  return *this;
 }
 
 

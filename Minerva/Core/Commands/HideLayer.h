@@ -30,7 +30,7 @@ public:
   // typedef(s)
   typedef Usul::Commands::Command BaseClass;
 
-  USUL_DECLARE_QUERY_POINTERS ( HideLayer );
+  USUL_DECLARE_COMMAND ( HideLayer );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   HideLayer ();

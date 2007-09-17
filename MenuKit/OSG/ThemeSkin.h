@@ -14,6 +14,8 @@
 #include "MenuKit/Button.h"   // for request support
 #include "MenuKit/OSG/TileFunctor.h" // for map typedef
 
+#include "Usul/Base/Object.h"
+
 #include "osgText/Font"
 
 namespace osg
@@ -36,7 +38,7 @@ namespace MenuKit
       * MapType member for color designation.
       */
     template<typename ThemeType>
-    class ThemeSkin : public Referenced
+    class ThemeSkin : public Usul::Base::Object
     {
       /**\todo TODO: have skins support their own theme maps.
         * thus taking the pressure off of a Tile to maintain
@@ -50,11 +52,12 @@ namespace MenuKit
         * This is a medium priority TODO.
         */
     public:
-      typedef Referenced base_class;
+      typedef Usul::Base::Object base_class;
 
       typedef ThemeType theme_type;
       typedef ThemeSkin<theme_type> thisclass;
-      MENUKIT_DECLARE_POINTER ( thisclass );
+      
+      USUL_DECLARE_REF_POINTERS ( thisclass );
 
       typedef Tile tile_type;
       typedef std::map<tile_type::DisplayMode,theme_type> ModeMap;

@@ -30,7 +30,7 @@ using namespace MenuKit::OSG;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BaseMenu::BaseMenu()  : BaseClass(),            // typedef MenuKit::Referenced  BaseClass
+BaseMenu::BaseMenu()  : BaseClass(),
                         _menu           ( new MenuKit::Menu ( "", "", MenuKit::Menu::HORIZONTAL ) ),
                         _skin           ( new BaseMenu::Skin ( 0x0 ) ),
                         _behavior       ( new BaseMenu::Behavior() ),

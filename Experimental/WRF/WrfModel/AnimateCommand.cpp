@@ -13,6 +13,8 @@
 #include "Usul/Trace/Scope.h"
 #include "Usul/Interfaces/ITimestepAnimation.h"
 
+USUL_IMPLEMENT_COMMAND ( AnimateCommand );
+
 AnimateCommand::AnimateCommand ( bool animate, Usul::Interfaces::IUnknown * caller ) :
   BaseClass ( caller ),
   _animate ( animate )

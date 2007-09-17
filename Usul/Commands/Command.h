@@ -21,14 +21,15 @@
 #include "Usul/Base/Object.h"
 
 #include "Usul/Interfaces/ICommand.h"
-
+#include "Usul/Interfaces/IUpdateEnable.h"
 
 namespace Usul {
 namespace Commands {
 
 
 class USUL_EXPORT Command : public Usul::Base::Object,
-                            public Usul::Interfaces::ICommand
+                            public Usul::Interfaces::ICommand,
+                            public Usul::Interfaces::IUpdateEnable
 {
 public:
 
@@ -48,6 +49,9 @@ public:
   // Get the caller.
   const IUnknown *            caller() const;
   IUnknown *                  caller();
+
+  // Clone this command.
+  virtual Command*            clone () const = 0;
 
   // Execute the command.
   virtual void                execute ( Usul::Interfaces::IUnknown * );
@@ -76,17 +80,17 @@ protected:
 
   // Constructor.
   Command ( IUnknown *caller );
+  Command ( const Command & );
+  Command &operator = ( const Command & );
 
   // Use reference counting.
   virtual ~Command();
 
   virtual void                _execute() = 0;
 
-private:
+  virtual bool                updateEnable () const;
 
-  // No copying or assignment.
-  Command ( const Command & );
-  Command &operator = ( const Command & );
+private:
 
   void                        _destroy();
 
@@ -102,5 +106,32 @@ private:
 } // namespace Commands
 } // namespace Usul
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper Macros.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  For the command class definition.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define USUL_DECLARE_COMMAND(class_name)\
+  USUL_DECLARE_QUERY_POINTERS ( class_name );\
+  USUL_DECLARE_TYPE_ID ( class_name );\
+  virtual Usul::Commands::Command* clone ( ) const;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  For the command class implementation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define USUL_IMPLEMENT_COMMAND(class_name)\
+  USUL_IMPLEMENT_TYPE_ID ( class_name );\
+  Usul::Commands::Command* class_name::clone ( ) const { return new class_name ( *this ); }
 
 #endif //_USUL_COMMANDS_COMMAND_CLASS_H_

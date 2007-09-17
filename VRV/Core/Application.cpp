@@ -2664,15 +2664,16 @@ Application::Navigator* Application::favorite ( const std::string& name )
 
 MenuKit::Button* Application::_createButton ( Usul::Commands::Command* command )
 {
-  MenuKit::Button* button ( new MenuKit::Button );
+  MenuKit::Button::RefPtr button ( new MenuKit::Button );
 
   // Set the text.
-  button->text ( command->text() );
+  if ( 0x0 != command )
+    button->text ( command->text() );
 
   // Set the command.
   button->command ( command );
 
-  return button;
+  return button.release ();
 }
 
 
@@ -2684,9 +2685,9 @@ MenuKit::Button* Application::_createButton ( Usul::Commands::Command* command )
 
 MenuKit::Button* Application::_createRadio ( Usul::Commands::Command* command )
 {
-  MenuKit::Button* button ( this->_createButton ( command ) );
+  MenuKit::Button::RefPtr button ( this->_createButton ( command ) );
   button->radio ( true );
-  return button;
+  return button.release ();
 }
 
 
@@ -2698,9 +2699,9 @@ MenuKit::Button* Application::_createRadio ( Usul::Commands::Command* command )
 
 MenuKit::Button* Application::_createToggle    ( Usul::Commands::Command* command )
 {
-  MenuKit::Button* button ( this->_createButton ( command ) );
+  MenuKit::Button::RefPtr button ( this->_createButton ( command ) );
   button->toggle ( true );
-  return button;
+  return button.release ();
 }
 
 
@@ -2712,9 +2713,9 @@ MenuKit::Button* Application::_createToggle    ( Usul::Commands::Command* comman
 
 MenuKit::Button* Application::_createSeperator ( )
 {
-  MenuKit::Button* button ( new MenuKit::Button );
+  MenuKit::Button::RefPtr button ( new MenuKit::Button );
   button->separator ( true );
-  return button;
+  return button.release ();
 }
 
 

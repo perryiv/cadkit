@@ -227,6 +227,36 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Menu.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Menu.h"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing Menu.h"
+						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\Menu.h&quot; -o &quot;.\GeneratedFiles\moc_Menu.cpp&quot;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;&quot;.\Menu.h&quot;"
+						Outputs="&quot;.\GeneratedFiles\moc_Menu.cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing Menu.h"
+						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\Menu.h&quot; -o &quot;.\GeneratedFiles\moc_Menu.cpp&quot;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;&quot;.\Menu.h&quot;"
+						Outputs="&quot;.\GeneratedFiles\moc_Menu.cpp&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\ProgressBarDock.cpp"
 				>
 			</File>
@@ -239,7 +269,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing... ProgressBarDock.h"
-						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\ProgressBarDock.h&quot; -o &quot;.\GeneratedFiles\moc_ProgressBarDock.cpp&quot;"
+						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\ProgressBarDock.h&quot; -o &quot;.\GeneratedFiles\moc_ProgressBarDock.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\ProgressBarDock.h"
 						Outputs=".\GeneratedFiles\moc_ProgressBarDock.cpp"
 					/>
@@ -250,7 +280,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing... ProgressBarDock.h"
-						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\ProgressBarDock.h&quot; -o &quot;.\GeneratedFiles\moc_ProgressBarDock.cpp&quot;"
+						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\ProgressBarDock.h&quot; -o &quot;.\GeneratedFiles\moc_ProgressBarDock.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\ProgressBarDock.h"
 						Outputs=".\GeneratedFiles\moc_ProgressBarDock.cpp"
 					/>
@@ -301,6 +331,10 @@
 			>
 			<File
 				RelativePath=".\GeneratedFiles\moc_MainWindow.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GeneratedFiles\moc_Menu.cpp"
 				>
 			</File>
 			<File

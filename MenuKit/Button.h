@@ -29,10 +29,11 @@ public:
 
   // Typedefs and smart-pointers.
   typedef Item BaseClass;
-  MENUKIT_DECLARE_POINTER ( Button );
+  USUL_DECLARE_REF_POINTERS ( Button );
 
   // Construction.
   Button();
+  Button( Usul::Commands::Command * );
   Button ( const std::string &name, const std::string &icon_file );
   Button ( const Button & );
 

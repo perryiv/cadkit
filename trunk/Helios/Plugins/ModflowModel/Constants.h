@@ -45,6 +45,7 @@ namespace Modflow
 
     // Other flags.
     const unsigned int VISIBLE   ( 0x00000100 );
+    const unsigned int DIRTY     ( 0x00000200 );
   };
 }
 

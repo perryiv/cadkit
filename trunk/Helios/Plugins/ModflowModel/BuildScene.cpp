@@ -27,7 +27,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 void BuildScene::addQuads ( unsigned int flags, double x, double y, double top, double bottom, 
-                            const osg::Vec2d &half, osg::Vec3Array *vertices, osg::Vec3Array *normals )
+                            const osg::Vec2d &half, double verticalMargin,
+                            osg::Vec3Array *vertices, osg::Vec3Array *normals )
 {
   USUL_TRACE_SCOPE_STATIC;
 
@@ -36,10 +37,10 @@ void BuildScene::addQuads ( unsigned int flags, double x, double y, double top, 
 
   if ( Usul::Bits::has ( flags, Modflow::Flags::TOP ) )
   {
-    vertices->push_back ( osg::Vec3f ( x + half[0], y - half[1], top ) );
-    vertices->push_back ( osg::Vec3f ( x + half[0], y + half[1], top ) );
-    vertices->push_back ( osg::Vec3f ( x - half[0], y + half[1], top ) );
-    vertices->push_back ( osg::Vec3f ( x - half[0], y - half[1], top ) );
+    vertices->push_back ( osg::Vec3f ( x + half[0], y - half[1], top - verticalMargin ) );
+    vertices->push_back ( osg::Vec3f ( x + half[0], y + half[1], top - verticalMargin ) );
+    vertices->push_back ( osg::Vec3f ( x - half[0], y + half[1], top - verticalMargin ) );
+    vertices->push_back ( osg::Vec3f ( x - half[0], y - half[1], top - verticalMargin ) );
 
     const osg::Vec3f n ( 0, 0, 1 );
     normals->push_back ( n ); normals->push_back ( n ); normals->push_back ( n ); normals->push_back ( n );
@@ -47,10 +48,10 @@ void BuildScene::addQuads ( unsigned int flags, double x, double y, double top, 
 
   if ( Usul::Bits::has ( flags, Modflow::Flags::BOTTOM ) )
   {
-    vertices->push_back ( osg::Vec3f ( x - half[0], y - half[1], bottom ) );
-    vertices->push_back ( osg::Vec3f ( x - half[0], y + half[1], bottom ) );
-    vertices->push_back ( osg::Vec3f ( x + half[0], y + half[1], bottom ) );
-    vertices->push_back ( osg::Vec3f ( x + half[0], y - half[1], bottom ) );
+    vertices->push_back ( osg::Vec3f ( x - half[0], y - half[1], bottom + verticalMargin ) );
+    vertices->push_back ( osg::Vec3f ( x - half[0], y + half[1], bottom + verticalMargin ) );
+    vertices->push_back ( osg::Vec3f ( x + half[0], y + half[1], bottom + verticalMargin ) );
+    vertices->push_back ( osg::Vec3f ( x + half[0], y - half[1], bottom + verticalMargin ) );
 
     const osg::Vec3f n ( 0, 0, -1 );
     normals->push_back ( n ); normals->push_back ( n ); normals->push_back ( n ); normals->push_back ( n );

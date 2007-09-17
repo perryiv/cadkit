@@ -10,11 +10,12 @@ ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
 # ------------ Find Ossim Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSSIM.cmake)
+INCLUDE(${CMakeModules}/FindOSG.cmake)
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # ------------ Set Include Folders ----------------------
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${OSSIM_INC_DIR} )
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${OSSIM_INC_DIR} ${OT_INC_DIR} )
 
 set (SOURCES
     ProjectionManagerFactory.cpp

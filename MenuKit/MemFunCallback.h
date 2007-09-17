@@ -168,6 +168,36 @@ private:
 };
 
 
+template < class E >
+const std::type_info &BasicCommand < E >::classTypeId() 
+{
+  return typeid ( BasicCommand < E > );
+}
+
+template < class E >
+const std::type_info &BasicCommand < E >::typeId() const 
+{
+  return BasicCommand < E >::classTypeId();
+}
+template < class E >
+Usul::Commands::Command* BasicCommand < E >::clone ( ) const { return new BasicCommand < E > ( *this ); }
+
+
+template < class E, class C >
+const std::type_info &CheckCommand < E, C >::classTypeId() 
+{
+  return typeid ( CheckCommand < E, C > );
+}
+
+template < class E, class C >
+const std::type_info &CheckCommand < E, C >::typeId() const 
+{
+  return BasicCommand < E >::classTypeId();
+}
+template < class E, class C >
+Usul::Commands::Command* CheckCommand < E, C >::clone ( ) const { return new CheckCommand < E, C > ( *this ); }
+
+
 }; // namespace MenuKit
 
 

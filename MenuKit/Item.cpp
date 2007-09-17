@@ -142,7 +142,7 @@ void Item::flags ( unsigned int f )
 
 bool Item::checked() const
 {
-  return Usul::Bits::has <unsigned int> ( this->flags(), Item::CHECKED );
+  return Usul::Bits::has <unsigned int, unsigned int> ( this->flags(), Item::CHECKED );
 }
 
 
@@ -155,9 +155,9 @@ bool Item::checked() const
 void Item::checked ( bool e )
 {
   if ( e )
-    this->flags ( Usul::Bits::add <unsigned int>    ( this->flags(), Item::CHECKED ) );
+    this->flags ( Usul::Bits::add <unsigned int, unsigned int>    ( this->flags(), Item::CHECKED ) );
   else
-    this->flags ( Usul::Bits::remove <unsigned int> ( this->flags(), Item::CHECKED ) );
+    this->flags ( Usul::Bits::remove <unsigned int, unsigned int> ( this->flags(), Item::CHECKED ) );
 }
 
 
@@ -169,7 +169,7 @@ void Item::checked ( bool e )
 
 bool Item::toggle() const
 {
-  return Usul::Bits::has <unsigned int> ( this->flags(), Item::TOGGLE );
+  return Usul::Bits::has <unsigned int, unsigned int> ( this->flags(), Item::TOGGLE );
 }
 
 
@@ -182,9 +182,9 @@ bool Item::toggle() const
 void Item::toggle ( bool e )
 {
   if ( e )
-    this->flags ( Usul::Bits::add    <unsigned int> ( this->flags(), Item::TOGGLE ) );
+    this->flags ( Usul::Bits::add    <unsigned int, unsigned int> ( this->flags(), Item::TOGGLE ) );
   else
-    this->flags ( Usul::Bits::remove <unsigned int> ( this->flags(), Item::TOGGLE ) );
+    this->flags ( Usul::Bits::remove <unsigned int, unsigned int> ( this->flags(), Item::TOGGLE ) );
 }
 
 
@@ -196,7 +196,7 @@ void Item::toggle ( bool e )
 
 bool Item::radio() const
 {
-  return Usul::Bits::has <unsigned int> ( this->flags(), Item::RADIO );
+  return Usul::Bits::has <unsigned int, unsigned int> ( this->flags(), Item::RADIO );
 }
 
 
@@ -209,9 +209,9 @@ bool Item::radio() const
 void Item::radio ( bool e )
 {
   if ( e )
-    this->flags ( Usul::Bits::add <unsigned int>    ( this->flags(), Item::RADIO ) );
+    this->flags ( Usul::Bits::add <unsigned int, unsigned int>    ( this->flags(), Item::RADIO ) );
   else
-    this->flags ( Usul::Bits::remove <unsigned int> ( this->flags(), Item::RADIO ) );
+    this->flags ( Usul::Bits::remove <unsigned int, unsigned int> ( this->flags(), Item::RADIO ) );
 }
 
 
@@ -223,7 +223,7 @@ void Item::radio ( bool e )
 
 bool Item::enabled() const
 {
-  return Usul::Bits::has <unsigned int> ( this->flags(), Item::ENABLED );
+  return Usul::Bits::has <unsigned int, unsigned int> ( this->flags(), Item::ENABLED );
 }
 
 
@@ -236,9 +236,9 @@ bool Item::enabled() const
 void Item::enabled ( bool e )
 {
   if ( e )
-    this->flags ( Usul::Bits::add    <unsigned int> ( this->flags(), Item::ENABLED ) );
+    this->flags ( Usul::Bits::add    <unsigned int, unsigned int> ( this->flags(), Item::ENABLED ) );
   else
-    this->flags ( Usul::Bits::remove <unsigned int> ( this->flags(), Item::ENABLED ) );
+    this->flags ( Usul::Bits::remove <unsigned int, unsigned int> ( this->flags(), Item::ENABLED ) );
 }
 
 
@@ -250,7 +250,7 @@ void Item::enabled ( bool e )
 
 bool Item::separator() const
 {
-  return Usul::Bits::has <unsigned int> ( this->flags(), Item::SEPARATOR );
+  return Usul::Bits::has <unsigned int, unsigned int> ( this->flags(), Item::SEPARATOR );
 }
 
 
@@ -263,9 +263,9 @@ bool Item::separator() const
 void Item::separator ( bool e )
 {
   if ( e )
-    this->flags ( Usul::Bits::add    <unsigned int> ( this->flags(), Item::SEPARATOR ) );
+    this->flags ( Usul::Bits::add    <unsigned int, unsigned int> ( this->flags(), Item::SEPARATOR ) );
   else
-    this->flags ( Usul::Bits::remove <unsigned int> ( this->flags(), Item::SEPARATOR ) );
+    this->flags ( Usul::Bits::remove <unsigned int, unsigned int> ( this->flags(), Item::SEPARATOR ) );
 }
 
 
@@ -277,7 +277,7 @@ void Item::separator ( bool e )
 
 bool Item::expanded() const
 {
-  return Usul::Bits::has <unsigned int> ( this->flags(), Item::EXPANDED );
+  return Usul::Bits::has <unsigned int, unsigned int> ( this->flags(), Item::EXPANDED );
 }
 
 
@@ -290,9 +290,9 @@ bool Item::expanded() const
 void Item::expanded ( bool e )
 {
   if ( e )
-    this->flags ( Usul::Bits::add    <unsigned int> ( this->flags(), Item::EXPANDED ) );
+    this->flags ( Usul::Bits::add    <unsigned int, unsigned int> ( this->flags(), Item::EXPANDED ) );
   else
-    this->flags ( Usul::Bits::remove <unsigned int> ( this->flags(), Item::EXPANDED ) );
+    this->flags ( Usul::Bits::remove <unsigned int, unsigned int> ( this->flags(), Item::EXPANDED ) );
 }
 
 
@@ -304,7 +304,7 @@ void Item::expanded ( bool e )
 
 bool Item::marked() const
 {
-  return Usul::Bits::has <unsigned int> ( this->flags(), Item::MARKED );
+  return Usul::Bits::has <unsigned int, unsigned int> ( this->flags(), Item::MARKED );
 }
 
 
@@ -317,9 +317,9 @@ bool Item::marked() const
 void Item::marked ( bool e )
 {
   if ( e )
-    this->flags ( Usul::Bits::add    <unsigned int> ( this->flags(), Item::MARKED ) );
+    this->flags ( Usul::Bits::add    <unsigned int, unsigned int> ( this->flags(), Item::MARKED ) );
   else
-    this->flags ( Usul::Bits::remove <unsigned int> ( this->flags(), Item::MARKED ) );
+    this->flags ( Usul::Bits::remove <unsigned int, unsigned int> ( this->flags(), Item::MARKED ) );
 }
 
 

@@ -19,8 +19,10 @@
 #include "Helios/Qt/Views/OSG/Viewer.h"
 #include "Helios/Qt/Views/OSG/Format.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Documents/Document.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IModifiedObserver.h"
 #include "Usul/Interfaces/IModifiedSubject.h"
@@ -44,7 +46,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModflowDelegateComponent , ModflowDelegateComp
 
 ModflowDelegateComponent::ModflowDelegateComponent() : BaseClass(),
   _caller ( static_cast < Usul::Interfaces::IUnknown * > ( 0x0 ) ),
-  _dockWidget ( 0x0 ),
+  _docked(),
   _layerTree ( 0x0 )
 {
   USUL_TRACE_SCOPE;
@@ -63,26 +65,49 @@ ModflowDelegateComponent::ModflowDelegateComponent() : BaseClass(),
 ModflowDelegateComponent::~ModflowDelegateComponent()
 {
   USUL_TRACE_SCOPE;
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &ModflowDelegateComponent::_destroy ), "7258451600" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destroy this instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModflowDelegateComponent::_destroy()
+{
+  USUL_TRACE_SCOPE;
 
   // Remove this from the list of active document listeners.
   Usul::Documents::Manager::instance().removeActiveDocumentListener ( this );
 
-  Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( _caller );
-  if ( true == mainWindow.valid() )
+  // Needed below.
+  Usul::Interfaces::Qt::IMainWindow::QueryPtr mw ( _caller );
+  QMainWindow *mainWindow ( ( mw.valid() ) ? mw->mainWindow() : 0x0 );
+
+  // Loop through the docking widgets.
+  for ( DockedMap::iterator i = _docked.begin(); i != _docked.end(); ++i )
   {
-    // Remove the DockWidget from the MainWindow.
-    QMainWindow *main ( mainWindow->mainWindow() );
-    if ( 0x0 != main )
+    QDockWidget *dockWidget ( i->second );
+    if ( 0x0 != dockWidget )
     {
-      main->removeDockWidget ( _dockWidget );
+      // Remove the dock widget from the main window.
+      if ( 0x0 != mainWindow )
+      {
+        mainWindow->removeDockWidget ( dockWidget );
+      }
+
+      // Make sure there is no contained widget.
+      dockWidget->setWidget ( 0x0 );
+
+      // Delete the DockWidget.
+      delete dockWidget;
     }
   }
 
-  // Make sure there is no contained widget.
-  _dockWidget->setWidget ( 0x0 );
-
-  // Delete the DockWidget.
-  delete _dockWidget; _dockWidget = 0x0;
+  // Clear the map.
+  _docked.clear();
 
   // This was just deleted by it's parent.
   _layerTree = 0x0;
@@ -201,40 +226,59 @@ void ModflowDelegateComponent::activeDocumentChanged ( Usul::Interfaces::IUnknow
 void ModflowDelegateComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
 {
   // Make sure this is only called once.
-  if ( 0x0 != _dockWidget )
+  if ( false == _docked.empty() )
     return;
 
   // Set the caller.
   _caller = caller;
 
+  // Build the docking window.
+  std::auto_ptr<QDockWidget> dockWidget ( this->_makeDockWindow ( "Modflow Layers", "ModflowDockWidget" ) );
+
+  // Create the tree for the scene graph.
+  _layerTree = new LayerTreeControl ( caller, dockWidget.get() );
+
+  // Set the docking window's widget.
+  dockWidget->setWidget ( _layerTree );
+
+  // Save in the map and release.
+  _docked[_layerTree] = dockWidget.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make a dock window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+QDockWidget *ModflowDelegateComponent::_makeDockWindow ( const std::string &title, const std::string &name )
+{
   // Need a main window.
-  Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
+  Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( _caller );
   if ( false == mainWindow.valid() )
-    return;
+    return 0x0;
 
   // Get the main window.
   QMainWindow *main ( mainWindow->mainWindow() );
   if ( 0x0 == main )
-    return;
+    return 0x0;
 
   // Build the docking window.
-  _dockWidget = new QDockWidget ( QObject::tr ( "Modflow" ), main );
-  _dockWidget->setAllowedAreas ( Qt::AllDockWidgetAreas );
-
-  // Create the tree for the scene graph.
-  _layerTree = new LayerTreeControl ( caller, _dockWidget );
+  std::auto_ptr<QDockWidget> dockWidget ( new QDockWidget ( QObject::tr ( title.c_str() ), main ) );
+  dockWidget->setAllowedAreas ( Qt::AllDockWidgetAreas );
 
   // Add the dock to the main window.
-  _dockWidget->setWidget( _layerTree );
-
-  // Add the dock to the main window.
-  main->addDockWidget ( Qt::LeftDockWidgetArea, _dockWidget );
+  main->addDockWidget ( Qt::LeftDockWidgetArea, dockWidget.get() );
 
   // Set the object name.
-  _dockWidget->setObjectName ( "ModflowDockWidget" );
+  dockWidget->setObjectName ( name.c_str() );
 
   // Add toggle to the menu.
-  Usul::Interfaces::IQtDockWidgetMenu::QueryPtr menu ( caller );
+  Usul::Interfaces::IQtDockWidgetMenu::QueryPtr menu ( _caller );
   if ( true == menu.valid() )
-    menu->addDockWidgetMenu ( _dockWidget );
+    menu->addDockWidgetMenu ( dockWidget.get() );
+
+  // Return the dock widget.
+  return dockWidget.release();
 }

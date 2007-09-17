@@ -24,8 +24,10 @@
 #include "XmlTree/XercesLife.h"
 
 #include "OsgTools/State/StateSet.h"
+#include "OsgTools/Group.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Bits/Bits.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/Factory/ObjectFactory.h"
@@ -68,7 +70,10 @@ ModflowDocument::ModflowDocument() : BaseClass ( "Modflow Document" ),
   _startHeads(),
   _landElev(),
   _bottomElev(),
-  _layers()
+  _layers(),
+  _root ( new osg::Group ),
+  _built ( 0x0 ),
+  _flags ( Modflow::Flags::DIRTY | Modflow::Flags::VISIBLE )
 {
   USUL_TRACE_SCOPE;
 }
@@ -97,6 +102,8 @@ void ModflowDocument::_destroy()
 {
   USUL_TRACE_SCOPE;
   this->clear();
+  _root = 0x0;
+  _built = 0x0;
 }
 
 
@@ -115,6 +122,10 @@ Usul::Interfaces::IUnknown *ModflowDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
   case Usul::Interfaces::ILayerList::IID:
     return static_cast < Usul::Interfaces::ILayerList* > ( this );
+  case Usul::Interfaces::IDirtyState::IID:
+    return static_cast < Usul::Interfaces::IDirtyState* > ( this );
+  case Usul::Interfaces::IUpdateListener::IID:
+    return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -364,6 +375,10 @@ void ModflowDocument::clear ( Usul::Interfaces::IUnknown * )
   // Have to clear each layer first because they reference each other.
   std::for_each ( _layers.begin(), _layers.end(), std::mem_fun ( &Layer::clear ) );
   _layers.clear();
+
+  // Clear the scene.
+  OsgTools::Group::removeAllChildren ( _root.get() );
+  OsgTools::Group::removeAllChildren ( _built.get() );
 }
 
 
@@ -423,7 +438,7 @@ ModflowDocument::Filters ModflowDocument::filtersInsert() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the scene.
+//  Build the scene. Actually, just return the root.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -432,26 +447,91 @@ osg::Node *ModflowDocument::buildScene ( const BaseClass::Options &options, Unkn
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  osg::ref_ptr<osg::Group> group ( new osg::Group );
-  double scaleFactor ( 0.95 );
+  // Should never happen...
+  if ( false == _root.valid() )
+    _root = new osg::Group;
 
-  // Add the layers.
-  const unsigned int num ( _layers.size() );
-  const unsigned int flags ( Modflow::Flags::CUBE | Modflow::Flags::BOUNDS );
-  for ( unsigned int i = 0; i < num; ++i )
+  // Return the scene.
+  return _root.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModflowDocument::_buildScene ( Unknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Make a copy of the layer pointers.
+  Layers layers;
   {
-    const Layer::RefPtr &layer ( _layers.at(i) );
-    group->addChild ( layer->buildScene ( flags, scaleFactor, caller ) );
-    //scaleFactor -= 0.05;
+    Guard guard ( this->mutex() );
+    layers.assign ( _layers.begin(), _layers.end() );
   }
 
-#ifdef _DEBUG
-#if 0
-  const std::string file ( Usul::File::fullPath ( "modflow.osg" ) );
-  osgDB::writeNodeFile ( *group, file );
-#endif
-#endif
-  return group.release();
+  // Make a new group.
+  osg::ref_ptr<osg::Group> group ( new osg::Group );
+
+  // Add the layers.
+  const unsigned int num ( layers.size() );
+  for ( unsigned int i = 0; i < num; ++i )
+  {
+    Layer::RefPtr layer ( layers.at(i) );
+    layer->flags ( Usul::Bits::add ( layer->flags(), Modflow::Flags::CUBE | Modflow::Flags::BOUNDS ) );
+    layer->margin ( 500, 500, 0 );
+    group->addChild ( layer->buildScene ( caller ) );
+  }
+
+  // Assign the new group to our staging area.
+  {
+    Guard guard ( this->mutex() );
+    _built = group;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the viewer is about to render.
+//
+//  Note: more then one viewer for this document will still work as long as 
+//  they all render in the same thread.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModflowDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Are we dirty?
+  if ( false == this->dirtyState() )
+    return;
+
+  // Should never happen...
+  if ( false == _root.valid() )
+    _root = new osg::Group;
+
+  // Build the scene. TODO: Put this in a job.
+  this->_buildScene ( caller );
+
+  // Swap scenes if we should.
+  if ( true == _built.valid() )
+  {
+    // Remove and add because _root was given to the viewer.
+    OsgTools::Group::removeAllChildren ( _root.get() );
+    OsgTools::Group::addAllChildren ( _built.get(), _root.get() );
+
+    // Reset this!
+    _built = 0x0;
+
+    // We're not dirty now.
+    this->dirtyState ( false );
+  }
 }
 
 
@@ -467,27 +547,6 @@ void ModflowDocument::_incrementProgress ( bool state, Unknown *progress, unsign
   this->setProgressBar ( state, numerator, denominator, progress );
   ++numerator;
   USUL_ASSERT ( numerator <= denominator );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the location of the grid cell.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-ModflowDocument::Vec2d ModflowDocument::_location ( unsigned int index ) const
-{
-  USUL_TRACE_SCOPE;
-  const unsigned int col ( index % _gridSize[1] );
-  const unsigned int row ( ( index - col ) / _gridSize[1] );
-
-  const double x ( _cellSize[0] * col );
-
-  const double height ( _cellSize[1] * _gridSize[1] );
-  const double y ( height - ( _cellSize[1] * row ) );
-
-  return Vec2d ( x, y );
 }
 
 
@@ -580,4 +639,59 @@ Usul::Interfaces::ILayer *ModflowDocument::layer ( unsigned int i )
   Guard guard ( this->mutex() );
   Layer::RefPtr layer ( ( i >= _layers.size() ) ? 0x0 : _layers.at ( i ) );
   return layer.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModflowDocument::dirtyState ( bool state )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  this->flags ( Usul::Bits::set ( this->flags(), Modflow::Flags::DIRTY, state ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ModflowDocument::dirtyState() const
+{
+  USUL_TRACE_SCOPE;
+  return Usul::Bits::has ( this->flags(), Modflow::Flags::DIRTY );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModflowDocument::flags ( unsigned int bits )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _flags = bits;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int ModflowDocument::flags() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _flags;
 }

@@ -24,7 +24,9 @@
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/IDirtyState.h"
 #include "Usul/Interfaces/ILayerList.h"
+#include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 
@@ -38,7 +40,9 @@ namespace Usul { namespace Factory { class ObjectFactory; } }
 
 class ModflowDocument : public Usul::Documents::Document,
                         public Usul::Interfaces::IBuildScene,
-                        public Usul::Interfaces::ILayerList
+                        public Usul::Interfaces::ILayerList,
+                        public Usul::Interfaces::IDirtyState,
+                        public Usul::Interfaces::IUpdateListener
 {
 public:
 
@@ -75,14 +79,25 @@ public:
   // Clear any existing data.
   virtual void                clear ( Unknown *caller = 0x0 );
 
+  // Set/get the dirty flag.
+  virtual void                dirtyState ( bool );
+  virtual bool                dirtyState() const;
+
   // Get the filters that correspond to what this document can read and write.
   virtual Filters             filtersOpen()   const;
   virtual Filters             filtersSave()   const;
   virtual Filters             filtersInsert() const;
   virtual Filters             filtersExport() const;
 
+  // Set/get the flag.
+  void                        flags ( unsigned int );
+  unsigned int                flags() const;
+
   // Return the grid size.
   Vec2ui                      gridSize() const;
+
+  // Get the layer at position i.
+  virtual ILayer *            layer ( unsigned int i );
 
   // Set/get the layers.
   void                        layers ( Layers & );
@@ -99,16 +114,16 @@ public:
   // Write the document to given file name.
   virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const;
 
-  // Get the layer at position i.
-  virtual ILayer *            layer ( unsigned int i );
+  // Usul::Interfaces::IUpdateListener
+  virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 
 protected:
+
+  void                        _buildScene ( Unknown *caller );
 
   void                        _destroy();
 
   void                        _incrementProgress ( bool state, Unknown *progress, unsigned int &numerator, unsigned int denominator );
-
-  Vec2d                       _location ( unsigned int i ) const;
 
   void                        _read ( Factory &, XmlTree::Node *file, Unknown *progress );
   void                        _read ( Factory &, const std::string &type, const std::string &file, Unknown *progress );
@@ -129,6 +144,9 @@ private:
   GridInfo _landElev;
   GridVector _bottomElev;
   Layers _layers;
+  osg::ref_ptr<osg::Group> _root;
+  osg::ref_ptr<osg::Group> _built;
+  unsigned int _flags;
 };
 
 

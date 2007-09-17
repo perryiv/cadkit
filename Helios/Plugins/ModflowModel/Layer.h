@@ -71,7 +71,7 @@ public:
   Layer *                 below();
 
   // Build the scene.
-  osg::Node *             buildScene ( unsigned int flags, double sizeFactor, Unknown *caller ) const;
+  osg::Node *             buildScene ( Unknown *caller );
 
   // Get the cell below.
   const Cell *            cell ( unsigned int row, unsigned int col ) const;
@@ -87,11 +87,23 @@ public:
   // Clear the layer.
   void                    clear();
 
+  // Set/get the dirty flag.
+  void                    dirty ( bool );
+  bool                    dirty() const;
+
   // Set the document.
   void                    document ( Usul::Interfaces::IUnknown * );
 
+  // Set/get the flag.
+  void                    flags ( unsigned int );
+  unsigned int            flags() const;
+
   // Return the grid size.
   Vec2ui                  gridSize() const;
+
+  // Set/get the margin.
+  void                    margin ( double x, double y, double z );
+  Vec3d                   margin() const;
 
   // Set modification flag.
   void                    modified ( bool );
@@ -120,7 +132,8 @@ protected:
   // Use reference counting.
   virtual ~Layer();
 
-  osg::Node *             _buildCubes ( unsigned int flags, double sizeFactor, Unknown *caller ) const;
+  osg::Node *             _buildCubes ( Unknown *caller ) const;
+  void                    _buildScene ( Unknown *caller );
 
 private:
 
@@ -136,6 +149,7 @@ private:
   osg::ref_ptr<osg::Group> _root;
   unsigned int _flags;
   IDocument::QueryPtr _document;
+  Vec3d _margin;
 };
 
 

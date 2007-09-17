@@ -28,7 +28,8 @@ public:
 
   // Add quads to the list of vertices. Sizes of the "cube" are controlled with the flags.
   static void addQuads ( unsigned int flags, double x, double y, double top, double bottom, 
-                         const osg::Vec2d &half, osg::Vec3Array *vertices, osg::Vec3Array *normals );
+                         const osg::Vec2d &half, double verticalMargin, 
+                         osg::Vec3Array *vertices, osg::Vec3Array *normals );
 };
 
 

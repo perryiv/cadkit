@@ -24,10 +24,12 @@
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IActiveDocumentListener.h"
 
+#include <map>
 #include <string>
 
 class LayerTreeControl;
 class QDockWidget;
+class QWidget;
 
 
 class ModflowDelegateComponent : public Usul::Base::Object,
@@ -41,6 +43,7 @@ public:
   // Typedefs.
   typedef Usul::Base::Object BaseClass;
   typedef Usul::Interfaces::IUnknown Unknown;
+  typedef std::map < QWidget *, QDockWidget * > DockedMap;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ModflowDelegateComponent );
@@ -73,8 +76,14 @@ protected:
   // Use reference counting.
   virtual ~ModflowDelegateComponent();
 
+private:
+
+  void                        _destroy();
+
+  QDockWidget *               _makeDockWindow ( const std::string &title, const std::string &name );
+
   Unknown::QueryPtr _caller;
-  QDockWidget *_dockWidget;
+  DockedMap _docked;
   LayerTreeControl *_layerTree;
 };
 

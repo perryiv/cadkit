@@ -19,6 +19,7 @@
 
 #include "Usul/Bits/Bits.h"
 #include "Usul/Functions/GUID.h"
+#include "Usul/Interfaces/IDirtyState.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Trace/Trace.h"
 
@@ -50,8 +51,9 @@ Layer::Layer ( const std::string &name, unsigned int numRows, unsigned int numCo
   _below ( 0x0 ),
   _guid ( Usul::Functions::GUID::generate() ),
   _root ( new osg::Group ),
-  _flags ( Modflow::Flags::VISIBLE ),
-  _document()
+  _flags ( Modflow::Flags::DIRTY | Modflow::Flags::VISIBLE ),
+  _document(),
+  _margin ( 0, 0, 0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -172,30 +174,39 @@ void Layer::zRange ( const Data &top, const Data &bottom )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node *Layer::buildScene ( unsigned int flags, double scaleFactor, Unknown *caller ) const
+osg::Node *Layer::buildScene ( Unknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  this->_buildScene ( caller );
+  return _root.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::_buildScene ( Unknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
   // Should never happen...
   if ( false == _root.valid() )
-  {
-    Layer &me ( const_cast < Layer & > ( *this ) );
-    me._root = new osg::Group;
-  }
+    _root = new osg::Group;
 
   // Remove all the existing children.
   OsgTools::Group::removeAllChildren ( _root.get() );
 
   // If we are visible...
-  if ( true == Usul::Bits::has ( _flags, Modflow::Flags::VISIBLE ) )
+  if ( true == Usul::Bits::has ( this->flags(), Modflow::Flags::VISIBLE ) )
   {
     // Add new scene.
-    _root->addChild ( this->_buildCubes ( flags, scaleFactor, caller ) );
+    _root->addChild ( this->_buildCubes ( caller ) );
   }
-
-  // Return new scene.
-  return _root.get();
 }
 
 
@@ -205,7 +216,7 @@ osg::Node *Layer::buildScene ( unsigned int flags, double scaleFactor, Unknown *
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node *Layer::_buildCubes ( unsigned int flags, double scaleFactor, Unknown *caller ) const
+osg::Node *Layer::_buildCubes ( Unknown *caller ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -229,10 +240,11 @@ osg::Node *Layer::_buildCubes ( unsigned int flags, double scaleFactor, Unknown 
   osg::ref_ptr<osg::Vec3Array> normals ( new osg::Vec3Array );
   normals->reserve ( vertices->size() ); // Need same number for "fast path".
 
-  // Determine cell spacing.
-  const osg::Vec2d halfSize ( 0.5 * scaleFactor * _cellSize[0], 0.5 * scaleFactor * _cellSize[1] );
+  // Determine cell size.
+  const osg::Vec2d halfSize ( ( 0.5 * _cellSize[0] ) - _margin[0], ( 0.5 * _cellSize[1] ) - _margin[1] );
 
   // Don't draw the bottom if there is a visible cell below us and we're supposed to draw the tops.
+  const unsigned int flags ( this->flags() );
   const unsigned int draw ( ( ( true == _below.valid() ) && ( true == _below->visible() ) && Usul::Bits::has ( flags, Modflow::Flags::TOP ) ) ? Usul::Bits::remove ( flags, Modflow::Flags::BOTTOM ) : flags );
 
   // Make the cells.
@@ -248,7 +260,7 @@ osg::Node *Layer::_buildCubes ( unsigned int flags, double scaleFactor, Unknown 
         // Add the boundary.
         if ( Usul::Bits::has ( flags, Modflow::Flags::BOUNDS ) )
         {
-          BuildScene::addQuads ( draw, cell->x(), cell->y(), cell->top(), cell->bottom(), halfSize, vertices.get(), normals.get() );
+          BuildScene::addQuads ( draw, cell->x(), cell->y(), cell->top(), cell->bottom(), halfSize, _margin[2], vertices.get(), normals.get() );
         }
 
         // Add the starting head.
@@ -262,7 +274,7 @@ osg::Node *Layer::_buildCubes ( unsigned int flags, double scaleFactor, Unknown 
             const Cell::Vector &heads ( cell->vector ( Modflow::Names::HEAD ) );
             if ( false == heads.empty() )
             {
-              BuildScene::addQuads ( draw, cell->x(), cell->y(), heads.at(0), cell->bottom(), halfSize * scaleFactor, vertices.get(), normals.get() );
+              BuildScene::addQuads ( draw, cell->x(), cell->y(), heads.at(0), cell->bottom(), halfSize, _margin[2], vertices.get(), normals.get() );
             }
           }
         }
@@ -571,9 +583,10 @@ void Layer::showLayer ( bool state )
     _root->setNodeMask ( mask );
 
     // Separate flag to support serialization.
-    _flags = Usul::Bits::set ( _flags, Modflow::Flags::VISIBLE, state );
+    this->flags ( Usul::Bits::set ( this->flags(), Modflow::Flags::VISIBLE, state ) );
 
-    // Set the flag that says we are modified.
+    // Set the flags that says we are modified and dirty.
+    this->dirty ( true );
     this->modified ( true );
   }
 }
@@ -588,7 +601,8 @@ void Layer::showLayer ( bool state )
 bool Layer::showLayer() const
 {
   USUL_TRACE_SCOPE;
-  return Usul::Bits::has ( _flags, Modflow::Flags::VISIBLE );
+  Guard guard ( this->mutex() );
+  return Usul::Bits::has ( this->flags(), Modflow::Flags::VISIBLE );
 }
 
 
@@ -601,6 +615,7 @@ bool Layer::showLayer() const
 void Layer::modified ( bool state )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   if ( true == _document.valid() )
   {
     _document->modified ( state );
@@ -617,5 +632,94 @@ void Layer::modified ( bool state )
 void Layer::document ( Usul::Interfaces::IUnknown *doc )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _document = doc;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::flags ( unsigned int bits )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _flags = bits;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Layer::flags() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _flags;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the margin.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::margin ( double x, double y, double z )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _margin.set ( x, y, z );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the margin.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Layer::Vec3d Layer::margin() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _margin;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::dirty ( bool state )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  this->flags ( Usul::Bits::set ( this->flags(), Modflow::Flags::DIRTY, state ) );
+
+  Usul::Interfaces::IDirtyState::QueryPtr dirty ( _document );
+  if ( true == dirty.valid() )
+    dirty->dirtyState ( state );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Layer::dirty() const
+{
+  USUL_TRACE_SCOPE;
+  return Usul::Bits::has ( this->flags(), Modflow::Flags::DIRTY );
 }

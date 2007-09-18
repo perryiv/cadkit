@@ -22,6 +22,7 @@
 
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/IUpdateEnable.h"
+#include "Usul/Interfaces/IUpdateCheck.h"
 
 namespace Usul {
 namespace Commands {
@@ -29,7 +30,8 @@ namespace Commands {
 
 class USUL_EXPORT Command : public Usul::Base::Object,
                             public Usul::Interfaces::ICommand,
-                            public Usul::Interfaces::IUpdateEnable
+                            public Usul::Interfaces::IUpdateEnable,
+                            public Usul::Interfaces::IUpdateCheck
 {
 public:
 
@@ -88,7 +90,11 @@ protected:
 
   virtual void                _execute() = 0;
 
+  /// Update the enabled state.
   virtual bool                updateEnable () const;
+
+  /// Update the checked state.
+  virtual bool                updateCheck () const;
 
 private:
 

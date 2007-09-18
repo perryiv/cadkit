@@ -24,6 +24,7 @@
 #include "Helios/Qt/Commands/SaveAsDocument.h"
 #include "Helios/Qt/Commands/ExportImage.h"
 #include "Helios/Qt/Commands/ExitApplication.h"
+#include "Helios/Qt/Commands/ToggleView.h"
 #include "Helios/Qt/Tools/Image.h"
 #include "Helios/Qt/Tools/SettingsGroupScope.h"
 
@@ -144,7 +145,7 @@ MainWindow::MainWindow ( const std::string &vendor,
   this->setEnabled ( true );
 
   // Make the menu.
-  this->_buildMenu();
+  this->_initMenu();
   this->_buildToolBar();
 
   // Build the text window.
@@ -239,6 +240,8 @@ void MainWindow::_destroy()
 
   // Clear the menu bar.
   this->_clearMenuBar ();
+  _menu = 0x0;
+  _dockMenu = 0x0;
 
   // Should be true.
   USUL_ASSERT ( 0 == _refCount );
@@ -321,17 +324,19 @@ void MainWindow::_saveSettings()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::_buildMenu()
+void MainWindow::_initMenu()
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2357339900" );
 
   // Handle repeated calls.
   this->_clearMenuBar ();
+  _menu = new MenuKit::Menu;
+
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   // Add file menu.
-  {
-    Usul::Interfaces::IUnknown::QueryPtr me ( this );
+  {  
     MenuKit::Menu::RefPtr menu ( new MenuKit::Menu );
     menu->name ( "&File" );
     menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::OpenDocument ( me ) ) );
@@ -350,6 +355,31 @@ void MainWindow::_buildMenu()
   {
   }
 
+  // Add view menu.
+  {
+    {
+      MenuKit::Menu::RefPtr view ( new MenuKit::Menu );
+      view->name ( "&View" );
+      _dockMenu = new MenuKit::Menu;
+      _dockMenu->name ( "Docking Windows" );
+      view->append ( _dockMenu );
+      _menu->append ( view );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the menu bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_buildMenu ()
+{
+  // Handle repeated calls.
+  this->_clearMenuBar ();
+
   // Build the qt menu.
   for ( MenuKit::Menu::iterator iter = _menu->begin(); iter != _menu->end (); ++iter )
   {
@@ -360,14 +390,6 @@ void MainWindow::_buildMenu()
       qtMenu->menu ( menu );
       this->menuBar()->addMenu ( qtMenu );
       _menus.push_back ( qtMenu );
-    }
-  }
-
-  // Add view menu.
-  {
-    QMenu *menu = this->menuBar()->addMenu ( tr ( "&View" ) );
-    {
-      _dockMenu = menu->addMenu ( "Docking Windows" );
     }
   }
 }
@@ -382,8 +404,6 @@ void MainWindow::_buildMenu()
 void MainWindow::_clearMenuBar ()
 {
   this->menuBar()->clear();
-  _dockMenu = 0x0;
-  _menu = new MenuKit::Menu;
 
   // Delete the menus we created.
   for ( Menus::iterator iter = _menus.begin(); iter != _menus.end(); ++iter )
@@ -414,14 +434,18 @@ void MainWindow::_buildToolBar()
   toolBar->setIconSize ( QSize ( 16, 16 ) );
   toolBar->setObjectName ( standardToolBarName );
 
+  typedef CadKit::Helios::Commands::Action Action;
+
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+
   // Add buttons.
   {
-    CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::OpenDocument> ( this ) );
+    CadKit::Helios::Commands::BaseAction::RefPtr action ( new Action ( new CadKit::Helios::Commands::OpenDocument ( me ) ) );
     _actions.insert ( action );
     toolBar->addAction ( action.get() );
   }
   {
-    CadKit::Helios::Commands::BaseAction::RefPtr action ( new CadKit::Helios::Commands::Action<CadKit::Helios::Commands::SaveDocument> ( this ) );
+    CadKit::Helios::Commands::BaseAction::RefPtr action ( new Action ( new CadKit::Helios::Commands::SaveDocument ( me ) ) );
     _actions.insert ( action );
     toolBar->addAction ( action.get() );
   }
@@ -459,8 +483,7 @@ void MainWindow::_buildTextWindow()
   dock->setObjectName ( "TextWindow" );
 
   // Add toggle to the menu.
-  if ( 0x0 != _dockMenu )
-    _dockMenu->addAction ( dock->toggleViewAction() );
+  this->addDockWidgetMenu ( dock );
 }
 
 
@@ -487,8 +510,7 @@ void MainWindow::_buildProgressBarWindow()
   dock->setObjectName ( "ProgressBarsWindow" );
 
   // Add toggle to the menu.
-  if ( 0x0 != _dockMenu )
-    _dockMenu->addAction ( dock->toggleViewAction() );
+  this->addDockWidgetMenu ( dock );
 }
 
 
@@ -1483,8 +1505,13 @@ void MainWindow::restoreDockWindows()
 
 void MainWindow::addDockWidgetMenu ( QDockWidget * dock )
 {
-  if ( 0x0 != _dockMenu && 0x0 != dock )
-    _dockMenu->addAction ( dock->toggleViewAction() );
+  if ( _dockMenu.valid () )
+  {
+    MenuKit::Button::RefPtr button ( new MenuKit::Button ( new CadKit::Helios::Commands::ToggleView ( dock ) ) );
+    button->toggle ( true );
+    _dockMenu->append ( button.get() );
+  }
+  this->_buildMenu ();
 }
 
 

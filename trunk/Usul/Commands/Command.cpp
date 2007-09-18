@@ -134,6 +134,8 @@ Usul::Interfaces::IUnknown *Command::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IUnknown*>(static_cast<Usul::Interfaces::ICommand*>(this));
   case Usul::Interfaces::IUpdateEnable::IID:
     return static_cast < Usul::Interfaces::IUpdateEnable * > ( this );
+  case Usul::Interfaces::IUpdateCheck::IID:
+    return static_cast < Usul::Interfaces::IUpdateCheck * > ( this );
   default:
     return 0x0;
   }
@@ -335,6 +337,18 @@ std::string Command::iconPath() const
 ///////////////////////////////////////////////////////////////////////////////
 
 bool Command::updateEnable () const
+{
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the checked state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Command::updateCheck () const
 {
   return true;
 }

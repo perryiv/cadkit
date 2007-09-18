@@ -153,6 +153,7 @@ public:
   void                              restoreDockWindows ();
 protected:
 
+  void                              _initMenu();
   void                              _buildMenu();
   void                              _buildTextWindow();
   void                              _buildProgressBarWindow();
@@ -239,7 +240,7 @@ private:
   SplashScreen::RefPtr _splash;
   QWorkspace *_workSpace;
   TextWindow _textWindow;
-  QMenu *_dockMenu;
+  MenuKit::Menu::RefPtr _dockMenu;
   QTimer *_idleTimer;
   ProgressBarDock::RefPtr _progressBars;
   MenuKit::Menu::RefPtr _menu;

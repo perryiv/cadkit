@@ -1006,8 +1006,8 @@ void Renderer::_fboScreenCapture ( osg::Image& image, const osg::Matrix& project
 osg::Image* Renderer::screenCapture ( float frameSizeScale, unsigned int numSamples )
 {
   // Get our current width and height.
-  unsigned int width  ( this->viewport()->width ()  * frameSizeScale );
-  unsigned int height ( this->viewport()->height () * frameSizeScale  );
+  unsigned int width  ( static_cast < unsigned int > ( this->viewport()->width ()  * frameSizeScale ) );
+  unsigned int height ( static_cast < unsigned int > ( this->viewport()->height () * frameSizeScale ) );
 
   TiledScreenCapture tiled;
   tiled.size ( width, height );

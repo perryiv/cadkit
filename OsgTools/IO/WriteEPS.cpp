@@ -169,7 +169,7 @@ bool WriteEPS::_writeFile() const
 	::fprintf ( out, "%%!PS-Adobe-2.0 EPSF-2.0\n" );
 
 	// If there is a creator then write it.
-	if ( _creator != "" ) ::fprintf ( out, "%%%%Creator: %s\n", _creator );
+	if ( _creator != "" ) ::fprintf ( out, "%%%%Creator: %s\n", _creator.c_str() );
 
 	// Finish the header.
 	::fprintf ( out, "%%%%BoundingBox: %g %g %g %g\n", viewport[0], viewport[1], viewport[2], viewport[3]);
@@ -327,7 +327,7 @@ bool WriteEPS::_writePrimitive ( const float &pointSize, const int &whichPrim, F
 	const GLfloat *buffer = _primitive[whichPrim].buffer;
 
 	// Initialize the token.
-	token = *buffer;
+	token = static_cast < int > ( *buffer );
 
 	// Since we grabbed the token, increment the pointer into the buffer.
 	++buffer;
@@ -368,7 +368,7 @@ bool WriteEPS::_writePrimitive ( const float &pointSize, const int &whichPrim, F
       maxColor = Usul::Math::maximum ( absR, Usul::Math::maximum ( absG, absB ) );
 
 			// Calculate the number of steps to take for drawing the line.
-			steps = Usul::Math::maximum ( 1.0, maxColor * distance * _lineSmoothingFactor );
+			steps = static_cast < int > ( Usul::Math::maximum ( 1.0, maxColor * distance * _lineSmoothingFactor ) );
 
 			// Calculate the distance in the x and y-direction for each step.
 			xstep = dx / steps;
@@ -419,7 +419,7 @@ bool WriteEPS::_writePrimitive ( const float &pointSize, const int &whichPrim, F
 	case GL_POLYGON_TOKEN:
 
 		// Grab the number of vertices.
-		numVertices = *buffer;
+		numVertices = static_cast < int > ( *buffer );
 
 		// Move to the next place in the buffer.
 		++buffer;

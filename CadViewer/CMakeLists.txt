@@ -42,7 +42,7 @@ ${CADKIT_ROOT_DIR}/Minerva/Plugins/ComputeNormals
 ${CADKIT_ROOT_DIR}/Minerva/Plugins/TriangulateCGAL
 ${CADKIT_ROOT_DIR}/Minerva/Plugins/Document
 
-#${CADKIT_ROOT_DIR}/Experimental/Planet
+${CADKIT_ROOT_DIR}/Experimental/Planet
 
 )
 

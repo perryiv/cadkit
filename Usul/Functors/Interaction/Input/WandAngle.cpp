@@ -86,7 +86,7 @@ float WandAngle::_calculateValue ( unsigned int zero, unsigned int sign )
 
     //std::cout << "---------------------------------------------------";
     //Usul::Print::matrix ( "", matrix.get(), std::cout );
-    std::cout << std::endl;
+    //std::cout << std::endl;
     IWandState::Vector nz ( 0.0f, 0.0f, -1.0f );
     IWandState::Vector localDir ( nz );
     IWandState::Vector globalDir = matrix * localDir;

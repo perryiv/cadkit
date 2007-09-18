@@ -24,15 +24,12 @@
 #include "CadViewer/Functors/Tool.h"
 #include "CadViewer/Pick/Intersect.h"
 
-#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Functors/Interaction/Matrix/MatrixFunctor.h"
 
 #include "VRV/Core/Application.h"
 
 #include "OsgTools/Grid.h"
-
-#include "MenuKit/MemFunCallback.h"
 
 #include <string>
 #include <vector>
@@ -53,15 +50,6 @@ public:
   // Useful typedefs
   typedef VRV::Core::Application BaseClass;
   typedef Usul::Math::Matrix44f Matrix44f;
-
-  typedef void (Application::*VoidFunction) ();
-  typedef void (Application::*BoolFunction) ( bool );
-  typedef bool (Application::*CheckFunction) () const;
-  typedef Usul::Adaptors::MemberFunction < Application*, VoidFunction >   ExecuteFunctor;
-  typedef MenuKit::MemFunCallbackReturn < Application*, CheckFunction >   CheckFunctor;
-  typedef Usul::Adaptors::MemberFunction < Application*, BoolFunction >   BoolFunctor;
-  typedef MenuKit::BasicCommand < ExecuteFunctor >                        BasicCommand;
-  typedef MenuKit::CheckCommand < BoolFunctor, CheckFunctor >             CheckCommand;
 
   // Constructor.
   Application ( );
@@ -90,21 +78,6 @@ public:
   static bool                   isAppThread();
   static bool                   isMainThread();
 
-  // Run the program.
-  void                          run();
-
-  // Quit the program
-  void                          quit ();
-
-  // Export functions.
-  void                          exportWorld ();
-  void                          exportWorldBinary ();
-  void                          exportScene ();
-  void                          exportSceneBinary ();
-
-  // View functions.
-  void                          viewWorld ();
-  void                          viewScene ();
 protected:
   
   // Joystick callbacks.
@@ -130,23 +103,10 @@ protected:
   // Calculate the frame-rate.
   double                        _calculateFrameRate() const;
 
-  // Generate a string from the integer.
-  std::string                   _counter ( unsigned int num ) const;
-
   // Initialize.
   void                          _initGrid ( osg::Node *node );
   void                          _initLight();
   void                          _initText();
-  void                          _initMenu();
-
-  // Initialize the menus.
-  void                          _initFileMenu     ( MenuKit::Menu* menu );
-  void                          _initEditMenu     ( MenuKit::Menu* menu );
-  void                          _initViewMenu     ( MenuKit::Menu* menu );
-  void                          _initNavigateMenu ( MenuKit::Menu* menu );
-  void                          _initToolsMenu    ( MenuKit::Menu* menu );
-  void                          _initOptionsMenu  ( MenuKit::Menu* menu );
-  void                          _initAnimateMenu  ( MenuKit::Menu* menu );
 
   // Handle the events, if any.
   bool                          _handleMenuEvent ( unsigned long id );
@@ -199,9 +159,6 @@ protected:
   // Use the scene tool if we are supposed to.
   void                          _useSceneTool();
 
-  // Write the scene to file.
-  void                          _writeScene ( const std::string &filename, const osg::Node *node ) const;
-
   /// Update notify.
   virtual void                  _updateNotify ();
 
@@ -214,23 +171,6 @@ protected:
   /// Called when button is released.
   virtual void                  buttonReleaseNotify ( Usul::Interfaces::IUnknown * );
 
-  void                          _increaseSpeed ();
-  void                          _decreaseSpeed ();
-  void                          _increaseSpeedTen ();
-  void                          _decreaseSpeedTen ();
-
-  void                          _animationSteps20 ( bool );
-  bool                          _animationSteps20 () const;
-
-  void                          _animationSteps50 ( bool );
-  bool                          _animationSteps50 () const;
-
-  void                          _animationSteps100 ( bool );
-  bool                          _animationSteps100 () const;
-
-  void                          _animationStepsDouble ( );
-  void                          _animationStepsHalf ( );
-
   // For readability.
   typedef unsigned long                                             ThreadId;
   typedef osg::ref_ptr<osg::MatrixTransform>                        MatTransPtr;
@@ -242,7 +182,6 @@ protected:
   typedef Interfaces::IVisibility::QueryPtr                         IVisibilityPtr;
   typedef Interfaces::ISelection::QueryPtr                          ISelectionPtr;
   typedef Interfaces::IMaterialStack::QueryPtr                      IMaterialStackPtr;
-  typedef std::map<std::string, Usul::Math::Vec4f >                ColorMap;
 
   // Data members.
   static ThreadId   _appThread;
@@ -260,7 +199,6 @@ protected:
   IVisibilityPtr    _iVisibility;
   ISelectionPtr     _iSelection;
   IMaterialStackPtr _iMaterialStack;
-  ColorMap          _colorMap;
   std::vector<OsgTools::Grid> _gridFunctors;
   bool              _textures;
 };

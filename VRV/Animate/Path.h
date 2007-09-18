@@ -18,11 +18,6 @@
 
 #include "Serialize/XML/Macros.h"
 
-#include "GN/Config/UsulConfig.h"
-#include "GN/Splines/Curve.h"
-#include "GN/Evaluate/Point.h"
-#include "GN/Write/XML.h"
-
 #include <vector>
 
 namespace Usul { namespace Interfaces { struct IUnknown; } }
@@ -34,33 +29,26 @@ class VRV_EXPORT Path : public Usul::Base::Object
 {
 public:
   typedef Usul::Base::Object                                      BaseClass;
-  typedef std::vector < Frame::RefPtr >                           Frames;
-  typedef GN::Config::UsulConfig < double, double, unsigned int > DoubleConfig;
-  typedef GN::Splines::Curve < DoubleConfig >                     DoubleCurve;
-  typedef DoubleCurve::IndependentSequence                        IndependentSequence;
-  typedef DoubleCurve::DependentContainer                         DependentContainer;
-  typedef DoubleCurve::DependentSequence                          DependentSequence;
-  typedef DoubleCurve::IndependentType                            Parameter;
 
   USUL_DECLARE_REF_POINTERS ( Path );
 
   Path ();
 
   /// Append a frame.
-  void              append ( Frame *frame );
+  virtual void      append ( Frame *frame );
 
   /// Clear.
-  void              clear ();
+  virtual void      clear () = 0;
 
   /// Get/Set the dirty flag.
   void              dirty ( bool );
   bool              dirty () const;
 
   /// Start the animation from beginning.
-  void              start ( Usul::Interfaces::IUnknown * caller );
+  virtual void      start ( Usul::Interfaces::IUnknown * caller );
 
   /// Animate one step.
-  void              animate ( Usul::Interfaces::IUnknown * caller );
+  virtual void      animate ( Usul::Interfaces::IUnknown * caller ) = 0;
 
   /// Are we animating?
   bool              animating () const;
@@ -68,21 +56,20 @@ public:
   /// Get/Set the number of animation steps.
   void              steps ( unsigned int value );
   unsigned int      steps ( ) const;
+
+  /// Get/Set flag to accept new frames.
+  void              acceptNewFrames ( bool b );
+  bool              acceptNewFrames () const;
 protected:
   virtual ~Path ();
 
-  void              _interpolate ( );
+  /// Append a frame.
+  virtual void      _append ( Frame *frame ) = 0;
 
-private:
   bool                _dirty;
-  Frames              _frames;
+  bool                _acceptNewFrames;
   unsigned int        _numberSteps;
   unsigned int        _currentStep;
-  //Parameter           _segTime;
-  //Parameter           _lastU;
-  IndependentSequence _params;
-  DependentContainer  _rotations;
-  DoubleCurve         _curve;
   double              _startTime;
   bool                _animating;
 

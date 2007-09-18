@@ -28,6 +28,7 @@ ${CADKIT_ROOT_DIR}/CadViewer/Plugins/display_scene_stats
 # ---- Document Plug-ins -------
 ${CADKIT_ROOT_DIR}/Helios/Plugins/SceneModel
 ${CADKIT_ROOT_DIR}/Helios/Plugins/TriangleModel
+${CADKIT_ROOT_DIR}/Helios/Plugins/ModflowModel
 ${CADKIT_ROOT_DIR}/Experimental/WRF/WrfModel
 ${CADKIT_ROOT_DIR}/Experimental/DynamicLand/DynamicLandModel
 ${CADKIT_ROOT_DIR}/Experimental/ModelPresentation/ModelPresentation

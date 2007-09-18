@@ -31,6 +31,8 @@ INCLUDE_DIRECTORIES(
 SET (SOURCES
   ./Animate/Frame.cpp
   ./Animate/Path.cpp
+  ./Animate/KeyFramePath.cpp
+  ./Animate/RecordedPath.cpp
   ./Core/Application.cpp
   ./Core/SharedDouble.cpp
   ./Core/SharedMatrix.cpp

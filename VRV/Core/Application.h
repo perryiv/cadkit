@@ -22,6 +22,8 @@
 #include "VRV/Interfaces/INavigationScene.h"
 #include "VRV/Interfaces/IModelsScene.h"
 #include "VRV/Animate/Path.h"
+#include "VRV/Animate/KeyFramePath.h"
+#include "VRV/Animate/RecordedPath.h"
 
 #include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
@@ -53,6 +55,7 @@
 #include "Usul/Functors/Interaction/Common/Sequence.h"
 #include "Usul/Functors/Interaction/Navigate/Transform.h"
 #include "Usul/Functors/Interaction/Input/AnalogInput.h"
+#include "Usul/Adaptors/MemberFunction.h"
 
 #include "OsgTools/Render/Renderer.h"
 #include "OsgTools/Render/SceneManager.h"
@@ -60,6 +63,7 @@
 #include "OsgTools/Widgets/ProgressBarGroup.h"
 
 #include "MenuKit/OSG/Menu.h"
+#include "MenuKit/MemFunCallback.h"
 
 #include "vrj/Draw/OGL/GlApp.h"
 #include "vrj/Draw/OGL/GlContextData.h"
@@ -148,6 +152,8 @@ public:
   typedef IPolygonMode::Mode                   PolygonMode;
   typedef Usul::Interfaces::IShadeModel        IShadeModel;
   typedef IShadeModel::Mode                    ShadeModel;
+  typedef VRV::Animate::Path                   Path;
+  typedef std::vector < Path::RefPtr >         Paths;
 
   typedef Usul::Functors::Interaction::Common::BaseFunctor   Navigator;
   typedef Usul::Functors::Interaction::Input::AnalogInput    AnalogInput;
@@ -157,6 +163,15 @@ public:
   typedef std::map < std::string, TransformFunctor::RefPtr > TransformFunctors;
   typedef std::map < std::string, FavoriteFunctor::RefPtr >  FavoriteFunctors;
   typedef FavoriteFunctors::iterator                         FavoriteIterator;
+
+  typedef void (Application::*VoidFunction) ();
+  typedef void (Application::*BoolFunction) ( bool );
+  typedef bool (Application::*CheckFunction) () const;
+  typedef Usul::Adaptors::MemberFunction < Application*, VoidFunction >   ExecuteFunctor;
+  typedef MenuKit::MemFunCallbackReturn < Application*, CheckFunction >   CheckFunctor;
+  typedef Usul::Adaptors::MemberFunction < Application*, BoolFunction >   BoolFunctor;
+  typedef MenuKit::BasicCommand < ExecuteFunctor >                        BasicCommand;
+  typedef MenuKit::CheckCommand < BoolFunctor, CheckFunctor >             CheckCommand;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -252,6 +267,17 @@ public:
   bool                    menuSceneShowHide () const;
   void                    menuSceneShowHide ( bool show );
 
+  /// Get/Set the current path.
+  Path*                   currentPath ();
+  const Path*             currentPath () const;
+  void                    currentPath ( Path* );
+
+  /// Create new key frame path.
+  void                    createKeyFramePath ();
+
+  /// Create new recorded path.
+  void                    createRecordedPath ();
+
   /// Append current camera.
   void                    appendCamera ();
 
@@ -264,6 +290,10 @@ public:
   /// Get/Set the number of animation steps.
   void                    animationSteps ( unsigned int steps );
   unsigned int            animationSteps ( ) const;
+
+  /// Get/Set flag to record path.
+  void                    recordPath ( bool b );
+  bool                    recordPath ( ) const;
 
   /// Get/Set the menu.
   Menu *                  menu ();
@@ -280,11 +310,23 @@ public:
   // Get the end of the favorites.
   FavoriteIterator        favoritesEnd ();
 
-  Navigator*              favorite ( const std::string& name );
-
   /// Toggle time based rendering.
   void                    timeBased ( bool b );
   bool                    timeBased () const;
+
+  // Export functions.
+  void                    exportWorld ();
+  void                    exportWorldBinary ();
+  void                    exportScene ();
+  void                    exportSceneBinary ();
+
+  // View functions.
+  void                    viewWorld ();
+  void                    viewScene ();
+
+  /// Get/Set near far mode.
+  void                    computeNearFar ( bool b );
+  bool                    computeNearFar () const;
 protected:
 
   /// VR Juggler methods.
@@ -363,6 +405,43 @@ protected:
 
   // Set the current "camera" position as "home".
   void                          _setHome();
+
+  // Initialize.
+  void                          _initMenu();
+
+  // Initialize the menus.
+  void                          _initFileMenu     ( MenuKit::Menu* menu );
+  void                          _initEditMenu     ( MenuKit::Menu* menu );
+  void                          _initViewMenu     ( MenuKit::Menu* menu );
+  void                          _initNavigateMenu ( MenuKit::Menu* menu );
+  void                          _initToolsMenu    ( MenuKit::Menu* menu );
+  void                          _initOptionsMenu  ( MenuKit::Menu* menu );
+  void                          _initAnimateMenu  ( MenuKit::Menu* menu );
+
+  /// Translation speed controls.
+  void                          _increaseSpeed ();
+  void                          _decreaseSpeed ();
+  void                          _increaseSpeedTen ();
+  void                          _decreaseSpeedTen ();
+
+  /// Animation speed controls.
+  void                          _animationSteps20 ( bool );
+  bool                          _animationSteps20 () const;
+
+  void                          _animationSteps50 ( bool );
+  bool                          _animationSteps50 () const;
+
+  void                          _animationSteps100 ( bool );
+  bool                          _animationSteps100 () const;
+
+  void                          _animationStepsDouble ( );
+  void                          _animationStepsHalf ( );
+
+  // Generate a string from the integer.
+  std::string                   _counter ( unsigned int num ) const;
+
+    // Write the scene to file.
+  void                          _writeScene ( const std::string &filename, const osg::Node *node ) const;
 
   /// Get/set the clipping distances (VRV::Interfaces::IClippingDistanceFloat).
   virtual void            getClippingDistances ( float &nearDist, float &farDist ) const;
@@ -484,6 +563,7 @@ private:
   typedef std::queue< CommandPtr >                         CommandQueue_;
   USUL_DECLARE_QUEUE_CONFIG ( QueueConfig, Mutex, Guard, CommandQueue_ );
   typedef Usul::Threads::Queue<QueueConfig>                CommandQueue;
+    typedef std::map<std::string, Usul::Math::Vec4f >      ColorMap;
 
   // Data members.
   mutable Mutex                          _mutex;
@@ -520,7 +600,6 @@ private:
   Navigator::RefPtr                      _navigator;
   unsigned int                           _refCount;
   bool                                   _menuSceneShowHide;
-  VRV::Animate::Path::RefPtr             _path;
   MenuPtr                                _menu;
   MenuPtr                                _statusBar;
   std::string                            _functorFilename;
@@ -531,6 +610,9 @@ private:
   float                                  _translationSpeed;
   osg::Matrixf                           _home;
   bool                                   _timeBased;
+  Paths                                  _paths;
+  Path::RefPtr                           _currentPath;
+  ColorMap                               _colorMap;
 };
 
 }

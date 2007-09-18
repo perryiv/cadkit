@@ -32,42 +32,42 @@ namespace Helios {
 namespace Commands {
 
 
-template < class CommandType > class Action : public BaseAction
+class Action : public CadKit::Helios::Commands::BaseAction
 {
 public:
 
   // Typedefs.
-  typedef BaseAction BaseClass;
+  typedef CadKit::Helios::Commands::BaseAction BaseClass;
   typedef Usul::Interfaces::IUnknown IUnknown;
-  typedef Action<CommandType> ThisType;
-  typedef boost::shared_ptr<ThisType> RefPtr;
 
   // Constructor.
-  template < class CallerType > Action ( CallerType *caller ) : BaseClass ( IUnknown::QueryPtr ( caller ) )
+  Action ( Usul::Commands::Command *command ) : BaseClass ( 0x0 ), _command ( command )
   {
     USUL_TRACE_SCOPE;
-    typename CommandType::RefPtr command ( new CommandType ( this->caller() ) );
 
-    const std::string text      ( command->text() );
-    const std::string shortcut  ( command->shortcut() );
-    const std::string statusTip ( command->statusTip() );
-    const std::string toolTip   ( command->toolTip() );
-    const std::string iconPath  ( command->iconPath() );
+    if ( _command.valid () )
+    {
+      const std::string text      ( _command->text() );
+      const std::string shortcut  ( _command->shortcut() );
+      const std::string statusTip ( _command->statusTip() );
+      const std::string toolTip   ( _command->toolTip() );
+      const std::string iconPath  ( _command->iconPath() );
 
-    if ( false == text.empty() )
-      this->setText ( tr ( text.c_str() ) );
+      if ( false == text.empty() )
+        this->setText ( tr ( text.c_str() ) );
 
-    if ( false == shortcut.empty() )
-      this->setShortcut ( tr ( shortcut.c_str() ) );
+      if ( false == shortcut.empty() )
+        this->setShortcut ( tr ( shortcut.c_str() ) );
 
-    if ( false == statusTip.empty() )
-      this->setStatusTip ( tr ( statusTip.c_str() ) );
+      if ( false == statusTip.empty() )
+        this->setStatusTip ( tr ( statusTip.c_str() ) );
 
-    if ( false == toolTip.empty() )
-      this->setToolTip ( tr ( toolTip.c_str() ) );
+      if ( false == toolTip.empty() )
+        this->setToolTip ( tr ( toolTip.c_str() ) );
 
-    if ( false == iconPath.empty() )
-      CadKit::Helios::Tools::Image::icon ( command->iconPath().c_str(), this );
+      if ( false == iconPath.empty() )
+        CadKit::Helios::Tools::Image::icon ( command->iconPath().c_str(), this );
+    }
   }
 
   // Destructor.
@@ -86,9 +86,15 @@ private:
   {
     USUL_TRACE_SCOPE;
     USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "3551910933" );
-    typename CommandType::RefPtr command ( new CommandType ( this->caller() ) );
-    command->execute ( 0x0 );
+    
+    if ( _command.valid () )
+    {
+      Usul::Commands::Command::RefPtr command ( _command->clone () );
+      command->execute ( 0x0 );
+    }
   }
+
+  Usul::Commands::Command::RefPtr _command;
 };
 
 

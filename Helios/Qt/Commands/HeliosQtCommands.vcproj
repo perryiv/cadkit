@@ -262,6 +262,14 @@
 				RelativePath=".\SaveDocument.h"
 				>
 			</File>
+			<File
+				RelativePath=".\ToggleView.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ToggleView.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Generated Files"

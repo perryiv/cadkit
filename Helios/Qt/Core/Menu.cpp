@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Helios/Qt/Core/Menu.h"
-
+#include "Helios/Qt/Commands/Action.h"
 #include "Helios/Qt/Tools/Image.h"
 
 #include "MenuKit/Visitor.h"
@@ -88,81 +88,6 @@ const MenuKit::Menu* Menu::menu () const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Action for command.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  class Action : public CadKit::Helios::Commands::BaseAction
-  {
-  public:
-
-    // Typedefs.
-    typedef CadKit::Helios::Commands::BaseAction BaseClass;
-    typedef Usul::Interfaces::IUnknown IUnknown;
-
-    // Constructor.
-    Action ( Usul::Commands::Command *command ) : BaseClass ( 0x0 ), _command ( command )
-    {
-      USUL_TRACE_SCOPE;
-
-      if ( _command.valid () )
-      {
-        const std::string text      ( _command->text() );
-        const std::string shortcut  ( _command->shortcut() );
-        const std::string statusTip ( _command->statusTip() );
-        const std::string toolTip   ( _command->toolTip() );
-        const std::string iconPath  ( _command->iconPath() );
-
-        if ( false == text.empty() )
-          this->setText ( tr ( text.c_str() ) );
-
-        if ( false == shortcut.empty() )
-          this->setShortcut ( tr ( shortcut.c_str() ) );
-
-        if ( false == statusTip.empty() )
-          this->setStatusTip ( tr ( statusTip.c_str() ) );
-
-        if ( false == toolTip.empty() )
-          this->setToolTip ( tr ( toolTip.c_str() ) );
-
-        if ( false == iconPath.empty() )
-          CadKit::Helios::Tools::Image::icon ( command->iconPath().c_str(), this );
-      }
-    }
-
-    // Destructor.
-    virtual ~Action()
-    {
-      USUL_TRACE_SCOPE;
-    }
-
-  private:
-
-    // No copying or assignment.
-    Action ( const Action & );
-    Action &operator = ( const Action & );
-
-    virtual void _execute()
-    {
-      USUL_TRACE_SCOPE;
-      USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "3551910933" );
-      
-      if ( _command.valid () )
-      {
-        Usul::Commands::Command::RefPtr command ( _command->clone () );
-        command->execute ( 0x0 );
-      }
-    }
-
-    Usul::Commands::Command::RefPtr _command;
-  };
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Build the menu.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -177,26 +102,45 @@ namespace Detail
 
     QtMenuBuilder ( QMenu* menu, Menu::Actions &actions ) : BaseClass (),
       _menu ( menu ),
-      _current ( menu ),
       _actions ( actions )
     {
     }
 
     virtual void apply ( MenuKit::Menu &m )
     {
+      // Save the old menu.
+      QMenu* current ( _menu );
+
+      // Add a new menu.
+      if ( 0x0 != _menu )
+        _menu = _menu->addMenu ( QObject::tr ( m.name().c_str() ) );
+
+      // Traverse the menu.
       m.traverse ( *this );
+
+      // Restore the current menu.
+      _menu = current;
     }
 
     virtual void apply ( MenuKit::Button &b )
     {
-      if ( 0x0 != _current )
+      if ( 0x0 != _menu )
       {
         if ( b.separator () )
-          _current->addSeparator ();
+          _menu->addSeparator ();
         else
         {
+          typedef CadKit::Helios::Commands::Action Action;
           Action::RefPtr action ( new Action ( b.command () ) );
-          _current->addAction ( action.get () );
+
+          // See if it's a toggle.
+          if ( b.toggle () )
+          {
+            action->setCheckable ( true );
+            action->setChecked ( b.checked () );
+          }
+
+          _menu->addAction ( action.get () );
           action->setEnabled ( b.enabled () );
           _actions.insert ( action );
         }
@@ -205,7 +149,6 @@ namespace Detail
 
   private:
     QMenu *_menu;
-    QMenu *_current;
     Menu::Actions &_actions;
   };
 }

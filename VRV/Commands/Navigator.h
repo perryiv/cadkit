@@ -20,15 +20,13 @@
 namespace VRV {
 namespace Commands {
 
-class VRV_EXPORT Navigator : public Usul::Commands::Command,
-                             public Usul::Interfaces::IUpdateCheck
+class VRV_EXPORT Navigator : public Usul::Commands::Command
 {
 public:
   typedef Usul::Commands::Command BaseClass;
   typedef Usul::Functors::Interaction::Common::BaseFunctor BaseFunctor;
 
   USUL_DECLARE_COMMAND ( Navigator );
-  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   Navigator ( BaseFunctor* functor, Usul::Interfaces::IUnknown *caller = 0x0 );
 

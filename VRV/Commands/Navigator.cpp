@@ -14,7 +14,6 @@
 
 using namespace VRV::Commands;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Navigator, Navigator::BaseClass );
 USUL_IMPLEMENT_COMMAND ( Navigator );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -59,24 +58,6 @@ void Navigator::_execute ()
       nf->navigator ( 0x0 );
     else
       nf->navigator ( _functor.get () );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Query for interface.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown* Navigator::queryInterface ( unsigned long iid )
-{
-  switch ( iid )
-  {
-  case Usul::Interfaces::IUpdateCheck::IID:
-    return static_cast < Usul::Interfaces::IUpdateCheck * > ( this );
-  default:
-    return BaseClass::queryInterface ( iid );
   }
 }
 

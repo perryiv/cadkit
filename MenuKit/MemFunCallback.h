@@ -110,8 +110,7 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class ExecuteFunctor, class CheckFunctor >
-class CheckCommand : public Usul::Commands::Command,
-                     public Usul::Interfaces::IUpdateCheck
+class CheckCommand : public Usul::Commands::Command
 {
 public:
   typedef Usul::Commands::Command BaseClass;
@@ -126,27 +125,6 @@ public:
     this->text ( name );
   }
 
-  void ref ()
-  {
-    BaseClass::ref ();
-  }
-
-  void unref ( bool allowDeletion = true )
-  {
-    BaseClass::unref ( allowDeletion );
-  }
-
-  Usul::Interfaces::IUnknown* queryInterface ( unsigned long iid )
-  {
-    switch ( iid )
-    {
-    case Usul::Interfaces::IUpdateCheck::IID:
-      return static_cast < Usul::Interfaces::IUpdateCheck * > ( this );
-    default:
-      return BaseClass::queryInterface ( iid );
-    }
-  }
-
   virtual bool updateCheck () const
   {
     return _check ( );
@@ -159,7 +137,7 @@ protected:
 
   virtual void _execute ()
   {
-    _functor ( !_check() );
+    _functor ( !_check () );
   }
 
 private:
@@ -192,7 +170,7 @@ const std::type_info &CheckCommand < E, C >::classTypeId()
 template < class E, class C >
 const std::type_info &CheckCommand < E, C >::typeId() const 
 {
-  return BasicCommand < E >::classTypeId();
+  return CheckCommand < E, C >::classTypeId();
 }
 template < class E, class C >
 Usul::Commands::Command* CheckCommand < E, C >::clone ( ) const { return new CheckCommand < E, C > ( *this ); }

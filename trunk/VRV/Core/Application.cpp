@@ -66,7 +66,8 @@ using namespace VRV::Core;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
+Application::Application() : 
+  vrj::GlApp( vrj::Kernel::instance() ),
   _mutex             (),
   _root              ( new osg::Group ),
   _navBranch         ( new osg::MatrixTransform ),
@@ -110,7 +111,8 @@ Application::Application() : vrj::GlApp( vrj::Kernel::instance() ),
   _transformFunctors (),
   _favoriteFunctors  (),
   _translationSpeed  ( 1.0f ),
-  _home              ( osg::Matrixf::identity() )
+  _home              ( osg::Matrixf::identity() ),
+  _timeBased         ( true )
 {
   USUL_TRACE_SCOPE;
 
@@ -730,7 +732,7 @@ void Application::init()
   osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
   _progressBars->position ( Usul::Math::Vec3f ( -0.95, -0.7, -3.0 ) );
   //_progressBars->position ( Usul::Math::Vec3f ( 100, 50, 1.0 ) );
-  group->addChild ( _progressBars->buildScene() );
+  //group->addChild ( _progressBars->buildScene() );
 
   // Initialize the button group by adding the individual buttons.
   _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON0, "VJButton0" ) );
@@ -819,7 +821,7 @@ void Application::preFrame()
   }
 
   // Update the progress bars.
-  _progressBars->buildScene();
+  //_progressBars->buildScene();
 
   // Purge the job manager.
   Usul::Jobs::Manager::instance().purge();
@@ -844,7 +846,10 @@ void Application::latePreFrame()
 
   // Set the reference time.
   if ( 0x0 != this->frameStamp () )
+  {
     this->frameStamp()->setReferenceTime ( _sharedReferenceTime->data );
+    this->frameStamp()->setFrameNumber ( this->frameStamp()->getFrameNumber() + 1 );
+  }
 
   // Set the navigation matrix.
   _navBranch->setMatrix ( _sharedMatrix->matrix () );
@@ -989,7 +994,9 @@ const osg::FrameStamp* Application::frameStamp() const
 double Application::frameTime() const
 {
   USUL_TRACE_SCOPE;
-  return _frameTime;
+  osg::ref_ptr < const osg::FrameStamp > fs ( this->frameStamp () );
+
+  return ( this->timeBased () ? _frameTime : ( fs.valid() ? fs->getFrameNumber() : 0 ) );
 }
 
 
@@ -1949,7 +1956,7 @@ float Application::translationSpeed () const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
-  return _translationSpeed;
+  return this->timeBased () ? _translationSpeed : _translationSpeed / 10000;
 }
 
 
@@ -2899,4 +2906,32 @@ Application::ShadeModel Application::shadeModel() const
 
   // No shading.
   return IShadeModel::NONE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set time based navigation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::timeBased ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  _timeBased = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get time based navigation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::timeBased (  ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _timeBased;
 }

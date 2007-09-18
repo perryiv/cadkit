@@ -281,6 +281,10 @@ public:
   FavoriteIterator        favoritesEnd ();
 
   Navigator*              favorite ( const std::string& name );
+
+  /// Toggle time based rendering.
+  void                    timeBased ( bool b );
+  bool                    timeBased () const;
 protected:
 
   /// VR Juggler methods.
@@ -526,6 +530,7 @@ private:
   FavoriteFunctors                       _favoriteFunctors;
   float                                  _translationSpeed;
   osg::Matrixf                           _home;
+  bool                                   _timeBased;
 };
 
 }

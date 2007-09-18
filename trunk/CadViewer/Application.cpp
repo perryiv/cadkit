@@ -323,7 +323,7 @@ void Application::_init()
 
 void Application::_initText()
 {
-#if 1
+#if 0
   // Removing anything we may have already.
   this->projectionGroupRemove ( "VRV_TEXT" );
 
@@ -766,6 +766,9 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
   }
 
   menu->append ( this->_createSeperator () );
+  
+  menu->append ( this->_createToggle ( new CheckCommand ( "Time Based", BoolFunctor ( this, &Application::timeBased ), CheckFunctor ( this, &Application::timeBased ) ) ) );
+
   menu->append ( this->_createButton ( new BasicCommand ( "Translate Speed x 10", ExecuteFunctor ( this, &Application::_increaseSpeedTen ) ) ) );
   menu->append ( this->_createButton ( new BasicCommand ( "Translate Speed x 2", ExecuteFunctor ( this, &Application::_increaseSpeed ) ) ) );
   menu->append ( this->_createButton ( new BasicCommand ( "Translate Speed / 2", ExecuteFunctor ( this, &Application::_decreaseSpeed ) ) ) );

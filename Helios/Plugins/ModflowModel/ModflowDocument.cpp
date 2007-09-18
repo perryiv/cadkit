@@ -53,6 +53,7 @@
 #include <algorithm>
 #include <fstream>
 #include <stdexcept>
+#include <functional>
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModflowDocument, ModflowDocument::BaseClass );
 
@@ -566,7 +567,8 @@ void ModflowDocument::layers ( Layers &layers )
 
   // Tell all layers they belong to this document.
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
-  std::for_each ( _layers.begin(), _layers.end(), std::bind2nd ( std::mem_fun1 ( &Layer::document ), me.get() ) );
+  for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
+    (*iter)->document ( me.get () );
 }
 
 

@@ -18,7 +18,7 @@
 #include "Constants.h"
 
 #include "Usul/Bits/Bits.h"
-#include "Usul/Functions/GUID.h"
+#include "Usul/Functions/Guid.h"
 #include "Usul/Interfaces/IDirtyState.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Trace/Trace.h"
@@ -301,7 +301,7 @@ osg::Node *Layer::_buildCubes ( Unknown *caller ) const
   geom->addPrimitiveSet ( new osg::DrawArrays ( osg::DrawArrays::QUADS, 0, vertices->size() ) );
   geode->addDrawable ( geom.get() );
 
-#if 0 // Transparency
+#if 1 // Transparency
 
   osg::ref_ptr < osg::Material > mat ( new osg::Material );
   osg::Vec4f color ( 51.0f / 255.0f, 204.0f / 255.0f, 204.0f / 255.0f, 1.0f );
@@ -394,7 +394,7 @@ void Layer::vector ( const std::string &name, unsigned int timeStep, const Data 
       {
         // Get vector and resize (not reserve).
         Cell::Vector &v ( cell->vector ( name ) );
-        v.resize ( Usul::Math::maximum ( v.size(), timeStep + 1 ) );
+        v.resize ( Usul::Math::maximum ( static_cast < unsigned int > ( v.size () ), timeStep + 1 ) );
 
         // Write value to cell's vector.
         const double value ( heads.at ( index ) );

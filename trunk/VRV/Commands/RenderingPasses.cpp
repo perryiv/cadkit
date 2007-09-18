@@ -13,7 +13,6 @@
 
 using namespace VRV::Commands;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( RenderingPasses, RenderingPasses::BaseClass );
 USUL_IMPLEMENT_COMMAND ( RenderingPasses );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -53,24 +52,6 @@ void RenderingPasses::_execute ()
 
   if ( rp.valid () )
     rp->renderingPasses ( _passes );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Query for interface.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown* RenderingPasses::queryInterface ( unsigned long iid )
-{
-  switch ( iid )
-  {
-  case Usul::Interfaces::IUpdateCheck::IID:
-    return static_cast < Usul::Interfaces::IUpdateCheck * > ( this );
-  default:
-    return BaseClass::queryInterface ( iid );
-  }
 }
 
 

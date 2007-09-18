@@ -20,8 +20,7 @@
 namespace VRV {
 namespace Commands {
 
-class VRV_EXPORT PolygonMode : public Usul::Commands::Command,
-                               public Usul::Interfaces::IUpdateCheck
+class VRV_EXPORT PolygonMode : public Usul::Commands::Command
 {
 public:
   typedef Usul::Commands::Command BaseClass;
@@ -29,7 +28,6 @@ public:
   typedef IPolygonMode::Mode                        Mode;
 
   USUL_DECLARE_COMMAND ( PolygonMode );
-  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   PolygonMode ( const std::string& name, Mode mode, Usul::Interfaces::IUnknown *caller = 0x0 );
 

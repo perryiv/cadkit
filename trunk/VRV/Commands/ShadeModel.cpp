@@ -12,7 +12,6 @@
 
 using namespace VRV::Commands;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ShadeModel, ShadeModel::BaseClass );
 USUL_IMPLEMENT_COMMAND ( ShadeModel );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -52,24 +51,6 @@ void ShadeModel::_execute ()
 
   if ( sm.valid () )
     sm->shadeModel ( _mode );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Query for interface.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown* ShadeModel::queryInterface ( unsigned long iid )
-{
-  switch ( iid )
-  {
-  case Usul::Interfaces::IUpdateCheck::IID:
-    return static_cast < Usul::Interfaces::IUpdateCheck * > ( this );
-  default:
-    return BaseClass::queryInterface ( iid );
-  }
 }
 
 

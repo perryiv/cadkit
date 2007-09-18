@@ -12,7 +12,6 @@
 
 using namespace VRV::Commands;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PolygonMode, PolygonMode::BaseClass );
 USUL_IMPLEMENT_COMMAND ( PolygonMode );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -52,24 +51,6 @@ void PolygonMode::_execute ()
 
   if ( pm.valid () )
     pm->polygonMode ( _mode );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Query for interface.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown* PolygonMode::queryInterface ( unsigned long iid )
-{
-  switch ( iid )
-  {
-  case Usul::Interfaces::IUpdateCheck::IID:
-    return static_cast < Usul::Interfaces::IUpdateCheck * > ( this );
-  default:
-    return BaseClass::queryInterface ( iid );
-  }
 }
 
 

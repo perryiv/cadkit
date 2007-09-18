@@ -17,6 +17,13 @@
 #include "VRV/Common/Constants.h"
 #include "VRV/Jobs/SaveImage.h"
 #include "VRV/Core/FunctorHelpers.h"
+#include "VRV/Commands/Camera.h"
+#include "VRV/Commands/PolygonMode.h"
+#include "VRV/Commands/ShadeModel.h"
+#include "VRV/Commands/RenderingPasses.h"
+#include "VRV/Commands/Navigator.h"
+#include "VRV/Commands/BackgroundColor.h"
+
 
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
@@ -33,6 +40,7 @@
 #include "Usul/System/Clock.h"
 #include "Usul/Math/Constants.h"
 #include "Usul/Print/Matrix.h"
+#include "Usul/Interfaces/ICommandList.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/XercesLife.h"
@@ -102,7 +110,6 @@ Application::Application() :
   _navigator         ( 0x0 ),
   _refCount          ( 0 ),
   _menuSceneShowHide ( true ),
-  _path              ( new VRV::Animate::Path ),
   _menu              ( new Menu ),
   _statusBar         ( new Menu ),
   _functorFilename   ( Usul::App::Application::instance ().configFile ( "functors" ) ),
@@ -112,7 +119,10 @@ Application::Application() :
   _favoriteFunctors  (),
   _translationSpeed  ( 1.0f ),
   _home              ( osg::Matrixf::identity() ),
-  _timeBased         ( true )
+  _timeBased         ( true ),
+  _paths             (),
+  _currentPath       ( 0x0 ),
+  _colorMap          ()
 {
   USUL_TRACE_SCOPE;
 
@@ -128,6 +138,17 @@ Application::Application() :
 
   // Add our self to the list of active document listeners.
   Usul::Documents::Manager::instance().addActiveDocumentListener ( this );
+
+  // populate the color map.  TODO: Read from config file.
+  _colorMap["Red"]    = Usul::Math::Vec4f ( 1.0,0.0,0.0,1.0 );
+  _colorMap["Yellow"] = Usul::Math::Vec4f ( 1.0,1.0,0.0,1.0 );
+  _colorMap["Green"]  = Usul::Math::Vec4f ( 0.0,1.0,0.0,1.0 );
+  _colorMap["Teal"]   = Usul::Math::Vec4f ( 0.0,1.0,1.0,1.0 );
+  _colorMap["Blue"]   = Usul::Math::Vec4f ( 0.0,0.0,1.0,1.0 );
+  _colorMap["White"]  = Usul::Math::Vec4f ( 1.0,1.0,1.0,1.0 );
+  _colorMap["Grey"]   = Usul::Math::Vec4f ( 0.5,0.5,0.5,1.0 );
+  _colorMap["Black"]  = Usul::Math::Vec4f ( 0.0,0.0,0.0,1.0 );
+  _colorMap["Sky Blue"] = Usul::Math::Vec4f ( 0.592156, 0.713725, 1.0, 1.0 );
 }
 
 
@@ -292,9 +313,16 @@ void Application::run()
 {
   USUL_TRACE_SCOPE;
 
+  // Get the kernel.
   vrj::Kernel* kernel ( vrj::Kernel::instance() );
-  kernel->setApplication( this );
+
+  // Tell the kernel that we are the app.
+  kernel->setApplication ( this );
+
+  // Start the kernel.
   kernel->start();
+
+  // Wait for events.
   kernel->waitForKernelStop();
 }
 
@@ -352,7 +380,7 @@ void Application::contextInit()
   renderer->viewer()->setLightingMode ( osgUtil::SceneView::NO_SCENEVIEW_LIGHT );
 
   // Turn off computing of the near and far plane.
-  renderer->viewer()->setComputeNearFarMode ( osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR );
+  //renderer->viewer()->setComputeNearFarMode ( osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR );
 
   // Needed for stereo to work.
   renderer->viewer()->setDrawBufferValue( GL_NONE );
@@ -855,7 +883,8 @@ void Application::latePreFrame()
   _navBranch->setMatrix ( _sharedMatrix->matrix () );
 
   // Animate if we are suppose to.
-  _path->animate ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  if ( _currentPath.valid () )
+    _currentPath->animate ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 
   // Notify that it's ok to update.
   this->_updateNotify();
@@ -2114,6 +2143,8 @@ void Application::_navigate()
   // Tell the navigator to execute.
   if ( _navigator.valid() )
     (*_navigator)();
+
+  this->appendCamera ();
 }
 
 
@@ -2192,6 +2223,48 @@ const osg::Matrixd& Application::getViewMatrix (  ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the current path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VRV::Animate::Path* Application::currentPath ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _currentPath.get ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the current path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const VRV::Animate::Path* Application::currentPath () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _currentPath.get ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the current path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::currentPath ( Path * path )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _currentPath = path;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Append current camera.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2199,7 +2272,9 @@ const osg::Matrixd& Application::getViewMatrix (  ) const
 void Application::appendCamera ()
 {
   USUL_TRACE_SCOPE;
-  _path->append ( new VRV::Animate::Frame ( this->getViewMatrix () ) );
+  Path::RefPtr path ( this->currentPath () );
+  if ( path.valid () )
+    path->append ( new VRV::Animate::Frame ( this->getViewMatrix () ) );
 }
 
 
@@ -2212,7 +2287,10 @@ void Application::appendCamera ()
 void Application::startAnimation ()
 {
   USUL_TRACE_SCOPE;
-  _path->start ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+
+  Path::RefPtr path ( this->currentPath () );
+  if ( path.valid () )
+    path->start ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 }
 
 
@@ -2225,7 +2303,10 @@ void Application::startAnimation ()
 void Application::clearAnimation ()
 {
   USUL_TRACE_SCOPE;
-  _path->clear ();
+
+  Path::RefPtr path ( this->currentPath () );
+  if ( path.valid () )
+    path->clear ();
 }
 
 
@@ -2238,7 +2319,10 @@ void Application::clearAnimation ()
 void Application::animationSteps ( unsigned int steps )
 {
   USUL_TRACE_SCOPE;
-  _path->steps ( steps );
+  
+  Path::RefPtr path ( this->currentPath () );
+  if ( path.valid () )
+    path->steps ( steps );
 }
 
 
@@ -2251,7 +2335,94 @@ void Application::animationSteps ( unsigned int steps )
 unsigned int Application::animationSteps ( ) const
 {
   USUL_TRACE_SCOPE;
-  return _path->steps ( );
+  Guard guard ( this->mutex () );
+  if ( _currentPath.valid () )
+    return _currentPath->steps ( );
+
+  return 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create new key frame path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::createKeyFramePath ()
+{
+  USUL_TRACE_SCOPE;
+
+  Path::RefPtr path ( new VRV::Animate::KeyFramePath );
+
+  {
+    Guard guard ( this->mutex () );
+    _paths.push_back ( path.get () );
+  }
+
+  // Make the new path current.
+  this->currentPath ( path.get() );
+
+  // Rebuild the menu.
+  this->_initMenu ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create new recored path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void  Application::createRecordedPath ()
+{
+  USUL_TRACE_SCOPE;
+
+  Path::RefPtr path ( new VRV::Animate::RecordedPath );
+
+  {
+    Guard guard ( this->mutex () );
+    _paths.push_back ( path.get () );
+  }
+
+  // Make the new path current.
+  this->currentPath ( path.get() );
+
+  // Rebuild the menu.
+  this->_initMenu ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set flag to record path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::recordPath ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  
+  Path::RefPtr path ( this->currentPath () );
+  if ( path.valid () )
+    path->acceptNewFrames ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get flag to record path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::recordPath ( ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  if ( _currentPath.valid () )
+    return _currentPath->acceptNewFrames ( );
+
+  return false;
 }
 
 
@@ -2575,7 +2746,7 @@ void Application::_readFunctorFile ()
 
   // Set the navigator.  Will be null if there isn't a favorite with this name.
   if ( false == name.empty () )
-    this->navigator ( this->favorite ( name ) );
+    this->navigator ( _favoriteFunctors [ name ] );
 }
 
 
@@ -2646,20 +2817,6 @@ Application::FavoriteIterator Application::favoritesEnd ()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
   return _favoriteFunctors.end();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the favorite.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Application::Navigator* Application::favorite ( const std::string& name )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex () );
-  return _favoriteFunctors [ name ];
 }
 
 
@@ -2935,3 +3092,757 @@ bool Application::timeBased (  ) const
   Guard guard ( this->mutex () );
   return _timeBased;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initMenu()
+{
+  USUL_TRACE_SCOPE;
+  typedef VRV::Prefs::Settings::Color Color;
+
+  osg::Vec4 bgNormal,   bgHighlight,   bgDisabled;
+  osg::Vec4 textNormal, textHighlight, textDisabled;
+  
+  // Set menu's background and text colors from preferences.xml stored in VRV::Prefs::Settings
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuBgColorNorm(),   bgNormal,      4 );
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuBgColorHLght(),  bgHighlight,   4 );
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuBgColorDsabl(),  bgDisabled,    4 );
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuTxtColorNorm(),  textNormal,    4 );
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuTxtColorHLght(), textHighlight, 4 );
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuTxtColorDsabl(), textDisabled,  4 );
+
+  MenuPtr osgMenu ( new Menu );
+
+  osgMenu->skin()->bg_color_normal      ( bgNormal );
+  osgMenu->skin()->bg_color_highlight   ( bgHighlight );
+  osgMenu->skin()->bg_color_disabled    ( bgDisabled );
+  osgMenu->skin()->text_color_normal    ( textNormal );
+  osgMenu->skin()->text_color_highlight ( textHighlight );
+  osgMenu->skin()->text_color_disabled  ( textDisabled );
+
+  // Set the menu scene.
+  osg::Matrixf mm;
+  OsgTools::Convert::matrix ( this->preferences()->menuMatrix(), mm );
+  osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+  
+  mt->setMatrix ( mm );
+
+  // Make sure that we don't need this on linux before removing it.
+//#ifndef _MSC_VER
+  mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+//#endif
+
+  mt->setName ( "MenuBranch" );
+
+  // This needs to be here or it will show on every node.
+  if ( true == this->_isHeadNode() )
+  {
+    osgMenu->scene ( mt.get() );
+  }
+
+  // Get the state set.
+  osg::ref_ptr < osg::StateSet > ss ( mt->getOrCreateStateSet() );
+
+  // take lighting off of the menu
+  ss->setMode( GL_LIGHTING , osg::StateAttribute::OFF );
+
+  this->projectionGroupRemove ( "VRV_MENU" );
+  osg::ref_ptr < osg::Group > group ( this->projectionGroupGet ( "VRV_MENU" ) );
+  group->addChild ( mt.get( ) );
+
+  // Make the menu.
+  MenuKit::Menu::RefPtr menu ( new MenuKit::Menu );
+  menu->layout ( MenuKit::Menu::HORIZONTAL );
+
+  // The file menu.
+  {
+    MenuKit::Menu::RefPtr file ( new MenuKit::Menu );
+    file->layout ( MenuKit::Menu::VERTICAL );
+    file->text ( "File" );
+    this->_initFileMenu ( file.get() );
+    menu->append ( file.get() );
+  }
+
+  // The edit menu.
+  /*{
+    MenuKit::Menu::Ptr edit ( new MenuKit::Menu );
+    edit->layout ( MenuKit::Menu::VERTICAL );
+    edit->text ( "Edit" );
+    this->_initEditMenu ( edit.get() );
+    menu->append ( edit.get() );
+  }*/
+
+  // The view menu.
+  {
+    MenuKit::Menu::RefPtr view ( new MenuKit::Menu );
+    view->layout ( MenuKit::Menu::VERTICAL );
+    view->text ( "View" );
+    this->_initViewMenu ( view.get() );
+    menu->append ( view.get() );
+  }
+
+  // The navigate menu.
+  {
+    MenuKit::Menu::RefPtr navigate ( new MenuKit::Menu );
+    navigate->layout ( MenuKit::Menu::VERTICAL );
+    navigate->text ( "Navigate" );
+    this->_initNavigateMenu ( navigate.get() );
+    menu->append ( navigate.get() );
+  }
+
+  // The options menu.
+  {
+    MenuKit::Menu::RefPtr options ( new MenuKit::Menu );
+    options->layout ( MenuKit::Menu::VERTICAL );
+    options->text ( "Options" );
+    this->_initOptionsMenu ( options.get() );
+    menu->append ( options.get() );
+  }
+
+  // The animate menu.
+  {
+    MenuKit::Menu::RefPtr animate ( new MenuKit::Menu );
+    animate->layout ( MenuKit::Menu::VERTICAL );
+    animate->text ( "Animate" );
+    this->_initAnimateMenu ( animate.get() );
+    menu->append ( animate.get() );
+  }
+
+  // The tools menu.
+  {
+    this->_initToolsMenu ( menu.get() );
+  }
+
+  // Set the menu.
+  osgMenu->menu ( menu.get() );
+
+  // Swap the menu.
+  this->menu ( osgMenu.get () );
+
+  // Default settings, so that the menu has the correct toggle's checked.
+  OsgTools::State::StateSet::setPolygonsFilled ( this->models(), false );
+  OsgTools::State::StateSet::setPolygonsSmooth ( this->models() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the file menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initFileMenu     ( MenuKit::Menu* menu )
+{
+  USUL_TRACE_SCOPE;
+  // The export sub-menu.
+  {
+    MenuKit::Menu::RefPtr exportMenu ( new MenuKit::Menu );
+    exportMenu->layout ( MenuKit::Menu::VERTICAL );
+    exportMenu->text ( "Export" );
+    menu->append ( exportMenu.get() );
+
+    exportMenu->append ( this->_createButton ( new BasicCommand ( "Image", ExecuteFunctor ( this, &Application::exportNextFrame ) ) ) );
+    exportMenu->append ( this->_createButton ( new BasicCommand ( "Models ASCII", ExecuteFunctor ( this, &Application::exportWorld ) ) ) );
+    exportMenu->append ( this->_createButton ( new BasicCommand ( "Models Binary", ExecuteFunctor ( this, &Application::exportWorldBinary ) ) ) );
+    exportMenu->append ( this->_createButton ( new BasicCommand ( "Scene ASCII", ExecuteFunctor ( this, &Application::exportScene ) ) ) );
+    exportMenu->append ( this->_createButton ( new BasicCommand ( "Scene Binary", ExecuteFunctor ( this, &Application::exportSceneBinary ) ) ) );
+  }
+
+  menu->append ( this->_createSeperator () );
+  menu->append ( this->_createButton ( new BasicCommand ( "Exit", ExecuteFunctor ( this, &Application::quit ) ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the edit menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initEditMenu     ( MenuKit::Menu* menu )
+{
+  USUL_TRACE_SCOPE;
+  /*CV_REGISTER ( _hideSelected,     "hide_selected" );
+  CV_REGISTER ( _showAll,          "show_all" );
+  CV_REGISTER ( _unselectVisible,  "unselect_visible" );
+
+  
+  CV_REGISTER ( _vScaleWorld,      "vertical_scale_world" );
+  CV_REGISTER ( _vScaleSelected,   "vertical_scale_selected" );
+  CV_REGISTER ( _wMoveSelLocal,    "move_selected_local_wand" );
+  CV_REGISTER ( _wMoveTopLocal,    "move_world_local_wand" );
+  CV_REGISTER ( _raySelector,      "ray_selection" );*/
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the view menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initViewMenu ( MenuKit::Menu* menu )
+{
+  USUL_TRACE_SCOPE;
+  menu->append ( this->_createToggle ( new CheckCommand ( "Frame Dump", BoolFunctor ( this, &Application::frameDump ), CheckFunctor ( this, &Application::frameDump ) ) ) );
+  menu->append ( this->_createButton ( new BasicCommand ( "Reset Clipping", ExecuteFunctor ( this, &Application::_setNearAndFarClippingPlanes ) ) ) );
+  menu->append ( this->_createButton ( new BasicCommand ( "Set Home", ExecuteFunctor ( this, &Application::_setHome ) ) ) );
+  menu->append ( this->_createButton ( new BasicCommand ( "View All", ExecuteFunctor ( this, &Application::viewScene ) ) ) );
+  menu->append ( this->_createToggle ( new CheckCommand ( "Compute Near Far", BoolFunctor ( this, &Application::computeNearFar ), CheckFunctor ( this, &Application::computeNearFar ) ) ) );
+  menu->append ( this->_createSeperator () );
+
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+
+  // Rendering passes menu.
+  {
+    MenuKit::Menu::RefPtr passes ( new MenuKit::Menu );
+    passes->layout ( MenuKit::Menu::VERTICAL );
+    passes->text ( "Rendering Passes" );
+    menu->append ( passes.get() );
+
+    typedef VRV::Commands::RenderingPasses RenderingPasses;
+
+    passes->append ( this->_createRadio ( new RenderingPasses ( "1", 1, me.get () ) ) );
+    passes->append ( this->_createRadio ( new RenderingPasses ( "3", 3, me.get () ) ) );
+    passes->append ( this->_createRadio ( new RenderingPasses ( "9", 9, me.get () ) ) );
+    passes->append ( this->_createRadio ( new RenderingPasses ( "12", 12, me.get () ) ) );
+  }
+
+  // Goto menu.
+  {
+    MenuKit::Menu::RefPtr gotoMenu ( new MenuKit::Menu );
+    gotoMenu->layout ( MenuKit::Menu::VERTICAL );
+    gotoMenu->text ( "Goto" );
+    menu->append ( gotoMenu.get() );
+
+    typedef VRV::Commands::Camera Camera;
+  
+    gotoMenu->append ( this->_createButton ( new Camera ( "Home",   ICamera::RESET,  me ) ) );
+    gotoMenu->append ( this->_createButton ( new Camera ( "Front",  ICamera::FRONT,  me ) ) );
+    gotoMenu->append ( this->_createButton ( new Camera ( "Back",   ICamera::BACK ,  me ) ) );
+    gotoMenu->append ( this->_createButton ( new Camera ( "Top",    ICamera::TOP,    me ) ) );
+    gotoMenu->append ( this->_createButton ( new Camera ( "Bottom", ICamera::BOTTOM, me ) ) );
+    gotoMenu->append ( this->_createButton ( new Camera ( "Left",   ICamera::LEFT,   me ) ) );
+    gotoMenu->append ( this->_createButton ( new Camera ( "Right",  ICamera::RIGHT,  me ) ) );
+  }
+
+  // Polygons menu.
+  {
+    MenuKit::Menu::RefPtr polygons ( new MenuKit::Menu );
+    polygons->layout ( MenuKit::Menu::VERTICAL );
+    polygons->text ( "Polygons" );
+    menu->append ( polygons.get() );
+
+    typedef VRV::Commands::PolygonMode PolygonMode;
+
+    polygons->append ( this->_createRadio ( new PolygonMode ( "Filled",    IPolygonMode::FILLED, me.get() ) ) );
+    polygons->append ( this->_createRadio ( new PolygonMode ( "Wireframe", IPolygonMode::WIRE_FRAME, me.get() ) ) );
+    polygons->append ( this->_createRadio ( new PolygonMode ( "Points",    IPolygonMode::POINTS, me.get() ) ) );
+  }
+
+  // Shading menu.
+  {
+    MenuKit::Menu::RefPtr shading ( new MenuKit::Menu );
+    shading->layout ( MenuKit::Menu::VERTICAL );
+    shading->text ( "Shading" );
+    menu->append ( shading.get() );
+
+    typedef VRV::Commands::ShadeModel ShadeModel;
+
+    shading->append ( this->_createRadio ( new ShadeModel ( "Smooth", IShadeModel::SMOOTH, me.get() ) ) );
+    shading->append ( this->_createRadio ( new ShadeModel ( "Flat",   IShadeModel::FLAT, me.get() ) ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the navigate menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initNavigateMenu ( MenuKit::Menu* menu )
+{
+  USUL_TRACE_SCOPE;
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+  // Favorites menu
+  {
+    MenuKit::Menu::RefPtr favorites ( new MenuKit::Menu );
+    favorites->layout ( MenuKit::Menu::VERTICAL );
+    favorites->text ( "Favorites" );
+    menu->append ( favorites.get() );
+
+    typedef VRV::Commands::Navigator Navigator;
+    for ( FavoriteIterator iter = this->favoritesBegin(); iter != this->favoritesEnd (); ++iter )
+      favorites->append ( this->_createRadio ( new Navigator ( iter->second, me ) ) );
+  }
+
+  menu->append ( this->_createSeperator () );
+  
+  menu->append ( this->_createToggle ( new CheckCommand ( "Time Based", BoolFunctor ( this, &Application::timeBased ), CheckFunctor ( this, &Application::timeBased ) ) ) );
+
+  menu->append ( this->_createButton ( new BasicCommand ( "Translate Speed x 10", ExecuteFunctor ( this, &Application::_increaseSpeedTen ) ) ) );
+  menu->append ( this->_createButton ( new BasicCommand ( "Translate Speed x 2", ExecuteFunctor ( this, &Application::_increaseSpeed ) ) ) );
+  menu->append ( this->_createButton ( new BasicCommand ( "Translate Speed / 2", ExecuteFunctor ( this, &Application::_decreaseSpeed ) ) ) );
+  menu->append ( this->_createButton ( new BasicCommand ( "Translate Speed / 10", ExecuteFunctor ( this, &Application::_decreaseSpeedTen ) ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the Tools menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initToolsMenu ( MenuKit::Menu* menu )
+{
+  USUL_TRACE_SCOPE;
+  typedef Usul::Interfaces::ICommandList::CommandList Commands;
+  Usul::Interfaces::ICommandList::QueryPtr commandList ( Usul::Documents::Manager::instance().active() );
+
+  if ( commandList.valid() )
+  {
+    MenuKit::Menu::RefPtr tools ( new MenuKit::Menu );
+    tools->layout ( MenuKit::Menu::VERTICAL );
+    tools->text ( "Tools" );
+    menu->append ( tools.get() );
+
+    Commands commands ( commandList->getCommandList() );
+    for ( Commands::iterator iter = commands.begin(); iter != commands.end(); ++iter )
+    {
+      tools->append ( this->_createButton ( (*iter).get() ) );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the options menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
+{
+  USUL_TRACE_SCOPE;
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+
+  // Create a sub-menu for background color
+  MenuKit::Menu::RefPtr background ( new MenuKit::Menu );
+  background->layout ( MenuKit::Menu::VERTICAL );
+  background->text ( "Background Color" );
+  menu->append ( background.get() );
+
+  // Add a button for each of our colors.
+  typedef VRV::Commands::BackgroundColor BackgroundColor;
+  for ( ColorMap::const_iterator iter = _colorMap.begin(); iter != _colorMap.end(); ++iter )
+    background->append ( this->_createButton ( new BackgroundColor ( iter->first, iter->second, me ) ) );
+
+  menu->append ( this->_createButton ( new BasicCommand ( "Calibrate Joystick", ExecuteFunctor ( this, &Application::analogTrim ) ) ) );
+  menu->append ( this->_createToggle ( new CheckCommand ( "Hide Scene", BoolFunctor ( this, &Application::menuSceneShowHide ), CheckFunctor ( this, &Application::menuSceneShowHide ) ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the animate menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initAnimateMenu  ( MenuKit::Menu* menu )
+{
+  USUL_TRACE_SCOPE;
+  menu->append ( this->_createButton ( new BasicCommand ( "Append", ExecuteFunctor ( this, &Application::appendCamera ) ) ) );
+  menu->append ( this->_createButton ( new BasicCommand ( "Animate", ExecuteFunctor ( this, &Application::startAnimation ) ) ) );
+
+  menu->append ( this->_createSeperator () );
+  menu->append ( this->_createToggle ( new CheckCommand ( "Record",  BoolFunctor ( this, &Application::recordPath ), CheckFunctor ( this, &Application::recordPath ) ) ) );
+  menu->append ( this->_createSeperator () );
+  {
+    MenuKit::Menu::RefPtr steps ( new MenuKit::Menu );
+    steps->layout ( MenuKit::Menu::VERTICAL );
+    steps->text ( "Steps" );
+    menu->append ( steps.get() );
+
+    steps->append ( this->_createRadio ( new CheckCommand ( "20",  BoolFunctor ( this, &Application::_animationSteps20 ), CheckFunctor ( this, &Application::_animationSteps20 ) ) ) );
+    steps->append ( this->_createRadio ( new CheckCommand ( "50",  BoolFunctor ( this, &Application::_animationSteps50 ), CheckFunctor ( this, &Application::_animationSteps50 ) ) ) );
+    steps->append ( this->_createRadio ( new CheckCommand ( "100", BoolFunctor ( this, &Application::_animationSteps100 ), CheckFunctor ( this, &Application::_animationSteps100 ) ) ) );
+
+    steps->append ( this->_createSeperator () );
+    menu->append ( this->_createButton ( new BasicCommand ( "Steps x 2", ExecuteFunctor ( this, &Application::_animationStepsDouble ) ) ) );
+    menu->append ( this->_createButton ( new BasicCommand ( "Steps / 2", ExecuteFunctor ( this, &Application::_animationStepsHalf ) ) ) );
+  }
+
+  menu->append ( this->_createSeperator () );
+  menu->append ( this->_createButton ( new BasicCommand ( "New Key Frame Path", ExecuteFunctor ( this, &Application::createKeyFramePath ) ) ) );
+  menu->append ( this->_createButton ( new BasicCommand ( "New Recorded Path", ExecuteFunctor ( this, &Application::createRecordedPath ) ) ) );
+
+  menu->append ( this->_createSeperator () );
+
+  menu->append ( this->_createButton ( new BasicCommand ( "Clear", ExecuteFunctor ( this, &Application::clearAnimation ) ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export the current world's geometry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::exportWorld ( )
+{
+  USUL_TRACE_SCOPE;
+  static unsigned int count ( 0 );
+  std::string number ( this->_counter ( ++count ) );
+  std::string filename ( "cv_world_" + number + ".osg" );
+  this->_writeScene ( filename, this->models() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export the current world's geometry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::exportWorldBinary ( )
+{
+  USUL_TRACE_SCOPE;
+  static unsigned int count ( 0 );
+  std::string number ( this->_counter ( ++count ) );
+  std::string filename ( "cv_world_" + number + ".ive" );
+  this->_writeScene ( filename, this->models() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export the current world's entire scene geometry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::exportScene ()
+{
+  static unsigned int count ( 0 );
+  std::string number ( this->_counter ( ++count ) );
+  std::string filename ( "cv_scene_" + number + ".osg" );
+  this->_writeScene ( filename, this->_sceneRoot() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export the current world's entire scene geometry as binary osg.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::exportSceneBinary ( )
+{
+  USUL_TRACE_SCOPE;
+  static unsigned int count ( 0 );
+  std::string number ( this->_counter ( ++count ) );
+  std::string filename ( "cv_scene_" + number + ".ive" );
+  this->_writeScene ( filename, this->_sceneRoot() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Move the camera such that the whole world is visible.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::viewWorld ( )
+{
+  USUL_TRACE_SCOPE;
+
+  // Save current model-matrix.
+  osg::Matrix original ( this->models()->getMatrix() );
+
+  // Perform the "view all" on the model's branch.
+  this->viewAll ( this->models(), this->preferences()->viewAllScaleZ() );
+
+  // Move the navigation branch.
+  this->_navigationMatrix ( this->models()->getMatrix() );
+
+  // Restore the model's matrix.
+  this->models()->setMatrix ( original );
+
+  // make sure the scene is visible
+  this->_setNearAndFarClippingPlanes();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Move the camera such that the whole world is visible.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::viewScene ( )
+{
+  USUL_TRACE_SCOPE;
+  this->viewAll ( this->navigationScene(), this->preferences()->viewAllScaleZ() );
+  this->_setNearAndFarClippingPlanes();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the status-bar visibility.
+//
+///////////////////////////////////////////////////////////////////////////////
+#if 0
+void Application::_statusBarVis ( MenuKit::Message m, MenuKit::Item *item )
+{
+  ErrorChecker ( 1552310702u, isAppThread(), CV::NOT_APP_THREAD );
+
+  MenuPtr status ( this->statusBar() );
+
+  // Process the message.
+  switch ( m )
+  {
+    case MenuKit::MESSAGE_UPDATE:
+      item->checked ( status->menu()->expanded() );
+      break;
+
+    case MenuKit::MESSAGE_SELECTED:
+      status->menu()->expanded ( !status->menu()->expanded() );
+      status->updateScene();
+      break;
+  }
+}
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Increase speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_increaseSpeed ( )
+{
+  this->_increaseTranslateSpeed ( 2.0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Decrease speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_decreaseSpeed ( )
+{
+  this->_decreaseTranslateSpeed ( 2.0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Increase speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_increaseSpeedTen  ( )
+{
+  this->_increaseTranslateSpeed ( 10.0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Decrease speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_decreaseSpeedTen ( )
+{
+  this->_decreaseTranslateSpeed ( 10.0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of animation steps to 20.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animationSteps20 ( bool )
+{
+  this->animationSteps ( 20 );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the number of animation steps 20?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_animationSteps20 ( ) const
+{
+  return 20 == this->animationSteps ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of animation steps to 50.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animationSteps50 ( bool )
+{
+  this->animationSteps ( 50 );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the number of animation steps 50?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_animationSteps50 ( ) const
+{
+  return 50 == this->animationSteps ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of animation steps to 100.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animationSteps100 ( bool )
+{
+  this->animationSteps ( 100 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the number of animation steps 100?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_animationSteps100 ( ) const
+{
+  return 100 == this->animationSteps ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Double the number of animation steps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animationStepsDouble ( )
+{
+  this->animationSteps ( this->animationSteps () * 2 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Half the number of animation steps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animationStepsHalf ( )
+{
+  this->animationSteps ( this->animationSteps () / 2 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the scene to file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_writeScene ( const std::string &filename, const osg::Node *node ) const
+{
+  if ( 0x0 == node )
+    return;
+
+  // If the machine name is the same as the writer...
+  const std::string host    ( Usul::System::Host::name() );
+  const std::string &writer ( this->preferences()->fileWriterMachineName() );
+
+  if ( writer.empty () )
+    return;
+
+  // Write the file iff the machine name is the same as the writer-name.
+  if ( host == writer )
+  {
+    if ( false == osgDB::writeNodeFile ( *node, filename ) )
+    {
+      Usul::Exceptions::Thrower<std::runtime_error>
+        ( "Error 1421787869, failed to write file.",
+        "\n\tFile Name: ", filename,
+        "\n\tNode Name: ", node->getName(),
+        "\n\tAddress:   ", node );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Generate a string from the integer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Application::_counter ( unsigned int num ) const
+{
+  const unsigned int size ( 512 );
+  char buffer[size];
+  ::sprintf ( buffer, "%04d", num );
+  return std::string ( buffer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set near far mode..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::computeNearFar ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  osg::CullSettings::ComputeNearFarMode mode ( b ? osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES : osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
+  for( Renderers::iterator iter = _renderers.begin(); iter != _renderers.end(); ++iter )
+  {
+    (*iter)->viewer()->setComputeNearFarMode ( mode );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get near far mode..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::computeNearFar () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  if ( false == _renderers.empty () )
+    return osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES ==_renderers.front()->viewer()->getComputeNearFarMode ();
+  
+  return false;
+}
+

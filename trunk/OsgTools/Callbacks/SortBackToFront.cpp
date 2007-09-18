@@ -100,17 +100,31 @@ namespace Detail
       _index1 ( i1 ),
       _index2 ( i2 ),
       _index3 ( i3 ),
-      _vertices ( vertices )
+      _vertices ( vertices ),
+      _center ()
+    {
+      _center = _vertices->at( _index0 ) + _vertices->at( _index1 ) + _vertices->at( _index2 ) + _vertices->at ( _index3 );
+      _center /= 4;
+    }
+
+    Quad ( const Quad &rhs ) :
+      _index0 ( rhs._index0 ),
+      _index1 ( rhs._index1 ),
+      _index2 ( rhs._index2 ),
+      _index3 ( rhs._index3 ),
+      _vertices ( rhs._vertices ),
+      _center ( rhs._center )
     {
     }
 
-    bool operator< ( const Quad &t ) const
+
+    /* bool operator< ( const Quad &t ) const
     {
       const osg::Vec3& v1 ( _vertices->at( _index0 ) );
       const osg::Vec3& v2 ( _vertices->at( t._index0 ) );
 
       return v1[2] < v2[2];
-    }
+      }*/
 
     Quad& operator= ( const Quad &rhs )
     {
@@ -119,13 +133,14 @@ namespace Detail
       this->_index2 = rhs._index2;
       this->_index3 = rhs._index3;
       this->_vertices = rhs._vertices;
+      this->_center = rhs._center;
 
       return *this;
     }
 
     double length2 ( const osg::Vec3& eye ) const
     {
-      return (eye - _vertices->at( _index0 ) ).length2();
+      return (eye - _center ).length2();
     }
 
     unsigned int index0 () const { return _index0; }
@@ -138,6 +153,7 @@ namespace Detail
     unsigned int _index1;
     unsigned int _index2;
     unsigned int _index3;
+    osg::Vec3 _center;
 
     osg::ref_ptr < const osg::Vec3Array > _vertices;
   };

@@ -54,15 +54,15 @@ Blocks::Blocks ( const osg::BoundingBox &box, unsigned int times, unsigned int r
 
   osg::ref_ptr< osg::StateSet > ss ( _geode->getOrCreateStateSet() );
 
-  //osg::Vec4 diffuse ( 20.0 / 255.0f, 100.0f / 255.0f, 140.0f / 255.0f, 1.0f );
-  osg::Vec4 diffuse ( 255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, 1.0f );
-  osg::Vec4 ambient ( diffuse );
+  osg::Vec4 frontDiffuse ( 20.0 / 255.0f, 100.0f / 255.0f, 140.0f / 255.0f, 1.0f );
+  osg::Vec4 backDiffuse ( 255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, 1.0f );
+  //osg::Vec4 ambient ( diffuse );
 
-  _material->setAmbient ( osg::Material::BACK,  ambient );
-  _material->setAmbient ( osg::Material::FRONT, ambient );
+  _material->setAmbient ( osg::Material::BACK,  backDiffuse );
+  _material->setAmbient ( osg::Material::FRONT, frontDiffuse );
 
-  _material->setDiffuse ( osg::Material::BACK,  diffuse );
-  _material->setDiffuse ( osg::Material::FRONT, diffuse );
+  _material->setDiffuse ( osg::Material::BACK,  backDiffuse );
+  _material->setDiffuse ( osg::Material::FRONT, frontDiffuse );
 
   //ss->setAttribute ( _material.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
 }

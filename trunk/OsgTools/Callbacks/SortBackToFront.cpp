@@ -316,6 +316,7 @@ namespace Detail
           {
             normals.at ( current / 3 )     = ncopy->at ( i->index0() / 3 );
           }
+
         }
       }
       break;

@@ -2364,7 +2364,7 @@ void Application::createKeyFramePath ()
   this->currentPath ( path.get() );
 
   // Rebuild the menu.
-  this->_initMenu ();
+  //this->_initMenu ();
 }
 
 
@@ -2389,7 +2389,7 @@ void  Application::createRecordedPath ()
   this->currentPath ( path.get() );
 
   // Rebuild the menu.
-  this->_initMenu ();
+  //this->_initMenu ();
 }
 
 

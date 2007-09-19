@@ -762,7 +762,7 @@ void Application::init()
   osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
   _progressBars->position ( Usul::Math::Vec3f ( -0.95, -0.7, -3.0 ) );
   //_progressBars->position ( Usul::Math::Vec3f ( 100, 50, 1.0 ) );
-  //group->addChild ( _progressBars->buildScene() );
+  group->addChild ( _progressBars->buildScene() );
 
   // Initialize the button group by adding the individual buttons.
   _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON0, "VJButton0" ) );
@@ -830,7 +830,8 @@ void Application::preFrame()
   // Write out the start of the frame.
   if ( _sharedReferenceTime.isLocal () )
   {
-    _sharedReferenceTime->data = static_cast < double > ( _frameStart - _initialTime );
+    _sharedReferenceTime->data = osg::Timer::instance()->delta_s(_initialTime, osg::Timer::instance()->tick());
+    //static_cast < double > ( _frameStart - _initialTime );
   }
 
   // Update these input devices.
@@ -851,7 +852,7 @@ void Application::preFrame()
   }
 
   // Update the progress bars.
-  //_progressBars->buildScene();
+  _progressBars->buildScene();
 
   // Purge the job manager.
   Usul::Jobs::Manager::instance().purge();

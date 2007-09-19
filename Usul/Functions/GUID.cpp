@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Usul/Functions/Guid.h"
+#include "Usul/Functions/GUID.h"
 
 #ifdef _MSC_VER
 # include <vector>

@@ -19,6 +19,7 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR
 
 # Set the sources to compile.
 set (SOURCES
+./Attribute.cpp
 ./BlockCenteredFlow.cpp
 ./ModflowFactory.cpp
 ./ModflowDocument.cpp

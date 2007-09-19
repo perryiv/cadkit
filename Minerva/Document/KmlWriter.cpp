@@ -14,7 +14,7 @@
 #include "Minerva/Core/DataObjects/Line.h"
 #include "Minerva/Core/DataObjects/Polygon.h"
 
-#include "Usul/Functions/Guid.h"
+#include "Usul/Functions/GUID.h"
 
 #include <fstream>
 

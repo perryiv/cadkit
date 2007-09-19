@@ -10,7 +10,7 @@
 
 #include "Minerva/Core/DB/Connection.h"
 
-#include "Usul/Functions/Guid.h"
+#include "Usul/Functions/GUID.h"
 #include "Usul/System/Host.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Threads/Thread.h"

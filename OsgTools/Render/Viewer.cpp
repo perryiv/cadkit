@@ -532,7 +532,9 @@ void Viewer::camera ( CameraOption option )
 
   // Make the adapters.
   EventAdapter::Ptr ea ( new EventAdapter );
-  ea->setWindowSize ( Usul::Math::Vec2ui ( this->width(), this->height() ) );
+  unsigned int width ( static_cast < unsigned int > ( this->width () ) );
+  unsigned int height ( static_cast < unsigned int > ( this->height () ) );
+  ea->setWindowSize ( Usul::Math::Vec2ui ( width, height ) );
   ActionAdapter aa ( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
 
   // See if we have a trackball...
@@ -1605,8 +1607,8 @@ bool Viewer::writeImageFile ( const std::string &filename ) const
   if ( 1.0f != scale )
   {
     // Calculate size.
-    const unsigned int width  ( static_cast<unsigned int> ( scale * static_cast<float> ( this->width()  ) ) );
-    const unsigned int height ( static_cast<unsigned int> ( scale * static_cast<float> ( this->height() ) ) );
+    const unsigned int width  ( static_cast<unsigned int> ( scale * this->width()  ) );
+    const unsigned int height ( static_cast<unsigned int> ( scale * this->height() ) );
 
     // Write the image to file.
     return this->_writeImageFile ( filename, width, height );
@@ -1663,8 +1665,11 @@ bool Viewer::_writeImageFile ( const std::string &filename ) const
   // Make the image
   osg::ref_ptr<osg::Image> image ( new osg::Image );
 
+  int x ( static_cast < int > ( this->x () ) );
+  int y ( static_cast < int > ( this->y () ) );
+
   // Read the screen buffer.
-  image->readPixels ( this->x(), this->y(), static_cast<int> ( this->width() ), static_cast<int> ( this->height() ), GL_RGB, GL_UNSIGNED_BYTE );
+  image->readPixels ( x, y, static_cast<int> ( this->width() ), static_cast<int> ( this->height() ), GL_RGB, GL_UNSIGNED_BYTE );
 
   // Write the image.
   return osgDB::writeImageFile ( *image, filename );
@@ -3085,7 +3090,7 @@ bool Viewer::_lineSegment ( float mouseX, float mouseY, osg::Vec3 &pt0, osg::Vec
 
   // Declare the event adapter.
   EventAdapter::Ptr ea ( new EventAdapter );
-  ea->setWindowSize ( Usul::Math::Vec2ui( this->width(), this->height() ) );
+  ea->setWindowSize ( Usul::Math::Vec2ui( static_cast < unsigned int > ( this->width() ), static_cast < unsigned int > ( this->height() ) ) );
   ea->setMouse ( Usul::Math::Vec2f( mouseX, mouseY ) );
 
   // Get the necessary coordinates.
@@ -3673,7 +3678,7 @@ void Viewer::handleNavigation ( float x, float y, bool left, bool middle, bool r
 
   // Set the event-adapter. Order is important.
   ea->setSeconds ( Usul::System::Clock::seconds() );
-  ea->setWindowSize ( Usul::Math::Vec2ui( this->width(), this->height() ) );
+  ea->setWindowSize ( Usul::Math::Vec2ui( static_cast < unsigned int > ( this->width() ), static_cast < unsigned int > ( this->height() ) ) );
   ea->setMouse ( Usul::Math::Vec2f ( x, y ) );
 
   ea->setButton ( left, middle, right );
@@ -3973,7 +3978,7 @@ void Viewer::timeoutSpin()
   // Make the adapters.
   EventAdapter::Ptr ea ( new EventAdapter );
   ActionAdapter aa ( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
-  ea->setWindowSize ( Usul::Math::Vec2ui ( this->width(), this->height() ) );
+  ea->setWindowSize ( Usul::Math::Vec2ui ( static_cast < unsigned int > ( this->width() ), static_cast < unsigned int > ( this->height() ) ) );
   ea->setEventType ( EventAdapter::FRAME );
 
   // Ask the manipulator to handle the event.
@@ -4304,8 +4309,8 @@ void Viewer::fovSet ( double fov )
 {
   Usul::Shared::Preferences::instance().setDouble( Usul::Registry::Keys::FOV, fov );
 
-  unsigned int width  ( this->width() );
-  unsigned int height ( this->height() );
+  unsigned int width  ( static_cast < unsigned int > ( this->width()  ) );
+  unsigned int height ( static_cast < unsigned int > ( this->height() ) );
   this->resize ( width, height );
 }
 

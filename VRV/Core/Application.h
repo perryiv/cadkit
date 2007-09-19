@@ -167,11 +167,11 @@ public:
   typedef void (Application::*VoidFunction) ();
   typedef void (Application::*BoolFunction) ( bool );
   typedef bool (Application::*CheckFunction) () const;
-  typedef Usul::Adaptors::MemberFunction < Application*, VoidFunction >   ExecuteFunctor;
-  typedef MenuKit::MemFunCallbackReturn < Application*, CheckFunction >   CheckFunctor;
-  typedef Usul::Adaptors::MemberFunction < Application*, BoolFunction >   BoolFunctor;
-  typedef MenuKit::BasicCommand < ExecuteFunctor >                        BasicCommand;
-  typedef MenuKit::CheckCommand < BoolFunctor, CheckFunctor >             CheckCommand;
+  typedef Usul::Adaptors::MemberFunction < void, Application*, VoidFunction > ExecuteFunctor;
+  typedef MenuKit::MemFunCallbackReturn < Application*, CheckFunction >       CheckFunctor;
+  typedef Usul::Adaptors::MemberFunction < void, Application*, BoolFunction > BoolFunctor;
+  typedef MenuKit::BasicCommand < ExecuteFunctor >                            BasicCommand;
+  typedef MenuKit::CheckCommand < BoolFunctor, CheckFunctor >                 CheckCommand;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 

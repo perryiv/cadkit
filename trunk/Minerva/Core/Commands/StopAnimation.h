@@ -33,6 +33,7 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   StopAnimation ( );
+  StopAnimation ( Usul::Interfaces::IUnknown *caller );
 
 protected:
   virtual ~StopAnimation();

@@ -29,10 +29,65 @@ namespace Adaptors {
 
 template
 <
+  class ReturnType,
   class ObjectType,
   class FunctionType
 >
 struct MemberFunction
+{
+  MemberFunction() : _o ( 0x0 ), _f ( 0x0 ){} // For gcc's stl containers.
+  MemberFunction ( ObjectType o, FunctionType f ) : _o ( o ), _f ( f ){}
+  MemberFunction ( const MemberFunction &mf ) : _o ( mf._o ), _f ( mf._f ){}
+
+  MemberFunction &operator = ( const MemberFunction &mf )
+  {
+    _o = mf._o;
+    _f = mf._f;
+    return *this;
+  }
+  
+  ReturnType operator()()
+  {
+    return ((*_o).*_f)();
+  }
+
+  template < class Arg >
+  ReturnType operator () ( const Arg &arg )
+  {
+    return ((*_o).*_f) ( arg );
+  }
+
+  template < class Arg1, class Arg2 >
+  ReturnType operator () ( const Arg1 &arg1, const Arg2 &arg2 )
+  {
+    return ((*_o).*_f) ( arg1, arg2 );
+  }
+
+  template < class Arg1, class Arg2, class Arg3 >
+  ReturnType operator () ( const Arg1 &arg1, Arg2 arg2, Arg3 arg3 )
+  {
+    return ((*_o).*_f) ( arg1, arg2, arg3 );
+  }
+
+private:
+
+  ObjectType _o;
+  FunctionType _f;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Specialization of member function adaptor that returns void.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template
+<
+  class ObjectType,
+  class FunctionType
+>
+struct MemberFunction < void, ObjectType, FunctionType >
 {
   MemberFunction() : _o ( 0x0 ), _f ( 0x0 ){} // For gcc's stl containers.
   MemberFunction ( ObjectType o, FunctionType f ) : _o ( o ), _f ( f ){}
@@ -86,10 +141,29 @@ template
   class ObjectType,
   class FunctionType
 >
-MemberFunction < ObjectType, FunctionType > 
+MemberFunction < void, ObjectType, FunctionType > 
 memberFunction ( ObjectType object, FunctionType function )
 {
-  return MemberFunction < ObjectType, FunctionType > ( object, function );
+  return MemberFunction < void, ObjectType, FunctionType > ( object, function );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Function to create a member function adaptor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template
+<
+  class ReturnType,
+  class ObjectType,
+  class FunctionType
+>
+MemberFunction < ReturnType, ObjectType, FunctionType > 
+memberFunction ( ObjectType object, FunctionType function )
+{
+  return MemberFunction < ReturnType, ObjectType, FunctionType > ( object, function );
 }
 
 

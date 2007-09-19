@@ -4,7 +4,6 @@ PROJECT(Magrathea)
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
-
 # ------------ Find OpenGL Library ----------------------
 FIND_PACKAGE(OpenGL)
 
@@ -28,7 +27,6 @@ INCLUDE_DIRECTORIES(
 		     ${OT_INC_DIR} 
 		     ${WMS_INC_DIR}
 		     ${OSSIM_INC_DIR}
-		     ${OSG_EPHEMERIS_INC_DIR}
 		     ${OSSIM_PLANET_INC_DIR}
 		     )
 
@@ -40,6 +38,9 @@ SET (SOURCES
   Manipulator.cpp
   Planet.cpp
   Navigator.cpp
+  ImageTextureLayer.cpp
+  WmsLayer.cpp
+  KwlLayer.cpp
 )
 
 # Create a Shared Library

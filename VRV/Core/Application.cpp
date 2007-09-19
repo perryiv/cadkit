@@ -24,7 +24,6 @@
 #include "VRV/Commands/Navigator.h"
 #include "VRV/Commands/BackgroundColor.h"
 
-
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/CommandLine/Parser.h"
@@ -299,6 +298,8 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IBackgroundColor * > ( this );
   case Usul::Interfaces::IRenderingPasses::IID:
     return static_cast < Usul::Interfaces::IRenderingPasses * > ( this );
+  case Usul::Interfaces::IViewport::IID:
+    return static_cast < Usul::Interfaces::IViewport * > ( this );
   default:
     return 0x0;
   }
@@ -3849,3 +3850,54 @@ bool Application::computeNearFar () const
   return false;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the x position of the viewport.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Application::x () const
+{
+  osg::ref_ptr < const osg::Viewport > vp ( this->viewport() );
+  return vp.valid() ? vp->x () : 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the y position of the viewport.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Application::y () const
+{
+  osg::ref_ptr < const osg::Viewport > vp ( this->viewport() );
+  return vp.valid() ? vp->y () : 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the height of the viewport.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Application::height () const
+{
+  osg::ref_ptr < const osg::Viewport > vp ( this->viewport() );
+  return vp.valid() ? vp->height() : 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the width of the viewport.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Application::width () const
+{
+  osg::ref_ptr < const osg::Viewport > vp ( this->viewport() );
+  return vp.valid() ? vp->height () : 0;
+}

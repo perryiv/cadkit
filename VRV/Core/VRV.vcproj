@@ -274,14 +274,6 @@
 				Name="Interfaces"
 				>
 				<File
-					RelativePath="..\Interfaces\IFrameInfo.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Interfaces\IJoystick.h"
-					>
-				</File>
-				<File
 					RelativePath="..\Interfaces\IModelAdd.h"
 					>
 				</File>

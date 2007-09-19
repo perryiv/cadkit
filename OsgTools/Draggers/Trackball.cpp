@@ -86,7 +86,7 @@ Trackball::Trackball ( const Trackball &dragger, const osg::CopyOp &op ) :
 
 Trackball::~Trackball()
 {
-  _viewer = static_cast < Usul::Interfaces::IViewer* > ( 0x0 );
+  _viewer = static_cast < Usul::Interfaces::IViewport* > ( 0x0 );
 }
 
 
@@ -207,6 +207,10 @@ void Trackball::_common ( const osg::Vec3d &pt0, const osg::Vec3d &pt1 )
   float angle;
 
 #if 1
+
+  if ( !_viewer.valid () )
+    return;
+
   float p0x ( 2.0f*(_v0.x())/(_viewer->width())-1.0f );
   float p0y ( 2.0f*(_v0.y())/(_viewer->height())-1.0f );
   

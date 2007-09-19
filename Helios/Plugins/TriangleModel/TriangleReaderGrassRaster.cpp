@@ -9,6 +9,7 @@
 #include "Usul/Endian/Endian.h"
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Case.h"
+#include "Usul/Types/Types.h"
 
 
 
@@ -80,6 +81,14 @@ struct SwapBytes
     Usul::Endian::FromBigToSystem::convert ( v );
   }
   void operator () ( int &v ) const
+  {
+    Usul::Endian::FromBigToSystem::convert ( v );
+  }
+  void operator () ( unsigned int &v ) const
+  {
+    Usul::Endian::FromBigToSystem::convert ( v );
+  }
+  void operator () ( Usul::Types::Int16 &v ) const
   {
     Usul::Endian::FromBigToSystem::convert ( v );
   }
@@ -316,23 +325,8 @@ void TriangleReaderGrassRaster::_read()
   std::cout << "Reading Header Information..." << std::endl;
   this->_readHeader();
 
-  // Initialize local vaiables.
-  Usul::Math::Vec2ui gridSize ( _header.rows + 1 , _header.cols +1 );
-  Usul::Math::Vec2d lowerLeft ( _header.west, _header.south );
-  float cellSize ( _header.ns_resol );
-  float noDataValue ( 0 );
-
-  // Useful typedefs.
-  typedef std::vector<float> Values;
-  typedef osg::Vec3f Vec3;
-  typedef Usul::Predicates::CloseFloat<double> Close;
-
   // More local variables.
-  const unsigned int numPoints ( gridSize[0] * gridSize[1] );
-  Vec3 a0 ( 0, 0, 0 ), a1 ( 0, 0, 0 ), b0 ( 0, 0, 0 ), b1 ( 0, 0, 0 );
-  Close close ( 0.0005 ); // Reasonable?
-  Usul::Policies::TimeBased update ( 1000 ); // Every second.
-
+  const unsigned int numPoints ( ( _header.rows + 1 ) * ( _header.cols +1 ) );
 
   // Open a stream with a large buffer.
   const unsigned long int bufSize ( 4095 );
@@ -350,17 +344,51 @@ void TriangleReaderGrassRaster::_read()
   if ( !in.is_open() )
     throw std::runtime_error ( "Error 1099205557: Failed to open file: " + filename );
 
-
-  typedef float ValueType;
-  typedef std::vector<ValueType> ValueVector;
-  ValueVector vertices ( numPoints, 0 );
-  in.read ( reinterpret_cast<char *> ( &vertices[0] ), vertices.size() * sizeof ( ValueVector::value_type ) );
   
-  // Swap the bytes.
-  std::for_each ( vertices.begin(), vertices.end(), Helper::SwapBytes() );
- 
   
 
+  
+  // Floating point raster files
+  if( _header.format == -1 )
+  {
+    FloatVec vertices ( numPoints, 0 );
+
+    // Read the data
+    in.read ( reinterpret_cast<char *> ( &vertices[0] ), vertices.size() * sizeof ( FloatVec::value_type ) );
+   
+    // Swap the bytes.
+    std::for_each ( vertices.begin(), vertices.end(), Helper::SwapBytes() );
+
+    // Make the Triangle Set
+    this->_makeTriangleDocument( vertices );
+  }
+
+  // 1 Byte Integer raster files
+  if( _header.format == 8 )
+  {
+    Int8Vec vertices ( numPoints, 0 );
+
+    // Read the data
+    in.read ( reinterpret_cast<char *> ( &vertices[0] ), vertices.size() * sizeof ( Int8Vec::value_type ) );
+   
+    // Make the Triangle Set
+    this->_makeTriangleDocument( vertices );
+  }
+  
+  // 2 Byte Integer raster files
+  if( _header.format == 1 )
+  {
+    Int16Vec vertices ( numPoints, 0 );
+
+    // Read the data
+    in.read ( reinterpret_cast<char *> ( &vertices[0] ), vertices.size() * sizeof ( Int16Vec::value_type ) );
+   
+    // Swap the bytes.
+    std::for_each ( vertices.begin(), vertices.end(), Helper::SwapBytes() );
+
+    // Make the Triangle Set
+    this->_makeTriangleDocument( vertices );
+  }
   //delete old triangles
   //_triangleSet->clear();
 
@@ -371,8 +399,63 @@ void TriangleReaderGrassRaster::_read()
 
   // Grab the first row.
   //std::for_each ( row0.begin(), row0.end(), vertices );
+ 
+}
 
-  
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleReaderGrassRaster::_incrementProgress ( bool state, float i, float num )
+{
+  USUL_TRACE_SCOPE;
+  std::cout << "Percent Complete: " << i << "/" << num << "( " <<  ( i / num ) * 100 << " )\r" << std::flush;
+  unsigned int &numerator   ( _progress.first  );
+  unsigned int &denominator ( _progress.second );
+  _document->setProgressBar ( state, numerator, denominator, _caller );
+  ++numerator;
+  USUL_ASSERT ( numerator <= denominator );
+
+#if 0
+  // Check to see if we've been cancelled.
+  Usul::Threads:Thread::RefPtr thread ( Usul::Threads::Manager::instance().currentThread() );
+  if ( true == thread.valid() )
+  {
+    if ( Usul::Threads::Thread::CANCELLED == thread->result() )
+    {
+      // Throws the exception to stop executing this thread.
+      thread->cancel();
+    }
+  }
+#endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Functor create the triangle document
+//
+///////////////////////////////////////////////////////////////////////////////
+template < class VectorType > void TriangleReaderGrassRaster::_makeTriangleDocument( VectorType vertices )
+{
+   // Useful typedefs.
+  typedef std::vector<float> Values;
+  typedef osg::Vec3f Vec3;
+  typedef Usul::Predicates::CloseFloat<double> Close;
+
+  // Initialize local vaiables.
+  Usul::Math::Vec2ui gridSize ( _header.rows + 1 , _header.cols +1 );
+  Usul::Math::Vec2d lowerLeft ( _header.west, _header.south );
+  float cellSize ( _header.ns_resol );
+  float noDataValue ( 0 );
+
+  // More local variables.
+  const unsigned int numPoints ( gridSize[0] * gridSize[1] );
+  Vec3 a0 ( 0, 0, 0 ), a1 ( 0, 0, 0 ), b0 ( 0, 0, 0 ), b1 ( 0, 0, 0 );
+  Close close ( 0.0005 ); // Reasonable?
+  Usul::Policies::TimeBased update ( 1000 ); // Every second.
 
   std::cout << "Reading Vertices..." << std::endl;
   // Loop until we've read all the points.
@@ -380,7 +463,7 @@ void TriangleReaderGrassRaster::_read()
   // Set the progress numbers.
   _progress.first = 0;
   _progress.second = stopR;
-
+  
   for ( unsigned int i = 0; i < stopR; ++i )
   {
     // Grab the next row.
@@ -431,7 +514,7 @@ void TriangleReaderGrassRaster::_read()
         }
       }
 
-         }
+    }
     //std::cout << "\rPercent Complete: " << i << "/" << static_cast<float>( numPoints / gridSize[0] ) <<  std::flush;
     // Feedback.
       this->_incrementProgress ( update(), static_cast<float>( i ), static_cast<float>( numPoints / stopC ) );
@@ -439,29 +522,8 @@ void TriangleReaderGrassRaster::_read()
     // Swap rows.
     //row0.swap ( row1 );
   }
-  
-  
+
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Update the progress bar.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TriangleReaderGrassRaster::_incrementProgress ( bool state, float i, float num )
-{
-  USUL_TRACE_SCOPE;
-  std::cout << "Percent Complete: " << i << "/" << num << "( " <<  ( i / num ) * 100 << " )\r" << std::flush;
-  unsigned int &numerator   ( _progress.first  );
-  unsigned int &denominator ( _progress.second );
-  _document->setProgressBar ( state, numerator, denominator, _caller );
-  ++numerator;
-  USUL_ASSERT ( numerator <= denominator );
-}
-
-
 /////////////////
 //  PRIVATE
 /////////////////

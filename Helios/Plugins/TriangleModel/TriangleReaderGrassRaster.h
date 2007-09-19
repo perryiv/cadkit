@@ -25,6 +25,13 @@ public:
   typedef std::pair < unsigned int, unsigned int > Progress;
   typedef osg::ref_ptr< osg::Vec3Array > Vec3ArrayPtr;
 
+  // Data types
+  typedef Usul::Types::Int16 Int16;
+  typedef Usul::Types::Int8 Int8;
+  typedef std::vector< Int8 > Int8Vec;
+  typedef std::vector< Int16 > Int16Vec;
+  typedef std::vector< float > FloatVec;
+
   struct Header
   { 
     unsigned int    proj;
@@ -69,9 +76,13 @@ protected:
   void                      _read();
   void                      _readHeader();
   void                      _incrementProgress ( bool state, float i, float num );
+
   
   void                      _readXML();
   void                      _parseXML( XmlTree::Node &node, Usul::Interfaces::IUnknown *caller );
+
+
+  template < class VectorType > void _makeTriangleDocument( VectorType vertices );
 
 private:
    // No copying.

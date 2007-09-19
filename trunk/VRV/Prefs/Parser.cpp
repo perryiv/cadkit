@@ -110,7 +110,7 @@ void Parser::_read ( const std::string &filename )
 {
   // Define the xml-reader type.
   typedef void (Parser::*Function) ( const std::string &s );
-  typedef Usul::Adaptors::MemberFunction < Parser*, Function > MemFun;
+  typedef Usul::Adaptors::MemberFunction < void, Parser*, Function > MemFun;
   typedef Usul::Errors::ThrowingPolicy < std::runtime_error > ErrorPolicy;
   typedef XML::Reader < MemFun, XML::ValueCB, ErrorPolicy > XmlReader;
 

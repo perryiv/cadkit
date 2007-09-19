@@ -187,7 +187,9 @@ void Application::_construct()
   _databasePager->setAcceptNewDatabaseRequests( true );
   _databasePager->setDatabasePagerThreadPause( false );
   
+#if ( OSG_VERSION_MAJOR < 2 )
   _databasePager->setUseFrameBlock( false );
+#endif
 
   // Read the user's preference file, if any.
   this->_readUserPreferences();

@@ -10,12 +10,12 @@
 
 #include "Magrathea/KwlLayer.h"
 
-#include "Usul/Functions/Guid.h"
+#include "Usul/Functions/GUID.h"
 #include "Usul/System/Directory.h"
 #include "Usul/File/Path.h"
 #include "Usul/Factory/RegisterCreator.h"
 
-#include "ossim/base/ossimKeywordList.h"
+#include "ossim/base/ossimKeywordlist.h"
 #include "ossimPlanet/ossimPlanetTextureLayerRegistry.h"
 
 using namespace Magrathea;

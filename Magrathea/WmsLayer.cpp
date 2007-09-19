@@ -10,7 +10,7 @@
 
 #include "Magrathea/WmsLayer.h"
 
-#include "Usul/Functions/Guid.h"
+#include "Usul/Functions/GUID.h"
 #include "Usul/Factory/RegisterCreator.h"
 
 using namespace Magrathea;

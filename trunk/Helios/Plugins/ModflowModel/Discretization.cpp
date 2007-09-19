@@ -14,8 +14,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Discretization.h"
+#include "Attribute.h"
+#include "Constants.h"
 #include "ModflowDocument.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Trace/Trace.h"
 

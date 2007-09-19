@@ -99,16 +99,39 @@ void LayerTreeControl::buildTree ( Usul::Interfaces::IUnknown *unknown )
     if ( true == layer.valid() )
     {
       // Make a tree item.
-      QTreeWidgetItem *item ( new QTreeWidgetItem ( _tree ) );
+      std::auto_ptr<QTreeWidgetItem> item ( new QTreeWidgetItem ( _tree ) );
       item->setText ( 0, layer->name().c_str() );
 
       // Set the checked state.
-      Qt::CheckState state ( layer->showLayer() ? Qt::Checked : Qt::Unchecked );
-      item->setCheckState ( 0, state );
-      _tree->addTopLevelItem ( item );
+      item->setCheckState ( 0, ( layer->showLayer() ? Qt::Checked : Qt::Unchecked ) );
+      _tree->addTopLevelItem ( item.get() );
 
       // Save the tree and layer items in the map.
-      _layerMap.insert ( LayerMap::value_type ( item, layer.get() ) );
+      _layerMap[item.get()] = layer.get();
+
+      // Check for sub-layers.
+      Usul::Interfaces::ILayerList::QueryPtr subLayers ( layer );
+      if ( true == subLayers.valid() )
+      {
+        // Get the layer.
+        Usul::Interfaces::ILayer::QueryPtr subLayer ( subLayers->layer ( i ) );
+        if ( true == subLayer.valid() )
+        {
+          // Make an item.
+          std::auto_ptr<QTreeWidgetItem> subItem ( new QTreeWidgetItem ( item.get() ) );
+          subItem->setText ( 0, subLayer->name().c_str() );
+
+          // Set the checked state.
+          subItem->setCheckState ( 0, ( subLayer->showLayer() ? Qt::Checked : Qt::Unchecked ) );
+          item->addChild ( subItem.get() );
+
+          // Save the tree and layer items in the map.
+          _layerMap[subItem.get()] = subLayer.release();
+        }
+      }
+
+      // Done with this.
+      item.release();
     }
   }
 

@@ -266,7 +266,7 @@ osg::Node* SceneDocument::_loadModel( const std::string& filename, Unknown* call
   USUL_TRACE_SCOPE;
 
   typedef void (Detail::ProgressHelper::*Function) ( const std::string &, unsigned long, unsigned long ); 
-  typedef Usul::Adaptors::MemberFunction < Detail::ProgressHelper*, Function > MemFun;
+  typedef Usul::Adaptors::MemberFunction < void, Detail::ProgressHelper*, Function > MemFun;
   typedef OsgTools::IO::Reader::ReaderCallback < MemFun > Callback;
 
   std::string directory ( Usul::File::directory ( filename, false ) );

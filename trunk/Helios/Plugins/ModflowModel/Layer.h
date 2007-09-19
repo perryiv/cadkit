@@ -17,11 +17,13 @@
 #define _MODFLOW_MODEL_LAYER_CLASS_H_
 
 #include "CompileGuard.h"
+#include "Attribute.h"
 #include "Cell.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/ILayer.h"
+#include "Usul/Interfaces/ILayerList.h"
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
@@ -32,11 +34,10 @@
 
 #include <vector>
 
-class ModflowDocument;
-
 
 class Layer : public Usul::Base::Object,
-              public Usul::Interfaces::ILayer
+              public Usul::Interfaces::ILayer,
+              public Usul::Interfaces::ILayerList
 {
 public:
 
@@ -50,6 +51,9 @@ public:
   typedef Cell::Vector Data;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef Usul::Interfaces::IDocument IDocument;
+  typedef Usul::Interfaces::ILayer ILayer;
+  typedef Usul::Interfaces::ILayerList ILayerList;
+  typedef std::vector < BaseAttribute::RefPtr > Attributes;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Layer );
@@ -59,6 +63,9 @@ public:
 
   // Construction.
   Layer ( const std::string &name, unsigned int numRows, unsigned int numColumns, const Vec2d &cellSize );
+
+  // Add the attribute.
+  void                    addAttribute ( BaseAttribute * );
 
   // Set/get the layer above.
   void                    above ( Layer * );
@@ -108,15 +115,22 @@ public:
   // Set modification flag.
   void                    modified ( bool );
 
+  // Get the number of layers.
+  virtual unsigned int    numberLayers() const;
+
+  /// Get the layer at position i.
+  virtual ILayer *        layer ( unsigned int i );
+
   // Purge all the cells that are outside the bounds.
   void                    purge ( const Data &bounds );
 
   // Set all the values for the given time step.
   void                    vector ( const std::string &name, unsigned int timeStep, const Data &heads );
 
-  // Set/get the visible flag.
-  bool                    visible() const { return this->showLayer(); }
-  void                    visible ( bool state ) { this->showLayer ( state ); }
+  // Set/get the visible state for the names attribute.
+  // Pass empty string fo entire layer.
+  bool                    visible ( const std::string &name = "" ) const;
+  void                    visible ( bool state, const std::string &name = "" );
 
   // Set cell's tops and bottoms.
   void                    zRange ( const Data &top, const Data &bottom );
@@ -150,6 +164,7 @@ private:
   unsigned int _flags;
   IDocument::QueryPtr _document;
   Vec3d _margin;
+  Attributes _attributes;
 };
 
 

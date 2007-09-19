@@ -26,7 +26,8 @@ namespace Modflow
   // String names.
   namespace Names
   {
-    const std::string HEAD ( "head" );
+    const std::string BOUNDS ( "Bounds" );
+    const std::string HEAD   ( "head" );
   }
 
   namespace Flags

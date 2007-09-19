@@ -71,6 +71,8 @@ SET (SOURCES
 ./Commands/StopAnimation.cpp
 ./Animate/Date.cpp
 ./Animate/Settings.cpp
+./Visitors/TemporalAnimation.cpp
+./Visitors/FindMinMaxDates.cpp
 )
 
 # Create a Shared Library

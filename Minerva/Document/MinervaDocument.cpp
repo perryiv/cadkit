@@ -128,6 +128,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Minerva::Interfaces::IDirtyScene * > ( this );
   case Usul::Interfaces::ILayerList::IID:
     return static_cast < Usul::Interfaces::ILayerList * > ( this );
+  case Usul::Interfaces::ICommandList::IID:
+    return static_cast < Usul::Interfaces::ICommandList * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -1486,6 +1488,7 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
         // Animate if we should.
         if ( duration > _animationSpeed )
         {
+          std::cout << "Duration: " << duration << "Time: " << time << std::endl;
           if( _animateSettings->timestepType() == Settings::DAY )
             lastDate.incrementDay();
           else if ( _animateSettings->timestepType() == Settings::MONTH )
@@ -1566,4 +1569,23 @@ Usul::Interfaces::ILayer* MinervaDocument::layer ( unsigned int i )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
   return _layers.at ( i );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the command list for the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MinervaDocument::CommandList  MinervaDocument::getCommandList ()
+{
+  CommandList commands;
+
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+
+  commands.push_back ( new Minerva::Core::Commands::StartAnimation ( me ) );
+  commands.push_back ( new Minerva::Core::Commands::StopAnimation ( me ) );
+
+  return commands;
 }

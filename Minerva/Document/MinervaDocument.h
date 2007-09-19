@@ -24,6 +24,7 @@
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/ILayerList.h"
+#include "Usul/Interfaces/ICommandList.h"
 
 #include "Minerva/Core/Animate/Settings.h"
 #include "Minerva/Core/Scene/SceneManager.h"
@@ -55,7 +56,8 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Minerva::Interfaces::IAddLayer,
                                                 public Minerva::Interfaces::IRemoveLayer,
                                                 public Minerva::Interfaces::IDirtyScene,
-                                                public Usul::Interfaces::ILayerList
+  public Usul::Interfaces::ILayerList,
+  public Usul::Interfaces::ICommandList
 {
 public:
   /// Useful typedefs.
@@ -244,6 +246,9 @@ protected:
 
   /// Get the layer at position i ( Usul::Interfaces::ILayerList ).
   virtual Usul::Interfaces::ILayer*     layer ( unsigned int i );
+
+  /// Get the command list for this document.
+  virtual CommandList                   getCommandList ();
 
 private:
 

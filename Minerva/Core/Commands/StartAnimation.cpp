@@ -28,6 +28,20 @@ USUL_FACTORY_REGISTER_CREATOR ( StartAnimation );
 StartAnimation::StartAnimation ( ) : 
   BaseClass( 0x0 )
 {
+  this->text ( "Start Animation" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+StartAnimation::StartAnimation ( Usul::Interfaces::IUnknown *caller ) : 
+  BaseClass( caller )
+{
+  this->text ( "Start Animation" );
 }
 
 

@@ -223,6 +223,14 @@
 				Name="Implementation"
 				>
 				<File
+					RelativePath=".\Attribute.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Attribute.h"
+					>
+				</File>
+				<File
 					RelativePath=".\BaseReader.cpp"
 					>
 				</File>

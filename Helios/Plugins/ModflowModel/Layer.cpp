@@ -18,7 +18,7 @@
 #include "Constants.h"
 
 #include "Usul/Bits/Bits.h"
-#include "Usul/Functions/Guid.h"
+#include "Usul/Functions/GUID.h"
 #include "Usul/Interfaces/IDirtyState.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Trace/Trace.h"
@@ -53,7 +53,8 @@ Layer::Layer ( const std::string &name, unsigned int numRows, unsigned int numCo
   _root ( new osg::Group ),
   _flags ( Modflow::Flags::DIRTY | Modflow::Flags::VISIBLE ),
   _document(),
-  _margin ( 0, 0, 0 )
+  _margin ( 0, 0, 0 ),
+  _attributes()
 {
   USUL_TRACE_SCOPE;
 
@@ -113,6 +114,7 @@ void Layer::clear()
   _above = 0x0;
   _below = 0x0;
   _rows.clear();
+  _attributes.clear();
   OsgTools::Group::removeAllChildren ( _root.get() );
 }
 
@@ -301,7 +303,7 @@ osg::Node *Layer::_buildCubes ( Unknown *caller ) const
   geom->addPrimitiveSet ( new osg::DrawArrays ( osg::DrawArrays::QUADS, 0, vertices->size() ) );
   geode->addDrawable ( geom.get() );
 
-#if 1 // Transparency
+#if 0 // Transparency
 
   osg::ref_ptr < osg::Material > mat ( new osg::Material );
   osg::Vec4f color ( 51.0f / 255.0f, 204.0f / 255.0f, 204.0f / 255.0f, 1.0f );
@@ -394,7 +396,7 @@ void Layer::vector ( const std::string &name, unsigned int timeStep, const Data 
       {
         // Get vector and resize (not reserve).
         Cell::Vector &v ( cell->vector ( name ) );
-        v.resize ( Usul::Math::maximum ( static_cast < unsigned int > ( v.size () ), timeStep + 1 ) );
+        v.resize ( Usul::Math::maximum ( v.size(), timeStep + 1 ) );
 
         // Write value to cell's vector.
         const double value ( heads.at ( index ) );
@@ -580,7 +582,7 @@ void Layer::showLayer ( bool state )
   {
     // Set the mask.
     const osg::Node::NodeMask mask ( ( state ) ? 0xffffffff : 0 );
-    _root->setNodeMask ( mask );
+    _root->setNodeMask ( mask ); // Still need to do this?
 
     // Separate flag to support serialization.
     this->flags ( Usul::Bits::set ( this->flags(), Modflow::Flags::VISIBLE, state ) );
@@ -722,4 +724,88 @@ bool Layer::dirty() const
 {
   USUL_TRACE_SCOPE;
   return Usul::Bits::has ( this->flags(), Modflow::Flags::DIRTY );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Layer::numberLayers() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _attributes.size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the layer at position i.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::ILayer *Layer::layer ( unsigned int i )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  BaseAttribute::RefPtr attribute ( ( i >= _attributes.size() ) ? 0x0 : _attributes.at ( i ) );
+  return attribute.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the attribute.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::addAttribute ( BaseAttribute *attribute )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  if ( 0x0 != attribute )
+  {
+    _attributes.push_back ( attribute );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the visible state for the names attribute.
+//  Pass empty string fo entire layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Layer::visible ( const std::string &name ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return ( ( name.empty() ) ? this->showLayer() : this->showLayer() ); // TODO
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the visible state for the names attribute.
+//  Pass empty string fo entire layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::visible ( bool state, const std::string &name )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if ( name.empty() )
+  {
+    this->showLayer ( state );
+  }
+  else
+  {
+    this->showLayer ( state ); // TODO
+  }
 }

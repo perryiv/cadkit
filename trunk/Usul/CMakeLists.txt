@@ -56,7 +56,7 @@ SET (SOURCES
 	File/Remove.cpp
 	File/Temp.cpp
 	Functions/Color.cpp
-	Functions/Guid.cpp
+	Functions/GUID.cpp
   Functors/Interaction/Input/JoystickHorizontal.cpp
   Functors/Interaction/Input/WandAngle.cpp
   Functors/Interaction/Input/AnalogInput.cpp

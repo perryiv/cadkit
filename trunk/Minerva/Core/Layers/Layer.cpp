@@ -11,7 +11,7 @@
 #include "Minerva/Core/Layers/Layer.h"
 #include "Minerva/Core/Visitor.h"
 
-#include "Usul/Functions/Guid.h"
+#include "Usul/Functions/GUID.h"
 #include "Usul/Functions/ToString.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IGeometryCenter.h"

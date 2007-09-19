@@ -13,6 +13,7 @@
 #include "Usul/Interfaces/IVectorLayer.h"
 #include "Usul/Interfaces/ITemporalData.h"
 #include "Usul/Interfaces/IAddRowLegend.h"
+#include "Usul/Interfaces/IViewport.h"
 #include "Usul/Trace/Trace.h"
 
 #include "OsgTools/Animate/AnimationCallback.h"
@@ -43,7 +44,6 @@ SceneManager::SceneManager() :
 BaseClass(),
 _mutex(),
 _root ( new osg::Group ),
-_static_root( new osg::Group ),
 _projectionNode ( new osg::Projection ),
 _dateText ( new osgText::Text ),
 _layers(),
@@ -105,11 +105,18 @@ void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
 
   if ( this->dirty() )
   {
+    Usul::Interfaces::IViewport::QueryPtr vp ( caller );
+    if ( vp.valid () )
+    {
+      _width  = static_cast < unsigned int > ( vp->width  () );
+      _height = static_cast < unsigned int > ( vp->height () );
+      _projectionNode->setMatrix( osg::Matrix::ortho2D( 0, _width, 0, _height ) );
+    }
+
     _legend->clear();
 
     // Clear what we have
     _root->removeChild( 0, _root->getNumChildren() );
-    _static_root->removeChild( 0, _static_root->getNumChildren() );
     _projectionNode->removeChild ( 0, _projectionNode->getNumChildren() );
 
     // Loop throught the layers
@@ -122,12 +129,11 @@ void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
         {
           osg::ref_ptr< osg::Group > group ( new osg::Group );
           vector->buildScene( group.get() );
-          _static_root->addChild( group.get() );
+          _root->addChild( group.get() );
         }
       }
     }
 
-    _root->addChild( _static_root.get() );
     _root->addChild ( _projectionNode.get() );
 
     /// Build the legend.
@@ -147,7 +153,6 @@ void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
     _projectionNode->addChild ( mt.get() );
 
     _root->dirtyBound();
-    _static_root->dirtyBound();
     _projectionNode->dirtyBound();
   }
 

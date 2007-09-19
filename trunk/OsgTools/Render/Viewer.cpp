@@ -2342,10 +2342,11 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IUpdateSubject * > ( this );
   case Usul::Interfaces::IClippingDistance::IID:
     return static_cast < Usul::Interfaces::IClippingDistance * > ( this );
+  case Usul::Interfaces::IViewport::IID:
+    return static_cast < Usul::Interfaces::IViewport * > ( this );
   default:
     return 0x0;
-  }
-  
+  } 
 }
 
 
@@ -2992,9 +2993,9 @@ void Viewer::clearScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Viewer::x() const
+double Viewer::x() const
 {
-  return static_cast < int > ( this->viewer()->getViewport()->x() );
+  return this->viewer()->getViewport()->x();
 }
 
 
@@ -3004,9 +3005,9 @@ int Viewer::x() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Viewer::y() const
+double Viewer::y() const
 {
-  return static_cast < int > ( this->viewer()->getViewport()->y() );
+  return this->viewer()->getViewport()->y();
 }
 
 
@@ -3016,9 +3017,9 @@ int Viewer::y() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Viewer::height() const
+double Viewer::height() const
 {
-  return static_cast < unsigned int > ( Usul::Math::absolute ( this->viewer()->getViewport()->height() ) );
+  return Usul::Math::absolute ( this->viewer()->getViewport()->height() );
 }
 
 
@@ -3028,9 +3029,9 @@ unsigned int Viewer::height() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Viewer::width() const
+double Viewer::width() const
 {
-  return static_cast < unsigned int > ( Usul::Math::absolute ( this->viewer()->getViewport()->width() ) );
+  return Usul::Math::absolute ( this->viewer()->getViewport()->width() );
 }
 
 

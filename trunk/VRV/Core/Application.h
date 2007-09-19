@@ -49,6 +49,7 @@
 #include "Usul/Interfaces/INavigationFunctor.h"
 #include "Usul/Interfaces/IBackgroundColor.h"
 #include "Usul/Interfaces/IRenderingPasses.h"
+#include "Usul/Interfaces/IViewport.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Queue.h"
@@ -126,7 +127,8 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public Usul::Interfaces::IShadeModel,
                                public Usul::Interfaces::INavigationFunctor,
                                public Usul::Interfaces::IBackgroundColor,
-                               public Usul::Interfaces::IRenderingPasses
+                               public Usul::Interfaces::IRenderingPasses,
+                               public Usul::Interfaces::IViewport
 {
 public:
   // Typedefs.
@@ -541,8 +543,14 @@ protected:
   virtual PolygonMode           polygonMode() const;
 
   /// Set/get the shade model (IShadeModel).
-  virtual void                    shadeModel ( ShadeModel mode );
-  virtual ShadeModel              shadeModel() const;
+  virtual void                  shadeModel ( ShadeModel mode );
+  virtual ShadeModel            shadeModel() const;
+
+  /// Get viewport parameters (IViewport).
+  virtual double                x () const;
+  virtual double                y () const;
+  virtual double                height () const;
+  virtual double                width () const;
 
   /// No copying.
   Application ( const Application& );

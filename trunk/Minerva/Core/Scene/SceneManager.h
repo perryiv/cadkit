@@ -70,7 +70,7 @@ public:
   Layer *                    getLayer            ( const std::string& guid );
 
   /// Resize
-  void                       resize( unsigned int width, unsigned int height );
+  void                       resize ( unsigned int width, unsigned int height );
 
   /// Get/Set the dirty flag.
   bool                       dirty() const;
@@ -125,7 +125,6 @@ private:
 
   // OSG nodes.
   osg::ref_ptr < osg::Group >                    _root;
-  osg::ref_ptr < osg::Group >                    _static_root;
   osg::ref_ptr < osg::Projection >               _projectionNode;
   osg::ref_ptr < osgText::Text >                 _dateText;
 

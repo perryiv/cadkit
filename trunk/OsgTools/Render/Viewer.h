@@ -66,6 +66,7 @@
 #include "Usul/Interfaces/IUpdateSubject.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/IClippingDistance.h"
+#include "Usul/Interfaces/IViewport.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
@@ -139,7 +140,8 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IUpdateSceneVisitor,
                                 public Usul::Interfaces::ICullSceneVisitor,
                                 public Usul::Interfaces::IUpdateSubject,
-                                public Usul::Interfaces::IClippingDistance
+                                public Usul::Interfaces::IClippingDistance,
+                                public Usul::Interfaces::IViewport
 {
 public:
 
@@ -631,12 +633,14 @@ protected:
   // Get the number of clipping planes in the scene
   virtual unsigned int       numClippingPlanes() { return this->planes(); }
 
+  /// Get the view port parameters (IViewport).
+  virtual double             x() const;
+  virtual double             y() const;
+  virtual double             height() const;
+  virtual double             width() const;
+
   /// Usul::Interfaces::IViewer
   virtual void               clearScene();
-  virtual int                x() const;
-  virtual int                y() const;
-  virtual unsigned int       height() const;
-  virtual unsigned int       width() const;
   virtual void               handleMessage ( unsigned short message );
 
   /// Usul::Interfaces::IGetBoundingBox

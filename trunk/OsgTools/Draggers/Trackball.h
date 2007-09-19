@@ -18,7 +18,7 @@
 
 #include "OsgTools/Draggers/Translate.h"
 
-#include "Usul/Interfaces/IViewer.h"
+#include "Usul/Interfaces/IViewport.h"
 
 #include "osg/Vec2d"
 
@@ -70,7 +70,7 @@ private:
 
   osg::Vec3d _diff;
   float _trackballSize;
-  Usul::Interfaces::IViewer::ValidAccessQueryPtr _viewer;
+  Usul::Interfaces::IViewport::QueryPtr _viewer;
 
   osg::Vec3 _v0;
 };

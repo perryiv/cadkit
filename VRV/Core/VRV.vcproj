@@ -410,11 +410,27 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Animate\KeyFramePath.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Animate\KeyFramePath.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Animate\Path.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\Animate\Path.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Animate\RecordedPath.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Animate\RecordedPath.h"
 					>
 				</File>
 			</Filter>

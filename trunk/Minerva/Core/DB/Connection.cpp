@@ -395,7 +395,7 @@ pqxx::result Connection::executeQuery( const std::string& query, unsigned int ti
   Usul::Threads::Thread::RefPtr thread ( Usul::Threads::Manager::instance().create () );
   
   typedef void (Helper::QueryHelper::*Function) ( Usul::Threads::Thread *s );
-  typedef Usul::Adaptors::MemberFunction < Helper::QueryHelper*, Function > MemFun;
+  typedef Usul::Adaptors::MemberFunction < void, Helper::QueryHelper*, Function > MemFun;
 
   thread->started  ( Usul::Threads::newFunctionCallback( MemFun ( &helper, &Helper::QueryHelper::start ) ) );
   thread->finished ( Usul::Threads::newFunctionCallback( MemFun ( &helper, &Helper::QueryHelper::end ) ) );

@@ -8,12 +8,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "PrevTimestep.h"
+#include "FirstTimestep.h"
 
 #include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/IDldNavigator.h"
 
-USUL_IMPLEMENT_COMMAND ( PrevTimestep );
+USUL_IMPLEMENT_COMMAND ( FirstTimestep );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -21,11 +21,11 @@ USUL_IMPLEMENT_COMMAND ( PrevTimestep );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PrevTimestep::PrevTimestep ( Usul::Interfaces::IUnknown * caller ) :
+FirstTimestep::FirstTimestep ( Usul::Interfaces::IUnknown * caller ) :
   BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
-  this->text ( "Previous Year" );
+  this->text ( "First Year" );
 }
 
 
@@ -35,7 +35,7 @@ PrevTimestep::PrevTimestep ( Usul::Interfaces::IUnknown * caller ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PrevTimestep::~PrevTimestep ()
+FirstTimestep::~FirstTimestep ()
 {
   USUL_TRACE_SCOPE;
 }
@@ -47,26 +47,22 @@ PrevTimestep::~PrevTimestep ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PrevTimestep::_execute ()
+void FirstTimestep::_execute ()
 {
   USUL_TRACE_SCOPE;
   //this->_dummy();
 #if 1
-
   Usul::Interfaces::IDldNavigator::QueryPtr nav ( this->caller() );
-  
   if ( nav.valid () )
   {
-    bool value = nav->decrementFilePosition();
-    if( true == value )
-    {
-      nav->loadCurrentFile( true );
-    }
+    nav->setCurrentFilePosition( 0 );
+    nav->loadCurrentFile( true );
+    
   }
 #endif
 }
 
-void PrevTimestep::_dummy ()
+void FirstTimestep::_dummy ()
 {
   USUL_TRACE_SCOPE;
   std::cout << "In Dummy" << std::endl;

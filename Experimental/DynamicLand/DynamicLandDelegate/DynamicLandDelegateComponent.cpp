@@ -81,7 +81,7 @@ Usul::Interfaces::IUnknown *DynamicLandDelegateComponent::queryInterface ( unsig
 
 bool DynamicLandDelegateComponent::doesHandle( const std::string& token ) const
 {
-  return ( token ==    "Dynamic Land Document" );
+  return ( token == "Dynamic Land Document" );
 }
 
 

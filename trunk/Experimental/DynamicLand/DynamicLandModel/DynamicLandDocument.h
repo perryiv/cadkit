@@ -32,6 +32,8 @@
 
 #include "XmlTree/Document.h"
 
+#include "boost/shared_ptr.hpp"
+
 #include <string>
 
 namespace osg { class Node; }
@@ -59,6 +61,7 @@ public:
   typedef Usul::Documents::Document::RefPtr DocumentPtr;
   typedef Usul::Documents::Manager DocManager;
   typedef Usul::Jobs::Manager JobManager;
+  typedef boost::shared_ptr<JobManager> JobManagerPtr;
   typedef DocManager::DocumentInfo Info;
   typedef OsgTools::Triangles::TriangleSet::RefPtr TriangleSetPtr;
   typedef std::vector < std::string > Files;
@@ -117,6 +120,7 @@ public:
   bool                        decrementFilePosition ();
   bool                        incrementFilePosition ();
   unsigned int                currentFilePosition ();
+  int                         currentFileLoaded();
   bool                        loadCurrentFile( bool loadFile );
   void                        animate( bool a );
   void                        setCurrentFilePosition( unsigned int pos );
@@ -173,6 +177,11 @@ protected:
   void                        _findFiles();
   void                        _loadJobs( Usul::Interfaces::IUnknown *caller );
 
+  Usul::Jobs::Manager *       _getJobManager();
+
+  void                        _setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller );
+  void                        _currentFileLoaded( int index);
+
   /// Use reference counting.
   virtual ~DynamicLandDocument();
 
@@ -187,6 +196,7 @@ private:
   Usul::Policies::TimeBased       _fileQueryDelay;
   Usul::Policies::TimeBased       _animationDelay;
   unsigned int                    _currFileNum;
+  int                             _currFileLoaded;
   unsigned int                    _numFilesInDirectory; 
   Files                           _files;
   bool                            _loadNewMap;
@@ -206,7 +216,7 @@ private:
   bool                            _updateAnimation;
 
   bool                            _setPoolSize;
-  JobManager                      _jobManager;
+  JobManagerPtr                   _jobManager;
 
   class KillJob : public Usul::Jobs::Job
   {

@@ -11,6 +11,7 @@
 #include "Experimental/DynamicLand/DynamicLandModel/DynamicLandDocument.h"
 
 #include "Experimental/DynamicLand/DynamicLandModel/LoadNextTimestep.h"
+#include "Experimental/DynamicLand/DynamicLandModel/FirstTimestep.h"
 #include "Experimental/DynamicLand/DynamicLandModel/NextTimestep.h"
 #include "Experimental/DynamicLand/DynamicLandModel/PrevTimestep.h"
 #include "Experimental/DynamicLand/DynamicLandModel/LoadTimestep.h"
@@ -22,6 +23,8 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Interfaces/IMaterials.h"
 #include "Usul/Interfaces/IMemoryPool.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Resources/StatusBar.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Interfaces/IVertices.h"
@@ -84,6 +87,7 @@ DynamicLandDocument::DynamicLandDocument() :
   _fileQueryDelay ( 1000 ),
   _animationDelay ( 2000 ),
   _currFileNum ( 0 ),
+  _currFileLoaded ( -1 ),
   _numFilesInDirectory ( 0 ), 
   _files( 0x0 ),
   _loadNewMap ( false ),
@@ -97,7 +101,7 @@ DynamicLandDocument::DynamicLandDocument() :
   _isAnimating ( false ),
   _updateAnimation ( false ),
   _setPoolSize ( true ),
-  _jobManager ( 1 )
+  _jobManager ( static_cast<JobManager *> ( 0x0 ) )
 {
   USUL_TRACE_SCOPE;
   _header.cellSize = 0;
@@ -117,6 +121,7 @@ DynamicLandDocument::DynamicLandDocument() :
 DynamicLandDocument::~DynamicLandDocument()
 {
   USUL_TRACE_SCOPE;
+  _jobManager.reset();
 }
 
 
@@ -183,10 +188,11 @@ bool DynamicLandDocument::incrementFilePosition ()
         int index = this->currentFilePosition() - this->_timeStepWindowSize;
         if( index < 0 )
            index = this->numFiles() + index;
+        
 
         //Spawn a job to kill the time step at <index>
-        KillJob::RefPtr job ( new KillJob ( this, 0x0, index ) );
-        Usul::Jobs::Manager::instance().add ( job.get() );
+        //KillJob::RefPtr job ( new KillJob ( this, 0x0, index ) );
+        //Usul::Jobs::Manager::instance().add ( job.get() );
         
       }
 
@@ -233,10 +239,11 @@ bool DynamicLandDocument::decrementFilePosition ()
         int index = this->currentFilePosition() + this->_timeStepWindowSize;
         if( index > static_cast< int > ( this->numFiles() ) )
            index = 0 + index - static_cast< int > ( this->numFiles() );
+        
 
         //Spawn a job to kill the time step at <index>
-        KillJob::RefPtr job ( new KillJob ( this, 0x0, index ) );
-        Usul::Jobs::Manager::instance().add ( job.get() );
+        //KillJob::RefPtr job ( new KillJob ( this, 0x0, index ) );
+        //Usul::Jobs::Manager::instance().add ( job.get() );
       }
       --_currFileNum;
       std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
@@ -509,7 +516,7 @@ osg::Node* DynamicLandDocument::LoadDataJob::_buildScene( Usul::Documents::Docum
     // tell Triangle set to build its scene and assign the resulting node
     // to our internal node.
     
-    group->addChild( build->buildScene( opt, 0x0 ) );
+    group->addChild( build->buildScene( opt, _caller ) );
     
 
     // Disable Material Usage
@@ -606,6 +613,20 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   if ( false == _fileQueryDelay() )
     return;
 
+  // Set the status bar text
+  {
+    std::ostringstream text;
+    if( this->currentFilePosition() != this->currentFileLoaded() )
+    {
+      text << "  Year " << this->currentFilePosition() + 1 << " (Not Loaded)";
+    }
+    else
+    {
+      text << "  Year " << this->currentFilePosition() + 1;
+    }
+    this->_setStatusBar ( text.str(), caller );
+  }
+
   if( true == _animationDelay() && true == this->_updateAnimationFrame() )
   {    
       this->incrementFilePosition();
@@ -619,6 +640,7 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   {
     // current time step is ready to be shown
     this->_loadNextTimeStep();
+    this->_currentFileLoaded( this->currentFilePosition() );
   }
   
   // Search for files matching our criteria
@@ -657,7 +679,7 @@ void DynamicLandDocument::_loadJobs( Usul::Interfaces::IUnknown *caller )
       #else // without progress bars
         LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, 0x0, this->currentFilePosition() ) );
       #endif
-      _jobManager.add( job.get() );
+      this->_getJobManager()->add( job.get() );
       
     }
     for( int i = start; i <= end; ++i )
@@ -692,13 +714,27 @@ void DynamicLandDocument::_loadJobs( Usul::Interfaces::IUnknown *caller )
         #else // without progress bars
           LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, 0x0, index ) );
         #endif
-        _jobManager.add( job.get() );
+        this->_getJobManager()->add( job.get() );
         //Usul::Jobs::Manager::instance().add ( job.get() );
       }
     }
   }
-  else
-    std::cout << "No files to load!" << std::endl;
+ 
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convenience function to set status bar and flush events.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::_setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller )
+{
+  Usul::Interfaces::IStatusBar::QueryPtr status ( caller );
+  if ( status.valid() )
+    status->setStatusBarText ( text, true );
 }
 
 
@@ -780,10 +816,7 @@ void DynamicLandDocument::_findFiles()
        std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
       }
     }
-    else
-    {
-      std::cout << "\nNo Files found matching search criteria" << std::endl;
-    }
+    
 
   }
 }
@@ -1138,16 +1171,23 @@ void DynamicLandDocument::_loadNextTimeStep()
 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  _terrain->removeChild( 0, _terrain->getNumChildren() );
-  osg::ref_ptr< osg::Group > group ( new osg::Group );
-  group = _timeStepPool.at( this->currentFilePosition() ).group;
-  _terrain->addChild( group.release() );
-  _timeStepPool.at( this->currentFilePosition() ).isLoading = false;
-  _timeStepPool.at( this->currentFilePosition() ).isValid = true;
-  this->loadCurrentFile ( false );
-  this->isLoaded( true );
-  if( true == this->isAnimating() )
-    this->_updateAnimationFrame( true );
+  try
+  {
+    _terrain->removeChild( 0, _terrain->getNumChildren() );
+    osg::ref_ptr< osg::Group > group ( new osg::Group );
+    group = _timeStepPool.at( this->currentFilePosition() ).group;
+    _terrain->addChild( group.get() );
+    _timeStepPool.at( this->currentFilePosition() ).isLoading = false;
+    _timeStepPool.at( this->currentFilePosition() ).isValid = true;
+    this->loadCurrentFile ( false );
+    this->isLoaded( this->currentFilePosition(), true );
+    if( true == this->isAnimating() )
+      this->_updateAnimationFrame( true );
+  }
+  catch ( const std::exception &e )
+  {
+    std::cout << "Error 1999395957: Application::preFrame(): exception: " + std::string ( e.what() ) << std::endl;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1160,6 +1200,34 @@ void DynamicLandDocument::_loadPrevTimeStep()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::_currentFileLoaded (int index)
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _currFileLoaded = index;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int DynamicLandDocument::currentFileLoaded ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return this->_currFileLoaded;
 }
 
 
@@ -1473,10 +1541,11 @@ DynamicLandDocument::CommandList DynamicLandDocument::getCommandList()
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
   std::cout << me.get () << std::endl;
 
-  cl.push_back( new LoadNextTimestep( me.get() ) );
+  //cl.push_back( new LoadNextTimestep( me.get() ) );
   cl.push_back( new NextTimestep( me.get() ) );
   cl.push_back( new PrevTimestep( me.get() ) );
   cl.push_back( new LoadTimestep( me.get() ) );
+  cl.push_back( new FirstTimestep( me.get() ) );
   cl.push_back( new StartAnimation( me.get() ) );
   cl.push_back( new StopAnimation( me.get() ) );
   return cl;
@@ -1571,4 +1640,22 @@ std::string DynamicLandDocument::dir()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _dir;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the job manager.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Jobs::Manager *DynamicLandDocument::_getJobManager()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if ( 0x0 == _jobManager.get() )
+  {
+    _jobManager = JobManagerPtr ( new Usul::Jobs::Manager ( 1 ) );
+  }
+  return _jobManager.get();
 }

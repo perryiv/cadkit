@@ -220,7 +220,7 @@ MinervaDocument::Filters MinervaDocument::filtersInsert() const
 //
 //  Get the filters that correspond to what this document can open.
 //
-///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 MinervaDocument::Filters MinervaDocument::filtersOpen()   const
 {
@@ -1488,7 +1488,6 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
         // Animate if we should.
         if ( duration > _animationSpeed )
         {
-          std::cout << "Duration: " << duration << "Time: " << time << std::endl;
           if( _animateSettings->timestepType() == Settings::DAY )
             lastDate.incrementDay();
           else if ( _animateSettings->timestepType() == Settings::MONTH )

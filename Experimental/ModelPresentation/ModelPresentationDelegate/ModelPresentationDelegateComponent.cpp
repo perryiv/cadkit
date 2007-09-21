@@ -81,7 +81,7 @@ Usul::Interfaces::IUnknown *ModelPresentationDelegateComponent::queryInterface (
 
 bool ModelPresentationDelegateComponent::doesHandle( const std::string& token ) const
 {
-  return ( token ==    "Dynamic Land Document" );
+  return ( token ==    "Model Presentation Document" );
 }
 
 

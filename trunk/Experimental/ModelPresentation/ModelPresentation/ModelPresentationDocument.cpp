@@ -18,6 +18,7 @@
 
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IPlugin.h"
+#include "Usul/Interfaces/IMemoryPool.h"
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Jobs/Manager.h"
@@ -497,10 +498,10 @@ osg::Node* ModelPresentationDocument::_parseModel( XmlTree::Node &node, Unknown 
   osg::ref_ptr< osg::Group > group ( new osg::Group );
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
-    if ( "path" == iter->first )
+    if ( "file" == iter->first )
     {
       Usul::Strings::fromString ( iter->second, path );
-      group->addChild( this->_loadPath( path, caller ) );
+      group->addChild( this->_loadFile( path, caller ) );
     }
     if ( "directory" == iter->first )
     {
@@ -520,14 +521,68 @@ osg::Node* ModelPresentationDocument::_parseModel( XmlTree::Node &node, Unknown 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* ModelPresentationDocument::_loadPath( const std::string& path, Unknown *caller )
+osg::Node* ModelPresentationDocument::_loadFile( const std::string& filename, Unknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  std::string slash ( Usul::File::slash() );
-  std::cout << path << " single file loading..." << std::endl;
-  osg::ref_ptr< osg::Node > loadedModel = osgDB::readNodeFile( path );
-  return loadedModel.release();
+  osg::ref_ptr< osg::Group > group ( new osg::Group );
+  std::cout << filename << " single file loading..." << std::endl;
+  if( Usul::File::extension( filename.c_str() ) == "ive" || 
+        Usul::File::extension( filename.c_str() ) == "osg" )
+  {
+    group->addChild( osgDB::readNodeFile( filename ) );
+  }
+  else
+  {
+     // This will create a new document.
+    Info info ( DocManager::instance().find ( filename, caller ) );
+
+    // Check to see if we created a document.
+    if ( true == info.document.valid() && info.document->canOpen( filename ) )
+    {
+      
+      // Ask the document to open the file.
+      try
+      {
+        this->_openDocument ( filename, info.document.get(), caller );
+      
+
+
+        // Disable Memory pools
+        {
+          Usul::Interfaces::IMemoryPool::QueryPtr pool ( info.document );
+          if ( true == pool.valid() )
+          {
+            pool->usePool ( false );
+          }
+        }
+        
+        Usul::Interfaces::IBuildScene::QueryPtr build ( info.document.get() );
+        if ( true == build.valid() )
+        {
+
+          OsgTools::Triangles::TriangleSet::Options opt;
+          opt[ "normals" ] = "per-vertex";
+          opt[ "colors" ]  = "per-vertex";
+
+          // tell Triangle set to build its scene and assign the resulting node
+          // to our internal node.
+
+          // Reference count should go from 1->0 but not delete.
+          group->addChild( build->buildScene( opt, caller ) );
+          
+         }
+      }
+      catch( ... )
+      {
+        std::cout << "\tUnable to open file: " << filename << std::endl;
+      }
+    }
+    else
+      std::cout << "\tUnknown file format for: " << filename << std::endl;
+  }
+
+  return group.release();
 }
 
 
@@ -542,39 +597,102 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-
   std::cout << dir << " directory loading..." << std::endl;
-  Files osgfiles;
-  Usul::File::find( dir, "osg", osgfiles );
-
-  Files ivefiles;
-  Usul::File::find( dir, "ive", ivefiles );
-  
+  Files files;
+  Usul::File::find( dir, "*", files );
+    
   osg::ref_ptr< osg::Group> group ( new osg::Group );
-  std::cout << "Found " << osgfiles.size() << " files in " << dir << std::endl;
-  for( unsigned int i = 0; i < osgfiles.size(); ++i )
+  std::cout << "Found " << files.size() << " files in " << dir << std::endl;
+  for( unsigned int i = 0; i < files.size(); ++i )
   {
-    std::cout << "\tLoading file: " << osgfiles.at(i).c_str() << std::endl;
-#ifdef _MSC_VER
-    osg::ref_ptr< osg::Node > loadedModel = osgDB::readNodeFile( osgfiles.at(i).c_str() );
-#else
-    osg::ref_ptr< osg::Node > loadedModel = osgDB::readNodeFile( dir + osgfiles.at(i).c_str() );
-#endif
-    group->addChild( loadedModel.release() );
-  }
-  for( unsigned int i = 0; i < ivefiles.size(); ++i )
-  {
-    std::cout << "\tLoading file: " << osgfiles.at(i).c_str() << std::endl;
-#ifdef MSC_VER
-    osg::ref_ptr< osg::Node > loadedModel = osgDB::readNodeFile( ivefiles.at(i).c_str() );
-#else
-    osg::ref_ptr< osg::Node > loadedModel = osgDB::readNodeFile( dir + ivefiles.at(i).c_str() );
-#endif
-    group->addChild( loadedModel.release() );
+    std::string filename = files.at(i).c_str();
+    std::cout << "\tLoading file: " << filename << std::endl;
+    
+    if( Usul::File::extension( filename.c_str() ) == "ive" ||
+        Usul::File::extension( filename.c_str() ) == "IVE" ||
+        Usul::File::extension( filename.c_str() ) == "OSG" ||
+        Usul::File::extension( filename.c_str() ) == "osg" )
+    {
+      #ifdef _MSC_VER
+        osg::ref_ptr< osg::Node > loadedModel = osgDB::readNodeFile( files.at(i).c_str() );
+      #else
+        osg::ref_ptr< osg::Node > loadedModel = osgDB::readNodeFile( dir + files.at(i).c_str() );
+      #endif
+      group->addChild( loadedModel.release() );
+    }
+    else
+    {
+       // This will create a new document.
+      Info info ( DocManager::instance().find ( filename, caller ) );
+
+      // Check to see if we created a document.
+      if ( true == info.document.valid() && info.document->canOpen( filename ) )
+      {
+        
+        // Ask the document to open the file.
+        try
+        {
+          this->_openDocument ( filename, info.document.get(), caller );
+        
+
+
+          // Disable Memory pools
+          {
+            Usul::Interfaces::IMemoryPool::QueryPtr pool ( info.document );
+            if ( true == pool.valid() )
+            {
+              pool->usePool ( false );
+            }
+          }
+          
+          Usul::Interfaces::IBuildScene::QueryPtr build ( info.document.get() );
+          if ( true == build.valid() )
+          {
+
+            OsgTools::Triangles::TriangleSet::Options opt;
+            opt[ "normals" ] = "per-vertex";
+            opt[ "colors" ]  = "per-vertex";
+
+            // tell Triangle set to build its scene and assign the resulting node
+            // to our internal node.
+
+            // Reference count should go from 1->0 but not delete.
+            group->addChild( build->buildScene( opt, caller ) );
+            
+           }
+        }
+        catch( ... )
+        {
+          std::cout << "\tUnable to open file: " << filename << std::endl;
+        }
+      }
+      else
+        std::cout << "\tUnknown file format for: " << filename << std::endl;
+    }
+    
   }
 
   return group.release();
 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Open the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::_openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  //Guard guard ( this->mutex() );
+  if ( 0x0 == document )
+    return;
+
+  std::cout << "Opening file: " << file << " ... " << std::endl;
+  document->open ( file, caller );
+  std::cout << "Done" << std::endl;
 }
 
 
@@ -596,7 +714,7 @@ ModelPresentationDocument::CommandList ModelPresentationDocument::getCommandList
   {
     cl.push_back( new MpdMenuCommand( me.get(), _sets.at(i).name, i ) );
   }
-  //cl.push_back( new NextTimestep( me.get() ) );
+  
   
   return cl;
 

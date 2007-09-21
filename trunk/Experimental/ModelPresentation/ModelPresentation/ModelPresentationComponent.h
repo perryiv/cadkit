@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _DYNAMIC_LAND_MODEL_COMPONENT_CLASS_H_
-#define _DYNAMIC_LAND_MODEL_COMPONENT_CLASS_H_
+#ifndef _MODEL_PRESENTATION_COMPONENT_CLASS_H_
+#define _MODEL_PRESENTATION_COMPONENT_CLASS_H_
 
 #include "CompileGuard.h"
 
@@ -48,7 +48,7 @@ public:
   ModelPresentationComponent();
 
   /// Usul::Interfaces::IPlugin
-  virtual std::string         getPluginName() const { return "Dynamic Land Model"; }
+  virtual std::string         getPluginName() const { return "Model Presentation"; }
 
   /// Usul::Interfaces::IDocumentCreate
   virtual Document *           createDocument ( Unknown *caller = 0x0 );
@@ -66,4 +66,4 @@ protected:
 };
 
 
-#endif // _DYNAMIC_LAND_MODEL_COMPONENT_CLASS_H_
+#endif // _MODEL_PRESENTATION_COMPONENT_CLASS_H_

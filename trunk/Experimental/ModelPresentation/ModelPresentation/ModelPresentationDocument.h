@@ -124,12 +124,13 @@ protected:
   void                        _parseSet( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller );
-  osg::Node*                  _loadPath( const std::string& path, Unknown *caller );
+  osg::Node*                  _loadFile( const std::string& filename, Unknown *caller );
   osg::Node*                  _loadDirectory( const std::string& dir, Unknown *caller );
   /// Usul::Interfaces::IUpdateListener
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 
-  
+  void                        _openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller );
+
 
   CommandList                 getCommandList();
 

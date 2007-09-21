@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _DYNAMIC_LAND_MODEL_FACTORY_CLASS_H_
-#define _DYNAMIC_LAND_MODEL_FACTORY_CLASS_H_
+#ifndef _MODEL_PRESENTATION_FACTORY_CLASS_H_
+#define _MODEL_PRESENTATION_FACTORY_CLASS_H_
 
 #include "CompileGuard.h"
 
@@ -57,4 +57,4 @@ protected:
 };
 
 
-#endif // _DYNAMIC_LAND_MODEL_FACTORY_CLASS_H_
+#endif // _MODEL_PRESENTATION_FACTORY_CLASS_H_

@@ -2148,7 +2148,10 @@ void Application::_navigate()
   if ( _navigator.valid() )
     (*_navigator)();
 
-  this->appendCamera ();
+  // Append a camera.
+  Path::RefPtr path ( this->currentPath () );
+  if ( path.valid () )
+    path->append ( new VRV::Animate::Frame ( this->getViewMatrix () ) );
 }
 
 
@@ -2278,7 +2281,11 @@ void Application::appendCamera ()
   USUL_TRACE_SCOPE;
   Path::RefPtr path ( this->currentPath () );
   if ( path.valid () )
+  {
+    path->acceptNewFrames ( true );
     path->append ( new VRV::Animate::Frame ( this->getViewMatrix () ) );
+    path->acceptNewFrames ( false );
+  }
 }
 
 

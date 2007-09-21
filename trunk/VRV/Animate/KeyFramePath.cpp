@@ -124,7 +124,7 @@ void KeyFramePath::animate ( Usul::Interfaces::IUnknown * caller )
     // The independent variable.
     Parameter u ( static_cast < double > ( _currentStep ) / static_cast < double > ( totalNumberSteps - 1 ) );
 
-    //std::cout << "u: " << u << std::endl;
+    std::cout << "u: " << u << std::endl;
 
     // Make a point for the position and rotation.
     Point pos ( _curve.dimension() );
@@ -175,6 +175,17 @@ void KeyFramePath::animate ( Usul::Interfaces::IUnknown * caller )
 
     if ( _currentStep == totalNumberSteps )
     {
+      // Evaluate the point.
+      GN::Evaluate::point ( _curve, 1, pos );
+      r0 = _rotations.back ();
+
+      // The matrix.
+      osg::Matrix m;
+      m.postMult ( osg::Matrix::rotate ( osg::Quat ( r0.at(0), r0.at(1), r0.at(2), r0.at(3) ) ) );
+      m.postMult ( osg::Matrix::translate ( osg::Vec3 ( pos.at ( 0 ), pos.at ( 1 ), pos.at ( 2 ) ) ) );
+
+      vm->setViewMatrix ( m );
+
       Guard guard ( this->mutex () );
       _animating = false;
     }
@@ -219,6 +230,7 @@ void KeyFramePath::_interpolate ( )
       point.push_back ( c[0] );
       point.push_back ( c[1] );
       point.push_back ( c[2] );
+      point.push_back ( 0.0  );
       point.push_back ( r[0] );
       point.push_back ( r[1] );
       point.push_back ( r[2] );
@@ -262,8 +274,8 @@ void KeyFramePath::_interpolate ( )
 
   // Trim the two containers of data. Note: the 4 is related to the 
   // container dimension (see above), not the order.
-  pos.erase ( pos.begin() + 3, pos.end() );
-  _rotations.erase ( _rotations.begin(), _rotations.begin() + 3 );
+  pos.erase ( pos.begin() + 4, pos.end() );
+  _rotations.erase ( _rotations.begin(), _rotations.begin() + 4 );
 
   // Note: rot.at(0) should point to the 4 components of the quaternian.
   Usul::Math::transpose ( _rotations );

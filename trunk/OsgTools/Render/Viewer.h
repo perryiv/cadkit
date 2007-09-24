@@ -67,6 +67,7 @@
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/IViewport.h"
+#include "Usul/Interfaces/IMenuAdd.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
@@ -141,7 +142,8 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::ICullSceneVisitor,
                                 public Usul::Interfaces::IUpdateSubject,
                                 public Usul::Interfaces::IClippingDistance,
-                                public Usul::Interfaces::IViewport
+                                public Usul::Interfaces::IViewport,
+                                public Usul::Interfaces::IMenuAdd
 {
 public:
 
@@ -733,6 +735,9 @@ protected:
   /// Get/set the clipping distances (Usul::Interfaces::IClippingDistance).
   virtual void                  getClippingDistances ( float &nearDist, float &farDist ) const;
   virtual void                  setClippingDistances ( float nearDist, float farDist );
+
+  /// Add to the menu.
+  virtual void                  menuAdd ( MenuKit::Menu &menu );
 
 private:
 

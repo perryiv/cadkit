@@ -126,7 +126,7 @@ void Planet::setDefaults()
 
   const bool  elevEnabled    ( true  );
   const bool  ephemerisFlag  ( false );
-  const bool  hudEnabled     ( true );
+  const bool  hudEnabled     ( false );
   const float elevExag       ( 1.0   );
   const int   elevEstimate   ( 16    );    
   const int   levelDetail    ( 16    );    

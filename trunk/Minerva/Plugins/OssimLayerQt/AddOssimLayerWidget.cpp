@@ -1,0 +1,125 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author(s): Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "Minerva/Plugins/OssimLayerQt/CompileGuard.h"
+#include "Minerva/Plugins/OssimLayerQt/AddOssimLayerWidget.h"
+
+#include "Usul/File/Path.h"
+
+#include "Minerva/Interfaces/IAddLayer.h"
+
+#include "Magrathea/ImageTextureLayer.h"
+#include "Magrathea/KwlLayer.h"
+
+#include "QtGui/QFileDialog"
+#include "QtGui/QVBoxLayout"
+#include "QtGui/QListWidget"
+#include "QtGui/QPushButton"
+
+#include <iostream>
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AddOssimLayerWidget::AddOssimLayerWidget( QWidget *parent ) : BaseClass ( parent ),
+_listView ( 0x0 )
+{
+  _listView = new QListWidget ( this );
+
+  QPushButton *browse ( new QPushButton ( "Browse" ) );
+
+  connect ( browse, SIGNAL ( clicked () ), this, SLOT ( _browseClicked () ) );
+
+  QVBoxLayout *topLayout ( new QVBoxLayout );
+  this->setLayout ( topLayout );
+
+  topLayout->addWidget ( browse );
+  topLayout->addWidget ( _listView );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AddOssimLayerWidget::~AddOssimLayerWidget()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Browse.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AddOssimLayerWidget::_browseClicked()
+{
+  try
+  {
+    std::string filters ( "All Files(*.*);;JPEG (*.jpg);;TIFF (*.tiff,*.tif);;PNG (*.png);;OSSIM Key Word List (*kwl)" );
+
+    // Need to use this static function to get native file dialog.
+    QStringList answer ( QFileDialog::getOpenFileNames ( this, "Open Image", "", filters.c_str(), 0x0 ) );
+
+    for ( QStringList::iterator iter = answer.begin(); iter != answer.end (); ++iter )
+      _listView->addItem ( *iter );
+  }
+  catch ( const std::exception& e )
+  {
+    std::cout << "Error 3063467427: Standard exception caught: " << e.what() << std::endl;
+  }
+  catch ( ... )
+  {
+    std::cout << "Error 2199256948: Unknown exception caught." << std::endl;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add images to caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AddOssimLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
+{
+  Minerva::Interfaces::IAddLayer::QueryPtr al ( caller );
+
+  if ( false == al.valid () )
+    return;
+
+  for ( int i = 0; i < _listView->count (); ++i )
+  {
+    QListWidgetItem *item ( _listView->item ( i ) );
+
+    if( 0x0 != item )
+    {
+      std::string filename ( item->text ().toStdString () );
+      std::string ext ( Usul::File::extension ( filename ) );
+
+      if ( "kwl" == ext )
+      {
+        Usul::Interfaces::ILayer::RefPtr layer ( new Magrathea::KwlLayer ( filename ) );
+        al->addLayer ( layer );
+      }
+      else
+      {
+        Usul::Interfaces::ILayer::RefPtr layer ( new Magrathea::ImageTextureLayer ( filename ) );
+        al->addLayer ( layer );
+      }
+    }
+  }
+}

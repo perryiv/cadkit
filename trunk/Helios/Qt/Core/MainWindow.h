@@ -33,6 +33,8 @@
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 #include "Usul/Interfaces/Qt/IWorkspace.h"
 #include "Usul/Interfaces/IQtDockWidgetMenu.h"
+#include "Usul/Interfaces/IActiveDocumentListener.h"
+#include "Usul/Interfaces/IActiveViewListener.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Queue.h"
@@ -70,7 +72,9 @@ class HELIOS_QT_CORE_EXPORT MainWindow :
   public Usul::Interfaces::IGUIDelegateNotify,
   public Usul::Interfaces::IStreamListenerChar,
   public Usul::Interfaces::IProgressBarFactory,
-  public Usul::Interfaces::IQtDockWidgetMenu
+  public Usul::Interfaces::IQtDockWidgetMenu,
+  public Usul::Interfaces::IActiveDocumentListener,
+  public Usul::Interfaces::IActiveViewListener
 {
   Q_OBJECT
 
@@ -200,6 +204,12 @@ protected:
 
   // Add dock widget to menu (Usul::Interfaces::IQtDockWidgetMenu).
   virtual void                      addDockWidgetMenu ( QDockWidget * dock );
+
+  /// The active document has changed.
+  virtual void                      activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc );
+
+  /// The active document has changed.
+  virtual void                      activeViewChanged ( Usul::Interfaces::IUnknown *oldView, Usul::Interfaces::IUnknown *newView );
 
 private slots:
 

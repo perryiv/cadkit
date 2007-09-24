@@ -845,30 +845,6 @@ void Viewer::computeNearFar( bool b )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the database pager.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-CadKit::OSG::Glue::DatabasePager^ Viewer::DatabasePager::get()
-{
-  return gcnew CadKit::OSG::Glue::DatabasePager( System::IntPtr( _viewer->databasePager() ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the database pager.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::DatabasePager::set( CadKit::OSG::Glue::DatabasePager^ pager )
-{
-  _viewer->databasePager( static_cast < osgDB::DatabasePager* > ( pager->ptr().ToPointer() ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the matrix manipulator.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1087,31 +1063,4 @@ void Viewer::_onSpinTick ( System::Object^ sender, System::EventArgs^ args )
 {
   if ( 0x0 != _viewer )
     _viewer->timeoutSpin();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get whether the database pager should pre compile OpenGL objects before 
-//  allowing them to be merged into the scene graph.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::DatabasePagerPreCompile::get()
-{
-  return ( 0x0 == _viewer || 0x0 == _viewer->databasePager() ) ? false : _viewer->databasePager()->getDoPreCompile();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set whether the database pager should pre compile OpenGL objects before 
-//  allowing them to be merged into the scene graph.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::DatabasePagerPreCompile::set ( bool state )
-{
-  if ( 0x0 != _viewer && 0x0 != _viewer->databasePager() )
-    _viewer->databasePager()->setDoPreCompile ( state );
 }

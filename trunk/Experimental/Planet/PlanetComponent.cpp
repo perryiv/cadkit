@@ -82,6 +82,7 @@ osg::Group*  PlanetComponent::planetNode ( const std::string& key )
   {
     planet = new ossimPlanet;
     planet->getLand()->setLandType ( ossimPlanetLandType_ELLIPSOID );
+    planet->setEnableHudFlag ( false );
 
     {
       osg::ref_ptr < ossimPlanetOssimImageLayer > layer ( new ossimPlanetOssimImageLayer );

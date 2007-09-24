@@ -350,6 +350,18 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="OFF"
+					>
+					<File
+						RelativePath=".\TriangleReaderOFF.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\TriangleReaderOFF.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="DLL"

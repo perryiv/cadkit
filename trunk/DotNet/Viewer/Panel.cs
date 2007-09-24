@@ -1035,32 +1035,5 @@ namespace CadKit.Viewer
       get { using (this.Lock.read()) { return this.Viewer.textureMode(CadKit.Interfaces.TextureMode.Mode.CUBE_MAP); } }
       set { using (this.Lock.write()) { this.Viewer.textureMode(CadKit.Interfaces.TextureMode.Mode.CUBE_MAP, value); } }
     }
-
-
-    /// <summary>
-    /// Get whether the database pager should pre compile OpenGL objects before 
-    /// allowing them to be merged into the scene graph.
-    /// </summary>
-    public bool DatabasePagerPreCompile
-    {
-      get { using (this.Lock.read()) { return this.Viewer.DatabasePagerPreCompile; } }
-      set
-      {
-        using (this.Lock.write())
-        {
-          this.Viewer.DatabasePagerPreCompile = value;
-        }
-        CadKit.Persistence.Registry.Instance.setBool(REGISTRY_SECTION, this.DATABASE_PAGER_PRE_COMPILE, value);
-      }
-    }
-
-
-    /// <summary>
-    /// Set the database pager.
-    /// </summary>
-    public void initDatabasePagerSettings()
-    {
-      this.DatabasePagerPreCompile = CadKit.Persistence.Registry.Instance.getBool(REGISTRY_SECTION, this.DATABASE_PAGER_PRE_COMPILE, this.DatabasePagerPreCompile);
-    }
   }
 }

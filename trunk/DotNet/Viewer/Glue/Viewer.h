@@ -152,13 +152,6 @@ namespace CadKit
           void set ( CadKit::OSG::Glue::Node ^node );
         };
 
-        /// Get/Set the database pager.
-        property CadKit::OSG::Glue::DatabasePager ^ DatabasePager
-        {
-          CadKit::OSG::Glue::DatabasePager^ get();
-          void set ( CadKit::OSG::Glue::DatabasePager ^node );
-        };
-
         /// Get/Set the matrix manipulator.
         property CadKit::OSG::Glue::MatrixManipulator ^ MatrixManipulator
         {
@@ -204,14 +197,6 @@ namespace CadKit
         float                     frameDumpScale();
         void                      frameDumpScale ( float scale );
         void                      computeNearFar( bool b );
-
-        // Set whether the database pager should pre compile OpenGL objects before allowing
-        // them to be merged into the scene graph.
-        property bool DatabasePagerPreCompile
-        {
-          bool get();
-          void set ( bool b );
-        }
 
       protected:
 

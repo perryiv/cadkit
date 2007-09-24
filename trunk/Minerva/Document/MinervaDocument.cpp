@@ -23,7 +23,9 @@
 #include "Minerva/Core/Visitors/TemporalAnimation.h"
 #include "Minerva/Core/Visitors/FindMinMaxDates.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/File/Path.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Interfaces/IOssimPlanetLayer.h"
 #include "Usul/Interfaces/ILayerExtents.h"
@@ -34,6 +36,9 @@
 #include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
+
+#include "MenuKit/Menu.h"
+#include "MenuKit/Button.h"
 
 using namespace Minerva::Document;
 
@@ -91,7 +96,7 @@ SERIALIZE_XML_INITIALIZER_LIST
 
 MinervaDocument::~MinervaDocument()
 {
-  _sender->deleteSession();
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( _sender, &CommandSender::deleteSession ), "5415547030" );
 
   _sceneManager = 0x0;
   _planet = 0x0;
@@ -130,6 +135,10 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::ILayerList * > ( this );
   case Usul::Interfaces::ICommandList::IID:
     return static_cast < Usul::Interfaces::ICommandList * > ( this );
+  case Usul::Interfaces::IMenuAdd::IID:
+    return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
+  case Usul::Interfaces::ICommandExecuteListener::IID:
+    return static_cast < Usul::Interfaces::ICommandExecuteListener * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -1082,18 +1091,30 @@ void MinervaDocument::_executeCommand ( Usul::Interfaces::ICommand* command )
 {
   if ( 0x0 != command )
   { 
+    // Execute the command.
+    command->execute( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Command has executed..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::commandExecuteNotify ( Usul::Commands::Command* command )
+{
+  if ( 0x0 != command )
+  { 
     // Send the command to the distributed client.
     if ( _sender.valid() && _commandsSend )
     {
       // Send the command.
       _sender->sendCommand ( command );
     }
-
-    // Execute the command.
-    command->execute( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
   }
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1587,4 +1608,24 @@ MinervaDocument::CommandList  MinervaDocument::getCommandList ()
   commands.push_back ( new Minerva::Core::Commands::StopAnimation ( me ) );
 
   return commands;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add to the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::menuAdd ( MenuKit::Menu& menu )
+{
+  MenuKit::Menu::RefPtr m ( new MenuKit::Menu );
+  m->name ( "Minerva" );
+
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+
+  m->append ( new MenuKit::Button ( new Minerva::Core::Commands::StartAnimation ( me ) ) );
+  m->append ( new MenuKit::Button ( new Minerva::Core::Commands::StopAnimation  ( me ) ) );
+
+  menu.append ( m );
 }

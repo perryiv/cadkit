@@ -62,7 +62,6 @@ namespace DT.Minerva.Plugins.Document
         if (null != doc)
         {
           doc.Viewer = view.HeliosViewer;
-          view.initDatabasePagerSettings();
           view.SizeChanged += new System.EventHandler(doc.resize);
         }
 

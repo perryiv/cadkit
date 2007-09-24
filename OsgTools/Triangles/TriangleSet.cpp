@@ -92,7 +92,7 @@ namespace Detail
 ///////////////////////////////////////////////////////////////////////////////
 
 TriangleSet::TriangleSet() : BaseClass(),
-  _shared    ( LessVector ( CloseFloat() ) ),
+  _shared    ( LessVector ( CloseFloat( 20 ) ) ),
   _triangles (),
   _vertices  ( new osg::Vec3Array ),
   _normalsV  ( new osg::Vec3Array ),

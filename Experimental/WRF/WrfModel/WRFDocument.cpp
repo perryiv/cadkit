@@ -45,6 +45,9 @@
 
 #include "Serialize/XML/Deserialize.h"
 
+#include "MenuKit/Menu.h"
+#include "MenuKit/Button.h"
+
 #include "osgText/Text"
 #include "osg/Geode"
 #include "osg/Geometry"
@@ -158,6 +161,8 @@ Usul::Interfaces::IUnknown *WRFDocument::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
   case Usul::Interfaces::ICommandList::IID:
     return static_cast < Usul::Interfaces::ICommandList * > ( this );
+  case Usul::Interfaces::IMenuAdd::IID:
+    return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -848,6 +853,40 @@ WRFDocument::CommandList WRFDocument::getCommandList ()
   commands.push_back ( new AnimateCommand ( false, me.get() ) );
 
   return commands;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add to the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::menuAdd ( MenuKit::Menu& menu )
+{
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+
+  // Make the menu.
+  MenuKit::Menu::RefPtr wrf ( new MenuKit::Menu );
+  wrf->name ( "WRF" );
+  
+  wrf->append ( new MenuKit::Button ( new NextTimestep ( this ) ) );
+  wrf->append ( new MenuKit::Button ( new PreviousTimestep ( this ) ) );
+
+  for ( ChannelInfos::iterator iter = _channelInfo.begin(); iter != _channelInfo.end(); ++ iter )
+  {
+    wrf->append ( new MenuKit::Button ( new ChannelCommand ( (*iter)->name (), (*iter)->index (), this ) ) );
+  }
+
+  wrf->append ( new MenuKit::Button ( new ChangeNumPlanes ( 4.0, this ) ) );
+  wrf->append ( new MenuKit::Button ( new ChangeNumPlanes ( 2.0, this ) ) );
+  wrf->append ( new MenuKit::Button ( new ChangeNumPlanes ( 0.5, this ) ) );
+  wrf->append ( new MenuKit::Button ( new ChangeNumPlanes ( 0.25, this ) ) );
+
+  wrf->append ( new MenuKit::Button ( new AnimateCommand ( true, me.get() ) ) );
+  wrf->append ( new MenuKit::Button ( new AnimateCommand ( false, me.get() ) ) );
+
+  menu.append ( wrf );
 }
 
 

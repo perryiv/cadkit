@@ -317,14 +317,6 @@
 					RelativePath=".\PolygonLayerGlue.h"
 					>
 				</File>
-				<File
-					RelativePath=".\PolygonTimeLayerGlue.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\PolygonTimeLayerGlue.h"
-					>
-				</File>
 			</Filter>
 		</Filter>
 	</Files>

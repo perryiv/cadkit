@@ -23,6 +23,7 @@
 #include "TriangleReaderGrassRaster.h"
 #include "TriangleReaderArcAsciiGrid.h"
 #include "ParadisReader.h"
+#include "TriangleReaderOFF.h"
 
 #include "OsgTools/Triangles/LoopSplitter.h"
 
@@ -196,7 +197,7 @@ bool TriangleDocument::canInsert ( const std::string &file ) const
 bool TriangleDocument::canOpen ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "stl" || ext == "r3d" || ext == "tdf" || ext == "asc" || ext == "grs"/*|| ext == "prds"*/ );
+  return ( ext == "stl" || ext == "r3d" || ext == "tdf" || ext == "asc" || ext == "grs" || ext == "off" /*|| ext == "prds"*/ );
 }
 
 
@@ -255,6 +256,11 @@ void TriangleDocument::read ( const std::string &name, Unknown *caller )
     reader();
   }
 #endif
+  else if ( "off" == ext )
+  {
+    TriangleReaderOFF reader ( name, caller, this );
+    reader ();
+  }
   else
   {
     throw std::runtime_error("Error: 983249834290 Invalid file extension for Triangle Document:" + name);

@@ -196,14 +196,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\DatabasePager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\DatabasePager.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Group.cpp"
 				>
 			</File>

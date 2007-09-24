@@ -261,6 +261,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Algorithms\Detail\Corners.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Algorithms\Detail\Rotations.h"
 						>
 					</File>
@@ -860,6 +864,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\ICommandExecuteListener.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\ICommandList.h"
 					>
 				</File>
@@ -941,6 +949,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IFindLoops.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IFitLineTerrain.h"
 					>
 				</File>
 				<File
@@ -1133,6 +1145,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\ILayer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\ILayerAddGUIQt.h"
 					>
 				</File>
 				<File

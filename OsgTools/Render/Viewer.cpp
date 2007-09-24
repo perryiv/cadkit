@@ -2349,6 +2349,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IClippingDistance * > ( this );
   case Usul::Interfaces::IViewport::IID:
     return static_cast < Usul::Interfaces::IViewport * > ( this );
+  case Usul::Interfaces::IMenuAdd::IID:
+    return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
   default:
     return 0x0;
   } 
@@ -5126,4 +5128,19 @@ void Viewer::setClippingDistances ( float nearDist, float farDist )
   {
     this->viewer()->setProjectionMatrixAsFrustum ( left, right, bottom, top, nearDist, farDist );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add to the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::menuAdd ( MenuKit::Menu &menu )
+{
+  // Redirect to the caller.
+  Usul::Interfaces::IMenuAdd::QueryPtr ma ( _caller );
+  if ( ma.valid () )
+    ma->menuAdd ( menu );
 }

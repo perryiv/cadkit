@@ -25,6 +25,8 @@
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/ILayerList.h"
 #include "Usul/Interfaces/ICommandList.h"
+#include "Usul/Interfaces/IMenuAdd.h"
+#include "Usul/Interfaces/ICommandExecuteListener.h"
 
 #include "Minerva/Core/Animate/Settings.h"
 #include "Minerva/Core/Scene/SceneManager.h"
@@ -56,8 +58,10 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Minerva::Interfaces::IAddLayer,
                                                 public Minerva::Interfaces::IRemoveLayer,
                                                 public Minerva::Interfaces::IDirtyScene,
-  public Usul::Interfaces::ILayerList,
-  public Usul::Interfaces::ICommandList
+                                                public Usul::Interfaces::ILayerList,
+                                                public Usul::Interfaces::ICommandList,
+                                                public Usul::Interfaces::IMenuAdd,
+                                                public Usul::Interfaces::ICommandExecuteListener
 {
 public:
   /// Useful typedefs.
@@ -242,14 +246,19 @@ protected:
   virtual void                             dirtyScene ();
 
   /// Get the number of layers ( Usul::Interfaces::ILayerList ).
-  virtual unsigned int                  numberLayers () const;
+  virtual unsigned int                     numberLayers () const;
 
   /// Get the layer at position i ( Usul::Interfaces::ILayerList ).
-  virtual Usul::Interfaces::ILayer*     layer ( unsigned int i );
+  virtual Usul::Interfaces::ILayer*        layer ( unsigned int i );
 
   /// Get the command list for this document.
-  virtual CommandList                   getCommandList ();
+  virtual CommandList                      getCommandList ();
 
+  /// Add to the menu.
+  virtual void                             menuAdd ( MenuKit::Menu& menu );
+
+  // Command is executed.
+  virtual void                             commandExecuteNotify ( Usul::Commands::Command* command );
 private:
 
   Layers _layers;

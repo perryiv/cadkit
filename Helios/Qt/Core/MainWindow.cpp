@@ -43,6 +43,7 @@
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/GUI/IAddDockWindow.h"
+#include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Resources/TextWindow.h"
 #include "Usul/Strings/Qt.h"
@@ -174,6 +175,12 @@ MainWindow::MainWindow ( const std::string &vendor,
 
   this->setAcceptDrops ( true );
 
+  // Add this as an active view listener.
+  Usul::Documents::Manager::instance().addActiveViewListener ( this );
+
+  // Add this as an active document listener.
+  Usul::Documents::Manager::instance().addActiveDocumentListener ( this );
+
   // Register DocumentProxy for Usul::Documents::Document.
   qRegisterMetaType < DocumentProxy > ( );
 }
@@ -208,6 +215,12 @@ void MainWindow::_destroy()
   // Stop the idle timer.
   if ( 0x0 != _idleTimer )
     _idleTimer->stop();
+
+  // Remove this as an active view listener.
+  Usul::Documents::Manager::instance().removeActiveViewListener ( this );
+
+  // Remove this as an active document listener.
+  Usul::Documents::Manager::instance().removeActiveDocumentListener ( this );
 
   // Clear the factory before releasing the plugins (some of them may 
   // populate it but not clean up).
@@ -364,6 +377,24 @@ void MainWindow::_initMenu()
       _dockMenu->name ( "Docking Windows" );
       view->append ( _dockMenu );
       _menu->append ( view );
+    }
+  }
+
+  // Check the active document.
+  {
+    Usul::Interfaces::IMenuAdd::QueryPtr ma ( Usul::Documents::Manager::instance().activeDocument () );
+    if ( ma.valid () )
+    {
+      ma->menuAdd ( *_menu );
+    }
+  }
+
+  // Check the active view.
+  {
+    Usul::Interfaces::IMenuAdd::QueryPtr ma ( Usul::Documents::Manager::instance().activeView () );
+    if ( ma.valid () )
+    {
+      ma->menuAdd ( *_menu );
     }
   }
 }
@@ -609,6 +640,10 @@ Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IProgressBarFactory * > ( this );
   case Usul::Interfaces::IQtDockWidgetMenu::IID:
     return static_cast < Usul::Interfaces::IQtDockWidgetMenu * > ( this );
+  case Usul::Interfaces::IActiveDocumentListener::IID:
+    return static_cast < Usul::Interfaces::IActiveDocumentListener * > ( this );
+  case Usul::Interfaces::IActiveViewListener::IID:
+    return static_cast < Usul::Interfaces::IActiveViewListener * > ( this );
   default:
     return 0x0;
   }
@@ -1563,4 +1598,19 @@ void MainWindow::dropEvent ( QDropEvent *event )
   }
 
   event->acceptProposedAction();
+}
+
+
+/// The active document has changed.
+void MainWindow::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
+{
+  this->_initMenu ();
+  this->_buildMenu ();
+}
+
+/// The active document has changed.
+void MainWindow::activeViewChanged ( Usul::Interfaces::IUnknown *oldView, Usul::Interfaces::IUnknown *newView )
+{
+  this->_initMenu ();
+  this->_buildMenu ();
 }

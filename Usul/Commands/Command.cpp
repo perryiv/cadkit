@@ -19,6 +19,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Interfaces/ICommandExecuteListener.h"
 
 using namespace Usul::Commands;
 
@@ -156,6 +157,11 @@ void Command::execute ( Usul::Interfaces::IUnknown * caller )
   // If we don't already have a caller, and we are given a valid one, set our internal caller.
   if( false == _caller.valid() && 0x0 != caller )
     _caller = caller;
+
+  // Notify that we are executing.
+  Usul::Interfaces::ICommandExecuteListener::QueryPtr cel ( this->caller () );
+  if ( cel.valid () )
+    cel->commandExecuteNotify ( this );
   
   // Execute the command.
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Command::_execute ), "3084410573" );

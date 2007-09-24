@@ -40,6 +40,7 @@
 #include "Usul/Math/Constants.h"
 #include "Usul/Print/Matrix.h"
 #include "Usul/Interfaces/ICommandList.h"
+#include "Usul/Interfaces/IMenuAdd.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/XercesLife.h"
@@ -3228,6 +3229,10 @@ void Application::_initMenu()
   {
     this->_initToolsMenu ( menu.get() );
   }
+
+  Usul::Interfaces::IMenuAdd::QueryPtr ma ( Usul::Documents::Manager::instance().activeDocument () );
+  if ( ma.valid ( ) )
+    ma->menuAdd ( *menu );
 
   // Set the menu.
   osgMenu->menu ( menu.get() );

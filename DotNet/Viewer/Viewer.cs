@@ -749,16 +749,6 @@ namespace CadKit.Viewer
 
 
     /// <summary>
-    /// Get/Set the database pager.
-    /// </summary>
-    public object DatabasePager
-    {
-      get { using (this.Lock.read()) { return this.Panel.Viewer.DatabasePager; } }
-      set { using (this.Lock.write()) { this.Panel.Viewer.DatabasePager = value as CadKit.OSG.Glue.DatabasePager; } }
-    }
-
-
-    /// <summary>
     /// Get/Set the matrix manipulator.
     /// </summary>
     public object MatrixManipulator
@@ -951,26 +941,6 @@ namespace CadKit.Viewer
     {
       get { return this.Panel.TextureModeCubeMap; }
       set { this.Panel.TextureModeCubeMap = value; }
-    }
-
-
-    /// <summary>
-    /// Get whether the database pager should pre compile OpenGL objects before 
-    /// allowing them to be merged into the scene graph.
-    /// </summary>
-    public bool DatabasePagerPreCompile
-    {
-      get { using (this.Lock.read()) { return this.Panel.DatabasePagerPreCompile; } }
-      set { using (this.Lock.write()) { this.Panel.DatabasePagerPreCompile = value; } }
-    }
-
-
-    /// <summary>
-    /// Set the database pager.
-    /// </summary>
-    public void initDatabasePagerSettings()
-    {
-      using (this.Lock.write()) { this.Panel.initDatabasePagerSettings(); }
     }
 
 

@@ -13,7 +13,6 @@
 #include "PointLayerGlue.h"
 #include "PointTimeLayerGlue.h"
 #include "PolygonLayerGlue.h"
-#include "PolygonTimeLayerGlue.h"
 #include "SingleColorFunctor.h"
 #include "GradientColorFunctor.h"
 #include "Connection.h"
@@ -77,8 +76,8 @@ CadKit::Interfaces::ILayer^ Factory::createFromMinervaLayer( System::IntPtr poin
       managedLayer = gcnew PointTimeLayerGlue( pointTimeLayer );
     else if( ::Minerva::Core::Layers::PolygonLayer* polygonLayer = dynamic_cast < ::Minerva::Core::Layers::PolygonLayer* > ( layer.get() ) )
       managedLayer = gcnew PolygonLayerGlue( polygonLayer );
-    else if( ::Minerva::Core::Layers::PolygonTimeLayer* polygonTimeLayer = dynamic_cast < ::Minerva::Core::Layers::PolygonTimeLayer* > ( layer.get() ) )
-      managedLayer = gcnew PolygonTimeLayerGlue ( polygonTimeLayer );
+    /*else if( ::Minerva::Core::Layers::PolygonTimeLayer* polygonTimeLayer = dynamic_cast < ::Minerva::Core::Layers::PolygonTimeLayer* > ( layer.get() ) )
+      managedLayer = gcnew PolygonTimeLayerGlue ( polygonTimeLayer );*/
   }
 
   return managedLayer;
@@ -103,8 +102,8 @@ CadKit::Interfaces::ILayer^ Factory::create( System::String^ datatable, DT::Mine
         DT::Minerva::Glue::LayerGlue ^layer = nullptr;
         if( info->isPointTimeTable ( table ) )
           layer = gcnew PointTimeLayerGlue();
-        else if ( info->isPolygonTimeTable ( table ) )
-          layer = gcnew PolygonTimeLayerGlue ();
+        /*else if ( info->isPolygonTimeTable ( table ) )
+          layer = gcnew PolygonTimeLayerGlue ();*/
         else if ( info->isPointTable ( table ) )
           layer = gcnew PointLayerGlue();
         else if ( info->isLineTable ( table ) )

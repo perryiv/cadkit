@@ -461,30 +461,6 @@
 					RelativePath="..\Commands\Navigator.h"
 					>
 				</File>
-				<File
-					RelativePath="..\Commands\PolygonMode.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Commands\PolygonMode.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Commands\RenderingPasses.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Commands\RenderingPasses.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Commands\ShadeModel.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Commands\ShadeModel.h"
-					>
-				</File>
 			</Filter>
 		</Filter>
 	</Files>

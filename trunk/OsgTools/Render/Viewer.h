@@ -68,6 +68,7 @@
 #include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/IViewport.h"
 #include "Usul/Interfaces/IMenuAdd.h"
+#include "Usul/Interfaces/IRenderLoop.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
@@ -143,7 +144,8 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IUpdateSubject,
                                 public Usul::Interfaces::IClippingDistance,
                                 public Usul::Interfaces::IViewport,
-                                public Usul::Interfaces::IMenuAdd
+                                public Usul::Interfaces::IMenuAdd,
+                                public Usul::Interfaces::IRenderLoop
 {
 public:
 
@@ -230,6 +232,10 @@ public:
   // Button Press/Release
   void                  buttonPress      ( float x, float y, bool left, bool middle, bool right );
   void                  buttonRelease    ( float x, float y, bool left, bool middle, bool right );
+
+  /// Get the caller.
+  IUnknown*             caller ();
+  const IUnknown *      caller () const;
 
   // Set the camera.
   virtual void          camera ( CameraOption option );
@@ -738,6 +744,10 @@ protected:
 
   /// Add to the menu.
   virtual void                  menuAdd ( MenuKit::Menu &menu );
+
+  /// Get/Set render loop flag (IRenderLoop).
+  virtual void                  renderLoop ( bool b );
+  virtual bool                  renderLoop () const;
 
 private:
 

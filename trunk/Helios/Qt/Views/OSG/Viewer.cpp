@@ -12,8 +12,16 @@
 
 #include "Usul/Documents/Manager.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Commands/PolygonMode.h"
+#include "Usul/Commands/RenderingPasses.h"
+#include "Usul/Commands/RenderLoop.h"
+#include "Usul/Commands/ShadeModel.h"
 
 #include "OsgTools/Render/Defaults.h"
+
+#include "MenuKit/Menu.h"
+#include "MenuKit/Button.h"
+#include "MenuKit/RadioButton.h"
 
 #include "QtCore/QTimer"
 #include "QtGui/QResizeEvent"
@@ -33,6 +41,7 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   _viewer ( 0x0 ),
   _refCount ( 0 ),
   _timer ( 0x0 ),
+  _timerRenderLoop ( 0x0 ),
   _keys(),
   _lastMode ( OsgTools::Render::Viewer::NAVIGATION ),
   _mutex ( new Viewer::Mutex )
@@ -84,6 +93,9 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
 
   // Initialize the timer.
   _timer = new QTimer ( this );
+
+  // Initialize the timer for render loop.
+  _timerRenderLoop = new QTimer ( this );
 
   // Save the mode.
   _lastMode = _viewer->getMode();
@@ -228,6 +240,10 @@ Usul::Interfaces::IUnknown * Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ITimeoutSpin* > ( this );
   case Usul::Interfaces::IModifiedObserver::IID:
     return static_cast < Usul::Interfaces::IModifiedObserver * > ( this );
+  case Usul::Interfaces::IRenderLoop::IID:
+    return static_cast < Usul::Interfaces::IRenderLoop * > ( this );
+  case Usul::Interfaces::IMenuAdd::IID:
+    return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
   default:
     return 0x0;
   }
@@ -779,4 +795,128 @@ void Viewer::subjectModified ( Usul::Interfaces::IUnknown * )
 Viewer::Mutex &Viewer::mutex() const
 {
   return *_mutex;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set render loop flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::renderLoop ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  if ( 0x0 != _timerRenderLoop )
+  {
+    _timerRenderLoop->stop();
+
+    if ( b )
+    {
+      this->connect ( _timerRenderLoop, SIGNAL ( timeout() ), this, SLOT ( _onTimeoutRenderLoop() ) );
+
+      // Set the timer to go off every 15 milliseconds.
+      _timerRenderLoop->start ( static_cast<int> ( 15 ) );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get render loop flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::renderLoop () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  return ( 0x0 != _timerRenderLoop ? _timerRenderLoop->isActive () : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_onTimeoutRenderLoop()
+{
+  USUL_TRACE_SCOPE;
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  if ( true == viewer.valid() )
+    viewer->render ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add to the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::menuAdd( MenuKit::Menu &menu )
+{
+  MenuKit::Menu::RefPtr view ( menu.findOrCreateMenu ( "&View" ) );
+
+  if ( view.valid () )
+  {
+    if ( view->items().size () > 0 )
+      view->addSeparator ();
+
+    Usul::Interfaces::IUnknown::QueryPtr viewer ( this->viewer () );
+
+    typedef MenuKit::RadioButton RadioButton;
+    typedef Usul::Commands::RenderingPasses RenderingPasses;
+    typedef Usul::Commands::PolygonMode PolygonMode;
+    typedef Usul::Interfaces::IPolygonMode IPolygonMode;
+    typedef Usul::Commands::ShadeModel ShadeModel;
+    typedef Usul::Interfaces::IShadeModel IShadeModel;
+
+    // Rendering passes menu.
+    {
+      MenuKit::Menu::RefPtr passes ( new MenuKit::Menu );
+      passes->layout ( MenuKit::Menu::VERTICAL );
+      passes->text ( "Rendering Passes" );
+      view->append ( passes.get() );
+
+      passes->append ( new RadioButton ( new RenderingPasses ( "1", 1, viewer.get () ) ) );
+      passes->append ( new RadioButton ( new RenderingPasses ( "3", 3, viewer.get () ) ) );
+      passes->append ( new RadioButton ( new RenderingPasses ( "9", 9, viewer.get () ) ) );
+      passes->append ( new RadioButton ( new RenderingPasses ( "12", 12, viewer.get () ) ) );
+    }
+
+    MenuKit::Button::RefPtr rl ( new MenuKit::Button );
+    rl->command ( new Usul::Commands::RenderLoop ( "Render Loop", viewer.get() ) );
+    rl->toggle ( true );
+    view->append ( rl );
+
+    // Polygons menu.
+    {
+      MenuKit::Menu::RefPtr polygons ( new MenuKit::Menu );
+      polygons->layout ( MenuKit::Menu::VERTICAL );
+      polygons->text ( "Polygons" );
+      view->append ( polygons.get() );
+
+      polygons->append ( new RadioButton ( new PolygonMode ( "Filled",    IPolygonMode::FILLED, viewer.get() ) ) );
+      polygons->append ( new RadioButton ( new PolygonMode ( "Wireframe", IPolygonMode::WIRE_FRAME, viewer.get() ) ) );
+      polygons->append ( new RadioButton ( new PolygonMode ( "Points",    IPolygonMode::POINTS, viewer.get() ) ) );
+    }
+
+    // Shading menu.
+    {
+      MenuKit::Menu::RefPtr shading ( new MenuKit::Menu );
+      shading->layout ( MenuKit::Menu::VERTICAL );
+      shading->text ( "Shading" );
+      view->append ( shading.get() );
+
+      shading->append ( new RadioButton ( new ShadeModel ( "Smooth", IShadeModel::SMOOTH, viewer.get() ) ) );
+      shading->append ( new RadioButton ( new ShadeModel ( "Flat",   IShadeModel::FLAT, viewer.get() ) ) );
+    }
+  }
 }

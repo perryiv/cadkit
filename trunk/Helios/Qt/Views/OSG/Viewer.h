@@ -19,6 +19,8 @@
 #include "Usul/Interfaces/ITimeoutAnimate.h"
 #include "Usul/Interfaces/ITimeoutSpin.h"
 #include "Usul/Interfaces/IModifiedObserver.h"
+#include "Usul/Interfaces/IRenderLoop.h"
+#include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 
@@ -42,7 +44,9 @@ class HELIOS_QT_VIEWS_OSG_EXPORT Viewer : public QGLWidget,
                                           public Usul::Interfaces::IWindow,
                                           public Usul::Interfaces::ITimeoutAnimate,
                                           public Usul::Interfaces::ITimeoutSpin,
-                                          public Usul::Interfaces::IModifiedObserver
+                                          public Usul::Interfaces::IModifiedObserver,
+                                          public Usul::Interfaces::IRenderLoop,
+                                          public Usul::Interfaces::IMenuAdd
 {
   Q_OBJECT
 
@@ -91,6 +95,13 @@ public:
   /// Called when the document is modified (Usul::Interfaces::IModifiedObserver).
   virtual void                            subjectModified ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
+  /// Get/Set render loop flag (IRenderLoop).
+  virtual void                            renderLoop ( bool b );
+  virtual bool                            renderLoop () const;
+
+  /// Add to the menu (IMenuAdd).
+  virtual void                            menuAdd ( MenuKit::Menu& menu );
+
 protected:
 
   void                                    _initPlacement ();
@@ -109,6 +120,7 @@ private slots:
 
   void                                    _onTimeoutAnimation();
   void                                    _onTimeoutSpin();
+  void                                    _onTimeoutRenderLoop();
 
 private:
 
@@ -116,6 +128,7 @@ private:
   OsgTools::Render::Viewer::RefPtr _viewer;
   unsigned int _refCount;
   QTimer *_timer;
+  QTimer *_timerRenderLoop;
   KeyMap _keys;
   ViewMode _lastMode;
   mutable Mutex *_mutex;

@@ -159,6 +159,7 @@ Viewer::MatrixManipPtr Viewer::_navManipCopyBuffer ( 0x0 );
 ///////////////////////////////////////////////////////////////////////////////
 
 Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
+  BaseClass        (),
   _context         ( context ),
   _renderer        ( new Renderer ),
   _sceneManager    ( new SceneManager ),
@@ -2351,6 +2352,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IViewport * > ( this );
   case Usul::Interfaces::IMenuAdd::IID:
     return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
+  case Usul::Interfaces::IRenderLoop::IID:
+    return static_cast < Usul::Interfaces::IRenderLoop * > ( this );
   default:
     return 0x0;
   } 
@@ -5143,4 +5146,59 @@ void Viewer::menuAdd ( MenuKit::Menu &menu )
   Usul::Interfaces::IMenuAdd::QueryPtr ma ( _caller );
   if ( ma.valid () )
     ma->menuAdd ( menu );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set render loop flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::renderLoop ( bool b )
+{
+  // Redirect to the caller.
+  Usul::Interfaces::IRenderLoop::QueryPtr rl ( this->caller () );
+  if ( rl.valid () )
+    rl->renderLoop ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get render loop flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::renderLoop () const
+{
+  // Redirect to the caller.
+  Usul::Interfaces::IRenderLoop::QueryPtr rl ( const_cast < IUnknown * > ( this->caller () ) );
+  return rl.valid () ? rl->renderLoop ( ) : false ;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown * Viewer::caller ()
+{
+  Guard guard ( this->mutex () );
+  return _caller.get ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Usul::Interfaces::IUnknown * Viewer::caller () const
+{
+  Guard guard ( this->mutex () );
+  return _caller.get ();
 }

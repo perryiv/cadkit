@@ -8,41 +8,39 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __VRV_COMMANDS_SHADE_MODEL_H__
-#define __VRV_COMMANDS_SHADE_MODEL_H__
+#ifndef __USUL_COMMANDS_RENDERING_PASSES_H__
+#define __USUL_COMMANDS_RENDERING_PASSES_H__
 
-#include "VRV/Export.h"
+#include "Usul/Export/Export.h"
 
 #include "Usul/Commands/Command.h"
-#include "Usul/Interfaces/IShadeModel.h"
 #include "Usul/Interfaces/IUpdateCheck.h"
 
-namespace VRV {
+namespace Usul {
 namespace Commands {
 
-class VRV_EXPORT ShadeModel : public Usul::Commands::Command
+class USUL_EXPORT RenderingPasses : public Usul::Commands::Command
 {
 public:
   typedef Usul::Commands::Command BaseClass;
-  typedef Usul::Interfaces::IShadeModel            IShadeModel;
-  typedef IShadeModel::Mode                        Mode;
 
-  USUL_DECLARE_COMMAND ( ShadeModel );
+  USUL_DECLARE_COMMAND ( RenderingPasses );
 
-  ShadeModel ( const std::string& name, Mode mode, Usul::Interfaces::IUnknown *caller = 0x0 );
+  RenderingPasses ( const std::string& name, unsigned int passes, Usul::Interfaces::IUnknown *caller = 0x0 );
 
 protected:
-  virtual ~ShadeModel ();
+  virtual ~RenderingPasses ();
 
   virtual void _execute ();
 
+  virtual bool updateEnable () const;
   virtual bool updateCheck () const;
 
 private:
-  Mode _mode;
+  unsigned int _passes;
 };
 
 }
 }
 
-#endif // __VRV_COMMANDS_SHADE_MODEL_H__
+#endif // __USUL_COMMANDS_RENDERING_PASSES_H__

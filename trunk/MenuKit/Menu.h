@@ -76,6 +76,8 @@ public:
   void                      prepend ( Item * );
   void                      insert ( iterator, Item * );
 
+  Menu*                     findOrCreateMenu ( const std::string& name );
+
   // Set/get the layout.
   void                      layout ( Layout l ) { _layout = l; }
   Layout                    layout() const { return _layout; }

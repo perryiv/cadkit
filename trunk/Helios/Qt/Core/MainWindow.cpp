@@ -145,6 +145,10 @@ MainWindow::MainWindow ( const std::string &vendor,
   // Enable toolbar docking.
   this->setEnabled ( true );
 
+  // Create the menu for the docking windows.
+  _dockMenu = new MenuKit::Menu;
+  _dockMenu->text ( "Docking Windows" );
+
   // Make the menu.
   this->_initMenu();
   this->_buildToolBar();
@@ -351,7 +355,7 @@ void MainWindow::_initMenu()
   // Add file menu.
   {  
     MenuKit::Menu::RefPtr menu ( new MenuKit::Menu );
-    menu->name ( "&File" );
+    menu->text ( "&File" );
     menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::OpenDocument ( me ) ) );
     menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::InsertDocument ( me ) ) );
     menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::SaveDocument ( me ) ) );
@@ -372,9 +376,7 @@ void MainWindow::_initMenu()
   {
     {
       MenuKit::Menu::RefPtr view ( new MenuKit::Menu );
-      view->name ( "&View" );
-      _dockMenu = new MenuKit::Menu;
-      _dockMenu->name ( "Docking Windows" );
+      view->text ( "&View" );
       view->append ( _dockMenu );
       _menu->append ( view );
     }
@@ -417,7 +419,7 @@ void MainWindow::_buildMenu ()
     // We only have top level items that are menus.
     if ( MenuKit::Menu *menu = dynamic_cast < MenuKit::Menu* > ( iter->get() ) )
     {
-      CadKit::Helios::Core::Menu* qtMenu ( new CadKit::Helios::Core::Menu ( tr ( menu->name ().c_str() ) ) );
+      CadKit::Helios::Core::Menu* qtMenu ( new CadKit::Helios::Core::Menu ( tr ( menu->text ().c_str() ) ) );
       qtMenu->menu ( menu );
       this->menuBar()->addMenu ( qtMenu );
       _menus.push_back ( qtMenu );
@@ -1601,14 +1603,25 @@ void MainWindow::dropEvent ( QDropEvent *event )
 }
 
 
-/// The active document has changed.
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The active document has changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void MainWindow::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
 {
   this->_initMenu ();
   this->_buildMenu ();
 }
 
-/// The active document has changed.
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The active view has changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void MainWindow::activeViewChanged ( Usul::Interfaces::IUnknown *oldView, Usul::Interfaces::IUnknown *newView )
 {
   this->_initMenu ();

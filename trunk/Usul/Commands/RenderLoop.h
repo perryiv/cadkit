@@ -8,38 +8,37 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __VRV_COMMANDS_RENDERING_PASSES_H__
-#define __VRV_COMMANDS_RENDERING_PASSES_H__
+#ifndef __USUL_COMMANDS_RENDER_LOOP_H__
+#define __USUL_COMMANDS_RENDER_LOOP_H__
 
-#include "VRV/Export.h"
+#include "Usul/Export/Export.h"
 
 #include "Usul/Commands/Command.h"
 #include "Usul/Interfaces/IUpdateCheck.h"
 
-namespace VRV {
+namespace Usul {
 namespace Commands {
 
-class VRV_EXPORT RenderingPasses : public Usul::Commands::Command
+class USUL_EXPORT RenderLoop : public Usul::Commands::Command
 {
 public:
   typedef Usul::Commands::Command BaseClass;
 
-  USUL_DECLARE_COMMAND ( RenderingPasses );
+  USUL_DECLARE_COMMAND ( RenderLoop );
 
-  RenderingPasses ( const std::string& name, unsigned int passes, Usul::Interfaces::IUnknown *caller = 0x0 );
+  RenderLoop ( const std::string& name, Usul::Interfaces::IUnknown *caller = 0x0 );
 
 protected:
-  virtual ~RenderingPasses ();
+  virtual ~RenderLoop ();
 
   virtual void _execute ();
 
+  virtual bool updateEnable () const;
   virtual bool updateCheck () const;
 
-private:
-  unsigned int _passes;
 };
 
 }
 }
 
-#endif // __VRV_COMMANDS_RENDERING_PASSES_H__
+#endif // __USUL_COMMANDS_RENDER_LOOP_H__

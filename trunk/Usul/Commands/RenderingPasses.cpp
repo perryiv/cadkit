@@ -8,11 +8,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "VRV/Commands/ShadeModel.h"
+#include "Usul/Commands/RenderingPasses.h"
+#include "Usul/Interfaces/IRenderingPasses.h"
 
-using namespace VRV::Commands;
+using namespace Usul::Commands;
 
-USUL_IMPLEMENT_COMMAND ( ShadeModel );
+USUL_IMPLEMENT_COMMAND ( RenderingPasses );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -20,9 +21,9 @@ USUL_IMPLEMENT_COMMAND ( ShadeModel );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ShadeModel::ShadeModel ( const std::string& name, Mode mode, Usul::Interfaces::IUnknown *caller ) : 
+RenderingPasses::RenderingPasses ( const std::string& name, unsigned int passes, Usul::Interfaces::IUnknown *caller ) : 
 BaseClass ( caller ),
-_mode ( mode )
+_passes ( passes )
 {
   this->text ( name );
 }
@@ -34,7 +35,7 @@ _mode ( mode )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ShadeModel::~ShadeModel ()
+RenderingPasses::~RenderingPasses ()
 {
 }
 
@@ -45,12 +46,12 @@ ShadeModel::~ShadeModel ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ShadeModel::_execute ()
+void RenderingPasses::_execute ()
 {
-  Usul::Interfaces::IShadeModel::QueryPtr sm ( this->caller () );
+  Usul::Interfaces::IRenderingPasses::QueryPtr rp ( this->caller () );
 
-  if ( sm.valid () )
-    sm->shadeModel ( _mode );
+  if ( rp.valid () )
+    rp->renderingPasses ( _passes );
 }
 
 
@@ -60,8 +61,21 @@ void ShadeModel::_execute ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ShadeModel::updateCheck () const
+bool RenderingPasses::updateCheck () const
 {
-  Usul::Interfaces::IShadeModel::QueryPtr sm ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller () ) );
-  return sm.valid () ? _mode == sm->shadeModel () : false;
+  Usul::Interfaces::IRenderingPasses::QueryPtr rp ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller () ) );
+  return rp.valid () ? _passes == rp->renderingPasses () : false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the enabled state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool RenderingPasses::updateEnable () const
+{
+  Usul::Interfaces::IRenderingPasses::QueryPtr rp ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller () ) );
+  return rp.valid ();
 }

@@ -8,19 +8,19 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __VRV_COMMANDS_POLYGON_MODE_H__
-#define __VRV_COMMANDS_POLYGON_MODE_H__
+#ifndef __USUL_COMMANDS_POLYGON_MODE_H__
+#define __USUL_COMMANDS_POLYGON_MODE_H__
 
-#include "VRV/Export.h"
+#include "Usul/Export/Export.h"
 
 #include "Usul/Commands/Command.h"
 #include "Usul/Interfaces/IPolygonMode.h"
 #include "Usul/Interfaces/IUpdateCheck.h"
 
-namespace VRV {
+namespace Usul {
 namespace Commands {
 
-class VRV_EXPORT PolygonMode : public Usul::Commands::Command
+class USUL_EXPORT PolygonMode : public Usul::Commands::Command
 {
 public:
   typedef Usul::Commands::Command BaseClass;
@@ -45,4 +45,4 @@ private:
 }
 }
 
-#endif // __VRV_COMMANDS_POLYGON_MODE_H__
+#endif // __USUL_COMMANDS_POLYGON_MODE_H__

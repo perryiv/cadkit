@@ -18,11 +18,11 @@
 #include "VRV/Jobs/SaveImage.h"
 #include "VRV/Core/FunctorHelpers.h"
 #include "VRV/Commands/Camera.h"
-#include "VRV/Commands/PolygonMode.h"
-#include "VRV/Commands/ShadeModel.h"
-#include "VRV/Commands/RenderingPasses.h"
 #include "VRV/Commands/Navigator.h"
 #include "VRV/Commands/BackgroundColor.h"
+#include "Usul/Commands/PolygonMode.h"
+#include "Usul/Commands/RenderingPasses.h"
+#include "Usul/Commands/ShadeModel.h"
 
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
@@ -3321,7 +3321,7 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
     passes->text ( "Rendering Passes" );
     menu->append ( passes.get() );
 
-    typedef VRV::Commands::RenderingPasses RenderingPasses;
+    typedef Usul::Commands::RenderingPasses RenderingPasses;
 
     passes->append ( this->_createRadio ( new RenderingPasses ( "1", 1, me.get () ) ) );
     passes->append ( this->_createRadio ( new RenderingPasses ( "3", 3, me.get () ) ) );
@@ -3354,7 +3354,7 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
     polygons->text ( "Polygons" );
     menu->append ( polygons.get() );
 
-    typedef VRV::Commands::PolygonMode PolygonMode;
+    typedef Usul::Commands::PolygonMode PolygonMode;
 
     polygons->append ( this->_createRadio ( new PolygonMode ( "Filled",    IPolygonMode::FILLED, me.get() ) ) );
     polygons->append ( this->_createRadio ( new PolygonMode ( "Wireframe", IPolygonMode::WIRE_FRAME, me.get() ) ) );
@@ -3368,7 +3368,7 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
     shading->text ( "Shading" );
     menu->append ( shading.get() );
 
-    typedef VRV::Commands::ShadeModel ShadeModel;
+    typedef Usul::Commands::ShadeModel ShadeModel;
 
     shading->append ( this->_createRadio ( new ShadeModel ( "Smooth", IShadeModel::SMOOTH, me.get() ) ) );
     shading->append ( this->_createRadio ( new ShadeModel ( "Flat",   IShadeModel::FLAT, me.get() ) ) );

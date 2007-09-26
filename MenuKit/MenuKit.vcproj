@@ -254,6 +254,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RadioButton.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RadioButton.h"
+				>
+			</File>
+			<File
 				RelativePath=".\UpdateVisitor.cpp"
 				>
 			</File>

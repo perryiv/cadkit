@@ -8,9 +8,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "VRV/Commands/PolygonMode.h"
+#include "Usul/Commands/PolygonMode.h"
 
-using namespace VRV::Commands;
+using namespace Usul::Commands;
 
 USUL_IMPLEMENT_COMMAND ( PolygonMode );
 

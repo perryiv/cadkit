@@ -113,7 +113,7 @@ namespace Detail
 
       // Add a new menu.
       if ( 0x0 != _menu )
-        _menu = _menu->addMenu ( QObject::tr ( m.name().c_str() ) );
+        _menu = _menu->addMenu ( QObject::tr ( m.text().c_str() ) );
 
       // Traverse the menu.
       m.traverse ( *this );
@@ -134,7 +134,7 @@ namespace Detail
           Action::RefPtr action ( new Action ( b.command () ) );
 
           // See if it's a toggle.
-          if ( b.toggle () )
+          if ( b.toggle () || b.radio () )
           {
             action->setCheckable ( true );
             action->setChecked ( b.checked () );

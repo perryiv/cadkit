@@ -8,12 +8,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "VRV/Commands/RenderingPasses.h"
-#include "Usul/Interfaces/IRenderingPasses.h"
+#include "Usul/Commands/ShadeModel.h"
 
-using namespace VRV::Commands;
+using namespace Usul::Commands;
 
-USUL_IMPLEMENT_COMMAND ( RenderingPasses );
+USUL_IMPLEMENT_COMMAND ( ShadeModel );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -21,9 +20,9 @@ USUL_IMPLEMENT_COMMAND ( RenderingPasses );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RenderingPasses::RenderingPasses ( const std::string& name, unsigned int passes, Usul::Interfaces::IUnknown *caller ) : 
+ShadeModel::ShadeModel ( const std::string& name, Mode mode, Usul::Interfaces::IUnknown *caller ) : 
 BaseClass ( caller ),
-_passes ( passes )
+_mode ( mode )
 {
   this->text ( name );
 }
@@ -35,7 +34,7 @@ _passes ( passes )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RenderingPasses::~RenderingPasses ()
+ShadeModel::~ShadeModel ()
 {
 }
 
@@ -46,12 +45,12 @@ RenderingPasses::~RenderingPasses ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RenderingPasses::_execute ()
+void ShadeModel::_execute ()
 {
-  Usul::Interfaces::IRenderingPasses::QueryPtr rp ( this->caller () );
+  Usul::Interfaces::IShadeModel::QueryPtr sm ( this->caller () );
 
-  if ( rp.valid () )
-    rp->renderingPasses ( _passes );
+  if ( sm.valid () )
+    sm->shadeModel ( _mode );
 }
 
 
@@ -61,8 +60,8 @@ void RenderingPasses::_execute ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool RenderingPasses::updateCheck () const
+bool ShadeModel::updateCheck () const
 {
-  Usul::Interfaces::IRenderingPasses::QueryPtr rp ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller () ) );
-  return rp.valid () ? _passes == rp->renderingPasses () : false;
+  Usul::Interfaces::IShadeModel::QueryPtr sm ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller () ) );
+  return sm.valid () ? _mode == sm->shadeModel () : false;
 }

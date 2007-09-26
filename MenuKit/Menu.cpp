@@ -18,6 +18,8 @@
 #include "Visitor.h"
 #include "Errors.h"
 
+#include <algorithm>
+
 using namespace MenuKit;
 
 
@@ -96,10 +98,11 @@ Menu& Menu::operator = ( const Menu &m )
 
 void Menu::append ( Item *item )
 {
-  MENUKIT_CHECK_POINTER      ( 3094399297u, item );
-  MENUKIT_ENSURE_NULL_PARENT ( 1547689565u, item );
-  item->_setParent ( this );
-  _items.push_back ( item );
+  if ( 0x0 != item )
+  {
+    item->_setParent ( this );
+    _items.push_back ( item );
+  }
 }
 
 
@@ -111,10 +114,11 @@ void Menu::append ( Item *item )
 
 void Menu::prepend ( Item *item )
 {
-  MENUKIT_CHECK_POINTER      ( 3117610494u, item );
-  MENUKIT_ENSURE_NULL_PARENT ( 2578476072u, item );
-  item->_setParent ( this );
-  _items.insert ( _items.begin(), item );
+  if ( 0x0 != item )
+  {
+    item->_setParent ( this );
+    _items.insert ( _items.begin(), item );
+  }
 }
 
 
@@ -126,10 +130,11 @@ void Menu::prepend ( Item *item )
 
 void Menu::insert ( iterator iter, Item *item )
 {
-  MENUKIT_CHECK_POINTER      ( 3953040935u, item );
-  MENUKIT_ENSURE_NULL_PARENT ( 2734640082u, item );
-  item->_setParent ( this );
-  _items.insert ( iter, item );
+  if ( 0x0 != item )
+  {
+    item->_setParent ( this );
+    _items.insert ( iter, item );
+  }
 }
 
 
@@ -185,4 +190,53 @@ void Menu::addSeparator ()
   MenuKit::Button::RefPtr button ( new MenuKit::Button );
   button->separator ( true );
   this->append ( button.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Predicate to find menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct FindMenu
+  {
+    FindMenu ( const std::string& name ) : _name ( name )
+    {
+    }
+
+    template < class T >
+    bool operator () ( const T& t ) const
+    {
+      return ( _name == t->text () );
+    }
+
+  private:
+    std::string _name;
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find or create the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Menu* Menu::findOrCreateMenu( const std::string &name )
+{
+  Guard guard ( this->mutex () );
+
+  // Try and find a item with the name.
+  iterator iter = std::find_if ( _items.begin (), _items.end(), Detail::FindMenu ( name ) );
+
+  if ( _items.end() != iter )
+    return dynamic_cast < Menu* > ( iter->get() );
+
+  Menu::RefPtr m ( new Menu );
+  m->name ( name );
+  this->append ( m );
+  return m.get();
 }

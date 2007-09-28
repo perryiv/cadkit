@@ -118,6 +118,9 @@ namespace Detail
       // Traverse the menu.
       m.traverse ( *this );
 
+      // Set the enabled flag.
+      _menu->setEnabled ( m.enabled () );
+
       // Restore the current menu.
       _menu = current;
     }

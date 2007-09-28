@@ -31,6 +31,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
+#include "Usul/Commands/GenericCommand.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Components/Loader.h"
 #include "Usul/Documents/Manager.h"
@@ -114,7 +115,9 @@ MainWindow::MainWindow ( const std::string &vendor,
   _idleTimer    ( 0x0 ),
   _progressBars ( new ProgressBarDock ),
   _menu         ( 0x0 ),
-  _menus        ()
+  _menus        (),
+  _recentFiles  (),
+  _recentFilesMenu ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -168,6 +171,9 @@ MainWindow::MainWindow ( const std::string &vendor,
 
   // Load the settings.
   this->_loadSettings();
+
+  // Make the menu.
+  this->_initMenu();
 
   // Set the title.
   this->setWindowTitle ( program.c_str() );
@@ -259,6 +265,7 @@ void MainWindow::_destroy()
   this->_clearMenuBar ();
   _menu = 0x0;
   _dockMenu = 0x0;
+  _recentFilesMenu = 0x0;
 
   // Should be true.
   USUL_ASSERT ( 0 == _refCount );
@@ -299,6 +306,8 @@ void MainWindow::_loadSettings()
     const QRect rect ( _settings.value ( CadKit::Helios::Core::Registry::Keys::GEOMETRY.c_str(), CadKit::Helios::Core::Registry::Defaults::GEOMETRY ).value<QRect>() );
     this->setGeometry ( rect );
 
+    _recentFiles = _settings.value  ( CadKit::Helios::Core::Registry::Keys::RECENT_FILES.c_str () ).toStringList ();
+
     // This is what we want...
     //this->setGeometry ( Usul::Registry::Database::instance().get<QRect> 
     //  ( CadKit::Helios::Core::Registry::Keys::GEOMETRY, CadKit::Helios::Core::Registry::Defaults::GEOMETRY ) );
@@ -328,6 +337,9 @@ void MainWindow::_saveSettings()
     // Save dock window positions.
     QByteArray positions ( this->saveState ( Helios::Core::Constants::VERSION ) );
     _settings.setValue ( CadKit::Helios::Core::Registry::Keys::DOCK_WINDOW_POSITIONS.c_str(), positions );
+
+    // Save recent files.
+    _settings.setValue ( CadKit::Helios::Core::Registry::Keys::RECENT_FILES.c_str (), _recentFiles );
   }
 
   // Write to disk.
@@ -362,6 +374,14 @@ void MainWindow::_initMenu()
     menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::SaveAsDocument ( me ) ) );
     menu->addSeparator();
     menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::ExportImage ( me ) ) );
+    menu->addSeparator();
+
+    // Make the recent files menu.
+    this->_initRecentFilesMenu ();
+
+    // Add the recent file menu.
+    menu->append ( _recentFilesMenu );
+
     menu->addSeparator();
     menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::ExitApplication ( me ) ) );
 
@@ -443,6 +463,65 @@ void MainWindow::_clearMenuBar ()
     delete *iter;
 
   _menus.clear ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make recent files menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_initRecentFilesMenu()
+{
+  // Make a menu if we need to.
+  if ( 0x0 == _recentFilesMenu )
+  {
+    _recentFilesMenu = new MenuKit::Menu;
+  }
+
+  // Clear what we have.
+  _recentFilesMenu->clear ();
+
+  // Set the name.
+  _recentFilesMenu->text ( "Recent Files" );
+
+  // For convienence.
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+
+  // Add to the recent file menu.
+  for ( QStringList::iterator iter = _recentFiles.begin(); iter != _recentFiles.end(); ++iter )
+  {
+    CadKit::Helios::Commands::OpenDocument::RefPtr openDocument ( new CadKit::Helios::Commands::OpenDocument ( me ) );
+    openDocument->filename ( iter->toStdString () );
+    _recentFilesMenu->append ( new MenuKit::Button ( openDocument ) );
+  }
+
+  _recentFilesMenu->addSeparator ();
+
+  // Useful typedefs.
+  typedef void (MainWindow::*Function) ();
+  typedef Usul::Adaptors::MemberFunction < void, MainWindow*, Function > MemFun;
+  typedef Usul::Commands::GenericCommand < MemFun > GenericCommand;
+
+  // Add a clear button.
+  _recentFilesMenu->append ( new MenuKit::Button ( new GenericCommand ( "Clear", MemFun ( this, &MainWindow::_clearRecentFiles ) ) ) );
+
+  // Enable the menu only if there are recent files.
+  _recentFilesMenu->enabled ( !_recentFiles.empty () );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear recent files.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_clearRecentFiles ()
+{
+  _recentFiles.clear ();
+  this->_initRecentFilesMenu ();
 }
 
 
@@ -1377,6 +1456,17 @@ void MainWindow::_notifyFinishedLoading ( Usul::Documents::Document *document )
   // Handle no document.
   if ( 0x0 == document )
     return;
+
+  // The filename.
+  std::string filename ( document->fileName () );
+
+  // Add the document to the recent file list.
+  if ( false == _recentFiles.contains ( filename.c_str () ) )
+    _recentFiles.append ( filename.c_str () );
+
+  // If the recent files are too big...
+  if ( _recentFiles.count () > 10 )
+    _recentFiles.erase ( _recentFiles.begin () );
 
   // Typedefs.
   typedef Usul::Documents::Document Document;

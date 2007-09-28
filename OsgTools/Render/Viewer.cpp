@@ -2078,6 +2078,30 @@ unsigned int Viewer::numRenderPasses ( ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the number of rendering passes. Unavailable numbers have no effect.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::renderingPasses ( unsigned int num )
+{
+  this->numRenderPasses( num );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of rendering passes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Viewer::renderingPasses ( ) const
+{
+  return this->numRenderPasses();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Toggle the hidden lines.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2354,6 +2378,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
   case Usul::Interfaces::IRenderLoop::IID:
     return static_cast < Usul::Interfaces::IRenderLoop * > ( this );
+  case Usul::Interfaces::IRenderingPasses::IID:
+    return static_cast < Usul::Interfaces::IRenderingPasses * > ( this );
   default:
     return 0x0;
   } 

@@ -158,6 +158,7 @@ public:
 protected:
 
   void                              _initMenu();
+  void                              _initRecentFilesMenu();
   void                              _buildMenu();
   void                              _buildTextWindow();
   void                              _buildProgressBarWindow();
@@ -178,6 +179,7 @@ protected:
 
   void                              _clearDocuments();
   void                              _clearMenuBar ();
+  void                              _clearRecentFiles ();
 
   virtual void                      closeEvent ( QCloseEvent *event );
 
@@ -255,6 +257,8 @@ private:
   ProgressBarDock::RefPtr _progressBars;
   MenuKit::Menu::RefPtr _menu;
   Menus _menus;
+  QStringList _recentFiles;
+  MenuKit::Menu::RefPtr _recentFilesMenu;
 };
 
 

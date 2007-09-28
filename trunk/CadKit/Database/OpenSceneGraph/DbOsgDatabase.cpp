@@ -668,14 +668,14 @@ bool DbOsgDatabase::_addDataSets ( IUnknown *caller, ShapeHandle shape, osg::Geo
   SL_ASSERT ( geometry );
   
   // Add the vertices. If we don't add any then we failed.
-  if ( false == this->_addVertices ( caller, shape, geometry ) )
-    return ERROR ( FORMAT ( "Failed to get vertices for shape %X.", shape ), CadKit::FAILED );
-
-  // Add the normals, colors, and texture coordinates, if there are any.
-  // It is ok if these fail.
-  this->_addNormals   ( caller, shape, geometry );
-  this->_addColors    ( caller, shape, geometry );
-  this->_addTexCoords ( caller, shape, geometry );
+  if(true == this->_addVertices ( caller, shape, geometry ))
+  {
+	// Add the normals, colors, and texture coordinates, if there are any.
+	// It is ok if these fail.
+	this->_addNormals   ( caller, shape, geometry );
+	this->_addColors    ( caller, shape, geometry );
+	this->_addTexCoords ( caller, shape, geometry );
+  }
 
   // It worked.
   return true;
@@ -720,7 +720,7 @@ bool DbOsgDatabase::_addVertices ( IUnknown *caller, ShapeHandle shape, osg::Geo
   }
 
   // It didn't work.
-  return ERROR ( FORMAT ( "Failed to get vertices for shape %X.", shape ), CadKit::FAILED );
+  return WARNING ( FORMAT ( "Failed to get vertices for shape %X.", shape ), CadKit::FAILED );
 }
 
 

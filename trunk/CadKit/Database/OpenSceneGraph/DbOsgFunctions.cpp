@@ -20,7 +20,7 @@
 #include "Standard/SlRefPtr.h"
 
 #include "osg/Material"
-
+#include "osg/BlendFunc"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 #endif
@@ -48,10 +48,8 @@ void setMaterial ( const SlMaterialf &material, osg::StateSet *state )
     return;
   }
   
-  
-  // Initialize blending flag.
-
-  bool blending = false;
+  // Initialize transparency.
+  float alpha = 1.0f;
 
   // Set the colors that are valid.
 
@@ -60,12 +58,7 @@ void setMaterial ( const SlMaterialf &material, osg::StateSet *state )
   {
     const SlVec4f &v = material.getAmbient();
     mat->setAmbient ( osg::Material::FRONT, osg::Vec4 ( v[0], v[1], v[2], v[3] ) );
-    
-    if ( v[3] < 1 )
-    {
-      blending = true;
-    }
-
+    alpha = v[3];
   }
 
   // Diffuse.
@@ -73,12 +66,8 @@ void setMaterial ( const SlMaterialf &material, osg::StateSet *state )
   {
     const SlVec4f &v = material.getDiffuse();
     mat->setDiffuse ( osg::Material::FRONT, osg::Vec4 ( v[0], v[1], v[2], v[3] ) );
-
-    if ( !blending && ( v[3] < 1 ) )
-    {
-      blending = true;
-    }
-
+    if(v[3] < alpha)
+        alpha = v[3];
   }
 
   // Specular.
@@ -86,11 +75,8 @@ void setMaterial ( const SlMaterialf &material, osg::StateSet *state )
   {
     const SlVec4f &v = material.getSpecular();
     mat->setSpecular ( osg::Material::FRONT, osg::Vec4 ( v[0], v[1], v[2], v[3] ) );
-    if ( !blending && ( v[3] < 1 ) )
-    {
-      blending = true;
-    }
-
+    if(v[3] < alpha)
+        alpha = v[3];
   }
 
 
@@ -99,11 +85,8 @@ void setMaterial ( const SlMaterialf &material, osg::StateSet *state )
   {
     const SlVec4f &v = material.getEmissive();
     mat->setEmission ( osg::Material::FRONT, osg::Vec4 ( v[0], v[1], v[2], v[3] ) );
-    if ( !blending && ( v[3] < 1 ) )
-    {
-      blending = true;
-    }
-
+    if(v[3] < alpha)
+        alpha = v[3];
   }
 
   // Shininess.
@@ -114,16 +97,17 @@ void setMaterial ( const SlMaterialf &material, osg::StateSet *state )
   }
 
   // Enable blending and transparency sorting if any colors are transparent.
-  
-  if ( blending )
-
+  if ( alpha < 1.0f )
   {
-    
-    state->setMode ( GL_BLEND, osg::StateAttribute::ON );
+    mat->setAlpha(osg::Material::FRONT, alpha);
+      
+    osg::ref_ptr<osg::BlendFunc> blendfunc = new osg::BlendFunc;
+    state->setAttributeAndModes( blendfunc.get(), osg::StateAttribute::ON );
 
+    // 
     state->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
-
   }
+
   // Set the state's material.
   state->setAttribute ( mat );
 }

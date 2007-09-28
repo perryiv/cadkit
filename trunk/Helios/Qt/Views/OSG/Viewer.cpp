@@ -871,6 +871,7 @@ void Viewer::menuAdd( MenuKit::Menu &menu )
 
     Usul::Interfaces::IUnknown::QueryPtr viewer ( this->viewer () );
 
+    // Typedefs.
     typedef MenuKit::RadioButton RadioButton;
     typedef Usul::Commands::RenderingPasses RenderingPasses;
     typedef Usul::Commands::PolygonMode PolygonMode;
@@ -903,9 +904,10 @@ void Viewer::menuAdd( MenuKit::Menu &menu )
       polygons->text ( "Polygons" );
       view->append ( polygons.get() );
 
-      polygons->append ( new RadioButton ( new PolygonMode ( "Filled",    IPolygonMode::FILLED, viewer.get() ) ) );
-      polygons->append ( new RadioButton ( new PolygonMode ( "Wireframe", IPolygonMode::WIRE_FRAME, viewer.get() ) ) );
-      polygons->append ( new RadioButton ( new PolygonMode ( "Points",    IPolygonMode::POINTS, viewer.get() ) ) );
+      polygons->append ( new RadioButton ( new PolygonMode ( "Filled",       IPolygonMode::FILLED, viewer.get() ) ) );
+      polygons->append ( new RadioButton ( new PolygonMode ( "Hidden Lines", IPolygonMode::HIDDEN_LINES, viewer.get() ) ) );
+      polygons->append ( new RadioButton ( new PolygonMode ( "Wireframe",    IPolygonMode::WIRE_FRAME, viewer.get() ) ) );
+      polygons->append ( new RadioButton ( new PolygonMode ( "Points",       IPolygonMode::POINTS, viewer.get() ) ) );
     }
 
     // Shading menu.

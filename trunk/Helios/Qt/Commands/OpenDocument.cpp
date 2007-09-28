@@ -289,6 +289,12 @@ void OpenDocument::filename ( const std::string& filename )
 {
   Guard guard ( this->mutex () );
   _filename = filename;
+
+  this->text ( _filename );
+  this->shortcut ( "" );
+  this->statusTip ( "" );
+  this->toolTip ( "" );
+  this->iconPath ( "" );
 }
 
 

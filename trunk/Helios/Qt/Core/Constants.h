@@ -53,7 +53,10 @@ namespace CadKit
           const std::string LAST_DIRECTORY            ( "last_directory" );
 
           // Dock window positions.
-          const std::string DOCK_WINDOW_POSITIONS     = "dock_window_positions";
+          const std::string DOCK_WINDOW_POSITIONS     ( "dock_window_positions" );
+
+          // Recent files.
+          const std::string RECENT_FILES              ( "recent_files" );
         }
 
         namespace Defaults

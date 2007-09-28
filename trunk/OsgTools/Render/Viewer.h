@@ -69,6 +69,7 @@
 #include "Usul/Interfaces/IViewport.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IRenderLoop.h"
+#include "Usul/Interfaces/IRenderingPasses.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
@@ -145,7 +146,8 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IClippingDistance,
                                 public Usul::Interfaces::IViewport,
                                 public Usul::Interfaces::IMenuAdd,
-                                public Usul::Interfaces::IRenderLoop
+                                public Usul::Interfaces::IRenderLoop,
+                                public Usul::Interfaces::IRenderingPasses
 {
 public:
 
@@ -748,6 +750,10 @@ protected:
   /// Get/Set render loop flag (IRenderLoop).
   virtual void                  renderLoop ( bool b );
   virtual bool                  renderLoop () const;
+
+  /// Get/Set the number of rendering passes (IRenderingPasses).
+  virtual void                  renderingPasses ( unsigned int number );
+  virtual unsigned int          renderingPasses () const;
 
 private:
 

@@ -50,6 +50,9 @@ public:
   // Assignment.
   Menu& operator = ( const Menu & );
 
+  // Clear the menu.
+  void                      clear ();
+
   // Get the children.
   const Items &             items() const { return(_items); }
 

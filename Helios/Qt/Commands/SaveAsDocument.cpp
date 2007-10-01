@@ -31,7 +31,6 @@ SaveAsDocument::SaveAsDocument ( IUnknown *caller ) : BaseClass ( caller )
   this->shortcut ( "" );
   this->statusTip ( "Save the active document as another document." );
   this->toolTip ( "Save the active document as another document." );
-  this->iconPath ( "Save.gif" );
 }
 
 

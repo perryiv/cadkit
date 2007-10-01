@@ -127,7 +127,7 @@ namespace Program
     const std::string vendor ( "CadKit" );
     const std::string url ( "cadkit.sf.net" );
     const std::string icon ( "helios_sun.png" );
-    Usul::App::Application::instance().splashImage ( "splash_screen.jpg" );
+    Usul::App::Application::instance().splashImage ( "splash_screen.png" );
 
     // Get temporary directory and make sure it exists.
     const std::string tempDir ( Usul::File::Temp::directory ( true ) + "/" + program + "/" );

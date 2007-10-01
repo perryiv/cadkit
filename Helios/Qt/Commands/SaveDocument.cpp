@@ -31,7 +31,7 @@ SaveDocument::SaveDocument ( IUnknown *caller ) : BaseClass ( caller )
   this->shortcut ( "Ctrl+S" );
   this->statusTip ( "Save the active document." );
   this->toolTip ( "Save the active document." );
-  this->iconPath ( "Save.gif" );
+  this->iconPath ( "saveDocument.png" );
 }
 
 

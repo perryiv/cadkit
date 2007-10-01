@@ -29,6 +29,7 @@ namespace Adaptors {
 
 template
 <
+  class ReturnType,
   class ArgumentType,
   class FunctionType
 >
@@ -44,10 +45,51 @@ struct Bind1
     _f = b._f;
     return *this;
   }
+
+  ReturnType operator()()
+  {
+    return _f ( _a );
+  }
+
+private:
+
+  ArgumentType _a;
+  FunctionType _f;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Bind a single argument.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template
+<
+  class ArgumentType,
+  class FunctionType
+>
+struct Bind1 < void, ArgumentType, FunctionType >
+{
+  Bind1() : _a ( 0x0 ), _f ( 0x0 ){} // For gcc's stl containers.
+  Bind1 ( ArgumentType a, FunctionType f ) : _a ( a ), _f ( f ){}
+  Bind1 ( const Bind1 &b ) : _a ( b._a ), _f ( b._f ){}
+
+  Bind1 &operator = ( const Bind1 &b )
+  {
+    _a = b._a;
+    _f = b._f;
+    return *this;
+  }
   
   void operator()()
   {
     _f ( _a );
+  }
+
+  template < class FirstArgument > void operator() ( const FirstArgument &arg )
+  {
+    _f ( arg, _a );
   }
 
 private:
@@ -107,11 +149,25 @@ template
   class ArgumentType,
   class FunctionType
 >
-Bind1 < ArgumentType, FunctionType > 
+Bind1 < void, ArgumentType, FunctionType > 
 bind1 ( ArgumentType argument, FunctionType function )
 {
-  return Bind1 < ArgumentType, FunctionType > ( argument, function );
+  return Bind1 < void, ArgumentType, FunctionType > ( argument, function );
 }
+
+
+template
+<
+  class ReturnType,
+  class ArgumentType,
+  class FunctionType
+>
+Bind1 < ReturnType, ArgumentType, FunctionType > 
+bind1 ( ArgumentType argument, FunctionType function )
+{
+  return Bind1 < ReturnType, ArgumentType, FunctionType > ( argument, function );
+}
+
 
 template
 <

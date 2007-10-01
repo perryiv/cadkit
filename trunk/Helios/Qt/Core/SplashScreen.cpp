@@ -182,8 +182,7 @@ void SplashScreen::_loadSplashImage()
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "8048315890" );
 
   CadKit::Helios::Tools::Image::pixmap ( _file, _image );
-
-  if ( true == _image->pixmap()->isNull() )
+  if ( ( 0x0 == _image ) || ( 0x0 == _image->pixmap() ) || ( true == _image->pixmap()->isNull() ) )
   {
     std::cout << "Warning 3987519476: Failed to load splash screen image: " << _file << std::endl;
   }
@@ -222,7 +221,7 @@ void SplashScreen::show()
   this->_loadSplashImage();
 
   // Could not get layout to work. This code makes sense.
-  if ( false == _image->pixmap()->isNull() )
+  if ( ( 0x0 != _image ) && ( 0x0 != _image->pixmap() ) && ( false == _image->pixmap()->isNull() ) )
   {
     _image->setGeometry ( 0, 0, _image->pixmap()->width(), _image->pixmap()->height() );
     _progress->setGeometry ( 0, _image->height(), _image->width(), _progress->height() / 2 );

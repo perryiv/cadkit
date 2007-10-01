@@ -12,7 +12,7 @@
 #ifndef _MODFLOW_DELEGATE_LAYER_TREE_CONTROL_CLASS_H_
 #define _MODFLOW_DELEGATE_LAYER_TREE_CONTROL_CLASS_H_
 
-#include "Usul/Interfaces/ILayer.h"
+#include "Usul/Interfaces/ITreeNode.h"
 
 #include "QtGui/QWidget"
 
@@ -29,8 +29,8 @@ public:
 
   typedef QWidget BaseClass;
   typedef Usul::Interfaces::IUnknown Unknown;
-  typedef Usul::Interfaces::ILayer ILayer;
-  typedef std::map < QTreeWidgetItem *, ILayer::RefPtr > LayerMap;
+  typedef Usul::Interfaces::ITreeNode ITreeNode;
+  typedef std::map < QTreeWidgetItem *, ITreeNode::RefPtr > NodeMap;
 
   LayerTreeControl ( Unknown *caller, QWidget *parent = 0x0 );
   virtual ~LayerTreeControl();
@@ -49,9 +49,10 @@ private:
   void                _itemChanged ( QTreeWidgetItem *item, int columnNumber );
 
   QTreeWidget *_tree;
-  LayerMap _layerMap;
+  NodeMap _nodeMap;
   Unknown::QueryPtr _caller;
   Unknown::QueryPtr _document;
+  bool _processingItem;
 };
 
 

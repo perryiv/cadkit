@@ -13,7 +13,8 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
-#include "Usul/Interfaces/ILayerList.h"
+#include "Usul/Interfaces/IBooleanState.h"
+#include "Usul/Scope/Reset.h"
 
 #include "QtGui/QHeaderView"
 #include "QtGui/QTreeWidget"
@@ -29,9 +30,10 @@
 LayerTreeControl::LayerTreeControl ( Usul::Interfaces::IUnknown *caller, QWidget *parent ) : 
   BaseClass ( parent ),
   _tree ( 0x0 ),
-  _layerMap(),
+  _nodeMap(),
   _caller ( caller ),
-  _document()
+  _document(),
+  _processingItem ( false )
 {
   // Make the top-level layout.
   QVBoxLayout *layout ( new QVBoxLayout ( parent ) );
@@ -59,11 +61,88 @@ LayerTreeControl::~LayerTreeControl()
   // Note: _tree gets deleted by it's parent.
 
   // Clear the map.
-  _layerMap.clear();
+  _nodeMap.clear();
 
   // Not necessary but good practice.
   _caller   = static_cast < Usul::Interfaces::IUnknown * > ( 0x0 );
   _document = static_cast < Usul::Interfaces::IUnknown * > ( 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper templates to add items to the tree.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  void addItem ( QTreeWidget *parent, QTreeWidgetItem *item )
+  {
+    if ( parent && item )
+    {
+      parent->addTopLevelItem ( item );
+    }
+  }
+  void addItem ( QTreeWidgetItem *parent, QTreeWidgetItem *item )
+  {
+    if ( parent && item )
+    {
+      parent->addChild ( item );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to add a node to the tree.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  template < class MapType, class WidgetType > void addTreeNode ( MapType &items, WidgetType *widget, Usul::Interfaces::IUnknown *unknown )
+  {
+    // Handle bad input.
+    if ( 0x0 == widget )
+      return;
+
+    // See if the correct interface is implemented.
+    Usul::Interfaces::ITreeNode::QueryPtr node ( unknown );
+    if ( false == node.valid() )
+      return;
+
+    // For each node...
+    const unsigned int numNodes ( node->getNumChildNodes() );
+    for ( unsigned int i = 0; i < numNodes; ++i )
+    {
+      // Get the child node.
+      Usul::Interfaces::ITreeNode::QueryPtr child ( node->getChildNode ( i ) );
+      if ( true == child.valid() )
+      {
+        // Make a tree item.
+        QTreeWidgetItem *item ( new QTreeWidgetItem ( widget ) );
+        item->setText ( 0, child->getTreeNodeName().c_str() );
+
+        // Set the checked state.
+        Usul::Interfaces::IBooleanState::QueryPtr boolean ( child );
+        if ( true == boolean.valid() )
+        {
+          item->setCheckState ( 0, ( ( boolean->getBooleanState() ) ? Qt::Checked : Qt::Unchecked ) );
+        }
+
+        // Add the item to the tree.
+        Helper::addItem ( widget, item );
+
+        // Save in the map.
+        items[item] = child.get();
+
+        // Build sub-tree.
+        Helper::addTreeNode ( items, item, child.get() );
+      }
+    }
+  }
 }
 
 
@@ -80,60 +159,13 @@ void LayerTreeControl::buildTree ( Usul::Interfaces::IUnknown *unknown )
 
   // Clear anything we may have.
   _tree->clear();
-  _layerMap.clear();
-
-  // See if the correct interface is implemented.
-  Usul::Interfaces::ILayerList::QueryPtr layers ( unknown );
-  if ( false == layers.valid() )
-    return;
+  _nodeMap.clear();
 
   // Disconnect signal while adding to tree.
   _tree->disconnect ( this );
 
-  // For each layer...
-  const unsigned int numLayers ( layers->numberLayers() );
-  for ( unsigned int i = 0; i < numLayers; ++i )
-  {
-    // Get the layer.
-    Usul::Interfaces::ILayer::QueryPtr layer ( layers->layer ( i ) );
-    if ( true == layer.valid() )
-    {
-      // Make a tree item.
-      std::auto_ptr<QTreeWidgetItem> item ( new QTreeWidgetItem ( _tree ) );
-      item->setText ( 0, layer->name().c_str() );
-
-      // Set the checked state.
-      item->setCheckState ( 0, ( layer->showLayer() ? Qt::Checked : Qt::Unchecked ) );
-      _tree->addTopLevelItem ( item.get() );
-
-      // Save the tree and layer items in the map.
-      _layerMap[item.get()] = layer.get();
-
-      // Check for sub-layers.
-      Usul::Interfaces::ILayerList::QueryPtr subLayers ( layer );
-      if ( true == subLayers.valid() )
-      {
-        // Get the layer.
-        Usul::Interfaces::ILayer::QueryPtr subLayer ( subLayers->layer ( i ) );
-        if ( true == subLayer.valid() )
-        {
-          // Make an item.
-          std::auto_ptr<QTreeWidgetItem> subItem ( new QTreeWidgetItem ( item.get() ) );
-          subItem->setText ( 0, subLayer->name().c_str() );
-
-          // Set the checked state.
-          subItem->setCheckState ( 0, ( subLayer->showLayer() ? Qt::Checked : Qt::Unchecked ) );
-          item->addChild ( subItem.get() );
-
-          // Save the tree and layer items in the map.
-          _layerMap[subItem.get()] = subLayer.release();
-        }
-      }
-
-      // Done with this.
-      item.release();
-    }
-  }
+  // Add the tree node.
+  Helper::addTreeNode ( _nodeMap, _tree, unknown );
 
   // Re-connect slots.
   this->_connectTreeViewSlots();
@@ -168,20 +200,122 @@ void LayerTreeControl::_onItemChanged ( QTreeWidgetItem *item, int column )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to set the item's parent's check.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  void setParentCheck ( QTreeWidgetItem *item )
+  {
+    if ( item )
+    {
+      QTreeWidgetItem *parent ( item->parent() );
+      if ( parent )
+      {
+        unsigned int checked   ( 0 );
+        unsigned int unChecked ( 0 );
+        unsigned int partial   ( 0 );
+
+        const int numChildren ( parent->childCount() );
+        for ( int i = 0; i < numChildren; ++i )
+        {
+          QTreeWidgetItem *child ( parent->child ( i ) );
+          if ( child )
+          {
+            const Qt::CheckState state ( child->checkState ( 0 ) );
+            if ( state == Qt::Checked )
+            {
+              ++checked;
+            }
+            if ( state == Qt::Unchecked )
+            {
+              ++unChecked;
+            }
+            if ( state == Qt::PartiallyChecked )
+            {
+              ++partial;
+            }
+          }
+        }
+
+        if ( numChildren == checked )
+        {
+          parent->setCheckState ( 0, Qt::Checked );
+        }
+        else if ( numChildren == unChecked )
+        {
+          parent->setCheckState ( 0, Qt::Unchecked );
+        }
+        else
+        {
+          parent->setCheckState ( 0, Qt::PartiallyChecked );
+        }
+      }
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to set the item's children's check.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  void setChildrenCheck ( QTreeWidgetItem *parent, Qt::CheckState state )
+  {
+    if ( parent )
+    {
+      const int numChildren ( parent->childCount() );
+      for ( int i = 0; i < numChildren; ++i )
+      {
+        QTreeWidgetItem *child ( parent->child ( i ) );
+        if ( child )
+        {
+          child->setCheckState ( 0, state );
+        }
+      }
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Item has been changed.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void LayerTreeControl::_itemChanged ( QTreeWidgetItem *item, int column )
 {
+  // This function should not result in a call to itself.
+  if ( true == _processingItem )
+    return;
+
+  // Always set/reset this flag.
+  Usul::Scope::Reset<bool> processingItem ( _processingItem, true, false );
+
+  // If the item is valid...
   if ( 0x0 != item )
   {
+    // Get the state and layer.
     Qt::CheckState state ( item->checkState ( column ) );
-    ILayer::RefPtr layer ( _layerMap[item] );
+    Usul::Interfaces::IBooleanState::QueryPtr boolean ( _nodeMap[item] );
 
-    if ( layer.valid() )
+    // If the interface is valid...
+    if ( boolean.valid() )
     {
-      layer->showLayer ( Qt::Checked == state );
+      // Set the state.
+      boolean->setBooleanState ( Qt::Checked == state );
+
+      // Set check for the children.
+      Helper::setChildrenCheck ( item, state );
+
+      // Set the check for the parent.
+      Helper::setParentCheck ( item );
     }
   }
 }

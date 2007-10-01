@@ -147,7 +147,7 @@
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../"
-				PreprocessorDefinitions="_USUL_TRACE;WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_USUL"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_USUL"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -761,6 +761,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IBackgroundColor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IBooleanState.h"
 					>
 				</File>
 				<File
@@ -1517,6 +1521,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\ITranslationSpeed.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\ITreeNode.h"
 					>
 				</File>
 				<File

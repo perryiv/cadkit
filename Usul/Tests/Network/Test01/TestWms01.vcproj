@@ -115,7 +115,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR);$(CURL_INC_DIR)"
-				PreprocessorDefinitions="_USUL_TRACE;_CRT_SECURE_NO_WARNINGS;CURL_STATICLIB"
+				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS;CURL_STATICLIB"
 				RuntimeLibrary="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"

@@ -8,30 +8,29 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __DynamicLand_FIRST_TIMESTEP_COMMAND_H__
-#define __DynamicLand_FIRST_TIMESTEP_COMMAND_H__
+#ifndef __ModelPresentation_PREV_TIMESTEP_COMMAND_H__
+#define __ModelPresentation_PREV_TIMESTEP_COMMAND_H__
 
 #include "Usul/Commands/Command.h"
 
 
-class FirstTimestep : public Usul::Commands::Command
+class MpdPrevTimestep : public Usul::Commands::Command
 {
 public:
   typedef Usul::Commands::Command BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_COMMAND ( FirstTimestep );
+  USUL_DECLARE_COMMAND ( MpdPrevTimestep );
 
-  FirstTimestep ( Usul::Interfaces::IUnknown* caller );
+  MpdPrevTimestep ( Usul::Interfaces::IUnknown* caller );
 
 protected:
-  virtual ~FirstTimestep ();
+  virtual ~MpdPrevTimestep ();
 
   virtual void _execute ();
-  virtual void _dummy ();
 
 
 };
 
 
-#endif // __DynamicLand_FIRST_TIMESTEP_COMMAND_H__
+#endif // __ModelPresentation_PREV_TIMESTEP_COMMAND_H__

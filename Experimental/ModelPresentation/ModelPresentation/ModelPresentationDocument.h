@@ -4,13 +4,13 @@
 //  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Author(s): Adam Kubach
+//  Author(s): Jeff Conner
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Document for dld files
+//  Document for mpd files
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -60,12 +60,28 @@ public:
      unsigned int groupIndex;
      osg::ref_ptr< osg::Group > model;
   };
+  struct MpdTimeGroup
+  {
+    unsigned int startTime;
+    unsigned int endTime;
+  };
+  struct MpdTimeSet
+  {
+    osg::ref_ptr< osg::Switch > timeline;
+    unsigned int currentTime;
+    unsigned int endTime;
+    unsigned int interval;
+    std::vector< MpdTimeGroup > groups;
+  };
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
   typedef Usul::Documents::Document Document;
   typedef Usul::Documents::Document::RefPtr DocumentPtr;
   typedef Usul::Documents::Manager DocManager;
   typedef DocManager::DocumentInfo Info;
+  typedef Usul::Policies::TimeBased TimeBased;
+
+
   typedef std::vector< osg::ref_ptr< osg::Switch > > MpdScene;
   typedef osg::ref_ptr< osg::Group > GroupPtr;
   typedef std::vector < std::string > Files;
@@ -108,8 +124,18 @@ public:
   virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const;
   
   /// Usul::Interfaces::IMpdNavigator
-  // go to the next group in the set
-  void                nextGroup ( unsigned int index );
+  
+  void              nextGroup( unsigned int index );
+  void              startAnimation();
+  void              stopAnimation();
+  void              nextStep();
+  void              prevStep();
+  void              firstStep();
+
+  bool              isAnimating();
+  void              isAnimating( bool value );
+
+                
 
 protected:
 
@@ -122,7 +148,9 @@ protected:
   void                        _parseHeader( XmlTree::Node &node, Unknown *caller );
   void                        _parseStatic( XmlTree::Node &node, Unknown *caller );
   void                        _parseSet( XmlTree::Node &node, Unknown *caller );
+  void                        _parseTimeSet( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller );
+  osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _loadFile( const std::string& filename, Unknown *caller );
   osg::Node*                  _loadDirectory( const std::string& dir, Unknown *caller );
@@ -130,6 +158,9 @@ protected:
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 
   void                        _openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller );
+  void                        _setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller );
+  void                        _checkTimeSteps();
+  
 
 
   CommandList                 getCommandList();
@@ -144,6 +175,11 @@ private:
   MpdGroups                   _groups;
   MpdModels                   _models;
   MpdSets                     _sets;
+  MpdTimeSet                  _timeSet;
+  TimeBased                   _update;
+  unsigned int                _updateInterval;
+  bool                        _useTimeLine;
+  bool                        _isAnimating;
 
 
 

@@ -4,12 +4,17 @@
 //  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Author(s): Adam Kubach
+//  Author(s): Jeff Conner
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ModelPresentationDocument.h"
-#include "MpdMenuCommand.h"
+#include "Experimental/ModelPresentation/ModelPresentation/ModelPresentationDocument.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdMenuCommand.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdPrevTimestep.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdStartAnimation.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdstopAnimation.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdFirstTimestep.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdNextCommand.h"
 
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -50,9 +55,17 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _root ( new osg::Group ),
   _static ( new osg::Group ),
   _sceneTree ( 0x0 ),
-  _sets ( 0x0 )
+  _sets ( 0x0 ),
+  _update( 1000 ),
+  _updateInterval( 1000 ),
+  _useTimeLine( false ),
+  _isAnimating( false )
 {
   USUL_TRACE_SCOPE;
+  _timeSet.currentTime = 0;
+  _timeSet.endTime = 200;
+  _timeSet.interval = 1;
+  _timeSet.timeline = new osg::Switch;
 }
 
 
@@ -268,7 +281,35 @@ osg::Node *ModelPresentationDocument::buildScene ( const BaseClass::Options &opt
     _root->addChild( _sceneTree.at( i ).get() );
   }
   _root->addChild( _static.get() );
+  _root->addChild( _timeSet.timeline.get() );
   return _root.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Check the time steps to see if anything needs to he hidden/shown.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::_checkTimeSteps()
+{
+  for( unsigned int i = 0; i < _timeSet.groups.size(); ++i )
+  { 
+    // turn on groups that should be shown at this time step
+    if( _timeSet.currentTime >=_timeSet.groups.at( i ).startTime  &&
+        _timeSet.currentTime < _timeSet.groups.at( i ).endTime  )
+    {      
+      _timeSet.timeline->setValue( i, true );
+    }
+    // turn off groups that should be hidden at this time step
+    if( _timeSet.currentTime < _timeSet.groups.at( i ).startTime   ||
+        _timeSet.currentTime >= _timeSet.groups.at( i ).endTime )
+    {
+      _timeSet.timeline->setValue( i, false );
+    }
+
+  }
 }
 
 
@@ -281,6 +322,27 @@ osg::Node *ModelPresentationDocument::buildScene ( const BaseClass::Options &opt
 void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+
+  if( true == _useTimeLine )
+  {
+    std::ostringstream text;
+    text << "  Year " << _timeSet.currentTime;
+    this->_setStatusBar( text.str(), caller );
+  }
+
+  if( true == this->isAnimating() )
+  {
+    if( true == _update() )
+    {
+      if( _timeSet.currentTime == _timeSet.endTime )
+        _timeSet.currentTime = 0;
+      else
+        _timeSet.currentTime += _timeSet.interval;
+
+      this->_checkTimeSteps();
+
+    }
+  }
 }
 
 
@@ -303,6 +365,136 @@ void ModelPresentationDocument::nextGroup ( unsigned int index )
   this->_sceneTree.at( index )->setValue( _sets.at( index ).index, true );
   
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Go to the next group in the set
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::nextStep ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if( false == this->isAnimating() )
+  {
+    if( _timeSet.currentTime == _timeSet.endTime )
+      _timeSet.currentTime = 0;
+    else
+      _timeSet.currentTime ++;
+    this->_checkTimeSteps();
+
+  }
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Go to the next group in the set
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::prevStep ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if( false == this->isAnimating() )
+  {
+    if( _timeSet.currentTime == 0 )
+      _timeSet.currentTime = _timeSet.endTime;
+    else
+      _timeSet.currentTime --;
+    this->_checkTimeSteps();
+
+  }
+  
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Go to the next group in the set
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::firstStep ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if( false == this->isAnimating() )
+  {
+    
+      _timeSet.currentTime = 0;
+      this->_checkTimeSteps();
+
+  }
+  
+  
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Go to the next group in the set
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::startAnimation ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  this->isAnimating( true );
+  
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Go to the next group in the set
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::stopAnimation ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  this->isAnimating( false );
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the parameter file and parse elements.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ModelPresentationDocument::isAnimating()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _isAnimating;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the parameter file and parse elements.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::isAnimating( bool value )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _isAnimating = value;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -334,6 +526,10 @@ bool ModelPresentationDocument::_readParameterFile( XmlTree::Node &node, Unknown
     if ( "set" == node->name() )
     {
       this->_parseSet( *node, caller );
+    }
+    if ( "timeset" == node->name() )
+    {
+      this->_parseTimeSet( *node, caller );
     }
     if ( "static" == node->name() )
     {
@@ -484,6 +680,109 @@ osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Parse a time line set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *caller )
+{ 
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Ok to update the status bar with time related information
+  _useTimeLine = true;
+
+  typedef XmlTree::Document::Attributes Attributes;
+  typedef XmlTree::Document::Children Children;
+  Attributes& attributes ( node.attributes() );
+  Children& children ( node.children() );
+  
+  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+  {
+    
+    if ( "endTime" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, _timeSet.endTime );
+    }
+     if ( "interval" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, _timeSet.interval );
+    }
+        
+  }
+  // TODO: create a set here --
+  osg::ref_ptr< osg::Switch > switchNode ( new osg::Switch );
+
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    if ( "group" == node->name() )
+    {
+      std::cout << "Found group..." << std::endl;
+      switchNode->addChild( this->_parseTimeGroup( *node, caller ), false );
+    }
+  }
+  
+
+#if 1
+  // Turn off display lists
+  OsgTools::DisplayLists dl( false );
+  dl( switchNode.get() );
+#endif
+  _timeSet.timeline = switchNode.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse a time line group.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unknown *caller )
+{ 
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  typedef XmlTree::Document::Attributes Attributes;
+  typedef XmlTree::Document::Children Children;
+  Attributes& attributes ( node.attributes() );
+  Children& children ( node.children() );
+  
+  MpdTimeGroup timeGroup;
+  timeGroup.startTime = 0;
+  timeGroup.endTime = _timeSet.endTime;
+
+  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+  {
+    if ( "startTime" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, timeGroup.startTime );
+    }
+    if ( "endTime" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, timeGroup.endTime );
+    }    
+  }
+  _timeSet.groups.push_back( timeGroup );
+
+  GroupPtr group ( new osg::Group );
+
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    if ( "model" == node->name() )
+    {
+      std::cout << "Found timeline group model: " << std::flush;
+      group->addChild( this->_parseModel( *node, caller ) );
+    }  
+  }
+  return group.release();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Parse a model.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -527,12 +826,9 @@ osg::Node* ModelPresentationDocument::_loadFile( const std::string& filename, Un
   Guard guard ( this->mutex() );
   osg::ref_ptr< osg::Group > group ( new osg::Group );
   std::cout << filename << " single file loading..." << std::endl;
-  if( Usul::File::extension( filename.c_str() ) == "ive" || 
-        Usul::File::extension( filename.c_str() ) == "osg" )
-  {
-    group->addChild( osgDB::readNodeFile( filename ) );
-  }
-  else
+     #ifndef _MSC_VER
+        filename =  dir + filename.at(i).c_str() ;
+     #endif
   {
      // This will create a new document.
     Info info ( DocManager::instance().find ( filename, caller ) );
@@ -605,9 +901,14 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
   std::cout << "Found " << files.size() << " files in " << dir << std::endl;
   for( unsigned int i = 0; i < files.size(); ++i )
   {
-    std::string filename = files.at(i).c_str();
+    std::string filename = "";//files.at(i).c_str();
+     #ifdef _MSC_VER
+        filename = files.at(i).c_str();
+      #else
+        filename =  dir + files.at(i).c_str() ;
+      #endif
     std::cout << "\tLoading file: " << filename << std::endl;
-    
+    /*
     if( Usul::File::extension( filename.c_str() ) == "ive" ||
         Usul::File::extension( filename.c_str() ) == "IVE" ||
         Usul::File::extension( filename.c_str() ) == "OSG" ||
@@ -621,6 +922,7 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
       group->addChild( loadedModel.release() );
     }
     else
+    */
     {
        // This will create a new document.
       Info info ( DocManager::instance().find ( filename, caller ) );
@@ -696,6 +998,21 @@ void ModelPresentationDocument::_openDocument ( const std::string &file, Usul::D
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convenience function to set status bar and flush events.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::_setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller )
+{
+  Usul::Interfaces::IStatusBar::QueryPtr status ( caller );
+  if ( status.valid() )
+    status->setStatusBarText ( text, true );
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Build the command list.
@@ -714,7 +1031,15 @@ ModelPresentationDocument::CommandList ModelPresentationDocument::getCommandList
   {
     cl.push_back( new MpdMenuCommand( me.get(), _sets.at(i).name, i ) );
   }
-  
+  if( true == _useTimeLine )
+  {
+    cl.push_back( new MpdNextCommand( me.get() ) );
+    cl.push_back( new MpdPrevTimestep( me.get() ) );
+    cl.push_back( new MpdFirstTimestep( me.get() ) );
+    cl.push_back( new MpdStartAnimation( me.get() ) );
+    cl.push_back( new MpdStopAnimation( me.get() ) );
+    
+  }
   
   return cl;
 

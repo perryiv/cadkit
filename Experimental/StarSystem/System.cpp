@@ -204,5 +204,5 @@ System::Vec3d System::center() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return ( ( true == _body.valid() ) ? _body->center() : System::Vec3d ( 0, 0, 0 ) ); // TODO
+  return ( ( true == _body.valid() ) ? _body->center() : System::Vec3d ( 0, 0, 0 ) );
 }

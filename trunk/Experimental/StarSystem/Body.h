@@ -19,11 +19,15 @@
 
 #include "StarSystem/Node.h"
 
+#include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 
 namespace osg { class MatrixTransform; }
+namespace osgUtil { class CullVisitor; }
+namespace Helper { class CullCallback; }
 class ossimPlanet;
 class ossimPlanetEllipsoidLandModel;
+class ossimEllipsoid;
 
 
 namespace StarSystem {
@@ -36,20 +40,32 @@ public:
   // Useful typedefs.
   typedef Node BaseClass;
   typedef BaseClass::BuildOptions BuildOptions;
+  typedef Usul::Math::Vec2d Vec2d;
   typedef Usul::Math::Vec3d Vec3d;
 
   // Helper macro for repeated code.
   STAR_SYSTEM_DEFINE_NODE_CLASS ( Body );
 
-  // Constructor
+  // Enumerations.
+  enum
+  {
+    RADIUS_EQUATOR = 0,
+    RADIUS_POLAR   = 1
+  };
+
+  // Constructors
   Body();
 
   // Set/get the center.
-  void                      center ( Vec3d & );
+  void                      center ( const Vec3d & );
   Vec3d                     center() const;
 
   // Get the maximum radius.
   double                    maxRadius() const;
+
+  // Set/get the radii.
+  void                      radii ( const Vec2d & );
+  Vec2d                     radii() const;
 
   // Get the scene.
   const osg::Node *         scene() const;
@@ -60,7 +76,11 @@ protected:
   // Use reference counting.
   virtual ~Body();
 
+  void                      _buildScene ( osgUtil::CullVisitor * );
+
 private:
+
+  friend class Helper::CullCallback;
 
   // No copying or assignment.
   Body ( const Body & );
@@ -71,6 +91,7 @@ private:
   ossimPlanet *_planet;
   ossimPlanetEllipsoidLandModel *_landModel;
   osg::MatrixTransform *_transform;
+  ossimEllipsoid *_ellipsoid;
 };
 
 

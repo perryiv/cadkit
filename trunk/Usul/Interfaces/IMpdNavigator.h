@@ -29,6 +29,21 @@ struct IMpdNavigator : public Usul::Interfaces::IUnknown
   // go to the next group in the set
   virtual void              nextGroup ( unsigned int index ) = 0;
 
+  // start time step animation
+  virtual void              startAnimation() = 0;
+
+  // stop time step animation
+  virtual void              stopAnimation() = 0;
+
+  // Go to the next time step
+  virtual void              nextStep() = 0;
+
+  // Go to the previous time step
+  virtual void              prevStep() = 0;
+
+  // Go to the first time step
+  virtual void              firstStep() = 0;
+
   
 
 

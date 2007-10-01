@@ -8,12 +8,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "LoadTimestep.h"
+#include "MpdStopAnimation.h"
 
 #include "Usul/Trace/Trace.h"
-#include "Usul/Interfaces/IDldNavigator.h"
+#include "Usul/Interfaces/IMpdNavigator.h"
 
-USUL_IMPLEMENT_COMMAND ( LoadTimestep );
+USUL_IMPLEMENT_COMMAND ( MpdStopAnimation );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -21,11 +21,11 @@ USUL_IMPLEMENT_COMMAND ( LoadTimestep );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LoadTimestep::LoadTimestep ( Usul::Interfaces::IUnknown * caller ) :
+MpdStopAnimation::MpdStopAnimation ( Usul::Interfaces::IUnknown * caller ) :
   BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
-  this->text ( "Load Current Year" );
+  this->text ( "Stop Animation" );
 }
 
 
@@ -35,7 +35,7 @@ LoadTimestep::LoadTimestep ( Usul::Interfaces::IUnknown * caller ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LoadTimestep::~LoadTimestep ()
+MpdStopAnimation::~MpdStopAnimation ()
 {
   USUL_TRACE_SCOPE;
 }
@@ -47,24 +47,15 @@ LoadTimestep::~LoadTimestep ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LoadTimestep::_execute ()
+void MpdStopAnimation::_execute ()
 {
   USUL_TRACE_SCOPE;
   //this->_dummy();
 #if 1
-
-  Usul::Interfaces::IDldNavigator::QueryPtr nav ( this->caller() );
-
+  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller() );
   if ( nav.valid () )
   {
-    nav->loadCurrentFile( true );
+    nav->stopAnimation();
   }
-  
 #endif
-}
-
-void LoadTimestep::_dummy ()
-{
-  USUL_TRACE_SCOPE;
-  std::cout << "In Dummy" << std::endl;
 }

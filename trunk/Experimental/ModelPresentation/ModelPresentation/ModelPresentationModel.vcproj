@@ -263,11 +263,51 @@
 				Name="Commands"
 				>
 				<File
+					RelativePath=".\MpdFirstTimestep.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdFirstTimestep.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MpdMenuCommand.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\MpdMenuCommand.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdNextCommand.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdNextCommand.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdPrevTimestep.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdPrevTimestep.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdStartAnimation.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdStartAnimation.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdStopAnimation.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdStopAnimation.h"
 					>
 				</File>
 			</Filter>

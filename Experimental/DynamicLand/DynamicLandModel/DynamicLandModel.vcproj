@@ -147,7 +147,7 @@
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../../;../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR)"
-				PreprocessorDefinitions="_USUL_TRACE;WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_DYNAMIC_LAND_MODEL;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_DYNAMIC_LAND_MODEL;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"

@@ -16,7 +16,7 @@
 #ifndef _MODFLOW_MODEL_FACTORY_CLASS_H_
 #define _MODFLOW_MODEL_FACTORY_CLASS_H_
 
-#include "CompileGuard.h"
+#include "Helios/Plugins/ModflowModel/CompileGuard.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IClassFactory.h"

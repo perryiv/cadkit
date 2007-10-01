@@ -223,75 +223,11 @@
 				Name="Implementation"
 				>
 				<File
-					RelativePath=".\Attribute.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Attribute.h"
-					>
-				</File>
-				<File
-					RelativePath=".\BaseReader.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\BaseReader.h"
-					>
-				</File>
-				<File
-					RelativePath=".\BasicPackage.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\BasicPackage.h"
-					>
-				</File>
-				<File
-					RelativePath=".\BlockCenteredFlow.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\BlockCenteredFlow.h"
-					>
-				</File>
-				<File
-					RelativePath=".\BuildScene.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\BuildScene.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Cell.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Cell.h"
-					>
-				</File>
-				<File
 					RelativePath=".\CompileGuard.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Constants.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Discretization.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Discretization.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Layer.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Layer.h"
 					>
 				</File>
 				<File
@@ -318,20 +254,100 @@
 					RelativePath=".\ModflowFactory.h"
 					>
 				</File>
+				<Filter
+					Name="Attributes"
+					>
+					<File
+						RelativePath=".\Attributes\Attribute.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Attributes\Attribute.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Builders"
+					>
+					<File
+						RelativePath=".\Builders\BuildScene.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Builders\BuildScene.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Model"
+					>
+					<File
+						RelativePath=".\Model\Cell.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Model\Cell.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Model\Layer.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Model\Layer.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Readers"
+					>
+					<File
+						RelativePath=".\Readers\BaseReader.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Readers\BaseReader.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Readers\BasicPackage.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Readers\BasicPackage.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Readers\BlockCenteredFlow.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Readers\BlockCenteredFlow.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Readers\Discretization.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Readers\Discretization.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Readers\HeadLevelOutput.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Readers\HeadLevelOutput.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="DLL"
 				>
 				<File
-					RelativePath="Export.def"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Misc Files"
-				>
-				<File
-					RelativePath=".\Notes.txt"
+					RelativePath=".\Export.def"
 					>
 				</File>
 			</Filter>

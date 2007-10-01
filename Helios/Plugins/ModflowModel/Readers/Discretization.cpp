@@ -13,14 +13,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Discretization.h"
-#include "Attribute.h"
-#include "Constants.h"
-#include "ModflowDocument.h"
+#include "Helios/Plugins/ModflowModel/Readers/Discretization.h"
+#include "Helios/Plugins/ModflowModel/Attributes/Attribute.h"
+#include "Helios/Plugins/ModflowModel/Constants.h"
+#include "Helios/Plugins/ModflowModel/ModflowDocument.h"
 
-#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Trace/Trace.h"
+
+using namespace Modflow::Readers;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -64,8 +65,8 @@ namespace Helper
       const std::string name ( Usul::Strings::format ( "Layer ", i + 1 ) );
 
       // This has to be by reference!
-      Layer::RefPtr &layer ( layers.at ( i ) );
-      layer = new Layer ( name, gridSize[0], gridSize[1], cellSize );
+      Discretization::Layer::RefPtr &layer ( layers.at ( i ) );
+      layer = new Discretization::Layer ( name, gridSize[0], gridSize[1], cellSize );
     }
   }
 }
@@ -77,7 +78,7 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Discretization::read ( ModflowDocument *doc, const std::string &file, Unknown *progress )
+void Discretization::read ( Modflow::ModflowDocument *doc, const std::string &file, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -98,7 +99,7 @@ void Discretization::read ( ModflowDocument *doc, const std::string &file, Unkno
   // Read the header.
   this->_checkStream();
   unsigned int numLayers ( 0 );
-  ModflowDocument::Vec2ui gridSize ( 0, 0 );
+  Modflow::ModflowDocument::Vec2ui gridSize ( 0, 0 );
   _in >> numLayers >> gridSize[0] >> gridSize[1];
   const unsigned int numCells ( gridSize[0] * gridSize[1] );
 
@@ -108,7 +109,7 @@ void Discretization::read ( ModflowDocument *doc, const std::string &file, Unkno
   // Read the cell size.
   std::string dummy;
   this->_checkStream();
-  ModflowDocument::Vec2d cellSize ( 0.0, 0.0 );
+  Modflow::ModflowDocument::Vec2d cellSize ( 0.0, 0.0 );
   _in >> dummy >> cellSize[0]; this->_getLine();
   _in >> dummy >> cellSize[1]; this->_getLine();
 
@@ -120,7 +121,7 @@ void Discretization::read ( ModflowDocument *doc, const std::string &file, Unkno
   this->_seekToLine ( "INTERNAL" );
   this->_checkStream();
   GridInfo top ( "", GridData ( numCells ) );
-  this->_readGrid ( top );
+  this->_readGrid ( 4, top );
 
   // For each layer...
   for ( unsigned int i = 0; i < numLayers; ++i )
@@ -129,11 +130,14 @@ void Discretization::read ( ModflowDocument *doc, const std::string &file, Unkno
     GridInfo bottom ( "", GridData ( numCells ) );
     this->_seekToLine ( "INTERNAL" );
     this->_checkStream();
-    this->_readGrid ( bottom );
+    this->_readGrid ( 4, bottom );
 
     // Add a layer.
     Layer::RefPtr layer = layers.at ( i );
     layer->zRange ( top.second, bottom.second );
+
+    // Add attribute for the boundary.
+    layer->addAttribute ( new Modflow::Attributes::Attribute ( Modflow::Names::CELL_BOUNDARY ) );
 
     // The bottom becomes the new top.
     top = bottom;

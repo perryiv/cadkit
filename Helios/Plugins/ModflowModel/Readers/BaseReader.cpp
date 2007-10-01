@@ -13,14 +13,18 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "BaseReader.h"
-#include "ModflowDocument.h"
+#include "Helios/Plugins/ModflowModel/Readers/BaseReader.h"
+#include "Helios/Plugins/ModflowModel/ModflowDocument.h"
 
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/System/LastError.h"
 
 #include "boost/algorithm/string/trim.hpp"
+
+#include <sstream>
+
+using namespace Modflow::Readers;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -95,7 +99,7 @@ void BaseReader::_open ( const std::string &name )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void BaseReader::_set ( ModflowDocument *document, Unknown *progress )
+void BaseReader::_set ( Modflow::ModflowDocument *document, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -134,6 +138,7 @@ void BaseReader::_skipLines ( char c )
     }
   }
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -213,14 +218,15 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void BaseReader::_readGrid ( GridInfo &grid )
+void BaseReader::_readGrid ( unsigned int numWordsToSkip, GridInfo &grid )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
   // Read the name.
   std::string dummy;
-  _in >> dummy >> dummy >> dummy >> dummy;
+  for ( unsigned int i = 0; i < numWordsToSkip; ++i )
+    _in >> dummy;
   this->_checkStream();
   std::string name ( this->_getLine() );
   boost::algorithm::trim ( name );
@@ -253,4 +259,51 @@ std::string BaseReader::_getLine()
   _in.getline ( &buffer[0], buffer.size() - 1 );
 
   return std::string ( &buffer[0] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Count the time steps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int BaseReader::_countLines ( const std::string &label, const std::string &file )
+{
+  USUL_TRACE_SCOPE_STATIC;
+
+  // Initialize the count.
+  unsigned int count ( 0 );
+
+  // Handle bad state.
+  std::ifstream in ( file.c_str() );
+  if ( false == in.is_open() )
+    return count;
+
+  // Declare outside of the loop.
+  std::vector<char> buffer ( Modflow::LINE_BUFFER_SIZE, '\0' );
+
+  // While we're not at the end of the file.
+  while ( false == in.eof() )
+  {
+    // Fill the vector.
+    buffer.assign ( Modflow::LINE_BUFFER_SIZE, '\0' );
+
+    // Get the line.
+    in.getline ( &buffer[0], buffer.size() - 1 );
+
+    // Get the first word.
+    std::istringstream in ( &buffer[0] );
+    std::string word;
+    in >> word;
+
+    // If the first word is the label, increment the count.
+    if ( label == word )
+    {
+      ++count;
+    }
+  }
+  
+  // Return the count.
+  return count;
 }

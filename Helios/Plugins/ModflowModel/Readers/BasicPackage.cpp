@@ -9,14 +9,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Block-centered flow reader.
+//  Basic package file reader.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "BlockCenteredFlow.h"
-#include "ModflowDocument.h"
+#include "Helios/Plugins/ModflowModel/Readers/BasicPackage.h"
+#include "Helios/Plugins/ModflowModel/Attributes/Attribute.h"
+#include "Helios/Plugins/ModflowModel/Constants.h"
+#include "Helios/Plugins/ModflowModel/ModflowDocument.h"
 
 #include "Usul/Trace/Trace.h"
+
+using namespace Modflow::Readers;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -25,7 +29,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BlockCenteredFlow::BlockCenteredFlow() : BaseClass()
+BasicPackage::BasicPackage() : BaseClass()
 {
   USUL_TRACE_SCOPE;
 }
@@ -37,7 +41,7 @@ BlockCenteredFlow::BlockCenteredFlow() : BaseClass()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BlockCenteredFlow::~BlockCenteredFlow()
+BasicPackage::~BasicPackage()
 {
   USUL_TRACE_SCOPE;
 }
@@ -49,7 +53,7 @@ BlockCenteredFlow::~BlockCenteredFlow()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void BlockCenteredFlow::read ( ModflowDocument *doc, const std::string &file, Unknown *progress )
+void BasicPackage::read ( Modflow::ModflowDocument *doc, const std::string &file, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -65,7 +69,7 @@ void BlockCenteredFlow::read ( ModflowDocument *doc, const std::string &file, Un
   this->_set ( doc, progress );
 
   // Get layers.
-  ModflowDocument::Guard ( _document->mutex() );
+  Modflow::ModflowDocument::Guard ( _document->mutex() );
   Layers &layers = _document->layers();
 
   // Determine grid size and number of layers.
@@ -76,6 +80,30 @@ void BlockCenteredFlow::read ( ModflowDocument *doc, const std::string &file, Un
   // For each layer...
   for ( unsigned int i = 0; i < numLayers; ++i )
   {
-    // TODO...
+    // Read the grid.
+    GridInfo bounds ( "", GridData ( numCells ) );
+    this->_seekToLine ( "INTERNAL" );
+    this->_checkStream();
+    this->_readGrid ( 4, bounds );
+
+    // Zap all the cells outside of the bounds.
+    layers.at(i)->purge ( bounds.second );
+  }
+
+  // For each layer...
+  for ( unsigned int i = 0; i < numLayers; ++i )
+  {
+    // Read the grid.
+    GridInfo startHeads ( "", GridData ( numCells ) );
+    this->_seekToLine ( "INTERNAL" );
+    this->_checkStream();
+    this->_readGrid ( 4, startHeads );
+
+    // Add attribute for entire layer.
+    Layer::RefPtr layer = layers.at ( i );
+    layer->addAttribute ( new Modflow::Attributes::Attribute ( Modflow::Names::STARTING_HEAD ) );
+
+    // Set the start heads.
+    layer->vector ( Modflow::Names::STARTING_HEAD, 0, startHeads.second );
   }
 }

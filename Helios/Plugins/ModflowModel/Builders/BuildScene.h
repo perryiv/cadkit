@@ -16,10 +16,14 @@
 #ifndef _MODFLOW_MODEL_BUILD_SCENE_FUNCTIONS_H_
 #define _MODFLOW_MODEL_BUILD_SCENE_FUNCTIONS_H_
 
-#include "CompileGuard.h"
+#include "Helios/Plugins/ModflowModel/CompileGuard.h"
 
 #include "osg/Array"
 #include "osg/Vec2d"
+
+
+namespace Modflow {
+namespace Builders {
 
 
 struct BuildScene
@@ -31,6 +35,10 @@ public:
                          const osg::Vec2d &half, double verticalMargin, 
                          osg::Vec3Array *vertices, osg::Vec3Array *normals );
 };
+
+
+} // namespace Builders
+} // namespace Modflow
 
 
 #endif // _MODFLOW_MODEL_BUILD_SCENE_FUNCTIONS_H_

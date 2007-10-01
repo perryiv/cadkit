@@ -16,7 +16,7 @@
 #ifndef _MODFLOW_MODEL_COMPONENT_CLASS_H_
 #define _MODFLOW_MODEL_COMPONENT_CLASS_H_
 
-#include "CompileGuard.h"
+#include "Helios/Plugins/ModflowModel/CompileGuard.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
@@ -24,7 +24,7 @@
 
 #include <string>
 
-class ModflowDocument;
+namespace Modflow { class ModflowDocument; }
 
 
 class ModflowComponent : public Usul::Base::Referenced,
@@ -54,8 +54,6 @@ public:
   virtual Document *           createDocument ( Unknown *caller = 0x0 );
 
 protected: 
-
-  friend class ModflowDocument;
 
   // Do not copy.
   ModflowComponent ( const ModflowComponent & );

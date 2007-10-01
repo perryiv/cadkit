@@ -16,7 +16,7 @@
 #ifndef _MODFLOW_MODEL_CELL_CLASS_H_
 #define _MODFLOW_MODEL_CELL_CLASS_H_
 
-#include "CompileGuard.h"
+#include "Helios/Plugins/ModflowModel/CompileGuard.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Math/Vector2.h"
@@ -28,6 +28,10 @@
 #include <vector>
 
 namespace osg { class Node; }
+
+
+namespace Modflow {
+namespace Model {
 
 
 class Cell : public Usul::Base::Object
@@ -92,6 +96,10 @@ private:
   NamedVectors _vectors;
   NamedValues _values;
 };
+
+
+} // namespace Model
+} // namespace Modflow
 
 
 #endif // _MODFLOW_MODEL_CELL_CLASS_H_

@@ -13,11 +13,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Cell.h"
-#include "Constants.h"
+#include "Helios/Plugins/ModflowModel/Model/Cell.h"
+#include "Helios/Plugins/ModflowModel/Constants.h"
 
 #include "Usul/Math/MinMax.h"
 #include "Usul/Trace/Trace.h"
+
+using namespace Modflow::Model;
 
 
 ///////////////////////////////////////////////////////////////////////////////

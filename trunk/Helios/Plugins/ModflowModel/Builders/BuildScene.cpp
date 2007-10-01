@@ -13,11 +13,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "BuildScene.h"
-#include "Constants.h"
+#include "Helios/Plugins/ModflowModel/Builders/BuildScene.h"
+#include "Helios/Plugins/ModflowModel/Constants.h"
 
 #include "Usul/Bits/Bits.h"
 #include "Usul/Trace/Trace.h"
+
+using namespace Modflow::Builders;
 
 
 ///////////////////////////////////////////////////////////////////////////////

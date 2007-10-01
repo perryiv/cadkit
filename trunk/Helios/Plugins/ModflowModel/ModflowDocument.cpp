@@ -13,11 +13,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ModflowDocument.h"
-#include "Constants.h"
-#include "Discretization.h"
-#include "BasicPackage.h"
-#include "BlockCenteredFlow.h"
+#include "Helios/Plugins/ModflowModel/ModflowDocument.h"
+#include "Helios/Plugins/ModflowModel/Constants.h"
+#include "Helios/Plugins/ModflowModel/Readers/Discretization.h"
+#include "Helios/Plugins/ModflowModel/Readers/BasicPackage.h"
+#include "Helios/Plugins/ModflowModel/Readers/BlockCenteredFlow.h"
+#include "Helios/Plugins/ModflowModel/Readers/HeadLevelOutput.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/Predicates.h"
@@ -54,6 +55,8 @@
 #include <fstream>
 #include <stdexcept>
 #include <functional>
+
+using namespace Modflow;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModflowDocument, ModflowDocument::BaseClass );
 
@@ -121,12 +124,14 @@ Usul::Interfaces::IUnknown *ModflowDocument::queryInterface ( unsigned long iid 
   {
   case Usul::Interfaces::IBuildScene::IID:
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
-  case Usul::Interfaces::ILayerList::IID:
-    return static_cast < Usul::Interfaces::ILayerList* > ( this );
   case Usul::Interfaces::IDirtyState::IID:
     return static_cast < Usul::Interfaces::IDirtyState* > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
+  case Usul::Interfaces::ITreeNode::IID:
+    return static_cast < Usul::Interfaces::ITreeNode * > ( this );
+  case Usul::Interfaces::IBooleanState::IID:
+    return static_cast < Usul::Interfaces::IBooleanState * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -287,9 +292,10 @@ void ModflowDocument::read ( const std::string &file, Unknown *caller, Unknown *
 
   // Add readers to a factory.
   Usul::Factory::ObjectFactory factory;
-  factory.add ( new Usul::Factory::TypeCreator<Discretization>    ( "discretization"      ) );
-  factory.add ( new Usul::Factory::TypeCreator<BasicPackage>      ( "basic_package"       ) );
-  factory.add ( new Usul::Factory::TypeCreator<BlockCenteredFlow> ( "block_centered_flow" ) );
+  factory.add ( new Usul::Factory::TypeCreator<Modflow::Readers::Discretization>    ( "discretization"      ) );
+  factory.add ( new Usul::Factory::TypeCreator<Modflow::Readers::BasicPackage>      ( "basic_package"       ) );
+  factory.add ( new Usul::Factory::TypeCreator<Modflow::Readers::BlockCenteredFlow> ( "block_centered_flow" ) );
+  factory.add ( new Usul::Factory::TypeCreator<Modflow::Readers::HeadLevelOutput>   ( "head_level_output"   ) );
 
   // Initialize and finalize use of xerces.
   XmlTree::XercesLife life;
@@ -606,7 +612,7 @@ const ModflowDocument::Layers &ModflowDocument::layers() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int ModflowDocument::numberLayers() const
+unsigned int ModflowDocument::numLayers() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -626,21 +632,6 @@ ModflowDocument::Vec2ui ModflowDocument::gridSize() const
   Guard guard ( this->mutex() );
   Layer::RefPtr layer ( _layers.empty() ? 0x0 : _layers.front() );
   return ( ( layer.valid() ) ? Vec2ui ( layer->gridSize() ) : Vec2ui ( 0, 0 ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the layer at position i.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::ILayer *ModflowDocument::layer ( unsigned int i )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  Layer::RefPtr layer ( ( i >= _layers.size() ) ? 0x0 : _layers.at ( i ) );
-  return layer.get();
 }
 
 
@@ -696,4 +687,101 @@ unsigned int ModflowDocument::flags() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _flags;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the child at the position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Usul::Interfaces::ITreeNode *ModflowDocument::getChildNode ( unsigned int i ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return ( ( i >= _layers.size() ) ? 0x0 : _layers.at(i).get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the child at the position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::ITreeNode *ModflowDocument::getChildNode ( unsigned int i )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return ( ( i >= _layers.size() ) ? 0x0 : _layers.at(i).get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of children.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int ModflowDocument::getNumChildNodes() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _layers.size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the node name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModflowDocument::setTreeNodeName ( const std::string &s )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  this->name ( s );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the node name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string ModflowDocument::getTreeNodeName() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return this->name();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModflowDocument::setBooleanState ( bool state )
+{
+  USUL_TRACE_SCOPE;
+  //Guard guard ( this->mutex() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the node name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ModflowDocument::getBooleanState() const
+{
+  USUL_TRACE_SCOPE;
+  //Guard guard ( this->mutex() );
+  return true;
 }

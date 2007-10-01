@@ -16,7 +16,11 @@
 #ifndef _MODFLOW_MODEL_BASIC_PACKAGE_READER_CLASS_H_
 #define _MODFLOW_MODEL_BASIC_PACKAGE_READER_CLASS_H_
 
-#include "BaseReader.h"
+#include "Helios/Plugins/ModflowModel/Readers/BaseReader.h"
+
+
+namespace Modflow {
+namespace Readers {
 
 
 class BasicPackage : public BaseReader
@@ -46,6 +50,10 @@ private:
   BasicPackage ( const BasicPackage & );
   BasicPackage &operator = ( const BasicPackage & );
 };
+
+
+} // namespace Readers
+} // namespace Modflow
 
 
 #endif // _MODFLOW_MODEL_BASIC_PACKAGE_READER_CLASS_H_

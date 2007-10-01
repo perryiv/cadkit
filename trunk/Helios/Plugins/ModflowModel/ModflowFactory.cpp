@@ -12,8 +12,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ModflowFactory.h"
-#include "ModflowComponent.h"
+#include "Helios/Plugins/ModflowModel/ModflowFactory.h"
+#include "Helios/Plugins/ModflowModel/ModflowComponent.h"
 
 #include "Usul/Components/Create.h"
 

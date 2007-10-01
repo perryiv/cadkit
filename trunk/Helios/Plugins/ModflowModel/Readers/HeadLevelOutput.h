@@ -9,17 +9,21 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Discretization file reader.
+//  Head-level output reader.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _MODFLOW_MODEL_DISCRETIZATION_READER_CLASS_H_
-#define _MODFLOW_MODEL_DISCRETIZATION_READER_CLASS_H_
+#ifndef _MODFLOW_MODEL_HEAD_LEVEL_OUTPUT_READER_CLASS_H_
+#define _MODFLOW_MODEL_HEAD_LEVEL_OUTPUT_READER_CLASS_H_
 
-#include "BaseReader.h"
+#include "Helios/Plugins/ModflowModel/Readers/BaseReader.h"
 
 
-class Discretization : public BaseReader
+namespace Modflow {
+namespace Readers {
+
+
+class HeadLevelOutput : public BaseReader
 {
 public:
 
@@ -27,10 +31,10 @@ public:
   typedef BaseReader BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Discretization );
+  USUL_DECLARE_REF_POINTERS ( HeadLevelOutput );
 
   // Construction.
-  Discretization();
+  HeadLevelOutput();
 
   // Read the file.
   virtual void            read ( ModflowDocument *doc, const std::string &file, Unknown *progress );
@@ -38,14 +42,18 @@ public:
 protected:
 
   // Use reference counting.
-  virtual ~Discretization();
+  virtual ~HeadLevelOutput();
 
 private:
 
   // Do not copy.
-  Discretization ( const Discretization & );
-  Discretization &operator = ( const Discretization & );
+  HeadLevelOutput ( const HeadLevelOutput & );
+  HeadLevelOutput &operator = ( const HeadLevelOutput & );
 };
 
 
-#endif // _MODFLOW_MODEL_DISCRETIZATION_READER_CLASS_H_
+} // namespace Readers
+} // namespace Modflow
+
+
+#endif // _MODFLOW_MODEL_HEAD_LEVEL_OUTPUT_READER_CLASS_H_

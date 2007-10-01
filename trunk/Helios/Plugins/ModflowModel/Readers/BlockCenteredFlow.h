@@ -16,7 +16,11 @@
 #ifndef _MODFLOW_MODEL_BLOCK_CENTERED_FLOW_READER_CLASS_H_
 #define _MODFLOW_MODEL_BLOCK_CENTERED_FLOW_READER_CLASS_H_
 
-#include "BaseReader.h"
+#include "Helios/Plugins/ModflowModel/Readers/BaseReader.h"
+
+
+namespace Modflow {
+namespace Readers {
 
 
 class BlockCenteredFlow : public BaseReader
@@ -46,6 +50,10 @@ private:
   BlockCenteredFlow ( const BlockCenteredFlow & );
   BlockCenteredFlow &operator = ( const BlockCenteredFlow & );
 };
+
+
+} // namespace Readers
+} // namespace Modflow
 
 
 #endif // _MODFLOW_MODEL_BLOCK_CENTERED_FLOW_READER_CLASS_H_

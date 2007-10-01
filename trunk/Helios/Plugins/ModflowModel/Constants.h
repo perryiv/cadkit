@@ -16,7 +16,7 @@
 #ifndef _MODFLOW_MODEL_CONSTANTS_H_
 #define _MODFLOW_MODEL_CONSTANTS_H_
 
-#include "CompileGuard.h"
+#include "Helios/Plugins/ModflowModel/CompileGuard.h"
 
 #include <string>
 
@@ -26,8 +26,9 @@ namespace Modflow
   // String names.
   namespace Names
   {
-    const std::string BOUNDS ( "Bounds" );
-    const std::string HEAD   ( "head" );
+    const std::string CELL_BOUNDARY ( "Cell Boundary" );
+    const std::string STARTING_HEAD ( "Starting Head" );
+    const std::string HEAD_LEVELS   ( "Head Levels"   );
   }
 
   namespace Flags

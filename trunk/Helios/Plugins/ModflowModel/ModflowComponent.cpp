@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ModflowComponent.h"
-#include "ModflowDocument.h"
+#include "Helios/Plugins/ModflowModel/ModflowComponent.h"
+#include "Helios/Plugins/ModflowModel/ModflowDocument.h"
 
 
 #include <algorithm>
@@ -73,6 +73,6 @@ Usul::Interfaces::IUnknown *ModflowComponent::queryInterface ( unsigned long iid
 
 Usul::Documents::Document *ModflowComponent::createDocument ( Unknown *caller )
 {
-  ModflowDocument::ValidRefPtr document ( new ModflowDocument );
+  Modflow::ModflowDocument::ValidRefPtr document ( new Modflow::ModflowDocument );
   return document.release();
 }

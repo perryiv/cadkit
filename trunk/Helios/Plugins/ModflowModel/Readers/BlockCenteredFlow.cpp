@@ -9,15 +9,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Basic package file reader.
+//  Block-centered flow reader.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "BasicPackage.h"
-#include "Constants.h"
-#include "ModflowDocument.h"
+#include "Helios/Plugins/ModflowModel/Readers/BlockCenteredFlow.h"
+#include "Helios/Plugins/ModflowModel/ModflowDocument.h"
 
 #include "Usul/Trace/Trace.h"
+
+using namespace Modflow::Readers;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -26,7 +27,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BasicPackage::BasicPackage() : BaseClass()
+BlockCenteredFlow::BlockCenteredFlow() : BaseClass()
 {
   USUL_TRACE_SCOPE;
 }
@@ -38,7 +39,7 @@ BasicPackage::BasicPackage() : BaseClass()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BasicPackage::~BasicPackage()
+BlockCenteredFlow::~BlockCenteredFlow()
 {
   USUL_TRACE_SCOPE;
 }
@@ -50,7 +51,7 @@ BasicPackage::~BasicPackage()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void BasicPackage::read ( ModflowDocument *doc, const std::string &file, Unknown *progress )
+void BlockCenteredFlow::read ( Modflow::ModflowDocument *doc, const std::string &file, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -66,7 +67,7 @@ void BasicPackage::read ( ModflowDocument *doc, const std::string &file, Unknown
   this->_set ( doc, progress );
 
   // Get layers.
-  ModflowDocument::Guard ( _document->mutex() );
+  Modflow::ModflowDocument::Guard ( _document->mutex() );
   Layers &layers = _document->layers();
 
   // Determine grid size and number of layers.
@@ -77,26 +78,6 @@ void BasicPackage::read ( ModflowDocument *doc, const std::string &file, Unknown
   // For each layer...
   for ( unsigned int i = 0; i < numLayers; ++i )
   {
-    // Read the grid.
-    GridInfo bounds ( "", GridData ( numCells ) );
-    this->_seekToLine ( "INTERNAL" );
-    this->_checkStream();
-    this->_readGrid ( bounds );
-
-    // Zap all the cells outside of the bounds.
-    layers.at(i)->purge ( bounds.second );
-  }
-
-  // For each layer...
-  for ( unsigned int i = 0; i < numLayers; ++i )
-  {
-    // Read the grid.
-    GridInfo startHeads ( "", GridData ( numCells ) );
-    this->_seekToLine ( "INTERNAL" );
-    this->_checkStream();
-    this->_readGrid ( startHeads );
-
-    // Set the start heads.
-    layers.at(i)->vector ( Modflow::Names::HEAD, 0, startHeads.second );
+    // TODO...
   }
 }

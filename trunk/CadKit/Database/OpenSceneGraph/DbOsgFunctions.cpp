@@ -75,8 +75,6 @@ void setMaterial ( const SlMaterialf &material, osg::StateSet *state )
   {
     const SlVec4f &v = material.getSpecular();
     mat->setSpecular ( osg::Material::FRONT, osg::Vec4 ( v[0], v[1], v[2], v[3] ) );
-    if(v[3] < alpha)
-        alpha = v[3];
   }
 
 
@@ -85,8 +83,6 @@ void setMaterial ( const SlMaterialf &material, osg::StateSet *state )
   {
     const SlVec4f &v = material.getEmissive();
     mat->setEmission ( osg::Material::FRONT, osg::Vec4 ( v[0], v[1], v[2], v[3] ) );
-    if(v[3] < alpha)
-        alpha = v[3];
   }
 
   // Shininess.
@@ -98,13 +94,10 @@ void setMaterial ( const SlMaterialf &material, osg::StateSet *state )
 
   // Enable blending and transparency sorting if any colors are transparent.
   if ( alpha < 1.0f )
-  {
+  {    
     mat->setAlpha(osg::Material::FRONT, alpha);
-      
     osg::ref_ptr<osg::BlendFunc> blendfunc = new osg::BlendFunc;
     state->setAttributeAndModes( blendfunc.get(), osg::StateAttribute::ON );
-
-    // 
     state->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
   }
 

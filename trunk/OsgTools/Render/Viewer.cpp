@@ -3351,7 +3351,7 @@ void Viewer::setTrackball ( const osg::Vec3& center, float distance , const osg:
 OsgTools::Render::Trackball* Viewer::_trackball()
 {
   Trackball::Ptr trackball ( dynamic_cast < Trackball * > ( this->navManip( ) ) );
-  if( trackball.valid() ) 
+  if ( trackball.valid() ) 
     return trackball.get(); 
   throw std::runtime_error ( "Error 3608089520: Trackball is not valid." );
 }
@@ -3908,7 +3908,7 @@ void Viewer::handleTool ( bool left, bool middle, bool right, bool motion, float
 void Viewer::handleSeek ( float x, float y, bool left )
 {
   // Retrun now if we aren't in seek mode.
-  if ( _currentMode != SEEK || false == left )
+  if ( ( _currentMode != SEEK ) || ( false == left ) || ( 0x0 == dynamic_cast < Trackball * > ( this->navManip() ) ) )
     return;
 
   // Find interface to animate, if one exists

@@ -645,7 +645,16 @@ void ModflowDocument::dirtyState ( bool state )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
+  // Don't set to same state.
+  if ( this->dirtyState() == state )
+    return;
+
+  // Set local flag.
   this->flags ( Usul::Bits::set ( this->flags(), Modflow::Flags::DIRTY, state ) );
+
+  // Set the modified flag too. This will generate the re-draw.
+  this->modified ( true );
 }
 
 

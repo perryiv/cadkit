@@ -265,6 +265,22 @@
 						RelativePath=".\Attributes\Attribute.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Attributes\Boxes.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Attributes\Boxes.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Attributes\Quads.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Attributes\Quads.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Builders"

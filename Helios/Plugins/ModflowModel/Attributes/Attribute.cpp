@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Classes for attribute wrappers.
+//  Base class for attributes.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -36,14 +36,17 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Attribute, Attribute::BaseClass );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Attribute::Attribute ( const std::string &name ) : BaseClass(),
+Attribute::Attribute ( const std::string &name, IUnknown *parent ) : BaseClass(),
   _flags   ( Modflow::Flags::VISIBLE | Modflow::Flags::DIRTY ),
-  _scene   ( new osg::Group )
+  _scene   ( new osg::Group ),
+  _parent  ( parent )
 {
   USUL_TRACE_SCOPE;
 
   // Set the name.
   BaseClass::name ( name );
+
+  // Do not reference _parent!
 }
 
 
@@ -72,6 +75,7 @@ void Attribute::_destroy()
   Guard guard ( this->mutex() );
   this->clear();
   _scene = 0x0;
+  _parent = 0x0; // Do not unreference!
 }
 
 
@@ -100,10 +104,13 @@ Usul::Interfaces::IUnknown *Attribute::queryInterface ( unsigned long iid )
   USUL_TRACE_SCOPE;
   switch ( iid )
   {
+  case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::ITreeNode::IID:
     return static_cast < Usul::Interfaces::ITreeNode* > ( this );
   case Usul::Interfaces::IBooleanState::IID:
     return static_cast < Usul::Interfaces::IBooleanState* > ( this );
+  case Usul::Interfaces::IDirtyState::IID:
+    return static_cast < Usul::Interfaces::IDirtyState* > ( this );
   default:
     return 0x0;
   }
@@ -120,7 +127,16 @@ void Attribute::visible ( bool state )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
+  // Don't set to same state.
+  if ( this->visible() == state )
+    return;
+
+  // Set the visible flag.
   _flags = Usul::Bits::set ( _flags, Modflow::Flags::VISIBLE, state );
+
+  // Set the flags that says we are modified and dirty.
+  this->dirtyState ( true );
 }
 
 
@@ -144,11 +160,25 @@ bool Attribute::visible() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Attribute::dirty ( bool state )
+void Attribute::dirtyState ( bool state )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
+  // Don't set to same state.
+  if ( this->dirtyState() == state )
+    return;
+
+  // Set local flag.
   _flags = Usul::Bits::set ( _flags, Modflow::Flags::DIRTY, state );
+
+  // If we're dirty then set parent's state.
+  if ( true == state )
+  {
+    Usul::Interfaces::IDirtyState::QueryPtr dirty ( _parent );
+    if ( true == dirty.valid() )
+      dirty->dirtyState ( state );
+  }
 }
 
 
@@ -158,7 +188,7 @@ void Attribute::dirty ( bool state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Attribute::dirty() const
+bool Attribute::dirtyState() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -172,21 +202,21 @@ bool Attribute::dirty() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Attribute::scene ( osg::Node *node )
+void Attribute::_setScene ( osg::Group *group )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  _scene = node;
+  _scene = group;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the scene.
+//  Build the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node *Attribute::scene()
+osg::Group *Attribute::buildScene ( Modflow::Model::Layer * )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );

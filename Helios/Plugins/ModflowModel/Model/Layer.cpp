@@ -134,10 +134,13 @@ Usul::Interfaces::IUnknown *Layer::queryInterface ( unsigned long iid )
   USUL_TRACE_SCOPE;
   switch ( iid )
   {
+  case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::ITreeNode::IID:
     return static_cast < Usul::Interfaces::ITreeNode* > ( this );
   case Usul::Interfaces::IBooleanState::IID:
     return static_cast < Usul::Interfaces::IBooleanState * > ( this );
+  case Usul::Interfaces::IDirtyState::IID:
+    return static_cast < Usul::Interfaces::IDirtyState * > ( this );
   default:
     return 0x0;
   }
@@ -209,42 +212,23 @@ void Layer::_buildScene ( Unknown *caller )
   // Remove all the existing children.
   OsgTools::Group::removeAllChildren ( _root.get() );
 
-#if 1
+  // No longer dirty. Do this before we can return.
+  this->dirtyState ( false );
 
-  // If we are visible...
-  if ( true == Usul::Bits::has ( this->flags(), Modflow::Flags::VISIBLE ) )
-  {
-    // Add new scene.
-    _root->addChild ( this->_buildCubes ( caller ) );
-  }
-
-#else
-
-  // Add builders to a factory.
-  Usul::Factory::ObjectFactory factory;
-  factory.add ( new Usul::Factory::TypeCreator<Modflow::Builders::BuildQuads> ( Modflow::Names::CELL_BOUNDARY ) );
-  factory.add ( new Usul::Factory::TypeCreator<Modflow::Builders::BuildQuads> ( Modflow::Names::STARTING_HEAD ) );
-  factory.add ( new Usul::Factory::TypeCreator<Modflow::Builders::BuildQuads> ( Modflow::Names::HEAD_LEVELS   ) );
+  // Return now if we're not visible.
+  if ( false == this->visible() )
+    return;
 
   // Loop through the attributes.
   for ( Attributes::iterator i = _attributes.begin(); i != _attributes.end(); ++i )
   {
-    Attribute::RefPtr attr ( *i );
-    if ( true == attr.valid() )
+    Attribute::RefPtr a ( *i );
+    if ( true == a.valid() )
     {
-      // Get the builder.
-      BaseBuilder::RefPtr builder ( dynamic_cast<BaseBuilder *> ( factory.create ( type ) ) );
-      if ( true == builder.valid() )
-      {
-        // Add the scene to the root.
-        _root->addChild ( builder.buildScene ( caller ) );
-
-        Connect visual attributes (cubes, spheres, etc) with values (boundary, well height, etc).
-      }
+      // Add the scene to the root.
+      _root->addChild ( a->buildScene ( this ) );
     }
   }
-
-#endif
 }
 
 
@@ -254,6 +238,7 @@ void Layer::_buildScene ( Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#if 0
 osg::Node *Layer::_buildCubes ( Unknown *caller ) const
 {
   USUL_TRACE_SCOPE;
@@ -361,7 +346,7 @@ osg::Node *Layer::_buildCubes ( Unknown *caller ) const
 
   return geode.release();
 }
-
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -562,6 +547,20 @@ const Cell *Layer::cell ( unsigned int row, unsigned int col ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the cell.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Cell *Layer::cell ( unsigned int row, unsigned int col )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _rows.at ( row ).at ( col ).get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the cell below.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -589,15 +588,11 @@ void Layer::visible ( bool state )
   if ( this->visible() == state )
     return;
 
-  if ( true == _root.valid() )
-  {
-    // Separate flag to support serialization.
-    this->flags ( Usul::Bits::set ( this->flags(), Modflow::Flags::VISIBLE, state ) );
+  // Set the visible flag.
+  this->flags ( Usul::Bits::set ( this->flags(), Modflow::Flags::VISIBLE, state ) );
 
-    // Set the flags that says we are modified and dirty.
-    this->dirty ( true );
-    this->modified ( true );
-  }
+  // Set the flags that says we are dirty.
+  this->dirty ( true );
 }
 
 
@@ -708,16 +703,25 @@ Layer::Vec3d Layer::margin() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::dirty ( bool state )
+void Layer::dirtyState ( bool state )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
+  // Don't set to same state.
+  if ( this->dirtyState() == state )
+    return;
+
+  // Set local flag.
   this->flags ( Usul::Bits::set ( this->flags(), Modflow::Flags::DIRTY, state ) );
 
-  Usul::Interfaces::IDirtyState::QueryPtr dirty ( _document );
-  if ( true == dirty.valid() )
-    dirty->dirtyState ( state );
+  // If we're dirty then set document's state.
+  if ( true == state )
+  {
+    Usul::Interfaces::IDirtyState::QueryPtr dirty ( _document );
+    if ( true == dirty.valid() )
+      dirty->dirtyState ( state );
+  }
 }
 
 
@@ -727,7 +731,7 @@ void Layer::dirty ( bool state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Layer::dirty() const
+bool Layer::dirtyState() const
 {
   USUL_TRACE_SCOPE;
   return Usul::Bits::has ( this->flags(), Modflow::Flags::DIRTY );

@@ -14,7 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Helios/Plugins/ModflowModel/Readers/Discretization.h"
-#include "Helios/Plugins/ModflowModel/Attributes/Attribute.h"
+#include "Helios/Plugins/ModflowModel/Attributes/Boxes.h"
 #include "Helios/Plugins/ModflowModel/Constants.h"
 #include "Helios/Plugins/ModflowModel/ModflowDocument.h"
 
@@ -137,7 +137,8 @@ void Discretization::read ( Modflow::ModflowDocument *doc, const std::string &fi
     layer->zRange ( top.second, bottom.second );
 
     // Add attribute for the boundary.
-    layer->addAttribute ( new Modflow::Attributes::Attribute ( Modflow::Names::CELL_BOUNDARY ) );
+    layer->addAttribute ( new Modflow::Attributes::Boxes 
+      ( Modflow::Names::CELL_BOUNDARY, layer->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
 
     // The bottom becomes the new top.
     top = bottom;

@@ -21,12 +21,10 @@
 #include "Helios/Plugins/ModflowModel/Model/Cell.h"
 
 #include "Usul/Base/Object.h"
-#include "Usul/Interfaces/IUnknown.h"
-#include "Usul/Interfaces/ILayer.h"
-#include "Usul/Interfaces/ITreeNode.h"
-#include "Usul/Interfaces/ILayerList.h"
 #include "Usul/Interfaces/IBooleanState.h"
+#include "Usul/Interfaces/IDirtyState.h"
 #include "Usul/Interfaces/IDocument.h"
+#include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Pointers/Pointers.h"
@@ -44,7 +42,8 @@ namespace Model {
 
 class Layer : public Usul::Base::Object,
               public Usul::Interfaces::ITreeNode,
-              public Usul::Interfaces::IBooleanState
+              public Usul::Interfaces::IBooleanState,
+              public Usul::Interfaces::IDirtyState
 {
 public:
 
@@ -59,7 +58,6 @@ public:
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef Usul::Interfaces::IDocument IDocument;
   typedef Usul::Interfaces::ITreeNode ITreeNode;
-  typedef Usul::Interfaces::IBooleanState IBooleanState;
   typedef Modflow::Attributes::Attribute Attribute;
   typedef std::vector < Attribute::RefPtr > Attributes;
   typedef osg::ref_ptr < osg::Group > GroupPtr;
@@ -89,7 +87,7 @@ public:
   // Build the scene.
   osg::Node *                 buildScene ( Unknown *caller );
 
-  // Get the cell below.
+  // Get the cell.
   const Cell *                cell ( unsigned int row, unsigned int col ) const;
   Cell *                      cell ( unsigned int row, unsigned int col );
 
@@ -104,8 +102,12 @@ public:
   void                        clear();
 
   // Set/get the dirty flag.
-  void                        dirty ( bool );
-  bool                        dirty() const;
+  void                        dirty ( bool state ) { this->dirtyState ( state ); }
+  bool                        dirty() const { return this->dirtyState(); }
+
+  // Set/get the dirty flag.
+  virtual void                dirtyState ( bool );
+  virtual bool                dirtyState() const;
 
   // Set the document.
   void                        document ( Usul::Interfaces::IUnknown * );

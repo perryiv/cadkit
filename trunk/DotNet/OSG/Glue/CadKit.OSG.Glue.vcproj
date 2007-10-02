@@ -59,7 +59,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgGAd.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgGAd.lib OpenThreadsd.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"
@@ -135,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib OpenThreads.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"

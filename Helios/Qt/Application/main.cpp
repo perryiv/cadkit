@@ -14,8 +14,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "QtGui/QApplication"
-
+#include "Helios/Qt/Core/Application.h"
 #include "Helios/Qt/Core/MainWindow.h"
 
 #include "Threads/OpenThreads/Mutex.h"
@@ -156,12 +155,8 @@ namespace Program
       // For cleaning.
       Helper::Clean clean;
 
-      // Read the registry.
-      //XmlTree::RegistryReader reader ( new XmlTree::RegistryReader() );
-      //Usul::Registry::Database::instance().accept ( visitor );
-
       // Declare application.
-      QApplication app ( argc, argv );
+      CadKit::Helios::Core::Application app ( argc, argv );
 
       // Call quit when the last window closes. (Not sure if this is needed...)
       app.connect ( &app, SIGNAL ( lastWindowClosed() ), &app, SLOT ( quit() ) );
@@ -193,6 +188,9 @@ namespace Program
           // Hide the splash screen and show the main window.
           mw.hideSplashScreen();
           mw.show();
+
+          // Parse the command-line.
+          mw.parseCommandLine ( argc, argv );
 
           // Run the application.
           result = app.exec();

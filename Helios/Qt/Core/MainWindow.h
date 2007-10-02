@@ -134,6 +134,9 @@ public:
   void                              releasePlugin ( const std::string &pluginFile );
   void                              initPlugins ();
 
+  // Load the file.
+  void                              loadFile ( const std::string &file );
+
   // Functions for getting information about this binary.
   std::string                       directory() const;
   std::string                       icon() const;
@@ -142,19 +145,23 @@ public:
   std::string                       vendor() const;
   std::string                       url() const;
 
-  // Get the settings.
-  const QSettings &                 settings() const;
-  QSettings &                       settings();
+  // Parse the command-line.
+  void                              parseCommandLine ( int argc, char **argv );
 
   // Show/hide the splash screen.
   void                              hideSplashScreen();
   void                              showSplashScreen();
 
+  // Get the settings.
+  const QSettings &                 settings() const;
+  QSettings &                       settings();
+
+  // Restore dock window positions.
+  void                              restoreDockWindows();
+
   // Update these sub-windows.
   virtual void                      updateTextWindow ( bool force );
-  
-  // Restore dock window positions.
-  void                              restoreDockWindows ();
+
 protected:
 
   void                              _initMenu();
@@ -165,7 +172,15 @@ protected:
   void                              _buildToolBar();
   void                              _buildPluginDockWidgets();
 
+  void                              _clearDocuments();
+  void                              _clearMenuBar ();
+  void                              _clearRecentFiles ();
+  virtual void                      closeEvent ( QCloseEvent *event );
   virtual void                      _closeEvent ( QCloseEvent* event );
+
+  /// Drag events.
+  virtual void                      dragEnterEvent ( QDragEnterEvent *event );
+  virtual void                      dropEvent      ( QDropEvent      *event );
 
   std::string                       _formatFilters ( const Filters &filters ) const;
 
@@ -175,17 +190,9 @@ protected:
   void                              _lastFileDialogFilter ( const std::string &title, const std::string &filter ) const;
   void                              _loadSettings();
 
+  void                              _parseCommandLine ( int argc, char **argv );
+
   void                              _saveSettings();
-
-  void                              _clearDocuments();
-  void                              _clearMenuBar ();
-  void                              _clearRecentFiles ();
-
-  virtual void                      closeEvent ( QCloseEvent *event );
-
-  /// Drag events.
-  virtual void                      dragEnterEvent ( QDragEnterEvent *event );
-  virtual void                      dropEvent      ( QDropEvent      *event );
  
   // Usul::Interfaces::Qt::IMainWindow
   virtual QMainWindow *             mainWindow();

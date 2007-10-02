@@ -1318,6 +1318,8 @@ void MainWindow::_idleProcess()
 
 void MainWindow::_clearDocuments()
 {
+  USUL_TRACE_SCOPE;
+
   // Typedefs.
   typedef Usul::Documents::Manager::Documents  Documents;
   typedef Usul::Documents::Document            Document;
@@ -1355,6 +1357,7 @@ void MainWindow::_clearDocuments()
 
 QMainWindow * MainWindow::mainWindow()
 {
+  USUL_TRACE_SCOPE;
   return this;
 }
 
@@ -1367,6 +1370,7 @@ QMainWindow * MainWindow::mainWindow()
 
 const QMainWindow* MainWindow::mainWindow() const
 {
+  USUL_TRACE_SCOPE;
   return this;
 }
 
@@ -1379,6 +1383,8 @@ const QMainWindow* MainWindow::mainWindow() const
 
 QWorkspace * MainWindow::workspace()
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _workSpace;
 }
 
@@ -1391,6 +1397,8 @@ QWorkspace * MainWindow::workspace()
 
 const QWorkspace* MainWindow::workspace() const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _workSpace;
 }
 
@@ -1403,6 +1411,8 @@ const QWorkspace* MainWindow::workspace() const
 
 void MainWindow::notifyDocumentFinishedLoading ( Usul::Documents::Document* document )
 {
+  USUL_TRACE_SCOPE;
+
   if ( 0x0 != document )
   {
     // Reference the document.  Some care will have to be taken since the proxy has a raw pointer.
@@ -1561,9 +1571,12 @@ void MainWindow::_buildPluginDockWidgets()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  A close event has been recieved.  Close any windows that the workspace has open.
-//  Calling in the destructor is too late because the event loop has exited.
-//  TODO:  Ask the documents if they need to save before calling the BaseClass' fucntion.
+//  A close event has been recieved.  Close any windows that the workspace 
+//  has open. Calling in the destructor is too late because the event loop 
+//  has exited.
+//
+//  TODO: Ask the documents if they need to save before calling the 
+//  BaseClass' function.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1576,15 +1589,19 @@ void MainWindow::closeEvent ( QCloseEvent* event )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  A close event has been recieved.  Close any windows that the workspace has open.
-//  Calling in the destructor is too late because the event loop has exited.
-//  TODO:  Ask the documents if they need to save before calling the BaseClass' fucntion.
+//  A close event has been recieved.  Close any windows that the workspace 
+//  has open. Calling in the destructor is too late because the event loop 
+//  has exited.
+//
+//  TODO: Ask the documents if they need to save before calling the 
+//  BaseClass' function.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void MainWindow::_closeEvent ( QCloseEvent* event )
 {
   USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
 
   // Close child windows first.
   _workSpace->closeAllWindows();
@@ -1603,6 +1620,7 @@ void MainWindow::_closeEvent ( QCloseEvent* event )
 Usul::Interfaces::IUnknown* MainWindow::createProgressBar()
 {
   USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return 0x0 );
   return _progressBars->createProgressBar ();
 }
 
@@ -1616,6 +1634,7 @@ Usul::Interfaces::IUnknown* MainWindow::createProgressBar()
 void MainWindow::restoreDockWindows()
 {
   USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
 
   // Restore dock window positions.
   CadKit::Helios::Tools::SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::MAIN_WINDOW, _settings );  
@@ -1632,6 +1651,9 @@ void MainWindow::restoreDockWindows()
 
 void MainWindow::addDockWidgetMenu ( QDockWidget * dock )
 {
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
   if ( _dockMenu.valid () )
   {
     MenuKit::Button::RefPtr button ( new MenuKit::Button ( new CadKit::Helios::Commands::ToggleView ( dock ) ) );
@@ -1650,6 +1672,9 @@ void MainWindow::addDockWidgetMenu ( QDockWidget * dock )
 
 void MainWindow::dragEnterEvent ( QDragEnterEvent *event )
 {
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
   typedef QList < QUrl > Urls;
   typedef Urls::const_iterator ConstIterator;
 
@@ -1673,6 +1698,9 @@ void MainWindow::dragEnterEvent ( QDragEnterEvent *event )
 
 void MainWindow::dropEvent ( QDropEvent *event )
 {
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
   typedef QList < QUrl > Urls;
   typedef Urls::const_iterator ConstIterator;
 
@@ -1701,6 +1729,7 @@ void MainWindow::dropEvent ( QDropEvent *event )
 
 void MainWindow::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
 {
+  USUL_TRACE_SCOPE;
   this->_initMenu ();
   this->_buildMenu ();
 }
@@ -1714,6 +1743,57 @@ void MainWindow::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usu
 
 void MainWindow::activeViewChanged ( Usul::Interfaces::IUnknown *oldView, Usul::Interfaces::IUnknown *newView )
 {
+  USUL_TRACE_SCOPE;
   this->_initMenu ();
   this->_buildMenu ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse the command-line.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::parseCommandLine ( int argc, char **argv )
+{
+  USUL_TRACE_SCOPE;
+  Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( this, &MainWindow::_parseCommandLine ), argc, argv, "4427951490" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse the command-line.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_parseCommandLine ( int argc, char **argv )
+{
+  USUL_TRACE_SCOPE;
+
+  for ( int i = 1; i < argc; ++i )
+  {
+    this->loadFile ( argv[i] );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::loadFile ( const std::string &file )
+{
+  USUL_TRACE_SCOPE;
+
+  if ( true == Usul::Predicates::FileExists::test ( file ) )
+  {
+    Usul::Interfaces::IUnknown::QueryPtr me ( this );
+    CadKit::Helios::Commands::OpenDocument::RefPtr command ( new CadKit::Helios::Commands::OpenDocument ( me ) );
+    command->filename ( file );
+    command->execute ( 0x0 );
+  }
 }

@@ -114,7 +114,12 @@ void HeadLevelOutput::read ( Modflow::ModflowDocument *doc, const std::string &f
     // Add attribute for each layer...
     for ( unsigned int i = 0; i < numLayers; ++i )
     {
-      layers.at(i)->addAttribute ( new Modflow::Attributes::Attribute ( Modflow::Names::HEAD_LEVELS ) );
+      Modflow::Model::Layer::RefPtr layer ( layers.at(i) );
+      if ( true == layer.valid() )
+      {
+        layer->addAttribute ( new Modflow::Attributes::Attribute 
+          ( Modflow::Names::HEAD_LEVELS, layer->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
+      }
     }
   }
 }

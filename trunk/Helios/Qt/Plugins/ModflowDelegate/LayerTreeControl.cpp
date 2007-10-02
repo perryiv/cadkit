@@ -217,6 +217,7 @@ namespace Helper
         unsigned int unChecked ( 0 );
         unsigned int partial   ( 0 );
 
+        // Determine children's state.
         const int numChildren ( parent->childCount() );
         for ( int i = 0; i < numChildren; ++i )
         {
@@ -239,6 +240,7 @@ namespace Helper
           }
         }
 
+        // Set check state according the children's state.
         if ( numChildren == checked )
         {
           parent->setCheckState ( 0, Qt::Checked );
@@ -251,6 +253,9 @@ namespace Helper
         {
           parent->setCheckState ( 0, Qt::PartiallyChecked );
         }
+
+        // Call this function for the parent.
+        Helper::setParentCheck ( parent->parent() );
       }
     }
   }
@@ -301,7 +306,7 @@ void LayerTreeControl::_itemChanged ( QTreeWidgetItem *item, int column )
   // If the item is valid...
   if ( 0x0 != item )
   {
-    // Get the state and layer.
+    // Get the state and interface.
     Qt::CheckState state ( item->checkState ( column ) );
     Usul::Interfaces::IBooleanState::QueryPtr boolean ( _nodeMap[item] );
 

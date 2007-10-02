@@ -101,7 +101,8 @@ void BasicPackage::read ( Modflow::ModflowDocument *doc, const std::string &file
 
     // Add attribute for entire layer.
     Layer::RefPtr layer = layers.at ( i );
-    layer->addAttribute ( new Modflow::Attributes::Attribute ( Modflow::Names::STARTING_HEAD ) );
+    layer->addAttribute ( new Modflow::Attributes::Attribute 
+      ( Modflow::Names::STARTING_HEAD, layer->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
 
     // Set the start heads.
     layer->vector ( Modflow::Names::STARTING_HEAD, 0, startHeads.second );

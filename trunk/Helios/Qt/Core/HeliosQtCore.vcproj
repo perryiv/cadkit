@@ -170,6 +170,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\Application.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Application.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Constants.h"
 				>
 			</File>
@@ -239,7 +247,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing Menu.h"
-						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\Menu.h&quot; -o &quot;.\GeneratedFiles\moc_Menu.cpp&quot;"
+						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\Menu.h&quot; -o &quot;.\GeneratedFiles\moc_Menu.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\moc.exe;&quot;.\Menu.h&quot;"
 						Outputs="&quot;.\GeneratedFiles\moc_Menu.cpp&quot;"
 					/>
@@ -250,7 +258,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing Menu.h"
-						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\Menu.h&quot; -o &quot;.\GeneratedFiles\moc_Menu.cpp&quot;"
+						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\Menu.h&quot; -o &quot;.\GeneratedFiles\moc_Menu.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\moc.exe;&quot;.\Menu.h&quot;"
 						Outputs="&quot;.\GeneratedFiles\moc_Menu.cpp&quot;"
 					/>

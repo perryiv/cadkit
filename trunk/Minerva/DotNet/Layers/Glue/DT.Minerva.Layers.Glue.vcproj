@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib libpqxxd.lib ossimd.lib"
+				AdditionalDependencies="osgd.lib libpqxxd.lib ossimd.lib OpenThreadsd.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(PQXX_LIB_DIR);$(BOOST_LIB_DIR);$(OSSIM_LIB_DIR)"
 				GenerateDebugInformation="true"
@@ -137,7 +137,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib libpqxx.lib ossim.lib"
+				AdditionalDependencies="osg.lib libpqxx.lib ossim.lib OpenThreads.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(PQXX_LIB_DIR);$(BOOST_LIB_DIR);$(OSSIM_LIB_DIR)"
 				GenerateDebugInformation="true"

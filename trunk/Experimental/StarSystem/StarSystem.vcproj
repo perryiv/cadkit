@@ -275,6 +275,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Tile.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Tile.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Visitor.cpp"
 				>
 			</File>

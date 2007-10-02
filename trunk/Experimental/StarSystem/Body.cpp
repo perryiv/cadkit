@@ -23,6 +23,7 @@
 #include "Usul/Trace/Trace.h"
 
 #include "OsgTools/ShapeFactory.h"
+#include "OsgTools/Group.h"
 
 #include "ossimPlanet/ossimPlanet.h"
 #include "ossimPlanet/ossimPlanetLand.h"
@@ -314,10 +315,6 @@ void Body::_buildScene ( osgUtil::CullVisitor *cv )
   if ( 0x0 == cv )
     return;
 
-  // Get the properties.
-  const osg::Vec3d eye ( cv->getEyeLocal() );
-  const osg::Vec3d vp  ( cv->getViewPoint() );
-  std::cout << " Eye Point: " << eye[0] << ' ' << eye[1] << ' ' << eye[2] << std::endl;
-  std::cout << "View Point: " <<  vp[0] << ' ' <<  vp[1] << ' ' <<  vp[2] << std::endl;
-  std::cout << std::endl;
+  // Remove all children in the group.
+  //OsgTools::Group::removeAllChildren ( _transform );
 }

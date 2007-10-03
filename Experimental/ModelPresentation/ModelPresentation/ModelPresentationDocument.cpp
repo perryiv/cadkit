@@ -704,9 +704,15 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
     {
       Usul::Strings::fromString ( iter->second, _timeSet.endTime );
     }
-     if ( "interval" == iter->first )
+    if ( "interval" == iter->first )
     {
       Usul::Strings::fromString ( iter->second, _timeSet.interval );
+    }
+    if ( "timelength" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, _updateInterval );
+      std::cout << "Setting time update interval to " << _updateInterval << std::endl;
+      //_update._updateTime = _updateInterval;
     }
         
   }

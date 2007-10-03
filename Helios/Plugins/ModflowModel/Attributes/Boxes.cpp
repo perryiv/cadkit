@@ -22,6 +22,8 @@
 
 #include "osg/Group"
 
+#include <algorithm>
+
 using namespace Modflow::Attributes;
 
 
@@ -114,6 +116,26 @@ unsigned int Boxes::getNumChildNodes() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _sides.size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Boxes::setBooleanState ( bool state )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Set this instance's state.
+  this->visible ( state );
+
+  // Set child's state.
+  typedef Usul::Interfaces::IBooleanState IBooleanState;
+  std::for_each ( _sides.begin(), _sides.end(), std::bind2nd ( std::mem_fun ( &IBooleanState::setBooleanState ), state ) );
 }
 
 

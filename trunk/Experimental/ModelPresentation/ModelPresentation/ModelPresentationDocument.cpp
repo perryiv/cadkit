@@ -12,7 +12,7 @@
 #include "Experimental/ModelPresentation/ModelPresentation/MpdMenuCommand.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdPrevTimestep.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdStartAnimation.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdstopAnimation.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdStopAnimation.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdFirstTimestep.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdNextCommand.h"
 
@@ -827,7 +827,7 @@ osg::Node* ModelPresentationDocument::_loadFile( const std::string& filename, Un
   osg::ref_ptr< osg::Group > group ( new osg::Group );
   std::cout << filename << " single file loading..." << std::endl;
      #ifndef _MSC_VER
-        filename =  dir + filename.at(i).c_str() ;
+     //   filename =  filename.at(i).c_str() ;
      #endif
   {
      // This will create a new document.

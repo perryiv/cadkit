@@ -40,9 +40,6 @@ SET (SOURCES
   ./Commands/Camera.cpp
   ./Commands/LoadDocument.cpp
   ./Commands/Navigator.cpp
-  ./Commands/PolygonMode.cpp
-  ./Commands/RenderingPasses.cpp
-  ./Commands/ShadeModel.cpp
   ./Jobs/SaveImage.cpp
   ./Devices/JoystickDevice.cpp
   ./Devices/ButtonGroup.cpp

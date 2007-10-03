@@ -45,6 +45,7 @@ SET (SOURCES
 ./Menu.cpp
 ./FlagsVisitor.cpp
 ./UpdateVisitor.cpp
+./RadioButton.cpp
 )
 
 # Create a Shared Library

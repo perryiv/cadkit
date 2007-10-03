@@ -83,6 +83,8 @@ protected:
 
 
   template < class VectorType > void _makeTriangleDocument( VectorType vertices );
+  bool                      _loadTexture ( const std::string& filename, Usul::Interfaces::IUnknown *caller );
+
 
 private:
    // No copying.
@@ -97,6 +99,7 @@ private:
   FileInfo                  _file;
   TriangleDocumentPtr       _document;
   std::string               _xmlFilename;
+  std::string               _textureFilename;
 
 };
 

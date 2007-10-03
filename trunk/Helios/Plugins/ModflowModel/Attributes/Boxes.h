@@ -48,6 +48,9 @@ public:
   virtual const ITreeNode *   getChildNode ( unsigned int which ) const;
   virtual ITreeNode *         getChildNode ( unsigned int which );
 
+  // Usul::Interfaces::IBooleanState.
+  virtual void                setBooleanState ( bool );
+
 protected:
 
   // Use reference counting.

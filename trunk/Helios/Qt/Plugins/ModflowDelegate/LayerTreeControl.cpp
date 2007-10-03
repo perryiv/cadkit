@@ -200,63 +200,84 @@ void LayerTreeControl::_onItemChanged ( QTreeWidgetItem *item, int column )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Helper function to set the item's parent's check.
+//  Helper function to count visible children.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace Helper
 {
-  void setParentCheck ( QTreeWidgetItem *item )
+  unsigned int countVisibleChildren ( const QTreeWidgetItem *item )
   {
-    if ( item )
+    unsigned int count ( 0 );
+    if ( 0x0 != item )
     {
-      QTreeWidgetItem *parent ( item->parent() );
-      if ( parent )
+      const int numChildren ( item->childCount() );
+      for ( int i = 0; i < numChildren; ++i )
       {
-        unsigned int checked   ( 0 );
-        unsigned int unChecked ( 0 );
-        unsigned int partial   ( 0 );
-
-        // Determine children's state.
-        const int numChildren ( parent->childCount() );
-        for ( int i = 0; i < numChildren; ++i )
+        const QTreeWidgetItem *child ( item->child ( i ) );
+        if ( ( 0x0 != child ) && ( Qt::Checked == child->checkState ( 0 ) ) )
         {
-          QTreeWidgetItem *child ( parent->child ( i ) );
-          if ( child )
-          {
-            const Qt::CheckState state ( child->checkState ( 0 ) );
-            if ( state == Qt::Checked )
-            {
-              ++checked;
-            }
-            if ( state == Qt::Unchecked )
-            {
-              ++unChecked;
-            }
-            if ( state == Qt::PartiallyChecked )
-            {
-              ++partial;
-            }
-          }
+          ++count;
         }
-
-        // Set check state according the children's state.
-        if ( numChildren == checked )
-        {
-          parent->setCheckState ( 0, Qt::Checked );
-        }
-        else if ( numChildren == unChecked )
-        {
-          parent->setCheckState ( 0, Qt::Unchecked );
-        }
-        else
-        {
-          parent->setCheckState ( 0, Qt::PartiallyChecked );
-        }
-
-        // Call this function for the parent.
-        Helper::setParentCheck ( parent->parent() );
       }
+    }
+    return count;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to set checks.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  void setChecks ( QTreeWidgetItem *item, LayerTreeControl::NodeMap &items )
+  {
+    // Handle no item
+    if ( 0x0 == item )
+      return;
+
+    // Loop through all the children.
+    const int numChildren ( item->childCount() );
+    for ( int i = 0; i < numChildren; ++i )
+    {
+      // Get the child.
+      QTreeWidgetItem *child ( item->child ( i ) );
+
+      // Depth-first traversal.
+      Helper::setChecks ( child, items );
+    }
+
+    // Get the number of visible children.
+    const unsigned int numVisibleChildren ( Helper::countVisibleChildren ( item ) );
+
+    // Special case num children.
+    if ( 0 == numChildren )
+    {
+      Usul::Interfaces::IBooleanState::QueryPtr boolean ( items[item] );
+      item->setCheckState ( 0, ( ( boolean->getBooleanState() ) ? Qt::Checked : Qt::Unchecked ) );
+      return;
+    }
+
+    // Are all the children visible?
+    if ( numVisibleChildren == numChildren )
+    {
+      item->setCheckState ( 0, Qt::Checked );
+    }
+
+    // Are none of the chldren visible?
+    else if ( 0 == numVisibleChildren )
+    {
+      item->setCheckState ( 0, Qt::Unchecked );
+    }
+
+    // Otherwise, it's mixed.
+    else
+    {
+      item->setCheckState ( 0, Qt::PartiallyChecked );
     }
   }
 }
@@ -264,25 +285,23 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Helper function to set the item's children's check.
+//  Helper function to set checks.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace Helper
 {
-  void setChildrenCheck ( QTreeWidgetItem *parent, Qt::CheckState state )
+  void setChecks ( QTreeWidget *tree, LayerTreeControl::NodeMap &items )
   {
-    if ( parent )
+    // Handle no tree
+    if ( 0x0 == tree )
+      return;
+
+    // Loop through all the children.
+    const int numChildren ( tree->topLevelItemCount() );
+    for ( int i = 0; i < numChildren; ++i )
     {
-      const int numChildren ( parent->childCount() );
-      for ( int i = 0; i < numChildren; ++i )
-      {
-        QTreeWidgetItem *child ( parent->child ( i ) );
-        if ( child )
-        {
-          child->setCheckState ( 0, state );
-        }
-      }
+      Helper::setChecks ( tree->topLevelItem ( i ), items );
     }
   }
 }
@@ -316,11 +335,8 @@ void LayerTreeControl::_itemChanged ( QTreeWidgetItem *item, int column )
       // Set the state.
       boolean->setBooleanState ( Qt::Checked == state );
 
-      // Set check for the children.
-      Helper::setChildrenCheck ( item, state );
-
-      // Set the check for the parent.
-      Helper::setParentCheck ( item );
+      // Top-down traversal setting all the checks.
+      Helper::setChecks ( _tree, _nodeMap );
     }
   }
 }

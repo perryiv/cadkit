@@ -836,7 +836,13 @@ void Layer::setBooleanState ( bool state )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
+  // Set this instance's state.
   this->visible ( state );
+
+  // Set child's state.
+  typedef Usul::Interfaces::IBooleanState IBooleanState;
+  std::for_each ( _attributes.begin(), _attributes.end(), std::bind2nd ( std::mem_fun ( &IBooleanState::setBooleanState ), state ) );
 }
 
 

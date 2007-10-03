@@ -38,6 +38,9 @@ SET (SOURCES
 	CommandLine/Flags.cpp
 	CommandLine/Options.cpp
 	Commands/Command.cpp
+  Commands/PolygonMode.cpp
+  Commands/RenderingPasses.cpp
+  Commands/ShadeModel.cpp
 	Components/Manager.cpp
 	Console/Feedback.cpp
 	Devices/BaseDevice.cpp

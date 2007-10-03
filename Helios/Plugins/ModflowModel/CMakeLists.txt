@@ -19,17 +19,21 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR
 
 # Set the sources to compile.
 set (SOURCES
-./Attribute.cpp
-./BlockCenteredFlow.cpp
+./Model/Cell.cpp
+./Model/Layer.cpp
+./Attributes/Quads.cpp
+./Attributes/Boxes.cpp
+./Attributes/Attribute.cpp
 ./ModflowFactory.cpp
-./ModflowDocument.cpp
 ./ModflowComponent.cpp
-./Layer.cpp
-./BuildScene.cpp
-./Cell.cpp
-./Discretization.cpp
-./BasicPackage.cpp
-./BaseReader.cpp
+./ModflowDocument.cpp
+./Builders/BuildScene.cpp
+./Readers/BasicPackage.cpp
+./Readers/HeadLevelOutput.cpp
+./Readers/Discretization.cpp
+./Readers/BaseReader.cpp
+./Readers/BlockCenteredFlow.cpp
+
 )
 
 # ---------- Create a Shared Library

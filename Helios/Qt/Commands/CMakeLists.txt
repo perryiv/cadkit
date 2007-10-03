@@ -25,6 +25,7 @@ SET (SOURCES
     OpenDocument.cpp
     SaveDocument.cpp
     SaveAsDocument.cpp
+    ToggleView.cpp
 )
 
 SET(MOC_HDRS

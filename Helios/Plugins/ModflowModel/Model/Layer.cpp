@@ -419,7 +419,12 @@ void Layer::vector ( const std::string &name, unsigned int timeStep, const Data 
       {
         // Get vector and resize (not reserve).
         Cell::Vector &v ( cell->vector ( name ) );
-        v.resize ( Usul::Math::maximum ( v.size(), timeStep + 1 ) );
+
+        // Static cast needed to compile with gcc
+        unsigned int size ( static_cast < unsigned int > ( v.size() ) );
+
+        // Resize.
+        v.resize ( Usul::Math::maximum ( size, timeStep + 1 ) );
 
         // Write value to cell's vector.
         const double value ( heads.at ( index ) );

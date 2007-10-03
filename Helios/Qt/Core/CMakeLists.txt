@@ -17,10 +17,13 @@ SET (SOURCES
     MainWindow.cpp
     SplashScreen.cpp
     ProgressBarDock.cpp
+    Menu.cpp
 )
 
 SET(MOC_HDRS
   MainWindow.h
+  ProgressBarDock.h
+  Menu.h
 )
 
 # After this call, foo_MOC_SRCS = moc_Class1.cxx moc_Class2.cxx moc_Class3.cxx.
@@ -32,7 +35,7 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 ADD_LIBRARY(HeliosQtCore SHARED ${SOURCES} ${MOC_SRCS} )
 
 # Link the Library	
-LINK_CADKIT( HeliosQtCore HeliosQtCommands HeliosQtTools XmlTree
+LINK_CADKIT( HeliosQtCore HeliosQtCommands HeliosQtTools XmlTree MenuKit
   Usul
 )
 

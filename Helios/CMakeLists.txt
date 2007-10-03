@@ -35,6 +35,7 @@ ${PROJECT_SOURCE_DIR}/../Usul
 ${PROJECT_SOURCE_DIR}/../Threads/OpenThreads
 ${PROJECT_SOURCE_DIR}/../OsgTools 
 ${PROJECT_SOURCE_DIR}/../XmlTree 
+${PROJECT_SOURCE_DIR}/../MenuKit
 #${PROJECT_SOURCE_DIR}/Animate
 #${PROJECT_SOURCE_DIR}/Plugins/About
 ${PROJECT_SOURCE_DIR}/Plugins/SceneModel

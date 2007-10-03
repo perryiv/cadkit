@@ -10,6 +10,8 @@
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Types/Types.h"
+#include "Usul/Predicates/FileExists.h"
+#include "osgDB/ReadFile"
 
 
 
@@ -128,7 +130,7 @@ struct SwapBytes
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Read the file.
+//  Build the scene
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -164,6 +166,9 @@ void TriangleReaderGrassRaster::operator()()
 
   // Read the file.
   this->_read();
+
+  // Load the texture file
+  this->_loadTexture( _textureFilename, _caller );
 }
 
 
@@ -184,6 +189,9 @@ void TriangleReaderGrassRaster::read()
 
   // Read the file.
   this->_read();
+
+  // Load the texture file
+  this->_loadTexture( _textureFilename, _caller );
 }
 
 
@@ -253,6 +261,12 @@ void TriangleReaderGrassRaster::_parseXML( XmlTree::Node &node, Usul::Interfaces
       Usul::Strings::fromString ( iter->second, _file.first );
       _file.second = Usul::File::size ( _file.first );
     }
+    if ( "texture" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, _textureFilename );
+      
+    }
+
   }
 
 #if 0
@@ -524,6 +538,96 @@ template < class VectorType > void TriangleReaderGrassRaster::_makeTriangleDocum
   }
 
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load an image file to use as a texture file to the model.
+//  An actual texture object is not created.  Instead, we use
+//  the color information contained in the image to set the 
+//  corresponding color at a given point in the terrain file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool TriangleReaderGrassRaster::_loadTexture ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
+{
+  std::cout << "Loading texture: " << filename << std::endl;
+  if( 0x0 == _document )
+  {
+    USUL_ASSERT ( false );
+    std::cout << "Invalid Document!" << std::endl;
+    return false;
+  }
+  #ifdef _MSC_VER
+    std::string file ( filename );
+  #else
+    std::string slash ( Usul::File::slash() );
+    std::string file ( _document->dir() + slash + filename );
+  #endif
+  if( Usul::Predicates::FileExists::test ( file ) )
+  {
+   
+    // Get color array
+    Usul::Interfaces::IColorsPerVertex::QueryPtr colorsV ( _document );
+    osg::ref_ptr< osg::Vec4Array > colors = colorsV->getColorsV ( true );
+
+    // Get vertices
+    Usul::Interfaces::IVertices::QueryPtr vertices ( _document );
+    osg::ref_ptr< osg::Vec3Array > v = vertices->vertices();
+
+    // make sure the number of colors is correct.
+    colors->resize ( v->size() );
+
+    // load the image
+    osg::ref_ptr< osg::Image > tex ( new osg::Image );
+    tex = osgDB::readImageFile( file );
+    // Initialize local vaiables.
+    Usul::Math::Vec2ui gridSize ( _header.rows + 1 , _header.cols +1 );
+    Usul::Math::Vec2d ll ( _header.west, _header.south );
+    float cellSize ( _header.ns_resol );
+    
+    std::cout << "Reading texture image file: " << file << std::endl;
+   
+    for( unsigned int i = 0; i < v->size(); ++i )
+    {
+      // get the current grid location of the point at index i
+      float vi = v->at(i)[0] - ll[1];
+      float vj = v->at(i)[1] - ll[0];
+      float rsize = ( float ( gridSize[0] ) * cellSize ) - 1;
+      float csize = ( float ( gridSize[1] ) * cellSize ) - 1;
+      
+      // get the color information from the image for the point at index i
+      unsigned int pixelRow = static_cast < unsigned int >( ( rsize - vi ) / cellSize );
+      unsigned int pixelCol = static_cast < unsigned int >( vj / cellSize );
+      unsigned char * pixel = tex->data(  pixelCol, pixelRow  );
+
+      // get the color values to use
+      osg::Vec4f pixelColor ( 0, 0, 0, 1 );
+      pixelColor[0] = static_cast< float > ( pixel[0] ) / 255.0f ;
+      pixelColor[1] = static_cast< float > ( pixel[1] ) / 255.0f ;
+      pixelColor[2] = static_cast< float > ( pixel[2] ) / 255.0f ;
+  
+      // set the color for the point at index i
+      colors->at(i) = pixelColor;
+    }
+
+    // The colors are not dirty.
+    colorsV->dirtyColorsV ( false );
+
+    std::cout << "\nTexture file reading complete!" << std::endl;
+
+    return true;
+    }
+  else
+  {
+    std::cout << "Unable to load image file:" << file << ".  File does not exist!" << std::endl;
+    return false;
+  }
+}
+
+
+
 /////////////////
 //  PRIVATE
 /////////////////

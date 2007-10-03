@@ -24,10 +24,11 @@ namespace Policies {
 
 struct TimeBased
 {
-  TimeBased( Usul::Types::Uint64 updateTime ) : 
-    _lastTime ( Usul::System::Clock::milliseconds() ), 
-    _updateTime( updateTime ) 
-    { }
+  TimeBased ( Usul::Types::Uint64 updateTime ) : 
+    _lastTime   ( Usul::System::Clock::milliseconds() ), 
+    _updateTime ( updateTime )
+  {
+  }
 
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -57,8 +58,35 @@ struct TimeBased
     //If we get here return false
     return false;
   }
+
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Set the time.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  void lastTime ( Usul::Types::Uint64 last )
+  {
+    _lastTime = last;
+  }
+
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Set the time.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  void updateTime ( Usul::Types::Uint64 update )
+  {
+    _updateTime = update;
+  }
+
 private:
-  Usul::Types::Uint64 _lastTime, _updateTime;
+
+  Usul::Types::Uint64 _lastTime;
+  Usul::Types::Uint64 _updateTime;
 };
 
 
@@ -70,10 +98,11 @@ private:
 
 struct NumberBased
 {
-  NumberBased( unsigned int refreshRate ) :
-    _refreshRate ( refreshRate ),
+  NumberBased ( unsigned int refreshRate ) :
+    _refreshRate  ( refreshRate ),
     _numRefreshes ( 0 )
-    { }
+  {
+  }
 
   
   ///////////////////////////////////////////////////////////////////////////////
@@ -92,8 +121,11 @@ struct NumberBased
       return true;
     return false;
   }
+
 private:
-  unsigned int _refreshRate, _numRefreshes;
+
+  unsigned int _refreshRate;
+  unsigned int _numRefreshes;
 };
 
 }

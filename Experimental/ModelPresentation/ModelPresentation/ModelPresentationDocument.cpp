@@ -56,7 +56,7 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _static ( new osg::Group ),
   _sceneTree ( 0x0 ),
   _sets ( 0x0 ),
-  _update( 1000 ),
+  _update( TimeBasedPtr( new TimeBased( 1000 ) ) ),
   _updateInterval( 1000 ),
   _useTimeLine( false ),
   _isAnimating( false )
@@ -332,7 +332,7 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
 
   if( true == this->isAnimating() )
   {
-    if( true == _update() )
+    if( true == (*_update)() )
     {
       if( _timeSet.currentTime == _timeSet.endTime )
         _timeSet.currentTime = 0;
@@ -712,7 +712,7 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
     {
       Usul::Strings::fromString ( iter->second, _updateInterval );
       std::cout << "Setting time update interval to " << _updateInterval << std::endl;
-      //_update._updateTime = _updateInterval;
+      _update = ( TimeBasedPtr( new TimeBased( _updateInterval ) ) );
     }
         
   }

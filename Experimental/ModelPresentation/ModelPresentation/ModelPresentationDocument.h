@@ -32,6 +32,7 @@
 #include "XmlTree/Document.h"
 
 #include <string>
+#include <memory>
 
 namespace osg { class Node; }
 
@@ -80,6 +81,7 @@ public:
   typedef Usul::Documents::Manager DocManager;
   typedef DocManager::DocumentInfo Info;
   typedef Usul::Policies::TimeBased TimeBased;
+  typedef std::auto_ptr< TimeBased > TimeBasedPtr;
 
 
   typedef std::vector< osg::ref_ptr< osg::Switch > > MpdScene;
@@ -176,7 +178,7 @@ private:
   MpdModels                   _models;
   MpdSets                     _sets;
   MpdTimeSet                  _timeSet;
-  TimeBased                   _update;
+  TimeBasedPtr                _update;
   unsigned int                _updateInterval;
   bool                        _useTimeLine;
   bool                        _isAnimating;

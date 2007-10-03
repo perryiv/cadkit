@@ -17,6 +17,7 @@
 #include "Usul/Interfaces/ILayerAddGUIQt.h"
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 
+#include "QtGui/QHeaderView"
 #include "QtGui/QTreeWidget"
 #include "QtGui/QVBoxLayout"
 #include "QtGui/QHBoxLayout"
@@ -54,6 +55,7 @@ _document ()
   buttonLayout->addWidget ( refresh );
 
   _tree = new QTreeWidget;
+  _tree->header()->setHidden ( 1 );
   treeLayout->addWidget ( _tree );
   
   topLayout->addLayout ( buttonLayout );

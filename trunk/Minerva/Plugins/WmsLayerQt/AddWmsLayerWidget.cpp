@@ -23,6 +23,7 @@
 #include "QtGui/QPushButton"
 #include "QtGui/QRadioButton"
 #include "QtGui/QButtonGroup"
+#include "QtGui/QFileDialog"
 
 #include <iostream>
 
@@ -36,28 +37,38 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
 _server ( 0x0 ),
 _cacheDirectory ( 0x0 ),
 _imageTypes ( 0x0 )
-{
-  _server = new QLineEdit ( this );
-  _cacheDirectory = new QLineEdit ( this );
-
+{  
   QVBoxLayout *topLayout ( new QVBoxLayout );
   this->setLayout ( topLayout );
+  
+  // The server field.
+  {
+    QHBoxLayout *layout0 ( new QHBoxLayout );
+    QLabel *serverLabel ( new QLabel ( "Server:" ) );
+    _server = new QLineEdit ( this );
+    layout0->addWidget ( serverLabel );
+    layout0->addWidget ( _server );
+    topLayout->addLayout ( layout0 );
+  }
 
-  QHBoxLayout *layout0 ( new QHBoxLayout );
-  QHBoxLayout *layout1 ( new QHBoxLayout );
+  // The cache field.
+  {
+    QHBoxLayout *layout1 ( new QHBoxLayout );
 
-  QLabel *serverLabel ( new QLabel ( "Server:" ) );
-  QLabel *cacheLabel  ( new QLabel ( "Cache Directory:" ) );
+    QLabel *cacheLabel  ( new QLabel ( "Cache Directory:" ) );
+    layout1->addWidget ( cacheLabel );
 
-  layout0->addWidget ( serverLabel );
-  layout0->addWidget ( _server );
+    _cacheDirectory = new QLineEdit ( this );
+    layout1->addWidget ( _cacheDirectory );
 
-  layout1->addWidget ( cacheLabel );
-  layout1->addWidget ( _cacheDirectory );
+    QPushButton *button ( new QPushButton ( "Browse" ) );
 
-  topLayout->addLayout ( layout0 );
-  topLayout->addLayout ( layout1 );
+    connect ( button, SIGNAL ( clicked() ), this, SLOT ( _browseDirectory () ) );
+    layout1->addWidget ( button );
 
+    topLayout->addLayout ( layout1 );
+  }
+  
   _imageTypes = new QButtonGroup;
   QRadioButton *jpeg ( new QRadioButton ( "image/jpeg" ) );
   QRadioButton *png  ( new QRadioButton ( "image/png" ) );
@@ -116,4 +127,21 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
 
     al->addLayer ( layer.get () );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Browse for a directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AddWmsLayerWidget::_browseDirectory ()
+{
+  QString dir ( QFileDialog::getExistingDirectory ( this, tr ( "Cache Directory" ),
+                                                    _cacheDirectory->text(),
+                                                    QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks ) );
+
+  if ( dir.size() >  0 )
+    _cacheDirectory->setText ( dir );
 }

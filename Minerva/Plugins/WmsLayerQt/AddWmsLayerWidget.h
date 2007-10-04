@@ -34,6 +34,9 @@ public:
 
   void apply ( Usul::Interfaces::IUnknown * caller );
 
+protected slots:
+  void _browseDirectory ();
+
 private:
   QLineEdit *_server;
   QLineEdit *_cacheDirectory;

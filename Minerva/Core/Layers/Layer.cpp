@@ -680,9 +680,15 @@ unsigned int Layer::number() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::_labelDataObject ( Minerva::Core::DataObjects::DataObject* dataObject )
+void Layer::_setDataObjectMembers ( Minerva::Core::DataObjects::DataObject* dataObject )
 {
+  dataObject->renderBin ( this->renderBin() );
+  dataObject->connection ( this->connection() );
+
+  // Label parameters.
   dataObject->showLabel ( this->showLabel() );
+  dataObject->labelColor( this->labelColor() );
+  dataObject->labelSize( _labelSize );
 
   // If we have a column to use for a label.
   if( this->showLabel() && !this->labelColumn().empty() )
@@ -690,39 +696,36 @@ void Layer::_labelDataObject ( Minerva::Core::DataObjects::DataObject* dataObjec
     std::string value ( this->connection()->getColumnDataString( dataObject->tableName(), dataObject->rowId(), this->labelColumn() ) );
 
     dataObject->label( value );
-    dataObject->labelColor( this->labelColor() );
-
-    osg::Vec3 center;
-    unsigned int srid ( 0 );
-    Usul::Interfaces::IGeometryCenter::QueryPtr geometryCenter ( dataObject->geometry() );
-    if( geometryCenter.valid() )
-    {
-      center = geometryCenter->geometryCenter( srid );
-    }
-
-    Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
-    Usul::Interfaces::IPlanetCoordinates::QueryPtr  planet  ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlanetCoordinates::IID ) );
-
-    if( project.valid() )
-    {
-      Usul::Math::Vec3d orginal;
-      orginal[0] = center[0];
-      orginal[1] = center[1];
-      orginal[2] = this->labelZOffset();
-      Usul::Math::Vec3d point;
-      project->projectToSpherical( orginal, srid, point );
-
-      if( planet.valid() )
-      {
-        planet->convertToPlanet( point, point );
-        center.set ( point[0], point[1], point[2] );
-      }
-    }
-
-    dataObject->labelPosition( center );
-
-    dataObject->labelSize( _labelSize );
   }
+
+  osg::Vec3 center;
+  unsigned int srid ( 0 );
+  Usul::Interfaces::IGeometryCenter::QueryPtr geometryCenter ( dataObject->geometry() );
+  if( geometryCenter.valid() )
+  {
+    center = geometryCenter->geometryCenter( srid );
+  }
+
+  Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
+  Usul::Interfaces::IPlanetCoordinates::QueryPtr  planet  ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlanetCoordinates::IID ) );
+
+  if( project.valid() )
+  {
+    Usul::Math::Vec3d orginal;
+    orginal[0] = center[0];
+    orginal[1] = center[1];
+    orginal[2] = this->labelZOffset();
+    Usul::Math::Vec3d point;
+    project->projectToSpherical( orginal, srid, point );
+
+    if( planet.valid() )
+    {
+      planet->convertToPlanet( point, point );
+      center.set ( point[0], point[1], point[2] );
+    }
+  }
+
+  dataObject->labelPosition( center );
 }
 
 
@@ -990,8 +993,14 @@ Usul::Interfaces::IUnknown* Layer::queryInterface( unsigned long iid )
 
 void Layer::buildVectorData  ( Usul::Interfaces::IUnknown *caller )
 {
+  // Clear what we have.
+  this->_clearDataObjects();
+
+  // Set the query.
   if( true == _query.empty() && false == this->customQuery() )
     _query = this->defaultQuery();
+
+  // Build the data objects.
   this->buildDataObjects( caller );
 }
 

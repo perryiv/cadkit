@@ -1,19 +1,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, John K. Grant.
+//  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Menu button.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#include "MenuKit/Button.h"
+#include "MenuKit/ToggleButton.h"
 #include "MenuKit/Visitor.h"
 
 using namespace MenuKit;
@@ -25,8 +20,9 @@ using namespace MenuKit;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::Button(): BaseClass()
+ToggleButton::ToggleButton(): BaseClass()
 {
+  this->radio ( true );
 }
 
 
@@ -36,21 +32,10 @@ Button::Button(): BaseClass()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::Button( Usul::Commands::Command* command ): BaseClass()
+ToggleButton::ToggleButton( Usul::Commands::Command* command ): BaseClass()
 {
+  this->toggle ( true );
   this->command ( command );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Button::Button ( const std::string &name, const std::string &icon_file ) : 
-  BaseClass ( name, icon_file )
-{
 }
 
 
@@ -60,7 +45,7 @@ Button::Button ( const std::string &name, const std::string &icon_file ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::Button ( const Button& b ): BaseClass ( b )
+ToggleButton::ToggleButton ( const ToggleButton& b ): BaseClass ( b )
 {
 }
 
@@ -71,7 +56,7 @@ Button::Button ( const Button& b ): BaseClass ( b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button& Button::operator = ( const Button& b )
+ToggleButton& ToggleButton::operator = ( const ToggleButton& b )
 {
   BaseClass::operator = ( b );
   return ( *this );
@@ -84,7 +69,7 @@ Button& Button::operator = ( const Button& b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Button::~Button()
+ToggleButton::~ToggleButton()
 {
 }
 
@@ -95,7 +80,7 @@ Button::~Button()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Button::accept ( Visitor &v )
+void ToggleButton::accept ( Visitor &v )
 {
   v.apply ( *this );
 }

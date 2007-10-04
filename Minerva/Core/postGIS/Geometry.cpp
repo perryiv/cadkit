@@ -48,33 +48,6 @@ Geometry::~Geometry()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert to lat long coordinates.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-//template < class Vertices >
-//void Geometry::_convertToLatLong ( const Vertices& vertices, std::vector< ossimGpt >& latLongPoints )
-//{
-//  Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
-//
-//  if ( project.valid() )
-//  {
-//    for( typename Vertices::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter )
-//    {
-//      Usul::Math::Vec3d orginal ( (*iter)[0], (*iter)[1], 0.0 );
-//      Usul::Math::Vec3d point;
-//      project->projectToSpherical( orginal, _srid, point );
-//
-//      ossimGpt gpt ( point[1], point[0], point[2] ); // Lat is first agrument, long is second.
-//      
-//      latLongPoints.push_back( gpt );
-//    }
-//  }
-//}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get center of geometry at given id.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -200,4 +173,18 @@ Usul::Interfaces::IUnknown* Geometry::queryInterface( unsigned long iid )
   default:
     return 0x0;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the database info.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Geometry::databaseInfo ( Connection* connection, int id, const std::string& table )
+{
+  _connection = connection;
+  _id = id;
+  _tableName = table;
 }

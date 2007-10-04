@@ -4,33 +4,34 @@
 //  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Author(s): Adam Kubach
+//  Author: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MENU_KIT_RADIO_BUTTON_H__
-#define __MENU_KIT_RADIO_BUTTON_H__
+#ifndef __MENU_KIT_TOGGLE_BUTTON_H__
+#define __MENU_KIT_TOGGLE_BUTTON_H__
 
 #include "MenuKit/Button.h"
+
 
 namespace MenuKit {
 
 
-class MENUKIT_EXPORT RadioButton : public Button
+class MENUKIT_EXPORT ToggleButton : public Button
 {
 public:
 
   // Typedefs and smart-pointers.
   typedef Button BaseClass;
-  USUL_DECLARE_REF_POINTERS ( RadioButton );
+  USUL_DECLARE_REF_POINTERS ( ToggleButton );
 
   // Construction.
-  RadioButton ();
-  RadioButton ( Usul::Commands::Command * );
-  RadioButton ( const RadioButton & );
+  ToggleButton ();
+  ToggleButton ( Usul::Commands::Command * );
+  ToggleButton ( const ToggleButton & );
 
   // Assignment.
-  RadioButton& operator = ( const RadioButton & );
+  ToggleButton& operator = ( const ToggleButton & );
 
   // Accept the visitor.
   virtual void        accept ( Visitor &v );
@@ -38,10 +39,11 @@ public:
 protected:
 
   // Use reference counting.
-  virtual ~RadioButton();
+  virtual ~ToggleButton();
 };
 
 
 } // namespace MenuKit
 
-#endif // __MENU_KIT_RADIO_BUTTON_H__
+
+#endif // __MENU_KIT_TOGGLE_BUTTON_H__

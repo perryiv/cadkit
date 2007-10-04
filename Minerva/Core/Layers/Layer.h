@@ -218,7 +218,7 @@ protected:
   template < class T >
   osg::Vec4                   _color( const T& iter );
 
-  void                        _labelDataObject ( DataObject* dataObject );
+  void                        _setDataObjectMembers ( DataObject* dataObject );
 
   /// Register members for serialization.
   void                        _registerMembers();

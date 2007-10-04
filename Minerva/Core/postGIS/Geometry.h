@@ -36,7 +36,8 @@ class MINERVA_EXPORT Geometry : public Usul::Base::Referenced,
                                 public Usul::Interfaces::IOffset
 {
 public:
-  typedef Usul::Base::Referenced    BaseClass;
+  typedef Usul::Base::Referenced        BaseClass;
+  typedef Minerva::Core::DB::Connection Connection;
 
   USUL_DECLARE_QUERY_POINTERS( Geometry );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
@@ -54,6 +55,8 @@ public:
   unsigned int            srid () const { return _srid; }
   void                    srid ( unsigned int srid ) { _srid = srid; }
 
+  /// Set the database info.
+  void                    databaseInfo ( Connection* connection, int id, const std::string& table );
 protected:
   virtual ~Geometry();
 

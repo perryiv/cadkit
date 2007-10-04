@@ -162,6 +162,7 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
     for ( Factory::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
     {
       (*geom)->srid( srid );
+      (*geom)->databaseInfo ( this->connection(), id, dataTable );
       Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
       Usul::Interfaces::IOffset::QueryPtr offset ( geom->get() );
 
@@ -172,13 +173,11 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       data->color ( this->_color ( iter ) );
       data->width( _lineWidth );
       data->geometry( unknown.get() );
-      data->renderBin( this->renderBin() );
-      data->connection ( this->connection() );
       data->tableName ( dataTable );
       data->rowId ( id );
 
       /// Set the label.
-      this->_labelDataObject( data.get() );
+      this->_setDataObjectMembers( data.get() );
 
       data->buildScene();
 

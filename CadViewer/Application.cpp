@@ -440,36 +440,6 @@ void Application::_rebuildGrid()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Initialize the light.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_initLight()
-{
-  ErrorChecker ( 1067093691, isAppThread(), CV::NOT_APP_THREAD );
-
-  osg::ref_ptr< osg::Light > light ( new osg::Light );
-  osg::Vec3 ld;
-  osg::Vec4 lp;
-  osg::Vec4 ambient;
-  osg::Vec4 diffuse;
-
-  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->lightPosition(), lp, 4 );
-  OsgTools::Convert::vector<Usul::Math::Vec3f,osg::Vec3>( this->preferences()->lightDirection(), ld, 3 );
-  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->ambientLightColor(), ambient, 4 );
-  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->diffuseLightColor(), diffuse, 4 );
-
-  light->setPosition( lp );
-  light->setDirection( ld );
-  light->setAmbient ( ambient );
-  light->setDiffuse ( diffuse );
-
-  this->addLight ( light.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Called before the frame is drawn.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -534,15 +504,21 @@ bool Application::_handleMenuEvent( unsigned long id )
 
   ErrorChecker ( 1071559313u, isAppThread(), CV::NOT_APP_THREAD );
 
+  // Get the menu.
+  Menu::RefPtr menu ( this->menu () );
+
+  if ( 0x0 == menu.get() )
+    return false;
+
   // First see if you are supposed to show or hide it. Always do this first.
   if ( COMMAND_MENU_TOGGLE == id )
   {
-    this->menu()->toggleVisible();
+    menu->toggleVisible();
     return true;
   }
 
   // If we are not expanded then we should not handle button events.
-  if ( !this->menu()->menu()->expanded() )
+  if ( !menu->menu()->expanded() )
     return false;
 
   // Initialize.
@@ -552,23 +528,23 @@ bool Application::_handleMenuEvent( unsigned long id )
   switch ( id )
   {
     case COMMAND_MENU_SELECT:
-      this->menu()->selectFocused();
+      menu->selectFocused();
       break;
 
     case COMMAND_MENU_LEFT:
-      this->menu()->moveFocused ( MenuKit::Behavior::LEFT );
+      menu->moveFocused ( MenuKit::Behavior::LEFT );
       break;
 
     case COMMAND_MENU_RIGHT:
-      this->menu()->moveFocused ( MenuKit::Behavior::RIGHT );
+      menu->moveFocused ( MenuKit::Behavior::RIGHT );
       break;
 
     case COMMAND_MENU_UP:
-      this->menu()->moveFocused ( MenuKit::Behavior::UP );
+      menu->moveFocused ( MenuKit::Behavior::UP );
       break;
 
     case COMMAND_MENU_DOWN:
-      this->menu()->moveFocused ( MenuKit::Behavior::DOWN );
+      menu->moveFocused ( MenuKit::Behavior::DOWN );
       break;
 
     default:
@@ -892,8 +868,10 @@ void Application::_navigate()
 
   ErrorChecker ( 1068000936, isAppThread(), CV::NOT_APP_THREAD );
 
+  Menu::RefPtr menu ( this->menu () );
+
   // If the menu is showing then we don't navigate.
-  if ( this->menu()->menu()->expanded() )
+  if ( menu.valid () && menu->menu()->expanded() )
     return;
 
   // If we have a valid tool then we don't navigate.
@@ -1311,9 +1289,10 @@ void Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
 
     if ( VRV::BUTTON5 == id )
     {
-      this->_readUserPreferences ();
-      this->_readFunctorFile ();
-      this->_initMenu ();
+      this->_readUserPreferences();
+      this->_readFunctorFile();
+      this->_initMenu();
+      this->_initLight();
     }
   }
 }

@@ -430,3 +430,16 @@ void SceneManager::globalLightRemove ( unsigned int i )
     _lights.erase ( _lights.begin() + i );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the global lights.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SceneManager::globalLightClear ( )
+{
+  _lightNode->removeChild ( 0, _lightNode->getNumChildren () );
+  _lights.clear ();
+}

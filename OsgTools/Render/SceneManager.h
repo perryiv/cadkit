@@ -48,6 +48,9 @@ public:
   /// Remove global light at index i.
   void                  globalLightRemove ( unsigned int i );
 
+  /// Clear all global lights.
+  void                  globalLightClear ();
+
   /// Get the scene
   osg::Node *           scene();
   const osg::Node *     scene() const;

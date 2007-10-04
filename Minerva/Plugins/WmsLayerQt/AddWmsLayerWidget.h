@@ -19,6 +19,7 @@
 #include <string>
 
 class QLineEdit;
+class QButtonGroup;
 
 namespace Usul { namespace Interfaces { struct IUnknown; } }
 
@@ -36,6 +37,7 @@ public:
 private:
   QLineEdit *_server;
   QLineEdit *_cacheDirectory;
+  QButtonGroup *_imageTypes;
 };
 
 

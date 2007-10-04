@@ -80,8 +80,8 @@ public:
   typedef Usul::Documents::Document::RefPtr DocumentPtr;
   typedef Usul::Documents::Manager DocManager;
   typedef DocManager::DocumentInfo Info;
-  typedef Usul::Policies::TimeBased TimeBased;
-  typedef std::auto_ptr< TimeBased > TimeBasedPtr;
+  typedef Usul::Policies::NumberBased UpdatePolicy;
+  typedef std::auto_ptr< UpdatePolicy > UpdatePolicyPtr;
 
 
   typedef std::vector< osg::ref_ptr< osg::Switch > > MpdScene;
@@ -178,8 +178,7 @@ private:
   MpdModels                   _models;
   MpdSets                     _sets;
   MpdTimeSet                  _timeSet;
-  TimeBasedPtr                _update;
-  unsigned int                _updateInterval;
+  UpdatePolicyPtr             _update;
   bool                        _useTimeLine;
   bool                        _isAnimating;
 

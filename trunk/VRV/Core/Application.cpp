@@ -20,14 +20,15 @@
 #include "VRV/Commands/Camera.h"
 #include "VRV/Commands/Navigator.h"
 #include "VRV/Commands/BackgroundColor.h"
-#include "Usul/Commands/PolygonMode.h"
-#include "Usul/Commands/RenderingPasses.h"
-#include "Usul/Commands/ShadeModel.h"
 
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/CommandLine/Parser.h"
 #include "Usul/CommandLine/Options.h"
+#include "Usul/Commands/PolygonMode.h"
+#include "Usul/Commands/RenderingPasses.h"
+#include "Usul/Commands/ShadeModel.h"
+#include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/File/Path.h"
@@ -139,6 +140,9 @@ Application::Application() :
   // Add our self to the list of active document listeners.
   Usul::Documents::Manager::instance().addActiveDocumentListener ( this );
 
+  // Add our self as the active view.
+  Usul::Documents::Manager::instance().activeView ( this );
+
   // populate the color map.  TODO: Read from config file.
   _colorMap["Red"]    = Usul::Math::Vec4f ( 1.0,0.0,0.0,1.0 );
   _colorMap["Yellow"] = Usul::Math::Vec4f ( 1.0,1.0,0.0,1.0 );
@@ -214,6 +218,9 @@ Application::~Application()
 
   // Remove our self from the list of active document listeners.
   Usul::Documents::Manager::instance().removeActiveDocumentListener ( this );
+
+  // Remove our self as the active view.
+  Usul::Documents::Manager::instance().activeView ( 0x0 );
 
   // Remove all button listeners.
   for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
@@ -301,6 +308,8 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IRenderingPasses * > ( this );
   case Usul::Interfaces::IViewport::IID:
     return static_cast < Usul::Interfaces::IViewport * > ( this );
+  case Usul::Interfaces::IView::IID:
+    return static_cast < Usul::Interfaces::IView * > ( this );
   default:
     return 0x0;
   }
@@ -3230,9 +3239,22 @@ void Application::_initMenu()
     this->_initToolsMenu ( menu.get() );
   }
 
+  // Check the active document.
   Usul::Interfaces::IMenuAdd::QueryPtr ma ( Usul::Documents::Manager::instance().activeDocument () );
   if ( ma.valid ( ) )
     ma->menuAdd ( *menu );
+
+  // Check all plugins.
+  typedef Usul::Components::Manager PluginManager;
+  typedef PluginManager::UnknownSet Unknowns;
+
+  Unknowns unknowns ( PluginManager::instance().getInterfaces ( Usul::Interfaces::IMenuAdd::IID ) );
+  for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++ iter )
+  {
+    // Should be true.
+    Usul::Interfaces::IMenuAdd::ValidQueryPtr ma ( *iter );
+    ma->menuAdd ( *menu );
+  }
 
   // Set the menu.
   osgMenu->menu ( menu.get() );
@@ -3912,4 +3934,49 @@ double Application::width () const
 {
   osg::ref_ptr < const osg::Viewport > vp ( this->viewport() );
   return vp.valid() ? vp->height () : 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IDocument* Application::document()
+{
+  return Usul::Documents::Manager::instance().activeDocument ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the light.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initLight()
+{
+  {
+    Guard guard ( this->mutex () );
+    _sceneManager->globalLightClear ();
+  }
+
+  osg::ref_ptr< osg::Light > light ( new osg::Light );
+  osg::Vec3 ld;
+  osg::Vec4 lp;
+  osg::Vec4 ambient;
+  osg::Vec4 diffuse;
+
+  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->lightPosition(), lp, 4 );
+  OsgTools::Convert::vector<Usul::Math::Vec3f,osg::Vec3>( this->preferences()->lightDirection(), ld, 3 );
+  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->ambientLightColor(), ambient, 4 );
+  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->diffuseLightColor(), diffuse, 4 );
+
+  light->setPosition( lp );
+  light->setDirection( ld );
+  light->setAmbient ( ambient );
+  light->setDiffuse ( diffuse );
+
+  this->addLight ( light.get() );
 }

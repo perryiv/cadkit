@@ -105,7 +105,6 @@ protected:
 
   // Initialize.
   void                          _initGrid ( osg::Node *node );
-  void                          _initLight();
   void                          _initText();
 
   // Handle the events, if any.

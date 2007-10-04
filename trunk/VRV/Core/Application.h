@@ -50,6 +50,7 @@
 #include "Usul/Interfaces/IBackgroundColor.h"
 #include "Usul/Interfaces/IRenderingPasses.h"
 #include "Usul/Interfaces/IViewport.h"
+#include "Usul/Interfaces/IView.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Queue.h"
@@ -128,7 +129,8 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public Usul::Interfaces::INavigationFunctor,
                                public Usul::Interfaces::IBackgroundColor,
                                public Usul::Interfaces::IRenderingPasses,
-                               public Usul::Interfaces::IViewport
+                               public Usul::Interfaces::IViewport,
+                               public Usul::Interfaces::IView
 {
 public:
   // Typedefs.
@@ -393,6 +395,7 @@ protected:
   virtual void            _navigate ();
 
   void                    _initStatusBar();
+  void                    _initLight();
 
   void                    _updateStatusBar ( const std::string &text );
 
@@ -551,6 +554,9 @@ protected:
   virtual double                y () const;
   virtual double                height () const;
   virtual double                width () const;
+
+  // Get the document (IView).
+  virtual Usul::Interfaces::IDocument  * document();
 
   /// No copying.
   Application ( const Application& );

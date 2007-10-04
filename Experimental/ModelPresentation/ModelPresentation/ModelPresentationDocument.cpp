@@ -56,8 +56,7 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _static ( new osg::Group ),
   _sceneTree ( 0x0 ),
   _sets ( 0x0 ),
-  _update( TimeBasedPtr( new TimeBased( 1000 ) ) ),
-  _updateInterval( 1000 ),
+  _update( UpdatePolicyPtr( new UpdatePolicy( 10 ) ) ),
   _useTimeLine( false ),
   _isAnimating( false )
 {
@@ -710,9 +709,10 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
     }
     if ( "timelength" == iter->first )
     {
-      Usul::Strings::fromString ( iter->second, _updateInterval );
-      std::cout << "Setting time update interval to " << _updateInterval << std::endl;
-      _update = ( TimeBasedPtr( new TimeBased( _updateInterval ) ) );
+      unsigned int interval = 10;
+      Usul::Strings::fromString ( iter->second, interval );
+      std::cout << "Setting time update interval to " << interval << std::endl;
+      _update = ( UpdatePolicyPtr( new UpdatePolicy( interval ) ) );
     }
         
   }

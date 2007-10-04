@@ -34,7 +34,7 @@ namespace DT.Minerva.Plugins.Document
     /// <summary>
     ///  Data Members
     /// </summary>
-    private DT.Minerva.Plugins.Document.Glue.DllGlue _dll = new DT.Minerva.Plugins.Document.Glue.DllGlue();
+    private DT.Minerva.Plugins.Document.Glue.DllGlue _navtiveDocument = new DT.Minerva.Plugins.Document.Glue.DllGlue();
 
     /// <summary>
     ///  Mirror layers on managed side.  It's a bit easier to work with.
@@ -78,7 +78,7 @@ namespace DT.Minerva.Plugins.Document
     {
       try
       {
-        _dll = null;
+        _navtiveDocument = null;
 
         base._cleanup();
       }
@@ -103,10 +103,10 @@ namespace DT.Minerva.Plugins.Document
         System.IO.FileInfo info = new System.IO.FileInfo(name);
         System.IO.Directory.SetCurrentDirectory(info.DirectoryName);
 
-        _dll.setActive(true);
+        _navtiveDocument.setActive(true);
 
         // Read the file.
-        _dll.open(name);
+        _navtiveDocument.open(name);
 
         // Set document name.
         this.Name = name;
@@ -119,7 +119,7 @@ namespace DT.Minerva.Plugins.Document
           recent.add(name);
         }
 
-        _layers.InsertRange(0, _dll.Layers);
+        _layers.InsertRange(0, _navtiveDocument.Layers);
       }
       finally
       {
@@ -137,7 +137,7 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     public void save(object caller)
     {
-      _dll.save();
+      _navtiveDocument.save();
       this.Modified = false;
     }
 
@@ -150,7 +150,7 @@ namespace DT.Minerva.Plugins.Document
       this.Name = filename;
       this.HasDefaultName = false;
 
-      _dll.saveAs(filename);
+      _navtiveDocument.saveAs(filename);
       this.Modified = false;
     }
 
@@ -190,7 +190,7 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     public void export(string filename)
     {
-      _dll.exportFile(filename);
+      _navtiveDocument.exportFile(filename);
     }
 
 
@@ -210,7 +210,7 @@ namespace DT.Minerva.Plugins.Document
     {
       set
       {
-        _dll.viewer(value);
+        _navtiveDocument.viewer(value);
       }
     }
 
@@ -221,9 +221,9 @@ namespace DT.Minerva.Plugins.Document
     public void resize(object sender, System.EventArgs e)
     {
       System.Windows.Forms.Form form = sender as System.Windows.Forms.Form;
-      if (null != form && null != _dll)
+      if (null != form && null != _navtiveDocument)
       {
-        _dll.resize(form.Size.Width, form.Size.Height);
+        _navtiveDocument.resize(form.Size.Width, form.Size.Height);
       }
     }
 
@@ -247,9 +247,9 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
-        _dll.setActive(true);
+        _navtiveDocument.setActive(true);
         if (layer is CadKit.Interfaces.IOssimLayer)
-          _dll.addLayer(layer, null);
+          _navtiveDocument.addLayer(layer, null);
         else
           this._createAddLayerJob(layer);
 
@@ -279,8 +279,8 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
-        _dll.setActive(true);
-        _dll.hideLayer(layer);
+        _navtiveDocument.setActive(true);
+        _navtiveDocument.hideLayer(layer);
         this.Modified = true;
       }
     }
@@ -293,8 +293,8 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
-        _dll.setActive(true);
-        _dll.showLayer(layer);
+        _navtiveDocument.setActive(true);
+        _navtiveDocument.showLayer(layer);
         this.Modified = true;
       }
     }
@@ -307,9 +307,9 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
-        _dll.setActive(true);
+        _navtiveDocument.setActive(true);
         _layers.Remove(layer);
-        _dll.removeLayer(layer);
+        _navtiveDocument.removeLayer(layer);
         this.Modified = true;
       }
     }
@@ -320,25 +320,25 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     void CadKit.Interfaces.ILayerList.viewLayerExtents(CadKit.Interfaces.ILayer layer)
     {
-      _dll.viewLayerExtents(layer);
+      _navtiveDocument.viewLayerExtents(layer);
     }
 
 
     void CadKit.Interfaces.ILayerList.addToFavorites(CadKit.Interfaces.ILayer layer)
     {
-      _dll.addToFavorites(layer);
+      _navtiveDocument.addToFavorites(layer);
       this.Modified = true;
     }
 
     CadKit.Interfaces.ILayer CadKit.Interfaces.ILayerList.createFavorite(string name)
     {
-      return _dll.createFavorite(name);
+      return _navtiveDocument.createFavorite(name);
     }
 
 
     string[] CadKit.Interfaces.ILayerList.Favorites
     {
-      get { return _dll.Favorites; }
+      get { return _navtiveDocument.Favorites; }
     }
 
 
@@ -364,8 +364,8 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
-        _dll.setActive(true);
-        DT.Minerva.Plugins.Document.AddLayerJob job = new DT.Minerva.Plugins.Document.AddLayerJob(layer, _dll);
+        _navtiveDocument.setActive(true);
+        DT.Minerva.Plugins.Document.AddLayerJob job = new DT.Minerva.Plugins.Document.AddLayerJob(layer, _navtiveDocument);
         job.Name = "Adding " + layer.Name;
         job.Start += job._showLayer;
         job.Finish += this._jobEnd;
@@ -381,8 +381,8 @@ namespace DT.Minerva.Plugins.Document
     {
       if (null != layer)
       {
-        _dll.setActive(true);
-        DT.Minerva.Plugins.Document.ModifyLayerJob job = new DT.Minerva.Plugins.Document.ModifyLayerJob(layer, _dll);
+        _navtiveDocument.setActive(true);
+        DT.Minerva.Plugins.Document.ModifyLayerJob job = new DT.Minerva.Plugins.Document.ModifyLayerJob(layer, _navtiveDocument);
         job.Name = "Modifying " + layer.Name;
         job.Start += job._showLayer;
         job.Finish += this._jobEnd;
@@ -393,8 +393,8 @@ namespace DT.Minerva.Plugins.Document
 
     CadKit.Interfaces.AnimateTimestep CadKit.Interfaces.IAnimateTemporal.TimestepType
     {
-      get { return _dll.timestepType(); }
-      set { _dll.timestepType(value); }
+      get { return _navtiveDocument.timestepType(); }
+      set { _navtiveDocument.timestepType(value); }
     }
 
 
@@ -431,7 +431,7 @@ namespace DT.Minerva.Plugins.Document
 
     void CadKit.Interfaces.IAnimateTemporal.pauseAnimation()
     {
-      _dll.pauseAnimation();
+      _navtiveDocument.pauseAnimation();
     }
 
     double CadKit.Interfaces.IAnimateTemporal.AnimationSpeed
@@ -442,7 +442,7 @@ namespace DT.Minerva.Plugins.Document
       }
       set
       {
-        _dll.animationSpeed(value);
+        _navtiveDocument.animationSpeed(value);
       }
     }
 
@@ -489,7 +489,7 @@ namespace DT.Minerva.Plugins.Document
       if (null != renderLoop)
       {
         renderLoop.UseRenderLoop = true;
-        _dll.startAnimation(speed, accumulate, timeWindow, numDays);
+        _navtiveDocument.startAnimation(speed, accumulate, timeWindow, numDays);
       }
     }
 
@@ -503,7 +503,7 @@ namespace DT.Minerva.Plugins.Document
       if (null != renderLoop)
       {
         renderLoop.UseRenderLoop = false;
-        _dll.stopAnimation();
+        _navtiveDocument.stopAnimation();
       }
     }
 
@@ -513,68 +513,68 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     bool CadKit.Interfaces.IOssimPlanetSettings.ElevationEnabled
     {
-      get { return _dll.elevationEnabled(); }
-      set { _dll.elevationEnabled(value); }
+      get { return _navtiveDocument.elevationEnabled(); }
+      set { _navtiveDocument.elevationEnabled(value); }
     }
 
     float CadKit.Interfaces.IOssimPlanetSettings.HeightExageration
     {
-      get { return _dll.elevationExag(); }
-      set { _dll.elevationExag(value); }
+      get { return _navtiveDocument.elevationExag(); }
+      set { _navtiveDocument.elevationExag(value); }
     }
 
 
     float CadKit.Interfaces.IOssimPlanetSettings.ElevationPatchSize
     {
-      get { return _dll.elevationPatchSize(); }
-      set { _dll.elevationPatchSize(value); }
+      get { return _navtiveDocument.elevationPatchSize(); }
+      set { _navtiveDocument.elevationPatchSize(value); }
     }
 
     float CadKit.Interfaces.IOssimPlanetSettings.MaxLevelDetail
     {
-      get { return _dll.levelDetail(); }
-      set { _dll.levelDetail(value); }
+      get { return _navtiveDocument.levelDetail(); }
+      set { _navtiveDocument.levelDetail(value); }
     }
 
     string CadKit.Interfaces.IOssimPlanetSettings.ElevationCacheDir
     {
-      get { return _dll.elevationCacheDir(); }
-      set { _dll.elevationCacheDir(value); }
+      get { return _navtiveDocument.elevationCacheDir(); }
+      set { _navtiveDocument.elevationCacheDir(value); }
     }
 
     bool CadKit.Interfaces.IOssimPlanetSettings.EphemerisEnabled
     {
-      get { return _dll.ephemerisFlag(); }
-      set { _dll.ephemerisFlag(value); }
+      get { return _navtiveDocument.ephemerisFlag(); }
+      set { _navtiveDocument.ephemerisFlag(value); }
     }
 
     bool CadKit.Interfaces.IOssimPlanetSettings.HudEnabled
     {
-      get { return _dll.hudEnabled(); }
-      set { _dll.hudEnabled(value); }
+      get { return _navtiveDocument.hudEnabled(); }
+      set { _navtiveDocument.hudEnabled(value); }
     }
 
     bool CadKit.Interfaces.IOssimPlanetSettings.LatLongGrid
     {
-      get { return _dll.latLongGrid(); }
-      set { _dll.latLongGrid(value); }
+      get { return _navtiveDocument.latLongGrid(); }
+      set { _navtiveDocument.latLongGrid(value); }
     }
 
     bool CadKit.Interfaces.ILegend.ShowLegend
     {
-      get { return _dll.showLegend(); }
-      set { _dll.showLegend(value); }
+      get { return _navtiveDocument.showLegend(); }
+      set { _navtiveDocument.showLegend(value); }
     }
 
     float CadKit.Interfaces.ILegend.PercentScreenWidth
     {
-      get { return _dll.percentScreenWidth(); }
-      set { _dll.percentScreenWidth(value); }
+      get { return _navtiveDocument.percentScreenWidth(); }
+      set { _navtiveDocument.percentScreenWidth(value); }
     }
 
     void CadKit.Interfaces.ILayerOperation.setLayerOperation(string opType, int val, CadKit.Interfaces.ILayer layer)
     {
-      _dll.setLayerOperation(opType, val, layer);
+      _navtiveDocument.setLayerOperation(opType, val, layer);
     }
 
     void CadKit.Interfaces.IMovieMode.setMovieMode( bool b )
@@ -582,47 +582,47 @@ namespace DT.Minerva.Plugins.Document
       if (b)
       {
         CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
-        _dll.setMovieMode(b, viewer.HeliosViewer);
+        _navtiveDocument.setMovieMode(b, viewer.HeliosViewer);
       }
       else
       {
         CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
-        _dll.setMovieMode(b, viewer.HeliosViewer);
+        _navtiveDocument.setMovieMode(b, viewer.HeliosViewer);
       }
     }
 
     void CadKit.Interfaces.IMovieMode.play()
     {
       CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
-      _dll.play(viewer.HeliosViewer);
+      _navtiveDocument.play(viewer.HeliosViewer);
     }
 
     void CadKit.Interfaces.IMovieMode.pause()
     {
       CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
-      _dll.pause(viewer.HeliosViewer);
+      _navtiveDocument.pause(viewer.HeliosViewer);
     }
 
     void CadKit.Interfaces.IMovieMode.restart()
     {
       CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
-      _dll.restart(viewer.HeliosViewer);
+      _navtiveDocument.restart(viewer.HeliosViewer);
     }
 
     bool CadKit.Interfaces.IMovieMode.isPlaying()
     {
-      return _dll.isPlaying();
+      return _navtiveDocument.isPlaying();
     }
 
     bool CadKit.Interfaces.IMovieMode.isPaused()
     {
-      return _dll.isPaused();
+      return _navtiveDocument.isPaused();
     }
 
     void _activeDocumentChanged(CadKit.Interfaces.IDocument oldDoc, CadKit.Interfaces.IDocument newDoc)
     {
       //bool active = ( this == newDoc );
-      //_dll.setActive ( active );
+      //_navtiveDocument.setActive ( active );
     }
   }  
 }

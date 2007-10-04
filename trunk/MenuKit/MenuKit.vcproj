@@ -262,6 +262,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Separator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Separator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ToggleButton.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ToggleButton.h"
+				>
+			</File>
+			<File
 				RelativePath=".\UpdateVisitor.cpp"
 				>
 			</File>

@@ -154,6 +154,7 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       for ( Factory::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
       {
         (*geom)->srid( srid );
+        (*geom)->databaseInfo ( this->connection(), id, dataTable );
         Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
         Usul::Interfaces::IOffset::QueryPtr offset ( unknown );
 
@@ -168,13 +169,11 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
         data->showInterior ( this->showInterior() );
         data->geometry ( unknown.get() );
         data->color( this->_color ( iter ) );
-        data->renderBin( this->renderBin() );
-        data->connection ( this->connection() );
         data->tableName ( dataTable );
         data->rowId ( id );
 
         /// Set the label.
-        this->_labelDataObject( data.get() );
+        this->_setDataObjectMembers( data.get() );
 
         // Pre build the scene.
         data->preBuildScene();

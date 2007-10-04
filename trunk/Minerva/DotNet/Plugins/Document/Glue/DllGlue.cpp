@@ -157,7 +157,6 @@ void DllGlue::showLayer( CadKit::Interfaces::ILayer ^layer )
     {
       void *ptr ( layerPtr->nativeIntPtr().ToPointer() );
       Usul::Interfaces::IUnknown *unknown ( reinterpret_cast < Usul::Interfaces::IUnknown * > ( ptr ) );
-      //Usul::Interfaces::ILayer::QueryPtr base ( unknown );
       if( 0x0 != unknown && 0x0 != unknown->queryInterface( Usul::Interfaces::ILayer::IID ) )
         _document->showLayerCommand ( static_cast < Usul::Interfaces::ILayer* > ( unknown ) );
     }

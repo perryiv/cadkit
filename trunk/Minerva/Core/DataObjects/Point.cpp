@@ -217,8 +217,30 @@ osg::Node* Point::buildScene()
 
   if ( this->dirty() )
   {
+    // Clear what we have.
+    _group->removeChild( 0, _group->getNumChildren() );
+
+    Usul::Interfaces::IPointData::QueryPtr pointData ( this->geometry() );
+
+    Usul::Math::Vec3d center;
+
+    /// Get the center from our data source.
+    if( pointData.valid () )
+      center = pointData->pointData( );
+
+    // Save the center in lat/lon coordinates.
+    _center.set ( center [ 0 ], center [ 1 ], center [ 2 ] );
+    
+    // Convert to planet coordinates.
+    Detail::convertToPlanet ( center );
+
+    // Convert from Usul's Vec3d to a osg::Vec3
+    _centerEarth.set( center[0], center[1], center[2] );
+
+    osg::ref_ptr < osg::Node > geometry ( this->_buildGeometry() );
+
     // Get the state set
-    osg::ref_ptr < osg::StateSet > ss ( _group->getOrCreateStateSet() );
+    osg::ref_ptr < osg::StateSet > ss ( geometry->getOrCreateStateSet() );
 
     // Set the material's diffuse color
     _material->setDiffuse ( osg::Material::FRONT_AND_BACK, this->color() );
@@ -247,27 +269,8 @@ osg::Node* Point::buildScene()
     // Set the render bin.
     ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
 
-    // Clear what we have.
-    _group->removeChild( 0, _group->getNumChildren() );
-
-    Usul::Interfaces::IPointData::QueryPtr pointData ( this->geometry() );
-
-    Usul::Math::Vec3d center;
-
-    /// Get the center from our data source.
-    if( pointData.valid () )
-      center = pointData->pointData( );
-
-    // Save the center in lat/lon coordinates.
-    _center.set ( center [ 0 ], center [ 1 ], center [ 2 ] );
-    
-    // Convert to planet coordinates.
-    Detail::convertToPlanet ( center );
-
-    // Convert from Usul's Vec3d to a osg::Vec3
-    _centerEarth.set( center[0], center[1], center[2] );
-
-    _group->addChild( this->_buildGeometry() );
+    // Add the geometry to our group.
+    _group->addChild( geometry.get () );
 
     // Do we have a label?
     if( this->showLabel() && !this->label().empty() )

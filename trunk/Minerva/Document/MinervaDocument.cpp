@@ -916,6 +916,9 @@ void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
     Guard guard ( this->mutex() );
     _datesDirty = true;
   }
+
+  // We are modified.
+  this->modified ( true );
 }
 
 

@@ -406,18 +406,21 @@ const Minerva::Core::DB::Connection* DataObject::connection() const
 osg::Node* DataObject::_buildLabel()
 {
   osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-  osg::ref_ptr < osgText::Text > text ( new osgText::Text );
 
-  text->setFont( OsgTools::Font::defaultFont() );
-  text->setColor( this->labelColor() );
-  text->setPosition ( this->labelPosition() );
-  text->setAutoRotateToScreen( true );
-  text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
-  text->setCharacterSize( this->labelSize() );
+  if ( this->showLabel () )
+  {
+    osg::ref_ptr < osgText::Text > text ( new osgText::Text );
+    text->setFont( OsgTools::Font::defaultFont() );
+    text->setColor( this->labelColor() );
+    text->setPosition ( this->labelPosition() );
+    text->setAutoRotateToScreen( true );
+    text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
+    text->setCharacterSize( this->labelSize() );
 
-  text->setText ( this->label() );
+    text->setText ( this->label() );
 
-  geode->addDrawable( text.get() );
+    geode->addDrawable( text.get() );
+  }
 
   return geode.release();
 }

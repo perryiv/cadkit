@@ -22,7 +22,10 @@
 namespace MenuKit {
 
 class Menu;
+class Separator;
 class Button;
+class RadioButton;
+class ToggleButton;
 
 class MENUKIT_EXPORT Visitor : public Usul::Base::Object
 {
@@ -38,6 +41,9 @@ public:
   // Apply this visitor to the items.
   virtual void        apply ( Menu &m );
   virtual void        apply ( Button &b );
+  virtual void        apply ( Separator &s );
+  virtual void        apply ( RadioButton &radio );
+  virtual void        apply ( ToggleButton &toggle );
 
   // Set/get the mode.
   void                mode ( Mode m ) { _mode = m; }

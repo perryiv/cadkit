@@ -162,6 +162,7 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       for ( Factory::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
       {
         (*geom)->srid( srid );
+        (*geom)->databaseInfo ( this->connection(), id, dataTable );
         Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
         Usul::Interfaces::IOffset::QueryPtr offset ( unknown );
 
@@ -176,8 +177,6 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
         data->size ( this->size() );
         data->primitiveId ( this->primitiveID() );
         data->quality ( this->quality() );
-        data->renderBin( this->renderBin() );
-        data->connection ( this->connection() );
         data->tableName ( dataTable );
         data->rowId ( id );
         data->autotransform ( this->autotransform () );
@@ -190,8 +189,8 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
           this->_updateMinMax( value );
         }
 
-         /// Set the label.
-        this->_labelDataObject( data.get() );
+         /// Set the common members.
+        this->_setDataObjectMembers( data.get() );
 
         this->_addDataObject( data.get() );
       }

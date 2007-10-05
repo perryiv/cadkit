@@ -113,7 +113,7 @@ template
 >
 struct Bind2
 {
-Bind2() : _a1 ( 0x0 ), _a2 ( 0x0 ), _f ( 0x0 ){} // For gcc's stl containers.
+  Bind2() : _a1 ( 0x0 ), _a2 ( 0x0 ), _f ( 0x0 ){} // For gcc's stl containers.
   Bind2 ( ArgumentType1 a1, ArgumentType2 a2, FunctionType f ) : _a1 ( a1 ), _a2 ( a2 ), _f ( f ){}
   Bind2 ( const Bind2 &b ) : _a1 ( b._a1 ), _a2 ( b._a2 ), _f ( b._f ){}
 

@@ -20,6 +20,7 @@
 #include "Helios/Qt/Commands/BaseAction.h"
 #include "Helios/Qt/Tools/Image.h"
 
+#include "Usul/Commands/Command.h"
 #include "Usul/Commands/History.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Trace/Trace.h"

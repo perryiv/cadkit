@@ -132,6 +132,42 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Specialization of member function adaptor that returns bool.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template
+<
+  class ObjectType,
+  class FunctionType
+>
+struct MemberFunction < bool, ObjectType, FunctionType >
+{
+  MemberFunction() : _o ( 0x0 ), _f ( 0x0 ){} // For gcc's stl containers.
+  MemberFunction ( ObjectType o, FunctionType f ) : _o ( o ), _f ( f ){}
+  MemberFunction ( const MemberFunction &mf ) : _o ( mf._o ), _f ( mf._f ){}
+
+  MemberFunction &operator = ( const MemberFunction &mf )
+  {
+    _o = mf._o;
+    _f = mf._f;
+    return *this;
+  }
+  
+  bool operator()() const
+  {
+    ((*_o).*_f)();
+  }
+
+private:
+
+  ObjectType _o;
+  FunctionType _f;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Function to create a member function adaptor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,6 +182,26 @@ memberFunction ( ObjectType object, FunctionType function )
 {
   return MemberFunction < void, ObjectType, FunctionType > ( object, function );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Function to create a member function adaptor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#if 0 // Needed?
+template
+<
+  class ObjectType,
+  class FunctionType
+>
+MemberFunction < bool, ObjectType, FunctionType > 
+memberFunction ( ObjectType object, FunctionType function )
+{
+  return MemberFunction < bool, ObjectType, FunctionType > ( object, function );
+}
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////

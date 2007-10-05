@@ -2525,16 +2525,12 @@ const Application::Menu * Application::statusBar () const
 
 void Application::_initStatusBar()
 {
-  // Return now if we don't have a status bar.
-  if ( 0x0 == this->statusBar () )
+  // TODO:  Have a seperate entry for node to show status bar in the preferences.
+  if ( false == this->_isHeadNode () )
     return;
 
   // Remove what we may have.
   this->projectionGroupRemove ( "VRV_STATUS_BAR" );
-
-  // TODO:  Have a seperate entry for node to show status bar in the preferences.
-  if ( false == this->_isHeadNode () )
-    return;
 
   // Get the matrix.
   osg::Matrixf m;

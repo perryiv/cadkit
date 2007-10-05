@@ -1293,6 +1293,7 @@ void Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
       this->_readFunctorFile();
       this->_initMenu();
       this->_initLight();
+      this->_initStatusBar();
     }
   }
 }

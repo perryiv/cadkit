@@ -15,6 +15,9 @@
 #include "MenuKit/Visitor.h"
 #include "MenuKit/UpdateVisitor.h"
 #include "MenuKit/Button.h"
+#include "MenuKit/ToggleButton.h"
+#include "MenuKit/RadioButton.h"
+#include "MenuKit/Separator.h"
 
 #include "Usul/Trace/Trace.h"
 #include "Usul/Threads/Named.h"
@@ -98,7 +101,8 @@ namespace Detail
   class QtMenuBuilder : public MenuKit::Visitor
   {
   public:
-    typedef MenuKit::Visitor BaseClass;
+    typedef MenuKit::Visitor                  BaseClass;
+    typedef CadKit::Helios::Commands::Action  Action;
 
     QtMenuBuilder ( QMenu* menu, Menu::Actions &actions ) : BaseClass (),
       _menu ( menu ),
@@ -127,26 +131,48 @@ namespace Detail
 
     virtual void apply ( MenuKit::Button &b )
     {
+      Action::RefPtr action ( new Action ( b.command () ) );
+      
+      action->setEnabled ( b.enabled () );
+      _actions.insert ( action );
+
+      if ( 0x0 != _menu )
+        _menu->addAction ( action.get () );
+    }
+
+    virtual void apply ( MenuKit::ToggleButton &toggle )
+    {
+      Action::RefPtr action ( new Action ( toggle.command () ) );
+      
+      action->setEnabled ( toggle.enabled () );
+      _actions.insert ( action );
+
+      action->setCheckable ( true );
+      action->setChecked ( toggle.checked () );
+
+      if ( 0x0 != _menu )
+        _menu->addAction ( action.get () );
+    }
+
+    virtual void apply ( MenuKit::RadioButton &radio )
+    {
+      Action::RefPtr action ( new Action ( radio.command () ) );
+      
+      action->setEnabled ( radio.enabled () );
+      _actions.insert ( action );
+
+      action->setCheckable ( true );
+      action->setChecked ( radio.checked () );
+
+      if ( 0x0 != _menu )
+        _menu->addAction ( action.get () );
+    }
+
+    virtual void apply ( MenuKit::Separator &s )
+    {
       if ( 0x0 != _menu )
       {
-        if ( b.separator () )
-          _menu->addSeparator ();
-        else
-        {
-          typedef CadKit::Helios::Commands::Action Action;
-          Action::RefPtr action ( new Action ( b.command () ) );
-
-          // See if it's a toggle.
-          if ( b.toggle () || b.radio () )
-          {
-            action->setCheckable ( true );
-            action->setChecked ( b.checked () );
-          }
-
-          _menu->addAction ( action.get () );
-          action->setEnabled ( b.enabled () );
-          _actions.insert ( action );
-        }
+        _menu->addSeparator ();
       }
     }
 

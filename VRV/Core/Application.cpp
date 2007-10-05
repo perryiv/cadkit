@@ -3248,7 +3248,7 @@ void Application::_initMenu()
   for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++ iter )
   {
     // Should be true.
-    Usul::Interfaces::IMenuAdd::ValidQueryPtr ma ( *iter );
+    Usul::Interfaces::IMenuAdd::ValidQueryPtr ma ( (*iter).get() );
     ma->menuAdd ( *menu );
   }
 

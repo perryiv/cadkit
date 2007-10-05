@@ -2577,6 +2577,7 @@ bool Viewer::axes() const
 void Viewer::setViewMatrix ( const osg::Matrixf& matrix )
 {
   this->viewer()->setViewMatrix ( matrix );
+  this->navManip()->setByInverseMatrix ( this->getViewMatrix () );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2588,6 +2589,7 @@ void Viewer::setViewMatrix ( const osg::Matrixf& matrix )
 void Viewer::setViewMatrix ( const osg::Matrixd& matrix )
 {
   this->viewer()->setViewMatrix ( matrix );
+  this->navManip()->setByInverseMatrix ( this->getViewMatrix () );
 }
 
 

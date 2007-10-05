@@ -22,6 +22,7 @@
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
 #include "MenuKit/RadioButton.h"
+#include "MenuKit/ToggleButton.h"
 
 #include "QtCore/QTimer"
 #include "QtGui/QResizeEvent"
@@ -892,9 +893,7 @@ void Viewer::menuAdd( MenuKit::Menu &menu )
       passes->append ( new RadioButton ( new RenderingPasses ( "12", 12, viewer.get () ) ) );
     }
 
-    MenuKit::Button::RefPtr rl ( new MenuKit::Button );
-    rl->command ( new Usul::Commands::RenderLoop ( "Render Loop", viewer.get() ) );
-    rl->toggle ( true );
+    MenuKit::Button::RefPtr rl ( new MenuKit::ToggleButton ( new Usul::Commands::RenderLoop ( "Render Loop", viewer.get() ) ) );
     view->append ( rl );
 
     // Polygons menu.

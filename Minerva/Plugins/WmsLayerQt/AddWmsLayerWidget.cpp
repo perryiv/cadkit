@@ -71,6 +71,7 @@ _imageTypes ( 0x0 )
   
   _imageTypes = new QButtonGroup;
   QRadioButton *jpeg ( new QRadioButton ( "image/jpeg" ) );
+  jpeg->setChecked ( true );
   QRadioButton *png  ( new QRadioButton ( "image/png" ) );
 
   _imageTypes->addButton ( jpeg );

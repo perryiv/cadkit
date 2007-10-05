@@ -13,8 +13,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Visitor.h"
-#include "Menu.h"
+#include "MenuKit/Visitor.h"
+#include "MenuKit/Menu.h"
+
+#include "Usul/Cast/Cast.h"
 
 using namespace MenuKit;
 
@@ -106,6 +108,7 @@ void Visitor::apply ( Separator &s )
 
 void Visitor::apply ( RadioButton &radio )
 {
+  this->apply ( USUL_UNSAFE_CAST ( Button&, radio ) );
 }
 
 
@@ -117,4 +120,5 @@ void Visitor::apply ( RadioButton &radio )
 
 void Visitor::apply ( ToggleButton &toggle )
 {
+  this->apply ( USUL_UNSAFE_CAST ( Button&, toggle ) );
 }

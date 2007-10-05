@@ -40,6 +40,7 @@ public:
   // Typedefs.
   typedef CadKit::Helios::Commands::BaseAction BaseClass;
   typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef boost::shared_ptr<Action> RefPtr;
 
   // Constructor.
   Action ( Usul::Commands::Command *command ) : BaseClass ( 0x0 ), _command ( command )

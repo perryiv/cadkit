@@ -236,6 +236,12 @@ void MainWindow::_destroy()
   // populate it but not clean up).
   Usul::Factory::ObjectFactory::instance().clear();
 
+  // Clear the menu bar.  To this before plugins are released.
+  this->_clearMenuBar ();
+  _menu = 0x0;
+  _dockMenu = 0x0;
+  _recentFilesMenu = 0x0;
+
   // Release all the plugins.
   this->releasePlugins();
 
@@ -260,12 +266,6 @@ void MainWindow::_destroy()
 
   // Unset the text window resource.
   Usul::Resources::textWindow ( 0x0 );
-
-  // Clear the menu bar.
-  this->_clearMenuBar ();
-  _menu = 0x0;
-  _dockMenu = 0x0;
-  _recentFilesMenu = 0x0;
 
   // Should be true.
   USUL_ASSERT ( 0 == _refCount );

@@ -13,10 +13,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Menu.h"
-#include "Button.h"
-#include "Visitor.h"
-#include "Errors.h"
+#include "MenuKit/Menu.h"
+#include "MenuKit/Button.h"
+#include "MenuKit/Visitor.h"
+#include "MenuKit/Errors.h"
+#include "MenuKit/Separator.h"
 
 #include <algorithm>
 
@@ -30,6 +31,7 @@ using namespace MenuKit;
 ///////////////////////////////////////////////////////////////////////////////
 
 Menu::Menu(): BaseClass(), 
+  _text   (),
   _items  (), 
   _layout ( VERTICAL )
 {
@@ -42,8 +44,9 @@ Menu::Menu(): BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Menu::Menu ( const std::string &name, const std::string &icon_file, Layout layout ) :
-  BaseClass ( name, icon_file ),
+Menu::Menu ( const std::string &name, Layout layout ) :
+  BaseClass ( ),
+  _text   ( name ),
   _items  (), 
   _layout ( layout )
 {
@@ -57,6 +60,7 @@ Menu::Menu ( const std::string &name, const std::string &icon_file, Layout layou
 ///////////////////////////////////////////////////////////////////////////////
 
 Menu::Menu ( const Menu &m ): BaseClass ( m ),
+  _text   ( m._text ),
   _items  ( m._items ), 
   _layout ( m._layout )
 {
@@ -83,6 +87,7 @@ Menu::~Menu()
 Menu& Menu::operator = ( const Menu &m )
 {
   BaseClass::operator = ( m );
+  _text   = m._text;
   _items  = m._items;
   _layout = m._layout;
 
@@ -200,9 +205,7 @@ void Menu::traverse ( Visitor &v )
 
 void Menu::addSeparator ()
 {
-  MenuKit::Button::RefPtr button ( new MenuKit::Button );
-  button->separator ( true );
-  this->append ( button.get() );
+  this->append ( new MenuKit::Separator );
 }
 
 
@@ -223,7 +226,9 @@ namespace Detail
     template < class T >
     bool operator () ( const T& t ) const
     {
-      return ( _name == t->text () );
+      if ( Menu* m = dynamic_cast < Menu* > ( t.get() ) )
+        return ( _name == m->text () );
+      return false;
     }
 
   private:
@@ -247,9 +252,9 @@ Menu* Menu::findOrCreateMenu( const std::string &name )
 
   if ( _items.end() != iter )
     return dynamic_cast < Menu* > ( iter->get() );
-
+  
   Menu::RefPtr m ( new Menu );
-  m->name ( name );
+  m->text ( name );
   this->append ( m );
   return m.get();
 }

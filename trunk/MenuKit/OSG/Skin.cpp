@@ -341,7 +341,15 @@ float Skin::graphic_height(const MenuKit::Item* item)
 
 float Skin::graphic_width(const Item* item)
 {
-  Word word(item->text(),_font.get());
+  std::string text ( "" );
+
+  // This is hack until building the osg scene is refactored.
+  if ( const MenuKit::Button *b = dynamic_cast < const MenuKit::Button * > ( item ) )
+    text = b->text ();
+  else if ( const MenuKit::Menu *m = dynamic_cast < const MenuKit::Menu * > ( item ) )
+    text = m->text ();
+
+  Word word( text, _font.get() );
   word.height( 0.5*(this->height()) );
   osg::ref_ptr<osg::Drawable> wdraw = word();
   osg::BoundingBox wbox = wdraw->getBound();

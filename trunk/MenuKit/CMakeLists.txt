@@ -46,6 +46,8 @@ SET (SOURCES
 ./FlagsVisitor.cpp
 ./UpdateVisitor.cpp
 ./RadioButton.cpp
+./ToggleButton.cpp
+./Separator.cpp
 )
 
 # Create a Shared Library

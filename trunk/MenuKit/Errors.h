@@ -30,9 +30,6 @@ struct MENUKIT_EXPORT Errors
 
   // Throws if the state is false.
   static void checkState ( unsigned int id, bool state );
-
-  // Throws if the parent is not null.
-  static void ensureNullParent ( unsigned int id, const Item *item );
 };
 
 
@@ -41,7 +38,6 @@ struct MENUKIT_EXPORT Errors
 
 #define MENUKIT_CHECK_POINTER       MenuKit::Errors::checkPointer
 #define MENUKIT_CHECK_STATE         MenuKit::Errors::checkState
-#define MENUKIT_ENSURE_NULL_PARENT  MenuKit::Errors::ensureNullParent
 
 
 #endif // _MENUKIT_ERROR_CHECKING_

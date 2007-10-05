@@ -44,11 +44,19 @@ osg::Node* GFX::operator() ( const Item* top )
 
   float pw = _skin->graphic_width( top );
 
-  if( top->text().size()>0 )
-    {
-      _skin->width( pw );
-      scene->addChild( _skin->create(top) );
-    }
+  std::string text ( "" );
+
+  // This is hack until building the osg scene is refactored.
+  if ( const MenuKit::Button *b = dynamic_cast < const MenuKit::Button * > ( top ) )
+    text = b->text ();
+  else if ( const MenuKit::Menu *m = dynamic_cast < const MenuKit::Menu * > ( top ) )
+    text = m->text ();
+
+  if( text.size()>0 )
+  {
+    _skin->width( pw );
+    scene->addChild( _skin->create(top) );
+  }
 
   const Menu* menu = dynamic_cast<const Menu*>(top);
   if( menu )

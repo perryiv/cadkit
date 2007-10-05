@@ -33,6 +33,9 @@ public:
   // Accept the visitor.
   virtual void        accept ( Visitor &v );
 
+  // Is this item a separator?
+  virtual bool        separator () const { return true; }
+
 protected:
   virtual ~Separator ();
 };

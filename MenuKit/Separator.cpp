@@ -21,7 +21,6 @@ using namespace MenuKit;
 
 Separator::Separator(): BaseClass()
 {
-  this->separator ( true );
 }
 
 

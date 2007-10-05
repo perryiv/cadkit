@@ -19,8 +19,6 @@
 
 #include "Usul/Bits/Bits.h"
 
-///\todo TODO: fix this! //#include "boost/mpl/assert_is_same.hpp"
-
 #include <algorithm>
 #include <sstream>
 #include <stdexcept>
@@ -35,27 +33,6 @@ using namespace MenuKit;
 ///////////////////////////////////////////////////////////////////////////////
 
 Item::Item(): BaseClass (), 
-  _command     ( 0x0 ),
-  _text        (),
-  _info        (),
-  _iconFile    (),
-  _parent      ( 0x0 ),
-  _flags       ( Item::ENABLED )
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Item::Item ( const std::string &text, const std::string &iconFile ) :
-  _command     ( 0x0 ),
-  _text        ( text ),
-  _info        (),
-  _iconFile    ( iconFile ),
   _parent      ( 0x0 ),
   _flags       ( Item::ENABLED )
 {
@@ -69,10 +46,6 @@ Item::Item ( const std::string &text, const std::string &iconFile ) :
 ///////////////////////////////////////////////////////////////////////////////
 
 Item::Item ( const Item &i ) : BaseClass ( i ),
-  _command     ( i._command ), 
-  _text        ( i._text ), 
-  _info        ( i._info ),
-  _iconFile    ( i._iconFile ),
   _parent      ( i._parent ),
   _flags       ( i._flags )
 {
@@ -99,10 +72,6 @@ Item::~Item()
 Item& Item::operator = ( const Item &i )
 {
   BaseClass::operator = (i);
-  _command     = i._command;
-  _iconFile    = i._iconFile;
-  _text        = i._text;
-  _info        = i._info;
   _parent      = i._parent;
   _flags       = i._flags;
 
@@ -136,87 +105,6 @@ void Item::flags ( unsigned int f )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the checked state.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Item::checked() const
-{
-  return Usul::Bits::has <unsigned int, unsigned int> ( this->flags(), Item::CHECKED );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the checked state.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Item::checked ( bool e )
-{
-  if ( e )
-    this->flags ( Usul::Bits::add <unsigned int, unsigned int>    ( this->flags(), Item::CHECKED ) );
-  else
-    this->flags ( Usul::Bits::remove <unsigned int, unsigned int> ( this->flags(), Item::CHECKED ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the toggle state.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Item::toggle() const
-{
-  return Usul::Bits::has <unsigned int, unsigned int> ( this->flags(), Item::TOGGLE );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the toggle state.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Item::toggle ( bool e )
-{
-  if ( e )
-    this->flags ( Usul::Bits::add    <unsigned int, unsigned int> ( this->flags(), Item::TOGGLE ) );
-  else
-    this->flags ( Usul::Bits::remove <unsigned int, unsigned int> ( this->flags(), Item::TOGGLE ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the radio state.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Item::radio() const
-{
-  return Usul::Bits::has <unsigned int, unsigned int> ( this->flags(), Item::RADIO );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the radio state.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Item::radio ( bool e )
-{
-  if ( e )
-    this->flags ( Usul::Bits::add <unsigned int, unsigned int>    ( this->flags(), Item::RADIO ) );
-  else
-    this->flags ( Usul::Bits::remove <unsigned int, unsigned int> ( this->flags(), Item::RADIO ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the enabled state.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -239,33 +127,6 @@ void Item::enabled ( bool e )
     this->flags ( Usul::Bits::add    <unsigned int, unsigned int> ( this->flags(), Item::ENABLED ) );
   else
     this->flags ( Usul::Bits::remove <unsigned int, unsigned int> ( this->flags(), Item::ENABLED ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the separator state.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Item::separator() const
-{
-  return Usul::Bits::has <unsigned int, unsigned int> ( this->flags(), Item::SEPARATOR );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the separator state.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Item::separator ( bool e )
-{
-  if ( e )
-    this->flags ( Usul::Bits::add    <unsigned int, unsigned int> ( this->flags(), Item::SEPARATOR ) );
-  else
-    this->flags ( Usul::Bits::remove <unsigned int, unsigned int> ( this->flags(), Item::SEPARATOR ) );
 }
 
 
@@ -320,40 +181,4 @@ void Item::marked ( bool e )
     this->flags ( Usul::Bits::add    <unsigned int, unsigned int> ( this->flags(), Item::MARKED ) );
   else
     this->flags ( Usul::Bits::remove <unsigned int, unsigned int> ( this->flags(), Item::MARKED ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the command.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Item::command ( Command * command )
-{
-  _command = command;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the command.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Commands::Command * Item::command ()
-{
-  return _command.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the command.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Usul::Commands::Command * Item::command () const
-{
-  return _command.get();
 }

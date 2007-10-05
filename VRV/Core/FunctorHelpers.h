@@ -25,6 +25,9 @@
 #include "Usul/Functors/Interaction/Wand/WandPosition.h"
 #include "Usul/Functors/Interaction/Wand/WandRotation.h"
 #include "Usul/Factory/TypeCreator.h"
+#include "Usul/Factory/ObjectFactory.h"
+
+#include "XmlTree/Node.h"
 
 namespace VRV {
 namespace Core {

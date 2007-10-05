@@ -54,21 +54,3 @@ void Errors::checkState ( unsigned int id, bool state )
     throw std::runtime_error ( out.str() );
   }
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Make sure the parent is null.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Errors::ensureNullParent ( unsigned int id, const Item *item )
-{
-  if ( item->parent() )
-  {
-    std::ostringstream out;
-    out << "Error " << id << ", item already has a parent."
-      << "\n\tText: " << item->text();
-    throw std::runtime_error ( out.str() );
-  }
-}

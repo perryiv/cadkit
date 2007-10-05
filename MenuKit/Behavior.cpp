@@ -645,7 +645,7 @@ void Behavior::selectFocused()
   }
 
   // Execute the command.
-  Usul::Commands::Command::RefPtr command ( focus->command () );
+  Usul::Commands::Command::RefPtr command ( button.valid () ? button->command () : 0x0 );
   if ( command.valid () )
     command->execute ( 0x0 );
 }

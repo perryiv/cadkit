@@ -44,7 +44,7 @@ public:
 
   // Construction.
   Menu();
-  Menu ( const std::string &name, const std::string &icon_file, Layout layout );
+  Menu ( const std::string &name, Layout layout );
   Menu ( const Menu & );
 
   // Assignment.
@@ -94,6 +94,10 @@ public:
   // Add a separator to the end.
   void                      addSeparator ();
 
+  // Set/get the text string.
+  void                      text ( const std::string &t ) { _text = t; }
+  const std::string &       text() const { return _text; }
+
 protected:
 
   // Use reference counting.
@@ -101,6 +105,7 @@ protected:
 
 private:
 
+  std::string _text;
   Items _items;
   Layout _layout;
 };

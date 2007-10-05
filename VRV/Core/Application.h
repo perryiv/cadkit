@@ -21,10 +21,9 @@
 #include "VRV/Interfaces/IModelAdd.h"
 #include "VRV/Interfaces/INavigationScene.h"
 #include "VRV/Interfaces/IModelsScene.h"
-#include "VRV/Animate/Path.h"
-#include "VRV/Animate/KeyFramePath.h"
-#include "VRV/Animate/RecordedPath.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Commands/GenericCommand.h"
 #include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
@@ -57,7 +56,6 @@
 #include "Usul/Functors/Interaction/Common/Sequence.h"
 #include "Usul/Functors/Interaction/Navigate/Transform.h"
 #include "Usul/Functors/Interaction/Input/AnalogInput.h"
-#include "Usul/Adaptors/MemberFunction.h"
 
 #include "OsgTools/Render/Renderer.h"
 #include "OsgTools/Render/SceneManager.h"
@@ -156,8 +154,6 @@ public:
   typedef IPolygonMode::Mode                   PolygonMode;
   typedef Usul::Interfaces::IShadeModel        IShadeModel;
   typedef IShadeModel::Mode                    ShadeModel;
-  typedef VRV::Animate::Path                   Path;
-  typedef std::vector < Path::RefPtr >         Paths;
 
   typedef Usul::Functors::Interaction::Common::BaseFunctor   Navigator;
   typedef Usul::Functors::Interaction::Input::AnalogInput    AnalogInput;
@@ -174,7 +170,7 @@ public:
   typedef Usul::Adaptors::MemberFunction < void, Application*, VoidFunction > ExecuteFunctor;
   typedef MenuKit::MemFunCallbackReturn < Application*, CheckFunction >       CheckFunctor;
   typedef Usul::Adaptors::MemberFunction < void, Application*, BoolFunction > BoolFunctor;
-  typedef MenuKit::BasicCommand < ExecuteFunctor >                            BasicCommand;
+  typedef Usul::Commands::GenericCommand < ExecuteFunctor >                   BasicCommand;
   typedef MenuKit::CheckCommand < BoolFunctor, CheckFunctor >                 CheckCommand;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
@@ -270,34 +266,6 @@ public:
   // Menu scene hiding functions
   bool                    menuSceneShowHide () const;
   void                    menuSceneShowHide ( bool show );
-
-  /// Get/Set the current path.
-  Path*                   currentPath ();
-  const Path*             currentPath () const;
-  void                    currentPath ( Path* );
-
-  /// Create new key frame path.
-  void                    createKeyFramePath ();
-
-  /// Create new recorded path.
-  void                    createRecordedPath ();
-
-  /// Append current camera.
-  void                    appendCamera ();
-
-  /// Start the animation.
-  void                    startAnimation ();
-
-  /// Clear animation.
-  void                    clearAnimation ();
-
-  /// Get/Set the number of animation steps.
-  void                    animationSteps ( unsigned int steps );
-  unsigned int            animationSteps ( ) const;
-
-  /// Get/Set flag to record path.
-  void                    recordPath ( bool b );
-  bool                    recordPath ( ) const;
 
   /// Get/Set the menu.
   Menu *                  menu ();
@@ -402,12 +370,6 @@ protected:
   // Parse the command-line arguments.
   void                    _parseCommandLine();
 
-  // Create a button.
-  MenuKit::Button*              _createButton    ( Usul::Commands::Command* command );
-  MenuKit::Button*              _createRadio     ( Usul::Commands::Command* command );
-  MenuKit::Button*              _createToggle    ( Usul::Commands::Command* command );
-  MenuKit::Button*              _createSeperator ( );
-
   // Set the current "camera" position as "home".
   void                          _setHome();
 
@@ -421,26 +383,12 @@ protected:
   void                          _initNavigateMenu ( MenuKit::Menu* menu );
   void                          _initToolsMenu    ( MenuKit::Menu* menu );
   void                          _initOptionsMenu  ( MenuKit::Menu* menu );
-  void                          _initAnimateMenu  ( MenuKit::Menu* menu );
 
   /// Translation speed controls.
   void                          _increaseSpeed ();
   void                          _decreaseSpeed ();
   void                          _increaseSpeedTen ();
   void                          _decreaseSpeedTen ();
-
-  /// Animation speed controls.
-  void                          _animationSteps20 ( bool );
-  bool                          _animationSteps20 () const;
-
-  void                          _animationSteps50 ( bool );
-  bool                          _animationSteps50 () const;
-
-  void                          _animationSteps100 ( bool );
-  bool                          _animationSteps100 () const;
-
-  void                          _animationStepsDouble ( );
-  void                          _animationStepsHalf ( );
 
   // Generate a string from the integer.
   std::string                   _counter ( unsigned int num ) const;
@@ -624,8 +572,6 @@ private:
   float                                  _translationSpeed;
   osg::Matrixf                           _home;
   bool                                   _timeBased;
-  Paths                                  _paths;
-  Path::RefPtr                           _currentPath;
   ColorMap                               _colorMap;
 };
 

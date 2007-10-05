@@ -419,6 +419,18 @@ void MainWindow::_initMenu()
       ma->menuAdd ( *_menu );
     }
   }
+
+  // Check all plugins.
+  typedef Usul::Components::Manager PluginManager;
+  typedef PluginManager::UnknownSet Unknowns;
+
+  Unknowns unknowns ( PluginManager::instance().getInterfaces ( Usul::Interfaces::IMenuAdd::IID ) );
+  for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++ iter )
+  {
+    // Should be true.
+    Usul::Interfaces::IMenuAdd::ValidQueryPtr ma ( *iter );
+    ma->menuAdd ( *_menu );
+  }
 }
 
 

@@ -311,7 +311,6 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
     _geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
   }
 
-#if 1
   // Set the correct colors.
   if ( OsgTools::Options::has ( options, "colors", "per-vertex" ) )
   {
@@ -339,13 +338,14 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
 
     
   }
-#endif
+
 #if 0
   static osg::ref_ptr < OsgTools::MaterialFactory > mf ( new OsgTools::MaterialFactory );
 
   osg::ref_ptr < osg::StateSet > ss ( _geometry->getOrCreateStateSet() );
   ss->setAttribute ( mf->create(), osg::StateAttribute::ON );
 #endif
+
   // Return the geometry.
   return _geometry.get();
 }

@@ -769,7 +769,6 @@ void Document::updateGUI  (  )
 
 Document::Options& Document::options()
 {
-  //return _options[this->activeView()];
   return _options;
 }
 
@@ -782,34 +781,20 @@ Document::Options& Document::options()
 
 const Document::Options& Document::options() const
 {
-  //return _options[this->activeView()];
   return _options;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the options.
+//  Add the options.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Document::Options& Document::options( View* view )
+void Document::_addOptions ( const Options &options )
 {
-  //return _options[view];
-  return _options;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the options.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Document::Options& Document::options( View* view ) const
-{
-  //return _options[view];
-  return _options;
+  for ( Options::const_iterator i = options.begin(); i != options.end(); ++i )
+    _options[i->first] = i->second;
 }
 
 

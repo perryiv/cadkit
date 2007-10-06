@@ -180,10 +180,6 @@ public:
   Options&                    options();
   const Options&              options() const;
 
-  /// Get the options
-  Options&                    options( View* );
-  const Options&              options( View* ) const;
-
   /// Read the file and add it to existing document's data.
   virtual void                read ( const std::string &filename, Unknown *caller, Unknown *progress );
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0 );
@@ -235,6 +231,8 @@ protected:
 
   /// Use reference counting.
   virtual ~Document();
+
+  void                        _addOptions ( const Options & );
 
   std::string                 _getSaveAsFileName ( Options &options, Unknown *caller = 0x0 );
 

@@ -99,7 +99,7 @@ public:
   // Get max and min values of the given field name.
   void                 getMinAndMax ( const std::string& tableName, const std::string& fieldName, double& min, double& max );
 
-  struct ScopedConnection
+  struct MINERVA_EXPORT ScopedConnection
   {
     ScopedConnection ( Connection &c );
     ~ScopedConnection();

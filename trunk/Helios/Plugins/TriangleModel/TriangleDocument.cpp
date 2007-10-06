@@ -80,6 +80,12 @@ TriangleDocument::TriangleDocument() : BaseClass ( "Triangle Document" ),
 #if 1
   _triangles->factory()->usePool ( false );
 #endif
+
+  // Default options.
+  OsgTools::Triangles::TriangleSet::Options options;
+  options["normals"] = "per-vertex";
+  options["colors"] = "per-vertex";
+  this->_addOptions ( options );
 }
 
 

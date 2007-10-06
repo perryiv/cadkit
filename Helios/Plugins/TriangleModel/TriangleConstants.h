@@ -25,6 +25,8 @@ namespace FileFormat
 {
   namespace Record
   {
+    // Changing these number will break backward compatability.
+    // However, adding new numbers does not break anything.
     typedef Usul::Types::Uint32 Type;
     const Type META_DATA         ( 100 );
     const Type VERTICES          ( 200 );
@@ -34,6 +36,7 @@ namespace FileFormat
     const Type BOUNDING_BOX      ( 600 );
     const Type SORTED_VERTICES   ( 700 );
     const Type VERTEX_LOOP       ( 800 );
+    const Type VERTEX_COLORS     ( 900 );
   }
 
   namespace Header

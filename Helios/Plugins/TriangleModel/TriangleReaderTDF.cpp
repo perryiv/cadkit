@@ -301,6 +301,11 @@ void TriangleReaderTDF::_readRecord ( std::ifstream &in )
       this->_readBounds ( in );
       break;
     }
+    case FileFormat::Record::VERTEX_COLORS:
+    {
+      this->_readColorsV ( in );
+      break;
+    }
     default:
     {
       this->_skipRecord ( in, type, size );
@@ -390,6 +395,30 @@ void TriangleReaderTDF::_readNormalsV ( std::ifstream &in )
   // Read the per vertex normals.
   Normals &normals ( *_triangles->normalsV() );
   Detail::Read<Normals>::sequence ( in, "triangle normals", numNormals, normals );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the vertex colors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleReaderTDF::_readColorsV ( std::ifstream &in )
+{
+  // Get the integer data.
+  const FileFormat::Size::Sequence numColors ( Detail::Read<FileFormat::Size::Sequence>::value ( in, "number of colors"     ) );
+  const FileFormat::Size::Scalar   floatSize ( Detail::Read<FileFormat::Size::Scalar>::value   ( in, "floating point bytes" ) );
+
+  // Make sure we support the floating-point size.
+  Detail::checkSizes ( in, "floating point", sizeof ( Colors::value_type ), 4 * floatSize, _file );
+
+  // Make the colors.
+  Colors &colors ( *_triangles->getColorsV ( false ) );
+  colors.resize ( numColors );
+
+  // Read the per vertex colors.
+  Detail::Read<Colors>::sequence ( in, "triangle colors", numColors, colors );
 }
 
 

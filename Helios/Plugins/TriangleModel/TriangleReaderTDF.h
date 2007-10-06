@@ -41,6 +41,7 @@ public:
   typedef TriangleSet::TriangleVector TriangleVector;
   typedef TriangleSet::VerticesPtr::element_type Vertices;
   typedef TriangleSet::NormalsPtr::element_type Normals;
+  typedef TriangleSet::ColorsPtr::element_type Colors;
   typedef std::vector < Usul::Math::Vec3ui > Indices;
   typedef std::vector < unsigned int > SortOrder;
   typedef OsgTools::Triangles::SharedVertex SharedVertex;
@@ -78,6 +79,7 @@ protected:
   void                _readHeader    ( std::ifstream &in );
   void                _readRecord    ( std::ifstream &in );
   void                _readRecords   ( std::ifstream &in );
+  void                _readColorsV   ( std::ifstream &in );
   void                _readNormalsT  ( std::ifstream &in );
   void                _readNormalsV  ( std::ifstream &in );
   void                _readTriangles ( std::ifstream &in );

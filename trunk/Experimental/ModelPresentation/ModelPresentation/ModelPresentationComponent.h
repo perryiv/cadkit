@@ -28,8 +28,8 @@ class SceneDocument;
 
 
 class ModelPresentationComponent : public Usul::Base::Referenced,
-                     public Usul::Interfaces::IPlugin,
-                     public Usul::Interfaces::IDocumentCreate
+                                   public Usul::Interfaces::IPlugin,
+                                   public Usul::Interfaces::IDocumentCreate
 {
 public:
 
@@ -48,10 +48,10 @@ public:
   ModelPresentationComponent();
 
   /// Usul::Interfaces::IPlugin
-  virtual std::string         getPluginName() const { return "Model Presentation"; }
+  virtual std::string           getPluginName() const { return "Model Presentation"; }
 
   /// Usul::Interfaces::IDocumentCreate
-  virtual Document *           createDocument ( Unknown *caller = 0x0 );
+  virtual Document *            createDocument ( Unknown *caller = 0x0 );
 
 protected: 
 

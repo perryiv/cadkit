@@ -269,6 +269,9 @@ void Connection::deactivate()
 
 Connection::ScopedConnection::ScopedConnection ( Connection &c ) : _c ( c )
 {
+  if ( 0x0 == _c._connection )
+    _c.connect ();
+
   _c.activate();
 }
 

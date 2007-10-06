@@ -24,6 +24,7 @@
 #include "Usul/IO/Reader.h"
 
 #include "osg/Vec3f"
+#include "osg/Vec4f"
 
 #include <fstream>
 #include <iostream>
@@ -47,6 +48,13 @@ struct SwapBytes
     Usul::Endian::FromLittleToSystem::convert ( v[0] );
     Usul::Endian::FromLittleToSystem::convert ( v[1] );
     Usul::Endian::FromLittleToSystem::convert ( v[2] );
+  }
+  void operator () ( osg::Vec4f &v ) const
+  {
+    Usul::Endian::FromLittleToSystem::convert ( v[0] );
+    Usul::Endian::FromLittleToSystem::convert ( v[1] );
+    Usul::Endian::FromLittleToSystem::convert ( v[2] );
+    Usul::Endian::FromLittleToSystem::convert ( v[3] );
   }
   void operator () ( unsigned int &v ) const
   {
@@ -99,7 +107,7 @@ template < class FileInfoType > inline void isFileBigEnough ( std::ifstream &in,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Helper function to check if file is big enough.
+//  Helper function to check the size.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

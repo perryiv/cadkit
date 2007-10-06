@@ -216,6 +216,30 @@ void TriangleWriterTDF::operator()()
     }
   }
 
+  // Write the vertex colors.
+  {
+    const osg::Vec4Array &colors ( *_document->getColorsV ( false ) );
+    const FileFormat::Size::Sequence numColors ( colors.size() );
+    if ( numColors > 0 )
+    {
+      _document->setStatusBar ( "Writing per-vertex color vectors..." );
+
+      const FileFormat::Size::Scalar floatSize  ( sizeof ( float ) );
+      const FileFormat::Size::Record recordSize ( sequenceSize + scalarSize + numColors * floatSize * 4 );
+
+      WRITE_SCALAR ( FileFormat::Record::VERTEX_COLORS );
+      WRITE_SCALAR ( recordSize );
+      WRITE_SCALAR ( numColors );
+      WRITE_SCALAR ( floatSize  );
+
+      for ( osg::Vec3Array::size_type i = 0; i < numColors; ++i )
+      {
+        WRITE_VEC3 ( colors[i] );
+        _document->setProgressBar ( update(), count++, total, _caller );
+      }
+    }
+  }
+
   // Write the triangles, which is just each vertex's index.
   {
     typedef TriangleDocument::TriangleVector TriangleVector;

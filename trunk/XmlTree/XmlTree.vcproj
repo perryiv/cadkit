@@ -260,6 +260,30 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RegistryBuilder.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RegistryBuilder.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RegistryIO.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RegistryIO.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RegistryVisitor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RegistryVisitor.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ReplaceIllegalCharacters.cpp"
 				>
 			</File>

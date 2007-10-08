@@ -81,18 +81,18 @@ namespace Helper
   xercesc::DOMDocument *load ( xercesc::InputSource& input )
   {
     // Make new parser.
-      std::auto_ptr<xercesc::XercesDOMParser> parser ( new xercesc::XercesDOMParser );
-      parser->setValidationScheme ( xercesc::XercesDOMParser::Val_Always );
+    std::auto_ptr<xercesc::XercesDOMParser> parser ( new xercesc::XercesDOMParser );
+    parser->setValidationScheme ( xercesc::XercesDOMParser::Val_Always );
 
-      // Parse the file.
-      parser->parse ( input );
+    // Parse the file.
+    parser->parse ( input );
 
-      // Normalize the document. I think this eliminates empty nodes that 
-      // Xerces may create.
-      parser->getDocument()->normalizeDocument();
+    // Normalize the document. I think this eliminates empty nodes that 
+    // Xerces may create.
+    parser->getDocument()->normalizeDocument();
 
-      // Take over ownership of document and return it.
-      return parser->adoptDocument();
+    // Take over ownership of document and return it.
+    return parser->adoptDocument();
   }
 
   xercesc::DOMDocument *load ( const std::string &file )
@@ -108,7 +108,6 @@ namespace Helper
     try
     {
       xercesc::LocalFileInputSource input ( XmlTree::fromNative( file ).c_str() );
-
       return load ( input );
     }
 

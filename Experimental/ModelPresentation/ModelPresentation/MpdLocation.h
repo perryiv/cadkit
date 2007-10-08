@@ -8,24 +8,24 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __ModelPresentation_MENU_COMMAND_H__
-#define __ModelPresentation_MENU_COMMAND_H__
+#ifndef __ModelPresentation_LOCATION_COMMAND_H__
+#define __ModelPresentation_LOCATION_COMMAND_H__
 
 #include "Usul/Commands/Command.h"
 
 
-class MpdMenuCommand : public Usul::Commands::Command
+class MpdLocation : public Usul::Commands::Command
 {
 public:
   typedef Usul::Commands::Command BaseClass;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_COMMAND ( MpdMenuCommand );
+  USUL_DECLARE_COMMAND ( MpdLocation );
 
-  MpdMenuCommand ( Usul::Interfaces::IUnknown * caller, const std::string text, unsigned int index );
+  MpdLocation ( Usul::Interfaces::IUnknown * caller, const std::string text, unsigned int index );
 
 protected:
-  virtual ~MpdMenuCommand ();
+  virtual ~MpdLocation ();
 
   virtual void _execute ();
 
@@ -37,4 +37,4 @@ private:
 };
 
 
-#endif // __ModelPresentation_MENU_COMMAND_H__
+#endif // __ModelPresentation_LOCATION_COMMAND_H__

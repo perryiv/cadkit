@@ -579,6 +579,54 @@ void ModelPresentationDocument::_parseStatic( XmlTree::Node &node, Unknown *call
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse a location.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *caller )
+{ 
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Ok to update the status bar with time related information
+  _useTimeLine = true;
+
+  typedef XmlTree::Document::Attributes Attributes;
+  typedef XmlTree::Document::Children Children;
+  Attributes& attributes ( node.attributes() );
+  Children& children ( node.children() );
+  
+  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+  {
+    
+    if ( "name" == iter->first )
+    {
+      //Usul::Strings::fromString ( iter->second, _timeSet.endTime );
+    }
+   
+        
+  }
+  // TODO: create destination matrix here --
+  osg::Matrixd location;
+  osg::Matrixd matrix;
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    if ( "matrix" == node->name() )
+    {
+      std::cout << "Found matrix" << std::endl;
+      //switchNode->addChild( this->_parseTimeGroup( *node, caller ), false );
+    }
+  }
+  //TODO: add a path
+  _locations.push_back( matrix );
+}
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Parse a set.
@@ -1018,6 +1066,17 @@ void ModelPresentationDocument::_setStatusBar ( const std::string &text, Usul::I
     status->setStatusBarText ( text, true );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build an animation path 
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::setAnimationPath( unsigned int i )
+{
+
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

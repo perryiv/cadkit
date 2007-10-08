@@ -287,7 +287,7 @@ void Program::_saveDocument ( const std::string &file, Usul::Documents::Document
     return;
 
   std::cout << "Saving file: " << file << " ... " << std::endl;
-  document->saveAs ( file, this, false );
+  document->saveAs ( file, this, 0x0 );
   std::cout << "Done" << std::endl;
 }
 

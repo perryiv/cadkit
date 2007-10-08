@@ -81,7 +81,7 @@ Usul::Interfaces::IUnknown *ModelPresentationDelegateComponent::queryInterface (
 
 bool ModelPresentationDelegateComponent::doesHandle( const std::string& token ) const
 {
-  return ( token ==    "Model Presentation Document" );
+  return ( token == "Model Presentation Document" );
 }
 
 

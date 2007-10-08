@@ -419,6 +419,9 @@ void TriangleReaderTDF::_readColorsV ( std::ifstream &in )
 
   // Read the per vertex colors.
   Detail::Read<Colors>::sequence ( in, "triangle colors", numColors, colors );
+
+  // The colors are not dirty.
+  _triangles->dirtyColorsV ( false );
 }
 
 

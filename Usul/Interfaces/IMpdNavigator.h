@@ -44,6 +44,9 @@ struct IMpdNavigator : public Usul::Interfaces::IUnknown
   // Go to the first time step
   virtual void              firstStep() = 0;
 
+  // Setup and execute an animation path
+  virtual void              setAnimationPath( unsigned int i ) = 0;
+
   
 
 

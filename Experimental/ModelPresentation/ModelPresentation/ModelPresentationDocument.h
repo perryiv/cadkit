@@ -84,12 +84,14 @@ public:
   typedef std::auto_ptr< UpdatePolicy > UpdatePolicyPtr;
 
 
+
   typedef std::vector< osg::ref_ptr< osg::Switch > > MpdScene;
   typedef osg::ref_ptr< osg::Group > GroupPtr;
   typedef std::vector < std::string > Files;
   typedef std::vector< MpdGroup > MpdGroups;
   typedef std::vector< MpdModel > MpdModels;
   typedef std::vector< MpdSet > MpdSets;
+  typedef std::vector< osg::Matrixd > Location;
  
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ModelPresentationDocument );
@@ -133,9 +135,12 @@ public:
   void              nextStep();
   void              prevStep();
   void              firstStep();
+  void              setAnimationPath( unsigned int i );
 
   bool              isAnimating();
   void              isAnimating( bool value );
+
+
 
                 
 
@@ -151,6 +156,7 @@ protected:
   void                        _parseStatic( XmlTree::Node &node, Unknown *caller );
   void                        _parseSet( XmlTree::Node &node, Unknown *caller );
   void                        _parseTimeSet( XmlTree::Node &node, Unknown *caller );
+   void                       _parseLocation( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller );
@@ -162,6 +168,7 @@ protected:
   void                        _openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller );
   void                        _setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller );
   void                        _checkTimeSteps();
+  
   
 
 
@@ -181,6 +188,8 @@ private:
   UpdatePolicyPtr             _update;
   bool                        _useTimeLine;
   bool                        _isAnimating;
+
+  Location                    _locations;
 
 
 

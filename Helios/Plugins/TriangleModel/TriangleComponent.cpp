@@ -111,3 +111,4 @@ void TriangleComponent::createTriangleDocument ( OsgTools::Triangles::TriangleSe
   // Bring this document's windows to the front.
   document->windowsForward();
 }
+

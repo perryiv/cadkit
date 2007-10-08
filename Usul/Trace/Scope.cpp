@@ -86,7 +86,7 @@ Scope::~Scope()
 void Scope::_begin() const
 {
   std::ostringstream out;
-  out << "Begin " << SET_WIDTH << _thread << ", " << SET_WIDTH << Usul::System::Clock::milliseconds() << ", " << _object << ", " << _name << '\n';
+  out << "Begin, " << SET_WIDTH << _thread << ", " << SET_WIDTH << Usul::System::Clock::milliseconds() << ", " << _object << ", " << _name << '\n';
   Usul::Trace::Print::execute ( out.str() );
 }
 
@@ -100,6 +100,6 @@ void Scope::_begin() const
 void Scope::_end() const
 {
   std::ostringstream out;
-  out << "  End " << SET_WIDTH << _thread << ", " << SET_WIDTH << Usul::System::Clock::milliseconds() << ", " << _object << ", " << _name << '\n';
+  out << "  End, " << SET_WIDTH << _thread << ", " << SET_WIDTH << Usul::System::Clock::milliseconds() << ", " << _object << ", " << _name << '\n';
   Usul::Trace::Print::execute ( out.str() );
 }

@@ -83,7 +83,9 @@ protected:
 
 
   template < class VectorType > void _makeTriangleDocument( VectorType vertices );
-  bool                      _loadTexture ( const std::string& filename, Usul::Interfaces::IUnknown *caller );
+  void                      _loadTexture ( const std::string& filename, Usul::Interfaces::IUnknown *caller );
+
+  void                      _stats();
 
 
 private:

@@ -24,6 +24,7 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Policies/Update.h"
 #include "Usul/Predicates/EqualVector.h"
+#include "Usul/Predicates/FileExists.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Functors/General/Increment.h"
 #include "Usul/Errors/Checker.h"
@@ -33,6 +34,8 @@
 #include "Usul/Algorithms/FindAllConnected.h"
 #include "Usul/Polygons/Triangle.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Math/Vector3.h"
+#include "Usul/Math/Vector2.h"
 
 #include "Usul/Scope/Timer.h"
 
@@ -59,6 +62,8 @@
 #include "osg/Material"
 #include "osg/LineWidth"
 #include "osg/PolygonOffset"
+
+#include "osgDB/ReadFile"
 
 #include <algorithm>
 #include <numeric>
@@ -2214,3 +2219,91 @@ void TriangleSet::useMaterial ( bool b )
   // Set all the blocks' use material flag.
   std::for_each ( _blocks.begin(), _blocks.end(), std::bind2nd ( std::mem_fun ( &Blocks::useMaterial ), b ) );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the use material flag.
+//
+//  header format is:
+//
+//  [0] = rows
+//  [1] = cols
+//  [2] = lower left x-value
+//  [3] = lower left y-value
+//  [4] = cellsize
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleSet::loadColorFile( const std::string &file, const HeaderInfo& header )
+{
+  if( 5 != header.size() )
+    return;
+  if( Usul::Predicates::FileExists::test ( file ) )
+  {
+   
+    // Get color array
+    ColorsPtr colors = this->getColorsV( true );
+   
+    // make sure the number of colors is correct.
+    _colorsV->resize ( _vertices->size() );
+
+    // load the image
+    osg::ref_ptr< osg::Image > tex ( new osg::Image );
+    tex = osgDB::readImageFile( file );
+
+    // Initialize local vaiables.
+    Usul::Math::Vec2ui gridSize ( header[0] , header[1] );
+    Usul::Math::Vec2d ll ( header[2], header[3] );
+    float cellSize ( header[4] );
+    
+    std::cout << "Reading texture image file: " << file << std::endl;
+
+    if( gridSize[1] != tex->s() ||
+        gridSize[0] != tex->t() )
+    {
+      std::cout << "Image resolution doesn't match object resolution!" << std::endl;
+      std::cout << "Image resolution:  " << tex->s() << " x " << tex->t() << std::endl;
+      std::cout << "Object resolution: " << gridSize[1] << " x " << gridSize[0] << std::endl;
+      return;
+    }
+   
+    for( unsigned int i = 0; i < _vertices->size(); ++i )
+    {
+      // get the current grid location of the point at index i
+      float vi = _vertices->at(i)[0] - ll[1];
+      float vj = _vertices->at(i)[1] - ll[0];
+      float rsize = ( float ( gridSize[0] ) * cellSize ) - 1;
+      float csize = ( float ( gridSize[1] ) * cellSize ) - 1;
+      
+      // get the color information from the image for the point at index i
+      unsigned int pixelRow = static_cast < unsigned int >( ( rsize - vi ) / cellSize );
+      unsigned int pixelCol = static_cast < unsigned int >( vj / cellSize );
+      unsigned char * pixel = tex->data(  pixelCol, pixelRow  );
+
+      // get the color values to use
+      osg::Vec4f pixelColor ( 0, 0, 0, 1 );
+      pixelColor[0] = static_cast< float > ( pixel[0] ) / 255.0f ;
+      pixelColor[1] = static_cast< float > ( pixel[1] ) / 255.0f ;
+      pixelColor[2] = static_cast< float > ( pixel[2] ) / 255.0f ;
+  
+      // set the color for the point at index i
+      colors->at(i) = pixelColor;
+    }
+    _colorsV = colors;
+    // The colors are not dirty.
+    this->dirtyColorsV ( false );
+
+    std::cout << "\nTexture file reading complete!" << std::endl;
+
+   
+    
+
+    }
+  else
+  {
+    std::cout << "Unable to load image file:" << file << ".  File does not exist!" << std::endl;
+  
+  }
+}
+

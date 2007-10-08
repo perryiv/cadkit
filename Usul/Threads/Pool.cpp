@@ -102,7 +102,7 @@ void Pool::_destroy()
   this->cancel();
 
   // Wait for threads to finish.
-  this->_waitForThreads ( 100000 );
+  this->_waitForThreads ( 1000000 );
 
   // Now delete internal thread.
   if ( 0x0 != _thread && false == _thread->isIdle() )

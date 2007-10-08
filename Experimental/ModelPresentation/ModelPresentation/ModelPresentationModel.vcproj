@@ -271,6 +271,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\MpdLocation.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdLocation.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MpdMenuCommand.cpp"
 					>
 				</File>

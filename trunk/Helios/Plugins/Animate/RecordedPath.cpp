@@ -11,10 +11,11 @@
 #include "Helios/Plugins/Animate/RecordedPath.h"
 
 #include "Usul/Interfaces/IViewMatrix.h"
+#include "Usul/Factory/RegisterCreator.h"
 
 using namespace Animate;
 
-//USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "MatrixPath", Path );
+USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "RecordedPath", RecordedPath );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

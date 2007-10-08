@@ -18,15 +18,12 @@
 #include "Usul/Math/Transpose.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Errors/Assert.h"
-#include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Factory/RegisterCreator.h"
 
-#include "osg/FrameStamp"
-
 using namespace Animate;
 
-//USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "MatrixPath", Path );
+USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "KeyFramePath", KeyFramePath );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -111,13 +108,10 @@ void KeyFramePath::updateNotify ( Usul::Interfaces::IUnknown * caller )
   if ( false == this->animating () || _params.empty () || false == _curve.valid() )
     return;
 
-  Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
   Usul::Interfaces::IViewMatrix::QueryPtr vm ( caller );
 
-  if ( fs.valid() && vm.valid () )
+  if ( vm.valid () )
   {
-    osg::ref_ptr < osg::FrameStamp > frameStamp ( fs->frameStamp () );
-
     typedef DoubleCurve::Vector Point;
     typedef DoubleCurve::SizeType SizeType;
     typedef IndependentSequence::iterator Iterator;
@@ -194,8 +188,8 @@ void KeyFramePath::updateNotify ( Usul::Interfaces::IUnknown * caller )
 
       vm->setViewMatrix ( m );
 
-      Guard guard ( this->mutex () );
-      _animating = false;
+      // We are done animating.
+      this->animating ( false );
     }
   }
 }

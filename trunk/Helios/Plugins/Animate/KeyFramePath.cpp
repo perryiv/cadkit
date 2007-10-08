@@ -130,7 +130,7 @@ void KeyFramePath::updateNotify ( Usul::Interfaces::IUnknown * caller )
     // The independent variable.
     Parameter u ( static_cast < double > ( _currentStep ) / static_cast < double > ( totalNumberSteps - 1 ) );
 
-    std::cout << "u: " << u << std::endl;
+    std::cout << "u: " << u;
 
     // Make a point for the position and rotation.
     Point pos ( _curve.dimension() );
@@ -160,6 +160,8 @@ void KeyFramePath::updateNotify ( Usul::Interfaces::IUnknown * caller )
 
     // What fraction are we between the adjacent parameters?
     const Parameter fraction ( ( u - u0 ) / ( u1 - u0 ) );
+
+    std::cout << " Fraction: " << fraction << std::endl;
 
     // Spherical linear interpolation.
     const osg::Quat q0 ( r0.at(0), r0.at(1), r0.at(2), r0.at(3) );

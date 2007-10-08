@@ -47,6 +47,8 @@ protected:
   /// Append a frame.
   virtual void      _append ( Frame *frame );
 
+  void              _animate ( Usul::Interfaces::IUnknown * caller );
+  void              _record ( Usul::Interfaces::IUnknown * caller );
 private:
   Frames              _frames;
   Frames::iterator    _current;

@@ -75,11 +75,24 @@ void RecordedPath::start ( Usul::Interfaces::IUnknown * caller )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Animate one step.
+//  Animate or record.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void RecordedPath::updateNotify ( Usul::Interfaces::IUnknown * caller )
+{
+  this->_record ( caller );
+  this->_animate ( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Animate one step.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RecordedPath::_animate ( Usul::Interfaces::IUnknown * caller )
 {
   if ( false == this->animating () )
     return;
@@ -96,6 +109,28 @@ void RecordedPath::updateNotify ( Usul::Interfaces::IUnknown * caller )
     }
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Animate one step.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RecordedPath::_record ( Usul::Interfaces::IUnknown * caller )
+{
+  if ( false == this->acceptNewFrames () )
+    return;
+
+  Usul::Interfaces::IViewMatrix::QueryPtr vm ( caller );
+
+  if ( vm.valid () )
+  {
+    Guard guard ( this->mutex () );
+    _frames.push_back ( new Frame ( vm->getViewMatrix() ) );
+  }
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

@@ -131,6 +131,35 @@ template <> struct Convert < the_type > \
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Macro for defining vector converters.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define USUL_REGISTRY_DEFINE_CONVERTER_MATRIX_4x4(the_type) \
+template <> struct Convert < the_type > \
+{ \
+  static std::string to ( const the_type &m ) \
+  { \
+    std::ostringstream os; \
+    os << m[0] << ' ' << m[4] << ' ' << m[ 8] << ' ' << m[12] << ' '; \
+    os << m[1] << ' ' << m[5] << ' ' << m[ 9] << ' ' << m[13] << ' '; \
+    os << m[2] << ' ' << m[6] << ' ' << m[10] << ' ' << m[14] << ' '; \
+    os << m[3] << ' ' << m[7] << ' ' << m[11] << ' ' << m[15]; \
+    return os.str(); \
+  } \
+  static void from ( const std::string& s, the_type &m ) \
+  { \
+    std::istringstream in ( s ); \
+    in >> m[0] >> m[4] >> m[ 8] >> m[12]; \
+    in >> m[1] >> m[5] >> m[ 9] >> m[13]; \
+    in >> m[2] >> m[6] >> m[10] >> m[14]; \
+    in >> m[3] >> m[7] >> m[11] >> m[15]; \
+  } \
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Helper macro to define scalar and derived converters.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -139,7 +168,8 @@ template <> struct Convert < the_type > \
   USUL_REGISTRY_DEFINE_CONVERTER_SCALAR ( the_type ); \
   USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_2 ( Usul::Math::Vec2##postfix ); \
   USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_3 ( Usul::Math::Vec3##postfix ); \
-  USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_4 ( Usul::Math::Vec4##postfix )
+  USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_4 ( Usul::Math::Vec4##postfix ); \
+  USUL_REGISTRY_DEFINE_CONVERTER_MATRIX_4x4 ( Usul::Math::Matrix44##postfix )
 
 ///////////////////////////////////////////////////////////////////////////////
 //

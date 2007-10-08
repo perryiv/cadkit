@@ -82,11 +82,15 @@ void _test()
   TEST_VALUE ( double,       ["level 1 double"]["level 2 double"],  2.0 );
   TEST_VALUE ( unsigned int, ["level 1 uint"]["level 2 uint"],      2 );
 
-  // Many levels.
+  // Many levels and derived types.
   TEST_VECTOR ( Usul::Math::Vec3d,  ["level one"]["level two"]["level three"]["level four 1"], Usul::Math::Vec3d  ( 10.0,  20.0,  30.0  ) );
   TEST_VECTOR ( Usul::Math::Vec3f,  ["level one"]["level two"]["level three"]["level four 2"], Usul::Math::Vec3f  ( 10.0f, 20.0f, 30.0f ) );
   TEST_VECTOR ( Usul::Math::Vec3ui, ["level one"]["level two"]["level three"]["level four 3"], Usul::Math::Vec3ui ( 10,    20,    30    ) );
   TEST_VECTOR ( Usul::Math::Vec3i,  ["level one"]["level two"]["level three"]["level four 4"], Usul::Math::Vec3i  ( 10,    20,    30    ) );
+
+  // Matrices
+  TEST_VECTOR ( Usul::Math::Matrix44d, ["level one"]["level two"]["level three"]["level four 5"], Usul::Math::Matrix44d::translation ( 1, 2, 3 ) );
+  TEST_VECTOR ( Usul::Math::Matrix44f, ["level one"]["level two"]["level three"]["level four 6"], Usul::Math::Matrix44d::translation ( 1, 2, 3 ) );
 
   // Destroy the registry.
   Usul::Registry::Database::destroy();

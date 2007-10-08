@@ -334,9 +334,6 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
   else
   {
     // Use Materials
-    
-
-    
   }
 
 #if 0

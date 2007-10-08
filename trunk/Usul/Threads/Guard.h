@@ -31,6 +31,12 @@ public:
     _mutex.lock();
   }
 
+  // Constructor. Locks the mutex.
+  template < class ObjectType > Guard ( ObjectType *object ) : _mutex ( object->mutex() )
+  {
+    _mutex.lock();
+  }
+
   // Destructor. Unlocks the mutex.
   ~Guard()
   {

@@ -18,7 +18,7 @@
 
 #include "Usul/Base/Object.h"
 
-namespace Usul { namespace Registry { class Node; } }
+namespace Usul { namespace Registry { class Node; class Database; } }
 
 
 namespace Usul {
@@ -40,8 +40,9 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Visitor );
 
-  // Visit the node.
-  virtual void              visit ( Node & ) = 0;
+  // Visit the object.
+  virtual void              visit ( Database * ) = 0;
+  virtual void              visit ( Node * ) = 0;
 
 private:
 

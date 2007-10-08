@@ -17,6 +17,10 @@
 #define _USUL_REGISTRY_NODE_CLASS_H_
 
 #include "Usul/Base/Object.h"
+#include "Usul/Registry/Convert.h"
+
+#include <string>
+#include <map>
 
 namespace Usul { namespace Registry { class Visitor; } }
 
@@ -40,23 +44,87 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Node );
 
+  // Have to declare after the smart-pointer definition.
+  typedef std::map < std::string, Node::RefPtr > Kids;
+
   // Constructor.
   Node();
 
   // Accept the visitor.
-  void                      accept ( Visitor & );
+  void                            accept ( Visitor * );
 
-private:
+  // Clear the node.
+  void                            clear();
+
+  // Get the string value.
+  std::string                     get() const;
+  template < class T > T          get() const;
+
+  // Operator to return the child with the name. Creates child nodes as needed.
+  Node &                          operator [] ( const std::string &name );
+
+  // Set the value.
+  template < class T > Node &     operator = ( const T &t );
+
+  // Set the string value.
+  void                            set ( const std::string & );
+  template < class T > void       set ( const T &t );
+
+protected:
 
   // Use reference counting.
   virtual ~Node();
+
+  std::string                     _getValue() const;
 
 private:
 
   // No copying or assignment.
   Node &operator = ( const Node & );
   Node ( const Node & );
+
+  std::string _value;
+  Kids _kids;
 };
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the value. Extend formatting with overloads to "to".
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class T > void Node::set ( const T &t )
+{
+  this->set ( Usul::Registry::Convert<T>::to ( t ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the value. Extend formatting with overloads to "from".
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class T > T Node::get() const
+{
+  T v = T();
+  Usul::Registry::Convert<T>::from ( this->_getValue(), v );
+  return v;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class T > Node &Node::operator = ( const T &t )
+{
+  this->set ( t );
+  return *this;
+}
 
 
 } // namespace Registry

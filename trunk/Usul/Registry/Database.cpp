@@ -42,7 +42,6 @@ Database::Database() :
   _root  ( new Node() )
 {
   USUL_TRACE_SCOPE;
-  _root->ref();
 }
 
 
@@ -55,7 +54,7 @@ Database::Database() :
 Database::~Database()
 {
   USUL_TRACE_SCOPE;
-  _root->unref(); _root = 0x0;
+  _root = 0x0;
   delete _mutex;
 }
 
@@ -114,6 +113,8 @@ Database::Mutex &Database::mutex() const
 void Database::clear()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _root->clear();
 }
 
 
@@ -123,7 +124,24 @@ void Database::clear()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Database::accept ( Usul::Registry::Visitor & )
+void Database::accept ( Usul::Registry::Visitor *v )
 {
   USUL_TRACE_SCOPE;
+
+  if ( 0x0 != v )
+  {
+    v->visit ( this );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Operator to return the child with the name. Creates child nodes as needed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Node &Database::operator [] ( const std::string &name )
+{
+  return (*_root)[name];
 }

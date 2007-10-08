@@ -296,15 +296,6 @@ void AnimateComponent::recordPath ( bool record )
   if ( path.valid () )
   {
     path->acceptNewFrames ( record );
-
-    //Usul::Interfaces::IUpdateSubject::QueryPtr us ( Usul::Documents::Manager::instance().activeView () );
-    //Usul::Interfaces::IUpdateListener::QueryPtr ul ( path );
-
-    //if ( us.valid () )
-    //{
-    //  // Add or remove update listener.
-    //  record ? us->addUpdateListener ( ul ) : us->removeUpdateListener ( ul );
-    //}
   }
 }
 

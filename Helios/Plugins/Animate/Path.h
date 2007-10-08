@@ -49,8 +49,10 @@ public:
   /// Start the animation from beginning.
   virtual void      start ( Usul::Interfaces::IUnknown * caller );
 
-  /// Are we animating?
+  /// Get/Set animate flag?
+  void              animating ( bool );
   bool              animating () const;
+  
 
   /// Get/Set flag to accept new frames.
   void              acceptNewFrames ( bool b );
@@ -65,6 +67,7 @@ protected:
   /// (Usul::Interfaces::IUpdateListener).
   virtual void      updateNotify    ( Usul::Interfaces::IUnknown *caller );
 
+private:
   bool                _dirty;
   bool                _acceptNewFrames;
   double              _startTime;

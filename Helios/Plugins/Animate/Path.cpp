@@ -21,7 +21,6 @@
 using namespace Animate;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Path, Path::BaseClass );
-//USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "MatrixPath", Path );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -95,6 +94,19 @@ void Path::start ( Usul::Interfaces::IUnknown * caller )
     Guard guard ( this->mutex () );
     _animating = true;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the animating flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Path::animating ( bool b )
+{
+  Guard guard ( this->mutex () );
+  _animating = b;
 }
 
 

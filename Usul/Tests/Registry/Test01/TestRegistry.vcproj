@@ -181,6 +181,14 @@
 			Name="Files"
 			>
 			<File
+				RelativePath=".\a.xml"
+				>
+			</File>
+			<File
+				RelativePath=".\b.xml"
+				>
+			</File>
+			<File
 				RelativePath=".\trace.csv"
 				>
 			</File>

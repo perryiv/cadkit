@@ -49,6 +49,10 @@ public:
   // Operator to return the node with the name. Creates child nodes as needed.
   Node &                          operator [] ( const std::string &name );
 
+  // Get the root.
+  Node *                          root();
+  const Node *                    root() const;
+
   // Helper class to create and destroy the database.
   struct Life
   {

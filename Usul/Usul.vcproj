@@ -2138,6 +2138,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Scope\PushPop.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Scope\Reset.h"
 					>
 				</File>

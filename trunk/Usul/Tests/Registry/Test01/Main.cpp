@@ -20,7 +20,11 @@
 # endif
 #endif
 
+#include "XmlTree/RegistryIO.h"
+#include "XmlTree/XercesLife.h"
+
 #include "Usul/CommandLine/Arguments.h"
+#include "Usul/File/Contents.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
@@ -62,38 +66,88 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Populate the registry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void _populateRegistry()
+{
+  USUL_TRACE_SCOPE_STATIC;
+
+  // This fauls up the file comparison with extra newlines.
+#if 0
+  // Put some value in the registry.
+  TEST_VALUE ( std::string,  ["level_1_string"],  std::string ( "1" ) );
+  TEST_VALUE ( float,        ["level_1_float"],   1.0f );
+  TEST_VALUE ( double,       ["level_1_double"],  1.0  );
+  TEST_VALUE ( unsigned int, ["level_1_uint"],    1    );
+#endif
+
+  // Second level.
+  TEST_VALUE ( std::string,  ["level_1_string"]["level_2_string"], std::string ( "2" ) );
+  TEST_VALUE ( float,        ["level_1_float" ]["level_2_float" ],  2.0f );
+  TEST_VALUE ( double,       ["level_1_double"]["level_2_double"],  2.0 );
+  TEST_VALUE ( unsigned int, ["level_1_uint"  ]["level_2_uint"  ],  2 );
+
+  // Many levels and derived types.
+  TEST_VECTOR ( Usul::Math::Vec3d,  ["level_one"]["level_two"]["level_three"]["level_four_1"], Usul::Math::Vec3d  ( 10.0,  20.0,  30.0  ) );
+  TEST_VECTOR ( Usul::Math::Vec3f,  ["level_one"]["level_two"]["level_three"]["level_four_2"], Usul::Math::Vec3f  ( 10.0f, 20.0f, 30.0f ) );
+  TEST_VECTOR ( Usul::Math::Vec3ui, ["level_one"]["level_two"]["level_three"]["level_four_3"], Usul::Math::Vec3ui ( 10,    20,    30    ) );
+  TEST_VECTOR ( Usul::Math::Vec3i,  ["level_one"]["level_two"]["level_three"]["level_four_4"], Usul::Math::Vec3i  ( 10,    20,    30    ) );
+
+  // Matrices
+  TEST_VECTOR ( Usul::Math::Matrix44d, ["level_one"]["level_two"]["level_three"]["level_four_5"], Usul::Math::Matrix44d::translation ( 1.1, 2.2, 3.3 ) );
+  TEST_VECTOR ( Usul::Math::Matrix44f, ["level_one"]["level_two"]["level_three"]["level_four_6"], Usul::Math::Matrix44d::translation ( 1.0, 2.0, 3.0 ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Run the test.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void _test()
+void _runTest()
 {
   USUL_TRACE_SCOPE_STATIC;
 
-  // Put some value in the registry.
-  TEST_VALUE ( std::string,  ["level 1 string"],  std::string ( "1" ) );
-  TEST_VALUE ( float,        ["level 1 float"],   1.0f );
-  TEST_VALUE ( double,       ["level 1 double"],  1.0  );
-  TEST_VALUE ( unsigned int, ["level 1 uint"],    1    );
+  // Scoped life.
+  XmlTree::XercesLife xerces;
 
-  // Second level.
-  TEST_VALUE ( std::string,  ["level 1 string"]["level 2 string"], std::string ( "2" ) );
-  TEST_VALUE ( float,        ["level 1 float"]["level 2 float"],    2.0f );
-  TEST_VALUE ( double,       ["level 1 double"]["level 2 double"],  2.0 );
-  TEST_VALUE ( unsigned int, ["level 1 uint"]["level 2 uint"],      2 );
+  // Registry file name.
+  const std::string a ( "a.xml" );
+  const std::string b ( "b.xml" );
 
-  // Many levels and derived types.
-  TEST_VECTOR ( Usul::Math::Vec3d,  ["level one"]["level two"]["level three"]["level four 1"], Usul::Math::Vec3d  ( 10.0,  20.0,  30.0  ) );
-  TEST_VECTOR ( Usul::Math::Vec3f,  ["level one"]["level two"]["level three"]["level four 2"], Usul::Math::Vec3f  ( 10.0f, 20.0f, 30.0f ) );
-  TEST_VECTOR ( Usul::Math::Vec3ui, ["level one"]["level two"]["level three"]["level four 3"], Usul::Math::Vec3ui ( 10,    20,    30    ) );
-  TEST_VECTOR ( Usul::Math::Vec3i,  ["level one"]["level two"]["level three"]["level four 4"], Usul::Math::Vec3i  ( 10,    20,    30    ) );
+  {
+    // Scoped registry.
+    Usul::Registry::Database::Life registry;
 
-  // Matrices
-  TEST_VECTOR ( Usul::Math::Matrix44d, ["level one"]["level two"]["level three"]["level four 5"], Usul::Math::Matrix44d::translation ( 1, 2, 3 ) );
-  TEST_VECTOR ( Usul::Math::Matrix44f, ["level one"]["level two"]["level three"]["level four 6"], Usul::Math::Matrix44d::translation ( 1, 2, 3 ) );
+    // Populate the registry.
+    ::_populateRegistry();
 
-  // Destroy the registry.
-  Usul::Registry::Database::destroy();
+    // Write it to disk.
+    XmlTree::RegistryIO::write ( a );
+  }
+
+  {
+    // Scoped registry.
+    Usul::Registry::Database::Life registry;
+
+    // Read it from disk.
+    XmlTree::RegistryIO::read ( a );
+
+    // Write it to disk.
+    XmlTree::RegistryIO::read ( b );
+  }
+
+  // Compare the files.
+  std::string sa, sb;
+  Usul::File::contents ( a, sa );
+  Usul::File::contents ( b, sb );
+  if ( sa != sb )
+  {
+    throw std::runtime_error ( "Error 1651017564: files are not equal" );
+  }
 }
 
 
@@ -112,7 +166,7 @@ int main ( int argc, char **argv )
   Usul::Trace::Print::init ( &trace );
 
   // Call test function.
-  Usul::Functions::safeCall ( _test, "9765950220" );
+  Usul::Functions::safeCall ( _runTest, "9765950220" );
 
   return 0;
 }

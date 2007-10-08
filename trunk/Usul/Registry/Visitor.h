@@ -44,7 +44,7 @@ public:
   virtual void              visit ( Database * ) = 0;
   virtual void              visit ( Node * ) = 0;
 
-private:
+protected:
 
   // Constructor.
   Visitor();

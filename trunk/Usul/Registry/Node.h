@@ -46,6 +46,8 @@ public:
 
   // Have to declare after the smart-pointer definition.
   typedef std::map < std::string, Node::RefPtr > Kids;
+  typedef Kids::iterator Iterator;
+  typedef Kids::const_iterator ConstIterator;
 
   // Constructor.
   Node();
@@ -53,8 +55,16 @@ public:
   // Accept the visitor.
   void                            accept ( Visitor * );
 
+  // Iterators.
+  Iterator                        begin();
+  ConstIterator                   begin() const;
+
   // Clear the node.
   void                            clear();
+
+  // Iterators.
+  Iterator                        end();
+  ConstIterator                   end() const;
 
   // Get the string value.
   std::string                     get() const;

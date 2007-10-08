@@ -18,7 +18,6 @@
 #include "Usul/Registry/Visitor.h"
 #include "Usul/Trace/Trace.h"
 
-using namespace Usul;
 using namespace Usul::Registry;
 
 
@@ -42,6 +41,7 @@ Database::Database() :
   _root  ( new Node() )
 {
   USUL_TRACE_SCOPE;
+  _root->name ( "registry" );
 }
 
 
@@ -143,5 +143,35 @@ void Database::accept ( Usul::Registry::Visitor *v )
 
 Node &Database::operator [] ( const std::string &name )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   return (*_root)[name];
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the root.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Registry::Node *Database::root()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _root.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the root.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Usul::Registry::Node *Database::root() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _root.get();
 }

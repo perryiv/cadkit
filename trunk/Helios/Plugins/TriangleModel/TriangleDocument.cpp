@@ -164,6 +164,8 @@ Usul::Interfaces::IUnknown *TriangleDocument::queryInterface ( unsigned long iid
     return static_cast < Usul::Interfaces::IMaterials* > ( this );
   case Usul::Interfaces::IDisplaylists::IID:
     return static_cast < Usul::Interfaces::IDisplaylists* > ( this );
+    case Usul::Interfaces::ILoadColorFile::IID:
+    return static_cast < Usul::Interfaces::ILoadColorFile* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -1009,4 +1011,16 @@ bool TriangleDocument::displayList () const
 void TriangleDocument::displayList ( bool use )
 {
   _triangles->displayList( use );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Load a color file into a triangle set
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void TriangleDocument::loadColorFile( const std::string &filename, const HeaderInfo& header )
+{
+  _triangles->loadColorFile( filename, header );
 }

@@ -23,6 +23,7 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/Console/Feedback.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/File/Path.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Trace/Trace.h"
@@ -40,7 +41,7 @@ public:
   Program( const std::string& program = "VRV" ) : 
     _trace ( 0x0 )
   {
-    std::string filename ( Usul::System::Host::name() + "_trace.csv" );
+    std::string filename ( Usul::File::fullPath ( Usul::System::Host::name() + "_trace.csv" ) );
     _trace = new std::ofstream ( filename.c_str() );
 
     // Set the vendor and program.

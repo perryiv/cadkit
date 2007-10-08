@@ -57,7 +57,7 @@ void PointTimeLayer::buildGeometry()
 		case 1:
 		{
 			osg::ref_ptr< osg::Geode > geode( new osg::Geode() );
-      OsgTools::ShapeFactory::MeshSize size ( 20, 20 );
+      OsgTools::ShapeFactory::MeshSize size ( 10, 10 );
       osg::ref_ptr < osg::Geometry > geometry ( OsgTools::ShapeFactorySingleton::instance().sphere ( this->renderSize(), size ) );
 
       geode->addDrawable( geometry.get() );

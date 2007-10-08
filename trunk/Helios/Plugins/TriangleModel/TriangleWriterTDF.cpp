@@ -58,6 +58,7 @@ TriangleWriterTDF::~TriangleWriterTDF()
 
 #define WRITE_SCALAR(exp) Usul::IO::WriteLittleEndian::write  ( file.stream(), (exp) )
 #define WRITE_VEC3(exp)   Usul::IO::WriteLittleEndian::write3 ( file.stream(), (exp) )
+#define WRITE_VEC4(exp)   Usul::IO::WriteLittleEndian::write4 ( file.stream(), (exp) )
 #define WRITE_STRING(exp) file.stream().write ( (exp).c_str(), (exp).length() )
 
 
@@ -232,9 +233,9 @@ void TriangleWriterTDF::operator()()
       WRITE_SCALAR ( numColors );
       WRITE_SCALAR ( floatSize  );
 
-      for ( osg::Vec3Array::size_type i = 0; i < numColors; ++i )
+      for ( osg::Vec4Array::size_type i = 0; i < numColors; ++i )
       {
-        WRITE_VEC3 ( colors[i] );
+        WRITE_VEC4 ( colors[i] );
         _document->setProgressBar ( update(), count++, total, _caller );
       }
     }

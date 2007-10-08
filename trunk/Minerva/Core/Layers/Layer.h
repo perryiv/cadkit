@@ -293,7 +293,7 @@ osg::Vec4 Layer::_color ( const T& iter )
     {
       std::string column ( this->colorColumn() );
       double fieldValue = iter[ column.c_str() ].as( static_cast < double > ( 0 ) );
-      color = (*this->colorFunctor())(fieldValue);
+      color = ( *this->colorFunctor() ) ( fieldValue );
     }
     else
     {

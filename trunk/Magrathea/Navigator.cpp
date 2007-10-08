@@ -12,10 +12,17 @@
 
 #include "Usul/Math/MinMax.h"
 #include "Usul/Math/UMath.h"
+#include "Usul/Math/Angle.h"
 
 #include "osgUtil/IntersectVisitor"
 
 #include "ossimPlanet/ossimPlanetLand.h"
+
+#ifdef _MSC_VER 
+# ifdef _DEBUG
+#  include <windows.h>
+# endif
+#endif
 
 using namespace Magrathea;
 
@@ -39,8 +46,16 @@ _pitchSpeed ( 0.5 ),
 _yawSpeed ( 20 ),
 _landModel ( 0x0 ),
 _primary ( primary ),
-_planet ( 0x0 )
+_planet ( 0x0 ),
+_compass ( new OsgTools::Builders::Compass )
 {
+  //_compass->setPositionByPercentage( 0.5f, 0.5f );
+   //_compass->setRotateByViewMatrix( false );
+  //_compass->setTextureFilename("C:/Jeff/src/DT/bin/icons/big_compass_1.tga");
+  //_compass->updateCompass();
+ 
+  
+  
 }
 
 
@@ -72,6 +87,12 @@ void Navigator::setLatLonHeight(double lat, double lon, double height)
   _zoom = Usul::Math::clamp ( -( 1.0 + ( height / _primary->radius ( _lat ) ) ), _zoomMin, _zoomMax );
   _hpr.x() = 0;
   _hpr.y() = 0;
+  //_compass->setHeadingRelativeToNorth( osg::Vec2( 90.0f , 90.0f ) , osg::Vec2( _lon , _lat ) );
+  //_compass->setHeading( _compass->getHeading() );
+  //_compass->setHeading( _compass->getHeading() + _hpr.x() );
+  //_compass->setPitch( _hpr.y() );
+
+ // _compass->updateCompass();
 }
 
 
@@ -157,6 +178,7 @@ void Navigator::home()
   _hpr.set(0.0, 0.0, 0.0);
   _lat = 0.0;
   _lon = -90.0;
+  //_planet->addChild( _compass->getCompass() );
 }
 
 
@@ -207,7 +229,81 @@ void Navigator::rotate ( const osg::Vec3f& point0, const osg::Vec3f& point1 )
     _lon = Detail::wrap( _lon + 180.0, _primary->minLon(), _primary->maxLon());
 
     _hpr.x() = Detail::wrap( _hpr.x() + 180.0, -180.0, 180.0 );
+
+ 
   }
+//  osg::Matrixd orient ( this->viewMatrix() );
+//  osg::Quat quat ( orient.getRotate() );
+//
+//  //quat.set( 0.0f, 0.0f, quat.z(), quat.w() );
+//  double degrot;
+//  osg::Vec3f vec;
+//  quat.getRotate( degrot, vec );
+//  _compass->setHeadingRelativeToNorth( osg::Vec2( 0.0f , 90.0f ) , osg::Vec2( _lon , _lat ) );
+//  
+//  
+//
+//  osg::EllipsoidModel model (1.0, _primary->polarRadius() / _primary->equatorialRadius() );
+//   
+//  double nx, ny, nz, px, py, pz;
+//
+//  model.convertLatLongHeightToXYZ( osg::DegreesToRadians ( 90.0f ),
+//                                   osg::DegreesToRadians ( 0.0f),
+//                                   0,
+//                                   nx,ny,nz);
+//
+//  model.convertLatLongHeightToXYZ( osg::DegreesToRadians ( _lat ),
+//                                   osg::DegreesToRadians ( _lon),
+//                                   0,
+//                                   px,py,pz);
+//  
+//  osg::Vec3 north    ( 0.0, 0.0, 1.0 );
+//  osg::Vec3 position ( px, py, pz );
+//
+//  float PdotN = position * north;
+//  float NdotN = north * north;
+//
+//  osg::Vec3 directionToNorth ( north -  ( position * PdotN ) );
+//  directionToNorth.y() = 0;
+//  directionToNorth.normalize();
+//
+//  //osg::Vec3 w1 ( ( directionToNorth * PdotN ) / NdotN );
+//  //osg::Vec3 w2 ( directionToNorth - w1 );
+//  
+//  //float rotation (atan2( w1, w2 ) );
+//  osg::Vec3 directionHeading( ( sin( _hpr.x() ) * cos( _hpr.y() ) ),
+//                              ( sin( _hpr.x() ) * sin( _hpr.y() ) ),
+//                              ( cos( _hpr.x() ) ) );
+//  directionHeading.y() = 0;
+//  directionHeading.normalize();
+//
+//  //double rotation ( osg::RadiansToDegrees ( Usul::Math::Angle < double, 3 >::get ( directionHeading , directionToNorth ) ) );
+//  float rotation ( osg::RadiansToDegrees( acos( directionHeading * directionToNorth ) ) );
+//  //float correction = osg::RadiansToDegrees( atan ( ( vec.x() * float( degrot ) ) / ( vec.z() * float( degrot ) ) ) );
+//  //float rotation = osg::RadiansToDegrees( atan ( (  ( 1 - pz ) / ( - px ) ) ) ); 
+//  //_compass->setHeading( _compass->getHeading() - osg::RadiansToDegrees( float( rotation ) ) );
+//
+//  /*if( _lon < -90 )
+//    _compass->setHeading( -rotation  );
+//  else*/
+//    _compass->setHeading( rotation  );
+//
+//#ifdef _MSC_VER
+//# ifdef _DEBUG
+//  std::ostringstream os;
+//  os << "To North: " << directionToNorth.x() << " " << directionToNorth.y() << " " << directionToNorth.z() << " "
+////    << "Heading: " << directionHeading.x() << " " << directionHeading.y() << " " << directionHeading.z() << " "
+//    << "Lat/Lon: "  << _lat << " " << _lon << " "
+//     << "Heading/Pitch: " << _hpr.x() << " " << _hpr.y() << " "
+//     << "Rotation: " << rotation << std::endl;
+//  ::OutputDebugStringA ( os.str().c_str() ); 
+//# endif
+//#endif
+//
+//  //_compass->setHeading( _compass->getHeading() + ( dx * 180.0f / osg::PI ) );
+//  //_compass->setPitch( _hpr.y() );
+//
+//  _compass->updateCompass();
 }
 
 
@@ -355,9 +451,16 @@ void Navigator::look ( const osg::Vec3f& point0, const osg::Vec3f& point1 )
 
   double heading ( Detail::wrap < float > ( _hpr.x() - dx * yawSpeed, -180.0f, 180.0f ) );
   _hpr.x() = heading;
+ 
 
   double pitch ( Usul::Math::clamp ( _hpr.y() - dy * pitchSpeed, 0.0, osg::DegreesToRadians ( 90.0 ) ) );
   _hpr.y() = pitch;
+
+  //rotate compass
+  // _compass->setHeading( _compass->getHeading() + _hpr.x() );
+  //_compass->setPitch( _hpr.y() );
+
+  //_compass->updateCompass();
 }
 
 

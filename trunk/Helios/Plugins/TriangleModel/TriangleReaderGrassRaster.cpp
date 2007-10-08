@@ -1,6 +1,7 @@
 #include "TriangleReaderGrassRaster.h"
 
 #include "Usul/File/Stats.h"
+#include "Usul/File/Path.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector2.h"
@@ -11,14 +12,17 @@
 #include "Usul/Strings/Case.h"
 #include "Usul/Types/Types.h"
 #include "Usul/Predicates/FileExists.h"
+
 #include "osgDB/ReadFile"
-
-
 
 #include <algorithm>
 #include <fstream>
 #include <stdexcept>
 #include <vector>
+
+const int GRASS_RASTER_FORMAT_FLOAT ( -1 );
+const int GRASS_RASTER_FORMAT_8Bit_INT ( 0 );
+const int GRASS_RASTER_FORMAT_16Bit_INT ( 1 );
 
 //USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( TriangleReaderGrassRaster, TriangleReaderGrassRaster::BaseClass );
 
@@ -158,6 +162,7 @@ osg::Node* TriangleReaderGrassRaster::buildScene()
 void TriangleReaderGrassRaster::operator()()
 {
   USUL_TRACE_SCOPE;
+
   // Clear accumulated state.
   this->clear();
 
@@ -168,7 +173,16 @@ void TriangleReaderGrassRaster::operator()()
   this->_read();
 
   // Load the texture file
-  this->_loadTexture( _textureFilename, _caller );
+  this->_loadTexture ( _textureFilename, _caller );
+
+  // Display stats of the triangle set
+  this->_stats();
+
+  // testing...
+#if 1
+  const std::string name ( Usul::File::fullPath ( "testwrite.tdf" ) );
+  _document->write ( name );
+#endif
 }
 
 
@@ -348,9 +362,10 @@ void TriangleReaderGrassRaster::_read()
   std::ifstream in;
   std::string filename = "";
   in.rdbuf()->pubsetbuf ( buffer, bufSize );
-  if( _header.format == -1 )
+  if( _header.format == ::GRASS_RASTER_FORMAT_FLOAT )
     filename = _dir + "fcell/" + _file.first;
-  if( _header.format == 1 || _header.format == 0 )
+  if( _header.format == ::GRASS_RASTER_FORMAT_16Bit_INT ||
+      _header.format == ::GRASS_RASTER_FORMAT_8Bit_INT  )
     filename = _dir + "cell/" + _file.first;
 
   in.open ( filename.c_str(), std::ios::in | std::ios::binary );
@@ -363,7 +378,7 @@ void TriangleReaderGrassRaster::_read()
 
   
   // Floating point raster files
-  if( _header.format == -1 )
+  if( _header.format == ::GRASS_RASTER_FORMAT_FLOAT )
   {
     FloatVec vertices ( numPoints, 0 );
 
@@ -378,7 +393,7 @@ void TriangleReaderGrassRaster::_read()
   }
 
   // 1 Byte Integer raster files
-  if( _header.format == 8 )
+  if( _header.format == ::GRASS_RASTER_FORMAT_8Bit_INT )
   {
     Int8Vec vertices ( numPoints, 0 );
 
@@ -390,7 +405,7 @@ void TriangleReaderGrassRaster::_read()
   }
   
   // 2 Byte Integer raster files
-  if( _header.format == 1 )
+  if( _header.format == ::GRASS_RASTER_FORMAT_16Bit_INT )
   {
     Int16Vec vertices ( numPoints, 0 );
 
@@ -426,7 +441,7 @@ void TriangleReaderGrassRaster::_read()
 void TriangleReaderGrassRaster::_incrementProgress ( bool state, float i, float num )
 {
   USUL_TRACE_SCOPE;
-  std::cout << "Percent Complete: " << i << "/" << num << "( " <<  ( i / num ) * 100 << " )\r" << std::flush;
+ // std::cout << "Percent Complete: " << i << "/" << num << "( " <<  ( i / num ) * 100 << " )\r" << std::flush;
   unsigned int &numerator   ( _progress.first  );
   unsigned int &denominator ( _progress.second );
   _document->setProgressBar ( state, numerator, denominator, _caller );
@@ -550,80 +565,35 @@ template < class VectorType > void TriangleReaderGrassRaster::_makeTriangleDocum
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool TriangleReaderGrassRaster::_loadTexture ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
+void TriangleReaderGrassRaster::_loadTexture ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
 {
-  std::cout << "Loading texture: " << filename << std::endl;
-  if( 0x0 == _document )
-  {
-    USUL_ASSERT ( false );
-    std::cout << "Invalid Document!" << std::endl;
-    return false;
-  }
-  #ifdef _MSC_VER
-    std::string file ( filename );
-  #else
-    std::string slash ( Usul::File::slash() );
-    std::string file ( _document->dir() + slash + filename );
-  #endif
-  if( Usul::Predicates::FileExists::test ( file ) )
-  {
-   
-    // Get color array
-    Usul::Interfaces::IColorsPerVertex::QueryPtr colorsV ( _document );
-    osg::ref_ptr< osg::Vec4Array > colors = colorsV->getColorsV ( true );
+  // Get interface to triangle set for loading a color file
+  Usul::Interfaces::ILoadColorFile::QueryPtr colorFile ( _document );
 
-    // Get vertices
-    Usul::Interfaces::IVertices::QueryPtr vertices ( _document );
-    osg::ref_ptr< osg::Vec3Array > v = vertices->vertices();
+  // Create header vector from header information
+  std::vector< float > header ( 0 );
 
-    // make sure the number of colors is correct.
-    colors->resize ( v->size() );
-
-    // load the image
-    osg::ref_ptr< osg::Image > tex ( new osg::Image );
-    tex = osgDB::readImageFile( file );
-    // Initialize local vaiables.
-    Usul::Math::Vec2ui gridSize ( _header.rows + 1 , _header.cols +1 );
-    Usul::Math::Vec2d ll ( _header.west, _header.south );
-    float cellSize ( _header.ns_resol );
-    
-    std::cout << "Reading texture image file: " << file << std::endl;
-   
-    for( unsigned int i = 0; i < v->size(); ++i )
-    {
-      // get the current grid location of the point at index i
-      float vi = v->at(i)[0] - ll[1];
-      float vj = v->at(i)[1] - ll[0];
-      float rsize = ( float ( gridSize[0] ) * cellSize ) - 1;
-      float csize = ( float ( gridSize[1] ) * cellSize ) - 1;
-      
-      // get the color information from the image for the point at index i
-      unsigned int pixelRow = static_cast < unsigned int >( ( rsize - vi ) / cellSize );
-      unsigned int pixelCol = static_cast < unsigned int >( vj / cellSize );
-      unsigned char * pixel = tex->data(  pixelCol, pixelRow  );
-
-      // get the color values to use
-      osg::Vec4f pixelColor ( 0, 0, 0, 1 );
-      pixelColor[0] = static_cast< float > ( pixel[0] ) / 255.0f ;
-      pixelColor[1] = static_cast< float > ( pixel[1] ) / 255.0f ;
-      pixelColor[2] = static_cast< float > ( pixel[2] ) / 255.0f ;
+  header.push_back( _header.rows );
+  header.push_back( _header.cols );
+  header.push_back( _header.west );
+  header.push_back( _header.south );
+  header.push_back( _header.ns_resol );
   
-      // set the color for the point at index i
-      colors->at(i) = pixelColor;
-    }
+  colorFile->loadColorFile( filename, header );
 
-    // The colors are not dirty.
-    colorsV->dirtyColorsV ( false );
+     
+}
 
-    std::cout << "\nTexture file reading complete!" << std::endl;
 
-    return true;
-    }
-  else
-  {
-    std::cout << "Unable to load image file:" << file << ".  File does not exist!" << std::endl;
-    return false;
-  }
+///////////////////////////////////////////////////////////////////////////////
+//
+//
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleReaderGrassRaster::_stats()
+{
+  std::cout << "Number of triangles in the model: " << _document->numTriangles() << std::endl;
 }
 
 

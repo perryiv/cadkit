@@ -30,7 +30,7 @@ class OSG_TOOLS_EXPORT Compass : public osg::Referenced
 public:
 
 	Compass ( );
-	virtual ~Compass ( );
+	
 	
 	void setTextureFilename ( const std::string& fn );
 	osg::Node* getCompass ( );
@@ -62,6 +62,8 @@ public:
 	void updateCompass ( );
 
 protected:
+
+  virtual ~Compass ( );
 
 	osg::Node* _buildCompassObject ( );
 	osg::MatrixTransform*  _initCompass ( osg::Node* geode );

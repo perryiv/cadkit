@@ -47,6 +47,7 @@
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Interfaces/IColorsPerVertex.h"
 #include "Usul/Interfaces/IMemoryPool.h"
+#include "Usul/Interfaces/ILoadColorFile.h"
 
 #include "Usul/Types/Types.h"
 
@@ -82,7 +83,8 @@ class TriangleDocument : public Usul::Documents::Document,
                          public Usul::Interfaces::IColorsPerVertex,
                          public Usul::Interfaces::IMemoryPool,
                          public Usul::Interfaces::IMaterials,
-                         public Usul::Interfaces::IDisplaylists
+                         public Usul::Interfaces::IDisplaylists,
+                         public Usul::Interfaces::ILoadColorFile
 {
 public:
 
@@ -156,6 +158,10 @@ public:
 
   // Usul::Interfaces::IFindLoops
   virtual void                findLoops ( Usul::Interfaces::IUnknown* caller );
+
+  // Usul::Interfaces::ILoadColorFile
+  virtual void               loadColorFile( const std::string &filename, const HeaderInfo& header );
+
 
   /// Flip the normals.
   virtual void                flipNormalVectors();

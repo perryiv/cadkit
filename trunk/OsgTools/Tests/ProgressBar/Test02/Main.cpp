@@ -84,7 +84,7 @@ void _test()
   // The pool size.
   const unsigned int size ( ( args.size() > 2 && false == args[2].empty() ) ? 
                             ( static_cast < unsigned int > ( Usul::Math::absolute ( ::atoi ( args[2].c_str() ) ) ) ) : 
-                            ( 10 ) );
+                            ( 5 ) );
                             std::cout << "Pool size: " << size << std::endl;
 
   // Fill random number vector now. Calling rand() in the child threads is unreliable.

@@ -31,6 +31,7 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Interfaces/ILoadColorFile.h"
 #include "Usul/Predicates/CloseFloat.h"
 #include "Usul/Predicates/LessVector.h"
 #include "Usul/Types/Types.h"
@@ -89,6 +90,8 @@ public:
   typedef std::vector< unsigned int > Connected;
   typedef std::vector < Connected > Subsets;
   typedef osg::ref_ptr< osg::Group > GroupPtr;
+  //typedef ILoadColorFile::HeaderInfo HeaderInfo;
+  typedef std::vector< float > HeaderInfo;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( TriangleSet );
@@ -290,6 +293,9 @@ public:
   // Get the normal of the i'th vertex.
   const osg::Vec3f &      vertexNormal ( unsigned int ) const;
 
+  void                    loadColorFile( const std::string &filename, const HeaderInfo& header );
+
+
 protected:
 
   // Do not copy.
@@ -316,6 +322,7 @@ protected:
   void                    _updateColorV  ( SharedVertex *sv );
   void                    _updateNormalV ( SharedVertex *sv );
 
+  
 private:
 
   // Possible dirty flags.

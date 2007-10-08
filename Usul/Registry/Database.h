@@ -16,11 +16,7 @@
 #ifndef _USUL_REGISTRY_DATABASE_CLASS_H_
 #define _USUL_REGISTRY_DATABASE_CLASS_H_
 
-#include "Usul/Export/Export.h"
-#include "Usul/Threads/RecursiveMutex.h"
-#include "Usul/Threads/Guard.h"
-
-namespace Usul { namespace Registry { class Visitor; class Node; } }
+#include "Usul/Registry/Node.h"
 
 
 namespace Usul {
@@ -35,20 +31,23 @@ public:
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
 
+  // Accept the visitor.
+  void                            accept ( Visitor * );
+
   // Clear the database.
-  void                      clear();
+  void                            clear();
 
   // Destroy the single instance.
-  static void               destroy();
+  static void                     destroy();
 
   // Return the single instance.
-  static Database &         instance();
+  static Database &               instance();
 
   // Get the mutex.
-  Mutex &                   mutex() const;
+  Mutex &                         mutex() const;
 
-  // Accept the visitor.
-  void                      accept ( Visitor & );
+  // Operator to return the node with the name. Creates child nodes as needed.
+  Node &                          operator [] ( const std::string &name );
 
   // Helper class to create and destroy the database.
   struct Life
@@ -69,7 +68,7 @@ private:
 
   static Database *_instance;
   mutable Mutex *_mutex;
-  Node *_root;
+  Node::RefPtr _root;
 };
 
 

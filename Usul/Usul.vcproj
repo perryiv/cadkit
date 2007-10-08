@@ -1672,6 +1672,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Math\StringConvert.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Math\Transpose.h"
 					>
 				</File>
@@ -2529,6 +2533,10 @@
 				>
 				<File
 					RelativePath=".\Registry\Constants.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Registry\Convert.h"
 					>
 				</File>
 				<File

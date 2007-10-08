@@ -11,10 +11,10 @@ ADD_DEFINITIONS ("-D_COMPILING_ANIMATE")
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${HELIOS_INCLUDE_DIR}" 
+INCLUDE_DIRECTORIES( 
 	"${PROJECT_SOURCE_DIR}/../" 
-	"${FOXTOOLKIT_INCLUDE}" 
-	"${GENERIC_NURBS_INCLUDE_DIR}" 
+  "${CADKIT_ROOT_DIR}/GenericNurbs"
+  ${OSG_INC_DIR}
 )
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )

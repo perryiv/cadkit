@@ -38,6 +38,7 @@
 #include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
+#include "Usul/System/Host.h"
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
@@ -75,7 +76,7 @@ _minDate ( boost::date_time::min_date_time ),
 _maxDate ( boost::date_time::max_date_time ),
 _lastDate ( boost::date_time::min_date_time ),
 _lastTime ( -1.0 ),
-_animationSpeed ( 0.5f ),
+_animationSpeed ( 0.1f ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
   // Initialize the planet.
@@ -89,7 +90,20 @@ SERIALIZE_XML_INITIALIZER_LIST
   SERIALIZE_XML_ADD_MEMBER ( _sessionName );
   SERIALIZE_XML_ADD_MEMBER ( _connection );
 
+#ifndef _MSC_VER
+  //this->elevationEnabled ( false );
   this->showLegend ( false );
+
+    
+  if( Usul::System::Host::name() == "viz2" )
+  {
+    this->showLegend ( true );
+    this->sceneManager()->legendWidth ( 0.75 );
+    this->sceneManager()->legendPadding ( osg::Vec2 ( 20.0, 40.0 ) );
+    this->sceneManager()->legendHeightPerItem ( 60 );
+    this->sceneManager()->legendPosition( Minerva::Core::Scene::SceneManager::LEGEND_TOP_LEFT );
+  }
+#endif
 }
 
 
@@ -138,8 +152,6 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Minerva::Interfaces::IDirtyScene * > ( this );
   case Usul::Interfaces::ILayerList::IID:
     return static_cast < Usul::Interfaces::ILayerList * > ( this );
-  case Usul::Interfaces::ICommandList::IID:
-    return static_cast < Usul::Interfaces::ICommandList * > ( this );
   case Usul::Interfaces::IMenuAdd::IID:
     return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
   case Usul::Interfaces::ICommandExecuteListener::IID:
@@ -1287,10 +1299,13 @@ namespace Detail
     typedef Usul::Jobs::Job BaseClass;
 
     CheckForCommands ( Usul::Interfaces::IUnknown* caller, CommandReceiver *receiver ) : 
-      BaseClass ( caller ),
+      BaseClass ( caller, false ),
       _caller ( caller ),
       _receiver ( receiver )
     {
+      Usul::Interfaces::IProgressBar::QueryPtr pb ( this->progress () );
+      if ( pb.valid () )
+        pb->hideProgressBar ();
     }
   protected:
 
@@ -1501,6 +1516,7 @@ Magrathea::Planet* MinervaDocument::planet ()
 
 void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
 {
+  //std::cout << "Animate: " << ( _animateSettings->animate () ? "YES" : "NO" ) << std::endl;
   bool datesDirty ( false );
   {
     Guard guard ( this->mutex () );
@@ -1540,8 +1556,10 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
 
         Minerva::Core::Animate::Date lastDate ( _lastDate );
 
+        std::cout << "Time: " << time << " Duration: " << duration << " Speed: " << _animationSpeed <<  std::endl;
+
         // Animate if we should.
-        if ( duration > _animationSpeed )
+        if ( duration > 0.1f /*_animationSpeed*/ )
         {
           if( _animateSettings->timestepType() == Settings::DAY )
             lastDate.incrementDay();
@@ -1623,25 +1641,6 @@ Usul::Interfaces::ILayer* MinervaDocument::layer ( unsigned int i )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
   return _layers.at ( i );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the command list for the document.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-MinervaDocument::CommandList  MinervaDocument::getCommandList ()
-{
-  CommandList commands;
-
-  Usul::Interfaces::IUnknown::QueryPtr me ( this );
-
-  commands.push_back ( new Minerva::Core::Commands::StartAnimation ( me ) );
-  commands.push_back ( new Minerva::Core::Commands::StopAnimation ( me ) );
-
-  return commands;
 }
 
 

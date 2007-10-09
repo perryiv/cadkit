@@ -69,6 +69,8 @@ SET (SOURCES
 ./Commands/PauseAnimation.cpp
 ./Commands/AddLayer.cpp
 ./Commands/StopAnimation.cpp
+./Commands/ToggleShown.cpp
+./Commands/ShowPastEvents.cpp 
 ./Animate/Date.cpp
 ./Animate/Settings.cpp
 ./Visitors/TemporalAnimation.cpp

@@ -551,6 +551,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Commands\ShowPastEvents.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\ShowPastEvents.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Commands\StartAnimation.cpp"
 						>
 					</File>
@@ -564,6 +572,14 @@
 					</File>
 					<File
 						RelativePath=".\Commands\StopAnimation.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\ToggleShown.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\ToggleShown.h"
 						>
 					</File>
 				</Filter>

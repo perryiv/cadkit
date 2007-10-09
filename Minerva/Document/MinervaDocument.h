@@ -213,6 +213,10 @@ public:
   virtual void                             animateSpeed ( double speed );
   virtual double                           animateSpeed () const;
 
+  /// Get/Set the show past events flag (Minerva::Interfaces::IAnimationControl).
+  virtual void                             showPastEvents ( bool );
+  virtual bool                             showPastEvents () const;
+
   /// Have visitor visit all layes.
   void                                     accept ( Minerva::Core::Visitor& visitor );
 protected:

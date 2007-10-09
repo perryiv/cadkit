@@ -20,6 +20,8 @@
 #include "Minerva/Core/Commands/RemoveLayer.h"
 #include "Minerva/Core/Commands/ShowLayer.h"
 #include "Minerva/Core/Commands/HideLayer.h"
+#include "Minerva/Core/Commands/ToggleShown.h"
+#include "Minerva/Core/Commands/ShowPastEvents.h"
 #include "Minerva/Core/Visitors/TemporalAnimation.h"
 #include "Minerva/Core/Visitors/FindMinMaxDates.h"
 
@@ -39,6 +41,7 @@
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
+#include "MenuKit/ToggleButton.h"
 
 using namespace Minerva::Document;
 
@@ -85,6 +88,8 @@ SERIALIZE_XML_INITIALIZER_LIST
   SERIALIZE_XML_ADD_MEMBER ( _commandsReceive );
   SERIALIZE_XML_ADD_MEMBER ( _sessionName );
   SERIALIZE_XML_ADD_MEMBER ( _connection );
+
+  this->showLegend ( false );
 }
 
 
@@ -1193,6 +1198,32 @@ double MinervaDocument::animateSpeed () const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Show past events.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::showPastEvents ( bool b )
+{
+  Guard guard ( this->mutex () );
+  _animateSettings->showPastDays( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show past events.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::showPastEvents () const
+{
+  Guard guard ( this->mutex () );
+  return _animateSettings->showPastDays( );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Notification that a renderer is about to render.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1622,13 +1653,23 @@ MinervaDocument::CommandList  MinervaDocument::getCommandList ()
 
 void MinervaDocument::menuAdd ( MenuKit::Menu& menu )
 {
-  MenuKit::Menu::RefPtr m ( new MenuKit::Menu );
-  m->name ( "Minerva" );
+  typedef MenuKit::ToggleButton ToggleButton;
+  typedef MenuKit::Button       Button;
+
+  MenuKit::Menu::RefPtr m ( new MenuKit::Menu ( "Minerva" ) );
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
-  m->append ( new MenuKit::Button ( new Minerva::Core::Commands::StartAnimation ( me ) ) );
-  m->append ( new MenuKit::Button ( new Minerva::Core::Commands::StopAnimation  ( me ) ) );
+  m->append ( new Button       ( new Minerva::Core::Commands::StartAnimation ( me ) ) );
+  m->append ( new Button       ( new Minerva::Core::Commands::StopAnimation  ( me ) ) );
+  m->append ( new ToggleButton ( new Minerva::Core::Commands::ShowPastEvents ( me ) ) );
+
+  {
+    MenuKit::Menu::RefPtr layerMenu ( new MenuKit::Menu ( "Layers", MenuKit::Menu::VERTICAL ) );
+    for ( Layers::iterator iter = _layers.begin(); iter != _layers.end (); ++ iter )
+      layerMenu->append ( new ToggleButton ( new Minerva::Core::Commands::ToggleShown ( *iter ) ) );
+    m->append ( layerMenu.get() );
+  }
 
   menu.append ( m );
 }

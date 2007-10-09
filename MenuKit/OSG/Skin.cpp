@@ -15,6 +15,7 @@
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
+#include "MenuKit/Separator.h"
 
 #include "osg/MatrixTransform"
 #include "osg/Group"
@@ -160,15 +161,15 @@ private:
 
 osg::Node* Skin::create(const MenuKit::Item* itm)
 {
-  osg::Node* scene;
+  osg::Node* scene ( 0x0 );
   const MenuKit::Button* b = dynamic_cast<const MenuKit::Button*>( itm );
   if( b )
   {
-    if( b->separator() )
-      scene = this->create_separator(b);
-    else
-      scene = this->create_button(b);
+    scene = this->create_button(b);
   }
+
+  if( itm && itm->separator() )
+    scene = this->create_separator( itm );
 
   const MenuKit::Menu* m = dynamic_cast<const MenuKit::Menu*>( itm );
   if( m )
@@ -314,7 +315,7 @@ osg::Node* Skin::create_button(const Button* button)
   return group.release();
 }
 
-osg::Node* Skin::create_separator(const MenuKit::Button* button)
+osg::Node* Skin::create_separator(const MenuKit::Item* button)
 {
   BackgroundBox box(0.1*(this->height()),(this->width()));
   box.color( (this->_properBackgroundColor()) );
@@ -488,3 +489,4 @@ osg::Drawable* Disk::operator() ()
 }
 
 //--- end of helper implementation ---//
+

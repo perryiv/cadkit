@@ -67,7 +67,7 @@ namespace MenuKit
       virtual osg::Node* create(const MenuKit::Item*);
       virtual osg::Node* create_button(const MenuKit::Button*);
       virtual osg::Node* create_menu(const MenuKit::Menu*);
-      virtual osg::Node* create_separator(const MenuKit::Button*);
+      virtual osg::Node* create_separator(const MenuKit::Item*);
 
       // returns the graphical height/width for the skin of the Item
       float graphic_height(const Item*);

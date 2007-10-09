@@ -29,7 +29,7 @@ using namespace Usul::Jobs;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Job::Job ( Usul::Interfaces::IUnknown *caller ) : BaseClass(),
+Job::Job ( Usul::Interfaces::IUnknown *caller, bool showProgressBar ) : BaseClass(),
   _id          ( 0 ),
   _cancelledCB ( 0x0 ),
   _errorCB     ( 0x0 ),
@@ -54,6 +54,9 @@ Job::Job ( Usul::Interfaces::IUnknown *caller ) : BaseClass(),
     Usul::Interfaces::IUnknown::QueryPtr unknown ( factory->createProgressBar() );
     _progress = unknown.get();
     _label = unknown.get();
+
+    if ( _progress.valid () && showProgressBar )
+      _progress->showProgressBar ();
   }
 }
 
@@ -86,6 +89,9 @@ void Job::_destroy()
   _finishedCB  = 0x0;
   _startedCB   = 0x0;
   _thread      = 0x0;
+
+  if ( _progress.valid () )
+    _progress->hideProgressBar ();
 }
 
 

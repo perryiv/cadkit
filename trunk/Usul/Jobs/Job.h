@@ -67,7 +67,7 @@ public:
 protected:
 
   // Constructors
-  Job ( Usul::Interfaces::IUnknown* caller = 0x0 );
+  Job ( Usul::Interfaces::IUnknown* caller = 0x0, bool showProgressBar = true  );
 
   // Use reference counting.
   virtual ~Job();

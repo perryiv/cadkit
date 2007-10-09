@@ -12,6 +12,7 @@
 #include "Minerva/Interfaces/IAnimationControl.h"
 
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/Documents/Manager.h"
 
 using namespace Minerva::Core::Commands;
 
@@ -58,6 +59,23 @@ AnimationSpeed::~AnimationSpeed()
 }
 
 
+namespace Detail
+{
+  bool tryAnimationSpeedChange ( Usul::Interfaces::IUnknown *caller, bool speed )
+  {
+    Minerva::Interfaces::IAnimationControl::QueryPtr control ( caller );
+
+    if ( control.valid() )
+    {
+      control->animateSpeed ( speed );
+      return true;
+    }
+
+    return false;
+  }
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Execute command.
@@ -66,10 +84,8 @@ AnimationSpeed::~AnimationSpeed()
 
 void AnimationSpeed::_execute ()
 {
-  Minerva::Interfaces::IAnimationControl::QueryPtr control ( this->caller() );
-
-  if ( control.valid() )
-    control->animateSpeed ( _speed );
+  if ( false == Detail::tryAnimationSpeedChange ( this->caller (), _speed ) )
+    Detail::tryAnimationSpeedChange ( Usul::Documents::Manager::instance().activeDocument (), _speed );
 }
 
 

@@ -44,7 +44,7 @@ public:
 
   // Construction.
   Menu();
-  Menu ( const std::string &name, Layout layout );
+  Menu ( const std::string &name, Layout layout = VERTICAL );
   Menu ( const Menu & );
 
   // Assignment.

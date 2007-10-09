@@ -867,8 +867,7 @@ void WRFDocument::menuAdd ( MenuKit::Menu& menu )
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   // Make the menu.
-  MenuKit::Menu::RefPtr wrf ( new MenuKit::Menu );
-  wrf->name ( "WRF" );
+  MenuKit::Menu::RefPtr wrf ( new MenuKit::Menu ( "WRF" ) );
   
   wrf->append ( new MenuKit::Button ( new NextTimestep ( this ) ) );
   wrf->append ( new MenuKit::Button ( new PreviousTimestep ( this ) ) );

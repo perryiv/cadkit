@@ -61,7 +61,7 @@ AnimationSpeed::~AnimationSpeed()
 
 namespace Detail
 {
-  bool tryAnimationSpeedChange ( Usul::Interfaces::IUnknown *caller, bool speed )
+  bool tryAnimationSpeedChange ( Usul::Interfaces::IUnknown *caller, double speed )
   {
     Minerva::Interfaces::IAnimationControl::QueryPtr control ( caller );
 

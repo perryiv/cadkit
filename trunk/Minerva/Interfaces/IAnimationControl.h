@@ -37,6 +37,10 @@ struct IAnimationControl : public Usul::Interfaces::IUnknown
   virtual void                 animateSpeed ( double speed ) = 0;
   virtual double               animateSpeed () const = 0;
 
+  /// Get/Set the show past events flag.
+  virtual void                 showPastEvents ( bool ) = 0;
+  virtual bool                 showPastEvents () const = 0;
+
 }; // struct IAnimationControl
 
 } // end namespace Interfaces

@@ -333,7 +333,7 @@ osg::Node* Skin::create_separator(const MenuKit::Item* button)
 float Skin::graphic_height(const MenuKit::Item* item)
 {
   const MenuKit::Button* b = dynamic_cast<const MenuKit::Button*>( item );
-  if( b && b->separator() )
+  if( item && item->separator() )
     return( 0.1*(this->height()) );
 
   else

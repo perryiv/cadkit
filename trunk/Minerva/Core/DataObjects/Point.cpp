@@ -276,6 +276,9 @@ osg::Node* Point::buildScene()
     if( this->showLabel() && !this->label().empty() )
       _group->addChild ( this->_buildLabel() );
 
+    ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+    OsgTools::State::StateSet::setTwoSidedLighting ( _group.get(), true );
+
     this->dirty( false );
   }
 

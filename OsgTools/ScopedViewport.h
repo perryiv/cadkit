@@ -25,16 +25,23 @@ namespace OsgTools {
 
 struct ScopedViewport
 {
-  ScopedViewport ( osgUtil::SceneView *sv ) : _viewport(), _sceneView ( sv )
+  ScopedViewport ( osg::Viewport *vp ) : _viewport( vp )
   {
-    if ( _sceneView.valid() )
-      _viewport = new osg::Viewport ( *(_sceneView->getViewport()), osg::CopyOp::DEEP_COPY_ALL );
+    if ( _viewport.valid() )
+    {
+      _x      = _viewport->x();
+      _y      = _viewport->y();
+      _width  = _viewport->width();
+      _height = _viewport->height();
+    }
   }
 
   ~ScopedViewport()
   {
-    if ( _sceneView.valid() )
-      _sceneView->setViewport ( _viewport.get() );
+    if ( _viewport.valid() )
+    {
+      _viewport->setViewport ( _x, _y, _width, _height );
+    }
   }
 
 private:
@@ -43,7 +50,10 @@ private:
   ScopedViewport &operator = ( const ScopedViewport & );
 
   osg::ref_ptr<osg::Viewport> _viewport;
-  osg::ref_ptr<osgUtil::SceneView> _sceneView;
+  osg::Viewport::value_type _x;
+  osg::Viewport::value_type _y;
+  osg::Viewport::value_type _width;
+  osg::Viewport::value_type _height;
 };
 
 

@@ -107,6 +107,7 @@ const osg::Vec4& FBOScreenCapture::clearColor () const
 }
 
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the view matrix.
@@ -188,8 +189,10 @@ void FBOScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& scen
   // Make the camera file the scene data.
   sceneView.setSceneData ( camera.get() );
 
-  // Render to the image.
+  // Cull.
   sceneView.cull();
+
+  // Render to the image.
   sceneView.draw();
 
   // Set the old root back to the scene data.

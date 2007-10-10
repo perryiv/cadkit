@@ -1014,6 +1014,7 @@ osg::Image* Renderer::screenCapture ( float frameSizeScale, unsigned int numSamp
   tiled.clearColor ( this->backgroundColor() );
   tiled.viewMatrix ( this->viewMatrix() );
   tiled.numSamples ( numSamples );
+  tiled.scale ( frameSizeScale );
   return tiled ( *this->viewer(), _sceneView->getProjectionMatrix() );
 }
 

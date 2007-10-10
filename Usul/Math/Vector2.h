@@ -272,7 +272,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  T dot ( const Vector2 &v )
+  T dot ( const Vector2 &v ) const
   {
     return 
       _v[0] * v[0] +

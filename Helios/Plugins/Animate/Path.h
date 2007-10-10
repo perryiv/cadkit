@@ -14,6 +14,7 @@
 #include "Helios/Plugins/Animate/Frame.h"
 
 #include "Usul/Base/Object.h"
+#include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 
 #include "Serialize/XML/Macros.h"
@@ -25,11 +26,11 @@ namespace Usul { namespace Interfaces { struct IUnknown; } }
 
 namespace Animate {
 
-class Path : public Usul::Base::Object,
+class Path : public Usul::Documents::Document,
              public Usul::Interfaces::IUpdateListener
 {
 public:
-  typedef Usul::Base::Object                                      BaseClass;
+  typedef Usul::Documents::Document        BaseClass;
 
   USUL_DECLARE_QUERY_POINTERS ( Path );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
@@ -38,9 +39,6 @@ public:
 
   /// Append a frame.
   virtual void      append ( Frame *frame );
-
-  /// Clear.
-  virtual void      clear () = 0;
 
   /// Get/Set the dirty flag.
   void              dirty ( bool );
@@ -57,6 +55,30 @@ public:
   /// Get/Set flag to accept new frames.
   void              acceptNewFrames ( bool b );
   bool              acceptNewFrames () const;
+
+  /// Get the extension for the file.
+  virtual std::string  extension () const = 0;
+
+  /// Get the name of the path.
+  virtual std::string  name () const = 0;
+
+  /// Return true if this document can do it.
+  virtual bool                canExport ( const std::string &ext ) const;
+  virtual bool                canInsert ( const std::string &ext ) const;
+  virtual bool                canOpen   ( const std::string &ext ) const;
+  virtual bool                canSave   ( const std::string &ext ) const;
+
+  /// Get the filters that correspond to what this document can do.
+  virtual Filters             filtersExport() const;
+  virtual Filters             filtersInsert() const;
+  virtual Filters             filtersOpen()   const;
+  virtual Filters             filtersSave()   const;
+
+  /// Read.
+  virtual void                read ( const std::string &filename, Unknown *caller, Unknown *progress );
+
+  /// Write.
+  virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const;
 
 protected:
   virtual ~Path ();

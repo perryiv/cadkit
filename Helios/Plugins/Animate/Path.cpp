@@ -15,6 +15,8 @@
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/File/Path.h"
+#include "Usul/Strings/Case.h"
 
 #include "osg/FrameStamp"
 
@@ -29,7 +31,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Path, Path::BaseClass );
 ///////////////////////////////////////////////////////////////////////////////
 
 Path::Path () : 
-  BaseClass (),
+  BaseClass ( "Animation Path" ),
   _dirty ( false ),
   _acceptNewFrames ( false ),
   _startTime ( -1.0 ),
@@ -188,5 +190,115 @@ Usul::Interfaces::IUnknown* Path::queryInterface ( unsigned long iid )
 ///////////////////////////////////////////////////////////////////////////////
 
 void Path::updateNotify ( Usul::Interfaces::IUnknown *caller )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return true if this document can do it.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Path::canExport ( const std::string &file ) const
+{
+  return this->canSave ( file );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return true if this document can do it.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Path::canInsert ( const std::string &file ) const
+{
+  return this->canSave ( file );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return true if this document can do it.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Path::canOpen ( const std::string &file ) const
+{
+  return this->canSave ( file );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return true if this document can do it.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Path::canSave ( const std::string &file ) const
+{
+  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
+  return ( ext == this->extension () );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the filters that correspond to what this document can export.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Path::Filters Path::filtersExport() const
+{
+  return this->filtersSave ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the filters that correspond to what this document can insert.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Path::Filters Path::filtersInsert() const
+{
+  return this->filtersSave ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the filters that correspond to what this document can open.
+//
+//////////////////////////////////////////////////////////////////////////////
+
+Path::Filters Path::filtersOpen()   const
+{
+  return this->filtersSave ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the filters that correspond to what this document can save.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Path::Filters Path::filtersSave()   const
+{
+  Filters filters;
+  filters.push_back ( Filter ( this->name() + " (*." + this->extension () + ")", "*." + this->extension () ) );
+  return filters;
+}
+
+
+/// Read.
+void Path::read ( const std::string &filename, Unknown *caller, Unknown *progress )
+{
+}
+
+/// Write.
+void Path::write ( const std::string &filename, Unknown *caller  ) const
 {
 }

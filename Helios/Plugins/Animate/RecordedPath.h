@@ -33,13 +33,19 @@ public:
   RecordedPath ();
 
   /// Clear.
-  virtual void      clear ();
+  virtual void                clear ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   /// Start the animation from beginning.
-  virtual void      start ( Usul::Interfaces::IUnknown * caller );
+  virtual void                start ( Usul::Interfaces::IUnknown * caller );
 
   /// Animate one step.
-  virtual void      updateNotify ( Usul::Interfaces::IUnknown * caller );
+  virtual void                updateNotify ( Usul::Interfaces::IUnknown * caller );
+
+  /// Get the extension for the file.
+  virtual std::string         extension () const;
+
+  /// Get the name of the path.
+  virtual std::string         name () const;
 
 protected:
   virtual ~RecordedPath ();

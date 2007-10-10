@@ -15,7 +15,9 @@ my $output = shift @ARGV;
 while ( @ARGV )
 {
   my $file = shift @ARGV;
-  my $command = sprintf ( "mv $file %09d.jpg", $output );
+  my @parts = split ( /\./, $file );
+  my $ext = $parts [ @parts - 1 ];
+  my $command = sprintf ( "mv $file %09d.%s", $output, $ext );
   print "$command\n";
   `$command`;
   $output++;

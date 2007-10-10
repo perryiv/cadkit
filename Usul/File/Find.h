@@ -97,7 +97,7 @@ inline void find ( const std::string &d, const std::string &ext, Names &names )
       // Get name
       std::string name ( dp->d_name );
 
-      if ( Usul::File::extension ( name ) == ext )
+      if ( ( "*" == ext ) || ( Usul::File::extension ( name ) == ext ) )
       {
         // Add to list
         names.insert ( names.end(), name );

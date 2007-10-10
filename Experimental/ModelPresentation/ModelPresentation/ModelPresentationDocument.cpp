@@ -39,6 +39,7 @@
 #include "osg/Group"
 #include "osg/Switch"
 
+
 #include <iterator>
 
 
@@ -983,14 +984,11 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
 
       // Check to see if we created a document.
       if ( true == info.document.valid() && info.document->canOpen( filename ) )
-      {
-        
+      {       
         // Ask the document to open the file.
         try
         {
           this->_openDocument ( filename, info.document.get(), caller );
-        
-
 
           // Disable Memory pools
           {
@@ -1009,10 +1007,6 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
             opt[ "normals" ] = "per-vertex";
             opt[ "colors" ]  = "per-vertex";
 
-            // tell Triangle set to build its scene and assign the resulting node
-            // to our internal node.
-
-            // Reference count should go from 1->0 but not delete.
             group->addChild( build->buildScene( opt, caller ) );
             
            }

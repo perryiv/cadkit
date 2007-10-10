@@ -17,13 +17,14 @@
 #include "Usul/File/Temp.h"
 #include "Usul/File/Remove.h"
 
+#include "osg/Geode"
+#include "osg/Image"
+
 #include "osgDB/WriteFile"
 
 #include <vector>
 #include <string>
 #include <sstream>
-
-#include "osg/Image"
 
 using namespace OsgTools::Render;
 
@@ -37,7 +38,8 @@ TiledScreenCapture::TiledScreenCapture () :
 _size (),
 _color (),
 _viewMatrix (),
-_numSamples ( 4 )
+_numSamples ( 4 ),
+_scale ( 1.0f )
 {
 }
 
@@ -196,30 +198,6 @@ namespace Detail
     osg::Matrix m;
     m.makeFrustum ( currentLeft, currentRight, currentBottom, currentTop, zNear, zFar );
     return m;
-
-    //osg::Matrix ras2ndc (
-    //    1.0f / answerWidth,           0,          0,   0,
-    //    0,                  -1.0f / answerHeight, 0, -1.0f,
-    //    0,                            0,          1,   0,
-    //    0,                            0,          0,   1 );
-
-    //// Find the lower left corner of this tile in Normalized Device Coordinates ( ndc ).
-    //float xndc ( static_cast < float > ( x ) / answerWidth  );
-    //float yndc ( static_cast < float > ( y ) / answerHeight );
-
-    //// Find the inverse width and height of this tile in ndc coordinates.
-    //float inv_wndc ( static_cast < float > ( answerWidth  / tileX ) );
-    //float inv_hndc ( static_cast < float > ( answerHeight / tileY ) );
-
-    //// Construct a matrix to zoom this tile's ndc region to [-1,1]x[-1,1].
-    //osg::Matrix T0 ( osg::Matrix::translate ( -xndc, -yndc, 0 ) );
-    //osg::Matrix S  ( osg::Matrix::scale     ( 2 * inv_wndc, 2 * inv_hndc, 1 ) );
-    //osg::Matrix T1 ( osg::Matrix::translate ( -1, -1, 0 ) );
-    //osg::Matrix ndc2tile ( T0 * S * T1 );
-
-    //// Construct tile matrix.
-    //osg::Matrix m ( proj * ras2ndc * ndc2tile );
-    //return m;
   }
 }
 
@@ -231,6 +209,33 @@ namespace Detail
 ///////////////////////////////////////////////////////////////////////////////
 
 void TiledScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& sceneView, const osg::Matrix& projection )
+{
+  // Scope the viewport.
+  OsgTools::ScopedViewport sv ( sceneView.getViewport () );
+
+  osg::ref_ptr < ProcessScene > ps ( new ProcessScene ( this->scale () ) );
+  sceneView.getSceneData()->accept ( *ps );
+
+  try
+  {
+    this->_capturePixels ( image, sceneView, projection );
+  }
+  catch ( ... )
+  {
+    std::cout << "Exception caught while trying to capture screen." << std::endl;
+  }
+
+  ps->restoreScene ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create the image using Super-sampled, tiled rendering...
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TiledScreenCapture::_capturePixels ( osg::Image& image, osgUtil::SceneView& sceneView, const osg::Matrix& projection )
 {
   // Width and Height.
   unsigned int width  ( _size [ 0 ] );
@@ -266,9 +271,6 @@ void TiledScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& sc
   fbo.size ( tileWidth, tileHeight );
   fbo.viewMatrix ( this->viewMatrix() );
   fbo.clearColor ( this->clearColor() );
-
-  // Scope the viewport.
-  OsgTools::ScopedViewport sv ( &sceneView );
 
   // Set the viewport for the tile.
   //sceneView.setViewport ( 0, 0, tileX * samplesX, tileY * samplesY );
@@ -372,3 +374,129 @@ void TiledScreenCapture::_accumulate ( osg::Image& image, const osg::Image& tile
     }
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TiledScreenCapture::scale ( float scale )
+{
+  _scale = scale;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float TiledScreenCapture::scale () const
+{
+  return _scale;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+TiledScreenCapture::ProcessScene::ProcessScene ( float scale ) : BaseClass ( osg::NodeVisitor::TRAVERSE_ALL_CHILDREN ),
+_scale ( scale ),
+_autoTransforms (),
+_projections (),
+_texts ()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+TiledScreenCapture::ProcessScene::~ProcessScene ()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Restore the scene to it's orginal state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TiledScreenCapture::ProcessScene::restoreScene ( )
+{
+  // Restore auto transform's scale.
+  for ( AutoTransforms::iterator iter = _autoTransforms.begin(); iter != _autoTransforms.end(); ++iter )
+    iter->first->setAutoScaleToScreen ( iter->second  );
+
+  // Restore projection node masks
+  for ( Projections::iterator iter = _projections.begin(); iter != _projections.end(); ++iter )
+    iter->first->setNodeMask ( iter->second );
+
+  // Restore osgText::Text.
+  for ( Texts::iterator iter = _texts.begin(); iter != _texts.end(); ++iter )
+    iter->first->setCharacterSize ( iter->second );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Visit the projection node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TiledScreenCapture::ProcessScene::apply( osg::Projection& node )
+{
+  _projections.insert ( Projections::value_type ( &node, node.getNodeMask () ) );
+  node.setNodeMask ( 0x0 );
+
+  node.traverse ( *this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Visit the transform node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TiledScreenCapture::ProcessScene::apply( osg::Transform& node )
+{
+  if ( osg::AutoTransform *at = dynamic_cast < osg::AutoTransform * > ( &node ) )
+  {
+    _autoTransforms.insert ( AutoTransforms::value_type ( at, at->getAutoScaleToScreen() ) );
+    at->setAutoScaleToScreen ( false );
+  }
+
+  node.traverse ( *this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Visit the geode node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TiledScreenCapture::ProcessScene::apply( osg::Geode& node )
+{
+  unsigned int numDrawables ( node.getNumDrawables () );
+  for ( unsigned int i = 0; i < numDrawables; ++i )
+  {
+    if ( osgText::Text* text = dynamic_cast < osgText::Text* > ( node.getDrawable ( i ) ) )
+    {
+      _texts.insert ( Texts::value_type ( text, text->getCharacterHeight () ) );
+      text->setCharacterSize ( text->getCharacterHeight() * _scale );
+    }
+  }
+}
+

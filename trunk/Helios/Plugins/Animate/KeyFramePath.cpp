@@ -25,6 +25,7 @@ using namespace Animate;
 
 USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "KeyFramePath", KeyFramePath );
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -39,8 +40,6 @@ KeyFramePath::KeyFramePath () :
   _curve (),
   _numberSteps ( 50 ),
   _currentStep ( 0 )
-  //  _startTime ( -1.0 ),
-  //_animating( false )
 {
   this->_addMember ( "Frames", _frames );
 }
@@ -293,7 +292,7 @@ void KeyFramePath::_interpolate ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void KeyFramePath::clear ()
+void KeyFramePath::clear ( Usul::Interfaces::IUnknown *caller )
 {
   {
     Guard guard ( this->mutex () );
@@ -329,4 +328,28 @@ unsigned int KeyFramePath::steps ( ) const
 {
   Guard guard ( this->mutex () );
   return _numberSteps;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the extension for the file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string KeyFramePath::extension () const
+{
+  return "kfp";
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name of the path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string KeyFramePath::name () const
+{
+  return "Key Frame Path";
 }

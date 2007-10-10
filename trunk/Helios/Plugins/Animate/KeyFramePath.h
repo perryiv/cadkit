@@ -46,7 +46,7 @@ public:
   KeyFramePath ();
 
   /// Clear.
-  virtual void      clear ();
+  virtual void      clear ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   /// Start the animation from beginning.
   virtual void      start ( Usul::Interfaces::IUnknown * caller );
@@ -57,6 +57,12 @@ public:
   /// Get/Set the number of animation steps.
   void              steps ( unsigned int value );
   unsigned int      steps ( ) const;
+
+  /// Get the extension for the file.
+  virtual std::string  extension () const;
+
+  /// Get the name of the path.
+  virtual std::string  name () const;
 
 protected:
   virtual ~KeyFramePath ();

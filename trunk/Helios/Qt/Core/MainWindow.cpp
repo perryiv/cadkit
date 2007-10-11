@@ -318,8 +318,11 @@ void MainWindow::_loadSettings()
 
   // Set the window's properties.
   Usul::Registry::Node &mw ( Reg::instance()[Sections::MAIN_WINDOW] );
-  _recentFiles = mw[Keys::RECENT_FILES].get<QStringList> ( QStringList() );
   this->setGeometry ( mw[Keys::GEOMETRY].get<QRect> ( Defaults::GEOMETRY ) );
+
+  // Get recent-files list and remove files that do not exist.
+  _recentFiles = mw[Keys::RECENT_FILES]["files"].get<StringList> ( StringList() );
+  _recentFiles.remove_if ( std::not1 ( Usul::Predicates::FileExists() ) );
 }
 
 
@@ -342,7 +345,7 @@ void MainWindow::_saveSettings()
   mw[Keys::DOCK_WINDOW_POSITIONS] = this->saveState ( Helios::Core::Constants::VERSION );
 
   // Save recent files.
-  mw[Keys::RECENT_FILES] = _recentFiles;
+  mw[Keys::RECENT_FILES]["files"] = _recentFiles;
 
   // Write to disk.
   Usul::Functions::safeCallV1 ( XmlTree::RegistryIO::write, this->_registryFileName(), "4136994389" );
@@ -503,12 +506,16 @@ void MainWindow::_initRecentFilesMenu()
   // For convienence.
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
-  // Add to the recent file menu.
-  for ( QStringList::iterator iter = _recentFiles.begin(); iter != _recentFiles.end(); ++iter )
+  // Add to the recent file menu if the file exists.
+  for ( StringList::const_iterator iter = _recentFiles.begin(); iter != _recentFiles.end(); ++iter )
   {
-    CadKit::Helios::Commands::OpenDocument::RefPtr openDocument ( new CadKit::Helios::Commands::OpenDocument ( me ) );
-    openDocument->filename ( iter->toStdString () );
-    _recentFilesMenu->append ( new MenuKit::Button ( openDocument ) );
+    const std::string file ( *iter );
+    if ( true == Usul::Predicates::FileExists::test ( file ) )
+    {
+      CadKit::Helios::Commands::OpenDocument::RefPtr openDocument ( new CadKit::Helios::Commands::OpenDocument ( me ) );
+      openDocument->filename ( file );
+      _recentFilesMenu->append ( new MenuKit::Button ( openDocument ) );
+    }
   }
 
   _recentFilesMenu->addSeparator ();
@@ -522,7 +529,7 @@ void MainWindow::_initRecentFilesMenu()
   _recentFilesMenu->append ( new MenuKit::Button ( new GenericCommand ( "Clear", MemFun ( this, &MainWindow::_clearRecentFiles ) ) ) );
 
   // Enable the menu only if there are recent files.
-  _recentFilesMenu->enabled ( !_recentFiles.empty () );
+  _recentFilesMenu->enabled ( false == _recentFiles.empty() );
 }
 
 
@@ -532,10 +539,10 @@ void MainWindow::_initRecentFilesMenu()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::_clearRecentFiles ()
+void MainWindow::_clearRecentFiles()
 {
-  _recentFiles.clear ();
-  this->_initRecentFilesMenu ();
+  _recentFiles.clear();
+  this->_initRecentFilesMenu();
 }
 
 
@@ -1462,15 +1469,16 @@ void MainWindow::_notifyFinishedLoading ( Usul::Documents::Document *document )
     return;
 
   // The filename.
-  std::string filename ( document->fileName () );
+  const std::string name ( document->fileName() );
 
-  // Add the document to the recent file list.
-  if ( false == _recentFiles.contains ( filename.c_str () ) )
-    _recentFiles.append ( filename.c_str () );
+  // Add the document to the recent file list if it isn't already in there.
+  if ( _recentFiles.end() == std::find ( _recentFiles.begin(), _recentFiles.end(), name ) )
+    _recentFiles.push_front ( name );
 
-  // If the recent files are too big...
-  if ( _recentFiles.count () > 10 )
-    _recentFiles.erase ( _recentFiles.begin () );
+  // If the list is too long then remove the oldest (the front).
+  const unsigned int maxRecentFiles ( Reg::instance()[Sections::MAIN_WINDOW][Keys::RECENT_FILES]["max_num"].get<unsigned int> ( 15 ) );
+  while ( _recentFiles.size() > maxRecentFiles )
+    _recentFiles.pop_back();
 
   // Typedefs.
   typedef Usul::Documents::Document Document;

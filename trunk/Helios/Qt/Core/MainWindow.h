@@ -41,6 +41,7 @@
 
 #include "QtGui/QMainWindow"
 
+#include <list>
 #include <map>
 #include <queue>
 #include <set>
@@ -92,6 +93,7 @@ public:
   typedef ILoadFileDialog::Filters              Filters;
   typedef std::vector<std::string>              PluginFiles;
   typedef Usul::Interfaces::IUnknown            Unknown;
+  typedef std::list<std::string>                StringList;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( MainWindow );
@@ -261,7 +263,7 @@ private:
   ProgressBarDock::RefPtr _progressBars;
   MenuKit::Menu::RefPtr _menu;
   Menus _menus;
-  QStringList _recentFiles;
+  StringList _recentFiles;
   MenuKit::Menu::RefPtr _recentFilesMenu;
 };
 

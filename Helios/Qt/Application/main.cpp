@@ -24,8 +24,8 @@
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Exceptions/Thrower.h"
+#include "Usul/File/Contents.h"
 #include "Usul/File/Make.h"
-#include "Usul/File/Temp.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Jobs/Manager.h"
@@ -37,6 +37,7 @@
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Trace/Print.h"
+#include "Usul/User/Directory.h"
 
 #include <fstream>
 #include <sstream>
@@ -128,12 +129,12 @@ namespace Program
     const std::string icon ( "helios_sun.png" );
     Usul::App::Application::instance().splashImage ( "splash_screen.png" );
 
-    // Get temporary directory and make sure it exists.
-    const std::string tempDir ( Usul::File::Temp::directory ( true ) + "/" + program + "/" );
-    Usul::File::make ( tempDir );
+    // Get persistant directory and make sure it exists.
+    const std::string persistantDir ( Usul::User::Directory::vendor ( vendor, true ) + program + "/" );
+    Usul::File::make ( persistantDir );
 
     // Redirect standard out and error to a file.
-    const std::string output ( tempDir + program + ".out" );
+    const std::string output ( persistantDir + program + ".out" );
     Usul::File::remove ( output, false );
     Program::sink = Program::StreamSink::RefPtr ( new Usul::IO::StreamSink ( output ) );
 
@@ -143,7 +144,7 @@ namespace Program
     out << "Built on " << Usul::Strings::formatDate ( __DATE__ ) << " at " << __TIME__ << std::endl;
 
     // Send trace output here. Comment this out for stdout.
-    const std::string traceFile ( tempDir + program + ".csv" );
+    const std::string traceFile ( persistantDir + program + ".csv" );
     std::ofstream traceStream ( traceFile.c_str() );
     Usul::Trace::Print::init ( &traceStream );
 

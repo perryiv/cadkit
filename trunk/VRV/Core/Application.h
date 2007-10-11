@@ -72,7 +72,6 @@
 #include "osg/Referenced"
 #include "osg/Matrix"
 #include "osg/Timer"
-#include "osg/Camera"
 
 #include "osgDB/DatabasePager"
 
@@ -80,12 +79,6 @@
 #include <string>
 #include <queue>
 
-// Forward declarations.
-namespace vrj
-{
-  class Kernel;
-  class GlDrawManager;
-};
 
 namespace osg
 {
@@ -167,11 +160,11 @@ public:
   typedef void (Application::*VoidFunction) ();
   typedef void (Application::*BoolFunction) ( bool );
   typedef bool (Application::*CheckFunction) () const;
-  typedef Usul::Adaptors::MemberFunction < void, Application*, VoidFunction > ExecuteFunctor;
-  typedef MenuKit::MemFunCallbackReturn < Application*, CheckFunction >       CheckFunctor;
-  typedef Usul::Adaptors::MemberFunction < void, Application*, BoolFunction > BoolFunctor;
-  typedef Usul::Commands::GenericCommand < ExecuteFunctor >                   BasicCommand;
-  typedef MenuKit::CheckCommand < BoolFunctor, CheckFunctor >                 CheckCommand;
+  typedef Usul::Adaptors::MemberFunction < void, Application*, VoidFunction >  ExecuteFunctor;
+  typedef Usul::Adaptors::MemberFunction < bool, Application*, CheckFunction > CheckFunctor;
+  typedef Usul::Adaptors::MemberFunction < void, Application*, BoolFunction >  BoolFunctor;
+  typedef Usul::Commands::GenericCommand < ExecuteFunctor >                    BasicCommand;
+  typedef MenuKit::CheckCommand < BoolFunctor, CheckFunctor >                  CheckCommand;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 

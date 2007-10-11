@@ -156,7 +156,7 @@ struct MemberFunction < bool, ObjectType, FunctionType >
   
   bool operator()() const
   {
-    ((*_o).*_f)();
+    return ((*_o).*_f)();
   }
 
 private:

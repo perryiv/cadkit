@@ -61,6 +61,9 @@ namespace Usul
       const std::string FOV                       = "fov";
       const std::string PERSPECTIVE               = "perspective";
       const std::string COR_NAME                  = "center_of_rotation";
+
+      // Trackball settings.
+      const std::string TRACKBALL                 ( "trackball" );
     };
   };
 };

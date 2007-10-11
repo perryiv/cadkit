@@ -163,7 +163,10 @@ void LoadDocument::LoadJob::_loadModel( const std::string& filename )
   label ( "Loading filename: " + filename, true );
 
   if ( document->canOpen ( filename ) )
+  {
     document->read ( filename, _caller.get(), _secondProgressBar.get() );
+    document->fileName ( filename );
+  }
 
   // Get the node.
   Usul::Interfaces::IBuildScene::Options options;

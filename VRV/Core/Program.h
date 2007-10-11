@@ -25,11 +25,13 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/File/Path.h"
 #include "Usul/Jobs/Manager.h"
+#include "Usul/Registry/Database.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/System/Host.h"
 
 #include "XmlTree/Document.h"
+#include "XmlTree/RegistryIO.h"
 
 namespace VRV {
 namespace Core {
@@ -85,6 +87,12 @@ public:
     // should have been destroyed.
     Usul::Components::Manager::instance().clear ( &std::cout );
 
+    // Save the registry.
+    XmlTree::RegistryIO::write ( Usul::App::Application::instance().configFile ( "settings" ) );
+
+    // Clear the registry.
+    Usul::Registry::Database::destroy();
+
     // Set the mutex factory to null so that we can find late uses of it.
     Usul::Threads::Mutex::createFunction ( 0x0 );
 
@@ -137,6 +145,9 @@ protected:
   {
     // Set the arguments.
     Usul::CommandLine::Arguments::instance().set ( argc, argv );
+
+    // Read the registry.
+    Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Program::_readRegistryFile ), "3499560042" );
 
     // Load the plugins. Not a big deal if it throws.
     Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Program::_loadPlugins ), "1701127221" );
@@ -192,6 +203,13 @@ protected:
 
     // Reset the document manager.
     Usul::Documents::Manager::reset();
+  }
+
+  // Read the registry.
+  void _readRegistryFile ()
+  {
+    // Need to revisit file name and location..
+    XmlTree::RegistryIO::read ( Usul::App::Application::instance().configFile ( "settings" ) );
   }
 
 private:

@@ -370,6 +370,10 @@
 				RelativePath="..\..\.cadviewer\registry.xml"
 				>
 			</File>
+			<File
+				RelativePath="..\..\.cadviewer\settings.xml"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

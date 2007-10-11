@@ -32,16 +32,19 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/File/Path.h"
+#include "Usul/Interfaces/ICommandList.h"
+#include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Math/Constants.h"
+#include "Usul/Math/Matrix44.h"
+#include "Usul/Print/Matrix.h"
+#include "Usul/Registry/Database.h"
+#include "Usul/Registry/Convert.h"
 #include "Usul/System/Host.h"
 #include "Usul/System/Directory.h"
 #include "Usul/System/Clock.h"
-#include "Usul/Math/Constants.h"
-#include "Usul/Print/Matrix.h"
-#include "Usul/Interfaces/ICommandList.h"
-#include "Usul/Interfaces/IMenuAdd.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/XercesLife.h"
@@ -794,7 +797,7 @@ void Application::init()
   }
 
   // Experimental: 
-  #if 1 // Experimental
+  #if 0 // Experimental
   std::ostringstream out;
   out << Usul::System::Host::name() << "_home_position.txt";
   {
@@ -814,7 +817,7 @@ void Application::init()
 
   #else
     // Save the "home" position.
-    this->_setHome();
+    //this->_setHome();
   #endif
 }
 
@@ -1220,6 +1223,21 @@ void Application::addModel ( osg::Node *model, const std::string& filename )
 void Application::_loadModelFiles  ( const Filenames& filenames )
 {
   USUL_TRACE_SCOPE;
+
+  // Get the home position from the registry.
+  if ( false == filenames.empty() )
+  {
+    std::string filename ( filenames.back() );
+    std::string dir      ( Usul::File::directory ( filename, true ) );
+
+    // We want just the filename.
+    filename.erase ( 0, dir.size() );
+
+    Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ filename ] );
+    Usul::Math::Matrix44f m ( node [ VRV::Constants::Keys::HOME_POSITION ].get < Usul::Math::Matrix44f > ( Usul::Math::Matrix44f () ) );
+    OsgTools::Convert::matrix ( m, _home );
+    this->_navigationMatrix ( _home );
+  }
 
   // Create a command.
   VRV::Commands::LoadDocument::RefPtr command ( new VRV::Commands::LoadDocument ( filenames, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
@@ -2701,9 +2719,24 @@ void Application::_setHome()
 {
   Guard guard ( this->mutex() );
   _home = this->_navigationMatrix();
-  Usul::Print::matrix ( "Matrix:", _home.ptr(), std::cout );
 
-#if 1 // Experimental
+  Usul::Interfaces::IDocument::RefPtr document ( this->document () );
+
+  // Save the home position in the registry.
+  if ( document.valid () )
+  {
+    std::string filename ( document->fileName() );
+    std::string dir      ( Usul::File::directory ( filename, true ) );
+
+    // Remove the directory from the filename.
+    filename.erase ( 0, dir.size() );
+
+    Usul::Math::Matrix44f m;
+    OsgTools::Convert::matrix ( _home, m );
+    Usul::Registry::Database::instance()[ filename ][ VRV::Constants::Keys::HOME_POSITION ] = m;
+  }
+
+#if 0 // Experimental
   std::ostringstream out;
   out << Usul::System::Host::name() << "_home_position.txt";
   std::ofstream file ( out.str().c_str() );

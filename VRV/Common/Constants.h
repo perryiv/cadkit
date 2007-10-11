@@ -13,9 +13,18 @@
 
 namespace VRV
 {
-  const unsigned int        WALK_MODE_ID ( 1744687282u );
-  const unsigned int        POLE_MODE_ID ( 1744687283u );
-  const unsigned int        FLY_MODE_ID  ( 1744687284u );
+  namespace Constants
+  {
+    namespace Sections
+    {
+      const std::string VRV             ( "VRV" );
+    }
+
+    namespace Keys
+    {
+      const std::string HOME_POSITION   ( "home_position" );
+    }
+  }
 }
 
 #endif // __VRV_CONSTANTS_H__

@@ -304,7 +304,7 @@ void Application::_init()
 
 void Application::_initText()
 {
-#if 0
+#ifdef _MSC_VER
   // Removing anything we may have already.
   this->projectionGroupRemove ( "VRV_TEXT" );
 

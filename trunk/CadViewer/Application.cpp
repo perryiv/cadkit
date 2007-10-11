@@ -26,39 +26,24 @@
 #include "CadViewer/Pick/Select.h"
 #include "CadViewer/Pick/Seek.h"
 
-#include "Usul/App/Application.h"
-#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Components/Manager.h"
-#include "Usul/Math/Constants.h"
 #include "Usul/Threads/ThreadId.h"
-#include "Usul/System/Host.h"
 #include "Usul/Functors/General/If.h"
 #include "Usul/Predicates/UnaryPair.h"
-#include "Usul/Documents/Manager.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/IButtonID.h"
 
 #include "VRV/Common/Buttons.h"
 
 #include "osg/MatrixTransform"
-#include "osg/AutoTransform"
 #include "osg/Matrix"
 #include "osg/Projection"
 
-#include "osgDB/WriteFile"
-
-#include "OsgTools/Axes.h"
 #include "OsgTools/Text.h"
-#include "OsgTools/Convert.h"
 #include "OsgTools/Group.h"
 #include "OsgTools/Font.h"
-#include "OsgTools/State/StateSet.h"
 #include "OsgTools/Visitor.h"
-
-#include "MenuKit/MemFunCallback.h"
-
-#include "vrj/Kernel/Kernel.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -89,9 +74,6 @@ namespace CV
   const unsigned long COMMAND_UNSELECT_VISIBLE = BUTTON_GREEN;
   const unsigned long COMMAND_SHOW_ALL         = BUTTON_RED;  
 
-  const unsigned long NAVIGATE_TOGGLE = BUTTON_YELLOW;
-  const unsigned long STOP_NAV_TOOL   = BUTTON_RED;       // helps greatly in sim mode
-  const unsigned long NAVIGATE_FLY    = BUTTON_BLUE;      // Joseph doesn't need it, but its handy if anybody else does
   const unsigned long TOOL_SCALE      = BUTTON_GREEN;
   const unsigned long NAVIGATE_NO_NAV = BUTTON_RED;
 };

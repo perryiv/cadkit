@@ -25,7 +25,6 @@
 #include "CadViewer/Pick/Intersect.h"
 
 #include "Usul/Pointers/Pointers.h"
-#include "Usul/Functors/Interaction/Matrix/MatrixFunctor.h"
 
 #include "VRV/Core/Application.h"
 

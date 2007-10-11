@@ -15,7 +15,6 @@
 
 #include "Usul/Registry/Node.h"
 #include "Usul/Registry/Visitor.h"
-#include "Usul/Trace/Trace.h"
 
 using namespace Usul::Registry;
 
@@ -85,24 +84,11 @@ void Node::set ( const std::string &s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Node::_getValue() const
+std::string Node::get ( const std::string &defaultValue ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return std::string ( _value.begin(), _value.end() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the value.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string Node::get() const
-{
-  USUL_TRACE_SCOPE;
-  return this->_getValue();
+  return ( ( true == _value.empty() ) ? defaultValue : _value );
 }
 
 

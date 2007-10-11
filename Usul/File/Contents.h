@@ -156,6 +156,20 @@ inline void contents ( const std::string &filename, std::string &file )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the file contents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline std::string contents ( const std::string &filename )
+{
+  std::string s;
+  Usul::File::contents ( filename, s );
+  return s;
+}
+
+
 } // namespace File
 } // namespace Usul
 

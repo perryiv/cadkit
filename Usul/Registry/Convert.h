@@ -52,7 +52,7 @@ template <> struct Convert < the_type > \
     os << v; \
     return os.str(); \
   } \
-  static void from ( const std::string& s, the_type &v ) \
+  static void from ( const std::string &s, the_type &v ) \
   { \
     std::istringstream in ( s ); \
     in >> v; \
@@ -75,7 +75,7 @@ template <> struct Convert < the_type > \
     os << v[0] << ' ' << v[1]; \
     return os.str(); \
   } \
-  static void from ( const std::string& s, the_type &v ) \
+  static void from ( const std::string &s, the_type &v ) \
   { \
     std::istringstream in ( s ); \
     in >> v[0] >> v[1]; \
@@ -98,7 +98,7 @@ template <> struct Convert < the_type > \
     os << v[0] << ' ' << v[1] << ' ' << v[2]; \
     return os.str(); \
   } \
-  static void from ( const std::string& s, the_type &v ) \
+  static void from ( const std::string &s, the_type &v ) \
   { \
     std::istringstream in ( s ); \
     in >> v[0] >> v[1] >> v[2]; \
@@ -121,7 +121,7 @@ template <> struct Convert < the_type > \
     os << v[0] << ' ' << v[1] << ' ' << v[2] << ' ' << v[3]; \
     return os.str(); \
   } \
-  static void from ( const std::string& s, the_type &v ) \
+  static void from ( const std::string &s, the_type &v ) \
   { \
     std::istringstream in ( s ); \
     in >> v[0] >> v[1] >> v[2] >> v[3]; \
@@ -147,7 +147,7 @@ template <> struct Convert < the_type > \
     os << m[3] << ' ' << m[7] << ' ' << m[11] << ' ' << m[15]; \
     return os.str(); \
   } \
-  static void from ( const std::string& s, the_type &m ) \
+  static void from ( const std::string &s, the_type &m ) \
   { \
     std::istringstream in ( s ); \
     in >> m[0] >> m[4] >> m[ 8] >> m[12]; \

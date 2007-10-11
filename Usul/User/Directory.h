@@ -37,6 +37,11 @@ struct USUL_EXPORT Directory
   // it failed. If the user has HOME set then we follow the unix convention of 
   // making a "dot" directory.
   static std::string      vendor ( const std::string &vendorName, bool wantSlash = false );
+
+  // Get the program in which the vendor can store persistent data. Throws if
+  // it failed. If the user has HOME set then we follow the unix convention of 
+  // making a "dot" directory.
+  static std::string      program ( const std::string &vendorName, const std::string &programName, bool wantSlash = false );
 };
 
 

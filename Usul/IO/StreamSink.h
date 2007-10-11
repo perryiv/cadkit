@@ -69,6 +69,9 @@ public:
   void                    add    ( Usul::Interfaces::IUnknown * );
   void                    remove ( Usul::Interfaces::IUnknown * );
 
+  // Flush the stream(s).
+  void                    flush();
+
   // Notify listeners.
   void                    notify ( const char *s, unsigned int n );
 
@@ -201,6 +204,11 @@ struct TwoSinks : public BaseSink
   ~TwoSinks()
   {
   }
+  void flush()
+  {
+    std::cout << std::flush;
+    std::cerr << std::flush;
+  }
 
 private:
 
@@ -227,6 +235,11 @@ struct CharSink : public BaseSink
   }
   ~CharSink()
   {
+  }
+  void flush()
+  {
+    std::cout << std::flush;
+    std::cerr << std::flush;
   }
 
 private:
@@ -312,6 +325,25 @@ void StreamSink::remove ( Usul::Interfaces::IUnknown *unknown )
   if ( true == listener.valid() )
   {
     _listeners.remove ( IStreamListener::RefPtr ( listener.get() ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Flush the stream(s).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StreamSink::flush()
+{
+  if ( 0x0 != _twoSinks )
+  {
+    _twoSinks->flush();
+  }
+  if ( 0x0 != _charSink )
+  {
+    _charSink->flush();
   }
 }
 

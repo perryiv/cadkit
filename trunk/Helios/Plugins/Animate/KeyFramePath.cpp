@@ -13,6 +13,7 @@
 #include "GN/Interpolate/Global.h"
 #include "GN/Algorithms/KnotVector.h"
 #include "GN/Algorithms/Fill.h"
+#include "GN/Algorithms/Parameterize.h"
 #include "GN/Tessellate/Bisect.h"
 
 #include "Usul/Math/Transpose.h"
@@ -194,6 +195,7 @@ void KeyFramePath::updateNotify ( Usul::Interfaces::IUnknown * caller )
 }
 
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Interpolate.
@@ -207,6 +209,7 @@ void KeyFramePath::_interpolate ( )
   typedef DoubleCurve::SizeType SizeType;
   typedef DoubleCurve::ErrorCheckerType ErrorCheckerType;
   typedef GN::Algorithms::KnotVector < IndependentSequence, ErrorCheckerType > KnotVectorBuilder;
+  typedef GN::Algorithms::Parameterize< IndependentSequence, DependentContainer, DoubleCurve::Power, ErrorCheckerType > Paramerterize;
 
   // Clear what we have.
   _curve.clear ();
@@ -231,7 +234,7 @@ void KeyFramePath::_interpolate ( )
       point.push_back ( c[0] );
       point.push_back ( c[1] );
       point.push_back ( c[2] );
-      point.push_back ( 0.0  );
+      point.push_back ( 1.0  );
       point.push_back ( r[0] );
       point.push_back ( r[1] );
       point.push_back ( r[2] );
@@ -250,14 +253,15 @@ void KeyFramePath::_interpolate ( )
   if ( points.size() < DoubleCurve::Limits::MIN_NUM_CTR_PTS )
     return;
 
+  // Transpose so that the first index of "points" is the dimension.
+  Usul::Math::transpose ( points );
+
   // Make the parameters evenly spaced.
-  GN::Algorithms::fill ( _params, points.size(), 0, 1 );
+  //GN::Algorithms::fill ( _params, points.size(), 0, 1 );
+  Paramerterize::fit ( points, GN::Algorithms::Constants::CENTRIPETAL_FIT, _params );
 
   // Should be true.
   USUL_ASSERT ( _params.size() == points.size() );
-
-  // Transpose so that the first index of "points" is the dimension.
-  Usul::Math::transpose ( points );
 
   // Make the knot vector. Size it for interpolation.
   IndependentSequence knots;

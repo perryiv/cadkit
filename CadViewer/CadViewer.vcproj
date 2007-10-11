@@ -359,11 +359,15 @@
 			Name="Config"
 			>
 			<File
+				RelativePath="..\..\.cadviewer\functors.xml"
+				>
+			</File>
+			<File
 				RelativePath=".\preferences.xml"
 				>
 			</File>
 			<File
-				RelativePath=".\registry.xml"
+				RelativePath="..\..\.cadviewer\registry.xml"
 				>
 			</File>
 		</Filter>

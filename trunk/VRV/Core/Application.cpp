@@ -32,6 +32,7 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/File/Path.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/ICommandList.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Jobs/Manager.h"
@@ -741,11 +742,48 @@ double Application::getTimeSinceStart()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Initialize the application.
+//  Initialize this instance.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void Application::init()
+{
+  bool stop ( false );
+
+  try
+  {
+    this->_init();
+  }
+
+  catch ( const std::exception &e )
+  {
+    std::cout << "Error 1082603967: "
+              << "Exception generated while initializing."
+              << "\n\tWhat: " << e.what()
+              << std::endl;
+    stop = true;
+  }
+  catch ( ... )
+  {
+    std::cout << "Error 1082603859: "
+              << "Unknown exception generated while initializing." 
+              << std::endl;
+    stop = true;
+  }
+
+  // Are you supposed to stop?
+  if ( stop )
+    vrj::Kernel::instance()->stop();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the application.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_init()
 {
   USUL_TRACE_SCOPE;
 
@@ -796,6 +834,18 @@ void Application::init()
     (*iter)->addButtonReleaseListener ( me.get() );
   }
 
+  // Set the background color.
+  this->backgroundColor ( this->preferences()->backgroundColor() );
+
+  // Set up lights.
+  this->_initLight();
+
+  // Initialize the menu.
+  this->_initMenu();
+
+  // Initialize the status-bar.
+  this->_initStatusBar();
+
   // Experimental: 
   #if 0 // Experimental
   std::ostringstream out;
@@ -830,6 +880,18 @@ void Application::init()
 
 void Application::preFrame()
 {
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Application::_preFrame ), "3669056808" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called before the frame.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_preFrame()
+{
   USUL_TRACE_SCOPE;
 
   // Mark the start of the frame.
@@ -845,8 +907,7 @@ void Application::preFrame()
   // Write out the start of the frame.
   if ( _sharedReferenceTime.isLocal () )
   {
-    _sharedReferenceTime->data = osg::Timer::instance()->delta_s(_initialTime, osg::Timer::instance()->tick());
-    //static_cast < double > ( _frameStart - _initialTime );
+    _sharedReferenceTime->data = osg::Timer::instance()->delta_s( _initialTime, osg::Timer::instance()->tick() );
   }
 
   // Update these input devices.
@@ -885,6 +946,18 @@ void Application::preFrame()
 
 void Application::latePreFrame()
 {
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Application::_latePreFrame ), "1897051329" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called after preFrame, but before the frame.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_latePreFrame()
+{
   USUL_TRACE_SCOPE;
 
   // Get the frame time.
@@ -914,13 +987,25 @@ void Application::latePreFrame()
 }
 
 
-////////////////////////////////////////////////////////////////b///////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  Called when the frame is done.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void Application::postFrame()
+{
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Application::_postFrame ), "2751540437" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the frame is done.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_postFrame()
 {
   USUL_TRACE_SCOPE;
 

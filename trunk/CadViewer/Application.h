@@ -113,8 +113,7 @@ protected:
   bool                          _handleNavigationEvent ( unsigned long id );
 
   // Called by the kernel to initialize this instance.
-  virtual void                  init();
-  void                          _init();
+  virtual void                  _init();
 
   // Intersect if we are supposed to.
   void                          _intersect();
@@ -126,11 +125,9 @@ protected:
   unsigned int                  _numSelected();
 
   // Called by the kernel before the frame.
-  virtual void                  latePreFrame();
   void                          _latePreFrame();
 
   // Called by the kernel after the frame.
-  virtual void                  postFrame();
   void                          _postFrame();
 
   // Seek to the intersected point, if any.

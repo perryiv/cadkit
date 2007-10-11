@@ -107,6 +107,9 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   {
     subject->addModifiedObserver ( this );
   }
+
+  // Load initial trackball settings.
+  _viewer->trackballStateLoad();
 }
 
 

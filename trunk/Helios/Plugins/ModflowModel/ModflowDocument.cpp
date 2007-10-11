@@ -538,6 +538,9 @@ void ModflowDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
     // We're not dirty now.
     this->dirtyState ( false );
+
+    // However, the bounding shere is dirty.
+    _root->dirtyBound();
   }
 }
 

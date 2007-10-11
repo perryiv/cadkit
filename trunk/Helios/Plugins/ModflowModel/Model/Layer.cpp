@@ -229,6 +229,9 @@ void Layer::_buildScene ( Unknown *caller )
       _root->addChild ( a->buildScene ( this ) );
     }
   }
+
+  // The bounding sphere is dirty.
+  _root->dirtyBound();
 }
 
 

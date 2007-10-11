@@ -207,6 +207,7 @@ void Attribute::_setScene ( osg::Group *group )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _scene = group;
+  _scene->dirtyBound();
 }
 
 

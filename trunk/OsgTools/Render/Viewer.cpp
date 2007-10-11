@@ -72,6 +72,9 @@
 #include "Usul/Interfaces/IToolLifeTime.h"
 #include "Usul/Interfaces/IRenderListener.h"
 
+#include "Usul/Registry/Constants.h"
+#include "Usul/Registry/Convert.h"
+#include "Usul/Registry/Database.h"
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/ReportErrors.h"
 #include "Usul/Resources/TextWindow.h"
@@ -118,8 +121,28 @@
 #include <limits>
 
 using namespace OsgTools::Render;
+namespace Sections = Usul::Registry::Sections;
+namespace Keys = Usul::Registry::Keys;
+typedef Usul::Registry::Database Reg;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Viewer, Viewer::BaseClass );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Converters for registry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Usul
+{
+  namespace Registry
+  {
+    USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_3 ( osg::Vec3f );
+    USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_3 ( osg::Vec3d );
+    USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_3 ( osg::Quat );
+  }
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -209,7 +232,7 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   this->_addAxes();
 
   // Set the default fov
-  Usul::Shared::Preferences::instance().setDouble( Usul::Registry::Keys::FOV, OsgTools::Render::Defaults::CAMERA_FOV_Y );
+  Usul::Shared::Preferences::instance().setDouble( Keys::FOV, OsgTools::Render::Defaults::CAMERA_FOV_Y );
 
   // Unique context id to identify this viewer in OSG.
   static unsigned int count ( 0 );
@@ -231,6 +254,9 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
 
 Viewer::~Viewer()
 {
+  // Remember this trackball setting.
+  this->trackballStateSave();
+
   // Better be zero
   USUL_ASSERT ( 0 == this->refCount() );
 }
@@ -377,7 +403,7 @@ void Viewer::render()
     this->_setCenterOfRotation();
 
     // Set high lod callbacks if we should
-    if ( Usul::Shared::Preferences::instance().getBool( Usul::Registry::Keys::HIGH_LODS ) )
+    if ( Usul::Shared::Preferences::instance().getBool( Keys::HIGH_LODS ) )
       this->_setLodCullCallback ( new OsgTools::Render::HighLodCallback );
 
     // Check for errors.
@@ -540,7 +566,7 @@ void Viewer::camera ( CameraOption option )
 
   // See if we have a trackball...
   Trackball *trackball = dynamic_cast < Trackball * > ( this->navManip ( ) );
-  
+
   // Try to save the distance.
   std::pair<bool,float> dist ( false, 0 );
   if ( trackball )
@@ -716,7 +742,7 @@ void Viewer::resize ( unsigned int w, unsigned int h )
   this->viewport ( 0, 0, (int) w, (int) h );
 
   // Set the viewer's projection matrix.
-  double fovy  ( Usul::Shared::Preferences::instance().getDouble ( Usul::Registry::Keys::FOV ) );
+  double fovy  ( Usul::Shared::Preferences::instance().getDouble ( Keys::FOV ) );
   double zNear ( OsgTools::Render::Defaults::CAMERA_Z_NEAR );
   double zFar  ( OsgTools::Render::Defaults::CAMERA_Z_FAR );
   double width ( w ), height ( h );
@@ -1310,7 +1336,7 @@ Viewer::LowLods::LowLods ( Viewer *c ) : _c ( c )
 {
   USUL_ERROR_CHECKER ( 0x0 != _c );
 
-  if ( Usul::Shared::Preferences::instance().getBool( Usul::Registry::Keys::LOW_LODS ) )
+  if ( Usul::Shared::Preferences::instance().getBool( Keys::LOW_LODS ) )
     OsgTools::Render::setLodCullCallback ( new OsgTools::Render::LowLodCallback, _c->scene(), _c->_lods );
 }
 
@@ -1567,7 +1593,7 @@ void Viewer::_removeSelectionBox()
 
 double Viewer::_animationTime()
 { 
-  double animation ( Usul::Shared::Preferences::instance().getDouble ( Usul::Registry::Keys::ANIMATION_TIME, _ANIMATION_TIMER_MILLISECONDS ) );
+  double animation ( Usul::Shared::Preferences::instance().getDouble ( Keys::ANIMATION_TIME, _ANIMATION_TIMER_MILLISECONDS ) );
   return animation * OsgTools::Render::Defaults::TO_MILLISECONDS; 
 }
 
@@ -3658,7 +3684,7 @@ void Viewer::buttonPress ( float x, float y, bool left, bool middle, bool right 
   this->spin ( false );
 
   // Set the lod-callbacks if we are suppose to.
-  if ( Usul::Shared::Preferences::instance().getBool( Usul::Registry::Keys::LOW_LODS ) )
+  if ( Usul::Shared::Preferences::instance().getBool( Keys::LOW_LODS ) )
     this->_setLodCullCallback ( new OsgTools::Render::LowLodCallback );
 
   // Handle the navigation event.
@@ -3980,7 +4006,7 @@ void Viewer::spin ( bool state )
     this->spin ( false );
 
     // Set a new timeout event if we are allowed.
-    if ( Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::ALLOW_SPIN ) )
+    if ( Usul::Shared::Preferences::instance().getBool ( Keys::ALLOW_SPIN ) )
       _timeoutSpin->startSpin ( _ANIMATION_TIMER_MILLISECONDS );
   }
 
@@ -4001,7 +4027,7 @@ void Viewer::spin ( bool state )
 void Viewer::timeoutSpin()
 {
   // Punt if we should.
-  if ( false == Usul::Shared::Preferences::instance().getBool ( Usul::Registry::Keys::ALLOW_SPIN ) )
+  if ( false == Usul::Shared::Preferences::instance().getBool ( Keys::ALLOW_SPIN ) )
     return;
 
   // Handle bad cases.
@@ -4340,7 +4366,7 @@ void Viewer::setAllMaterialsAlpha( float alpha )
 
 void Viewer::fovSet ( double fov )
 {
-  Usul::Shared::Preferences::instance().setDouble( Usul::Registry::Keys::FOV, fov );
+  Usul::Shared::Preferences::instance().setDouble( Keys::FOV, fov );
 
   unsigned int width  ( static_cast < unsigned int > ( this->width()  ) );
   unsigned int height ( static_cast < unsigned int > ( this->height() ) );
@@ -4356,7 +4382,7 @@ void Viewer::fovSet ( double fov )
 
 double Viewer::fovGet () const
 {
-  return Usul::Shared::Preferences::instance().getDouble( Usul::Registry::Keys::FOV );
+  return Usul::Shared::Preferences::instance().getDouble( Keys::FOV );
 }
 
 
@@ -4557,7 +4583,7 @@ bool Viewer::showCenterOfRotation ( ) const
 
 void Viewer::_setCenterOfRotation()
 {
-  osg::ref_ptr< osg::Group > group ( this->getGroup ( Usul::Registry::Keys::COR_NAME ) );
+  osg::ref_ptr< osg::Group > group ( this->getGroup ( Keys::COR_NAME ) );
 
   group->removeChild( 0, group->getNumChildren() );
 
@@ -5229,4 +5255,76 @@ const Usul::Interfaces::IUnknown * Viewer::caller () const
 {
   Guard guard ( this->mutex () );
   return _caller.get ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper unction to prepare document tag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  std::string documentTagName ( const Usul::Interfaces::IDocument *doc )
+  {
+    std::string name ( ( 0x0 != doc ) ? doc->fileName() : "" );
+    std::replace ( name.begin(), name.end(), ' ',  '_' );
+    std::replace ( name.begin(), name.end(), '/',  '_' );
+    std::replace ( name.begin(), name.end(), '\\', '_' );
+    std::replace ( name.begin(), name.end(), ':',  '_' );
+    std::replace ( name.begin(), name.end(), '.',  '_' );
+    return name;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Save the trackball state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::trackballStateSave() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  std::string doc ( Helper::documentTagName ( _document.get() ) );
+  if ( true == doc.empty() )
+    return;
+
+  const Trackball *trackball ( dynamic_cast < const Trackball * > ( this->navManip() ) );
+  if ( 0x0 == trackball )
+    return;
+
+  Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["center"]   = trackball->center();
+  Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["rotation"] = trackball->rotation();
+  Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["distance"] = trackball->distance();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the trackball state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::trackballStateLoad()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  std::string doc ( Helper::documentTagName ( _document.get() ) );
+  if ( true == doc.empty() )
+    return;
+
+  Trackball *trackball ( dynamic_cast < Trackball * > ( this->navManip() ) );
+  if ( 0x0 == trackball )
+    return;
+
+  const osg::Vec3   center ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["center"].get<osg::Vec3>   ( trackball->center()   ) );
+  const osg::Quat rotation ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["rotation"].get<osg::Quat> ( trackball->rotation() ) );
+  const float     distance ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["distance"].get<float>     ( trackball->distance() ) );
+  this->setTrackball ( center, distance, rotation, false, true );
 }

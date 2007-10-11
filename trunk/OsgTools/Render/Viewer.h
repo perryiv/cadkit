@@ -434,6 +434,10 @@ public:
   // Animate
   bool                  timeoutAnimate ();
 
+  // Save/load the trackball settings.
+  void                  trackballStateSave() const;
+  void                  trackballStateLoad();
+
   // Set/Get two sided lighting
   void                  twoSidedLighting ( bool twoSided );
   bool                  twoSidedLighting () const;

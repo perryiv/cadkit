@@ -18,6 +18,7 @@
 
 #include "Usul/Base/Object.h"
 #include "Usul/Registry/Convert.h"
+#include "Usul/Trace/Trace.h"
 
 #include <string>
 #include <map>
@@ -67,8 +68,8 @@ public:
   ConstIterator                   end() const;
 
   // Get the string value.
-  std::string                     get() const;
-  template < class T > T          get() const;
+  std::string                     get ( const std::string &defaultValue ) const;
+  template < class T > T          get ( const T &defaultValue ) const;
 
   // Operator to return the child with the name. Creates child nodes as needed.
   Node &                          operator [] ( const std::string &name );
@@ -84,8 +85,6 @@ protected:
 
   // Use reference counting.
   virtual ~Node();
-
-  std::string                     _getValue() const;
 
 private:
 
@@ -106,6 +105,7 @@ private:
 
 template < class T > void Node::set ( const T &t )
 {
+  USUL_TRACE_SCOPE;
   this->set ( Usul::Registry::Convert<T>::to ( t ) );
 }
 
@@ -116,10 +116,16 @@ template < class T > void Node::set ( const T &t )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class T > T Node::get() const
+template < class T > T Node::get ( const T &defaultValue ) const
 {
-  T v = T();
-  Usul::Registry::Convert<T>::from ( this->_getValue(), v );
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  if ( true == _value.empty() )
+    return defaultValue;
+
+  T v = defaultValue;
+  Usul::Registry::Convert<T>::from ( _value, v );
   return v;
 }
 
@@ -132,6 +138,7 @@ template < class T > T Node::get() const
 
 template < class T > Node &Node::operator = ( const T &t )
 {
+  USUL_TRACE_SCOPE;
   this->set ( t );
   return *this;
 }

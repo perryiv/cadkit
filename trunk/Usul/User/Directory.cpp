@@ -98,3 +98,26 @@ std::string Usul::User::Directory::vendor ( const std::string &name, bool wantSl
   // Return string.
   return path;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get user's program directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Usul::User::Directory::program ( const std::string &vendor, const std::string &program, bool wantSlash )
+{
+  // Handle bad input.
+  if ( program.empty() )
+    throw std::runtime_error ( "Error 3166677210: Empty program name given." );
+
+  // Make the slash.
+  const std::string slash ( ( wantSlash ) ? "/" : "" );
+
+  // Make the path.
+  const std::string path ( Usul::User::Directory::vendor ( vendor, true ) + program + slash );
+
+  // Return string.
+  return path;
+}

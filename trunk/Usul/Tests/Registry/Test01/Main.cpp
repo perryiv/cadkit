@@ -47,7 +47,7 @@
 #define TEST_VALUE(the_type,the_key,the_value) \
 { \
   Usul::Registry::Database::instance() the_key = the_value; \
-  USUL_ASSERT ( the_value == (Usul::Registry::Database::instance() the_key).get<the_type>() ); \
+  USUL_ASSERT ( the_value == (Usul::Registry::Database::instance() the_key).get<the_type> ( the_value ) ); \
 }
 
 
@@ -60,7 +60,7 @@
 #define TEST_VECTOR(the_type,the_key,the_vector) \
 { \
   Usul::Registry::Database::instance() the_key = the_vector; \
-  USUL_ASSERT ( true == the_vector.equal ( (Usul::Registry::Database::instance() the_key).get<the_type>() ) ); \
+  USUL_ASSERT ( true == the_vector.equal ( (Usul::Registry::Database::instance() the_key).get<the_type> ( the_vector ) ) ); \
 }
 
 

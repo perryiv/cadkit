@@ -137,6 +137,9 @@ void _runTest()
     XmlTree::RegistryIO::read ( a );
 
     // Write it to disk.
+    XmlTree::RegistryIO::write ( b );
+
+    // Write it to disk.
     XmlTree::RegistryIO::read ( b );
   }
 

@@ -24,7 +24,7 @@ namespace Usul {
 namespace Predicates {
 
 
-struct EndsWith : public std::unary_function < const std::string &, bool >
+struct EndsWith : public std::unary_function < std::string, bool >
 {
   EndsWith ( const EndsWith &ew ) : _s ( ew._s ){}
   EndsWith ( const std::string &s ) : _s ( s ){}

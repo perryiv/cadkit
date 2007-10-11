@@ -19,6 +19,7 @@
 #include "OsgTools/Box.h"
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Volume/Texture3DVolume.h"
+#include "OsgTools/Volume/TransferFunction1D.h"
 
 #include "osg/Group"
 #include "osg/MatrixTransform"
@@ -61,28 +62,29 @@ osg::Image* loadTexture( int sizeX, int sizeY, int sizeZ, const std::string& fil
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* buildTransferFunction ( )
+OsgTools::Volume::TransferFunction* buildTransferFunction ( )
 {
-  osg::ref_ptr < osg::Image > image ( new osg::Image );
-  image->allocateImage ( 256, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE );
+  OsgTools::Volume::TransferFunction1D::RefPtr tf ( new OsgTools::Volume::TransferFunction1D );
+  tf->size ( 256 );
+  tf->textureUnit ( 1 );
 
-  unsigned char *data ( image->data() );
+  typedef OsgTools::Volume::TransferFunction1D::Color Color;
 
-  std::fill ( data, data + ( 256 * 4 ), 0 );
-  
-  data += ( 128 * 4 );
-  for ( unsigned int i = 127; i < 256; ++i )
+  for ( unsigned int i = 0; i < 256; ++i )
   {
+    Color c;
     float value ( static_cast < float > ( i - 127 ) / 128 );
     float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
     Usul::Functions::hsvToRgb ( r, g, b, value * 360, 1.0f, 1.0f );
-    *data++ = r * 255;
-    *data++ = g * 255;
-    *data++ = b * 255;
-    *data++ = i;
+    c[0] = r * 255;
+    c[1] = g * 255;
+    c[2] = b * 255;
+    c[3] = i;
+
+    tf->value ( i, c );
   }
 
-  return image.release();
+  return tf.release();
 }
 
 

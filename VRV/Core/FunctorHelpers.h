@@ -222,6 +222,11 @@ namespace Helper
               transform->analog ( analog.get() );
               functor.append ( transform.get() );
             }
+
+            // If the "component" in the functor xml file has an attribute 
+            // called "speed", then this will override the speed that was 
+            // set when the transform was made.
+            transform->speed ( Helper::FromString<float>::convert ( node->attributes()["speed"], transform->speed() ) );
           }
         }
       }

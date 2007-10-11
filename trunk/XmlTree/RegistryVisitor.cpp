@@ -102,7 +102,7 @@ void RegistryVisitor::visit ( Usul::Registry::Node *n )
     return;
 
   // Make new node.
-  XmlTree::Node::RefPtr node ( new XmlTree::Node ( n->name(), n->get() ) );
+  XmlTree::Node::RefPtr node ( new XmlTree::Node ( n->name(), n->get ( "" ) ) );
 
   // Add it to the current node.
   _stack.top()->children().push_back ( node.get() );

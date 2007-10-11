@@ -330,7 +330,7 @@ protected:
   void                    _loadSimConfigs();
 
   // Load the file(s).
-  void                    _loadModelFiles  ( const Filenames& filename );
+  void                    _loadModelFiles  ( const Filenames& filenames );
 
   // Set the near and far clipping planes based on the scene.
   void                    _setNearAndFarClippingPlanes();

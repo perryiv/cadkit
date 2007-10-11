@@ -181,7 +181,6 @@ public:
   // Destructor.
   virtual ~Application();
 
-  virtual void            init();
   virtual void            viewAll ( osg::Node *mt, osg::Matrix::value_type zScale=2 );
 
   /// Add a light.
@@ -303,13 +302,15 @@ protected:
 
   /// VR Juggler methods.
   virtual void            contextInit();
-  virtual void            preFrame();
-  virtual void            latePreFrame();
   virtual void            contextPreDraw();
   virtual void            contextPostDraw();
   virtual void            draw();
-  virtual void            postFrame();
   virtual void            contextClose();
+
+  virtual void            _init();
+  virtual void            _preFrame();
+  virtual void            _latePreFrame();
+  virtual void            _postFrame();
 
   // Draw functions.
   virtual void            _preDraw ( OsgTools::Render::Renderer *renderer );
@@ -511,6 +512,14 @@ protected:
   Application& operator = (const Application&);
 
 private:
+  // Don't allow derived classes to implement these VR Juggler functions.
+  // Implement the _function instead.  
+  // This is to ensure that the functions are wrapped in a try/catch.
+  virtual void            init();
+  virtual void            preFrame();
+  virtual void            latePreFrame();
+  virtual void            postFrame();
+
   // Typedefs.
   typedef osg::ref_ptr < osg::MatrixTransform >            MatTransPtr;
   typedef osg::ref_ptr < osg::Group >                      GroupPtr;

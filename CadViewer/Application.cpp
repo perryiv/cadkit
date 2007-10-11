@@ -30,8 +30,6 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Components/Manager.h"
-#include "Usul/Print/Vector.h"
-#include "Usul/Print/Matrix.h"
 #include "Usul/Math/Constants.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/System/Host.h"
@@ -229,43 +227,6 @@ Application::~Application()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::init()
-{
-  bool stop ( false );
-
-  try
-  {
-    this->_init();
-  }
-
-  catch ( const std::exception &e )
-  {
-    std::cout << "Error 1082603967: "
-              << "Exception generated while initializing."
-              << "\n\tWhat: " << e.what()
-              << std::endl;
-    stop = true;
-  }
-  catch ( ... )
-  {
-    std::cout << "Error 1082603859: "
-              << "Unknown exception generated while initializing." 
-              << std::endl;
-    stop = true;
-  }
-
-  // Are you supposed to stop?
-  if ( stop )
-    vrj::Kernel::instance()->stop();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize this instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void Application::_init()
 {
   ErrorChecker ( 1067096939, 0 == _appThread );
@@ -275,22 +236,10 @@ void Application::_init()
   _appThread = Usul::Threads::currentThreadId();
 
   // Call the base class's function first.
-  BaseClass::init();
+  BaseClass::_init();
   
   // Set the global GL_NORMALIZE flag.
   //this->normalize ( this->preferences()->normalizeVertexNormalsGlobal() );
-  
-  // Set the background color.
-  this->backgroundColor ( this->preferences()->backgroundColor() );
-
-  // Set up lights.
-  this->_initLight();
-
-  // Initialize the menu.
-  this->_initMenu();
-
-  // Initialize the status-bar.
-  this->_initStatusBar();
 
   // Note: we cannot initialize the text yet because the viewport has not been set.
 }
@@ -444,33 +393,6 @@ void Application::_rebuildGrid()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::latePreFrame()
-{
-  // For safety.
-  try
-  {
-    this->_latePreFrame();
-  }
-
-  // Catch exceptions.
-  catch ( const std::exception &e )
-  {
-    this->_update ( *_msgText, "Error 1999395957: Application::preFrame(): exception: " + std::string ( e.what() ) );
-  }
-  // Catch exceptions.
-  catch ( ... )
-  {
-    this->_update ( *_msgText, "Error 2847458960: Application::preFrame(): unknown exception." );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called before the frame is drawn.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void Application::_latePreFrame()
 {
   USUL_TRACE_SCOPE;
@@ -478,7 +400,7 @@ void Application::_latePreFrame()
   ErrorChecker ( 1067093580, isAppThread(), CV::NOT_APP_THREAD );
   
   // Call the base class's function.
-  BaseClass::latePreFrame();
+  BaseClass::_latePreFrame();
 
   // Update the frame-rate's text.
   this->_updateFrameRateDisplay();
@@ -680,40 +602,6 @@ void Application::JoystickCB::operator() ( VRV::Devices::Message m, Usul::Base::
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::postFrame()
-{
-  USUL_TRACE_SCOPE;
-
-  // For safety.
-  try
-  {
-    this->_postFrame();
-  }
-
-  // Catch exceptions.
-  catch ( const std::exception &e )
-  {
-    std::ostringstream message;
-    message << "Error 3956579158: Application::postFrame(): exception: "
-      << e.what();
-    this->_update ( *_msgText, message.str() );
-  }
-
-  // Catch exceptions.
-  catch ( ... )
-  {
-    std::string message ( "Error 2660463460: Application::postFrame(): unknown exception." );
-    this->_update ( *_msgText, message );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called after the frame is drawn.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void Application::_postFrame()
 {
   USUL_TRACE_SCOPE;
@@ -721,7 +609,7 @@ void Application::_postFrame()
   ErrorChecker ( 1071439494, isAppThread(), CV::NOT_APP_THREAD );
 
   // Call the base class's function.
-  BaseClass::postFrame();
+  BaseClass::_postFrame();
 
   // Initialize the text if we need to. We cannot call this sooner because 
   // contextInit() has to be called first.

@@ -155,17 +155,8 @@ protected:
   // Use the scene tool if we are supposed to.
   void                          _useSceneTool();
 
-  /// Update notify.
-  virtual void                  _updateNotify ();
-
-  /// The active document has changed.
-  virtual void                  activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc );
-
   /// Called when button is pressed.
   virtual void                  buttonPressNotify ( Usul::Interfaces::IUnknown * );
-
-  /// Called when button is released.
-  virtual void                  buttonReleaseNotify ( Usul::Interfaces::IUnknown * );
 
   // For readability.
   typedef unsigned long                                             ThreadId;

@@ -2084,8 +2084,30 @@ void Application::_updateNotify ()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::Interfaces::IUnknown::QueryPtr me ( this );
-  std::for_each ( _updateListeners.begin(), _updateListeners.end(), std::bind2nd ( std::mem_fun ( &UpdateListener::updateNotify ), me.get() ) );
+  if ( this->_allowNotify () )
+  {
+    Usul::Interfaces::IUnknown::QueryPtr me ( this );
+    std::for_each ( _updateListeners.begin(), _updateListeners.end(), std::bind2nd ( std::mem_fun ( &UpdateListener::updateNotify ), me.get() ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is notifying allowed?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_allowNotify () const
+{
+  // Don't notify if the menu is shown.
+  MenuPtr m ( const_cast < Menu* > ( this->menu() ) );
+  if ( true == m.valid() && true == m->isVisible() )
+  {
+    return false;
+  }
+
+  return true;
 }
 
 
@@ -2146,7 +2168,8 @@ void Application::addCommand ( Usul::Interfaces::ICommand* command )
 
 void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
 {
-  // Nothing to do for now.
+  // Rebuild the menu.
+  this->_initMenu();
 }
 
 

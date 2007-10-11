@@ -67,9 +67,6 @@ namespace CadKit
           const int Y                                 ( 100 );
           const int WIDTH                             ( 800 );
           const int HEIGHT                            ( 600 );
-
-          // File dialog properties.
-          const std::string LAST_DIRECTORY            ( "" );
         }
       }
 

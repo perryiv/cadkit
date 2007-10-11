@@ -39,7 +39,6 @@
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Queue.h"
 
-#include "QtCore/QSettings"
 #include "QtGui/QMainWindow"
 
 #include <map>
@@ -152,14 +151,11 @@ public:
   void                              hideSplashScreen();
   void                              showSplashScreen();
 
-  // Get the settings.
-  const QSettings &                 settings() const;
-  QSettings &                       settings();
-
   // Restore dock window positions.
   void                              restoreDockWindows();
 
-  // Update these sub-windows.
+  // Text window operations.
+  void                              textWindowAppend ( const std::string & );
   virtual void                      updateTextWindow ( bool force );
 
 protected:
@@ -245,8 +241,9 @@ private:
 
   void                              _notifyFinishedLoading ( Usul::Documents::Document * );
 
+  std::string                       _registryFileName() const;
+
   mutable Mutex *_mutex;
-  QSettings _settings;
   Actions _actions;
   ToolBars _toolBars;
   unsigned long _refCount;

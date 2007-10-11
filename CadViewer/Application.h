@@ -32,10 +32,7 @@
 
 #include <string>
 #include <vector>
-#include <list>
-#include <fstream>
 
-namespace Usul { namespace Commands { class Command; } }
 
 namespace CV {
 
@@ -47,8 +44,8 @@ class Application : public VRV::Core::Application,
 public:
 
   // Useful typedefs
-  typedef VRV::Core::Application BaseClass;
-  typedef Usul::Math::Matrix44f Matrix44f;
+  typedef VRV::Core::Application      BaseClass;
+  typedef Usul::Interfaces::IUnknown  Unknown;
 
   // Constructor.
   Application ( );
@@ -90,10 +87,6 @@ protected:
 
   // The callbacks are friendly.
   friend struct JoystickCB;
-
-  // Typedefs used internally.
-  typedef Usul::Interfaces::IUnknown Unknown;
-  typedef Unknown::ValidQueryPtr ValidUnknown;
 
   // These are not implemented by design.
   Application ( const Application &app );
@@ -148,7 +141,6 @@ protected:
   // Update.
   void                          _updateFrameRateDisplay();
   void                          _updateAnalogText();
-  void                          _updateCursor();
   void                          _updateSceneTool();
 
   // Use the scene tool if we are supposed to.

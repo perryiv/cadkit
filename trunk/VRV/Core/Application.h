@@ -301,20 +301,14 @@ public:
 protected:
 
   /// VR Juggler methods.
-  virtual void            contextInit();
-  virtual void            contextPreDraw();
-  virtual void            contextPostDraw();
-  virtual void            draw();
-  virtual void            contextClose();
-
   virtual void            _init();
   virtual void            _preFrame();
   virtual void            _latePreFrame();
   virtual void            _postFrame();
 
   // Draw functions.
-  virtual void            _preDraw ( OsgTools::Render::Renderer *renderer );
-  void                    _draw ( OsgTools::Render::Renderer *renderer );
+  virtual void            _preDraw  ( OsgTools::Render::Renderer *renderer );
+  void                    _draw     ( OsgTools::Render::Renderer *renderer );
   virtual void            _postDraw ( OsgTools::Render::Renderer *renderer );
 
   /// Set the viewport.
@@ -355,7 +349,8 @@ protected:
   void                    _decreaseTranslateSpeed ( double amount );
 
   /// Update notify.
-  virtual void            _updateNotify ();
+  void                    _updateNotify ();
+  virtual bool            _allowNotify () const;
 
   /// Process commands.
   void                    _processCommands ();
@@ -516,8 +511,13 @@ private:
   // Implement the _function instead.  
   // This is to ensure that the functions are wrapped in a try/catch.
   virtual void            init();
+  virtual void            contextInit();
   virtual void            preFrame();
   virtual void            latePreFrame();
+  virtual void            contextPreDraw();
+  virtual void            contextPostDraw();
+  virtual void            draw();
+  virtual void            contextClose();
   virtual void            postFrame();
 
   // Typedefs.

@@ -572,8 +572,11 @@ void Application::JoystickCB::operator() ( VRV::Devices::Message m, Usul::Base::
   ErrorChecker ( 1915253659u, isAppThread(), CV::NOT_APP_THREAD );
   ErrorChecker ( 4165917933u, 0x0 != _app );
 
-  MenuKit::OSG::Menu *menu = _app->menu ();
-  ErrorChecker ( 3990552070u, 0x0 != menu );
+  MenuKit::OSG::Menu::RefPtr menu ( _app->menu () );
+
+  // Make sure we have a valid menu.
+  if ( false == menu.valid () )
+    return;
 
   switch ( m )
   {
@@ -1092,38 +1095,6 @@ void Application::_updateSceneTool()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Only notify if the menu is not shown..
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_updateNotify()
-{
-  MenuPtr m ( this->menu() );
-  if ( true == m.valid() && false == m->isVisible() )
-  {
-    BaseClass::_updateNotify();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  The active document has changed.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
-{
-  // Redirect first.
-  BaseClass::activeDocumentChanged ( oldDoc, newDoc );
-
-  // Rebuild the menu.
-  this->_initMenu();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Called when button is pressed.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1183,27 +1154,5 @@ void Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
       this->_initLight();
       this->_initStatusBar();
     }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called when button is released.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::buttonReleaseNotify ( Usul::Interfaces::IUnknown * caller )
-{
-  USUL_TRACE_SCOPE;
-
-  // Redirect.
-  BaseClass::buttonReleaseNotify ( caller );
-
-  // Get the button id.
-  Usul::Interfaces::IButtonID::QueryPtr button ( caller );
-  if ( button.valid () )
-  {
-    unsigned long id ( button->buttonID () );
   }
 }

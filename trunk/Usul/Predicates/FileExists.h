@@ -30,8 +30,12 @@ namespace Usul {
 namespace Predicates {
 
 
-struct FileExists : public std::unary_function < const std::string &, bool >
+struct FileExists : public std::unary_function < std::string, bool >
 {
+  typedef std::unary_function < std::string, bool > BaseClass;
+  typedef BaseClass::argument_type argument_type;
+  typedef BaseClass::result_type result_type;
+
 protected:
 
   struct File

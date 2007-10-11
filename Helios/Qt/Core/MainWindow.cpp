@@ -28,6 +28,11 @@
 #include "Helios/Qt/Tools/Image.h"
 #include "Helios/Qt/Tools/SettingsGroupScope.h"
 
+#include "XmlTree/Document.h"
+#include "XmlTree/RegistryIO.h"
+
+#include "MenuKit/Button.h"
+
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
@@ -38,6 +43,7 @@
 #include "Usul/Errors/Stack.h"
 #include "Usul/Factory/ObjectFactory.h"
 #include "Usul/File/Contents.h"
+#include "Usul/File/Make.h"
 #include "Usul/File/Path.h"
 #include "Usul/File/Stats.h"
 #include "Usul/Functions/SafeCall.h"
@@ -46,17 +52,17 @@
 #include "Usul/Interfaces/GUI/IAddDockWindow.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/Registry/Database.h"
+#include "Usul/Registry/Qt.h"
 #include "Usul/Resources/TextWindow.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/Strings/Qt.h"
 #include "Usul/Threads/Callback.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
-
-#include "XmlTree/Document.h"
-
-#include "MenuKit/Button.h"
+#include "Usul/User/Directory.h"
 
 #include "QtCore/QStringList"
 #include "QtCore/QTimer"
@@ -81,9 +87,14 @@
 #include <fstream>
 
 using namespace CadKit::Helios::Core;
+namespace Sections = CadKit::Helios::Core::Registry::Sections;
+namespace Keys = CadKit::Helios::Core::Registry::Keys;
+namespace Defaults = CadKit::Helios::Core::Registry::Defaults;
+typedef Usul::Registry::Database Reg;
 
 // Needed for invoke method.
 Q_DECLARE_METATYPE( DocumentProxy );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -98,7 +109,6 @@ MainWindow::MainWindow ( const std::string &vendor,
                          const std::string &output,
                          bool showSplash ) : BaseClass(),
   _mutex        ( new MainWindow::Mutex ),
-  _settings     ( QSettings::IniFormat, QSettings::UserScope, vendor.c_str(), program.c_str() ),
   _actions      (),
   _toolBars     (),
   _refCount     ( 0 ),
@@ -123,6 +133,9 @@ MainWindow::MainWindow ( const std::string &vendor,
 
   // Name this thread.
   Usul::Threads::Named::instance().set ( Usul::Threads::Names::GUI );
+
+  // Keep names the same.
+  Usul::App::Application::instance().program ( _program );
 
   // Program-wide settings.
   QCoreApplication::setOrganizationName ( vendor.c_str() );
@@ -170,7 +183,7 @@ MainWindow::MainWindow ( const std::string &vendor,
   this->statusBar()->showMessage ( tr ( "Ready" ) );
 
   // Load the settings.
-  this->_loadSettings();
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MainWindow::_loadSettings ), "9740089350" );
 
   // Make the menu.
   this->_initMenu();
@@ -300,20 +313,13 @@ void MainWindow::_loadSettings()
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2863006339" );
 
+  // Read the file and populate the registry. Not a big deal if this fails.
+  Usul::Functions::safeCallV1 ( XmlTree::RegistryIO::read, this->_registryFileName(), "1123442106" );
+
   // Set the window's properties.
-  {
-    CadKit::Helios::Tools::SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::MAIN_WINDOW, _settings );
-    const QRect rect ( _settings.value ( CadKit::Helios::Core::Registry::Keys::GEOMETRY.c_str(), CadKit::Helios::Core::Registry::Defaults::GEOMETRY ).value<QRect>() );
-    this->setGeometry ( rect );
-
-    _recentFiles = _settings.value  ( CadKit::Helios::Core::Registry::Keys::RECENT_FILES.c_str () ).toStringList ();
-
-    // This is what we want...
-    //this->setGeometry ( Usul::Registry::Database::instance().get<QRect> 
-    //  ( CadKit::Helios::Core::Registry::Keys::GEOMETRY, CadKit::Helios::Core::Registry::Defaults::GEOMETRY ) );
-
-    // also add to usul preferences...
-  }
+  Usul::Registry::Node &mw ( Reg::instance()[Sections::MAIN_WINDOW] );
+  _recentFiles = mw[Keys::RECENT_FILES].get<QStringList> ( QStringList() );
+  this->setGeometry ( mw[Keys::GEOMETRY].get<QRect> ( Defaults::GEOMETRY ) );
 }
 
 
@@ -329,21 +335,17 @@ void MainWindow::_saveSettings()
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "9722347090" );
 
   // Set the window's properties.
-  {
-    CadKit::Helios::Tools::SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::MAIN_WINDOW, _settings );
-    const QRect rect ( this->geometry() );
-    _settings.setValue ( CadKit::Helios::Core::Registry::Keys::GEOMETRY.c_str(), rect );
+  Usul::Registry::Node &mw ( Reg::instance()[Sections::MAIN_WINDOW] );
+  mw[Keys::GEOMETRY] = this->geometry();
 
-    // Save dock window positions.
-    QByteArray positions ( this->saveState ( Helios::Core::Constants::VERSION ) );
-    _settings.setValue ( CadKit::Helios::Core::Registry::Keys::DOCK_WINDOW_POSITIONS.c_str(), positions );
+  // Save dock window positions.
+  mw[Keys::DOCK_WINDOW_POSITIONS] = this->saveState ( Helios::Core::Constants::VERSION );
 
-    // Save recent files.
-    _settings.setValue ( CadKit::Helios::Core::Registry::Keys::RECENT_FILES.c_str (), _recentFiles );
-  }
+  // Save recent files.
+  mw[Keys::RECENT_FILES] = _recentFiles;
 
   // Write to disk.
-  _settings.sync();
+  Usul::Functions::safeCallV1 ( XmlTree::RegistryIO::write, this->_registryFileName(), "4136994389" );
 }
 
 
@@ -640,34 +642,6 @@ void MainWindow::_buildProgressBarWindow()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the settings.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const QSettings &MainWindow::settings() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _settings;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the settings.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-QSettings &MainWindow::settings()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _settings;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Increment the reference count.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -898,9 +872,13 @@ std::string MainWindow::_lastFileDialogDir ( const std::string &title ) const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  const std::string key ( "helios_qt_file_dialog_" + title );
-  QVariant dir ( _settings.value ( key.c_str(), QString ( Usul::CommandLine::Arguments::instance().directory().c_str() ) ) );
-  return dir.toString().toStdString();
+  // Copy the title and replace any white space.
+  std::string key ( title );
+  std::replace ( key.begin(), key.end(), ' ', '_' );
+
+  // Get the value and return it.
+  const std::string dir ( Reg::instance()[Sections::FILE_DIALOG][Keys::LAST_DIRECTORY][key].get ( "" ) );
+  return dir;
 }
 
 
@@ -915,8 +893,12 @@ void MainWindow::_lastFileDialogDir ( const std::string &title, const std::strin
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  const std::string key ( "helios_qt_file_dialog_" + title );
-  _settings.setValue ( key.c_str(), QVariant ( dir.c_str() ) );
+  // Copy the title and replace any white space.
+  std::string key ( title );
+  std::replace ( key.begin(), key.end(), ' ', '_' );
+
+  // Set the value and return it.
+  Reg::instance()[Sections::FILE_DIALOG][Keys::LAST_DIRECTORY][key] = dir;
 }
 
 
@@ -1517,7 +1499,7 @@ void MainWindow::notify ( Usul::Interfaces::IUnknown *caller, const char *values
 {
   USUL_TRACE_SCOPE;
 
-  if ( 0x0 != values && numValues > 0 )
+  if ( ( 0x0 != values ) && ( numValues > 0 ) )
   {
     // Remove all carriage returns and null characters.
     std::string s ( values, values + numValues );
@@ -1529,11 +1511,30 @@ void MainWindow::notify ( Usul::Interfaces::IUnknown *caller, const char *values
     if ( false == s.empty() && '\n' == s.at ( s.size() - 1 ) )
       s.resize ( s.size() - 1 );
 
-    // Do not guard, the queue has an internal mutex.
-    _textWindow.second->add ( s );
+    // Append text.
+    this->textWindowAppend ( s );
 
     // Tell window to refresh.
     this->updateTextWindow ( true );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The document has finished loading.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::textWindowAppend ( const std::string &s )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Need to guard this check.
+  if ( 0x0 != _textWindow.second.get() )
+  {
+    _textWindow.second->add ( s );
   }
 }
 
@@ -1648,9 +1649,8 @@ void MainWindow::restoreDockWindows()
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
 
-  // Restore dock window positions.
-  CadKit::Helios::Tools::SettingsGroupScope group ( CadKit::Helios::Core::Registry::Sections::MAIN_WINDOW, _settings );  
-  QByteArray positions ( _settings.value ( CadKit::Helios::Core::Registry::Keys::DOCK_WINDOW_POSITIONS.c_str() ).toByteArray() );
+  QByteArray defaults ( this->saveState ( Helios::Core::Constants::VERSION ) );
+  QByteArray positions ( Reg::instance()[Sections::MAIN_WINDOW][Keys::DOCK_WINDOW_POSITIONS].get<QByteArray> ( defaults ) );
   this->restoreState ( positions, Helios::Core::Constants::VERSION );
 }
 
@@ -1808,4 +1808,28 @@ void MainWindow::loadFile ( const std::string &file )
     command->filename ( file );
     command->execute ( 0x0 );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return name of registry file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string MainWindow::_registryFileName() const
+{
+  USUL_TRACE_SCOPE;
+
+  // Get persistant directory.
+  const std::string dir ( Usul::User::Directory::vendor ( this->vendor(), true ) + this->programName() + "/" );
+
+  // Make sure it exists.
+  Usul::File::make ( dir );
+
+  // Make the file name.
+  std::string name ( dir + this->programName() + ".registry" );
+
+  // Return file name.
+  return name;
 }

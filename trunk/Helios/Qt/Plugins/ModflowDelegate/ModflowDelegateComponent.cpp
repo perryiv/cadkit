@@ -189,17 +189,6 @@ void ModflowDelegateComponent::createDefaultGUI ( Usul::Documents::Document *doc
 
     // Show the window.
     viewer->show();
-
-    // Make sure the geometry is visible.
-    viewer->viewer()->camera ( OsgTools::Render::Viewer::FIT );
-
-    // Attach viewer as a listener to the document.
-    Usul::Interfaces::IModifiedObserver::QueryPtr observer ( viewer->viewer() );
-    Usul::Interfaces::IModifiedSubject::QueryPtr subject ( document );
-    if ( ( true == observer.valid() ) && ( true == subject.valid() ) )
-    {
-      subject->addModifiedObserver ( observer.get() );
-    }
   }
 }
 

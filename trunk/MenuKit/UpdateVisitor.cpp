@@ -10,6 +10,9 @@
 
 #include "MenuKit/UpdateVisitor.h"
 #include "MenuKit/Button.h"
+#include "MenuKit/RadioButton.h"
+#include "MenuKit/ToggleButton.h"
+#include "MenuKit/Menu.h"
 
 #include "Usul/Commands/Command.h"
 #include "Usul/Interfaces/IUpdateEnable.h"
@@ -37,6 +40,22 @@ UpdateVisitor::UpdateVisitor () : BaseClass ()
 
 UpdateVisitor::~UpdateVisitor ()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void UpdateVisitor::apply ( Menu &m )
+{
+  // Disable the menu if it's empty.
+  m.enabled ( !m.empty () );
+
+  // Visit all it's children.
+  m.traverse ( *this );
 }
 
 

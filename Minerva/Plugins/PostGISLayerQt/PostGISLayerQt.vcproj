@@ -83,7 +83,7 @@
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/PostGISLayerQt.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(QTDIR)/lib"
+				AdditionalLibraryDirectories="$(QTDIR)/lib;$(BOOST_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug\PostGISLayerQtd.pdb"
@@ -182,7 +182,7 @@
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/PostGISLayerQt.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(QTDIR)/lib"
+				AdditionalLibraryDirectories="$(QTDIR)/lib;$(BOOST_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
 				ProgramDatabaseFile=".\Release\PostGISLayerQt.pdb"
 				ImportLibrary=".\Release\PostGISLayerQt.lib"
@@ -253,8 +253,46 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\ColorPage.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ColorPage.h"
+					>
+				</File>
+				<File
 					RelativePath=".\CompileGuard.h"
 					>
+				</File>
+				<File
+					RelativePath=".\DatabasePage.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DatabasePage.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing DatabasePage.h"
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\DatabasePage.h&quot; -o &quot;.\GeneratedFiles\moc_DatabasePage.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\DatabasePage.h"
+							Outputs=".\GeneratedFiles\moc_DatabasePage.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing DatabasePage.h"
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\DatabasePage.h&quot; -o &quot;.\GeneratedFiles\moc_DatabasePage.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\DatabasePage.h"
+							Outputs=".\GeneratedFiles\moc_DatabasePage.cpp"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath=".\PostGISLayerQtComponent.cpp"
@@ -282,6 +320,10 @@
 				>
 				<File
 					RelativePath=".\generatedfiles\moc_AddPostGISLayerWidget.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_DatabasePage.cpp"
 					>
 				</File>
 			</Filter>

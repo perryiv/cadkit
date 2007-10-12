@@ -14,6 +14,7 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/IViewMatrix.h"
+#include "Usul/Interfaces/IRenderLoop.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
@@ -35,7 +36,8 @@ Path::Path () :
   _dirty ( false ),
   _acceptNewFrames ( false ),
   _startTime ( -1.0 ),
-  _animating( false )
+  _animating( false ),
+  _renderLoopState ( false )
 {
 }
 
@@ -92,9 +94,33 @@ void Path::start ( Usul::Interfaces::IUnknown * caller )
     _startTime = fs->frameStamp ()->getReferenceTime ();
   }
 
+  this->animating ( true );
+
+  Usul::Interfaces::IRenderLoop::QueryPtr rl ( caller );
+  if ( rl.valid ( ) )
   {
     Guard guard ( this->mutex () );
-    _animating = true;
+    _renderLoopState = rl->renderLoop ();
+    rl->renderLoop ( true );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Stop the animation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Path::stop ( Usul::Interfaces::IUnknown * caller )
+{
+  this->animating ( false );
+
+  Usul::Interfaces::IRenderLoop::QueryPtr rl ( caller );
+  if ( rl.valid ( ) )
+  {
+    Guard guard ( this->mutex () );
+    rl->renderLoop ( _renderLoopState );
   }
 }
 

@@ -67,7 +67,8 @@ void RegistryVisitor::visit ( Usul::Registry::Database *db )
   if ( ( 0x0 != db ) && ( 0x0 != db->root() ) )
   {
     // Set document's name.
-    Usul::Scope::PushPop<NodeStack> pushPop ( _stack, XmlTree::Node::RefPtr ( _document.get() ) );
+    XmlTree::Node::RefPtr node ( _document.get() );
+    Usul::Scope::PushPop<NodeStack> pushPop ( _stack, node );
     _document->name ( db->root()->name() );
 
     // Visit document's children.

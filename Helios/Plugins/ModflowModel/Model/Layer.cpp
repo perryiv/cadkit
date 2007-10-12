@@ -24,6 +24,7 @@
 #include "Usul/Factory/TypeCreator.h"
 #include "Usul/Interfaces/IDirtyState.h"
 #include "Usul/Math/MinMax.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/Trace/Trace.h"
 
 #include "OsgTools/Callbacks/SortBackToFront.h"
@@ -158,21 +159,41 @@ void Layer::zRange ( const Data &top, const Data &bottom )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  unsigned int index ( 0 );
-  for ( Rows::iterator i = _rows.begin(); i != _rows.end(); ++i )
+  const unsigned int numRows ( _rows.size() );
+  for ( unsigned int i = 0; i < numRows; ++i )
   {
-    Row &row ( *i );
-    for ( Row::iterator j = row.begin(); j != row.end(); ++j )
+    Row &row ( _rows.at(i) );
+    const unsigned int numCols ( row.size() );
+    for ( unsigned int j = 0; j < numCols; ++j )
     {
-      Cell::RefPtr cell ( *j );
+      Cell::RefPtr cell ( row.at(j) );
       if ( true == cell.valid() )
       {
+        // Calculate the index.
+        const unsigned int index ( ( i * numCols ) + j );
+
+        // Get the top and bottom values.
         const double b ( bottom.at(index) );
         const double t ( top.at(index) );
-        USUL_ASSERT ( t >= b );
+
+        // Sanity check.
+        if ( t < b )
+        {
+          // Print warning and keep going.
+          std::cout << Usul::Strings::format 
+            ( "Warning 9516028000: cell's top value less than bottom.", 
+              " Layer: ", this->name(), 
+              ", Row: ", i, 
+              ", Column: ", j, 
+              ", Index: ", index, 
+              ", Top: ", t,
+              ", Bottom: ", b );
+          std::cout << std::endl;
+        }
+
+        // Set top and bottom value.
         cell->bottom ( b );
         cell->top ( t );
-        ++index;
       }
     }
   }

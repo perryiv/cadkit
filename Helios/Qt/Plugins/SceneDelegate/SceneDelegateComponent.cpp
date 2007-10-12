@@ -85,7 +85,6 @@ bool SceneDelegateComponent::doesHandle( const std::string& token ) const
            token == "Molecule Document" ||
            token ==    "Voxel Document" ||
            token ==  "Minerva Document" ||
-           token ==  "Modflow Document" ||
            token == "Triangle Document" ||
            token == "Model Presentation Document" );
 }
@@ -122,8 +121,5 @@ void SceneDelegateComponent::createDefaultGUI ( Usul::Documents::Document *docum
 
     // Show the window.
     viewer->show();
-
-    // Make sure the geometry is visible.
-    viewer->viewer()->camera ( OsgTools::Render::Viewer::FIT );
   }
 }

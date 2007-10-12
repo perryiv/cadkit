@@ -41,7 +41,9 @@
 
 
 #include <iterator>
-
+#include <vector>
+#include <fstream>
+#include <iostream>
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModelPresentationDocument, ModelPresentationDocument::BaseClass );
 
@@ -978,16 +980,18 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
     }
     else
     */
+    try
     {
        // This will create a new document.
       Info info ( DocManager::instance().find ( filename, caller ) );
 
       // Check to see if we created a document.
-      if ( true == info.document.valid() && info.document->canOpen( filename ) )
+      if ( true == info.document.valid() && true == info.document->canOpen( filename ) )
       {       
         // Ask the document to open the file.
         try
         {
+          
           this->_openDocument ( filename, info.document.get(), caller );
 
           // Disable Memory pools
@@ -1019,7 +1023,10 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
       else
         std::cout << "\tUnknown file format for: " << filename << std::endl;
     }
-    
+    catch ( ... )
+    {
+      std::cout << "\tUnknown file format for: " << filename << std::endl;
+    }
   }
 
   return group.release();
@@ -1041,8 +1048,17 @@ void ModelPresentationDocument::_openDocument ( const std::string &file, Usul::D
     return;
 
   std::cout << "Opening file: " << file << " ... " << std::endl;
-  document->open ( file, caller );
+#if 1
+  if( true == document->canOpen( file ) )
+    document->open ( file, caller );
+  else
+    std::cout << "Unable to open document for file: " << file << std::endl;
+#else
+    document->open ( file, caller );
+#endif
   std::cout << "Done" << std::endl;
+  
+	
 }
 
 

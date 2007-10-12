@@ -25,6 +25,9 @@ SET (SOURCES
     Writer.cpp
     Detail/RootImpl.cpp
     Functions.cpp
+    RegistryBuilder.cpp
+    RegistryIO.cpp
+    RegistryVisitor.cpp
     ReplaceIllegalCharacters.cpp
 )
 

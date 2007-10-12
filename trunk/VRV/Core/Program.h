@@ -33,6 +33,8 @@
 #include "XmlTree/Document.h"
 #include "XmlTree/RegistryIO.h"
 
+#include <fstream>
+
 namespace VRV {
 namespace Core {
 

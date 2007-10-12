@@ -3939,9 +3939,6 @@ void Viewer::handleSeek ( float x, float y, bool left )
   if ( ( _currentMode != SEEK ) || ( false == left ) || ( 0x0 == dynamic_cast < Trackball * > ( this->navManip() ) ) )
     return;
 
-  // Find interface to animate, if one exists
-  Usul::Interfaces::IAnimate::QueryPtr animate ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IAnimate::IID ) );
-
   osgUtil::Hit hit;
 
   // Return if the click didn't intersect the scene
@@ -3968,6 +3965,9 @@ void Viewer::handleSeek ( float x, float y, bool left )
   osg::Vec3 axis2 ( c2 - eye );
 
   const float d2 ( axis2.length() );
+
+  // Find interface to animate, if one exists
+  Usul::Interfaces::IAnimate::QueryPtr animate ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IAnimate::IID ) );
 
   // Use the animation interface if we found a valid one
   if ( animate.valid() )

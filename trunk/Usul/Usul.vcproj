@@ -2810,6 +2810,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Units"
+				>
+				<File
+					RelativePath=".\Units\Length.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

@@ -57,6 +57,8 @@ _legendHeightPerItem ( 30 ),
 _legendPadding ( 20.0f, 20.0f ),
 _legendPosition ( LEGEND_BOTTOM_RIGHT )
 {
+  _projectionNode->setName ( "Minerva_Projection_Node" );
+
   // Make sure it draws last and without depth testing.
   osg::ref_ptr< osg::StateSet > ss ( _projectionNode->getOrCreateStateSet() );
   ss->setRenderBinDetails( 1000, "RenderBin" );

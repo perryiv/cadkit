@@ -276,9 +276,11 @@ osg::Node* Point::buildScene()
     if( this->showLabel() && !this->label().empty() )
       _group->addChild ( this->_buildLabel() );
 
+    // Need to track down the reason for the difference on windows and linux...
+#ifndef _MSC_VER
     ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
     OsgTools::State::StateSet::setTwoSidedLighting ( _group.get(), true );
-
+#endif
     this->dirty( false );
   }
 

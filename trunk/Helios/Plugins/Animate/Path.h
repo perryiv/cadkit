@@ -47,6 +47,9 @@ public:
   /// Start the animation from beginning.
   virtual void      start ( Usul::Interfaces::IUnknown * caller );
 
+  /// Stop the animation.
+  virtual void      stop ( Usul::Interfaces::IUnknown * caller );
+
   /// Get/Set animate flag?
   void              animating ( bool );
   bool              animating () const;
@@ -94,6 +97,7 @@ private:
   bool                _acceptNewFrames;
   double              _startTime;
   bool                _animating;
+  bool                _renderLoopState;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS ( Path );

@@ -108,6 +108,8 @@ void RecordedPath::_animate ( Usul::Interfaces::IUnknown * caller )
       vm->setViewMatrix ( (*_current)->matrix () );
       ++_current;
     }
+    if ( _current == _frames.end() )
+      this->stop ( caller );
   }
 }
 
@@ -127,8 +129,7 @@ void RecordedPath::_record ( Usul::Interfaces::IUnknown * caller )
 
   if ( vm.valid () )
   {
-    Guard guard ( this->mutex () );
-    _frames.push_back ( new Frame ( vm->getViewMatrix() ) );
+    this->_append ( new Frame ( vm->getViewMatrix() ) );
   }
 }
 

@@ -42,7 +42,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( AnimateComponent , AnimateComponent::BaseClass
 
 AnimateComponent::AnimateComponent() : BaseClass(),
 _paths (),
-_currentPath ( 0x0 )
+_currentPath ( 0x0 ),
+_pathsMenu ( new MenuKit::Menu ( "Current Paths" ) )
 {
 }
 
@@ -90,13 +91,13 @@ void AnimateComponent::menuAdd ( MenuKit::Menu& m )
   typedef void (AnimateComponent::*VoidFunction) ();
   typedef void (AnimateComponent::*BoolFunction) ( bool );
   typedef bool (AnimateComponent::*CheckFunction) () const;
-  typedef Usul::Adaptors::MemberFunction < void, AnimateComponent*, VoidFunction > ExecuteFunctor;
-  typedef MenuKit::MemFunCallbackReturn < AnimateComponent*, CheckFunction >       CheckFunctor;
-  typedef Usul::Adaptors::MemberFunction < void, AnimateComponent*, BoolFunction > BoolFunctor;
-  typedef Usul::Commands::GenericCommand < ExecuteFunctor >                        BasicCommand;
-  typedef MenuKit::CheckCommand < BoolFunctor, CheckFunctor >                      CheckCommand;
-  typedef MenuKit::Button                                                          Button;
-  typedef MenuKit::ToggleButton                                                    ToggleButton;
+  typedef Usul::Adaptors::MemberFunction < void, AnimateComponent*, VoidFunction >  ExecuteFunctor;
+  typedef Usul::Adaptors::MemberFunction < bool, AnimateComponent*, CheckFunction > CheckFunctor;
+  typedef Usul::Adaptors::MemberFunction < void, AnimateComponent*, BoolFunction >  BoolFunctor;
+  typedef Usul::Commands::GenericCommand < ExecuteFunctor >                         BasicCommand;
+  typedef MenuKit::CheckCommand < BoolFunctor, CheckFunctor >                       CheckCommand;
+  typedef MenuKit::Button                                                           Button;
+  typedef MenuKit::ToggleButton                                                     ToggleButton;
 
   MenuKit::Menu::RefPtr menu ( m.findOrCreateMenu ( "Animate" ) );
   
@@ -105,6 +106,9 @@ void AnimateComponent::menuAdd ( MenuKit::Menu& m )
 
   menu->addSeparator();
   menu->append ( new ToggleButton ( new CheckCommand ( "Record",  BoolFunctor ( this, &AnimateComponent::recordPath ), CheckFunctor ( this, &AnimateComponent::recordPath ) ) ) );
+
+  menu->addSeparator();
+  menu->append ( _pathsMenu );
 
   menu->addSeparator();
   menu->append ( new Button ( new BasicCommand ( "New Key Frame Path", ExecuteFunctor ( this, &AnimateComponent::createKeyFramePath ) ) ) );
@@ -212,7 +216,7 @@ void AnimateComponent::startAnimation ()
 
   Path::RefPtr path ( this->currentPath () );
   if ( path.valid () )
-    path->start ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+    path->start ( Usul::Documents::Manager::instance().activeView () );
 }
 
 
@@ -253,7 +257,7 @@ void AnimateComponent::createKeyFramePath ()
   this->currentPath ( path.get() );
 
   // Rebuild the menu.
-  //this->_initMenu ();
+  this->_buildMenu ();
 }
 
 
@@ -278,7 +282,7 @@ void AnimateComponent::createRecordedPath ()
   this->currentPath ( path.get() );
 
   // Rebuild the menu.
-  //this->_initMenu ();
+  this->_buildMenu ();
 }
 
 
@@ -314,4 +318,15 @@ bool AnimateComponent::recordPath ( ) const
     return _currentPath->acceptNewFrames ( );
 
   return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the menu for the current paths.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AnimateComponent::_buildMenu ()
+{
 }

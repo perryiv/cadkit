@@ -24,6 +24,8 @@
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 
+#include "MenuKit/Menu.h"
+
 #include <vector>
 
 namespace Animate {
@@ -79,6 +81,10 @@ public:
 
 protected:
 
+  /// Build the menu for the current paths.
+  void                       _buildMenu ();
+
+  /// Usul::Interfaces::IMenuAdd.
   virtual void               menuAdd ( MenuKit::Menu& menu );
 
   // Do not copy.
@@ -91,6 +97,7 @@ protected:
 private:
   Paths                                  _paths;
   Path::RefPtr                           _currentPath;
+  MenuKit::Menu::RefPtr                  _pathsMenu;
 };
 
 

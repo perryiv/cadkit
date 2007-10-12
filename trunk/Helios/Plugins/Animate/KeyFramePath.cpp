@@ -189,7 +189,7 @@ void KeyFramePath::updateNotify ( Usul::Interfaces::IUnknown * caller )
       vm->setViewMatrix ( m );
 
       // We are done animating.
-      this->animating ( false );
+      this->stop ( caller );
     }
   }
 }
@@ -260,8 +260,9 @@ void KeyFramePath::_interpolate ( )
   //GN::Algorithms::fill ( _params, points.size(), 0, 1 );
   Paramerterize::fit ( points, GN::Algorithms::Constants::CENTRIPETAL_FIT, _params );
 
+  // This is no longer true with the transpose needed for the centripetal fit.
   // Should be true.
-  USUL_ASSERT ( _params.size() == points.size() );
+  //USUL_ASSERT ( _params.size() == points.size() );
 
   // Make the knot vector. Size it for interpolation.
   IndependentSequence knots;

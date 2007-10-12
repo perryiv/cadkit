@@ -202,6 +202,10 @@
 			Name="Config Files"
 			>
 			<File
+				RelativePath="..\..\..\..\.CadKit\Helios\Helios.registry"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\configs\HeliosPlugins.xml"
 				>
 			</File>

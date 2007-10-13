@@ -18,6 +18,7 @@
 #include "Helios/Qt/Core/Constants.h"
 #include "Helios/Qt/Core/Menu.h"
 #include "Helios/Qt/Commands/Action.h"
+#include "Helios/Qt/Commands/NewDocument.h"
 #include "Helios/Qt/Commands/OpenDocument.h"
 #include "Helios/Qt/Commands/InsertDocument.h"
 #include "Helios/Qt/Commands/SaveDocument.h"
@@ -50,6 +51,7 @@
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/GUI/IAddDockWindow.h"
+#include "Usul/Interfaces/IDocumentCreate.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Registry/Database.h"
@@ -127,7 +129,8 @@ MainWindow::MainWindow ( const std::string &vendor,
   _menu         ( 0x0 ),
   _menus        (),
   _recentFiles  (),
-  _recentFilesMenu ( 0x0 )
+  _recentFilesMenu ( 0x0 ),
+  _newDocumentMenu ( new MenuKit::Menu ( "New" ) )
 {
   USUL_TRACE_SCOPE;
 
@@ -254,6 +257,7 @@ void MainWindow::_destroy()
   _menu = 0x0;
   _dockMenu = 0x0;
   _recentFilesMenu = 0x0;
+  _newDocumentMenu = 0x0;
 
   // Release all the plugins.
   this->releasePlugins();
@@ -373,6 +377,7 @@ void MainWindow::_initMenu()
   {  
     MenuKit::Menu::RefPtr menu ( new MenuKit::Menu );
     menu->text ( "&File" );
+    menu->append ( _newDocumentMenu );
     menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::OpenDocument ( me ) ) );
     menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::InsertDocument ( me ) ) );
     menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::SaveDocument ( me ) ) );
@@ -1557,8 +1562,33 @@ void MainWindow::initPlugins()
 {
   USUL_TRACE_SCOPE;
 
+  // Query point to this.
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+
   // Have the plugins build any dock widgets.
   this->_buildPluginDockWidgets();
+
+  typedef Usul::Components::Manager PluginManager;
+  typedef PluginManager::UnknownSet Unknowns;
+
+  // Look for plugins that create documents.
+  Unknowns unknowns ( PluginManager::instance().getInterfaces ( Usul::Interfaces::IDocumentCreate::IID ) );
+
+  for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
+  {
+    // Should be true.
+    Usul::Interfaces::IDocumentCreate::ValidQueryPtr dc ( *iter );
+
+    // Create a document.
+    Usul::Documents::Document::RefPtr document ( dc->createDocument( me ) );
+
+    // Get the name of the document.
+    std::string name ( document.valid() ? document->typeName () : "" );
+
+    CadKit::Helios::Commands::NewDocument::RefPtr command ( new CadKit::Helios::Commands::NewDocument ( me, *iter, name ) );
+    _newDocumentMenu->append ( new MenuKit::Button ( command.get() ) );
+  }
+
 }
 
 

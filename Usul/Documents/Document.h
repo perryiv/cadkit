@@ -131,6 +131,9 @@ public:
   void                        delegate ( Delegate *delegate );
   Delegate*                   delegate ( );
 
+  /// Assign the document a default file name
+  void                        defaultFilename ();
+
   /// Iterators to the end
   WindowItr                   endWindows()       { return _windows.end(); }
   WindowConstItr              endWindows() const { return _windows.end(); }

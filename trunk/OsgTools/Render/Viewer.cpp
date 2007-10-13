@@ -5418,14 +5418,21 @@ void Viewer::trackballStateSave() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
+  // If the document has not been given a name then punt.
+  if ( false == _document->fileValid() )
+    return;
+
+  // Get string key for document.
   std::string doc ( Helper::documentTagName ( _document.get() ) );
   if ( true == doc.empty() )
     return;
 
+  // Get trackball.
   const Trackball *trackball ( dynamic_cast < const Trackball * > ( this->navManip() ) );
   if ( 0x0 == trackball )
     return;
 
+  // Save properties in registry.
   Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["center"]   = trackball->center();
   Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["rotation"] = trackball->rotation();
   Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["distance"] = trackball->distance();
@@ -5443,16 +5450,21 @@ void Viewer::trackballStateLoad()
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
+  // Get string key for document.
   std::string doc ( Helper::documentTagName ( _document.get() ) );
   if ( true == doc.empty() )
     return;
 
+  // Get trackball.
   Trackball *trackball ( dynamic_cast < Trackball * > ( this->navManip() ) );
   if ( 0x0 == trackball )
     return;
 
+  // Get properties from registry.
   const osg::Vec3   center ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["center"].get<osg::Vec3>   ( trackball->center()   ) );
   const osg::Quat rotation ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["rotation"].get<osg::Quat> ( trackball->rotation() ) );
   const float     distance ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["distance"].get<float>     ( trackball->distance() ) );
+
+  // Set trackball's properties.
   this->setTrackball ( center, distance, rotation, false, true );
 }

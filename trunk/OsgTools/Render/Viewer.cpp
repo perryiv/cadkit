@@ -3994,9 +3994,17 @@ void Viewer::handleIntersect ( float x, float y )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  // Are there any listeners?
+  // Don't bother intersecting if there any no listeners.
   if ( _intersectListeners.empty() )
     return;
+
+  // Intersect the model. Return if no intersection.
+  osgUtil::Hit hit;
+  if ( false == this->_intersect ( x, y, this->scene(), hit, false ) )
+    return;
+
+  // Notify the listeners.
+  this->_intersectNotify ( x, y, hit );
 }
 
 
@@ -5111,6 +5119,7 @@ void Viewer::_intersectNotify ( float x, float y, osgUtil::Hit &hit )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
   Usul::Interfaces::IUnknown::QueryPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
   for ( IntersectListeners::iterator i = _intersectListeners.begin(); i != _intersectListeners.end(); ++i )
   {

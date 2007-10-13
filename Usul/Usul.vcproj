@@ -1140,6 +1140,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IIntersectListener.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IIntersectNotify.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IJoystick.h"
 					>
 				</File>

@@ -180,6 +180,9 @@ void ModflowDelegateComponent::createDefaultGUI ( Usul::Documents::Document *doc
     QtViewerPtr viewer ( new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent ) );
     parent->addWindow ( viewer.get() );
 
+    // We want mouse-move events even when there are no mouse buttons pressed.
+    viewer->setMouseTracking ( true );
+
     // Build the scene.
     Usul::Interfaces::IBuildScene::QueryPtr build ( document );
     if ( build.valid () )

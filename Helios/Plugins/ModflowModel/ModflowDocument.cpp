@@ -811,4 +811,6 @@ void ModflowDocument::intersectNotify ( float x, float y, osgUtil::Hit &hit, Usu
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
+
+  std::cout << "Intersected: " << x << ' ' << y << std::endl;
 }

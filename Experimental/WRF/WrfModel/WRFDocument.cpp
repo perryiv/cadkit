@@ -75,7 +75,7 @@ WRFDocument::WRFDocument() :
   _parser (),
   _filename ( "" ),
   _currentTimestep ( 0 ),
-  _currentChannel ( 2 ),
+  _currentChannel ( 0 ),
   _timesteps ( 0 ),
   _channels ( 0 ),
   _x ( 0 ),
@@ -342,6 +342,10 @@ osg::Node *WRFDocument::buildScene ( const BaseClass::Options &options, Unknown 
 void WRFDocument::_buildScene ( )
 {
   USUL_TRACE_SCOPE;
+
+  // Return now if we don't have any data.
+  if ( 0 == _timesteps || 0 == _channels )
+    return;
 
   // Remove what we have.
   {
@@ -746,6 +750,10 @@ bool WRFDocument::_cacheFull () const
 
 void WRFDocument::_launchNextCacheRequest ()
 {
+  // Return now if we don't have any data.
+  if ( 0 == _timesteps || 0 == _channels )
+    return;
+
   unsigned int timestepToLoad ( 0 );
 
   if ( false == _volumeCache.empty () )

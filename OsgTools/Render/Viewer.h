@@ -70,6 +70,8 @@
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IRenderLoop.h"
 #include "Usul/Interfaces/IRenderingPasses.h"
+#include "Usul/Interfaces/IIntersectListener.h"
+#include "Usul/Interfaces/IIntersectNotify.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
@@ -139,6 +141,7 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::ISnapShot,
                                 public Usul::Interfaces::IView,
                                 public Usul::Interfaces::IRenderNotify,
+                                public Usul::Interfaces::IIntersectNotify,
                                 public Usul::Interfaces::IFrameStamp,
                                 public Usul::Interfaces::IUpdateSceneVisitor,
                                 public Usul::Interfaces::ICullSceneVisitor,
@@ -186,7 +189,9 @@ public:
   typedef BaseClass::Mutex Mutex;
   typedef BaseClass::Guard Guard;
   typedef Usul::Interfaces::IRenderListener IRenderListener;
+  typedef Usul::Interfaces::IIntersectListener IIntersectListener;
   typedef std::vector<IRenderListener::RefPtr> RenderListeners;
+  typedef std::vector<IIntersectListener::RefPtr> IntersectListeners;
   typedef osgUtil::CullVisitor CullVisitor;
   typedef osg::NodeVisitor NodeVisitor;
   typedef Usul::Interfaces::IUpdateListener IUpdateListener;
@@ -285,6 +290,7 @@ public:
   // Handle different modes.
   void                  handleDragging   ( float x, float y, Dragger::Command command );
   void                  handleMenu       ( float x, float y );
+  void                  handleIntersect  ( float x, float y );
   void                  handleNavigation ( float x, float y, bool left, bool middle, bool right, EventAdapter::EventType type );
   virtual void          handlePicking    ( float x, float y, bool left, unsigned int numClicks );
   void                  handleSeek       ( float x, float y, bool left );
@@ -538,6 +544,7 @@ protected:
   void                  _hiddenLineRender();
 
   virtual  bool         _intersect ( float x, float y, osg::Node *scene, osgUtil::Hit &hit, bool useWindowCoords = false );
+  void                  _intersectNotify ( float x, float y, osgUtil::Hit &hit );
   bool                  _lineSegment ( float mouseX, float mouseY, osg::Vec3 &pt0, osg::Vec3 &pt1, bool useWindowCoords = false );
 
   void                  _render();
@@ -716,14 +723,17 @@ protected:
   /// Usul::Interfaces::ISnapShot
   virtual void                  takePicture ( const std::string& filename, float frameSizeScale, unsigned int numSamples );
 
-  // Add the listener (IRenderListener).
+  // Add the listeners.
   virtual void                  addRenderListener ( IUnknown *listener );
+  virtual void                  addIntersectListener ( IUnknown *listener );
 
-  // Remove all render listeners.
+  // Remove all listeners.
   virtual void                  clearRenderListeners();
+  virtual void                  clearIntersectListeners();
 
-  // Remove the listener (IRenderListener).
+  // Remove the listener.
   virtual void                  removeRenderListener ( IUnknown *caller );
+  virtual void                  removeIntersectListener ( IUnknown *caller );
 
   // Usul::Interfaces::IFrameStamp
   const osg::FrameStamp *       frameStamp() const;
@@ -821,6 +831,7 @@ private:
   unsigned int _corners;
   UseDisplayLists _useDisplayList;
   RenderListeners _renderListeners;
+  IntersectListeners _intersectListeners;
   UpdateListeners _updateListeners;
 };
 

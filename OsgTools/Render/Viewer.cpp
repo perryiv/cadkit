@@ -182,29 +182,30 @@ Viewer::MatrixManipPtr Viewer::_navManipCopyBuffer ( 0x0 );
 ///////////////////////////////////////////////////////////////////////////////
 
 Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
-  BaseClass        (),
-  _context         ( context ),
-  _renderer        ( new Renderer ),
-  _sceneManager    ( new SceneManager ),
-  _setCursor       ( caller ),
-  _timeoutSpin     ( caller ),
-  _caller          ( caller ),
-  _lods            (),
-  _document        ( doc ),
-  _frameDump       (),
-  _flags           ( _UPDATE_TIMES | _SHOW_AXES ),
-  _animation       (),
-  _navManip        ( 0x0 ),
-  _currentTool     (),
-  _lastTool        (),
-  _currentMode     ( NAVIGATION ),
-  _lightEditors    (),
-  _contextId       ( 0 ),
-  _gradient        (),
-  _corners         ( Corners::ALL ),
-  _useDisplayList  ( false, true ),
-  _renderListeners (),
-  _updateListeners ()
+  BaseClass           (),
+  _context            ( context ),
+  _renderer           ( new Renderer ),
+  _sceneManager       ( new SceneManager ),
+  _setCursor          ( caller ),
+  _timeoutSpin        ( caller ),
+  _caller             ( caller ),
+  _lods               (),
+  _document           ( doc ),
+  _frameDump          (),
+  _flags              ( _UPDATE_TIMES | _SHOW_AXES ),
+  _animation          (),
+  _navManip           ( 0x0 ),
+  _currentTool        (),
+  _lastTool           (),
+  _currentMode        ( NAVIGATION ),
+  _lightEditors       (),
+  _contextId          ( 0 ),
+  _gradient           (),
+  _corners            ( Corners::ALL ),
+  _useDisplayList     ( false, true ),
+  _renderListeners    (),
+  _intersectListeners (),
+  _updateListeners    ()
 {
   // Add the document
   this->document ( doc );
@@ -323,11 +324,10 @@ void Viewer::clear()
   _timeoutSpin = static_cast < Usul::Interfaces::ITimeoutSpin* > ( 0x0 );
   _caller = static_cast < Usul::Interfaces::IUnknown* > ( 0x0 );
 
-  // Remove render listeners.
+  // Remove listeners.
   this->clearRenderListeners();
-
-  // Remove update listeners.
-  this->_clearUpdateListeners ();
+  this->clearIntersectListeners();
+  this->_clearUpdateListeners();
 }
 
 
@@ -388,6 +388,7 @@ void Viewer::render()
   // Check for errors.
   Detail::checkForErrors ( 1491085606 );
 
+  // Need local scope.
   {
     Usul::Scope::Caller::RefPtr preAndPostCall ( Usul::Scope::makeCaller ( 
       Usul::Adaptors::memberFunction ( this, &Viewer::_preRenderNotify ), 
@@ -1995,6 +1996,9 @@ void Viewer::document ( Document *document )
 
     // Add the document as an update listener.
     this->addUpdateListener ( unknown.get() );
+
+    // Add the document as an intersect listener.
+    this->addIntersectListener ( unknown.get() );
   }
 }
 
@@ -2388,6 +2392,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IView * > ( this );
   case Usul::Interfaces::IRenderNotify::IID:
     return static_cast < Usul::Interfaces::IRenderNotify * > ( this );
+  case Usul::Interfaces::IIntersectNotify::IID:
+    return static_cast < Usul::Interfaces::IIntersectNotify * > ( this );
   case Usul::Interfaces::IFrameStamp::IID:
     return static_cast < Usul::Interfaces::IFrameStamp * > ( this );
   case Usul::Interfaces::IUpdateSceneVisitor::IID:
@@ -3266,7 +3272,7 @@ bool Viewer::_intersect ( float x, float y, osg::Node *scene, osgUtil::Hit &hit,
 
 bool Viewer::intersect ( float x, float y, osgUtil::Hit &hit ) 
 { 
-  return _intersect( x, y, this->model(), hit ); 
+  return this->_intersect ( x, y, this->model(), hit ); 
 }
 
 
@@ -3939,9 +3945,8 @@ void Viewer::handleSeek ( float x, float y, bool left )
   if ( ( _currentMode != SEEK ) || ( false == left ) || ( 0x0 == dynamic_cast < Trackball * > ( this->navManip() ) ) )
     return;
 
-  osgUtil::Hit hit;
-
   // Return if the click didn't intersect the scene
+  osgUtil::Hit hit;
   if ( !this->intersect ( x, y, hit ) )
     return;
 
@@ -3950,20 +3955,14 @@ void Viewer::handleSeek ( float x, float y, bool left )
   const osg::Vec3 center ( this->getCenter() );
   const float distance ( this->getDistance() );
 
-  osg::Matrix m ( osg::Matrixd::translate(0.0,0.0,distance)*
-                  osg::Matrixd::rotate(rot)*
-                  osg::Matrixd::translate(center) );
-
-  osg::Vec3 eye, c, up;
-
   // Get the eye position.
+  osg::Vec3 eye, c, up;
+  osg::Matrix m ( osg::Matrixd::translate ( 0.0, 0.0, distance ) * osg::Matrixd::rotate ( rot ) * osg::Matrixd::translate ( center ) );
   m.inverse( m ).getLookAt ( eye, c, up );
 
   // Get the new center and distance.
   const osg::Vec3 c2 ( hit.getWorldIntersectPoint() );
-
   osg::Vec3 axis2 ( c2 - eye );
-
   const float d2 ( axis2.length() );
 
   // Find interface to animate, if one exists
@@ -3981,6 +3980,23 @@ void Viewer::handleSeek ( float x, float y, bool left )
     this->setTrackball ( c2, d2, rot, true, true );
     this->render();
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Handle intersection event.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::handleIntersect ( float x, float y )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Are there any listeners?
+  if ( _intersectListeners.empty() )
+    return;
 }
 
 
@@ -4919,6 +4935,64 @@ osg::Group* Viewer::projectionGroupGet ( const std::string& key )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to remove the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  template < class Listeners, class MutexType > void removeListener ( Listeners &listeners, Usul::Interfaces::IUnknown *caller, MutexType &mutex )
+  {
+    typedef typename Listeners::value_type::element_type InterfaceType;
+    typedef Usul::Threads::Guard<MutexType> Guard;
+    typedef typename Listeners::iterator Itr;
+
+    USUL_TRACE_SCOPE_STATIC;
+
+    InterfaceType::QueryPtr listener ( caller );
+    if ( true == listener.valid() )
+    {
+      Guard guard ( mutex );
+      InterfaceType::RefPtr value ( listener.get() );
+      Itr end ( std::remove ( listeners.begin(), listeners.end(), value ) );
+      listeners.erase ( end, listeners.end() );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to add the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  template < class Listeners, class MutexType > void addListener ( Listeners &listeners, Usul::Interfaces::IUnknown *caller, MutexType &mutex )
+  {
+    typedef typename Listeners::value_type::element_type InterfaceType;
+    typedef Usul::Threads::Guard<MutexType> Guard;
+
+    USUL_TRACE_SCOPE_STATIC;
+
+    // Don't add twice.
+    Helper::removeListener ( listeners, caller, mutex );
+
+    // Check for necessary interface.
+    InterfaceType::QueryPtr listener ( caller );
+    if ( true == listener.valid() )
+    {
+      // Block while we add the listener.
+      Guard guard ( mutex );
+      listeners.push_back ( InterfaceType::RefPtr ( listener.get() ) );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Add the listener.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -4926,16 +5000,20 @@ osg::Group* Viewer::projectionGroupGet ( const std::string& key )
 void Viewer::addRenderListener ( IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+  Helper::addListener ( _renderListeners, caller, this->mutex() );
+}
 
-  // Don't add twice.
-  this->removeRenderListener ( caller );
 
-  IRenderListener::QueryPtr listener ( caller );
-  if ( true == listener.valid() )
-  {
-    Guard guard ( this->mutex() );
-    _renderListeners.push_back ( IRenderListener::RefPtr ( listener.get() ) );
-  }
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::addIntersectListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Helper::addListener ( _intersectListeners, caller, this->mutex() );
 }
 
 
@@ -4955,6 +5033,20 @@ void Viewer::clearRenderListeners()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Remove all intersect listeners.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::clearIntersectListeners()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _intersectListeners.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Remove the listener.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -4962,15 +5054,20 @@ void Viewer::clearRenderListeners()
 void Viewer::removeRenderListener ( IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+  Helper::removeListener ( _renderListeners, caller, this->mutex() );
+}
 
-  IRenderListener::QueryPtr listener ( caller );
-  if ( true == listener.valid() )
-  {
-    Guard guard ( this->mutex() );
-    IRenderListener::RefPtr value ( listener.get() );
-    RenderListeners::iterator end ( std::remove ( _renderListeners.begin(), _renderListeners.end(), value ) );
-    _renderListeners.erase ( end, _renderListeners.end() );
-  }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::removeIntersectListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Helper::removeListener ( _intersectListeners, caller, this->mutex() );
 }
 
 
@@ -4984,8 +5081,8 @@ void Viewer::_preRenderNotify()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  Usul::Interfaces::IUnknown::QueryPtr unknown ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-  std::for_each ( _renderListeners.begin(), _renderListeners.end(), std::bind2nd ( std::mem_fun ( &IRenderListener::preRenderNotify ), unknown.get() ) );
+  Usul::Interfaces::IUnknown::QueryPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  std::for_each ( _renderListeners.begin(), _renderListeners.end(), std::bind2nd ( std::mem_fun ( &IRenderListener::preRenderNotify ), me.get() ) );
 }
 
 
@@ -4999,8 +5096,30 @@ void Viewer::_postRenderNotify()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  Usul::Interfaces::IUnknown::QueryPtr unknown ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-  std::for_each ( _renderListeners.begin(), _renderListeners.end(), std::bind2nd ( std::mem_fun ( &IRenderListener::postRenderNotify ), unknown.get() ) );
+  Usul::Interfaces::IUnknown::QueryPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  std::for_each ( _renderListeners.begin(), _renderListeners.end(), std::bind2nd ( std::mem_fun ( &IRenderListener::postRenderNotify ), me.get() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify of intersection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_intersectNotify ( float x, float y, osgUtil::Hit &hit )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Usul::Interfaces::IUnknown::QueryPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  for ( IntersectListeners::iterator i = _intersectListeners.begin(); i != _intersectListeners.end(); ++i )
+  {
+    IIntersectListener::RefPtr listener ( *i );
+    if ( true == listener.valid() )
+    {
+      listener->intersectNotify ( x, y, hit, me.get() );
+    }
+  }
 }
 
 

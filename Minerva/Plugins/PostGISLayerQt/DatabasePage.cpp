@@ -17,6 +17,8 @@
 #include "Minerva/Core/Layers/LineLayer.h"
 #include "Minerva/Core/Layers/PolygonLayer.h"
 
+#if ( QT_VERSION >= 0x040300 )
+
 #include "QtGui/QLineEdit"
 #include "QtGui/QDialog.h"
 #include "QtGui/QListWidget.h"
@@ -237,3 +239,6 @@ bool DatabasePage::isComplete () const
 {
   return !_listView->selectedItems().empty ();
 }
+
+
+#endif // QT_VERSION

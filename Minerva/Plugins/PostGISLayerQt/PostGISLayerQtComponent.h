@@ -61,7 +61,12 @@ protected:
   virtual ~PostGISLayerQtComponent();
 
 private:
+
+#if ( QT_VERSION >= 0x040300 )
   AddPostGISLayerWidget *_widget;
+#else
+  QWidget *_widget;
+#endif
 };
 
 

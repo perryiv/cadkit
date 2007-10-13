@@ -14,6 +14,8 @@
 #include "Minerva/Core/DB/Connection.h"
 #include "Minerva/Core/Layers/Layer.h"
 
+#if ( QT_VERSION >= 0x040300 )
+
 #include "QtGui/QWizardPage"
 
 class AddPostGISLayerWidget;
@@ -33,5 +35,6 @@ private:
 
 };
 
+#endif // QT_VERSION
 
 #endif // __POSTGIS_COLOR_PAGE_H__

@@ -26,6 +26,7 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IDirtyState.h"
 #include "Usul/Interfaces/IUpdateListener.h"
+#include "Usul/Interfaces/IIntersectListener.h"
 #include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Math/Vector2.h"
@@ -46,6 +47,7 @@ class ModflowDocument : public Usul::Documents::Document,
                         public Usul::Interfaces::IBuildScene,
                         public Usul::Interfaces::IDirtyState,
                         public Usul::Interfaces::IUpdateListener,
+                        public Usul::Interfaces::IIntersectListener,
                         public Usul::Interfaces::ITreeNode,
                         public Usul::Interfaces::IBooleanState
 {
@@ -103,6 +105,9 @@ public:
 
   // Return the grid size.
   Vec2ui                                  gridSize() const;
+
+  // Usul::Interfaces::IIntersectListener.
+  virtual void                            intersectNotify ( float x, float y, osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller );
 
   // Set/get the layers.
   void                                    layers ( Layers & );

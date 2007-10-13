@@ -434,6 +434,7 @@ void Viewer::mouseMoveEvent ( QMouseEvent * event )
   viewer->handleNavigation ( x, y, left, middle, right, type );
   viewer->handlePicking    ( x, y, false, 0 );
   viewer->handleDragging   ( x, y, OsgTools::Draggers::Dragger::MOVE );
+  viewer->handleIntersect  ( x, y );
 
   // Handle tool.
   viewer->handleTool ( left, middle, right, true, x, y, 0.0 );
@@ -495,7 +496,7 @@ void Viewer::mouseReleaseEvent ( QMouseEvent * event )
 
   // Handle the events. Make sure you pick before you drag.
   viewer->handlePicking  ( x, y, left, 1 );
-  viewer->handleDragging ( x, y, OsgTools::Draggers::Dragger::START );
+  viewer->handleDragging ( x, y, OsgTools::Draggers::Dragger::FINISH );
 
   // Make sure.
   OsgTools::Draggers::Dragger::dragging ( 0x0, osg::Matrixd::identity() );

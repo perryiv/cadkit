@@ -128,6 +128,8 @@ Usul::Interfaces::IUnknown *ModflowDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IDirtyState* > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
+  case Usul::Interfaces::IIntersectListener::IID:
+    return static_cast < Usul::Interfaces::IIntersectListener * > ( this );
   case Usul::Interfaces::ITreeNode::IID:
     return static_cast < Usul::Interfaces::ITreeNode * > ( this );
   case Usul::Interfaces::IBooleanState::IID:
@@ -200,7 +202,7 @@ bool ModflowDocument::canSave ( const std::string &file ) const
 void ModflowDocument::write ( const std::string &name, Unknown *caller  ) const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   std::cout << "Warning 3910751487: writing Modflow documents is not implemented" << std::endl;
 }
 
@@ -350,7 +352,7 @@ void ModflowDocument::_read ( Factory &factory, XmlTree::Node *file, Unknown *pr
 void ModflowDocument::_read ( Factory &factory, const std::string &type, const std::string &file, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   BaseReader::RefPtr reader ( dynamic_cast<BaseReader *> ( factory.create ( type ) ) );
   if ( true == reader.valid() )
@@ -369,7 +371,7 @@ void ModflowDocument::_read ( Factory &factory, const std::string &type, const s
 void ModflowDocument::clear ( Usul::Interfaces::IUnknown * )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   _gridSize.set ( 0, 0 );
   _cellSize.set ( 0.0f, 0.0f );
@@ -452,7 +454,7 @@ ModflowDocument::Filters ModflowDocument::filtersInsert() const
 osg::Node *ModflowDocument::buildScene ( const BaseClass::Options &options, Unknown *caller )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   // Should never happen...
   if ( false == _root.valid() )
@@ -476,7 +478,7 @@ void ModflowDocument::_buildScene ( Unknown *caller )
   // Make a copy of the layer pointers.
   Layers layers;
   {
-    Guard guard ( this->mutex() );
+    Guard guard ( this );
     layers.assign ( _layers.begin(), _layers.end() );
   }
 
@@ -495,7 +497,7 @@ void ModflowDocument::_buildScene ( Unknown *caller )
 
   // Assign the new group to our staging area.
   {
-    Guard guard ( this->mutex() );
+    Guard guard ( this );
     _built = group;
   }
 }
@@ -513,7 +515,7 @@ void ModflowDocument::_buildScene ( Unknown *caller )
 void ModflowDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   // Are we dirty?
   if ( false == this->dirtyState() )
@@ -569,7 +571,7 @@ void ModflowDocument::_incrementProgress ( bool state, Unknown *progress, unsign
 void ModflowDocument::layers ( Layers &layers )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   // Set layers.
   _layers = layers;
@@ -590,7 +592,7 @@ void ModflowDocument::layers ( Layers &layers )
 ModflowDocument::Layers &ModflowDocument::layers()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _layers;
 }
 
@@ -604,7 +606,7 @@ ModflowDocument::Layers &ModflowDocument::layers()
 const ModflowDocument::Layers &ModflowDocument::layers() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _layers;
 }
 
@@ -618,7 +620,7 @@ const ModflowDocument::Layers &ModflowDocument::layers() const
 unsigned int ModflowDocument::numLayers() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _layers.size();
 }
 
@@ -632,7 +634,7 @@ unsigned int ModflowDocument::numLayers() const
 ModflowDocument::Vec2ui ModflowDocument::gridSize() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   Layer::RefPtr layer ( _layers.empty() ? 0x0 : _layers.front() );
   return ( ( layer.valid() ) ? Vec2ui ( layer->gridSize() ) : Vec2ui ( 0, 0 ) );
 }
@@ -647,7 +649,7 @@ ModflowDocument::Vec2ui ModflowDocument::gridSize() const
 void ModflowDocument::dirtyState ( bool state )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   // Don't set to same state.
   if ( this->dirtyState() == state )
@@ -683,7 +685,7 @@ bool ModflowDocument::dirtyState() const
 void ModflowDocument::flags ( unsigned int bits )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _flags = bits;
 }
 
@@ -697,7 +699,7 @@ void ModflowDocument::flags ( unsigned int bits )
 unsigned int ModflowDocument::flags() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _flags;
 }
 
@@ -711,7 +713,7 @@ unsigned int ModflowDocument::flags() const
 const Usul::Interfaces::ITreeNode *ModflowDocument::getChildNode ( unsigned int i ) const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return ( ( i >= _layers.size() ) ? 0x0 : _layers.at(i).get() );
 }
 
@@ -725,7 +727,7 @@ const Usul::Interfaces::ITreeNode *ModflowDocument::getChildNode ( unsigned int 
 Usul::Interfaces::ITreeNode *ModflowDocument::getChildNode ( unsigned int i )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return ( ( i >= _layers.size() ) ? 0x0 : _layers.at(i).get() );
 }
 
@@ -739,7 +741,7 @@ Usul::Interfaces::ITreeNode *ModflowDocument::getChildNode ( unsigned int i )
 unsigned int ModflowDocument::getNumChildNodes() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _layers.size();
 }
 
@@ -753,7 +755,7 @@ unsigned int ModflowDocument::getNumChildNodes() const
 void ModflowDocument::setTreeNodeName ( const std::string &s )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   this->name ( s );
 }
 
@@ -767,7 +769,7 @@ void ModflowDocument::setTreeNodeName ( const std::string &s )
 std::string ModflowDocument::getTreeNodeName() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return this->name();
 }
 
@@ -781,7 +783,7 @@ std::string ModflowDocument::getTreeNodeName() const
 void ModflowDocument::setBooleanState ( bool state )
 {
   USUL_TRACE_SCOPE;
-  //Guard guard ( this->mutex() );
+  //Guard guard ( this );
 }
 
 
@@ -794,6 +796,19 @@ void ModflowDocument::setBooleanState ( bool state )
 bool ModflowDocument::getBooleanState() const
 {
   USUL_TRACE_SCOPE;
-  //Guard guard ( this->mutex() );
+  //Guard guard ( this );
   return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when there is an intersection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModflowDocument::intersectNotify ( float x, float y, osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
 }

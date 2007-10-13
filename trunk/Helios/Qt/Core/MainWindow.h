@@ -265,6 +265,7 @@ private:
   Menus _menus;
   StringList _recentFiles;
   MenuKit::Menu::RefPtr _recentFilesMenu;
+  MenuKit::Menu::RefPtr _newDocumentMenu;
 };
 
 

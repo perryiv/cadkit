@@ -239,6 +239,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NewDocument.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NewDocument.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OpenDocument.cpp"
 				>
 			</File>

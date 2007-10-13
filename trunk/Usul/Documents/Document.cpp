@@ -69,11 +69,6 @@ Document::Document ( const std::string &type ) : BaseClass(),
   _options   (),
   _modifiedObservers ()
 {
-  // Assign default filename.
-  static unsigned int count ( 0 );
-  std::ostringstream name;
-  name << "Untitled" << ++count;
-  this->fileName  ( name.str() );
   this->fileValid ( false );
 }
 
@@ -905,4 +900,21 @@ void Document::read ( const std::string &filename, Unknown *caller, Unknown *pro
 
 void Document::read ( const std::string &filename, Unknown *caller )
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Assign the document a default file name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::defaultFilename ()
+{
+  // Assign default filename.
+  static unsigned int count ( 0 );
+  std::ostringstream name;
+  name << "Untitled" << ++count;
+  this->fileName  ( name.str() );
+  this->fileValid ( false );
 }

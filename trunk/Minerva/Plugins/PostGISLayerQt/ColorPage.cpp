@@ -10,6 +10,7 @@
 
 #include "Minerva/Plugins/PostGISLayerQt/ColorPage.h"
 
+#if ( QT_VERSION >= 0x040300 )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -25,3 +26,5 @@ ColorPage::ColorPage( AddPostGISLayerWidget* ) : BaseClass ()
 void ColorPage::initializePage ()
 {
 }
+
+#endif // QT_VERSION

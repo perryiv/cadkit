@@ -16,6 +16,10 @@
 
 #include "Minerva/Plugins/PostGISLayerQt/PostGISLayerQtComponent.h"
 
+#if ( QT_VERSION < 0x040300 )
+#include "QtGui/QFrame"
+#endif
+
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PostGISLayerQtComponent, PostGISLayerQtComponent::BaseClass );
 
 
@@ -76,21 +80,46 @@ std::string PostGISLayerQtComponent::getPluginName() const
 }
 
 
-QWidget* PostGISLayerQtComponent::layerAddGUI ( )
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the widget that adds a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+QWidget* PostGISLayerQtComponent::layerAddGUI()
 {
+#if ( QT_VERSION >= 0x040300 )
   _widget = new AddPostGISLayerWidget;
-  return _widget;
+#else
+  _widget = new QFrame;
+#endif
+   return _widget;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 std::string PostGISLayerQtComponent::name() const 
 {
   return "PostGIS";
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Apply the caller to the widget.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void PostGISLayerQtComponent::apply ( Usul::Interfaces::IUnknown* caller )
 {
+#if ( QT_VERSION >= 0x040300 )
   if ( 0x0 != _widget )
     _widget->apply ( caller );
-
+#endif
   _widget = 0x0;
 }

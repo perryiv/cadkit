@@ -11,6 +11,8 @@
 #ifndef __POSTGIS_DATABASE_PAGE_H__
 #define __POSTGIS_DATABASE_PAGE_H__
 
+#if ( QT_VERSION >= 0x040300 )
+
 #include "Minerva/Core/DB/Connection.h"
 
 #include "QtGui/QWizardPage"
@@ -42,5 +44,6 @@ private:
   Minerva::Core::DB::Connection::RefPtr _connection;
 };
 
+#endif // QT_VERSION
 
 #endif // __POSTGIS_DATABASE_PAGE_H__

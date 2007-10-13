@@ -14,6 +14,8 @@
 #include "Minerva/Plugins/PostGISLayerQt/CompileGuard.h"
 #include "Minerva/Core/Layers/Layer.h"
 
+#if ( QT_VERSION >= 0x040300 )
+
 #include "QtGui/QWizard"
 
 #include <vector>
@@ -43,5 +45,6 @@ private:
   Layer::RefPtr _layer;
 };
 
+#endif // QT_VERSION
 
 #endif // __ADD_POSTGIS_LAYER_WIDGET_H__

@@ -78,7 +78,7 @@ Layer::Layer ( const std::string &name, unsigned int numRows, unsigned int numCo
       const double x ( cellSize[0] * j );
 
       // Cell is inactive by default.
-      row.push_back ( new Cell ( x, y ) );
+      row.push_back ( new Cell ( x, y, i, j ) );
     }
   }
 }
@@ -790,5 +790,17 @@ void Layer::getStringGrid ( StringGrid &data ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  data.push_back ( Attribute::makeStringRow ( this->name() ) );
+  data.push_back ( Attribute::makeStringRow ( this->className(), this->name() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the class name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Layer::className() const
+{
+  return "Layer";
 }

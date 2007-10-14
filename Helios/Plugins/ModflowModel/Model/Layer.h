@@ -95,6 +95,9 @@ public:
   // Build the scene.
   osg::Node *                 buildScene ( Unknown *caller );
 
+  // Get the class name.
+  virtual std::string         className() const;
+
   // Get the cell.
   const Cell *                cell ( unsigned int row, unsigned int col ) const;
   Cell *                      cell ( unsigned int row, unsigned int col );

@@ -108,3 +108,15 @@ BaseObject::StringRow BaseObject::makeStringRow ( const std::string &a, const st
   row.push_back ( b );
   return row;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the class name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string BaseObject::className() const
+{
+  return this->typeId().name();
+}

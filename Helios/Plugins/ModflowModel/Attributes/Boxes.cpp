@@ -197,3 +197,17 @@ osg::Group *Boxes::buildScene ( Modflow::Model::Layer *layer )
   this->_setScene ( group.get() );
   return BaseClass::buildScene ( layer );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append internal state to list.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Boxes::getStringGrid ( Usul::Interfaces::IStringGridGet::StringGrid &data ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  data.push_back ( BaseClass::makeStringRow ( "Surface", this->name() ) );
+}

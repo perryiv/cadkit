@@ -45,6 +45,7 @@ public:
   typedef Modflow::Base::BaseObject BaseClass;
   typedef Usul::Math::Vec2d Vec2d;
   typedef Usul::Math::Vec3d Vec3d;
+  typedef Usul::Math::Vec2ui Vec2ui;
   typedef std::vector < double > Vector;
   typedef std::map < std::string, Vector > NamedVectors;
   typedef std::map < std::string, double > NamedValues;
@@ -60,7 +61,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( Cell );
 
   // Construction.
-  Cell ( double x, double y );
+  Cell ( double x, double y, unsigned int i, unsigned int j );
 
   // Set/get the bottom.
   void                    bottom ( double );
@@ -71,6 +72,9 @@ public:
 
   // Clear the cell.
   virtual void            clear();
+
+  // Return the indices in the grid.
+  Vec2ui                  indices() const;
 
   // Set/get the top.
   void                    top ( double z );
@@ -104,6 +108,7 @@ private:
 
   double _x;
   double _y;
+  Vec2ui _indices;
   double _bottom;
   double _top;
   NamedVectors _vectors;

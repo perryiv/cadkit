@@ -80,6 +80,7 @@ void Quads::_destroy()
 void Quads::clear()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this );
   BaseClass::clear();
 }
 
@@ -99,6 +100,9 @@ osg::Group *Quads::buildScene ( Modflow::Model::Layer *layer )
 
   // No longer dirty. Do this before we can return.
   this->dirtyState ( false );
+
+  // Clear the cell weak pointers.
+  this->_cellWeakPointersClear();
 
   // If the layer is valid and we are visible...
   if ( ( 0x0 != layer ) && ( true == this->visible() ) )
@@ -134,21 +138,33 @@ osg::Group *Quads::buildScene ( Modflow::Model::Layer *layer )
         sides = _sides;
       }
 
+      // Save room for the weak pointers, up to all 6 sides.
+      this->_cellWeakPointersReserve ( numCells * 6 );
+
       // Loop through the cells.
       for ( unsigned int i = 0; i < gridSize[0]; ++i )
       {
         for ( unsigned int j = 0; j < gridSize[1]; ++j )
         {
           // Is the cell valid?
-          const Modflow::Model::Cell *cell ( layer->cell ( i, j ) );
+          Modflow::Model::Cell *cell ( layer->cell ( i, j ) );
           if ( 0x0 != cell )
           {
             // Lock the cell for performance.
             Guard guard ( cell->mutex() );
 
+            // Get current number of vertices.
+            const unsigned int originalNumVertices ( vertices->size() );
+
             // Add the quads.
             Modflow::Builders::BuildScene::addQuads 
               ( sides, cell->x(), cell->y(), cell->top(), cell->bottom(), halfSize, margin[2], vertices.get(), normals.get() );
+
+            // Get number of vertices used for this cell.
+            const unsigned int numVerticesForCell ( vertices->size() - originalNumVertices );
+
+            // Save in sequence for each vertex.
+            this->_cellWeakPointersAppend ( cell, numVerticesForCell );
           }
         }
       }
@@ -156,6 +172,7 @@ osg::Group *Quads::buildScene ( Modflow::Model::Layer *layer )
       // We often skip many cells above.
       vertices->trim();
       normals->trim();
+      this->_cellWeakPointersTrim();
 
       // Make geometry.
       osg::ref_ptr<osg::Geometry> geom ( new osg::Geometry );
@@ -177,4 +194,18 @@ osg::Group *Quads::buildScene ( Modflow::Model::Layer *layer )
   // Set new scene and return it.
   this->_setScene ( group.get() );
   return BaseClass::buildScene ( layer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append internal state to list.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Quads::getStringGrid ( Usul::Interfaces::IStringGridGet::StringGrid &data ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  data.push_back ( BaseClass::makeStringRow ( "Side", this->name() ) );
 }

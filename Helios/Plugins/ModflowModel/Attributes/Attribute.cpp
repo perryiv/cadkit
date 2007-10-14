@@ -15,6 +15,7 @@
 
 #include "Helios/Plugins/ModflowModel/Attributes/Attribute.h"
 #include "Helios/Plugins/ModflowModel/Constants.h"
+#include "Helios/Plugins/ModflowModel/Model/Cell.h"
 
 #include "OsgTools/Group.h"
 
@@ -42,7 +43,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Attribute, Attribute::BaseClass );
 Attribute::Attribute ( const std::string &name, IUnknown *parent ) : BaseClass ( name ),
   _flags   ( Modflow::Flags::VISIBLE | Modflow::Flags::DIRTY ),
   _scene   ( new osg::Group ),
-  _parent  ( parent )
+  _parent  ( parent ),
+  _cells()
 {
   USUL_TRACE_SCOPE;
   // Do not reference _parent!
@@ -71,10 +73,11 @@ Attribute::~Attribute()
 void Attribute::_destroy()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   this->clear();
   _scene = 0x0;
   _parent = 0x0; // Do not unreference!
+  this->_cellWeakPointersClear();
 }
 
 
@@ -87,8 +90,9 @@ void Attribute::_destroy()
 void Attribute::clear()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _scene = new osg::Group;
+  this->_cellWeakPointersClear();
 }
 
 
@@ -126,7 +130,7 @@ Usul::Interfaces::IUnknown *Attribute::queryInterface ( unsigned long iid )
 void Attribute::visible ( bool state )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   // Don't set to same state.
   if ( this->visible() == state )
@@ -149,7 +153,7 @@ void Attribute::visible ( bool state )
 bool Attribute::visible() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return Usul::Bits::has ( _flags, Modflow::Flags::VISIBLE );
 }
 
@@ -163,7 +167,7 @@ bool Attribute::visible() const
 void Attribute::dirtyState ( bool state )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   // Don't set to same state.
   if ( this->dirtyState() == state )
@@ -191,7 +195,7 @@ void Attribute::dirtyState ( bool state )
 bool Attribute::dirtyState() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return Usul::Bits::has ( _flags, Modflow::Flags::DIRTY );
 }
 
@@ -205,7 +209,7 @@ bool Attribute::dirtyState() const
 void Attribute::_setScene ( osg::Group *group )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   // Set the pointer.
   _scene = group;
@@ -231,7 +235,7 @@ void Attribute::_setScene ( osg::Group *group )
 osg::Group *Attribute::buildScene ( Modflow::Model::Layer * )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _scene.get();
 }
 
@@ -245,7 +249,7 @@ osg::Group *Attribute::buildScene ( Modflow::Model::Layer * )
 const Usul::Interfaces::ITreeNode *Attribute::getChildNode ( unsigned int i ) const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return 0x0;
 }
 
@@ -259,7 +263,7 @@ const Usul::Interfaces::ITreeNode *Attribute::getChildNode ( unsigned int i ) co
 Usul::Interfaces::ITreeNode *Attribute::getChildNode ( unsigned int which )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return 0x0;
 }
 
@@ -273,7 +277,7 @@ Usul::Interfaces::ITreeNode *Attribute::getChildNode ( unsigned int which )
 unsigned int Attribute::getNumChildNodes() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return 0;
 }
 
@@ -287,7 +291,7 @@ unsigned int Attribute::getNumChildNodes() const
 void Attribute::setTreeNodeName ( const std::string &s )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   BaseClass::name ( s );
 }
 
@@ -301,7 +305,7 @@ void Attribute::setTreeNodeName ( const std::string &s )
 std::string Attribute::getTreeNodeName() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return this->name();
 }
 
@@ -315,7 +319,7 @@ std::string Attribute::getTreeNodeName() const
 void Attribute::setBooleanState ( bool state )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   this->visible ( state );
 }
 
@@ -329,7 +333,7 @@ void Attribute::setBooleanState ( bool state )
 bool Attribute::getBooleanState() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return this->visible();
 }
 
@@ -343,6 +347,79 @@ bool Attribute::getBooleanState() const
 void Attribute::getStringGrid ( Usul::Interfaces::IStringGridGet::StringGrid &data ) const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  data.push_back ( BaseClass::makeStringRow ( this->name() ) );
+  Guard guard ( this );
+  data.push_back ( BaseClass::makeStringRow ( this->className(), this->name() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the weak pointers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Attribute::_cellWeakPointersClear()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _cells.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reserve the weak pointers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Attribute::_cellWeakPointersReserve ( unsigned int size )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _cells.reserve ( size );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append to the weak pointers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Attribute::_cellWeakPointersAppend ( Modflow::Model::Cell *cell, unsigned int num )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  for ( unsigned int i = 0; i < num; ++i )
+  {
+    _cells.push_back ( Cells::value_type ( cell ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Trim the sequence.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Attribute::_cellWeakPointersTrim()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  Cells ( _cells ).swap ( _cells );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the cell from the vertex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Modflow::Model::Cell *Attribute::getCellAtVertex ( unsigned int which )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( ( which < _cells.size() ) ? dynamic_cast < Modflow::Model::Cell * > ( _cells.at(which).get() ) : 0x0 );
 }

@@ -35,6 +35,7 @@ public:
 
   // Useful typedefs.
   typedef Modflow::Attributes::Attribute BaseClass;
+  typedef Usul::Pointers::WeakPointer < Quads > WeakPtr;
 
   // Construction.
   Quads ( const std::string &name, IUnknown *parent, unsigned int sides );

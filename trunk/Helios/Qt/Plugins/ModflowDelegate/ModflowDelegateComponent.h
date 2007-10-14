@@ -23,6 +23,7 @@
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IActiveDocumentListener.h"
+#include "Usul/Interfaces/IStringGridSet.h"
 
 #include <map>
 #include <string>
@@ -30,13 +31,15 @@
 class LayerTreeControl;
 class QDockWidget;
 class QWidget;
+class QLabel;
 
 
 class ModflowDelegateComponent : public Usul::Base::Object,
                                  public Usul::Interfaces::IPlugin,
                                  public Usul::Interfaces::IGUIDelegate,
                                  public Usul::Interfaces::IActiveDocumentListener,
-                                 public Usul::Interfaces::IAddDockWindow
+                                 public Usul::Interfaces::IAddDockWindow,
+                                 public Usul::Interfaces::IStringGridSet
 {
 public:
 
@@ -44,6 +47,9 @@ public:
   typedef Usul::Base::Object BaseClass;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef std::map < QWidget *, QDockWidget * > DockedMap;
+  typedef Usul::Interfaces::IStringGridSet IStringGridSet;
+  typedef IStringGridSet::StringRow StringRow;
+  typedef IStringGridSet::StringGrid StringGrid;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ModflowDelegateComponent );
@@ -67,6 +73,9 @@ public:
   /// Add a dock window (IAddDockWindow).
   virtual void                addDockWindow ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
+  // Usul::Interfaces::IStringGridSet.
+  virtual void                setStringGrid ( const StringGrid &grid );
+
 protected: 
 
   // Do not copy.
@@ -85,6 +94,7 @@ private:
   Unknown::QueryPtr _caller;
   DockedMap _docked;
   LayerTreeControl *_layerTree;
+  QLabel *_intersectInfo;
 };
 
 

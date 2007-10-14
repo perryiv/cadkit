@@ -43,6 +43,9 @@ public:
   // Build the scene.
   virtual osg::Group *        buildScene ( Modflow::Model::Layer * );
 
+  // Clear the attribute.
+  virtual void                clear();
+
 protected:
 
   // Use reference counting.

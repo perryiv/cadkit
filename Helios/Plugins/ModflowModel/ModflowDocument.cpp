@@ -38,6 +38,7 @@
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/IStringGridGet.h"
+#include "Usul/Interfaces/IStringGridSet.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/System/Directory.h"
 #include "Usul/System/LastError.h"
@@ -822,6 +823,12 @@ void ModflowDocument::intersectNotify ( float x, float y, const osgUtil::Hit &hi
   typedef BaseObject::StringGrid StringGrid;
   typedef BaseObject::StringRow StringRow;
   typedef Usul::Interfaces::IStringGridGet IStringGridGet;
+  typedef Usul::Interfaces::IStringGridSet IStringGridSet;
+
+  // Get interface from delegate.
+  IStringGridSet::QueryPtr setter ( this->delegate() );
+  if ( false == setter.valid() )
+    return;
 
   // Loop over the node path and collect data.
   StringGrid grid;
@@ -839,23 +846,6 @@ void ModflowDocument::intersectNotify ( float x, float y, const osgUtil::Hit &hi
     }
   }
 
-  // Handle no data.
-  if ( true == grid.empty() )
-    return;
-
-  // Print formatted data.
-  std::ostringstream out;
-  for ( StringGrid::const_iterator j = grid.begin(); j != grid.end(); ++j )
-  {
-    const StringGrid::value_type &row ( *j );
-    for ( unsigned int r = 0; r < row.size(); ++r )
-    {
-      const std::string &s ( row.at(r) );
-      out << ( ( 0 == r ) ? "" : ": " ) << s;
-    }
-    out << '\n';
-  }
-
-  // Print to stdout.
-  std::cout << "\nIntersected:\n" << out.str() << std::flush;
+  // Set the grid data in the delegate.
+  setter->setStringGrid ( grid );
 }

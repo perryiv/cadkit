@@ -65,7 +65,7 @@ public:
   virtual osg::Group *        buildScene ( Modflow::Model::Layer * );
 
   // Clear the attribute.
-  void                        clear();
+  virtual void                clear();
 
   // Set/get the dirty flag.
   virtual void                dirtyState ( bool );

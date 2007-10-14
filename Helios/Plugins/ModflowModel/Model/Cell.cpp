@@ -251,3 +251,16 @@ void Cell::vector ( const std::string &name, const Vector &v )
   Guard guard ( this->mutex() );
   _vectors[name] = v;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the cell.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Cell::clear()
+{
+  USUL_TRACE_SCOPE;
+  // Nothing to clear, just plumbing.
+}

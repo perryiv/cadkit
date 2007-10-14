@@ -47,6 +47,9 @@ public:
   // Build the scene.
   virtual osg::Group *        buildScene ( Modflow::Model::Layer * );
 
+  // Clear the attribute.
+  virtual void                clear();
+
   // Usul::Interfaces::ITreeNode.
   virtual unsigned int        getNumChildNodes() const;
   virtual const ITreeNode *   getChildNode ( unsigned int which ) const;

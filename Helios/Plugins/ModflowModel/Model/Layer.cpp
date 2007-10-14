@@ -16,6 +16,7 @@
 #include "Helios/Plugins/ModflowModel/Model/Layer.h"
 #include "Helios/Plugins/ModflowModel/Builders/BuildScene.h"
 #include "Helios/Plugins/ModflowModel/Constants.h"
+#include "Helios/Plugins/ModflowModel/Tools/Clear.h"
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -116,8 +117,10 @@ void Layer::clear()
   Guard guard ( this->mutex() );
   _above = 0x0;
   _below = 0x0;
-  _rows.clear();
-  _attributes.clear();
+
+  Modflow::Tools::Clear<Rows>::pointers2D ( _rows );
+  Modflow::Tools::Clear<Attributes>::pointers1D ( _attributes );
+
   OsgTools::Group::removeAllChildren ( _root.get() );
   _root->setUserData ( 0x0 );
 }
@@ -143,7 +146,7 @@ Usul::Interfaces::IUnknown *Layer::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IStringGridGet::IID:
     return static_cast < Usul::Interfaces::IStringGridGet* > ( this );
   default:
-    return BaseClass::queryInterface ( iid );
+    return 0x0;
   }
 }
 

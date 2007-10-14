@@ -370,6 +370,14 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Tools"
+					>
+					<File
+						RelativePath=".\Tools\Clear.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="DLL"

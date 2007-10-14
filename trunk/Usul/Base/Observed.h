@@ -19,6 +19,7 @@
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IDeleteNotify.h"
 #include "Usul/Interfaces/IDeleteListener.h"
+#include "Usul/Pointers/WeakPointer.h"
 
 #include <set>
 
@@ -34,6 +35,7 @@ public:
 
   // Typedefs.
   typedef Usul::Base::Object BaseClass;
+  typedef Usul::Pointers::WeakPointer < Observed > WeakPtr;
   typedef Usul::Interfaces::IDeleteListener IDeleteListener;
   typedef std::set < IDeleteListener::RefPtr > DeleteListeners;
 

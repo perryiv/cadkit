@@ -4000,10 +4000,9 @@ void Viewer::handleIntersect ( float x, float y )
 
   // Intersect the model. Return if no intersection.
   osgUtil::Hit hit;
-  if ( false == this->_intersect ( x, y, this->scene(), hit, false ) )
-    return;
+  this->_intersect ( x, y, this->scene(), hit, false );
 
-  // Notify the listeners.
+  // Notify the listeners (even if there is no intersection).
   this->_intersectNotify ( x, y, hit );
 }
 

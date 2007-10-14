@@ -41,10 +41,12 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Attribute, Attribute::BaseClass );
 ///////////////////////////////////////////////////////////////////////////////
 
 Attribute::Attribute ( const std::string &name, IUnknown *parent ) : BaseClass ( name ),
-  _flags   ( Modflow::Flags::VISIBLE | Modflow::Flags::DIRTY ),
-  _scene   ( new osg::Group ),
-  _parent  ( parent ),
-  _cells()
+  _flags    ( Modflow::Flags::VISIBLE | Modflow::Flags::DIRTY ),
+  _scene    ( new osg::Group ),
+  _parent   ( parent ),
+  _cells    (),
+  _minColor ( 0.0f, 0.0f, 0.0f, 1.0f ),
+  _maxColor ( 0.0f, 0.0f, 0.0f, 1.0f )
 {
   USUL_TRACE_SCOPE;
   // Do not reference _parent!
@@ -232,7 +234,7 @@ void Attribute::_setScene ( osg::Group *group )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Group *Attribute::buildScene ( Modflow::Model::Layer * )
+osg::Group *Attribute::buildScene ( Modflow::ModflowDocument *, Modflow::Model::Layer * )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -422,4 +424,60 @@ Modflow::Model::Cell *Attribute::getCellAtVertex ( unsigned int which )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return ( ( which < _cells.size() ) ? dynamic_cast < Modflow::Model::Cell * > ( _cells.at(which).get() ) : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the min color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Attribute::Color Attribute::minColor() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _minColor;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the min color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Attribute::minColor ( const Color &c )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _minColor = c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the max color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Attribute::Color Attribute::maxColor() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _maxColor;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the max color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Attribute::maxColor ( const Color &c )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _maxColor = c;
 }

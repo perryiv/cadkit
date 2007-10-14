@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Constant values.
+//  Constants and definitions.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -21,6 +21,12 @@
 #include <string>
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constants
+//
+///////////////////////////////////////////////////////////////////////////////
+
 namespace Modflow
 {
   // String names.
@@ -29,6 +35,8 @@ namespace Modflow
     const std::string CELL_BOUNDARY ( "Cell Boundary" );
     const std::string STARTING_HEAD ( "Starting Head" );
     const std::string HEAD_LEVELS   ( "Head Levels"   );
+    const std::string MAX_ELEVATION ( "Max Elevation" );
+    const std::string MIN_ELEVATION ( "Min Elevation" );
   }
 
   namespace Flags
@@ -50,6 +58,16 @@ namespace Modflow
     const unsigned int DIRTY     ( 0x00000200 );
   };
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Definitions
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define INVALID_MIN std::numeric_limits<double>::max()
+#define INVALID_MAX std::numeric_limits<double>::min()
 
 
 #endif // _MODFLOW_MODEL_CONSTANTS_H_

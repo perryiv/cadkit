@@ -38,6 +38,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <limits>
 
 using namespace Modflow::Model;
 
@@ -61,7 +62,8 @@ Layer::Layer ( const std::string &name, unsigned int numRows, unsigned int numCo
   _flags ( Modflow::Flags::DIRTY | Modflow::Flags::VISIBLE ),
   _document(),
   _margin ( 0, 0, 0 ),
-  _attributes()
+  _attributes(),
+  _zRange ( INVALID_MIN, INVALID_MAX )
 {
   USUL_TRACE_SCOPE;
 
@@ -138,13 +140,13 @@ Usul::Interfaces::IUnknown *Layer::queryInterface ( unsigned long iid )
   switch ( iid )
   {
   case Usul::Interfaces::ITreeNode::IID:
-    return static_cast < Usul::Interfaces::ITreeNode* > ( this );
+    return static_cast < Usul::Interfaces::ITreeNode * > ( this );
   case Usul::Interfaces::IBooleanState::IID:
     return static_cast < Usul::Interfaces::IBooleanState * > ( this );
   case Usul::Interfaces::IDirtyState::IID:
     return static_cast < Usul::Interfaces::IDirtyState * > ( this );
   case Usul::Interfaces::IStringGridGet::IID:
-    return static_cast < Usul::Interfaces::IStringGridGet* > ( this );
+    return static_cast < Usul::Interfaces::IStringGridGet * > ( this );
   default:
     return 0x0;
   }
@@ -161,6 +163,9 @@ void Layer::zRange ( const Data &top, const Data &bottom )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
+  // Initialize extreme.
+  _zRange.set ( INVALID_MIN, INVALID_MAX );
 
   const unsigned int numRows ( _rows.size() );
   for ( unsigned int i = 0; i < numRows; ++i )
@@ -197,6 +202,10 @@ void Layer::zRange ( const Data &top, const Data &bottom )
         // Set top and bottom value.
         cell->bottom ( b );
         cell->top ( t );
+
+        // Expand the extremes.
+        _zRange[0] = Usul::Math::minimum ( _zRange[0], b );
+        _zRange[1] = Usul::Math::maximum ( _zRange[1], t );
       }
     }
   }
@@ -209,11 +218,11 @@ void Layer::zRange ( const Data &top, const Data &bottom )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node *Layer::buildScene ( Unknown *caller )
+osg::Node *Layer::buildScene ( Modflow::ModflowDocument *document, Unknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  this->_buildScene ( caller );
+  this->_buildScene ( document, caller );
   _root->setUserData ( new UserData ( this ) );
   return _root.get();
 }
@@ -225,7 +234,7 @@ osg::Node *Layer::buildScene ( Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::_buildScene ( Unknown *caller )
+void Layer::_buildScene ( Modflow::ModflowDocument *document, Unknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -254,7 +263,7 @@ void Layer::_buildScene ( Unknown *caller )
     if ( true == a.valid() )
     {
       // Add the scene to the root.
-      _root->addChild ( a->buildScene ( this ) );
+      _root->addChild ( a->buildScene ( document, this ) );
     }
   }
 
@@ -803,4 +812,18 @@ void Layer::getStringGrid ( StringGrid &data ) const
 std::string Layer::className() const
 {
   return "Layer";
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Layer::Vec2d Layer::zRange() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _zRange;
 }

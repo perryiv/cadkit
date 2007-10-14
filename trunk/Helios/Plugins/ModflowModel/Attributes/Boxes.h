@@ -45,7 +45,7 @@ public:
   Boxes ( const std::string &name, IUnknown *parent );
 
   // Build the scene.
-  virtual osg::Group *        buildScene ( Modflow::Model::Layer * );
+  virtual osg::Group *        buildScene ( Modflow::ModflowDocument *, Modflow::Model::Layer * );
 
   // Clear the attribute.
   virtual void                clear();
@@ -57,6 +57,10 @@ public:
 
   // Usul::Interfaces::IStringGridGet.
   virtual void                getStringGrid ( IStringGridGet::StringGrid & ) const;
+
+  // Set the min/max color.
+  virtual void                maxColor ( const Color &c );
+  virtual void                minColor ( const Color &c );
 
   // Usul::Interfaces::IBooleanState.
   virtual void                setBooleanState ( bool );

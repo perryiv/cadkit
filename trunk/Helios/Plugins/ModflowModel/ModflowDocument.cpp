@@ -13,6 +13,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef _WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#endif
+
 #include "Helios/Plugins/ModflowModel/ModflowDocument.h"
 #include "Helios/Plugins/ModflowModel/Constants.h"
 #include "Helios/Plugins/ModflowModel/Readers/Discretization.h"
@@ -39,6 +45,7 @@
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/IStringGridGet.h"
 #include "Usul/Interfaces/IStringGridSet.h"
+#include "Usul/Math/MinMax.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/System/Directory.h"
@@ -57,10 +64,11 @@
 #include "boost/algorithm/string/trim.hpp"
 
 #include <algorithm>
+#include <functional>
 #include <fstream>
+#include <limits>
 #include <stdexcept>
 #include <sstream>
-#include <functional>
 
 using namespace Modflow;
 
@@ -84,9 +92,15 @@ ModflowDocument::ModflowDocument() : BaseClass ( "Modflow Document" ),
   _layers(),
   _root ( new osg::Group ),
   _built ( 0x0 ),
-  _flags ( Modflow::Flags::DIRTY | Modflow::Flags::VISIBLE )
+  _flags ( Modflow::Flags::DIRTY | Modflow::Flags::VISIBLE ),
+  _colors(),
+  _zRange ( INVALID_MIN, INVALID_MAX )
 {
   USUL_TRACE_SCOPE;
+
+  // Default colors.
+  this->color ( Modflow::Names::MIN_ELEVATION, Color ( 0.0f, 0.0f, 1.0f, 1.0f ) );
+  this->color ( Modflow::Names::MAX_ELEVATION, Color ( 102.0f / 255.0f, 204.0f / 255.0f, 1.0f, 1.0f ) );
 }
 
 
@@ -499,7 +513,7 @@ void ModflowDocument::_buildScene ( Unknown *caller )
     Layer::RefPtr layer ( layers.at(i) );
     layer->flags ( Usul::Bits::add ( layer->flags(), Modflow::Flags::CUBE | Modflow::Flags::BOUNDS ) );
     layer->margin ( 500, 500, 0 );
-    group->addChild ( layer->buildScene ( caller ) );
+    group->addChild ( layer->buildScene ( this, caller ) );
   }
 
   // Assign the new group to our staging area.
@@ -587,6 +601,19 @@ void ModflowDocument::layers ( Layers &layers )
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
   for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
     (*iter)->document ( me.get () );
+
+  // Set z-range.
+  _zRange.set ( INVALID_MIN, INVALID_MAX );
+  for ( Layers::const_iterator i = _layers.begin(); i != _layers.end(); ++i )
+  {
+    Layers::value_type layer ( *i );
+    if ( true == layer.valid() )
+    {
+      const Vec2d zRange ( layer->zRange() );
+      _zRange[0] = Usul::Math::minimum ( _zRange[0], zRange[0] );
+      _zRange[1] = Usul::Math::maximum ( _zRange[1], zRange[1] );
+    }
+  }
 }
 
 
@@ -876,4 +903,47 @@ void ModflowDocument::intersectNotify ( float x, float y, const osgUtil::Hit &hi
 
   // Set the grid data in the delegate.
   setter->setStringGrid ( grid );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ModflowDocument::Color ModflowDocument::color ( const std::string &name ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  Colors::const_iterator i ( _colors.find ( name ) );
+  return ( ( _colors.end() == i ) ? Color() : i->second );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModflowDocument::color ( const std::string &name, const Color &c )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _colors[name] = c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ModflowDocument::Vec2d ModflowDocument::zRange() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _zRange;
 }

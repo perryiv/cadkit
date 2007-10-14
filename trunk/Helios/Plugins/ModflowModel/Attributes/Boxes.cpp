@@ -162,7 +162,7 @@ void Boxes::setBooleanState ( bool state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Group *Boxes::buildScene ( Modflow::Model::Layer *layer )
+osg::Group *Boxes::buildScene ( Modflow::ModflowDocument *document, Modflow::Model::Layer *layer )
 {
   USUL_TRACE_SCOPE;
 
@@ -188,14 +188,14 @@ osg::Group *Boxes::buildScene ( Modflow::Model::Layer *layer )
       Quads::RefPtr quads ( sides.at(i) );
       if ( true == quads.valid() )
       {
-        group->addChild ( quads->buildScene ( layer ) );
+        group->addChild ( quads->buildScene ( document, layer ) );
       }
     }
   }
 
   // Set new scene and return it.
   this->_setScene ( group.get() );
-  return BaseClass::buildScene ( layer );
+  return BaseClass::buildScene ( document, layer );
 }
 
 
@@ -210,4 +210,48 @@ void Boxes::getStringGrid ( Usul::Interfaces::IStringGridGet::StringGrid &data )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   data.push_back ( BaseClass::makeStringRow ( "Surface", this->name() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the min color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Boxes::minColor ( const Color &c )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  for ( Sides::iterator i = _sides.begin(); i != _sides.end(); ++i )
+  {
+    Quads::RefPtr quads ( *i );
+    if ( true == quads.valid() )
+    {
+      quads->minColor ( c );
+    }
+  }
+  BaseClass::minColor ( c );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the max color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Boxes::maxColor ( const Color &c )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  for ( Sides::iterator i = _sides.begin(); i != _sides.end(); ++i )
+  {
+    Quads::RefPtr quads ( *i );
+    if ( true == quads.valid() )
+    {
+      quads->maxColor ( c );
+    }
+  }
+  BaseClass::maxColor ( c );
 }

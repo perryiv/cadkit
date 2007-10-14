@@ -93,7 +93,7 @@ public:
   Layer *                     below();
 
   // Build the scene.
-  osg::Node *                 buildScene ( Unknown *caller );
+  osg::Node *                 buildScene ( Modflow::ModflowDocument *document, Unknown *caller );
 
   // Get the class name.
   virtual std::string         className() const;
@@ -150,6 +150,9 @@ public:
   // Set cell's tops and bottoms.
   void                        zRange ( const Data &top, const Data &bottom );
 
+  // Get z-range [min,max].
+  Vec2d                       zRange() const;
+
   // Usul::Interfaces::ITreeNode.
   virtual unsigned int        getNumChildNodes() const;
   virtual const ITreeNode *   getChildNode ( unsigned int which ) const;
@@ -169,8 +172,7 @@ protected:
   // Use reference counting.
   virtual ~Layer();
 
-  osg::Node *                 _buildCubes ( Unknown *caller ) const;
-  void                        _buildScene ( Unknown *caller );
+  void                        _buildScene ( Modflow::ModflowDocument *document, Unknown *caller );
 
 private:
 
@@ -187,6 +189,7 @@ private:
   IDocument::QueryPtr _document;
   Vec3d _margin;
   Attributes _attributes;
+  Vec2d _zRange;
 };
 
 

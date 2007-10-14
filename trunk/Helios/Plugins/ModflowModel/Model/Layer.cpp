@@ -40,6 +40,7 @@
 
 using namespace Modflow::Model;
 
+USUL_IMPLEMENT_TYPE_ID ( Layer );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Layer, Layer::BaseClass );
 
 

@@ -42,6 +42,8 @@
 #include "Usul/System/LastError.h"
 #include "Usul/Trace/Trace.h"
 
+#include "osgUtil/IntersectVisitor"
+
 #include "osgDB/WriteFile"
 
 #include "osg/Group"
@@ -54,10 +56,12 @@
 #include <algorithm>
 #include <fstream>
 #include <stdexcept>
+#include <sstream>
 #include <functional>
 
 using namespace Modflow;
 
+USUL_IMPLEMENT_TYPE_ID ( ModflowDocument );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModflowDocument, ModflowDocument::BaseClass );
 
 
@@ -807,10 +811,41 @@ bool ModflowDocument::getBooleanState() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModflowDocument::intersectNotify ( float x, float y, osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller )
+void ModflowDocument::intersectNotify ( float x, float y, const osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  std::cout << "Intersected: " << x << ' ' << y << std::endl;
+  typedef Modflow::Attributes::Attribute Attribute;
+  typedef Attribute::UserData UserData;
+  typedef Attribute::StringData StringData;
+
+  // Loop over the node path and collect data.
+  StringData sd;
+  const osg::NodePath &path ( hit.getNodePath() );
+  for ( osg::NodePath::const_iterator i = path.begin(); i != path.end(); ++i )
+  {
+    osg::ref_ptr<osg::Node> node ( *i );
+    osg::ref_ptr<UserData> ud ( ( true == node.valid() ) ? dynamic_cast < UserData * > ( node->getUserData() ) : 0x0 );
+    Attribute::RefPtr attr ( ( true == ud.valid() ) ? ud->value().get() : 0x0 );
+    if ( true == attr.valid() )
+    {
+      attr.get()->appendStringData ( sd );
+    }
+  }
+
+  // Handle no data.
+  if ( true == sd.empty() )
+    return;
+
+  // Print formatted data.
+  std::ostringstream out;
+  for ( StringData::const_iterator j = sd.begin(); j != sd.end(); ++j )
+  {
+    const StringData::value_type &value ( *j );
+    out << value.first << ": " << value.second << '\n';
+  }
+
+  // Print to stdout.
+  std::cout << "\nIntersected:\n" << out.str() << std::flush;
 }

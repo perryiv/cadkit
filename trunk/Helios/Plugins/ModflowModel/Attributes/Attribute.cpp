@@ -25,8 +25,11 @@
 
 #include "osg/Group"
 
+#include <sstream>
+
 using namespace Modflow::Attributes;
 
+USUL_IMPLEMENT_TYPE_ID ( Attribute );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Attribute, Attribute::BaseClass );
 
 
@@ -104,7 +107,6 @@ Usul::Interfaces::IUnknown *Attribute::queryInterface ( unsigned long iid )
   USUL_TRACE_SCOPE;
   switch ( iid )
   {
-  case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::ITreeNode::IID:
     return static_cast < Usul::Interfaces::ITreeNode* > ( this );
   case Usul::Interfaces::IBooleanState::IID:
@@ -112,7 +114,7 @@ Usul::Interfaces::IUnknown *Attribute::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IDirtyState::IID:
     return static_cast < Usul::Interfaces::IDirtyState* > ( this );
   default:
-    return 0x0;
+    return BaseClass::queryInterface ( iid );
   }
 }
 
@@ -206,8 +208,19 @@ void Attribute::_setScene ( osg::Group *group )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
+  // Set the pointer.
   _scene = group;
-  _scene->dirtyBound();
+
+  // If we have a valid scene...
+  if ( true == _scene.valid() )
+  {
+    // Make sure the bounds are dirty.
+    _scene->dirtyBound();
+
+    // Set this instance as the user data.
+    _scene->setUserData ( new UserData ( this ) );
+  }
 }
 
 
@@ -320,4 +333,19 @@ bool Attribute::getBooleanState() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return this->visible();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append internal state to list.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Attribute::appendStringData ( StringData &data ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  data.push_back ( StringPair ( "Name", this->name() ) );
 }

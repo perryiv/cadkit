@@ -17,6 +17,7 @@
 
 #include "Usul/Components/Create.h"
 
+USUL_IMPLEMENT_TYPE_ID ( ModflowFactory );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModflowFactory, ModflowFactory::BaseClass );
 
 

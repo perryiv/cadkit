@@ -33,24 +33,27 @@ class ModflowComponent : public Usul::Base::Referenced,
 {
 public:
 
-  /// Typedefs.
+  // Typedefs.
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef Usul::Documents::Document Document;
 
-  /// Smart-pointer definitions.
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( ModflowComponent );
+
+  // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ModflowComponent );
 
-  /// Usul::Interfaces::IUnknown members.
+  // Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  /// Default construction.
+  // Default construction.
   ModflowComponent();
 
-  /// Usul::Interfaces::IPlugin
+  // Usul::Interfaces::IPlugin
   virtual std::string         getPluginName() const { return "Modflow Model"; }
 
-  /// Usul::Interfaces::IDocumentCreate
+  // Usul::Interfaces::IDocumentCreate
   virtual Document *           createDocument ( Unknown *caller = 0x0 );
 
 protected: 
@@ -59,7 +62,7 @@ protected:
   ModflowComponent ( const ModflowComponent & );
   ModflowComponent &operator = ( const ModflowComponent & );
 
-  /// Use reference counting.
+  // Use reference counting.
   virtual ~ModflowComponent();
 
 

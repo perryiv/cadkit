@@ -20,7 +20,7 @@
 #include "Helios/Plugins/ModflowModel/Attributes/Attribute.h"
 #include "Helios/Plugins/ModflowModel/Model/Cell.h"
 
-#include "Usul/Base/Object.h"
+#include "Usul/Base/Observed.h"
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IDirtyState.h"
 #include "Usul/Interfaces/IDocument.h"
@@ -40,7 +40,7 @@ namespace Modflow {
 namespace Model {
 
 
-class Layer : public Usul::Base::Object,
+class Layer : public Usul::Base::Observed,
               public Usul::Interfaces::ITreeNode,
               public Usul::Interfaces::IBooleanState,
               public Usul::Interfaces::IDirtyState
@@ -48,7 +48,7 @@ class Layer : public Usul::Base::Object,
 public:
 
   // Useful typedefs.
-  typedef Usul::Base::Object BaseClass;
+  typedef Usul::Base::Observed BaseClass;
   typedef Usul::Math::Vec2d Vec2d;
   typedef Usul::Math::Vec3d Vec3d;
   typedef Usul::Math::Vec2ui Vec2ui;
@@ -61,6 +61,9 @@ public:
   typedef Modflow::Attributes::Attribute Attribute;
   typedef std::vector < Attribute::RefPtr > Attributes;
   typedef osg::ref_ptr < osg::Group > GroupPtr;
+
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( Layer );
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Layer );

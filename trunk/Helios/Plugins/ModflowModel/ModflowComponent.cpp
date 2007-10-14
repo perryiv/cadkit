@@ -16,10 +16,8 @@
 #include "Helios/Plugins/ModflowModel/ModflowComponent.h"
 #include "Helios/Plugins/ModflowModel/ModflowDocument.h"
 
-
-#include <algorithm>
-
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModflowComponent , ModflowComponent::BaseClass );
+USUL_IMPLEMENT_TYPE_ID ( ModflowComponent );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModflowComponent, ModflowComponent::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -17,8 +17,6 @@
 #define _USUL_BASE_OBSERVED_CLASS_H_
 
 #include "Usul/Base/Object.h"
-#include "Usul/Interfaces/IDeleteNotify.h"
-#include "Usul/Interfaces/IDeleteListener.h"
 #include "Usul/Pointers/WeakPointer.h"
 
 #include <set>
@@ -28,16 +26,15 @@ namespace Usul {
 namespace Base {
 
 
-class USUL_EXPORT Observed : public Usul::Base::Object,
-                             public Usul::Interfaces::IDeleteNotify
+class USUL_EXPORT Observed : public Usul::Base::Object
 {
 public:
 
   // Typedefs.
   typedef Usul::Base::Object BaseClass;
   typedef Usul::Pointers::WeakPointer < Observed > WeakPtr;
-  typedef Usul::Interfaces::IDeleteListener IDeleteListener;
-  typedef std::set < IDeleteListener::RefPtr > DeleteListeners;
+  typedef Usul::Pointers::DeleteListener DeleteListener;
+  typedef std::set < DeleteListener * > DeleteListeners;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Observed );
@@ -45,14 +42,11 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Observed );
 
-  // Usul::Interfaces::IUnknown members.
-  USUL_DECLARE_IUNKNOWN_MEMBERS;
+  // Add the listener.
+  virtual void            addDeleteListener ( DeleteListener * );
 
-  // Add the listener (IDeleteListener).
-  virtual void            addDeleteListener ( Usul::Interfaces::IUnknown * );
-
-  // Remove the listener (IDeleteListener).
-  virtual void            removeDeleteListener ( Usul::Interfaces::IUnknown * );
+  // Remove the listener.
+  virtual void            removeDeleteListener ( DeleteListener * );
 
 protected:
 

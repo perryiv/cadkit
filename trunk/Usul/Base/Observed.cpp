@@ -75,6 +75,7 @@ Observed &Observed::operator = ( const Observed &m )
 Observed::~Observed()
 {
   USUL_TRACE_SCOPE;
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Observed::_notifyDeleteListeners ), "1745111909" );
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Observed::_destroy ), "3168745373" );
 }
 
@@ -111,62 +112,7 @@ void Observed::_notifyDeleteListeners()
   }
 
   // Notify all the listeners.
-  std::for_each ( listeners.begin(), listeners.end(), 
-    std::bind2nd ( std::mem_fun ( &IDeleteListener::objectDeleted ), this ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Query the interfaces
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown *Observed::queryInterface ( unsigned long iid )
-{
-  USUL_TRACE_SCOPE;
-  switch ( iid )
-  {
-  case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::IDeleteNotify::IID:
-    return static_cast < Usul::Interfaces::IDeleteNotify* > ( this );
-  default:
-    return 0x0;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Reference this object.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Observed::ref()
-{
-  USUL_TRACE_SCOPE;
-  BaseClass::ref();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Dereference this object.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Observed::unref ( bool allowDeletion )
-{
-  USUL_TRACE_SCOPE;
-
-  // If we're going to be deleted then notify the listeners.
-  if ( 1 == this->refCount() )
-  {
-    this->_notifyDeleteListeners();
-  }
-
-  // Call base class.
-  BaseClass::unref ( allowDeletion );
+  std::for_each ( listeners.begin(), listeners.end(), std::mem_fun ( &DeleteListener::objectDeleted ) );
 }
 
 
@@ -176,13 +122,11 @@ void Observed::unref ( bool allowDeletion )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Observed::addDeleteListener ( Usul::Interfaces::IUnknown *unknown )
+void Observed::addDeleteListener ( DeleteListener *listener )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-
-  IDeleteListener::QueryPtr listener ( unknown );
-  if ( true == listener.valid() )
+  if ( 0x0 != listener )
   {
     _deleteListeners.insert ( listener );
   }
@@ -195,14 +139,9 @@ void Observed::addDeleteListener ( Usul::Interfaces::IUnknown *unknown )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Observed::removeDeleteListener ( Usul::Interfaces::IUnknown *unknown )
+void Observed::removeDeleteListener ( DeleteListener *listener )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-
-  IDeleteListener::QueryPtr listener ( unknown );
-  if ( true == listener.valid() )
-  {
-    _deleteListeners.erase ( listener );
-  }
+  _deleteListeners.erase ( listener );
 }

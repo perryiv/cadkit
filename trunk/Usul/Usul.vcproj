@@ -924,14 +924,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IDeleteListener.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IDeleteNotify.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IDeletePrimitive.h"
 					>
 				</File>

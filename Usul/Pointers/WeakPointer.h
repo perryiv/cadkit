@@ -178,6 +178,11 @@ public:
     {
       _p = 0x0;
     }
+    else
+    {
+      // Should this happen?
+      USUL_ASSERT ( false );
+    }
   }
 
 

@@ -32,6 +32,7 @@
 #include "Usul/Trace/Trace.h"
 
 #include "QtGui/QDockWidget"
+#include "QtGui/QLabel"
 #include "QtGui/QMainWindow"
 #include "QtGui/QWorkspace"
 
@@ -47,7 +48,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModflowDelegateComponent , ModflowDelegateComp
 ModflowDelegateComponent::ModflowDelegateComponent() : BaseClass(),
   _caller ( static_cast < Usul::Interfaces::IUnknown * > ( 0x0 ) ),
   _docked(),
-  _layerTree ( 0x0 )
+  _layerTree ( 0x0 ),
+  _intersectInfo ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -109,8 +111,9 @@ void ModflowDelegateComponent::_destroy()
   // Clear the map.
   _docked.clear();
 
-  // This was just deleted by it's parent.
+  // These were just deleted by the parent.
   _layerTree = 0x0;
+  _intersectInfo = 0x0;
 
   // Done with this.
   _caller = static_cast < Usul::Interfaces::IUnknown * > ( 0x0 );
@@ -138,6 +141,8 @@ Usul::Interfaces::IUnknown *ModflowDelegateComponent::queryInterface ( unsigned 
     return static_cast < Usul::Interfaces::IActiveDocumentListener * > ( this );
   case Usul::Interfaces::IAddDockWindow::IID:
     return static_cast < Usul::Interfaces::IAddDockWindow * > ( this );
+  case Usul::Interfaces::IStringGridSet::IID:
+    return static_cast < Usul::Interfaces::IStringGridSet * > ( this );
   default:
     return 0x0;
   }
@@ -205,7 +210,13 @@ void ModflowDelegateComponent::createDefaultGUI ( Usul::Documents::Document *doc
 void ModflowDelegateComponent::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
 {
   if ( 0x0 != _layerTree )
+  {
     _layerTree->buildTree ( newDoc );
+  }
+  if ( 0x0 != _intersectInfo )
+  {
+    _intersectInfo->clear();
+  }
 }
 
 
@@ -224,17 +235,35 @@ void ModflowDelegateComponent::addDockWindow ( Usul::Interfaces::IUnknown *calle
   // Set the caller.
   _caller = caller;
 
-  // Build the docking window.
-  std::auto_ptr<QDockWidget> dockWidget ( this->_makeDockWindow ( "Modflow Layers", "ModflowDockWidget" ) );
+  // Layers tree.
+  {
+    // Build the docking window.
+    std::auto_ptr<QDockWidget> dockWidget ( this->_makeDockWindow ( "Modflow Layers", "ModflowLayersDockWidget" ) );
 
-  // Create the tree for the scene graph.
-  _layerTree = new LayerTreeControl ( caller, dockWidget.get() );
+    // Create the tree for the scene graph.
+    _layerTree = new LayerTreeControl ( caller, dockWidget.get() );
 
-  // Set the docking window's widget.
-  dockWidget->setWidget ( _layerTree );
+    // Set the docking window's widget.
+    dockWidget->setWidget ( _layerTree );
 
-  // Save in the map and release.
-  _docked[_layerTree] = dockWidget.release();
+    // Save in the map and release.
+    _docked[_layerTree] = dockWidget.release();
+  }
+
+  // Intersection window.
+  {
+    // Build the docking window.
+    std::auto_ptr<QDockWidget> dockWidget ( this->_makeDockWindow ( "Modflow Intersection", "ModflowIntersectionDockWidget" ) );
+
+    // Create the tree for the scene graph.
+    _intersectInfo = new QLabel ( dockWidget.get() );
+
+    // Set the docking window's widget.
+    dockWidget->setWidget ( _intersectInfo );
+
+    // Save in the map and release.
+    _docked[_intersectInfo] = dockWidget.release();
+  }
 }
 
 
@@ -273,4 +302,17 @@ QDockWidget *ModflowDelegateComponent::_makeDockWindow ( const std::string &titl
 
   // Return the dock widget.
   return dockWidget.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when there is an intersection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModflowDelegateComponent::setStringGrid ( const StringGrid &grid )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
 }

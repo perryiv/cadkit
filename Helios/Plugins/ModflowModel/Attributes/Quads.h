@@ -41,7 +41,7 @@ public:
   Quads ( const std::string &name, IUnknown *parent, unsigned int sides );
 
   // Build the scene.
-  virtual osg::Group *        buildScene ( Modflow::Model::Layer * );
+  virtual osg::Group *        buildScene ( Modflow::ModflowDocument *document, Modflow::Model::Layer * );
 
   // Clear the attribute.
   virtual void                clear();

@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Helios/Plugins/ModflowModel/Attributes/Quads.h"
+#include "Helios/Plugins/ModflowModel/ModflowDocument.h"
 #include "Helios/Plugins/ModflowModel/Builders/BuildScene.h"
 #include "Helios/Plugins/ModflowModel/Constants.h"
 #include "Helios/Plugins/ModflowModel/Model/Layer.h"
@@ -91,7 +92,7 @@ void Quads::clear()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Group *Quads::buildScene ( Modflow::Model::Layer *layer )
+osg::Group *Quads::buildScene ( Modflow::ModflowDocument *document, Modflow::Model::Layer *layer )
 {
   USUL_TRACE_SCOPE;
 
@@ -124,12 +125,13 @@ osg::Group *Quads::buildScene ( Modflow::Model::Layer *layer )
     const unsigned int numCells ( gridSize[0] * gridSize[1] );
     if ( gridSize[0] > 1 && gridSize[1] > 1 )
     {
-      // Make vertices and normals.
+      // Make vertices and normals, 4 on each face.
       osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
-      vertices->reserve ( numCells * 24 ); // 4 on each face.
+      vertices->reserve ( numCells * 24 );
 
+      // Need same number for "fast path".
       osg::ref_ptr<osg::Vec3Array> normals ( new osg::Vec3Array );
-      normals->reserve ( vertices->size() ); // Need same number for "fast path".
+      normals->reserve ( vertices->size() );
 
       // Copy the sides.
       unsigned int sides ( 0 );
@@ -140,6 +142,10 @@ osg::Group *Quads::buildScene ( Modflow::Model::Layer *layer )
 
       // Save room for the weak pointers, up to all 6 sides.
       this->_cellWeakPointersReserve ( numCells * 6 );
+
+      // Get min and max colors.
+      const osg::Vec4f minColor ( this->minColor()[0], this->minColor()[1], this->minColor()[2], this->minColor()[3] );
+      const osg::Vec4f maxColor ( this->maxColor()[0], this->maxColor()[1], this->maxColor()[2], this->maxColor()[3] );
 
       // Loop through the cells.
       for ( unsigned int i = 0; i < gridSize[0]; ++i )
@@ -158,7 +164,9 @@ osg::Group *Quads::buildScene ( Modflow::Model::Layer *layer )
 
             // Add the quads.
             Modflow::Builders::BuildScene::addQuads 
-              ( sides, cell->x(), cell->y(), cell->top(), cell->bottom(), halfSize, margin[2], vertices.get(), normals.get() );
+              ( sides, cell->x(), cell->y(), cell->top(), cell->bottom(), 
+                halfSize, margin[2], 
+                vertices.get(), normals.get() );
 
             // Get number of vertices used for this cell.
             const unsigned int numVerticesForCell ( vertices->size() - originalNumVertices );
@@ -174,11 +182,37 @@ osg::Group *Quads::buildScene ( Modflow::Model::Layer *layer )
       normals->trim();
       this->_cellWeakPointersTrim();
 
+      // Set the color for each vertex. Same number for "fast path".
+      const unsigned int numVertices ( vertices->size() );
+      osg::ref_ptr<osg::Vec4Array> colors ( new osg::Vec4Array ( numVertices ) );
+      const Usul::Math::Vec2d zRange ( document->zRange() );
+      const osg::Vec4f dir ( maxColor - minColor );
+      for ( unsigned int k = 0; k < numVertices; ++k )
+      {
+        osg::Vec3f &v ( vertices->at(k) );
+        osg::Vec4f &c ( colors->at(k) );
+        const float fraction ( ( v[2] - zRange[0] ) / ( zRange[1] - zRange[0] ) );
+        c[0] = minColor[0] + ( dir[0] * fraction );
+        c[1] = minColor[1] + ( dir[1] * fraction );
+        c[2] = minColor[2] + ( dir[2] * fraction );
+        c[3] = minColor[3] + ( dir[3] * fraction );
+#if 0
+        std::cout << "fraction = " << fraction;
+        std::cout << ", c = ( " << c[0] << ' ' << c[1] << ' ' << c[2] << ' ' << c[3] << " )";
+        std::cout << ", minColor = ( " << minColor[0] << ' ' << minColor[1] << ' ' << minColor[2] << ' ' << minColor[3] << " )";
+        std::cout << ", maxColor = ( " << maxColor[0] << ' ' << maxColor[1] << ' ' << maxColor[2] << ' ' << maxColor[3] << " )";
+        std::cout << ", dir = ( " << dir[0] << ' ' << dir[1] << ' ' << dir[2] << ' ' << dir[3] << " )";
+        std::cout << std::endl;
+#endif
+      }
+
       // Make geometry.
       osg::ref_ptr<osg::Geometry> geom ( new osg::Geometry );
       geom->setVertexArray ( vertices.get() );
       geom->setNormalArray ( normals.get() );
+      geom->setColorArray ( colors.get() );
       geom->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
+      geom->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
 
       // Turn both of these on because vertex buffer, when available, 
       // overrides display-list settings.
@@ -193,7 +227,7 @@ osg::Group *Quads::buildScene ( Modflow::Model::Layer *layer )
 
   // Set new scene and return it.
   this->_setScene ( group.get() );
-  return BaseClass::buildScene ( layer );
+  return BaseClass::buildScene ( document, layer );
 }
 
 

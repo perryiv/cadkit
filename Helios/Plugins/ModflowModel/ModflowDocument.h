@@ -31,10 +31,13 @@
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
+#include "Usul/Math/Vector4.h"
+#include "Usul/Pointers/WeakPointer.h"
 
 #include <iosfwd>
 #include <string>
 #include <vector>
+#include <map>
 
 namespace osg { class Node; class Group; }
 namespace Usul { namespace Factory { class ObjectFactory; } }
@@ -58,15 +61,18 @@ public:
   typedef Usul::Math::Vec2ui Vec2ui;
   typedef Usul::Math::Vec2d Vec2d;
   typedef Usul::Math::Vec3f Vec3f;
-  typedef std::vector<double> GridData;
-  typedef std::pair<std::string,GridData> GridInfo;
-  typedef std::vector<GridInfo> GridVector;
+  typedef std::vector < double > GridData;
+  typedef std::pair < std::string, GridData > GridInfo;
+  typedef std::vector < GridInfo > GridVector;
   typedef Modflow::Model::Layer Layer;
-  typedef std::vector<Layer::RefPtr> Layers;
+  typedef std::vector < Layer::RefPtr > Layers;
   typedef Usul::Factory::ObjectFactory Factory;
   typedef Modflow::Readers::BaseReader BaseReader;
   typedef Usul::Interfaces::ITreeNode ITreeNode;
   typedef Usul::Interfaces::IBooleanState IBooleanState;
+  typedef Usul::Math::Vec4f Color;
+  typedef std::map < std::string, Color > Colors;
+  typedef Usul::Pointers::WeakPointer < ModflowDocument > WeakPtr;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( ModflowDocument );
@@ -91,6 +97,10 @@ public:
 
   // Clear any existing data.
   virtual void                            clear ( Unknown *caller = 0x0 );
+
+  // Get/set the color.
+  Color                                   color ( const std::string &name ) const;
+  void                                    color ( const std::string &name, const Color & );
 
   // Set/get the dirty flag.
   virtual void                            dirtyState ( bool );
@@ -140,6 +150,9 @@ public:
   virtual void                            setBooleanState ( bool );
   virtual bool                            getBooleanState() const;
 
+  // Get z-range [min,max].
+  Vec2d                                   zRange() const;
+
 protected:
 
   void                                    _buildScene ( Unknown *caller );
@@ -170,6 +183,8 @@ private:
   osg::ref_ptr<osg::Group> _root;
   osg::ref_ptr<osg::Group> _built;
   unsigned int _flags;
+  Colors _colors;
+  Vec2d _zRange;
 };
 
 

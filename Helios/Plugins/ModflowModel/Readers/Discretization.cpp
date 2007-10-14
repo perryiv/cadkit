@@ -138,9 +138,16 @@ void Discretization::read ( Modflow::ModflowDocument *doc, const std::string &fi
     Layer::RefPtr layer = layers.at ( i );
     layer->zRange ( top.second, bottom.second );
 
-    // Add attribute for the boundary.
-    layer->addAttribute ( new Modflow::Attributes::Boxes 
+    // Make attribute for the boundary.
+    Modflow::Attributes::Boxes::RefPtr boxes ( new Modflow::Attributes::Boxes 
       ( Modflow::Names::CELL_BOUNDARY, layer->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
+
+    // Set the attribute's color.
+    boxes->minColor ( doc->color ( Modflow::Names::MIN_ELEVATION ) );
+    boxes->maxColor ( doc->color ( Modflow::Names::MAX_ELEVATION ) );
+
+    // Add attribute.
+    layer->addAttribute ( boxes.get() );
 
     // The bottom becomes the new top.
     top = bottom;

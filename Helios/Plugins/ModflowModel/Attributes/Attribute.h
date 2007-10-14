@@ -21,12 +21,13 @@
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IDirtyState.h"
 #include "Usul/Interfaces/ITreeNode.h"
+#include "Usul/Math/Vector4.h"
 
 #include "osg/Group"
 
 #include <vector>
 
-namespace Modflow { namespace Model { class Layer; class Cell; } }
+namespace Modflow { class ModflowDocument; namespace Model { class Layer; class Cell; } }
 
 
 namespace Modflow {
@@ -61,12 +62,13 @@ public:
   typedef BaseClass::StringGrid StringGrid;
   typedef Modflow::Base::BaseObject::WeakPtr CellWeakPtr;
   typedef std::vector < CellWeakPtr > Cells;
+  typedef Usul::Math::Vec4f Color;
 
   // Construction.
   Attribute ( const std::string &name, IUnknown *parent );
 
   // Build the scene.
-  virtual osg::Group *        buildScene ( Modflow::Model::Layer * );
+  virtual osg::Group *        buildScene ( Modflow::ModflowDocument *, Modflow::Model::Layer * );
 
   // Clear the attribute.
   virtual void                clear();
@@ -96,6 +98,12 @@ public:
   // Get the cell from the vertex.
   Modflow::Model::Cell *      getCellAtVertex ( unsigned int which );
 
+  // Set/get the min/max color.
+  virtual void                maxColor ( const Color &c );
+  Color                       maxColor() const;
+  virtual void                minColor ( const Color &c );
+  Color                       minColor() const;
+
 protected:
 
   // Use reference counting.
@@ -120,6 +128,8 @@ private:
   GroupPtr _scene;
   IUnknown *_parent;
   Cells _cells;
+  Color _minColor;
+  Color _maxColor;
 };
 
 

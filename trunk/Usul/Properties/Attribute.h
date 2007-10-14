@@ -24,14 +24,19 @@ namespace Usul {
 namespace Properties {
 
 
-template < class T > class Attribute : public Usul::Base::Referenced
+template
+<
+  class T, 
+  class BaseClassType = Usul::Base::Referenced 
+>
+class Attribute : public BaseClassType
 {
 public:
 
   /// Typedefs.
-  typedef Usul::Base::Referenced BaseClass;
+  typedef BaseClassType BaseClass;
   typedef T ValueType;
-  typedef Attribute < T > ThisType;
+  typedef Attribute < ValueType, BaseClass > ThisType;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Attribute );
@@ -51,7 +56,9 @@ public:
 
 protected:
 
-  virtual ~Attribute(){}
+  virtual ~Attribute()
+  {
+  }
 
 private:
 

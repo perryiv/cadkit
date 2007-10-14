@@ -308,6 +308,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Base\Observed.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Base\Observed.h"
+					>
+				</File>
+				<File
 					RelativePath="Base\Referenced.cpp"
 					>
 				</File>
@@ -913,6 +921,14 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IDeleteAllConnected.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IDeleteListener.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IDeleteNotify.h"
 					>
 				</File>
 				<File
@@ -1720,6 +1736,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Pointers\DoNothingPolicy.h"
+					>
+				</File>
+				<File
 					RelativePath="Pointers\Exceptions.h"
 					>
 				</File>
@@ -1757,6 +1777,10 @@
 				</File>
 				<File
 					RelativePath="Pointers\SmartPointer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Pointers\WeakPointer.h"
 					>
 				</File>
 				<Filter

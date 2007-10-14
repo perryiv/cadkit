@@ -16,8 +16,6 @@
 #ifndef _USUL_BASE_OBJECT_CLASS_H_
 #define _USUL_BASE_OBJECT_CLASS_H_
 
-#include "Usul/Export/Export.h"
-
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/RecursiveMutex.h"

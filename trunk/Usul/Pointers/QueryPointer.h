@@ -17,7 +17,6 @@
 #define _USUL_QUERY_INTERFACE_POINTER_CLASS_H_
 
 #include "Usul/Pointers/SmartPointer.h"
-#include "Usul/Pointers/RefCountPolicy.h"
 
 
 namespace Usul {
@@ -29,7 +28,7 @@ template
   class NewInterface_, 
   class Config_
 >
-class QueryPointer: public SmartPointer
+class QueryPointer : public SmartPointer
 <
   NewInterface_,
   Config_
@@ -45,7 +44,6 @@ public:
 
   typedef NewInterface_ NewInterface;
   typedef Config_ Config;
-  typedef typename Config::reference_policy RefCountPolicy;
   typedef SmartPointer < NewInterface, Config > BaseClass;
   typedef QueryPointer < NewInterface, Config > ThisType;
 

@@ -51,6 +51,9 @@ public:
   typedef IStringGridGet::StringRow StringRow;
   typedef IStringGridGet::StringGrid StringGrid;
 
+  // Get the class name.
+  virtual std::string         className() const;
+
   // Clear the object.
   virtual void                clear() = 0;
 

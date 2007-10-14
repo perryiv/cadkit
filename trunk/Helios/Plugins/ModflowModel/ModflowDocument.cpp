@@ -40,6 +40,7 @@
 #include "Usul/Interfaces/IStringGridGet.h"
 #include "Usul/Interfaces/IStringGridSet.h"
 #include "Usul/Strings/Case.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/System/Directory.h"
 #include "Usul/System/LastError.h"
 #include "Usul/Trace/Trace.h"
@@ -835,14 +836,41 @@ void ModflowDocument::intersectNotify ( float x, float y, const osgUtil::Hit &hi
   const osg::NodePath &path ( hit.getNodePath() );
   for ( osg::NodePath::const_iterator i = path.begin(); i != path.end(); ++i )
   {
+    // Get basic string data.
     osg::ref_ptr<osg::Node> node ( *i );
     osg::ref_ptr<UserData> ud ( ( true == node.valid() ) ? dynamic_cast < UserData * >  ( node->getUserData() ) : 0x0 );
-    IStringGridGet::QueryPtr attr ( ( true == ud.valid() ) ? ( ud->value().get() ) : 0x0 );
-    if ( true == attr.valid() )
+    IStringGridGet::QueryPtr getter ( ( true == ud.valid() ) ? ( ud->value().get() ) : 0x0 );
+    if ( true == getter.valid() )
     {
       StringGrid local;
-      attr.get()->getStringGrid ( local );
+      getter.get()->getStringGrid ( local );
       grid.insert ( grid.end(), local.begin(), local.end() );
+    }
+
+    // Are there vertices?
+    if ( false == hit.getVecIndexList().empty() )
+    {
+      // Get the vertices involved.
+      const unsigned int vertexStart ( hit.getVecIndexList().front() );
+
+      // Get the attribute.
+      Modflow::Attributes::Attribute::RefPtr attr ( ( true == ud.valid() ) ? 
+        dynamic_cast < Modflow::Attributes::Attribute * > ( ud->value().get() ) : 0x0 );
+      if ( true == attr.valid() )
+      {
+        // Get the cell.
+        const Modflow::Model::Cell *cell ( attr->getCellAtVertex ( vertexStart ) );
+        if ( 0x0 != cell )
+        {
+          // Get the cell's properties.
+          grid.push_back ( Modflow::Base::BaseObject::makeStringRow ( "Cell X",      Usul::Strings::format ( cell->x() ) ) );
+          grid.push_back ( Modflow::Base::BaseObject::makeStringRow ( "Cell Y",      Usul::Strings::format ( cell->y() ) ) );
+          grid.push_back ( Modflow::Base::BaseObject::makeStringRow ( "Cell Top",    Usul::Strings::format ( cell->top() ) ) );
+          grid.push_back ( Modflow::Base::BaseObject::makeStringRow ( "Cell Bottom", Usul::Strings::format ( cell->bottom() ) ) );
+          grid.push_back ( Modflow::Base::BaseObject::makeStringRow ( "Cell Row",    Usul::Strings::format ( cell->indices()[0] ) ) );
+          grid.push_back ( Modflow::Base::BaseObject::makeStringRow ( "Cell Column", Usul::Strings::format ( cell->indices()[1] ) ) );
+        }
+      }
     }
   }
 

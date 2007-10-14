@@ -30,9 +30,10 @@ USUL_IMPLEMENT_TYPE_ID ( Cell );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Cell::Cell ( double x, double y ) : BaseClass ( "" ),
+Cell::Cell ( double x, double y, unsigned int i, unsigned int j ) : BaseClass ( "" ),
   _x       ( x ),
   _y       ( y ),
+  _indices ( i, j ),
   _bottom  ( 0 ),
   _top     ( 0 ),
   _vectors (),
@@ -64,7 +65,7 @@ Cell::~Cell()
 void Cell::top ( double t )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _top = t;
 }
 
@@ -78,7 +79,7 @@ void Cell::top ( double t )
 double Cell::top() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _top;
 }
 
@@ -92,7 +93,7 @@ double Cell::top() const
 void Cell::bottom ( double b )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _bottom = b;
 }
 
@@ -106,7 +107,7 @@ void Cell::bottom ( double b )
 double Cell::bottom() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _bottom;
 }
 
@@ -120,7 +121,7 @@ double Cell::bottom() const
 double Cell::x() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _x;
 }
 
@@ -134,7 +135,7 @@ double Cell::x() const
 void Cell::x ( double value )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _x = value;
 }
 
@@ -148,7 +149,7 @@ void Cell::x ( double value )
 double Cell::y() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _y;
 }
 
@@ -162,7 +163,7 @@ double Cell::y() const
 void Cell::y ( double value )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _y = value;
 }
 
@@ -176,7 +177,7 @@ void Cell::y ( double value )
 Cell::Vec3d Cell::center() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return Vec3d ( _x, _y, 0.5 * ( _top - _bottom ) );
 }
 
@@ -190,7 +191,7 @@ Cell::Vec3d Cell::center() const
 double Cell::value ( const std::string &name ) const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   Cell &me ( const_cast < Cell & > ( *this ) );
   return me._values[name];
 }
@@ -205,7 +206,7 @@ double Cell::value ( const std::string &name ) const
 void Cell::value ( const std::string &name, double v )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _values[name] = v;
 }
 
@@ -219,7 +220,7 @@ void Cell::value ( const std::string &name, double v )
 const Cell::Vector &Cell::vector ( const std::string &name ) const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   Cell &me ( const_cast < Cell & > ( *this ) );
   return me._vectors[name];
 }
@@ -234,7 +235,7 @@ const Cell::Vector &Cell::vector ( const std::string &name ) const
 Cell::Vector &Cell::vector ( const std::string &name )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _vectors[name];
 }
 
@@ -248,7 +249,7 @@ Cell::Vector &Cell::vector ( const std::string &name )
 void Cell::vector ( const std::string &name, const Vector &v )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _vectors[name] = v;
 }
 
@@ -263,4 +264,18 @@ void Cell::clear()
 {
   USUL_TRACE_SCOPE;
   // Nothing to clear, just plumbing.
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return indices.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Cell::Vec2ui Cell::indices() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _indices;
 }

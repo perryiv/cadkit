@@ -55,6 +55,9 @@ public:
   virtual const ITreeNode *   getChildNode ( unsigned int which ) const;
   virtual ITreeNode *         getChildNode ( unsigned int which );
 
+  // Usul::Interfaces::IStringGridGet.
+  virtual void                getStringGrid ( IStringGridGet::StringGrid & ) const;
+
   // Usul::Interfaces::IBooleanState.
   virtual void                setBooleanState ( bool );
 

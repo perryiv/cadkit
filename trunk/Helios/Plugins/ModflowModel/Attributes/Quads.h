@@ -46,6 +46,9 @@ public:
   // Clear the attribute.
   virtual void                clear();
 
+  // Usul::Interfaces::IStringGridGet.
+  virtual void                getStringGrid ( IStringGridGet::StringGrid & ) const;
+
 protected:
 
   // Use reference counting.

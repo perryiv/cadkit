@@ -24,7 +24,9 @@
 
 #include "osg/Group"
 
-namespace Modflow { namespace Model { class Layer; } }
+#include <vector>
+
+namespace Modflow { namespace Model { class Layer; class Cell; } }
 
 
 namespace Modflow {
@@ -57,6 +59,8 @@ public:
   typedef BaseClass::IStringGridGet IStringGridGet;
   typedef BaseClass::StringRow StringRow;
   typedef BaseClass::StringGrid StringGrid;
+  typedef Modflow::Base::BaseObject::WeakPtr CellWeakPtr;
+  typedef std::vector < CellWeakPtr > Cells;
 
   // Construction.
   Attribute ( const std::string &name, IUnknown *parent );
@@ -89,10 +93,18 @@ public:
   // Usul::Interfaces::IStringGridGet.
   virtual void                getStringGrid ( IStringGridGet::StringGrid & ) const;
 
+  // Get the cell from the vertex.
+  Modflow::Model::Cell *      getCellAtVertex ( unsigned int which );
+
 protected:
 
   // Use reference counting.
   virtual ~Attribute();
+
+  void                        _cellWeakPointersClear();
+  void                        _cellWeakPointersReserve ( unsigned int );
+  void                        _cellWeakPointersAppend ( Modflow::Model::Cell *, unsigned int num );
+  void                        _cellWeakPointersTrim();
 
   void                        _setScene ( osg::Group * );
 
@@ -107,6 +119,7 @@ private:
   unsigned int _flags;
   GroupPtr _scene;
   IUnknown *_parent;
+  Cells _cells;
 };
 
 

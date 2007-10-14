@@ -37,6 +37,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/IStringGridGet.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/System/Directory.h"
 #include "Usul/System/LastError.h"
@@ -816,34 +817,43 @@ void ModflowDocument::intersectNotify ( float x, float y, const osgUtil::Hit &hi
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  typedef Modflow::Attributes::Attribute Attribute;
-  typedef Attribute::UserData UserData;
-  typedef Attribute::StringData StringData;
+  typedef Modflow::Base::BaseObject BaseObject;
+  typedef BaseObject::UserData UserData;
+  typedef BaseObject::StringGrid StringGrid;
+  typedef BaseObject::StringRow StringRow;
+  typedef Usul::Interfaces::IStringGridGet IStringGridGet;
 
   // Loop over the node path and collect data.
-  StringData sd;
+  StringGrid grid;
   const osg::NodePath &path ( hit.getNodePath() );
   for ( osg::NodePath::const_iterator i = path.begin(); i != path.end(); ++i )
   {
     osg::ref_ptr<osg::Node> node ( *i );
-    osg::ref_ptr<UserData> ud ( ( true == node.valid() ) ? dynamic_cast < UserData * > ( node->getUserData() ) : 0x0 );
-    Attribute::RefPtr attr ( ( true == ud.valid() ) ? ud->value().get() : 0x0 );
+    osg::ref_ptr<UserData> ud ( ( true == node.valid() ) ? dynamic_cast < UserData * >  ( node->getUserData() ) : 0x0 );
+    IStringGridGet::QueryPtr attr ( ( true == ud.valid() ) ? ( ud->value().get() ) : 0x0 );
     if ( true == attr.valid() )
     {
-      attr.get()->appendStringData ( sd );
+      StringGrid local;
+      attr.get()->getStringGrid ( local );
+      grid.insert ( grid.end(), local.begin(), local.end() );
     }
   }
 
   // Handle no data.
-  if ( true == sd.empty() )
+  if ( true == grid.empty() )
     return;
 
   // Print formatted data.
   std::ostringstream out;
-  for ( StringData::const_iterator j = sd.begin(); j != sd.end(); ++j )
+  for ( StringGrid::const_iterator j = grid.begin(); j != grid.end(); ++j )
   {
-    const StringData::value_type &value ( *j );
-    out << value.first << ": " << value.second << '\n';
+    const StringGrid::value_type &row ( *j );
+    for ( unsigned int r = 0; r < row.size(); ++r )
+    {
+      const std::string &s ( row.at(r) );
+      out << ( ( 0 == r ) ? "" : ": " ) << s;
+    }
+    out << '\n';
   }
 
   // Print to stdout.

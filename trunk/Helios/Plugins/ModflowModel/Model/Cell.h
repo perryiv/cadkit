@@ -16,12 +16,15 @@
 #ifndef _MODFLOW_MODEL_CELL_CLASS_H_
 #define _MODFLOW_MODEL_CELL_CLASS_H_
 
-#include "Helios/Plugins/ModflowModel/CompileGuard.h"
+#include "Helios/Plugins/ModflowModel/Base/BaseObject.h"
 
 #include "Usul/Base/Observed.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Properties/Attribute.h"
+
+#include "osg/Referenced"
 
 #include <map>
 #include <string>
@@ -34,17 +37,21 @@ namespace Modflow {
 namespace Model {
 
 
-class Cell : public Usul::Base::Observed
+class Cell : public Modflow::Base::BaseObject
 {
 public:
 
   // Useful typedefs.
-  typedef Usul::Base::Observed BaseClass;
+  typedef Modflow::Base::BaseObject BaseClass;
   typedef Usul::Math::Vec2d Vec2d;
   typedef Usul::Math::Vec3d Vec3d;
-  typedef std::vector<double> Vector;
-  typedef std::map<std::string,Vector> NamedVectors;
-  typedef std::map<std::string,double> NamedValues;
+  typedef std::vector < double > Vector;
+  typedef std::map < std::string, Vector > NamedVectors;
+  typedef std::map < std::string, double > NamedValues;
+  typedef Usul::Pointers::WeakPointer < Cell > WeakPtr;
+  typedef BaseClass::IStringGridGet IStringGridGet;
+  typedef BaseClass::StringRow StringRow;
+  typedef BaseClass::StringGrid StringGrid;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Cell );

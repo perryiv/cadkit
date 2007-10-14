@@ -358,6 +358,18 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Base"
+					>
+					<File
+						RelativePath=".\Base\BaseObject.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Base\BaseObject.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="DLL"

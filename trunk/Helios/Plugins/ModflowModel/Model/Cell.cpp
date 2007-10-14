@@ -30,7 +30,7 @@ USUL_IMPLEMENT_TYPE_ID ( Cell );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Cell::Cell ( double x, double y ) : BaseClass(),
+Cell::Cell ( double x, double y ) : BaseClass ( "" ),
   _x       ( x ),
   _y       ( y ),
   _bottom  ( 0 ),

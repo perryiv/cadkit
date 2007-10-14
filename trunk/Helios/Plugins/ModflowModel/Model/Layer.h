@@ -16,7 +16,7 @@
 #ifndef _MODFLOW_MODEL_LAYER_CLASS_H_
 #define _MODFLOW_MODEL_LAYER_CLASS_H_
 
-#include "Helios/Plugins/ModflowModel/CompileGuard.h"
+#include "Helios/Plugins/ModflowModel/Base/BaseObject.h"
 #include "Helios/Plugins/ModflowModel/Attributes/Attribute.h"
 #include "Helios/Plugins/ModflowModel/Model/Cell.h"
 
@@ -40,15 +40,16 @@ namespace Modflow {
 namespace Model {
 
 
-class Layer : public Usul::Base::Observed,
+class Layer : public Modflow::Base::BaseObject,
               public Usul::Interfaces::ITreeNode,
               public Usul::Interfaces::IBooleanState,
-              public Usul::Interfaces::IDirtyState
+              public Usul::Interfaces::IDirtyState,
+              public Usul::Interfaces::IStringGridGet
 {
 public:
 
   // Useful typedefs.
-  typedef Usul::Base::Observed BaseClass;
+  typedef Modflow::Base::BaseObject BaseClass;
   typedef Usul::Math::Vec2d Vec2d;
   typedef Usul::Math::Vec3d Vec3d;
   typedef Usul::Math::Vec2ui Vec2ui;
@@ -61,6 +62,10 @@ public:
   typedef Modflow::Attributes::Attribute Attribute;
   typedef std::vector < Attribute::RefPtr > Attributes;
   typedef osg::ref_ptr < osg::Group > GroupPtr;
+  typedef Usul::Pointers::WeakPointer < Layer > WeakPtr;
+  typedef BaseClass::IStringGridGet IStringGridGet;
+  typedef BaseClass::StringRow StringRow;
+  typedef BaseClass::StringGrid StringGrid;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Layer );
@@ -152,6 +157,9 @@ public:
   // Usul::Interfaces::IBooleanState.
   virtual void                setBooleanState ( bool );
   virtual bool                getBooleanState() const;
+
+  // Usul::Interfaces::IStringGridGet.
+  virtual void                getStringGrid ( StringGrid & ) const;
 
 protected:
 

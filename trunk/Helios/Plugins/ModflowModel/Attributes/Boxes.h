@@ -33,6 +33,7 @@ public:
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef Usul::Interfaces::ITreeNode ITreeNode;
   typedef std::vector<Quads::RefPtr> Sides;
+  typedef Usul::Pointers::WeakPointer < Boxes > WeakPtr;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Boxes );

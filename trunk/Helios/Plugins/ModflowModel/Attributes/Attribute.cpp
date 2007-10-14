@@ -39,16 +39,12 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Attribute, Attribute::BaseClass );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Attribute::Attribute ( const std::string &name, IUnknown *parent ) : BaseClass(),
+Attribute::Attribute ( const std::string &name, IUnknown *parent ) : BaseClass ( name ),
   _flags   ( Modflow::Flags::VISIBLE | Modflow::Flags::DIRTY ),
   _scene   ( new osg::Group ),
   _parent  ( parent )
 {
   USUL_TRACE_SCOPE;
-
-  // Set the name.
-  BaseClass::name ( name );
-
   // Do not reference _parent!
 }
 
@@ -113,6 +109,8 @@ Usul::Interfaces::IUnknown *Attribute::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IBooleanState* > ( this );
   case Usul::Interfaces::IDirtyState::IID:
     return static_cast < Usul::Interfaces::IDirtyState* > ( this );
+  case Usul::Interfaces::IStringGridGet::IID:
+    return static_cast < Usul::Interfaces::IStringGridGet* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -342,10 +340,9 @@ bool Attribute::getBooleanState() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Attribute::appendStringData ( StringData &data ) const
+void Attribute::getStringGrid ( Usul::Interfaces::IStringGridGet::StringGrid &data ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-
-  data.push_back ( StringPair ( "Name", this->name() ) );
+  data.push_back ( BaseClass::makeStringRow ( this->name() ) );
 }

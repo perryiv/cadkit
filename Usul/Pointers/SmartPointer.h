@@ -40,10 +40,11 @@ struct SmartPointer
   /////////////////////////////////////////////////////////////////////////////
 
   typedef Config_ Config;
-  typedef typename Config::null_policy_access NullAccess;
-  typedef typename Config::null_policy_assign NullAssign;
-  typedef typename Config::null_policy_construct NullConstruct;
-  typedef typename Config::reference_policy ReferencePolicy;
+  typedef typename Config::AccessPolicy NullAccess;
+  typedef typename Config::AssignmentPolicy AssignmentPolicy;
+  typedef typename Config::ConstructorPolicy ConstructorPolicy;
+  typedef typename Config::ReferencePolicy ReferencePolicy;
+  typedef typename Config::DestructorPolicy DestructorPolicy;
   typedef T element_type;
   typedef SmartPointer < T, Config > ThisType;
 
@@ -56,7 +57,7 @@ struct SmartPointer
 
   SmartPointer() : _p ( 0x0 )
   {
-    NullConstruct::check ( _p );
+    ConstructorPolicy::check ( _p );
   }
 
 
@@ -68,9 +69,11 @@ struct SmartPointer
 
   SmartPointer ( T *t ) : _p ( t )
   {
-    NullConstruct::check ( _p );
+    ConstructorPolicy::check ( _p );
     if ( _p )
+    {
       ReferencePolicy::ref ( _p );
+    }
   }
 
 
@@ -82,9 +85,11 @@ struct SmartPointer
 
   SmartPointer ( const ThisType &p ) : _p ( p.get() )
   {
-    NullConstruct::check ( _p );
+    ConstructorPolicy::check ( _p );
     if ( _p )
+    {
       ReferencePolicy::ref ( _p );
+    }
   }
 
 
@@ -96,8 +101,11 @@ struct SmartPointer
 
   ~SmartPointer()
   {
+    DestructorPolicy::check ( _p );
     if ( _p )
+    {
       ReferencePolicy::unref ( _p );
+    }
   }
 
 
@@ -323,11 +331,13 @@ protected:
   void _set ( T *p )
   {
     // Check the policy.
-    NullAssign::check ( p );
+    AssignmentPolicy::check ( p );
 
     // If the given pointer is the same address then just return.
     if ( _p == p )
+    {
       return;
+    }
 
     // Make a copy of the current one.
     T *old = _p;
@@ -337,14 +347,18 @@ protected:
 
     // If the given pointer is not null then reference it.
     if ( _p )
+    {
       ReferencePolicy::ref ( _p );
+    }
 
     // If the old one is not null then release it. Make sure we do this last 
     // because the given pointer "p" could be a child (indirect or direct) of 
     // "old". If we release "old" before we reference "p" then "p" may get 
     // deleted when it should not have.
     if ( old )
+    {
       ReferencePolicy::unref ( old );
+    }
   }
 
 

@@ -35,7 +35,7 @@ struct IIntersectListener : public Usul::Interfaces::IUnknown
   enum { IID = 1909417664u };
 
   // Notify the observer of the intersection.
-  virtual void      intersectNotify ( float x, float y, osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller ) = 0;
+  virtual void      intersectNotify ( float x, float y, const osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller ) = 0;
 };
 
 

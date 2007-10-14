@@ -22,6 +22,7 @@
 #include "Usul/Pointers/NoReferencePolicy.h"
 #include "Usul/Pointers/ArrayDeletePolicy.h"
 #include "Usul/Pointers/NullPolicy.h"
+#include "Usul/Pointers/DoNothingPolicy.h"
 #include "Usul/Pointers/Exceptions.h"
 
 #include "Usul/Errors/ThrowingPolicy.h"
@@ -42,10 +43,11 @@ namespace Configs {
 
 struct ArrayNullOk
 {
-  typedef Usul::Pointers::ArrayDeletePolicy reference_policy;
-  typedef Usul::Pointers::NullOkPolicy null_policy_access;
-  typedef null_policy_access null_policy_assign;
-  typedef null_policy_access null_policy_construct;
+  typedef Usul::Pointers::ArrayDeletePolicy ReferencePolicy;
+  typedef Usul::Pointers::DoNothingPolicy AccessPolicy;
+  typedef Usul::Pointers::DoNothingPolicy AssignmentPolicy;
+  typedef Usul::Pointers::DoNothingPolicy ConstructorPolicy;
+  typedef Usul::Pointers::DoNothingPolicy DestructorPolicy;
 };
 
 
@@ -62,9 +64,10 @@ struct ArrayNullThrows : public ArrayNullOk
   typedef Usul::Pointers::Exceptions::NullPointer exception_type;
   typedef Usul::Errors::ThrowingPolicy < exception_type > throwing_policy;
 public:
-  typedef Usul::Pointers::NullBadPolicy < throwing_policy > null_policy_access;
-  typedef null_policy_access null_policy_assign;
-  typedef null_policy_access null_policy_construct;
+  typedef Usul::Pointers::NullBadPolicy < throwing_policy > AccessPolicy;
+  typedef AccessPolicy AssignmentPolicy;
+  typedef AccessPolicy ConstructorPolicy;
+  typedef Usul::Pointers::DoNothingPolicy DestructorPolicy;
 };
 
 
@@ -78,10 +81,11 @@ public:
 
 struct RefCountingNullOk
 {
-  typedef Usul::Pointers::RefCountPolicy reference_policy;
-  typedef Usul::Pointers::NullOkPolicy null_policy_access;
-  typedef null_policy_access null_policy_assign;
-  typedef null_policy_access null_policy_construct;
+  typedef Usul::Pointers::RefCountPolicy ReferencePolicy;
+  typedef Usul::Pointers::DoNothingPolicy AccessPolicy;
+  typedef Usul::Pointers::DoNothingPolicy AssignmentPolicy;
+  typedef Usul::Pointers::DoNothingPolicy ConstructorPolicy;
+  typedef Usul::Pointers::DoNothingPolicy DestructorPolicy;
 };
 
 
@@ -95,10 +99,11 @@ struct RefCountingNullOk
 
 struct NoRefCountingNullOk
 {
-  typedef Usul::Pointers::NoRefCountPolicy reference_policy;
-  typedef Usul::Pointers::NullOkPolicy null_policy_access;
-  typedef null_policy_access null_policy_assign;
-  typedef null_policy_access null_policy_construct;
+  typedef Usul::Pointers::NoRefCountPolicy ReferencePolicy;
+  typedef Usul::Pointers::DoNothingPolicy AccessPolicy;
+  typedef Usul::Pointers::DoNothingPolicy AssignmentPolicy;
+  typedef Usul::Pointers::DoNothingPolicy ConstructorPolicy;
+  typedef Usul::Pointers::DoNothingPolicy DestructorPolicy;
 };
 
 
@@ -114,10 +119,12 @@ class RefCountingNullThrows : public RefCountingNullOk
 {
   typedef Usul::Pointers::Exceptions::NullPointer exception_type;
   typedef Usul::Errors::ThrowingPolicy < exception_type > throwing_policy;
+  typedef Usul::Pointers::NullBadPolicy < throwing_policy > null_bad_policy;
 public:
-  typedef Usul::Pointers::NullBadPolicy < throwing_policy > null_policy_access;
-  typedef null_policy_access null_policy_assign;
-  typedef null_policy_access null_policy_construct;
+  typedef null_bad_policy AccessPolicy;
+  typedef null_bad_policy AssignmentPolicy;
+  typedef null_bad_policy ConstructorPolicy;
+  typedef Usul::Pointers::DoNothingPolicy DestructorPolicy;
 };
 
 
@@ -133,10 +140,12 @@ class NoRefCountingNullThrows : public NoRefCountingNullOk
 {
   typedef Usul::Pointers::Exceptions::NullPointer exception_type;
   typedef Usul::Errors::ThrowingPolicy < exception_type > throwing_policy;
+  typedef Usul::Pointers::NullBadPolicy < throwing_policy > null_bad_policy;
 public:
-  typedef Usul::Pointers::NullBadPolicy < throwing_policy > null_policy_access;
-  typedef null_policy_access null_policy_assign;
-  typedef null_policy_access null_policy_construct;
+  typedef null_bad_policy AccessPolicy;
+  typedef null_bad_policy AssignmentPolicy;
+  typedef null_bad_policy ConstructorPolicy;
+  typedef Usul::Pointers::DoNothingPolicy DestructorPolicy;
 };
 
 
@@ -152,10 +161,12 @@ class RefCountingNullAccessThrows : public RefCountingNullOk
 {
   typedef Usul::Pointers::Exceptions::NullPointer exception_type;
   typedef Usul::Errors::ThrowingPolicy < exception_type > throwing_policy;
+  typedef Usul::Pointers::NullBadPolicy < throwing_policy > null_bad_policy;
 public:
-  typedef Usul::Pointers::NullBadPolicy < throwing_policy > null_policy_access;
-  typedef Usul::Pointers::NullOkPolicy null_policy_assign;
-  typedef Usul::Pointers::NullOkPolicy null_policy_construct;
+  typedef null_bad_policy AccessPolicy;
+  typedef Usul::Pointers::DoNothingPolicy AssignmentPolicy;
+  typedef Usul::Pointers::DoNothingPolicy ConstructorPolicy;
+  typedef Usul::Pointers::DoNothingPolicy DestructorPolicy;
 };
 
 
@@ -171,10 +182,12 @@ class NoRefCountingNullAccessThrows : public NoRefCountingNullOk
 {
   typedef Usul::Pointers::Exceptions::NullPointer exception_type;
   typedef Usul::Errors::ThrowingPolicy < exception_type > throwing_policy;
+  typedef Usul::Pointers::NullBadPolicy < throwing_policy > null_bad_policy;
 public:
-  typedef Usul::Pointers::NullBadPolicy < throwing_policy > null_policy_access;
-  typedef Usul::Pointers::NullOkPolicy null_policy_assign;
-  typedef Usul::Pointers::NullOkPolicy null_policy_construct;
+  typedef null_bad_policy AccessPolicy;
+  typedef Usul::Pointers::DoNothingPolicy AssignmentPolicy;
+  typedef Usul::Pointers::DoNothingPolicy ConstructorPolicy;
+  typedef Usul::Pointers::DoNothingPolicy DestructorPolicy;
 };
 
 
@@ -191,10 +204,12 @@ class RefCountingNoInterfaceThrows : public RefCountingNullOk
 {
   typedef Usul::Pointers::Exceptions::NoInterface exception_type;
   typedef Usul::Errors::ThrowingPolicy < exception_type > throwing_policy;
+  typedef Usul::Pointers::NullBadPolicy < throwing_policy > null_bad_policy;
 public:
-  typedef Usul::Pointers::NullBadPolicy < throwing_policy > null_policy_access;
-  typedef null_policy_access null_policy_assign;
-  typedef null_policy_access null_policy_construct;
+  typedef null_bad_policy AccessPolicy;
+  typedef null_bad_policy AssignmentPolicy;
+  typedef null_bad_policy ConstructorPolicy;
+  typedef Usul::Pointers::DoNothingPolicy DestructorPolicy;
 };
 
 

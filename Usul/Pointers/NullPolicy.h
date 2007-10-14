@@ -23,18 +23,6 @@ namespace Pointers {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Policy class that permits null pointers.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-struct NullOkPolicy
-{
-  template < class T > static void check ( const T *t ){}
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Policy class that does not permit null pointers.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -51,7 +39,9 @@ struct NullBadPolicy
     // cycles it takes to construct the error-policy. Further, this permits 
     // us to easily insert a breakpoint.
     if ( 0x0 == t )
+    {
       ErrorPolicy_ ( 1075270902, false, "Null pointer" );
+    }
   }
 };
 

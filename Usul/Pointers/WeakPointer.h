@@ -17,15 +17,32 @@
 #define _USUL_WEAK_POINTER_CLASS_H_
 
 #include "Usul/Errors/Assert.h"
-#include "Usul/Interfaces/IDeleteListener.h"
-#include "Usul/Interfaces/IDeleteNotify.h"
 
 
 namespace Usul {
 namespace Pointers {
 
 
-template < class T > class WeakPointer : public Usul::Interfaces::IDeleteListener
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Base class for delete-listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct DeleteListener
+{
+  virtual void objectDeleted() = 0;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Base class for delete-listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
+template < class T > class WeakPointer : public DeleteListener
 {
 public:
 
@@ -36,8 +53,6 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   typedef WeakPointer < T > ThisType;
-  typedef Usul::Interfaces::IDeleteListener IDeleteListener;
-  typedef Usul::Interfaces::IDeleteNotify IDeleteNotify;
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -115,74 +130,17 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Query the interfaces
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  Usul::Interfaces::IUnknown *queryInterface ( unsigned long iid )
-  {
-    switch ( iid )
-    {
-    case Usul::Interfaces::IUnknown::IID:
-    case Usul::Interfaces::IDeleteListener::IID:
-      return static_cast < Usul::Interfaces::IDeleteListener* > ( this );
-    default:
-      return 0x0;
-    }
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Reference this object.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  void ref()
-  {
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Dereference this object.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  void unref ( bool )
-  {
-  }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
   //  Notify the listener that the object has been deleted.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void objectDeleted ( Usul::Interfaces::IUnknown *unknown )
+  void objectDeleted()
   {
-    // Don't set to null more than once.
-    if ( 0x0 == _p )
-    {
-      USUL_ASSERT ( false ); // Should not happen.
-      return;
-    }
+    // Should be true.
+    USUL_ASSERT ( 0x0 != _p );
 
-    // Make sure they are the same. Do not reference or de-reference!
-    // Have to query for the interface because the same object can have two 
-    // or more IUnknown pointers with different addresses.
-    IDeleteNotify *theirs ( static_cast < IDeleteNotify * > ( ( 0x0 == unknown ) ? 0x0 : unknown->queryInterface ( IDeleteNotify::IID ) ) );
-    IDeleteNotify *mine   ( static_cast < IDeleteNotify * > ( ( 0x0 ==      _p ) ? 0x0 :      _p->queryInterface ( IDeleteNotify::IID ) ) );
-    if ( mine == theirs )
-    {
-      _p = 0x0;
-    }
-    else
-    {
-      // Should this happen?
-      USUL_ASSERT ( false );
-    }
+    // Set object to null.
+    _p = 0x0;
   }
 
 
@@ -219,10 +177,9 @@ private:
 
   void _addSelfAsDeleteListener()
   {
-    IDeleteNotify::QueryPtr notify ( _p );
-    if ( true == notify.valid() )
+    if ( 0x0 != _p )
     {
-      notify->addDeleteListener ( this );
+      _p->addDeleteListener ( this );
     }
   }
 
@@ -234,10 +191,9 @@ private:
 
   void _removeSelfAsDeleteListener()
   {
-    IDeleteNotify::QueryPtr notify ( _p );
-    if ( true == notify.valid() )
+    if ( 0x0 != _p )
     {
-      notify->removeDeleteListener ( this );
+      _p->removeDeleteListener ( this );
     }
   }
 

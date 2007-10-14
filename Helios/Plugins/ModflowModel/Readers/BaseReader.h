@@ -19,7 +19,7 @@
 #include "Helios/Plugins/ModflowModel/CompileGuard.h"
 #include "Helios/Plugins/ModflowModel/Model/Layer.h"
 
-#include "Usul/Base/Object.h"
+#include "Usul/Base/Observed.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
@@ -35,12 +35,12 @@ namespace Modflow {
 namespace Readers {
 
 
-class BaseReader : public Usul::Base::Object
+class BaseReader : public Usul::Base::Observed
 {
 public:
 
   // Useful typedefs.
-  typedef Usul::Base::Object BaseClass;
+  typedef Usul::Base::Observed BaseClass;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef Modflow::Model::Layer Layer;
   typedef std::vector<Layer::RefPtr> Layers;
@@ -48,6 +48,9 @@ public:
   typedef std::pair<std::string,GridData> GridInfo;
   typedef Usul::Math::Vec2ui Vec2ui;
   typedef Usul::Math::Vec2d Vec2d;
+
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( BaseReader );
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( BaseReader );

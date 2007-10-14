@@ -27,11 +27,14 @@ class Quads : public Modflow::Attributes::Attribute
 {
 public:
 
-  // Useful typedefs.
-  typedef Modflow::Attributes::Attribute BaseClass;
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( Quads );
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Quads );
+
+  // Useful typedefs.
+  typedef Modflow::Attributes::Attribute BaseClass;
 
   // Construction.
   Quads ( const std::string &name, IUnknown *parent, unsigned int sides );

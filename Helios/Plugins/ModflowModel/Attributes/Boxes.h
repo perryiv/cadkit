@@ -34,6 +34,9 @@ public:
   typedef Usul::Interfaces::ITreeNode ITreeNode;
   typedef std::vector<Quads::RefPtr> Sides;
 
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( Boxes );
+
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Boxes );
 

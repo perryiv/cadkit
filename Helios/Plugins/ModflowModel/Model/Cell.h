@@ -18,7 +18,7 @@
 
 #include "Helios/Plugins/ModflowModel/CompileGuard.h"
 
-#include "Usul/Base/Object.h"
+#include "Usul/Base/Observed.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Pointers/Pointers.h"
@@ -34,17 +34,20 @@ namespace Modflow {
 namespace Model {
 
 
-class Cell : public Usul::Base::Object
+class Cell : public Usul::Base::Observed
 {
 public:
 
   // Useful typedefs.
-  typedef Usul::Base::Object BaseClass;
+  typedef Usul::Base::Observed BaseClass;
   typedef Usul::Math::Vec2d Vec2d;
   typedef Usul::Math::Vec3d Vec3d;
   typedef std::vector<double> Vector;
   typedef std::map<std::string,Vector> NamedVectors;
   typedef std::map<std::string,double> NamedValues;
+
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( Cell );
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Cell );

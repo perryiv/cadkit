@@ -27,22 +27,25 @@ class ModflowFactory : public Usul::Base::Referenced,
 {
 public:
 
-  /// Typedefs.
+  // Typedefs.
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef Usul::Base::Referenced BaseClass;
 
-  /// Smart-pointer definitions.
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( ModflowFactory );
+
+  // Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( ModflowFactory );
 
-  /// Usul::Interfaces::IUnknown members.
+  // Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  /// Default construction.
+  // Default construction.
   ModflowFactory();
 
 protected:
 
-  /// Use reference counting.
+  // Use reference counting.
   virtual ~ModflowFactory();
 
   /////////////////////////////////////////////////////////////////////////////
@@ -51,8 +54,8 @@ protected:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  /// Create a component of the given interface type (defined by iid).
-  /// Return an unknown pointer to this new component.
+  // Create a component of the given interface type (defined by iid).
+  // Return an unknown pointer to this new component.
   virtual Unknown *       createInstance ( unsigned long iid );
 };
 

@@ -68,6 +68,9 @@ public:
   typedef Usul::Interfaces::ITreeNode ITreeNode;
   typedef Usul::Interfaces::IBooleanState IBooleanState;
 
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( ModflowDocument );
+
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ModflowDocument );
 
@@ -107,7 +110,7 @@ public:
   Vec2ui                                  gridSize() const;
 
   // Usul::Interfaces::IIntersectListener.
-  virtual void                            intersectNotify ( float x, float y, osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller );
+  virtual void                            intersectNotify ( float x, float y, const osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller );
 
   // Set/get the layers.
   void                                    layers ( Layers & );

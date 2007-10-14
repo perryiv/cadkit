@@ -29,6 +29,13 @@ namespace Strings {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+template < class T1 > 
+inline std::string format ( const T1 &t1 )
+{
+  std::ostringstream out;
+  out << t1;
+  return out.str();
+}
 template < class T1, class T2 > 
 inline std::string format ( const T1 &t1, const T2 &t2 )
 {

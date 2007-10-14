@@ -107,7 +107,7 @@ public:
   Vec2d                       cellSize() const;
 
   // Clear the layer.
-  void                        clear();
+  virtual void                clear();
 
   // Set/get the dirty flag.
   void                        dirty ( bool state ) { this->dirtyState ( state ); }

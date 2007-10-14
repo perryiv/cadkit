@@ -69,6 +69,9 @@ public:
   // Get the center.
   Vec3d                   center() const;
 
+  // Clear the cell.
+  virtual void            clear();
+
   // Set/get the top.
   void                    top ( double z );
   double                  top() const;

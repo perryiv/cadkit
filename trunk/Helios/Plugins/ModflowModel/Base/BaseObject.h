@@ -29,7 +29,8 @@ namespace Modflow {
 namespace Base {
 
 
-class BaseObject : public Usul::Base::Observed
+class BaseObject : public Usul::Base::Observed,
+                   public Usul::Interfaces::IUnknown
 {
 public:
 
@@ -39,6 +40,9 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( BaseObject );
 
+  // Usul::Interfaces::IUnknown members.
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
+
   // Useful typedefs.
   typedef Usul::Base::Observed BaseClass;
   typedef Usul::Pointers::WeakPointer < BaseObject > WeakPtr;
@@ -46,6 +50,9 @@ public:
   typedef Usul::Interfaces::IStringGridGet IStringGridGet;
   typedef IStringGridGet::StringRow StringRow;
   typedef IStringGridGet::StringGrid StringGrid;
+
+  // Clear the object.
+  virtual void                clear() = 0;
 
   // Helper functions to make string rows.
   static StringRow            makeStringRow ( const std::string & );

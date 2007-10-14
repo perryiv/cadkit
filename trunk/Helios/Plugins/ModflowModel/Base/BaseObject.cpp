@@ -22,6 +22,7 @@
 using namespace Modflow::Base;
 
 USUL_IMPLEMENT_TYPE_ID ( BaseObject );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( BaseObject, BaseObject::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -58,6 +59,25 @@ BaseObject::~BaseObject()
 
 void BaseObject::_destroy()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query the interfaces. Just plumbing.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown *BaseObject::queryInterface ( unsigned long iid )
+{
+  USUL_TRACE_SCOPE;
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+    return static_cast < Usul::Interfaces::IUnknown* > ( this );
+  default:
+    return 0x0;
+  }
 }
 
 

@@ -35,6 +35,9 @@
 #include "QtGui/QLabel"
 #include "QtGui/QMainWindow"
 #include "QtGui/QWorkspace"
+#include "QtGui/QHBoxLayout"
+
+#include <iostream>
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModflowDelegateComponent , ModflowDelegateComponent::BaseClass );
 
@@ -255,11 +258,23 @@ void ModflowDelegateComponent::addDockWindow ( Usul::Interfaces::IUnknown *calle
     // Build the docking window.
     std::auto_ptr<QDockWidget> dockWidget ( this->_makeDockWindow ( "Modflow Intersection", "ModflowIntersectionDockWidget" ) );
 
-    // Create the tree for the scene graph.
-    _intersectInfo = new QLabel ( dockWidget.get() );
+    // Create outer frame.
+    QFrame *frame ( new QFrame ( dockWidget.get() ) );
+    frame->setFrameStyle ( QFrame::Panel | QFrame::Sunken );
+
+    // Create the label.
+    _intersectInfo = new QLabel;
+
+    // Make layout.
+    QHBoxLayout *layout ( new QHBoxLayout );
+    layout->setMargin ( 50 );
+    layout->addWidget ( _intersectInfo );
+
+    // Set the frame's layout.
+    frame->setLayout ( layout );
 
     // Set the docking window's widget.
-    dockWidget->setWidget ( _intersectInfo );
+    dockWidget->setWidget ( frame );
 
     // Save in the map and release.
     _docked[_intersectInfo] = dockWidget.release();
@@ -315,4 +330,33 @@ void ModflowDelegateComponent::setStringGrid ( const StringGrid &grid )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
+
+  // Handle bad state.
+  if ( 0x0 == _intersectInfo )
+  {
+    return;
+  }
+
+  // Handle empty grid.
+  if ( true == grid.empty() )
+  {
+    _intersectInfo->clear();
+    return;
+  }
+
+  // Print formatted data.
+  std::ostringstream out;
+  for ( unsigned int r = 0; r < grid.size(); ++r )
+  {
+    out << ( ( 0 == r ) ? "" : "\n" );
+    const StringGrid::value_type &row ( grid.at(r) );
+    for ( unsigned int c = 0; c < row.size(); ++c )
+    {
+      const std::string &s ( row.at(c) );
+      out << ( ( 0 == c ) ? "" : ": " ) << s;
+    }
+  }
+
+  // Set the label's text.
+  _intersectInfo->setText ( out.str().c_str() );
 }

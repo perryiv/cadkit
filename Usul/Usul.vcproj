@@ -1496,6 +1496,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IStringGridGet.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IStringGridSet.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\ISubdivideModel.h"
 					>
 				</File>

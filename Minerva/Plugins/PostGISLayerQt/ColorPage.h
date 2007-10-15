@@ -14,7 +14,9 @@
 #include "Minerva/Core/DB/Connection.h"
 #include "Minerva/Core/Layers/Layer.h"
 
-#if ( QT_VERSION >= 0x040300 )
+#include "QtCore/qglobal.h"
+
+#if ( QT_VERSION >= QT_VERSION_CHECK (4,3,0 ) )
 
 #include "QtGui/QWizardPage"
 

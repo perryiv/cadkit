@@ -197,6 +197,27 @@ template <> struct Convert < std::list < std::string > >
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Converter for a bool.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <> struct Convert < bool >
+{
+  static std::string to ( const bool &b )
+  {
+    return b ? "true" : "false";
+  }
+  static void from ( const std::string &s, bool &b )
+  {
+    std::string copy ( s );
+    std::transform ( copy.begin (), copy.end(), copy.begin (), ::tolower );
+    b = ( "true" == copy ? true : false );
+  }
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Helper macro to define scalar and derived converters.
 //
 ///////////////////////////////////////////////////////////////////////////////

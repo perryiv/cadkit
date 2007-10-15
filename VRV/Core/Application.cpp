@@ -397,8 +397,13 @@ void Application::contextInit()
   // Turn off the default light.
   renderer->viewer()->setLightingMode ( osgUtil::SceneView::NO_SCENEVIEW_LIGHT );
 
-  // Turn off computing of the near and far plane.
-  renderer->viewer()->setComputeNearFarMode ( osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR );
+  bool defaultAutoNearFar ( false );
+  Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ VRV::Constants::Sections::VRV ] );
+  bool autoNearFar ( node [ VRV::Constants::Keys::AUTO_NEAR_FAR ].get < bool > ( defaultAutoNearFar ) );
+
+  // Turn on computing of the near and far plane if we should.
+  osg::CullSettings::ComputeNearFarMode mode ( autoNearFar ? osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES : osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
+  renderer->viewer()->setComputeNearFarMode ( mode );
 
   // Needed for stereo to work.
   renderer->viewer()->setDrawBufferValue( GL_NONE );
@@ -3572,6 +3577,8 @@ void Application::computeNearFar ( bool b )
   {
     (*iter)->viewer()->setComputeNearFarMode ( mode );
   }
+
+  Usul::Registry::Database::instance()[ VRV::Constants::Sections::VRV ][ VRV::Constants::Keys::AUTO_NEAR_FAR ] = b;
 }
 
 

@@ -22,8 +22,9 @@ namespace VRV
 
     namespace Keys
     {
-      const std::string HOME_POSITION   ( "home_position" );
-      const std::string AUTO_NEAR_FAR   ( "auto_near_far" );
+      const std::string HOME_POSITION    ( "home_position" );
+      const std::string AUTO_NEAR_FAR    ( "auto_near_far" );
+      const std::string MENU_SHOW_HIDE   ( "menu_show_hide" );
     }
   }
 }

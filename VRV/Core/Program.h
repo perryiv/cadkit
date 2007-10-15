@@ -20,8 +20,9 @@
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Components/Loader.h"
 #include "Usul/Components/Manager.h"
-#include "Usul/Documents/Manager.h"
 #include "Usul/Console/Feedback.h"
+#include "Usul/Documents/Manager.h"
+#include "Usul/Factory/ObjectFactory.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/File/Path.h"
 #include "Usul/Jobs/Manager.h"
@@ -83,6 +84,9 @@ public:
 
     // Delete all thread objects.
     Usul::Threads::Manager::instance().purge();
+
+    // Clear the object factory.
+    Usul::Factory::ObjectFactory::instance().clear();
 
     // Release all libraries that loaded during component creation. 
     // Note: We should be able to safely do this now that all components 

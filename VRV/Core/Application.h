@@ -382,8 +382,11 @@ protected:
   // Generate a string from the integer.
   std::string                   _counter ( unsigned int num ) const;
 
-    // Write the scene to file.
+  // Write the scene to file.
   void                          _writeScene ( const std::string &filename, const osg::Node *node ) const;
+
+  /// Get section for current document.
+  std::string                   _documentSection () const;
 
   /// Get/set the clipping distances (VRV::Interfaces::IClippingDistanceFloat).
   virtual void            getClippingDistances ( float &nearDist, float &farDist ) const;

@@ -4956,11 +4956,11 @@ namespace Helper
 
     USUL_TRACE_SCOPE_STATIC;
 
-    InterfaceType::QueryPtr listener ( caller );
+    typename InterfaceType::QueryPtr listener ( caller );
     if ( true == listener.valid() )
     {
       Guard guard ( mutex );
-      InterfaceType::RefPtr value ( listener.get() );
+      typename InterfaceType::RefPtr value ( listener.get() );
       Itr end ( std::remove ( listeners.begin(), listeners.end(), value ) );
       listeners.erase ( end, listeners.end() );
     }
@@ -4987,12 +4987,12 @@ namespace Helper
     Helper::removeListener ( listeners, caller, mutex );
 
     // Check for necessary interface.
-    InterfaceType::QueryPtr listener ( caller );
+    typename InterfaceType::QueryPtr listener ( caller );
     if ( true == listener.valid() )
     {
       // Block while we add the listener.
       Guard guard ( mutex );
-      listeners.push_back ( InterfaceType::RefPtr ( listener.get() ) );
+      listeners.push_back ( typename InterfaceType::RefPtr ( listener.get() ) );
     }
   }
 }

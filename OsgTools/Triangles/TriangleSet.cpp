@@ -2253,7 +2253,7 @@ void TriangleSet::loadColorFile( const std::string &file, const HeaderInfo& head
     tex = osgDB::readImageFile( file );
 
     // Initialize local vaiables.
-    Usul::Math::Vec2ui gridSize ( header[0] , header[1] );
+    Usul::Math::Vec2ui gridSize ( static_cast < unsigned int > ( header[0] ) , static_cast < unsigned int > ( header[1] ) );
     Usul::Math::Vec2d ll ( header[2], header[3] );
     float cellSize ( header[4] );
     

@@ -21,6 +21,7 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/IMpdNavigator.h"
+#include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Math/Vector2.h"
@@ -40,8 +41,8 @@ namespace osg { class Node; }
 class ModelPresentationDocument : public Usul::Documents::Document,
                                   public Usul::Interfaces::IBuildScene,
                                   public Usul::Interfaces::IUpdateListener,
-			                            public Usul::Interfaces::ICommandList,
-                                  public Usul::Interfaces::IMpdNavigator
+                                  public Usul::Interfaces::IMpdNavigator,
+                                  public Usul::Interfaces::IMenuAdd 
 {
 public:
   // Structs
@@ -91,7 +92,8 @@ public:
   typedef std::vector< MpdGroup > MpdGroups;
   typedef std::vector< MpdModel > MpdModels;
   typedef std::vector< MpdSet > MpdSets;
-  typedef std::vector< osg::Matrixd > Location;
+  typedef std::vector< osg::Matrix > Location;
+  
  
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ModelPresentationDocument );
@@ -115,20 +117,19 @@ public:
   virtual void                clear ( Unknown *caller = 0x0 );
 
   /// Get the filters that correspond to what this document can read and write.
-  virtual Filters             filtersOpen()   const;
-  virtual Filters             filtersSave()   const;
-  virtual Filters             filtersInsert() const;
-  virtual Filters             filtersExport() const;
+  virtual Filters  filtersOpen()   const;
+  virtual Filters  filtersSave()   const;
+  virtual Filters  filtersInsert() const;
+  virtual Filters  filtersExport() const;
 
   
   /// Read the document.
-  virtual void                read ( const std::string &filename, Unknown *caller = 0x0 );
+  virtual void     read ( const std::string &filename, Unknown *caller = 0x0 );
 
   /// Write the document to given file name.
-  virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const;
+  virtual void     write ( const std::string &filename, Unknown *caller = 0x0  ) const;
   
   /// Usul::Interfaces::IMpdNavigator
-  
   void              nextGroup( unsigned int index );
   void              startAnimation();
   void              stopAnimation();
@@ -136,6 +137,9 @@ public:
   void              prevStep();
   void              firstStep();
   void              setAnimationPath( unsigned int i );
+
+  //Usul::Interfaces::IMenuAdd
+  void              menuAdd ( MenuKit::Menu& menu );
 
   bool              isAnimating();
   void              isAnimating( bool value );
@@ -156,7 +160,8 @@ protected:
   void                        _parseStatic( XmlTree::Node &node, Unknown *caller );
   void                        _parseSet( XmlTree::Node &node, Unknown *caller );
   void                        _parseTimeSet( XmlTree::Node &node, Unknown *caller );
-   void                       _parseLocation( XmlTree::Node &node, Unknown *caller );
+  void                        _parseLocation( XmlTree::Node &node, Unknown *caller );
+  osg::Matrix                _parseMatrix( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller );
@@ -169,10 +174,9 @@ protected:
   void                        _setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller );
   void                        _checkTimeSteps();
   
-  
+  void                        _setMatrix( osg::Matrix * matrix, const std::string& values, const std::string& type );
 
 
-  CommandList                 getCommandList();
 
   /// Use reference counting.
   virtual ~ModelPresentationDocument();

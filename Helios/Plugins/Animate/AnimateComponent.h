@@ -79,6 +79,10 @@ public:
   void                    recordPath ( bool b );
   bool                    recordPath ( ) const;
 
+  /// Do we have a valid path.
+  bool                    ensureValidPath () const;
+  bool                    ensureRecordedPath () const;
+  bool                    ensureKeyFramePath () const;
 protected:
 
   /// Build the menu for the current paths.

@@ -23,19 +23,53 @@ namespace Usul {
 namespace Commands {
 
 
-template < class Functor >
+struct FalseFunctor
+{
+  bool operator () () const
+  {
+    return false;
+  }
+};
+
+
+struct TrueFunctor
+{
+  bool operator () () const
+  {
+    return true;
+  }
+};
+
+
+template < class ExecuteFunctor, class EnableFunctor = TrueFunctor >
 class GenericCommand : public Usul::Commands::Command
 {
 public:
   typedef Usul::Commands::Command BaseClass;
+  typedef GenericCommand < ExecuteFunctor, EnableFunctor > ThisType;
 
   USUL_DECLARE_COMMAND  ( GenericCommand );
 
-  GenericCommand ( const std::string& name, Functor functor, Usul::Interfaces::IUnknown * caller = 0x0 ) : 
+  GenericCommand ( const std::string& name, ExecuteFunctor functor, Usul::Interfaces::IUnknown * caller = 0x0 ) : 
     BaseClass ( caller ),
-    _functor ( functor )
+    _functor ( functor ),
+    _enable ()
   {
     this->text ( name );
+  }
+
+  GenericCommand ( const std::string& name, ExecuteFunctor functor, EnableFunctor e, Usul::Interfaces::IUnknown * caller = 0x0 ) : 
+    BaseClass ( caller ),
+    _functor ( functor ),
+    _enable ( e )
+  {
+    this->text ( name );
+  }
+
+  // Set the enable functor.
+  void enableFunctor ( EnableFunctor f )
+  {
+    _enable = f;
   }
 
 protected:
@@ -48,29 +82,35 @@ protected:
     _functor ( );
   }
 
+  virtual bool updateEnable () const
+  {
+    return _enable ();
+  }
+
 private:
-  Functor _functor;
+  ExecuteFunctor _functor;
+  EnableFunctor _enable;
 };
 
 
-template < class Functor >
-const std::type_info &GenericCommand < Functor >::classTypeId() 
+template < class Functor, class EnableFunctor >
+const std::type_info &GenericCommand < Functor, EnableFunctor >::classTypeId() 
 {
-  return typeid ( GenericCommand < Functor > );
+  return typeid ( ThisType );
 }
 
 
-template < class Functor >
-const std::type_info &GenericCommand < Functor >::typeId() const 
+template < class Functor, class EnableFunctor >
+const std::type_info &GenericCommand < Functor, EnableFunctor >::typeId() const 
 {
-  return GenericCommand < Functor >::classTypeId();
+  return ThisType::classTypeId();
 }
 
 
-template < class Functor >
-Usul::Commands::Command* GenericCommand < Functor >::clone ( ) const 
+template < class Functor, class EnableFunctor >
+Usul::Commands::Command* GenericCommand < Functor, EnableFunctor >::clone ( ) const 
 {
-  return new GenericCommand < Functor > ( *this );
+  return new ThisType ( *this );
 }
 
 

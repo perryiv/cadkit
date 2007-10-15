@@ -24,6 +24,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Commands/GenericCommand.h"
+#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
@@ -164,7 +165,7 @@ public:
   typedef Usul::Adaptors::MemberFunction < bool, Application*, CheckFunction > CheckFunctor;
   typedef Usul::Adaptors::MemberFunction < void, Application*, BoolFunction >  BoolFunctor;
   typedef Usul::Commands::GenericCommand < ExecuteFunctor >                    BasicCommand;
-  typedef MenuKit::CheckCommand < BoolFunctor, CheckFunctor >                  CheckCommand;
+  typedef Usul::Commands::GenericCheckCommand < BoolFunctor, CheckFunctor >    CheckCommand;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 

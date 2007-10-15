@@ -19,6 +19,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Commands/GenericCommand.h"
+#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Trace/Scope.h"
 #include "Usul/Interfaces/IUpdateSubject.h"
@@ -27,7 +28,6 @@
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
 #include "MenuKit/ToggleButton.h"
-#include "MenuKit/MemFunCallback.h"
 
 using namespace Animate;
 
@@ -95,17 +95,23 @@ void AnimateComponent::menuAdd ( MenuKit::Menu& m )
   typedef Usul::Adaptors::MemberFunction < bool, AnimateComponent*, CheckFunction > CheckFunctor;
   typedef Usul::Adaptors::MemberFunction < void, AnimateComponent*, BoolFunction >  BoolFunctor;
   typedef Usul::Commands::GenericCommand < ExecuteFunctor >                         BasicCommand;
-  typedef MenuKit::CheckCommand < BoolFunctor, CheckFunctor >                       CheckCommand;
+  typedef Usul::Commands::GenericCommand < ExecuteFunctor, CheckFunctor >           BasicEnableCommand;
+  typedef Usul::Commands::GenericCheckCommand < BoolFunctor, CheckFunctor, CheckFunctor > CheckCommand;
   typedef MenuKit::Button                                                           Button;
   typedef MenuKit::ToggleButton                                                     ToggleButton;
 
   MenuKit::Menu::RefPtr menu ( m.findOrCreateMenu ( "Animate" ) );
+
+  CheckFunctor validPath ( this, &AnimateComponent::ensureValidPath );
   
-  menu->append ( new Button ( new BasicCommand ( "Append", ExecuteFunctor ( this, &AnimateComponent::appendCamera ) ) ) );
-  menu->append ( new Button ( new BasicCommand ( "Animate", ExecuteFunctor ( this, &AnimateComponent::startAnimation ) ) ) );
+  menu->append ( new Button ( new BasicEnableCommand ( "Append", ExecuteFunctor ( this, &AnimateComponent::appendCamera ), CheckFunctor ( this, &AnimateComponent::ensureKeyFramePath ) ) ) );
+  menu->append ( new Button ( new BasicEnableCommand ( "Animate", ExecuteFunctor ( this, &AnimateComponent::startAnimation ), validPath ) ) );
 
   menu->addSeparator();
-  menu->append ( new ToggleButton ( new CheckCommand ( "Record",  BoolFunctor ( this, &AnimateComponent::recordPath ), CheckFunctor ( this, &AnimateComponent::recordPath ) ) ) );
+  menu->append ( new ToggleButton ( new CheckCommand ( "Record",  
+                                                       BoolFunctor ( this, &AnimateComponent::recordPath ), 
+                                                       CheckFunctor ( this, &AnimateComponent::recordPath ),
+                                                       CheckFunctor ( this, &AnimateComponent::ensureRecordedPath ) ) ) );
 
   menu->addSeparator();
   menu->append ( _pathsMenu );
@@ -116,7 +122,7 @@ void AnimateComponent::menuAdd ( MenuKit::Menu& m )
 
   menu->addSeparator();
 
-  menu->append ( new Button ( new BasicCommand ( "Clear", ExecuteFunctor ( this, &AnimateComponent::clearAnimation ) ) ) );
+  menu->append ( new Button ( new BasicEnableCommand ( "Clear", ExecuteFunctor ( this, &AnimateComponent::clearAnimation ), validPath ) ) );
 }
 
 
@@ -329,4 +335,40 @@ bool AnimateComponent::recordPath ( ) const
 
 void AnimateComponent::_buildMenu ()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Do we have a valid path?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool AnimateComponent::ensureValidPath () const
+{
+  return 0x0 != this->currentPath();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Do we have a valid recoreded path?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool AnimateComponent::ensureRecordedPath () const
+{
+  return 0x0 != dynamic_cast < const RecordedPath* > ( this->currentPath() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Do we have a valid recoreded path?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool AnimateComponent::ensureKeyFramePath () const
+{
+  return 0x0 != dynamic_cast < const KeyFramePath* > ( this->currentPath() );
 }

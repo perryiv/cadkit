@@ -2670,6 +2670,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Commands\GenericCheckCommand.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Commands\GenericCommand.h"
 					>
 				</File>

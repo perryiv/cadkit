@@ -16,7 +16,7 @@
 
 #include "Minerva/Plugins/PostGISLayerQt/PostGISLayerQtComponent.h"
 
-#if ( QT_VERSION < 0x040300 )
+#if ( QT_VERSION < QT_VERSION_CHECK (4,3,0 ) )
 #include "QtGui/QFrame"
 #endif
 

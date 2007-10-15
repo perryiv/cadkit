@@ -102,8 +102,11 @@ void RegistryVisitor::visit ( Usul::Registry::Node *n )
   if ( 0x0 == n )
     return;
 
+  // Default value for get function.  Needed to be on the stack for gcc 3.2.
+  std::string t ( "" );
+
   // Make new node.
-  XmlTree::Node::RefPtr node ( new XmlTree::Node ( n->name(), n->get ( "" ) ) );
+  XmlTree::Node::RefPtr node ( new XmlTree::Node ( n->name(), n->get ( t ) ) );
 
   // Add it to the current node.
   _stack.top()->children().push_back ( node.get() );

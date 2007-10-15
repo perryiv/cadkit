@@ -35,9 +35,14 @@
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/Group.h"
 
+#include "MenuKit/Menu.h"
+#include "MenuKit/Button.h"
+#include "MenuKit/ToggleButton.h"
+
 #include "osgDB/ReadFile"
 #include "osg/Group"
 #include "osg/Switch"
+#include "osg/MatrixTransform"
 
 
 #include <iterator>
@@ -112,10 +117,10 @@ Usul::Interfaces::IUnknown *ModelPresentationDocument::queryInterface ( unsigned
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast < Usul::Interfaces::IUpdateListener* > ( this );
-  case Usul::Interfaces::ICommandList::IID:
-    return static_cast < Usul::Interfaces::ICommandList* > ( this ); 
   case Usul::Interfaces::IMpdNavigator::IID:
     return static_cast < Usul::Interfaces::IMpdNavigator* > ( this ); 
+  case Usul::Interfaces::IMenuAdd::IID:
+    return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -613,21 +618,106 @@ void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *ca
         
   }
   // TODO: create destination matrix here --
-  osg::Matrixd location;
-  osg::Matrixd matrix;
+  
+  
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
     if ( "matrix" == node->name() )
     {
+      
       std::cout << "Found matrix" << std::endl;
-      //switchNode->addChild( this->_parseTimeGroup( *node, caller ), false );
+     
+      _locations.push_back( this->_parseMatrix( *node, caller) );
     }
   }
-  //TODO: add a path
-  _locations.push_back( matrix );
+  
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse a matrix
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Matrix ModelPresentationDocument::_parseMatrix( XmlTree::Node &node, Unknown *caller )
+{
+   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Ok to update the status bar with time related information
+  _useTimeLine = true;
+
+  typedef XmlTree::Document::Attributes Attributes;
+  typedef XmlTree::Document::Children Children;
+  Attributes& attributes ( node.attributes() );
+  Children& children ( node.children() );
+  std::string type;
+  std::string value;
+  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+  {
+    
+    if ( "type" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, type );
+    }
+    if ( "value" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, value );
+    }
+   
+  }
+  // TODO: create destination matrix here --
+  osg::Matrix matrix;
+  if( value.size() > 0 && type.size() > 0 )
+    this->_setMatrix( &matrix, value, type );
+  else
+    std::cout << "Incorrect Matrix format!" << std::endl;
+ 
+  return matrix;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set a matrix location
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::_setMatrix( osg::Matrix * matrix, const std::string& values, const std::string& type )
+{
+  std::istringstream is( values );
+  
+  osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
+  if( "xyzpry" == type )
+  {
+    std::cout << "Found XYZ, Pitch, Roll, Yaw designation location" << std::endl;
+
+    float x ( 0 ), y( 0 ), z( 0 ), pitch( 0 ), roll( 0 ), yaw( 0 );
+    is >> x >> y >> z >> pitch >> roll >> yaw;
+
+    
+    mt->setMatrix (  osg::Matrix::rotate ( osg::inDegrees ( pitch ), 1.0f, 0.0f, 0.0f ) *
+                     osg::Matrix::rotate ( osg::inDegrees ( roll ), 0.0f, 1.0f, 0.0f ) *
+                     osg::Matrix::rotate ( osg::inDegrees ( yaw ), 0.0f, 0.0f, 1.0f ) *
+                     osg::Matrix::translate ( osg::Vec3f(x, y, z) ) );
+    matrix->setRotate( mt->getMatrix().getRotate() );
+    matrix->translate( mt->getMatrix().getTrans() );
+    
+  }
+  if( "matrix" == type )
+  {
+    std::cout << "Found matrix designation location" << std::endl;
+    osg::Matrixf::value_type m[16];
+      is >> m[0] >> m[4] >> m[8]  >> m[12];
+      is >> m[1] >> m[5] >> m[9]  >> m[13];
+      is >> m[2] >> m[6] >> m[10] >> m[14];
+      is >> m[3] >> m[7] >> m[11] >> m[15];
+    matrix->set( m );
+
+  }
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1094,28 +1184,73 @@ void ModelPresentationDocument::setAnimationPath( unsigned int i )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ModelPresentationDocument::CommandList ModelPresentationDocument::getCommandList()
+//ModelPresentationDocument::CommandList ModelPresentationDocument::getCommandList()
+//{
+//  USUL_TRACE_SCOPE;
+//  CommandList cl;
+//
+//  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+//  std::cout << me.get () << std::endl;
+//
+//  for( unsigned int i = 0; i < _sets.size(); ++i )
+//  {
+//    cl.push_back( new MpdMenuCommand( me.get(), _sets.at(i).name, i ) );
+//  }
+//  if( true == _useTimeLine )
+//  {
+//    cl.push_back( new MpdNextCommand( me.get() ) );
+//    cl.push_back( new MpdPrevTimestep( me.get() ) );
+//    cl.push_back( new MpdFirstTimestep( me.get() ) );
+//    cl.push_back( new MpdStartAnimation( me.get() ) );
+//    cl.push_back( new MpdStopAnimation( me.get() ) );
+//    
+//  }
+//  
+//  return cl;
+//
+//}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add to the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu )
 {
-  USUL_TRACE_SCOPE;
-  CommandList cl;
+  typedef MenuKit::ToggleButton ToggleButton;
+  typedef MenuKit::Button       Button;
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
-  std::cout << me.get () << std::endl;
 
-  for( unsigned int i = 0; i < _sets.size(); ++i )
+  // Add the model menu
   {
-    cl.push_back( new MpdMenuCommand( me.get(), _sets.at(i).name, i ) );
+    MenuKit::Menu::RefPtr ModelMenu ( new MenuKit::Menu ( "Models", MenuKit::Menu::VERTICAL ) );
+    for( unsigned int i = 0; i < _sets.size(); ++i )
+    {
+      //cl.push_back( new MpdMenuCommand( me.get(), _sets.at(i).name, i ) );
+      ModelMenu->append ( new ToggleButton ( new MpdMenuCommand( me.get(), _sets.at(i).name, i ) ) );
+    }
+    
+    menu.append ( ModelMenu );
   }
+  // Add the Timeline menu if needed
   if( true == _useTimeLine )
   {
-    cl.push_back( new MpdNextCommand( me.get() ) );
-    cl.push_back( new MpdPrevTimestep( me.get() ) );
-    cl.push_back( new MpdFirstTimestep( me.get() ) );
-    cl.push_back( new MpdStartAnimation( me.get() ) );
-    cl.push_back( new MpdStopAnimation( me.get() ) );
+    MenuKit::Menu::RefPtr TimelineMenu ( new MenuKit::Menu ( "Timeline", MenuKit::Menu::VERTICAL ) );
+
+    TimelineMenu->append ( new ToggleButton ( new MpdNextCommand( me.get() ) ) );
+    TimelineMenu->append ( new ToggleButton ( new MpdPrevTimestep( me.get() ) ) );
+    TimelineMenu->append ( new ToggleButton ( new MpdFirstTimestep( me.get() ) ) );
+    TimelineMenu->append ( new ToggleButton ( new MpdStartAnimation( me.get() ) ) );
+    TimelineMenu->append ( new ToggleButton ( new MpdStopAnimation( me.get() ) ) );
+
+    menu.append ( TimelineMenu );
     
   }
   
-  return cl;
 
+ 
 }

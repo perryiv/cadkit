@@ -397,12 +397,8 @@ void Application::contextInit()
   // Turn off the default light.
   renderer->viewer()->setLightingMode ( osgUtil::SceneView::NO_SCENEVIEW_LIGHT );
 
-  bool defaultAutoNearFar ( false );
-  Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ VRV::Constants::Sections::VRV ] );
-  bool autoNearFar ( node [ VRV::Constants::Keys::AUTO_NEAR_FAR ].get < bool > ( defaultAutoNearFar ) );
-
-  // Turn on computing of the near and far plane if we should.
-  osg::CullSettings::ComputeNearFarMode mode ( autoNearFar ? osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES : osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
+  // Turn off computing of the near and far plane.
+  osg::CullSettings::ComputeNearFarMode mode ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
   renderer->viewer()->setComputeNearFarMode ( mode );
 
   // Needed for stereo to work.
@@ -1314,21 +1310,6 @@ void Application::_loadModelFiles  ( const Filenames& filenames )
 {
   USUL_TRACE_SCOPE;
 
-  // Get the home position from the registry.
-  if ( false == filenames.empty() )
-  {
-    std::string filename ( filenames.back() );
-    std::string dir      ( Usul::File::directory ( filename, true ) );
-
-    // We want just the filename.
-    filename.erase ( 0, dir.size() );
-
-    Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ filename ] );
-    Usul::Math::Matrix44f m ( node [ VRV::Constants::Keys::HOME_POSITION ].get < Usul::Math::Matrix44f > ( Usul::Math::Matrix44f () ) );
-    OsgTools::Convert::matrix ( m, _home );
-    this->_navigationMatrix ( _home );
-  }
-
   // Create a command.
   VRV::Commands::LoadDocument::RefPtr command ( new VRV::Commands::LoadDocument ( filenames, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) ) );
 
@@ -2173,6 +2154,23 @@ void Application::addCommand ( Usul::Interfaces::ICommand* command )
 
 void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
 {
+  // Get the section for the document.
+  Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ this->_documentSection () ] );
+
+  // Turn on computing of the near and far plane if we should.
+  bool defaultAutoNearFar ( false );
+  bool autoNearFar ( node [ VRV::Constants::Keys::AUTO_NEAR_FAR ].get < bool > ( defaultAutoNearFar ) );
+  this->computeNearFar ( autoNearFar );
+
+  // Get the home position from the registry.
+  Usul::Math::Matrix44f m ( node [ VRV::Constants::Keys::HOME_POSITION ].get < Usul::Math::Matrix44f > ( Usul::Math::Matrix44f () ) );
+  OsgTools::Convert::matrix ( m, _home );
+  this->_navigationMatrix ( _home );
+
+  // Set the menu show hide state.
+  bool menuShowHide ( node[ VRV::Constants::Keys::MENU_SHOW_HIDE ].get < bool > ( false ) );
+  this->menuSceneShowHide ( menuShowHide );
+
   // Rebuild the menu.
   this->_initMenu();
 }
@@ -2299,6 +2297,7 @@ void Application::menuSceneShowHide ( bool show )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _menuSceneShowHide = show;
+  Usul::Registry::Database::instance()[ this->_documentSection () ][ VRV::Constants::Keys::MENU_SHOW_HIDE ] = show;
 }
 
 
@@ -2833,21 +2832,9 @@ void Application::_setHome()
   Guard guard ( this->mutex() );
   _home = this->_navigationMatrix();
 
-  Usul::Interfaces::IDocument::RefPtr document ( this->document () );
-
-  // Save the home position in the registry.
-  if ( document.valid () )
-  {
-    std::string filename ( document->fileName() );
-    std::string dir      ( Usul::File::directory ( filename, true ) );
-
-    // Remove the directory from the filename.
-    filename.erase ( 0, dir.size() );
-
-    Usul::Math::Matrix44f m;
-    OsgTools::Convert::matrix ( _home, m );
-    Usul::Registry::Database::instance()[ filename ][ VRV::Constants::Keys::HOME_POSITION ] = m;
-  }
+  Usul::Math::Matrix44f m;
+  OsgTools::Convert::matrix ( _home, m );
+  Usul::Registry::Database::instance()[ this->_documentSection () ][ VRV::Constants::Keys::HOME_POSITION ] = m;
 
 #if 0 // Experimental
   std::ostringstream out;
@@ -3578,7 +3565,7 @@ void Application::computeNearFar ( bool b )
     (*iter)->viewer()->setComputeNearFarMode ( mode );
   }
 
-  Usul::Registry::Database::instance()[ VRV::Constants::Sections::VRV ][ VRV::Constants::Keys::AUTO_NEAR_FAR ] = b;
+  Usul::Registry::Database::instance()[ this->_documentSection () ][ VRV::Constants::Keys::AUTO_NEAR_FAR ] = b;
 }
 
 
@@ -3694,4 +3681,33 @@ void Application::_initLight()
   light->setDiffuse ( diffuse );
 
   this->addLight ( light.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get section for current document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Application::_documentSection () const
+{
+  // Get the active document.
+  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  std::string filename;
+
+  // If we have a valid filename.
+  if ( document.valid () )
+  {
+    std::string name ( document->fileName () );
+    filename.assign  ( name.begin (), name.end() );
+    std::string dir  ( Usul::File::directory ( filename, true ) );
+
+    // We want just the filename.
+    filename.erase ( 0, dir.size() );
+  }
+
+  // Return the name.
+  return filename;
 }

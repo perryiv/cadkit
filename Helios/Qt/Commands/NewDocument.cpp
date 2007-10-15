@@ -104,11 +104,15 @@ void NewDocument::_execute()
   // Make sure we got an active document.
   if ( document.valid () )
   {
-    // Assign a default name.
-    document->defaultFilename();
-
     // Find a delegate for the document.
     Usul::Documents::Manager::instance().delegate ( document.get() );
+    
+    // Make sure a delegate was found.
+    if ( 0x0 == document->delegate () )
+      Usul::Exceptions::Thrower < std::runtime_error > ( "Error 3380055569: Could not find delegate for: ", document->typeName() );
+
+    // Assign a default name.
+    document->defaultFilename();
 
     // See if the caller wants to be notified when the document finishes loading.
     Usul::Interfaces::IGUIDelegateNotify::QueryPtr notify ( this->caller() );

@@ -90,7 +90,7 @@ std::string PostGISLayerQtComponent::getPluginName() const
 
 QWidget* PostGISLayerQtComponent::layerAddGUI()
 {
-#if ( QT_VERSION >= 0x040300 )
+#if ( QT_VERSION >= QT_VERSION_CHECK ( 4, 3, 0 ) )
   _widget = new AddPostGISLayerWidget;
 #else
   _widget = new QFrame;
@@ -119,7 +119,7 @@ std::string PostGISLayerQtComponent::name() const
 
 void PostGISLayerQtComponent::apply ( Usul::Interfaces::IUnknown* caller )
 {
-#if ( QT_VERSION >= 0x040300 )
+#if ( QT_VERSION >= QT_VERSION_CHECK ( 4, 3, 0 ) )
   if ( 0x0 != _widget )
     _widget->apply ( caller );
 #endif

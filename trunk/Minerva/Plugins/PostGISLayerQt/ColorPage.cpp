@@ -10,7 +10,7 @@
 
 #include "Minerva/Plugins/PostGISLayerQt/ColorPage.h"
 
-#if ( QT_VERSION >= 0x040300 )
+#if ( QT_VERSION >= QT_VERSION_CHECK ( 4, 3, 0 ) )
 
 ///////////////////////////////////////////////////////////////////////////////
 //

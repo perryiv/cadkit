@@ -17,6 +17,7 @@
 #include "Helios/Plugins/Animate/KeyFramePath.h"
 #include "Helios/Plugins/Animate/RecordedPath.h"
 
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Commands/GenericCommand.h"
 #include "Usul/Commands/GenericCheckCommand.h"
@@ -27,6 +28,7 @@
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
+#include "MenuKit/RadioButton.h"
 #include "MenuKit/ToggleButton.h"
 
 using namespace Animate;
@@ -160,7 +162,7 @@ const Animate::Path* AnimateComponent::currentPath () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AnimateComponent::currentPath ( Path * path )
+void AnimateComponent::setCurrentPath ( Path::RefPtr path )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -183,6 +185,18 @@ void AnimateComponent::currentPath ( Path * path )
   }
 
   _currentPath = path;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the given path current?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool AnimateComponent::isCurrentPath ( Path::RefPtr path ) const
+{
+  return path == this->currentPath();
 }
 
 
@@ -253,6 +267,8 @@ void AnimateComponent::createKeyFramePath ()
   USUL_TRACE_SCOPE;
 
   Path::RefPtr path ( new Animate::KeyFramePath );
+  path->defaultFilename();
+  path->fileName ( path->fileName() + " (" + path->typeName() + ")" );
 
   {
     Guard guard ( this->mutex () );
@@ -260,7 +276,7 @@ void AnimateComponent::createKeyFramePath ()
   }
 
   // Make the new path current.
-  this->currentPath ( path.get() );
+  this->setCurrentPath ( path.get() );
 
   // Rebuild the menu.
   this->_buildMenu ();
@@ -278,6 +294,8 @@ void AnimateComponent::createRecordedPath ()
   USUL_TRACE_SCOPE;
 
   Path::RefPtr path ( new Animate::RecordedPath );
+  path->defaultFilename();
+  path->fileName ( path->fileName() + " (" + path->typeName() + ")" );
 
   {
     Guard guard ( this->mutex () );
@@ -285,7 +303,7 @@ void AnimateComponent::createRecordedPath ()
   }
 
   // Make the new path current.
-  this->currentPath ( path.get() );
+  this->setCurrentPath ( path.get() );
 
   // Rebuild the menu.
   this->_buildMenu ();
@@ -335,6 +353,27 @@ bool AnimateComponent::recordPath ( ) const
 
 void AnimateComponent::_buildMenu ()
 {
+  typedef void (AnimateComponent::*SetPathFunctionPtr ) ( Path::RefPtr );
+  typedef bool (AnimateComponent::*CheckFunction) ( Path::RefPtr ) const;
+  typedef Usul::Adaptors::MemberFunction < void, AnimateComponent*, SetPathFunctionPtr > PathFunction;
+  typedef Usul::Adaptors::MemberFunction < bool, AnimateComponent*, CheckFunction >      CheckFunctor;
+
+  typedef Usul::Adaptors::Bind1 < void, Path::RefPtr, PathFunction >  SetPathFunctor;
+  typedef Usul::Adaptors::Bind1 < bool, Path::RefPtr, CheckFunctor >  CheckPathFunctor;
+  typedef Usul::Commands::TrueFunctor TrueFunctor;
+  typedef Usul::Commands::ExecutePolicy < SetPathFunctor, CheckPathFunctor > Policy;
+
+  typedef Usul::Commands::GenericCheckCommand < SetPathFunctor, CheckPathFunctor, TrueFunctor, Policy > CheckCommand;
+  typedef MenuKit::RadioButton                                                     RadioButton;
+
+  _pathsMenu->clear();
+
+  for ( Paths::iterator iter = _paths.begin(); iter != _paths.end(); ++iter )
+  {
+    _pathsMenu->append ( new RadioButton ( new CheckCommand ( (*iter)->fileName(),  
+                                                             SetPathFunctor ( *iter,  PathFunction ( this, &AnimateComponent::setCurrentPath ) ), 
+                                                             CheckPathFunctor ( *iter, CheckFunctor ( this, &AnimateComponent::isCurrentPath ) ) ) ) );
+  }
 }
 
 

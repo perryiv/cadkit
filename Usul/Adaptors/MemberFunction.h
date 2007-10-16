@@ -159,6 +159,18 @@ struct MemberFunction < bool, ObjectType, FunctionType >
     return ((*_o).*_f)();
   }
 
+  template < class Arg >
+  bool operator () ( const Arg &arg ) const
+  {
+    return ((*_o).*_f) ( arg );
+  }
+
+  template < class Arg1, class Arg2 >
+  bool operator () ( const Arg1 &arg1, const Arg2 &arg2 ) const
+  {
+    ((*_o).*_f) ( arg1, arg2 );
+  }
+
 private:
 
   ObjectType _o;

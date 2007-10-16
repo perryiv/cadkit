@@ -23,14 +23,36 @@
 namespace Usul {
 namespace Commands {
 
-template < class ExecuteFunctor, class CheckFunctor, class EnableFunctor = TrueFunctor >
+  template < class E, class C >
+  struct TogglePolicy
+  {
+    void operator () ( E e, C c )
+    {
+      e ( !c() );
+    }
+  };
+
+  template < class E, class C >
+  struct ExecutePolicy
+  {
+    void operator () ( E e, C c )
+    {
+      e ( );
+    }
+  };
+
+template < class ExecuteFunctor,
+           class CheckFunctor, 
+           class EnableFunctor = TrueFunctor,
+           class ExecutePolicy_ = TogglePolicy < ExecuteFunctor, CheckFunctor > >
 class GenericCheckCommand : public Usul::Commands::Command
 {
 public:
   typedef Usul::Commands::Command                                             BaseClass;
-  typedef GenericCheckCommand < ExecuteFunctor, CheckFunctor, EnableFunctor > ThisType;
+  typedef ExecutePolicy_                                                      ExecutePolicy;
+  typedef GenericCheckCommand < ExecuteFunctor, CheckFunctor, EnableFunctor, ExecutePolicy > ThisType;
 
-  USUL_DECLARE_COMMAND  ( GenericCheckCommand );
+  USUL_DECLARE_QUERY_POINTERS  ( GenericCheckCommand );
 
   GenericCheckCommand ( const std::string& name, 
                        ExecuteFunctor functor, 
@@ -57,15 +79,19 @@ public:
     this->text ( name );
   }
 
+  virtual Usul::Commands::Command* clone ( ) const { return new ThisType ( *this ); }
+
+  static const std::type_info &classTypeId() { return typeid ( ThisType ); }
+  virtual const std::type_info &typeId() const { return ThisType::classTypeId(); }
 
 protected:
-  virtual ~GenericCheckCommand ()
-  {
-  }
+  virtual ~GenericCheckCommand () {}
 
   virtual void _execute ()
   {
-    _functor ( !_check() );
+    ExecutePolicy p;
+    p ( _functor, _check );
+    //_functor ( !_check() );
   }
 
   virtual bool updateEnable () const
@@ -83,27 +109,6 @@ private:
   EnableFunctor _enable;
   CheckFunctor _check;
 };
-
-
-template < class Functor, class CheckFunctor, class EnableFunctor >
-const std::type_info &GenericCheckCommand < Functor, CheckFunctor, EnableFunctor >::classTypeId() 
-{
-  return typeid ( ThisType );
-}
-
-
-template < class Functor, class CheckFunctor, class EnableFunctor >
-const std::type_info &GenericCheckCommand < Functor, CheckFunctor, EnableFunctor >::typeId() const 
-{
-  return ThisType::classTypeId();
-}
-
-
-template < class Functor, class CheckFunctor, class EnableFunctor >
-Usul::Commands::Command* GenericCheckCommand < Functor, CheckFunctor, EnableFunctor >::clone ( ) const 
-{
-  return new ThisType ( *this );
-}
 
 
 }

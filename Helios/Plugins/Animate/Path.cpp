@@ -31,8 +31,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Path, Path::BaseClass );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Path::Path () : 
-  BaseClass ( "Animation Path" ),
+Path::Path ( const std::string& type ) : 
+  BaseClass ( type ),
   _dirty ( false ),
   _acceptNewFrames ( false ),
   _startTime ( -1.0 ),

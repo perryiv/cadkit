@@ -58,7 +58,8 @@ public:
   /// Get/Set the current path.
   Path*                   currentPath ();
   const Path*             currentPath () const;
-  void                    currentPath ( Path* );
+  void                    setCurrentPath ( Path::RefPtr );
+  bool                    isCurrentPath ( Path::RefPtr ) const;
 
   /// Create new key frame path.
   void                    createKeyFramePath ();

@@ -88,6 +88,38 @@ template < class T > inline const T & maximum ( const T &t1, const T &t2, const 
 
 /////////////////////////////////////////////////////////////////////////////
 //
+//  Return the minimum value.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+template < class T, class Pred > inline const T & minimum ( const T &t1, const T &t2, const T &t3, const T &t4, Pred pred )
+{
+  return ( Usul::Math::minimum ( Usul::Math::minimum ( t1, t2, pred ), Usul::Math::minimum ( t3, t4, pred ), pred ) );
+}
+template < class T > inline const T & minimum ( const T &t1, const T &t2, const T &t3, const T &t4 )
+{
+  return ( Usul::Math::minimum ( Usul::Math::minimum ( t1, t2 ), Usul::Math::minimum ( t3, t4 ) ) );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Return the minimum value.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+template < class T, class Pred > inline const T & minimum ( const T &t1, const T &t2, const T &t3, const T &t4, const T &t5, Pred pred )
+{
+  return ( Usul::Math::minimum ( Usul::Math::minimum ( t1, t2, pred ), Usul::Math::minimum ( t3, t4, t5, pred ), pred ) );
+}
+template < class T > inline const T & minimum ( const T &t1, const T &t2, const T &t3, const T &t4, const T &t5 )
+{
+  return ( Usul::Math::minimum ( Usul::Math::minimum ( t1, t2 ), Usul::Math::minimum ( t3, t4, t5 ) ) );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 //  Clamp the value between min and max.
 //
 /////////////////////////////////////////////////////////////////////////////

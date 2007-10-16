@@ -195,7 +195,7 @@ public:
   unsigned int                numTriangles() const;
 
   /// Read the file and add it to document's data.
-  virtual void                read ( const std::string &filename, Unknown *caller = 0x0 );
+  virtual void                read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
   /// Reserve space for the triangles.
   void                        reserveTriangles ( unsigned int );

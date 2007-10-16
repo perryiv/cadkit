@@ -228,11 +228,23 @@
 					>
 				</File>
 				<File
-					RelativePath=".\VolumeCallback.cpp"
+					RelativePath=".\ImageReaderWriter.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\VolumeCallback.h"
+					RelativePath=".\ImageReaderWriter.h"
+					>
+				</File>
+				<File
+					RelativePath=".\IReaderWriter.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ReaderWriterFactory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ReaderWriterFactory.h"
 					>
 				</File>
 				<File
@@ -253,10 +265,6 @@
 				</File>
 				<File
 					RelativePath=".\VolumeFactory.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\VolumeFactory.h"
 					>
 				</File>
 			</Filter>

@@ -104,7 +104,7 @@ public:
   virtual Filters             filtersSave()   const;
 
   /// Read the file and add it to existing document's data.
-  virtual void                read ( const std::string &filename, Unknown *caller = 0x0 );
+  virtual void                read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
   /// Write the document to given file name. Does not rename this document.
   virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const;

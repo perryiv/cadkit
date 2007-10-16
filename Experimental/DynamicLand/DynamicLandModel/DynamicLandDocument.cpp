@@ -359,7 +359,7 @@ void DynamicLandDocument::write ( const std::string &name, Unknown *caller  ) co
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DynamicLandDocument::read ( const std::string &name, Unknown *caller )
+void DynamicLandDocument::read ( const std::string &name, Unknown *caller, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );

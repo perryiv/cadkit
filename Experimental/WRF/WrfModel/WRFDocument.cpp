@@ -236,7 +236,7 @@ void WRFDocument::write ( const std::string &name, Unknown *caller  ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WRFDocument::read ( const std::string &name, Unknown *caller )
+void WRFDocument::read ( const std::string &name, Unknown *caller, Unknown *progress )
 {
   Serialize::XML::deserialize ( name, *this );
 }

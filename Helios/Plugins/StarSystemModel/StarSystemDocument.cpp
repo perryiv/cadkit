@@ -167,7 +167,7 @@ void StarSystemDocument::write ( const std::string &name, Unknown *caller  ) con
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void StarSystemDocument::read ( const std::string &name, Unknown *caller )
+void StarSystemDocument::read ( const std::string &name, Unknown *caller, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );

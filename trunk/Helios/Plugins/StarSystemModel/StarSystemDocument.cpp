@@ -174,11 +174,10 @@ void StarSystemDocument::read ( const std::string &name, Unknown *caller, Unknow
 
 #if 1
 
-  StarSystem::Body::ValidRefPtr body ( new StarSystem::Body() );
+  StarSystem::Body::ValidRefPtr body ( new StarSystem::Body ( Usul::Math::Vec2d ( osg::WGS_84_RADIUS_EQUATOR * 0.75, osg::WGS_84_RADIUS_POLAR * 0.5 ) ) );
   const Usul::Math::Vec3d c ( _system->center() );
   body->center ( Usul::Math::Vec3d ( c[0] + 50000000, c[1], c[2] ) );
-  body->radii ( Usul::Math::Vec2d ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR ) );
-  //_system->add ( body.get() );
+  _system->add ( body.get() );
 
 #endif
 

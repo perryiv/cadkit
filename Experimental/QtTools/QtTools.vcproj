@@ -2,8 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="plug: Model Presentation Delegate Qt"
-	ProjectGUID="{478E254F-0755-4125-9C0D-38E8DB898732}"
+	Name="lib: CadKit QtTools"
+	ProjectGUID="{768EABAD-0721-457D-820D-C0548B1F252A}"
+	RootNamespace="QtTools"
 	>
 	<Platforms>
 		<Platform
@@ -39,14 +40,14 @@
 				PreprocessorDefinitions="_DEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/QtModelPresentationDelegate.tlb"
+				TypeLibraryName=".\Debug/QtTools.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR),$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(QTDIR)\include"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_DYNAMIC_LAND_DELEGATE_DELEGATE;"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(CADKIT_ROOT_DIR)/Experimental;$(QTDIR)/include"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_QT_TOOLS"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -55,7 +56,7 @@
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
-				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
+				PrecompiledHeaderFile=""
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -79,15 +80,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib QtCored4.lib QtGuid4.lib QtOpenGLd4.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/QtModelPresentationDelegate.plugd"
+				AdditionalDependencies=" QtCored4.lib QtGuid4.lib"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/QtToolsd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(QTDIR)\lib"
-				ModuleDefinitionFile="Export.def"
+				AdditionalLibraryDirectories="$(QTDIR)/lib"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug\QtModelPresentationDelegated.pdb"
-				ImportLibrary=".\Debug\QtModelPresentationDelegated.lib"
+				ProgramDatabaseFile=".\Debug/QtToolsd.pdb"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/QtToolsd.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -140,14 +140,14 @@
 				PreprocessorDefinitions="NDEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/QtModelPresentationDelegate.tlb"
+				TypeLibraryName=".\Release/QtTools.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR),$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(QTDIR)\include"
-				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_DYNAMIC_LAND_DELEGATE_DELEGATE;"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(CADKIT_ROOT_DIR)/Experimental;$(QTDIR)/include"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_QT_TOOLS"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -155,7 +155,7 @@
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
-				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
+				PrecompiledHeaderFile=""
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -178,14 +178,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib QtCore4.lib QtGui4.lib QtOpenGL4.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/QtModelPresentationDelegate.plug"
+				AdditionalDependencies=" QtCore4.lib QtGui4.lib"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/QtTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(QTDIR)\lib"
-				ModuleDefinitionFile="Export.def"
-				ProgramDatabaseFile=".\Release\QtModelPresentationDelegate.pdb"
-				ImportLibrary=".\Release\QtModelPresentationDelegate.lib"
+				AdditionalLibraryDirectories="$(QTDIR)/lib"
+				ProgramDatabaseFile=".\Release/QtTools.pdb"
+				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/QtTools.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -223,31 +222,45 @@
 				Name="Implementation"
 				>
 				<File
-					RelativePath=".\CompileGuard.h"
+					RelativePath=".\Export.h"
 					>
 				</File>
 				<File
-					RelativePath=".\ModelPresentationDelegateComponent.cpp"
+					RelativePath=".\TreeControl.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\ModelPresentationDelegateComponent.h"
+					RelativePath=".\TreeControl.h"
 					>
-				</File>
-				<File
-					RelativePath=".\ModelPresentationDelegateFactory.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\ModelPresentationDelegateFactory.h"
-					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing TreeControl.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\TreeControl.h&quot; -o &quot;.\GeneratedFiles\moc_TreeControl.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\TreeControl.h"
+							Outputs=".\GeneratedFiles\moc_TreeControl.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing TreeControl.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\TreeControl.h&quot; -o &quot;.\GeneratedFiles\moc_TreeControl.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\TreeControl.h"
+							Outputs=".\GeneratedFiles\moc_TreeControl.cpp"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
-				Name="DLL"
+				Name="GeneratedFiles"
 				>
 				<File
-					RelativePath="Export.def"
+					RelativePath=".\generatedfiles\moc_TreeControl.cpp"
 					>
 				</File>
 			</Filter>

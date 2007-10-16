@@ -14,7 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Helios/Plugins/VolumeModel/VolumeDocument.h"
-#include "Helios/Plugins/VolumeModel/ReaderWriterFactory.h"
+#include "Helios/Plugins/VolumeModel/ImageReaderWriter.h"
 
 #include "OsgTools/Images/Image3d.h"
 #include "OsgTools/Volume/Texture3DVolume.h"
@@ -34,7 +34,9 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VolumeDocument, VolumeDocument::BaseClass );
 ///////////////////////////////////////////////////////////////////////////////
 
 VolumeDocument::VolumeDocument() : BaseClass ( "Volume Document" ),
-  _readerWriter ( 0x0 )
+  _root ( new osg::Group ),
+  _readerWriter ( 0x0 ),
+  _dirty ( false )
 {
 }
 
@@ -62,6 +64,8 @@ Usul::Interfaces::IUnknown *VolumeDocument::queryInterface ( unsigned long iid )
   {
   case Usul::Interfaces::IBuildScene::IID:
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
+  case Usul::Interfaces::IUpdateListener::IID:
+    return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -128,10 +132,15 @@ bool VolumeDocument::canSave ( const std::string &file ) const
 void VolumeDocument::read ( const std::string &name, Unknown *caller, Unknown *progress )
 {
   if ( false == _readerWriter.valid () )
-    _readerWriter = ReaderWriterFactory::instance().create ( name );
+  {
+    // Image reader writer is the default.
+    _readerWriter = new ImageReaderWriter;
+  }
 
   if ( _readerWriter.valid () )
     _readerWriter->read ( name, caller );
+
+  this->dirty ( true );
 }
 
 
@@ -230,14 +239,70 @@ osg::Node *VolumeDocument::buildScene ( const BaseClass::Options &opt, Unknown *
 {
   this->setStatusBar ( "Building scene..." );
 
+  this->_buildScene ();
+
+  return _root.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VolumeDocument::dirty ( bool b )
+{
+  Guard guard ( this->mutex() );
+  _dirty = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VolumeDocument::dirty () const
+{
+  Guard guard ( this->mutex() );
+  return _dirty;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VolumeDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  if ( this->dirty ( ) )
+    this->_buildScene ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VolumeDocument::_buildScene ()
+{
+  _root->removeChildren ( 0, _root->getNumChildren() );
+
   if ( _readerWriter.valid () )
   {
     osg::ref_ptr < OsgTools::Volume::Texture3DVolume > volume ( new OsgTools::Volume::Texture3DVolume );
-    volume->numPlanes ( 512 );
+    volume->numPlanes ( 256 );
+    volume->resizePowerTwo ( true );
     volume->image ( _readerWriter->image3D() );
 
-    return volume.release();
+    _root->addChild ( volume.get() );
   }
 
-  return 0x0;
+  this->dirty ( false );
 }

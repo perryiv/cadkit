@@ -21,7 +21,9 @@
 #include "Usul/Documents/Document.h"
 
 #include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/IUpdateListener.h"
 
+#include "osg/Group"
 #include "osg/Image"
 #include "osg/ref_ptr"
 
@@ -29,7 +31,8 @@
 #include <vector>
 
 class VolumeDocument : public Usul::Documents::Document,
-                       public Usul::Interfaces::IBuildScene
+                       public Usul::Interfaces::IBuildScene,
+                       public Usul::Interfaces::IUpdateListener
 {
 public:
 
@@ -69,6 +72,9 @@ public:
   /// Write the document to given file name.
   virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const;
 
+  /// Get/Set the dirty flag.
+  void                        dirty ( bool b );
+  bool                        dirty () const;
 protected:
 
   /// Do not copy.
@@ -78,8 +84,15 @@ protected:
   /// Use reference counting.
   virtual ~VolumeDocument();
 
+  void                        _buildScene ();
+
+  /// Update (Usul::Interfaces::IUpdateListener).
+  virtual void                             updateNotify ( Usul::Interfaces::IUnknown *caller );
+
 private:
+  osg::ref_ptr < osg::Group > _root;
   IReaderWriter::RefPtr _readerWriter;
+  bool _dirty;
 };
 
 

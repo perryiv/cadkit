@@ -34,9 +34,6 @@ public:
   /// Clear any existing data.
   virtual void                clear ( Unknown *caller = 0x0 );
 
-  /// Can this reader/writer handle the extension.
-  virtual bool                handle ( const std::string& filename ) const;
-
   /// Read the file and add it to existing document's data.
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0 );
 

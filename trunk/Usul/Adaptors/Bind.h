@@ -101,6 +101,47 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Bind a single argument.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template
+<
+  class ArgumentType,
+  class FunctionType
+>
+struct Bind1 < bool, ArgumentType, FunctionType >
+{
+  Bind1() : _a ( 0x0 ), _f ( 0x0 ){} // For gcc's stl containers.
+  Bind1 ( ArgumentType a, FunctionType f ) : _a ( a ), _f ( f ){}
+  Bind1 ( const Bind1 &b ) : _a ( b._a ), _f ( b._f ){}
+
+  Bind1 &operator = ( const Bind1 &b )
+  {
+    _a = b._a;
+    _f = b._f;
+    return *this;
+  }
+  
+  bool operator()() const
+  {
+    return _f ( _a );
+  }
+
+  template < class FirstArgument > bool operator() ( const FirstArgument &arg ) const
+  {
+    return _f ( arg, _a );
+  }
+
+private:
+
+  ArgumentType _a;
+  FunctionType _f;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Bind two arguments.
 //
 ///////////////////////////////////////////////////////////////////////////////

@@ -24,7 +24,7 @@ USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "RecordedPath", RecordedPath );
 ///////////////////////////////////////////////////////////////////////////////
 
 RecordedPath::RecordedPath () : 
-  BaseClass (),
+  BaseClass ( "Recorded Path" ),
   _frames (),
   _current ()
 {

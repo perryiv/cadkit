@@ -34,7 +34,7 @@ USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "KeyFramePath", KeyFramePath );
 ///////////////////////////////////////////////////////////////////////////////
 
 KeyFramePath::KeyFramePath () : 
-  BaseClass (),
+  BaseClass ( "Key Frame Path" ),
   _frames (),
   _params (),
   _rotations (),

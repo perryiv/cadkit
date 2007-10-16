@@ -35,7 +35,7 @@ public:
   USUL_DECLARE_QUERY_POINTERS ( Path );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  Path ();
+  Path ( const std::string& type );
 
   /// Append a frame.
   virtual void      append ( Frame *frame );

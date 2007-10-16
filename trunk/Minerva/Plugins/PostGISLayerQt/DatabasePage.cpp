@@ -17,7 +17,7 @@
 #include "Minerva/Core/Layers/LineLayer.h"
 #include "Minerva/Core/Layers/PolygonLayer.h"
 
-#if ( QT_VERSION >= 0x040300 )
+#if ( QT_VERSION >= QT_VERSION_CHECK ( 4, 3, 0 ) )
 
 #include "QtGui/QLineEdit"
 #include "QtGui/QDialog.h"

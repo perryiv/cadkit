@@ -21,6 +21,7 @@
 #include "Minerva/Plugins/PostGISLayerQt/AddPostGISLayerWidget.h"
 
 #include "Usul/Base/Referenced.h"
+#include "Usul/Headers/Qt.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/ILayerAddGUIQt.h"
 
@@ -62,7 +63,7 @@ protected:
 
 private:
 
-#if ( QT_VERSION >= QT_VERSION_CHECK (4,3,0 ) )
+#if ( QT_VERSION >= QT_VERSION_CHECK ( 4, 3, 0 ) )
   AddPostGISLayerWidget *_widget;
 #else
   QWidget *_widget;

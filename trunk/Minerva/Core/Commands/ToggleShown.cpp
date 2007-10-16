@@ -68,7 +68,7 @@ ToggleShown::~ToggleShown()
 
 void ToggleShown::_execute ()
 {
-  Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( Usul::Documents::Manager::instance().active () );
+  Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( Usul::Documents::Manager::instance().activeDocument () );
   
   // Toggle shown.
   if ( _layer.valid () )

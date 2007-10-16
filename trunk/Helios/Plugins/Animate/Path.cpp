@@ -19,6 +19,9 @@
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
 
+#include "Serialize/XML/Deserialize.h"
+#include "Serialize/XML/Serialize.h"
+
 #include "osg/FrameStamp"
 
 using namespace Animate;
@@ -319,12 +322,25 @@ Path::Filters Path::filtersSave()   const
 }
 
 
-/// Read.
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void Path::read ( const std::string &filename, Unknown *caller, Unknown *progress )
 {
+  Serialize::XML::deserialize ( filename, *this );
 }
 
-/// Write.
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void Path::write ( const std::string &filename, Unknown *caller  ) const
 {
+  Serialize::XML::serialize( "Path", *this, filename );
 }

@@ -136,7 +136,7 @@ AddLayer::AddLayerJob::AddLayerJob ( Usul::Interfaces::ILayer* layer, Usul::Inte
   USUL_TRACE_SCOPE;
 
   // Capture the active document.
-  _document = Usul::Documents::Manager::instance().active();
+  _document = Usul::Documents::Manager::instance().activeDocument();
 
   // Try adding the layer with the caller first.  If that fails, try the active document.
   if ( false == this->_addLayer ( caller ) )

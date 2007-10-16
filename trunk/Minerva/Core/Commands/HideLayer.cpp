@@ -67,7 +67,7 @@ HideLayer::~HideLayer()
 
 void HideLayer::_execute ()
 {
-  Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( Usul::Documents::Manager::instance().active () );
+  Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( Usul::Documents::Manager::instance().activeDocument () );
   
   // Hide the layer.
   if ( _layer.valid () )

@@ -212,30 +212,6 @@ Manager::Filters Manager::filtersOpen() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::active ( IDocument *document )
-{
-  this->activeDocument ( document );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the active document
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IDocument* Manager::active()
-{
-  return this->activeDocument ();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Make this document active.  May be null.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void Manager::activeDocument ( IDocument* document )
 {
     // Save the old document.
@@ -301,7 +277,7 @@ void Manager::activeView ( View * view )
   IDocument::RefPtr document ( view ? view->document() : 0x0 );
 
   // Set the active document.
-  this->active ( document );
+  this->activeDocument ( document );
 
   // Make a copy of the listeners.
   ActiveViewListeners listeners;
@@ -347,7 +323,7 @@ void Manager::close ( Document *document )
   if ( doc.get() == this->activeDocument () )
   {
     // Set the active document to null.  Call this instead of setting it directy.
-    this->active ( 0x0 );
+    this->activeDocument ( 0x0 );
   }
 
   // Remove the document from the list

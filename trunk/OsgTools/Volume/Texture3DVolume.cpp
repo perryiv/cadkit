@@ -49,6 +49,8 @@ _transferFunction ( 0x0 )
 
   // Add the planes.
   this->addDrawable ( _geometry.get() );
+
+  this->resizePowerTwo ( false );
 }
 
 
@@ -109,7 +111,7 @@ void Texture3DVolume::image ( osg::Image* image, TextureUnit unit )
   texture3D->setWrap( osg::Texture3D::WRAP_T, osg::Texture3D::CLAMP );
 
   // Don't resize.
-  texture3D->setResizeNonPowerOfTwoHint( false );
+  texture3D->setResizeNonPowerOfTwoHint( this->resizePowerTwo () );
 
   // Get the state set.
   osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
@@ -314,6 +316,30 @@ void Texture3DVolume::useTransferFunction ( bool b )
 bool Texture3DVolume::useTransferFunction () const
 {
   return Usul::Bits::has ( _flags, _USE_TRANSFER_FUNCTION );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the resize power of two flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Texture3DVolume::resizePowerTwo ( bool b )
+{
+  _flags = Usul::Bits::set ( _flags, _RESIZE_POWER_TWO, b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the resize power of two flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Texture3DVolume::resizePowerTwo () const
+{
+  return Usul::Bits::has ( _flags, _RESIZE_POWER_TWO );
 }
 
 

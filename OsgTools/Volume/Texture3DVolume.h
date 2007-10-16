@@ -48,13 +48,17 @@ public:
   void                             boundingBox ( const osg::BoundingBox& bb );
   const osg::BoundingBox&          boundingBox () const;
 
+  /// Get/Set the resize power of two flag.
+  void                             resizePowerTwo ( bool b );
+  bool                             resizePowerTwo () const;
+
   /// Get/Set the transfer function flag.
   void                             useTransferFunction ( bool b );
   bool                             useTransferFunction () const;
   
   /// Get/Set the transfer function as an image.
   void                             transferFunction ( TransferFunction* tf, TextureUnit unit = 1 );
-  TransferFunction*                 transferFunction () const;
+  TransferFunction*                transferFunction () const;
 
 protected:
   virtual ~Texture3DVolume();
@@ -65,7 +69,8 @@ private:
 
   enum RenderFlags
   {
-    _USE_TRANSFER_FUNCTION = 0x00000001
+    _USE_TRANSFER_FUNCTION = 0x00000001,
+    _RESIZE_POWER_TWO      = 0x00000002
   };
 
   TexutreInfo                  _volume;

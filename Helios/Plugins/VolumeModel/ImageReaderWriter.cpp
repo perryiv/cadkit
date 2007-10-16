@@ -9,7 +9,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Helios/Plugins/VolumeModel/ImageReaderWriter.h"
-#include "Helios/Plugins/VolumeModel/ReaderWriterFactory.h"
 
 #include "OsgTools/Images/Image3d.h"
 
@@ -81,19 +80,6 @@ ImageReaderWriter::~ImageReaderWriter()
 IReaderWriter* ImageReaderWriter::clone () const
 {
   return new ImageReaderWriter ( *this );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return true if this reader/writer can do it.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool ImageReaderWriter::handle ( const std::string &file ) const
-{
-  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "jpeg" || ext == "jpg" || ext == "tiff" || ext == "tif" || ext == "gif" || ext == "png" || ext == "bmp" );
 }
 
 
@@ -175,7 +161,3 @@ Usul::Interfaces::IUnknown* ImageReaderWriter::queryInterface( unsigned long iid
     return 0x0;
   }
 }
-
-
-/// Register this reader writer in the factory.
-//RegisterReaderWriter registerRW ( new ImageReaderWriter() );

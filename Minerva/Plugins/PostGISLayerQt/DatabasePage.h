@@ -11,9 +11,9 @@
 #ifndef __POSTGIS_DATABASE_PAGE_H__
 #define __POSTGIS_DATABASE_PAGE_H__
 
-#include "QtCore/qglobal.h"
+#include "Usul/Headers/Qt.h"
 
-#if ( QT_VERSION >= QT_VERSION_CHECK (4,3,0 ) )
+#if ( QT_VERSION >= QT_VERSION_CHECK ( 4, 3, 0 ) )
 
 #include "Minerva/Core/DB/Connection.h"
 

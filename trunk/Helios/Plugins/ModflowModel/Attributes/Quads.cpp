@@ -192,10 +192,7 @@ osg::Group *Quads::buildScene ( Modflow::ModflowDocument *document, Modflow::Mod
         osg::Vec3f &v ( vertices->at(k) );
         osg::Vec4f &c ( colors->at(k) );
         const float fraction ( ( v[2] - zRange[0] ) / ( zRange[1] - zRange[0] ) );
-        c[0] = minColor[0] + ( dir[0] * fraction );
-        c[1] = minColor[1] + ( dir[1] * fraction );
-        c[2] = minColor[2] + ( dir[2] * fraction );
-        c[3] = minColor[3] + ( dir[3] * fraction );
+        c = minColor + ( dir * fraction );
 #if 0
         std::cout << "fraction = " << fraction;
         std::cout << ", c = ( " << c[0] << ' ' << c[1] << ' ' << c[2] << ' ' << c[3] << " )";

@@ -148,7 +148,7 @@ Usul::Interfaces::IUnknown *Layer::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IStringGridGet::IID:
     return static_cast < Usul::Interfaces::IStringGridGet * > ( this );
   default:
-    return 0x0;
+    return BaseClass::queryInterface ( iid );
   }
 }
 

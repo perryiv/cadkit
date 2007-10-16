@@ -14,10 +14,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "ModflowDelegateComponent.h"
-#include "LayerTreeControl.h"
 
 #include "Helios/Qt/Views/OSG/Viewer.h"
 #include "Helios/Qt/Views/OSG/Format.h"
+
+#include "QtTools/TreeControl.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Documents/Document.h"
@@ -244,7 +245,7 @@ void ModflowDelegateComponent::addDockWindow ( Usul::Interfaces::IUnknown *calle
     std::auto_ptr<QDockWidget> dockWidget ( this->_makeDockWindow ( "Modflow Layers", "ModflowLayersDockWidget" ) );
 
     // Create the tree for the scene graph.
-    _layerTree = new LayerTreeControl ( caller, dockWidget.get() );
+    _layerTree = new QtTools::TreeControl ( caller, dockWidget.get() );
 
     // Set the docking window's widget.
     dockWidget->setWidget ( _layerTree );

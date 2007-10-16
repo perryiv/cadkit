@@ -28,7 +28,8 @@
 #include <map>
 #include <string>
 
-class LayerTreeControl;
+namespace QtTools { class TreeControl; }
+
 class QDockWidget;
 class QWidget;
 class QLabel;
@@ -93,7 +94,7 @@ private:
 
   Unknown::QueryPtr _caller;
   DockedMap _docked;
-  LayerTreeControl *_layerTree;
+  QtTools::TreeControl *_layerTree;
   QLabel *_intersectInfo;
 };
 

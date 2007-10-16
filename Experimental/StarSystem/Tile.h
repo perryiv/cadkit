@@ -19,7 +19,12 @@
 
 #include "StarSystem/Export.h"
 
-#include "osg/LOD"
+#include "Usul/Base/Typed.h"
+#include "Usul/Pointers/Pointers.h"
+
+#include "osg/Group"
+
+#include <typeinfo>
 
 class ossimEllipsoid;
 
@@ -27,24 +32,40 @@ class ossimEllipsoid;
 namespace StarSystem {
 
 
-class STAR_SYSTEM_EXPORT Tile : public osg::LOD
+class STAR_SYSTEM_EXPORT Tile : public osg::Group
 {
 public:
-
-  // Useful typedefs.
-  typedef osg::LOD BaseClass;
 
   // OSG Plumbing.
   META_Node ( osg, Tile );
 
+  // Declare smart pointers.
+  USUL_DECLARE_REF_POINTERS ( Tile );
+
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( Tile );
+
+  // Useful typedefs.
+  typedef osg::Group BaseClass;
+
   // Constructors.
-  Tile();
+  Tile ( osg::Vec2d &mn = osg::Vec2d ( 0, 0 ), 
+         osg::Vec2d &mx = osg::Vec2d ( 1, 1 ), 
+         double elevation = 0,
+         double distance = 1,
+         ossimEllipsoid *ellipsoid = 0x0 );
   Tile ( const Tile &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY );
+
+  // Traverse the children.
+  virtual void              traverse ( osg::NodeVisitor & );
 
 protected:
 
   // Use reference counting.
   virtual ~Tile();
+
+  // Initialize the tile.
+  void                      _init();
 
 private:
 
@@ -54,6 +75,10 @@ private:
   void                      _destroy();
 
   ossimEllipsoid *_ellipsoid;
+  osg::Vec2d _min;
+  osg::Vec2d _max;
+  double _elevation;
+  double _distance;
 };
 
 

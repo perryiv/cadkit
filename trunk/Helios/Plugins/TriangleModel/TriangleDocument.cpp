@@ -228,7 +228,7 @@ bool TriangleDocument::canSave ( const std::string &file ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleDocument::read ( const std::string &name, Unknown *caller )
+void TriangleDocument::read ( const std::string &name, Unknown *caller, Unknown *progress )
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( name ) ) );
 

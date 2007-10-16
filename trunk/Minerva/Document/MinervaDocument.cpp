@@ -276,7 +276,7 @@ MinervaDocument::Filters MinervaDocument::filtersSave()   const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::read ( const std::string &filename, Unknown *caller )
+void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unknown *progress )
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
 

@@ -26,7 +26,7 @@ struct IRead : public Usul::Interfaces::IUnknown
   enum { IID = 1594661597u };
 
   // Read the file.
-  virtual void read ( const std::string &filename, Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
+  virtual void read ( const std::string &filename, Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 ) = 0;
 };
 
 

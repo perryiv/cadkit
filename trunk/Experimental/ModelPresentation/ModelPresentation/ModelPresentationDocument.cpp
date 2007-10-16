@@ -200,7 +200,7 @@ void ModelPresentationDocument::write ( const std::string &name, Unknown *caller
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::read ( const std::string &name, Unknown *caller )
+void ModelPresentationDocument::read ( const std::string &name, Unknown *caller, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );

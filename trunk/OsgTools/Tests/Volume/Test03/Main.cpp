@@ -15,6 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Functions/Color.h"
+#include "Usul/Threads/Mutex.h"
 
 #include "OsgTools/Box.h"
 #include "OsgTools/State/StateSet.h"
@@ -73,13 +74,10 @@ OsgTools::Volume::TransferFunction* buildTransferFunction ( )
   for ( unsigned int i = 0; i < 256; ++i )
   {
     Color c;
-    float value ( static_cast < float > ( i - 127 ) / 128 );
-    float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
-    Usul::Functions::hsvToRgb ( r, g, b, value * 360, 1.0f, 1.0f );
-    c[0] = r * 255;
-    c[1] = g * 255;
-    c[2] = b * 255;
-    c[3] = i;
+    c[0] = i;
+    c[1] = i;
+    c[2] = i;
+    c[3] = i < 10 ? 0 : 25;
 
     tf->value ( i, c );
   }
@@ -94,11 +92,11 @@ OsgTools::Volume::TransferFunction* buildTransferFunction ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* buildVolume( const osg::BoundingBox& bb )
+osg::Node* buildVolume( const osg::BoundingBox& bb, const std::string& filename, unsigned int xSize, unsigned int ySize, unsigned int zSize )
 {
   osg::ref_ptr < OsgTools::Volume::Texture3DVolume > volume ( new OsgTools::Volume::Texture3DVolume );
-  volume->numPlanes ( 1024 );
-  volume->image ( loadTexture ( 256, 256, 256, "Engine256.raw" ) );
+  volume->numPlanes ( 256 );
+  volume->image ( loadTexture ( xSize, ySize, zSize, filename ) );
   volume->boundingBox ( bb );
   volume->transferFunction ( buildTransferFunction() );
 
@@ -138,6 +136,30 @@ osg::Node* buildBoundingBox( const osg::BoundingBox& bb )
 
 int main( int argc, char **argv )
 {
+  if ( argc < 5 )
+    return -1;
+
+  std::string filename ( argv[1] );
+
+  unsigned int xSize ( 0 ), ySize ( 0 ), zSize ( 0 );
+
+  {
+    std::istringstream in ( argv [2] );
+    in >> xSize;
+  }
+
+  {
+    std::istringstream in ( argv [3] );
+    in >> ySize;
+  }
+
+  {
+    std::istringstream in ( argv [4] );
+    in >> zSize;
+  }
+
+  Usul::Threads::Mutex::createFunction ( Usul::Threads::newSingleThreadedMutexStub );
+
   osgViewer::Viewer viewer;
 
   viewer.setUpViewInWindow( 0, 500, 512, 512 );
@@ -147,7 +169,7 @@ int main( int argc, char **argv )
   osg::BoundingBox bb ( osg::Vec3 ( -1.0, -1.0, -1.0 ), osg::Vec3 ( 1.0, 1.0, 1.0 ) );
 
   root->addChild ( buildBoundingBox( bb ) );
-  root->addChild ( buildVolume( bb ) );
+  root->addChild ( buildVolume( bb, filename, xSize, ySize, zSize ) );
 
   viewer.setSceneData ( root.get() );
 

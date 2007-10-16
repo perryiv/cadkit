@@ -131,7 +131,7 @@ public:
   unsigned int                            numLayers() const;
 
   // Read the document.
-  virtual void                            read ( const std::string &filename, Unknown *caller, Unknown *progress );
+  virtual void                            read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
   // Write the document to given file name.
   virtual void                            write ( const std::string &filename, Unknown *caller = 0x0  ) const;

@@ -3273,7 +3273,7 @@ void Application::_initToolsMenu ( MenuKit::Menu* menu )
   typedef MenuKit::Button                             Button;
   typedef Usul::Interfaces::ICommandList::CommandList Commands;
 
-  Usul::Interfaces::ICommandList::QueryPtr commandList ( Usul::Documents::Manager::instance().active() );
+  Usul::Interfaces::ICommandList::QueryPtr commandList ( Usul::Documents::Manager::instance().activeDocument() );
 
   if ( commandList.valid() )
   {

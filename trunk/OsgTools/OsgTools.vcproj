@@ -1241,14 +1241,6 @@
 				Name="Volume"
 				>
 				<File
-					RelativePath=".\Volume\GPURayCasting.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Volume\GPURayCasting.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Volume\PlanarProxyGeometry.cpp"
 					>
 				</File>

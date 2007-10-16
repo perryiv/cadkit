@@ -15,6 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "StarSystem/Body.h"
+#include "StarSystem/Tile.h"
 #include "StarSystem/Visitor.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
@@ -141,10 +142,14 @@ Body::Body() : BaseClass(),
   _transform->ref();
 
   // Add the planet to the transform.
-  _transform->addChild ( _planet );
+  //_transform->addChild ( _planet );
+
+  // Add a tile.
+  Tile::ValidRefPtr tile ( new Tile ( osg::Vec2d ( -180, -90 ), osg::Vec2d ( 180, 90 ), this->radii()[Body::RADIUS_EQUATOR], this->radii()[Body::RADIUS_EQUATOR] * 7, _ellipsoid ) );
+  _transform->addChild ( tile.get() );
 
   // Experimenting...
-  _transform->setCullCallback ( new Helper::CullCallback ( this ) );
+  //_transform->setCullCallback ( new Helper::CullCallback ( this ) );
 
   // Set the default attributes.
   _planet->getLand()->setLandType ( ossimPlanetLandType_ELLIPSOID );

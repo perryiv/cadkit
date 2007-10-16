@@ -26,6 +26,7 @@
 
 #include <typeinfo>
 
+namespace OsgTools { class Mesh; }
 class ossimEllipsoid;
 
 
@@ -51,6 +52,8 @@ public:
   // Constructors.
   Tile ( osg::Vec2d &mn = osg::Vec2d ( 0, 0 ), 
          osg::Vec2d &mx = osg::Vec2d ( 1, 1 ), 
+         unsigned int numRows = 10,
+         unsigned int numColumns = 10,
          double elevation = 0,
          double distance = 1,
          ossimEllipsoid *ellipsoid = 0x0 );
@@ -79,6 +82,7 @@ private:
   osg::Vec2d _max;
   double _elevation;
   double _distance;
+  OsgTools::Mesh *_mesh;
 };
 
 

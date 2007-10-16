@@ -28,9 +28,12 @@
 #include "Usul/Adaptors/Random.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Math/MinMax.h"
 #include "Usul/Trace/Trace.h"
 
 #include "ossim/base/ossimEllipsoid.h"
+
+#include "osgUtil/CullVisitor"
 
 #include "osg/Geode"
 #include "osg/Material"
@@ -47,13 +50,15 @@ USUL_IMPLEMENT_TYPE_ID ( Tile );
 ///////////////////////////////////////////////////////////////////////////////
 
 Tile::Tile ( osg::Vec2d &mn, osg::Vec2d &mx, 
+             unsigned int numRows, unsigned int numColumns,
              double elevation, double distance, 
              ossimEllipsoid *ellipsoid ) : BaseClass(),
+  _ellipsoid ( ellipsoid ),
   _min ( mn ),
   _max ( mx ),
   _elevation ( elevation ),
   _distance ( distance ),
-  _ellipsoid ( ellipsoid )
+  _mesh ( new OsgTools::Mesh ( numRows, numColumns ) )
 {
   USUL_TRACE_SCOPE;
   this->_init();
@@ -67,11 +72,12 @@ Tile::Tile ( osg::Vec2d &mn, osg::Vec2d &mx,
 ///////////////////////////////////////////////////////////////////////////////
 
 Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, option ),
+  _ellipsoid ( tile._ellipsoid ),
   _min ( tile._min ),
   _max ( tile._max ),
   _elevation ( tile._elevation ),
   _distance ( tile._distance ),
-  _ellipsoid ( tile._ellipsoid )
+  _mesh ( new OsgTools::Mesh ( tile._mesh->rows(), tile._mesh->columns() ) )
 {
   USUL_TRACE_SCOPE;
   this->_init();
@@ -131,12 +137,12 @@ void Tile::_init()
 {
   USUL_TRACE_SCOPE;
 
-  // handle no ellipsoid.
-  if ( 0x0 == _ellipsoid )
+  // Handle bad state.
+  if ( ( 0x0 == _ellipsoid ) || ( 0x0 == _mesh ) )
     return;
 
   // Add internal geometry.
-  OsgTools::Mesh mesh ( 10, 10 );
+  OsgTools::Mesh &mesh ( *_mesh );
   for ( unsigned int i = 0; i < mesh.rows(); ++i )
   {
     const double u ( static_cast<double> ( i ) / ( mesh.rows() - 1 ) );
@@ -176,6 +182,8 @@ void Tile::_init()
 void Tile::_destroy()
 {
   USUL_TRACE_SCOPE;
+  _ellipsoid = 0x0; // Don't delete!
+  delete _mesh; _mesh = 0x0;
 }
 
 
@@ -189,12 +197,33 @@ void Tile::traverse ( osg::NodeVisitor &nv )
 {
   USUL_TRACE_SCOPE;
 
+  // Handle bad state.
+  if ( ( 0x0 == _mesh ) || ( _mesh->rows() < 2 ) || ( _mesh->columns() < 2 ) )
+    return;
+
   // If this is the cull-visitor.
   if ( osg::NodeVisitor::CULL_VISITOR == nv.getVisitorType() )
   {
-    const osg::Vec3f &center ( this->getBound().center() );
-    const double dist ( nv.getDistanceToViewPoint ( center, true ) );
-    const bool low ( ( dist > _distance ) );
+    const osgUtil::CullVisitor &cv ( dynamic_cast < osgUtil::CullVisitor & > ( nv ) );
+
+    // Four corners and center of the tile.
+    const osg::Vec3f &eye ( cv.getViewPointLocal() );
+    const osg::Vec3f &p00 ( _mesh->point ( 0, 0 ) );
+    const osg::Vec3f &p0N ( _mesh->point ( 0, _mesh->columns() - 1 ) );
+    const osg::Vec3f &pN0 ( _mesh->point ( _mesh->rows() - 1, 0 ) );
+    const osg::Vec3f &pNN ( _mesh->point ( _mesh->rows() - 1, _mesh->columns() - 1 ) );
+    const osg::Vec3f &pBC ( this->getBound().center() );
+
+    // Squared distances from the eye to t he points.
+    const float dist00 ( ( eye - p00 ).length2() );
+    const float dist0N ( ( eye - p0N ).length2() );
+    const float distN0 ( ( eye - pN0 ).length2() );
+    const float distNN ( ( eye - pNN ).length2() );
+    const float distBC ( ( eye - pBC ).length2() );
+
+    // Check with smallest distance.
+    const float dist ( Usul::Math::minimum ( dist00, dist0N, distN0, distNN, distBC ) );
+    const bool low ( ( dist > ( _distance * _distance ) ) );
     const unsigned int numChildren ( this->getNumChildren() );
     USUL_ASSERT ( numChildren > 0 );
 
@@ -215,10 +244,10 @@ void Tile::traverse ( osg::NodeVisitor &nv )
         osg::ref_ptr<osg::Group> group ( new osg::Group );
         const double half ( _distance * 0.5f );
         const osg::Vec2d mid ( ( _max + _min ) * 0.5 );
-        group->addChild ( new Tile ( osg::Vec2d ( _min[0], _min[1] ), osg::Vec2d (  mid[0],  mid[1] ), _elevation, half, _ellipsoid ) ); // lower left  tile
-        group->addChild ( new Tile ( osg::Vec2d (  mid[0], _min[1] ), osg::Vec2d ( _max[0],  mid[1] ), _elevation, half, _ellipsoid ) ); // lower right tile
-        group->addChild ( new Tile ( osg::Vec2d ( _min[0],  mid[1] ), osg::Vec2d (  mid[0], _max[1] ), _elevation, half, _ellipsoid ) ); // upper left  tile
-        group->addChild ( new Tile ( osg::Vec2d (  mid[0],  mid[1] ), osg::Vec2d ( _max[0], _max[1] ), _elevation, half, _ellipsoid ) ); // upper right tile
+        group->addChild ( new Tile ( osg::Vec2d ( _min[0], _min[1] ), osg::Vec2d (  mid[0],  mid[1] ), _mesh->rows(), _mesh->columns(), _elevation, half, _ellipsoid ) ); // lower left  tile
+        group->addChild ( new Tile ( osg::Vec2d (  mid[0], _min[1] ), osg::Vec2d ( _max[0],  mid[1] ), _mesh->rows(), _mesh->columns(), _elevation, half, _ellipsoid ) ); // lower right tile
+        group->addChild ( new Tile ( osg::Vec2d ( _min[0],  mid[1] ), osg::Vec2d (  mid[0], _max[1] ), _mesh->rows(), _mesh->columns(), _elevation, half, _ellipsoid ) ); // upper left  tile
+        group->addChild ( new Tile ( osg::Vec2d (  mid[0],  mid[1] ), osg::Vec2d ( _max[0], _max[1] ), _mesh->rows(), _mesh->columns(), _elevation, half, _ellipsoid ) ); // upper right tile
         this->addChild ( group.get() );
       }
 

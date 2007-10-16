@@ -22,6 +22,7 @@
 #include "Usul/Trace/Trace.h"
 
 #include "osg/Group"
+#include "osg/CoordinateSystemNode"
 
 #include <algorithm>
 
@@ -37,7 +38,7 @@ STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( System );
 ///////////////////////////////////////////////////////////////////////////////
 
 System::System() : BaseClass(),
-  _body       ( new Body() ),
+  _body       ( new Body ( Body::Vec2d ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR ) ) ),
   _satellites ( new Group() )
 {
   USUL_TRACE_SCOPE;

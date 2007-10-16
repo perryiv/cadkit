@@ -25,8 +25,6 @@
 namespace osg { class MatrixTransform; }
 namespace osgUtil { class CullVisitor; }
 namespace Helper { class CullCallback; }
-class ossimPlanet;
-class ossimPlanetEllipsoidLandModel;
 class ossimEllipsoid;
 
 
@@ -54,7 +52,7 @@ public:
   };
 
   // Constructors
-  Body();
+  Body ( const Vec2d &radii );
 
   // Set/get the center.
   void                      center ( const Vec3d & );
@@ -63,8 +61,7 @@ public:
   // Get the maximum radius.
   double                    maxRadius() const;
 
-  // Set/get the radii.
-  void                      radii ( const Vec2d & );
+  // Get the radii.
   Vec2d                     radii() const;
 
   // Get the scene.
@@ -88,8 +85,6 @@ private:
 
   void                      _destroy();
 
-  ossimPlanet *_planet;
-  ossimPlanetEllipsoidLandModel *_landModel;
   osg::MatrixTransform *_transform;
   ossimEllipsoid *_ellipsoid;
 };

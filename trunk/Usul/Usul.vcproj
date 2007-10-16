@@ -2480,6 +2480,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Headers\Qt.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Headers\SStream.h"
 					>
 				</File>

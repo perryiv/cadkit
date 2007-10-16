@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR),$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(QTDIR)\include"
+				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR),$(CADKIT_ROOT_DIR);$(CADKIT_ROOT_DIR)/Experimental;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(QTDIR)\include"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_MODFLOW_DELEGATE;"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -146,7 +146,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR),$(CADKIT_ROOT_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(QTDIR)\include"
+				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR),$(CADKIT_ROOT_DIR);$(CADKIT_ROOT_DIR)/Experimental;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(QTDIR)\include"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_MODFLOW_DELEGATE;"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -227,25 +227,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\LayerTreeControl.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\LayerTreeControl.h"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Moc&apos;ing LayerTreeControl.h..."
-							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\LayerTreeControl.h&quot; -o &quot;.\GeneratedFiles\moc_LayerTreeControl.cpp&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\LayerTreeControl.h"
-							Outputs=".\GeneratedFiles\moc_LayerTreeControl.cpp"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath=".\ModflowDelegateComponent.cpp"
 					>
 				</File>
@@ -267,14 +248,6 @@
 				>
 				<File
 					RelativePath="Export.def"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="GeneratedFiles"
-				>
-				<File
-					RelativePath=".\generatedfiles\moc_LayerTreeControl.cpp"
 					>
 				</File>
 			</Filter>

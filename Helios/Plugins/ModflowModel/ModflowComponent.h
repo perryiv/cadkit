@@ -28,8 +28,8 @@ namespace Modflow { class ModflowDocument; }
 
 
 class ModflowComponent : public Usul::Base::Referenced,
-                       public Usul::Interfaces::IPlugin,
-                       public Usul::Interfaces::IDocumentCreate
+                         public Usul::Interfaces::IPlugin,
+                         public Usul::Interfaces::IDocumentCreate
 {
 public:
 

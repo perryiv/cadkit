@@ -63,10 +63,6 @@ public:
 
   // Singleton.
   static Manager &      instance();
-
-  /// Get/Set the active document.  Deprecated, use activeDocument.
-  void                  active ( IDocument* );
-  IDocument*            active ();
   
   /// Get/Set the active document.
   void                  activeDocument ( IDocument* );

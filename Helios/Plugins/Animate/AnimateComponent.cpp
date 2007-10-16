@@ -268,7 +268,6 @@ void AnimateComponent::createKeyFramePath ()
 
   Path::RefPtr path ( new Animate::KeyFramePath );
   path->defaultFilename();
-  path->fileName ( path->fileName() + " (" + path->typeName() + ")" );
 
   {
     Guard guard ( this->mutex () );
@@ -295,7 +294,6 @@ void AnimateComponent::createRecordedPath ()
 
   Path::RefPtr path ( new Animate::RecordedPath );
   path->defaultFilename();
-  path->fileName ( path->fileName() + " (" + path->typeName() + ")" );
 
   {
     Guard guard ( this->mutex () );
@@ -370,7 +368,7 @@ void AnimateComponent::_buildMenu ()
 
   for ( Paths::iterator iter = _paths.begin(); iter != _paths.end(); ++iter )
   {
-    _pathsMenu->append ( new RadioButton ( new CheckCommand ( (*iter)->fileName(),  
+    _pathsMenu->append ( new RadioButton ( new CheckCommand ( (*iter)->fileName() + " (" + (*iter)->typeName() + ")",  
                                                              SetPathFunctor ( *iter,  PathFunction ( this, &AnimateComponent::setCurrentPath ) ), 
                                                              CheckPathFunctor ( *iter, CheckFunctor ( this, &AnimateComponent::isCurrentPath ) ) ) ) );
   }

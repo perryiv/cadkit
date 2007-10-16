@@ -57,7 +57,7 @@ void InsertDocument::_execute ()
 {
   USUL_TRACE_SCOPE;
 
-  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().active() );
+  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   if( document.valid() )
   {
@@ -74,7 +74,7 @@ void InsertDocument::_execute ()
 
 bool InsertDocument::updateEnable () const
 {
-  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().active() );
+  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   return document.valid();
 }

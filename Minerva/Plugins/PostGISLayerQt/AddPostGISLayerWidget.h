@@ -14,6 +14,8 @@
 #include "Minerva/Plugins/PostGISLayerQt/CompileGuard.h"
 #include "Minerva/Core/Layers/Layer.h"
 
+#include "QtCore/QObject"
+
 #include "Usul/Headers/Qt.h"
 
 #if ( QT_VERSION >= QT_VERSION_CHECK ( 4, 3, 0 ) )

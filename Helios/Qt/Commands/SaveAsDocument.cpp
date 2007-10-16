@@ -56,7 +56,7 @@ void SaveAsDocument::_execute ()
 {
   USUL_TRACE_SCOPE;
 
-  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().active() );
+  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   if( document.valid() )
   {
@@ -73,7 +73,7 @@ void SaveAsDocument::_execute ()
 
 bool SaveAsDocument::updateEnable () const
 {
-  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().active() );
+  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   return document.valid();
 }

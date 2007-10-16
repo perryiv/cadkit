@@ -20,6 +20,8 @@
 #include "Minerva/Plugins/PostGISLayerQt/CompileGuard.h"
 #include "Minerva/Plugins/PostGISLayerQt/AddPostGISLayerWidget.h"
 
+#include "QtCore/QObject"
+
 #include "Usul/Base/Referenced.h"
 #include "Usul/Headers/Qt.h"
 #include "Usul/Interfaces/IPlugin.h"

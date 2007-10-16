@@ -135,7 +135,7 @@ Controller::~Controller(void)
 
 Usul::Interfaces::IDocument* Controller::activeDocument()
 {
-  return Usul::Documents::Manager::instance().active();
+  return Usul::Documents::Manager::instance().activeDocument();
 }
 
 
@@ -148,8 +148,6 @@ Usul::Interfaces::IDocument* Controller::activeDocument()
 Usul::Interfaces::IViewer *Controller::activeView()
 {
   Usul::Interfaces::IViewer::QueryPtr viewer ( Usul::Documents::Manager::instance().activeView() );
-
-  // Should I use get or release here?
   return viewer.get();
 }
 

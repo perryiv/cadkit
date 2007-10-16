@@ -67,7 +67,7 @@ RemoveLayer::~RemoveLayer()
 
 void RemoveLayer::_execute ()
 {
-  Minerva::Interfaces::IRemoveLayer::QueryPtr remove ( Usul::Documents::Manager::instance().active () );
+  Minerva::Interfaces::IRemoveLayer::QueryPtr remove ( Usul::Documents::Manager::instance().activeDocument () );
 
   // Remove the layer.
   if ( remove.valid () )

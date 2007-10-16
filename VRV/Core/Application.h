@@ -64,7 +64,6 @@
 #include "OsgTools/Widgets/ProgressBarGroup.h"
 
 #include "MenuKit/OSG/Menu.h"
-#include "MenuKit/MemFunCallback.h"
 
 #include "vrj/Draw/OGL/GlApp.h"
 #include "vrj/Draw/OGL/GlContextData.h"

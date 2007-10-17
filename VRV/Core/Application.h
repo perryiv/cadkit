@@ -388,6 +388,9 @@ protected:
   /// Get section for current document.
   std::string                   _documentSection () const;
 
+  /// Caputure the pixels.
+  void                          _capturePixels ( const std::string& filename );
+
   /// Get/set the clipping distances (VRV::Interfaces::IClippingDistanceFloat).
   virtual void            getClippingDistances ( float &nearDist, float &farDist ) const;
   virtual void            setClippingDistances ( float nearDist, float farDist );

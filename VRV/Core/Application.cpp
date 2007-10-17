@@ -40,6 +40,7 @@
 #include "Usul/Trace/Trace.h"
 #include "Usul/Math/Constants.h"
 #include "Usul/Math/Matrix44.h"
+#include "Usul/Predicates/Tolerance.h"
 #include "Usul/Print/Matrix.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Convert.h"
@@ -629,16 +630,7 @@ void Application::contextPostDraw()
 
   if ( _frameDump.dump () )
   {
-    osg::ref_ptr < osg::Viewport > vp ( this->viewport() );
-    osg::ref_ptr < osg::Image > image ( new osg::Image () );
-
-    image->readPixels ( static_cast < int > ( vp->x() ), 
-                        static_cast < int > ( vp->y() ), 
-                        static_cast < int > ( vp->width() ), 
-                        static_cast < int > ( vp->height() ), 
-                        GL_RGB, GL_UNSIGNED_BYTE );
-
-    osgDB::writeImageFile ( *image, _frameDump.file() );
+    this->_capturePixels ( _frameDump.file() );
   }
 }
 
@@ -655,31 +647,62 @@ void Application::_postDraw( OsgTools::Render::Renderer *renderer )
 
   if( true == _exportImage )
   {
-    // Get frame scale from the preferences.
-    const double multiplier ( this->preferences()->frameScale() );
-
-    // Scale the width and height.
-    unsigned int width  ( static_cast < unsigned int > ( _viewport->width()  * multiplier ) );
-    unsigned int height ( static_cast < unsigned int > ( _viewport->height() * multiplier ) );
-
-    // Capture image.
-    osg::ref_ptr<osg::Image> image ( renderer->screenCapture ( multiplier, 1 ) );
+    // Get the extension from the preferences.
+    const std::string ext ( this->preferences()->imageExportExtension() );
 
     // How many images have we exported.
     static unsigned int count ( 0 );
-
-    // Get the extension from the preferences.
-    const std::string ext ( this->preferences()->imageExportExtension() );
 
     // Construct the filename.
     std::ostringstream filename;
     filename << "/array/cluster/data/screen_shots/" << count++ << "_" << Usul::System::Host::name() << ext;
 
-    Usul::Jobs::Manager::instance().add ( new VRV::Jobs::SaveImage ( filename.str(), image.get() ) );
+    // Get frame scale from the preferences.
+    const double multiplier ( this->preferences()->frameScale() );
+
+    Usul::Predicates::Tolerance < float > tolerance ( 0.001f );
+
+    // If the frame scale is one, just caputure the pixels on the screen.
+    if ( tolerance ( multiplier, 1.0f ) )
+    {
+      this->_capturePixels ( filename.str() );
+    }
+    else
+    {
+      // Scale the width and height.
+      unsigned int width  ( static_cast < unsigned int > ( _viewport->width()  * multiplier ) );
+      unsigned int height ( static_cast < unsigned int > ( _viewport->height() * multiplier ) );
+
+      // Capture image.
+      osg::ref_ptr<osg::Image> image ( renderer->screenCapture ( multiplier, 1 ) );
+
+      Usul::Jobs::Manager::instance().add ( new VRV::Jobs::SaveImage ( filename.str(), image.get() ) );
+    }
 
     // Don't export next time.
     _exportImage = false;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Caputure the pixels.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_capturePixels ( const std::string& filename )
+{
+  osg::ref_ptr < osg::Viewport > vp ( this->viewport() );
+  osg::ref_ptr < osg::Image > image ( new osg::Image () );
+
+  image->readPixels ( static_cast < int > ( vp->x() ), 
+                      static_cast < int > ( vp->y() ), 
+                      static_cast < int > ( vp->width() ), 
+                      static_cast < int > ( vp->height() ), 
+                      GL_RGB, GL_UNSIGNED_BYTE );
+
+  osgDB::writeImageFile ( *image, filename );
 }
 
 

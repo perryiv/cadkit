@@ -22,9 +22,8 @@
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 
+namespace StarSystem { class Tile; }
 namespace osg { class MatrixTransform; }
-namespace osgUtil { class CullVisitor; }
-namespace Helper { class CullCallback; }
 class ossimEllipsoid;
 
 
@@ -61,7 +60,8 @@ public:
   // Get the maximum radius.
   double                    maxRadius() const;
 
-  // Get the radii.
+  // Set/get the radii.
+  void                      radii ( const Vec2d & );
   Vec2d                     radii() const;
 
   // Get the scene.
@@ -73,11 +73,7 @@ protected:
   // Use reference counting.
   virtual ~Body();
 
-  void                      _buildScene ( osgUtil::CullVisitor * );
-
 private:
-
-  friend class Helper::CullCallback;
 
   // No copying or assignment.
   Body ( const Body & );
@@ -87,6 +83,7 @@ private:
 
   osg::MatrixTransform *_transform;
   ossimEllipsoid *_ellipsoid;
+  Tile *_tile;
 };
 
 

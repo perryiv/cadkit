@@ -49,21 +49,19 @@ USUL_IMPLEMENT_TYPE_ID ( Tile );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Tile::Tile ( unsigned int level, osg::Vec2d &mn, osg::Vec2d &mx, 
-             unsigned int numRows, unsigned int numColumns,
-             double elevation, double distance, 
+Tile::Tile ( unsigned int level, const osg::Vec2d &mn, const osg::Vec2d &mx, 
+             unsigned int numRows, unsigned int numColumns, double splitDistance, 
              ossimEllipsoid *ellipsoid ) : BaseClass(),
   _mutex ( new Tile::Mutex ),
   _ellipsoid ( ellipsoid ),
   _min ( mn ),
   _max ( mx ),
-  _elevation ( elevation ),
-  _distance ( distance ),
+  _splitDistance ( splitDistance ),
   _mesh ( new OsgTools::Mesh ( numRows, numColumns ) ),
-  _level ( level )
+  _level ( level ),
+  _dirty ( true )
 {
   USUL_TRACE_SCOPE;
-  this->_init();
 }
 
 
@@ -78,13 +76,12 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _ellipsoid ( tile._ellipsoid ),
   _min ( tile._min ),
   _max ( tile._max ),
-  _elevation ( tile._elevation ),
-  _distance ( tile._distance ),
+  _splitDistance ( tile._splitDistance ),
   _mesh ( new OsgTools::Mesh ( tile._mesh->rows(), tile._mesh->columns() ) ),
-  _level ( tile._level )
+  _level ( tile._level ),
+  _dirty ( true )
 {
   USUL_TRACE_SCOPE;
-  this->_init();
 
   // Remove if you are ready to test copying. Right now, I'm not sure what 
   // it means. This constructor is here to satisfy the META_Node macro.
@@ -137,18 +134,25 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Initialize the tile.
+//  Update the tile.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::_init()
+void Tile::_update()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
+  // Handle not being dirty.
+  if ( false == this->dirty() )
+    return;
+
   // Handle bad state.
   if ( ( 0x0 == _ellipsoid ) || ( 0x0 == _mesh ) )
     return;
+
+  // Remove all the children.
+  this->removeChildren ( 0, this->getNumChildren() );
 
   // Add internal geometry.
   OsgTools::Mesh &mesh ( *_mesh );
@@ -164,7 +168,8 @@ void Tile::_init()
       // Convert lat-lon coordinates to xyz.
       osg::Vec3f &p ( mesh.point ( i, j ) );
       double x ( 0 ), y ( 0 ), z ( 0 );
-      _ellipsoid->latLonHeightToXYZ ( lat, lon, _elevation, x, y, z );
+      const double elevation ( _ellipsoid->geodeticRadius ( lat ) );
+      _ellipsoid->latLonHeightToXYZ ( lat, lon, elevation, x, y, z );
       p[0] = static_cast<float> ( x );
       p[1] = static_cast<float> ( y );
       p[2] = static_cast<float> ( z );
@@ -175,10 +180,15 @@ void Tile::_init()
       n.normalize();
     }
   }
+
+  // Add mesh geometry to this node.
   this->addChild ( mesh() );
 
   // Assign material.
   this->getOrCreateStateSet()->setAttributeAndModes ( Helper::material(), osg::StateAttribute::PROTECTED );
+
+  // No longer dirty.
+  this->dirty ( false );
 }
 
 
@@ -208,69 +218,95 @@ void Tile::traverse ( osg::NodeVisitor &nv )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  // Handle bad state.
-  if ( ( 0x0 == _mesh ) || ( _mesh->rows() < 2 ) || ( _mesh->columns() < 2 ) )
-    return;
-
-  // If this is the cull-visitor.
-  if ( osg::NodeVisitor::CULL_VISITOR == nv.getVisitorType() )
+  // Determine visitor type.
+  switch ( nv.getVisitorType() )
   {
-    const osgUtil::CullVisitor &cv ( dynamic_cast < osgUtil::CullVisitor & > ( nv ) );
-
-    // Four corners and center of the tile.
-    const osg::Vec3f &eye ( cv.getViewPointLocal() );
-    const osg::Vec3f &p00 ( _mesh->point ( 0, 0 ) );
-    const osg::Vec3f &p0N ( _mesh->point ( 0, _mesh->columns() - 1 ) );
-    const osg::Vec3f &pN0 ( _mesh->point ( _mesh->rows() - 1, 0 ) );
-    const osg::Vec3f &pNN ( _mesh->point ( _mesh->rows() - 1, _mesh->columns() - 1 ) );
-    const osg::Vec3f &pBC ( this->getBound().center() );
-
-    // Squared distances from the eye to t he points.
-    const float dist00 ( ( eye - p00 ).length2() );
-    const float dist0N ( ( eye - p0N ).length2() );
-    const float distN0 ( ( eye - pN0 ).length2() );
-    const float distNN ( ( eye - pNN ).length2() );
-    const float distBC ( ( eye - pBC ).length2() );
-
-    // Check with smallest distance.
-    const float dist ( Usul::Math::minimum ( dist00, dist0N, distN0, distNN, distBC ) );
-    const bool low ( ( dist > ( _distance * _distance ) ) );
-    const unsigned int numChildren ( this->getNumChildren() );
-    USUL_ASSERT ( numChildren > 0 );
-
-    if ( low )
+    case osg::NodeVisitor::CULL_VISITOR:
     {
-      // Remove high level of detail.
-      this->removeChild ( 1, numChildren - 1 );
-
-      // Traverse low level of detail.
-      this->getChild ( 0 )->accept ( nv );
+      this->_update();
+      this->_cull ( nv );
+      return;
     }
 
-    else
+    default:
     {
-      // Add high level if necessary.
-      if ( 1 == numChildren )
-      {
-        osg::ref_ptr<osg::Group> group ( new osg::Group );
-        const double half ( _distance * 0.5f );
-        const osg::Vec2d mid ( ( _max + _min ) * 0.5 );
-        group->addChild ( new Tile ( _level + 1, osg::Vec2d ( _min[0], _min[1] ), osg::Vec2d (  mid[0],  mid[1] ), _mesh->rows(), _mesh->columns(), _elevation, half, _ellipsoid ) ); // lower left  tile
-        group->addChild ( new Tile ( _level + 1, osg::Vec2d (  mid[0], _min[1] ), osg::Vec2d ( _max[0],  mid[1] ), _mesh->rows(), _mesh->columns(), _elevation, half, _ellipsoid ) ); // lower right tile
-        group->addChild ( new Tile ( _level + 1, osg::Vec2d ( _min[0],  mid[1] ), osg::Vec2d (  mid[0], _max[1] ), _mesh->rows(), _mesh->columns(), _elevation, half, _ellipsoid ) ); // upper left  tile
-        group->addChild ( new Tile ( _level + 1, osg::Vec2d (  mid[0],  mid[1] ), osg::Vec2d ( _max[0], _max[1] ), _mesh->rows(), _mesh->columns(), _elevation, half, _ellipsoid ) ); // upper right tile
-        this->addChild ( group.get() );
-      }
-
-      // Traverse last child.
-      this->getChild ( this->getNumChildren() - 1 )->accept ( nv );
+      BaseClass::traverse ( nv );
     }
   }
+}
 
-  // Not the cull-visitor.
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Cull traversal.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_cull ( osg::NodeVisitor &nv )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Handle bad state.
+  if ( ( 0x0 == _mesh ) || 
+       ( _mesh->rows() < 2 ) || 
+       ( _mesh->columns() < 2 ) || 
+       ( osg::NodeVisitor::CULL_VISITOR != nv.getVisitorType() ) )
+  {
+    return;
+  }
+
+  // Get cull visitor.
+  const osgUtil::CullVisitor &cv ( dynamic_cast < osgUtil::CullVisitor & > ( nv ) );
+
+  // Four corners and center of the tile.
+  OsgTools::Mesh &mesh ( *_mesh );
+  const osg::Vec3f &eye ( cv.getViewPointLocal() );
+  const osg::Vec3f &p00 ( mesh.point ( 0, 0 ) );
+  const osg::Vec3f &p0N ( mesh.point ( 0, mesh.columns() - 1 ) );
+  const osg::Vec3f &pN0 ( mesh.point ( mesh.rows() - 1, 0 ) );
+  const osg::Vec3f &pNN ( mesh.point ( mesh.rows() - 1, mesh.columns() - 1 ) );
+  const osg::Vec3f &pBC ( this->getBound().center() );
+
+  // Squared distances from the eye to t he points.
+  const float dist00 ( ( eye - p00 ).length2() );
+  const float dist0N ( ( eye - p0N ).length2() );
+  const float distN0 ( ( eye - pN0 ).length2() );
+  const float distNN ( ( eye - pNN ).length2() );
+  const float distBC ( ( eye - pBC ).length2() );
+
+  // Check with smallest distance.
+  const float dist ( Usul::Math::minimum ( dist00, dist0N, distN0, distNN, distBC ) );
+  const bool low ( ( dist > ( _splitDistance * _splitDistance ) ) );
+  const unsigned int numChildren ( this->getNumChildren() );
+  USUL_ASSERT ( numChildren > 0 );
+
+  if ( low )
+  {
+    // Remove high level of detail.
+    this->removeChild ( 1, numChildren - 1 );
+
+    // Traverse low level of detail.
+    this->getChild ( 0 )->accept ( nv );
+  }
+
   else
   {
-    BaseClass::traverse ( nv );
+    // Add high level if necessary.
+    if ( 1 == numChildren )
+    {
+      osg::ref_ptr<osg::Group> group ( new osg::Group );
+      const double half ( _splitDistance * 0.5f );
+      const osg::Vec2d mid ( ( _max + _min ) * 0.5 );
+      group->addChild ( new Tile ( _level + 1, osg::Vec2d ( _min[0], _min[1] ), osg::Vec2d (  mid[0],  mid[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid ) ); // lower left  tile
+      group->addChild ( new Tile ( _level + 1, osg::Vec2d (  mid[0], _min[1] ), osg::Vec2d ( _max[0],  mid[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid ) ); // lower right tile
+      group->addChild ( new Tile ( _level + 1, osg::Vec2d ( _min[0],  mid[1] ), osg::Vec2d (  mid[0], _max[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid ) ); // upper left  tile
+      group->addChild ( new Tile ( _level + 1, osg::Vec2d (  mid[0],  mid[1] ), osg::Vec2d ( _max[0], _max[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid ) ); // upper right tile
+      this->addChild ( group.get() );
+    }
+
+    // Traverse last child.
+    this->getChild ( this->getNumChildren() - 1 )->accept ( nv );
   }
 }
 
@@ -299,4 +335,32 @@ Tile::Mutex &Tile::mutex() const
 {
   USUL_TRACE_SCOPE;
   return *_mutex;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flag that says we're dirty.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::dirty ( bool state )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _dirty = state;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the flag that says we're dirty.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Tile::dirty() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _dirty;
 }

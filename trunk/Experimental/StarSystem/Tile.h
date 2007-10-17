@@ -21,6 +21,8 @@
 
 #include "Usul/Base/Typed.h"
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Threads/Guard.h"
 
 #include "osg/Group"
 
@@ -48,9 +50,12 @@ public:
 
   // Useful typedefs.
   typedef osg::Group BaseClass;
+  typedef Usul::Threads::RecursiveMutex Mutex;
+  typedef Usul::Threads::Guard<Mutex> Guard;
 
   // Constructors.
-  Tile ( osg::Vec2d &mn = osg::Vec2d ( 0, 0 ), 
+  Tile ( unsigned int level = 0, 
+         osg::Vec2d &mn = osg::Vec2d ( 0, 0 ), 
          osg::Vec2d &mx = osg::Vec2d ( 1, 1 ), 
          unsigned int numRows = 10,
          unsigned int numColumns = 10,
@@ -58,6 +63,12 @@ public:
          double distance = 1,
          ossimEllipsoid *ellipsoid = 0x0 );
   Tile ( const Tile &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY );
+
+  // Return level of this tile. Zero is the top.
+  unsigned int              level() const;
+
+  // Return the mutex. Use with caution.
+  Mutex &                   mutex() const;
 
   // Traverse the children.
   virtual void              traverse ( osg::NodeVisitor & );
@@ -77,12 +88,14 @@ private:
 
   void                      _destroy();
 
+  mutable Mutex *_mutex;
   ossimEllipsoid *_ellipsoid;
   osg::Vec2d _min;
   osg::Vec2d _max;
   double _elevation;
   double _distance;
   OsgTools::Mesh *_mesh;
+  unsigned int _level;
 };
 
 

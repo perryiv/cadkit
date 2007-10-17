@@ -49,16 +49,18 @@ USUL_IMPLEMENT_TYPE_ID ( Tile );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Tile::Tile ( osg::Vec2d &mn, osg::Vec2d &mx, 
+Tile::Tile ( unsigned int level, osg::Vec2d &mn, osg::Vec2d &mx, 
              unsigned int numRows, unsigned int numColumns,
              double elevation, double distance, 
              ossimEllipsoid *ellipsoid ) : BaseClass(),
+  _mutex ( new Tile::Mutex ),
   _ellipsoid ( ellipsoid ),
   _min ( mn ),
   _max ( mx ),
   _elevation ( elevation ),
   _distance ( distance ),
-  _mesh ( new OsgTools::Mesh ( numRows, numColumns ) )
+  _mesh ( new OsgTools::Mesh ( numRows, numColumns ) ),
+  _level ( level )
 {
   USUL_TRACE_SCOPE;
   this->_init();
@@ -72,15 +74,21 @@ Tile::Tile ( osg::Vec2d &mn, osg::Vec2d &mx,
 ///////////////////////////////////////////////////////////////////////////////
 
 Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, option ),
+  _mutex ( new Tile::Mutex ),
   _ellipsoid ( tile._ellipsoid ),
   _min ( tile._min ),
   _max ( tile._max ),
   _elevation ( tile._elevation ),
   _distance ( tile._distance ),
-  _mesh ( new OsgTools::Mesh ( tile._mesh->rows(), tile._mesh->columns() ) )
+  _mesh ( new OsgTools::Mesh ( tile._mesh->rows(), tile._mesh->columns() ) ),
+  _level ( tile._level )
 {
   USUL_TRACE_SCOPE;
   this->_init();
+
+  // Remove if you are ready to test copying. Right now, I'm not sure what 
+  // it means. This constructor is here to satisfy the META_Node macro.
+  USUL_ASSERT ( false );
 }
 
 
@@ -136,6 +144,7 @@ namespace Helper
 void Tile::_init()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this );
 
   // Handle bad state.
   if ( ( 0x0 == _ellipsoid ) || ( 0x0 == _mesh ) )
@@ -184,6 +193,7 @@ void Tile::_destroy()
   USUL_TRACE_SCOPE;
   _ellipsoid = 0x0; // Don't delete!
   delete _mesh; _mesh = 0x0;
+  delete _mutex; _mutex = 0x0;
 }
 
 
@@ -196,6 +206,7 @@ void Tile::_destroy()
 void Tile::traverse ( osg::NodeVisitor &nv )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this );
 
   // Handle bad state.
   if ( ( 0x0 == _mesh ) || ( _mesh->rows() < 2 ) || ( _mesh->columns() < 2 ) )
@@ -244,10 +255,10 @@ void Tile::traverse ( osg::NodeVisitor &nv )
         osg::ref_ptr<osg::Group> group ( new osg::Group );
         const double half ( _distance * 0.5f );
         const osg::Vec2d mid ( ( _max + _min ) * 0.5 );
-        group->addChild ( new Tile ( osg::Vec2d ( _min[0], _min[1] ), osg::Vec2d (  mid[0],  mid[1] ), _mesh->rows(), _mesh->columns(), _elevation, half, _ellipsoid ) ); // lower left  tile
-        group->addChild ( new Tile ( osg::Vec2d (  mid[0], _min[1] ), osg::Vec2d ( _max[0],  mid[1] ), _mesh->rows(), _mesh->columns(), _elevation, half, _ellipsoid ) ); // lower right tile
-        group->addChild ( new Tile ( osg::Vec2d ( _min[0],  mid[1] ), osg::Vec2d (  mid[0], _max[1] ), _mesh->rows(), _mesh->columns(), _elevation, half, _ellipsoid ) ); // upper left  tile
-        group->addChild ( new Tile ( osg::Vec2d (  mid[0],  mid[1] ), osg::Vec2d ( _max[0], _max[1] ), _mesh->rows(), _mesh->columns(), _elevation, half, _ellipsoid ) ); // upper right tile
+        group->addChild ( new Tile ( _level + 1, osg::Vec2d ( _min[0], _min[1] ), osg::Vec2d (  mid[0],  mid[1] ), _mesh->rows(), _mesh->columns(), _elevation, half, _ellipsoid ) ); // lower left  tile
+        group->addChild ( new Tile ( _level + 1, osg::Vec2d (  mid[0], _min[1] ), osg::Vec2d ( _max[0],  mid[1] ), _mesh->rows(), _mesh->columns(), _elevation, half, _ellipsoid ) ); // lower right tile
+        group->addChild ( new Tile ( _level + 1, osg::Vec2d ( _min[0],  mid[1] ), osg::Vec2d (  mid[0], _max[1] ), _mesh->rows(), _mesh->columns(), _elevation, half, _ellipsoid ) ); // upper left  tile
+        group->addChild ( new Tile ( _level + 1, osg::Vec2d (  mid[0],  mid[1] ), osg::Vec2d ( _max[0], _max[1] ), _mesh->rows(), _mesh->columns(), _elevation, half, _ellipsoid ) ); // upper right tile
         this->addChild ( group.get() );
       }
 
@@ -261,4 +272,31 @@ void Tile::traverse ( osg::NodeVisitor &nv )
   {
     BaseClass::traverse ( nv );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the level. Zero is the top.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Tile::level() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _level;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Tile::Mutex &Tile::mutex() const
+{
+  USUL_TRACE_SCOPE;
+  return *_mutex;
 }

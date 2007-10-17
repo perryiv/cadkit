@@ -45,7 +45,8 @@ STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( Body );
 
 Body::Body ( const Vec2d &r ) : BaseClass(),
   _transform ( new osg::MatrixTransform ),
-  _ellipsoid ( new ossimEllipsoid ( r[Body::RADIUS_EQUATOR], r[Body::RADIUS_POLAR] ) )
+  _ellipsoid ( new ossimEllipsoid ( r[Body::RADIUS_EQUATOR], r[Body::RADIUS_POLAR] ) ),
+  _tile ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -55,11 +56,15 @@ Body::Body ( const Vec2d &r ) : BaseClass(),
   // Set ellipsoid radii.
   _ellipsoid->setAB ( r[Body::RADIUS_EQUATOR], r[Body::RADIUS_POLAR] );
 
-  // Add a tile.
-  Tile::ValidRefPtr tile 
-    ( new Tile ( 0, osg::Vec2d ( -180, -90 ), osg::Vec2d ( 180, 90 ), 10, 10, 
-      this->radii()[Body::RADIUS_EQUATOR], this->radii()[Body::RADIUS_EQUATOR] * 7, _ellipsoid ) );
-  _transform->addChild ( tile.get() );
+  // Properties of the tile.
+  const osg::Vec2d mn ( -180, -90 );
+  const osg::Vec2d mx (  180,  90 );
+  const double splitDistance ( _ellipsoid->a() * 7 );
+
+  // Make the tile and add it to the transform.
+  _tile = new Tile ( 0, mn, mx, 10, 10, splitDistance, _ellipsoid );
+  _tile->ref();
+  _transform->addChild ( _tile );
 }
 
 
@@ -86,6 +91,7 @@ void Body::_destroy()
 {
   USUL_TRACE_SCOPE;
   Usul::Pointers::unreference ( _transform ); _transform = 0x0;
+  Usul::Pointers::unreference ( _tile ); _tile = 0x0;
   delete _ellipsoid; _ellipsoid = 0x0;
 }
 
@@ -129,6 +135,7 @@ void Body::center ( const Vec3d &c )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _transform->setMatrix ( osg::Matrix::translate ( c[0], c[1], c[2] ) );
+  _tile->dirty();
 }
 
 
@@ -177,19 +184,15 @@ Body::Vec2d Body::radii() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the scene.
+//  Set the radii.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Body::_buildScene ( osgUtil::CullVisitor *cv )
+void Body::radii ( const Body::Vec2d &r )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-
-  // Handle null visitor.
-  if ( 0x0 == cv )
-    return;
-
-  // Remove all children in the group.
-  //OsgTools::Group::removeAllChildren ( _transform );
+  _ellipsoid->setA ( r[Body::RADIUS_EQUATOR] );
+  _ellipsoid->setB ( r[Body::RADIUS_POLAR] );
+  _tile->dirty();
 }

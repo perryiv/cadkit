@@ -29,6 +29,7 @@
 #include <typeinfo>
 
 namespace OsgTools { class Mesh; }
+namespace osgUtil { class CullVisitor; }
 class ossimEllipsoid;
 
 
@@ -55,14 +56,17 @@ public:
 
   // Constructors.
   Tile ( unsigned int level = 0, 
-         osg::Vec2d &mn = osg::Vec2d ( 0, 0 ), 
-         osg::Vec2d &mx = osg::Vec2d ( 1, 1 ), 
+         const osg::Vec2d &mn = osg::Vec2d ( 0, 0 ), 
+         const osg::Vec2d &mx = osg::Vec2d ( 1, 1 ), 
          unsigned int numRows = 10,
          unsigned int numColumns = 10,
-         double elevation = 0,
-         double distance = 1,
+         double splitDistance = 1,
          ossimEllipsoid *ellipsoid = 0x0 );
   Tile ( const Tile &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY );
+
+  // Set/get the flag that says we're dirty.
+  bool                      dirty() const;
+  void                      dirty ( bool );
 
   // Return level of this tile. Zero is the top.
   unsigned int              level() const;
@@ -78,8 +82,9 @@ protected:
   // Use reference counting.
   virtual ~Tile();
 
-  // Initialize the tile.
-  void                      _init();
+  void                      _cull ( osg::NodeVisitor &nv );
+
+  void                      _update();
 
 private:
 
@@ -92,10 +97,10 @@ private:
   ossimEllipsoid *_ellipsoid;
   osg::Vec2d _min;
   osg::Vec2d _max;
-  double _elevation;
-  double _distance;
+  double _splitDistance;
   OsgTools::Mesh *_mesh;
   unsigned int _level;
+  bool _dirty;
 };
 
 

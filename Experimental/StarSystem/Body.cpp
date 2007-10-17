@@ -57,7 +57,7 @@ Body::Body ( const Vec2d &r ) : BaseClass(),
 
   // Add a tile.
   Tile::ValidRefPtr tile 
-    ( new Tile ( osg::Vec2d ( -180, -90 ), osg::Vec2d ( 180, 90 ), 10, 10, 
+    ( new Tile ( 0, osg::Vec2d ( -180, -90 ), osg::Vec2d ( 180, 90 ), 10, 10, 
       this->radii()[Body::RADIUS_EQUATOR], this->radii()[Body::RADIUS_EQUATOR] * 7, _ellipsoid ) );
   _transform->addChild ( tile.get() );
 }

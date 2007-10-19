@@ -36,6 +36,7 @@ public:
   virtual void initializePage ();
 
 private:
+  AddPostGISLayerWidget *_widget;
 
 };
 

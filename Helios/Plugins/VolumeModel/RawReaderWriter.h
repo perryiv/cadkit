@@ -8,25 +8,28 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __HELIOS_VOLUME_MODEL_IMAGE_READER_WRITER_H__
-#define __HELIOS_VOLUME_MODEL_IMAGE_READER_WRITER_H__
+#ifndef __HELIOS_VOLUME_MODEL_RAW_READER_WRITER_H__
+#define __HELIOS_VOLUME_MODEL_RAW_READER_WRITER_H__
 
 #include "Helios/Plugins/VolumeModel/IReaderWriter.h"
 
 #include "Usul/Base/Object.h"
+#include "Usul/Math/Vector3.h"
 
 #include "osg/Image"
 #include "osg/ref_ptr"
 
-class ImageReaderWriter : public Usul::Base::Object,
-                          public IReaderWriter
+namespace XmlTree { class Node; }
+
+class RawReaderWriter : public Usul::Base::Object,
+                        public IReaderWriter
 {
 public:
   typedef Usul::Base::Object BaseClass;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  ImageReaderWriter();
+  RawReaderWriter();
 
   /// Clear any existing data.
   virtual void                clear ( Unknown *caller = 0x0 );
@@ -38,20 +41,18 @@ public:
   virtual void                write ( const std::string &filename, const VolumeDocument &doc, Unknown *caller = 0x0  ) const;
 
 protected:
-  virtual ~ImageReaderWriter();
+  virtual ~RawReaderWriter();
 
-  ImageReaderWriter ( const ImageReaderWriter& rhs );
-  ImageReaderWriter& operator= ( const ImageReaderWriter& rhs );
+  RawReaderWriter ( const RawReaderWriter& rhs );
+  RawReaderWriter& operator= ( const RawReaderWriter& rhs );
+
+  void                        _addTransferFunction ( VolumeDocument& doc, XmlTree::Node& node );
 
 private:
-  typedef osg::ref_ptr<osg::Image> ImagePtr;
-  typedef std::vector< ImagePtr >  ImageList;
-  typedef std::string              Filename;
-  typedef std::vector < Filename > Filenames;
-
-  ImageList _imageList;
-  Filenames _filenames;
+  
+  std::string _filename;
+  Usul::Math::Vec3ui _size;
 };
 
 
-#endif // __HELIOS_VOLUME_MODEL_IMAGE_READER_WRITER_H__
+#endif // __HELIOS_VOLUME_MODEL_RAW_READER_WRITER_H__

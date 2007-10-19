@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Helios/Plugins/VolumeModel/ImageReaderWriter.h"
+#include "Helios/Plugins/VolumeModel/VolumeDocument.h"
 
 #include "OsgTools/Images/Image3d.h"
 
@@ -34,34 +35,6 @@ _filenames()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copy Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-ImageReaderWriter::ImageReaderWriter ( const ImageReaderWriter& rhs ) : BaseClass ( rhs ),
-_imageList( rhs._imageList ),
-_filenames( rhs._filenames )
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Assignment.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-ImageReaderWriter& ImageReaderWriter::operator= ( const ImageReaderWriter& rhs )
-{
-  BaseClass::operator= ( rhs );
-  _imageList = rhs._imageList;
-  _filenames = rhs._filenames;
-  return *this;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -73,23 +46,11 @@ ImageReaderWriter::~ImageReaderWriter()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Clone this reader/writer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-IReaderWriter* ImageReaderWriter::clone () const
-{
-  return new ImageReaderWriter ( *this );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Read the file and add it to existing data.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageReaderWriter::read ( const std::string &name, Unknown *caller )
+void ImageReaderWriter::read ( const std::string &name, VolumeDocument &doc, Unknown *caller )
 {
   // Read the image.
   ImagePtr image ( osgDB::readImageFile ( name ) );
@@ -105,6 +66,16 @@ void ImageReaderWriter::read ( const std::string &name, Unknown *caller )
   _imageList.push_back ( image.get() );
 
   _filenames.push_back ( name );
+
+  osg::ref_ptr < osg::Image > image3D ( OsgTools::Images::image3d ( _imageList, true, 1000 ) );
+  doc.image3D ( image3D.get() );
+
+  unsigned int numImages ( _imageList.size() );
+  double zSize ( 1.0f / numImages );
+  zSize *= 0.5;
+
+  osg::BoundingBox bb ( -1.0, -1.0, -zSize, 1.0, 1.0, zSize );
+  doc.boundingBox ( bb );
 }
 
 
@@ -114,7 +85,7 @@ void ImageReaderWriter::read ( const std::string &name, Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageReaderWriter::write ( const std::string &filename, Unknown *caller ) const
+void ImageReaderWriter::write ( const std::string &filename, const VolumeDocument &doc, Unknown *caller ) const
 {
 }
 
@@ -129,18 +100,6 @@ void ImageReaderWriter::clear ( Usul::Interfaces::IUnknown *caller )
 {
   _imageList.clear();
   _filenames.clear();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the 3D image.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Image* ImageReaderWriter::image3D ()
-{
-  return OsgTools::Images::image3d ( _imageList, true, 1000 );
 }
 
 

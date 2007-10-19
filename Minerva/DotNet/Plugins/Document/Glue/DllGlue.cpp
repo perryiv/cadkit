@@ -946,5 +946,5 @@ array<CadKit::Interfaces::ILayer^ > ^ DllGlue::Layers::get()
 
 void DllGlue::setActive ( bool b )
 {
-  Usul::Documents::Manager::instance().active ( b ? _document : 0x0 );
+  Usul::Documents::Manager::instance().activeDocument ( b ? _document : 0x0 );
 }

@@ -265,6 +265,37 @@
 					>
 				</File>
 				<File
+					RelativePath=".\ConnectToDatabase.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ConnectToDatabase.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing ConnectToDatabase.h"
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\ConnectToDatabase.h&quot; -o &quot;.\GeneratedFiles\moc_ConnectToDatabase.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\ConnectToDatabase.h"
+							Outputs=".\GeneratedFiles\moc_ConnectToDatabase.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing ConnectToDatabase.h"
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\ConnectToDatabase.h&quot; -o &quot;.\GeneratedFiles\moc_ConnectToDatabase.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\ConnectToDatabase.h"
+							Outputs=".\GeneratedFiles\moc_ConnectToDatabase.cpp"
+						/>
+					</FileConfiguration>
+
+				</File>
+				<File
 					RelativePath=".\DatabasePage.cpp"
 					>
 				</File>
@@ -324,6 +355,10 @@
 				</File>
 				<File
 					RelativePath=".\generatedfiles\moc_DatabasePage.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_ConnectToDatabase.cpp"
 					>
 				</File>
 			</Filter>

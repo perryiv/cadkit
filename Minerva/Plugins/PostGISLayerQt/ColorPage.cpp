@@ -18,7 +18,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ColorPage::ColorPage( AddPostGISLayerWidget* ) : BaseClass ()
+ColorPage::ColorPage( AddPostGISLayerWidget* widget ) : BaseClass (),
+_widget ( widget )
 {
 }
 

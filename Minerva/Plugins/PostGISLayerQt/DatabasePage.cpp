@@ -10,6 +10,7 @@
 
 #include "Minerva/Plugins/PostGISLayerQt/DatabasePage.h"
 #include "Minerva/Plugins/PostGISLayerQt/AddPostGISLayerWidget.h"
+#include "Minerva/Plugins/PostGISLayerQt/ConnectToDatabase.h"
 
 #include "Minerva/Core/DB/Info.h"
 #include "Minerva/Core/Layers/PointLayer.h"
@@ -102,89 +103,12 @@ void DatabasePage::_listTables ()
 
 void DatabasePage::_connectToDatabase ()
 {
-  //QDialog *dialog ( new QDialog ( mw.valid() ? mw->mainWindow() : 0x0 ) );
-  QDialog *dialog ( new QDialog ( this ) );
+  ConnectToDatabase dialog ( this );
 
-  QVBoxLayout *topLayout ( new QVBoxLayout );
-  dialog->setLayout ( topLayout );
+  _connection = dialog.exec();
 
-  QLineEdit *hostname ( new QLineEdit );
-  QLineEdit *database ( new QLineEdit );
-  QLineEdit *username ( new QLineEdit );
-  QLineEdit *password ( new QLineEdit );
-  password->setEchoMode ( QLineEdit::Password );
-
-  // Hostname.
-  {
-    QHBoxLayout *layout ( new QHBoxLayout );
-    QLabel *label ( new QLabel ( "Hostname:" ) );
-    layout->addWidget ( label );
-    layout->addWidget ( hostname );
-    topLayout->addLayout ( layout );
-  }
-
-  // Database.
-  {
-    QHBoxLayout *layout ( new QHBoxLayout );
-    QLabel *label ( new QLabel ( "Database:" ) );
-    layout->addWidget ( label );
-    layout->addWidget ( database );
-    topLayout->addLayout ( layout );
-  }
-
-  // Username.
-  {
-    QHBoxLayout *layout ( new QHBoxLayout );
-    QLabel *label ( new QLabel ( "Username:" ) );
-    layout->addWidget ( label );
-    layout->addWidget ( username );
-    topLayout->addLayout ( layout );
-  }
-
-  // Password.
-  {
-    QHBoxLayout *layout ( new QHBoxLayout );
-    QLabel *label ( new QLabel ( "Password:" ) );
-    layout->addWidget ( label );
-    layout->addWidget ( password );
-    topLayout->addLayout ( layout );
-  }
-
-  topLayout->addStretch ();
-
-  // Ok and cancel buttons.
-  {
-    QPushButton *ok ( new QPushButton ( "Ok" ) );
-    QPushButton *cancel ( new QPushButton ( "Cancel" ) );
-
-    connect ( ok,     SIGNAL ( clicked () ), dialog, SLOT ( accept () ) );
-    connect ( cancel, SIGNAL ( clicked () ), dialog, SLOT ( reject () ) );
-
-    QHBoxLayout *layout ( new QHBoxLayout );
-    
-    topLayout->addLayout ( layout );
-    
-    layout->addStretch  ();
-    layout->addWidget ( ok );
-    layout->addWidget ( cancel );
-  }
-
-  dialog->setModal ( true );
-  
-  if ( QDialog::Accepted == dialog->exec() )
-  {
-    Minerva::Core::DB::Connection::RefPtr connection ( new Minerva::Core::DB::Connection );
-    connection->hostname ( hostname->text().toStdString () );
-    connection->database ( database->text().toStdString () );
-    connection->username ( username->text().toStdString () );
-    connection->password ( password->text().toStdString () );
-
-    _connection = connection;
-
+  if ( _connection.valid () )
     this->_listTables ();
-  }
-
-  delete dialog;
 }
 
 

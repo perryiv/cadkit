@@ -244,10 +244,8 @@ void KeyFramePath::_interpolate ( )
   }
 
   // Make sure there are no adjacent points that are identical.
-  // Is this needed?  With this uncommented, an assertion is thrown when two frames are identical.
-  // We either need to not add adjacent identical frames, or leave this commented out.
-  //typedef DependentContainer::IsEqual IsEqualPoint;
-  //points.erase ( std::unique ( points.begin(), points.end(), IsEqualPoint() ), points.end() );
+  typedef DependentContainer::IsEqual IsEqualPoint;
+  points.erase ( std::unique ( points.begin(), points.end(), IsEqualPoint() ), points.end() );
 
   // Now that we have unique frames, make sure there are enough.
   if ( points.size() < DoubleCurve::Limits::MIN_NUM_CTR_PTS )

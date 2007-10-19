@@ -23,7 +23,11 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 
+#include "OsgTools/Volume/TransferFunction.h"
+
 #include "osg/Group"
+#include "osg/Projection"
+#include "osg/BoundingBox"
 #include "osg/Image"
 #include "osg/ref_ptr"
 
@@ -38,6 +42,9 @@ public:
 
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
+  typedef OsgTools::Volume::TransferFunction  TransferFunction;
+  typedef TransferFunction::RefPtr            TransferFunctionPtr;
+  typedef std::vector < TransferFunctionPtr > TransferFunctions;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( VolumeDocument );
@@ -75,6 +82,18 @@ public:
   /// Get/Set the dirty flag.
   void                        dirty ( bool b );
   bool                        dirty () const;
+
+  /// Get/Set the 3D image.
+  void                        image3D ( osg::Image* );
+  osg::Image*                 image3D () const;
+
+  /// Get/Set the bounding box.
+  void                        boundingBox ( const osg::BoundingBox& bb );
+  osg::BoundingBox            boundingBox () const;
+
+  /// Add a transfer function.
+  void                        addTransferFunction ( TransferFunction* );
+
 protected:
 
   /// Do not copy.
@@ -91,8 +110,14 @@ protected:
 
 private:
   osg::ref_ptr < osg::Group > _root;
+  osg::ref_ptr < osg::Node > _node;
+  osg::ref_ptr < osg::Projection > _projection;
+  osg::ref_ptr < osg::Image > _image3D;
+  osg::BoundingBox            _bb;
   IReaderWriter::RefPtr _readerWriter;
   bool _dirty;
+  TransferFunctions _transferFunctions;
+  unsigned int _activeTransferFunction;
 };
 
 

@@ -240,6 +240,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\RawReaderWriter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\RawReaderWriter.h"
+					>
+				</File>
+				<File
 					RelativePath=".\VolumeComponent.cpp"
 					>
 				</File>

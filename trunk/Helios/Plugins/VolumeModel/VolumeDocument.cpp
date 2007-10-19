@@ -15,14 +15,18 @@
 
 #include "Helios/Plugins/VolumeModel/VolumeDocument.h"
 #include "Helios/Plugins/VolumeModel/ImageReaderWriter.h"
+#include "Helios/Plugins/VolumeModel/RawReaderWriter.h"
 
 #include "OsgTools/Images/Image3d.h"
 #include "OsgTools/Volume/Texture3DVolume.h"
+#include "OsgTools/Volume/GPURayCasting.h"
 
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
+#include "Usul/Interfaces/IViewport.h"
+#include "Usul/Interfaces/IViewMatrix.h"
 
-#include "osgDB/ReadFile"
+#include "osg/MatrixTransform"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VolumeDocument, VolumeDocument::BaseClass );
 
@@ -35,8 +39,13 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VolumeDocument, VolumeDocument::BaseClass );
 
 VolumeDocument::VolumeDocument() : BaseClass ( "Volume Document" ),
   _root ( new osg::Group ),
+  _projection ( new osg::Projection ),
+  _image3D ( 0x0 ),
+  _bb ( -1.0, -1.0, -1.0, 1.0, 1.0, 1.0 ),
   _readerWriter ( 0x0 ),
-  _dirty ( false )
+  _dirty ( false ),
+  _transferFunctions(),
+  _activeTransferFunction()
 {
 }
 
@@ -106,7 +115,7 @@ bool VolumeDocument::canInsert ( const std::string &file ) const
 bool VolumeDocument::canOpen ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "" );
+  return ( ext == "rawvol" );
 }
 
 
@@ -135,10 +144,14 @@ void VolumeDocument::read ( const std::string &name, Unknown *caller, Unknown *p
   {
     // Image reader writer is the default.
     _readerWriter = new ImageReaderWriter;
+
+    std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( name ) ) );
+    if ( "rawvol" == ext )
+      _readerWriter = new RawReaderWriter;
   }
 
   if ( _readerWriter.valid () )
-    _readerWriter->read ( name, caller );
+    _readerWriter->read ( name, *this, caller );
 
   this->dirty ( true );
 }
@@ -153,7 +166,7 @@ void VolumeDocument::read ( const std::string &name, Unknown *caller, Unknown *p
 void VolumeDocument::write ( const std::string &filename, Unknown *caller ) const
 {
   if ( _readerWriter.valid () )
-    _readerWriter->write ( filename, caller );
+    _readerWriter->write ( filename, *this, caller );
 }
 
 
@@ -212,6 +225,7 @@ VolumeDocument::Filters VolumeDocument::filtersInsert() const
 VolumeDocument::Filters VolumeDocument::filtersOpen() const
 {
   Filters filters;
+  filters.push_back ( Filter ( "Raw  (*.rawvol)",        "*.rawvol"        ) );
   return filters;
 }
 
@@ -279,6 +293,22 @@ bool VolumeDocument::dirty () const
 
 void VolumeDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
+  Usul::Interfaces::IViewport::QueryPtr vp ( caller );
+  if ( vp.valid () )
+    _projection->setMatrix ( osg::Matrix::ortho2D ( vp->x(), vp->width(), vp->y(), vp->height () ) );
+
+#if 0
+  Usul::Interfaces::IViewMatrix::QueryPtr vm ( caller );
+  if ( vm.valid () )
+  {
+    osg::Matrix matrix ( vm->getViewMatrix() );
+    osg::Vec3f  eye ( matrix( 0, 2 ), matrix( 1, 2 ), matrix( 2, 2 ) );
+
+    if ( OsgTools::Volume::GPURayCasting *volume = dynamic_cast < OsgTools::Volume::GPURayCasting* > ( _node.get() ) )
+      volume->camera ( eye );
+  }
+#endif
+
   if ( this->dirty ( ) )
     this->_buildScene ();
 }
@@ -296,13 +326,119 @@ void VolumeDocument::_buildScene ()
 
   if ( _readerWriter.valid () )
   {
+#if 1
     osg::ref_ptr < OsgTools::Volume::Texture3DVolume > volume ( new OsgTools::Volume::Texture3DVolume );
     volume->numPlanes ( 256 );
     volume->resizePowerTwo ( true );
-    volume->image ( _readerWriter->image3D() );
+    volume->image ( this->image3D() );
+    volume->boundingBox ( this->boundingBox () );
+
+    if ( _transferFunctions.size() > 0 )
+      volume->transferFunction ( _transferFunctions.at ( _activeTransferFunction ) );
 
     _root->addChild ( volume.get() );
+#else
+    osg::ref_ptr < OsgTools::Volume::GPURayCasting > volume ( new OsgTools::Volume::GPURayCasting );
+    volume->samplingRate ( 0.05 );
+    //volume->resizePowerTwo ( true );
+    volume->image ( this->image3D() );
+    osg::BoundingBox bb ( osg::Vec3 ( 0.0, 0.0, 0.0 ), osg::Vec3 ( 1.0, 1.0, 1.0 ) );
+    volume->boundingBox ( bb );
+    //volume->boundingBox ( this->boundingBox () );
+
+    volume->camera ( osg::Vec3 ( 0.50, 0.5, 1.0 ) );
+
+    if ( _transferFunctions.size() > 0 )
+      volume->transferFunction ( _transferFunctions.at ( _activeTransferFunction ) );
+
+    osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+    mt->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
+
+    mt->addChild ( volume.get() );
+
+    _projection->removeChild ( 0, 1 );
+    _projection->addChild ( mt.get() );
+
+    _root->addChild ( _projection.get() );
+
+    _node = volume.get();
+
+
+    //_root->addChild ( volume.get() );
+#endif
   }
 
   this->dirty ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the 3D image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VolumeDocument::image3D ( osg::Image* image )
+{
+  {
+    Guard guard ( this->mutex() );
+    _image3D = image;
+  }
+  this->dirty ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the 3D image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Image* VolumeDocument::image3D () const
+{
+  Guard guard ( this->mutex() );
+  return _image3D.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the bounding box.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VolumeDocument::boundingBox ( const osg::BoundingBox& bb )
+{
+  {
+    Guard guard ( this->mutex() );
+    _bb = bb;
+  }
+  this->dirty ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the bounding box.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::BoundingBox VolumeDocument::boundingBox () const
+{
+  Guard guard ( this->mutex() );
+  return _bb;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a transfer function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VolumeDocument::addTransferFunction ( TransferFunction* tf )
+{
+  Guard guard ( this->mutex () );
+  _activeTransferFunction = _transferFunctions.size();
+  _transferFunctions.push_back ( tf );
 }

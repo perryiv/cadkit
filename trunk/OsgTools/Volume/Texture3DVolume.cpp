@@ -181,6 +181,46 @@ namespace Detail
     return os.str();
   }
 
+  inline std::string buildShadingFunction ( const osg::Vec3& ambient, const osg::Vec3& diffuse, const osg::Vec3& specular, float shininess )
+  {
+    std::ostringstream os;
+
+    os << "vec3 shading ( vec3 normal, vec3 viewVector, vec3 lightPosition )\n"
+      << "{\n"
+      // Material properties.
+      << "  vec3 Ka = vec3 ( " << ambient[0] << ", " << ambient[1] << ", " << ambient[2] << ");\n"
+      << "  vec3 Kd = vec3 ( " << diffuse[0] << ", " << diffuse[1] << ", " << diffuse[2] << ");\n"
+      << "  vec3 Ks = vec3 ( " << specular[0] << ", " << specular[1] << ", " << specular[2] << ");\n"
+      << "  float shininess = " << shininess << ";\n"
+
+      // Light properties.
+      //<< "  vec3 lightColor = vec3 ( 1.0, 1.0, 1.0 );\n"
+      << "  vec3 lightColor = vec3 ( 0.5, 0.5, 0.5 );\n"
+      << "  vec3 ambientLight = vec3 ( 0.3, 0.3, 0.3 );\n"
+
+      // Half vector.
+      << "  vec3 h = normalize ( lightPosition + viewVector );\n"
+
+      // Compute ambient.
+      << "  vec3 ambient = Ka * ambientLight;\n"
+
+      // Compute diffuse.
+      << "  float diffuseLight = max ( dot ( lightPosition, viewVector ), 0.0 );\n"
+      << "  vec3 diffuse = Kd * lightColor * diffuseLight;\n"
+
+      // Compute specular.
+      << "  float specularLight = pow ( max ( dot ( h, normal ), 0.0 ), shininess );\n"
+      << "  if ( diffuseLight <= 0 ) specularLight = 0;\n"
+      << "  vec3 specular = Ks * lightColor * specularLight;\n"
+
+      // Return the result.
+      //<< "  return vec4 ( ambient + diffuse + specular, 0 );\n"
+      << "  return ambient + diffuse + specular;\n"
+      << "}\n";
+
+    return os.str();
+  }
+
   static const char* fragSource = 
   {
     "uniform sampler3D Volume;\n"
@@ -199,6 +239,31 @@ namespace Detail
     "{\n"
     "   float index = vec4( texture3D( Volume, gl_TexCoord[0].xyz ) ).x;\n"
     "   vec4 color = vec4( texture1D( TransferFunction, index ) );\n"
+    #if 0
+    "   vec3 camera = vec3 ( gl_ModelViewMatrixInverse[0][3], gl_ModelViewMatrixInverse[1][3], gl_ModelViewMatrixInverse[2][3] );\n"
+    "   vec3 lightPosition = vec3 ( 0.0, 0.0, 1.0 );\n"
+
+    "    vec3 texCoord = gl_TexCoord[0].xyz;\n"
+
+       // Compute gradient.
+    "   vec3 sample1, sample2;\n"
+    "   sample1.x = texture3D( Volume, texCoord - vec3 ( 0.1, 0.0, 0.0 ) ).x;\n"
+    "   sample2.x = texture3D( Volume, texCoord + vec3 ( 0.1, 0.0, 0.0 ) ).x;\n"
+    "   sample1.y = texture3D( Volume, texCoord - vec3 ( 0.0, 0.1, 0.0 ) ).x;\n"
+    "   sample2.y = texture3D( Volume, texCoord + vec3 ( 0.0, 0.1, 0.0 ) ).x;\n"
+    "   sample1.z = texture3D( Volume, texCoord - vec3 ( 0.0, 0.0, 0.1 ) ).x;\n"
+    "   sample2.z = texture3D( Volume, texCoord + vec3 ( 0.0, 0.0, 0.1 ) ).x;\n"
+
+    // Take difference and normalize.
+    "   vec3 normal = normalize ( sample2 - sample1 );\n"
+
+    // Calculate light and viewing direction.
+    "   vec3 light = normalize ( lightPosition - texCoord );\n"
+    "   vec3 view = normalize ( camera - texCoord );\n"
+
+    // Add to color.
+    "   color.rgb += shading ( normal, view, light );\n"
+#endif
     "   gl_FragColor = vec4( color );\n"
     "}\n"
   };
@@ -206,7 +271,7 @@ namespace Detail
   std::string buildFagmentShader ( bool transferFunction )
   {
     if ( transferFunction )
-      return fragTransferFunctionSource;
+      return buildShadingFunction ( osg::Vec3 ( 0.1, 0.1, 0.1 ), osg::Vec3 ( 0.6, 0.6, 0.6 ), osg::Vec3 ( 0.2, 0.2, 0.2 ), 50 ) + fragTransferFunctionSource;
 
     return fragSource;
   }

@@ -318,6 +318,14 @@
 					RelativePath=".\MpdStopAnimation.h"
 					>
 				</File>
+				<File
+					RelativePath=".\MpdTools.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdTools.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 	</Files>

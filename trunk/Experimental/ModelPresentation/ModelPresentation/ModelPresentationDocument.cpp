@@ -15,8 +15,11 @@
 #include "Experimental/ModelPresentation/ModelPresentation/MpdStopAnimation.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdFirstTimestep.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdNextCommand.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdLocation.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdTools.h"
 
 #include "Usul/Interfaces/IDisplaylists.h"
+#include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"
@@ -31,13 +34,17 @@
 #include "Usul/File/Path.h"
 #include "Usul/File/Find.h"
 #include "Usul/File/Slash.h"
+#include "Usul/Print/Matrix.h"
+#include "Usul/Math/Matrix44.h"
 
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/Group.h"
+#include "OsgTools/Convert.h"
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
 #include "MenuKit/ToggleButton.h"
+#include "MenuKit/RadioButton.h"
 
 #include "osgDB/ReadFile"
 #include "osg/Group"
@@ -49,6 +56,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <Math.h>
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModelPresentationDocument, ModelPresentationDocument::BaseClass );
 
@@ -66,7 +74,8 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _sets ( 0x0 ),
   _update( UpdatePolicyPtr( new UpdatePolicy( 10 ) ) ),
   _useTimeLine( false ),
-  _isAnimating( false )
+  _isAnimating( false ),
+  _showTools ( false )
 {
   USUL_TRACE_SCOPE;
   _timeSet.currentTime = 0;
@@ -477,7 +486,36 @@ void ModelPresentationDocument::stopAnimation ()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Read the parameter file and parse elements.
+//  Show the current view matrix
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::displayViewMatrix()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  
+  Usul::Interfaces::IViewMatrix::QueryPtr view ( Usul::Documents::Manager::instance().activeView() );
+
+  if( true == view.valid() )
+  {
+    //Usul::Math::Matrix44f m;
+    //OsgTools::Convert::matrix ( view->getViewMatrix(), m );
+    
+    osg::Matrixf matrix = view->getViewMatrix();
+
+    std::ostringstream out;
+    //out << Usul::System::Host::name() << "_home_position.txt";
+    //std::ofstream file ( out.str().c_str() );
+    std::cout << "Current view matrix: " << std::endl;
+    Usul::Print::matrix ( "", matrix.ptr(), out, 20 );
+    std::cout << out.str().c_str() << std::endl;
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the current animation state
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -491,7 +529,7 @@ bool ModelPresentationDocument::isAnimating()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Read the parameter file and parse elements.
+//  set the current animation set
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -519,9 +557,12 @@ bool ModelPresentationDocument::_readParameterFile( XmlTree::Node &node, Unknown
   Attributes& attributes ( node.attributes() );
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
-    if ( "numsets" == iter->first )
+    if ( "usetools" == iter->first )
     {
-      //Usul::Strings::fromString ( iter->second, _dir );
+      std::string value = "false";
+      Usul::Strings::fromString ( iter->second, value );
+      if( value == "true" )
+        _showTools = true;
     }
   }
 
@@ -542,6 +583,11 @@ bool ModelPresentationDocument::_readParameterFile( XmlTree::Node &node, Unknown
     {
       std::cout << "Parsing static entries..." << std::endl;
       this->_parseStatic( *node, caller );
+    } 
+    if ( "location" == node->name() )
+    {
+      std::cout << "Parsing location entries..." << std::endl;
+      this->_parseLocation( *node, caller );
     } 
   }
   
@@ -607,18 +653,17 @@ void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *ca
   Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
   
+  
+  std::string name = "Location";
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-  {
-    
+  { 
     if ( "name" == iter->first )
     {
-      //Usul::Strings::fromString ( iter->second, _timeSet.endTime );
-    }
-   
-        
+      Usul::Strings::fromString ( iter->second, name );
+    }  
   }
   // TODO: create destination matrix here --
-  
+  _locationNames.push_back( name );
   
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
@@ -628,7 +673,7 @@ void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *ca
       
       std::cout << "Found matrix" << std::endl;
      
-      _locations.push_back( this->_parseMatrix( *node, caller) );
+      this->_parseMatrix( *node, caller, name);
     }
   }
   
@@ -641,13 +686,13 @@ void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *ca
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Matrix ModelPresentationDocument::_parseMatrix( XmlTree::Node &node, Unknown *caller )
+void ModelPresentationDocument::_parseMatrix( XmlTree::Node &node, Unknown *caller, const std::string& name )
 {
    USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
   // Ok to update the status bar with time related information
-  _useTimeLine = true;
+  //_useTimeLine = true;
 
   typedef XmlTree::Document::Attributes Attributes;
   typedef XmlTree::Document::Children Children;
@@ -666,7 +711,7 @@ osg::Matrix ModelPresentationDocument::_parseMatrix( XmlTree::Node &node, Unknow
     {
       Usul::Strings::fromString ( iter->second, value );
     }
-   
+ 
   }
   // TODO: create destination matrix here --
   osg::Matrix matrix;
@@ -674,8 +719,9 @@ osg::Matrix ModelPresentationDocument::_parseMatrix( XmlTree::Node &node, Unknow
     this->_setMatrix( &matrix, value, type );
   else
     std::cout << "Incorrect Matrix format!" << std::endl;
- 
-  return matrix;
+
+  
+  _locations[ name ] = matrix;
 }
 
 
@@ -709,11 +755,12 @@ void ModelPresentationDocument::_setMatrix( osg::Matrix * matrix, const std::str
   if( "matrix" == type )
   {
     std::cout << "Found matrix designation location" << std::endl;
+    char temp;
     osg::Matrixf::value_type m[16];
-      is >> m[0] >> m[4] >> m[8]  >> m[12];
-      is >> m[1] >> m[5] >> m[9]  >> m[13];
-      is >> m[2] >> m[6] >> m[10] >> m[14];
-      is >> m[3] >> m[7] >> m[11] >> m[15];
+      is >> m[0] >> temp >> m[4] >> temp >> m[8] >> temp  >> m[12] >> temp;
+      is >> m[1] >> temp >> m[5] >> temp >> m[9] >> temp  >> m[13] >> temp;
+      is >> m[2] >> temp >> m[6] >> temp >> m[10] >> temp >> m[14] >> temp;
+      is >> m[3] >> temp >> m[7] >> temp >> m[11] >> temp >> m[15];
     matrix->set( m );
 
   }
@@ -973,9 +1020,7 @@ osg::Node* ModelPresentationDocument::_loadFile( const std::string& filename, Un
   Guard guard ( this->mutex() );
   osg::ref_ptr< osg::Group > group ( new osg::Group );
   std::cout << filename << " single file loading..." << std::endl;
-     #ifndef _MSC_VER
-     //   filename =  filename.at(i).c_str() ;
-     #endif
+  try
   {
      // This will create a new document.
     Info info ( DocManager::instance().find ( filename, caller ) );
@@ -1023,6 +1068,10 @@ osg::Node* ModelPresentationDocument::_loadFile( const std::string& filename, Un
     }
     else
       std::cout << "\tUnknown file format for: " << filename << std::endl;
+  }
+  catch( ... )
+  {
+    std::cout << "\tUnknown file format for: " << filename << std::endl;
   }
 
   return group.release();
@@ -1161,9 +1210,65 @@ void ModelPresentationDocument::_openDocument ( const std::string &file, Usul::D
 
 void ModelPresentationDocument::_setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   Usul::Interfaces::IStatusBar::QueryPtr status ( caller );
   if ( status.valid() )
     status->setStatusBarText ( text, true );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build an animation path 
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ModelPresentationDocument::MatrixfVec ModelPresentationDocument::_getInterpolationMatrices( Matrixf m1, Matrixf m2 )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  
+  osg::Vec3d m1trans ( m1.getTrans() );
+  osg::Vec3d m2trans ( m2.getTrans() );
+
+  osg::Vec3d m3trans ( osg::Vec3d( m1trans[0], m1trans[1], m1trans[2] + 1.0 ) );
+
+  // ( p3 - p2 ) ^ ( p1 - p2 )
+  osg::Vec3d normal ( ( m3trans - m2trans ) ^ ( m1trans - m2trans ) );
+  normal.normalize();
+  double d = sqrt( pow( ( m2trans[0] - m1trans[0] ), 2 ) +
+                   pow( ( m2trans[1] - m1trans[1] ), 2 ) +
+                   pow( ( m2trans[2] - m1trans[2] ), 2 ) );
+
+  /*osg::Vec3d interpolated1 ( ( m2trans[0] - m1trans[0] ) * 0.25 ,
+                             ( m2trans[1] - m1trans[1] ) * 0.25, 
+                             ( m2trans[2] - m1trans[2] ) * 0.25 ); 
+
+  osg::Vec3d interpolated2 ( ( m2trans[0] - m1trans[0] ) * 0.75 ,
+                             ( m2trans[1] - m1trans[1] ) * 0.75, 
+                             ( m2trans[2] - m1trans[2] ) * 0.75 ); */
+  osg::Vec3d interpolated1( m1trans + ( ( m2trans - m1trans ) * 0.25 ) );
+  osg::Vec3d interpolated2( m1trans + ( ( m2trans - m1trans ) * 0.75 ) );
+
+  osg::Vec3d intpos1 ( interpolated1 + ( normal * ( d /2 ) ) );
+  osg::Vec3d intpos2 ( interpolated2 + ( normal * ( d /2 ) ) );
+
+  Matrixf mprime1;
+  Matrixf mprime2;
+
+  mprime1.setRotate( m1.getRotate() );
+  mprime1.setTrans( intpos1 );
+
+ // mprime2.setRotate( m2.getRotate() );
+  //mprime2.setTrans( intpos2 );
+
+  MatrixfVec mvec;
+
+  mvec.push_back( mprime1 );
+  mvec.push_back( mprime2 );
+
+  return mvec;  
+
 }
 
 
@@ -1173,43 +1278,53 @@ void ModelPresentationDocument::_setStatusBar ( const std::string &text, Usul::I
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::setAnimationPath( unsigned int i )
+void ModelPresentationDocument::setAnimationPath( const std::string& name )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if( _locations.size() <= 0 )
+    return;
 
+  //Usul::Interfaces::IAnimatePath::QueryPtr path ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IAnimatePath::IID ) );
+  Usul::Interfaces::IUnknown *unknown ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::IAnimatePath::IID ) );
+  Usul::Interfaces::IAnimatePath::QueryPtr path ( unknown );
+
+  
+  Usul::Interfaces::IViewMatrix::QueryPtr view ( Usul::Documents::Manager::instance().activeView() );
+
+  if( true == path.valid() && true == view.valid() )
+  {
+    std::vector< osg::Matrixf > matrices;
+
+    Matrixf viewmatrix = view->getViewMatrix();
+    Matrixf destination = this->_locations[ name ];
+
+    matrices.push_back( viewmatrix );
+#if 0
+    MatrixfVec mvec = this->_getInterpolationMatrices( viewmatrix, destination );   
+    for( unsigned int i = 0; i < mvec.size(); ++i )
+    {
+      matrices.push_back( mvec.at( i ) );
+    }
+#endif
+#if 0
+    Matrixf mhalf = ( viewmatrix );
+    osg::Vec3d trans = mhalf.getTrans();
+    mhalf.setTrans( osg::Vec3d( trans[0], trans[1] + 1, trans[2] ) );
+    mhalf.setRotate( destination.getRotate() );
+    matrices.push_back( mhalf );
+#endif
+    matrices.push_back( destination );
+    
+    path->animatePath( matrices );
+    
+
+    /*std::ostringstream out;
+    Usul::Print::matrix ( "", matrices.at( 1 ).ptr(), out, 20 );
+    std::cout << out.str().c_str() << std::endl;*/
+
+  }
 }
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the command list.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-//ModelPresentationDocument::CommandList ModelPresentationDocument::getCommandList()
-//{
-//  USUL_TRACE_SCOPE;
-//  CommandList cl;
-//
-//  Usul::Interfaces::IUnknown::QueryPtr me ( this );
-//  std::cout << me.get () << std::endl;
-//
-//  for( unsigned int i = 0; i < _sets.size(); ++i )
-//  {
-//    cl.push_back( new MpdMenuCommand( me.get(), _sets.at(i).name, i ) );
-//  }
-//  if( true == _useTimeLine )
-//  {
-//    cl.push_back( new MpdNextCommand( me.get() ) );
-//    cl.push_back( new MpdPrevTimestep( me.get() ) );
-//    cl.push_back( new MpdFirstTimestep( me.get() ) );
-//    cl.push_back( new MpdStartAnimation( me.get() ) );
-//    cl.push_back( new MpdStopAnimation( me.get() ) );
-//    
-//  }
-//  
-//  return cl;
-//
-//}
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1222,6 +1337,7 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu )
 {
   typedef MenuKit::ToggleButton ToggleButton;
   typedef MenuKit::Button       Button;
+  typedef MenuKit::RadioButton  Radio;
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
@@ -1231,7 +1347,7 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu )
     for( unsigned int i = 0; i < _sets.size(); ++i )
     {
       //cl.push_back( new MpdMenuCommand( me.get(), _sets.at(i).name, i ) );
-      ModelMenu->append ( new ToggleButton ( new MpdMenuCommand( me.get(), _sets.at(i).name, i ) ) );
+      ModelMenu->append ( new Radio ( new MpdMenuCommand( me.get(), _sets.at(i).name, i ) ) );
     }
     
     menu.append ( ModelMenu );
@@ -1241,16 +1357,30 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu )
   {
     MenuKit::Menu::RefPtr TimelineMenu ( new MenuKit::Menu ( "Timeline", MenuKit::Menu::VERTICAL ) );
 
-    TimelineMenu->append ( new ToggleButton ( new MpdNextCommand( me.get() ) ) );
-    TimelineMenu->append ( new ToggleButton ( new MpdPrevTimestep( me.get() ) ) );
-    TimelineMenu->append ( new ToggleButton ( new MpdFirstTimestep( me.get() ) ) );
-    TimelineMenu->append ( new ToggleButton ( new MpdStartAnimation( me.get() ) ) );
-    TimelineMenu->append ( new ToggleButton ( new MpdStopAnimation( me.get() ) ) );
+    TimelineMenu->append ( new Button ( new MpdNextCommand( me.get() ) ) );
+    TimelineMenu->append ( new Button ( new MpdPrevTimestep( me.get() ) ) );
+    TimelineMenu->append ( new Button ( new MpdFirstTimestep( me.get() ) ) );
+    TimelineMenu->append ( new Button ( new MpdStartAnimation( me.get() ) ) );
+    TimelineMenu->append ( new Button ( new MpdStopAnimation( me.get() ) ) );
 
     menu.append ( TimelineMenu );
     
   }
+  if( _locationNames.size() > 0 )
+  {
+    MenuKit::Menu::RefPtr locationMenu ( new MenuKit::Menu ( "Locations", MenuKit::Menu::VERTICAL ) );
+    for( unsigned int i = 0; i < _locationNames.size(); ++i )
+    {  
+       locationMenu->append( new Radio ( new MpdLocation( me.get(), _locationNames.at( i )  ) ) );
+    }
+    menu.append( locationMenu );
+  }
+  if( true == _showTools )
+  {
+    MenuKit::Menu::RefPtr toolsMenu ( new MenuKit::Menu ( "Tools", MenuKit::Menu::VERTICAL ) );
+    toolsMenu->append ( new Button ( new MpdTools( me.get(), "ShowMatrix" ) ) );
+    menu.append( toolsMenu );
+  }
   
 
- 
 }

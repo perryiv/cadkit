@@ -45,7 +45,10 @@ struct IMpdNavigator : public Usul::Interfaces::IUnknown
   virtual void              firstStep() = 0;
 
   // Setup and execute an animation path
-  virtual void              setAnimationPath( unsigned int i ) = 0;
+  virtual void              setAnimationPath( const std::string & ) = 0;
+
+  // Output the current view matrix
+  virtual void              displayViewMatrix() = 0;
 
   
 

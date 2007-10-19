@@ -8,12 +8,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "MpdLocation.h"
+#include "MpdTools.h"
 
 #include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/IMpdNavigator.h"
 
-USUL_IMPLEMENT_COMMAND ( MpdLocation );
+USUL_IMPLEMENT_COMMAND ( MpdTools );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -21,7 +21,7 @@ USUL_IMPLEMENT_COMMAND ( MpdLocation );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MpdLocation::MpdLocation ( Usul::Interfaces::IUnknown * caller, const std::string& text ) :
+MpdTools::MpdTools ( Usul::Interfaces::IUnknown * caller, const std::string& text ) :
   BaseClass ( caller ),
   _text ( text )
 {
@@ -36,7 +36,7 @@ MpdLocation::MpdLocation ( Usul::Interfaces::IUnknown * caller, const std::strin
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MpdLocation::~MpdLocation ()
+MpdTools::~MpdTools ()
 {
   USUL_TRACE_SCOPE;
 }
@@ -48,16 +48,17 @@ MpdLocation::~MpdLocation ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MpdLocation::_execute ()
+void MpdTools::_execute ()
 {
   USUL_TRACE_SCOPE;
   
-#if 1
+if( "ShowMatrix" == this->_text )
+{
   Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller() );
   if ( nav.valid () )
   {
-    nav->setAnimationPath( _text );
+    nav->displayViewMatrix();
   }
-#endif
+}
 }
 

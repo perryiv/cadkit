@@ -76,6 +76,8 @@ Usul::Interfaces::IUnknown *AnimateComponent::queryInterface ( unsigned long iid
     return static_cast < Usul::Interfaces::IPlugin* > ( this );
   case Usul::Interfaces::IMenuAdd::IID:
     return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
+  case Usul::Interfaces::IAnimatePath::IID:
+    return static_cast < Usul::Interfaces::IAnimatePath * > ( this );
   default:
     return 0x0;
   }
@@ -155,6 +157,37 @@ const Animate::Path* AnimateComponent::currentPath () const
   return _currentPath.get ();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Usul::Interfaces::IAnimatePath
+// Set an animation path from a vector of matrix keypoints
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
+void AnimateComponent::animatePath( std::vector< osg::Matrixf > matrix )
+{ 
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  Animate::KeyFramePath::RefPtr path ( new Animate::KeyFramePath() );
+
+  if( true == path.valid() )
+  {
+    path->acceptNewFrames( true );
+    for( std::vector< osg::Matrixf >::iterator iter = matrix.begin(); iter != matrix.end(); ++iter )
+    {
+      path->append( new Animate::Frame( *iter ) );
+    }
+
+    this->setCurrentPath( path.get() );
+
+    path->start( Usul::Documents::Manager::instance().activeView() );
+
+    this->_buildMenu();
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

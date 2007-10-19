@@ -23,6 +23,7 @@
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IMenuAdd.h"
+#include "Usul/Interfaces/IAnimatePath.h"
 
 #include "MenuKit/Menu.h"
 
@@ -33,7 +34,8 @@ namespace Animate {
 
 class AnimateComponent : public Usul::Base::Object,
                          public Usul::Interfaces::IPlugin,
-                         public Usul::Interfaces::IMenuAdd
+                         public Usul::Interfaces::IMenuAdd,
+                         public Usul::Interfaces::IAnimatePath
 {
 public:
 
@@ -76,6 +78,9 @@ public:
   /// Clear animation.
   void                    clearAnimation ();
 
+  // Usul::Interfaces::IAnimatePath
+  void                    animatePath( std::vector< osg::Matrixf > );
+
   /// Get/Set flag to record path.
   void                    recordPath ( bool b );
   bool                    recordPath ( ) const;
@@ -91,6 +96,7 @@ protected:
 
   /// Usul::Interfaces::IMenuAdd.
   virtual void               menuAdd ( MenuKit::Menu& menu );
+
 
   // Do not copy.
   AnimateComponent ( const AnimateComponent & );

@@ -26,7 +26,7 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Policies/Update.h"
-#include "Usul/Interfaces/ICommandList.h"
+#include "Usul/Interfaces/IAnimatePath.h"
 
 #include "OsgTools/Triangles/TriangleSet.h"
 
@@ -42,7 +42,7 @@ class ModelPresentationDocument : public Usul::Documents::Document,
                                   public Usul::Interfaces::IBuildScene,
                                   public Usul::Interfaces::IUpdateListener,
                                   public Usul::Interfaces::IMpdNavigator,
-                                  public Usul::Interfaces::IMenuAdd 
+                                  public Usul::Interfaces::IMenuAdd
 {
 public:
   // Structs
@@ -83,7 +83,7 @@ public:
   typedef DocManager::DocumentInfo Info;
   typedef Usul::Policies::NumberBased UpdatePolicy;
   typedef std::auto_ptr< UpdatePolicy > UpdatePolicyPtr;
-
+  typedef osg::Matrixf Matrixf;
 
 
   typedef std::vector< osg::ref_ptr< osg::Switch > > MpdScene;
@@ -92,7 +92,9 @@ public:
   typedef std::vector< MpdGroup > MpdGroups;
   typedef std::vector< MpdModel > MpdModels;
   typedef std::vector< MpdSet > MpdSets;
-  typedef std::vector< osg::Matrix > Location;
+  typedef std::map< std::string, osg::Matrix > Location;
+  typedef std::vector< std::string > LocationNames;
+  typedef std::vector< osg::Matrixf > MatrixfVec;
   
  
   /// Smart-pointer definitions.
@@ -136,10 +138,9 @@ public:
   void              nextStep();
   void              prevStep();
   void              firstStep();
-  void              setAnimationPath( unsigned int i );
-
-  //Usul::Interfaces::IMenuAdd
-  void              menuAdd ( MenuKit::Menu& menu );
+  void              setAnimationPath( const std::string& name );
+  void              displayViewMatrix();
+  
 
   bool              isAnimating();
   void              isAnimating( bool value );
@@ -161,12 +162,13 @@ protected:
   void                        _parseSet( XmlTree::Node &node, Unknown *caller );
   void                        _parseTimeSet( XmlTree::Node &node, Unknown *caller );
   void                        _parseLocation( XmlTree::Node &node, Unknown *caller );
-  osg::Matrix                _parseMatrix( XmlTree::Node &node, Unknown *caller );
+  void                        _parseMatrix( XmlTree::Node &node, Unknown *caller, const std::string& name );
   osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _loadFile( const std::string& filename, Unknown *caller );
   osg::Node*                  _loadDirectory( const std::string& dir, Unknown *caller );
+  MatrixfVec                  _getInterpolationMatrices( Matrixf m1, Matrixf m2 );
   /// Usul::Interfaces::IUpdateListener
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 
@@ -176,7 +178,8 @@ protected:
   
   void                        _setMatrix( osg::Matrix * matrix, const std::string& values, const std::string& type );
 
-
+  //Usul::Interfaces::IMenuAdd
+  void                        menuAdd ( MenuKit::Menu& menu );
 
   /// Use reference counting.
   virtual ~ModelPresentationDocument();
@@ -192,8 +195,10 @@ private:
   UpdatePolicyPtr             _update;
   bool                        _useTimeLine;
   bool                        _isAnimating;
+  bool                        _showTools;
 
-  Location                    _locations;
+  Location                   _locations;
+  LocationNames              _locationNames;
 
 
 

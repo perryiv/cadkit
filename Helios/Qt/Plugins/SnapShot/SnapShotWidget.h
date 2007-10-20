@@ -19,7 +19,8 @@
 #include <vector>
 #include <string>
 
-class SnapShotWidget : public QWidget
+class SnapShotWidget : public QWidget,
+                       private Ui::SnapShot
 {
   Q_OBJECT;
 public:
@@ -39,7 +40,6 @@ private slots:
 private:
 
   Files            _files;
-  Ui::SnapShot     _snapShot;
 };
 
 

@@ -26,10 +26,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 SnapShotWidget::SnapShotWidget( QWidget *parent ) : BaseClass ( parent ),
-  _files (),
-  _snapShot ()
+  _files ()
 {
-  _snapShot.setupUi ( this );
+  this->setupUi ( this );
 }
 
 
@@ -73,8 +72,8 @@ void SnapShotWidget::on__snapShotButton_clicked()
     if( snapShot.valid () )
     {
       // Get the parameters for the snap shot.
-      double frameScale ( _snapShot._frameScale->value() );
-      unsigned int numSamples ( _snapShot._numSamples->value() );
+      double frameScale ( _frameScale->value() );
+      unsigned int numSamples ( _numSamples->value() );
 
       // Create a temp file.
       std::string filename ( Usul::File::Temp::file() );

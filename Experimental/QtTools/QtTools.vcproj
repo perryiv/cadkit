@@ -222,6 +222,36 @@
 				Name="Implementation"
 				>
 				<File
+					RelativePath=".\ColorButton.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ColorButton.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing ColorButton.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\ColorButton.h&quot; -o &quot;.\GeneratedFiles\moc_ColorButton.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\ColorButton.h"
+							Outputs=".\GeneratedFiles\moc_ColorButton.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing ColorButton.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\TreeControl.h&quot; -o &quot;.\GeneratedFiles\moc_ColorButton.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\ColorButton.h"
+							Outputs=".\GeneratedFiles\moc_ColorButton.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\Export.h"
 					>
 				</File>
@@ -233,7 +263,7 @@
 					RelativePath=".\TreeControl.h"
 					>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -244,7 +274,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="Release|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -261,6 +291,10 @@
 				>
 				<File
 					RelativePath=".\generatedfiles\moc_TreeControl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_ColorButton.cpp"
 					>
 				</File>
 			</Filter>

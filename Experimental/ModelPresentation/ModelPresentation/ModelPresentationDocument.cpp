@@ -1247,11 +1247,11 @@ ModelPresentationDocument::MatrixVec ModelPresentationDocument::_getInterpolatio
   osg::Vec3d interpolated2 ( ( m2trans[0] - m1trans[0] ) * 0.75 ,
                              ( m2trans[1] - m1trans[1] ) * 0.75, 
                              ( m2trans[2] - m1trans[2] ) * 0.75 ); */
-  osg::Vec3d interpolated1( m1trans + ( ( m2trans - m1trans ) * 0.25 ) );
-  osg::Vec3d interpolated2( m1trans + ( ( m2trans - m1trans ) * 0.75 ) );
+  osg::Vec3d interpolated1( m1trans + ( ( m2trans - m1trans ) * 0.33 ) );
+  osg::Vec3d interpolated2( m1trans + ( ( m2trans - m1trans ) * 0.67 ) );
 
-  osg::Vec3d intpos1 ( interpolated1 + ( normal * ( d /2 ) ) );
-  osg::Vec3d intpos2 ( interpolated2 + ( normal * ( d /2 ) ) );
+  osg::Vec3d intpos1 ( interpolated1 + ( normal * ( d / 10 ) ) );
+  osg::Vec3d intpos2 ( interpolated2 + ( normal * ( d / 10 ) ) );
 
   osg::Matrixd mprime1;
   osg::Matrixd mprime2;
@@ -1309,7 +1309,7 @@ void ModelPresentationDocument::setAnimationPath ( const std::string& name )
   // Get final matrix but don't append yet.
   const osg::Matrixd m1 ( this->_locations[name] );
 
-#if 0
+#if 1
   // Append middle matrices.
   const MatrixVec mvec ( this->_getInterpolationMatrices ( m0, m1 ) );
   for ( MatrixVec::const_iterator i = mvec.begin(); i != mvec.end(); ++i )
@@ -1385,7 +1385,7 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu )
     MenuKit::Menu::RefPtr locationMenu ( new MenuKit::Menu ( "Locations", MenuKit::Menu::VERTICAL ) );
     for( unsigned int i = 0; i < _locationNames.size(); ++i )
     {  
-       locationMenu->append( new Radio ( new MpdLocation( me.get(), _locationNames.at( i )  ) ) );
+       locationMenu->append( new Button ( new MpdLocation( me.get(), _locationNames.at( i )  ) ) );
     }
     menu.append( locationMenu );
   }

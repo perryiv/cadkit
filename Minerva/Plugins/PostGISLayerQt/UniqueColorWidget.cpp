@@ -8,9 +8,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Plugins/PostGISLayerQt/ColorPage.h"
+#include "Minerva/Plugins/PostGISLayerQt/UniqueColorWidget.h"
 
-#if ( QT_VERSION >= QT_VERSION_CHECK ( 4, 3, 0 ) )
+#include "QtTools/ColorButton.h"
+
+#include "QtGui/QHBoxLayout"
+#include "QtGui/QPushButton"
+#include "QtGui/QLabel"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -18,14 +22,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ColorPage::ColorPage( AddPostGISLayerWidget* widget ) : BaseClass (),
-_widget ( widget )
+UniqueColorWidget::UniqueColorWidget ( Layer *layer, QWidget *parent ) :
+BaseClass ( parent ),
+_layer ( layer )
 {
 }
-
-
-void ColorPage::initializePage ()
-{
-}
-
-#endif // QT_VERSION

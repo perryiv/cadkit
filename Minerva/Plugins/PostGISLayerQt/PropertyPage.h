@@ -11,35 +11,38 @@
 #ifndef __POSTGIS_COLOR_PAGE_H__
 #define __POSTGIS_COLOR_PAGE_H__
 
+#include "Minerva/Plugins/PostGISLayerQt/ui_LayerProperties.h"
+
 #include "Minerva/Core/DB/Connection.h"
 #include "Minerva/Core/Layers/Layer.h"
 
-#include "QtCore/QObject"
+#include "QtTools/ColorButton.h"
 
-#include "Usul/Headers/Qt.h"
-
-#if ( QT_VERSION >= QT_VERSION_CHECK ( 4, 3, 0 ) )
-
-#include "QtGui/QWizardPage"
+#include "QtGui/QWidget"
 
 class AddPostGISLayerWidget;
 
-class ColorPage : public QWizardPage
+class PropertyPage : public QWidget,
+                     private Ui::LayerProperties
 {
+  Q_OBJECT;
 public:
-  typedef QWizardPage BaseClass;
+  typedef QWidget BaseClass;
   typedef Minerva::Core::DB::Connection Connection;
   typedef Minerva::Core::Layers::Layer  Layer;
 
-  ColorPage ( AddPostGISLayerWidget* );
+  PropertyPage ( Layer *layer, QWidget *parent = 0x0 );
+  ~PropertyPage ();
 
-  virtual void initializePage ();
+protected slots:
+  void _colorTypeChanged ( int index );
+  void _tabChanged ( int index );
 
 private:
-  AddPostGISLayerWidget *_widget;
+  Layer::RefPtr _layer;
+  QWidget *_colorWidget;
 
 };
 
-#endif // QT_VERSION
 
 #endif // __POSTGIS_COLOR_PAGE_H__

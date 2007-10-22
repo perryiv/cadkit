@@ -19,7 +19,7 @@
 
 #include <algorithm>
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( MinervaComponent , MinervaComponent::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( MinervaComponent, MinervaComponent::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////

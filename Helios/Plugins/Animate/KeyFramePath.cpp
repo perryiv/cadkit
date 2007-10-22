@@ -254,20 +254,17 @@ void KeyFramePath::_interpolate ( )
   // Transpose so that the first index of "points" is the dimension.
   Usul::Math::transpose ( points );
 
-  // Make the parameters evenly spaced.
-  //GN::Algorithms::fill ( _params, points.size(), 0, 1 );
+  // Fit the parameters.
   Paramerterize::fit ( points, GN::Algorithms::Constants::CENTRIPETAL_FIT, _params );
-
-  // This is no longer true with the transpose needed for the centripetal fit.
-  // Should be true.
-  //USUL_ASSERT ( _params.size() == points.size() );
 
   // Make the knot vector. Size it for interpolation.
   IndependentSequence knots;
   const SizeType cubic ( 4 );
   const SizeType order ( std::min<SizeType> ( cubic, _params.size() ) );
 
+#ifdef _DEBUG
   std::cout << "Order: " << order << std::endl;
+#endif
 
   knots.resize ( _params.size() + order );
   KnotVectorBuilder::build ( _params, order, knots );

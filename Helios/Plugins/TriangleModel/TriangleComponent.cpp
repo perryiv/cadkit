@@ -18,7 +18,7 @@
 
 #include "Usul/Documents/Manager.h"
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( TriangleComponent , TriangleComponent::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( TriangleComponent, TriangleComponent::BaseClass );
 USUL_IMPLEMENT_TYPE_ID ( TriangleComponent );
 
 

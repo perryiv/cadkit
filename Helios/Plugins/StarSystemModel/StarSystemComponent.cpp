@@ -18,7 +18,7 @@
 
 #include "Usul/Trace/Trace.h"
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemComponent , StarSystemComponent::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemComponent, StarSystemComponent::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////

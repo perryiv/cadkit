@@ -16,7 +16,7 @@
 #include "VolumeComponent.h"
 #include "VolumeDocument.h"
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VolumeComponent , VolumeComponent::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VolumeComponent, VolumeComponent::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////

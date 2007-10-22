@@ -475,7 +475,7 @@ template < class VectorType > void TriangleReaderGrassRaster::_makeTriangleDocum
   typedef Usul::Predicates::CloseFloat<double> Close;
 
   // Initialize local vaiables.
-  Usul::Math::Vec2ui gridSize ( _header.rows + 1 , _header.cols +1 );
+  Usul::Math::Vec2ui gridSize ( _header.rows + 1, _header.cols +1 );
   Usul::Math::Vec2d lowerLeft ( _header.west, _header.south );
   float cellSize ( _header.ns_resol );
   float noDataValue ( 0 );

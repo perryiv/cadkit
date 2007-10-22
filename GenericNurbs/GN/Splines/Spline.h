@@ -82,12 +82,12 @@ public:
   /////////////////////////////////////////////////////////////////////////////
 
   Spline() : BaseClass(),
-    _order        (),
-    _numCtrPts    (),
+    _order       (),
+    _numCtrPts   (),
     _rational     ( false ),
-    _knots        (),
-    _ctrPts       (),
-    _work         ()
+    _knots       (),
+    _ctrPts      (),
+    _work        ()
   {
   }
 
@@ -834,11 +834,11 @@ public:
   ///
   /////////////////////////////////////////////////////////////////////////////
 
-  bool valid () const
+  bool valid() const
   {
     try
     {
-      this->check ();
+      this->check();
     }
     catch ( ... )
     {

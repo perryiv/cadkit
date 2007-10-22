@@ -150,6 +150,15 @@ template < class Matrix44, class Vec4, class Vec3 > struct Multiply
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Error-checking type that just throws.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+typedef ::Usul::Errors::ThrowingPolicy < std::runtime_error > ErrorCheckerThrow;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Error-checking type that asserts and then throws.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -178,23 +187,6 @@ ErrorCheckerPrintAndThrow;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Error-checking type depends on the compiler.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#ifdef _DEBUG
-  #ifdef _MSC_VER
-    typedef ErrorCheckerAssertAndThrow    ErrorCheckerType;
-  #else
-    typedef ErrorCheckerPrintAndThrow     ErrorCheckerType;
-  #endif
-#else
-  typedef ::Usul::Errors::DoNothingPolicy ErrorCheckerType;
-#endif
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  End of namespace UsulDetail.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -214,14 +206,15 @@ template
 <
   class IndependentType_, 
   class DependentType_ = IndependentType_,
-  class SizeType_ = unsigned int
+  class SizeType_ = unsigned int,
+  class ErrorCheckerType_ = UsulDetail::ErrorCheckerThrow
 >
 class UsulConfig
 {
 public:
 
-  typedef UsulDetail::ErrorCheckerType    ErrorCheckerType;
-  typedef GN::Config::Base::StringData    BaseClassType;
+  typedef ErrorCheckerType_             ErrorCheckerType;
+  typedef GN::Config::Base::StringData  BaseClassType;
 
   typedef IndependentType_  IndependentType;
   typedef DependentType_    DependentType;

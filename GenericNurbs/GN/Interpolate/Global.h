@@ -165,7 +165,7 @@ void global ( const typename CurveType::SizeType &order,
   spline.resize ( dimension, order, numCtrPts, rational );
 
   // Should be true.
-  SizeType numKnots ( knots.size()  );
+  SizeType numKnots ( knots.size() );
   GN_ERROR_CHECK ( numCtrPts + order == numKnots );
   GN_ERROR_CHECK ( 1 == spline.numIndepVars() );
   GN_ERROR_CHECK ( spline.numKnots ( 0 ) == numKnots );

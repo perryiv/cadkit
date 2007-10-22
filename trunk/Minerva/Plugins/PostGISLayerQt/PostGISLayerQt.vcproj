@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(QTDIR)\include;$(OSSIM_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSG_INC_DIR);$(BOOST_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(QTDIR)\include;$(OSSIM_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSG_INC_DIR);$(BOOST_INC_DIR);$(CADKIT_ROOT_DIR)/Experimental"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_POSTGIS_LAYER_QT;"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -146,7 +146,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(QTDIR)\include;$(OSSIM_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSG_INC_DIR);$(BOOST_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(QTDIR)\include;$(OSSIM_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSG_INC_DIR);$(BOOST_INC_DIR);$(CADKIT_ROOT_DIR)/Experimental"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_POSTGIS_LAYER_QT;"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -253,14 +253,6 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\ColorPage.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\ColorPage.h"
-					>
-				</File>
-				<File
 					RelativePath=".\CompileGuard.h"
 					>
 				</File>
@@ -293,7 +285,6 @@
 							Outputs=".\GeneratedFiles\moc_ConnectToDatabase.cpp"
 						/>
 					</FileConfiguration>
-
 				</File>
 				<File
 					RelativePath=".\DatabasePage.cpp"
@@ -337,6 +328,131 @@
 					RelativePath=".\PostGISLayerQtFactory.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\PropertyPage.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PropertyPage.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_LayerProperties.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\LayerProperties.ui -o .\ui_LayerProperties.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\PropertyPage.h&quot; -o &quot;.\GeneratedFiles\moc_PropertyPage.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ui_LayerProperties.h;$(QTDIR)\bin\moc.exe;.\ColorPage.h"
+							Outputs=".\ui_LayerProperties.h;.\GeneratedFiles\moc_PropertyPage.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_LayerProperties.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\LayerProperties.ui -o .\ui_LayerProperties.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\PropertyPage.h&quot; -o &quot;.\GeneratedFiles\moc_PropertyPage.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ui_LayerProperties.h;$(QTDIR)\bin\moc.exe;.\ColorPage.h"
+							Outputs=".\ui_LayerProperties.h;.\GeneratedFiles\moc_PropertyPage.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<Filter
+					Name="Color"
+					>
+					<File
+						RelativePath=".\GradientColorWidget.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\GradientColorWidget.h"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								Description="Moc&apos;ing GradientColorWidget.h"
+								CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\GradientColorWidget.h&quot; -o &quot;.\GeneratedFiles\moc_GradientColorWidget.cpp&quot;&#x0D;&#x0A;"
+								AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\GradientColorWidget.h"
+								Outputs=".\GeneratedFiles\moc_GradientColorWidget.cpp"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								Description="Moc&apos;ing GradientColorWidget.h"
+								CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\GradientColorWidget.h&quot; -o &quot;.\GeneratedFiles\moc_GradientColorWidget.cpp&quot;&#x0D;&#x0A;"
+								AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\GradientColorWidget.h"
+								Outputs=".\GeneratedFiles\moc_GradientColorWidget.cpp"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\SingleColorWidget.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\SingleColorWidget.h"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								Description="Moc&apos;ing SingleColorWidget.h"
+								CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\SingleColorWidget.h&quot; -o &quot;.\GeneratedFiles\moc_SingleColorWidget.cpp&quot;&#x0D;&#x0A;"
+								AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\SingleColorWidget.h"
+								Outputs=".\GeneratedFiles\moc_SingleColorWidget.cpp"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								Description="Moc&apos;ing SingleColorWidget.h"
+								CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\SingleColorWidget.h&quot; -o &quot;.\GeneratedFiles\moc_SingleColorWidget.cpp&quot;&#x0D;&#x0A;"
+								AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\SingleColorWidget.h"
+								Outputs=".\GeneratedFiles\moc_SingleColorWidget.cpp"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\UniqueColorWidget.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\UniqueColorWidget.h"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								Description="Moc&apos;ing UniqueColorWidget.h"
+								CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\UniqueColorWidget.h&quot; -o &quot;.\GeneratedFiles\moc_UniqueColorWidget.cpp&quot;&#x0D;&#x0A;"
+								AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\UniqueColorWidget.h"
+								Outputs=".\GeneratedFiles\moc_UniqueColorWidget.cpp"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								Description="Moc&apos;ing UniqueColorWidget.h"
+								CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\UniqueColorWidget.h&quot; -o &quot;.\GeneratedFiles\moc_UniqueColorWidget.cpp&quot;&#x0D;&#x0A;"
+								AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\UniqueColorWidget.h"
+								Outputs=".\GeneratedFiles\moc_UniqueColorWidget.cpp"
+							/>
+						</FileConfiguration>
+
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="DLL"
@@ -354,11 +470,31 @@
 					>
 				</File>
 				<File
+					RelativePath=".\generatedfiles\moc_ConnectToDatabase.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\generatedfiles\moc_DatabasePage.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_ConnectToDatabase.cpp"
+					RelativePath=".\generatedfiles\moc_PropertyPage.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_SingleColorWidget.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_GradientColorWidget.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_UniqueColorWidget.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ui_LayerProperties.h"
 					>
 				</File>
 			</Filter>

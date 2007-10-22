@@ -10,13 +10,15 @@
 
 #include "Minerva/Plugins/PostGISLayerQt/AddPostGISLayerWidget.h"
 #include "Minerva/Plugins/PostGISLayerQt/DatabasePage.h"
-#include "Minerva/Plugins/PostGISLayerQt/ColorPage.h"
+#include "Minerva/Plugins/PostGISLayerQt/PropertyPage.h"
 
 #include "Minerva/Interfaces/IAddLayer.h"
 
 #include <iostream>
 
-#if ( QT_VERSION >= QT_VERSION_CHECK ( 4, 3, 0 ) )
+#include "QtGui/QVBoxLayout"
+#include "QtGui/QHBoxLayout"
+#include "QtGui/QPushButton"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -24,18 +26,34 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AddPostGISLayerWidget::AddPostGISLayerWidget( QWidget *parent ) : BaseClass ( parent ),
-_layer ( 0x0 )
+AddPostGISLayerWidget::AddPostGISLayerWidget( QWidget *parent ) : 
+BaseClass ( parent ),
+_databasePage ( 0x0 ),
+_propertyPage ( 0x0 ),
+_editButton ( new QPushButton ( "Edit Properties" ) ),
+_stackedWidget ( 0x0 )
 {
-  //this->setButton ( BackButton, new QPushButton ( "Previous" ) );
-  //this->setButton ( NextButton, new QPushButton ( "Next"     ) );
+  QVBoxLayout *topLayout ( new QVBoxLayout );
+  this->setLayout ( topLayout );
 
-  QList<QWizard::WizardButton> layout;
-  layout << QWizard::Stretch << QWizard::BackButton  << QWizard::NextButton << QWizard::FinishButton;
-  this->setButtonLayout(layout);
+  _stackedWidget = new QStackedWidget ( this );
 
-  this->addPage ( new DatabasePage ( this ) );
-  this->addPage ( new ColorPage ( this ) );
+  QHBoxLayout *layout ( new QHBoxLayout );
+  layout->addStretch ();
+  layout->addWidget ( _editButton );
+
+  topLayout->addWidget ( _stackedWidget );
+  topLayout->addLayout ( layout );
+
+  _databasePage = new DatabasePage ( this );
+
+  _stackedWidget->addWidget ( _databasePage );
+  _stackedWidget->setCurrentWidget ( _databasePage );
+
+  _editButton->setEnabled ( false );
+
+  connect ( _databasePage, SIGNAL ( layerChanged ( bool ) ), _editButton, SLOT ( setEnabled ( bool ) ) );
+  connect ( _editButton, SIGNAL ( clicked () ), this, SLOT ( _editLayerProperties () ) );
 }
 
 
@@ -63,32 +81,35 @@ void AddPostGISLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
   if ( false == al.valid () )
     return;
 
-  if ( _layer.valid () )
-    al->addLayer ( _layer );
+  Minerva::Core::Layers::Layer::RefPtr layer ( 0x0 != _databasePage ? _databasePage->layer() : 0x0 );
+
+  if ( layer.valid () )
+    al->addLayer ( layer );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the layer.
+//  Edit layer properties.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddPostGISLayerWidget::layer ( Layer* layer )
+void AddPostGISLayerWidget::_editLayerProperties ()
 {
-  _layer = layer;
+  if ( 0x0 != _propertyPage )
+  {
+    _stackedWidget->removeWidget ( _propertyPage );
+    delete _propertyPage;
+  }
+
+  Minerva::Core::Layers::Layer::RefPtr layer ( 0x0 != _databasePage ? _databasePage->layer() : 0x0 );
+  if ( layer.valid() )
+  {
+    _propertyPage = new PropertyPage ( layer.get(), this );
+    _stackedWidget->addWidget ( _propertyPage );
+    _stackedWidget->setCurrentWidget ( _propertyPage );
+  }
+
+  _editButton->setEnabled ( false );
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Minerva::Core::Layers::Layer* AddPostGISLayerWidget::layer ()
-{
-  return _layer.get();
-}
-
-#endif // QT_VERSION

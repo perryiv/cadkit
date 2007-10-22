@@ -18,10 +18,7 @@
 #include "Minerva/Core/Layers/LineLayer.h"
 #include "Minerva/Core/Layers/PolygonLayer.h"
 
-#if ( QT_VERSION >= QT_VERSION_CHECK ( 4, 3, 0 ) )
 
-#include "QtGui/QLineEdit"
-#include "QtGui/QDialog.h"
 #include "QtGui/QListWidget.h"
 #include "QtGui/QVBoxLayout"
 #include "QtGui/QHBoxLayout"
@@ -35,20 +32,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DatabasePage::DatabasePage ( AddPostGISLayerWidget* ) : BaseClass (),
+DatabasePage::DatabasePage ( QWidget * parent ) : BaseClass ( parent ),
+_layer ( 0x0 ),
 _listView ( 0x0 ),
 _connection ( 0x0 )
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DatabasePage::initializePage ()
 {
   QVBoxLayout *topLayout ( new QVBoxLayout );
   this->setLayout ( topLayout );
@@ -67,6 +54,17 @@ void DatabasePage::initializePage ()
   _listView->setSelectionMode ( QListWidget::SingleSelection );
 
   connect ( _listView, SIGNAL ( itemSelectionChanged () ), this, SLOT ( _selectionChanged () ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DatabasePage::~DatabasePage()
+{
 }
 
 
@@ -120,6 +118,9 @@ void DatabasePage::_connectToDatabase ()
 
 void DatabasePage::_selectionChanged ()
 {
+  if ( false == _connection.valid() )
+    return;
+
   // Scope our connection.
   Minerva::Core::DB::Connection::ScopedConnection scoped ( *_connection );
 
@@ -146,23 +147,19 @@ void DatabasePage::_selectionChanged ()
     layer->tablename ( table );
   }
 
-  if ( 0x0 != _widget )
-    _widget->layer ( layer.get () );
+  _layer = layer;
 
-  emit completeChanged();
+  emit layerChanged( true );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Are we complete?
+//  Get the layer.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DatabasePage::isComplete () const
+Minerva::Core::Layers::Layer* DatabasePage::layer ()
 {
-  return !_listView->selectedItems().empty ();
+  return _layer.get();
 }
-
-
-#endif // QT_VERSION

@@ -12,43 +12,41 @@
 #define __ADD_POSTGIS_LAYER_WIDGET_H__
 
 #include "Minerva/Plugins/PostGISLayerQt/CompileGuard.h"
-#include "Minerva/Core/Layers/Layer.h"
 
-#include "QtCore/QObject"
-
-#include "Usul/Headers/Qt.h"
-
-#if ( QT_VERSION >= QT_VERSION_CHECK ( 4, 3, 0 ) )
-
-#include "QtGui/QWizard"
+#include "QtGui/QWidget"
 
 #include <vector>
 #include <string>
 
 
 class QPushButton;
+class QStackedWidget;
+
+class DatabasePage;
+class PropertyPage;
 
 namespace Usul { namespace Interfaces { struct IUnknown; } }
 
-class AddPostGISLayerWidget : public QWizard
+class AddPostGISLayerWidget : public QWidget
 {
   Q_OBJECT;
 public:
-  typedef QWizard BaseClass;
-  typedef Minerva::Core::Layers::Layer Layer;
+  typedef QWidget BaseClass;
 
   AddPostGISLayerWidget( QWidget *parent = 0x0 );
   virtual ~AddPostGISLayerWidget();
 
   void apply ( Usul::Interfaces::IUnknown * caller );
 
-  /// Get/Set the layer.
-  void                    layer ( Layer* layer );
-  Layer*                  layer ();
+protected slots:
+  void _editLayerProperties ();
+
 private:
-  Layer::RefPtr _layer;
+  DatabasePage   *_databasePage;
+  PropertyPage   *_propertyPage;
+  QPushButton    *_editButton;
+  QStackedWidget *_stackedWidget;
 };
 
-#endif // QT_VERSION
 
 #endif // __ADD_POSTGIS_LAYER_WIDGET_H__

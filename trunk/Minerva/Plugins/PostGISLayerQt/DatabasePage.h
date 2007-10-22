@@ -11,29 +11,28 @@
 #ifndef __POSTGIS_DATABASE_PAGE_H__
 #define __POSTGIS_DATABASE_PAGE_H__
 
-#include "QtCore/QObject"
-
-#include "Usul/Headers/Qt.h"
-
-#if ( QT_VERSION >= QT_VERSION_CHECK ( 4, 3, 0 ) )
-
 #include "Minerva/Core/DB/Connection.h"
+#include "Minerva/Core/Layers/Layer.h"
 
-#include "QtGui/QWizardPage"
+#include "QtGui/QWidget"
 
 class QListWidget;
-class AddPostGISLayerWidget;
 
-class DatabasePage : public QWizardPage
+class DatabasePage : public QWidget
 {
   Q_OBJECT;
 public:
-  typedef QWizardPage BaseClass;
+  typedef QWidget BaseClass;
+  typedef Minerva::Core::Layers::Layer Layer;
 
-  DatabasePage ( AddPostGISLayerWidget* );
+  DatabasePage  ( QWidget * parent = 0x0 );
+  ~DatabasePage ();
 
-  virtual void initializePage ();
-  virtual bool isComplete () const;
+  /// Get the layer.
+  Layer*                  layer ();
+
+signals:
+  void layerChanged( bool );
 
 protected:
   void _listTables ();
@@ -43,11 +42,10 @@ protected slots:
   void _selectionChanged ();
 
 private:
-  AddPostGISLayerWidget *_widget;
-  QListWidget *_listView;
+  Layer::RefPtr   _layer;
+  QListWidget    *_listView;
   Minerva::Core::DB::Connection::RefPtr _connection;
 };
 
-#endif // QT_VERSION
 
 #endif // __POSTGIS_DATABASE_PAGE_H__

@@ -239,22 +239,32 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Find or create the menu.
+//  Find the menu. Create it if we should.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Menu* Menu::findOrCreateMenu( const std::string &name )
+Menu* Menu::find ( const std::string& name, bool create )
 {
   Guard guard ( this->mutex () );
 
   // Try and find a item with the name.
   iterator iter = std::find_if ( _items.begin (), _items.end(), Detail::FindMenu ( name ) );
-
   if ( _items.end() != iter )
+  {
     return dynamic_cast < Menu* > ( iter->get() );
-  
-  Menu::RefPtr m ( new Menu );
-  m->text ( name );
-  this->append ( m );
-  return m.get();
+  }
+
+  // Initialize.
+  Menu::RefPtr menu ( 0x0 );
+
+  // If we get to here then create one if we should.
+  if ( true == create )
+  {
+    menu = new Menu;
+    menu->text ( name );
+    this->append ( menu );
+  }
+
+  // Return menu (which may be null).
+  return menu.get();
 }

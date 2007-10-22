@@ -51,7 +51,7 @@ public:
   Menu& operator = ( const Menu & );
 
   // Clear the menu.
-  void                      clear ();
+  void                      clear();
 
   // Get the children.
   const Items &             items() const { return(_items); }
@@ -79,7 +79,8 @@ public:
   void                      prepend ( Item * );
   void                      insert ( iterator, Item * );
 
-  Menu*                     findOrCreateMenu ( const std::string& name );
+  // Find the menu. Create it if we should.
+  Menu*                     find ( const std::string& name, bool create );
 
   // Set/get the layout.
   void                      layout ( Layout l ) { _layout = l; }

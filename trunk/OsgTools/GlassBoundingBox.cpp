@@ -258,7 +258,7 @@ osg::Node* GlassBoundingBox::_makeBoxOutline ( osg::Vec3Array& vertices )
     group->addChild ( mt.get() );
 
     OsgTools::ShapeFactory::MeshSize size ( 20, 20 );
-    g->addDrawable ( sf->sphere ( radius * 1.2f , size ) );
+    g->addDrawable ( sf->sphere ( radius * 1.2f, size ) );
   }
   
   OsgTools::State::StateSet::setLighting ( group.get(), true );

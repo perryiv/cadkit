@@ -88,7 +88,7 @@ void matrix ( const osg::Matrixd &f, Usul::Math::Matrix44<T,I,B> &t )
 
 
 template < class F, class T >
-void vector ( const F& from , T& to, unsigned int size )
+void vector ( const F& from, T& to, unsigned int size )
 {
   std::copy( &from[0], &from[0] + size, &to[0] );
 }

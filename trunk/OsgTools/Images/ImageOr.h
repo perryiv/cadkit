@@ -17,7 +17,7 @@ namespace osg { class Image; }
 namespace OsgTools {
 namespace Images {
 
-  OSG_TOOLS_EXPORT osg::Image* imageOr ( const osg::Image& , const osg::Image& );
+  OSG_TOOLS_EXPORT osg::Image* imageOr ( const osg::Image&, const osg::Image& );
 
 }
 }

@@ -419,7 +419,7 @@ bool StateSet::getPolygonsFlat ( const osg::Node *node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void StateSet::setPolygonsTextures ( osg::StateSet* ss , bool on )
+void StateSet::setPolygonsTextures ( osg::StateSet* ss, bool on )
 {
   if ( 0x0 == ss )
     return;

@@ -18,6 +18,7 @@
 #define _MODEL_PRESENTATION_DOCUMENT_H_
 
 #include "Usul/Documents/Document.h"
+#include "Usul/Interfaces/IAnimatePath.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/IMpdNavigator.h"
@@ -26,7 +27,6 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Policies/Update.h"
-#include "Usul/Interfaces/IAnimatePath.h"
 
 #include "OsgTools/Triangles/TriangleSet.h"
 
@@ -92,10 +92,11 @@ public:
   typedef std::vector< MpdGroup > MpdGroups;
   typedef std::vector< MpdModel > MpdModels;
   typedef std::vector< MpdSet > MpdSets;
-  typedef std::map< std::string, osg::Matrix > Location;
+  typedef std::map< std::string, osg::Matrixd > Locations;
   typedef std::vector< std::string > LocationNames;
-  typedef std::vector< osg::Matrixf > MatrixfVec;
-  
+
+  typedef Usul::Interfaces::IAnimatePath IAnimatePath;
+  typedef std::vector < osg::Matrixd > MatrixVec;
  
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ModelPresentationDocument );
@@ -123,7 +124,6 @@ public:
   virtual Filters  filtersSave()   const;
   virtual Filters  filtersInsert() const;
   virtual Filters  filtersExport() const;
-
   
   /// Read the document.
   virtual void     read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
@@ -140,14 +140,9 @@ public:
   void              firstStep();
   void              setAnimationPath( const std::string& name );
   void              displayViewMatrix();
-  
 
   bool              isAnimating();
   void              isAnimating( bool value );
-
-
-
-                
 
 protected:
 
@@ -168,7 +163,8 @@ protected:
   osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _loadFile( const std::string& filename, Unknown *caller );
   osg::Node*                  _loadDirectory( const std::string& dir, Unknown *caller );
-  MatrixfVec                  _getInterpolationMatrices( Matrixf m1, Matrixf m2 );
+  MatrixVec                   _getInterpolationMatrices ( const osg::Matrixd &m1, const osg::Matrixd &m2 ) const;
+
   /// Usul::Interfaces::IUpdateListener
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 
@@ -197,11 +193,8 @@ private:
   bool                        _isAnimating;
   bool                        _showTools;
 
-  Location                   _locations;
-  LocationNames              _locationNames;
-
-
-
+  Locations                   _locations;
+  LocationNames               _locationNames;
 };
 
 

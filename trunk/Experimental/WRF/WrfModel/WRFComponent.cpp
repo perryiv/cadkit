@@ -17,7 +17,7 @@
 #include "WRFDocument.h"
 
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WRFComponent , WRFComponent::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WRFComponent, WRFComponent::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////

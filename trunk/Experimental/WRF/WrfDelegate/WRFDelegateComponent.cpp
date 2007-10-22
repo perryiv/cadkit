@@ -27,7 +27,7 @@
 
 #include "QtGui/QWorkspace"
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WRFDelegateComponent , WRFDelegateComponent::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WRFDelegateComponent, WRFDelegateComponent::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////

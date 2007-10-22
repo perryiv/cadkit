@@ -21,7 +21,7 @@
 
 #include <algorithm>
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PlanetComponent , PlanetComponent::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PlanetComponent, PlanetComponent::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////

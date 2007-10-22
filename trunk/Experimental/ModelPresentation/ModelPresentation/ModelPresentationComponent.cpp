@@ -20,7 +20,7 @@
 
 #include <algorithm>
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModelPresentationComponent , ModelPresentationComponent::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModelPresentationComponent, ModelPresentationComponent::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////

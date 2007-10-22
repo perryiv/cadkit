@@ -1223,10 +1223,10 @@ void ModelPresentationDocument::_setStatusBar ( const std::string &text, Usul::I
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ModelPresentationDocument::MatrixfVec ModelPresentationDocument::_getInterpolationMatrices( Matrixf m1, Matrixf m2 )
+ModelPresentationDocument::MatrixVec ModelPresentationDocument::_getInterpolationMatrices ( const osg::Matrixd &m1, const osg::Matrixd &m2 ) const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  // Guard guard ( this ); Nothing to guard.
   
   osg::Vec3d m1trans ( m1.getTrans() );
   osg::Vec3d m2trans ( m2.getTrans() );
@@ -1253,22 +1253,21 @@ ModelPresentationDocument::MatrixfVec ModelPresentationDocument::_getInterpolati
   osg::Vec3d intpos1 ( interpolated1 + ( normal * ( d /2 ) ) );
   osg::Vec3d intpos2 ( interpolated2 + ( normal * ( d /2 ) ) );
 
-  Matrixf mprime1;
-  Matrixf mprime2;
+  osg::Matrixd mprime1;
+  osg::Matrixd mprime2;
 
   mprime1.setRotate( m1.getRotate() );
   mprime1.setTrans( intpos1 );
 
- // mprime2.setRotate( m2.getRotate() );
-  //mprime2.setTrans( intpos2 );
+  mprime2.setRotate( m2.getRotate() );
+  mprime2.setTrans( intpos2 );
 
-  MatrixfVec mvec;
+  MatrixVec mvec;
 
   mvec.push_back( mprime1 );
   mvec.push_back( mprime2 );
 
   return mvec;  
-
 }
 
 
@@ -1278,52 +1277,67 @@ ModelPresentationDocument::MatrixfVec ModelPresentationDocument::_getInterpolati
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::setAnimationPath( const std::string& name )
+void ModelPresentationDocument::setAnimationPath ( const std::string& name )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  if( _locations.size() <= 0 )
+  Guard guard ( this );
+
+  typedef IAnimatePath::PackedMatrices PackedMatrices;
+  typedef IAnimatePath::PackedMatrix PackedMatrix;
+
+  // Check number of locations.
+  if ( _locations.size() <= 0 )
     return;
 
-  //Usul::Interfaces::IAnimatePath::QueryPtr path ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IAnimatePath::IID ) );
-  Usul::Interfaces::IUnknown *unknown ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::IAnimatePath::IID ) );
-  Usul::Interfaces::IAnimatePath::QueryPtr path ( unknown );
+  // Make sure we have this location.
+  if ( _locations.end() == _locations.find ( name ) )
+    return;
 
-  
+  // Get needed interfaces.
+  IAnimatePath::QueryPtr path ( Usul::Components::Manager::instance().getInterface ( IAnimatePath::IID ) );
   Usul::Interfaces::IViewMatrix::QueryPtr view ( Usul::Documents::Manager::instance().activeView() );
+  if ( false == path.valid() || false == view.valid() )
+    return;
 
-  if( true == path.valid() && true == view.valid() )
+  // The matrices.
+  PackedMatrices matrices;
+
+  // Get current matrix and append.
+  const osg::Matrixd m0 ( view->getViewMatrix() );
+  matrices.push_back ( PackedMatrix ( m0.ptr(), m0.ptr() + 16 ) );
+
+  // Get final matrix but don't append yet.
+  const osg::Matrixd m1 ( this->_locations[name] );
+
+#if 0
+  // Append middle matrices.
+  const MatrixVec mvec ( this->_getInterpolationMatrices ( m0, m1 ) );
+  for ( MatrixVec::const_iterator i = mvec.begin(); i != mvec.end(); ++i )
   {
-    std::vector< osg::Matrixf > matrices;
-
-    Matrixf viewmatrix = view->getViewMatrix();
-    Matrixf destination = this->_locations[ name ];
-
-    matrices.push_back( viewmatrix );
-#if 0
-    MatrixfVec mvec = this->_getInterpolationMatrices( viewmatrix, destination );   
-    for( unsigned int i = 0; i < mvec.size(); ++i )
-    {
-      matrices.push_back( mvec.at( i ) );
-    }
-#endif
-#if 0
-    Matrixf mhalf = ( viewmatrix );
-    osg::Vec3d trans = mhalf.getTrans();
-    mhalf.setTrans( osg::Vec3d( trans[0], trans[1] + 1, trans[2] ) );
-    mhalf.setRotate( destination.getRotate() );
-    matrices.push_back( mhalf );
-#endif
-    matrices.push_back( destination );
-    
-    path->animatePath( matrices );
-    
-
-    /*std::ostringstream out;
-    Usul::Print::matrix ( "", matrices.at( 1 ).ptr(), out, 20 );
-    std::cout << out.str().c_str() << std::endl;*/
-
+    const osg::Matrixd &temp ( *i );
+    matrices.push_back ( PackedMatrix ( temp.ptr(), temp.ptr() + 16 ) );
   }
+#endif
+
+#if 0
+  Matrix mhalf = ( m0 );
+  osg::Vec3d trans = mhalf.getTrans();
+  mhalf.setTrans ( osg::Vec3d( trans[0], trans[1] + 1, trans[2] ) );
+  mhalf.setRotate(  m1.getRotate() );
+  matrices.push_back ( mhalf );
+#endif
+
+  // Append final matrix.
+  matrices.push_back ( PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
+
+  // Animate through these matrices.
+  path->animatePath ( matrices );
+
+#if 0
+  std::ostringstream out;
+  Usul::Print::matrix ( "", matrices.at( 1 ).ptr(), out, 20 );
+  std::cout << out.str().c_str() << std::endl;
+#endif
 }
 
 

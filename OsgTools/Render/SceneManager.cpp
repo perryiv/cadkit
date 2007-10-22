@@ -90,7 +90,7 @@ const osg::Node * SceneManager::scene() const
 void SceneManager::model ( osg::Node* node )
 {
   // Remove any thing that may be under the clip node
-  _clipNode->removeChild ( 0 , _clipNode->getNumChildren() );
+  _clipNode->removeChild ( 0, _clipNode->getNumChildren() );
 
   // If we are given a valid node
   if ( 0x0 != node )

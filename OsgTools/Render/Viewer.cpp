@@ -3352,7 +3352,7 @@ void Viewer::setRotation( const osg::Quat &r )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::setTrackball ( const osg::Vec3& center, float distance , const osg::Quat& rot, bool makeTrackball, bool setViewerToo )
+void Viewer::setTrackball ( const osg::Vec3& center, float distance, const osg::Quat& rot, bool makeTrackball, bool setViewerToo )
 {
   if ( !this->viewer() )
     return;

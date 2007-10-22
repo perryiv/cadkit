@@ -65,7 +65,7 @@ struct OSG_TOOLS_EXPORT StateSet
 
   // Make filled polygons draw with flat shading.
   static bool         getPolygonsTextures ( osg::StateSet* ss );
-  static void         setPolygonsTextures ( osg::StateSet* ss , bool todo );
+  static void         setPolygonsTextures ( osg::StateSet* ss, bool todo );
 
   // Set/get the polygon mode.
   static void         setPolygonMode ( osg::Node *node, unsigned int face, unsigned int mode );

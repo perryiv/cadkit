@@ -199,19 +199,19 @@ osg::Vec3f LoopSplitter::_getCornerPoint(int edge1, int edge2) const
  
   if( _makeCornerDecision(ZMIN_YMIN, XMIN_YMIN, XMIN_ZMIN, edge1, edge2) ) {
       return _boundBox.corner(0);
-  } else if (_makeCornerDecision(XMIN_YMIN,ZMAX_YMIN,XMIN_ZMAX , edge1, edge2 ) ) {
+  } else if (_makeCornerDecision(XMIN_YMIN,ZMAX_YMIN,XMIN_ZMAX, edge1, edge2 ) ) {
       return _boundBox.corner(4);
-  } else if (_makeCornerDecision(ZMAX_YMIN, XMAX_YMIN, XMAX_ZMAX , edge1, edge2 ) ) {
+  } else if (_makeCornerDecision(ZMAX_YMIN, XMAX_YMIN, XMAX_ZMAX, edge1, edge2 ) ) {
       return _boundBox.corner(5);  
-  } else if (_makeCornerDecision(XMAX_YMIN,ZMIN_YMIN ,XMAX_ZMIN , edge1, edge2 ) ) {
+  } else if (_makeCornerDecision(XMAX_YMIN,ZMIN_YMIN ,XMAX_ZMIN, edge1, edge2 ) ) {
       return _boundBox.corner(1);  
-  } else if (_makeCornerDecision(ZMIN_YMAX,XMIN_YMAX ,XMIN_ZMIN , edge1, edge2 ) ) {
+  } else if (_makeCornerDecision(ZMIN_YMAX,XMIN_YMAX ,XMIN_ZMIN, edge1, edge2 ) ) {
       return _boundBox.corner(2);  
-  } else if (_makeCornerDecision(XMIN_YMAX,ZMAX_YMAX ,XMIN_ZMAX , edge1, edge2 ) ) {
+  } else if (_makeCornerDecision(XMIN_YMAX,ZMAX_YMAX ,XMIN_ZMAX, edge1, edge2 ) ) {
       return _boundBox.corner(6);  
-  } else if (_makeCornerDecision(ZMAX_YMAX,XMAX_YMAX,XMAX_ZMAX , edge1, edge2 ) ) {
+  } else if (_makeCornerDecision(ZMAX_YMAX,XMAX_YMAX,XMAX_ZMAX, edge1, edge2 ) ) {
       return _boundBox.corner(7);  
-  } else if (_makeCornerDecision(XMAX_YMAX,XMAX_ZMIN ,ZMIN_YMAX , edge1, edge2 ) ) {
+  } else if (_makeCornerDecision(XMAX_YMAX,XMAX_ZMIN ,ZMIN_YMAX, edge1, edge2 ) ) {
       return _boundBox.corner(3);  
   }
          

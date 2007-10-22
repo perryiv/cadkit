@@ -113,7 +113,7 @@ bool PolygonMode::has ( osg::PolygonMode::Face face, const osg::StateSet *ss )
 {
   // See if there is any polygon-mode for the given face.
   const bool filled ( PolygonMode::has ( face, osg::PolygonMode::FILL,  ss  ) );
-  const bool lines  ( PolygonMode::has ( face, osg::PolygonMode::LINE , ss ) );
+  const bool lines  ( PolygonMode::has ( face, osg::PolygonMode::LINE,  ss ) );
   const bool points ( PolygonMode::has ( face, osg::PolygonMode::POINT, ss ) );
   return ( filled || lines || points );
 }

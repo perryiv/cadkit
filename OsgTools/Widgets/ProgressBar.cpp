@@ -142,7 +142,7 @@ namespace Detail
 
     osg::ref_ptr< osg::Vec2Array > uvcoords ( new osg::Vec2Array ( 4, texCoords ) );
 
-    geometry.setTexCoordArray ( 0 , uvcoords.get() );
+    geometry.setTexCoordArray ( 0, uvcoords.get() );
 
     geometry.setVertexArray ( vertices.get() );
 
@@ -656,7 +656,7 @@ void ProgressBar::stepAnimation()
 
 void ProgressBar::clear()
 {
-  _root->removeChild ( 0 , _root->getNumChildren() );
+  _root->removeChild ( 0, _root->getNumChildren() );
   _root = 0x0;
 }
 ////////////////////
@@ -761,7 +761,7 @@ std::string ProgressBar::_getPercentComplete()
   double percentage =  ( _value + _range[0] ) / _range[1];
 
   percentage *= 100;
-  sprintf( s , "%0.1lf%c" , percentage, '%' );
+  sprintf( s, "%0.1lf%c" , percentage, '%' );
 
   return s;
 }
@@ -818,7 +818,7 @@ osg::Node * ProgressBar::_buildScene()
       anim->addChild (  ( Detail::buildThreadSafeQuad( 1003,
                                                "icons/bar.tga",
                                                osg::Vec2f ( _barPos[0], _barPos[1] + _barLH[1] ),
-                                               osg::Vec2f ( _barPos[0] + _barSize , _barPos[1] ),
+                                               osg::Vec2f ( _barPos[0] + _barSize, _barPos[1] ),
                                                0.0f, *geometry ) ) );
     }
     {
@@ -826,7 +826,7 @@ osg::Node * ProgressBar::_buildScene()
       anim->addChild ( (  Detail::buildThreadSafeQuad( 1002,
                                                  "icons/background.tga",
                                                  osg::Vec2f ( _barPos[0] + _barSize, _barPos[1] + _barLH[1] ),
-                                                 osg::Vec2f( _barPos[0] + _barLH[0] , _barPos[1] ),
+                                                 osg::Vec2f( _barPos[0] + _barLH[0], _barPos[1] ),
                                                  0.0f, *geometry ) ) );
     }
     {
@@ -834,7 +834,7 @@ osg::Node * ProgressBar::_buildScene()
       anim->addChild ( ( Detail::buildThreadSafeQuad( 1001,
                                            "icons/barborder.tga",
                                            osg::Vec2f ( _barBorderPos[0], _barBorderPos[1] + _barBorderLH[1] ),
-                                           osg::Vec2f( _barBorderPos[0] + _barBorderLH[0] , _barBorderPos[1] ),
+                                           osg::Vec2f( _barBorderPos[0] + _barBorderLH[0], _barBorderPos[1] ),
                                            _barBorderPos[2], *geometry ) ) );
     }
     {
@@ -842,7 +842,7 @@ osg::Node * ProgressBar::_buildScene()
       anim->addChild ( ( Detail::buildThreadSafeQuad( 1000,
                                         "icons/border.tga",
                                         osg::Vec2f ( _borderPos[0], _borderPos[1] + _size[1] ),
-                                        osg::Vec2f ( _borderPos[0] + _size[0] , _borderPos[1] ),
+                                        osg::Vec2f ( _borderPos[0] + _size[0], _borderPos[1] ),
                                         _borderPos[2], *geometry ) ) );
     }
 

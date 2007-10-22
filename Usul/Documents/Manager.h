@@ -100,6 +100,9 @@ public:
   // Find a document and delegate for the given filename.
   DocumentInfo          find ( const std::string& filename, Usul::Interfaces::IUnknown *caller = 0x0 );
 
+  // Get the mutex. Use with caution.
+  Mutex&                mutex() { return *_mutex; }
+
   // Deletes current instance. Clears cached data.
   static void           reset();
 
@@ -118,9 +121,6 @@ protected:
 
   // Find a delegate for the given document.
   Delegate*             _findDelegate ( Document * document );
-
-  // Get the mutex.
-  Mutex&                mutex () { return *_mutex; }
 
 private:
 

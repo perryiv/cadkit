@@ -1344,7 +1344,7 @@ inline int construct_trapezoids( int nseg, std::vector < Node > &qs, std::vector
   }
   
   for (i = math_N(nseg, math_logstar_n(nseg)) + 1; i <= nseg; i++)
-    add_segment( permute.at( choose_idx++ ) , qs, tr, seg );
+    add_segment( permute.at( choose_idx++ ), qs, tr, seg );
 
   return choose_idx;
 

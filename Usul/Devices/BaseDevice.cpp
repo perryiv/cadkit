@@ -11,7 +11,7 @@
 
 using namespace Usul::Devices;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( BaseDevice , Usul::Base::Referenced );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( BaseDevice, Usul::Base::Referenced );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

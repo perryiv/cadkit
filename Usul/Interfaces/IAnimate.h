@@ -26,7 +26,7 @@ struct IAnimate : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3673709138u };
 
-  //Animate from current position to given position
+  // Animate from current position to given position
   virtual void animate ( const osg::Vec3f& center, float distance, const osg::Quat& rotation, Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
 }; 
 

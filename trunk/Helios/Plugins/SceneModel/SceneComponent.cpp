@@ -19,7 +19,7 @@
 
 #include <algorithm>
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( SceneComponent , SceneComponent::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( SceneComponent, SceneComponent::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////

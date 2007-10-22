@@ -79,7 +79,7 @@ public:
   void                    clearAnimation ();
 
   // Usul::Interfaces::IAnimatePath
-  void                    animatePath( std::vector< osg::Matrixf > );
+  void                    animatePath ( std::vector< osg::Matrixf > );
 
   /// Get/Set flag to record path.
   void                    recordPath ( bool b );

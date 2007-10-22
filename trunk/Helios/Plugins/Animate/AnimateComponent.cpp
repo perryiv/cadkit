@@ -22,7 +22,7 @@
 #include "Usul/Commands/GenericCommand.h"
 #include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Documents/Manager.h"
-#include "Usul/Trace/Scope.h"
+#include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/IUpdateSubject.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 
@@ -33,7 +33,7 @@
 
 using namespace Animate;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( AnimateComponent , AnimateComponent::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( AnimateComponent, AnimateComponent::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -104,7 +104,12 @@ void AnimateComponent::menuAdd ( MenuKit::Menu& m )
   typedef MenuKit::Button                                                           Button;
   typedef MenuKit::ToggleButton                                                     ToggleButton;
 
-  MenuKit::Menu::RefPtr menu ( m.findOrCreateMenu ( "Animate" ) );
+  // Return if there is no active view.
+  Usul::Documents::Manager::View::RefPtr view ( Usul::Documents::Manager::instance().activeView() );
+  if ( false == view.valid() )
+    return;
+
+  MenuKit::Menu::RefPtr menu ( m.find ( "Animate", true ) );
 
   CheckFunctor validPath ( this, &AnimateComponent::ensureValidPath );
   
@@ -165,7 +170,6 @@ const Animate::Path* AnimateComponent::currentPath () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-
 void AnimateComponent::animatePath( std::vector< osg::Matrixf > matrix )
 { 
   USUL_TRACE_SCOPE;
@@ -182,10 +186,9 @@ void AnimateComponent::animatePath( std::vector< osg::Matrixf > matrix )
     }
 
     this->setCurrentPath( path.get() );
+    this->_buildMenu();
 
     path->start( Usul::Documents::Manager::instance().activeView() );
-
-    this->_buildMenu();
   }
 }
 

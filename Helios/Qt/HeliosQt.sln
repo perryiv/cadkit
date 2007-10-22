@@ -414,18 +414,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Minerva PostGISLayerQ
 		{1F0BC334-B3D3-4553-8025-DA8B50D2FA99} = {1F0BC334-B3D3-4553-8025-DA8B50D2FA99}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Animate", "..\Plugins\Animate\Animate.vcproj", "{8F7CCB93-7E75-49B0-8881-0B29891C463C}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{8B99160D-5504-4A93-89DC-F4AE949501A4} = {8B99160D-5504-4A93-89DC-F4AE949501A4}
-		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-		{2AFAFF2F-1967-4124-A178-5F1B703C016F} = {2AFAFF2F-1967-4124-A178-5F1B703C016F}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Generic Nurbs", "..\..\GenericNurbs\GN\gn_library.vcproj", "{1C8F8A43-B135-4301-959A-1ED41708A63F}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
@@ -439,6 +427,18 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit QtTools", "..\.
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Path Animation", "..\..\Experimental\PathAnimation\PathAnimation.vcproj", "{372E35DF-DE41-45DC-9C11-7067C5131393}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{8B99160D-5504-4A93-89DC-F4AE949501A4} = {8B99160D-5504-4A93-89DC-F4AE949501A4}
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+		{2AFAFF2F-1967-4124-A178-5F1B703C016F} = {2AFAFF2F-1967-4124-A178-5F1B703C016F}
 	EndProjectSection
 EndProject
 Global
@@ -607,10 +607,6 @@ Global
 		{FF83BBFA-BA37-4A60-B531-FB0566662B98}.Debug|Win32.Build.0 = Debug|Win32
 		{FF83BBFA-BA37-4A60-B531-FB0566662B98}.Release|Win32.ActiveCfg = Release|Win32
 		{FF83BBFA-BA37-4A60-B531-FB0566662B98}.Release|Win32.Build.0 = Release|Win32
-		{8F7CCB93-7E75-49B0-8881-0B29891C463C}.Debug|Win32.ActiveCfg = Debug|Win32
-		{8F7CCB93-7E75-49B0-8881-0B29891C463C}.Debug|Win32.Build.0 = Debug|Win32
-		{8F7CCB93-7E75-49B0-8881-0B29891C463C}.Release|Win32.ActiveCfg = Release|Win32
-		{8F7CCB93-7E75-49B0-8881-0B29891C463C}.Release|Win32.Build.0 = Release|Win32
 		{1C8F8A43-B135-4301-959A-1ED41708A63F}.Debug|Win32.ActiveCfg = Debug|Win32
 		{1C8F8A43-B135-4301-959A-1ED41708A63F}.Debug|Win32.Build.0 = Debug|Win32
 		{1C8F8A43-B135-4301-959A-1ED41708A63F}.Release|Win32.ActiveCfg = Release|Win32
@@ -619,6 +615,10 @@ Global
 		{768EABAD-0721-457D-820D-C0548B1F252A}.Debug|Win32.Build.0 = Debug|Win32
 		{768EABAD-0721-457D-820D-C0548B1F252A}.Release|Win32.ActiveCfg = Release|Win32
 		{768EABAD-0721-457D-820D-C0548B1F252A}.Release|Win32.Build.0 = Release|Win32
+		{372E35DF-DE41-45DC-9C11-7067C5131393}.Debug|Win32.ActiveCfg = Debug|Win32
+		{372E35DF-DE41-45DC-9C11-7067C5131393}.Debug|Win32.Build.0 = Debug|Win32
+		{372E35DF-DE41-45DC-9C11-7067C5131393}.Release|Win32.ActiveCfg = Release|Win32
+		{372E35DF-DE41-45DC-9C11-7067C5131393}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

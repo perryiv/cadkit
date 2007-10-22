@@ -28,7 +28,7 @@
 #include "QtGui/QHeaderView"
 
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( SnapShotComponent , SnapShotComponent::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( SnapShotComponent, SnapShotComponent::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

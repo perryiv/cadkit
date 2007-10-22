@@ -867,7 +867,7 @@ void Viewer::_onTimeoutRenderLoop()
 
 void Viewer::menuAdd( MenuKit::Menu &menu )
 {
-  MenuKit::Menu::RefPtr view ( menu.findOrCreateMenu ( "&View" ) );
+  MenuKit::Menu::RefPtr view ( menu.find ( "&View", true ) );
 
   if ( view.valid () )
   {

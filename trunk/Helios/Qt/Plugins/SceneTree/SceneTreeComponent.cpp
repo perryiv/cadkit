@@ -33,7 +33,7 @@
 #include "QtGui/QTreeWidget"
 
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( SceneTreeComponent , SceneTreeComponent::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( SceneTreeComponent, SceneTreeComponent::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -73,7 +73,7 @@ SceneTreeComponent::~SceneTreeComponent()
   if( mainWindow.valid() )
   {
     // Remove the DockWidget from the MainWindow.
-    QMainWindow * main  ( mainWindow->mainWindow() );
+    QMainWindow * main ( mainWindow->mainWindow() );
     main->removeDockWidget ( _dock );
   }
 
@@ -262,8 +262,11 @@ void SceneTreeComponent::updateTreeControls( osg::Node *scene  )
   // This removes the top level item.  We only add to the top level.
   _sceneTree->takeTopLevelItem ( 0 );
 
-  QTreeWidgetItem *root ( Detail::buildSceneTree ( scene, 0x0 ) );
-  _sceneTree->addTopLevelItem ( root );
+  if ( 0x0 != scene )
+  {
+    QTreeWidgetItem *root ( Detail::buildSceneTree ( scene, 0x0 ) );
+    _sceneTree->addTopLevelItem ( root );
+  }
 }
 
 
@@ -275,11 +278,7 @@ void SceneTreeComponent::updateTreeControls( osg::Node *scene  )
 
 void SceneTreeComponent::activeViewChanged ( Usul::Interfaces::IUnknown *oldView, Usul::Interfaces::IUnknown *newView )
 {
+  // If dynamic cast fails, it will return null.  By passing null to this function, it will clear the scene tree.
   Usul::Interfaces::IOpenSceneGraph::QueryPtr osg ( newView );
-
-  if ( osg.valid() )
-  {
-    // If dynamic cast fails, it will return null.  By passing null to this function, it will clear the scene tree.
-    this->updateTreeControls ( dynamic_cast < osg::Node* > ( osg->osgReferenced () ) );
-  }
+  this->updateTreeControls ( dynamic_cast < osg::Node* > ( ( osg.valid() ) ? osg->osgReferenced() : 0x0 ) );
 }

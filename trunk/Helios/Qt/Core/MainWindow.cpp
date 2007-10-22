@@ -252,8 +252,8 @@ void MainWindow::_destroy()
   // populate it but not clean up).
   Usul::Factory::ObjectFactory::instance().clear();
 
-  // Clear the menu bar.  To this before plugins are released.
-  this->_clearMenuBar ();
+  // Clear the menu bar. Do this before plugins are released.
+  this->_clearMenuBar();
   _menu = 0x0;
   _dockMenu = 0x0;
   _recentFilesMenu = 0x0;

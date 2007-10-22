@@ -25,7 +25,7 @@
 
 #include "QtGui/QWorkspace"
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemDelegateComponent , StarSystemDelegateComponent::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemDelegateComponent, StarSystemDelegateComponent::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////

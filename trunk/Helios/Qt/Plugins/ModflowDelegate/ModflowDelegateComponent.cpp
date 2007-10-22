@@ -40,7 +40,7 @@
 
 #include <iostream>
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModflowDelegateComponent , ModflowDelegateComponent::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModflowDelegateComponent, ModflowDelegateComponent::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -84,7 +84,7 @@ QWidget* OssimLayerQtComponent::layerAddGUI ( )
 
 std::string OssimLayerQtComponent::name() const 
 {
-  return "Ossim Image";
+  return "File System";
 }
 
 void OssimLayerQtComponent::apply ( Usul::Interfaces::IUnknown* caller )

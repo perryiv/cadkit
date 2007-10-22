@@ -12,10 +12,8 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg 
-{  
-  class Matrixf; 
-}
+#include <vector>
+
 
 namespace Usul {
 namespace Interfaces {
@@ -23,17 +21,19 @@ namespace Interfaces {
 
 struct IAnimatePath : public Usul::Interfaces::IUnknown
 {
+  /// Typedefs.
+  typedef std::vector < double > PackedMatrix;
+  typedef std::vector < PackedMatrix > PackedMatrices;
+
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( IAnimatePath );
 
   /// Id for this interface.
-  enum { IID = 1614564854u };
+  enum { IID = 4103645503u };
 
-  // Set an animation path from a vector of matrix keypoints
-  virtual void                animatePath( std::vector< osg::Matrixf > ) = 0;
-
-}; //struct IVertices
-
+  // Set an animation path from a vector of matrices.
+  virtual void                animatePath ( const PackedMatrices & ) = 0;
+};
 
 
 }

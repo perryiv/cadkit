@@ -114,6 +114,14 @@ Usul::Commands::Command* GenericCommand < Functor, EnableFunctor >::clone ( ) co
 }
 
 
+// Helper function.
+template < class ExecuteFunctor, class EnableFunctor >
+GenericCommand < ExecuteFunctor, EnableFunctor > *genericCommand ( const std::string &name, ExecuteFunctor f, EnableFunctor e, Usul::Interfaces::IUnknown * caller = 0x0 )
+{
+  typedef GenericCommand < ExecuteFunctor, EnableFunctor > Cmd;
+  return new Cmd ( name, f, e, caller );
+}
+
 }
 }
 

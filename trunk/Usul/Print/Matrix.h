@@ -42,8 +42,8 @@ inline void matrix ( const StringType_ &message,
                      int width = 10,
                      int precision = 4 )
 {
-  int w ( width );
-  int p ( precision );
+  const int w ( width );
+  const int p ( precision );
 
   out << message;
   out << "\n\t";

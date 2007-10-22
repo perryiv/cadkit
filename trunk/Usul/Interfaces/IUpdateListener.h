@@ -32,7 +32,7 @@ struct IUpdateListener : public Usul::Interfaces::IUnknown
   enum { IID = 4018508570u };
 
   // It's safe to update.
-  virtual void updateNotify    ( Usul::Interfaces::IUnknown *caller ) = 0;
+  virtual void updateNotify ( Usul::Interfaces::IUnknown *caller ) = 0;
 
 }; // struct IUpdateListener
 

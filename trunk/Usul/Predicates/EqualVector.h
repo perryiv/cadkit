@@ -44,7 +44,7 @@ template < class E > struct EqualVector < E, 3 >
   // for copy constructor and assignment operator.
   EqualVector ( E e ) : _equal ( e ){}
 
-  // See if vector a is "less" than vector b.
+  // See if vector a is equal to vector b.
   template < class V > bool operator () ( const V &a, const V &b ) const
   {
     // Require this to be true.

@@ -31,8 +31,8 @@ struct IUpdateSubject : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2658302544u };
 
-  virtual void addUpdateListener    ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
-  virtual void removeUpdateListener ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
+  virtual void addUpdateListener    ( Usul::Interfaces::IUnknown *listener ) = 0;
+  virtual void removeUpdateListener ( Usul::Interfaces::IUnknown *listener ) = 0;
 
 }; // struct IUpdateSubject
 

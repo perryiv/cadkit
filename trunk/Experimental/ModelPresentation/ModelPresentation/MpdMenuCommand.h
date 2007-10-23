@@ -29,6 +29,8 @@ protected:
 
   virtual void _execute ();
 
+  virtual bool updateCheck () const;
+
 private:
   std::string             _text;
   unsigned int            _index;

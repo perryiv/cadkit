@@ -36,6 +36,7 @@
 #include "Usul/File/Slash.h"
 #include "Usul/Print/Matrix.h"
 #include "Usul/Math/Matrix44.h"
+#include "Usul/Math/UMath.h"
 
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/Group.h"
@@ -56,7 +57,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
-#include <Math.h>
+
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModelPresentationDocument, ModelPresentationDocument::BaseClass );
 
@@ -1236,9 +1237,9 @@ ModelPresentationDocument::MatrixVec ModelPresentationDocument::_getInterpolatio
   // ( p3 - p2 ) ^ ( p1 - p2 )
   osg::Vec3d normal ( ( m3trans - m2trans ) ^ ( m1trans - m2trans ) );
   normal.normalize();
-  double d = sqrt( pow( ( m2trans[0] - m1trans[0] ), 2 ) +
-                   pow( ( m2trans[1] - m1trans[1] ), 2 ) +
-                   pow( ( m2trans[2] - m1trans[2] ), 2 ) );
+  double d = Usul::Math::sqrt( Usul::Math::pow( ( m2trans[0] - m1trans[0] ), 2.0 ) +
+                   	       Usul::Math::pow( ( m2trans[1] - m1trans[1] ), 2.0 ) +
+                               Usul::Math::pow( ( m2trans[2] - m1trans[2] ), 2.0 ) );
 
   /*osg::Vec3d interpolated1 ( ( m2trans[0] - m1trans[0] ) * 0.25 ,
                              ( m2trans[1] - m1trans[1] ) * 0.25, 

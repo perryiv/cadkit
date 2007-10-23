@@ -114,7 +114,7 @@ private:
   Paths _paths;
   CurvePlayer::RefPtr _player;
   bool _paused;
-  double _degree;
+  unsigned int _degree;
 };
 
 

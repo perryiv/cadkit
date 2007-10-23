@@ -105,11 +105,6 @@ void CurvePlayer::_play ( const CameraPath *path, unsigned int degree, Usul::Int
   this->playing ( false );
   _current = 0;
 
-  // Required interface.
-  Usul::Interfaces::IRenderLoop::QueryPtr rl ( caller );
-  if ( false == rl.valid() )
-    return;
-
   // Try to make the curve.
   this->_interpolate ( path, degree, reverseOrder );
 
@@ -123,9 +118,14 @@ void CurvePlayer::_play ( const CameraPath *path, unsigned int degree, Usul::Int
   // We are now playing.
   this->playing ( true );
 
-  // Save current render-loop state and turn it on.
-  _renderLoop = rl->renderLoop();
-  rl->renderLoop ( true );
+  // Check to see if the caller supports render loop.
+  Usul::Interfaces::IRenderLoop::QueryPtr rl ( caller );
+  if ( true == rl.valid() )
+  {
+    // Save current render-loop state and turn it on.
+    _renderLoop = rl->renderLoop();
+    rl->renderLoop ( true );
+  }
 }
 
 

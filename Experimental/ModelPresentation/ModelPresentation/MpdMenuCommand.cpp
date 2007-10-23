@@ -65,11 +65,13 @@ void MpdMenuCommand::_execute ()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Update the radio button.
+//  Update the radio button.  Return true to have radio checked.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 bool MpdMenuCommand::updateCheck () const
 {
+  // Implement me to update radio state.
+  return true;
 }
 

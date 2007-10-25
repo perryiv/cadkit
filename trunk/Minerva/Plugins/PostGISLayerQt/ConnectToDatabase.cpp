@@ -214,13 +214,13 @@ void ConnectToDatabase::_restoreConnections ()
 {
   _savedConnections = Usul::Registry::Database::instance()[ Detail::KEY ].get < SavedConnections > ( SavedConnections () );
 
-  SavedConnections saved ( _savedConnections.begin(), std::unique ( _savedConnections.begin(), _savedConnections.end() ) );
+  // Make sure we only have unique connections.
+  this->_ensureUniqueConnections();
 
-  _savedConnections.assign ( saved.begin(), saved.end() );
-
+  // Add connections to combo box.
   for ( SavedConnections::const_iterator iter = _savedConnections.begin(); iter != _savedConnections.end(); ++iter )
   {
-    std::string name ( iter->database + " on " + iter->hostname );
+    std::string name ( iter->name() );
     _recentConnections->addItem ( name.c_str() );
   }
 
@@ -236,8 +236,23 @@ void ConnectToDatabase::_restoreConnections ()
 
 void ConnectToDatabase::_saveConnections ()
 {
+  this->_ensureUniqueConnections();
+  Usul::Registry::Database::instance()[ Detail::KEY ] = _savedConnections;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Ensure all connections all unique.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ConnectToDatabase::_ensureUniqueConnections ()
+{
+  std::sort ( _savedConnections.begin(), _savedConnections.end() );
   SavedConnections saved ( _savedConnections.begin(), std::unique ( _savedConnections.begin(), _savedConnections.end() ) );
-  Usul::Registry::Database::instance()[ Detail::KEY ] = saved;
+
+  _savedConnections.assign ( saved.begin(), saved.end() );
 }
 
 

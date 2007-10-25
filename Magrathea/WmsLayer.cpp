@@ -25,6 +25,7 @@ USUL_FACTORY_REGISTER_CREATOR ( WmsLayer );
 ///////////////////////////////////////////////////////////////////////////////
 
 WmsLayer::WmsLayer() : BaseClass(),
+_name (),
 _guid ( Usul::Functions::GUID::generate() ),
 _server (),
 _imageType (),
@@ -37,6 +38,7 @@ _b ( 0 ),
 _wmsImageLayer ( new ossimPlanetWmsImageLayer ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
+  SERIALIZE_XML_ADD_MEMBER ( _name );
   SERIALIZE_XML_ADD_MEMBER ( _guid );
   SERIALIZE_XML_ADD_MEMBER ( _server );
   SERIALIZE_XML_ADD_MEMBER ( _imageType );
@@ -308,5 +310,17 @@ void WmsLayer::deserialize ( const XmlTree::Node& node )
 
 std::string WmsLayer::name() const
 {
-  return this->server();
+  return _name.empty() ? this->server() : _name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WmsLayer::name ( const std::string& name )
+{
+  _name = name;
 }

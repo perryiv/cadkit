@@ -55,8 +55,9 @@ public:
   bool                    transparentColorFlag() const;
   void                    transparentColor( unsigned int r, unsigned int g, unsigned int b );
 
-  /// Get the name.
+  /// Get/Set the name.
   virtual std::string     name() const;
+  void                    name( const std::string& );
 
   /// Get/Set show layer
   virtual void            showLayer( bool b );
@@ -72,6 +73,7 @@ protected:
   virtual void                             layerExtents ( double &lat, double &lon, double& height ) const;
 
 private:
+  std::string _name;
   std::string _guid;
   std::string _server;
   std::string _imageType;

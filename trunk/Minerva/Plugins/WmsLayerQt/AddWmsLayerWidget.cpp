@@ -34,13 +34,23 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
+_name ( 0x0 ),
 _server ( 0x0 ),
 _cacheDirectory ( 0x0 ),
 _imageTypes ( 0x0 )
 {  
   QVBoxLayout *topLayout ( new QVBoxLayout );
   this->setLayout ( topLayout );
-  
+ 
+  // The name field.
+  {
+    QHBoxLayout *layout0 ( new QHBoxLayout );
+    _name = new QLineEdit ( this );
+    layout0->addWidget ( new QLabel ( "Name:" ) );
+    layout0->addWidget ( _name );
+    topLayout->addLayout ( layout0 );
+  }
+
   // The server field.
   {
     QHBoxLayout *layout0 ( new QHBoxLayout );
@@ -82,6 +92,7 @@ _imageTypes ( 0x0 )
   layout2->addWidget ( png );
 
   topLayout->addLayout ( layout2 );
+  topLayout->addStretch();
 }
 
 
@@ -125,6 +136,9 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
 
     // Set the image type.
     layer->imageType ( type.toStdString () );
+
+    // Set the name.
+    layer->name ( _name->text().toStdString() );
 
     al->addLayer ( layer.get () );
   }

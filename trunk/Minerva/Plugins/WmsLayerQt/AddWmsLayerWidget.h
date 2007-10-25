@@ -38,6 +38,7 @@ protected slots:
   void _browseDirectory ();
 
 private:
+  QLineEdit *_name;
   QLineEdit *_server;
   QLineEdit *_cacheDirectory;
   QButtonGroup *_imageTypes;

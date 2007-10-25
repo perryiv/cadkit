@@ -12,6 +12,7 @@
 #include "Minerva/Core/Functors/SingleColorFunctor.h"
 
 #include "QtTools/ColorButton.h"
+#include "QtTools/Color.h"
 
 #include "QtGui/QHBoxLayout"
 #include "QtGui/QPushButton"
@@ -49,9 +50,7 @@ _colorButton ( new QtTools::ColorButton )
 void SingleColorWidget::_colorChanged ()
 {
   Minerva::Core::Functors::SingleColorFunctor::RefPtr functor ( new Minerva::Core::Functors::SingleColorFunctor );
-  QColor c ( _colorButton->color () );
-  osg::Vec4 color ( c.red(), c.green(), c.blue(), c.alpha() );
-  functor->color ( color );
+  functor->color ( QtTools::Color< osg::Vec4 >::convert ( _colorButton->color () ) );
 
   if ( _layer.valid() )
     _layer->colorFunctor ( functor.get() );

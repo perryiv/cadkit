@@ -108,7 +108,7 @@ void StateSet::setNormalize ( osg::Node *node, bool on )
   USUL_VALID_REF_POINTER(osg::StateSet) ss ( node->getOrCreateStateSet() );
 
   // Set the mode.
-  ss->setMode ( GL_NORMALIZE, ( ( on ) ? osg::StateAttribute::ON : osg::StateAttribute::OFF ) );
+  ss->setMode ( GL_NORMALIZE, ( ( on ) ? osg::StateAttribute::ON : osg::StateAttribute::OFF ) | osg::StateAttribute::PROTECTED );
 }
 
 
@@ -125,7 +125,7 @@ void StateSet::setNormalize ( osg::StateSet *ss, bool on )
     return;
 
   // Set the mode.
-  ss->setMode ( GL_NORMALIZE, ( ( on ) ? osg::StateAttribute::ON : osg::StateAttribute::OFF ) );
+  ss->setMode ( GL_NORMALIZE, ( ( on ) ? osg::StateAttribute::ON : osg::StateAttribute::OFF ) | osg::StateAttribute::PROTECTED );
 }
 
 

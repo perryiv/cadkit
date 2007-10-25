@@ -214,6 +214,10 @@ void ConnectToDatabase::_restoreConnections ()
 {
   _savedConnections = Usul::Registry::Database::instance()[ Detail::KEY ].get < SavedConnections > ( SavedConnections () );
 
+  SavedConnections saved ( _savedConnections.begin(), std::unique ( _savedConnections.begin(), _savedConnections.end() ) );
+
+  _savedConnections.assign ( saved.begin(), saved.end() );
+
   for ( SavedConnections::const_iterator iter = _savedConnections.begin(); iter != _savedConnections.end(); ++iter )
   {
     std::string name ( iter->database + " on " + iter->hostname );

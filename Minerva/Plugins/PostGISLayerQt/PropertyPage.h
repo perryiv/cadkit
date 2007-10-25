@@ -20,6 +20,9 @@
 
 #include "QtGui/QWidget"
 
+#include <vector>
+#include <string>
+
 class AddPostGISLayerWidget;
 
 class PropertyPage : public QWidget,
@@ -30,18 +33,57 @@ public:
   typedef QWidget BaseClass;
   typedef Minerva::Core::DB::Connection Connection;
   typedef Minerva::Core::Layers::Layer  Layer;
+  typedef std::vector < std::string > Strings;
 
   PropertyPage ( Layer *layer, QWidget *parent = 0x0 );
   ~PropertyPage ();
 
+protected:
+  void _initDrawingTab();
+  void _initTimeTab();
+  void _initGeneralTab();
+  void _initQueryTab();
+
+  void _initLabelProperties();
+  void _initLegendProperties();
+
 protected slots:
-  void _colorTypeChanged ( int index );
   void _tabChanged ( int index );
+
+  /// Slot for drawing tab.
+  void _colorTypeChanged ( int index );
+
+  /// The name for the layer has changed.
+  void _nameChanged();
+
+  /// Slots for label.
+  void _labelShownChanged( int state );
+  void _labelColorChanged();
+  void _labelColumnChanged( int index );
+  void _labelSizeChanged( int value );
+  void _labelZOffsetChanged ( int value );
+
+  /// Slots for legend.
+  void _showInLegendChanged( int state );
+  void _legendTextChanged();
+  void _showCountLegendChanged( int state );
+  void _showMinLegendChanged( int state );
+  void _showMaxLegendChanged( int state );
+
+  /// Slots for offset.
+  void _xOffsetChanged ( double value );
+  void _yOffsetChanged ( double value );
+  void _zOffsetChanged ( double value );
+
+  /// Slots for query tab.
+  void _customQueryChanged ( int state );
+  void _customQueryTextChanged ();
+  void _primaryKeyChanged ();
 
 private:
   Layer::RefPtr _layer;
   QWidget *_colorWidget;
-
+  QWidget *_primitiveWidget;
 };
 
 

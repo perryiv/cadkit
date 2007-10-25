@@ -45,7 +45,7 @@ inline std::string convert ( const QString &source )
 
 
 template < class QtStringContainer, class StandardStringContainer > 
-inline void convert ( const QtStringContainer &q, StandardStringContainer &s )
+inline void convertTo ( const QtStringContainer &q, StandardStringContainer &s )
 {
   s.clear();
   if ( false == q.empty() )
@@ -56,6 +56,19 @@ inline void convert ( const QtStringContainer &q, StandardStringContainer &s )
       const QString &temp ( *i );
       const QByteArray bytes ( temp.toAscii() );
       s.push_back ( std::string ( bytes.begin(), bytes.end() ) );
+    }
+  }
+}
+
+template < class QtStringContainer, class StandardStringContainer > 
+inline void convertFrom ( const StandardStringContainer &s, QtStringContainer &q )
+{
+  q.clear();
+  if ( false == s.empty() )
+  {
+    for ( typename StandardStringContainer::const_iterator i = s.begin(); i != s.end(); ++i )
+    {
+      q.push_back ( i->c_str() );
     }
   }
 }

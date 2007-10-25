@@ -12,7 +12,7 @@
 #include "Minerva/Plugins/PostGISLayerQt/DatabasePage.h"
 #include "Minerva/Plugins/PostGISLayerQt/PropertyPage.h"
 
-#include "Minerva/Interfaces/IAddLayer.h"
+#include "Minerva/Core/Commands/AddLayer.h"
 
 #include <iostream>
 
@@ -76,15 +76,9 @@ AddPostGISLayerWidget::~AddPostGISLayerWidget()
 
 void AddPostGISLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
 {
-  Minerva::Interfaces::IAddLayer::QueryPtr al ( caller );
-
-  if ( false == al.valid () )
-    return;
-
-  Minerva::Core::Layers::Layer::RefPtr layer ( 0x0 != _databasePage ? _databasePage->layer() : 0x0 );
-
-  if ( layer.valid () )
-    al->addLayer ( layer );
+  Usul::Interfaces::ILayer::QueryPtr layer ( 0x0 != _databasePage ? _databasePage->layer() : 0x0 );
+  Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( caller, layer.get() ) );
+  addLayer->execute ( 0x0 );
 }
 
 

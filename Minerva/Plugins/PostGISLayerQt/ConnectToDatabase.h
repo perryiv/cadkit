@@ -30,9 +30,19 @@ public:
     std::string password;
     bool savePassword;
 
+    std::string name () const
+    {
+      return ( database + " on " + hostname );
+    }
+
     bool operator== ( const SavedConnection &rhs ) const
     {
       return ( hostname == rhs.hostname && database == rhs.database );
+    }
+
+    bool operator < ( const SavedConnection& rhs ) const
+    {
+      return this->name() < rhs.name();
     }
   };
 
@@ -46,6 +56,7 @@ public:
   Connection*   exec ();
 
 protected:
+  void _ensureUniqueConnections();
   void _restoreConnections();
   void _populateComboBox ();
   void _saveConnections();

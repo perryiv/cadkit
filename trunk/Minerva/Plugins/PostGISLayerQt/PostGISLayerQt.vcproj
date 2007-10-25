@@ -342,7 +342,7 @@
 							Name="VCCustomBuildTool"
 							Description="Creating ui_LayerProperties.h..."
 							CommandLine="$(QTDIR)\bin\uic.exe .\LayerProperties.ui -o .\ui_LayerProperties.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\PropertyPage.h&quot; -o &quot;.\GeneratedFiles\moc_PropertyPage.cpp&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ui_LayerProperties.h;$(QTDIR)\bin\moc.exe;.\ColorPage.h"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\LayerProperties.ui;$(QTDIR)\bin\moc.exe;.\ColorPage.h"
 							Outputs=".\ui_LayerProperties.h;.\GeneratedFiles\moc_PropertyPage.cpp"
 						/>
 					</FileConfiguration>
@@ -353,7 +353,7 @@
 							Name="VCCustomBuildTool"
 							Description="Creating ui_LayerProperties.h..."
 							CommandLine="$(QTDIR)\bin\uic.exe .\LayerProperties.ui -o .\ui_LayerProperties.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\PropertyPage.h&quot; -o &quot;.\GeneratedFiles\moc_PropertyPage.cpp&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ui_LayerProperties.h;$(QTDIR)\bin\moc.exe;.\ColorPage.h"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\LayerProperties.ui;$(QTDIR)\bin\moc.exe;.\ColorPage.h"
 							Outputs=".\ui_LayerProperties.h;.\GeneratedFiles\moc_PropertyPage.cpp"
 						/>
 					</FileConfiguration>
@@ -450,7 +450,100 @@
 								Outputs=".\GeneratedFiles\moc_UniqueColorWidget.cpp"
 							/>
 						</FileConfiguration>
-
+					</File>
+				</Filter>
+				<Filter
+					Name="Primitives"
+					>
+					<File
+						RelativePath=".\LineWidget.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\LineWidget.h"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								Description="Creating ui_LineWidget.h..."
+								CommandLine="$(QTDIR)\bin\uic.exe .\LineWidget.ui -o .\ui_LineWidget.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\LineWidget.h&quot; -o &quot;.\GeneratedFiles\moc_LineWidget.cpp&#x0D;&#x0A;"
+								AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\LineWidget.ui ;$(QTDIR)\bin\moc.exe;.\LineWidget.h"
+								Outputs=".\ui_LineWidget.h;.\GeneratedFiles\moc_LineWidget.cpp"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								Description="Creating ui_LineWidget.h..."
+								CommandLine="$(QTDIR)\bin\uic.exe .\LineWidget.ui -o .\ui_LineWidget.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\LineWidget.h&quot; -o &quot;.\GeneratedFiles\moc_LineWidget.cpp&#x0D;&#x0A;"
+								AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\LineWidget.ui ;$(QTDIR)\bin\moc.exe;.\LineWidget.h"
+								Outputs=".\ui_LineWidget.h;.\GeneratedFiles\moc_LineWidget.cpp"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\PointWidget.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\PointWidget.h"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								Description="Creating ui_PointWidget.h..."
+								CommandLine="$(QTDIR)\bin\uic.exe .\PointWidget.ui -o .\ui_PointWidget.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\PointWidget.h&quot; -o &quot;.\GeneratedFiles\moc_PointWidget.cpp&#x0D;&#x0A;"
+								AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\PointWidget.ui ;$(QTDIR)\bin\moc.exe;.\PointWidget.h"
+								Outputs=".\ui_PointWidget.h;.\GeneratedFiles\moc_PointWidget.cpp"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								Description="Creating ui_PointWidget.h..."
+								CommandLine="$(QTDIR)\bin\uic.exe .\PointWidget.ui -o .\ui_PointWidget.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\PointWidget.h&quot; -o &quot;.\GeneratedFiles\moc_PointWidget.cpp&#x0D;&#x0A;"
+								AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\PointWidget.ui ;$(QTDIR)\bin\moc.exe;.\PointWidget.h"
+								Outputs=".\ui_PointWidget.h;.\GeneratedFiles\moc_PointWidget.cpp"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\PolygonWidget.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\PolygonWidget.h"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								Description="Creating ui_PolygonWidget.h..."
+								CommandLine="$(QTDIR)\bin\uic.exe .\PolygonWidget.ui -o .\ui_PolygonWidget.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\PolygonWidget.h&quot; -o &quot;.\GeneratedFiles\moc_PolygonWidget.cpp&#x0D;&#x0A;"
+								AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\PolygonWidget.ui ;$(QTDIR)\bin\moc.exe;.\PolygonWidget.h"
+								Outputs=".\ui_PolygonWidget.h;.\GeneratedFiles\moc_PolygonWidget.cpp"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								Description="Creating ui_PolygonWidget.h..."
+								CommandLine="$(QTDIR)\bin\uic.exe .\PolygonWidget.ui -o .\ui_PolygonWidget.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\PolygonWidget.h&quot; -o &quot;.\GeneratedFiles\moc_PolygonWidget.cpp&#x0D;&#x0A;"
+								AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\PolygonWidget.ui ;$(QTDIR)\bin\moc.exe;.\PolygonWidget.h"
+								Outputs=".\ui_PolygonWidget.h;.\GeneratedFiles\moc_PolygonWidget.cpp"
+							/>
+						</FileConfiguration>
 					</File>
 				</Filter>
 			</Filter>
@@ -463,7 +556,7 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="GeneratedItems"
+				Name="GeneratedFiles"
 				>
 				<File
 					RelativePath=".\generatedfiles\moc_AddPostGISLayerWidget.cpp"
@@ -478,15 +571,27 @@
 					>
 				</File>
 				<File
+					RelativePath=".\generatedfiles\moc_GradientColorWidget.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_LineWidget.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_PointWidget.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_PolygonWidget.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\generatedfiles\moc_PropertyPage.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\generatedfiles\moc_SingleColorWidget.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\generatedfiles\moc_GradientColorWidget.cpp"
 					>
 				</File>
 				<File

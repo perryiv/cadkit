@@ -37,7 +37,7 @@ PolygonLayer::PolygonLayer() : BaseClass(),
 _format(),
 _showInterior( true ),
 _showBorder( false ),
-_borderColor(),
+_borderColor( 0.0, 0.0, 0.0, 1.0 ),
 _borderWidth ( 1.0f )
 {
   this->name( "PolygonLayer" );

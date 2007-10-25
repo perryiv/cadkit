@@ -365,10 +365,13 @@ void PlanarProxyGeometry::_drawImplementation( osg::State& state ) const
     ::glEnd();
 #endif
     
+    //state.setVertexPointer ( 3, GL_FLOAT, 0, &intersection.front() );
     ::glVertexPointer ( 3, GL_FLOAT, 0, &intersection.front() );
     ::glDrawElements ( GL_TRIANGLE_FAN, 6, GL_UNSIGNED_SHORT, &_indices.front() );
     
   }
+
+  //state.disableVertexPointer ();
 }
 
 

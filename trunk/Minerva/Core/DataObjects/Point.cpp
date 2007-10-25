@@ -264,7 +264,7 @@ osg::Node* Point::buildScene()
     }
 
     // Set the material.
-    ss->setAttribute ( _material.get(), osg::StateAttribute::ON );
+    ss->setAttribute ( _material.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
 
     // Set the render bin.
     ss->setRenderBinDetails( this->renderBin(), "RenderBin" );

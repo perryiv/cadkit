@@ -25,7 +25,9 @@
 #include "Minerva/Core/Visitors/TemporalAnimation.h"
 #include "Minerva/Core/Visitors/FindMinMaxDates.h"
 
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Case.h"
@@ -40,9 +42,9 @@
 #include "Usul/Jobs/Manager.h"
 #include "Usul/System/Host.h"
 
-#include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
 #include "MenuKit/ToggleButton.h"
+#include "MenuKit/RadioButton.h"
 
 using namespace Minerva::Document;
 
@@ -72,11 +74,13 @@ _commandUpdate ( 5000 ),
 _commandJob ( 0x0 ),
 _animateSettings ( new Minerva::Core::Animate::Settings ),
 _datesDirty ( false ),
-_minDate ( boost::date_time::min_date_time ),
-_maxDate ( boost::date_time::max_date_time ),
 _lastDate ( boost::date_time::min_date_time ),
+_global ( new TimeSpan ),
+_current ( new TimeSpan ),
+_timeSpans (),
 _lastTime ( -1.0 ),
 _animationSpeed ( 0.1f ),
+_timeSpanMenu ( new MenuKit::Menu ( "Time Spans" ) ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
   // Initialize the planet.
@@ -89,6 +93,7 @@ SERIALIZE_XML_INITIALIZER_LIST
   SERIALIZE_XML_ADD_MEMBER ( _commandsReceive );
   SERIALIZE_XML_ADD_MEMBER ( _sessionName );
   SERIALIZE_XML_ADD_MEMBER ( _connection );
+  SERIALIZE_XML_ADD_MEMBER ( _timeSpans );
 
 #ifndef _MSC_VER
   //this->elevationEnabled ( false );
@@ -1160,10 +1165,19 @@ void MinervaDocument::stopAnimation()
   {
     Guard guard ( this->mutex () );
     _animateSettings->animate ( false );
+
+    // Reset dates.
+    if ( _global.valid () )
+    {
+      typedef Minerva::Core::Visitors::TemporalAnimation Visitor;
+      Visitor::RefPtr visitor ( new Visitor ( _global->firstDate(), _global->lastDate() ) );
+      this->accept ( *visitor );
+    }
   }
-  // Reset dates.
-  Minerva::Core::Visitors::TemporalAnimation::RefPtr visitor ( new Minerva::Core::Visitors::TemporalAnimation ( _minDate, _maxDate ) );
-  this->accept ( *visitor );
+
+  // Update the text.
+  this->sceneManager()->dateText().setText( "" );
+  this->sceneManager()->dateText().update ();
 }
 
 
@@ -1516,84 +1530,75 @@ Magrathea::Planet* MinervaDocument::planet ()
 
 void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
 {
-  //std::cout << "Animate: " << ( _animateSettings->animate () ? "YES" : "NO" ) << std::endl;
-  bool datesDirty ( false );
-  {
-    Guard guard ( this->mutex () );
-    datesDirty = _datesDirty;
-  }
+  Guard guard ( this->mutex () );
 
+  // If we are suppose to animate...
   if ( _animateSettings->animate () )
   {
-    if ( datesDirty )
+    if ( _datesDirty )
     {
-      Minerva::Core::Visitors::FindMinMaxDates::RefPtr findMinMax ( new Minerva::Core::Visitors::FindMinMaxDates );
-      this->accept ( *findMinMax );
+      this->_findFirstLastDate();
 
-      _minDate = findMinMax->first ();
-      _maxDate = findMinMax->last ();
-      _lastDate = _minDate;
-
-      Guard guard ( this->mutex () );
       _datesDirty = false;
+
+      // Rebuild the time spans menu.
+      this->_buildTimeSpanMenu();
     }
 
-    if ( false == _animateSettings->pause () )
+    if ( false == _animateSettings->pause () && _current.valid() )
     {
       Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
-      if ( fs.valid () )
+      double time ( fs.valid () ? fs->frameStamp()->getReferenceTime () : 0.0 );
+
+      // Set the last time if it hasn't been set.
+      if ( -1.0 == _lastTime )
+        _lastTime = time;
+
+      // Duration between last time the date was incremented.
+      double duration ( time - _lastTime );
+
+      Minerva::Core::Animate::Date lastDate ( _lastDate );
+
+      //std::cout << "Time: " << time << " Duration: " << duration << " Speed: " << _animationSpeed <<  std::endl;
+
+      // Animate if we should.
+      if ( duration > 0.1f /*_animationSpeed*/ )
       {
-        osg::ref_ptr < osg::FrameStamp > frameStamp ( fs->frameStamp () );
+        if( _animateSettings->timestepType() == Settings::DAY )
+          lastDate.incrementDay();
+        else if ( _animateSettings->timestepType() == Settings::MONTH )
+          lastDate.incrementMonth();
+        else if ( _animateSettings->timestepType() == Settings::YEAR )
+          lastDate.incrementYear();
+        _lastTime = time;
 
-        double time ( frameStamp->getReferenceTime () );
-
-        // Set the last time if it hasn't been set.
-        if ( -1.0 == _lastTime )
-          _lastTime = time;
-
-        // Duration between last time the date was incremented.
-        double duration ( time - _lastTime );
-
-        Minerva::Core::Animate::Date lastDate ( _lastDate );
-
-        std::cout << "Time: " << time << " Duration: " << duration << " Speed: " << _animationSpeed <<  std::endl;
-
-        // Animate if we should.
-        if ( duration > 0.1f /*_animationSpeed*/ )
+        // Wrap if we've gone beyond the last date.
+        if( lastDate > _current->lastDate() )
         {
-          if( _animateSettings->timestepType() == Settings::DAY )
-            lastDate.incrementDay();
-          else if ( _animateSettings->timestepType() == Settings::MONTH )
-            lastDate.incrementMonth();
-          else if ( _animateSettings->timestepType() == Settings::YEAR )
-            lastDate.incrementYear();
-          _lastTime = time;
-
-          if( lastDate > _maxDate )
-          {
-            lastDate = _minDate;
-          }
-
-          Minerva::Core::Animate::Date firstDate ( lastDate );
-
-          if ( _animateSettings->showPastDays() )
-          {
-            firstDate = _minDate;
-          }
-
-          if( _animateSettings->timeWindow() )
-          {
-            firstDate = lastDate;
-            firstDate.moveBackNumDays( _animateSettings->windowLength() );
-          }
-
-          this->sceneManager()->dateText().setText( lastDate.toString() );
-          this->sceneManager()->dateText().update ();
-          _lastDate = lastDate;
-
-          Minerva::Core::Visitors::TemporalAnimation::RefPtr visitor ( new Minerva::Core::Visitors::TemporalAnimation ( firstDate, lastDate ) );
-          this->accept ( *visitor );
+          lastDate = _current->firstDate();
         }
+
+        Minerva::Core::Animate::Date firstDate ( lastDate );
+
+        if ( _animateSettings->showPastDays() )
+        {
+          firstDate = _current->firstDate();
+        }
+
+        if( _animateSettings->timeWindow() )
+        {
+          firstDate = lastDate;
+          firstDate.moveBackNumDays( _animateSettings->windowLength() );
+        }
+
+        // Update the text.
+        this->sceneManager()->dateText().setText( lastDate.toString() );
+        this->sceneManager()->dateText().update ();
+        _lastDate = lastDate;
+
+        // Set the dates to show.
+        Minerva::Core::Visitors::TemporalAnimation::RefPtr visitor ( new Minerva::Core::Visitors::TemporalAnimation ( firstDate, lastDate ) );
+        this->accept ( *visitor );
       }
     }
   }
@@ -1661,6 +1666,7 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu )
 
   m->append ( new Button       ( new Minerva::Core::Commands::StartAnimation ( me ) ) );
   m->append ( new Button       ( new Minerva::Core::Commands::StopAnimation  ( me ) ) );
+  m->append ( new Button       ( new Minerva::Core::Commands::PauseAnimation ( me ) ) );
   m->append ( new ToggleButton ( new Minerva::Core::Commands::ShowPastEvents ( me ) ) );
 
   {
@@ -1670,5 +1676,92 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu )
     m->append ( layerMenu.get() );
   }
 
+  // Time spans.
+  this->_buildTimeSpanMenu();
+  m->append ( _timeSpanMenu.get() );
+
   menu.append ( m );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build time span menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_buildTimeSpanMenu()
+{
+  typedef MenuKit::RadioButton  RadioButton;
+
+  _timeSpanMenu->clear();
+
+  if ( _global.valid() )
+    _timeSpanMenu->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( _global->name(), 
+                                                                          Usul::Adaptors::bind1<void> ( _global, Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::currentTimeSpan ) ), 
+                                                                          Usul::Adaptors::bind1<bool> ( _global, Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isCurrentTimeSpan ) ) ) ) );
+
+  for ( TimeSpans::iterator iter = _timeSpans.begin(); iter != _timeSpans.end(); ++iter )
+  {
+    _timeSpanMenu->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( (*iter)->name(), 
+                                                                          Usul::Adaptors::bind1<void> ( *iter, Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::currentTimeSpan ) ), 
+                                                                          Usul::Adaptors::bind1<bool> ( *iter, Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isCurrentTimeSpan ) ) ) ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the current time span.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::currentTimeSpan ( TimeSpan::RefPtr span )
+{
+  Guard guard ( this );
+  _current = span;
+
+  if ( _current.valid() )
+    _lastDate = _current->firstDate();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the current time span.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::isCurrentTimeSpan ( TimeSpan::RefPtr span ) const
+{
+  Guard guard ( this );
+  return span.get() ==  _current.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find first and last date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_findFirstLastDate()
+{
+  Guard guard ( this );
+
+  Minerva::Core::Visitors::FindMinMaxDates::RefPtr findMinMax ( new Minerva::Core::Visitors::FindMinMaxDates );
+  this->accept ( *findMinMax );
+
+  TimeSpan::RefPtr global ( new TimeSpan );
+
+  global->firstDate ( findMinMax->first() );
+  global->lastDate ( findMinMax->last() );
+
+  // Set the current to the new global.
+  if ( _current == _global )
+    _current = global;
+  
+  _lastDate = findMinMax->first();
+
+  _global = global;
 }

@@ -76,7 +76,7 @@ void AddOssimLayerWidget::_browseClicked()
 {
   try
   {
-    std::string filters ( "All Files(*.*);;JPEG (*.jpg);;TIFF (*.tiff,*.tif);;PNG (*.png);;OSSIM Key Word List (*kwl)" );
+    std::string filters ( "All Files (*.*);;JPEG (*.jpg);;TIFF (*.tiff *.tif);;PNG (*.png);;OSSIM Key Word List (*kwl)" );
 
     // Get the last directory.
     std::string directory ( Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY].get < std::string > ( "" ) );

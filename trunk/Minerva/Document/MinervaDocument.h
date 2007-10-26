@@ -28,6 +28,7 @@
 #include "Usul/Interfaces/ICommandExecuteListener.h"
 
 #include "Minerva/Core/Animate/Settings.h"
+#include "Minerva/Core/Animate/TimeSpan.h"
 #include "Minerva/Core/Scene/SceneManager.h"
 #include "Minerva/Core/DB/Connection.h"
 #include "Minerva/Core/Layers/Layer.h"
@@ -37,6 +38,8 @@
 #include "Minerva/Interfaces/IDirtyScene.h"
 
 #include "Magrathea/Planet.h"
+
+#include "MenuKit/Menu.h"
 
 #include "Serialize/XML/Macros.h"
 
@@ -69,6 +72,8 @@ public:
   typedef std::vector < Usul::Interfaces::ILayer::QueryPtr > Layers;
   typedef Minerva::Core::Scene::SceneManager SceneManager;
   typedef Minerva::Core::Animate::Settings Settings;
+  typedef Minerva::Core::Animate::TimeSpan TimeSpan;
+  typedef std::vector < TimeSpan::RefPtr > TimeSpans;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( MinervaDocument );
@@ -217,6 +222,10 @@ public:
 
   /// Have visitor visit all layes.
   void                                     accept ( Minerva::Core::Visitor& visitor );
+
+  /// Set the current time span.
+  void                                     currentTimeSpan ( TimeSpan::RefPtr span );
+  bool                                     isCurrentTimeSpan ( TimeSpan::RefPtr span ) const;
 protected:
   virtual ~MinervaDocument();
 
@@ -237,6 +246,12 @@ protected:
 
   /// Animate.
   void                                     _animate ( Usul::Interfaces::IUnknown *caller );
+
+  /// Build time span menu.
+  void                                     _buildTimeSpanMenu();
+
+  /// Find first and last date.
+  void                                     _findFirstLastDate();
 
   /// Minerva::Interfaces::IAddLayer
   virtual void                             addLayer ( Usul::Interfaces::ILayer * layer );
@@ -277,12 +292,14 @@ private:
 
   /// Animation members.
   Minerva::Core::Animate::Settings::RefPtr  _animateSettings;
-  Minerva::Core::Animate::Date _minDate;
-  Minerva::Core::Animate::Date _maxDate;
   Minerva::Core::Animate::Date _lastDate;
+  TimeSpan::RefPtr _global;
+  TimeSpan::RefPtr _current;
+  TimeSpans _timeSpans;
   bool _datesDirty;
   double _lastTime;
   double _animationSpeed;
+  MenuKit::Menu::RefPtr _timeSpanMenu;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME( MinervaDocument );

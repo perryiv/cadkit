@@ -17,6 +17,7 @@
 #include "Minerva/Core/Animate/Date.h"
 
 #include "Usul/Strings/Split.h"
+#include "Usul/Strings/Convert.h"
 
 #include <vector>
 #include <sstream>
@@ -305,4 +306,97 @@ void Date::incrementYear()
 {
   boost::gregorian::years one(1);
   _date = _date + one;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper struct to convert string to int for a given month name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct MonthToInt
+  {
+    typedef std::map < std::string, int > Months;
+
+    MonthToInt () : _months()
+    {
+      _months.insert ( Months::value_type ( "jan", 1 ) );
+      _months.insert ( Months::value_type ( "feb", 2 ) );
+      _months.insert ( Months::value_type ( "mar", 3 ) );
+      _months.insert ( Months::value_type ( "apr", 4 ) );
+      _months.insert ( Months::value_type ( "may", 5 ) );
+      _months.insert ( Months::value_type ( "jun", 6 ) );
+      _months.insert ( Months::value_type ( "jul", 7 ) );
+      _months.insert ( Months::value_type ( "aug", 8 ) );
+      _months.insert ( Months::value_type ( "sep", 9 ) );
+      _months.insert ( Months::value_type ( "oct", 10 ) );
+      _months.insert ( Months::value_type ( "nov", 11 ) );
+      _months.insert ( Months::value_type ( "dec", 12 ) );
+    }
+
+    int operator () ( const std::string& s )
+    {
+      std::string month ( s );
+      std::transform ( month.begin(), month.end(), month.begin(), ::tolower );
+
+      return _months[month];
+    }
+
+  private:
+    Months _months;
+  };
+
+  MonthToInt monthToInt;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the date to stream.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::ostream& operator<<( std::ostream& out, const Date& date )
+{
+  USUL_TRACE_SCOPE_STATIC;
+
+  out << date.toString();
+  return out;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the date from stream.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::istream& operator>> ( std::istream& in, Date& date )
+{
+  USUL_TRACE_SCOPE_STATIC;
+
+  std::string s;
+  in >> s;
+
+  // Get the 3 components of the month.
+  std::vector < std::string > strings;
+  Usul::Strings::split ( s, '-', false, strings );
+
+  if ( 3 == strings.size() )
+  {
+    // Year.
+    int year ( Usul::Strings::fromString <int> ( strings[0] ) );
+
+    // Month.
+    int month ( Detail::monthToInt ( strings[1] ) );
+
+    // Day
+    int day ( Usul::Strings::fromString <int> ( strings[2] ) );
+
+    date = Date ( boost::gregorian::date ( year, month, day ) );
+  }
+  return in;
 }

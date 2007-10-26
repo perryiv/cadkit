@@ -70,6 +70,9 @@ public:
   Document *                              document();
   const Document *                        document() const;
 
+  /// Edit the background.
+  void                                    editBackground();
+
   // Get the mutex.
   Mutex &                                 mutex() const;
 

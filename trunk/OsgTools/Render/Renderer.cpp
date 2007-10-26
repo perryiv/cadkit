@@ -95,6 +95,11 @@ Renderer::Renderer() : BaseClass(),
 
   // Set the viewer's defaults.
   _sceneView->setDefaults();
+
+  // Turn this on for more debuging information.
+#if 0
+  _sceneView->getState()->setCheckForGLErrors( osg::State::ONCE_PER_ATTRIBUTE );
+#endif
 }
 
 

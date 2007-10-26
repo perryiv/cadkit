@@ -33,6 +33,9 @@ public:
 
   void     buildTree ( Usul::Interfaces::IUnknown * document );
 
+signals:
+  void enableWidgets ( bool );
+
 protected:
   void     _connectTreeViewSlots ();
 

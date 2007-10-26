@@ -257,6 +257,17 @@
 							Outputs=".\GeneratedFiles\moc_LayersTree.cpp"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing LayersTree.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\LayersTree.h&quot; -o &quot;.\GeneratedFiles\moc_LayersTree.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\LayersTree.h"
+							Outputs=".\GeneratedFiles\moc_LayersTree.cpp"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter

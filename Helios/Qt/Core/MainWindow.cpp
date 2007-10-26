@@ -816,23 +816,22 @@ MainWindow::FileResult MainWindow::getSaveFileName  ( const std::string &title, 
   const std::string allFilters ( this->_formatFilters ( filters ) );
 
   // Get the current filter.
-  const std::string filter ( this->_lastFileDialogFilter ( title ) );
+  QString filter ( this->_lastFileDialogFilter ( title ).c_str() );
 
   // Get the directory.
   const std::string dir ( this->_lastFileDialogDir ( title ) );
 
   // Need to use this static function to get native file dialog.
-  QString answer ( QFileDialog::getSaveFileName ( this, title.c_str(), dir.c_str(), allFilters.c_str(), 0x0 ) );
+  QString answer ( QFileDialog::getSaveFileName ( this, title.c_str(), dir.c_str(), allFilters.c_str(), &filter ) );
 
   if( 0 != answer.size () )
   {
     std::string filename ( answer.toStdString() );
     std::string directory ( Usul::File::directory ( filename, false ) );
-    std::string filter ( "" );
 
     // Save the directory and filter.
     this->_lastFileDialogDir    ( title, directory );
-    this->_lastFileDialogFilter ( title, filter    );
+    this->_lastFileDialogFilter ( title, filter.toStdString() );
 
     file.first = filename;
   }

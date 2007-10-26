@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Plugins/LayerManager/LayersTree.h"
+#include "Minerva/Core/Commands/RemoveLayer.h"
 #include "Minerva/Core/Commands/HideLayer.h"
 #include "Minerva/Core/Commands/ShowLayer.h"
 
@@ -71,6 +72,18 @@ _document ()
 
   connect ( refresh, SIGNAL ( clicked () ),
             this,    SLOT   ( _onRefreshClick () ) );
+
+  connect ( this,         SIGNAL ( enableWidgets ( bool ) ),
+            addLayer,     SLOT   ( setEnabled ( bool ) ) );
+
+  connect ( this,         SIGNAL ( enableWidgets ( bool ) ),
+            removeLayer,  SLOT   ( setEnabled ( bool ) ) );
+
+  connect ( this,         SIGNAL ( enableWidgets ( bool ) ),
+            refresh,      SLOT   ( setEnabled ( bool ) ) );
+
+  // Disable by default.
+  emit enableWidgets( false );
 }
 
 
@@ -105,6 +118,9 @@ void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
 
   // See if the correct interface is implemented.
   Usul::Interfaces::ILayerList::QueryPtr layers ( document );
+
+  emit enableWidgets( layers.valid() );
+
   if ( false == layers.valid() )
     return;
 
@@ -251,7 +267,6 @@ void LayersTree::_onAddLayerClick ()
     }
 
     delete dialog;
-    //delete toolbox;
 
     this->buildTree ( _document );
   }
@@ -269,6 +284,20 @@ void LayersTree::_onAddLayerClick ()
 
 void LayersTree::_onRemoveLayerClick ()
 {
+  QTreeWidgetItem * item ( _tree->currentItem() );
+
+  if ( 0x0 != item )
+  {
+    Layer::RefPtr layer ( _layerMap [ item ] );
+
+    if ( layer.valid () )
+    {
+      Minerva::Core::Commands::RemoveLayer::RefPtr command ( new Minerva::Core::Commands::RemoveLayer ( layer.get() ) );
+      command->execute ( _document );
+
+      this->buildTree ( _document );
+    }
+  }
 }
 
 

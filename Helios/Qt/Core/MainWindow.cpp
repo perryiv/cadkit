@@ -760,27 +760,26 @@ MainWindow::FilesResult MainWindow::getLoadFileNames ( const std::string &title,
   // Set the filter string.
   const std::string allFilters ( this->_formatFilters ( filters ) );
 
-  // Get the current filter.
-  const std::string filter ( this->_lastFileDialogFilter ( title ) );
-
   // Get the directory.
   const std::string dir ( this->_lastFileDialogDir ( title ) );
 
+  // Get the current filter.
+  QString filter ( this->_lastFileDialogFilter( title ).c_str() );
+
   // Need to use this static function to get native file dialog.
-  QStringList answer ( QFileDialog::getOpenFileNames ( this, title.c_str(), dir.c_str(), allFilters.c_str(), 0x0 ) );
+  QStringList answer ( QFileDialog::getOpenFileNames ( this, title.c_str(), dir.c_str(), allFilters.c_str(), &filter ) );
 
   // If we have at least one file.
   if( false == answer.empty() )
   {
     std::string filename ( answer.first().toStdString() );
     std::string directory ( Usul::File::directory ( filename, false ) );
-    std::string filter ( "" );
 
     // Save the directory and filter.
     this->_lastFileDialogDir    ( title, directory );
-    this->_lastFileDialogFilter ( title, filter    );
+    this->_lastFileDialogFilter ( title, filter.toStdString() );
 
-    files.second.first = filter;
+    files.second.first = filter.toStdString();
 
     // Fox and WinForms both use a string for the filter "label" and another 
     // one for the actual file extensions. Qt does not, so the fact that 
@@ -924,7 +923,12 @@ std::string MainWindow::_lastFileDialogFilter ( const std::string &title ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  std::string filter;
+
+  // Copy the title and replace any white space.
+  std::string key ( title );
+  std::replace ( key.begin(), key.end(), ' ', '_' );
+
+  const std::string filter ( Reg::instance()[Sections::FILE_DIALOG][Keys::LAST_FILTER][key].get ( "" ) );
   return filter;
 }
 
@@ -939,6 +943,12 @@ void MainWindow::_lastFileDialogFilter ( const std::string &title, const std::st
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+  
+  // Copy the title and replace any white space.
+  std::string key ( title );
+  std::replace ( key.begin(), key.end(), ' ', '_' );
+
+  Reg::instance()[Sections::FILE_DIALOG][Keys::LAST_FILTER][key] = filter;
 }
 
 

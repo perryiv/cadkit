@@ -12,6 +12,7 @@
 #include "Minerva/Plugins/OssimLayerQt/AddOssimLayerWidget.h"
 
 #include "Usul/File/Path.h"
+#include "Usul/Registry/Database.h"
 
 #include "Minerva/Interfaces/IAddLayer.h"
 
@@ -24,6 +25,12 @@
 #include "QtGui/QPushButton"
 
 #include <iostream>
+
+namespace Detail
+{
+  const std::string SECTION  ( "add_file_system_layer" );
+  const std::string KEY      ( "directory" );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -71,8 +78,17 @@ void AddOssimLayerWidget::_browseClicked()
   {
     std::string filters ( "All Files(*.*);;JPEG (*.jpg);;TIFF (*.tiff,*.tif);;PNG (*.png);;OSSIM Key Word List (*kwl)" );
 
+    // Get the last directory.
+    std::string directory ( Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY].get < std::string > ( "" ) );
+
     // Need to use this static function to get native file dialog.
-    QStringList answer ( QFileDialog::getOpenFileNames ( this, "Open Image", "", filters.c_str(), 0x0 ) );
+    QStringList answer ( QFileDialog::getOpenFileNames ( this, "Open Image", directory.c_str(), filters.c_str(), 0x0 ) );
+
+    if ( false == answer.empty() )
+    {
+      std::string directory ( Usul::File::directory ( answer.first().toStdString(), false ) );
+      Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY] = directory;
+    }
 
     for ( QStringList::iterator iter = answer.begin(); iter != answer.end (); ++iter )
       _listView->addItem ( *iter );

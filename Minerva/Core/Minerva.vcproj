@@ -622,6 +622,14 @@
 						RelativePath=".\Animate\Settings.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Animate\TimeSpan.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Animate\TimeSpan.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter

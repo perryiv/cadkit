@@ -33,6 +33,7 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   PauseAnimation ( );
+  PauseAnimation ( Usul::Interfaces::IUnknown *caller );
 
 protected:
   virtual ~PauseAnimation();

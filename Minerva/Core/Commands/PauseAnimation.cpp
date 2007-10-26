@@ -28,6 +28,20 @@ USUL_FACTORY_REGISTER_CREATOR ( PauseAnimation );
 PauseAnimation::PauseAnimation ( ) : 
   BaseClass( 0x0 )
 {
+  this->text ( "Pause Animation" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PauseAnimation::PauseAnimation ( Usul::Interfaces::IUnknown *caller ) : 
+  BaseClass( caller )
+{
+  this->text ( "Pause Animation" );
 }
 
 

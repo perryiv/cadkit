@@ -13,6 +13,8 @@
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
 
+#include "Usul/Trace/Trace.h"
+
 #include "osg/MatrixTransform"
 #include "osg/Group"
 #include "osg/Geode"
@@ -28,10 +30,12 @@ GFX::GFX(Skin* s, Item *a): BaseClass(), _skin(s), _active(a)
 
 GFX::GFX(const GFX& g): BaseClass(g), _skin(g._skin), _active(g._active)
 {
+  USUL_TRACE_SCOPE;
 }
 
 GFX& GFX::operator = (const GFX& g)
 {
+  USUL_TRACE_SCOPE;
   BaseClass::operator = (g);
   _skin = g._skin;
   _active = g._active;
@@ -40,6 +44,7 @@ GFX& GFX::operator = (const GFX& g)
 
 osg::Node* GFX::operator() ( const Item* top )
 {
+  USUL_TRACE_SCOPE;
   osg::ref_ptr<osg::Group> scene = new osg::Group;
 
   float pw = _skin->graphic_width( top );
@@ -70,6 +75,7 @@ osg::Node* GFX::operator() ( const Item* top )
 
 osg::Node* GFX::traverse(const Menu* menu,float mwidth)
 {
+  USUL_TRACE_SCOPE;
   osg::ref_ptr<osg::Group> scene = new osg::Group();
 
   if( menu->expanded() && (menu->items().size()>0) )
@@ -127,6 +133,7 @@ osg::Node* GFX::traverse(const Menu* menu,float mwidth)
 osg::Vec3 GFX::calculate_move(const Menu* menu, const Item* child, const Item* prevchild, unsigned int index,
                               float menuwidth, float localwidth,float& xaccum, float& yaccum)
 {
+  USUL_TRACE_SCOPE;
   osg::Vec3 move(0.0,0.0,0.0);
   switch( menu->layout() )
   {
@@ -211,6 +218,7 @@ osg::Vec3 GFX::calculate_move(const Menu* menu, const Item* child, const Item* p
 
 void GFX::_setSkinMode ( const Item *item )
 {
+  USUL_TRACE_SCOPE;
   if ( !item->enabled() )
     _skin->mode ( Skin::DISABLED );
   else if ( this->_isInActivePath ( item ) )
@@ -228,6 +236,7 @@ void GFX::_setSkinMode ( const Item *item )
 
 bool GFX::_isInActivePath ( const Item *item )
 {
+  USUL_TRACE_SCOPE;
   // Get the active item.
   const Item *active = _active.get();
 

@@ -21,10 +21,11 @@ USUL_IMPLEMENT_COMMAND ( MpdMenuCommand );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MpdMenuCommand::MpdMenuCommand ( Usul::Interfaces::IUnknown * caller, const std::string text, unsigned int index ) :
+MpdMenuCommand::MpdMenuCommand ( Usul::Interfaces::IUnknown * caller, const std::string text, unsigned int set, unsigned int group ) :
   BaseClass ( caller ),
   _text ( text ),
-  _index ( index )
+  _set ( set ),
+  _group( group )
 {
   USUL_TRACE_SCOPE;
   this->text ( text );
@@ -55,9 +56,10 @@ void MpdMenuCommand::_execute ()
   
 #if 1
   Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller() );
+
   if ( nav.valid () )
   {
-    nav->nextGroup ( _index );
+    nav->setGroup( _set, _group );
   }
 #endif
 }
@@ -71,7 +73,15 @@ void MpdMenuCommand::_execute ()
 
 bool MpdMenuCommand::updateCheck () const
 {
+  USUL_TRACE_SCOPE;
+
   // Implement me to update radio state.
-  return true;
+  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller() ) );
+
+  unsigned int currentGroup = nav->getCurrentGroupFromSet( _set );
+  if( currentGroup == _group )
+    return true;
+  else
+    return false;
 }
 

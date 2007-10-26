@@ -129,7 +129,7 @@ void GradientBackground::init()
   osg::ref_ptr<osg::StateSet> state ( geode->getOrCreateStateSet() );
   state->setMode ( GL_LIGHTING,   osg::StateAttribute::PROTECTED | osg::StateAttribute::OFF );
   state->setMode ( GL_DEPTH_TEST, osg::StateAttribute::PROTECTED | osg::StateAttribute::OFF );
-  osg::ref_ptr<osg::PolygonMode> mode ( new osg::PolygonMode ( osg::PolygonMode::FRONT, osg::PolygonMode::FILL ) );
+  osg::ref_ptr<osg::PolygonMode> mode ( new osg::PolygonMode ( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL ) );
   state->setAttributeAndModes ( mode.get(), osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
   osg::ref_ptr<osg::ShadeModel> shading ( new osg::ShadeModel );
   state->setAttributeAndModes ( shading.get(), osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );

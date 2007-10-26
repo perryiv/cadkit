@@ -10,12 +10,14 @@
 
 #include "Helios/Qt/Views/OSG/Viewer.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Commands/PolygonMode.h"
 #include "Usul/Commands/RenderingPasses.h"
 #include "Usul/Commands/RenderLoop.h"
 #include "Usul/Commands/ShadeModel.h"
+#include "Usul/Commands/GenericCommand.h"
 
 #include "OsgTools/Render/Defaults.h"
 
@@ -24,8 +26,11 @@
 #include "MenuKit/RadioButton.h"
 #include "MenuKit/ToggleButton.h"
 
+#include "QtTools/Color.h"
+
 #include "QtCore/QTimer"
 #include "QtGui/QResizeEvent"
+#include "QtGui/QColorDialog"
 
 using namespace CadKit::Helios::Views::OSG;
 
@@ -877,12 +882,15 @@ void Viewer::menuAdd( MenuKit::Menu &menu )
     Usul::Interfaces::IUnknown::QueryPtr viewer ( this->viewer () );
 
     // Typedefs.
+    typedef MenuKit::Button Button;
     typedef MenuKit::RadioButton RadioButton;
     typedef Usul::Commands::RenderingPasses RenderingPasses;
     typedef Usul::Commands::PolygonMode PolygonMode;
     typedef Usul::Interfaces::IPolygonMode IPolygonMode;
     typedef Usul::Commands::ShadeModel ShadeModel;
     typedef Usul::Interfaces::IShadeModel IShadeModel;
+
+    view->append ( new Button ( Usul::Commands::genericCommand ( "Edit Background", Usul::Adaptors::memberFunction<void> ( this, &Viewer::editBackground ), Usul::Commands::TrueFunctor() ) ) );
 
     // Rendering passes menu.
     {
@@ -924,4 +932,24 @@ void Viewer::menuAdd( MenuKit::Menu &menu )
       shading->append ( new RadioButton ( new ShadeModel ( "Flat",   IShadeModel::FLAT, viewer.get() ) ) );
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Edit the background.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::editBackground()
+{
+  // Get the color.
+  QColor color ( QColorDialog::getColor ( ) );
+  
+  // Get the viewer.
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+
+  // Make sure both are valid...
+  if ( color.isValid() && viewer.valid() )
+    viewer->backgroundColor ( QtTools::Color< osg::Vec4 >::convert ( color ) );
 }

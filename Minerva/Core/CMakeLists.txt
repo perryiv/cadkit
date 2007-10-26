@@ -73,6 +73,7 @@ SET (SOURCES
 ./Commands/ShowPastEvents.cpp 
 ./Animate/Date.cpp
 ./Animate/Settings.cpp
+./Animate/TimeSpan.cpp
 ./Visitors/TemporalAnimation.cpp
 ./Visitors/FindMinMaxDates.cpp
 )

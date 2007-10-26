@@ -85,27 +85,11 @@ private:
   boost::gregorian::date _date;
 };
 
-
-inline std::ostream& operator<<( std::ostream& out, const Date& date )
-{
-  USUL_TRACE_SCOPE_STATIC;
-
-  out << date.toString();
-  return out;
-}
-
-inline std::istream& operator>> ( std::istream& in, Date& date )
-{
-  USUL_TRACE_SCOPE_STATIC;
-
-  std::string s;
-  in >> s;
-  date.fromString( s );
-  return in;
-}
-
 }
 }
 }
+
+std::ostream& operator<<( std::ostream& out, const Minerva::Core::Animate::Date& date );
+std::istream& operator>> ( std::istream& in, Minerva::Core::Animate::Date& date );
 
 #endif // __MINERVA_CORE_ANIMATE_DATE_H__

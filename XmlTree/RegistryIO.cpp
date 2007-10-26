@@ -34,7 +34,7 @@ using namespace XmlTree;
 
 void RegistryIO::read ( const std::string &file )
 {
-  USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE_STATIC;
 
   // Read xml tree.
   XmlTree::Loader loader;
@@ -55,7 +55,7 @@ void RegistryIO::read ( const std::string &file )
 
 void RegistryIO::write ( const std::string &file )
 {
-  USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE_STATIC;
 
   // Build xml tree.
   XmlTree::RegistryVisitor::RefPtr visitor ( new XmlTree::RegistryVisitor );

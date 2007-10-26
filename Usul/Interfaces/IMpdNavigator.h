@@ -50,7 +50,11 @@ struct IMpdNavigator : public Usul::Interfaces::IUnknown
   // Output the current view matrix
   virtual void              displayViewMatrix() = 0;
 
-  
+  // Get the current group index in a set
+  virtual unsigned int      getCurrentGroupFromSet( unsigned int index ) const = 0;
+
+  // set the current group in the given set
+  virtual void              setGroup ( unsigned int set, unsigned int group ) = 0;
 
 
 }; //struct IVertices

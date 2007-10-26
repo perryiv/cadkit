@@ -50,6 +50,7 @@ public:
   {
     unsigned int index;
     std::string name;
+    std::vector< std::string > groupNames;
   };
   struct MpdGroup
   {
@@ -84,7 +85,6 @@ public:
   typedef Usul::Policies::NumberBased UpdatePolicy;
   typedef std::auto_ptr< UpdatePolicy > UpdatePolicyPtr;
   typedef osg::Matrixf Matrixf;
-
 
   typedef std::vector< osg::ref_ptr< osg::Switch > > MpdScene;
   typedef osg::ref_ptr< osg::Group > GroupPtr;
@@ -140,6 +140,8 @@ public:
   void              firstStep();
   void              setAnimationPath( const std::string& name );
   void              displayViewMatrix();
+  unsigned int      getCurrentGroupFromSet( unsigned int index ) const;
+  void              setGroup ( unsigned int set, unsigned int group );
 
   bool              isAnimating();
   void              isAnimating( bool value );
@@ -154,11 +156,11 @@ protected:
   bool                        _readParameterFile( XmlTree::Node &node, Unknown *caller );
   void                        _parseHeader( XmlTree::Node &node, Unknown *caller );
   void                        _parseStatic( XmlTree::Node &node, Unknown *caller );
-  void                        _parseSet( XmlTree::Node &node, Unknown *caller );
+  void                        _parseSet( XmlTree::Node &node, Unknown *caller, unsigned int setnum );
   void                        _parseTimeSet( XmlTree::Node &node, Unknown *caller );
   void                        _parseLocation( XmlTree::Node &node, Unknown *caller );
   void                        _parseMatrix( XmlTree::Node &node, Unknown *caller, const std::string& name );
-  osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller );
+  osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller, MpdSet & set );
   osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _loadFile( const std::string& filename, Unknown *caller );

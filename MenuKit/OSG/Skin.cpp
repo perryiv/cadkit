@@ -17,6 +17,8 @@
 #include "MenuKit/Button.h"
 #include "MenuKit/Separator.h"
 
+#include "Usul/Trace/Trace.h"
+
 #include "osg/MatrixTransform"
 #include "osg/Group"
 #include "osg/Geode"
@@ -55,6 +57,7 @@ Skin::Skin ( osgText::Font* f,
                             _mode                ( Skin::NORMAL ),
                             _bg_draw_mode        ( bgm )
 {
+  USUL_TRACE_SCOPE;
 }
 
 Skin::Skin ( const Skin& s )  : BaseClass ( s ),
@@ -72,10 +75,12 @@ Skin::Skin ( const Skin& s )  : BaseClass ( s ),
                                 _mode                ( s._mode              ),
                                 _bg_draw_mode        ( s._bg_draw_mode )
 {
+  USUL_TRACE_SCOPE;
 }
 
 Skin& Skin::operator = ( const Skin& s )
 {
+  USUL_TRACE_SCOPE;
   BaseClass::operator = ( s );
   _font                 = s._font;
   _text_color_normal    = s._text_color_normal;
@@ -97,6 +102,7 @@ Skin& Skin::operator = ( const Skin& s )
 
 const osg::Vec4 &Skin::_properTextColor()
 {
+  USUL_TRACE_SCOPE;
   if ( HIGHLIGHT == this->mode() )
     return _text_color_highlight;
   else if ( DISABLED == this->mode() )
@@ -108,6 +114,7 @@ const osg::Vec4 &Skin::_properTextColor()
 
 const osg::Vec4 &Skin::_properBackgroundColor()
 {
+  USUL_TRACE_SCOPE;
   if ( HIGHLIGHT == this->mode() )
     return _bg_color_highlight;
   else if ( DISABLED == this->mode() )
@@ -161,6 +168,7 @@ private:
 
 osg::Node* Skin::create(const MenuKit::Item* itm)
 {
+  USUL_TRACE_SCOPE;
   osg::Node* scene ( 0x0 );
   const MenuKit::Button* b = dynamic_cast<const MenuKit::Button*>( itm );
   if( b )
@@ -180,6 +188,7 @@ osg::Node* Skin::create(const MenuKit::Item* itm)
 
 osg::Node* Skin::create_menu(const Menu* menu)
 {
+  USUL_TRACE_SCOPE;
   float magic = -0.2*(this->height());
 
   Word word( menu->text(), _font.get() );
@@ -239,6 +248,7 @@ osg::Node* Skin::create_menu(const Menu* menu)
 
 osg::Node* Skin::create_button(const Button* button)
 {
+  USUL_TRACE_SCOPE;
   float magic = -0.2*(this->height());
 
   Word word( button->text(), _font.get() );
@@ -317,6 +327,7 @@ osg::Node* Skin::create_button(const Button* button)
 
 osg::Node* Skin::create_separator(const MenuKit::Item* button)
 {
+  USUL_TRACE_SCOPE;
   BackgroundBox box(0.1*(this->height()),(this->width()));
   box.color( (this->_properBackgroundColor()) );
 
@@ -332,6 +343,7 @@ osg::Node* Skin::create_separator(const MenuKit::Item* button)
 
 float Skin::graphic_height(const MenuKit::Item* item)
 {
+  USUL_TRACE_SCOPE;
   const MenuKit::Button* b = dynamic_cast<const MenuKit::Button*>( item );
   if( item && item->separator() )
     return( 0.1*(this->height()) );
@@ -342,6 +354,7 @@ float Skin::graphic_height(const MenuKit::Item* item)
 
 float Skin::graphic_width(const Item* item)
 {
+  USUL_TRACE_SCOPE;
   std::string text ( "" );
 
   // This is hack until building the osg scene is refactored.
@@ -349,6 +362,9 @@ float Skin::graphic_width(const Item* item)
     text = b->text ();
   else if ( const MenuKit::Menu *m = dynamic_cast < const MenuKit::Menu * > ( item ) )
     text = m->text ();
+
+  if ( text.empty() )
+    return 0.0;
 
   Word word( text, _font.get() );
   word.height( 0.5*(this->height()) );
@@ -389,6 +405,7 @@ float Skin::graphic_width(const Item* item)
 
 float Skin::find_max_width(const Menu::Items& items)
 {
+  USUL_TRACE_SCOPE;
   CompareItemsPredicate<Menu::Items::value_type> pred(this);
   Menu::const_iterator iter = std::max_element( items.begin(), items.end(), pred );
 
@@ -397,6 +414,7 @@ float Skin::find_max_width(const Menu::Items& items)
 
 osg::Drawable* Arrow::operator () ()
 {
+  USUL_TRACE_SCOPE;
   osg::Vec3Array* vertices = new osg::Vec3Array();
   float h_2 = 0.5f * height();
   vertices->push_back( osg::Vec3(0.0, h_2 , 0.0) );
@@ -422,6 +440,7 @@ osg::Drawable* Arrow::operator () ()
 
 osg::Drawable* Disk::operator() ()
 {
+  USUL_TRACE_SCOPE;
   float radius = 0.5*height();
 
   osg::Vec3Array* vertices = new osg::Vec3Array();

@@ -22,7 +22,7 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_COMMAND ( MpdMenuCommand );
 
-  MpdMenuCommand ( Usul::Interfaces::IUnknown * caller, const std::string text, unsigned int index );
+  MpdMenuCommand ( Usul::Interfaces::IUnknown * caller, const std::string text, unsigned int set, unsigned int group );
 
 protected:
   virtual ~MpdMenuCommand ();
@@ -33,7 +33,8 @@ protected:
 
 private:
   std::string             _text;
-  unsigned int            _index;
+  unsigned int            _set;
+  unsigned int            _group;
 
 
 };

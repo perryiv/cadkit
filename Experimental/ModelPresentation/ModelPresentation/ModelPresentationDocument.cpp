@@ -363,6 +363,15 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
 }
 
 
+unsigned int ModelPresentationDocument::getCurrentGroupFromSet( unsigned int index ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  return _sets.at( index ).index;
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Go to the next group in the set
@@ -380,6 +389,28 @@ void ModelPresentationDocument::nextGroup ( unsigned int index )
     _sets.at( index ).index = 0;
 
   this->_sceneTree.at( index )->setValue( _sets.at( index ).index, true );
+  
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Show the group in the specified set and hide all others.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::setGroup ( unsigned int set, unsigned int group )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  for( unsigned int i = 0; i < _sceneTree.at( set )->getNumChildren(); ++i )
+  {
+    this->_sceneTree.at( set )->setValue( i, false );
+  }
+    _sets.at( set ).index = group;
+  
+  this->_sceneTree.at( set )->setValue( group, true );
   
 }
 
@@ -568,13 +599,14 @@ bool ModelPresentationDocument::_readParameterFile( XmlTree::Node &node, Unknown
   }
 
   Children& children ( node.children() );
-	
+	unsigned int set = 0;
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
     if ( "set" == node->name() )
     {
-      this->_parseSet( *node, caller );
+      this->_parseSet( *node, caller, set );
+      set ++;
     }
     if ( "timeset" == node->name() )
     {
@@ -774,7 +806,7 @@ void ModelPresentationDocument::_setMatrix( osg::Matrix * matrix, const std::str
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller )
+void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller, unsigned int setnum )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -785,6 +817,7 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller 
   MpdSet set;
   set.index = 0;
   set.name = "Set";
+  
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
     if ( "name" == iter->first )
@@ -799,14 +832,13 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller 
   }
   // TODO: create a set here --
   osg::ref_ptr< osg::Switch > switchNode ( new osg::Switch );
-
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
     if ( "group" == node->name() )
     {
       std::cout << "Found group..." << std::endl;
-      switchNode->addChild( this->_parseGroup( *node, caller ), false );
+      switchNode->addChild( this->_parseGroup( *node, caller, set ), false );
     }
   }
   switchNode->setValue( 0, true );
@@ -828,7 +860,7 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown *caller )
+osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown *caller, MpdSet & set )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -836,12 +868,14 @@ osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown 
   typedef XmlTree::Document::Children Children;
   Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
-
+  std::string groupName = "group";
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
     if ( "name" == iter->first )
     {
-      //Usul::Strings::fromString ( iter->second, _header.gridSize[1] );
+      
+      Usul::Strings::fromString ( iter->second, groupName );
+      set.groupNames.push_back( groupName );
     }
     if ( "numitems" == iter->first )
     {
@@ -1104,7 +1138,7 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
       #else
         filename =  dir + files.at(i).c_str() ;
       #endif
-    std::cout << "\tLoading file: " << filename << std::endl;
+    std::cout << "Loading file: " << filename << std::endl;
     /*
     if( Usul::File::extension( filename.c_str() ) == "ive" ||
         Usul::File::extension( filename.c_str() ) == "IVE" ||
@@ -1186,8 +1220,6 @@ void ModelPresentationDocument::_openDocument ( const std::string &file, Usul::D
   //Guard guard ( this->mutex() );
   if ( 0x0 == document )
     return;
-
-  std::cout << "Opening file: " << file << " ... " << std::endl;
 #if 1
   if( true == document->canOpen( file ) )
     document->open ( file, caller );
@@ -1248,11 +1280,11 @@ ModelPresentationDocument::MatrixVec ModelPresentationDocument::_getInterpolatio
   osg::Vec3d interpolated2 ( ( m2trans[0] - m1trans[0] ) * 0.75 ,
                              ( m2trans[1] - m1trans[1] ) * 0.75, 
                              ( m2trans[2] - m1trans[2] ) * 0.75 ); */
-  osg::Vec3d interpolated1( m1trans + ( ( m2trans - m1trans ) * 0.33 ) );
-  osg::Vec3d interpolated2( m1trans + ( ( m2trans - m1trans ) * 0.67 ) );
+  osg::Vec3d interpolated1( m1trans + ( ( m2trans - m1trans ) * 0.25 ) );
+  osg::Vec3d interpolated2( m1trans + ( ( m2trans - m1trans ) * 0.75 ) );
 
-  osg::Vec3d intpos1 ( interpolated1 + ( normal * ( d / 10 ) ) );
-  osg::Vec3d intpos2 ( interpolated2 + ( normal * ( d / 10 ) ) );
+  osg::Vec3d intpos1 ( interpolated1 + ( normal * ( d /2 ) ) );
+  osg::Vec3d intpos2 ( interpolated2 + ( normal * ( d /2 ) ) );
 
   osg::Matrixd mprime1;
   osg::Matrixd mprime2;
@@ -1310,7 +1342,7 @@ void ModelPresentationDocument::setAnimationPath ( const std::string& name )
   // Get final matrix but don't append yet.
   const osg::Matrixd m1 ( this->_locations[name] );
 
-#if 1
+#if 0
   // Append middle matrices.
   const MatrixVec mvec ( this->_getInterpolationMatrices ( m0, m1 ) );
   for ( MatrixVec::const_iterator i = mvec.begin(); i != mvec.end(); ++i )
@@ -1361,8 +1393,13 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu )
     MenuKit::Menu::RefPtr ModelMenu ( new MenuKit::Menu ( "Models", MenuKit::Menu::VERTICAL ) );
     for( unsigned int i = 0; i < _sets.size(); ++i )
     {
-      //cl.push_back( new MpdMenuCommand( me.get(), _sets.at(i).name, i ) );
-      ModelMenu->append ( new Radio ( new MpdMenuCommand( me.get(), _sets.at(i).name, i ) ) );
+      MenuKit::Menu::RefPtr ModelSubMenu ( new MenuKit::Menu ( _sets.at(i).name, MenuKit::Menu::VERTICAL ) );
+     
+      for( unsigned int j = 0; j < _sets.at( i ).groupNames.size(); ++j )
+      {
+         ModelSubMenu->append ( new Radio ( new MpdMenuCommand( me.get(), _sets.at( i ).groupNames.at( j ), i, j ) ) );
+      }
+      ModelMenu->append( ModelSubMenu.get() );
     }
     
     menu.append ( ModelMenu );
@@ -1386,7 +1423,7 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu )
     MenuKit::Menu::RefPtr locationMenu ( new MenuKit::Menu ( "Locations", MenuKit::Menu::VERTICAL ) );
     for( unsigned int i = 0; i < _locationNames.size(); ++i )
     {  
-       locationMenu->append( new Button ( new MpdLocation( me.get(), _locationNames.at( i )  ) ) );
+       locationMenu->append( new Radio ( new MpdLocation( me.get(), _locationNames.at( i )  ) ) );
     }
     menu.append( locationMenu );
   }

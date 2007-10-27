@@ -25,7 +25,8 @@ ${CADKIT_ROOT_DIR}/VRV
 ${CADKIT_ROOT_DIR}/CadViewer/Plugins/scene_operations
 ${CADKIT_ROOT_DIR}/CadViewer/Plugins/display_scene_stats
 
-${CADKIT_ROOT_DIR}/Helios/Plugins/Animate
+#${CADKIT_ROOT_DIR}/Helios/Plugins/Animate
+${CADKIT_ROOT_DIR}/Experimental/PathAnimation
 
 # ---- Document Plug-ins -------
 ${CADKIT_ROOT_DIR}/Helios/Plugins/SceneModel
@@ -34,6 +35,9 @@ ${CADKIT_ROOT_DIR}/Helios/Plugins/ModflowModel
 ${CADKIT_ROOT_DIR}/Experimental/WRF/WrfModel
 ${CADKIT_ROOT_DIR}/Experimental/DynamicLand/DynamicLandModel
 ${CADKIT_ROOT_DIR}/Experimental/ModelPresentation/ModelPresentation
+
+${CADKIT_ROOT_DIR}/Experimental/StarSystem
+${CADKIT_ROOT_DIR}/Helios/Plugins/StarSystemModel
 
 # ---- Minerva -------
 ${CADKIT_ROOT_DIR}/Magrathea

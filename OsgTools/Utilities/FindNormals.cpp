@@ -136,17 +136,6 @@ void FindNormals::apply(osg::Geode& geode)
           {
             this->_handleDrawElements< osg::DrawElementsUInt > ( *drawElementsUInt, *vertices, *normals, bindPerVertex );
           }
-
-          // This is a poor way of doing this, but it's the easest.
-          //for ( osg::Vec3Array::const_iterator iter = normals->begin(); iter != normals->end(); ++iter )
-          //{
-          //  /*OsgTools::Builders::Arrow arrow;
-          //  arrow.start ( *iter );
-          //  arrow.end( *iter + iter->length() );
-          //  arrow.tessellation ( 0.01f );
-
-          //  _root->addChild( arrow() );*/
-          //}
         }
       }
     }

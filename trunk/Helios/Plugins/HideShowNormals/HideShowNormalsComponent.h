@@ -19,11 +19,10 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/ICommand.h"
-#include "Usul/Interfaces/GUI/IMenuEntry.h"
+#include "Usul/Interfaces/IMenuAdd.h"
 
 class HideShowNormalsComponent : public Usul::Base::Referenced,
-                                 public Usul::Interfaces::ICommand,
-                                 public Usul::Interfaces::IMenuEntry,
+                                 public Usul::Interfaces::IMenuAdd,
                                  public Usul::Interfaces::IPlugin
 {
 public:
@@ -41,21 +40,19 @@ public:
   /// Constructor
   HideShowNormalsComponent();
 
+  void                       showNormals ( bool b);
+  bool                       showNormals () const;
+  bool                       canHideShowNormals () const;
+
 protected:    
   /// Destructor
   ~HideShowNormalsComponent();
 
   /// Usul::Interfaces::IPlugin
-  virtual std::string getPluginName() const;
-    
-  /// Usul::Interfaces::ICommand
-  virtual void execute ( Usul::Interfaces::IUnknown *caller );
+  virtual std::string        getPluginName() const;
+  
+  virtual void               menuAdd ( MenuKit::Menu& menu );
 
-  /// Usul::Interfaces::IMenuEntry
-  virtual std::string   menuText() const;
-  virtual std::string   hotKeyText() const;
-  virtual std::string   statusBarText() const;
-  virtual std::string   menuGroup() const;
 };
 
 #endif /* __HIDESHOWNORMALSCOMPONENT_H__  */		

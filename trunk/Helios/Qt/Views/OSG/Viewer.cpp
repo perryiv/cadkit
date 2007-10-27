@@ -894,9 +894,7 @@ void Viewer::menuAdd( MenuKit::Menu &menu )
 
     // Rendering passes menu.
     {
-      MenuKit::Menu::RefPtr passes ( new MenuKit::Menu );
-      passes->layout ( MenuKit::Menu::VERTICAL );
-      passes->text ( "Rendering Passes" );
+      MenuKit::Menu::RefPtr passes ( new MenuKit::Menu ( "Rendering Passes" ) );
       view->append ( passes.get() );
 
       passes->append ( new RadioButton ( new RenderingPasses ( "1", 1, viewer.get () ) ) );
@@ -910,9 +908,7 @@ void Viewer::menuAdd( MenuKit::Menu &menu )
 
     // Polygons menu.
     {
-      MenuKit::Menu::RefPtr polygons ( new MenuKit::Menu );
-      polygons->layout ( MenuKit::Menu::VERTICAL );
-      polygons->text ( "Polygons" );
+      MenuKit::Menu::RefPtr polygons ( new MenuKit::Menu ( "Polygons" ) );
       view->append ( polygons.get() );
 
       polygons->append ( new RadioButton ( new PolygonMode ( "Filled",       IPolygonMode::FILLED, viewer.get() ) ) );
@@ -923,9 +919,7 @@ void Viewer::menuAdd( MenuKit::Menu &menu )
 
     // Shading menu.
     {
-      MenuKit::Menu::RefPtr shading ( new MenuKit::Menu );
-      shading->layout ( MenuKit::Menu::VERTICAL );
-      shading->text ( "Shading" );
+      MenuKit::Menu::RefPtr shading ( new MenuKit::Menu ( "Shading" ) );
       view->append ( shading.get() );
 
       shading->append ( new RadioButton ( new ShadeModel ( "Smooth", IShadeModel::SMOOTH, viewer.get() ) ) );

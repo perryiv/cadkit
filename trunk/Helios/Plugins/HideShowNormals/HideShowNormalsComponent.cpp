@@ -1,4 +1,4 @@
-﻿
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2005, Adam Kubach
@@ -16,13 +16,15 @@
 
 #include "HideShowNormalsComponent.h"
 
-#include "Usul/App/Controller.h"
-#include "Usul/Documents/Document.h"
-#include "Usul/Interfaces/IActiveView.h"
+#include "Usul/Documents/Manager.h"
+#include "Usul/Adaptors/Bind.h"
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Interfaces/IOpenSceneGraph.h"
 #include "Usul/Interfaces/IGroup.h"
-#include "Usul/Interfaces/IDocument.h"
-#include "Usul/Interfaces/ISendMessage.h"
+
+#include "MenuKit/Menu.h"
+#include "MenuKit/ToggleButton.h"
 
 #include "OsgTools/Utilities/FindNormals.h"
 
@@ -63,12 +65,10 @@ Usul::Interfaces::IUnknown *HideShowNormalsComponent::queryInterface ( unsigned 
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::ICommand::IID:
-    return static_cast < Usul::Interfaces::ICommand*>(this);
-  case Usul::Interfaces::IMenuEntry::IID:
-    return static_cast < Usul::Interfaces::IMenuEntry*>(this);
+  case Usul::Interfaces::IMenuAdd::IID:
+    return static_cast < Usul::Interfaces::IMenuAdd*>(this);
   case Usul::Interfaces::IPlugin::IID:
-    return static_cast < Usul::Interfaces::IPlugin* > ( this );
+    return static_cast < Usul::Interfaces::IPlugin * > ( this );
   default:
     return 0x0;
   }
@@ -86,104 +86,108 @@ std::string HideShowNormalsComponent::getPluginName() const
   return "Hide Show Normals";
 }
 
-	
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Show/Hide new primitives.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void HideShowNormalsComponent::execute ( Usul::Interfaces::IUnknown *caller )
+namespace Detail
 {
+  const std::string GROUP_NAME ( "SHOW_NORMALS" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show/Hide normals.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void HideShowNormalsComponent::showNormals ( bool b )
+{
+  Usul::Interfaces::IView::RefPtr view ( Usul::Documents::Manager::instance().activeView() );
+
   // Get the interface we need.
-  Usul::Interfaces::IActiveView::ValidQueryPtr activeView ( caller );
-  Usul::Interfaces::IOpenSceneGraph::ValidQueryPtr osg ( activeView->getActiveView() );
-  Usul::Interfaces::IDocument::QueryPtr document ( Usul::App::Controller::instance().activeDocument() );
-  Usul::Interfaces::ISendMessage::QueryPtr message ( document );
-  Usul::Interfaces::IGroup::QueryPtr group ( activeView->getActiveView() );
+  Usul::Interfaces::IOpenSceneGraph::QueryPtr osg ( view );
+  Usul::Interfaces::IGroup::QueryPtr group ( view );
 
-  // Get the scene.
-  osg::ref_ptr<osg::Node> model ( dynamic_cast < osg::Node * > ( osg->osgReferenced() ) );
-
-  // Handle bad input.
-  if ( false == model.valid() )
+  if ( false == group.valid () || false == osg.valid() )
     return;
 
-  
-  if ( group.valid () )
+  // Remove what we have
+  group->removeGroup ( Detail::GROUP_NAME );
+
+  if ( b )
   {
-    const std::string groupName ( "SHOW_NORMALS" );
+    // Get the scene.
+    osg::ref_ptr<osg::Node> model ( dynamic_cast < osg::Node * > ( osg->osgReferenced() ) );
 
-    if ( group->hasGroup ( groupName ) )
-      group->removeGroup ( groupName );
-    else
-    {
-      osg::ref_ptr< osg::Group > g ( group->getGroup ( groupName ) );
+    // Handle bad input.
+    if ( false == model.valid() )
+      return;
 
-      osg::ref_ptr < OsgTools::Utilities::FindNormals > visitor ( new OsgTools::Utilities::FindNormals );
+    osg::ref_ptr< osg::Group > g ( group->getGroup ( Detail::GROUP_NAME ) );
 
-      osg::BoundingBox bb;
-      bb.expandBy( model->getBound() );
+    osg::ref_ptr < OsgTools::Utilities::FindNormals > visitor ( new OsgTools::Utilities::FindNormals );
 
-      visitor->boundingBox ( bb );
+    osg::BoundingBox bb;
+    bb.expandBy( model->getBound() );
 
-      model->accept( *visitor );
+    visitor->boundingBox ( bb );
 
-      g->addChild ( visitor->normals() );
-    }
+    model->accept( *visitor );
 
-    if ( message.valid() )
-    {
-      message->sendMessage ( Usul::Interfaces::ISendMessage::ID_RENDER_SCENE );
-    }
+    g->addChild ( visitor->normals() );
   }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the menu text.
+//  Are normals shown?
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string HideShowNormalsComponent::menuText() const
+bool HideShowNormalsComponent::showNormals ( ) const
 {
-  return "Hide/Show normals.";
+  Usul::Interfaces::IGroup::QueryPtr group ( Usul::Documents::Manager::instance().activeView() );
+  return ( group.valid() ? group->hasGroup ( Detail::GROUP_NAME ) : false );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the hot-key text.
+//  Can normals be shown?
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string HideShowNormalsComponent::hotKeyText() const
+bool HideShowNormalsComponent::canHideShowNormals () const
 {
-  return "";
+  Usul::Interfaces::IView::RefPtr view ( Usul::Documents::Manager::instance().activeView() );
+
+  // Get the interface we need.
+  Usul::Interfaces::IOpenSceneGraph::QueryPtr osg ( view );
+  Usul::Interfaces::IGroup::QueryPtr group ( view );
+
+  return ( group.valid () && osg.valid() );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the status-bar text.
+//  Add to the menu.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string HideShowNormalsComponent::statusBarText() const
+void HideShowNormalsComponent::menuAdd ( MenuKit::Menu& m )
 {
-  return "Hide/Show normals.";
+  typedef MenuKit::ToggleButton ToggleButton;
+  typedef void (HideShowNormalsComponent::*BoolFunction) ( bool );
+  typedef bool (HideShowNormalsComponent::*CheckFunction) () const;
+  typedef Usul::Adaptors::MemberFunction < bool, HideShowNormalsComponent*, CheckFunction > CheckFunctor;
+  typedef Usul::Adaptors::MemberFunction < void, HideShowNormalsComponent*, BoolFunction >  BoolFunctor;
+  typedef Usul::Commands::GenericCheckCommand < BoolFunctor, CheckFunctor, CheckFunctor > CheckCommand;
+
+  // Build the menu.
+  MenuKit::Menu::RefPtr menu ( m.find ( "Tools", true ) );
+  
+  menu->append ( new ToggleButton ( new CheckCommand ( "Show Normals",  
+                                                       BoolFunctor ( this, &HideShowNormalsComponent::showNormals ), 
+                                                       CheckFunctor ( this, &HideShowNormalsComponent::showNormals ),
+                                                       CheckFunctor ( this, &HideShowNormalsComponent::canHideShowNormals ) ) ) );
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get Group for the menu.  "" means no group
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string HideShowNormalsComponent::menuGroup() const
-{
-  return "Primitives";
-}
-

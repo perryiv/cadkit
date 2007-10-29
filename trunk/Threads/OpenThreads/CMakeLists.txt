@@ -24,7 +24,9 @@ INCLUDE(${CMakeModules}/FindOSG.cmake)
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../../" "$ENV{CADKIT_ROOT_DIR}" ${OT_INC_DIR} )
+INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../../" 
+                     "$ENV{CADKIT_ROOT_DIR}" 
+                     ${OT_INC_DIR} )
 
 ADD_DEFINITIONS("-D_COMPILING_OPEN_THREADS_EXTENSIONS")
 
@@ -41,4 +43,4 @@ ADD_LIBRARY(OpenThreadsEx SHARED ${SOURCES} )
 
 # Link the Library	
 LINK_CADKIT( OpenThreadsEx Usul )
-TARGET_LINK_LIBRARIES(OpenThreadsEx ${OPENTHREADS_LIB})
+TARGET_LINK_LIBRARIES(OpenThreadsEx ${OPENTHREADS_LIB} )

@@ -1363,8 +1363,8 @@ void ModelPresentationDocument::setAnimationPath ( const std::string& name )
   // Append final matrix.
   matrices.push_back ( PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
 
-//Disabling animation for Demo in Drum 10-29-07
-#if 0
+
+#if 1
   // Animate through these matrices.
   path->animatePath ( matrices );
 #else
@@ -1428,7 +1428,7 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu )
     MenuKit::Menu::RefPtr locationMenu ( new MenuKit::Menu ( "Locations", MenuKit::Menu::VERTICAL ) );
     for( unsigned int i = 0; i < _locationNames.size(); ++i )
     {  
-       locationMenu->append( new Radio ( new MpdLocation( me.get(), _locationNames.at( i )  ) ) );
+       locationMenu->append( new Button ( new MpdLocation( me.get(), _locationNames.at( i )  ) ) );
     }
     menu.append( locationMenu );
   }

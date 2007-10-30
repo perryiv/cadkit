@@ -131,7 +131,7 @@ void LayerManagerComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
     QMainWindow * main ( mainWindow->mainWindow() );
 
     // Build the docking window.
-    _dock = new QDockWidget ( QObject::tr ( "Layers" ), main );
+    _dock = new QDockWidget ( QObject::tr ( "GIS Layers" ), main );
     _dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
 
     // Create the tree for the scene graph.
@@ -142,7 +142,7 @@ void LayerManagerComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
     main->addDockWidget ( Qt::LeftDockWidgetArea, _dock );
 
     // Set the object name.
-    _dock->setObjectName ( "LayersDockWidget" );
+    _dock->setObjectName ( "GISLayersDockWidget" );
 
     // Add toggle to the menu.
     Usul::Interfaces::IQtDockWidgetMenu::QueryPtr dwm ( caller );

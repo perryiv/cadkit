@@ -350,7 +350,7 @@ bool Loop::triangulate ( Usul::Interfaces::IUnknown *caller, bool buildOnFly )
     osg::Plane plane ( v0, v1, v2 );
 
     // Add the triangle.
-    OsgTools::Triangles::Triangle::RefPtr t ( add->addTriangle ( sv0, sv1, sv2, plane.getNormal(), buildOnFly ) );
+    OsgTools::Triangles::Triangle::RefPtr t ( add->addTriangle ( sv0, sv1, sv2, plane.getNormal(), buildOnFly, true ) );
 
     // This triangle is not original.
     if ( t.valid() )

@@ -18,6 +18,7 @@
 #define _STAR_SYSTEM_RECURSIVE_TILE_CLASS_H_
 
 #include "StarSystem/Export.h"
+#include "StarSystem/Extents.h"
 
 #include "Usul/Base/Typed.h"
 #include "Usul/Math/Vector4.h"
@@ -80,6 +81,9 @@ public:
   // Set/get the flag that says we're dirty.
   bool                      dirty() const;
   void                      dirty ( bool state, bool dirtyChildren = false );
+
+  // Mark the dirty state, only if we cross this extents.
+  void                      dirty ( bool state, const Extents& extents );
 
   // Return level of this tile. Zero is the top.
   unsigned int              level() const;

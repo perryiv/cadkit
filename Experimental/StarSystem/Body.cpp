@@ -216,7 +216,7 @@ void Body::rasterAppend ( RasterLayer * layer )
   if ( 0x0 != layer )
   {
     _rasters->append ( layer );
-    _tile->dirty( true, true);
+    _tile->dirty( true, layer->extents() );
   }
 }
 

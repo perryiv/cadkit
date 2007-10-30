@@ -19,7 +19,6 @@
 #include "Usul/File/Stats.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector2.h"
-#include "Usul/Predicates/CloseFloat.h"
 #include "Usul/Policies/Update.h"
 #include "Usul/Trace/Trace.h"
 
@@ -79,6 +78,9 @@ TriangleReaderArcAsciiGrid::~TriangleReaderArcAsciiGrid()
 
 void TriangleReaderArcAsciiGrid::operator()()
 {
+  // Set initial progress and range.
+  _document->setProgressBar ( true, 0, 100, _caller );
+
   // Clear accumulated state.
   this->clear();
 
@@ -139,7 +141,6 @@ namespace Helper
 
 void TriangleReaderArcAsciiGrid::_read()
 {
-  
   // Open a stream with a large buffer.
   const unsigned long int bufSize ( 4095 );
   char buffer[bufSize+1];
@@ -153,7 +154,7 @@ void TriangleReaderArcAsciiGrid::_read()
   Usul::Math::Vec2ui gridSize ( 0, 0 );
   Usul::Math::Vec2d lowerLeft ( 0, 0 );
   double cellSize ( 0 );
-  double noDataValue ( 0 );
+  double noDataDouble ( 0 );
 
   // Read header file.
   {
@@ -163,10 +164,13 @@ void TriangleReaderArcAsciiGrid::_read()
     in >> label >> lowerLeft[0]; // Lower left x coordinate
     in >> label >> lowerLeft[1]; // Lower left y coordinate
     in >> label >> cellSize;
-    in >> label >> noDataValue;
+    in >> label >> noDataDouble;
   }
 
-  
+  // Make sure nodata value is an integer.
+  const int noDataInt ( static_cast < int > ( noDataDouble ) );
+  USUL_ASSERT ( noDataDouble == static_cast < double > ( noDataInt ) );
+
   // Useful typedefs.
   typedef std::vector<float> Values;
   typedef osg::Vec3f Vec3;
@@ -175,7 +179,6 @@ void TriangleReaderArcAsciiGrid::_read()
   // More local variables.
   const unsigned int numPoints ( gridSize[0] * gridSize[1] );
   Vec3 a0 ( 0, 0, 0 ), a1 ( 0, 0, 0 ), b0 ( 0, 0, 0 ), b1 ( 0, 0, 0 );
-  Close close ( 5 ); // Reasonable?
   Usul::Policies::TimeBased update ( 1000 ); // Every second.
 
   // Allocate two rows.
@@ -222,25 +225,26 @@ void TriangleReaderArcAsciiGrid::_read()
       const Vec3 c ( xb, y0, row1.at ( j     ) );
       const Vec3 d ( xb, y1, row1.at ( j + 1 ) );
 
-      // See if points are close to "no data".
-      if ( false == close ( d[2], noDataValue ) &&
-           false == close ( a[2], noDataValue ) )
+      // See if points are "no data".
+      if ( ( static_cast < int > ( d[2] ) != noDataInt ) &&
+           ( static_cast < int > ( a[2] ) != noDataInt ) )
       {
         // Add first triangle.
-        if ( false == close ( c[2], noDataValue ) )
+        if ( static_cast < int > ( c[2] != noDataInt ) )
         {
           Vec3 n ( ( d - c ) ^ ( a - c ) );
           n.normalize();
-          OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( a, c, d, n, false ) );
+          OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( a, c, d, n, false, true ) );
           t->original ( true );
         }
 
         // Add second triangle.
-        if ( false == close ( b[2], noDataValue ) )
+        if ( static_cast < int > ( b[2] != noDataInt ) )
         {
           Vec3 n ( ( b - d ) ^ ( a - d ) );
           n.normalize();
-          OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( a, d, b, n, false ) );
+          USUL_ASSERT ( !( 301 == i && 40 == j ) );
+          OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( a, d, b, n, false, true ) );
           t->original ( true );
         }
       }

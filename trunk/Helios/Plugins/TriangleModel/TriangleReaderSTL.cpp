@@ -125,7 +125,7 @@ unsigned int TriangleReaderSTL::_countAcsiiFacets()
       ++count;
 
       // Show progress.
-      _document->setProgressBar ( elapsed(), in, fileSize );
+      _document->setProgressBar ( elapsed(), in, fileSize, _caller );
     }
   }
 
@@ -143,7 +143,7 @@ unsigned int TriangleReaderSTL::_countAcsiiFacets()
 void TriangleReaderSTL::operator()()
 {
   // Set initial progress and range.
-  _document->setProgressBar ( true, 0, 100 );
+  _document->setProgressBar ( true, 0, 100, _caller );
 
   // Initialize start time.
   Usul::Types::Uint64 start ( Usul::System::Clock::milliseconds() );
@@ -225,11 +225,11 @@ void TriangleReaderSTL::_readAscii()
     else if ( "endfacet" == type )
     {
       // Add the triangle.  Mark as orginal.
-      OsgTools::Triangles::Triangle* t ( _document->addTriangle ( v0, v1, v2, n, false ) );
+      OsgTools::Triangles::Triangle* t ( _document->addTriangle ( v0, v1, v2, n, false, true ) );
       t->original ( true );
 
       // Show progress.
-      _document->setProgressBar ( elapsed(), in, fileSize );
+      _document->setProgressBar ( elapsed(), in, fileSize, _caller );
     }
   }
 }
@@ -324,11 +324,11 @@ void TriangleReaderSTL::_readBinary()
     USUL_ASSERT ( in.tellg() == position );
 
     // Add the triangle.  Mark as orginal.
-    OsgTools::Triangles::Triangle *t ( _document->addTriangle ( facet.v0, facet.v1, facet.v2, facet.n, false ) );
+    OsgTools::Triangles::Triangle *t ( _document->addTriangle ( facet.v0, facet.v1, facet.v2, facet.n, false, true ) );
     t->original ( true );
 
     // Show progress.
-    _document->setProgressBar ( elapsed(), count, numTriangles );
+    _document->setProgressBar ( elapsed(), count, numTriangles, _caller );
     ++count;
   }
 }

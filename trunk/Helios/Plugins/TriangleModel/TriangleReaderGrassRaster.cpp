@@ -24,9 +24,6 @@ const int GRASS_RASTER_FORMAT_FLOAT ( -1 );
 const int GRASS_RASTER_FORMAT_8Bit_INT ( 0 );
 const int GRASS_RASTER_FORMAT_16Bit_INT ( 1 );
 
-//USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( TriangleReaderGrassRaster, TriangleReaderGrassRaster::BaseClass );
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -34,16 +31,18 @@ const int GRASS_RASTER_FORMAT_16Bit_INT ( 1 );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TriangleReaderGrassRaster::TriangleReaderGrassRaster( const std::string &file, Usul::Interfaces::IUnknown *caller, TriangleDocument *doc ):
-BaseClass(),
-_dir            ( "" ),
-_caller         ( caller ),
-//_file           ( "ziqlab_watersheds_15m_dem_clipped", Usul::File::size ( file ) ),
-_file           ( "", 0 ),
-_document       ( doc ),
-_xmlFilename    ( file )
+TriangleReaderGrassRaster::TriangleReaderGrassRaster ( const std::string &file, Usul::Interfaces::IUnknown *caller, TriangleDocument *doc ) :
+  BaseClass(),
+  _header          (),
+  _dir             ( "" ),
+  _caller          ( caller ),
+  _progress        ( 0, 0 ),
+  _file            ( "", 0 ),
+  _document        ( doc ),
+  _xmlFilename     ( file ),
+  _textureFilename ( "" )
 {
-  
+  ::memset ( &_header, 0, sizeof ( TriangleReaderGrassRaster::Header ) );
 }
 
 
@@ -126,32 +125,10 @@ struct SwapBytes
 }
 
 
-
 /////////////////
 //  PUBLIC
 /////////////////
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the scene
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* TriangleReaderGrassRaster::buildScene()
-{
-  USUL_TRACE_SCOPE;
-  osg::ref_ptr< osg::Group > group ( new osg::Group );
-
-  OsgTools::Triangles::TriangleSet::Options opt;
-  opt[ "normals" ] = "per-vertex";
-  opt[ "colors" ]  = "per-vertex";
-  std::cout << "Building scene..." << std::endl;
-//  group->addChild( _triangleSet->buildScene( opt, 0x0 ) );
-  group->addChild( _document->buildScene( opt, _caller ) );
-  return group.release();
-
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -163,6 +140,9 @@ void TriangleReaderGrassRaster::operator()()
 {
   USUL_TRACE_SCOPE;
 
+  // Set initial progress and range.
+  _document->setProgressBar ( true, 0, 100, _caller );
+
   // Clear accumulated state.
   this->clear();
 
@@ -173,13 +153,13 @@ void TriangleReaderGrassRaster::operator()()
   this->_read();
 
   // Load the texture file
-  this->_loadTexture ( _textureFilename, _caller );
+  this->_loadTexture ( _textureFilename );
 
   // Display stats of the triangle set
   this->_stats();
 
   // testing...
-#if 1
+#if 0
   const std::string name ( Usul::File::fullPath ( "testwrite.tdf" ) );
   _document->write ( name );
 #endif
@@ -195,6 +175,7 @@ void TriangleReaderGrassRaster::operator()()
 void TriangleReaderGrassRaster::read()
 {
   USUL_TRACE_SCOPE;
+
   // Clear accumulated state.
   this->clear();
 
@@ -205,7 +186,7 @@ void TriangleReaderGrassRaster::read()
   this->_read();
 
   // Load the texture file
-  this->_loadTexture( _textureFilename, _caller );
+  this->_loadTexture ( _textureFilename );
 }
 
 
@@ -237,7 +218,6 @@ void TriangleReaderGrassRaster::clear()
 void TriangleReaderGrassRaster::_readXML()
 {
   USUL_TRACE_SCOPE;
-  //Guard guard ( this->mutex() );
 
   XmlTree::Document::RefPtr document ( new XmlTree::Document );
   document->load ( _xmlFilename );
@@ -245,7 +225,7 @@ void TriangleReaderGrassRaster::_readXML()
   if ( "grs" == document->name() )
   {
     // if the parameter file is loaded correctly go ahead and load the 1st map
-    this->_parseXML( *document, _caller );
+    this->_parseXML ( *document );
   }
 }
 
@@ -256,10 +236,10 @@ void TriangleReaderGrassRaster::_readXML()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleReaderGrassRaster::_parseXML( XmlTree::Node &node, Usul::Interfaces::IUnknown *caller )
+void TriangleReaderGrassRaster::_parseXML( XmlTree::Node &node )
 {
   USUL_TRACE_SCOPE;
-  //Guard guard ( this->mutex() );
+
   typedef XmlTree::Document::Attributes Attributes;
   typedef XmlTree::Document::Children Children;
 
@@ -278,26 +258,19 @@ void TriangleReaderGrassRaster::_parseXML( XmlTree::Node &node, Usul::Interfaces
     if ( "texture" == iter->first )
     {
       Usul::Strings::fromString ( iter->second, _textureFilename );
-      
     }
-
   }
 
 #if 0
   Children& children ( node.children() );
-	
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
     if ( "set" == node->name() )
     {
-      
     }
-    
   }
 #endif  
-
-
 }
 
 
@@ -373,10 +346,6 @@ void TriangleReaderGrassRaster::_read()
   if ( !in.is_open() )
     throw std::runtime_error ( "Error 1099205557: Failed to open file: " + filename );
 
-  
-  
-
-  
   // Floating point raster files
   if( _header.format == ::GRASS_RASTER_FORMAT_FLOAT )
   {
@@ -441,7 +410,7 @@ void TriangleReaderGrassRaster::_read()
 void TriangleReaderGrassRaster::_incrementProgress ( bool state, float i, float num )
 {
   USUL_TRACE_SCOPE;
- // std::cout << "Percent Complete: " << i << "/" << num << "( " <<  ( i / num ) * 100 << " )\r" << std::flush;
+
   unsigned int &numerator   ( _progress.first  );
   unsigned int &denominator ( _progress.second );
   _document->setProgressBar ( state, numerator, denominator, _caller );
@@ -462,12 +431,14 @@ void TriangleReaderGrassRaster::_incrementProgress ( bool state, float i, float 
 #endif
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Functor create the triangle document
 //
 ///////////////////////////////////////////////////////////////////////////////
-template < class VectorType > void TriangleReaderGrassRaster::_makeTriangleDocument( VectorType vertices )
+
+template < class VectorType > void TriangleReaderGrassRaster::_makeTriangleDocument ( VectorType vertices )
 {
    // Useful typedefs.
   typedef std::vector<float> Values;
@@ -483,21 +454,20 @@ template < class VectorType > void TriangleReaderGrassRaster::_makeTriangleDocum
   // More local variables.
   const unsigned int numPoints ( gridSize[0] * gridSize[1] );
   Vec3 a0 ( 0, 0, 0 ), a1 ( 0, 0, 0 ), b0 ( 0, 0, 0 ), b1 ( 0, 0, 0 );
-  Close close ( 0.0005 ); // Reasonable?
+  Close close ( 5 ); // Reasonable?
   Usul::Policies::TimeBased update ( 1000 ); // Every second.
 
   std::cout << "Reading Vertices..." << std::endl;
+
   // Loop until we've read all the points.
   const unsigned int stopR ( gridSize[0] - 1 );
+
   // Set the progress numbers.
   _progress.first = 0;
   _progress.second = stopR;
   
   for ( unsigned int i = 0; i < stopR; ++i )
   {
-    // Grab the next row.
-    //std::for_each ( row1.begin(), row1.end(), vertices );
-
     // Shortcuts.
     const Values::value_type xa ( lowerLeft[1] + ( ( i     ) * cellSize ) );
     const Values::value_type xb ( lowerLeft[1] + ( ( i + 1 ) * cellSize ) );
@@ -516,44 +486,35 @@ template < class VectorType > void TriangleReaderGrassRaster::_makeTriangleDocum
       const Vec3 b ( xa, y1, vertices.at ( ( i * stopC ) + ( j + 1 ) ) );
       const Vec3 c ( xb, y0, vertices.at ( ( ( i + 1 ) * stopC ) + j     ) );
       const Vec3 d ( xb, y1, vertices.at ( ( ( i + 1 ) * stopC ) + ( j + 1 ) ) );
-      
 
       // See if points are close to "no data".
       if ( false == close ( d[2], noDataValue ) &&
            false == close ( a[2], noDataValue ) )
       {
-        // Add first triangle.
+        // Add first triangle. Pass false for "look" because we know they're unique.
         if ( false == close ( c[2], noDataValue ) )
         {
           Vec3 n ( ( d - c ) ^ ( a - c ) );
           n.normalize();
-          OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( a, c, d, n, false ) );
+          OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( a, c, d, n, false, true ) );
           t->original ( true );
-          //_triangleSet->addTriangle ( a, c, d, n, false );
         }
 
-        // Add second triangle.
+        // Add second triangle. Pass false for "look" because we know they're unique.
         if ( false == close ( b[2], noDataValue ) )
         {
           Vec3 n ( ( b - d ) ^ ( a - d ) );
           n.normalize();
-          OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( a, d, b, n, false ) );
+          OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( a, d, b, n, false, true ) );
           t->original ( true );
-          //_triangleSet->addTriangle ( a, d, b, n, false );
         }
       }
-
     }
-    //std::cout << "\rPercent Complete: " << i << "/" << static_cast<float>( numPoints / gridSize[0] ) <<  std::flush;
+
     // Feedback.
-      this->_incrementProgress ( update(), static_cast<float>( i ), static_cast<float>( numPoints / stopC ) );
- 
-    // Swap rows.
-    //row0.swap ( row1 );
+    this->_incrementProgress ( update(), static_cast<float>( i ), static_cast<float>( numPoints / stopC ) );
   }
-
 }
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -565,7 +526,7 @@ template < class VectorType > void TriangleReaderGrassRaster::_makeTriangleDocum
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleReaderGrassRaster::_loadTexture ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
+void TriangleReaderGrassRaster::_loadTexture ( const std::string& filename )
 {
   // Get interface to triangle set for loading a color file
   Usul::Interfaces::ILoadColorFile::QueryPtr colorFile ( _document );
@@ -580,8 +541,6 @@ void TriangleReaderGrassRaster::_loadTexture ( const std::string& filename, Usul
   header.push_back( _header.ns_resol );
   
   colorFile->loadColorFile( filename, header );
-
-     
 }
 
 

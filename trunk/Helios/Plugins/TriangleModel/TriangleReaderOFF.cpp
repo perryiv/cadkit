@@ -60,7 +60,7 @@ TriangleReaderOFF::~TriangleReaderOFF()
 void TriangleReaderOFF::operator()()
 {
   // Set initial progress and range.
-  _document->setProgressBar ( true, 0, 100 );
+  _document->setProgressBar ( true, 0, 100, _caller );
 
   // Initialize start time.
   Usul::Types::Uint64 start ( Usul::System::Clock::milliseconds() );
@@ -116,8 +116,8 @@ void TriangleReaderOFF::operator()()
       osg::Vec3 n ( a ^ b );
       n.normalize();
 
-      // Add the triangle.  Mark as orginal.
-      OsgTools::Triangles::Triangle* t ( _document->addTriangle ( v0, v1, v2, n, false ) );
+      // Add the triangle. Mark as orginal.
+      OsgTools::Triangles::Triangle* t ( _document->addTriangle ( v0, v1, v2, n, false, true ) );
       t->original ( true );
     }
   }

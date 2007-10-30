@@ -68,7 +68,7 @@ TriangleReaderR3D::~TriangleReaderR3D()
 void TriangleReaderR3D::operator()()
 {
   // Set initial progress and range.
-  _document->setProgressBar ( true, 0, 100 );
+  _document->setProgressBar ( true, 0, 100, _caller );
 
   typedef std::vector < osg::Vec3f > Vectors;
 
@@ -150,7 +150,7 @@ void TriangleReaderR3D::operator()()
     }
 
     // Show progress.
-    _document->setProgressBar ( elapsed(), in, fileSize );
+    _document->setProgressBar ( elapsed(), in, fileSize, _caller );
   }
 
   // Reserve enough room
@@ -160,7 +160,7 @@ void TriangleReaderR3D::operator()()
   _document->setStatusBar ( "Finding triangles..." );
 
   // Set initial progress and range.
-  _document->setProgressBar ( true, 0, 100 );
+  _document->setProgressBar ( true, 0, 100, _caller );
 
   // Set all the vertices and normals.
   for ( unsigned int s = 0; s < numStrips; ++s )
@@ -188,11 +188,11 @@ void TriangleReaderR3D::operator()()
       n.normalize();
 
       // Add the triangle
-      _document->addTriangle ( v0, v1, v2, n, false );
+      _document->addTriangle ( v0, v1, v2, n, false, true );
     }
 
     // Show progress.
-    _document->setProgressBar ( elapsed(), s, numStrips );
+    _document->setProgressBar ( elapsed(), s, numStrips, _caller );
   }
 }
 

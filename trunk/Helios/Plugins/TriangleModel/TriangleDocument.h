@@ -113,8 +113,8 @@ public:
   virtual SharedVertex *      addSharedVertex ( const osg::Vec3 &v, bool look = true );
 
   /// Add the triangle.
-  virtual Triangle *          addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool update );
-  virtual Triangle *          addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n, bool update );
+  virtual Triangle *          addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool update, bool look );
+  virtual Triangle *          addTriangle ( SharedVertex *sv0, SharedVertex *sv1, SharedVertex *sv2, const osg::Vec3f &n, bool update, bool look );
 
   /// Add an entire triangle set. Assumes the triangle set has been constructed properly.
   void                        addTriangleSet ( TriangleSet * );
@@ -160,7 +160,7 @@ public:
   virtual void                findLoops ( Usul::Interfaces::IUnknown* caller );
 
   // Usul::Interfaces::ILoadColorFile
-  virtual void               loadColorFile( const std::string &filename, const HeaderInfo& header );
+  virtual void                loadColorFile( const std::string &filename, const HeaderInfo& header );
 
 
   /// Flip the normals.

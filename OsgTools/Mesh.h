@@ -19,6 +19,7 @@
 #include "OsgTools/Export.h"
 #include "OsgTools/Declarations.h"
 
+#include "osg/Vec2"
 #include "osg/Vec3"
 
 #include <vector>
@@ -38,6 +39,8 @@ public:
   typedef Vectors::const_reference const_reference;
   typedef Vectors::value_type value_type;
   typedef Vectors::size_type size_type;
+  typedef osg::Vec2 TexCoord;
+  typedef std::vector < TexCoord > TexCoords;
 
   Mesh();
   Mesh ( unsigned int rows, unsigned int columns );
@@ -47,6 +50,7 @@ public:
   // Allocate the mesh.
   void                allocatePoints();
   void                allocateNormals();
+  void                allocateTexCoords();
 
   // The number of columns.
   unsigned int        columns() const { return _columns; }
@@ -78,6 +82,15 @@ public:
   // Set the size.
   void                size ( unsigned int rows, unsigned int columns );
 
+  // Access to the texture coordinates.
+  void                texCoords ( const TexCoords &p ) { _texCoords = p; }
+  TexCoords &         texCoords()       { return _texCoords; }
+  const TexCoords &   texCoords() const { return _texCoords; }
+
+  // Access to a single texture coordinate.
+  TexCoord&           texCoord ( size_type row, size_type column );
+  const TexCoord&     texCoord ( size_type row, size_type column ) const;
+
   // Generate a scene.
   osg::Node *         operator()() const;
 
@@ -85,6 +98,7 @@ private:
 
   Vectors _points;
   Vectors _normals;
+  TexCoords _texCoords;
   unsigned int _rows;
   unsigned int _columns;
 };

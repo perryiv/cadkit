@@ -17,6 +17,7 @@
 #include "StarSystem/Body.h"
 #include "StarSystem/Tile.h"
 #include "StarSystem/Visitor.h"
+#include "StarSystem/RasterGroup.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
@@ -46,12 +47,14 @@ STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( Body );
 Body::Body ( const Vec2d &r ) : BaseClass(),
   _transform ( new osg::MatrixTransform ),
   _ellipsoid ( new ossimEllipsoid ( r[Body::RADIUS_EQUATOR], r[Body::RADIUS_POLAR] ) ),
-  _tile ( 0x0 )
+  _tile ( 0x0 ),
+  _rasters ( new RasterGroup )
 {
   USUL_TRACE_SCOPE;
 
   // Not using smart pointers.
   _transform->ref();
+  _rasters->ref();
 
   // Set ellipsoid radii.
   _ellipsoid->setAB ( r[Body::RADIUS_EQUATOR], r[Body::RADIUS_POLAR] );
@@ -62,7 +65,7 @@ Body::Body ( const Vec2d &r ) : BaseClass(),
   const double splitDistance ( _ellipsoid->a() * 7 );
 
   // Make the tile and add it to the transform.
-  _tile = new Tile ( 0, mn, mx, 10, 10, splitDistance, _ellipsoid );
+  _tile = new Tile ( 0, mn, mx, 10, 10, splitDistance, _ellipsoid, _rasters );
   _tile->ref();
   _transform->addChild ( _tile );
 }
@@ -92,6 +95,7 @@ void Body::_destroy()
   USUL_TRACE_SCOPE;
   Usul::Pointers::unreference ( _transform ); _transform = 0x0;
   Usul::Pointers::unreference ( _tile ); _tile = 0x0;
+  Usul::Pointers::unreference ( _rasters ); _rasters = 0x0;
   delete _ellipsoid; _ellipsoid = 0x0;
 }
 
@@ -194,5 +198,20 @@ void Body::radii ( const Body::Vec2d &r )
   Guard guard ( this->mutex() );
   _ellipsoid->setA ( r[Body::RADIUS_EQUATOR] );
   _ellipsoid->setB ( r[Body::RADIUS_POLAR] );
+  _tile->dirty();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append raster data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::rasterAppend ( RasterLayer * layer )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _rasters->append ( layer );
   _tile->dirty();
 }

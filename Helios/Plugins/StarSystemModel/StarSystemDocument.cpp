@@ -18,6 +18,7 @@
 #include "StarSystem/BuildScene.h"
 #include "StarSystem/Pager.h"
 #include "StarSystem/System.h"
+#include "StarSystem/RasterLayerOssim.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Random.h"
@@ -172,26 +173,36 @@ void StarSystemDocument::read ( const std::string &name, Unknown *caller, Unknow
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
+  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( name ) ) );
+  if ( "ball" == ext )
+  {
 #if 1
 
-  StarSystem::Body::ValidRefPtr body ( new StarSystem::Body ( Usul::Math::Vec2d ( osg::WGS_84_RADIUS_EQUATOR * 0.75, osg::WGS_84_RADIUS_POLAR * 0.5 ) ) );
-  const Usul::Math::Vec3d c ( _system->center() );
-  body->center ( Usul::Math::Vec3d ( c[0] + 50000000, c[1], c[2] ) );
-  _system->add ( body.get() );
+    StarSystem::Body::ValidRefPtr body ( new StarSystem::Body ( Usul::Math::Vec2d ( osg::WGS_84_RADIUS_EQUATOR * 0.75, osg::WGS_84_RADIUS_POLAR * 0.5 ) ) );
+    const Usul::Math::Vec3d c ( _system->center() );
+    body->center ( Usul::Math::Vec3d ( c[0] + 50000000, c[1], c[2] ) );
+    _system->add ( body.get() );
 
 #endif
 
 #if 0
 
-  Usul::Adaptors::Random<double> random ( 0, 500000000 );
-  for ( unsigned int i = 0; i < 2; ++i )
-  {
-    StarSystem::System::ValidRefPtr system ( new StarSystem::System() );
-    system->center ( StarSystem::System::Vec3d ( random(), random(), random() ) );
-    _system->add ( system.get() );
-  }
+    Usul::Adaptors::Random<double> random ( 0, 500000000 );
+    for ( unsigned int i = 0; i < 2; ++i )
+    {
+      StarSystem::System::ValidRefPtr system ( new StarSystem::System() );
+      system->center ( StarSystem::System::Vec3d ( random(), random(), random() ) );
+      _system->add ( system.get() );
+    }
 
 #endif
+  }
+  else if ( "tiff" == ext || "tif" == ext || "jpg" == ext )
+  {
+    StarSystem::RasterLayerOssim::RefPtr layer ( new StarSystem::RasterLayerOssim );
+    layer->open ( name );
+    _system->body()->rasterAppend ( layer.get() );
+  }
 }
 
 
@@ -260,7 +271,11 @@ StarSystemDocument::Filters StarSystemDocument::filtersOpen() const
 StarSystemDocument::Filters StarSystemDocument::filtersInsert() const
 {
   USUL_TRACE_SCOPE;
-  return this->filtersOpen();
+  Filters filters;
+  filters.push_back ( Filter ( "StarSystem (*.ball)", "*.ball" ) );
+  filters.push_back ( Filter ( "Tiff (*.tiff *.tif)", "*.tiff *.tif" ) );
+  filters.push_back ( Filter ( "Jpeg (*.jpg)",        "*.jpg" ) );
+  return filters;
 }
 
 

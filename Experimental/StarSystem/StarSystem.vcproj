@@ -239,6 +239,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Extents.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Extents.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Group.cpp"
 				>
 			</File>
@@ -264,6 +272,30 @@
 			</File>
 			<File
 				RelativePath=".\Pager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RasterGroup.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RasterGroup.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RasterLayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RasterLayer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RasterLayerOssim.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RasterLayerOssim.h"
 				>
 			</File>
 			<File

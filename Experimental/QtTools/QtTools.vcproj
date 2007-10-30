@@ -249,7 +249,7 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="Moc&apos;ing ColorButton.h..."
-							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\TreeControl.h&quot; -o &quot;.\GeneratedFiles\moc_ColorButton.cpp&quot;&#x0D;&#x0A;"
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\ColorButton.h&quot; -o &quot;.\GeneratedFiles\moc_ColorButton.cpp&quot;&#x0D;&#x0A;"
 							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\ColorButton.h"
 							Outputs=".\GeneratedFiles\moc_ColorButton.cpp"
 						/>

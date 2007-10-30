@@ -21,8 +21,10 @@
 #endif
 
 #include "StarSystem/Tile.h"
+#include "StarSystem/RasterLayer.h"
 
 #include "OsgTools/Mesh.h"
+#include "OsgTools/State/StateSet.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Random.h"
@@ -37,6 +39,7 @@
 
 #include "osg/Geode"
 #include "osg/Material"
+#include "osg/Texture2D"
 
 using namespace StarSystem;
 
@@ -51,7 +54,7 @@ USUL_IMPLEMENT_TYPE_ID ( Tile );
 
 Tile::Tile ( unsigned int level, const osg::Vec2d &mn, const osg::Vec2d &mx, 
              unsigned int numRows, unsigned int numColumns, double splitDistance, 
-             ossimEllipsoid *ellipsoid ) : BaseClass(),
+             ossimEllipsoid *ellipsoid, RasterLayer* raster ) : BaseClass(),
   _mutex ( new Tile::Mutex ),
   _ellipsoid ( ellipsoid ),
   _min ( mn ),
@@ -59,9 +62,12 @@ Tile::Tile ( unsigned int level, const osg::Vec2d &mn, const osg::Vec2d &mx,
   _splitDistance ( splitDistance ),
   _mesh ( new OsgTools::Mesh ( numRows, numColumns ) ),
   _level ( level ),
-  _dirty ( true )
+  _dirty ( true ),
+  _raster ( raster )
 {
   USUL_TRACE_SCOPE;
+
+  Usul::Pointers::reference ( _raster );
 }
 
 
@@ -79,13 +85,16 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _splitDistance ( tile._splitDistance ),
   _mesh ( new OsgTools::Mesh ( tile._mesh->rows(), tile._mesh->columns() ) ),
   _level ( tile._level ),
-  _dirty ( true )
+  _dirty ( true ),
+  _raster ( tile._raster )
 {
   USUL_TRACE_SCOPE;
 
   // Remove if you are ready to test copying. Right now, I'm not sure what 
   // it means. This constructor is here to satisfy the META_Node macro.
   USUL_ASSERT ( false );
+
+  Usul::Pointers::reference ( _raster );
 }
 
 
@@ -156,9 +165,9 @@ void Tile::_update()
 
   // Add internal geometry.
   OsgTools::Mesh &mesh ( *_mesh );
-  for ( unsigned int i = 0; i < mesh.rows(); ++i )
+  for ( int i = mesh.rows() - 1; i >= 0; --i )
   {
-    const double u ( static_cast<double> ( i ) / ( mesh.rows() - 1 ) );
+    const double u ( 1.0 - static_cast<double> ( i ) / ( mesh.rows() - 1 ) );
     for ( unsigned int j = 0; j < mesh.columns(); ++j )
     {
       const double v ( static_cast<double> ( j ) / ( mesh.columns() - 1 ) );
@@ -178,6 +187,9 @@ void Tile::_update()
       osg::Vec3f &n ( mesh.normal ( i, j ) );
       n = p; // Minus the center, which is (0,0,0).
       n.normalize();
+
+      // Assign texture coordinate.
+      mesh.texCoord ( i, j ).set ( u, 1.0 - v );
     }
   }
 
@@ -185,7 +197,35 @@ void Tile::_update()
   this->addChild ( mesh() );
 
   // Assign material.
-  this->getOrCreateStateSet()->setAttributeAndModes ( Helper::material(), osg::StateAttribute::PROTECTED );
+  //this->getOrCreateStateSet()->setAttributeAndModes ( Helper::material(), osg::StateAttribute::PROTECTED );
+
+  // Turn off lighting.
+  OsgTools::State::StateSet::setLighting ( this, false );
+
+  // Get the image.
+  if ( 0x0 != _raster )
+  {
+    unsigned int width  ( 256 );
+    unsigned int height ( 256 );
+    Extents extents ( _min, _max );
+
+    osg::ref_ptr < osg::Image > image ( _raster->texture ( extents, width, height, this->level() ) );
+    if ( image.valid() )
+    {
+      // Create the texture.
+      osg::ref_ptr < osg::Texture2D > texture ( new osg::Texture2D );
+      texture->setImage( image.get() );
+
+      texture->setFilter( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
+      texture->setFilter( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
+      texture->setWrap( osg::Texture::WRAP_S, osg::Texture::CLAMP );
+      texture->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP );
+
+      // Get the state set.
+      osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
+      ss->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+    }
+  }
 
   // No longer dirty.
   this->dirty ( false );
@@ -201,6 +241,9 @@ void Tile::_update()
 void Tile::_destroy()
 {
   USUL_TRACE_SCOPE;
+
+  Usul::Pointers::unreference ( _raster ); _raster = 0x0;
+
   _ellipsoid = 0x0; // Don't delete!
   delete _mesh; _mesh = 0x0;
   delete _mutex; _mutex = 0x0;
@@ -298,10 +341,10 @@ void Tile::_cull ( osg::NodeVisitor &nv )
       osg::ref_ptr<osg::Group> group ( new osg::Group );
       const double half ( _splitDistance * 0.5f );
       const osg::Vec2d mid ( ( _max + _min ) * 0.5 );
-      group->addChild ( new Tile ( _level + 1, osg::Vec2d ( _min[0], _min[1] ), osg::Vec2d (  mid[0],  mid[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid ) ); // lower left  tile
-      group->addChild ( new Tile ( _level + 1, osg::Vec2d (  mid[0], _min[1] ), osg::Vec2d ( _max[0],  mid[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid ) ); // lower right tile
-      group->addChild ( new Tile ( _level + 1, osg::Vec2d ( _min[0],  mid[1] ), osg::Vec2d (  mid[0], _max[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid ) ); // upper left  tile
-      group->addChild ( new Tile ( _level + 1, osg::Vec2d (  mid[0],  mid[1] ), osg::Vec2d ( _max[0], _max[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid ) ); // upper right tile
+      group->addChild ( new Tile ( _level + 1, osg::Vec2d ( _min[0], _min[1] ), osg::Vec2d (  mid[0],  mid[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid, _raster ) ); // lower left  tile
+      group->addChild ( new Tile ( _level + 1, osg::Vec2d (  mid[0], _min[1] ), osg::Vec2d ( _max[0],  mid[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid, _raster ) ); // lower right tile
+      group->addChild ( new Tile ( _level + 1, osg::Vec2d ( _min[0],  mid[1] ), osg::Vec2d (  mid[0], _max[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid, _raster ) ); // upper left  tile
+      group->addChild ( new Tile ( _level + 1, osg::Vec2d (  mid[0],  mid[1] ), osg::Vec2d ( _max[0], _max[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid, _raster ) ); // upper right tile
       this->addChild ( group.get() );
     }
 

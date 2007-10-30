@@ -22,7 +22,7 @@
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 
-namespace StarSystem { class Tile; }
+namespace StarSystem { class Tile; class RasterLayer; class RasterGroup; }
 namespace osg { class MatrixTransform; }
 class ossimEllipsoid;
 
@@ -64,6 +64,9 @@ public:
   void                      radii ( const Vec2d & );
   Vec2d                     radii() const;
 
+  // Append raster data.
+  void                      rasterAppend ( RasterLayer * );
+
   // Get the scene.
   const osg::Node *         scene() const;
   osg::Node *               scene();
@@ -84,6 +87,7 @@ private:
   osg::MatrixTransform *_transform;
   ossimEllipsoid *_ellipsoid;
   Tile *_tile;
+  RasterGroup *_rasters;
 };
 
 

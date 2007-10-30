@@ -53,19 +53,19 @@ USUL_IMPLEMENT_TYPE_ID ( Tile );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Tile::Tile ( unsigned int level, const osg::Vec2d &mn, const osg::Vec2d &mx, 
-             unsigned int numRows, unsigned int numColumns, double splitDistance, 
+Tile::Tile ( unsigned int level, const Extents &extents, 
+             const MeshSize &meshSize, double splitDistance, 
              Body *body, RasterLayer* raster ) : BaseClass(),
   _mutex ( new Tile::Mutex ),
   _body ( body ),
-  _min ( mn ),
-  _max ( mx ),
+  _extents ( extents ),
   _splitDistance ( splitDistance ),
-  _mesh ( new OsgTools::Mesh ( numRows, numColumns ) ),
+  _mesh ( new OsgTools::Mesh ( meshSize[0], meshSize[1] ) ),
   _level ( level ),
   _dirty ( true ),
   _raster ( raster ),
-  _children ()
+  _children (),
+  _textureUnit ( 0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -82,14 +82,14 @@ Tile::Tile ( unsigned int level, const osg::Vec2d &mn, const osg::Vec2d &mx,
 Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, option ),
   _mutex ( new Tile::Mutex ),
   _body ( tile._body ),
-  _min ( tile._min ),
-  _max ( tile._max ),
+  _extents ( tile._extents ),
   _splitDistance ( tile._splitDistance ),
   _mesh ( new OsgTools::Mesh ( tile._mesh->rows(), tile._mesh->columns() ) ),
   _level ( tile._level ),
   _dirty ( true ),
   _raster ( tile._raster ),
-  _children ( tile._children )
+  _children ( tile._children ),
+  _textureUnit ( tile._textureUnit )
 {
   USUL_TRACE_SCOPE;
 
@@ -166,6 +166,10 @@ void Tile::_update()
   // Remove all the children.
   this->removeChildren ( 0, this->getNumChildren() );
 
+  // Shortcuts.
+  const Extents::Vertex &mn ( _extents.minimum() );
+  const Extents::Vertex &mx ( _extents.maximum() );
+
   // Add internal geometry.
   OsgTools::Mesh &mesh ( *_mesh );
   for ( int i = mesh.rows() - 1; i >= 0; --i )
@@ -174,8 +178,8 @@ void Tile::_update()
     for ( unsigned int j = 0; j < mesh.columns(); ++j )
     {
       const double v ( static_cast<double> ( j ) / ( mesh.columns() - 1 ) );
-      const double lon ( _min[0] + u * ( _max[0] - _min[0] ) );
-      const double lat ( _min[1] + v * ( _max[1] - _min[1] ) );
+      const double lon ( mn[0] + u * ( mx[0] - mn[0] ) );
+      const double lat ( mn[1] + v * ( mx[1] - mn[1] ) );
 
       // Convert lat-lon coordinates to xyz.
       osg::Vec3f &p ( mesh.point ( i, j ) );
@@ -197,10 +201,10 @@ void Tile::_update()
   double offset ( 25000 - ( this->level() * 150 ) );
 
   osg::ref_ptr < osg::Group > group ( new osg::Group );
-  group->addChild ( this->_buildLonSkirt ( _min[0], 0.0, offset ) ); // Left skirt.
-  group->addChild ( this->_buildLonSkirt ( _max[0], 1.0, offset ) ); // Right skirt.
-  group->addChild ( this->_buildLatSkirt ( _min[1], 0.0, offset ) ); // Bottom skirt.
-  group->addChild ( this->_buildLatSkirt ( _max[1], 1.0, offset ) ); // Top skirt.
+  group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], 0.0, offset ) ); // Left skirt.
+  group->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], 1.0, offset ) ); // Right skirt.
+  group->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], 0.0, offset ) ); // Bottom skirt.
+  group->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], 1.0, offset ) ); // Top skirt.
   group->addChild ( mesh() );
 
   // Add mesh geometry to this node.
@@ -214,9 +218,8 @@ void Tile::_update()
   {
     unsigned int width  ( 256 );
     unsigned int height ( 256 );
-    Extents extents ( _min, _max );
 
-    osg::ref_ptr < osg::Image > image ( _raster->texture ( extents, width, height, this->level() ) );
+    osg::ref_ptr < osg::Image > image ( _raster->texture ( _extents, width, height, this->level() ) );
     if ( image.valid() )
     {
       // Create the texture.
@@ -232,7 +235,7 @@ void Tile::_update()
 
       // Get the state set.
       osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
-      ss->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+      ss->setTextureAttributeAndModes ( _textureUnit, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
 
       // Turn off lighting.
       OsgTools::State::StateSet::setLighting ( this, false );
@@ -278,8 +281,15 @@ void Tile::traverse ( osg::NodeVisitor &nv )
   {
     case osg::NodeVisitor::CULL_VISITOR:
     {
+      // Get cull visitor.
+      osgUtil::CullVisitor *cv ( dynamic_cast < osgUtil::CullVisitor * > ( &nv ) );
+
+      // Return if we are culled.
+      if ( 0x0 == cv || cv->isCulled ( *this ) )
+        return;
+
       this->_update();
-      this->_cull ( nv );
+      this->_cull ( *cv );
       return;
     }
 
@@ -297,7 +307,7 @@ void Tile::traverse ( osg::NodeVisitor &nv )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::_cull ( osg::NodeVisitor &nv )
+void Tile::_cull ( osgUtil::CullVisitor &cv )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -305,18 +315,10 @@ void Tile::_cull ( osg::NodeVisitor &nv )
   // Handle bad state.
   if ( ( 0x0 == _mesh ) || 
        ( _mesh->rows() < 2 ) || 
-       ( _mesh->columns() < 2 ) || 
-       ( osg::NodeVisitor::CULL_VISITOR != nv.getVisitorType() ) )
+       ( _mesh->columns() < 2 ) )
   {
     return;
   }
-
-  // Get cull visitor.
-  osgUtil::CullVisitor &cv ( dynamic_cast < osgUtil::CullVisitor & > ( nv ) );
-
-  // Return if we are culled.
-  if ( cv.isCulled ( *this ) )
-    return;
 
   // Four corners and center of the tile.
   OsgTools::Mesh &mesh ( *_mesh );
@@ -340,16 +342,24 @@ void Tile::_cull ( osg::NodeVisitor &nv )
   const unsigned int numChildren ( this->getNumChildren() );
   USUL_ASSERT ( numChildren > 0 );
 
+  // Make sure texture state is on.
+  osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
+  ss->setTextureMode ( _textureUnit, GL_TEXTURE_2D, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+
   if ( low )
   {
     // Remove high level of detail.
-    this->removeChild ( 1, numChildren - 1 );
-
-    // Unreference all children.
-    _children[LOWER_LEFT] = 0x0; _children[LOWER_RIGHT] = 0x0; _children[UPPER_LEFT] = 0x0; _children[UPPER_RIGHT] = 0x0;
+    if ( numChildren > 1 )
+    {
+      this->removeChild ( 1, numChildren - 1 );
+      _children[LOWER_LEFT]  = 0x0;
+      _children[LOWER_RIGHT] = 0x0;
+      _children[UPPER_LEFT]  = 0x0;
+      _children[UPPER_RIGHT] = 0x0;
+    }
 
     // Traverse low level of detail.
-    this->getChild ( 0 )->accept ( nv );
+    this->getChild ( 0 )->accept ( cv );
   }
 
   else
@@ -357,22 +367,40 @@ void Tile::_cull ( osg::NodeVisitor &nv )
     // Add high level if necessary.
     if ( 1 == numChildren )
     {
+      const double half ( _splitDistance * 0.5 );
+
+      const Extents::Vertex &mn ( _extents.minimum() );
+      const Extents::Vertex &mx ( _extents.maximum() );
+      const Extents::Vertex md ( ( mx + mn ) * 0.5 );
+
+      const unsigned int level ( _level + 1 );
+      const MeshSize meshSize ( mesh.rows(), mesh.columns() );
+
+      const Extents ll ( Extents::Vertex ( mn[0], mn[1] ), Extents::Vertex ( md[0], md[1] ) );
+      const Extents lr ( Extents::Vertex ( md[0], mn[1] ), Extents::Vertex ( mx[0], md[1] ) );
+      const Extents ul ( Extents::Vertex ( mn[0], md[1] ), Extents::Vertex ( md[0], mx[1] ) );
+      const Extents ur ( Extents::Vertex ( md[0], md[1] ), Extents::Vertex ( mx[0], mx[1] ) );
+
+      _children[LOWER_LEFT]  = new Tile ( level, ll, meshSize, half, _body, _raster ); // lower left  tile
+      _children[LOWER_RIGHT] = new Tile ( level, lr, meshSize, half, _body, _raster ); // lower right tile
+      _children[UPPER_LEFT]  = new Tile ( level, ul, meshSize, half, _body, _raster ); // upper left  tile
+      _children[UPPER_RIGHT] = new Tile ( level, ur, meshSize, half, _body, _raster ); // upper right tile
+
       osg::ref_ptr<osg::Group> group ( new osg::Group );
-      const double half ( _splitDistance * 0.5f );
-      const osg::Vec2d mid ( ( _max + _min ) * 0.5 );
-      _children[LOWER_LEFT]  = new Tile ( _level + 1, osg::Vec2d ( _min[0], _min[1] ), osg::Vec2d (  mid[0],  mid[1] ), mesh.rows(), mesh.columns(), half, _body, _raster ); // lower left  tile
-      _children[LOWER_RIGHT] = new Tile ( _level + 1, osg::Vec2d (  mid[0], _min[1] ), osg::Vec2d ( _max[0],  mid[1] ), mesh.rows(), mesh.columns(), half, _body, _raster ); // lower right tile
-      _children[UPPER_LEFT]  = new Tile ( _level + 1, osg::Vec2d ( _min[0],  mid[1] ), osg::Vec2d (  mid[0], _max[1] ), mesh.rows(), mesh.columns(), half, _body, _raster ); // upper left  tile
-      _children[UPPER_RIGHT] = new Tile ( _level + 1, osg::Vec2d (  mid[0],  mid[1] ), osg::Vec2d ( _max[0], _max[1] ), mesh.rows(), mesh.columns(), half, _body, _raster ); // upper right tile
       group->addChild ( _children[LOWER_LEFT]  );
       group->addChild ( _children[LOWER_RIGHT] );
       group->addChild ( _children[UPPER_LEFT]  );
       group->addChild ( _children[UPPER_RIGHT] );
       this->addChild ( group.get() );
+
+      // Remove texture state
+      osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
+      ss->setTextureMode ( _textureUnit, GL_TEXTURE_2D, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+      //ss->removeTextureMode ( _textureUnit, GL_TEXTURE_2D );
     }
 
     // Traverse last child.
-    this->getChild ( this->getNumChildren() - 1 )->accept ( nv );
+    this->getChild ( this->getNumChildren() - 1 )->accept ( cv );
   }
 }
 
@@ -437,9 +465,7 @@ void Tile::dirty ( bool state, bool dirtyChildren, const Extents& extents )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  Extents e ( _min, _max );
-
-  if ( extents.intersects ( e ) )
+  if ( extents.intersects ( _extents ) )
   {
     // Set our dirty state.
     this->dirty ( state, false );
@@ -487,7 +513,7 @@ osg::Node* Tile::_buildLonSkirt ( double lon, double u, double offset )
   for ( unsigned int j = 0; j < columns; ++j )
   {
     const double v ( static_cast<double> ( j ) / ( columns - 1 ) );
-    const double lat ( _min[1] + v * ( _max[1] - _min[1] ) );
+    const double lat ( _extents.minimum()[1] + v * ( _extents.maximum()[1] - _extents.minimum()[1] ) );
 
     const double elevation ( _body->geodeticRadius ( lat ) );
 
@@ -521,7 +547,7 @@ osg::Node* Tile::_buildLatSkirt ( double lat, double v, double offset )
   for ( int i = rows - 1; i >= 0; --i )
   {
     const double u ( 1.0 - static_cast<double> ( i ) / ( mesh.rows() - 1 ) );
-    const double lon ( _min[0] + u * ( _max[0] - _min[0] ) );
+    const double lon ( _extents.minimum()[0] + u * ( _extents.maximum()[0] - _extents.minimum()[0] ) );
 
     const double elevation ( _body->geodeticRadius ( lat ) );
 

@@ -65,7 +65,7 @@ Body::Body ( const Vec2d &r ) : BaseClass(),
   const double splitDistance ( _ellipsoid->a() * 7 );
 
   // Make the tile and add it to the transform.
-  _tile = new Tile ( 0, mn, mx, 10, 10, splitDistance, this, _rasters );
+  _tile = new Tile ( 0, Tile::Extents ( mn, mx ), Tile::MeshSize ( 17, 17 ), splitDistance, this, _rasters );
   _tile->ref();
   _transform->addChild ( _tile );
 }

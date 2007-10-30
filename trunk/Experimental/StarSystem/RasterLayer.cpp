@@ -56,7 +56,7 @@ void RasterLayer::extents ( const Extents& extents )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Extents RasterLayer::extents () const
+RasterLayer::Extents RasterLayer::extents () const
 {
   Guard guard ( this );
   return _extents;

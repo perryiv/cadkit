@@ -30,11 +30,12 @@
 #ifndef _USUL_PREDICATES_CLOSE_FLOAT_H_
 #define _USUL_PREDICATES_CLOSE_FLOAT_H_
 
-#include "Usul/Types/Types.h"
+#include "Usul/Errors/Assert.h"
+#include "Usul/Cast/Cast.h"
+#include "Usul/Math/Absolute.h"
 #include "Usul/Math/Finite.h"
 #include "Usul/Math/NaN.h"
-#include "Usul/Math/Absolute.h"
-#include "Usul/Errors/Assert.h"
+#include "Usul/Types/Types.h"
 
 
 namespace Usul {
@@ -129,15 +130,15 @@ template < class FloatType_ > struct CloseFloat
     }
 
     // Interpret the memory as a signed integer.
-    SignedInteger ia ( *(reinterpret_cast<SignedInteger*>(&a)) );
-    SignedInteger ib ( *(reinterpret_cast<SignedInteger*>(&b)) );
+    SignedInteger ia ( *( USUL_UNSAFE_CAST ( SignedInteger*, &a ) ) );
+    SignedInteger ib ( *( USUL_UNSAFE_CAST ( SignedInteger*, &b ) ) );
 
     // Make them lexicographically ordered as a twos-complement int.
     Usul::Predicates::Detail::handleTwosCompliment ( ia );
     Usul::Predicates::Detail::handleTwosCompliment ( ib );
 
     // See how far apart a and b are.
-    UnsignedInteger diff ( static_cast < UnsignedInteger > ( Usul::Math::absolute ( ia - ib ) ) );
+    const UnsignedInteger diff ( static_cast < UnsignedInteger > ( Usul::Math::absolute ( ia - ib ) ) );
 
 #ifdef _DEBUG
     if ( diff <= unitsInLastPlace )

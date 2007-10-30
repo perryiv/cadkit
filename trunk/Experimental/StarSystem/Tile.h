@@ -80,10 +80,10 @@ public:
 
   // Set/get the flag that says we're dirty.
   bool                      dirty() const;
-  void                      dirty ( bool state, bool dirtyChildren = false );
+  void                      dirty ( bool state, bool dirtyChildren );
 
   // Mark the dirty state, only if we cross this extents.
-  void                      dirty ( bool state, const Extents& extents );
+  void                      dirty ( bool state, bool dirtyChildren, const Extents& extents);
 
   // Return level of this tile. Zero is the top.
   unsigned int              level() const;

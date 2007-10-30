@@ -209,9 +209,6 @@ void Tile::_update()
   // Assign material.
   //this->getOrCreateStateSet()->setAttributeAndModes ( Helper::material(), osg::StateAttribute::PROTECTED );
 
-  // Turn off lighting.
-  OsgTools::State::StateSet::setLighting ( this, false );
-
   // Get the image.
   if ( 0x0 != _raster )
   {
@@ -236,11 +233,14 @@ void Tile::_update()
       // Get the state set.
       osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
       ss->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+
+      // Turn off lighting.
+      OsgTools::State::StateSet::setLighting ( this, false );
     }
   }
 
   // No longer dirty.
-  this->dirty ( false );
+  this->dirty ( false, false );
 }
 
 
@@ -432,7 +432,7 @@ void Tile::dirty ( bool state, bool dirtyChildren )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::dirty ( bool state, const Extents& extents )
+void Tile::dirty ( bool state, bool dirtyChildren, const Extents& extents )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -445,10 +445,13 @@ void Tile::dirty ( bool state, const Extents& extents )
     this->dirty ( state, false );
 
     // Visit our children.
-    if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->dirty  ( state, extents );
-    if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->dirty ( state, extents );
-    if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->dirty  ( state, extents );
-    if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->dirty ( state, extents );
+    if ( dirtyChildren )
+    {
+      if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->dirty  ( state, dirtyChildren, extents );
+      if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->dirty ( state, dirtyChildren, extents );
+      if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->dirty  ( state, dirtyChildren, extents );
+      if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->dirty ( state, dirtyChildren, extents );
+    }
   }
 }
 

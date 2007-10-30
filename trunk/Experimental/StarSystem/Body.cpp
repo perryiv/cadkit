@@ -65,7 +65,7 @@ Body::Body ( const Vec2d &r ) : BaseClass(),
   const double splitDistance ( _ellipsoid->a() * 7 );
 
   // Make the tile and add it to the transform.
-  _tile = new Tile ( 0, mn, mx, 10, 10, splitDistance, _ellipsoid, _rasters );
+  _tile = new Tile ( 0, mn, mx, 10, 10, splitDistance, this, _rasters );
   _tile->ref();
   _transform->addChild ( _tile );
 }
@@ -218,4 +218,32 @@ void Body::rasterAppend ( RasterLayer * layer )
     _rasters->append ( layer );
     _tile->dirty( true, true);
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert lat, lon, height to x,y,z.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const
+{
+  typedef osg::Vec3f::value_type ValueType;
+
+  double x ( 0 ), y ( 0 ), z ( 0 );
+  _ellipsoid->latLonHeightToXYZ ( lat, lon, elevation, x, y, z );
+  point.set ( static_cast<ValueType> ( x ), static_cast<ValueType> ( y ), static_cast<ValueType> ( z ) );
+}
+
+ 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Computes the "geodetic" radius for a given latitude in degrees.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Body::geodeticRadius( double latitude ) const
+{
+  return _ellipsoid->geodeticRadius ( latitude );
 }

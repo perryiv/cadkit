@@ -21,6 +21,7 @@
 #endif
 
 #include "StarSystem/Tile.h"
+#include "StarSystem/Body.h"
 #include "StarSystem/RasterLayer.h"
 
 #include "OsgTools/Mesh.h"
@@ -54,9 +55,9 @@ USUL_IMPLEMENT_TYPE_ID ( Tile );
 
 Tile::Tile ( unsigned int level, const osg::Vec2d &mn, const osg::Vec2d &mx, 
              unsigned int numRows, unsigned int numColumns, double splitDistance, 
-             ossimEllipsoid *ellipsoid, RasterLayer* raster ) : BaseClass(),
+             Body *body, RasterLayer* raster ) : BaseClass(),
   _mutex ( new Tile::Mutex ),
-  _ellipsoid ( ellipsoid ),
+  _body ( body ),
   _min ( mn ),
   _max ( mx ),
   _splitDistance ( splitDistance ),
@@ -80,7 +81,7 @@ Tile::Tile ( unsigned int level, const osg::Vec2d &mn, const osg::Vec2d &mx,
 
 Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, option ),
   _mutex ( new Tile::Mutex ),
-  _ellipsoid ( tile._ellipsoid ),
+  _body ( tile._body ),
   _min ( tile._min ),
   _max ( tile._max ),
   _splitDistance ( tile._splitDistance ),
@@ -159,7 +160,7 @@ void Tile::_update()
     return;
 
   // Handle bad state.
-  if ( ( 0x0 == _ellipsoid ) || ( 0x0 == _mesh ) )
+  if ( ( 0x0 == _body ) || ( 0x0 == _mesh ) )
     return;
 
   // Remove all the children.
@@ -179,11 +180,8 @@ void Tile::_update()
       // Convert lat-lon coordinates to xyz.
       osg::Vec3f &p ( mesh.point ( i, j ) );
       double x ( 0 ), y ( 0 ), z ( 0 );
-      const double elevation ( _ellipsoid->geodeticRadius ( lat ) );
-      _ellipsoid->latLonHeightToXYZ ( lat, lon, elevation, x, y, z );
-      p[0] = static_cast<float> ( x );
-      p[1] = static_cast<float> ( y );
-      p[2] = static_cast<float> ( z );
+      const double elevation ( _body->geodeticRadius ( lat ) );
+      _body->latLonHeightToXYZ ( lat, lon, elevation, p );
 
       // Assign normal vectors.
       osg::Vec3f &n ( mesh.normal ( i, j ) );
@@ -195,8 +193,18 @@ void Tile::_update()
     }
   }
 
+  // Depth of skirt.  This function needs to be tweeked.
+  double offset ( 25000 - ( this->level() * 150 ) );
+
+  osg::ref_ptr < osg::Group > group ( new osg::Group );
+  group->addChild ( this->_buildLonSkirt ( _min[0], 0.0, offset ) ); // Left skirt.
+  group->addChild ( this->_buildLonSkirt ( _max[0], 1.0, offset ) ); // Right skirt.
+  group->addChild ( this->_buildLatSkirt ( _min[1], 0.0, offset ) ); // Bottom skirt.
+  group->addChild ( this->_buildLatSkirt ( _max[1], 1.0, offset ) ); // Top skirt.
+  group->addChild ( mesh() );
+
   // Add mesh geometry to this node.
-  this->addChild ( mesh() );
+  this->addChild ( group.get() );
 
   // Assign material.
   //this->getOrCreateStateSet()->setAttributeAndModes ( Helper::material(), osg::StateAttribute::PROTECTED );
@@ -220,8 +228,10 @@ void Tile::_update()
 
       texture->setFilter( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
       texture->setFilter( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
-      texture->setWrap( osg::Texture::WRAP_S, osg::Texture::CLAMP );
-      texture->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP );
+      texture->setWrap( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
+      texture->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
+      texture->setBorderColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 0.0 ) );
+      texture->setBorderWidth ( 0.0 );
 
       // Get the state set.
       osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
@@ -246,7 +256,7 @@ void Tile::_destroy()
 
   Usul::Pointers::unreference ( _raster ); _raster = 0x0;
 
-  _ellipsoid = 0x0; // Don't delete!
+  _body = 0x0; // Don't delete!
   delete _mesh; _mesh = 0x0;
   delete _mutex; _mutex = 0x0;
 }
@@ -335,6 +345,9 @@ void Tile::_cull ( osg::NodeVisitor &nv )
     // Remove high level of detail.
     this->removeChild ( 1, numChildren - 1 );
 
+    // Unreference all children.
+    _children[LOWER_LEFT] = 0x0; _children[LOWER_RIGHT] = 0x0; _children[UPPER_LEFT] = 0x0; _children[UPPER_RIGHT] = 0x0;
+
     // Traverse low level of detail.
     this->getChild ( 0 )->accept ( nv );
   }
@@ -347,10 +360,10 @@ void Tile::_cull ( osg::NodeVisitor &nv )
       osg::ref_ptr<osg::Group> group ( new osg::Group );
       const double half ( _splitDistance * 0.5f );
       const osg::Vec2d mid ( ( _max + _min ) * 0.5 );
-      _children[LOWER_LEFT]  = new Tile ( _level + 1, osg::Vec2d ( _min[0], _min[1] ), osg::Vec2d (  mid[0],  mid[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid, _raster ); // lower left  tile
-      _children[LOWER_RIGHT] = new Tile ( _level + 1, osg::Vec2d (  mid[0], _min[1] ), osg::Vec2d ( _max[0],  mid[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid, _raster ); // lower right tile
-      _children[UPPER_LEFT]  = new Tile ( _level + 1, osg::Vec2d ( _min[0],  mid[1] ), osg::Vec2d (  mid[0], _max[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid, _raster ); // upper left  tile
-      _children[UPPER_RIGHT] = new Tile ( _level + 1, osg::Vec2d (  mid[0],  mid[1] ), osg::Vec2d ( _max[0], _max[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid, _raster ); // upper right tile
+      _children[LOWER_LEFT]  = new Tile ( _level + 1, osg::Vec2d ( _min[0], _min[1] ), osg::Vec2d (  mid[0],  mid[1] ), mesh.rows(), mesh.columns(), half, _body, _raster ); // lower left  tile
+      _children[LOWER_RIGHT] = new Tile ( _level + 1, osg::Vec2d (  mid[0], _min[1] ), osg::Vec2d ( _max[0],  mid[1] ), mesh.rows(), mesh.columns(), half, _body, _raster ); // lower right tile
+      _children[UPPER_LEFT]  = new Tile ( _level + 1, osg::Vec2d ( _min[0],  mid[1] ), osg::Vec2d (  mid[0], _max[1] ), mesh.rows(), mesh.columns(), half, _body, _raster ); // upper left  tile
+      _children[UPPER_RIGHT] = new Tile ( _level + 1, osg::Vec2d (  mid[0],  mid[1] ), osg::Vec2d ( _max[0], _max[1] ), mesh.rows(), mesh.columns(), half, _body, _raster ); // upper right tile
       group->addChild ( _children[LOWER_LEFT]  );
       group->addChild ( _children[LOWER_RIGHT] );
       group->addChild ( _children[UPPER_LEFT]  );
@@ -424,4 +437,72 @@ bool Tile::dirty() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _dirty;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build skirt along longitude line.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* Tile::_buildLonSkirt ( double lon, double u, double offset )
+{
+  unsigned int columns ( _mesh->columns() );
+
+  // Make the mesh
+  OsgTools::Mesh mesh ( 2, columns );
+
+  // Left skirt.
+  for ( unsigned int j = 0; j < columns; ++j )
+  {
+    const double v ( static_cast<double> ( j ) / ( columns - 1 ) );
+    const double lat ( _min[1] + v * ( _max[1] - _min[1] ) );
+
+    const double elevation ( _body->geodeticRadius ( lat ) );
+
+    // Convert lat-lon coordinates to xyz.
+    _body->latLonHeightToXYZ ( lat, lon, elevation,          mesh.point ( 0, j ) );
+    _body->latLonHeightToXYZ ( lat, lon, elevation - offset, mesh.point ( 1, j ) );
+
+    // Assign texture coordinate.
+    mesh.texCoord ( 0, j ).set ( u, v );
+    mesh.texCoord ( 1, j ).set ( u, v );
+  }
+
+  return mesh();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build skirt along latitude line.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* Tile::_buildLatSkirt ( double lat, double v, double offset )
+{
+  unsigned int rows ( _mesh->rows() );
+
+  // Make the mesh
+  OsgTools::Mesh mesh ( rows, 2 );
+
+  // Left skirt.
+  for ( int i = rows - 1; i >= 0; --i )
+  {
+    const double u ( 1.0 - static_cast<double> ( i ) / ( mesh.rows() - 1 ) );
+    const double lon ( _min[0] + u * ( _max[0] - _min[0] ) );
+
+    const double elevation ( _body->geodeticRadius ( lat ) );
+
+    // Convert lat-lon coordinates to xyz.
+    _body->latLonHeightToXYZ ( lat, lon, elevation,          mesh.point ( i, 0 ) );
+    _body->latLonHeightToXYZ ( lat, lon, elevation - offset, mesh.point ( i, 1 ) );
+
+    // Assign texture coordinate.
+    mesh.texCoord ( i, 0 ).set ( u, v );
+    mesh.texCoord ( i, 1 ).set ( u, v );
+  }
+
+  return mesh();
 }

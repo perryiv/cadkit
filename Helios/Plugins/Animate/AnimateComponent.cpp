@@ -170,9 +170,10 @@ const Animate::Path* AnimateComponent::currentPath () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AnimateComponent::animatePath( std::vector< osg::Matrixf > matrix )
+void AnimateComponent::animatePath( const PackedMatrices & matrices )
 { 
   USUL_TRACE_SCOPE;
+#if 0
   Guard guard ( this->mutex() );
 
   Animate::KeyFramePath::RefPtr path ( new Animate::KeyFramePath() );
@@ -190,6 +191,7 @@ void AnimateComponent::animatePath( std::vector< osg::Matrixf > matrix )
 
     path->start( Usul::Documents::Manager::instance().activeView() );
   }
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////

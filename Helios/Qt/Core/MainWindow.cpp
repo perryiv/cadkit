@@ -438,7 +438,7 @@ void MainWindow::_initMenu()
   for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++ iter )
   {
     // Should be true.
-    Usul::Interfaces::IMenuAdd::ValidQueryPtr ma ( *iter );
+    Usul::Interfaces::IMenuAdd::ValidQueryPtr ma ( (*iter).get() );
     ma->menuAdd ( *_menu );
   }
 }
@@ -1586,7 +1586,7 @@ void MainWindow::initPlugins()
   for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
   {
     // Should be true.
-    Usul::Interfaces::IDocumentCreate::ValidQueryPtr dc ( *iter );
+    Usul::Interfaces::IDocumentCreate::ValidQueryPtr dc ( (*iter).get() );
 
     // Create a document.
     Usul::Documents::Document::RefPtr document ( dc->createDocument( me ) );
@@ -1594,7 +1594,7 @@ void MainWindow::initPlugins()
     // Get the name of the document.
     std::string name ( document.valid() ? document->typeName () : "" );
 
-    CadKit::Helios::Commands::NewDocument::RefPtr command ( new CadKit::Helios::Commands::NewDocument ( me, *iter, name ) );
+    CadKit::Helios::Commands::NewDocument::RefPtr command ( new CadKit::Helios::Commands::NewDocument ( me, (*iter).get(), name ) );
     _newDocumentMenu->append ( new MenuKit::Button ( command.get() ) );
   }
 

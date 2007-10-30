@@ -20,6 +20,7 @@
 #include "StarSystem/Export.h"
 
 #include "Usul/Base/Typed.h"
+#include "Usul/Math/Vector4.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
@@ -50,10 +51,20 @@ public:
   // Type information.
   USUL_DECLARE_TYPE_ID ( Tile );
 
+  // Indices for children
+  enum Indices
+  {
+    LOWER_LEFT,
+    LOWER_RIGHT,
+    UPPER_LEFT,
+    UPPER_RIGHT
+  };
+
   // Useful typedefs.
   typedef osg::Group BaseClass;
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
+  typedef Usul::Math::Vector4 < Tile::RefPtr > Children;
 
   // Constructors.
   Tile ( unsigned int level = 0, 
@@ -68,7 +79,7 @@ public:
 
   // Set/get the flag that says we're dirty.
   bool                      dirty() const;
-  void                      dirty ( bool );
+  void                      dirty ( bool state, bool dirtyChildren = false );
 
   // Return level of this tile. Zero is the top.
   unsigned int              level() const;
@@ -104,6 +115,7 @@ private:
   unsigned int _level;
   bool _dirty;
   RasterLayer *_raster;
+  Children _children;
 };
 
 

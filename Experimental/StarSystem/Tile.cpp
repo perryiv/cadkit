@@ -63,7 +63,8 @@ Tile::Tile ( unsigned int level, const osg::Vec2d &mn, const osg::Vec2d &mx,
   _mesh ( new OsgTools::Mesh ( numRows, numColumns ) ),
   _level ( level ),
   _dirty ( true ),
-  _raster ( raster )
+  _raster ( raster ),
+  _children ()
 {
   USUL_TRACE_SCOPE;
 
@@ -86,7 +87,8 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _mesh ( new OsgTools::Mesh ( tile._mesh->rows(), tile._mesh->columns() ) ),
   _level ( tile._level ),
   _dirty ( true ),
-  _raster ( tile._raster )
+  _raster ( tile._raster ),
+  _children ( tile._children )
 {
   USUL_TRACE_SCOPE;
 
@@ -345,10 +347,14 @@ void Tile::_cull ( osg::NodeVisitor &nv )
       osg::ref_ptr<osg::Group> group ( new osg::Group );
       const double half ( _splitDistance * 0.5f );
       const osg::Vec2d mid ( ( _max + _min ) * 0.5 );
-      group->addChild ( new Tile ( _level + 1, osg::Vec2d ( _min[0], _min[1] ), osg::Vec2d (  mid[0],  mid[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid, _raster ) ); // lower left  tile
-      group->addChild ( new Tile ( _level + 1, osg::Vec2d (  mid[0], _min[1] ), osg::Vec2d ( _max[0],  mid[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid, _raster ) ); // lower right tile
-      group->addChild ( new Tile ( _level + 1, osg::Vec2d ( _min[0],  mid[1] ), osg::Vec2d (  mid[0], _max[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid, _raster ) ); // upper left  tile
-      group->addChild ( new Tile ( _level + 1, osg::Vec2d (  mid[0],  mid[1] ), osg::Vec2d ( _max[0], _max[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid, _raster ) ); // upper right tile
+      _children[LOWER_LEFT]  = new Tile ( _level + 1, osg::Vec2d ( _min[0], _min[1] ), osg::Vec2d (  mid[0],  mid[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid, _raster ); // lower left  tile
+      _children[LOWER_RIGHT] = new Tile ( _level + 1, osg::Vec2d (  mid[0], _min[1] ), osg::Vec2d ( _max[0],  mid[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid, _raster ); // lower right tile
+      _children[UPPER_LEFT]  = new Tile ( _level + 1, osg::Vec2d ( _min[0],  mid[1] ), osg::Vec2d (  mid[0], _max[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid, _raster ); // upper left  tile
+      _children[UPPER_RIGHT] = new Tile ( _level + 1, osg::Vec2d (  mid[0],  mid[1] ), osg::Vec2d ( _max[0], _max[1] ), mesh.rows(), mesh.columns(), half, _ellipsoid, _raster ); // upper right tile
+      group->addChild ( _children[LOWER_LEFT]  );
+      group->addChild ( _children[LOWER_RIGHT] );
+      group->addChild ( _children[UPPER_LEFT]  );
+      group->addChild ( _children[UPPER_RIGHT] );
       this->addChild ( group.get() );
     }
 
@@ -391,11 +397,19 @@ Tile::Mutex &Tile::mutex() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::dirty ( bool state )
+void Tile::dirty ( bool state, bool dirtyChildren )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _dirty = state;
+
+  if ( dirtyChildren )
+  {
+    if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->dirty  ( state, dirtyChildren );
+    if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->dirty ( state, dirtyChildren );
+    if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->dirty  ( state, dirtyChildren );
+    if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->dirty ( state, dirtyChildren );
+  }
 }
 
 

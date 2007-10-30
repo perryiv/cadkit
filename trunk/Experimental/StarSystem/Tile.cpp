@@ -300,7 +300,11 @@ void Tile::_cull ( osg::NodeVisitor &nv )
   }
 
   // Get cull visitor.
-  const osgUtil::CullVisitor &cv ( dynamic_cast < osgUtil::CullVisitor & > ( nv ) );
+  osgUtil::CullVisitor &cv ( dynamic_cast < osgUtil::CullVisitor & > ( nv ) );
+
+  // Return if we are culled.
+  if ( cv.isCulled ( *this ) )
+    return;
 
   // Four corners and center of the tile.
   OsgTools::Mesh &mesh ( *_mesh );

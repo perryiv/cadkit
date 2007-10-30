@@ -179,23 +179,8 @@ void RasterLayerOssim::_convert ( const ossimImageData& data, osg::Image& image 
   unsigned char np1 ( static_cast < unsigned char > ( data.getNullPix( 0 ) ) );
   unsigned char np2 ( static_cast < unsigned char > ( data.getNullPix( ( greyscale ? 0 : 1 ) ) ) );
   unsigned char np3 ( static_cast < unsigned char > ( data.getNullPix( ( greyscale ? 0 : 2 ) ) ) );
-  
-  // Handle greyscale images...
-  if( data.getNumberOfBands()< 3 )
-  {
-     //b2 = (unsigned char*)data.getBuf(0);
-     //b3 = (unsigned char*)data.getBuf(0);
-     //np2 = (unsigned char)data.getNullPix(0);
-     //np3 = (unsigned char)data.getNullPix(0);
-  }
-  else
-  {
-     //b2 = (unsigned char*)data.getBuf(1);
-     //b3 = (unsigned char*)data.getBuf(2);
-     //np2 = (unsigned char)data.getNullPix(1);
-     //np3 = (unsigned char)data.getNullPix(2);
-  }
-      
+
+  // Copy the pixels into the osg image.
   for( unsigned int i = 0; i < size; ++i )
   {
     // If the pixel is null, make transparent.

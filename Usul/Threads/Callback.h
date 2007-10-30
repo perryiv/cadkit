@@ -98,6 +98,47 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Callback class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Function > class VoidFunctionCallback : public Callback
+{
+public:
+
+  // Useful typedefs.
+  typedef Callback BaseClass;
+
+  // Smart-pointer definitions.
+  USUL_DECLARE_REF_POINTERS ( VoidFunctionCallback );
+
+  // Constructor.
+  VoidFunctionCallback ( Function f ) : BaseClass(),
+    _f ( f )
+  {
+  }
+
+  // Overload this function.
+  virtual void operator() ( Usul::Threads::Thread * )
+  {
+    _f();
+  }
+
+protected:
+
+  // Use reference counting.
+  virtual ~VoidFunctionCallback()
+  {
+  }
+
+private:
+
+  Function _f;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Helper function to make a FunctionCallback.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -105,6 +146,18 @@ private:
 template < class Function > Callback *newFunctionCallback ( Function f )
 {
   return new FunctionCallback<Function> ( f );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to make a VoidFunctionCallback.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Function > Callback *newVoidFunctionCallback ( Function f )
+{
+  return new VoidFunctionCallback<Function> ( f );
 }
 
 

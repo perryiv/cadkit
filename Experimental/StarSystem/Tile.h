@@ -29,7 +29,7 @@
 
 #include <typeinfo>
 
-namespace StarSystem { class RasterLayer; }
+namespace StarSystem { class RasterLayer; class Body; }
 namespace OsgTools { class Mesh; }
 namespace osgUtil { class CullVisitor; }
 class ossimEllipsoid;
@@ -73,7 +73,7 @@ public:
          unsigned int numRows = 10,
          unsigned int numColumns = 10,
          double splitDistance = 1,
-         ossimEllipsoid *ellipsoid = 0x0,
+         Body *body = 0x0,
          RasterLayer *raster = 0x0 );
   Tile ( const Tile &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY );
 
@@ -98,7 +98,10 @@ protected:
   void                      _cull ( osg::NodeVisitor &nv );
 
   void                      _update();
-
+  
+  // Build skirts.
+  osg::Node*                _buildLonSkirt ( double lon, double u, double offset );
+  osg::Node*                _buildLatSkirt ( double lat, double v, double offset );
 private:
 
   // No assignment.
@@ -107,7 +110,7 @@ private:
   void                      _destroy();
 
   mutable Mutex *_mutex;
-  ossimEllipsoid *_ellipsoid;
+  Body *_body;
   osg::Vec2d _min;
   osg::Vec2d _max;
   double _splitDistance;

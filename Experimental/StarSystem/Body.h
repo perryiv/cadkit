@@ -23,7 +23,7 @@
 #include "Usul/Math/Vector3.h"
 
 namespace StarSystem { class Tile; class RasterLayer; class RasterGroup; }
-namespace osg { class MatrixTransform; }
+namespace osg { class MatrixTransform; class Vec3f; }
 class ossimEllipsoid;
 
 
@@ -56,6 +56,12 @@ public:
   // Set/get the center.
   void                      center ( const Vec3d & );
   Vec3d                     center() const;
+
+  // Computes the "geodetic" radius for a given latitude in degrees.
+  double                    geodeticRadius( double latitude ) const;
+
+  // Convert lat, lon, height to x,y,z.
+  void                      latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const;
 
   // Get the maximum radius.
   double                    maxRadius() const;

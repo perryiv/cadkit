@@ -7,7 +7,11 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( ${OSG_INC_DIR} ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../../../" ${QT_INCLUDE_DIR} )
+INCLUDE_DIRECTORIES( ${OSG_INC_DIR} 
+                     ${CADKIT_INC_DIR} 
+                     "${CADKIT_INC_DIR}/Experimental"
+                     "${PROJECT_SOURCE_DIR}/../../../" 
+                     ${QT_INCLUDE_DIR} )
 
 
 # List the Sources.

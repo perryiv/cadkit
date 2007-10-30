@@ -16,10 +16,11 @@ ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR} )
 
 set (SOURCES
-	VolumeFactory.cpp
-	VolumeDocument.cpp
-	VolumeComponent.cpp
-	VolumeCallback.cpp
+./VolumeFactory.cpp
+./VolumeComponent.cpp
+./ImageReaderWriter.cpp
+./RawReaderWriter.cpp
+./VolumeDocument.cpp
 )
 
 # ---------- Create a Shared Library

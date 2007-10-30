@@ -22,6 +22,7 @@ SET (SOURCES
     ExitApplication.cpp
     ExportImage.cpp
     InsertDocument.cpp
+    NewDocument.cpp
     OpenDocument.cpp
     SaveDocument.cpp
     SaveAsDocument.cpp

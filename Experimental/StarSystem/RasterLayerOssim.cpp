@@ -132,15 +132,15 @@ osg::Image* RasterLayerOssim::texture ( const Extents& extents, unsigned int wid
   {
     ossimIrect requestRect(0, 0, width - 1, height - 1 );
 
-    double deltaX ( extents.max()[0] - extents.min()[0] );
-    double deltaY ( extents.max()[1] - extents.min()[1] );
+    double deltaX ( extents.maximum()[0] - extents.minimum()[0] );
+    double deltaY ( extents.maximum()[1] - extents.minimum()[1] );
      
     double deltaLat ( deltaY / height );
     double deltaLon ( deltaX / width );
 
     _projection->setDecimalDegreesPerPixel( ossimDpt ( deltaLon, deltaLat ) );
 
-    _projection->setUlGpt( ossimGpt ( extents.max()[1], extents.min()[0] ) ); // Max lat and min lon.
+    _projection->setUlGpt( ossimGpt ( extents.maximum()[1], extents.minimum()[0] ) ); // Max lat and min lon.
     _viewInterface->setView( _projection, false );
     ossimRefPtr<ossimImageData> data ( _renderer->getTile( requestRect ) );
 

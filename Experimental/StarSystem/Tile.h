@@ -22,6 +22,7 @@
 
 #include "Usul/Base/Typed.h"
 #include "Usul/Math/Vector4.h"
+#include "Usul/Math/Vector2.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
@@ -66,13 +67,13 @@ public:
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
   typedef Usul::Math::Vector4 < Tile::RefPtr > Children;
+  typedef StarSystem::Extents < osg::Vec2d > Extents;
+  typedef Usul::Math::Vec2ui MeshSize;
 
   // Constructors.
   Tile ( unsigned int level = 0, 
-         const osg::Vec2d &mn = osg::Vec2d ( 0, 0 ), 
-         const osg::Vec2d &mx = osg::Vec2d ( 1, 1 ), 
-         unsigned int numRows = 10,
-         unsigned int numColumns = 10,
+         const Extents &extents = Extents ( Extents::Vertex ( 0, 0 ), Extents::Vertex ( 1, 1 ) ), 
+         const MeshSize &meshSize = MeshSize ( 10, 10 ),
          double splitDistance = 1,
          Body *body = 0x0,
          RasterLayer *raster = 0x0 );
@@ -99,13 +100,14 @@ protected:
   // Use reference counting.
   virtual ~Tile();
 
-  void                      _cull ( osg::NodeVisitor &nv );
+  void                      _cull ( osgUtil::CullVisitor &cv );
 
   void                      _update();
   
   // Build skirts.
   osg::Node*                _buildLonSkirt ( double lon, double u, double offset );
   osg::Node*                _buildLatSkirt ( double lat, double v, double offset );
+
 private:
 
   // No assignment.
@@ -115,14 +117,14 @@ private:
 
   mutable Mutex *_mutex;
   Body *_body;
-  osg::Vec2d _min;
-  osg::Vec2d _max;
+  Extents _extents;
   double _splitDistance;
   OsgTools::Mesh *_mesh;
   unsigned int _level;
   bool _dirty;
   RasterLayer *_raster;
   Children _children;
+  unsigned int _textureUnit;
 };
 
 

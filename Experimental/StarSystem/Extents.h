@@ -11,22 +11,17 @@
 #ifndef __STAR_SYSTEM_EXTENTS_H__
 #define __STAR_SYSTEM_EXTENTS_H__
 
-#include "StarSystem/Export.h"
+#include "Usul/Math/MinMax.h"
 
-#include "Usul/Threads/RecursiveMutex.h"
-#include "Usul/Threads/Guard.h"
-
-#include "osg/Vec2d"
 
 namespace StarSystem {
 
 
-class STAR_SYSTEM_EXPORT Extents
+template < class VertexType > class Extents
 {
 public:
-  typedef osg::Vec2d Vertex;
-  typedef Usul::Threads::RecursiveMutex Mutex;
-  typedef Usul::Threads::Guard<Mutex> Guard;
+
+  typedef VertexType Vertex;
 
   /// Construction/Destruction.
   Extents();
@@ -35,13 +30,13 @@ public:
   ~Extents();
 
   /// Assignment.
-  Extents& operator= ( const Extents& rhs );
+  Extents& operator = ( const Extents& rhs );
 
   /// Get the min.
-  Vertex               min() const;
+  const Vertex &       minimum() const;
 
   /// Get the max.
-  Vertex               max() const;
+  const Vertex &       maximum() const;
 
   /// Expand by the extents.
   void                 expand ( const Extents& extents );
@@ -49,18 +44,165 @@ public:
   /// Does the extent intersect this extent.
   bool                 intersects ( const Extents& extents ) const;
 
-  /// Get the mutex
-  Mutex&               mutex() const { return *_mutex; }
 private:
-  void                 _destroy ();
 
-  mutable Mutex *_mutex;
   Vertex _min;
   Vertex _max;
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macro to help shorten the lines.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define ThisClass Extents<VertexType>
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class VertexType > inline ThisClass::Extents() :
+  _min ( 0.0, 0.0 ),
+  _max ( 0.0, 0.0 )
+{
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class VertexType > inline ThisClass::Extents ( const Vertex& min, const Vertex& max ) :
+  _min ( min ),
+  _max ( max )
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copy Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class VertexType > inline ThisClass::Extents ( const Extents& rhs ) :
+  _min ( rhs._min ),
+  _max ( rhs._max )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Assignment.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class VertexType > inline ThisClass& ThisClass::operator = ( const ThisClass& rhs )
+{
+  _min = rhs._min;
+  _max = rhs._max;
+  return *this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class VertexType > inline ThisClass::~Extents()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the min.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class VertexType > inline const typename ThisClass::Vertex &ThisClass::minimum() const
+{
+  return _min;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the max.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class VertexType > inline const typename ThisClass::Vertex &ThisClass::maximum() const
+{
+  return _max;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Expand by the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class VertexType > inline void ThisClass::expand ( const Extents& extents )
+{
+  Vertex zero ( 0.0, 0.0 );
+
+  // If we are invalid.
+  if ( zero == _min && zero == _max )
+  {
+    _min = extents.minimum();
+    _max = extents.maximum();
+  }
+  else
+  {
+    const Vertex mn ( extents.minimum() );
+    const Vertex mx ( extents.maximum() );
+
+    _min[0] = Usul::Math::minimum ( _min[0], mn[0] );
+    _min[1] = Usul::Math::minimum ( _min[1], mn[1] );
+
+    _max[0] = Usul::Math::maximum ( _max[0], mx[0] );
+    _max[1] = Usul::Math::maximum ( _max[1], mx[1] );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Does the extent intersect this extent.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class VertexType > inline bool ThisClass::intersects ( const Extents& extents ) const
+{
+  const Vertex mn ( extents.minimum() );
+  const Vertex mx ( extents.maximum() );
+  
+  return ( Usul::Math::maximum ( _min[0], mn[0] ) <= Usul::Math::minimum ( _max[0], mx[0] ) &&
+           Usul::Math::maximum ( _min[1], mn[1] ) <= Usul::Math::minimum ( _max[1], mx[1] ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clean up macro definition.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#undef ThisClass
+
+
+} // namespace StarSystem
 
 
 #endif // __STAR_SYSTEM_EXTENTS_H__

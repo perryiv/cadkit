@@ -16,6 +16,8 @@
 
 #include "Usul/Base/Object.h"
 
+#include "osg/Vec2d"
+
 namespace osg { class Image; class Vec3d; }
 
 namespace StarSystem {
@@ -24,7 +26,9 @@ namespace StarSystem {
 class STAR_SYSTEM_EXPORT RasterLayer : public Usul::Base::Object
 {
 public:
+
   typedef Usul::Base::Object BaseClass;
+  typedef StarSystem::Extents < osg::Vec2d > Extents;
 
   USUL_DECLARE_REF_POINTERS ( RasterLayer );
 

@@ -315,7 +315,7 @@ void Tile::_cull ( osg::NodeVisitor &nv )
   const osg::Vec3f &pNN ( mesh.point ( mesh.rows() - 1, mesh.columns() - 1 ) );
   const osg::Vec3f &pBC ( this->getBound().center() );
 
-  // Squared distances from the eye to t he points.
+  // Squared distances from the eye to the points.
   const float dist00 ( ( eye - p00 ).length2() );
   const float dist0N ( ( eye - p0N ).length2() );
   const float distN0 ( ( eye - pN0 ).length2() );

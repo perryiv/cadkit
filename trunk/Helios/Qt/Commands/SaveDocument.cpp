@@ -41,7 +41,7 @@ SaveDocument::SaveDocument ( IUnknown *caller ) : BaseClass ( caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SaveDocument::~SaveDocument ()
+SaveDocument::~SaveDocument()
 {
   USUL_TRACE_SCOPE;
 }
@@ -53,7 +53,7 @@ SaveDocument::~SaveDocument ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SaveDocument::_execute ()
+void SaveDocument::_execute()
 {
   USUL_TRACE_SCOPE;
 
@@ -61,7 +61,7 @@ void SaveDocument::_execute ()
 
   if( document.valid() )
   {
-    document->save( this->caller() );
+    document->save ( this->caller() );
   }
 }
 
@@ -72,9 +72,9 @@ void SaveDocument::_execute ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool SaveDocument::updateEnable () const
+bool SaveDocument::updateEnable() const
 {
   Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
-  return document.valid() && document->modified ();
+  return document.valid() && document->modified();
 }

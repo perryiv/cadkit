@@ -208,7 +208,7 @@ MainWindow::MainWindow ( const std::string &vendor,
   Usul::Documents::Manager::instance().addActiveDocumentListener ( this );
 
   // Register DocumentProxy for Usul::Documents::Document.
-  qRegisterMetaType < DocumentProxy > ( );
+  qRegisterMetaType<DocumentProxy>();
 }
 
 
@@ -611,7 +611,21 @@ void MainWindow::_buildTextWindow()
 
   // Make the text window.
   _textWindow.first = new QTextEdit ( dock );
+
+  // Set properties.
   _textWindow.first->setReadOnly ( true );
+
+  // Keep text window from growing too big.
+  if ( 0x0 != _textWindow.first->document() )
+  {
+    // Set maximum block count.
+    const int maxBlocks ( Reg::instance()[Sections::TEXT_WINDOW][Keys::MAXIMUM_BLOCK_COUNT].get<int> ( 1000 ) );
+    _textWindow.first->document()->setMaximumBlockCount ( maxBlocks );
+
+    // Write it back so that we can at least modify the registry 
+    // file to alter (until we have a GUI).
+    Reg::instance()[Sections::TEXT_WINDOW][Keys::MAXIMUM_BLOCK_COUNT] = maxBlocks;
+  }
 
   // Dock it.
   dock->setWidget ( _textWindow.first );

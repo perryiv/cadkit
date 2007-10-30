@@ -96,8 +96,8 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TriangleSet::TriangleSet() : BaseClass(),
-  _shared    ( LessVector ( CloseFloat( 20 ) ) ),
+TriangleSet::TriangleSet ( unsigned int unitsInLastPlace ) : BaseClass(),
+  _shared    ( LessVector ( CloseFloat ( unitsInLastPlace ) ) ),
   _triangles (),
   _vertices  ( new osg::Vec3Array ),
   _normalsV  ( new osg::Vec3Array ),
@@ -361,12 +361,12 @@ void TriangleSet::correctNormal ( const SharedVertex *sv0, const SharedVertex *s
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OsgTools::Triangles::Triangle *TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool update )
+OsgTools::Triangles::Triangle *TriangleSet::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool update, bool look )
 {
   // Get or make the shared vertices.
-  SharedVertex *sv0 ( this->addSharedVertex ( v0 ) );
-  SharedVertex *sv1 ( this->addSharedVertex ( v1 ) );
-  SharedVertex *sv2 ( this->addSharedVertex ( v2 ) );
+  SharedVertex *sv0 ( this->addSharedVertex ( v0, look ) );
+  SharedVertex *sv1 ( this->addSharedVertex ( v1, look ) );
+  SharedVertex *sv2 ( this->addSharedVertex ( v2, look ) );
 
   // Add the triangle
   return this->addTriangle ( sv0, sv1, sv2, n, update );

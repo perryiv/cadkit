@@ -99,14 +99,14 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( TriangleSet );
 
-  // Construction.
-  TriangleSet();
+  // Construction. Pass the number of adjacent floating point numbers that are the "same".
+  TriangleSet ( unsigned int unitsInLastPlace = 1 );
 
-  // Add a shared vertex.
-  SharedVertex *          addSharedVertex ( const osg::Vec3f &v, bool look = true );
+  // Add a shared vertex. Pass false for "look" if you know the vertex is unique.
+  SharedVertex *          addSharedVertex ( const osg::Vec3f &v, bool look );
 
-  // Add a triangle.
-  Triangle *              addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool update );
+  // Add a triangle. Pass false for "look" if you know the vertex is unique.
+  Triangle *              addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool update, bool look );
   Triangle *              addTriangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, const osg::Vec3f &n, bool update );
 
   // Get the averaged normal for the shared vertex.

@@ -40,7 +40,7 @@ SaveAsDocument::SaveAsDocument ( IUnknown *caller ) : BaseClass ( caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SaveAsDocument::~SaveAsDocument ()
+SaveAsDocument::~SaveAsDocument()
 {
   USUL_TRACE_SCOPE;
 }
@@ -52,7 +52,7 @@ SaveAsDocument::~SaveAsDocument ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SaveAsDocument::_execute ()
+void SaveAsDocument::_execute()
 {
   USUL_TRACE_SCOPE;
 
@@ -60,7 +60,7 @@ void SaveAsDocument::_execute ()
 
   if( document.valid() )
   {
-    document->saveAs( this->caller() );
+    document->saveAs ( this->caller() );
   }
 }
 
@@ -71,7 +71,7 @@ void SaveAsDocument::_execute ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool SaveAsDocument::updateEnable () const
+bool SaveAsDocument::updateEnable() const
 {
   Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 

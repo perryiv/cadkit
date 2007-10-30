@@ -37,6 +37,7 @@ namespace CadKit
           // Registry sections.
           const std::string MAIN_WINDOW               ( "main_window" );
           const std::string FILE_DIALOG               ( "file_dialog" );
+          const std::string TEXT_WINDOW               ( "text_window" );
         }
 
         namespace Keys
@@ -58,6 +59,9 @@ namespace CadKit
 
           // Recent files.
           const std::string RECENT_FILES              ( "recent_files" );
+
+          // Misc.
+          const std::string MAXIMUM_BLOCK_COUNT       ( "maximum_block_count" );
         }
 
         namespace Defaults

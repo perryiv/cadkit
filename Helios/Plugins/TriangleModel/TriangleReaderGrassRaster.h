@@ -46,7 +46,7 @@ public:
     double          ns_resol;
     int             format;
     int             compressed;
- };
+  };
 
   USUL_DECLARE_REF_POINTERS ( TriangleReaderGrassRaster );
 
@@ -65,13 +65,7 @@ public:
   // Read the file.
   void                      read();
 
-  // Build the scene
-  osg::Node*                buildScene();
-
-
 protected:
-
-  
 
   void                      _read();
   void                      _readHeader();
@@ -79,23 +73,22 @@ protected:
 
   
   void                      _readXML();
-  void                      _parseXML( XmlTree::Node &node, Usul::Interfaces::IUnknown *caller );
+  void                      _parseXML ( XmlTree::Node &node );
 
 
   template < class VectorType > void _makeTriangleDocument( VectorType vertices );
-  void                      _loadTexture ( const std::string& filename, Usul::Interfaces::IUnknown *caller );
+  void                      _loadTexture ( const std::string& filename );
 
   void                      _stats();
 
-
 private:
-   // No copying.
+
+  // No copying.
   TriangleReaderGrassRaster ( const TriangleReaderGrassRaster & );
   TriangleReaderGrassRaster &operator = ( const TriangleReaderGrassRaster & );
 
   Header                    _header; 
   std::string               _dir;
-  //TriangleSetPtr            _triangleSet;
   IUnknown::RefPtr          _caller;
   Progress                  _progress;
   FileInfo                  _file;

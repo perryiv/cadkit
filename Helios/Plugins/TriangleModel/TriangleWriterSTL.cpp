@@ -60,7 +60,7 @@ TriangleWriterSTL::~TriangleWriterSTL()
 
 namespace Detail
 {
-  template < class WriterType_ > void write ( TriangleDocument &document, WriterType_ &writer )
+  template < class WriterType_ > void write ( TriangleDocument &document, WriterType_ &writer, Usul::Interfaces::IUnknown *caller )
   {
     Usul::Policies::TimeBased update ( 1000 );
     Usul::Interfaces::IProgressBar::ValidQueryPtr progressBar ( Usul::Resources::progressBar() );
@@ -76,7 +76,7 @@ namespace Detail
       const osg::Vec3f &v2 = document.vertex2 ( i );
       const osg::Vec3f &n  = document.getTriangleNormal  ( i );
 
-      document.setProgressBar ( update(), i, numTriangles );
+      document.setProgressBar ( update(), i, numTriangles, caller );
 
       // Write the data. Note the order!
       writer ( n, v0, v1, v2 );
@@ -111,7 +111,7 @@ void TriangleWriterSTL::operator()()
     // Write the triangles in binary.
     typedef OsgTools::IO::BinaryWriter < osg::Vec3f > BinaryWriter;
     BinaryWriter writer (file.stream() );
-    Detail::write ( *_document, writer );
+    Detail::write ( *_document, writer, _caller );
 
     // Rename temporary file to final filename
     file.rename ( _file );
@@ -129,7 +129,7 @@ void TriangleWriterSTL::operator()()
     // Write the triangles in ascii.
     typedef OsgTools::IO::AsciiWriter < osg::Vec3f > AsciiWriter;
     AsciiWriter writer (file.stream() );
-    Detail::write ( *_document, writer );
+    Detail::write ( *_document, writer, _caller );
 
     // End of the solid.
     file.stream() << "endsolid" << std::endl;

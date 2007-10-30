@@ -234,27 +234,27 @@ void TriangleDocument::read ( const std::string &name, Unknown *caller, Unknown 
 
   if ( "stl" == ext )
   {
-    TriangleReaderSTL reader ( name, caller, this );
+    TriangleReaderSTL reader ( name, progress, this );
     reader();
   }
   else if ( "r3d" == ext )
   {
-    TriangleReaderR3D reader ( name, caller, this );
+    TriangleReaderR3D reader ( name, progress, this );
     reader();
   }
   else if ( "tdf" == ext )
   {
-    TriangleReaderTDF reader ( name, caller, this );
+    TriangleReaderTDF reader ( name, progress, this );
     reader();
   } 
   else if ( "asc" == ext )
   {
-    TriangleReaderArcAsciiGrid reader ( name, caller, this );
+    TriangleReaderArcAsciiGrid reader ( name, progress, this );
     reader();
   }
   else if ( "grs" == ext )
   {
-    TriangleReaderGrassRaster reader ( name, caller, this );
+    TriangleReaderGrassRaster reader ( name, progress, this );
     reader();
   }
 #if 0
@@ -266,7 +266,7 @@ void TriangleDocument::read ( const std::string &name, Unknown *caller, Unknown 
 #endif
   else if ( "off" == ext )
   {
-    TriangleReaderOFF reader ( name, caller, this );
+    TriangleReaderOFF reader ( name, progress, this );
     reader ();
   }
   else
@@ -454,9 +454,9 @@ void TriangleDocument::reserveTriangles ( unsigned int num )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OsgTools::Triangles::Triangle *TriangleDocument::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool update )
+OsgTools::Triangles::Triangle *TriangleDocument::addTriangle ( const osg::Vec3f &v0, const osg::Vec3f &v1, const osg::Vec3f &v2, const osg::Vec3f &n, bool update, bool look )
 {
-  return _triangles->addTriangle ( v0, v1, v2, n, update );
+  return _triangles->addTriangle ( v0, v1, v2, n, update, look );
 }
 
 
@@ -466,7 +466,7 @@ OsgTools::Triangles::Triangle *TriangleDocument::addTriangle ( const osg::Vec3f 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OsgTools::Triangles::Triangle *TriangleDocument::addTriangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, const osg::Vec3f &n, bool update )
+OsgTools::Triangles::Triangle *TriangleDocument::addTriangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, const osg::Vec3f &n, bool update, bool )
 {
   return _triangles->addTriangle ( v0, v1, v2, n, update );
 }

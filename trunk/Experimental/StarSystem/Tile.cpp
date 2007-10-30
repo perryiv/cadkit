@@ -428,6 +428,33 @@ void Tile::dirty ( bool state, bool dirtyChildren )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Mark the dirty state, only if we cross this extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::dirty ( bool state, const Extents& extents )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  Extents e ( _min, _max );
+
+  if ( extents.intersects ( e ) )
+  {
+    // Set our dirty state.
+    this->dirty ( state, false );
+
+    // Visit our children.
+    if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->dirty  ( state, extents );
+    if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->dirty ( state, extents );
+    if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->dirty  ( state, extents );
+    if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->dirty ( state, extents );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the flag that says we're dirty.
 //
 ///////////////////////////////////////////////////////////////////////////////

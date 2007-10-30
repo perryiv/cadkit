@@ -55,8 +55,8 @@ Job::Job ( Usul::Interfaces::IUnknown *caller, bool showProgressBar ) : BaseClas
     _progress = unknown.get();
     _label = unknown.get();
 
-    if ( _progress.valid () && showProgressBar )
-      _progress->showProgressBar ();
+    if ( _progress.valid() && showProgressBar )
+      _progress->showProgressBar();
   }
 }
 
@@ -90,8 +90,8 @@ void Job::_destroy()
   _startedCB   = 0x0;
   _thread      = 0x0;
 
-  if ( _progress.valid () )
-    _progress->hideProgressBar ();
+  if ( _progress.valid() )
+    _progress->hideProgressBar();
 }
 
 
@@ -385,7 +385,7 @@ void Job::progress ( IUnknown* progress )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Job::IUnknown* Job::progress ( )
+Job::IUnknown* Job::progress()
 {
   return _progress.get();
 }

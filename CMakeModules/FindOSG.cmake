@@ -56,8 +56,10 @@ FIND_LIBRARY(OSG_FX_LIB osgFX
  ${OSG_LIB_DIR}
 )
 
+
 # ------------ Find osgProducer Library ----------------------
-FIND_LIBRARY(OSG_PRODUCER_LIB osgProducer ${OSG_LIB_DIR} )
+# osgProducer is no longer part of the main distribution as of OSG 2.0
+#FIND_LIBRARY(OSG_PRODUCER_LIB osgProducer ${OSG_LIB_DIR} )
 
 MARK_AS_ADVANCED(
   OT_INC_DIR

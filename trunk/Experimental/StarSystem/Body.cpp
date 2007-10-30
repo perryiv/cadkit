@@ -212,6 +212,10 @@ void Body::rasterAppend ( RasterLayer * layer )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  _rasters->append ( layer );
-  _tile->dirty();
+
+  if ( 0x0 != layer )
+  {
+    _rasters->append ( layer );
+    _tile->dirty( true, true);
+  }
 }

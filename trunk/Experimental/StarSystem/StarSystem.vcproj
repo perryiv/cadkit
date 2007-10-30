@@ -239,10 +239,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Extents.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Extents.h"
 				>
 			</File>

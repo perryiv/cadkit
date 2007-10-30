@@ -28,6 +28,7 @@
 
 #include <typeinfo>
 
+namespace StarSystem { class RasterLayer; }
 namespace OsgTools { class Mesh; }
 namespace osgUtil { class CullVisitor; }
 class ossimEllipsoid;
@@ -61,7 +62,8 @@ public:
          unsigned int numRows = 10,
          unsigned int numColumns = 10,
          double splitDistance = 1,
-         ossimEllipsoid *ellipsoid = 0x0 );
+         ossimEllipsoid *ellipsoid = 0x0,
+         RasterLayer *raster = 0x0 );
   Tile ( const Tile &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY );
 
   // Set/get the flag that says we're dirty.
@@ -101,6 +103,7 @@ private:
   OsgTools::Mesh *_mesh;
   unsigned int _level;
   bool _dirty;
+  RasterLayer *_raster;
 };
 
 

@@ -34,6 +34,7 @@ typedef Usul::Errors::Checker ErrorChecker;
 Mesh::Mesh() :
   _points(),
   _normals(),
+  _texCoords(),
   _rows(),
   _columns()
 {
@@ -47,10 +48,11 @@ Mesh::Mesh() :
 ///////////////////////////////////////////////////////////////////////////////
 
 Mesh::Mesh ( unsigned int rows, unsigned int columns ) :
-  _points  ( rows * columns ),
-  _normals ( rows * columns ),
-  _rows    ( rows ),
-  _columns ( columns )
+  _points    ( rows * columns ),
+  _normals   ( rows * columns ),
+  _texCoords ( rows * columns ),
+  _rows      ( rows ),
+  _columns   ( columns )
 {
 }
 
@@ -62,10 +64,11 @@ Mesh::Mesh ( unsigned int rows, unsigned int columns ) :
 ///////////////////////////////////////////////////////////////////////////////
 
 Mesh::Mesh ( const Mesh &m ) :
-  _points  ( m._points  ),
-  _normals ( m._normals ),
-  _rows    ( m._rows    ),
-  _columns ( m._columns )
+  _points    ( m._points    ),
+  _normals   ( m._normals   ),
+  _texCoords ( m._texCoords ),
+  _rows      ( m._rows      ),
+  _columns   ( m._columns   )
 {
 }
 
@@ -78,10 +81,11 @@ Mesh::Mesh ( const Mesh &m ) :
 
 Mesh &Mesh::operator = ( const Mesh &m )
 {
-  _points  = m._points;
-  _normals = m._normals;
-  _rows    = m._rows;
-  _columns = m._columns;
+  _points    = m._points;
+  _normals   = m._normals;
+  _texCoords = m._texCoords;
+  _rows      = m._rows;
+  _columns   = m._columns;
   return *this;
 }
 
@@ -120,6 +124,18 @@ void Mesh::allocatePoints()
 void Mesh::allocateNormals()
 {
   _normals.resize ( _columns * _rows );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Allocate the texture coordinates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Mesh::allocateTexCoords()
+{
+  _texCoords.resize ( _columns * _rows );
 }
 
 
@@ -181,6 +197,30 @@ Mesh::reference Mesh::normal ( size_type r, size_type c )
 Mesh::const_reference Mesh::normal ( size_type r, size_type c ) const
 {
   return _normals.at ( r * _columns + c );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Access to a single texture coordinate.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Mesh::TexCoord& Mesh::texCoord ( size_type r, size_type c )
+{
+  return _texCoords.at ( r * _columns + c );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Access to a single texture coordinate.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Mesh::TexCoord& Mesh::texCoord ( size_type r, size_type c ) const
+{
+  return _texCoords.at ( r * _columns + c );
 }
 
 
@@ -254,6 +294,9 @@ osg::Node* Mesh::operator()() const
   if ( osg::Geometry::BIND_OVERALL == binding )
     normals->at ( 0 ) = this->normal ( 0, 0 );
 
+  // Allocation texture coordinates.
+  osg::ref_ptr<osg::Vec2Array> texCoords ( new osg::Vec2Array ( numVertices ) );
+
   // There is one tri-strip for each adjacent pair of rows.
   osg::Geometry::PrimitiveSetList primSetList ( _rows - 1 );
 
@@ -274,6 +317,10 @@ osg::Node* Mesh::operator()() const
       // marching left-to-right, from the bottom towards the top.)
       points->at ( index++ ) = this->point ( i + 1, j );
       points->at ( index++ ) = this->point ( i,     j );
+
+      // Set the texture coordinates.
+      texCoords->at ( index - 2 ) = this->texCoord ( i + 1, j ); // static_cast < float > ( i + 1 ) / primSetList.size(), static_cast < float > ( j ) / _columns );
+      texCoords->at ( index - 1 ) = this->texCoord ( i,     j ); //static_cast < float > ( i     ) / primSetList.size(), static_cast < float > ( j ) / _columns );
 
       // Set the normal if we should.
       if ( osg::Geometry::BIND_PER_VERTEX == binding )
@@ -298,6 +345,9 @@ osg::Node* Mesh::operator()() const
   // Set the normals.
   geom->setNormalArray ( normals.get() );
   geom->setNormalBinding ( binding );
+
+  // Set the texture coordinates.
+  geom->setTexCoordArray ( 0, texCoords.get() );
 
   // Set the primitive-set list.
   geom->setPrimitiveSetList ( primSetList );

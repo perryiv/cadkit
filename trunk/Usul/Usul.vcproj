@@ -1184,6 +1184,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\ILayerModifyGUIQt.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\ILights.h"
 					>
 				</File>

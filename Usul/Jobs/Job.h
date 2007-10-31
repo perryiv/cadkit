@@ -48,6 +48,9 @@ public:
   // Cancel the job.
   void                      cancel();
 
+  // Was the job canceled?
+  bool                      canceled() const;
+
   // Return this job's id.
   unsigned long             id() const;
 
@@ -131,6 +134,7 @@ private:
   ProgressBar::QueryPtr _progress;
   StatusBar::QueryPtr   _label;
   int _priority;
+  bool _canceled;
 };
 
 

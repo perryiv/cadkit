@@ -29,6 +29,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Random.h"
+#include "Usul/Bits/Bits.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Math/MinMax.h"
@@ -63,26 +64,20 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _splitDistance ( splitDistance ),
   _mesh ( new OsgTools::Mesh ( meshSize[0], meshSize[1] ) ),
   _level ( level ),
-  _dirty ( true ),
+  _flags ( Tile::ALL ),
   _raster ( raster ),
   _children (),
   _textureUnit ( 0 ),
   _image ( image ),
-  _texCoords ( texCoords )
+  _texCoords ( texCoords ),
+  _job ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 
   Usul::Pointers::reference ( _raster );
 
   // Start the request to pull in texture.
-  if ( 0x0 != _body )
-    _body->jobManager().add ( new CutImageJob ( this, _raster ) );
-  
-  /*if ( 0x0 != _body )
-  {
-    this->ref();
-    _body->threadPool().addTask ( Usul::Threads::newVoidFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Tile::_loadImage ) ) );
-  }*/
+  this->_launchImageRequest();
 }
 
 
@@ -99,12 +94,13 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _splitDistance ( tile._splitDistance ),
   _mesh ( new OsgTools::Mesh ( tile._mesh->rows(), tile._mesh->columns() ) ),
   _level ( tile._level ),
-  _dirty ( true ),
+  _flags ( Tile::ALL ),
   _raster ( tile._raster ),
   _children ( tile._children ),
   _textureUnit ( tile._textureUnit ),
   _image ( tile._image ),
-  _texCoords ( tile._texCoords )
+  _texCoords ( tile._texCoords ),
+  _job ( tile._job )
 {
   USUL_TRACE_SCOPE;
 
@@ -199,23 +195,35 @@ void Tile::_update()
       const double lon ( mn[0] + u * ( mx[0] - mn[0] ) );
       const double lat ( mn[1] + v * ( mx[1] - mn[1] ) );
 
-      // Convert lat-lon coordinates to xyz.
-      osg::Vec3f &p ( mesh.point ( i, j ) );
-      double x ( 0 ), y ( 0 ), z ( 0 );
-      const double elevation ( _body->geodeticRadius ( lat ) );
-      _body->latLonHeightToXYZ ( lat, lon, elevation, p );
+      // Only set the vertices, if they are dirty.
+      if ( this->verticesDirty() )
+      {
+        // Convert lat-lon coordinates to xyz.
+        osg::Vec3f &p ( mesh.point ( i, j ) );
+        double x ( 0 ), y ( 0 ), z ( 0 );
+        const double elevation ( _body->geodeticRadius ( lat ) );
+        _body->latLonHeightToXYZ ( lat, lon, elevation, p );
 
-      // Assign normal vectors.
-      osg::Vec3f &n ( mesh.normal ( i, j ) );
-      n = p; // Minus the center, which is (0,0,0).
-      n.normalize();
+        // Assign normal vectors.
+        osg::Vec3f &n ( mesh.normal ( i, j ) );
+        n = p; // Minus the center, which is (0,0,0).
+        n.normalize();
+      }
 
-      // Assign texture coordinate.
-      double up ( ( _texCoords[0] + ( u * deltaU ) ) );
-      double vp ( ( _texCoords[2] + ( ( 1.0 - v ) * deltaV ) ) );
-      mesh.texCoord ( i, j ).set ( up , vp );
+      // Only set the texture coordinates if they are dirty.
+      if ( this->texCoordsDirty() )
+      {
+        // Assign texture coordinate.
+        double up ( ( _texCoords[0] + ( u * deltaU ) ) );
+        double vp ( ( _texCoords[2] + ( ( 1.0 - v ) * deltaV ) ) );
+        mesh.texCoord ( i, j ).set ( up , vp );
+      }
     }
   }
+
+  // Unset these dirty flags.
+  this->dirty ( false, Tile::VERTICES, false );
+  this->dirty ( false, Tile::TEX_COORDS, false );
 
   // Depth of skirt.  This function needs to be tweeked.
   double offset ( 25000 - ( this->level() * 150 ) );
@@ -234,7 +242,7 @@ void Tile::_update()
   //this->getOrCreateStateSet()->setAttributeAndModes ( Helper::material(), osg::StateAttribute::PROTECTED );
 
   // Get the image.
-  if ( _image.valid() )
+  if ( _image.valid() && this->textureDirty() )
   {
     // Create the texture.
     osg::ref_ptr < osg::Texture2D > texture ( new osg::Texture2D );
@@ -253,10 +261,10 @@ void Tile::_update()
 
     // Turn off lighting.
     OsgTools::State::StateSet::setLighting ( this, false );
-  }
 
-  // No longer dirty.
-  this->dirty ( false, false );
+    // Texture no longer dirty.
+    this->dirty ( false, Tile::TEXTURE, false );
+  }
 }
 
 
@@ -301,6 +309,9 @@ void Tile::traverse ( osg::NodeVisitor &nv )
 
     case osg::NodeVisitor::CULL_VISITOR:
     {
+      if ( 0 == this->level() && 0x0 != _body )
+        _body->jobManager().purge();
+
       // Get cull visitor.
       osgUtil::CullVisitor *cv ( dynamic_cast < osgUtil::CullVisitor * > ( &nv ) );
 
@@ -308,7 +319,11 @@ void Tile::traverse ( osg::NodeVisitor &nv )
       if ( 0x0 == cv || cv->isCulled ( *this ) )
         return;
 
-      this->_update();
+      // Only update here if the vertices are invalid.
+      // This will ensure proper splitting.
+      if ( this->verticesDirty() ) 
+        this->_update();
+
       this->_cull ( *cv );
       return;
     }
@@ -368,14 +383,18 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 
   if ( low )
   {
+    this->_update();
+
     // Remove high level of detail.
     if ( numChildren > 1 )
     {
       this->removeChild ( 1, numChildren - 1 );
-      if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->_clearScene();
-      if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->_clearScene();
-      if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->_clearScene();
-      if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->_clearScene();
+
+      // Clear the job and all children.
+      if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->clear();
+      if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->clear();
+      if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->clear();
+      if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->clear();
 
       _children[LOWER_LEFT]  = 0x0;
       _children[LOWER_RIGHT] = 0x0;
@@ -389,6 +408,8 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 
   else
   {
+    //this->clear();
+
     // Add high level if necessary.
     if ( 1 == numChildren )
     {
@@ -471,18 +492,19 @@ Tile::Mutex &Tile::mutex() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::dirty ( bool state, bool dirtyChildren )
+void Tile::dirty ( bool state, unsigned int flags, bool dirtyChildren )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  _dirty = state;
+
+  _flags = Usul::Bits::set ( _flags, flags, state );
 
   if ( dirtyChildren )
   {
-    if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->dirty  ( state, dirtyChildren );
-    if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->dirty ( state, dirtyChildren );
-    if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->dirty  ( state, dirtyChildren );
-    if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->dirty ( state, dirtyChildren );
+    if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->dirty  ( state, flags, dirtyChildren );
+    if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->dirty ( state, flags, dirtyChildren );
+    if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->dirty  ( state, flags, dirtyChildren );
+    if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->dirty ( state, flags, dirtyChildren );
   }
 }
 
@@ -493,7 +515,7 @@ void Tile::dirty ( bool state, bool dirtyChildren )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::dirty ( bool state, bool dirtyChildren, const Extents& extents )
+void Tile::dirty ( bool state, unsigned int flags, bool dirtyChildren, const Extents& extents )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -501,23 +523,22 @@ void Tile::dirty ( bool state, bool dirtyChildren, const Extents& extents )
   if ( extents.intersects ( _extents ) )
   {
     // Set our dirty state.
-    this->dirty ( state, false );
+    this->dirty ( state, flags, false );
 
     // Visit our children.
     if ( dirtyChildren )
     {
-      if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->dirty  ( state, dirtyChildren, extents );
-      if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->dirty ( state, dirtyChildren, extents );
-      if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->dirty  ( state, dirtyChildren, extents );
-      if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->dirty ( state, dirtyChildren, extents );
+      if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->dirty  ( state, flags, dirtyChildren, extents );
+      if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->dirty ( state, flags, dirtyChildren, extents );
+      if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->dirty  ( state, flags, dirtyChildren, extents );
+      if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->dirty ( state, flags, dirtyChildren, extents );
     }
 
 #if 1
-    if ( _dirty )
+    if ( this->textureDirty() )
     {
       // Start the request to pull in texture.
-      if ( 0x0 != _body )
-        _body->jobManager().add ( new CutImageJob ( this, _raster ) );
+      this->_launchImageRequest();
     }
 #endif
   }
@@ -534,7 +555,49 @@ bool Tile::dirty() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _dirty;
+  return 0 != _flags;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are the vertices dirty?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Tile::verticesDirty() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return Usul::Bits::has ( _flags, Tile::VERTICES );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are the texture coordinates dirty?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Tile::texCoordsDirty() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return Usul::Bits::has ( _flags, Tile::TEX_COORDS );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the texture dirty?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Tile::textureDirty() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return Usul::Bits::has ( _flags, Tile::TEXTURE );
 }
 
 
@@ -617,6 +680,8 @@ Tile::CutImageJob::CutImageJob( Tile *tile, RasterLayer *layer ) :
   _tile ( tile ),
   _raster ( layer )
 {
+  USUL_TRACE_SCOPE;
+
   if ( _tile.valid() )
     this->priority ( _tile->level() * -1 );
 
@@ -632,6 +697,8 @@ Tile::CutImageJob::CutImageJob( Tile *tile, RasterLayer *layer ) :
 
 Tile::CutImageJob::~CutImageJob()
 {
+  USUL_TRACE_SCOPE;
+
   Usul::Pointers::unreference ( _raster );
 }
 
@@ -644,6 +711,12 @@ Tile::CutImageJob::~CutImageJob()
 
 void Tile::CutImageJob::_started ()
 {
+  USUL_TRACE_SCOPE;
+
+  // Return now if we are canceled.
+  if ( this->canceled() )
+    return;
+
   // Get the image.
   if ( 0x0 != _raster && _tile.valid () )
   {
@@ -657,14 +730,17 @@ void Tile::CutImageJob::_started ()
     unsigned int level ( _tile->level() );
 
     // Request the image.
-    _tile->image ( _raster->texture ( extents, width, height, level ) );
+    _tile->image ( _raster->texture ( extents, width, height, level )  );
 
     // Set the new starting texture coordinates.
     _tile->texCoords ( Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
 
     // Dirty the tile.
-    _tile->dirty( true, false );
+    //_tile->dirty( true, false );
   }
+
+  // We are done with the tile.
+  _tile = 0x0;
 }
 
 
@@ -674,9 +750,14 @@ void Tile::CutImageJob::_started ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::_clearScene()
+void Tile::clear()
 {
-  this->removeChild ( 0, this->getNumChildren() );
+  USUL_TRACE_SCOPE;
+
+  if ( _job.valid() )
+    _job->cancel();
+
+  _job = 0x0;
 }
 
 
@@ -691,6 +772,8 @@ void Tile::image ( osg::Image* image )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _image = image;
+
+  this->dirty ( true, Tile::TEXTURE, false );
 }
 
 
@@ -747,4 +830,29 @@ void Tile::texCoords ( const Usul::Math::Vec4d& t )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _texCoords = t;
+
+  this->dirty ( true, Tile::TEX_COORDS, false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_launchImageRequest()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  if ( _job.valid() )
+    _job->cancel();
+
+  // Start the request to pull in texture.
+  if ( 0x0 != _body )
+  {
+    _job = new CutImageJob ( this, _raster );
+    _body->jobManager().add ( _job );
+  }
 }

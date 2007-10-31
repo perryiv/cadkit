@@ -64,6 +64,15 @@ public:
     UPPER_RIGHT
   };
 
+  // Dirty flags.
+  enum Flags
+  {
+    VERTICES   = 0x01,
+    TEX_COORDS = 0x02,
+    TEXTURE    = 0x04,
+    ALL        = VERTICES | TEX_COORDS | TEXTURE
+  };
+
   // Useful typedefs.
   typedef osg::Group BaseClass;
   typedef Usul::Threads::RecursiveMutex Mutex;
@@ -84,12 +93,20 @@ public:
          osg::Image * image = 0x0 );
   Tile ( const Tile &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY );
 
+  // Clear the scene.
+  void                      clear();
+
   // Set/get the flag that says we're dirty.
   bool                      dirty() const;
-  void                      dirty ( bool state, bool dirtyChildren );
+  void                      dirty ( bool state, unsigned int flags, bool dirtyChildren );
 
   // Mark the dirty state, only if we cross this extents.
-  void                      dirty ( bool state, bool dirtyChildren, const Extents& extents);
+  void                      dirty ( bool state, unsigned int flags, bool dirtyChildren, const Extents& extents);
+
+  // Get the individual dirty states.
+  bool                      verticesDirty() const;
+  bool                      texCoordsDirty() const;
+  bool                      textureDirty() const;
 
   // Get the extents.
   Extents                   extents() const;
@@ -116,9 +133,6 @@ protected:
   // Use reference counting.
   virtual ~Tile();
 
-  // Clear the scene.
-  void                      _clearScene();
-
   void                      _cull ( osgUtil::CullVisitor &cv );
 
   void                      _update();
@@ -128,7 +142,7 @@ protected:
   osg::Node*                _buildLatSkirt ( double lat, double v, double offset );
 
   // Load the image.
-  void                      _loadImage ();
+  void                      _launchImageRequest();
 
 private:
 
@@ -159,12 +173,13 @@ private:
   double _splitDistance;
   OsgTools::Mesh *_mesh;
   unsigned int _level;
-  bool _dirty;
+  unsigned int _flags;
   RasterLayer *_raster;
   Children _children;
   unsigned int _textureUnit;
   osg::ref_ptr < osg::Image > _image;
   Usul::Math::Vec4d _texCoords;
+  Usul::Jobs::Job::RefPtr _job;
 };
 
 

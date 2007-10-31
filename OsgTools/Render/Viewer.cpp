@@ -291,6 +291,9 @@ void Viewer::create()
   // Counter for display-list id. OSG will handle using the correct display 
   // list for this context.
   _renderer->uniqueID ( _contextId );
+
+  // Compute with bounding primitives.
+  //this->viewer()->getCullVisitor()->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_PRIMITIVES );
 }
 
 

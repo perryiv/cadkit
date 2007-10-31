@@ -49,7 +49,7 @@ Body::Body ( const Vec2d &r ) : BaseClass(),
   _ellipsoid ( new ossimEllipsoid ( r[Body::RADIUS_EQUATOR], r[Body::RADIUS_POLAR] ) ),
   _tile ( 0x0 ),
   _rasters ( new RasterGroup ),
-  _manager ( 2 )
+  _manager ( 3 )
 {
   USUL_TRACE_SCOPE;
 

@@ -37,7 +37,8 @@ struct IThreadPoolAddTask : public Usul::Interfaces::IUnknown
   enum { IID = 4196711123u };
 
   /// Add a task.
-  virtual TaskHandle addTask ( Usul::Threads::Callback *started, 
+  virtual TaskHandle addTask ( int priority,
+                               Usul::Threads::Callback *started, 
                                Usul::Threads::Callback *finished  = 0x0,
                                Usul::Threads::Callback *cancelled = 0x0,
                                Usul::Threads::Callback *error     = 0x0,

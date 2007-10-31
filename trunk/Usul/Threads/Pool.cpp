@@ -145,13 +145,13 @@ Pool::Mutex &Pool::mutex() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Pool::TaskHandle Pool::addTask ( Callback *started, Callback *finished, Callback *cancelled, Callback *error, Callback *destroyed )
+Pool::TaskHandle Pool::addTask ( int priority, Callback *started, Callback *finished, Callback *cancelled, Callback *error, Callback *destroyed )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
   Task::RefPtr task ( new Task ( _nextTaskId++, started, finished, cancelled, error, destroyed ) );
-  _tasks[task->id()] = task;
+  _tasks[TaskKey( priority, task->id() )] = task;
 
   return task->id();
 }
@@ -163,11 +163,11 @@ Pool::TaskHandle Pool::addTask ( Callback *started, Callback *finished, Callback
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Pool::hasTask ( TaskHandle id ) const
+bool Pool::hasTask ( int priority, TaskHandle id ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  AllTasks::const_iterator i ( _tasks.find ( id ) );
+  AllTasks::const_iterator i ( _tasks.find ( TaskKey( priority, id ) ) );
   return ( _tasks.end() != i );
 }
 
@@ -224,12 +224,12 @@ unsigned int Pool::numTasksQueued() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Pool::remove ( TaskHandle id )
+void Pool::remove ( int priority, TaskHandle id )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  AllTasks::iterator i ( _tasks.find ( id ) );
+  AllTasks::iterator i ( _tasks.find ( TaskKey ( priority, id ) ) );
   if ( _tasks.end() != i )
   {
     Task::RefPtr task ( i->second );

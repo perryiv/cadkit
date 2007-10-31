@@ -142,7 +142,7 @@ void Manager::add ( Job *job )
   if ( 0x0 != job )
   {
     job->id ( this->nextJobId () );
-    _pool->addTask ( job->_startedCB, job->_finishedCB, job->_cancelledCB, job->_errorCB, 0x0 );
+    _pool->addTask ( job->priority(), job->_startedCB, job->_finishedCB, job->_cancelledCB, job->_errorCB, 0x0 );
     _jobs.push_back ( Job::RefPtr ( job ) );
   }
 }

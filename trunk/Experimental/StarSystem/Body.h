@@ -21,6 +21,7 @@
 
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
+#include "Usul/Jobs/Manager.h"
 
 namespace StarSystem { class Tile; class RasterLayer; class RasterGroup; }
 namespace osg { class MatrixTransform; class Vec3f; }
@@ -77,6 +78,9 @@ public:
   const osg::Node *         scene() const;
   osg::Node *               scene();
 
+  // Get the thread pool for this body.
+  Usul::Jobs::Manager&      jobManager();
+
 protected:
 
   // Use reference counting.
@@ -94,6 +98,7 @@ private:
   ossimEllipsoid *_ellipsoid;
   Tile *_tile;
   RasterGroup *_rasters;
+  Usul::Jobs::Manager _manager;
 };
 
 

@@ -186,15 +186,11 @@
 			Name="Misc Files"
 			>
 			<File
-				RelativePath="C:\Documents and Settings\perry\Local Settings\Temp\Helios\Helios.csv"
+				RelativePath="..\..\..\..\.CadKit\Helios\Helios.csv"
 				>
 			</File>
 			<File
-				RelativePath="C:\Documents and Settings\perry\Application Data\CadKit\Helios.ini"
-				>
-			</File>
-			<File
-				RelativePath="C:\Documents and Settings\perry\Local Settings\Temp\Helios\Helios.out"
+				RelativePath="..\..\..\..\.CadKit\Helios\Helios.out"
 				>
 			</File>
 		</Filter>

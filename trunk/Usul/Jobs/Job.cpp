@@ -39,7 +39,8 @@ Job::Job ( Usul::Interfaces::IUnknown *caller, bool showProgressBar ) : BaseClas
   _done        ( false ),
   _progress    ( static_cast < ProgressBar * > ( 0x0 ) ),
   _label       ( static_cast < StatusBar  * > ( 0x0 ) ),
-  _priority    ( 0 )
+  _priority    ( 0 ),
+  _canceled    ( false )
 {
   USUL_TRACE_SCOPE;
 
@@ -309,6 +310,22 @@ void Job::cancel()
   {
     _thread->cancel();
   }
+
+  _canceled = true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Was the job canceled?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Job::canceled() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _canceled;
 }
 
 

@@ -101,6 +101,9 @@ void Body::_destroy()
   // Wait for the pool to finish.
   _manager.wait();
 
+  // Purge.
+  _manager.purge();
+
   Usul::Pointers::unreference ( _transform ); _transform = 0x0;
   Usul::Pointers::unreference ( _tile ); _tile = 0x0;
   Usul::Pointers::unreference ( _rasters ); _rasters = 0x0;

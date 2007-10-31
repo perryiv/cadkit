@@ -629,6 +629,7 @@ Tile::CutImageJob::~CutImageJob()
   Usul::Pointers::unreference ( _raster );
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Load the texture.

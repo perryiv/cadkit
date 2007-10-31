@@ -26,8 +26,10 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
+#include "Usul/Jobs/Job.h"
 
 #include "osg/Group"
+#include "osg/Image"
 
 #include <typeinfo>
 
@@ -69,14 +71,17 @@ public:
   typedef Usul::Math::Vector4 < Tile::RefPtr > Children;
   typedef StarSystem::Extents < osg::Vec2d > Extents;
   typedef Usul::Math::Vec2ui MeshSize;
+  typedef std::vector < Tile::RefPtr > Tiles;
 
   // Constructors.
   Tile ( unsigned int level = 0, 
          const Extents &extents = Extents ( Extents::Vertex ( 0, 0 ), Extents::Vertex ( 1, 1 ) ), 
          const MeshSize &meshSize = MeshSize ( 10, 10 ),
+         const Usul::Math::Vec4d& texCoords = Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ),
          double splitDistance = 1,
          Body *body = 0x0,
-         RasterLayer *raster = 0x0 );
+         RasterLayer *raster = 0x0,
+         osg::Image * image = 0x0 );
   Tile ( const Tile &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY );
 
   // Set/get the flag that says we're dirty.
@@ -86,11 +91,22 @@ public:
   // Mark the dirty state, only if we cross this extents.
   void                      dirty ( bool state, bool dirtyChildren, const Extents& extents);
 
+  // Get the extents.
+  Extents                   extents() const;
+
+  // Get/Set the image.
+  void                      image ( osg::Image* );
+  osg::Image*               image ();
+
   // Return level of this tile. Zero is the top.
   unsigned int              level() const;
 
   // Return the mutex. Use with caution.
   Mutex &                   mutex() const;
+
+  // Get/Set the starting texture coordinates.
+  Usul::Math::Vec4d         texCoords() const;
+  void                      texCoords ( const Usul::Math::Vec4d& );
 
   // Traverse the children.
   virtual void              traverse ( osg::NodeVisitor & );
@@ -100,6 +116,9 @@ protected:
   // Use reference counting.
   virtual ~Tile();
 
+  // Clear the scene.
+  void                      _clearScene();
+
   void                      _cull ( osgUtil::CullVisitor &cv );
 
   void                      _update();
@@ -108,7 +127,26 @@ protected:
   osg::Node*                _buildLonSkirt ( double lon, double u, double offset );
   osg::Node*                _buildLatSkirt ( double lat, double v, double offset );
 
+  // Load the image.
+  void                      _loadImage ();
+
 private:
+
+  class CutImageJob : public Usul::Jobs::Job
+  {
+  public:
+    typedef Usul::Jobs::Job BaseClass;
+
+    CutImageJob ( Tile* tile, RasterLayer* layer );
+
+  protected:
+    virtual ~CutImageJob();
+
+    virtual void _started();
+  private:
+    Tile::RefPtr _tile;
+    RasterLayer *_raster;
+  };
 
   // No assignment.
   Tile &operator = ( const Tile & );
@@ -125,6 +163,8 @@ private:
   RasterLayer *_raster;
   Children _children;
   unsigned int _textureUnit;
+  osg::ref_ptr < osg::Image > _image;
+  Usul::Math::Vec4d _texCoords;
 };
 
 

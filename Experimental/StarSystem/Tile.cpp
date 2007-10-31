@@ -33,6 +33,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Jobs/Manager.h"
 
 #include "ossim/base/ossimEllipsoid.h"
 
@@ -54,8 +55,8 @@ USUL_IMPLEMENT_TYPE_ID ( Tile );
 ///////////////////////////////////////////////////////////////////////////////
 
 Tile::Tile ( unsigned int level, const Extents &extents, 
-             const MeshSize &meshSize, double splitDistance, 
-             Body *body, RasterLayer* raster ) : BaseClass(),
+             const MeshSize &meshSize, const Usul::Math::Vec4d& texCoords, double splitDistance, 
+             Body *body, RasterLayer* raster, osg::Image* image ) : BaseClass(),
   _mutex ( new Tile::Mutex ),
   _body ( body ),
   _extents ( extents ),
@@ -65,11 +66,23 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _dirty ( true ),
   _raster ( raster ),
   _children (),
-  _textureUnit ( 0 )
+  _textureUnit ( 0 ),
+  _image ( image ),
+  _texCoords ( texCoords )
 {
   USUL_TRACE_SCOPE;
 
   Usul::Pointers::reference ( _raster );
+
+  // Start the request to pull in texture.
+  if ( 0x0 != _body )
+    _body->jobManager().add ( new CutImageJob ( this, _raster ) );
+  
+  /*if ( 0x0 != _body )
+  {
+    this->ref();
+    _body->threadPool().addTask ( Usul::Threads::newVoidFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Tile::_loadImage ) ) );
+  }*/
 }
 
 
@@ -89,7 +102,9 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _dirty ( true ),
   _raster ( tile._raster ),
   _children ( tile._children ),
-  _textureUnit ( tile._textureUnit )
+  _textureUnit ( tile._textureUnit ),
+  _image ( tile._image ),
+  _texCoords ( tile._texCoords )
 {
   USUL_TRACE_SCOPE;
 
@@ -170,6 +185,9 @@ void Tile::_update()
   const Extents::Vertex &mn ( _extents.minimum() );
   const Extents::Vertex &mx ( _extents.maximum() );
 
+  double deltaU ( _texCoords[1] - _texCoords[0] );
+  double deltaV ( _texCoords[3] - _texCoords[2] );
+
   // Add internal geometry.
   OsgTools::Mesh &mesh ( *_mesh );
   for ( int i = mesh.rows() - 1; i >= 0; --i )
@@ -193,7 +211,9 @@ void Tile::_update()
       n.normalize();
 
       // Assign texture coordinate.
-      mesh.texCoord ( i, j ).set ( u, 1.0 - v );
+      double up ( ( _texCoords[0] + ( u * deltaU ) ) );
+      double vp ( ( _texCoords[2] + ( ( 1.0 - v ) * deltaV ) ) );
+      mesh.texCoord ( i, j ).set ( up , vp );
     }
   }
 
@@ -201,10 +221,10 @@ void Tile::_update()
   double offset ( 25000 - ( this->level() * 150 ) );
 
   osg::ref_ptr < osg::Group > group ( new osg::Group );
-  group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], 0.0, offset ) ); // Left skirt.
-  group->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], 1.0, offset ) ); // Right skirt.
-  group->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], 0.0, offset ) ); // Bottom skirt.
-  group->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], 1.0, offset ) ); // Top skirt.
+  group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], offset ) ); // Left skirt.
+  group->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], offset ) ); // Right skirt.
+  group->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], offset ) ); // Bottom skirt.
+  group->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], offset ) ); // Top skirt.
   group->addChild ( mesh() );
 
   // Add mesh geometry to this node.
@@ -214,32 +234,25 @@ void Tile::_update()
   //this->getOrCreateStateSet()->setAttributeAndModes ( Helper::material(), osg::StateAttribute::PROTECTED );
 
   // Get the image.
-  if ( 0x0 != _raster )
+  if ( _image.valid() )
   {
-    unsigned int width  ( 256 );
-    unsigned int height ( 256 );
+    // Create the texture.
+    osg::ref_ptr < osg::Texture2D > texture ( new osg::Texture2D );
+    texture->setImage( _image.get() );
 
-    osg::ref_ptr < osg::Image > image ( _raster->texture ( _extents, width, height, this->level() ) );
-    if ( image.valid() )
-    {
-      // Create the texture.
-      osg::ref_ptr < osg::Texture2D > texture ( new osg::Texture2D );
-      texture->setImage( image.get() );
+    texture->setFilter( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
+    texture->setFilter( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
+    texture->setWrap( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
+    texture->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
+    texture->setBorderColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 0.0 ) );
+    texture->setBorderWidth ( 0.0 );
 
-      texture->setFilter( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
-      texture->setFilter( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
-      texture->setWrap( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
-      texture->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
-      texture->setBorderColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 0.0 ) );
-      texture->setBorderWidth ( 0.0 );
+    // Get the state set.
+    osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
+    ss->setTextureAttributeAndModes ( _textureUnit, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
 
-      // Get the state set.
-      osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
-      ss->setTextureAttributeAndModes ( _textureUnit, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-
-      // Turn off lighting.
-      OsgTools::State::StateSet::setLighting ( this, false );
-    }
+    // Turn off lighting.
+    OsgTools::State::StateSet::setLighting ( this, false );
   }
 
   // No longer dirty.
@@ -279,6 +292,13 @@ void Tile::traverse ( osg::NodeVisitor &nv )
   // Determine visitor type.
   switch ( nv.getVisitorType() )
   {
+    case osg::NodeVisitor::UPDATE_VISITOR:
+    {
+      if ( 0 == this->level() && 0x0 != _body )
+        _body->jobManager().purge();
+      return;
+    }
+
     case osg::NodeVisitor::CULL_VISITOR:
     {
       // Get cull visitor.
@@ -343,8 +363,8 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   USUL_ASSERT ( numChildren > 0 );
 
   // Make sure texture state is on.
-  osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
-  ss->setTextureMode ( _textureUnit, GL_TEXTURE_2D, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+  //osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
+  //ss->setTextureMode ( _textureUnit, GL_TEXTURE_2D, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
 
   if ( low )
   {
@@ -352,6 +372,11 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
     if ( numChildren > 1 )
     {
       this->removeChild ( 1, numChildren - 1 );
+      if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->_clearScene();
+      if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->_clearScene();
+      if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->_clearScene();
+      if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->_clearScene();
+
       _children[LOWER_LEFT]  = 0x0;
       _children[LOWER_RIGHT] = 0x0;
       _children[UPPER_LEFT]  = 0x0;
@@ -381,10 +406,15 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
       const Extents ul ( Extents::Vertex ( mn[0], md[1] ), Extents::Vertex ( md[0], mx[1] ) );
       const Extents ur ( Extents::Vertex ( md[0], md[1] ), Extents::Vertex ( mx[0], mx[1] ) );
 
-      _children[LOWER_LEFT]  = new Tile ( level, ll, meshSize, half, _body, _raster ); // lower left  tile
-      _children[LOWER_RIGHT] = new Tile ( level, lr, meshSize, half, _body, _raster ); // lower right tile
-      _children[UPPER_LEFT]  = new Tile ( level, ul, meshSize, half, _body, _raster ); // upper left  tile
-      _children[UPPER_RIGHT] = new Tile ( level, ur, meshSize, half, _body, _raster ); // upper right tile
+      const Usul::Math::Vec4d tll ( 0.0, 0.5, 0.5, 1.0 );
+      const Usul::Math::Vec4d tlr ( 0.5, 1.0, 0.5, 1.0 );
+      const Usul::Math::Vec4d tul ( 0.0, 0.5, 0.0, 0.5 );
+      const Usul::Math::Vec4d tur ( 0.5, 1.0, 0.0, 0.5 );
+
+      _children[LOWER_LEFT]  = new Tile ( level, ll, meshSize, tll, half, _body, _raster, _image.get() ); // lower left  tile
+      _children[LOWER_RIGHT] = new Tile ( level, lr, meshSize, tlr, half, _body, _raster, _image.get() ); // lower right tile
+      _children[UPPER_LEFT]  = new Tile ( level, ul, meshSize, tul, half, _body, _raster, _image.get() ); // upper left  tile
+      _children[UPPER_RIGHT] = new Tile ( level, ur, meshSize, tur, half, _body, _raster, _image.get() ); // upper right tile
 
       osg::ref_ptr<osg::Group> group ( new osg::Group );
       group->addChild ( _children[LOWER_LEFT]  );
@@ -394,8 +424,8 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
       this->addChild ( group.get() );
 
       // Remove texture state
-      osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
-      ss->setTextureMode ( _textureUnit, GL_TEXTURE_2D, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+      //osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
+      //ss->setTextureMode ( _textureUnit, GL_TEXTURE_2D, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
       //ss->removeTextureMode ( _textureUnit, GL_TEXTURE_2D );
     }
 
@@ -478,6 +508,15 @@ void Tile::dirty ( bool state, bool dirtyChildren, const Extents& extents )
       if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->dirty  ( state, dirtyChildren, extents );
       if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->dirty ( state, dirtyChildren, extents );
     }
+
+#if 1
+    if ( _dirty )
+    {
+      // Start the request to pull in texture.
+      if ( 0x0 != _body )
+        _body->jobManager().add ( new CutImageJob ( this, _raster ) );
+    }
+#endif
   }
 }
 
@@ -522,8 +561,8 @@ osg::Node* Tile::_buildLonSkirt ( double lon, double u, double offset )
     _body->latLonHeightToXYZ ( lat, lon, elevation - offset, mesh.point ( 1, j ) );
 
     // Assign texture coordinate.
-    mesh.texCoord ( 0, j ).set ( u, v );
-    mesh.texCoord ( 1, j ).set ( u, v );
+    mesh.texCoord ( 0, j ).set ( _texCoords[0] + u, _texCoords[2] + v );
+    mesh.texCoord ( 1, j ).set ( _texCoords[0] + u, _texCoords[2] + v );
   }
 
   return mesh();
@@ -556,9 +595,149 @@ osg::Node* Tile::_buildLatSkirt ( double lat, double v, double offset )
     _body->latLonHeightToXYZ ( lat, lon, elevation - offset, mesh.point ( i, 1 ) );
 
     // Assign texture coordinate.
-    mesh.texCoord ( i, 0 ).set ( u, v );
-    mesh.texCoord ( i, 1 ).set ( u, v );
+    mesh.texCoord ( i, 0 ).set ( _texCoords[0] + u, _texCoords[2] + v );
+    mesh.texCoord ( i, 1 ).set ( _texCoords[0] + u, _texCoords[2] + v );
   }
 
   return mesh();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Job to cut the texture to correct extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Tile::CutImageJob::CutImageJob( Tile *tile, RasterLayer *layer ) : 
+  BaseClass ( 0x0, false ),
+  _tile ( tile ),
+  _raster ( layer )
+{
+  Usul::Pointers::reference ( _raster );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Tile::CutImageJob::~CutImageJob()
+{
+  Usul::Pointers::unreference ( _raster );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the texture.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::CutImageJob::_started ()
+{
+  // Get the image.
+  if ( 0x0 != _raster && _tile.valid () )
+  {
+    unsigned int width  ( 256 );
+    unsigned int height ( 256 );
+
+    // Get the extents.
+    Extents extents ( _tile->extents() );
+
+    // Get the level.
+    unsigned int level ( _tile->level() );
+
+    // Request the image.
+    _tile->image ( _raster->texture ( extents, width, height, level ) );
+
+    // Set the new starting texture coordinates.
+    _tile->texCoords ( Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
+
+    // Dirty the tile.
+    _tile->dirty( true, false );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_clearScene()
+{
+  this->removeChild ( 0, this->getNumChildren() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::image ( osg::Image* image )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _image = image;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Image* Tile::image ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _image.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Tile::Extents Tile::extents() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _extents;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the starting texture coordinates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec4d Tile::texCoords() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _texCoords;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the starting texture coordinates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::texCoords ( const Usul::Math::Vec4d& t )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _texCoords = t;
 }

@@ -48,7 +48,8 @@ Body::Body ( const Vec2d &r ) : BaseClass(),
   _transform ( new osg::MatrixTransform ),
   _ellipsoid ( new ossimEllipsoid ( r[Body::RADIUS_EQUATOR], r[Body::RADIUS_POLAR] ) ),
   _tile ( 0x0 ),
-  _rasters ( new RasterGroup )
+  _rasters ( new RasterGroup ),
+  _manager ( 2 )
 {
   USUL_TRACE_SCOPE;
 
@@ -65,7 +66,7 @@ Body::Body ( const Vec2d &r ) : BaseClass(),
   const double splitDistance ( _ellipsoid->a() * 7 );
 
   // Make the tile and add it to the transform.
-  _tile = new Tile ( 0, Tile::Extents ( mn, mx ), Tile::MeshSize ( 17, 17 ), splitDistance, this, _rasters );
+  _tile = new Tile ( 0, Tile::Extents ( mn, mx ), Tile::MeshSize ( 17, 17 ), Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ), splitDistance, this, _rasters );
   _tile->ref();
   _transform->addChild ( _tile );
 }
@@ -93,6 +94,13 @@ Body::~Body()
 void Body::_destroy()
 {
   USUL_TRACE_SCOPE;
+
+  // Remove all jobs that are not running.
+  _manager.trim();
+  
+  // Wait for the pool to finish.
+  _manager.wait();
+
   Usul::Pointers::unreference ( _transform ); _transform = 0x0;
   Usul::Pointers::unreference ( _tile ); _tile = 0x0;
   Usul::Pointers::unreference ( _rasters ); _rasters = 0x0;
@@ -246,4 +254,18 @@ void Body::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Ve
 double Body::geodeticRadius( double latitude ) const
 {
   return _ellipsoid->geodeticRadius ( latitude );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the thread pool for this body.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Jobs::Manager& Body::jobManager()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _manager;
 }

@@ -17,6 +17,7 @@
 #include "TriangleReaderArcAsciiGrid.h"
 
 #include "Usul/File/Stats.h"
+#include "Usul/Math/Vector4.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Policies/Update.h"
@@ -25,7 +26,9 @@
 #include "osg/Vec3"
 
 #include <algorithm>
+#include <exception>
 #include <fstream>
+#include <list>
 #include <stdexcept>
 #include <vector>
 
@@ -187,15 +190,16 @@ void TriangleReaderArcAsciiGrid::_read()
 
   // Set the progress numbers.
   _progress.first = 0;
-  _progress.second = numPoints;
+  _progress.second = 2 * numPoints;
 
   //delete old triangles
   _document->clear();
 
-  // Reserve triangles.
-  // NOTE: commented out this line to debug a bad_alloc error happening
-  //       in reserve, called by reserveTriangles( ... )
-  //_document->reserveTriangles ( gridSize[0] * gridSize[1] );
+  // Make list of triangles while we parse. This will be slower but is more 
+  // likely to work with really big files that push the system's limits.
+  typedef Usul::Math::Vector4 < Vec3 > TriangleProxy;
+  typedef std::list < TriangleProxy > TriangleProxyList;
+  TriangleProxyList _triangleProxies;
 
   // Grab the first row.
   std::for_each ( row0.begin(), row0.end(), Helper::ReadStream ( _file.first, in ) );
@@ -234,8 +238,7 @@ void TriangleReaderArcAsciiGrid::_read()
         {
           Vec3 n ( ( d - c ) ^ ( a - c ) );
           n.normalize();
-          OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( a, c, d, n, false, true ) );
-          t->original ( true );
+          _triangleProxies.push_back ( TriangleProxy ( a, c, d, n ) );
         }
 
         // Add second triangle.
@@ -243,9 +246,7 @@ void TriangleReaderArcAsciiGrid::_read()
         {
           Vec3 n ( ( b - d ) ^ ( a - d ) );
           n.normalize();
-          USUL_ASSERT ( !( 301 == i && 40 == j ) );
-          OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( a, d, b, n, false, true ) );
-          t->original ( true );
+          _triangleProxies.push_back ( TriangleProxy ( a, d, b, n ) );
         }
       }
 
@@ -255,6 +256,47 @@ void TriangleReaderArcAsciiGrid::_read()
 
     // Swap rows.
     row0.swap ( row1 );
+  }
+
+  // Delete the rows.
+  { Values temp; std::swap ( row0, temp ); }
+  { Values temp; std::swap ( row1, temp ); }
+
+  // Reserve triangles. Reduce size until it works.
+  unsigned int numTrianglesToAllocate ( _triangleProxies.size() );
+  while ( numTrianglesToAllocate > 0 )
+  {
+    try
+    {
+      _document->reserveTriangles ( numTrianglesToAllocate );
+      std::cout << "Allocated " << numTrianglesToAllocate << " triangles" << std::endl;
+      break;
+    }
+    catch ( const std::bad_alloc & )
+    {
+      std::cout << "Failed to allocate " << numTrianglesToAllocate << " triangles" << std::endl;
+      numTrianglesToAllocate = static_cast < unsigned int > ( static_cast < double > ( numTrianglesToAllocate ) * 0.9 );
+    }
+  }
+
+  // Trim triangles that we can't load.
+  TriangleProxyList::iterator first ( _triangleProxies.begin() );
+  std::advance ( first, numTrianglesToAllocate );
+  _triangleProxies.erase ( first, _triangleProxies.end() );
+
+  // Loop through saved triangles.
+  while ( false == _triangleProxies.empty() )
+  {
+    // Add triangles.
+    const TriangleProxy &p ( _triangleProxies.front() );
+    OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( p[0], p[1], p[2], p[3], false, true ) );
+    t->original ( true );
+
+    // Remove from the front as we go.
+    _triangleProxies.pop_front();
+
+    // Feedback.
+    this->_incrementProgress ( update() );
   }
 
   // Trim the size down.

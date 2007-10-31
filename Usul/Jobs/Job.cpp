@@ -38,7 +38,8 @@ Job::Job ( Usul::Interfaces::IUnknown *caller, bool showProgressBar ) : BaseClas
   _thread      ( 0x0 ),
   _done        ( false ),
   _progress    ( static_cast < ProgressBar * > ( 0x0 ) ),
-  _label       ( static_cast < StatusBar  * > ( 0x0 ) )
+  _label       ( static_cast < StatusBar  * > ( 0x0 ) ),
+  _priority    ( 0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -375,6 +376,8 @@ bool Job::isDone() const
 
 void Job::progress ( IUnknown* progress )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _progress = progress;
 }
 
@@ -387,6 +390,8 @@ void Job::progress ( IUnknown* progress )
 
 Job::IUnknown* Job::progress()
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _progress.get();
 }
 
@@ -399,6 +404,8 @@ Job::IUnknown* Job::progress()
 
 void Job::label ( IUnknown* label )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _label = label;
 }
 
@@ -436,4 +443,32 @@ void Job::_setLabel ( const std::string& text )
 {
   if ( _label.valid() )
     _label->setStatusBarText ( text, true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the priority.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Job::priority( int value )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _priority = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the priority.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int Job::priority() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _priority;
 }

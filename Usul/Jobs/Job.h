@@ -61,6 +61,10 @@ public:
   void                      progress ( IUnknown* progress );
   IUnknown*                 progress ();
 
+  /// Get/Set the priority.
+  void                      priority( int );
+  int                       priority() const;
+
   /// Set the label.
   void                      label ( IUnknown* label );
 
@@ -126,6 +130,7 @@ private:
   bool _done;
   ProgressBar::QueryPtr _progress;
   StatusBar::QueryPtr   _label;
+  int _priority;
 };
 
 

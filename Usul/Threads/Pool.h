@@ -45,7 +45,8 @@ public:
   typedef Usul::Threads::Callback Callback;
   typedef Usul::Interfaces::IThreadPoolAddTask IThreadPoolAddTask;
   typedef IThreadPoolAddTask::TaskHandle TaskHandle;
-  typedef std::map<TaskHandle,Task::RefPtr> AllTasks;
+  typedef std::pair < int, TaskHandle > TaskKey;
+  typedef std::map<TaskKey,Task::RefPtr> AllTasks;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Pool );
@@ -60,7 +61,8 @@ public:
   Pool ( unsigned int numThreads = 10 );
 
   // Add a task.
-  TaskHandle              addTask ( Callback *started, 
+  TaskHandle              addTask ( int priority,
+                                    Callback *started, 
                                     Callback *finished = 0x0,
                                     Callback *cancelled = 0x0,
                                     Callback *error = 0x0,
@@ -70,7 +72,7 @@ public:
   void                    cancel();
 
   // Does the pool have the task?
-  bool                    hasTask ( TaskHandle ) const;
+  bool                    hasTask ( int, TaskHandle ) const;
 
   // Return the mutex. Use with caution.
   Mutex &                 mutex() const;
@@ -85,7 +87,7 @@ public:
   unsigned int            numTasksQueued() const;
 
   // Remove the task from the pool.
-  void                    remove ( TaskHandle );
+  void                    remove ( int, TaskHandle );
 
   // Set/get the sleep duration. This is the amount of time (in milliseconds) 
   // that the internal worker thread will sleep during a loop.

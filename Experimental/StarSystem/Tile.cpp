@@ -406,10 +406,13 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
       const Extents ul ( Extents::Vertex ( mn[0], md[1] ), Extents::Vertex ( md[0], mx[1] ) );
       const Extents ur ( Extents::Vertex ( md[0], md[1] ), Extents::Vertex ( mx[0], mx[1] ) );
 
-      const Usul::Math::Vec4d tll ( 0.0, 0.5, 0.5, 1.0 );
-      const Usul::Math::Vec4d tlr ( 0.5, 1.0, 0.5, 1.0 );
-      const Usul::Math::Vec4d tul ( 0.0, 0.5, 0.0, 0.5 );
-      const Usul::Math::Vec4d tur ( 0.5, 1.0, 0.0, 0.5 );
+      double deltaU ( _texCoords[1] - _texCoords[0] );
+      double deltaV ( _texCoords[3] - _texCoords[2] );
+
+      const Usul::Math::Vec4d tll ( 0.0,          deltaU / 2.0, deltaV / 2.0, deltaV );
+      const Usul::Math::Vec4d tlr ( deltaU / 2.0, deltaU,       deltaV / 2.0, deltaV );
+      const Usul::Math::Vec4d tul ( 0.0,          deltaU / 2.0, 0.0,          deltaV / 2.0 );
+      const Usul::Math::Vec4d tur ( deltaU / 2.0, deltaU,       0.0,          deltaV / 2.0 );
 
       _children[LOWER_LEFT]  = new Tile ( level, ll, meshSize, tll, half, _body, _raster, _image.get() ); // lower left  tile
       _children[LOWER_RIGHT] = new Tile ( level, lr, meshSize, tlr, half, _body, _raster, _image.get() ); // lower right tile
@@ -614,6 +617,9 @@ Tile::CutImageJob::CutImageJob( Tile *tile, RasterLayer *layer ) :
   _tile ( tile ),
   _raster ( layer )
 {
+  if ( _tile.valid() )
+    this->priority ( _tile->level() * -1 );
+
   Usul::Pointers::reference ( _raster );
 }
 

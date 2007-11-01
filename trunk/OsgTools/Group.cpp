@@ -30,12 +30,7 @@ void Group::removeAllChildren ( osg::Group *group )
 {
   if ( group )
   {
-    while ( group->getNumChildren() )
-    {
-      // Since the children are held in an std::vector it should be faster to
-      // remove them off the end.
-      group->removeChild ( group->getNumChildren() - 1 );
-    }
+    group->removeChildren ( 0, group->getNumChildren() );
   }
 }
 

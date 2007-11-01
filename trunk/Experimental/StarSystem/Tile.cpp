@@ -23,6 +23,7 @@
 #include "StarSystem/Tile.h"
 #include "StarSystem/Body.h"
 #include "StarSystem/RasterLayer.h"
+#include "StarSystem/CutImageJob.h"
 
 #include "OsgTools/Mesh.h"
 #include "OsgTools/State/StateSet.h"
@@ -278,6 +279,11 @@ void Tile::_destroy()
 {
   USUL_TRACE_SCOPE;
 
+  // Cancel the job.
+  if ( _job.valid() && false == _job->isDone() )
+    _job->cancel();
+  _job = 0x0;
+
   Usul::Pointers::unreference ( _raster ); _raster = 0x0;
 
   _body = 0x0; // Don't delete!
@@ -430,10 +436,18 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
       double deltaU ( _texCoords[1] - _texCoords[0] );
       double deltaV ( _texCoords[3] - _texCoords[2] );
 
-      const Usul::Math::Vec4d tll ( 0.0,          deltaU / 2.0, deltaV / 2.0, deltaV );
-      const Usul::Math::Vec4d tlr ( deltaU / 2.0, deltaU,       deltaV / 2.0, deltaV );
-      const Usul::Math::Vec4d tul ( 0.0,          deltaU / 2.0, 0.0,          deltaV / 2.0 );
-      const Usul::Math::Vec4d tur ( deltaU / 2.0, deltaU,       0.0,          deltaV / 2.0 );
+      double startU ( _texCoords[0] );
+      double halfU  ( _texCoords[0] + ( deltaU / 2.0 ) );
+      double endU   ( startU + deltaU );
+
+      double startV ( _texCoords[2] );
+      double halfV  ( _texCoords[2] + ( deltaV / 2.0 ) );
+      double endV   ( startV + deltaV );
+
+      const Usul::Math::Vec4d tll ( startU, halfU, halfV,  endV );
+      const Usul::Math::Vec4d tlr ( halfU,  endU,  halfV,  endV );
+      const Usul::Math::Vec4d tul ( startU, halfU, startV, halfV );
+      const Usul::Math::Vec4d tur ( halfU,  endU,  startV, halfV );
 
       _children[LOWER_LEFT]  = new Tile ( level, ll, meshSize, tll, half, _body, _raster, _image.get() ); // lower left  tile
       _children[LOWER_RIGHT] = new Tile ( level, lr, meshSize, tlr, half, _body, _raster, _image.get() ); // lower right tile
@@ -668,7 +682,7 @@ osg::Node* Tile::_buildLatSkirt ( double lat, double v, double offset )
   return mesh();
 }
 
-
+#if 0
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Job to cut the texture to correct extents.
@@ -742,7 +756,7 @@ void Tile::CutImageJob::_started ()
   // We are done with the tile.
   _tile = 0x0;
 }
-
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //

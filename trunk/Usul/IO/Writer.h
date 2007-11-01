@@ -81,6 +81,7 @@ template < class EndianPolicy_ > struct Writer
 
 typedef Writer < Usul::Endian::FromSystemToBig >    WriteBigEndian;
 typedef Writer < Usul::Endian::FromSystemToLittle > WriteLittleEndian;
+typedef Writer < Usul::Endian::FromSystemToSystem > WriteSystemEndian;
 
 
 } // namespace IO

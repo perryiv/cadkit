@@ -330,6 +330,23 @@ struct FromLittleToSystem
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  A no-op converter.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct FromSystemToSystem
+{
+  template < class T > static void convert ( T &t )
+  {
+  }
+  template < class T > void operator () ( T &t )
+  {
+  }
+};
+
+
 } // namespace Endian
 } // namespace Usul
 

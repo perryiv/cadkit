@@ -284,14 +284,14 @@ namespace Detail
 {
   struct TrimJob
   {
-    TrimJob ()
+    TrimJob()
     {
     }
 
     template < class T >
     bool operator () ( const T& t ) const
     {
-      return 0x0 != t->thread ();
+      return ( 0x0 != t->thread() );
     }
   };
 }
@@ -302,11 +302,11 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::trim ()
+void Manager::trim()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
   // Trim all jobs that aren't running
-  _jobs.remove_if ( Detail::TrimJob () );
+  _jobs.remove_if ( Detail::TrimJob() );
 }

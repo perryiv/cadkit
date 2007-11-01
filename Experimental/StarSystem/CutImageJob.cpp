@@ -36,7 +36,7 @@ CutImageJob::CutImageJob ( Tile* tile, RasterLayer *raster ) :
   USUL_TRACE_SCOPE;
 
   if ( _tile.valid () )
-    this->priority ( _tile->level() * -1 );
+    this->priority ( _tile->level() );
 
   Usul::Pointers::reference ( _raster );
 }

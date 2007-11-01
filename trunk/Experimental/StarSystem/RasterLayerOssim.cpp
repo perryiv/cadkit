@@ -181,10 +181,10 @@ void RasterLayerOssim::_convert ( const ossimImageData& data, osg::Image& image 
   unsigned char np3 ( static_cast < unsigned char > ( data.getNullPix( ( greyscale ? 0 : 2 ) ) ) );
 
   // Copy the pixels into the osg image.
-  for( unsigned int i = 0; i < size; ++i )
+  for ( unsigned int i = 0; i < size; ++i )
   {
     // If the pixel is null, make transparent.
-    if( (*b1==np1) && (*b2==np2)&& (*b3==np3) )
+    if ( ( *b1 == np1 ) && ( *b2 == np2 ) && ( *b3 == np3 ) )
     {
        buffer[3] = 0;
     }

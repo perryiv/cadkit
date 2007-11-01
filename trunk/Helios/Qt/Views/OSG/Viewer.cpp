@@ -71,10 +71,10 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   _viewer->document ( doc );
 
   // Set good default background.
-  _viewer->defaultBackground();
+  //_viewer->defaultBackground();
 
   // Not working...
-#if 0
+#if 1
   _viewer->backgroundCorners ( OsgTools::Render::Viewer::Corners::BOTTOM );
   _viewer->backgroundColor ( _viewer->backgroundColor() );
   _viewer->backgroundCorners ( OsgTools::Render::Viewer::Corners::TOP );

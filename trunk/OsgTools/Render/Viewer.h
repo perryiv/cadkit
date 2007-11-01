@@ -80,7 +80,6 @@
 #include "OsgTools/Render/SceneManager.h"
 
 #include "OsgTools/Draggers/Dragger.h"
-#include "OsgTools/Builders/GradientBackground.h"
 
 #include "osgUtil/SceneView"
 
@@ -184,8 +183,6 @@ public:
   typedef Usul::Interfaces::ISetCursorType ISetCursorType;
   typedef Usul::Interfaces::ITimeoutSpin ITimeoutSpin;
   typedef FrameDump::Names Filenames;
-  typedef OsgTools::Builders::GradientBackground GradientBackground;
-  typedef GradientBackground::Corners Corners;
   typedef BaseClass::Mutex Mutex;
   typedef BaseClass::Guard Guard;
   typedef Usul::Interfaces::IRenderListener IRenderListener;
@@ -196,6 +193,8 @@ public:
   typedef osg::NodeVisitor NodeVisitor;
   typedef Usul::Interfaces::IUpdateListener IUpdateListener;
   typedef std::vector<IUpdateListener::RefPtr> UpdateListeners;
+  typedef Renderer::GradientBackground GradientBackground;
+  typedef Renderer::Corners            Corners;
 
   enum ViewMode
   {
@@ -827,8 +826,6 @@ private:
   ViewMode _currentMode;
   LightEditors _lightEditors;
   unsigned int _contextId;
-  GradientBackground _gradient;
-  unsigned int _corners;
   UseDisplayLists _useDisplayList;
   RenderListeners _renderListeners;
   IntersectListeners _intersectListeners;

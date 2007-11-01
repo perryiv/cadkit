@@ -19,6 +19,7 @@
 #include "OsgTools/Export.h"
 #include "OsgTools/Declarations.h"
 
+#include "osg/Projection"
 #include "osg/MatrixTransform"
 #include "osg/Geometry"
 #include "osg/ref_ptr"
@@ -73,7 +74,7 @@ public:
 
 private:
 
-  osg::ref_ptr<osg::MatrixTransform> _root;
+  osg::ref_ptr<osg::Projection> _root;
   osg::ref_ptr<osg::Geometry> _geom;
   osg::ref_ptr<osg::Vec3Array> _vertices;
   osg::ref_ptr<osg::Vec4Array> _colors;

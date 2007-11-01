@@ -200,8 +200,6 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   _currentMode        ( NAVIGATION ),
   _lightEditors       (),
   _contextId          ( 0 ),
-  _gradient           (),
-  _corners            ( Corners::ALL ),
   _useDisplayList     ( false, true ),
   _renderListeners    (),
   _intersectListeners (),
@@ -757,8 +755,10 @@ void Viewer::resize ( unsigned int w, unsigned int h )
   // Update the projection node.
   _sceneManager->projection()->setMatrix( osg::Matrix::ortho2D ( 0, w ,0, h ) );
 
+  _renderer->resize( w, h );
+
   // Update the gradient background vertices.
-  _gradient.update ( w, h );
+  //_gradient.update ( w, h );
 }
 
 
@@ -1243,23 +1243,7 @@ void Viewer::_setLodCullCallback ( osg::NodeCallback *cb )
 
 void Viewer::backgroundColor ( const osg::Vec4 &color )
 {
-  // Always remove the existing branch.
-  OsgTools::Group::removeAllOccurances ( _gradient.root(), _sceneManager->projection() );
-
-  // Always update the gradient object.
-  _gradient.color ( color, this->backgroundCorners() );
-
-  // Use regular background if all corners are the same.
-  if ( Corners::ALL == this->backgroundCorners() )
-  {
-    _renderer->backgroundColor ( color );
-  }
-
-  // Otherwise, add the branch to render the gradient.
-  else
-  {
-    _sceneManager->projection()->addChild ( _gradient.root() );
-  }
+  _renderer->backgroundColor ( color );
 }
 
 
@@ -1271,7 +1255,7 @@ void Viewer::backgroundColor ( const osg::Vec4 &color )
 
 osg::Vec4 Viewer::backgroundColor() const
 {
-  return _gradient.color ( this->backgroundCorners() );
+  return _renderer->backgroundColor();
 }
 
 
@@ -1283,7 +1267,7 @@ osg::Vec4 Viewer::backgroundColor() const
 
 void Viewer::backgroundCorners ( unsigned int corners )
 {
-  _corners = corners;
+  _renderer->backgroundCorners ( corners );
 }
 
 
@@ -1295,7 +1279,7 @@ void Viewer::backgroundCorners ( unsigned int corners )
 
 unsigned int Viewer::backgroundCorners() const
 {
-  return _corners;
+  return _renderer->backgroundCorners();
 }
 
 

@@ -23,8 +23,11 @@
 #include "Usul/File/Temp.h"
 #include "Usul/Pointers/Pointers.h"
 
+#include "OsgTools/Builders/GradientBackground.h"
+
 #include "osg/ref_ptr"
 #include "osg/Timer"
+#include "osg/ClearNode"
 
 #include "osgUtil/SceneView"
 
@@ -48,6 +51,8 @@ public:
   typedef osg::ref_ptr<SceneView> SceneViewPtr;
   typedef osg::Viewport Viewport;
   typedef std::vector < std::string > ImageList;
+  typedef OsgTools::Builders::GradientBackground GradientBackground;
+  typedef GradientBackground::Corners            Corners;
 
   // Constructor
   Renderer();
@@ -55,6 +60,10 @@ public:
   // Set/get the background color.
   void                  backgroundColor ( const osg::Vec4 &color );
   osg::Vec4             backgroundColor() const;
+
+  // Set/get the background corners.
+  void                  backgroundCorners ( unsigned int corners );
+  unsigned int          backgroundCorners() const;
 
   // Clear
   void                  clear();
@@ -92,6 +101,9 @@ public:
 
   // Render.  Assumes the context is already current.
   void                  render();
+
+  // Resize the viewer.
+  void                  resize ( unsigned int width, unsigned int height );
 
   // Set/get the scatter scale.
   double                scatterScale() const;
@@ -164,16 +176,15 @@ private:
 
   SceneViewPtr _sceneView;
   osg::ref_ptr<osg::FrameStamp> _framestamp;
-
   osg::Timer _timer;
   osg::Timer_t _start_tick;
-
   TimeHistories _times;
-
   unsigned int _numPasses;  
   unsigned int _contextId;
-  
   bool _hasAccumBuffer;
+  GradientBackground _gradient;
+  unsigned int _corners;
+  osg::ref_ptr<osg::ClearNode> _clearNode;
 };
 
 }

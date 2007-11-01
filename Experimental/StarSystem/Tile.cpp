@@ -79,6 +79,9 @@ Tile::Tile ( unsigned int level, const Extents &extents,
 
   // Start the request to pull in texture.
   this->_launchImageRequest();
+
+  // We want thread safe ref and unref.
+  this->setThreadSafeRefUnref ( true );
 }
 
 

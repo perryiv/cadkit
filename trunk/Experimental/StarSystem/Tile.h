@@ -19,6 +19,7 @@
 
 #include "StarSystem/Export.h"
 #include "StarSystem/Extents.h"
+#include "StarSystem/CutImageJob.h"
 
 #include "Usul/Base/Typed.h"
 #include "Usul/Math/Vector4.h"
@@ -163,7 +164,7 @@ private:
   unsigned int _textureUnit;
   osg::ref_ptr < osg::Image > _image;
   Usul::Math::Vec4d _texCoords;
-  Usul::Jobs::Job::RefPtr _job;
+  CutImageJob::RefPtr _cutImageJob;
 };
 
 

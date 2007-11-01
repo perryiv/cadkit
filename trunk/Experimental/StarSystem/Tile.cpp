@@ -23,7 +23,6 @@
 #include "StarSystem/Tile.h"
 #include "StarSystem/Body.h"
 #include "StarSystem/RasterLayer.h"
-#include "StarSystem/CutImageJob.h"
 
 #include "OsgTools/Mesh.h"
 #include "OsgTools/State/StateSet.h"
@@ -71,7 +70,7 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _textureUnit ( 0 ),
   _image ( image ),
   _texCoords ( texCoords ),
-  _job ( 0x0 )
+  _cutImageJob ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -104,7 +103,7 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _textureUnit ( tile._textureUnit ),
   _image ( tile._image ),
   _texCoords ( tile._texCoords ),
-  _job ( tile._job )
+  _cutImageJob ( tile._cutImageJob )
 {
   USUL_TRACE_SCOPE;
 
@@ -283,9 +282,9 @@ void Tile::_destroy()
   USUL_TRACE_SCOPE;
 
   // Cancel the job.
-  if ( _job.valid() && false == _job->isDone() )
-    _job->cancel();
-  _job = 0x0;
+  if ( _cutImageJob.valid() && false == _cutImageJob->isDone() )
+    _cutImageJob->cancel();
+  _cutImageJob = 0x0;
 
   Usul::Pointers::unreference ( _raster ); _raster = 0x0;
 
@@ -318,6 +317,14 @@ void Tile::traverse ( osg::NodeVisitor &nv )
 
     case osg::NodeVisitor::CULL_VISITOR:
     {
+      // See if our job is done loading image.
+      if ( _cutImageJob.valid() && _cutImageJob->isDone() )
+      {
+        this->image ( _cutImageJob->image() );
+        this->texCoords ( Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
+        _cutImageJob = 0x0;
+      }
+
       if ( 0 == this->level() && 0x0 != _body )
         _body->jobManager().purge();
 
@@ -685,81 +692,6 @@ osg::Node* Tile::_buildLatSkirt ( double lat, double v, double offset )
   return mesh();
 }
 
-#if 0
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Job to cut the texture to correct extents.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Tile::CutImageJob::CutImageJob( Tile *tile, RasterLayer *layer ) : 
-  BaseClass ( 0x0, false ),
-  _tile ( tile ),
-  _raster ( layer )
-{
-  USUL_TRACE_SCOPE;
-
-  if ( _tile.valid() )
-    this->priority ( _tile->level() * -1 );
-
-  Usul::Pointers::reference ( _raster );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Destructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Tile::CutImageJob::~CutImageJob()
-{
-  USUL_TRACE_SCOPE;
-
-  Usul::Pointers::unreference ( _raster );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Load the texture.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Tile::CutImageJob::_started ()
-{
-  USUL_TRACE_SCOPE;
-
-  // Return now if we are canceled.
-  if ( this->canceled() )
-    return;
-
-  // Get the image.
-  if ( 0x0 != _raster && _tile.valid () )
-  {
-    unsigned int width  ( 256 );
-    unsigned int height ( 256 );
-
-    // Get the extents.
-    Extents extents ( _tile->extents() );
-
-    // Get the level.
-    unsigned int level ( _tile->level() );
-
-    // Request the image.
-    _tile->image ( _raster->texture ( extents, width, height, level )  );
-
-    // Set the new starting texture coordinates.
-    _tile->texCoords ( Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
-
-    // Dirty the tile.
-    //_tile->dirty( true, false );
-  }
-
-  // We are done with the tile.
-  _tile = 0x0;
-}
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -771,10 +703,10 @@ void Tile::clear()
 {
   USUL_TRACE_SCOPE;
 
-  if ( _job.valid() )
-    _job->cancel();
+  if ( _cutImageJob.valid() )
+    _cutImageJob->cancel();
 
-  _job = 0x0;
+  _cutImageJob = 0x0;
 }
 
 
@@ -863,13 +795,15 @@ void Tile::_launchImageRequest()
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  if ( _job.valid() )
-    _job->cancel();
+  if ( _cutImageJob.valid() )
+    _cutImageJob->cancel();
+
+  _cutImageJob = 0x0;
 
   // Start the request to pull in texture.
   if ( 0x0 != _body )
   {
-    _job = new CutImageJob ( this, _raster );
-    _body->jobManager().add ( _job );
+    _cutImageJob = new CutImageJob ( this->extents(), this->level(), _raster );
+    _body->jobManager().add ( _cutImageJob );
   }
 }

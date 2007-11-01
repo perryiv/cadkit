@@ -117,7 +117,8 @@ bool StarSystemDocument::canExport ( const std::string &file ) const
 bool StarSystemDocument::canInsert ( const std::string &file ) const
 {
   USUL_TRACE_SCOPE;
-  return this->canOpen ( file );
+  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
+  return ( ext == "ball" || ext == "tif" || ext == "tiff" || ext == "jpg" );
 }
 
 

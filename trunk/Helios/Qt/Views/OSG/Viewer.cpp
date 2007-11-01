@@ -29,6 +29,7 @@
 
 #include "QtTools/Color.h"
 
+#include "QtCore/QUrl"
 #include "QtCore/QTimer"
 #include "QtGui/QResizeEvent"
 
@@ -115,6 +116,9 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
 
   // Load initial trackball settings.
   _viewer->trackballStateLoad();
+
+  // Enable drag 'n drop.
+  this->setAcceptDrops ( true );
 }
 
 
@@ -986,4 +990,72 @@ void Viewer::editBackground()
 
   // Request paint.
   this->update();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Dragging has entering window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::dragEnterEvent ( QDragEnterEvent *event )
+{
+  USUL_TRACE_SCOPE;
+  
+  Document::RefPtr document ( this->document() );
+  
+  if ( false == document.valid() || 0x0 == event )
+    return;
+
+  typedef QList < QUrl > Urls;
+  typedef Urls::const_iterator ConstIterator;
+
+  Urls urls ( event->mimeData()->urls () );
+
+  for ( ConstIterator i = urls.begin(); i != urls.end(); ++ i )
+  {
+    std::string file ( i->toLocalFile ().toStdString () );
+
+    if ( document->canInsert ( file ) )
+    {
+      event->acceptProposedAction();
+      return;
+    }
+  }
+
+  event->accept();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Files have been dropped.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::dropEvent ( QDropEvent *event )
+{
+  USUL_TRACE_SCOPE;
+
+  Document::RefPtr document ( this->document() );
+
+  if ( false == document.valid() || 0x0 == event )
+    return;
+
+  typedef QList < QUrl > Urls;
+  typedef Urls::const_iterator ConstIterator;
+
+  Urls urls ( event->mimeData()->urls () );
+
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+
+  for ( ConstIterator i = urls.begin(); i != urls.end(); ++ i )
+  {
+    std::string file ( i->toLocalFile ().toStdString () );
+
+    document->read ( file, me.get() );
+  }
+
+  event->acceptProposedAction();
 }

@@ -17,14 +17,13 @@
 #ifndef _STAR_SYSTEM_CUT_IMAGE_JOB_CLASS_H_
 #define _STAR_SYSTEM_CUT_IMAGE_JOB_CLASS_H_
 
-#include "StarSystem/Tile.h"
+#include "StarSystem/Extents.h"
 
 #include "Usul/Jobs/Job.h"
 
 #include "osg/Image"
 #include "osg/ref_ptr"
 #include "osg/Vec2d"
-#include "osg/observer_ptr"
 
 namespace StarSystem { class RasterLayer; }
 
@@ -43,7 +42,9 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( CutImageJob );
 
-  CutImageJob ( Tile* tile, RasterLayer *layer );
+  CutImageJob ( const Extents &extents, unsigned int level, RasterLayer *layer );
+
+  osg::Image *      image();
 
 protected:
 
@@ -53,8 +54,10 @@ protected:
 
 private:
 
-  osg::observer_ptr < Tile > _tile;
+  Extents _extents;
+  unsigned int _level;
   RasterLayer *_raster;
+  ImagePtr _image;
 };
 
 

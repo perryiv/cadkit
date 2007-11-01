@@ -21,6 +21,7 @@
 #include "osg/Geode"
 #include "osg/PolygonMode"
 #include "osg/ShadeModel"
+#include "osg/ClearNode"
 
 using namespace OsgTools::Builders;
 
@@ -32,7 +33,7 @@ using namespace OsgTools::Builders;
 ///////////////////////////////////////////////////////////////////////////////
 
 GradientBackground::GradientBackground() :
-  _root     ( new osg::MatrixTransform ),
+_root       ( new osg::Projection ),
   _geom     ( new osg::Geometry ),
   _colors   ( new osg::Vec4Array ),
   _vertices ( new osg::Vec3Array )
@@ -71,6 +72,9 @@ void GradientBackground::update ( unsigned int w, unsigned int h )
     _geom->dirtyDisplayList();
     _geom->dirtyBound();
   }
+
+  if ( _root.valid() )
+    _root->setMatrix ( osg::Matrix::ortho2D ( 0, w, 0, h ) );
 }
 
 
@@ -82,7 +86,7 @@ void GradientBackground::update ( unsigned int w, unsigned int h )
 
 void GradientBackground::clear()
 {
-  _root     = new osg::MatrixTransform;
+  _root     = new osg::Projection;
   _geom     = new osg::Geometry;
   _colors   = new osg::Vec4Array;
   _vertices = new osg::Vec3Array;
@@ -98,7 +102,8 @@ void GradientBackground::clear()
 void GradientBackground::init()
 {
   // Declare new objects.
-  _root = new osg::MatrixTransform;
+  _root = new osg::Projection;
+  osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
   _geom = new osg::Geometry;
   _vertices = new osg::Vec3Array ( 4 );
@@ -115,8 +120,8 @@ void GradientBackground::init()
   _colors->at(3) = color;
 
   // Set transform properties.
-  _root->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
-  _root->setMatrix ( osg::Matrix::identity() );
+  mt->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
+  mt->setMatrix ( osg::Matrix::identity() );
 
   // Set geometry properties.
   _geom->setVertexArray ( _vertices.get() );
@@ -136,8 +141,9 @@ void GradientBackground::init()
   state->setRenderBinDetails ( -1, "RenderBin" );
 
   // Hook up scene.
-  _root->addChild ( geode.get() );
+  mt->addChild ( geode.get() );
   geode->addDrawable ( _geom.get() );
+  _root->addChild ( mt.get() );
 }
 
 

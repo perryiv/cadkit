@@ -24,6 +24,7 @@
 #include "OsgTools/Render/FBOScreenCapture.h"
 #include "OsgTools/Render/TiledScreenCapture.h"
 #include "OsgTools/Builders/GradientBackground.h"
+#include "OsgTools/Group.h"
 
 #include "Usul/Errors/Checker.h"
 #include "Usul/Bits/Bits.h"
@@ -73,14 +74,17 @@ namespace Detail
 ///////////////////////////////////////////////////////////////////////////////
 
 Renderer::Renderer() : BaseClass(),
-  _sceneView ( new osgUtil::SceneView ),
-  _framestamp ( new osg::FrameStamp ),
-  _times(),
-  _timer(),
-  _start_tick ( 0 ),
-  _numPasses ( 1 ),
-  _contextId ( 0 ),
-  _hasAccumBuffer ( false )
+  _sceneView          ( new osgUtil::SceneView ),
+  _framestamp         ( new osg::FrameStamp ),
+  _times              ( ),
+  _timer              ( ),
+  _start_tick         ( 0 ),
+  _numPasses          ( 1 ),
+  _contextId          ( 0 ),
+  _hasAccumBuffer     ( false ),
+  _gradient           (),
+  _corners            ( Corners::ALL ),
+  _clearNode          ( new osg::ClearNode )
 {
   // Set the start tick.
   _start_tick = _timer.tick();
@@ -233,6 +237,9 @@ void Renderer::render()
     ::glClear ( _sceneView->getRenderStage()->getClearMask() );
   }
 
+  // Set the clear node.
+  this->viewer()->getCullVisitor()->setClearNode ( _clearNode.get() );
+
   // See if we are supposed to use multiple passes.
   if ( this->numRenderPasses() > 1 )
     this->_multiPassRender();
@@ -353,8 +360,27 @@ void Renderer::_multiPassRender()
 
 void Renderer::backgroundColor ( const osg::Vec4 &color )
 {
+  // Always remove the existing branch.
+  OsgTools::Group::removeAllOccurances ( _gradient.root(), _clearNode.get() );
+
+  // Always update the gradient object.
+  _gradient.color ( color, this->backgroundCorners() );
+
+  // Use regular background if all corners are the same.
+  if ( Corners::ALL == this->backgroundCorners() )
+  {
+    _clearNode->setClearColor ( color );
+  }
+
+  // Otherwise, add the branch to render the gradient.
+  else
+  {
+    _clearNode->addChild ( _gradient.root() );
+  }
+#if 0
   if ( 0x0 != this->viewer() )
     this->viewer()->setClearColor ( color );
+#endif
 }
 
 
@@ -366,7 +392,32 @@ void Renderer::backgroundColor ( const osg::Vec4 &color )
 
 osg::Vec4 Renderer::backgroundColor() const
 {
-  return ( 0x0 == this->viewer() ) ? osg::Vec4 ( 0, 0, 0, 1 ) : this->viewer()->getClearColor();
+  return _gradient.color ( this->backgroundCorners() );
+  //return ( 0x0 == this->viewer() ) ? osg::Vec4 ( 0, 0, 0, 1 ) : this->viewer()->getClearColor();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the background corners.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Renderer::backgroundCorners ( unsigned int corners )
+{
+  _corners = corners;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the background corners.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Renderer::backgroundCorners() const
+{
+  return _corners;
 }
 
 
@@ -605,7 +656,10 @@ void Renderer::uniqueID ( unsigned int id )
 
 void Renderer::scene ( osg::Node *node )
 {
-  _sceneView->setSceneData ( node );
+  osg::ref_ptr < osg::Group > root ( new osg::Group );
+  root->addChild ( node );
+  root->addChild ( _clearNode.get() );
+  _sceneView->setSceneData ( root.get() );
 }
 
 
@@ -1279,4 +1333,17 @@ osg::Light *Renderer::light()
 const osg::Light *Renderer::light() const
 {
   return ( 0x0 == _sceneView.get() ) ? 0x0 : _sceneView->getLight();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Resize the window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Renderer::resize ( unsigned int w, unsigned int h )
+{
+  // Update the gradient background vertices.
+  _gradient.update ( w, h );
 }

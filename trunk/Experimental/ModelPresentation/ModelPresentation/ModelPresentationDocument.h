@@ -161,7 +161,7 @@ protected:
   void                        _parseLocation( XmlTree::Node &node, Unknown *caller );
   void                        _parseMatrix( XmlTree::Node &node, Unknown *caller, const std::string& name );
   osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller, MpdSet & set );
-  osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller );
+  osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller, unsigned int &currentTime );
   osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller );
   osg::Node*                  _loadFile( const std::string& filename, Unknown *caller );
   osg::Node*                  _loadDirectory( const std::string& dir, Unknown *caller );

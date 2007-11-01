@@ -340,12 +340,7 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
 {
   USUL_TRACE_SCOPE;
 
-  if( true == _useTimeLine )
-  {
-    std::ostringstream text;
-    text << "  Year " << _timeSet.currentTime;
-    this->_setStatusBar( text.str(), caller );
-  }
+  
 
   if( true == this->isAnimating() )
   {
@@ -357,6 +352,12 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
         _timeSet.currentTime += _timeSet.interval;
 
       this->_checkTimeSteps();
+
+      // Output feedback
+      std::ostringstream text;
+      text << "  Year " << _timeSet.currentTime;
+      std::cout << "Now showing timestep #" << _timeSet.currentTime << std::endl;
+      this->_setStatusBar( text.str(), caller );
 
     }
   }
@@ -678,9 +679,6 @@ void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *ca
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  // Ok to update the status bar with time related information
-  _useTimeLine = true;
-
   typedef XmlTree::Document::Attributes Attributes;
   typedef XmlTree::Document::Children Children;
   Attributes& attributes ( node.attributes() );
@@ -941,14 +939,14 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
   }
   // TODO: create a set here --
   osg::ref_ptr< osg::Switch > switchNode ( new osg::Switch );
-
+  unsigned int currentTime = 0;
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
     if ( "group" == node->name() )
     {
       std::cout << "Found group..." << std::endl;
-      switchNode->addChild( this->_parseTimeGroup( *node, caller ), false );
+      switchNode->addChild( this->_parseTimeGroup( *node, caller, currentTime ), false );
     }
   }
   
@@ -968,7 +966,7 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unknown *caller )
+osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unknown *caller, unsigned int &currentTime )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -978,9 +976,9 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
   Children& children ( node.children() );
   
   MpdTimeGroup timeGroup;
-  timeGroup.startTime = 0;
-  timeGroup.endTime = _timeSet.endTime;
-
+  timeGroup.startTime = currentTime;
+  timeGroup.endTime = currentTime + 1;
+  currentTime ++;
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
     if ( "startTime" == iter->first )
@@ -990,6 +988,7 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
     if ( "endTime" == iter->first )
     {
       Usul::Strings::fromString ( iter->second, timeGroup.endTime );
+      currentTime = timeGroup.endTime;
     }    
   }
   _timeSet.groups.push_back( timeGroup );

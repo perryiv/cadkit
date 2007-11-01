@@ -146,22 +146,6 @@ protected:
 
 private:
 
-  class CutImageJob : public Usul::Jobs::Job
-  {
-  public:
-    typedef Usul::Jobs::Job BaseClass;
-
-    CutImageJob ( Tile* tile, RasterLayer* layer );
-
-  protected:
-    virtual ~CutImageJob();
-
-    virtual void _started();
-  private:
-    Tile::RefPtr _tile;
-    RasterLayer *_raster;
-  };
-
   // No assignment.
   Tile &operator = ( const Tile & );
 

@@ -28,15 +28,16 @@ using namespace StarSystem;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CutImageJob::CutImageJob ( const Extents &extents, unsigned int level, RasterLayer *raster ) : 
+CutImageJob::CutImageJob ( Tile* tile, RasterLayer *raster ) : 
   BaseClass ( 0x0, false ),
-  _extents ( extents ),
-  _level   ( level ),
-  _raster  ( raster ),
-  _image   ( 0x0 )
+  _tile    ( tile ),
+  _raster  ( raster )
 {
   USUL_TRACE_SCOPE;
-  this->priority ( level * -1 );
+
+  if ( _tile.valid () )
+    this->priority ( _tile->level() * -1 );
+
   Usul::Pointers::reference ( _raster );
 }
 
@@ -78,19 +79,10 @@ void CutImageJob::_started()
   const unsigned int height ( 256 );
 
   // Request the image.
-  _image = _raster->texture ( _extents, width, height, _level );
-}
+  if ( _tile.valid() )
+    _tile->image ( _raster->texture ( _tile->extents(), width, height, _tile->level() )  );
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the texture.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Image *CutImageJob::image()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return _image.get();
+  // Set the new starting texture coordinates.
+  if ( _tile.valid() )
+    _tile->texCoords ( Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
 }

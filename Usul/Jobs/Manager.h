@@ -71,7 +71,7 @@ public:
   void                    purge();
 
   // Trim any jobs that are queued, but not running.
-  void                    trim ();
+  void                    trim();
 
   // Wait for all jobs to complete.
   void                    wait();

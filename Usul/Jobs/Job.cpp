@@ -37,10 +37,10 @@ Job::Job ( Usul::Interfaces::IUnknown *caller, bool showProgressBar ) : BaseClas
   _startedCB   ( 0x0 ),
   _thread      ( 0x0 ),
   _done        ( false ),
+  _canceled    ( false ),
   _progress    ( static_cast < ProgressBar * > ( 0x0 ) ),
   _label       ( static_cast < StatusBar  * > ( 0x0 ) ),
-  _priority    ( 0 ),
-  _canceled    ( false )
+  _priority    ( 0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -223,8 +223,13 @@ void Job::_error()
 void Job::_threadFinished ( Thread *thread )
 {
   USUL_TRACE_SCOPE;
+
   ScopedThread scoped ( *this, thread, 0x0 );
   ScopedDone done ( *this, true );
+
+  if ( true == this->canceled() )
+    this->cancel();
+
   this->_finished();
 }
 
@@ -250,7 +255,12 @@ void Job::_finished()
 void Job::_threadStarted ( Thread *thread )
 {
   USUL_TRACE_SCOPE;
+
   this->_setThread ( thread );
+
+  if ( true == this->canceled() )
+    this->cancel();
+
   this->_started();
 }
 
@@ -306,12 +316,12 @@ void Job::cancel()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
+  _canceled = true;
+
   if ( true == _thread.valid() )
   {
     _thread->cancel();
   }
-
-  _canceled = true;
 }
 
 

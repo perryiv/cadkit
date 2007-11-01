@@ -46,7 +46,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( Job );
 
   // Cancel the job.
-  void                      cancel();
+  virtual void              cancel();
 
   // Was the job canceled?
   bool                      canceled() const;
@@ -131,10 +131,10 @@ private:
   Callback::RefPtr _startedCB;
   Thread::RefPtr _thread;
   bool _done;
+  bool _canceled;
   ProgressBar::QueryPtr _progress;
   StatusBar::QueryPtr   _label;
   int _priority;
-  bool _canceled;
 };
 
 

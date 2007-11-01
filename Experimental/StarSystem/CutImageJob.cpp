@@ -78,11 +78,26 @@ void CutImageJob::_started()
   const unsigned int width  ( 256 );
   const unsigned int height ( 256 );
 
-  // Request the image.
-  if ( _tile.valid() )
-    _tile->image ( _raster->texture ( _tile->extents(), width, height, _tile->level() )  );
+  Extents extents;
+  unsigned int level ( 0 );
+  {
+    Tile::RefPtr tile ( _tile.get() );
+    if ( tile.valid() )
+    {
+      extents = tile->extents();
+      level = tile->level();
+    }
+  }
 
-  // Set the new starting texture coordinates.
-  if ( _tile.valid() )
-    _tile->texCoords ( Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
+  // Request the image.
+  osg::ref_ptr < osg::Image > image ( _raster->texture ( extents, width, height, level ) );
+
+  Tile::RefPtr tile ( _tile.get() );
+  if ( tile.valid() )
+  {
+    tile->image ( image.get() );
+
+    // Set the new starting texture coordinates.
+    tile->texCoords ( Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
+  }
 }

@@ -235,6 +235,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CutImageJob.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CutImageJob.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Export.h"
 				>
 			</File>

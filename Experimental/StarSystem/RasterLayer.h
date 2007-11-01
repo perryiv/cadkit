@@ -42,9 +42,11 @@ public:
   virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) = 0;
 
 protected:
+
   virtual ~RasterLayer();
 
 private:
+
   Extents _extents;
 };
 

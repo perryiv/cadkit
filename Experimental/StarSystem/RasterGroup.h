@@ -30,17 +30,20 @@ public:
 
   RasterGroup();
 
-  void append ( RasterLayer* layer );
+  void                            append ( RasterLayer* layer );
 
-  virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level );
+  virtual osg::Image*             texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level );
 
 protected:
-  virtual ~RasterGroup ();
 
-  void _updateExtents( const RasterLayer& layer );
+  virtual ~RasterGroup();
 
-  void _compositeImages ( osg::Image& result, const osg::Image& image ) const;
+  void                            _updateExtents ( const RasterLayer& layer );
+
+  void                            _compositeImages ( osg::Image& result, const osg::Image& image ) const;
+
 private:
+
   Layers _layers;
 };
 

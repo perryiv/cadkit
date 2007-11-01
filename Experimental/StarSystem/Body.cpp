@@ -97,7 +97,10 @@ void Body::_destroy()
 
   // Remove all jobs that are not running.
   _manager.trim();
-  
+
+  // Cancel all remaining jobs.
+  _manager.cancel();
+
   // Wait for the pool to finish.
   _manager.wait();
 

@@ -77,11 +77,11 @@ Tile::Tile ( unsigned int level, const Extents &extents,
 
   Usul::Pointers::reference ( _raster );
 
-  // Start the request to pull in texture.
-  this->_launchImageRequest();
-
   // We want thread safe ref and unref.
   this->setThreadSafeRefUnref ( true );
+
+  // Start the request to pull in texture.
+  this->_launchImageRequest();
 }
 
 

@@ -42,6 +42,7 @@ void ColorButton::color ( const QColor& c )
     _color = c;
     this->update();
     emit colorChanged();
+    emit colorChangedF( c.redF(), c.greenF(), c.blueF(), c.alphaF() );
   }
 }
 

@@ -35,6 +35,7 @@ public:
 
 signals:
   void colorChanged ();
+  void colorChangedF ( float, float, float, float );
 
 protected:
   virtual void paintEvent( QPaintEvent *e );

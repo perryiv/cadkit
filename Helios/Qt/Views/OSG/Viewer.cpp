@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Helios/Qt/Views/OSG/Viewer.h"
+#include "Helios/Qt/Views/OSG/EditBackground.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Documents/Manager.h"
@@ -30,7 +31,6 @@
 
 #include "QtCore/QTimer"
 #include "QtGui/QResizeEvent"
-#include "QtGui/QColorDialog"
 
 using namespace CadKit::Helios::Views::OSG;
 
@@ -937,13 +937,53 @@ void Viewer::menuAdd( MenuKit::Menu &menu )
 
 void Viewer::editBackground()
 {
-  // Get the color.
-  QColor color ( QColorDialog::getColor ( ) );
-  
   // Get the viewer.
   OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
 
-  // Make sure both are valid...
-  if ( color.isValid() && viewer.valid() )
-    viewer->backgroundColor ( QtTools::Color< osg::Vec4 >::convert ( color ) );
+  // Make sure it's valid.
+  if ( false == viewer.valid() )
+    return;
+
+  EditBackground dialog ( viewer.get(), this ); //( mw.valid() ? mw->mainWindow() : 0x0 ) );
+
+  // Useful typedef.
+  typedef OsgTools::Render::Viewer::Corners Corners;
+
+  // Save current colors.
+  // Top left corner.
+  viewer->backgroundCorners ( Corners::TOP_LEFT );
+  osg::Vec4 topLeftColor ( viewer->backgroundColor ( ) );
+
+  // Top right corner.
+  viewer->backgroundCorners ( Corners::TOP_RIGHT );
+  osg::Vec4 topRightColor ( viewer->backgroundColor ( ) );
+
+  // Bottom left corner.
+  viewer->backgroundCorners ( Corners::BOTTOM_LEFT );
+  osg::Vec4 bottomLeftColor ( viewer->backgroundColor ( ) );
+
+  viewer->backgroundCorners ( Corners::BOTTOM_RIGHT );
+  osg::Vec4 bottomRightColor ( viewer->backgroundColor ( ) );
+
+  // Restore colors if canceled.
+  if ( QDialog::Rejected == dialog.exec() )
+  {
+    // Top left corner.
+    viewer->backgroundCorners ( Corners::TOP_LEFT );
+    viewer->backgroundColor ( topLeftColor );
+
+    // Top right corner.
+    viewer->backgroundCorners ( Corners::TOP_RIGHT );
+    viewer->backgroundColor ( topRightColor );
+
+    // Bottom left corner.
+    viewer->backgroundCorners ( Corners::BOTTOM_LEFT );
+    viewer->backgroundColor ( bottomLeftColor );
+
+    viewer->backgroundCorners ( Corners::BOTTOM_RIGHT );
+    viewer->backgroundColor ( bottomRightColor );
+  }
+
+  // Request paint.
+  this->update();
 }

@@ -169,6 +169,36 @@
 			UniqueIdentifier="{3fdfe9b9-2c0d-4bd9-b52a-972f8bb039c3}"
 			>
 			<File
+				RelativePath=".\EditBackground.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\EditBackground.h"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing EditBackground.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\EditBackground.h&quot; -o &quot;.\GeneratedFiles\moc_EditBackground.cpp&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\EditBackground.h"
+						Outputs="&quot;.\GeneratedFiles\moc_EditBackground.cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing EditBackground.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\EditBackground.h&quot; -o &quot;.\GeneratedFiles\moc_EditBackground.cpp&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\EditBackground.h"
+						Outputs="&quot;.\GeneratedFiles\moc_EditBackground.cpp&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\Export.h"
 				>
 			</File>
@@ -216,6 +246,10 @@
 			>
 			<File
 				RelativePath=".\generatedfiles\moc_Viewer.cpp"
+				>
+			</File>
+                  <File
+				RelativePath=".\generatedfiles\moc_EditBackground.cpp"
 				>
 			</File>
 		</Filter>

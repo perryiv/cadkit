@@ -37,9 +37,10 @@ STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( System );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-System::System() : BaseClass(),
-  _body       ( new Body ( Body::Vec2d ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR ) ) ),
-  _satellites ( new Group() )
+System::System( Usul::Jobs::Manager& manager ) : BaseClass(),
+  _body       ( new Body ( Body::Vec2d ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR ), manager ) ),
+  _satellites ( new Group() ),
+  _manager    ( manager )
 {
   USUL_TRACE_SCOPE;
 }
@@ -67,6 +68,7 @@ System::~System()
 void System::_destroy()
 {
   USUL_TRACE_SCOPE;
+
   _satellites = 0x0;
   _body = 0x0;
 }
@@ -206,4 +208,46 @@ System::Vec3d System::center() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return ( ( true == _body.valid() ) ? _body->center() : System::Vec3d ( 0, 0, 0 ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notification that a renderer just rendered.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void System::preRender ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::preRender ( caller );
+
+  Guard guard ( this );
+
+  if ( _body.valid() )
+    _body->preRender ( caller );
+
+  if ( _satellites.valid() )
+    _satellites->preRender( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notification that a renderer is about to render.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void System::postRender ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::postRender ( caller );
+
+  Guard guard ( this );
+
+  if ( _body.valid() )
+    _body->postRender ( caller );
+
+  if ( _satellites.valid() )
+    _satellites->postRender( caller );
 }

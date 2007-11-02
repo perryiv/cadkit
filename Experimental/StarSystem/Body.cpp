@@ -44,12 +44,12 @@ STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( Body );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Body::Body ( const Vec2d &r ) : BaseClass(),
+Body::Body ( const Vec2d &r, Usul::Jobs::Manager& manager ) : BaseClass(),
   _transform ( new osg::MatrixTransform ),
   _ellipsoid ( new ossimEllipsoid ( r[Body::RADIUS_EQUATOR], r[Body::RADIUS_POLAR] ) ),
   _tile ( 0x0 ),
   _rasters ( new RasterGroup ),
-  _manager ( 3 )
+  _manager ( manager )
 {
   USUL_TRACE_SCOPE;
 
@@ -95,18 +95,7 @@ void Body::_destroy()
 {
   USUL_TRACE_SCOPE;
 
-  // Remove all jobs that are not running.
-  _manager.trim();
-
-  // Cancel all remaining jobs.
-  _manager.cancel();
-
-  // Wait for the pool to finish.
-  _manager.wait();
-
-  // Purge.
-  _manager.purge();
-
+  //_manager = JobManagerPtr ( static_cast < Usul::Jobs::Manager * > ( 0x0 ) );
   Usul::Pointers::unreference ( _transform ); _transform = 0x0;
   Usul::Pointers::unreference ( _tile ); _tile = 0x0;
   Usul::Pointers::unreference ( _rasters ); _rasters = 0x0;
@@ -274,4 +263,30 @@ Usul::Jobs::Manager& Body::jobManager()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _manager;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notification that a renderer just rendered.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::preRender ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::preRender ( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notification that a renderer is about to render.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::postRender ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::postRender ( caller );
 }

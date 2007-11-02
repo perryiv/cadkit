@@ -64,6 +64,7 @@ void CameraPath::cameraAppend ( const Usul::Math::Vec3d &eye, const Usul::Math::
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _values.insert ( _values.end(), Triplet ( eye, center, up ) );
+  this->modified ( true );
 }
 
 
@@ -78,6 +79,7 @@ void CameraPath::cameraPrepend ( const Usul::Math::Vec3d &eye, const Usul::Math:
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _values.insert ( _values.begin(), Triplet ( eye, center, up ) );
+  this->modified ( true );
 }
 
 
@@ -96,6 +98,7 @@ void CameraPath::closePath()
     return;
 
   _values.insert ( _values.end(), _values.front() );
+  this->modified ( true );
 }
 
 
@@ -261,6 +264,7 @@ void CameraPath::clear ( Usul::Interfaces::IUnknown *caller )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _values.clear();
+  this->modified ( true );
 }
 
 

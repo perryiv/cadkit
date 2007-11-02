@@ -44,6 +44,10 @@ public:
   // Helper macro for repeated code.
   STAR_SYSTEM_DEFINE_NODE_CLASS ( Node );
 
+  // Pre- and post-render notifications.
+  virtual void              preRender  ( Usul::Interfaces::IUnknown *caller );
+  virtual void              postRender ( Usul::Interfaces::IUnknown *caller );
+
 protected:
 
   // Constructor

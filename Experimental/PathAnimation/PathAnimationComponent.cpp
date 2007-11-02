@@ -133,8 +133,9 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   // Build the menu.
   MenuKit::Menu::RefPtr menu ( m.find ( "Cameras", true ) );
   menu->append ( new Button ( Usul::Commands::genericCommand ( "New Path", Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_newPath ), Usul::Commands::TrueFunctor() ) ) );
-  menu->append ( new Button ( Usul::Commands::genericCommand ( "Open Path", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_openPath ) ), Usul::Commands::TrueFunctor() ) ) );
-  menu->append ( new Button ( Usul::Commands::genericCommand ( "Save Path", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_saveCurrentPath ) ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( Usul::Commands::genericCommand ( "Open Path...", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_openPath ) ), Usul::Commands::TrueFunctor() ) ) );
+  menu->append ( new Button ( Usul::Commands::genericCommand ( "Save Path...", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_saveCurrentPath ) ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_isCurrentPathModified ) ) ) );
+  menu->append ( new Button ( Usul::Commands::genericCommand ( "Save Path As...", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_saveAsCurrentPath ) ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
 
   menu->addSeparator();
   menu->append ( new Button ( Usul::Commands::genericCommand ( "Append",  Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraAppend  ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
@@ -757,6 +758,35 @@ void PathAnimationComponent::_saveCurrentPath ( Usul::Interfaces::IUnknown::Quer
 {
   USUL_TRACE_SCOPE;
 
+  // Get the current path.
+  CameraPath::RefPtr path ( 0x0 );
+  {
+    Guard guard ( this );
+    path = _currentPath;
+  }
+
+  // Return if we don't have a current path.
+  if ( false == path.valid() )
+    return;
+
+  // If the filename is valid, save.  If not, prompt for filename.
+  if ( path->fileValid() )
+    path->save( caller );
+  else
+    this->_saveAsCurrentPath ( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Save the current path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_saveAsCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr caller )
+{
+  USUL_TRACE_SCOPE;
+
   // Query for the needed interface.
   Usul::Interfaces::ISaveFileDialog::QueryPtr dialog ( caller );
   if ( false == dialog.valid() )
@@ -782,9 +812,23 @@ void PathAnimationComponent::_saveCurrentPath ( Usul::Interfaces::IUnknown::Quer
   // Save the camera file.
   if ( false == filename.empty() )
   {
-    path->write ( filename, caller ); 
+    path->saveAs ( filename, caller ); 
 
     // Rebuild the menu.
     this->_buildMenu();
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the current path modified?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PathAnimationComponent::_isCurrentPathModified() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( _currentPath.valid() ? _currentPath->modified() : false );
 }

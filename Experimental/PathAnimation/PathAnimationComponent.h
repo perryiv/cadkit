@@ -87,6 +87,7 @@ protected:
   bool                          _hasCurrentPath() const;
 
   bool                          _isCurrentPath ( CameraPath::RefPtr ) const;
+  bool                          _isCurrentPathModified() const;
   bool                          _isDegree ( unsigned int ) const;
   bool                          _isPlaying() const;
   bool                          _isPaused() const;
@@ -101,6 +102,7 @@ protected:
   void                          _playPathForward ( const CameraPath *path );
 
   void                          _saveCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );
+  void                          _saveAsCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );
   void                          _setCurrentPath ( CameraPath::RefPtr );
   void                          _setDegree ( unsigned int );
   void                          _stopPlaying();

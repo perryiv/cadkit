@@ -948,10 +948,14 @@ void Viewer::editBackground()
   if ( false == viewer.valid() )
     return;
 
-  EditBackground dialog ( viewer.get(), this ); //( mw.valid() ? mw->mainWindow() : 0x0 ) );
-
   // Useful typedef.
   typedef OsgTools::Render::Viewer::Corners Corners;
+
+  // The edit background dialog.
+  EditBackground dialog ( viewer.get(), this );
+
+  // Save current corner configuration.
+  unsigned int corners ( viewer->backgroundCorners() );
 
   // Save current colors.
   // Top left corner.
@@ -969,6 +973,9 @@ void Viewer::editBackground()
   viewer->backgroundCorners ( Corners::BOTTOM_RIGHT );
   osg::Vec4 bottomRightColor ( viewer->backgroundColor ( ) );
 
+  // Set the corner value before showing dialog.
+  viewer->backgroundCorners ( corners );
+
   // Restore colors if canceled.
   if ( QDialog::Rejected == dialog.exec() )
   {
@@ -984,8 +991,12 @@ void Viewer::editBackground()
     viewer->backgroundCorners ( Corners::BOTTOM_LEFT );
     viewer->backgroundColor ( bottomLeftColor );
 
+    // Bottom right corner.
     viewer->backgroundCorners ( Corners::BOTTOM_RIGHT );
     viewer->backgroundColor ( bottomRightColor );
+
+    // Set corners state.
+    viewer->backgroundCorners ( corners );
   }
 
   // Request paint.

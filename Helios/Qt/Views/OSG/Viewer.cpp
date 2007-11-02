@@ -874,7 +874,7 @@ void Viewer::_onTimeoutRenderLoop()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::menuAdd( MenuKit::Menu &menu )
+void Viewer::menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller )
 {
   MenuKit::Menu::RefPtr view ( menu.find ( "&View", true ) );
 

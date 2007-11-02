@@ -870,7 +870,7 @@ WRFDocument::CommandList WRFDocument::getCommandList ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WRFDocument::menuAdd ( MenuKit::Menu& menu )
+void WRFDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller )
 {
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 

@@ -90,7 +90,7 @@ protected:
   void                       _buildMenu ();
 
   /// Usul::Interfaces::IMenuAdd.
-  virtual void               menuAdd ( MenuKit::Menu& menu );
+  virtual void               menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
 
 
   // Do not copy.

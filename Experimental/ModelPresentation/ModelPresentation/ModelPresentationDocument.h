@@ -177,7 +177,7 @@ protected:
   void                        _setMatrix( osg::Matrix * matrix, const std::string& values, const std::string& type );
 
   //Usul::Interfaces::IMenuAdd
-  void                        menuAdd ( MenuKit::Menu& menu );
+  void                        menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
 
   /// Use reference counting.
   virtual ~ModelPresentationDocument();

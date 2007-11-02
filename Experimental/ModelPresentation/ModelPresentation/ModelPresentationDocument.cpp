@@ -1384,7 +1384,7 @@ void ModelPresentationDocument::setAnimationPath ( const std::string& name )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu )
+void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller )
 {
   typedef MenuKit::ToggleButton ToggleButton;
   typedef MenuKit::Button       Button;

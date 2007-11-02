@@ -269,7 +269,7 @@ protected:
   virtual Usul::Interfaces::ILayer*        layer ( unsigned int i );
 
   /// Add to the menu.
-  virtual void                             menuAdd ( MenuKit::Menu& menu );
+  virtual void                             menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
 
   // Command is executed.
   virtual void                             commandExecuteNotify ( Usul::Commands::Command* command );

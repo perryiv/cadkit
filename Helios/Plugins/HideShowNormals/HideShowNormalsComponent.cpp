@@ -174,7 +174,7 @@ bool HideShowNormalsComponent::canHideShowNormals () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void HideShowNormalsComponent::menuAdd ( MenuKit::Menu& m )
+void HideShowNormalsComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnknown * caller )
 {
   typedef MenuKit::ToggleButton ToggleButton;
   typedef void (HideShowNormalsComponent::*BoolFunction) ( bool );

@@ -23,6 +23,8 @@
 #include "Usul/Strings/Case.h"
 #include "Usul/Trace/Trace.h"
 
+SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER(CameraPath::Triplet);
+USUL_FACTORY_REGISTER_CREATOR(CameraPath);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -34,6 +36,8 @@ CameraPath::CameraPath() : BaseClass ( "Camera Path Document" ),
   _values()
 {
   USUL_TRACE_SCOPE;
+
+  this->_addMember ( "values", _values );
 }
 
 

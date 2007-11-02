@@ -1076,10 +1076,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IGetTitle.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IGetTriangleNormal.h"
 					>
 				</File>

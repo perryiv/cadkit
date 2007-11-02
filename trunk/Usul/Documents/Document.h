@@ -27,7 +27,6 @@
 #include "Usul/Interfaces/ISendMessage.h"
 #include "Usul/Interfaces/IRead.h"
 #include "Usul/Interfaces/IBuildScene.h"
-#include "Usul/Interfaces/IGetTitle.h"
 #include "Usul/Interfaces/ICanClose.h"
 #include "Usul/Interfaces/ICanInsert.h"
 #include "Usul/Interfaces/IView.h"
@@ -54,7 +53,6 @@ class USUL_EXPORT Document : public Usul::Base::Object,
                              public Usul::Interfaces::IDocument,
                              public Usul::Interfaces::ISendMessage,
                              public Usul::Interfaces::IRead,
-                             public Usul::Interfaces::IGetTitle,
                              public Usul::Interfaces::ICanClose,
                              public Usul::Interfaces::ICanInsert,
                              public Usul::Interfaces::IModifiedSubject,
@@ -248,8 +246,8 @@ protected:
   template < class Listeners >
   void                        _sendMessage ( Listeners &listeners, unsigned short message );
 
-  /// Usul::Interfaces::IGetTitle
-  virtual std::string         getTitle ( Window* );
+  // Build the title for given window.
+  virtual std::string         _buildTitle ( Window* );
 
   /// Usul::Interfaces::IModifiedSubject
   virtual void                addModifiedObserver    ( Usul::Interfaces::IModifiedObserver* observer );

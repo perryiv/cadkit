@@ -15,7 +15,6 @@
 #include "Usul/Errors/Stack.h"
 #include "Usul/File/Find.h"
 #include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Interfaces/IClassesFactory.h"
 #include "Usul/Trace/Trace.h"
 
 #include <iostream>
@@ -224,36 +223,12 @@ void Manager::load ( unsigned long iid, const Strings &plugins, bool keepGoingIf
       // Find the factory
       Usul::Interfaces::IClassFactory::ValidQueryPtr factory ( this->_factory ( name ) );
 
-      // Interface for adding mutliple IUnknowns
-      Usul::Interfaces::IClassesFactory::QueryPtr classes ( factory );
+      // Get the IUnknown
+      Usul::Interfaces::IUnknown::QueryPtr unknown ( factory->createInstance ( iid ) );
 
-      // Do we need to add more than one?
-      if ( classes.valid() )
-      {
-        typedef Usul::Interfaces::IClassesFactory::Unknowns Unknowns;
-
-        // Get the list of IUnknowns
-        Unknowns unknowns ( classes->createInstances ( iid ) );
-
-        // Go through each list and add to our set
-        for( Unknowns::iterator i = unknowns.begin(); i != unknowns.end(); ++i )
-        {
-          Usul::Interfaces::IUnknown::QueryPtr unknown ( *i );
-
-          // Insert into set of plugins
-          if ( unknown.valid() )
-            _unknowns.insert ( unknown.get() );
-        }
-      }
-      else
-      {
-        // Get the IUnknown
-        Usul::Interfaces::IUnknown::QueryPtr unknown ( factory->createInstance ( iid ) );
-
-        // Insert into set of plugins.
-        if ( unknown.valid() )
-          _unknowns.insert ( unknown.get() );
-      }
+      // Insert into set of plugins.
+      if ( unknown.valid() )
+        _unknowns.insert ( unknown.get() );
     }
 
     catch ( const std::exception &e )

@@ -40,9 +40,11 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemDocument, StarSystemDocument::BaseCl
 ///////////////////////////////////////////////////////////////////////////////
 
 StarSystemDocument::StarSystemDocument() : BaseClass ( "StarSystem Document" ),
-  _system ( new StarSystem::System() )
+  _system ( 0x0 ),
+  _manager ( 3 )
 {
   USUL_TRACE_SCOPE;
+  _system = new StarSystem::System( _manager );
   _system->ref();
 }
 
@@ -70,6 +72,20 @@ void StarSystemDocument::_destroy()
 {
   USUL_TRACE_SCOPE;
   _system->unref(); _system = 0x0;
+
+  // Remove all jobs that are not running.
+  _manager.trim();
+
+  // Cancel all remaining jobs.
+  _manager.cancel();
+
+  // Wait for the pool to finish.
+  _manager.wait();
+
+  // Purge.
+  _manager.purge();
+
+ // _manager = JobManagerPtr ( static_cast < Usul::Jobs::Manager * > ( 0x0 ) );
 }
 
 
@@ -179,7 +195,7 @@ void StarSystemDocument::read ( const std::string &name, Unknown *caller, Unknow
   {
 #if 1
 
-    StarSystem::Body::ValidRefPtr body ( new StarSystem::Body ( Usul::Math::Vec2d ( osg::WGS_84_RADIUS_EQUATOR * 0.75, osg::WGS_84_RADIUS_POLAR * 0.5 ) ) );
+    StarSystem::Body::ValidRefPtr body ( new StarSystem::Body ( Usul::Math::Vec2d ( osg::WGS_84_RADIUS_EQUATOR * 0.75, osg::WGS_84_RADIUS_POLAR * 0.5 ), _manager ) );
     const Usul::Math::Vec3d c ( _system->center() );
     body->center ( Usul::Math::Vec3d ( c[0] + 50000000, c[1], c[2] ) );
     _system->add ( body.get() );
@@ -191,7 +207,7 @@ void StarSystemDocument::read ( const std::string &name, Unknown *caller, Unknow
     Usul::Adaptors::Random<double> random ( 0, 500000000 );
     for ( unsigned int i = 0; i < 2; ++i )
     {
-      StarSystem::System::ValidRefPtr system ( new StarSystem::System() );
+      StarSystem::System::ValidRefPtr system ( new StarSystem::System( _manager ) );
       system->center ( StarSystem::System::Vec3d ( random(), random(), random() ) );
       _system->add ( system.get() );
     }
@@ -326,7 +342,10 @@ osgDB::DatabasePager *StarSystemDocument::getDatabasePager()
 void StarSystemDocument::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-  StarSystem::Pager::instance().preRender ( caller );
+  //StarSystem::Pager::instance().preRender ( caller );
+  if ( 0x0 != _system )
+    _system->preRender ( caller );
+
   BaseClass::preRenderNotify ( caller );
 }
 
@@ -340,6 +359,10 @@ void StarSystemDocument::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
 void StarSystemDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+
+  if ( 0x0 != _system )
+    _system->postRender ( caller );
+
   BaseClass::postRenderNotify ( caller );
 }
 

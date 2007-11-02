@@ -20,6 +20,9 @@
 #include "StarSystem/Body.h"
 #include "StarSystem/Group.h"
 
+#include "Usul/Jobs/Manager.h"
+
+#include "boost/shared_ptr.hpp"
 
 namespace StarSystem {
 
@@ -37,7 +40,7 @@ public:
   STAR_SYSTEM_DEFINE_NODE_CLASS ( System );
 
   // Constructor
-  System();
+  System( Usul::Jobs::Manager& manager );
 
   // Add a satellite.
   void                      add ( Node * );
@@ -50,6 +53,10 @@ public:
   // Set/get the center.
   void                      center ( Vec3d & );
   Vec3d                     center() const;
+
+  // Pre- and post-render notifications.
+  virtual void              preRender  ( Usul::Interfaces::IUnknown *caller );
+  virtual void              postRender ( Usul::Interfaces::IUnknown *caller );
 
   // Set/get the satellites.
   void                      satellites ( Group * );
@@ -71,6 +78,7 @@ private:
 
   Body::RefPtr _body;
   Group::RefPtr _satellites;
+  Usul::Jobs::Manager &_manager;
 };
 
 

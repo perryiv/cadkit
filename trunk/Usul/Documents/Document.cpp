@@ -828,6 +828,7 @@ void Document::removeModifiedObserver ( Usul::Interfaces::IModifiedObserver* obs
 
 void Document::modified ( bool m )
 {
+  Guard guard ( this );
   _file.modified ( m );
 
   for ( ModifiedObservers::iterator iter = _modifiedObservers.begin(); iter != _modifiedObservers.end(); ++iter )

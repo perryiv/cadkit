@@ -19,6 +19,7 @@
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IDatabasePager.h"
+#include "Usul/Jobs/Manager.h"
 
 #include <string>
 
@@ -97,6 +98,7 @@ private:
   void                        _destroy();
 
   StarSystem::System *_system;
+  Usul::Jobs::Manager _manager;
 };
 
 

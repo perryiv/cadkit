@@ -21,6 +21,8 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/Interfaces/IUpdateSubject.h"
 #include "Usul/Interfaces/IViewMatrix.h"
+#include "Usul/Interfaces/GUI/ILoadFileDialog.h"
+#include "Usul/Interfaces/GUI/ISaveFileDialog.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Constants.h"
 #include "Usul/Strings/Format.h"
@@ -112,10 +114,12 @@ Usul::Interfaces::IUnknown *PathAnimationComponent::queryInterface ( unsigned lo
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::menuAdd ( MenuKit::Menu& m )
+void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnknown * c )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
+
+  Usul::Interfaces::IUnknown::QueryPtr caller ( c );
 
   typedef MenuKit::Button Button;
   typedef MenuKit::ToggleButton ToggleButton;
@@ -129,6 +133,8 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m )
   // Build the menu.
   MenuKit::Menu::RefPtr menu ( m.find ( "Cameras", true ) );
   menu->append ( new Button ( Usul::Commands::genericCommand ( "New Path", Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_newPath ), Usul::Commands::TrueFunctor() ) ) );
+  menu->append ( new Button ( Usul::Commands::genericCommand ( "Open Path", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_openPath ) ), Usul::Commands::TrueFunctor() ) ) );
+  menu->append ( new Button ( Usul::Commands::genericCommand ( "Save Path", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_saveCurrentPath ) ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
 
   menu->addSeparator();
   menu->append ( new Button ( Usul::Commands::genericCommand ( "Append",  Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraAppend  ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
@@ -687,4 +693,98 @@ bool PathAnimationComponent::_isDegree ( unsigned int degree ) const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return ( _degree == degree );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Open a path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_openPath( Usul::Interfaces::IUnknown::QueryPtr caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Query for the interface.
+  Usul::Interfaces::ILoadFileDialog::QueryPtr dialog ( caller );
+  if ( false == dialog.valid() )
+    return;
+
+  typedef Usul::Interfaces::ILoadFileDialog::FilesResult FilesResult;
+  typedef Usul::Interfaces::ILoadFileDialog::FileNames Filenames;
+
+  CameraPath::RefPtr path ( new CameraPath );
+
+  // Get the filenames.
+  FilesResult result ( dialog->getLoadFileNames ( "Load Camera Path", path->filtersOpen() ) );
+  Filenames names ( result.first );
+
+  // Loop through each file...
+  for ( Filenames::const_iterator iter = names.begin(); iter != names.end(); ++iter )
+  {
+    CameraPath::RefPtr path ( new CameraPath );
+    if ( path->canOpen ( *iter ) )
+    {
+      // Open the file.
+      path->open ( *iter, caller );
+      path->fileName ( *iter );
+      path->name ( path->fileName() );
+
+      // Append new path.
+      {
+        Guard guard ( this );
+        _paths.push_back ( path );
+      }
+
+      // Make the new path current.
+      this->_setCurrentPath ( path.get() );
+    }
+  }
+
+  // Rebuild the menu.
+  this->_buildMenu();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Save the current path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_saveCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Query for the needed interface.
+  Usul::Interfaces::ISaveFileDialog::QueryPtr dialog ( caller );
+  if ( false == dialog.valid() )
+    return;
+
+  // Get the current path.
+  CameraPath::RefPtr path ( 0x0 );
+  {
+    Guard guard ( this );
+    path = _currentPath;
+  }
+
+  // Return if we don't have a current path.
+  if ( false == path.valid() )
+    return;
+
+  typedef Usul::Interfaces::ISaveFileDialog::FileResult FileResult;
+
+  // Get the filename.
+  FileResult result ( dialog->getSaveFileName ( "Save Camera Path", path->filtersOpen() ) );
+  std::string filename ( result.first );
+
+  // Save the camera file.
+  if ( false == filename.empty() )
+  {
+    path->write ( filename, caller ); 
+
+    // Rebuild the menu.
+    this->_buildMenu();
+  }
 }

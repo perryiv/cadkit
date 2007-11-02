@@ -156,7 +156,7 @@ protected:
   virtual CommandList         getCommandList ();
 
   /// Add to the menu.
-  virtual void                menuAdd ( MenuKit::Menu& menu );
+  virtual void                menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
 
   /// Do not copy.
   WRFDocument ( const WRFDocument & );

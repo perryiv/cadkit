@@ -758,7 +758,7 @@ protected:
   virtual void                  setClippingDistances ( float nearDist, float farDist );
 
   /// Add to the menu.
-  virtual void                  menuAdd ( MenuKit::Menu &menu );
+  virtual void                  menuAdd ( MenuKit::Menu &menu, Usul::Interfaces::IUnknown* caller = 0x0 );
 
   /// Get/Set render loop flag (IRenderLoop).
   virtual void                  renderLoop ( bool b );

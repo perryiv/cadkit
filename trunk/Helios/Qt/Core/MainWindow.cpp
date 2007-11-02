@@ -417,7 +417,7 @@ void MainWindow::_initMenu()
     Usul::Interfaces::IMenuAdd::QueryPtr ma ( Usul::Documents::Manager::instance().activeDocument () );
     if ( ma.valid () )
     {
-      ma->menuAdd ( *_menu );
+      ma->menuAdd ( *_menu, me.get() );
     }
   }
 
@@ -426,7 +426,7 @@ void MainWindow::_initMenu()
     Usul::Interfaces::IMenuAdd::QueryPtr ma ( Usul::Documents::Manager::instance().activeView () );
     if ( ma.valid () )
     {
-      ma->menuAdd ( *_menu );
+      ma->menuAdd ( *_menu, me.get() );
     }
   }
 
@@ -439,7 +439,7 @@ void MainWindow::_initMenu()
   {
     // Should be true.
     Usul::Interfaces::IMenuAdd::ValidQueryPtr ma ( (*iter).get() );
-    ma->menuAdd ( *_menu );
+    ma->menuAdd ( *_menu, me.get() );
   }
 }
 

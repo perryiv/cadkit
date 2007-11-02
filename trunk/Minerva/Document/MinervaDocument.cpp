@@ -1655,7 +1655,7 @@ Usul::Interfaces::ILayer* MinervaDocument::layer ( unsigned int i )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::menuAdd ( MenuKit::Menu& menu )
+void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller )
 {
   typedef MenuKit::ToggleButton ToggleButton;
   typedef MenuKit::Button       Button;

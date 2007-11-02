@@ -308,13 +308,6 @@ void Tile::traverse ( osg::NodeVisitor &nv )
   // Determine visitor type.
   switch ( nv.getVisitorType() )
   {
-    case osg::NodeVisitor::UPDATE_VISITOR:
-    {
-      if ( 0 == this->level() && 0x0 != _body )
-        _body->jobManager().purge();
-      return;
-    }
-
     case osg::NodeVisitor::CULL_VISITOR:
     {
       // See if our job is done loading image.

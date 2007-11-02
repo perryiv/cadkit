@@ -27,7 +27,7 @@ struct IMenuAdd : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2732755211u };
 
-  virtual void               menuAdd ( MenuKit::Menu& menu ) = 0;
+  virtual void               menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown* caller = 0x0 ) = 0;
 
 }; // struct IMenuAdd
 

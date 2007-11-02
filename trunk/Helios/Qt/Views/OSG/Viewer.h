@@ -103,7 +103,7 @@ public:
   virtual bool                            renderLoop () const;
 
   /// Add to the menu (IMenuAdd).
-  virtual void                            menuAdd ( MenuKit::Menu& menu );
+  virtual void                            menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
 
 protected:
 

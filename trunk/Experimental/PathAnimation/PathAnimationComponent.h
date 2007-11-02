@@ -66,7 +66,7 @@ public:
   virtual std::string           getPluginName() const { return "Path Animation"; }
 
   // Usul::Interfaces::IMenuAdd
-  virtual void                  menuAdd ( MenuKit::Menu& menu );
+  virtual void                  menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
 
   // Usul::Interfaces::IUpdateListener
   virtual void                  updateNotify ( IUnknown *caller );
@@ -92,6 +92,7 @@ protected:
   bool                          _isPaused() const;
 
   void                          _newPath();
+  void                          _openPath ( Usul::Interfaces::IUnknown::QueryPtr );
 
   void                          _pause ( bool );
   void                          _playBackward();
@@ -99,6 +100,7 @@ protected:
   void                          _playPathBackward ( const CameraPath *path );
   void                          _playPathForward ( const CameraPath *path );
 
+  void                          _saveCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );
   void                          _setCurrentPath ( CameraPath::RefPtr );
   void                          _setDegree ( unsigned int );
   void                          _stopPlaying();

@@ -88,7 +88,7 @@ Usul::Interfaces::IUnknown *AnimateComponent::queryInterface ( unsigned long iid
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AnimateComponent::menuAdd ( MenuKit::Menu& m )
+void AnimateComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnknown * caller )
 {
   typedef void (AnimateComponent::*VoidFunction)();
   typedef void (AnimateComponent::*BoolFunction) ( bool );

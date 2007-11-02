@@ -51,7 +51,7 @@ protected:
   /// Usul::Interfaces::IPlugin
   virtual std::string        getPluginName() const;
   
-  virtual void               menuAdd ( MenuKit::Menu& menu );
+  virtual void               menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
 
 };
 

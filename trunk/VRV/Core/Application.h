@@ -370,7 +370,6 @@ protected:
   void                          _initEditMenu     ( MenuKit::Menu* menu );
   void                          _initViewMenu     ( MenuKit::Menu* menu );
   void                          _initNavigateMenu ( MenuKit::Menu* menu );
-  void                          _initToolsMenu    ( MenuKit::Menu* menu );
   void                          _initOptionsMenu  ( MenuKit::Menu* menu );
 
   /// Translation speed controls.

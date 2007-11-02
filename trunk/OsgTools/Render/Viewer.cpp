@@ -5308,12 +5308,12 @@ void Viewer::setClippingDistances ( float nearDist, float farDist )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::menuAdd ( MenuKit::Menu &menu )
+void Viewer::menuAdd ( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller )
 {
   // Redirect to the caller.
   Usul::Interfaces::IMenuAdd::QueryPtr ma ( _caller );
   if ( ma.valid () )
-    ma->menuAdd ( menu );
+    ma->menuAdd ( menu, caller );
 }
 
 

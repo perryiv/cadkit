@@ -33,7 +33,6 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
-#include "Usul/Interfaces/ICommandList.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Threads/Manager.h"
@@ -869,30 +868,6 @@ void Application::_init()
 
   // Initialize the status-bar.
   this->_initStatusBar();
-
-  // Experimental: 
-  #if 0 // Experimental
-  std::ostringstream out;
-  out << Usul::System::Host::name() << "_home_position.txt";
-  {
-    std::ifstream file ( out.str().c_str() );
-    if ( true == file.is_open() )
-    {
-      osg::Matrixf::value_type *m = _home.ptr();
-      file >> m[0] >> m[4] >> m[8]  >> m[12];
-      file >> m[1] >> m[5] >> m[9]  >> m[13];
-      file >> m[2] >> m[6] >> m[10] >> m[14];
-      file >> m[3] >> m[7] >> m[11] >> m[15];
-    }
-  }
-
-  // Always set the navigation matrix.
-  this->_navigationMatrix ( _home );
-
-  #else
-    // Save the "home" position.
-    //this->_setHome();
-  #endif
 }
 
 
@@ -3082,13 +3057,10 @@ void Application::_initMenu()
     menu->append ( options.get() );
   }
 
-  // The tools menu.
-  this->_initToolsMenu ( menu.get() );
-
   // Check the active document.
   Usul::Interfaces::IMenuAdd::QueryPtr ma ( Usul::Documents::Manager::instance().activeDocument () );
   if ( ma.valid ( ) )
-    ma->menuAdd ( *menu );
+    ma->menuAdd ( *menu, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 
   // Check all plugins.
   typedef Usul::Components::Manager PluginManager;
@@ -3099,7 +3071,7 @@ void Application::_initMenu()
   {
     // Should be true.
     Usul::Interfaces::IMenuAdd::ValidQueryPtr ma ( (*iter).get() );
-    ma->menuAdd ( *menu );
+    ma->menuAdd ( *menu, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
   }
 
   // Set the menu.
@@ -3280,37 +3252,6 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
   menu->append ( new Button       ( new BasicCommand ( "Translate Speed x 2", ExecuteFunctor ( this, &Application::_increaseSpeed ) ) ) );
   menu->append ( new Button       ( new BasicCommand ( "Translate Speed / 2", ExecuteFunctor ( this, &Application::_decreaseSpeed ) ) ) );
   menu->append ( new Button       ( new BasicCommand ( "Translate Speed / 10", ExecuteFunctor ( this, &Application::_decreaseSpeedTen ) ) ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize the Tools menu.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_initToolsMenu ( MenuKit::Menu* menu )
-{
-  USUL_TRACE_SCOPE;
-  
-  typedef MenuKit::Button                             Button;
-  typedef Usul::Interfaces::ICommandList::CommandList Commands;
-
-  Usul::Interfaces::ICommandList::QueryPtr commandList ( Usul::Documents::Manager::instance().activeDocument() );
-
-  if ( commandList.valid() )
-  {
-    MenuKit::Menu::RefPtr tools ( new MenuKit::Menu );
-    tools->layout ( MenuKit::Menu::VERTICAL );
-    tools->text ( "Tools" );
-    menu->append ( tools.get() );
-
-    Commands commands ( commandList->getCommandList() );
-    for ( Commands::iterator iter = commands.begin(); iter != commands.end(); ++iter )
-    {
-      tools->append ( new Button ( (*iter).get() ) );
-    }
-  }
 }
 
 

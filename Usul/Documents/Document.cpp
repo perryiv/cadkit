@@ -195,8 +195,6 @@ Usul::Interfaces::IUnknown *Document::queryInterface ( unsigned long iid )
     return static_cast< Usul::Interfaces::ISendMessage* > ( this );
   case Usul::Interfaces::IRead::IID:
     return static_cast< Usul::Interfaces::IRead* > ( this );
-  case Usul::Interfaces::IGetTitle::IID:
-    return static_cast < Usul::Interfaces::IGetTitle* > ( this );
   case Usul::Interfaces::ICanInsert::IID:
     return static_cast < Usul::Interfaces::ICanInsert* > ( this );
   case Usul::Interfaces::ICanClose::IID:
@@ -646,7 +644,7 @@ void Document::windowsForward()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Document::getTitle ( Window *window )
+std::string Document::_buildTitle ( Window *window )
 {
   // String for title
   std::string title ( this->fileName() );
@@ -850,7 +848,7 @@ void Document::updateWindowTitles()
 {
   for ( Windows::iterator iter = _windows.begin(); iter != _windows.end(); ++iter )
   {
-    std::string title ( this->getTitle ( *iter ) );
+    std::string title ( this->_buildTitle ( *iter ) );
     (*iter)->setTitle ( title );
   }
 }

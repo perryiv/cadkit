@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+namespace Usul { namespace Interfaces { struct IUnknown; } }
 
 class AVIWriter
 {
@@ -23,11 +24,11 @@ public:
   AVIWriter( const Filename& filename, const Filenames& filenames );
 
   // Write the file.
-  void operator() ();
+  void operator() ( Usul::Interfaces::IUnknown *caller );
 
 private:
   /// Write the movie.
-  void _write();
+  void _write( Usul::Interfaces::IUnknown *caller );
 
   Filename _filename;
   Filenames _filenames;

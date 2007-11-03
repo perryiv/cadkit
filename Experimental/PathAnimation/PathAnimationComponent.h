@@ -84,6 +84,8 @@ protected:
   void                          _currentCameraAppend();
   void                          _currentCameraPrepend();
 
+  void                          _exportMovie ( Usul::Interfaces::IUnknown::QueryPtr );
+
   bool                          _hasCurrentPath() const;
 
   bool                          _isCurrentPath ( CameraPath::RefPtr ) const;
@@ -119,6 +121,10 @@ private:
   CurvePlayer::RefPtr _player;
   bool _paused;
   unsigned int _degree;
+  bool _writeMovie;
+  std::string _movieFilename;
+  Usul::Interfaces::IUnknown::QueryPtr _movieWriter;
+  Usul::Interfaces::IUnknown::QueryPtr _caller;
 };
 
 

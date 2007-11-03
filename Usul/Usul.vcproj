@@ -844,14 +844,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IChangeMenuBar.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IClassesFactory.h"
-					>
-				</File>
-				<File
 					RelativePath="Interfaces\IClassFactory.h"
 					>
 				</File>
@@ -893,10 +885,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IComputeTriangleNormals.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ICreateMovie.h"
 					>
 				</File>
 				<File
@@ -1557,10 +1545,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\ITriangle.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ITriangleSet.h"
 					>
 				</File>
 				<File

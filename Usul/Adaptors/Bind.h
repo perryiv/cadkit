@@ -140,6 +140,7 @@ private:
 };
 
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Bind two arguments.
@@ -148,6 +149,7 @@ private:
 
 template
 <
+  class ReturnType,
   class ArgumentType1,
   class ArgumentType2,
   class FunctionType
@@ -166,9 +168,86 @@ struct Bind2
     return *this;
   }
   
+  ReturnType operator()()
+  {
+    _f ( _a1, _a2 );
+  }
+
+private:
+
+  ArgumentType1 _a1;
+  ArgumentType2 _a2;
+  FunctionType _f;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Bind two arguments.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template
+<
+  class ArgumentType1,
+  class ArgumentType2,
+  class FunctionType
+>
+struct Bind2 < void, ArgumentType1, ArgumentType2, FunctionType >
+{
+  Bind2() : _a1 ( 0x0 ), _a2 ( 0x0 ), _f ( 0x0 ){} // For gcc's stl containers.
+  Bind2 ( ArgumentType1 a1, ArgumentType2 a2, FunctionType f ) : _a1 ( a1 ), _a2 ( a2 ), _f ( f ){}
+  Bind2 ( const Bind2 &b ) : _a1 ( b._a1 ), _a2 ( b._a2 ), _f ( b._f ){}
+
+  Bind2 &operator = ( const Bind2 &b )
+  {
+    _a1 = b._a1;
+    _a2 = b._a2;
+    _f = b._f;
+    return *this;
+  }
+  
   void operator()()
   {
     _f ( _a1, _a2 );
+  }
+
+private:
+
+  ArgumentType1 _a1;
+  ArgumentType2 _a2;
+  FunctionType _f;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Bind two arguments.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template
+<
+  class ArgumentType1,
+  class ArgumentType2,
+  class FunctionType
+>
+struct Bind2 < bool, ArgumentType1, ArgumentType2, FunctionType >
+{
+  Bind2() : _a1 ( 0x0 ), _a2 ( 0x0 ), _f ( 0x0 ){} // For gcc's stl containers.
+  Bind2 ( ArgumentType1 a1, ArgumentType2 a2, FunctionType f ) : _a1 ( a1 ), _a2 ( a2 ), _f ( f ){}
+  Bind2 ( const Bind2 &b ) : _a1 ( b._a1 ), _a2 ( b._a2 ), _f ( b._f ){}
+
+  Bind2 &operator = ( const Bind2 &b )
+  {
+    _a1 = b._a1;
+    _a2 = b._a2;
+    _f = b._f;
+    return *this;
+  }
+  
+  bool operator()() const
+  {
+    return _f ( _a1, _a2 );
   }
 
 private:
@@ -210,16 +289,30 @@ bind1 ( ArgumentType argument, FunctionType function )
 }
 
 
+
 template
 <
   class ArgumentType1,
   class ArgumentType2,
   class FunctionType
 >
-Bind2 < ArgumentType1, ArgumentType2, FunctionType > 
+Bind2 < void, ArgumentType1, ArgumentType2, FunctionType > 
 bind2 ( ArgumentType1 argument1, ArgumentType2 argument2, FunctionType function )
 {
-  return Bind2 < ArgumentType1, ArgumentType2, FunctionType > ( argument1, argument2, function );
+  return Bind2 < void, ArgumentType1, ArgumentType2, FunctionType > ( argument1, argument2, function );
+}
+
+template
+<
+  class ReturnType,
+  class ArgumentType1,
+  class ArgumentType2,
+  class FunctionType
+>
+Bind2 < ReturnType, ArgumentType1, ArgumentType2, FunctionType > 
+bind2 ( ArgumentType1 argument1, ArgumentType2 argument2, FunctionType function )
+{
+  return Bind2 < ReturnType, ArgumentType1, ArgumentType2, FunctionType > ( argument1, argument2, function );
 }
 
 

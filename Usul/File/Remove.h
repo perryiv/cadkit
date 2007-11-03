@@ -63,6 +63,14 @@ inline void remove ( const std::string &file, bool allowThrow = false )
 }
 #endif
 
+struct Remove : public std::unary_function < std::string, void >
+{
+  void operator () ( const std::string& file ) const
+  {
+    remove ( file, false );
+  }
+};
+
 } // namespace File
 } // namespace Usul
 

@@ -11,7 +11,10 @@
 
 #include "AVIWriter.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Exceptions/Thrower.h"
+#include "Usul/File/Remove.h"
+#include "Usul/Functions/SafeCall.h"
 
 #include "osg/ref_ptr"
 #include "osg/Image"
@@ -21,6 +24,7 @@
 #include <windows.h>
 #include <vfw.h>
 #include <iostream>
+#include <algorithm>
 
 struct AVIWriterHelper
 {
@@ -76,8 +80,24 @@ void AVIWriter::operator () ()
   if( _filenames.empty() )
     return;
 
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &AVIWriter::_write ), "2952324509" );
+
+  // Remove all files.
+  std::for_each ( _filenames.begin(), _filenames.end(), Usul::File::Remove() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the avi file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AVIWriter::_write ()
+{
   typedef osg::ref_ptr < osg::Image > ImagePtr;
 
+#if 0
   // Scale all images to power of two sizes
   for ( unsigned int i = 0; i < _filenames.size(); ++i )
   {
@@ -88,7 +108,7 @@ void AVIWriter::operator () ()
     image->scaleImage ( s, t, 1 );
     osgDB::writeImageFile ( *image, _filenames.at( i ) );
   }
-
+#endif
   unsigned int rate ( 15 );
   unsigned int time ( 0 );
 
@@ -137,7 +157,7 @@ void AVIWriter::operator () ()
   strhdr.dwScale                = 1;
   strhdr.dwRate                 = rate;
   strhdr.dwQuality              = 10000;
-  strhdr.dwSuggestedBufferSize  = image->getImageSizeInBytes();
+  strhdr.dwSuggestedBufferSize  = 0; //image->getImageSizeInBytes();
 
   SetRect(&strhdr.rcFrame, 0, 0, image->s(), image->t() );
 

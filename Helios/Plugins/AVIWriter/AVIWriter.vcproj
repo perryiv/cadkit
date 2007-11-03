@@ -244,10 +244,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\AVIWriterFactory.h"
-					>
-				</File>
-				<File
 					RelativePath=".\CompileGuard.h"
 					>
 				</File>

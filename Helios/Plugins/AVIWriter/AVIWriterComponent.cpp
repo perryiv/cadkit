@@ -11,6 +11,8 @@
 
 #include "Usul/Strings/Case.h"
 #include "Usul/File/Path.h"
+#include "Usul/Jobs/Job.h"
+#include "Usul/Jobs/Manager.h"
 
 #include "AVIWriter.h"
 
@@ -18,18 +20,18 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( AVIWriterComponent, AVIWriterComponent::BaseCl
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Constructor
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AVIWriterComponent::AVIWriterComponent() 
+AVIWriterComponent::AVIWriterComponent() : BaseClass()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Destructor
+//  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -101,6 +103,44 @@ bool AVIWriterComponent::canWrite   ( const std::string &filename ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Job to write avi.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  class WriteAVIJob : public Usul::Jobs::Job
+  {
+  public:
+    typedef Usul::Jobs::Job BaseClass;
+    typedef AVIWriterComponent::Filenames Filenames;
+
+    WriteAVIJob ( const std::string& filename, const Filenames& filenames, Usul::Interfaces::IUnknown* caller ) :
+      BaseClass ( caller ),
+      _filename ( filename ),
+      _filenames ( filenames )
+    {
+    }
+
+    virtual ~WriteAVIJob()
+    {
+    }
+
+  protected:
+    virtual void _started ()
+    {
+      AVIWriter writer ( _filename, _filenames );
+      writer( this->progress() );
+    }
+  private:
+    std::string _filename;
+    Filenames _filenames;
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Write the movie file.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -111,7 +151,11 @@ void AVIWriterComponent::writeMovie ( const Filename& filename, const Filenames&
 
   if ( "avi" == ext )
   {
+#if 1
+    Usul::Jobs::Manager::instance().add ( new Detail::WriteAVIJob ( filename, filenames, caller ) );
+#else
     AVIWriter writer ( filename, filenames );
     writer();
+#endif
   }
 }

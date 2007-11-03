@@ -44,7 +44,7 @@ protected:
   ~AVIWriterComponent();
 
   /// Usul::Interfaces::IPlugin implementation
-  virtual std::string getPluginName() const;
+  virtual std::string         getPluginName() const;
     
   /// Usul::Interfaces::IWriteMovieFile
   virtual Filters             filtersWrite() const;

@@ -105,7 +105,8 @@ struct IProgressBar : public Usul::Interfaces::IUnknown
         _progressBar->updateProgressBar ( static_cast < unsigned int > ( percent * 100 ) );
 
         //Flush the event queue.  Makes application responsive
-        _flush->flushEventQueue();
+        if ( _flush.valid() )
+          _flush->flushEventQueue();
       }
     }
 

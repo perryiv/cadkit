@@ -11,10 +11,12 @@
 
 #include "AVIWriter.h"
 
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/File/Remove.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
 
 #include "osg/ref_ptr"
 #include "osg/Image"
@@ -74,13 +76,13 @@ _filenames ( filenames )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AVIWriter::operator () ()
+void AVIWriter::operator () ( Usul::Interfaces::IUnknown *caller )
 {
   // Return now if we don't have any filenames.
   if( _filenames.empty() )
     return;
 
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &AVIWriter::_write ), "2952324509" );
+  Usul::Functions::safeCall ( Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction ( this, &AVIWriter::_write ) ), "2952324509" );
 
   // Remove all files.
   std::for_each ( _filenames.begin(), _filenames.end(), Usul::File::Remove() );
@@ -93,22 +95,12 @@ void AVIWriter::operator () ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AVIWriter::_write ()
+void AVIWriter::_write ( Usul::Interfaces::IUnknown *caller )
 {
   typedef osg::ref_ptr < osg::Image > ImagePtr;
 
-#if 0
-  // Scale all images to power of two sizes
-  for ( unsigned int i = 0; i < _filenames.size(); ++i )
-  {
-    ImagePtr image ( osgDB::readImageFile ( _filenames.at( i ) ) );
+  Usul::Interfaces::IProgressBar::UpdateProgressBar progress ( 0.0, 1.0, caller );
 
-    unsigned int s ( osg::Image::computeNearestPowerOfTwo ( image->s() ) );
-    unsigned int t ( osg::Image::computeNearestPowerOfTwo ( image->t() ) );
-    image->scaleImage ( s, t, 1 );
-    osgDB::writeImageFile ( *image, _filenames.at( i ) );
-  }
-#endif
   unsigned int rate ( 15 );
   unsigned int time ( 0 );
 
@@ -218,7 +210,6 @@ void AVIWriter::_write ()
   {
     ImagePtr image ( osgDB::readImageFile ( _filenames.at( i ) ) );
 
-#if 1
     unsigned char *dest = reinterpret_cast < unsigned char * > ( lpbi + lpbi->biSize );
 
     std::vector< unsigned char > buffer;
@@ -230,9 +221,6 @@ void AVIWriter::_write ()
       for ( int s = 0 ; s < image->s(); ++s )
       {
         unsigned char* source ( image->data( s, t, 0 ) );
-        //*dest++ = *source++;
-        //*dest++ = *source++;
-        //*dest++ = *source++;
         buffer.push_back ( *(source+2) );
         buffer.push_back ( *(source+1) );
         buffer.push_back ( *(source+0) );
@@ -250,17 +238,10 @@ void AVIWriter::_write ()
                       image->getImageSizeInBytes(), // size of this frame
                       AVIIF_KEYFRAME,       // flags....
                       NULL, NULL);
-#else
-    ::AVIStreamWrite( helper.streamCompressed,  // stream pointer
-                time, // time of this frame
-                1,        // number to write
-                image->data ( 0, 0, 0 ),
-                image->getImageSizeInBytes(),  // size of this frame
-                AVIIF_KEYFRAME,       // flags....
-                NULL, NULL);
-#endif
 
     ++time;
+
+    progress ( i, _filenames.size() );
   }
 
   ::GlobalUnlock( hDIB );

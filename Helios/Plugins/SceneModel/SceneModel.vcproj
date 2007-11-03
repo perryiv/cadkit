@@ -246,10 +246,6 @@
 					RelativePath=".\SceneFactory.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\SceneFactory.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

@@ -238,10 +238,6 @@
 					RelativePath=".\TriangulateFactory.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\TriangulateFactory.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

@@ -238,10 +238,6 @@
 					RelativePath=".\SceneDelegateFactory.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\SceneDelegateFactory.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

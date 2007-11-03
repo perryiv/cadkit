@@ -250,10 +250,6 @@
 					RelativePath=".\ModflowFactory.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\ModflowFactory.h"
-					>
-				</File>
 				<Filter
 					Name="Attributes"
 					>

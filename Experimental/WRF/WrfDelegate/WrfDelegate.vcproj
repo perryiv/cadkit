@@ -238,10 +238,6 @@
 					RelativePath=".\WRFDelegateFactory.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\WRFDelegateFactory.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

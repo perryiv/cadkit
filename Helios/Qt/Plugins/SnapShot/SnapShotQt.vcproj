@@ -250,7 +250,7 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="Creating ui_SnapShot.h..."
-							CommandLine="$(QTDIR)\bin\uic.exe .\SnapShot.ui -o .\ui_SnapShot.h"
+							CommandLine="$(QTDIR)\bin\uic.exe .\SnapShot.ui -o .\ui_SnapShot.h&#x0D;&#x0A;"
 							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ui_SnapShot.h"
 							Outputs=".\ui_SnapShot.h"
 						/>
@@ -258,10 +258,6 @@
 				</File>
 				<File
 					RelativePath=".\SnapShotFactory.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\SnapShotFactory.h"
 					>
 				</File>
 				<File
@@ -288,7 +284,7 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="Moc&apos;ing SnapShotWidget.h..."
-							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\SnapShotWidget.h&quot; -o &quot;.\GeneratedFiles\moc_SnapShotWidget.cpp&quot;"
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\SnapShotWidget.h&quot; -o &quot;.\GeneratedFiles\moc_SnapShotWidget.cpp&quot;&#x0D;&#x0A;"
 							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\SnapShotWidget.h"
 							Outputs=".\GeneratedFiles\moc_SnapShotWidget.cpp"
 						/>

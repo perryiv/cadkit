@@ -246,10 +246,6 @@
 					RelativePath=".\DynamicLandFactory.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\DynamicLandFactory.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

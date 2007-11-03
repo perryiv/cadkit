@@ -233,11 +233,13 @@ void QuickTimeHelper::insertTrackIntoMedia ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void QuickTimeHelper::addImages ( const Filenames& filenames )
+void QuickTimeHelper::addImages ( const Filenames& filenames, Usul::Interfaces::IUnknown* caller )
 {
   QuickTimeHelper::ScopedMediaEdits edit ( *this );
-  edit.init();  
-  
+  edit.init();
+ 
+  Usul::Interfaces::IProgressBar::UpdateProgressBar progress ( 0.0, 1.0, caller, false );
+
   for ( unsigned int i = 0; i < filenames.size(); ++i )
   {
     OSErr err;
@@ -268,6 +270,8 @@ void QuickTimeHelper::addImages ( const Filenames& filenames )
 
     this->_checkError( err );
 
+    // Update progress.
+    progress ( i, filenames.size() );
   }
 }
 

@@ -10,10 +10,13 @@
 #include "MOVWriter.h"
 #include "QuickTimeHelper.h"
 
+#include "Usul/File/Remove.h"
+
 #include "osg/ref_ptr"
 #include "osg/Image"
 #include "osgDB/ReadFile"
 
+#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -39,7 +42,7 @@ _filenames ( filenames )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MOVWriter::operator () ()
+void MOVWriter::operator () ( Usul::Interfaces::IUnknown *caller )
 {
   if( _filenames.empty() )
     return;
@@ -59,9 +62,12 @@ void MOVWriter::operator () ()
   helper.createTrackAndMedia ( image->s(), image->t() );
 
   // Add the images
-  helper.addImages ( _filenames );
+  helper.addImages ( _filenames, caller );
 
   helper.insertTrackIntoMedia();
 
   helper.flattenMovieFile();
+
+  // Delete all images.
+  std::for_each ( _filenames.begin(), _filenames.end(), Usul::File::Remove() );
 }

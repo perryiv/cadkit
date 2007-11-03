@@ -247,10 +247,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\MOVWriterFactory.h"
-					>
-				</File>
-				<File
 					RelativePath=".\QuickTimeHelper.cpp"
 					>
 				</File>

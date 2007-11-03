@@ -14,13 +14,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#include "MOVWriterComponent.h"
+#include "Helios/Plugins/MOVWriter/MOVWriterComponent.h"
+#include "Helios/Plugins/MOVWriter/MOVWriter.h"
 
 #include "Usul/Strings/Case.h"
 #include "Usul/File/Path.h"
-
-#include "MOVWriter.h"
-
+#include "Usul/Jobs/Job.h"
+#include "Usul/Jobs/Manager.h"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( MOVWriterComponent, MOVWriterComponent::BaseClass );
 
@@ -108,17 +108,51 @@ bool MOVWriterComponent::canWrite   ( const std::string &filename ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Job to write the movie file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  class WriteMovJob : public Usul::Jobs::Job
+  {
+  public:
+    typedef Usul::Jobs::Job BaseClass;
+    typedef MOVWriterComponent::Filenames Filenames;
+
+    WriteMovJob ( const std::string& filename, const Filenames& filenames, Usul::Interfaces::IUnknown* caller ) :
+    BaseClass ( caller ),
+    _filename ( filename ),
+    _filenames ( filenames )
+    {
+    }
+
+    virtual ~WriteMovJob() { }
+
+  protected:
+    virtual void _started ()
+    {
+      MOVWriter writer ( _filename, _filenames );
+      writer( this->progress() );
+    }
+
+  private:
+    std::string _filename;
+    Filenames _filenames;
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Write the movie file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MOVWriterComponent::writeMovie ( const Filename& filename, const Filenames& filenames )
+void MOVWriterComponent::writeMovie ( const Filename& filename, const Filenames& filenames, Usul::Interfaces::IUnknown *caller )
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
 
   if( "mov" == ext )
-  {
-    MOVWriter writer ( filename, filenames );
-    writer();
-  }
+    Usul::Jobs::Manager::instance().add ( new Detail::WriteMovJob ( filename, filenames, caller ) );
 }

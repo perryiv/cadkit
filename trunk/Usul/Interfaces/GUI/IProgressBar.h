@@ -70,11 +70,12 @@ struct IProgressBar : public Usul::Interfaces::IUnknown
   //  Helper to update the progress bar.
   struct UpdateProgressBar
   {
-    template < class T > UpdateProgressBar( double start, double finish, T *t ) :
+    template < class T > UpdateProgressBar( double start, double finish, T *t, bool hideWhenFinished = true ) :
     _start( start ),
     _finish ( finish ),
     _progressBar ( t ),
-    _flush( t )
+    _flush( t ),
+    _hideWhenFinished ( hideWhenFinished )
     {
       //Show the progress bar if we have one
       if( _progressBar.valid() )
@@ -88,7 +89,7 @@ struct IProgressBar : public Usul::Interfaces::IUnknown
    ~UpdateProgressBar()
     {
       //Hide the progress bar if we have one
-      if( _progressBar.valid() )
+      if( _progressBar.valid() && _hideWhenFinished )
         _progressBar->hideProgressBar();
     }
 
@@ -116,6 +117,7 @@ struct IProgressBar : public Usul::Interfaces::IUnknown
 
     mutable IProgressBar::QueryPtr                   _progressBar;
     mutable Usul::Interfaces::IFlushEvents::QueryPtr _flush;
+    bool _hideWhenFinished;
   };
 };
 

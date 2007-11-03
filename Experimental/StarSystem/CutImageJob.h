@@ -21,6 +21,7 @@
 
 #include "Usul/Jobs/Job.h"
 
+#include "osg/Texture2D"
 #include "osg/Image"
 #include "osg/ref_ptr"
 #include "osg/Vec2d"
@@ -37,6 +38,7 @@ public:
 
   typedef Usul::Jobs::Job BaseClass;
   typedef osg::ref_ptr < osg::Image > ImagePtr;
+  typedef osg::ref_ptr < osg::Texture2D > TexturePtr;
   typedef StarSystem::Extents < osg::Vec2d > Extents;
 
   // Smart-pointer definitions.
@@ -45,6 +47,8 @@ public:
   CutImageJob ( const Extents &extents, unsigned int level, RasterLayer *layer );
 
   osg::Image *      image();
+
+  osg::Texture2D *  texture();
 
 protected:
 
@@ -58,6 +62,7 @@ private:
   unsigned int _level;
   RasterLayer *_raster;
   ImagePtr _image;
+  TexturePtr _texture;
 };
 
 

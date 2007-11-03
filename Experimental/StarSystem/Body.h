@@ -19,6 +19,7 @@
 
 #include "StarSystem/Node.h"
 #include "StarSystem/Extents.h"
+#include "StarSystem/CutImageJob.h"
 
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
@@ -92,10 +93,13 @@ public:
   osg::Node *               scene();
 
   // Request texture.
-  unsigned int              textureRequest ( const Extents &extents, unsigned int level );
+  int                       textureRequest ( const Extents &extents, unsigned int level );
+
+  // Cancel request.
+  void                      textureRequestCancel ( int id );
 
   // Get the texture.
-  osg::Texture*             texture ( unsigned int );
+  osg::Texture2D*           texture ( int id );
 
 protected:
 
@@ -103,6 +107,8 @@ protected:
   virtual ~Body();
 
 private:
+
+  typedef std::map < int, CutImageJob::RefPtr > TextureJobs;
 
   // No copying or assignment.
   Body ( const Body & );
@@ -115,6 +121,10 @@ private:
   Tile *_tile;
   RasterGroup *_rasters;
   Usul::Jobs::Manager &_manager;
+  TextureJobs _textureJobs;
+  bool _frame;
+  unsigned int _texturesPerFrame;
+  unsigned int _maxTexturesPerFrame;
 };
 
 

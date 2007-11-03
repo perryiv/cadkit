@@ -57,7 +57,7 @@ USUL_IMPLEMENT_TYPE_ID ( Tile );
 
 Tile::Tile ( unsigned int level, const Extents &extents, 
              const MeshSize &meshSize, const Usul::Math::Vec4d& texCoords, double splitDistance, 
-             Body *body, RasterLayer* raster, osg::Image* image ) : BaseClass(),
+             Body *body, osg::Image* image ) : BaseClass(),
   _mutex ( new Tile::Mutex ),
   _body ( body ),
   _extents ( extents ),
@@ -65,19 +65,25 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _mesh ( new OsgTools::Mesh ( meshSize[0], meshSize[1] ) ),
   _level ( level ),
   _flags ( Tile::ALL ),
-  _raster ( raster ),
   _children (),
   _textureUnit ( 0 ),
   _image ( image ),
+  _texture ( new osg::Texture2D ),
   _texCoords ( texCoords ),
-  _cutImageJob ( 0x0 )
+  _jobId ( -1 )
 {
   USUL_TRACE_SCOPE;
 
-  Usul::Pointers::reference ( _raster );
-
   // We want thread safe ref and unref.
   this->setThreadSafeRefUnref ( true );
+
+  // Create the texture.
+  _texture->setImage( _image.get() );
+
+  _texture->setFilter( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
+  _texture->setFilter( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
+  _texture->setWrap( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
+  _texture->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
 
   // Start the request to pull in texture.
   this->_launchImageRequest();
@@ -98,20 +104,17 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _mesh ( new OsgTools::Mesh ( tile._mesh->rows(), tile._mesh->columns() ) ),
   _level ( tile._level ),
   _flags ( Tile::ALL ),
-  _raster ( tile._raster ),
   _children ( tile._children ),
   _textureUnit ( tile._textureUnit ),
   _image ( tile._image ),
   _texCoords ( tile._texCoords ),
-  _cutImageJob ( tile._cutImageJob )
+  _jobId ( tile._jobId )
 {
   USUL_TRACE_SCOPE;
 
   // Remove if you are ready to test copying. Right now, I'm not sure what 
   // it means. This constructor is here to satisfy the META_Node macro.
   USUL_ASSERT ( false );
-
-  Usul::Pointers::reference ( _raster );
 }
 
 
@@ -245,22 +248,11 @@ void Tile::_update()
   //this->getOrCreateStateSet()->setAttributeAndModes ( Helper::material(), osg::StateAttribute::PROTECTED );
 
   // Get the image.
-  if ( _image.valid() && this->textureDirty() )
+  if ( _texture.valid() && this->textureDirty() )
   {
-    // Create the texture.
-    osg::ref_ptr < osg::Texture2D > texture ( new osg::Texture2D );
-    texture->setImage( _image.get() );
-
-    texture->setFilter( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
-    texture->setFilter( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
-    texture->setWrap( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
-    texture->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
-    texture->setBorderColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 0.0 ) );
-    texture->setBorderWidth ( 0.0 );
-
     // Get the state set.
     osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
-    ss->setTextureAttributeAndModes ( _textureUnit, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+    ss->setTextureAttributeAndModes ( _textureUnit, _texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
 
     // Turn off lighting.
     OsgTools::State::StateSet::setLighting ( this, false );
@@ -282,11 +274,7 @@ void Tile::_destroy()
   USUL_TRACE_SCOPE;
 
   // Cancel the job.
-  if ( _cutImageJob.valid() && false == _cutImageJob->isDone() )
-    _cutImageJob->cancel();
-  _cutImageJob = 0x0;
-
-  Usul::Pointers::unreference ( _raster ); _raster = 0x0;
+  this->clear();
 
   _body = 0x0; // Don't delete!
   delete _mesh; _mesh = 0x0;
@@ -311,15 +299,16 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     case osg::NodeVisitor::CULL_VISITOR:
     {
       // See if our job is done loading image.
-      if ( _cutImageJob.valid() && _cutImageJob->isDone() )
+      if ( 0x0 != _body && _jobId >= 0 )
       {
-        this->image ( _cutImageJob->image() );
-        this->texCoords ( Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
-        _cutImageJob = 0x0;
+        osg::ref_ptr < osg::Texture2D > texture ( _body->texture ( _jobId ) );
+        if ( texture.valid() )
+        {
+          this->texture ( texture.get() );
+          this->texCoords ( Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
+          _jobId = -1;
+        }
       }
-
-      if ( 0 == this->level() && 0x0 != _body )
-        _body->jobManager().purge();
 
       // Get cull visitor.
       osgUtil::CullVisitor *cv ( dynamic_cast < osgUtil::CullVisitor * > ( &nv ) );
@@ -452,10 +441,10 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
       const Usul::Math::Vec4d tul ( startU, halfU, startV, halfV );
       const Usul::Math::Vec4d tur ( halfU,  endU,  startV, halfV );
 
-      _children[LOWER_LEFT]  = new Tile ( level, ll, meshSize, tll, half, _body, _raster, _image.get() ); // lower left  tile
-      _children[LOWER_RIGHT] = new Tile ( level, lr, meshSize, tlr, half, _body, _raster, _image.get() ); // lower right tile
-      _children[UPPER_LEFT]  = new Tile ( level, ul, meshSize, tul, half, _body, _raster, _image.get() ); // upper left  tile
-      _children[UPPER_RIGHT] = new Tile ( level, ur, meshSize, tur, half, _body, _raster, _image.get() ); // upper right tile
+      _children[LOWER_LEFT]  = new Tile ( level, ll, meshSize, tll, half, _body, _image.get() ); // lower left  tile
+      _children[LOWER_RIGHT] = new Tile ( level, lr, meshSize, tlr, half, _body, _image.get() ); // lower right tile
+      _children[UPPER_LEFT]  = new Tile ( level, ul, meshSize, tul, half, _body, _image.get() ); // upper left  tile
+      _children[UPPER_RIGHT] = new Tile ( level, ur, meshSize, tur, half, _body, _image.get() ); // upper right tile
 
       osg::ref_ptr<osg::Group> group ( new osg::Group );
       group->addChild ( _children[LOWER_LEFT]  );
@@ -696,40 +685,51 @@ void Tile::clear()
 {
   USUL_TRACE_SCOPE;
 
-  if ( _cutImageJob.valid() )
-    _cutImageJob->cancel();
+  _body->textureRequestCancel ( _jobId );
+  _jobId = -1;
 
-  _cutImageJob = 0x0;
+  this->dirty ( false, Tile::ALL, false );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the image.
+//  Set the texture.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::image ( osg::Image* image )
+void Tile::texture ( osg::Texture2D* texture )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  _image = image;
 
-  this->dirty ( true, Tile::TEXTURE, false );
+  if ( 0x0 != texture )
+  {
+    _texture = texture;
+    if ( _children[LOWER_LEFT].valid()  && this->image () == _children[LOWER_LEFT]->image()  ) _children[LOWER_LEFT]->texture ( texture );
+    if ( _children[LOWER_RIGHT].valid() && this->image () == _children[LOWER_RIGHT]->image() ) _children[LOWER_RIGHT]->texture ( texture );
+    if ( _children[UPPER_LEFT].valid()  && this->image () == _children[UPPER_LEFT]->image()  ) _children[UPPER_LEFT]->texture ( texture );
+    if ( _children[UPPER_RIGHT].valid() && this->image () == _children[UPPER_RIGHT]->image() ) _children[UPPER_RIGHT]->texture ( texture );
+
+    // Set our image.
+    this->image ( texture->getImage() );
+
+    this->dirty ( true, Tile::TEXTURE, false );
+  }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the image.
+//  Get the texture.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* Tile::image ()
+osg::Texture2D* Tile::texture ()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _image.get();
+  return _texture.get();
 }
 
 
@@ -788,15 +788,38 @@ void Tile::_launchImageRequest()
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  if ( _cutImageJob.valid() )
-    _cutImageJob->cancel();
-
-  _cutImageJob = 0x0;
-
   // Start the request to pull in texture.
   if ( 0x0 != _body )
   {
-    _cutImageJob = new CutImageJob ( this->extents(), this->level(), _raster );
-    _body->jobManager().add ( _cutImageJob );
+    _body->textureRequestCancel ( _jobId );
+    _jobId = _body->textureRequest ( this->extents(), this->level() );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::image ( osg::Image* image )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _image = image;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Image* Tile::image ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _image.get();
 }

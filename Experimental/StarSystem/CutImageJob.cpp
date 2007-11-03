@@ -33,10 +33,11 @@ CutImageJob::CutImageJob ( const Extents &extents, unsigned int level, RasterLay
   _extents ( extents ),
   _level   ( level ),
   _raster  ( raster ),
-  _image   ( 0x0 )
+  _image   ( 0x0 ),
+  _texture ( 0x0 )
 {
   USUL_TRACE_SCOPE;
-  this->priority ( level * -1 );
+  this->priority ( level );
   Usul::Pointers::reference ( _raster );
 }
 
@@ -79,6 +80,15 @@ void CutImageJob::_started()
 
   // Request the image.
   _image = _raster->texture ( _extents, width, height, _level );
+
+  // Create the texture.
+  _texture = new osg::Texture2D;
+  _texture->setImage( _image.get() );
+
+  _texture->setFilter( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
+  _texture->setFilter( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
+  _texture->setWrap( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
+  _texture->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
 }
 
 
@@ -93,4 +103,17 @@ osg::Image *CutImageJob::image()
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _image.get();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the texture.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Texture2D *CutImageJob::texture()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _texture.get();
 }

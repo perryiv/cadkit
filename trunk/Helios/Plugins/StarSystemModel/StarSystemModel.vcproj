@@ -246,10 +246,6 @@
 					RelativePath=".\StarSystemFactory.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\StarSystemFactory.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

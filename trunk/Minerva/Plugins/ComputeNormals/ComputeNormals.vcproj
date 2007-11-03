@@ -236,10 +236,6 @@
 					RelativePath=".\ComputeNormalsFactory.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\ComputeNormalsFactory.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

@@ -238,10 +238,6 @@
 					RelativePath=".\DynamicLandDelegateFactory.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\DynamicLandDelegateFactory.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

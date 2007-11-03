@@ -238,10 +238,6 @@
 					RelativePath=".\ModflowDelegateFactory.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\ModflowDelegateFactory.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

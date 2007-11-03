@@ -223,6 +223,10 @@
 				Name="Implementation"
 				>
 				<File
+					RelativePath=".\CompileGuard.h"
+					>
+				</File>
+				<File
 					RelativePath=".\StarSystemDelegateComponent.cpp"
 					>
 				</File>
@@ -232,14 +236,6 @@
 				</File>
 				<File
 					RelativePath=".\StarSystemDelegateFactory.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\StarSystemDelegateFactory.h"
-					>
-				</File>
-				<File
-					RelativePath=".\CompileGuard.h"
 					>
 				</File>
 			</Filter>

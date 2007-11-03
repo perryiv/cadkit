@@ -238,10 +238,6 @@
 					RelativePath=".\ModelPresentationDelegateFactory.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\ModelPresentationDelegateFactory.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

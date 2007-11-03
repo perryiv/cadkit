@@ -270,10 +270,6 @@
 					RelativePath=".\WRFFactory.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\WRFFactory.h"
-					>
-				</File>
 				<Filter
 					Name="Commands"
 					>

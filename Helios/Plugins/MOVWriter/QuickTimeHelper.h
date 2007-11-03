@@ -10,12 +10,16 @@
 #ifndef __QUICK_TIME_HELPER_H__
 #define __QUICK_TIME_HELPER_H__
 
+#include "Usul/Interfaces/GUI/IProgressBar.h"
+
 // Quick Time headers.
 #include "QTML.h"
 #include "Movies.h"
 
 #include <string>
 #include <vector>
+
+namespace Usul { namespace Interfaces { struct IUnknown; } }
 
 class QuickTimeHelper
 {
@@ -35,7 +39,7 @@ public:
 
   void insertTrackIntoMedia ();
 
-  void addImages ( const Filenames& filenames );
+  void addImages ( const Filenames& filenames, Usul::Interfaces::IUnknown* caller );
 
   void flattenMovieFile();
 

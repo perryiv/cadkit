@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+namespace Usul { namespace Interfaces { struct IUnknown; } }
 
 class MOVWriter
 {
@@ -23,7 +24,7 @@ public:
   MOVWriter( const Filename& filename, const Filenames& filenames );
 
   // Write the file.
-  void operator() ();
+  void operator() ( Usul::Interfaces::IUnknown *caller );
 
 private:
   /// Filename to write to.

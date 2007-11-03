@@ -93,21 +93,26 @@ SET(SUFFIX_FOR_PATH
 
 SET (Boost_LIBRARIES "")
 SET (BOOST "boost")
-SET (Boost_VERSION "-1_34")
-SET (Boost_DEBUG "-d")
-SET (Boost_COMPILER "")
+SET (Boost_VERSION $ENV{BOOST_VERSION} )
+SET (Boost_DEBUG $ENV{BOOST_DEBUG} )
+SET (Boost_COMPILER $ENV{BOOST_COMPILER} )
 SET (Boost_MUTLI_THREAD "-mt")
+
+
+if (NOT Boost_VERSION) 	 
+	SET (Boost_VERSION "-1_33" ) 	 
+endif (NOT Boost_VERSION)
+
+if (NOT Boost_DEBUG) 	 
+	SET (Boost_DEBUG "-d" ) 	 
+endif (NOT Boost_DEBUG)
+
 
 # - Boost has a naming scheme that we have to match..
 IF (MINGW)
 SET (Boost_COMPILER "-mgw")
 ENDIF (MINGW)
 
-IF ( NOT APPLE )
-  IF(CMAKE_COMPILER_IS_GNUCC)
-  	SET(Boost_COMPILER "-gcc34")
-  ENDIF(CMAKE_COMPILER_IS_GNUCC)
-ENDIF ( NOT APPLE )
 
 MARK_AS_ADVANCED(Boost_COMPILER)
 MARK_AS_ADVANCED(Boost_MULTI_THREAD)

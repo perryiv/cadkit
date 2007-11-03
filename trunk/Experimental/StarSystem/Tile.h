@@ -19,7 +19,6 @@
 
 #include "StarSystem/Export.h"
 #include "StarSystem/Extents.h"
-#include "StarSystem/CutImageJob.h"
 
 #include "Usul/Base/Typed.h"
 #include "Usul/Math/Vector4.h"
@@ -31,6 +30,7 @@
 
 #include "osg/Group"
 #include "osg/Image"
+#include "osg/Texture2D"
 
 #include <typeinfo>
 
@@ -90,7 +90,6 @@ public:
          const Usul::Math::Vec4d& texCoords = Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ),
          double splitDistance = 1,
          Body *body = 0x0,
-         RasterLayer *raster = 0x0,
          osg::Image * image = 0x0 );
   Tile ( const Tile &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY );
 
@@ -126,6 +125,10 @@ public:
   Usul::Math::Vec4d         texCoords() const;
   void                      texCoords ( const Usul::Math::Vec4d& );
 
+  // Get/Set the texture.
+  void                      texture ( osg::Texture2D* );
+  osg::Texture2D*           texture ();
+
   // Traverse the children.
   virtual void              traverse ( osg::NodeVisitor & );
 
@@ -159,12 +162,12 @@ private:
   OsgTools::Mesh *_mesh;
   unsigned int _level;
   unsigned int _flags;
-  RasterLayer *_raster;
   Children _children;
   unsigned int _textureUnit;
   osg::ref_ptr < osg::Image > _image;
+  osg::ref_ptr < osg::Texture2D > _texture;
   Usul::Math::Vec4d _texCoords;
-  CutImageJob::RefPtr _cutImageJob;
+  int _jobId;
 };
 
 

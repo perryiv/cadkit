@@ -45,7 +45,6 @@
 #define USUL_TRACE_SCOPE_STATIC
 
 #ifdef _USUL_TRACE 
-#ifndef _COMPILING_USUL
 
 #undef USUL_TRACE_1
 #undef USUL_TRACE_SCOPE
@@ -60,7 +59,6 @@
 #define USUL_TRACE_SCOPE_STATIC\
   Usul::Trace::Scope trace_scope ( __FUNCTION__ )
 
-#endif
 #endif
 
 
@@ -81,17 +79,6 @@
 
 #define USUL_TRACE_5(exp1,exp2,exp3,exp4,exp5)\
   USUL_TRACE_1(exp1); USUL_TRACE_4(exp2,exp3,exp4,exp5)
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Turn tracing on/off here.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#ifndef _USUL_TRACE
-  #define _USUL_TRACE
-#endif
 
 
 

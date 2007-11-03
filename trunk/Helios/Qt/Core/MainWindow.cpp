@@ -452,6 +452,8 @@ void MainWindow::_initMenu()
 
 void MainWindow::_buildMenu ()
 {
+  USUL_TRACE_SCOPE;
+
   // Handle repeated calls.
   this->_clearMenuBar ();
 
@@ -478,6 +480,8 @@ void MainWindow::_buildMenu ()
 
 void MainWindow::_clearMenuBar ()
 {
+  USUL_TRACE_SCOPE;
+
   this->menuBar()->clear();
 
   // Delete the menus we created.
@@ -496,6 +500,8 @@ void MainWindow::_clearMenuBar ()
 
 void MainWindow::_initRecentFilesMenu()
 {
+  USUL_TRACE_SCOPE;
+
   // Make a menu if we need to.
   if ( 0x0 == _recentFilesMenu )
   {
@@ -546,6 +552,8 @@ void MainWindow::_initRecentFilesMenu()
 
 void MainWindow::_clearRecentFiles()
 {
+  USUL_TRACE_SCOPE;
+
   _recentFiles.clear();
   this->_initRecentFilesMenu();
 }
@@ -1527,7 +1535,7 @@ void MainWindow::_notifyFinishedLoading ( Usul::Documents::Document *document )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  The document has finished loading.
+//  Update the text window.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

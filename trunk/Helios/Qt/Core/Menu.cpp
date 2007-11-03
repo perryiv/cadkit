@@ -36,6 +36,7 @@ BaseClass ( title, parent ),
 _menu ( 0x0 ),
 _actions ()
 {
+  USUL_TRACE_SCOPE;
   connect ( this, SIGNAL ( aboutToShow() ), SLOT ( _showMenu () ) );
   connect ( this, SIGNAL ( aboutToHide() ), SLOT ( _hideMenu () ) );
 }
@@ -49,6 +50,7 @@ _actions ()
 
 Menu::~Menu ()
 {
+  USUL_TRACE_SCOPE;
   _actions.clear ();
 }
 
@@ -61,6 +63,7 @@ Menu::~Menu ()
 
 void Menu::menu ( MenuKit::Menu* menu )
 {
+  USUL_TRACE_SCOPE;
   _menu = menu;
 }
 
@@ -73,6 +76,7 @@ void Menu::menu ( MenuKit::Menu* menu )
 
 MenuKit::Menu* Menu::menu ()
 {
+  USUL_TRACE_SCOPE;
   return _menu.get();
 }
 
@@ -85,6 +89,7 @@ MenuKit::Menu* Menu::menu ()
 
 const MenuKit::Menu* Menu::menu () const
 {
+  USUL_TRACE_SCOPE;
   return _menu.get();
 }
 
@@ -108,10 +113,13 @@ namespace Detail
       _menu ( menu ),
       _actions ( actions )
     {
+      USUL_TRACE_SCOPE;
     }
 
     virtual void apply ( MenuKit::Menu &m )
     {
+      USUL_TRACE_SCOPE;
+
       // Save the old menu.
       QMenu* current ( _menu );
 
@@ -131,6 +139,8 @@ namespace Detail
 
     virtual void apply ( MenuKit::Button &b )
     {
+      USUL_TRACE_SCOPE;
+
       Action::RefPtr action ( new Action ( b.command () ) );
       
       action->setEnabled ( b.enabled () );
@@ -142,6 +152,8 @@ namespace Detail
 
     virtual void apply ( MenuKit::ToggleButton &toggle )
     {
+      USUL_TRACE_SCOPE;
+
       Action::RefPtr action ( new Action ( toggle.command () ) );
       
       action->setEnabled ( toggle.enabled () );
@@ -156,6 +168,8 @@ namespace Detail
 
     virtual void apply ( MenuKit::RadioButton &radio )
     {
+      USUL_TRACE_SCOPE;
+
       Action::RefPtr action ( new Action ( radio.command () ) );
       
       action->setEnabled ( radio.enabled () );
@@ -170,6 +184,8 @@ namespace Detail
 
     virtual void apply ( MenuKit::Separator &s )
     {
+      USUL_TRACE_SCOPE;
+
       if ( 0x0 != _menu )
       {
         _menu->addSeparator ();
@@ -191,6 +207,8 @@ namespace Detail
 
 void Menu::_showMenu ()
 {
+  USUL_TRACE_SCOPE;
+
   // Clear what we may have.
   this->clear ();
   _actions.clear();
@@ -216,4 +234,5 @@ void Menu::_showMenu ()
 
 void Menu::_hideMenu ()
 {
+  USUL_TRACE_SCOPE;
 }

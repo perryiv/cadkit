@@ -19,6 +19,7 @@
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
 
 #include "QtCore/QObject"
 
@@ -28,6 +29,7 @@ class QVBoxLayout;
 class QWidget;
 class QDockWidget;
 class QProgressBar;
+class QLabel;
 
 namespace Usul { namespace Interfaces { struct IUnknown; } }
 
@@ -62,7 +64,8 @@ private:
 
   // Wrapper around QProgressBar.
   class ProgressBar : public Usul::Base::Referenced,
-                      public Usul::Interfaces::IProgressBar
+                      public Usul::Interfaces::IProgressBar,
+                      public Usul::Interfaces::IStatusBar
   {
   public:
     typedef Usul::Base::Referenced BaseClass;
@@ -77,7 +80,7 @@ private:
     Usul::Interfaces::IUnknown* queryInterface ( unsigned long iid );
 
     // Create a progress bar.
-    QWidget* operator () ( QWidget *parent );
+    void operator () ( QVBoxLayout *layout );
 
     // Set the progress bar.
     void     progressBar ( QProgressBar * );
@@ -90,8 +93,14 @@ private:
     virtual void updateProgressBar ( unsigned int value );
     virtual void hideProgressBar();
 
+    // Set the status bar text.
+    virtual void setStatusBarText ( const std::string &text, bool force );
+
   private:
     QProgressBar *_progressBar;
+    QLabel *_label;
+    QVBoxLayout *_layout;
+    QVBoxLayout *_parentLayout;
   };
 
   typedef std::list < ProgressBar::RefPtr > ProgressBars;

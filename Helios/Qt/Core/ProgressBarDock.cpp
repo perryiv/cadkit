@@ -17,6 +17,7 @@
 #include "QtGui/QProgressBar"
 #include "QtGui/QVBoxLayout"
 #include "QtGui/QScrollArea"
+#include "QtGui/QLabel"
 
 using namespace CadKit::Helios::Core;
 
@@ -53,9 +54,9 @@ ProgressBarDock::~ProgressBarDock ()
 
 QWidget* ProgressBarDock::operator () ( QDockWidget* parent )
 {
-  //QScrollArea *scroll ( new QScrollArea ( parent ) );
   _widget = new QScrollArea ( parent );
   _layout = new QVBoxLayout ( _widget );
+  _widget->setLayout ( _layout );
 
   return _widget;
 }
@@ -67,7 +68,12 @@ QWidget* ProgressBarDock::operator () ( QDockWidget* parent )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ProgressBarDock::ProgressBar::ProgressBar () : BaseClass (), _progressBar ( 0x0 )
+ProgressBarDock::ProgressBar::ProgressBar () : 
+  BaseClass (),
+  _progressBar ( 0x0 ),
+  _label ( 0x0 ),
+  _layout ( 0x0 ),
+  _parentLayout ( 0x0 )
 {
 }
 
@@ -108,7 +114,9 @@ Usul::Interfaces::IUnknown* ProgressBarDock::ProgressBar::queryInterface ( unsig
   {
   case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IProgressBar::IID:
-    return static_cast < Usul::Interfaces::IProgressBar *  > ( this );
+    return static_cast < Usul::Interfaces::IProgressBar * > ( this );
+  case Usul::Interfaces::IStatusBar::IID:
+    return static_cast < Usul::Interfaces::IStatusBar * > ( this );
   default:
     return 0x0;
   }
@@ -121,10 +129,20 @@ Usul::Interfaces::IUnknown* ProgressBarDock::ProgressBar::queryInterface ( unsig
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-QWidget* ProgressBarDock::ProgressBar::operator () ( QWidget *parent )
+void ProgressBarDock::ProgressBar::operator () ( QVBoxLayout *vLayout )
 {
-  _progressBar = new QProgressBar ( parent );
-  return _progressBar;
+  QVBoxLayout *layout ( new QVBoxLayout );
+  _label = new QLabel;
+  _progressBar = new QProgressBar;
+  
+  layout->addWidget ( _label );
+  layout->addWidget ( _progressBar );
+  layout->addStretch();
+
+  vLayout->addLayout ( layout );
+
+  _parentLayout = vLayout;
+  _layout = layout;
 }
 
 
@@ -150,11 +168,21 @@ ProgressBarDock::ProgressBar::~ProgressBar ()
 {
   this->hideProgressBar ();
 
+  if ( 0x0 != _parentLayout )
+    _parentLayout->removeItem ( _layout );
+
   // Defer this delete for the main thread to take care of.
   if ( 0x0 != _progressBar )
   {
     _progressBar->deleteLater ();
     _progressBar = 0x0;
+  }
+
+  if ( 0x0 != _label )
+  {
+    this->setStatusBarText ( "", true );
+    _label->deleteLater();
+    _label = 0x0;
   }
 }
 
@@ -227,6 +255,22 @@ void ProgressBarDock::ProgressBar::hideProgressBar()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the status bar text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarDock::ProgressBar::setStatusBarText ( const std::string &text, bool force )
+{
+  if ( 0x0 != _label )
+  {
+    QMetaObject::invokeMethod ( _label, "setText", Qt::AutoConnection, 
+      Q_ARG ( QString, text.c_str() ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Append a progress bar.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -244,16 +288,16 @@ Usul::Interfaces::IUnknown * ProgressBarDock::createProgressBar ()
     }
 
     QMetaObject::invokeMethod ( this, "_updateProgressBars", Qt::QueuedConnection );
-    return progress.get();
+    return progress->queryInterface ( Usul::Interfaces::IUnknown::IID );
   }
   else
   {
-    QWidget *w ( ( *progress ) ( _widget ) );
-    
     if ( 0x0 != _layout )
-      _layout->addWidget ( w );
+      (*progress) ( _layout );
 
-    return progress.release();
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( progress );
+    progress = 0x0;
+    return unknown.release();
   }
 
   return 0x0;
@@ -280,11 +324,12 @@ void ProgressBarDock::_updateProgressBars ()
 
   if ( first.valid () )
   {
-    QProgressBar *bar ( new QProgressBar ( _widget ) );
-    first->progressBar ( bar );
+    //QProgressBar *bar ( new QProgressBar ( _widget ) );
+    //first->progressBar ( bar );
   
     if ( 0x0 != _layout )
-      _layout->addWidget ( bar );
+      (*first) ( _layout );
+    _widget->update();
   }
 }
 

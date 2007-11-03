@@ -26,6 +26,9 @@ public:
   void operator() ();
 
 private:
+  /// Write the movie.
+  void _write();
+
   Filename _filename;
   Filenames _filenames;
 };

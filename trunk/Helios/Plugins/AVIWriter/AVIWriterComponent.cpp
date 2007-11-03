@@ -105,7 +105,7 @@ bool AVIWriterComponent::canWrite   ( const std::string &filename ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AVIWriterComponent::writeMovie ( const Filename& filename, const Filenames& filenames )
+void AVIWriterComponent::writeMovie ( const Filename& filename, const Filenames& filenames, Usul::Interfaces::IUnknown *caller )
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
 

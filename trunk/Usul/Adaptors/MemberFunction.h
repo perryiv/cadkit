@@ -168,7 +168,7 @@ struct MemberFunction < bool, ObjectType, FunctionType >
   template < class Arg1, class Arg2 >
   bool operator () ( const Arg1 &arg1, const Arg2 &arg2 ) const
   {
-    ((*_o).*_f) ( arg1, arg2 );
+    return ((*_o).*_f) ( arg1, arg2 );
   }
 
 private:

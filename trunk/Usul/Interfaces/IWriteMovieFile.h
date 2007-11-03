@@ -42,7 +42,7 @@ struct IWriteMovieFile : public Usul::Interfaces::IUnknown
 
   virtual bool                canWrite   ( const std::string &file ) const = 0;
 
-  virtual void                writeMovie ( const Filename& filename, const Filenames& filenames ) = 0;
+  virtual void                writeMovie ( const Filename& filename, const Filenames& filenames, Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
 
 }; // struct IWriteMovieFile
 

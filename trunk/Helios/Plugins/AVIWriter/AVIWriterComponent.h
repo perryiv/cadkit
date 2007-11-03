@@ -49,7 +49,7 @@ protected:
   /// Usul::Interfaces::IWriteMovieFile
   virtual Filters             filtersWrite() const;
   virtual bool                canWrite   ( const std::string &file ) const;
-  virtual void                writeMovie ( const Filename& filename, const Filenames& filenames );
+  virtual void                writeMovie ( const Filename& filename, const Filenames& filenames, Usul::Interfaces::IUnknown *caller = 0x0 );
 };
 
 #endif /* __AVIWRITERCOMPONENT_H__  */		

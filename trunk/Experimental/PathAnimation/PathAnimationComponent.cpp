@@ -18,11 +18,16 @@
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Commands/GenericCheckCommand.h"
+#include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
-#include "Usul/Interfaces/IUpdateSubject.h"
-#include "Usul/Interfaces/IViewMatrix.h"
+#include "Usul/File/Path.h"
+#include "Usul/File/Temp.h"
+#include "Usul/Interfaces/IFrameDump.h"
 #include "Usul/Interfaces/GUI/ILoadFileDialog.h"
 #include "Usul/Interfaces/GUI/ISaveFileDialog.h"
+#include "Usul/Interfaces/IWriteMovieFile.h"
+#include "Usul/Interfaces/IUpdateSubject.h"
+#include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Constants.h"
 #include "Usul/Strings/Format.h"
@@ -54,7 +59,11 @@ PathAnimationComponent::PathAnimationComponent() : BaseClass(),
   _paths(),
   _player ( 0x0 ),
   _paused ( false ),
-  _degree ( Reg::instance()[Sections::PATH_ANIMATION]["curve"]["degree"].get<unsigned int> ( 3 ) )
+  _degree ( Reg::instance()[Sections::PATH_ANIMATION]["curve"]["degree"].get<unsigned int> ( 3 ) ),
+  _writeMovie ( false ),
+  _movieFilename (),
+  _movieWriter (),
+  _caller ()
 {
   USUL_TRACE_SCOPE;
 
@@ -136,6 +145,7 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   menu->append ( new Button ( Usul::Commands::genericCommand ( "Open Path...", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_openPath ) ), Usul::Commands::TrueFunctor() ) ) );
   menu->append ( new Button ( Usul::Commands::genericCommand ( "Save Path...", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_saveCurrentPath ) ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_isCurrentPathModified ) ) ) );
   menu->append ( new Button ( Usul::Commands::genericCommand ( "Save Path As...", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_saveAsCurrentPath ) ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( Usul::Commands::genericCommand ( "Export Movie...", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_exportMovie ) ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
 
   menu->addSeparator();
   menu->append ( new Button ( Usul::Commands::genericCommand ( "Append",  Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraAppend  ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
@@ -624,6 +634,34 @@ void PathAnimationComponent::updateNotify ( IUnknown *caller )
   {
     // This sets "_player" to null.
     this->_stopPlaying();
+
+    // If we are suppose to write a movie.
+    if ( _writeMovie )
+    {
+      // Look for the frame dump interface.
+      Usul::Interfaces::IFrameDump::QueryPtr fd ( caller );
+
+      if ( fd.valid() )
+      {
+        // Get the filenames for the movie.
+        Usul::Interfaces::IFrameDump::Filenames filenames ( fd->filenames() );
+
+        // Write move interface.
+        Usul::Interfaces::IWriteMovieFile::QueryPtr wm ( _movieWriter );
+        if ( wm.valid() && false == _movieFilename.empty() )
+          wm->writeMovie ( _movieFilename, filenames, _caller );
+        
+        // Turn off frame dumping.
+        fd->dumpFrames ( false );
+        fd->saveNames ( false );
+      }
+
+      // We wrote the move, clear all data members.
+      _writeMovie = false;
+      _caller = static_cast < IUnknown * > ( 0x0 );
+      _movieWriter = static_cast < IUnknown * > ( 0x0 );
+      _movieFilename.clear();
+    }
   }
 }
 
@@ -831,4 +869,92 @@ bool PathAnimationComponent::_isCurrentPathModified() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return ( _currentPath.valid() ? _currentPath->modified() : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export the movie.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_exportMovie ( Usul::Interfaces::IUnknown::QueryPtr caller )
+{
+  USUL_TRACE_SCOPE;
+
+  // Query for needed interfaces.
+  Usul::Interfaces::ISaveFileDialog::QueryPtr dialog ( caller );
+  Usul::Interfaces::IFrameDump::QueryPtr fd ( Usul::Documents::Manager::instance().activeView() );
+
+  // Return if we don't have a save dialog or frame dumping.
+  if ( false == dialog.valid() || false == fd.valid () )
+    return;
+
+  // Useful typedefs.
+  typedef Usul::Interfaces::ISaveFileDialog::Filters Filters;
+  typedef Usul::Interfaces::ISaveFileDialog::FileResult FileResult;
+  typedef Usul::Components::Manager PluginManager;
+  typedef PluginManager::UnknownSet Unknowns;
+
+  Unknowns unknowns ( PluginManager::instance().getInterfaces ( Usul::Interfaces::IWriteMovieFile::IID ) );
+
+  // Return if we didn't find any plugins to create a movie.
+  if ( unknowns.empty() )
+    return;
+
+  // Export filters.
+  Filters filters;
+
+  // Append all filters into one list.
+  for ( Unknowns::const_iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
+  {
+    Usul::Interfaces::IWriteMovieFile::QueryPtr wm ( (*iter).get() );
+    Filters f ( wm->filtersWrite() );
+    filters.insert ( filters.end(), f.begin(), f.end() );
+  }
+
+  // Get the filename.
+  FileResult result ( dialog->getSaveFileName ( "Export Movie", filters ) );
+  std::string filename ( result.first );
+
+  // Save the movie.
+  if ( false == filename.empty() )
+  {
+    Guard guard ( this );
+
+    // Find the movie writer.
+    for ( Unknowns::const_iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
+    {
+      Usul::Interfaces::IWriteMovieFile::QueryPtr wm ( (*iter).get() );
+      if ( wm->canWrite ( filename ) )
+      {
+        _movieWriter = (*iter).get();
+        break;
+      }
+    }
+
+    // Save the caller.
+    _caller = caller;
+
+    // We want to save a movie.
+    _writeMovie = true;
+
+    // Save the name.
+    _movieFilename = filename;
+
+    // Get the base name.
+    std::string base ( Usul::File::base ( filename ) );
+
+    // Get the directory.
+    std::string directory ( Usul::File::Temp::directory() );
+
+    // Set the frame dump properties.
+    fd->frameDumpProperties ( directory, base, ".jpg" );
+    fd->resetFrameDumpCounter();
+    fd->saveNames ( true );
+    fd->dumpFrames ( true );
+
+    // Play the movie.
+    this->_playForward();
+  }
 }

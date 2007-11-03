@@ -12,6 +12,7 @@
 #include "Helios/Qt/Views/OSG/EditBackground.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Commands/PolygonMode.h"
@@ -19,6 +20,8 @@
 #include "Usul/Commands/RenderLoop.h"
 #include "Usul/Commands/ShadeModel.h"
 #include "Usul/Commands/GenericCommand.h"
+#include "Usul/Commands/GenericCheckCommand.h"
+#include "Usul/Strings/Format.h"
 
 #include "OsgTools/Render/Defaults.h"
 
@@ -51,6 +54,7 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   _timerRenderLoop ( 0x0 ),
   _keys(),
   _lastMode ( OsgTools::Render::Viewer::NAVIGATION ),
+  _sizes (),
   _mutex ( new Viewer::Mutex )
 {
   USUL_TRACE_SCOPE;
@@ -119,6 +123,15 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
 
   // Enable drag 'n drop.
   this->setAcceptDrops ( true );
+
+  // Add common window sizes.
+  // From http://en.wikipedia.org/wiki/Image:Standard_video_res.svg
+  _sizes.push_back ( Size ( 640, 480 ) );
+  _sizes.push_back ( Size ( 720, 480 ) );
+  _sizes.push_back ( Size ( 768, 576 ) );
+  _sizes.push_back ( Size ( 1024, 768 ) );
+  _sizes.push_back ( Size ( 1280, 720 ) );
+  _sizes.push_back ( Size ( 1920, 1080 ) );
 }
 
 
@@ -929,6 +942,19 @@ void Viewer::menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller )
       shading->append ( new RadioButton ( new ShadeModel ( "Smooth", IShadeModel::SMOOTH, viewer.get() ) ) );
       shading->append ( new RadioButton ( new ShadeModel ( "Flat",   IShadeModel::FLAT, viewer.get() ) ) );
     }
+
+    // Make the menu of common sizes.
+    MenuKit::Menu::RefPtr size ( new MenuKit::Menu ( "Size" ) );
+    for ( Sizes::const_iterator iter = _sizes.begin(); iter != _sizes.end(); ++iter )
+    {
+      Size s ( *iter );
+      size->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( Usul::Strings::format ( s[0], " x ", s[1] ), 
+        Usul::Adaptors::bind2<void> ( s[0], s[1], Usul::Adaptors::memberFunction<void> ( this, &Viewer::_resize ) ), 
+        Usul::Adaptors::bind2<bool> ( s[0], s[1], Usul::Adaptors::memberFunction<bool> ( this, &Viewer::_isSize ) ) ) ) );
+    }
+
+    view->append ( size );
+
   }
 }
 
@@ -1069,4 +1095,29 @@ void Viewer::dropEvent ( QDropEvent *event )
   }
 
   event->acceptProposedAction();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Resize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_resize ( unsigned int w, unsigned int h )
+{
+  this->resize ( static_cast < int > ( w ), static_cast < int > ( h ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this the windows current size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::_isSize ( unsigned int w, unsigned int h ) const
+{
+  QSize size ( this->size () );
+  return static_cast < int > ( w ) == size.width() && static_cast < int > ( h ) == size.height();
 }

@@ -99,18 +99,18 @@ SET (Boost_COMPILER $ENV{BOOST_COMPILER} )
 SET (Boost_MUTLI_THREAD $ENV{BOOST_MULTI_THREAD} )
 
 
-if (NOT Boost_VERSION) 	 
-	SET (Boost_VERSION "-1_33" ) 	 
-endif (NOT Boost_VERSION)
+#if (NOT Boost_VERSION) 	 
+#	SET (Boost_VERSION "-1_33" ) 	 
+#endif (NOT Boost_VERSION)
 
-if (NOT Boost_DEBUG) 	 
-	SET (Boost_DEBUG "-d" ) 	 
-endif (NOT Boost_DEBUG)
+#if (NOT Boost_DEBUG) 	 
+#	SET (Boost_DEBUG "-d" ) 	 
+#endif (NOT Boost_DEBUG)
 
 
-if (NOT Boost_MULTI_THREAD)
-        SET (Boost_MULTI_THREAD "-mt")
-endif (NOT Boost_MULTI_THREAD)
+#if (NOT Boost_MULTI_THREAD)
+#        SET (Boost_MULTI_THREAD "-mt")
+#endif (NOT Boost_MULTI_THREAD)
 
 
 # - Boost has a naming scheme that we have to match..

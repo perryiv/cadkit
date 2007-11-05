@@ -145,6 +145,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
+				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(CADKIT_ROOT_DIR)/Experimental;$(OSG_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSSIM_INC_DIR);$(BOOST_ROOT_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM"
@@ -162,6 +163,7 @@
 				WarningLevel="3"
 				WarnAsError="true"
 				SuppressStartupBanner="true"
+				DebugInformationFormat="0"
 				CompileAs="0"
 			/>
 			<Tool
@@ -183,6 +185,7 @@
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR)"
+				GenerateDebugInformation="false"
 				ProgramDatabaseFile=".\Release/StarSystem.pdb"
 				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/StarSystem.lib"
 			/>

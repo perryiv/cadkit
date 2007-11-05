@@ -33,6 +33,7 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Math/MinMax.h"
+#include "Usul/Math/Nan.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
 
@@ -356,6 +357,11 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   // Four corners and center of the tile.
   OsgTools::Mesh &mesh ( *_mesh );
   const osg::Vec3f &eye ( cv.getViewPointLocal() );
+  
+  // Make sure the eye values are a number.
+  if ( Usul::Math::nan ( eye[0] ) || Usul::Math::nan ( eye[1] ) || Usul::Math::nan ( eye[2] ) )
+    return;
+
   const osg::Vec3f &p00 ( mesh.point ( 0, 0 ) );
   const osg::Vec3f &p0N ( mesh.point ( 0, mesh.columns() - 1 ) );
   const osg::Vec3f &pN0 ( mesh.point ( mesh.rows() - 1, 0 ) );

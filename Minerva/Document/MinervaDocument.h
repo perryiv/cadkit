@@ -251,6 +251,9 @@ protected:
   /// Animate.
   void                                     _animate ( Usul::Interfaces::IUnknown *caller );
 
+  /// Build the scene.
+  void                                     _buildScene ( Usul::Interfaces::IUnknown *caller );
+
   /// Build time span menu.
   void                                     _buildTimeSpanMenu();
 

@@ -315,6 +315,8 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IViewport * > ( this );
   case Usul::Interfaces::IView::IID:
     return static_cast < Usul::Interfaces::IView * > ( this );
+  case Usul::Interfaces::ITextMatrix::IID:
+    return static_cast < Usul::Interfaces::ITextMatrix* > ( this );
   default:
     return 0x0;
   }
@@ -3674,4 +3676,40 @@ std::string Application::_documentSection () const
 
   // Return the name.
   return filename;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get text at the (x,y) on the screen.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osgText::Text* Application::getText ( unsigned int x, unsigned int y )
+{
+  return _sceneManager->getText ( x, y );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set text value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::setText ( unsigned int x, unsigned int y, const std::string& text )
+{
+  _sceneManager->setText ( x, y, text );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::removeText ( unsigned int x, unsigned int y )
+{
+  _sceneManager->removeText ( x, y );
 }

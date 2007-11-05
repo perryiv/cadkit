@@ -49,6 +49,7 @@
 #include "Usul/Interfaces/INavigationFunctor.h"
 #include "Usul/Interfaces/IBackgroundColor.h"
 #include "Usul/Interfaces/IRenderingPasses.h"
+#include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IViewport.h"
 #include "Usul/Interfaces/IView.h"
 #include "Usul/Threads/RecursiveMutex.h"
@@ -121,7 +122,8 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public Usul::Interfaces::IBackgroundColor,
                                public Usul::Interfaces::IRenderingPasses,
                                public Usul::Interfaces::IViewport,
-                               public Usul::Interfaces::IView
+                               public Usul::Interfaces::IView,
+                               public Usul::Interfaces::ITextMatrix
 {
 public:
   // Typedefs.
@@ -492,13 +494,22 @@ protected:
   virtual ShadeModel            shadeModel() const;
 
   /// Get viewport parameters (IViewport).
-  virtual double                x () const;
-  virtual double                y () const;
-  virtual double                height () const;
-  virtual double                width () const;
+  virtual double                x() const;
+  virtual double                y() const;
+  virtual double                height() const;
+  virtual double                width() const;
 
   // Get the document (IView).
   virtual Usul::Interfaces::IDocument  * document();
+
+  /// Get text at the (x,y) on the screen (ITextMatrix).
+  virtual osgText::Text*        getText    ( unsigned int x, unsigned int y );
+
+  /// Set text value (ITextMatrix).
+  virtual void                  setText    ( unsigned int x, unsigned int y, const std::string& text );
+
+  /// Remove text (ITextMatrix)
+  virtual void                  removeText ( unsigned int x, unsigned int y );
 
   /// No copying.
   Application ( const Application& );

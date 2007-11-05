@@ -37,6 +37,7 @@
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/ITemporalData.h"
+#include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
@@ -45,6 +46,10 @@
 #include "MenuKit/Button.h"
 #include "MenuKit/ToggleButton.h"
 #include "MenuKit/RadioButton.h"
+
+#include "osgText/Text"
+
+#include <sstream>
 
 using namespace Minerva::Document;
 
@@ -1350,12 +1355,8 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
 
-  // Rebuild the scene if it's dirty.
-  if ( _sceneManager->dirty () )
-  {
-    _sceneManager->buildScene ( caller );
-    _sceneManager->dirty ( false );
-  }
+  // Build the scene.
+  this->_buildScene ( caller );
 
   bool jobFinished ( _commandJob.valid() ? _commandJob->isDone () : true );
 
@@ -1786,13 +1787,58 @@ void MinervaDocument::_findFirstLastDate()
   _global = global;
 }
 
-/// Get/Set the split metric.
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the split metric.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void MinervaDocument::splitMetric ( double value )
 {
   _planet->splitMetric ( value );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the given number the current split metric?
+//
+///////////////////////////////////////////////////////////////////////////////
+
 bool MinervaDocument::isSplitMetric ( double value ) const
 {
   return value == _planet->splitMetric();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
+{
+  // Rebuild the scene if it's dirty.
+  if ( _sceneManager->dirty () )
+  {
+    _sceneManager->buildScene ( caller );
+    _sceneManager->dirty ( false );
+  }
+
+  Usul::Interfaces::ITextMatrix::QueryPtr tm ( caller );
+  if ( tm.valid() )
+  {
+    const unsigned int requests  ( _planet->databasePager()->getFileRequestListSize()   );
+    const unsigned int toCompile ( _planet->databasePager()->getDataToCompileListSize() );
+
+    std::ostringstream os;
+    os << "Requests: " << requests << " To compile: " << toCompile;
+
+    osg::ref_ptr < osgText::Text > text ( tm->getText ( 15, 15 ) );
+    text->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+    text->setText ( ( requests > 0 || toCompile > 0 ) ? os.str() : "" );
+    //tm->setText ( 15, 15, os.str() );
+  }
 }

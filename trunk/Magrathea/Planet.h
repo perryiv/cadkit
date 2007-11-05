@@ -90,8 +90,8 @@ public:
   int                                             elevationPatchSize() const;
   void                                            elevationPatchSize( const int& );
 
-  int                                             levelDetail() const;
-  void                                            levelDetail( const int& );
+  unsigned int                                    levelDetail() const;
+  void                                            levelDetail( unsigned int );
 
   std::string                                     elevationCacheDir() const;
   void                                            elevationCacheDir( const std::string& directory );
@@ -100,6 +100,10 @@ public:
 
   void                                            showLatLongGrid( bool b );
   bool                                            showLatLongGrid() const;
+
+  /// Get/Set the split metric.
+  void                                            splitMetric ( double );
+  double                                          splitMetric () const;
 
   /// Go to given lat, long and height.
   void                                            gotoLocation( double lat, double lon, double height );

@@ -1659,6 +1659,7 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
 {
   typedef MenuKit::ToggleButton ToggleButton;
   typedef MenuKit::Button       Button;
+  typedef MenuKit::RadioButton  RadioButton;
 
   MenuKit::Menu::RefPtr m ( new MenuKit::Menu ( "Minerva" ) );
 
@@ -1679,6 +1680,25 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   // Time spans.
   this->_buildTimeSpanMenu();
   m->append ( _timeSpanMenu.get() );
+
+  MenuKit::Menu::RefPtr split ( new MenuKit::Menu ( "Split Metric" ) );
+  split->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "1", 
+                                                                          Usul::Adaptors::bind1<void> ( 1.0, Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::splitMetric ) ), 
+                                                                          Usul::Adaptors::bind1<bool> ( 1.0, Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isSplitMetric ) ) ) ) );
+  split->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "2", 
+                                                                          Usul::Adaptors::bind1<void> ( 2.0, Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::splitMetric ) ), 
+                                                                          Usul::Adaptors::bind1<bool> ( 2.0, Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isSplitMetric ) ) ) ) );
+  split->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "3", 
+                                                                          Usul::Adaptors::bind1<void> ( 3.0, Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::splitMetric ) ), 
+                                                                          Usul::Adaptors::bind1<bool> ( 3.0, Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isSplitMetric ) ) ) ) );
+  split->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "6", 
+                                                                          Usul::Adaptors::bind1<void> ( 6.0, Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::splitMetric ) ), 
+                                                                          Usul::Adaptors::bind1<bool> ( 6.0, Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isSplitMetric ) ) ) ) );
+  split->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "9", 
+                                                                          Usul::Adaptors::bind1<void> ( 9.0, Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::splitMetric ) ), 
+                                                                          Usul::Adaptors::bind1<bool> ( 9.0, Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isSplitMetric ) ) ) ) );
+
+  m->append ( split.get() );
 
   menu.append ( m );
 }
@@ -1764,4 +1784,15 @@ void MinervaDocument::_findFirstLastDate()
   _lastDate = findMinMax->first();
 
   _global = global;
+}
+
+/// Get/Set the split metric.
+void MinervaDocument::splitMetric ( double value )
+{
+  _planet->splitMetric ( value );
+}
+
+bool MinervaDocument::isSplitMetric ( double value ) const
+{
+  return value == _planet->splitMetric();
 }

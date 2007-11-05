@@ -12,10 +12,10 @@
 #include "OsgTools/Render/FBOScreenCapture.h"
 #include "OsgTools/Images/DownSample.h"
 #include "OsgTools/ScopedViewport.h"
+#include "OsgTools/Group.h"
 
 // For debugging...
 #include "Usul/File/Temp.h"
-#include "Usul/File/Remove.h"
 
 #include "osg/Geode"
 #include "osg/Image"
@@ -25,6 +25,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <iostream>
 
 using namespace OsgTools::Render;
 
@@ -39,7 +40,8 @@ _size (),
 _color (),
 _viewMatrix (),
 _numSamples ( 4 ),
-_scale ( 1.0f )
+_scale ( 1.0f ),
+_background()
 {
 }
 
@@ -216,19 +218,44 @@ void TiledScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& sc
   osg::ref_ptr < ProcessScene > ps ( new ProcessScene ( this->scale () ) );
   sceneView.getSceneData()->accept ( *ps );
 
+  osg::ref_ptr < osg::Node > scene ( sceneView.getSceneData() );
+
   try
   {
     this->_capturePixels ( image, sceneView, projection );
   }
   catch ( ... )
   {
+    ps->restoreScene ();
+    sceneView.setSceneData( scene.get() );
+
     std::cout << "Exception caught while trying to capture screen." << std::endl;
   }
 
   ps->restoreScene ();
+  sceneView.setSceneData( scene.get() );
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Linear interpolate.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail {
+
+  osg::Vec4 interpolate ( double u, const osg::Vec4& c0, const osg::Vec4& c1 )
+  {
+    return ( ( c0 * ( 1.0 - u ) ) + ( c1 * u ) );
+  }
+
+  osg::Vec4 bilinearInterpolate ( double x, double y, const osg::Vec4& a, const osg::Vec4& b, const osg::Vec4& c, const osg::Vec4& d )
+  {
+    return ( ( a *( 1 - x ) * ( 1 - y ) ) + ( d * ( 1 - x ) * y ) + ( b * x * ( 1 - y ) ) + ( c * x * y ) );
+  }
+
+}
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Create the image using Super-sampled, tiled rendering...
@@ -260,6 +287,21 @@ void TiledScreenCapture::_capturePixels ( osg::Image& image, osgUtil::SceneView&
   unsigned int tileWidth  ( tileX );
   unsigned int tileHeight ( tileY );
 
+  // Set the tile size.
+  _background.update ( tileX, tileY );
+
+  // Set up the scene for the clear node.
+  osg::ref_ptr < osg::Group > group ( new osg::Group );
+  group->addChild ( sceneView.getSceneData() );
+  
+  osg::ref_ptr < osg::ClearNode > clear ( new osg::ClearNode );
+  clear->setClearColor ( this->clearColor() );
+  clear->addChild ( _background.root() );
+  
+  group->addChild ( clear.get() );
+  
+  sceneView.setSceneData ( group.get() );
+
   // Starting x and y value for the loop.
   // This is pad the final image to ensure edge pixels are correct.
   int firstX ( static_cast < int > ( ::ceil ( filterWidth  / 2.0 - 0.5 ) ) );
@@ -282,22 +324,38 @@ void TiledScreenCapture::_capturePixels ( osg::Image& image, osgUtil::SceneView&
   downSample.numSamples ( this->numSamples( ) );
   downSample.filterSize ( filterWidth, filterHeight );
 
-  //typedef std::vector < std::string > Files;
-  //Files files;
-
   //// Create a temp file.
   //std::string filename ( Usul::File::Temp::file() );
-  //files.push_back ( filename );
 
-  unsigned int i ( 0 );
+  //unsigned int i ( 0 );
+
+  double v ( 0.0 );
+
+  const double du ( static_cast < double > ( tileWidth ) / width );
+  const double dv ( static_cast < double > ( tileHeight ) / height );
+
+  typedef OsgTools::Builders::GradientBackground::Corners Corners;
+
+  osg::Vec4 ll ( _background.color ( Corners::BOTTOM_LEFT ) );
+  osg::Vec4 lr ( _background.color ( Corners::BOTTOM_RIGHT ) );
+  osg::Vec4 ul ( _background.color ( Corners::TOP_LEFT ) );
+  osg::Vec4 ur ( _background.color ( Corners::TOP_RIGHT ) );
 
   // Create the tiles.
   for ( int y = -firstY; y < static_cast < int > ( height ) + firstY; y += tileY )
   {
-    unsigned int j ( 0 );
+    //unsigned int j ( 0 );
+    double u ( 0.0 );
 
     for ( int x = -firstX; x < static_cast < int > ( width ) + firstX; x += tileX )
     {
+      // Interpolate colors for background.
+      _background.color ( Detail::bilinearInterpolate ( u,      v,      ll, lr, ur, ul ), Corners::BOTTOM_LEFT );
+      _background.color ( Detail::bilinearInterpolate ( u + du, v,      ll, lr, ur, ul ), Corners::BOTTOM_RIGHT );
+      _background.color ( Detail::bilinearInterpolate ( u,      v + dv, ll, lr, ur, ul ), Corners::TOP_LEFT );
+      _background.color ( Detail::bilinearInterpolate ( u + du, v + dv, ll, lr, ur, ul ), Corners::TOP_RIGHT );
+      u += du;
+
       // Get the matrix.
       osg::Matrix m ( Detail::computeTileProjection ( projection, width, height, x, y, tileX, tileY ) );
 
@@ -316,12 +374,15 @@ void TiledScreenCapture::_capturePixels ( osg::Image& image, osgUtil::SceneView&
       // Add tile to answer image.
       this->_accumulate ( image, *tile, static_cast < unsigned int > ( x + firstX ), static_cast < unsigned int > ( y + firstY ) );
     }
-
-    ++i;
+     v += dv;
+    //++i;
   }
 
-  /*for ( Files::iterator iter = files.begin(); iter != files.end(); ++iter )
-    Usul::File::remove ( *iter );*/
+  // Restore background
+  _background.color ( ll, Corners::BOTTOM_LEFT );
+  _background.color ( lr, Corners::BOTTOM_RIGHT );
+  _background.color ( ul, Corners::TOP_LEFT );
+  _background.color ( ur, Corners::TOP_RIGHT );
 }
 
 
@@ -369,7 +430,7 @@ void TiledScreenCapture::_accumulate ( osg::Image& image, const osg::Image& tile
         *result++ = *pixels++;
         *result++ = *pixels++;
         *result++ = *pixels++;
-        *result++ = *pixels++;
+        //*result++ = *pixels++;
       }
     }
   }
@@ -500,3 +561,14 @@ void TiledScreenCapture::ProcessScene::apply( osg::Geode& node )
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set background properties.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TiledScreenCapture::background ( const OsgTools::Builders::GradientBackground& background )
+{
+  _background = background;
+}

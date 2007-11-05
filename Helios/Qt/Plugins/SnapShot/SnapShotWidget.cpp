@@ -13,6 +13,7 @@
 #include "Usul/File/Temp.h"
 #include "Usul/File/Remove.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/Interfaces/GUI/ISaveFileDialog.h"
 #include "Usul/Interfaces/ISnapShot.h"
 
 #include "boost/algorithm/string/replace.hpp"
@@ -25,8 +26,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SnapShotWidget::SnapShotWidget( QWidget *parent ) : BaseClass ( parent ),
-  _files ()
+SnapShotWidget::SnapShotWidget( QWidget *parent, Usul::Interfaces::IUnknown* caller ) : BaseClass ( parent ),
+  _files (),
+  _caller ( caller )
 {
   this->setupUi ( this );
 }
@@ -75,23 +77,43 @@ void SnapShotWidget::on__snapShotButton_clicked()
       double frameScale ( _frameScale->value() );
       unsigned int numSamples ( _numSamples->value() );
 
-      // Create a temp file.
-      std::string filename ( Usul::File::Temp::file() );
+      typedef Usul::Interfaces::ISaveFileDialog::Filter  Filter;
+      typedef Usul::Interfaces::ISaveFileDialog::Filters Filters;
+      typedef Usul::Interfaces::ISaveFileDialog::FileResult FileResult;
+      
+      Filters filters;
+      filters.push_back ( Filter ( "Bitmap (*.bmp)", "(*.bmp)" ) );
+      filters.push_back ( Filter ( "JPEG (*.jpg)", "(*.jpg)" ) );
+      filters.push_back ( Filter ( "PNG (*.png)", "(*.png)" ) );
 
-      // Make it a bitmap.
-      boost::algorithm::replace_last ( filename, ".tmp", ".bmp" );
+      Usul::Interfaces::ISaveFileDialog::QueryPtr dialog ( _caller );
 
-      // Save it to our list.
-      _files.push_back ( filename );
+      if ( _caller.valid() )
+      {
+        FileResult result ( dialog->getSaveFileName ( "Save Image", filters ) );
 
-      // Some feedback...
-      std::cout << "Creating image: " << filename << std::endl;
+        std::string filename ( result.first );
+        if ( false == filename.empty() )
+        {
+          // Create a temp file.
+          //std::string filename ( Usul::File::Temp::file() );
 
-      // Take the picture.
-      snapShot->takePicture ( filename, frameScale, numSamples );
+          // Make it a bitmap.
+          //boost::algorithm::replace_last ( filename, ".tmp", ".bmp" );
 
-      // Open it up.
-      QProcess::startDetached ( filename.c_str() );
+          // Save it to our list.
+          //_files.push_back ( filename );
+
+          // Some feedback...
+          std::cout << "Creating image: " << filename << std::endl;
+
+          // Take the picture.
+          snapShot->takePicture ( filename, frameScale, numSamples );
+
+          // Open it up.
+          //QProcess::startDetached ( filename.c_str() );
+        }
+      }
     }
   }
   catch ( const std::exception& e )

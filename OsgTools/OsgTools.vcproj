@@ -484,6 +484,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\ScopedNodeMask.h"
+					>
+				</File>
+				<File
 					RelativePath=".\ScopedOptions.h"
 					>
 				</File>

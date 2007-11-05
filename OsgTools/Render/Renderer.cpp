@@ -18,6 +18,7 @@
 #include "OsgTools/Jitter.h"
 #include "OsgTools/Render/RecordTime.h"
 #include "OsgTools/ScopedProjection.h"
+#include "OsgTools/ScopedNodeMask.h"
 #include "OsgTools/Render/Defaults.h"
 #include "OsgTools/Images/Matrix.h"
 #include "OsgTools/Render/ClampProjection.h"
@@ -1074,6 +1075,11 @@ osg::Image* Renderer::screenCapture ( float frameSizeScale, unsigned int numSamp
   tiled.viewMatrix ( this->viewMatrix() );
   tiled.numSamples ( numSamples );
   tiled.scale ( frameSizeScale );
+  tiled.background ( _gradient );
+  
+  // Turn off the node mask for the clear node.  The tiled screen capture uses it's own clear node.
+  OsgTools::ScopedNodeMask nm ( *_clearNode, 0x0 );
+
   return tiled ( *this->viewer(), _sceneView->getProjectionMatrix() );
 }
 

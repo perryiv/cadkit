@@ -114,7 +114,7 @@ void SnapShotComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
     _dock = new QDockWidget ( QObject::tr ( "Snap Shot" ), main );
     _dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
 
-    SnapShotWidget *widget = new SnapShotWidget ( _dock );
+    SnapShotWidget *widget = new SnapShotWidget ( _dock, _caller );
 
     // Add the dock to the main window.
     _dock->setWidget( widget );

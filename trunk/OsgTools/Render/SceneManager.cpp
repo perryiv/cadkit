@@ -12,8 +12,10 @@
 #include "OsgTools/Font.h"
 #include "OsgTools/Render/Constants.h"
 
+#include "osg/MatrixTransform"
 #include "osg/Geode"
 #include "osg/LightSource"
+#include "osg/PolygonMode"
 
 using namespace OsgTools::Render;
 
@@ -299,10 +301,18 @@ osgText::Text* SceneManager::getText( unsigned int x, unsigned int y )
     _textMap.insert( TextMap::value_type( TextMap::key_type ( x, y ), text ) );
 
     osg::ref_ptr<osg::Group> group ( this->projectionGroupGet ( OsgTools::Render::Constants::TEXT_MATRIX ) );
+    
+    osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+    mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+
     osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
     geode->addDrawable( text.get() );
 
-    group->addChild( geode.get() );
+    mt->addChild( geode.get() );
+    osg::ref_ptr<osg::PolygonMode> mode ( new osg::PolygonMode ( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL ) );
+    mt->getOrCreateStateSet()->setAttributeAndModes ( mode.get(), osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+
+    group->addChild ( mt.get() );
 
     return text.get();
   }

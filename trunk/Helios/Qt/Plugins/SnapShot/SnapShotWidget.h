@@ -14,6 +14,8 @@
 #include "CompileGuard.h"
 #include "ui_SnapShot.h"
 
+#include "Usul/Interfaces/IUnknown.h"
+
 #include "QtGui/QWidget"
 
 #include <vector>
@@ -27,7 +29,7 @@ public:
   typedef QWidget BaseClass;
   typedef std::vector < std::string > Files;
 
-  SnapShotWidget( QWidget *parent = 0x0 );
+  SnapShotWidget( QWidget *parent = 0x0, Usul::Interfaces::IUnknown* caller = 0x0 );
   virtual ~SnapShotWidget();
 
 protected:
@@ -40,6 +42,7 @@ private slots:
 private:
 
   Files            _files;
+  Usul::Interfaces::IUnknown::QueryPtr _caller;
 };
 
 

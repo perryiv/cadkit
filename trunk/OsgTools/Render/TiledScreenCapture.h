@@ -15,6 +15,8 @@
 
 #include "Usul/Math/Vector2.h"
 
+#include "OsgTools/Builders/GradientBackground.h"
+
 #include "osg/AutoTransform"
 #include "osg/Vec4"
 #include "osg/Matrix"
@@ -44,6 +46,9 @@ public:
   void                         size ( unsigned int width, unsigned int height );
   void                         size ( const Usul::Math::Vec2ui& size );
   const Usul::Math::Vec2ui&    size () const;
+
+  // Set the background properties.
+  void                         background ( const OsgTools::Builders::GradientBackground& background );
 
   /// Get/Set the clear color.
   void                         clearColor ( const osg::Vec4& color );
@@ -107,6 +112,7 @@ private:
   osg::Matrix        _viewMatrix;
   unsigned int       _numSamples;
   float              _scale;
+  OsgTools::Builders::GradientBackground _background;
 };
 
 

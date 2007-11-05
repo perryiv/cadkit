@@ -165,6 +165,10 @@ public:
   bool                        showLegend() const;
   void                        showLegend( bool b );
 
+  /// Get/Set the split metric.
+  void                                     splitMetric ( double );
+  bool                                     isSplitMetric ( double ) const;
+
   /// Get/Set the percentage of screen the legend uses.
   void                                     percentScreenWidth ( float );
   float                                    percentScreenWidth();

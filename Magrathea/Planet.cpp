@@ -503,7 +503,7 @@ void  Planet::elevationPatchSize( const int& elevEstimate )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Planet::levelDetail() const
+unsigned int Planet::levelDetail() const
 { 
   return _planet->getLand()->getMaxLevelDetail();
 }
@@ -515,7 +515,7 @@ int Planet::levelDetail() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Planet::levelDetail( const int& levelDetail )
+void Planet::levelDetail( unsigned int levelDetail )
 { 
   _planet->getLand()->setMaxLevelDetail( levelDetail );
   reset(); 
@@ -769,4 +769,17 @@ void Planet::initVisitors ( Usul::Interfaces::IUnknown *caller )
       }
     }
   }
+}
+
+
+/// Get/Set the split metric.
+void Planet::splitMetric ( double value )
+{
+  _planet->getLand()->setSplitMetricRatio ( value );
+  this->reset();
+}
+
+double Planet::splitMetric () const
+{
+  return _planet->getLand()->getSplitMetricRatio();
 }

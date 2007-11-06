@@ -33,7 +33,7 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Math/MinMax.h"
-#include "Usul/Math/Nan.h"
+#include "Usul/Math/NaN.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
 

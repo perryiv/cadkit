@@ -368,6 +368,9 @@ osg::Node* Mesh::operator()() const
   // TODO. For now... without this rendering polygons as "lines" draws a couple of weird extra line. OSG bug?
   geom->setUseDisplayList ( false );
 
+  // Use vertex buffers.
+  //geom->setUseVertexBufferObjects ( true );
+
   // Release the geode and return it.
   return geode.release();
 }

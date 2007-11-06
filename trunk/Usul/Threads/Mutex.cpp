@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Threads/Mutex.h"
+#include "Usul/Trace/Trace.h"
 #include "Usul/Errors/Assert.h"
 
 using namespace Usul::Threads;
@@ -39,6 +40,7 @@ Mutex::CreateFunction *Mutex::_fun = 0x0;
 
 Mutex::Mutex()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -50,6 +52,7 @@ Mutex::Mutex()
 
 Mutex::~Mutex()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -61,6 +64,7 @@ Mutex::~Mutex()
 
 Mutex *Mutex::create()
 {
+  USUL_TRACE_SCOPE_STATIC;
   USUL_ASSERT ( _fun ); // The client needs to set this.
   return (*_fun)();
 }
@@ -75,6 +79,7 @@ Mutex *Mutex::create()
 
 Mutex::CreateFunction *Mutex::createFunction ( Mutex::CreateFunction *fun )
 {
+  USUL_TRACE_SCOPE_STATIC;
   CreateFunction *original = _fun;
   _fun = fun;
   return original;
@@ -89,6 +94,7 @@ Mutex::CreateFunction *Mutex::createFunction ( Mutex::CreateFunction *fun )
 
 Mutex::CreateFunction *Mutex::createFunction()
 {
+  USUL_TRACE_SCOPE_STATIC;
   return _fun;
 }
 
@@ -101,6 +107,7 @@ Mutex::CreateFunction *Mutex::createFunction()
 
 SingleThreadedMutex::SingleThreadedMutex()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -112,6 +119,7 @@ SingleThreadedMutex::SingleThreadedMutex()
 
 SingleThreadedMutex::~SingleThreadedMutex()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -123,6 +131,7 @@ SingleThreadedMutex::~SingleThreadedMutex()
 
 void SingleThreadedMutex::lock()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -134,6 +143,7 @@ void SingleThreadedMutex::lock()
 
 void SingleThreadedMutex::unlock()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -149,6 +159,7 @@ namespace Usul
   {
     Mutex *newSingleThreadedMutexStub()
     {
+      USUL_TRACE_SCOPE_STATIC;
       return new SingleThreadedMutex();
     }
   };

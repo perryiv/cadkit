@@ -37,6 +37,7 @@
 #include "Usul/Print/Matrix.h"
 #include "Usul/Math/Matrix44.h"
 #include "Usul/Math/UMath.h"
+#include "Usul/Math/MinMax.h"
 
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/Group.h"
@@ -76,11 +77,12 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _update( UpdatePolicyPtr( new UpdatePolicy( 10 ) ) ),
   _useTimeLine( false ),
   _isAnimating( false ),
-  _showTools ( false )
+  _showTools ( false ),
+  _userSpecifiedEndTime( false )
 {
   USUL_TRACE_SCOPE;
   _timeSet.currentTime = 0;
-  _timeSet.endTime = 200;
+  _timeSet.endTime = 0;
   _timeSet.interval = 1;
   _timeSet.timeline = new osg::Switch;
 }
@@ -923,6 +925,7 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
     if ( "endTime" == iter->first )
     {
       Usul::Strings::fromString ( iter->second, _timeSet.endTime );
+      _userSpecifiedEndTime = true;
     }
     if ( "interval" == iter->first )
     {
@@ -930,10 +933,11 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
     }
     if ( "timelength" == iter->first )
     {
-      unsigned int interval = 10;
+      unsigned int interval = 1;
       Usul::Strings::fromString ( iter->second, interval );
       std::cout << "Setting time update interval to " << interval << std::endl;
       _update = ( UpdatePolicyPtr( new UpdatePolicy( interval ) ) );
+      
     }
         
   }
@@ -978,7 +982,7 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
   MpdTimeGroup timeGroup;
   timeGroup.startTime = currentTime;
   timeGroup.endTime = currentTime + 1;
-  currentTime ++;
+  
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
     if ( "startTime" == iter->first )
@@ -991,8 +995,14 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
       currentTime = timeGroup.endTime;
     }    
   }
+  if( false == _userSpecifiedEndTime )
+  {
+    unsigned int currOrGroup = Usul::Math::maximum( currentTime, timeGroup.startTime );
+    unsigned int endTime = Usul::Math::maximum( _timeSet.endTime, currOrGroup );
+    _timeSet.endTime = endTime;
+  }
   _timeSet.groups.push_back( timeGroup );
-
+  
   GroupPtr group ( new osg::Group );
 
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
@@ -1004,6 +1014,7 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
       group->addChild( this->_parseModel( *node, caller ) );
     }  
   }
+  currentTime ++;
   return group.release();
 }
 

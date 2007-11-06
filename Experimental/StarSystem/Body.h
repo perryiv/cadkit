@@ -74,6 +74,10 @@ public:
   // Convert lat, lon, height to x,y,z.
   void                      latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const;
 
+  // Set/get the maximum level.
+  void                      maxLevel ( unsigned int level );
+  unsigned int              maxLevel() const;
+
   // Get the maximum radius.
   double                    maxRadius() const;
 
@@ -125,6 +129,7 @@ private:
   bool _frame;
   unsigned int _texturesPerFrame;
   unsigned int _maxTexturesPerFrame;
+  unsigned int _maxLevel;
 };
 
 

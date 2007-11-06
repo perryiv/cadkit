@@ -45,6 +45,8 @@
 #include "osg/Material"
 #include "osg/Texture2D"
 
+#include <limits>
+
 using namespace StarSystem;
 
 USUL_IMPLEMENT_TYPE_ID ( Tile );
@@ -66,7 +68,7 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _mesh ( new OsgTools::Mesh ( meshSize[0], meshSize[1] ) ),
   _level ( level ),
   _flags ( Tile::ALL ),
-  _children (),
+  _children(),
   _textureUnit ( 0 ),
   _image ( image ),
   _texture ( new osg::Texture2D ),
@@ -232,8 +234,8 @@ void Tile::_update()
   this->dirty ( false, Tile::VERTICES, false );
   this->dirty ( false, Tile::TEX_COORDS, false );
 
-  // Depth of skirt.  This function needs to be tweeked.
-  double offset ( 25000 - ( this->level() * 150 ) );
+  // Depth of skirt.  TODO: This function needs to be tweeked.
+  double offset ( Usul::Math::minimum<double> ( ( 25000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
 
   osg::ref_ptr < osg::Group > group ( new osg::Group );
   group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], offset ) ); // Left skirt.
@@ -349,7 +351,8 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   // Handle bad state.
   if ( ( 0x0 == _mesh ) || 
        ( _mesh->rows() < 2 ) || 
-       ( _mesh->columns() < 2 ) )
+       ( _mesh->columns() < 2 ) ||
+       ( 0x0 == _body ) )
   {
     return;
   }
@@ -358,10 +361,6 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   OsgTools::Mesh &mesh ( *_mesh );
   const osg::Vec3f &eye ( cv.getViewPointLocal() );
   
-  // Make sure the eye values are a number.
-  if ( Usul::Math::nan ( eye[0] ) || Usul::Math::nan ( eye[1] ) || Usul::Math::nan ( eye[2] ) )
-    return;
-
   const osg::Vec3f &p00 ( mesh.point ( 0, 0 ) );
   const osg::Vec3f &p0N ( mesh.point ( 0, mesh.columns() - 1 ) );
   const osg::Vec3f &pN0 ( mesh.point ( mesh.rows() - 1, 0 ) );
@@ -377,15 +376,17 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 
   // Check with smallest distance.
   const float dist ( Usul::Math::minimum ( dist00, dist0N, distN0, distNN, distBC ) );
-  const bool low ( ( dist > ( _splitDistance * _splitDistance ) ) );
+  const bool farAway ( ( dist > ( _splitDistance * _splitDistance ) ) );
   const unsigned int numChildren ( this->getNumChildren() );
   USUL_ASSERT ( numChildren > 0 );
 
-  // Make sure texture state is on.
-  //osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
-  //ss->setTextureMode ( _textureUnit, GL_TEXTURE_2D, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+  // Check for nan in eye values (it's happened).
+  const bool eyeIsNan ( Usul::Math::nan ( eye[0] ) || Usul::Math::nan ( eye[1] ) || Usul::Math::nan ( eye[2] ) );
 
-  if ( low )
+  // Check if we've gone too deep.
+  const bool tooDeep ( this->level() >= _body->maxLevel() );
+
+  if ( farAway || eyeIsNan || tooDeep )
   {
     this->_update();
 
@@ -431,16 +432,16 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
       const Extents ul ( Extents::Vertex ( mn[0], md[1] ), Extents::Vertex ( md[0], mx[1] ) );
       const Extents ur ( Extents::Vertex ( md[0], md[1] ), Extents::Vertex ( mx[0], mx[1] ) );
 
-      double deltaU ( _texCoords[1] - _texCoords[0] );
-      double deltaV ( _texCoords[3] - _texCoords[2] );
+      const double deltaU ( _texCoords[1] - _texCoords[0] );
+      const double deltaV ( _texCoords[3] - _texCoords[2] );
 
-      double startU ( _texCoords[0] );
-      double halfU  ( _texCoords[0] + ( deltaU / 2.0 ) );
-      double endU   ( startU + deltaU );
+      const double startU ( _texCoords[0] );
+      const double halfU  ( _texCoords[0] + ( deltaU / 2.0 ) );
+      const double endU   ( startU + deltaU );
 
-      double startV ( _texCoords[2] );
-      double halfV  ( _texCoords[2] + ( deltaV / 2.0 ) );
-      double endV   ( startV + deltaV );
+      const double startV ( _texCoords[2] );
+      const double halfV  ( _texCoords[2] + ( deltaV / 2.0 ) );
+      const double endV   ( startV + deltaV );
 
       const Usul::Math::Vec4d tll ( startU, halfU, halfV,  endV );
       const Usul::Math::Vec4d tlr ( halfU,  endU,  halfV,  endV );
@@ -458,11 +459,6 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
       group->addChild ( _children[UPPER_LEFT]  );
       group->addChild ( _children[UPPER_RIGHT] );
       this->addChild ( group.get() );
-
-      // Remove texture state
-      //osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
-      //ss->setTextureMode ( _textureUnit, GL_TEXTURE_2D, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
-      //ss->removeTextureMode ( _textureUnit, GL_TEXTURE_2D );
     }
 
     // Traverse last child.
@@ -712,10 +708,10 @@ void Tile::texture ( osg::Texture2D* texture )
   if ( 0x0 != texture )
   {
     _texture = texture;
-    if ( _children[LOWER_LEFT].valid()  && this->image () == _children[LOWER_LEFT]->image()  ) _children[LOWER_LEFT]->texture ( texture );
-    if ( _children[LOWER_RIGHT].valid() && this->image () == _children[LOWER_RIGHT]->image() ) _children[LOWER_RIGHT]->texture ( texture );
-    if ( _children[UPPER_LEFT].valid()  && this->image () == _children[UPPER_LEFT]->image()  ) _children[UPPER_LEFT]->texture ( texture );
-    if ( _children[UPPER_RIGHT].valid() && this->image () == _children[UPPER_RIGHT]->image() ) _children[UPPER_RIGHT]->texture ( texture );
+    if ( _children[LOWER_LEFT].valid()  && this->image() == _children[LOWER_LEFT]->image()  ) _children[LOWER_LEFT]->texture ( texture );
+    if ( _children[LOWER_RIGHT].valid() && this->image() == _children[LOWER_RIGHT]->image() ) _children[LOWER_RIGHT]->texture ( texture );
+    if ( _children[UPPER_LEFT].valid()  && this->image() == _children[UPPER_LEFT]->image()  ) _children[UPPER_LEFT]->texture ( texture );
+    if ( _children[UPPER_RIGHT].valid() && this->image() == _children[UPPER_RIGHT]->image() ) _children[UPPER_RIGHT]->texture ( texture );
 
     // Set our image.
     this->image ( texture->getImage() );
@@ -731,7 +727,7 @@ void Tile::texture ( osg::Texture2D* texture )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Texture2D* Tile::texture ()
+osg::Texture2D* Tile::texture()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -823,7 +819,7 @@ void Tile::image ( osg::Image* image )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* Tile::image ()
+osg::Image* Tile::image()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

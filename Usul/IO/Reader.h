@@ -20,10 +20,29 @@
 #include "Usul/Cast/Cast.h"
 
 #include <stdexcept>
+#include <string>
 
 
 namespace Usul {
 namespace IO {
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Exception class for unexpected end-of-file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Exceptions
+{
+  struct UnexpectedEndOfFile : public std::runtime_error
+  {
+    typedef std::runtime_error BaseClass;
+    UnexpectedEndOfFile ( const std::string &message ) : BaseClass ( message )
+    {
+    }
+  };
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -39,7 +58,7 @@ template < class EndianPolicy_ > struct Reader
   template < class Stream, class T > static void read ( Stream &stream, T &t )
   {
     if ( EOF == stream.peek() )
-      throw std::runtime_error ( "Error 1496689971: Unexpected end of file reached" );
+      throw Usul::IO::Exceptions::UnexpectedEndOfFile ( "Error 1496689971: Unexpected end of file reached" );
     stream.read ( USUL_UNSAFE_CAST ( char *, &t ), sizeof ( T ) );
     EndianPolicy::convert ( t );
   }
@@ -84,6 +103,7 @@ template < class EndianPolicy_ > struct Reader
 
 typedef Reader < Usul::Endian::FromBigToSystem >    ReadBigEndian;
 typedef Reader < Usul::Endian::FromLittleToSystem > ReadLittleEndian;
+typedef Reader < Usul::Endian::FromSystemToSystem > ReadSystemEndian;
 
 
 } // namespace IO

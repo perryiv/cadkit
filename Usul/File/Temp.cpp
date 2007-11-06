@@ -116,8 +116,7 @@ Temp::~Temp()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Work-around for Win32's tmpnam() implementation. It does not consider if 
-//  the directory is write-protected.
+//  Return a valid temporary file name.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -128,6 +127,9 @@ std::string Temp::file()
   LastError::init();
 
   #ifdef _MSC_VER // Visual C++
+
+  // Work-around for Win32's tmpnam() implementation. It does not consider if 
+  // the directory is write-protected.
 
   // Compile-time sanity check.
   const unsigned int bufSize ( 16383 ); // 2^14 - 1

@@ -15,8 +15,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Trace/Print.h"
-#include "Usul/Threads/Mutex.h"
-#include "Usul/Threads/Guard.h"
+//#include "Usul/Threads/Mutex.h"
+//#include "Usul/Threads/Guard.h"
 
 using namespace Usul::Trace;
 
@@ -30,8 +30,8 @@ using namespace Usul::Trace;
 namespace Detail
 {
   std::ostream *_stream ( 0x0 );
-  Usul::Threads::Mutex *_mutex ( 0x0 );
-  typedef Usul::Threads::Guard<Usul::Threads::Mutex> Guard;
+  //Usul::Threads::Mutex *_mutex ( 0x0 );
+  //typedef Usul::Threads::Guard<Usul::Threads::Mutex> Guard;
 }
 
 
@@ -47,7 +47,7 @@ void Print::execute ( const std::string &s )
   {
     if ( false == s.empty() )
     {
-      Detail::Guard guard ( *Detail::_mutex );
+      //Detail::Guard guard ( *Detail::_mutex );
       *Detail::_stream << s << std::flush;
     }
   }
@@ -66,7 +66,7 @@ void Print::execute ( const char *s )
   {
     if ( 0x0 != s )
     {
-      Detail::Guard guard ( *Detail::_mutex );
+      //Detail::Guard guard ( *Detail::_mutex );
       *Detail::_stream << s << std::flush;
     }
   }
@@ -84,7 +84,6 @@ void Print::execute ( number_type num )\
 {\
   if ( 0x0 != Detail::_stream )\
   {\
-    Detail::Guard guard ( *Detail::_mutex );\
     *Detail::_stream << num << std::flush;\
   }\
 }
@@ -96,6 +95,7 @@ void Print::execute ( number_type num )\
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+IMPLEMENT_NUMBER_PRINTING_MEMBER ( const void * );
 IMPLEMENT_NUMBER_PRINTING_MEMBER ( unsigned long );
 IMPLEMENT_NUMBER_PRINTING_MEMBER ( unsigned short );
 IMPLEMENT_NUMBER_PRINTING_MEMBER ( unsigned int );
@@ -116,6 +116,6 @@ IMPLEMENT_NUMBER_PRINTING_MEMBER ( float );
 
 void Print::init ( std::ostream *s )
 {
-  Detail::_mutex = Usul::Threads::Mutex::create();
+  //Detail::_mutex = Usul::Threads::Mutex::create();
   Detail::_stream = s;
 }

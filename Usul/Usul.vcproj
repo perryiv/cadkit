@@ -47,7 +47,7 @@
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
 				AdditionalIncludeDirectories="../"
-				PreprocessorDefinitions="_USUL_TRACE;WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_USUL"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_USUL"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -1771,18 +1771,6 @@
 					RelativePath=".\Pointers\WeakPointer.h"
 					>
 				</File>
-				<Filter
-					Name="Memory"
-					>
-					<File
-						RelativePath=".\Memory\Block.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Memory\Pool.h"
-						>
-					</File>
-				</Filter>
 			</Filter>
 			<Filter
 				Name="Predicates"
@@ -2843,6 +2831,18 @@
 				>
 				<File
 					RelativePath=".\Units\Length.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Memory"
+				>
+				<File
+					RelativePath=".\Memory\Block.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Memory\Pool.h"
 					>
 				</File>
 			</Filter>

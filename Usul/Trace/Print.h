@@ -30,6 +30,7 @@ namespace Trace {
 struct USUL_EXPORT Print
 {
   static void execute ( const std::string & );
+  static void execute ( const void * );
   static void execute ( const char * );
   static void execute ( unsigned long );
   static void execute ( unsigned short );

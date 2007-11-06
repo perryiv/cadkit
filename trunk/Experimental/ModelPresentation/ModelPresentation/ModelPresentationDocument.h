@@ -194,6 +194,7 @@ private:
   bool                        _useTimeLine;
   bool                        _isAnimating;
   bool                        _showTools;
+  bool                        _userSpecifiedEndTime;
 
   Locations                   _locations;
   LocationNames               _locationNames;

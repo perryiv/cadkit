@@ -17,10 +17,14 @@
 #include "TriangleReaderArcAsciiGrid.h"
 
 #include "Usul/File/Stats.h"
+#include "Usul/File/Temp.h"
+#include "Usul/IO/Reader.h"
+#include "Usul/IO/Writer.h"
 #include "Usul/Math/Vector4.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Policies/Update.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/Trace/Trace.h"
 
 #include "osg/Vec3"
@@ -138,6 +142,44 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to write a triangle to the stream.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  template < class Stream, class Vertex, class Normal > 
+  inline void writeTriangle ( Stream &stream, const Vertex &v0, const Vertex &v1, const Vertex &v2, const Normal &n )
+  {
+    Usul::IO::WriteSystemEndian::write3 ( stream, v0 );
+    Usul::IO::WriteSystemEndian::write3 ( stream, v1 );
+    Usul::IO::WriteSystemEndian::write3 ( stream, v2 );
+    Usul::IO::WriteSystemEndian::write3 ( stream, n  );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to read a triangle from the stream.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  template < class Stream, class Vertex, class Normal > 
+  inline void readTriangle ( Stream &stream, Vertex &v0, Vertex &v1, Vertex &v2, Normal &n )
+  {
+    Usul::IO::ReadSystemEndian::read3 ( stream, v0 );
+    Usul::IO::ReadSystemEndian::read3 ( stream, v1 );
+    Usul::IO::ReadSystemEndian::read3 ( stream, v2 );
+    Usul::IO::ReadSystemEndian::read3 ( stream, n  );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Read the file.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -190,16 +232,22 @@ void TriangleReaderArcAsciiGrid::_read()
 
   // Set the progress numbers.
   _progress.first = 0;
-  _progress.second = 2 * numPoints;
+  _progress.second = numPoints;
 
-  //delete old triangles
-  _document->clear();
+  // Feedback.
+  std::cout << Usul::Strings::format ( "Grid Size X: ", gridSize[0], ", Y: ", gridSize[1], ", Total: ", numPoints, '\n',
+                                       "Lower Left: ", lowerLeft[0], ", ", lowerLeft[1], '\n', 
+                                       "Cell Size: ", cellSize, '\n',
+                                       "No Data: ", noDataInt ) << std::endl;
 
-  // Make list of triangles while we parse. This will be slower but is more 
-  // likely to work with really big files that push the system's limits.
-  typedef Usul::Math::Vector4 < Vec3 > TriangleProxy;
-  typedef std::list < TriangleProxy > TriangleProxyList;
-  TriangleProxyList _triangleProxies;
+  // Make a temp file to hold all the valid triangles.
+  Usul::File::Temp validTriangles ( Usul::File::Temp::BINARY );
+  std::cout << Usul::Strings::format ( "Making temporary file '", validTriangles.name(), "' to hold valid triangles" ) << std::endl;
+
+  // When done parsing, holds the number valid triangles.
+  unsigned int count ( 0 );
+
+  std::cout << Usul::Strings::format ( "Reading rows from: ", _file.first, " ..." ) << std::endl;
 
   // Grab the first row.
   std::for_each ( row0.begin(), row0.end(), Helper::ReadStream ( _file.first, in ) );
@@ -238,7 +286,9 @@ void TriangleReaderArcAsciiGrid::_read()
         {
           Vec3 n ( ( d - c ) ^ ( a - c ) );
           n.normalize();
-          _triangleProxies.push_back ( TriangleProxy ( a, c, d, n ) );
+          //_triangleProxies.push_back ( TriangleProxy ( a, c, d, n ) );
+          Helper::writeTriangle ( validTriangles.stream(), a, c, d, n );
+          ++count;
         }
 
         // Add second triangle.
@@ -246,8 +296,15 @@ void TriangleReaderArcAsciiGrid::_read()
         {
           Vec3 n ( ( b - d ) ^ ( a - d ) );
           n.normalize();
-          _triangleProxies.push_back ( TriangleProxy ( a, d, b, n ) );
+          //_triangleProxies.push_back ( TriangleProxy ( a, d, b, n ) );
+          Helper::writeTriangle ( validTriangles.stream(), a, d, b, n );
+          ++count;
         }
+      }
+
+      if ( update() )
+      {
+        std::cout << Usul::Strings::format ( "Added ", count, " triangles so far..." ) << std::endl;
       }
 
       // Feedback.
@@ -258,49 +315,93 @@ void TriangleReaderArcAsciiGrid::_read()
     row0.swap ( row1 );
   }
 
+  // Close the input file.
+  in.close();
+
+  // Close (but don't delete) the temporary file.
+  validTriangles.stream().flush();
+  validTriangles.close();
+
   // Delete the rows.
   { Values temp; std::swap ( row0, temp ); }
   { Values temp; std::swap ( row1, temp ); }
 
   // Reserve triangles. Reduce size until it works.
-  unsigned int numTrianglesToAllocate ( _triangleProxies.size() );
+  unsigned int numTrianglesToAllocate ( count );
   while ( numTrianglesToAllocate > 0 )
   {
     try
     {
       _document->reserveTriangles ( numTrianglesToAllocate );
-      std::cout << "Allocated " << numTrianglesToAllocate << " triangles" << std::endl;
+      std::cout << Usul::Strings::format ( "Allocated ", numTrianglesToAllocate, " triangles" ) << std::endl;
       break;
     }
     catch ( const std::bad_alloc & )
     {
-      std::cout << "Failed to allocate " << numTrianglesToAllocate << " triangles" << std::endl;
+      std::cout << Usul::Strings::format ( "Failed to allocate ", numTrianglesToAllocate, " triangles" ) << std::endl;
       numTrianglesToAllocate = static_cast < unsigned int > ( static_cast < double > ( numTrianglesToAllocate ) * 0.9 );
     }
   }
 
-  // Trim triangles that we can't load.
-  TriangleProxyList::iterator first ( _triangleProxies.begin() );
-  std::advance ( first, numTrianglesToAllocate );
-  _triangleProxies.erase ( first, _triangleProxies.end() );
-
-  // Loop through saved triangles.
-  while ( false == _triangleProxies.empty() )
   {
-    // Add triangles.
-    const TriangleProxy &p ( _triangleProxies.front() );
-    OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( p[0], p[1], p[2], p[3], false, true ) );
-    t->original ( true );
+    // Open the temporary file.
+    std::ifstream in2;
+    in2.rdbuf()->pubsetbuf ( buffer, bufSize );
+    in2.open ( validTriangles.name().c_str(), std::ofstream::out | std::ofstream::binary );
+    if ( !in2.is_open() )
+      throw std::runtime_error ( "Error 1199892810: Failed to open temporary triangle file: " + validTriangles.name() );
 
-    // Remove from the front as we go.
-    _triangleProxies.pop_front();
+    // Space for the triangles.
+    Vec3 v0 ( 0, 0, 0 );
+    Vec3 v1 ( 0, 0, 0 );
+    Vec3 v2 ( 0, 0, 0 );
+    Vec3 n  ( 0, 0, 0 );
 
-    // Feedback.
-    this->_incrementProgress ( update() );
+    // Set the progress numbers.
+    _progress.first = 0;
+    _progress.second = numTrianglesToAllocate;
+
+    // No memory pool. These files can get really big.
+    _document->usePool ( false );
+
+    // Read and add triangles.
+    for ( unsigned int k = 0; k < numTrianglesToAllocate; ++k )
+    {
+      if ( update() )
+      {
+        std::cout << Usul::Strings::format ( "Reading triangle ", k, " of ", numTrianglesToAllocate ) << std::endl;
+      }
+
+      // This could throw if the binary file did not get all the 
+      // valid triangles, which happens when the disk fills up.
+      try
+      {
+        // Read triangle.
+        Helper::readTriangle ( in2, v0, v1, v2, n );
+      }
+      catch ( const Usul::IO::Exceptions::UnexpectedEndOfFile & )
+      {
+        std::cout << Usul::Strings::format ( "Error 3718606332: Unexpected end of file reached while parsing: ", validTriangles.name(), ". Proceeding with the triangles already added." ) << std::endl;
+        break;
+      }
+
+      // This could throw if the file is huge.
+      try
+      {
+        // Add triangle.
+        OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( v0, v1, v2, n, false, true ) );
+        t->original ( true );
+      }
+      catch ( const std::bad_alloc & )
+      {
+        std::cout << Usul::Strings::format ( "Error 3718606332: Failed to allocate memory for triangle ", k, " of ", numTrianglesToAllocate, ". Proceeding with the triangles already added." ) << std::endl;
+        break;
+      }
+
+      // Feedback.
+      this->_incrementProgress ( update() );
+    }
   }
-
-  // Trim the size down.
-  _document->purge();
 }
 
 

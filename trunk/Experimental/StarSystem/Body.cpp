@@ -53,7 +53,8 @@ Body::Body ( const Vec2d &r, Usul::Jobs::Manager& manager ) : BaseClass(),
   _textureJobs (),
   _frame ( false ),
   _texturesPerFrame ( 0 ),
-  _maxTexturesPerFrame ( 1 )
+  _maxTexturesPerFrame ( 1 ),
+  _maxLevel ( 50 )
 {
   USUL_TRACE_SCOPE;
 
@@ -372,4 +373,32 @@ osg::Texture2D* Body::texture ( int id )
   }
 
   return texture.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the maximum level.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Body::maxLevel() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _maxLevel;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the maximum level.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::maxLevel ( unsigned int level )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _maxLevel = level;
 }

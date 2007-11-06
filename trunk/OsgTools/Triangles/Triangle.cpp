@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OsgTools/Triangles/Triangle.h"
+#include "OsgTools/Triangles/Exceptions.h"
 #include "OsgTools/Triangles/SharedVertex.h"
 
 #include "Usul/MPL/StaticAssert.h"
@@ -45,7 +46,7 @@ Triangle::Triangle ( SharedVertex *v0, SharedVertex *v1, SharedVertex *v2, Index
 {
   // Make sure the vertices are not the same.
   if ( v0 == v1 || v0 == v2 || v1 == v2 )
-    Usul::Exceptions::Thrower<std::invalid_argument>
+    Usul::Exceptions::Thrower<OsgTools::Triangles::Exceptions::TriangleVerticesEqual>
       ( "Error 1437076236: Triangle vertices are equal" );
 
   // Reference the vertices.

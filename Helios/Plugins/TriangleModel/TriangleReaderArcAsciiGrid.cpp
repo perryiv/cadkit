@@ -16,6 +16,8 @@
 
 #include "TriangleReaderArcAsciiGrid.h"
 
+#include "OsgTools/Triangles/Exceptions.h"
+
 #include "Usul/File/Stats.h"
 #include "Usul/File/Temp.h"
 #include "Usul/IO/Reader.h"
@@ -391,6 +393,11 @@ void TriangleReaderArcAsciiGrid::_read()
         // Add triangle.
         OsgTools::Triangles::Triangle::RefPtr t ( _document->addTriangle ( v0, v1, v2, n, false, true ) );
         t->original ( true );
+      }
+      catch ( const OsgTools::Triangles::Exceptions::TriangleVerticesEqual & )
+      {
+        std::cout << Usul::Strings::format ( "Error 3597395729: Two or more triangle vertices are equal: v0 = ", v0[0], ' ', v0[1], ' ', v0[2], ", v1 = ", v1[0], ' ', v1[1], ' ', v1[2], ", v2 = ", v2[0], ' ', v2[1], ' ', v2[2] ) << std::endl;
+        break;
       }
       catch ( const std::bad_alloc & )
       {

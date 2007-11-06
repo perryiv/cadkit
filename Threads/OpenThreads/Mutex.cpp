@@ -18,6 +18,7 @@
 #include "OpenThreads/Mutex"
 
 #include "Usul/Threads/ThreadId.h"
+#include "Usul/Trace/Trace.h"
 #include "Usul/Exceptions/Thrower.h"
 
 #include <stdexcept>
@@ -35,6 +36,7 @@ Mutex::Mutex() : BaseClass(),
   _mutex ( new OpenThreads::Mutex ), 
   _threadId ( 0 )
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -46,6 +48,7 @@ Mutex::Mutex() : BaseClass(),
 
 Mutex::~Mutex()
 {
+  USUL_TRACE_SCOPE;
   delete _mutex;
 }
 
@@ -58,6 +61,8 @@ Mutex::~Mutex()
 
 void Mutex::_check()
 {
+  USUL_TRACE_SCOPE;
+
   // See if this thread has the lock.
   if ( Usul::Threads::currentThreadId() == _threadId )
   {
@@ -75,6 +80,8 @@ void Mutex::_check()
 
 void Mutex::lock()
 {
+  USUL_TRACE_SCOPE;
+
   // See if we can lock.
   this->_check();
 
@@ -98,6 +105,8 @@ void Mutex::lock()
 
 void Mutex::unlock()
 {
+  USUL_TRACE_SCOPE;
+
   // Lock the mutex.
   if ( 0 != _mutex->unlock() )
   {
@@ -122,6 +131,7 @@ namespace Threads
   {
     Usul::Threads::Mutex *newOpenThreadsMutex()
     {
+      USUL_TRACE_SCOPE_STATIC;
       return new Mutex();
     }
   };

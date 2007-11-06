@@ -568,6 +568,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Triangles\Exceptions.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Triangles\Factory.cpp"
 					>
 				</File>

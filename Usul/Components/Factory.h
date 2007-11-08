@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2005, Perry L Miller IV
+//  Copyright (c) 2005, Perry L Miller IV and Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -124,5 +124,30 @@ Usul::Interfaces::IUnknown *Factory < Component >::createInstance ( unsigned lon
 
 }
 }
+
+
+#ifdef _DEBUG 
+#define USUL_DEBUG_MODE true
+#else
+#define USUL_DEBUG_MODE false
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macro for functions needed in Cadkit plugins.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define USUL_DECLARE_COMPONENT_FACTORY(component_name) \
+extern "C" bool usul_is_debug_build() \
+{ \
+  return USUL_DEBUG_MODE;\
+} \
+extern "C" Usul::Interfaces::IClassFactory *usul_get_class_factory() \
+{ \
+  Usul::Interfaces::IClassFactory::ValidRefPtr factory ( new Usul::Components::Factory<component_name>() ); \
+  return factory.release(); \
+} \
+
 
 #endif // _USUL_COMPONENTS_FACTORY_CLASS_H_

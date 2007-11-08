@@ -169,6 +169,14 @@
 			UniqueIdentifier="{3fdfe9b9-2c0d-4bd9-b52a-972f8bb039c3}"
 			>
 			<File
+				RelativePath=".\Delegate.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Delegate.h"
+				>
+			</File>
+			<File
 				RelativePath=".\EditBackground.cpp"
 				>
 			</File>
@@ -245,11 +253,11 @@
 			Name="Generated Files"
 			>
 			<File
-				RelativePath=".\generatedfiles\moc_Viewer.cpp"
+				RelativePath=".\generatedfiles\moc_EditBackground.cpp"
 				>
 			</File>
-                  <File
-				RelativePath=".\generatedfiles\moc_EditBackground.cpp"
+			<File
+				RelativePath=".\generatedfiles\moc_Viewer.cpp"
 				>
 			</File>
 		</Filter>

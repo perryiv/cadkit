@@ -11,7 +11,7 @@
 //  SceneFactory class.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
+#if 0
 #include "Helios/Plugins/SceneModel/SceneComponent.h"
 
 #include "Usul/Components/Factory.h"
@@ -44,3 +44,4 @@ extern "C" Usul::Interfaces::IClassFactory *usul_get_class_factory()
   Usul::Interfaces::IClassFactory::ValidRefPtr factory ( new Usul::Components::Factory<SceneComponent>() );
   return factory.release();
 }
+#endif

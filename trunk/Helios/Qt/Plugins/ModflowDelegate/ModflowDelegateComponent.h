@@ -28,7 +28,7 @@
 #include <map>
 #include <string>
 
-namespace QtTools { class TreeControl; }
+namespace QtTools { class TreeControl; class PropertyBrowser; }
 
 class QDockWidget;
 class QWidget;
@@ -95,6 +95,7 @@ private:
   Unknown::QueryPtr _caller;
   DockedMap _docked;
   QtTools::TreeControl *_layerTree;
+  QtTools::PropertyBrowser *_propertyBrowser;
   QLabel *_intersectInfo;
 };
 

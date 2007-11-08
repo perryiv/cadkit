@@ -18,6 +18,7 @@
 #include "Helios/Qt/Views/OSG/Viewer.h"
 #include "Helios/Qt/Views/OSG/Format.h"
 
+#include "QtTools/PropertyBrowser.h"
 #include "QtTools/TreeControl.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
@@ -53,6 +54,7 @@ ModflowDelegateComponent::ModflowDelegateComponent() : BaseClass(),
   _caller ( static_cast < Usul::Interfaces::IUnknown * > ( 0x0 ) ),
   _docked(),
   _layerTree ( 0x0 ),
+  _propertyBrowser ( 0x0 ),
   _intersectInfo ( 0x0 )
 {
   USUL_TRACE_SCOPE;
@@ -117,6 +119,7 @@ void ModflowDelegateComponent::_destroy()
 
   // These were just deleted by the parent.
   _layerTree = 0x0;
+  _propertyBrowser = 0x0;
   _intersectInfo = 0x0;
 
   // Done with this.
@@ -217,6 +220,9 @@ void ModflowDelegateComponent::activeDocumentChanged ( Usul::Interfaces::IUnknow
   {
     _layerTree->buildTree ( newDoc );
   }
+  if ( 0x0 != _propertyBrowser )
+  {
+  }
   if ( 0x0 != _intersectInfo )
   {
     _intersectInfo->clear();
@@ -252,6 +258,21 @@ void ModflowDelegateComponent::addDockWindow ( Usul::Interfaces::IUnknown *calle
 
     // Save in the map and release.
     _docked[_layerTree] = dockWidget.release();
+  }
+
+  // Property browser.
+  {
+    // Build the docking window.
+    std::auto_ptr<QDockWidget> dockWidget ( this->_makeDockWindow ( "Property Browser", "PropertyBrowserDockWidget" ) );
+
+    // Create the tree for the scene graph.
+    _propertyBrowser = new QtTools::PropertyBrowser ( dockWidget.get() );
+
+    // Set the docking window's widget.
+    dockWidget->setWidget ( _propertyBrowser );
+
+    // Save in the map and release.
+    _docked[_propertyBrowser] = dockWidget.release();
   }
 
   // Intersection window.

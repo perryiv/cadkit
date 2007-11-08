@@ -14,6 +14,8 @@
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Documents/Manager.h"
 
+#include <sstream>
+
 using namespace Minerva::Core::Commands;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( AnimationSpeed, AnimationSpeed::BaseClass );
@@ -40,11 +42,15 @@ AnimationSpeed::AnimationSpeed ( ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AnimationSpeed::AnimationSpeed ( double speed ) : 
-  BaseClass ( 0x0 ),
+AnimationSpeed::AnimationSpeed ( double speed, Usul::Interfaces::IUnknown *caller ) : 
+  BaseClass ( caller ),
   _speed    ( speed )
 {
   this->_addMember ( "speed", _speed );
+
+  std::ostringstream os;
+  os << speed;
+  this->text( os.str() );
 }
 
 
@@ -86,6 +92,19 @@ void AnimationSpeed::_execute ()
 {
   if ( false == Detail::tryAnimationSpeedChange ( this->caller (), _speed ) )
     Detail::tryAnimationSpeedChange ( Usul::Documents::Manager::instance().activeDocument (), _speed );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the check.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool AnimationSpeed::updateCheck () const
+{
+  Minerva::Interfaces::IAnimationControl::QueryPtr control ( const_cast < Usul::Interfaces::IUnknown* > ( this->caller() ) );
+  return control.valid() ? _speed == control->animateSpeed ( ) : false;
 }
 
 

@@ -33,12 +33,14 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   AnimationSpeed ( );
-  AnimationSpeed ( double speed );
+  AnimationSpeed ( double speed, Usul::Interfaces::IUnknown *caller = 0x0 );
 
 protected:
   virtual ~AnimationSpeed();
 
   virtual void                _execute();
+
+  virtual bool                updateCheck () const;
 
 private:
 

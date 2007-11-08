@@ -378,6 +378,10 @@
 				Name="Evaluate"
 				>
 				<File
+					RelativePath=".\Evaluate\Derivative.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Evaluate\Point.h"
 					>
 				</File>
@@ -414,7 +418,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Math\Curvature.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Math\Distance.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Math\FrenetSerret.h"
 					>
 				</File>
 				<File

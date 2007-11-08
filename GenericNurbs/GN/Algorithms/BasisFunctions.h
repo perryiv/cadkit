@@ -364,6 +364,149 @@ void basisFunctions ( const CurveType &curve,
 }
 
 
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Compute the non-vanishing basis functions and derivatives.
+//
+//  spline:         The spline.
+//  span:           The knot span corresponding to the given parameter.
+//  u:              The parameter we are finding the basis functions for.
+//  n:              How many derivatives to compute.
+//  ders:           The derivatives.
+//
+//  Alogrithm A2.3 from "The NURBS Book" page 72.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+template
+<
+  class CurveType, 
+  class Derivatives
+>
+inline
+void basisFunctionsDerivatives ( const CurveType &curve,
+                                 typename CurveType::SizeType span,
+                                 typename CurveType::IndependentArgument u,
+                                 typename CurveType::SizeType n,
+                                 Derivatives &ders )
+{
+  // Declare types.
+  typedef typename CurveType::IndependentSequence IndependentSequence;
+  typedef typename CurveType::IndependentType IndependentType;
+  typedef typename CurveType::SizeType SizeType;
+  typedef typename CurveType::ErrorCheckerType ErrorCheckerType;
+
+  typedef typename CurveType::SizeContainer SizeContainer;
+  typedef typename CurveType::DependentContainer MatrixContainer;
+  typedef typename CurveType::DependentTester DependentTester;
+  typedef GN::Math::Matrix < SizeType, MatrixContainer, SizeContainer, DependentTester, ErrorCheckerType > Matrix;
+  typedef typename CurveType::WorkSpace WorkSpace;
+
+  // Has to be a curve.
+  GN_IS_CURVE ( CurveType );
+
+  const IndependentSequence &knots = curve.knotVector ( 0 );
+  const SizeType order ( curve.order() );
+  const SizeType degree ( curve.degree() );
+
+  Matrix ndu ( order, order );
+  ndu(0,0) = 1.0;
+
+  WorkSpace left;
+  WorkSpace right;
+  double saved ( 0.0 );
+
+  left.accommodate  ( order );
+  right.accommodate ( order );
+
+  for ( SizeType j = 1; j <= degree; ++ j )
+  {
+    left[j] = u - knots[span + 1 - j];
+    right[j] = knots[span + j ] - u;
+    saved = 0.0;
+
+    for ( SizeType r = 0; r < j; ++ r )
+    {
+      ndu(j,r) = right[r+1] + left[j-r];
+      double temp ( ndu(r,j-1)/ndu(j,r) );
+
+      ndu(r,j) = saved + right[r+1]*temp;
+      saved = left[j-r]*temp;
+    }
+    ndu(j,j) = saved;
+  }
+
+  // Load the basis functions.
+  for ( SizeType j = 0; j <= degree; ++j )
+  {
+    ders(0,j) = ndu(j,degree);
+  }
+
+  Matrix a ( 2, order );
+  a.set ( Matrix::value_type ( 0 ) );
+
+  // Compute the derivatives.
+  for ( SizeType r = 0; r <= degree; ++ r )
+  {
+    SizeType s1 ( 0 ), s2 ( 1 );
+
+    a ( 0, 0 ) = 1.0;
+
+    // Compute the kth derivative.
+    for ( SizeType k = 1; k <= n; ++k )
+    {
+      double d ( 0.0 );
+      int rk ( r - k );
+      int pk ( degree - k );
+      if ( r >= k )
+      {
+        a(s2,0) = a(s1,0)/ndu(pk+1,rk);
+        d = a(s2,0)*ndu(rk,pk);
+      }
+
+      int j1 ( 0 ), j2 ( 0 );
+
+      if ( rk >= -1 )
+        j1 = 1;
+      else
+        j1 = -rk;
+
+      if ( ( static_cast < int > ( r ) - 1 ) <= pk )
+        j2 = k - 1;
+      else
+        j2 = degree - r;
+
+      for ( int j = j1; j <= j2; ++j )
+      {
+        a ( s2, j ) = ( a( s1, j ) - a ( s1, j - 1 ) ) / ndu ( pk + 1, rk + j );
+        d += a ( s2, j ) * ndu ( rk + j, pk );
+      }
+
+      if ( r <= pk )
+      {
+        a ( s2, k ) = -a( s1, k - 1 ) / ndu ( pk + 1, r );
+        d += a ( s2, k ) * ndu ( r, pk );
+      }
+
+      ders ( k, r ) = d;
+
+      // Switch rows.
+      SizeType t ( s1 );
+      s1 = s2;
+      s2 = t;
+    }
+  }
+
+  // Multiply through by the correct factors.
+  SizeType r0 ( degree );
+  for ( SizeType k = 1; k <= n; ++k )
+  {
+    for ( SizeType j = 0; j <= degree; ++j )
+      ders ( k, j ) *= r0;
+    r0 *= ( degree - k );
+  }
+}
+
 }; // namespace Algorithms
 }; // namespace GN
 

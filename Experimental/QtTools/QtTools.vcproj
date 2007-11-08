@@ -260,6 +260,36 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PropertyBrowser.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PropertyBrowser.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing PropertyBrowser.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\PropertyBrowser.h&quot; -o &quot;.\GeneratedFiles\moc_PropertyBrowser.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\PropertyBrowser.h"
+							Outputs=".\GeneratedFiles\moc_PropertyBrowser.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing PropertyBrowser.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\PropertyBrowser.h&quot; -o &quot;.\GeneratedFiles\moc_PropertyBrowser.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\PropertyBrowser.h"
+							Outputs=".\GeneratedFiles\moc_PropertyBrowser.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\TreeControl.cpp"
 					>
 				</File>
@@ -295,6 +325,10 @@
 				>
 				<File
 					RelativePath=".\generatedfiles\moc_ColorButton.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_PropertyBrowser.cpp"
 					>
 				</File>
 				<File

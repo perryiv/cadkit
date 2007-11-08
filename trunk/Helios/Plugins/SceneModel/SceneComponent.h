@@ -53,9 +53,7 @@ public:
   /// Usul::Interfaces::IDocumentCreate
   virtual Document *           createDocument ( Unknown *caller = 0x0 );
 
-protected: 
-
-  friend class SceneDocument;
+protected:
 
   // Do not copy.
   SceneComponent ( const SceneComponent & );
@@ -63,7 +61,6 @@ protected:
 
   /// Use reference counting.
   virtual ~SceneComponent();
-
 
 };
 

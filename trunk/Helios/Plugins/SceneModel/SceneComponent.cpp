@@ -16,9 +16,11 @@
 #include "SceneComponent.h"
 #include "SceneDocument.h"
 
+#include "Usul/Components/Factory.h"
 
 #include <algorithm>
 
+USUL_DECLARE_COMPONENT_FACTORY( SceneComponent );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( SceneComponent, SceneComponent::BaseClass );
 
 

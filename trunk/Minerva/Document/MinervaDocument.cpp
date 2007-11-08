@@ -105,7 +105,7 @@ SERIALIZE_XML_INITIALIZER_LIST
   this->showLegend ( false );
 
     
-  if( Usul::System::Host::name() == "viz2" )
+  if( Usul::System::Host::name() == "viz4" )
   {
     this->showLegend ( true );
     this->sceneManager()->legendWidth ( 0.75 );
@@ -1563,7 +1563,7 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
       //std::cout << "Time: " << time << " Duration: " << duration << " Speed: " << _animationSpeed <<  std::endl;
 
       // Animate if we should.
-      if ( duration > 0.1f /*_animationSpeed*/ )
+      if ( duration > _animationSpeed )
       {
         if( _animateSettings->timestepType() == Settings::DAY )
           lastDate.incrementDay();
@@ -1670,6 +1670,13 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   m->append ( new Button       ( new Minerva::Core::Commands::StopAnimation  ( me ) ) );
   m->append ( new Button       ( new Minerva::Core::Commands::PauseAnimation ( me ) ) );
   m->append ( new ToggleButton ( new Minerva::Core::Commands::ShowPastEvents ( me ) ) );
+
+  MenuKit::Menu::RefPtr speed ( new MenuKit::Menu ( "Speed" ) );
+  speed->append ( new ToggleButton ( new Minerva::Core::Commands::AnimationSpeed ( 0.1, me ) ) );
+  speed->append ( new ToggleButton ( new Minerva::Core::Commands::AnimationSpeed ( 0.5, me ) ) );
+  speed->append ( new ToggleButton ( new Minerva::Core::Commands::AnimationSpeed ( 1.0, me ) ) );
+  speed->append ( new ToggleButton ( new Minerva::Core::Commands::AnimationSpeed ( 2.0, me ) ) );
+  m->append ( speed );
 
   {
     MenuKit::Menu::RefPtr layerMenu ( new MenuKit::Menu ( "Layers", MenuKit::Menu::VERTICAL ) );
@@ -1839,6 +1846,7 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
     osg::ref_ptr < osgText::Text > text ( tm->getText ( 15, 15 ) );
     text->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
     text->setText ( ( requests > 0 || toCompile > 0 ) ? os.str() : "" );
+    //text->setText ( os.str() );
     //tm->setText ( 15, 15, os.str() );
   }
 }

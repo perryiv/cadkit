@@ -16,6 +16,9 @@
 #include "Experimental/WRF/WrfModel/AnimateCommand.h"
 #include "Experimental/WRF/WrfModel/LoadDataJob.h"
 
+#include "Usul/Adaptors/Bind.h"
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Convert.h"
@@ -47,6 +50,7 @@
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
+#include "MenuKit/RadioButton.h"
 
 #include "osgText/Text"
 #include "osg/Geode"
@@ -872,6 +876,8 @@ WRFDocument::CommandList WRFDocument::getCommandList ()
 
 void WRFDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller )
 {
+  typedef MenuKit::RadioButton RadioButton;
+
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   // Make the menu.
@@ -892,6 +898,10 @@ void WRFDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * ca
 
   wrf->append ( new MenuKit::Button ( new AnimateCommand ( true, me.get() ) ) );
   wrf->append ( new MenuKit::Button ( new AnimateCommand ( false, me.get() ) ) );
+
+  MenuKit::Menu::RefPtr tf ( new MenuKit::Menu );
+  tf->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "0", Usul::Adaptors::bind1<void> ( 0, Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::transferFunction ) ), Usul::Adaptors::bind1<bool> ( 0, Usul::Adaptors::memberFunction<bool> ( this, &WRFDocument::isTransferFunction ) ) ) ) );
+  tf->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "1", Usul::Adaptors::bind1<void> ( 1, Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::transferFunction ) ), Usul::Adaptors::bind1<bool> ( 1, Usul::Adaptors::memberFunction<bool> ( this, &WRFDocument::isTransferFunction ) ) ) ) ); 
 
   menu.append ( wrf );
 }
@@ -1545,4 +1555,19 @@ void WRFDocument::_buildDefaultTransferFunctions ()
 
   _transferFunctions.push_back ( new TransferFunction1D ( grayscale ) );
   _transferFunctions.push_back ( new TransferFunction1D ( hsv ) );
+}
+
+
+void WRFDocument::transferFunction ( unsigned int i )
+{
+  Guard guard ( this );
+  _currentTransferFunction = i;
+  _volumeNode->transferFunction ( _transferFunctions.at ( i ).get() );
+  this->dirty ( true );
+}
+
+bool WRFDocument::isTransferFunction ( unsigned int i ) const
+{
+  Guard guard ( this );
+  return i == _currentTransferFunction;
 }

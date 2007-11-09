@@ -123,6 +123,10 @@ public:
   /// Get the maximium number of items in the cache.
   unsigned int                maxCacheSize () const;
 
+  /// Set the transfer function.
+  void                        transferFunction ( unsigned int i );
+  bool                        isTransferFunction ( unsigned int i ) const;
+
 protected:
 
   void                        _processReadRequests ( Usul::Threads::Thread *);
@@ -225,6 +229,7 @@ private:
   Usul::Math::Vec2d _lowerLeft;
   Usul::Math::Vec2d _upperRight;
   bool _usePlanet;
+  unsigned int _currentTransferFunction;
   TransferFunctions _transferFunctions;
 
   SERIALIZE_XML_DEFINE_MAP;

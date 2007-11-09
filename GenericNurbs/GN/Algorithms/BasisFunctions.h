@@ -17,6 +17,7 @@
 
 
 #include "GN/Macros/ErrorCheck.h"
+#include "GN/Math/Matrix.h"
 #include "GN/MPL/TypeCheck.h"
 
 

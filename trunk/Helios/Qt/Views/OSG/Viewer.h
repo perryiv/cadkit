@@ -113,6 +113,7 @@ protected:
   void                                    _initPlacement ();
   void                                    _resize ( unsigned int w, unsigned int h );
   bool                                    _isSize ( unsigned int w, unsigned int h ) const;
+  void                                    _customSize();
 
   // Override these events.
   virtual void                            paintEvent  ( QPaintEvent * event );

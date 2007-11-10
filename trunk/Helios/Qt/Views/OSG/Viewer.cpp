@@ -35,6 +35,12 @@
 #include "QtCore/QUrl"
 #include "QtCore/QTimer"
 #include "QtGui/QResizeEvent"
+#include "QtGui/QDialog"
+#include "QtGui/QHBoxLayout"
+#include "QtGui/QVBoxLayout"
+#include "QtGui/QPushButton"
+#include "QtGui/QSpinBox"
+#include "QtGui/QLabel"
 
 using namespace CadKit::Helios::Views::OSG;
 
@@ -952,6 +958,9 @@ void Viewer::menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller )
         Usul::Adaptors::bind2<void> ( s[0], s[1], Usul::Adaptors::memberFunction<void> ( this, &Viewer::_resize ) ), 
         Usul::Adaptors::bind2<bool> ( s[0], s[1], Usul::Adaptors::memberFunction<bool> ( this, &Viewer::_isSize ) ) ) ) );
     }
+    size->append ( new Button ( Usul::Commands::genericCommand ( "Custom...", 
+        Usul::Adaptors::memberFunction<void> ( this, &Viewer::_customSize ), 
+        Usul::Commands::TrueFunctor() ) ) );
 
     view->append ( size );
 
@@ -1120,4 +1129,62 @@ bool Viewer::_isSize ( unsigned int w, unsigned int h ) const
 {
   QSize size ( this->size () );
   return static_cast < int > ( w ) == size.width() && static_cast < int > ( h ) == size.height();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Enter a custom size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_customSize()
+{
+  QDialog dialog;
+  dialog.setWindowTitle ( "Enter Custom Size" );
+
+  QVBoxLayout *topLayout ( new QVBoxLayout );
+  dialog.setLayout ( topLayout );
+
+  QSpinBox *x ( new QSpinBox );
+  QSpinBox *y ( new QSpinBox );
+
+  x->setMaximum ( 4096 );
+  y->setMaximum ( 4096 );
+
+  const QSize size ( this->size () );
+
+  x->setValue ( size.width() );
+  y->setValue ( size.height() );
+
+  {
+    QHBoxLayout *layout ( new QHBoxLayout );
+    layout->addWidget ( new QLabel ( "X:" ) );
+    layout->addWidget ( x );
+    layout->addWidget ( new QLabel ( "Y:" ) );
+    layout->addWidget ( y );
+    topLayout->addLayout ( layout );
+  }
+
+  {
+    QPushButton *ok ( new QPushButton ( "Ok" ) );
+    QPushButton *cancel ( new QPushButton ( "Cancel" ) );
+
+    connect ( ok, SIGNAL ( clicked() ), &dialog, SLOT ( accept() ) );
+    connect ( cancel, SIGNAL ( clicked() ), &dialog, SLOT ( reject() ) );
+
+    QHBoxLayout *layout ( new QHBoxLayout );
+    layout->addStretch();
+    layout->addWidget( ok );
+    layout->addWidget( cancel );
+    topLayout->addLayout ( layout );
+  }
+
+  if ( QDialog::Accepted == dialog.exec() )
+  {
+    const int xValue ( x->value() );
+    const int yValue ( y->value() );
+
+    this->resize ( xValue, yValue );
+  }
 }

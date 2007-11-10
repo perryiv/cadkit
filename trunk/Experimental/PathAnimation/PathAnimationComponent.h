@@ -77,9 +77,12 @@ protected:
   virtual ~PathAnimationComponent();
 
   void                          _buildMenu();
+  void                          _buildCameraMenu();
 
   bool                          _canClosePath() const;
   bool                          _canPlay() const;
+  bool                          _canOpenPath ( Usul::Interfaces::IUnknown * caller ) const;
+  bool                          _canSavePath ( Usul::Interfaces::IUnknown * caller ) const;
   void                          _closeCameraPath();
   void                          _currentCameraAppend();
   void                          _currentCameraPrepend();
@@ -105,6 +108,7 @@ protected:
 
   void                          _saveCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );
   void                          _saveAsCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );
+  void                          _setCameraPosition ( unsigned int );
   void                          _setCurrentPath ( CameraPath::RefPtr );
   void                          _setDegree ( unsigned int );
   void                          _stopPlaying();
@@ -116,6 +120,7 @@ private:
   PathAnimationComponent &operator = ( const PathAnimationComponent & );
 
   MenuKit::Menu::RefPtr _pathsMenu;
+  MenuKit::Menu::RefPtr _cameraMenu;
   CameraPath::RefPtr _currentPath;
   Paths _paths;
   CurvePlayer::RefPtr _player;

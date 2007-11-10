@@ -53,8 +53,10 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PathAnimationComponent, PathAnimationComponent
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PathAnimationComponent::PathAnimationComponent() : BaseClass(),
+PathAnimationComponent::PathAnimationComponent() : 
+  BaseClass(),
   _pathsMenu ( new MenuKit::Menu ( "Camera Paths" ) ),
+  _cameraMenu ( new MenuKit::Menu ( "Cameras" ) ),
   _currentPath ( 0x0 ),
   _paths(),
   _player ( 0x0 ),
@@ -142,11 +144,19 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   // Build the menu.
   MenuKit::Menu::RefPtr menu ( m.find ( "Cameras", true ) );
   menu->append ( new Button ( Usul::Commands::genericCommand ( "New Path", Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_newPath ), Usul::Commands::TrueFunctor() ) ) );
-  menu->append ( new Button ( Usul::Commands::genericCommand ( "Open Path...", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_openPath ) ), Usul::Commands::TrueFunctor() ) ) );
-  menu->append ( new Button ( Usul::Commands::genericCommand ( "Save Path...", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_saveCurrentPath ) ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_isCurrentPathModified ) ) ) );
-  menu->append ( new Button ( Usul::Commands::genericCommand ( "Save Path As...", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_saveAsCurrentPath ) ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
-  menu->append ( new Button ( Usul::Commands::genericCommand ( "Export Movie...", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_exportMovie ) ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
 
+  // Only add the open button if the interface is implemented.
+  if ( this->_canOpenPath( caller ) )
+    menu->append ( new Button ( Usul::Commands::genericCommand ( "Open Path...", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_openPath ) ), Usul::Commands::TrueFunctor() ) ) );
+
+  // Only add the save buttons if hte interface is implemented.
+  if ( this->_canSavePath ( caller ) )
+  {
+    menu->append ( new Button ( Usul::Commands::genericCommand ( "Save Path...", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_saveCurrentPath ) ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_isCurrentPathModified ) ) ) );
+    menu->append ( new Button ( Usul::Commands::genericCommand ( "Save Path As...", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_saveAsCurrentPath ) ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+    menu->append ( new Button ( Usul::Commands::genericCommand ( "Export Movie...", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_exportMovie ) ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  }
+  
   menu->addSeparator();
   menu->append ( new Button ( Usul::Commands::genericCommand ( "Append",  Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraAppend  ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
   menu->append ( new Button ( Usul::Commands::genericCommand ( "Prepend", Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraPrepend ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
@@ -156,6 +166,10 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   menu->append ( new Button ( Usul::Commands::genericCommand ( "Play Forward",  Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_playForward  ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
   menu->append ( new Button ( Usul::Commands::genericCommand ( "Play Backward", Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_playBackward ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
   menu->append ( new Button ( Usul::Commands::genericCommand ( "Stop",          Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_stopPlaying  ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_isPlaying ) ) ) );
+
+  menu->addSeparator();
+  
+  menu->append ( _cameraMenu.get() );
 
   menu->addSeparator();
   MenuKit::Menu::RefPtr sub ( new MenuKit::Menu ( "Degree" ) );
@@ -308,6 +322,9 @@ void PathAnimationComponent::_currentCameraAppend()
 
   // Use helper function.
   Helper::insertCamera ( Usul::Adaptors::memberFunction ( _currentPath.get(), &CameraPath::cameraAppend ) );
+
+  // Build the camera menu.
+  this->_buildCameraMenu();
 }
 
 
@@ -328,6 +345,9 @@ void PathAnimationComponent::_currentCameraPrepend()
 
   // Use helper function.
   Helper::insertCamera ( Usul::Adaptors::memberFunction ( _currentPath.get(), &CameraPath::cameraPrepend ) );
+
+  // Build the camera menu.
+  this->_buildCameraMenu();
 }
 
 
@@ -348,6 +368,9 @@ void PathAnimationComponent::_closeCameraPath()
 
   // Close the path.
   _currentPath->closePath();
+
+  // Build the camera menu.
+  this->_buildCameraMenu();
 }
 
 
@@ -957,4 +980,94 @@ void PathAnimationComponent::_exportMovie ( Usul::Interfaces::IUnknown::QueryPtr
     // Play the movie.
     this->_playForward();
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is there an interface to open a path..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PathAnimationComponent::_canOpenPath ( Usul::Interfaces::IUnknown* caller ) const
+{
+  Usul::Interfaces::ILoadFileDialog::QueryPtr fd ( caller );
+  return fd.valid();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is there an interface to save a path..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PathAnimationComponent::_canSavePath ( Usul::Interfaces::IUnknown* caller ) const
+{
+  Usul::Interfaces::ISaveFileDialog::QueryPtr fd ( caller );
+  return fd.valid();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the camera menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_buildCameraMenu()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Clear what we have.
+  _cameraMenu->clear();
+
+  if ( false == _currentPath.valid() )
+    return;
+
+  // Number of frames.
+  unsigned int numFrames ( _currentPath->size() );
+
+  // Build the buttons.
+  for ( unsigned int i = 0; i < numFrames; ++ i )
+  {
+    std::ostringstream name;
+    name << "Camera " << i;
+    _cameraMenu->append ( new MenuKit::Button ( 
+      Usul::Commands::genericCommand ( name.str(),  
+                                       Usul::Adaptors::bind1<void> ( i, 
+                                       Usul::Adaptors::memberFunction ( this, &PathAnimationComponent::_setCameraPosition  ) ), 
+                                       Usul::Commands::TrueFunctor() ) ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the view to the given camera position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_setCameraPosition ( unsigned int num )
+{
+  // Get needed interface.
+  Usul::Interfaces::IViewMatrix::QueryPtr vm ( Usul::Documents::Manager::instance().activeView() );
+  if ( false == vm.valid() || false == _currentPath.valid() )
+    return;
+
+  Usul::Math::Vec3d eye, center, up;
+  _currentPath->camera ( eye, center, up, num );
+
+  // Make sure the vectors are normalized.
+  up.normalize();
+
+  // Make the matrix.
+  osg::Matrixd mat ( osg::Matrixd::identity() );
+  mat.makeLookAt ( osg::Vec3d ( eye[0], eye[1], eye[2] ), osg::Vec3d ( center[0], center[1], center[2] ), osg::Vec3d ( up[0], up[1], up[2] ) );
+
+  // Set the matrix.
+  vm->setViewMatrix ( mat );
+
+
 }

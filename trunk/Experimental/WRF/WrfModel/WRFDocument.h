@@ -27,7 +27,6 @@
 #include "Usul/Interfaces/ITimestepAnimation.h"
 #include "Usul/Interfaces/ITimeVaryingData.h"
 #include "Usul/Interfaces/IUpdateListener.h"
-#include "Usul/Interfaces/ICommandList.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 
 #include "Serialize/XML/Macros.h"
@@ -48,7 +47,6 @@ class WRFDocument : public Usul::Documents::Document,
                     public Usul::Interfaces::ITimestepAnimation,
                     public Usul::Interfaces::ITimeVaryingData,
                     public Usul::Interfaces::IUpdateListener,
-                    public Usul::Interfaces::ICommandList,
                     public Usul::Interfaces::IMenuAdd
 {
 public:
@@ -155,9 +153,6 @@ protected:
 
   /// Usul::Interfaces::IUpdateListener
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
-
-  /// Usul::Interfaces::ICommandList
-  virtual CommandList         getCommandList ();
 
   /// Add to the menu.
   virtual void                menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );

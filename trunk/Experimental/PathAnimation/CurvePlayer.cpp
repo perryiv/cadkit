@@ -386,7 +386,7 @@ void CurvePlayer::update ( Usul::Interfaces::IUnknown *caller )
   }
 
   // Increment the current parameter.
-  _current += this->stepSize();
+  _current += this->stepSize() / ( _curve.numControlPoints() - 1 );
 
   // Check to see if we're off the end.
   if ( _current > _curve.lastKnot() )

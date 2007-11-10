@@ -129,6 +129,42 @@ Usul::Commands::Command *genericCheckCommand (
 }
 
 
+template
+<
+  class ExecuteFunctor, 
+  class CheckFunctor,
+  class EnableFunctor
+>
+Usul::Commands::Command *genericCheckCommand ( 
+  const std::string &name, 
+  ExecuteFunctor f, 
+  CheckFunctor c,
+  EnableFunctor e,
+  Usul::Interfaces::IUnknown * caller = 0x0 )
+{
+  typedef ExecutePolicy < ExecuteFunctor, CheckFunctor > Policy;
+  typedef GenericCheckCommand < ExecuteFunctor, CheckFunctor, EnableFunctor, Policy > Cmd;
+  return new Cmd ( name, f, c, e, caller );
+}
+
+
+template
+<
+  class ExecuteFunctor, 
+  class CheckFunctor
+>
+Usul::Commands::Command *genericToggleCommand ( 
+  const std::string &name, 
+  ExecuteFunctor f, 
+  CheckFunctor c,
+  Usul::Interfaces::IUnknown * caller = 0x0 )
+{
+  typedef TogglePolicy < ExecuteFunctor, CheckFunctor > Policy;
+  typedef GenericCheckCommand < ExecuteFunctor, CheckFunctor, TrueFunctor, Policy > Cmd;
+  return new Cmd ( name, f, c, caller );
+}
+
+
 }
 }
 

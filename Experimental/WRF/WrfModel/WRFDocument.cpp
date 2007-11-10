@@ -18,6 +18,7 @@
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Commands/GenericCommand.h"
 #include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
@@ -163,8 +164,6 @@ Usul::Interfaces::IUnknown *WRFDocument::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ITimeVaryingData * > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
-  case Usul::Interfaces::ICommandList::IID:
-    return static_cast < Usul::Interfaces::ICommandList * > ( this );
   case Usul::Interfaces::IMenuAdd::IID:
     return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
   default:
@@ -836,46 +835,13 @@ void WRFDocument::_updateCache ()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get a list of avialable commands.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-WRFDocument::CommandList WRFDocument::getCommandList ()
-{
-  USUL_TRACE_SCOPE;
-
-  Usul::Interfaces::IUnknown::QueryPtr me ( this );
-
-  CommandList commands;
-
-  commands.push_back ( new NextTimestep ( this ) );
-  commands.push_back ( new PreviousTimestep ( this ) );
-
-  for ( ChannelInfos::iterator iter = _channelInfo.begin(); iter != _channelInfo.end(); ++ iter )
-  {
-    commands.push_back ( new ChannelCommand ( (*iter)->name (), (*iter)->index (), this ) );
-  }
-
-  commands.push_back ( new ChangeNumPlanes ( 4.0, this ) );
-  commands.push_back ( new ChangeNumPlanes ( 2.0, this ) );
-  commands.push_back ( new ChangeNumPlanes ( 0.5, this ) );
-  commands.push_back ( new ChangeNumPlanes ( 0.25, this ) );
-
-  commands.push_back ( new AnimateCommand ( true, me.get() ) );
-  commands.push_back ( new AnimateCommand ( false, me.get() ) );
-
-  return commands;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Add to the menu.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void WRFDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller )
 {
+  typedef MenuKit::Button Button;
   typedef MenuKit::RadioButton RadioButton;
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
@@ -883,6 +849,7 @@ void WRFDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * ca
   // Make the menu.
   MenuKit::Menu::RefPtr wrf ( new MenuKit::Menu ( "WRF" ) );
   
+  wrf->append ( new Button ( Usul::Commands::genericCommand ( "First Timestep", Usul::Adaptors::bind1<void> ( 0, Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::setCurrentTimeStep )  ), Usul::Commands::TrueFunctor() ) ) );
   wrf->append ( new MenuKit::Button ( new NextTimestep ( this ) ) );
   wrf->append ( new MenuKit::Button ( new PreviousTimestep ( this ) ) );
 
@@ -899,9 +866,11 @@ void WRFDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * ca
   wrf->append ( new MenuKit::Button ( new AnimateCommand ( true, me.get() ) ) );
   wrf->append ( new MenuKit::Button ( new AnimateCommand ( false, me.get() ) ) );
 
-  MenuKit::Menu::RefPtr tf ( new MenuKit::Menu );
+  MenuKit::Menu::RefPtr tf ( new MenuKit::Menu ( "Transfer Functions" ) );
   tf->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "0", Usul::Adaptors::bind1<void> ( 0, Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::transferFunction ) ), Usul::Adaptors::bind1<bool> ( 0, Usul::Adaptors::memberFunction<bool> ( this, &WRFDocument::isTransferFunction ) ) ) ) );
   tf->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "1", Usul::Adaptors::bind1<void> ( 1, Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::transferFunction ) ), Usul::Adaptors::bind1<bool> ( 1, Usul::Adaptors::memberFunction<bool> ( this, &WRFDocument::isTransferFunction ) ) ) ) ); 
+
+  wrf->append ( tf.get() );
 
   menu.append ( wrf );
 }
@@ -1558,6 +1527,13 @@ void WRFDocument::_buildDefaultTransferFunctions ()
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the transfer function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void WRFDocument::transferFunction ( unsigned int i )
 {
   Guard guard ( this );
@@ -1565,6 +1541,13 @@ void WRFDocument::transferFunction ( unsigned int i )
   _volumeNode->transferFunction ( _transferFunctions.at ( i ).get() );
   this->dirty ( true );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this the current  transfer function?
+//
+///////////////////////////////////////////////////////////////////////////////
 
 bool WRFDocument::isTransferFunction ( unsigned int i ) const
 {

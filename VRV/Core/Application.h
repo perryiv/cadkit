@@ -28,6 +28,7 @@
 #include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/GUI/ISaveFileDialog.h"
 #include "Usul/Interfaces/IUpdateSubject.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/ICommand.h"
@@ -123,7 +124,8 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public Usul::Interfaces::IRenderingPasses,
                                public Usul::Interfaces::IViewport,
                                public Usul::Interfaces::IView,
-                               public Usul::Interfaces::ITextMatrix
+                               public Usul::Interfaces::ITextMatrix,
+                               public Usul::Interfaces::ISaveFileDialog
 {
 public:
   // Typedefs.
@@ -392,6 +394,13 @@ protected:
   /// Caputure the pixels.
   void                          _capturePixels ( const std::string& filename );
 
+  /// Get the next name for file to save.
+  std::string                   _filename ( const std::string& base, const std::string& ext );
+
+  /// Set the allow update state.
+  bool                          _setAllowUpdate ( bool );
+  bool                          _isUpdateOn () const;
+
   /// Get/set the clipping distances (VRV::Interfaces::IClippingDistanceFloat).
   virtual void            getClippingDistances ( float &nearDist, float &farDist ) const;
   virtual void            setClippingDistances ( float nearDist, float farDist );
@@ -511,6 +520,9 @@ protected:
   /// Remove text (ITextMatrix)
   virtual void                  removeText ( unsigned int x, unsigned int y );
 
+  // Get the name of the file to save to (ISaveFileDialog)
+  virtual FileResult            getSaveFileName  ( const std::string &title = "Save", const Filters &filters = Filters() );
+
   /// No copying.
   Application ( const Application& );
   Application& operator = (const Application&);
@@ -591,6 +603,8 @@ private:
   osg::Matrixf                           _home;
   bool                                   _timeBased;
   ColorMap                               _colorMap;
+  unsigned int                           _count;
+  bool                                   _allowUpdate;
 };
 
 }

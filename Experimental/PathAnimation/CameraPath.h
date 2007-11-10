@@ -43,6 +43,9 @@ public:
   // Constructor.
   CameraPath();
 
+  /// Get the camera info.
+  void                          camera ( Usul::Math::Vec3d &eye, Usul::Math::Vec3d &center, Usul::Math::Vec3d &up, unsigned int num ) const;
+
   // Insert the camera information.
   void                          cameraAppend  ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up );
   void                          cameraPrepend ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up );

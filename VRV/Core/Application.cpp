@@ -21,6 +21,10 @@
 #include "VRV/Commands/Navigator.h"
 #include "VRV/Commands/BackgroundColor.h"
 
+#include "Usul/Adaptors/Bind.h"
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Commands/GenericCommand.h"
+#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/CommandLine/Parser.h"
@@ -43,6 +47,7 @@
 #include "Usul/Print/Matrix.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Convert.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/System/Host.h"
 #include "Usul/System/Directory.h"
 #include "Usul/System/Clock.h"
@@ -128,7 +133,9 @@ Application::Application() :
   _translationSpeed  ( 1.0f ),
   _home              ( osg::Matrixf::identity() ),
   _timeBased         ( true ),
-  _colorMap          ()
+  _colorMap          (),
+  _count             ( 0 ),
+  _allowUpdate       ( true )
 {
   USUL_TRACE_SCOPE;
 
@@ -317,6 +324,8 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IView * > ( this );
   case Usul::Interfaces::ITextMatrix::IID:
     return static_cast < Usul::Interfaces::ITextMatrix* > ( this );
+  case Usul::Interfaces::ISaveFileDialog::IID:
+    return static_cast < Usul::Interfaces::ISaveFileDialog* > ( this );
   default:
     return 0x0;
   }
@@ -2088,7 +2097,7 @@ bool Application::_allowNotify () const
 {
   // Don't notify if the menu is shown.
   MenuPtr m ( const_cast < Menu* > ( this->menu() ) );
-  if ( true == m.valid() && true == m->isVisible() )
+  if ( false == this->_isUpdateOn() || ( true == m.valid() && true == m->isVisible() ) )
   {
     return false;
   }
@@ -3283,6 +3292,8 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
 
   menu->append ( new Button       ( new BasicCommand ( "Calibrate Joystick", ExecuteFunctor ( this, &Application::analogTrim ) ) ) );
   menu->append ( new ToggleButton ( new CheckCommand ( "Hide Scene", BoolFunctor ( this, &Application::menuSceneShowHide ), CheckFunctor ( this, &Application::menuSceneShowHide ) ) ) );
+
+  menu->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Update", Usul::Adaptors::memberFunction<void> ( this, &Application::_setAllowUpdate ), Usul::Adaptors::memberFunction<bool> ( this, &Application::_isUpdateOn ) ) ) );
 }
 
 
@@ -3712,4 +3723,76 @@ void Application::setText ( unsigned int x, unsigned int y, const std::string& t
 void Application::removeText ( unsigned int x, unsigned int y )
 {
   _sceneManager->removeText ( x, y );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name of the file to save to.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::FileResult Application::getSaveFileName  ( const std::string &title, const Filters &filters )
+{
+  std::cout << "In getSaveFilename" << std::endl;
+
+  FileResult result;
+
+   // If the machine name is the same as the writer...
+  const std::string host    ( Usul::System::Host::name() );
+  const std::string writer  ( this->preferences()->fileWriterMachineName() );
+
+  // Write the file iff the machine name is the same as the writer-name.
+  if ( filters.size() > 1 && host == writer )
+  {
+    const Filter filter ( filters.front() );
+    const std::string ext ( filter.second );
+    
+    result.first = this->_filename ( "vrv_file", ext );
+    result.second = filter;
+
+    std::cout << result.first;
+
+  }
+
+  return result;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get section for current document..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Application::_filename ( const std::string& base, const std::string& ext )
+{
+  Guard guard ( this->mutex () );
+  return Usul::Strings::format ( base, _count++, ext );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the allow update state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_setAllowUpdate ( bool state )
+{
+  Guard guard ( this );
+  _allowUpdate = state;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is update turned on?.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_isUpdateOn () const
+{
+  Guard guard ( this );
+  return _allowUpdate;
 }

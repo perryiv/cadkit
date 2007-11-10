@@ -16,23 +16,23 @@
 #ifndef _SCENE_MODEL_COMPONENT_CLASS_H_
 #define _SCENE_MODEL_COMPONENT_CLASS_H_
 
-#include "CompileGuard.h"
+#include "Helios/Qt/Plugins/SceneDelegate/CompileGuard.h"
+
+#include "Helios/Qt/Views/OSG/Delegate.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Interfaces/GUI/IGUIDelegate.h"
 
 #include <string>
 
 
-class SceneDelegateComponent : public Usul::Base::Referenced,
-                               public Usul::Interfaces::IPlugin,
-                               public Usul::Interfaces::IGUIDelegate
+class SceneDelegateComponent : public CadKit::Helios::Views::OSG::Delegate,
+                               public Usul::Interfaces::IPlugin
 {
 public:
 
   /// Typedefs.
-  typedef Usul::Base::Referenced BaseClass;
+  typedef CadKit::Helios::Views::OSG::Delegate BaseClass;
   typedef Usul::Interfaces::IUnknown Unknown;
 
   /// Smart-pointer definitions.
@@ -49,7 +49,6 @@ public:
 
   /// Usul::Interfaces::IGUIDelegate
   virtual bool                doesHandle( const std::string& token ) const;
-  virtual void                createDefaultGUI ( Usul::Documents::Document *document, Usul::Interfaces::IUnknown* caller );
 
 protected: 
 

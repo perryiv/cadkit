@@ -38,6 +38,8 @@
 #include "osg/MatrixTransform"
 #include "osg/Image"
 
+#include "osgDB/DatabasePager"
+
 #include <string>
 #include <vector>
 #include <list>
@@ -63,6 +65,13 @@ public:
 
   /// Construction.
   WRFDocument();
+  /// Add the view to the document.
+  virtual void                addView ( Usul::Interfaces::IView *view );
+
+  /// Usul::Interfaces::IRenderListener inherited from base class.
+  virtual void                postRenderNotify ( Unknown *caller );
+  virtual void                preRenderNotify ( Unknown *caller );
+
 
   /// Build the scene.
   virtual osg::Node *         buildScene ( const BaseClass::Options &options, Unknown *caller = 0x0 );
@@ -226,6 +235,7 @@ private:
   bool _usePlanet;
   unsigned int _currentTransferFunction;
   TransferFunctions _transferFunctions;
+  osg::ref_ptr< osgDB::DatabasePager > _databasePager;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME ( WRFDocument );

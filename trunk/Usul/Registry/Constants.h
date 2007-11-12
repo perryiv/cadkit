@@ -65,6 +65,9 @@ namespace Usul
 
       // Trackball settings.
       const std::string TRACKBALL                 ( "trackball" );
+
+      // Frame dump directory.
+      const std::string FRAME_DUMP_DIRECTORY      ( "frame_dump_directory" );
     };
   };
 };

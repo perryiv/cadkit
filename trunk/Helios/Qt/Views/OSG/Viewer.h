@@ -110,6 +110,10 @@ public:
 
 protected:
 
+  void                                    _frameDump ( bool b );
+  bool                                    _frameDumpProperties();
+  bool                                    _isFrameDump() const;
+
   void                                    _initPlacement ();
   void                                    _resize ( unsigned int w, unsigned int h );
   bool                                    _isSize ( unsigned int w, unsigned int h ) const;

@@ -156,6 +156,7 @@ osg::Node* Text::buildScene()
 
   text->setAutoRotateToScreen( true );
   text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
+  //text->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
   text->setCharacterSize( _height );
   text->setText ( this->text() );
   

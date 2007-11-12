@@ -74,6 +74,7 @@ public:
   typedef Minerva::Core::Animate::Settings Settings;
   typedef Minerva::Core::Animate::TimeSpan TimeSpan;
   typedef std::vector < TimeSpan::RefPtr > TimeSpans;
+  typedef Minerva::Interfaces::IAnimationControl IAnimationControl;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( MinervaDocument );
@@ -122,48 +123,33 @@ public:
   void                        setLayerOperation( const std::string&, int val, Usul::Interfaces::IUnknown * layer );
 
   /// Animation methods.
-  void                        timestepType( Settings::TimestepType type );
-  Settings::TimestepType      timestepType( ) const;
+  void                                     timestepType( IAnimationControl::TimestepType type );
+  IAnimationControl::TimestepType          timestepType( ) const;
   
-  void                        startAnimationCommand();
-  void                        stopAnimationCommand();
-  void                        pauseAnimationCommand();
-  void                        animationSpeedCommand ( double value );
+  void                                     startAnimationCommand();
+  void                                     stopAnimationCommand();
+  void                                     pauseAnimationCommand();
+  void                                     animationSpeedCommand ( double value );
 
-  void                        addLayerCommand ( Usul::Interfaces::ILayer * layer );
-  void                        removeLayerCommand ( Usul::Interfaces::ILayer * layer );
-  void                        modifyLayerCommand ( Usul::Interfaces::ILayer * layer );
-  void                        showLayerCommand ( Usul::Interfaces::ILayer * layer );
-  void                        hideLayerCommand ( Usul::Interfaces::ILayer * layer );
+  void                                     addLayerCommand ( Usul::Interfaces::ILayer * layer );
+  void                                     removeLayerCommand ( Usul::Interfaces::ILayer * layer );
+  void                                     modifyLayerCommand ( Usul::Interfaces::ILayer * layer );
+  void                                     showLayerCommand ( Usul::Interfaces::ILayer * layer );
+  void                                     hideLayerCommand ( Usul::Interfaces::ILayer * layer );
 
-  void                        resize ( unsigned int width, unsigned int height );
+  void                                     resize ( unsigned int width, unsigned int height );
 
-  bool                        elevationEnabled() const;
-  void                        elevationEnabled( bool val );
+  bool                                     elevationEnabled() const;
+  void                                     elevationEnabled( bool val );
 
-  bool                        hudEnabled() const;
-  void                        hudEnabled( bool val );
+  bool                                     hudEnabled() const;
+  void                                     hudEnabled( bool val );
 
-  bool                        ephemerisFlag() const;
-  void                        ephemerisFlag( bool val );
+  bool                                     ephemerisFlag() const;
+  void                                     ephemerisFlag( bool val );
 
-  float                       elevationExag() const;
-  void                        elevationExag( float elevExagVal );
-
-  int                         elevationPatchSize() const;
-  void                        elevationPatchSize( float elevEstimateVal );
-
-  int                         levelDetail() const;
-  void                        levelDetail( float levelDetailVal );
-
-  std::string                 elevationCacheDir() const;
-  void                        elevationCacheDir( const std::string& directory );
-
-  bool                        latLongGrid() const;
-  void                        latLongGrid( bool b );
-
-  bool                        showLegend() const;
-  void                        showLegend( bool b );
+  bool                                     isShowLegend() const;
+  void                                     showLegend( bool b );
 
   /// Get/Set the split metric.
   void                                     splitMetric ( double );
@@ -172,9 +158,6 @@ public:
   /// Get/Set the percentage of screen the legend uses.
   void                                     percentScreenWidth ( float );
   float                                    percentScreenWidth();
-
-  /// For now
-  void                                     viewer ( Usul::Interfaces::IUnknown* viewer );
 
   void                                     addToFavorites( Usul::Interfaces::IUnknown* layer );
   Usul::Interfaces::IUnknown *             createFavorite( const std::string& name ) const;

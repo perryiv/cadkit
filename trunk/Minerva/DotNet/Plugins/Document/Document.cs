@@ -19,8 +19,6 @@ namespace DT.Minerva.Plugins.Document
     CadKit.Interfaces.IFiltersSave,
     CadKit.Interfaces.IFiltersExport,
     CadKit.Interfaces.ILayerList,
-    CadKit.Interfaces.IAnimateTemporal,
-    CadKit.Interfaces.IOssimPlanetSettings,
     CadKit.Interfaces.ILegend,
     CadKit.Interfaces.ILayerOperation, 
     CadKit.Interfaces.IMovieMode
@@ -220,11 +218,11 @@ namespace DT.Minerva.Plugins.Document
     /// </summary>
     public void resize(object sender, System.EventArgs e)
     {
-      System.Windows.Forms.Form form = sender as System.Windows.Forms.Form;
-      if (null != form && null != _navtiveDocument)
-      {
-        _navtiveDocument.resize(form.Size.Width, form.Size.Height);
-      }
+    //  System.Windows.Forms.Form form = sender as System.Windows.Forms.Form;
+    //  if (null != form && null != _navtiveDocument)
+    //  {
+    //    _navtiveDocument.resize(form.Size.Width, form.Size.Height);
+    //  }
     }
 
 
@@ -390,175 +388,6 @@ namespace DT.Minerva.Plugins.Document
       }
     }
 
-
-    CadKit.Interfaces.AnimateTimestep CadKit.Interfaces.IAnimateTemporal.TimestepType
-    {
-      get { return _navtiveDocument.timestepType(); }
-      set { _navtiveDocument.timestepType(value); }
-    }
-
-
-    /// <summary>
-    /// Start animation.
-    /// </summary>
-    void CadKit.Interfaces.IAnimateTemporal.startAnimation(float speed, bool accumulate, bool timeWindow, int numDays)
-    {
-      try
-      {
-        this._startAnimation(speed, accumulate, timeWindow, numDays);
-      }
-      catch (System.Exception e)
-      {
-        System.Console.WriteLine("Error 2899159884: {0}", e.Message);
-      }
-    }
-
-
-    /// <summary>
-    /// Stop animation.
-    /// </summary>
-    void CadKit.Interfaces.IAnimateTemporal.stopAnimation()
-    {
-      try
-      {
-        this._stopAnimation();
-      }
-      catch (System.Exception e)
-      {
-        System.Console.WriteLine("Error 3428066134: {0}", e.Message);
-      }
-    }
-
-    void CadKit.Interfaces.IAnimateTemporal.pauseAnimation()
-    {
-      _navtiveDocument.pauseAnimation();
-    }
-
-    double CadKit.Interfaces.IAnimateTemporal.AnimationSpeed
-    {
-      get
-      {
-        return 0.0;
-      }
-      set
-      {
-        _navtiveDocument.animationSpeed(value);
-      }
-    }
-
-    bool CadKit.Interfaces.IAnimateTemporal.ShowPastEvents
-    {
-      get
-      {
-        return false;
-      }
-      set
-      {
-      }
-    }
-
-    bool CadKit.Interfaces.IAnimateTemporal.TimeWindow
-    {
-      get
-      {
-        return false;
-      }
-      set
-      {
-      }
-    }
-
-    bool CadKit.Interfaces.IAnimateTemporal.TimeWindowLength
-    {
-      get
-      {
-        return false;
-      }
-      set
-      {
-      }
-    }
-
-
-    /// <summary>
-    /// Start the animation.
-    /// </summary>
-    protected void _startAnimation(float speed, bool accumulate, bool timeWindow, int numDays)
-    {
-      CadKit.Interfaces.IRenderLoop renderLoop = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IRenderLoop;
-      if (null != renderLoop)
-      {
-        renderLoop.UseRenderLoop = true;
-        _navtiveDocument.startAnimation(speed, accumulate, timeWindow, numDays);
-      }
-    }
-
-
-    /// <summary>
-    /// Stop the animation.
-    /// </summary>
-    protected void _stopAnimation()
-    {
-      CadKit.Interfaces.IRenderLoop renderLoop = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Interfaces.IRenderLoop;
-      if (null != renderLoop)
-      {
-        renderLoop.UseRenderLoop = false;
-        _navtiveDocument.stopAnimation();
-      }
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    bool CadKit.Interfaces.IOssimPlanetSettings.ElevationEnabled
-    {
-      get { return _navtiveDocument.elevationEnabled(); }
-      set { _navtiveDocument.elevationEnabled(value); }
-    }
-
-    float CadKit.Interfaces.IOssimPlanetSettings.HeightExageration
-    {
-      get { return _navtiveDocument.elevationExag(); }
-      set { _navtiveDocument.elevationExag(value); }
-    }
-
-
-    float CadKit.Interfaces.IOssimPlanetSettings.ElevationPatchSize
-    {
-      get { return _navtiveDocument.elevationPatchSize(); }
-      set { _navtiveDocument.elevationPatchSize(value); }
-    }
-
-    float CadKit.Interfaces.IOssimPlanetSettings.MaxLevelDetail
-    {
-      get { return _navtiveDocument.levelDetail(); }
-      set { _navtiveDocument.levelDetail(value); }
-    }
-
-    string CadKit.Interfaces.IOssimPlanetSettings.ElevationCacheDir
-    {
-      get { return _navtiveDocument.elevationCacheDir(); }
-      set { _navtiveDocument.elevationCacheDir(value); }
-    }
-
-    bool CadKit.Interfaces.IOssimPlanetSettings.EphemerisEnabled
-    {
-      get { return _navtiveDocument.ephemerisFlag(); }
-      set { _navtiveDocument.ephemerisFlag(value); }
-    }
-
-    bool CadKit.Interfaces.IOssimPlanetSettings.HudEnabled
-    {
-      get { return _navtiveDocument.hudEnabled(); }
-      set { _navtiveDocument.hudEnabled(value); }
-    }
-
-    bool CadKit.Interfaces.IOssimPlanetSettings.LatLongGrid
-    {
-      get { return _navtiveDocument.latLongGrid(); }
-      set { _navtiveDocument.latLongGrid(value); }
-    }
 
     bool CadKit.Interfaces.ILegend.ShowLegend
     {

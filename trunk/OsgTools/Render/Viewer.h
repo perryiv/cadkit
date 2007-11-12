@@ -26,9 +26,6 @@
 #include "Usul/Interfaces/IShadeModel.h"
 #include "Usul/Interfaces/IPolygonMode.h"
 #include "Usul/Interfaces/IExport.h"
-#include "Usul/Interfaces/IBoundingSphere.h"
-#include "Usul/Interfaces/IBoundingBox.h"
-#include "Usul/Interfaces/IOpenGLState.h"
 #include "Usul/Interfaces/IOpenSceneGraph.h"
 #include "Usul/Interfaces/ISelectionBox.h"
 #include "Usul/Interfaces/IStereo.h"
@@ -39,7 +36,6 @@
 #include "Usul/Interfaces/IClippingPlanes.h"
 #include "Usul/Interfaces/IViewer.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
-#include "Usul/Interfaces/IAxes.h"
 #include "Usul/Interfaces/ITrackball.h"
 #include "Usul/Interfaces/ISceneIntersect.h"
 #include "Usul/Interfaces/IRedraw.h"
@@ -111,9 +107,6 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IShadeModel,
                                 public Usul::Interfaces::IPolygonMode,
                                 public Usul::Interfaces::IExport,
-                                public Usul::Interfaces::IBoundingBox,
-                                public Usul::Interfaces::IBoundingSphere,
-                                public Usul::Interfaces::IOpenGLState,
                                 public Usul::Interfaces::IOpenSceneGraph,
                                 public Usul::Interfaces::ISelectionBox,
                                 public Usul::Interfaces::IStereo,
@@ -124,7 +117,6 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IClippingPlanes,
                                 public Usul::Interfaces::IViewer,
                                 public Usul::Interfaces::IGetBoundingBox,
-                                public Usul::Interfaces::IAxes,
                                 public Usul::Interfaces::ICamera,
                                 public Usul::Interfaces::ITrackball,
                                 public Usul::Interfaces::ISceneIntersect,
@@ -216,8 +208,8 @@ public:
   void                  setBackground ( const osg::Vec4 & );
 
   // Get/Set show axes state.
-  void                  axes ( bool );
-  bool                  axes() const;
+  void                  axesShown ( bool );
+  bool                  isAxesShown() const;
 
   // Set/get the background color. Throws if getting color from a null viewer.
   void                  backgroundColor ( const osg::Vec4 &color );
@@ -579,10 +571,6 @@ protected:
   /// Usul::Interfaces::IShadeModel
   virtual void                      shadeModel ( IShadeModel::Mode mode );
   virtual IShadeModel::Mode         shadeModel() const;
-
-  /// Usul::Interfaces::IAxes
-  virtual void                      setAxes ( bool );
-  virtual bool                      hasAxes ( ) const;
 
   /// Usul::Interfaces::IOpenSceneGraph
   /// Get the pointer to the base class for all OSG objects.

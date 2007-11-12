@@ -24,6 +24,13 @@ struct IAnimationControl : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2210737686u };
 
+  enum TimestepType
+  {
+    DAY,
+    MONTH,
+    YEAR
+  };
+
   /// Start the animation.
   virtual void                 startAnimation () = 0;
 
@@ -40,6 +47,10 @@ struct IAnimationControl : public Usul::Interfaces::IUnknown
   /// Get/Set the show past events flag.
   virtual void                 showPastEvents ( bool ) = 0;
   virtual bool                 showPastEvents () const = 0;
+
+  /// Get/Set the timestep type.
+  virtual TimestepType         timestepType() const = 0;
+  virtual void                 timestepType ( TimestepType ) = 0;
 
 }; // struct IAnimationControl
 

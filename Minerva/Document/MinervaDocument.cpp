@@ -22,6 +22,7 @@
 #include "Minerva/Core/Commands/HideLayer.h"
 #include "Minerva/Core/Commands/ToggleShown.h"
 #include "Minerva/Core/Commands/ShowPastEvents.h"
+#include "Minerva/Core/Commands/ChangeTimestepType.h"
 #include "Minerva/Core/Visitors/TemporalAnimation.h"
 #include "Minerva/Core/Visitors/FindMinMaxDates.h"
 
@@ -435,10 +436,10 @@ void MinervaDocument::setLayerOperation( const std::string& optype, int val, Usu
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::timestepType( Settings::TimestepType type )
+void MinervaDocument::timestepType( IAnimationControl::TimestepType type )
 {
   Guard guard ( this->mutex () );
-  _animateSettings->timestepType( type );
+  _animateSettings->timestepType( static_cast < Minerva::Core::Animate::Settings::TimestepType > ( type ) );
 }
 
 
@@ -448,10 +449,10 @@ void MinervaDocument::timestepType( Settings::TimestepType type )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Minerva::Core::Animate::Settings::TimestepType MinervaDocument::timestepType( ) const
+Minerva::Interfaces::IAnimationControl::TimestepType MinervaDocument::timestepType( ) const
 {
   Guard guard ( this->mutex () );
-  return _animateSettings->timestepType();
+  return static_cast < Minerva::Interfaces::IAnimationControl::TimestepType > ( _animateSettings->timestepType() );
 }
 
 
@@ -593,131 +594,11 @@ void MinervaDocument::ephemerisFlag( bool val )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the elevation exageration.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-float MinervaDocument::elevationExag() const
-{
-  return _planet->elevationExag();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the elevation exageration.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::elevationExag( float elevExagVal )
-{
-  _planet->elevationExag( elevExagVal );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the elevation patch size.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-int MinervaDocument::elevationPatchSize() const
-{
-  return _planet->elevationPatchSize();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the elevation patch size.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::elevationPatchSize( float elevEstimateVal )
-{
-  _planet->elevationPatchSize( elevEstimateVal );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the level of detail.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-int MinervaDocument::levelDetail() const
-{
-  return _planet->levelDetail();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the level of detail.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::levelDetail( float levelDetailVal )
-{
-  _planet->levelDetail( levelDetailVal );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the elevation cache directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string MinervaDocument::elevationCacheDir() const
-{
-  return _planet->elevationCacheDir();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the elevation cache directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::elevationCacheDir( const std::string& directory )
-{
-  _planet->elevationCacheDir( directory );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is the lat long grid showing.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool MinervaDocument::latLongGrid() const
-{
-  return _planet->showLatLongGrid();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set whether the lat long grid should be shown.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::latLongGrid( bool b )
-{
-  _planet->showLatLongGrid( b );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Is the legend showing?
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool MinervaDocument::showLegend() const
+bool MinervaDocument::isShowLegend() const
 {
   return _sceneManager->showLegend();
 }
@@ -780,18 +661,6 @@ osgGA::MatrixManipulator * MinervaDocument::getMatrixManipulator ()
 osgDB::DatabasePager * MinervaDocument::getDatabasePager ()
 {
   return _planet->databasePager();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the viewer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::viewer( Usul::Interfaces::IUnknown *viewer )
-{
-  _planet->viewer( viewer );
 }
 
 
@@ -1678,6 +1547,12 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   speed->append ( new ToggleButton ( new Minerva::Core::Commands::AnimationSpeed ( 2.0, me ) ) );
   m->append ( speed );
 
+  MenuKit::Menu::RefPtr type ( new MenuKit::Menu ( "Timestep" ) );
+  type->append ( new RadioButton ( new Minerva::Core::Commands::ChangeTimestepType ( Minerva::Interfaces::IAnimationControl::DAY,   me ) ) );
+  type->append ( new RadioButton ( new Minerva::Core::Commands::ChangeTimestepType ( Minerva::Interfaces::IAnimationControl::MONTH, me ) ) );
+  type->append ( new RadioButton ( new Minerva::Core::Commands::ChangeTimestepType ( Minerva::Interfaces::IAnimationControl::YEAR,  me ) ) );
+  m->append ( type );
+
   {
     MenuKit::Menu::RefPtr layerMenu ( new MenuKit::Menu ( "Layers", MenuKit::Menu::VERTICAL ) );
     for ( Layers::iterator iter = _layers.begin(); iter != _layers.end (); ++ iter )
@@ -1707,6 +1582,10 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
                                                                           Usul::Adaptors::bind1<bool> ( 9.0, Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isSplitMetric ) ) ) ) );
 
   m->append ( split.get() );
+
+  m->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Show Legend", 
+                                                                          Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::showLegend ), 
+                                                                          Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isShowLegend ) ) ) );
 
   menu.append ( m );
 }

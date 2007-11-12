@@ -1723,12 +1723,6 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int width, 
 
 void Viewer::takePicture ( const std::string& filename, float frameSizeScale, unsigned int numSamples )
 {
-  // Save the axes state.
-  bool axes ( this->axes() );
-
-  // Turn off the axes.
-  this->axes( false );
-
   // Make this context current.
   if ( _context.valid() )
     _context->makeCurrent();
@@ -1737,9 +1731,6 @@ void Viewer::takePicture ( const std::string& filename, float frameSizeScale, un
 
   // Write the image to file.
   osgDB::writeImageFile ( *image, filename );
-
-  // Restore the state.
-  this->axes ( axes );
 }
 
 
@@ -2319,16 +2310,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IShadeModel* > ( this );
   case Usul::Interfaces::IPolygonMode::IID:
     return static_cast < Usul::Interfaces::IPolygonMode* > ( this );
-  case Usul::Interfaces::IAxes::IID:
-    return static_cast < Usul::Interfaces::IAxes* > ( this );
   case Usul::Interfaces::IExport::IID:
     return static_cast < Usul::Interfaces::IExport* > ( this );
-  case Usul::Interfaces::IBoundingBox::IID:
-    return static_cast < Usul::Interfaces::IBoundingBox* > ( this );
-  case Usul::Interfaces::IBoundingSphere::IID:
-    return static_cast < Usul::Interfaces::IBoundingSphere* > ( this );
-  case Usul::Interfaces::IOpenGLState::IID:
-    return static_cast < Usul::Interfaces::IOpenGLState* > ( this );
   case Usul::Interfaces::IOpenSceneGraph::IID:
     return static_cast<Usul::Interfaces::IOpenSceneGraph*>(this);
   case Usul::Interfaces::ISelectionBox::IID:
@@ -2513,7 +2496,7 @@ void Viewer::_removeAxes ()
 void Viewer::_setAxes ()
 {
   // Return now if no axes
-  if( !this->axes() )
+  if( !this->isAxesShown() )
     return;
 
   osg::ref_ptr< osg::Group > group ( _sceneManager->projectionGroupGet ( OsgTools::Render::Constants::AXES ) );
@@ -2560,7 +2543,7 @@ void Viewer::_setAxes ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::axes( bool b )
+void Viewer::axesShown( bool b )
 {
   if ( b )
   {
@@ -2581,7 +2564,7 @@ void Viewer::axes( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::axes() const
+bool Viewer::isAxesShown() const
 {
   return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _SHOW_AXES );
 }
@@ -2707,30 +2690,6 @@ Viewer::IPolygonMode::Mode Viewer::polygonMode() const
     return IPolygonMode::FILLED;
 
   return IPolygonMode::NONE;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the state of showing axes. Usul::Interfaces::IAxes.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::setAxes ( bool b )
-{
-  this->axes( b );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the show axes state.  Usul::Interfaces::IAxes.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::hasAxes ( ) const
-{
-  return this->axes();
 }
 
 

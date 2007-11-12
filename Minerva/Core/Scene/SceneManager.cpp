@@ -11,7 +11,6 @@
 #include "Minerva/Core/Scene/SceneManager.h"
 
 #include "Usul/Interfaces/IVectorLayer.h"
-#include "Usul/Interfaces/ITemporalData.h"
 #include "Usul/Interfaces/IAddRowLegend.h"
 #include "Usul/Interfaces/IViewport.h"
 #include "Usul/Trace/Trace.h"
@@ -52,7 +51,7 @@ _width( 0 ),
 _height( 0 ),
 _legend( new OsgTools::Legend::Legend ),
 _showLegend( true ),
-_legendWidth ( 0.20f ),
+_legendWidth ( 0.40f ),
 _legendHeightPerItem ( 30 ),
 _legendPadding ( 20.0f, 20.0f ),
 _legendPosition ( LEGEND_BOTTOM_RIGHT )

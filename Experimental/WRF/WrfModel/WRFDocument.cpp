@@ -33,6 +33,9 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IPlanetNode.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
+#include "Usul/Interfaces/ICullSceneVisitor.h"
+#include "Usul/Interfaces/IFrameStamp.h"
+#include "Usul/Interfaces/IUpdateSceneVisitor.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Predicates/FileExists.h"
@@ -61,6 +64,9 @@
 #include "osg/Texture2D"
 
 #include "osgDB/ReadFile"
+
+#include "osgUtil/CullVisitor"
+#include "osgUtil/UpdateVisitor"
 
 #include <limits>
 
@@ -113,6 +119,7 @@ WRFDocument::WRFDocument() :
   _upperRight ( 0.0, 0.0 ),
   _usePlanet ( true ),
   _transferFunctions (),
+  _databasePager ( new osgDB::DatabasePager ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   this->_addMember ( "filename", _filename );
@@ -1481,8 +1488,8 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
   }
 
   // Build the topography.
-  else
-    Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &WRFDocument::_buildTopography ), "3345743110" );
+  //else
+  //  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &WRFDocument::_buildTopography ), "3345743110" );
 }
 
 
@@ -1553,4 +1560,81 @@ bool WRFDocument::isTransferFunction ( unsigned int i ) const
 {
   Guard guard ( this );
   return i == _currentTransferFunction;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Pre-render notification.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
+  if ( ( true == fs.valid() ) && ( 0x0 != fs->frameStamp() ) )
+  {
+    _databasePager->signalBeginFrame ( fs->frameStamp() );
+    _databasePager->updateSceneGraph ( fs->frameStamp()->getReferenceTime() );
+  }
+
+  BaseClass::preRenderNotify ( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Pre-render notification.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+ 
+  _databasePager->signalEndFrame();
+
+  BaseClass::postRenderNotify ( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the cull and update visitors of the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::addView ( Usul::Interfaces::IView *view )
+{
+  USUL_TRACE_SCOPE;
+
+  BaseClass::addView ( view );
+
+  // Set cull visitor's database pager.
+  {
+    Usul::Interfaces::ICullSceneVisitor::QueryPtr getVisitor ( view );
+    if ( true == getVisitor.valid() )
+    {
+      osg::ref_ptr<osgUtil::CullVisitor> visitor ( getVisitor->getCullSceneVisitor ( 0x0 ) );
+      if ( true == visitor.valid() )
+      {
+        visitor->setDatabaseRequestHandler ( _databasePager.get() );
+      }
+    }
+  }
+
+  // Set update visitor's database pager.
+  {
+    Usul::Interfaces::IUpdateSceneVisitor::QueryPtr getVisitor ( view );
+    if ( true == getVisitor.valid() )
+    {
+      osg::ref_ptr<osg::NodeVisitor> visitor ( getVisitor->getUpdateSceneVisitor ( 0x0 ) );
+      if ( true == visitor.valid() )
+      {
+        visitor->setDatabaseRequestHandler ( _databasePager.get() );
+      }
+    }
+  }
 }

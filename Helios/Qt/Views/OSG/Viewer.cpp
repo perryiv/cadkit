@@ -13,15 +13,20 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Bind.h"
-#include "Usul/Documents/Manager.h"
-#include "Usul/Trace/Trace.h"
 #include "Usul/Commands/PolygonMode.h"
 #include "Usul/Commands/RenderingPasses.h"
 #include "Usul/Commands/RenderLoop.h"
 #include "Usul/Commands/ShadeModel.h"
 #include "Usul/Commands/GenericCommand.h"
 #include "Usul/Commands/GenericCheckCommand.h"
+#include "Usul/Documents/Manager.h"
+#include "Usul/File/Make.h"
+#include "Usul/Registry/Constants.h"
+#include "Usul/Registry/Convert.h"
+#include "Usul/Registry/Database.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/System/DateTime.h"
+#include "Usul/Trace/Trace.h"
 
 #include "OsgTools/Render/Defaults.h"
 
@@ -41,8 +46,14 @@
 #include "QtGui/QPushButton"
 #include "QtGui/QSpinBox"
 #include "QtGui/QLabel"
+#include "QtGui/QFileDialog"
+
+#include <ctime>
 
 using namespace CadKit::Helios::Views::OSG;
+namespace Sections = Usul::Registry::Sections;
+namespace Keys = Usul::Registry::Keys;
+typedef Usul::Registry::Database Reg;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -907,6 +918,7 @@ void Viewer::menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller )
     // Typedefs.
     typedef MenuKit::Button Button;
     typedef MenuKit::RadioButton RadioButton;
+    typedef MenuKit::ToggleButton ToggleButton;
     typedef Usul::Commands::RenderingPasses RenderingPasses;
     typedef Usul::Commands::PolygonMode PolygonMode;
     typedef Usul::Interfaces::IPolygonMode IPolygonMode;
@@ -964,6 +976,13 @@ void Viewer::menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller )
 
     view->append ( size );
 
+    // Frame dump button.
+    view->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Frame Dump", Usul::Adaptors::memberFunction<void> ( this, &Viewer::_frameDump ), Usul::Adaptors::memberFunction<bool> ( this, &Viewer::_isFrameDump ) ) ) );
+
+    typedef OsgTools::Render::Viewer OsgViewer;
+
+    // Axes button.
+    view->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Show Axes", Usul::Adaptors::memberFunction<void> ( _viewer.get(), &OsgViewer::axesShown ), Usul::Adaptors::memberFunction<bool> ( _viewer.get(), &OsgViewer::isAxesShown ) ) ) );
   }
 }
 
@@ -1187,4 +1206,95 @@ void Viewer::_customSize()
 
     this->resize ( xValue, yValue );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the frame dump state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_frameDump ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  
+  // Get the viewer.
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+
+  // Make sure it's valid.
+  if ( false == viewer.valid() )
+    return;
+
+  // Set the frame dump state.
+  _viewer->frameDump().dump ( ( b && this->_frameDumpProperties() ? true : false ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the frame dump state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::_isFrameDump() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( _viewer.valid() ? _viewer->frameDump().dump() : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show a dialog for frame dump properties.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::_frameDumpProperties()
+{
+  // Get the directory from the registry.
+  std::string directory ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::FRAME_DUMP_DIRECTORY].get<std::string> ( "" ) );
+
+  // If we don't have one, ask for one.
+  if ( directory.empty() )
+  {
+    QString dir ( QFileDialog::getExistingDirectory ( this, "Select a directory" ) );
+    
+    if ( 0 == dir.size() )
+      return false;
+
+    // Set the directory in the registry.
+    directory = dir.toStdString();
+    Reg::instance()[Sections::VIEWER_SETTINGS][Keys::FRAME_DUMP_DIRECTORY] = directory;
+  }
+
+  // Get the current time.
+  ::tm time ( Usul::System::DateTime::local() );
+
+  // Convert it to a string.
+  const unsigned int size ( 1024 );
+  char buffer[size];
+  ::memset ( buffer, '\0', size );
+  ::strftime ( buffer, size - 1, "%H_%M_%S_%d_%b_%Y", &time );
+
+  directory += std::string ( "/" ) + std::string ( buffer ) + std::string ( "/" );
+
+  // Make the directory.
+  Usul::File::make ( directory );
+
+  // Get the viewer.
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+
+  // Make sure it's valid.
+  if ( false == viewer.valid() )
+    return false;
+
+  // Set the frame dump properties.
+  viewer->frameDump().dir ( directory );
+  viewer->frameDump().base( "filename" );
+  viewer->frameDump().digits ( 10 );
+  viewer->frameDump().ext ( ".jpg" );
+
+  return true;
 }

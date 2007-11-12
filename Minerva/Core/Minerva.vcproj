@@ -519,6 +519,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Commands\ChangeTimestepType.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Commands\ChangeTimestepType.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Commands\HideLayer.cpp"
 						>
 					</File>

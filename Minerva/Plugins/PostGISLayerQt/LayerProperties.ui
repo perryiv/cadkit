@@ -343,15 +343,15 @@
          <item>
           <widget class="QLabel" name="label_9" >
            <property name="text" >
-            <string>Minimium Date:</string>
+            <string>First Date:</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBox_2" />
+          <widget class="QComboBox" name="_firstDateColumn" />
          </item>
          <item>
-          <widget class="QDateEdit" name="dateEdit" />
+          <widget class="QDateEdit" name="_firstDateEdit" />
          </item>
         </layout>
        </item>
@@ -360,15 +360,15 @@
          <item>
           <widget class="QLabel" name="label_10" >
            <property name="text" >
-            <string>Maximium Date:</string>
+            <string>Last Date:</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBox" />
+          <widget class="QComboBox" name="_lastDateColumn" />
          </item>
          <item>
-          <widget class="QDateEdit" name="dateEdit_2" />
+          <widget class="QDateEdit" name="_lastDateEdit" />
          </item>
         </layout>
        </item>

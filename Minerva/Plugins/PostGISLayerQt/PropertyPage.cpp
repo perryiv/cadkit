@@ -325,6 +325,28 @@ void PropertyPage::_initTimeTab()
   {
     if ( !_layer->isTemporal() )
       _tabWidget->removeTab ( _tabWidget->indexOf ( _timeTab ) );
+    else
+    {
+      // Get the conection.
+      Connection::RefPtr connection ( _layer->connection() );
+      if ( connection.valid() )
+      {
+        Connection::ScopedConnection sc ( *connection );
+        Minerva::Core::DB::Info::RefPtr info ( new Minerva::Core::DB::Info ( connection ) );
+
+        // If the table has a date column...
+        if ( info->hasColumnType ( _layer->tablename(), "date" ) )
+        {
+          Strings columns ( info->getColumnNames ( _layer->tablename() ) );
+          QStringList sl;
+          Usul::Strings::convertFrom ( columns, sl );
+
+          // Add the items to the combo box.
+          _firstDateColumn->addItems ( sl );
+          _lastDateColumn->addItems ( sl );
+        }
+      }
+    }
   }
 }
 

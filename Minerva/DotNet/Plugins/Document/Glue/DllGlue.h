@@ -68,32 +68,6 @@ namespace DT
 
             void                  viewer( CadKit::Viewer::Glue::Viewer ^viewer );
 
-            void                  resize ( int h, int w );
-
-            bool                  elevationEnabled();
-            void                  elevationEnabled( bool val );
-
-            bool                  hudEnabled();
-            void                  hudEnabled( bool val );
-
-            bool                  ephemerisFlag();
-            void                  ephemerisFlag( bool val );
-
-            float                 elevationExag();
-            void                  elevationExag( float elevExagVal );
-
-            int                   elevationPatchSize();
-            void                  elevationPatchSize( float elevEstimateVal );
-
-            int                   levelDetail();
-            void                  levelDetail( float levelDetailVal );
-
-            System::String^       elevationCacheDir();
-            void                  elevationCacheDir( System::String^ directory );
-
-            bool                  latLongGrid();
-            void                  latLongGrid( bool b );
-
             bool                  showLegend();
             void                  showLegend( bool b );
 

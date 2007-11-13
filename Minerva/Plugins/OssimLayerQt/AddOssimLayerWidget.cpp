@@ -11,6 +11,7 @@
 #include "Minerva/Plugins/OssimLayerQt/CompileGuard.h"
 #include "Minerva/Plugins/OssimLayerQt/AddOssimLayerWidget.h"
 
+#include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
 #include "Usul/Registry/Database.h"
 
@@ -112,7 +113,7 @@ void AddOssimLayerWidget::_browseClicked()
 
 void AddOssimLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
 {
-  Minerva::Interfaces::IAddLayer::QueryPtr al ( caller );
+  Minerva::Interfaces::IAddLayer::QueryPtr al ( Usul::Documents::Manager::instance().activeDocument() );
 
   if ( false == al.valid () )
     return;

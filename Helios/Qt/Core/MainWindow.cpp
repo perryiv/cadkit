@@ -1702,7 +1702,6 @@ void MainWindow::_closeEvent ( QCloseEvent* event )
 Usul::Interfaces::IUnknown* MainWindow::createProgressBar()
 {
   USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( return 0x0 );
   return _progressBars->createProgressBar ();
 }
 

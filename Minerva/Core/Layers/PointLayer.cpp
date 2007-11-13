@@ -125,14 +125,11 @@ PointLayer::~PointLayer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
+void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *p )
 {
-  // Lock the mutex.
-  Guard guard( this->mutex() );
-
   Minerva::Core::DB::Connection::ScopedConnection scopedConnection ( *this->connection() );
 
-  Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
+  Usul::Interfaces::IProgressBar::QueryPtr progress ( p );
 
   // Execute the query.
   pqxx::result geometryResult ( this->connection()->executeQuery ( this->query() ) );
@@ -191,6 +188,9 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 
          /// Set the common members.
         this->_setDataObjectMembers( data.get() );
+
+        // Pre build the scene.
+        data->preBuildScene( caller );
 
         this->_addDataObject( data.get() );
       }
@@ -282,7 +282,7 @@ void PointLayer::modify( Usul::Interfaces::IUnknown *caller )
   DataObjects &dataObjects ( this->_getDataObjects() );
   dataObjects.clear();
 
-  this->buildDataObjects ( caller );
+  this->buildDataObjects ( caller, 0x0 );
 /*
   DataObjects &dataObjects ( this->_getDataObjects() );
 

@@ -44,12 +44,12 @@ public:
   float                 width() const;
   void                  width( float );
 
-  /// Build the scene branch for the data object.
-  virtual osg::Node*    buildScene();
-
 protected:
   /// Use reference counting.
   virtual ~Line();
+
+  /// Build the scene branch for the data object.
+  virtual osg::Node*    _preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 );
 
 private:
   float     _width;

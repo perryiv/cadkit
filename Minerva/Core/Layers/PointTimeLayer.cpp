@@ -126,7 +126,7 @@ void PointTimeLayer::accept ( Minerva::Core::Visitor& visitor )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
+void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *p )
 {
   USUL_TRACE_SCOPE;
 
@@ -136,7 +136,7 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
 
   Minerva::Core::DB::Connection::ScopedConnection scopedConnection ( *this->connection() );
 
-  Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
+  Usul::Interfaces::IProgressBar::QueryPtr progress ( p );
 
   // Make copies of data needed in loop.
   const std::string  tableName ( this->tablename() );
@@ -209,6 +209,8 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
             data->autotransform ( autotransform );
             data->secondarySize ( secondarySize );
 
+            data->preBuildScene ( caller );
+
             if( primitiveSizeColumn.size() > 0 )
             {
               float value ( i [ primitiveSizeColumn ].as < float > () );
@@ -259,7 +261,7 @@ void PointTimeLayer::modify( Usul::Interfaces::IUnknown *caller )
   // For now rebuild the data objects.
   // In the future need to check if the query has changed, and then go get new data objects.
   // If the query is the same, then just modify the current data objects.
-  this->buildDataObjects( caller );
+  this->buildDataObjects( caller, 0x0 );
 }
 
 
@@ -283,6 +285,7 @@ bool PointTimeLayer::isTemporal() const
 
 void PointTimeLayer::firstDateColumn( const std::string& dateColumn )
 {
+  Guard guard ( this );
   _firstDateColumn = dateColumn;
 }
 
@@ -295,6 +298,7 @@ void PointTimeLayer::firstDateColumn( const std::string& dateColumn )
 
 const std::string& PointTimeLayer::firstDateColumn() const
 {
+  Guard guard ( this );
   return _firstDateColumn;
 }
 
@@ -307,6 +311,7 @@ const std::string& PointTimeLayer::firstDateColumn() const
 
 void PointTimeLayer::lastDateColumn( const std::string& dateColumn )
 {
+  Guard guard ( this );
   _lastDateColumn = dateColumn;
 }
 
@@ -319,6 +324,7 @@ void PointTimeLayer::lastDateColumn( const std::string& dateColumn )
 
 const std::string& PointTimeLayer::lastDateColumn() const
 {
+  Guard guard ( this );
   return _lastDateColumn;
 }
 
@@ -394,6 +400,7 @@ std::string PointTimeLayer::_whereClause() const
 
 void PointTimeLayer::minDate( const Date& date )
 {
+  Guard guard ( this );
   _minDate = date;
 }
 
@@ -420,6 +427,7 @@ void PointTimeLayer::minDate( unsigned int day, unsigned int month, unsigned int
 
 const PointTimeLayer::Date& PointTimeLayer::minDate() const
 {
+  Guard guard ( this );
   return _minDate;
 }
 
@@ -432,6 +440,7 @@ const PointTimeLayer::Date& PointTimeLayer::minDate() const
 
 void PointTimeLayer::maxDate ( const Date& date )
 {
+  Guard guard ( this );
   _maxDate = date;
 }
 
@@ -444,6 +453,7 @@ void PointTimeLayer::maxDate ( const Date& date )
 
 void PointTimeLayer::maxDate (unsigned int day, unsigned int month, unsigned int year )
 {
+  Guard guard ( this );
   std::ostringstream os;
   os << year << "/" << month << "/" << day;
   _maxDate = Date( os.str() );
@@ -458,6 +468,7 @@ void PointTimeLayer::maxDate (unsigned int day, unsigned int month, unsigned int
 
 const PointTimeLayer::Date& PointTimeLayer::maxDate() const
 {
+  Guard guard ( this );
   return _maxDate;
 }
 
@@ -514,6 +525,8 @@ const PointTimeLayer* PointTimeLayer::getRawPointer() const
 
 void PointTimeLayer::_updateMinMaxDate ( const std::string& min, const std::string& max )
 {
+  Guard guard ( this );
+
   Date d0 ( min );
   Date d1 ( max );
 

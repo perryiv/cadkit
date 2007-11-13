@@ -35,12 +35,10 @@ using namespace Minerva::Core::DataObjects;
 
 Polygon::Polygon() :
 BaseClass(),
-_group ( new osg::Group ),
-_preBuiltScene ( 0x0 ),
 _showBorder( false ),
 _showInterior ( true )
 {
-  _group->setUserData ( new UserData ( this ) );
+  //_group->setUserData ( new UserData ( this ) );
 }
 
 
@@ -64,31 +62,6 @@ Polygon::~Polygon()
 void Polygon::accept ( Minerva::Core::Visitor& visitor )
 {
   visitor.visit ( *this );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* Polygon::buildScene( )
-{
-  if( this->dirty() )
-  {
-    this->preBuildScene();
-  }
-
-  // Switch the pre built scene for what we hand back to osg.
-  // This is safer in a multi-threaded environment.
-  if( _preBuiltScene.valid() )
-  {
-    _group = _preBuiltScene;
-    _preBuiltScene = 0x0;
-  }
-
-  return _group.get();
 }
 
 
@@ -147,22 +120,23 @@ osg::Node* Polygon::_buildPolygons( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Polygon::preBuildScene()
+osg::Node* Polygon::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
 {
   // Clear what we have by making a new one.
-  _preBuiltScene = new osg::Group;
+  osg::ref_ptr < osg::Group > group ( new osg::Group );
 
   if( this->showInterior() )
   {
-    _preBuiltScene->addChild( this->_buildPolygons() );
+    group->addChild( this->_buildPolygons() );
   }
 
   if( this->showBorder() )
   {
-    _preBuiltScene->addChild( BaseClass::buildScene() );
+    group->addChild( BaseClass::_preBuildScene( caller ) );
   }
 
   this->dirty( false );
+  return group.release();
 }
 
 

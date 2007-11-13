@@ -128,15 +128,12 @@ float LineLayer::lineWidth() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
+void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *p )
 {
-  // Lock the mutex.
-  Guard guard( this->mutex() );
-
   Minerva::Core::DB::Connection::ScopedConnection scopedConnection ( *this->connection() );
 
   // Query for a progress bar.
-  Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
+  Usul::Interfaces::IProgressBar::QueryPtr progress ( p );
 
   // Execute the query.
   pqxx::result geometryResult ( this->connection()->executeQuery ( this->query() ) );
@@ -145,8 +142,10 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
   if( progress.valid() )
     progress->setTotalProgressBar( geometryResult.size() );
 
-  // The data table.
+  // Data needed below.
   std::string dataTable ( this->tablename() );
+  osg::Vec3f offset ( 0.0, 0.0, this->zOffset() );
+  float lineWidth ( this->lineWidth() );
 
   // Loop through the results.
   for ( pqxx::result::const_iterator iter = geometryResult.begin(); iter != geometryResult.end(); ++ iter )
@@ -164,22 +163,23 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
       (*geom)->srid( srid );
       (*geom)->databaseInfo ( this->connection(), id, dataTable );
       Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
-      Usul::Interfaces::IOffset::QueryPtr offset ( geom->get() );
+      Usul::Interfaces::IOffset::QueryPtr sp ( geom->get() );
 
-      if( offset.valid() )
-        offset->spatialOffset( osg::Vec3f ( 0.0, 0.0, this->zOffset() ) );
+      if( sp.valid() )
+        sp->spatialOffset( offset );
 
       Minerva::Core::DataObjects::Line::RefPtr data ( new Minerva::Core::DataObjects::Line( ) );
       data->color ( this->_color ( iter ) );
-      data->width( _lineWidth );
+      data->width( lineWidth );
       data->geometry( unknown.get() );
       data->tableName ( dataTable );
       data->rowId ( id );
 
-      /// Set the label.
+      // Set the label.
       this->_setDataObjectMembers( data.get() );
 
-      data->buildScene();
+      // Build the scene.
+      data->preBuildScene( caller );
 
       // Add the data object.
       this->_addDataObject( data.get() );
@@ -208,7 +208,7 @@ void LineLayer::modify( Usul::Interfaces::IUnknown *caller )
   DataObjects &dataObjects ( this->_getDataObjects() );
   dataObjects.clear();
 
-  this->buildDataObjects ( caller );
+  this->buildDataObjects ( caller, 0x0 );
 
   //// Lock the mutex.
   //Guard guard( _mutex );

@@ -17,6 +17,7 @@
 #include "Usul/Interfaces/IGeometryCenter.h"
 #include "Usul/Interfaces/IProjectCoordinates.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Math/NaN.h"
 #include "Usul/Trace/Trace.h"
@@ -991,7 +992,7 @@ Usul::Interfaces::IUnknown* Layer::queryInterface( unsigned long iid )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::buildVectorData  ( Usul::Interfaces::IUnknown *caller )
+void Layer::buildVectorData  ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
 {
   // Clear what we have.
   this->_clearDataObjects();
@@ -1000,8 +1001,14 @@ void Layer::buildVectorData  ( Usul::Interfaces::IUnknown *caller )
   if( true == _query.empty() && false == this->customQuery() )
     _query = this->defaultQuery();
 
+  // Query for a status bar.
+  Usul::Interfaces::IStatusBar::UpdateStatusBar status ( progress );
+
+  // Give feedback.
+  status ( "Building " + this->name() );
+
   // Build the data objects.
-  this->buildDataObjects( caller );
+  this->buildDataObjects( caller, progress );
 }
 
 

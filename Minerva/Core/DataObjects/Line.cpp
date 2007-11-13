@@ -100,14 +100,14 @@ void Line::width ( float width )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Line::buildScene()
+osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
 {
   if ( this->dirty() )
   {
     // Remove the drawables we have.
     _node->removeChild( 0, _node->getNumChildren() );
 
-    _node->setUserData( new UserData( this ) );
+    //_node->setUserData( new UserData( this ) );
 
     osg::ref_ptr < osg::StateSet > ss ( _node->getOrCreateStateSet() );
     ss->setRenderBinDetails( this->renderBin(), "RenderBin" );

@@ -20,7 +20,7 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/DB/Connection.h"
 
-#include "Usul/Base/Referenced.h"
+#include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -37,10 +37,10 @@ namespace Core {
 
 namespace DataObjects {
 
-class MINERVA_EXPORT DataObject : public Usul::Base::Referenced
+class MINERVA_EXPORT DataObject : public Usul::Base::Object
 {
 public:
-  typedef Usul::Base::Referenced      BaseClass;
+  typedef Usul::Base::Object          BaseClass;
   typedef Usul::Interfaces::IUnknown  Unknown;
 
   // Smart-pointer definitions.
@@ -56,8 +56,8 @@ public:
   virtual void          accept ( Minerva::Core::Visitor& visitor );
 
   /// Build the scene branch for the data object.
-  virtual osg::Node*    buildScene() = 0;
-  virtual void          preBuildScene();
+  virtual osg::Node*    buildScene( Usul::Interfaces::IUnknown* caller = 0x0 );
+  void                  preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 );
 
   /// Get/Set the color.
   const osg::Vec4&      color () const;
@@ -119,6 +119,8 @@ protected:
 
   osg::Node*            _buildLabel();
 
+  virtual osg::Node*    _preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 ) = 0;
+
 private:
 
   bool         _dirty;
@@ -133,6 +135,8 @@ private:
   bool         _showLabel;
   Unknown::QueryPtr _geometry;
   Minerva::Core::DB::Connection::RefPtr _connection;
+  osg::ref_ptr < osg::Node > _root;
+  osg::ref_ptr < osg::Node > _preBuiltScene;
 
   /// Shape Factory to share across all Data Objects.
   static OsgTools::ShapeFactory::Ptr _sf;

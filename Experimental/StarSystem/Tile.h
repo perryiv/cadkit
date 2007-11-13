@@ -129,6 +129,9 @@ public:
   void                      texture ( osg::Texture2D* );
   osg::Texture2D*           texture ();
 
+  // Set the texture data.
+  void                      textureData ( osg::Texture2D* texture, const Usul::Math::Vec4d& coords );
+
   // Traverse the children.
   virtual void              traverse ( osg::NodeVisitor & );
 
@@ -148,6 +151,8 @@ protected:
   // Load the image.
   void                      _launchImageRequest();
 
+  // Quarter the texture coordinates.
+  void                      _quarterTextureCoordinates ( Usul::Math::Vec4d& ll, Usul::Math::Vec4d& lr, Usul::Math::Vec4d& ul, Usul::Math::Vec4d& ur ) const;
 private:
 
   // No assignment.

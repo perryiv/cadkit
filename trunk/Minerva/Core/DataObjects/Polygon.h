@@ -20,8 +20,6 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/DataObjects/Line.h"
 
-#include "osg/Group"
-
 #include <map>
 
 namespace Minerva {
@@ -42,10 +40,6 @@ public:
   /// Accept the visitor.
   virtual void          accept ( Minerva::Core::Visitor& visitor );
 
-  /// Build the scene branch for the data object.
-  virtual osg::Node*    buildScene();
-  virtual void          preBuildScene();
-
   /// Get/Set draw border flag.
   void                  showBorder( bool b );
   bool                  showBorder() const;
@@ -58,11 +52,12 @@ protected:
   /// Use reference counting.
   virtual ~Polygon();
 
-  osg::Node*    _buildPolygons();
+  /// Build the scene branch for the data object.
+  virtual osg::Node*    _preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 );
+
+  osg::Node*            _buildPolygons();
 
 private:
-  osg::ref_ptr < osg::Group > _group;
-  osg::ref_ptr < osg::Group > _preBuiltScene;
 
   bool _showBorder;
   bool _showInterior;

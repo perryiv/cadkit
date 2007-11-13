@@ -121,14 +121,11 @@ PolygonLayer::~PolygonLayer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
+void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *p )
 {
-  // Guard this section of code.
-  Guard guard( this->mutex() );
-
   Minerva::Core::DB::Connection::ScopedConnection scopedConnection ( *this->connection() );
 
-  Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
+  Usul::Interfaces::IProgressBar::QueryPtr progress ( p );
 
   std::string dataTable ( this->tablename() );
 
@@ -176,7 +173,7 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller )
         this->_setDataObjectMembers( data.get() );
 
         // Pre build the scene.
-        data->preBuildScene();
+        data->preBuildScene( caller );
 
         this->_addDataObject( data.get() );
       }
@@ -213,7 +210,7 @@ void PolygonLayer::modify( Usul::Interfaces::IUnknown *caller )
   DataObjects &dataObjects ( this->_getDataObjects() );
   dataObjects.clear();
 
-  this->buildDataObjects ( caller );
+  this->buildDataObjects ( caller, 0x0 );
 
   // Guard this section of code.
   //Guard guard ( _mutex);
@@ -280,6 +277,7 @@ const std::string& PolygonLayer::format() const
 
 void PolygonLayer::showBorder( bool b )
 {
+  Guard guard ( this );
   _showBorder = b;
 }
 
@@ -292,6 +290,7 @@ void PolygonLayer::showBorder( bool b )
 
 bool PolygonLayer::showBorder() const
 {
+  Guard guard ( this );
   return _showBorder;
 }
 
@@ -304,6 +303,7 @@ bool PolygonLayer::showBorder() const
 
 void PolygonLayer::borderColor( const osg::Vec4& color )
 {
+  Guard guard ( this );
   _borderColor = color;
 }
 
@@ -316,6 +316,7 @@ void PolygonLayer::borderColor( const osg::Vec4& color )
 
 const osg::Vec4& PolygonLayer::borderColor() const
 {
+  Guard guard ( this );
   return _borderColor;
 }
 
@@ -328,6 +329,7 @@ const osg::Vec4& PolygonLayer::borderColor() const
 
 void PolygonLayer::showInterior( bool b )
 {
+  Guard guard ( this );
   _showInterior = b;
 }
 
@@ -340,6 +342,7 @@ void PolygonLayer::showInterior( bool b )
 
 bool PolygonLayer::showInterior() const
 {
+  Guard guard ( this );
   return _showInterior;
 }
 
@@ -352,6 +355,7 @@ bool PolygonLayer::showInterior() const
 
 void PolygonLayer::borderWidth( float width )
 {
+  Guard guard ( this );
   _borderWidth = width;
 }
 
@@ -364,6 +368,7 @@ void PolygonLayer::borderWidth( float width )
 
 float PolygonLayer::borderWidth() const
 {
+  Guard guard ( this );
   return _borderWidth;
 }
 

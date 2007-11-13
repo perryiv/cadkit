@@ -14,6 +14,8 @@
 
 #include "Minerva/Core/Commands/AddLayer.h"
 
+#include "Usul/Documents/Manager.h"
+
 #include <iostream>
 
 #include "QtGui/QVBoxLayout"
@@ -78,7 +80,7 @@ void AddPostGISLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
 {
   Usul::Interfaces::ILayer::QueryPtr layer ( 0x0 != _databasePage ? _databasePage->layer() : 0x0 );
   Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( caller, layer.get() ) );
-  addLayer->execute ( 0x0 );
+  addLayer->execute ( Usul::Documents::Manager::instance().activeDocument() );
 }
 
 

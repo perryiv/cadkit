@@ -211,7 +211,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::buildScene()
+osg::Node* Point::_preBuildScene( Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
 
@@ -322,7 +322,7 @@ osg::Node* Point::_buildGeometry()
 osg::Node* Point::_buildPoint()
 {
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  geode->setUserData( new UserData( this ) );
+  //geode->setUserData( new UserData( this ) );
   
   osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
 
@@ -366,7 +366,7 @@ osg::Node* Point::_buildPoint()
 osg::Node* Point::_buildSphere()
 {
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  geode->setUserData( new UserData( this ) );
+  //geode->setUserData( new UserData( this ) );
 
   unsigned int size ( static_cast < unsigned int > ( 20.0f * this->quality() ) );
   OsgTools::ShapeFactory::MeshSize meshSize ( size, size );
@@ -391,7 +391,7 @@ osg::Node* Point::_buildSphere()
 osg::Node* Point::_buildCone( bool invert )
 {
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  geode->setUserData( new UserData( this ) );
+  //geode->setUserData( new UserData( this ) );
 
   float height ( _size );
   float radius ( height * 0.25 );
@@ -454,7 +454,7 @@ osg::Node* Point::_buildCone( bool invert )
 osg::Node* Point::_buildDisk()
 {
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  geode->setUserData( new UserData( this ) );
+  //geode->setUserData( new UserData( this ) );
 
   // For now use a short cylinder.  Ellipsoid would be better.
   osg::ref_ptr < osg::Cylinder > cylinder ( new osg::Cylinder( osg::Vec3( 0.0, 0.0, 0.0 ), _size, _size * 0.25 ) );
@@ -486,7 +486,7 @@ osg::Node* Point::_buildDisk()
 osg::Node* Point::_buildCube()
 {
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  geode->setUserData( new UserData( this ) );
+  //geode->setUserData( new UserData( this ) );
 
   geode->addDrawable( BaseClass::shapeFactory()->cube ( osg::Vec3 ( _size, _size, _size )  ) );
 
@@ -519,7 +519,7 @@ osg::Node* Point::_buildCylinder()
   USUL_TRACE_SCOPE;
 
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  geode->setUserData( new UserData( this ) );
+  //geode->setUserData( new UserData( this ) );
 
   if( this->size() > 0 )
   {

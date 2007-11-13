@@ -150,7 +150,7 @@ public:
   virtual std::string         defaultQuery() const;
 
   /// Build the data objects.
-  virtual void                buildDataObjects( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
+  virtual void                buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress ) = 0;
 
   /// Modify data objects.
   virtual void                modify( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
@@ -227,7 +227,7 @@ protected:
   void                        _updateMinMax ( double value );
 
   /// Usul::Interfaces::IVectorLayer
-  virtual void                buildVectorData  ( Usul::Interfaces::IUnknown *caller = 0x0 );
+  virtual void                buildVectorData  ( Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
   virtual void                modifyVectorData ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   /// Usul::Interfaces::IAddRowLegend
@@ -297,7 +297,9 @@ osg::Vec4 Layer::_color ( const T& iter )
     }
     else
     {
-      color = (*this->colorFunctor())( 0.0 );
+      Minerva::Core::Functors::BaseColorFunctor::RefPtr functor ( this->colorFunctor() );
+      if ( functor.valid() )
+        color = (*functor)( 0.0 );
     }
   }
   catch ( const std::exception& e )

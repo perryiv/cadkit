@@ -31,7 +31,7 @@ struct IVectorLayer : public Usul::Interfaces::IUnknown
   virtual void                buildScene( osg::Group* parent ) = 0;
 
   /// Build the data objects.
-  virtual void                buildVectorData  ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
+  virtual void                buildVectorData  ( Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 ) = 0;
 
   /// Modify data objects
   virtual void                modifyVectorData ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;

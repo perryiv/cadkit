@@ -72,9 +72,6 @@ public:
   unsigned int            primitiveId () const;
   void                    primitiveId ( unsigned int );
 
-  /// Build the scene branch for the data object.
-  virtual osg::Node*      buildScene();
-
   /// Get/Set quality
   void                    quality( float value );
   float                   quality() const;
@@ -99,6 +96,9 @@ protected:
   osg::Node*            _buildDisk();
   osg::Node*            _buildCube();
   osg::Node*            _buildCylinder();
+
+  /// Build the scene branch for the data object.
+  virtual osg::Node*    _preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 );
 
 private:
   float        _size;

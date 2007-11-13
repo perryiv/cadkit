@@ -262,7 +262,7 @@ void LayersTree::_onAddLayerClick ()
       for ( Unknowns::iterator iter = unknowns.begin (); iter != unknowns.end(); ++iter )
       {
         Usul::Interfaces::ILayerAddGUIQt::QueryPtr gui ( *iter );
-        gui->apply ( _document );
+        gui->apply ( _caller );
       }
     }
 

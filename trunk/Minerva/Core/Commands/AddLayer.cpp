@@ -97,7 +97,10 @@ void AddLayer::_execute ()
 
   // Create a job to add a layer.  It captures the active document.
   AddLayerJob::RefPtr job ( new AddLayerJob ( _layer, this->caller () ) );
-  job->progress ( _progressBar );
+
+  if ( _progressBar.valid() )
+    job->progress ( _progressBar );
+
   Usul::Jobs::Manager::instance().add ( job.get() );
 }
 
@@ -198,8 +201,9 @@ void AddLayer::AddLayerJob::_started()
 
   // Build the vector data.
   if ( vector.valid () )
-    vector->buildVectorData ( this->progress() );
+    vector->buildVectorData ( _caller, this->progress() );
 
+  // Dirty the scene.
   Minerva::Interfaces::IDirtyScene::QueryPtr ds ( _caller );
   if ( ds.valid ( ) )
     ds->dirtyScene ();

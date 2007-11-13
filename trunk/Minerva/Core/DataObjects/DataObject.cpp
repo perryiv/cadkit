@@ -456,8 +456,10 @@ bool DataObject::showLabel () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DataObject::preBuildScene()
+void DataObject::preBuildScene( Usul::Interfaces::IUnknown * caller )
 {
+  Guard guard ( this );
+  _preBuiltScene = this->_preBuildScene ( caller );
 }
 
 
@@ -470,4 +472,30 @@ void DataObject::preBuildScene()
 bool DataObject::transparent() const
 {
   return 1.0f != this->color().w();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* DataObject::buildScene( Usul::Interfaces::IUnknown* caller )
+{
+  // Build the scene if we need to.
+  if ( this->dirty () )
+    this->preBuildScene( caller );
+
+  Guard guard ( this );
+
+  // Switch the pre built scene for what we hand back to osg.
+  // This is safer in a multi-threaded environment.
+  if( _preBuiltScene.valid() )
+  {
+    _root = _preBuiltScene;
+    _preBuiltScene = 0x0;
+  }
+
+  return _root.get();
 }

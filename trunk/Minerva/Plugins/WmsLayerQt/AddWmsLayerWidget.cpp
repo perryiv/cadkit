@@ -15,6 +15,8 @@
 
 #include "Magrathea/WmsLayer.h"
 
+#include "Usul/Documents/Manager.h"
+
 #include "QtGui/QLabel"
 #include "QtGui/QLineEdit"
 #include "QtGui/QHBoxLayout"
@@ -115,7 +117,7 @@ AddWmsLayerWidget::~AddWmsLayerWidget()
 
 void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
 {
-  Minerva::Interfaces::IAddLayer::QueryPtr al ( caller );
+  Minerva::Interfaces::IAddLayer::QueryPtr al ( Usul::Documents::Manager::instance().activeDocument() );
 
   if ( false == al.valid () )
     return;

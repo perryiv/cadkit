@@ -50,7 +50,7 @@ public:
   const std::string&      lastDateColumn() const;
 
   /// Build the data objects.
-  virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller = 0x0 );
+  virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
 
   /// Modify the data objects.
   virtual void            modify( Usul::Interfaces::IUnknown *caller = 0x0 );

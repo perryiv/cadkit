@@ -88,6 +88,8 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _texture->setWrap( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
   _texture->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
 
+  this->getOrCreateStateSet()->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF );
+
   // Start the request to pull in texture.
   this->_launchImageRequest();
 }
@@ -307,8 +309,7 @@ void Tile::traverse ( osg::NodeVisitor &nv )
         osg::ref_ptr < osg::Texture2D > texture ( _body->texture ( _jobId ) );
         if ( texture.valid() )
         {
-          this->texture ( texture.get() );
-          this->texCoords ( Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
+          this->textureData ( texture.get(), Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
           _jobId = -1;
         }
       }
@@ -386,7 +387,11 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   // Check if we've gone too deep.
   const bool tooDeep ( this->level() >= _body->maxLevel() );
 
-  if ( farAway || eyeIsNan || tooDeep )
+  // Should we traverse the low lod?
+  const bool low ( farAway || eyeIsNan || tooDeep );
+  bool splitHappened ( false );
+
+  if ( low )
   {
     this->_update();
 
@@ -408,13 +413,11 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
     }
 
     // Traverse low level of detail.
-    this->getChild ( 0 )->accept ( cv );
+//    this->getChild ( 0 )->accept ( cv );
   }
 
   else
   {
-    //this->clear();
-
     // Add high level if necessary.
     if ( 1 == numChildren )
     {
@@ -432,21 +435,9 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
       const Extents ul ( Extents::Vertex ( mn[0], md[1] ), Extents::Vertex ( md[0], mx[1] ) );
       const Extents ur ( Extents::Vertex ( md[0], md[1] ), Extents::Vertex ( mx[0], mx[1] ) );
 
-      const double deltaU ( _texCoords[1] - _texCoords[0] );
-      const double deltaV ( _texCoords[3] - _texCoords[2] );
-
-      const double startU ( _texCoords[0] );
-      const double halfU  ( _texCoords[0] + ( deltaU / 2.0 ) );
-      const double endU   ( startU + deltaU );
-
-      const double startV ( _texCoords[2] );
-      const double halfV  ( _texCoords[2] + ( deltaV / 2.0 ) );
-      const double endV   ( startV + deltaV );
-
-      const Usul::Math::Vec4d tll ( startU, halfU, halfV,  endV );
-      const Usul::Math::Vec4d tlr ( halfU,  endU,  halfV,  endV );
-      const Usul::Math::Vec4d tul ( startU, halfU, startV, halfV );
-      const Usul::Math::Vec4d tur ( halfU,  endU,  startV, halfV );
+      // Texture coordinates for the children tiles.
+      Usul::Math::Vec4d tll, tlr, tul, tur;
+      this->_quarterTextureCoordinates ( tll, tlr, tul, tur );
 
       _children[LOWER_LEFT]  = new Tile ( level, ll, meshSize, tll, half, _body, _image.get() ); // lower left  tile
       _children[LOWER_RIGHT] = new Tile ( level, lr, meshSize, tlr, half, _body, _image.get() ); // lower right tile
@@ -459,11 +450,17 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
       group->addChild ( _children[UPPER_LEFT]  );
       group->addChild ( _children[UPPER_RIGHT] );
       this->addChild ( group.get() );
-    }
 
-    // Traverse last child.
-    this->getChild ( this->getNumChildren() - 1 )->accept ( cv );
+      splitHappened = true;
+    }
   }
+
+  // Traverse low level of detail.
+  if ( low || splitHappened )
+    this->getChild ( 0 )->accept ( cv );
+  // Traverse last child.
+  else
+    this->getChild ( this->getNumChildren() - 1 )->accept ( cv );
 }
 
 
@@ -708,14 +705,6 @@ void Tile::texture ( osg::Texture2D* texture )
   if ( 0x0 != texture )
   {
     _texture = texture;
-    if ( _children[LOWER_LEFT].valid()  && this->image() == _children[LOWER_LEFT]->image()  ) _children[LOWER_LEFT]->texture ( texture );
-    if ( _children[LOWER_RIGHT].valid() && this->image() == _children[LOWER_RIGHT]->image() ) _children[LOWER_RIGHT]->texture ( texture );
-    if ( _children[UPPER_LEFT].valid()  && this->image() == _children[UPPER_LEFT]->image()  ) _children[UPPER_LEFT]->texture ( texture );
-    if ( _children[UPPER_RIGHT].valid() && this->image() == _children[UPPER_RIGHT]->image() ) _children[UPPER_RIGHT]->texture ( texture );
-
-    // Set our image.
-    this->image ( texture->getImage() );
-
     this->dirty ( true, Tile::TEXTURE, false );
   }
 }
@@ -824,4 +813,63 @@ osg::Image* Tile::image()
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _image.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Quarter the texture coordinates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_quarterTextureCoordinates ( Usul::Math::Vec4d& ll, Usul::Math::Vec4d& lr, Usul::Math::Vec4d& ul, Usul::Math::Vec4d& ur ) const
+{
+  const double deltaU ( _texCoords[1] - _texCoords[0] );
+  const double deltaV ( _texCoords[3] - _texCoords[2] );
+
+  const double startU ( _texCoords[0] );
+  const double halfU  ( _texCoords[0] + ( deltaU / 2.0 ) );
+  const double endU   ( startU + deltaU );
+
+  const double startV ( _texCoords[2] );
+  const double halfV  ( _texCoords[2] + ( deltaV / 2.0 ) );
+  const double endV   ( startV + deltaV );
+
+  ll.set ( startU, halfU, halfV,  endV );
+  lr.set ( halfU,  endU,  halfV,  endV );
+  ul.set ( startU, halfU, startV, halfV );
+  ur.set ( halfU,  endU,  startV, halfV );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the texture data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::textureData ( osg::Texture2D* texture, const Usul::Math::Vec4d& coords )
+{
+  // Set the texture.
+  this->texture ( texture );
+
+  // Set the texture coordinates.
+  this->texCoords ( coords );
+  
+#if 1
+  // Set children data.
+  {
+    Guard guard ( this );
+
+    Usul::Math::Vec4d ll, lr, ul, ur;
+    this->_quarterTextureCoordinates ( ll, lr, ul, ur );
+    if ( _children[LOWER_LEFT].valid()  && this->image() == _children[LOWER_LEFT]->image()  ) _children[LOWER_LEFT]->textureData  ( texture, ll );
+    if ( _children[LOWER_RIGHT].valid() && this->image() == _children[LOWER_RIGHT]->image() ) _children[LOWER_RIGHT]->textureData ( texture, lr );
+    if ( _children[UPPER_LEFT].valid()  && this->image() == _children[UPPER_LEFT]->image()  ) _children[UPPER_LEFT]->textureData  ( texture, ul );
+    if ( _children[UPPER_RIGHT].valid() && this->image() == _children[UPPER_RIGHT]->image() ) _children[UPPER_RIGHT]->textureData ( texture, ur );
+  }
+#endif
+
+  // Set our image.
+  this->image ( texture->getImage() );
 }

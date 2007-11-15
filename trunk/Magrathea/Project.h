@@ -11,6 +11,7 @@
 #ifndef __OSSIM_PROJECT_H__
 #define __OSSIM_PROJECT_H__
 
+#include "ossim/base/ossimCommon.h"
 #include "ossim/base/ossimConstants.h"
 #include "ossim/base/ossimGpt.h"
 #include "ossim/base/ossimEcefPoint.h"
@@ -37,7 +38,11 @@ namespace Magrathea
       mapProj->eastingNorthingToWorld( ossimDpt ( (*iter)[0], (*iter)[1] ), gpt );
 
       double deltaH = ossimElevManager::instance()->getHeightAboveMSL(gpt);
+#if OSSIM_MINOR_VERSION_NUMBER < 7
       if(deltaH == OSSIM_DBL_NAN)
+#else
+      if( ossim::isnan (deltaH))
+#endif
       {
          deltaH = 0.0;
       }
@@ -97,7 +102,11 @@ namespace Magrathea
     //std::cerr << "Lat: " << gpt.lat << " Long: " << gpt.lon << std::endl;
 
     double deltaH = ossimElevManager::instance()->getHeightAboveMSL(gpt);
-    if(deltaH == OSSIM_DBL_NAN)
+#if OSSIM_MINOR_VERSION_NUMBER < 7
+      if(deltaH == OSSIM_DBL_NAN)
+#else
+      if( ossim::isnan (deltaH))
+#endif
     {
       deltaH = 0.0;
     }
@@ -129,12 +138,15 @@ namespace Magrathea
     double normalizationFactor = ecef.getMagnitude();
 
     ossimGpt gpt ( vec.y(), vec.x() );
-    gpt.hgt = OSSIM_DBL_NAN;
     
     ecef = gpt;
 
     double deltaH = ossimElevManager::instance()->getHeightAboveMSL(gpt);
-    if(deltaH == OSSIM_DBL_NAN)
+#if OSSIM_MINOR_VERSION_NUMBER < 7
+      if(deltaH == OSSIM_DBL_NAN)
+#else
+      if( ossim::isnan (deltaH))
+#endif
     {
        deltaH = 0.0;
     }

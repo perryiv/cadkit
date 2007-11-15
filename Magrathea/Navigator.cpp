@@ -475,7 +475,7 @@ void Navigator::planet( ossimPlanet * planet )
   if( 0x0 != planet )
   {
     _planet = planet;
-    _landModel = planet->getLand()->getModel().get();
+    _landModel = planet->land()->model().get();
   }
 }
 
@@ -495,7 +495,7 @@ bool Navigator::_losIntersectionPoint ( osg::Vec3d& point )
     if( _planet->getComputeIntersectionFlag() )
     {
       osg::Vec3d losPt ( _planet->getLineOfSitePoint() );
-      _planet->getLand()->getModel()->inverse( losPt, point );
+      _planet->land()->model()->inverse( losPt, point );
       hitFound = true;
     }
     else

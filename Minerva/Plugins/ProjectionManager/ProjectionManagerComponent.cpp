@@ -95,12 +95,21 @@ namespace Detail
   void projectFromGpt( const ossimGpt& gpt, Usul::Math::Vec3d& latLonPoint )
   {
     double deltaH = ossimElevManager::instance()->getHeightAboveEllipsoid( gpt );
-    if(deltaH == OSSIM_DBL_NAN)
+
+#if OSSIM_MINOR_VERSION_NUMBER < 7
+      if(deltaH == OSSIM_DBL_NAN)
+#else
+      if( ossim::isnan (deltaH))
+#endif
     {
        deltaH = ossimGeoidManager::instance()->offsetFromEllipsoid( gpt );
     }
 
-    if(deltaH == OSSIM_DBL_NAN)
+#if OSSIM_MINOR_VERSION_NUMBER < 7
+      if(deltaH == OSSIM_DBL_NAN)
+#else
+      if( ossim::isnan (deltaH))
+#endif
     {
        deltaH = 0.0;
     }

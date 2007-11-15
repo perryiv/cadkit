@@ -70,7 +70,11 @@ namespace Magrathea
 
     // Calculate the real height
     double deltaH(  ossimElevManager::instance()->getHeightAboveMSL( center ) );
-    if(deltaH == OSSIM_DBL_NAN)
+#if OSSIM_MINOR_VERSION_NUMBER < 7
+      if(deltaH == OSSIM_DBL_NAN)
+#else
+      if( ossim::isnan (deltaH))
+#endif
     {
       deltaH = 0.0;
     }

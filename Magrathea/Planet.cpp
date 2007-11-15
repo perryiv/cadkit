@@ -125,7 +125,7 @@ void Planet::setDefaults()
   const ossimPlanetLandType landType ( ossimPlanetLandType_NORMALIZED_ELLIPSOID );
 
   const bool  elevEnabled    ( true  );
-  const bool  ephemerisFlag  ( false );
+  //  const bool  ephemerisFlag  ( false );
   const bool  hudEnabled     ( false );
   const float elevExag       ( 1.0   );
   const int   elevEstimate   ( 16    );    
@@ -133,18 +133,18 @@ void Planet::setDefaults()
 
   const ossimFilename elevCache( "" );
 
-  _planet->getLand()->setLandType( landType );
-  _planet->getLand()->setElevationEnabledFlag( elevEnabled );
-  _planet->getLand()->setHeightExag( elevExag );
-  _planet->getLand()->setElevationPatchSize( elevEstimate );
-  _planet->getLand()->setMaxLevelDetail( levelDetail );
-  _planet->getLand()->setElevationCacheDir( elevCache );
-  _planet->setEnableEphemerisFlag( ephemerisFlag );
+  _planet->land()->setLandType( landType );
+  _planet->land()->setElevationEnabledFlag( elevEnabled );
+  _planet->land()->setHeightExag( elevExag );
+  _planet->land()->setElevationPatchSize( elevEstimate );
+  _planet->land()->setMaxLevelDetail( levelDetail );
+  _planet->land()->setElevationCacheDir( elevCache );
+  //  _planet->setEnableEphemerisFlag( ephemerisFlag );
   _planet->setEnableHudFlag( hudEnabled );
-  _planet->getLand()->setElevationCacheDir( elevCache );
-  _planet->getLand()->resetGraph();
+  _planet->land()->setElevationCacheDir( elevCache );
+  _planet->land()->resetGraph();
 
-  _layerManipulator->setLand( _planet->getLand().get() );
+  _layerManipulator->setLand( _planet->land().get() );
 }
 
 
@@ -160,9 +160,9 @@ void Planet::init()
   {
     this->setDefaults();
 
-    _planet->getLand()->setTextureLayer( _textureLayerGroup.get(), 0 );
-    _planet->getLand()->setTextureLayer( _textureOperationLayerGroup.get(), 1 );
-    _planet->getLand()->resetGraph(); 	
+    _planet->land()->setOverlayLayer( 0, _textureLayerGroup.get() );
+    _planet->land()->setOverlayLayer( 1, _textureOperationLayerGroup.get() );
+    _planet->land()->resetGraph(); 	
 
     //osgDB::Registry::instance()->setDatabasePager( _databasePager.get() );
 	  _databasePager->setExpiryDelay(0);
@@ -194,7 +194,7 @@ void Planet::readKWL( const std::string& fileName )
   if( layer.valid() )
   {
     _textureLayerGroup->addTop( layer.get() );
-    this->refreshLandTextures( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
+    this->refreshLandTextures( layer->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
   }
 }
 
@@ -225,7 +225,7 @@ int Planet::addLayer( ossimPlanetTextureLayer *layer  )
   {    
     _textureLayerGroup->addTop( layer );    
     index = _textureLayerGroup->findLayerIndex( layer );
-    this->refreshLandTextures( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
+    this->refreshLandTextures( layer->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
   }
 
   return index;
@@ -258,7 +258,7 @@ int Planet::addLayerOperation( ossimPlanetTextureLayer *layer  )
   {    
     _textureOperationLayerGroup->addTop( layer );
     index = _textureOperationLayerGroup->findLayerIndex( layer );
-    this->refreshLandTextures( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
+    this->refreshLandTextures( layer->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
   }
 
   return index;
@@ -298,7 +298,7 @@ void Planet::removeLayerOperation( int index  )
 void Planet::removeLayer( ossimPlanetTextureLayer *layer )
 {
   _textureLayerGroup->removeLayer( layer );
-  this->refreshLandTextures( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
+  this->refreshLandTextures( layer->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
 }
 
 bool Planet::hasLayer( ossimPlanetTextureLayer *layer )
@@ -320,7 +320,7 @@ bool Planet::hasLayerOperation( ossimPlanetTextureLayer *layer )
 void Planet::removeLayerOperation( ossimPlanetTextureLayer *layer  )
 {
   _textureOperationLayerGroup->removeLayer( layer );
-  this->refreshLandTextures( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
+  this->refreshLandTextures( layer->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
 }
 
 
@@ -332,7 +332,7 @@ void Planet::removeLayerOperation( ossimPlanetTextureLayer *layer  )
 
 void Planet::reset()
 {  
-  _planet->getLand()->resetGraph(); 
+  _planet->land()->resetGraph(); 
 }
 
 
@@ -342,9 +342,9 @@ void Planet::reset()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Planet::refreshLandTextures( ossimPlanetExtents* extents, ossimPlanetPagedLandLodRefreshType refreshType )
+void Planet::refreshLandTextures( ossimPlanetExtents* extents, ossimPlanetLandRefreshType refreshType )
 {
-  _planet->getLand()->resetGraph( extents, refreshType );
+  _planet->land()->resetGraph( extents, refreshType );
 }
 
 
@@ -380,7 +380,7 @@ osgDB::DatabasePager* Planet::databasePager() const
 
 bool Planet::elevationEnabled() const
 { 
-  return _planet->getLand()->getElevationEnabledFlag(); 
+  return _planet->land()->getElevationEnabledFlag(); 
 }
 
 
@@ -392,7 +392,7 @@ bool Planet::elevationEnabled() const
 
 void Planet::elevationEnabled( bool val ) 
 { 
-  _planet->getLand()->setElevationEnabledFlag( val ); 
+  _planet->land()->setElevationEnabledFlag( val ); 
   reset(); 
 }
 
@@ -430,7 +430,8 @@ void Planet::hudEnabled( bool val )
 
 bool Planet::ephemerisFlag() const
 { 
-  return _planet->getEnableEphemerisFlag();
+  //return _planet->getEnableEphemerisFlag();
+  return false;
 }
 
 
@@ -442,7 +443,7 @@ bool Planet::ephemerisFlag() const
 
 void Planet::ephemerisFlag( bool val )
 { 
-  _planet->setEnableEphemerisFlag( val );
+  //_planet->setEnableEphemerisFlag( val );
   // Update??
 }  
 
@@ -455,7 +456,7 @@ void Planet::ephemerisFlag( bool val )
 
 float Planet::elevationExag() const
 { 
-  return _planet->getLand()->getHeightExag();
+  return _planet->land()->getHeightExag();
 }
 
 
@@ -467,7 +468,7 @@ float Planet::elevationExag() const
 
 void Planet::elevationExag( const float& elevExag )
 { 
-  _planet->getLand()->setHeightExag( elevExag );
+  _planet->land()->setHeightExag( elevExag );
   reset(); 
 }
 
@@ -480,7 +481,7 @@ void Planet::elevationExag( const float& elevExag )
 
 int Planet::elevationPatchSize() const
 { 
-  return _planet->getLand()->getElevationPatchSize();
+  return _planet->land()->getElevationPatchSize();
 }
 
 
@@ -492,7 +493,7 @@ int Planet::elevationPatchSize() const
 
 void  Planet::elevationPatchSize( const int& elevEstimate )
 { 
-  _planet->getLand()->setElevationPatchSize( elevEstimate );
+  _planet->land()->setElevationPatchSize( elevEstimate );
   reset(); 
 }
 
@@ -505,7 +506,7 @@ void  Planet::elevationPatchSize( const int& elevEstimate )
 
 unsigned int Planet::levelDetail() const
 { 
-  return _planet->getLand()->getMaxLevelDetail();
+  return _planet->land()->getMaxLevelDetail();
 }
 
 
@@ -517,7 +518,7 @@ unsigned int Planet::levelDetail() const
 
 void Planet::levelDetail( unsigned int levelDetail )
 { 
-  _planet->getLand()->setMaxLevelDetail( levelDetail );
+  _planet->land()->setMaxLevelDetail( levelDetail );
   reset(); 
 }
 
@@ -530,7 +531,7 @@ void Planet::levelDetail( unsigned int levelDetail )
 
 void Planet::landType( ossimPlanetLandType landType )
 { 
-  _planet->getLand()->setLandType( landType );
+  _planet->land()->setLandType( landType );
   reset(); 
 }      
 
@@ -570,7 +571,7 @@ bool Planet::showLatLongGrid() const
 
 std::string Planet::elevationCacheDir() const
 {
-  ossimFilename name ( _planet->getLand()->getElevationCacheDir( ) );
+  ossimFilename name ( _planet->land()->getElevationCacheDir( ) );
   return name.c_str();
 }
 
@@ -583,7 +584,7 @@ std::string Planet::elevationCacheDir() const
 
 void Planet::elevationCacheDir( const std::string& directory )
 {
-  _planet->getLand()->setElevationCacheDir( directory.c_str() );
+  _planet->land()->setElevationCacheDir( directory.c_str() );
 }
 
 
@@ -775,11 +776,11 @@ void Planet::initVisitors ( Usul::Interfaces::IUnknown *caller )
 /// Get/Set the split metric.
 void Planet::splitMetric ( double value )
 {
-  _planet->getLand()->setSplitMetricRatio ( value );
+  _planet->land()->setSplitMetricRatio ( value );
   this->reset();
 }
 
 double Planet::splitMetric () const
 {
-  return _planet->getLand()->getSplitMetricRatio();
+  return _planet->land()->getSplitMetricRatio();
 }

@@ -14,6 +14,9 @@
 #include "Usul/Math/Absolute.h"
 
 #include "ossim/base/ossimConstants.h"
+#include "ossim/base/ossimGpt.h"
+#include "ossim/base/ossimGeoidManager.h"
+#include "ossim/elevation/ossimElevManager.h"
 
 #include <algorithm>
 
@@ -51,11 +54,7 @@ namespace Magrathea
     
     ossimGpt p1 ( lat1, lon1 );
     double deltaH(  ossimElevManager::instance()->getHeightAboveMSL( p1 ) );
-#if OSSIM_MINOR_VERSION_NUMBER < 7
-      if(deltaH == OSSIM_DBL_NAN)
-#else
-      if( ossim::isnan (deltaH))
-#endif
+    if( ossim::isnan (deltaH))
     {
       deltaH = 0.0;
     }

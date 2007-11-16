@@ -50,6 +50,14 @@
 
 #include "osgText/Text"
 
+#include "ossim/projection/ossimProjectionFactoryRegistry.h"
+#include "ossim/projection/ossimMapProjection.h"
+#include "ossim/base/ossimGpt.h"
+#include "ossim/base/ossimEcefPoint.h"
+#include "ossim/base/ossimGeoidManager.h"
+
+#include "ossim/base/ossimEllipsoid.h"
+
 #include <sstream>
 
 using namespace Minerva::Document;
@@ -149,8 +157,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
   {
   case Usul::Interfaces::IBuildScene::IID:
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
-  case Usul::Interfaces::IMatrixManipulator::IID:
-    return static_cast < Usul::Interfaces::IMatrixManipulator* > ( this );
+  //case Usul::Interfaces::IMatrixManipulator::IID:
+  //  return static_cast < Usul::Interfaces::IMatrixManipulator* > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
   case Minerva::Interfaces::IAnimationControl::IID:
@@ -167,6 +175,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
   case Usul::Interfaces::ICommandExecuteListener::IID:
     return static_cast < Usul::Interfaces::ICommandExecuteListener * > ( this );
+  case Usul::Interfaces::IPlanetCoordinates::IID:
+    return static_cast < Usul::Interfaces::IPlanetCoordinates* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -1728,4 +1738,79 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
     //text->setText ( os.str() );
     //tm->setText ( 15, 15, os.str() );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert to planet coordinates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::convertToPlanetEllipsoid ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert to planet coordinates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
+{
+#if 0
+  ossimEcefPoint ecef;
+  ossimGpt dummy;
+  ecef = dummy;
+  double normalizationFactor = ecef.getMagnitude();
+
+  ossimGpt gpt ( orginal[1], orginal[0], orginal[2] );
+
+  // Transform to ossimPlanet coordinates
+  ecef = gpt;
+  planetPoint[0] = ecef.x()/normalizationFactor;
+  planetPoint[1] = ecef.y()/normalizationFactor;
+  planetPoint[2] = ecef.z()/normalizationFactor;
+#else
+  const osg::Vec3d in ( orginal[1], orginal[0], orginal[2] );
+  osg::Vec3d out;
+
+  _planet->landModel()->forward( in, out );
+
+  planetPoint.set ( out[0], out[1], out[2] );
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert from planet coordinates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const
+{
+#if 0
+  ossimEcefPoint ecef;
+  ossimGpt dummy;
+  ecef = dummy;
+  double normalizationFactor = ecef.getMagnitude();
+
+  ecef = ossimEcefPoint( planetPoint [ 0 ] * normalizationFactor, planetPoint [ 1 ] * normalizationFactor, planetPoint [ 2 ] * normalizationFactor );
+
+  ossimGpt gpt ( ecef );
+
+  latLonPoint [ 0 ] = gpt.lon;
+  latLonPoint [ 1 ] = gpt.lat;
+  latLonPoint [ 2 ] = gpt.hgt;
+#else
+  const osg::Vec3d in ( planetPoint[0], planetPoint[1], planetPoint[2] );
+  osg::Vec3d out;
+
+  _planet->landModel()->inverse( in, out );
+
+  latLonPoint.set ( out[1], out[0], out[2] );
+#endif
 }

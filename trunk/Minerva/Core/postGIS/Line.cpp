@@ -10,14 +10,8 @@
 
 #include "Minerva/Core/postGIS/Line.h"
 
-#include "Magrathea/Project.h"
-#include "Magrathea/Resample.h"
-
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IProjectCoordinates.h"
-
-#include "osg/Geode"
-#include "osg/Geometry"
 
 using namespace Minerva::Core::postGIS;
 
@@ -44,44 +38,6 @@ _latLongPoints ()
 
 Line::~Line()
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the geometry.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Geometry* Line::buildLineData()
-{
-  if( _latLongPoints.empty() )
-    this->_buildLatLongPoints();
-
-  // Create the geometry
-  osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
-
-  unsigned int num ( 0 );
-
-  osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
-
-  Vertices sampledPoints;
-  Magrathea::resample( _latLongPoints, sampledPoints );
-
-  osg::ref_ptr< osg::Vec3Array > newVertices ( new osg::Vec3Array );
-  Magrathea::convertVerticesToEarthCoordinates( sampledPoints, *newVertices, this->spatialOffset().z() );
-
-  vertices->insert( vertices->end(), newVertices->begin(), newVertices->end() );
-
-  // Add the primitive set
-  geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINE_STRIP, num, newVertices->size() ) );
-
-  num += newVertices->size();
-
-  // Set the vertices.
-	geometry->setVertexArray( vertices.get() );
-
-  return geometry.release();
 }
 
 

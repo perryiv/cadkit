@@ -26,6 +26,8 @@
 #include "Usul/Interfaces/ILayerList.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/ICommandExecuteListener.h"
+#include "Usul/Interfaces/IProjectCoordinates.h"
+#include "Usul/Interfaces/IPlanetCoordinates.h"
 
 #include "Minerva/Core/Animate/Settings.h"
 #include "Minerva/Core/Animate/TimeSpan.h"
@@ -62,7 +64,8 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Minerva::Interfaces::IDirtyScene,
                                                 public Usul::Interfaces::ILayerList,
                                                 public Usul::Interfaces::IMenuAdd,
-                                                public Usul::Interfaces::ICommandExecuteListener
+                                                public Usul::Interfaces::ICommandExecuteListener,
+                                                public Usul::Interfaces::IPlanetCoordinates
 {
 public:
   /// Useful typedefs.
@@ -263,6 +266,12 @@ protected:
 
   // Command is executed.
   virtual void                             commandExecuteNotify ( Usul::Commands::Command* command );
+
+  /// Convert to planet coordinates.
+  virtual void convertToPlanetEllipsoid ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
+  virtual void convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
+  virtual void convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const;
+
 private:
 
   Layers _layers;

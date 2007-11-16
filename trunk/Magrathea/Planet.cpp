@@ -160,8 +160,12 @@ void Planet::init()
   {
     this->setDefaults();
 
-    _planet->land()->setOverlayLayer( 0, _textureLayerGroup.get() );
-    _planet->land()->setOverlayLayer( 1, _textureOperationLayerGroup.get() );
+    //_planet->land()->overlayLayers()->addTop ( _textureLayerGroup.get() );
+    //_planet->land()->overlayLayers()->addBeforeIdx ( 0, _textureLayerGroup.get() );
+    //_planet->land()->overlayLayers()->addBeforeIdx ( 1, _textureOperationLayerGroup.get() );
+
+    //_planet->land()->setOverlayLayer( 0, _textureLayerGroup.get() );
+    //_planet->land()->setOverlayLayer( 1, _textureOperationLayerGroup.get() );
     _planet->land()->resetGraph(); 	
 
     //osgDB::Registry::instance()->setDatabasePager( _databasePager.get() );
@@ -205,10 +209,10 @@ void Planet::readKWL( const std::string& fileName )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Planet::addLayer( const std::string& filename )
+void Planet::addLayer( const std::string& filename )
 {
   osg::ref_ptr< ossimPlanetTextureLayer > layer ( ossimPlanetTextureLayerRegistry::instance()->createLayer(filename.c_str() ) );
-  return this->addLayer( layer.get() );
+  this->addLayer( layer.get() );
 }
 
 
@@ -218,17 +222,16 @@ int Planet::addLayer( const std::string& filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Planet::addLayer( ossimPlanetTextureLayer *layer  )
+void Planet::addLayer( ossimPlanetTextureLayer *layer  )
 {
-  int index ( -1 );
   if( 0x0 != layer )
   {    
-    _textureLayerGroup->addTop( layer );    
-    index = _textureLayerGroup->findLayerIndex( layer );
+    _planet->land()->referenceLayer()->addTop ( layer );
+
+    //_textureLayerGroup->addTop( layer );    
+    //index = _textureLayerGroup->findLayerIndex( layer );
     this->refreshLandTextures( layer->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
   }
-
-  return index;
 }
 
 
@@ -271,33 +274,10 @@ int Planet::addLayerOperation( ossimPlanetTextureLayer *layer  )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Planet::removeLayer( int index  )
-{
-  _textureLayerGroup->removeLayer( index );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove a layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Planet::removeLayerOperation( int index  )
-{
-  _textureOperationLayerGroup->removeLayer( index );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove a layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void Planet::removeLayer( ossimPlanetTextureLayer *layer )
 {
-  _textureLayerGroup->removeLayer( layer );
+  _planet->land()->referenceLayer()->removeLayer ( layer );
+  //_textureLayerGroup->removeLayer( layer );
   this->refreshLandTextures( layer->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
 }
 
@@ -783,4 +763,16 @@ void Planet::splitMetric ( double value )
 double Planet::splitMetric () const
 {
   return _planet->land()->getSplitMetricRatio();
+}
+
+
+// Get the land model.
+ossimPlanetLandModel* Planet::landModel()
+{
+  return _planet->land()->model().get();
+}
+
+const ossimPlanetLandModel* Planet::landModel() const
+{
+  return _planet->land()->model().get();
 }

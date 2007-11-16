@@ -81,23 +81,23 @@ osg::Group*  PlanetComponent::planetNode ( const std::string& key )
   if ( false == planet.valid() )
   {
     planet = new ossimPlanet;
-    planet->getLand()->setLandType ( ossimPlanetLandType_ELLIPSOID );
+    planet->land()->setLandType ( ossimPlanetLandType_ELLIPSOID );
     planet->setEnableHudFlag ( false );
-
+#if 0
     {
       osg::ref_ptr < ossimPlanetOssimImageLayer > layer ( new ossimPlanetOssimImageLayer );
       layer->openImage ( "C:\\adam\\data\\earth\\blue_marble\\land_shallow_topo_west_tiled.tif" );
-      planet->getLand()->setTextureLayer ( layer.get(), 0 );
-      planet->getLand()->resetGraph( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
+      planet->land()->setOverlayLayer ( 0, layer.get() );
+      planet->land()->resetGraph( layer->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
     }
 
     {
       osg::ref_ptr < ossimPlanetOssimImageLayer > layer ( new ossimPlanetOssimImageLayer );
       layer->openImage ( "C:\\adam\\data\\earth\\blue_marble\\land_shallow_topo_east_tiled.tif" );
-      planet->getLand()->setTextureLayer ( layer.get(), 1 );
-      planet->getLand()->resetGraph( layer->getExtents().get(), ossimPlanetPagedLandLodRefreshType_TEXTURE );
+      planet->land()->setOverlayLayer ( 1, layer.get() );
+      planet->land()->resetGraph( layer->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
     }
-
+#endif
     
 
   }

@@ -209,14 +209,14 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul:
             data->autotransform ( autotransform );
             data->secondarySize ( secondarySize );
 
-            data->preBuildScene ( caller );
-
             if( primitiveSizeColumn.size() > 0 )
             {
               float value ( i [ primitiveSizeColumn ].as < float > () );
               data->size( size * value );
               this->_updateMinMax( value );
             }
+
+            data->preBuildScene ( caller );
 
             // Also add to the vector of data objects.  This allows for faster updating.
             this->_addDataObject( data.get() );

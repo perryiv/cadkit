@@ -32,8 +32,6 @@ struct ILineData : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2143101424u };
 
-  virtual osg::Geometry* buildLineData () = 0;
-
   virtual const Vertices&     lineData () = 0;
 
 }; // struct ILineData

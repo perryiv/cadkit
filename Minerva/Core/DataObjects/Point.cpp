@@ -193,9 +193,11 @@ namespace Detail
 
 namespace Detail
 {
-  void convertToPlanet ( Usul::Math::Vec3d& p )
+  void convertToPlanet ( Usul::Math::Vec3d& p, Usul::Interfaces::IUnknown* caller )
   {
-    Usul::Interfaces::IPlanetCoordinates::QueryPtr  planet  ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlanetCoordinates::IID ) );
+    //Usul::Interfaces::IPlanetCoordinates::QueryPtr  planet  ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlanetCoordinates::IID ) );
+
+    Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
 
     if( planet.valid() )
     {
@@ -232,12 +234,12 @@ osg::Node* Point::_preBuildScene( Usul::Interfaces::IUnknown * caller )
     _center.set ( center [ 0 ], center [ 1 ], center [ 2 ] );
     
     // Convert to planet coordinates.
-    Detail::convertToPlanet ( center );
+    Detail::convertToPlanet ( center, caller );
 
     // Convert from Usul's Vec3d to a osg::Vec3
     _centerEarth.set( center[0], center[1], center[2] );
 
-    osg::ref_ptr < osg::Node > geometry ( this->_buildGeometry() );
+    osg::ref_ptr < osg::Node > geometry ( this->_buildGeometry( caller ) );
 
     // Get the state set
     osg::ref_ptr < osg::StateSet > ss ( geometry->getOrCreateStateSet() );
@@ -294,7 +296,7 @@ osg::Node* Point::_preBuildScene( Usul::Interfaces::IUnknown * caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildGeometry()
+osg::Node* Point::_buildGeometry( Usul::Interfaces::IUnknown* caller )
 {
   USUL_TRACE_SCOPE;
 
@@ -306,7 +308,7 @@ osg::Node* Point::_buildGeometry()
   case DISK:           return this->_buildDisk();
   case CUBE:           return this->_buildCube();
   case INVERTED_CONE:  return this->_buildCone( true );
-  case CYLINDER:       return this->_buildCylinder();
+  case CYLINDER:       return this->_buildCylinder( caller );
   }
 
   return 0x0;
@@ -514,7 +516,7 @@ osg::Node* Point::_buildCube()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildCylinder()
+osg::Node* Point::_buildCylinder( Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
 
@@ -535,17 +537,17 @@ osg::Node* Point::_buildCylinder()
     // Offset center by height m.
     // Convert to earth coordinates.
 
-    Usul::Interfaces::IPlanetCoordinates::QueryPtr  planet  ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlanetCoordinates::IID ) );
+    //Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
 
-    Usul::Math::Vec3d earth;
-    earth.set ( v1[0], v1[1], v1[2] );
+    //Usul::Math::Vec3d earth;
+    //earth.set ( v1[0], v1[1], v1[2] );
 
-    Usul::Math::Vec3d latLon;
+    //Usul::Math::Vec3d latLon;
 
-    if( planet.valid() )
+    /*if( planet.valid() )
     {
       planet->convertFromPlanet( earth, latLon );
-    }
+    }*/
 
     unsigned int sides ( static_cast < unsigned int > ( 20 * this->quality() ) );
     osg::ref_ptr < osg::Geometry > geometry ( BaseClass::shapeFactory()->cylinder( this->secondarySize(), sides, v0, v1, !this->transparent() ) );

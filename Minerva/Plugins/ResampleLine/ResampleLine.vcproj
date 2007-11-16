@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="plug: Minerva OssimLayerQt"
-	ProjectGUID="{380061A1-58F9-49D0-B185-413BD96DBF43}"
+	Name="plug: Minerva ResampleLine"
+	ProjectGUID="{B2AB7CF2-2A20-4888-9312-2AE8E81D066D}"
 	>
 	<Platforms>
 		<Platform
@@ -39,14 +39,14 @@
 				PreprocessorDefinitions="_DEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/OssimLayerQt.tlb"
+				TypeLibraryName=".\Debug/ResampleLine.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(QTDIR)\include;$(OSSIM_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSG_INC_DIR);$(WMS_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_OSSIM_LAYER_QT;"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(OSSIM_INC_DIR)"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_RESAMPLE_LINE;"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -79,15 +79,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/OssimLayerQt.plugd"
+				AdditionalDependencies="ossimd.lib"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/ResampleLine.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(QTDIR)/lib"
+				AdditionalLibraryDirectories="$(OSSIM_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug\OssimLayerQtd.pdb"
-				ImportLibrary=".\Debug\OssimLayerQtd.lib"
+				ProgramDatabaseFile=".\Debug\ResampleLined.pdb"
+				ImportLibrary=".\Debug\ResampleLined.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -140,14 +140,14 @@
 				PreprocessorDefinitions="NDEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/OssimLayerQt.tlb"
+				TypeLibraryName=".\Release/ResampleLine.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(QTDIR)\include;$(OSSIM_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSG_INC_DIR);$(WMS_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_OSSIM_LAYER_QT;"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(OSSIM_INC_DIR)"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_RESAMPLE_LINE;"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -178,14 +178,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/OssimLayerQt.plug"
+				AdditionalDependencies="ossim.lib"
+				OutputFile="$(CADKIT_ROOT_DIR)/bin/ResampleLine.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(QTDIR)/lib"
+				AdditionalLibraryDirectories="$(OSSIM_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
-				ProgramDatabaseFile=".\Release\OssimLayerQt.pdb"
-				ImportLibrary=".\Release\OssimLayerQt.lib"
+				ProgramDatabaseFile=".\Release\ResampleLine.pdb"
+				ImportLibrary=".\Release\ResampleLine.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -223,71 +223,15 @@
 				Name="Implementation"
 				>
 				<File
-					RelativePath=".\AddOssimLayerWidget.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\AddOssimLayerWidget.h"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description=""
-							CommandLine=""
-							AdditionalDependencies=""
-							Outputs=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description=""
-							CommandLine=""
-							AdditionalDependencies=""
-							Outputs=""
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath=".\CompileGuard.h"
 					>
 				</File>
 				<File
-					RelativePath=".\OssimLayerQtComponent.cpp"
+					RelativePath=".\ResampleLineComponent.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\OssimLayerQtComponent.h"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Moc&apos;ing AddOssimLayerWidget.h"
-							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\AddOssimLayerWidget.h&quot; -o &quot;.\GeneratedFiles\moc_AddOssimLayerWidget.cpp&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\AddOssimLayerWidget.h"
-							Outputs=".\GeneratedFiles\moc_AddOssimLayerWidget.cpp"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Moc&apos;ing AddOssimLayerWidget.h"
-							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\AddOssimLayerWidget.h&quot; -o &quot;.\GeneratedFiles\moc_AddOssimLayerWidget.cpp&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\AddOssimLayerWidget.h"
-							Outputs=".\GeneratedFiles\moc_AddOssimLayerWidget.cpp"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\OssimLayerQtFactory.cpp"
+					RelativePath=".\ResampleLineComponent.h"
 					>
 				</File>
 			</Filter>
@@ -296,14 +240,6 @@
 				>
 				<File
 					RelativePath="Export.def"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="GeneratedItems"
-				>
-				<File
-					RelativePath=".\generatedfiles\moc_AddOssimLayerWidget.cpp"
 					>
 				</File>
 			</Filter>

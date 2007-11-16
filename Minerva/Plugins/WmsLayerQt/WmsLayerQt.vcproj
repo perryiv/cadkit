@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(QTDIR)\include;$(OSSIM_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSG_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(QTDIR)\include;$(OSSIM_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSG_INC_DIR);$(WMS_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_WMS_LAYER_QT;"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -146,7 +146,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(QTDIR)\include;$(OSSIM_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSG_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(QTDIR)\include;$(OSSIM_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSG_INC_DIR);$(WMS_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_WMS_LAYER_QT;"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -263,7 +263,6 @@
 				<File
 					RelativePath=".\WmsLayerQtComponent.h"
 					>
-				
 				</File>
 				<File
 					RelativePath=".\WmsLayerQtFactory.cpp"

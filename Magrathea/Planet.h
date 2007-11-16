@@ -51,16 +51,14 @@ public:
 
   void                                            readKWL( const std::string& );
 
-  int                                             addLayer( const std::string& filename );
-  int                                             addLayer( ossimPlanetTextureLayer *layer );
+  void                                            addLayer( const std::string& filename );
+  void                                            addLayer( ossimPlanetTextureLayer *layer );
 
   int                                             addLayerOperation ( const std::string& filename );
   int                                             addLayerOperation ( ossimPlanetTextureLayer *layer );
   
-  void                                            removeLayer( int index );
   void                                            removeLayer( ossimPlanetTextureLayer *layer );
 
-  void                                            removeLayerOperation ( int index );
   void                                            removeLayerOperation ( ossimPlanetTextureLayer *layer );
 
   bool                                            hasLayer( ossimPlanetTextureLayer* layer );
@@ -137,7 +135,11 @@ public:
   void                                            postRender ( Usul::Interfaces::IUnknown *caller );
 
   // Initialize the cull and update visitors of the caller.
-  void                      initVisitors ( Usul::Interfaces::IUnknown *caller );
+  void                                            initVisitors ( Usul::Interfaces::IUnknown *caller );
+
+  // Get the land model.
+  ossimPlanetLandModel*                           landModel();
+  const ossimPlanetLandModel*                     landModel() const;
 protected:
 
   virtual ~Planet();

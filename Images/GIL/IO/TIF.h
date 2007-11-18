@@ -35,6 +35,7 @@ namespace Images
         typedef Base<ImageType> BaseClass;
         typedef TIF<ImageType> ThisType;
         typedef boost::shared_ptr<ThisType> RefPtr;
+        typedef typename BaseClass::Dimensions Dimensions;
 
         TIF ( bool noHandlers = true ) : BaseClass(),
           _originalErrorHandler   ( 0x0 ),

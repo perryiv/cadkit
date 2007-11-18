@@ -38,6 +38,7 @@ namespace Images
         typedef Base<ImageType> BaseClass;
         typedef PNG<ImageType> ThisType;
         typedef boost::shared_ptr<ThisType> RefPtr;
+        typedef typename BaseClass::Dimensions Dimensions;
 
         PNG() : BaseClass()
         {

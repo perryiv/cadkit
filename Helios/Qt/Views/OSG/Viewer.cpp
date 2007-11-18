@@ -455,9 +455,9 @@ void Viewer::mouseMoveEvent ( QMouseEvent * event )
   if ( false == viewer.valid() )
     return;
 
-  bool left   ( event->buttons().testFlag ( Qt::LeftButton  ) );
-  bool middle ( event->buttons().testFlag ( Qt::MidButton   ) );
-  bool right  ( event->buttons().testFlag ( Qt::RightButton ) );
+  const bool left   ( event->buttons().testFlag ( Qt::LeftButton  ) );
+  const bool middle ( event->buttons().testFlag ( Qt::MidButton   ) );
+  const bool right  ( event->buttons().testFlag ( Qt::RightButton ) );
 
   float x ( event->x() );
   float y ( this->height() - event->y() );
@@ -493,9 +493,9 @@ void Viewer::mousePressEvent ( QMouseEvent * event )
   if ( false == viewer.valid() )
     return;
 
-  bool left   ( event->buttons().testFlag ( Qt::LeftButton  ) );
-  bool middle ( event->buttons().testFlag ( Qt::MidButton   ) );
-  bool right  ( event->buttons().testFlag ( Qt::RightButton ) );
+  const bool left   ( event->buttons().testFlag ( Qt::LeftButton  ) );
+  const bool middle ( event->buttons().testFlag ( Qt::MidButton   ) );
+  const bool right  ( event->buttons().testFlag ( Qt::RightButton ) );
 
   float x ( event->x() );
   float y ( this->height() - event->y() );
@@ -524,9 +524,9 @@ void Viewer::mouseReleaseEvent ( QMouseEvent * event )
   if ( false == viewer.valid() )
     return;
 
-  bool left   ( event->buttons().testFlag ( Qt::LeftButton  ) );
-  bool middle ( event->buttons().testFlag ( Qt::MidButton   ) );
-  bool right  ( event->buttons().testFlag ( Qt::RightButton ) );
+  const bool left   ( event->buttons().testFlag ( Qt::LeftButton  ) );
+  const bool middle ( event->buttons().testFlag ( Qt::MidButton   ) );
+  const bool right  ( event->buttons().testFlag ( Qt::RightButton ) );
 
   float x ( event->x() );
   float y ( this->height() - event->y() );

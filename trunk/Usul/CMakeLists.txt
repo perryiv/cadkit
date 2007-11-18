@@ -28,96 +28,99 @@ ADD_DEFINITIONS("-D_COMPILING_USUL")
 
 #List the Sources
 SET (SOURCES
-	App/Application.cpp
-	App/Controller.cpp
-	Base/InstanceManager.cpp
-	Base/Object.cpp
-	Base/Referenced.cpp
-	Base/Typed.cpp
-	CommandLine/Arguments.cpp
-	CommandLine/Flags.cpp
-	CommandLine/Options.cpp
-	Commands/Command.cpp
-  Commands/PolygonMode.cpp
-  Commands/RenderingPasses.cpp
-  Commands/ShadeModel.cpp
-	Components/Manager.cpp
-	Console/Feedback.cpp
-	Devices/BaseDevice.cpp
-	Devices/Factory.cpp
-	Devices/State.cpp
-	DLL/Library.cpp
-	DLL/Listener.cpp
-	DLL/Loader.cpp
-	Documents/Document.cpp
-	Documents/Manager.cpp
-	Errors/Stack.cpp
-	Errors/Error.cpp
-  Factory/ObjectFactory.cpp
-  Factory/BaseCreator.cpp
-	File/Make.cpp
-	File/Remove.cpp
-	File/Temp.cpp
-	Functions/Color.cpp
-	Functions/GUID.cpp
-  Functors/Interaction/Input/JoystickHorizontal.cpp
-  Functors/Interaction/Input/WandAngle.cpp
-  Functors/Interaction/Input/AnalogInput.cpp
-  Functors/Interaction/Input/WandPitch.cpp
-  Functors/Interaction/Input/JoystickVertical.cpp
-  Functors/Interaction/Input/WandYaw.cpp
-  Functors/Interaction/Matrix/IdentityMatrix.cpp
-  Functors/Interaction/Matrix/InverseMatrix.cpp
-  Functors/Interaction/Matrix/MatrixPair.cpp
-  Functors/Interaction/Matrix/MatrixFunctor.cpp
-  Functors/Interaction/Common/Sequence.cpp
-  Functors/Interaction/Common/BaseFunctor.cpp
-  Functors/Interaction/Wand/WandMatrix.cpp
-  Functors/Interaction/Wand/WandPosition.cpp
-  Functors/Interaction/Wand/WandRotation.cpp
-  Functors/Interaction/Navigate/Direction.cpp
-  Functors/Interaction/Navigate/Rotate.cpp
-  Functors/Interaction/Navigate/Transform.cpp
-  Functors/Interaction/Navigate/Translate.cpp
-	Jobs/Job.cpp
-	Jobs/Manager.cpp
-	ID/GUID.cpp
-	Predicates/CanWrite.cpp
-  Registry/Node.cpp
-  Registry/Visitor.cpp
-  Registry/Database.cpp
-	Resources/CancelButton.cpp
-	Resources/EventQueue.cpp
-	Resources/MenuBar.cpp
-	Resources/ProgressBar.cpp
-	Resources/ReportErrors.cpp
-	Resources/StatusBar.cpp
-	Resources/TextWindow.cpp
-	Scope/Timer.cpp
-	Shared/Preferences.cpp
-	State/Busy.cpp
-	System/Clock.cpp
-	System/DateTime.cpp
-	System/Directory.cpp
-	System/Environment.cpp
-	System/Host.cpp
-	System/LastError.cpp
-	System/Memory.cpp
-	System/Screen.cpp
-	System/Sleep.cpp
-	System/Socket.cpp
-	Threads/Mutex.cpp
-	Threads/Named.cpp
-	Threads/RecursiveMutex.cpp
-	Threads/Task.cpp
-	Threads/Thread.cpp
-	Threads/Pool.cpp
-	Threads/Callback.cpp
-	Threads/Manager.cpp
-	Trace/Scope.cpp
-	Trace/Print.cpp
-	Types/Types.cpp
-	User/Directory.cpp
+./Threads/Named.cpp
+./Threads/Callback.cpp
+./Threads/RecursiveMutex.cpp
+./Threads/Task.cpp
+./Threads/Pool.cpp
+./Threads/Manager.cpp
+./Threads/Thread.cpp
+./Threads/Mutex.cpp
+./Console/Feedback.cpp
+./Shared/Preferences.cpp
+./Factory/BaseCreator.cpp
+./Factory/ObjectFactory.cpp
+./Scope/Timer.cpp
+./Jobs/Manager.cpp
+./Jobs/Job.cpp
+./Predicates/CanWrite.cpp
+./System/Socket.cpp
+./System/LastError.cpp
+./System/DateTime.cpp
+./System/Host.cpp
+./System/Directory.cpp
+./System/Screen.cpp
+./System/Sleep.cpp
+./System/Clock.cpp
+./System/Memory.cpp
+./System/Environment.cpp
+./Types/Types.cpp
+./File/Remove.cpp
+./File/Make.cpp
+./File/Temp.cpp
+./Commands/RenderLoop.cpp
+./Commands/Command.cpp
+./Commands/RenderingPasses.cpp
+./Commands/PolygonMode.cpp
+./Commands/ShadeModel.cpp
+./Commands/History.cpp
+./Resources/TextWindow.cpp
+./Resources/CancelButton.cpp
+./Resources/ProgressBar.cpp
+./Resources/MenuBar.cpp
+./Resources/EventQueue.cpp
+./Resources/StatusBar.cpp
+./Resources/ReportErrors.cpp
+./Registry/Database.cpp
+./Registry/Node.cpp
+./Registry/Visitor.cpp
+./User/Directory.cpp
+./State/Busy.cpp
+./ID/GUID.cpp
+./Functions/Color.cpp
+./Functions/GUID.cpp
+./DLL/Listener.cpp
+./DLL/Library.cpp
+./DLL/Loader.cpp
+./Trace/Scope.cpp
+./Trace/Print.cpp
+./Errors/Stack.cpp
+./Errors/Error.cpp
+./Functors/Interaction/Wand/WandPosition.cpp
+./Functors/Interaction/Wand/WandRotation.cpp
+./Functors/Interaction/Wand/WandMatrix.cpp
+./Functors/Interaction/Navigate/Translate.cpp
+./Functors/Interaction/Navigate/Direction.cpp
+./Functors/Interaction/Navigate/Rotate.cpp
+./Functors/Interaction/Navigate/Transform.cpp
+./Functors/Interaction/Common/Sequence.cpp
+./Functors/Interaction/Common/BaseFunctor.cpp
+./Functors/Interaction/Matrix/InverseMatrix.cpp
+./Functors/Interaction/Matrix/MatrixPair.cpp
+./Functors/Interaction/Matrix/IdentityMatrix.cpp
+./Functors/Interaction/Matrix/MatrixFunctor.cpp
+./Functors/Interaction/Input/WandYaw.cpp
+./Functors/Interaction/Input/JoystickVertical.cpp
+./Functors/Interaction/Input/JoystickHorizontal.cpp
+./Functors/Interaction/Input/AnalogInput.cpp
+./Functors/Interaction/Input/WandPitch.cpp
+./Functors/Interaction/Input/WandAngle.cpp
+./Base/InstanceManager.cpp
+./Base/Referenced.cpp
+./Base/Observed.cpp
+./Base/Object.cpp
+./Base/Typed.cpp
+./CommandLine/Arguments.cpp
+./CommandLine/Options.cpp
+./CommandLine/Flags.cpp
+./App/Application.cpp
+./App/Controller.cpp
+./Documents/Document.cpp
+./Documents/Manager.cpp
+./Components/Manager.cpp
+./Devices/Factory.cpp
+./Devices/State.cpp
+./Devices/BaseDevice.cpp
 )
 
 

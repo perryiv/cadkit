@@ -28,9 +28,11 @@ SET(MOC_HDRS
   EditBackground.h
 )
 
+# Create the moc files.
+QT4_WRAP_CPP(MOC_SRCS ${MOC_HDRS})
 
 # Create a Shared Library
-ADD_LIBRARY(HeliosQtViewsOSG SHARED ${SOURCES} )
+ADD_LIBRARY(HeliosQtViewsOSG SHARED ${SOURCES} ${MOC_SRCS} )
 
 # Link the Library	
 LINK_CADKIT( HeliosQtViewsOSG Usul OsgTools )

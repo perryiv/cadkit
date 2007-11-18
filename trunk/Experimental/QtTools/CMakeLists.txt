@@ -1,7 +1,7 @@
 
-PROJECT(HeliosQtViewsOSG)
+PROJECT(QtTools)
 
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../../CMakeModules")
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 
@@ -16,29 +16,27 @@ INCLUDE_DIRECTORIES( ${OSG_INC_DIR}
 
 # List the Sources.
 SET (SOURCES
-    Viewer.cpp
-    Format.cpp
-    Delegate.cpp
-    EditBackground.cpp
+  ColorButton.cpp
+  PropertyBrowser.cpp
+  TreeControl.cpp
 )
 
 # These need to be moc'd.
 SET(MOC_HDRS
-  Viewer.h
-  EditBackground.h
+  ColorButton.h
+  PropertyBrowser.h
+  TreeControl.h
 )
 
 # Create the moc files.
 QT4_WRAP_CPP(MOC_SRCS ${MOC_HDRS})
 
 # Create a Shared Library
-ADD_LIBRARY(HeliosQtViewsOSG SHARED ${SOURCES} ${MOC_SRCS} )
+ADD_LIBRARY( QtTools SHARED ${SOURCES} ${MOC_SRCS} )
 
 # Link the Library	
-LINK_CADKIT( HeliosQtViewsOSG Usul OsgTools QtTools )
+LINK_CADKIT( QtTools Usul )
 
-TARGET_LINK_LIBRARIES( HeliosQtViewsOSG
+TARGET_LINK_LIBRARIES( QtTools
    ${QT_LIBRARIES}
-   ${QT_QTOPENGL_LIBRARY}
-   ${OSG_LIBRARY}
 )

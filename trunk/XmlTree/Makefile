@@ -1,32 +1,26 @@
-# Include the header to set up the environment.
-include ${USUL_INC_DIR}/Usul/Make/header.mak
+
+# Include all variables, flags, etc...
+include ${CADKIT_MAKE_DIR}/header.mak
 
 # C++ source files.
 CPP_FILES = \
-	./Document.cpp \
-	./Node.cpp \
-	./Loader.cpp \
-	./XercesLife.cpp \
-	./Writer.cpp \
-	./Detail/RootImpl.cpp \
-	./Functions.cpp \
+  ./Detail/RootImpl.cpp \
+  ./RegistryVisitor.cpp \
+  ./Document.cpp \
+  ./RegistryIO.cpp \
+  ./Loader.cpp \
+  ./ReplaceIllegalCharacters.cpp \
+  ./Node.cpp \
+  ./Writer.cpp \
+  ./XercesLife.cpp \
+  ./Functions.cpp \
+  ./RegistryBuilder.cpp
 
-
-# The include path.
 LOCAL_INCLUDE = \
-	-I$(CADKIT_ROOT_DIR)\
-	-I$(CADKIT_ROOT_DIR)/Experimental \
-	-I$(XERCES_INC_DIR)
-
-# The libraries to link to.
-LOCAL_LIBS = \
-	-L$(XERCES_LIB_DIR) -lxerces-c
-
-# Any flags for the compiler. 
-LOCAL_CPP_FLAGS = 
+	-I../
 
 # The name of the thing we are making.
 TARGET = XmlTree
 
-# The common rules for compiling are in here.
-include ${USUL_INC_DIR}/Usul/Make/library.mak
+# Include the rules for make...
+include ${CADKIT_MAKE_DIR}/library.mak

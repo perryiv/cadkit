@@ -136,7 +136,7 @@ public:
     this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_URL, _url.c_str() ) );
     this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_WRITEDATA, &file ) );
     this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_WRITEFUNCTION, &Curl::_writeDataCB ) );
-    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_NOSIGNAL, TRUE ) );
+    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_NOSIGNAL, true ) );
 
     // Get the data.
     this->_check ( ::curl_easy_perform ( handle.handle() ) );

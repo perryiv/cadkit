@@ -11,19 +11,22 @@ ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" )
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} ${OSG_INC_DIR} "${PROJECT_SOURCE_DIR}/../" )
 
 set (SOURCES
-	TriangleWriterTDF.cpp
-	TriangleWriterSTL.cpp
-	TriangleReaderTDF.cpp
-	TriangleReaderSTL.cpp
-	TriangleReaderR3D.cpp
-	TriangleFactory.cpp
-	TriangleDocument.cpp
-	TriangleComponent.cpp
 	ParadisReader.cpp
-	./TriangleReaderArcAsciiGrid.cpp
+	TriangleComponent.cpp
+	TriangleDocument.cpp
+	TriangleFactory.cpp
+	TriangleReaderArcAsciiGrid.cpp
+	TriangleReaderFieldViewAscii.cpp
+	TriangleReaderGrassRaster.cpp
+	TriangleReaderOFF.cpp
+	TriangleReaderR3D.cpp
+	TriangleReaderSTL.cpp
+	TriangleReaderTDF.cpp
+	TriangleWriterSTL.cpp
+	TriangleWriterTDF.cpp
 )
 
 # ---------- Create a Shared Library

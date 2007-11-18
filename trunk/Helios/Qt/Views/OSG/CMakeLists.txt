@@ -18,6 +18,14 @@ INCLUDE_DIRECTORIES( ${OSG_INC_DIR}
 SET (SOURCES
     Viewer.cpp
     Format.cpp
+    Delegate.cpp
+    EditBackground.cpp
+)
+
+# These need to be moc'd.
+SET(MOC_HDRS
+  Viewer.h
+  EditBackground.h
 )
 
 

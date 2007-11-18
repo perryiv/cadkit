@@ -1,9 +1,10 @@
 # Set these variables for all platforms.
 CPP = g++
+MOC = moc-qt4
 
 DEBUG_CPP_FLAGS = -D_DEBUG -g
 
-GLOBAL_CPP_FLAGS =
+GLOBAL_CPP_FLAGS = -fPIC
 GLOBAL_LINK_FLAGS =
 
 PLATFORM_CPP_FLAGS =
@@ -11,6 +12,9 @@ PLATFORM_LINK_FLAGS =
 PLATFORM_INCLUDE_FLAGS =
 
 EXECUTABLE_EXTENSION =
+
+# Get the operating system.
+OS_TYPE = `uname`
 
 # Append target names with a 'd' if this is a debug build.
 ifdef ($_DEBUG)
@@ -36,6 +40,7 @@ ifeq ($(OS_TYPE), Linux)
 	Os = Linix
 	os = linux
 	PLATFORM_CPP_FLAGS = -D_ISOC99_SOURCE
+	echo "------------------- On Linux ----------------------"
 endif
 
 # If we are on Cygwin.

@@ -27,7 +27,9 @@ namespace OSG {
 class HELIOS_QT_VIEWS_OSG_EXPORT EditBackground : public QDialog
 {
   Q_OBJECT;
+
 public:
+
   // Useful typedefs.
   typedef QDialog BaseClass;
   typedef OsgTools::Render::Viewer::Corners Corners;
@@ -36,16 +38,21 @@ public:
   virtual ~EditBackground();
 
 protected:
+
   QWidget* _initChecks();
 
 protected slots:
-  void _topLeftChanged ( int state );
-  void _topRightChanged ( int state );
+
   void _bottomLeftChanged ( int state );
   void _bottomRightChanged ( int state );
 
   void _colorChanged ( float r, float g, float b, float a );
+
+  void _topLeftChanged ( int state );
+  void _topRightChanged ( int state );
+
 private:
+
   OsgTools::Render::Viewer::RefPtr _viewer;
   QCheckBox *_topLeft;
   QCheckBox *_topRight;
@@ -53,9 +60,11 @@ private:
   QCheckBox *_bottomRight;
 };
 
+
 }
 }
 }
 }
+
 
 #endif // __CADKIT_HELIOS_QT_VIEWS_EDIT_BACKGROUND_H__

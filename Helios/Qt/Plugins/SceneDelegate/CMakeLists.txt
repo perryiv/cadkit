@@ -16,8 +16,8 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${OSG_INC_DIR}" "${PROJECT_SOURCE_DIR}/.
 
 
 set (SOURCES
-	SceneDelegateFactory.cpp
-	SceneDelegateComponent.cpp
+  SceneDelegateComponent.cpp
+  SceneDelegateFactory.cpp
 )
 
 

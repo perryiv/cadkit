@@ -119,13 +119,13 @@ QWidget* EditBackground::_initChecks()
   _bottomLeft->setEnabled ( valid );
   _bottomRight->setEnabled ( valid );
 
-  // Set current check state.
+  // Set current check state. The static_cast is because of a g++ 4.1.2 bug...
   if ( _viewer.valid() )
   {
-    _topLeft->setChecked     ( Usul::Bits::has ( _viewer->backgroundCorners(), Corners::TOP_LEFT     ) );
-    _topRight->setChecked    ( Usul::Bits::has ( _viewer->backgroundCorners(), Corners::TOP_RIGHT    ) );
-    _bottomLeft->setChecked  ( Usul::Bits::has ( _viewer->backgroundCorners(), Corners::BOTTOM_LEFT  ) );
-    _bottomRight->setChecked ( Usul::Bits::has ( _viewer->backgroundCorners(), Corners::BOTTOM_RIGHT ) );
+    _topLeft->setChecked     ( Usul::Bits::has ( _viewer->backgroundCorners(), static_cast<unsigned int> ( Corners::TOP_LEFT )     ) );
+    _topRight->setChecked    ( Usul::Bits::has ( _viewer->backgroundCorners(), static_cast<unsigned int> ( Corners::TOP_RIGHT )    ) );
+    _bottomLeft->setChecked  ( Usul::Bits::has ( _viewer->backgroundCorners(), static_cast<unsigned int> ( Corners::BOTTOM_LEFT )  ) );
+    _bottomRight->setChecked ( Usul::Bits::has ( _viewer->backgroundCorners(), static_cast<unsigned int> ( Corners::BOTTOM_RIGHT ) ) );
   }
 
   // Connect slots.
@@ -146,8 +146,9 @@ QWidget* EditBackground::_initChecks()
 
 void EditBackground::_topLeftChanged ( int state )
 {
+  // The static_cast is because of a g++ 4.1.2 bug...
   if ( _viewer.valid() )
-    _viewer->backgroundCorners ( Usul::Bits::set ( _viewer->backgroundCorners(), Corners::TOP_LEFT, ( state > 0 ) ) );
+    _viewer->backgroundCorners ( Usul::Bits::set ( _viewer->backgroundCorners(), static_cast<unsigned int> ( Corners::TOP_LEFT ), ( state > 0 ) ) );
 }
 
 
@@ -159,8 +160,9 @@ void EditBackground::_topLeftChanged ( int state )
 
 void EditBackground::_topRightChanged ( int state )
 {
+  // The static_cast is because of a g++ 4.1.2 bug...
   if ( _viewer.valid() )
-    _viewer->backgroundCorners ( Usul::Bits::set ( _viewer->backgroundCorners(), Corners::TOP_RIGHT, ( state > 0 ) ) );
+    _viewer->backgroundCorners ( Usul::Bits::set ( _viewer->backgroundCorners(), static_cast<unsigned int> ( Corners::TOP_RIGHT ), ( state > 0 ) ) );
 }
 
 
@@ -172,8 +174,9 @@ void EditBackground::_topRightChanged ( int state )
 
 void EditBackground::_bottomLeftChanged ( int state )
 {
+  // The static_cast is because of a g++ 4.1.2 bug...
   if ( _viewer.valid() )
-    _viewer->backgroundCorners ( Usul::Bits::set ( _viewer->backgroundCorners(), Corners::BOTTOM_LEFT, ( state > 0 ) ) );
+    _viewer->backgroundCorners ( Usul::Bits::set ( _viewer->backgroundCorners(), static_cast<unsigned int> ( Corners::BOTTOM_LEFT ), ( state > 0 ) ) );
 }
 
 
@@ -185,8 +188,9 @@ void EditBackground::_bottomLeftChanged ( int state )
 
 void EditBackground::_bottomRightChanged ( int state )
 {
+  // The static_cast is because of a g++ 4.1.2 bug...
   if ( _viewer.valid() )
-    _viewer->backgroundCorners ( Usul::Bits::set ( _viewer->backgroundCorners(), Corners::BOTTOM_RIGHT, ( state > 0 ) ) );
+    _viewer->backgroundCorners ( Usul::Bits::set ( _viewer->backgroundCorners(), static_cast<unsigned int> ( Corners::BOTTOM_RIGHT ), ( state > 0 ) ) );
 }
 
 

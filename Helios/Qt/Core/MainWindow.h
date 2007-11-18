@@ -39,7 +39,7 @@
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Queue.h"
 
-#include "QtGui/QMainWindow"
+#include <QtGui/QMainWindow>
 
 #include <list>
 #include <map>

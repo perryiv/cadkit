@@ -13,18 +13,22 @@
 
 #include "QtGui/QColor"
 
+#include "Usul/Math/MinMax.h"
+
 namespace QtTools
 {
   template < class ColorType >
   class Color
   {
   public:
+
     static void convert ( const ColorType& c, QColor& q )
     {
-      q.setRed   ( c[0] * 255 );
-      q.setGreen ( c[1] * 255 );
-      q.setBlue  ( c[2] * 255 );
-      q.setAlpha ( c[3] * 255 );
+      // Keep in range. The static_cast is because of a g++ 4.1.2 bug...
+      q.setRed   ( Usul::Math::maximum ( 0, Usul::Math::minimum ( 255, static_cast<int> ( c[0] ) * 255 ) ) );
+      q.setGreen ( Usul::Math::maximum ( 0, Usul::Math::minimum ( 255, static_cast<int> ( c[1] ) * 255 ) ) );
+      q.setBlue  ( Usul::Math::maximum ( 0, Usul::Math::minimum ( 255, static_cast<int> ( c[2] ) * 255 ) ) );
+      q.setAlpha ( Usul::Math::maximum ( 0, Usul::Math::minimum ( 255, static_cast<int> ( c[3] ) * 255 ) ) );
     }
 
     static void convert ( const QColor& q, ColorType& c )

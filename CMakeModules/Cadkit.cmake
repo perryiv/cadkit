@@ -64,4 +64,5 @@ SET (EXECUTABLE_OUTPUT_PATH
 	"Single Directory for all Executables."
 )
 
-
+# We want to see compiler arguments.
+SET (CMAKE_VERBOSE_MAKEFILE "ON")

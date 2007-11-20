@@ -3778,7 +3778,7 @@ std::string Application::_filename ( const std::string& base, const std::string&
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Application::_setAllowUpdate ( bool state )
+void Application::_setAllowUpdate ( bool state )
 {
   Guard guard ( this );
   _allowUpdate = state;

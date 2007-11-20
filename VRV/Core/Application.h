@@ -144,7 +144,7 @@ public:
   typedef VRV::Devices::TrackerDevice          Tracker;
   typedef VRV::Devices::JoystickDevice         Joystick;
   typedef MenuKit::OSG::Menu                   Menu;
-  typedef USUL_VALID_REF_POINTER(Menu)         MenuPtr;
+  typedef USUL_REF_POINTER(Menu)               MenuPtr;
   typedef Usul::Interfaces::ICamera            ICamera;
   typedef ICamera::CameraOption                CameraOption;
   typedef Usul::Interfaces::IPolygonMode       IPolygonMode;
@@ -398,7 +398,7 @@ protected:
   std::string                   _filename ( const std::string& base, const std::string& ext );
 
   /// Set the allow update state.
-  bool                          _setAllowUpdate ( bool );
+  void                          _setAllowUpdate ( bool );
   bool                          _isUpdateOn () const;
 
   /// Get/set the clipping distances (VRV::Interfaces::IClippingDistanceFloat).

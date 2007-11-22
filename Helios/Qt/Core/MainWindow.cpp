@@ -168,10 +168,6 @@ MainWindow::MainWindow ( const std::string &vendor,
   _dockMenu = new MenuKit::Menu;
   _dockMenu->text ( "Docking Windows" );
 
-  // Make the menu.
-  this->_initMenu();
-  this->_buildToolBar();
-
   // Build the text window.
   this->_buildTextWindow();
 
@@ -188,8 +184,10 @@ MainWindow::MainWindow ( const std::string &vendor,
   // Load the settings.
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MainWindow::_loadSettings ), "9740089350" );
 
-  // Make the menu.
-  this->_initMenu();
+  // Make the menu and toolbar.
+  this->_buildMenuKitMenu();
+  this->_buildQtMenu();
+  this->_buildToolBar();
 
   // Set the title.
   this->setWindowTitle ( program.c_str() );
@@ -362,13 +360,12 @@ void MainWindow::_saveSettings()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::_initMenu()
+void MainWindow::_buildMenuKitMenu()
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2357339900" );
 
   // Handle repeated calls.
-  this->_clearMenuBar ();
   _menu = new MenuKit::Menu;
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
@@ -387,7 +384,7 @@ void MainWindow::_initMenu()
     menu->addSeparator();
 
     // Make the recent files menu.
-    this->_initRecentFilesMenu ();
+    this->_initRecentFilesMenu();
 
     // Add the recent file menu.
     menu->append ( _recentFilesMenu );
@@ -414,8 +411,8 @@ void MainWindow::_initMenu()
 
   // Check the active document.
   {
-    Usul::Interfaces::IMenuAdd::QueryPtr ma ( Usul::Documents::Manager::instance().activeDocument () );
-    if ( ma.valid () )
+    Usul::Interfaces::IMenuAdd::QueryPtr ma ( Usul::Documents::Manager::instance().activeDocument() );
+    if ( ma.valid() )
     {
       ma->menuAdd ( *_menu, me.get() );
     }
@@ -423,8 +420,8 @@ void MainWindow::_initMenu()
 
   // Check the active view.
   {
-    Usul::Interfaces::IMenuAdd::QueryPtr ma ( Usul::Documents::Manager::instance().activeView () );
-    if ( ma.valid () )
+    Usul::Interfaces::IMenuAdd::QueryPtr ma ( Usul::Documents::Manager::instance().activeView() );
+    if ( ma.valid() )
     {
       ma->menuAdd ( *_menu, me.get() );
     }
@@ -450,20 +447,24 @@ void MainWindow::_initMenu()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::_buildMenu ()
+void MainWindow::_buildQtMenu()
 {
   USUL_TRACE_SCOPE;
 
   // Handle repeated calls.
-  this->_clearMenuBar ();
+  this->_clearMenuBar();
+
+  // Handle bad state.
+  if ( 0x0 == _menu )
+    return;
 
   // Build the qt menu.
-  for ( MenuKit::Menu::iterator iter = _menu->begin(); iter != _menu->end (); ++iter )
+  for ( MenuKit::Menu::iterator iter = _menu->begin(); iter != _menu->end(); ++iter )
   {
     // We only have top level items that are menus.
     if ( MenuKit::Menu *menu = dynamic_cast < MenuKit::Menu* > ( iter->get() ) )
     {
-      CadKit::Helios::Core::Menu* qtMenu ( new CadKit::Helios::Core::Menu ( tr ( menu->text ().c_str() ) ) );
+      CadKit::Helios::Core::Menu* qtMenu ( new CadKit::Helios::Core::Menu ( tr ( menu->text().c_str() ) ) );
       qtMenu->menu ( menu );
       this->menuBar()->addMenu ( qtMenu );
       _menus.push_back ( qtMenu );
@@ -478,7 +479,7 @@ void MainWindow::_buildMenu ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::_clearMenuBar ()
+void MainWindow::_clearMenuBar()
 {
   USUL_TRACE_SCOPE;
 
@@ -488,7 +489,7 @@ void MainWindow::_clearMenuBar ()
   for ( Menus::iterator iter = _menus.begin(); iter != _menus.end(); ++iter )
     delete *iter;
 
-  _menus.clear ();
+  _menus.clear();
 }
 
 
@@ -509,7 +510,7 @@ void MainWindow::_initRecentFilesMenu()
   }
 
   // Clear what we have.
-  _recentFilesMenu->clear ();
+  _recentFilesMenu->clear();
 
   // Set the name.
   _recentFilesMenu->text ( "Recent Files" );
@@ -529,10 +530,10 @@ void MainWindow::_initRecentFilesMenu()
     }
   }
 
-  _recentFilesMenu->addSeparator ();
+  _recentFilesMenu->addSeparator();
 
   // Useful typedefs.
-  typedef void (MainWindow::*Function) ();
+  typedef void (MainWindow::*Function)();
   typedef Usul::Adaptors::MemberFunction < void, MainWindow*, Function > MemFun;
   typedef Usul::Commands::GenericCommand < MemFun > GenericCommand;
 
@@ -846,7 +847,7 @@ MainWindow::FileResult MainWindow::getSaveFileName  ( const std::string &title, 
   // Need to use this static function to get native file dialog.
   QString answer ( QFileDialog::getSaveFileName ( this, title.c_str(), dir.c_str(), allFilters.c_str(), &filter ) );
 
-  if( 0 != answer.size () )
+  if( 0 != answer.size() )
   {
     std::string filename ( answer.toStdString() );
     std::string directory ( Usul::File::directory ( filename, false ) );
@@ -1614,7 +1615,7 @@ void MainWindow::initPlugins()
     Usul::Documents::Document::RefPtr document ( dc->createDocument( me ) );
 
     // Get the name of the document.
-    std::string name ( document.valid() ? document->typeName () : "" );
+    std::string name ( document.valid() ? document->typeName() : "" );
 
     CadKit::Helios::Commands::NewDocument::RefPtr command ( new CadKit::Helios::Commands::NewDocument ( me, (*iter).get(), name ) );
     _newDocumentMenu->append ( new MenuKit::Button ( command.get() ) );
@@ -1702,7 +1703,7 @@ void MainWindow::_closeEvent ( QCloseEvent* event )
 Usul::Interfaces::IUnknown* MainWindow::createProgressBar()
 {
   USUL_TRACE_SCOPE;
-  return _progressBars->createProgressBar ();
+  return _progressBars->createProgressBar();
 }
 
 
@@ -1734,13 +1735,13 @@ void MainWindow::addDockWidgetMenu ( QDockWidget * dock )
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
 
-  if ( _dockMenu.valid () )
+  if ( _dockMenu.valid() )
   {
     MenuKit::Button::RefPtr button ( new MenuKit::Button ( new CadKit::Helios::Commands::ToggleView ( dock ) ) );
     button->toggle ( true );
     _dockMenu->append ( button.get() );
   }
-  this->_buildMenu ();
+  this->_buildQtMenu();
 }
 
 
@@ -1758,13 +1759,13 @@ void MainWindow::dragEnterEvent ( QDragEnterEvent *event )
   typedef QList < QUrl > Urls;
   typedef Urls::const_iterator ConstIterator;
 
-  Urls urls ( event->mimeData()->urls () );
+  Urls urls ( event->mimeData()->urls() );
 
   for ( ConstIterator i = urls.begin(); i != urls.end(); ++ i )
   {
-    std::string file ( i->toLocalFile ().toStdString () );
+    std::string file ( i->toLocalFile().toStdString() );
 
-    if ( Usul::Documents::Manager::instance ().canOpen ( file ) )
+    if ( Usul::Documents::Manager::instance().canOpen ( file ) )
       event->acceptProposedAction();
   }
 }
@@ -1784,13 +1785,13 @@ void MainWindow::dropEvent ( QDropEvent *event )
   typedef QList < QUrl > Urls;
   typedef Urls::const_iterator ConstIterator;
 
-  Urls urls ( event->mimeData()->urls () );
+  Urls urls ( event->mimeData()->urls() );
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   for ( ConstIterator i = urls.begin(); i != urls.end(); ++ i )
   {
-    std::string file ( i->toLocalFile ().toStdString () );
+    std::string file ( i->toLocalFile().toStdString() );
 
     CadKit::Helios::Commands::OpenDocument::RefPtr command ( new CadKit::Helios::Commands::OpenDocument ( me ) );
     command->filename ( file );
@@ -1810,8 +1811,8 @@ void MainWindow::dropEvent ( QDropEvent *event )
 void MainWindow::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
 {
   USUL_TRACE_SCOPE;
-  this->_initMenu ();
-  this->_buildMenu ();
+  this->_buildMenuKitMenu();
+  this->_buildQtMenu();
 }
 
 
@@ -1824,8 +1825,8 @@ void MainWindow::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usu
 void MainWindow::activeViewChanged ( Usul::Interfaces::IUnknown *oldView, Usul::Interfaces::IUnknown *newView )
 {
   USUL_TRACE_SCOPE;
-  this->_initMenu ();
-  this->_buildMenu ();
+  this->_buildMenuKitMenu();
+  this->_buildQtMenu();
 }
 
 

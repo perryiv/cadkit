@@ -33,16 +33,16 @@ public:
 
   /// Construction/Destruction.
   Menu ( const QString& title, QWidget* parent = 0x0 );
-  ~Menu ();
+  virtual ~Menu();
 
   /// Get/Set the menu.
   void                        menu ( MenuKit::Menu* );
-  MenuKit::Menu*              menu ();
-  const MenuKit::Menu*        menu () const;
+  MenuKit::Menu*              menu();
+  const MenuKit::Menu*        menu() const;
 
 protected slots:
-  void _showMenu ();
-  void _hideMenu ();
+  void _showMenu();
+  void _hideMenu();
 
 private:
   MenuKit::Menu::RefPtr _menu;

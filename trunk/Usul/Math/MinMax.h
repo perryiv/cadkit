@@ -124,9 +124,9 @@ template < class T > inline const T & minimum ( const T &t1, const T &t2, const 
 //
 /////////////////////////////////////////////////////////////////////////////
 
-template < typename T > inline T clamp ( const T& t1, const T &t2, const T& t3 )
+template < typename T > inline T clamp ( const T& value, const T &min, const T& max )
 {
-  return minimum ( maximum ( t1, t2 ), t3 );
+  return minimum ( maximum ( value, min ), max );
 }
 
 } // namespace Math

@@ -70,6 +70,9 @@ public:
   // Purge all jobs that are ready to be deleted.
   void                    purge();
 
+  // Number of jobs.
+  unsigned int            size() const;
+
   // Trim any jobs that are queued, but not running.
   void                    trim();
 

@@ -39,23 +39,15 @@ _lon (0.0 ),
 _zoom ( -4.2 ),
 _hpr( 0.0, 0.0, 0.0 ),
 _zoomMin ( -4.2 ),
-_zoomMax ( 0.001 ),
+_zoomMax ( 1 ),
 _rotateSpeed ( 8.0 ),
 _elevationSpeed ( 0.75 ),
 _pitchSpeed ( 0.5 ),
 _yawSpeed ( 20 ),
 _landModel ( 0x0 ),
 _primary ( primary ),
-_planet ( 0x0 ),
-_compass ( new OsgTools::Builders::Compass )
+_planet ( 0x0 )
 {
-  //_compass->setPositionByPercentage( 0.5f, 0.5f );
-   //_compass->setRotateByViewMatrix( false );
-  //_compass->setTextureFilename("C:/Jeff/src/DT/bin/icons/big_compass_1.tga");
-  //_compass->updateCompass();
- 
-  
-  
 }
 
 
@@ -87,12 +79,6 @@ void Navigator::setLatLonHeight(double lat, double lon, double height)
   _zoom = Usul::Math::clamp ( -( 1.0 + ( height / _primary->radius ( _lat ) ) ), _zoomMin, _zoomMax );
   _hpr.x() = 0;
   _hpr.y() = 0;
-  //_compass->setHeadingRelativeToNorth( osg::Vec2( 90.0f , 90.0f ) , osg::Vec2( _lon , _lat ) );
-  //_compass->setHeading( _compass->getHeading() );
-  //_compass->setHeading( _compass->getHeading() + _hpr.x() );
-  //_compass->setPitch( _hpr.y() );
-
- // _compass->updateCompass();
 }
 
 
@@ -178,7 +164,6 @@ void Navigator::home()
   _hpr.set(0.0, 0.0, 0.0);
   _lat = 0.0;
   _lon = -90.0;
-  //_planet->addChild( _compass->getCompass() );
 }
 
 
@@ -545,5 +530,7 @@ bool Navigator::_losIntersectionPoint ( osg::Vec3d& point )
 double Navigator::_calculateLinearSpeed ( double factor, double displacement ) const
 {
   double speed ( ( _zoom + 1 ) * factor * displacement );
+  if ( 0.0 == speed )
+    return 0.1;
   return speed;
 }

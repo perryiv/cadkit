@@ -24,6 +24,7 @@
 #include "Usul/Adaptors/Random.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Trace/Trace.h"
 
@@ -84,8 +85,6 @@ void StarSystemDocument::_destroy()
 
   // Purge.
   _manager.purge();
-
- // _manager = JobManagerPtr ( static_cast < Usul::Jobs::Manager * > ( 0x0 ) );
 }
 
 
@@ -105,6 +104,8 @@ Usul::Interfaces::IUnknown *StarSystemDocument::queryInterface ( unsigned long i
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
   case Usul::Interfaces::IDatabasePager::IID:
     return static_cast < Usul::Interfaces::IDatabasePager* > ( this );
+  case Usul::Interfaces::IUpdateListener::IID:
+    return static_cast < Usul::Interfaces::IUpdateListener* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -389,4 +390,27 @@ void StarSystemDocument::addView ( Usul::Interfaces::IView *view )
 void StarSystemDocument::removeView ( Usul::Interfaces::IView *view )
 {
   BaseClass::removeView ( view );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StarSystemDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  Usul::Interfaces::ITextMatrix::QueryPtr tm ( caller );
+  if ( tm.valid() )
+  {
+    const unsigned int requests  ( _manager.size() );
+
+    std::ostringstream os;
+    os << "Requests: " << requests;
+
+    tm->setText ( 15, 15, ( requests > 0 ) ? os.str() : "", osg::Vec4f ( 1.0, 1.0, 1.0, 1.0 ) );
+  }
 }

@@ -17,6 +17,8 @@
 // For debugging...
 #include "Usul/File/Temp.h"
 
+#include "Usul/Math/Interpolate.h"
+
 #include "osg/Geode"
 #include "osg/Image"
 
@@ -239,25 +241,6 @@ void TiledScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& sc
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Linear interpolate.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail {
-
-  osg::Vec4 interpolate ( double u, const osg::Vec4& c0, const osg::Vec4& c1 )
-  {
-    return ( ( c0 * ( 1.0 - u ) ) + ( c1 * u ) );
-  }
-
-  osg::Vec4 bilinearInterpolate ( double x, double y, const osg::Vec4& a, const osg::Vec4& b, const osg::Vec4& c, const osg::Vec4& d )
-  {
-    return ( ( a *( 1 - x ) * ( 1 - y ) ) + ( d * ( 1 - x ) * y ) + ( b * x * ( 1 - y ) ) + ( c * x * y ) );
-  }
-
-}
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Create the image using Super-sampled, tiled rendering...
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -350,10 +333,11 @@ void TiledScreenCapture::_capturePixels ( osg::Image& image, osgUtil::SceneView&
     for ( int x = -firstX; x < static_cast < int > ( width ) + firstX; x += tileX )
     {
       // Interpolate colors for background.
-      _background.color ( Detail::bilinearInterpolate ( u,      v,      ll, lr, ur, ul ), Corners::BOTTOM_LEFT );
-      _background.color ( Detail::bilinearInterpolate ( u + du, v,      ll, lr, ur, ul ), Corners::BOTTOM_RIGHT );
-      _background.color ( Detail::bilinearInterpolate ( u,      v + dv, ll, lr, ur, ul ), Corners::TOP_LEFT );
-      _background.color ( Detail::bilinearInterpolate ( u + du, v + dv, ll, lr, ur, ul ), Corners::TOP_RIGHT );
+      typedef Usul::Math::Interpolate<osg::Vec4> Interpolate;
+      _background.color ( Interpolate::bilinear ( u,      v,      ll, lr, ur, ul ), Corners::BOTTOM_LEFT );
+      _background.color ( Interpolate::bilinear ( u + du, v,      ll, lr, ur, ul ), Corners::BOTTOM_RIGHT );
+      _background.color ( Interpolate::bilinear ( u,      v + dv, ll, lr, ur, ul ), Corners::TOP_LEFT );
+      _background.color ( Interpolate::bilinear ( u + du, v + dv, ll, lr, ur, ul ), Corners::TOP_RIGHT );
       u += du;
 
       // Get the matrix.

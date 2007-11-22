@@ -83,7 +83,7 @@ public:
   osgText::Text*        getText( unsigned int x, unsigned int y );
 
   /// Set text value.
-  void                  setText( unsigned int x, unsigned int y, const std::string& text );
+  void                  setText( unsigned int x, unsigned int y, const std::string& text, const osg::Vec4f& color );
 
   /// Remove text
   void                  removeText( unsigned int x, unsigned int y );

@@ -310,3 +310,17 @@ void Manager::trim()
   // Trim all jobs that aren't running
   _jobs.remove_if ( Detail::TrimJob() );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Number of jobs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Manager::size() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _jobs.size();
+}

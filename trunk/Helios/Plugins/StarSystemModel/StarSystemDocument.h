@@ -19,6 +19,7 @@
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IDatabasePager.h"
+#include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Jobs/Manager.h"
 
 #include <string>
@@ -30,7 +31,8 @@ namespace StarSystem { class System; }
 
 class StarSystemDocument : public Usul::Documents::Document,
                            public Usul::Interfaces::IBuildScene,
-                           public Usul::Interfaces::IDatabasePager
+                           public Usul::Interfaces::IDatabasePager,
+                           public Usul::Interfaces::IUpdateListener
 {
 public:
 
@@ -92,6 +94,9 @@ protected:
 
   // Use reference counting.
   virtual ~StarSystemDocument();
+
+  /// Update (Usul::Interfaces::IUpdateListener).
+  virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 
 private:
 

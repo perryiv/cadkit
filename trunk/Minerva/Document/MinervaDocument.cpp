@@ -97,8 +97,6 @@ _animationSpeed ( 0.1f ),
 _timeSpanMenu ( new MenuKit::Menu ( "Time Spans" ) ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
-  // Initialize the planet.
-  _planet->init();
   _planet->root()->addChild( _sceneManager->root() );
 
   SERIALIZE_XML_ADD_MEMBER ( _layers );
@@ -1224,6 +1222,7 @@ namespace Detail
   };
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Update.
@@ -1732,11 +1731,8 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
     std::ostringstream os;
     os << "Requests: " << requests << " To compile: " << toCompile;
 
-    osg::ref_ptr < osgText::Text > text ( tm->getText ( 15, 15 ) );
-    text->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
-    text->setText ( ( requests > 0 || toCompile > 0 ) ? os.str() : "" );
-    //text->setText ( os.str() );
-    //tm->setText ( 15, 15, os.str() );
+    std::string text ( ( requests > 0 || toCompile > 0 ) ? os.str() : "" );
+    tm->setText ( 15, 15, text, osg::Vec4f ( 1.0, 1.0, 1.0, 1.0 ) );
   }
 }
 
@@ -1760,27 +1756,12 @@ void MinervaDocument::convertToPlanetEllipsoid ( const Usul::Math::Vec3d& orgina
 
 void MinervaDocument::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
 {
-#if 0
-  ossimEcefPoint ecef;
-  ossimGpt dummy;
-  ecef = dummy;
-  double normalizationFactor = ecef.getMagnitude();
-
-  ossimGpt gpt ( orginal[1], orginal[0], orginal[2] );
-
-  // Transform to ossimPlanet coordinates
-  ecef = gpt;
-  planetPoint[0] = ecef.x()/normalizationFactor;
-  planetPoint[1] = ecef.y()/normalizationFactor;
-  planetPoint[2] = ecef.z()/normalizationFactor;
-#else
   const osg::Vec3d in ( orginal[1], orginal[0], orginal[2] );
   osg::Vec3d out;
 
   _planet->landModel()->forward( in, out );
 
   planetPoint.set ( out[0], out[1], out[2] );
-#endif
 }
 
 
@@ -1792,25 +1773,10 @@ void MinervaDocument::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::
 
 void MinervaDocument::convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const
 {
-#if 0
-  ossimEcefPoint ecef;
-  ossimGpt dummy;
-  ecef = dummy;
-  double normalizationFactor = ecef.getMagnitude();
-
-  ecef = ossimEcefPoint( planetPoint [ 0 ] * normalizationFactor, planetPoint [ 1 ] * normalizationFactor, planetPoint [ 2 ] * normalizationFactor );
-
-  ossimGpt gpt ( ecef );
-
-  latLonPoint [ 0 ] = gpt.lon;
-  latLonPoint [ 1 ] = gpt.lat;
-  latLonPoint [ 2 ] = gpt.hgt;
-#else
   const osg::Vec3d in ( planetPoint[0], planetPoint[1], planetPoint[2] );
   osg::Vec3d out;
 
   _planet->landModel()->inverse( in, out );
 
   latLonPoint.set ( out[1], out[0], out[2] );
-#endif
 }

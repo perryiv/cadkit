@@ -26,6 +26,8 @@ _ga_t1 ( 0x0 ),
 _ga_t0 ( 0x0 ),
 _navigator ( 0x0 )
 {
+  //this->setUseFrameEventForUpdateFlag( true );
+
   _navigator = new Navigator(new ossimPlanetPrimaryBody("earth_wgs84",
                                                             6378137.0,
                                                          6356752.3142,
@@ -111,7 +113,9 @@ void Manipulator::init(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter&
 bool Manipulator::handle( const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter& us )
 {
 #if USE_OSSIM_PLANET_MANIPULATOR
-  return BaseClass::handle ( ea, us );
+  bool handled ( BaseClass::handle ( ea, us ) );
+  theNavigator->update();
+  return handled;
 #else
   switch( ea.getEventType() )
   {

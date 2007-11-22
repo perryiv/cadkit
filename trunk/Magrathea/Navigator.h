@@ -21,9 +21,6 @@
 #include "ossimPlanet/ossimPlanetPrimaryBody.h"
 #include "ossimPlanet/ossimPlanet.h"
 
-//compass include
-#include "OsgTools/Builders/Compass.h"
-
 namespace Magrathea {
 
 class MAGRATHEA_EXPORT Navigator : public osg::Referenced
@@ -98,9 +95,6 @@ private:
 
   // The planet
   osg::ref_ptr < ossimPlanet > _planet;
-
-  //compass 
-  osg::ref_ptr< OsgTools::Builders::Compass > _compass;
 };
 
 }

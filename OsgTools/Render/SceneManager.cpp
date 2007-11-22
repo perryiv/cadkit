@@ -327,9 +327,11 @@ osgText::Text* SceneManager::getText( unsigned int x, unsigned int y )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SceneManager::setText( unsigned int x, unsigned int y, const std::string& text )
+void SceneManager::setText( unsigned int x, unsigned int y, const std::string& text, const osg::Vec4& color )
 {
-  this->getText( x, y )->setText( text );
+  osg::ref_ptr < osgText::Text > t ( this->getText( x, y ) );
+  t->setColor ( color );
+  t->setText ( text );
 }
 
 

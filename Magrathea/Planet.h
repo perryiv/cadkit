@@ -47,7 +47,6 @@ public:
   Planet();
 
   void                                            setDefaults();
-  void                                            init();
 
   void                                            readKWL( const std::string& );
 

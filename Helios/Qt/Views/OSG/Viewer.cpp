@@ -95,7 +95,7 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   // Set good default background.
   //_viewer->defaultBackground();
 
-  // Not working...
+  // Gradient background.
 #if 1
   _viewer->backgroundCorners ( OsgTools::Render::Viewer::Corners::BOTTOM );
   _viewer->backgroundColor ( _viewer->backgroundColor() );

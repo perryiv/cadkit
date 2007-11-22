@@ -318,6 +318,23 @@ public:
   }
 
 
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Normalize, return the length prior to normalization.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  T normalize()
+  {
+    T l ( this->length() );
+    T il ( static_cast < T > ( 1 ) / l );
+
+    _v[0] *= il;
+    _v[1] *= il;
+
+    return l;
+  }
+
 private:
 
   T _v[SIZE];

@@ -20,6 +20,7 @@
 
 #include <string>
 
+namespace osg { class Vec4f; }
 namespace osgText { class Text; }
 
 namespace Usul {
@@ -38,7 +39,7 @@ struct ITextMatrix : public Usul::Interfaces::IUnknown
   virtual osgText::Text*        getText    ( unsigned int x, unsigned int y ) = 0;
 
   /// Set text value.
-  virtual void                  setText    ( unsigned int x, unsigned int y, const std::string& text ) = 0;
+  virtual void                  setText    ( unsigned int x, unsigned int y, const std::string& text, const osg::Vec4f& color ) = 0;
 
   /// Remove text
   virtual void                  removeText ( unsigned int x, unsigned int y ) = 0;

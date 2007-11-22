@@ -1668,6 +1668,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Math\Interpolate.h"
+					>
+				</File>
+				<File
 					RelativePath="Math\Matrix44.h"
 					>
 				</File>
@@ -1681,10 +1685,6 @@
 				</File>
 				<File
 					RelativePath=".\Math\Power.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Math\StringConvert.h"
 					>
 				</File>
 				<File
@@ -2051,6 +2051,10 @@
 				>
 				<File
 					RelativePath=".\Containers\Array.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Containers\Array2D.h"
 					>
 				</File>
 				<File

@@ -83,6 +83,14 @@ Planet::Planet() :
   ss->setAttribute( offset.get(), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
 
   _latLongGrid = new LatLongGrid();
+
+  this->setDefaults();
+
+  _planet->land()->resetGraph(); 	
+
+  _databasePager->setExpiryDelay(0);
+  _databasePager->setAcceptNewDatabaseRequests( true );
+  _databasePager->setDatabasePagerThreadPause( false );	
 }
 
 
@@ -113,6 +121,7 @@ Planet::~Planet()
   _databasePager = 0x0;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the defaults.
@@ -123,6 +132,7 @@ void Planet::setDefaults()
 {
   // Defaults. 
   const ossimPlanetLandType landType ( ossimPlanetLandType_NORMALIZED_ELLIPSOID );
+  //const ossimPlanetLandType landType ( ossimPlanetLandType_ELLIPSOID );
 
   const bool  elevEnabled    ( true  );
   //  const bool  ephemerisFlag  ( false );
@@ -145,43 +155,6 @@ void Planet::setDefaults()
   _planet->land()->resetGraph();
 
   _layerManipulator->setLand( _planet->land().get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Planet::init()
-{
-  try
-  {
-    this->setDefaults();
-
-    //_planet->land()->overlayLayers()->addTop ( _textureLayerGroup.get() );
-    //_planet->land()->overlayLayers()->addBeforeIdx ( 0, _textureLayerGroup.get() );
-    //_planet->land()->overlayLayers()->addBeforeIdx ( 1, _textureOperationLayerGroup.get() );
-
-    //_planet->land()->setOverlayLayer( 0, _textureLayerGroup.get() );
-    //_planet->land()->setOverlayLayer( 1, _textureOperationLayerGroup.get() );
-    _planet->land()->resetGraph(); 	
-
-    //osgDB::Registry::instance()->setDatabasePager( _databasePager.get() );
-	  _databasePager->setExpiryDelay(0);
-	  _databasePager->setAcceptNewDatabaseRequests( true );
-	  _databasePager->setDatabasePagerThreadPause( false );	
-
-    #if ( OSG_VERSION_MAJOR < 2 )
-    _databasePager->setUseFrameBlock( true );
-    #endif
-  }
-  catch( const std::exception& e )
-  {
-    std::cerr << "Error 332911910: Exception caught in init " << std::endl;
-    std::cerr << "Message:" << e.what() << std::endl;
-  }
 }
 
 
@@ -588,12 +561,6 @@ osgGA::MatrixManipulator* Planet::manipulator() const
 
 void Planet::gotoLocation( double lat, double lon, double height )
 {
-  //ossimString actionString = ":navigator gotolatlonelevnadir ";
-  //actionString += (ossimString::toString(lat) + " " +
-  //                  ossimString::toString(lon) + " " +
-  //                  ossimString::toString(height));
-   
-  //ossimPlanetAction ( actionString.c_str() ).execute();
   _manipulator->gotoLocation( lat, lon, height );
 
   Usul::Interfaces::IViewMatrix::QueryPtr viewMatrix ( _viewer );

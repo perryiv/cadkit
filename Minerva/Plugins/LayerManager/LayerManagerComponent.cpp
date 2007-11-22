@@ -15,10 +15,12 @@
 #include "Usul/Interfaces/IQtDockWidgetMenu.h"
 
 #include "Usul/Documents/Manager.h"
+#include "Usul/Components/Factory.h"
 
 #include "QtGui/QDockWidget"
 #include "QtGui/QMainWindow"
 
+USUL_DECLARE_COMPONENT_FACTORY ( LayerManagerComponent );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( LayerManagerComponent, LayerManagerComponent::BaseClass );
 
 

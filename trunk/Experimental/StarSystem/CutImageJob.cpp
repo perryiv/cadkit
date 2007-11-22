@@ -64,31 +64,42 @@ CutImageJob::~CutImageJob()
 void CutImageJob::_started()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  // Guard guard ( this ); This will block the main thread's purge() !
 
   // Have we been cancelled?
   if ( true == this->canceled() )
     this->cancel();
 
   // Handle no raster layer.
-  if ( 0x0 == _raster )
-    return;
+  {
+    Guard guard ( this );
+    if ( 0x0 == _raster )
+      return;
+  }
 
   // Get the image.
   const unsigned int width  ( 256 );
   const unsigned int height ( 256 );
 
   // Request the image.
-  _image = _raster->texture ( _extents, width, height, _level );
+  osg::ref_ptr<osg::Image> image ( _raster->texture ( _extents, width, height, _level ) );
 
   // Create the texture.
-  _texture = new osg::Texture2D;
-  _texture->setImage( _image.get() );
+  osg::ref_ptr<osg::Texture2D> texture ( new osg::Texture2D );
 
-  _texture->setFilter( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
-  _texture->setFilter( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
-  _texture->setWrap( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
-  _texture->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
+  // Set the texture's state.
+  texture->setImage ( image.get() );
+  texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
+  texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
+  texture->setWrap ( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
+  texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
+
+  // Set our data members.
+  {
+    Guard guard ( this );
+    _image = image;
+    _texture = texture;
+  }
 }
 
 

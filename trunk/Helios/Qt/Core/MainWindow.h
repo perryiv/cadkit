@@ -162,9 +162,9 @@ public:
 
 protected:
 
-  void                              _initMenu();
+  void                              _buildMenuKitMenu();
   void                              _initRecentFilesMenu();
-  void                              _buildMenu();
+  void                              _buildQtMenu();
   void                              _buildTextWindow();
   void                              _buildProgressBarWindow();
   void                              _buildToolBar();

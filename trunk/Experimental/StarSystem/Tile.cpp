@@ -457,10 +457,15 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 
   // Traverse low level of detail.
   if ( low || splitHappened )
+  {
     this->getChild ( 0 )->accept ( cv );
+  }
+
   // Traverse last child.
   else
+  {
     this->getChild ( this->getNumChildren() - 1 )->accept ( cv );
+  }
 }
 
 

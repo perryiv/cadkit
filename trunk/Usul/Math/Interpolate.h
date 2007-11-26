@@ -33,8 +33,8 @@ struct Interpolate
   /// Trilinear interpolate.
   static T trilinear ( double u, double v, double w, const T& a, const T& b, const T& c, const T& d, const T& e, const T& f, const T& g, const T& h )
   {
-    T t0 ( Detail::bilinearInterpolate ( u, v, a, b, c, d ) );
-    T t1 ( Detail::bilinearInterpolate ( u, v, e, f, g, h ) );
+    T t0 ( bilinear ( u, v, a, b, c, d ) );
+    T t1 ( bilinear ( u, v, e, f, g, h ) );
 
     return  ( ( ( 1 - w ) * t0 ) + ( w * t1 ) );
   }

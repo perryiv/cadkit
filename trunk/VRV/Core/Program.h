@@ -60,8 +60,7 @@ public:
     Usul::Trace::Print::init ( _trace );
 
     // Use 5 threads.
-    Usul::Jobs::Manager::instance().poolResize ( 5 );
-
+    Usul::Jobs::Manager::init( 5 );
   }
 
 
@@ -72,9 +71,6 @@ public:
 
     // Clear any documents.
     this->_clearDocuments();
-
-    // Trim the job manager.
-    Usul::Jobs::Manager::instance().trim ();
 
     // Delete the job manager.
     Usul::Jobs::Manager::destroy();

@@ -70,7 +70,7 @@ void LoadDocument::_execute()
   LoadJob::RefPtr job ( new LoadJob ( _filenames, this->caller() ) );
 
   // Add the job to the manager.
-  Usul::Jobs::Manager::instance().add ( job.get() );
+  Usul::Jobs::Manager::instance().addJob ( job.get() );
 }
 
 

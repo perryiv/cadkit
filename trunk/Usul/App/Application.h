@@ -34,18 +34,18 @@ public:
 	/// Get the icon directory.
 	const std::string                    iconDirectory() const;
 	
-	/// Get/Set the splash screen image.
+	/// Get/set the splash screen image.
 	void                                 splashImage( const std::string& image );
 	const std::string &                  splashImage( ) const;
 	
 	/// Get the path to the splash screen image.
 	std::string                          splashImagePath() const;
 	
-  /// Get/Set the vender.
+  /// Get/set the vender.
   void                                 vendor ( const std::string& );
   const std::string&                   vendor () const;
 
-  /// Get/Set the program name.
+  /// Get/set the program name.
   void                                 program ( const std::string& );
   const std::string&                   program () const;
 

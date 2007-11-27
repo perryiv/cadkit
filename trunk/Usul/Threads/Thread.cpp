@@ -298,22 +298,21 @@ void Thread::start()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Run the thread.
-//
-//  TODO: Need mutex for this function or the "running" state. No other way 
-//  to guard this function against re-entrance.
+//  Execute the thread.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Thread::_execute()
+void Thread::_execute() throw()
 {
   USUL_TRACE_SCOPE;
 
   try
   {
-    // See if we've been killed.
-    if ( Thread::KILLED == this->result() )
-      return;
+    // See if we've been cancelled.
+    if ( Thread::CANCELLED == this->result() )
+    {
+      throw Usul::Exceptions::Cancelled ( "Message 3304756260: Thread cancelled before it was executed" );
+    }
 
     // Initialize.
     bool hasError ( false );
@@ -321,7 +320,7 @@ void Thread::_execute()
     // This thread should not be the one that created us.
     if ( Usul::Threads::currentThreadId() == this->_getCreationThread() )
     {
-      this->_reportError ( Usul::Strings::format ( "Error 1746088330: calling thread ", this->id(), "'s _execute() from the system thread that created it" ) );
+      this->_reportError ( Usul::Strings::format ( "Error 1746088330: executing thread ", this->id(), " from the system thread that created it" ) );
       hasError = true;
     }
 
@@ -681,33 +680,4 @@ bool Thread::isIdle() const
   const bool zeroSystemThread ( 0 == this->systemId() );
 
   return ( notRunning && zeroSystemThread );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the flags to indicate that the thread was killed. This function is 
-//  virtual; the overriding function should call this implementation before 
-//  actually killing the real thread.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Thread::kill()
-{
-  USUL_TRACE_SCOPE;
-
-  // Lock mutex to make sure that all of these members are set together.
-  Guard guard ( this->mutex() );
-
-  // Set these members.
-  this->_setResult ( Thread::KILLED );
-  this->_setState ( Thread::NOT_RUNNING );
-  this->_setSystemThreadId ( 0 );
-
-  // Set the callbacks.
-  this->cancelled ( 0x0 );
-  this->destroyed ( 0x0 );
-  this->error     ( 0x0 );
-  this->finished  ( 0x0 );
-  this->started   ( 0x0 );
 }

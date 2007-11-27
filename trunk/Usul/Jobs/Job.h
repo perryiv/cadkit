@@ -23,6 +23,7 @@
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 
 namespace Usul { namespace Jobs { class Manager; } }
+namespace Usul { namespace Jobs { namespace Detail { class Task; } } }
 namespace Usul { namespace Jobs { namespace Helper { class ScopedThread; class ScopedDone; } } }
 
 
@@ -79,9 +80,6 @@ protected:
   // Use reference counting.
   virtual ~Job();
 
-  // Set the id.  Protected so only the Job Manager can set it.
-  void                      id ( unsigned int value );
-
   // Called when the job is cancelled.
   virtual void              _cancelled();
 
@@ -90,6 +88,9 @@ protected:
 
   // Called when the job finishes normally.
   virtual void              _finished();
+
+  // Set the id. Protected so only the Job Manager can set it.
+  void                      _setId ( unsigned int value );
 
   // Called when the job starts.
   virtual void              _started();
@@ -120,6 +121,7 @@ private:
   void                      _threadStarted   ( Thread * );
 
 	// Use namespaces here, or gcc 4.0 will give an error.
+  friend class Usul::Jobs::Detail::Task;
   friend class Usul::Jobs::Manager;
   friend class Helper::ScopedThread;
   friend class Helper::ScopedDone;

@@ -28,10 +28,9 @@ using namespace Usul::Threads;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Task::Task ( unsigned long id, Callback *started, Callback *finished, Callback *cancelled, Callback *error, Callback *destroyed ) : BaseClass(),
+Task::Task ( unsigned long id, Callback *started, Callback *finished, Callback *cancelled, Callback *error ) : BaseClass(),
   _id          ( id ),
   _cancelledCB ( cancelled ),
-  _destroyedCB ( destroyed ),
   _errorCB     ( error ),
   _finishedCB  ( finished ),
   _startedCB   ( started )
@@ -64,7 +63,6 @@ void Task::_destroy()
   USUL_TRACE_SCOPE;
 
   _cancelledCB = 0x0;
-  _destroyedCB = 0x0;
   _errorCB = 0x0;
   _finishedCB = 0x0;
   _startedCB = 0x0;
@@ -96,21 +94,6 @@ Task::Callback *Task::cancelledCB()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   Callback *cb ( _cancelledCB.get() );
-  return cb;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the callback.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Task::Callback *Task::destroyedCB()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  Callback *cb ( _destroyedCB.get() );
   return cb;
 }
 

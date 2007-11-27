@@ -16,10 +16,7 @@
 #ifndef _USUL_THREADS_POOL_CLASS_H_
 #define _USUL_THREADS_POOL_CLASS_H_
 
-#include "Usul/Base/Referenced.h"
-#include "Usul/Interfaces/Threads/IThreadPoolAddTask.h"
-#include "Usul/Threads/Guard.h"
-#include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Base/Object.h"
 #include "Usul/Threads/Task.h"
 #include "Usul/Threads/Thread.h"
 #include "Usul/Pointers/Pointers.h"
@@ -32,21 +29,16 @@ namespace Usul {
 namespace Threads {
 
 
-class USUL_EXPORT Pool : public Usul::Base::Referenced,
-                         public Usul::Interfaces::IThreadPoolAddTask
+class USUL_EXPORT Pool : public Usul::Base::Object
 {
 public:
 
   // Useful typedefs.
-  typedef Usul::Base::Referenced BaseClass;
-  typedef std::vector<Thread::RefPtr> ThreadPool;
-  typedef Usul::Threads::RecursiveMutex Mutex;
-  typedef Usul::Threads::Guard<Mutex> Guard;
+  typedef Usul::Base::Object BaseClass;
+  typedef std::vector < Thread::RefPtr > ThreadPool;
   typedef Usul::Threads::Callback Callback;
-  typedef Usul::Interfaces::IThreadPoolAddTask IThreadPoolAddTask;
-  typedef IThreadPoolAddTask::TaskHandle TaskHandle;
-  typedef std::pair < int, TaskHandle > TaskKey;
-  typedef std::map<TaskKey,Task::RefPtr> AllTasks;
+  typedef std::pair < int, unsigned long > TaskHandle;
+  typedef std::map < TaskHandle, Task::RefPtr > TaskQueue;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Pool );
@@ -54,49 +46,54 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Pool );
 
-  // Usul::Interfaces::IUnknown members.
-	USUL_DECLARE_IUNKNOWN_MEMBERS;
+  // Enumerations.
+  enum { DEFAULT_NUM_THREADS = 10 };
 
   // Constructor
-  Pool ( unsigned int numThreads = 10 );
+  Pool ( unsigned int numThreads = Pool::DEFAULT_NUM_THREADS );
 
   // Add a task.
+  TaskHandle              addTask ( int priority, Task *task );
   TaskHandle              addTask ( int priority,
                                     Callback *started, 
                                     Callback *finished = 0x0,
                                     Callback *cancelled = 0x0,
-                                    Callback *error = 0x0,
-                                    Callback *destroyed = 0x0 );
+                                    Callback *error = 0x0 );
 
-  // Cancel all tasks.
+  // Cancel all running threads and remove all queued tasks.
   void                    cancel();
 
-  // Does the pool have the task?
-  bool                    hasTask ( int, TaskHandle ) const;
+  // Clear the queued tasks. Has no effect on tasks currently being executed.
+  void                    clearQueuedTasks();
 
-  // Return the mutex. Use with caution.
-  Mutex &                 mutex() const;
+  // Does the pool have the task?
+  bool                    hasQueuedTask ( TaskHandle ) const;
+
+  // Get the next task id. This will also increment the internal counter.
+  unsigned long           nextTaskId();
 
   // Get the number of threads in the pool.
   unsigned int            numThreads() const;
 
-  // Get the number of idle threads.
-  unsigned int            numThreadsIdle() const;
+  // Get the number of tasks.
+  unsigned int            numTasks() const;
 
-  // Get the number of tasks that are waiting for idle threads.
+  // Get the number of tasks that are executing.
+  unsigned int            numTasksExecuting() const;
+
+  // Get the number of tasks that are waiting to be executed.
   unsigned int            numTasksQueued() const;
 
-  // Remove the task from the pool.
-  void                    remove ( int, TaskHandle );
+  // Remove the task from the queue. Has no effect on running tasks.
+  void                    removeQueuedTask ( TaskHandle );
 
   // Set/get the sleep duration. This is the amount of time (in milliseconds) 
-  // that the internal worker thread will sleep during a loop.
+  // that the internal worker threads will sleep during a loop.
   void                    sleepDuration ( unsigned long );
   unsigned long           sleepDuration() const;
 
   // Wait for all tasks to complete.
-  void                    wait();
-  void                    wait ( unsigned long timeout );
+  void                    waitForTasks();
 
 protected:
 
@@ -109,30 +106,27 @@ private:
   Pool ( const Pool & );
   Pool &operator = ( const Pool & );
 
+  void                    _cancelThreads();
+
   void                    _destroy();
-
-  Thread *                _firstAvailableThread();
-
-  bool                    _isRunning() const;
-
-  void                    _threadProcessTasks();
 
   Task *                  _nextTask();
 
-  void                    _threadStarted   ( Usul::Threads::Thread * );
-  void                    _threadCancelled ( Usul::Threads::Thread * );
-  void                    _threadError     ( Usul::Threads::Thread * );
-  void                    _threadFinished  ( Usul::Threads::Thread * );
+  void                    _startThreads();
 
-  void                    _waitForThreads ( unsigned long timeout );
+  void                    _threadProcessTasks ( Usul::Threads::Task *task, Usul::Threads::Thread * );
+  void                    _threadStarted ( Usul::Threads::Thread * );
+
+  void                    _waitForThreads();
 
   // Data members.
-  mutable Mutex _mutex;
   ThreadPool _pool;
-  AllTasks _tasks;
+  TaskQueue _queue;
+  unsigned int _executing;
   unsigned long _nextTaskId;
-  Thread::RefPtr _thread;
   unsigned long _sleep;
+  bool _runThreads;
+  bool _started;
 };
 
 

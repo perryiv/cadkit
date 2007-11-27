@@ -224,12 +224,15 @@ void Job::_threadFinished ( Thread *thread )
 {
   USUL_TRACE_SCOPE;
 
+  // Declare up here.
   ScopedThread scoped ( *this, thread, 0x0 );
   ScopedDone done ( *this, true );
 
+  // See if we've been cancelled.
   if ( true == this->canceled() )
     this->cancel();
 
+  // Call finish callback.
   this->_finished();
 }
 
@@ -359,7 +362,7 @@ unsigned long Job::id() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Job::id ( unsigned int value )
+void Job::_setId ( unsigned int value )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -479,7 +482,7 @@ void Job::_setLabel ( const std::string& text )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Job::priority( int value )
+void Job::priority ( int value )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );

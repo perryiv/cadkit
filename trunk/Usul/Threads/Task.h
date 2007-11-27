@@ -36,11 +36,10 @@ public:
   USUL_DECLARE_REF_POINTERS ( Task );
 
   // Constructor
-  Task ( unsigned long id, Callback *started, Callback *finished, Callback *cancelled, Callback *error, Callback *destroyed );
+  Task ( unsigned long id, Callback *started, Callback *finished, Callback *cancelled, Callback *error );
 
   unsigned long             id() const;
   Callback *                cancelledCB();
-  Callback *                destroyedCB();
   Callback *                errorCB();
   Callback *                finishedCB();
   Callback *                startedCB();
@@ -60,7 +59,6 @@ private:
 
   unsigned long _id;
   Callback::RefPtr _cancelledCB;
-  Callback::RefPtr _destroyedCB;
   Callback::RefPtr _errorCB;
   Callback::RefPtr _finishedCB;
   Callback::RefPtr _startedCB;

@@ -19,6 +19,7 @@
 
 #include "Usul/File/Remove.h"
 #include "Usul/Network/Curl.h"
+#include "Usul/Network/Names.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Format.h"
@@ -33,25 +34,6 @@
 
 namespace Usul {
 namespace Network {
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Pre-defined names for name-value options.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Names
-{
-  const std::string REQUEST     ( "request" );
-  const std::string FORMAT      ( "format" );
-  const std::string SRS         ( "srs" );
-  const std::string STYLES      ( "styles" );
-  const std::string WIDTH       ( "width" );
-  const std::string HEIGHT      ( "height" );
-  const std::string LAYERS      ( "layers" );
-  const std::string BBOX        ( "bbox" );
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -187,7 +169,7 @@ public:
     if ( false == success )
     {
       Usul::File::remove ( file );
-      throw std::runtime_error ( "Error 1822747149: failed to download file: " + file );
+      throw std::runtime_error ( "Error 1822747149: failed to download: " + url );
     }
   }
 

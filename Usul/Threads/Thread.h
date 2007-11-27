@@ -57,7 +57,6 @@ public:
     NORMAL,       // Thread finished normaly.
     CANCELLED,    // Thread was cancelled.
     ERROR_RESULT, // Thread encountered an error.
-    KILLED,       // Thread was killed.
   };
 
   // If this function is called from the system thread that this instance 
@@ -76,11 +75,6 @@ public:
 
   // See if this thread is idle. When it's idle it is ok to delete.
   virtual bool            isIdle() const;
-
-  // Set the flags to indicate that the thread was killed. This function is 
-  // virtual; the overriding function should call this implementation before 
-  // actually killing the real thread.
-  virtual void            kill();
 
   // Return the mutex. Use with caution.
   Mutex &                 mutex() const;
@@ -116,7 +110,7 @@ protected:
   virtual ~Thread();
 
   // Call this from the system thread's "start" function.
-  void                    _execute();
+  void                    _execute() throw();
 
   // Overload this function to start the thread.
   virtual void            _start() = 0;

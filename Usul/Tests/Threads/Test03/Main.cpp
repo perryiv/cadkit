@@ -66,13 +66,13 @@ void _test()
   std::generate ( Detail::randomNumbers.begin(), Detail::randomNumbers.end(), ::rand );
 
   // Set the job manager's thread-pool size.
-  Usul::Jobs::Manager::instance().poolResize ( size );
+  Usul::Jobs::Manager::init ( size );
 
   // Start the jobs.
   for ( unsigned int i = 0; i < num; ++i )
   {
     Usul::Jobs::Job::RefPtr job ( new TestJob ( Detail::randomNumbers.at(i) ) );
-    Usul::Jobs::Manager::instance().add ( job.get() );
+    Usul::Jobs::Manager::instance().addJob ( job.get() );
   }
 
   // Wait until all jobs finish.
@@ -132,5 +132,8 @@ int main ( int argc, char **argv )
   Usul::Functions::safeCall ( _test,  "3274711482" );
   Usul::Functions::safeCall ( _clean, "1164335400" );
 
+  std::cout << "Finished test!" << std::endl;
+
+  //std::cin.get();
   return 0;
 }

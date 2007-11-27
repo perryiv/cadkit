@@ -21,7 +21,6 @@
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Pool.h"
 
-#include <list>
 
 namespace Usul {
 namespace Jobs {
@@ -35,50 +34,49 @@ public:
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
   typedef Usul::Threads::Pool ThreadPool;
-  typedef std::list<Job::RefPtr> JobList;
 
   // Constructor and destructor. Use as a singleton or as individual objects.
-  Manager();
-  Manager ( unsigned int poolSize );
+  Manager ( unsigned int poolSize = Usul::Threads::Pool::DEFAULT_NUM_THREADS );
   ~Manager();
 
   // Add a job to the list.
-  void                    add ( Job * );
+  void                    addJob ( Job * );
 
-  // Cancel all jobs.
+  // Cancel the job(s).
   void                    cancel();
+  void                    cancel ( Job * );
 
-  // This will delete the previous instance, if any.
+  // Clear any jobs that are queued, but not running.
+  void                    clearQueuedJobs();
+
+  // This will delete the singleton instance, if any.
   static void             destroy();
 
-  // See if the list of jobs is empty.
-  bool                    empty() const;
+  // Initialize singleton with given thread-pool size.
+  static void             init ( unsigned int poolSize = Usul::Threads::Pool::DEFAULT_NUM_THREADS );
 
-  // It's a singleton.
+  // Get the singleton.
   static Manager &        instance();
 
   // Get the next job id. This will also increment the internal counter.
   unsigned long           nextJobId();
 
+  // Get the number of jobs.
+  unsigned int            numJobs() const;
+  unsigned int            numJobsExecuting() const;
+  unsigned int            numJobsQueued() const;
+
   // Return the mutex. Use with caution.
   Mutex &                 mutex() const;
 
   // Get the size and resize the thread pool.
-  void                    poolResize ( unsigned int numThreads );
   unsigned int            poolSize() const;
 
-  // Purge all jobs that are ready to be deleted.
-  void                    purge();
-
-  // Number of jobs.
-  unsigned int            size() const;
-
-  // Trim any jobs that are queued, but not running.
-  void                    trim();
+  // Remove the queued job. Has no effect on running jobs.
+  void                    removeQueuedJob ( Job * );
 
   // Wait for all jobs to complete.
   void                    wait();
-  void                    wait ( unsigned long timeout );
 
 private:
 
@@ -91,8 +89,6 @@ private:
   // Data members.
   static Manager *_instance;
   mutable Mutex _mutex;
-  unsigned long _nextJobId;
-  JobList _jobs;
   ThreadPool::RefPtr _pool;
 };
 

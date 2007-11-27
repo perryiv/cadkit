@@ -312,7 +312,7 @@ void Program::run()
       // Otherwise...
       else
       {
-        manager.add ( job.get() );
+        manager.addJob ( job.get() );
       }
 
       // Reset the min.

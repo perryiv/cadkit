@@ -126,23 +126,6 @@ void _threadError ( Usul::Threads::Thread *thread )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Called when a thread is deleted.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void _threadDestroyed ( Usul::Threads::Thread *thread )
-{
-  USUL_TRACE_SCOPE_STATIC;
-
-  std::ostringstream out;
-  out << "Destroyed thread " << std::setw ( 4 ) << thread->id() 
-      << " using system thread " << std::setw ( 4 ) << thread->systemId() << '\n';
-  std::cout << out.str() << std::flush;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Add a task.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -156,8 +139,7 @@ void _addTask ( Usul::Threads::Pool *pool )
     Usul::Threads::Callback::RefPtr finished  ( Usul::Threads::newFunctionCallback ( _threadFinished  ) );
     Usul::Threads::Callback::RefPtr cancelled ( Usul::Threads::newFunctionCallback ( _threadCancelled ) );
     Usul::Threads::Callback::RefPtr error     ( Usul::Threads::newFunctionCallback ( _threadError     ) );
-    Usul::Threads::Callback::RefPtr destroyed ( Usul::Threads::newFunctionCallback ( _threadDestroyed ) );
-    pool->addTask ( started.get(), finished.get(), cancelled.get(), error.get(), destroyed.get() );
+    pool->addTask ( 0, started.get(), finished.get(), cancelled.get(), error.get() );
   }
 }
 
@@ -199,7 +181,7 @@ void _test()
   }
 
   // Wait for all tasks to finish.
-  pool->wait();
+  pool->waitForTasks();
 }
 
 
@@ -237,6 +219,9 @@ int main ( int argc, char **argv )
 
   Usul::Functions::safeCall ( _test,  "6124470160" );
   Usul::Functions::safeCall ( _clean, "3242794296" );
+
+  //std::cout << "Finished test!" << std::endl;
+  //std::cin.get();
 
   return 0;
 }

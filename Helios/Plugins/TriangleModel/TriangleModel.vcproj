@@ -362,6 +362,18 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="FVAS"
+					>
+					<File
+						RelativePath=".\TriangleReaderFieldViewAscii.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\TriangleReaderFieldViewAscii.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="DLL"

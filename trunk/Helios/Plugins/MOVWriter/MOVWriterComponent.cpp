@@ -153,6 +153,8 @@ void MOVWriterComponent::writeMovie ( const Filename& filename, const Filenames&
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
 
-  if( "mov" == ext )
-    Usul::Jobs::Manager::instance().add ( new Detail::WriteMovJob ( filename, filenames, caller ) );
+  if ( "mov" == ext )
+  {
+    Usul::Jobs::Manager::instance().addJob ( new Detail::WriteMovJob ( filename, filenames, caller ) );
+  }
 }

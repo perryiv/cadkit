@@ -207,7 +207,7 @@ void OpenDocument::_startJob ( const std::string& file )
   info.document->delegate ( info.delegate );
 
   // Create and add the job to the job manager.
-  Usul::Jobs::Manager::instance().add ( new OpenDocument::Job ( info.document.get(), file, this->caller() ) );
+  Usul::Jobs::Manager::instance().addJob ( new OpenDocument::Job ( info.document.get(), file, this->caller() ) );
 }
 
 

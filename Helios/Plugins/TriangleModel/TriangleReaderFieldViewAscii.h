@@ -32,6 +32,8 @@ public:
   typedef std::pair < unsigned int, unsigned int > Progress;
   typedef std::vector< Usul::Math::Vec3d > Vertices;
   typedef OsgTools::Triangles::SharedVertex SharedVertex;
+  typedef std::vector< unsigned int > Face;
+  typedef std::vector< Face > Faces;
 
  // USUL_DECLARE_REF_POINTERS ( TriangleReaderFieldViewAscii );
 
@@ -56,6 +58,8 @@ protected:
   Color4                _getInterpolatedColorValue( double value );
   void                  _incrementProgress ( bool state );
   void                  _createTriangeSet();
+  void                  _createMirroredTriangle( unsigned int i, osg::Vec4Array * colors );
+  
 
 private:
   GroupPtr              _root;
@@ -67,7 +71,8 @@ private:
   IUnknown::RefPtr      _caller;
   Progress              _progress;
   Vertices              _vertices;
-
+  Vertices              _mirrorVertices;
+  Faces                 _faces;
 
 };
 

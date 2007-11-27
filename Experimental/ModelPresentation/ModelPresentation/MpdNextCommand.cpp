@@ -25,7 +25,7 @@ MpdNextCommand::MpdNextCommand ( Usul::Interfaces::IUnknown * caller ) :
   BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
-  this->text ( "Next Year" );
+  this->text ( "Next Step" );
 }
 
 

@@ -192,6 +192,7 @@ private:
   MpdTimeSet                  _timeSet;
   UpdatePolicyPtr             _update;
   bool                        _useTimeLine;
+  bool                        _useModels;
   bool                        _isAnimating;
   bool                        _showTools;
   bool                        _userSpecifiedEndTime;

@@ -25,7 +25,7 @@ MpdPrevTimestep::MpdPrevTimestep ( Usul::Interfaces::IUnknown * caller ) :
   BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
-  this->text ( "Previous Year" );
+  this->text ( "Previous Step" );
 }
 
 

@@ -25,7 +25,7 @@ MpdFirstTimestep::MpdFirstTimestep ( Usul::Interfaces::IUnknown * caller ) :
   BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
-  this->text ( "First Year" );
+  this->text ( "First Step" );
 }
 
 

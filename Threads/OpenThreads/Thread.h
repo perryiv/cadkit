@@ -38,8 +38,6 @@ public:
 
   virtual bool            isIdle() const;
 
-  virtual void            kill();
-
 protected:
 
   virtual ~Thread();

@@ -201,41 +201,6 @@ void Thread::_destroy()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Kill the thread.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Thread::kill()
-{
-  USUL_TRACE_SCOPE;
-
-  // Don't kill twice.
-  if ( BaseClass::KILLED == this->result() )
-    return;
-
-  // Don't kill an idle thread.
-  if ( true == this->isIdle() )
-    return;
-
-  // Grab pointer and detach.
-  OpenThreads::Thread *t ( _thread );
-  _thread = 0x0;
-
-  // If it's still running then cancel it.
-  if ( true == t->isRunning() )
-  {
-    // OpenThreads implementation of cancel() is a "kill".
-    Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( t, &OpenThreads::Thread::setCancelModeAsynchronous ), "3247502066" );
-    Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( t, &OpenThreads::Thread::cancel ), "3474159748" );
-  }
-
-  // Call this last to keep from getting purged!
-  BaseClass::kill();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Start this thread.
 //
 ///////////////////////////////////////////////////////////////////////////////

@@ -64,9 +64,15 @@ struct MemberFunction
   }
 
   template < class Arg1, class Arg2, class Arg3 >
-  ReturnType operator () ( const Arg1 &arg1, Arg2 arg2, Arg3 arg3 )
+  ReturnType operator () ( const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3 )
   {
     return ((*_o).*_f) ( arg1, arg2, arg3 );
+  }
+  
+  template < class Arg1, class Arg2, class Arg3, class Arg4, class Arg5, class Arg6 >
+  ReturnType operator () ( const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3, const Arg4 &arg4, const Arg5 &arg5, const Arg6 &arg6 )
+  {
+    return ((*_o).*_f) ( arg1, arg2, arg3, arg4, arg5, arg6 );
   }
 
 private:
@@ -121,6 +127,12 @@ struct MemberFunction < void, ObjectType, FunctionType >
   void operator () ( const Arg1 &arg1, Arg2 arg2, Arg3 arg3 )
   {
     ((*_o).*_f) ( arg1, arg2, arg3 );
+  }
+
+  template < class Arg1, class Arg2, class Arg3, class Arg4, class Arg5, class Arg6 >
+  void operator () ( const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3, const Arg4 &arg4, const Arg5 &arg5, const Arg6 &arg6 )
+  {
+    ((*_o).*_f) ( arg1, arg2, arg3, arg4, arg5, arg6 );
   }
 
 private:

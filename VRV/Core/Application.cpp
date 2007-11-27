@@ -686,7 +686,7 @@ void Application::_postDraw( OsgTools::Render::Renderer *renderer )
       // Capture image.
       osg::ref_ptr<osg::Image> image ( renderer->screenCapture ( multiplier, 1 ) );
 
-      Usul::Jobs::Manager::instance().add ( new VRV::Jobs::SaveImage ( filename.str(), image.get() ) );
+      Usul::Jobs::Manager::instance().addJob ( new VRV::Jobs::SaveImage ( filename.str(), image.get() ) );
     }
 
     // Don't export next time.
@@ -939,9 +939,6 @@ void Application::_preFrame()
 
   // Update the progress bars.
   //_progressBars->buildScene();
-
-  // Purge the job manager.
-  Usul::Jobs::Manager::instance().purge();
 
   // Purge any threads that may be finished.
   Usul::Threads::Manager::instance().purge();
@@ -3708,9 +3705,9 @@ osgText::Text* Application::getText ( unsigned int x, unsigned int y )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::setText ( unsigned int x, unsigned int y, const std::string& text )
+void Application::setText ( unsigned int x, unsigned int y, const std::string& text, const osg::Vec4f& color )
 {
-  _sceneManager->setText ( x, y, text );
+  _sceneManager->setText ( x, y, text, color );
 }
 
 

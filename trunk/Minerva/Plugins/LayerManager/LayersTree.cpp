@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Plugins/LayerManager/LayersTree.h"
+#include "Minerva/Plugins/LayerManager/PropertiesAction.h"
 #include "Minerva/Core/Commands/RemoveLayer.h"
 #include "Minerva/Core/Commands/HideLayer.h"
 #include "Minerva/Core/Commands/ShowLayer.h"
@@ -26,6 +27,7 @@
 #include "QtGui/QTabWidget.h"
 #include "QtGui/QDialog.h"
 #include "QtGui/QMainWindow.h"
+#include "QtGui/QMenu"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -57,6 +59,7 @@ _document ()
 
   _tree = new QTreeWidget;
   _tree->header()->setHidden ( 1 );
+  _tree->setContextMenuPolicy ( Qt::CustomContextMenu );
   treeLayout->addWidget ( _tree );
   
   topLayout->addLayout ( buttonLayout );
@@ -135,8 +138,10 @@ void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
 
     if ( layer.valid () )
     {
+      // Make the item.
       QTreeWidgetItem *item ( new QTreeWidgetItem ( _tree ) );
       item->setText ( 0, layer->name ().c_str () );
+      item->setStatusTip ( 0, layer->name().c_str() );
 
       Qt::CheckState state ( layer->showLayer() ? Qt::Checked : Qt::Unchecked );
       item->setCheckState ( 0, state );
@@ -166,6 +171,10 @@ void LayersTree::_connectTreeViewSlots ()
   // Notify us when an item is changed.
   connect ( _tree, SIGNAL ( itemChanged       ( QTreeWidgetItem *, int ) ),
             this,  SLOT   ( _onItemChanged    ( QTreeWidgetItem *, int ) ) );
+
+  // Notify us when a context menu is requested.
+  connect ( _tree, SIGNAL ( customContextMenuRequested ( const QPoint& ) ),
+            this,  SLOT   ( _onContextMenuShow ( const QPoint& ) ) );
 }
 
 
@@ -227,16 +236,16 @@ void LayersTree::_onAddLayerClick ()
 
     Usul::Interfaces::Qt::IMainWindow::QueryPtr mw ( _caller );
 
-    QDialog *dialog ( new QDialog ( mw.valid() ? mw->mainWindow() : 0x0 ) );
-    QTabWidget *tabs ( new QTabWidget ( dialog ) );
+    QDialog dialog ( mw.valid() ? mw->mainWindow() : 0x0 );
+    QTabWidget *tabs ( new QTabWidget ( &dialog ) );
     QPushButton *ok ( new QPushButton ( "Ok" ) );
     QPushButton *cancel ( new QPushButton ( "Cancel" ) );
 
-    connect ( ok,     SIGNAL ( clicked () ), dialog, SLOT ( accept () ) );
-    connect ( cancel, SIGNAL ( clicked () ), dialog, SLOT ( reject () ) );
+    connect ( ok,     SIGNAL ( clicked () ), &dialog, SLOT ( accept () ) );
+    connect ( cancel, SIGNAL ( clicked () ), &dialog, SLOT ( reject () ) );
 
     QVBoxLayout *topLayout ( new QVBoxLayout );
-    dialog->setLayout ( topLayout );
+    dialog.setLayout ( topLayout );
 
     QVBoxLayout *vLayout ( new QVBoxLayout );
     QHBoxLayout *hLayout ( new QHBoxLayout );
@@ -255,9 +264,9 @@ void LayersTree::_onAddLayerClick ()
       tabs->addTab ( gui->layerAddGUI (), gui->name ().c_str() );
     }
 
-    dialog->setModal ( true );
+    dialog.setModal ( true );
     
-    if ( QDialog::Accepted == dialog->exec() )
+    if ( QDialog::Accepted == dialog.exec() )
     {
       for ( Unknowns::iterator iter = unknowns.begin (); iter != unknowns.end(); ++iter )
       {
@@ -265,8 +274,6 @@ void LayersTree::_onAddLayerClick ()
         gui->apply ( _caller );
       }
     }
-
-    delete dialog;
 
     this->buildTree ( _document );
   }
@@ -309,4 +316,33 @@ void LayersTree::_onRemoveLayerClick ()
 
 void LayersTree::_onRefreshClick ()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show the context menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayersTree::_onContextMenuShow ( const QPoint& pos )
+{
+  if ( 0x0 == _tree )
+    return;
+
+  QTreeWidgetItem *item ( _tree->itemAt ( pos ) );
+
+  LayerMap::iterator iter ( _layerMap.find ( item ) );
+
+  if ( iter != _layerMap.end() )
+  {
+    Layer::RefPtr layer ( iter->second );
+    
+    if ( layer.valid () )
+    {
+      QMenu menu;
+      menu.addAction ( new PropertiesAction ( layer.get(), _document.get() ) );
+      menu.exec ( _tree->mapToGlobal ( pos ) );
+    }
+  }
 }

@@ -252,7 +252,7 @@ void OpenDocument::Job::_started()
     // Feedback.
     std::cout << Usul::Strings::format ( "Opening file: ", _name );
     #ifdef _DEBUG
-    std::cout << Usul::Strings::format ( ", thread = ", this->thread()->id() );
+    //std::cout << Usul::Strings::format ( ", thread = ", this->thread()->id() );
     #endif
     std::cout << Usul::Resources::TextWindow::endl;
     

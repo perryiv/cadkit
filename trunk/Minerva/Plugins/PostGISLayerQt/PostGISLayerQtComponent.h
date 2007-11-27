@@ -24,10 +24,12 @@
 #include "Usul/Headers/Qt.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/ILayerAddGUIQt.h"
+#include "Usul/Interfaces/ILayerModifyGUIQt.h"
 
 class PostGISLayerQtComponent : public Usul::Base::Referenced,
                                 public Usul::Interfaces::IPlugin,
-                                public Usul::Interfaces::ILayerAddGUIQt
+                                public Usul::Interfaces::ILayerAddGUIQt,
+                                public Usul::Interfaces::ILayerModifyGUIQt
 
 {
 public:
@@ -47,12 +49,17 @@ public:
   
 protected:
 
+  /// ILayerAddGUIQt.
   virtual QWidget*            layerAddGUI ( );
   virtual std::string         name () const;
   virtual void                apply ( Usul::Interfaces::IUnknown* caller );
 
   /// Return name of plugin.
   virtual std::string           getPluginName() const;
+
+  /// ILayerModifyQtGUI
+  virtual bool                handle ( Usul::Interfaces::ILayer* ) const;
+  virtual void                showModifyGUI ( Usul::Interfaces::ILayer*, Usul::Interfaces::IUnknown* caller = 0x0 );
 
   // Do not copy.
   PostGISLayerQtComponent ( const PostGISLayerQtComponent & );

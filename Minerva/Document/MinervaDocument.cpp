@@ -50,14 +50,6 @@
 
 #include "osgText/Text"
 
-#include "ossim/projection/ossimProjectionFactoryRegistry.h"
-#include "ossim/projection/ossimMapProjection.h"
-#include "ossim/base/ossimGpt.h"
-#include "ossim/base/ossimEcefPoint.h"
-#include "ossim/base/ossimGeoidManager.h"
-
-#include "ossim/base/ossimEllipsoid.h"
-
 #include <sstream>
 
 using namespace Minerva::Document;
@@ -1437,8 +1429,6 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
       double duration ( time - _lastTime );
 
       Minerva::Core::Animate::Date lastDate ( _lastDate );
-
-      //std::cout << "Time: " << time << " Duration: " << duration << " Speed: " << _animationSpeed <<  std::endl;
 
       // Animate if we should.
       if ( duration > _animationSpeed )

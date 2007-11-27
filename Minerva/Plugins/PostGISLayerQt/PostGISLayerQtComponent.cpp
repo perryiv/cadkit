@@ -15,14 +15,23 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Plugins/PostGISLayerQt/PostGISLayerQtComponent.h"
+#include "Minerva/Plugins/PostGISLayerQt/PropertyPage.h"
+#include "Minerva/Core/Layers/Layer.h"
 
+#include "Usul/Components/Factory.h"
 
+#include "QtGui/QDialog.h"
+#include "QtGui/QVBoxLayout"
+#include "QtGui/QHBoxLayout"
+#include "QtGui/QPushButton"
+
+USUL_DECLARE_COMPONENT_FACTORY ( PostGISLayerQtComponent );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PostGISLayerQtComponent, PostGISLayerQtComponent::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Constructor
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -34,7 +43,7 @@ _widget ( 0x0 )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Destructor
+//  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -59,6 +68,8 @@ Usul::Interfaces::IUnknown *PostGISLayerQtComponent::queryInterface ( unsigned l
     return static_cast < Usul::Interfaces::IPlugin* > ( this );
   case Usul::Interfaces::ILayerAddGUIQt::IID:
     return static_cast < Usul::Interfaces::ILayerAddGUIQt * > ( this );
+  case Usul::Interfaces::ILayerModifyGUIQt::IID:
+    return static_cast < Usul::Interfaces::ILayerModifyGUIQt * > ( this );
   default:
     return 0x0;
   }
@@ -112,4 +123,49 @@ void PostGISLayerQtComponent::apply ( Usul::Interfaces::IUnknown* caller )
 {
   if ( 0x0 != _widget )
     _widget->apply ( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Do we handle this type of layer?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PostGISLayerQtComponent::handle ( Usul::Interfaces::ILayer* layer ) const
+{
+  return 0x0 != dynamic_cast < Minerva::Core::Layers::Layer * > ( layer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show the property gui.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PostGISLayerQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, Usul::Interfaces::IUnknown* caller ) 
+{
+  Minerva::Core::Layers::Layer::RefPtr baseLayer ( dynamic_cast < Minerva::Core::Layers::Layer* > ( layer ) );
+  PropertyPage *page ( new PropertyPage ( baseLayer ) );
+
+  QDialog dialog ( 0x0 );
+  QPushButton *ok ( new QPushButton ( "Ok" ) );
+  QPushButton *cancel ( new QPushButton ( "Cancel" ) );
+
+  QVBoxLayout *topLayout ( new QVBoxLayout );
+  dialog.setLayout ( topLayout );
+
+  QHBoxLayout *hLayout ( new QHBoxLayout );
+
+  topLayout->addWidget ( page );
+  topLayout->addLayout ( hLayout );
+  
+  hLayout->addStretch  ();
+  hLayout->addWidget ( ok );
+  hLayout->addWidget ( cancel );
+
+  if ( QDialog::Accepted == dialog.exec() )
+  {
+  }
 }

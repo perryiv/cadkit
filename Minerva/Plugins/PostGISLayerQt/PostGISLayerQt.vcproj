@@ -325,10 +325,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\PostGISLayerQtFactory.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\PropertyPage.cpp"
 					>
 				</File>

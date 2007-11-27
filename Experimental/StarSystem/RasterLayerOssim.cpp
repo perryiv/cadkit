@@ -156,6 +156,7 @@ osg::Image* RasterLayerOssim::texture ( const Extents& extents, unsigned int wid
       RasterLayerOssim::_convert ( *data, *result );
   }
 
+  result->flipVertical();
   return result.release();
 }
 

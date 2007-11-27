@@ -45,6 +45,11 @@
 #include "osg/Material"
 #include "osg/Texture2D"
 
+#ifdef _DEBUG
+#include "Usul/Strings/Format.h"
+#include "osgText/Text"
+#endif
+
 #include <limits>
 
 using namespace StarSystem;
@@ -228,7 +233,7 @@ void Tile::_update()
       {
         // Assign texture coordinate.
         double up ( ( _texCoords[0] + ( u * deltaU ) ) );
-        double vp ( ( _texCoords[2] + ( ( 1.0 - v ) * deltaV ) ) );
+        double vp ( ( _texCoords[2] + ( v * deltaV ) ) );
         mesh.texCoord ( i, j ).set ( up , vp );
       }
     }
@@ -239,7 +244,7 @@ void Tile::_update()
   this->dirty ( false, Tile::TEX_COORDS, false );
 
   // Depth of skirt.  TODO: This function needs to be tweeked.
-  const double offset ( Usul::Math::minimum<double> ( ( 25000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
+  const double offset ( Usul::Math::maximum<double> ( ( 25000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
 
   // Make group to holds the meshes.
   osg::ref_ptr < osg::Group > group ( new osg::Group );
@@ -251,6 +256,25 @@ void Tile::_update()
   group->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], offset ) ); // Top skirt.
   group->addChild ( mesh() );
   this->addChild ( group.get() );
+
+#ifdef _DEBUG
+  osg::Vec3 p;
+  const double elevation ( _body->geodeticRadius ( _extents.minimum()[1] ) + 1000 );
+  _body->latLonHeightToXYZ ( _extents.minimum()[1], _extents.minimum()[0], elevation, p );
+
+  osg::ref_ptr< osgText::Text > text ( new osgText::Text );
+  text->setPosition ( p );
+  text->setAutoRotateToScreen ( true );
+  text->setCharacterSize ( 25 );
+  text->setCharacterSizeMode ( osgText::Text::SCREEN_COORDS );
+  text->setText ( Usul::Strings::format ( _extents.minimum()[1], ", ", _extents.minimum()[0] ) );
+
+  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+  geode->addDrawable ( text.get() );
+
+  group->addChild ( geode.get() );
+  
+#endif
 
   // Assign material.
   //this->getOrCreateStateSet()->setAttributeAndModes ( Helper::material(), osg::StateAttribute::PROTECTED );

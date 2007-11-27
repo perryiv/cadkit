@@ -45,6 +45,7 @@ protected slots:
   void _onAddLayerClick ();
   void _onRemoveLayerClick ();
   void _onRefreshClick ();
+  void _onContextMenuShow ( const QPoint& pos );
 
 private:
   QTreeWidget *_tree;

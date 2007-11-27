@@ -10,6 +10,7 @@
 
 #include "StarSystem/RasterGroup.h"
 
+#include "Usul/File/Make.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
@@ -133,11 +134,15 @@ osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, u
   }
 
 #if 0
-  Extents::Vertex min ( extents.min() );
-  Extents::Vertex max ( extents.max() );
+  Extents::Vertex min ( extents.minimum() );
+  Extents::Vertex max ( extents.maximum() );
 
   std::ostringstream os;
-  os << "C:/adam/temp/debug/" << min[0] << "_" << min[1] << "_" << max[0] << "_" << max[1] << "_" << width << "_" << height << "_" << level << ".bmp";
+  os << "C:/adam/temp/debug/level_" << level << "/";
+  
+  Usul::File::make ( os.str() );
+
+  os << min[0] << "_" << min[1] << "_" << max[0] << "_" << max[1] << "_" << width << "_" << height << ".bmp";
   osgDB::writeImageFile ( *result, os.str() );
 #endif
 

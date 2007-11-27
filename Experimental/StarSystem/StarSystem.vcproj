@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="curld.lib osgd.lib osgDBd.lib ossimd.lib wsock32.lib winmm.lib"
+				AdditionalDependencies="curld.lib osgd.lib osgDBd.lib osgTextd.lib ossimd.lib wsock32.lib winmm.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/StarSystemd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"

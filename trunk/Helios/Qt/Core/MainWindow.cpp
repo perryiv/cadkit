@@ -262,7 +262,7 @@ void MainWindow::_destroy()
 
   // Wait here until all jobs are done.
   std::cout << "Waiting for all jobs to finish..." << std::endl;
-  Usul::Jobs::Manager::instance().purge();
+  //Usul::Jobs::Manager::instance().purge();
   Usul::Jobs::Manager::instance().cancel();
   Usul::Jobs::Manager::instance().wait();
   Usul::Jobs::Manager::destroy();
@@ -1343,7 +1343,7 @@ void MainWindow::_idleProcess()
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Jobs::Manager::instance()),    &Usul::Jobs::Manager::purge    ) );
+  //Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Jobs::Manager::instance()),    &Usul::Jobs::Manager::purge    ) );
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Threads::Manager::instance()), &Usul::Threads::Manager::purge ) );
 }
 

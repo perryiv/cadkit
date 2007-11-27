@@ -119,8 +119,8 @@ namespace Program
     // Set command-line arguments.
     Usul::CommandLine::Arguments::instance().set ( argc, argv );
 
-    // Turn down the number of jobs.
-    Usul::Jobs::Manager::instance().poolResize ( 4 );
+    // Make job manager.
+    Usul::Jobs::Manager::init ( 4 );
 
     // Branding.
     const std::string program ( "Helios" );

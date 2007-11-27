@@ -35,7 +35,6 @@ SET (SOURCES
 ./Group.cpp
 ./Body.cpp
 ./BuildScene.cpp
-./Pager.cpp
 ./Tile.cpp
 )
 

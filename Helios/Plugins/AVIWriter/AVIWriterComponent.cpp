@@ -152,7 +152,7 @@ void AVIWriterComponent::writeMovie ( const Filename& filename, const Filenames&
   if ( "avi" == ext )
   {
 #if 1
-    Usul::Jobs::Manager::instance().add ( new Detail::WriteAVIJob ( filename, filenames, caller ) );
+    Usul::Jobs::Manager::instance().addJob ( new Detail::WriteAVIJob ( filename, filenames, caller ) );
 #else
     AVIWriter writer ( filename, filenames );
     writer();

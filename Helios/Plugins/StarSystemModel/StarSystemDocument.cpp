@@ -16,15 +16,17 @@
 #include "StarSystemDocument.h"
 
 #include "StarSystem/BuildScene.h"
-#include "StarSystem/Pager.h"
+#include "StarSystem/Extents.h"
 #include "StarSystem/System.h"
 #include "StarSystem/RasterLayerOssim.h"
+#include "StarSystem/RasterLayerWms.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Random.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/ITextMatrix.h"
+#include "Usul/Network/Names.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Trace/Trace.h"
 
@@ -42,11 +44,31 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemDocument, StarSystemDocument::BaseCl
 
 StarSystemDocument::StarSystemDocument() : BaseClass ( "StarSystem Document" ),
   _system ( 0x0 ),
-  _manager ( 3 )
+  _manager ( 2 ) // Until we no longer block when getting an ossim image...
 {
   USUL_TRACE_SCOPE;
-  _system = new StarSystem::System( _manager );
+  _system = new StarSystem::System ( _manager );
   _system->ref();
+
+#if 1
+
+  const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
+
+  typedef StarSystem::RasterLayerWms::Options Options;
+  Options options;
+  options[Usul::Network::Names::LAYERS]  = "modis,global_mosaic";
+  options[Usul::Network::Names::STYLES]  = ",visual";
+  options[Usul::Network::Names::SRS]     = "EPSG:4326";
+  options[Usul::Network::Names::REQUEST] = "GetMap";
+  options[Usul::Network::Names::FORMAT]  = "image/jpeg";
+
+  typedef StarSystem::Body::Extents Extents;
+  typedef Extents::Vertex Vertex;
+  const Extents maxExtents ( Vertex ( -180, -90 ), Vertex ( 180, 90 ) );
+  StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
+  _system->body()->rasterAppend ( layer.get() );
+
+#endif
 }
 
 
@@ -75,16 +97,16 @@ void StarSystemDocument::_destroy()
   _system->unref(); _system = 0x0;
 
   // Remove all jobs that are not running.
-  _manager.trim();
+  //_manager.trim();
 
-  // Cancel all remaining jobs.
+  // Remove all queued jobs and cancel running jobs.
   _manager.cancel();
 
   // Wait for the pool to finish.
   _manager.wait();
 
   // Purge.
-  _manager.purge();
+  //_manager.purge();
 }
 
 
@@ -330,7 +352,7 @@ osg::Node *StarSystemDocument::buildScene ( const BaseClass::Options &options, U
 osgDB::DatabasePager *StarSystemDocument::getDatabasePager()
 {
   USUL_TRACE_SCOPE;
-  return 0x0; // StarSystem::Pager::instance().pager();
+  return 0x0;
 }
 
 
@@ -343,7 +365,7 @@ osgDB::DatabasePager *StarSystemDocument::getDatabasePager()
 void StarSystemDocument::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-  //StarSystem::Pager::instance().preRender ( caller );
+
   if ( 0x0 != _system )
     _system->preRender ( caller );
 
@@ -377,7 +399,6 @@ void StarSystemDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
 void StarSystemDocument::addView ( Usul::Interfaces::IView *view )
 {
   BaseClass::addView ( view );
-  StarSystem::Pager::instance().initVisitors ( view );
 }
 
 
@@ -406,11 +427,12 @@ void StarSystemDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   Usul::Interfaces::ITextMatrix::QueryPtr tm ( caller );
   if ( tm.valid() )
   {
-    const unsigned int requests  ( _manager.size() );
+    const unsigned int queued    ( _manager.numJobsQueued() );
+    const unsigned int executing ( _manager.numJobsExecuting() );
+    const unsigned int total     ( queued + executing );
 
-    std::ostringstream os;
-    os << "Requests: " << requests;
+    const std::string out ( ( total > 0 ) ? ( Usul::Strings::format ( "Queued: ", queued, ", Running: ", executing ) ) : "" );
 
-    tm->setText ( 15, 15, ( requests > 0 ) ? os.str() : "", osg::Vec4f ( 1.0, 1.0, 1.0, 1.0 ) );
+    tm->setText ( 15, 15, out, osg::Vec4f ( 1.0, 1.0, 1.0, 1.0 ) );
   }
 }

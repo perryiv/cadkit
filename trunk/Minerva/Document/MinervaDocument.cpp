@@ -1242,7 +1242,7 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   if ( _commandsReceive && _commandUpdate () && jobFinished )
   {
     Usul::Jobs::Job::RefPtr job ( new Detail::CheckForCommands ( caller, _receiver.get() ) );
-    Usul::Jobs::Manager::instance().add ( job.get () );
+    Usul::Jobs::Manager::instance().addJob ( job.get () );
     _commandJob = job;
   }
 

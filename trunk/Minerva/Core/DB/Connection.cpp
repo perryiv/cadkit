@@ -421,7 +421,8 @@ pqxx::result Connection::executeQuery( const std::string& query, unsigned int ti
   if ( false == helper.done () )
   {
     std::cerr << "Killing thread" << thread->systemId() << std::endl;
-    thread->kill();
+    //thread->kill();
+    thread->cancel();
     throw std::runtime_error ( "Error 4205862221: Connection timed out." );
   }
 

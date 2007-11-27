@@ -101,7 +101,7 @@ void AddLayer::_execute ()
   if ( _progressBar.valid() )
     job->progress ( _progressBar );
 
-  Usul::Jobs::Manager::instance().add ( job.get() );
+  Usul::Jobs::Manager::instance().addJob ( job.get() );
 }
 
 

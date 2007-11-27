@@ -182,7 +182,8 @@ namespace Helper
     // Set the state. Make it override any other similar states.
     ss->setAttributeAndModes ( pm.get(), 
                                osg::StateAttribute::OVERRIDE | 
-                               osg::StateAttribute::ON );
+                               osg::StateAttribute::ON |
+                               osg::StateAttribute::PROTECTED );
   }
 };
 

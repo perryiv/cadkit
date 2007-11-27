@@ -679,7 +679,7 @@ void DynamicLandDocument::_loadJobs( Usul::Interfaces::IUnknown *caller )
       #else // without progress bars
         LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, 0x0, this->currentFilePosition() ) );
       #endif
-      this->_getJobManager()->add( job.get() );
+      this->_getJobManager()->addJob ( job.get() );
       
     }
     for( int i = start; i <= end; ++i )
@@ -714,7 +714,7 @@ void DynamicLandDocument::_loadJobs( Usul::Interfaces::IUnknown *caller )
         #else // without progress bars
           LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, 0x0, index ) );
         #endif
-        this->_getJobManager()->add( job.get() );
+        this->_getJobManager()->addJob ( job.get() );
         //Usul::Jobs::Manager::instance().add ( job.get() );
       }
     }

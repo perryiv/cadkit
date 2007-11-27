@@ -40,7 +40,7 @@ public:
 protected:
   virtual ~RasterLayerOssim();
 
-  void                  _convert ( const ossimImageData& data, osg::Image& image ) const;
+  static void           _convert ( const ossimImageData& data, osg::Image& image );
   void                  _updateExtents();
 
 private:

@@ -37,8 +37,9 @@ CutImageJob::CutImageJob ( const Extents &extents, unsigned int level, RasterLay
   _texture ( 0x0 )
 {
   USUL_TRACE_SCOPE;
-  this->priority ( level );
+  this->priority ( -1 * static_cast<int> ( level ) );
   Usul::Pointers::reference ( _raster );
+  this->name ( Usul::Strings::format ( "Extents: [", extents.minimum()[0], ", ", extents.minimum()[1], ", ", extents.maximum()[0], ", ", extents.maximum()[1], "], level: ", level ) );
 }
 
 
@@ -78,11 +79,15 @@ void CutImageJob::_started()
   }
 
   // Get the image.
-  const unsigned int width  ( 256 );
-  const unsigned int height ( 256 );
+  const unsigned int width  ( 512 ); // WMS server doesn't like 256...
+  const unsigned int height ( 512 );
 
   // Request the image.
   osg::ref_ptr<osg::Image> image ( _raster->texture ( _extents, width, height, _level ) );
+
+  // Have we been cancelled?
+  if ( true == this->canceled() )
+    this->cancel();
 
   // Create the texture.
   osg::ref_ptr<osg::Texture2D> texture ( new osg::Texture2D );
@@ -93,6 +98,10 @@ void CutImageJob::_started()
   texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
   texture->setWrap ( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
   texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
+
+  // Have we been cancelled?
+  if ( true == this->canceled() )
+    this->cancel();
 
   // Set our data members.
   {

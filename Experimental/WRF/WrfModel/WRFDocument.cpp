@@ -1356,7 +1356,7 @@ void WRFDocument::_requestData ( unsigned int timestep, unsigned int channel, bo
   }
 
   // Add the job to the job manager.
-  Usul::Jobs::Manager::instance().add ( job.get() );
+  Usul::Jobs::Manager::instance().addJob ( job.get() );
 }
 
 

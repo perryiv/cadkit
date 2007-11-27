@@ -12,6 +12,8 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Threads/Safe.h"
+#include "Usul/Trace/Trace.h"
 
 #include "osg/ref_ptr"
 #include "osg/Image"
@@ -37,6 +39,7 @@ RasterLayerOssim::RasterLayerOssim() :
   BaseClass(),
   _handler ( 0x0 )
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -48,6 +51,7 @@ RasterLayerOssim::RasterLayerOssim() :
 
 RasterLayerOssim::~RasterLayerOssim()
 {
+  USUL_TRACE_SCOPE;
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &RasterLayerOssim::_destroy ), "3809846167" );
 }
 
@@ -60,8 +64,9 @@ RasterLayerOssim::~RasterLayerOssim()
 
 void RasterLayerOssim::_destroy()
 {
-  Usul::Pointers::unreference ( _handler ); _handler = 0x0;
+  USUL_TRACE_SCOPE;
 
+  Usul::Pointers::unreference ( _handler ); _handler = 0x0;
   Usul::Pointers::unreference ( _projection ); _projection = 0x0;
   Usul::Pointers::unreference ( _renderer ); _renderer = 0x0;
   _viewInterface = 0x0;
@@ -76,6 +81,9 @@ void RasterLayerOssim::_destroy()
 
 void RasterLayerOssim::open ( const std::string& filename )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
   _handler = ossimImageHandlerRegistry::instance()->open ( ossimFilename ( filename.c_str() ) );
   Usul::Pointers::reference ( _handler );
 
@@ -87,24 +95,22 @@ void RasterLayerOssim::open ( const std::string& filename )
 
   _viewInterface = _renderer;
 
-  _renderer->setView( _projection, false );
-  _renderer->getResampler()->setFilterType( "nearest neighbor" );
+  _renderer->setView ( _projection, false );
+  _renderer->getResampler()->setFilterType ( "nearest neighbor" );
 
-  _renderer->connectMyInputTo( 0, _handler );
+  _renderer->connectMyInputTo ( 0, _handler );
 
   ossimImageViewTransform* ivt = _renderer->getImageViewTransform();
-  if(ivt)
+  if ( ivt )
   {
-    ossimImageViewProjectionTransform* projectionTransform = PTR_CAST(ossimImageViewProjectionTransform,
-                                                                      ivt);
-    if(projectionTransform)
+    ossimImageViewProjectionTransform* projectionTransform = PTR_CAST ( ossimImageViewProjectionTransform, ivt );
+    if ( projectionTransform )
     {
-       ossimMapProjection* mapProj = PTR_CAST(ossimMapProjection,
-                                              projectionTransform->getImageProjection());
-       if(mapProj)
+       ossimMapProjection* mapProj = PTR_CAST ( ossimMapProjection, projectionTransform->getImageProjection() );
+       if ( mapProj )
        {
-          mapProj->setElevationLookupFlag(false);
-          _projection->setElevationLookupFlag(false);
+          mapProj->setElevationLookupFlag ( false );
+          _projection->setElevationLookupFlag ( false );
        }
     }
   }
@@ -121,6 +127,7 @@ void RasterLayerOssim::open ( const std::string& filename )
 
 osg::Image* RasterLayerOssim::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
 
   // Create the answer.
@@ -132,21 +139,21 @@ osg::Image* RasterLayerOssim::texture ( const Extents& extents, unsigned int wid
   {
     ossimIrect requestRect(0, 0, width - 1, height - 1 );
 
-    double deltaX ( extents.maximum()[0] - extents.minimum()[0] );
-    double deltaY ( extents.maximum()[1] - extents.minimum()[1] );
+    const double deltaX ( extents.maximum()[0] - extents.minimum()[0] );
+    const double deltaY ( extents.maximum()[1] - extents.minimum()[1] );
      
-    double deltaLat ( deltaY / height );
-    double deltaLon ( deltaX / width );
+    const double deltaLat ( deltaY / height );
+    const double deltaLon ( deltaX / width );
 
-    _projection->setDecimalDegreesPerPixel( ossimDpt ( deltaLon, deltaLat ) );
+    _projection->setDecimalDegreesPerPixel ( ossimDpt ( deltaLon, deltaLat ) );
 
-    _projection->setUlGpt( ossimGpt ( extents.maximum()[1], extents.minimum()[0] ) ); // Max lat and min lon.
-    _viewInterface->setView( _projection, false );
-    ossimRefPtr<ossimImageData> data ( _renderer->getTile( requestRect ) );
+    _projection->setUlGpt ( ossimGpt ( extents.maximum()[1], extents.minimum()[0] ) ); // Max lat and min lon.
+    _viewInterface->setView ( _projection, false );
+    ossimRefPtr<ossimImageData> data ( _renderer->getTile ( requestRect ) );
 
     // Convert to osg image.
-    if ( data.valid() && data->getBuf() && ( data->getDataObjectStatus()!=OSSIM_EMPTY ) )
-      this->_convert ( *data, *result );
+    if ( data.valid() && data->getBuf() && ( data->getDataObjectStatus() != OSSIM_EMPTY ) )
+      RasterLayerOssim::_convert ( *data, *result );
   }
 
   return result.release();
@@ -159,10 +166,12 @@ osg::Image* RasterLayerOssim::texture ( const Extents& extents, unsigned int wid
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RasterLayerOssim::_convert ( const ossimImageData& data, osg::Image& image ) const
+void RasterLayerOssim::_convert ( const ossimImageData& data, osg::Image& image )
 {
+  USUL_TRACE_SCOPE_STATIC;
+
   // Only handle 8 byte pixels for now.
-  if( OSSIM_UINT8 != data.getScalarType() && data.getSize() > 0 )
+  if ( OSSIM_UINT8 != data.getScalarType() && data.getSize() > 0 )
     return;
 
   const unsigned int width ( data.getWidth() );
@@ -211,6 +220,9 @@ void RasterLayerOssim::_convert ( const ossimImageData& data, osg::Image& image 
 
 void RasterLayerOssim::_updateExtents()
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
   if ( 0x0 != _handler )
   {
     ossimKeywordlist kwl;

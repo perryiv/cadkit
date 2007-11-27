@@ -46,8 +46,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(CADKIT_ROOT_DIR)/Experimental;$(OSG_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSSIM_INC_DIR);$(BOOST_ROOT_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(CADKIT_ROOT_DIR)/Experimental;$(OSG_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSSIM_INC_DIR);$(BOOST_ROOT_DIR);$(CURL_INC_DIR)"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM;CURL_STATICLIB"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -80,11 +80,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib OpenThreadsd.lib ossimPlanetd.lib ossimd.lib"
+				AdditionalDependencies="curld.lib osgd.lib osgDBd.lib ossimd.lib wsock32.lib winmm.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/StarSystemd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR)"
+				AdditionalLibraryDirectories="$(CURL_LIB_DIR);$(OSG_LIB_DIR);$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/StarSystemd.pdb"
 				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/StarSystemd.lib"
@@ -147,8 +147,8 @@
 				AdditionalOptions="/Zm200 "
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(CADKIT_ROOT_DIR)/Experimental;$(OSG_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSSIM_INC_DIR);$(BOOST_ROOT_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM"
+				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(CADKIT_ROOT_DIR)/Experimental;$(OSG_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSSIM_INC_DIR);$(BOOST_ROOT_DIR);$(CURL_INC_DIR)"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM;CURL_STATICLIB"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -180,11 +180,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib OpenThreads.lib ossimPlanet.lib ossim.lib"
+				AdditionalDependencies="curl.lib osg.lib osgDB.lib ossim.lib wsock32.lib winmm.lib"
 				OutputFile="$(CADKIT_ROOT_DIR)/bin/StarSystem.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR)"
+				AdditionalLibraryDirectories="$(CURL_LIB_DIR);$(OSG_LIB_DIR);$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR)"
 				GenerateDebugInformation="false"
 				ProgramDatabaseFile=".\Release/StarSystem.pdb"
 				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/StarSystem.lib"
@@ -274,14 +274,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Pager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Pager.h"
-				>
-			</File>
-			<File
 				RelativePath=".\RasterGroup.cpp"
 				>
 			</File>
@@ -303,6 +295,14 @@
 			</File>
 			<File
 				RelativePath=".\RasterLayerOssim.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RasterLayerWms.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RasterLayerWms.h"
 				>
 			</File>
 			<File

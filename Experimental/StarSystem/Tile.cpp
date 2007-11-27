@@ -81,14 +81,16 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   this->setThreadSafeRefUnref ( true );
 
   // Create the texture.
-  _texture->setImage( _image.get() );
-
+  _texture->setImage ( _image.get() );
   _texture->setFilter( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
   _texture->setFilter( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
   _texture->setWrap( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
   _texture->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
 
   this->getOrCreateStateSet()->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF );
+
+  // Create as wire-frame. Turns solid when the texture is loaded.
+  OsgTools::State::StateSet::setPolygonsLines ( this, true );
 
   // Start the request to pull in texture.
   this->_launchImageRequest();
@@ -206,7 +208,7 @@ void Tile::_update()
       const double lon ( mn[0] + u * ( mx[0] - mn[0] ) );
       const double lat ( mn[1] + v * ( mx[1] - mn[1] ) );
 
-      // Only set the vertices, if they are dirty.
+      // Only set the vertices if they are dirty.
       if ( this->verticesDirty() )
       {
         // Convert lat-lon coordinates to xyz.
@@ -237,16 +239,17 @@ void Tile::_update()
   this->dirty ( false, Tile::TEX_COORDS, false );
 
   // Depth of skirt.  TODO: This function needs to be tweeked.
-  double offset ( Usul::Math::minimum<double> ( ( 25000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
+  const double offset ( Usul::Math::minimum<double> ( ( 25000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
 
+  // Make group to holds the meshes.
   osg::ref_ptr < osg::Group > group ( new osg::Group );
+
+  // Add skirts and ground.
   group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], offset ) ); // Left skirt.
   group->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], offset ) ); // Right skirt.
   group->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], offset ) ); // Bottom skirt.
   group->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], offset ) ); // Top skirt.
   group->addChild ( mesh() );
-
-  // Add mesh geometry to this node.
   this->addChild ( group.get() );
 
   // Assign material.
@@ -311,6 +314,9 @@ void Tile::traverse ( osg::NodeVisitor &nv )
         {
           this->textureData ( texture.get(), Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
           _jobId = -1;
+
+          // Solid ground.
+          OsgTools::State::StateSet::setPolygonsFilled ( this, true );
         }
       }
 
@@ -400,20 +406,20 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
     {
       this->removeChild ( 1, numChildren - 1 );
 
-      // Clear the job and all children.
-      if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->clear();
-      if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->clear();
-      if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->clear();
-      if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->clear();
+      if ( false == _body->cacheTiles() )
+      {
+        // Clear all the children.
+        if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->clear();
+        if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->clear();
+        if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->clear();
+        if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->clear();
 
-      _children[LOWER_LEFT]  = 0x0;
-      _children[LOWER_RIGHT] = 0x0;
-      _children[UPPER_LEFT]  = 0x0;
-      _children[UPPER_RIGHT] = 0x0;
+        _children[LOWER_LEFT]  = 0x0;
+        _children[LOWER_RIGHT] = 0x0;
+        _children[UPPER_LEFT]  = 0x0;
+        _children[UPPER_RIGHT] = 0x0;
+      }
     }
-
-    // Traverse low level of detail.
-//    this->getChild ( 0 )->accept ( cv );
   }
 
   else
@@ -421,28 +427,36 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
     // Add high level if necessary.
     if ( 1 == numChildren )
     {
-      const double half ( _splitDistance * 0.5 );
+      // Make tiles if we are not caching them, or if this is the first time.
+      if ( ( false == _body->cacheTiles() ) || 
+           ( false == _children[LOWER_LEFT].valid()  ) ||
+           ( false == _children[LOWER_RIGHT].valid() ) ||
+           ( false == _children[UPPER_LEFT].valid()  ) ||
+           ( false == _children[UPPER_RIGHT].valid() ) )
+      {
+        const double half ( _splitDistance * 0.5 );
 
-      const Extents::Vertex &mn ( _extents.minimum() );
-      const Extents::Vertex &mx ( _extents.maximum() );
-      const Extents::Vertex md ( ( mx + mn ) * 0.5 );
+        const Extents::Vertex &mn ( _extents.minimum() );
+        const Extents::Vertex &mx ( _extents.maximum() );
+        const Extents::Vertex md ( ( mx + mn ) * 0.5 );
 
-      const unsigned int level ( _level + 1 );
-      const MeshSize meshSize ( mesh.rows(), mesh.columns() );
+        const unsigned int level ( _level + 1 );
+        const MeshSize meshSize ( mesh.rows(), mesh.columns() );
 
-      const Extents ll ( Extents::Vertex ( mn[0], mn[1] ), Extents::Vertex ( md[0], md[1] ) );
-      const Extents lr ( Extents::Vertex ( md[0], mn[1] ), Extents::Vertex ( mx[0], md[1] ) );
-      const Extents ul ( Extents::Vertex ( mn[0], md[1] ), Extents::Vertex ( md[0], mx[1] ) );
-      const Extents ur ( Extents::Vertex ( md[0], md[1] ), Extents::Vertex ( mx[0], mx[1] ) );
+        const Extents ll ( Extents::Vertex ( mn[0], mn[1] ), Extents::Vertex ( md[0], md[1] ) );
+        const Extents lr ( Extents::Vertex ( md[0], mn[1] ), Extents::Vertex ( mx[0], md[1] ) );
+        const Extents ul ( Extents::Vertex ( mn[0], md[1] ), Extents::Vertex ( md[0], mx[1] ) );
+        const Extents ur ( Extents::Vertex ( md[0], md[1] ), Extents::Vertex ( mx[0], mx[1] ) );
 
-      // Texture coordinates for the children tiles.
-      Usul::Math::Vec4d tll, tlr, tul, tur;
-      this->_quarterTextureCoordinates ( tll, tlr, tul, tur );
+        // Texture coordinates for the children tiles.
+        Usul::Math::Vec4d tll, tlr, tul, tur;
+        this->_quarterTextureCoordinates ( tll, tlr, tul, tur );
 
-      _children[LOWER_LEFT]  = new Tile ( level, ll, meshSize, tll, half, _body, _image.get() ); // lower left  tile
-      _children[LOWER_RIGHT] = new Tile ( level, lr, meshSize, tlr, half, _body, _image.get() ); // lower right tile
-      _children[UPPER_LEFT]  = new Tile ( level, ul, meshSize, tul, half, _body, _image.get() ); // upper left  tile
-      _children[UPPER_RIGHT] = new Tile ( level, ur, meshSize, tur, half, _body, _image.get() ); // upper right tile
+        _children[LOWER_LEFT]  = new Tile ( level, ll, meshSize, tll, half, _body, _image.get() ); // lower left  tile
+        _children[LOWER_RIGHT] = new Tile ( level, lr, meshSize, tlr, half, _body, _image.get() ); // lower right tile
+        _children[UPPER_LEFT]  = new Tile ( level, ul, meshSize, tul, half, _body, _image.get() ); // upper left  tile
+        _children[UPPER_RIGHT] = new Tile ( level, ur, meshSize, tur, half, _body, _image.get() ); // upper right tile
+      }
 
       osg::ref_ptr<osg::Group> group ( new osg::Group );
       group->addChild ( _children[LOWER_LEFT]  );
@@ -464,7 +478,8 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   // Traverse last child.
   else
   {
-    this->getChild ( this->getNumChildren() - 1 )->accept ( cv );
+    const unsigned int last ( this->getNumChildren() - 1 );
+    this->getChild ( last )->accept ( cv );
   }
 }
 

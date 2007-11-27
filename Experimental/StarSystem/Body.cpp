@@ -53,8 +53,9 @@ Body::Body ( const Vec2d &r, Usul::Jobs::Manager& manager ) : BaseClass(),
   _textureJobs (),
   _frame ( false ),
   _texturesPerFrame ( 0 ),
-  _maxTexturesPerFrame ( 1 ),
-  _maxLevel ( 50 )
+  _maxTexturesPerFrame ( 10 ),
+  _maxLevel ( 50 ),
+  _cacheTiles ( false )
 {
   USUL_TRACE_SCOPE;
 
@@ -67,7 +68,7 @@ Body::Body ( const Vec2d &r, Usul::Jobs::Manager& manager ) : BaseClass(),
 
   // Properties of the tile.
   const osg::Vec2d mn ( -180, -90 );
-  const osg::Vec2d mx (  180,  90 );
+  const osg::Vec2d mx (    0,  90 );
   const double splitDistance ( _ellipsoid->a() * 7 );
 
   // Make the tile and add it to the transform.
@@ -116,7 +117,7 @@ void Body::_destroy()
 const osg::Node *Body::scene() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _transform;
 }
 
@@ -130,7 +131,7 @@ const osg::Node *Body::scene() const
 osg::Node *Body::scene()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _transform;
 }
 
@@ -144,7 +145,7 @@ osg::Node *Body::scene()
 void Body::center ( const Vec3d &c )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _transform->setMatrix ( osg::Matrix::translate ( c[0], c[1], c[2] ) );
   _tile->dirty();
 }
@@ -159,7 +160,7 @@ void Body::center ( const Vec3d &c )
 Body::Vec3d Body::center() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   const osg::Vec3d c ( _transform->getMatrix().getTrans() );
   return Vec3d ( c[0], c[1], c[2] );
 }
@@ -174,7 +175,7 @@ Body::Vec3d Body::center() const
 double Body::maxRadius() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return ( ( 0x0 == _ellipsoid ) ? 1 : Usul::Math::maximum ( _ellipsoid->a(), _ellipsoid->b() ) );
 }
 
@@ -188,7 +189,7 @@ double Body::maxRadius() const
 Body::Vec2d Body::radii() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return ( ( 0x0 == _ellipsoid ) ? Vec2d ( 1, 1 ) : Vec2d ( _ellipsoid->a(), _ellipsoid->b() ) );
 }
 
@@ -202,7 +203,7 @@ Body::Vec2d Body::radii() const
 void Body::radii ( const Body::Vec2d &r )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _ellipsoid->setA ( r[Body::RADIUS_EQUATOR] );
   _ellipsoid->setB ( r[Body::RADIUS_POLAR] );
   _tile->dirty();
@@ -218,7 +219,7 @@ void Body::radii ( const Body::Vec2d &r )
 void Body::rasterAppend ( RasterLayer * layer )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   if ( 0x0 != layer )
   {
@@ -269,7 +270,7 @@ double Body::geodeticRadius( double latitude ) const
 Usul::Jobs::Manager& Body::jobManager()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _manager;
 }
 
@@ -286,7 +287,6 @@ void Body::preRender ( Usul::Interfaces::IUnknown *caller )
   BaseClass::preRender ( caller );
 
   Guard guard ( this );
-  _manager.purge();
   _frame = true;
   _texturesPerFrame = 0;
 }
@@ -319,7 +319,7 @@ int Body::textureRequest ( const Extents &extents, unsigned int level )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   CutImageJob::RefPtr job ( new CutImageJob ( extents, level, _rasters ) );
-  _manager.add ( job );
+  _manager.addJob ( job );
   _textureJobs.insert ( TextureJobs::value_type ( job->id(), job ) );
   return job->id();
 }
@@ -341,7 +341,7 @@ void Body::textureRequestCancel ( int id )
   if ( iter != _textureJobs.end() )
   {
     CutImageJob::RefPtr job ( iter->second );
-    job->cancel();
+    _manager.cancel ( job );
     _textureJobs.erase ( iter );
   }
 }
@@ -385,7 +385,7 @@ osg::Texture2D* Body::texture ( int id )
 unsigned int Body::maxLevel() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _maxLevel;
 }
 
@@ -399,6 +399,34 @@ unsigned int Body::maxLevel() const
 void Body::maxLevel ( unsigned int level )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _maxLevel = level;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the flag for caching tiles.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Body::cacheTiles() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _cacheTiles;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flag for caching tiles.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::cacheTiles ( bool state )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _cacheTiles = state;
 }

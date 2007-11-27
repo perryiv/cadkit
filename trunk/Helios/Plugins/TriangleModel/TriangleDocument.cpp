@@ -24,6 +24,7 @@
 #include "TriangleReaderArcAsciiGrid.h"
 #include "ParadisReader.h"
 #include "TriangleReaderOFF.h"
+#include "TriangleReaderFieldViewAscii.h"
 
 #include "OsgTools/Triangles/LoopSplitter.h"
 
@@ -205,7 +206,7 @@ bool TriangleDocument::canInsert ( const std::string &file ) const
 bool TriangleDocument::canOpen ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "stl" || ext == "r3d" || ext == "tdf" || ext == "asc" || ext == "grs" || ext == "off" /*|| ext == "prds"*/ );
+  return ( ext == "stl" || ext == "r3d" || ext == "tdf" || ext == "asc" || ext == "grs" || ext == "off" || ext == "fvas"/*|| ext == "prds"*/ );
 }
 
 
@@ -267,6 +268,11 @@ void TriangleDocument::read ( const std::string &name, Unknown *caller, Unknown 
   else if ( "off" == ext )
   {
     TriangleReaderOFF reader ( name, progress, this );
+    reader ();
+  }
+  else if ( "fvas" == ext )
+  {
+    TriangleReaderFieldViewAscii reader ( name, progress, this );
     reader ();
   }
   else

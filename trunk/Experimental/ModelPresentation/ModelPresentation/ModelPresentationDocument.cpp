@@ -76,6 +76,7 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _sets ( 0x0 ),
   _update( UpdatePolicyPtr( new UpdatePolicy( 10 ) ) ),
   _useTimeLine( false ),
+  _useModels( false ),
   _isAnimating( false ),
   _showTools ( false ),
   _userSpecifiedEndTime( false )
@@ -817,6 +818,7 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller,
   MpdSet set;
   set.index = 0;
   set.name = "Set";
+  _useModels = true;
   
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
@@ -1404,6 +1406,7 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   // Add the model menu
+  if( _useModels )
   {
     MenuKit::Menu::RefPtr ModelMenu ( new MenuKit::Menu ( "Models", MenuKit::Menu::VERTICAL ) );
     for( unsigned int i = 0; i < _sets.size(); ++i )

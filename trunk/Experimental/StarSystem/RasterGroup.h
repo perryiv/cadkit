@@ -16,15 +16,26 @@
 
 #include "Usul/Base/Object.h"
 
+#include "osg/Image"
+#include "osg/ref_ptr"
+
 #include <vector>
+#include <map>
 
 namespace StarSystem {
 
 class STAR_SYSTEM_EXPORT RasterGroup : public RasterLayer
 {
 public:
+
   typedef RasterLayer BaseClass;
   typedef std::vector < RasterLayer::RefPtr > Layers;
+  typedef osg::ref_ptr < osg::Image > ImagePtr;
+  typedef std::pair < unsigned int, unsigned int > KeySize;
+  typedef std::pair < Extents::value_type, Extents::value_type > KeyRange;
+  typedef std::pair < KeyRange, KeyRange > KeyBounds;
+  typedef std::pair < KeySize, KeyBounds > ImageKey;
+  typedef std::map < ImageKey, ImagePtr > ImageCache;
 
   USUL_DECLARE_REF_POINTERS ( RasterGroup );
 
@@ -40,11 +51,18 @@ protected:
 
   void                            _updateExtents ( const RasterLayer& layer );
 
-  void                            _compositeImages ( osg::Image& result, const osg::Image& image ) const;
+  void                            _cacheAdd ( const Extents& extents, unsigned int width, unsigned int height, osg::Image *image );
+  osg::Image *                    _cacheFind ( const Extents& extents, unsigned int width, unsigned int height ) const;
+
+  static void                     _compositeImages ( osg::Image& result, const osg::Image& image );
+
+  static ImageKey                 _makeKey ( const Extents& extents, unsigned int width, unsigned int height );
 
 private:
 
   Layers _layers;
+  ImageCache _cache;
+  bool _useCache;
 };
 
 }

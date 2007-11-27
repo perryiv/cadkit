@@ -61,6 +61,10 @@ public:
   // Constructors
   Body ( const Vec2d &radii, Usul::Jobs::Manager& manager );
 
+  // Set/get the flag that says to cache the tiles.
+  bool                      cacheTiles() const;
+  void                      cacheTiles ( bool );
+
   // Set/get the center.
   void                      center ( const Vec3d & );
   Vec3d                     center() const;
@@ -130,6 +134,7 @@ private:
   unsigned int _texturesPerFrame;
   unsigned int _maxTexturesPerFrame;
   unsigned int _maxLevel;
+  bool _cacheTiles;
 };
 
 

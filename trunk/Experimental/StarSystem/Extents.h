@@ -22,11 +22,14 @@ template < class VertexType > class Extents
 public:
 
   typedef VertexType Vertex;
+  typedef typename Vertex::value_type value_type;
+  typedef value_type ValueType;
 
   /// Construction/Destruction.
   Extents();
-  Extents( const Vertex& min, const Vertex& max );
-  Extents( const Extents& rhs );
+  Extents ( ValueType minLon, ValueType minLat, ValueType maxLon, ValueType maxLat );
+  Extents ( const Vertex& min, const Vertex& max );
+  Extents ( const Extents& rhs );
   ~Extents();
 
   /// Assignment.
@@ -34,9 +37,13 @@ public:
 
   /// Get the min.
   const Vertex &       minimum() const;
+  ValueType            minLon() const;
+  ValueType            minLat() const;
 
   /// Get the max.
   const Vertex &       maximum() const;
+  ValueType            maxLon() const;
+  ValueType            maxLat() const;
 
   /// Expand by the extents.
   void                 expand ( const Extents& extents );

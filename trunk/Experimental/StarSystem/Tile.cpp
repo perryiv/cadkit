@@ -83,7 +83,7 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   USUL_TRACE_SCOPE;
 
   // We want thread safe ref and unref.
-  this->setThreadSafeRefUnref ( true );
+  //this->setThreadSafeRefUnref ( true );
 
   // Create the texture.
   _texture->setImage ( _image.get() );
@@ -95,7 +95,7 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   this->getOrCreateStateSet()->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF );
 
   // Create as wire-frame. Turns solid when the texture is loaded.
-  OsgTools::State::StateSet::setPolygonsLines ( this, true );
+  //OsgTools::State::StateSet::setPolygonsLines ( this, true );
 
   // Start the request to pull in texture.
   this->_launchImageRequest();
@@ -199,8 +199,8 @@ void Tile::_update()
   const Extents::Vertex &mn ( _extents.minimum() );
   const Extents::Vertex &mx ( _extents.maximum() );
 
-  double deltaU ( _texCoords[1] - _texCoords[0] );
-  double deltaV ( _texCoords[3] - _texCoords[2] );
+  const double deltaU ( _texCoords[1] - _texCoords[0] );
+  const double deltaV ( _texCoords[3] - _texCoords[2] );
 
   // Add internal geometry.
   OsgTools::Mesh &mesh ( *_mesh );
@@ -231,10 +231,10 @@ void Tile::_update()
       // Only set the texture coordinates if they are dirty.
       if ( this->texCoordsDirty() )
       {
-        // Assign texture coordinate.
-        double up ( ( _texCoords[0] + ( u * deltaU ) ) );
-        double vp ( ( _texCoords[2] + ( v * deltaV ) ) );
-        mesh.texCoord ( i, j ).set ( up , vp );
+        // Assign texture coordinate.  Lower left corner should be (0,0).
+        const double s ( ( _texCoords[0] + ( u * deltaU ) ) );
+        const double t ( ( _texCoords[2] + ( v * deltaV ) ) );
+        mesh.texCoord ( i, j ).set ( s , t );
       }
     }
   }
@@ -340,7 +340,7 @@ void Tile::traverse ( osg::NodeVisitor &nv )
           _jobId = -1;
 
           // Solid ground.
-          OsgTools::State::StateSet::setPolygonsFilled ( this, true );
+          //OsgTools::State::StateSet::setPolygonsFilled ( this, true );
         }
       }
 
@@ -879,10 +879,10 @@ void Tile::_quarterTextureCoordinates ( Usul::Math::Vec4d& ll, Usul::Math::Vec4d
   const double halfV  ( _texCoords[2] + ( deltaV / 2.0 ) );
   const double endV   ( startV + deltaV );
 
-  ll.set ( startU, halfU, halfV,  endV );
-  lr.set ( halfU,  endU,  halfV,  endV );
-  ul.set ( startU, halfU, startV, halfV );
-  ur.set ( halfU,  endU,  startV, halfV );
+  ll.set ( startU, halfU, startV, halfV );
+  lr.set ( halfU,  endU,  startV, halfV );
+  ul.set ( startU, halfU, halfV,  endV );
+  ur.set ( halfU,  endU,  halfV,  endV );
 }
 
 

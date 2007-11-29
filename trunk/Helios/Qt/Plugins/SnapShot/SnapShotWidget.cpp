@@ -31,6 +31,9 @@ SnapShotWidget::SnapShotWidget( QWidget *parent, Usul::Interfaces::IUnknown* cal
   _caller ( caller )
 {
   this->setupUi ( this );
+
+  label_2->setVisible ( false );
+  _numSamples->setVisible ( false );
 }
 
 

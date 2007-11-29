@@ -56,6 +56,10 @@ FIND_LIBRARY(OSG_FX_LIB osgFX
  ${OSG_LIB_DIR}
 )
 
+FIND_LIBRARY(OSG_MANIPULATOR osgManipulator
+ ${OSG_LIB_DIR}
+)
+
 
 # ------------ Find osgProducer Library ----------------------
 # osgProducer is no longer part of the main distribution as of OSG 2.0

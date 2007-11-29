@@ -13,22 +13,21 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _STAR_SYSTEM_DELEGATE_COMPONENT_CLASS_H_
-#define _STAR_SYSTEM_DELEGATE_COMPONENT_CLASS_H_
+#ifndef _SCENE_MODEL_COMPONENT_CLASS_H_
+#define _SCENE_MODEL_COMPONENT_CLASS_H_
 
 #include "CompileGuard.h"
 
-#include "Usul/Base/Object.h"
-#include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Interfaces/GUI/IGUIDelegate.h"
-
 #include "Helios/Qt/Views/OSG/Delegate.h"
+
+#include "Usul/Base/Referenced.h"
+#include "Usul/Interfaces/IPlugin.h"
 
 #include <string>
 
 
-class StarSystemDelegateComponent : public CadKit::Helios::Views::OSG::Delegate,
-                              public Usul::Interfaces::IPlugin
+class VectorFieldDelegateComponent : public CadKit::Helios::Views::OSG::Delegate,
+                               public Usul::Interfaces::IPlugin
 {
 public:
 
@@ -37,16 +36,16 @@ public:
   typedef Usul::Interfaces::IUnknown Unknown;
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( StarSystemDelegateComponent );
+  USUL_DECLARE_REF_POINTERS ( VectorFieldDelegateComponent );
 
   /// Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   /// Default construction.
-  StarSystemDelegateComponent();
+  VectorFieldDelegateComponent();
 
   /// Usul::Interfaces::IPlugin
-  virtual std::string         getPluginName() const { return "StarSystem Delegate"; }
+  virtual std::string         getPluginName() const { return "Scene Delegate"; }
 
   /// Usul::Interfaces::IGUIDelegate
   virtual bool                doesHandle( const std::string& token ) const;
@@ -54,14 +53,14 @@ public:
 protected: 
 
   // Do not copy.
-  StarSystemDelegateComponent ( const StarSystemDelegateComponent & );
-  StarSystemDelegateComponent &operator = ( const StarSystemDelegateComponent & );
+  VectorFieldDelegateComponent ( const VectorFieldDelegateComponent & );
+  VectorFieldDelegateComponent &operator = ( const VectorFieldDelegateComponent & );
 
   /// Use reference counting.
-  virtual ~StarSystemDelegateComponent();
+  virtual ~VectorFieldDelegateComponent();
 
 
 };
 
 
-#endif // _STAR_SYSTEM_DELEGATE_COMPONENT_CLASS_H_
+#endif // _SCENE_MODEL_COMPONENT_CLASS_H_

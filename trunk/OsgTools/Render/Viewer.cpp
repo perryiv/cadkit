@@ -182,28 +182,28 @@ Viewer::MatrixManipPtr Viewer::_navManipCopyBuffer ( 0x0 );
 ///////////////////////////////////////////////////////////////////////////////
 
 Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
-  BaseClass           (),
-  _context            ( context ),
-  _renderer           ( new Renderer ),
-  _sceneManager       ( new SceneManager ),
-  _setCursor          ( caller ),
-  _timeoutSpin        ( caller ),
-  _caller             ( caller ),
-  _lods               (),
-  _document           ( doc ),
-  _frameDump          (),
-  _flags              ( _UPDATE_TIMES | _SHOW_AXES ),
-  _animation          (),
-  _navManip           ( 0x0 ),
-  _currentTool        (),
-  _lastTool           (),
-  _currentMode        ( NAVIGATION ),
-  _lightEditors       (),
-  _contextId          ( 0 ),
-  _useDisplayList     ( false, true ),
-  _renderListeners    (),
-  _intersectListeners (),
-  _updateListeners    ()
+  BaseClass            (),
+  _context             ( context ),
+  _renderer            ( new Renderer ),
+  _sceneManager        ( new SceneManager ),
+  _setCursor           ( caller ),
+  _timeoutSpin         ( caller ),
+  _caller              ( caller ),
+  _lods                (),
+  _document            ( doc ),
+  _frameDump           (),
+  _flags               ( _UPDATE_TIMES | _SHOW_AXES ),
+  _animation           (),
+  _navManip            ( 0x0 ),
+  _currentMode         ( NAVIGATION ),
+  _lightEditors        (),
+  _contextId           ( 0 ),
+  _useDisplayList      ( false, true ),
+  _renderListeners     (),
+  _intersectListeners  (),
+  _updateListeners     (),
+  _mouseEventListeners (),
+  _activeDragger       ( 0x0 )
 {
   // Add the document
   this->document ( doc );
@@ -328,6 +328,7 @@ void Viewer::clear()
   // Remove listeners.
   this->clearRenderListeners();
   this->clearIntersectListeners();
+  this->clearMouseEventListeners();
   this->_clearUpdateListeners();
 }
 
@@ -397,9 +398,6 @@ void Viewer::render()
 
     // Set the axes.
     this->_setAxes();
-
-    // Set the lights
-    this->_setLights();
 
     // Set the center of rotation
     this->_setCenterOfRotation();
@@ -1977,6 +1975,9 @@ void Viewer::document ( Document *document )
 
     // Add the document as an intersect listener.
     this->addIntersectListener ( unknown.get() );
+
+    // Add the document as a mouse event listenter.
+    this->addMouseEventListener ( unknown.get() );
   }
 }
 
@@ -2328,8 +2329,6 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IGroup* > ( this );
   case Usul::Interfaces::IClippingPlanes::IID:
     return static_cast < Usul::Interfaces::IClippingPlanes* > ( this );
-  case Usul::Interfaces::IViewer::IID:
-    return static_cast < Usul::Interfaces::IViewer* > ( this );
   case Usul::Interfaces::IGetBoundingBox::IID:
     return static_cast < Usul::Interfaces::IGetBoundingBox* > ( this );
   case Usul::Interfaces::ICamera::IID:
@@ -2342,16 +2341,10 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IRedraw*>(this);
   case Usul::Interfaces::IMode::IID:
     return static_cast < Usul::Interfaces::IMode* > ( this );
-  case Usul::Interfaces::ISetTool::IID:
-    return static_cast<Usul::Interfaces::ISetTool*>(this);
   case Usul::Interfaces::ISpin::IID:
     return static_cast < Usul::Interfaces::ISpin* > ( this );
-  case Usul::Interfaces::IBackground::IID:
-    return static_cast < Usul::Interfaces::IBackground* > ( this );
   case Usul::Interfaces::IHeliosView::IID:
     return static_cast < Usul::Interfaces::IHeliosView* > ( this );
-  case Usul::Interfaces::ILights::IID:
-    return static_cast < Usul::Interfaces::ILights* > ( this );
   case Usul::Interfaces::ICenterOfRotation::IID:
     return static_cast < Usul::Interfaces::ICenterOfRotation * > ( this );
   case Usul::Interfaces::IScreenCapture::IID:
@@ -2993,18 +2986,6 @@ osg::BoundingBox Viewer::getBoundingBox() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Clear the viewer
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::clearScene()
-{
-  this->scene( 0x0 );
-}
- 
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the location of the viewport.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -3143,6 +3124,8 @@ bool Viewer::_lineSegment ( float mouseX, float mouseY, osg::Vec3 &pt0, osg::Vec
 
 bool Viewer::_intersect ( float x, float y, osg::Node *scene, osgUtil::Hit &hit, bool useWindowCoords )
 {
+  _pointerInfo.reset();
+
   // Handle no scene or viewer.
   if ( !scene || !this->viewer() )
     return false;
@@ -3160,30 +3143,9 @@ bool Viewer::_intersect ( float x, float y, osg::Node *scene, osgUtil::Hit &hit,
   osg::ref_ptr<osg::LineSegment> ls ( new osg::LineSegment ( pt0, pt1 ) );
   visitor->addLineSegment ( ls.get() );
 
-#if 0
-  osg::Group *group = scene->asGroup();
-  OsgTools::Ray ray;
-  ray.start ( pt0 );
-  ray.end ( pt1 );
-  ray.thickness ( 3 );
-  static osg::ref_ptr<osg::Node> node;
-  if ( group )
-    group->removeChild ( node.get() );
-  node = ray();
-  std::ostringstream out;
-  out << "pt0 = " << pt0[0] << ' ' << pt0[1] << ' ' << pt0[2] << ", "
-      << "pt1 = " << pt1[0] << ' ' << pt1[1] << ' ' << pt1[2] << '\n';
-  ::OutputDebugString ( out.str().c_str() );
-#endif
-
   // Intersect the scene.
   typedef osgUtil::IntersectVisitor::HitList HitList;
   scene->accept ( *visitor );
-
-#if 0
-  if ( group )
-    group->addChild ( node.get() );
-#endif
 
   // See if there was an intersection.
   if ( !visitor->hits() )
@@ -3197,13 +3159,11 @@ bool Viewer::_intersect ( float x, float y, osg::Node *scene, osgUtil::Hit &hit,
   // Set the hit.
   hit = hits.front();
 
-#if 0
-  std::ostringstream message;
-  message << "hit._primitiveIndex = " << hit._primitiveIndex << std::endl;
-  for ( unsigned int i = 0; i < hit._vecIndexList.size(); ++i )
-    message << "hit._vecIndexList[" << i << "] = " << hit._vecIndexList[i] << std::endl;
-  FX::FXMessageBox::information ( this, FX::MBOX_OK, "Intersection", message.str().c_str() );
-#endif
+  for ( HitList::const_iterator iter = hits.begin(); iter != hits.end(); ++iter )
+    _pointerInfo.addIntersection ( iter->getNodePath(), iter->getLocalIntersectPoint() );
+
+  // Not sure what this is for...
+  _pointerInfo._hitIter = _pointerInfo._hitList.begin();
 
   // It worked.
   return true;
@@ -3449,29 +3409,7 @@ void Viewer::_findDragger ( const osgUtil::Hit &hit )
       break;
   }
 
-  // If we did not find a dragger...
-  if ( 0x0 == dragger )
-  {
-    Dragger::dragging ( 0x0, osg::Matrixd::identity() );
-    return;
-  }
-
-  // We found a dragger. Loop again from the root of the path.
-  osg::Matrixd cumulative ( osg::Matrixd::identity() );
-  for ( osg::NodePath::const_iterator i = path.begin(); i != path.end(); ++i )
-  {
-    // Stop at our dragger.
-    if ( ( *i ) == static_cast < osg::Node * > ( dragger ) )
-      break;
-
-    // If it is a transform then accumulate.
-    osg::MatrixTransform *mt = dynamic_cast < osg::MatrixTransform * > ( *i );
-    if ( mt )
-      cumulative = mt->getMatrix() * cumulative;
-  }
-
-  // Set the dragging data.
-  Dragger::dragging ( dragger, cumulative );
+  _activeDragger = dragger;
 }
 
 
@@ -3484,78 +3422,7 @@ void Viewer::_findDragger ( const osgUtil::Hit &hit )
 void Viewer::setMode ( ViewMode mode ) 
 { 
   _currentMode = mode;
-  this->doneTool();
   this->updateCursor(); 
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the current tool
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::setTool ( Usul::Interfaces::ITool *tool )
-{
-  // Clean up existing tool if we can.
-  Usul::Interfaces::ICleanUp::QueryPtr cleanUp ( _currentTool );
-  if ( cleanUp.valid() )
-    cleanUp->cleanUp ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-
-  // Set new tool.
-  _currentTool = tool;
-
-  // Update the cursor.
-  this->updateCursor();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the current tool
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::ITool *Viewer::getTool()
-{
-  return _currentTool.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Release the current tool.  Save it in last tool.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::doneTool()
-{
-  Usul::Interfaces::ICleanUp::QueryPtr cleanUp ( _currentTool );
-  if ( cleanUp.valid() )
-    cleanUp->cleanUp ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-
-  if ( _currentTool.valid() )
-  {
-    _lastTool = _currentTool;
-    _currentTool = static_cast < ITool * > ( 0x0 );
-    this->updateCursor();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Load the last tool
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::loadLastTool()
-{
-  if ( _lastTool.valid() )
-  {
-    _currentTool = _lastTool;
-    this->updateCursor();
-  }
 }
 
 
@@ -3630,7 +3497,7 @@ void Viewer::updateCursor()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::buttonPress ( float x, float y, bool left, bool middle, bool right )
+void Viewer::buttonPress ( EventAdapter *ea )
 {
   // Stop any spin.
   this->spin ( false );
@@ -3640,10 +3507,17 @@ void Viewer::buttonPress ( float x, float y, bool left, bool middle, bool right 
     this->_setLodCullCallback ( new OsgTools::Render::LowLodCallback );
 
   // Handle the navigation event.
-  this->handleNavigation ( x, y, left, middle, right, EventAdapter::PUSH );
+  this->_handleNavigation ( ea );
 
-  // Handle any tool events.
-  this->handleTool ( left, middle, right, false, x, y, 0.0 );
+  // Does nothing unless in seek mode.
+  this->_handleSeek ( ea );
+
+  // Handle the events. Make sure you pick before you drag.
+  this->_handlePicking  ( ea );
+  this->_handleDragging ( ea );
+
+  // Notify of the mouse event.
+  this->_mouseEventNotify ( ea );
 }
 
 
@@ -3653,39 +3527,52 @@ void Viewer::buttonPress ( float x, float y, bool left, bool middle, bool right 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::buttonRelease ( float x, float y, bool left, bool middle, bool right )
+void Viewer::buttonRelease ( EventAdapter *ea )
 {
   // Set the lod-callbacks.
   this->_setLodCullCallback ( 0x0 );
   //this->_setLodCullCallback ( new Detail::HighLodCallback );
 
   // Handle the event.
-  this->handleNavigation ( x, y, left, middle, right, EventAdapter::RELEASE );
+  this->_handleNavigation ( ea );
 
-  // Handle any tool events.
-  this->handleTool ( left, middle, right, false, x, y, 0.0 );
+  // Handle the events. Make sure you pick before you drag.
+  this->_handlePicking  ( ea );
+  this->_handleDragging ( ea );
+
+  // Notify of the mouse event.
+  this->_mouseEventNotify ( ea );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Handle the navigation event.
+//  The mouse has moved.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::handleNavigation ( float x, float y, bool left, bool middle, bool right, EventAdapter::EventType type )
+void Viewer::mouseMove ( EventAdapter *ea )
 {
-  // Make sure we are in navigation mode.
-  if ( !this->navigating() || this->tool())
-    return;
+  // Handle the events. Make sure you pick before you drag.
+  this->_handleNavigation ( ea );
+  this->_handlePicking    ( ea );
+  this->_handleDragging   ( ea );
+  this->_handleIntersect  ( ea );
 
-  // Handle no manipulator, scene, or viewer.
-  if ( !this->navManip() || !this->scene() || !this->viewer() )
-    return;
+  // Notify of the mouse event.
+  this->_mouseEventNotify ( ea );
+}
 
-  // Declare the adapters.
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create an event adaptor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+EventAdapter * Viewer:: eventAdaptor ( float x, float y, bool left, bool middle, bool right, EventAdapter::EventType type )
+{
   EventAdapter::Ptr ea ( new EventAdapter );
-  ActionAdapter aa ( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
 
   // Set the event-adapter. Order is important.
   ea->setSeconds ( Usul::System::Clock::seconds() );
@@ -3696,11 +3583,36 @@ void Viewer::handleNavigation ( float x, float y, bool left, bool middle, bool r
   ea->setButtonMask ( left, middle, right );
   ea->setEventType ( type );
 
+  return ea.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Handle the navigation event.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_handleNavigation ( EventAdapter *ea )
+{
+  // Make sure we are in navigation mode.
+  if ( !this->navigating() )
+    return;
+
+  // Handle no manipulator, scene, or viewer.
+  if ( !this->navManip() || !this->scene() || !this->viewer() || 0x0 == ea )
+    return;
+
+  // Declare the adapters.
+  ActionAdapter aa ( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
+
+  EventAdapter::EventType type ( ea->getEventType() );
+
   // Ask the manipulator to handle the event.
   if ( this->navManip()->handle ( *ea, aa ) )
   {
     // Set the navigation cursor.
-    this->_setNavCursor ( left, middle, right, type );
+    //this->_setNavCursor ( left, middle, right, type );
 
     // Set the scene's matrix.
     this->viewer()->setViewMatrix ( this->navManip()->getInverseMatrix() );
@@ -3743,15 +3655,19 @@ void Viewer::handleNavigation ( float x, float y, bool left, bool middle, bool r
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::handlePicking ( float x, float y, bool left, unsigned int numClicks )
+void Viewer::_handlePicking ( EventAdapter *ea )
 {
   // Make sure we are in picking mode.
-  if ( !this->picking() )
+  if ( !this->picking() || 0x0 == ea )
     return;
 
   // Stop any spinning.
   this->spin ( false );
- 
+
+  const float x ( ea->getX() );
+  const float y ( ea->getY() );
+  const bool left ( Usul::Bits::has ( ea->getButton(), EventAdapter::LEFT_MOUSE_BUTTON ) );
+
   // Intersect the scene.
   osgUtil::Hit hit;
   if ( !this->_intersect ( x, y, this->scene(), hit, false ) )
@@ -3789,10 +3705,6 @@ void Viewer::handlePicking ( float x, float y, bool left, unsigned int numClicks
     {
       // Set the dragger being dragged, if there is one.
       this->_findDragger ( hit );
-
-      // Edit the light, if any.
-      if ( 2 == numClicks )
-        this->_editLight ( hit );
     }
 
     // Un ref the matrix transform
@@ -3808,10 +3720,6 @@ void Viewer::handlePicking ( float x, float y, bool left, unsigned int numClicks
   {
     // Set the dragger being dragged, if there is one.
     this->_findDragger ( hit );
-
-    //Was this a double left click?
-    if ( 2 == numClicks )
-      this->_editMaterial ( hit );
   }
 }
 
@@ -3822,60 +3730,22 @@ void Viewer::handlePicking ( float x, float y, bool left, unsigned int numClicks
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::handleDragging ( float x, float y, Dragger::Command command )
+void Viewer::_handleDragging ( EventAdapter *ea )
 {
-  {
-    // Lock the dragger.
-    Dragger::Guard guard ( Dragger::dragging().mutex() );
+  // Make sure we are in picking mode, and there is a dragger.
+  if ( false == this->picking() || 0x0 == _activeDragger.get() || 0x0 == ea)
+    return;
 
-    // Make sure we are in picking mode, and there is a dragger.
-    if ( false == this->picking() || 0x0 == Dragger::dragging().value().dragger.get() )
-      return;
+  // Declare the adapters.
+  ActionAdapter aa ( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
 
-    // Calculate the two points for our line-segment.
-    osg::Vec3 pt0, pt1;
-    if ( !this->_lineSegment ( x, y, pt0, pt1, Dragger::dragging().value().dragger->useWindowCoords() ) )
-      return;
+  _pointerInfo.setCamera ( this->viewer()->getCamera() );
+  _pointerInfo.setMousePosition ( ea->getX(), ea->getY() );
 
-    // Have the dragger execute the command.
-    Dragger::dragging().value().dragger->execute ( command, pt0, pt1 );
-  }
+  _activeDragger->handle ( _pointerInfo, *ea, aa );
 
   // Redraw.
   this->render();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Handle tool event.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::handleTool ( bool left, bool middle, bool right, bool motion, float x, float y, float z )
-{
-  // Check to see if we are in tool-mode.
-  if ( !this->tool() )
-    return;
-
-  // If we have a tool command...
-  if ( _currentTool.valid() )
-  {
-    // Execute the tool command.
-    if ( _currentTool->execute ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ), left, middle, right, motion, x, y, z ) )
-    {
-      // If the control-key is not down...
-      //if ( !( event.state & FX::CONTROLMASK ) )
-      {
-        // We are done with this tool.
-        Usul::Interfaces::IToolLifeTime::QueryPtr toolLifeTime ( _currentTool );
-        if( toolLifeTime.valid() && toolLifeTime->temporary() )        
-        {
-          this->doneTool();
-        }
-      }
-    }
-  }
 }
 
 
@@ -3885,15 +3755,21 @@ void Viewer::handleTool ( bool left, bool middle, bool right, bool motion, float
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::handleSeek ( float x, float y, bool left )
+void Viewer::_handleSeek ( EventAdapter *ea )
 {
+  // Handle bad input.
+  if ( 0x0 == ea )
+    return;
+
+  const bool left ( Usul::Bits::has ( ea->getButton(), EventAdapter::LEFT_MOUSE_BUTTON ) );
+
   // Retrun now if we aren't in seek mode.
   if ( ( _currentMode != SEEK ) || ( false == left ) || ( 0x0 == dynamic_cast < Trackball * > ( this->navManip() ) ) )
     return;
 
   // Return if the click didn't intersect the scene
   osgUtil::Hit hit;
-  if ( !this->intersect ( x, y, hit ) )
+  if ( !this->intersect ( ea->getX(), ea->getY(), hit ) )
     return;
 
   // Make copy of trackball's current rotation
@@ -3935,14 +3811,20 @@ void Viewer::handleSeek ( float x, float y, bool left )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::handleIntersect ( float x, float y )
+void Viewer::_handleIntersect ( EventAdapter *ea )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
+  if ( 0x0 == ea )
+    return;
+
   // Don't bother intersecting if there any no listeners.
   if ( _intersectListeners.empty() )
     return;
+
+  const float x ( ea->getX() );
+  const float y ( ea->getY() );
 
   // Intersect the model. Return if no intersection.
   osgUtil::Hit hit;
@@ -4031,169 +3913,6 @@ void Viewer::setBackground ( const osg::Vec4 &color )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Show the lights in the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::_showLights()
-{
-  osg::ref_ptr<osg::Group> group ( _sceneManager->projectionGroupGet ( OsgTools::Render::Constants::LIGHT ) );
-
-  // Get the light from the scene view.
-  osg::ref_ptr< osg::Light > light ( this->viewer()->getLight() );
-
-#if 0
-  // This is for positional lights...TODO
-  // Get the bounding sphere.  The light will move along the bounding sphere.
-  osg::BoundingSphere bs ( this->scene()->getBound() );
-
-  osg::Vec4 position ( light->getPosition() );
-  osg::Vec3 pos ( position.x(), position.y(), position.z() );
-
-  osg::Vec3 v0 ( bs.center() + pos * bs.radius() );
-
-  double length ( bs.radius() * 0.25 );
-
-  osg::Vec3 v1 ( v0 + light->getDirection() * length );
-#endif
-
-  osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-
-  // Radius and height for cones.
-  const double radius ( 5.0 );
-  const double height ( 20.0 );
-
-  // Length of the cylinder
-  const double length ( 50.0 );
-
-  osg::Vec3 x  ( length, 0.0, 0.0 );
-
-  osg::Quat quat ( osg::inDegrees(90.0), osg::Vec3( 0.0, 1.0, 0.0 )  );
-
-  {
-    osg::Vec3 center  ( length / 2.0, 0.0, 0.0 );
-
-    osg::ref_ptr < osg::Cylinder > cylinder ( new osg::Cylinder ( center, radius / 2.0, length ) );
-    cylinder->setRotation( quat );
-    osg::ref_ptr< osg::ShapeDrawable > sd ( new osg::ShapeDrawable( cylinder.get() ) );
-
-    geode->addDrawable ( sd.get() );
-  }
-
-  {
-    osg::ref_ptr < osg::Cone > cone ( new osg::Cone( x, radius, height ) );
-    cone->setRotation( quat );
-    osg::ref_ptr< osg::ShapeDrawable > sd ( new osg::ShapeDrawable( cone.get() ) );
-
-    geode->addDrawable ( sd.get() );
-  }
-
-  // Set the material
-  osg::ref_ptr< osg::Material > mat ( new osg::Material );
-  mat->setDiffuse ( osg::Material::FRONT, light->getDiffuse() );
-
-  osg::ref_ptr< osg::StateSet > ss ( geode->getOrCreateStateSet () );
-  ss->setAttribute ( mat.get(), osg::StateAttribute::ON );
-
-  // Add the geode to the container of light editors.
-  _lightEditors.insert ( LightEditors::value_type ( geode.get(), light.get() ) );
-
-  osg::Vec3 lightDirection ( light->getDirection() );
-  lightDirection.normalize();
-
-  // Make a dragger
-  osg::ref_ptr< Dragger > dragger ( new OsgTools::Draggers::Trackball ( this->queryInterface( Usul::Interfaces::IUnknown::IID ) ) );
-
-  // Set the geometrys
-  dragger->geometry( Dragger::NORMAL, geode.get() );
-  dragger->geometry( Dragger::DRAGGING, geode.get() );
-
-  osg::ref_ptr< LightCallback > cb ( new LightCallback ( light.get() ) );
-  dragger->callback ( Dragger::MOVE, cb.get() );
-  dragger->callback ( Dragger::FINISH, cb.get() );
-  dragger->useWindowCoords ( true );
-
-  osg::ref_ptr < osg::MatrixTransform > mt = new osg::MatrixTransform;
-  mt->setMatrix( osg::Matrix::rotate( x, lightDirection ) );
-  mt->addChild( dragger.get() );
-
-  // Create a matrix transform.
-  osg::ref_ptr < osg::MatrixTransform > modelview_abs ( new osg::MatrixTransform );
-  modelview_abs->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-  modelview_abs->setMatrix( osg::Matrix::translate ( osg::Vec3( this->width() - 50, 50, -100 ) ) );
-
-  modelview_abs->addChild ( mt.get() );
-
-  group->addChild( modelview_abs.get() );
-
-  // The scene has changed.
-  this->changedScene();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove the lights in the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::_removeLights()
-{
-  _sceneManager->projectionGroupRemove ( OsgTools::Render::Constants::LIGHT );
-
-  // The scene has changed.
-  this->changedScene();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the light positions in the scene.  This is for directional lights 
-//  (i.e. lights that aren't changed by the model view matrix).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::_setLights()
-{
-
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Edit the light that was clicked on
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::_editLight ( osgUtil::Hit &hit )
-{
-  LightEditors::iterator iter = _lightEditors.find( hit.getGeode() );
-
-  if( iter != _lightEditors.end() )
-  {
-#if 0
-    // Get the light.
-    osg::ref_ptr< osg::Light > light ( iter->second );
-
-    LightEditor le ( this, light.get(), this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
-    le.show();
-
-    osg::ref_ptr< osg::Material > mat ( new osg::Material );
-    mat->setAmbient ( osg::Material::FRONT, light->getAmbient() );
-    mat->setDiffuse ( osg::Material::FRONT, light->getDiffuse() );
-    mat->setSpecular ( osg::Material::FRONT, light->getSpecular() );
-
-    osg::ref_ptr< osg::StateSet > ss ( iter->first->getOrCreateStateSet () );
-    ss->setAttribute ( mat.get(), osg::StateAttribute::ON );
-#endif
-    std::cout << "Warning: Not implemented." << std::endl;
-  }
-
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Add default clipping plane.
 //  Usul::Interfaces::IClippingPlanes
 //
@@ -4258,64 +3977,6 @@ void Viewer::removeClippingPlanes (  )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Are the lights drawn in the scene?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::lights() const
-{
-  return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _SHOW_LIGHTS );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Hide/Show the lights in the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::lights( bool b )
-{
-  if ( b )
-  {
-    _flags = Usul::Bits::add < unsigned int, unsigned int > ( _flags, _SHOW_LIGHTS );
-    this->_showLights();
-  }
-  else
-  {
-    _flags = Usul::Bits::remove < unsigned int, unsigned int > ( _flags, _SHOW_LIGHTS );
-    this->_removeLights();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Hide/Show the lights in the scene
-//  Usul::Interfaces::ILights
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::setLights ( bool b )
-{
-  this->lights( b );
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Are the lights drawn in the scene?
-//  Usul::Interfaces::ILights
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::hasLights ( ) const
-{
-  return this->lights();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Go through the scene and set all materials transparency value to alpha.
 //  Change the appropriate attributes for transparency.
 //
@@ -4352,48 +4013,6 @@ void Viewer::fovSet ( double fov )
 double Viewer::fovGet () const
 {
   return Usul::Shared::Preferences::instance().getDouble( Keys::FOV );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Need interface for adding chore, for now just render.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::addChoreRedraw()
-{
-  this->render();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Need interface for handling a message.  For now do nothing.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::handleMessage ( unsigned short message )
-{
-  Usul::Interfaces::IHandleMessage::QueryPtr hm ( _caller );
-
-  if ( hm.valid() )
-    hm->handleMessage ( message );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Edit the background.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::editBackground()
-{
-  Usul::Interfaces::IBackground::QueryPtr bg ( _caller );
-
-  if( bg.valid() )
-    bg->editBackground();
 }
 
 
@@ -5026,6 +4645,44 @@ void Viewer::removeIntersectListener ( IUnknown *caller )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Add the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::addMouseEventListener ( IUnknown *caller )
+{
+  Helper::addListener ( _mouseEventListeners, caller, this->mutex() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove all mouse event listeners.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::clearMouseEventListeners()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _mouseEventListeners.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::removeMouseEventListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Helper::removeListener ( _mouseEventListeners, caller, this->mutex() );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Notify of rendering.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -5072,6 +4729,29 @@ void Viewer::_intersectNotify ( float x, float y, osgUtil::Hit &hit )
     if ( true == listener.valid() )
     {
       listener->intersectNotify ( x, y, hit, me.get() );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify of mouse event.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_mouseEventNotify ( EventAdapter *ea )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  Usul::Interfaces::IUnknown::QueryPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  for ( MouseEventListeners::iterator i = _mouseEventListeners.begin(); i != _mouseEventListeners.end(); ++i )
+  {
+    IMouseEventListener::RefPtr listener ( *i );
+    if ( true == listener.valid() && 0x0 != ea )
+    {
+      listener->mouseEventNotify ( *ea, me );
     }
   }
 }

@@ -1236,6 +1236,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IMouseEventListener.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IMouseEventSubject.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IMpdNavigator.h"
 					>
 				</File>
@@ -2541,14 +2549,6 @@
 				</File>
 				<File
 					RelativePath=".\App\Application.h"
-					>
-				</File>
-				<File
-					RelativePath=".\App\Controller.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\App\Controller.h"
 					>
 				</File>
 			</Filter>

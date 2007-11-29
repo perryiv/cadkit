@@ -40,12 +40,8 @@
 #include "Usul/Interfaces/ISceneIntersect.h"
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/IMode.h"
-#include "Usul/Interfaces/ITool.h"
-#include "Usul/Interfaces/ISetTool.h"
 #include "Usul/Interfaces/ISpin.h"
-#include "Usul/Interfaces/IBackground.h"
 #include "Usul/Interfaces/IHeliosView.h"
-#include "Usul/Interfaces/ILights.h"
 #include "Usul/Interfaces/IOpenGLContext.h"
 #include "Usul/Interfaces/ITimeoutAnimate.h"
 #include "Usul/Interfaces/GUI/ISetCursorType.h"
@@ -68,14 +64,14 @@
 #include "Usul/Interfaces/IRenderingPasses.h"
 #include "Usul/Interfaces/IIntersectListener.h"
 #include "Usul/Interfaces/IIntersectNotify.h"
+#include "Usul/Interfaces/IMouseEventListener.h"
+#include "Usul/Interfaces/IMouseEventSubject.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
 #include "OsgTools/Render/EventAdapter.h"
 #include "OsgTools/Render/Renderer.h"
 #include "OsgTools/Render/SceneManager.h"
-
-#include "OsgTools/Draggers/Dragger.h"
 
 #include "osgUtil/SceneView"
 
@@ -88,6 +84,8 @@
 #include "osgText/Text"
 
 #include "osgGA/MatrixManipulator"
+
+#include "osgManipulator/Dragger"
 
 #include <list>
 #include <string>
@@ -115,18 +113,14 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IGetDocument,
                                 public Usul::Interfaces::IGroup,
                                 public Usul::Interfaces::IClippingPlanes,
-                                public Usul::Interfaces::IViewer,
                                 public Usul::Interfaces::IGetBoundingBox,
                                 public Usul::Interfaces::ICamera,
                                 public Usul::Interfaces::ITrackball,
                                 public Usul::Interfaces::ISceneIntersect,
                                 public Usul::Interfaces::IRedraw,
                                 public Usul::Interfaces::IMode,
-                                public Usul::Interfaces::ISetTool,
                                 public Usul::Interfaces::ISpin,
-                                public Usul::Interfaces::IBackground,
                                 public Usul::Interfaces::IHeliosView,
-                                public Usul::Interfaces::ILights,
                                 public Usul::Interfaces::ICenterOfRotation,
                                 public Usul::Interfaces::IScreenCapture,
                                 public Usul::Interfaces::ISnapShot,
@@ -137,6 +131,7 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IUpdateSceneVisitor,
                                 public Usul::Interfaces::ICullSceneVisitor,
                                 public Usul::Interfaces::IUpdateSubject,
+                                public Usul::Interfaces::IMouseEventSubject,
                                 public Usul::Interfaces::IClippingDistance,
                                 public Usul::Interfaces::IViewport,
                                 public Usul::Interfaces::IMenuAdd,
@@ -168,8 +163,8 @@ public:
   typedef Usul::Interfaces::IPolygonMode IPolygonMode;
   typedef osgGA::MatrixManipulator MatrixManip;
   typedef osg::ref_ptr<MatrixManip> MatrixManipPtr;
-  typedef OsgTools::Draggers::Dragger Dragger;
-  typedef Usul::Interfaces::ITool ITool;
+  typedef osgManipulator::Dragger Dragger;
+  typedef osg::ref_ptr < Dragger > DraggerPtr;
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef Usul::Interfaces::IOpenGLContext IContext;
   typedef Usul::Interfaces::ISetCursorType ISetCursorType;
@@ -185,6 +180,8 @@ public:
   typedef osg::NodeVisitor NodeVisitor;
   typedef Usul::Interfaces::IUpdateListener IUpdateListener;
   typedef std::vector<IUpdateListener::RefPtr> UpdateListeners;
+  typedef Usul::Interfaces::IMouseEventListener IMouseEventListener;
+  typedef std::vector<IMouseEventListener::RefPtr> MouseEventListeners;
   typedef Renderer::GradientBackground GradientBackground;
   typedef Renderer::Corners            Corners;
 
@@ -197,12 +194,6 @@ public:
 
   // Construction
   Viewer ( Document *doc, IUnknown* context, IUnknown *caller );
-
-  // Add a chore.
-  void                  addChoreRedraw();
-
-  // Edit the background color.
-  void                  editBackground();
 
   // Edit the background color.
   void                  setBackground ( const osg::Vec4 & );
@@ -228,8 +219,8 @@ public:
   bool                  boundingSphere() const;
 
   // Button Press/Release
-  void                  buttonPress      ( float x, float y, bool left, bool middle, bool right );
-  void                  buttonRelease    ( float x, float y, bool left, bool middle, bool right );
+  void                  buttonPress      ( EventAdapter *ea );
+  void                  buttonRelease    ( EventAdapter *ea );
 
   /// Get the caller.
   IUnknown*             caller ();
@@ -266,6 +257,8 @@ public:
   const Document *      document() const;
   void                  document ( Document * );
 
+  EventAdapter *        eventAdaptor ( float x, float y, bool left, bool middle, bool right, EventAdapter::EventType type );
+
   // Force all detail to render.
   void                  forceDetail();
 
@@ -278,24 +271,11 @@ public:
   const FrameDump &     frameDump() const { return _frameDump; }
   FrameDump &           frameDump()       { return _frameDump; }
 
-  // Handle different modes.
-  void                  handleDragging   ( float x, float y, Dragger::Command command );
-  void                  handleMenu       ( float x, float y );
-  void                  handleIntersect  ( float x, float y );
-  void                  handleNavigation ( float x, float y, bool left, bool middle, bool right, EventAdapter::EventType type );
-  virtual void          handlePicking    ( float x, float y, bool left, unsigned int numClicks );
-  void                  handleSeek       ( float x, float y, bool left );
-  void                  handleTool       ( bool left, bool middle, bool right, bool motion, float x, float y, float z );
-
   // Is there an accumulation buffer?
   bool                  hasAccumBuffer() const;
 
   // Is it created?
   bool                  isCreated() const;
-
-  // Hide/Show lights in the scene.
-  bool                  lights() const;
-  void                  lights( bool );
 
   // Set/get the navigation manipulator.
   const MatrixManip *   navManip() const;
@@ -310,10 +290,12 @@ public:
   const osg::Node *     model() const;
   osg::Node *           model();
 
+  // The mouse have moved.
+  void                  mouseMove ( EventAdapter *ea );
+
   // Get the mode
   bool                  navigating() const { return NAVIGATION == _currentMode; }
   bool                  picking()    const { return PICK       == _currentMode; }
-  bool                  tool()       const { return _currentTool.valid(); }
 
   void                  navigating( bool b ) { this->setMode( NAVIGATION ); }
   void                  picking   ( bool b ) { this->setMode( PICK       ); }
@@ -500,13 +482,6 @@ public:
     Viewer *_c;
   };
 
-  ///  Usul::Interfaces::ISetTool
-  // Set and Release the tool
-  virtual void setTool ( ITool * );
-  virtual ITool* getTool ();
-  virtual void doneTool ();
-  virtual void loadLastTool ();
-
   /// Add/Remove group from projection node
   osg::Group*           projectionGroupGet    ( const std::string& );
 
@@ -514,10 +489,6 @@ protected:
 
   // Use reference counting.
   virtual ~Viewer();
-
-  void                  _showLights();
-  void                  _removeLights();
-  void                  _setLights();
 
   void                  _addAxes ();
   void                  _removeAxes ();
@@ -527,7 +498,6 @@ protected:
 
   void                  _dumpFrame();
 
-  void                  _editLight     ( osgUtil::Hit &hit );
   void                  _editMaterial  ( osgUtil::Hit &hit );
 
   void                  _findDragger ( const osgUtil::Hit &hit );
@@ -562,6 +532,16 @@ protected:
   // Notify of rendering.
   void                  _preRenderNotify();
   void                  _postRenderNotify();
+
+  // Handle different modes.
+  void                  _handleDragging   ( EventAdapter *ea );
+  void                  _handleIntersect  ( EventAdapter *ea );
+  void                  _handleNavigation ( EventAdapter *ea );
+  void                  _handlePicking    ( EventAdapter *ea );
+  void                  _handleSeek       ( EventAdapter *ea );
+
+  // Notify of mouse event.
+  void                  _mouseEventNotify ( EventAdapter *ea );
 
   /// Usul::Interfaces::IViewMatrix
   virtual void                      setViewMatrix ( const osg::Matrixf& );
@@ -647,10 +627,6 @@ protected:
   virtual double             height() const;
   virtual double             width() const;
 
-  /// Usul::Interfaces::IViewer
-  virtual void               clearScene();
-  virtual void               handleMessage ( unsigned short message );
-
   /// Usul::Interfaces::IGetBoundingBox
   virtual osg::BoundingBox   getBoundingBox() const;
 
@@ -689,10 +665,6 @@ protected:
   virtual OsgTools::Render::Viewer*            heliosView()       { return this; }
   virtual const OsgTools::Render::Viewer*      heliosView() const { return this; }
 
-  /// Usul::Interfaces::ILights
-  virtual void                  setLights ( bool );
-  virtual bool                  hasLights ( ) const;
-
   /// Usul::Interfaces::IExport
   virtual bool                  canExport ( const std::string &filename );
   virtual Filters               filtersExport() const;
@@ -713,14 +685,20 @@ protected:
   // Add the listeners.
   virtual void                  addRenderListener ( IUnknown *listener );
   virtual void                  addIntersectListener ( IUnknown *listener );
+  virtual void                  addMouseEventListener ( IUnknown *listener );
+  virtual void                  addUpdateListener ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   // Remove all listeners.
   virtual void                  clearRenderListeners();
   virtual void                  clearIntersectListeners();
+  virtual void                  clearMouseEventListeners();
+  void                          _clearUpdateListeners ();
 
   // Remove the listener.
   virtual void                  removeRenderListener ( IUnknown *caller );
   virtual void                  removeIntersectListener ( IUnknown *caller );
+  virtual void                  removeMouseEventListener ( IUnknown *caller );
+  virtual void                  removeUpdateListener ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   // Usul::Interfaces::IFrameStamp
   const osg::FrameStamp *       frameStamp() const;
@@ -731,15 +709,6 @@ protected:
 
   // Usul::Interfaces::IUpdateSceneVisitor.
   virtual NodeVisitor *         getUpdateSceneVisitor ( Usul::Interfaces::IUnknown *caller );
-
-  /// Add an update listener ( IUpdateListener ).
-  virtual void                  addUpdateListener ( Usul::Interfaces::IUnknown *caller = 0x0 );
-
-  /// Remove an update listener ( IUpdateListener ).
-  virtual void                  removeUpdateListener ( Usul::Interfaces::IUnknown *caller = 0x0 );
-
-  /// Clear update listeners.
-  void                          _clearUpdateListeners ();
 
   /// Get/set the clipping distances (Usul::Interfaces::IClippingDistance).
   virtual void                  getClippingDistances ( float &nearDist, float &farDist ) const;
@@ -809,8 +778,6 @@ private:
   unsigned int _flags;
   OsgTools::Render::Animation _animation;
   MatrixManipPtr _navManip;
-  ITool::QueryPtr _currentTool;
-  ITool::QueryPtr _lastTool;
   ViewMode _currentMode;
   LightEditors _lightEditors;
   unsigned int _contextId;
@@ -818,6 +785,9 @@ private:
   RenderListeners _renderListeners;
   IntersectListeners _intersectListeners;
   UpdateListeners _updateListeners;
+  MouseEventListeners _mouseEventListeners;
+  DraggerPtr _activeDragger;
+  osgManipulator::PointerInfo _pointerInfo;
 };
 
 }

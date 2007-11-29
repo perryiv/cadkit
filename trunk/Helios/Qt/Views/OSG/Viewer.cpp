@@ -468,15 +468,8 @@ void Viewer::mouseMoveEvent ( QMouseEvent * event )
   // Set the event type.
   typedef OsgTools::Render::EventAdapter EventAdapter;
   EventAdapter::EventType type ( ( mouse ) ? EventAdapter::DRAG : EventAdapter::MOVE );
-
-  // Handle the events. Make sure you pick before you drag.
-  viewer->handleNavigation ( x, y, left, middle, right, type );
-  viewer->handlePicking    ( x, y, false, 0 );
-  viewer->handleDragging   ( x, y, OsgTools::Draggers::Dragger::MOVE );
-  viewer->handleIntersect  ( x, y );
-
-  // Handle tool.
-  viewer->handleTool ( left, middle, right, true, x, y, 0.0 );
+  EventAdapter::Ptr ea ( viewer->eventAdaptor ( x, y, left, middle, right, type) );
+  viewer->mouseMove ( ea.get() );
 }
 
 
@@ -500,14 +493,10 @@ void Viewer::mousePressEvent ( QMouseEvent * event )
   float x ( event->x() );
   float y ( this->height() - event->y() );
 
-  viewer->buttonPress ( x, y, left, middle, right );
-
-  // Does nothing unless in seek mode.
-  viewer->handleSeek ( x, y, left );
-
-  // Handle the events. Make sure you pick before you drag.
-  viewer->handlePicking  ( x, y, left, 1 );
-  viewer->handleDragging ( x, y, OsgTools::Draggers::Dragger::START );
+   // Set the event type.
+  typedef OsgTools::Render::EventAdapter EventAdapter;
+  EventAdapter::Ptr ea ( viewer->eventAdaptor ( x, y, left, middle, right, EventAdapter::PUSH ) );
+  viewer->buttonPress ( ea.get() );
 }
 
 
@@ -531,14 +520,9 @@ void Viewer::mouseReleaseEvent ( QMouseEvent * event )
   float x ( event->x() );
   float y ( this->height() - event->y() );
 
-  viewer->buttonRelease ( x, y, left, middle, right );
-
-  // Handle the events. Make sure you pick before you drag.
-  viewer->handlePicking  ( x, y, left, 1 );
-  viewer->handleDragging ( x, y, OsgTools::Draggers::Dragger::FINISH );
-
-  // Make sure.
-  OsgTools::Draggers::Dragger::dragging ( 0x0, osg::Matrixd::identity() );
+  typedef OsgTools::Render::EventAdapter EventAdapter;
+  EventAdapter::Ptr ea ( viewer->eventAdaptor ( x, y, left, middle, right, EventAdapter::RELEASE ) );
+  viewer->buttonRelease ( ea.get() );
 }
 
 
@@ -658,6 +642,10 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
 
     _lastMode = viewer->getMode();
     viewer->setMode ( OsgTools::Render::Viewer::SEEK );
+    break;
+
+  case Qt::Key_Escape:
+    viewer->cycleMode();
     break;
   }
 }

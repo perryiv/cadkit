@@ -34,8 +34,6 @@ struct IViewer : public Usul::Interfaces::IUnknown
 
   virtual void clearScene() = 0;
 
-  virtual void handleMessage ( unsigned short message ) = 0;
-
 }; // struct IViewer
 
 

@@ -36,8 +36,6 @@ struct IMode : public Usul::Interfaces::IUnknown
   virtual bool                picking() const = 0;
   virtual void                picking( bool ) = 0;
 
-  virtual bool                tool() const = 0;
-
 }; // class IMode
 
 

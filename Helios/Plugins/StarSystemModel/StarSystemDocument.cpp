@@ -50,7 +50,7 @@ StarSystemDocument::StarSystemDocument() : BaseClass ( "StarSystem Document" ),
   _system = new StarSystem::System ( _manager );
   _system->ref();
 
-#if 1
+#if 0
 
   const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
 

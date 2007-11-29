@@ -119,6 +119,8 @@ private:
 
   void                    _waitForThreads();
 
+  bool                    _isRunning() const;
+
   // Data members.
   ThreadPool _pool;
   TaskQueue _queue;

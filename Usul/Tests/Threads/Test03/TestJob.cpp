@@ -131,7 +131,12 @@ void TestJob::_started()
       << ", sleeping " << _sleep << '\n';
   TRACE_AND_PRINT ( out.str() );
 
-  Usul::System::Sleep::milliseconds ( _sleep );
+  //Usul::System::Sleep::milliseconds ( _sleep );
+
+  unsigned long num ( 0 );
+
+  for ( unsigned int i = 0; i < _sleep; ++i )
+    num *= i;
 
   // Every 4th thread we cancel.
   if ( ( 0 != id ) && ( 0 == ( id % 4 ) ) )

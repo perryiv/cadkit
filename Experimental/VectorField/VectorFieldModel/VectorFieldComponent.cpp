@@ -13,19 +13,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "StarSystemDelegateComponent.h"
+#include "VectorFieldComponent.h"
+#include "VectorFieldDocument.h"
 
-#include "Helios/Qt/Views/OSG/Viewer.h"
-#include "Helios/Qt/Views/OSG/Format.h"
+#include "Usul/Components/Factory.h"
 
-#include "Usul/Documents/Document.h"
-#include "Usul/Interfaces/IBuildScene.h"
-#include "Usul/Interfaces/Qt/IWorkspace.h"
-#include "Usul/Trace/Trace.h"
+#include <algorithm>
 
-#include "QtGui/QWorkspace"
-
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemDelegateComponent, StarSystemDelegateComponent::BaseClass );
+USUL_DECLARE_COMPONENT_FACTORY( VectorFieldComponent );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VectorFieldComponent, VectorFieldComponent::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -34,9 +30,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemDelegateComponent, StarSystemDelegat
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-StarSystemDelegateComponent::StarSystemDelegateComponent() : BaseClass()
+VectorFieldComponent::VectorFieldComponent() : BaseClass()
 {
-  USUL_TRACE_SCOPE;
 }
 
 
@@ -46,9 +41,8 @@ StarSystemDelegateComponent::StarSystemDelegateComponent() : BaseClass()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-StarSystemDelegateComponent::~StarSystemDelegateComponent()
+VectorFieldComponent::~VectorFieldComponent()
 {
-  USUL_TRACE_SCOPE;
 }
 
 
@@ -58,28 +52,29 @@ StarSystemDelegateComponent::~StarSystemDelegateComponent()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown *StarSystemDelegateComponent::queryInterface ( unsigned long iid )
+Usul::Interfaces::IUnknown *VectorFieldComponent::queryInterface ( unsigned long iid )
 {
-  USUL_TRACE_SCOPE;
-
   switch ( iid )
   {
+  case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IPlugin::IID:
     return static_cast < Usul::Interfaces::IPlugin*>(this);
+  case Usul::Interfaces::IDocumentCreate::IID:
+    return static_cast < Usul::Interfaces::IDocumentCreate*>(this);
   default:
-    return BaseClass::queryInterface ( iid );
+    return 0x0;
   }
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Does this delegate handle the given token
+//  Create document.
 //
 /////////////////////////////////////////////////////////////////////////////
 
-bool StarSystemDelegateComponent::doesHandle ( const std::string& token ) const
+Usul::Documents::Document *VectorFieldComponent::createDocument ( Unknown *caller )
 {
-  USUL_TRACE_SCOPE;
-  return ( token == "StarSystem Document" );
+  VectorFieldDocument::ValidRefPtr document ( new VectorFieldDocument );
+  return document.release();
 }

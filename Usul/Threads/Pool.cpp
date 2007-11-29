@@ -13,6 +13,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifndef _USUL_TRACE
+#define _USUL_TRACE
+#endif
+
 #include "Usul/Threads/Pool.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Assert.h"
@@ -67,6 +71,8 @@ Pool::Pool ( unsigned int numThreads ) : BaseClass(),
     // Set callback.
     thread->started ( Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Pool::_threadStarted ) ) );
   }
+
+  this->_startThreads();
 }
 
 
@@ -134,7 +140,7 @@ Pool::TaskHandle Pool::addTask ( int priority, Task *task )
   _queue[key] = task;
 
   // Make sure the threads are started.
-  this->_startThreads();
+  //this->_startThreads();
 
   // Return key.
   return key;
@@ -277,6 +283,12 @@ void Pool::removeQueuedTask ( TaskHandle id )
   }
 }
 
+bool Pool::_isRunning() const
+{
+  Guard guard ( this->mutex() );
+  return _runThreads;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -298,7 +310,8 @@ void Pool::_threadStarted ( Usul::Threads::Thread *thread )
     throw std::invalid_argument ( "Error 2565542508: wrong thread in start function" );
 
   // Loop until told otherwise.
-  while ( true == Usul::Threads::Safe::get ( this->mutex(), _runThreads ) )
+  //while ( true == Usul::Threads::Safe::get ( this->mutex(), _runThreads ) )
+  while ( this->_isRunning() )
   {
     // Get the next task.
     Task::RefPtr task ( this->_nextTask() );

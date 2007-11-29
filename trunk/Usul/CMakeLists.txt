@@ -114,7 +114,6 @@ SET (SOURCES
 ./CommandLine/Options.cpp
 ./CommandLine/Flags.cpp
 ./App/Application.cpp
-./App/Controller.cpp
 ./Documents/Document.cpp
 ./Documents/Manager.cpp
 ./Components/Manager.cpp

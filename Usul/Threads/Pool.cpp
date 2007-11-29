@@ -335,7 +335,7 @@ void Pool::_threadProcessTasks ( Usul::Threads::Task *task, Usul::Threads::Threa
   // Do not lock mutex here!
 
   // Handle bad input.
-  if ( 0x0 == task )
+  if ( ( 0x0 == task ) || ( 0x0 == thread ) )
     return;
 
   // Get the callbacks.
@@ -362,6 +362,17 @@ void Pool::_threadProcessTasks ( Usul::Threads::Task *task, Usul::Threads::Threa
     // Call the cancelled callback.
     if ( true == cancelled.valid() )
       (*cancelled) ( thread );
+  }
+
+  // Handle standard exceptions.
+  catch ( const std::exception &e )
+  {
+    // Feedback.
+    std::cout << Usul::Strings::format ( "Error 3878127704: standard exception caught while running thread ", thread->id(), ", ", e.what() ) << std::endl;
+
+    // Call the error callback.
+    if ( true == error.valid() )
+      (*error) ( thread );
   }
 
   // Handle all other exceptions.

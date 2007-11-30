@@ -848,6 +848,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\ICFDCommands.h"
+					>
+				</File>
+				<File
 					RelativePath="Interfaces\IClassFactory.h"
 					>
 				</File>
@@ -1185,6 +1189,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\ILineLayer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\ILoadColorFile.h"
 					>
 				</File>
 				<File
@@ -1797,6 +1805,10 @@
 				</File>
 				<File
 					RelativePath=".\Predicates\CompareCoordinate.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Predicates\DirExists.h"
 					>
 				</File>
 				<File

@@ -102,8 +102,10 @@ private:
 
   void                        _destroy();
 
+  void                        _makeSystem();
+
   StarSystem::System *_system;
-  Usul::Jobs::Manager _manager;
+  Usul::Jobs::Manager *_manager;
 };
 
 

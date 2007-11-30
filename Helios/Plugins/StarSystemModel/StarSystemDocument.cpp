@@ -44,31 +44,9 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemDocument, StarSystemDocument::BaseCl
 
 StarSystemDocument::StarSystemDocument() : BaseClass ( "StarSystem Document" ),
   _system ( 0x0 ),
-  _manager ( 2 ) // Until we no longer block when getting an ossim image...
+  _manager ( 0x0 )
 {
   USUL_TRACE_SCOPE;
-  _system = new StarSystem::System ( _manager );
-  _system->ref();
-
-#if 0
-
-  const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
-
-  typedef StarSystem::RasterLayerWms::Options Options;
-  Options options;
-  options[Usul::Network::Names::LAYERS]  = "modis,global_mosaic";
-  options[Usul::Network::Names::STYLES]  = ",visual";
-  options[Usul::Network::Names::SRS]     = "EPSG:4326";
-  options[Usul::Network::Names::REQUEST] = "GetMap";
-  options[Usul::Network::Names::FORMAT]  = "image/jpeg";
-
-  typedef StarSystem::Body::Extents Extents;
-  typedef Extents::Vertex Vertex;
-  const Extents maxExtents ( Vertex ( -180, -90 ), Vertex ( 180, 90 ) );
-  StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
-  _system->body()->rasterAppend ( layer.get() );
-
-#endif
 }
 
 
@@ -94,19 +72,22 @@ StarSystemDocument::~StarSystemDocument()
 void StarSystemDocument::_destroy()
 {
   USUL_TRACE_SCOPE;
-  _system->unref(); _system = 0x0;
 
-  // Remove all jobs that are not running.
-  //_manager.trim();
+  // Delete the star-system.
+  Usul::Pointers::unreference ( _system ); _system = 0x0;
 
-  // Remove all queued jobs and cancel running jobs.
-  _manager.cancel();
+  // Clean up job manager.
+  if ( 0x0 != _manager )
+  {
+    // Remove all queued jobs and cancel running jobs.
+    _manager->cancel();
 
-  // Wait for the pool to finish.
-  _manager.wait();
+    // Wait for remaining jobs to finish.
+    _manager->wait();
 
-  // Purge.
-  //_manager.purge();
+    // Delete the manager.
+    delete _manager; _manager = 0x0;
+  }
 }
 
 
@@ -213,31 +194,11 @@ void StarSystemDocument::read ( const std::string &name, Unknown *caller, Unknow
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
+  // Make sure we have a system.
+  this->_makeSystem();
+
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( name ) ) );
-  if ( "ball" == ext )
-  {
-#if 1
-
-    StarSystem::Body::ValidRefPtr body ( new StarSystem::Body ( Usul::Math::Vec2d ( osg::WGS_84_RADIUS_EQUATOR * 0.75, osg::WGS_84_RADIUS_POLAR * 0.5 ), _manager ) );
-    const Usul::Math::Vec3d c ( _system->center() );
-    body->center ( Usul::Math::Vec3d ( c[0] + 50000000, c[1], c[2] ) );
-    _system->add ( body.get() );
-
-#endif
-
-#if 0
-
-    Usul::Adaptors::Random<double> random ( 0, 500000000 );
-    for ( unsigned int i = 0; i < 2; ++i )
-    {
-      StarSystem::System::ValidRefPtr system ( new StarSystem::System( _manager ) );
-      system->center ( StarSystem::System::Vec3d ( random(), random(), random() ) );
-      _system->add ( system.get() );
-    }
-
-#endif
-  }
-  else if ( "tiff" == ext || "tif" == ext || "jpg" == ext )
+  if ( "tiff" == ext || "tif" == ext || "jpg" == ext )
   {
     StarSystem::RasterLayerOssim::RefPtr layer ( new StarSystem::RasterLayerOssim );
     layer->open ( name );
@@ -314,7 +275,9 @@ StarSystemDocument::Filters StarSystemDocument::filtersInsert() const
   Filters filters;
   filters.push_back ( Filter ( "StarSystem (*.ball)", "*.ball" ) );
   filters.push_back ( Filter ( "Tiff (*.tiff *.tif)", "*.tiff *.tif" ) );
-  filters.push_back ( Filter ( "Jpeg (*.jpg)",        "*.jpg" ) );
+  filters.push_back ( Filter ( "Jpeg (*.jpg)", "*.jpg" ) );
+  filters.push_back ( Filter ( "PNG  (*.png)", "*.png" ) );
+  filters.push_back ( Filter ( "All Images (*.tiff *.tif * jpg *.png)", "*.tiff *.tif * jpg *.png" ) );
   return filters;
 }
 
@@ -330,8 +293,8 @@ osg::Node *StarSystemDocument::buildScene ( const BaseClass::Options &options, U
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  if ( 0x0 == _system )
-    return new osg::Group();
+  // Make sure we have a system.
+  this->_makeSystem();
 
   osg::ref_ptr<osg::Node> node ( 0x0 );
   {
@@ -427,12 +390,89 @@ void StarSystemDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   Usul::Interfaces::ITextMatrix::QueryPtr tm ( caller );
   if ( tm.valid() )
   {
-    const unsigned int queued    ( _manager.numJobsQueued() );
-    const unsigned int executing ( _manager.numJobsExecuting() );
+    const unsigned int queued    ( ( 0x0 == _manager ) ? 0 : _manager->numJobsQueued() );
+    const unsigned int executing ( ( 0x0 == _manager ) ? 0 : _manager->numJobsExecuting() );
     const unsigned int total     ( queued + executing );
 
     const std::string out ( ( total > 0 ) ? ( Usul::Strings::format ( "Queued: ", queued, ", Running: ", executing ) ) : "" );
 
     tm->setText ( 15, 15, out, osg::Vec4f ( 1.0, 1.0, 1.0, 1.0 ) );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make the system.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StarSystemDocument::_makeSystem()
+{
+  USUL_TRACE_SCOPE;
+
+  // Only make it once.
+  if ( 0x0 == _manager )
+  {
+    _manager = new Usul::Jobs::Manager ( 5, true );
+  }
+
+  // Only make it once.
+  if ( 0x0 == _system )
+  {
+    _system = new StarSystem::System ( *_manager );
+    Usul::Pointers::reference ( _system );
+  }
+
+#if 1
+
+  {
+    const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
+
+    typedef StarSystem::RasterLayerWms::Options Options;
+    Options options;
+    options[Usul::Network::Names::LAYERS]  = "modis,global_mosaic";
+    options[Usul::Network::Names::STYLES]  = ",visual";
+    options[Usul::Network::Names::SRS]     = "EPSG:4326";
+    options[Usul::Network::Names::REQUEST] = "GetMap";
+    options[Usul::Network::Names::FORMAT]  = "image/jpeg";
+
+    typedef StarSystem::Body::Extents Extents;
+    typedef Extents::Vertex Vertex;
+    const Extents maxExtents ( Vertex ( -180, -90 ), Vertex ( 180, 90 ) );
+
+    StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
+    _system->body()->rasterAppend ( layer.get() );
+  }
+
+#endif
+
+#if 0
+
+  {
+    // See http://sco.az.gov/imagery.htm
+    const std::string url ( "http://129.219.93.216:8080/wmsconnector/com.esri.wms.Esrimap" );
+
+    typedef StarSystem::RasterLayerWms::Options Options;
+    Options options;
+    options[Usul::Network::Names::LAYERS]      = "imagery";
+    options[Usul::Network::Names::SRS]         = "EPSG:4326";
+    options[Usul::Network::Names::REQUEST]     = "GetMap";
+    options[Usul::Network::Names::FORMAT]      = "image/jpeg";
+    options[Usul::Network::Names::VERSION]     = "1.1.1";
+    options["transparent"]                     = "true";
+    options["service"]                         = "wms";
+    options["ServiceName"]                     = "arizona";
+
+    typedef StarSystem::Body::Extents Extents;
+    typedef Extents::Vertex Vertex;
+    const Extents maxExtents ( Vertex ( -115.0261211891, 31.2774721445 ), Vertex ( -108.9149437491, 37.0170157412 ) );
+
+    StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
+    layer->alpha ( 255, 255, 255,   0 );
+    layer->alpha (   0,   0,   0,   0 );
+    _system->body()->rasterAppend ( layer.get() );
+  }
+
+#endif
 }

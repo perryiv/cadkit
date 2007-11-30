@@ -84,7 +84,7 @@ Renderer::Renderer() : BaseClass(),
   _contextId          ( 0 ),
   _hasAccumBuffer     ( false ),
   _gradient           (),
-  _corners            ( Corners::ALL ),
+  _corners            ( 0 ),
   _clearNode          ( new osg::ClearNode )
 {
   // Set the start tick.
@@ -359,16 +359,16 @@ void Renderer::_multiPassRender()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Renderer::backgroundColor ( const osg::Vec4 &color )
+void Renderer::backgroundColor ( const osg::Vec4 &color, unsigned int corner )
 {
   // Always remove the existing branch.
   OsgTools::Group::removeAllOccurances ( _gradient.root(), _clearNode.get() );
 
   // Always update the gradient object.
-  _gradient.color ( color, this->backgroundCorners() );
+  _gradient.color ( color, corner );
 
   // Use regular background if all corners are the same.
-  if ( Corners::ALL == this->backgroundCorners() )
+  if ( Corners::ALL == corner )
   {
     _clearNode->setClearColor ( color );
   }
@@ -378,10 +378,29 @@ void Renderer::backgroundColor ( const osg::Vec4 &color )
   {
     _clearNode->addChild ( _gradient.root() );
   }
-#if 0
-  if ( 0x0 != this->viewer() )
-    this->viewer()->setClearColor ( color );
-#endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the background color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Renderer::backgroundColor ( const osg::Vec4 &color )
+{
+  this->backgroundColor ( color, this->backgroundCorners() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the background color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec4 Renderer::backgroundColor ( unsigned int corners ) const
+{
+  return _gradient.color ( corners );
 }
 
 
@@ -393,8 +412,7 @@ void Renderer::backgroundColor ( const osg::Vec4 &color )
 
 osg::Vec4 Renderer::backgroundColor() const
 {
-  return _gradient.color ( this->backgroundCorners() );
-  //return ( 0x0 == this->viewer() ) ? osg::Vec4 ( 0, 0, 0, 1 ) : this->viewer()->getClearColor();
+  return this->backgroundColor ( this->backgroundCorners() );
 }
 
 

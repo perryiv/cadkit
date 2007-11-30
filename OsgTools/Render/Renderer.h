@@ -58,7 +58,9 @@ public:
   Renderer();
 
   // Set/get the background color.
+  void                  backgroundColor ( const osg::Vec4 &color, unsigned int corners );
   void                  backgroundColor ( const osg::Vec4 &color );
+  osg::Vec4             backgroundColor ( unsigned int corners ) const;
   osg::Vec4             backgroundColor() const;
 
   // Set/get the background corners.

@@ -23,6 +23,10 @@
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Components/Manager.h"
+#include "Usul/Errors/AssertPolicy.h"
+#include "Usul/Errors/CompositePolicy.h"
+#include "Usul/Errors/ThrowingPolicy.h"
+#include "Usul/Errors/PureVirtualCall.h"
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/File/Contents.h"
 #include "Usul/File/Make.h"
@@ -51,8 +55,14 @@
 
 namespace Program
 {
+  // For stdout and stderr re-direction.
   typedef Usul::IO::StreamSink StreamSink;
   StreamSink::RefPtr sink ( static_cast<StreamSink *> ( 0x0 ) );
+
+  // Trapping pure virtual calls.
+  typedef Usul::Errors::ThrowingPolicy < std::runtime_error > ThrowingPolicy;
+  typedef Usul::Errors::CompositePolicy < ThrowingPolicy, Usul::Errors::AssertPolicy > CompositePolicy;
+  Usul::Errors::PureVirtualCall < CompositePolicy > pureCallAction;
 }
 
 
@@ -120,7 +130,7 @@ namespace Program
     Usul::CommandLine::Arguments::instance().set ( argc, argv );
 
     // Make job manager.
-    Usul::Jobs::Manager::init ( 4 );
+    Usul::Jobs::Manager::init ( 4, true );
 
     // Branding.
     const std::string program ( "Helios" );

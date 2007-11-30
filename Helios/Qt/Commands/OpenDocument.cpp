@@ -247,7 +247,7 @@ void OpenDocument::Job::_started()
   USUL_TRACE_SCOPE;
 
   // If we have a valid document...
-  if( _document.valid() )
+  if ( _document.valid() )
   {
     // Feedback.
     std::cout << Usul::Strings::format ( "Opening file: ", _name );

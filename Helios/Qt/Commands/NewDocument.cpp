@@ -17,9 +17,13 @@
 #include "Helios/Qt/Commands/NewDocument.h"
 #include "Helios/Qt/Core/Constants.h"
 
+#include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IDocumentCreate.h"
+#include "Usul/Interfaces/IInitNewDocument.h"
 #include "Usul/Interfaces/GUI/IGUIDelegateNotify.h"
+#include "Usul/Threads/Named.h"
 #include "Usul/Trace/Trace.h"
 
 using namespace CadKit::Helios::Commands;
@@ -92,6 +96,7 @@ NewDocument::~NewDocument()
 void NewDocument::_execute()
 {
   USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
   // Do not lock the mutex. This function is re-entrant.
 
   Usul::Interfaces::IDocumentCreate::QueryPtr dc ( _component );
@@ -102,26 +107,63 @@ void NewDocument::_execute()
   Usul::Documents::Document::RefPtr document ( dc->createDocument ( this->caller () ) );
 
   // Make sure we got an active document.
-  if ( document.valid () )
+  if ( false == document.valid() )
+    return;
+
+  // Find a delegate for the document.
+  Usul::Documents::Manager::instance().delegate ( document.get() );
+  
+  // Make sure a delegate was found.
+  if ( 0x0 == document->delegate() )
+    Usul::Exceptions::Thrower < std::runtime_error > ( "Error 3380055569: Could not find delegate for: ", document->typeName() );
+
+  // Assign a default name.
+  document->defaultFilename();
+
+  // Try to initialize the document.
+  NewDocument::_initNewDocument ( IUnknown::QueryPtr ( document ), this->caller() );
+
+  // See if the caller wants to be notified when the document finishes loading.
+  Usul::Interfaces::IGUIDelegateNotify::QueryPtr notify ( this->caller() );
+
+  // Notify.
+  if ( notify.valid() )
+    notify->notifyDocumentFinishedLoading ( document );
+
+  // Add the document to the manager.
+  Usul::Documents::Manager::instance().add ( document );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Try to initialize the new document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void NewDocument::_initNewDocument ( IUnknown *document, IUnknown *caller )
+{
+  USUL_TRACE_SCOPE_STATIC;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
+  // Get all plugins that initialize documents.
+  typedef Usul::Interfaces::IInitNewDocument IInitNewDocument;
+  typedef Usul::Components::Manager::UnknownSet UnknownSet;
+  UnknownSet unknowns ( Usul::Components::Manager::instance().getInterfaces ( IInitNewDocument::IID ) );
+  for ( UnknownSet::iterator i = unknowns.begin(); i != unknowns.end(); ++i )
   {
-    // Find a delegate for the document.
-    Usul::Documents::Manager::instance().delegate ( document.get() );
-    
-    // Make sure a delegate was found.
-    if ( 0x0 == document->delegate () )
-      Usul::Exceptions::Thrower < std::runtime_error > ( "Error 3380055569: Could not find delegate for: ", document->typeName() );
+    IInitNewDocument::QueryPtr initializer ( *i );
+    if ( true == initializer.valid() )
+    {
+      // Ask the plugin if it does our type of document.
+      if ( true == initializer->handlesDocumentType ( document ) )
+      {
+        // Initialize the document.
+        initializer->initNewDocument ( caller, document );
 
-    // Assign a default name.
-    document->defaultFilename();
-
-    // See if the caller wants to be notified when the document finishes loading.
-    Usul::Interfaces::IGUIDelegateNotify::QueryPtr notify ( this->caller() );
-
-    // Notify.
-    if ( notify.valid() )
-      notify->notifyDocumentFinishedLoading ( document );
-
-    // Add the document to the manager.
-    Usul::Documents::Manager::instance().add( document );
+        // Return now!
+        return;
+      }
+    }
   }
 }

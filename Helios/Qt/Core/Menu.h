@@ -11,6 +11,8 @@
 #ifndef __CADKIT_HELIOS_QT_CORE_MENU_H__
 #define __CADKIT_HELIOS_QT_CORE_MENU_H__
 
+#include "Helios/Qt/Core/Export.h"
+
 #include "MenuKit/Menu.h"
 
 #include "Helios/Qt/Commands/BaseAction.h"
@@ -23,7 +25,7 @@ namespace CadKit {
 namespace Helios {
 namespace Core {
 
-class Menu : public QMenu
+class HELIOS_QT_CORE_EXPORT Menu : public QMenu
 {
   Q_OBJECT;
 public:
@@ -42,7 +44,6 @@ public:
 
 protected slots:
   void _showMenu();
-  void _hideMenu();
 
 private:
   MenuKit::Menu::RefPtr _menu;

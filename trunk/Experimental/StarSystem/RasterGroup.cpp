@@ -31,7 +31,7 @@ RasterGroup::RasterGroup() :
   BaseClass (),
   _layers   (),
   _cache    (),
-  _useCache ( true )
+  _useCache ( false )
 {
   USUL_TRACE_SCOPE;
 }
@@ -124,7 +124,7 @@ osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, u
         if ( image.valid() )
         {
           // Composite.
-          RasterGroup::_compositeImages ( *result, *image );
+          RasterGroup::_compositeImages ( *result, *image, layer->alphas() );
 
           // Cache the result.
           this->_cacheAdd ( extents, width, height, result.get() );
@@ -157,7 +157,7 @@ osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, u
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image )
+void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas )
 {
   USUL_TRACE_SCOPE_STATIC;
 
@@ -179,22 +179,34 @@ void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image
 
   for ( unsigned int i = 0; i < size; ++i )
   {
-    // If it's competely opaque, set the values.
-    if ( false == hasAlpha )
+    // Copy the color channels.
+    unsigned char r ( src[0] );
+    unsigned char g ( src[1] );
+    unsigned char b ( src[2] );
+
+    // Is the color in the alpha table?
+    Alphas::const_iterator iter ( alphas.find ( Color ( RedGreen ( r, g ), b ) ) );
+    const bool hasExtraAlpha ( alphas.end() != iter );
+
+    // If the image is competely opaque then set the values.
+    if ( ( false == hasAlpha ) && ( false == hasExtraAlpha ) )
     {
-      dst[0] = src[0];
-      dst[1] = src[1];
-      dst[2] = src[2];
+      dst[0] = r;
+      dst[1] = g;
+      dst[2] = b;
     }
     else
     {
+      // Get correct alpha.
+      const unsigned char useThisAlpha ( ( hasExtraAlpha ) ? iter->second : src[3] );
+
       // Normalize between zero and one.
-      const float a ( static_cast < float > ( src[3] ) / 255.5f );
+      const float a ( static_cast < float > ( useThisAlpha ) / 255.5f );
 
       // Composite.
-      dst[0] = static_cast < unsigned char > ( dst[0] * ( 1 - a ) + ( src[0] * a ) );
-      dst[1] = static_cast < unsigned char > ( dst[1] * ( 1 - a ) + ( src[1] * a ) );
-      dst[2] = static_cast < unsigned char > ( dst[2] * ( 1 - a ) + ( src[2] * a ) );
+      dst[0] = static_cast < unsigned char > ( dst[0] * ( 1 - a ) + ( r * a ) );
+      dst[1] = static_cast < unsigned char > ( dst[1] * ( 1 - a ) + ( g * a ) );
+      dst[2] = static_cast < unsigned char > ( dst[2] * ( 1 - a ) + ( b * a ) );
     }
 
     dst[3] = 255;

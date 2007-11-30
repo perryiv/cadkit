@@ -1655,7 +1655,7 @@ Usul::Jobs::Manager *DynamicLandDocument::_getJobManager()
   Guard guard ( this->mutex() );
   if ( 0x0 == _jobManager.get() )
   {
-    _jobManager = JobManagerPtr ( new Usul::Jobs::Manager ( 1 ) );
+    _jobManager = JobManagerPtr ( new Usul::Jobs::Manager ( 1, true ) );
   }
   return _jobManager.get();
 }

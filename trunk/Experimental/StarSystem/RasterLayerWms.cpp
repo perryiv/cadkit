@@ -25,6 +25,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
 #include "Usul/File/Make.h"
+#include "Usul/File/Stats.h"
 #include "Usul/File/Temp.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Math/Absolute.h"
@@ -169,8 +170,14 @@ osg::Image* RasterLayerWms::texture ( const Extents& extents, unsigned int width
     Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( &wms, &Usul::Network::WMS::download ), 5, stream, "2052060829" );
   }
 
-  // Load the image.
-  osg::ref_ptr<osg::Image> image ( osgDB::readImageFile ( file ) );
+  // Initialize.
+  osg::ref_ptr<osg::Image> image ( 0x0 );
+
+  // Load the file iff it exists and it's non-zero size.
+  if ( ( true == Usul::Predicates::FileExists::test ( file ) ) && ( Usul::File::size ( file ) > 0 ) )
+  {
+    image = osgDB::readImageFile ( file );
+  }
 
   // If it failed to load then delete the file.
   if ( false == image.valid() )

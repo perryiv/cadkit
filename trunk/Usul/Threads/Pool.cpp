@@ -47,7 +47,7 @@ USUL_IMPLEMENT_TYPE_ID ( Pool );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Pool::Pool ( unsigned int numThreads ) : BaseClass(),
+Pool::Pool ( unsigned int numThreads, bool lazyStart ) : BaseClass(),
   _pool       (),
   _queue      (),
   _executing  ( 0 ),
@@ -72,7 +72,11 @@ Pool::Pool ( unsigned int numThreads ) : BaseClass(),
     thread->started ( Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Pool::_threadStarted ) ) );
   }
 
-  this->_startThreads();
+  // Start threads now if we're supposed to.
+  if ( false == lazyStart )
+  {
+    this->_startThreads();
+  }
 }
 
 
@@ -136,11 +140,11 @@ Pool::TaskHandle Pool::addTask ( int priority, Task *task )
   // Make handle.
   TaskHandle key ( priority, task->id() );
 
-  // Add task.
-  _queue[key] = task;
+  // Add task. Local reference may help with stability.
+  _queue[key] = Task::RefPtr ( task );
 
   // Make sure the threads are started.
-  //this->_startThreads();
+  this->_startThreads();
 
   // Return key.
   return key;
@@ -400,11 +404,13 @@ void Pool::_threadProcessTasks ( Usul::Threads::Task *task, Usul::Threads::Threa
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the next task.
+//  Get the next task. Make sure you return a copy of the smart-pointer! 
+//  Otherwise, with multiple threads running at once, the task could be 
+//  decremented by a different thread but after it's released here.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Threads::Task *Pool::_nextTask()
+Usul::Threads::Task::RefPtr Pool::_nextTask()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -422,11 +428,11 @@ Usul::Threads::Task *Pool::_nextTask()
     ++_executing;
 
     // Return task.
-    return task.release();
+    return task;
   }
   else
   {
-    return 0x0;
+    return Usul::Threads::Task::RefPtr ( 0x0 );
   }
 }
 

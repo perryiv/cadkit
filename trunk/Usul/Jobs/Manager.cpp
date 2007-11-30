@@ -79,9 +79,9 @@ namespace Usul
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Manager::Manager ( unsigned int poolSize ) :
+Manager::Manager ( unsigned int poolSize, bool lazyStart ) :
   _mutex     (),
-  _pool      ( new Usul::Threads::Pool ( poolSize ) )
+  _pool      ( new Usul::Threads::Pool ( poolSize, lazyStart ) )
 {
   USUL_TRACE_SCOPE;
 }
@@ -111,7 +111,7 @@ Manager &Manager::instance()
   USUL_TRACE_SCOPE_STATIC;
   if ( 0x0 == _instance )
   {
-    Manager::init();
+    Manager::init ( Usul::Threads::Pool::DEFAULT_NUM_THREADS, true );
   }
   return *_instance;
 }
@@ -123,11 +123,11 @@ Manager &Manager::instance()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::init ( unsigned int poolSize )
+void Manager::init ( unsigned int poolSize, bool lazyStart )
 {
   USUL_TRACE_SCOPE_STATIC;
   Manager::destroy();
-  _instance = new Manager ( poolSize );
+  _instance = new Manager ( poolSize, lazyStart );
 }
 
 

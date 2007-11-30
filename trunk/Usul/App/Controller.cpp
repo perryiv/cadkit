@@ -1237,7 +1237,7 @@ void Controller::documentNew ( Usul::Interfaces::IUnknown* component, Usul::Inte
 
   // Initialize new document if it implements the interface
   if( init.valid() )
-    init->initNewDocument( caller );
+    init->initNewDocument ( doc.get(), caller );
 
   // Create the default gui
   doc->createDefaultGUI( caller );

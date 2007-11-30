@@ -49,7 +49,7 @@ namespace Usul
       const std::string SPLIT                     = "split";
 
       // Child window background colors.
-      const std::string CLEAR_COLOR               = "clear_color";
+      const std::string BACKGROUND_COLOR          = "background_color";
 
       // Preference values.
       const std::string ANIMATION_TIME            = "animation_time";

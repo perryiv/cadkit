@@ -124,6 +124,7 @@ template <> struct Convert < QByteArray >
 
     IntegerType numElements ( 0 );
     in >> numElements;
+
     if ( 0 == numElements )
       return;
 

@@ -36,7 +36,7 @@ public:
   typedef Usul::Threads::Pool ThreadPool;
 
   // Constructor and destructor. Use as a singleton or as individual objects.
-  Manager ( unsigned int poolSize = Usul::Threads::Pool::DEFAULT_NUM_THREADS );
+  Manager ( unsigned int poolSize, bool lazyStart );
   ~Manager();
 
   // Add a job to the list.
@@ -53,7 +53,7 @@ public:
   static void             destroy();
 
   // Initialize singleton with given thread-pool size.
-  static void             init ( unsigned int poolSize = Usul::Threads::Pool::DEFAULT_NUM_THREADS );
+  static void             init ( unsigned int poolSize, bool lazyStart );
 
   // Get the singleton.
   static Manager &        instance();

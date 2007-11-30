@@ -262,11 +262,31 @@
 					>
 				</File>
 				<File
+					RelativePath=".\SharedMap.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SharedMap.h"
+					>
+				</File>
+				<File
 					RelativePath=".\SharedMatrix.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\SharedMatrix.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SharedVector.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SharedVector.h"
+					>
+				</File>
+				<File
+					RelativePath=".\VprIO.h"
 					>
 				</File>
 			</Filter>

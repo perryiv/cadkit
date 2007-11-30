@@ -60,7 +60,7 @@ public:
     Usul::Trace::Print::init ( _trace );
 
     // Use 5 threads.
-    Usul::Jobs::Manager::init( 5 );
+    Usul::Jobs::Manager::init( 5, false );
   }
 
 

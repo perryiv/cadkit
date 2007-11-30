@@ -1,0 +1,88 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author(s): Jeff Conner
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "CFDAnimation.h"
+
+#include "Usul/Trace/Trace.h"
+#include "Usul/Interfaces/ICFDCommands.h"
+
+USUL_IMPLEMENT_COMMAND ( CFDAnimation );
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+CFDAnimation::CFDAnimation ( Usul::Interfaces::IUnknown * caller ) :
+  BaseClass ( caller )
+{
+  USUL_TRACE_SCOPE;
+  this->text ( "Animation" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+CFDAnimation::~CFDAnimation ()
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Execute.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CFDAnimation::_execute ()
+{
+  USUL_TRACE_SCOPE;
+  //this->_dummy();
+#if 1
+  Usul::Interfaces::ICFDCommands::QueryPtr nav ( this->caller() );
+  if ( nav.valid () )
+  {
+    if( true == nav->animation() )
+    {
+      nav->animation( false );
+    }
+    else
+    {
+      nav->animation( true );
+    }
+  }
+#endif
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the radio button.  Return true to have radio checked.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool CFDAnimation::updateCheck () const
+{
+  USUL_TRACE_SCOPE;
+
+  // Implement me to update radio state.
+  Usul::Interfaces::ICFDCommands::QueryPtr nav ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller() ) );
+
+  return nav->animation();
+}
+
+

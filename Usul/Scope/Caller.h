@@ -16,6 +16,9 @@
 #ifndef _USUL_SCOPE_CALLER_H_
 #define _USUL_SCOPE_CALLER_H_
 
+#include "Usul/Base/Referenced.h"
+#include "Usul/Pointers/Pointers.h"
+
 
 namespace Usul {
 namespace Scope {

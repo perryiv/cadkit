@@ -38,7 +38,6 @@ _actions()
 {
   USUL_TRACE_SCOPE;
   connect ( this, SIGNAL ( aboutToShow() ), SLOT ( _showMenu() ) );
-  connect ( this, SIGNAL ( aboutToHide() ), SLOT ( _hideMenu() ) );
 }
 
 
@@ -51,6 +50,7 @@ _actions()
 Menu::~Menu()
 {
   USUL_TRACE_SCOPE;
+  this->clear();
   _actions.clear();
 }
 
@@ -223,16 +223,4 @@ void Menu::_showMenu()
     MenuKit::Visitor::RefPtr visitor ( new Detail::QtMenuBuilder ( this, _actions ) );
     _menu->traverse ( *visitor );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Menu is about to be hidden.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Menu::_hideMenu()
-{
-  USUL_TRACE_SCOPE;
 }

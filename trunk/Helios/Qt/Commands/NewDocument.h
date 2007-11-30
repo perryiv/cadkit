@@ -48,6 +48,8 @@ protected:
 
   virtual void              _execute();
 
+  static void               _initNewDocument ( IUnknown *document, IUnknown *caller );
+
 private:
 
   IUnknown::QueryPtr _component;

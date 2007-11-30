@@ -8,12 +8,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "MpdStartAnimation.h"
+#include "MpdAnimation.h"
 
 #include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/IMpdNavigator.h"
 
-USUL_IMPLEMENT_COMMAND ( MpdStartAnimation );
+USUL_IMPLEMENT_COMMAND ( MpdAnimation );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -21,11 +21,11 @@ USUL_IMPLEMENT_COMMAND ( MpdStartAnimation );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MpdStartAnimation::MpdStartAnimation ( Usul::Interfaces::IUnknown * caller ) :
+MpdAnimation::MpdAnimation ( Usul::Interfaces::IUnknown * caller ) :
   BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
-  this->text ( "Start Animation" );
+  this->text ( "Animation" );
 }
 
 
@@ -35,7 +35,7 @@ MpdStartAnimation::MpdStartAnimation ( Usul::Interfaces::IUnknown * caller ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MpdStartAnimation::~MpdStartAnimation ()
+MpdAnimation::~MpdAnimation ()
 {
   USUL_TRACE_SCOPE;
 }
@@ -47,15 +47,44 @@ MpdStartAnimation::~MpdStartAnimation ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MpdStartAnimation::_execute ()
+void MpdAnimation::_execute ()
 {
   USUL_TRACE_SCOPE;
+  //this->_dummy();
 #if 1
   Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller() );
   if ( nav.valid () )
   {
-    nav->animate( true );
+    if( true == nav->animate() )
+    {
+      nav->animate( false );
+    }
+    else
+    {
+      nav->animate( true );
+    }
   }
 #endif
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the toggle button.  Return true to have radio checked.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MpdAnimation::updateCheck () const
+{
+  USUL_TRACE_SCOPE;
+
+  // Implement me to update radio state.
+  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller() ) );
+
+  if ( nav.valid () )
+  {
+    return nav->animate();
+  }
+  else
+    return false;
+}

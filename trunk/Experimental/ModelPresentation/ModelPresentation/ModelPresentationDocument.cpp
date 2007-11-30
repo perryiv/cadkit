@@ -11,8 +11,7 @@
 #include "Experimental/ModelPresentation/ModelPresentation/ModelPresentationDocument.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdMenuCommand.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdPrevTimestep.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdStartAnimation.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdStopAnimation.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdAnimation.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdFirstTimestep.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdNextCommand.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdLocation.h"
@@ -483,40 +482,6 @@ void ModelPresentationDocument::firstStep ()
       this->_checkTimeSteps();
 
   }
-  
-  
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Go to the next group in the set
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ModelPresentationDocument::startAnimation ()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  this->isAnimating( true );
-  
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Go to the next group in the set
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ModelPresentationDocument::stopAnimation ()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  this->isAnimating( false );
-  
 }
 
 
@@ -1430,8 +1395,7 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
     TimelineMenu->append ( new Button ( new MpdNextCommand( me.get() ) ) );
     TimelineMenu->append ( new Button ( new MpdPrevTimestep( me.get() ) ) );
     TimelineMenu->append ( new Button ( new MpdFirstTimestep( me.get() ) ) );
-    TimelineMenu->append ( new Button ( new MpdStartAnimation( me.get() ) ) );
-    TimelineMenu->append ( new Button ( new MpdStopAnimation( me.get() ) ) );
+    TimelineMenu->append ( new ToggleButton ( new MpdAnimation( me.get() ) ) );
 
     menu.append ( TimelineMenu );
     
@@ -1453,4 +1417,36 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   }
   
 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// toggle animation
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
+void ModelPresentationDocument::animate( bool state )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  _isAnimating = state;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// check animation state
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
+bool ModelPresentationDocument::animate()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  return _isAnimating;
 }

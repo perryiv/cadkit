@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <scene>
   <group type="polygon" >
-    <source>C:\adam\data\SandFlow\Data\Basin</source>
+    <source>C:\Jeff\Demos\SandFlow\Data\Basin</source>
   </group>
   <group type="pointtime" size="1.0" primitive="1" >
-    <source>C:\adam\data\SandFlow\Data\Sand</source>
+    <source>C:\Jeff\Demos\SandFlow\Data\Sand</source>
   </group>
 </scene>

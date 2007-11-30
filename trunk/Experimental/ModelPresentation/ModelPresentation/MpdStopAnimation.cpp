@@ -50,12 +50,11 @@ MpdStopAnimation::~MpdStopAnimation ()
 void MpdStopAnimation::_execute ()
 {
   USUL_TRACE_SCOPE;
-  //this->_dummy();
 #if 1
   Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller() );
   if ( nav.valid () )
   {
-    nav->stopAnimation();
+    nav->animate( false );
   }
 #endif
 }

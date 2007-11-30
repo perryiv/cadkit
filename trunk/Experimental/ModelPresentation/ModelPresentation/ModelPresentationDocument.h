@@ -133,8 +133,6 @@ public:
   
   /// Usul::Interfaces::IMpdNavigator
   void              nextGroup( unsigned int index );
-  void              startAnimation();
-  void              stopAnimation();
   void              nextStep();
   void              prevStep();
   void              firstStep();
@@ -142,6 +140,8 @@ public:
   void              displayViewMatrix();
   unsigned int      getCurrentGroupFromSet( unsigned int index ) const;
   void              setGroup ( unsigned int set, unsigned int group );
+  void              animate( bool state );
+  bool              animate();
 
   bool              isAnimating();
   void              isAnimating( bool value );

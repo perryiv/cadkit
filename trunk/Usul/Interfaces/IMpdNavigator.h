@@ -12,8 +12,6 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-//namespace osg { class Vec4; }
-
 namespace Usul {
 namespace Interfaces {
 
@@ -30,10 +28,10 @@ struct IMpdNavigator : public Usul::Interfaces::IUnknown
   virtual void              nextGroup ( unsigned int index ) = 0;
 
   // start time step animation
-  virtual void              startAnimation() = 0;
+  //virtual void              startAnimation() = 0;
 
   // stop time step animation
-  virtual void              stopAnimation() = 0;
+  //virtual void              stopAnimation() = 0;
 
   // Go to the next time step
   virtual void              nextStep() = 0;
@@ -55,6 +53,12 @@ struct IMpdNavigator : public Usul::Interfaces::IUnknown
 
   // set the current group in the given set
   virtual void              setGroup ( unsigned int set, unsigned int group ) = 0;
+
+  // toggle animation
+  virtual void              animate( bool state ) = 0;
+
+  // check animation state
+  virtual bool              animate() = 0;
 
 
 }; //struct IVertices

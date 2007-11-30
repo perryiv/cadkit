@@ -96,7 +96,7 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   //_viewer->defaultBackground();
 
   // Gradient background.
-#if 1
+#if 0
   _viewer->backgroundCorners ( OsgTools::Render::Viewer::Corners::BOTTOM );
   _viewer->backgroundColor ( _viewer->backgroundColor() );
   _viewer->backgroundCorners ( OsgTools::Render::Viewer::Corners::TOP );
@@ -135,8 +135,9 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
     subject->addModifiedObserver ( this );
   }
 
-  // Load initial trackball settings.
+  // Load initial settings.
   _viewer->trackballStateLoad();
+  _viewer->backgroundLoad();
 
   // Enable drag 'n drop.
   this->setAcceptDrops ( true );
@@ -1000,20 +1001,14 @@ void Viewer::editBackground()
   unsigned int corners ( viewer->backgroundCorners() );
 
   // Save current colors.
-  // Top left corner.
-  viewer->backgroundCorners ( Corners::TOP_LEFT );
-  osg::Vec4 topLeftColor ( viewer->backgroundColor ( ) );
-
-  // Top right corner.
-  viewer->backgroundCorners ( Corners::TOP_RIGHT );
-  osg::Vec4 topRightColor ( viewer->backgroundColor ( ) );
-
-  // Bottom left corner.
-  viewer->backgroundCorners ( Corners::BOTTOM_LEFT );
-  osg::Vec4 bottomLeftColor ( viewer->backgroundColor ( ) );
-
-  viewer->backgroundCorners ( Corners::BOTTOM_RIGHT );
-  osg::Vec4 bottomRightColor ( viewer->backgroundColor ( ) );
+  viewer->backgroundCorners  ( Corners::TOP_LEFT );
+  osg::Vec4 topLeftColor     ( viewer->backgroundColor() );
+  viewer->backgroundCorners  ( Corners::TOP_RIGHT );
+  osg::Vec4 topRightColor    ( viewer->backgroundColor() );
+  viewer->backgroundCorners  ( Corners::BOTTOM_LEFT );
+  osg::Vec4 bottomLeftColor  ( viewer->backgroundColor() );
+  viewer->backgroundCorners  ( Corners::BOTTOM_RIGHT );
+  osg::Vec4 bottomRightColor ( viewer->backgroundColor() );
 
   // Set the corner value before showing dialog.
   viewer->backgroundCorners ( corners );

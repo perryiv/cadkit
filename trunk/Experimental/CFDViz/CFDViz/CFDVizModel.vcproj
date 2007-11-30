@@ -223,10 +223,6 @@
 				Name="Implementation"
 				>
 				<File
-					RelativePath=".\CompileGuard.h"
-					>
-				</File>
-				<File
 					RelativePath=".\CFDVizComponent.cpp"
 					>
 				</File>
@@ -250,6 +246,10 @@
 					RelativePath=".\CFDVizFactory.h"
 					>
 				</File>
+				<File
+					RelativePath=".\CompileGuard.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="DLL"
@@ -262,6 +262,14 @@
 			<Filter
 				Name="Commands"
 				>
+				<File
+					RelativePath=".\CFDAnimation.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CFDAnimation.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 	</Files>

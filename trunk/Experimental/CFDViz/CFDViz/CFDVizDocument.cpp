@@ -9,10 +9,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Experimental/CFDViz/CFDViz/CFDVizDocument.h"
+#include "CFDAnimation.h"
 
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IViewPort.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"
@@ -41,6 +43,7 @@
 #include "MenuKit/RadioButton.h"
 
 #include "osgDB/ReadFile"
+#include "osgDB/WriteFile"
 #include "osg/Group"
 #include "osg/Switch"
 #include "osg/MatrixTransform"
@@ -71,10 +74,13 @@ CFDVizDocument::CFDVizDocument() :
   _root( new osg::Group ),
   _particleScene( new osg::Group ),
   _vertices( 0 ),
+  _progress( 0.0, 0.0 ),
   _colorTable( 0 ),
   _firstPass( true ),
   _particles( 0 ),
-  _update( 50 )
+  _update( 5 ),
+  _isAnimating( false ),
+  _streamLines( new osg::Vec3Array )
 {
   USUL_TRACE_SCOPE;
    
@@ -124,6 +130,8 @@ Usul::Interfaces::IUnknown *CFDVizDocument::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IUpdateListener* > ( this );
   case Usul::Interfaces::IMenuAdd::IID:
     return static_cast < Usul::Interfaces::IMenuAdd* > ( this );
+  case Usul::Interfaces::ICFDCommands::IID:
+    return static_cast < Usul::Interfaces::ICFDCommands* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -194,6 +202,8 @@ void CFDVizDocument::write ( const std::string &name, Unknown *caller  ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
+  osgDB::writeNodeFile( *_root.get(), name+".ive" );
 }
 
 
@@ -207,13 +217,14 @@ void CFDVizDocument::read ( const std::string &name, Unknown *caller, Unknown *p
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  this->_readColorTable( name );
+  this->_readColorTable( name, progress );
 
 #if 1
   this->_readVertices( name );
 #else
-  this->_readGridFile( name );
+  this->_readGridFile( name, progress );
   this->_initParticles();
+  this->_partition();
 #endif
 }
 
@@ -290,9 +301,9 @@ osg::Node *CFDVizDocument::buildScene ( const BaseClass::Options &options, Unkno
 #if 1
   _root->addChild( this->_buildVectorArrows( true, 2.0, caller ) );
 #else
-  _root->addChild( this->_drawGrid() );
-  //_root->addChild( this->_buildVectorArrows( false, 1.0, caller ) );
-  _root->addChild( this->_drawParticles() );
+  _root->addChild( this->_drawGrid( caller ) );
+  _root->addChild( this->_buildVectorArrows( false, 1.0, caller ) );
+  _root->addChild( this->_drawParticles( caller ) );
 #endif
   std::cout << "Buildscene complete!" << std::endl;
   return _root.get();
@@ -309,10 +320,10 @@ osg::Node *CFDVizDocument::buildScene ( const BaseClass::Options &options, Unkno
 void CFDVizDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-  if( true == _update() )
+  if( true == _update() && true == _isAnimating )
   {
-    this->_moveParticles();
-    this->_drawParticles();
+    this->_moveParticles( caller );
+    this->_drawParticles( caller );
   }
 }
 
@@ -349,7 +360,7 @@ void CFDVizDocument::_openDocument ( const std::string &file, Usul::Documents::D
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CFDVizDocument::_readGridFile( const std::string & filename )
+void CFDVizDocument::_readGridFile( const std::string & filename, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -360,6 +371,14 @@ void CFDVizDocument::_readGridFile( const std::string & filename )
   in >> _gridResolution[0] >> _gridResolution[1] >> _gridResolution[2];
 
   unsigned int numVectors = _gridResolution[0] * _gridResolution[1] * _gridResolution[2]; 
+  // Set the progress numbers.
+  _progress.first = 0;
+  _progress.second = numVectors;
+
+  Usul::Policies::TimeBased update ( 1000 ); // Every second.
+
+
+  _vertices.reserve( numVectors );
   for( unsigned int i = 0; i < numVectors; ++i )
   {
     double x = 0, y = 0, z = 0, u = 0, v = 0, w = 0;
@@ -368,6 +387,9 @@ void CFDVizDocument::_readGridFile( const std::string & filename )
     p.pos = Vec3d( x, y, z );
     p.dir = Vec3d( u, v, w );
     _vertices.push_back( p );
+
+    // Feedback.
+    this->_incrementProgress ( update(), progress );
   }
 
   in.close();
@@ -380,20 +402,26 @@ void CFDVizDocument::_readGridFile( const std::string & filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CFDVizDocument::_moveParticles()
+void CFDVizDocument::_moveParticles( Unknown *caller )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+
+  //feedback
+  //std::cout << "Moving Particles... " << std::endl;
 
   for( unsigned int i = 0; i < _particles.size(); ++i )
   {
     double magnitude = 0.1;
     Vec3d pos = _particles.at( i ).pos;
-    Vec3d dir = this->_getDirectionAt2( pos );
+    Vec3d dir = this->_getDirectionAt2( pos, caller );
     pos = pos + ( dir * magnitude );
+
+    {
+      Guard guard ( this->mutex() );
+      _particles.at( i ).pos = pos;
+      _particles.at( i ).dir = dir * magnitude;
+    }
     
-    _particles.at( i ).pos = pos;
-    _particles.at( i ).dir = dir * magnitude;
       
   }
   
@@ -446,9 +474,10 @@ bool CFDVizDocument::_rayQuadIntersect( Vec3d a, Vec3d b, Vec3d c, Vec3d d, Vec3
 
     std::vector< osg::Vec3d > vertices;
     vertices.push_back( osg::Vec3d( p[0], p[1], p[2] ) );
+    
     int result = plane.intersect( vertices );
-    if( result < 0 )
-      return false;
+    if( result >= 0 )
+      return true;
   }
   {
     osg::Plane plane ( osg::Vec3d( a[0], a[1], a[2] ),
@@ -457,6 +486,7 @@ bool CFDVizDocument::_rayQuadIntersect( Vec3d a, Vec3d b, Vec3d c, Vec3d d, Vec3
     
     std::vector< osg::Vec3d > vertices;
     vertices.push_back( osg::Vec3d( p[0], p[1], p[2] ) );
+   
     int result = plane.intersect( vertices );
     if( result < 0 )
       return false;
@@ -843,24 +873,127 @@ double CFDVizDocument::_determinant( Vec3d a, Vec3d b, Vec3d c )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Create bounding boxes that will narrow search for performance speedup
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CFDVizDocument::_partition()
+{
+  std::cout << "Partition Grid Space..." << std::endl;
+
+  for( unsigned int i = 0; i < _gridResolution[0] - 1; ++i )
+  {
+    Partition p;
+    CFDPoint cp = this->_getVertexAt( i, 0, 0 );
+    osg::Vec3d value( cp.pos[0], cp.pos[1], cp.pos[2] );
+    p.bb.set( value, value );
+    int xmin = Usul::Math::maximum( static_cast< int > ( i ) - 2, 0 );
+    p.xmin = static_cast< unsigned int > ( xmin );
+    p.xmax = Usul::Math::minimum( i + 3, _gridResolution[0] - 1 );
+    p.ymin = 0;
+    p.ymax = _gridResolution[1] - 1;
+    p.zmin = 0;
+    p.zmax = _gridResolution[2] - 1;
+    for( unsigned int j = 0; j < _gridResolution[1]; ++j )
+    { 
+      for( unsigned int k = 0; k < _gridResolution[2]; ++k )
+      {
+        //partition grid space
+        CFDPoint tp = this->_getVertexAt( i, j, k );
+        osg::Vec3d bbmin = p.bb.corner( 0 );
+        osg::Vec3d bbmax = p.bb.corner( 7 );
+        osg::Vec3d min ( Usul::Math::minimum( tp.pos[0], bbmin.x() ),
+                         Usul::Math::minimum( tp.pos[1], bbmin.y() ),
+                         Usul::Math::minimum( tp.pos[2], bbmin.z() ) );
+
+        osg::Vec3d max ( Usul::Math::maximum( tp.pos[0], bbmax.x() ),
+                         Usul::Math::maximum( tp.pos[1], bbmax.y() ),
+                         Usul::Math::maximum( tp.pos[2], bbmax.z() ) );
+
+        tp = this->_getVertexAt( i + 1, j, k );
+        min = osg::Vec3d( Usul::Math::minimum( tp.pos[0], min.x() ),
+                          Usul::Math::minimum( tp.pos[1], min.y() ),
+                          Usul::Math::minimum( tp.pos[2], min.z() ) );
+
+        max = osg::Vec3d( Usul::Math::maximum( tp.pos[0], max.x() ),
+                          Usul::Math::maximum( tp.pos[1], max.y() ),
+                          Usul::Math::maximum( tp.pos[2], max.z() ) );
+        
+
+        p.bb.set( min, max );
+
+      }
+
+    }
+    _partitions.push_back( p );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Check bounding boxes to narrow search for performance speedup
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool CFDVizDocument::_getPartition( Vec2d &iRange, Vec2d &jRange, Vec2d &kRange, Vec3d pos )
+{
+  for( unsigned int i = 0; i < _partitions.size(); ++i )
+  { 
+    Partition p = _partitions.at( i );
+    osg::Vec3f fpos ( static_cast< float > ( pos[0] ),
+                      static_cast< float > ( pos[1] ),
+                      static_cast< float > ( pos[2] ) );
+    osg::Vec3d dpos ( pos[0], pos[1], pos[2] );
+    
+    if( p.bb.contains( dpos ) )
+    {
+      iRange = Vec2d( p.xmin, p.xmax );
+      jRange = Vec2d( p.ymin, p.ymax );
+      kRange = Vec2d( p.zmin, p.zmax );
+      return true;
+
+    }
+  }
+  return false;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Used for irregular grid lookups
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CFDVizDocument::Vec3d CFDVizDocument::_getDirectionAt2( Vec3d pos )
+CFDVizDocument::Vec3d CFDVizDocument::_getDirectionAt2( Vec3d pos, Unknown *caller )
 {
   Vec3d dir( 0, 0, 0 );
 
-  for( unsigned int i = 0; i < _gridResolution[0] - 1; ++i )
+  unsigned int numVectors = _gridResolution[0] * _gridResolution[1] * _gridResolution[2]; 
+  _progress.first = 0;
+  _progress.second = numVectors;
+
+  Usul::Policies::TimeBased update ( 1000 ); // Every second.
+
+  Vec2d iRange ( 0, _gridResolution[0] - 1 );
+  Vec2d jRange ( 0, _gridResolution[1] - 1 );
+  Vec2d kRange ( 0, _gridResolution[2] - 1 );
+
+  Vec2d ti, tj, tk;
+  //this->_getPartition( ti, tj, tk, pos );
+
+  for( unsigned int i = iRange[0]; i < iRange[1]; ++i )
   {
-    for( unsigned int j = 0; j < _gridResolution[1] - 1; ++j )
+    for( unsigned int j = jRange[0]; j < jRange[1]; ++j )
     {
-      for( unsigned int k = 0; k < _gridResolution[2] - 1; ++k )
+      for( unsigned int k = kRange[0]; k < kRange[1]; ++k )
       {
+        
         if( true == this->_contains( i, j, k, pos ) )
         {
           dir = this->_getDirectionAt( i, j, k, pos );
         }
+        // Feedback.
+        this->_incrementProgress ( update(), caller );
       }
     }
   }
@@ -886,8 +1019,7 @@ CFDVizDocument::Vec3d CFDVizDocument::_getDirectionAt( unsigned int i, unsigned 
   p = pos;
   
   Vec3d c( 0, 0, 0 );
-  //FILE* debug = fopen( "V:/data/VolViz/colorat.txt", "a" );
-  //FILE* debug2 = fopen( "V:/data/VolViz/voxelat.txt", "a" );
+ 
   std::vector< CFDPoint > v;   
   Usul::Math::Vec3ui min( i, j, k );
  
@@ -964,10 +1096,7 @@ CFDVizDocument::Vec3d CFDVizDocument::_getDirectionAt( unsigned int i, unsigned 
   c[0] = ( V0123[0] * a ) + ( V4567[0] * b );
   c[1] = ( V0123[1] * a ) + ( V4567[1] * b );
   c[2] = ( V0123[2] * a ) + ( V4567[2] * b );
-  //fprintf( debug, "pos=( %lf, %lf ,%lf)\tcolor=(%lf, %lf, %lf, %lf)\n", p[0], p[1], p[2], c[0], c[1], c[2], c[3] );  
   
-  //fclose( debug );
-  //fclose( debug2 );
   return c;
 }
 
@@ -1090,29 +1219,56 @@ CFDVizDocument::Vec3d CFDVizDocument::_getDirectionAt( Vec3d pos )
 void CFDVizDocument::_initParticles()
 {
   Particle p0, p1, p2;
+  
+    
 #if 1
   p0.pos = Vec3d( 0.1, 1.5, 0.5 );
   p1.pos = Vec3d( 0.1, 1.5, 1.5 );
+  p2.pos = Vec3d( 0.1, 1.5, 2.5 );
 
   p0.dir = Vec3d( 0.0, 0.0, 0.0 );
   p1.dir = Vec3d( 0.0, 0.0, 0.0 );
+  p2.dir = Vec3d( 0.0, 0.0, 0.0 );
 
   p0.ttl = 10;
   p1.ttl = 10;
+  p2.ttl = 10;
 
   _particles.push_back( p0 );
+  osg::Vec3d pos ( p0.pos[0], p0.pos[1], p0.pos[2] );
+  _streamLines->push_back( pos );
+  _streamLines->push_back( pos );
+  
+
   _particles.push_back( p1 );
+  pos = osg::Vec3d( p1.pos[0], p1.pos[1], p1.pos[2] );
+  _streamLines->push_back( pos );
+  _streamLines->push_back( pos );
+
+  _particles.push_back( p2 );
+  pos = osg::Vec3d( p2.pos[0], p2.pos[1], p2.pos[2] );
+  _streamLines->push_back( pos );
+  _streamLines->push_back( pos );
+
+  
 #else
 #if 0
   p0.pos = Vec3d( 0.5, 0.5, 0.5 );
   p0.dir = Vec3d( 0, 0, 0 );
   _particles.push_back( p0 );
+  _streamLines->push_back( p0.pos );
+  _streamLines->push_back( p0.pos );
 #else
   double midz = floor( static_cast< double > ( _gridResolution[2] ) / 2 );
-  CFDPoint c0 = this->_getVertexAt( _gridResolution[0], 0, static_cast< unsigned int > ( midz ) );
+  double midy = floor( static_cast< double > ( _gridResolution[1] ) / 2 );
+  CFDPoint c0 = this->_getVertexAt( _gridResolution[0], 
+                static_cast< unsigned int > ( midy ),
+                static_cast< unsigned int > ( midz ) );
   p0.pos = c0.pos;
   //p0.pos += .5;
   _particles.push_back( p0 );
+  _streamLines->push_back( p0.pos );
+  _streamLines->push_back( p0.pos );
 
 #endif
 #endif
@@ -1126,11 +1282,11 @@ void CFDVizDocument::_initParticles()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node * CFDVizDocument::_drawParticles()
+osg::Node * CFDVizDocument::_drawParticles( Unknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  //_particleScene->removeChild( 0, _particleScene->getNumChildren() );
+  _particleScene->removeChild( 0, _particleScene->getNumChildren() );
   osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
   osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
@@ -1138,20 +1294,24 @@ osg::Node * CFDVizDocument::_drawParticles()
   for( unsigned int i = 0; i < _particles.size(); ++i )
   {
     osg::Vec3d pos ( osg::Vec3d( _particles.at( i ).pos[0], _particles.at( i ).pos[1], _particles.at( i ).pos[2] ) );
-    //osg::Vec3d dir ( osg::Vec3d( _particles.at( i ).dir[0], _particles.at( i ).dir[1], _particles.at( i ).dir[2] ) );
-    vertices->push_back( pos ); 
-    //vertices->push_back( pos + dir );
+    osg::Vec3d dir ( osg::Vec3d( _particles.at( i ).dir[0], _particles.at( i ).dir[1], _particles.at( i ).dir[2] ) );
+    
+    
+    unsigned int size = _particles.size() * 2;
+    _streamLines->push_back( _streamLines->at( _streamLines->size() - ( size - 1 ) ) );
+    _streamLines->push_back( pos );
+    
   }
 
   OsgTools::State::StateSet::setPointSize( geometry->getOrCreateStateSet(), 6 );
-  OsgTools::State::StateSet::setLineWidth( geometry->getOrCreateStateSet(), 6 );
+  OsgTools::State::StateSet::setLineWidth( geometry->getOrCreateStateSet(), 2 );
   OsgTools::State::StateSet::setLighting( geometry->getOrCreateStateSet(), false );
   osg::ref_ptr< osg::Vec4Array > colors ( new osg::Vec4Array() );
   colors->push_back( osg::Vec4f( 0.0, 0.0, 1.0, 1.0 ) );
   geometry->setColorArray( colors.get() );
   geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
-  geometry->setVertexArray( vertices.get() );
-  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::POINTS, 0, vertices->size() ) );
+  geometry->setVertexArray( _streamLines.get() );
+  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINES, 0, _streamLines->size() ) );
   geode->addDrawable( geometry.get() );
   _particleScene->addChild( geode.get() );
   return _particleScene.get();
@@ -1180,7 +1340,7 @@ void CFDVizDocument::_setStatusBar ( const std::string &text, Usul::Interfaces::
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node * CFDVizDocument::_drawGrid()
+osg::Node * CFDVizDocument::_drawGrid( Unknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -1189,6 +1349,15 @@ osg::Node * CFDVizDocument::_drawGrid()
   osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
   osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
+  
+  // Set the progress numbers.
+  std::cout << "Creating Grid Object..." << std::endl;
+   unsigned int numVectors = _gridResolution[0] * _gridResolution[1] * _gridResolution[2]; 
+  _progress.first = 0;
+  _progress.second = numVectors;
+
+  Usul::Policies::TimeBased update ( 1000 ); // Every second.
+  
   
   for( unsigned int i = 0; i < _gridResolution[0] - 1; ++i )
   {
@@ -1229,6 +1398,8 @@ osg::Node * CFDVizDocument::_drawGrid()
         vertices->push_back( p7 );vertices->push_back( p3 );vertices->push_back( p3 );vertices->push_back( p1 );vertices->push_back( p1 );vertices->push_back( p5 );vertices->push_back( p5 );vertices->push_back( p7 );
         vertices->push_back( p7 );vertices->push_back( p6 );vertices->push_back( p6 );vertices->push_back( p4 );vertices->push_back( p4 );vertices->push_back( p5 );vertices->push_back( p5 );vertices->push_back( p7 );
 #endif
+        // Feedback.
+        this->_incrementProgress ( update(), caller );
       }
     }
   }
@@ -1387,7 +1558,7 @@ osg::Vec4Array * CFDVizDocument::_getColorArray( bool drawMirror )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CFDVizDocument::_readColorTable( const std::string & filename )
+void CFDVizDocument::_readColorTable( const std::string & filename, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -1421,7 +1592,7 @@ void CFDVizDocument::_readColorTable( const std::string & filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CFDVizDocument::_readVertices( const std::string& filename )
+void CFDVizDocument::_readVertices( const std::string& filename, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -1484,7 +1655,7 @@ void CFDVizDocument::_readVertices( const std::string& filename )
     _vertices.push_back( p );
  
     // Feedback.
-    // this->_incrementProgress ( update() );
+    this->_incrementProgress ( update(), progress );
 
   }
 
@@ -1531,17 +1702,22 @@ CFDVizDocument::Color4 CFDVizDocument::_getInterpolatedColorValue( double value 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CFDVizDocument::_incrementProgress ( bool state )
+void CFDVizDocument::_incrementProgress ( bool state, Unknown *progress )
 {
-  //unsigned int &numerator   ( _progress.first  );
-  //unsigned int &denominator ( _progress.second );
-  //// Debugging in Cadviewer
-  ////std::cout << "\rProgress: " << numerator << "/" << denominator << " ( " << static_cast< double > ( numerator / denominator ) << " % )" << std::endl;
-  //_document->setProgressBar ( state, numerator, denominator, _caller );
-  //++numerator;
-  //USUL_ASSERT ( numerator <= denominator );
+  
+  unsigned int &numerator   ( _progress.first  );
+  unsigned int &denominator ( _progress.second );
+  this->setProgressBar ( state, numerator, denominator, progress );
+  ++numerator;
+  USUL_ASSERT ( numerator <= denominator );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void CFDVizDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller )
 {
@@ -1552,8 +1728,40 @@ void CFDVizDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown *
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   MenuKit::Menu::RefPtr toolsMenu ( new MenuKit::Menu ( "CFD Tools", MenuKit::Menu::VERTICAL ) );
+  toolsMenu->append ( new Radio ( new CFDAnimation( me.get() ) ) );
+  
   menu.append( toolsMenu );
 
-  
+}
 
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CFDVizDocument::animation ( bool state )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  _isAnimating = state;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the progress bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool CFDVizDocument::animation ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  return _isAnimating;
 }

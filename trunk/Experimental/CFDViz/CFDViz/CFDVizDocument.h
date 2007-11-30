@@ -19,6 +19,7 @@
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IAnimatePath.h"
+#include "Usul/Interfaces/ICFDCommands.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/IMpdNavigator.h"
@@ -47,7 +48,8 @@ namespace osg { class Node; }
 class CFDVizDocument :            public Usul::Documents::Document,
                                   public Usul::Interfaces::IBuildScene,
                                   public Usul::Interfaces::IUpdateListener,
-                                  public Usul::Interfaces::IMenuAdd
+                                  public Usul::Interfaces::IMenuAdd,
+                                  public Usul::Interfaces::ICFDCommands
 
                                   
 {
@@ -65,6 +67,12 @@ public:
     Usul::Math::Vec3d dir;
     unsigned int ttl;
   };
+  struct Partition
+  {
+    osg::BoundingBox bb;
+    unsigned int xmin, xmax, ymin, ymax, zmin, zmax;
+  };
+
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
   typedef Usul::Documents::Document Document;
@@ -84,6 +92,8 @@ public:
   typedef std::vector< double > ColorValues;
   typedef std::vector< unsigned char > ColorVec;
   typedef std::vector< CFDPoint > Vertices;
+  typedef osg::ref_ptr< osg::Vec3Array > Vec3Array;
+  typedef std::vector < Vec3Array > Streamlines;
   typedef osg::ref_ptr< osg::LineSegment > LineSegmentPtr;
   typedef osg::BoundingBox BoundingBox;
   typedef osg::ref_ptr< osg::MatrixTransform > MatrixTransformPtr;
@@ -91,6 +101,7 @@ public:
   typedef OsgTools::Builders::Arrow Arrow;
   typedef OsgTools::Ray Ray;
   typedef std::vector< Particle > Particles;
+  typedef std::vector< Partition > Partitions;
   
   
   /// Smart-pointer definitions.
@@ -130,6 +141,9 @@ public:
   virtual void     write ( const std::string &filename, Unknown *caller = 0x0  ) const;
   
  
+  // Usul::Interfaces::ICFDCommand
+  void              animation ( bool state );
+  bool              animation ();
 
 protected:
 
@@ -142,16 +156,16 @@ protected:
 
   void                        _openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller );
   void                        _setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller );
-  void                        _incrementProgress ( bool state );
+  void                        _incrementProgress ( bool state, Unknown *progress = 0x0 );
 
   // Scene Builders
   void                        _buildScene( Unknown *caller );
   osg::Node*                  _buildVectorArrows( bool drawMirror, double arrowSize, Unknown *caller );
     
   //Reads
-  void                        _readVertices( const std::string& filename );
-  void                        _readColorTable( const std::string& filename );
-  void                        _readGridFile( const std::string & filename );
+  void                        _readVertices( const std::string& filename, Unknown *progress = 0x0 );
+  void                        _readColorTable( const std::string& filename, Unknown *progress = 0x0 );
+  void                        _readGridFile( const std::string & filename, Unknown *progress = 0x0 );
 
   void                        _setupEnvironment();
   Color4                      _getInterpolatedColorValue( double value );
@@ -159,13 +173,15 @@ protected:
   CFDPoint                    _getVertexAt( unsigned int i, unsigned int j, unsigned int k );
 
   // CFD animation and particle movement
-  void                        _moveParticles();
+  void                        _moveParticles( Unknown *caller );
   Vec3d                       _getDirectionAt( Vec3d pos );
   Vec3d                       _getDirectionAt( unsigned int i, unsigned int j, unsigned int k, Vec3d pos );
-  Vec3d                       _getDirectionAt2( Vec3d pos );
+  Vec3d                       _getDirectionAt2( Vec3d pos, Unknown *caller );
   bool                        _contains( unsigned int i, unsigned int j, unsigned int k, Vec3d pos );
-  osg::Node *                 _drawParticles();
-  osg::Node *                 _drawGrid();
+  bool                        _getPartition( Vec2d &iRange, Vec2d &jRange, Vec2d &kRange, Vec3d pos );
+  void                        _partition();
+  osg::Node *                 _drawParticles( Unknown *caller );
+  osg::Node *                 _drawGrid( Unknown *caller );
   void                        _initParticles();
   double                      _determinant( Vec3d a, Vec3d b, Vec3d c );
   bool                        _rayQuadIntersect( Vec3d a, Vec3d b, Vec3d c, Vec3d d, Vec3d p );
@@ -185,6 +201,9 @@ private:
   Usul::Math::Vec3ui            _gridResolution;
   Particles                     _particles;    
   Usul::Policies::NumberBased   _update;
+  bool                          _isAnimating;
+  Vec3Array                     _streamLines;
+  Partitions                    _partitions;
   
 };
 

@@ -67,9 +67,20 @@ Body::Body ( const Vec2d &r, Usul::Jobs::Manager& manager ) : BaseClass(),
   _ellipsoid->setAB ( r[Body::RADIUS_EQUATOR], r[Body::RADIUS_POLAR] );
 
   // Properties of the tile.
+#if 1
+  const osg::Vec2d mn ( -115, 31 );
+  const osg::Vec2d mx ( -109, 37 );
+#else
   const osg::Vec2d mn ( -180, -90 );
   const osg::Vec2d mx (    0,  90 );
-  const double splitDistance ( _ellipsoid->a() * 7 );
+#endif
+
+  // Calculate split distance.
+  const double lonRange ( mx[0] - mn[0] );
+  const double latRange ( mx[1] - mn[1] );
+  const double maxRange ( Usul::Math::maximum ( lonRange, latRange ) );
+  const double multiplier ( 7 );
+  const double splitDistance ( _ellipsoid->a() * multiplier * ( maxRange / 180 ) );
 
   // Make the tile and add it to the transform.
   _tile = new Tile ( 0, Tile::Extents ( mn, mx ), Tile::MeshSize ( 17, 17 ), Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ), splitDistance, this );

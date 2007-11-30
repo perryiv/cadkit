@@ -18,6 +18,8 @@
 
 #include "osg/Vec2d"
 
+#include <map>
+
 namespace osg { class Image; class Vec3d; }
 
 namespace StarSystem {
@@ -29,10 +31,19 @@ public:
 
   typedef Usul::Base::Object BaseClass;
   typedef StarSystem::Extents < osg::Vec2d > Extents;
+  typedef std::pair < unsigned char, unsigned char > RedGreen;
+  typedef std::pair < RedGreen, unsigned char > Color;
+  typedef std::map < Color, unsigned char > Alphas;
 
   USUL_DECLARE_REF_POINTERS ( RasterLayer );
 
   RasterLayer();
+
+  // Add an alpha value.
+  void                  alpha ( unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha );
+
+  // Get the alpha values.
+  Alphas                alphas() const;
 
   /// Get/Set the extents.
   void                  extents ( const Extents& extents );
@@ -48,6 +59,7 @@ protected:
 private:
 
   Extents _extents;
+  Alphas _alphas;
 };
 
 

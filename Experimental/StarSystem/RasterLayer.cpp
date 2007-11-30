@@ -10,6 +10,8 @@
 
 #include "StarSystem/RasterLayer.h"
 
+#include "osg/Image"
+
 using namespace StarSystem;
 
 
@@ -21,7 +23,8 @@ using namespace StarSystem;
 
 RasterLayer::RasterLayer() : 
   BaseClass(),
-  _extents()
+  _extents(),
+  _alphas()
 {
 }
 
@@ -60,4 +63,31 @@ RasterLayer::Extents RasterLayer::extents() const
 {
   Guard guard ( this );
   return _extents;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add an alpha value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayer::alpha ( unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha )
+{
+  Guard guard ( this );
+  Color color ( RedGreen ( red, green ), blue );
+  _alphas[color] = alpha;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the alpha values.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterLayer::Alphas RasterLayer::alphas() const
+{
+  Guard guard ( this );
+  return _alphas;
 }

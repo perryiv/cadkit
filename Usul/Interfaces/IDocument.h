@@ -96,7 +96,7 @@ struct IDocument : public Usul::Interfaces::IUnknown
   virtual void                          removeWindow   ( Usul::Interfaces::IWindow *window ) = 0;
   virtual void                          removeView     ( Usul::Interfaces::IView *view   ) = 0;
 
-  virtual const std::string&            typeName() const = 0;
+  virtual std::string                   typeName() const = 0;
 
   virtual void                          updateGUI() = 0;
 

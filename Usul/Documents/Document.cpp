@@ -589,9 +589,9 @@ void Document::setProgressBar ( bool state, std::istream &in, unsigned int fileS
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::setStatusBar ( const std::string &text )
+void Document::setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller )
 {
-  Usul::Interfaces::IStatusBar::QueryPtr status ( Usul::Resources::statusBar() );
+  Usul::Interfaces::IStatusBar::QueryPtr status ( ( 0x0 == caller ) ? Usul::Resources::statusBar() : caller );
   if ( status.valid() )
     status->setStatusBarText ( text, true );
 }
@@ -892,4 +892,18 @@ void Document::defaultFilename()
   name << "Untitled" << ++count;
   this->fileName  ( name.str() );
   this->fileValid ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the name of this type of document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Document::typeName() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _typeName;
 }

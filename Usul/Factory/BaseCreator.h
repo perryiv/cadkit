@@ -23,7 +23,6 @@
 
 #include <string>
 
-namespace Usul { namespace Base { class Referenced; } }
 
 namespace Usul {
 namespace Factory {
@@ -43,11 +42,11 @@ public:
 
   USUL_DECLARE_REF_POINTERS ( BaseCreator );
 
-  BaseCreator ( const std::string &name );
-
   virtual Usul::Base::Referenced *  operator()() = 0;
 
 protected:
+
+  BaseCreator ( const std::string &name );
 
   virtual ~BaseCreator();
 };

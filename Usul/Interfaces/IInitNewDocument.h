@@ -32,9 +32,11 @@ struct IInitNewDocument : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1017125944u };
 
-  /// Initialize a new document
-  virtual void                initNewDocument ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
+  /// Do we handle this document type?
+  virtual bool                handlesDocumentType ( Usul::Interfaces::IUnknown *document ) = 0;
 
+  /// Initialize a new document
+  virtual void                initNewDocument ( Usul::Interfaces::IUnknown *document, Usul::Interfaces::IUnknown *caller ) = 0;
 };
 
 

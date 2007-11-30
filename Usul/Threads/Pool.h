@@ -50,7 +50,7 @@ public:
   enum { DEFAULT_NUM_THREADS = 10 };
 
   // Constructor
-  Pool ( unsigned int numThreads = Pool::DEFAULT_NUM_THREADS );
+  Pool ( unsigned int numThreads = Pool::DEFAULT_NUM_THREADS, bool lazyStart = true );
 
   // Add a task.
   TaskHandle              addTask ( int priority, Task *task );
@@ -110,7 +110,7 @@ private:
 
   void                    _destroy();
 
-  Task *                  _nextTask();
+  Task::RefPtr            _nextTask();
 
   void                    _startThreads();
 

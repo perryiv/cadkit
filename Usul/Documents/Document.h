@@ -202,14 +202,14 @@ public:
   void                        setProgressBar ( bool state, std::istream &in, unsigned int fileSize, Unknown *caller = 0x0 );
 
   /// Convenience function to set status bar and flush events.
-  void                        setStatusBar ( const std::string &text );
+  void                        setStatusBar ( const std::string &text, Unknown *caller = 0x0 );
 
   /// Usul::Interfaces::ISendMessage
   /// Send the message to all listeners except for one specified
   virtual void                sendMessage ( unsigned short message, const Unknown *skip = 0x0 );
 
   /// Return the name of this type of document.
-  virtual const std::string&  typeName() const { return _typeName; }
+  virtual std::string         typeName() const;
 
   /// Update the GUI.
   virtual void                updateGUI();

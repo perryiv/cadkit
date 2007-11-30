@@ -34,6 +34,7 @@ namespace Names
   const std::string HEIGHT      ( "height" );
   const std::string LAYERS      ( "layers" );
   const std::string BBOX        ( "bbox" );
+  const std::string VERSION     ( "version" );
 }
 
 

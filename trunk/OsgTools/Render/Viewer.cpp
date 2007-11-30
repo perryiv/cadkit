@@ -138,8 +138,12 @@ namespace Usul
 {
   namespace Registry
   {
+    USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_4 ( osg::Vec4f );
+    USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_4 ( osg::Vec4d );
     USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_3 ( osg::Vec3f );
     USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_3 ( osg::Vec3d );
+    USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_2 ( osg::Vec2f );
+    USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_2 ( osg::Vec2d );
     USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_4 ( osg::Quat );
   }
 }
@@ -237,6 +241,7 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   static unsigned int count ( 0 );
   _contextId = ++count;
 
+  // Set the scene.
   _renderer->scene ( _sceneManager->scene() );
 
 #ifdef _DEBUG
@@ -255,6 +260,9 @@ Viewer::~Viewer()
 {
   // Remember this trackball setting.
   this->trackballStateSave();
+
+  // Save the background settings.
+  this->backgroundSave();
 
   // Better be zero
   USUL_ASSERT ( 0 == this->refCount() );
@@ -753,10 +761,8 @@ void Viewer::resize ( unsigned int w, unsigned int h )
   // Update the projection node.
   _sceneManager->projection()->setMatrix( osg::Matrix::ortho2D ( 0, w ,0, h ) );
 
-  _renderer->resize( w, h );
-
-  // Update the gradient background vertices.
-  //_gradient.update ( w, h );
+  // Update the renderer.
+  _renderer->resize ( w, h );
 }
 
 
@@ -1239,9 +1245,21 @@ void Viewer::_setLodCullCallback ( osg::NodeCallback *cb )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+void Viewer::backgroundColor ( const osg::Vec4 &color, unsigned int corners )
+{
+  _renderer->backgroundColor ( color, corners );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the background color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void Viewer::backgroundColor ( const osg::Vec4 &color )
 {
-  _renderer->backgroundColor ( color );
+  this->backgroundColor ( color, this->backgroundCorners() );
 }
 
 
@@ -1254,6 +1272,18 @@ void Viewer::backgroundColor ( const osg::Vec4 &color )
 osg::Vec4 Viewer::backgroundColor() const
 {
   return _renderer->backgroundColor();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the background color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec4 Viewer::backgroundColor ( unsigned int corners ) const
+{
+  return _renderer->backgroundColor ( corners );
 }
 
 
@@ -3918,7 +3948,7 @@ void Viewer::setBackground ( const osg::Vec4 &color )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::addClippingPlane ( )
+void Viewer::addClippingPlane()
 {
   this->addPlane();
 }
@@ -5013,7 +5043,7 @@ const Usul::Interfaces::IUnknown * Viewer::caller () const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Helper unction to prepare document tag.
+//  Helper function to prepare document tag.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -5021,7 +5051,7 @@ namespace Helper
 {
   std::string documentTagName ( const Usul::Interfaces::IDocument *doc )
   {
-    std::string name ( ( 0x0 != doc ) ? doc->fileName() : "" );
+    std::string name ( ( 0x0 != doc ) ? ( ( true == doc->fileValid() ) ? doc->fileName() : doc->typeName() ) : "" );
     std::replace ( name.begin(), name.end(), ' ',  '_' );
     std::replace ( name.begin(), name.end(), '/',  '_' );
     std::replace ( name.begin(), name.end(), '\\', '_' );
@@ -5058,9 +5088,10 @@ void Viewer::trackballStateSave() const
     return;
 
   // Save properties in registry.
-  Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["center"]   = trackball->center();
-  Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["rotation"] = trackball->rotation();
-  Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["distance"] = trackball->distance();
+  Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc] );
+  reg["center"]   = trackball->center();
+  reg["rotation"] = trackball->rotation();
+  reg["distance"] = trackball->distance();
 }
 
 
@@ -5076,7 +5107,7 @@ void Viewer::trackballStateLoad()
   Guard guard ( this );
 
   // Get string key for document.
-  std::string doc ( Helper::documentTagName ( _document.get() ) );
+  const std::string doc ( Helper::documentTagName ( _document.get() ) );
   if ( true == doc.empty() )
     return;
 
@@ -5086,10 +5117,69 @@ void Viewer::trackballStateLoad()
     return;
 
   // Get properties from registry.
-  const osg::Vec3   center ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["center"].get<osg::Vec3>   ( trackball->center()   ) );
-  const osg::Quat rotation ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["rotation"].get<osg::Quat> ( trackball->rotation() ) );
-  const float     distance ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc]["distance"].get<float>     ( trackball->distance() ) );
+  Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc] );
+  const osg::Vec3   center ( reg["center"].get<osg::Vec3>   ( trackball->center()   ) );
+  const osg::Quat rotation ( reg["rotation"].get<osg::Quat> ( trackball->rotation() ) );
+  const float     distance ( reg["distance"].get<float>     ( trackball->distance() ) );
 
   // Set trackball's properties.
   this->setTrackball ( center, distance, rotation, false, true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the background settings.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::backgroundLoad()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Need a valid document.
+  if ( false == _document.valid() )
+    return;
+
+  // Get string key for document.
+  const std::string doc ( Helper::documentTagName ( _document.get() ) );
+  if ( true == doc.empty() )
+    return;
+
+  // Get properties from registry.
+  Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::BACKGROUND_COLOR][doc] );
+  this->backgroundColor   ( reg["top_left"].get<osg::Vec4>     ( this->backgroundColor ( Corners::TOP_LEFT     ) ), Corners::TOP_LEFT     );
+  this->backgroundColor   ( reg["top_right"].get<osg::Vec4>    ( this->backgroundColor ( Corners::TOP_RIGHT    ) ), Corners::TOP_RIGHT    );
+  this->backgroundColor   ( reg["bottom_left"].get<osg::Vec4>  ( this->backgroundColor ( Corners::BOTTOM_LEFT  ) ), Corners::BOTTOM_LEFT  );
+  this->backgroundColor   ( reg["bottom_right"].get<osg::Vec4> ( this->backgroundColor ( Corners::BOTTOM_RIGHT ) ), Corners::BOTTOM_RIGHT );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Save the background settings.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::backgroundSave()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Need a valid document.
+  if ( false == _document.valid() )
+    return;
+
+  // Get string key for document.
+  const std::string doc ( Helper::documentTagName ( _document.get() ) );
+  if ( true == doc.empty() )
+    return;
+
+  // Save properties in registry.
+  Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::BACKGROUND_COLOR][doc] );
+  reg["top_left"]     = this->backgroundColor ( Corners::TOP_LEFT );
+  reg["top_right"]    = this->backgroundColor ( Corners::TOP_RIGHT );
+  reg["bottom_left"]  = this->backgroundColor ( Corners::BOTTOM_LEFT );
+  reg["bottom_right"] = this->backgroundColor ( Corners::BOTTOM_RIGHT );
 }

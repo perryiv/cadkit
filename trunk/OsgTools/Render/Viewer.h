@@ -203,12 +203,18 @@ public:
   bool                  isAxesShown() const;
 
   // Set/get the background color. Throws if getting color from a null viewer.
+  void                  backgroundColor ( const osg::Vec4 &color, unsigned int corners );
   void                  backgroundColor ( const osg::Vec4 &color );
+  osg::Vec4             backgroundColor ( unsigned int corners ) const;
   osg::Vec4             backgroundColor() const;
 
   // Set/get the background corners.
   void                  backgroundCorners ( unsigned int corners );
   unsigned int          backgroundCorners() const;
+
+  // Save and load the background.
+  void                  backgroundLoad();
+  void                  backgroundSave();
 
   // Set/get the bounding-box state.
   void                  boundingBox ( bool show );
@@ -494,8 +500,6 @@ protected:
   void                  _removeAxes ();
   void                  _setAxes (); 
 
-  void                  _setCenterOfRotation();
-
   void                  _dumpFrame();
 
   void                  _editMaterial  ( osgUtil::Hit &hit );
@@ -509,6 +513,8 @@ protected:
   bool                  _lineSegment ( float mouseX, float mouseY, osg::Vec3 &pt0, osg::Vec3 &pt1, bool useWindowCoords = false );
 
   void                  _render();
+
+  void                  _setCenterOfRotation();
 
   void                  _setNavCursor ( bool left, bool middle, bool right, EventAdapter::EventType type );
 

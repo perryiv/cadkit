@@ -81,7 +81,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/collision_pqp.vrplugd"
+				OutputFile="$(CADKIT_BIN_DIR)/collision_pqp.vrplugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""

@@ -47,7 +47,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR),$(FOX_INC_DIR),$(OSG_INC_DIR),$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR),$(FOX_INC_DIR),$(OSG_INC_DIR),$(OPENTHREADS_INC_DIR)"
 				PreprocessorDefinitions="_COMPILING_OSG_FOX_CORE;FOXDLL;_USRDLL;WIN32;_DEBUG;_WINDOWS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -78,13 +78,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="OpenThreadsWin32d.lib opengl32.lib foxdlld-1.6.lib shell32.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosCored.dll"
+				OutputFile="$(CADKIT_BIN_DIR)/HeliosCored.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(FOX_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(OPENTHREADS_LIB_DIR)&quot;;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/OsgFoxCored.pdb"
-				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/OsgFoxCored.lib"
+				ImportLibrary="$(CADKIT_BIN_DIR)/OsgFoxCored.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -146,7 +146,7 @@
 				AdditionalOptions="/Zm200 "
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR),$(FOX_INC_DIR),$(OSG_INC_DIR),$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR),$(FOX_INC_DIR),$(OSG_INC_DIR),$(OPENTHREADS_INC_DIR)"
 				PreprocessorDefinitions="_COMPILING_OSG_FOX_CORE;FOXDLL;_USRDLL;NDEBUG;WIN32;_WINDOWS"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -177,12 +177,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="OpenThreads.lib opengl32.lib foxdll-1.6.lib shell32.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosCore.dll"
+				OutputFile="$(CADKIT_BIN_DIR)/HeliosCore.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(FOX_LIB_DIR);$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/OsgFoxCore.pdb"
-				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/OsgFoxCore.lib"
+				ImportLibrary="$(CADKIT_BIN_DIR)/OsgFoxCore.lib"
 				TargetMachine="1"
 			/>
 			<Tool

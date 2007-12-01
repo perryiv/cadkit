@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR)/SimFlow;$(OPENTHREADS_INC_DIR);$(PRODUCER_INC_DIR);$(OSG_INC_DIR);$(XERCES_INC_DIR);$(VJCINEMA_ROOT_DIR)/include;$(VJ_BASE_DIR)/include;$(VJ_BASE_DIR)/include/tweek/idl;$(VJ_DEPS_DIR)/include;"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR)/SimFlow;$(OPENTHREADS_INC_DIR);$(PRODUCER_INC_DIR);$(OSG_INC_DIR);$(XERCES_INC_DIR);$(VJCINEMA_ROOT_DIR)/include;$(VJ_BASE_DIR)/include;$(VJ_BASE_DIR)/include/tweek/idl;$(VJ_DEPS_DIR)/include;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;__WIN32__=1;__x86__=1;__NT__=1;__OSVERSION__=5;USE_core_stub_in_nt_dll;USE_core_stub_in_nt_dll_NOT_DEFINED_Subject;$(NOINHERIT)"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -127,7 +127,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR)/SimFlow;$(OPENTHREADS_INC_DIR);$(PRODUCER_INC_DIR);$(OSG_INC_DIR);$(XERCES_INC_DIR);$(VJCINEMA_ROOT_DIR)/include;$(VJ_BASE_DIR)/include;$(VJ_BASE_DIR)/include/tweek/idl;$(VJ_DEPS_DIR)/include;"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR)/SimFlow;$(OPENTHREADS_INC_DIR);$(PRODUCER_INC_DIR);$(OSG_INC_DIR);$(XERCES_INC_DIR);$(VJCINEMA_ROOT_DIR)/include;$(VJ_BASE_DIR)/include;$(VJ_BASE_DIR)/include/tweek/idl;$(VJ_DEPS_DIR)/include;"
 				PreprocessorDefinitions="WIN32;_OPT;NDEBUG;_CONSOLE;__WIN32__=1;__x86__=1;__NT__=1;__OSVERSION__=5;USE_core_stub_in_nt_dll;USE_core_stub_in_nt_dll_NOT_DEFINED_Subject;$(NOINHERIT)"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"

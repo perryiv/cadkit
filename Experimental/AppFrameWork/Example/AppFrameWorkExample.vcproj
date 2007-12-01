@@ -45,7 +45,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="4"
-				AdditionalIncludeDirectories="../../;$(CADKIT_ROOT_DIR)"
+				AdditionalIncludeDirectories="../../;$(CADKIT_INC_DIR)"
 				PreprocessorDefinitions="_WINDOWS;WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="true"
@@ -73,7 +73,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/AppFrameWorkExample.exe"
+				OutputFile="$(CADKIT_BIN_DIR)/AppFrameWorkExample.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\Release/AppFrameWorkExample.pdb"
@@ -104,7 +104,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy plugins.xml %CADKIT_ROOT_DIR%\bin\$(TargetName).plugs /a /d /v /y"
+				CommandLine="copy plugins.xml %CADKIT_INC_DIR%\bin\$(TargetName).plugs /a /d /v /y"
 			/>
 		</Configuration>
 		<Configuration
@@ -139,7 +139,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../;$(CADKIT_ROOT_DIR)"
+				AdditionalIncludeDirectories="../../;$(CADKIT_INC_DIR)"
 				PreprocessorDefinitions="_WINDOWS;WIN32;_DEBUG"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="true"
@@ -168,7 +168,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/AppFrameWorkExampled.exe"
+				OutputFile="$(CADKIT_BIN_DIR)/AppFrameWorkExampled.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
@@ -200,7 +200,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy plugins.xml %CADKIT_ROOT_DIR%\bin\$(TargetName).plugs /a /d /v /y"
+				CommandLine="copy plugins.xml %CADKIT_INC_DIR%\bin\$(TargetName).plugs /a /d /v /y"
 			/>
 		</Configuration>
 	</Configurations>

@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR)/Experimental;$(LOCAL_SRC_DIR);$(BOOST_INC_DIR);$(LOCAL_SRC_DIR)/Brahma/src"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR)/Experimental;$(CADKIT_INC_DIR);$(BOOST_INC_DIR);$(CADKIT_INC_DIR)/Brahma/src"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;BRAHMA_EXPORTS;BRAHMA_SHARED"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,9 +62,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="Usuld.lib SerializeXMLd.lib XMLTreed.lib"
-				OutputFile="$(LOCAL_SRC_DIR)/bin/Brahmad.dll"
+				OutputFile="$(CADKIT_BIN_DIR)/Brahmad.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(LOCAL_SRC_DIR)/bin"
+				AdditionalLibraryDirectories="$(CADKIT_BIN_DIR)"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -119,7 +119,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR)/Experimental;$(LOCAL_SRC_DIR);$(BOOST_INC_DIR);$(LOCAL_SRC_DIR)/Brahma/src"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR)/Experimental;$(CADKIT_INC_DIR);$(BOOST_INC_DIR);$(CADKIT_INC_DIR)/Brahma/src"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;BRAHMA_EXPORTS;BRAHMA_SHARED;"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -139,9 +139,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="Usul.lib SerializeXML.lib XMLTree.lib"
-				OutputFile="$(LOCAL_SRC_DIR)/bin/Brahma.dll"
+				OutputFile="$(CADKIT_BIN_DIR)/Brahma.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(LOCAL_SRC_DIR)/bin"
+				AdditionalLibraryDirectories="$(CADKIT_BIN_DIR)"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"

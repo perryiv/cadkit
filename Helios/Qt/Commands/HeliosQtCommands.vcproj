@@ -37,7 +37,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR);$(QTDIR)\include;$(BOOST_ROOT_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(QTDIR)\include;$(BOOST_ROOT_DIR)"
 				PreprocessorDefinitions="_COMPILING_HELIOS_QT_COMMANDS;UNICODE,WIN32,QT_THREAD_SUPPORT,QT_NO_DEBUG,NDEBUG,QT_CORE_LIB,QT_GUI_LIB,CORE_LIB"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -55,7 +55,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies=" qtmain.lib QtCore4.lib QtGui4.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosQtCommands.dll"
+				OutputFile="$(CADKIT_BIN_DIR)/HeliosQtCommands.dll"
 				AdditionalLibraryDirectories="$(QTDIR)\lib"
 				GenerateDebugInformation="false"
 				SubSystem="2"
@@ -110,7 +110,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR);$(QTDIR)\include;$(BOOST_ROOT_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(QTDIR)\include;$(BOOST_ROOT_DIR)"
 				PreprocessorDefinitions="_USUL_TRACE;_COMPILING_HELIOS_QT_COMMANDS;UNICODE,WIN32,QT_THREAD_SUPPORT,QT_CORE_LIB,QT_GUI_LIB,CORE_LIB"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
@@ -128,7 +128,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/HeliosQtCommandsd.dll"
+				OutputFile="$(CADKIT_BIN_DIR)/HeliosQtCommandsd.dll"
 				AdditionalLibraryDirectories="$(QTDIR)\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -196,7 +196,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing BaseAction.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe  -D_USUL_TRACE -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -I&quot;$(LOCAL_SRC_DIR)&quot; -I&quot;$(QTDIR)\include&quot; &quot;.\BaseAction.h&quot; -o &quot;.\GeneratedFiles\moc_BaseAction.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="$(QTDIR)\bin\moc.exe  -D_USUL_TRACE -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -I&quot;$(CADKIT_INC_DIR)&quot; -I&quot;$(QTDIR)\include&quot; &quot;.\BaseAction.h&quot; -o &quot;.\GeneratedFiles\moc_BaseAction.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\BaseAction.h"
 						Outputs="&quot;.\GeneratedFiles\moc_BaseAction.cpp&quot;"
 					/>

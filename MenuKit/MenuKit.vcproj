@@ -64,13 +64,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="../bin/MenuKitd.dll"
+				OutputFile="$(CADKIT_BIN_DIR)/MenuKitd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/MenuKitd.pdb"
 				SubSystem="2"
-				ImportLibrary="../bin/MenuKitd.lib"
+				ImportLibrary="$(CADKIT_BIN_DIR)/MenuKitd.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -145,7 +145,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="../bin/MenuKit.dll"
+				OutputFile="$(CADKIT_BIN_DIR)/MenuKit.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="false"
@@ -153,7 +153,7 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="../bin/MenuKit.lib"
+				ImportLibrary="$(CADKIT_BIN_DIR)/MenuKit.lib"
 				TargetMachine="1"
 			/>
 			<Tool

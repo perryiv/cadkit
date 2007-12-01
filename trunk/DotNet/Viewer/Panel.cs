@@ -283,7 +283,7 @@ namespace CadKit.Viewer
 
           if (null != this.Viewer)
           {
-            this.Viewer.handleNavigation(x, y, _leftButtonDown, _middleButtonDown, _rightButtonDown, type);
+            this.Viewer.mouseMove(x, y, _leftButtonDown, _middleButtonDown, _rightButtonDown, type);
           }
         }
       }
@@ -333,7 +333,7 @@ namespace CadKit.Viewer
 
           if (null != this.Viewer)
           {
-            this.Viewer.buttonRelease(x, y, left, middle, right);
+            this.Viewer.buttonRelease(x, y, left, middle, right, CadKit.Viewer.Glue.Viewer.Type.RELEASE);
           }
 
           if (left)
@@ -370,8 +370,7 @@ namespace CadKit.Viewer
 
           if (null != this.Viewer)
           {
-            this.Viewer.buttonPress(x, y, left, middle, right);
-            this.Viewer.handleSeek(x, y, left);
+            this.Viewer.buttonPress(x, y, left, middle, right, CadKit.Viewer.Glue.Viewer.Type.PUSH);
           }
 
           if (left)

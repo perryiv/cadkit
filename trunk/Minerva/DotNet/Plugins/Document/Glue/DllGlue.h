@@ -88,18 +88,6 @@ namespace DT
               array<CadKit::Interfaces::ILayer^ > ^ get();
             }
 
-            void                  setMovieMode( bool b, CadKit::Viewer::Glue::Viewer ^viewer );
-
-            void                  play(CadKit::Viewer::Glue::Viewer ^viewer );
-
-            void                  pause( CadKit::Viewer::Glue::Viewer ^viewer );
-
-            void                  restart( CadKit::Viewer::Glue::Viewer ^viewer );
-
-            bool                  isPlaying();
-
-            bool                  isPaused();
-
             void                  setActive ( bool b );
 
           private:

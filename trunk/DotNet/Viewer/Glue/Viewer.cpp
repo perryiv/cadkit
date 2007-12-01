@@ -222,10 +222,14 @@ Viewer::Corners Viewer::backgroundCorners()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::buttonPress ( float x, float y, bool left, bool middle, bool right )
+void Viewer::buttonPress ( float x, float y, bool left, bool middle, bool right, Type type )
 {
   if ( _viewer )
-    _viewer->buttonPress ( x, y, left, middle, right );
+  {
+    typedef OsgTools::Render::EventAdapter EventAdapter;
+    EventAdapter::Ptr ea ( _viewer->eventAdaptor ( x, y, left, middle, right, static_cast < osgGA::GUIEventAdapter::EventType > ( type ) ) );
+    _viewer->buttonPress ( ea.get() );
+  }
 }
 
 
@@ -235,10 +239,31 @@ void Viewer::buttonPress ( float x, float y, bool left, bool middle, bool right 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::buttonRelease ( float x, float y, bool left, bool middle, bool right )
+void Viewer::buttonRelease ( float x, float y, bool left, bool middle, bool right, Type type )
 {
   if ( _viewer )
-    _viewer->buttonRelease ( x, y, left, middle, right );
+  {
+    typedef OsgTools::Render::EventAdapter EventAdapter;
+    EventAdapter::Ptr ea ( _viewer->eventAdaptor ( x, y, left, middle, right, static_cast < osgGA::GUIEventAdapter::EventType > ( type ) ) );
+    _viewer->buttonRelease ( ea.get() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Handle Navigation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::mouseMove ( float x, float y, bool left, bool middle, bool right, Type type )
+{
+  if ( _viewer )
+  {
+    typedef OsgTools::Render::EventAdapter EventAdapter;
+    EventAdapter::Ptr ea ( _viewer->eventAdaptor ( x, y, left, middle, right, static_cast < osgGA::GUIEventAdapter::EventType > ( type ) ) );
+    _viewer->mouseMove ( ea.get() );
+  }
 }
 
 
@@ -275,32 +300,6 @@ void Viewer::create()
 {
   if ( _viewer )
     _viewer->create();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Handle Navigation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::handleNavigation ( float x, float y, bool left, bool middle, bool right, Type type )
-{
-  if ( _viewer )
-    _viewer->handleNavigation ( x, y, left, middle, right, static_cast < osgGA::GUIEventAdapter::EventType > ( type ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Handle Seek.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::handleSeek ( float x, float y, bool left )
-{
-  if ( _viewer )
-    _viewer->handleSeek ( x, y, left );
 }
 
 

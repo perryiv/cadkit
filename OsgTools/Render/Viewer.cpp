@@ -21,7 +21,6 @@
 
 #include "OsgTools/Render/Viewer.h"
 #include "OsgTools/Render/Defaults.h"
-#include "OsgTools/Render/LightCallback.h"
 #include "OsgTools/Group.h"
 #include "OsgTools/ScopedOptions.h"
 #include "OsgTools/Box.h"
@@ -48,7 +47,6 @@
 #include "OsgTools/IO/WriteEPS.h"
 #include "OsgTools/Callbacks/HiddenLines.h"
 #include "OsgTools/Font.h"
-#include "OsgTools/Draggers/Trackball.h"
 
 #include "Usul/Errors/Checker.h"
 #include "Usul/Components/Manager.h"
@@ -62,14 +60,9 @@
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IReportErrors.h"
 #include "Usul/Interfaces/GUI/IMaterialEditor.h"
-#include "Usul/Interfaces/ISendMessage.h"
-#include "Usul/Interfaces/ICleanUp.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
-#include "Usul/Interfaces/IHandleMessage.h"
 #include "Usul/Interfaces/IAnimate.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
-#include "Usul/Interfaces/IDatabasePager.h"
-#include "Usul/Interfaces/IToolLifeTime.h"
 #include "Usul/Interfaces/IRenderListener.h"
 
 #include "Usul/Registry/Constants.h"
@@ -82,7 +75,6 @@
 #include "Usul/System/Clock.h"
 #include "Usul/Predicates/Tolerance.h"
 #include "Usul/Scope/Caller.h"
-#include "Usul/Scope/Reset.h"
 #include "Usul/Cast/Cast.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/File/Path.h"
@@ -2345,10 +2337,6 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IExport* > ( this );
   case Usul::Interfaces::IOpenSceneGraph::IID:
     return static_cast<Usul::Interfaces::IOpenSceneGraph*>(this);
-  case Usul::Interfaces::ISelectionBox::IID:
-    return static_cast<Usul::Interfaces::ISelectionBox*>(this);
-  case Usul::Interfaces::IStereo::IID:
-    return static_cast < Usul::Interfaces::IStereo* > ( this );
   case Usul::Interfaces::IFrameDump::IID:
     return static_cast<Usul::Interfaces::IFrameDump*>(this);
   case Usul::Interfaces::ITextMatrix::IID:
@@ -2369,14 +2357,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::ITrackball*>(this);
   case Usul::Interfaces::IRedraw::IID:
     return static_cast<Usul::Interfaces::IRedraw*>(this);
-  case Usul::Interfaces::IMode::IID:
-    return static_cast < Usul::Interfaces::IMode* > ( this );
   case Usul::Interfaces::ISpin::IID:
     return static_cast < Usul::Interfaces::ISpin* > ( this );
-  case Usul::Interfaces::IHeliosView::IID:
-    return static_cast < Usul::Interfaces::IHeliosView* > ( this );
-  case Usul::Interfaces::ICenterOfRotation::IID:
-    return static_cast < Usul::Interfaces::ICenterOfRotation * > ( this );
   case Usul::Interfaces::IScreenCapture::IID:
     return static_cast < Usul::Interfaces::IScreenCapture * > ( this );
   case Usul::Interfaces::ISnapShot::IID:
@@ -2761,30 +2743,6 @@ bool Viewer::stereo() const
 void Viewer::stereo( bool b )
 {
   this->viewer()->getDisplaySettings()->setStereo( b );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Draw selection box with given vertices
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::drawSelectionBox ( const osg::Vec3 &v1, const osg::Vec3 &v2 )
-{
-  this->_drawSelectionBox( v1, v2 );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove the selection box from the scene
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::removeSelectionBox()
-{
-  this->_removeSelectionBox();
 }
 
 
@@ -4170,14 +4128,7 @@ bool Viewer::exportFile ( const std::string& filename )
 
 void Viewer::showCenterOfRotation ( bool b )
 {
-  if ( b )
-  {
-    _flags = Usul::Bits::add < unsigned int, unsigned int > ( _flags, _SHOW_COR );
-  }
-  else
-  {
-    _flags = Usul::Bits::remove < unsigned int, unsigned int > ( _flags, _SHOW_COR );
-  }
+  _flags = Usul::Bits::set < unsigned int, unsigned int > ( _flags, _SHOW_COR, b );
 }
 
 

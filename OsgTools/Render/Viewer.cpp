@@ -1633,7 +1633,6 @@ bool Viewer::writeImageFile ( const std::string &filename ) const
 {
   // Force all detail to render.
   Viewer *me ( const_cast < Viewer * > ( this ) );
-  me->forceDetail();
 
   // Get scale of window size.
   const float scale ( this->frameDump().scale() );
@@ -4413,64 +4412,6 @@ void Viewer::computeNearFar( bool b )
     //cv->setInheritanceMask ( Usul::Bits::add ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
     cv->setComputeNearFarMode( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Force all detail to render. This makes sense if the scene uses a 
-//  database pager.
-//  See: http://openscenegraph.net/pipermail/osg-users/2006-April/063593.html
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::forceDetail()
-{
-#if 0
-  const osgDB::DatabasePager *db ( this->databasePager() );
-  if ( 0x0 == db )
-    return;
-
-  const unsigned int maxNum ( 10000 );
-  unsigned int count ( 0 );
-
-  while ( count < maxNum )
-  {	
-    const unsigned int requests  ( db->getFileRequestListSize()   );
-    const unsigned int toCompile ( db->getDataToCompileListSize() );
-
-
-    #ifdef _DEBUG
-    std::cout << "         count = " << count << std::endl;
-    std::cout << "      requests = " << requests << std::endl;
-    std::cout << "     toCompile = " << toCompile << std::endl;
-    #endif
-
-    if ( 0 == requests && 0 == toCompile )
-    {
-      #ifdef _DEBUG
-      std::cout << "Note 3611460148: all detail is paged in" << std::endl;
-      #endif
-      break;
-    }
-
-    else
-    {
-      this->render();
-    }
-
-    if ( maxNum == count )
-    {
-      #ifdef _DEBUG
-      std::cout << "Warning 3611460148: max iterations reached" << std::endl;
-      #endif
-      break;
-    }
-
-    ++count;
-	
-  }
-  #endif
 }
 
 

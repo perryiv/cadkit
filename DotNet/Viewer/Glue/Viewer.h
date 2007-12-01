@@ -18,6 +18,8 @@
 
 #include "OsgTools/Render/Viewer.h"
 
+#include "osgGA/GUIEventAdapter"
+
 namespace CadKit
 {
   namespace Viewer
@@ -48,8 +50,10 @@ namespace CadKit
         enum class Type 
         { 
           NONE = 0,
-          DRAG = 4,
-          MOVE = 5
+          PUSH = osgGA::GUIEventAdapter::PUSH,
+          RELEASE = osgGA::GUIEventAdapter::RELEASE,
+          DRAG = osgGA::GUIEventAdapter::DRAG,
+          MOVE = osgGA::GUIEventAdapter::MOVE
         };
 
         enum class ViewMode
@@ -82,8 +86,9 @@ namespace CadKit
         Corners               backgroundCorners();
 
         // Button Press/Release
-        void                  buttonPress      ( float x, float y, bool left, bool middle, bool right );
-        void                  buttonRelease    ( float x, float y, bool left, bool middle, bool right );
+        void                  buttonPress      ( float x, float y, bool left, bool middle, bool right, Type type );
+        void                  buttonRelease    ( float x, float y, bool left, bool middle, bool right, Type type );
+        void                  mouseMove        ( float x, float y, bool left, bool middle, bool right, Type type );
 
         void                  clear();
 
@@ -91,10 +96,6 @@ namespace CadKit
         void                  create();
 
         void                  camera ( CadKit::Interfaces::CameraOption option );
-
-        // Handle Navigation.
-        void                  handleNavigation ( float x, float y, bool left, bool middle, bool right, Type type );
-        void                  handleSeek ( float x, float y, bool left );
 
         // Set/get the mode.
         void                  mode ( ViewMode mode );

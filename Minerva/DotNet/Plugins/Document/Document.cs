@@ -20,8 +20,7 @@ namespace DT.Minerva.Plugins.Document
     CadKit.Interfaces.IFiltersExport,
     CadKit.Interfaces.ILayerList,
     CadKit.Interfaces.ILegend,
-    CadKit.Interfaces.ILayerOperation, 
-    CadKit.Interfaces.IMovieMode
+    CadKit.Interfaces.ILayerOperation
   {
     /// <summary>
     /// Constants
@@ -404,48 +403,6 @@ namespace DT.Minerva.Plugins.Document
     void CadKit.Interfaces.ILayerOperation.setLayerOperation(string opType, int val, CadKit.Interfaces.ILayer layer)
     {
       _navtiveDocument.setLayerOperation(opType, val, layer);
-    }
-
-    void CadKit.Interfaces.IMovieMode.setMovieMode( bool b )
-    {
-      if (b)
-      {
-        CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
-        _navtiveDocument.setMovieMode(b, viewer.HeliosViewer);
-      }
-      else
-      {
-        CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
-        _navtiveDocument.setMovieMode(b, viewer.HeliosViewer);
-      }
-    }
-
-    void CadKit.Interfaces.IMovieMode.play()
-    {
-      CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
-      _navtiveDocument.play(viewer.HeliosViewer);
-    }
-
-    void CadKit.Interfaces.IMovieMode.pause()
-    {
-      CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
-      _navtiveDocument.pause(viewer.HeliosViewer);
-    }
-
-    void CadKit.Interfaces.IMovieMode.restart()
-    {
-      CadKit.Viewer.Viewer viewer = CadKit.Documents.Manager.Instance.ActiveView as CadKit.Viewer.Viewer;
-      _navtiveDocument.restart(viewer.HeliosViewer);
-    }
-
-    bool CadKit.Interfaces.IMovieMode.isPlaying()
-    {
-      return _navtiveDocument.isPlaying();
-    }
-
-    bool CadKit.Interfaces.IMovieMode.isPaused()
-    {
-      return _navtiveDocument.isPaused();
     }
 
     void _activeDocumentChanged(CadKit.Interfaces.IDocument oldDoc, CadKit.Interfaces.IDocument newDoc)

@@ -810,7 +810,7 @@ bool Controller::modeNavigatingCheck ( )
 {
   // Enable if there is a view, set check if view is in correct state.
   Usul::Interfaces::IMode::QueryPtr mode ( this->activeView( ) );
-  return mode.valid() && mode->navigating() && !mode->tool();
+  return mode.valid() && mode->navigating();
 }
 
 
@@ -854,7 +854,7 @@ bool Controller::modePickingCheck ( )
 {
   // Enable if there is a view, set check if view is in correct state.
   Usul::Interfaces::IMode::QueryPtr mode ( this->activeView( ) );
-  return mode.valid() && mode->picking() && !mode->tool();
+  return mode.valid() && mode->picking();
 }
 
 
@@ -1237,7 +1237,7 @@ void Controller::documentNew ( Usul::Interfaces::IUnknown* component, Usul::Inte
 
   // Initialize new document if it implements the interface
   if( init.valid() )
-    init->initNewDocument ( doc.get(), caller );
+    init->initNewDocument ( Usul::Interfaces::IUnknown::QueryPtr ( doc ), caller );
 
   // Create the default gui
   doc->createDefaultGUI( caller );

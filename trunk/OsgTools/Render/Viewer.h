@@ -27,8 +27,6 @@
 #include "Usul/Interfaces/IPolygonMode.h"
 #include "Usul/Interfaces/IExport.h"
 #include "Usul/Interfaces/IOpenSceneGraph.h"
-#include "Usul/Interfaces/ISelectionBox.h"
-#include "Usul/Interfaces/IStereo.h"
 #include "Usul/Interfaces/IFrameDump.h"
 #include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IGetDocument.h"
@@ -39,14 +37,11 @@
 #include "Usul/Interfaces/ITrackball.h"
 #include "Usul/Interfaces/ISceneIntersect.h"
 #include "Usul/Interfaces/IRedraw.h"
-#include "Usul/Interfaces/IMode.h"
 #include "Usul/Interfaces/ISpin.h"
-#include "Usul/Interfaces/IHeliosView.h"
 #include "Usul/Interfaces/IOpenGLContext.h"
 #include "Usul/Interfaces/ITimeoutAnimate.h"
 #include "Usul/Interfaces/GUI/ISetCursorType.h"
 #include "Usul/Interfaces/ITimeoutSpin.h"
-#include "Usul/Interfaces/ICenterOfRotation.h"
 #include "Usul/Interfaces/IScreenCapture.h"
 #include "Usul/Interfaces/ISnapShot.h"
 #include "Usul/Interfaces/IView.h"
@@ -106,8 +101,6 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IPolygonMode,
                                 public Usul::Interfaces::IExport,
                                 public Usul::Interfaces::IOpenSceneGraph,
-                                public Usul::Interfaces::ISelectionBox,
-                                public Usul::Interfaces::IStereo,
                                 public Usul::Interfaces::IFrameDump,
                                 public Usul::Interfaces::ITextMatrix,
                                 public Usul::Interfaces::IGetDocument,
@@ -118,10 +111,7 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::ITrackball,
                                 public Usul::Interfaces::ISceneIntersect,
                                 public Usul::Interfaces::IRedraw,
-                                public Usul::Interfaces::IMode,
                                 public Usul::Interfaces::ISpin,
-                                public Usul::Interfaces::IHeliosView,
-                                public Usul::Interfaces::ICenterOfRotation,
                                 public Usul::Interfaces::IScreenCapture,
                                 public Usul::Interfaces::ISnapShot,
                                 public Usul::Interfaces::IView,
@@ -242,6 +232,10 @@ public:
   virtual void          copyCamera() const;
   virtual void          pasteCamera();
   bool                  canPasteCamera() const;
+
+  /// Hide/Show the center of rotation.
+  void                  showCenterOfRotation ( bool b );
+  bool                  showCenterOfRotation ( ) const;
 
   /// Set the context.
   void                  context ( Usul::Interfaces::IUnknown* context );
@@ -439,6 +433,14 @@ public:
   double                scatterScale() const;
   void                  scatterScale ( double );
 
+  // Get/set the stereo mode
+  void                  stereoMode ( unsigned int );
+  unsigned int          stereoMode() const;
+
+  //Get/Set the eye distance
+  void                  stereoEyeDistance ( float );
+  float                 stereoEyeDistance() const;
+
   // Update the cursor based on the internal mode.
   void                  updateCursor();
 
@@ -563,19 +565,6 @@ protected:
   virtual const osg::Referenced *   osgReferenced() const;
   virtual osg::Referenced *         osgReferenced();
 
-  ///  Usul::Interfaces::ISelectionBox
-  virtual void               drawSelectionBox ( const osg::Vec3&, const osg::Vec3& );
-  virtual void               removeSelectionBox();
-
-  /// Usul::Interfaces::IStereo
-  // Get/set the stereo mode
-  virtual void               stereoMode ( unsigned int );
-  virtual unsigned int       stereoMode() const;
-
-  //Get/Set the eye distance
-  virtual void               stereoEyeDistance ( float );
-  virtual float              stereoEyeDistance() const;
-
   /////////////////////////////////////////////////////////////////////////////
   //
   //  Usul::Interfaces::IFrameDump
@@ -667,19 +656,11 @@ protected:
   virtual void                  redraw();
   virtual void                  setStatsDisplay ( bool b );
 
-  /// Usul::Interfaces::IHeliosView
-  virtual OsgTools::Render::Viewer*            heliosView()       { return this; }
-  virtual const OsgTools::Render::Viewer*      heliosView() const { return this; }
-
   /// Usul::Interfaces::IExport
   virtual bool                  canExport ( const std::string &filename );
   virtual Filters               filtersExport() const;
   virtual Filters               filtersWriteImage() const;
   virtual bool                  exportFile ( const std::string& filename );
-
-  /// Usul::Interfaces::ICenterOrRotation
-  virtual void                  showCenterOfRotation ( bool b );
-  virtual bool                  showCenterOfRotation ( ) const;
 
   /// Usul::Interfaces::IScreenCapture
   virtual osg::Image*           screenCapture ( const osg::Vec3f& center, float distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const;

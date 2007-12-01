@@ -100,7 +100,7 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   _viewer->backgroundCorners ( OsgTools::Render::Viewer::Corners::BOTTOM );
   _viewer->backgroundColor ( _viewer->backgroundColor() );
   _viewer->backgroundCorners ( OsgTools::Render::Viewer::Corners::TOP );
-  _viewer->backgroundColor ( OsgTools::Render::Defaults::CLEAR_COLOR );
+  _viewer->backgroundColor ( osg::Vec4 ( 1.0, 1.0, 0.5, 1.0 )/*OsgTools::Render::Defaults::CLEAR_COLOR*/ );
 #endif
 
   // Set the focus policy.

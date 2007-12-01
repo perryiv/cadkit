@@ -47,7 +47,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/EHsc "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR);$(USUL_INC_DIR);$(WX_INC_DIR);$(WX_LIB_DIR)/mswd;$(XALAN_INC_DIR);$(XERCES_INC_DIR)"
+				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR);$(CADKIT_INC_DIR);$(WX_INC_DIR);$(WX_LIB_DIR)/mswd;$(XALAN_INC_DIR);$(XERCES_INC_DIR)"
 				PreprocessorDefinitions="NOPCH;WIN32;__WXMSW__;_WINDOWS;__WXDEBUG__;_DEBUG;WXUSINGDLL"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="true"

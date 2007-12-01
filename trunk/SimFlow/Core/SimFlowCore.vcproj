@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(BOOST_INC_DIR)&quot;;&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(XERCES_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(VTK_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(BOOST_INC_DIR)&quot;;&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(XERCES_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(VTK_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_COMPILING_SIM_FLOW"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -120,7 +120,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(BOOST_INC_DIR)&quot;;&quot;$(CADKIT_ROOT_DIR)&quot;;&quot;$(XERCES_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(VTK_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(BOOST_INC_DIR)&quot;;&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(XERCES_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(VTK_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_COMPILING_SIM_FLOW"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

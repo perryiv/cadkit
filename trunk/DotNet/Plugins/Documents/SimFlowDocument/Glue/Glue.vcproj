@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(LOCAL_SRC_DIR)/SimFlow;$(XERCES_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR);$(VTK_INC_DIR);$(VTK_INC_DIR)\Utilities;$(VTK_INC_DIR)\VolumeRendering;$(VTK_INC_DIR)\Rendering;$(VTK_INC_DIR)\Hybrid;$(VTK_INC_DIR)\Widgets;$(VTK_INC_DIR)\Rendering\Testing\Cxx;$(VTK_INC_DIR)\IO;$(VTK_INC_DIR)\Imaging;$(VTK_INC_DIR)\Graphics;$(VTK_INC_DIR)\GenericFiltering;$(VTK_INC_DIR)\Filtering;$(VTK_INC_DIR)\Common;$(VTK_INC_DIR)\Common\Testing\Cxx;$(VTK_INC_DIR)\Utilities\DICOMParser;$(VTK_INC_DIR)\Utilities\vtkfreetype\include;$(VTK_INC_DIR)\Utilities\vtknetcdf;$(VTK_INC_DIR)\Utilities\vtkexodus2\include;$(VTK_INC_DIR)\Utilities\vtkfreetype;$(VTK_INC_DIR)\Utilities\ftgl\src;$(VTK_INC_DIR)\Utilities\ftgl"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/SimFlow;$(XERCES_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR);$(VTK_INC_DIR);$(VTK_INC_DIR)\Utilities;$(VTK_INC_DIR)\VolumeRendering;$(VTK_INC_DIR)\Rendering;$(VTK_INC_DIR)\Hybrid;$(VTK_INC_DIR)\Widgets;$(VTK_INC_DIR)\Rendering\Testing\Cxx;$(VTK_INC_DIR)\IO;$(VTK_INC_DIR)\Imaging;$(VTK_INC_DIR)\Graphics;$(VTK_INC_DIR)\GenericFiltering;$(VTK_INC_DIR)\Filtering;$(VTK_INC_DIR)\Common;$(VTK_INC_DIR)\Common\Testing\Cxx;$(VTK_INC_DIR)\Utilities\DICOMParser;$(VTK_INC_DIR)\Utilities\vtkfreetype\include;$(VTK_INC_DIR)\Utilities\vtknetcdf;$(VTK_INC_DIR)\Utilities\vtkexodus2\include;$(VTK_INC_DIR)\Utilities\vtkfreetype;$(VTK_INC_DIR)\Utilities\ftgl\src;$(VTK_INC_DIR)\Utilities\ftgl"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
@@ -117,7 +117,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(LOCAL_SRC_DIR)/SimFlow;$(XERCES_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR);$(VTK_INC_DIR);$(VTK_INC_DIR)\Utilities;$(VTK_INC_DIR)\VolumeRendering;$(VTK_INC_DIR)\Rendering;$(VTK_INC_DIR)\Hybrid;$(VTK_INC_DIR)\Widgets;$(VTK_INC_DIR)\Rendering\Testing\Cxx;$(VTK_INC_DIR)\IO;$(VTK_INC_DIR)\Imaging;$(VTK_INC_DIR)\Graphics;$(VTK_INC_DIR)\GenericFiltering;$(VTK_INC_DIR)\Filtering;$(VTK_INC_DIR)\Common;$(VTK_INC_DIR)\Common\Testing\Cxx;$(VTK_INC_DIR)\Utilities\DICOMParser;$(VTK_INC_DIR)\Utilities\vtkfreetype\include;$(VTK_INC_DIR)\Utilities\vtknetcdf;$(VTK_INC_DIR)\Utilities\vtkexodus2\include;$(VTK_INC_DIR)\Utilities\vtkfreetype;$(VTK_INC_DIR)\Utilities\ftgl\src;$(VTK_INC_DIR)\Utilities\ftgl"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/SimFlow;$(XERCES_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR);$(VTK_INC_DIR);$(VTK_INC_DIR)\Utilities;$(VTK_INC_DIR)\VolumeRendering;$(VTK_INC_DIR)\Rendering;$(VTK_INC_DIR)\Hybrid;$(VTK_INC_DIR)\Widgets;$(VTK_INC_DIR)\Rendering\Testing\Cxx;$(VTK_INC_DIR)\IO;$(VTK_INC_DIR)\Imaging;$(VTK_INC_DIR)\Graphics;$(VTK_INC_DIR)\GenericFiltering;$(VTK_INC_DIR)\Filtering;$(VTK_INC_DIR)\Common;$(VTK_INC_DIR)\Common\Testing\Cxx;$(VTK_INC_DIR)\Utilities\DICOMParser;$(VTK_INC_DIR)\Utilities\vtkfreetype\include;$(VTK_INC_DIR)\Utilities\vtknetcdf;$(VTK_INC_DIR)\Utilities\vtkexodus2\include;$(VTK_INC_DIR)\Utilities\vtkfreetype;$(VTK_INC_DIR)\Utilities\ftgl\src;$(VTK_INC_DIR)\Utilities\ftgl"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -192,7 +192,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(CADKIT_ROOT_DIR);$(LOCAL_SRC_DIR)/SimFlow;$(XERCES_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR);$(VTK_INC_DIR);$(VTK_INC_DIR)\Utilities;$(VTK_INC_DIR)\VolumeRendering;$(VTK_INC_DIR)\Rendering;$(VTK_INC_DIR)\Hybrid;$(VTK_INC_DIR)\Widgets;$(VTK_INC_DIR)\Rendering\Testing\Cxx;$(VTK_INC_DIR)\IO;$(VTK_INC_DIR)\Imaging;$(VTK_INC_DIR)\Graphics;$(VTK_INC_DIR)\GenericFiltering;$(VTK_INC_DIR)\Filtering;$(VTK_INC_DIR)\Common;$(VTK_INC_DIR)\Common\Testing\Cxx;$(VTK_INC_DIR)\Utilities\DICOMParser;$(VTK_INC_DIR)\Utilities\vtkfreetype\include;$(VTK_INC_DIR)\Utilities\vtknetcdf;$(VTK_INC_DIR)\Utilities\vtkexodus2\include;$(VTK_INC_DIR)\Utilities\vtkfreetype;$(VTK_INC_DIR)\Utilities\ftgl\src;$(VTK_INC_DIR)\Utilities\ftgl"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/SimFlow;$(XERCES_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR);$(VTK_INC_DIR);$(VTK_INC_DIR)\Utilities;$(VTK_INC_DIR)\VolumeRendering;$(VTK_INC_DIR)\Rendering;$(VTK_INC_DIR)\Hybrid;$(VTK_INC_DIR)\Widgets;$(VTK_INC_DIR)\Rendering\Testing\Cxx;$(VTK_INC_DIR)\IO;$(VTK_INC_DIR)\Imaging;$(VTK_INC_DIR)\Graphics;$(VTK_INC_DIR)\GenericFiltering;$(VTK_INC_DIR)\Filtering;$(VTK_INC_DIR)\Common;$(VTK_INC_DIR)\Common\Testing\Cxx;$(VTK_INC_DIR)\Utilities\DICOMParser;$(VTK_INC_DIR)\Utilities\vtkfreetype\include;$(VTK_INC_DIR)\Utilities\vtknetcdf;$(VTK_INC_DIR)\Utilities\vtkexodus2\include;$(VTK_INC_DIR)\Utilities\vtkfreetype;$(VTK_INC_DIR)\Utilities\ftgl\src;$(VTK_INC_DIR)\Utilities\ftgl"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

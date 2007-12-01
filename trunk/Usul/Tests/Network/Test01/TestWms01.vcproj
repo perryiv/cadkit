@@ -38,7 +38,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR);$(CURL_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CURL_INC_DIR)"
 				PreprocessorDefinitions="_USUL_TRACE;_CRT_SECURE_NO_WARNINGS;CURL_STATICLIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -114,7 +114,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR);$(CURL_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CURL_INC_DIR)"
 				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS;CURL_STATICLIB"
 				RuntimeLibrary="2"
 				WarningLevel="3"

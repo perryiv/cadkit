@@ -45,7 +45,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="4"
-				AdditionalIncludeDirectories="../;$(CADKIT_ROOT_DIR),$(FOX_INC_DIR),$(OSG_INC_DIR),$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="../;$(CADKIT_INC_DIR),$(FOX_INC_DIR),$(OSG_INC_DIR),$(OPENTHREADS_INC_DIR)"
 				PreprocessorDefinitions="_WINDOWS;WIN32;NDEBUG;FOXDLL;HAVE_OPENGL"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="true"
@@ -75,7 +75,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions=" /PROFILE"
 				AdditionalDependencies="foxdll-1.6.lib osg.lib osgDB.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/helios.exe"
+				OutputFile="$(CADKIT_BIN_DIR)/helios.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(FOX_LIB_DIR);$(OSG_LIB_DIR)"
@@ -107,7 +107,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy %CADKIT_ROOT_DIR%\Helios\Images\*.* %CADKIT_ROOT_DIR%\bin\icons /f /i /k /y /c"
+				CommandLine="xcopy %CADKIT_INC_DIR%\Helios\Images\*.* %CADKIT_INC_DIR%\bin\icons /f /i /k /y /c"
 			/>
 		</Configuration>
 		<Configuration
@@ -141,7 +141,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../;$(CADKIT_ROOT_DIR),$(FOX_INC_DIR),$(OSG_INC_DIR),$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="../;$(CADKIT_INC_DIR),$(FOX_INC_DIR),$(OSG_INC_DIR),$(OPENTHREADS_INC_DIR)"
 				PreprocessorDefinitions="_WINDOWS;WIN32;_DEBUG;FOXDLL;HAVE_OPENGL"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="true"
@@ -172,7 +172,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions=" /PROFILE"
 				AdditionalDependencies="foxdlld-1.6.lib osgd.lib osgDBd.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/helios_d.exe"
+				OutputFile="$(CADKIT_BIN_DIR)/helios_d.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(FOX_LIB_DIR);$(OSG_LIB_DIR)"
@@ -205,7 +205,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy %CADKIT_ROOT_DIR%\Helios\Images\*.* %CADKIT_ROOT_DIR%\bin\icons /f /i /k /y /c"
+				CommandLine="xcopy %CADKIT_INC_DIR%\Helios\Images\*.* %CADKIT_INC_DIR%\bin\icons /f /i /k /y /c"
 			/>
 		</Configuration>
 	</Configurations>

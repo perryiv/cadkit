@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR);&quot;$(LOCAL_SRC_DIR)/SimFlow&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(XERCES_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);&quot;$(CADKIT_INC_DIR)/SimFlow&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(XERCES_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -92,7 +92,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy scene.sfd $(LOCAL_SRC_DIR)/bin"
+				CommandLine="copy scene.sfd $(CADKIT_BIN_DIR)"
 			/>
 		</Configuration>
 		<Configuration
@@ -121,7 +121,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
-				AdditionalIncludeDirectories="$(LOCAL_SRC_DIR);&quot;$(LOCAL_SRC_DIR)/SimFlow&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(XERCES_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);&quot;$(CADKIT_INC_DIR)/SimFlow&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(XERCES_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;WIN32_LEAN_AND_MEAN"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -173,7 +173,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy scene.sfd $(LOCAL_SRC_DIR)/bin"
+				CommandLine="copy scene.sfd $(CADKIT_BIN_DIR)"
 			/>
 		</Configuration>
 	</Configurations>

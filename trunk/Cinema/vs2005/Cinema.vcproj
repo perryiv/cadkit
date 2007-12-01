@@ -63,12 +63,12 @@
 				Name="VCLinkerTool"
 				RegisterOutput="true"
 				AdditionalDependencies="osgd.lib osgDBd.lib "
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/Cinemad.dll"
+				OutputFile="$(CADKIT_BIN_DIR)/Cinemad.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR);"
 				GenerateDebugInformation="true"
 				SubSystem="1"
-				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/Cinemad.lib"
+				ImportLibrary="$(CADKIT_BIN_DIR)/Cinemad.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -144,14 +144,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osg.lib osgDB.lib"
-				OutputFile="$(CADKIT_ROOT_DIR)/bin/Cinema.dll"
+				OutputFile="$(CADKIT_BIN_DIR)/Cinema.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(OPENTHREADS_LIB_DIR)"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(CADKIT_ROOT_DIR)/bin/Cinema.lib"
+				ImportLibrary="$(CADKIT_BIN_DIR)/Cinema.lib"
 				TargetMachine="1"
 			/>
 			<Tool

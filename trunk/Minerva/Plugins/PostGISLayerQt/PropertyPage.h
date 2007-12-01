@@ -36,7 +36,7 @@ public:
   typedef std::vector < std::string > Strings;
 
   PropertyPage ( Layer *layer, QWidget *parent = 0x0 );
-  ~PropertyPage ();
+  virtual ~PropertyPage ();
 
 protected:
   void _initDrawingTab();

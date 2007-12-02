@@ -21,7 +21,6 @@
 #include "Usul/Interfaces/IModifiedObserver.h"
 #include "Usul/Interfaces/IRenderLoop.h"
 #include "Usul/Interfaces/IMenuAdd.h"
-#include "Usul/Math/Vector2.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 
@@ -60,8 +59,6 @@ public:
   typedef OsgTools::Render::Viewer::ViewMode ViewMode;
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
-  typedef Usul::Math::Vec2ui Size;
-  typedef std::vector < Size > Sizes;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -146,7 +143,6 @@ private:
   QTimer *_timerRenderLoop;
   KeyMap _keys;
   ViewMode _lastMode;
-  Sizes _sizes;
   mutable Mutex *_mutex;
 };
 

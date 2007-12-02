@@ -71,11 +71,10 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   _timerRenderLoop ( 0x0 ),
   _keys(),
   _lastMode ( OsgTools::Render::Viewer::NAVIGATION ),
-  _sizes (),
   _mutex ( new Viewer::Mutex )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   // For convienence;
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
@@ -91,17 +90,6 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
 
   // Set the document. Do this after create.
   _viewer->document ( doc );
-
-  // Set good default background.
-  //_viewer->defaultBackground();
-
-  // Gradient background.
-#if 0
-  _viewer->backgroundCorners ( OsgTools::Render::Viewer::Corners::BOTTOM );
-  _viewer->backgroundColor ( _viewer->backgroundColor() );
-  _viewer->backgroundCorners ( OsgTools::Render::Viewer::Corners::TOP );
-  _viewer->backgroundColor ( osg::Vec4 ( 1.0, 1.0, 0.5, 1.0 )/*OsgTools::Render::Defaults::CLEAR_COLOR*/ );
-#endif
 
   // Set the focus policy.
   this->setFocusPolicy ( Qt::ClickFocus );
@@ -141,15 +129,6 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
 
   // Enable drag 'n drop.
   this->setAcceptDrops ( true );
-
-  // Add common window sizes.
-  // From http://en.wikipedia.org/wiki/Image:Standard_video_res.svg
-  _sizes.push_back ( Size ( 640, 480 ) );
-  _sizes.push_back ( Size ( 720, 480 ) );
-  _sizes.push_back ( Size ( 768, 576 ) );
-  _sizes.push_back ( Size ( 1024, 768 ) );
-  _sizes.push_back ( Size ( 1280, 720 ) );
-  _sizes.push_back ( Size ( 1920, 1080 ) );
 }
 
 
@@ -214,7 +193,7 @@ Viewer::~Viewer()
 Viewer::Document * Viewer::document()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _document.get();
 }
 
@@ -228,7 +207,7 @@ Viewer::Document * Viewer::document()
 const Viewer::Document * Viewer::document() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _document.get();
 }
 
@@ -242,7 +221,7 @@ const Viewer::Document * Viewer::document() const
 OsgTools::Render::Viewer* Viewer::viewer()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _viewer.get();
 }
 
@@ -256,7 +235,7 @@ OsgTools::Render::Viewer* Viewer::viewer()
 const OsgTools::Render::Viewer* Viewer::viewer() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _viewer.get();
 }
 
@@ -303,7 +282,7 @@ Usul::Interfaces::IUnknown * Viewer::queryInterface ( unsigned long iid )
 void Viewer::ref()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   ++_refCount;
 }
 
@@ -317,7 +296,7 @@ void Viewer::ref()
 void Viewer::unref ( bool )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   --_refCount;
 }
 
@@ -408,7 +387,7 @@ void Viewer::swapBuffers()
 void Viewer::_initPlacement()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   if ( QWidget* parent = dynamic_cast < QWidget* > ( this->parent() ) )
   {
@@ -713,7 +692,7 @@ void Viewer::setTitle ( const std::string& title )
 void Viewer::startAnimation ( double milliseconds )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   if ( 0x0 != _timer )
   {
@@ -741,7 +720,7 @@ void Viewer::_onTimeoutAnimation()
   // Set the matrix and see if we should continue.
   if ( false == viewer->timeoutAnimate() ) 
   {
-    Guard guard ( this->mutex() );
+    Guard guard ( this );
     _timer->stop();
   }
 }
@@ -774,7 +753,7 @@ void Viewer::_onTimeoutSpin()
 void Viewer::stopSpin()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   if ( 0x0 != _timer )
   {
@@ -792,7 +771,7 @@ void Viewer::stopSpin()
 void Viewer::startSpin ( double milliseconds )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   if ( 0x0 != _timer )
   {
@@ -812,7 +791,7 @@ void Viewer::startSpin ( double milliseconds )
 void Viewer::subjectModified ( Usul::Interfaces::IUnknown * )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   // Queue a repaint.
   this->update();
@@ -840,7 +819,7 @@ Viewer::Mutex &Viewer::mutex() const
 void Viewer::renderLoop ( bool b )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   if ( 0x0 != _timerRenderLoop )
   {
@@ -866,7 +845,7 @@ void Viewer::renderLoop ( bool b )
 bool Viewer::renderLoop () const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   return ( 0x0 != _timerRenderLoop ? _timerRenderLoop->isActive () : false );
 }
@@ -895,6 +874,9 @@ void Viewer::_onTimeoutRenderLoop()
 
 void Viewer::menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
   MenuKit::Menu::RefPtr view ( menu.find ( "&View", true ) );
 
   if ( view.valid () )
@@ -950,9 +932,21 @@ void Viewer::menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller )
       shading->append ( new RadioButton ( new ShadeModel ( "Flat",   IShadeModel::FLAT, viewer.get() ) ) );
     }
 
+    // Add common window sizes.
+    // From http://en.wikipedia.org/wiki/Image:Standard_video_res.svg
+    typedef Usul::Math::Vec2ui Size;
+    typedef std::vector < Size > Sizes;
+    Sizes sizes;
+    sizes.push_back ( Size ( 640, 480 ) );
+    sizes.push_back ( Size ( 720, 480 ) );
+    sizes.push_back ( Size ( 768, 576 ) );
+    sizes.push_back ( Size ( 1024, 768 ) );
+    sizes.push_back ( Size ( 1280, 720 ) );
+    sizes.push_back ( Size ( 1920, 1080 ) );
+
     // Make the menu of common sizes.
     MenuKit::Menu::RefPtr size ( new MenuKit::Menu ( "Size" ) );
-    for ( Sizes::const_iterator iter = _sizes.begin(); iter != _sizes.end(); ++iter )
+    for ( Sizes::const_iterator iter = sizes.begin(); iter != sizes.end(); ++iter )
     {
       Size s ( *iter );
       size->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( Usul::Strings::format ( s[0], " x ", s[1] ), 

@@ -1233,18 +1233,14 @@ bool Viewer::_frameDumpProperties()
   // Get the directory from the registry.
   std::string directory ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::FRAME_DUMP_DIRECTORY].get<std::string> ( "" ) );
 
-  // If we don't have one, ask for one.
-  if ( directory.empty() )
-  {
-    QString dir ( QFileDialog::getExistingDirectory ( this, "Select a directory" ) );
-    
-    if ( 0 == dir.size() )
-      return false;
+  // Confirm that this is the correct directory.
+  QString dir ( QFileDialog::getExistingDirectory ( this, "Select a directory", directory.c_str() ) );
+  if ( 0 == dir.size() )
+    return false;
 
-    // Set the directory in the registry.
-    directory = dir.toStdString();
-    Reg::instance()[Sections::VIEWER_SETTINGS][Keys::FRAME_DUMP_DIRECTORY] = directory;
-  }
+  // Set the directory in the registry.
+  directory = dir.toStdString();
+  Reg::instance()[Sections::VIEWER_SETTINGS][Keys::FRAME_DUMP_DIRECTORY] = directory;
 
   // Get the current time.
   ::tm time ( Usul::System::DateTime::local() );
@@ -1253,7 +1249,7 @@ bool Viewer::_frameDumpProperties()
   const unsigned int size ( 1024 );
   char buffer[size];
   ::memset ( buffer, '\0', size );
-  ::strftime ( buffer, size - 1, "%H_%M_%S_%d_%b_%Y", &time );
+  ::strftime ( buffer, size - 1, "%Y_%m_%d_%H_%M_%S", &time );
 
   directory += std::string ( "/" ) + std::string ( buffer ) + std::string ( "/" );
 
@@ -1269,7 +1265,7 @@ bool Viewer::_frameDumpProperties()
 
   // Set the frame dump properties.
   viewer->frameDump().dir ( directory );
-  viewer->frameDump().base( "filename" );
+  viewer->frameDump().base( "" );
   viewer->frameDump().digits ( 10 );
   viewer->frameDump().ext ( ".jpg" );
 

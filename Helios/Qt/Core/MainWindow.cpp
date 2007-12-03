@@ -26,13 +26,14 @@
 #include "Helios/Qt/Commands/ExportImage.h"
 #include "Helios/Qt/Commands/ExitApplication.h"
 #include "Helios/Qt/Commands/ToggleView.h"
-#include "Helios/Qt/Tools/Image.h"
 #include "Helios/Qt/Tools/SettingsGroupScope.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/RegistryIO.h"
 
 #include "MenuKit/Button.h"
+
+#include "QtTools/Image.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
@@ -155,7 +156,7 @@ MainWindow::MainWindow ( const std::string &vendor,
     this->showSplashScreen();
 
   // Set the icon.
-  CadKit::Helios::Tools::Image::icon ( icon, this );
+  QtTools::Image::icon ( icon, this );
 
   // Make the work space.
   _workSpace = new QWorkspace ( this );

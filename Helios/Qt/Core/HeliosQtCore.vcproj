@@ -37,7 +37,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(QTDIR)\include;$(BOOST_ROOT_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental;$(QTDIR)\include;$(BOOST_ROOT_DIR)"
 				PreprocessorDefinitions="_COMPILING_HELIOS_QT_CORE;UNICODE,WIN32,QT_THREAD_SUPPORT,QT_NO_DEBUG,NDEBUG,QT_CORE_LIB,QT_GUI_LIB,CORE_LIB"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -111,7 +111,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(QTDIR)\include;$(BOOST_ROOT_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental;$(QTDIR)\include;$(BOOST_ROOT_DIR)"
 				PreprocessorDefinitions="_COMPILING_HELIOS_QT_CORE;UNICODE,WIN32,QT_THREAD_SUPPORT,QT_CORE_LIB,QT_GUI_LIB,CORE_LIB"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"

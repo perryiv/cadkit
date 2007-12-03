@@ -112,6 +112,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy .\Icons $(CADKIT_BIN_DIR)\icons /f /i /k /y /c"
 			/>
 		</Configuration>
 		<Configuration
@@ -209,6 +210,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy .\Icons $(CADKIT_BIN_DIR)\icons /f /i /k /y /c"
 			/>
 		</Configuration>
 	</Configurations>
@@ -221,6 +223,36 @@
 			<Filter
 				Name="Implementation"
 				>
+				<File
+					RelativePath=".\AnimationControl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\AnimationControl.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_AnimationControl.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\AnimationControl.ui -o .\ui_AnimationControl.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\AnimationControl.h&quot; -o &quot;.\GeneratedFiles\moc_AnimationControl.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\AnimationControl.ui;$(QTDIR)\bin\moc.exe;.\AnimationControl.h"
+							Outputs=".\ui_AnimationControl.h;.\GeneratedFiles\moc_AnimationControl.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_AnimationControl.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\AnimationControl.ui -o .\ui_AnimationControl.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\AnimationControl.h&quot; -o &quot;.\GeneratedFiles\moc_AnimationControl.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\AnimationControl.ui;$(QTDIR)\bin\moc.exe;.\AnimationControl.h"
+							Outputs=".\ui_AnimationControl.h;.\GeneratedFiles\moc_AnimationControl.cpp"
+						/>
+					</FileConfiguration>
+				</File>
 				<File
 					RelativePath=".\Color.h"
 					>
@@ -257,6 +289,14 @@
 				</File>
 				<File
 					RelativePath=".\Export.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Image.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Image.h"
 					>
 				</File>
 				<File
@@ -323,6 +363,10 @@
 			<Filter
 				Name="GeneratedFiles"
 				>
+				<File
+					RelativePath=".\generatedfiles\moc_AnimationControl.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\generatedfiles\moc_ColorButton.cpp"
 					>

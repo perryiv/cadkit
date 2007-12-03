@@ -10,7 +10,8 @@
 
 #include "Helios/Qt/Core/SplashScreen.h"
 #include "Helios/Qt/Tools/Show.h"
-#include "Helios/Qt/Tools/Image.h"
+
+#include "QtTools/Image.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Assert.h"
@@ -181,7 +182,7 @@ void SplashScreen::_loadSplashImage()
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "8048315890" );
 
-  CadKit::Helios::Tools::Image::pixmap ( _file, _image );
+  QtTools::Image::pixmap ( _file, _image );
   if ( ( 0x0 == _image ) || ( 0x0 == _image->pixmap() ) || ( true == _image->pixmap()->isNull() ) )
   {
     std::cout << "Warning 3987519476: Failed to load splash screen image: " << _file << std::endl;

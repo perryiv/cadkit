@@ -173,14 +173,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Image.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Image.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Move.cpp"
 				>
 			</File>

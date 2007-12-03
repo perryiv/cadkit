@@ -10,7 +10,8 @@
 
 #include "Helios/Qt/Core/Menu.h"
 #include "Helios/Qt/Commands/Action.h"
-#include "Helios/Qt/Tools/Image.h"
+
+#include "QtTools/Image.h"
 
 #include "MenuKit/Visitor.h"
 #include "MenuKit/UpdateVisitor.h"

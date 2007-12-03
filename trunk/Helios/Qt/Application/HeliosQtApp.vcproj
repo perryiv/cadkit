@@ -186,11 +186,11 @@
 			Name="Misc Files"
 			>
 			<File
-				RelativePath="..\..\..\..\.CadKit\Helios\Helios.csv"
+				RelativePath="..\..\..\..\..\.CadKit\Helios\Helios.csv"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\.CadKit\Helios\Helios.out"
+				RelativePath="..\..\..\..\..\.CadKit\Helios\Helios.out"
 				>
 			</File>
 		</Filter>
@@ -198,11 +198,11 @@
 			Name="Config Files"
 			>
 			<File
-				RelativePath="..\..\..\..\.CadKit\Helios\Helios.registry"
+				RelativePath="..\..\..\..\..\.CadKit\Helios\Helios.registry"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\configs\HeliosPlugins.xml"
+				RelativePath="..\..\..\..\configs\HeliosPlugins.xml"
 				>
 			</File>
 			<File

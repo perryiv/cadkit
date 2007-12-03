@@ -21,10 +21,13 @@
 #include "QtTools/ui_AnimationControl.h"
 
 #include "Usul/Interfaces/IActiveDocumentListener.h"
+#include "Usul/Interfaces/ITimeVaryingData.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 
 #include "QtGui/QWidget"
+
+class QTimer;
 
 
 namespace QtTools {
@@ -43,6 +46,7 @@ public:
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard < Mutex > Guard;
+  typedef Usul::Interfaces::ITimeVaryingData ITimeVaryingData;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( AnimationControl );
@@ -69,15 +73,50 @@ public:
 
 protected slots:
 
+  void                        _onLoop ( bool );
+  void                        _onPlayForward();
+  void                        _onPlayBackward();
+  void                        _onSpeedChanged ( double );
+  void                        _onStepForward();
+  void                        _onStepBackward();
+  void                        _onStopPlaying();
+  void                        _onTimer();
+
 protected:
 
   void                        _destroy();
+
+  void                        _render();
+
+  void                        _loopEvent ( bool );
+
+  void                        _playForwardEvent();
+  void                        _playBackwardEvent();
+
+  void                        _slotsConnect();
+  void                        _slotsDisconnect();
+  void                        _speedChangedEvent ( double );
+  void                        _stepForward();
+  void                        _stepForwardEvent();
+  void                        _stepBackward();
+  void                        _stepBackwardEvent();
+  void                        _stopPlaying();
+  void                        _stopPlayingEvent();
+
+  void                        _startTimer();
+  void                        _stopTimer();
+
+  void                        _timerEvent();
 
   unsigned long _refCount;
   mutable Mutex *_mutex;
   Unknown::QueryPtr _caller;
   Unknown::QueryPtr _document;
+  ITimeVaryingData::QueryPtr _data;
   unsigned int _state;
+  QTimer *_timer;
+  double _milliSeconds;
+  bool _loop;
 };
 
 

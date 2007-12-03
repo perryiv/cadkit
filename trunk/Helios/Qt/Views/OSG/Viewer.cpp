@@ -265,6 +265,8 @@ Usul::Interfaces::IUnknown * Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IModifiedObserver * > ( this );
   case Usul::Interfaces::IRenderLoop::IID:
     return static_cast < Usul::Interfaces::IRenderLoop * > ( this );
+  case Usul::Interfaces::IRedraw::IID:
+    return static_cast < Usul::Interfaces::IRedraw * > ( this );
   case Usul::Interfaces::IMenuAdd::IID:
     return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
   default:
@@ -1270,4 +1272,32 @@ bool Viewer::_frameDumpProperties()
   viewer->frameDump().ext ( ".jpg" );
 
   return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Usul::Interfaces::IRedraw::redraw()
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::redraw()
+{
+  Usul::Interfaces::IRedraw::QueryPtr draw ( this->viewer() );
+  if ( true == draw.valid() )
+    draw->redraw();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Usul::Interfaces::IRedraw::setStatsDisplay()
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::setStatsDisplay ( bool b )
+{
+  Usul::Interfaces::IRedraw::QueryPtr draw ( this->viewer() );
+  if ( true == draw.valid() )
+    draw->setStatsDisplay ( b );
 }

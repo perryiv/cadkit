@@ -80,6 +80,7 @@
 #include "Usul/File/Path.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Math/Absolute.h"
+#include "Usul/Threads/Named.h"
 #include "Usul/Trace/Trace.h"
 
 #include "osg/MatrixTransform"
@@ -373,6 +374,9 @@ void Viewer::update()
 
 void Viewer::render()
 {
+  // Only the gui thread.
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
   // Handle no viewer or scene.
   if ( !this->viewer() || !this->viewer()->getSceneData() || false == _context.valid() )
     return;
@@ -423,6 +427,12 @@ void Viewer::render()
 
     // Check for errors.
     Detail::checkForErrors ( 840649560 );
+
+#if 0
+#ifdef _DEBUG
+    std::cout << "Just rendered frame: " << _renderer->viewer()->getFrameStamp()->getFrameNumber() << std::endl;
+#endif
+#endif
   }
 
   // Swap the buffers.

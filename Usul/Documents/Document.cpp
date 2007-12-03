@@ -32,6 +32,7 @@
 #include "Usul/Resources/EventQueue.h"
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/TextWindow.h"
+#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
 #include <sstream>
@@ -203,6 +204,8 @@ Usul::Interfaces::IUnknown *Document::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IModifiedSubject* > ( this );
   case Usul::Interfaces::IRenderListener::IID:
     return static_cast < Usul::Interfaces::IRenderListener* > ( this );
+  case Usul::Interfaces::IRedraw::IID:
+    return static_cast < Usul::Interfaces::IRedraw* > ( this );
   default:
     return 0x0;
   }
@@ -833,7 +836,10 @@ void Document::modified ( bool m )
   {
     // Need to make gcc happy.
     Usul::Interfaces::IModifiedObserver::RefPtr temp ( iter->get() );
-    temp->subjectModified ( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
+    if ( true == temp.valid() )
+    {
+      temp->subjectModified ( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
+    }
   }
 }
 
@@ -906,4 +912,54 @@ std::string Document::typeName() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _typeName;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Usul::Interfaces::IRedraw::redraw()
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::redraw()
+{
+  USUL_TRACE_SCOPE;
+
+  // Copy views.
+  Views views ( Usul::Threads::Safe::get ( this->mutex(), _views ) );
+
+  // Loop through views.
+  for ( Views::iterator i = views.begin(); i != views.end(); ++i )
+  {
+    Usul::Interfaces::IRedraw::QueryPtr draw ( *i );
+    if ( true == draw.valid() )
+    {
+      draw->redraw();
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Usul::Interfaces::IRedraw::setStatsDisplay()
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::setStatsDisplay ( bool b )
+{
+  USUL_TRACE_SCOPE;
+
+  // Copy views.
+  Views views ( Usul::Threads::Safe::get ( this->mutex(), _views ) );
+
+  // Loop through views.
+  for ( Views::iterator i = views.begin(); i != views.end(); ++i )
+  {
+    Usul::Interfaces::IRedraw::QueryPtr draw ( *i );
+    if ( true == draw.valid() )
+    {
+      draw->setStatsDisplay ( b );
+    }
+  }
 }

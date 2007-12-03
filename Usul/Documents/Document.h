@@ -36,6 +36,7 @@
 #include "Usul/Interfaces/IModifiedObserver.h"
 #include "Usul/Interfaces/IHandleMessage.h"
 #include "Usul/Interfaces/IRenderListener.h"
+#include "Usul/Interfaces/IRedraw.h"
 
 #include <string>
 #include <list>
@@ -56,7 +57,8 @@ class USUL_EXPORT Document : public Usul::Base::Object,
                              public Usul::Interfaces::ICanClose,
                              public Usul::Interfaces::ICanInsert,
                              public Usul::Interfaces::IModifiedSubject,
-                             public Usul::Interfaces::IRenderListener
+                             public Usul::Interfaces::IRenderListener,
+                             public Usul::Interfaces::IRedraw
 {
 public:
 
@@ -256,6 +258,10 @@ protected:
   /// Usul::Interfaces::IRenderListener
   virtual void                postRenderNotify ( Unknown *caller );
   virtual void                preRenderNotify ( Unknown *caller );
+
+  /// Usul::Interfaces::IRedraw
+  virtual void                redraw();
+  virtual void                setStatsDisplay ( bool b );
 
 private:
 

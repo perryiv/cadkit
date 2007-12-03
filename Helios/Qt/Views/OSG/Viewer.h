@@ -20,6 +20,7 @@
 #include "Usul/Interfaces/ITimeoutSpin.h"
 #include "Usul/Interfaces/IModifiedObserver.h"
 #include "Usul/Interfaces/IRenderLoop.h"
+#include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
@@ -46,6 +47,7 @@ class HELIOS_QT_VIEWS_OSG_EXPORT Viewer : public QGLWidget,
                                           public Usul::Interfaces::ITimeoutSpin,
                                           public Usul::Interfaces::IModifiedObserver,
                                           public Usul::Interfaces::IRenderLoop,
+                                          public Usul::Interfaces::IRedraw,
                                           public Usul::Interfaces::IMenuAdd
 {
   Q_OBJECT
@@ -101,6 +103,10 @@ public:
   /// Get/Set render loop flag (IRenderLoop).
   virtual void                            renderLoop ( bool b );
   virtual bool                            renderLoop () const;
+
+  /// Redraw the view (IRedraw).
+  virtual void                            redraw();
+  virtual void                            setStatsDisplay ( bool );
 
   /// Add to the menu (IMenuAdd).
   virtual void                            menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );

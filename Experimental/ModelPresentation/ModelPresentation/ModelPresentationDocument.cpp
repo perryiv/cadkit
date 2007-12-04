@@ -1035,7 +1035,7 @@ osg::Node* ModelPresentationDocument::_loadFile( const std::string& filename, Un
   Guard guard ( this->mutex() );
   osg::ref_ptr< osg::Group > group ( new osg::Group );
   std::cout << filename << " single file loading..." << std::endl;
-  Usul::System::Directory::cwd( _workingDir );
+  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
   try
   {
      // This will create a new document.
@@ -1105,7 +1105,7 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::Directory::cwd( _workingDir );
+  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
 
   std::cout << dir << " directory loading..." << std::endl;
   Files files;

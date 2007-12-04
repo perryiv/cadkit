@@ -374,11 +374,12 @@ void Viewer::update()
 
 void Viewer::render()
 {
-  // Only the gui thread.
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
-
   // Handle no viewer or scene.
   if ( !this->viewer() || !this->viewer()->getSceneData() || false == _context.valid() )
+    return;
+
+  // Return if it's not the correct thread.
+  if ( false == _context->isContextThread() )
     return;
 
   // Make this context current.

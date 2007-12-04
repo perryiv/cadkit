@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2005, Mike Jackson
@@ -23,6 +24,7 @@ struct IOpenGLContext : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2489692458u };
   
+  virtual bool    isContextThread() const = 0;
   virtual void    makeCurrent()  = 0;
   virtual void    swapBuffers()  = 0;
     

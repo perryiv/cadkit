@@ -430,7 +430,7 @@ void Application::contextInit()
   // Set the background color.
   osg::Vec4 color;
   OsgTools::Convert::vector ( _backgroundColor, color, 4 );
-  renderer->backgroundColor ( color );
+  renderer->backgroundColor ( color, OsgTools::Render::Renderer::Corners::ALL );
 
   (*_renderer) = renderer.get();
 
@@ -1605,7 +1605,7 @@ void Application::backgroundColor( const Usul::Math::Vec4f& color )
 
   for( Renderers::iterator iter = _renderers.begin(); iter != _renderers.end(); ++iter )
   {
-    (*iter)->backgroundColor ( c );
+    (*iter)->backgroundColor ( c, OsgTools::Render::Renderer::Corners::ALL );
   }
 }
 

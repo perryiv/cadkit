@@ -83,6 +83,7 @@ public:
   const OsgTools::Render::Viewer*         viewer() const;
 
   /// Usul::Interfaces::IOpenGLContext
+  virtual bool                            isContextThread() const;
   virtual void                            makeCurrent();
   virtual void                            swapBuffers();
 
@@ -149,6 +150,7 @@ private:
   QTimer *_timerRenderLoop;
   KeyMap _keys;
   ViewMode _lastMode;
+  unsigned long _threadId;
   mutable Mutex *_mutex;
 };
 

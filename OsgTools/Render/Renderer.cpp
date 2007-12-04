@@ -41,7 +41,6 @@
 #include "Usul/Resources/TextWindow.h"
 #include "Usul/Shared/Preferences.h"
 #include "Usul/System/Clock.h"
-#include "Usul/Threads/Named.h"
 #include "Usul/Headers/OpenGL.h"
 
 #include "osg/MatrixTransform"
@@ -226,9 +225,6 @@ void Renderer::nearFar ( double &n, double &f ) const
 
 void Renderer::render()
 {
-  // Only the gui thread.
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
-
   // Handle no viewer.
   if ( false == _sceneView.valid() )
     return;

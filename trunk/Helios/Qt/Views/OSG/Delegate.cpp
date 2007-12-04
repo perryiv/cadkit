@@ -104,5 +104,8 @@ void Delegate::createDefaultGUI ( Usul::Documents::Document *document, Usul::Int
 
     // Show the window.
     viewer->show();
+
+    // Set the focus.
+    viewer->setFocus();
   }
 }

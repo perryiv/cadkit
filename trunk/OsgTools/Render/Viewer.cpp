@@ -43,7 +43,6 @@
 #include "OsgTools/Utilities/Intersect.h"
 #include "OsgTools/Builders/Arrow.h"
 #include "OsgTools/Widgets/Axes.h"
-#include "OsgTools/Widgets/ClipPlane.h"
 #include "OsgTools/IO/WriteEPS.h"
 #include "OsgTools/Callbacks/HiddenLines.h"
 #include "OsgTools/Font.h"
@@ -193,14 +192,15 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   _animation           (),
   _navManip            ( 0x0 ),
   _currentMode         ( NAVIGATION ),
-  _lightEditors        (),
   _contextId           ( 0 ),
   _useDisplayList      ( false, true ),
   _renderListeners     (),
   _intersectListeners  (),
   _updateListeners     (),
   _mouseEventListeners (),
-  _activeDragger       ( 0x0 )
+  _activeDragger       ( 0x0 ),
+  _pointerInfo         (),
+  _clipPlaneWidgets    ()
 {
   // Add the document
   this->document ( doc );
@@ -2201,20 +2201,20 @@ void Viewer::setHiddenLines()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::addPlane ( )
+osg::ClipPlane* Viewer::addPlane()
 {
   // Get the bounding box
   osg::BoundingBox bb; 
   bb.expandBy ( _sceneManager->clipNode()->getBound() );
 
-  // Intial points for the plane
+  // Initial points for the plane.
   osg::Vec3 top_left     ( bb.corner( 1 ) );
   osg::Vec3 bottom_left  ( bb.corner( 0 ) );
   osg::Vec3 top_right    ( bb.corner( 7 ) );
 
     // Define the plane on the diagonal of the bounding box
   osg::Plane plane ( top_left, bottom_left, top_right );
-  this->addPlane ( plane );
+  return this->addPlane ( plane );
 }
 
 
@@ -2239,6 +2239,7 @@ osg::ClipPlane* Viewer::addPlane ( const osg::Plane& plane, bool widget )
 
     osg::ref_ptr< osg::Group > group ( _sceneManager->groupGet ( OsgTools::Render::Constants::CLIPPING_PLANES ) );
     group->addChild ( widget.get() );
+    _clipPlaneWidgets.insert ( ClipPlaneWidgets::value_type (  clipPlane->getClipPlaneNum(), widget.get() ) );
   }
 
   // Add the plane
@@ -2252,32 +2253,15 @@ osg::ClipPlane* Viewer::addPlane ( const osg::Plane& plane, bool widget )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add a clipping plane to the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::addClipBox ( const osg::BoundingBox& bb )
-{
-  _sceneManager->clipNode()->createClipBox ( bb );
-  OsgTools::GlassBoundingBox gbb ( bb );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Remove a clipping plane from the scene
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void Viewer::removePlane ( unsigned int index )
 {
-  _sceneManager->clipNode()->removeClipPlane ( index );
-
-  osg::ref_ptr< osg::Group > group ( _sceneManager->groupGet ( OsgTools::Render::Constants::CLIPPING_PLANES ) );
-
-  group->removeChild ( index );
-
-  this->changedScene();
+  osg::ref_ptr < osg::ClipPlane > clipPlane ( _sceneManager->clipNode()->getClipPlane ( index ) );
+  if ( clipPlane.valid() )
+    this->removePlane ( clipPlane.get() );  
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2288,7 +2272,23 @@ void Viewer::removePlane ( unsigned int index )
 
 void Viewer::removePlane ( osg::ClipPlane *plane )
 {
+  if ( 0x0 == plane )
+    return;
+
+  // Get the index.
+  unsigned int index ( plane->getClipPlaneNum() );
+
+  // Remove the plane from the clip node.
   _sceneManager->clipNode()->removeClipPlane ( plane );
+
+  // Remove the widget.
+  osg::ref_ptr< osg::Group > group ( _sceneManager->groupGet ( OsgTools::Render::Constants::CLIPPING_PLANES ) );
+
+  ClipPlaneWidget::Ptr widget ( _clipPlaneWidgets[index] );
+  _clipPlaneWidgets.erase ( index );
+  group->removeChild ( widget.get() );
+
+  this->changedScene();
 }
 
 
@@ -2303,13 +2303,7 @@ void Viewer::removePlanes()
   typedef osg::ClipNode::ClipPlaneList ClipPlaneList;
   ClipPlaneList cliplist ( _sceneManager->clipNode()->getClipPlaneList() );
   for ( ClipPlaneList::iterator i = cliplist.begin(); i != cliplist.end(); ++i )
-    _sceneManager->clipNode()->removeClipPlane ( i->get() );
-
-  osg::ref_ptr< osg::Group > group ( _sceneManager->groupGet ( OsgTools::Render::Constants::CLIPPING_PLANES ) );
-
-  group->removeChild( 0, group->getNumChildren() );
-  
-  this->changedScene();
+    this->removePlane ( i->get() );
 }
 
 
@@ -3910,46 +3904,32 @@ void Viewer::setBackground ( const osg::Vec4 &color )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add default clipping plane.
-//  Usul::Interfaces::IClippingPlanes
+//  Add default clipping plane (IClippingPlanes).
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::addClippingPlane()
+unsigned int Viewer::addClippingPlane()
 {
-  this->addPlane();
+  osg::ref_ptr < osg::ClipPlane > clipPlane ( this->addPlane() );
+  return ( clipPlane.valid() ? clipPlane->getClipPlaneNum() : 0 );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add clipping plane defined by given plane.
-//  Usul::Interfaces::IClippingPlanes
+//  Add clipping plane defined by given plane (IClippingPlanes).
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::addClippingPlane ( const osg::Plane& plane )
+unsigned int Viewer::addClippingPlane ( const osg::Plane& plane )
 {
-  this->addPlane ( plane );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add 6 clipping planes defined by the given bounding box.
-//  Usul::Interfaces::IClippingPlanes
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::addClippingBox   ( const osg::BoundingBox& bb )
-{
-  this->addClipBox( bb );
+  osg::ref_ptr < osg::ClipPlane > clipPlane ( this->addPlane( plane ) );
+  return ( clipPlane.valid() ? clipPlane->getClipPlaneNum() : 0 );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Remove clipping plane with given index.
-//  Usul::Interfaces::IClippingPlanes
+//  Remove clipping plane with given index IClippingPlanes.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -3961,14 +3941,44 @@ void Viewer::removeClippingPlane ( unsigned int index )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Remove all clipping planes.
-//  Usul::Interfaces::IClippingPlanes
+//  Remove all clipping planes (IClippingPlanes).
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::removeClippingPlanes (  )
+void Viewer::removeClippingPlanes()
 {
   this->removePlanes();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the clipping plane (IClippingPlanes).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Plane Viewer::getClippingPlane ( unsigned int index )
+{
+  osg::ref_ptr < osg::ClipPlane > clipPlane ( _sceneManager->clipNode()->getClipPlane ( index ) );
+  return ( clipPlane.valid() ? osg::Plane ( clipPlane->getClipPlane() ) : osg::Plane() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the clipping plane (IClippingPlanes).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::setClippingPlane ( unsigned int index, const osg::Plane& plane )
+{
+  osg::ref_ptr < osg::ClipPlane > clipPlane ( _sceneManager->clipNode()->getClipPlane ( index ) );
+  if ( clipPlane.valid() )
+    clipPlane->setClipPlane ( plane );
+
+  ClipPlaneWidget::Ptr widget ( _clipPlaneWidgets[index] );
+  if ( widget.valid() )
+    widget->update();
 }
 
 

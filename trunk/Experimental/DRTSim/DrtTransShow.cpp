@@ -1,0 +1,82 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author(s): Jeff Conner
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "DrtTransShow.h"
+
+#include "Usul/Trace/Trace.h"
+#include "Usul/Interfaces/IDrtCommands.h"
+
+USUL_IMPLEMENT_COMMAND ( DrtTransShow );
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DrtTransShow::DrtTransShow ( Usul::Interfaces::IUnknown * caller ) :
+  BaseClass ( caller )
+{
+  USUL_TRACE_SCOPE;
+  this->text ( "Transhipments" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DrtTransShow::~DrtTransShow ()
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Execute.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DrtTransShow::_execute ()
+{
+  USUL_TRACE_SCOPE;
+  //this->_dummy();
+#if 1
+  Usul::Interfaces::IDrtCommands::QueryPtr nav ( this->caller() );
+  if ( nav.valid () )
+  {
+	if( true == nav->transShow() )
+		nav->transShow( false );
+	else
+		nav->transShow( true );
+  }
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the radio button.  Return true to have radio checked.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DrtTransShow::updateCheck () const
+{
+  USUL_TRACE_SCOPE;
+
+  // Implement me to update radio state.
+  Usul::Interfaces::IDrtCommands::QueryPtr nav ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller() ) );
+
+  return nav->transShow();
+}
+

@@ -67,6 +67,7 @@
 #include "OsgTools/Render/EventAdapter.h"
 #include "OsgTools/Render/Renderer.h"
 #include "OsgTools/Render/SceneManager.h"
+#include "OsgTools/Widgets/ClipPlane.h"
 
 #include "osgUtil/SceneView"
 
@@ -336,9 +337,8 @@ public:
   void                  textureMode ( osg::StateAttribute::GLMode mode, bool state );
 
   // Add/Remove clipping plane
-  void                  addPlane ( );
+  osg::ClipPlane*       addPlane();
   osg::ClipPlane*       addPlane ( const osg::Plane&, bool widget = true );
-  void                  addClipBox  ( const osg::BoundingBox& bb );
   void                  removePlane ( unsigned int );
   void                  removePlane ( osg::ClipPlane * );
   void                  removePlanes();
@@ -602,15 +602,17 @@ protected:
   virtual void               removeGroup ( const std::string& );
   virtual bool               hasGroup    ( const std::string& );
 
-  /// Usul::Interfaces::IClippingPlanes
-  // Add/Remove clipping plane
-  virtual void               addClippingPlane ( );
-  virtual void               addClippingPlane ( const osg::Plane& plane );
-  virtual void               addClippingBox   ( const osg::BoundingBox& bb );
+  // Add/Remove clipping plane (IClippingPlanes).
+  virtual unsigned int       addClippingPlane();
+  virtual unsigned int       addClippingPlane ( const osg::Plane& plane );
   virtual void               removeClippingPlane ( unsigned int index );
   virtual void               removeClippingPlanes();
 
-  // Get the number of clipping planes in the scene
+  // Get/Set the clipping plane (IClippingPlanes).
+  virtual osg::Plane         getClippingPlane ( unsigned int );
+  virtual void               setClippingPlane ( unsigned int, const osg::Plane& );
+
+  // Get the number of clipping planes in the scene (IClippingPlanes).
   virtual unsigned int       numClippingPlanes() { return this->planes(); }
 
   /// Get the view port parameters (IViewport).
@@ -743,10 +745,11 @@ private:
   typedef osg::ref_ptr < osgText::Text > TextPtr;
   typedef std::pair < bool, osg::Matrixd > CameraBuffer;
   typedef Document::RefPtr DocumentPtr;
-  typedef std::map < osg::Geode *, osg::Light * > LightEditors;
   typedef std::vector < LodPtr > LodList;
   typedef std::pair < bool, LodList > Lods;
   typedef std::pair < bool, bool > UseDisplayLists;
+  typedef OsgTools::Widgets::ClipPlane ClipPlaneWidget;
+  typedef std::map < unsigned int, ClipPlaneWidget::Ptr > ClipPlaneWidgets;
 
   static CameraBuffer _cameraCopyBuffer;
   static MatrixManipPtr _navManipCopyBuffer;
@@ -763,7 +766,6 @@ private:
   OsgTools::Render::Animation _animation;
   MatrixManipPtr _navManip;
   ViewMode _currentMode;
-  LightEditors _lightEditors;
   unsigned int _contextId;
   UseDisplayLists _useDisplayList;
   RenderListeners _renderListeners;
@@ -772,6 +774,7 @@ private:
   MouseEventListeners _mouseEventListeners;
   DraggerPtr _activeDragger;
   osgManipulator::PointerInfo _pointerInfo;
+  ClipPlaneWidgets _clipPlaneWidgets;
 };
 
 }

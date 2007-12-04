@@ -12,48 +12,27 @@
 
 #include "OsgTools/Export.h"
 
-#include "OsgTools/Draggers/Dragger.h"
-
+#include "osg/ref_ptr"
 #include "osg/BoundingBox"
 #include "osg/ClipPlane"
+#include "osg/Group"
 
 namespace OsgTools {
 namespace Widgets {
 
-class OSG_TOOLS_EXPORT ClipPlane : public OsgTools::Draggers::Dragger
+class OSG_TOOLS_EXPORT ClipPlane : public osg::Group
 {
 public:
+  typedef osg::Group BaseClass;
+  typedef osg::ref_ptr < ClipPlane > Ptr;
 
   /// Constructor
   ClipPlane ( const osg::BoundingBox& bb, osg::ClipPlane *clip );
   
+  void update();
+
 protected:
-
-  class ClipPlaneCallback : public OsgTools::Draggers::Callback
-  {
-  public:
-    typedef OsgTools::Draggers::Callback BaseClass;
-    typedef OsgTools::Draggers::Dragger Dragger;
-
-    ClipPlaneCallback ( const osg::Vec3& topLeft, const osg::Vec3& bottomLeft, const osg::Vec3& topRight, osg::ClipPlane* clipPlane );
-    ClipPlaneCallback ( const ClipPlaneCallback & );
-
-    // Execute the callback.
-    virtual void operator() ( Dragger &d );
-    
-  protected:
-
-    // Use reference counting.
-    virtual ~ClipPlaneCallback();
-
-  private:
-    osg::Vec3 _topLeft;
-    osg::Vec3 _bottomLeft;
-    osg::Vec3 _topRight;
-
-    osg::ref_ptr< osg::ClipPlane > _clipPlane;
-  };
-
+  void _setGeometry();
 
   /// Destructor.  Use ref counting.
   virtual ~ClipPlane();

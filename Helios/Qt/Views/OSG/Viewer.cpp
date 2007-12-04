@@ -94,9 +94,6 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   // Set the focus policy.
   this->setFocusPolicy ( Qt::ClickFocus );
 
-  // Set the focus.
-  this->setFocus();
-
   // Delete on close.
   this->setAttribute ( Qt::WA_DeleteOnClose );
 

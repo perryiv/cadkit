@@ -14,26 +14,22 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _SCENE_TREE_COMPONENT_CLASS_H_
-#define _SCENE_TREE_COMPONENT_CLASS_H_
+#ifndef _CLIP_PLANES_COMPONENT_CLASS_H_
+#define _CLIP_PLANES_COMPONENT_CLASS_H_
 
-#include "Helios/Qt/Plugins/SceneTree/CompileGuard.h"
+#include "Helios/Qt/Plugins/ClipPlanes/CompileGuard.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/GUI/IAddDockWindow.h"
-#include "Usul/Interfaces/GUI/IUpdateTreeControls.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IActiveViewListener.h"
 
-class QTreeWidget; class QDockWidget;
+class QDockWidget;
+class ClipPlanes;
 
-namespace osg { class Node; }
-
-
-class SceneTreeComponent : public Usul::Base::Referenced,
+class ClipPlanesComponent : public Usul::Base::Referenced,
                            public Usul::Interfaces::IAddDockWindow,
-                           public Usul::Interfaces::IUpdateTreeControls,
                            public Usul::Interfaces::IPlugin,
                            public Usul::Interfaces::IActiveViewListener
 {
@@ -43,13 +39,13 @@ public:
   typedef Usul::Base::Referenced BaseClass;
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( SceneTreeComponent );
+  USUL_DECLARE_REF_POINTERS ( ClipPlanesComponent );
 
   /// Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   /// Default construction.
-  SceneTreeComponent();
+  ClipPlanesComponent();
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -57,7 +53,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  virtual std::string getPluginName() const { return "Scene Tree Qt"; }
+  virtual std::string getPluginName() const { return "Clip Planes Qt"; }
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -67,31 +63,23 @@ public:
 
   virtual void addDockWindow ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Usul::Interfaces::IUpdateSceneTreeControls
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  virtual void updateTreeControls ( osg::Node *scene );
-
 protected:
 
   /// The active document has changed.
   virtual void                          activeViewChanged ( Usul::Interfaces::IUnknown *oldView, Usul::Interfaces::IUnknown *newView );
 
   // Do not copy.
-  SceneTreeComponent ( const SceneTreeComponent & );
-  SceneTreeComponent &operator = ( const SceneTreeComponent & );
+  ClipPlanesComponent ( const ClipPlanesComponent & );
+  ClipPlanesComponent &operator = ( const ClipPlanesComponent & );
 
   /// Use reference counting.
-  virtual ~SceneTreeComponent();
+  virtual ~ClipPlanesComponent();
 
   Usul::Interfaces::IUnknown::QueryPtr _caller;
 
   QDockWidget     *_dock;
-  QTreeWidget     *_sceneTree;
+  ClipPlanes      *_clipPlanes;
 };
 
 
-#endif // _SCENE_TREE_COMPONENT_CLASS_H_
+#endif // _CLIP_PLANES_COMPONENT_CLASS_H_

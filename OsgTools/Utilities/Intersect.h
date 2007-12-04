@@ -24,6 +24,8 @@ namespace OsgTools
     OSG_TOOLS_EXPORT void boundingBoxIntersect ( const osg::Plane& plane, const osg::BoundingBox& bb, osg::Vec3Array &vertices );
 
     ///  Get the vertex where line segment intersects the plane.
+    /// See "Algebraic Form" at http://en.wikipedia.org/wiki/Line-plane_intersection and
+    /// See "Solution 2" at http://local.wasp.uwa.edu.au/~pbourke/geometry/planeline/
     inline bool lineSegmentIntersect ( const osg::Plane& plane, const osg::Vec3& v0, const osg::Vec3& v1, osg::Vec3& point )
     {
       osg::Vec4 p ( plane.asVec4() );
@@ -39,8 +41,8 @@ namespace OsgTools
       double u ( num / denom );
 
       // Line intersects, but does so past the line segment end points.
-      if ( u < 0.0 || u > 1.0 )
-        return false;
+      //if ( u < 0.0 || u > 1.0 )
+      //  return false;
 
       point = v0 + ( ( v1 - v0 ) * u );
 

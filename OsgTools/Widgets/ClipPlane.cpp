@@ -68,7 +68,7 @@ void ClipPlane::_setGeometry()
   geode->addDrawable ( geometry.get() );
   
   // Make the vertices
-  osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array(4) );
+  osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array );
   OsgTools::Utilities::boundingBoxIntersect ( plane, _bb, *vertices );
 
   // Make the normals
@@ -89,7 +89,7 @@ void ClipPlane::_setGeometry()
   geometry->setColorBinding  ( osg::Geometry::BIND_OVERALL );
 
   // Add the primitive set
-  geometry->addPrimitiveSet ( new osg::DrawArrays( osg::PrimitiveSet::QUADS, 0, 4 ) );
+  geometry->addPrimitiveSet ( new osg::DrawArrays( osg::PrimitiveSet::QUADS, 0, vertices->size() ) );
 
   // Get or Create the state set
   osg::ref_ptr < osg::StateSet > stateset ( geometry->getOrCreateStateSet() );
@@ -118,7 +118,7 @@ void ClipPlane::_setGeometry()
   edge->setColorBinding  ( osg::Geometry::BIND_OVERALL );
 
   // Add the primitive set
-  edge->addPrimitiveSet ( new osg::DrawArrays( osg::PrimitiveSet::LINE_LOOP, 0, 4 ) );
+  edge->addPrimitiveSet ( new osg::DrawArrays( osg::PrimitiveSet::LINE_LOOP, 0, vertices->size() ) );
 
   // Add the geometry
   geode->addDrawable( edge.get() );

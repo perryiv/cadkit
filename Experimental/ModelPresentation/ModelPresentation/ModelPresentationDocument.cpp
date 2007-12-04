@@ -37,6 +37,7 @@
 #include "Usul/Math/Matrix44.h"
 #include "Usul/Math/UMath.h"
 #include "Usul/Math/MinMax.h"
+#include "Usul/System/Directory.h"
 
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/Group.h"
@@ -218,11 +219,13 @@ void ModelPresentationDocument::read ( const std::string &name, Unknown *caller,
   Guard guard ( this->mutex() );
 
   XmlTree::Document::RefPtr document ( new XmlTree::Document );
+  _workingDir = Usul::File::directory( name, true );
+
   document->load ( name );
 
   if ( "mpd" == document->name() )
   {
-    this->_readParameterFile( *document, caller );
+    this->_readParameterFile( *document, caller, progress );
   }
 
 }
@@ -548,7 +551,7 @@ void ModelPresentationDocument::isAnimating( bool value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ModelPresentationDocument::_readParameterFile( XmlTree::Node &node, Unknown *caller )
+bool ModelPresentationDocument::_readParameterFile( XmlTree::Node &node, Unknown *caller, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -574,22 +577,22 @@ bool ModelPresentationDocument::_readParameterFile( XmlTree::Node &node, Unknown
     XmlTree::Node::RefPtr node ( *iter );
     if ( "set" == node->name() )
     {
-      this->_parseSet( *node, caller, set );
+      this->_parseSet( *node, caller, progress, set );
       set ++;
     }
     if ( "timeset" == node->name() )
     {
-      this->_parseTimeSet( *node, caller );
+      this->_parseTimeSet( *node, caller, progress );
     }
     if ( "static" == node->name() )
     {
       std::cout << "Parsing static entries..." << std::endl;
-      this->_parseStatic( *node, caller );
+      this->_parseStatic( *node, caller, progress );
     } 
     if ( "location" == node->name() )
     {
       std::cout << "Parsing location entries..." << std::endl;
-      this->_parseLocation( *node, caller );
+      this->_parseLocation( *node, caller, progress );
     } 
   }
   
@@ -604,7 +607,7 @@ bool ModelPresentationDocument::_readParameterFile( XmlTree::Node &node, Unknown
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::_parseStatic( XmlTree::Node &node, Unknown *caller )
+void ModelPresentationDocument::_parseStatic( XmlTree::Node &node, Unknown *caller, Unknown *progress )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -624,7 +627,7 @@ void ModelPresentationDocument::_parseStatic( XmlTree::Node &node, Unknown *call
     if ( "model" == node->name() )
     {
       std::cout << "Found static model: " << std::flush;
-      _static->addChild( this->_parseModel( *node, caller ) );
+      _static->addChild( this->_parseModel( *node, caller, progress ) );
     }  
   }
 #if 1
@@ -642,7 +645,7 @@ void ModelPresentationDocument::_parseStatic( XmlTree::Node &node, Unknown *call
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *caller )
+void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *caller, Unknown *progress )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -672,7 +675,7 @@ void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *ca
       
       std::cout << "Found matrix" << std::endl;
      
-      this->_parseMatrix( *node, caller, name);
+      this->_parseMatrix( *node, caller, progress, name);
     }
   }
   
@@ -685,7 +688,7 @@ void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *ca
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::_parseMatrix( XmlTree::Node &node, Unknown *caller, const std::string& name )
+void ModelPresentationDocument::_parseMatrix( XmlTree::Node &node, Unknown *caller, Unknown *progress, const std::string& name )
 {
    USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -772,7 +775,7 @@ void ModelPresentationDocument::_setMatrix( osg::Matrix * matrix, const std::str
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller, unsigned int setnum )
+void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int setnum )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -805,7 +808,7 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller,
     if ( "group" == node->name() )
     {
       std::cout << "Found group..." << std::endl;
-      switchNode->addChild( this->_parseGroup( *node, caller, set ), false );
+      switchNode->addChild( this->_parseGroup( *node, caller, progress, set ), false );
     }
   }
   switchNode->setValue( 0, true );
@@ -827,7 +830,7 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown *caller, MpdSet & set )
+osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdSet & set )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -860,7 +863,7 @@ osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown 
     if ( "model" == node->name() )
     {
       std::cout << "Found group model: " << std::flush;
-      group->addChild( this->_parseModel( *node, caller ) );
+      group->addChild( this->_parseModel( *node, caller, progress ) );
     }  
   }
   return group.release();
@@ -873,7 +876,7 @@ osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *caller )
+void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *caller, Unknown *progress )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -917,7 +920,7 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
     if ( "group" == node->name() )
     {
       std::cout << "Found group..." << std::endl;
-      switchNode->addChild( this->_parseTimeGroup( *node, caller, currentTime ), false );
+      switchNode->addChild( this->_parseTimeGroup( *node, caller, progress, currentTime ), false );
     }
   }
   
@@ -937,7 +940,7 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unknown *caller, unsigned int &currentTime )
+osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int &currentTime )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -978,7 +981,7 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
     if ( "model" == node->name() )
     {
       std::cout << "Found timeline group model: " << std::flush;
-      group->addChild( this->_parseModel( *node, caller ) );
+      group->addChild( this->_parseModel( *node, caller, progress ) );
     }  
   }
   currentTime ++;
@@ -993,7 +996,7 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* ModelPresentationDocument::_parseModel( XmlTree::Node &node, Unknown *caller )
+osg::Node* ModelPresentationDocument::_parseModel( XmlTree::Node &node, Unknown *caller, Unknown *progress )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -1006,12 +1009,12 @@ osg::Node* ModelPresentationDocument::_parseModel( XmlTree::Node &node, Unknown 
     if ( "file" == iter->first )
     {
       Usul::Strings::fromString ( iter->second, path );
-      group->addChild( this->_loadFile( path, caller ) );
+      group->addChild( this->_loadFile( path, caller, progress ) );
     }
     if ( "directory" == iter->first )
     {
       Usul::Strings::fromString ( iter->second, path );
-      group->addChild( this->_loadDirectory( path, caller ) );
+      group->addChild( this->_loadDirectory( path, caller, progress ) );
     }
            
   }
@@ -1026,12 +1029,13 @@ osg::Node* ModelPresentationDocument::_parseModel( XmlTree::Node &node, Unknown 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* ModelPresentationDocument::_loadFile( const std::string& filename, Unknown *caller )
+osg::Node* ModelPresentationDocument::_loadFile( const std::string& filename, Unknown *caller, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   osg::ref_ptr< osg::Group > group ( new osg::Group );
   std::cout << filename << " single file loading..." << std::endl;
+  Usul::System::Directory::cwd( _workingDir );
   try
   {
      // This will create a new document.
@@ -1044,7 +1048,7 @@ osg::Node* ModelPresentationDocument::_loadFile( const std::string& filename, Un
       // Ask the document to open the file.
       try
       {
-        this->_openDocument ( filename, info.document.get(), caller );
+        this->_openDocument ( filename, info.document.get(), caller, progress );
       
 
 
@@ -1096,10 +1100,12 @@ osg::Node* ModelPresentationDocument::_loadFile( const std::string& filename, Un
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Unknown *caller )
+osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Unknown *caller, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
+  Usul::System::Directory::cwd( _workingDir );
 
   std::cout << dir << " directory loading..." << std::endl;
   Files files;
@@ -1143,7 +1149,7 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
         try
         {
           
-          this->_openDocument ( filename, info.document.get(), caller );
+          this->_openDocument ( filename, info.document.get(), caller, progress );
 
           // Disable Memory pools
           {
@@ -1191,7 +1197,7 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::_openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller )
+void ModelPresentationDocument::_openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   //Guard guard ( this->mutex() );
@@ -1199,7 +1205,7 @@ void ModelPresentationDocument::_openDocument ( const std::string &file, Usul::D
     return;
 #if 1
   if( true == document->canOpen( file ) )
-    document->open ( file, caller );
+    document->open ( file, caller, progress );
   else
     std::cout << "Unable to open document for file: " << file << std::endl;
 #else

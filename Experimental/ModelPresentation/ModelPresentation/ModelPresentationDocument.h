@@ -153,24 +153,24 @@ protected:
   ModelPresentationDocument &operator = ( const ModelPresentationDocument & );
 
   void                        _buildScene();
-  bool                        _readParameterFile( XmlTree::Node &node, Unknown *caller );
-  void                        _parseHeader( XmlTree::Node &node, Unknown *caller );
-  void                        _parseStatic( XmlTree::Node &node, Unknown *caller );
-  void                        _parseSet( XmlTree::Node &node, Unknown *caller, unsigned int setnum );
-  void                        _parseTimeSet( XmlTree::Node &node, Unknown *caller );
-  void                        _parseLocation( XmlTree::Node &node, Unknown *caller );
-  void                        _parseMatrix( XmlTree::Node &node, Unknown *caller, const std::string& name );
-  osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller, MpdSet & set );
-  osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller, unsigned int &currentTime );
-  osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller );
-  osg::Node*                  _loadFile( const std::string& filename, Unknown *caller );
-  osg::Node*                  _loadDirectory( const std::string& dir, Unknown *caller );
+  bool                        _readParameterFile( XmlTree::Node &node, Unknown *caller, Unknown *progress );
+  void                        _parseHeader( XmlTree::Node &node, Unknown *caller, Unknown *progress );
+  void                        _parseStatic( XmlTree::Node &node, Unknown *caller, Unknown *progress );
+  void                        _parseSet( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int setnum );
+  void                        _parseTimeSet( XmlTree::Node &node, Unknown *caller, Unknown *progress );
+  void                        _parseLocation( XmlTree::Node &node, Unknown *caller, Unknown *progress );
+  void                        _parseMatrix( XmlTree::Node &node, Unknown *caller, Unknown *progress, const std::string& name );
+  osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdSet & set );
+  osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int &currentTime );
+  osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller, Unknown *progress );
+  osg::Node*                  _loadFile( const std::string& filename, Unknown *caller, Unknown *progress );
+  osg::Node*                  _loadDirectory( const std::string& dir, Unknown *caller, Unknown *progress );
   MatrixVec                   _getInterpolationMatrices ( const osg::Matrixd &m1, const osg::Matrixd &m2 ) const;
 
   /// Usul::Interfaces::IUpdateListener
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 
-  void                        _openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller );
+  void                        _openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller, Unknown *progress );
   void                        _setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller );
   void                        _checkTimeSteps();
   
@@ -199,6 +199,8 @@ private:
 
   Locations                   _locations;
   LocationNames               _locationNames;
+
+  std::string                 _workingDir;
 };
 
 

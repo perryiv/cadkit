@@ -26,6 +26,7 @@
 #include "Usul/Registry/Database.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/System/DateTime.h"
+#include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
 
 #include "OsgTools/Render/Defaults.h"
@@ -71,6 +72,7 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   _timerRenderLoop ( 0x0 ),
   _keys(),
   _lastMode ( OsgTools::Render::Viewer::NAVIGATION ),
+  _threadId ( Usul::Threads::currentThreadId() ),
   _mutex ( new Viewer::Mutex )
 {
   USUL_TRACE_SCOPE;
@@ -348,6 +350,20 @@ void Viewer::focusInEvent ( QFocusEvent * event )
 
   // Make our view current.
   Usul::Documents::Manager::instance().activeView ( this->viewer() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the current thread the thread we were created in.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::isContextThread() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return Usul::Threads::currentThreadId() == _threadId;
 }
 
 

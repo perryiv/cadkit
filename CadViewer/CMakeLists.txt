@@ -14,44 +14,49 @@ INCLUDE(${CMakeModules}/FindVRJuggler.cmake)
 INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 
 SUBDIRS(
-${CADKIT_ROOT_DIR}/Usul 
-${CADKIT_ROOT_DIR}/Threads/OpenThreads
-${CADKIT_ROOT_DIR}/OsgTools
-${CADKIT_ROOT_DIR}/XmlTree
-${CADKIT_ROOT_DIR}/Serialize/XML
-${CADKIT_ROOT_DIR}/MenuKit
-${CADKIT_ROOT_DIR}/MenuKit/OSG
-${CADKIT_ROOT_DIR}/VRV
-${CADKIT_ROOT_DIR}/CadViewer/Plugins/scene_operations
-${CADKIT_ROOT_DIR}/CadViewer/Plugins/display_scene_stats
+${CADKIT_INC_DIR}/Usul 
+${CADKIT_INC_DIR}/Threads/OpenThreads
+${CADKIT_INC_DIR}/OsgTools
+${CADKIT_INC_DIR}/XmlTree
+${CADKIT_INC_DIR}/Serialize/XML
+${CADKIT_INC_DIR}/MenuKit
+${CADKIT_INC_DIR}/MenuKit/OSG
+${CADKIT_INC_DIR}/VRV
+${CADKIT_INC_DIR}/CadViewer/Plugins/scene_operations
+${CADKIT_INC_DIR}/CadViewer/Plugins/display_scene_stats
 
-#${CADKIT_ROOT_DIR}/Helios/Plugins/Animate
-${CADKIT_ROOT_DIR}/Experimental/PathAnimation
+${CADKIT_INC_DIR}/Experimental/PathAnimation
 
 # ---- Document Plug-ins -------
-${CADKIT_ROOT_DIR}/Helios/Plugins/SceneModel
-${CADKIT_ROOT_DIR}/Helios/Plugins/TriangleModel
-${CADKIT_ROOT_DIR}/Helios/Plugins/ModflowModel
-${CADKIT_ROOT_DIR}/Experimental/WRF/WrfModel
-${CADKIT_ROOT_DIR}/Experimental/DynamicLand/DynamicLandModel
-${CADKIT_ROOT_DIR}/Experimental/ModelPresentation/ModelPresentation
+${CADKIT_INC_DIR}/Helios/Plugins/SceneModel
+${CADKIT_INC_DIR}/Helios/Plugins/TriangleModel
+${CADKIT_INC_DIR}/Experimental/WRF/WrfModel
+${CADKIT_INC_DIR}/Experimental/DynamicLand/DynamicLandModel
+${CADKIT_INC_DIR}/Experimental/ModelPresentation/ModelPresentation
 
-${CADKIT_ROOT_DIR}/Experimental/StarSystem
-${CADKIT_ROOT_DIR}/Helios/Plugins/StarSystemModel
+${CADKIT_INC_DIR}/Experimental/StarSystem
+${CADKIT_INC_DIR}/Helios/Plugins/StarSystemModel
 
 # ---- Minerva -------
-${CADKIT_ROOT_DIR}/Magrathea
-${CADKIT_ROOT_DIR}/Minerva/Core
-${CADKIT_ROOT_DIR}/Minerva/Document
+${CADKIT_INC_DIR}/Magrathea
+${CADKIT_INC_DIR}/Minerva/Core
+${CADKIT_INC_DIR}/Minerva/Document
 # ---- Minerva Plug-ins -------
-${CADKIT_ROOT_DIR}/Minerva/Plugins/ProjectionManager
-${CADKIT_ROOT_DIR}/Minerva/Plugins/ComputeNormals
-${CADKIT_ROOT_DIR}/Minerva/Plugins/TriangulateCGAL
-${CADKIT_ROOT_DIR}/Minerva/Plugins/Document
+${CADKIT_INC_DIR}/Minerva/Plugins/ProjectionManager
+${CADKIT_INC_DIR}/Minerva/Plugins/ComputeNormals
+${CADKIT_INC_DIR}/Minerva/Plugins/TriangulateCGAL
+${CADKIT_INC_DIR}/Minerva/Plugins/Document
 
-${CADKIT_ROOT_DIR}/Experimental/Planet
+${CADKIT_INC_DIR}/Experimental/Planet
+
+
 
 )
+
+#---- ModFlow ---
+IF ("$ENV{MODFLOW_INC_DIR}")
+   SUBDIRS(  $ENV{MODFLOW_INC_DIR}/ModflowModel )
+ENDIF ( "$ENV{MODFLOW_INC_DIR}")
 
 # ------------ Set Include Folders ----------------------
 INCLUDE_DIRECTORIES( 

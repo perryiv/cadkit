@@ -50,7 +50,7 @@ namespace Detail
 void _threadStarted ( Usul::Threads::Thread *thread )
 {
   USUL_TRACE_SCOPE_STATIC;
-
+  
   const unsigned long sleep ( Detail::randomNumbers.at ( thread->id() ) );
 
   {

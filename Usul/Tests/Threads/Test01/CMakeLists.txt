@@ -6,8 +6,8 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 
 SUBDIRS(
-${CADKIT_ROOT_DIR}/Usul 
-${CADKIT_ROOT_DIR}/Threads/OpenThreads
+${CADKIT_INC_DIR}/Usul 
+${CADKIT_INC_DIR}/Threads/OpenThreads
 )
 
 # ------------ Set Include Folders ----------------------

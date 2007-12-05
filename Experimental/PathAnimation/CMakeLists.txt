@@ -13,7 +13,7 @@ ADD_DEFINITIONS ("-D_COMPILING_PATH_ANIMATION")
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
 	"${PROJECT_SOURCE_DIR}/../" 
-  "${CADKIT_ROOT_DIR}/GenericNurbs"
+  "${CADKIT_INC_DIR}/GenericNurbs"
   ${OSG_INC_DIR}
 )
 

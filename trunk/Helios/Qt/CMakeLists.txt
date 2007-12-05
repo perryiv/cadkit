@@ -3,6 +3,7 @@
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
 
+set(QT_MAX_VERSION "4.9.9")
 set(QT_USE_OPENGL TRUE)
 
 FIND_PACKAGE(Qt4 REQUIRED)

@@ -228,10 +228,10 @@ void RootImpl::node ( const std::string &path, char delim, const std::string &va
   Usul::Strings::split ( path, delim, false, parts );
 
   // Get list of nodes.
-  xercesc::DOMNodeList *kids ( _document->getChildNodes() );
+  //xercesc::DOMNodeList *kids ( _document->getChildNodes() );
 
   // Loop through nodes.
-  const XMLSize_t num ( kids->getLength() );
+  //const XMLSize_t num ( kids->getLength() );
 //  for ( xercesc::XMLSize_t i = 0; i < num; ++i )
 //    HERE
 //    Node, need to pass in an unsigner integer indicating which occurance of the path to operate on.

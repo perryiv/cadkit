@@ -31,11 +31,11 @@ MACRO(LINK_CADKIT TRGTNAME)
 ENDMACRO(LINK_CADKIT TRGTNAME)
 
 
- # Set up common variables
-if (NOT CADKIT_ROOT_DIR)
-   set(CADKIT_ROOT_DIR "$ENV{CADKIT_ROOT_DIR}")
-endif( NOT CADKIT_ROOT_DIR )
-	 
+ # Set up common variables	 
+IF (NOT CADKIT_LIB_DIR)
+   set(CADKIT_LIB_DIR "$ENV{CADKIT_LIB_DIR}")
+endif( NOT CADKIT_LIB_DIR )
+
 if (NOT CADKIT_BIN_DIR)
    set(CADKIT_BIN_DIR "$ENV{CADKIT_BIN_DIR}")
 endif( NOT CADKIT_BIN_DIR )
@@ -52,7 +52,7 @@ endif( NOT CADKIT_INC_DIR )
 
 # setup output Directories
 SET (LIBRARY_OUTPUT_PATH
-	${CADKIT_BIN_DIR}
+	${CADKIT_LIB_DIR}
 	CACHE PATH
 	"Single Directory for all Libraries"
 )

@@ -22,19 +22,19 @@ FIND_LIBRARY ( VJCINEMA_LIB VrjCinema "$ENV{VRJCINEMA_ROOT_DIR}/lib" )
 INCLUDE(${CMakeModules}/FindVRJuggler.cmake)
 
 SUBDIRS(
-${CADKIT_ROOT_DIR}/Usul 
-${CADKIT_ROOT_DIR}/Threads/OpenThreads
-${CADKIT_ROOT_DIR}/OsgTools
-${CADKIT_ROOT_DIR}/XmlTree
-${CADKIT_ROOT_DIR}/Serialize/XML
-${CADKIT_ROOT_DIR}/Magrathea
-${CADKIT_ROOT_DIR}/Minerva/Core
-${CADKIT_ROOT_DIR}/Minerva/Document
-${CADKIT_ROOT_DIR}/VRV
+${CADKIT_INC_DIR}/Usul 
+${CADKIT_INC_DIR}/Threads/OpenThreads
+${CADKIT_INC_DIR}/OsgTools
+${CADKIT_INC_DIR}/XmlTree
+${CADKIT_INC_DIR}/Serialize/XML
+${CADKIT_INC_DIR}/Magrathea
+${CADKIT_INC_DIR}/Minerva/Core
+${CADKIT_INC_DIR}/Minerva/Document
+${CADKIT_INC_DIR}/VRV
 # ---- Plug-ins -------
-${CADKIT_ROOT_DIR}/Minerva/Plugins/ProjectionManager
-${CADKIT_ROOT_DIR}/Minerva/Plugins/ComputeNormals
-${CADKIT_ROOT_DIR}/Minerva/Plugins/TriangulateCGAL
+${CADKIT_INC_DIR}/Minerva/Plugins/ProjectionManager
+${CADKIT_INC_DIR}/Minerva/Plugins/ComputeNormals
+${CADKIT_INC_DIR}/Minerva/Plugins/TriangulateCGAL
 )
 
 # ------------ Set Include Folders ----------------------

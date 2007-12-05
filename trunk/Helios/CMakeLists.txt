@@ -43,16 +43,16 @@ ${PROJECT_SOURCE_DIR}/Plugins/VolumeModel
 #${PROJECT_SOURCE_DIR}/Plugins/SceneStatsOSG
 #${PROJECT_SOURCE_DIR}/Animate
 #${PROJECT_SOURCE_DIR}/Plugins/About
-#${CADKIT_ROOT_DIR}/Magrathea/
-#${CADKIT_ROOT_DIR}/Minerva/Core
-#${CADKIT_ROOT_DIR}/Minerva/Document
+#${CADKIT_INC_DIR}/Magrathea/
+#${CADKIT_INC_DIR}/Minerva/Core
+#${CADKIT_INC_DIR}/Minerva/Document
 #
 # ---- Minerva Plug-ins -------
 #
-#${CADKIT_ROOT_DIR}/Minerva/Plugins/ProjectionManager
-#${CADKIT_ROOT_DIR}/Minerva/Plugins/ComputeNormals
-#${CADKIT_ROOT_DIR}/Minerva/Plugins/TriangulateCGAL
-#${CADKIT_ROOT_DIR}/Minerva/Plugins/Document
+#${CADKIT_INC_DIR}/Minerva/Plugins/ProjectionManager
+#${CADKIT_INC_DIR}/Minerva/Plugins/ComputeNormals
+#${CADKIT_INC_DIR}/Minerva/Plugins/TriangulateCGAL
+#${CADKIT_INC_DIR}/Minerva/Plugins/Document
 )
 
 

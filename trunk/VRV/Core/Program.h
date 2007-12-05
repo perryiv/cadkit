@@ -57,7 +57,10 @@ public:
     Usul::Threads::Manager::instance().factory ( &Threads::OT::newOpenThreadsThread );
 
     // Set the trace output file.
-    Usul::Trace::Print::init ( _trace );
+    Usul::Trace::Print::stream ( _trace );
+
+    // Default trace behavior.
+    Usul::Trace::Print::printing ( false );
 
     // Use 5 threads.
     Usul::Jobs::Manager::init( 5, false );

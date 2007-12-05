@@ -29,6 +29,11 @@ namespace Trace {
 
 struct USUL_EXPORT Print
 {
+  // Add a filter which, when found, overrides the printing state.
+  // This function is not thread safe! It's best to call it at startup.
+  static void addFilter ( bool print, const std::string &filter );
+
+  // Print the value.
   static void execute ( const std::string & );
   static void execute ( const void * );
   static void execute ( const char * );
@@ -41,7 +46,12 @@ struct USUL_EXPORT Print
   static void execute ( float );
   static void execute ( double );
 
-  static void init ( std::ostream * );
+  // Set the printing state. The default is true.
+  // This function is not thread safe! It's best to call it at startup.
+  static void printing ( bool );
+
+  // Initialize the stream.
+  static void stream ( std::ostream * );
 };
 
 

@@ -13,8 +13,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#if 1
 #ifndef _USUL_TRACE
 #define _USUL_TRACE
+#endif
 #endif
 
 #include "Usul/Threads/Pool.h"

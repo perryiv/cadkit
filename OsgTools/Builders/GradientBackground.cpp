@@ -33,10 +33,10 @@ using namespace OsgTools::Builders;
 ///////////////////////////////////////////////////////////////////////////////
 
 GradientBackground::GradientBackground() :
-_root       ( new osg::Projection ),
+  _root       ( new osg::Projection ),
   _geom     ( new osg::Geometry ),
-  _colors   ( new osg::Vec4Array ),
-  _vertices ( new osg::Vec3Array )
+  _vertices ( new osg::Vec3Array ),
+  _colors   ( new osg::Vec4Array )
 {
   this->init();
 }

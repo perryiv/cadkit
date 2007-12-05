@@ -35,8 +35,8 @@ namespace Detail
       _index0 ( i0 ),
       _index1 ( i1 ),
       _index2 ( i2 ),
-      _vertices ( vertices ),
-      _center ()
+      _center (),
+      _vertices ( vertices )
     {
       _center = _vertices->at( _index0 ) + _vertices->at( _index1 ) + _vertices->at( _index2 );
       _center /= 3;
@@ -46,8 +46,8 @@ namespace Detail
       _index0 ( rhs._index0 ),
       _index1 ( rhs._index1 ),
       _index2 ( rhs._index2 ),
-      _vertices ( rhs._vertices ),
-      _center ( rhs._center )
+      _center ( rhs._center ),
+      _vertices ( rhs._vertices )
     {
     }
 
@@ -100,8 +100,8 @@ namespace Detail
       _index1 ( i1 ),
       _index2 ( i2 ),
       _index3 ( i3 ),
-      _vertices ( vertices ),
-      _center ()
+      _center (),
+      _vertices ( vertices )
     {
       _center = _vertices->at( _index0 ) + _vertices->at( _index1 ) + _vertices->at( _index2 ) + _vertices->at ( _index3 );
       _center /= 4;
@@ -112,8 +112,8 @@ namespace Detail
       _index1 ( rhs._index1 ),
       _index2 ( rhs._index2 ),
       _index3 ( rhs._index3 ),
-      _vertices ( rhs._vertices ),
-      _center ( rhs._center )
+      _center ( rhs._center ),
+      _vertices ( rhs._vertices )
     {
     }
 

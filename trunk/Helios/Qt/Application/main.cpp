@@ -153,10 +153,16 @@ namespace Program
     out << "Welcome to " << program << std::endl;
     out << "Built on " << Usul::Strings::formatDate ( __DATE__ ) << " at " << __TIME__ << std::endl;
 
-    // Send trace output here. Comment this out for stdout.
+    // Send trace output here.
     const std::string traceFile ( persistantDir + program + ".csv" );
     std::ofstream traceStream ( traceFile.c_str() );
-    Usul::Trace::Print::init ( &traceStream );
+    Usul::Trace::Print::stream ( &traceStream );
+
+    // Default trace behavior.
+    Usul::Trace::Print::printing ( false );
+
+    // Optional trace filters.
+    Usul::Trace::Print::addFilter ( true, "Usul::Threads::Pool" );
 
     // Initialize singleton of named threads.
     Usul::Threads::Named::instance().set ( Usul::Threads::Names::MAIN );

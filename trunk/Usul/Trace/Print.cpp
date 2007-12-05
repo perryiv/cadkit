@@ -15,23 +15,83 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Trace/Print.h"
-//#include "Usul/Threads/Mutex.h"
-//#include "Usul/Threads/Guard.h"
+
+#include <vector>
 
 using namespace Usul::Trace;
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Initialize the stream to print to.
+//  Initialize variables with file scope.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace Detail
+namespace Usul
 {
-  std::ostream *_stream ( 0x0 );
-  //Usul::Threads::Mutex *_mutex ( 0x0 );
-  //typedef Usul::Threads::Guard<Usul::Threads::Mutex> Guard;
+  namespace Trace
+  {
+    namespace Detail
+    {
+      std::ostream *_stream ( 0x0 );
+
+      bool _printing ( true );
+      typedef std::pair < bool, std::string > Filter;
+      typedef std::vector < Filter > Filters;
+      Filters _filters;
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Run the string through the filters. Since this function just reads the 
+//  container, it should be re-entrant.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Usul
+{
+  namespace Trace
+  {
+    namespace Detail
+    {
+      inline bool match ( const std::string &filter, const std::string &str )
+      {
+        // See if they're equal. This will handle empty strings too.
+        if ( filter == str )
+        {
+          return true;
+        }
+
+        // Can we find the filter in the given string?
+        const std::string::size_type position ( str.find ( filter ) );
+        const bool found ( position != std::string::npos );
+        return found;
+      }
+
+      inline bool shouldPrint ( const std::string &str )
+      {
+        // Loop through the filters.
+        for ( Filters::const_iterator i = _filters.begin(); i != _filters.end(); ++i )
+        {
+          // Get filter.
+          const Filter &filter ( *i );
+
+          // See if they're equal. This will handle empty strings too.
+          if ( true == match ( filter.second, str ) )
+          {
+            // Return the printing state for this filter.
+            return filter.first;
+          }
+        }
+
+        // If we get to here then use default behavior.
+        return _printing;
+      }
+    }
+  }
 }
 
 
@@ -47,8 +107,10 @@ void Print::execute ( const std::string &s )
   {
     if ( false == s.empty() )
     {
-      //Detail::Guard guard ( *Detail::_mutex );
-      *Detail::_stream << s << std::flush;
+      if ( true == Detail::shouldPrint ( s ) )
+      {
+        *Detail::_stream << s << std::flush;
+      }
     }
   }
 }
@@ -66,8 +128,10 @@ void Print::execute ( const char *s )
   {
     if ( 0x0 != s )
     {
-      //Detail::Guard guard ( *Detail::_mutex );
-      *Detail::_stream << s << std::flush;
+      if ( true == Detail::shouldPrint ( s ) )
+      {
+        *Detail::_stream << s << std::flush;
+      }
     }
   }
 }
@@ -109,13 +173,39 @@ IMPLEMENT_NUMBER_PRINTING_MEMBER ( float );
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the stream to print to. 
-//  Initialize the mutex.
 //  Not thread safe!
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Print::init ( std::ostream *s )
+void Print::stream ( std::ostream *s )
 {
-  //Detail::_mutex = Usul::Threads::Mutex::create();
   Detail::_stream = s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a filter. With no filters everything gets through.
+//  This function is not thread safe!
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Print::addFilter ( bool print, const std::string &filter )
+{
+  if ( false == filter.empty() )
+  {
+    Detail::_filters.push_back ( Detail::Filter ( print, filter ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the printing state. This function is not thread safe!
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Print::printing ( bool state )
+{
+  Detail::_printing = state;
 }

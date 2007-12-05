@@ -13,12 +13,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#if 1
-#ifndef _USUL_TRACE
-#define _USUL_TRACE
-#endif
-#endif
-
 #include "Usul/Threads/Pool.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Assert.h"
@@ -289,12 +283,6 @@ void Pool::removeQueuedTask ( TaskHandle id )
   }
 }
 
-bool Pool::_isRunning() const
-{
-  Guard guard ( this->mutex() );
-  return _runThreads;
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -316,8 +304,7 @@ void Pool::_threadStarted ( Usul::Threads::Thread *thread )
     throw std::invalid_argument ( "Error 2565542508: wrong thread in start function" );
 
   // Loop until told otherwise.
-  //while ( true == Usul::Threads::Safe::get ( this->mutex(), _runThreads ) )
-  while ( this->_isRunning() )
+  while ( true == Usul::Threads::Safe::get ( this->mutex(), _runThreads ) )
   {
     // Get the next task.
     Task::RefPtr task ( this->_nextTask() );

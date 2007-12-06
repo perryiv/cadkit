@@ -4,6 +4,9 @@
 # Option for tracing.
 OPTION ( USUL_TRACING "Should tracing be enabled?" OFF )
 
+# We don't want RPath.
+SET ( CMAKE_SKIP_RPATH ON )
+
 # Turn on tracing if we are supposed to.
 IF ( USUL_TRACING )
 ADD_DEFINITIONS("-D_USUL_TRACE")

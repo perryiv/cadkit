@@ -23,6 +23,10 @@
 #include <stdlib.h>
 #include <iostream>
 
+#ifndef _MSC_VER
+#include <limits.h>
+#endif
+
 
 namespace Usul {
 namespace File {
@@ -86,8 +90,8 @@ inline std::string fullPath ( const std::string &file )
 
 #else
 
-  std::cout << "Usul/File/Path.h std::string fullPath ( const std::string &file ) "
-    << " Is not implemented yet." << std::endl;
+  // http://linux.about.com/library/cmd/blcmdl3_realpath.htm
+  ::realpath ( file.c_str(), buffer );
 
 #endif
 

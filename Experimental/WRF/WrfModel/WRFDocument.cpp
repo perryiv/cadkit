@@ -13,21 +13,17 @@
 #include "Experimental/WRF/WrfModel/NextTimestep.h"
 #include "Experimental/WRF/WrfModel/PreviousTimestep.h"
 #include "Experimental/WRF/WrfModel/ChangeNumPlanes.h"
-#include "Experimental/WRF/WrfModel/AnimateCommand.h"
 #include "Experimental/WRF/WrfModel/LoadDataJob.h"
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Commands/GenericCommand.h"
 #include "Usul/Commands/GenericCheckCommand.h"
+#include "Usul/Components/Manager.h"
+#include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
-#include "Usul/Strings/Case.h"
-#include "Usul/Strings/Convert.h"
-#include "Usul/Predicates/CloseFloat.h"
 #include "Usul/Functions/Color.h"
-#include "Usul/Jobs/Manager.h"
-#include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Trace/Trace.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/IBuildScene.h"
@@ -36,12 +32,15 @@
 #include "Usul/Interfaces/ICullSceneVisitor.h"
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/IUpdateSceneVisitor.h"
-#include "Usul/Documents/Manager.h"
-#include "Usul/Functions/SafeCall.h"
-#include "Usul/Predicates/FileExists.h"
+#include "Usul/Jobs/Manager.h"
 #include "Usul/Math/Angle.h"
 #include "Usul/Math/MinMax.h"
-#include "Usul/Components/Manager.h"
+#include "Usul/Predicates/CloseFloat.h"
+#include "Usul/Predicates/FileExists.h"
+#include "Usul/Strings/Case.h"
+#include "Usul/Strings/Convert.h"
+#include "Usul/Trace/Trace.h"
+
 #include "Usul/Factory/RegisterCreator.h"
 
 #include "OsgTools/Font.h"
@@ -55,6 +54,7 @@
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
 #include "MenuKit/RadioButton.h"
+#include "MenuKit/ToggleButton.h"
 
 #include "osgText/Text"
 #include "osg/Geode"
@@ -677,7 +677,7 @@ void WRFDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     static unsigned int num ( 0 );
 
     ++num;
-    if ( this->animating() && num % 2 == 0 )
+    if ( this->isAnimating() && num % 2 == 0 )
     {
       unsigned int currentTimestep ( this->getCurrentTimeStep () );
       this->setCurrentTimeStep ( ++currentTimestep );
@@ -832,7 +832,7 @@ void WRFDocument::_updateCache ()
     return;
 
   // Don't make any more requests if the cache is full and we are not animating.
-  if ( this->_cacheFull () && false == this->animating () )
+  if ( this->_cacheFull () && false == this->isAnimating () )
     return;
   
   // Make the next request.
@@ -850,28 +850,29 @@ void WRFDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * ca
 {
   typedef MenuKit::Button Button;
   typedef MenuKit::RadioButton RadioButton;
+  typedef MenuKit::ToggleButton ToggleButton;
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   // Make the menu.
   MenuKit::Menu::RefPtr wrf ( new MenuKit::Menu ( "WRF" ) );
   
+  // Add animating toggle.
+  wrf->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Animate", Usul::Adaptors::memberFunction<void>( this, &WRFDocument::animating ), Usul::Adaptors::memberFunction<bool> ( this, &WRFDocument::isAnimating ) ) ) );
+
   wrf->append ( new Button ( Usul::Commands::genericCommand ( "First Timestep", Usul::Adaptors::bind1<void> ( 0, Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::setCurrentTimeStep )  ), Usul::Commands::TrueFunctor() ) ) );
-  wrf->append ( new MenuKit::Button ( new NextTimestep ( this ) ) );
-  wrf->append ( new MenuKit::Button ( new PreviousTimestep ( this ) ) );
+  wrf->append ( new Button ( new NextTimestep ( this ) ) );
+  wrf->append ( new Button ( new PreviousTimestep ( this ) ) );
 
   for ( ChannelInfos::iterator iter = _channelInfo.begin(); iter != _channelInfo.end(); ++ iter )
   {
-    wrf->append ( new MenuKit::Button ( new ChannelCommand ( (*iter)->name (), (*iter)->index (), this ) ) );
+    wrf->append ( new Button ( new ChannelCommand ( (*iter)->name (), (*iter)->index (), this ) ) );
   }
 
-  wrf->append ( new MenuKit::Button ( new ChangeNumPlanes ( 4.0, this ) ) );
-  wrf->append ( new MenuKit::Button ( new ChangeNumPlanes ( 2.0, this ) ) );
-  wrf->append ( new MenuKit::Button ( new ChangeNumPlanes ( 0.5, this ) ) );
-  wrf->append ( new MenuKit::Button ( new ChangeNumPlanes ( 0.25, this ) ) );
-
-  wrf->append ( new MenuKit::Button ( new AnimateCommand ( true, me.get() ) ) );
-  wrf->append ( new MenuKit::Button ( new AnimateCommand ( false, me.get() ) ) );
+  wrf->append ( new Button ( new ChangeNumPlanes ( 4.0, this ) ) );
+  wrf->append ( new Button ( new ChangeNumPlanes ( 2.0, this ) ) );
+  wrf->append ( new Button ( new ChangeNumPlanes ( 0.5, this ) ) );
+  wrf->append ( new Button ( new ChangeNumPlanes ( 0.25, this ) ) );
 
   MenuKit::Menu::RefPtr tf ( new MenuKit::Menu ( "Transfer Functions" ) );
   tf->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "0", Usul::Adaptors::bind1<void> ( 0, Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::transferFunction ) ), Usul::Adaptors::bind1<bool> ( 0, Usul::Adaptors::memberFunction<bool> ( this, &WRFDocument::isTransferFunction ) ) ) ) );
@@ -999,11 +1000,25 @@ void WRFDocument::loadJobFinished ( Usul::Jobs::Job* job )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool WRFDocument::animating () const
+bool WRFDocument::isAnimating () const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _animating;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the animation state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::animating ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _animating = b;
 }
 
 

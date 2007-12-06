@@ -121,8 +121,9 @@ public:
   /// Load job has finished.
   void                        loadJobFinished ( Usul::Jobs::Job* job );
 
-  /// Are we animating?
-  bool                        animating () const;
+  /// Get/Set the animating state.
+  bool                        isAnimating () const;
+  void                        animating ( bool b );
 
   /// Get the number of items in the cache.
   unsigned int                cacheSize () const;

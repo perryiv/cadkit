@@ -9,6 +9,8 @@
 
 #include "UnmanagedRenderContext.h"
 
+#include "Usul/Threads/ThreadId.h"
+
 using namespace CadKit::OpenGL::Glue;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( UnmanagedRenderContext , UnmanagedRenderContext::BaseClass );
@@ -22,7 +24,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( UnmanagedRenderContext , UnmanagedRenderContex
 
 UnmanagedRenderContext::UnmanagedRenderContext() : BaseClass(),
 _makeCurrentCallback ( 0x0 ),
-_swapBuffersCallback ( 0x0 )
+_swapBuffersCallback ( 0x0 ),
+_threadId ( Usul::Threads::currentThreadId () )
 {
 }
 
@@ -106,4 +109,16 @@ Usul::Interfaces::IUnknown *UnmanagedRenderContext::queryInterface ( unsigned lo
   default:
     return 0x0;
   }  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this the correct thread?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool UnmanagedRenderContext::isContextThread() const
+{
+  return Usul::Threads::currentThreadId() == _threadId;
 }

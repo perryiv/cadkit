@@ -27,8 +27,6 @@
 #include "OsgTools/ShapeFactory.h"
 #include "OsgTools/Group.h"
 
-#include "ossim/base/ossimEllipsoid.h"
-
 #include "osg/MatrixTransform"
 
 #include <limits>
@@ -44,9 +42,9 @@ STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( Body );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Body::Body ( const Vec2d &r, Usul::Jobs::Manager& manager ) : BaseClass(),
+Body::Body ( LandModel *model, Usul::Jobs::Manager& manager ) : BaseClass(),
   _transform ( new osg::MatrixTransform ),
-  _ellipsoid ( new ossimEllipsoid ( r[Body::RADIUS_EQUATOR], r[Body::RADIUS_POLAR] ) ),
+  _landModel ( model ),
   _tile ( 0x0 ),
   _rasters ( new RasterGroup ),
   _manager ( manager ),
@@ -63,16 +61,13 @@ Body::Body ( const Vec2d &r, Usul::Jobs::Manager& manager ) : BaseClass(),
   _transform->ref();
   _rasters->ref();
 
-  // Set ellipsoid radii.
-  _ellipsoid->setAB ( r[Body::RADIUS_EQUATOR], r[Body::RADIUS_POLAR] );
-
   // Properties of the tile.
-#if 1
+#if 0
   const osg::Vec2d mn ( -115, 31 );
   const osg::Vec2d mx ( -109, 37 );
 #else
   const osg::Vec2d mn ( -180, -90 );
-  const osg::Vec2d mx (    0,  90 );
+  const osg::Vec2d mx (  180,  90 );
 #endif
 
   // Calculate split distance.
@@ -80,7 +75,7 @@ Body::Body ( const Vec2d &r, Usul::Jobs::Manager& manager ) : BaseClass(),
   const double latRange ( mx[1] - mn[1] );
   const double maxRange ( Usul::Math::maximum ( lonRange, latRange ) );
   const double multiplier ( 7 );
-  const double splitDistance ( _ellipsoid->a() * multiplier * ( maxRange / 180 ) );
+  const double splitDistance ( _landModel->size() * multiplier * ( maxRange / 180 ) );
 
   // Make the tile and add it to the transform.
   _tile = new Tile ( 0, Tile::Extents ( mn, mx ), Tile::MeshSize ( 17, 17 ), Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ), splitDistance, this );
@@ -115,7 +110,6 @@ void Body::_destroy()
   Usul::Pointers::unreference ( _transform ); _transform = 0x0;
   Usul::Pointers::unreference ( _tile ); _tile = 0x0;
   Usul::Pointers::unreference ( _rasters ); _rasters = 0x0;
-  delete _ellipsoid; _ellipsoid = 0x0;
 }
 
 
@@ -179,50 +173,6 @@ Body::Vec3d Body::center() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the maximum radius.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double Body::maxRadius() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return ( ( 0x0 == _ellipsoid ) ? 1 : Usul::Math::maximum ( _ellipsoid->a(), _ellipsoid->b() ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the radii.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Body::Vec2d Body::radii() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return ( ( 0x0 == _ellipsoid ) ? Vec2d ( 1, 1 ) : Vec2d ( _ellipsoid->a(), _ellipsoid->b() ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the radii.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Body::radii ( const Body::Vec2d &r )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  _ellipsoid->setA ( r[Body::RADIUS_EQUATOR] );
-  _ellipsoid->setB ( r[Body::RADIUS_POLAR] );
-  _tile->dirty();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Append raster data.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -249,12 +199,7 @@ void Body::rasterAppend ( RasterLayer * layer )
 void Body::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const
 {
   USUL_TRACE_SCOPE;
-
-  typedef osg::Vec3f::value_type ValueType;
-
-  double x ( 0 ), y ( 0 ), z ( 0 );
-  _ellipsoid->latLonHeightToXYZ ( lat, lon, elevation, x, y, z );
-  point.set ( static_cast<ValueType> ( x ), static_cast<ValueType> ( y ), static_cast<ValueType> ( z ) );
+  _landModel->latLonHeightToXYZ ( lat, lon, elevation, point );
 }
 
  
@@ -267,8 +212,7 @@ void Body::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Ve
 double Body::geodeticRadius( double latitude ) const
 {
   USUL_TRACE_SCOPE;
-
-  return _ellipsoid->geodeticRadius ( latitude );
+  return _landModel->elevation ( 0, latitude );
 }
 
 

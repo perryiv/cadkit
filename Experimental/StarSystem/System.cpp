@@ -16,6 +16,8 @@
 
 #include "StarSystem/System.h"
 #include "StarSystem/Visitor.h"
+#include "StarSystem/LandModelEllipsoid.h"
+#include "StarSystem/LandModelFlat.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
@@ -38,7 +40,9 @@ STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( System );
 ///////////////////////////////////////////////////////////////////////////////
 
 System::System( Usul::Jobs::Manager& manager ) : BaseClass(),
-  _body       ( new Body ( Body::Vec2d ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR ), manager ) ),
+//_body       ( new Body ( new LandModelEllipsoid ( LandModelEllipsoid::Vec2d ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR ) ), manager ) ),
+//_body       ( new Body ( new LandModelFlat ( 32612 ), manager ) ),
+_body       ( new Body ( new LandModelFlat ( "ossimLlxyProjection" ), manager ) ),
   _satellites ( new Group() ),
   _manager    ( manager )
 {

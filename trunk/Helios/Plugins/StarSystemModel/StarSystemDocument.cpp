@@ -17,6 +17,7 @@
 
 #include "StarSystem/BuildScene.h"
 #include "StarSystem/Extents.h"
+#include "StarSystem/LandModelEllipsoid.h"
 #include "StarSystem/System.h"
 #include "StarSystem/RasterLayerOssim.h"
 #include "StarSystem/RasterLayerWms.h"

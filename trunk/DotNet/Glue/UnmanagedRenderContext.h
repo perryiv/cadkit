@@ -41,6 +41,7 @@ namespace CadKit
         UnmanagedRenderContext();
         virtual ~UnmanagedRenderContext();
 
+        virtual bool    isContextThread() const;
         virtual void    makeCurrent();
         virtual void    swapBuffers();
 
@@ -50,6 +51,7 @@ namespace CadKit
       private:
         managedCallback _makeCurrentCallback;
         managedCallback _swapBuffersCallback;
+        unsigned long   _threadId;
       };
     }
   }

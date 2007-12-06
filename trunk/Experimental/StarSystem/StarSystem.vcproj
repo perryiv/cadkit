@@ -262,6 +262,26 @@
 				>
 			</File>
 			<File
+				RelativePath=".\LandModel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LandModelEllipsoid.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LandModelEllipsoid.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LandModelFlat.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LandModelFlat.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Macros.h"
 				>
 			</File>

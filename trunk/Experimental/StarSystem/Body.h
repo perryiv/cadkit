@@ -20,6 +20,7 @@
 #include "StarSystem/Node.h"
 #include "StarSystem/Extents.h"
 #include "StarSystem/CutImageJob.h"
+#include "StarSystem/LandModel.h"
 
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
@@ -31,7 +32,6 @@
 
 namespace StarSystem { class Tile; class RasterLayer; class RasterGroup; }
 namespace osg { class MatrixTransform; class Vec3f; class Texture; }
-class ossimEllipsoid;
 
 
 namespace StarSystem {
@@ -51,15 +51,8 @@ public:
   // Helper macro for repeated code.
   STAR_SYSTEM_DEFINE_NODE_CLASS ( Body );
 
-  // Enumerations.
-  enum
-  {
-    RADIUS_EQUATOR = 0,
-    RADIUS_POLAR   = 1
-  };
-
   // Constructors
-  Body ( const Vec2d &radii, Usul::Jobs::Manager& manager );
+  Body ( LandModel *model, Usul::Jobs::Manager& manager );
 
   // Set/get the flag that says to cache the tiles.
   bool                      cacheTiles() const;
@@ -82,16 +75,9 @@ public:
   void                      maxLevel ( unsigned int level );
   unsigned int              maxLevel() const;
 
-  // Get the maximum radius.
-  double                    maxRadius() const;
-
   // Pre- and post-render notifications.
   virtual void              preRender  ( Usul::Interfaces::IUnknown *caller );
   virtual void              postRender ( Usul::Interfaces::IUnknown *caller );
-
-  // Set/get the radii.
-  void                      radii ( const Vec2d & );
-  Vec2d                     radii() const;
 
   // Append raster data.
   void                      rasterAppend ( RasterLayer * );
@@ -125,7 +111,7 @@ private:
   void                      _destroy();
 
   osg::MatrixTransform *_transform;
-  ossimEllipsoid *_ellipsoid;
+  LandModel::RefPtr _landModel;
   Tile *_tile;
   RasterGroup *_rasters;
   Usul::Jobs::Manager &_manager;

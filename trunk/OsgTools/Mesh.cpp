@@ -51,8 +51,10 @@ Mesh::Mesh ( unsigned int rows, unsigned int columns ) :
   _points    ( rows * columns ),
   _normals   ( rows * columns ),
   _texCoords ( rows * columns ),
+  _colors    ( rows * columns ),
   _rows      ( rows ),
-  _columns   ( columns )
+  _columns   ( columns ),
+  _useColors ( false )
 {
 }
 
@@ -136,6 +138,18 @@ void Mesh::allocateNormals()
 void Mesh::allocateTexCoords()
 {
   _texCoords.resize ( _columns * _rows );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Allocate the colors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Mesh::allocateColors()
+{
+  _colors.resize ( _columns * _rows );
 }
 
 
@@ -297,6 +311,9 @@ osg::Node* Mesh::operator()() const
   // Allocation texture coordinates.
   osg::ref_ptr<osg::Vec2Array> texCoords ( new osg::Vec2Array ( numVertices ) );
 
+  // Allocation of colors.
+  osg::ref_ptr<osg::Vec4Array> colors ( new osg::Vec4Array ( numVertices ) );
+
   // There is one tri-strip for each adjacent pair of rows.
   osg::Geometry::PrimitiveSetList primSetList ( _rows - 1 );
 
@@ -319,14 +336,21 @@ osg::Node* Mesh::operator()() const
       points->at ( index++ ) = this->point ( i,     j );
 
       // Set the texture coordinates.
-      texCoords->at ( index - 2 ) = this->texCoord ( i + 1, j ); // static_cast < float > ( i + 1 ) / primSetList.size(), static_cast < float > ( j ) / _columns );
-      texCoords->at ( index - 1 ) = this->texCoord ( i,     j ); //static_cast < float > ( i     ) / primSetList.size(), static_cast < float > ( j ) / _columns );
+      texCoords->at ( index - 2 ) = this->texCoord ( i + 1, j );
+      texCoords->at ( index - 1 ) = this->texCoord ( i,     j );
 
       // Set the normal if we should.
       if ( osg::Geometry::BIND_PER_VERTEX == binding )
       {
         normals->at ( index - 2 ) = this->normal ( i + 1, j );
         normals->at ( index - 1 ) = this->normal ( i,     j );
+      }
+
+      // Set the colors.
+      if ( this->useColors() )
+      {
+        colors->at ( index - 2 ) = this->color ( i + 1, j );
+        colors->at ( index - 1 ) = this->color ( i,     j );
       }
     }
 
@@ -348,6 +372,12 @@ osg::Node* Mesh::operator()() const
 
   // Set the texture coordinates.
   geom->setTexCoordArray ( 0, texCoords.get() );
+
+  if ( this->useColors() )
+  {
+    geom->setColorArray ( colors.get() );
+    geom->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+  }
 
   // Set the primitive-set list.
   geom->setPrimitiveSetList ( primSetList );
@@ -373,4 +403,52 @@ osg::Node* Mesh::operator()() const
 
   // Release the geode and return it.
   return geode.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Access to a single color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Mesh::Color& Mesh::color ( size_type r, size_type c )
+{
+  return _colors.at ( r * _columns + c );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Access to a single color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Mesh::Color& Mesh::color ( size_type r, size_type c ) const
+{
+  return _colors.at ( r * _columns + c );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the use color flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Mesh::useColors ( bool b )
+{
+  _useColors = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the use color flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Mesh::useColors () const
+{
+  return _useColors;
 }

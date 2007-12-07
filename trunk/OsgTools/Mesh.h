@@ -21,6 +21,7 @@
 
 #include "osg/Vec2"
 #include "osg/Vec3"
+#include "osg/Vec4"
 
 #include <vector>
 
@@ -41,6 +42,8 @@ public:
   typedef Vectors::size_type size_type;
   typedef osg::Vec2 TexCoord;
   typedef std::vector < TexCoord > TexCoords;
+  typedef osg::Vec4 Color;
+  typedef std::vector < Color > Colors;
 
   Mesh();
   Mesh ( unsigned int rows, unsigned int columns );
@@ -51,6 +54,16 @@ public:
   void                allocatePoints();
   void                allocateNormals();
   void                allocateTexCoords();
+  void                allocateColors();
+
+  // Access to the colors.
+  void                colors ( const Colors &p ) { _colors = p; }
+  Colors &            colors()       { return _colors; }
+  const Colors &      colors() const { return _colors; }
+
+  // Access to a single color.
+  Color&              color ( size_type row, size_type column );
+  const Color&        color ( size_type row, size_type column ) const;
 
   // The number of columns.
   unsigned int        columns() const { return _columns; }
@@ -94,13 +107,18 @@ public:
   // Generate a scene.
   osg::Node *         operator()() const;
 
+  // Get/Set the use color flag.
+  void                useColors ( bool b );
+  bool                useColors () const;
 private:
 
   Vectors _points;
   Vectors _normals;
   TexCoords _texCoords;
+  Colors _colors;
   unsigned int _rows;
   unsigned int _columns;
+  bool _useColors;
 };
 
 

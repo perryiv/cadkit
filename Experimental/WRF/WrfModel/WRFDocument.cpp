@@ -102,7 +102,6 @@ WRFDocument::WRFDocument() :
   _requests (),
   _jobForScene ( 0x0 ),
   _animating ( false ),
-  _offset (),
   _vectorCache (),
   _cellSize ( 1000.0, 1000.0, 300.0 ),
   _cellScale ( 0.001, 0.001, 0.001 ),

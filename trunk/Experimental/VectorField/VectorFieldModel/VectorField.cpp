@@ -10,10 +10,13 @@
 #include "VectorField.h"
 
 #include "OsgTools/State/StateSet.h"
+#include "OsgTools/ShapeFactory.h"
 
 #include "osg/ref_ptr"
 #include "osg/Geometry"
 #include "osg/Geode"
+#include "osg/Material"
+#include "osg/MatrixTransform"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -79,7 +82,7 @@ osg::Node* VectorField::advectParticle ( double x, double y ) const
   osg::Vec3 position ( x, y, 0.0 );
   vertices->push_back ( position );
 
-  const unsigned int maxSteps ( 1000 );
+  const unsigned int maxSteps ( 5000 );
   unsigned int numSteps ( 0 );
 
   while ( triangle.valid() && numSteps < maxSteps )
@@ -116,4 +119,89 @@ osg::Node* VectorField::advectParticle ( double x, double y ) const
   OsgTools::State::StateSet::setLineWidth( geode.get(), 2.0 );
 
   return geode.release();
+}
+
+namespace Detail
+{
+  osg::Node* drawCriticalPoint ( const Triangle::Position& p, Triangle::CriticalPointType type )
+  {
+    osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+    unsigned int size ( static_cast < unsigned int > ( 15.0 ) );
+    OsgTools::ShapeFactory::MeshSize meshSize ( size, size );
+    OsgTools::ShapeFactory::LatitudeRange  latRange  ( 89.9f, -89.9f );
+    OsgTools::ShapeFactory::LongitudeRange longRange (  0.0f, 360.0f );
+
+    geode->addDrawable( OsgTools::ShapeFactorySingleton::instance().sphere ( 0.040, meshSize, latRange, longRange  ) );
+
+    osg::ref_ptr < osg::Material > mat ( new osg::Material );
+
+    osg::Vec4 color ( 0.5, 0.5, 0.5, 1.0 );
+
+    if ( Triangle::SADDLE_POINT == type )
+      color.set ( 0.0, 1.0, 0.0, 1.0 );
+    else if ( Triangle::ATTRACTING_NODE == type )
+      color.set ( 1.0, 0.0, 1.0, 1.0 );
+    else if ( Triangle::REPELLING_NODE == type )
+      color.set ( 1.0, 1.0, 0.0, 1.0 );
+    else if ( Triangle::CENTER == type )
+      color.set ( 0.6, 0.6, 1.0, 1.0 );
+    else if ( Triangle::ATTRACTING_FOCUS == type )
+      color.set ( 1.0, 0.7, 0.7, 1.0 );
+    else if ( Triangle::REPELLING_FOCUS == type )
+      color.set ( 1.0, 0.5, 0.0, 1.0 );
+
+    mat->setDiffuse ( osg::Material::FRONT_AND_BACK, color );
+
+    geode->getOrCreateStateSet()->setAttributeAndModes ( mat.get(), osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+    osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+    mt->setMatrix ( osg::Matrix::translate ( p ) );
+    mt->addChild ( geode.get() );
+
+    return mt.release();
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Classify.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* VectorField::classifyCriticalPoints () const
+{
+  osg::ref_ptr < osg::Group > group ( new osg::Group );
+
+  for ( unsigned int i = 0; i < _grid.rows(); ++i )
+  {
+    for ( unsigned int j = 0; j < _grid.rows(); ++j )
+    {
+      Cell2D::RefPtr cell ( const_cast < Cell2D* > ( _grid.cell ( i, j ) ) );
+
+      if ( cell.valid() )
+      {
+        Triangle::RefPtr t0 ( cell->upper() );
+        Triangle::RefPtr t1 ( cell->lower() );
+
+        {
+          Triangle::Position p ( t0->findCriticalPoint() );
+          if ( t0->pointInside ( p ) )
+          {
+            Triangle::CriticalPointType type ( t0->classifyCriticalPoint ( p ) );
+            group->addChild ( Detail::drawCriticalPoint ( p, type ) );
+          }
+        }
+
+        {
+          Triangle::Position p ( t1->findCriticalPoint() );
+          if ( t1->pointInside ( p ) )
+          {
+            Triangle::CriticalPointType type ( t1->classifyCriticalPoint ( p ) );
+            group->addChild ( Detail::drawCriticalPoint ( p, type ) );
+          }
+        }
+      }
+    }
+  }
+
+  return group.release();
 }

@@ -51,15 +51,23 @@ _cells ( r, c )
   {
     for ( unsigned int j = 0; j < c + 1; ++j )
     {
-      float x ( static_cast < float > ( static_cast < int > ( i ) - 10.0 ) + random() );
-      float y ( static_cast < float > ( static_cast < int > ( j ) - 10.0 ) + random() );
-      Position p ( x, y, 0.0 );
-      Vector d ( x, -y );
+      float x ( static_cast < float > ( static_cast < int > ( j ) - 10.0 ) + random() );
+      float y ( static_cast < float > ( static_cast < int > ( r + 1 - i ) - 10.0 ) + random() );
 
+      x /= 5.0;
+      y /= 5.0;
+
+      Position p ( x, y, 0.0 );
+      Vector d ( -y, x );
+
+#if 0
       float x0 ( ( x + 0.8 ) * Usul::Math::cos ( 0.4 * y ) );
       float y0 ( ( y + 0.8 ) * Usul::Math::cos ( 0.4 * x ) );
       d[0] = x0;
       d[1] = y0;
+#endif
+      d[0] = -0.103209 + ( 0.051511 * x ) - ( 0.302688 * y ) + ( 0.037556 * x * y ) - ( 0.232875 * x * x ) + ( 0.611528 * y * y );
+      d[1] =  0.143656 + ( 0.687847 * x ) - ( 0.144779 * y ) - ( 0.213010 * x * y ) - ( 1.029676 * x * x ) + ( 0.246278 * y * y );
 
       _points->push_back ( p );
       _vectors->push_back ( d );
@@ -89,10 +97,31 @@ _cells ( r, c )
   this->removeCell ( 5, 6 );
   this->removeCell ( 5, 7 );
   this->removeCell ( 5, 8 );
+  this->removeCell ( 5, 9 );
   this->removeCell ( 6, 5 );
+  this->removeCell ( 6, 6 );
+  this->removeCell ( 6, 7 );
   this->removeCell ( 7, 5 );
   this->removeCell ( 8, 5 );
   this->removeCell ( 9, 5 );
+
+  this->removeCell ( 9, 11 );
+  this->removeCell ( 9, 12 );
+
+  /*this->removeCell ( 10, 10 );
+  this->removeCell ( 10, 11 );
+  this->removeCell ( 10, 12 );
+  this->removeCell ( 10, 13 );
+
+  this->removeCell ( 11, 11 );
+  this->removeCell ( 11, 12 );*/
+
+  /*this->removeCell ( 5, 16 );
+  this->removeCell ( 5, 17 );
+  this->removeCell ( 6, 16 );
+  this->removeCell ( 6, 17 );
+  this->removeCell ( 4, 18 );
+  this->removeCell ( 5, 18 );*/
 }
 
 
@@ -271,9 +300,10 @@ unsigned int Grid2D::numPoints() const
 
 void Grid2D::removeCell ( unsigned int i, unsigned int j )
 {
-  _vectors->at ( _cells.at ( i, j )->indices()[0] ) = Vector ( 0.0, 0.0 );
-  _vectors->at ( _cells.at ( i, j )->indices()[1] ) = Vector ( 0.0, 0.0 );
-  _vectors->at ( _cells.at ( i, j )->indices()[2] ) = Vector ( 0.0, 0.0 );
-  _vectors->at ( _cells.at ( i, j )->indices()[3] ) = Vector ( 0.0, 0.0 );
+  Cell::RefPtr cell ( _cells.at ( i, j ) );
+  _vectors->at ( cell->indices()[0] ) = Vector ( 0.0, 0.0 );
+  _vectors->at ( cell->indices()[1] ) = Vector ( 0.0, 0.0 );
+  _vectors->at ( cell->indices()[2] ) = Vector ( 0.0, 0.0 );
+  _vectors->at ( cell->indices()[3] ) = Vector ( 0.0, 0.0 );
   _cells.at ( i, j ) = 0x0;
 }

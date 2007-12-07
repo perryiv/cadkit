@@ -311,35 +311,34 @@ osg::Node *VectorFieldDocument::buildScene ( const BaseClass::Options &options, 
     if ( v.length() > 0 )
     {
       v.normalize();
+      v = v * 0.2;
 
       OsgTools::Builders::Arrow arrow;
       arrow.start ( osg::Vec3 ( p[0], p[1], 0.0 ) );
       arrow.end ( arrow.start() + osg::Vec3 ( v[0], v[1], 0.0 ) );
-      arrow.radius ( 0.05 );
-      arrow.height ( 0.07 );
-
-      _root->addChild ( arrow() );
-    }
-  }
-
-  
-
-  /*group->addChild ( _field.advectParticle ( 0.5, 1.5 ) );
-  group->addChild ( _field.advectParticle ( -2.0, -2.0 ) );
-  group->addChild ( _field.advectParticle ( -2.0, -5.5 ) );
-  group->addChild ( _field.advectParticle ( 2.0, -7.0 ) );
-  group->addChild ( _field.advectParticle ( 8.0, -2.5 ) );
-  group->addChild ( _field.advectParticle ( -8.0, 8.0 ) );
-  group->addChild ( _field.advectParticle ( -20.0, -20.0 ) );*/
+      arrow.radius ( 0.025 );
+      arrow.height ( 0.035 );
 
 #if 0
-  osg::ref_ptr < osgManipulator::Translate2DDragger > dragger ( new osgManipulator::Translate2DDragger ( osg::Plane ( osg::Vec3 ( 0.0, 0.0, 1.0 ), 0 ) ) );
-  dragger->setupDefaultGeometry();
-  group->addChild ( dragger.get() );
+      osg::ref_ptr < osgManipulator::Translate2DDragger > dragger ( new osgManipulator::Translate2DDragger ( osg::Plane ( osg::Vec3 ( 0.0, 0.0, 1.0 ), 0 ) ) );
+      dragger->setMatrix ( osg::Matrix::translate ( arrow.start() ) );
+      dragger->setupDefaultGeometry();
+      _root->addChild ( dragger.get() );
 
-  osg::ref_ptr < osgManipulator::Selection > selection ( new osgManipulator::Selection );
-  group->addChild ( selection.get() );
-  _commandManager->connect(*dragger, *selection);
+      osg::ref_ptr < osgManipulator::Selection > selection ( new osgManipulator::Selection );
+      selection->addChild ( arrow() );
+      _root->addChild ( selection.get() );
+      _commandManager->connect(*dragger, *selection);
+#else
+      _root->addChild ( arrow() );
+#endif
+    }
+  }
+  
+  _root->addChild ( _field.classifyCriticalPoints() );
+
+#if 1
+  
 #endif
 
   // Return the scene
@@ -423,7 +422,7 @@ void VectorFieldDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::I
   // See if it's the left button.
   const bool left ( Usul::Bits::has ( ea.getButton(), osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ) );
 
-  if ( si.valid() && osgGA::GUIEventAdapter::PUSH == ea.getEventType() && this->isAllowAddParticle())
+  if ( left && si.valid() && osgGA::GUIEventAdapter::PUSH == ea.getEventType() && this->isAllowAddParticle())
   {
     osgUtil::Hit hit;
     if ( si->intersect ( ea.getX(), ea.getY(), hit ) )

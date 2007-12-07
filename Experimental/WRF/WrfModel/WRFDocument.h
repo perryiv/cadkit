@@ -72,7 +72,6 @@ public:
   virtual void                postRenderNotify ( Unknown *caller );
   virtual void                preRenderNotify ( Unknown *caller );
 
-
   /// Build the scene.
   virtual osg::Node *         buildScene ( const BaseClass::Options &options, Unknown *caller = 0x0 );
 
@@ -142,7 +141,6 @@ protected:
   osg::Node*                  _buildVolume( osg::Image* image );
   void                        _initBoundingBox ();
   osg::Node *                 _buildProxyGeometry ();
-  void                        _buildTopography ();
   osg::Node *                 _buildVectorField ( unsigned int timestep, unsigned int channel0, unsigned int channel1 );
   void                        _buildDefaultTransferFunctions ();
 
@@ -214,14 +212,12 @@ private:
   osg::ref_ptr < osg::Group > _planet;
   osg::ref_ptr < osg::MatrixTransform > _volumeTransform;
   osg::ref_ptr < OsgTools::Volume::Texture3DVolume > _volumeNode;
-  osg::ref_ptr < osg::Node > _topography;
   osg::BoundingBox _bb;
   bool _dirty;
   Requests _requests;
   Usul::Jobs::Job::RefPtr _jobForScene;
   bool _animating;
   osg::Vec3 _offset;
-  std::string _textureFile;
   VectorFields _vectorFields;
   std::vector < osg::ref_ptr < osg::Node > > _vectorCache;
   osg::Vec3 _cellSize;
@@ -233,7 +229,6 @@ private:
   bool _headers;
   Usul::Math::Vec2d _lowerLeft;
   Usul::Math::Vec2d _upperRight;
-  bool _usePlanet;
   unsigned int _currentTransferFunction;
   TransferFunctions _transferFunctions;
   osg::ref_ptr< osgDB::DatabasePager > _databasePager;

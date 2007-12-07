@@ -101,14 +101,12 @@ WRFDocument::WRFDocument() :
   _planet ( new osg::Group ),
   _volumeTransform ( new osg::MatrixTransform ),
   _volumeNode ( new OsgTools::Volume::Texture3DVolume ),
-  _topography ( 0x0 ),
   _bb (),
   _dirty ( true ),
   _requests (),
   _jobForScene ( 0x0 ),
   _animating ( false ),
   _offset (),
-  _textureFile ( "" ),
   _vectorCache (),
   _cellSize ( 1000.0, 1000.0, 300.0 ),
   _cellScale ( 0.001, 0.001, 0.001 ),
@@ -119,7 +117,6 @@ WRFDocument::WRFDocument() :
   _headers ( true ),
   _lowerLeft ( 0.0, 0.0 ),
   _upperRight ( 0.0, 0.0 ),
-  _usePlanet ( true ),
   _transferFunctions (),
   _databasePager ( new osgDB::DatabasePager ),
   SERIALIZE_XML_INITIALIZER_LIST
@@ -131,7 +128,6 @@ WRFDocument::WRFDocument() :
   this->_addMember ( "y", _y );
   this->_addMember ( "z", _z );
   this->_addMember ( "num_2D_fields", _num2DFields );
-  this->_addMember ( "texture_file", _textureFile );
   this->_addMember ( "channels", _channelInfo );
   this->_addMember ( "headers", _headers );
   this->_addMember ( "cache_size", _maxCacheSize );
@@ -139,7 +135,6 @@ WRFDocument::WRFDocument() :
   this->_addMember ( "starting_channel",  _currentChannel );
   this->_addMember ( "lower_left", _lowerLeft );
   this->_addMember ( "upper_right", _upperRight );
-  this->_addMember ( "use_planet", _usePlanet );
   this->_addMember ( "cell_size", _cellSize );
 }
 
@@ -326,22 +321,9 @@ WRFDocument::Filters WRFDocument::filtersInsert() const
 
 osg::Node *WRFDocument::buildScene ( const BaseClass::Options &options, Unknown *caller )
 {
-  try
-  {
-    this->_buildScene();
-
-    return _root.get();
-  }
-  catch ( const std::exception& e )
-  {
-    std::cout << "Error 2642125610: Standard exceptiong caught: " << e.what() << std::endl;
-  }
-  catch ( ... )
-  {
-    std::cout << "Error 5186009000: Unknown exceptiong caught: " << std::endl;
-  }
-
-  return 0x0;
+  USUL_TRACE_SCOPE;
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &WRFDocument::_buildScene ), "2642125610" );
+  return _root.get();
 }
 
 
@@ -351,7 +333,7 @@ osg::Node *WRFDocument::buildScene ( const BaseClass::Options &options, Unknown 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WRFDocument::_buildScene ( )
+void WRFDocument::_buildScene()
 {
   USUL_TRACE_SCOPE;
 
@@ -367,14 +349,7 @@ void WRFDocument::_buildScene ( )
     _root->addChild ( _volumeTransform.get () );
 
     // Add the planet.
-    if ( _usePlanet )
-      _root->addChild ( _planet.get() );
-
-    // Add the topography back.
-    else
-    {      
-      _root->addChild ( _topography.get() );
-    }
+    _root->addChild ( _planet.get() );
   }
 
   // If we don't have the data already...
@@ -411,10 +386,6 @@ void WRFDocument::_buildScene ( )
 
     // Get the 3D image for the volume.
     ImagePtr image ( this->_volume ( _currentTimestep, _currentChannel ) );
-
-    // Make a bounding box around the volume.
-    //OsgTools::GlassBoundingBox gbb ( _bb );
-    //gbb ( _volumeTransform.get(), true, false, false );
 
     // Add the volume to the scene.
     {
@@ -588,10 +559,8 @@ osg::Node * WRFDocument::_buildProxyGeometry ()
 void WRFDocument::startTimestepAnimation ()
 {
   USUL_TRACE_SCOPE;
-  {
-    Guard guard ( this->mutex() );
-    _animating = true;
-  }
+  Guard guard ( this->mutex() );
+  _animating = true;
 }
 
 
@@ -604,10 +573,8 @@ void WRFDocument::startTimestepAnimation ()
 void WRFDocument::stopTimestepAnimation ()
 {
   USUL_TRACE_SCOPE;
-  {
-    Guard guard ( this->mutex() );
-    _animating = false;
-  }
+  Guard guard ( this->mutex() );
+  _animating = false;
 }
 
 
@@ -853,6 +820,9 @@ void WRFDocument::_updateCache ()
 
 void WRFDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
   typedef MenuKit::Button Button;
   typedef MenuKit::RadioButton RadioButton;
   typedef MenuKit::ToggleButton ToggleButton;
@@ -1031,170 +1001,6 @@ void WRFDocument::animating ( bool b )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _animating = b;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the topography.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void WRFDocument::_buildTopography ()
-{
-  USUL_TRACE_SCOPE;
-
-  // Make a copy of the parser.
-  Parser parser ( _parser );
-
-  // Get the topograpy.
-  Parser::Data data;
-  parser.field2D ( data, 0 );
-
-  const unsigned int width ( _x ), height ( _y );
-
-  double xCellSize ( 10.0 );
-  double yCellSize ( 10.0 );
-  double zCellSize ( 3.0 );
-
-  double xLength ( width  * xCellSize );
-  double yLength ( height * yCellSize );
-  double zLength ( _z * zCellSize );
-
-  double xHalf ( xLength / 2.0 );
-  double yHalf ( yLength / 2.0 );
-  double zHalf ( zLength / 2.0 );
-
-  osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array );
-  osg::ref_ptr < osg::Vec3Array > normals ( new osg::Vec3Array );
-  osg::ref_ptr < osg::Vec2Array > coords  ( new osg::Vec2Array );
-
-  unsigned int numPoints ( height * width );
-  vertices->reserve ( numPoints );
-  normals->reserve  ( numPoints / 3 );
-  coords->reserve   ( numPoints );
-
-  // Loop over the rows
-  for ( unsigned int i = 0; i < height - 1; ++i )
-  {
-    float xa ( -yHalf + ( ( i     ) * xCellSize ) );
-    float xb ( -yHalf + ( ( i + 1 ) * xCellSize ) );
-
-    // Loop over the columns.
-    for ( unsigned int j = 0; j < width - 1; ++j )
-    {
-      float y0 ( -xHalf + ( ( j     ) * yCellSize ) );
-      float y1 ( -xHalf + ( ( j + 1 ) * yCellSize ) );
-
-      // Calculate vertices of current triangles.
-      const osg::Vec3 a ( xa, y0, ( data.at ( ( ( i     ) * width ) + j     ) / 100.0 ) - zHalf );
-      const osg::Vec3 b ( xa, y1, ( data.at ( ( ( i     ) * width ) + j + 1 ) / 100.0 ) - zHalf );
-      const osg::Vec3 c ( xb, y0, ( data.at ( ( ( i + 1 ) * width ) + j     ) / 100.0 ) - zHalf );
-      const osg::Vec3 d ( xb, y1, ( data.at ( ( ( i + 1 ) * width ) + j + 1 ) / 100.0 ) - zHalf );
-
-      const osg::Vec2 ta ( static_cast < double > ( i     ) / height, static_cast < double > ( j     ) / width );
-      const osg::Vec2 tb ( static_cast < double > ( i     ) / height, static_cast < double > ( j + 1 ) / width );
-      const osg::Vec2 tc ( static_cast < double > ( i + 1 ) / height, static_cast < double > ( j     ) / width );
-      const osg::Vec2 td ( static_cast < double > ( i + 1 ) / height, static_cast < double > ( j + 1 ) / width );
-
-      // Add first triangle.
-      {
-        osg::Vec3 n ( ( d - c ) ^ ( a - c ) );
-        n.normalize();
-
-        vertices->push_back ( a );
-        vertices->push_back ( c );
-        vertices->push_back ( d );
-        normals->push_back ( n );
-
-        coords->push_back ( ta );
-        coords->push_back ( tc );
-        coords->push_back ( td );
-      }
-
-      // Add second triangle.
-      {
-        osg::Vec3 n ( ( b - d ) ^ ( a - d ) );
-        n.normalize();
-
-        vertices->push_back ( a );
-        vertices->push_back ( d );
-        vertices->push_back ( b );
-        normals->push_back ( n );
-
-        coords->push_back ( ta );
-        coords->push_back ( td );
-        coords->push_back ( tb );
-      }
-    }
-  }
-
-  osg::ref_ptr < osg::Geode > node ( new osg::Geode );
-  osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
-  geometry->setUseDisplayList ( false );
-
-  geometry->setVertexArray ( vertices.get() );
-  geometry->setNormalArray ( normals.get() );
-  geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
-
-  if ( Usul::Predicates::FileExists::test ( _textureFile ) )
-  {
-    osg::ref_ptr < osg::Image > image ( osgDB::readImageFile ( _textureFile ) );
-
-    if ( image.valid() )
-    {
-      osg::ref_ptr < osg::Texture2D > texture ( new osg::Texture2D );
-      texture->setImage( image.get() );
-
-      texture->setFilter( osg::Texture::MIN_FILTER, osg::Texture::NEAREST );
-      texture->setFilter( osg::Texture::MAG_FILTER, osg::Texture::NEAREST );
-      texture->setWrap  ( osg::Texture::WRAP_S, osg::Texture::CLAMP );
-      texture->setWrap  ( osg::Texture::WRAP_T, osg::Texture::CLAMP );
-      texture->setInternalFormatMode ( osg::Texture::USE_IMAGE_DATA_FORMAT );
-
-      // Get the state set.
-      osg::ref_ptr< osg::StateSet > ss ( node->getOrCreateStateSet() );
-      ss->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON );
-      geometry->setTexCoordArray ( 0, coords.get() );
-    }
-  }
-
-  geometry->addPrimitiveSet ( new osg::DrawArrays ( GL_TRIANGLES, 0, vertices->size() ) );
-
-  node->addDrawable ( geometry.get() );
-
-  osg::ref_ptr < osg::StateSet > ss ( node->getOrCreateStateSet () );
-  
-  // Make a light-model.
-  osg::ref_ptr<osg::LightModel> lm ( new osg::LightModel );
-  lm->setTwoSided( true );
- 
-  // Set the state. Make it override any other similar states.
-  typedef osg::StateAttribute Attribute;
-  ss->setAttributeAndModes ( lm.get(), Attribute::OVERRIDE | Attribute::ON );
-
-  // Turn off back face culling
-  ss->setMode ( GL_CULL_FACE, Attribute::OVERRIDE | Attribute::OFF );
-
-  //osg::Vec4 frontDiffuse ( 20.0 / 255.0f, 100.0f / 255.0f, 140.0f / 255.0f, 1.0f );
-  osg::Vec4 frontDiffuse ( 80.0 / 255.0f, 56.0f / 255.0f, 28.0f / 255.0f, 1.0f );
-  osg::Vec4 backDiffuse ( 255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, 1.0f );
-  //osg::Vec4 ambient ( diffuse );
-
-  osg::ref_ptr < osg::Material > material ( new osg::Material );
-  material->setAmbient ( osg::Material::BACK,  backDiffuse );
-  material->setAmbient ( osg::Material::FRONT, backDiffuse );
-
-  material->setDiffuse ( osg::Material::BACK,  backDiffuse );
-  material->setDiffuse ( osg::Material::FRONT, backDiffuse );
-
-  ss->setAttribute ( material.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-
-  // Set the data members.
-  {
-    Guard guard ( this->mutex() );
-    _topography = node.get();
-  }
 }
 
 
@@ -1395,6 +1201,8 @@ void WRFDocument::_requestData ( unsigned int timestep, unsigned int channel, bo
 
 void WRFDocument::deserialize ( const XmlTree::Node &node )
 {
+  Guard guard ( this->mutex () );
+
   _dataMemberMap.deserialize ( node );
 
   // Set the parser's datamembers.
@@ -1417,74 +1225,62 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
   // Make enough room for the cache.
   _vectorCache.resize ( _timesteps );
 
-  if ( _usePlanet )
-  {
-    Usul::Interfaces::IPlanetNode::QueryPtr pn ( Usul::Components::Manager::instance ().getInterface ( Usul::Interfaces::IPlanetNode::IID  ) );
+  // Look for needed interfaces.
+  Usul::Interfaces::IPlanetNode::QueryPtr pn ( Usul::Components::Manager::instance ().getInterface ( Usul::Interfaces::IPlanetNode::IID  ) );
+  Usul::Interfaces::IPlanetCoordinates::QueryPtr pc ( Usul::Components::Manager::instance ().getInterface ( Usul::Interfaces::IPlanetCoordinates::IID ) );
 
-    if ( pn.valid () )
-    {
-      Guard guard ( this->mutex () );
-      _planet = pn->planetNode ( _filename );
-    }
-
-    // Add the transform for the volume.
-    //_planet->addChild ( _volumeTransform.get() );
-
-    Usul::Interfaces::IPlanetCoordinates::QueryPtr pc ( Usul::Components::Manager::instance ().getInterface ( Usul::Interfaces::IPlanetCoordinates::IID ) );
-
-    if ( pc.valid () )
-    {
-      // Lat long center of the bounding box.
-      const Usul::Math::Vec2d center ( ( _lowerLeft + _upperRight ) * 0.5  );
-      //center /= 2.0;
-
-      Usul::Math::Vec3d translate;
-
-      double height ( (_z * _cellSize [ 2 ] ) / 2.0 );
-
-      pc->convertToPlanetEllipsoid ( Usul::Math::Vec3d ( center [ 1 ], center [ 0 ], height ), translate );
-
-      // Matrix to translate the proper location.
-      const osg::Matrix T ( osg::Matrix::translate ( translate [ 0 ], translate [ 1 ], translate [ 2 ] ) );
-
-      // Make the up vector at the lat long location.
-      osg::Vec3 up ( translate [ 0 ], translate [ 1 ], translate [ 2 ] );
-      up.normalize();
-
-      const osg::Matrix R ( osg::Matrix::rotate ( osg::Vec3( 0.0, 0.0, -1.0 ), up ) );
-
-      // Calculate the up vector of the bounding box.
-      osg::Vec3 bbUp ( R * osg::Vec3 ( 0.0, 0.0, -1.0 ) );
-      bbUp.normalize();
-
-      // Calculate the north vector.
-      Usul::Math::Vec3d v1;
-      pc->convertToPlanetEllipsoid ( Usul::Math::Vec3d ( center [ 1 ], center [ 0 ] + 0.1, height ), v1 );
-      Usul::Math::Vec3d diff ( v1 - translate );
-      diff.normalize();
-
-      const osg::Vec3 north ( diff[0], diff[1], diff[2] );
-
-      // Get the angle bewteen the bounding box's up and north.
-      typedef Usul::Math::Angle < double, 3 > Angle;
-      const double angle ( Angle::get < osg::Vec3 > ( bbUp, north ) );
-
-      const osg::Matrix R1 ( osg::Matrix::rotate ( angle, up ) );
-
-      osg::Matrix m;
-      m.postMult ( osg::Matrix::rotate ( osg::PI, osg::Vec3 ( 1.0, 0.0, 0.0 ) ) );
-      m.postMult ( R );
-      m.postMult ( R1 );
-      m.postMult ( T );
-
-      _volumeTransform->setMatrix ( m );
-    }
-
+  if ( pn.valid () )
+  {  
+    _planet = pn->planetNode ( _filename );
   }
 
-  // Build the topography.
-  //else
-  //  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &WRFDocument::_buildTopography ), "3345743110" );
+  if ( pc.valid () )
+  {
+    // Lat long center of the bounding box.
+    const Usul::Math::Vec2d center ( ( _lowerLeft + _upperRight ) * 0.5  );
+    //center /= 2.0;
+
+    Usul::Math::Vec3d translate;
+
+    double height ( (_z * _cellSize [ 2 ] ) / 2.0 );
+
+    pc->convertToPlanetEllipsoid ( Usul::Math::Vec3d ( center [ 1 ], center [ 0 ], height ), translate );
+
+    // Matrix to translate the proper location.
+    const osg::Matrix T ( osg::Matrix::translate ( translate [ 0 ], translate [ 1 ], translate [ 2 ] ) );
+
+    // Make the up vector at the lat long location.
+    osg::Vec3 up ( translate [ 0 ], translate [ 1 ], translate [ 2 ] );
+    up.normalize();
+
+    const osg::Matrix R ( osg::Matrix::rotate ( osg::Vec3( 0.0, 0.0, -1.0 ), up ) );
+
+    // Calculate the up vector of the bounding box.
+    osg::Vec3 bbUp ( R * osg::Vec3 ( 0.0, 0.0, -1.0 ) );
+    bbUp.normalize();
+
+    // Calculate the north vector.
+    Usul::Math::Vec3d v1;
+    pc->convertToPlanetEllipsoid ( Usul::Math::Vec3d ( center [ 1 ], center [ 0 ] + 0.1, height ), v1 );
+    Usul::Math::Vec3d diff ( v1 - translate );
+    diff.normalize();
+
+    const osg::Vec3 north ( diff[0], diff[1], diff[2] );
+
+    // Get the angle bewteen the bounding box's up and north.
+    typedef Usul::Math::Angle < double, 3 > Angle;
+    const double angle ( Angle::get < osg::Vec3 > ( bbUp, north ) );
+
+    const osg::Matrix R1 ( osg::Matrix::rotate ( angle, up ) );
+
+    osg::Matrix m;
+    m.postMult ( osg::Matrix::rotate ( osg::PI, osg::Vec3 ( 1.0, 0.0, 0.0 ) ) );
+    m.postMult ( R );
+    m.postMult ( R1 );
+    m.postMult ( T );
+
+    _volumeTransform->setMatrix ( m );
+  }
 }
 
 

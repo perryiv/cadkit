@@ -223,7 +223,6 @@ private:
   Requests _requests;
   Usul::Jobs::Job::RefPtr _jobForScene;
   bool _animating;
-  osg::Vec3 _offset;
   VectorFields _vectorFields;
   std::vector < osg::ref_ptr < osg::Node > > _vectorCache;
   osg::Vec3 _cellSize;

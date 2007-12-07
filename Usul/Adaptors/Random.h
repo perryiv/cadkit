@@ -18,6 +18,7 @@
 
 #include "Usul/Errors/Assert.h"
 
+#include <cstdlib>
 
 namespace Usul {
 namespace Adaptors {

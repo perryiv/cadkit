@@ -9,10 +9,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Experimental/WRF/WrfModel/WRFDocument.h"
-#include "Experimental/WRF/WrfModel/ChannelCommand.h"
-#include "Experimental/WRF/WrfModel/NextTimestep.h"
-#include "Experimental/WRF/WrfModel/PreviousTimestep.h"
-#include "Experimental/WRF/WrfModel/ChangeNumPlanes.h"
 #include "Experimental/WRF/WrfModel/LoadDataJob.h"
 
 #include "Usul/Adaptors/Bind.h"
@@ -632,6 +628,34 @@ unsigned int WRFDocument::getNumberOfTimeSteps () const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Go to the next timestep.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::nextTimeStep()
+{
+  unsigned int current ( this->getCurrentTimeStep () );
+  this->setCurrentTimeStep ( ++current );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Go to the previous timestep.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::previousTimeStep()
+{
+  unsigned int current ( this->getCurrentTimeStep () );
+  if ( 0 == current )
+    current = this->getNumberOfTimeSteps();
+  this->setCurrentTimeStep ( --current );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Update.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -756,7 +780,7 @@ void WRFDocument::_launchNextCacheRequest ()
   //if ( this->animating () )
   {
     // Get the current channel
-    unsigned int currentChannel ( this->currentChannel () );
+    unsigned int currentChannel ( this->getCurrentChannel () );
 
     // Only make the request if we don't already have it.
     if ( false == this->_dataCached ( timestepToLoad, currentChannel ) )
@@ -835,19 +859,24 @@ void WRFDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * ca
   // Add animating toggle.
   wrf->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Animate", Usul::Adaptors::memberFunction<void>( this, &WRFDocument::animating ), Usul::Adaptors::memberFunction<bool> ( this, &WRFDocument::isAnimating ) ) ) );
 
-  wrf->append ( new Button ( Usul::Commands::genericCommand ( "First Timestep", Usul::Adaptors::bind1<void> ( 0, Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::setCurrentTimeStep )  ), Usul::Commands::TrueFunctor() ) ) );
-  wrf->append ( new Button ( new NextTimestep ( this ) ) );
-  wrf->append ( new Button ( new PreviousTimestep ( this ) ) );
+  wrf->append ( new Button ( Usul::Commands::genericCommand ( "First Timestep",    Usul::Adaptors::bind1<void> ( 0, Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::setCurrentTimeStep )  ), Usul::Commands::TrueFunctor() ) ) );
+  wrf->append ( new Button ( Usul::Commands::genericCommand ( "Next Timestep",     Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::nextTimeStep ),     Usul::Commands::TrueFunctor() ) ) );
+  wrf->append ( new Button ( Usul::Commands::genericCommand ( "Previous Timestep", Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::previousTimeStep ), Usul::Commands::TrueFunctor() ) ) );
 
+  MenuKit::Menu::RefPtr channels ( new MenuKit::Menu ( "Channels" ) );
   for ( ChannelInfos::iterator iter = _channelInfo.begin(); iter != _channelInfo.end(); ++ iter )
   {
-    wrf->append ( new Button ( new ChannelCommand ( (*iter)->name (), (*iter)->index (), this ) ) );
+    channels->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( 
+      (*iter)->name (), 
+      Usul::Adaptors::bind1<void> ( (*iter)->index (), Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::currentChannel ) ), 
+      Usul::Adaptors::bind1<bool> ( (*iter)->index (), Usul::Adaptors::memberFunction<bool> ( this, &WRFDocument::isCurrentChannel ) ) ) ) );
   }
+  wrf->append ( channels.get() );
 
-  wrf->append ( new Button ( new ChangeNumPlanes ( 4.0, this ) ) );
-  wrf->append ( new Button ( new ChangeNumPlanes ( 2.0, this ) ) );
-  wrf->append ( new Button ( new ChangeNumPlanes ( 0.5, this ) ) );
-  wrf->append ( new Button ( new ChangeNumPlanes ( 0.25, this ) ) );
+  wrf->append ( new Button ( Usul::Commands::genericCommand ( Usul::Strings::format ( "Multiply planes x ", 4.0  ), Usul::Adaptors::bind1<void> ( 4.0,  Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::numPlanesMultiply )  ), Usul::Commands::TrueFunctor() ) ) );
+  wrf->append ( new Button ( Usul::Commands::genericCommand ( Usul::Strings::format ( "Multiply planes x ", 2.0  ), Usul::Adaptors::bind1<void> ( 2.0,  Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::numPlanesMultiply )  ), Usul::Commands::TrueFunctor() ) ) );
+  wrf->append ( new Button ( Usul::Commands::genericCommand ( Usul::Strings::format ( "Multiply planes x ", 0.5  ), Usul::Adaptors::bind1<void> ( 0.5,  Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::numPlanesMultiply )  ), Usul::Commands::TrueFunctor() ) ) );
+  wrf->append ( new Button ( Usul::Commands::genericCommand ( Usul::Strings::format ( "Multiply planes x ", 0.25 ), Usul::Adaptors::bind1<void> ( 0.25, Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::numPlanesMultiply )  ), Usul::Commands::TrueFunctor() ) ) );
 
   MenuKit::Menu::RefPtr tf ( new MenuKit::Menu ( "Transfer Functions" ) );
   typedef TransferFunctions::const_iterator ConstIterator;
@@ -889,11 +918,24 @@ void WRFDocument::currentChannel ( unsigned int value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int WRFDocument::currentChannel () const
+unsigned int WRFDocument::getCurrentChannel ( ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _currentChannel;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the current channel.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool WRFDocument::isCurrentChannel ( unsigned int value ) const
+{
+  USUL_TRACE_SCOPE;
+  return value == this->getCurrentChannel();
 }
 
 
@@ -922,6 +964,18 @@ bool WRFDocument::dirty () const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _dirty;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Multiply the number of planes by a factor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::numPlanesMultiply ( double factor )
+{
+  this->numPlanes ( static_cast < unsigned int > ( this->numPlanes() * factor ) );
 }
 
 

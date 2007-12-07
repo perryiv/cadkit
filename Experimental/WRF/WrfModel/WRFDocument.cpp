@@ -39,6 +39,7 @@
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Convert.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/Trace/Trace.h"
 
 #include "Usul/Factory/RegisterCreator.h"
@@ -69,6 +70,7 @@
 #include "osgUtil/UpdateVisitor"
 
 #include <limits>
+#include <iterator>
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WRFDocument, WRFDocument::BaseClass );
 USUL_FACTORY_REGISTER_CREATOR ( WRFDocument );
@@ -875,8 +877,15 @@ void WRFDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * ca
   wrf->append ( new Button ( new ChangeNumPlanes ( 0.25, this ) ) );
 
   MenuKit::Menu::RefPtr tf ( new MenuKit::Menu ( "Transfer Functions" ) );
-  tf->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "0", Usul::Adaptors::bind1<void> ( 0, Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::transferFunction ) ), Usul::Adaptors::bind1<bool> ( 0, Usul::Adaptors::memberFunction<bool> ( this, &WRFDocument::isTransferFunction ) ) ) ) );
-  tf->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "1", Usul::Adaptors::bind1<void> ( 1, Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::transferFunction ) ), Usul::Adaptors::bind1<bool> ( 1, Usul::Adaptors::memberFunction<bool> ( this, &WRFDocument::isTransferFunction ) ) ) ) ); 
+  typedef TransferFunctions::const_iterator ConstIterator;
+  for ( ConstIterator iter = _transferFunctions.begin(); iter != _transferFunctions.end(); ++iter )
+  {
+    const long num ( std::distance<ConstIterator> ( _transferFunctions.begin(), iter ) );
+    tf->append ( new RadioButton ( 
+                 Usul::Commands::genericCheckCommand ( Usul::Strings::format ( num ), 
+                                 Usul::Adaptors::bind1<void> ( num, Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::transferFunction ) ), 
+                                 Usul::Adaptors::bind1<bool> ( num, Usul::Adaptors::memberFunction<bool> ( this, &WRFDocument::isTransferFunction ) ) ) ) );
+  }
 
   wrf->append ( tf.get() );
 
@@ -1422,8 +1431,9 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
 
     if ( pc.valid () )
     {
-      Usul::Math::Vec2d center ( ( _lowerLeft + _upperRight ) );
-      center /= 2.0;
+      // Lat long center of the bounding box.
+      const Usul::Math::Vec2d center ( ( _lowerLeft + _upperRight ) * 0.5  );
+      //center /= 2.0;
 
       Usul::Math::Vec3d translate;
 
@@ -1431,15 +1441,14 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
 
       pc->convertToPlanetEllipsoid ( Usul::Math::Vec3d ( center [ 1 ], center [ 0 ], height ), translate );
 
-      osg::Matrix T ( osg::Matrix::translate ( translate [ 0 ], translate [ 1 ], translate [ 2 ] ) );
+      // Matrix to translate the proper location.
+      const osg::Matrix T ( osg::Matrix::translate ( translate [ 0 ], translate [ 1 ], translate [ 2 ] ) );
 
-      osg::Vec3 v0 ( translate [ 0 ], translate [ 1 ], translate [ 2 ] );
-
-      osg::Vec3 up ( v0 );
+      // Make the up vector at the lat long location.
+      osg::Vec3 up ( translate [ 0 ], translate [ 1 ], translate [ 2 ] );
       up.normalize();
 
-      osg::Matrix R;
-      R.makeRotate ( osg::Vec3( 0.0, 0.0, -1.0 ), up );
+      const osg::Matrix R ( osg::Matrix::rotate ( osg::Vec3( 0.0, 0.0, -1.0 ), up ) );
 
       // Calculate the up vector of the bounding box.
       osg::Vec3 bbUp ( R * osg::Vec3 ( 0.0, 0.0, -1.0 ) );
@@ -1451,48 +1460,16 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
       Usul::Math::Vec3d diff ( v1 - translate );
       diff.normalize();
 
-      osg::Vec3 north ( diff[0], diff[1], diff[2] );
+      const osg::Vec3 north ( diff[0], diff[1], diff[2] );
 
-#if 0
-      {
-        OsgTools::Ray ray;
-        ray.start ( v0 );
-        ray.end ( v0 + ( north * 100000 ) );
-        ray.color ( osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 ) );
-        ray.thickness ( 15.0f );
-
-        _planet->addChild ( ray() );
-      }
-
-      {
-        OsgTools::Ray ray;
-        ray.start ( v0 );
-        ray.end ( v0 + ( bbUp * 100000 ) );
-        ray.color ( osg::Vec4 ( 0.0, 1.0, 0.0, 1.0 ) );
-        ray.thickness ( 15.0f );
-
-        _planet->addChild ( ray() );
-      }
-
-      {
-        OsgTools::Ray ray;
-        ray.start ( v0 );
-        ray.end ( v0 + ( up * 100000 ) );
-        ray.color ( osg::Vec4 ( 0.0, 0.0, 1.0, 1.0 ) );
-        ray.thickness ( 15.0f );
-
-        _planet->addChild ( ray() );
-      }
-#endif
-
+      // Get the angle bewteen the bounding box's up and north.
       typedef Usul::Math::Angle < double, 3 > Angle;
+      const double angle ( Angle::get < osg::Vec3 > ( bbUp, north ) );
 
-      double angle ( Angle::get < osg::Vec3 > ( bbUp, north ) );
-
-      osg::Matrix R1;
-      R1.makeRotate ( angle, up );
+      const osg::Matrix R1 ( osg::Matrix::rotate ( angle, up ) );
 
       osg::Matrix m;
+      m.postMult ( osg::Matrix::rotate ( osg::PI, osg::Vec3 ( 1.0, 0.0, 0.0 ) ) );
       m.postMult ( R );
       m.postMult ( R1 );
       m.postMult ( T );
@@ -1524,8 +1501,14 @@ void WRFDocument::_buildDefaultTransferFunctions ()
 
   Colors grayscale ( size );
   Colors hsv       ( size );
+  Colors hsv2      ( size );
 
-  for ( unsigned int i = 0; i < size; ++i )
+  // Don't draw voxels with a value of zero.
+  grayscale.at ( 0 ) [ 3 ] = 0;
+  hsv.at ( 0 ) [ 3 ] = 0;
+  hsv2.at ( 0 ) [ 3 ] = 0;
+
+  for ( unsigned int i = 1; i < size; ++i )
   {
     float value ( static_cast < float > ( i ) / 255 );
     unsigned int alpha ( 35 );
@@ -1534,18 +1517,27 @@ void WRFDocument::_buildDefaultTransferFunctions ()
     grayscale.at ( i ) [ 0 ] = c;
     grayscale.at ( i ) [ 1 ] = c;
     grayscale.at ( i ) [ 2 ] = c;
-    grayscale.at ( i ) [ 3 ] = ( i == 0 ? 0 : alpha );
+    grayscale.at ( i ) [ 3 ] = alpha;
 
     float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
     Usul::Functions::hsvToRgb ( r, g, b, 300 - ( value * 300 ), 1.0f, 1.0f );
     hsv.at ( i ) [ 0 ] = static_cast < unsigned char > ( r * 255 );
     hsv.at ( i ) [ 1 ] = static_cast < unsigned char > ( g * 255 );
     hsv.at ( i ) [ 2 ] = static_cast < unsigned char > ( b * 255 );
-    hsv.at ( i ) [ 3 ] = ( i == 0 ? 0 : alpha );
+    hsv.at ( i ) [ 3 ] = alpha;
+
+    hsv2.at ( i ) [ 0 ] = static_cast < unsigned char > ( r * 255 );
+    hsv2.at ( i ) [ 1 ] = static_cast < unsigned char > ( g * 255 );
+    hsv2.at ( i ) [ 2 ] = static_cast < unsigned char > ( b * 255 );
+    if ( value < .25 || value > .75 )
+      hsv2.at ( i ) [ 3 ] = static_cast < unsigned char > ( Usul::Math::absolute ( ( value - 0.5 ) * ( alpha * 2 ) ) );
+    else
+      hsv2.at ( i ) [ 3 ] = 0;
   }
 
   _transferFunctions.push_back ( new TransferFunction1D ( grayscale ) );
   _transferFunctions.push_back ( new TransferFunction1D ( hsv ) );
+  _transferFunctions.push_back ( new TransferFunction1D ( hsv2 ) );
 }
 
 

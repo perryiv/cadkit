@@ -98,7 +98,8 @@ public:
 
   /// Get/Set the current channel.
   void                        currentChannel ( unsigned int value );
-  unsigned int                currentChannel () const;
+  unsigned int                getCurrentChannel () const;
+  bool                        isCurrentChannel ( unsigned int ) const;
 
   /// Get/Set the dirty flag.
   void                        dirty ( bool b );
@@ -110,7 +111,12 @@ public:
 
   virtual unsigned int        getNumberOfTimeSteps () const;
 
+  /// Go to the next or previous timestep.
+  void                        nextTimeStep();
+  void                        previousTimeStep();
+
   /// Get/Set the number of planes.
+  void                        numPlanesMultiply ( double factor );
   void                        numPlanes ( unsigned int numPlanes );
   unsigned int                numPlanes () const;
 

@@ -54,8 +54,10 @@ class WRFDocument : public Usul::Documents::Document,
 public:
 
   /// Useful typedefs.
-  typedef Usul::Documents::Document BaseClass;
-  typedef Parser::Data::value_type  DataType;
+  typedef Usul::Documents::Document      BaseClass;
+  typedef Parser::Data::value_type       DataType;
+  typedef std::vector < DataType >       FloatData;
+  typedef std::vector < unsigned char >  ImageData;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( WRFDocument );
@@ -121,7 +123,7 @@ public:
   unsigned int                numPlanes () const;
 
   /// Add volume
-  void                        addVolume ( const Parser::Data& data, osg::Image* image, unsigned int timestep, unsigned int channel );
+  void                        addData( unsigned int timestep, unsigned int channel, const FloatData& data );
 
   /// Load job has finished.
   void                        loadJobFinished ( Usul::Jobs::Job* job );
@@ -142,9 +144,6 @@ public:
 
 protected:
 
-  void                        _processReadRequests ( Usul::Threads::Thread *);
-  osg::Image *                _volume ( unsigned int timestep, unsigned int channel );
-  osg::Node*                  _buildVolume( osg::Image* image );
   void                        _initBoundingBox ();
   osg::Node *                 _buildProxyGeometry ();
   osg::Node *                 _buildVectorField ( unsigned int timestep, unsigned int channel0, unsigned int channel1 );
@@ -196,8 +195,8 @@ private:
   typedef osg::ref_ptr < osg::Image >                           ImagePtr;
   typedef std::pair < unsigned int, unsigned int >              Request;
   typedef std::map < Request, Usul::Jobs::Job::RefPtr >         Requests;
-  typedef std::map < Request, ImagePtr >                        VolumeCache;
-  typedef std::map < Request, Parser::Data >                    DataCache;
+  typedef std::map < Request, ImageData >                       VolumeCache;
+  typedef std::map < Request, FloatData >                       DataCache;
   typedef OsgTools::Volume::TransferFunction                    TransferFunction;
   typedef TransferFunction::RefPtr                              TransferFunctionPtr;
   typedef std::vector < TransferFunctionPtr >                   TransferFunctions;
@@ -224,7 +223,6 @@ private:
   Usul::Jobs::Job::RefPtr _jobForScene;
   bool _animating;
   VectorFields _vectorFields;
-  std::vector < osg::ref_ptr < osg::Node > > _vectorCache;
   osg::Vec3 _cellSize;
   osg::Vec3 _cellScale;
   unsigned int _maxCacheSize;

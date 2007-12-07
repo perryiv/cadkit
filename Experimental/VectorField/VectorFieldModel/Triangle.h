@@ -30,6 +30,17 @@ public:
   typedef osg::ref_ptr < Vectors >    VectorsPtr;
   typedef Usul::Math::Vec3ui          Indices;
 
+  enum CriticalPointType
+  {
+    NONE,
+    SADDLE_POINT,
+    ATTRACTING_NODE,
+    REPELLING_NODE,
+    ATTRACTING_FOCUS,
+    REPELLING_FOCUS,
+    CENTER
+  };
+
   USUL_DECLARE_REF_POINTERS ( Triangle );
 
   Triangle ( const Indices& indices, Positions* positions, Vectors* vectors );
@@ -40,6 +51,9 @@ public:
   bool                      pointInside ( const Position& p ) const;
 
   Vector                    vectorAtPoint ( const Position& p ) const;
+
+  CriticalPointType         classifyCriticalPoint ( const Position& p ) const;
+  Position                  findCriticalPoint () const;
 
 protected:
   virtual ~Triangle();

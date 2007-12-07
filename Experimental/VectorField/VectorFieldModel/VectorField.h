@@ -28,6 +28,8 @@ public:
 
   osg::Node*        advectParticle ( double x, double y ) const;
 
+  osg::Node*        classifyCriticalPoints () const;
+
 private:
   Grid _grid;
 };

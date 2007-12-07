@@ -17,6 +17,7 @@
 #include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/Color.h"
 #include "Usul/Functions/SafeCall.h"
@@ -37,8 +38,7 @@
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Trace/Trace.h"
-
-#include "Usul/Factory/RegisterCreator.h"
+#include "Usul/Threads/Safe.h"
 
 #include "OsgTools/Font.h"
 #include "OsgTools/GlassBoundingBox.h"
@@ -102,7 +102,6 @@ WRFDocument::WRFDocument() :
   _requests (),
   _jobForScene ( 0x0 ),
   _animating ( false ),
-  _vectorCache (),
   _cellSize ( 1000.0, 1000.0, 300.0 ),
   _cellScale ( 0.001, 0.001, 0.001 ),
   _maxCacheSize ( 50 ),
@@ -332,20 +331,21 @@ void WRFDocument::_buildScene()
 {
   USUL_TRACE_SCOPE;
 
+  Guard guard ( this->mutex() );
+
   // Return now if we don't have any data.
   if ( 0 == _timesteps || 0 == _channels )
     return;
 
   // Remove what we have.
-  {
-    Guard guard ( this->mutex() );
-    _root->removeChild ( 0, _root->getNumChildren() );
-    _volumeTransform->removeChild ( 0, _volumeTransform->getNumChildren () );
-    _root->addChild ( _volumeTransform.get () );
+  _root->removeChild ( 0, _root->getNumChildren() );
+  _volumeTransform->removeChild ( 0, _volumeTransform->getNumChildren () );
 
-    // Add the planet.
-    _root->addChild ( _planet.get() );
-  }
+  // Add the volume back.
+  _root->addChild ( _volumeTransform.get () );
+
+  // Add the planet.
+  _root->addChild ( _planet.get() );
 
   // If we don't have the data already...
   if ( false == this->_dataCached ( _currentTimestep, _currentChannel ) )
@@ -353,7 +353,6 @@ void WRFDocument::_buildScene()
     if ( true == this->_dataRequested ( _currentTimestep, _currentChannel ) )
     {
       // Keep a handle the job to wait for.
-      Guard guard ( this->mutex() );
       _jobForScene = _requests [ Request ( _currentTimestep, _currentChannel ) ];
     }
 
@@ -364,30 +363,45 @@ void WRFDocument::_buildScene()
     }
 
     // Build proxy geometry.
-    {
-      Guard guard ( this->mutex() );
-      _volumeTransform->addChild ( this->_buildProxyGeometry() );
-    }
+    _volumeTransform->addChild ( this->_buildProxyGeometry() );
   }
   
   // We have the data ...
   else
   {
     // We no longer need to wait for any job.
-    {
-      Guard guard ( this->mutex() );
-      _jobForScene = 0x0;
-    }
+    _jobForScene = 0x0;
+
+    ImageData& data ( _volumeCache [ Request ( _currentTimestep, _currentChannel ) ] );
 
     // Get the 3D image for the volume.
-    ImagePtr image ( this->_volume ( _currentTimestep, _currentChannel ) );
+    ImagePtr image ( new osg::Image );
+    image->setImage ( _x, _y, _z, GL_INTENSITY, GL_LUMINANCE, GL_UNSIGNED_BYTE, &data.front(), osg::Image::NO_DELETE );
+
+#ifdef _MSC_VER
+    osg::ref_ptr < osg::Image > scaled ( new osg::Image );
+    scaled->allocateImage ( 512, 512, 128, GL_LUMINANCE, GL_UNSIGNED_BYTE );
+    ::memset ( scaled->data(), 0, 512 * 512 * 128 );
+
+    for ( unsigned int r = 0; r < _z; ++r )
+    {
+      for ( unsigned int t = 0; t < _y; ++ t )
+      {
+        for ( unsigned int s = 0; s < _x; ++ s )
+        {
+          *scaled->data ( s, t, r ) = *image->data ( s, t, r );
+        }
+      }
+    }
+    image = scaled;
+#endif
+
+    _volumeNode->numPlanes ( _numPlanes );
+    _volumeNode->image ( image.get() );
 
     // Add the volume to the scene.
-    {
-      Guard guard ( this->mutex() );
-      _volumeTransform->addChild ( this->_buildVolume ( image.get() ) );
-      //_volumeTransform->addChild ( this->_buildVectorField ( _currentTimestep, 0, 1 ) );
-    }
+    _volumeTransform->addChild ( _volumeNode.get() );
+    //_volumeTransform->addChild ( this->_buildVectorField ( _currentTimestep, 0, 1 ) );
   }
 
   // No longer dirty
@@ -425,13 +439,56 @@ bool WRFDocument::_dataRequested ( unsigned int timestep, unsigned int channel )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Normalize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  template < class ImageData, class FloatData >
+  inline void normalize ( ImageData& out, const FloatData& in, typename FloatData::value_type min, typename FloatData::value_type max )
+  {
+    typedef typename ImageData::value_type PixelType;
+    typedef typename FloatData::value_type FloatType;
+
+    out.reserve ( in.size() );
+
+    Usul::Predicates::CloseFloat< FloatType > close ( 10 );
+
+    for ( typename FloatData::const_iterator iter = in.begin(); iter != in.end(); ++iter )
+    {
+      // Get the value.
+      FloatType value ( *iter );
+      bool inValid ( !Usul::Math::finite ( value ) || Usul::Math::nan ( value ) || close ( value, 1.0e+035f ) );
+      
+      if( false == inValid )
+      {
+        value = ( value - min ) / ( max - min );
+        out.push_back ( static_cast < PixelType > ( value * 255 ) );
+      }
+      else
+        out.push_back ( 0 );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Add volume to the cache.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WRFDocument::addVolume ( const Parser::Data& data, osg::Image* image, unsigned int timestep, unsigned int channel )
+void WRFDocument::addData ( unsigned int timestep, unsigned int channel, const FloatData& data )
 {
   USUL_TRACE_SCOPE;
+
+  // Get the min/max information for this channel.
+  Channel::RefPtr info ( Usul::Threads::Safe::get ( this->mutex(), _channelInfo.at ( channel ) ) );
+
+  // Normalize the data to unsigned char.
+  ImageData chars;
+  Detail::normalize ( chars, data, info->min (), info->max () );
 
   // For convienence.
   Request request ( timestep, channel );
@@ -440,7 +497,7 @@ void WRFDocument::addVolume ( const Parser::Data& data, osg::Image* image, unsig
   Guard guard ( this->mutex() );
 
   // Cache the volume.
-  _volumeCache [ request ] = image;
+  _volumeCache [ request ] = chars;
 
   // Cache the raw data if we a suppose to.
   if ( _cacheRawData )
@@ -448,37 +505,6 @@ void WRFDocument::addVolume ( const Parser::Data& data, osg::Image* image, unsig
 
   // Erase the request from the list of jobs that are running.
   _requests.erase ( request );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the volume at the timestep and channel.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Image * WRFDocument::_volume ( unsigned int timestep, unsigned int channel )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _volumeCache [ Request ( timestep, channel ) ].get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the volume.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* WRFDocument::_buildVolume( osg::Image* image )
-{
-  USUL_TRACE_SCOPE;
-
-  _volumeNode->numPlanes ( _numPlanes );
-  _volumeNode->image ( image );
-
-  return _volumeNode.get ();
 }
 
 
@@ -755,6 +781,8 @@ bool WRFDocument::_cacheFull () const
 
 void WRFDocument::_launchNextCacheRequest ()
 {
+  Guard guard ( this->mutex () );
+
   // Return now if we don't have any data.
   if ( 0 == _timesteps || 0 == _channels )
     return;
@@ -767,50 +795,16 @@ void WRFDocument::_launchNextCacheRequest ()
     timestepToLoad = last.first + 1;
   }
 
+  // Wrap to the beginning.
   if ( timestepToLoad > _timesteps )
     timestepToLoad = 0;
 
-  typedef LoadDataJob::ReadRequest ReadRequest;
-  typedef LoadDataJob::ReadRequests ReadRequests;
+  // Get the current channel
+  unsigned int currentChannel ( this->getCurrentChannel () );
 
-  ReadRequests requests;
-
-  // If we are animation only request data for the current channel.
-  //if ( this->animating () )
-  {
-    // Get the current channel
-    unsigned int currentChannel ( this->getCurrentChannel () );
-
-    // Only make the request if we don't already have it.
-    if ( false == this->_dataCached ( timestepToLoad, currentChannel ) )
-      this->_requestData ( timestepToLoad, currentChannel, false );
-  }
-#if 0
-  else
-  {
-    for ( unsigned int i = 0; i < _channels; ++ i )
-    {
-      // Only make a request if we don't alreay have the data.
-      if ( false == this->_dataCached ( timestepToLoad, i ) )
-      {
-        Channel::RefPtr info ( _channelInfo.at ( i ) );
-        ReadRequest request ( timestepToLoad, info );
-        requests.push_back ( request );
-      }
-    }
-
-    LoadDataJob::RefPtr job ( new LoadDataJob ( requests, this, _parser ) );
-    job->setSize ( _x, _y, _z );
-
-    for ( ReadRequests::const_iterator iter = requests.begin(); iter != requests.end(); ++iter )
-    {
-      Guard guard ( this->mutex() );
-      _requests.insert ( Requests::value_type ( Request ( iter->first, iter->second->index() ), job.get() ) );
-    }
-
-    Usul::Jobs::Manager::instance().add ( job.get() );
-  }
-#endif
+  // Only make the request if we don't already have it.
+  if ( false == this->_dataCached ( timestepToLoad, currentChannel ) )
+    this->_requestData ( timestepToLoad, currentChannel, false );
 }
 
 
@@ -822,9 +816,13 @@ void WRFDocument::_launchNextCacheRequest ()
 
 void WRFDocument::_updateCache ()
 {
-  // Return now if there are still requests pending...
-  if ( false == _requests.empty() )
-    return;
+  {
+    Guard guard ( this->mutex () );
+
+    // Return now if there are still requests pending...
+    if ( false == _requests.empty() )
+      return;
+  }
 
   // Don't make any more requests if the cache is full and we are not animating.
   if ( this->_cacheFull () && false == this->isAnimating () )
@@ -906,6 +904,7 @@ void WRFDocument::currentChannel ( unsigned int value )
   {
     Guard guard ( this->mutex() );
     _currentChannel = value;
+    _volumeCache.clear();
   }
   this->dirty ( true );
 }
@@ -1067,14 +1066,6 @@ osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int
 {
   USUL_TRACE_SCOPE;
 
-  // Check the cache.
-  {
-    Guard guard ( this->mutex () );
-    osg::ref_ptr < osg::Node > &node ( _vectorCache.at ( timestep ) );
-    if ( node.valid () )
-      return node.get();
-  }
-
   // Check the first channel.
   if ( false == this->_dataCached ( timestep, channel0 ) )
   {
@@ -1216,28 +1207,19 @@ osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int
 void WRFDocument::_requestData ( unsigned int timestep, unsigned int channel, bool wait )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this );
 
   typedef LoadDataJob::ReadRequest ReadRequest;
-  typedef LoadDataJob::ReadRequests ReadRequests;
 
-  Channel::RefPtr info ( _channelInfo.at ( channel ) );
+  ReadRequest request ( timestep, channel );
+  LoadDataJob::RefPtr job ( new LoadDataJob ( request, this, Parser ( _parser ) ) );
 
-  ReadRequest request ( timestep, info );
-  ReadRequests requests;
-  requests.push_back ( request );
-
-  LoadDataJob::RefPtr job ( new LoadDataJob ( requests, this, _parser ) );
-  job->setSize ( _x, _y, _z );
-
-  {
-    Guard guard ( this->mutex() );    
-    _requests.insert ( Requests::value_type ( Request ( timestep, channel ), job.get() ) );
-  }
+  // Add the job to the list of things we are waiting for.
+  _requests.insert ( Requests::value_type ( Request ( timestep, channel ), job.get() ) );
 
   // If we need to wait for this job...
   if ( wait )
   {
-    Guard guard ( this->mutex() );
     _jobForScene = job.get();
   }
 
@@ -1274,9 +1256,6 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
 
   // Build the transfer function.
   _volumeNode->transferFunction ( _transferFunctions.at ( 0 ).get() );
-
-  // Make enough room for the cache.
-  _vectorCache.resize ( _timesteps );
 
   // Look for needed interfaces.
   Usul::Interfaces::IPlanetNode::QueryPtr pn ( Usul::Components::Manager::instance ().getInterface ( Usul::Interfaces::IPlanetNode::IID  ) );

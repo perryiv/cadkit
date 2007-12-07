@@ -22,8 +22,6 @@
 #include "Usul/Scope/Reset.h"
 #include "Usul/Trace/Trace.h"
 
-#include "ossimPlanet/ossimPlanet.h"
-
 #include "osg/Group"
 
 using namespace StarSystem;

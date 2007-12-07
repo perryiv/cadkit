@@ -562,7 +562,10 @@ osg::Node * WRFDocument::_buildProxyGeometry ()
   text->setCharacterSize( 50 );
   text->setCharacterSizeMode ( osgText::Text::SCREEN_COORDS );
   text->setPosition ( _bb.center() );
-  text->setText( "Loading..." );
+  {
+    Guard guard ( this );
+    text->setText( Usul::Strings::format ( "Loading ", _currentTimestep, " of ", _timesteps ) );
+  }
   text->setAutoRotateToScreen( true );
   text->setUseDisplayList ( false );
   text->setFontResolution( 40, 40 );

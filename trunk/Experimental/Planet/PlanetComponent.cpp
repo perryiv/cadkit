@@ -82,19 +82,30 @@ osg::Group*  PlanetComponent::planetNode ( const std::string& key )
   {
     planet = new ossimPlanet;
     planet->land()->setLandType ( ossimPlanetLandType_ELLIPSOID );
-    planet->setEnableHudFlag ( false );
-#if 0
+    planet->setEnableHudFlag ( true );
+    planet->hud()->setTextColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 0.0 ) );
+    planet->hud()->setCrosshairColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 0.0 ) );
+
+#ifdef _MSC_VER
+    const std::string file0 ( "C:\\adam\\data\\earth\\blue_marble\\land_shallow_topo_west_tiled.tif" );
+    const std::string file1 ( "C:\\adam\\data\\earth\\blue_marble\\land_shallow_topo_east_tiled.tif" );
+#else
+    const std::string file0 ( "/array/cluster/data/gis/earth/land_shallow_topo_west_tiled.tif" );
+    const std::string file1 ( "/array/cluster/data/gis/earth/land_shallow_topo_east_tiled.tif" );
+#endif
+
+#if 1
     {
       osg::ref_ptr < ossimPlanetOssimImageLayer > layer ( new ossimPlanetOssimImageLayer );
-      layer->openImage ( "C:\\adam\\data\\earth\\blue_marble\\land_shallow_topo_west_tiled.tif" );
-      planet->land()->setOverlayLayer ( 0, layer.get() );
+      layer->openImage ( file0.c_str() );
+      planet->land()->referenceLayer()->addTop ( layer.get() );
       planet->land()->resetGraph( layer->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
     }
 
     {
       osg::ref_ptr < ossimPlanetOssimImageLayer > layer ( new ossimPlanetOssimImageLayer );
-      layer->openImage ( "C:\\adam\\data\\earth\\blue_marble\\land_shallow_topo_east_tiled.tif" );
-      planet->land()->setOverlayLayer ( 1, layer.get() );
+      layer->openImage ( file1.c_str() );
+      planet->land()->referenceLayer()->addTop ( layer.get() );
       planet->land()->resetGraph( layer->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
     }
 #endif

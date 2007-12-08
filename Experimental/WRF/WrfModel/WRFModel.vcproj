@@ -223,14 +223,6 @@
 				Name="Implementation"
 				>
 				<File
-					RelativePath=".\Cache.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Cache.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Channel.cpp"
 					>
 				</File>

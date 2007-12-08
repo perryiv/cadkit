@@ -21,6 +21,8 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/IDldNavigator.h"
+#include "Usul/Interfaces/IDataSync.h"
+#include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Documents/Manager.h"
@@ -43,7 +45,7 @@ class DynamicLandDocument : public Usul::Documents::Document,
                             public Usul::Interfaces::IBuildScene,
                             public Usul::Interfaces::IUpdateListener,
                             public Usul::Interfaces::IDldNavigator,
-			                      public Usul::Interfaces::ICommandList
+			                      public Usul::Interfaces::IMenuAdd
 {
 public:
   // Structs
@@ -60,6 +62,7 @@ public:
   typedef Usul::Documents::Document Document;
   typedef Usul::Documents::Document::RefPtr DocumentPtr;
   typedef Usul::Documents::Manager DocManager;
+  typedef Usul::Interfaces::IDataSync IDataSync;
   typedef Usul::Jobs::Manager JobManager;
   typedef boost::shared_ptr<JobManager> JobManagerPtr;
   typedef DocManager::DocumentInfo Info;
@@ -170,8 +173,6 @@ protected:
   /// Usul::Interfaces::IUpdateListener
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 
-  CommandList                 getCommandList();
-
   void                        _setThreadPoolSize( unsigned int size );
 
   void                        _findFiles();
@@ -181,6 +182,10 @@ protected:
 
   void                        _setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller );
   void                        _currentFileLoaded( int index);
+
+  //Usul::Interfaces::IMenuAdd
+  void                        menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
+
 
   /// Use reference counting.
   virtual ~DynamicLandDocument();

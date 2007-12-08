@@ -38,6 +38,7 @@
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IMenuAdd.h"
+#include "Usul/Interfaces/IPluginInitialize.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Trace/Trace.h"
@@ -844,6 +845,33 @@ void Application::_init()
     vpr::GUID guid ( "FEFB5D44-9EC3-4fe3-B2C7-43C394A49848" );
     _sharedMatrix.init ( guid, "viz0" );
   }
+
+  // Initialize the shared boolean system
+#if 1
+  typedef Usul::Interfaces::IPluginInitialize  IPluginInitialize;
+  typedef Usul::Components::Manager PluginManager;
+  typedef PluginManager::UnknownSet Unknowns;
+
+  // Get needed interfaces.
+  Unknowns unknowns ( PluginManager::instance().getInterfaces ( IPluginInitialize::IID ) );
+  for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
+  {
+    try
+    {
+      IPluginInitialize::ValidQueryPtr pluginInit ( (*iter).get() );
+      pluginInit->initialize ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+    }
+    catch ( const std::exception &e )
+    {
+      std::cout << "Error 4024751295: Standard exception caught while trying to initialize plugin: " << e.what() << std::endl;
+    }
+    catch ( ... )
+    {
+      std::cout << "Error 2915155888: Unknown exception caught while trying to initialize plugin.";
+    }
+  }
+
+#endif
 
   // Add the progress bars to the scene.
   osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );

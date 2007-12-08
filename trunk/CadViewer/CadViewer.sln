@@ -137,6 +137,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Dynamic Land Model", 
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
+		{8B99160D-5504-4A93-89DC-F4AE949501A4} = {8B99160D-5504-4A93-89DC-F4AE949501A4}
+		{B0D6CA13-5860-4C0E-8E7A-68D8DBE61C21} = {B0D6CA13-5860-4C0E-8E7A-68D8DBE61C21}
 		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
@@ -230,6 +232,35 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Path Animation", "..\
 		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Ray Cast Volume Vizualization", "..\Experimental\RayCastVolViz\RayCastVolViz\RayCastVolVizModel.vcproj", "{520C2CCE-DBC1-4691-BC06-5DD949622717}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+		{8B99160D-5504-4A93-89DC-F4AE949501A4} = {8B99160D-5504-4A93-89DC-F4AE949501A4}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Multi Process Data Synchronization", "..\Experimental\DataSync\DataSync\DataSyncModel.vcproj", "{B0D6CA13-5860-4C0E-8E7A-68D8DBE61C21}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{2228A7FB-34E3-43F7-9C45-3C5F822245B2} = {2228A7FB-34E3-43F7-9C45-3C5F822245B2}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Model Presentation", "..\Experimental\ModelPresentation\ModelPresentation\ModelPresentationModel.vcproj", "{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
 Global
@@ -326,6 +357,18 @@ Global
 		{372E35DF-DE41-45DC-9C11-7067C5131393}.Debug|Win32.Build.0 = Debug|Win32
 		{372E35DF-DE41-45DC-9C11-7067C5131393}.Release|Win32.ActiveCfg = Release|Win32
 		{372E35DF-DE41-45DC-9C11-7067C5131393}.Release|Win32.Build.0 = Release|Win32
+		{520C2CCE-DBC1-4691-BC06-5DD949622717}.Debug|Win32.ActiveCfg = Debug|Win32
+		{520C2CCE-DBC1-4691-BC06-5DD949622717}.Debug|Win32.Build.0 = Debug|Win32
+		{520C2CCE-DBC1-4691-BC06-5DD949622717}.Release|Win32.ActiveCfg = Release|Win32
+		{520C2CCE-DBC1-4691-BC06-5DD949622717}.Release|Win32.Build.0 = Release|Win32
+		{B0D6CA13-5860-4C0E-8E7A-68D8DBE61C21}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B0D6CA13-5860-4C0E-8E7A-68D8DBE61C21}.Debug|Win32.Build.0 = Debug|Win32
+		{B0D6CA13-5860-4C0E-8E7A-68D8DBE61C21}.Release|Win32.ActiveCfg = Release|Win32
+		{B0D6CA13-5860-4C0E-8E7A-68D8DBE61C21}.Release|Win32.Build.0 = Release|Win32
+		{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}.Debug|Win32.Build.0 = Debug|Win32
+		{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}.Release|Win32.ActiveCfg = Release|Win32
+		{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

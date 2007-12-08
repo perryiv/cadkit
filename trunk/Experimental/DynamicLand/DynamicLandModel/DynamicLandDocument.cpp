@@ -18,6 +18,7 @@
 #include "Experimental/DynamicLand/DynamicLandModel/StartAnimation.h"
 #include "Experimental/DynamicLand/DynamicLandModel/StopAnimation.h"
 
+
 #include "Usul/Interfaces/IColorsPerVertex.h"
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -37,6 +38,12 @@
 #include "Usul/File/Path.h"
 #include "Usul/File/Find.h"
 #include "Usul/File/Slash.h"
+#include "Usul/System/Host.h"
+
+#include "MenuKit/Menu.h"
+#include "MenuKit/Button.h"
+#include "MenuKit/ToggleButton.h"
+#include "MenuKit/RadioButton.h"
 
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/Group.h"
@@ -156,8 +163,8 @@ Usul::Interfaces::IUnknown *DynamicLandDocument::queryInterface ( unsigned long 
     return static_cast < Usul::Interfaces::IUpdateListener* > ( this );
   case Usul::Interfaces::IDldNavigator::IID:
     return static_cast < Usul::Interfaces::IDldNavigator* > ( this );
-  case Usul::Interfaces::ICommandList::IID:
-    return static_cast < Usul::Interfaces::ICommandList* > ( this ); 
+  case Usul::Interfaces::IMenuAdd::IID:
+    return static_cast < Usul::Interfaces::IMenuAdd* > ( this ); 
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -627,6 +634,10 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     this->_setStatusBar ( text.str(), caller );
   }
 
+  // Get needed interfaces.
+  IDataSync::QueryPtr dataSync ( Usul::Components::Manager::instance().getInterface ( IDataSync::IID ) );
+  
+  // check to see if it is time to update the animation frame
   if( true == _animationDelay() && true == this->_updateAnimationFrame() )
   {    
       this->incrementFilePosition();
@@ -634,13 +645,18 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
       this->_updateAnimationFrame( false );
    }
   
+  // update the animation frame
+  
+ 
   if( true == this->isValid( this->currentFilePosition() ) &&
       false == this->isLoading( this->currentFilePosition() ) &&
-      true == this->loadCurrentFile() )
+      true == this->loadCurrentFile() &&
+      true == dataSync->queryDataState() )
   {
     // current time step is ready to be shown
     this->_loadNextTimeStep();
     this->_currentFileLoaded( this->currentFilePosition() );
+    dataSync->resetData();
   }
   
   // Search for files matching our criteria
@@ -1435,6 +1451,10 @@ void DynamicLandDocument::setTimeStepFrame( unsigned int i, osg::Group * group )
   _timeStepPool.at( i ).isValid = true;
   _timeStepPool.at( i ).isLoading = false;
   _timeStepPool.at( i ).group = group;
+
+   // Get needed interfaces.
+  IDataSync::QueryPtr dataSync ( Usul::Components::Manager::instance().getInterface ( IDataSync::IID ) );
+  dataSync->setDataFlag( Usul::System::Host::name(), true );
   //_timeStepPool.at( i ).group = dynamic_cast<osg::Group *> ( group->clone ( osg::CopyOp::DEEP_COPY_ALL ) );
 }
 
@@ -1533,24 +1553,37 @@ void DynamicLandDocument::LoadDataJob::_started ()
 }
 
 
-DynamicLandDocument::CommandList DynamicLandDocument::getCommandList()
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add to the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DynamicLandDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller )
 {
-  USUL_TRACE_SCOPE;
-  CommandList cl;
+  typedef MenuKit::ToggleButton ToggleButton;
+  typedef MenuKit::Button       Button;
+  typedef MenuKit::RadioButton  Radio;
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
-  std::cout << me.get () << std::endl;
 
-  //cl.push_back( new LoadNextTimestep( me.get() ) );
-  cl.push_back( new NextTimestep( me.get() ) );
-  cl.push_back( new PrevTimestep( me.get() ) );
-  cl.push_back( new LoadTimestep( me.get() ) );
-  cl.push_back( new FirstTimestep( me.get() ) );
-  cl.push_back( new StartAnimation( me.get() ) );
-  cl.push_back( new StopAnimation( me.get() ) );
-  return cl;
+  // Add the Animation menu 
+  {
+    MenuKit::Menu::RefPtr TimelineMenu ( new MenuKit::Menu ( "Timeline", MenuKit::Menu::VERTICAL ) );
 
+    TimelineMenu->append ( new Button ( new NextTimestep( me.get() ) ) );
+    TimelineMenu->append ( new Button ( new PrevTimestep( me.get() ) ) );
+    TimelineMenu->append ( new Button ( new LoadTimestep( me.get() ) ) );
+    TimelineMenu->append ( new Button ( new FirstTimestep( me.get() ) ) );
+    TimelineMenu->append ( new Button ( new StartAnimation( me.get() ) ) );
+    TimelineMenu->append ( new Button ( new StopAnimation( me.get() ) ) );
+    //TimelineMenu->append ( new ToggleButton ( new MpdAnimation( me.get() ) ) );
+
+    menu.append ( TimelineMenu ); 
+  }
 }
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

@@ -152,7 +152,7 @@ void NewDocument::_initNewDocument ( IUnknown *document, IUnknown *caller )
   UnknownSet unknowns ( Usul::Components::Manager::instance().getInterfaces ( IInitNewDocument::IID ) );
   for ( UnknownSet::iterator i = unknowns.begin(); i != unknowns.end(); ++i )
   {
-    IInitNewDocument::QueryPtr initializer ( *i );
+    IInitNewDocument::QueryPtr initializer ( (*i).get() );
     if ( true == initializer.valid() )
     {
       // Ask the plugin if it does our type of document.

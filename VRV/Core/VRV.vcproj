@@ -254,6 +254,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\SharedBoolean.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SharedBoolean.h"
+					>
+				</File>
+				<File
 					RelativePath=".\SharedDouble.cpp"
 					>
 				</File>

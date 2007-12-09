@@ -19,6 +19,8 @@
 #include "OsgTools/Export.h"
 #include "OsgTools/Declarations.h"
 
+namespace osg { class Vec4d; }
+
 
 namespace OsgTools {
 namespace State {
@@ -83,6 +85,10 @@ struct OSG_TOOLS_EXPORT StateSet
 
   // Set the states for hidden lines.
   static void         hiddenLines ( const osg::Vec4f &color, osg::StateSet *normal, osg::StateSet *hidden );
+
+  // Materials.
+  static void         setMaterialRandom ( osg::Node *node );
+  static void         setMaterialDefault ( osg::Node *node );
 };
 
 

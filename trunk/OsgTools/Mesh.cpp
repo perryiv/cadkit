@@ -287,8 +287,8 @@ osg::Node* Mesh::operator()() const
   Binding binding ( Detail::normalBinding ( _points, _normals ) );
 
   // Declare nodes.
-  osg::ref_ptr<osg::Geode>     geode   ( new osg::Geode );
-  osg::ref_ptr<osg::Geometry>  geom    ( new osg::Geometry );
+  osg::ref_ptr<osg::Geode>    geode ( new osg::Geode );
+  osg::ref_ptr<osg::Geometry> geom  ( new osg::Geometry );
 
   // Allocate the points.
   unsigned int numVertices ( ( 2 * _rows - 2 ) * _columns );

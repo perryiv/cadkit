@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Qt/Core/Menu.h"
-#include "Helios/Qt/Commands/Action.h"
+#include "QtTools/Menu.h"
+#include "QtTools/Action.h"
 
 #include "QtTools/Image.h"
 
@@ -23,7 +23,7 @@
 #include "Usul/Trace/Trace.h"
 #include "Usul/Threads/Named.h"
 
-using namespace CadKit::Helios::Core;
+using namespace QtTools;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -107,8 +107,8 @@ namespace Detail
   class QtMenuBuilder : public MenuKit::Visitor
   {
   public:
-    typedef MenuKit::Visitor                  BaseClass;
-    typedef CadKit::Helios::Commands::Action  Action;
+    typedef MenuKit::Visitor  BaseClass;
+    typedef QtTools::Action   Action;
 
     QtMenuBuilder ( QMenu* menu, Menu::Actions &actions ) : BaseClass(),
       _menu ( menu ),

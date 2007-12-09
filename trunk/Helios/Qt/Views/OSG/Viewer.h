@@ -123,6 +123,9 @@ protected:
   bool                                    _isSize ( unsigned int w, unsigned int h ) const;
   void                                    _customSize();
 
+  /// Add to the menu.
+  virtual void                            _menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
+
   // Override these events.
   virtual void                            paintEvent  ( QPaintEvent * event );
   virtual void                            resizeEvent ( QResizeEvent * event );
@@ -140,6 +143,7 @@ private slots:
   void                                    _onTimeoutAnimation();
   void                                    _onTimeoutSpin();
   void                                    _onTimeoutRenderLoop();
+  void                                    _onContextMenuShow ( const QPoint& pos );
 
 private:
 

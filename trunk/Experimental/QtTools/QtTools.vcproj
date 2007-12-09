@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental;$(QTDIR)/include"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental;$(QTDIR)/include;$(BOOST_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_QT_TOOLS"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -147,7 +147,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental;$(QTDIR)/include"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental;$(QTDIR)/include;$(BOOST_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_QT_TOOLS"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -223,6 +223,36 @@
 			<Filter
 				Name="Implementation"
 				>
+				<File
+					RelativePath=".\Action.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Action.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing Action.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\Action.h&quot; -o &quot;.\GeneratedFiles\moc_Action.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\Action.h"
+							Outputs=".\GeneratedFiles\moc_Action.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing Action.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\Action.h&quot; -o &quot;.\GeneratedFiles\moc_Action.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\Action.h"
+							Outputs=".\GeneratedFiles\moc_Action.cpp"
+						/>
+					</FileConfiguration>
+				</File>
 				<File
 					RelativePath=".\AnimationControl.cpp"
 					>
@@ -304,6 +334,36 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Menu.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Menu.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing Menu.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\Menu.h&quot; -o &quot;.\GeneratedFiles\moc_Menu.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\Menu.h"
+							Outputs=".\GeneratedFiles\moc_Menu.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing Menu.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\Menu.h&quot; -o &quot;.\GeneratedFiles\moc_Menu.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\Menu.h"
+							Outputs=".\GeneratedFiles\moc_Menu.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\PropertyBrowser.cpp"
 					>
 				</File>
@@ -368,11 +428,19 @@
 				Name="GeneratedFiles"
 				>
 				<File
+					RelativePath=".\generatedfiles\moc_Action.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\generatedfiles\moc_AnimationControl.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\generatedfiles\moc_ColorButton.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_Menu.cpp"
 					>
 				</File>
 				<File

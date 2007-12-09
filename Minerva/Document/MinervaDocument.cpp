@@ -1169,7 +1169,6 @@ void MinervaDocument::addView ( Usul::Interfaces::IView *view )
 
   // Initalize the OSG visitors.
   _planet->initVisitors ( view );
-  
 }
 
 

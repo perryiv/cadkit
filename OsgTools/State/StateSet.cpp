@@ -14,8 +14,9 @@
 
 #include "OsgTools/State/StateSet.h"
 
-#include "Usul/Pointers/Pointers.h"
+#include "Usul/Adaptors/Random.h"
 #include "Usul/Bits/Bits.h"
+#include "Usul/Pointers/Pointers.h"
 
 #include "osg/Node"
 #include "osg/StateSet"
@@ -703,19 +704,72 @@ void StateSet::hiddenLines ( const osg::Vec4f &color, osg::StateSet *normal, osg
   // Set the polygon-mode.
   osg::ref_ptr<osg::PolygonMode> mode ( new osg::PolygonMode );
   mode->setMode ( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE );
-  hidden->setAttributeAndModes ( mode.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
+  hidden->setAttributeAndModes ( mode.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
 
   // Set the polygon-offset. See osgscribe example.
   osg::ref_ptr<osg::PolygonOffset> offset ( new osg::PolygonOffset );
   offset->setFactor ( -1.0f );
   offset->setUnits  ( -1.0f );
-  hidden->setAttributeAndModes ( offset.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
+  hidden->setAttributeAndModes ( offset.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
 
   // Material same as background and no lighting.
   osg::ref_ptr<osg::Material> material ( new osg::Material );
   material->setAmbient ( osg::Material::FRONT_AND_BACK, color );
   material->setDiffuse ( osg::Material::FRONT_AND_BACK, color );
-  normal->setAttributeAndModes ( material.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
-  
-  //normal->setMode ( GL_LIGHTING, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
+  normal->setAttributeAndModes ( material.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  normal->setMode ( GL_LIGHTING, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::OFF );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set a random material.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StateSet::setMaterialRandom ( osg::Node *node )
+{
+  // Handle bad input.
+  if ( 0x0 == node )
+    return;
+
+  osg::Vec4 emissive ( 0.0f, 0.0f, 0.0f, 1.0f );
+  osg::Vec4 specular ( 0.2f, 0.2f, 0.2f, 1.0f );
+
+  Usul::Adaptors::Random < float > rd ( 0.2f, 1.0f );
+
+  osg::Vec4 diffuse ( rd(), rd(), rd(), 1.0f );
+  osg::Vec4 ambient ( diffuse );
+
+  osg::ref_ptr<osg::Material> mat ( new osg::Material );
+  mat->setAmbient   ( osg::Material::FRONT_AND_BACK, ambient  );
+  mat->setDiffuse   ( osg::Material::FRONT_AND_BACK, diffuse  );
+  mat->setEmission  ( osg::Material::FRONT_AND_BACK, emissive );
+  mat->setSpecular  ( osg::Material::FRONT_AND_BACK, specular );
+  mat->setShininess ( osg::Material::FRONT_AND_BACK, 100      );
+
+  node->getOrCreateStateSet()->setAttributeAndModes ( mat.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set a default material.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StateSet::setMaterialDefault ( osg::Node *node )
+{
+  // Handle bad input.
+  if ( 0x0 == node )
+    return;
+
+  osg::ref_ptr<osg::Material> mat ( new osg::Material );
+  mat->setAmbient   ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 1.0f, 1.0f, 1.0f, 1.0f ) );
+  mat->setDiffuse   ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 1.0f, 1.0f, 1.0f, 1.0f ) );
+  mat->setEmission  ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.0f, 0.0f, 0.0f, 1.0f ) );
+  mat->setSpecular  ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.2f, 0.2f, 0.2f, 1.0f ) );
+  mat->setShininess ( osg::Material::FRONT_AND_BACK, 100 );
+
+  node->getOrCreateStateSet()->setAttributeAndModes ( mat.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
 }

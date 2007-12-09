@@ -4417,21 +4417,21 @@ const osg::Light *Viewer::light() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::computeNearFar( bool b )
+void Viewer::computeNearFar ( bool b )
 {
-  if( b )
+  if ( b )
   {
     osgUtil::CullVisitor *cv ( this->viewer()->getCullVisitor() );
     cv->setClampProjectionMatrixCallback ( new OsgTools::Render::ClampProjection ( *cv, OsgTools::Render::Defaults::CAMERA_Z_NEAR, OsgTools::Render::Defaults::CAMERA_Z_FAR ) );
     cv->setInheritanceMask ( Usul::Bits::remove ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
-    cv->setComputeNearFarMode( osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES );
+    cv->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES );
   }
   else
   {
     osgUtil::CullVisitor *cv ( this->viewer()->getCullVisitor() );
     cv->setClampProjectionMatrixCallback ( 0x0 );
     //cv->setInheritanceMask ( Usul::Bits::add ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
-    cv->setComputeNearFarMode( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
+    cv->setComputeNearFarMode ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
   }
 }
 

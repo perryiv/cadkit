@@ -35,11 +35,22 @@ _functor ( 0x0 )
   layout->addWidget ( _colorButton );
   this->setLayout ( layout );
 
-  connect ( _colorButton, SIGNAL ( colorChanged() ), this, SLOT ( _colorChanged() ) );
+  QObject::connect ( _colorButton, SIGNAL ( colorChanged() ), this, SLOT ( _colorChanged() ) );
 
   if ( 0x0 != layer )
     _functor = dynamic_cast < Minerva::Core::Functors::SingleColorFunctor* > ( layer->colorFunctor() );
 
+  if ( false == _functor.valid() )
+  {
+    // Make a new functor.
+    _functor = new Minerva::Core::Functors::SingleColorFunctor;
+
+    // Set the new functor.
+    if ( _layer.valid() )
+      _layer->colorFunctor ( _functor.get() );
+  }
+
+  // Set the inital state of the color button.
   _colorButton->color ( _functor.valid() ? QtTools::Color<osg::Vec4>::convert ( _functor->color() ) : QColor ( 255, 0, 0 ) );
 }
 
@@ -63,11 +74,6 @@ SingleColorWidget::~SingleColorWidget()
 
 void SingleColorWidget::_colorChanged ()
 {
-  if ( false == _functor.valid() )
-    _functor = new Minerva::Core::Functors::SingleColorFunctor;
-
-  _functor->color ( QtTools::Color< osg::Vec4 >::convert ( _colorButton->color () ) );
-
-  if ( _layer.valid() )
-    _layer->colorFunctor ( _functor.get() );
+  if ( _functor.valid() )
+    _functor->color ( QtTools::Color< osg::Vec4 >::convert ( _colorButton->color () ) ); 
 }

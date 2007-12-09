@@ -222,7 +222,7 @@ void Tile::_update()
   // Make group to hold the meshes.
   osg::ref_ptr < osg::Group > group ( new osg::Group );
 
-#if 0
+#if 1
 
   // Add skirts to group.
   group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], offset ) ); // Left skirt.

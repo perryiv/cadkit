@@ -475,7 +475,7 @@ void StarSystemDocument::_makeSystem()
   body->addTile ( Extents ( -180, -90,    0,   90 ) );
   body->addTile ( Extents (    0, -90,  180,   90 ) );
 
-#if 1
+#if 0
 
   {
     const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
@@ -498,7 +498,7 @@ void StarSystemDocument::_makeSystem()
 
 #endif
 
-#if 1
+#if 0
 
   {
     // See http://sco.az.gov/imagery.htm
@@ -522,6 +522,30 @@ void StarSystemDocument::_makeSystem()
     StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
     layer->alpha ( 255, 255, 255,   0 );
     layer->alpha (   0,   0,   0,   0 );
+    _system->body()->rasterAppend ( layer.get() );
+  }
+
+#endif
+
+#if 1
+
+  {
+    // See http://onmars.jpl.nasa.gov
+    const std::string url ( "http://onmars.jpl.nasa.gov/wms.cgi" );
+
+    typedef StarSystem::RasterLayerWms::Options Options;
+    Options options;
+    options[Usul::Network::Names::LAYERS]  = "mola";
+    options[Usul::Network::Names::STYLES]  = "color";
+    options[Usul::Network::Names::SRS]     = "EPSG:4326";
+    options[Usul::Network::Names::REQUEST] = "GetMap";
+    options[Usul::Network::Names::FORMAT]  = "image/jpeg";
+
+    typedef StarSystem::Body::Extents Extents;
+    typedef Extents::Vertex Vertex;
+    const Extents maxExtents ( Vertex ( -180, -90 ), Vertex ( 180, 90 ) );
+
+    StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
     _system->body()->rasterAppend ( layer.get() );
   }
 

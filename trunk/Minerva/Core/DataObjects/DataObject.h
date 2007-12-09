@@ -107,6 +107,10 @@ public:
   /// Is the data object transparent?
   bool                  transparent() const;
 
+  /// Get/Set the visibilty flag.
+  void                  visibility ( bool b );
+  bool                  visibility ( ) const;
+
   /// Get/Set the database connection.
   void                                  connection( Minerva::Core::DB::Connection* );
   Minerva::Core::DB::Connection *       connection();

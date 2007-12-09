@@ -25,6 +25,7 @@ public:
   typedef Minerva::Core::Layers::PointLayer PointLayer;
 
   PointWidget ( PointLayer* layer, QWidget* parent = 0x0 );
+  virtual ~PointWidget();
 
 protected slots:
   void _stackPointsChanged ( int state );

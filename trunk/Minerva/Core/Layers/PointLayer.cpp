@@ -187,7 +187,7 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Int
         }
 
          /// Set the common members.
-        this->_setDataObjectMembers( data.get() );
+        this->_setDataObjectMembers( data.get(), caller );
 
         // Pre build the scene.
         data->preBuildScene( caller );

@@ -681,7 +681,7 @@ unsigned int Layer::number() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::_setDataObjectMembers ( Minerva::Core::DataObjects::DataObject* dataObject )
+void Layer::_setDataObjectMembers ( Minerva::Core::DataObjects::DataObject* dataObject, Usul::Interfaces::IUnknown* caller )
 {
   dataObject->renderBin ( this->renderBin() );
   dataObject->connection ( this->connection() );
@@ -708,7 +708,7 @@ void Layer::_setDataObjectMembers ( Minerva::Core::DataObjects::DataObject* data
   }
 
   Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
-  Usul::Interfaces::IPlanetCoordinates::QueryPtr  planet  ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlanetCoordinates::IID ) );
+  Usul::Interfaces::IPlanetCoordinates::QueryPtr  planet  ( caller );
 
   if( project.valid() )
   {

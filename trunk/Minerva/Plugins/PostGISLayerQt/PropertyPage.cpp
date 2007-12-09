@@ -22,6 +22,7 @@
 #include "Usul/Strings/Qt.h"
 
 #include "QtTools/Color.h"
+#include "QtTools/ComboBox.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -38,7 +39,7 @@ _primitiveWidget ( 0x0 )
   this->setupUi ( this );
 
   // We want to know when the tab changes.
-  connect ( _tabWidget, SIGNAL ( currentChanged ( int ) ), this, SLOT ( _tabChanged ( int ) ) );
+  QObject::connect ( _tabWidget, SIGNAL ( currentChanged ( int ) ), this, SLOT ( _tabChanged ( int ) ) );
 
   // Initialize all the tabs.
   this->_initDrawingTab();
@@ -108,9 +109,9 @@ void PropertyPage::_colorTypeChanged ( int index )
 void PropertyPage::_initQueryTab ()
 {
   // Connect slots and signals.
-  connect ( _customQuery, SIGNAL ( stateChanged ( int ) ), this, SLOT ( _customQueryChanged ( int ) ) );
-  connect ( _queryEdit, SIGNAL ( textChanged () ), this, SLOT ( _customQueryTextChanged () ) );
-  connect ( _primaryKeyText, SIGNAL ( editingFinished () ), this, SLOT ( _primaryKeyChanged () ) );
+  QObject::connect ( _customQuery, SIGNAL ( stateChanged ( int ) ), this, SLOT ( _customQueryChanged ( int ) ) );
+  QObject::connect ( _queryEdit, SIGNAL ( textChanged () ), this, SLOT ( _customQueryTextChanged () ) );
+  QObject::connect ( _primaryKeyText, SIGNAL ( editingFinished () ), this, SLOT ( _primaryKeyChanged () ) );
 
   if ( _layer.valid() )
   {
@@ -199,7 +200,10 @@ void PropertyPage::_initGeneralTab()
     _zOffset->setValue ( _layer->zOffset() );
   }
 
-  connect ( _nameEdit, SIGNAL ( editingFinished () ), this, SLOT ( _nameChanged () ) );
+  QObject::connect ( _nameEdit, SIGNAL ( editingFinished () ),      this, SLOT ( _nameChanged () ) );
+  QObject::connect ( _xOffset,  SIGNAL ( valueChanged ( double ) ), this, SLOT ( _xOffsetChanged ( double ) ) );
+  QObject::connect ( _yOffset,  SIGNAL ( valueChanged ( double ) ), this, SLOT ( _yOffsetChanged ( double ) ) );
+  QObject::connect ( _zOffset,  SIGNAL ( valueChanged ( double ) ), this, SLOT ( _zOffsetChanged ( double ) ) );
 
   this->_initLabelProperties();
   this->_initLegendProperties();
@@ -226,13 +230,9 @@ void PropertyPage::_initLabelProperties()
       Connection::ScopedConnection sc ( *connection );
       Minerva::Core::DB::Info::RefPtr info ( new Minerva::Core::DB::Info ( connection ) );
       Strings columns ( info->getColumnNames ( _layer->tablename() ) );
-      QStringList sl;
-      Usul::Strings::convertFrom ( columns, sl );
-      _labelColumn->addItems ( sl );
-      
-      QStringList::iterator iter ( std::find ( sl.begin(), sl.end(), _layer->labelColumn().c_str() ) );
-      int index ( iter != sl.end() ? std::distance ( iter, sl.begin() ) : -1 );
-      _labelColumn->setCurrentIndex ( index );
+
+      // Populate the combo box.
+      QtTools::ComboBox::populate ( *_labelColumn, columns, _layer->labelColumn() );
     }
 
     _labelSize->setValue ( _layer->labelSize () );
@@ -240,11 +240,11 @@ void PropertyPage::_initLabelProperties()
   }
 
   // Slots and signals for labels.
-  connect ( _labelShown,   SIGNAL ( stateChanged ( int )        ), this, SLOT ( _labelShownChanged   ( int ) ) );
-  connect ( _labelColor,   SIGNAL ( colorChanged ( )            ), this, SLOT ( _labelColorChanged   ( )     ) );
-  connect ( _labelColumn,  SIGNAL ( currentIndexChanged ( )     ), this, SLOT ( _labelColumnChanged  ( int ) ) );
-  connect ( _labelSize,    SIGNAL ( valueChanged ( int )        ), this, SLOT ( _labelSizeChanged    ( int ) ) );
-  connect ( _labelZOffset, SIGNAL ( valueChanged ( int )        ), this, SLOT ( _labelZOffsetChanged ( int ) ) );
+  QObject::connect ( _labelShown,   SIGNAL ( stateChanged ( int )        ), this, SLOT ( _labelShownChanged   ( int ) ) );
+  QObject::connect ( _labelColor,   SIGNAL ( colorChanged ( )            ), this, SLOT ( _labelColorChanged   ( )     ) );
+  QObject::connect ( _labelColumn,  SIGNAL ( currentIndexChanged ( )     ), this, SLOT ( _labelColumnChanged  ( int ) ) );
+  QObject::connect ( _labelSize,    SIGNAL ( valueChanged ( int )        ), this, SLOT ( _labelSizeChanged    ( int ) ) );
+  QObject::connect ( _labelZOffset, SIGNAL ( valueChanged ( int )        ), this, SLOT ( _labelZOffsetChanged ( int ) ) );
 }
 
 
@@ -266,11 +266,11 @@ void PropertyPage::_initLegendProperties()
   }
 
   // Slots and signals for labels.
-  connect ( _showInLegend,    SIGNAL ( stateChanged ( int )  ), this, SLOT ( _showInLegendChanged    ( int ) ) );
-  connect ( _legendText,      SIGNAL ( editingFinished ( )   ), this, SLOT ( _legendTextChanged       ( )     ) );
-  connect ( _showCountLegend, SIGNAL ( stateChanged ( int )  ), this, SLOT ( _showCountLegendChanged  ( int ) ) );
-  connect ( _showMinLegend,   SIGNAL ( stateChanged ( int )  ), this, SLOT ( _showMinLegendChanged     ( int ) ) );
-  connect ( _showMaxLegend,   SIGNAL ( stateChanged ( int )  ), this, SLOT ( _showMaxLegendChanged    ( int ) ) );
+  QObject::connect ( _showInLegend,    SIGNAL ( stateChanged ( int )  ), this, SLOT ( _showInLegendChanged    ( int ) ) );
+  QObject::connect ( _legendText,      SIGNAL ( editingFinished ( )   ), this, SLOT ( _legendTextChanged       ( )     ) );
+  QObject::connect ( _showCountLegend, SIGNAL ( stateChanged ( int )  ), this, SLOT ( _showCountLegendChanged  ( int ) ) );
+  QObject::connect ( _showMinLegend,   SIGNAL ( stateChanged ( int )  ), this, SLOT ( _showMinLegendChanged     ( int ) ) );
+  QObject::connect ( _showMaxLegend,   SIGNAL ( stateChanged ( int )  ), this, SLOT ( _showMaxLegendChanged    ( int ) ) );
 }
 
 
@@ -282,7 +282,7 @@ void PropertyPage::_initLegendProperties()
 
 void PropertyPage::_initDrawingTab()
 {
-  connect ( _colorTypeComboBox, SIGNAL ( currentIndexChanged ( int ) ), this, SLOT ( _colorTypeChanged ( int ) ) );
+  QObject::connect ( _colorTypeComboBox, SIGNAL ( currentIndexChanged ( int ) ), this, SLOT ( _colorTypeChanged ( int ) ) );
 
   _colorTypeComboBox->addItem ( tr ( "Single Color" ) );
   _colorTypeComboBox->addItem ( tr ( "Gradient Color" ) );
@@ -334,17 +334,12 @@ void PropertyPage::_initTimeTab()
         Connection::ScopedConnection sc ( *connection );
         Minerva::Core::DB::Info::RefPtr info ( new Minerva::Core::DB::Info ( connection ) );
 
-        // If the table has a date column...
-        if ( info->hasColumnType ( _layer->tablename(), "date" ) )
-        {
-          Strings columns ( info->getColumnNames ( _layer->tablename() ) );
-          QStringList sl;
-          Usul::Strings::convertFrom ( columns, sl );
+        // Get all date columns.
+        Strings columns ( info->getColumnNames ( _layer->tablename(), "date" ) );
 
-          // Add the items to the combo box.
-          _firstDateColumn->addItems ( sl );
-          _lastDateColumn->addItems ( sl );
-        }
+        // Add the items to the combo box.
+        QtTools::ComboBox::populate ( *_firstDateColumn, columns );
+        QtTools::ComboBox::populate ( *_lastDateColumn, columns );
       }
     }
   }

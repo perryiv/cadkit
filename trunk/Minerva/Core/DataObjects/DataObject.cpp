@@ -460,6 +460,7 @@ void DataObject::preBuildScene( Usul::Interfaces::IUnknown * caller )
 {
   Guard guard ( this );
   _preBuiltScene = this->_preBuildScene ( caller );
+  this->dirty ( false );
 }
 
 
@@ -493,9 +494,46 @@ osg::Node* DataObject::buildScene( Usul::Interfaces::IUnknown* caller )
   // This is safer in a multi-threaded environment.
   if( _preBuiltScene.valid() )
   {
+    // Get the visibilty state.
+    bool visible ( this->visibility () );
+    
     _root = _preBuiltScene;
     _preBuiltScene = 0x0;
+
+    // Set the visibility state.
+    this->visibility ( visible );
   }
 
   return _root.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the visibilty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::visibility ( bool b )
+{
+  Guard guard ( this );
+
+  if ( _root.valid () )
+  {
+    unsigned int nodeMask ( b ? 0xffffffff : 0x0 );
+    _root->setNodeMask ( nodeMask );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the visibilty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DataObject::visibility ( ) const
+{
+  Guard guard ( this );
+  return _root.valid () ? ( _root->getNodeMask () != 0x0 ) : ( _preBuiltScene.valid() ? _preBuiltScene->getNodeMask() != 0x0 : false );
 }

@@ -170,7 +170,7 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::I
         data->rowId ( id );
 
         /// Set the label.
-        this->_setDataObjectMembers( data.get() );
+        this->_setDataObjectMembers( data.get(), caller );
 
         // Pre build the scene.
         data->preBuildScene( caller );

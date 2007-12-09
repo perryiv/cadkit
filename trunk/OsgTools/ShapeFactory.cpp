@@ -332,10 +332,10 @@ osg::Geometry * ShapeFactory::cylinder ( float radius,
 
 osg::Geometry * ShapeFactory::_cylinderTriStrips ( float radius, unsigned int sides, const osg::Vec3& pointOne, const osg::Vec3& pointTwo )
 {
-  CylinderProperties key ( CylinderSize( radius, sides ), CylinderPoints( pointOne, pointTwo ) );
+  /*CylinderProperties key ( CylinderSize( radius, sides ), CylinderPoints( pointOne, pointTwo ) );
   Cylinders::iterator iter = _cylinders.find ( key );
   if ( _cylinders.end() != iter )
-    return iter->second.get();
+    return iter->second.get();*/
 
   Geometry geometry ( new osg::Geometry );
   osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
@@ -403,8 +403,9 @@ osg::Geometry * ShapeFactory::_cylinderTriStrips ( float radius, unsigned int si
   geometry->addPrimitiveSet ( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLE_FAN, size, fanSize ) );
   geometry->addPrimitiveSet ( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLE_FAN, size + fanSize, fanSize ) );
 
-  _cylinders[key] = geometry;
-  return geometry.get();
+  /*_cylinders[key] = geometry;
+  return geometry.get();*/
+  return geometry.release();
 }
 
 

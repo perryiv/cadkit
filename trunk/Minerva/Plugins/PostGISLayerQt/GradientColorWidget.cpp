@@ -36,8 +36,19 @@ _maxColorButton ( new QtTools::ColorButton )
   layout->addWidget ( _maxColorButton );
   this->setLayout ( layout );
 
-  connect ( _minColorButton, SIGNAL ( colorChanged() ), this, SLOT ( _minColorChanged() ) );
-  connect ( _maxColorButton, SIGNAL ( colorChanged() ), this, SLOT ( _maxColorChanged() ) );
+  QObject::connect ( _minColorButton, SIGNAL ( colorChanged() ), this, SLOT ( _minColorChanged() ) );
+  QObject::connect ( _maxColorButton, SIGNAL ( colorChanged() ), this, SLOT ( _maxColorChanged() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+GradientColorWidget::~GradientColorWidget()
+{
 }
 
 

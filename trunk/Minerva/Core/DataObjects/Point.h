@@ -80,9 +80,6 @@ public:
   void                    autotransform ( bool b );
   bool                    autotransform () const;
 
-  /// Get/Set the visibilty flag.
-  void                    visibility ( bool b );
-  bool                    visibility ( ) const;
 protected:
 
   // Use reference counting
@@ -110,7 +107,6 @@ private:
   bool         _autotransform;
 
   osg::ref_ptr < osg::Material >         _material;
-  osg::ref_ptr < osg::Group >            _group;
 };
 
 

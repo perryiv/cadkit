@@ -17,8 +17,11 @@
 #include "Minerva/Plugins/PostGISLayerQt/PostGISLayerQtComponent.h"
 #include "Minerva/Plugins/PostGISLayerQt/PropertyPage.h"
 #include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/Core/Commands/AddLayer.h"
+#include "Minerva/Core/Commands/RemoveLayer.h"
 
 #include "Usul/Components/Factory.h"
+#include "Usul/Documents/Manager.h"
 
 #include "QtGui/QDialog.h"
 #include "QtGui/QVBoxLayout"
@@ -147,11 +150,24 @@ bool PostGISLayerQtComponent::handle ( Usul::Interfaces::ILayer* layer ) const
 void PostGISLayerQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, Usul::Interfaces::IUnknown* caller ) 
 {
   Minerva::Core::Layers::Layer::RefPtr baseLayer ( dynamic_cast < Minerva::Core::Layers::Layer* > ( layer ) );
-  PropertyPage *page ( new PropertyPage ( baseLayer ) );
+
+  // Return now if no layer.
+  if ( 0x0 == baseLayer )
+    return;
+
+  // Make a copy.
+  Usul::Interfaces::IUnknown::RefPtr clone ( baseLayer->clone() );
+
+  Minerva::Core::Layers::Layer::RefPtr clonedLayer ( dynamic_cast < Minerva::Core::Layers::Layer* > ( clone.get() ) );
+
+  PropertyPage *page ( new PropertyPage ( clonedLayer ) );
 
   QDialog dialog ( 0x0 );
   QPushButton *ok ( new QPushButton ( "Ok" ) );
   QPushButton *cancel ( new QPushButton ( "Cancel" ) );
+
+  QObject::connect ( ok,     SIGNAL ( clicked() ), &dialog, SLOT ( accept() ) );
+  QObject::connect ( cancel, SIGNAL ( clicked() ), &dialog, SLOT ( reject() ) );
 
   QVBoxLayout *topLayout ( new QVBoxLayout );
   dialog.setLayout ( topLayout );
@@ -167,5 +183,12 @@ void PostGISLayerQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, U
 
   if ( QDialog::Accepted == dialog.exec() )
   {
+    // Remove the old one.
+    Minerva::Core::Commands::RemoveLayer::RefPtr removeLayer ( new Minerva::Core::Commands::RemoveLayer ( baseLayer.get() ) );
+    removeLayer->execute ( Usul::Documents::Manager::instance().activeDocument() );
+
+    // Add the new one.
+    Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( caller, clonedLayer.get() ) );
+    addLayer->execute ( Usul::Documents::Manager::instance().activeDocument() );
   }
 }

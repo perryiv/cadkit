@@ -131,8 +131,8 @@ Planet::~Planet()
 void Planet::setDefaults()
 {
   // Defaults. 
-  const ossimPlanetLandType landType ( ossimPlanetLandType_NORMALIZED_ELLIPSOID );
-  //const ossimPlanetLandType landType ( ossimPlanetLandType_ELLIPSOID );
+  //const ossimPlanetLandType landType ( ossimPlanetLandType_NORMALIZED_ELLIPSOID );
+  const ossimPlanetLandType landType ( ossimPlanetLandType_ELLIPSOID );
 
   const bool  elevEnabled    ( true  );
   //  const bool  ephemerisFlag  ( false );

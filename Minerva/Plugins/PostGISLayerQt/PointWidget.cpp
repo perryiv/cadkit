@@ -12,7 +12,7 @@
 
 #include "Minerva/Core/DB/Info.h"
 
-#include "Usul/Strings/Qt.h"
+#include "QtTools/ComboBox.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -43,13 +43,9 @@ _layer ( layer )
       Minerva::Core::DB::Connection::ScopedConnection sc ( *connection );
       Minerva::Core::DB::Info::RefPtr info ( new Minerva::Core::DB::Info ( connection ) );
       Minerva::Core::DB::Info::Strings columns ( info->getColumnNames ( _layer->tablename() ) );
-      QStringList sl;
-      Usul::Strings::convertFrom ( columns, sl );
-      _sizeColumn->addItems ( sl );
-      
-      QStringList::iterator iter ( std::find ( sl.begin(), sl.end(), _layer->primitiveSizeColumn().c_str() ) );
-      int index ( iter != sl.end() ? std::distance ( iter, sl.begin() ) : -1 );
-      _sizeColumn->setCurrentIndex ( index );
+
+      // Populate the combo box.
+      QtTools::ComboBox::populate ( *_sizeColumn, columns, _layer->primitiveSizeColumn() );
     }
   }
 
@@ -61,6 +57,17 @@ _layer ( layer )
   connect ( _size,          SIGNAL ( valueChanged ( double ) ), this, SLOT ( _sizeChanged ( double ) ) );
   connect ( _secondarySize, SIGNAL ( valueChanged ( double ) ), this, SLOT ( _secondarySizeChanged ( double ) ) );
   connect ( _quality,       SIGNAL ( valueChanged ( int ) ),    this, SLOT ( _qualityChanged ( int ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PointWidget::~PointWidget()
+{
 }
 
 

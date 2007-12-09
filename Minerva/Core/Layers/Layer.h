@@ -62,6 +62,7 @@ public:
   typedef DataObject::RefPtr                        DataObjectPtr;
   typedef std::vector< DataObjectPtr >	            DataObjects;
   typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;
+  typedef Usul::Interfaces::IUnknown                IUnknown;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( Layer );
@@ -75,6 +76,9 @@ public:
     MIN   = 0x00000002,
     MAX   = 0x00000004
   };
+
+  /// Clone this layer.
+  virtual IUnknown*           clone() const = 0;
 
   /// Accept the visitor.
   virtual void                accept ( Minerva::Core::Visitor& visitor );
@@ -218,7 +222,7 @@ protected:
   template < class T >
   osg::Vec4                   _color( const T& iter );
 
-  void                        _setDataObjectMembers ( DataObject* dataObject );
+  void                        _setDataObjectMembers ( DataObject* dataObject, Usul::Interfaces::IUnknown* caller );
 
   /// Register members for serialization.
   void                        _registerMembers();
@@ -232,9 +236,6 @@ protected:
 
   /// Usul::Interfaces::IAddRowLegend
   virtual void                                             addLegendRow ( OsgTools::Legend::LegendObject* row );
-
-  /// Clone this layer.
-  virtual Usul::Interfaces::IUnknown*                      clone() const = 0;
 
 private:
 

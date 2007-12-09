@@ -61,6 +61,7 @@ public:
   bool                            hasColumnType ( const std::string& table, const std::string& type ) const;
 
   Strings                         getColumnNames ( const std::string& table ) const;
+  Strings                         getColumnNames ( const std::string& table, const std::string& type ) const;
 
   void                            getMinMaxValue( const std::string& query, const std::string& columnName, double& min, double& max ) const;
 protected:

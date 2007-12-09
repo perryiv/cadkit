@@ -176,7 +176,7 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Inte
       data->rowId ( id );
 
       // Set the label.
-      this->_setDataObjectMembers( data.get() );
+      this->_setDataObjectMembers( data.get(), caller );
 
       // Build the scene.
       data->preBuildScene( caller );

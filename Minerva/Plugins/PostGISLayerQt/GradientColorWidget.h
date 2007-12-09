@@ -27,6 +27,7 @@ public:
   typedef Minerva::Core::Functors::GradientColorFunctor GradientColor;
 
   GradientColorWidget ( Layer *layer, QWidget *parent = 0x0 );
+  virtual ~GradientColorWidget();
 
 protected slots:
   void _minColorChanged ();

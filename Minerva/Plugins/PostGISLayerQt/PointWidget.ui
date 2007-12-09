@@ -105,7 +105,14 @@
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="_size" />
+      <widget class="QDoubleSpinBox" name="_size" >
+       <property name="decimals" >
+        <number>10</number>
+       </property>
+       <property name="maximum" >
+        <double>1000000000000000.000000000000000</double>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -119,7 +126,14 @@
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="_secondarySize" />
+      <widget class="QDoubleSpinBox" name="_secondarySize" >
+       <property name="decimals" >
+        <number>10</number>
+       </property>
+       <property name="maximum" >
+        <double>1000000000000000.000000000000000</double>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

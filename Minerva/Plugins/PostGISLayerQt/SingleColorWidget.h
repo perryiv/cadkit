@@ -12,6 +12,7 @@
 #define __POSTGIS_SINGLE_COLOR_WIDGET_H__
 
 #include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/Core/Functors/SingleColorFunctor.h"
 
 #include "QtGui/QWidget"
 
@@ -25,6 +26,7 @@ public:
   typedef Minerva::Core::Layers::Layer  Layer;
 
   SingleColorWidget ( Layer *layer, QWidget *parent = 0x0 );
+  virtual ~SingleColorWidget();
 
 protected slots:
   void _colorChanged ();
@@ -32,6 +34,7 @@ protected slots:
 private:
   Layer::RefPtr _layer;
   QtTools::ColorButton *_colorButton;
+  Minerva::Core::Functors::SingleColorFunctor::RefPtr _functor;
 };
 
 

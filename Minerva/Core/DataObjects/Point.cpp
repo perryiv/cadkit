@@ -55,8 +55,7 @@ _quality ( 0.80f ),
 _center (),
 _centerEarth(),
 _autotransform ( true ),
-_material ( new osg::Material ),
-_group ( new osg::Group )
+_material ( new osg::Material )
 {
   _material->setSpecular ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.4, 0.4, 0.4, 1.0 ) );
   _material->setAmbient ( osg::Material::FRONT_AND_BACK, osg::Vec4( 0.2, 0.2, 0.2, 1.0 ) );
@@ -195,8 +194,6 @@ namespace Detail
 {
   void convertToPlanet ( Usul::Math::Vec3d& p, Usul::Interfaces::IUnknown* caller )
   {
-    //Usul::Interfaces::IPlanetCoordinates::QueryPtr  planet  ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IPlanetCoordinates::IID ) );
-
     Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
 
     if( planet.valid() )
@@ -217,76 +214,74 @@ osg::Node* Point::_preBuildScene( Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
 
-  if ( this->dirty() )
+  // Make the group.
+  osg::ref_ptr < osg::Group > group ( new osg::Group );
+
+  Usul::Interfaces::IPointData::QueryPtr pointData ( this->geometry() );
+
+  Usul::Math::Vec3d center;
+
+  /// Get the center from our data source.
+  if( pointData.valid () )
+    center = pointData->pointData( );
+
+  // Save the center in lat/lon coordinates.
+  _center.set ( center [ 0 ], center [ 1 ], center [ 2 ] );
+  
+  // Convert to planet coordinates.
+  Detail::convertToPlanet ( center, caller );
+
+  // Convert from Usul's Vec3d to a osg::Vec3
+  _centerEarth.set( center[0], center[1], center[2] );
+
+  osg::ref_ptr < osg::Node > geometry ( this->_buildGeometry( caller ) );
+
+  // Get the state set
+  osg::ref_ptr < osg::StateSet > ss ( geometry->getOrCreateStateSet() );
+
+  // Set the material's diffuse color
+  _material->setDiffuse ( osg::Material::FRONT_AND_BACK, this->color() );
+  _material->setAmbient ( osg::Material::FRONT_AND_BACK, this->color() );
+
+  // Set proper state for transparency
+  if( 1.0f == this->color().w() )
   {
-    // Clear what we have.
-    _group->removeChild( 0, _group->getNumChildren() );
+    ss->setMode ( GL_BLEND,      osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
+    //ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON  | osg::StateAttribute::OVERRIDE );
+  }
+  else
+  {
+    _material->setTransparency( osg::Material::FRONT_AND_BACK, 1.0f - this->color().w() );
+    ss->setMode ( GL_BLEND,      osg::StateAttribute::ON  | osg::StateAttribute::OVERRIDE );
 
-    Usul::Interfaces::IPointData::QueryPtr pointData ( this->geometry() );
+    // If we don't have a render bin assigned, use the transparent bin.
+    if( 0 == this->renderBin() )
+      ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
+    //ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
+  }
 
-    Usul::Math::Vec3d center;
+  // Set the material.
+  ss->setAttribute ( _material.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
 
-    /// Get the center from our data source.
-    if( pointData.valid () )
-      center = pointData->pointData( );
+  // Set the render bin.
+  ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
 
-    // Save the center in lat/lon coordinates.
-    _center.set ( center [ 0 ], center [ 1 ], center [ 2 ] );
-    
-    // Convert to planet coordinates.
-    Detail::convertToPlanet ( center, caller );
+  // Add the geometry to our group.
+  group->addChild( geometry.get () );
 
-    // Convert from Usul's Vec3d to a osg::Vec3
-    _centerEarth.set( center[0], center[1], center[2] );
-
-    osg::ref_ptr < osg::Node > geometry ( this->_buildGeometry( caller ) );
-
-    // Get the state set
-    osg::ref_ptr < osg::StateSet > ss ( geometry->getOrCreateStateSet() );
-
-    // Set the material's diffuse color
-    _material->setDiffuse ( osg::Material::FRONT_AND_BACK, this->color() );
-    _material->setAmbient ( osg::Material::FRONT_AND_BACK, this->color() );
-
-    // Set proper state for transparency
-    if( 1.0f == this->color().w() )
-    {
-      ss->setMode ( GL_BLEND,      osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
-      //ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON  | osg::StateAttribute::OVERRIDE );
-    }
-    else
-    {
-      _material->setTransparency( osg::Material::FRONT_AND_BACK, 1.0f - this->color().w() );
-      ss->setMode ( GL_BLEND,      osg::StateAttribute::ON  | osg::StateAttribute::OVERRIDE );
-
-      // If we don't have a render bin assigned, use the transparent bin.
-      if( 0 == this->renderBin() )
-        ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
-      //ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
-    }
-
-    // Set the material.
-    ss->setAttribute ( _material.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-
-    // Set the render bin.
-    ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
-
-    // Add the geometry to our group.
-    _group->addChild( geometry.get () );
-
-    // Do we have a label?
-    if( this->showLabel() && !this->label().empty() )
-      _group->addChild ( this->_buildLabel() );
+  // Do we have a label?
+  if( this->showLabel() && !this->label().empty() )
+    group->addChild ( this->_buildLabel() );
 
     // Need to track down the reason for the difference on windows and linux...
 #ifndef _MSC_VER
-    ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
-    OsgTools::State::StateSet::setTwoSidedLighting ( _group.get(), true );
+  ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+  OsgTools::State::StateSet::setTwoSidedLighting ( _group.get(), true );
 #endif
-    this->dirty( false );
-  }
+  
+  this->dirty( false );
 
-  return _group.get();
+  return group.release();
 }
 
 
@@ -528,29 +523,21 @@ osg::Node* Point::_buildCylinder( Usul::Interfaces::IUnknown * caller )
     osg::Vec3 v0 ( _centerEarth );
 
     osg::Vec3 v1 ( v0 );
-    v1.normalize();
-    v1 *= this->size();
-    v1 += v0;
 
-    // TODO:
-    // Get lat long of center.
-    // Offset center by height m.
-    // Convert to earth coordinates.
+    Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
 
-    //Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
-
-    //Usul::Math::Vec3d earth;
-    //earth.set ( v1[0], v1[1], v1[2] );
-
-    //Usul::Math::Vec3d latLon;
-
-    /*if( planet.valid() )
+    if( planet.valid() )
     {
-      planet->convertFromPlanet( earth, latLon );
-    }*/
+      Usul::Math::Vec3d latLon;
+      planet->convertFromPlanet( Usul::Math::Vec3d ( v0[0], v0[1], v0[2] ), latLon );
+      latLon[2] += this->size() * 1000;
+      Usul::Math::Vec3d earth;
+      planet->convertToPlanet ( latLon, earth );
+      v1.set ( earth[0], earth[1], earth[2] );
+    }
 
     unsigned int sides ( static_cast < unsigned int > ( 20 * this->quality() ) );
-    osg::ref_ptr < osg::Geometry > geometry ( BaseClass::shapeFactory()->cylinder( this->secondarySize(), sides, v0, v1, !this->transparent() ) );
+    osg::ref_ptr < osg::Geometry > geometry ( BaseClass::shapeFactory()->cylinder( this->secondarySize()* 1000, sides, v0, v1, !this->transparent() ) );
     geode->addDrawable( geometry.get() );
 
     if( this->transparent() )
@@ -609,34 +596,6 @@ void Point::autotransform ( bool b )
 bool Point::autotransform () const
 {
   return _autotransform;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the visibilty flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Point::visibility ( bool b )
-{
-  if ( _group.valid () )
-  {
-    unsigned int nodeMask ( b ? 0xffffffff : 0x0 );
-    _group->setNodeMask ( nodeMask );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the visibilty flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Point::visibility ( ) const
-{
-  return _group.valid () ? ( _group->getNodeMask () != 0x0 ) : false;
 }
 
 

@@ -26,7 +26,7 @@ public:
   typedef Minerva::Core::Layers::Layer Layer;
 
   DatabasePage  ( QWidget * parent = 0x0 );
-  ~DatabasePage ();
+  virtual ~DatabasePage ();
 
   /// Get the layer.
   Layer*                  layer ();

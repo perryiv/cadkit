@@ -340,9 +340,11 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
     
     if ( layer.valid () )
     {
+      PropertiesAction action ( layer.get(), _caller.get() );
       QMenu menu;
-      menu.addAction ( new PropertiesAction ( layer.get(), _document.get() ) );
+      menu.addAction ( &action );
       menu.exec ( _tree->mapToGlobal ( pos ) );
+      this->buildTree( _document );
     }
   }
 }

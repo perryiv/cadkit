@@ -340,6 +340,23 @@ Info::Strings Info::getColumnNames ( const std::string& table ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get all column names.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Info::Strings Info::getColumnNames ( const std::string& table, const std::string& type ) const
+{
+  // Remove the schema name, if any.
+  std::string name ( Detail::tableName( table ) );
+
+  // Run the query.
+  std::string query ( "SELECT column_name FROM information_schema.columns WHERE table_name='" + name + "' AND data_type='" + type + "'" );
+  return _fillStringsFromQuery( query );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get min and max value for given query.
 //
 ///////////////////////////////////////////////////////////////////////////////

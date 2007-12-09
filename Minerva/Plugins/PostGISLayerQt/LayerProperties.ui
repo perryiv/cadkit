@@ -230,7 +230,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="_xOffset" />
+           <widget class="QDoubleSpinBox" name="_xOffset" >
+            <property name="minimum" >
+             <double>-1000000000000000.000000000000000</double>
+            </property>
+            <property name="maximum" >
+             <double>1000000000000000.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QLabel" name="label_13" >
@@ -246,7 +253,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="_yOffset" />
+           <widget class="QDoubleSpinBox" name="_yOffset" >
+            <property name="minimum" >
+             <double>-1000000000000000.000000000000000</double>
+            </property>
+            <property name="maximum" >
+             <double>1000000000000000.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QLabel" name="label_14" >
@@ -262,7 +276,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="_zOffset" />
+           <widget class="QDoubleSpinBox" name="_zOffset" >
+            <property name="minimum" >
+             <double>-1000000000000000.000000000000000</double>
+            </property>
+            <property name="maximum" >
+             <double>1000000000000000.000000000000000</double>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

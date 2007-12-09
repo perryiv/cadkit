@@ -9,7 +9,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Plugins/PostGISLayerQt/SingleColorWidget.h"
-#include "Minerva/Core/Functors/SingleColorFunctor.h"
 
 #include "QtTools/ColorButton.h"
 #include "QtTools/Color.h"
@@ -27,7 +26,8 @@
 SingleColorWidget::SingleColorWidget ( Layer *layer, QWidget *parent ) :
 BaseClass ( parent ),
 _layer ( layer ),
-_colorButton ( new QtTools::ColorButton )
+_colorButton ( new QtTools::ColorButton ),
+_functor ( 0x0 )
 {
   QHBoxLayout *layout ( new QHBoxLayout );
   QLabel *label ( new QLabel ( "Choose Color" ) );
@@ -37,7 +37,21 @@ _colorButton ( new QtTools::ColorButton )
 
   connect ( _colorButton, SIGNAL ( colorChanged() ), this, SLOT ( _colorChanged() ) );
 
-  _colorButton->color ( QColor ( 255, 0, 0 ) ); 
+  if ( 0x0 != layer )
+    _functor = dynamic_cast < Minerva::Core::Functors::SingleColorFunctor* > ( layer->colorFunctor() );
+
+  _colorButton->color ( _functor.valid() ? QtTools::Color<osg::Vec4>::convert ( _functor->color() ) : QColor ( 255, 0, 0 ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+SingleColorWidget::~SingleColorWidget()
+{
 }
 
 
@@ -49,9 +63,11 @@ _colorButton ( new QtTools::ColorButton )
 
 void SingleColorWidget::_colorChanged ()
 {
-  Minerva::Core::Functors::SingleColorFunctor::RefPtr functor ( new Minerva::Core::Functors::SingleColorFunctor );
-  functor->color ( QtTools::Color< osg::Vec4 >::convert ( _colorButton->color () ) );
+  if ( false == _functor.valid() )
+    _functor = new Minerva::Core::Functors::SingleColorFunctor;
+
+  _functor->color ( QtTools::Color< osg::Vec4 >::convert ( _colorButton->color () ) );
 
   if ( _layer.valid() )
-    _layer->colorFunctor ( functor.get() );
+    _layer->colorFunctor ( _functor.get() );
 }

@@ -26,9 +26,11 @@
 #include "Usul/Adaptors/Random.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Network/Names.h"
 #include "Usul/Strings/Case.h"
+#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
 #include "osg/MatrixTransform"
@@ -180,7 +182,7 @@ bool StarSystemDocument::canSave ( const std::string &file ) const
 void StarSystemDocument::write ( const std::string &name, Unknown *caller  ) const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 }
 
 
@@ -193,7 +195,7 @@ void StarSystemDocument::write ( const std::string &name, Unknown *caller  ) con
 void StarSystemDocument::read ( const std::string &name, Unknown *caller, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   // Make sure we have a system.
   this->_makeSystem();
@@ -217,7 +219,7 @@ void StarSystemDocument::read ( const std::string &name, Unknown *caller, Unknow
 void StarSystemDocument::clear ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 }
 
 
@@ -292,7 +294,7 @@ StarSystemDocument::Filters StarSystemDocument::filtersInsert() const
 osg::Node *StarSystemDocument::buildScene ( const BaseClass::Options &options, Unknown *caller )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   // Make sure we have a system.
   this->_makeSystem();
@@ -330,8 +332,9 @@ void StarSystemDocument::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
 
-  if ( 0x0 != _system )
-    _system->preRender ( caller );
+  StarSystem::System::RefPtr system ( Usul::Threads::Safe::get ( this->mutex(), _system ) );
+  if ( true == system.valid() )
+    system->preRender ( caller );
 
   BaseClass::preRenderNotify ( caller );
 }
@@ -347,8 +350,9 @@ void StarSystemDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
 
-  if ( 0x0 != _system )
-    _system->postRender ( caller );
+  StarSystem::System::RefPtr system ( Usul::Threads::Safe::get ( this->mutex(), _system ) );
+  if ( true == system.valid() )
+    system->postRender ( caller );
 
   BaseClass::postRenderNotify ( caller );
 }
@@ -362,7 +366,27 @@ void StarSystemDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
 
 void StarSystemDocument::addView ( Usul::Interfaces::IView *view )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Call the base classes on first.
   BaseClass::addView ( view );
+
+  // Make sure we have a system.
+  this->_makeSystem();
+
+  // Get the system.
+  StarSystem::System::RefPtr system ( Usul::Threads::Safe::get ( this->mutex(), _system ) );
+  StarSystem::Body::RefPtr body ( ( true == system.valid() ) ? system->body() : 0x0 );
+  if ( false == body.valid() )
+    return;
+
+  // Get the interface.
+#if 0
+  Usul::Interfaces::IClippingDistance::QueryPtr cd ( view );
+  if ( cd.valid () )
+    cd->setClippingDistances ( 0.001f, 10000 ); // Need to determine at run-time.
+#endif
 }
 
 
@@ -411,6 +435,7 @@ void StarSystemDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 void StarSystemDocument::_makeSystem()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this );
 
   // Only make it once.
   if ( 0x0 == _manager )
@@ -419,11 +444,36 @@ void StarSystemDocument::_makeSystem()
   }
 
   // Only make it once.
-  if ( 0x0 == _system )
-  {
-    _system = new StarSystem::System ( *_manager );
-    Usul::Pointers::reference ( _system );
-  }
+  if ( 0x0 != _system )
+    return;
+
+  // Local typedefs to shorten the lines.
+  typedef StarSystem::System System;
+  typedef StarSystem::Body Body;
+  typedef Body::Extents Extents;
+
+  // Make the system.
+  _system = new StarSystem::System ( *_manager );
+  Usul::Pointers::reference ( _system );
+
+  // Make the land model.
+  typedef StarSystem::LandModelEllipsoid Land;
+  Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
+  Land::RefPtr land ( new Land ( radii ) );
+
+  // Make a good split distance.
+  const double splitDistance ( land->size() * 3 );
+
+  // Size of the mesh.
+  Body::MeshSize meshSize ( 17, 17 );
+
+  // Add the body.
+  Body::RefPtr body ( new Body ( land, *_manager, meshSize, splitDistance ) );
+  _system->body ( body.get() );
+
+  // Add tiles to the body.
+  body->addTile ( Extents ( -180, -90,    0,   90 ) );
+  body->addTile ( Extents (    0, -90,  180,   90 ) );
 
 #if 1
 
@@ -432,8 +482,8 @@ void StarSystemDocument::_makeSystem()
 
     typedef StarSystem::RasterLayerWms::Options Options;
     Options options;
-    options[Usul::Network::Names::LAYERS]  = "modis,global_mosaic";
-    options[Usul::Network::Names::STYLES]  = ",visual";
+    options[Usul::Network::Names::LAYERS]  = "BMNG,global_mosaic";
+    options[Usul::Network::Names::STYLES]  = "Jul,visual";
     options[Usul::Network::Names::SRS]     = "EPSG:4326";
     options[Usul::Network::Names::REQUEST] = "GetMap";
     options[Usul::Network::Names::FORMAT]  = "image/jpeg";
@@ -448,7 +498,7 @@ void StarSystemDocument::_makeSystem()
 
 #endif
 
-#if 0
+#if 1
 
   {
     // See http://sco.az.gov/imagery.htm
@@ -477,3 +527,19 @@ void StarSystemDocument::_makeSystem()
 
 #endif
 }
+
+#if 0
+
+    //_body ( new Body ( new LandModelFlat ( 32612 ), manager ) ), // UTM 12
+    //_body ( new Body ( new LandModelFlat ( "ossimLlxyProjection" ), manager ) ),
+
+    const osg::Vec2d mn ( -115, 0 );
+    const osg::Vec2d mx ( -109, 90 );
+
+    //const osg::Vec2d mn ( -115, 31 );
+    //const osg::Vec2d mx ( -109, 37 );
+
+    //const osg::Vec2d mn ( -180, -90 );
+    //const osg::Vec2d mx (  180,  90 );
+
+#endif

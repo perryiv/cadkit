@@ -18,6 +18,8 @@
 
 #include "Usul/Trace/Trace.h"
 
+#include "osgDB/Registry"
+
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemComponent, StarSystemComponent::BaseClass );
 
 
@@ -30,6 +32,14 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemComponent, StarSystemComponent::Base
 StarSystemComponent::StarSystemComponent() : BaseClass()
 {
   USUL_TRACE_SCOPE;
+
+  // Getting a mysterious crash while loading the jpeg reader-writer plugin.
+  // Thinking that it's related to two or more threads all loading files at 
+  // once, and the osgDB registry no being thread-safe. Doing this will 
+  // pre-load the plugins.
+  osgDB::Registry::instance()->getReaderWriterForExtension ( "jpg" );
+  osgDB::Registry::instance()->getReaderWriterForExtension ( "png" );
+  osgDB::Registry::instance()->getReaderWriterForExtension ( "tif" );
 }
 
 

@@ -10,6 +10,8 @@
 
 #include "StarSystem/LandModelEllipsoid.h"
 
+#include "Usul/Math/Absolute.h"
+#include "Usul/Math/MinMax.h"
 #include "Usul/Trace/Trace.h"
 
 #include "ossim/base/ossimEllipsoid.h"
@@ -27,6 +29,8 @@ LandModelEllipsoid::LandModelEllipsoid ( const Vec2d &r ) :
   BaseClass(),
   _ellipsoid ( new ossimEllipsoid ( r[RADIUS_EQUATOR], r[RADIUS_POLAR] ) )
 {
+  USUL_TRACE_SCOPE;
+
   // Set ellipsoid radii.
   _ellipsoid->setAB ( r[RADIUS_EQUATOR], r[RADIUS_POLAR] );
 }
@@ -40,6 +44,7 @@ LandModelEllipsoid::LandModelEllipsoid ( const Vec2d &r ) :
 
 LandModelEllipsoid::~LandModelEllipsoid ()
 {
+  USUL_TRACE_SCOPE;
   delete _ellipsoid; _ellipsoid = 0x0;
 }
 
@@ -52,6 +57,8 @@ LandModelEllipsoid::~LandModelEllipsoid ()
 
 double LandModelEllipsoid::size () const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   return _ellipsoid->a();
 }
   
@@ -65,7 +72,7 @@ double LandModelEllipsoid::size () const
 double LandModelEllipsoid::elevation ( double lat, double lon ) const
 {
   USUL_TRACE_SCOPE;
-
+  Guard guard ( this );
   return _ellipsoid->geodeticRadius ( lat );
 }
 
@@ -79,6 +86,7 @@ double LandModelEllipsoid::elevation ( double lat, double lon ) const
 void LandModelEllipsoid::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this );
 
   typedef osg::Vec3f::value_type ValueType;
 
@@ -87,3 +95,42 @@ void LandModelEllipsoid::latLonHeightToXYZ ( double lat, double lon, double elev
   point.set ( static_cast<ValueType> ( x ), static_cast<ValueType> ( y ), static_cast<ValueType> ( z ) );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the mesh size for the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+LandModel::MeshSize LandModelEllipsoid::meshSize ( const LandModel::Extents &extents, const LandModel::MeshSize &ms )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Get latitude as integer values.
+  const long maxLat ( static_cast < long > ( extents.maxLat() ) );
+  const long minLat ( static_cast < long > ( extents.minLat() ) );
+
+  // If both ends are touching poles then return the default mesh.
+  if ( ( 90 == maxLat ) && ( -90 == minLat ) )
+    return ms;
+
+  // Get the extreme latitude.
+  const long extremeLat ( Usul::Math::maximum ( Usul::Math::absolute ( maxLat ), Usul::Math::absolute ( minLat ) ) );
+
+  // If we're not touching the pole then return the default mesh.
+  if ( 90 != extremeLat )
+    return ms;
+
+  // The cutoff latitude.
+  const long cutoff ( 80 );
+
+  // If we're not above "cutoff" degrees (or below -cutoff) then return default mesh.
+  const bool north ( ( maxLat >  cutoff ) && ( minLat >  cutoff ) );
+  const bool south ( ( maxLat < -cutoff ) && ( minLat < -cutoff ) );
+  if ( ( false == north ) && ( false == south ) )
+    return ms;
+
+  // If we get to here then set the number of columns.
+  return MeshSize ( 3, ms[0] );
+}

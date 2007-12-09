@@ -28,7 +28,6 @@
 #include "OsgTools/State/StateSet.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Adaptors/Random.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Functions/SafeCall.h"
@@ -83,21 +82,25 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   USUL_TRACE_SCOPE;
 
   // We want thread safe ref and unref.
-  //this->setThreadSafeRefUnref ( true );
+  this->setThreadSafeRefUnref ( true );
 
   // Create the texture.
   _texture->setImage ( _image.get() );
-  _texture->setFilter( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
-  _texture->setFilter( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
-  _texture->setWrap( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
-  _texture->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
+  _texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
+  _texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
+  _texture->setWrap ( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
+  _texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
 
+  // Turn off back-face culling.
   this->getOrCreateStateSet()->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF );
 
   // Create as wire-frame. Turns solid when the texture is loaded.
   //OsgTools::State::StateSet::setPolygonsLines ( this, true );
 
-  // Start the request to pull in texture.
+  // For some reason this is now needed or else we cannot see the images.
+  OsgTools::State::StateSet::setMaterialDefault ( this );
+
+  // Start the request to pull in the texture.
   this->_launchImageRequest();
 }
 
@@ -140,36 +143,6 @@ Tile::~Tile()
 {
   USUL_TRACE_SCOPE;
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Tile::_destroy ), "2021499927" );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create a random material
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper
-{
-  osg::Material* material()
-  {
-    osg::Vec4 emissive ( 0.0f, 0.0f, 0.0f, 1.0f );
-    osg::Vec4 specular ( 0.2f, 0.2f, 0.2f, 1.0f );
-
-    Usul::Adaptors::Random < float > rd ( 0.2f, 1.0f );
-
-	  osg::Vec4 diffuse ( rd(), rd(), rd(), 1.0f );
-    osg::Vec4 ambient ( diffuse );
-
-    osg::ref_ptr<osg::Material> mat ( new osg::Material );
-	  mat->setAmbient   ( osg::Material::FRONT_AND_BACK, ambient  );
-	  mat->setDiffuse   ( osg::Material::FRONT_AND_BACK, diffuse  );
-	  mat->setEmission  ( osg::Material::FRONT_AND_BACK, emissive );
-	  mat->setSpecular  ( osg::Material::FRONT_AND_BACK, specular );
-    mat->setShininess ( osg::Material::FRONT_AND_BACK, 100      );
-
-    return mat.release();
-  }
 }
 
 
@@ -246,18 +219,28 @@ void Tile::_update()
   // Depth of skirt.  TODO: This function needs to be tweeked.
   const double offset ( Usul::Math::maximum<double> ( ( 25000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
 
-  // Make group to holds the meshes.
+  // Make group to hold the meshes.
   osg::ref_ptr < osg::Group > group ( new osg::Group );
 
-  // Add skirts and ground.
+#if 0
+
+  // Add skirts to group.
   group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], offset ) ); // Left skirt.
   group->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], offset ) ); // Right skirt.
   group->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], offset ) ); // Bottom skirt.
   group->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], offset ) ); // Top skirt.
+
+#endif
+
+  // Add ground to group.
   group->addChild ( mesh() );
+
+  // Add the group to us.
   this->addChild ( group.get() );
 
+#if 0
 #ifdef _DEBUG
+
   osg::Vec3 p;
   const double elevation ( _body->geodeticRadius ( _extents.minimum()[1] ) + 1000 );
   _body->latLonHeightToXYZ ( _extents.minimum()[1], _extents.minimum()[0], elevation, p );
@@ -275,12 +258,10 @@ void Tile::_update()
   group->addChild ( geode.get() );
   
 #endif
-
-  // Assign material.
-  //this->getOrCreateStateSet()->setAttributeAndModes ( Helper::material(), osg::StateAttribute::PROTECTED );
+#endif
 
   // Get the image.
-  if ( _texture.valid() && this->textureDirty() )
+  if ( ( true == _texture.valid() ) && ( 0x0 != _texture->getImage() ) && ( true == this->textureDirty() ) )
   {
     // Get the state set.
     osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
@@ -465,21 +446,25 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
         const Extents::Vertex md ( ( mx + mn ) * 0.5 );
 
         const unsigned int level ( _level + 1 );
-        const MeshSize meshSize ( mesh.rows(), mesh.columns() );
 
         const Extents ll ( Extents::Vertex ( mn[0], mn[1] ), Extents::Vertex ( md[0], md[1] ) );
         const Extents lr ( Extents::Vertex ( md[0], mn[1] ), Extents::Vertex ( mx[0], md[1] ) );
         const Extents ul ( Extents::Vertex ( mn[0], md[1] ), Extents::Vertex ( md[0], mx[1] ) );
         const Extents ur ( Extents::Vertex ( md[0], md[1] ), Extents::Vertex ( mx[0], mx[1] ) );
 
+        const MeshSize mll ( _body->meshSize ( ll ) );
+        const MeshSize mlr ( _body->meshSize ( lr ) );
+        const MeshSize mul ( _body->meshSize ( ul ) );
+        const MeshSize mur ( _body->meshSize ( ur ) );
+
         // Texture coordinates for the children tiles.
         Usul::Math::Vec4d tll, tlr, tul, tur;
         this->_quarterTextureCoordinates ( tll, tlr, tul, tur );
 
-        _children[LOWER_LEFT]  = new Tile ( level, ll, meshSize, tll, half, _body, _image.get() ); // lower left  tile
-        _children[LOWER_RIGHT] = new Tile ( level, lr, meshSize, tlr, half, _body, _image.get() ); // lower right tile
-        _children[UPPER_LEFT]  = new Tile ( level, ul, meshSize, tul, half, _body, _image.get() ); // upper left  tile
-        _children[UPPER_RIGHT] = new Tile ( level, ur, meshSize, tur, half, _body, _image.get() ); // upper right tile
+        _children[LOWER_LEFT]  = new Tile ( level, ll, mll, tll, half, _body, _image.get() ); // lower left  tile
+        _children[LOWER_RIGHT] = new Tile ( level, lr, mlr, tlr, half, _body, _image.get() ); // lower right tile
+        _children[UPPER_LEFT]  = new Tile ( level, ul, mul, tul, half, _body, _image.get() ); // upper left  tile
+        _children[UPPER_RIGHT] = new Tile ( level, ur, mur, tur, half, _body, _image.get() ); // upper right tile
       }
 
       osg::ref_ptr<osg::Group> group ( new osg::Group );

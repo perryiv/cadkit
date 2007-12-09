@@ -17,6 +17,7 @@
 #include "StarSystem/CutImageJob.h"
 #include "StarSystem/RasterLayer.h"
 
+#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
 using namespace StarSystem;
@@ -65,29 +66,30 @@ CutImageJob::~CutImageJob()
 void CutImageJob::_started()
 {
   USUL_TRACE_SCOPE;
-  // Guard guard ( this ); This will block the main thread's purge() !
 
   // Have we been cancelled?
   if ( true == this->canceled() )
     this->cancel();
 
   // Handle no raster layer.
-  {
-    Guard guard ( this );
-    if ( 0x0 == _raster )
-      return;
-  }
+  RasterLayer::RefPtr raster ( Usul::Threads::Safe::get ( this->mutex(), _raster ) );
+  if ( false == raster.valid() )
+    return;
 
   // Get the image.
   const unsigned int width  ( 512 ); // WMS server doesn't like 256...
   const unsigned int height ( 512 );
 
   // Request the image.
-  osg::ref_ptr<osg::Image> image ( _raster->texture ( _extents, width, height, _level ) );
+  osg::ref_ptr<osg::Image> image ( raster->texture ( _extents, width, height, _level, this ) );
 
   // Have we been cancelled?
   if ( true == this->canceled() )
     this->cancel();
+
+  // See if there is an image.
+  if ( false == image.valid() )
+    return;
 
   // Create the texture.
   osg::ref_ptr<osg::Texture2D> texture ( new osg::Texture2D );

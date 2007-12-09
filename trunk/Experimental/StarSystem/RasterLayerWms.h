@@ -39,7 +39,7 @@ public:
   RasterLayerWms ( const Extents &maxExtents, const std::string &url, const Options &options );
 
   /// Get the texture
-  virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level );
+  virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * );
 
 protected:
 

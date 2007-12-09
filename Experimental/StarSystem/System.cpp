@@ -39,10 +39,8 @@ STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( System );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-System::System( Usul::Jobs::Manager& manager ) : BaseClass(),
-//_body       ( new Body ( new LandModelEllipsoid ( LandModelEllipsoid::Vec2d ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR ) ), manager ) ),
-//_body       ( new Body ( new LandModelFlat ( 32612 ), manager ) ),
-_body       ( new Body ( new LandModelFlat ( "ossimLlxyProjection" ), manager ) ),
+System::System ( Usul::Jobs::Manager& manager ) : BaseClass(),
+  _body       ( 0x0 ),
   _satellites ( new Group() ),
   _manager    ( manager )
 {

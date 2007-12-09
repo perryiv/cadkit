@@ -125,7 +125,7 @@ void RasterLayerOssim::open ( const std::string& filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* RasterLayerOssim::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level )
+osg::Image* RasterLayerOssim::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

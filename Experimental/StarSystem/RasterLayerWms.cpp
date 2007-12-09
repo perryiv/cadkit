@@ -134,7 +134,7 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* RasterLayerWms::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level )
+osg::Image* RasterLayerWms::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * )
 {
   USUL_TRACE_SCOPE;
 

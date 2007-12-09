@@ -21,12 +21,17 @@
 
 class ossimEllipsoid;
 
+
 namespace StarSystem {
 
-class LandModelEllipsoid : public LandModel
+
+class STAR_SYSTEM_EXPORT LandModelEllipsoid : public LandModel
 {
 public:
+
   typedef LandModel BaseClass;
+  typedef BaseClass::Extents Extents;
+  typedef BaseClass::MeshSize MeshSize;
   typedef Usul::Math::Vec2d Vec2d;
 
   USUL_DECLARE_REF_POINTERS ( LandModelEllipsoid );
@@ -49,13 +54,20 @@ public:
   // Convert lat, lon, height to x,y,z.
   virtual void        latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const;
 
+  // Return the appropriate mesh size.
+  virtual MeshSize    meshSize ( const Extents &extents, const MeshSize &ms );
+
 protected:
+
   virtual ~LandModelEllipsoid ();
 
 private:
+
   ossimEllipsoid *_ellipsoid;
 };
 
+
 }
+
 
 #endif // __STAR_SYSTEM_RASTER_LAND_MODEL_ELLIPSOID_H__

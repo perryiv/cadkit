@@ -11,6 +11,7 @@
 #include "StarSystem/RasterGroup.h"
 
 #include "Usul/File/Make.h"
+#include "Usul/Jobs/Job.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
@@ -92,39 +93,56 @@ void RasterGroup::_updateExtents ( const RasterLayer& layer  )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level )
+osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *job )
 {
   USUL_TRACE_SCOPE;
   //Guard guard ( this );
+
+  // Have we been cancelled?
+  if ( ( 0x0 != job ) && ( true == job->canceled() ) )
+    job->cancel();
 
   // See if it's in the cache.
   osg::ref_ptr < osg::Image > result ( this->_cacheFind ( extents, width, height ) );
   if ( true == result.valid() )
     return result.release();
 
-  // Create the answer.
-  result = new osg::Image;
-  result->allocateImage ( width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE );
-  ::memset ( result->data(), 0, result->getImageSizeInBytes() );
-
   // Get copy of the layers.
   Layers layers ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
+
+  // If there are no layers...
+  if ( true == layers.empty() )
+    return 0x0;
 
   // Loop through each layer.
   for ( Layers::iterator iter = layers.begin(); iter != layers.end(); ++iter )
   {
+    // Have we been cancelled?
+    if ( ( 0x0 != job ) && ( true == job->canceled() ) )
+      job->cancel();
+
+    // Get the layer.
     Layers::value_type layer ( *iter );
     if ( true == layer.valid() )
     {
       if ( extents.intersects ( layer->extents() ) )
       {
         // Get the image for the layer.
-        osg::ref_ptr < osg::Image > image ( layer->texture ( extents, width, height, level ) );
+        osg::ref_ptr < osg::Image > image ( layer->texture ( extents, width, height, level, job ) );
 
         if ( image.valid() )
         {
-          // Composite.
-          RasterGroup::_compositeImages ( *result, *image, layer->alphas() );
+          // Is this the first image?
+          if ( false == result.valid() )
+          {
+            // We always make an image and composite to handle formats other than GL_RGBA.
+            result = new osg::Image;
+            result->allocateImage ( width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE );
+            ::memset ( result->data(), 0, result->getImageSizeInBytes() );
+          }
+
+          // Composite the images.
+          RasterGroup::_compositeImages ( *result, *image, layer->alphas(), job );
 
           // Cache the result.
           this->_cacheAdd ( extents, width, height, result.get() );
@@ -157,7 +175,7 @@ osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, u
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas )
+void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, Usul::Jobs::Job *job )
 {
   USUL_TRACE_SCOPE_STATIC;
 
@@ -172,21 +190,38 @@ void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image
   const unsigned int width  ( result.s() );
   const unsigned int height ( result.t() );
 
+  // We only composite images of the same size.
+  if ( ( width != image.s() ) || ( height != image.t() ) )
+    return;
+
   const unsigned int size ( width * height );
+  const bool alphaMapEmpty ( alphas.empty() );
+  bool hasExtraAlpha ( false );
+  Alphas::const_iterator iter ( alphas.end() );
 
   const bool hasAlpha ( GL_RGBA == format );
   const unsigned int offset ( ( hasAlpha ) ? 4 : 3 );
 
   for ( unsigned int i = 0; i < size; ++i )
   {
+    // Have we been cancelled?
+    if ( 0 == ( i % 100 ) )
+    {
+      if ( ( 0x0 != job ) && ( true == job->canceled() ) )
+        job->cancel();
+    }
+
     // Copy the color channels.
     unsigned char r ( src[0] );
     unsigned char g ( src[1] );
     unsigned char b ( src[2] );
 
     // Is the color in the alpha table?
-    Alphas::const_iterator iter ( alphas.find ( Color ( RedGreen ( r, g ), b ) ) );
-    const bool hasExtraAlpha ( alphas.end() != iter );
+    if ( false == alphaMapEmpty )
+    {
+      iter = alphas.find ( Color ( RedGreen ( r, g ), b ) );
+      hasExtraAlpha = ( alphas.end() != iter );
+    }
 
     // If the image is competely opaque then set the values.
     if ( ( false == hasAlpha ) && ( false == hasExtraAlpha ) )

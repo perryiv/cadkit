@@ -30,6 +30,7 @@
 #include "osg/MatrixTransform"
 
 #include <limits>
+#include <stdexcept>
 
 using namespace StarSystem;
 
@@ -42,10 +43,9 @@ STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( Body );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Body::Body ( LandModel *model, Usul::Jobs::Manager& manager ) : BaseClass(),
+Body::Body ( LandModel *model, Usul::Jobs::Manager &manager, const MeshSize &ms, double splitDistance ) : BaseClass(),
   _transform ( new osg::MatrixTransform ),
   _landModel ( model ),
-  _tile ( 0x0 ),
   _rasters ( new RasterGroup ),
   _manager ( manager ),
   _textureJobs (),
@@ -53,34 +53,19 @@ Body::Body ( LandModel *model, Usul::Jobs::Manager& manager ) : BaseClass(),
   _texturesPerFrame ( 0 ),
   _maxTexturesPerFrame ( 10 ),
   _maxLevel ( 50 ),
-  _cacheTiles ( false )
+  _cacheTiles ( false ),
+  _splitDistance ( splitDistance ),
+  _meshSize ( ms )
 {
   USUL_TRACE_SCOPE;
+
+  // Must not be null.
+  if ( false == _landModel.valid() )
+    throw std::invalid_argument ( "Error 3062013877: null land model given to body" );
 
   // Not using smart pointers.
   _transform->ref();
   _rasters->ref();
-
-  // Properties of the tile.
-#if 0
-  const osg::Vec2d mn ( -115, 31 );
-  const osg::Vec2d mx ( -109, 37 );
-#else
-  const osg::Vec2d mn ( -180, -90 );
-  const osg::Vec2d mx (  180,  90 );
-#endif
-
-  // Calculate split distance.
-  const double lonRange ( mx[0] - mn[0] );
-  const double latRange ( mx[1] - mn[1] );
-  const double maxRange ( Usul::Math::maximum ( lonRange, latRange ) );
-  const double multiplier ( 7 );
-  const double splitDistance ( _landModel->size() * multiplier * ( maxRange / 180 ) );
-
-  // Make the tile and add it to the transform.
-  _tile = new Tile ( 0, Tile::Extents ( mn, mx ), Tile::MeshSize ( 17, 17 ), Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ), splitDistance, this );
-  _tile->ref();
-  _transform->addChild ( _tile );
 }
 
 
@@ -108,8 +93,56 @@ void Body::_destroy()
   USUL_TRACE_SCOPE;
 
   Usul::Pointers::unreference ( _transform ); _transform = 0x0;
-  Usul::Pointers::unreference ( _tile ); _tile = 0x0;
   Usul::Pointers::unreference ( _rasters ); _rasters = 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to dirty the tiles.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace StarSystem
+{
+  namespace Helper
+  {
+    inline void dirtyTiles ( osg::Group *group, bool state, unsigned int flags, bool dirtyChildren, const Body::Extents& extents )
+    {
+      USUL_TRACE_SCOPE_STATIC;
+
+      const unsigned int numChildren ( ( 0x0 == group ) ? 0 : group->getNumChildren() );
+      for ( unsigned int i = 0; i < numChildren; ++i )
+      {
+        osg::ref_ptr<Tile> tile ( dynamic_cast < Tile * > ( group->getChild ( i ) ) );
+        if ( true == tile.valid() )
+        {
+          tile->dirty ( state, flags, dirtyChildren, extents );
+        }
+      }
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a tile.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::addTile ( const Extents &extents )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Make the tile.
+  const Usul::Math::Vec4d textureCoords ( 0.0, 1.0, 0.0, 1.0 );
+  const MeshSize meshSize ( this->meshSize ( extents ) );
+  osg::ref_ptr<Tile> tile ( new Tile ( 0, extents, meshSize, textureCoords, _splitDistance, this ) );
+
+  // Add tile to the trnsform.
+  _transform->addChild ( tile.get() );
 }
 
 
@@ -152,7 +185,6 @@ void Body::center ( const Vec3d &c )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _transform->setMatrix ( osg::Matrix::translate ( c[0], c[1], c[2] ) );
-  _tile->dirty();
 }
 
 
@@ -184,8 +216,11 @@ void Body::rasterAppend ( RasterLayer * layer )
 
   if ( 0x0 != layer )
   {
+    // Append the layer to the existing group.
     _rasters->append ( layer );
-    _tile->dirty( true, Tile::TEXTURE, true, layer->extents() );
+
+    // Dirty the tiles.
+    Helper::dirtyTiles ( _transform, true, Tile::TEXTURE, true, layer->extents() );
   }
 }
 
@@ -209,7 +244,7 @@ void Body::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Ve
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-double Body::geodeticRadius( double latitude ) const
+double Body::geodeticRadius ( double latitude ) const
 {
   USUL_TRACE_SCOPE;
   return _landModel->elevation ( 0, latitude );
@@ -384,4 +419,18 @@ void Body::cacheTiles ( bool state )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _cacheTiles = state;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the mesh size for the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Body::MeshSize Body::meshSize ( const Body::Extents &extents )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( ( true == _landModel.valid() ) ? _landModel->meshSize ( extents, _meshSize ) : _meshSize );
 }

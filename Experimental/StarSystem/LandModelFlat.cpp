@@ -32,6 +32,8 @@ LandModelFlat::LandModelFlat ( unsigned int pcscode ) :
   BaseClass(),
   _projection ( 0x0 )
 {
+  USUL_TRACE_SCOPE;
+
   ossimKeywordlist kwl;
 
   std::ostringstream os;
@@ -53,6 +55,7 @@ LandModelFlat::LandModelFlat ( const std::string& name ) :
   BaseClass(),
   _projection ( 0x0 )
 {
+  USUL_TRACE_SCOPE;
   _projection = ossimProjectionFactoryRegistry::instance()->createProjection( ossimString ( name.c_str() ) );
 }
 
@@ -65,6 +68,8 @@ LandModelFlat::LandModelFlat ( const std::string& name ) :
 
 LandModelFlat::~LandModelFlat ()
 {
+  USUL_TRACE_SCOPE;
+
   if ( 0x0 != _projection )
     delete _projection;
   
@@ -80,10 +85,13 @@ LandModelFlat::~LandModelFlat ()
 
 double LandModelFlat::size () const
 {
+  USUL_TRACE_SCOPE;
+
   osg::Vec3f v0, v1;
   this->latLonHeightToXYZ ( 0, 0, 0, v0 );
   this->latLonHeightToXYZ ( -90, -180, 0, v1 );
-  return (v1 - v0).length();
+
+  return (v1 - v0).length() / 10;
 }
   
 
@@ -96,7 +104,6 @@ double LandModelFlat::size () const
 double LandModelFlat::elevation ( double lat, double lon ) const
 {
   USUL_TRACE_SCOPE;
-
   return 0.0;
 }
 
@@ -110,6 +117,7 @@ double LandModelFlat::elevation ( double lat, double lon ) const
 void LandModelFlat::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this );
 
   typedef osg::Vec3f::value_type ValueType;
 
@@ -123,3 +131,15 @@ void LandModelFlat::latLonHeightToXYZ ( double lat, double lon, double elevation
   
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the mesh size for the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+LandModel::MeshSize LandModelFlat::meshSize ( const LandModel::Extents &extents, const LandModel::MeshSize &ms )
+{
+  USUL_TRACE_SCOPE;
+  return ms;
+}

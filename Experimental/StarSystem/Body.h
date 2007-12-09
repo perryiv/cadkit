@@ -47,12 +47,16 @@ public:
   typedef Usul::Math::Vec2d Vec2d;
   typedef Usul::Math::Vec3d Vec3d;
   typedef StarSystem::Extents < osg::Vec2d > Extents;
+  typedef Usul::Math::Vec2ui MeshSize;
 
   // Helper macro for repeated code.
   STAR_SYSTEM_DEFINE_NODE_CLASS ( Body );
 
   // Constructors
-  Body ( LandModel *model, Usul::Jobs::Manager& manager );
+  Body ( LandModel *, Usul::Jobs::Manager &, const MeshSize &, double splitDistance );
+
+  // Add a tile for the given extents.
+  void                      addTile ( const Extents & );
 
   // Set/get the flag that says to cache the tiles.
   bool                      cacheTiles() const;
@@ -74,6 +78,9 @@ public:
   // Set/get the maximum level.
   void                      maxLevel ( unsigned int level );
   unsigned int              maxLevel() const;
+
+  // Return the mesh size for the extents.
+  MeshSize                  meshSize ( const Body::Extents &extents );
 
   // Pre- and post-render notifications.
   virtual void              preRender  ( Usul::Interfaces::IUnknown *caller );
@@ -112,7 +119,6 @@ private:
 
   osg::MatrixTransform *_transform;
   LandModel::RefPtr _landModel;
-  Tile *_tile;
   RasterGroup *_rasters;
   Usul::Jobs::Manager &_manager;
   TextureJobs _textureJobs;
@@ -121,6 +127,8 @@ private:
   unsigned int _maxTexturesPerFrame;
   unsigned int _maxLevel;
   bool _cacheTiles;
+  double _splitDistance;
+  MeshSize _meshSize;
 };
 
 

@@ -21,6 +21,8 @@
 #include <map>
 
 namespace osg { class Image; class Vec3d; }
+namespace Usul { namespace Jobs { class Job; } }
+
 
 namespace StarSystem {
 
@@ -50,7 +52,7 @@ public:
   Extents               extents () const;
 
   /// Get the texture
-  virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) = 0;
+  virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * ) = 0;
 
 protected:
 

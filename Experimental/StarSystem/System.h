@@ -40,7 +40,7 @@ public:
   STAR_SYSTEM_DEFINE_NODE_CLASS ( System );
 
   // Constructor
-  System( Usul::Jobs::Manager& manager );
+  System ( Usul::Jobs::Manager& manager );
 
   // Add a satellite.
   void                      add ( Node * );

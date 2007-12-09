@@ -20,12 +20,17 @@
 
 class ossimProjection;
 
+
 namespace StarSystem {
 
-class LandModelFlat : public LandModel
+
+class STAR_SYSTEM_EXPORT LandModelFlat : public LandModel
 {
 public:
+
   typedef LandModel BaseClass;
+  typedef BaseClass::Extents Extents;
+  typedef BaseClass::MeshSize MeshSize;
 
   USUL_DECLARE_REF_POINTERS ( LandModelFlat );
 
@@ -41,13 +46,20 @@ public:
   // Convert lat, lon, height to x,y,z.
   virtual void        latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const;
 
+  // Return the appropriate mesh size.
+  virtual MeshSize    meshSize ( const Extents &extents, const MeshSize &ms );
+
 protected:
+
   virtual ~LandModelFlat ();
 
 private:
+
   ossimProjection *_projection;
 };
 
+
 }
+
 
 #endif // __STAR_SYSTEM_RASTER_LAND_MODEL_FLAT_H__

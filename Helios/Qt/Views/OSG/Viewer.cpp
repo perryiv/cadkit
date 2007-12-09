@@ -37,6 +37,7 @@
 #include "MenuKit/ToggleButton.h"
 
 #include "QtTools/Color.h"
+#include "QtTools/Menu.h"
 
 #include "QtCore/QUrl"
 #include "QtCore/QTimer"
@@ -125,6 +126,12 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   // Load initial settings.
   _viewer->trackballStateLoad();
   _viewer->backgroundLoad();
+
+  // We have a custom context menu.
+  this->setContextMenuPolicy ( Qt::CustomContextMenu );
+
+  // Notify us when a context menu is requested.
+  QObject::connect ( this, SIGNAL ( customContextMenuRequested ( const QPoint& ) ), this,  SLOT ( _onContextMenuShow ( const QPoint& ) ) );
 
   // Enable drag 'n drop.
   this->setAcceptDrops ( true );
@@ -896,92 +903,104 @@ void Viewer::menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller )
 
   if ( view.valid () )
   {
-    if ( view->items().size () > 0 )
-      view->addSeparator ();
-
-    Usul::Interfaces::IUnknown::QueryPtr viewer ( this->viewer () );
-
-    // Typedefs.
-    typedef MenuKit::Button Button;
-    typedef MenuKit::RadioButton RadioButton;
-    typedef MenuKit::ToggleButton ToggleButton;
-    typedef Usul::Commands::RenderingPasses RenderingPasses;
-    typedef Usul::Commands::PolygonMode PolygonMode;
-    typedef Usul::Interfaces::IPolygonMode IPolygonMode;
-    typedef Usul::Commands::ShadeModel ShadeModel;
-    typedef Usul::Interfaces::IShadeModel IShadeModel;
-
-    view->append ( new Button ( Usul::Commands::genericCommand ( "Edit Background", Usul::Adaptors::memberFunction<void> ( this, &Viewer::editBackground ), Usul::Commands::TrueFunctor() ) ) );
-
-    // Rendering passes menu.
-    {
-      MenuKit::Menu::RefPtr passes ( new MenuKit::Menu ( "Rendering Passes" ) );
-      view->append ( passes.get() );
-
-      passes->append ( new RadioButton ( new RenderingPasses ( "1", 1, viewer.get () ) ) );
-      passes->append ( new RadioButton ( new RenderingPasses ( "3", 3, viewer.get () ) ) );
-      passes->append ( new RadioButton ( new RenderingPasses ( "9", 9, viewer.get () ) ) );
-      passes->append ( new RadioButton ( new RenderingPasses ( "12", 12, viewer.get () ) ) );
-    }
-
-    MenuKit::Button::RefPtr rl ( new MenuKit::ToggleButton ( new Usul::Commands::RenderLoop ( "Render Loop", viewer.get() ) ) );
-    view->append ( rl );
-
-    // Polygons menu.
-    {
-      MenuKit::Menu::RefPtr polygons ( new MenuKit::Menu ( "Polygons" ) );
-      view->append ( polygons.get() );
-
-      polygons->append ( new RadioButton ( new PolygonMode ( "Filled",       IPolygonMode::FILLED, viewer.get() ) ) );
-      polygons->append ( new RadioButton ( new PolygonMode ( "Hidden Lines", IPolygonMode::HIDDEN_LINES, viewer.get() ) ) );
-      polygons->append ( new RadioButton ( new PolygonMode ( "Wireframe",    IPolygonMode::WIRE_FRAME, viewer.get() ) ) );
-      polygons->append ( new RadioButton ( new PolygonMode ( "Points",       IPolygonMode::POINTS, viewer.get() ) ) );
-    }
-
-    // Shading menu.
-    {
-      MenuKit::Menu::RefPtr shading ( new MenuKit::Menu ( "Shading" ) );
-      view->append ( shading.get() );
-
-      shading->append ( new RadioButton ( new ShadeModel ( "Smooth", IShadeModel::SMOOTH, viewer.get() ) ) );
-      shading->append ( new RadioButton ( new ShadeModel ( "Flat",   IShadeModel::FLAT, viewer.get() ) ) );
-    }
-
-    // Add common window sizes.
-    // From http://en.wikipedia.org/wiki/Image:Standard_video_res.svg
-    typedef Usul::Math::Vec2ui Size;
-    typedef std::vector < Size > Sizes;
-    Sizes sizes;
-    sizes.push_back ( Size ( 640, 480 ) );
-    sizes.push_back ( Size ( 720, 480 ) );
-    sizes.push_back ( Size ( 768, 576 ) );
-    sizes.push_back ( Size ( 1024, 768 ) );
-    sizes.push_back ( Size ( 1280, 720 ) );
-    sizes.push_back ( Size ( 1920, 1080 ) );
-
-    // Make the menu of common sizes.
-    MenuKit::Menu::RefPtr size ( new MenuKit::Menu ( "Size" ) );
-    for ( Sizes::const_iterator iter = sizes.begin(); iter != sizes.end(); ++iter )
-    {
-      Size s ( *iter );
-      size->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( Usul::Strings::format ( s[0], " x ", s[1] ), 
-        Usul::Adaptors::bind2<void> ( s[0], s[1], Usul::Adaptors::memberFunction<void> ( this, &Viewer::_resize ) ), 
-        Usul::Adaptors::bind2<bool> ( s[0], s[1], Usul::Adaptors::memberFunction<bool> ( this, &Viewer::_isSize ) ) ) ) );
-    }
-    size->append ( new Button ( Usul::Commands::genericCommand ( "Custom...", 
-        Usul::Adaptors::memberFunction<void> ( this, &Viewer::_customSize ), 
-        Usul::Commands::TrueFunctor() ) ) );
-
-    view->append ( size );
-
-    // Frame dump button.
-    view->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Frame Dump", Usul::Adaptors::memberFunction<void> ( this, &Viewer::_frameDump ), Usul::Adaptors::memberFunction<bool> ( this, &Viewer::_isFrameDump ) ) ) );
-
-    typedef OsgTools::Render::Viewer OsgViewer;
-
-    // Axes button.
-    view->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Show Axes", Usul::Adaptors::memberFunction<void> ( _viewer.get(), &OsgViewer::axesShown ), Usul::Adaptors::memberFunction<bool> ( _viewer.get(), &OsgViewer::isAxesShown ) ) ) );
+    this->_menuAdd ( *view );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add to the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller )
+{
+  if ( menu.items().size () > 0 )
+    menu.addSeparator ();
+
+  Usul::Interfaces::IUnknown::QueryPtr viewer ( this->viewer () );
+
+  // Typedefs.
+  typedef MenuKit::Button Button;
+  typedef MenuKit::RadioButton RadioButton;
+  typedef MenuKit::ToggleButton ToggleButton;
+  typedef Usul::Commands::RenderingPasses RenderingPasses;
+  typedef Usul::Commands::PolygonMode PolygonMode;
+  typedef Usul::Interfaces::IPolygonMode IPolygonMode;
+  typedef Usul::Commands::ShadeModel ShadeModel;
+  typedef Usul::Interfaces::IShadeModel IShadeModel;
+
+  menu.append ( new Button ( Usul::Commands::genericCommand ( "Edit Background", Usul::Adaptors::memberFunction<void> ( this, &Viewer::editBackground ), Usul::Commands::TrueFunctor() ) ) );
+
+  // Rendering passes menu.
+  {
+    MenuKit::Menu::RefPtr passes ( new MenuKit::Menu ( "Rendering Passes" ) );
+    menu.append ( passes.get() );
+
+    passes->append ( new RadioButton ( new RenderingPasses ( "1", 1, viewer.get () ) ) );
+    passes->append ( new RadioButton ( new RenderingPasses ( "3", 3, viewer.get () ) ) );
+    passes->append ( new RadioButton ( new RenderingPasses ( "9", 9, viewer.get () ) ) );
+    passes->append ( new RadioButton ( new RenderingPasses ( "12", 12, viewer.get () ) ) );
+  }
+
+  MenuKit::Button::RefPtr rl ( new MenuKit::ToggleButton ( new Usul::Commands::RenderLoop ( "Render Loop", viewer.get() ) ) );
+  menu.append ( rl );
+
+  // Polygons menu.
+  {
+    MenuKit::Menu::RefPtr polygons ( new MenuKit::Menu ( "Polygons" ) );
+    menu.append ( polygons.get() );
+
+    polygons->append ( new RadioButton ( new PolygonMode ( "Filled",       IPolygonMode::FILLED, viewer.get() ) ) );
+    polygons->append ( new RadioButton ( new PolygonMode ( "Hidden Lines", IPolygonMode::HIDDEN_LINES, viewer.get() ) ) );
+    polygons->append ( new RadioButton ( new PolygonMode ( "Wireframe",    IPolygonMode::WIRE_FRAME, viewer.get() ) ) );
+    polygons->append ( new RadioButton ( new PolygonMode ( "Points",       IPolygonMode::POINTS, viewer.get() ) ) );
+  }
+
+  // Shading menu.
+  {
+    MenuKit::Menu::RefPtr shading ( new MenuKit::Menu ( "Shading" ) );
+    menu.append ( shading.get() );
+
+    shading->append ( new RadioButton ( new ShadeModel ( "Smooth", IShadeModel::SMOOTH, viewer.get() ) ) );
+    shading->append ( new RadioButton ( new ShadeModel ( "Flat",   IShadeModel::FLAT, viewer.get() ) ) );
+  }
+
+  // Add common window sizes.
+  // From http://en.wikipedia.org/wiki/Image:Standard_video_res.svg
+  typedef Usul::Math::Vec2ui Size;
+  typedef std::vector < Size > Sizes;
+  Sizes sizes;
+  sizes.push_back ( Size ( 640, 480 ) );
+  sizes.push_back ( Size ( 720, 480 ) );
+  sizes.push_back ( Size ( 768, 576 ) );
+  sizes.push_back ( Size ( 1024, 768 ) );
+  sizes.push_back ( Size ( 1280, 720 ) );
+  sizes.push_back ( Size ( 1920, 1080 ) );
+
+  // Make the menu of common sizes.
+  MenuKit::Menu::RefPtr size ( new MenuKit::Menu ( "Size" ) );
+  for ( Sizes::const_iterator iter = sizes.begin(); iter != sizes.end(); ++iter )
+  {
+    Size s ( *iter );
+    size->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( Usul::Strings::format ( s[0], " x ", s[1] ), 
+      Usul::Adaptors::bind2<void> ( s[0], s[1], Usul::Adaptors::memberFunction<void> ( this, &Viewer::_resize ) ), 
+      Usul::Adaptors::bind2<bool> ( s[0], s[1], Usul::Adaptors::memberFunction<bool> ( this, &Viewer::_isSize ) ) ) ) );
+  }
+  size->append ( new Button ( Usul::Commands::genericCommand ( "Custom...", 
+      Usul::Adaptors::memberFunction<void> ( this, &Viewer::_customSize ), 
+      Usul::Commands::TrueFunctor() ) ) );
+
+  menu.append ( size );
+
+  // Frame dump button.
+  menu.append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Frame Dump", Usul::Adaptors::memberFunction<void> ( this, &Viewer::_frameDump ), Usul::Adaptors::memberFunction<bool> ( this, &Viewer::_isFrameDump ) ) ) );
+
+  typedef OsgTools::Render::Viewer OsgViewer;
+
+  // Axes button.
+  menu.append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Show Axes", Usul::Adaptors::memberFunction<void> ( _viewer.get(), &OsgViewer::axesShown ), Usul::Adaptors::memberFunction<bool> ( _viewer.get(), &OsgViewer::isAxesShown ) ) ) );
 }
 
 
@@ -1313,4 +1332,28 @@ void Viewer::setStatsDisplay ( bool b )
   Usul::Interfaces::IRedraw::QueryPtr draw ( this->viewer() );
   if ( true == draw.valid() )
     draw->setStatsDisplay ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show the context menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_onContextMenuShow ( const QPoint& pos )
+{
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+
+  // Return if no viewer, or if we aren't in the proper mode.
+  if ( false == viewer.valid() || false == viewer->picking() )
+    return;
+
+  MenuKit::Menu::RefPtr menu ( new MenuKit::Menu );
+  this->_menuAdd ( *menu );
+
+  QtTools::Menu qMenu;
+  qMenu.menu ( menu.get() );
+  qMenu.exec ( this->mapToGlobal ( pos ) );
+
 }

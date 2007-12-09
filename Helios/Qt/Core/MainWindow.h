@@ -20,9 +20,7 @@
 #include "Helios/Qt/Core/Export.h"
 #include "Helios/Qt/Core/SplashScreen.h"
 #include "Helios/Qt/Core/DocumentProxy.h"
-#include "Helios/Qt/Core/Menu.h"
 #include "Helios/Qt/Core/ProgressBarDock.h"
-#include "Helios/Qt/Commands/BaseAction.h"
 
 #include "Usul/Interfaces/IStreamListener.h"
 #include "Usul/Interfaces/GUI/ILoadFileDialog.h"
@@ -38,6 +36,11 @@
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Queue.h"
+
+#include "QtTools/Menu.h"
+#include "QtTools/Action.h"
+
+#include "boost/shared_ptr.hpp"
 
 #include <QtGui/QMainWindow>
 
@@ -84,8 +87,8 @@ public:
   typedef QMainWindow                           BaseClass;
   typedef Usul::Threads::RecursiveMutex         Mutex;
   typedef Usul::Threads::Guard<Mutex>           Guard;
-  typedef CadKit::Helios::Commands::BaseAction  BaseAction;
-  typedef std::set<BaseAction::RefPtr>          Actions;
+  typedef QtTools::Action                       Action;
+  typedef std::set<Action::RefPtr>              Actions;
   typedef std::map<std::string,QToolBar*>       ToolBars;
   typedef Usul::Interfaces::ILoadFileDialog     ILoadFileDialog;
   typedef ILoadFileDialog::FileResult           FileResult;
@@ -233,7 +236,7 @@ private:
   typedef Usul::Threads::Queue<QueueConfig> StreamQueue;
   typedef boost::shared_ptr<StreamQueue> StreamQueuePtr;
   typedef std::pair<QTextEdit*,StreamQueuePtr> TextWindow;
-  typedef std::vector < Menu* > Menus;
+  typedef std::vector < QtTools::Menu* > Menus;
 
   // No copying or assignment.
   MainWindow ( const MainWindow & );

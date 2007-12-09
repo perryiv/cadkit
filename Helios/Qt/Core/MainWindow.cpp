@@ -16,8 +16,6 @@
 
 #include "Helios/Qt/Core/MainWindow.h"
 #include "Helios/Qt/Core/Constants.h"
-#include "Helios/Qt/Core/Menu.h"
-#include "Helios/Qt/Commands/Action.h"
 #include "Helios/Qt/Commands/NewDocument.h"
 #include "Helios/Qt/Commands/OpenDocument.h"
 #include "Helios/Qt/Commands/InsertDocument.h"
@@ -26,7 +24,6 @@
 #include "Helios/Qt/Commands/ExportImage.h"
 #include "Helios/Qt/Commands/ExitApplication.h"
 #include "Helios/Qt/Commands/ToggleView.h"
-#include "Helios/Qt/Tools/SettingsGroupScope.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/RegistryIO.h"
@@ -465,7 +462,7 @@ void MainWindow::_buildQtMenu()
     // We only have top level items that are menus.
     if ( MenuKit::Menu *menu = dynamic_cast < MenuKit::Menu* > ( iter->get() ) )
     {
-      CadKit::Helios::Core::Menu* qtMenu ( new CadKit::Helios::Core::Menu ( tr ( menu->text().c_str() ) ) );
+      QtTools::Menu* qtMenu ( new QtTools::Menu ( tr ( menu->text().c_str() ) ) );
       qtMenu->menu ( menu );
       this->menuBar()->addMenu ( qtMenu );
       _menus.push_back ( qtMenu );
@@ -582,18 +579,16 @@ void MainWindow::_buildToolBar()
   toolBar->setIconSize ( QSize ( 16, 16 ) );
   toolBar->setObjectName ( standardToolBarName );
 
-  typedef CadKit::Helios::Commands::Action Action;
-
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   // Add buttons.
   {
-    CadKit::Helios::Commands::BaseAction::RefPtr action ( new Action ( new CadKit::Helios::Commands::OpenDocument ( me ) ) );
+    Action::RefPtr action ( new Action ( new CadKit::Helios::Commands::OpenDocument ( me ) ) );
     _actions.insert ( action );
     toolBar->addAction ( action.get() );
   }
   {
-    CadKit::Helios::Commands::BaseAction::RefPtr action ( new Action ( new CadKit::Helios::Commands::SaveDocument ( me ) ) );
+    Action::RefPtr action ( new Action ( new CadKit::Helios::Commands::SaveDocument ( me ) ) );
     _actions.insert ( action );
     toolBar->addAction ( action.get() );
   }

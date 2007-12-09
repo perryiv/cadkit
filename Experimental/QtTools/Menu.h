@@ -11,30 +11,27 @@
 #ifndef __CADKIT_HELIOS_QT_CORE_MENU_H__
 #define __CADKIT_HELIOS_QT_CORE_MENU_H__
 
-#include "Helios/Qt/Core/Export.h"
+#include "QtTools/Export.h"
+#include "QtTools/Action.h"
 
 #include "MenuKit/Menu.h"
-
-#include "Helios/Qt/Commands/BaseAction.h"
 
 #include "QtGui/QMenu"
 
 #include <set>
 
-namespace CadKit {
-namespace Helios {
-namespace Core {
+namespace QtTools {
 
-class HELIOS_QT_CORE_EXPORT Menu : public QMenu
+class QT_TOOLS_EXPORT Menu : public QMenu
 {
   Q_OBJECT;
 public:
   typedef QMenu BaseClass;
-  typedef CadKit::Helios::Commands::BaseAction  BaseAction;
-  typedef std::set<BaseAction::RefPtr>          Actions;
+  typedef Action                   Action;
+  typedef std::set<Action::RefPtr> Actions;
 
   /// Construction/Destruction.
-  Menu ( const QString& title, QWidget* parent = 0x0 );
+  Menu ( const QString& title= "", QWidget* parent = 0x0 );
   virtual ~Menu();
 
   /// Get/Set the menu.
@@ -50,8 +47,6 @@ private:
   Actions _actions;
 };
 
-}
-}
 }
 
 

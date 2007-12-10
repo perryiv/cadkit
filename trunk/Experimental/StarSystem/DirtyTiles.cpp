@@ -10,60 +10,85 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Macro definitions.
+//  Helper functor for making the tiles dirty.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _STAR_SYSTEM_MACROS_CLASS_H_
-#define _STAR_SYSTEM_MACROS_CLASS_H_
+#include "StarSystem/DirtyTiles.h"
+#include "StarSystem/Tile.h"
 
+#include "Usul/Trace/Trace.h"
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  For the node class definition.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define STAR_SYSTEM_DEFINE_NODE_CLASS(class_name)\
-  USUL_DECLARE_REF_POINTERS ( class_name );\
-  USUL_DECLARE_TYPE_ID ( class_name );\
-  virtual void accept ( Visitor & )
+using namespace StarSystem;
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  For the node class implementation.
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define STAR_SYSTEM_IMPLEMENT_NODE_CLASS(class_name)\
-  USUL_IMPLEMENT_TYPE_ID ( class_name );\
-  void class_name::accept ( Visitor &v ) { v.visit ( *this ); }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  For the visitor class definition.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define STAR_SYSTEM_DEFINE_VISITOR_CLASS(class_name)\
-  USUL_DECLARE_REF_POINTERS ( class_name );\
-  USUL_DECLARE_TYPE_ID ( class_name );\
-  virtual void visit ( System & );\
-  virtual void visit ( Group & );\
-  virtual void visit ( Body & );\
-  virtual void visit ( Node & )
+DirtyTiles::DirtyTiles ( bool state, unsigned int flags ) :
+  _state ( state ),
+  _flags ( flags ),
+  _extents(),
+  _useExtents ( false )
+{
+  USUL_TRACE_SCOPE;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  For the visitor class implementation.
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define STAR_SYSTEM_IMPLEMENT_VISITOR_CLASS(class_name)\
-  USUL_IMPLEMENT_TYPE_ID ( class_name )
+DirtyTiles::DirtyTiles ( bool state, unsigned int flags, const Tile::Extents& extents ) :
+  _state ( state ),
+  _flags ( flags ),
+  _extents ( extents ),
+  _useExtents ( true )
+{
+  USUL_TRACE_SCOPE;
+}
 
 
-#endif // _STAR_SYSTEM_MACROS_CLASS_H_
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copy constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+  DirtyTiles::DirtyTiles ( const DirtyTiles &d ) :
+  _state ( d._state ),
+  _flags ( d._flags ),
+  _extents ( d._extents ),
+  _useExtents ( d._useExtents )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called for every group. Need to determine if it's a tile.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DirtyTiles::operator () ( osg::Group *group )
+{
+  USUL_TRACE_SCOPE;
+  Tile::RefPtr tile ( dynamic_cast < Tile * > ( group ) );
+  if ( true == tile.valid() )
+  {
+    if ( true == _useExtents )
+    {
+      tile->dirty ( _state, _flags, false, _extents );
+    }
+    else
+    {
+      tile->dirty ( _state, _flags, false );
+    }
+  }
+}

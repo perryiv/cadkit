@@ -216,21 +216,21 @@ void Tile::_update()
   this->dirty ( false, Tile::VERTICES, false );
   this->dirty ( false, Tile::TEX_COORDS, false );
 
-  // Depth of skirt.  TODO: This function needs to be tweeked.
-  const double offset ( Usul::Math::maximum<double> ( ( 25000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
-
   // Make group to hold the meshes.
   osg::ref_ptr < osg::Group > group ( new osg::Group );
 
-#if 1
+  // Build skirts if we're supposed to.
+  if ( true == _body->useSkirts() )
+  {
+    // Depth of skirt.  TODO: This function needs to be tweeked.
+    const double offset ( Usul::Math::maximum<double> ( ( 25000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
 
-  // Add skirts to group.
-  group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], offset ) ); // Left skirt.
-  group->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], offset ) ); // Right skirt.
-  group->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], offset ) ); // Bottom skirt.
-  group->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], offset ) ); // Top skirt.
-
-#endif
+    // Add skirts to group.
+    group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], offset ) ); // Left skirt.
+    group->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], offset ) ); // Right skirt.
+    group->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], offset ) ); // Bottom skirt.
+    group->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], offset ) ); // Top skirt.
+  }
 
   // Add ground to group.
   group->addChild ( mesh() );

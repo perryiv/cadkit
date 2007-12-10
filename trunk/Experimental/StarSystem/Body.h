@@ -67,7 +67,7 @@ public:
   Vec3d                     center() const;
 
   // Computes the "geodetic" radius for a given latitude in degrees.
-  double                    geodeticRadius( double latitude ) const;
+  double                    geodeticRadius ( double latitude ) const;
 
   // Get the thread pool for this body.
   Usul::Jobs::Manager&      jobManager();
@@ -102,6 +102,10 @@ public:
   // Get the texture.
   osg::Texture2D*           texture ( int id );
 
+  // Set/get the flag that says to use skirts.
+  void                      useSkirts ( bool );
+  bool                      useSkirts() const;
+
 protected:
 
   // Use reference counting.
@@ -129,6 +133,7 @@ private:
   bool _cacheTiles;
   double _splitDistance;
   MeshSize _meshSize;
+  bool _useSkirts;
 };
 
 

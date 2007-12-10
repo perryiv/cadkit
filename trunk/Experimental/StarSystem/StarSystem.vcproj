@@ -246,6 +246,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DirtyTiles.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DirtyTiles.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Export.h"
 				>
 			</File>

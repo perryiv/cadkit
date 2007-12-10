@@ -15,6 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "StarSystem/Body.h"
+#include "StarSystem/DirtyTiles.h"
 #include "StarSystem/Tile.h"
 #include "StarSystem/Visitor.h"
 #include "StarSystem/RasterGroup.h"
@@ -24,8 +25,8 @@
 #include "Usul/Math/MinMax.h"
 #include "Usul/Trace/Trace.h"
 
-#include "OsgTools/ShapeFactory.h"
 #include "OsgTools/Group.h"
+#include "OsgTools/Visitor.h"
 
 #include "osg/MatrixTransform"
 
@@ -55,7 +56,8 @@ Body::Body ( LandModel *model, Usul::Jobs::Manager &manager, const MeshSize &ms,
   _maxLevel ( 50 ),
   _cacheTiles ( false ),
   _splitDistance ( splitDistance ),
-  _meshSize ( ms )
+  _meshSize ( ms ),
+  _useSkirts ( true )
 {
   USUL_TRACE_SCOPE;
 
@@ -94,34 +96,6 @@ void Body::_destroy()
 
   Usul::Pointers::unreference ( _transform ); _transform = 0x0;
   Usul::Pointers::unreference ( _rasters ); _rasters = 0x0;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Helper function to dirty the tiles.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace StarSystem
-{
-  namespace Helper
-  {
-    inline void dirtyTiles ( osg::Group *group, bool state, unsigned int flags, bool dirtyChildren, const Body::Extents& extents )
-    {
-      USUL_TRACE_SCOPE_STATIC;
-
-      const unsigned int numChildren ( ( 0x0 == group ) ? 0 : group->getNumChildren() );
-      for ( unsigned int i = 0; i < numChildren; ++i )
-      {
-        osg::ref_ptr<Tile> tile ( dynamic_cast < Tile * > ( group->getChild ( i ) ) );
-        if ( true == tile.valid() )
-        {
-          tile->dirty ( state, flags, dirtyChildren, extents );
-        }
-      }
-    }
-  }
 }
 
 
@@ -220,7 +194,9 @@ void Body::rasterAppend ( RasterLayer * layer )
     _rasters->append ( layer );
 
     // Dirty the tiles.
-    Helper::dirtyTiles ( _transform, true, Tile::TEXTURE, true, layer->extents() );
+    DirtyTiles dirty ( true, Tile::TEXTURE, layer->extents() );
+    osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
+    _transform->accept ( *visitor );
   }
 }
 
@@ -433,4 +409,39 @@ Body::MeshSize Body::meshSize ( const Body::Extents &extents )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return ( ( true == _landModel.valid() ) ? _landModel->meshSize ( extents, _meshSize ) : _meshSize );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flag to use skirts.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::useSkirts ( bool use )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Set the flag.
+  _useSkirts = use;
+
+  // Dirty the tiles.
+  DirtyTiles dirty ( true, Tile::TEXTURE );
+  osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
+  _transform->accept ( *visitor );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the flag to use skirts.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Body::useSkirts() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _useSkirts;
 }

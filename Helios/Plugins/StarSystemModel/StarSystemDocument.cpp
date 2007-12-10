@@ -469,13 +469,14 @@ void StarSystemDocument::_makeSystem()
 
   // Add the body.
   Body::RefPtr body ( new Body ( land, *_manager, meshSize, splitDistance ) );
+  body->useSkirts ( true );
   _system->body ( body.get() );
 
   // Add tiles to the body.
   body->addTile ( Extents ( -180, -90,    0,   90 ) );
   body->addTile ( Extents (    0, -90,  180,   90 ) );
 
-#if 0
+#if 1
 
   {
     const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
@@ -527,7 +528,7 @@ void StarSystemDocument::_makeSystem()
 
 #endif
 
-#if 1
+#if 0
 
   {
     // See http://onmars.jpl.nasa.gov

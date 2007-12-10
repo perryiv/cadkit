@@ -49,7 +49,7 @@ namespace Usul
     template < typename T >
     inline T fromString ( const std::string& s )
     {
-      T t;
+      T t = T();
       Usul::Strings::fromString ( s, t );
       return t;
     }

@@ -250,10 +250,6 @@
 			Filter="moc;h;cpp"
 			UniqueIdentifier="{9437f44b-e7bb-46c1-9a8f-35f3a7ad52c8}"
 			>
-			<File
-				RelativePath=".\GeneratedFiles\moc_BaseAction.cpp"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

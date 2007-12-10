@@ -40,7 +40,7 @@ def main():
         sys.exit(0)
 
     # Get the directory where the source code lives.
-    srcDirectory = os.environ['CADKIT_ROOT_DIR']
+    srcDirectory = os.environ['CADKIT_INC_DIR']
     os.chdir ( srcDirectory );
 
     # Do an update.

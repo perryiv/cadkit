@@ -44,7 +44,7 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( CutImageJob );
 
-  CutImageJob ( const Extents &extents, unsigned int level, RasterLayer *layer );
+  CutImageJob ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, RasterLayer *layer );
 
   osg::Image *      image();
 
@@ -59,6 +59,8 @@ protected:
 private:
 
   Extents _extents;
+  unsigned int _width;
+  unsigned int _height;
   unsigned int _level;
   RasterLayer *_raster;
   ImagePtr _image;

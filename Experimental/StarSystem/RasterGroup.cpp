@@ -136,13 +136,11 @@ osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, u
           if ( false == result.valid() )
           {
             // We always make an image and composite to handle formats other than GL_RGBA.
-            result = new osg::Image;
-            result->allocateImage ( width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE );
-            ::memset ( result->data(), 0, result->getImageSizeInBytes() );
+            result = this->_createBlankImage( width, height );
           }
 
           // Composite the images.
-          RasterGroup::_compositeImages ( *result, *image, layer->alphas(), job );
+          this->_compositeImages ( *result, *image, layer->alphas(), job );
 
           // Cache the result.
           this->_cacheAdd ( extents, width, height, result.get() );
@@ -177,7 +175,7 @@ osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, u
 
 void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, Usul::Jobs::Job *job )
 {
-  USUL_TRACE_SCOPE_STATIC;
+  USUL_TRACE_SCOPE;
 
   // We only handle these cases.
   const GLenum format ( image.getPixelFormat() );

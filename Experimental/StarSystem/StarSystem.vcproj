@@ -254,6 +254,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ElevationGroup.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ElevationGroup.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ElevationLayerDem.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ElevationLayerDem.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Export.h"
 				>
 			</File>

@@ -19,6 +19,7 @@
 
 #include "StarSystem/Export.h"
 #include "StarSystem/Extents.h"
+#include "StarSystem/CutImageJob.h"
 
 #include "Usul/Base/Typed.h"
 #include "Usul/Math/Vector4.h"
@@ -26,7 +27,6 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
-#include "Usul/Jobs/Job.h"
 
 #include "osg/Group"
 #include "osg/Image"
@@ -121,6 +121,9 @@ public:
   // Return the mutex. Use with caution.
   Mutex &                   mutex() const;
 
+  // Get the size.
+  MeshSize                  meshSize() const;
+
   // Get/Set the starting texture coordinates.
   Usul::Math::Vec4d         texCoords() const;
   void                      texCoords ( const Usul::Math::Vec4d& );
@@ -150,6 +153,7 @@ protected:
 
   // Load the image.
   void                      _launchImageRequest();
+  void                      _launchElevationRequest();
 
   // Quarter the texture coordinates.
   void                      _quarterTextureCoordinates ( Usul::Math::Vec4d& ll, Usul::Math::Vec4d& lr, Usul::Math::Vec4d& ul, Usul::Math::Vec4d& ur ) const;
@@ -170,9 +174,11 @@ private:
   Children _children;
   unsigned int _textureUnit;
   osg::ref_ptr < osg::Image > _image;
+  osg::ref_ptr < osg::Image > _elevation;
   osg::ref_ptr < osg::Texture2D > _texture;
   Usul::Math::Vec4d _texCoords;
   int _jobId;
+  CutImageJob::RefPtr _elevationJob;
 };
 
 

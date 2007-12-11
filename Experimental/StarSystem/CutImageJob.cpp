@@ -29,9 +29,11 @@ using namespace StarSystem;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CutImageJob::CutImageJob ( const Extents &extents, unsigned int level, RasterLayer *raster ) : 
+CutImageJob::CutImageJob ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, RasterLayer *raster ) : 
   BaseClass ( 0x0, false ),
   _extents ( extents ),
+  _width   ( width ),
+  _height  ( height ),
   _level   ( level ),
   _raster  ( raster ),
   _image   ( 0x0 ),
@@ -77,8 +79,8 @@ void CutImageJob::_started()
     return;
 
   // Get the image.
-  const unsigned int width  ( 512 ); // WMS server doesn't like 256...
-  const unsigned int height ( 512 );
+  const unsigned int width  ( Usul::Threads::Safe::get ( this->mutex(), _width ) );
+  const unsigned int height ( Usul::Threads::Safe::get ( this->mutex(), _height ) );
 
   // Request the image.
   osg::ref_ptr<osg::Image> image ( raster->texture ( _extents, width, height, _level, this ) );

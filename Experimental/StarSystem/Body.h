@@ -66,6 +66,12 @@ public:
   void                      center ( const Vec3d & );
   Vec3d                     center() const;
 
+  // Get the elevation data.
+  RasterLayer*              elevationData();
+
+  // Append elevation data.
+  void                      elevationAppend ( RasterLayer * );
+
   // Computes the "geodetic" radius for a given latitude in degrees.
   double                    geodeticRadius ( double latitude ) const;
 
@@ -124,6 +130,7 @@ private:
   osg::MatrixTransform *_transform;
   LandModel::RefPtr _landModel;
   RasterGroup *_rasters;
+  RasterGroup *_elevation;
   Usul::Jobs::Manager &_manager;
   TextureJobs _textureJobs;
   bool _frame;

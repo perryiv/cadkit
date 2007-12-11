@@ -91,3 +91,19 @@ RasterLayer::Alphas RasterLayer::alphas() const
   Guard guard ( this );
   return _alphas;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a blank image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Image* RasterLayer::_createBlankImage( unsigned int width, unsigned int height ) const
+{
+  osg::ref_ptr < osg::Image > result ( new osg::Image );
+  result->allocateImage ( width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE );
+  ::memset ( result->data(), 0, result->getImageSizeInBytes() );
+
+  return result.release();
+}

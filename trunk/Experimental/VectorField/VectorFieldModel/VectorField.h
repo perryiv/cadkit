@@ -22,13 +22,13 @@ public:
   VectorField();
 
   // Get/Set the grid.
-  void             grid( const Grid& grid );
-  Grid&            grid();
-  const Grid&      grid() const;
+  void              grid( const Grid& grid );
+  Grid&             grid();
+  const Grid&       grid() const;
 
   osg::Node*        advectParticle ( double x, double y ) const;
 
-  osg::Node*        classifyCriticalPoints () const;
+  osg::Node*        buildTopographyGraph () const;
 
 private:
   Grid _grid;

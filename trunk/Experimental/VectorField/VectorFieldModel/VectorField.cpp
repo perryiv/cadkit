@@ -167,7 +167,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* VectorField::classifyCriticalPoints () const
+osg::Node* VectorField::buildTopographyGraph () const
 {
   osg::ref_ptr < osg::Group > group ( new osg::Group );
 

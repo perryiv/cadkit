@@ -335,7 +335,7 @@ osg::Node *VectorFieldDocument::buildScene ( const BaseClass::Options &options, 
     }
   }
   
-  _root->addChild ( _field.classifyCriticalPoints() );
+  _root->addChild ( _field.buildTopographyGraph() );
 
 #if 1
   

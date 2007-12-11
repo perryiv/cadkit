@@ -51,12 +51,14 @@ public:
   void                  extents ( const Extents& extents );
   Extents               extents () const;
 
-  /// Get the texture
+  /// Get the texture.
   virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * ) = 0;
 
 protected:
 
   virtual ~RasterLayer();
+
+  virtual osg::Image *            _createBlankImage ( unsigned int width, unsigned int height ) const;
 
 private:
 

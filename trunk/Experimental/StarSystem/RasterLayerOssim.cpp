@@ -37,7 +37,10 @@ using namespace StarSystem;
 
 RasterLayerOssim::RasterLayerOssim() : 
   BaseClass(),
-  _handler ( 0x0 )
+  _handler ( 0x0 ),
+  _renderer ( 0x0 ),
+  _viewInterface ( 0x0 ),
+  _projection ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 }
@@ -100,6 +103,8 @@ void RasterLayerOssim::open ( const std::string& filename )
 
   _renderer->connectMyInputTo ( 0, _handler );
 
+  // I'm not really sure what this is for.
+  // I think some projections might be sensitive to elevation.
   ossimImageViewTransform* ivt = _renderer->getImageViewTransform();
   if ( ivt )
   {
@@ -115,6 +120,7 @@ void RasterLayerOssim::open ( const std::string& filename )
     }
   }
 
+  // Update our extents.
   this->_updateExtents();
 }
 
@@ -131,9 +137,7 @@ osg::Image* RasterLayerOssim::texture ( const Extents& extents, unsigned int wid
   Guard guard ( this );
 
   // Create the answer.
-  osg::ref_ptr < osg::Image > result ( new osg::Image );
-  result->allocateImage ( width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE );
-  ::memset ( result->data(), 0, result->getImageSizeInBytes() );
+  osg::ref_ptr < osg::Image > result ( this->_createBlankImage( width, height ) );
 
   if ( 0x0 != _projection && 0x0 != _viewInterface && 0x0 != _renderer )
   {
@@ -153,10 +157,9 @@ osg::Image* RasterLayerOssim::texture ( const Extents& extents, unsigned int wid
 
     // Convert to osg image.
     if ( data.valid() && data->getBuf() && ( data->getDataObjectStatus() != OSSIM_EMPTY ) )
-      RasterLayerOssim::_convert ( *data, *result );
+      this->_convert ( *data, *result );
   }
 
-  result->flipVertical();
   return result.release();
 }
 
@@ -169,7 +172,7 @@ osg::Image* RasterLayerOssim::texture ( const Extents& extents, unsigned int wid
 
 void RasterLayerOssim::_convert ( const ossimImageData& data, osg::Image& image )
 {
-  USUL_TRACE_SCOPE_STATIC;
+  USUL_TRACE_SCOPE;
 
   // Only handle 8 byte pixels for now.
   if ( OSSIM_UINT8 != data.getScalarType() && data.getSize() > 0 )
@@ -210,6 +213,8 @@ void RasterLayerOssim::_convert ( const ossimImageData& data, osg::Image& image 
     ++b2;
     ++b3;
   }
+
+   image.flipVertical();
 }
 
 

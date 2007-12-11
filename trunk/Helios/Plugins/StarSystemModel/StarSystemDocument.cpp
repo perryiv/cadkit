@@ -21,6 +21,7 @@
 #include "StarSystem/System.h"
 #include "StarSystem/RasterLayerOssim.h"
 #include "StarSystem/RasterLayerWms.h"
+#include "StarSystem/ElevationLayerDem.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Random.h"
@@ -141,7 +142,7 @@ bool StarSystemDocument::canInsert ( const std::string &file ) const
 {
   USUL_TRACE_SCOPE;
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "ball" || ext == "tif" || ext == "tiff" || ext == "jpg" );
+  return ( ext == "ball" || ext == "tif" || ext == "tiff" || ext == "jpg" || ext == "dem" );
 }
 
 
@@ -206,6 +207,12 @@ void StarSystemDocument::read ( const std::string &name, Unknown *caller, Unknow
     StarSystem::RasterLayerOssim::RefPtr layer ( new StarSystem::RasterLayerOssim );
     layer->open ( name );
     _system->body()->rasterAppend ( layer.get() );
+  }
+  else if ( "dem" == ext || "ras" == ext )
+  {
+    StarSystem::ElevationLayerDem::RefPtr layer ( new StarSystem::ElevationLayerDem );
+    layer->open ( name );
+    _system->body()->elevationAppend ( layer.get() );
   }
 }
 
@@ -280,6 +287,8 @@ StarSystemDocument::Filters StarSystemDocument::filtersInsert() const
   filters.push_back ( Filter ( "Tiff (*.tiff *.tif)", "*.tiff *.tif" ) );
   filters.push_back ( Filter ( "Jpeg (*.jpg)", "*.jpg" ) );
   filters.push_back ( Filter ( "PNG  (*.png)", "*.png" ) );
+  filters.push_back ( Filter ( "Digital Elevation Model  (*.dem)", "*.dem" ) );
+  filters.push_back ( Filter ( "OSSIM General Raster  (*.ras)", "*.ras" ) );
   filters.push_back ( Filter ( "All Images (*.tiff *.tif * jpg *.png)", "*.tiff *.tif * jpg *.png" ) );
   return filters;
 }

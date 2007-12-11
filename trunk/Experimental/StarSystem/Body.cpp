@@ -19,6 +19,7 @@
 #include "StarSystem/Tile.h"
 #include "StarSystem/Visitor.h"
 #include "StarSystem/RasterGroup.h"
+#include "StarSystem/ElevationGroup.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
@@ -48,6 +49,7 @@ Body::Body ( LandModel *model, Usul::Jobs::Manager &manager, const MeshSize &ms,
   _transform ( new osg::MatrixTransform ),
   _landModel ( model ),
   _rasters ( new RasterGroup ),
+  _elevation ( new ElevationGroup ),
   _manager ( manager ),
   _textureJobs (),
   _frame ( false ),
@@ -68,6 +70,7 @@ Body::Body ( LandModel *model, Usul::Jobs::Manager &manager, const MeshSize &ms,
   // Not using smart pointers.
   _transform->ref();
   _rasters->ref();
+  _elevation->ref();
 }
 
 
@@ -96,6 +99,7 @@ void Body::_destroy()
 
   Usul::Pointers::unreference ( _transform ); _transform = 0x0;
   Usul::Pointers::unreference ( _rasters ); _rasters = 0x0;
+  Usul::Pointers::unreference ( _elevation ); _elevation = 0x0;
 }
 
 
@@ -284,7 +288,7 @@ int Body::textureRequest ( const Extents &extents, unsigned int level )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  CutImageJob::RefPtr job ( new CutImageJob ( extents, level, _rasters ) );
+  CutImageJob::RefPtr job ( new CutImageJob ( extents, 512, 512, level, _rasters ) );
   _manager.addJob ( job );
   _textureJobs.insert ( TextureJobs::value_type ( job->id(), job ) );
   return job->id();
@@ -444,4 +448,42 @@ bool Body::useSkirts() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _useSkirts;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append elevation data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::elevationAppend ( RasterLayer * layer )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  if ( 0x0 != _elevation && 0x0 != layer )
+  {
+    // Append the layer to the existing group.
+    _elevation->append ( layer );
+
+    // Dirty the tiles.
+    DirtyTiles dirty ( true, Tile::VERTICES, layer->extents() );
+    osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
+    _transform->accept ( *visitor );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the elevation data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterLayer* Body::elevationData()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _elevation;
 }

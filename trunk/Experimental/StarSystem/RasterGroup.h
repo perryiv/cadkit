@@ -54,7 +54,7 @@ protected:
   void                            _cacheAdd ( const Extents& extents, unsigned int width, unsigned int height, osg::Image *image );
   osg::Image *                    _cacheFind ( const Extents& extents, unsigned int width, unsigned int height ) const;
 
-  static void                     _compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, Usul::Jobs::Job * );
+  virtual void                    _compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, Usul::Jobs::Job * );
 
   static ImageKey                 _makeKey ( const Extents& extents, unsigned int width, unsigned int height );
 

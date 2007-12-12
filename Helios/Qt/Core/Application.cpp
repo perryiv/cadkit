@@ -30,7 +30,7 @@ using namespace CadKit::Helios::Core;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Application::Application ( int argc, char **argv ) : BaseClass ( argc, argv )
+Application::Application ( int &argc, char **argv ) : BaseClass ( argc, argv )
 {
   USUL_TRACE_SCOPE;
 }

@@ -34,8 +34,9 @@ public:
   // Useful typedefs.
   typedef QApplication BaseClass;
 
-  // Constructor and destructor.
-  Application ( int argc, char **argv );
+  // Constructor and destructor.  QApplication takes a reference to argc.
+  // Passing by value will cause a crash on Fedora 7 with gcc 4.0.
+  Application ( int &argc, char **argv );
   ~Application();
 
   // Notification of every event.

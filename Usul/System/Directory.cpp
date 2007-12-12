@@ -10,6 +10,8 @@
 
 #include "Usul/System/Directory.h"
 #include "Usul/System/Environment.h"
+#include "Usul/System/LastError.h"
+#include "Usul/Strings/Format.h"
 
 #ifdef _MSC_VER
 # define NOMINMAX
@@ -19,6 +21,7 @@
 #endif
 
 #include <stdexcept>
+#include <iostream>
 
 using namespace Usul::System;
 
@@ -31,10 +34,24 @@ using namespace Usul::System;
 
 void Directory::cwd ( const std::string& directory )
 {
+  // Initialize last error.
+  Usul::System::LastError::init();
+
+  // Set new working directory.
 #ifdef _MSC_VER
-  ::_chdir( directory.c_str() );
+  const int result ( ::_chdir( directory.c_str() ) );
 #else
-  ::chdir ( directory.c_str() );
+  const int result ( ::chdir ( directory.c_str() ) );
+#endif
+
+  // Check result.
+  if ( -1 == result )
+  {
+    throw std::runtime_error ( Usul::Strings::format ( "Error: 2118168350, Failed to set current working directory to '", directory, "', System error: ", Usul::System::LastError::message() ) );
+  }
+
+#if 1
+  std::cout << "Setting Current Working Directory: " << directory << std::endl;
 #endif
 }
 
@@ -60,7 +77,9 @@ std::string Directory::cwd ()
      directory.assign( buffer, ::strlen( buffer ) );
      ::free( buffer );
    }
-
+#if 1
+  std::cout << "Getting Current Working Directory: " << directory << std::endl;
+#endif
   return directory;
 }
 

@@ -360,7 +360,7 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
 
       // Output feedback
       std::ostringstream text;
-      text << "  Year " << _timeSet.currentTime;
+      text << "  Step " << _timeSet.currentTime;
       std::cout << "Now showing timestep #" << _timeSet.currentTime << std::endl;
       this->_setStatusBar( text.str(), caller );
 
@@ -964,6 +964,7 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
       Usul::Strings::fromString ( iter->second, timeGroup.endTime );
       currentTime = timeGroup.endTime;
     }    
+
   }
   if( false == _userSpecifiedEndTime )
   {
@@ -1006,6 +1007,7 @@ osg::Node* ModelPresentationDocument::_parseModel( XmlTree::Node &node, Unknown 
   osg::ref_ptr< osg::Group > group ( new osg::Group );
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
+
     if ( "file" == iter->first )
     {
       Usul::Strings::fromString ( iter->second, path );
@@ -1035,7 +1037,7 @@ osg::Node* ModelPresentationDocument::_loadFile( const std::string& filename, Un
   Guard guard ( this->mutex() );
   osg::ref_ptr< osg::Group > group ( new osg::Group );
   std::cout << filename << " single file loading..." << std::endl;
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+
   try
   {
      // This will create a new document.
@@ -1048,9 +1050,8 @@ osg::Node* ModelPresentationDocument::_loadFile( const std::string& filename, Un
       // Ask the document to open the file.
       try
       {
+        Usul::System::Directory::ScopedCwd cwd ( _workingDir );
         this->_openDocument ( filename, info.document.get(), caller, progress );
-      
-
 
         // Disable Memory pools
         {
@@ -1104,17 +1105,16 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
-
+ 
   std::cout << dir << " directory loading..." << std::endl;
   Files files;
   Usul::File::find( dir, "*", files );
-    
+  
   osg::ref_ptr< osg::Group> group ( new osg::Group );
   std::cout << "Found " << files.size() << " files in " << dir << std::endl;
   for( unsigned int i = 0; i < files.size(); ++i )
   {
+   
     std::string filename = "";//files.at(i).c_str();
      #ifdef _MSC_VER
         filename = files.at(i).c_str();
@@ -1148,7 +1148,7 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
         // Ask the document to open the file.
         try
         {
-          
+          Usul::System::Directory::ScopedCwd cwd ( _workingDir );
           this->_openDocument ( filename, info.document.get(), caller, progress );
 
           // Disable Memory pools

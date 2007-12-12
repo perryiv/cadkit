@@ -20,7 +20,7 @@
 </extensions>
 </storageModule>
 <storageModule moduleId="cdtBuildSystem" version="4.0.0">
-<configuration artifactExtension="so" artifactName="Usuld" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.sharedLib" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.so.debug.1472560071" name="Debug" parent="cdt.managedbuild.config.gnu.so.debug" postannouncebuildStep="" postbuildStep="cp -f ${BuildArtifactFilePrefix}${BuildArtifactFileName} ${CADKIT_BIN_DIR}" preannouncebuildStep="" prebuildStep="">
+<configuration artifactExtension="so" artifactName="Usuld" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.sharedLib,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.so.debug.1472560071" name="Debug" parent="cdt.managedbuild.config.gnu.so.debug" postannouncebuildStep="" postbuildStep="cp -f ${BuildArtifactFilePrefix}${BuildArtifactFileName} ${CADKIT_BIN_DIR}" preannouncebuildStep="" prebuildStep="">
 <folderInfo id="cdt.managedbuild.config.gnu.so.debug.1472560071." name="/" resourcePath="">
 <toolChain id="cdt.managedbuild.toolchain.gnu.so.debug.1991149657" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.so.debug">
 <targetPlatform id="cdt.managedbuild.target.gnu.platform.so.debug.1793154384" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.so.debug"/>
@@ -53,6 +53,7 @@
 <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 <additionalInput kind="additionalinput" paths="$(LIBS)"/>
 </inputType>
+<outputType id="cdt.managedbuild.tool.gnu.cpp.linker.so.debug.output.1295657045" outputPrefix="lib" superClass="cdt.managedbuild.tool.gnu.cpp.linker.so.debug.output"/>
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.assembler.so.debug.967412305" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.so.debug">
 <inputType id="cdt.managedbuild.tool.gnu.assembler.input.679931835" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
@@ -500,7 +501,7 @@
 </extensions>
 </storageModule>
 <storageModule moduleId="cdtBuildSystem" version="4.0.0">
-<configuration artifactExtension="so" artifactName="Usul" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.sharedLib,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.so.release.1260836189" name="Release" parent="cdt.managedbuild.config.gnu.so.release">
+<configuration artifactExtension="so" artifactName="Usul" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.sharedLib" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.so.release.1260836189" name="Release" parent="cdt.managedbuild.config.gnu.so.release">
 <folderInfo id="cdt.managedbuild.config.gnu.so.release.1260836189." name="/" resourcePath="">
 <toolChain id="cdt.managedbuild.toolchain.gnu.so.release.928066899" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.so.release">
 <targetPlatform id="cdt.managedbuild.target.gnu.platform.so.release.579962493" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.so.release"/>

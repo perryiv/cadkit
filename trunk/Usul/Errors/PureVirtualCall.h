@@ -27,7 +27,9 @@ template < class ActionType > struct PureVirtualCall
 
   PureVirtualCall()
   {
+#ifdef _MSC_VER
     ::_set_purecall_handler ( &ThisType::_pureCallHandler );
+#endif
   }
 
 private:

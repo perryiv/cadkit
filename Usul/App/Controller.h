@@ -50,10 +50,6 @@ public:
   bool                        axesEnable ();
   void                        axesShow ( bool b );
 
-  void                        backgroundDefault();
-  void                        backgroundEdit();
-  bool                        backgroundEnable();
-
   void                        boundingBoxToggle();
   void                        boundingSphereToggle();
 
@@ -65,9 +61,6 @@ public:
 
   void                        camera ( unsigned int option );
   bool                        cameraEnable ();
-
-  void                        centerOfRotationSet ( bool b );
-  bool                        centerOfRotationCheck ();
 
   bool                        displayLists();
   void                        displayListsToggle();
@@ -100,18 +93,6 @@ public:
   bool                        lightingTwoSidedCheck  ();
   bool                        lightingTwoSidedEnable ();
 
-  void                        lightsShow ( bool );
-  bool                        lightsCheck ();
-  bool                        lightsEnable ();
-
-  bool                        modeNavigatingCheck ( );
-  bool                        modeNavigatingEnable ( );
-  void                        modeNavigatingSet ( );
-
-  bool                        modePickingCheck ( );
-  bool                        modePickingEnable ( );
-  void                        modePickingSet ( );
-
   void                        newWindow ( Usul::Interfaces::IUnknown* caller );
 
   bool                        hasPolygonMode ( IPolygonMode::Mode mode );
@@ -122,22 +103,13 @@ public:
   bool                        hasShadeModel ( IShadeModel::Mode mode );
   void                        setShadeModel ( IShadeModel::Mode mode );
 
-  bool                        sceneStage();
-  void                        sceneStage ( bool b );
-
   bool                        shadeModelEnable ();
 
   void                        spinToggle ();
   bool                        spinCheck ();
 
-  void                        stereoSet ( bool b );
-  bool                        stereoCheck ();
-  bool                        stereoCheck ( unsigned int mode );
-  bool                        stereoEnable();
   const StereoModes&          stereoModes();
-  void                        stereoModeSet ( unsigned int mode );
-  void                        stereoEyeDistanceSet ( float distance );
-  bool                        stereoEyeDistanceCheck ( float distance );
+  
 
 private:
   Controller  ( );

@@ -27,7 +27,6 @@ class QT_TOOLS_EXPORT Menu : public QMenu
   Q_OBJECT;
 public:
   typedef QMenu BaseClass;
-  typedef Action                   Action;
   typedef std::set<Action::RefPtr> Actions;
 
   /// Construction/Destruction.

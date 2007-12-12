@@ -28,6 +28,7 @@ public:
   typedef QPushButton BaseClass;
 
   ColorButton ( QWidget* parent = 0x0 );
+  virtual ~ColorButton();
 
   /// Get/Set the color.
   void                   color ( const QColor& c );

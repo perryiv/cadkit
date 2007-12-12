@@ -13,7 +13,6 @@ INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../../../" ${QT_INCLUDE_DIR} )
 
 #List the Sources
 SET (SOURCES
-    Image.cpp
     Move.cpp
     SettingsGroupScope.cpp
     Show.cpp

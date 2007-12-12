@@ -17,7 +17,6 @@ INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../../../" ${QT_INCLUDE_DIR} )
 
 #List the Sources
 SET (SOURCES
-    BaseAction.cpp
     Command.cpp
     ExitApplication.cpp
     ExportImage.cpp
@@ -29,17 +28,10 @@ SET (SOURCES
     ToggleView.cpp
 )
 
-SET(MOC_HDRS
-  BaseAction.h
-)
-
-# After this call, foo_MOC_SRCS = moc_Class1.cxx moc_Class2.cxx moc_Class3.cxx.
-QT4_WRAP_CPP(MOC_SRCS ${MOC_HDRS})
-
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # Create a Shared Library
-ADD_LIBRARY(HeliosQtCommands SHARED ${SOURCES} ${MOC_SRCS} )
+ADD_LIBRARY(HeliosQtCommands SHARED ${SOURCES} )
 
 # Link the Library	
 LINK_CADKIT( HeliosQtCommands Usul)

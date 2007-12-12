@@ -43,8 +43,8 @@ AnimationControl::AnimationControl ( Unknown *caller, QWidget *parent  ) : BaseC
   _refCount     ( 0 ),
   _mutex        ( new AnimationControl::Mutex ),
   _caller       ( caller ),
-  _document     ( Unknown::RefPtr ( 0x0 ) ),
-  _data         ( ITimeVaryingData::RefPtr ( 0x0 ) ),
+  _document     ( static_cast < Unknown* > ( 0x0 ) ),
+  _data         ( static_cast < ITimeVaryingData * > ( 0x0 ) ),
   _state        ( 0 ),
   _timer        ( 0x0 ),
   _milliSeconds ( 1000 ),
@@ -125,9 +125,9 @@ void AnimationControl::_destroy()
     }
 
     // Done with these.
-    _caller   = Unknown::RefPtr ( 0x0 );
-    _document = Unknown::RefPtr ( 0x0 );
-    _data     = ITimeVaryingData::RefPtr ( 0x0 );
+    _caller   = static_cast < Unknown* > ( 0x0 );
+    _document = static_cast < Unknown* > ( 0x0 );
+    _data     = static_cast < ITimeVaryingData* > ( 0x0 );
 
     // Should be true.
     USUL_ASSERT ( 0 == _refCount );

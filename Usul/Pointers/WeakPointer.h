@@ -32,6 +32,11 @@ namespace Pointers {
 struct DeleteListener
 {
   virtual void objectDeleted() = 0;
+
+protected:
+
+  // Make gcc happy.
+  virtual ~DeleteListener(){}
 };
 
 

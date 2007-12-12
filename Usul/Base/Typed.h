@@ -29,6 +29,11 @@ struct USUL_EXPORT Typed
 {
   static const std::type_info &     classTypeId();
   virtual const std::type_info &    typeId() const = 0;
+
+protected:
+
+  // Make gcc happy.
+  virtual ~Typed(){}
 };
 
 

@@ -39,6 +39,11 @@ struct IUnknown
 
   /// Unreference the interface.
   virtual void            unref ( bool allowDeletion = true ) = 0;
+  
+protected:
+
+  // Make gcc happy.
+  virtual ~IUnknown(){}
 };
 
 

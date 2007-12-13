@@ -301,8 +301,6 @@ void ParadisReader::_readHeader ( std::istream& in )
   // Read first precipitate record offset.
   _precipRecordOffset = Detail::read< Usul::Types::Uint64 >::value ( in, _isLittleEndian );
 
-  Usul::Types::Uint64 metaDataOffset = Detail::read< Usul::Types::Uint64 >::value ( in, _isLittleEndian );
-
   // Read the version.
   {
     Usul::Types::Uint32 version ( Detail::read < Usul::Types::Uint32 >::value
@@ -452,9 +450,6 @@ void ParadisReader::_readPrecipitates ( std::istream& in )
           ";\n File: ", _file.first );
     }
 
-    // Read the length.
-    Usul::Types::Uint32 length ( Detail::read< Usul::Types::Uint32 >::value ( in, _isLittleEndian ) );
-
     // Read the id.
     Usul::Types::Uint32 id ( Detail::read< Usul::Types::Uint32 >::value ( in, _isLittleEndian ) );
 
@@ -471,8 +466,6 @@ void ParadisReader::_readPrecipitates ( std::istream& in )
     Usul::Types::Uint64 verticesOffset    ( Detail::read< Usul::Types::Uint64 >::value ( in, _isLittleEndian ) );
     Usul::Types::Uint64 trianglesOffset   ( Detail::read< Usul::Types::Uint64 >::value ( in, _isLittleEndian ) );
     Usul::Types::Uint64 normalsOffset     ( Detail::read< Usul::Types::Uint64 >::value ( in, _isLittleEndian ) );
-    Usul::Types::Uint64 metadataOffset    ( Detail::read< Usul::Types::Uint64 >::value ( in, _isLittleEndian ) );
-    Usul::Types::Uint64 endOfRecordOffset ( Detail::read< Usul::Types::Uint64 >::value ( in, _isLittleEndian ) );
 
     // Precipitate Record
     PrecipitateRecord record;

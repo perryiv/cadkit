@@ -99,11 +99,6 @@
   // Add/Remove clipping plane
 //TODO:: Implement this
 
-  // Get/set stereo
-  - (IBAction) stereo:(id)sender;
-
-
-
 
 @end
 

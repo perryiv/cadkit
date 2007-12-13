@@ -1642,9 +1642,6 @@ void Viewer::_dumpFrame()
 
 bool Viewer::writeImageFile ( const std::string &filename ) const
 {
-  // Force all detail to render.
-  Viewer *me ( const_cast < Viewer * > ( this ) );
-
   // Get scale of window size.
   const float scale ( this->frameDump().scale() );
 

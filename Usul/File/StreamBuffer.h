@@ -46,6 +46,7 @@ public:
   struct Callback
   {
     virtual void operator () ( const std::string &file, unsigned long bytes, unsigned long total ) = 0;
+    virtual ~Callback () {};
   };
 
   void callback ( Callback *cb )

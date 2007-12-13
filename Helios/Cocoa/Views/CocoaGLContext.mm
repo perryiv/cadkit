@@ -77,6 +77,10 @@ void    CocoaGLContext::swapBuffers()
 }
 
 
+bool CocoaGLContext::isContextThread() const
+{
+return true;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

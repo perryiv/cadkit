@@ -57,7 +57,7 @@
     _runModelFlyin = YES;
     renderLock = [[NSLock alloc] init];
     // Set up the ProgressBar/Status Text Bridge
-    long swapInterval = 1;
+    const GLint swapInterval = 1;
     [[self openGLContext]
         setValues: &swapInterval
      forParameter: NSOpenGLCPSwapInterval ] ;
@@ -119,7 +119,7 @@
     _osgInitialized = YES;
    // glEnable (GL_MULTISAMPLE_ARB);
    // glHint (GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
-    _viewer->axes( false );
+    _viewer->axesShown( false );
     return YES;
   } else {
     _osgInitialized = NO;
@@ -309,14 +309,13 @@
   
   float x ( location.x );
   float y ( location.y );
+ 
+  if ( _viewer.valid() )
+  {
+    typedef OsgTools::Render::EventAdapter EventAdapter;
+    EventAdapter::Ptr ea ( _viewer->eventAdaptor ( x, y, left, middle, right, EventAdapter::PUSH ) );
   
-  _viewer->buttonPress ( x, y, left, middle, right );
-  if (left) {
-    unsigned int numClicks ( [theEvent clickCount] );
-    
-    // Handle the events. Make sure you pick before you drag.
-    _viewer->handlePicking  ( x, y, left, numClicks );
-    _viewer->handleDragging ( x, y, OsgTools::Draggers::Dragger::START );
+    _viewer->buttonPress ( ea.get() );
   }
 }
 // -----------------------------------------------------------------------------
@@ -341,25 +340,19 @@
 {
   NSPoint location = [self convertPoint:[theEvent locationInWindow] fromView:nil];
   bool left   ( [theEvent buttonNumber] == 0 );
-
+  bool middle ( [theEvent buttonNumber] == 2 );
+  bool right  ( [theEvent buttonNumber] == 1 );
   
   float x ( location.x );
   float y ( location.y );
   
-  _viewer->buttonRelease ( x, y, false, false, false );
+  if ( _viewer.valid() )
+  {
+    typedef OsgTools::Render::EventAdapter EventAdapter;
+    EventAdapter::Ptr ea ( _viewer->eventAdaptor ( x, y, left, middle, right, EventAdapter::RELEASE ) );
   
-  //typedef OsgTools::Render::EventAdapter EventAdapter;
-  //_viewer->handleNavigation ( x, y, left, middle, right, EventAdapter::RELEASE );
-  if (left) {
-    unsigned int numClicks ( [theEvent clickCount] );
-    
-    // Handle the events. Make sure you pick before you drag.
-    _viewer->handlePicking  ( x, y, left, numClicks );
-    _viewer->handleDragging ( x, y, OsgTools::Draggers::Dragger::FINISH );
+    _viewer->buttonRelease ( ea.get() );
   }
-  
-  // Make sure.
-  OsgTools::Draggers::Dragger::dragging ( 0x0, osg::Matrixd::identity() );
 }
 
 // -----------------------------------------------------------------------------
@@ -393,17 +386,15 @@
   // See if any mouses button are down.
   unsigned int mouse ( left || middle || right );
   
-  // Set the event type.
-  typedef OsgTools::Render::EventAdapter EventAdapter;
-  EventAdapter::EventType type ( ( mouse ) ? EventAdapter::DRAG : EventAdapter::MOVE );
+  if ( _viewer.valid() )
+  {
+    typedef OsgTools::Render::EventAdapter EventAdapter;
+    EventAdapter::EventType type ( ( mouse ) ? EventAdapter::DRAG : EventAdapter::MOVE );
+    EventAdapter::Ptr ea ( _viewer->eventAdaptor ( x, y, left, middle, right, type ) );
   
-  // Handle the events. Make sure you pick before you drag.
-  _viewer->handleNavigation ( x, y, left, middle, right, type );
-  _viewer->handlePicking    ( x, y, false, 0 );
-  _viewer->handleDragging   ( x, y, OsgTools::Draggers::Dragger::MOVE );
+    _viewer->mouseMove ( ea.get() );
+  }
   
-  // Handle tool.
-  _viewer->handleTool ( left, middle, right, true, x, y, 0.0 );
 }
 
 // -----------------------------------------------------------------------------
@@ -483,11 +474,6 @@
         _viewer->setMode ( OsgTools::Render::Viewer::NAVIGATION );
       break;
       
-      // See if it was one of the control keys
-    case Usul::Devices::KEY_Control_L:
-    case Usul::Devices::KEY_Control_R:
-      _viewer->loadLastTool();
-      break;
       // See if it was the s key...
     case Usul::Devices::KEY_s:
       _viewer->stereo ( !_viewer->stereo() );
@@ -526,16 +512,6 @@
     case Usul::Devices::KEY_Escape: 
     case Usul::Devices::KEY_v:
       _viewer->cycleMode();
-      break;
-      
-    case Usul::Devices::KEY_Control_L:
-    case Usul::Devices::KEY_Control_R:
-    {
-      Usul::Interfaces::ICleanUp::QueryPtr cleanUp ( _viewer->getTool() );
-      if( cleanUp.valid() )
-        cleanUp->cleanUp( _viewer->queryInterface( Usul::Interfaces::IUnknown::IID ) );
-      _viewer->doneTool();
-    }
       break;
   }
 }
@@ -714,12 +690,12 @@
 // -----------------------------------------------------------------------------
 - (IBAction) toggleAxis:(id)sender
 {
-  if (_viewer->axes()) {
+  if (_viewer->isAxesShown()) {
     [sender setTitle:TOGGLE_AXIS_ON];
   } else {
     [sender setTitle:TOGGLE_AXIS_OFF];
   }
-  _viewer->axes( !_viewer->axes() );
+  _viewer->axesShown( !_viewer->isAxesShown() );
   [self setNeedsDisplay:YES];
 }
 

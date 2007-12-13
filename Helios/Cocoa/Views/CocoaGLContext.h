@@ -34,6 +34,7 @@ class CocoaGLContext : public Usul::Base::Referenced,
   
      void    makeCurrent();
      void    swapBuffers();
+	 bool    isContextThread() const;
     
   
      

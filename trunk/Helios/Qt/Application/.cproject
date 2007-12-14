@@ -1,5 +1,6 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?fileVersion 4.0.0?>
+
 <cproject>
   
 
@@ -9,72 +10,75 @@
     <cconfiguration id="cdt.managedbuild.config.gnu.exe.debug.1699370273">
       
 
-      <storageModule moduleId="org.eclipse.cdt.core.settings" name="Debug" id="cdt.managedbuild.config.gnu.exe.debug.1699370273" buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider">
-        <externalSettings/>
-        <extensions>
-          <extension point="org.eclipse.cdt.core.BinaryParser" id="org.eclipse.cdt.core.ELF"/>
-          <extension point="org.eclipse.cdt.core.ErrorParser" id="org.eclipse.cdt.core.GASErrorParser"/>
-          <extension point="org.eclipse.cdt.core.ErrorParser" id="org.eclipse.cdt.core.GCCErrorParser"/>
-          <extension point="org.eclipse.cdt.core.ErrorParser" id="org.eclipse.cdt.core.GLDErrorParser"/>
-          <extension point="org.eclipse.cdt.core.ErrorParser" id="org.eclipse.cdt.core.MakeErrorParser"/>
-        </extensions>
-      </storageModule>
+      <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.exe.debug.1699370273" moduleId="org.eclipse.cdt.core.settings" name="Debug">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
       
 
       <storageModule moduleId="cdtBuildSystem" version="4.0.0">
-        <configuration id="cdt.managedbuild.config.gnu.exe.debug.1699370273" name="Debug" description="" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" parent="cdt.managedbuild.config.gnu.exe.debug" artifactName="HeliosQtd" artifactExtension="" cleanCommand="rm -rf" prebuildStep="" postbuildStep="cp -f ${BuildArtifactFilePrefix}${BuildArtifactFileName} ${CADKIT_BIN_DIR}" preannouncebuildStep="" postannouncebuildStep="">
-          <folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1699370273." name="/" resourcePath="">
-            <toolChain superClass="cdt.managedbuild.toolchain.gnu.exe.debug" id="cdt.managedbuild.toolchain.gnu.exe.debug.1601842140" name="Linux GCC">
-              <targetPlatform superClass="cdt.managedbuild.target.gnu.platform.exe.debug" id="cdt.managedbuild.target.gnu.platform.exe.debug.1060077928" name="Debug Platform"/>
-              <builder superClass="cdt.managedbuild.target.gnu.builder.exe.debug" id="cdt.managedbuild.target.gnu.builder.exe.debug.116808541" name="Gnu Make Builder" managedBuildOn="true" keepEnvironmentInBuildfile="false" buildPath="${workspace_loc:/HeliosQtApp/Debug}"/>
-              <tool superClass="cdt.managedbuild.tool.gnu.archiver.base" id="cdt.managedbuild.tool.gnu.archiver.base.993505564" name="GCC Archiver"/>
-              <tool superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1174193832" name="GCC C++ Compiler">
-                <option superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" id="gnu.cpp.compiler.exe.debug.option.optimization.level.1777406199" name="Optimization Level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
-                <option superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" id="gnu.cpp.compiler.exe.debug.option.debugging.level.1572763713" name="Debug Level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
-                <option superClass="gnu.cpp.compiler.option.other.other" id="gnu.cpp.compiler.option.other.other.610482447" name="Other flags" value="-c -fmessage-length=0 -fPIC" valueType="string"/>
-                <option superClass="gnu.cpp.compiler.option.include.paths" id="gnu.cpp.compiler.option.include.paths.1978868011" name="Include paths (-I)" valueType="includePath">
-                  <listOptionValue value="&quot;${CADKIT_INC_DIR}&quot;" builtIn="false"/>
-                  <listOptionValue value="&quot;${CADKIT_INC_DIR}/Experimental&quot;" builtIn="false"/>
-                  <listOptionValue value="&quot;${QTDIR}/include&quot;" builtIn="false"/>
-                </option>
-                <inputType superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input" id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1592724850"/>
-              </tool>
-              <tool superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.143494942" name="GCC C Compiler">
-                <option superClass="gnu.c.compiler.exe.debug.option.optimization.level" id="gnu.c.compiler.exe.debug.option.optimization.level.2029935566" name="Optimization Level" defaultValue="gnu.c.optimization.level.none" valueType="enumerated"/>
-                <option superClass="gnu.c.compiler.exe.debug.option.debugging.level" id="gnu.c.compiler.exe.debug.option.debugging.level.1784366101" name="Debug Level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
-                <inputType superClass="cdt.managedbuild.tool.gnu.c.compiler.input" id="cdt.managedbuild.tool.gnu.c.compiler.input.1514495326"/>
-              </tool>
-              <tool superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.974195882" name="GCC C Linker"/>
-              <tool superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.2121567640" name="GCC C++ Linker">
-                <option superClass="gnu.cpp.link.option.flags" id="gnu.cpp.link.option.flags.1109733001" name="Linker flags" value="-fPIC" valueType="string"/>
-                <option superClass="gnu.cpp.link.option.libs" id="gnu.cpp.link.option.libs.1981514386" name="Libraries (-l)" valueType="libs">
-                  <listOptionValue value="Usuld" builtIn="false"/>
-                  <listOptionValue value="HeliosQtToolsd" builtIn="false"/>
-                  <listOptionValue value="HeliosQtCommandsd" builtIn="false"/>
-                  <listOptionValue value="QtToolsd" builtIn="false"/>
-                  <listOptionValue value="OpenThreadsExd" builtIn="false"/>
-                  <listOptionValue value="MenuKitd" builtIn="false"/>
-                  <listOptionValue value="XmlTreed" builtIn="false"/>
-                  <listOptionValue value="HeliosQtCored" builtIn="false"/>
-                  <listOptionValue value="QtCore" builtIn="false"/>
-                  <listOptionValue value="QtGui" builtIn="false"/>
-                </option>
-                <option superClass="gnu.cpp.link.option.paths" id="gnu.cpp.link.option.paths.1965064248" name="Library search path (-L)" valueType="libPaths">
-                  <listOptionValue value="&quot;${CADKIT_LIB_DIR}&quot;" builtIn="false"/>
-                  <listOptionValue value="&quot;${QTDIR}/lib&quot;" builtIn="false"/>
-                </option>
-                <inputType superClass="cdt.managedbuild.tool.gnu.cpp.linker.input" id="cdt.managedbuild.tool.gnu.cpp.linker.input.1822306901">
-                  <additionalInput paths="$(USER_OBJS)" kind="additionalinputdependency"/>
-                  <additionalInput paths="$(LIBS)" kind="additionalinput"/>
-                </inputType>
-              </tool>
-              <tool superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1404788036" name="GCC Assembler">
-                <inputType superClass="cdt.managedbuild.tool.gnu.assembler.input" id="cdt.managedbuild.tool.gnu.assembler.input.1104515624"/>
-              </tool>
-            </toolChain>
-          </folderInfo>
-        </configuration>
-      </storageModule>
+<configuration artifactExtension="" artifactName="HeliosQtd" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.exe.debug.1699370273" name="Debug" parent="cdt.managedbuild.config.gnu.exe.debug" postannouncebuildStep="" postbuildStep="cp -f ${BuildArtifactFilePrefix}${BuildArtifactFileName} ${CADKIT_BIN_DIR}" preannouncebuildStep="" prebuildStep="">
+<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1699370273." name="/" resourcePath="">
+<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1601842140" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
+<targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug.1060077928" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
+<builder buildPath="${workspace_loc:/HeliosQtApp/Debug}" id="cdt.managedbuild.target.gnu.builder.exe.debug.116808541" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
+<tool id="cdt.managedbuild.tool.gnu.archiver.base.993505564" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1174193832" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
+<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.1777406199" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.1572763713" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
+<option id="gnu.cpp.compiler.option.other.other.610482447" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -fPIC" valueType="string"/>
+<option id="gnu.cpp.compiler.option.include.paths.1978868011" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="&quot;${CADKIT_INC_DIR}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${CADKIT_INC_DIR}/Experimental&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${QTDIR}/include&quot;"/>
+</option>
+<option id="gnu.cpp.compiler.option.preprocessor.def.87175085" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="_DEBUG"/>
+</option>
+<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1592724850" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.143494942" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
+<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.2029935566" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
+<option id="gnu.c.compiler.exe.debug.option.debugging.level.1784366101" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1514495326" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.974195882" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.2121567640" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
+<option id="gnu.cpp.link.option.flags.1109733001" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-fPIC" valueType="string"/>
+<option id="gnu.cpp.link.option.libs.1981514386" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+<listOptionValue builtIn="false" value="Usuld"/>
+<listOptionValue builtIn="false" value="HeliosQtToolsd"/>
+<listOptionValue builtIn="false" value="HeliosQtCommandsd"/>
+<listOptionValue builtIn="false" value="QtToolsd"/>
+<listOptionValue builtIn="false" value="OpenThreadsExd"/>
+<listOptionValue builtIn="false" value="MenuKitd"/>
+<listOptionValue builtIn="false" value="XmlTreed"/>
+<listOptionValue builtIn="false" value="HeliosQtCored"/>
+<listOptionValue builtIn="false" value="QtCore"/>
+<listOptionValue builtIn="false" value="QtGui"/>
+</option>
+<option id="gnu.cpp.link.option.paths.1965064248" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
+<listOptionValue builtIn="false" value="&quot;${CADKIT_LIB_DIR}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${QTDIR}/lib&quot;"/>
+</option>
+<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1822306901" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+</inputType>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1404788036" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
+<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1104515624" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+</tool>
+</toolChain>
+</folderInfo>
+</configuration>
+</storageModule>
       
 
       <storageModule moduleId="scannerConfiguration">
@@ -1331,16 +1335,16 @@
     <cconfiguration id="cdt.managedbuild.config.gnu.exe.release.1344894802">
       
 
-      <storageModule moduleId="org.eclipse.cdt.core.settings" name="Release" id="cdt.managedbuild.config.gnu.exe.release.1344894802" buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider">
-        <externalSettings/>
-        <extensions>
-          <extension point="org.eclipse.cdt.core.BinaryParser" id="org.eclipse.cdt.core.ELF"/>
-          <extension point="org.eclipse.cdt.core.ErrorParser" id="org.eclipse.cdt.core.GASErrorParser"/>
-          <extension point="org.eclipse.cdt.core.ErrorParser" id="org.eclipse.cdt.core.GCCErrorParser"/>
-          <extension point="org.eclipse.cdt.core.ErrorParser" id="org.eclipse.cdt.core.GLDErrorParser"/>
-          <extension point="org.eclipse.cdt.core.ErrorParser" id="org.eclipse.cdt.core.MakeErrorParser"/>
-        </extensions>
-      </storageModule>
+      <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.exe.release.1344894802" moduleId="org.eclipse.cdt.core.settings" name="Release">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
       
 
       <storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -2691,8 +2695,8 @@
   
 
   <storageModule moduleId="cdtBuildSystem" version="4.0.0">
-    <project id="HeliosQtApp.cdt.managedbuild.target.gnu.exe.1209594207" name="Executable" projectType="cdt.managedbuild.target.gnu.exe"/>
-  </storageModule>
+<project id="HeliosQtApp.cdt.managedbuild.target.gnu.exe.1209594207" name="Executable" projectType="cdt.managedbuild.target.gnu.exe"/>
+</storageModule>
   
 
 </cproject>

@@ -34,6 +34,9 @@
 <listOptionValue builtIn="false" value="&quot;${CADKIT_INC_DIR}&quot;"/>
 <listOptionValue builtIn="false" value="&quot;${OPENTHREADS_INC_DIR}&quot;"/>
 </option>
+<option id="gnu.cpp.compiler.option.preprocessor.def.1308985030" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="_DEBUG"/>
+</option>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1087687727" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.c.compiler.so.debug.295669563" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.so.debug">

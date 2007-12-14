@@ -209,6 +209,11 @@ void Usul::File::make ( const std::string &p )
     temp.append ( "/" );
     parts.erase ( parts.begin() );
   }
+  
+  // On *NIX platorms, prepend a / to the beginning of the path.∫
+  #ifndef _MSC_VER
+  temp.insert ( temp.begin(), '/' );
+  #endif
 
   // Loop through all but last part.
   const unsigned int num ( parts.size() );

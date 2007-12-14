@@ -34,6 +34,9 @@
 <listOptionValue builtIn="false" value="&quot;${QTDIR}/include&quot;"/>
 </option>
 <option id="gnu.cpp.compiler.option.other.other.1077312431" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -fPIC" valueType="string"/>
+<option id="gnu.cpp.compiler.option.preprocessor.def.1359339500" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="_DEBUG"/>
+</option>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.426596949" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.c.compiler.so.debug.2011453370" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.so.debug">

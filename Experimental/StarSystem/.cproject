@@ -1,5 +1,6 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?fileVersion 4.0.0?>
+
 <cproject>
   
 
@@ -9,83 +10,79 @@
     <cconfiguration id="cdt.managedbuild.config.gnu.so.debug.1493386347">
       
 
-      <storageModule id="cdt.managedbuild.config.gnu.so.debug.1493386347" moduleId="org.eclipse.cdt.core.settings" name="Debug" buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider">
-        
-
-        <macros>
-          <stringMacro name="OSSIM_LIB_DIR" type="VALUE_TEXT" value="/home/perry/sdk/ossim/ossim/lib"/>
-        </macros>
-        <externalSettings>
-          <externalSetting>
-            <entry kind="includePath" flags="VALUE_WORKSPACE_PATH" name="/StarSystem"/>
-            <entry kind="libraryPath" flags="VALUE_WORKSPACE_PATH" name="/StarSystem/Debug"/>
-          </externalSetting>
-        </externalSettings>
-        <extensions>
-          <extension point="org.eclipse.cdt.core.BinaryParser" id="org.eclipse.cdt.core.ELF"/>
-          <extension point="org.eclipse.cdt.core.ErrorParser" id="org.eclipse.cdt.core.GASErrorParser"/>
-          <extension point="org.eclipse.cdt.core.ErrorParser" id="org.eclipse.cdt.core.GCCErrorParser"/>
-          <extension point="org.eclipse.cdt.core.ErrorParser" id="org.eclipse.cdt.core.GLDErrorParser"/>
-          <extension point="org.eclipse.cdt.core.ErrorParser" id="org.eclipse.cdt.core.MakeErrorParser"/>
-        </extensions>
-      </storageModule>
+      <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.so.debug.1493386347" moduleId="org.eclipse.cdt.core.settings" name="Debug">
+<externalSettings>
+<externalSetting>
+<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/StarSystem"/>
+<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/StarSystem/Debug"/>
+</externalSetting>
+</externalSettings>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
       
 
       <storageModule moduleId="cdtBuildSystem" version="4.0.0">
-        
-
-        <configuration id="cdt.managedbuild.config.gnu.so.debug.1493386347" name="Debug" description="" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.sharedLib" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib" parent="cdt.managedbuild.config.gnu.so.debug" artifactName="StarSystemd" artifactExtension="so" cleanCommand="rm -rf" prebuildStep="" postbuildStep="cp -f ${BuildArtifactFilePrefix}${BuildArtifactFileName} ${CADKIT_BIN_DIR}" preannouncebuildStep="" postannouncebuildStep="">
-          <folderInfo id="cdt.managedbuild.config.gnu.so.debug.1493386347." name="/" resourcePath="">
-            <toolChain superClass="cdt.managedbuild.toolchain.gnu.so.debug" id="cdt.managedbuild.toolchain.gnu.so.debug.1222535620" name="Linux GCC">
-              <targetPlatform superClass="cdt.managedbuild.target.gnu.platform.so.debug" id="cdt.managedbuild.target.gnu.platform.so.debug.62203256" name="Debug Platform"/>
-              <builder superClass="cdt.managedbuild.target.gnu.builder.so.debug" id="cdt.managedbuild.target.gnu.builder.so.debug.1726423246" name="Gnu Make Builder" managedBuildOn="true" keepEnvironmentInBuildfile="false" buildPath="${workspace_loc:/StarSystem/Debug}"/>
-              <tool superClass="cdt.managedbuild.tool.gnu.archiver.base" id="cdt.managedbuild.tool.gnu.archiver.base.581183059" name="GCC Archiver"/>
-              <tool superClass="cdt.managedbuild.tool.gnu.cpp.compiler.so.debug" id="cdt.managedbuild.tool.gnu.cpp.compiler.so.debug.1839502732" name="GCC C++ Compiler">
-                <option superClass="gnu.cpp.compiler.so.debug.option.optimization.level" id="gnu.cpp.compiler.so.debug.option.optimization.level.1403039055" name="Optimization Level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
-                <option superClass="gnu.cpp.compiler.so.debug.option.debugging.level" id="gnu.cpp.compiler.so.debug.option.debugging.level.1843684848" name="Debug Level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
-                <option superClass="gnu.cpp.compiler.option.include.paths" id="gnu.cpp.compiler.option.include.paths.1866561550" name="Include paths (-I)" valueType="includePath">
-                  <listOptionValue value="&quot;${CADKIT_INC_DIR}&quot;" builtIn="false"/>
-                  <listOptionValue value="&quot;${CADKIT_INC_DIR}/Experimental&quot;" builtIn="false"/>
-                  <listOptionValue value="&quot;${OSG_INC_DIR}&quot;" builtIn="false"/>
-                  <listOptionValue value="&quot;${OSSIM_INC_DIR}&quot;" builtIn="false"/>
-                </option>
-                <option superClass="gnu.cpp.compiler.option.other.other" id="gnu.cpp.compiler.option.other.other.1895015690" name="Other flags" value="-c -fmessage-length=0 -fPIC" valueType="string"/>
-                <inputType superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input" id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1063424458"/>
-              </tool>
-              <tool superClass="cdt.managedbuild.tool.gnu.c.compiler.so.debug" id="cdt.managedbuild.tool.gnu.c.compiler.so.debug.704901855" name="GCC C Compiler">
-                <option superClass="gnu.c.compiler.so.debug.option.optimization.level" id="gnu.c.compiler.so.debug.option.optimization.level.1383292345" name="Optimization Level" defaultValue="gnu.c.optimization.level.none" valueType="enumerated"/>
-                <option superClass="gnu.c.compiler.so.debug.option.debugging.level" id="gnu.c.compiler.so.debug.option.debugging.level.1781049956" name="Debug Level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
-                <inputType superClass="cdt.managedbuild.tool.gnu.c.compiler.input" id="cdt.managedbuild.tool.gnu.c.compiler.input.586823866"/>
-              </tool>
-              <tool superClass="cdt.managedbuild.tool.gnu.c.linker.so.debug" id="cdt.managedbuild.tool.gnu.c.linker.so.debug.988412767" name="GCC C Linker">
-                <option superClass="gnu.c.link.so.debug.option.shared" id="gnu.c.link.so.debug.option.shared.1268231245" name="Shared (-shared)" defaultValue="true" valueType="boolean"/>
-              </tool>
-              <tool superClass="cdt.managedbuild.tool.gnu.cpp.linker.so.debug" id="cdt.managedbuild.tool.gnu.cpp.linker.so.debug.1960734333" name="GCC C++ Linker">
-                <option superClass="gnu.cpp.link.so.debug.option.shared" id="gnu.cpp.link.so.debug.option.shared.800559005" name="Shared (-shared)" defaultValue="true" valueType="boolean"/>
-                <option superClass="gnu.cpp.link.option.libs" id="gnu.cpp.link.option.libs.2064462004" name="Libraries (-l)" valueType="libs">
-                  <listOptionValue value="Usuld" builtIn="false"/>
-                  <listOptionValue value="osg" builtIn="false"/>
-                  <listOptionValue value="ossim" builtIn="false"/>
-                  <listOptionValue value="OsgToolsd" builtIn="false"/>
-                </option>
-                <option superClass="gnu.cpp.link.option.paths" id="gnu.cpp.link.option.paths.900308956" name="Library search path (-L)" valueType="libPaths">
-                  <listOptionValue value="&quot;${CADKIT_BIN_DIR}&quot;" builtIn="false"/>
-                  <listOptionValue value="&quot;${OSG_LIB_DIR}&quot;" builtIn="false"/>
-                  <listOptionValue value="&quot;${OSSIM_LIB_DIR}&quot;" builtIn="false"/>
-                </option>
-                <option superClass="gnu.cpp.link.option.flags" id="gnu.cpp.link.option.flags.1346764382" name="Linker flags" value="-fPIC" valueType="string"/>
-                <inputType superClass="cdt.managedbuild.tool.gnu.cpp.linker.input" id="cdt.managedbuild.tool.gnu.cpp.linker.input.416373157">
-                  <additionalInput paths="$(USER_OBJS)" kind="additionalinputdependency"/>
-                  <additionalInput paths="$(LIBS)" kind="additionalinput"/>
-                </inputType>
-              </tool>
-              <tool superClass="cdt.managedbuild.tool.gnu.assembler.so.debug" id="cdt.managedbuild.tool.gnu.assembler.so.debug.797076213" name="GCC Assembler">
-                <inputType superClass="cdt.managedbuild.tool.gnu.assembler.input" id="cdt.managedbuild.tool.gnu.assembler.input.581360586"/>
-              </tool>
-            </toolChain>
-          </folderInfo>
-        </configuration>
-      </storageModule>
+<configuration artifactExtension="so" artifactName="StarSystemd" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.sharedLib,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.so.debug.1493386347" name="Debug" parent="cdt.managedbuild.config.gnu.so.debug" postannouncebuildStep="" postbuildStep="cp -f ${BuildArtifactFilePrefix}${BuildArtifactFileName} ${CADKIT_BIN_DIR}" preannouncebuildStep="" prebuildStep="">
+<folderInfo id="cdt.managedbuild.config.gnu.so.debug.1493386347." name="/" resourcePath="">
+<toolChain id="cdt.managedbuild.toolchain.gnu.so.debug.1222535620" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.so.debug">
+<targetPlatform id="cdt.managedbuild.target.gnu.platform.so.debug.62203256" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.so.debug"/>
+<builder buildPath="${workspace_loc:/StarSystem/Debug}" id="cdt.managedbuild.target.gnu.builder.so.debug.1726423246" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.so.debug"/>
+<tool id="cdt.managedbuild.tool.gnu.archiver.base.581183059" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.so.debug.1839502732" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.so.debug">
+<option id="gnu.cpp.compiler.so.debug.option.optimization.level.1403039055" name="Optimization Level" superClass="gnu.cpp.compiler.so.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+<option id="gnu.cpp.compiler.so.debug.option.debugging.level.1843684848" name="Debug Level" superClass="gnu.cpp.compiler.so.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
+<option id="gnu.cpp.compiler.option.include.paths.1866561550" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="&quot;${CADKIT_INC_DIR}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${CADKIT_INC_DIR}/Experimental&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${OSG_INC_DIR}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${OSSIM_INC_DIR}&quot;"/>
+</option>
+<option id="gnu.cpp.compiler.option.other.other.1895015690" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -fPIC" valueType="string"/>
+<option id="gnu.cpp.compiler.option.preprocessor.def.2121739477" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="_DEBUG"/>
+</option>
+<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1063424458" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.c.compiler.so.debug.704901855" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.so.debug">
+<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.so.debug.option.optimization.level.1383292345" name="Optimization Level" superClass="gnu.c.compiler.so.debug.option.optimization.level" valueType="enumerated"/>
+<option id="gnu.c.compiler.so.debug.option.debugging.level.1781049956" name="Debug Level" superClass="gnu.c.compiler.so.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.586823866" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.c.linker.so.debug.988412767" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.so.debug">
+<option defaultValue="true" id="gnu.c.link.so.debug.option.shared.1268231245" name="Shared (-shared)" superClass="gnu.c.link.so.debug.option.shared" valueType="boolean"/>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.cpp.linker.so.debug.1960734333" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.so.debug">
+<option defaultValue="true" id="gnu.cpp.link.so.debug.option.shared.800559005" name="Shared (-shared)" superClass="gnu.cpp.link.so.debug.option.shared" valueType="boolean"/>
+<option id="gnu.cpp.link.option.libs.2064462004" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+<listOptionValue builtIn="false" value="Usuld"/>
+<listOptionValue builtIn="false" value="osg"/>
+<listOptionValue builtIn="false" value="ossim"/>
+<listOptionValue builtIn="false" value="OsgToolsd"/>
+</option>
+<option id="gnu.cpp.link.option.paths.900308956" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
+<listOptionValue builtIn="false" value="&quot;${CADKIT_BIN_DIR}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${OSG_LIB_DIR}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${OSSIM_LIB_DIR}&quot;"/>
+</option>
+<option id="gnu.cpp.link.option.flags.1346764382" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-fPIC" valueType="string"/>
+<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.416373157" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+</inputType>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.assembler.so.debug.797076213" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.so.debug">
+<inputType id="cdt.managedbuild.tool.gnu.assembler.input.581360586" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+</tool>
+</toolChain>
+</folderInfo>
+</configuration>
+</storageModule>
       
 
       <storageModule moduleId="scannerConfiguration">
@@ -1345,23 +1342,21 @@
     <cconfiguration id="cdt.managedbuild.config.gnu.so.release.435783629">
       
 
-      <storageModule id="cdt.managedbuild.config.gnu.so.release.435783629" moduleId="org.eclipse.cdt.core.settings" name="Release" buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider">
-        
-
-        <externalSettings>
-          <externalSetting>
-            <entry kind="includePath" flags="VALUE_WORKSPACE_PATH" name="/StarSystem"/>
-            <entry kind="libraryPath" flags="VALUE_WORKSPACE_PATH" name="/StarSystem/Release"/>
-          </externalSetting>
-        </externalSettings>
-        <extensions>
-          <extension point="org.eclipse.cdt.core.BinaryParser" id="org.eclipse.cdt.core.ELF"/>
-          <extension point="org.eclipse.cdt.core.ErrorParser" id="org.eclipse.cdt.core.GASErrorParser"/>
-          <extension point="org.eclipse.cdt.core.ErrorParser" id="org.eclipse.cdt.core.GCCErrorParser"/>
-          <extension point="org.eclipse.cdt.core.ErrorParser" id="org.eclipse.cdt.core.GLDErrorParser"/>
-          <extension point="org.eclipse.cdt.core.ErrorParser" id="org.eclipse.cdt.core.MakeErrorParser"/>
-        </extensions>
-      </storageModule>
+      <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.so.release.435783629" moduleId="org.eclipse.cdt.core.settings" name="Release">
+<externalSettings>
+<externalSetting>
+<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/StarSystem"/>
+<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/StarSystem/Release"/>
+</externalSetting>
+</externalSettings>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
       
 
       <storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -2724,10 +2719,8 @@
   
 
   <storageModule moduleId="cdtBuildSystem" version="4.0.0">
-    
-
-    <project id="StarSystem.cdt.managedbuild.target.gnu.so.236310895" name="Shared Library" projectType="cdt.managedbuild.target.gnu.so"/>
-  </storageModule>
+<project id="StarSystem.cdt.managedbuild.target.gnu.so.236310895" name="Shared Library" projectType="cdt.managedbuild.target.gnu.so"/>
+</storageModule>
   
 
 </cproject>

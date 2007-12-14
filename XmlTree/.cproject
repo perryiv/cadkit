@@ -33,7 +33,10 @@
 <listOptionValue builtIn="false" value="&quot;${CADKIT_INC_DIR}&quot;"/>
 <listOptionValue builtIn="false" value="&quot;${XERCES_INC_DIR}&quot;"/>
 </option>
-<option id="gnu.cpp.compiler.option.other.other.412714651" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -fPIC" valueType="string"/>
+<option id="gnu.cpp.compiler.option.other.other.412714651" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -fPIC" valueType="string"/>
+<option id="gnu.cpp.compiler.option.preprocessor.def.1736034286" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="_DEBUG"/>
+</option>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.2116324275" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.c.compiler.so.debug.1877209022" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.so.debug">
@@ -54,7 +57,7 @@
 <listOptionValue builtIn="false" value="xerces-c"/>
 <listOptionValue builtIn="false" value="Usuld"/>
 </option>
-<option id="gnu.cpp.link.option.flags.775903474" superClass="gnu.cpp.link.option.flags" value="-fPIC" valueType="string"/>
+<option id="gnu.cpp.link.option.flags.775903474" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-fPIC" valueType="string"/>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.59624352" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 <additionalInput kind="additionalinput" paths="$(LIBS)"/>

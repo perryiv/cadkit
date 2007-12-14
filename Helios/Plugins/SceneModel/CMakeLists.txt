@@ -19,7 +19,6 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR
 
 # Set the sources to compile.
 set (SOURCES
-	SceneFactory.cpp
 	SceneComponent.cpp
 	SceneDocument.cpp
 )

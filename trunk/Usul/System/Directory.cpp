@@ -21,7 +21,6 @@
 #endif
 
 #include <stdexcept>
-#include <iostream>
 
 using namespace Usul::System;
 
@@ -39,9 +38,9 @@ void Directory::cwd ( const std::string& directory )
 
   // Set new working directory.
 #ifdef _MSC_VER
-  const int result ( ::_chdir( directory.c_str() ) );
+  const int result ( ::_chdir ( directory.c_str() ) );
 #else
-  const int result ( ::chdir ( directory.c_str() ) );
+  const int result (  ::chdir ( directory.c_str() ) );
 #endif
 
   // Check result.
@@ -49,10 +48,6 @@ void Directory::cwd ( const std::string& directory )
   {
     throw std::runtime_error ( Usul::Strings::format ( "Error: 2118168350, Failed to set current working directory to '", directory, "', System error: ", Usul::System::LastError::message() ) );
   }
-
-#if 1
-  std::cout << "Setting Current Working Directory: " << directory << std::endl;
-#endif
 }
 
 
@@ -62,24 +57,22 @@ void Directory::cwd ( const std::string& directory )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Directory::cwd ()
+std::string Directory::cwd()
 {
   std::string directory;
   char* buffer;
 
    // Get the current working directory: 
 #ifdef _MSC_VER
-  if( (buffer = ::_getcwd( NULL, 0 )) != NULL )
+  if( ( buffer = ::_getcwd ( NULL, 0 ) ) != NULL )
 #else
-  if( (buffer = ::getcwd( NULL, 0 )) != NULL )
+  if( ( buffer =  ::getcwd ( NULL, 0 ) ) != NULL )
 #endif
    {
-     directory.assign( buffer, ::strlen( buffer ) );
-     ::free( buffer );
+     directory.assign ( buffer, ::strlen ( buffer ) );
+     ::free ( buffer );
    }
-#if 1
-  std::cout << "Getting Current Working Directory: " << directory << std::endl;
-#endif
+
   return directory;
 }
 

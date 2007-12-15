@@ -19,6 +19,7 @@
 #include "Usul/File/Stats.h"
 
 #include <fstream>
+#include <stdexcept>
 
 
 namespace Usul {

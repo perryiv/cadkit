@@ -436,10 +436,14 @@ void ClipPlanes::_selectedItemChanged( int index )
   // Get the plane.
   osg::Plane plane ( cp->getClippingPlane( index ) );
   const float d ( plane[3] );
+  
+  // Get the normal of the plane.
+  const osg::Vec3 normal ( plane.getNormal() );
 
   // Move the plane to origin.
   plane[3] = 0.0;
 
+#if 0
   const float t0 ( plane.distance ( bb._min ) );
   const float t1 ( plane.distance ( bb._max ) );
 
@@ -449,10 +453,38 @@ void ClipPlanes::_selectedItemChanged( int index )
   
   _distanceSlider->setMinimum ( static_cast < int > ( ::floor ( -distance ) ) );
   _distanceSlider->setMaximum ( static_cast < int > ( ::ceil  ( distance ) ) );
+#else
+  const float min ( normal[0] * bb._min[0] + normal[1] * bb._min[2] + normal[2] * bb._min[2] );
+  const float max ( normal[0] * bb._max[0] + normal[1] * bb._max[2] + normal[2] * bb._max[2] );
+  
+  _distanceSlider->setMinimum ( static_cast < int > ( ::floor ( -min ) ) );
+  _distanceSlider->setMaximum ( static_cast < int > ( ::ceil  ( -max ) ) );
+#endif
   _distanceSlider->setValue ( static_cast < int > ( d ) );
 
-  osg::Vec3 normal ( plane.getNormal() );
+  //osg::Vec3 normal ( plane.getNormal() );
   _normalX->setValue ( normal[0] );
   _normalY->setValue ( normal[1] );
   _normalZ->setValue ( normal[2] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear all clipping planes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ClipPlanes::on_clearButton_clicked()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
+  Usul::Interfaces::IClippingPlanes::QueryPtr cp ( _caller );
+
+  if ( false == cp.valid () )
+    return;
+
+  cp->removeClippingPlanes();
+  this->_render();
 }

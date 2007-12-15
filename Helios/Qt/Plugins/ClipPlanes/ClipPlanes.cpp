@@ -435,34 +435,27 @@ void ClipPlanes::_selectedItemChanged( int index )
 
   // Get the plane.
   osg::Plane plane ( cp->getClippingPlane( index ) );
+  
+  // Get the distance.
   const float d ( plane[3] );
   
   // Get the normal of the plane.
   const osg::Vec3 normal ( plane.getNormal() );
 
-  // Move the plane to origin.
-  plane[3] = 0.0;
-
-#if 0
-  const float t0 ( plane.distance ( bb._min ) );
-  const float t1 ( plane.distance ( bb._max ) );
-
+  // Distances from the orgin, plus a small buffer.
+  const float t0 ( ( ( normal[0] * bb._min[0] ) + ( normal[1] * bb._min[1] ) + ( normal[2] * bb._min[2] ) ) * -1.01 );
+  const float t1 ( ( ( normal[0] * bb._max[0] ) + ( normal[1] * bb._max[1] ) + ( normal[2] * bb._max[2] ) ) * -1.01 );
+  
+  // Find the min and max distance.
   const float min ( Usul::Math::minimum ( t0, t1 ) );
   const float max ( Usul::Math::maximum ( t0, t1 ) );
-  const float distance ( max - min );
   
-  _distanceSlider->setMinimum ( static_cast < int > ( ::floor ( -distance ) ) );
-  _distanceSlider->setMaximum ( static_cast < int > ( ::ceil  ( distance ) ) );
-#else
-  const float min ( normal[0] * bb._min[0] + normal[1] * bb._min[2] + normal[2] * bb._min[2] );
-  const float max ( normal[0] * bb._max[0] + normal[1] * bb._max[2] + normal[2] * bb._max[2] );
-  
-  _distanceSlider->setMinimum ( static_cast < int > ( ::floor ( -min ) ) );
-  _distanceSlider->setMaximum ( static_cast < int > ( ::ceil  ( -max ) ) );
-#endif
+  // Set slider values.
+  _distanceSlider->setMinimum ( static_cast < int > ( ::floor ( min ) ) );
+  _distanceSlider->setMaximum ( static_cast < int > ( ::ceil  ( max ) ) );
   _distanceSlider->setValue ( static_cast < int > ( d ) );
 
-  //osg::Vec3 normal ( plane.getNormal() );
+  // Set normal values.
   _normalX->setValue ( normal[0] );
   _normalY->setValue ( normal[1] );
   _normalZ->setValue ( normal[2] );

@@ -51,6 +51,8 @@ protected slots:
   void on_negXAxis_clicked();
   void on_negYAxis_clicked();
   void on_negZAxis_clicked();
+  
+  void on_clearButton_clicked();
 
 private:
   Usul::Interfaces::IUnknown::QueryPtr _caller;

@@ -2968,7 +2968,7 @@ osg::BoundingBox Viewer::getBoundingBox() const
 {
   // Return the scene's bounding box.
   osg::BoundingBox bb;
-  bb.expandBy ( this->scene()->getBound() );
+  bb.expandBy ( this->model()->getBound() );
   return bb;
 }
 

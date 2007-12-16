@@ -350,6 +350,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SplitCallbacks.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SplitCallbacks.h"
 				>
 			</File>

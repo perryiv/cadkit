@@ -55,7 +55,7 @@ public:
   STAR_SYSTEM_DEFINE_NODE_CLASS ( Body );
 
   // Constructors
-  Body ( LandModel *, Usul::Jobs::Manager &, const MeshSize &, double splitDistance );
+  Body ( LandModel *land = 0x0, Usul::Jobs::Manager *manager = 0x0, const MeshSize &ms = MeshSize ( 17, 17 ), double splitDistance = 1 );
 
   // Add a tile for the given extents.
   void                      addTile ( const Extents & );
@@ -78,7 +78,7 @@ public:
   double                    geodeticRadius ( double latitude ) const;
 
   // Get the thread pool for this body.
-  Usul::Jobs::Manager&      jobManager();
+  Usul::Jobs::Manager *     jobManager();
 
   // Convert lat, lon, height to x,y,z.
   void                      latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const;
@@ -109,13 +109,13 @@ public:
   void                      splitCallback ( SplitCallback * );
 
   // Request texture.
-  int                       textureRequest ( const Extents &extents, unsigned int level );
+  unsigned long             textureRequest ( const Extents &extents, unsigned int level );
 
   // Cancel request.
-  void                      textureRequestCancel ( int id );
+  void                      textureRequestCancel ( unsigned long id );
 
   // Get the texture.
-  osg::Texture2D*           texture ( int id );
+  osg::Texture2D*           texture ( unsigned long id );
 
   // Set/get the flag that says to use skirts.
   void                      useSkirts ( bool );
@@ -128,7 +128,7 @@ protected:
 
 private:
 
-  typedef std::map < int, CutImageJob::RefPtr > TextureJobs;
+  typedef std::map < unsigned long, CutImageJob::RefPtr > TextureJobs;
 
   // No copying or assignment.
   Body ( const Body & );
@@ -140,7 +140,7 @@ private:
   LandModel::RefPtr _landModel;
   RasterGroup *_rasters;
   RasterGroup *_elevation;
-  Usul::Jobs::Manager &_manager;
+  Usul::Jobs::Manager *_manager;
   TextureJobs _textureJobs;
   bool _frame;
   unsigned int _texturesPerFrame;

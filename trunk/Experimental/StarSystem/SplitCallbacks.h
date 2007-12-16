@@ -43,9 +43,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( SplitCallback );
 
   // Constructor
-  SplitCallback() : BaseClass()
-  {
-  }
+  SplitCallback();
 
   // Return true if the tile should split.
   virtual bool shouldSplit ( bool suggestion, Tile * ) = 0;
@@ -53,9 +51,7 @@ public:
 protected:
 
   // Use reference counting.
-  virtual ~SplitCallback()
-  {
-  }
+  virtual ~SplitCallback();
 
 private:
 
@@ -80,22 +76,46 @@ public:
   USUL_DECLARE_REF_POINTERS ( PassThrough );
 
   // Constructor
-  PassThrough() : BaseClass()
-  {
-  }
+  PassThrough();
 
   // Return true if the tile should split.
-  virtual bool shouldSplit ( bool suggestion, Tile * )
-  {
-    return suggestion;
-  }
+  virtual bool shouldSplit ( bool suggestion, Tile * );
 
 protected:
 
   // Use reference counting.
-  virtual ~PassThrough()
-  {
-  }
+  virtual ~PassThrough();
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Callback that splits the tile until the given level is reached.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class SplitToLevel : public SplitCallback
+{
+public:
+
+  typedef SplitCallback BaseClass;
+
+  USUL_DECLARE_REF_POINTERS ( SplitToLevel );
+
+  // Constructor
+  SplitToLevel ( unsigned int maxLevel );
+
+  // Return true if the tile should split.
+  virtual bool shouldSplit ( bool suggestion, Tile * );
+
+protected:
+
+  // Use reference counting.
+  virtual ~SplitToLevel();
+
+private:
+
+  unsigned int _maxLevel;
 };
 
 

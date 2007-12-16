@@ -33,6 +33,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Math/NaN.h"
+#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
 
@@ -77,7 +78,7 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _image ( image ),
   _texture ( new osg::Texture2D ),
   _texCoords ( texCoords ),
-  _jobId ( -1 )
+  _jobId ( false, 0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -123,7 +124,7 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _textureUnit ( tile._textureUnit ),
   _image ( tile._image ),
   _texCoords ( tile._texCoords ),
-  _jobId ( tile._jobId )
+  _jobId ( false, 0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -312,13 +313,13 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     case osg::NodeVisitor::CULL_VISITOR:
     {
       // See if our job is done loading image.
-      if ( 0x0 != _body && _jobId >= 0 )
+      if ( ( 0x0 != _body ) && ( true == _jobId.first ) )
       {
-        osg::ref_ptr < osg::Texture2D > texture ( _body->texture ( _jobId ) );
+        osg::ref_ptr < osg::Texture2D > texture ( _body->texture ( _jobId.second ) );
         if ( texture.valid() )
         {
           this->textureData ( texture.get(), Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
-          _jobId = -1;
+          _jobId.first = false;
 
           // Solid ground.
           //OsgTools::State::StateSet::setPolygonsFilled ( this, true );
@@ -716,8 +717,19 @@ void Tile::clear()
 {
   USUL_TRACE_SCOPE;
 
-  _body->textureRequestCancel ( _jobId );
-  _jobId = -1;
+  // Get copy of job id and set the member to default.
+  JobID job ( false, 0 );
+  {
+    Guard guard ( this );
+    job = _jobId;
+    _jobId.first = false;
+  }
+
+  // Cancel job if it's valid.
+  if ( true == job.first )
+  {
+    _body->textureRequestCancel ( job.second );
+  }
 
   this->dirty ( false, Tile::ALL, false );
 }
@@ -814,8 +826,14 @@ void Tile::_launchImageRequest()
   // Start the request to pull in texture.
   if ( 0x0 != _body )
   {
-    _body->textureRequestCancel ( _jobId );
-    _jobId = _body->textureRequest ( this->extents(), this->level() );
+    if ( true == _jobId.first )
+    {
+      _body->textureRequestCancel ( _jobId.second );
+      _jobId.first = false;
+    }
+
+    _jobId.second = _body->textureRequest ( this->extents(), this->level() );
+    _jobId.first = true;
   }
 }
 

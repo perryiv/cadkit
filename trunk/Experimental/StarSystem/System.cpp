@@ -39,7 +39,7 @@ STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( System );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-System::System ( Usul::Jobs::Manager& manager ) : BaseClass(),
+System::System ( Usul::Jobs::Manager *manager ) : BaseClass(),
   _body       ( 0x0 ),
   _satellites ( new Group() ),
   _manager    ( manager )
@@ -252,4 +252,18 @@ void System::postRender ( Usul::Interfaces::IUnknown *caller )
 
   if ( _satellites.valid() )
     _satellites->postRender( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the job manager.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void System::jobManager ( Usul::Jobs::Manager *manager )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _manager = manager;
 }

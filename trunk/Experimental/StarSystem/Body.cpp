@@ -46,9 +46,9 @@ STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( Body );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Body::Body ( LandModel *model, Usul::Jobs::Manager &manager, const MeshSize &ms, double splitDistance ) : BaseClass(),
+Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, double splitDistance ) : BaseClass(),
   _transform ( new osg::MatrixTransform ),
-  _landModel ( model ),
+  _landModel ( land ),
   _rasters ( new RasterGroup ),
   _elevation ( new ElevationGroup ),
   _manager ( manager ),
@@ -64,10 +64,6 @@ Body::Body ( LandModel *model, Usul::Jobs::Manager &manager, const MeshSize &ms,
   _splitCallback ( new StarSystem::Callbacks::PassThrough )
 {
   USUL_TRACE_SCOPE;
-
-  // Must not be null.
-  if ( false == _landModel.valid() )
-    throw std::invalid_argument ( "Error 3062013877: null land model given to body" );
 
   // Not using smart pointers.
   _transform->ref();
@@ -209,14 +205,15 @@ void Body::rasterAppend ( RasterLayer * layer )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert lat, lon, height to x,y,z.
+//  Convert lat,lon,height to x,y,z.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void Body::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const
 {
   USUL_TRACE_SCOPE;
-  _landModel->latLonHeightToXYZ ( lat, lon, elevation, point );
+  if ( true == _landModel.valid() )
+    _landModel->latLonHeightToXYZ ( lat, lon, elevation, point );
 }
 
  
@@ -229,7 +226,7 @@ void Body::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Ve
 double Body::geodeticRadius ( double latitude ) const
 {
   USUL_TRACE_SCOPE;
-  return _landModel->elevation ( 0, latitude );
+  return ( ( true == _landModel.valid() ) ? _landModel->elevation ( 0, latitude ) : 1 );
 }
 
 
@@ -239,7 +236,7 @@ double Body::geodeticRadius ( double latitude ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Jobs::Manager& Body::jobManager()
+Usul::Jobs::Manager *Body::jobManager()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -286,13 +283,21 @@ void Body::postRender ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Body::textureRequest ( const Extents &extents, unsigned int level )
+unsigned long Body::textureRequest ( const Extents &extents, unsigned int level )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
+
+  if ( 0x0 == _manager )
+  {
+    // Have to throw because there's no value we can return.
+    throw std::runtime_error ( "Error 3925869673: Job manager is null" );
+  }
+
   CutImageJob::RefPtr job ( new CutImageJob ( extents, 512, 512, level, _rasters ) );
-  _manager.addJob ( job );
+  _manager->addJob ( job );
   _textureJobs.insert ( TextureJobs::value_type ( job->id(), job ) );
+
   return job->id();
 }
 
@@ -303,17 +308,21 @@ int Body::textureRequest ( const Extents &extents, unsigned int level )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Body::textureRequestCancel ( int id )
+void Body::textureRequestCancel ( unsigned long id )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
+
+  // Handle no job manager.
+  if ( 0x0 == _manager )
+    return;
 
   TextureJobs::iterator iter = _textureJobs.find ( id );
 
   if ( iter != _textureJobs.end() )
   {
     CutImageJob::RefPtr job ( iter->second );
-    _manager.cancel ( job );
+    _manager->cancel ( job );
     _textureJobs.erase ( iter );
   }
 }
@@ -325,7 +334,7 @@ void Body::textureRequestCancel ( int id )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Texture2D* Body::texture ( int id )
+osg::Texture2D* Body::texture ( unsigned long id )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

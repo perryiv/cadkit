@@ -163,7 +163,7 @@ void VolumeDocument::read ( const std::string &name, Unknown *caller, Unknown *p
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VolumeDocument::write ( const std::string &filename, Unknown *caller ) const
+void VolumeDocument::write ( const std::string &filename, Unknown *caller, Unknown *progress ) const
 {
   if ( _readerWriter.valid () )
     _readerWriter->write ( filename, *this, caller );

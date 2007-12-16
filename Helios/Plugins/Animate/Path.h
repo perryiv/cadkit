@@ -81,7 +81,7 @@ public:
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
   /// Write.
-  virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const;
+  virtual void                write ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 ) const;
 
 protected:
   virtual ~Path ();

@@ -181,11 +181,15 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SceneDocument::write ( const std::string &name, Unknown *caller  ) const
+void SceneDocument::write ( const std::string &name, Unknown *caller, Unknown *progress ) const
 {
+  // Handle bad state.
+  if ( ( true == name.empty() ) || ( false == _scene.valid() ) )
+    return;
+
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( name ) ) );
 
-  //Write the file as an stl
+  // Write the file as an stl
   if( "stl" == ext )
   {    
     //make a copy of the options
@@ -196,9 +200,9 @@ void SceneDocument::write ( const std::string &name, Unknown *caller  ) const
     writer.header ( "Created by Helios. " + _scene->getName() );
 
     //Should we write in ascii?
-    if( "ascii" == options["format"] )
+    if ( "ascii" == options["format"] )
     {
-      writer.writeASCII( *_scene );
+      writer.writeASCII ( *_scene );
     }
     else if ( "binary" == options["format"] )
     { 
@@ -210,12 +214,11 @@ void SceneDocument::write ( const std::string &name, Unknown *caller  ) const
       message << "Error 1251388893: " << options["format"] << " is an invalid file format, expected 'binary' or 'ascii'.";
       throw std::invalid_argument ( message.str() );    
     }
-
   }
   else
   {
-    //Write the file using osg
-    osgDB::writeNodeFile( *_scene, name );
+    // Write the file using osg
+    osgDB::writeNodeFile ( *_scene, name );
   }
 }
 

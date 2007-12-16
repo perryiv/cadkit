@@ -46,7 +46,7 @@
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
 				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(QTDIR)\include;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
-				PreprocessorDefinitions="FOXDLL;WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_SCENE_TREE"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_SCENE_TREE"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -147,7 +147,7 @@
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(QTDIR)\include;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR)"
-				PreprocessorDefinitions="FOXDLL;WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_SCENE_TREE"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_SCENE_TREE"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -232,10 +232,6 @@
 				</File>
 				<File
 					RelativePath=".\SceneTreeComponent.h"
-					>
-				</File>
-				<File
-					RelativePath=".\SceneTreeFactory.cpp"
 					>
 				</File>
 			</Filter>

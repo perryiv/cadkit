@@ -116,7 +116,7 @@ public:
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
   /// Write the document to given file name. Does not rename this document.
-  virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const;
+  virtual void                write ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
 
   /// Clear any existing data.
   virtual void                clear ( Unknown *caller = 0x0 );

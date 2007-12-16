@@ -40,7 +40,7 @@ public:
   STAR_SYSTEM_DEFINE_NODE_CLASS ( System );
 
   // Constructor
-  System ( Usul::Jobs::Manager& manager );
+  System ( Usul::Jobs::Manager *manager = 0x0 );
 
   // Add a satellite.
   void                      add ( Node * );
@@ -53,6 +53,9 @@ public:
   // Set/get the center.
   void                      center ( Vec3d & );
   Vec3d                     center() const;
+
+  // Set the job manager.
+  void                      jobManager ( Usul::Jobs::Manager * );
 
   // Pre- and post-render notifications.
   virtual void              preRender  ( Usul::Interfaces::IUnknown *caller );
@@ -78,7 +81,7 @@ private:
 
   Body::RefPtr _body;
   Group::RefPtr _satellites;
-  Usul::Jobs::Manager &_manager;
+  Usul::Jobs::Manager *_manager;
 };
 
 

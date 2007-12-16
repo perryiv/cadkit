@@ -82,6 +82,7 @@ public:
   typedef StarSystem::Extents < osg::Vec2d > Extents;
   typedef Usul::Math::Vec2ui MeshSize;
   typedef std::vector < Tile::RefPtr > Tiles;
+  typedef std::pair < bool, unsigned long > JobID;
 
   // Constructors.
   Tile ( unsigned int level = 0, 
@@ -178,7 +179,7 @@ private:
   osg::ref_ptr < osg::Image > _elevation;
   osg::ref_ptr < osg::Texture2D > _texture;
   Usul::Math::Vec4d _texCoords;
-  int _jobId;
+  JobID _jobId;
   CutImageJob::RefPtr _elevationJob;
 };
 

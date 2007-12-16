@@ -158,7 +158,7 @@ bool VectorFieldDocument::canSave ( const std::string &file ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VectorFieldDocument::write ( const std::string &name, Unknown *caller  ) const
+void VectorFieldDocument::write ( const std::string &name, Unknown *caller, Unknown *progress ) const
 {
 }
 

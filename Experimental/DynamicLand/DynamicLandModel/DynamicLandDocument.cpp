@@ -353,7 +353,7 @@ bool DynamicLandDocument::canSave ( const std::string &file ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DynamicLandDocument::write ( const std::string &name, Unknown *caller  ) const
+void DynamicLandDocument::write ( const std::string &name, Unknown *caller, Unknown *progress ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );

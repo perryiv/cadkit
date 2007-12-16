@@ -226,7 +226,7 @@ bool WRFDocument::canSave ( const std::string &file ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WRFDocument::write ( const std::string &name, Unknown *caller  ) const
+void WRFDocument::write ( const std::string &name, Unknown *caller, Unknown *progress ) const
 {
 }
 

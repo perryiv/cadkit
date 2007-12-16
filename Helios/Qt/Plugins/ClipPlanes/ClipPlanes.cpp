@@ -468,7 +468,7 @@ void ClipPlanes::_setMinMax ( double min, double max )
   
   _distanceSpinBox->setMinimum ( static_cast < int > ( ::floor ( min ) ) );
   _distanceSpinBox->setMaximum ( static_cast < int > ( ::ceil  ( max ) ) );
-  _distanceSpinBox->setSingleStep ( ( max - min ) *0.01 );
+  //_distanceSpinBox->setSingleStep ( ( max - min ) *0.01 );
 }
 
 

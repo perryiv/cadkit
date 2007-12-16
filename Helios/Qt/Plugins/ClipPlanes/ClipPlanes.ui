@@ -13,6 +13,12 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" >
+   <property name="margin" >
+    <number>9</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
    <item>
     <widget class="QFrame" name="frame" >
      <property name="frameShape" >
@@ -22,8 +28,20 @@
       <enum>QFrame::Sunken</enum>
      </property>
      <layout class="QVBoxLayout" >
+      <property name="margin" >
+       <number>9</number>
+      </property>
+      <property name="spacing" >
+       <number>6</number>
+      </property>
       <item>
        <layout class="QHBoxLayout" >
+        <property name="margin" >
+         <number>0</number>
+        </property>
+        <property name="spacing" >
+         <number>6</number>
+        </property>
         <item>
          <widget class="QPushButton" name="clearButton" >
           <property name="text" >
@@ -59,8 +77,20 @@
          <string>Axis</string>
         </property>
         <layout class="QGridLayout" >
+         <property name="margin" >
+          <number>9</number>
+         </property>
+         <property name="spacing" >
+          <number>6</number>
+         </property>
          <item row="0" column="0" >
           <layout class="QGridLayout" >
+           <property name="margin" >
+            <number>0</number>
+           </property>
+           <property name="spacing" >
+            <number>6</number>
+           </property>
            <item row="0" column="0" >
             <widget class="QRadioButton" name="posXAxis" >
              <property name="text" >
@@ -110,6 +140,12 @@
       </item>
       <item>
        <layout class="QHBoxLayout" >
+        <property name="margin" >
+         <number>0</number>
+        </property>
+        <property name="spacing" >
+         <number>6</number>
+        </property>
         <item>
          <widget class="QSlider" name="_distanceSlider" >
           <property name="minimum" >
@@ -127,7 +163,20 @@
          </widget>
         </item>
         <item>
-         <widget class="QDoubleSpinBox" name="_distanceSpinBox" />
+         <widget class="QDoubleSpinBox" name="_distanceSpinBox" >
+          <property name="minimumSize" >
+           <size>
+            <width>100</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximum" >
+           <double>10000000000.000000000000000</double>
+          </property>
+          <property name="singleStep" >
+           <double>1.000000000000000</double>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -140,8 +189,20 @@
          <enum>QFrame::Raised</enum>
         </property>
         <layout class="QVBoxLayout" >
+         <property name="margin" >
+          <number>9</number>
+         </property>
+         <property name="spacing" >
+          <number>6</number>
+         </property>
          <item>
           <layout class="QHBoxLayout" >
+           <property name="margin" >
+            <number>0</number>
+           </property>
+           <property name="spacing" >
+            <number>6</number>
+           </property>
            <item>
             <widget class="QLabel" name="label" >
              <property name="text" >
@@ -151,11 +212,11 @@
            </item>
            <item>
             <widget class="QDoubleSpinBox" name="_normalX" >
-             <property name="minimum" >
-              <double>-1.000000000000000</double>
-             </property>
              <property name="maximum" >
               <double>1.000000000000000</double>
+             </property>
+             <property name="minimum" >
+              <double>-1.000000000000000</double>
              </property>
              <property name="singleStep" >
               <double>0.100000000000000</double>
@@ -171,11 +232,11 @@
            </item>
            <item>
             <widget class="QDoubleSpinBox" name="_normalY" >
-             <property name="minimum" >
-              <double>-1.000000000000000</double>
-             </property>
              <property name="maximum" >
               <double>1.000000000000000</double>
+             </property>
+             <property name="minimum" >
+              <double>-1.000000000000000</double>
              </property>
              <property name="singleStep" >
               <double>0.100000000000000</double>
@@ -191,11 +252,11 @@
            </item>
            <item>
             <widget class="QDoubleSpinBox" name="_normalZ" >
-             <property name="minimum" >
-              <double>-1.000000000000000</double>
-             </property>
              <property name="maximum" >
               <double>1.000000000000000</double>
+             </property>
+             <property name="minimum" >
+              <double>-1.000000000000000</double>
              </property>
              <property name="singleStep" >
               <double>0.100000000000000</double>
@@ -206,6 +267,12 @@
          </item>
          <item>
           <layout class="QHBoxLayout" >
+           <property name="margin" >
+            <number>0</number>
+           </property>
+           <property name="spacing" >
+            <number>6</number>
+           </property>
            <item>
             <widget class="QPushButton" name="_addButton" >
              <property name="text" >

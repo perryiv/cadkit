@@ -46,6 +46,7 @@ _caller ()
 
   // Connect the slider.
   connect ( _distanceSlider, SIGNAL ( sliderMoved( int ) ), this, SLOT ( _distanceSliderChanged( int ) ) );
+  connect ( _distanceSpinBox, SIGNAL ( valueChanged( double ) ), this, SLOT ( _distanceSpinBoxChanged( double ) ) );
 }
 
 
@@ -395,21 +396,7 @@ void ClipPlanes::_distanceSliderChanged ( int value )
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
 
-  Usul::Interfaces::IClippingPlanes::QueryPtr cp ( _caller );
-
-  if ( false == cp.valid () )
-    return;
-
-  int index ( _clipPlaneList->currentRow() );
-
-  if ( index < 0 )
-    return;
-
-  osg::Plane plane ( cp->getClippingPlane( index ) );
-  plane[3] = value;
-  cp->setClippingPlane ( index, plane );
-
-  this->_render();
+  this->_setDistance( value );
 }
 
 
@@ -450,15 +437,92 @@ void ClipPlanes::_selectedItemChanged( int index )
   const float min ( Usul::Math::minimum ( t0, t1 ) );
   const float max ( Usul::Math::maximum ( t0, t1 ) );
   
-  // Set slider values.
-  _distanceSlider->setMinimum ( static_cast < int > ( ::floor ( min ) ) );
-  _distanceSlider->setMaximum ( static_cast < int > ( ::ceil  ( max ) ) );
+  // Set the min max values.
+  this->_setMinMax ( min, max );
+  
+  // Set the value.
   _distanceSlider->setValue ( static_cast < int > ( d ) );
+  _distanceSpinBox->setValue ( d );
 
   // Set normal values.
   _normalX->setValue ( normal[0] );
   _normalY->setValue ( normal[1] );
   _normalZ->setValue ( normal[2] );
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the min and max values.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ClipPlanes::_setMinMax ( double min, double max )
+{
+  USUL_TRACE_SCOPE;
+
+  // Set the slider min max.
+  _distanceSlider->setMinimum ( static_cast < int > ( ::floor ( min ) ) );
+  _distanceSlider->setMaximum ( static_cast < int > ( ::ceil  ( max ) ) );
+  
+  _distanceSpinBox->setMinimum ( static_cast < int > ( ::floor ( min ) ) );
+  _distanceSpinBox->setMaximum ( static_cast < int > ( ::ceil  ( max ) ) );
+  _distanceSpinBox->setSingleStep ( ( max - min ) *0.01 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The spin box has changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ClipPlanes::_distanceSpinBoxChanged ( double value )
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
+  this->_setDistance( value );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the distance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ClipPlanes::_setDistance ( double value )
+{
+  USUL_TRACE_SCOPE;
+  
+  _distanceSlider->blockSignals ( true );
+  _distanceSpinBox->blockSignals ( true );
+  
+  Usul::Interfaces::IClippingPlanes::QueryPtr cp ( _caller );
+
+  if ( false == cp.valid () )
+    return;
+
+  int index ( _clipPlaneList->currentRow() );
+
+  if ( index < 0 )
+    return;
+
+  osg::Plane plane ( cp->getClippingPlane( index ) );
+  plane[3] = value;
+  cp->setClippingPlane ( index, plane );
+  
+  // Set the value.
+  _distanceSlider->setValue ( static_cast < int > ( value ) );
+  _distanceSpinBox->setValue ( value );
+
+  // Draw.
+  this->_render();
+  
+  _distanceSlider->blockSignals ( false );
+  _distanceSpinBox->blockSignals ( false );
 }
 
 

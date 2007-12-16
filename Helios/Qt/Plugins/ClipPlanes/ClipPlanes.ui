@@ -5,26 +5,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>298</width>
-    <height>505</height>
+    <width>366</width>
+    <height>644</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" >
-   <property name="leftMargin" >
-    <number>1</number>
-   </property>
-   <property name="topMargin" >
-    <number>1</number>
-   </property>
-   <property name="rightMargin" >
-    <number>1</number>
-   </property>
-   <property name="bottomMargin" >
-    <number>1</number>
-   </property>
    <item>
     <widget class="QFrame" name="frame" >
      <property name="frameShape" >
@@ -121,20 +109,27 @@
        </widget>
       </item>
       <item>
-       <widget class="QSlider" name="_distanceSlider" >
-        <property name="minimum" >
-         <number>0</number>
-        </property>
-        <property name="maximum" >
-         <number>99</number>
-        </property>
-        <property name="sliderPosition" >
-         <number>0</number>
-        </property>
-        <property name="orientation" >
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" >
+        <item>
+         <widget class="QSlider" name="_distanceSlider" >
+          <property name="minimum" >
+           <number>0</number>
+          </property>
+          <property name="maximum" >
+           <number>99</number>
+          </property>
+          <property name="sliderPosition" >
+           <number>0</number>
+          </property>
+          <property name="orientation" >
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="_distanceSpinBox" />
+        </item>
+       </layout>
       </item>
       <item>
        <widget class="QFrame" name="_advancedOptions" >

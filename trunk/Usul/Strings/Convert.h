@@ -11,6 +11,7 @@
 #ifndef __USUL_STRINGS_CONVERT_H__
 #define __USUL_STRINGS_CONVERT_H__
 
+#include <iomanip>
 #include <string>
 #include <sstream>
 
@@ -27,7 +28,7 @@ namespace Usul
     inline std::string toString ( const T& t )
     {
       std::ostringstream os;
-      os << t;
+      os << std::setiosflags ( std::ios_base::fixed ) << t;
       return os.str();
     }
 

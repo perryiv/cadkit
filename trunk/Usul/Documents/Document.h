@@ -191,13 +191,13 @@ public:
   virtual void                removeView     ( View   *view   );
 
   /// Save the document to existing file name.
-  void                        save ( Unknown *caller = 0x0, std::ostream *out = 0x0 );
+  void                        save ( Unknown *caller = 0x0, Unknown *progress = 0x0, std::ostream *out = 0x0 );
 
   /// Always prompts for new file name.
-  void                        saveAs ( Unknown *caller = 0x0, std::ostream *out = 0x0 );
+  void                        saveAs ( Unknown *caller = 0x0, Unknown *progress = 0x0, std::ostream *out = 0x0 );
 
   /// Use given filename.
-  void                        saveAs ( const std::string& filename, Unknown *caller = 0x0, std::ostream *out = 0x0 );
+  void                        saveAs ( const std::string& filename, Unknown *caller = 0x0, Unknown *progress = 0x0, std::ostream *out = 0x0 );
 
   /// Convenience function to set progress bar and flush events.
   void                        setProgressBar ( bool state, unsigned int numerator, unsigned int denominator, Unknown *caller = 0x0 );
@@ -223,7 +223,7 @@ public:
   void                        windowsForward();
 
   /// Write the document to given file name. Does not rename this document.
-  virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const = 0;
+  virtual void                write ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 ) const = 0;
 
 protected:
 
@@ -238,7 +238,7 @@ protected:
 
   std::string                 _getSaveAsFileName ( Options &options, Unknown *caller = 0x0 );
 
-  void                        _save ( const std::string &filename, Unknown *caller, const Options &options = Options(), std::ostream *out = 0x0 );
+  void                        _save ( const std::string &filename, Unknown *caller, Unknown *progress, const Options &options = Options(), std::ostream *out = 0x0 );
 
   ///  Send the message to all windows except for one specified.
   template < class Listeners, class Skip >

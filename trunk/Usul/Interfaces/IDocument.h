@@ -88,10 +88,10 @@ struct IDocument : public Usul::Interfaces::IUnknown
   virtual void                          modified ( bool ) = 0;
 
   /// Save the document to existing file name.
-  virtual void                          save ( Unknown *caller = 0x0, std::ostream *out = 0x0 ) = 0;
+  virtual void                          save ( Unknown *caller = 0x0, Unknown *progress = 0x0, std::ostream *out = 0x0 ) = 0;
 
   /// Always prompts for new file name.
-  virtual void                          saveAs ( Unknown *caller = 0x0, std::ostream *out = 0x0 ) = 0;
+  virtual void                          saveAs ( Unknown *caller = 0x0, Unknown *progress = 0x0, std::ostream *out = 0x0 ) = 0;
 
   virtual void                          removeWindow   ( Usul::Interfaces::IWindow *window ) = 0;
   virtual void                          removeView     ( Usul::Interfaces::IView *view   ) = 0;
@@ -101,7 +101,7 @@ struct IDocument : public Usul::Interfaces::IUnknown
   virtual void                          updateGUI() = 0;
 
   /// Write the document to given file name. Does not rename this document.
-  virtual void                          write ( const std::string &filename, Unknown *caller = 0x0  ) const = 0;
+  virtual void                          write ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const = 0;
 };
 
 

@@ -37,11 +37,14 @@ protected:
   bool     _isAdvanced() const;
   void     _render();
   void     _addClippingPlane( const osg::Plane& );
+  void     _setMinMax ( double min, double max );
+  void     _setDistance ( double value );
 
 protected slots:
   void _addClipPlaneClicked();
   void _removeClipPlaneClicked();
   void _distanceSliderChanged ( int );
+  void _distanceSpinBoxChanged ( double );
   void _selectedItemChanged( int );
 
   // These are named so they get automatically connected.

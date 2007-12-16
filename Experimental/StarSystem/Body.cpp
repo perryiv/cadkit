@@ -24,6 +24,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Math/MinMax.h"
+#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
 #include "OsgTools/Group.h"
@@ -59,7 +60,8 @@ Body::Body ( LandModel *model, Usul::Jobs::Manager &manager, const MeshSize &ms,
   _cacheTiles ( false ),
   _splitDistance ( splitDistance ),
   _meshSize ( ms ),
-  _useSkirts ( true )
+  _useSkirts ( true ),
+  _splitCallback ( new StarSystem::Callbacks::PassThrough )
 {
   USUL_TRACE_SCOPE;
 
@@ -486,4 +488,46 @@ RasterLayer* Body::elevationData()
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _elevation;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the tile should split.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Body::shouldSplit ( bool suggestion, Tile *tile )
+{
+  USUL_TRACE_SCOPE;
+  SplitCallback::RefPtr callback ( this->splitCallback() );
+  return ( ( true == callback.valid() ) ? callback->shouldSplit ( suggestion, tile ) : suggestion );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the split callback..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::splitCallback ( SplitCallback *cb )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _splitCallback = cb;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the split callback..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+StarSystem::Callbacks::SplitCallback::RefPtr Body::splitCallback() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return SplitCallback::RefPtr ( _splitCallback );
 }

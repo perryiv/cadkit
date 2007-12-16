@@ -21,6 +21,7 @@
 #include "StarSystem/Extents.h"
 #include "StarSystem/CutImageJob.h"
 #include "StarSystem/LandModel.h"
+#include "StarSystem/SplitCallbacks.h"
 
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
@@ -48,6 +49,7 @@ public:
   typedef Usul::Math::Vec3d Vec3d;
   typedef StarSystem::Extents < osg::Vec2d > Extents;
   typedef Usul::Math::Vec2ui MeshSize;
+  typedef StarSystem::Callbacks::SplitCallback SplitCallback;
 
   // Helper macro for repeated code.
   STAR_SYSTEM_DEFINE_NODE_CLASS ( Body );
@@ -99,6 +101,13 @@ public:
   const osg::Node *         scene() const;
   osg::Node *               scene();
 
+  // See if the tile should split.
+  bool                      shouldSplit ( bool suggestion, Tile * );
+
+  // Set/get the callback used for tile splitting. Returns the existing callback.
+  SplitCallback::RefPtr     splitCallback() const;
+  void                      splitCallback ( SplitCallback * );
+
   // Request texture.
   int                       textureRequest ( const Extents &extents, unsigned int level );
 
@@ -141,6 +150,7 @@ private:
   double _splitDistance;
   MeshSize _meshSize;
   bool _useSkirts;
+  SplitCallback::RefPtr _splitCallback;
 };
 
 

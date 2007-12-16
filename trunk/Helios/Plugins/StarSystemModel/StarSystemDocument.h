@@ -16,6 +16,8 @@
 #ifndef _STAR_SYSTEM_MODEL_DOCUMENT_H_
 #define _STAR_SYSTEM_MODEL_DOCUMENT_H_
 
+#include "Serialize/XML/Macros.h"
+
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IDatabasePager.h"
@@ -84,7 +86,7 @@ public:
   virtual void                preRenderNotify ( Unknown *caller );
 
   // Write the document to given file name.
-  virtual void                write ( const std::string &filename, Unknown *caller = 0x0  ) const;
+  virtual void                write ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
 
 protected:
 
@@ -106,6 +108,9 @@ private:
 
   StarSystem::System *_system;
   Usul::Jobs::Manager *_manager;
+
+  SERIALIZE_XML_DEFINE_MAP;
+  SERIALIZE_XML_DEFINE_MEMBERS ( StarSystemDocument );
 };
 
 

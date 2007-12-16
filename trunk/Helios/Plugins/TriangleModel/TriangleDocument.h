@@ -239,7 +239,7 @@ public:
   virtual const osg::Vec3f &  vertex2 ( const osg::Geode *g, const osg::Drawable* d, unsigned int i ) const { return _triangles->vertex2 ( g, d, i ); }
 
   /// Write the document to given file name.
-  virtual void                write ( const std::string &filename,  Unknown *caller = 0x0  ) const;
+  virtual void                write ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
   
 protected:
 

@@ -25,6 +25,8 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Random.h"
+#include "Usul/Factory/ObjectFactory.h"
+#include "Usul/Factory/TypeCreator.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IClippingDistance.h"
@@ -48,7 +50,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemDocument, StarSystemDocument::BaseCl
 
 StarSystemDocument::StarSystemDocument() : BaseClass ( "StarSystem Document" ),
   _system ( 0x0 ),
-  _manager ( 0x0 )
+  _manager ( 0x0 ),
+  SERIALIZE_XML_INITIALIZER_LIST
 {
   USUL_TRACE_SCOPE;
 }
@@ -180,7 +183,7 @@ bool StarSystemDocument::canSave ( const std::string &file ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void StarSystemDocument::write ( const std::string &name, Unknown *caller  ) const
+void StarSystemDocument::write ( const std::string &name, Unknown *caller, Unknown *progress  ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -462,7 +465,7 @@ void StarSystemDocument::_makeSystem()
   typedef Body::Extents Extents;
 
   // Make the system.
-  _system = new StarSystem::System ( *_manager );
+  _system = new StarSystem::System ( _manager );
   Usul::Pointers::reference ( _system );
 
   // Make the land model.
@@ -477,7 +480,7 @@ void StarSystemDocument::_makeSystem()
   Body::MeshSize meshSize ( 17, 17 );
 
   // Add the body.
-  Body::RefPtr body ( new Body ( land, *_manager, meshSize, splitDistance ) );
+  Body::RefPtr body ( new Body ( land, _manager, meshSize, splitDistance ) );
   body->useSkirts ( true );
   _system->body ( body.get() );
 

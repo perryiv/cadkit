@@ -340,7 +340,7 @@ void Path::read ( const std::string &filename, Unknown *caller, Unknown *progres
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Path::write ( const std::string &filename, Unknown *caller  ) const
+void Path::write ( const std::string &filename, Unknown *caller, Unknown *progress ) const
 {
-  Serialize::XML::serialize( "Path", *this, filename );
+  Serialize::XML::serialize ( "Path", *this, filename );
 }

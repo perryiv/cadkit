@@ -290,7 +290,7 @@ void TriangleDocument::read ( const std::string &name, Unknown *caller, Unknown 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleDocument::write ( const std::string &name, Unknown *caller ) const
+void TriangleDocument::write ( const std::string &name, Unknown *caller, Unknown *progress ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( name ) ) );
    

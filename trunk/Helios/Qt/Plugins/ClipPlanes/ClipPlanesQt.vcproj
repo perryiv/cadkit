@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="plug: Clip Planets Qt"
+	Name="plug: Clip Planes Qt"
 	ProjectGUID="{02D711B4-4688-40E9-B68A-1F1972F4DE05}"
 	>
 	<Platforms>

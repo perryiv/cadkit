@@ -234,15 +234,15 @@ void Document::open ( const std::string &file, Usul::Interfaces::IUnknown *calle
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::save ( Usul::Interfaces::IUnknown *caller, std::ostream *out )
+void Document::save ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress, std::ostream *out )
 {
   // If the filename is valid...
   if ( this->fileValid() )
-    this->_save ( this->fileName(), caller, this->options(), out );
+    this->_save ( this->fileName(), caller, progress, this->options(), out );
 
   // Otherwise...
   else
-    this->saveAs ( caller, out );
+    this->saveAs ( caller, progress, out );
 }
 
 
@@ -252,17 +252,17 @@ void Document::save ( Usul::Interfaces::IUnknown *caller, std::ostream *out )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::saveAs ( Usul::Interfaces::IUnknown *caller, std::ostream *out )
+void Document::saveAs ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress, std::ostream *out )
 {
   // Ask for file name.
-  const std::string name ( this->_getSaveAsFileName( this->options(), caller ) );
+  const std::string name ( this->_getSaveAsFileName ( this->options(), caller ) );
 
   // Should have valid name unless user pressed cancel. This behavior is 
   // needed in canClose() and it's consistant with how we cancel elsewhere.
   if ( name.empty() )
     throw Usul::Exceptions::Canceled ( "User cancelled the save-as operation" );
 
-  this->saveAs ( name, caller, out );
+  this->saveAs ( name, caller, progress, out );
 }
 
 
@@ -272,10 +272,10 @@ void Document::saveAs ( Usul::Interfaces::IUnknown *caller, std::ostream *out )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::saveAs ( const std::string& filename, Unknown *caller, std::ostream *out )
+void Document::saveAs ( const std::string& filename, Unknown *caller, Unknown *progress, std::ostream *out )
 {
   // Save the document.
-  this->_save ( filename, caller, this->options(), out );
+  this->_save ( filename, caller, progress, this->options(), out );
 
   // Since the filename changed, update titles
   this->updateWindowTitles();
@@ -327,11 +327,11 @@ std::string Document::_getSaveAsFileName ( Options &options, Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::_save ( const std::string &name, Unknown *caller, const Options &options, std::ostream *out )
+void Document::_save ( const std::string &name, Unknown *caller, Unknown *progress, const Options &options, std::ostream *out )
 {
   // Write the document.
   OUTPUT(out) << "Saving file: " << name << " ... " << Usul::Resources::TextWindow::flush;
-  this->write ( name, caller );
+  this->write ( name, caller, progress );
   OUTPUT(out) << "done" << Usul::Resources::TextWindow::endl;
 
   // Set the file name.

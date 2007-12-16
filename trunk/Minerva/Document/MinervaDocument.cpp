@@ -309,7 +309,7 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::write ( const std::string &filename, Unknown *caller ) const
+void MinervaDocument::write ( const std::string &filename, Unknown *caller, Unknown *progress ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
 

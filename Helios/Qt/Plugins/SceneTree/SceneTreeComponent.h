@@ -93,5 +93,4 @@ protected:
   QTreeWidget     *_sceneTree;
 };
 
-
 #endif // _SCENE_TREE_COMPONENT_CLASS_H_

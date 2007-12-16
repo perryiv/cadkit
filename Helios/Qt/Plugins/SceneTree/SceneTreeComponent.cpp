@@ -14,8 +14,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "SceneTreeComponent.h"
+#include "Helios/Qt/Plugins/SceneTree/SceneTreeComponent.h"
 
+#include "Usul/Components/Factory.h"
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 #include "Usul/Interfaces/IQtDockWidgetMenu.h"
 #include "Usul/Interfaces/IOpenSceneGraph.h"
@@ -32,7 +33,7 @@
 #include "QtGui/QMainWindow"
 #include "QtGui/QTreeWidget"
 
-
+USUL_DECLARE_COMPONENT_FACTORY ( SceneTreeComponent );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( SceneTreeComponent, SceneTreeComponent::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////

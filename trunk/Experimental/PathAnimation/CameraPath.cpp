@@ -267,7 +267,7 @@ void CameraPath::read ( const std::string &file, Unknown *caller, Unknown *progr
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CameraPath::write ( const std::string &file, Unknown *caller  ) const
+void CameraPath::write ( const std::string &file, Unknown *caller, Unknown *progress  ) const
 {
   Serialize::XML::serialize ( "CameraPath", *this, file );
 }

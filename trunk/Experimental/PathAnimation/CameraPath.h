@@ -84,7 +84,7 @@ public:
   void                          values ( Values &, bool reverseOrder ) const;
 
   // Write.
-  virtual void                  write ( const std::string &file, IUnknown *caller = 0x0  ) const;
+  virtual void                  write ( const std::string &file, IUnknown *caller = 0x0, IUnknown *progress = 0x0  ) const;
 
   // Predicate functor for testing equal values.
   struct EqualValue

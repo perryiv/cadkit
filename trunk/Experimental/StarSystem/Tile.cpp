@@ -75,11 +75,9 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _children(),
   _textureUnit ( 0 ),
   _image ( image ),
-  _elevation ( 0x0 ),
   _texture ( new osg::Texture2D ),
   _texCoords ( texCoords ),
-  _jobId ( -1 ),
-  _elevationJob ( 0x0 )
+  _jobId ( -1 )
 {
   USUL_TRACE_SCOPE;
 
@@ -104,7 +102,6 @@ Tile::Tile ( unsigned int level, const Extents &extents,
 
   // Start the request to pull in the texture.
   this->_launchImageRequest();
-  this->_launchElevationRequest();
 }
 
 
@@ -125,10 +122,8 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _children ( tile._children ),
   _textureUnit ( tile._textureUnit ),
   _image ( tile._image ),
-  _elevation ( tile._elevation ),
   _texCoords ( tile._texCoords ),
-  _jobId ( tile._jobId ),
-  _elevationJob ( tile._elevationJob )
+  _jobId ( tile._jobId )
 {
   USUL_TRACE_SCOPE;
 
@@ -197,8 +192,7 @@ void Tile::_update()
         // Convert lat-lon coordinates to xyz.
         osg::Vec3f &p ( mesh.point ( i, j ) );
         double x ( 0 ), y ( 0 ), z ( 0 );
-        //const double offset ( _body->geodeticRadius ( lat ) );
-        const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( i, j ) ) ) : 0.0 ) );
+        const double elevation ( _body->geodeticRadius ( lat ) );
         _body->latLonHeightToXYZ ( lat, lon, elevation, p );
 
         // Assign normal vectors.
@@ -331,16 +325,6 @@ void Tile::traverse ( osg::NodeVisitor &nv )
         }
       }
 
-      // Check for new elevation data.
-      if ( _elevationJob.valid() && _elevationJob->isDone() )
-      {
-        _elevation = _elevationJob->image();
-        _elevationJob = 0x0;
-
-        // Force vertices to be rebuilt.
-        _flags = Usul::Bits::set ( _flags, Tile::VERTICES, true );
-      }
-
       // Get cull visitor.
       osgUtil::CullVisitor *cv ( dynamic_cast < osgUtil::CullVisitor * > ( &nv ) );
 
@@ -415,8 +399,11 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   const bool tooDeep ( this->level() >= _body->maxLevel() );
 
   // Should we traverse the low lod?
-  const bool low ( farAway || eyeIsNan || tooDeep );
+  bool low ( farAway || eyeIsNan || tooDeep );
   bool splitHappened ( false );
+
+  // Finally, ask the callback.
+  low = !( _body->shouldSplit ( !low, this ) );
 
   if ( low )
   {
@@ -584,14 +571,13 @@ void Tile::dirty ( bool state, unsigned int flags, bool dirtyChildren, const Ext
       if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->dirty ( state, flags, dirtyChildren, extents );
     }
 
+#if 1
     if ( this->textureDirty() )
     {
       // Start the request to pull in texture.
       this->_launchImageRequest();
     }
-
-    if ( this->verticesDirty() )
-      this->_launchElevationRequest();
+#endif
   }
 }
 
@@ -671,8 +657,7 @@ osg::Node* Tile::_buildLonSkirt ( double lon, double u, double offset )
     const double v ( static_cast<double> ( j ) / ( columns - 1 ) );
     const double lat ( _extents.minimum()[1] + v * ( _extents.maximum()[1] - _extents.minimum()[1] ) );
 
-    //const double elevation ( _body->geodeticRadius ( lat ) );
-    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( 0, j ) ) ) : 0.0 ) );
+    const double elevation ( _body->geodeticRadius ( lat ) );
 
     // Convert lat-lon coordinates to xyz.
     _body->latLonHeightToXYZ ( lat, lon, elevation,          mesh.point ( 0, j ) );
@@ -706,8 +691,7 @@ osg::Node* Tile::_buildLatSkirt ( double lat, double v, double offset )
     const double u ( 1.0 - static_cast<double> ( i ) / ( mesh.rows() - 1 ) );
     const double lon ( _extents.minimum()[0] + u * ( _extents.maximum()[0] - _extents.minimum()[0] ) );
 
-    //const double elevation ( _body->geodeticRadius ( lat ) );
-    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( i, 0 ) ) ) : 0.0 ) );
+    const double elevation ( _body->geodeticRadius ( lat ) );
 
     // Convert lat-lon coordinates to xyz.
     _body->latLonHeightToXYZ ( lat, lon, elevation,          mesh.point ( i, 0 ) );
@@ -838,27 +822,6 @@ void Tile::_launchImageRequest()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Load the elevation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Tile::_launchElevationRequest()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-
-  // Start the request to pull in texture.
-  if ( 0x0 != _body )
-  {
-    MeshSize size ( this->meshSize() );
-    _elevationJob = new CutImageJob ( this->extents(), size[0], size[1], this->level(), _body->elevationData() );
-    _body->jobManager().addJob ( _elevationJob.get() );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the image.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -893,6 +856,8 @@ osg::Image* Tile::image()
 
 void Tile::_quarterTextureCoordinates ( Usul::Math::Vec4d& ll, Usul::Math::Vec4d& lr, Usul::Math::Vec4d& ul, Usul::Math::Vec4d& ur ) const
 {
+  USUL_TRACE_SCOPE;
+
   const double deltaU ( _texCoords[1] - _texCoords[0] );
   const double deltaV ( _texCoords[3] - _texCoords[2] );
 
@@ -919,6 +884,8 @@ void Tile::_quarterTextureCoordinates ( Usul::Math::Vec4d& ll, Usul::Math::Vec4d
 
 void Tile::textureData ( osg::Texture2D* texture, const Usul::Math::Vec4d& coords )
 {
+  USUL_TRACE_SCOPE;
+
   // Set the texture.
   this->texture ( texture );
 
@@ -941,26 +908,4 @@ void Tile::textureData ( osg::Texture2D* texture, const Usul::Math::Vec4d& coord
 
   // Set our image.
   this->image ( texture->getImage() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the size.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Tile::MeshSize Tile::meshSize() const
-{
-  USUL_TRACE_SCOPE;
-
-  MeshSize size ( 0, 0 );
-
-  Guard guard ( this );
-
-  // Set the size.
-  if ( 0x0 != _mesh )
-    size.set ( _mesh->rows(), _mesh->columns() );
-
-  return size;
 }

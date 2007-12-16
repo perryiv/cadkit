@@ -47,7 +47,7 @@
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
 				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental;$(OSG_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSSIM_INC_DIR);$(BOOST_ROOT_DIR);$(CURL_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM;CURL_STATICLIB"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -148,7 +148,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental;$(OSG_INC_DIR);$(OSSIM_PLANET_INC_DIR);$(OSSIM_INC_DIR);$(BOOST_ROOT_DIR);$(CURL_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM;CURL_STATICLIB"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_STAR_SYSTEM"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -347,6 +347,10 @@
 			</File>
 			<File
 				RelativePath=".\RasterLayerWms.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SplitCallbacks.h"
 				>
 			</File>
 			<File

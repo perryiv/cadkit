@@ -2259,8 +2259,8 @@ void TriangleSet::loadColorFile( const std::string &file, const HeaderInfo& head
     
     std::cout << "Reading texture image file: " << file << std::endl;
 
-    if( gridSize[1] != tex->s() ||
-        gridSize[0] != tex->t() )
+    if( static_cast <int> ( gridSize[1] ) != tex->s() ||
+        static_cast <int> ( gridSize[0] ) != tex->t() )
     {
       std::cout << "Image resolution doesn't match object resolution!" << std::endl;
       std::cout << "Image resolution:  " << tex->s() << " x " << tex->t() << std::endl;
@@ -2274,7 +2274,6 @@ void TriangleSet::loadColorFile( const std::string &file, const HeaderInfo& head
       float vi = _vertices->at(i)[0] - ll[1];
       float vj = _vertices->at(i)[1] - ll[0];
       float rsize = ( float ( gridSize[0] ) * cellSize ) - 1;
-      float csize = ( float ( gridSize[1] ) * cellSize ) - 1;
       
       // get the color information from the image for the point at index i
       unsigned int pixelRow = static_cast < unsigned int >( ( rsize - vi ) / cellSize );

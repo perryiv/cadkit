@@ -18,10 +18,12 @@
 #include "StarSystem/BuildScene.h"
 #include "StarSystem/Extents.h"
 #include "StarSystem/LandModelEllipsoid.h"
-#include "StarSystem/System.h"
 #include "StarSystem/RasterLayerOssim.h"
 #include "StarSystem/RasterLayerWms.h"
 #include "StarSystem/ElevationLayerDem.h"
+
+#include "Serialize/XML/Serialize.h"
+#include "Serialize/XML/Deserialize.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Random.h"
@@ -54,6 +56,7 @@ StarSystemDocument::StarSystemDocument() : BaseClass ( "StarSystem Document" ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   USUL_TRACE_SCOPE;
+  this->_addMember ( "system", _system );
 }
 
 
@@ -81,7 +84,7 @@ void StarSystemDocument::_destroy()
   USUL_TRACE_SCOPE;
 
   // Delete the star-system.
-  Usul::Pointers::unreference ( _system ); _system = 0x0;
+  _system = 0x0;
 
   // Clean up job manager.
   if ( 0x0 != _manager )
@@ -187,6 +190,13 @@ void StarSystemDocument::write ( const std::string &name, Unknown *caller, Unkno
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
+
+  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( name ) ) );
+
+  if ( "ball" == ext )
+  {
+    Serialize::XML::serialize ( *this, name );
+  }
 }
 
 
@@ -205,12 +215,22 @@ void StarSystemDocument::read ( const std::string &name, Unknown *caller, Unknow
   this->_makeSystem();
 
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( name ) ) );
-  if ( "tiff" == ext || "tif" == ext || "jpg" == ext )
+
+  if ( "ball" == ext )
+  {
+    XmlTree::XercesLife life;
+    XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
+    document->load ( name );
+    this->deserialize ( *document );
+  }
+
+  else if ( "tiff" == ext || "tif" == ext || "jpg" == ext )
   {
     StarSystem::RasterLayerOssim::RefPtr layer ( new StarSystem::RasterLayerOssim );
     layer->open ( name );
     _system->body()->rasterAppend ( layer.get() );
   }
+
   else if ( "dem" == ext || "ras" == ext )
   {
     StarSystem::ElevationLayerDem::RefPtr layer ( new StarSystem::ElevationLayerDem );
@@ -456,17 +476,15 @@ void StarSystemDocument::_makeSystem()
   }
 
   // Only make it once.
-  if ( 0x0 != _system )
+  if ( true == _system.valid() )
     return;
 
   // Local typedefs to shorten the lines.
-  typedef StarSystem::System System;
   typedef StarSystem::Body Body;
   typedef Body::Extents Extents;
 
   // Make the system.
   _system = new StarSystem::System ( _manager );
-  Usul::Pointers::reference ( _system );
 
   // Make the land model.
   typedef StarSystem::LandModelEllipsoid Land;

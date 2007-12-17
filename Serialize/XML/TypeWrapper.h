@@ -359,12 +359,15 @@ inline std::istream &operator >> ( std::istream &in, the_type &v )\
 
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Usul::Math::Vec4d );
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Usul::Math::Vec4f );
+SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Usul::Math::Vec4ui );
 
 SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( Usul::Math::Vec3d );
 SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( Usul::Math::Vec3f );
+SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( Usul::Math::Vec3ui );
 
 SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2d );
 SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2f );
+SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2ui );
 
 
 ///////////////////////////////////////////////////////////////////////////////

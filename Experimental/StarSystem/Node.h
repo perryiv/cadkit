@@ -23,6 +23,8 @@
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IUnknown.h"
 
+#include "Serialize/XML/Macros.h"
+
 #include <map>
 #include <string>
 
@@ -63,6 +65,9 @@ private:
   Node &operator = ( const Node & );
 
   void                      _destroy();
+
+  SERIALIZE_XML_DEFINE_MAP;
+  SERIALIZE_XML_DEFINE_MEMBERS ( star_system_node );
 };
 
 

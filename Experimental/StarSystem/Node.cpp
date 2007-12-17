@@ -56,7 +56,8 @@ namespace
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Node::Node() : BaseClass()
+Node::Node() : BaseClass(),
+  SERIALIZE_XML_INITIALIZER_LIST
 {
   USUL_TRACE_SCOPE;
 }

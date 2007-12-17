@@ -30,9 +30,10 @@
 #include "boost/shared_ptr.hpp"
 
 #include "osg/Vec2d"
+#include "osg/MatrixTransform"
 
 namespace StarSystem { class Tile; class RasterLayer; class RasterGroup; }
-namespace osg { class MatrixTransform; class Vec3f; class Texture; }
+namespace osg { class Vec3f; class Texture; }
 
 
 namespace StarSystem {
@@ -50,6 +51,7 @@ public:
   typedef StarSystem::Extents < osg::Vec2d > Extents;
   typedef Usul::Math::Vec2ui MeshSize;
   typedef StarSystem::Callbacks::SplitCallback SplitCallback;
+  typedef osg::ref_ptr<osg::MatrixTransform> MatrixTransformPtr;
 
   // Helper macro for repeated code.
   STAR_SYSTEM_DEFINE_NODE_CLASS ( Body );
@@ -136,7 +138,7 @@ private:
 
   void                      _destroy();
 
-  osg::MatrixTransform *_transform;
+  MatrixTransformPtr _transform;
   LandModel::RefPtr _landModel;
   RasterGroup *_rasters;
   RasterGroup *_elevation;
@@ -151,6 +153,8 @@ private:
   MeshSize _meshSize;
   bool _useSkirts;
   SplitCallback::RefPtr _splitCallback;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( star_system_body );
 };
 
 

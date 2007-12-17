@@ -45,6 +45,8 @@ System::System ( Usul::Jobs::Manager *manager ) : BaseClass(),
   _manager    ( manager )
 {
   USUL_TRACE_SCOPE;
+  this->_addMember ( "body", _body );
+  this->_addMember ( "satellites", _satellites );
 }
 
 

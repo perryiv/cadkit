@@ -74,9 +74,9 @@ template < class Itr > inline void serialize ( const std::string &file, const st
 template < class Itr > inline void serialize ( const std::string &name, Itr first, Itr last, std::string &contents )
 {
   Usul::File::Temp temp ( Usul::File::Temp::BINARY );
-  serialize( temp.name(), name, first, last );
+  serialize ( temp.name(), name, first, last );
 
-  Usul::File::contents( temp.name(), contents );
+  Usul::File::contents ( temp.name(), contents );
 }
 
 
@@ -98,6 +98,23 @@ template < class T > inline void serialize ( const std::string& name, const T& t
 
   document->write ( filename );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Serialize the class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class T > inline void serialize ( const T &t, const std::string& filename )
+{
+  XmlTree::XercesLife life;
+  XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
+  document->name ( t.className() );
+  t.serialize ( *document );
+  document->write ( filename );
+}
+
 
 } // namespace Serialize
 } // namespace XML

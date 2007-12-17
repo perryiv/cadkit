@@ -22,8 +22,6 @@
 #include "QtCore/QString"
 #include "QtCore/QStringList"
 
-#include "Usul/Math/Absolute.h"
-
 #include <sstream>
 
 
@@ -72,9 +70,9 @@ template <> struct Convert < QStringList >
 
     std::ostringstream out;
     out << sl.at(0).toLocal8Bit().constData();
-    const unsigned int size ( static_cast < unsigned int > ( Usul::Math::absolute ( sl.size() ) ) );
-    for ( unsigned int i = 0; i < size; ++i )
-      out << ';' << sl.at(i).toLocal8Bit().constData();
+
+    for ( QStringList::const_iterator iter = sl.begin(); iter != sl.end(); ++iter )
+      out << ';' << iter->toLocal8Bit().constData();
 
     return out.str();
   }

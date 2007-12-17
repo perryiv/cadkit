@@ -42,6 +42,36 @@ STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( Body );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Serialization glue for osg::ref_ptr<osg::MatrixTransform>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+SERIALIZE_XML_DECLARE_MATRIX_4_4_WRAPPER ( osg::Matrixd );
+typedef StarSystem::Body::MatrixTransformPtr MatrixTransformPtr;
+inline std::ostream &operator << ( std::ostream &out, const MatrixTransformPtr &m )
+{
+  if ( true == m.valid() )
+  {
+    out << '\n' << m->getMatrix();
+  }
+  return out;
+}
+inline std::istream &operator >> ( std::istream &in, MatrixTransformPtr &m )
+{
+  osg::Matrixd matrix;
+  in >> matrix;
+  if ( false == m.valid() )
+  {
+    m = new osg::MatrixTransform;
+  }
+  m->setMatrix ( matrix );
+  return in;
+}
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( MatrixTransformPtr );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Constructor
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -66,9 +96,18 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   USUL_TRACE_SCOPE;
 
   // Not using smart pointers.
-  _transform->ref();
   _rasters->ref();
   _elevation->ref();
+
+  // Serialization setup.
+  this->_addMember ( "transformation", _transform );
+  this->_addMember ( "textures_per_frame", _texturesPerFrame );
+  this->_addMember ( "max_textures_per_frame", _maxTexturesPerFrame );
+  this->_addMember ( "max_level", _maxLevel );
+  this->_addMember ( "cache_tiles", _cacheTiles );
+  this->_addMember ( "split_distance", _splitDistance );
+  this->_addMember ( "mesh_size", _meshSize );
+  this->_addMember ( "use_skirts", _useSkirts );
 }
 
 
@@ -95,7 +134,8 @@ void Body::_destroy()
 {
   USUL_TRACE_SCOPE;
 
-  Usul::Pointers::unreference ( _transform ); _transform = 0x0;
+  _transform = 0x0;
+
   Usul::Pointers::unreference ( _rasters ); _rasters = 0x0;
   Usul::Pointers::unreference ( _elevation ); _elevation = 0x0;
 }
@@ -132,7 +172,7 @@ const osg::Node *Body::scene() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _transform;
+  return _transform.get();
 }
 
 
@@ -146,7 +186,7 @@ osg::Node *Body::scene()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _transform;
+  return _transform.get();
 }
 
 
@@ -349,7 +389,7 @@ osg::Texture2D* Body::texture ( unsigned long id )
     {
       texture = job->texture();
       _textureJobs.erase ( iter );
-      _texturesPerFrame++;
+      ++_texturesPerFrame;
     }
   }
 

@@ -20,6 +20,7 @@
 #include "StarSystem/System.h"
 
 #include "Usul/Factory/ObjectFactory.h"
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Factory/TypeCreator.h"
 #include "Usul/Trace/Trace.h"
 
@@ -30,25 +31,16 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemComponent, StarSystemComponent::Base
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Scoped registration for serialization. Doing all these in one place, 
-//  when the library is loaded, is thead-safe with respect to the factory.
+//  Registration for serialization. Doing all these in one place, when the 
+//  library is loaded, is thead-safe with respect to the factory.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace
+namespace StarSystem
 {
-  template < class T > void _registerClass ( const std::string &name )
-  {
-    Usul::Factory::ObjectFactory::instance().add ( new Usul::Factory::TypeCreator<T> ( name ) );
-  }
-  struct RegisterClasses
-  {
-    RegisterClasses()
-    {
-      _registerClass<StarSystem::System> ( "star_system_system" );
-      _registerClass<StarSystem::Body>   ( "star_system_body"   );
-    }
-  } _registerClasses;
+  USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "star_system_system",     System );
+  USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "star_system_body",       Body );
+  USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "star_system_satellites", Group );
 }
 
 

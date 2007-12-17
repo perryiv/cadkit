@@ -16,19 +16,20 @@
 #ifndef _STAR_SYSTEM_MODEL_DOCUMENT_H_
 #define _STAR_SYSTEM_MODEL_DOCUMENT_H_
 
-#include "Serialize/XML/Macros.h"
-
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IDatabasePager.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Jobs/Manager.h"
 
+#include "StarSystem/System.h"
+
+#include "Serialize/XML/Macros.h"
+
 #include <string>
 
 namespace osg { class Node; }
 namespace osgDB { class DatabasePager; }
-namespace StarSystem { class System; }
 
 
 class StarSystemDocument : public Usul::Documents::Document,
@@ -106,11 +107,11 @@ private:
 
   void                        _makeSystem();
 
-  StarSystem::System *_system;
+  StarSystem::System::RefPtr _system;
   Usul::Jobs::Manager *_manager;
 
   SERIALIZE_XML_DEFINE_MAP;
-  SERIALIZE_XML_DEFINE_MEMBERS ( StarSystemDocument );
+  SERIALIZE_XML_DEFINE_MEMBERS ( star_system_document );
 };
 
 

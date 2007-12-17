@@ -58,7 +58,7 @@ template < class T > inline void deserialize ( const XmlTree::Node &parent, std:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class T > inline void deserialize( const XmlTree::Node& parent, T& t )
+template < class T > inline void deserialize ( const XmlTree::Node& parent, T& t )
 {
   if( !parent.children().empty() )
   {

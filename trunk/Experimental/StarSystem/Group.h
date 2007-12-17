@@ -65,6 +65,8 @@ private:
   void                      _destroy();
 
   Nodes _nodes;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( star_system_satellites );
 };
 
 

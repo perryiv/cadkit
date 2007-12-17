@@ -10,135 +10,110 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Group class.
+//  Callbacks that determine tile splitting behavior.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "StarSystem/Group.h"
-#include "StarSystem/Visitor.h"
+#include "StarSystem/SplitCallbacks.h"
+#include "StarSystem/Tile.h"
 
-#include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Functions/SafeCall.h"
 #include "Usul/Trace/Trace.h"
 
-#include "osg/Group"
-
-#include <algorithm>
-
-using namespace StarSystem;
-
-STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( Group );
+using namespace StarSystem::Callbacks;
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Constructor
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Group::Group() : BaseClass(),
-  _nodes()
+SplitCallback::SplitCallback() : BaseClass()
 {
   USUL_TRACE_SCOPE;
-  this->_addMember ( "nodes", _nodes );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Destructor
+//  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Group::~Group()
+SplitCallback::~SplitCallback()
 {
   USUL_TRACE_SCOPE;
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Group::_destroy ), "2555885310" );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Destroy
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Group::_destroy()
+PassThrough::PassThrough() : BaseClass()
 {
   USUL_TRACE_SCOPE;
-  _nodes.clear();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the nodes.
+//  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Group::nodes ( Group::Nodes &nodes )
+PassThrough::~PassThrough()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  _nodes = nodes;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the nodes.
+//  Return true if the tile should split.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Group::Nodes &Group::nodes()
+bool PassThrough::shouldSplit ( bool suggestion, StarSystem::Tile * )
 {
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _nodes;
+  return suggestion;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the nodes.
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Group::Nodes &Group::nodes() const
+SplitToLevel::SplitToLevel ( unsigned int maxLevel ) : BaseClass(), 
+  _maxLevel ( maxLevel )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _nodes;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Is the group empty?
+//  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Group::empty() const
+SplitToLevel::~SplitToLevel()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _nodes.empty();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add a node.
+//  Return true if the tile's level is less than the max.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Group::add ( Node *node )
+bool SplitToLevel::shouldSplit ( bool suggestion, StarSystem::Tile *tile )
 {
-  USUL_TRACE_SCOPE;
-
-  if ( 0x0 != node )
-  {
-    Guard guard ( this->mutex() );
-    _nodes.push_back ( node );
-  }
+  return ( ( 0x0 == tile ) ? suggestion : ( tile->level() < _maxLevel ) );
 }

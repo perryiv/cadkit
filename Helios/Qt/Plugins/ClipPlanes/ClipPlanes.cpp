@@ -489,6 +489,31 @@ void ClipPlanes::_distanceSpinBoxChanged ( double value )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Scope the blocking of signals.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct ScopedBlockSignals
+  {
+    ScopedBlockSignals( QObject& object ) : _object ( object )
+    {
+      _object.blockSignals ( true );
+    }
+    ~ScopedBlockSignals()
+    {
+      _object.blockSignals ( false );
+    }
+    
+  private:
+    QObject &_object;
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the distance.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -497,8 +522,9 @@ void ClipPlanes::_setDistance ( double value )
 {
   USUL_TRACE_SCOPE;
   
-  _distanceSlider->blockSignals ( true );
-  _distanceSpinBox->blockSignals ( true );
+  // Disable signals during this function.
+  Detail::ScopedBlockSignals s0 ( *_distanceSlider );
+  Detail::ScopedBlockSignals s1 ( *_distanceSpinBox );
   
   Usul::Interfaces::IClippingPlanes::QueryPtr cp ( _caller );
 
@@ -520,9 +546,6 @@ void ClipPlanes::_setDistance ( double value )
 
   // Draw.
   this->_render();
-  
-  _distanceSlider->blockSignals ( false );
-  _distanceSpinBox->blockSignals ( false );
 }
 
 

@@ -387,9 +387,12 @@ void MainWindow::_buildMenuKitMenu()
     // Add the recent file menu.
     menu->append ( _recentFilesMenu );
 
+    // On mac Qt automatically adds a quit item in the application menu.
+#ifndef __APPLE__
     menu->addSeparator();
     menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::ExitApplication ( me ) ) );
-
+#endif
+    
     _menu->append ( menu );
   }
 
@@ -1120,8 +1123,15 @@ std::string MainWindow::defautPluginFile() const
 {
   USUL_TRACE_SCOPE;
   //Guard guard ( this->mutex() );
+  
+  #ifdef __APPLE__
+  // Relative path for an application bundle on OS X.
+  std::string relativePath ( "/../Plugins/" );
+  #else
+  std::string relativePath ( "/../configs/" );
+  #endif
 
-  std::string file ( this->directory() + "/../configs/" + this->programName() + "Plugins.xml" );
+  std::string file ( this->directory() + relativePath + this->programName() + "Plugins.xml" );
   std::replace ( file.begin(), file.end(), '\\', '/' );
   return file;
 }

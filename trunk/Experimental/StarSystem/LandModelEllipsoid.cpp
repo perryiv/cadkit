@@ -42,7 +42,7 @@ LandModelEllipsoid::LandModelEllipsoid ( const Vec2d &r ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LandModelEllipsoid::~LandModelEllipsoid ()
+LandModelEllipsoid::~LandModelEllipsoid()
 {
   USUL_TRACE_SCOPE;
   delete _ellipsoid; _ellipsoid = 0x0;
@@ -55,7 +55,7 @@ LandModelEllipsoid::~LandModelEllipsoid ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-double LandModelEllipsoid::size () const
+double LandModelEllipsoid::size() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -79,7 +79,7 @@ double LandModelEllipsoid::elevation ( double lat, double lon ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert lat, lon, height to x,y,z.
+//  Convert lat,lon,height to x,y,z.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -133,4 +133,53 @@ LandModel::MeshSize LandModelEllipsoid::meshSize ( const LandModel::Extents &ext
 
   // If we get to here then set the number of columns.
   return MeshSize ( 3, ms[0] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Serialize the members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LandModelEllipsoid::serialize ( XmlTree::Node &parent ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Copy the map.
+  Serialize::XML::DataMemberMap m ( _dataMemberMap );
+
+  // Add additional entries.
+  Vec2d r ( _ellipsoid->a(), _ellipsoid->b() );
+  m.addMember ( "radii", r );
+
+  // Write members to the node from local map.
+  m.serialize ( parent );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize the members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LandModelEllipsoid::deserialize ( const XmlTree::Node &node )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Copy the map.
+  Serialize::XML::DataMemberMap m ( _dataMemberMap );
+
+  // Add additional entries.
+  Vec2d r ( _ellipsoid->a(), _ellipsoid->b() );
+  m.addMember ( "radii", r );
+
+  // Initialize locals and members from the the node.
+  m.deserialize ( node );
+
+  // Set members from locals.
+  _ellipsoid->setAB ( r[RADIUS_EQUATOR], r[RADIUS_POLAR] );
 }

@@ -14,6 +14,8 @@
 #include "StarSystem/Export.h"
 #include "StarSystem/Extents.h"
 
+#include "Serialize/XML/Macros.h"
+
 #include "Usul/Base/Object.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Pointers/Pointers.h"
@@ -35,7 +37,10 @@ public:
 
   USUL_DECLARE_REF_POINTERS ( LandModel );
 
-  LandModel () : BaseClass() { }
+  LandModel () : BaseClass(),
+    SERIALIZE_XML_INITIALIZER_LIST
+  {
+  }
 
   // Get the size.
   virtual double      size() const = 0;
@@ -51,7 +56,12 @@ public:
 
 protected:
 
-  virtual ~LandModel () {}
+  virtual ~LandModel()
+  {
+  }
+
+  SERIALIZE_XML_DEFINE_MAP;
+  SERIALIZE_XML_DEFINE_MEMBERS ( star_system_land_model );
 };
 
 

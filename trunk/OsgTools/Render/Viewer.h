@@ -203,10 +203,6 @@ public:
   void                  backgroundCorners ( unsigned int corners );
   unsigned int          backgroundCorners() const;
 
-  // Save and load the background.
-  void                  backgroundLoad();
-  void                  backgroundSave();
-
   // Set/get the bounding-box state.
   void                  boundingBox ( bool show );
   bool                  boundingBox() const;
@@ -228,11 +224,6 @@ public:
 
   // Tell the canvas that the scene changed.
   virtual void          changedScene();
-
-  // Copy/paste the camera.
-  virtual void          copyCamera() const;
-  virtual void          pasteCamera();
-  bool                  canPasteCamera() const;
 
   /// Hide/Show the center of rotation.
   void                  showCenterOfRotation ( bool b );
@@ -301,6 +292,10 @@ public:
   // Set/get the mode
   void                  setMode ( ViewMode mode );
   ViewMode              getMode () { return _currentMode; }
+
+  // Save/load the state.
+  void                  stateLoad();
+  void                  stateSave() const;
 
   // Cycle through the modes
   void                  cycleMode();
@@ -380,7 +375,7 @@ public:
   SceneManager *        sceneManager() { return _sceneManager.get(); }
 
   // Get/Set back to front sorting.
-  bool                  sortBackToFront () const;
+  bool                  sortBackToFront() const;
   void                  sortBackToFront ( bool );
 
   // Get/set stereo
@@ -409,10 +404,6 @@ public:
 
   // Animate
   bool                  timeoutAnimate ();
-
-  // Save/load the trackball settings.
-  void                  trackballStateSave() const;
-  void                  trackballStateLoad();
 
   // Set/Get two sided lighting
   void                  twoSidedLighting ( bool twoSided );
@@ -743,7 +734,6 @@ private:
   typedef osg::ref_ptr < Node > NodePtr;
   typedef osg::ref_ptr < Group > GroupPtr;
   typedef osg::ref_ptr < osgText::Text > TextPtr;
-  typedef std::pair < bool, osg::Matrixd > CameraBuffer;
   typedef Document::RefPtr DocumentPtr;
   typedef std::vector < LodPtr > LodList;
   typedef std::pair < bool, LodList > Lods;
@@ -751,8 +741,6 @@ private:
   typedef OsgTools::Widgets::ClipPlane ClipPlaneWidget;
   typedef std::map < unsigned int, ClipPlaneWidget::Ptr > ClipPlaneWidgets;
 
-  static CameraBuffer _cameraCopyBuffer;
-  static MatrixManipPtr _navManipCopyBuffer;
   IContext::QueryPtr _context;
   Renderer::ValidRefPtr _renderer;
   SceneManager::ValidRefPtr _sceneManager;

@@ -163,16 +163,6 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Static data member(s).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Viewer::CameraBuffer Viewer::_cameraCopyBuffer ( false, osg::Matrixd::identity() );
-Viewer::MatrixManipPtr Viewer::_navManipCopyBuffer ( 0x0 );
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -213,7 +203,7 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   osg::ref_ptr< osg::Light > light ( new osg::Light );
   light->setLightNum ( 1 );
   light->setDiffuse ( osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
-  osg::ref_ptr< osg::StateSet > ss ( _sceneManager->projection()->getOrCreateStateSet () );
+  osg::ref_ptr< osg::StateSet > ss ( _sceneManager->projection()->getOrCreateStateSet() );
   ss->setAttribute ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
 #endif
 
@@ -251,12 +241,6 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
 
 Viewer::~Viewer()
 {
-  // Remember this trackball setting.
-  this->trackballStateSave();
-
-  // Save the background settings.
-  this->backgroundSave();
-
   // Better be zero
   USUL_ASSERT ( 0 == this->refCount() );
 }
@@ -570,8 +554,8 @@ void Viewer::camera ( CameraOption option )
 
   // Make the adapters.
   EventAdapter::Ptr ea ( new EventAdapter );
-  unsigned int width ( static_cast < unsigned int > ( this->width () ) );
-  unsigned int height ( static_cast < unsigned int > ( this->height () ) );
+  unsigned int width ( static_cast < unsigned int > ( this->width() ) );
+  unsigned int height ( static_cast < unsigned int > ( this->height() ) );
   ea->setWindowSize ( Usul::Math::Vec2ui ( width, height ) );
   ActionAdapter aa ( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
 
@@ -1468,53 +1452,6 @@ void Viewer::setStatusBarText ( const std::string &text, bool force )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copy the current camera.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::copyCamera() const
-{
-  _cameraCopyBuffer.first  = true; 
-  _cameraCopyBuffer.second = this->viewer()->getViewMatrix();
-
-  if ( this->navManip() )
-    _navManipCopyBuffer = dynamic_cast < MatrixManip * > ( this->navManip()->clone ( osg::CopyOp::DEEP_COPY_ALL ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Paste the camera.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::pasteCamera()
-{
-  if ( this->canPasteCamera() )
-  {
-    if ( this->navManip() && this->viewer() && _navManipCopyBuffer.valid() )
-    {
-      _navManip = dynamic_cast < MatrixManip * > ( this->navManip()->clone ( osg::CopyOp::DEEP_COPY_ALL ) );
-    }
-    this->viewer()->setViewMatrix ( _cameraCopyBuffer.second );
-  } 
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Can we paste the camera?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::canPasteCamera() const
-{
-  return _cameraCopyBuffer.first;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Draw a square representing the selection box.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1707,8 +1644,8 @@ bool Viewer::_writeImageFile ( const std::string &filename ) const
   // Make the image
   osg::ref_ptr<osg::Image> image ( new osg::Image );
 
-  int x ( static_cast < int > ( this->x () ) );
-  int y ( static_cast < int > ( this->y () ) );
+  int x ( static_cast < int > ( this->x() ) );
+  int y ( static_cast < int > ( this->y() ) );
 
   // Read the screen buffer.
   image->readPixels ( x, y, static_cast<int> ( this->width() ), static_cast<int> ( this->height() ), GL_RGB, GL_UNSIGNED_BYTE );
@@ -1824,7 +1761,7 @@ void Viewer::boundingBox ( bool state )
     else
       bb.expandBy ( this->model()->getBound() );
 
-    /*osg::StateSet *ss ( group->getOrCreateStateSet () );
+    /*osg::StateSet *ss ( group->getOrCreateStateSet() );
 
     osg::Material *mat ( new osg::Material );
     mat->setDiffuse ( osg::Material::FRONT, osg::Vec4 ( 255.0 / 255.0, 164.5 / 255.0, 85.0 / 255.0, 1 ) );
@@ -1854,7 +1791,7 @@ void Viewer::boundingBox ( bool state )
       osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
       mt->setMatrix ( osg::Matrix::translate ( bb.corner( i ) ) );
 
-      mt->addChild ( g.get () );
+      mt->addChild ( g.get() );
       group->addChild ( mt.get() );
 
       OsgTools::ShapeFactory::MeshSize size ( 20, 20 );
@@ -2459,7 +2396,7 @@ osg::Node* Viewer::model()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::_addAxes ()
+void Viewer::_addAxes()
 {
   // Get the group.  It will be under a projection node that is set which each resize, so the geometry under it
   // won't get distorted by screen resizes.
@@ -2484,7 +2421,7 @@ void Viewer::_addAxes ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::_removeAxes ()
+void Viewer::_removeAxes()
 {
   _sceneManager->projectionGroupRemove ( OsgTools::Render::Constants::AXES );
 
@@ -2499,7 +2436,7 @@ void Viewer::_removeAxes ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::_setAxes ()
+void Viewer::_setAxes()
 {
   // Return now if no axes
   if( !this->isAxesShown() )
@@ -2585,7 +2522,7 @@ bool Viewer::isAxesShown() const
 void Viewer::setViewMatrix ( const osg::Matrixf& matrix )
 {
   this->viewer()->setViewMatrix ( matrix );
-  this->navManip()->setByInverseMatrix ( this->getViewMatrix () );
+  this->navManip()->setByInverseMatrix ( this->getViewMatrix() );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2597,7 +2534,7 @@ void Viewer::setViewMatrix ( const osg::Matrixf& matrix )
 void Viewer::setViewMatrix ( const osg::Matrixd& matrix )
 {
   this->viewer()->setViewMatrix ( matrix );
-  this->navManip()->setByInverseMatrix ( this->getViewMatrix () );
+  this->navManip()->setByInverseMatrix ( this->getViewMatrix() );
 }
 
 
@@ -4015,7 +3952,7 @@ void Viewer::fovSet ( double fov )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-double Viewer::fovGet () const
+double Viewer::fovGet() const
 {
   return Usul::Shared::Preferences::instance().getDouble( Keys::FOV );
 }
@@ -4027,7 +3964,7 @@ double Viewer::fovGet () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::timeoutAnimate ()
+bool Viewer::timeoutAnimate()
 {
   // Get the matrix and see if we should continue.
   osg::Matrixd mat;
@@ -4891,7 +4828,7 @@ void Viewer::menuAdd ( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
 {
   // Redirect to the caller.
   Usul::Interfaces::IMenuAdd::QueryPtr ma ( _caller );
-  if ( ma.valid () )
+  if ( ma.valid() )
     ma->menuAdd ( menu, caller );
 }
 
@@ -4905,8 +4842,8 @@ void Viewer::menuAdd ( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
 void Viewer::renderLoop ( bool b )
 {
   // Redirect to the caller.
-  Usul::Interfaces::IRenderLoop::QueryPtr rl ( this->caller () );
-  if ( rl.valid () )
+  Usul::Interfaces::IRenderLoop::QueryPtr rl ( this->caller() );
+  if ( rl.valid() )
     rl->renderLoop ( b );
 }
 
@@ -4917,11 +4854,11 @@ void Viewer::renderLoop ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::renderLoop () const
+bool Viewer::renderLoop() const
 {
   // Redirect to the caller.
-  Usul::Interfaces::IRenderLoop::QueryPtr rl ( const_cast < IUnknown * > ( this->caller () ) );
-  return rl.valid () ? rl->renderLoop ( ) : false ;
+  Usul::Interfaces::IRenderLoop::QueryPtr rl ( const_cast < IUnknown * > ( this->caller() ) );
+  return rl.valid() ? rl->renderLoop ( ) : false ;
 }
 
 
@@ -4931,10 +4868,10 @@ bool Viewer::renderLoop () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown * Viewer::caller ()
+Usul::Interfaces::IUnknown * Viewer::caller()
 {
-  Guard guard ( this->mutex () );
-  return _caller.get ();
+  Guard guard ( this->mutex() );
+  return _caller.get();
 }
 
 
@@ -4944,10 +4881,10 @@ Usul::Interfaces::IUnknown * Viewer::caller ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Usul::Interfaces::IUnknown * Viewer::caller () const
+const Usul::Interfaces::IUnknown * Viewer::caller() const
 {
-  Guard guard ( this->mutex () );
-  return _caller.get ();
+  Guard guard ( this->mutex() );
+  return _caller.get();
 }
 
 
@@ -4974,18 +4911,14 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Save the trackball state.
+//  Save the state.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::trackballStateSave() const
+void Viewer::stateSave() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-
-  // If the document has not been given a name then punt.
-  if ( false == _document->fileValid() )
-    return;
 
   // Get string key for document.
   std::string doc ( Helper::documentTagName ( _document.get() ) );
@@ -4994,24 +4927,37 @@ void Viewer::trackballStateSave() const
 
   // Get trackball.
   const Trackball *trackball ( dynamic_cast < const Trackball * > ( this->navManip() ) );
-  if ( 0x0 == trackball )
-    return;
-
-  // Save properties in registry.
-  Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc] );
-  reg["center"]   = trackball->center();
-  reg["rotation"] = trackball->rotation();
-  reg["distance"] = trackball->distance();
+  if ( 0x0 != trackball )
+  {
+    // Save properties in registry.
+    Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc] );
+    reg["center"]   = trackball->center();
+    reg["rotation"] = trackball->rotation();
+    reg["distance"] = trackball->distance();
+  }
+  {
+    // Save properties in registry.
+    Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::BACKGROUND_COLOR][doc] );
+    reg["top_left"]     = this->backgroundColor ( Corners::TOP_LEFT );
+    reg["top_right"]    = this->backgroundColor ( Corners::TOP_RIGHT );
+    reg["bottom_left"]  = this->backgroundColor ( Corners::BOTTOM_LEFT );
+    reg["bottom_right"] = this->backgroundColor ( Corners::BOTTOM_RIGHT );
+  }
+  {
+    // Save properties in registry.
+    Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::RENDER_LOOP][doc] );
+    reg["state"] = this->renderLoop();
+  }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Load the trackball state.
+//  Load the state.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::trackballStateLoad()
+void Viewer::stateLoad()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -5023,73 +4969,28 @@ void Viewer::trackballStateLoad()
 
   // Get trackball.
   Trackball *trackball ( dynamic_cast < Trackball * > ( this->navManip() ) );
-  if ( 0x0 == trackball )
-    return;
+  if ( 0x0 != trackball )
+  {
+    // Get properties from registry.
+    Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc] );
+    const osg::Vec3   center ( reg["center"].get<osg::Vec3>   ( trackball->center()   ) );
+    const osg::Quat rotation ( reg["rotation"].get<osg::Quat> ( trackball->rotation() ) );
+    const float     distance ( reg["distance"].get<float>     ( trackball->distance() ) );
 
-  // Get properties from registry.
-  Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc] );
-  const osg::Vec3   center ( reg["center"].get<osg::Vec3>   ( trackball->center()   ) );
-  const osg::Quat rotation ( reg["rotation"].get<osg::Quat> ( trackball->rotation() ) );
-  const float     distance ( reg["distance"].get<float>     ( trackball->distance() ) );
-
-  // Set trackball's properties.
-  this->setTrackball ( center, distance, rotation, false, true );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Load the background settings.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::backgroundLoad()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-
-  // Need a valid document.
-  if ( false == _document.valid() )
-    return;
-
-  // Get string key for document.
-  const std::string doc ( Helper::documentTagName ( _document.get() ) );
-  if ( true == doc.empty() )
-    return;
-
-  // Get properties from registry.
-  Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::BACKGROUND_COLOR][doc] );
-  this->backgroundColor   ( reg["top_left"].get<osg::Vec4>     ( this->backgroundColor ( Corners::TOP_LEFT     ) ), Corners::TOP_LEFT     );
-  this->backgroundColor   ( reg["top_right"].get<osg::Vec4>    ( this->backgroundColor ( Corners::TOP_RIGHT    ) ), Corners::TOP_RIGHT    );
-  this->backgroundColor   ( reg["bottom_left"].get<osg::Vec4>  ( this->backgroundColor ( Corners::BOTTOM_LEFT  ) ), Corners::BOTTOM_LEFT  );
-  this->backgroundColor   ( reg["bottom_right"].get<osg::Vec4> ( this->backgroundColor ( Corners::BOTTOM_RIGHT ) ), Corners::BOTTOM_RIGHT );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Save the background settings.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::backgroundSave()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-
-  // Need a valid document.
-  if ( false == _document.valid() )
-    return;
-
-  // Get string key for document.
-  const std::string doc ( Helper::documentTagName ( _document.get() ) );
-  if ( true == doc.empty() )
-    return;
-
-  // Save properties in registry.
-  Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::BACKGROUND_COLOR][doc] );
-  reg["top_left"]     = this->backgroundColor ( Corners::TOP_LEFT );
-  reg["top_right"]    = this->backgroundColor ( Corners::TOP_RIGHT );
-  reg["bottom_left"]  = this->backgroundColor ( Corners::BOTTOM_LEFT );
-  reg["bottom_right"] = this->backgroundColor ( Corners::BOTTOM_RIGHT );
+    // Set trackball's properties.
+    this->setTrackball ( center, distance, rotation, false, true );
+  }
+  {
+    // Get properties from registry.
+    Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::BACKGROUND_COLOR][doc] );
+    this->backgroundColor ( reg["top_left"].get<osg::Vec4>     ( this->backgroundColor ( Corners::TOP_LEFT     ) ), Corners::TOP_LEFT     );
+    this->backgroundColor ( reg["top_right"].get<osg::Vec4>    ( this->backgroundColor ( Corners::TOP_RIGHT    ) ), Corners::TOP_RIGHT    );
+    this->backgroundColor ( reg["bottom_left"].get<osg::Vec4>  ( this->backgroundColor ( Corners::BOTTOM_LEFT  ) ), Corners::BOTTOM_LEFT  );
+    this->backgroundColor ( reg["bottom_right"].get<osg::Vec4> ( this->backgroundColor ( Corners::BOTTOM_RIGHT ) ), Corners::BOTTOM_RIGHT );
+  }
+  {
+    // Get properties from registry.
+    Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::RENDER_LOOP][doc] );
+    this->renderLoop ( reg["state"].get<bool> ( this->renderLoop() ) );
+  }
 }

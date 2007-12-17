@@ -101,7 +101,7 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
   this->setAttribute ( Qt::WA_DeleteOnClose );
 
   // Initalize the placement and size.
-  this->_initPlacement ();
+  this->_initPlacement();
 
   // Add this to the document.
   if ( 0x0 != doc )
@@ -123,9 +123,8 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
     subject->addModifiedObserver ( this );
   }
 
-  // Load initial settings.
-  _viewer->trackballStateLoad();
-  _viewer->backgroundLoad();
+  // Load state. Do this after setting document.
+  _viewer->stateLoad();
 
   // We have a custom context menu.
   this->setContextMenuPolicy ( Qt::CustomContextMenu );
@@ -155,6 +154,9 @@ Viewer::~Viewer()
     delete _timer;
     _timer = 0x0;
   }
+
+  // Save viewer's state.
+  _viewer->stateSave();
 
   // Clear the viewer.
   _viewer->clear();
@@ -864,12 +866,12 @@ void Viewer::renderLoop ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::renderLoop () const
+bool Viewer::renderLoop() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  return ( 0x0 != _timerRenderLoop ? _timerRenderLoop->isActive () : false );
+  return ( 0x0 != _timerRenderLoop ? _timerRenderLoop->isActive() : false );
 }
 
 
@@ -884,7 +886,7 @@ void Viewer::_onTimeoutRenderLoop()
   USUL_TRACE_SCOPE;
   OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
   if ( true == viewer.valid() )
-    viewer->render ();
+    viewer->render();
 }
 
 
@@ -901,7 +903,7 @@ void Viewer::menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller )
 
   MenuKit::Menu::RefPtr view ( menu.find ( "&View", true ) );
 
-  if ( view.valid () )
+  if ( view.valid() )
   {
     this->_menuAdd ( *view );
   }
@@ -916,10 +918,10 @@ void Viewer::menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller )
 
 void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller )
 {
-  if ( menu.items().size () > 0 )
-    menu.addSeparator ();
+  if ( menu.items().size() > 0 )
+    menu.addSeparator();
 
-  Usul::Interfaces::IUnknown::QueryPtr viewer ( this->viewer () );
+  Usul::Interfaces::IUnknown::QueryPtr viewer ( this->viewer() );
 
   // Typedefs.
   typedef MenuKit::Button Button;
@@ -938,10 +940,10 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
     MenuKit::Menu::RefPtr passes ( new MenuKit::Menu ( "Rendering Passes" ) );
     menu.append ( passes.get() );
 
-    passes->append ( new RadioButton ( new RenderingPasses ( "1", 1, viewer.get () ) ) );
-    passes->append ( new RadioButton ( new RenderingPasses ( "3", 3, viewer.get () ) ) );
-    passes->append ( new RadioButton ( new RenderingPasses ( "9", 9, viewer.get () ) ) );
-    passes->append ( new RadioButton ( new RenderingPasses ( "12", 12, viewer.get () ) ) );
+    passes->append ( new RadioButton ( new RenderingPasses ( "1", 1, viewer.get() ) ) );
+    passes->append ( new RadioButton ( new RenderingPasses ( "3", 3, viewer.get() ) ) );
+    passes->append ( new RadioButton ( new RenderingPasses ( "9", 9, viewer.get() ) ) );
+    passes->append ( new RadioButton ( new RenderingPasses ( "12", 12, viewer.get() ) ) );
   }
 
   MenuKit::Button::RefPtr rl ( new MenuKit::ToggleButton ( new Usul::Commands::RenderLoop ( "Render Loop", viewer.get() ) ) );
@@ -1087,11 +1089,11 @@ void Viewer::dragEnterEvent ( QDragEnterEvent *event )
   typedef QList < QUrl > Urls;
   typedef Urls::const_iterator ConstIterator;
 
-  Urls urls ( event->mimeData()->urls () );
+  Urls urls ( event->mimeData()->urls() );
 
   for ( ConstIterator i = urls.begin(); i != urls.end(); ++ i )
   {
-    std::string file ( i->toLocalFile ().toStdString () );
+    std::string file ( i->toLocalFile().toStdString() );
 
     if ( document->canInsert ( file ) )
     {
@@ -1122,13 +1124,13 @@ void Viewer::dropEvent ( QDropEvent *event )
   typedef QList < QUrl > Urls;
   typedef Urls::const_iterator ConstIterator;
 
-  Urls urls ( event->mimeData()->urls () );
+  Urls urls ( event->mimeData()->urls() );
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   for ( ConstIterator i = urls.begin(); i != urls.end(); ++ i )
   {
-    std::string file ( i->toLocalFile ().toStdString () );
+    std::string file ( i->toLocalFile().toStdString() );
 
     document->read ( file, me.get() );
   }
@@ -1157,7 +1159,7 @@ void Viewer::_resize ( unsigned int w, unsigned int h )
 
 bool Viewer::_isSize ( unsigned int w, unsigned int h ) const
 {
-  QSize size ( this->size () );
+  QSize size ( this->size() );
   return static_cast < int > ( w ) == size.width() && static_cast < int > ( h ) == size.height();
 }
 
@@ -1182,7 +1184,7 @@ void Viewer::_customSize()
   x->setMaximum ( 4096 );
   y->setMaximum ( 4096 );
 
-  const QSize size ( this->size () );
+  const QSize size ( this->size() );
 
   x->setValue ( size.width() );
   y->setValue ( size.height() );

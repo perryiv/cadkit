@@ -20,9 +20,9 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Strings/Convert.h"
 
 #include <string>
-#include <sstream>
 #include <map>
 #include <vector>
 
@@ -106,13 +106,10 @@ private:
 
 template < class T > inline Node::Node ( const std::string &name, T value ) : BaseClass(),
   _name       ( name ),
-  _value      (),
+  _value      ( Usul::Strings::toString ( value ) ),
   _attributes (),
   _children   ()
 {
-  std::ostringstream out;
-  out << value;
-  _value = out.str();
 }
 
 

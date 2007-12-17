@@ -43,10 +43,10 @@ public:
     RADIUS_POLAR   = 1
   };
 
-  LandModelEllipsoid ( const Vec2d &r );
+  LandModelEllipsoid ( const Vec2d &r = Vec2d ( 1, 1 ) );
 
-  // Get the size.
-  virtual double size () const;
+  // Deserialize this instance.
+  virtual void        deserialize ( const XmlTree::Node &node );
   
   // Get the elevation at given lat, lon.
   virtual double      elevation ( double lat, double lon ) const;
@@ -57,13 +57,22 @@ public:
   // Return the appropriate mesh size.
   virtual MeshSize    meshSize ( const Extents &extents, const MeshSize &ms );
 
+  // Get the size.
+  virtual double      size() const;
+
+  // Serialize this instance.
+  virtual void        serialize ( XmlTree::Node &parent ) const;
+
 protected:
 
-  virtual ~LandModelEllipsoid ();
+  virtual ~LandModelEllipsoid();
 
 private:
 
   ossimEllipsoid *_ellipsoid;
+
+  SERIALIZE_XML_CLASS_NAME ( star_system_land_model_ellipsoid );
+  SERIALIZE_XML_ADD_MEMBER_FUNCTION;
 };
 
 

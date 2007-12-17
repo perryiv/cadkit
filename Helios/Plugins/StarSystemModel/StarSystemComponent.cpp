@@ -18,6 +18,8 @@
 
 #include "StarSystem/Body.h"
 #include "StarSystem/System.h"
+#include "StarSystem/LandModelEllipsoid.h"
+#include "StarSystem/LandModelFlat.h"
 
 #include "Usul/Factory/ObjectFactory.h"
 #include "Usul/Factory/RegisterCreator.h"
@@ -38,9 +40,11 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemComponent, StarSystemComponent::Base
 
 namespace StarSystem
 {
-  USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "star_system_system",     System );
-  USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "star_system_body",       Body );
+  USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "star_system_system", System );
+  USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "star_system_body", Body );
   USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "star_system_satellites", Group );
+  USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "star_system_land_model_ellipsoid", LandModelEllipsoid );
+  USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "star_system_land_model_flat", LandModelFlat );
 }
 
 

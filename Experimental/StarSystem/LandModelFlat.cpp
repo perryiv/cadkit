@@ -128,7 +128,6 @@ void LandModelFlat::latLonHeightToXYZ ( double lat, double lon, double elevation
     _projection->worldToLineSample ( latLonPoint, p );
     point.set ( static_cast<ValueType> ( p.x ), static_cast<ValueType> ( p.y ), 0.0 );
   }
-  
 }
 
 
@@ -142,4 +141,42 @@ LandModel::MeshSize LandModelFlat::meshSize ( const LandModel::Extents &extents,
 {
   USUL_TRACE_SCOPE;
   return ms;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Serialize the members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LandModelFlat::serialize ( XmlTree::Node &parent ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Copy the map.
+  Serialize::XML::DataMemberMap m ( _dataMemberMap );
+
+  // Write members to the node from local map.
+  m.serialize ( parent );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize the members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LandModelFlat::deserialize ( const XmlTree::Node &node )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Copy the map.
+  Serialize::XML::DataMemberMap m ( _dataMemberMap );
+
+  // Initialize locals and members from the the node.
+  m.deserialize ( node );
 }

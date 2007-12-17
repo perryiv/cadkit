@@ -101,7 +101,7 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
 
   // Serialization setup.
   this->_addMember ( "transformation", _transform );
-  this->_addMember ( "textures_per_frame", _texturesPerFrame );
+  this->_addMember ( "land_model", _landModel );
   this->_addMember ( "max_textures_per_frame", _maxTexturesPerFrame );
   this->_addMember ( "max_level", _maxLevel );
   this->_addMember ( "cache_tiles", _cacheTiles );

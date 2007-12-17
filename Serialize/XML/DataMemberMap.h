@@ -51,6 +51,7 @@ public:
   typedef std::map < std::string, Serialize::XML::MemberBase::RefPtr > Map;
 
   DataMemberMap();
+  DataMemberMap ( const DataMemberMap & );
   ~DataMemberMap();
 
   template < class T > void addMember ( const std::string &name, T &value )
@@ -98,6 +99,9 @@ protected:
   void        _addMember ( Serialize::XML::MemberBase *member );
 
 private:
+
+  // No assignment.
+  DataMemberMap &operator = ( const DataMemberMap & );
 
   Map _map;
 };

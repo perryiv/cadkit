@@ -45,6 +45,13 @@
 
 #include "Serialize/XML/Macros.h"
 
+#define USE_STAR_SYSTEM 1
+
+#if USE_STAR_SYSTEM
+#include "Usul/Jobs/Manager.h"
+#include "StarSystem/System.h"
+#endif
+
 class ossimPlanetTextureLayer;
 
 namespace Usul { namespace Interfaces { struct ICommand; } }
@@ -277,7 +284,12 @@ private:
   Layers _layers;
   Favorites _favorites;
   Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
+#if USE_STAR_SYSTEM
+  StarSystem::System::RefPtr _system;
+  Usul::Jobs::Manager *_manager;
+#else
   osg::ref_ptr < Magrathea::Planet > _planet;
+#endif
 
   /// Command members.
   bool _commandsSend;

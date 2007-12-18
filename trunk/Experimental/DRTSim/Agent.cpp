@@ -381,7 +381,7 @@ bool Agent::_AgentDetailsLoader( )
 
 	AgentDetail tmp;
 
-	for( Usul::Types::Uint64 i = 0; i < 700000; ++i ) // numAgents; ++i)
+	for( Usul::Types::Uint64 i = 0; i < numAgents; ++i)
 	{
 
 		infile.read( ( char * ) &tValue, sizeof( int ) );

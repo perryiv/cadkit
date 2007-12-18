@@ -187,7 +187,7 @@ private:
   Area			_area;
   Agent			_agent;
   Stock			_stock;
-  Transhipment	_trans;
+  Transhipment	        _trans;
   Spore			_spore;
 
   // Menu variables

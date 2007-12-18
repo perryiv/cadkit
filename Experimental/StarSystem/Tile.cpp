@@ -193,7 +193,7 @@ void Tile::_update()
         // Convert lat-lon coordinates to xyz.
         osg::Vec3f &p ( mesh.point ( i, j ) );
         double x ( 0 ), y ( 0 ), z ( 0 );
-        const double elevation ( _body->geodeticRadius ( lat ) );
+        const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( i, j ) ) ) : 0.0 ) );
         _body->latLonHeightToXYZ ( lat, lon, elevation, p );
 
         // Assign normal vectors.
@@ -658,7 +658,7 @@ osg::Node* Tile::_buildLonSkirt ( double lon, double u, double offset )
     const double v ( static_cast<double> ( j ) / ( columns - 1 ) );
     const double lat ( _extents.minimum()[1] + v * ( _extents.maximum()[1] - _extents.minimum()[1] ) );
 
-    const double elevation ( _body->geodeticRadius ( lat ) );
+    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( 0, j ) ) ) : 0.0 ) );
 
     // Convert lat-lon coordinates to xyz.
     _body->latLonHeightToXYZ ( lat, lon, elevation,          mesh.point ( 0, j ) );
@@ -692,7 +692,7 @@ osg::Node* Tile::_buildLatSkirt ( double lat, double v, double offset )
     const double u ( 1.0 - static_cast<double> ( i ) / ( mesh.rows() - 1 ) );
     const double lon ( _extents.minimum()[0] + u * ( _extents.maximum()[0] - _extents.minimum()[0] ) );
 
-    const double elevation ( _body->geodeticRadius ( lat ) );
+    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( i, 0 ) ) ) : 0.0 ) );
 
     // Convert lat-lon coordinates to xyz.
     _body->latLonHeightToXYZ ( lat, lon, elevation,          mesh.point ( i, 0 ) );

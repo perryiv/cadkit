@@ -26,6 +26,7 @@
 #include "Usul/Errors/AssertPolicy.h"
 #include "Usul/Errors/CompositePolicy.h"
 #include "Usul/Errors/ThrowingPolicy.h"
+#include "Usul/Errors/InvalidParameter.h"
 #include "Usul/Errors/PureVirtualCall.h"
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/File/Contents.h"
@@ -59,10 +60,11 @@ namespace Program
   typedef Usul::IO::StreamSink StreamSink;
   StreamSink::RefPtr sink ( static_cast<StreamSink *> ( 0x0 ) );
 
-  // Trapping pure virtual calls.
+  // Trapping errors.
   typedef Usul::Errors::ThrowingPolicy < std::runtime_error > ThrowingPolicy;
-  typedef Usul::Errors::CompositePolicy < ThrowingPolicy, Usul::Errors::AssertPolicy > CompositePolicy;
+  typedef Usul::Errors::CompositePolicy < Usul::Errors::AssertPolicy, ThrowingPolicy > CompositePolicy;
   Usul::Errors::PureVirtualCall < CompositePolicy > pureCallAction;
+  Usul::Errors::InvalidParameter < CompositePolicy > invalidParameterAction;
 }
 
 

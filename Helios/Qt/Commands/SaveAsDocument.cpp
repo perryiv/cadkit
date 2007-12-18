@@ -58,7 +58,7 @@ void SaveAsDocument::_execute()
 
   Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
-  if( document.valid() )
+  if ( true == document.valid() )
   {
     document->saveAs ( this->caller() );
   }

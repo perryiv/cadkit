@@ -314,7 +314,7 @@ std::string Document::_getSaveAsFileName ( Options &options, Unknown *caller )
   options["format"] = format;
 
   // Set the binary flag
-  this->binary( "binary" == format );
+  this->binary ( "binary" == format );
 
   // Return the result.
   return result.first;

@@ -464,6 +464,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Errors\InvalidParameter.h"
+					>
+				</File>
+				<File
 					RelativePath="Errors\PrintingPolicy.h"
 					>
 				</File>
@@ -2283,6 +2287,10 @@
 				</File>
 				<File
 					RelativePath=".\Strings\Trim.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Strings\Unicode.h"
 					>
 				</File>
 			</Filter>

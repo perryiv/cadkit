@@ -21,6 +21,8 @@
 #ifndef _USUL_FUNCTIONS_SAFE_CALL_H_
 #define _USUL_FUNCTIONS_SAFE_CALL_H_
 
+#include "Usul/Exceptions/Canceled.h"
+
 #include <stdexcept>
 #include <iostream>
 #include <sstream>
@@ -30,24 +32,66 @@ namespace Usul {
 namespace Functions {
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper functions for handling exceptions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  inline void exceptionHandler ( const char *id, const Usul::Exceptions::Canceled & )
+  {
+  }
+  inline void exceptionHandler ( const char *id, const std::exception &e )
+  {
+    std::ostringstream out;
+    out << "Error " << ( ( 0x0 == id ) ? "3830268935" : id ) << ": " << e.what() << '\n';
+    std::cout << out.str() << std::flush;
+  }
+  inline void exceptionHandler ( const char *id )
+  {
+    std::ostringstream out;
+    out << "Error " << ( ( 0x0 == id ) ? "1129262471" : id ) << ": exception generated when calling wrapped function" << '\n';
+    std::cout << out.str() << std::flush;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macro for catch blocks.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define SAFE_CALL_CATCH_BLOCKS \
+catch ( const Usul::Exceptions::Canceled &e ) \
+{ \
+  Usul::Functions::Helper::exceptionHandler ( id, e ); \
+} \
+catch ( const std::exception &e ) \
+{ \
+  Usul::Functions::Helper::exceptionHandler ( id, e ); \
+} \
+catch ( ... ) \
+{ \
+  Usul::Functions::Helper::exceptionHandler ( id ); \
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macro for catch blocks.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 template < class F > void safeCall ( F function, const char *id = 0x0 )
 {
   try
   {
     function();
   }
-  catch ( std::exception &e )
-  {
-    std::ostringstream out;
-    out << "Error " << ( ( 0x0 == id ) ? "3021688577" : id ) << ": " << e.what() << '\n';
-    std::cout << out.str() << std::flush;
-  }
-  catch ( ... )
-  {
-    std::ostringstream out;
-    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
-    std::cout << out.str() << std::flush;
-  }
+  SAFE_CALL_CATCH_BLOCKS;
 }
 
 
@@ -57,18 +101,7 @@ template < class F, class T1 > void safeCallR1 ( F function, T1 &t1, const char 
   {
     function ( t1 );
   }
-  catch ( std::exception &e )
-  {
-    std::ostringstream out;
-    out << "Error " << ( ( 0x0 == id ) ? "2847149640" : id ) << ": " << e.what() << '\n';
-    std::cout << out.str() << std::flush;
-  }
-  catch ( ... )
-  {
-    std::ostringstream out;
-    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
-    std::cout << out.str() << std::flush;
-  }
+  SAFE_CALL_CATCH_BLOCKS;
 }
 
 
@@ -78,18 +111,7 @@ template < class F, class T1 > void safeCallV1 ( F function, T1 t1, const char *
   {
     function ( t1 );
   }
-  catch ( std::exception &e )
-  {
-    std::ostringstream out;
-    out << "Error " << ( ( 0x0 == id ) ? "6891331220" : id ) << ": " << e.what() << '\n';
-    std::cout << out.str() << std::flush;
-  }
-  catch ( ... )
-  {
-    std::ostringstream out;
-    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
-    std::cout << out.str() << std::flush;
-  }
+  SAFE_CALL_CATCH_BLOCKS;
 }
 
 
@@ -99,18 +121,7 @@ template < class F, class T1, class T2 > void safeCallR1R2 ( F function, T1 &t1,
   {
     function ( t1, t2 );
   }
-  catch ( std::exception &e )
-  {
-    std::ostringstream out;
-    out << "Error " << ( ( 0x0 == id ) ? "1295065733" : id ) << ": " << e.what() << '\n';
-    std::cout << out.str() << std::flush;
-  }
-  catch ( ... )
-  {
-    std::ostringstream out;
-    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
-    std::cout << out.str() << std::flush;
-  }
+  SAFE_CALL_CATCH_BLOCKS;
 }
 
 
@@ -120,18 +131,7 @@ template < class F, class T1, class T2 > void safeCallV1V2 ( F function, T1 t1, 
   {
     function ( t1, t2 );
   }
-  catch ( std::exception &e )
-  {
-    std::ostringstream out;
-    out << "Error " << ( ( 0x0 == id ) ? "2683524620" : id ) << ": " << e.what() << '\n';
-    std::cout << out.str() << std::flush;
-  }
-  catch ( ... )
-  {
-    std::ostringstream out;
-    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
-    std::cout << out.str() << std::flush;
-  }
+  SAFE_CALL_CATCH_BLOCKS;
 }
 
 
@@ -141,18 +141,7 @@ template < class F, class T1, class T2, class T3 > void safeCallV1V2V3 ( F funct
   {
     function ( t1, t2, t3 );
   }
-  catch ( std::exception &e )
-  {
-    std::ostringstream out;
-    out << "Error " << ( ( 0x0 == id ) ? "1257570409" : id ) << ": " << e.what() << '\n';
-    std::cout << out.str() << std::flush;
-  }
-  catch ( ... )
-  {
-    std::ostringstream out;
-    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
-    std::cout << out.str() << std::flush;
-  }
+  SAFE_CALL_CATCH_BLOCKS;
 }
 
 
@@ -162,18 +151,7 @@ template < class F, class T1, class T2, class T3 > void safeCallR1R2R3 ( F funct
   {
     function ( t1, t2, t3 );
   }
-  catch ( std::exception &e )
-  {
-    std::ostringstream out;
-    out << "Error " << ( ( 0x0 == id ) ? "4105045581" : id ) << ": " << e.what() << '\n';
-    std::cout << out.str() << std::flush;
-  }
-  catch ( ... )
-  {
-    std::ostringstream out;
-    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
-    std::cout << out.str() << std::flush;
-  }
+  SAFE_CALL_CATCH_BLOCKS;
 }
 
 
@@ -183,18 +161,7 @@ template < class F, class T1, class T2, class T3 > void safeCallV1V2R3 ( F funct
   {
     function ( t1, t2, t3 );
   }
-  catch ( std::exception &e )
-  {
-    std::ostringstream out;
-    out << "Error " << ( ( 0x0 == id ) ? "3880275686" : id ) << ": " << e.what() << '\n';
-    std::cout << out.str() << std::flush;
-  }
-  catch ( ... )
-  {
-    std::ostringstream out;
-    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
-    std::cout << out.str() << std::flush;
-  }
+  SAFE_CALL_CATCH_BLOCKS;
 }
 
 
@@ -204,18 +171,7 @@ template < class F, class T1, class T2, class T3, class T4, class T5 > void safe
   {
     function ( t1, t2, t3, t4, t5 );
   }
-  catch ( std::exception &e )
-  {
-    std::ostringstream out;
-    out << "Error " << ( ( 0x0 == id ) ? "1564004124" : id ) << ": " << e.what() << '\n';
-    std::cout << out.str() << std::flush;
-  }
-  catch ( ... )
-  {
-    std::ostringstream out;
-    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
-    std::cout << out.str() << std::flush;
-  }
+  SAFE_CALL_CATCH_BLOCKS;
 }
 
 
@@ -225,19 +181,17 @@ template < class F, class T1, class T2, class T3, class T4, class T5, class T6 >
   {
     function ( t1, t2, t3, t4, t5, t6 );
   }
-  catch ( std::exception &e )
-  {
-    std::ostringstream out;
-    out << "Error " << ( ( 0x0 == id ) ? "9516481030" : id ) << ": " << e.what() << '\n';
-    std::cout << out.str() << std::flush;
-  }
-  catch ( ... )
-  {
-    std::ostringstream out;
-    out << "Error " << id << ": exception generated when calling wrapped function" << '\n';
-    std::cout << out.str() << std::flush;
-  }
+  SAFE_CALL_CATCH_BLOCKS;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clean up macros
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#undef SAFE_CALL_CATCH_BLOCKS
 
 
 } // namespace Functions

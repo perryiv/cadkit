@@ -2194,10 +2194,17 @@ osg::ClipPlane* Viewer::addPlane ( const osg::Plane& plane, bool widget )
 
 void Viewer::removePlane ( unsigned int index )
 {
-  osg::ref_ptr < osg::ClipPlane > clipPlane ( _sceneManager->clipNode()->getClipPlane ( index ) );
-  if ( clipPlane.valid() )
-    this->removePlane ( clipPlane.get() );  
+  osg::ref_ptr<osg::ClipNode> clipNode ( ( true == _sceneManager.valid() ) ? _sceneManager->clipNode() : 0x0 );
+  if ( true == clipNode.valid() )
+  {
+    osg::ref_ptr < osg::ClipPlane > clipPlane ( clipNode->getClipPlane ( index ) );
+    if ( true == clipPlane.valid() )
+    {
+      this->removePlane ( clipPlane.get() );
+    }
+  }
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -3870,7 +3877,7 @@ unsigned int Viewer::addClippingPlane ( const osg::Plane& plane )
 
 void Viewer::removeClippingPlane ( unsigned int index )
 {
-  this->removePlane( index );
+  this->removePlane ( index );
 }
 
 

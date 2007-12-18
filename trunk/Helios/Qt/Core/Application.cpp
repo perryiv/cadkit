@@ -16,6 +16,7 @@
 
 #include "Helios/Qt/Core/Application.h"
 
+#include "Usul/Exceptions/Canceled.h"
 #include "Usul/Trace/Trace.h"
 
 #include <iostream>
@@ -61,7 +62,13 @@ bool Application::notify ( QObject *object, QEvent *event )
   {
     return BaseClass::notify ( object, event );
   }
-  catch ( std::exception &e )
+  catch ( const Usul::Exceptions::Canceled & )
+  {
+    #ifdef _DEBUG
+    std::cout << "Message 3196212174: Operation cancelled by user" << std::endl;
+    #endif
+  }
+  catch ( const std::exception &e )
   {
     std::ostringstream out;
     out << "Error 8033290760: " << e.what() << '\n';

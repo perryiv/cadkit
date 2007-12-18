@@ -101,14 +101,16 @@ void ClipPlanes::_removeClipPlaneClicked()
 
   if ( cp.valid () )
   {
-    unsigned int row ( _clipPlaneList->currentRow() );
-   
-    cp->removeClippingPlane ( row );
+    const int row ( _clipPlaneList->currentRow() );
+    if ( ( row >= 0 ) && ( row < _clipPlaneList->count() ) )
+    {
+      cp->removeClippingPlane ( row );
 
-    QListWidgetItem *item ( _clipPlaneList->takeItem( row ) );
-    delete item;
+      QListWidgetItem *item ( _clipPlaneList->takeItem( row ) );
+      delete item;
 
-    this->_render();
+      this->_render();
+    }
   }
 }
 
@@ -406,7 +408,7 @@ void ClipPlanes::_distanceSliderChanged ( int value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ClipPlanes::_selectedItemChanged( int index )
+void ClipPlanes::_selectedItemChanged ( int index )
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
@@ -417,11 +419,16 @@ void ClipPlanes::_selectedItemChanged( int index )
   if ( false == cp.valid () || false == getBB.valid() || index < 0 )
     return;
 
+  // Handle out of range value.
+  const unsigned int numPlanes ( cp->numClippingPlanes() );
+  if ( ( index < 0 ) || ( static_cast < unsigned int > ( index ) >= numPlanes ) )
+    return;
+
   // Get the bounding box.
   osg::BoundingBox bb ( getBB->getBoundingBox() );
 
   // Get the plane.
-  osg::Plane plane ( cp->getClippingPlane( index ) );
+  osg::Plane plane ( cp->getClippingPlane ( index ) );
   
   // Get the distance.
   const float d ( plane[3] );

@@ -36,7 +36,7 @@ private:
 
   static void _pureCallHandler()
   {
-    ActionType action ( 1833320484, false );
+    ActionType action ( 1833320484, false, "Error 3604988145: Pure virtual function called" );
   }
 };
 

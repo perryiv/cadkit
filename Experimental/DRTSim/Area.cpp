@@ -280,10 +280,12 @@ bool	Area::_AreaDetailsLoader ( )
 	const unsigned int zoom = 3;
 	
 	const Usul::Types::Uint64 fileSize ( Usul::File::size ( _filename ) );
+	std::cout << "Area file to load is " << _filename << std::endl;
 
 	std::ifstream infile( _filename.c_str(), std::ios::in | std::ios::binary );
+        
 	
-	if ( !infile )
+	if ( false == infile.is_open() )
 	{
 		std::cerr << "Error: unable to open AreaDetails file!\n";
 		return false;

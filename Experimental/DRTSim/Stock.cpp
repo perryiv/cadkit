@@ -642,7 +642,7 @@ bool			Stock::_StockDetailsLoader( )
 	_stockDetails.reserve( numStocks );
 	StockDetail tmp;
 
-	for( Usul::Types::Uint64 i = 0; i < 1458; ++i )		// numStocks; ++i )
+	for( Usul::Types::Uint64 i = 0; i < numStocks; ++i )
 	{
 		infile.read( ( char * ) &tValue, sizeof( int ) );
 		Usul::Endian::FromBigToSystem::convert ( tValue );

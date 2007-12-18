@@ -19,13 +19,14 @@
 
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Interfaces/IViewMatrix.h"
-#include "Usul/Interfaces/IViewPort.h"
+//#include "Usul/Interfaces/IViewPort.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"
 
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Case.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/File/Path.h"
@@ -259,7 +260,7 @@ void DRTSimDocument::_read ( const std::string &filename, Unknown *caller, Unkno
 	  std::getline( infile, id, ':');
 	  std::getline( infile, fn, '\n');
 	  fn.erase(0, 1);		// erase the space
-	  
+	  std::cout << Usul::Strings::format( "ID=",id,"\tfilename=",fn ) << std::endl;
 	  if( "agent" == id )		_agentFileName = fn;
 	  if( "area"  == id )		_areaFileName  = fn;
 	  if( "stock" == id )		_stockFileName = fn;
@@ -542,8 +543,9 @@ bool		DRTSimDocument::_readAreaDetailsFile( )
 
 		for(unsigned int i = 0; i < _area.getNumOfHospitals(); ++i)
 		{
-			_stock.setHospitalCoordinates( _area.getHospitalCoordinates( i ) );
-			_trans.setHospitalCoordinates( _area.getHospitalCoordinates( i ) );
+			osg::Vec3 p ( _area.getHospitalCoordinates( i )  );
+			_stock.setHospitalCoordinates( p );
+			_trans.setHospitalCoordinates( p );
 		}
 		
 		return true;

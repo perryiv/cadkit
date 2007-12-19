@@ -23,6 +23,7 @@
 #include "Helios/Qt/Commands/SaveAsDocument.h"
 #include "Helios/Qt/Commands/ExportImage.h"
 #include "Helios/Qt/Commands/ExportModel.h"
+#include "Helios/Qt/Commands/ExportScene.h"
 #include "Helios/Qt/Commands/ExitApplication.h"
 #include "Helios/Qt/Commands/ToggleView.h"
 
@@ -381,6 +382,7 @@ void MainWindow::_buildMenuKitMenu()
     MenuKit::Menu::RefPtr exportMenu ( new MenuKit::Menu ( "Export" ) );
     exportMenu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::ExportImage ( me ) ) );
     exportMenu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::ExportModel ( me ) ) );
+    exportMenu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::ExportScene ( me ) ) );
     menu->append ( exportMenu );
     menu->addSeparator();
 

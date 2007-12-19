@@ -8,16 +8,16 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Qt/Commands/ExportModel.h"
+#include "Helios/Qt/Commands/ExportScene.h"
 
-#include "Usul/Interfaces/IExportModel.h"
+#include "Usul/Interfaces/IExportScene.h"
 #include "Usul/Interfaces/GUI/ISaveFileDialog.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Trace/Trace.h"
 
 using namespace CadKit::Helios::Commands;
 
-USUL_IMPLEMENT_COMMAND ( ExportModel );
+USUL_IMPLEMENT_COMMAND ( ExportScene );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -26,13 +26,13 @@ USUL_IMPLEMENT_COMMAND ( ExportModel );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ExportModel::ExportModel ( IUnknown *caller ) : BaseClass ( caller )
+ExportScene::ExportScene ( IUnknown *caller ) : BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
-  this->text ( "&Export Model" );
+  this->text ( "&Export Scene" );
   this->shortcut ( "" );
-  this->statusTip ( "Export model of current view" );
-  this->toolTip ( "Export model of current view" );
+  this->statusTip ( "Export top-level scene of current view" );
+  this->toolTip ( "Export top-level scene of current view" );
   this->iconPath ( "" );
 }
 
@@ -43,7 +43,7 @@ ExportModel::ExportModel ( IUnknown *caller ) : BaseClass ( caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ExportModel::~ExportModel ()
+ExportScene::~ExportScene ()
 {
   USUL_TRACE_SCOPE;
 }
@@ -55,26 +55,26 @@ ExportModel::~ExportModel ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ExportModel::_execute ()
+void ExportScene::_execute ()
 {
   USUL_TRACE_SCOPE;
 
   // Typedefs.
-  typedef Usul::Interfaces::IExportModel::Filters        Filters;
+  typedef Usul::Interfaces::IExportScene::Filters        Filters;
   typedef Usul::Interfaces::ISaveFileDialog::FileResult  FileResult;
 
   // Get the interfaces
-  Usul::Interfaces::IExportModel::QueryPtr modelExport ( Usul::Documents::Manager::instance().activeView() );
+  Usul::Interfaces::IExportScene::QueryPtr sceneExport ( Usul::Documents::Manager::instance().activeView() );
   Usul::Interfaces::ISaveFileDialog::QueryPtr saveDialog ( this->caller() );
 
   // If the interfaces are valid...
-  if( modelExport.valid() && saveDialog.valid() )
+  if( sceneExport.valid() && saveDialog.valid() )
   {
     // Get the filters.
-    const Filters filters ( modelExport->filtersWriteModel() );
+    const Filters filters ( sceneExport->filtersWriteScene() );
 
     // Get the filename.
-    FileResult result ( saveDialog->getSaveFileName ( "Export Model", filters ) );
+    FileResult result ( saveDialog->getSaveFileName ( "Export Scene", filters ) );
     const std::string &filename ( result.first );
 
     // Return now if the filename is empty.
@@ -82,7 +82,7 @@ void ExportModel::_execute ()
       return;
 
     // Export.
-    modelExport->writeModelFile ( filename );
+    sceneExport->writeSceneFile ( filename );
   }
 }
 
@@ -93,9 +93,9 @@ void ExportModel::_execute ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ExportModel::updateEnable () const
+bool ExportScene::updateEnable () const
 {
-  Usul::Interfaces::IExportModel::QueryPtr me ( Usul::Documents::Manager::instance().activeView() );
+  Usul::Interfaces::IExportScene::QueryPtr me ( Usul::Documents::Manager::instance().activeView() );
   return me.valid();
 }
 

@@ -14,9 +14,7 @@
 #include "StarSystem/Export.h"
 #include "StarSystem/RasterLayerOssim.h"
 
-#include "ossim/support_data/ossimDemGrid.h"
-
-class ossimProjection;
+class ossimProjection; class ossimDemGrid;
 
 namespace StarSystem {
 
@@ -47,7 +45,7 @@ protected:
 
 private:
   bool _loaded;
-  ossimDemGrid _grid;
+  ossimDemGrid *_grid;
   ossimProjection *_projection;
 };
 

@@ -58,6 +58,8 @@
 #include "StarSystem/RasterLayerOssim.h"
 #include "StarSystem/RasterLayerWms.h"
 #include "StarSystem/ElevationLayerDem.h"
+#include "StarSystem/SplitCallbacks.h"
+
 #endif
 
 #include "osgText/Text"
@@ -130,10 +132,13 @@ SERIALIZE_XML_INITIALIZER_LIST
   Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
   Land::RefPtr land ( new Land ( radii ) );
 #endif
-  StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 32612 ) ); // UTM 12
+  //StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 32612 ) ); // UTM 12 WGS 84
+  //StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 32212 ) ); // UTM 12 WGS 72
+  StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 26712 ) ); // UTM 12 NAD 27
+  //StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 26912 ) ); // UTM 12 NAD 83
 
-  const osg::Vec2d mn ( -115, 30 );
-  const osg::Vec2d mx ( -109, 35 );
+  const osg::Vec2d mn ( -115, 32 );
+  const osg::Vec2d mx ( -109, 37 );
 
   // Make a good split distance.
   const double splitDistance ( land->size() / 10 );
@@ -143,7 +148,13 @@ SERIALIZE_XML_INITIALIZER_LIST
 
   // Add the body.
   Body::RefPtr body ( new Body ( land, _manager, meshSize, splitDistance ) );
-  body->useSkirts ( true );
+  body->useSkirts ( false );
+  body->splitCallback ( new StarSystem::Callbacks::SplitToLevel ( 2 ) );
+
+  //StarSystem::ElevationLayerDem::RefPtr dem ( new StarSystem::ElevationLayerDem );
+  //dem->open ( "c:/adam/data/terrain/maricopa_dem/mari_int.dem" );
+  //body->elevationAppend ( dem );
+
   _system->body ( body.get() );
 
 #if 0
@@ -1946,6 +1957,7 @@ void MinervaDocument::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::
 void MinervaDocument::convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const
 {
 #if USE_STAR_SYSTEM
+  _system->body()->xyzToLatLonHeight ( osg::Vec3f ( planetPoint[0], planetPoint[1], planetPoint[2] ), latLonPoint[1], latLonPoint[0], latLonPoint[2] );
 #else
   const osg::Vec3d in ( planetPoint[0], planetPoint[1], planetPoint[2] );
   osg::Vec3d out;

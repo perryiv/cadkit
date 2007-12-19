@@ -48,7 +48,7 @@ class STAR_SYSTEM_EXPORT Tile : public osg::Group
 public:
 
   // OSG Plumbing.
-  META_Node ( osg, Tile );
+  //META_Node ( osg, Tile );
 
   // Declare smart pointers.
   USUL_DECLARE_REF_POINTERS ( Tile );

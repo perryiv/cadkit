@@ -8,16 +8,16 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Qt/Commands/ExportImage.h"
+#include "Helios/Qt/Commands/ExportModel.h"
 
-#include "Usul/Interfaces/IExportImage.h"
+#include "Usul/Interfaces/IExportModel.h"
 #include "Usul/Interfaces/GUI/ISaveFileDialog.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Trace/Trace.h"
 
 using namespace CadKit::Helios::Commands;
 
-USUL_IMPLEMENT_COMMAND ( ExportImage );
+USUL_IMPLEMENT_COMMAND ( ExportModel );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -26,13 +26,13 @@ USUL_IMPLEMENT_COMMAND ( ExportImage );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ExportImage::ExportImage ( IUnknown *caller ) : BaseClass ( caller )
+ExportModel::ExportModel ( IUnknown *caller ) : BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
-  this->text ( "&Export Image" );
+  this->text ( "&Export Model" );
   this->shortcut ( "" );
-  this->statusTip ( "Export Image of current view" );
-  this->toolTip ( "Export Image of current view" );
+  this->statusTip ( "Export Model of current view" );
+  this->toolTip ( "Export Model of current view" );
   this->iconPath ( "" );
 }
 
@@ -43,7 +43,7 @@ ExportImage::ExportImage ( IUnknown *caller ) : BaseClass ( caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ExportImage::~ExportImage ()
+ExportModel::~ExportModel ()
 {
   USUL_TRACE_SCOPE;
 }
@@ -55,26 +55,26 @@ ExportImage::~ExportImage ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ExportImage::_execute ()
+void ExportModel::_execute ()
 {
   USUL_TRACE_SCOPE;
 
   // Typedefs.
-  typedef Usul::Interfaces::IExportImage::Filters        Filters;
+  typedef Usul::Interfaces::IExportModel::Filters        Filters;
   typedef Usul::Interfaces::ISaveFileDialog::FileResult  FileResult;
 
   // Get the interfaces
-  Usul::Interfaces::IExportImage::QueryPtr imageExport ( Usul::Documents::Manager::instance().activeView() );
+  Usul::Interfaces::IExportModel::QueryPtr modelExport ( Usul::Documents::Manager::instance().activeView() );
   Usul::Interfaces::ISaveFileDialog::QueryPtr saveDialog ( this->caller() );
 
   // If the interfaces are valid...
-  if( imageExport.valid() && saveDialog.valid() )
+  if( modelExport.valid() && saveDialog.valid() )
   {
     // Get the filters.
-    const Filters filters ( imageExport->filtersWriteImage() );
+    const Filters filters ( modelExport->filtersWriteModel() );
 
     // Get the filename.
-    FileResult result ( saveDialog->getSaveFileName ( "Export Image", filters ) );
+    FileResult result ( saveDialog->getSaveFileName ( "Export Model", filters ) );
     const std::string &filename ( result.first );
 
     // Return now if the filename is empty.
@@ -82,7 +82,7 @@ void ExportImage::_execute ()
       return;
 
     // Export.
-    imageExport->writeImageFile ( filename );
+    modelExport->writeModelFile ( filename );
   }
 }
 
@@ -93,8 +93,9 @@ void ExportImage::_execute ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ExportImage::updateEnable () const
+bool ExportModel::updateEnable () const
 {
-  return 0x0 != Usul::Documents::Manager::instance().activeView();
+  Usul::Interfaces::IExportModel::QueryPtr me ( Usul::Documents::Manager::instance().activeView() );
+  return me.valid();
 }
 

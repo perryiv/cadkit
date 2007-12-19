@@ -53,6 +53,7 @@ public:
 
   // Convert lat, lon, height to x,y,z.
   virtual void        latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const;
+  virtual void        xyzToLatLonHeight ( const osg::Vec3f& point, double& lat, double& lon, double& elevation ) const;
 
   // Return the appropriate mesh size.
   virtual MeshSize    meshSize ( const Extents &extents, const MeshSize &ms );

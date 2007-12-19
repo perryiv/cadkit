@@ -34,7 +34,7 @@ namespace Callbacks {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-class SplitCallback : public Usul::Base::Object
+class STAR_SYSTEM_EXPORT SplitCallback : public Usul::Base::Object
 {
 public:
 
@@ -67,7 +67,7 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-class PassThrough : public SplitCallback
+class STAR_SYSTEM_EXPORT PassThrough : public SplitCallback
 {
 public:
 
@@ -94,7 +94,7 @@ protected:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-class SplitToLevel : public SplitCallback
+class STAR_SYSTEM_EXPORT SplitToLevel : public SplitCallback
 {
 public:
 

@@ -76,14 +76,12 @@ public:
   // Append elevation data.
   void                      elevationAppend ( RasterLayer * );
 
-  // Computes the "geodetic" radius for a given latitude in degrees.
-  double                    geodeticRadius ( double latitude ) const;
-
   // Get the thread pool for this body.
   Usul::Jobs::Manager *     jobManager();
 
   // Convert lat, lon, height to x,y,z.
   void                      latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const;
+  void                      xyzToLatLonHeight ( const osg::Vec3& point, double& lat, double& lon, double& elevation ) const;
 
   // Set/get the maximum level.
   void                      maxLevel ( unsigned int level );

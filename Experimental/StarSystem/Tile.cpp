@@ -78,7 +78,8 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _image ( image ),
   _texture ( new osg::Texture2D ),
   _texCoords ( texCoords ),
-  _jobId ( false, 0 )
+  _jobId ( false, 0 ),
+  _elevationJob ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -103,6 +104,7 @@ Tile::Tile ( unsigned int level, const Extents &extents,
 
   // Start the request to pull in the texture.
   this->_launchImageRequest();
+  this->_launchElevationRequest();
 }
 
 
@@ -124,7 +126,8 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _textureUnit ( tile._textureUnit ),
   _image ( tile._image ),
   _texCoords ( tile._texCoords ),
-  _jobId ( false, 0 )
+  _jobId ( false, 0 ),
+  _elevationJob ( tile._elevationJob )
 {
   USUL_TRACE_SCOPE;
 
@@ -326,6 +329,16 @@ void Tile::traverse ( osg::NodeVisitor &nv )
         }
       }
 
+      // Check for new elevation data.
+      if ( _elevationJob.valid() && _elevationJob->isDone() )
+      {
+        _elevation = _elevationJob->image();
+        _elevationJob = 0x0;
+
+        // Force vertices to be rebuilt.
+        _flags = Usul::Bits::set ( _flags, Tile::VERTICES, true );
+      }
+
       // Get cull visitor.
       osgUtil::CullVisitor *cv ( dynamic_cast < osgUtil::CullVisitor * > ( &nv ) );
 
@@ -408,6 +421,8 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 
   if ( low )
   {
+    this->getChild( 0 )->setNodeMask( 0xff );
+
     this->_update();
 
     // Remove high level of detail.
@@ -433,6 +448,8 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 
   else
   {
+    this->getChild( 0 )->setNodeMask( 0x0 );
+
     // Add high level if necessary.
     if ( 1 == numChildren )
     {
@@ -572,13 +589,14 @@ void Tile::dirty ( bool state, unsigned int flags, bool dirtyChildren, const Ext
       if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->dirty ( state, flags, dirtyChildren, extents );
     }
 
-#if 1
     if ( this->textureDirty() )
     {
       // Start the request to pull in texture.
       this->_launchImageRequest();
     }
-#endif
+
+    if ( this->verticesDirty() )
+      this->_launchElevationRequest();
   }
 }
 
@@ -926,4 +944,47 @@ void Tile::textureData ( osg::Texture2D* texture, const Usul::Math::Vec4d& coord
 
   // Set our image.
   this->image ( texture->getImage() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the elevation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_launchElevationRequest()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Start the request to pull in texture.
+  if ( 0x0 != _body )
+  {
+    MeshSize size ( this->meshSize() );
+    _elevationJob = new CutImageJob ( this->extents(), size[0], size[1], this->level(), _body->elevationData() );
+    _body->jobManager()->addJob ( _elevationJob.get() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Tile::MeshSize Tile::meshSize() const
+{
+  USUL_TRACE_SCOPE;
+
+  MeshSize size ( 0, 0 );
+
+  Guard guard ( this );
+
+  // Set the size.
+  if ( 0x0 != _mesh )
+    size.set ( _mesh->rows(), _mesh->columns() );
+
+  return size;
 }

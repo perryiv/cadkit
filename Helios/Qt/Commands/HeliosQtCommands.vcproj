@@ -197,6 +197,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ExportModel.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ExportModel.h"
+				>
+			</File>
+			<File
 				RelativePath=".\InsertDocument.cpp"
 				>
 			</File>
@@ -244,12 +252,6 @@
 				RelativePath=".\ToggleView.h"
 				>
 			</File>
-		</Filter>
-		<Filter
-			Name="Generated Files"
-			Filter="moc;h;cpp"
-			UniqueIdentifier="{9437f44b-e7bb-46c1-9a8f-35f3a7ad52c8}"
-			>
 		</Filter>
 	</Files>
 	<Globals>

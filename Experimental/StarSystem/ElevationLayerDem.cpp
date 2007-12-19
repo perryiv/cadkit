@@ -23,6 +23,7 @@
 #include "ossim/projection/ossimProjection.h"
 #include "ossim/projection/ossimProjectionFactoryRegistry.h"
 #include "ossim/projection/ossimUtmProjection.h"
+#include "ossim/support_data/ossimDemGrid.h"
 
 #include <fstream>
 
@@ -37,7 +38,7 @@ using namespace StarSystem;
 ElevationLayerDem::ElevationLayerDem() : 
   BaseClass(),
   _loaded ( false ),
-  _grid(),
+  _grid( 0x0 ),
   _projection ( 0x0 )
 {
   USUL_TRACE_SCOPE;
@@ -53,6 +54,10 @@ ElevationLayerDem::ElevationLayerDem() :
 ElevationLayerDem::~ElevationLayerDem()
 {
   USUL_TRACE_SCOPE;
+
+  if ( 0x0 != _grid )
+    delete _grid;
+  _grid = 0x0;
   
   if ( 0x0 != _projection )
     delete _projection;
@@ -75,7 +80,8 @@ void ElevationLayerDem::open( const std::string& filename )
       return;
     
     Guard guard ( this );
-    _grid.read(in, false);
+    _grid = new ossimDemGrid;
+    _grid->read(in, false);
   }
   
 #if 0
@@ -94,7 +100,7 @@ void ElevationLayerDem::open( const std::string& filename )
   if ( 0x0 == _projection )
     return;
   
-  ossimDemHeader header ( _grid.getHeader() );
+  ossimDemHeader header ( _grid->getHeader() );
   ossimDemPointVector corners ( header.getDEMCorners() );
 
   ossimGpt ll ( _projection->inverse ( ossimDpt ( corners[0].getX(), corners[0].getY() ) ) );
@@ -238,7 +244,7 @@ double ElevationLayerDem::value ( double lon, double lat ) const
   ossimGpt ul ( lat, lon );
   ossimDpt point ( _projection->forward( ul ) );
   
-  ossimDemHeader header ( _grid.getHeader() );
+  ossimDemHeader header ( _grid->getHeader() );
   ossimDemPointVector corners ( header.getDEMCorners() );
   
   const double deltaX ( corners[2].getX() - corners[1].getX() );

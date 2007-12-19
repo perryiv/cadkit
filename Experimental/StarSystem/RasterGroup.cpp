@@ -189,7 +189,7 @@ void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image
   const unsigned int height ( result.t() );
 
   // We only composite images of the same size.
-  if ( ( width != image.s() ) || ( height != image.t() ) )
+  if ( ( static_cast<int> ( width ) != image.s() ) || ( static_cast<int> ( height ) != image.t() ) )
     return;
 
   const unsigned int size ( width * height );

@@ -131,12 +131,12 @@ SERIALIZE_XML_INITIALIZER_LIST
   typedef StarSystem::LandModelEllipsoid Land;
   Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
   Land::RefPtr land ( new Land ( radii ) );
-#endif
+#else
   //StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 32612 ) ); // UTM 12 WGS 84
   //StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 32212 ) ); // UTM 12 WGS 72
   StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 26712 ) ); // UTM 12 NAD 27
   //StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 26912 ) ); // UTM 12 NAD 83
-
+#endif
   const osg::Vec2d mn ( -115, 32 );
   const osg::Vec2d mx ( -109, 37 );
 
@@ -144,16 +144,17 @@ SERIALIZE_XML_INITIALIZER_LIST
   const double splitDistance ( land->size() / 10 );
 
   // Size of the mesh.
-  Body::MeshSize meshSize ( 17, 17 );
+  Body::MeshSize meshSize ( 25, 25 );
 
   // Add the body.
   Body::RefPtr body ( new Body ( land, _manager, meshSize, splitDistance ) );
   body->useSkirts ( false );
   body->splitCallback ( new StarSystem::Callbacks::SplitToLevel ( 2 ) );
 
-  //StarSystem::ElevationLayerDem::RefPtr dem ( new StarSystem::ElevationLayerDem );
+  StarSystem::ElevationLayerDem::RefPtr dem ( new StarSystem::ElevationLayerDem );
+  dem->open ( "/Users/adam/data/terrain/maricopa_dem/mari_int.dem" );
   //dem->open ( "c:/adam/data/terrain/maricopa_dem/mari_int.dem" );
-  //body->elevationAppend ( dem );
+  body->elevationAppend ( dem );
 
   _system->body ( body.get() );
 

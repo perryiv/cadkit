@@ -16,6 +16,7 @@
 #include "Experimental/ModelPresentation/ModelPresentation/MpdNextCommand.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdLocation.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdTools.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdTimelineModel.h"
 
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Interfaces/IViewMatrix.h"
@@ -79,13 +80,11 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _useModels( false ),
   _isAnimating( false ),
   _showTools ( false ),
-  _userSpecifiedEndTime( false )
+  _userSpecifiedEndTime( false ),
+  _globalTimelineEnd( 0 )
 {
   USUL_TRACE_SCOPE;
-  _timeSet.currentTime = 0;
-  _timeSet.endTime = 0;
-  _timeSet.interval = 1;
-  _timeSet.timeline = new osg::Switch;
+
 }
 
 
@@ -303,7 +302,11 @@ osg::Node *ModelPresentationDocument::buildScene ( const BaseClass::Options &opt
     _root->addChild( _sceneTree.at( i ).get() );
   }
   _root->addChild( _static.get() );
-  _root->addChild( _timeSet.timeline.get() );
+
+  for( unsigned int i = 0; i < _timeSets.size(); ++i )
+  {
+    _root->addChild( _timeSets.at( i ).timeline.get() );
+  }
   return _root.get();
 }
 
@@ -316,21 +319,31 @@ osg::Node *ModelPresentationDocument::buildScene ( const BaseClass::Options &opt
 
 void ModelPresentationDocument::_checkTimeSteps()
 {
-  for( unsigned int i = 0; i < _timeSet.groups.size(); ++i )
-  { 
-    // turn on groups that should be shown at this time step
-    if( _timeSet.currentTime >=_timeSet.groups.at( i ).startTime  &&
-        _timeSet.currentTime < _timeSet.groups.at( i ).endTime  )
-    {      
-      _timeSet.timeline->setValue( i, true );
+  for( unsigned int j = 0; j < _timeSets.size(); ++j )
+  {
+    for( unsigned int i = 0; i < _timeSets.at( j ).groups.size(); ++i )
+    { 
+      if( true == _timeSets.at( j ).visible )
+      {
+        // turn on groups that should be shown at this time step
+        if( _timeSets.at( j ).currentTime >=_timeSets.at( j ).groups.at( i ).startTime  &&
+            _timeSets.at( j ).currentTime < _timeSets.at( j ).groups.at( i ).endTime  )
+        {      
+          _timeSets.at( j ).timeline->setValue( i, true );
+        }
+        // turn off groups that should be hidden at this time step
+        if( _timeSets.at( j ).currentTime < _timeSets.at( j ).groups.at( i ).startTime   ||
+            _timeSets.at( j ).currentTime >= _timeSets.at( j ).groups.at( i ).endTime )
+        {
+          _timeSets.at( j ).timeline->setValue( i, false );
+        }
+        
+      }
+      else
+      {
+        _timeSets.at( j ).timeline->setValue( i, false );
+      }
     }
-    // turn off groups that should be hidden at this time step
-    if( _timeSet.currentTime < _timeSet.groups.at( i ).startTime   ||
-        _timeSet.currentTime >= _timeSet.groups.at( i ).endTime )
-    {
-      _timeSet.timeline->setValue( i, false );
-    }
-
   }
 }
 
@@ -351,18 +364,10 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
   {
     if( true == (*_update)() )
     {
-      if( _timeSet.currentTime == _timeSet.endTime )
-        _timeSet.currentTime = 0;
-      else
-        _timeSet.currentTime += _timeSet.interval;
-
+      this->_incrementTimeStep();
       this->_checkTimeSteps();
 
-      // Output feedback
-      std::ostringstream text;
-      text << "  Step " << _timeSet.currentTime;
-      std::cout << "Now showing timestep #" << _timeSet.currentTime << std::endl;
-      this->_setStatusBar( text.str(), caller );
+      
 
     }
   }
@@ -431,14 +436,17 @@ void ModelPresentationDocument::nextStep ()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  if( false == this->isAnimating() )
+  for( unsigned int i = 0; i < _timeSets.size(); ++i )
   {
-    if( _timeSet.currentTime == _timeSet.endTime )
-      _timeSet.currentTime = 0;
-    else
-      _timeSet.currentTime ++;
-    this->_checkTimeSteps();
+    if( false == this->isAnimating() )
+    {
+      if( _timeSets.at( i ).currentTime == _timeSets.at( i ).endTime )
+        _timeSets.at( i ).currentTime = 0;
+      else
+        _timeSets.at( i ).currentTime ++;
+      this->_checkTimeSteps();
 
+    }
   }
   
 }
@@ -454,16 +462,18 @@ void ModelPresentationDocument::prevStep ()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  if( false == this->isAnimating() )
+  for( unsigned int i = 0; i < _timeSets.size(); ++i )
   {
-    if( _timeSet.currentTime == 0 )
-      _timeSet.currentTime = _timeSet.endTime;
-    else
-      _timeSet.currentTime --;
-    this->_checkTimeSteps();
+    if( false == this->isAnimating() )
+    {
+      if( _timeSets.at( i ).currentTime == 0 )
+        _timeSets.at( i ).currentTime = _timeSets.at( i ).endTime;
+      else
+        _timeSets.at( i ).currentTime --;
+      this->_checkTimeSteps();
 
+    }
   }
-  
 }
 
 
@@ -480,9 +490,11 @@ void ModelPresentationDocument::firstStep ()
   Guard guard ( this->mutex() );
   if( false == this->isAnimating() )
   {
-    
-      _timeSet.currentTime = 0;
+    for( unsigned int i = 0; i < _timeSets.size(); ++i )
+    {
+      _timeSets.at( i ).currentTime = 0;
       this->_checkTimeSteps();
+    }
 
   }
 }
@@ -888,18 +900,22 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
   typedef XmlTree::Document::Children Children;
   Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
-  
+  MpdTimeSet timeset;
+  timeset.currentTime = 0;
+  timeset.endTime = 0;
+  timeset.timeline = new osg::Switch;
+  timeset.name = "Unknown";
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
     
     if ( "endTime" == iter->first )
     {
-      Usul::Strings::fromString ( iter->second, _timeSet.endTime );
+      Usul::Strings::fromString ( iter->second, timeset.endTime );
       _userSpecifiedEndTime = true;
     }
-    if ( "interval" == iter->first )
+    if ( "name" == iter->first )
     {
-      Usul::Strings::fromString ( iter->second, _timeSet.interval );
+      Usul::Strings::fromString ( iter->second, timeset.name );
     }
     if ( "timelength" == iter->first )
     {
@@ -909,6 +925,22 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
       _update = ( UpdatePolicyPtr( new UpdatePolicy( interval ) ) );
       
     }
+    if ( "visible" == iter->first )
+    {
+      std::string value = "false";
+
+      Usul::Strings::fromString ( iter->second, value );
+      if( value == "true" || value == "TRUE" ||
+          value == "yes"  || value == "YES" )
+      {
+        timeset.visible = true;
+      }
+      else
+      {
+        timeset.visible = false;
+      }
+      
+    }
         
   }
   // TODO: create a set here --
@@ -916,21 +948,27 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
   unsigned int currentTime = 0;
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
+    
     XmlTree::Node::RefPtr node ( *iter );
     if ( "group" == node->name() )
     {
       std::cout << "Found group..." << std::endl;
-      switchNode->addChild( this->_parseTimeGroup( *node, caller, progress, currentTime ), false );
+      switchNode->addChild( this->_parseTimeGroup( *node, caller, progress, currentTime, timeset ), false );
     }
+    currentTime ++;
   }
-  
-
+  currentTime --;
+  _globalTimelineEnd = Usul::Math::maximum( this->_globalTimelineEnd, currentTime );
 #if 1
   // Turn off display lists
   OsgTools::DisplayLists dl( false );
   dl( switchNode.get() );
 #endif
-  _timeSet.timeline = switchNode.release();
+  timeset.timeline = switchNode.release();
+  
+  timeset.visible = true;
+
+  _timeSets.push_back( timeset );
 }
 
 
@@ -940,7 +978,7 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int &currentTime )
+osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int &currentTime, MpdTimeSet &timeset )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -968,11 +1006,10 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
   }
   if( false == _userSpecifiedEndTime )
   {
-    unsigned int currOrGroup = Usul::Math::maximum( currentTime, timeGroup.startTime );
-    unsigned int endTime = Usul::Math::maximum( _timeSet.endTime, currOrGroup );
-    _timeSet.endTime = endTime;
+    _globalTimelineEnd = Usul::Math::maximum( currentTime, _globalTimelineEnd );
+    
   }
-  _timeSet.groups.push_back( timeGroup );
+  timeset.groups.push_back( timeGroup );
   
   GroupPtr group ( new osg::Group );
 
@@ -985,7 +1022,7 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
       group->addChild( this->_parseModel( *node, caller, progress ) );
     }  
   }
-  currentTime ++;
+  
   return group.release();
 }
 
@@ -1396,6 +1433,16 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   // Add the Timeline menu if needed
   if( true == _useTimeLine )
   {
+    // Timeline Models
+    MenuKit::Menu::RefPtr TimelineModelsMenu ( new MenuKit::Menu ( "Timeline Models", MenuKit::Menu::VERTICAL ) );
+    
+    for( unsigned int i = 0; i < _timeSets.size(); ++i )
+    {
+      TimelineModelsMenu->append ( new ToggleButton ( new MpdTimelineModel ( me.get(), _timeSets.at( i ).name, i ) ) );
+    }
+    menu.append ( TimelineModelsMenu );
+
+    // Timeline navigation controls
     MenuKit::Menu::RefPtr TimelineMenu ( new MenuKit::Menu ( "Timeline", MenuKit::Menu::VERTICAL ) );
 
     TimelineMenu->append ( new Button ( new MpdNextCommand( me.get() ) ) );
@@ -1404,6 +1451,8 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
     TimelineMenu->append ( new ToggleButton ( new MpdAnimation( me.get() ) ) );
 
     menu.append ( TimelineMenu );
+
+   
     
   }
   if( _locationNames.size() > 0 )
@@ -1455,4 +1504,56 @@ bool ModelPresentationDocument::animate()
   Guard guard ( this );
 
   return _isAnimating;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// check animation state
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::timelineModelState( unsigned int i, bool state )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  _timeSets.at( i ).visible = state;
+  this->_checkTimeSteps();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// check animation state
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ModelPresentationDocument::timelineModelState( unsigned int i )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );  
+
+  return _timeSets.at( i ).visible;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// check animation state
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::_incrementTimeStep()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );  
+
+  for( unsigned int i = 0; i < _timeSets.size(); ++i )
+  {
+    if( _timeSets.at( i ).currentTime == _globalTimelineEnd )
+      _timeSets.at( i ).currentTime = 0;
+    else
+      _timeSets.at( i ).currentTime += 1;
+  }
 }

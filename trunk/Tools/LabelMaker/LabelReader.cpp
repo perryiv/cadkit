@@ -271,6 +271,10 @@ osg::Node * LabelReader::_createText( unsigned int index )
 
   osg::ref_ptr< osg::StateSet > stateset ( geode->getOrCreateStateSet() );
  
+  stateset->setMode ( GL_BLEND, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+  stateset->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );  
+  stateset->setTextureMode( 0, osg::StateAttribute::TEXTURE, osg::StateAttribute::PROTECTED );
+
   text->setFont( font.get() );
   text->setColor( osg::Vec4f( 0, 0, 0, 1 ) );
   text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );

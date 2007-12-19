@@ -311,6 +311,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\MpdTimelineModel.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdTimelineModel.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MpdTools.cpp"
 					>
 				</File>

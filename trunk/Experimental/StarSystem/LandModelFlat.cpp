@@ -16,6 +16,7 @@
 #include "ossim/base/ossimDpt.h"
 #include "ossim/base/ossimKeywordNames.h"
 #include "ossim/base/ossimKeywordlist.h"
+#include "ossim/projection/ossimPcsCodeProjectionFactory.h"
 #include "ossim/projection/ossimProjectionFactoryRegistry.h"
 #include "ossim/projection/ossimProjection.h"
 
@@ -34,14 +35,19 @@ LandModelFlat::LandModelFlat ( unsigned int pcscode ) :
 {
   USUL_TRACE_SCOPE;
 
-  ossimKeywordlist kwl;
-
   std::ostringstream os;
   os << pcscode;
 
-  kwl.add( ossimKeywordNames::PCS_CODE_KW, os.str().c_str() );
+  _projection = ossimPcsCodeProjectionFactory::instance()->createProjection( os.str() );
 
-  _projection = ossimProjectionFactoryRegistry::instance()->createProjection( kwl );
+  // If we didn't create one, fall back on the factory.
+  if ( 0x0 == _projection )
+  {
+    ossimKeywordlist kwl;
+    kwl.add( ossimKeywordNames::PCS_CODE_KW, os.str().c_str() );
+
+    _projection = ossimProjectionFactoryRegistry::instance()->createProjection( kwl );
+  }
 }
 
 
@@ -123,10 +129,40 @@ void LandModelFlat::latLonHeightToXYZ ( double lat, double lon, double elevation
 
   if ( 0x0 != _projection )
   {
-    ossimDpt p;
     ossimGpt latLonPoint ( lat, lon, elevation );
+#if 0
+    ossimDpt p;
     _projection->worldToLineSample ( latLonPoint, p );
-    point.set ( static_cast<ValueType> ( p.x ), static_cast<ValueType> ( p.y ), 0.0 );
+#else
+    ossimDpt p ( _projection->forward ( latLonPoint ) );
+#endif
+    point.set ( static_cast<ValueType> ( p.x ), static_cast<ValueType> ( p.y ), elevation );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert x,y,z to lat, lon, height.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LandModelFlat::xyzToLatLonHeight ( const osg::Vec3f& point, double& lat, double& lon, double& elevation ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  if ( 0x0 != _projection )
+  {
+#if 0
+    ossimGpt latLonPoint;
+    _projection->lineSampleToWorld ( ossimDpt ( point.x(), point.y() ), latLonPoint );
+#else
+    ossimGpt latLonPoint ( _projection->inverse ( ossimDpt ( point.x(), point.y() ) ) );
+#endif
+    lon = static_cast<double> ( latLonPoint.lon );
+    lat = static_cast<double> ( latLonPoint.lat );
+    elevation = static_cast<double> ( point.z() );
   }
 }
 

@@ -63,14 +63,14 @@ _legendPosition ( LEGEND_BOTTOM_RIGHT )
   ss->setRenderBinDetails( 1000, "RenderBin" );
   ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
   
-
+#if 0
   osg::ref_ptr< osg::Light > light ( new osg::Light );
   light->setLightNum ( 1 );
   light->setDiffuse( osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
   light->setDirection( osg::Vec3 ( 0.0, 0.0, -1.0f ) );
   
   ss->setAttributeAndModes ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-
+#endif
   _dateText->setFont( OsgTools::Font::defaultFont() );
   _dateText->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
   _dateText->setText ( "" );
@@ -149,7 +149,8 @@ void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
     mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
     mt->addChild ( geode.get() );
 
-    _projectionNode->addChild ( mt.get() );
+    if ( this->showLegend() )
+      _projectionNode->addChild ( mt.get() );
 
     _root->dirtyBound();
     _projectionNode->dirtyBound();

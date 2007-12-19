@@ -110,9 +110,13 @@ namespace Detail
     {
       for ( typename Vertices::const_iterator iter = in.begin(); iter != in.end(); ++iter )
       {
+#if 1
         Usul::Math::Vec3d point;
         planet->convertToPlanet ( *iter, point );
         vertices->push_back ( osg::Vec3 ( point[0], point[1], point[2] ) );
+#else
+        vertices->push_back ( osg::Vec3 ( (*iter)[0], (*iter)[1], (*iter)[2] ) );
+#endif
       }
     }
 
@@ -152,6 +156,7 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
       // Get the line data.
       Vertices data ( line->lineData() );
 
+#if 1
       Usul::Interfaces::IFitLineTerrain::QueryPtr fit ( PluginManager::instance().getInterface ( Usul::Interfaces::IFitLineTerrain::IID ) );
 
       Vertices sampledPoints;
@@ -161,6 +166,10 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
         sampledPoints = data;
 
       osg::ref_ptr< osg::Vec3Array > vertices ( Detail::convert ( sampledPoints, caller ) );
+#else
+      osg::ref_ptr< osg::Vec3Array > vertices ( Detail::convert ( data, caller ) );
+#endif
+      
 
       // Create the geometry
       osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );

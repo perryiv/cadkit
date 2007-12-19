@@ -25,7 +25,9 @@
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IShadeModel.h"
 #include "Usul/Interfaces/IPolygonMode.h"
-#include "Usul/Interfaces/IExport.h"
+#include "Usul/Interfaces/IExportImage.h"
+#include "Usul/Interfaces/IExportScene.h"
+#include "Usul/Interfaces/IExportModel.h"
 #include "Usul/Interfaces/IOpenSceneGraph.h"
 #include "Usul/Interfaces/IFrameDump.h"
 #include "Usul/Interfaces/ITextMatrix.h"
@@ -100,7 +102,9 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IViewMatrix,
                                 public Usul::Interfaces::IShadeModel,
                                 public Usul::Interfaces::IPolygonMode,
-                                public Usul::Interfaces::IExport,
+                                public Usul::Interfaces::IExportImage,
+                                public Usul::Interfaces::IExportScene,
+                                public Usul::Interfaces::IExportModel,
                                 public Usul::Interfaces::IOpenSceneGraph,
                                 public Usul::Interfaces::IFrameDump,
                                 public Usul::Interfaces::ITextMatrix,
@@ -459,12 +463,13 @@ public:
   void                  viewer ( SceneView * );
 
   // Write the current frame to an image file.
-  bool                  writeImageFile ( const std::string &filename ) const;
-  virtual bool          writeImageFile ( const std::string &filename, unsigned int width, unsigned int height ) const;
+  virtual bool          writeImageFile ( const std::string &filename ) const;
 
-  // Write the current model or scene to file.
-  bool                  writeModelFile ( const std::string &filename, const std::string &options = std::string() ) const;
-  bool                  writeSceneFile ( const std::string &filename, const std::string &options = std::string() ) const;
+  // Write the current model to file (IExportModel).
+  virtual bool          writeModelFile ( const std::string &filename, const std::string &options = std::string() ) const;
+
+  // Write the current scene to file (IExportScene).
+  virtual bool          writeSceneFile ( const std::string &filename, const std::string &options = std::string() ) const;
 
   // Zoom by given amount
   void                  zoom ( double delta );
@@ -646,11 +651,14 @@ protected:
   virtual void                  redraw();
   virtual void                  setStatsDisplay ( bool b );
 
-  /// Usul::Interfaces::IExport
-  virtual bool                  canExport ( const std::string &filename );
-  virtual Filters               filtersExport() const;
+  /// Usul::Interfaces::IExportImage
   virtual Filters               filtersWriteImage() const;
-  virtual bool                  exportFile ( const std::string& filename );
+  
+  /// Usul::Interfaces::IExportModel
+  virtual Filters               filtersWriteModel() const;
+
+  /// Usul::Interfaces::IExportScene
+  virtual Filters               filtersWriteScene() const;
 
   /// Usul::Interfaces::IScreenCapture
   virtual osg::Image*           screenCapture ( const osg::Vec3f& center, float distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const;

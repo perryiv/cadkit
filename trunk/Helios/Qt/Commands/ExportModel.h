@@ -14,8 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __CADKIT_HELIOS_QT_COMMANDS_EXPORT_IMAGE_H__
-#define __CADKIT_HELIOS_QT_COMMANDS_EXPORT_IMAGE_H__
+#ifndef __CADKIT_HELIOS_QT_COMMANDS_EXPORT_MODEL_H__
+#define __CADKIT_HELIOS_QT_COMMANDS_EXPORT_MODEL_H__
 
 #include "Helios/Qt/Commands/Command.h"
 
@@ -27,7 +27,7 @@ namespace Helios {
 namespace Commands {
 
 
-class HELIOS_QT_COMMANDS_EXPORT ExportImage : public Usul::Commands::Command
+class HELIOS_QT_COMMANDS_EXPORT ExportModel : public Usul::Commands::Command
 {
 public:
 
@@ -36,14 +36,14 @@ public:
   typedef Usul::Interfaces::IUnknown            IUnknown;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_COMMAND ( ExportImage );
+  USUL_DECLARE_COMMAND ( ExportModel );
 
   // Constructor.
-  ExportImage ( IUnknown *caller );
+  ExportModel ( IUnknown *caller );
 
 protected:
   // Use reference counting.
-  virtual ~ExportImage();
+  virtual ~ExportModel();
 
   // Execute.
   virtual void              _execute();
@@ -57,4 +57,4 @@ protected:
 }
 
 
-#endif // __CADKIT_HELIOS_QT_COMMANDS_EXPORT_IMAGE_H__
+#endif // __CADKIT_HELIOS_QT_COMMANDS_EXPORT_MODEL_H__

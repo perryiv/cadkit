@@ -256,17 +256,18 @@ void Body::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Ve
     _landModel->latLonHeightToXYZ ( lat, lon, elevation, point );
 }
 
- 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Computes the "geodetic" radius for a given latitude in degrees.
+//  Convert x,y,z to lat, lon, height.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-double Body::geodeticRadius ( double latitude ) const
+void Body::xyzToLatLonHeight ( const osg::Vec3& point, double& lat, double& lon, double& elevation ) const
 {
   USUL_TRACE_SCOPE;
-  return ( ( true == _landModel.valid() ) ? _landModel->elevation ( 0, latitude ) : 1 );
+  if ( true == _landModel.valid() )
+    _landModel->xyzToLatLonHeight ( point, lat, lon, elevation );
 }
 
 

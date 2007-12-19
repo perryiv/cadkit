@@ -22,6 +22,7 @@
 #include "Helios/Qt/Commands/SaveDocument.h"
 #include "Helios/Qt/Commands/SaveAsDocument.h"
 #include "Helios/Qt/Commands/ExportImage.h"
+#include "Helios/Qt/Commands/ExportModel.h"
 #include "Helios/Qt/Commands/ExitApplication.h"
 #include "Helios/Qt/Commands/ToggleView.h"
 
@@ -370,15 +371,17 @@ void MainWindow::_buildMenuKitMenu()
 
   // Add file menu.
   {  
-    MenuKit::Menu::RefPtr menu ( new MenuKit::Menu );
-    menu->text ( "&File" );
+    MenuKit::Menu::RefPtr menu ( new MenuKit::Menu ("&File" ) );
     menu->append ( _newDocumentMenu );
     menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::OpenDocument ( me ) ) );
     menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::InsertDocument ( me ) ) );
     menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::SaveDocument ( me ) ) );
     menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::SaveAsDocument ( me ) ) );
     menu->addSeparator();
-    menu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::ExportImage ( me ) ) );
+    MenuKit::Menu::RefPtr exportMenu ( new MenuKit::Menu ( "Export" ) );
+    exportMenu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::ExportImage ( me ) ) );
+    exportMenu->append ( new MenuKit::Button ( new CadKit::Helios::Commands::ExportModel ( me ) ) );
+    menu->append ( exportMenu );
     menu->addSeparator();
 
     // Make the recent files menu.

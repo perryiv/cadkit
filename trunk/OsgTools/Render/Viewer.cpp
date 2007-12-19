@@ -1604,37 +1604,6 @@ bool Viewer::writeImageFile ( const std::string &filename ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Write the current frame to an image file.
-//  TODO: This supports legacy code. Depreciated.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::writeImageFile ( const std::string &filename, unsigned int width, unsigned int height ) const
-{
-  const float scale ( this->frameDump().scale() );
-  bool result ( false );
-  Viewer *me ( const_cast < Viewer * > ( this ) );
-  FrameDump &fd ( me->frameDump() );
-
-  try
-  {
-    fd.scale ( static_cast<float> ( width ) / static_cast<float> ( this->width() ) );
-    result = this->writeImageFile ( filename );
-    fd.scale ( scale );
-  }
-
-  catch ( ... )
-  {
-    fd.scale ( scale );
-    throw;
-  }
-
-  return result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Write the current frame to the file.  No tile rendering.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1709,6 +1678,16 @@ bool Viewer::writeSceneFile ( const std::string &filename, const std::string &op
   // Save and restore default options.
   OsgTools::ScopedOptions scoped ( options );
 
+  // Get the extension.
+  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
+
+  // Check for eps first.
+  if ( "eps" == ext )
+  {
+    OsgTools::IO::WriteEPS writer ( filename );
+    return writer.write ( const_cast < Viewer& > ( *this ) );
+  }
+
   // Write the scene to file.
   return osgDB::writeNodeFile ( *this->scene(), filename );
 }
@@ -1724,6 +1703,16 @@ bool Viewer::writeModelFile ( const std::string &filename, const std::string &op
 {
   // Save and restore default options.
   OsgTools::ScopedOptions scoped ( options );
+
+  // Get the extension.
+  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
+
+  // Check for eps first.
+  if ( "eps" == ext )
+  {
+    OsgTools::IO::WriteEPS writer ( filename );
+    return writer.write ( const_cast < Viewer& > ( *this ) );
+  }
 
   // Write the scene to file.
   return osgDB::writeNodeFile ( *this->model(), filename );
@@ -2278,8 +2267,12 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IShadeModel* > ( this );
   case Usul::Interfaces::IPolygonMode::IID:
     return static_cast < Usul::Interfaces::IPolygonMode* > ( this );
-  case Usul::Interfaces::IExport::IID:
-    return static_cast < Usul::Interfaces::IExport* > ( this );
+  case Usul::Interfaces::IExportImage::IID:
+    return static_cast < Usul::Interfaces::IExportImage* > ( this );
+  case Usul::Interfaces::IExportModel::IID:
+    return static_cast < Usul::Interfaces::IExportModel* > ( this );
+  case Usul::Interfaces::IExportScene::IID:
+    return static_cast < Usul::Interfaces::IExportScene* > ( this );
   case Usul::Interfaces::IOpenSceneGraph::IID:
     return static_cast<Usul::Interfaces::IOpenSceneGraph*>(this);
   case Usul::Interfaces::IFrameDump::IID:
@@ -4006,19 +3999,6 @@ void Viewer::zoom ( double delta )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Can we export this?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::canExport ( const std::string &filename )
-{
-  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
-  return ( "ive" == ext || "osg" == ext || "jpg" == ext || "png" == ext || "bmp" == ext || "rgba" == ext || "eps" == ext || "flt" == ext );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Return the filters for the images that we can expoxt.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -4040,7 +4020,7 @@ Viewer::Filters Viewer::filtersWriteImage() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Viewer::Filters Viewer::filtersExport() const
+Viewer::Filters Viewer::filtersWriteScene() const
 {
   Filters filters ( this->filtersWriteImage() );
   filters.push_back ( Filter ( "OpenSceneGraph Binary (*.ive)", "*.ive" ) );
@@ -4053,31 +4033,18 @@ Viewer::Filters Viewer::filtersExport() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Write the file.
-//
-//  TODO: This should search the export-filter's extensions.
+//  Return the filters that we can export.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::exportFile ( const std::string& filename )
+Viewer::Filters Viewer::filtersWriteModel() const
 {
-  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
-
-  if ( "ive" == ext || "osg" == ext || "flt" == ext )
-  {
-    return this->writeSceneFile ( filename );
-  }
-  else if ( "jpg" == ext || "png" == ext || "bmp" == ext || "rgba" == ext )
-  {
-    return this->writeImageFile ( filename );
-  }
-  else if ( "eps" == ext )
-  {
-    OsgTools::IO::WriteEPS writer ( filename );
-    return writer.write ( *this );
-  }
-
-  return false;
+  Filters filters ( this->filtersWriteImage() );
+  filters.push_back ( Filter ( "OpenSceneGraph Binary (*.ive)", "*.ive" ) );
+  filters.push_back ( Filter ( "OpenSceneGraph ASCII (*.osg)",  "*.osg" ) );
+  //filters.push_back ( Filter ( "OpenFlight (*.flt)",  "*.flt" ) );
+  filters.push_back ( Filter ( "Encapsulated PostScript (*.eps)", "*.eps" ) );
+  return filters;
 }
 
 

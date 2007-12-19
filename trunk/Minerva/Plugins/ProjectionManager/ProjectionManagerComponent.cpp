@@ -18,6 +18,7 @@
 
 #include "ossim/base/ossimKeywordNames.h"
 #include "ossim/base/ossimKeywordlist.h"
+#include "ossim/projection/ossimPcsCodeProjectionFactory.h"
 #include "ossim/projection/ossimProjectionFactoryRegistry.h"
 #include "ossim/projection/ossimMapProjection.h"
 #include "ossim/base/ossimGpt.h"
@@ -118,14 +119,18 @@ namespace Detail
 
 void ProjectionManagerComponent::projectToSpherical ( const Usul::Math::Vec3d& orginal, unsigned int srid, Usul::Math::Vec3d& latLonPoint ) const
 {
-  ossimKeywordlist kwl;
-
   std::ostringstream os;
   os << srid;
 
-  kwl.add( ossimKeywordNames::PCS_CODE_KW, os.str().c_str() );
+  ossimRefPtr < ossimProjection > projection ( ossimPcsCodeProjectionFactory::instance()->createProjection( os.str() ) );
 
-  ossimRefPtr < ossimProjection > projection ( ossimProjectionFactoryRegistry::instance()->createProjection( kwl ) );
+  if ( false == projection.valid() )
+  {
+    ossimKeywordlist kwl;
+    kwl.add( ossimKeywordNames::PCS_CODE_KW, os.str().c_str() );
+
+    projection = ossimProjectionFactoryRegistry::instance()->createProjection( kwl );
+  }
 
   ossimMapProjection *mapProj = dynamic_cast < ossimMapProjection * > ( projection.get() );
 

@@ -964,7 +964,15 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IExport.h"
+					RelativePath=".\Interfaces\IExportImage.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IExportModel.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IExportScene.h"
 					>
 				</File>
 				<File
@@ -1441,10 +1449,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\ISceneIntersect.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ISceneStage.h"
 					>
 				</File>
 				<File

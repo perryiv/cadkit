@@ -56,9 +56,13 @@ void Line::_convertToLatLong ( const Vertices& vertices, Vertices& latLongPoints
     latLongPoints.reserve ( vertices.size() );
     for( Vertices::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter )
     {
+#if 1
       Usul::Math::Vec3d point;
       project->projectToSpherical( *iter, this->srid(), point );     
       latLongPoints.push_back( point );
+#else
+      latLongPoints.push_back( *iter );
+#endif
     }
   }
 }

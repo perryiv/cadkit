@@ -184,6 +184,9 @@ osg::Image* RasterLayerWms::texture ( const Extents& extents, unsigned int width
   {
     Usul::File::remove ( file, false );
   }
+  // Set the file name.
+  else
+    image->setFileName ( file );
 
   // Return image, which may be null.
   return image.release();

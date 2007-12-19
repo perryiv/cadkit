@@ -27,12 +27,6 @@ struct IMpdNavigator : public Usul::Interfaces::IUnknown
   // go to the next group in the set
   virtual void              nextGroup ( unsigned int index ) = 0;
 
-  // start time step animation
-  //virtual void              startAnimation() = 0;
-
-  // stop time step animation
-  //virtual void              stopAnimation() = 0;
-
   // Go to the next time step
   virtual void              nextStep() = 0;
 
@@ -59,6 +53,12 @@ struct IMpdNavigator : public Usul::Interfaces::IUnknown
 
   // check animation state
   virtual bool              animate() = 0;
+
+  // toggle the current timeline animation on/off
+  virtual void              timelineModelState( unsigned int i, bool state ) = 0;  
+
+  // get the visibility state of a given model
+  virtual bool              timelineModelState( unsigned int i ) = 0;  
 
 
 }; //struct IVertices

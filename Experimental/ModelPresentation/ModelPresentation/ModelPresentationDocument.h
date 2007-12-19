@@ -73,8 +73,9 @@ public:
     osg::ref_ptr< osg::Switch > timeline;
     unsigned int currentTime;
     unsigned int endTime;
-    unsigned int interval;
     std::vector< MpdTimeGroup > groups;
+    bool visible;
+    std::string name;
   };
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
@@ -94,6 +95,7 @@ public:
   typedef std::vector< MpdSet > MpdSets;
   typedef std::map< std::string, osg::Matrixd > Locations;
   typedef std::vector< std::string > LocationNames;
+  typedef std::vector< MpdTimeSet > MpdTimeSets;
 
   typedef Usul::Interfaces::IAnimatePath IAnimatePath;
   typedef std::vector < osg::Matrixd > MatrixVec;
@@ -142,7 +144,8 @@ public:
   void              setGroup ( unsigned int set, unsigned int group );
   void              animate( bool state );
   bool              animate();
-
+  void              timelineModelState( unsigned int i, bool state );  
+  bool              timelineModelState( unsigned int i );  
   bool              isAnimating();
   void              isAnimating( bool value );
 
@@ -161,7 +164,7 @@ protected:
   void                        _parseLocation( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   void                        _parseMatrix( XmlTree::Node &node, Unknown *caller, Unknown *progress, const std::string& name );
   osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdSet & set );
-  osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int &currentTime );
+  osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int &currentTime, MpdTimeSet &timeset );
   osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   osg::Node*                  _loadFile( const std::string& filename, Unknown *caller, Unknown *progress );
   osg::Node*                  _loadDirectory( const std::string& dir, Unknown *caller, Unknown *progress );
@@ -173,6 +176,7 @@ protected:
   void                        _openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller, Unknown *progress );
   void                        _setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller );
   void                        _checkTimeSteps();
+  void                        _incrementTimeStep();
   
   void                        _setMatrix( osg::Matrix * matrix, const std::string& values, const std::string& type );
 
@@ -189,8 +193,8 @@ private:
   MpdGroups                   _groups;
   MpdModels                   _models;
   MpdSets                     _sets;
-  MpdTimeSet                  _timeSet;
-  UpdatePolicyPtr             _update;
+  MpdTimeSets                 _timeSets;
+  UpdatePolicyPtr             _update;
   bool                        _useTimeLine;
   bool                        _useModels;
   bool                        _isAnimating;
@@ -201,6 +205,7 @@ private:
   LocationNames               _locationNames;
 
   std::string                 _workingDir;
+  unsigned int                _globalTimelineEnd;
 };
 
 

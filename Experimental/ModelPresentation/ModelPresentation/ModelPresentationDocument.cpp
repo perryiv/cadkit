@@ -798,6 +798,7 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller,
   MpdSet set;
   set.index = 0;
   set.name = "Set";
+  set.menuName = "Models";
   _useModels = true;
   
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
@@ -809,6 +810,10 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller,
     if ( "numgroups" == iter->first )
     {
       //Usul::Strings::fromString ( iter->second, _header.gridSize[1] );
+    }
+    if ( "menu_name" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, set.menuName );
     }
         
   }
@@ -905,6 +910,7 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
   timeset.endTime = 0;
   timeset.timeline = new osg::Switch;
   timeset.name = "Unknown";
+  timeset.menuName = "Timelines";
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
     
@@ -924,6 +930,10 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
       std::cout << "Setting time update interval to " << interval << std::endl;
       _update = ( UpdatePolicyPtr( new UpdatePolicy( interval ) ) );
       
+    }
+    if ( "menu_name" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, timeset.menuName );
     }
     if ( "visible" == iter->first )
     {
@@ -1416,9 +1426,10 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   // Add the model menu
   if( _useModels )
   {
-    MenuKit::Menu::RefPtr ModelMenu ( new MenuKit::Menu ( "Models", MenuKit::Menu::VERTICAL ) );
     for( unsigned int i = 0; i < _sets.size(); ++i )
     {
+      const std::string menuName ( _sets.at(i).menuName );
+      MenuKit::Menu::RefPtr ModelMenu ( menu.find ( menuName, true ) );
       MenuKit::Menu::RefPtr ModelSubMenu ( new MenuKit::Menu ( _sets.at(i).name, MenuKit::Menu::VERTICAL ) );
      
       for( unsigned int j = 0; j < _sets.at( i ).groupNames.size(); ++j )
@@ -1428,22 +1439,24 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
       ModelMenu->append( ModelSubMenu.get() );
     }
     
-    menu.append ( ModelMenu );
+    //menu.append ( ModelMenu );
   }
   // Add the Timeline menu if needed
   if( true == _useTimeLine )
   {
     // Timeline Models
-    MenuKit::Menu::RefPtr TimelineModelsMenu ( new MenuKit::Menu ( "Timeline Models", MenuKit::Menu::VERTICAL ) );
-    
+   
     for( unsigned int i = 0; i < _timeSets.size(); ++i )
     {
+      const std::string menuName ( _timeSets.at(i).menuName );
+       MenuKit::Menu::RefPtr TimelineModelsMenu ( menu.find ( menuName, true ) );
+    
       TimelineModelsMenu->append ( new ToggleButton ( new MpdTimelineModel ( me.get(), _timeSets.at( i ).name, i ) ) );
     }
-    menu.append ( TimelineModelsMenu );
+    //menu.append ( TimelineModelsMenu );
 
     // Timeline navigation controls
-    MenuKit::Menu::RefPtr TimelineMenu ( new MenuKit::Menu ( "Timeline", MenuKit::Menu::VERTICAL ) );
+    MenuKit::Menu::RefPtr TimelineMenu ( new MenuKit::Menu ( "Animation", MenuKit::Menu::VERTICAL ) );
 
     TimelineMenu->append ( new Button ( new MpdNextCommand( me.get() ) ) );
     TimelineMenu->append ( new Button ( new MpdPrevTimestep( me.get() ) ) );

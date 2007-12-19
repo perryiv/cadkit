@@ -78,6 +78,7 @@ public:
   {
     _url  = curl._url;
     _file = curl._file;
+    return *this;
   }
 
 

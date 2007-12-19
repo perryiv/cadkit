@@ -50,6 +50,7 @@ public:
   {
     unsigned int index;
     std::string name;
+    std::string menuName;
     std::vector< std::string > groupNames;
   };
   struct MpdGroup
@@ -76,6 +77,7 @@ public:
     std::vector< MpdTimeGroup > groups;
     bool visible;
     std::string name;
+    std::string menuName;
   };
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
@@ -99,6 +101,9 @@ public:
 
   typedef Usul::Interfaces::IAnimatePath IAnimatePath;
   typedef std::vector < osg::Matrixd > MatrixVec;
+
+  typedef std::vector< std::string > modelMenuList;
+  typedef std::vector< std::string > timelineMenuList;
  
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ModelPresentationDocument );
@@ -206,6 +211,7 @@ private:
 
   std::string                 _workingDir;
   unsigned int                _globalTimelineEnd;
+  
 };
 
 

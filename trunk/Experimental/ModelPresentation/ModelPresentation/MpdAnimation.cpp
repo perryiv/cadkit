@@ -25,7 +25,7 @@ MpdAnimation::MpdAnimation ( Usul::Interfaces::IUnknown * caller ) :
   BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
-  this->text ( "Animation" );
+  this->text ( "Animate" );
 }
 
 

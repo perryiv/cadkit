@@ -87,6 +87,7 @@ struct OSG_TOOLS_EXPORT StateSet
   static void         hiddenLines ( const osg::Vec4f &color, osg::StateSet *normal, osg::StateSet *hidden );
 
   // Materials.
+  static void         setMaterial ( osg::Node *node, osg::Material *mat );
   static void         setMaterialRandom ( osg::Node *node );
   static void         setMaterialDefault ( osg::Node *node );
 };

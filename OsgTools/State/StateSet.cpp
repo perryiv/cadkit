@@ -748,7 +748,7 @@ void StateSet::setMaterialRandom ( osg::Node *node )
   mat->setSpecular  ( osg::Material::FRONT_AND_BACK, specular );
   mat->setShininess ( osg::Material::FRONT_AND_BACK, 100      );
 
-  node->getOrCreateStateSet()->setAttributeAndModes ( mat.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  StateSet::setMaterial ( node, mat.get() );
 }
 
 
@@ -771,5 +771,22 @@ void StateSet::setMaterialDefault ( osg::Node *node )
   mat->setSpecular  ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.2f, 0.2f, 0.2f, 1.0f ) );
   mat->setShininess ( osg::Material::FRONT_AND_BACK, 100 );
 
-  node->getOrCreateStateSet()->setAttributeAndModes ( mat.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  StateSet::setMaterial ( node, mat.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set a the material.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StateSet::setMaterial ( osg::Node *node, osg::Material *mat )
+{
+  // Handle bad input.
+  if ( 0x0 == node || 0x0 == mat )
+    return;
+
+  node->getOrCreateStateSet()->setAttributeAndModes 
+    ( mat, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
 }

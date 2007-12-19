@@ -32,6 +32,7 @@ namespace osg
   class Vec4f;
   class MatrixTransform;
   class Geometry;
+  class Material;
 };
 
 namespace osgText

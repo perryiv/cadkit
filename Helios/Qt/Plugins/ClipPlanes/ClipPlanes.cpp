@@ -573,5 +573,6 @@ void ClipPlanes::on_clearButton_clicked()
     return;
 
   cp->removeClippingPlanes();
+  _clipPlaneList->clear();
   this->_render();
 }

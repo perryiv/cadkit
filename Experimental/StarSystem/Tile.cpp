@@ -421,7 +421,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 
   if ( low )
   {
-    this->getChild( 0 )->setNodeMask( 0xff );
+    //this->getChild( 0 )->setNodeMask( 0xff );
 
     this->_update();
 
@@ -448,7 +448,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 
   else
   {
-    this->getChild( 0 )->setNodeMask( 0x0 );
+    //this->getChild( 0 )->setNodeMask( 0x0 );
 
     // Add high level if necessary.
     if ( 1 == numChildren )
@@ -595,8 +595,10 @@ void Tile::dirty ( bool state, unsigned int flags, bool dirtyChildren, const Ext
       this->_launchImageRequest();
     }
 
+#if 0
     if ( this->verticesDirty() )
       this->_launchElevationRequest();
+#endif
   }
 }
 

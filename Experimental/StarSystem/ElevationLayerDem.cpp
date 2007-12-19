@@ -103,11 +103,6 @@ void ElevationLayerDem::open( const std::string& filename )
   
   ossimDemHeader header ( _grid->getHeader() );
   ossimDemPointVector corners ( header.getDEMCorners() );
-  
-  std::cout << corners[0].getX() << " " << corners[0].getY() << std::endl;
-  std::cout << corners[1].getX() << " " << corners[1].getY() << std::endl;
-  std::cout << corners[2].getX() << " " << corners[2].getY() << std::endl;
-  std::cout << corners[3].getX() << " " << corners[3].getY() << std::endl;
 
   ossimGpt ll ( _projection->inverse ( ossimDpt ( corners[0].getX(), corners[0].getY() ) ) );
   ossimGpt ur ( _projection->inverse ( ossimDpt ( corners[2].getX(), corners[2].getY() ) ) );
@@ -132,6 +127,8 @@ osg::Image* ElevationLayerDem::texture ( const Extents& extents, unsigned int wi
   // Make the result.
   osg::ref_ptr < osg::Image > result ( this->_createBlankImage( width, height ) );
   
+  Guard guard ( this );
+
   if ( 0x0 != _projection && true == _loaded )
   {
     // The upper left corner.
@@ -274,14 +271,22 @@ double ElevationLayerDem::value ( double lon, double lat ) const
   
   const long i ( static_cast <long> ( ::floor ( u * ( width - 1 ) ) ) );
   const long j ( static_cast <long> ( ::floor ( v * ( height - 1 ) ) ) );
-  const double a ( _grid->getElevation( i,     j     ) );
-  const double b ( _grid->getElevation( i + 1, j     ) );
-  const double c ( _grid->getElevation( i,     j + 1 ) );
-  const double d ( _grid->getElevation( i + 1, j + 1 ) );
+  double a ( _grid->getElevation( i,     j     ) );
+  double b ( _grid->getElevation( i + 1, j     ) );
+  double c ( _grid->getElevation( i,     j + 1 ) );
+  double d ( _grid->getElevation( i + 1, j + 1 ) );
+
+  Usul::Predicates::Tolerance<double,double> tolerance ( 5 );
   
-  if ( nullValue == a || nullValue == b || nullValue == c || nullValue == d )
-    return nullValue;
-  
+  if ( tolerance ( nullValue, a ) )
+    a = header.getMinimumElev();
+  if ( tolerance ( nullValue, b ) )
+    b = header.getMinimumElev();
+  if ( tolerance ( nullValue, c ) )
+    c = header.getMinimumElev();
+  if ( tolerance ( nullValue, d ) )
+    d = header.getMinimumElev();
+
   const double up ( u - ( static_cast < double > ( i ) / width ) );
   const double vp ( v - ( static_cast < double > ( j ) / height ) );
   

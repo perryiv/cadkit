@@ -195,7 +195,7 @@ void Tile::_update()
       {
         // Convert lat-lon coordinates to xyz.
         osg::Vec3f &p ( mesh.point ( i, j ) );
-        double x ( 0 ), y ( 0 ), z ( 0 );
+        
         const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( i, j ) ) ) : 0.0 ) );
         _body->latLonHeightToXYZ ( lat, lon, elevation, p );
 

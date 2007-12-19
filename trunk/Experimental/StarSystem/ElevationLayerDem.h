@@ -14,28 +14,41 @@
 #include "StarSystem/Export.h"
 #include "StarSystem/RasterLayerOssim.h"
 
+#include "ossim/support_data/ossimDemGrid.h"
+
+class ossimProjection;
 
 namespace StarSystem {
 
 
-class STAR_SYSTEM_EXPORT ElevationLayerDem : public RasterLayerOssim
+class STAR_SYSTEM_EXPORT ElevationLayerDem : public RasterLayer
 {
 public:
-  typedef RasterLayerOssim BaseClass;
+  typedef RasterLayer BaseClass;
 
   USUL_DECLARE_REF_POINTERS ( ElevationLayerDem );
 
   ElevationLayerDem();
+  
+  /// Open the dem.
+  void                  open ( const std::string& filename );
 
   /// Get the texture
   virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * );
 
+  // Get the value at the lat, lon location.  May return null pixel value.
+  double                value ( double lon, double lat ) const;
+  
 protected:
   virtual ~ElevationLayerDem();
 
   virtual osg::Image*   _createBlankImage ( unsigned int width, unsigned int height ) const;
   virtual void          _convert ( const ossimImageData& data, osg::Image& image );
 
+private:
+  bool _loaded;
+  ossimDemGrid _grid;
+  ossimProjection *_projection;
 };
 
 

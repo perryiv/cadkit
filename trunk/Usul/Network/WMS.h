@@ -105,6 +105,7 @@ public:
     _url = wms._url;
     _file = wms._file;
     _options = wms._options;
+    return *this;
   }
 
 

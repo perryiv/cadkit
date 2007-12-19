@@ -11,6 +11,7 @@
 #include "StarSystem/ElevationLayerDem.h"
 
 #include "Usul/File/Path.h"
+#include "Usul/Math/Interpolate.h"
 #include "Usul/Predicates/Tolerance.h"
 #include "Usul/Trace/Trace.h"
 
@@ -102,6 +103,11 @@ void ElevationLayerDem::open( const std::string& filename )
   
   ossimDemHeader header ( _grid->getHeader() );
   ossimDemPointVector corners ( header.getDEMCorners() );
+  
+  std::cout << corners[0].getX() << " " << corners[0].getY() << std::endl;
+  std::cout << corners[1].getX() << " " << corners[1].getY() << std::endl;
+  std::cout << corners[2].getX() << " " << corners[2].getY() << std::endl;
+  std::cout << corners[3].getX() << " " << corners[3].getY() << std::endl;
 
   ossimGpt ll ( _projection->inverse ( ossimDpt ( corners[0].getX(), corners[0].getY() ) ) );
   ossimGpt ur ( _projection->inverse ( ossimDpt ( corners[2].getX(), corners[2].getY() ) ) );
@@ -137,14 +143,20 @@ osg::Image* ElevationLayerDem::texture ( const Extents& extents, unsigned int wi
     
     for ( unsigned int i = 0; i < height; ++i )
     {
-      const double u ( static_cast<double> ( i ) / ( height - 1 ) );
+      const double v ( static_cast<double> ( i ) / ( height - 1 ) );
       for ( unsigned int j = 0; j < width; ++j )
       {
-        const double v ( static_cast<double> ( j ) / ( width - 1 ) );
-        const double longitude ( extents.minimum()[0] + ( v * deltaX ) );
-        const double latitude ( extents.maximum()[1] - ( u * deltaY ) );
+        const double u ( static_cast<double> ( j ) / ( width - 1 ) );
         
-        const float elevation ( static_cast < float > ( this->value ( longitude, latitude ) ) );
+        // Calculate current lat, lon.
+        const double longitude ( extents.minimum()[0] + ( u * deltaX ) );
+        const double latitude ( extents.maximum()[1] - ( v * deltaY ) );
+        
+        // Get the elevation data.
+        float elevation ( static_cast < float > ( this->value ( longitude, latitude ) ) );
+        
+        if ( _grid->getMissingDataValue() == elevation )
+          elevation = 0.0;
         
         *reinterpret_cast < float* > ( result->data ( i, j ) ) = elevation;
       }
@@ -247,11 +259,31 @@ double ElevationLayerDem::value ( double lon, double lat ) const
   ossimDemHeader header ( _grid->getHeader() );
   ossimDemPointVector corners ( header.getDEMCorners() );
   
+  const double nullValue ( _grid->getMissingDataValue() );
+  
   const double deltaX ( corners[2].getX() - corners[1].getX() );
   const double deltaY ( corners[0].getY() - corners[1].getY() );
   
   const double u ( ( point.x - corners[1].getX() ) / deltaX );
-  const double v ( ( point.y - corners[1].getY() ) / -deltaY );
+  const double v ( ( point.y - corners[1].getY() ) / deltaY );
+  if ( u < 0.0 || v < 0.0 || u > 1.0 || v > 1.0 )
+    return nullValue;
+
+  const long width ( _grid->getWidth() );
+  const long height ( _grid->getHeight() );
   
-  return 0.0;
+  const long i ( static_cast <long> ( ::floor ( u * ( width - 1 ) ) ) );
+  const long j ( static_cast <long> ( ::floor ( v * ( height - 1 ) ) ) );
+  const double a ( _grid->getElevation( i,     j     ) );
+  const double b ( _grid->getElevation( i + 1, j     ) );
+  const double c ( _grid->getElevation( i,     j + 1 ) );
+  const double d ( _grid->getElevation( i + 1, j + 1 ) );
+  
+  if ( nullValue == a || nullValue == b || nullValue == c || nullValue == d )
+    return nullValue;
+  
+  const double up ( u - ( static_cast < double > ( i ) / width ) );
+  const double vp ( v - ( static_cast < double > ( j ) / height ) );
+  
+  return Usul::Math::Interpolate<double>::bilinear ( up, vp, a, b, c, d );
 }

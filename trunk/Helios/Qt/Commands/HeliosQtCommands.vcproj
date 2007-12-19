@@ -205,6 +205,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ExportScene.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ExportScene.h"
+				>
+			</File>
+			<File
 				RelativePath=".\InsertDocument.cpp"
 				>
 			</File>

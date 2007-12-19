@@ -10,12 +10,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Command to export the viewer's model.
+//  Command to export the viewer's scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __CADKIT_HELIOS_QT_COMMANDS_EXPORT_MODEL_H__
-#define __CADKIT_HELIOS_QT_COMMANDS_EXPORT_MODEL_H__
+#ifndef __CADKIT_HELIOS_QT_COMMANDS_EXPORT_SCENE_H__
+#define __CADKIT_HELIOS_QT_COMMANDS_EXPORT_SCENE_H__
 
 #include "Helios/Qt/Commands/Command.h"
 
@@ -27,7 +27,7 @@ namespace Helios {
 namespace Commands {
 
 
-class HELIOS_QT_COMMANDS_EXPORT ExportModel : public Usul::Commands::Command
+class HELIOS_QT_COMMANDS_EXPORT ExportScene : public Usul::Commands::Command
 {
 public:
 
@@ -36,14 +36,14 @@ public:
   typedef Usul::Interfaces::IUnknown            IUnknown;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_COMMAND ( ExportModel );
+  USUL_DECLARE_COMMAND ( ExportScene );
 
   // Constructor.
-  ExportModel ( IUnknown *caller );
+  ExportScene ( IUnknown *caller );
 
 protected:
   // Use reference counting.
-  virtual ~ExportModel();
+  virtual ~ExportScene();
 
   // Execute.
   virtual void              _execute();
@@ -57,4 +57,4 @@ protected:
 }
 
 
-#endif // __CADKIT_HELIOS_QT_COMMANDS_EXPORT_MODEL_H__
+#endif // __CADKIT_HELIOS_QT_COMMANDS_EXPORT_SCENE_H__

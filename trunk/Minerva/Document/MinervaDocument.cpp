@@ -116,8 +116,8 @@ SERIALIZE_XML_INITIALIZER_LIST
   }
 
   // Only make it once.
-  if ( true == _system.valid() )
-    return;
+  //if ( true == _system.valid() )
+  //  return;
 
   // Local typedefs to shorten the lines.
   typedef StarSystem::Body Body;
@@ -137,14 +137,14 @@ SERIALIZE_XML_INITIALIZER_LIST
   StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 26712 ) ); // UTM 12 NAD 27
   //StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 26912 ) ); // UTM 12 NAD 83
 #endif
-  const osg::Vec2d mn ( -115, 32 );
-  const osg::Vec2d mx ( -109, 37 );
+  const osg::Vec2d mn ( -113, 33.0 );
+  const osg::Vec2d mx ( -111, 34.0 );
 
   // Make a good split distance.
   const double splitDistance ( land->size() / 10 );
 
   // Size of the mesh.
-  Body::MeshSize meshSize ( 25, 25 );
+  Body::MeshSize meshSize ( 100, 100 );
 
   // Add the body.
   Body::RefPtr body ( new Body ( land, _manager, meshSize, splitDistance ) );
@@ -152,8 +152,8 @@ SERIALIZE_XML_INITIALIZER_LIST
   body->splitCallback ( new StarSystem::Callbacks::SplitToLevel ( 2 ) );
 
   StarSystem::ElevationLayerDem::RefPtr dem ( new StarSystem::ElevationLayerDem );
-  dem->open ( "/Users/adam/data/terrain/maricopa_dem/mari_int.dem" );
-  //dem->open ( "c:/adam/data/terrain/maricopa_dem/mari_int.dem" );
+  //dem->open ( "/Users/adam/data/terrain/maricopa_dem/mari_int.dem" );
+  dem->open ( "c:/adam/data/terrain/maricopa_dem/mari_int.dem" );
   body->elevationAppend ( dem );
 
   _system->body ( body.get() );
@@ -1906,6 +1906,7 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
     const unsigned int total     ( queued + executing );
 
     const std::string out ( ( total > 0 ) ? ( Usul::Strings::format ( "Queued: ", queued, ", Running: ", executing ) ) : "" );
+    os << out;
 #else
     const unsigned int requests  ( _planet->databasePager()->getFileRequestListSize()   );
 

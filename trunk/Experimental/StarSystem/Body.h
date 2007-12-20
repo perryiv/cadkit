@@ -96,6 +96,9 @@ public:
 
   // Append raster data.
   void                      rasterAppend ( RasterLayer * );
+  
+  // Get the raster data.
+  RasterLayer*              rasterData();
 
   // Get the scene.
   const osg::Node *         scene() const;

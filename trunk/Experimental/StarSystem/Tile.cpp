@@ -23,6 +23,7 @@
 #include "StarSystem/Tile.h"
 #include "StarSystem/Body.h"
 #include "StarSystem/RasterLayer.h"
+#include "StarSystem/BuildTiles.h"
 
 #include "OsgTools/Mesh.h"
 #include "OsgTools/State/StateSet.h"
@@ -45,11 +46,6 @@
 #include "osg/Material"
 #include "osg/Texture2D"
 
-#ifdef _DEBUG
-#include "Usul/Strings/Format.h"
-#include "osgText/Text"
-#endif
-
 #include <limits>
 
 using namespace StarSystem;
@@ -65,7 +61,7 @@ USUL_IMPLEMENT_TYPE_ID ( Tile );
 
 Tile::Tile ( unsigned int level, const Extents &extents, 
              const MeshSize &meshSize, const Usul::Math::Vec4d& texCoords, double splitDistance, 
-             Body *body, osg::Image* image ) : BaseClass(),
+             Body *body, osg::Image* image, osg::Image * elevation ) : BaseClass(),
   _mutex ( new Tile::Mutex ),
   _body ( body ),
   _extents ( extents ),
@@ -76,10 +72,12 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _children(),
   _textureUnit ( 0 ),
   _image ( image ),
+  _elevation ( elevation ),
   _texture ( new osg::Texture2D ),
   _texCoords ( texCoords ),
   _jobId ( false, 0 ),
-  _elevationJob ( 0x0 )
+  _elevationJob ( 0x0 ),
+  _tileJob ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -103,8 +101,11 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   OsgTools::State::StateSet::setMaterialDefault ( this );
 
   // Start the request to pull in the texture.
-  this->_launchImageRequest();
-  this->_launchElevationRequest();
+  if ( 0x0 == image )
+    this->_launchImageRequest();
+  
+  //if ( 0x0 == elevation )
+    //this->_launchElevationRequest();
 }
 
 
@@ -125,9 +126,11 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _children ( tile._children ),
   _textureUnit ( tile._textureUnit ),
   _image ( tile._image ),
+  _elevation ( tile._elevation ),
   _texCoords ( tile._texCoords ),
   _jobId ( false, 0 ),
-  _elevationJob ( tile._elevationJob )
+  _elevationJob ( tile._elevationJob ),
+  _tileJob ( tile._tileJob )
 {
   USUL_TRACE_SCOPE;
 
@@ -152,17 +155,17 @@ Tile::~Tile()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Update the tile.
+//  Update the mesh.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::_update()
+void Tile::updateMesh()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
   // Handle not being dirty.
-  if ( false == this->dirty() )
+  if ( false == this->verticesDirty() || false == this->texCoordsDirty() )
     return;
 
   // Handle bad state.
@@ -227,7 +230,7 @@ void Tile::_update()
   if ( true == _body->useSkirts() )
   {
     // Depth of skirt.  TODO: This function needs to be tweeked.
-    const double offset ( Usul::Math::maximum<double> ( ( 25000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
+    const double offset ( Usul::Math::maximum<double> ( ( 2500 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
 
     // Add skirts to group.
     group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], offset ) ); // Left skirt.
@@ -241,29 +244,20 @@ void Tile::_update()
 
   // Add the group to us.
   this->addChild ( group.get() );
+}
 
-#if 0
-#ifdef _DEBUG
 
-  osg::Vec3 p;
-  const double elevation ( _body->geodeticRadius ( _extents.minimum()[1] ) + 1000 );
-  _body->latLonHeightToXYZ ( _extents.minimum()[1], _extents.minimum()[0], elevation, p );
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Update the texture.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-  osg::ref_ptr< osgText::Text > text ( new osgText::Text );
-  text->setPosition ( p );
-  text->setAutoRotateToScreen ( true );
-  text->setCharacterSize ( 25 );
-  text->setCharacterSizeMode ( osgText::Text::SCREEN_COORDS );
-  text->setText ( Usul::Strings::format ( _extents.minimum()[1], ", ", _extents.minimum()[0] ) );
-
-  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-  geode->addDrawable ( text.get() );
-
-  group->addChild ( geode.get() );
+void Tile::updateTexture()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   
-#endif
-#endif
-
   // Get the image.
   if ( ( true == _texture.valid() ) && ( 0x0 != _texture->getImage() ) && ( true == this->textureDirty() ) )
   {
@@ -310,55 +304,49 @@ void Tile::traverse ( osg::NodeVisitor &nv )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  // Determine visitor type.
-  switch ( nv.getVisitorType() )
+  // If it's a cull visitor...
+  if ( osg::NodeVisitor::CULL_VISITOR == nv.getVisitorType() )
   {
-    case osg::NodeVisitor::CULL_VISITOR:
+    // See if our job is done loading image.
+    if ( ( 0x0 != _body ) && ( true == _jobId.first ) )
     {
-      // See if our job is done loading image.
-      if ( ( 0x0 != _body ) && ( true == _jobId.first ) )
+      osg::ref_ptr < osg::Texture2D > texture ( _body->texture ( _jobId.second ) );
+      if ( texture.valid() )
       {
-        osg::ref_ptr < osg::Texture2D > texture ( _body->texture ( _jobId.second ) );
-        if ( texture.valid() )
-        {
-          this->textureData ( texture.get(), Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
-          _jobId.first = false;
-
-          // Solid ground.
-          //OsgTools::State::StateSet::setPolygonsFilled ( this, true );
-        }
+        this->textureData ( texture.get(), Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
+        _jobId.first = false;
+        
+        // Solid ground.
+        //OsgTools::State::StateSet::setPolygonsFilled ( this, true );
       }
-
-      // Check for new elevation data.
-      if ( _elevationJob.valid() && _elevationJob->isDone() )
-      {
-        _elevation = _elevationJob->image();
-        _elevationJob = 0x0;
-
-        // Force vertices to be rebuilt.
-        _flags = Usul::Bits::set ( _flags, Tile::VERTICES, true );
-      }
-
-      // Get cull visitor.
-      osgUtil::CullVisitor *cv ( dynamic_cast < osgUtil::CullVisitor * > ( &nv ) );
-
-      // Return if we are culled.
-      if ( 0x0 == cv || cv->isCulled ( *this ) )
-        return;
-
-      // Only update here if the vertices are invalid.
-      // This will ensure proper splitting.
-      if ( this->verticesDirty() ) 
-        this->_update();
-
-      this->_cull ( *cv );
+    }
+    
+    // Check for new elevation data.
+    if ( _elevationJob.valid() && _elevationJob->isDone() )
+    {
+      _elevation = _elevationJob->image();
+      _elevationJob = 0x0;
+      
+      // Force vertices to be rebuilt.
+      _flags = Usul::Bits::set ( _flags, Tile::VERTICES, true );
+    }
+    
+    // Get cull visitor.
+    osgUtil::CullVisitor *cv ( dynamic_cast < osgUtil::CullVisitor * > ( &nv ) );
+    
+    // Return if we are culled.
+    if ( 0x0 == cv || cv->isCulled ( *this ) )
       return;
-    }
-
-    default:
-    {
-      BaseClass::traverse ( nv );
-    }
+    
+    // Only update here if the vertices are invalid.
+    // This will ensure proper splitting.
+    this->updateMesh();
+    
+    this->_cull ( *cv );
+  }
+  else
+  {
+    BaseClass::traverse ( nv );
   }
 }
 
@@ -414,7 +402,6 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 
   // Should we traverse the low lod?
   bool low ( farAway || eyeIsNan || tooDeep );
-  bool splitHappened ( false );
 
   // Finally, ask the callback.
   low = !( _body->shouldSplit ( !low, this ) );
@@ -423,7 +410,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   {
     //this->getChild( 0 )->setNodeMask( 0xff );
 
-    this->_update();
+    this->updateTexture();
 
     // Remove high level of detail.
     if ( numChildren > 1 )
@@ -442,6 +429,9 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
         _children[LOWER_RIGHT] = 0x0;
         _children[UPPER_LEFT]  = 0x0;
         _children[UPPER_RIGHT] = 0x0;
+        
+        // Clear the tile job.
+        if ( _tileJob.valid() ) _tileJob->cancel(); _tileJob = 0x0;
       }
     }
   }
@@ -460,47 +450,33 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
            ( false == _children[UPPER_LEFT].valid()  ) ||
            ( false == _children[UPPER_RIGHT].valid() ) )
       {
-        const double half ( _splitDistance * 0.5 );
-
-        const Extents::Vertex &mn ( _extents.minimum() );
-        const Extents::Vertex &mx ( _extents.maximum() );
-        const Extents::Vertex md ( ( mx + mn ) * 0.5 );
-
-        const unsigned int level ( _level + 1 );
-
-        const Extents ll ( Extents::Vertex ( mn[0], mn[1] ), Extents::Vertex ( md[0], md[1] ) );
-        const Extents lr ( Extents::Vertex ( md[0], mn[1] ), Extents::Vertex ( mx[0], md[1] ) );
-        const Extents ul ( Extents::Vertex ( mn[0], md[1] ), Extents::Vertex ( md[0], mx[1] ) );
-        const Extents ur ( Extents::Vertex ( md[0], md[1] ), Extents::Vertex ( mx[0], mx[1] ) );
-
-        const MeshSize mll ( _body->meshSize ( ll ) );
-        const MeshSize mlr ( _body->meshSize ( lr ) );
-        const MeshSize mul ( _body->meshSize ( ul ) );
-        const MeshSize mur ( _body->meshSize ( ur ) );
-
-        // Texture coordinates for the children tiles.
-        Usul::Math::Vec4d tll, tlr, tul, tur;
-        this->_quarterTextureCoordinates ( tll, tlr, tul, tur );
-
-        _children[LOWER_LEFT]  = new Tile ( level, ll, mll, tll, half, _body, _image.get() ); // lower left  tile
-        _children[LOWER_RIGHT] = new Tile ( level, lr, mlr, tlr, half, _body, _image.get() ); // lower right tile
-        _children[UPPER_LEFT]  = new Tile ( level, ul, mul, tul, half, _body, _image.get() ); // upper left  tile
-        _children[UPPER_RIGHT] = new Tile ( level, ur, mur, tur, half, _body, _image.get() ); // upper right tile
+        // Cancel what we may have running.
+        if ( _tileJob.valid() )
+          low = true;
+        else
+        {
+          _tileJob = new StarSystem::BuildTiles ( this );
+        
+          // Add the job to the job manager.
+          _body->jobManager()->addJob ( _tileJob.get() );
+        }
       }
 
-      osg::ref_ptr<osg::Group> group ( new osg::Group );
-      group->addChild ( _children[LOWER_LEFT]  );
-      group->addChild ( _children[LOWER_RIGHT] );
-      group->addChild ( _children[UPPER_LEFT]  );
-      group->addChild ( _children[UPPER_RIGHT] );
-      this->addChild ( group.get() );
-
-      splitHappened = true;
+      if ( _tileJob.valid() && _tileJob->isDone() )
+      {
+        osg::ref_ptr<osg::Group> group ( new osg::Group );
+        group->addChild ( _children[LOWER_LEFT]  );
+        group->addChild ( _children[LOWER_RIGHT] );
+        group->addChild ( _children[UPPER_LEFT]  );
+        group->addChild ( _children[UPPER_RIGHT] );
+        this->addChild ( group.get() );
+        _tileJob = 0x0;
+      }
     }
   }
 
   // Traverse low level of detail.
-  if ( low || splitHappened )
+  if ( low || _tileJob.valid() )
   {
     this->getChild ( 0 )->accept ( cv );
   }
@@ -511,6 +487,123 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
     const unsigned int last ( this->getNumChildren() - 1 );
     this->getChild ( last )->accept ( cv );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Split the tile.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::split ( Usul::Jobs::Job* job )
+{
+  Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
+  
+  // Handle no body.
+  if ( false == body.valid() )
+    return;
+  
+  const double half ( this->splitDistance() * 0.5 );
+  
+  const Extents extents ( this->extents() );
+  
+  const Extents::Vertex &mn ( extents.minimum() );
+  const Extents::Vertex &mx ( extents.maximum() );
+  const Extents::Vertex md ( ( mx + mn ) * 0.5 );
+  
+  const unsigned int level ( this->level() + 1 );
+  
+  // Extents for children tiles.
+  const Extents ll ( Extents::Vertex ( mn[0], mn[1] ), Extents::Vertex ( md[0], md[1] ) );
+  const Extents lr ( Extents::Vertex ( md[0], mn[1] ), Extents::Vertex ( mx[0], md[1] ) );
+  const Extents ul ( Extents::Vertex ( mn[0], md[1] ), Extents::Vertex ( md[0], mx[1] ) );
+  const Extents ur ( Extents::Vertex ( md[0], md[1] ), Extents::Vertex ( mx[0], mx[1] ) );
+  
+  // Mesh sizes for children tiles.
+  const MeshSize mll ( body->meshSize ( ll ) );
+  const MeshSize mlr ( body->meshSize ( lr ) );
+  const MeshSize mul ( body->meshSize ( ul ) );
+  const MeshSize mur ( body->meshSize ( ur ) );
+  
+  // Texture coordinates for the children tiles.
+  Usul::Math::Vec4d tll, tlr, tul, tur;
+  this->_quarterTextureCoordinates ( tll, tlr, tul, tur );
+
+  Tile::RefPtr t0 ( this->_buildTile ( level, ll, mll, tll, half, job ) ); // lower left  tile
+  Tile::RefPtr t1 ( this->_buildTile ( level, lr, mlr, tlr, half, job ) ); // lower right tile
+  Tile::RefPtr t2 ( this->_buildTile ( level, ul, mul, tul, half, job ) ); // upper left  tile
+  Tile::RefPtr t3 ( this->_buildTile ( level, ur, mur, tur, half, job ) ); // upper right tile
+  
+  // Have we been cancelled?
+  if ( 0x0 != job && true == job->canceled() )
+    job->cancel();
+  
+  {
+    Guard guard ( this->mutex() );
+    _children[LOWER_LEFT]  = t0.get(); 
+    _children[LOWER_RIGHT] = t1.get();
+    _children[UPPER_LEFT]  = t2.get();  
+    _children[UPPER_RIGHT] = t3.get();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build a tile.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Tile* Tile::_buildTile ( unsigned int level, const Extents& extents, const MeshSize& size, const Usul::Math::Vec4d& texCoords, double splitDistance, Usul::Jobs::Job* job ) const
+{
+  Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
+  
+  // Handle no body.
+  if ( false == body.valid() )
+    return 0x0;
+  
+  // The texture coordinates to use.
+  Usul::Math::Vec4d tCoords ( 0.0, 1.0, 0.0, 1.0 );
+  
+  RasterLayer::RefPtr raster ( body->rasterData() );
+  osg::ref_ptr < osg::Image > image ( 0x0 );
+  
+  if ( raster.valid() )
+  {
+    const unsigned int width ( 512 );
+    const unsigned int height ( 512 );
+    image = raster->texture ( extents, width, height, level, job );
+  }
+  
+  // If we didn't get an image, use our image.
+  if ( false == image.valid() )
+  {
+    image = Usul::Threads::Safe::get ( this->mutex(), _image.get() );
+    
+    // Use the suggested texture coordinates.
+    tCoords.set ( texCoords[0], texCoords[1], texCoords[2], texCoords[3] );
+  }
+  
+  osg::ref_ptr < osg::Image > elevation ( 0x0 );
+  RasterLayer::RefPtr elevationData ( body->elevationData() );
+  
+  if ( elevationData.valid() )
+  {
+    MeshSize size ( this->meshSize() );
+    elevation = elevationData->texture ( extents, size[0], size[1], level, job );
+  }
+  
+  // Have we been cancelled?
+  if ( 0x0 != job && true == job->canceled() )
+    job->cancel();
+  
+  // Make the tile.
+  osg::ref_ptr < Tile > tile ( new Tile ( level, extents, size, tCoords, splitDistance, body.get(), image.get(), elevation.get() ) );
+  tile->updateMesh();
+  tile->updateTexture();
+  
+  return tile.release();
 }
 
 
@@ -989,4 +1082,18 @@ Tile::MeshSize Tile::meshSize() const
     size.set ( _mesh->rows(), _mesh->columns() );
 
   return size;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the split distance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Tile::splitDistance() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _splitDistance;
 }

@@ -57,7 +57,7 @@ private:
       ( ( 0x0 == function )   ? "" : Usul::Strings::format ( "\n  Function: ",   Usul::Strings::Unicode::convert ( function ) ) ),
       ( ( 0x0 == file )       ? "" : Usul::Strings::format ( "\n  File: ",       Usul::Strings::Unicode::convert ( file ) ) ),
       ( (   0 == line )       ? "" : Usul::Strings::format ( "\n  Line: ",       line ) ) ) );
-    ActionType action ( 3327592610, false, message );
+    ActionType action ( 3327592610u, false, message );
   }
 };
 

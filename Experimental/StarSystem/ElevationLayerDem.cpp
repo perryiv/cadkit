@@ -96,7 +96,14 @@ void ElevationLayerDem::open( const std::string& filename )
   Guard guard ( this );
   _projection = ossimProjectionFactoryRegistry::instance()->createProjection ( kwl );
 #else
-  _projection = new ossimUtmProjection ( 12 );
+  ossimUtmProjection *projection = new ossimUtmProjection ( *(ossimDatumFactory::instance()->
+                                                              create(ossimString("NAS-C"))->
+                                                              ellipsoid()) );
+  projection->setDatum(ossimDatumFactory::instance()->
+                 create(ossimString("NAS-C")));
+  projection->setZone(12);
+  projection->setHemisphere('N');
+  _projection = projection;
 #endif
   if ( 0x0 == _projection )
     return;
@@ -134,10 +141,11 @@ osg::Image* ElevationLayerDem::texture ( const Extents& extents, unsigned int wi
     // The upper left corner.
     ossimGpt ul ( extents.maximum()[1], extents.minimum()[0] );
     ossimDpt point ( _projection->forward( ul ) );
-    
+
+#if 0
     const double deltaX ( extents.maximum()[0] - extents.minimum()[0] );
     const double deltaY ( extents.maximum()[1] - extents.minimum()[1] );
-    
+
     for ( unsigned int i = 0; i < height; ++i )
     {
       const double v ( static_cast<double> ( i ) / ( height - 1 ) );
@@ -148,7 +156,20 @@ osg::Image* ElevationLayerDem::texture ( const Extents& extents, unsigned int wi
         // Calculate current lat, lon.
         const double longitude ( extents.minimum()[0] + ( u * deltaX ) );
         const double latitude ( extents.maximum()[1] - ( v * deltaY ) );
-        
+#else
+        // Shortcuts.
+        const Extents::Vertex &mn ( extents.minimum() );
+        const Extents::Vertex &mx ( extents.maximum() );
+
+        for ( int i = height - 1; i >= 0; --i )
+        {
+          const double u ( 1.0 - static_cast<double> ( i ) / ( height - 1 ) );
+          for ( unsigned int j = 0; j < width; ++j )
+          {
+            const double v ( static_cast<double> ( j ) / ( width - 1 ) );
+            const double longitude ( mn[0] + u * ( mx[0] - mn[0] ) );
+            const double latitude ( mn[1] + v * ( mx[1] - mn[1] ) );
+#endif
         // Get the elevation data.
         float elevation ( static_cast < float > ( this->value ( longitude, latitude ) ) );
         
@@ -218,33 +239,6 @@ namespace Detail
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Convert.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ElevationLayerDem::_convert ( const ossimImageData& data, osg::Image& image )
-{
-  USUL_TRACE_SCOPE;
-
-  switch ( data.getScalarType () )
-  {
-  case OSSIM_SINT16:
-    Detail::convert < ossim_sint16, float > ( data, image );
-    break;
-  case OSSIM_UINT16:
-    Detail::convert < ossim_uint16, float > ( data, image );
-    break;
-  case OSSIM_FLOAT32:
-    Detail::convert < ossim_float32, float > ( data, image );
-    break;
-  default:
-    break;
-  }
-}
-
-
 // Get the value at the lat, lon location.  May return null pixel value.
 double ElevationLayerDem::value ( double lon, double lat ) const
 {
@@ -254,23 +248,19 @@ double ElevationLayerDem::value ( double lon, double lat ) const
   ossimDpt point ( _projection->forward( ul ) );
   
   ossimDemHeader header ( _grid->getHeader() );
-  ossimDemPointVector corners ( header.getDEMCorners() );
   
   const double nullValue ( _grid->getMissingDataValue() );
   
-  const double deltaX ( corners[2].getX() - corners[1].getX() );
-  const double deltaY ( corners[0].getY() - corners[1].getY() );
+  double northWestX ( 0 ), northWestY ( 0 );
+  _grid->getGroundCoords(0, 0, northWestX, northWestY);
   
-  const double u ( ( point.x - corners[1].getX() ) / deltaX );
-  const double v ( ( point.y - corners[1].getY() ) / deltaY );
-  if ( u < 0.0 || v < 0.0 || u > 1.0 || v > 1.0 )
-    return nullValue;
-
-  const long width ( _grid->getWidth() );
-  const long height ( _grid->getHeight() );
+  // Y is the row number, x is the column number.
+  const double x ( ( point.x - northWestX ) / header.getSpatialResX() );
+  const double y ( ( northWestY - point.y ) / header.getSpatialResY() );
   
-  const long i ( static_cast <long> ( ::floor ( u * ( width - 1 ) ) ) );
-  const long j ( static_cast <long> ( ::floor ( v * ( height - 1 ) ) ) );
+  const long i ( static_cast <long> ( x ) );
+  const long j ( static_cast <long> ( y ) );
+  
   double a ( _grid->getElevation( i,     j     ) );
   double b ( _grid->getElevation( i + 1, j     ) );
   double c ( _grid->getElevation( i,     j + 1 ) );
@@ -287,8 +277,8 @@ double ElevationLayerDem::value ( double lon, double lat ) const
   if ( tolerance ( nullValue, d ) )
     d = header.getMinimumElev();
 
-  const double up ( u - ( static_cast < double > ( i ) / width ) );
-  const double vp ( v - ( static_cast < double > ( j ) / height ) );
+  const double u ( x - static_cast < double > ( i ) );
+  const double v ( y - static_cast < double > ( j ) );
   
-  return Usul::Math::Interpolate<double>::bilinear ( up, vp, a, b, c, d );
+  return Usul::Math::Interpolate<double>::bilinear ( u, v, a, b, c, d );
 }

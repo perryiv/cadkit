@@ -14,6 +14,8 @@
 #include "StarSystem/Export.h"
 #include "StarSystem/RasterLayerOssim.h"
 
+#include "Usul/Math/Vector2.h"
+
 class ossimProjection; class ossimDemGrid;
 
 namespace StarSystem {
@@ -41,8 +43,7 @@ protected:
   virtual ~ElevationLayerDem();
 
   virtual osg::Image*   _createBlankImage ( unsigned int width, unsigned int height ) const;
-  virtual void          _convert ( const ossimImageData& data, osg::Image& image );
-
+  
 private:
   bool _loaded;
   ossimDemGrid *_grid;

@@ -238,6 +238,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\BuildTiles.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\BuildTiles.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CutImageJob.cpp"
 				>
 			</File>

@@ -2136,7 +2136,7 @@ osg::ClipPlane* Viewer::addPlane()
   osg::Vec3 bottom_left  ( bb.corner( 0 ) );
   osg::Vec3 top_right    ( bb.corner( 7 ) );
 
-    // Define the plane on the diagonal of the bounding box
+  // Define the plane on the diagonal of the bounding box
   osg::Plane plane ( top_left, bottom_left, top_right );
   return this->addPlane ( plane );
 }

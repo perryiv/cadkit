@@ -124,24 +124,24 @@ Axes::Axes()
   arrowX.start ( origin );
   arrowX.end ( x );
   arrowX.color ( colorX );
-  arrowX.radius ( 3.0 );
-  arrowX.height ( 10.0 );
+  arrowX.radius ( radius );
+  arrowX.height ( height );
 
   // The Y arrow.
   OsgTools::Builders::Arrow arrowY;
   arrowY.start ( origin );
   arrowY.end ( y );
   arrowY.color ( colorY );
-  arrowY.radius ( 3.0 );
-  arrowY.height ( 10.0 );
+  arrowY.radius ( radius );
+  arrowY.height ( height );
 
   // The Z arrow.
   OsgTools::Builders::Arrow arrowZ;
   arrowZ.start ( origin );
   arrowZ.end ( z );
   arrowZ.color ( colorZ );
-  arrowZ.radius ( 3.0 );
-  arrowZ.height ( 10.0 );
+  arrowZ.radius ( radius );
+  arrowZ.height ( height );
 
   // Geode for the text labels.
   osg::ref_ptr< osg::Geode > texts ( new osg::Geode );

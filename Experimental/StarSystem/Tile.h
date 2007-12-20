@@ -91,7 +91,8 @@ public:
          const Usul::Math::Vec4d& texCoords = Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ),
          double splitDistance = 1,
          Body *body = 0x0,
-         osg::Image * image = 0x0 );
+         osg::Image * image = 0x0,
+         osg::Image * elevation = 0x0 );
   Tile ( const Tile &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY );
 
   // Clear the scene.
@@ -138,6 +139,18 @@ public:
 
   // Traverse the children.
   virtual void              traverse ( osg::NodeVisitor & );
+  
+  // Get the split distance.
+  double                    splitDistance() const;
+  
+  // Split the tile.
+  void                      split ( Usul::Jobs::Job* );
+  
+  // Update mesh.
+  void                      updateMesh();
+  
+  // Update texture.
+  void                      updateTexture();
 
 protected:
 
@@ -146,8 +159,6 @@ protected:
 
   void                      _cull ( osgUtil::CullVisitor &cv );
 
-  void                      _update();
-  
   // Build skirts.
   osg::Node*                _buildLonSkirt ( double lon, double u, double offset );
   osg::Node*                _buildLatSkirt ( double lat, double v, double offset );
@@ -159,6 +170,8 @@ protected:
   // Quarter the texture coordinates.
   void                      _quarterTextureCoordinates ( Usul::Math::Vec4d& ll, Usul::Math::Vec4d& lr, Usul::Math::Vec4d& ul, Usul::Math::Vec4d& ur ) const;
 
+  // Build a tile.
+  Tile*                     _buildTile ( unsigned int level, const Extents& extents, const MeshSize& size, const Usul::Math::Vec4d& texCoords, double splitDistance, Usul::Jobs::Job* job ) const;
 private:
 
   // No assignment.
@@ -181,6 +194,7 @@ private:
   Usul::Math::Vec4d _texCoords;
   JobID _jobId;
   CutImageJob::RefPtr _elevationJob;
+  Usul::Jobs::Job::RefPtr _tileJob;
 };
 
 

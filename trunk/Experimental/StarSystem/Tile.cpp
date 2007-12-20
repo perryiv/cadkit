@@ -844,6 +844,12 @@ void Tile::clear()
     _body->textureRequestCancel ( job.second );
   }
 
+  if ( _tileJob.valid() )
+  {
+    _tileJob->cancel();
+    _tileJob = 0x0;
+  }
+
   this->dirty ( false, Tile::ALL, false );
 }
 

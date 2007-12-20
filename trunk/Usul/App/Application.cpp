@@ -75,7 +75,12 @@ Application::~Application()
 const std::string Application::iconDirectory() const
 {
 	const std::string dir ( Usul::CommandLine::Arguments::instance().directory() );
+  
+#ifdef __APPLE__
+  std::string path ( dir + "/../Resources/icons/" );
+#else
 	std::string path ( dir + "/icons/" );
+#endif
 
   return path;
 }

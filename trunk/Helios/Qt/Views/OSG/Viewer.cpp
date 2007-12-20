@@ -918,10 +918,18 @@ void Viewer::menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller )
 
 void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller )
 {
+  // Get the viewer.
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  
+  // Return now if no viewer.
+  if ( false == viewer.valid() )
+    return;
+  
+  // Add a separator if the menu already has items.
   if ( menu.items().size() > 0 )
     menu.addSeparator();
 
-  Usul::Interfaces::IUnknown::QueryPtr viewer ( this->viewer() );
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( this->viewer() );
 
   // Typedefs.
   typedef MenuKit::Button Button;
@@ -932,21 +940,37 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   typedef Usul::Interfaces::IPolygonMode IPolygonMode;
   typedef Usul::Commands::ShadeModel ShadeModel;
   typedef Usul::Interfaces::IShadeModel IShadeModel;
+  typedef OsgTools::Render::Viewer OsgViewer;
 
   menu.append ( new Button ( Usul::Commands::genericCommand ( "Edit Background", Usul::Adaptors::memberFunction<void> ( this, &Viewer::editBackground ), Usul::Commands::TrueFunctor() ) ) );
 
+  // Mode menu.
+  {
+    MenuKit::Menu::RefPtr modes ( new MenuKit::Menu ( "Modes" ) );
+    modes->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "Navigate", 
+                                                                           Usul::Adaptors::bind1<void> ( OsgViewer::NAVIGATION, Usul::Adaptors::memberFunction<void> ( viewer.get(), &OsgViewer::setMode ) ), 
+                                                                           Usul::Adaptors::bind1<bool> ( OsgViewer::NAVIGATION, Usul::Adaptors::memberFunction<bool> ( viewer.get(), &OsgViewer::isModeCurrent ) ) ) ) );
+    modes->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "Pick", 
+                                                                           Usul::Adaptors::bind1<void> ( OsgViewer::PICK, Usul::Adaptors::memberFunction<void> ( viewer.get(), &OsgViewer::setMode ) ), 
+                                                                           Usul::Adaptors::bind1<bool> ( OsgViewer::PICK, Usul::Adaptors::memberFunction<bool> ( viewer.get(), &OsgViewer::isModeCurrent ) ) ) ) );
+    modes->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "Seek", 
+                                                                           Usul::Adaptors::bind1<void> ( OsgViewer::SEEK, Usul::Adaptors::memberFunction<void> ( viewer.get(), &OsgViewer::setMode ) ), 
+                                                                           Usul::Adaptors::bind1<bool> ( OsgViewer::SEEK, Usul::Adaptors::memberFunction<bool> ( viewer.get(), &OsgViewer::isModeCurrent ) ) ) ) );
+    menu.append ( modes );
+  }
+  
   // Rendering passes menu.
   {
     MenuKit::Menu::RefPtr passes ( new MenuKit::Menu ( "Rendering Passes" ) );
     menu.append ( passes.get() );
 
-    passes->append ( new RadioButton ( new RenderingPasses ( "1", 1, viewer.get() ) ) );
-    passes->append ( new RadioButton ( new RenderingPasses ( "3", 3, viewer.get() ) ) );
-    passes->append ( new RadioButton ( new RenderingPasses ( "9", 9, viewer.get() ) ) );
-    passes->append ( new RadioButton ( new RenderingPasses ( "12", 12, viewer.get() ) ) );
+    passes->append ( new RadioButton ( new RenderingPasses ( "1", 1, unknown.get() ) ) );
+    passes->append ( new RadioButton ( new RenderingPasses ( "3", 3, unknown.get() ) ) );
+    passes->append ( new RadioButton ( new RenderingPasses ( "9", 9, unknown.get() ) ) );
+    passes->append ( new RadioButton ( new RenderingPasses ( "12", 12, unknown.get() ) ) );
   }
 
-  MenuKit::Button::RefPtr rl ( new MenuKit::ToggleButton ( new Usul::Commands::RenderLoop ( "Render Loop", viewer.get() ) ) );
+  MenuKit::Button::RefPtr rl ( new MenuKit::ToggleButton ( new Usul::Commands::RenderLoop ( "Render Loop", unknown.get() ) ) );
   menu.append ( rl );
 
   // Polygons menu.
@@ -954,10 +978,10 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
     MenuKit::Menu::RefPtr polygons ( new MenuKit::Menu ( "Polygons" ) );
     menu.append ( polygons.get() );
 
-    polygons->append ( new RadioButton ( new PolygonMode ( "Filled",       IPolygonMode::FILLED, viewer.get() ) ) );
-    polygons->append ( new RadioButton ( new PolygonMode ( "Hidden Lines", IPolygonMode::HIDDEN_LINES, viewer.get() ) ) );
-    polygons->append ( new RadioButton ( new PolygonMode ( "Wireframe",    IPolygonMode::WIRE_FRAME, viewer.get() ) ) );
-    polygons->append ( new RadioButton ( new PolygonMode ( "Points",       IPolygonMode::POINTS, viewer.get() ) ) );
+    polygons->append ( new RadioButton ( new PolygonMode ( "Filled",       IPolygonMode::FILLED, unknown.get() ) ) );
+    polygons->append ( new RadioButton ( new PolygonMode ( "Hidden Lines", IPolygonMode::HIDDEN_LINES, unknown.get() ) ) );
+    polygons->append ( new RadioButton ( new PolygonMode ( "Wireframe",    IPolygonMode::WIRE_FRAME, unknown.get() ) ) );
+    polygons->append ( new RadioButton ( new PolygonMode ( "Points",       IPolygonMode::POINTS, unknown.get() ) ) );
   }
 
   // Shading menu.
@@ -965,8 +989,8 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
     MenuKit::Menu::RefPtr shading ( new MenuKit::Menu ( "Shading" ) );
     menu.append ( shading.get() );
 
-    shading->append ( new RadioButton ( new ShadeModel ( "Smooth", IShadeModel::SMOOTH, viewer.get() ) ) );
-    shading->append ( new RadioButton ( new ShadeModel ( "Flat",   IShadeModel::FLAT, viewer.get() ) ) );
+    shading->append ( new RadioButton ( new ShadeModel ( "Smooth", IShadeModel::SMOOTH, unknown.get() ) ) );
+    shading->append ( new RadioButton ( new ShadeModel ( "Flat",   IShadeModel::FLAT, unknown.get() ) ) );
   }
 
   // Add common window sizes.
@@ -999,10 +1023,8 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   // Frame dump button.
   menu.append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Frame Dump", Usul::Adaptors::memberFunction<void> ( this, &Viewer::_frameDump ), Usul::Adaptors::memberFunction<bool> ( this, &Viewer::_isFrameDump ) ) ) );
 
-  typedef OsgTools::Render::Viewer OsgViewer;
-
   // Axes button.
-  menu.append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Show Axes", Usul::Adaptors::memberFunction<void> ( _viewer.get(), &OsgViewer::axesShown ), Usul::Adaptors::memberFunction<bool> ( _viewer.get(), &OsgViewer::isAxesShown ) ) ) );
+  menu.append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Show Axes", Usul::Adaptors::memberFunction<void> ( _viewer.get(), &OsgViewer::axesShown ), Usul::Adaptors::memberFunction<bool> ( viewer.get(), &OsgViewer::isAxesShown ) ) ) );
 }
 
 

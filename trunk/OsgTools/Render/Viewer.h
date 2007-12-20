@@ -295,7 +295,8 @@ public:
 
   // Set/get the mode
   void                  setMode ( ViewMode mode );
-  ViewMode              getMode () { return _currentMode; }
+  ViewMode              getMode () const { return _currentMode; }
+  bool                  isModeCurrent ( ViewMode mode ) const;
 
   // Save/load the state.
   void                  stateLoad();

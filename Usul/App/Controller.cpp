@@ -29,7 +29,6 @@
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/GUI/IAboutString.h"
 #include "Usul/Interfaces/GUI/ICancelButton.h"
-#include "Usul/Interfaces/IExport.h"
 #include "Usul/Interfaces/IFlipNormals.h"
 #include "Usul/Interfaces/ICamera.h"
 #include "Usul/Interfaces/ISpin.h"
@@ -546,40 +545,6 @@ void Controller::documentSaveAs ( Usul::Interfaces::IUnknown* caller )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the filters for exporting.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Controller::filtersExport ( Filters &filters )
-{
-  // Return if there is no view or no document.
-  if ( 0x0 == this->activeView() || 0x0 == this->activeDocument() )
-    return;
-
-  // Get the interface
-  Usul::Interfaces::IExport::QueryPtr exportData ( this->activeView() );
-
-  // Get the filters for the document
-  const Filters df ( this->activeDocument()->filtersExport() );
-  Filters all ( df.begin(), df.end() );
-
-  // Get the filters for the view, if we have a valid interface
-  if( exportData.valid() )
-  {
-    const Filters vi ( exportData->filtersExport() );
-    all.insert ( all.end(), vi.begin(), vi.end() );
-  }
-  
-  // Sort the filters and make sure we only have unique ones
-  std::sort ( all.begin(), all.end() );
-  Filters f ( all.begin(), std::unique ( all.begin(), all.end() ) );
-  filters = f;
-
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Export document into filename.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -589,9 +554,6 @@ void Controller::documentExport ( const std::string& filename, std::string filte
   // Return if there is no view or no document.
   if ( 0x0 == this->activeView() || 0x0 == this->activeDocument() )
     return;
-
-  // Get the interface
-  Usul::Interfaces::IExport::QueryPtr exportData ( this->activeView() );
 
     // See if the document can export this.
   if ( this->activeDocument()->canExport ( filename ) )
@@ -605,13 +567,6 @@ void Controller::documentExport ( const std::string& filename, std::string filte
 
     this->activeDocument()->write ( filename, caller );
     return;
-  }
-
-  if( exportData.valid() && exportData->canExport ( filename ) )
-  {
-    // See if the view can export this.
-    if ( exportData->exportFile ( filename ) )
-      return;
   }
 
   // If we get here then we did not successfully export the file

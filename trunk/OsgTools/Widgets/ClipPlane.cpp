@@ -65,7 +65,7 @@ void ClipPlane::_setGeometry()
 
   // Make the geometry
   osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
-  geode->addDrawable ( geometry.get() );
+  //geode->addDrawable ( geometry.get() );
   
   // Make the vertices
   osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array );

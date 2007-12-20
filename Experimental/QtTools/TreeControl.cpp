@@ -265,7 +265,7 @@ namespace Helper
     }
 
     // Are all the children visible?
-    if ( numVisibleChildren == numChildren )
+    if ( static_cast<int> ( numVisibleChildren ) == numChildren )
     {
       item->setCheckState ( 0, Qt::Checked );
     }

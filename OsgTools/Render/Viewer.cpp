@@ -226,6 +226,9 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
 
   // Set the scene.
   _renderer->scene ( _sceneManager->scene() );
+  
+  // Make the background the default.
+  this->defaultBackground();
 
 #ifdef _DEBUG
   //osg::setNotifyLevel ( osg::INFO );
@@ -326,7 +329,8 @@ void Viewer::clear()
 
 void Viewer::defaultBackground()
 {
-  this->backgroundColor ( OsgTools::Render::Defaults::CLEAR_COLOR );
+  this->backgroundColor ( OsgTools::Render::Defaults::CLEAR_COLOR, Corners::TOP );
+  this->backgroundColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ), Corners::BOTTOM );
 }
 
 

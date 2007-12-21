@@ -942,7 +942,8 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   typedef Usul::Interfaces::IShadeModel IShadeModel;
   typedef OsgTools::Render::Viewer OsgViewer;
 
-  menu.append ( new Button ( Usul::Commands::genericCommand ( "Edit Background", Usul::Adaptors::memberFunction<void> ( this, &Viewer::editBackground ), Usul::Commands::TrueFunctor() ) ) );
+  menu.append ( new Button ( Usul::Commands::genericCommand ( "Edit Background",    Usul::Adaptors::memberFunction<void> ( this, &Viewer::editBackground ), Usul::Commands::TrueFunctor() ) ) );
+  menu.append ( new Button ( Usul::Commands::genericCommand ( "Default Background", Usul::Adaptors::memberFunction<void> ( viewer.get(), &OsgViewer::defaultBackground ), Usul::Commands::TrueFunctor() ) ) );
 
   // Mode menu.
   {

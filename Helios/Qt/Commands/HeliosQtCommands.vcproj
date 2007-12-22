@@ -237,6 +237,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OpenManual.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OpenManual.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SaveAsDocument.cpp"
 				>
 			</File>

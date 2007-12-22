@@ -26,6 +26,7 @@
 #include "Helios/Qt/Commands/ExportScene.h"
 #include "Helios/Qt/Commands/ExitApplication.h"
 #include "Helios/Qt/Commands/ToggleView.h"
+#include "Helios/Qt/Commands/OpenManual.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/RegistryIO.h"
@@ -408,10 +409,18 @@ void MainWindow::_buildMenuKitMenu()
   // Add view menu.
   {
     {
-      MenuKit::Menu::RefPtr view ( new MenuKit::Menu );
-      view->text ( "&View" );
+      MenuKit::Menu::RefPtr view ( new MenuKit::Menu ( "&View" ) );
       view->append ( _dockMenu );
       _menu->append ( view );
+    }
+  }
+
+  // Add help menu.
+  {
+    {
+      MenuKit::Menu::RefPtr help ( new MenuKit::Menu ( "&Help" ) );
+      help->append ( new MenuKit::Button ( new CadKit::Helios::Commands::OpenManual ( me ) ) );
+      _menu->append ( help );
     }
   }
 

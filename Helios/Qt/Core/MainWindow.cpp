@@ -415,15 +415,6 @@ void MainWindow::_buildMenuKitMenu()
     }
   }
 
-  // Add help menu.
-  {
-    {
-      MenuKit::Menu::RefPtr help ( new MenuKit::Menu ( "&Help" ) );
-      help->append ( new MenuKit::Button ( new CadKit::Helios::Commands::OpenManual ( me ) ) );
-      _menu->append ( help );
-    }
-  }
-
   // Check the active document.
   {
     Usul::Interfaces::IMenuAdd::QueryPtr ma ( Usul::Documents::Manager::instance().activeDocument() );
@@ -452,6 +443,15 @@ void MainWindow::_buildMenuKitMenu()
     // Should be true.
     Usul::Interfaces::IMenuAdd::ValidQueryPtr ma ( (*iter).get() );
     ma->menuAdd ( *_menu, me.get() );
+  }
+
+  // Add help menu.
+  {
+    {
+      MenuKit::Menu::RefPtr help ( new MenuKit::Menu ( "&Help" ) );
+      help->append ( new MenuKit::Button ( new CadKit::Helios::Commands::OpenManual ( me ) ) );
+      _menu->append ( help );
+    }
   }
 }
 

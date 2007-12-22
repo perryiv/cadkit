@@ -160,8 +160,8 @@ protected:
   void                      _cull ( osgUtil::CullVisitor &cv );
 
   // Build skirts.
-  osg::Node*                _buildLonSkirt ( double lon, double u, double offset );
-  osg::Node*                _buildLatSkirt ( double lat, double v, double offset );
+  osg::Node*                _buildLonSkirt ( double lon, double u, unsigned int i, double offset );
+  osg::Node*                _buildLatSkirt ( double lat, double v, unsigned int j, double offset );
 
   // Load the image.
   void                      _launchImageRequest();

@@ -233,10 +233,10 @@ void Tile::updateMesh()
     const double offset ( Usul::Math::maximum<double> ( ( 2500 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
 
     // Add skirts to group.
-    group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], offset ) ); // Left skirt.
-    group->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], offset ) ); // Right skirt.
-    group->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], offset ) ); // Bottom skirt.
-    group->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], offset ) ); // Top skirt.
+    group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], mesh.rows() - 1,    offset ) ); // Left skirt.
+    group->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], 0,                  offset ) ); // Right skirt.
+    group->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], 0,                  offset ) ); // Bottom skirt.
+    group->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], mesh.columns() - 1, offset ) ); // Top skirt.
   }
 
   // Add ground to group.
@@ -758,7 +758,7 @@ bool Tile::textureDirty() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Tile::_buildLonSkirt ( double lon, double u, double offset )
+osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double offset )
 {
   unsigned int columns ( _mesh->columns() );
 
@@ -771,7 +771,7 @@ osg::Node* Tile::_buildLonSkirt ( double lon, double u, double offset )
     const double v ( static_cast<double> ( j ) / ( columns - 1 ) );
     const double lat ( _extents.minimum()[1] + v * ( _extents.maximum()[1] - _extents.minimum()[1] ) );
 
-    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( 0, j ) ) ) : 0.0 ) );
+    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( i, j ) ) ) : 0.0 ) );
 
     // Convert lat-lon coordinates to xyz.
     _body->latLonHeightToXYZ ( lat, lon, elevation,          mesh.point ( 0, j ) );
@@ -792,7 +792,7 @@ osg::Node* Tile::_buildLonSkirt ( double lon, double u, double offset )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Tile::_buildLatSkirt ( double lat, double v, double offset )
+osg::Node* Tile::_buildLatSkirt ( double lat, double v, unsigned int j, double offset )
 {
   unsigned int rows ( _mesh->rows() );
 
@@ -805,7 +805,7 @@ osg::Node* Tile::_buildLatSkirt ( double lat, double v, double offset )
     const double u ( 1.0 - static_cast<double> ( i ) / ( mesh.rows() - 1 ) );
     const double lon ( _extents.minimum()[0] + u * ( _extents.maximum()[0] - _extents.minimum()[0] ) );
 
-    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( i, 0 ) ) ) : 0.0 ) );
+    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( i, j ) ) ) : 0.0 ) );
 
     // Convert lat-lon coordinates to xyz.
     _body->latLonHeightToXYZ ( lat, lon, elevation,          mesh.point ( i, 0 ) );

@@ -942,8 +942,13 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   typedef Usul::Interfaces::IShadeModel IShadeModel;
   typedef OsgTools::Render::Viewer OsgViewer;
 
-  menu.append ( new Button ( Usul::Commands::genericCommand ( "Edit Background",    Usul::Adaptors::memberFunction<void> ( this, &Viewer::editBackground ), Usul::Commands::TrueFunctor() ) ) );
-  menu.append ( new Button ( Usul::Commands::genericCommand ( "Default Background", Usul::Adaptors::memberFunction<void> ( viewer.get(), &OsgViewer::defaultBackground ), Usul::Commands::TrueFunctor() ) ) );
+  // Background menu.
+  {
+    MenuKit::Menu::RefPtr background ( new MenuKit::Menu ( "Background" ) );
+    background->append ( new Button ( Usul::Commands::genericCommand ( "Edit...", Usul::Adaptors::memberFunction<void> ( this, &Viewer::editBackground ), Usul::Commands::TrueFunctor() ) ) );
+    background->append ( new Button ( Usul::Commands::genericCommand ( "Default", Usul::Adaptors::memberFunction<void> ( viewer.get(), &OsgViewer::defaultBackground ), Usul::Commands::TrueFunctor() ) ) );
+    menu.append ( background.get() );
+  }
 
   // Mode menu.
   {
@@ -957,7 +962,7 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
     modes->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "Seek", 
                                                                            Usul::Adaptors::bind1<void> ( OsgViewer::SEEK, Usul::Adaptors::memberFunction<void> ( viewer.get(), &OsgViewer::setMode ) ), 
                                                                            Usul::Adaptors::bind1<bool> ( OsgViewer::SEEK, Usul::Adaptors::memberFunction<bool> ( viewer.get(), &OsgViewer::isModeCurrent ) ) ) ) );
-    menu.append ( modes );
+    menu.append ( modes.get() );
   }
   
   // Rendering passes menu.

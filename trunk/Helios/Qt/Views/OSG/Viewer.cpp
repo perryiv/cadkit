@@ -155,6 +155,13 @@ Viewer::~Viewer()
     _timer = 0x0;
   }
 
+  if ( 0x0 != _timerRenderLoop )
+  {
+    _timerRenderLoop->stop();
+    delete _timerRenderLoop;
+    _timerRenderLoop = 0x0;
+  }
+
   // Save viewer's state.
   _viewer->stateSave();
 

@@ -13,16 +13,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Renderer.h"
+#include "OsgTools/Render/Renderer.h"
 
 #include "OsgTools/Jitter.h"
 #include "OsgTools/Render/RecordTime.h"
 #include "OsgTools/ScopedProjection.h"
 #include "OsgTools/ScopedNodeMask.h"
 #include "OsgTools/Render/Defaults.h"
-#include "OsgTools/Images/Matrix.h"
 #include "OsgTools/Render/ClampProjection.h"
-#include "OsgTools/Render/FBOScreenCapture.h"
 #include "OsgTools/Render/TiledScreenCapture.h"
 #include "OsgTools/Builders/GradientBackground.h"
 #include "OsgTools/Group.h"
@@ -30,16 +28,6 @@
 #include "Usul/Errors/Checker.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Errors/Stack.h"
-#include "Usul/Interfaces/GUI/IProgressBar.h"
-#include "Usul/Interfaces/GUI/IStatusBar.h"
-#include "Usul/Interfaces/GUI/ICancelButton.h"
-#include "Usul/Policies/Update.h"
-#include "Usul/Registry/Constants.h"
-#include "Usul/Resources/ProgressBar.h"
-#include "Usul/Resources/StatusBar.h"
-#include "Usul/Resources/CancelButton.h"
-#include "Usul/Resources/TextWindow.h"
-#include "Usul/Shared/Preferences.h"
 #include "Usul/System/Clock.h"
 #include "Usul/Headers/OpenGL.h"
 
@@ -50,16 +38,7 @@
 
 #include "osgUtil/UpdateVisitor"
 
-#include "osgDB/WriteFile"
-
-#include <iomanip>
-#include <list>
-#include <fstream>
-
 using namespace OsgTools::Render;
-
-
-namespace Detail { const unsigned int NUM_CHANNELS ( 3 ); }
 
 
 namespace Detail
@@ -731,347 +710,24 @@ void Renderer::update()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Make a temporary file and fill it with zeros. These will be the "pixels".
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  std::string makeFile ( unsigned int width, unsigned int height )
-  {
-    Usul::File::Temp file ( Usul::File::Temp::BINARY );
-
-    typedef std::vector < unsigned int > Pixels;
-    Pixels row ( width * Detail::NUM_CHANNELS, 0 );
-    const unsigned int bytesPerRow ( row.size() * sizeof ( Pixels::value_type ) );
-
-    // Write the dimensions.
-    file.stream().write ( reinterpret_cast < const char * > ( &width ), sizeof ( width ) );
-    file.stream().write ( reinterpret_cast < const char * > ( &height ), sizeof ( height ) );
-
-    // Fill the file with zeros, row by row.
-    for ( unsigned int i = 0; i < height; ++ i )
-      file.stream().write ( reinterpret_cast < const char * > ( &row[0] ), bytesPerRow );
-
-    // Return name.
-    file.release();
-    return file.name();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add the pixels from the temp file to the answer file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  template < class InputIterator, class OutputIterator >
-  void addPixels ( InputIterator begin, InputIterator end, OutputIterator out )
-  {
-    for ( InputIterator iter = begin; iter != end; ++iter )
-    {
-      *out += *iter;
-      out++;
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add the pixels from the temp file to the answer file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  template < class OutputContainer >
-  void addPixels ( const std::string &image, OutputContainer& out, unsigned int width, unsigned int height )
-  {
-    // Open image for reading.
-    std::ifstream in ( image.c_str(), std::ios::binary );
-    if ( false == in.is_open() )
-      throw std::runtime_error ( "Error 4068209531: failed to open file: " + image );
-
-    // Read the size.
-    unsigned int w ( 0 ), h ( 0 );
-    in.read ( reinterpret_cast < char * > ( &w ), sizeof ( w ) );
-    in.read ( reinterpret_cast < char * > ( &h ), sizeof ( h ) );
-    if ( w != width || h != height )
-      throw std::runtime_error ( "Error 2085849966: Inconsistant image sizes" );
-
-    // Pixels in temporary intermediate files are unsigned chars.
-    std::vector < unsigned char > row ( width * Detail::NUM_CHANNELS, 0 );
-
-    typedef typename OutputContainer::iterator OutputIterator;
-    typedef typename OutputIterator::value_type PixelComponent;
-
-    // Loop through the rows of the image.
-    for ( unsigned int i = 0; i < height; ++i )
-    {
-      // Read a single row from temp file.
-      in.read ( reinterpret_cast < std::ifstream::char_type * > ( &row[0] ), row.size() );
-
-      // Position to seek to.
-      const unsigned int position ( i * width * Detail::NUM_CHANNELS );
-
-      // Add this row to the answer file.
-      Detail::addPixels ( row.begin(), row.end(), out.begin() + position );
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Accumulate an image list into a single image.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Image* Renderer::_accumulate ( ImageList &images, unsigned int width, unsigned int height, GLenum pixelFormat, GLenum dataType ) const
-{
-  // Handle empty list.
-  if ( true == images.empty() )
-    return 0x0;
-
-  Usul::Interfaces::IProgressBar::UpdateProgressBar progress ( 0, 1, Usul::Resources::progressBar() );
-  Usul::Interfaces::IStatusBar::UpdateStatusBar status ( Usul::Resources::statusBar() );
-  Usul::Policies::TimeBased elapsed ( 1000 );
-
-  const unsigned int total ( images.size() );
-  unsigned int count ( 0 );
-
-  // Make a temporary vector and fill it with zeros. These will be the "pixels".
-  std::vector < unsigned short > answer ( width * height * Detail::NUM_CHANNELS, 0 );
-
-  // Loop through the image files.
-  for ( ImageList::iterator iter = images.begin(); iter != images.end(); ++iter )
-  {
-    // Add the pixels from the temp file.
-    Detail::addPixels ( *iter, answer, width, height );
-
-    // Feedback
-    if ( elapsed() )
-    {
-      progress ( count, total );
-      std::ostringstream out;
-      out << "Accumulating image " << std::distance ( images.begin(), iter ) + 1 << " of " << images.size();
-      status ( out.str(), true );
-    }
-    ++count;
-  }
-
-  // Used to average.
-  const float mult ( 1.0f / (float) images.size() );
-
-  // Allocate the image.
-  osg::ref_ptr < osg::Image > image ( new osg::Image );
-  image->allocateImage ( width, height, 1, pixelFormat, dataType );
-
-  // Image buffer
-  unsigned char *buffer = image->data ( );
-
-  // Read each row.
-  for ( unsigned int r = 0; r < answer.size(); ++r )
-  {
-    buffer[r] = static_cast < unsigned char > ( static_cast < float > ( answer[r] ) * mult );
-  }
-
-  // All done.
-  return image.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Small class to remove files in destructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  struct RemoveFiles
-  {
-    RemoveFiles ( Renderer::ImageList &files ) : _files ( files )
-    {
-    }
-    ~RemoveFiles()
-    {
-      for ( Renderer::ImageList::iterator i = _files.begin(); i != _files.end(); ++i )
-      {
-        const std::string &file ( *i );
-        try
-        {
-          Usul::File::Temp::remove ( file, true );
-        }
-        catch ( const std::exception & )
-        {
-          std::cout << "Error 2377855880: Failed to remove file '" << file << std::endl;
-        }
-        catch ( ... )
-        {
-          std::cout << "Error 2276766138: Failed to remove file '" << file << std::endl;
-        }
-      }
-    }
-    Renderer::ImageList &_files;
-  };
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write the image to file as raw data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  void writeImage ( const osg::Image &image, const std::string &file )
-  {
-    std::ofstream out ( file.c_str(), std::ios::binary );
-    if ( false == out.is_open() )
-      throw std::runtime_error ( "Error 2581366847: Failed to open file for writing: " + file );
-    if( image.s() < 0 )
-      throw std::runtime_error ( "Error 1241366246: width is less than zero." );
-    if( image.t() < 0 )
-      throw std::runtime_error ( "Error 3243622229: height is less than zero." );
-    const unsigned int width  ( static_cast < unsigned int > ( image.s() ) );
-    const unsigned int height ( static_cast < unsigned int > ( image.t() ) );
-    out.write ( reinterpret_cast < const char * > ( &width ),  sizeof ( width  ) );
-    out.write ( reinterpret_cast < const char * > ( &height ), sizeof ( height ) );
-    out.write ( reinterpret_cast < const char * > ( image.data() ), image.getImageSizeInBytes() );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Screen capture at the given view with the given height and width
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int width, unsigned int height )
 {
-  osg::ref_ptr< osg::Image > answer ( new osg::Image() );
-  osg::Matrix oldViewMatrix ( _sceneView->getViewMatrix() );
-
-  // Initialize progress bar.
-  Usul::Interfaces::IProgressBar::ShowHide showHide ( Usul::Resources::progressBar() );
-  Usul::Interfaces::IProgressBar::UpdateProgressBar progress ( 0, 1, Usul::Resources::progressBar() );
-  Usul::Interfaces::IStatusBar::UpdateStatusBar status ( Usul::Resources::statusBar() );
-  Usul::Interfaces::ICancelButton::ShowHide cancel ( Usul::Resources::cancelButton() );
-
-  try
-  {
-    _sceneView->setViewMatrix ( matrix );
-
-    const osg::Matrixd &proj = _sceneView->getProjectionMatrix();
-
-    if ( this->numRenderPasses() > 1 )
-    {
-      // Save original projection matrix.
-      OsgTools::ScopedProjection sp ( _sceneView.get() );
-
-      // Needed in the loop.
-      osg::Matrixd pMatrix;
-      osg::ref_ptr<osg::Viewport> vp ( this->viewport() );
-
-      // Vector to store the images.
-      ImageList images;
-      images.reserve ( this->numRenderPasses() );
-
-      // For cleaning up temporary files.
-      Detail::RemoveFiles removeFiles ( images );
-
-      // Loop through the passes...
-      for ( unsigned int i = 0; i < this->numRenderPasses(); ++i )
-      {
-        // Set the proper projection matrix.
-        OsgTools::Jitter::instance().perspective ( _numPasses, i, *vp, proj, pMatrix );
-        _sceneView->setProjectionMatrix ( pMatrix );
-
-        // Make a new image.
-        osg::ref_ptr < osg::Image > tempImage ( new osg::Image );
-
-        // Capture the image.
-        this->_screenCapture ( *tempImage, pMatrix, width, height );
-
-        // Write the image to file.
-        images.push_back ( Usul::File::Temp::file() );
-        Detail::writeImage ( *tempImage, images.back() );
-
-        // Feedback
-        {
-          progress ( i, this->numRenderPasses() );
-          std::ostringstream out;
-          out << "Capturing render pass " << i;
-          status ( out.str(), true );
-        }
-      }
-
-      answer = this->_accumulate ( images, width, height, GL_RGB, GL_UNSIGNED_BYTE );
-    }
-    else
-    {
-      // Fill in the image.
-      this->_screenCapture ( *answer, proj, width, height );
-    }
-  }
-
-  // If there is an exception, set the old view matrix and re-throw.
-  catch ( ... )
-  {
-    _sceneView->setViewMatrix( oldViewMatrix );
-    throw;
-  }
-
-  _sceneView->setViewMatrix( oldViewMatrix );
-
-  return answer.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Capture the screen.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Renderer::_screenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height )
-{
-  // Should we use frame buffer objects?
-  bool useFBO ( osg::FBOExtensions::instance( _contextId, true )->isSupported() && height <= 4096 && width <= 4096 );
-
-  // Make enough space
-  image.allocateImage ( width, height, 1, GL_RGB, GL_UNSIGNED_BYTE );
-      
-  if ( useFBO )
-    this->_fboScreenCapture ( image, projection, width, height );
-  else
-    this->_tiledScreenCapture( image, projection, width, height );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Capture the screen using a frame buffer object.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Renderer::_fboScreenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height )
-{
-  FBOScreenCapture fbo;
-  fbo.size ( width, height );
-  fbo.clearColor ( this->backgroundColor() );
-  fbo.viewMatrix ( this->viewMatrix() );
-  fbo ( image, *this->viewer(), projection );
-
-  // Figure out how to avoid this last render.
-  this->render();
+  TiledScreenCapture tiled;
+  tiled.size ( width, height );
+  tiled.clearColor ( this->backgroundColor() );
+  tiled.viewMatrix ( matrix );
+  tiled.numSamples ( 1.0f );
+  tiled.scale ( 1.0f );
+  tiled.background ( _gradient );
+  
+  // Turn off the node mask for the clear node.  The tiled screen capture uses it's own clear node.
+  OsgTools::ScopedNodeMask nm ( *_clearNode, 0x0 );
+  
+  return tiled ( *this->viewer(), _sceneView->getProjectionMatrix() );
 }
 
 
@@ -1123,121 +779,6 @@ void Renderer::scatterScale ( double scale )
 double Renderer::scatterScale() const
 {
   return OsgTools::Jitter::instance().scatterScale();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Capture the screen using tiles.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Renderer::_tiledScreenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height )
-{
-  // Tile height and width
-  const unsigned int tileWidth ( 256 );
-  const unsigned int tileHeight ( 256 );
-
-  // Calculate the number of rows and columns we will need
-  const unsigned int numRows ( ( height + tileHeight - 1 ) / tileHeight );
-  const unsigned int numCols ( ( width + tileWidth - 1 )   / tileWidth  );
-
-  // Set the current tile
-  unsigned int currentTile ( 0 );
-
-  // Get the old viewport
-  osg::ref_ptr<osg::Viewport> ovp ( static_cast < osg::Viewport* > ( this->viewport()->clone( osg::CopyOp::DEEP_COPY_ALL ) ) );
-
-  osg::Matrix opm ( this->viewer()->getProjectionMatrix() );
-
-  //double fovy  ( OsgTools::Render::Defaults::CAMERA_FOV_Y );
-  double zNear ( 0.0 );
-  double zFar  ( 0.0 );
-  //double aspect ( width / height );
-
-  double top     ( 0.0 );
-  double bottom  ( 0.0 );
-  double left    ( 0.0 );
-  double right   ( 0.0 );
-
-  projection.getFrustum( left, right, bottom, top, zNear, zFar);
-
-  do
-  {
-    // Begin tile 
-    const unsigned int currentRow ( currentTile / numCols );
-    const unsigned int currentCol ( currentTile % numCols );
-    
-    // Current tile height and width
-    unsigned int currentTileHeight ( 0 );
-    unsigned int currentTileWidth  ( 0 );
-
-    // Get the current tile height.  Accounts for tiles at end that are not complete
-    if ( currentRow < numRows - 1 )
-      currentTileHeight = tileHeight;
-    else
-      currentTileHeight = height - ( ( numRows - 1 ) * tileHeight );
-
-    // Get the current tile width.  Accounts for tiles at end that are not comlete
-    if ( currentCol  < numCols - 1 )
-      currentTileWidth = tileWidth;
-    else
-      currentTileWidth = width - ( ( numCols - 1 ) * tileWidth );    
-
-    // Set the view port to the tile width and height
-    this->viewer()->setViewport ( 0, 0, currentTileWidth, currentTileHeight );
-
-    // compute projection parameters
-    const double currentLeft   ( left          + ( right - left ) *  ( currentCol * tileWidth ) / width );
-    const double currentRight  ( currentLeft   + ( right - left ) *            currentTileWidth / width );
-    const double currentBottom ( bottom        + ( top - bottom ) * ( currentRow * tileHeight ) / height );
-    const double currentTop    ( currentBottom + ( top - bottom ) *           currentTileHeight / height );
-
-    // Set the new frustum
-    this->viewer()->setProjectionMatrixAsFrustum ( currentLeft, currentRight, currentBottom, currentTop, zNear, zFar );
-    
-    // Draw
-    this->_singlePassRender();
-
-    // Previous values
-    GLint prevRowLength, prevSkipRows, prevSkipPixels;
-
-    // save current glPixelStore values
-    ::glGetIntegerv(GL_PACK_ROW_LENGTH,  &prevRowLength);
-    ::glGetIntegerv(GL_PACK_SKIP_ROWS,   &prevSkipRows);
-    ::glGetIntegerv(GL_PACK_SKIP_PIXELS, &prevSkipPixels);
-
-    // Calculate position in image buffer to write to
-    GLint destX ( currentTileWidth  * currentCol );
-    GLint destY ( currentTileHeight * currentRow );
-
-    // setup pixel store for glReadPixels
-    // This makes sure that the buffer is read into the correct spot in the image buffer
-    ::glPixelStorei(GL_PACK_ROW_LENGTH,  width);
-    ::glPixelStorei(GL_PACK_SKIP_ROWS,   destY);
-    ::glPixelStorei(GL_PACK_SKIP_PIXELS, destX);
-
-    // read the tile into the final image
-    ::glReadPixels(0, 0, currentTileWidth, currentTileHeight, GL_RGB, GL_UNSIGNED_BYTE, image.data( ) );
-
-    // restore previous glPixelStore values
-    ::glPixelStorei(GL_PACK_ROW_LENGTH,  prevRowLength);
-    ::glPixelStorei(GL_PACK_SKIP_ROWS,   prevSkipRows);
-    ::glPixelStorei(GL_PACK_SKIP_PIXELS, prevSkipPixels);
-
-    // Go the the next tile
-    currentTile++;
-
-    // Are we done?
-    if ( currentTile >= numRows * numCols )
-      break;
-
-  } while ( 1 );
-
-  // Restore old settings
-  this->viewport ( ovp.get() );
-  this->viewer()->setProjectionMatrix( opm );
-  //this->resize ( ovp->width(), ovp->height() );
 }
 
 

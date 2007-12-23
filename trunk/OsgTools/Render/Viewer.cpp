@@ -278,8 +278,9 @@ void Viewer::create()
   // list for this context.
   _renderer->uniqueID ( _contextId );
 
-  // Compute with bounding primitives.
+  // Compute with bounding primitives.  This doesn't seem to have any affect.
   //this->viewer()->getCullVisitor()->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_PRIMITIVES );
+  //this->viewer()->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_PRIMITIVES );
 }
 
 
@@ -3630,7 +3631,7 @@ void Viewer::_handlePicking ( EventAdapter *ea )
     // Change all dirty bounds flags to true.
     OsgTools::Utilities::setDirtyBounds( root.get() );
 
-    bool result ( this->_intersect ( x, y, root.get(), hit, true ) );
+    this->_intersect ( x, y, root.get(), hit, true );
 
     // Change all matrix transforms that were changed before back to absolute.
     for( TList::iterator iter = tList.begin(); iter != tList.end(); ++iter )
@@ -4343,12 +4344,17 @@ const osg::Light *Viewer::light() const
 
 void Viewer::computeNearFar ( bool b )
 {
+  // Return now if no viewer.
+  if ( 0x0 == this->viewer() )
+    return;
+  
   if ( b )
   {
     osgUtil::CullVisitor *cv ( this->viewer()->getCullVisitor() );
     cv->setClampProjectionMatrixCallback ( new OsgTools::Render::ClampProjection ( *cv, OsgTools::Render::Defaults::CAMERA_Z_NEAR, OsgTools::Render::Defaults::CAMERA_Z_FAR ) );
     cv->setInheritanceMask ( Usul::Bits::remove ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
     cv->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES );
+    this->viewer()->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES );
   }
   else
   {
@@ -4356,6 +4362,7 @@ void Viewer::computeNearFar ( bool b )
     cv->setClampProjectionMatrixCallback ( 0x0 );
     //cv->setInheritanceMask ( Usul::Bits::add ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
     cv->setComputeNearFarMode ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
+    this->viewer()->setComputeNearFarMode ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
   }
 }
 
@@ -4774,12 +4781,18 @@ void Viewer::_clearUpdateListeners()
 void Viewer::getClippingDistances ( float &nearDist, float &farDist ) const
 {
   USUL_TRACE_SCOPE;
-
-  double left ( 0.0 ), right ( 0.0 ), top ( 0.0 ), bottom ( 0.0 ), zNear ( 0.0 ), zFar ( 0.0 );
-  this->viewer()->getProjectionMatrixAsFrustum ( left, right, bottom, top, zNear, zFar );
-
-  nearDist = zNear;
-  farDist  = zFar;
+  
+  double n ( 0.0 ), f ( 0.0 );
+  
+  // Get the near and far distances.
+  {
+    Guard guard ( this->mutex() );
+    if ( _renderer.valid() )
+      _renderer->nearFar ( n, f );
+  }
+  
+  nearDist = static_cast<float> ( n );
+  farDist  = static_cast<float> ( f );
 }
 
 

@@ -96,7 +96,7 @@ public:
 
   // Get the clipping plane distances.
   void                  nearFar ( double &n, double &f ) const;
-
+  
   // Set/get the number of rendering passes. Unavailable numbers have no effect.
   void                  numRenderPasses ( unsigned int );
   unsigned int          numRenderPasses() const { return _numPasses; }
@@ -153,22 +153,11 @@ protected:
 
   virtual ~Renderer();
 
-  osg::Image*           _accumulate ( ImageList& images, unsigned int width, unsigned int height, GLenum pixelFormat, GLenum dataType ) const;
-
   void                  _cullAndDraw();
 
   void                  _multiPassRender();
 
-  // Capture the screen.
-  void                  _screenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height );
-
   void                  _singlePassRender();
-
-  // Use a FBO to capture the screen.
-  void                  _fboScreenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height );
-
-  // Use tiles to capture the screen.
-  void                  _tiledScreenCapture ( osg::Image& image, const osg::Matrix& projection, unsigned int width, unsigned int height );
 
 private:
 

@@ -30,9 +30,13 @@ public:
   // Typedefs.
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
+  typedef Node::Path Path;
 
   // Accept the visitor.
   void                            accept ( Visitor * );
+
+  // Convert the given string to a legal tag.
+  std::string                     convertToTag ( const std::string & ) const;
 
   // Clear the database.
   void                            clear();
@@ -46,8 +50,9 @@ public:
   // Get the mutex.
   Mutex &                         mutex() const;
 
-  // Operator to return the node with the name. Creates child nodes as needed.
+  // Operator to return the child with the name or path. Creates child nodes as needed.
   Node &                          operator [] ( const std::string &name );
+  Node &                          operator [] ( const Path &path );
 
   // Get the root.
   Node *                          root();

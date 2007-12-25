@@ -151,6 +151,20 @@ Node &Database::operator [] ( const std::string &name )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Operator to return the child with the path. Creates child nodes as needed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Node &Database::operator [] ( const Node::Path &path )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return (*_root)[path];
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the root.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -174,4 +188,27 @@ const Usul::Registry::Node *Database::root() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _root.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the given string to a legal tag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Database::convertToTag ( const std::string &s ) const
+{
+  USUL_TRACE_SCOPE;
+  // Re-entrant
+
+  std::string tag ( s );
+
+  std::replace ( tag.begin(), tag.end(), ' ',  '_' );
+  std::replace ( tag.begin(), tag.end(), '/',  '_' );
+  std::replace ( tag.begin(), tag.end(), '\\', '_' );
+  std::replace ( tag.begin(), tag.end(), ':',  '_' );
+  std::replace ( tag.begin(), tag.end(), '.',  '_' );
+
+  return tag;
 }

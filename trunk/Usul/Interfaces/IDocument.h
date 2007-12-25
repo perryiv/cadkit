@@ -93,6 +93,9 @@ struct IDocument : public Usul::Interfaces::IUnknown
   /// Always prompts for new file name.
   virtual void                          saveAs ( Unknown *caller = 0x0, Unknown *progress = 0x0, std::ostream *out = 0x0 ) = 0;
 
+  // Returns appropriate tag name for registry.
+  virtual std::string                   registryTagName() const = 0;
+
   virtual void                          removeWindow   ( Usul::Interfaces::IWindow *window ) = 0;
   virtual void                          removeView     ( Usul::Interfaces::IView *view   ) = 0;
 

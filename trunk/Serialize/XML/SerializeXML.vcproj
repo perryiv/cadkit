@@ -274,6 +274,10 @@
 					RelativePath=".\SmartPointerMember.h"
 					>
 				</File>
+				<File
+					RelativePath=".\ValueMapMember.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Functions"

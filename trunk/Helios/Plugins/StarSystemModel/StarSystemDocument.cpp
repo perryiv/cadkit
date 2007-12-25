@@ -16,11 +16,13 @@
 #include "StarSystemDocument.h"
 
 #include "StarSystem/BuildScene.h"
+#include "StarSystem/ElevationLayerDem.h"
 #include "StarSystem/Extents.h"
 #include "StarSystem/LandModelEllipsoid.h"
 #include "StarSystem/RasterLayerOssim.h"
 #include "StarSystem/RasterLayerWms.h"
-#include "StarSystem/ElevationLayerDem.h"
+#include "StarSystem/Scale.h"
+#include "StarSystem/SetJobManager.h"
 
 #include "Serialize/XML/Serialize.h"
 #include "Serialize/XML/Deserialize.h"
@@ -53,6 +55,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemDocument, StarSystemDocument::BaseCl
 StarSystemDocument::StarSystemDocument() : BaseClass ( "StarSystem Document" ),
   _system ( 0x0 ),
   _manager ( 0x0 ),
+  _scale ( 1 ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   USUL_TRACE_SCOPE;
@@ -211,17 +214,23 @@ void StarSystemDocument::read ( const std::string &name, Unknown *caller, Unknow
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  // Make sure we have a system.
-  this->_makeSystem();
-
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( name ) ) );
 
   if ( "ball" == ext )
   {
+    // Deserialize the xml tree.
     XmlTree::XercesLife life;
     XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
     document->load ( name );
     this->deserialize ( *document );
+
+    // If we have a system...
+    if ( true == _system.valid() )
+    {
+      // Set the job manager.
+      StarSystem::SetJobManager::RefPtr setter ( new StarSystem::SetJobManager ( this->_getJobManager() ) );
+      _system->accept ( *setter );
+    }
   }
 
   else if ( "tiff" == ext || "tif" == ext || "jpg" == ext )
@@ -460,11 +469,11 @@ void StarSystemDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Make the system.
+//  Get the job manager. Make it if we have to.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void StarSystemDocument::_makeSystem()
+Usul::Jobs::Manager *StarSystemDocument::_getJobManager()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -475,6 +484,21 @@ void StarSystemDocument::_makeSystem()
     _manager = new Usul::Jobs::Manager ( 5, true );
   }
 
+  return _manager;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make the system.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StarSystemDocument::_makeSystem()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
   // Only make it once.
   if ( true == _system.valid() )
     return;
@@ -484,7 +508,7 @@ void StarSystemDocument::_makeSystem()
   typedef Body::Extents Extents;
 
   // Make the system.
-  _system = new StarSystem::System ( _manager );
+  _system = new StarSystem::System ( this->_getJobManager() );
 
   // Make the land model.
   typedef StarSystem::LandModelEllipsoid Land;
@@ -498,7 +522,7 @@ void StarSystemDocument::_makeSystem()
   Body::MeshSize meshSize ( 17, 17 );
 
   // Add the body.
-  Body::RefPtr body ( new Body ( land, _manager, meshSize, splitDistance ) );
+  Body::RefPtr body ( new Body ( land, this->_getJobManager(), meshSize, splitDistance ) );
   body->useSkirts ( true );
   _system->body ( body.get() );
 
@@ -528,6 +552,10 @@ void StarSystemDocument::_makeSystem()
   }
 
 #endif
+
+  StarSystem::Scale::RefPtr scale ( new StarSystem::Scale ( 1.0 / osg::WGS_84_RADIUS_EQUATOR ) );
+  _system->accept ( *scale );
+}
 
 #if 0
 
@@ -581,7 +609,6 @@ void StarSystemDocument::_makeSystem()
   }
 
 #endif
-}
 
 #if 0
 

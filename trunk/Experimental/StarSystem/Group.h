@@ -66,7 +66,7 @@ private:
 
   Nodes _nodes;
 
-  SERIALIZE_XML_DEFINE_MEMBERS ( star_system_satellites );
+  SERIALIZE_XML_DEFINE_MEMBERS ( Group );
 };
 
 

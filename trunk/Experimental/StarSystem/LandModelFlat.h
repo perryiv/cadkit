@@ -64,8 +64,9 @@ private:
 
   ossimProjection *_projection;
 
-  SERIALIZE_XML_CLASS_NAME ( star_system_land_model_flat );
-  SERIALIZE_XML_ADD_MEMBER_FUNCTION;};
+  SERIALIZE_XML_CLASS_NAME ( LandModelFlat );
+  SERIALIZE_XML_ADD_MEMBER_FUNCTION;
+};
 
 
 }

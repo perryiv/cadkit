@@ -10,6 +10,7 @@
 
 #include "StarSystem/RasterGroup.h"
 
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Make.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Threads/Safe.h"
@@ -21,6 +22,9 @@
 #include "osgDB/WriteFile"
 
 using namespace StarSystem;
+
+USUL_FACTORY_REGISTER_CREATOR ( RasterGroup );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -35,6 +39,10 @@ RasterGroup::RasterGroup() :
   _useCache ( false )
 {
   USUL_TRACE_SCOPE;
+
+  // Serialization glue.
+  this->_addMember ( "layers", _layers );
+  this->_addMember ( "use_in_memory_image_cache", _useCache );
 }
 
 
@@ -217,7 +225,7 @@ void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image
     // Is the color in the alpha table?
     if ( false == alphaMapEmpty )
     {
-      iter = alphas.find ( Color ( RedGreen ( r, g ), b ) );
+      iter = alphas.find ( Color ( r, g, b ) );
       hasExtraAlpha = ( alphas.end() != iter );
     }
 

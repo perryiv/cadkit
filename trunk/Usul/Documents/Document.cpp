@@ -28,6 +28,7 @@
 #include "Usul/Interfaces/GUI/IQuestion.h"
 #include "Usul/Interfaces/GUI/IUpdateGUI.h"
 #include "Usul/Interfaces/IHandleMessage.h"
+#include "Usul/Registry/Database.h"
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Resources/EventQueue.h"
 #include "Usul/Resources/StatusBar.h"
@@ -962,4 +963,22 @@ void Document::setStatsDisplay ( bool b )
       draw->setStatsDisplay ( b );
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Returns appropriate tag name for registry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Document::registryTagName() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  const std::string name ( ( true == this->fileValid() ) ? this->fileName() : this->typeName() );
+  const std::string tag ( Usul::Registry::Database::instance().convertToTag ( name ) );
+
+  return tag;
 }

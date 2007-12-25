@@ -10,6 +10,7 @@
 
 #include "StarSystem/LandModelFlat.h"
 
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Trace/Trace.h"
 
 #include "ossim/base/ossimGpt.h"
@@ -21,6 +22,8 @@
 #include "ossim/projection/ossimProjection.h"
 
 using namespace StarSystem;
+
+USUL_FACTORY_REGISTER_CREATOR ( LandModelFlat );
 
 
 ///////////////////////////////////////////////////////////////////////////////

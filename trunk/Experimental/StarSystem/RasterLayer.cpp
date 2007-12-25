@@ -15,6 +15,15 @@
 using namespace StarSystem;
 
 
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Declare serialization wrappers.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( RasterLayer::Extents );
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -24,8 +33,12 @@ using namespace StarSystem;
 RasterLayer::RasterLayer() : 
   BaseClass(),
   _extents(),
-  _alphas()
+  _alphas ( LessColor ( EqualPredicate() ) ),
+  SERIALIZE_XML_INITIALIZER_LIST
 {
+  // Serialization glue.
+  this->_addMember ( "extents", _extents );
+  //this->_addMember ( "alphas", _alphas );
 }
 
 
@@ -75,7 +88,7 @@ RasterLayer::Extents RasterLayer::extents() const
 void RasterLayer::alpha ( unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha )
 {
   Guard guard ( this );
-  Color color ( RedGreen ( red, green ), blue );
+  Color color ( red, green, blue );
   _alphas[color] = alpha;
 }
 

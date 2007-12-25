@@ -48,6 +48,8 @@ private:
   bool _loaded;
   ossimDemGrid *_grid;
   ossimProjection *_projection;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( ElevationLayerDem );
 };
 
 

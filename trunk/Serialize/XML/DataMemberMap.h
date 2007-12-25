@@ -17,11 +17,12 @@
 #ifndef _SERIALIZE_XML_DATA_MEMBER_MAP_CLASS_
 #define _SERIALIZE_XML_DATA_MEMBER_MAP_CLASS_
 
+#include "Serialize/XML/PointerMapMember.h"
 #include "Serialize/XML/QueryPointerMember.h"
+#include "Serialize/XML/SequenceMember.h"
 #include "Serialize/XML/SimpleDataMember.h"
 #include "Serialize/XML/SmartPointerMember.h"
-#include "Serialize/XML/PointerMapMember.h"
-#include "Serialize/XML/SequenceMember.h"
+#include "Serialize/XML/ValueMapMember.h"
 
 #include "XmlTree/Node.h"
 
@@ -73,10 +74,16 @@ public:
     this->_addMember ( new Serialize::XML::SmartPointerMember<PointerType> ( name, value ) );
   }
 
-  template < class K, class V > void addMember ( const std::string &name, std::map<K,V> &value )
+  template < class K, class V, class C > void addMember ( const std::string &name, std::map<K,V,C> &value )
   {
-    typedef std::map<K,V> MapType;
+    typedef std::map<K,V,C> MapType;
     this->_addMember ( new Serialize::XML::PointerMapMember<MapType> ( name, value ) );
+  }
+
+  void addMember ( const std::string &name, std::map<std::string,std::string> &value )
+  {
+    typedef std::map<std::string,std::string> MapType;
+    this->_addMember ( new Serialize::XML::ValueMapMember<MapType> ( name, value ) );
   }
 
   template < class T > void addMember ( const std::string &name, std::vector<T> &value )

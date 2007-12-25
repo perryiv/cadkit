@@ -17,9 +17,13 @@
 #include "StarSystem/SplitCallbacks.h"
 #include "StarSystem/Tile.h"
 
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Trace/Trace.h"
 
 using namespace StarSystem::Callbacks;
+
+USUL_FACTORY_REGISTER_CREATOR ( PassThrough );
+USUL_FACTORY_REGISTER_CREATOR ( SplitToLevel );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -28,7 +32,8 @@ using namespace StarSystem::Callbacks;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SplitCallback::SplitCallback() : BaseClass()
+SplitCallback::SplitCallback() : BaseClass(),
+  SERIALIZE_XML_INITIALIZER_LIST
 {
   USUL_TRACE_SCOPE;
 }
@@ -92,6 +97,9 @@ SplitToLevel::SplitToLevel ( unsigned int maxLevel ) : BaseClass(),
   _maxLevel ( maxLevel )
 {
   USUL_TRACE_SCOPE;
+
+  // Serialization glue.
+  this->_addMember ( "max_level", _maxLevel );
 }
 
 

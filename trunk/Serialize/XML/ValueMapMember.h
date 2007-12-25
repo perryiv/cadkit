@@ -14,8 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _SERIALIZE_XML_STD_POINTER_MAP_DATA_MEMBER_CLASS_
-#define _SERIALIZE_XML_STD_POINTER_MAP_DATA_MEMBER_CLASS_
+#ifndef _SERIALIZE_XML_STD_VALUE_MAP_DATA_MEMBER_CLASS_
+#define _SERIALIZE_XML_STD_VALUE_MAP_DATA_MEMBER_CLASS_
 
 #include "Serialize/XML/MemberBase.h"
 
@@ -24,14 +24,14 @@ namespace Serialize {
 namespace XML {
 
 
-template < class T > class PointerMapMember : public MemberBase 
+template < class T > class ValueMapMember : public MemberBase 
 {
 public:
 
-  USUL_DECLARE_REF_POINTERS ( PointerMapMember );
+  USUL_DECLARE_REF_POINTERS ( ValueMapMember );
   typedef MemberBase BaseClass;
 
-  PointerMapMember ( const std::string &name, T &value ) : BaseClass ( name ),
+  ValueMapMember ( const std::string &name, T &value ) : BaseClass ( name ),
     _value ( value )
   {
   }
@@ -56,13 +56,10 @@ public:
         element->children().push_back ( key.get() );
       }
 
-      // Add value (the smart-pointer)
+      // Add value
       {
-        typedef Serialize::XML::TypeWrapper< typename T::mapped_type > TypeWrapper;
         XmlTree::Node::ValidRefPtr value ( new XmlTree::Node ( "value" ) );
-        TypeWrapper::addAtribute ( "TypeName", TypeWrapper::className ( i->second ), *value );
         element->children().push_back ( value.get() );
-        TypeWrapper::serialize ( i->second, *value );
       }
     }
   }
@@ -71,8 +68,6 @@ public:
   {
     typedef typename XmlTree::Node::Children::const_iterator Itr;
     typedef typename T::value_type ValueType;
-    typedef typename T::mapped_type PointerType;
-    typedef Serialize::XML::TypeWrapper< PointerType > TypeWrapper;
 
     if ( this->name() != node.name() )
       return;
@@ -91,27 +86,10 @@ public:
         XmlTree::Node::RefPtr elementValue ( element->children()[1].get() );
         if ( true == elementKey.valid() && true == elementValue.valid() )
         {
-          if ( elementKey->name() == "key" && elementValue->name() == "value" && elementValue->children().size() > 0 )
+          const std::string keyString ( elementKey->value() );
+          if ( false == keyString.empty() )
           {
-            const std::string keyString ( elementKey->value() );
-            if ( false == keyString.empty() )
-            {
-              std::string typeName ( "" );
-              TypeWrapper::getAttribute ( "TypeName", *elementValue, typeName );
-              PointerType object ( TypeWrapper::create ( typeName ) );
-              if ( true == TypeWrapper::isValid ( object ) )
-              {
-                // Ask object to populate itself.
-                TypeWrapper::deserialize ( *elementValue, object );
-
-                // Erase existing value so that insert statement always works.
-                _value.erase ( keyString );
-
-                // Use insert statement instead of [] operator because the 
-                // smart-pointer may be a ValidRefPtr.
-                _value.insert ( ValueType ( keyString, object ) );
-              }
-            }
+            _value[keyString] = elementValue->value();
           }
         }
       }
@@ -120,7 +98,7 @@ public:
 
 protected:
 
-  virtual ~PointerMapMember()
+  virtual ~ValueMapMember()
   {
   }
 
@@ -134,4 +112,4 @@ private:
 } // namespace XML
 
 
-#endif // _SERIALIZE_XML_STD_POINTER_MAP_DATA_MEMBER_CLASS_
+#endif // _SERIALIZE_XML_STD_VALUE_MAP_DATA_MEMBER_CLASS_

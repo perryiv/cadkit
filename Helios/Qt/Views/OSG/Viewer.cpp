@@ -147,6 +147,9 @@ Viewer::~Viewer()
 {
   USUL_TRACE_SCOPE;
 
+  // Save viewer's state first.
+  _viewer->stateSave();
+
   // Stop and delete the timer.
   if ( 0x0 != _timer )
   {
@@ -155,15 +158,13 @@ Viewer::~Viewer()
     _timer = 0x0;
   }
 
+  // Stop and delete the render-loop timer.
   if ( 0x0 != _timerRenderLoop )
   {
     _timerRenderLoop->stop();
     delete _timerRenderLoop;
     _timerRenderLoop = 0x0;
   }
-
-  // Save viewer's state.
-  _viewer->stateSave();
 
   // Clear the viewer.
   _viewer->clear();

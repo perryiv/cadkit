@@ -14,10 +14,15 @@
 #include "StarSystem/Export.h"
 #include "StarSystem/Extents.h"
 
+#include "Serialize/XML/Macros.h"
+
 #include "Usul/Base/Object.h"
+#include "Usul/Math/Vector3.h"
+#include "Usul/Predicates/LessVector.h"
 
 #include "osg/Vec2d"
 
+#include <functional>
 #include <map>
 
 namespace osg { class Image; class Vec3d; }
@@ -33,9 +38,10 @@ public:
 
   typedef Usul::Base::Object BaseClass;
   typedef StarSystem::Extents < osg::Vec2d > Extents;
-  typedef std::pair < unsigned char, unsigned char > RedGreen;
-  typedef std::pair < RedGreen, unsigned char > Color;
-  typedef std::map < Color, unsigned char > Alphas;
+  typedef Usul::Math::Vec3uc Color;
+  typedef std::equal_to < unsigned char > EqualPredicate;
+  typedef Usul::Predicates::LessVector < EqualPredicate, 3 > LessColor;
+  typedef std::map < Usul::Math::Vec3uc, unsigned char, LessColor > Alphas;
 
   USUL_DECLARE_REF_POINTERS ( RasterLayer );
 
@@ -58,12 +64,15 @@ protected:
 
   virtual ~RasterLayer();
 
-  virtual osg::Image *            _createBlankImage ( unsigned int width, unsigned int height ) const;
+  virtual osg::Image *  _createBlankImage ( unsigned int width, unsigned int height ) const;
 
 private:
 
   Extents _extents;
   Alphas _alphas;
+
+  SERIALIZE_XML_DEFINE_MAP;
+  SERIALIZE_XML_DEFINE_MEMBERS ( RasterLayer );
 };
 
 

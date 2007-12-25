@@ -94,18 +94,8 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   // Turn off back-face culling.
   this->getOrCreateStateSet()->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF );
 
-  // Create as wire-frame. Turns solid when the texture is loaded.
-  //OsgTools::State::StateSet::setPolygonsLines ( this, true );
-
   // For some reason this is now needed or else we cannot see the images.
   OsgTools::State::StateSet::setMaterialDefault ( this );
-
-  // Start the request to pull in the texture.
-  if ( 0x0 == image )
-    this->_launchImageRequest();
-  
-  //if ( 0x0 == elevation )
-    //this->_launchElevationRequest();
 }
 
 
@@ -304,6 +294,12 @@ void Tile::traverse ( osg::NodeVisitor &nv )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
+  // Launch the image request if one is needed.
+  if ( ( true == this->textureDirty() ) && ( false == _jobId.first ) )
+  {
+    this->_launchImageRequest();
+  }
+
   // If it's a cull visitor...
   if ( osg::NodeVisitor::CULL_VISITOR == nv.getVisitorType() )
   {
@@ -315,9 +311,6 @@ void Tile::traverse ( osg::NodeVisitor &nv )
       {
         this->textureData ( texture.get(), Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
         _jobId.first = false;
-        
-        // Solid ground.
-        //OsgTools::State::StateSet::setPolygonsFilled ( this, true );
       }
     }
     
@@ -366,7 +359,8 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   if ( ( 0x0 == _mesh ) || 
        ( _mesh->rows() < 2 ) || 
        ( _mesh->columns() < 2 ) ||
-       ( 0x0 == _body ) )
+       ( 0x0 == _body ) ||
+       ( 0x0 == _body->jobManager() ) )
   {
     return;
   }
@@ -408,8 +402,6 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 
   if ( low )
   {
-    //this->getChild( 0 )->setNodeMask( 0xff );
-
     this->updateTexture();
 
     // Remove high level of detail.
@@ -438,8 +430,6 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 
   else
   {
-    //this->getChild( 0 )->setNodeMask( 0x0 );
-
     // Add high level if necessary.
     if ( 1 == numChildren )
     {
@@ -452,7 +442,9 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
       {
         // Cancel what we may have running.
         if ( _tileJob.valid() )
+        {
           low = true;
+        }
         else
         {
           _tileJob = new StarSystem::BuildTiles ( this );
@@ -682,15 +674,13 @@ void Tile::dirty ( bool state, unsigned int flags, bool dirtyChildren, const Ext
       if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->dirty ( state, flags, dirtyChildren, extents );
     }
 
-    if ( this->textureDirty() )
+#if 0
+
+    if ( this->verticesDirty() )
     {
-      // Start the request to pull in texture.
-      this->_launchImageRequest();
+      this->_launchElevationRequest();
     }
 
-#if 0
-    if ( this->verticesDirty() )
-      this->_launchElevationRequest();
 #endif
   }
 }
@@ -959,6 +949,27 @@ void Tile::_launchImageRequest()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Load the elevation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_launchElevationRequest()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Start the request to pull in texture.
+  if ( ( 0x0 != _body ) && ( 0x0 != _body->jobManager() ) )
+  {
+    MeshSize size ( this->meshSize() );
+    _elevationJob = new CutImageJob ( this->extents(), size[0], size[1], this->level(), _body->elevationData() );
+    _body->jobManager()->addJob ( _elevationJob.get() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the image.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1045,27 +1056,6 @@ void Tile::textureData ( osg::Texture2D* texture, const Usul::Math::Vec4d& coord
 
   // Set our image.
   this->image ( texture->getImage() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Load the elevation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Tile::_launchElevationRequest()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-
-  // Start the request to pull in texture.
-  if ( 0x0 != _body )
-  {
-    MeshSize size ( this->meshSize() );
-    _elevationJob = new CutImageJob ( this->extents(), size[0], size[1], this->level(), _body->elevationData() );
-    _body->jobManager()->addJob ( _elevationJob.get() );
-  }
 }
 
 

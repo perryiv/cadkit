@@ -11,6 +11,7 @@
 #include "StarSystem/RasterLayerOssim.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
@@ -28,6 +29,9 @@
 #include "ossim/projection/ossimProjectionFactoryRegistry.h"
 
 using namespace StarSystem;
+
+USUL_FACTORY_REGISTER_CREATOR ( RasterLayerOssim );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

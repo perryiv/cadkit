@@ -18,6 +18,7 @@
 #include "StarSystem/Visitor.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Trace/Trace.h"
 
@@ -27,6 +28,7 @@
 
 using namespace StarSystem;
 
+USUL_FACTORY_REGISTER_CREATOR ( Group );
 STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( Group );
 
 

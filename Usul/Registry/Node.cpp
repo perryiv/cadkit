@@ -109,11 +109,11 @@ void Node::clear()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Operator to return the child with the name. Creates child nodes as needed.
+//  Return the child with the name. Creates child nodes as needed.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Node &Node::operator [] ( const std::string &name )
+Node::RefPtr Node::_getNode ( const std::string &name )
 {
   Kids::iterator i ( _kids.find ( name ) );
   Node::RefPtr child ( ( _kids.end() == i ) ? 0x0 : i->second );
@@ -123,6 +123,39 @@ Node &Node::operator [] ( const std::string &name )
     child->name ( name );
     _kids.insert ( Kids::value_type ( name, child ) );
   }
+  return child;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Operator to return the child with the name. Creates child nodes as needed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Node &Node::operator [] ( const std::string &name )
+{
+  Kids::iterator i ( _kids.find ( name ) );
+  Node::RefPtr child ( this->_getNode ( name ) );
+  return *child;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Operator to return the child with the path. Creates child nodes as needed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Node &Node::operator [] ( const Node::Path &path )
+{
+  Node::RefPtr child ( this );
+
+  for ( Node::Path::const_iterator i = path.begin(); i != path.end(); ++i )
+  {
+    child = child->_getNode ( *i );
+  }
+
   return *child;
 }
 

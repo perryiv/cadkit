@@ -36,7 +36,7 @@ public:
 
   USUL_DECLARE_REF_POINTERS ( RasterLayerWms );
 
-  RasterLayerWms ( const Extents &maxExtents, const std::string &url, const Options &options );
+  RasterLayerWms ( const Extents &maxExtents = Extents ( -180, -90, 180, 90 ), const std::string &url = std::string(), const Options &options = Options() );
 
   /// Get the texture
   virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * );
@@ -56,6 +56,8 @@ private:
   std::string _url;
   Options _options;
   std::string _dir;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( RasterLayerWms );
 };
 
 

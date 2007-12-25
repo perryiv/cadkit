@@ -20,7 +20,9 @@
 #include "StarSystem/Node.h"
 #include "StarSystem/Extents.h"
 #include "StarSystem/CutImageJob.h"
+#include "StarSystem/ElevationGroup.h"
 #include "StarSystem/LandModel.h"
+#include "StarSystem/RasterGroup.h"
 #include "StarSystem/SplitCallbacks.h"
 
 #include "Usul/Math/Vector2.h"
@@ -32,7 +34,7 @@
 #include "osg/Vec2d"
 #include "osg/MatrixTransform"
 
-namespace StarSystem { class Tile; class RasterLayer; class RasterGroup; }
+namespace StarSystem { class Tile; }
 namespace osg { class Vec3f; class Texture; }
 
 
@@ -70,13 +72,17 @@ public:
   void                      center ( const Vec3d & );
   Vec3d                     center() const;
 
+  // Deserialize this instance.
+  virtual void              deserialize ( const XmlTree::Node &node );
+
   // Get the elevation data.
-  RasterLayer*              elevationData();
+  RasterLayer::RefPtr       elevationData();
 
   // Append elevation data.
   void                      elevationAppend ( RasterLayer * );
 
-  // Get the thread pool for this body.
+  // Set/get the job manager for this body.
+  void                      jobManager ( Usul::Jobs::Manager * );
   Usul::Jobs::Manager *     jobManager();
 
   // Convert lat, lon, height to x,y,z.
@@ -98,11 +104,17 @@ public:
   void                      rasterAppend ( RasterLayer * );
   
   // Get the raster data.
-  RasterLayer*              rasterData();
+  RasterLayer::RefPtr       rasterData();
+
+  // Get the scale for the system.
+  double                    scale() const;
 
   // Get the scene.
   const osg::Node *         scene() const;
   osg::Node *               scene();
+
+  // Serialize this instance.
+  virtual void              serialize ( XmlTree::Node &parent ) const;
 
   // See if the tile should split.
   bool                      shouldSplit ( bool suggestion, Tile * );
@@ -141,8 +153,8 @@ private:
 
   MatrixTransformPtr _transform;
   LandModel::RefPtr _landModel;
-  RasterGroup *_rasters;
-  RasterGroup *_elevation;
+  RasterGroup::RefPtr _rasters;
+  ElevationGroup::RefPtr _elevation;
   Usul::Jobs::Manager *_manager;
   TextureJobs _textureJobs;
   bool _frame;
@@ -154,8 +166,10 @@ private:
   MeshSize _meshSize;
   bool _useSkirts;
   SplitCallback::RefPtr _splitCallback;
+  double _scale;
 
-  SERIALIZE_XML_DEFINE_MEMBERS ( star_system_body );
+  SERIALIZE_XML_CLASS_NAME ( Body );
+  SERIALIZE_XML_ADD_MEMBER_FUNCTION;
 };
 
 

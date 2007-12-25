@@ -83,7 +83,7 @@ private:
   Group::RefPtr _satellites;
   Usul::Jobs::Manager *_manager;
 
-  SERIALIZE_XML_DEFINE_MEMBERS ( star_system_system );
+  SERIALIZE_XML_DEFINE_MEMBERS ( System );
 };
 
 

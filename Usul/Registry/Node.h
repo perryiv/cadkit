@@ -20,8 +20,9 @@
 #include "Usul/Registry/Convert.h"
 #include "Usul/Trace/Trace.h"
 
-#include <string>
 #include <map>
+#include <string>
+#include <vector>
 
 namespace Usul { namespace Registry { class Visitor; } }
 
@@ -38,6 +39,7 @@ public:
   typedef Usul::Base::Object BaseClass;
   typedef BaseClass::Mutex Mutex;
   typedef BaseClass::Guard Guard;
+  typedef std::vector<std::string> Path;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Node );
@@ -71,8 +73,9 @@ public:
   std::string                     get ( const std::string &defaultValue ) const;
   template < class T > T          get ( const T &defaultValue ) const;
 
-  // Operator to return the child with the name. Creates child nodes as needed.
+  // Operator to return the child with the name or path. Creates child nodes as needed.
   Node &                          operator [] ( const std::string &name );
+  Node &                          operator [] ( const Path &path );
 
   // Set the value.
   template < class T > Node &     operator = ( const T &t );
@@ -85,6 +88,8 @@ protected:
 
   // Use reference counting.
   virtual ~Node();
+
+  Node::RefPtr                    _getNode ( const std::string & );
 
 private:
 

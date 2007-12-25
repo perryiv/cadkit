@@ -10,12 +10,16 @@
 
 #include "StarSystem/ElevationGroup.h"
 
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Trace/Trace.h"
 
 #include "osg/ref_ptr"
 #include "osg/Image"
 
 using namespace StarSystem;
+
+USUL_FACTORY_REGISTER_CREATOR ( ElevationGroup );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

@@ -62,7 +62,7 @@ protected:
   }
 
   SERIALIZE_XML_DEFINE_MAP;
-  SERIALIZE_XML_DEFINE_MEMBERS ( star_system_land_model );
+  SERIALIZE_XML_DEFINE_MEMBERS ( LandModel );
 };
 
 

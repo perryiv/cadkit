@@ -20,10 +20,10 @@
 #include "StarSystem/Export.h"
 #include "StarSystem/Macros.h"
 
+#include "Serialize/XML/Macros.h"
+
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IUnknown.h"
-
-#include "Serialize/XML/Macros.h"
 
 #include <map>
 #include <string>
@@ -67,7 +67,7 @@ private:
   void                      _destroy();
 
   SERIALIZE_XML_DEFINE_MAP;
-  SERIALIZE_XML_DEFINE_MEMBERS ( star_system_node );
+  SERIALIZE_XML_DEFINE_MEMBERS ( Node );
 };
 
 

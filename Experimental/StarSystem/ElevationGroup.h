@@ -34,6 +34,8 @@ protected:
 
   virtual osg::Image *            _createBlankImage ( unsigned int width, unsigned int height ) const;
   virtual void                    _compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, Usul::Jobs::Job * );
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( ElevationGroup );
 };
 
 }

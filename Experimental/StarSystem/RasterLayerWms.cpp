@@ -24,6 +24,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Make.h"
 #include "Usul/File/Stats.h"
 #include "Usul/File/Temp.h"
@@ -48,6 +49,8 @@
 
 using namespace StarSystem;
 
+USUL_FACTORY_REGISTER_CREATOR ( RasterLayerWms );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -61,7 +64,12 @@ RasterLayerWms::RasterLayerWms ( const Extents &maxExtents, const std::string &u
   _dir     ( Usul::File::Temp::directory ( false ) )
 {
   USUL_TRACE_SCOPE;
+
   this->extents ( maxExtents );
+
+  // Serialization glue.
+  this->_addMember ( "url", _url );
+  this->_addMember ( "options", _options );
 }
 
 
@@ -160,7 +168,7 @@ osg::Image* RasterLayerWms::texture ( const Extents& extents, unsigned int width
   Usul::Network::WMS wms ( url, file, options.begin(), options.end() );
   file = Usul::Strings::format ( file, '.', wms.extension() );
 
-  // Make this a runtime switch.
+  // Make this a runtime switch?
   //Usul::Scope::RemoveFile remove ( file, false );
 
   // Pull it down if it does not exist...
@@ -184,9 +192,12 @@ osg::Image* RasterLayerWms::texture ( const Extents& extents, unsigned int width
   {
     Usul::File::remove ( file, false );
   }
+
   // Set the file name.
   else
+  {
     image->setFileName ( file );
+  }
 
   // Return image, which may be null.
   return image.release();

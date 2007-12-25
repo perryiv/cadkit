@@ -358,6 +358,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Scale.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Scale.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SetJobManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SetJobManager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SplitCallbacks.cpp"
 				>
 			</File>

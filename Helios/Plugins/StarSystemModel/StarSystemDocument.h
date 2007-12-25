@@ -105,10 +105,13 @@ private:
 
   void                        _destroy();
 
+  Usul::Jobs::Manager *       _getJobManager();
+
   void                        _makeSystem();
 
   StarSystem::System::RefPtr _system;
   Usul::Jobs::Manager *_manager;
+  double _scale;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS ( star_system_document );

@@ -4893,27 +4893,6 @@ const Usul::Interfaces::IUnknown * Viewer::caller() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Helper function to prepare document tag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper
-{
-  std::string documentTagName ( const Usul::Interfaces::IDocument *doc )
-  {
-    std::string name ( ( 0x0 != doc ) ? ( ( true == doc->fileValid() ) ? doc->fileName() : doc->typeName() ) : "" );
-    std::replace ( name.begin(), name.end(), ' ',  '_' );
-    std::replace ( name.begin(), name.end(), '/',  '_' );
-    std::replace ( name.begin(), name.end(), '\\', '_' );
-    std::replace ( name.begin(), name.end(), ':',  '_' );
-    std::replace ( name.begin(), name.end(), '.',  '_' );
-    return name;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Save the state.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -4924,7 +4903,7 @@ void Viewer::stateSave() const
   Guard guard ( this );
 
   // Get string key for document.
-  std::string doc ( Helper::documentTagName ( _document.get() ) );
+  std::string doc ( ( ( true == _document.valid() ) ? _document->registryTagName() : "" ) );
   if ( true == doc.empty() )
     return;
 
@@ -4966,7 +4945,7 @@ void Viewer::stateLoad()
   Guard guard ( this );
 
   // Get string key for document.
-  const std::string doc ( Helper::documentTagName ( _document.get() ) );
+  std::string doc ( ( ( true == _document.valid() ) ? _document->registryTagName() : "" ) );
   if ( true == doc.empty() )
     return;
 

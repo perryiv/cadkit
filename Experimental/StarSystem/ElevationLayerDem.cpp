@@ -10,6 +10,7 @@
 
 #include "StarSystem/ElevationLayerDem.h"
 
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
 #include "Usul/Math/Interpolate.h"
 #include "Usul/Predicates/Tolerance.h"
@@ -29,6 +30,9 @@
 #include <fstream>
 
 using namespace StarSystem;
+
+USUL_FACTORY_REGISTER_CREATOR ( ElevationLayerDem );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

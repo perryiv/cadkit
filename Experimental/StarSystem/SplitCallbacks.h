@@ -19,6 +19,8 @@
 
 #include "StarSystem/Export.h"
 
+#include "Serialize/XML/Macros.h"
+
 #include "Usul/Base/Object.h"
 
 namespace StarSystem { class Tile; }
@@ -42,13 +44,13 @@ public:
 
   USUL_DECLARE_REF_POINTERS ( SplitCallback );
 
-  // Constructor
-  SplitCallback();
-
   // Return true if the tile should split.
   virtual bool shouldSplit ( bool suggestion, Tile * ) = 0;
 
 protected:
+
+  // Constructor
+  SplitCallback();
 
   // Use reference counting.
   virtual ~SplitCallback();
@@ -58,6 +60,9 @@ private:
   // No copying or assignment.
   SplitCallback ( const SplitCallback & );
   SplitCallback &operator = ( const SplitCallback & );
+
+  SERIALIZE_XML_DEFINE_MAP;
+  SERIALIZE_XML_DEFINE_MEMBERS ( SplitCallback );
 };
 
 
@@ -85,6 +90,8 @@ protected:
 
   // Use reference counting.
   virtual ~PassThrough();
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( PassThrough );
 };
 
 
@@ -103,7 +110,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( SplitToLevel );
 
   // Constructor
-  SplitToLevel ( unsigned int maxLevel );
+  SplitToLevel ( unsigned int maxLevel = 2 );
 
   // Return true if the tile should split.
   virtual bool shouldSplit ( bool suggestion, Tile * );
@@ -116,6 +123,8 @@ protected:
 private:
 
   unsigned int _maxLevel;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( SplitToLevel );
 };
 
 

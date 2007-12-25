@@ -33,6 +33,7 @@ namespace Usul
       const std::string FILE_DIALOG_OPEN          ( "file_dialog_open" );
       const std::string FILE_DIALOG_SAVE          ( "file_dialog_save" );
       const std::string VIEWER_SETTINGS           ( "viewer_settings" );
+      const std::string DOCUMENT_SETTINGS         ( "document_settings" );
       const std::string PREFERENCES               ( "preferences" );
       const std::string IMAGE_EXPORT_SIZE         ( "image_export_size" );
       const std::string PATH_ANIMATION            ( "path_animation" );

@@ -63,6 +63,8 @@ private:
   Layers _layers;
   ImageCache _cache;
   bool _useCache;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( RasterGroup );
 };
 
 }

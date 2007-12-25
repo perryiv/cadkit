@@ -72,7 +72,7 @@ private:
 
   ossimEllipsoid *_ellipsoid;
 
-  SERIALIZE_XML_CLASS_NAME ( star_system_land_model_ellipsoid );
+  SERIALIZE_XML_CLASS_NAME ( LandModelEllipsoid );
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;
 };
 

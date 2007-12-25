@@ -13,6 +13,8 @@
 
 #include "Usul/Math/MinMax.h"
 
+#include <stdexcept>
+
 
 namespace StarSystem {
 
@@ -35,21 +37,25 @@ public:
   /// Assignment.
   Extents& operator = ( const Extents& rhs );
 
-  /// Get the min.
-  const Vertex &       minimum() const;
-  ValueType            minLon() const;
-  ValueType            minLat() const;
-
-  /// Get the max.
-  const Vertex &       maximum() const;
-  ValueType            maxLon() const;
-  ValueType            maxLat() const;
-
   /// Expand by the extents.
-  void                 expand ( const Extents& extents );
+  void                  expand ( const Extents& extents );
 
   /// Does the extent intersect this extent.
-  bool                 intersects ( const Extents& extents ) const;
+  bool                  intersects ( const Extents& extents ) const;
+
+  /// Get the min.
+  const Vertex &        minimum() const;
+  ValueType             minLon() const;
+  ValueType             minLat() const;
+
+  /// Get the max.
+  const Vertex &        maximum() const;
+  ValueType             maxLon() const;
+  ValueType             maxLat() const;
+
+  /// Bracket operator, largely for serialization.
+  ValueType             operator [] ( unsigned int ) const;
+  ValueType &           operator [] ( unsigned int );
 
 private:
 
@@ -213,6 +219,38 @@ template < class VertexType > inline typename ThisClass::ValueType ThisClass::mi
 template < class VertexType > inline typename ThisClass::ValueType ThisClass::maxLon() const
 {
   return _max[0];
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Bracket operator to help with serialization.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class VertexType > inline typename ThisClass::ValueType ThisClass::operator [] ( unsigned int i ) const
+{
+  if ( i > 3 )
+  {
+    throw std::runtime_error ( "Error 2037139798: Index out of range" );
+  }
+  return ( ( i < 2 ) ? _min[i] : _max[i-2] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Bracket operator to help with serialization.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class VertexType > inline typename ThisClass::ValueType &ThisClass::operator [] ( unsigned int i )
+{
+  if ( i > 3 )
+  {
+    throw std::runtime_error ( "Error 8676398430: Index out of range" );
+  }
+  return ( ( i < 2 ) ? _min[i] : _max[i-2] );
 }
 
 

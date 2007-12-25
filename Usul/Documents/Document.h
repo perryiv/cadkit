@@ -186,6 +186,9 @@ public:
   /// Read the file and add it to existing document's data.
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 ) = 0;
 
+  // Returns appropriate tag name for registry.
+  virtual std::string         registryTagName() const;
+
   /// Remove a window from the proper set.
   virtual void                removeWindow   ( Window *window );
   virtual void                removeView     ( View   *view   );

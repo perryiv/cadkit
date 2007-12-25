@@ -51,6 +51,8 @@ private:
   ossimViewInterface *_viewInterface;
 
   ossimEquDistCylProjection *_projection;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( RasterLayerOssim );
 };
 
 

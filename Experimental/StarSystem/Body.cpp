@@ -18,17 +18,16 @@
 #include "StarSystem/DirtyTiles.h"
 #include "StarSystem/Tile.h"
 #include "StarSystem/Visitor.h"
-#include "StarSystem/RasterGroup.h"
-#include "StarSystem/ElevationGroup.h"
+
+#include "OsgTools/Group.h"
+#include "OsgTools/Visitor.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
-
-#include "OsgTools/Group.h"
-#include "OsgTools/Visitor.h"
 
 #include "osg/MatrixTransform"
 
@@ -37,6 +36,7 @@
 
 using namespace StarSystem;
 
+USUL_FACTORY_REGISTER_CREATOR ( Body );
 STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( Body );
 
 
@@ -91,23 +91,24 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _splitDistance ( splitDistance ),
   _meshSize ( ms ),
   _useSkirts ( true ),
-  _splitCallback ( new StarSystem::Callbacks::PassThrough )
+  _splitCallback ( new StarSystem::Callbacks::PassThrough ),
+  _scale ( 1 )
 {
   USUL_TRACE_SCOPE;
-
-  // Not using smart pointers.
-  _rasters->ref();
-  _elevation->ref();
 
   // Serialization setup.
   this->_addMember ( "transformation", _transform );
   this->_addMember ( "land_model", _landModel );
+  this->_addMember ( "raster_group", _rasters );
+  this->_addMember ( "elevation_group", _elevation );
   this->_addMember ( "max_textures_per_frame", _maxTexturesPerFrame );
   this->_addMember ( "max_level", _maxLevel );
   this->_addMember ( "cache_tiles", _cacheTiles );
   this->_addMember ( "split_distance", _splitDistance );
   this->_addMember ( "mesh_size", _meshSize );
   this->_addMember ( "use_skirts", _useSkirts );
+  this->_addMember ( "split_callback", _splitCallback );
+  this->_addMember ( "scale", _scale );
 }
 
 
@@ -135,9 +136,8 @@ void Body::_destroy()
   USUL_TRACE_SCOPE;
 
   _transform = 0x0;
-
-  Usul::Pointers::unreference ( _rasters ); _rasters = 0x0;
-  Usul::Pointers::unreference ( _elevation ); _elevation = 0x0;
+  _rasters = 0x0;
+  _elevation = 0x0;
 }
 
 
@@ -230,7 +230,7 @@ void Body::rasterAppend ( RasterLayer * layer )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  if ( 0x0 != layer )
+  if ( ( true == _rasters.valid() ) && ( 0x0 != layer ) )
   {
     // Append the layer to the existing group.
     _rasters->append ( layer );
@@ -249,11 +249,11 @@ void Body::rasterAppend ( RasterLayer * layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RasterLayer* Body::rasterData()
+RasterLayer::RefPtr Body::rasterData()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _rasters;
+  return RasterLayer::RefPtr ( _rasters.get() );
 }
 
 
@@ -287,7 +287,7 @@ void Body::xyzToLatLonHeight ( const osg::Vec3& point, double& lat, double& lon,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the thread pool for this body.
+//  Get the job manager for this body.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -296,6 +296,20 @@ Usul::Jobs::Manager *Body::jobManager()
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _manager;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the job manager.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::jobManager ( Usul::Jobs::Manager *manager )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _manager = manager;
 }
 
 
@@ -349,7 +363,7 @@ unsigned long Body::textureRequest ( const Extents &extents, unsigned int level 
     throw std::runtime_error ( "Error 3925869673: Job manager is null" );
   }
 
-  CutImageJob::RefPtr job ( new CutImageJob ( extents, 512, 512, level, _rasters ) );
+  CutImageJob::RefPtr job ( new CutImageJob ( extents, 512, 512, level, _rasters.get() ) );
   _manager->addJob ( job );
   _textureJobs.insert ( TextureJobs::value_type ( job->id(), job ) );
 
@@ -528,7 +542,7 @@ void Body::elevationAppend ( RasterLayer * layer )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  if ( 0x0 != _elevation && 0x0 != layer )
+  if ( ( true == _elevation.valid() ) && ( 0x0 != layer ) )
   {
     // Append the layer to the existing group.
     _elevation->append ( layer );
@@ -547,11 +561,11 @@ void Body::elevationAppend ( RasterLayer * layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RasterLayer* Body::elevationData()
+RasterLayer::RefPtr Body::elevationData()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _elevation;
+  return RasterLayer::RefPtr ( _elevation.get() );
 }
 
 
@@ -594,4 +608,91 @@ StarSystem::Callbacks::SplitCallback::RefPtr Body::splitCallback() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return SplitCallback::RefPtr ( _splitCallback );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Body::scale() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _scale;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Serialize the members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::serialize ( XmlTree::Node &parent ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Copy the map.
+  Serialize::XML::DataMemberMap m ( _dataMemberMap );
+
+  // We serialize a vector of extents.
+  typedef std::vector < Usul::Math::Vec4d > Tiles;
+  Tiles tiles;
+
+  // Loop through tiles.
+  for ( unsigned int i = 0; i < _transform->getNumChildren(); ++i )
+  {
+    // Get the tile.
+    Tile::RefPtr tile ( dynamic_cast < Tile * > ( _transform->getChild ( i ) ) );
+    if ( true == tile.valid() )
+    {
+      // Add the extents.
+      const Tile::Extents e ( tile->extents() );
+      tiles.push_back ( Usul::Math::Vec4d ( e.minimum()[0], e.minimum()[1], e.maximum()[0], e.maximum()[1] ) );
+    }
+  }
+
+  // Add additional entries.
+  m.addMember ( "tiles", tiles );
+
+  // Write members to the node from local map.
+  m.serialize ( parent );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize the members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::deserialize ( const XmlTree::Node &node )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Copy the map.
+  Serialize::XML::DataMemberMap m ( _dataMemberMap );
+
+  // We serialize a vector of extents.
+  typedef std::vector < Usul::Math::Vec4d > Tiles;
+  Tiles tiles;
+
+  // Add additional entries.
+  m.addMember ( "tiles", tiles );
+
+  // Initialize locals and members from the the node.
+  m.deserialize ( node );
+
+  // Loop through tiles.
+  for ( Tiles::const_iterator i = tiles.begin(); i != tiles.end(); ++i )
+  {
+    // Add the tile.
+    const Tiles::value_type e ( *i );
+    this->addTile ( Tile::Extents ( e[0], e[1], e[2], e[3] ) );
+  }
 }

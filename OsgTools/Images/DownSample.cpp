@@ -224,7 +224,7 @@ osg::Image* DownSample::operator () ( osg::Image* input )
   if ( true == _dirty )
     this->_initialize();
 
-  unsigned int sourceWidth  ( input->s() );
+  //unsigned int sourceWidth  ( input->s() );
   unsigned int sourceHeight ( input->t() );
 
   unsigned int answerWidth ( _size[0] );

@@ -258,11 +258,11 @@ void TiledScreenCapture::_capturePixels ( osg::Image& image, osgUtil::SceneView&
   const unsigned int tileX ( 128 ), tileY ( 128 );
 
   // Number of samples in x and y direction.
-  const unsigned int samplesX ( this->numSamples () ), samplesY ( this->numSamples () );
+  //const unsigned int samplesX ( this->numSamples () ), samplesY ( this->numSamples () );
 
   // Amount to pad the tiles.
-  unsigned int xPadding ( static_cast < unsigned int > ( ::ceil ( filterWidth  / ( 2.0 + 0.5 ) ) ) );
-  unsigned int yPadding ( static_cast < unsigned int > ( ::ceil ( filterHeight / ( 2.0 + 0.5 ) ) ) );
+  //unsigned int xPadding ( static_cast < unsigned int > ( ::ceil ( filterWidth  / ( 2.0 + 0.5 ) ) ) );
+  //unsigned int yPadding ( static_cast < unsigned int > ( ::ceil ( filterHeight / ( 2.0 + 0.5 ) ) ) );
 
   // Tile width and height including padding.
   /*unsigned int tileWidth  ( tileX + ( 2 * xPadding ) );

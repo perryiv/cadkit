@@ -11,16 +11,18 @@
 #define __OSG_TOOLS_WIDGETS_AXES_H__
 
 #include "OsgTools/Export.h"
-#include "OsgTools/Draggers/Translate2.h"
 
+#include "osg/MatrixTransform"
 #include "osg/NodeCallback"
 
 namespace OsgTools {
 namespace Widgets {
 
-class OSG_TOOLS_EXPORT Axes : public OsgTools::Draggers::Translate2
+class OSG_TOOLS_EXPORT Axes : public osg::MatrixTransform
 {
 public:
+  typedef osg::MatrixTransform BaseClass;
+  
   Axes();
 
 protected:

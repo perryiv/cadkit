@@ -77,7 +77,8 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _texCoords ( texCoords ),
   _jobId ( false, 0 ),
   _elevationJob ( 0x0 ),
-  _tileJob ( 0x0 )
+  _tileJob ( 0x0 ),
+  _boundingSphere()
 {
   USUL_TRACE_SCOPE;
 
@@ -120,7 +121,8 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _texCoords ( tile._texCoords ),
   _jobId ( false, 0 ),
   _elevationJob ( tile._elevationJob ),
-  _tileJob ( tile._tileJob )
+  _tileJob ( tile._tileJob ),
+  _boundingSphere ( tile._boundingSphere )
 {
   USUL_TRACE_SCOPE;
 
@@ -220,7 +222,7 @@ void Tile::updateMesh()
   if ( true == _body->useSkirts() )
   {
     // Depth of skirt.  TODO: This function needs to be tweeked.
-    const double offset ( Usul::Math::maximum<double> ( ( 2500 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
+    const double offset ( Usul::Math::maximum<double> ( ( 5000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
 
     // Add skirts to group.
     group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], mesh.rows() - 1,    offset ) ); // Left skirt.
@@ -228,12 +230,20 @@ void Tile::updateMesh()
     group->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], 0,                  offset ) ); // Bottom skirt.
     group->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], mesh.columns() - 1, offset ) ); // Top skirt.
   }
+  
+  // Make the ground.
+  osg::ref_ptr<osg::Node> ground ( mesh() );
 
   // Add ground to group.
-  group->addChild ( mesh() );
+  group->addChild ( ground.get() );
+  
+  // Set our bounding sphere to be the ground's
+  _boundingSphere = ground->computeBound();
 
   // Add the group to us.
   this->addChild ( group.get() );
+  
+  this->dirtyBound();
 }
 
 
@@ -328,14 +338,18 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     osgUtil::CullVisitor *cv ( dynamic_cast < osgUtil::CullVisitor * > ( &nv ) );
     
     // Return if we are culled.
-    if ( 0x0 == cv || cv->isCulled ( *this ) )
-      return;
+    //if ( 0x0 == cv || cv->isCulled ( *this ) )
+      //return;
     
     // Only update here if the vertices are invalid.
     // This will ensure proper splitting.
     this->updateMesh();
     
+    //cv->setComputeNearFarMode ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
+    
     this->_cull ( *cv );
+    
+    //cv->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES );
   }
   else
   {
@@ -374,7 +388,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   const osg::Vec3f &pN0 ( mesh.point ( mesh.rows() - 1, 0 ) );
   const osg::Vec3f &pNN ( mesh.point ( mesh.rows() - 1, mesh.columns() - 1 ) );
   const osg::Vec3f &pBC ( this->getBound().center() );
-
+  
   // Squared distances from the eye to the points.
   const float dist00 ( ( eye - p00 ).length2() );
   const float dist0N ( ( eye - p0N ).length2() );
@@ -401,7 +415,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   low = !( _body->shouldSplit ( !low, this ) );
 
   if ( low )
-  {
+  {    
     this->updateTexture();
 
     // Remove high level of detail.
@@ -440,7 +454,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
            ( false == _children[UPPER_LEFT].valid()  ) ||
            ( false == _children[UPPER_RIGHT].valid() ) )
       {
-        // Cancel what we may have running.
+        // Use the low lod while we are waiting for the job.
         if ( _tileJob.valid() )
         {
           low = true;
@@ -470,6 +484,20 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   // Traverse low level of detail.
   if ( low || _tileJob.valid() )
   {
+#if 0
+    osg::BoundingBox bb;
+    osg::BoundingSphere bs ( this->getBound() );
+    bb.expandBy ( osg::BoundingSphere ( bs.center(), bs.radius() * 0.5 ) );
+    cv.updateCalculatedNearFar ( *cv.getModelViewMatrix(), bb );
+#endif
+    
+#if 0
+    cv.updateCalculatedNearFar ( p00 );
+    cv.updateCalculatedNearFar ( p0N );
+    cv.updateCalculatedNearFar ( pN0 );
+    cv.updateCalculatedNearFar ( pNN );
+#endif
+    
     this->getChild ( 0 )->accept ( cv );
   }
 
@@ -673,15 +701,6 @@ void Tile::dirty ( bool state, unsigned int flags, bool dirtyChildren, const Ext
       if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->dirty  ( state, flags, dirtyChildren, extents );
       if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->dirty ( state, flags, dirtyChildren, extents );
     }
-
-#if 0
-
-    if ( this->verticesDirty() )
-    {
-      this->_launchElevationRequest();
-    }
-
-#endif
   }
 }
 
@@ -750,7 +769,7 @@ bool Tile::textureDirty() const
 
 osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double offset )
 {
-  unsigned int columns ( _mesh->columns() );
+  const unsigned int columns ( _mesh->columns() );
 
   // Make the mesh
   OsgTools::Mesh mesh ( 2, columns );
@@ -784,7 +803,7 @@ osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double o
 
 osg::Node* Tile::_buildLatSkirt ( double lat, double v, unsigned int j, double offset )
 {
-  unsigned int rows ( _mesh->rows() );
+  const unsigned int rows ( _mesh->rows() );
 
   // Make the mesh
   OsgTools::Mesh mesh ( rows, 2 );
@@ -1092,4 +1111,18 @@ double Tile::splitDistance() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _splitDistance;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the bounding sphere.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::BoundingSphere Tile::computeBound() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _boundingSphere;
 }

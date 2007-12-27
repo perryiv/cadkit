@@ -95,6 +95,9 @@ public:
   // Clear the scene.
   void                      clear();
 
+  // Compute the bounding sphere.
+  virtual osg::BoundingSphere    computeBound() const;
+
   // Set/get the flag that says we're dirty.
   bool                      dirty() const;
   void                      dirty ( bool state, unsigned int flags, bool dirtyChildren );
@@ -192,6 +195,7 @@ private:
   JobID _jobId;
   CutImageJob::RefPtr _elevationJob;
   Usul::Jobs::Job::RefPtr _tileJob;
+  osg::BoundingSphere _boundingSphere;
 };
 
 

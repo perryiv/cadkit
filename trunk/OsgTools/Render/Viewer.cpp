@@ -2408,12 +2408,11 @@ void Viewer::_addAxes()
   osg::ref_ptr< osg::Group > group ( _sceneManager->projectionGroupGet ( OsgTools::Render::Constants::AXES ) );
 
   // Axes Dragger
-  osg::ref_ptr< OsgTools::Widgets::Axes > dragger ( new OsgTools::Widgets::Axes );
-  dragger->setMatrix( osg::Matrix::translate ( osg::Vec3( 50, 50, -100 ) ) );
-  dragger->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-  dragger->useWindowCoords ( true );
+  osg::ref_ptr< OsgTools::Widgets::Axes > axes ( new OsgTools::Widgets::Axes );
+  axes->setMatrix( osg::Matrix::translate ( osg::Vec3( 50, 50, -100 ) ) );
+  axes->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
 
-  group->addChild( dragger.get() );
+  group->addChild( axes.get() );
   
   // The scene has changed.
   this->changedScene();

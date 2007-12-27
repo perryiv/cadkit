@@ -465,7 +465,7 @@ osg::Geometry * ShapeFactory::_cylinderTriangles ( float radius, unsigned int si
 
   // Save the size.
   unsigned int size    ( vertices->size() );
-  unsigned int fanSize ( sides + 1 );
+  //unsigned int fanSize ( sides + 1 );
 
   // Convert tri-strip to triangles.
   for ( unsigned int i = 0; i < size - 2; ++i )

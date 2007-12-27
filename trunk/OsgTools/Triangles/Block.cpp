@@ -317,7 +317,6 @@ osg::Geometry *Block::buildScene ( const Options &options, TriangleSet *ts )
     osg::ref_ptr< osg::Vec4Array > colors ( ts->colorsV() );
     if( true == colors.valid() && vertices->size() == colors->size() )
     {
-      unsigned int csize ( colors->size() );
       _geometry->setColorArray ( colors.get() );
       _geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
     }

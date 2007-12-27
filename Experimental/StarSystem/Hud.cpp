@@ -67,7 +67,7 @@ osg::Node* Hud::buildScene()
 void Hud::updateScene ( unsigned int width, unsigned int height )
 {
   _camera->setViewport ( 0, 0, width, height );
-  _camera->setProjectionMatrixAsOrtho2D ( 0, width, 0, height );
+  _camera->setProjectionMatrixAsOrtho ( 0, width, 0, height, -10.0, 10.0 );
   _camera->removeChild ( 0, _camera->getNumChildren() );
   
   osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );

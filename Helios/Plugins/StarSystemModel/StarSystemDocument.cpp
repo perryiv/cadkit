@@ -458,25 +458,10 @@ namespace Detail
                                       0.0f,0.0f,ratio,0.0f,
                                       0.0f,0.0f,center*ratio,1.0f));
       
-      // Ask cull-visitor to clamp the projection matrix.
-      //return _cv.clampProjectionMatrixImplementation ( projection, zNear, zFar );
       return true;
 #else
-      // Try to get perspective parameters.
-      double left ( 0.0 ), right ( 0.0 ), bottom ( 0.0 ), top ( 0.0 ), n ( 0.0 ), f ( 0.0 );
-      if ( projection.getFrustum ( left, right, bottom, top, n, f ) )
-      {
-        projection.makeFrustum ( left, right, bottom, top, zNear, zFar );
-        return true;
-      }
-      
-      // Try to get orthographic parameters.
-      if ( projection.getOrtho ( left, right, bottom, top, n, f ) )
-      {
-        projection.makeOrtho ( left, right, bottom, top, zNear, zFar );
-        return true;
-      }
-      return false;
+      // Ask cull-visitor to clamp the projection matrix.
+      return _cv.clampProjectionMatrixImplementation ( projection, zNear, zFar );
 #endif
     }
     
@@ -516,13 +501,13 @@ void StarSystemDocument::addView ( Usul::Interfaces::IView *view )
     cd->setClippingDistances ( 0.001f, 10000 ); // Need to determine at run-time.
 #endif
   
-#if 0
+#if 1
   Usul::Interfaces::ICullSceneVisitor::QueryPtr csv ( view );
   if ( csv.valid() )
   {
-    //osg::ref_ptr<osgUtil::CullVisitor> cv ( csv->getCullSceneVisitor( 0x0 ) );
-    //cv->setClampProjectionMatrixCallback ( new Detail::ClampProjection ( *cv ) );
-    //cv->setInheritanceMask ( Usul::Bits::remove ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
+    osg::ref_ptr<osgUtil::CullVisitor> cv ( csv->getCullSceneVisitor( 0x0 ) );
+    cv->setClampProjectionMatrixCallback ( new Detail::ClampProjection ( *cv ) );
+    cv->setInheritanceMask ( Usul::Bits::remove ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
     //cv->setNearFarRatio ( 0.0000000000000001 );
   }
 #endif

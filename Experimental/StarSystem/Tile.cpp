@@ -173,6 +173,9 @@ void Tile::updateMesh()
 
   const double deltaU ( _texCoords[1] - _texCoords[0] );
   const double deltaV ( _texCoords[3] - _texCoords[2] );
+  
+  // Clear the bounding sphere.
+  _boundingSphere.init();
 
   // Add internal geometry.
   OsgTools::Mesh &mesh ( *_mesh );
@@ -193,6 +196,9 @@ void Tile::updateMesh()
         
         const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( i, j ) ) ) : 0.0 ) );
         _body->latLonHeightToXYZ ( lat, lon, elevation, p );
+        
+        // Expand the bounding sphere by the point.
+        _boundingSphere.expandBy ( p );
 
         // Assign normal vectors.
         osg::Vec3f &n ( mesh.normal ( i, j ) );
@@ -225,20 +231,14 @@ void Tile::updateMesh()
     const double offset ( Usul::Math::maximum<double> ( ( 5000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
 
     // Add skirts to group.
-    group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], mesh.rows() - 1,    offset ) ); // Left skirt.
+    //group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], mesh.rows() - 1,    offset ) ); // Left skirt.
     group->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], 0,                  offset ) ); // Right skirt.
     group->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], 0,                  offset ) ); // Bottom skirt.
-    group->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], mesh.columns() - 1, offset ) ); // Top skirt.
+    //group->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], mesh.columns() - 1, offset ) ); // Top skirt.
   }
   
   // Make the ground.
-  osg::ref_ptr<osg::Node> ground ( mesh() );
-
-  // Add ground to group.
-  group->addChild ( ground.get() );
-  
-  // Set our bounding sphere to be the ground's
-  _boundingSphere = ground->computeBound();
+  group->addChild ( mesh() );
 
   // Add the group to us.
   this->addChild ( group.get() );

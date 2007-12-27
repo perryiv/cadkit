@@ -18,6 +18,7 @@
 #define _SERIALIZE_XML_STD_POINTER_MAP_DATA_MEMBER_CLASS_
 
 #include "Serialize/XML/MemberBase.h"
+#include "Serialize/XML/TypeWrapper.h"
 
 
 namespace Serialize {

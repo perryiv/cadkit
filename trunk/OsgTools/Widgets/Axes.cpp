@@ -100,7 +100,7 @@ void Axes::AxesSort::operator () ( osg::Node* node, osg::NodeVisitor* nv )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Axes::Axes()
+Axes::Axes() : BaseClass()
 {
   // Length of the arrow.
   const double length ( 40.0 );
@@ -224,9 +224,8 @@ Axes::Axes()
   group->addChild( arrowZ() );
   group->addChild( texts.get() );
 
-  this->geometry( OsgTools::Draggers::Dragger::NORMAL, group.get() );
-  this->geometry( OsgTools::Draggers::Dragger::DRAGGING, group.get() );
-
+  this->addChild( group.get() );
+  
   this->setCullCallback ( new AxesSort );
 }
 

@@ -29,12 +29,14 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Random.h"
+#include "Usul/Bits/Bits.h"
 #include "Usul/Factory/ObjectFactory.h"
 #include "Usul/Factory/TypeCreator.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IClippingDistance.h"
-#include "Usul/Interfaces/ITextMatrix.h"
+#include "Usul/Interfaces/ICullSceneVisitor.h"
+#include "Usul/Interfaces/IViewport.h"
 #include "Usul/Network/Names.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Threads/Safe.h"
@@ -42,6 +44,8 @@
 
 #include "osg/MatrixTransform"
 #include "osg/CoordinateSystemNode"
+
+#include "osgUtil/CullVisitor"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemDocument, StarSystemDocument::BaseClass );
 
@@ -54,6 +58,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( StarSystemDocument, StarSystemDocument::BaseCl
 
 StarSystemDocument::StarSystemDocument() : BaseClass ( "StarSystem Document" ),
   _system ( 0x0 ),
+  _hud (),
   _manager ( 0x0 ),
   _scale ( 1 ),
   SERIALIZE_XML_INITIALIZER_LIST
@@ -340,13 +345,15 @@ osg::Node *StarSystemDocument::buildScene ( const BaseClass::Options &options, U
   // Make sure we have a system.
   this->_makeSystem();
 
-  osg::ref_ptr<osg::Node> node ( 0x0 );
-  {
-    StarSystem::BuildScene::RefPtr builder ( new StarSystem::BuildScene ( options, caller ) );
-    _system->accept ( *builder );
-    node = builder->scene();
-  }
-  return node.release();
+  osg::ref_ptr<osg::Group> group ( new osg::Group );
+  
+  StarSystem::BuildScene::RefPtr builder ( new StarSystem::BuildScene ( options, caller ) );
+  _system->accept ( *builder );
+  group->addChild ( builder->scene() );
+  
+  group->addChild ( _hud.buildScene() );
+  
+  return group.release();
 }
 
 
@@ -399,6 +406,86 @@ void StarSystemDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Class to ensure that clipping values are sane.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail 
+{
+    
+  struct ClampProjection : public osg::CullSettings::ClampProjectionMatrixCallback
+  {
+    typedef osg::CullSettings::ClampProjectionMatrixCallback BaseClass;
+    
+    ClampProjection ( osgUtil::CullVisitor &cv ) : BaseClass(), _cv ( cv )
+    {
+    }
+    
+    virtual bool clampProjectionMatrixImplementation ( osg::Matrixf &projection, double &zNear, double &zFar ) const
+    {
+      return this->_common ( projection, zNear, zFar );
+    }
+    
+    virtual bool clampProjectionMatrixImplementation ( osg::Matrixd &projection, double &zNear, double &zFar ) const
+    {
+      return this->_common ( projection, zNear, zFar );
+    }
+    
+  protected:
+    
+    template < class Matrix > bool _common ( Matrix &projection, double &zNear, double &zFar ) const
+    {
+      if ( zNear <= 0 )
+        zNear = 10;
+      //else
+      //  zNear = zNear * 0.50;
+      
+      zFar = zFar * 0.90;
+#if 1
+      typedef typename Matrix::value_type value_type;
+      
+      value_type trans_near_plane = (-zNear*projection(2,2)+projection(3,2))/(-zNear*projection(2,3)+projection(3,3));
+      value_type trans_far_plane = (-zFar*projection(2,2)+projection(3,2))/(-zFar*projection(2,3)+projection(3,3));
+      
+      value_type ratio = fabs(2.0/(trans_near_plane-trans_far_plane));
+      value_type center = -(trans_near_plane+trans_far_plane)/2.0;
+      
+      projection.postMult(osg::Matrix(1.0f,0.0f,0.0f,0.0f,
+                                      0.0f,1.0f,0.0f,0.0f,
+                                      0.0f,0.0f,ratio,0.0f,
+                                      0.0f,0.0f,center*ratio,1.0f));
+      
+      // Ask cull-visitor to clamp the projection matrix.
+      //return _cv.clampProjectionMatrixImplementation ( projection, zNear, zFar );
+      return true;
+#else
+      // Try to get perspective parameters.
+      double left ( 0.0 ), right ( 0.0 ), bottom ( 0.0 ), top ( 0.0 ), n ( 0.0 ), f ( 0.0 );
+      if ( projection.getFrustum ( left, right, bottom, top, n, f ) )
+      {
+        projection.makeFrustum ( left, right, bottom, top, zNear, zFar );
+        return true;
+      }
+      
+      // Try to get orthographic parameters.
+      if ( projection.getOrtho ( left, right, bottom, top, n, f ) )
+      {
+        projection.makeOrtho ( left, right, bottom, top, zNear, zFar );
+        return true;
+      }
+      return false;
+#endif
+    }
+    
+    osgUtil::CullVisitor &_cv;
+  };
+  
+} // namespace Detail
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Add a view to this document.
@@ -428,6 +515,17 @@ void StarSystemDocument::addView ( Usul::Interfaces::IView *view )
   if ( cd.valid () )
     cd->setClippingDistances ( 0.001f, 10000 ); // Need to determine at run-time.
 #endif
+  
+#if 0
+  Usul::Interfaces::ICullSceneVisitor::QueryPtr csv ( view );
+  if ( csv.valid() )
+  {
+    //osg::ref_ptr<osgUtil::CullVisitor> cv ( csv->getCullSceneVisitor( 0x0 ) );
+    //cv->setClampProjectionMatrixCallback ( new Detail::ClampProjection ( *cv ) );
+    //cv->setInheritanceMask ( Usul::Bits::remove ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
+    //cv->setNearFarRatio ( 0.0000000000000001 );
+  }
+#endif
 }
 
 
@@ -453,17 +551,15 @@ void StarSystemDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
 
-  Usul::Interfaces::ITextMatrix::QueryPtr tm ( caller );
-  if ( tm.valid() )
-  {
-    const unsigned int queued    ( ( 0x0 == _manager ) ? 0 : _manager->numJobsQueued() );
-    const unsigned int executing ( ( 0x0 == _manager ) ? 0 : _manager->numJobsExecuting() );
-    const unsigned int total     ( queued + executing );
-
-    const std::string out ( ( total > 0 ) ? ( Usul::Strings::format ( "Queued: ", queued, ", Running: ", executing ) ) : "" );
-
-    tm->setText ( 15, 15, out, osg::Vec4f ( 1.0, 1.0, 1.0, 1.0 ) );
-  }
+  const unsigned int queued    ( ( 0x0 == _manager ) ? 0 : _manager->numJobsQueued() );
+  const unsigned int executing ( ( 0x0 == _manager ) ? 0 : _manager->numJobsExecuting() );
+  
+  _hud.requests ( queued );
+  _hud.running ( executing );
+  
+  Usul::Interfaces::IViewport::QueryPtr vp ( caller );
+  if ( vp.valid() )
+    _hud.updateScene ( vp->width(), vp->height() );
 }
 
 
@@ -513,6 +609,7 @@ void StarSystemDocument::_makeSystem()
   // Make the land model.
   typedef StarSystem::LandModelEllipsoid Land;
   Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
+
   Land::RefPtr land ( new Land ( radii ) );
 
   // Make a good split distance.

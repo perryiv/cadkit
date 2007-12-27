@@ -23,6 +23,7 @@
 #include "Usul/Jobs/Manager.h"
 
 #include "StarSystem/System.h"
+#include "StarSystem/Hud.h"
 
 #include "Serialize/XML/Macros.h"
 
@@ -110,6 +111,7 @@ private:
   void                        _makeSystem();
 
   StarSystem::System::RefPtr _system;
+  StarSystem::Hud _hud;
   Usul::Jobs::Manager *_manager;
   double _scale;
 

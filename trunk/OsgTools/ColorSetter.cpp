@@ -12,7 +12,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ColorSetter.h"
+#include "OsgTools/ColorSetter.h"
+#include "OsgTools/State/StateSet.h"
 
 #include "osg/ShapeDrawable"
 #include "osg/Geometry"
@@ -36,4 +37,7 @@ void ColorSetter::operator ()(osg::Geometry* g) const
   color_array->push_back( _color );
   g->setColorArray( color_array );
   g->setColorBinding( osg::Geometry::BIND_OVERALL );
+ 
+  // Turn off lighting.
+  OsgTools::State::StateSet::setLighting ( g->getOrCreateStateSet(), false );
 }

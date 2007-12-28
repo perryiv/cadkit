@@ -107,6 +107,7 @@ Application::Application() :
   _sharedFrameTime   (),
   _sharedReferenceTime  (),
   _sharedMatrix      ( ),
+  _sharedScreenShotDirectory (),
   _frameTime         ( 1 ),
   _renderer          (),
   _renderers         (),
@@ -139,8 +140,7 @@ Application::Application() :
   _timeBased         ( true ),
   _colorMap          (),
   _count             ( 0 ),
-  _allowUpdate       ( true ),
-  _screenShotDirectory ()
+  _allowUpdate       ( true )
 {
   USUL_TRACE_SCOPE;
 
@@ -149,22 +149,8 @@ Application::Application() :
 
   this->_construct();
 
-  // Get the current time.
-  ::tm time ( Usul::System::DateTime::local() );
-
-  // Convert it to a string.
-  const unsigned int size ( 1024 );
-  char buffer[size];
-  ::memset ( buffer, '\0', size );
-  ::strftime ( buffer, size - 1, "%Y_%m_%d_%H_%M_%S", &time );
-
-  _screenShotDirectory = Usul::Strings::format ( "/array/cluster/data/screen_shots", "/", std::string ( buffer ), "/" );
-
-  // Make the directory.
-  Usul::File::make ( _screenShotDirectory );
-
+  
   // Set the frame dump properties.
-  _frameDump.dir ( _screenShotDirectory );
   _frameDump.base ( "_file_" + Usul::System::Host::name() );
   _frameDump.ext ( ".jpg" );
   _frameDump.digits ( 10 );
@@ -461,7 +447,7 @@ void Application::contextInit()
   _viewport->setViewport ( vp[0], vp[1], vp[2], vp[3] );
 
   // Set the projection.
-  _sceneManager->projection()->setMatrix ( osg::Matrix::ortho2D ( _viewport->x(), _viewport->width(), _viewport->y(), _viewport->height() ) );
+  _sceneManager->projection()->setMatrix ( osg::Matrix::ortho ( _viewport->x(), _viewport->width(), _viewport->y(), _viewport->height(), -10.0, 10.0 ) );
   _sceneManager->projection()->dirtyBound ();
 
   osg::ref_ptr < osg::StateSet > ss ( renderer->getGlobalStateSet() );
@@ -665,6 +651,10 @@ void Application::contextPostDraw()
 
   if ( _frameDump.dump () )
   {
+    // Set the directory each time.
+    _frameDump.dir ( this->_screenShotDirectory() );
+
+    // Capture the pixels.
     this->_capturePixels ( _frameDump.file() );
   }
 }
@@ -689,7 +679,7 @@ void Application::_postDraw( OsgTools::Render::Renderer *renderer )
     static unsigned int count ( 0 );
 
     // Construct the filename.
-    std::string filename ( Usul::Strings::format ( _screenShotDirectory, "/", count++, "_", Usul::System::Host::name() ) );
+    std::string filename ( Usul::Strings::format ( this->_screenShotDirectory(), "/", count++, "_", Usul::System::Host::name(), ext ) );
 
     // Get frame scale from the preferences.
     const double multiplier ( this->preferences()->frameScale() );
@@ -869,7 +859,32 @@ void Application::_init()
     _sharedMatrix.init ( guid, "viz0" );
   }
 
-  // Initialize the shared boolean system
+  {
+    vpr::GUID guid ( "edfcdb08-eece-45f5-b9d7-174bba164a41" );
+    _sharedScreenShotDirectory.init ( guid, "viz0" );
+  }
+  
+
+  if ( _sharedScreenShotDirectory.isLocal() )
+  {
+    // Get the current time.
+    ::tm time ( Usul::System::DateTime::local() );
+
+    // Convert it to a string.
+    const unsigned int size ( 1024 );
+    char buffer[size];
+    ::memset ( buffer, '\0', size );
+    ::strftime ( buffer, size - 1, "%Y_%m_%d_%H_%M_%S", &time );
+
+    std::string directory ( Usul::Strings::format ( "/array/cluster/data/screen_shots", "/", std::string ( buffer ), "/" ) );
+
+    _sharedScreenShotDirectory->data ( directory );
+
+    // Make sure the directory exists..
+    Usul::File::make ( directory );
+  }
+
+  // Initialize plugins that need to.
 #if 1
   typedef Usul::Interfaces::IPluginInitialize  IPluginInitialize;
   typedef Usul::Components::Manager PluginManager;
@@ -3846,4 +3861,16 @@ bool Application::_isUpdateOn () const
 {
   Guard guard ( this );
   return _allowUpdate;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the screen shot directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Application::_screenShotDirectory() const
+{
+  return _sharedScreenShotDirectory->data();
 }

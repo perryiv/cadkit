@@ -150,6 +150,8 @@ struct ReaderWriter<Usul::Types::Uint32>
 //
 ///////////////////////////////////////////////////////////////////////////////
 #if 0
+// This isn't compiling on the viz cluster.
+// I don't think it's current being used any where
 template<>
 struct ReaderWriter<Usul::Types::Uint64>
 {
@@ -163,5 +165,26 @@ struct ReaderWriter<Usul::Types::Uint64>
   }
 };
 #endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read/Write a std::string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<>
+struct ReaderWriter<std::string>
+{
+  static void read ( vpr::ObjectReader *reader, std::string &value )
+  {
+    reader->readString ( value );
+  }
+  static void write ( vpr::ObjectWriter *writer, std::string value )
+  {
+    writer->writeString ( value );
+  }
+};
+
 }
 }

@@ -70,6 +70,7 @@ SET (SOURCES
 ./Commands/AddLayer.cpp
 ./Commands/StopAnimation.cpp
 ./Commands/ToggleShown.cpp
+./Commands/ChangeTimestepType.cpp
 ./Commands/ShowPastEvents.cpp 
 ./Animate/Date.cpp
 ./Animate/Settings.cpp

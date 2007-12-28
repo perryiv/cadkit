@@ -10,6 +10,7 @@
 #include "OsgTools/Legend/Text.h"
 
 #include "OsgTools/Font.h"
+#include "OsgTools/State/StateSet.h"
 
 #include "osg/Geode"
 #include "osgText/Text"
@@ -159,7 +160,6 @@ osg::Node* Text::buildScene()
   //text->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
   text->setCharacterSize( _height );
   text->setText ( this->text() );
-  
 
   while ( ( OsgTools::Font::estimateTextWidth( text.get() ) * .75 ) > _width )
   {
@@ -169,15 +169,30 @@ osg::Node* Text::buildScene()
 
   geode->addDrawable( text.get() );
 
+  // Turn off lighting.
+  OsgTools::State::StateSet::setLighting ( geode.get(), false );
+
   return geode.release();
 }
 
 
-/// Get/Set the alignment.
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the alignment.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void Text::alignment ( Alignment type )
 {
   _alignment = type;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the alignment.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 Text::Alignment Text::alignment () const
 {

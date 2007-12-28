@@ -35,6 +35,7 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Assert.h"
+#include "Usul/File/Make.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IMenuAdd.h"
@@ -49,6 +50,7 @@
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Convert.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/System/DateTime.h"
 #include "Usul/System/Host.h"
 #include "Usul/System/Directory.h"
 #include "Usul/System/Clock.h"
@@ -69,6 +71,7 @@
 #include "osg/MatrixTransform"
 #include "osg/Quat"
 #include "osg/Version"
+#include "osg/LightModel"
 
 #include "vrj/Kernel/Kernel.h"
 #include "vrj/Draw/OGL/GlWindow.h"
@@ -136,7 +139,8 @@ Application::Application() :
   _timeBased         ( true ),
   _colorMap          (),
   _count             ( 0 ),
-  _allowUpdate       ( true )
+  _allowUpdate       ( true ),
+  _screenShotDirectory ()
 {
   USUL_TRACE_SCOPE;
 
@@ -145,7 +149,22 @@ Application::Application() :
 
   this->_construct();
 
-  _frameDump.dir ( "/array/cluster/data/screen_shots" );
+  // Get the current time.
+  ::tm time ( Usul::System::DateTime::local() );
+
+  // Convert it to a string.
+  const unsigned int size ( 1024 );
+  char buffer[size];
+  ::memset ( buffer, '\0', size );
+  ::strftime ( buffer, size - 1, "%Y_%m_%d_%H_%M_%S", &time );
+
+  _screenShotDirectory = Usul::Strings::format ( "/array/cluster/data/screen_shots", "/", std::string ( buffer ), "/" );
+
+  // Make the directory.
+  Usul::File::make ( _screenShotDirectory );
+
+  // Set the frame dump properties.
+  _frameDump.dir ( _screenShotDirectory );
   _frameDump.base ( "_file_" + Usul::System::Host::name() );
   _frameDump.ext ( ".jpg" );
   _frameDump.digits ( 10 );
@@ -445,6 +464,11 @@ void Application::contextInit()
   _sceneManager->projection()->setMatrix ( osg::Matrix::ortho2D ( _viewport->x(), _viewport->width(), _viewport->y(), _viewport->height() ) );
   _sceneManager->projection()->dirtyBound ();
 
+  osg::ref_ptr < osg::StateSet > ss ( renderer->getGlobalStateSet() );
+  osg::ref_ptr < osg::LightModel > model ( new osg::LightModel );
+  model->setAmbientIntensity( osg::Vec4 ( 0.1, 0.1, 0.1, 1.0 ) );
+  ss->setAttributeAndModes( model.get(), osg::StateAttribute::ON );
+
   // Add this renderer to our list.
   _renderers.push_back ( renderer );
 }
@@ -665,8 +689,7 @@ void Application::_postDraw( OsgTools::Render::Renderer *renderer )
     static unsigned int count ( 0 );
 
     // Construct the filename.
-    std::ostringstream filename;
-    filename << "/array/cluster/data/screen_shots/" << count++ << "_" << Usul::System::Host::name() << ext;
+    std::string filename ( Usul::Strings::format ( _screenShotDirectory, "/", count++, "_", Usul::System::Host::name() ) );
 
     // Get frame scale from the preferences.
     const double multiplier ( this->preferences()->frameScale() );
@@ -676,7 +699,7 @@ void Application::_postDraw( OsgTools::Render::Renderer *renderer )
     // If the frame scale is one, just caputure the pixels on the screen.
     if ( tolerance ( multiplier, 1.0f ) )
     {
-      this->_capturePixels ( filename.str() );
+      this->_capturePixels ( filename );
     }
     else
     {
@@ -687,7 +710,7 @@ void Application::_postDraw( OsgTools::Render::Renderer *renderer )
       // Capture image.
       osg::ref_ptr<osg::Image> image ( renderer->screenCapture ( multiplier, 1 ) );
 
-      Usul::Jobs::Manager::instance().addJob ( new VRV::Jobs::SaveImage ( filename.str(), image.get() ) );
+      Usul::Jobs::Manager::instance().addJob ( new VRV::Jobs::SaveImage ( filename, image.get() ) );
     }
 
     // Don't export next time.
@@ -939,13 +962,13 @@ void Application::_preFrame()
   if( _sharedFrameTime.isLocal() )
   {
     // Capture the frame time.
-    _sharedFrameTime->data = _frameTime;
+    _sharedFrameTime->data ( _frameTime );
   }
 
   // Write out the start of the frame.
   if ( _sharedReferenceTime.isLocal () )
   {
-    _sharedReferenceTime->data = osg::Timer::instance()->delta_s( _initialTime, osg::Timer::instance()->tick() );
+    _sharedReferenceTime->data ( osg::Timer::instance()->delta_s( _initialTime, osg::Timer::instance()->tick() ) );
   }
 
   // Update these input devices.
@@ -996,12 +1019,12 @@ void Application::_latePreFrame()
   USUL_TRACE_SCOPE;
 
   // Get the frame time.
-  _frameTime = _sharedFrameTime->data;
+  _frameTime = _sharedFrameTime->data();
 
   // Set the reference time.
   if ( 0x0 != this->frameStamp () )
   {
-    this->frameStamp()->setReferenceTime ( _sharedReferenceTime->data );
+    this->frameStamp()->setReferenceTime ( _sharedReferenceTime->data() );
     this->frameStamp()->setFrameNumber ( this->frameStamp()->getFrameNumber() + 1 );
   }
 
@@ -3671,16 +3694,19 @@ void Application::_initLight()
   osg::Vec4 lp;
   osg::Vec4 ambient;
   osg::Vec4 diffuse;
+  osg::Vec4 specular;
 
   OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->lightPosition(), lp, 4 );
   OsgTools::Convert::vector<Usul::Math::Vec3f,osg::Vec3>( this->preferences()->lightDirection(), ld, 3 );
   OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->ambientLightColor(), ambient, 4 );
   OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->diffuseLightColor(), diffuse, 4 );
+  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->specularLightColor(), specular, 4 );
 
   light->setPosition( lp );
   light->setDirection( ld );
   light->setAmbient ( ambient );
   light->setDiffuse ( diffuse );
+  light->setSpecular ( specular );
 
   this->addLight ( light.get() );
 }

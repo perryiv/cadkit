@@ -282,7 +282,7 @@ osg::Node* Skin::create_button(const Button* button)
 
     if( button->checked() )
     {
-      BackgroundBox fillbox(0.75*0.5*_icon_space,0.75*0.5*_icon_space,0.001,osg::PrimitiveSet::QUADS);
+      BackgroundBox fillbox(0.75*0.5*_icon_space,0.75*0.5*_icon_space,0.0,osg::PrimitiveSet::QUADS);
       fillbox.color(this->_properTextColor());
       checkbox->addDrawable( fillbox() );
     }

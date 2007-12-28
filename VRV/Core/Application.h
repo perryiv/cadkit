@@ -400,6 +400,9 @@ protected:
   void                          _setAllowUpdate ( bool );
   bool                          _isUpdateOn () const;
 
+  /// Get the screen shot directory.
+  std::string                   _screenShotDirectory() const;
+
   /// Get/set the clipping distances (VRV::Interfaces::IClippingDistanceFloat).
   virtual void            getClippingDistances ( float &nearDist, float &farDist ) const;
   virtual void            setClippingDistances ( float nearDist, float farDist );
@@ -556,6 +559,7 @@ private:
   typedef Usul::Threads::Queue<QueueConfig>                CommandQueue;
   typedef std::map<std::string, Usul::Math::Vec4f >        ColorMap;
   typedef VRV::Core::SharedData<double>                    SharedDouble;
+  typedef VRV::Core::SharedData<std::string>               SharedString;
 
   // Data members.
   mutable Mutex                          _mutex;
@@ -573,6 +577,7 @@ private:
   cluster::UserData < SharedDouble >     _sharedFrameTime;
   cluster::UserData < SharedDouble >     _sharedReferenceTime;
   cluster::UserData < SharedMatrix >     _sharedMatrix;
+  mutable cluster::UserData < SharedString >     _sharedScreenShotDirectory;
   vrj::GlContextData< RendererPtr >      _renderer;
   Renderers                              _renderers;
   OsgTools::Render::SceneManager::RefPtr _sceneManager;
@@ -605,7 +610,6 @@ private:
   ColorMap                               _colorMap;
   unsigned int                           _count;
   bool                                   _allowUpdate;
-  std::string                            _screenShotDirectory;
 };
 
 }

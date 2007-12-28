@@ -262,14 +262,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\SharedDouble.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\SharedDouble.h"
-					>
-				</File>
-				<File
 					RelativePath=".\SharedMap.cpp"
 					>
 				</File>

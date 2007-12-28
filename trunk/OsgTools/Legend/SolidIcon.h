@@ -87,6 +87,7 @@ osg::Node* SolidIcon < ColorPolicy, GeometryFunctor >::buildScene()
 
 /// Useful typedefs.
 typedef SolidIcon< OsgTools::ColorSetter, LineFunctor >       SolidColorLineIcon;
+typedef SolidIcon< OsgTools::ColorSetter, QuadFunctor >       SolidColorQuadIcon; 
 typedef SolidIcon< OsgTools::MaterialSetter, QuadFunctor >    SolidMaterialQuadIcon; 
 typedef SolidIcon< OsgTools::MaterialSetter, SphereFunctor >  SolidMaterialSphereIcon; 
 

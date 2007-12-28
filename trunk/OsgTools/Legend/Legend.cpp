@@ -8,6 +8,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OsgTools/Legend/Legend.h"
+#include "OsgTools/State/StateSet.h"
 
 #include "osg/Material"
 #include "osg/Geode"
@@ -115,6 +116,11 @@ osg::Node* Legend::buildScene()
   root->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
   root->setMatrix ( osg::Matrix::translate ( _x, _y, 0.0 ) );
 
+  osg::ref_ptr < osg::StateSet > ss ( root->getOrCreateStateSet () );
+  ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+  //ss->setMode ( GL_LIGHTING,  osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+  OsgTools::State::StateSet::setTwoSidedLighting ( ss.get(), true );
+
   osg::ref_ptr< osg::Group > group ( new osg::Group );
 
   root->addChild( group.get() );
@@ -152,11 +158,12 @@ osg::Node* Legend::buildScene()
         yTranslate *= -1;
 
       // WHY?
-#ifdef _MSC_VER
+      //#ifdef _MSC_VER
       osg::Matrix m ( osg::Matrix::translate ( padding, yTranslate, -1.0 ) );
-#else
-      osg::Matrix m ( osg::Matrix::translate ( padding, yTranslate, 1.0 ) );
-#endif
+      //#else
+      //osg::Matrix m ( osg::Matrix::translate ( padding, yTranslate, 1.0 ) );
+      //#endif
+
       mt->setMatrix( m );
       mt->addChild( (*iter)->buildScene() );
 
@@ -174,69 +181,96 @@ osg::Node* Legend::buildScene()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Build a quad.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  inline osg::Geometry* buildQuad ( unsigned int width, unsigned int height )
+  {
+    osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
+
+    osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array );
+    vertices->push_back( osg::Vec3 ( 0.0, 0.0, 0.0 ) );
+    vertices->push_back( osg::Vec3 ( 0.0, height, 0.0 ) );
+    vertices->push_back( osg::Vec3 ( width, height, 0.0 ) );
+    vertices->push_back( osg::Vec3 ( width, 0.0, 0.0 ) );
+
+    geometry->setVertexArray ( vertices.get() );
+
+    osg::ref_ptr < osg::Vec3Array > normals ( new osg::Vec3Array );
+    normals->push_back ( osg::Vec3 ( 0.0, 0.0, 1.0 ) );
+
+    geometry->setNormalArray ( normals.get() );
+    geometry->setNormalBinding ( osg::Geometry::BIND_OVERALL );
+
+    geometry->addPrimitiveSet ( new osg::DrawArrays ( GL_QUADS, 0, vertices->size() ) );
+    return geometry.release();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the background.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 osg::Node* Legend::_buildBackground( unsigned int width, unsigned int height )
 {
-  osg::ref_ptr< osg::Group > group ( new osg::Group );
+  // For readabilty.
+  const unsigned int on  ( osg::StateAttribute::ON  | osg::StateAttribute::PROTECTED );
+  const unsigned int off ( osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
 
-  osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
+  osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
 
-  osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array );
-  vertices->push_back( osg::Vec3 ( 0.0, 0.0, 0.0 ) );
-  vertices->push_back( osg::Vec3 ( 0.0, height, 0.0 ) );
-  vertices->push_back( osg::Vec3 ( width, height, 0.0 ) );
-  vertices->push_back( osg::Vec3 ( width, 0.0, 0.0 ) );
-
-  geometry->setVertexArray ( vertices.get() );
-
-  osg::ref_ptr < osg::Vec3Array > normals ( new osg::Vec3Array );
-  normals->push_back ( osg::Vec3 ( 0.0, 0.0, 1.0 ) );
-
-  geometry->setNormalArray ( normals.get() );
-  geometry->setNormalBinding ( osg::Geometry::BIND_OVERALL );
-
-  geometry->addPrimitiveSet ( new osg::DrawArrays ( GL_QUADS, 0, vertices->size() ) );
-
+  // Make the background.
   {
-    osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+    osg::ref_ptr < osg::Geometry > geometry ( Detail::buildQuad ( width, height ) );
     geode->addDrawable( geometry.get() );
 
-    osg::ref_ptr< osg::Material > material ( new osg::Material );
-    material->setDiffuse( osg::Material::FRONT_AND_BACK, osg::Vec4( 0.5, 0.5, 0.5, 1.0 ) );
-    material->setAlpha( osg::Material::FRONT_AND_BACK, 0.3f );
+    // Get the state set.
+    osg::ref_ptr< osg::StateSet > ss ( geometry->getOrCreateStateSet() );
 
-    osg::ref_ptr< osg::StateSet > ss ( geode->getOrCreateStateSet() );
-    ss->setAttribute( material.get(), osg::StateAttribute::ON );
-    ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
-    ss->setMode( GL_BLEND, osg::StateAttribute::ON );
-    ss->setMode( GL_POLYGON_OFFSET_FILL, osg::StateAttribute::ON );
+    // Set the color.
+    osg::ref_ptr<osg::Vec4Array> colors ( new osg::Vec4Array );
+    colors->push_back ( osg::Vec4( 0.5, 0.5, 0.5, 0.3 ) );
+    geometry->setColorArray ( colors.get() );
+    geometry->setColorBinding ( osg::Geometry::BIND_OVERALL );
+    
+    // Set the needed modes.
+    ss->setMode( GL_DEPTH_TEST, off );
+    ss->setMode( GL_BLEND, on );
+    ss->setMode( GL_POLYGON_OFFSET_FILL, on );
 
-    osg::ref_ptr< osg::PolygonOffset > offset ( new osg::PolygonOffset ( -1.0, -1.0 ) );
-
-    group->addChild( geode.get() );
+    //osg::ref_ptr< osg::PolygonOffset > offset ( new osg::PolygonOffset ( -1.0, -1.0 ) );
   }
 
+  // Make the outline.
   {
-    osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+    osg::ref_ptr < osg::Geometry > geometry ( Detail::buildQuad ( width, height ) );
     geode->addDrawable( geometry.get() );
 
-    osg::ref_ptr< osg::Material > material ( new osg::Material );
-    material->setDiffuse( osg::Material::FRONT_AND_BACK, osg::Vec4( 0.5, 0.5, 0.8, 1.0 ) );
-    material->setAlpha( osg::Material::FRONT_AND_BACK, 0.8f );
+    // Get the state set.
+    osg::ref_ptr< osg::StateSet > ss ( geometry->getOrCreateStateSet() );
 
-    osg::ref_ptr< osg::StateSet > ss ( geode->getOrCreateStateSet() );
-    ss->setAttribute( material.get(), osg::StateAttribute::ON );
+    // Set the color.
+    osg::ref_ptr<osg::Vec4Array> colors ( new osg::Vec4Array );
+    colors->push_back ( osg::Vec4( 0.5, 0.5, 0.8, 1.0 ) );
+    geometry->setColorArray ( colors.get() );
+    geometry->setColorBinding ( osg::Geometry::BIND_OVERALL );
 
+    // Turn on wire frame.
     osg::ref_ptr< osg::PolygonMode > mode ( new osg::PolygonMode( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE ) );
-    ss->setAttribute( mode.get(), osg::StateAttribute::ON );
-
-    group->addChild( geode.get() );
+    ss->setAttribute( mode.get(), on );
   }
 
-  return group.release();
+  // Turn off lighting.
+  OsgTools::State::StateSet::setLighting ( geode.get(), false );
+
+  // Return the background.
+  return geode.release();
 }
 
 

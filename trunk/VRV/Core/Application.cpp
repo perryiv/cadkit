@@ -3740,6 +3740,8 @@ std::string Application::_documentSection () const
 
   std::string filename;
 
+  return ( document.valid() ? document->registryTagName() : "Document" );
+#if 0
   // If we have a valid filename.
   if ( document.valid () )
   {
@@ -3753,6 +3755,7 @@ std::string Application::_documentSection () const
 
   // Return the name.
   return filename;
+#endif
 }
 
 

@@ -905,7 +905,13 @@ void WRFDocument::currentChannel ( unsigned int value )
     Guard guard ( this->mutex() );
     _currentChannel = value;
     _volumeCache.clear();
+
+    for ( Requests::iterator iter = _requests.begin(); iter != _requests.end(); ++iter )
+      iter->second->cancel();
+
+    _requests.clear();
   }
+
   this->dirty ( true );
 }
 

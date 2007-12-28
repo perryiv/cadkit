@@ -30,7 +30,7 @@
 #include "osg/Group"
 #include "osg/Array"
 #include "osg/Node"
-#include "osg/Projection"
+#include "osg/Camera"
 #include "osg/MatrixTransform"
 
 #include "osgText/Text"
@@ -124,9 +124,9 @@ private:
   mutable Mutex _mutex;
 
   // OSG nodes.
-  osg::ref_ptr < osg::Group >                    _root;
-  osg::ref_ptr < osg::Projection >               _projectionNode;
-  osg::ref_ptr < osgText::Text >                 _dateText;
+  osg::ref_ptr < osg::Group >      _root;
+  osg::ref_ptr < osg::Camera >     _camera;
+  osg::ref_ptr < osgText::Text >   _dateText;
 
   Layers _layers;
 

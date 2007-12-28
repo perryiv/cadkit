@@ -43,7 +43,7 @@ SceneManager::SceneManager() :
 BaseClass(),
 _mutex(),
 _root ( new osg::Group ),
-_projectionNode ( new osg::Projection ),
+_camera ( new osg::Camera ),
 _dateText ( new osgText::Text ),
 _layers(),
 _dirty ( false ),
@@ -56,21 +56,30 @@ _legendHeightPerItem ( 30 ),
 _legendPadding ( 20.0f, 20.0f ),
 _legendPosition ( LEGEND_BOTTOM_RIGHT )
 {
-  _projectionNode->setName ( "Minerva_Projection_Node" );
+  _camera->setName ( "Minerva_Camera" );
+  _camera->setRenderOrder ( osg::Camera::POST_RENDER );
+  _camera->setReferenceFrame ( osg::Camera::ABSOLUTE_RF );
+  _camera->setClearMask( GL_DEPTH_BUFFER_BIT );
+  _camera->setViewMatrix( osg::Matrix::identity() );
 
-  // Make sure it draws last and without depth testing.
-  osg::ref_ptr< osg::StateSet > ss ( _projectionNode->getOrCreateStateSet() );
-  ss->setRenderBinDetails( 1000, "RenderBin" );
-  ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+  osg::ref_ptr<osg::StateSet> ss ( _camera->getOrCreateStateSet() );
+
+  {
+    osg::ref_ptr< osg::Light > light ( new osg::Light );
+    light->setLightNum ( 1 );
+    light->setDiffuse( osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
+    light->setDirection( osg::Vec3 ( 0.0, 0.0, -1.0f ) );
   
-#if 0
-  osg::ref_ptr< osg::Light > light ( new osg::Light );
-  light->setLightNum ( 1 );
-  light->setDiffuse( osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
-  light->setDirection( osg::Vec3 ( 0.0, 0.0, -1.0f ) );
+    ss->setAttributeAndModes ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+  }
+
+  {
+    osg::ref_ptr< osg::Light > light ( new osg::Light );
+    light->setLightNum ( 0 );
   
-  ss->setAttributeAndModes ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-#endif
+    ss->setAttributeAndModes ( light.get(), osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+  }
+
   _dateText->setFont( OsgTools::Font::defaultFont() );
   _dateText->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
   _dateText->setText ( "" );
@@ -109,14 +118,15 @@ void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
     {
       _width  = static_cast < unsigned int > ( vp->width  () );
       _height = static_cast < unsigned int > ( vp->height () );
-      _projectionNode->setMatrix( osg::Matrix::ortho2D( 0, _width, 0, _height ) );
+      _camera->setViewport ( 0, 0, _width, _height );
+      _camera->setProjectionMatrixAsOrtho ( 0, _width, 0, _height, -40.0, 40.0 );
     }
 
     _legend->clear();
 
     // Clear what we have
     _root->removeChild( 0, _root->getNumChildren() );
-    _projectionNode->removeChild ( 0, _projectionNode->getNumChildren() );
+    _camera->removeChild ( 0, _camera->getNumChildren() );
 
     // Loop throught the layers
     for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
@@ -133,7 +143,7 @@ void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
       }
     }
 
-    _root->addChild ( _projectionNode.get() );
+    _root->addChild ( _camera.get() );
 
     /// Build the legend.
     this->_buildLegend();
@@ -145,15 +155,14 @@ void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
     osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
     geode->addDrawable( _dateText.get() );
 
-    osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-    mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-    mt->addChild ( geode.get() );
+    //osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+    //mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+    //mt->addChild ( geode.get() );
 
-    if ( this->showLegend() )
-      _projectionNode->addChild ( mt.get() );
+    _camera->addChild ( geode.get() );
 
     _root->dirtyBound();
-    _projectionNode->dirtyBound();
+    //_projectionNode->dirtyBound();
   }
 
   this->dirty( false );
@@ -193,7 +202,7 @@ void SceneManager::_buildLegend()
     this->_setLegendPosition( legendWidth );
 
     // Build the legend.
-    _projectionNode->addChild( _legend->buildScene() );
+    _camera->addChild( _legend->buildScene() );
   }
 }
 
@@ -301,8 +310,8 @@ void SceneManager::resize( unsigned int width, unsigned int height )
 {
   {
     Guard guard ( _mutex );
-
-    _projectionNode->setMatrix( osg::Matrix::ortho2D( 0, width, 0, height ) );
+    _camera->setViewport ( 0, 0, width, height );
+    _camera->setProjectionMatrixAsOrtho ( 0, width, 0, height, -40.0, 40.0 );
 
     _width = width;
     _height = height;

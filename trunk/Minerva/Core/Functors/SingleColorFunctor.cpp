@@ -130,19 +130,28 @@ OsgTools::Legend::Icon * SingleColorFunctor::icon (  Usul::Interfaces::IUnknown 
       return icon.release();
     }
   }
-
+#endif
   Usul::Interfaces::IPointLayer::QueryPtr pointLayer( caller );
   if( pointLayer.valid() )
   {
-    OsgTools::Legend::SolidMaterialSphereIcon::RefPtr icon ( new OsgTools::Legend::SolidMaterialSphereIcon );
-    icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::FRONT );
-    icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::BACK );
-    return icon.release();
+    typedef Usul::Interfaces::IPointLayer IPointLayer;
+
+    switch ( pointLayer->primitiveID() )
+    {
+    case IPointLayer::SPHERE:
+      {
+        OsgTools::Legend::SolidMaterialSphereIcon::RefPtr icon ( new OsgTools::Legend::SolidMaterialSphereIcon );
+        icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::FRONT );
+        icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::BACK );
+        return icon.release();
+      }
+    }
   }
-#endif
-  OsgTools::Legend::SolidMaterialQuadIcon::RefPtr icon ( new OsgTools::Legend::SolidMaterialQuadIcon );
-  icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::FRONT );
-  icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::BACK );
+  //#endif
+  OsgTools::Legend::SolidColorQuadIcon::RefPtr icon ( new OsgTools::Legend::SolidColorQuadIcon );
+  icon->colorPolicy().color ( this->color() );
+  //icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::FRONT );
+  //icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::BACK );
 
   return icon.release();
 }

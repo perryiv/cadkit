@@ -13,7 +13,7 @@
 
 #include "VRV/Export.h"
 #include "VRV/Prefs/Settings.h"
-#include "VRV/Core/SharedDouble.h"
+#include "VRV/Core/SharedData.h"
 #include "VRV/Core/SharedMatrix.h"
 #include "VRV/Devices/JoystickDevice.h"
 #include "VRV/Devices/ButtonGroup.h"
@@ -133,7 +133,6 @@ public:
   typedef OsgTools::Render::Renderer           Renderer;
   typedef Renderer::RefPtr                     RendererPtr;
   typedef std::vector < RendererPtr >          Renderers;
-  typedef VRV::Core::SharedDouble              SharedDouble;
   typedef Usul::Threads::RecursiveMutex        Mutex;
   typedef Usul::Threads::Guard<Mutex>          Guard;
   typedef OsgTools::Widgets::ProgressBarGroup  ProgressBars;
@@ -555,7 +554,8 @@ private:
   typedef std::queue< CommandPtr >                         CommandQueue_;
   USUL_DECLARE_QUEUE_CONFIG ( QueueConfig, Mutex, Guard, CommandQueue_ );
   typedef Usul::Threads::Queue<QueueConfig>                CommandQueue;
-    typedef std::map<std::string, Usul::Math::Vec4f >      ColorMap;
+  typedef std::map<std::string, Usul::Math::Vec4f >        ColorMap;
+  typedef VRV::Core::SharedData<double>                    SharedDouble;
 
   // Data members.
   mutable Mutex                          _mutex;
@@ -605,6 +605,7 @@ private:
   ColorMap                               _colorMap;
   unsigned int                           _count;
   bool                                   _allowUpdate;
+  std::string                            _screenShotDirectory;
 };
 
 }

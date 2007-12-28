@@ -1,3 +1,13 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author: Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #include "Usul/Types/Types.h"
 #include "VRV/Export.h"
 
@@ -12,10 +22,17 @@ namespace Core {
 
 template < class T > struct ReaderWriter;
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read/Write a boolean value
+//
+///////////////////////////////////////////////////////////////////////////////
+
 template<>
 struct ReaderWriter<bool>
 {
-  static void read ( vpr::ObjectReader *reader, bool value )
+  static void read ( vpr::ObjectReader *reader, bool &value )
   {
     reader->readBool ( value );
   }
@@ -25,10 +42,17 @@ struct ReaderWriter<bool>
   }
 };
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read/Write a float value
+//
+///////////////////////////////////////////////////////////////////////////////
+
 template<>
 struct ReaderWriter<float>
 {
-  static void read ( vpr::ObjectReader *reader, float value )
+  static void read ( vpr::ObjectReader *reader, float &value )
   {
     reader->readFloat ( value );
   }
@@ -38,10 +62,17 @@ struct ReaderWriter<float>
   }
 };
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read/Write a double value
+//
+///////////////////////////////////////////////////////////////////////////////
+
 template<>
 struct ReaderWriter<double>
 {
-  static void read ( vpr::ObjectReader *reader, double value )
+  static void read ( vpr::ObjectReader *reader, double &value )
   {
     reader->readDouble ( value );
   }
@@ -51,10 +82,17 @@ struct ReaderWriter<double>
   }
 };
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read/Write an unsigned 8 bit value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 template<>
 struct ReaderWriter<Usul::Types::Uint8>
 {
-  static void read ( vpr::ObjectReader *reader, Usul::Types::Uint8 value )
+  static void read ( vpr::ObjectReader *reader, Usul::Types::Uint8 &value )
   {
     reader->readUint8( value );
   }
@@ -65,10 +103,16 @@ struct ReaderWriter<Usul::Types::Uint8>
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read/Write an unsigned 16 bit value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 template<>
 struct ReaderWriter<Usul::Types::Uint16>
 {
-  static void read ( vpr::ObjectReader *reader, Usul::Types::Uint16 value )
+  static void read ( vpr::ObjectReader *reader, Usul::Types::Uint16 &value )
   {
     reader->readUint16( value );
   }
@@ -78,10 +122,17 @@ struct ReaderWriter<Usul::Types::Uint16>
   }
 };
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read/Write an unsigned 32 bit value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 template<>
 struct ReaderWriter<Usul::Types::Uint32>
 {
-  static void read ( vpr::ObjectReader *reader, Usul::Types::Uint32 value )
+  static void read ( vpr::ObjectReader *reader, Usul::Types::Uint32 &value )
   {
     reader->readUint32 ( value );
   }
@@ -91,10 +142,18 @@ struct ReaderWriter<Usul::Types::Uint32>
   }
 };
 
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read/Write an unsigned 64 bit value.
+//
+///////////////////////////////////////////////////////////////////////////////
+#if 0
 template<>
 struct ReaderWriter<Usul::Types::Uint64>
 {
-  static void read ( vpr::ObjectReader *reader, Usul::Types::Uint64 value )
+  static void read ( vpr::ObjectReader *reader, Usul::Types::Uint64 &value )
   {
     reader->readUint64 ( value );
   }
@@ -103,6 +162,6 @@ struct ReaderWriter<Usul::Types::Uint64>
     writer->writeUint64( value );
   }
 };
-
+#endif
 }
 }

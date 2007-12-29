@@ -25,7 +25,7 @@
 namespace StarSystem {
 
   
-class Hud
+class STAR_SYSTEM_EXPORT Hud
 {
 public:
   Hud();

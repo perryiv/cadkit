@@ -235,6 +235,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Program.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Program.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ProgressBarDock.cpp"
 				>
 			</File>

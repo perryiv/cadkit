@@ -379,7 +379,7 @@ SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2ui );
 #define SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_MATRIX_4_4(the_type)\
 inline std::ostream &operator << ( std::ostream &out, const the_type &m )\
 {\
-  int w ( 10 );\
+  int w ( 20 );\
   int p ( 4 );\
 \
   out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 0, 0 );\

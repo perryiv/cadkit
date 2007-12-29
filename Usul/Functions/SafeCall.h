@@ -64,18 +64,18 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define SAFE_CALL_CATCH_BLOCKS \
+#define USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS(error_id) \
 catch ( const Usul::Exceptions::Canceled &e ) \
 { \
-  Usul::Functions::Helper::exceptionHandler ( id, e ); \
+  Usul::Functions::Helper::exceptionHandler ( error_id, e ); \
 } \
 catch ( const std::exception &e ) \
 { \
-  Usul::Functions::Helper::exceptionHandler ( id, e ); \
+  Usul::Functions::Helper::exceptionHandler ( error_id, e ); \
 } \
 catch ( ... ) \
 { \
-  Usul::Functions::Helper::exceptionHandler ( id ); \
+  Usul::Functions::Helper::exceptionHandler ( error_id ); \
 }
 
 
@@ -91,7 +91,7 @@ template < class F > void safeCall ( F function, const char *id = 0x0 )
   {
     function();
   }
-  SAFE_CALL_CATCH_BLOCKS;
+  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( id );
 }
 
 
@@ -101,7 +101,7 @@ template < class F, class T1 > void safeCallR1 ( F function, T1 &t1, const char 
   {
     function ( t1 );
   }
-  SAFE_CALL_CATCH_BLOCKS;
+  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( id );
 }
 
 
@@ -111,7 +111,7 @@ template < class F, class T1 > void safeCallV1 ( F function, T1 t1, const char *
   {
     function ( t1 );
   }
-  SAFE_CALL_CATCH_BLOCKS;
+  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( id );
 }
 
 
@@ -121,7 +121,7 @@ template < class F, class T1, class T2 > void safeCallR1R2 ( F function, T1 &t1,
   {
     function ( t1, t2 );
   }
-  SAFE_CALL_CATCH_BLOCKS;
+  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( id );
 }
 
 
@@ -131,7 +131,7 @@ template < class F, class T1, class T2 > void safeCallV1V2 ( F function, T1 t1, 
   {
     function ( t1, t2 );
   }
-  SAFE_CALL_CATCH_BLOCKS;
+  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( id );
 }
 
 
@@ -141,7 +141,7 @@ template < class F, class T1, class T2, class T3 > void safeCallV1V2V3 ( F funct
   {
     function ( t1, t2, t3 );
   }
-  SAFE_CALL_CATCH_BLOCKS;
+  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( id );
 }
 
 
@@ -151,7 +151,7 @@ template < class F, class T1, class T2, class T3 > void safeCallR1R2R3 ( F funct
   {
     function ( t1, t2, t3 );
   }
-  SAFE_CALL_CATCH_BLOCKS;
+  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( id );
 }
 
 
@@ -161,7 +161,7 @@ template < class F, class T1, class T2, class T3 > void safeCallV1V2R3 ( F funct
   {
     function ( t1, t2, t3 );
   }
-  SAFE_CALL_CATCH_BLOCKS;
+  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( id );
 }
 
 
@@ -171,7 +171,17 @@ template < class F, class T1, class T2, class T3, class T4, class T5 > void safe
   {
     function ( t1, t2, t3, t4, t5 );
   }
-  SAFE_CALL_CATCH_BLOCKS;
+  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( id );
+}
+
+
+template < class F, class T1, class T2, class T3, class T4, class T5 > void safeCallV1V2V3V4R5 ( F function, T1 t1, T2 t2, T3 t3, T4 t4, T5 &t5, const char *id = 0x0 )
+{
+  try
+  {
+    function ( t1, t2, t3, t4, t5 );
+  }
+  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( id );
 }
 
 
@@ -181,17 +191,8 @@ template < class F, class T1, class T2, class T3, class T4, class T5, class T6 >
   {
     function ( t1, t2, t3, t4, t5, t6 );
   }
-  SAFE_CALL_CATCH_BLOCKS;
+  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( id );
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Clean up macros
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#undef SAFE_CALL_CATCH_BLOCKS
 
 
 } // namespace Functions

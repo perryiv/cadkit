@@ -60,7 +60,7 @@ public:
   virtual void                  activeViewChanged ( IUnknown *oldView, IUnknown *newView );
 
   // Usul::Interfaces::IAnimatePath.
-  virtual void                  animatePath ( const IAnimatePath::PackedMatrices & );
+  virtual void                  animatePath ( const IAnimatePath::PackedMatrices &, double step = Usul::Interfaces::AnimatePath::DEFAULT_STEP_SIZE );
 
   // Usul::Interfaces::IPlugin
   virtual std::string           getPluginName() const { return "Path Animation"; }
@@ -103,8 +103,8 @@ protected:
   void                          _pause ( bool );
   void                          _playBackward();
   void                          _playForward();
-  void                          _playPathBackward ( const CameraPath *path );
-  void                          _playPathForward ( const CameraPath *path );
+  void                          _playPathBackward ( const CameraPath *path, double step );
+  void                          _playPathForward ( const CameraPath *path, double step );
 
   void                          _saveCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );
   void                          _saveAsCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );

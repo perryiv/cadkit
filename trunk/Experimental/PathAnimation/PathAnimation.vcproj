@@ -249,10 +249,6 @@
 					RelativePath=".\PathAnimationComponent.h"
 					>
 				</File>
-				<File
-					RelativePath=".\PathAnimationFactory.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

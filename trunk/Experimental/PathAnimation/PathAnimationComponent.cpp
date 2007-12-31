@@ -18,6 +18,7 @@
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Commands/GenericCheckCommand.h"
+#include "Usul/Components/Factory.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
@@ -44,6 +45,7 @@
 namespace Sections = Usul::Registry::Sections;
 typedef Usul::Registry::Database Reg;
 
+USUL_DECLARE_COMPONENT_FACTORY ( PathAnimationComponent );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PathAnimationComponent, PathAnimationComponent::BaseClass );
 
 
@@ -436,7 +438,7 @@ bool PathAnimationComponent::_canClosePath() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::_playPathForward ( const CameraPath *path )
+void PathAnimationComponent::_playPathForward ( const CameraPath *path, double step )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -451,6 +453,9 @@ void PathAnimationComponent::_playPathForward ( const CameraPath *path )
   // Make sure we have a player.
   if ( false == _player.valid() )
     _player = new CurvePlayer;
+
+  // Set the step size.
+  _player->stepSize ( step );
 
   // Play the animation forward.
   _player->playForward ( path, _degree, Usul::Documents::Manager::instance().activeView() );
@@ -463,7 +468,7 @@ void PathAnimationComponent::_playPathForward ( const CameraPath *path )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::_playPathBackward ( const CameraPath *path )
+void PathAnimationComponent::_playPathBackward ( const CameraPath *path, double step )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -478,6 +483,9 @@ void PathAnimationComponent::_playPathBackward ( const CameraPath *path )
   // Make sure we have a player.
   if ( false == _player.valid() )
     _player = new CurvePlayer;
+
+  // Set the step size.
+  _player->stepSize ( step );
 
   // Play the animation forward.
   _player->playBackward ( path, _degree, Usul::Documents::Manager::instance().activeView() );
@@ -494,7 +502,7 @@ void PathAnimationComponent::_playForward()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  this->_playPathForward ( _currentPath.get() );
+  this->_playPathForward ( _currentPath.get(), Usul::Interfaces::AnimatePath::DEFAULT_STEP_SIZE );
 }
 
 
@@ -508,7 +516,7 @@ void PathAnimationComponent::_playBackward()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  this->_playPathBackward ( _currentPath.get() );
+  this->_playPathBackward ( _currentPath.get(), Usul::Interfaces::AnimatePath::DEFAULT_STEP_SIZE );
 }
 
 
@@ -695,7 +703,7 @@ void PathAnimationComponent::updateNotify ( IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &matrices )
+void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &matrices, double step )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -726,7 +734,7 @@ void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &m
   }
 
   // Play this path forward.
-  this->_playPathForward ( path.get() );
+  this->_playPathForward ( path.get(), step );
 }
 
 
@@ -1030,7 +1038,7 @@ void PathAnimationComponent::_buildCameraMenu()
     return;
 
   // Number of frames.
-  unsigned int numFrames ( _currentPath->size() );
+  const unsigned int numFrames ( _currentPath->size() );
 
   // Build the buttons.
   for ( unsigned int i = 0; i < numFrames; ++ i )
@@ -1040,7 +1048,7 @@ void PathAnimationComponent::_buildCameraMenu()
     _cameraMenu->append ( new MenuKit::Button ( 
       Usul::Commands::genericCommand ( name.str(),  
                                        Usul::Adaptors::bind1<void> ( i, 
-                                       Usul::Adaptors::memberFunction ( this, &PathAnimationComponent::_setCameraPosition  ) ), 
+                                       Usul::Adaptors::memberFunction ( this, &PathAnimationComponent::_setCameraPosition ) ), 
                                        Usul::Commands::TrueFunctor() ) ) );
   }
 }
@@ -1056,21 +1064,36 @@ void PathAnimationComponent::_setCameraPosition ( unsigned int num )
 {
   // Get needed interface.
   Usul::Interfaces::IViewMatrix::QueryPtr vm ( Usul::Documents::Manager::instance().activeView() );
-  if ( false == vm.valid() || false == _currentPath.valid() )
+  if ( false == vm.valid() )
     return;
 
+  // Check state.
+  if ( false == _currentPath.valid() )
+    return;
+
+  // Check input.
+  if ( num >= _currentPath->size() )
+    return;
+
+  // Get current view matrix.
+  const osg::Matrixd m1 ( vm->getViewMatrix() );
+
+  // Get camera properties. 
   Usul::Math::Vec3d eye, center, up;
   _currentPath->camera ( eye, center, up, num );
 
   // Make sure the vectors are normalized.
   up.normalize();
 
-  // Make the matrix.
-  osg::Matrixd mat ( osg::Matrixd::identity() );
-  mat.makeLookAt ( osg::Vec3d ( eye[0], eye[1], eye[2] ), osg::Vec3d ( center[0], center[1], center[2] ), osg::Vec3d ( up[0], up[1], up[2] ) );
+  // Make the new matrix.
+  osg::Matrixd m2 ( osg::Matrixd::identity() );
+  m2.makeLookAt ( osg::Vec3d ( eye[0], eye[1], eye[2] ), osg::Vec3d ( center[0], center[1], center[2] ), osg::Vec3d ( up[0], up[1], up[2] ) );
 
-  // Set the matrix.
-  vm->setViewMatrix ( mat );
+  // Prepare path.
+  PackedMatrices matrices;
+  matrices.push_back ( IAnimatePath::PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
+  matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
 
-
+  // Animate through the path.
+  this->animatePath ( matrices );
 }

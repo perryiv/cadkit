@@ -804,8 +804,11 @@ void PathAnimationComponent::_openPath( Usul::Interfaces::IUnknown::QueryPtr cal
     }
   }
 
-  // Rebuild the menu.
+  // Rebuild the path menu.
   this->_buildMenu();
+  
+  // Rebuild the camera menu.
+  this->_buildCameraMenu();
 }
 
 

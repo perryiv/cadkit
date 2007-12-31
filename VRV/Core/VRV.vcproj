@@ -262,6 +262,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\SharedData.h"
+					>
+				</File>
+				<File
 					RelativePath=".\SharedMap.cpp"
 					>
 				</File>

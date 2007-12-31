@@ -234,6 +234,9 @@ Application::~Application()
 {
   USUL_TRACE_SCOPE;
 
+  // Wait for all jobs to finish
+  Usul::Jobs::Manager::instance().wait();
+
   // Remove our self from the list of active document listeners.
   Usul::Documents::Manager::instance().removeActiveDocumentListener ( this );
 
@@ -881,7 +884,7 @@ void Application::_init()
     _sharedScreenShotDirectory->data ( directory );
 
     // Make sure the directory exists..
-    Usul::File::make ( directory );
+    Usul::Functions::safeCall ( Usul::Adaptors::bind1 ( directory, Usul::File::make ), "2725212336" );
   }
 
   // Initialize plugins that need to.

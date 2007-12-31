@@ -12,6 +12,7 @@
 #define __USUL_STRINGS_CONVERT_H__
 
 #include <iomanip>
+#include <limits>
 #include <string>
 #include <sstream>
 
@@ -19,6 +20,43 @@ namespace Usul
 {
   namespace Strings
   {
+    // Helper classes to only set floating point output.
+    namespace Helper
+    {
+      template < class T > struct SetStream
+      {
+        SetStream ( std::ostream & )
+        {
+        }
+      };
+      template < class T > inline void setFloatStream ( std::ostream &out )
+      {
+        out.setf ( std::ios_base::fixed, std::ios_base::floatfield );
+        out.precision ( std::numeric_limits<T>::digits10 );
+      }
+      template <> struct SetStream<float>
+      {
+        SetStream ( std::ostream &out )
+        {
+          setFloatStream<float> ( out );
+        }
+      };
+      template <> struct SetStream<double>
+      {
+        SetStream ( std::ostream &out )
+        {
+          setFloatStream<double> ( out );
+        }
+      };
+      template <> struct SetStream<long double>
+      {
+        SetStream ( std::ostream &out )
+        {
+          setFloatStream<long double> ( out );
+        }
+      };
+    }
+
     /// Convert t to a string.
     inline std::string toString ( bool t )
     {
@@ -28,7 +66,8 @@ namespace Usul
     inline std::string toString ( const T& t )
     {
       std::ostringstream os;
-      os << std::setiosflags ( std::ios_base::fixed ) << t;
+      Helper::SetStream<T> setStream ( os );
+      os << t;
       return os.str();
     }
 

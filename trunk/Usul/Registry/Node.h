@@ -69,8 +69,10 @@ public:
   Iterator                        end();
   ConstIterator                   end() const;
 
-  // Get the string value.
+  // Get the value.
+  std::string                     get ( const std::string &defaultValue, bool setValueIfEmpty );
   std::string                     get ( const std::string &defaultValue ) const;
+  template < class T > T          get ( const T &defaultValue, bool setValueIfEmpty );
   template < class T > T          get ( const T &defaultValue ) const;
 
   // Operator to return the child with the name or path. Creates child nodes as needed.
@@ -132,6 +134,26 @@ template < class T > T Node::get ( const T &defaultValue ) const
   T v = defaultValue;
   Usul::Registry::Convert<T>::from ( _value, v );
   return v;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the value. Extend formatting with overloads to "from".
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class T > T Node::get ( const T &defaultValue, bool setValueIfEmpty )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  if ( ( true == _value.empty() ) && ( true == setValueIfEmpty ) )
+  {
+    this->set ( defaultValue );
+  }
+
+  return this->get<T> ( defaultValue );
 }
 
 

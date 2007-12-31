@@ -16,6 +16,8 @@
 #include "OsgTools/ShapeFactory.h"
 #include "OsgTools/State/StateSet.h"
 
+#include <algorithm>
+
 namespace OsgTools {
 namespace Legend {
 
@@ -28,13 +30,18 @@ struct SphereFunctor
     OsgTools::ShapeFactory::LongitudeRange longRange (  0.0f, 360.0f );
 
     osg::ref_ptr < osg::Geometry > geom ( OsgTools::ShapeFactorySingleton::instance().sphere ( osg::Vec3( width / 2, height/2, 0.0 ), height / 2, meshSize, latRange, longRange  ) );
-    //OsgTools::State::StateSet::setLighting ( geom->getOrCreateStateSet(), true );
-    //OsgTools::State::StateSet::setNormalize ( geom->getOrCreateStateSet(), true );
 
-    osg::ref_ptr< osg::StateSet > ss ( geom->getOrCreateStateSet() );
-    //ss->setMode ( GL_NORMALIZE, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-    ss->setMode ( GL_LIGHTING, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-    ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+#ifdef _MSC_VER
+    osg::Vec3Array *normals = dynamic_cast < osg::Vec3Array * > ( geom->getNormalArray() );
+    if ( normals )
+    {
+      // Loop through the normals and negate them.
+      std::transform ( normals->begin(), normals->end(), normals->begin(), std::negate<osg::Vec3>() );
+    }
+#endif
+
+    // Make sure lighting is on.
+    OsgTools::State::StateSet::setLighting ( geom->getOrCreateStateSet(), true );
 
     return geom.release();
   }

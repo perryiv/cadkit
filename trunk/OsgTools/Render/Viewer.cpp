@@ -3733,16 +3733,21 @@ void Viewer::_handleSeek ( EventAdapter *ea )
   typedef Usul::Interfaces::IAnimatePath IAnimatePath;
   IAnimatePath::QueryPtr animate ( Usul::Components::Manager::instance().getInterface ( IAnimatePath::IID ) );
 
-  // Use the animation interface if we found a valid one
-  if ( animate.valid() )
+  // Use the animation interface if we found a valid one.
+  if ( true == animate.valid() )
   {
-    // Prepare path and animate.
+    // Prepare path.
     IAnimatePath::PackedMatrices matrices;
     const osg::Matrixd m1 ( this->getViewMatrix() );
     const osg::Matrixd m2 ( Trackball::matrix ( c2, rot, d2 ) );
     matrices.push_back ( IAnimatePath::PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
     matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
-    animate->animatePath ( matrices );
+
+    // Get step size.
+    const double step ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::SEEK_STEP_SIZE].get<double> ( 0.05, true ) );
+
+    // Animate through the path.
+    animate->animatePath ( matrices, step );
 
     // We do this also so that the trackball behaves well.
     this->setTrackball ( c2, d2, rot, true, true );

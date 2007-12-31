@@ -81,7 +81,6 @@ USUL_IMPLEMENT_TYPE_ID ( MinervaDocument );
 
 MinervaDocument::MinervaDocument() : BaseClass( "Minerva Document" ),
 _layers(),
-_favorites(),
 _sceneManager ( new Minerva::Core::Scene::SceneManager ),
 #if USE_STAR_SYSTEM
 _system ( 0x0 ),
@@ -101,7 +100,7 @@ _animateSettings ( new Minerva::Core::Animate::Settings ),
 _datesDirty ( false ),
 _lastDate ( boost::date_time::min_date_time ),
 _global ( new TimeSpan ),
-_current ( new TimeSpan ),
+_current ( _global ),
 _timeSpans (),
 _lastTime ( -1.0 ),
 _animationSpeed ( 0.1f ),
@@ -112,7 +111,7 @@ SERIALIZE_XML_INITIALIZER_LIST
   // Only make it once.
   if ( 0x0 == _manager )
   {
-    _manager = new Usul::Jobs::Manager ( 5, true );
+    _manager = new Usul::Jobs::Manager ( 1, true );
   }
 
   // Only make it once.
@@ -126,7 +125,7 @@ SERIALIZE_XML_INITIALIZER_LIST
   // Make the system.
   _system = new StarSystem::System ( _manager );
 
-#if 0
+#if 1
   // Make the land model.
   typedef StarSystem::LandModelEllipsoid Land;
   Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
@@ -137,32 +136,49 @@ SERIALIZE_XML_INITIALIZER_LIST
   StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 26712 ) ); // UTM 12 NAD 27
   //StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 26912 ) ); // UTM 12 NAD 83
 #endif
-  const osg::Vec2d mn ( -113, 33.0 );
-  const osg::Vec2d mx ( -111, 34.0 );
-
+  
   // Make a good split distance.
-  const double splitDistance ( land->size() / 10 );
+  const double splitDistance ( land->size() * 3 );
 
   // Size of the mesh.
-  Body::MeshSize meshSize ( 100, 100 );
+  Body::MeshSize meshSize ( 17, 17 );
 
   // Add the body.
   Body::RefPtr body ( new Body ( land, _manager, meshSize, splitDistance ) );
-  body->useSkirts ( false );
-  body->splitCallback ( new StarSystem::Callbacks::SplitToLevel ( 2 ) );
-
-  StarSystem::ElevationLayerDem::RefPtr dem ( new StarSystem::ElevationLayerDem );
-  //dem->open ( "/Users/adam/data/terrain/maricopa_dem/mari_int.dem" );
-  dem->open ( "c:/adam/data/terrain/maricopa_dem/mari_int.dem" );
-  body->elevationAppend ( dem );
-
-  _system->body ( body.get() );
+  body->useSkirts ( true );
 
 #if 0
+  body->splitCallback ( new StarSystem::Callbacks::SplitToLevel ( 2 ) );
+
+  static int i ( 0 );
+
+  if ( i >= 1 )
+  {
+  StarSystem::ElevationLayerDem::RefPtr dem ( new StarSystem::ElevationLayerDem );
+  dem->open ( "/Users/adam/data/terrain/maricopa_dem/mari_int.dem" );
+  //dem->open ( "c:/adam/data/terrain/maricopa_dem/mari_int.dem" );
+  body->elevationAppend ( dem );
+  
+  //StarSystem::RasterLayerOssim::RefPtr layer ( new StarSystem::RasterLayerOssim );
+  //layer->open ( "/Users/adam/data/terrain/maricopa_dem/mari_int.dem" );
+  //body->rasterAppend ( layer );
+  }
+  ++i;
+#endif
+  
+  _system->body ( body.get() );
+
+#if 1
   // Add tiles to the body.
   body->addTile ( Extents ( -180, -90,    0,   90 ) );
   body->addTile ( Extents (    0, -90,  180,   90 ) );
 #endif
+  const osg::Vec2d mn ( -113.33, 32.49 );
+  const osg::Vec2d mx ( -111.04, 34.05 );
+  
+  //const osg::Vec2d mn ( -112.0, 33.0 );
+  //const osg::Vec2d mx ( -111.5, 33.5 );
+  
   body->addTile ( Extents ( mn, mx ) );
 #if 1
 
@@ -190,7 +206,6 @@ SERIALIZE_XML_INITIALIZER_LIST
   _planet->root()->addChild( _sceneManager->root() );
 #endif
   SERIALIZE_XML_ADD_MEMBER ( _layers );
-  SERIALIZE_XML_ADD_MEMBER ( _favorites );
   SERIALIZE_XML_ADD_MEMBER ( _commandsSend );
   SERIALIZE_XML_ADD_MEMBER ( _commandsReceive );
   SERIALIZE_XML_ADD_MEMBER ( _sessionName );
@@ -198,6 +213,7 @@ SERIALIZE_XML_INITIALIZER_LIST
   SERIALIZE_XML_ADD_MEMBER ( _timeSpans );
 
 #ifndef _MSC_VER
+#ifndef __APPLE__
   //this->elevationEnabled ( false );
   this->showLegend ( false );
 
@@ -210,6 +226,7 @@ SERIALIZE_XML_INITIALIZER_LIST
     this->sceneManager()->legendHeightPerItem ( 60 );
     this->sceneManager()->legendPosition( Minerva::Core::Scene::SceneManager::LEGEND_TOP_LEFT );
   }
+#endif
 #endif
 }
 
@@ -453,7 +470,6 @@ void MinervaDocument::write ( const std::string &filename, Unknown *caller, Unkn
 
 void MinervaDocument::clear ( Unknown *caller )
 {
-  _favorites.clear();
   _sceneManager->clear();
   this->_connectToDistributedSession();
   _sender->deleteSession();
@@ -717,36 +733,6 @@ void MinervaDocument::hudEnabled( bool val )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Is ephemeris enabled?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool MinervaDocument::ephemerisFlag() const
-{
-#if USE_STAR_SYSTEM
-  return false;
-#else
-  return _planet->ephemerisFlag();
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the ephemeris flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::ephemerisFlag( bool val )
-{
-#if USE_STAR_SYSTEM == 0
-  _planet->ephemerisFlag ( val );
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Is the legend showing?
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -806,87 +792,6 @@ osgGA::MatrixManipulator * MinervaDocument::getMatrixManipulator ()
 #else
   return _planet->manipulator();
 #endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the database pager.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osgDB::DatabasePager * MinervaDocument::getDatabasePager ()
-{
-#if USE_STAR_SYSTEM
-  return 0x0;
-#else
-  return _planet->databasePager();
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add layer to the favorites.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::addToFavorites( Usul::Interfaces::IUnknown* unknown )
-{
-  Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
-
-  if( layer.valid() )
-    _favorites[layer->name()] = layer;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create a favorite from the string.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown * MinervaDocument::createFavorite( const std::string& name ) const
-{
-  Favorites::const_iterator iter = _favorites.find( name );
-  if( iter != _favorites.end() )
-  {
-    Usul::Interfaces::IClonable::QueryPtr clonable ( const_cast < Usul::Interfaces::ILayer* > ( iter->second.get() ) );
-
-    if( clonable.valid() )
-    {
-      /// Clone the "template"
-      Usul::Interfaces::ILayer::QueryPtr layer ( clonable->clone() );
-
-      /// Make sure that the favorite is shown.
-      if( layer.valid() )
-        layer->showLayer( true );
-
-      /// Return the layer we created.
-      return layer.release();
-    }
-  }
-
-  return 0x0;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Get the list of favorites.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-MinervaDocument::Names MinervaDocument::favorites() const
-{
-  Names names;
-
-  for( Favorites::const_iterator iter = _favorites.begin(); iter != _favorites.end(); ++iter )
-  {
-    names.push_back ( iter->first );
-  }
-
-  return names;
 }
 
 
@@ -1336,10 +1241,12 @@ void MinervaDocument::addView ( Usul::Interfaces::IView *view )
   // Call the base classes on first.
   BaseClass::addView ( view );
 
+#if 0
   Usul::Interfaces::IClippingDistance::QueryPtr cd ( view );
   if ( cd.valid () )
     cd->setClippingDistances ( 0.001, 15 );
-
+#endif
+  
 #if USE_STAR_SYSTEM == 0
   // Initalize the OSG visitors.
   _planet->initVisitors ( view );
@@ -1550,24 +1457,6 @@ const Minerva::Core::Scene::SceneManager * MinervaDocument::sceneManager () cons
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _sceneManager.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the planet.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Magrathea::Planet* MinervaDocument::planet ()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-#if USE_STAR_SYSTEM
-  return 0x0;
-#else
-  return _planet.get();
-#endif
 }
 
 

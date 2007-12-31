@@ -26,7 +26,6 @@
 #include "Usul/Interfaces/ILayerList.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/ICommandExecuteListener.h"
-#include "Usul/Interfaces/IProjectCoordinates.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 
 #include "Minerva/Core/Animate/Settings.h"
@@ -45,7 +44,7 @@
 
 #include "Serialize/XML/Macros.h"
 
-#define USE_STAR_SYSTEM 1
+#define USE_STAR_SYSTEM 0
 
 #if USE_STAR_SYSTEM
 #include "Usul/Jobs/Manager.h"
@@ -77,8 +76,6 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
 public:
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
-  typedef std::vector< std::string > Names;
-  typedef std::map < std::string, Usul::Interfaces::ILayer::QueryPtr > Favorites;
   typedef std::vector < Usul::Interfaces::ILayer::QueryPtr > Layers;
   typedef Minerva::Core::Scene::SceneManager SceneManager;
   typedef Minerva::Core::Animate::Settings Settings;
@@ -155,9 +152,6 @@ public:
   bool                                     hudEnabled() const;
   void                                     hudEnabled( bool val );
 
-  bool                                     ephemerisFlag() const;
-  void                                     ephemerisFlag( bool val );
-
   bool                                     isShowLegend() const;
   void                                     showLegend( bool b );
 
@@ -168,10 +162,6 @@ public:
   /// Get/Set the percentage of screen the legend uses.
   void                                     percentScreenWidth ( float );
   float                                    percentScreenWidth();
-
-  void                                     addToFavorites( Usul::Interfaces::IUnknown* layer );
-  Usul::Interfaces::IUnknown *             createFavorite( const std::string& name ) const;
-  Names                                    favorites() const;
 
   Layers&                                  layers();
   const Layers&                            layers() const;
@@ -197,12 +187,6 @@ public:
   /// Get the scene manager.
   SceneManager *                           sceneManager ();
   const SceneManager *                     sceneManager () const;
-
-  /// Get the planet.
-  Magrathea::Planet*                       planet ();
-
-  /// Get the database pager.
-  virtual osgDB::DatabasePager *           getDatabasePager ();
 
   /// Start the animation (Minerva::Interfaces::IAnimationControl).
   virtual void                             startAnimation ();
@@ -282,7 +266,6 @@ protected:
 private:
 
   Layers _layers;
-  Favorites _favorites;
   Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
 #if USE_STAR_SYSTEM
   StarSystem::System::RefPtr _system;

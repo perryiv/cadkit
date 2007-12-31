@@ -192,10 +192,6 @@ void LoadDocument::LoadJob::_loadModel( const std::string& filename )
   Usul::Interfaces::IUpdateSubject::QueryPtr subject ( _caller );
   if ( subject.valid () )
     subject->addUpdateListener ( document->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-
-  // Turn off display lits.
-  //OsgTools::DisplayLists dl ( false );
-  //dl ( model.get() );
 }
 
 

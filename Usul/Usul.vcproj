@@ -2214,6 +2214,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Scope\StreamState.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Scope\Timer.cpp"
 					>
 				</File>

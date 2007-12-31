@@ -201,11 +201,11 @@ public:
 
   template < class T > void set ( const std::string &name, const T &value )
   {
-    _options.insert ( Options::value_type ( name, Usul::Strings::toString ( value ) ) );
+    _options[name] = Usul::Strings::toString ( value );
   }
   template < class T > void set ( const std::string &name, const std::string &value )
   {
-    _options.insert ( Options::value_type ( name, value ) );
+    _options[name] = value;
   }
   template < class Itr > void set ( Itr first, Itr last )
   {

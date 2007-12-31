@@ -66,6 +66,7 @@ namespace Usul
       const std::string FRAME_DUMP_DIRECTORY      ( "frame_dump_directory" );
       const std::string RENDER_LOOP               ( "render_loop" );
       const std::string TRACKBALL                 ( "trackball" );
+      const std::string SEEK_STEP_SIZE            ( "seek_step_size" );
     };
   };
 };

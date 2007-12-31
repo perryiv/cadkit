@@ -54,6 +54,9 @@ public:
   // Get the inverse matrix of the manipulator.
   virtual osg::Matrixd    getInverseMatrix() const;
 
+  // Calculate the matrix for the manipulator.
+  static osg::Matrixd     matrix ( const osg::Vec3d &center, const osg::Quat &rotation, double distance );
+
   // Handle events.
   virtual bool            handle ( const osgGA::GUIEventAdapter &, osgGA::GUIActionAdapter & );
 

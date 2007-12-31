@@ -60,7 +60,7 @@
 #include "Usul/Interfaces/GUI/IReportErrors.h"
 #include "Usul/Interfaces/GUI/IMaterialEditor.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
-#include "Usul/Interfaces/IAnimate.h"
+#include "Usul/Interfaces/IAnimatePath.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
 #include "Usul/Interfaces/IRenderListener.h"
 
@@ -3729,13 +3729,23 @@ void Viewer::_handleSeek ( EventAdapter *ea )
   osg::Vec3 axis2 ( c2 - eye );
   const float d2 ( axis2.length() );
 
-  // Find interface to animate, if one exists
-  Usul::Interfaces::IAnimate::QueryPtr animate ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IAnimate::IID ) );
+  // Find interface to animate, if one exists.
+  typedef Usul::Interfaces::IAnimatePath IAnimatePath;
+  IAnimatePath::QueryPtr animate ( Usul::Components::Manager::instance().getInterface ( IAnimatePath::IID ) );
 
   // Use the animation interface if we found a valid one
   if ( animate.valid() )
   {
-    animate->animate ( c2, d2, rot );
+    // Prepare path and animate.
+    IAnimatePath::PackedMatrices matrices;
+    const osg::Matrixd m1 ( this->getViewMatrix() );
+    const osg::Matrixd m2 ( Trackball::matrix ( c2, rot, d2 ) );
+    matrices.push_back ( IAnimatePath::PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
+    matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
+    animate->animatePath ( matrices );
+
+    // We do this also so that the trackball behaves well.
+    this->setTrackball ( c2, d2, rot, true, true );
   }
 
   // If no animation interface exists, just set the trackball

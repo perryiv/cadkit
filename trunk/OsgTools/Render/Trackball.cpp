@@ -61,6 +61,22 @@ Trackball::~Trackball()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Calculate the matrix for the manipulator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Matrixd Trackball::matrix ( const osg::Vec3d &center, const osg::Quat &rotation, double distance )
+{
+  osg::Matrixd TC ( osg::Matrixd::translate ( -center ) );
+  osg::Matrixd IR ( osg::Matrixd::rotate ( rotation.inverse() ) );
+  osg::Matrixd TD ( osg::Matrixd::translate ( 0, 0, -distance ) );
+  osg::Matrixd M ( TC * IR * TD );
+  return M;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the inverse matrix of the manipulator. Does the same thing as the 
 //  base class's version, but I think this is easier to follow.
 //
@@ -68,11 +84,7 @@ Trackball::~Trackball()
 
 osg::Matrixd Trackball::getInverseMatrix() const
 {
-  osg::Matrixd TC ( osg::Matrixd::translate ( -_center ) );
-  osg::Matrixd IR ( osg::Matrixd::rotate ( _rotation.inverse() ) );
-  osg::Matrixd TD ( osg::Matrixd::translate ( 0, 0, -_distance ) );
-  osg::Matrixd M ( TC * IR * TD );
-  return M;
+  return Trackball::matrix ( _center, _rotation, _distance );
 }
 
 

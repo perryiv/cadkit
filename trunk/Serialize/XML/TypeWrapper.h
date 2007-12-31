@@ -26,10 +26,11 @@
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Scope/StreamState.h"
 #include "Usul/Types/Types.h"
 
-#include <sstream>
 #include <iomanip>
+#include <sstream>
 
 namespace Serialize {
 namespace XML {
@@ -252,6 +253,8 @@ template <> struct TypeWrapper < TheType >\
   static void serialize ( const TheType &value, XmlTree::Node &node )\
   {\
     std::ostringstream out;\
+    Usul::Scope::Stream::Flags flags ( out, std::ios_base::fixed, std::ios_base::floatfield );\
+    out.precision ( std::numeric_limits<TheType>::digits10 );\
     out << value;\
     node.value ( out.str() );\
   }\
@@ -298,6 +301,8 @@ SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( double );
 #define SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_4(the_type)\
 inline std::ostream &operator << ( std::ostream &out, const the_type &v )\
 {\
+  Usul::Scope::Stream::Flags flags ( out, std::ios_base::fixed, std::ios_base::floatfield );\
+  Usul::Scope::Stream::MaxPrecision<the_type::value_type> precision ( out );\
   out << v[0] << ' ' << v[1] << ' ' << v[2] << ' ' << v[3];\
   return out;\
 }\
@@ -310,6 +315,8 @@ inline std::istream &operator >> ( std::istream &in, the_type &v )\
 #define SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_3(the_type)\
 inline std::ostream &operator << ( std::ostream &out, const the_type &v )\
 {\
+  Usul::Scope::Stream::Flags flags ( out, std::ios_base::fixed, std::ios_base::floatfield );\
+  Usul::Scope::Stream::MaxPrecision<the_type::value_type> precision ( out );\
   out << v[0] << ' ' << v[1] << ' ' << v[2];\
   return out;\
 }\
@@ -322,6 +329,8 @@ inline std::istream &operator >> ( std::istream &in, the_type &v )\
 #define SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_2(the_type)\
 inline std::ostream &operator << ( std::ostream &out, const the_type &v )\
 {\
+  Usul::Scope::Stream::Flags flags ( out, std::ios_base::fixed, std::ios_base::floatfield );\
+  Usul::Scope::Stream::MaxPrecision<the_type::value_type> precision ( out );\
   out << v[0] << ' ' << v[1];\
   return out;\
 }\
@@ -379,28 +388,25 @@ SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2ui );
 #define SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_MATRIX_4_4(the_type)\
 inline std::ostream &operator << ( std::ostream &out, const the_type &m )\
 {\
-  int w ( 20 );\
-  int p ( 4 );\
+  Usul::Scope::Stream::Flags flags ( out, std::ios_base::fixed, std::ios_base::floatfield );\
+  Usul::Scope::Stream::MaxPrecision<the_type::value_type> precision ( out );\
 \
-  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 0, 0 );\
-  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 1, 0 );\
-  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 2, 0 );\
-  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 3, 0 );\
-  out << std::endl;\
-  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 0, 1 );\
-  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 1, 1 );\
-  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 2, 1 );\
-  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 3, 1 );\
-  out << std::endl;\
-  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 0, 2 );\
-  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 1, 2 );\
-  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 2, 2 );\
-  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 3, 2 );\
-  out << std::endl;\
-  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 0, 3 );\
-  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 1, 3 );\
-  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 2, 3 );\
-  out << std::setw ( w ) << std::setprecision ( p ) << std::fixed << m( 3, 3 );\
+  out << m( 0, 0 ) << ' ';\
+  out << m( 1, 0 ) << ' ';\
+  out << m( 2, 0 ) << ' ';\
+  out << m( 3, 0 ) << std::endl;\
+  out << m( 0, 1 ) << ' ';\
+  out << m( 1, 1 ) << ' ';\
+  out << m( 2, 1 ) << ' ';\
+  out << m( 3, 1 ) << std::endl;\
+  out << m( 0, 2 ) << ' ';\
+  out << m( 1, 2 ) << ' ';\
+  out << m( 2, 2 ) << ' ';\
+  out << m( 3, 2 ) << std::endl;\
+  out << m( 0, 3 ) << ' ';\
+  out << m( 1, 3 ) << ' ';\
+  out << m( 2, 3 ) << ' ';\
+  out << m( 3, 3 );\
 \
   return out;\
 }\

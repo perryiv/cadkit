@@ -187,6 +187,9 @@ protected:
     // Run the application.
     app.run();
 
+    // Clean up.
+    app.cleanup();
+
     // Successs.
     return 0;
   }

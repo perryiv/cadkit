@@ -234,6 +234,24 @@ Application::~Application()
 {
   USUL_TRACE_SCOPE;
 
+  // Make sure.
+  this->cleanup();
+
+  // Make sure we don't have any references hanging around.
+  USUL_ASSERT ( 0 == _refCount );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::cleanup()
+{
+  USUL_TRACE_SCOPE;
+
   // Wait for all jobs to finish
   Usul::Jobs::Manager::instance().wait();
 
@@ -260,9 +278,6 @@ Application::~Application()
 
   // Clear the menu.
   this->menu ( 0x0 );
-
-  // Make sure we don't have any references hanging around.
-  USUL_ASSERT ( 0 == _refCount );
 }
 
 

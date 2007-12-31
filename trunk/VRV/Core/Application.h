@@ -177,6 +177,9 @@ public:
   // Destructor.
   virtual ~Application();
 
+  // Clean up.  Call before the Application is destroyed.
+  void                    cleanup();
+
   virtual void            viewAll ( osg::Node *mt, osg::Matrix::value_type zScale=2 );
 
   /// Add a light.

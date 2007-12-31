@@ -212,7 +212,7 @@ void PathAnimationComponent::_newPath()
   this->_setCurrentPath ( path.get() );
 
   // Rebuild the menu.
-  this->_buildMenu();
+  this->_buildPathsMenu();
 }
 
 
@@ -222,7 +222,7 @@ void PathAnimationComponent::_newPath()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::_buildMenu()
+void PathAnimationComponent::_buildPathsMenu()
 {
   typedef void (PathAnimationComponent::*SetPathFunctionPtr ) ( CameraPath::RefPtr );
   typedef bool (PathAnimationComponent::*CheckFunction) ( CameraPath::RefPtr ) const;
@@ -805,7 +805,7 @@ void PathAnimationComponent::_openPath( Usul::Interfaces::IUnknown::QueryPtr cal
   }
 
   // Rebuild the path menu.
-  this->_buildMenu();
+  this->_buildPathsMenu();
   
   // Rebuild the camera menu.
   this->_buildCameraMenu();
@@ -879,7 +879,7 @@ void PathAnimationComponent::_saveAsCurrentPath ( Usul::Interfaces::IUnknown::Qu
     path->saveAs ( filename, caller ); 
 
     // Rebuild the menu.
-    this->_buildMenu();
+    this->_buildPathsMenu();
   }
 }
 

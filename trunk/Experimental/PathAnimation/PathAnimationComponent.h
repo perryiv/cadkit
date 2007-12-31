@@ -76,7 +76,7 @@ protected:
   // Use reference counting.
   virtual ~PathAnimationComponent();
 
-  void                          _buildMenu();
+  void                          _buildPathsMenu();
   void                          _buildCameraMenu();
 
   bool                          _canClosePath() const;

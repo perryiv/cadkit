@@ -44,7 +44,7 @@ struct Flags
   Flags ( std::ostream &out, std::ios_base::fmtflags flags ) :
     _out ( out ),
     _flags ( out.setf ( flags ) ),
-    _mask ( 0 ),
+    _mask ( static_cast < std::ios_base::fmtflags > ( 0 ) ),
     _useMask ( false )
   {
   }

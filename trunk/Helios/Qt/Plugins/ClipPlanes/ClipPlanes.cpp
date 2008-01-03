@@ -18,6 +18,8 @@
 #include "Usul/Trace/Trace.h"
 #include "Usul/Threads/Named.h"
 
+#include "QtTools/ScopedSignals.h"
+
 #include "osg/BoundingBox"
 #include "osg/Plane"
 
@@ -496,31 +498,6 @@ void ClipPlanes::_distanceSpinBoxChanged ( double value )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Scope the blocking of signals.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  struct ScopedBlockSignals
-  {
-    ScopedBlockSignals( QObject& object ) : _object ( object )
-    {
-      _object.blockSignals ( true );
-    }
-    ~ScopedBlockSignals()
-    {
-      _object.blockSignals ( false );
-    }
-    
-  private:
-    QObject &_object;
-  };
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the distance.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -530,8 +507,8 @@ void ClipPlanes::_setDistance ( double value )
   USUL_TRACE_SCOPE;
   
   // Disable signals during this function.
-  Detail::ScopedBlockSignals s0 ( *_distanceSlider );
-  Detail::ScopedBlockSignals s1 ( *_distanceSpinBox );
+  QtTools::ScopedSignals s0 ( *_distanceSlider );
+  QtTools::ScopedSignals s1 ( *_distanceSpinBox );
   
   Usul::Interfaces::IClippingPlanes::QueryPtr cp ( _caller );
 

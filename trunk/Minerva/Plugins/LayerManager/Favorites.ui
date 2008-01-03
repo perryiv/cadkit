@@ -1,0 +1,53 @@
+<ui version="4.0" >
+ <class>Favorites</class>
+ <widget class="QWidget" name="Favorites" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>435</width>
+    <height>416</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <item>
+    <layout class="QHBoxLayout" >
+     <item>
+      <widget class="QPushButton" name="addLayer" >
+       <property name="toolTip" >
+        <string>Add layer to active document</string>
+       </property>
+       <property name="statusTip" >
+        <string>Add layer to active document</string>
+       </property>
+       <property name="text" >
+        <string>Add Layer</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="removeFavoriteButton" >
+       <property name="text" >
+        <string>Remove Favorite</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTreeWidget" name="_favoritesTree" >
+     <column>
+      <property name="text" >
+       <string>1</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

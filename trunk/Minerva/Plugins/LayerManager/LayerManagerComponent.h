@@ -24,8 +24,11 @@
 #include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Interfaces/GUI/IAddDockWindow.h"
 
+#include <vector>
+
 class QDockWidget;
 class LayersTree;
+class Favorites;
 
 class LayerManagerComponent : public Usul::Base::Referenced,
                               public Usul::Interfaces::IPlugin,
@@ -37,6 +40,7 @@ public:
   /// Typedefs.
   typedef Usul::Base::Referenced                                   BaseClass;
   typedef Usul::Interfaces::IUnknown                               Unknown;
+  typedef std::vector<QDockWidget*>                                Docks;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( LayerManagerComponent );
@@ -64,12 +68,12 @@ protected:
 
   /// Add a dock window.
   virtual void                          addDockWindow ( Usul::Interfaces::IUnknown *caller = 0x0 );
-
-private:
+  
   Usul::Interfaces::IUnknown::QueryPtr _caller;
 
-  QDockWidget     *_dock;
+  Docks            _docks;
   LayersTree      *_layers;
+  Favorites       *_favorites;
 };
 
 

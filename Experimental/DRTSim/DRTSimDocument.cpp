@@ -23,6 +23,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/System/Host.h"
 
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Case.h"
@@ -63,6 +64,7 @@
 #include <iostream>
 
 
+
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( DRTSimDocument, DRTSimDocument::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -93,6 +95,7 @@ DRTSimDocument::DRTSimDocument() :
   _stockFileName	= "StockDetails.dat";
   _transFileName	= "Transhipments.dat";
   _sporeFileName	= "SporeDetails.dat";
+  _legendMachine        = "localhost";
 
   // end here ( added by W.C )
    
@@ -266,6 +269,9 @@ void DRTSimDocument::_read ( const std::string &filename, Unknown *caller, Unkno
 	  if( "stock" == id )		_stockFileName = fn;
 	  if( "spore" == id )		_sporeFileName = fn;
 	  if( "trans" == id )		_transFileName = fn;
+          if( "legend" == id )          _legendMachine = fn;
+
+          
   }
 }
 
@@ -358,7 +364,11 @@ osg::Node *DRTSimDocument::buildScene ( const BaseClass::Options &options, Unkno
         camera->setViewMatrix( osg::Matrix::identity( ) );
 		camera->setClearMask( GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT ); // GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT
 		// camera->setClearColor( osg::Vec4( 0.3f, 0.3f, 0.3f, 1.0f ) );
-        camera->addChild( _createHUDText() );
+        if( "localhost" == _legendMachine || 
+            Usul::System::Host::name() == _legendMachine )
+        {
+          camera->addChild( _createHUDText() );
+        }
         camera->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
 
 		_root->addChild( camera.get() );

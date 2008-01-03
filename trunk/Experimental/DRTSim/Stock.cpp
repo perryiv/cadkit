@@ -31,7 +31,7 @@
 // constructor and deconstructor
 Stock::Stock( )
 {
-	_seqTime			= 2.0f;
+	_seqTime			= 1.0f;
 	_sTime				= 12.0f;
 
 	_winHeight			=	1024;
@@ -325,7 +325,7 @@ osg::Sequence*	Stock::createStockSequence ( )
 		{
 			_stockSequence->addChild( _createStockDetailsbyStep( i ) );
 
-			if( ( count < _numTranSteps ) && ( i == (_transhipment[count]-1) ) )
+			if( ( count < _numTranSteps ) && ( i == (_transhipment[count]-2) ) )		// before transhipment
 			{
 				_stockSequence->setTime( _stockSequence->getNumChildren()-1, _seqTime*_numTranMovements );
 				count++;
@@ -613,6 +613,8 @@ osg::Group*		Stock::_createStockDetailsbyStep( const unsigned int &step )
 bool			Stock::_StockDetailsLoader( )
 {
 	
+	std::cout << "Stock filename: " << _filename << std::endl;
+
 	const Usul::Types::Uint64 fileSize ( Usul::File::size ( _filename ) );
 
 	std::ifstream infile( _filename.c_str(), std::ios::in | std::ios::binary);

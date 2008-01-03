@@ -110,9 +110,6 @@ osg::Switch*	Transhipment::createTranshipmentSwitch( )
 osg::Sequence*	Transhipment::createTranshipmentSequence( )
 {
 
-	// for test only
-	_numOfSteps = 27;
-
 	// numbers and curves
 	_tranSequence = new osg::Sequence;
 	
@@ -127,15 +124,16 @@ osg::Sequence*	Transhipment::createTranshipmentSequence( )
 		unsigned int count ( 0 );
 		unsigned int preStep ( 0 );
 
+		_tranSequence->addChild( new osg::Geode );
+
 		for( unsigned int s = 0; s < _tranSteps.size(); ++s )
 		{
 			if( s > 0 )		sId += _tranSteps[s-1];
 			eId = sId + _tranSteps[s];
 
-			count += _tranDetails[sId].tranStep - preStep;
-			preStep = count;
+			count = _tranDetails[sId].tranStep - preStep; // + s;			// after every transhipment there is an extra waiting time
+			preStep = _tranDetails[sId].tranStep;
 
-			_tranSequence->addChild( new osg::Geode );
 			_tranSequence->setTime( _tranSequence->getNumChildren()-1, _seqTime*(count-1) );
 			
 			for( unsigned int j = 0; j < _numBezierPoints; ++j )
@@ -150,7 +148,7 @@ osg::Sequence*	Transhipment::createTranshipmentSequence( )
 		}	
 
 		_tranSequence->addChild( new osg::Geode );
-		_tranSequence->setTime( _tranSequence->getNumChildren()-1, _seqTime*(_numOfSteps - count - _tranSteps.size()) );
+		_tranSequence->setTime( _tranSequence->getNumChildren()-1, _seqTime*(_numOfSteps - _tranDetails[_tranDetails.size()-1].tranStep + _tranSteps.size()) );
 
 	}
 
@@ -319,6 +317,8 @@ void			Transhipment::_computeQuadraticBezier( )
 bool		Transhipment::_TranDetailsLoader ( )
 {
 
+	std::cout << "Transhipment filename: " << _filename << std::endl;
+
 	const Usul::Types::Uint64 fileSize ( Usul::File::size ( _filename ) );
 
 	std::ifstream infile( _filename.c_str(), std::ios::in | std::ios::binary );
@@ -368,7 +368,8 @@ bool		Transhipment::_TranDetailsLoader ( )
 
 		if( tmp.quantityST > 0 )		// if "0", do not need draw transhipments
 		{
-			_tranDetails.push_back(tmp);
+
+			std::cout << "_tranDetails size: " << _tranDetails.size() << std::endl;
 
 			// put number of transhipmentSteps, a slightly different since the number of transhipments not continuous
 			if ( count == 0 )
@@ -389,6 +390,7 @@ bool		Transhipment::_TranDetailsLoader ( )
 #if debug
 			std::cout << "transhipment: " << tmp.tranStep << " " << tmp.stockType << " " << tmp.fromHospID << " " << tmp.toHospID << " " << tmp.quantityST << std::endl;
 #endif
+			_tranDetails.push_back(tmp);
 
 		}
 

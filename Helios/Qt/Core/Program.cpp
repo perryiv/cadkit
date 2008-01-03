@@ -172,6 +172,10 @@ void Program::run ( int argc, char **argv,
 
   // Set splash image.
   Usul::App::Application::instance().splashImage ( splash );
+  
+  // Set information.
+  Usul::App::Application::instance().vendor ( vendor );
+  Usul::App::Application::instance().program ( program );
 
   // Get persistant directory and make sure it exists.
   const std::string persistantDir ( Usul::User::Directory::vendor ( vendor, true ) + program + "/" );

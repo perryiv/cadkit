@@ -20,9 +20,12 @@
 #ifdef _WIN32
 # define NOMINMAX
 # include <windows.h> // For GetComputerName()
+#else
+#include <unistd.h>
 #endif
 #include <algorithm>
 #include <stdexcept>
+#include <vector>
 
 using namespace Usul;
 using namespace Usul::System;
@@ -48,10 +51,17 @@ std::string Host::name()
   if ( ::GetComputerNameA ( buffer, &used ) )
     machine = buffer;
 
+#else
+  
+  // Get the host name.
+  const unsigned int size ( 1023 );
+  std::vector < char > chars ( size + 1, '\0' );
+  if ( 0 == ::gethostname ( &chars[0], size ) )
+    machine.assign( &chars[0], &chars[0] + ::strlen ( &chars[0] ) );
+  
 #endif
-
-  // If we are on unix, or if the above did not work, then try to get the 
-  // environment variable.
+  
+  // Ifthe above did not work, then try to get the environment variable.
   if ( machine.empty() )
     machine = Usul::System::Environment::get ( "HOST" );
 

@@ -10,6 +10,7 @@
 
 #include "Minerva/Plugins/LayerManager/LayerManagerComponent.h"
 #include "Minerva/Plugins/LayerManager/LayersTree.h"
+#include "Minerva/Plugins/LayerManager/Favorites.h"
 
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 #include "Usul/Interfaces/IQtDockWidgetMenu.h"
@@ -32,8 +33,9 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( LayerManagerComponent, LayerManagerComponent::
 
 LayerManagerComponent::LayerManagerComponent() : BaseClass (),
 _caller ( static_cast < Usul::Interfaces::IUnknown * > ( 0x0 ) ),
-_dock ( 0x0 ),
-_layers ( 0x0 )
+_docks (),
+_layers ( 0x0 ),
+_favorites ( 0x0 )
 {
   // We want to be notified when the active document changes.
   Usul::Documents::Manager::instance().addActiveDocumentListener ( this );
@@ -51,20 +53,35 @@ LayerManagerComponent::~LayerManagerComponent()
   // Remove this from the list of active document listeners.
   Usul::Documents::Manager::instance().removeActiveDocumentListener ( this );
 
-  Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( _caller );
-
-  if( mainWindow.valid() )
+  // Needed below.
+  Usul::Interfaces::Qt::IMainWindow::QueryPtr mw ( _caller );
+  QMainWindow *mainWindow ( ( mw.valid() ) ? mw->mainWindow() : 0x0 );
+  
+  // Loop through the docking widgets.
+  for ( Docks::iterator i = _docks.begin(); i != _docks.end(); ++i )
   {
-    // Remove the DockWidget from the MainWindow.
-    QMainWindow * main  ( mainWindow->mainWindow() );
-    main->removeDockWidget ( _dock );
+    QDockWidget *dockWidget ( *i );
+    if ( 0x0 != dockWidget )
+    {
+      // Remove the dock widget from the main window.
+      if ( 0x0 != mainWindow )
+      {
+        mainWindow->removeDockWidget ( dockWidget );
+      }
+      
+      // Make sure there is no contained widget.
+      dockWidget->setWidget ( 0x0 );
+      
+      // Delete the DockWidget.
+      delete dockWidget;
+    }
   }
+  
+  // Clear the vector.
+  _docks.clear();
 
-  _dock->setWidget ( 0x0 );
-
-  // Delete the DockWidget.
-  delete _dock;
-  _dock = 0x0;
+  _layers = 0x0;
+  _favorites = 0x0;
 }
 
 
@@ -118,6 +135,49 @@ void LayerManagerComponent::activeDocumentChanged ( Usul::Interfaces::IUnknown *
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Make a dock window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  
+  QDockWidget* makeDockWindow( const std::string& title, const std::string& name, Usul::Interfaces::IUnknown *caller )
+  {
+    // Need a main window.
+    Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
+    if ( false == mainWindow.valid() )
+      return 0x0;
+    
+    // Get the main window.
+    QMainWindow *main ( mainWindow->mainWindow() );
+    if ( 0x0 == main )
+      return 0x0;
+    
+    // Build the docking window.
+    std::auto_ptr<QDockWidget> dockWidget ( new QDockWidget ( QObject::tr ( title.c_str() ), main ) );
+    dockWidget->setAllowedAreas ( Qt::AllDockWidgetAreas );
+    
+    // Add the dock to the main window.
+    main->addDockWidget ( Qt::LeftDockWidgetArea, dockWidget.get() );
+    
+    // Set the object name.
+    dockWidget->setObjectName ( name.c_str() );
+    
+    // Add toggle to the menu.
+    Usul::Interfaces::IQtDockWidgetMenu::QueryPtr menu ( caller );
+    if ( true == menu.valid() )
+      menu->addDockWidgetMenu ( dockWidget.get() );
+    
+    // Return the dock widget.
+    return dockWidget.release();
+  }
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Add a dock window.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -126,29 +186,33 @@ void LayerManagerComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
 {
   _caller = caller;
 
-  Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
-
-  if ( mainWindow.valid() )
   {
-    QMainWindow * main ( mainWindow->mainWindow() );
-
     // Build the docking window.
-    _dock = new QDockWidget ( QObject::tr ( "GIS Layers" ), main );
-    _dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
+    std::auto_ptr<QDockWidget> dock ( Detail::makeDockWindow ( "GIS Layers", "GISLayersDockWidget", caller ) );
 
-    // Create the tree for the scene graph.
-    _layers = new LayersTree ( caller, _dock );
+    // Create the tree for the layers.
+    _layers = new LayersTree ( caller, dock.get() );
 
     // Add the dock to the main window.
-    _dock->setWidget( _layers );
-    main->addDockWidget ( Qt::LeftDockWidgetArea, _dock );
-
-    // Set the object name.
-    _dock->setObjectName ( "GISLayersDockWidget" );
-
-    // Add toggle to the menu.
-    Usul::Interfaces::IQtDockWidgetMenu::QueryPtr dwm ( caller );
-    if ( dwm.valid () )
-      dwm->addDockWidgetMenu ( _dock );
+    dock->setWidget( _layers );
+    
+    // Add to our list.
+    _docks.push_back ( dock.release() );
   }
+  
+  {
+    // Build the docking window.
+    std::auto_ptr<QDockWidget> dock ( Detail::makeDockWindow ( "GIS Favorites", "GISFavoritesDockWidget", caller ) );
+    
+    // Create the tree for the favorites.
+    _favorites = new Favorites ( caller, dock.get() );
+    
+    // Add the dock to the main window.
+    dock->setWidget( _favorites );
+    
+    // Add to our list.
+    _docks.push_back ( dock.release() );
+  }
+  
+  QObject::connect ( _layers, SIGNAL ( addLayerFavorites ( Usul::Interfaces::IUnknown * ) ), _favorites, SLOT ( addLayer ( Usul::Interfaces::IUnknown * ) ) );
 }

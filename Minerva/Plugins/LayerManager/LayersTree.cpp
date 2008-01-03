@@ -19,6 +19,8 @@
 #include "Usul/Interfaces/ILayerAddGUIQt.h"
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 
+#include "QtTools/ScopedSignals.h"
+
 #include "QtGui/QHeaderView"
 #include "QtGui/QTreeWidget"
 #include "QtGui/QVBoxLayout"
@@ -67,23 +69,13 @@ _document ()
 
   this->_connectTreeViewSlots ();
 
-  connect ( addLayer, SIGNAL ( clicked () ),
-            this,     SLOT   ( _onAddLayerClick () ) );
+  connect ( addLayer,    SIGNAL ( clicked () ), this,     SLOT   ( _onAddLayerClick () ) );
+  connect ( removeLayer, SIGNAL ( clicked () ), this,     SLOT   ( _onRemoveLayerClick () ) );
+  connect ( refresh,     SIGNAL ( clicked () ), this,     SLOT   ( _onRefreshClick () ) );
 
-  connect ( removeLayer, SIGNAL ( clicked () ),
-            this,        SLOT   ( _onRemoveLayerClick () ) );
-
-  connect ( refresh, SIGNAL ( clicked () ),
-            this,    SLOT   ( _onRefreshClick () ) );
-
-  connect ( this,         SIGNAL ( enableWidgets ( bool ) ),
-            addLayer,     SLOT   ( setEnabled ( bool ) ) );
-
-  connect ( this,         SIGNAL ( enableWidgets ( bool ) ),
-            removeLayer,  SLOT   ( setEnabled ( bool ) ) );
-
-  connect ( this,         SIGNAL ( enableWidgets ( bool ) ),
-            refresh,      SLOT   ( setEnabled ( bool ) ) );
+  connect ( this,        SIGNAL ( enableWidgets ( bool ) ), addLayer,     SLOT   ( setEnabled ( bool ) ) );
+  connect ( this,        SIGNAL ( enableWidgets ( bool ) ), removeLayer,  SLOT   ( setEnabled ( bool ) ) );
+  connect ( this,        SIGNAL ( enableWidgets ( bool ) ), refresh,      SLOT   ( setEnabled ( bool ) ) );
 
   // Disable by default.
   emit enableWidgets( false );
@@ -117,7 +109,7 @@ void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
 
   // Clear anything we may have.
   _tree->clear();
-  _layerMap.clear ( );
+  _layerMap.clear();
 
   // See if the correct interface is implemented.
   Usul::Interfaces::ILayerList::QueryPtr layers ( document );
@@ -129,8 +121,8 @@ void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
 
   unsigned int numLayers ( layers->numberLayers () );
 
-  // Disconnect signal while adding to tree.
-  _tree->disconnect ( this );
+  // Block signals while adding to tree.
+  QtTools::ScopedSignals blockSignals ( *_tree );
 
   for ( unsigned int i = 0; i < numLayers; ++i )
   {
@@ -150,9 +142,6 @@ void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
       _layerMap.insert ( LayerMap::value_type ( item, layer.get() ) );
     }
   }
-
-  // Re-connect slots.
-  this->_connectTreeViewSlots ();
 }
 
 
@@ -260,7 +249,7 @@ void LayersTree::_onAddLayerClick ()
 
     for ( Unknowns::iterator iter = unknowns.begin (); iter != unknowns.end(); ++iter )
     {
-      Usul::Interfaces::ILayerAddGUIQt::QueryPtr gui ( *iter );
+      Usul::Interfaces::ILayerAddGUIQt::QueryPtr gui ( (*iter).get() );
       tabs->addTab ( gui->layerAddGUI (), gui->name ().c_str() );
     }
 
@@ -270,7 +259,7 @@ void LayersTree::_onAddLayerClick ()
     {
       for ( Unknowns::iterator iter = unknowns.begin (); iter != unknowns.end(); ++iter )
       {
-        Usul::Interfaces::ILayerAddGUIQt::QueryPtr gui ( *iter );
+        Usul::Interfaces::ILayerAddGUIQt::QueryPtr gui ( (*iter).get() );
         gui->apply ( _caller );
       }
     }
@@ -340,11 +329,37 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
     
     if ( layer.valid () )
     {
+      QAction favorites ( 0x0 );
+      favorites.setText( "Add to favorites" );
+      favorites.setToolTip( "Add layer to favorites" );
+      QObject::connect ( &favorites, SIGNAL ( triggered() ), this, SLOT ( _onAddLayerFavorites() ) );
+      
       PropertiesAction action ( layer.get(), _caller.get() );
       QMenu menu;
+      menu.addAction ( &favorites );
       menu.addAction ( &action );
       menu.exec ( _tree->mapToGlobal ( pos ) );
       this->buildTree( _document );
     }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the current layer to the favorites.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayersTree::_onAddLayerFavorites()
+{
+  QTreeWidgetItem * item ( _tree->currentItem() );
+  
+  if ( 0x0 != item )
+  {
+    // Get the layer as an unknown
+    Usul::Interfaces::IUnknown::QueryPtr unknown (  _layerMap [ item ] );
+    
+    emit addLayerFavorites ( unknown.get() );
   }
 }

@@ -100,7 +100,7 @@ void PropertiesAction::_execute()
 
   for ( Unknowns::iterator iter = unknowns.begin (); iter != unknowns.end(); ++iter )
   {
-    Usul::Interfaces::ILayerModifyGUIQt::QueryPtr gui ( *iter );
+    Usul::Interfaces::ILayerModifyGUIQt::QueryPtr gui ( (*iter).get() );
     if ( gui->handle ( _layer.get() ) )
     {
       gui->showModifyGUI( _layer.get(), _caller.get() );

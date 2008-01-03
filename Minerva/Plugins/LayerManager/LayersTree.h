@@ -35,6 +35,7 @@ public:
 
 signals:
   void enableWidgets ( bool );
+  void addLayerFavorites ( Usul::Interfaces::IUnknown * layer );
 
 protected:
   void     _connectTreeViewSlots ();
@@ -46,6 +47,7 @@ protected slots:
   void _onRemoveLayerClick ();
   void _onRefreshClick ();
   void _onContextMenuShow ( const QPoint& pos );
+  void _onAddLayerFavorites();
 
 private:
   QTreeWidget *_tree;

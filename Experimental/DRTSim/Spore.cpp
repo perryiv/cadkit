@@ -209,6 +209,8 @@ bool	Spore::_SporeDetailsLoader( )
 {
 	
 	const unsigned int zoom = 3;
+
+	std::cout << "Spore filename: " << _filename << std::endl;
 	
 	const Usul::Types::Uint64 fileSize ( Usul::File::size ( _filename ) );
 

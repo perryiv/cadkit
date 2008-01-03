@@ -60,7 +60,7 @@ public:
 
 
 	Agent(void) :
-		_seqTime				( 2.0f ),
+		_seqTime				( 1.0f ),
 		_sTime					( 12.0f ),
 		_winHeight				( 1024 ),
 		_winWidth				( 1280 ),

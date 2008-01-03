@@ -55,7 +55,7 @@ public:
 
 
 	Spore(void):
-		_seqTime			( 2.0f ),
+		_seqTime			( 1.0f ),
 		_sTime				( 12.0f ),
 		_nSteps				( 0 ),
 		_sporeStartingStep  ( 0 ),

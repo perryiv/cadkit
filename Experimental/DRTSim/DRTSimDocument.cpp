@@ -251,13 +251,13 @@ void DRTSimDocument::_read ( const std::string &filename, Unknown *caller, Unkno
 
   std::ifstream infile( filename.c_str(), std::ios::in );
   if( !infile ) {
-	  std::cerr << "Error: unable to open file!\n";
+	  std::cerr << "Error: unable to open drt file!\n";
 	  exit( 0 );
   }
 
   while( !infile.eof() )
   {
-	  std::getline( infile, id, ':');
+	  std::getline( infile, id, ':');		// agent: AgentDetails.dat
 	  std::getline( infile, fn, '\n');
 	  fn.erase(0, 1);		// erase the space
 	  std::cout << Usul::Strings::format( "ID=",id,"\tfilename=",fn ) << std::endl;
@@ -349,7 +349,7 @@ osg::Node *DRTSimDocument::buildScene ( const BaseClass::Options &options, Unkno
 		exit( 0 );		// program got exit once any one of files failed to open
 	}
 
-  // set up the camear
+  // put "current step" and Agent & Stock color bars
   {
 		osg::ref_ptr< osg::Camera > camera ( new osg::Camera );
 

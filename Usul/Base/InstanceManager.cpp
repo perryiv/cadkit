@@ -73,7 +73,13 @@ namespace Helper
   {
     if ( false == s.empty() )
     {
+#ifdef __APPLE__
+      ::fprintf( stderr, "%s\n", s.c_str() );
+      ::fflush( stderr );
+#else
       std::cout << s << std::flush;
+#endif
+      
       #ifdef _MSC_VER
       ::OutputDebugString ( s.c_str() );
       #endif
@@ -99,7 +105,9 @@ InstanceManager::~InstanceManager()
     // If we have objects...
     if ( false == _objects.empty() )
     {
+#if _MSC_VER
       USUL_ASSERT ( 0 ); // FYI
+#endif
       Helper::print ( Usul::Strings::format ( "Error 3951994349: ", _objects.size(), " referenced items remain:\n" ) );
       while ( false == _objects.empty() )
       {

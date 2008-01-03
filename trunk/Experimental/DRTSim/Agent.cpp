@@ -10,6 +10,7 @@
 #include "Usul/Endian/Endian.h"
 #include "Usul/File/Stats.h"
 #include "Usul/Errors/Assert.h"
+#include "Usul/Strings/Format.h"
 
 #include "Agent.h"
 
@@ -123,7 +124,7 @@ osg::Switch*	Agent::createAgentStepSwitch ( )
 	{
 		for( unsigned int i = 0; i < _agentSteps.size(); ++i )
 		{
-			std::string		str = " Current Step = " + _intToString( i );
+			std::string		str = " Current Step = " + _intToString( i ) + " of " + _intToString(_agentSteps.size());
 
 			_agentStepSwitch->addChild( _createTextAsNode( pos, layoutColor, characterSize, str ) );
 

@@ -197,6 +197,8 @@ private:
   bool				_isStockOn;
   bool				_isTransOn;
 
+  std::string			_legendMachine;
+
   // end here ( added by W.C )
   
   

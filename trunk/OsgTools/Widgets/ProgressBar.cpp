@@ -211,7 +211,7 @@ ProgressBar::ProgressBar() : BaseClass(),
   _animationCurEndStep ( 1, 1, .05 ),
   _root ( new osg::Group ),
   _dirty   ( true ),
-  _isVisible ( true ),
+  _isVisible ( false ),
   _isAnimating ( false ),
   _isFinished ( false )
 {
@@ -289,8 +289,6 @@ void ProgressBar::hideProgressBar()
     _isVisible = false;
     this->finished( true );
   }
-  
-  
 }
 
 

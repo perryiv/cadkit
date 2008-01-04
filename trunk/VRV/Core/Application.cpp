@@ -510,8 +510,7 @@ void Application::contextInit()
   _viewport->setViewport ( vp[0], vp[1], vp[2], vp[3] );
 
   // Set the projection.
-  _sceneManager->projection()->setMatrix ( osg::Matrix::ortho ( _viewport->x(), _viewport->width(), _viewport->y(), _viewport->height(), -10.0, 10.0 ) );
-  _sceneManager->projection()->dirtyBound ();
+  _sceneManager->resize( _viewport->x(), _viewport->width(), _viewport->y(), _viewport->height() );
 
   osg::ref_ptr < osg::StateSet > ss ( renderer->getGlobalStateSet() );
   osg::ref_ptr < osg::LightModel > model ( new osg::LightModel );

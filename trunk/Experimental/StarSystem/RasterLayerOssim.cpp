@@ -41,12 +41,15 @@ USUL_FACTORY_REGISTER_CREATOR ( RasterLayerOssim );
 
 RasterLayerOssim::RasterLayerOssim() : 
   BaseClass(),
+  _filename (),
   _handler ( 0x0 ),
   _renderer ( 0x0 ),
   _viewInterface ( 0x0 ),
   _projection ( 0x0 )
 {
   USUL_TRACE_SCOPE;
+
+  this->_addMember( "filename", _filename );
 }
 
 
@@ -90,6 +93,9 @@ void RasterLayerOssim::open ( const std::string& filename )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
+
+  // Set the filename
+  _filename = filename;
 
   _handler = ossimImageHandlerRegistry::instance()->open ( ossimFilename ( filename.c_str() ) );
   Usul::Pointers::reference ( _handler );
@@ -258,4 +264,20 @@ void RasterLayerOssim::_updateExtents()
       this->extents ( extents );
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayerOssim::deserialize ( const XmlTree::Node &node )
+{
+   USUL_TRACE_SCOPE;
+   _dataMemberMap.deserialize ( node );
+
+   // Open ourselfs.
+   this->open ( _filename );
 }

@@ -23,7 +23,6 @@ INCLUDE_DIRECTORIES(
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
          ${OSSIM_INC_DIR}
-         ${OSSIM_PLANET_INC_DIR}
 		     )
 
 
@@ -36,6 +35,21 @@ SET (SOURCES
 ./Body.cpp
 ./BuildScene.cpp
 ./Tile.cpp
+./RasterLayerOssim.cpp
+./RasterGroup.cpp
+./RasterLayerWms.cpp
+./CutImageJob.cpp
+./RasterLayer.cpp
+./LandModelEllipsoid.cpp
+./LandModelFlat.cpp
+./ElevationGroup.cpp
+./DirtyTiles.cpp
+./ElevationLayerDem.cpp
+./SplitCallbacks.cpp
+./BuildTiles.cpp
+./SetJobManager.cpp
+./Scale.cpp
+./Hud.cpp
 )
 
 # Create a Shared Library
@@ -52,7 +66,6 @@ TARGET_LINK_LIBRARIES(StarSystem
 	${OSG_TEXT_LIB}
 	${OSG_UTIL_LIB}
   ${OSSIM_LIB}
-	${OSSIM_PLANET_LIB}
 )
 
     

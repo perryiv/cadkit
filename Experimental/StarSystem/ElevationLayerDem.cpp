@@ -21,7 +21,7 @@
 
 #include "ossim/imaging/ossimImageData.h"
 #include "ossim/base/ossimKeywordNames.h"
-#include "ossim/base/ossimKeywordList.h"
+#include "ossim/base/ossimKeywordlist.h"
 #include "ossim/projection/ossimProjection.h"
 #include "ossim/projection/ossimProjectionFactoryRegistry.h"
 #include "ossim/projection/ossimUtmProjection.h"

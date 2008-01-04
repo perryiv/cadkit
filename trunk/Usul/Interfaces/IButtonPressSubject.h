@@ -35,7 +35,7 @@ struct IButtonPressSubject : public Usul::Interfaces::IUnknown
   virtual void            addButtonPressListener ( Usul::Interfaces::IUnknown * ) = 0;
 
   // Remove all listeners.
-  virtual void            clearButtonReleaseListeners() = 0;
+  virtual void            clearButtonPressListeners() = 0;
 
   // Remove the listener.
   virtual void            removeButtonPressListener ( Usul::Interfaces::IUnknown * ) = 0;

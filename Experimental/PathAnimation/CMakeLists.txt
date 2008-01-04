@@ -22,7 +22,6 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 set (SOURCES
 ./PathAnimationComponent.cpp
 ./CurvePlayer.cpp
-./PathAnimationFactory.cpp
 ./CameraPath.cpp
 )
 

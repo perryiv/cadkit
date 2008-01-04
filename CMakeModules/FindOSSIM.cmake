@@ -18,8 +18,8 @@
 
 # ------------ OsgEphemeris variables ---------------------- 
 
- set ( OSG_EPHEMERIS_INC_DIR "$ENV{OSG_EPHEMERIS_INC_DIR}" )
- set ( OSG_EPHEMERIS_LIB_DIR "$ENV{OSG_EPHEMERIS_LIB_DIR}" )
+ #set ( OSG_EPHEMERIS_INC_DIR "$ENV{OSG_EPHEMERIS_INC_DIR}" )
+ #set ( OSG_EPHEMERIS_LIB_DIR "$ENV{OSG_EPHEMERIS_LIB_DIR}" )
 
 
 
@@ -33,4 +33,4 @@ FIND_LIBRARY(OSSIM_LIB ossim ${OSSIM_LIB_DIR} )
 FIND_LIBRARY(OSSIM_PLANET_LIB ossimPlanet ${OSSIM_PLANET_LIB_DIR} )
 
 # ------------ Find OssimPlanet Library --------------------
-FIND_LIBRARY(OSG_EPHEMERIS_LIB osgEphemeris ${OSG_EPHEMERIS_LIB_DIR} )
+#FIND_LIBRARY(OSG_EPHEMERIS_LIB osgEphemeris ${OSG_EPHEMERIS_LIB_DIR} )

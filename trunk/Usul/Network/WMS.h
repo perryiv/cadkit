@@ -306,7 +306,7 @@ public:
   std::string extension() const
   {
     // Determine file extension by skipping "image/".
-    const std::string format ( this->get ( Names::FORMAT, "image/jpeg" ) );
+    const std::string format ( this->get ( Names::FORMAT, std::string ( "image/jpeg" ) ) );
     std::string ext ( ( format.size() > 6 && '/' == format.at(5) ) ? std::string ( format.begin() + 6, format.end() ) : format );
     ext = ( ( "jpeg" == ext ) ? "jpg" : ext );
     return ext;

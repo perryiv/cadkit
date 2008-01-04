@@ -35,6 +35,7 @@ SET (SOURCES
   ./Commands/Camera.cpp
   ./Commands/LoadDocument.cpp
   ./Commands/Navigator.cpp
+  ./Functors/Intersect.cpp
   ./Jobs/SaveImage.cpp
   ./Devices/JoystickDevice.cpp
   ./Devices/ButtonGroup.cpp

@@ -34,8 +34,8 @@ ${CADKIT_INC_DIR}/Experimental/WRF/WrfModel
 ${CADKIT_INC_DIR}/Experimental/DynamicLand/DynamicLandModel
 ${CADKIT_INC_DIR}/Experimental/ModelPresentation/ModelPresentation
 
-${CADKIT_INC_DIR}/Experimental/StarSystem
-${CADKIT_INC_DIR}/Helios/Plugins/StarSystemModel
+#${CADKIT_INC_DIR}/Experimental/StarSystem
+#${CADKIT_INC_DIR}/Helios/Plugins/StarSystemModel
 
 # ---- Minerva -------
 ${CADKIT_INC_DIR}/Magrathea
@@ -49,6 +49,8 @@ ${CADKIT_INC_DIR}/Minerva/Plugins/Document
 
 ${CADKIT_INC_DIR}/Experimental/Planet
 
+
+${CADKIT_INC_DIR}/Experimental/MeasureTool
 
 
 )
@@ -73,13 +75,12 @@ INCLUDE_DIRECTORIES(
 
 #List the Sources
 SET (SOURCES
-./Functors/ToolPair.cpp
-./Functors/MoveTool.cpp
-./Functors/Tool.cpp
-./Functors/ScaleTool.cpp
-./Pick/Intersect.cpp
-./Pick/Select.cpp
-./Pick/Seek.cpp
+#./Functors/ToolPair.cpp
+#./Functors/MoveTool.cpp
+#./Functors/Tool.cpp
+#./Functors/ScaleTool.cpp
+#./Pick/Select.cpp
+#./Pick/Seek.cpp
 ./main.cpp
 ./Application.cpp
 )

@@ -23,9 +23,9 @@
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/App/Application.h"
 #include "Usul/Commands/GenericCommand.h"
 #include "Usul/Commands/GenericCheckCommand.h"
-#include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/CommandLine/Parser.h"
 #include "Usul/CommandLine/Options.h"
@@ -38,6 +38,8 @@
 #include "Usul/File/Make.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Functors/Interaction/Navigate/Direction.h"
+#include "Usul/Functors/Interaction/Wand/WandRotation.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IPluginInitialize.h"
 #include "Usul/Jobs/Manager.h"
@@ -65,6 +67,8 @@
 
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Convert.h"
+#include "OsgTools/Ray.h"
+#include "OsgTools/ShapeFactory.h"
 
 #include "osgDB/WriteFile"
 
@@ -72,6 +76,7 @@
 #include "osg/Quat"
 #include "osg/Version"
 #include "osg/LightModel"
+#include "osg/Material"
 
 #include "vrj/Kernel/Kernel.h"
 #include "vrj/Draw/OGL/GlWindow.h"
@@ -120,7 +125,7 @@ Application::Application() :
   _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
   _joystick          ( new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" ) ),
   _analogTrim        ( 0, 0 ),
-  _wandOffset        ( 0, 0, 0 ), // feet (used to be z=-4)
+  _wandOffset        ( 0, -1.6, -0.67 ), // feet (used to be z=-4)
   _databasePager     ( new osgDB::DatabasePager ),
   _updateListeners   ( ),
   _commandQueue      ( ),
@@ -140,7 +145,10 @@ Application::Application() :
   _timeBased         ( true ),
   _colorMap          (),
   _count             ( 0 ),
-  _allowUpdate       ( true )
+  _allowUpdate       ( true ),
+  _intersector       ( 0x0 ),
+  _auxiliary         ( new osg::MatrixTransform ),
+  _allowIntersections ( true )
 {
   USUL_TRACE_SCOPE;
 
@@ -157,9 +165,6 @@ Application::Application() :
 
   // Add our self to the list of active document listeners.
   Usul::Documents::Manager::instance().addActiveDocumentListener ( this );
-
-  // Add our self as the active view.
-  Usul::Documents::Manager::instance().activeView ( this );
 
   // populate the color map.  TODO: Read from config file.
   _colorMap["Red"]    = Usul::Math::Vec4f ( 1.0,0.0,0.0,1.0 );
@@ -193,11 +198,27 @@ void Application::_construct()
   // Hook up the branches
   _root->addChild      ( _navBranch.get()    );
   _navBranch->addChild ( _models.get()       );
+  _root->addChild      ( _auxiliary.get()    );
 
   // Name the branches.
   _root->setName         ( "_root"         );
   _navBranch->setName    ( "_navBranch"    );
   _models->setName       ( "_models"       );
+  _auxiliary->setName    ( "_auxiliary"    );
+
+#if 0
+  osg::ref_ptr <osg::Geode> geode ( new osg::Geode );
+  geode->addDrawable ( OsgTools::ShapeFactorySingleton::instance().sphere( 5.0 ) );
+
+  osg::ref_ptr <osg::Material>  mat ( new osg::Material );
+  osg::Vec4 color ( 0.25, 0.25, 0.5, 1.0 );
+  mat->setDiffuse ( osg::Material::FRONT_AND_BACK, color );
+  mat->setAmbient ( osg::Material::FRONT_AND_BACK, color );
+  OsgTools::State::StateSet::setMaterial ( geode.get(), mat.get() );
+  geode->getOrCreateStateSet()->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+
+  _models->addChild ( geode.get() );
+#endif
 
   osg::Matrix m;
   m.makeRotate ( -osg::PI / 2, osg::Vec3 ( 1, 0, 0 ) );
@@ -221,6 +242,17 @@ void Application::_construct()
 
   // Read the user's functor file.
   this->_readFunctorFile ();
+
+  // Make the intersector.
+  typedef Usul::Functors::Interaction::Navigate::Direction Dir;
+  typedef Usul::Functors::Interaction::Wand::WandRotation MF;
+
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( this );
+  Usul::Math::Vec3f dir ( 0, 0, -1 );
+  MF::ValidRefPtr mf ( new MF ( unknown ) );
+  Dir::ValidRefPtr df ( new Dir ( unknown, "", dir, mf.get() ) );
+
+  _intersector = new VRV::Functors::Intersect ( unknown.get(), df.get(), "Intersect" );
 }
 
 
@@ -267,6 +299,9 @@ void Application::cleanup()
     (*iter)->clearButtonPressListeners ();
     (*iter)->clearButtonReleaseListeners ();
   }
+
+  // Clear all intersect listeners.
+  this->clearIntersectListeners();
 
   // Clear the navigator.
   this->navigator ( 0x0 );
@@ -350,6 +385,16 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ITextMatrix* > ( this );
   case Usul::Interfaces::ISaveFileDialog::IID:
     return static_cast < Usul::Interfaces::ISaveFileDialog* > ( this );
+  case VRV::Interfaces::IAuxiliaryScene::IID:
+    return static_cast<VRV::Interfaces::IAuxiliaryScene *>(this);
+  case Usul::Interfaces::IIntersectNotify::IID:
+    return static_cast<Usul::Interfaces::IIntersectNotify *> ( this );
+  case Usul::Interfaces::IButtonPressSubject::IID:
+    return static_cast<Usul::Interfaces::IButtonPressSubject*> ( this );
+  case Usul::Interfaces::IButtonReleaseSubject::IID:
+    return static_cast<Usul::Interfaces::IButtonReleaseSubject*> ( this );
+  case Usul::Interfaces::IGroup::IID:
+    return static_cast<Usul::Interfaces::IGroup*> ( this );
   default:
     return 0x0;
   }
@@ -382,7 +427,7 @@ void Application::run()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  A method to autocenter, places the node in front of viewer
+//  A method to autocenter, places the node in front of viewr
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -636,6 +681,11 @@ void Application::_draw ( OsgTools::Render::Renderer *renderer )
 
   // Do the drawing.
   renderer->render();
+
+  // This isn't going to work with multiple renderers per application.
+  double zNear ( 0.0 ), zFar ( 0.0 );
+  renderer->nearFar ( zNear, zFar );
+  _clipDist.set ( zNear, zFar );
 }
 
 
@@ -946,11 +996,8 @@ void Application::_init()
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   // Add our self as button listeners.
-  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
-  {
-    (*iter)->addButtonPressListener ( me.get() );
-    (*iter)->addButtonReleaseListener ( me.get() );
-  }
+  this->addButtonPressListener( me.get() );
+  this->addButtonReleaseListener ( me.get() );
 
   // Set the background color.
   this->backgroundColor ( this->preferences()->backgroundColor() );
@@ -963,6 +1010,9 @@ void Application::_init()
 
   // Initialize the status-bar.
   this->_initStatusBar();
+
+  // Add our self as the active view.
+  Usul::Documents::Manager::instance().activeView ( this );
 }
 
 
@@ -1026,6 +1076,9 @@ void Application::_preFrame()
 
   // Purge any threads that may be finished.
   Usul::Threads::Manager::instance().purge();
+
+  // Intersect.
+  this->_intersect();
 }
 
 
@@ -2046,11 +2099,21 @@ void Application::wandRotation ( Matrix44f &W ) const
   roll  *= Usul::Math::RAD_TO_DEG;
   pitch *= Usul::Math::RAD_TO_DEG;
   yaw   *= Usul::Math::RAD_TO_DEG;
-
+#if 0
   std::cout << "Yaw: "    << std::setw ( 10 ) << static_cast<int> ( yaw )
             << " Pitch: " << std::setw ( 10 ) << static_cast<int> ( pitch )
             << " Roll: "  << std::setw ( 10 ) << static_cast<int> ( roll ) 
             << std::endl;
+#endif
+  const unsigned int size ( 1024 );
+  std::vector < char > chars ( size, '\0' );
+
+  ::sprintf ( &chars[0], "Yaw: %15.6f Pitch: %15.6f Roll: %15.6f\n", yaw, pitch, roll ); 
+
+  Usul::Interfaces::ITextMatrix::QueryPtr tm ( const_cast < Application * > ( this ) );
+  if ( tm.valid() )
+    tm->setText ( 15, 75, std::string ( &chars[0] ), osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+
 #endif
 }
 
@@ -2342,9 +2405,52 @@ bool Application::frameDump () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::buttonPressNotify ( Usul::Interfaces::IUnknown * )
+bool Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
+
+  // Get the button id.
+  Usul::Interfaces::IButtonID::QueryPtr button ( caller );
+  if ( button.valid () )
+  {
+    unsigned long id ( button->buttonID () );
+
+    switch ( id )
+    {
+    case VRV::BUTTON0: std::cout << VRV::BUTTON0 << " Button 0 pressed (YELLOW)"   << std::endl; break;
+    case VRV::BUTTON1: std::cout << VRV::BUTTON1 << " Button 1 pressed (RED)"      << std::endl; break;
+    case VRV::BUTTON2: std::cout << VRV::BUTTON2 << " Button 2 pressed (GREEN)"    << std::endl; break;
+    case VRV::BUTTON3: std::cout << VRV::BUTTON3 << " Button 3 pressed (BLUE)"     << std::endl; break;
+    case VRV::BUTTON4: std::cout << VRV::BUTTON4 << " Button 4 pressed (JOYSTICK)" << std::endl; break;
+    case VRV::BUTTON5: std::cout << VRV::BUTTON5 << " Button 5 pressed (TRIGGER)"  << std::endl; break;
+    }
+
+    // Let the menu process first.
+    bool menuHandled ( this->_handleMenuEvent( id ) );
+
+    // Hide the scene if we are suppose to and it's currently visible.
+    bool hideScene ( this->menuSceneShowHide() && this->menu()->isVisible() );
+
+    // The node mask.
+    unsigned int mask ( hideScene ? 0 : 0xffffffff );
+
+    // Always set the mask.
+    this->modelsScene ( )->setNodeMask ( mask );
+
+    // Return now if the menu was handled.
+    if ( menuHandled )
+      return false;
+
+    // Now process the intersector buttons.
+    //if ( this->_handleIntersectionEvent( id ) )
+    //  return false;
+
+    // Handle the navigation mode.
+    if ( this->_handleNavigationEvent( id ) )
+      return false;
+  }
+
+  return true;
 }
 
 
@@ -2354,9 +2460,11 @@ void Application::buttonPressNotify ( Usul::Interfaces::IUnknown * )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::buttonReleaseNotify ( Usul::Interfaces::IUnknown * )
+bool Application::buttonReleaseNotify ( Usul::Interfaces::IUnknown * )
 {
   USUL_TRACE_SCOPE;
+
+  return true;
 }
 
 
@@ -3375,6 +3483,12 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
   menu->append ( new ToggleButton ( new CheckCommand ( "Hide Scene", BoolFunctor ( this, &Application::menuSceneShowHide ), CheckFunctor ( this, &Application::menuSceneShowHide ) ) ) );
 
   menu->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Update", Usul::Adaptors::memberFunction<void> ( this, &Application::_setAllowUpdate ), Usul::Adaptors::memberFunction<bool> ( this, &Application::_isUpdateOn ) ) ) );
+
+  menu->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Intersect", Usul::Adaptors::memberFunction<void> ( this, &Application::allowIntersections ), Usul::Adaptors::memberFunction<bool> ( this, &Application::isAllowIntersections ) ) ) );
+
+  menu->append ( new MenuKit::Separator );
+
+  menu->append ( new Button ( new BasicCommand ( "Reinitialize", ExecuteFunctor ( this, &Application::reinitialize ) ) ) );
 }
 
 
@@ -3759,21 +3873,6 @@ std::string Application::_documentSection () const
   std::string filename;
 
   return ( document.valid() ? document->registryTagName() : "Document" );
-#if 0
-  // If we have a valid filename.
-  if ( document.valid () )
-  {
-    std::string name ( document->fileName () );
-    filename.assign  ( name.begin (), name.end() );
-    std::string dir  ( Usul::File::directory ( filename, true ) );
-
-    // We want just the filename.
-    filename.erase ( 0, dir.size() );
-  }
-
-  // Return the name.
-  return filename;
-#endif
 }
 
 
@@ -3894,4 +3993,505 @@ bool Application::_isUpdateOn () const
 std::string Application::_screenShotDirectory() const
 {
   return _sharedScreenShotDirectory->data();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reinitialize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::reinitialize()
+{
+  this->_readUserPreferences();
+  this->_readFunctorFile();
+  this->_initMenu();
+  this->_initLight();
+  this->_initStatusBar();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process the button states and apply to the menu.
+//  Returns true if the event was handled.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_handleMenuEvent( unsigned long id )
+{
+  USUL_TRACE_SCOPE;
+
+  // Get the menu.
+  Menu::RefPtr menu ( this->menu () );
+
+  if ( 0x0 == menu.get() )
+    return false;
+
+  // First see if you are supposed to show or hide it. Always do this first.
+  if ( BUTTON_JOYSTICK == id )
+  {
+    menu->toggleVisible();
+    return true;
+  }
+
+  // If we are not expanded then we should not handle button events.
+  if ( !menu->menu()->expanded() )
+    return false;
+
+  // Initialize.
+  bool handled ( true );
+
+  // Process button states iff the menu is showing.
+  switch ( id )
+  {
+    case BUTTON_TRIGGER:
+      menu->selectFocused();
+      break;
+
+    case BUTTON_RED:
+      menu->moveFocused ( MenuKit::Behavior::LEFT );
+      break;
+
+    case BUTTON_BLUE:
+      menu->moveFocused ( MenuKit::Behavior::RIGHT );
+      break;
+
+    case BUTTON_YELLOW:
+      menu->moveFocused ( MenuKit::Behavior::UP );
+      break;
+
+    case BUTTON_GREEN:
+      menu->moveFocused ( MenuKit::Behavior::DOWN );
+      break;
+
+    default:
+      handled = false;
+  };
+
+  // Return the result.
+  return handled;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process the button states and apply to the intersector.
+//  Returns true if the event was handled.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_handleIntersectionEvent( unsigned long id )
+{
+  // Process pressed states.
+  if ( BUTTON_TRIGGER == id )
+  {
+    this->_intersect();
+    return true;
+  }
+
+#if 0
+  if(!_intersector) return false;
+
+  
+  else if ( COMMAND_HIDE_SELECTED == id )
+  {
+    this->_hideSelected ( MenuKit::MESSAGE_SELECTED, NULL );
+    return true;
+  }
+  
+  else if ( COMMAND_UNSELECT_VISIBLE == id )
+  {
+    this->_unselectVisible ( MenuKit::MESSAGE_SELECTED, NULL );
+    return true;
+  }
+  
+  else if ( COMMAND_SHOW_ALL == id )
+  {
+    this->_showAll ( MenuKit::MESSAGE_SELECTED, NULL );
+    return true;
+  }
+
+  // Process released states.
+  if ( COMMAND_SELECT == id )
+  {
+    this->_select();
+    this->_updateSceneTool();
+    return true;
+  }
+#endif
+  // We didn't handle the event.
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process the button states and apply to Navigation mode selection.
+//  Returns true if the event was handled.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_handleNavigationEvent( unsigned long id )
+{
+  bool handled ( true );
+
+  switch ( id )
+  {
+  // Turn off all navigation.
+  case BUTTON_RED:
+    this->navigator ( 0x0 );
+    break;
+
+  default :
+    handled = false;
+  }
+
+  return handled;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Intersect.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_intersect()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  if ( _intersector.valid() && _allowIntersections )
+  {
+    (*_intersector)();
+    if ( _intersector->hasHit() )
+    {
+      osgUtil::Hit hit (_intersector->lastHit () );
+
+      Usul::Interfaces::IUnknown::QueryPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+      for ( IntersectListeners::iterator i = _intersectListeners.begin(); i != _intersectListeners.end(); ++i )
+      {
+        IIntersectListener::RefPtr listener ( *i );
+        if ( true == listener.valid() )
+        {
+          listener->intersectNotify ( 0.0, 0.0, hit, me.get() );
+        }
+      }
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the auxiliary scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Group *Application::auxiliaryScene() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _auxiliary.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the auxiliary scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Group *Application::auxiliaryScene()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _auxiliary.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the allow intersections state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::allowIntersections ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _allowIntersections = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the allow intersections state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::isAllowIntersections() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _allowIntersections;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to remove the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace VRV {
+namespace Core {
+namespace Helper
+{
+  template < class Listeners, class MutexType > void removeListener ( Listeners &listeners, Usul::Interfaces::IUnknown *caller, MutexType &mutex )
+  {
+    typedef typename Listeners::value_type::element_type InterfaceType;
+    typedef Usul::Threads::Guard<MutexType> Guard;
+    typedef typename Listeners::iterator Itr;
+
+    USUL_TRACE_SCOPE_STATIC;
+
+    typename InterfaceType::QueryPtr listener ( caller );
+    if ( true == listener.valid() )
+    {
+      Guard guard ( mutex );
+      typename InterfaceType::RefPtr value ( listener.get() );
+      Itr end ( std::remove ( listeners.begin(), listeners.end(), value ) );
+      listeners.erase ( end, listeners.end() );
+    }
+  }
+}
+}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to add the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace VRV {
+namespace Core {
+namespace Helper
+{
+  template < class Listeners, class MutexType > void addListener ( Listeners &listeners, Usul::Interfaces::IUnknown *caller, MutexType &mutex )
+  {
+    typedef typename Listeners::value_type::element_type InterfaceType;
+    typedef Usul::Threads::Guard<MutexType> Guard;
+
+    USUL_TRACE_SCOPE_STATIC;
+
+    // Don't add twice.
+    Helper::removeListener ( listeners, caller, mutex );
+
+    // Check for necessary interface.
+    typename InterfaceType::QueryPtr listener ( caller );
+    if ( true == listener.valid() )
+    {
+      // Block while we add the listener.
+      Guard guard ( mutex );
+      listeners.push_back ( typename InterfaceType::RefPtr ( listener.get() ) );
+    }
+  }
+}
+}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the listener (IIntersectListener).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::addIntersectListener ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Helper::addListener ( _intersectListeners, caller, this->mutex() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove all intersect listeners (IIntersectListener).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::clearIntersectListeners()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _intersectListeners.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener (IIntersectListener).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::removeIntersectListener ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Helper::removeListener ( _intersectListeners, caller, this->mutex() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the listener (IButtonPressSubject).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::addButtonPressListener ( Usul::Interfaces::IUnknown * caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->addButtonPressListener ( caller );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove all listeners (IButtonPressSubject).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::clearButtonPressListeners()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->clearButtonPressListeners();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener (IButtonPressSubject).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::removeButtonPressListener ( Usul::Interfaces::IUnknown * caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->removeButtonPressListener ( caller );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the listener (IButtonReleaseSubject).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::addButtonReleaseListener ( Usul::Interfaces::IUnknown * caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->addButtonReleaseListener ( caller );
+  }
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove all listeners (IButtonReleaseSubject).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
+void Application::clearButtonReleaseListeners()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->clearButtonReleaseListeners();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener (IButtonReleaseSubject).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::removeButtonReleaseListener ( Usul::Interfaces::IUnknown *caller  )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->removeButtonReleaseListener ( caller );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the group by name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Group* Application::getGroup ( const std::string& name )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _sceneManager->groupGet ( name );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the group by name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::removeGroup ( const std::string& name )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _sceneManager->groupRemove ( name );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is there a group by this name?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::hasGroup ( const std::string& name )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _sceneManager->groupHas ( name );
 }

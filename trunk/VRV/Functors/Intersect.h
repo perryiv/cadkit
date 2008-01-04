@@ -17,24 +17,23 @@
 #define _CV_INTERSECT_FUNCTORS_H_
 
 #include "Usul/Functors/Interaction/Navigate/Direction.h"
-#include "CadViewer/Interfaces/IAuxiliaryScene.h"
-#include "VRV/Interfaces/INavigationScene.h"
-#include "VRV/Interfaces/IModelsScene.h"
-#include "Usul/Interfaces/IClippingDistance.h"
 
+#include "VRV/Interfaces/IAuxiliaryScene.h"
+
+#include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/IWandState.h"
 
 #include "osg/Vec3"
 
+#include "osgUtil/IntersectVisitor"
+
 #include <memory>
 #include <vector>
 
-namespace osg { class LineSegment; class Group;class Node; };
-namespace osg { typedef std::vector<Node*> NodePath; };
-namespace osgUtil { class IntersectVisitor; };
+namespace osg { class Group; class Node; };
 
-namespace CV {
-namespace Pick {
+namespace VRV {
+namespace Functors {
 
 
 class Intersect : public Usul::Functors::Interaction::Common::BaseFunctor
@@ -43,23 +42,31 @@ public:
 
   // Useful typedef(s).
   USUL_DECLARE_REF_POINTERS ( Intersect );
-  typedef Usul::Functors::Interaction::Common::BaseFunctor BaseClass;
+  typedef Usul::Functors::Interaction::Common::BaseFunctor BaseFunctor;
+  typedef BaseFunctor                                      BaseClass;
+  typedef Usul::Functors::Interaction::Navigate::Direction Direction;
 
-  // Reset any states.
-  virtual void          reset();
+  Intersect ( Unknown *unknown, Direction *dir, const std::string& name );
 
+  // Intersect.  Call this before hasHit or lastHit.
+  virtual void          operator()();
+
+  // Is there a hit?
+  bool                  hasHit() const;
+
+  // Get the last hit?
+  osgUtil::Hit          lastHit() const;
+
+  // Clone this functor.
+  BaseFunctor*          clone();
 protected:
 
   typedef osg::NodePath Path;
   typedef Usul::Interfaces::IUnknown Unknown;
-  typedef Usul::Functors::Interaction::Navigate::Direction Direction;
-  typedef CV::Interfaces::IAuxiliaryScene AuxiliaryScene;
-  typedef VRV::Interfaces::INavigationScene NavigationScene;
-  typedef VRV::Interfaces::IModelsScene ModelsScene;
+  typedef VRV::Interfaces::IAuxiliaryScene AuxiliaryScene;
   typedef Usul::Interfaces::IWandStateFloat WandState;
   typedef Usul::Interfaces::IClippingDistance ClippingDistance;
 
-  Intersect ( Unknown *unknown, Direction *dir, const std::string& name );
   Intersect ( const Intersect &cb );
   virtual ~Intersect();
 
@@ -68,42 +75,21 @@ protected:
 
   float                 _farClippingDistance() const;
 
-  void                  _intersect ( osg::Node *scene );
-
-  const osg::Group *    _modelsScene() const;
-  osg::Group *          _modelsScene();
-
-  const osg::Group *    _navigationScene() const;
-  osg::Group *          _navigationScene();
-
-  const Path &          _path() const;
-  Path &                _path();
+  bool                  _intersect ( osg::Node *scene, osgUtil::Hit & hit );
 
   void                  _rayBounds ( osg::Vec3& start, osg::Vec3& end );
 
-  void                  _updateRayScene();
-
-  bool                  _valid() const;
-
   void                  _wandPosition ( osg::Vec3 &p ) const;
-
-  const osg::Vec3 &     _worldIntersectPoint()  const { return _point; }
-  const osg::Vec3 &     _worldIntersectNormal() const { return _normal; }
 
 private:
 
   Direction::ValidRefPtr _direction;
   AuxiliaryScene::ValidQueryPtr _auxScene;
-  NavigationScene::ValidQueryPtr _navScene;
-  ModelsScene::ValidQueryPtr _models;
   WandState::ValidQueryPtr _wandState;
   ClippingDistance::ValidQueryPtr _clipDist;
   USUL_VALID_REF_POINTER ( osg::Group ) _rayBranch;
-  USUL_VALID_REF_POINTER ( osgUtil::IntersectVisitor ) _visitor;
-  USUL_VALID_REF_POINTER ( osg::LineSegment ) _segment;
-  std::auto_ptr<Path> _nodePath;
-  osg::Vec3 _point;
-  osg::Vec3 _normal;
+  osgUtil::Hit _hit;
+  bool _hasHit;
 };
 
 

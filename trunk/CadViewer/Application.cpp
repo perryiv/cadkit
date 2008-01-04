@@ -21,10 +21,10 @@
 #include "ScenePredicates.h"
 
 #include "VRV/Common/Libraries.h"
-#include "CadViewer/Functors/ToolPair.h"
+//#include "CadViewer/Functors/ToolPair.h"
 
-#include "CadViewer/Pick/Select.h"
-#include "CadViewer/Pick/Seek.h"
+//#include "CadViewer/Pick/Select.h"
+//#include "CadViewer/Pick/Seek.h"
 
 #include "Usul/Bits/Bits.h"
 #include "Usul/Components/Manager.h"
@@ -45,37 +45,15 @@
 #include "OsgTools/Font.h"
 #include "OsgTools/Visitor.h"
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Button mappings.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 namespace CV
 {
-  // For convenience.
-  const unsigned long BUTTON_RED      = VRV::BUTTON1;
-  const unsigned long BUTTON_YELLOW   = VRV::BUTTON0;
-  const unsigned long BUTTON_GREEN    = VRV::BUTTON2;
-  const unsigned long BUTTON_BLUE     = VRV::BUTTON3;
-  const unsigned long BUTTON_JOYSTICK = VRV::BUTTON4;
-  const unsigned long BUTTON_TRIGGER  = VRV::BUTTON5;
+  const unsigned long COMMAND_SELECT           = VRV::BUTTON_TRIGGER;
+  const unsigned long COMMAND_HIDE_SELECTED    = VRV::BUTTON_YELLOW;
+  const unsigned long COMMAND_UNSELECT_VISIBLE = VRV::BUTTON_GREEN;
+  const unsigned long COMMAND_SHOW_ALL         = VRV::BUTTON_RED;  
 
-  // Button combinations.
-  const unsigned long COMMAND_MENU_TOGGLE      = BUTTON_JOYSTICK;
-  const unsigned long COMMAND_MENU_SELECT      = BUTTON_TRIGGER;
-  const unsigned long COMMAND_MENU_LEFT        = BUTTON_RED;
-  const unsigned long COMMAND_MENU_RIGHT       = BUTTON_BLUE;
-  const unsigned long COMMAND_MENU_UP          = BUTTON_YELLOW;
-  const unsigned long COMMAND_MENU_DOWN        = BUTTON_GREEN;
-  
-  const unsigned long COMMAND_SELECT           = BUTTON_TRIGGER;
-  const unsigned long COMMAND_HIDE_SELECTED    = BUTTON_YELLOW;
-  const unsigned long COMMAND_UNSELECT_VISIBLE = BUTTON_GREEN;
-  const unsigned long COMMAND_SHOW_ALL         = BUTTON_RED;  
-
-  const unsigned long TOOL_SCALE      = BUTTON_GREEN;
-  const unsigned long NAVIGATE_NO_NAV = BUTTON_RED;
+  const unsigned long TOOL_SCALE      = VRV::BUTTON_GREEN;
+  const unsigned long NAVIGATE_NO_NAV = VRV::BUTTON_RED;
 };
 
 
@@ -90,12 +68,6 @@ namespace CV
   // Various callback ids.
   enum
   {
-    NO_NAVIGATION,
-    TRANSLATE_XZ_LOCAL,       // FLY
-    TRANSLATE_XZ_GLOBAL,      // WALK
-//    ROTATE_Y_TRANS_Y_GLOBAL,  // POLE
-    ROTATE_XY_LOCAL,
-    ROTATE_XY_GLOBAL,
     INTERSECT_SELECT,
     INTERSECT_SEEK,
     INTERSECT_HIDE,
@@ -141,9 +113,7 @@ unsigned long Application::_mainThread = 0;
 Application::Application ( ) :
   BaseClass       ( ),
   _gridBranch     ( new osg::MatrixTransform ),
-  _auxiliary      ( new osg::Group ),
   _sceneTool      ( 0x0 ),
-  _intersector    ( 0x0 ),
   _rotCenter      ( 0, 0, 0 ),
   _pickText       ( new OsgTools::Text ),
   _navText        ( new OsgTools::Text ),
@@ -158,7 +128,6 @@ Application::Application ( ) :
   ErrorChecker ( 1067097070u, 0 == _appThread );
   ErrorChecker ( 2970484549u, 0 == _mainThread );
   ErrorChecker ( 1067094628u, _gridBranch.valid() );
-  ErrorChecker ( 1069021589u, _auxiliary.valid() );
   ErrorChecker ( 1071551353u, 0x0 != _pickText.get() );
   ErrorChecker ( 1071551354u, 0x0 != _navText.get() );
   ErrorChecker ( 1071551355u, 0x0 != _frameText.get() );
@@ -168,12 +137,10 @@ Application::Application ( ) :
   _mainThread = Usul::Threads::currentThreadId();
 
   // Hook up the branches.
-  this->_sceneRoot()->addChild      ( _auxiliary.get()    );
   //_navBranch->addChild ( _gridBranch.get()   );
 
   // Name the branches.
   _gridBranch->setName   ( "_gridBranch"   );
-  _auxiliary->setName    ( "_auxiliary"    );
 
   // Hook up the joystick callbacks.
   JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
@@ -397,152 +364,6 @@ void Application::_latePreFrame()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Process the button states and apply to the menu.
-//  Returns true if the event was handled.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::_handleMenuEvent( unsigned long id )
-{
-  USUL_TRACE_SCOPE;
-
-  ErrorChecker ( 1071559313u, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Get the menu.
-  Menu::RefPtr menu ( this->menu () );
-
-  if ( 0x0 == menu.get() )
-    return false;
-
-  // First see if you are supposed to show or hide it. Always do this first.
-  if ( COMMAND_MENU_TOGGLE == id )
-  {
-    menu->toggleVisible();
-    return true;
-  }
-
-  // If we are not expanded then we should not handle button events.
-  if ( !menu->menu()->expanded() )
-    return false;
-
-  // Initialize.
-  bool handled ( true );
-
-  // Process button states iff the menu is showing.
-  switch ( id )
-  {
-    case COMMAND_MENU_SELECT:
-      menu->selectFocused();
-      break;
-
-    case COMMAND_MENU_LEFT:
-      menu->moveFocused ( MenuKit::Behavior::LEFT );
-      break;
-
-    case COMMAND_MENU_RIGHT:
-      menu->moveFocused ( MenuKit::Behavior::RIGHT );
-      break;
-
-    case COMMAND_MENU_UP:
-      menu->moveFocused ( MenuKit::Behavior::UP );
-      break;
-
-    case COMMAND_MENU_DOWN:
-      menu->moveFocused ( MenuKit::Behavior::DOWN );
-      break;
-
-    default:
-      handled = false;
-  };
-
-  // Return the result.
-  return handled;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Process the button states and apply to the intersector.
-//  Returns true if the event was handled.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::_handleIntersectionEvent( unsigned long id )
-{
-  ErrorChecker ( 2588614392u, isAppThread(), CV::NOT_APP_THREAD );
-
-  if(!_intersector) return false;
-#if 0
-  // Process pressed states.
-  if ( COMMAND_SELECT == id )
-  {
-    this->_intersect();
-    return true;
-  }
-  
-  else if ( COMMAND_HIDE_SELECTED == id )
-  {
-    this->_hideSelected ( MenuKit::MESSAGE_SELECTED, NULL );
-    return true;
-  }
-  
-  else if ( COMMAND_UNSELECT_VISIBLE == id )
-  {
-    this->_unselectVisible ( MenuKit::MESSAGE_SELECTED, NULL );
-    return true;
-  }
-  
-  else if ( COMMAND_SHOW_ALL == id )
-  {
-    this->_showAll ( MenuKit::MESSAGE_SELECTED, NULL );
-    return true;
-  }
-
-  // Process released states.
-  if ( COMMAND_SELECT == id )
-  {
-    this->_select();
-    this->_updateSceneTool();
-    return true;
-  }
-#endif
-  // We didn't handle the event.
-  return false;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Process the button states and apply to Navigation mode selection.
-//  Returns true if the event was handled.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Application::_handleNavigationEvent( unsigned long id )
-{
-  // Return if we are in intersect mode.
-  if( _intersector.valid () )
-    return false;
-
-  bool handled ( true );
-
-  switch ( id )
-  {
-  // Turn off all navigation.
-  case NAVIGATE_NO_NAV:
-    this->navigator ( 0x0 );
-    break;
-
-  default :
-    handled = false;
-  }
-
-  return handled;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Callback for the joystick.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -616,7 +437,7 @@ void Application::_postFrame()
 void Application::_select()
 {
   ErrorChecker ( 1070920309, isAppThread(), CV::NOT_APP_THREAD );
-
+#if 0
   // See if we have a selector...
   typedef CV::Pick::Select Select;
   Select::RefPtr selector ( dynamic_cast < Select * > ( _intersector.get() ) );
@@ -633,6 +454,7 @@ void Application::_select()
     // Reset the selector.
     selector->reset();
   }
+#endif
 }
 
 
@@ -645,7 +467,7 @@ void Application::_select()
 void Application::_seek()
 {
   ErrorChecker ( 1071204677, isAppThread(), CV::NOT_APP_THREAD );
-
+#if 0
   // See if we have a seeker...
   typedef CV::Pick::Seek Seek;
   Seek::RefPtr seeker ( dynamic_cast < Seek * > ( _intersector.get() ) );
@@ -654,6 +476,7 @@ void Application::_seek()
     // Tell the seeker to seek.
     seeker->seek();
   }
+#endif
 }
 
 
@@ -666,7 +489,7 @@ void Application::_seek()
 void Application::_unselect()
 {
   ErrorChecker ( 1070922810, isAppThread(), CV::NOT_APP_THREAD );
-
+#if 0
   // See if we have a selector...
   typedef CV::Pick::Select Select;
   Select::RefPtr selector ( dynamic_cast < Select * > ( _intersector.get() ) );
@@ -675,6 +498,7 @@ void Application::_unselect()
     // Tell the selector to "unselect" the intersected node.
     selector->unselect();
   }
+#endif
 }
 
 
@@ -785,7 +609,7 @@ void Application::_useSceneTool()
 void Application::_intersect()
 {
   ErrorChecker ( 1069016548, isAppThread(), CV::NOT_APP_THREAD );
-
+#if 0
   // If the menu is showing then we don't use the tool.
   if ( this->menu()->menu()->expanded() )
     return;
@@ -806,6 +630,7 @@ void Application::_intersect()
         this->_updateStatusBar ( "Intersected node: " + node->getName() );
     }
   }
+#endif
 }
 
 
@@ -828,32 +653,6 @@ void Application::_update ( OsgTools::Text &t, const std::string &s )
   // Dump text to stdout if this is the message-text or the pick-text.
   if ( &t == _pickText.get() || &t == _msgText.get() )
     std::cout << s << std::endl;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the auxiliary scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const osg::Group *Application::auxiliaryScene() const
-{
-  ErrorChecker ( 1069022674, _auxiliary.valid() );
-  return _auxiliary.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the auxiliary scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Group *Application::auxiliaryScene()
-{
-  ErrorChecker ( 1069022675, _auxiliary.valid() );
-  return _auxiliary.get();
 }
 
 
@@ -951,11 +750,10 @@ void Application::unref ( bool allowDeletion )
 
 Usul::Interfaces::IUnknown *Application::queryInterface ( unsigned long iid )
 {
+#if 0
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case CV::Interfaces::IAuxiliaryScene::IID:
-    return static_cast<CV::Interfaces::IAuxiliaryScene *>(this);
   case CV::Interfaces::IVisibility::IID:
     return _iVisibility.get();
   case CV::Interfaces::ISelection::IID:
@@ -965,6 +763,9 @@ Usul::Interfaces::IUnknown *Application::queryInterface ( unsigned long iid )
   default:
     return BaseClass::queryInterface ( iid );
   }
+#else
+  return BaseClass::queryInterface ( iid );
+#endif
 }
 
 
@@ -977,10 +778,13 @@ Usul::Interfaces::IUnknown *Application::queryInterface ( unsigned long iid )
 unsigned int Application::_numSelected ()
 {
   ErrorChecker ( 1084582713u, isAppThread(), CV::NOT_APP_THREAD );
-
+#if 0
   CV::Functors::Tool::Transforms t;
   this->_selected( t );
   return t.size();
+#else
+  return 0;
+#endif
 }
 
 
@@ -989,7 +793,7 @@ unsigned int Application::_numSelected ()
 //  Fill the given vector with the selected matrix-transforms.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
+#if 0
 void Application::_selected ( CV::Functors::Tool::Transforms &vt )
 {
   ErrorChecker ( 1227492927u, isAppThread(), CV::NOT_APP_THREAD );
@@ -1032,7 +836,7 @@ void Application::_selected ( CV::Functors::Tool::Transforms &vt )
   vt.resize ( append.size() );
   std::copy ( append.begin(), append.end(), vt.begin() );
 }
-
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1043,7 +847,7 @@ void Application::_selected ( CV::Functors::Tool::Transforms &vt )
 void Application::_updateSceneTool()
 {
   ErrorChecker ( 2346088799u, isAppThread(), CV::NOT_APP_THREAD );
-
+#if 0
   // If we have a scene functor...
   if ( _sceneTool.valid() )
   {
@@ -1072,69 +876,6 @@ void Application::_updateSceneTool()
       }
     }
   }
+#endif
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called when button is pressed.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
-{
-  USUL_TRACE_SCOPE;
-
-  // Redirect.
-  BaseClass::buttonPressNotify ( caller );
-
-  // Get the button id.
-  Usul::Interfaces::IButtonID::QueryPtr button ( caller );
-  if ( button.valid () )
-  {
-    unsigned long id ( button->buttonID () );
-
-    switch ( id )
-    {
-    case VRV::BUTTON0: std::cout << VRV::BUTTON0 << " Button 0 pressed (YELLOW)"   << std::endl; break;
-    case VRV::BUTTON1: std::cout << VRV::BUTTON1 << " Button 1 pressed (RED)"      << std::endl; break;
-    case VRV::BUTTON2: std::cout << VRV::BUTTON2 << " Button 2 pressed (GREEN)"    << std::endl; break;
-    case VRV::BUTTON3: std::cout << VRV::BUTTON3 << " Button 3 pressed (BLUE)"     << std::endl; break;
-    case VRV::BUTTON4: std::cout << VRV::BUTTON4 << " Button 4 pressed (JOYSTICK)" << std::endl; break;
-    case VRV::BUTTON5: std::cout << VRV::BUTTON5 << " Button 5 pressed (TRIGGER)"  << std::endl; break;
-    }
-
-    // Let the menu process first.
-    bool menuHandled ( this->_handleMenuEvent( id ) );
-
-    // Hide the scene if we are suppose to and it's currently visible.
-    bool hideScene ( this->menuSceneShowHide() && this->menu()->isVisible() );
-
-    // The node mask.
-    unsigned int mask ( hideScene ? 0 : 0xffffffff );
-
-    // Always set the mask.
-    this->modelsScene ( )->setNodeMask ( mask );
-
-    // Return now if the menu was handled.
-    if ( menuHandled )
-      return;
-
-    // Now process the intersector buttons.
-    if ( this->_handleIntersectionEvent( id ) )
-      return;
-
-    // Handle the navigation mode.
-    if ( this->_handleNavigationEvent( id ) )
-      return;
-
-    if ( VRV::BUTTON5 == id )
-    {
-      this->_readUserPreferences();
-      this->_readFunctorFile();
-      this->_initMenu();
-      this->_initLight();
-      this->_initStatusBar();
-    }
-  }
-}

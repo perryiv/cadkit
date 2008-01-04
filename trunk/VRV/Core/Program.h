@@ -187,6 +187,9 @@ protected:
     // Run the application.
     app.run();
 
+    // Save the registry.
+    XmlTree::RegistryIO::write ( Usul::App::Application::instance().configFile ( "settings" ) );
+
     // Clean up.
     app.cleanup();
 

@@ -32,7 +32,7 @@ struct IButtonReleaseListener : public Usul::Interfaces::IUnknown
   enum { IID = 2967760305u };
 
   // Called when button is released.
-  virtual void            buttonReleaseNotify ( Usul::Interfaces::IUnknown * ) = 0;
+  virtual bool            buttonReleaseNotify ( Usul::Interfaces::IUnknown * ) = 0;
 };
 
 

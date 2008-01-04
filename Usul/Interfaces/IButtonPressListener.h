@@ -32,7 +32,7 @@ struct IButtonPressListener : public Usul::Interfaces::IUnknown
   enum { IID = 1681623590u };
 
   // Called when button is pressed.
-  virtual void            buttonPressNotify ( Usul::Interfaces::IUnknown * ) = 0;
+  virtual bool            buttonPressNotify ( Usul::Interfaces::IUnknown * ) = 0;
 };
 
 

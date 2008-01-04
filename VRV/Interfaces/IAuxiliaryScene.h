@@ -13,15 +13,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CV_INTERFACE_AUXILIARY_SCENE_H_
-#define _CV_INTERFACE_AUXILIARY_SCENE_H_
+#ifndef _VRV_INTERFACE_AUXILIARY_SCENE_H_
+#define _VRV_INTERFACE_AUXILIARY_SCENE_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
 namespace osg { class Group; };
 
 
-namespace CV {
+namespace VRV {
 namespace Interfaces {
 
 
@@ -40,7 +40,7 @@ struct IAuxiliaryScene : public Usul::Interfaces::IUnknown
 
 
 }; // namespace Interfaces
-}; // namespace CV
+}; // namespace VRV
 
 
 #endif // _CV_INTERFACE_AUXILIARY_SCENE_H_

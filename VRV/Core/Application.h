@@ -21,6 +21,8 @@
 #include "VRV/Interfaces/IModelAdd.h"
 #include "VRV/Interfaces/INavigationScene.h"
 #include "VRV/Interfaces/IModelsScene.h"
+#include "VRV/Interfaces/IAuxiliaryScene.h"
+#include "VRV/Functors/Intersect.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Commands/GenericCommand.h"
@@ -36,7 +38,11 @@
 #include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Interfaces/IButtonPressListener.h"
 #include "Usul/Interfaces/IButtonReleaseListener.h"
+#include "Usul/Interfaces/IButtonPressSubject.h"
+#include "Usul/Interfaces/IButtonReleaseSubject.h"
 #include "Usul/Interfaces/IFrameStamp.h"
+#include "Usul/Interfaces/IIntersectNotify.h"
+#include "Usul/Interfaces/IIntersectListener.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IMatrixMultiply.h"
 #include "Usul/Interfaces/IJoystick.h"
@@ -53,6 +59,7 @@
 #include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IViewport.h"
 #include "Usul/Interfaces/IView.h"
+#include "Usul/Interfaces/IGroup.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Queue.h"
@@ -100,6 +107,7 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public VRV::Interfaces::IModelAdd,
                                public VRV::Interfaces::INavigationScene,
                                public VRV::Interfaces::IModelsScene,
+                               public VRV::Interfaces::IAuxiliaryScene,
                                public Usul::Interfaces::IClippingDistance,
                                public Usul::Interfaces::IFrameInfo,
                                public Usul::Interfaces::IWorldInfo,
@@ -125,7 +133,11 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public Usul::Interfaces::IViewport,
                                public Usul::Interfaces::IView,
                                public Usul::Interfaces::ITextMatrix,
-                               public Usul::Interfaces::ISaveFileDialog
+                               public Usul::Interfaces::ISaveFileDialog,
+                               public Usul::Interfaces::IIntersectNotify,
+                               public Usul::Interfaces::IButtonPressSubject,
+                               public Usul::Interfaces::IButtonReleaseSubject,
+                               public Usul::Interfaces::IGroup
 {
 public:
   // Typedefs.
@@ -297,6 +309,13 @@ public:
   /// Get/Set near far mode.
   void                    computeNearFar ( bool b );
   bool                    computeNearFar () const;
+
+  /// Reread the preference files and reinitialiaze.
+  void                    reinitialize();
+
+  /// Set/Get the allow intersections state
+  void                    allowIntersections ( bool b );
+  bool                    isAllowIntersections() const;
 protected:
 
   /// VR Juggler methods.
@@ -383,6 +402,15 @@ protected:
   void                          _decreaseSpeed ();
   void                          _increaseSpeedTen ();
   void                          _decreaseSpeedTen ();
+
+  
+  // Handle the events, if any.
+  bool                          _handleMenuEvent ( unsigned long id );
+  bool                          _handleIntersectionEvent ( unsigned long id );
+  bool                          _handleNavigationEvent ( unsigned long id );
+
+  // Intersect.
+  void                          _intersect();
 
   // Generate a string from the integer.
   std::string                   _counter ( unsigned int num ) const;
@@ -478,11 +506,11 @@ protected:
 
   /// Usul::Interfaces::IButtonPressListener
   /// Called when button is pressed.
-  virtual void                  buttonPressNotify ( Usul::Interfaces::IUnknown * );
+  virtual bool                  buttonPressNotify ( Usul::Interfaces::IUnknown * );
 
   /// Usul::Interfaces::IButtonReleaseListener
   /// Called when button is released.
-  virtual void                  buttonReleaseNotify ( Usul::Interfaces::IUnknown * );
+  virtual bool                  buttonReleaseNotify ( Usul::Interfaces::IUnknown * );
 
   /// Set the view matrix ( Usul::Interfaces::IViewMatrix ).
   /// Note: In this implementation, the navigation matrix is set.
@@ -528,6 +556,42 @@ protected:
   // Get the name of the file to save to (ISaveFileDialog)
   virtual FileResult            getSaveFileName  ( const std::string &title = "Save", const Filters &filters = Filters() );
 
+  // Get the auxiliary scene (CV::Interfaces::IAuxiliaryScene).
+  virtual const osg::Group *    auxiliaryScene() const;
+  virtual osg::Group *          auxiliaryScene();
+
+  // Add the listener (IIntersectListener).
+  virtual void                  addIntersectListener ( Usul::Interfaces::IUnknown *listener );
+
+  // Remove all intersect listeners.
+  virtual void                  clearIntersectListeners();
+
+  // Remove the listener (IIntersectListener).
+  virtual void                  removeIntersectListener ( Usul::Interfaces::IUnknown *caller );
+
+  // Add the listener (IButtonPressSubject).
+  virtual void                  addButtonPressListener ( Usul::Interfaces::IUnknown * );
+
+  // Remove all listeners (IButtonPressSubject).
+  virtual void                  clearButtonPressListeners();
+
+  // Remove the listener (IButtonPressSubject).
+  virtual void                  removeButtonPressListener ( Usul::Interfaces::IUnknown * );
+
+  // Add the listener (IButtonReleaseSubject).
+  virtual void                  addButtonReleaseListener ( Usul::Interfaces::IUnknown * );
+
+  // Remove all listeners (IButtonReleaseSubject).
+  virtual void                  clearButtonReleaseListeners();
+
+  // Remove the listener (IButtonReleaseSubject).
+  virtual void                  removeButtonReleaseListener ( Usul::Interfaces::IUnknown * );
+
+  // IGroup.
+  virtual osg::Group*           getGroup    ( const std::string& );
+  virtual void                  removeGroup ( const std::string& );
+  virtual bool                  hasGroup    ( const std::string& );
+
   /// No copying.
   Application ( const Application& );
   Application& operator = (const Application&);
@@ -547,8 +611,8 @@ private:
   virtual void            postFrame();
 
   // Typedefs.
-  typedef osg::ref_ptr < osg::MatrixTransform >            MatTransPtr;
-  typedef osg::ref_ptr < osg::Group >                      GroupPtr;
+  typedef osg::ref_ptr <osg::MatrixTransform>              MatTransPtr;
+  typedef osg::ref_ptr <osg::Group>                        GroupPtr;
   typedef VRV::Devices::ButtonGroup                        ButtonGroup;
   typedef VRV::Devices::ButtonGroup::ValidRefPtr           ButtonsPtr;
   typedef VRV::Devices::TrackerDevice::ValidRefPtr         TrackerPtr;
@@ -563,6 +627,10 @@ private:
   typedef std::map<std::string, Usul::Math::Vec4f >        ColorMap;
   typedef VRV::Core::SharedData<double>                    SharedDouble;
   typedef VRV::Core::SharedData<std::string>               SharedString;
+  typedef Usul::Functors::Interaction::Common::BaseFunctor BaseFunctor;
+  typedef BaseFunctor::RefPtr                              FunctorPtr;
+  typedef Usul::Interfaces::IIntersectListener             IIntersectListener;
+  typedef std::vector<IIntersectListener::RefPtr>          IntersectListeners;
 
   // Data members.
   mutable Mutex                          _mutex;
@@ -613,6 +681,10 @@ private:
   ColorMap                               _colorMap;
   unsigned int                           _count;
   bool                                   _allowUpdate;
+  VRV::Functors::Intersect::RefPtr       _intersector;
+  MatTransPtr                            _auxiliary;
+  bool                                   _allowIntersections;
+  IntersectListeners                     _intersectListeners;
 };
 
 }

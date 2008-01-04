@@ -154,7 +154,12 @@ void ButtonDevice::_notifyPressed()
   }
 
   Usul::Interfaces::IUnknown::QueryPtr unknown ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-  std::for_each ( pressed.begin(), pressed.end(), std::bind2nd ( std::mem_fun ( &IButtonPressListener::buttonPressNotify ), unknown.get() ) );
+  for ( ButtonPressListeners::iterator iter = pressed.begin(); iter != pressed.end(); ++iter )
+  {
+    // Break if we aren't suppose to continue.
+    if ( false == (*iter)->buttonPressNotify ( unknown.get() ) )
+      break;
+  }
 }
 
 
@@ -175,7 +180,12 @@ void ButtonDevice::_notifyReleased()
   }
 
   Usul::Interfaces::IUnknown::QueryPtr unknown ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-  std::for_each ( released.begin(), released.end(), std::bind2nd ( std::mem_fun ( &IButtonReleaseListener::buttonReleaseNotify ), unknown.get() ) );
+  for ( ButtonReleaseListeners::iterator iter = released.begin(); iter != released.end(); ++iter )
+  {
+    // Break if we aren't suppose to continue.
+    if ( false == (*iter)->buttonReleaseNotify ( unknown.get() ) )
+      break;
+  }
 }
 
 
@@ -195,6 +205,7 @@ void ButtonDevice::addButtonPressListener ( IUnknown *caller )
   IButtonPressListener::QueryPtr listener ( caller );
   if ( true == listener.valid() )
   {
+    
     Guard guard ( this->mutex() );
     _pressed.push_back ( IButtonPressListener::RefPtr ( listener.get() ) );
   }

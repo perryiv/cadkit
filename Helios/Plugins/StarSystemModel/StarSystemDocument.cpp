@@ -438,12 +438,16 @@ namespace Detail
     
     template < class Matrix > bool _common ( Matrix &projection, double &zNear, double &zFar ) const
     {
+      //std::cout << "Clamping projection." << std::endl;
+
       if ( zNear <= 0 )
+      {
         zNear = 10;
+      }
       //else
       //  zNear = zNear * 0.50;
       
-      zFar = zFar * 0.90;
+      //zFar = zFar * 0.90;
 #if 1
       typedef typename Matrix::value_type value_type;
       

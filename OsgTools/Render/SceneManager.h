@@ -19,7 +19,7 @@
 #include "osg/ClipNode"
 #include "osg/Group"
 #include "osg/Light"
-#include "osg/Projection"
+#include "osg/Camera"
 
 #include "osgText/Text"
 
@@ -72,8 +72,8 @@ public:
   void                  projectionGroupRemove ( const std::string& );
   bool                  projectionGroupHas    ( const std::string& ) const;
 
-  /// Get the projection node
-  osg::Projection*      projection();
+  /// Get the camera node
+  osg::Camera*          camera();
 
   /// Get the clip node
   const osg::ClipNode*  clipNode() const;
@@ -88,6 +88,8 @@ public:
   /// Remove text
   void                  removeText( unsigned int x, unsigned int y );
 
+  /// Resize.
+  void                  resize ( double x, double width, double y, double height );
 
 protected:
 
@@ -98,7 +100,7 @@ private:
 
   typedef osg::ref_ptr < Group >                   GroupPtr;
   typedef osg::ref_ptr < osg::ClipNode >           ClipNodePtr;
-  typedef osg::ref_ptr < osg::Projection >         ProjectionPtr;
+  typedef osg::ref_ptr < osg::Camera >             CameraPtr;
   typedef osg::ref_ptr < osgText::Text >           TextPtr;
   typedef std::pair < unsigned int, unsigned int > XYPair;
   typedef std::map < XYPair, TextPtr >             TextMap;
@@ -108,7 +110,7 @@ private:
 
   GroupPtr _scene;
   ClipNodePtr _clipNode;
-  ProjectionPtr _projectionNode;
+  CameraPtr _cameraNode;
   GroupPtr _lightNode;
   Lights   _lights;
 

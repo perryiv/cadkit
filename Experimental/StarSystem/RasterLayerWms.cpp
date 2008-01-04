@@ -31,6 +31,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Math/Absolute.h"
 #include "Usul/Network/WMS.h"
+#include "Usul/Registry/Database.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Scope/RemoveFile.h"
 #include "Usul/Threads/Safe.h"
@@ -51,17 +52,24 @@ using namespace StarSystem;
 
 USUL_FACTORY_REGISTER_CREATOR ( RasterLayerWms );
 
+namespace Detail
+{
+  const std::string WMS_CACHE_DIR ( "wms_cache_dir" );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
 //
-///////////////////////////////////////////////////////////////////////////////
+//////////
+/////////////////////////////////////////////////////////////////////
 
-RasterLayerWms::RasterLayerWms ( const Extents &maxExtents, const std::string &url, const Options &options ) : BaseClass(),
+RasterLayerWms::RasterLayerWms ( const Extents &maxExtents, const std::string &url, const Options &options ) : 
+  BaseClass(),
   _url     ( url ),
   _options ( options ),
-  _dir     ( Usul::File::Temp::directory ( false ) )
+  _dir     ( Usul::Registry::Database::instance()[Detail::WMS_CACHE_DIR].get<std::string> ( Usul::File::Temp::directory ( false ) ) ),
+  _useNetwork ( true )
 {
   USUL_TRACE_SCOPE;
 
@@ -70,6 +78,7 @@ RasterLayerWms::RasterLayerWms ( const Extents &maxExtents, const std::string &u
   // Serialization glue.
   this->_addMember ( "url", _url );
   this->_addMember ( "options", _options );
+  this->_addMember ( "use_network", _useNetwork );
 }
 
 
@@ -168,11 +177,11 @@ osg::Image* RasterLayerWms::texture ( const Extents& extents, unsigned int width
   Usul::Network::WMS wms ( url, file, options.begin(), options.end() );
   file = Usul::Strings::format ( file, '.', wms.extension() );
 
-  // Make this a runtime switch?
-  //Usul::Scope::RemoveFile remove ( file, false );
+  // Get the use network.
+  const bool useNetwork ( Usul::Threads::Safe::get ( this->mutex(), _useNetwork ) );
 
   // Pull it down if it does not exist...
-  if ( false == Usul::Predicates::FileExists::test ( file ) )
+  if ( false == Usul::Predicates::FileExists::test ( file ) && useNetwork )
   {
     std::ostream *stream ( 0x0 );
     Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( &wms, &Usul::Network::WMS::download ), 5, stream, "2052060829" );

@@ -37,6 +37,9 @@ public:
   /// Get the texture
   virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * );
 
+  /// Deserialize.
+  virtual void          deserialize ( const XmlTree::Node &node );
+
 protected:
   virtual ~RasterLayerOssim();
 
@@ -46,13 +49,16 @@ protected:
 private:
   void                  _destroy();
 
+  std::string        _filename;
   ossimImageHandler *_handler;
   ossimImageRenderer *_renderer;
   ossimViewInterface *_viewInterface;
 
   ossimEquDistCylProjection *_projection;
 
-  SERIALIZE_XML_DEFINE_MEMBERS ( RasterLayerOssim );
+  SERIALIZE_XML_CLASS_NAME( RasterLayerOssim ) 
+  SERIALIZE_XML_SERIALIZE_FUNCTION 
+  SERIALIZE_XML_ADD_MEMBER_FUNCTION
 };
 
 

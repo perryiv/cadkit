@@ -34,8 +34,8 @@ ${CADKIT_INC_DIR}/Experimental/WRF/WrfModel
 ${CADKIT_INC_DIR}/Experimental/DynamicLand/DynamicLandModel
 ${CADKIT_INC_DIR}/Experimental/ModelPresentation/ModelPresentation
 
-#${CADKIT_INC_DIR}/Experimental/StarSystem
-#${CADKIT_INC_DIR}/Helios/Plugins/StarSystemModel
+${CADKIT_INC_DIR}/Experimental/StarSystem
+${CADKIT_INC_DIR}/Helios/Plugins/StarSystemModel
 
 # ---- Minerva -------
 ${CADKIT_INC_DIR}/Magrathea

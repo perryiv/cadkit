@@ -751,7 +751,7 @@ void Viewer::resize ( unsigned int w, unsigned int h )
     this->viewer()->setProjectionMatrixAsPerspective ( fovy, aspect, zNear, zFar );
 
   // Update the projection node.
-  _sceneManager->projection()->setMatrix( osg::Matrix::ortho2D ( 0, w ,0, h ) );
+  _sceneManager->resize ( 0, w ,0, h );
 
   // Update the renderer.
   _renderer->resize ( w, h );
@@ -3023,8 +3023,8 @@ bool Viewer::_lineSegment ( float mouseX, float mouseY, osg::Vec3 &pt0, osg::Vec
   if ( useWindowCoords )
   {
     // Set the two points for our line-segment.
-    pt0 = osg::Vec3 ( x, y, -1 ) * osg::Matrix::inverse( _sceneManager->projection()->getMatrix() );
-    pt1 = osg::Vec3 ( x, y,  1 ) * osg::Matrix::inverse( _sceneManager->projection()->getMatrix() );
+    pt0 = osg::Vec3 ( x, y, -1 ) * osg::Matrix::inverse( _sceneManager->camera()->getProjectionMatrix() );
+    pt1 = osg::Vec3 ( x, y,  1 ) * osg::Matrix::inverse( _sceneManager->camera()->getProjectionMatrix() );
   }
 
   // Project into the scene.
@@ -3618,7 +3618,7 @@ void Viewer::_handlePicking ( EventAdapter *ea )
     // using just the screen coordniates.
     osg::ref_ptr< osg::MatrixTransform > root ( new osg::MatrixTransform );
     root->setMatrix ( osg::Matrix::identity() );
-    root->addChild( _sceneManager->projection() );
+    root->addChild( _sceneManager->camera() );
 
     // List of transforms that had the reference frame changed from absolute to relative.
     typedef std::vector< osg::ref_ptr< osg::Transform > > TList;

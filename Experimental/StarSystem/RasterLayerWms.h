@@ -56,6 +56,7 @@ private:
   std::string _url;
   Options _options;
   std::string _dir;
+  bool _useNetwork;
 
   SERIALIZE_XML_DEFINE_MEMBERS ( RasterLayerWms );
 };

@@ -30,21 +30,22 @@ SceneManager::SceneManager() :
   BaseClass(),
   _scene           ( new Group ),
   _clipNode        ( new osg::ClipNode ),
-  _projectionNode  ( new osg::Projection ),
+  _cameraNode      ( new osg::Camera ),
   _lightNode       ( new osg::Group ),
   _lights          (),
   _groupMap        (),
   _projectionMap   (),
   _textMap         ()
 {
-  _scene->addChild ( _projectionNode.get() );
+  _scene->addChild ( _cameraNode.get() );
   _scene->addChild ( _clipNode.get() );
   _scene->addChild ( _lightNode.get() );
 
   // Make sure it draws last and without depth testing.
-  osg::ref_ptr< osg::StateSet > ss ( _projectionNode->getOrCreateStateSet() );
-  ss->setRenderBinDetails( 2000, "RenderBin" );
-  ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+  _cameraNode->setRenderOrder ( osg::Camera::POST_RENDER );
+  _cameraNode->setReferenceFrame ( osg::Camera::ABSOLUTE_RF );
+  _cameraNode->setClearMask( GL_DEPTH_BUFFER_BIT );
+  _cameraNode->setViewMatrix( osg::Matrix::identity() );
 }
 
 
@@ -205,8 +206,8 @@ osg::Group* SceneManager::projectionGroupGet ( const std::string &key )
     group->setName( key );
 
     // Add the group to the scene
-    _projectionNode->addChild( group.get() );
-    _projectionNode->dirtyBound();
+    _cameraNode->addChild( group.get() );
+    _cameraNode->dirtyBound();
   }
 
   return group.get();
@@ -222,8 +223,8 @@ osg::Group* SceneManager::projectionGroupGet ( const std::string &key )
 void SceneManager::projectionGroupRemove ( const std::string &key )
 {
   osg::ref_ptr<osg::Group> &group = _projectionMap[key];
-  _projectionNode->removeChild ( group.get() );
-  _projectionNode->dirtyBound();
+  _cameraNode->removeChild ( group.get() );
+  _cameraNode->dirtyBound();
   group = 0x0;
 
   // Remove key from group map.
@@ -246,13 +247,13 @@ bool SceneManager::projectionGroupHas ( const std::string& key ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the projection node.
+//  Get the camera node.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Projection* SceneManager::projection()
+osg::Camera* SceneManager::camera()
 {
-  return _projectionNode.get();
+  return _cameraNode.get();
 }
 
 
@@ -454,4 +455,17 @@ void SceneManager::globalLightClear ( )
 {
   _lightNode->removeChild ( 0, _lightNode->getNumChildren () );
   _lights.clear ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Resize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SceneManager::resize ( double x, double width, double y, double height )
+{
+  _cameraNode->setViewport ( static_cast<int> ( x ), static_cast<int> ( y ), static_cast<int> ( width ), static_cast<int> ( height ) );
+  _cameraNode->setProjectionMatrixAsOrtho ( x, width, y, height, -1000.0, 1000.0 );
 }

@@ -97,10 +97,14 @@ inline void find ( const std::string &d, const std::string &ext, Names &names )
       // Get name
       std::string name ( dp->d_name );
 
-      if ( ( "*" == ext ) || ( Usul::File::extension ( name ) == ext ) )
+      const std::string base ( Usul::File::base ( name ) );
+      if ( ( "." != base ) && ( ".." != base ) )
       {
-        // Add to list
-        names.insert ( names.end(), name );
+        if ( ( "*" == ext ) || ( Usul::File::extension ( name ) == ext ) )
+        {
+          // Add to list
+          names.insert ( names.end(), name );
+        }
       }
     }
     closedir ( dirp );

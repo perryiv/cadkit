@@ -218,6 +218,25 @@ template <> struct Convert < bool >
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Converter for a string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <> struct Convert < std::string >
+{
+  static std::string to ( const std::string &s )
+  {
+    return s;
+  }
+  static void from ( const std::string &s0, std::string & s1 )
+  {
+    s1 = s0;
+  }
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Helper macro to define scalar and derived converters.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -235,7 +254,6 @@ template <> struct Convert < bool >
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-USUL_REGISTRY_DEFINE_CONVERTER_SCALAR ( std::string );
 USUL_REGISTRY_DEFINE_CONVERTER ( c,  char           );
 USUL_REGISTRY_DEFINE_CONVERTER ( s,  short          );
 USUL_REGISTRY_DEFINE_CONVERTER ( i,  int            );

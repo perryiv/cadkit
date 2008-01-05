@@ -131,7 +131,7 @@ void ElevationLayerDem::open( const std::string& filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* ElevationLayerDem::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * job )
+ElevationLayerDem::ImagePtr ElevationLayerDem::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * job )
 {
   USUL_TRACE_SCOPE;
   
@@ -186,7 +186,7 @@ osg::Image* ElevationLayerDem::texture ( const Extents& extents, unsigned int wi
   }
   
   // Return our result.
-  return result.release();
+  return result;
 }
 
 

@@ -44,6 +44,7 @@
 #include "Usul/Interfaces/IPluginInitialize.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Threads/Manager.h"
+#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Math/Constants.h"
 #include "Usul/Math/Matrix44.h"
@@ -1873,6 +1874,12 @@ void Application::_increaseTranslateSpeed ( double amount )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
   _translationSpeed *= amount;
+
+  // Get the section for the document.
+  Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ this->_documentSection () ] );
+
+  // Set the translation speed.
+  node[ VRV::Constants::Keys::TRANSLATION_SPEED ].set < float > ( _translationSpeed );
 }
 
 
@@ -1887,6 +1894,12 @@ void Application::_decreaseTranslateSpeed ( double amount )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
   _translationSpeed /= amount;
+
+  // Get the section for the document.
+  Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ this->_documentSection () ] );
+
+  // Set the translation speed.
+  node[ VRV::Constants::Keys::TRANSLATION_SPEED ].set < float > ( _translationSpeed );
 }
 
 
@@ -2305,9 +2318,20 @@ void Application::addCommand ( Usul::Interfaces::ICommand* command )
 ///////////////////////////////////////////////////////////////////////////////
 
 void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
-{
+{  
+  // Rebuild the menu.
+  this->_initMenu();
+
+  // Return now if we don't hava new document.
+  if ( 0x0 == newDoc )
+    return;
+
+  // Get the tag name from the document for the registry.
+  Usul::Interfaces::IDocument::QueryPtr document ( newDoc );
+  std::string documentSection ( document.valid() ? document->registryTagName() : "Document" );
+
   // Get the section for the document.
-  Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ this->_documentSection () ] );
+  Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ documentSection ] );
 
   // Turn on computing of the near and far plane if we should.
   bool defaultAutoNearFar ( false );
@@ -2323,8 +2347,20 @@ void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Us
   bool menuShowHide ( node[ VRV::Constants::Keys::MENU_SHOW_HIDE ].get < bool > ( false ) );
   this->menuSceneShowHide ( menuShowHide );
 
-  // Rebuild the menu.
-  this->_initMenu();
+  // Get the translation speed.
+  float speed ( node[ VRV::Constants::Keys::TRANSLATION_SPEED ].get < float > ( this->translationSpeed() ) );
+  Usul::Threads::Safe::set ( this->mutex(), speed, _translationSpeed );
+
+  Navigator::RefPtr functor ( this->navigator() );
+  std::string name ( functor.valid() ? functor->name() : "" );
+
+  // Get the navigator.
+  std::string navigatorName ( node[ VRV::Constants::Keys::NAVIGATION_FUNCTOR ].get < std::string > ( name ) );
+
+  {
+    Guard guard ( this );
+    this->navigator ( _favoriteFunctors[navigatorName] );
+  }
 }
 
 
@@ -2863,7 +2899,7 @@ void Application::_readFunctorFile ()
   _analogInputs.clear();
   _transformFunctors.clear();
   _favoriteFunctors.clear();
-  this->navigator ( 0x0 );
+  //this->navigator ( 0x0 );
   
   // Make the functors.
   Helper::add ( analogSetter,    factory, analogs,    _analogInputs, caller  );
@@ -2873,8 +2909,7 @@ void Application::_readFunctorFile ()
   Helper::add ( favoriteSetter,  factory, favorites,  _favoriteFunctors, caller );
 
   // Set the navigator.  Will be null if there isn't a favorite with this name.
-  if ( false == name.empty () )
-    this->navigator ( _favoriteFunctors [ name ] );
+  Usul::Threads::Safe::set ( this->mutex(), _favoriteFunctors [ name ].get(), _navigator );
 }
 
 
@@ -2889,6 +2924,15 @@ void Application::navigator ( Navigator * navigator )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
   _navigator = navigator;
+
+  // Get the name of the navigator.
+  std::string name ( _navigator.valid() ? _navigator->name() : "" );
+
+  // Get the section for the document.
+  Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ this->_documentSection () ] );
+
+  // Set the navigator's name.
+  node[ VRV::Constants::Keys::NAVIGATION_FUNCTOR ].set < std::string > ( name );
 }
 
 
@@ -3032,16 +3076,6 @@ void Application::_setHome()
   Usul::Math::Matrix44f m;
   OsgTools::Convert::matrix ( _home, m );
   Usul::Registry::Database::instance()[ this->_documentSection () ][ VRV::Constants::Keys::HOME_POSITION ] = m;
-
-#if 0 // Experimental
-  std::ostringstream out;
-  out << Usul::System::Host::name() << "_home_position.txt";
-  std::ofstream file ( out.str().c_str() );
-  if ( true == file.is_open() )
-  {
-    Usul::Print::matrix ( "", _home.ptr(), file, 20 );
-  }
-#endif
 }
 
 
@@ -3440,7 +3474,11 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
 
     typedef VRV::Commands::Navigator Navigator;
     for ( FavoriteIterator iter = this->favoritesBegin(); iter != this->favoritesEnd (); ++iter )
-      favorites->append ( new RadioButton ( new Navigator ( iter->second, me ) ) );
+    {
+      // Only add valid favorites.
+      if ( iter->second.valid() )
+        favorites->append ( new RadioButton ( new Navigator ( iter->second, me ) ) );
+    }
   }
 
   menu->addSeparator();
@@ -3868,9 +3906,6 @@ std::string Application::_documentSection () const
 {
   // Get the active document.
   Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
-
-  std::string filename;
-
   return ( document.valid() ? document->registryTagName() : "Document" );
 }
 

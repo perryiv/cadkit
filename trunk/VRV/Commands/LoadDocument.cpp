@@ -161,11 +161,11 @@ void LoadDocument::LoadJob::_loadModel( const std::string& filename )
   // Set the label.
   Usul::Interfaces::IStatusBar::UpdateStatusBar label ( _secondProgressBar.get() );
   label ( "Loading filename: " + filename, true );
+  std::cout << "Loading filename: " + filename << std::endl;
 
   if ( document->canOpen ( filename ) )
   {
-    document->read ( filename, _caller.get(), _secondProgressBar.get() );
-    document->fileName ( filename );
+    document->open ( filename, _caller.get(), _secondProgressBar.get() );
   }
 
   // Get the node.

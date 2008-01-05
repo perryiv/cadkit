@@ -34,7 +34,7 @@ public:
   void                  open ( const std::string& filename );
 
   /// Get the texture
-  virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * );
+  virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * );
 
   // Get the value at the lat, lon location.  May return null pixel value.
   double                value ( double lon, double lat ) const;

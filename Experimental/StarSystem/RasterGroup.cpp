@@ -101,7 +101,7 @@ void RasterGroup::_updateExtents ( const RasterLayer& layer  )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *job )
+RasterGroup::ImagePtr RasterGroup::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *job )
 {
   USUL_TRACE_SCOPE;
   //Guard guard ( this );
@@ -171,7 +171,7 @@ osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, u
 #endif
 
   // Return the result.
-  return result.release();
+  return result;
 }
 
 

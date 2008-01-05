@@ -21,11 +21,13 @@
 #include "Usul/Predicates/LessVector.h"
 
 #include "osg/Vec2d"
+#include "osg/Image"
+#include "osg/ref_ptr"
 
 #include <functional>
 #include <map>
 
-namespace osg { class Image; class Vec3d; }
+namespace osg { class Vec3d; }
 namespace Usul { namespace Jobs { class Job; } }
 
 
@@ -42,6 +44,7 @@ public:
   typedef std::equal_to < unsigned char > EqualPredicate;
   typedef Usul::Predicates::LessVector < EqualPredicate, 3 > LessColor;
   typedef std::map < Usul::Math::Vec3uc, unsigned char, LessColor > Alphas;
+  typedef osg::ref_ptr < osg::Image > ImagePtr;
 
   USUL_DECLARE_REF_POINTERS ( RasterLayer );
 
@@ -58,7 +61,7 @@ public:
   Extents               extents () const;
 
   /// Get the texture.
-  virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * ) = 0;
+  virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * ) = 0;
 
 protected:
 

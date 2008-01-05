@@ -575,7 +575,7 @@ void Tile::split ( Usul::Jobs::Job* job )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Tile* Tile::_buildTile ( unsigned int level, const Extents& extents, const MeshSize& size, const Usul::Math::Vec4d& texCoords, double splitDistance, Usul::Jobs::Job* job ) const
+Tile::RefPtr Tile::_buildTile ( unsigned int level, const Extents& extents, const MeshSize& size, const Usul::Math::Vec4d& texCoords, double splitDistance, Usul::Jobs::Job* job ) const
 {
   Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
   
@@ -619,11 +619,11 @@ Tile* Tile::_buildTile ( unsigned int level, const Extents& extents, const MeshS
     job->cancel();
   
   // Make the tile.
-  osg::ref_ptr < Tile > tile ( new Tile ( level, extents, size, tCoords, splitDistance, body.get(), image.get(), elevation.get() ) );
+  Tile::RefPtr tile ( new Tile ( level, extents, size, tCoords, splitDistance, body.get(), image.get(), elevation.get() ) );
   tile->updateMesh();
   tile->updateTexture();
   
-  return tile.release();
+  return tile;
 }
 
 

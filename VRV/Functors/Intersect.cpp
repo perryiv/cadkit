@@ -19,6 +19,7 @@
 #include "Usul/Functors/Interaction/Navigate/Direction.h"
 #include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IViewMatrix.h"
+#include "Usul/Interfaces/IWorldInfo.h"
 #include "Usul/Math/Vector4.h"
 
 #include "osg/AutoTransform"
@@ -151,7 +152,9 @@ void Intersect::_rayBounds ( osg::Vec3& start, osg::Vec3& end )
   const Direction::Vector &d = _direction->vector();
   osg::Vec3 dir ( d[0], d[1], d[2] );
 
-  float zFar ( this->_farClippingDistance() );
+  Usul::Interfaces::IWorldInfo::QueryPtr wi ( this->caller() );
+
+  float zFar ( wi.valid() ? wi->worldRadius() : this->_farClippingDistance() );
   end = start + ( dir * zFar );
 
 #if 0

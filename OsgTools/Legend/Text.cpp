@@ -145,7 +145,8 @@ osg::Node* Text::buildScene()
 
   osg::ref_ptr < osgText::Text > text ( new osgText::Text );
 
-  text->setFont( OsgTools::Font::defaultFont() );
+  osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
+  text->setFont( font.get() );
 
   if ( LEFT == _alignment )
     text->setPosition ( osg::Vec3( 0.0, _height / 4, 0.0 ) );

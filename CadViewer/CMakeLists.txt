@@ -4,7 +4,6 @@ PROJECT(CadViewer)
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
-
 # ------------ Find OpenGL Library ----------------------
 FIND_PACKAGE(OpenGL)
 
@@ -71,7 +70,13 @@ INCLUDE_DIRECTORIES(
 		     "${VRJ_INC_DIR}/tweek/CORBA"
 		     "${VRJ_INC_DIR}/tweek/idl"
 		     "$ENV{VJ_DEPS_DIR}/include"
+         #/usr/include/glib-2.0
+         #/usr/lib64/glib/include/
 		     )
+
+#ADD_DEFINITIONS("-DHAVE_GLIB")
+
+#LINK_DIRECTORIES( /usr/lib64/ )
 
 #List the Sources
 SET (SOURCES
@@ -108,4 +113,5 @@ TARGET_LINK_LIBRARIES( ${TARGET}
   ${OSG_UTIL_LIB}
   ${OSG_FX_LIB}
   ${OPENGL_LIBRARIES}
+  #glib-2.0
 )

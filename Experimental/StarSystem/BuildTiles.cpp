@@ -15,7 +15,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "StarSystem/BuildTiles.h"
-#include "StarSystem/Tile.h"
 
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Trace/Trace.h"
@@ -29,14 +28,12 @@ using namespace StarSystem;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BuildTiles::BuildTiles ( Tile* tile ) : BaseClass (),
+BuildTiles::BuildTiles ( Tile::RefPtr tile ) : BaseClass (),
 _tile ( tile )
 {
   USUL_TRACE_SCOPE;
   
-  Usul::Pointers::reference( _tile );
-  
-  if ( 0x0 != _tile )
+  if ( _tile.valid() )
     this->priority ( -1 * static_cast<int> ( _tile->level() ) );
 }
 
@@ -51,7 +48,7 @@ BuildTiles::~BuildTiles()
 {
   USUL_TRACE_SCOPE;
   
-  Usul::Pointers::unreference( _tile ); _tile = 0x0;
+  _tile = 0x0;
 }
 
 
@@ -66,12 +63,12 @@ void BuildTiles::_started()
   USUL_TRACE_SCOPE;
   
   // Make sure we have valid data.
-  if ( 0x0 == _tile )
+  if ( false == _tile.valid() )
     return;
   
   // Have we been cancelled?
   if ( true == this->canceled() )
     this->cancel();
   
-  _tile->split ( this );
+  _tile->split ( Usul::Jobs::Job::RefPtr ( this ) );
 }

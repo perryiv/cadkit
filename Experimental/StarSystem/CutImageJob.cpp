@@ -122,11 +122,11 @@ void CutImageJob::_started()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image *CutImageJob::image()
+CutImageJob::ImagePtr CutImageJob::image()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _image.get();
+  return _image;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -135,9 +135,9 @@ osg::Image *CutImageJob::image()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Texture2D *CutImageJob::texture()
+CutImageJob::TexturePtr CutImageJob::texture()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _texture.get();
+  return _texture;
 }

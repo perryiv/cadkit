@@ -151,10 +151,12 @@ Axes::Axes() : BaseClass()
 
   const double size ( 15.0f );
 
+  osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
+
   //Text for X
   {
     osg::ref_ptr< osgText::Text > text ( new osgText::Text );
-    text->setFont( OsgTools::Font::defaultFont() );
+    text->setFont( font.get() );
     text->setColor( colorX );
     text->setCharacterSize( size );
     text->setPosition ( osg::Vec3 ( length + height + 1, 0.0, 0.0 ) );
@@ -170,7 +172,7 @@ Axes::Axes() : BaseClass()
   //Text for Y
   {
     osg::ref_ptr< osgText::Text > text ( new osgText::Text );
-    text->setFont( OsgTools::Font::defaultFont() );
+    text->setFont( font.get() );
     text->setColor( colorY );
     text->setCharacterSize( size );
     text->setPosition ( osg::Vec3 ( 0.0, length + height + 1, 0.0 ) );
@@ -186,7 +188,7 @@ Axes::Axes() : BaseClass()
   //Text for Z
   {
     osg::ref_ptr< osgText::Text > text ( new osgText::Text );
-    text->setFont( OsgTools::Font::defaultFont() );
+    text->setFont( font.get() );
     text->setColor( colorZ );
     text->setCharacterSize( size );
     text->setPosition ( osg::Vec3 ( 0.0, 0.0, length + height + 1 ) );

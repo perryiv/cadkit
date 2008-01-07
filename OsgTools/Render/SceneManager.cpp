@@ -295,7 +295,10 @@ osgText::Text* SceneManager::getText( unsigned int x, unsigned int y )
   {
     osg::ref_ptr < osgText::Text > text ( new osgText::Text );
     text->setPosition( osg::Vec3 ( x, y, 0 ) );
-    text->setFont ( OsgTools::Font::defaultFont() );
+
+    osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
+    text->setFont ( font.get() );
+
     text->setColor( osg::Vec4 ( 0.0f,0.0f,0.0f,1.0f ) );
     text->setCharacterSize( 24.0f );
 

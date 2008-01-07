@@ -46,9 +46,9 @@ public:
 
   CutImageJob ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, RasterLayer *layer );
 
-  osg::Image *      image();
+  ImagePtr          image();
 
-  osg::Texture2D *  texture();
+  TexturePtr        texture();
 
 protected:
 

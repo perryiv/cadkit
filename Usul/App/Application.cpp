@@ -10,7 +10,7 @@
 
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
-#include "Usul/System/Directory.h"
+#include "Usul/User/Directory.h"
 #include "Usul/Predicates/FileExists.h"
 
 #include <algorithm>
@@ -184,7 +184,7 @@ std::string Application::configFile ( const std::string& name )
       return filename;
   }
 
-  std::string home ( Usul::System::Directory::home( true ) );
+  std::string home ( Usul::User::Directory::home( true ) );
 
   std::string programName ( this->program() );
   std::transform ( programName.begin(), programName.end(), programName.begin(), ::tolower );

@@ -144,7 +144,7 @@ public:
   double                    splitDistance() const;
   
   // Split the tile.
-  void                      split ( Usul::Jobs::Job* );
+  void                      split ( Usul::Jobs::Job::RefPtr );
   
   // Update mesh.
   void                      updateMesh();
@@ -171,7 +171,7 @@ protected:
   void                      _quarterTextureCoordinates ( Usul::Math::Vec4d& ll, Usul::Math::Vec4d& lr, Usul::Math::Vec4d& ul, Usul::Math::Vec4d& ur ) const;
 
   // Build a tile.
-  Tile::RefPtr              _buildTile ( unsigned int level, const Extents& extents, const MeshSize& size, const Usul::Math::Vec4d& texCoords, double splitDistance, Usul::Jobs::Job* job ) const;
+  Tile::RefPtr              _buildTile ( unsigned int level, const Extents& extents, const MeshSize& size, const Usul::Math::Vec4d& texCoords, double splitDistance, Usul::Jobs::Job::RefPtr job ) const;
 private:
 
   // No assignment.

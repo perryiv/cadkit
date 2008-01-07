@@ -83,7 +83,7 @@ std::string Font::fontfile ( const std::string &name )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osgText::Font* Font::defaultFont() 
+Font::FontPtr Font::defaultFont() 
 {
   #ifdef __APPLE__
     return osgText::readFontFile( "fudd.ttf" );

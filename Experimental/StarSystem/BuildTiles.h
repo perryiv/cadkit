@@ -18,19 +18,18 @@
 #define __STAR_SYSTEM_BUILD_TILES_H__
 
 #include "StarSystem/Export.h"
+#include "StarSystem/Tile.h"
 
 #include "Usul/Jobs/Job.h"
 
 namespace StarSystem {
-
-  class Tile;
   
 class STAR_SYSTEM_EXPORT BuildTiles : public Usul::Jobs::Job
 {
 public:
   typedef Usul::Jobs::Job BaseClass;
   
-  BuildTiles ( Tile* tile );
+  BuildTiles ( Tile::RefPtr tile );
   
 protected:
   virtual ~BuildTiles();
@@ -38,7 +37,7 @@ protected:
   virtual void _started();
   
 private:
-  Tile* _tile;
+  Tile::RefPtr _tile;
 };
 
   

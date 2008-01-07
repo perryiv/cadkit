@@ -421,10 +421,10 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
     // Remove high level of detail.
     if ( numChildren > 1 )
     {
-      this->removeChild ( 1, numChildren - 1 );
-
       if ( false == _body->cacheTiles() )
       {
+        this->removeChild ( 1, numChildren - 1 );
+
         // Clear all the children.
         if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->clear();
         if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->clear();
@@ -435,7 +435,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
         _children[LOWER_RIGHT] = 0x0;
         _children[UPPER_LEFT]  = 0x0;
         _children[UPPER_RIGHT] = 0x0;
-        
+
         // Clear the tile job.
         if ( _tileJob.valid() ) _tileJob->cancel(); _tileJob = 0x0;
       }
@@ -461,7 +461,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
         }
         else
         {
-          _tileJob = new StarSystem::BuildTiles ( this );
+          _tileJob = new StarSystem::BuildTiles ( Tile::RefPtr ( this ) );
         
           // Add the job to the job manager.
           _body->jobManager()->addJob ( _tileJob.get() );
@@ -516,7 +516,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::split ( Usul::Jobs::Job* job )
+void Tile::split ( Usul::Jobs::Job::RefPtr job )
 {
   Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
   
@@ -556,7 +556,7 @@ void Tile::split ( Usul::Jobs::Job* job )
   Tile::RefPtr t3 ( this->_buildTile ( level, ur, mur, tur, half, job ) ); // upper right tile
   
   // Have we been cancelled?
-  if ( 0x0 != job && true == job->canceled() )
+  if ( job.valid() && true == job->canceled() )
     job->cancel();
   
   {
@@ -575,7 +575,7 @@ void Tile::split ( Usul::Jobs::Job* job )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Tile::RefPtr Tile::_buildTile ( unsigned int level, const Extents& extents, const MeshSize& size, const Usul::Math::Vec4d& texCoords, double splitDistance, Usul::Jobs::Job* job ) const
+Tile::RefPtr Tile::_buildTile ( unsigned int level, const Extents& extents, const MeshSize& size, const Usul::Math::Vec4d& texCoords, double splitDistance, Usul::Jobs::Job::RefPtr job ) const
 {
   Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
   
@@ -615,7 +615,7 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level, const Extents& extents, cons
   }
   
   // Have we been cancelled?
-  if ( 0x0 != job && true == job->canceled() )
+  if ( job.valid() && true == job->canceled() )
     job->cancel();
   
   // Make the tile.

@@ -120,6 +120,7 @@ SET (SOURCES
   Triangles/SharedVertex.cpp
   Triangles/Triangle.cpp
   Triangles/TriangleSet.cpp
+  Utilities/DeleteHandler.cpp
   Utilities/FindNormals.cpp
   Utilities/Intersect.cpp
   Widgets/Axes.cpp

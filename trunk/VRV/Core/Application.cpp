@@ -35,8 +35,10 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Assert.h"
+#include "Usul/File/Find.h"
 #include "Usul/File/Make.h"
 #include "Usul/File/Path.h"
+#include "Usul/File/Remove.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Functors/Interaction/Navigate/Direction.h"
 #include "Usul/Functors/Interaction/Wand/WandRotation.h"
@@ -70,6 +72,7 @@
 #include "OsgTools/Convert.h"
 #include "OsgTools/Ray.h"
 #include "OsgTools/ShapeFactory.h"
+#include "OsgTools/Utilities/DeleteHandler.h"
 
 #include "osgDB/WriteFile"
 
@@ -127,7 +130,7 @@ Application::Application() :
   _joystick          ( new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" ) ),
   _analogTrim        ( 0, 0 ),
   _wandOffset        ( 0, -1.6, -0.67 ), // feet (used to be z=-4)
-  _databasePager     ( new osgDB::DatabasePager ),
+  _databasePager     ( 0x0 ),
   _updateListeners   ( ),
   _commandQueue      ( ),
   _frameDump         (),
@@ -149,16 +152,22 @@ Application::Application() :
   _allowUpdate       ( true ),
   _intersector       ( 0x0 ),
   _auxiliary         ( new osg::MatrixTransform ),
-  _allowIntersections ( true )
+  _allowIntersections ( true ),
+  _deleteHandler     ( new OsgTools::Utilities::DeleteHandler )
 {
   USUL_TRACE_SCOPE;
+
+  // We want thread safe ref and unrefing.
+  osg::Referenced::setThreadSafeReferenceCounting ( true );
+
+  // Set the delete handler.
+  osg::Referenced::setDeleteHandler ( _deleteHandler );
 
   // Parse the command-line arguments.
   this->_parseCommandLine();
 
   this->_construct();
 
-  
   // Set the frame dump properties.
   _frameDump.base ( "_file_" + Usul::System::Host::name() );
   _frameDump.ext ( ".jpg" );
@@ -226,14 +235,13 @@ void Application::_construct()
 
   _models->setMatrix( m );
 
-  _databasePager->registerPagedLODs( _sceneManager->scene() ); 
-
-  _databasePager->setAcceptNewDatabaseRequests( true );
-  _databasePager->setDatabasePagerThreadPause( false );
-  
-#if ( OSG_VERSION_MAJOR < 2 )
-  _databasePager->setUseFrameBlock( false );
-#endif
+  if ( _databasePager.valid() )
+  {
+    _databasePager->registerPagedLODs( _sceneManager->scene() ); 
+    
+    _databasePager->setAcceptNewDatabaseRequests( true );
+    _databasePager->setDatabasePagerThreadPause( false );
+  }
 
   // Read the user's preference file, if any.
   this->_readUserPreferences();
@@ -314,6 +322,27 @@ void Application::cleanup()
 
   // Clear the menu.
   this->menu ( 0x0 );
+
+  // If this machine is resposible for managing screen shot directory...
+  if ( _sharedScreenShotDirectory.isLocal() )
+  {
+    // Get the directory.
+    std::string directory ( _sharedScreenShotDirectory->data() );
+
+    // Get the contents of the directory.
+    std::list<std::string> names;
+    Usul::File::find ( directory, "*", names );
+
+    // Is the directory empty?
+    if ( false == names.empty() )
+    {
+      // Delete the directory.
+      Usul::Functions::safeCall ( Usul::Adaptors::bind1 ( directory, Usul::File::remove ), "2725212336" );
+    }
+  }
+
+  if ( 0x0 != _deleteHandler )
+    _deleteHandler->flushAll();
 }
 
 
@@ -467,13 +496,16 @@ void Application::contextInit()
   // Initialize the renderer.
   renderer->init();
 
-  unsigned int uniqueContextId ( vrj::GlDrawManager::instance()->getCurrentContext() );
+  const unsigned int uniqueContextId ( vrj::GlDrawManager::instance()->getCurrentContext() );
 
   renderer->uniqueID( uniqueContextId );
 
   // Hook up database pager.
-  renderer->viewer()->getCullVisitor()->setDatabaseRequestHandler( _databasePager.get() );
-  renderer->viewer()->getUpdateVisitor()->setDatabaseRequestHandler( _databasePager.get() );
+  if ( _databasePage.valid() )
+  {
+    renderer->viewer()->getCullVisitor()->setDatabaseRequestHandler( _databasePager.get() );
+    renderer->viewer()->getUpdateVisitor()->setDatabaseRequestHandler( _databasePager.get() );
+  }
 
   // Turn off the default light.
   renderer->viewer()->setLightingMode ( osgUtil::SceneView::NO_SCENEVIEW_LIGHT );
@@ -502,6 +534,7 @@ void Application::contextInit()
   OsgTools::Convert::vector ( _backgroundColor, color, 4 );
   renderer->backgroundColor ( color, OsgTools::Render::Renderer::Corners::ALL );
 
+  // Set the renderer for this context.
   (*_renderer) = renderer.get();
 
   // Get the viewport. 
@@ -681,11 +714,6 @@ void Application::_draw ( OsgTools::Render::Renderer *renderer )
 
   // Do the drawing.
   renderer->render();
-
-  // This isn't going to work with multiple renderers per application.
-  double zNear ( 0.0 ), zFar ( 0.0 );
-  renderer->nearFar ( zNear, zFar );
-  _clipDist.set ( zNear, zFar );
 }
 
 
@@ -1164,6 +1192,9 @@ void Application::_postFrame()
     // tell the DatabasePager that the frame is complete and that scene graph is no longer be activity traversed.
     _databasePager->signalEndFrame();
   }
+
+  if ( 0x0 != _deleteHandler )
+    _deleteHandler->flushAll();
 }
 
 
@@ -4118,6 +4149,7 @@ bool Application::_handleMenuEvent( unsigned long id )
 
 bool Application::_handleIntersectionEvent( unsigned long id )
 {
+#if 0
   // Process pressed states.
   if ( BUTTON_TRIGGER == id )
   {
@@ -4125,7 +4157,6 @@ bool Application::_handleIntersectionEvent( unsigned long id )
     return true;
   }
 
-#if 0
   if(!_intersector) return false;
 
   

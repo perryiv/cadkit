@@ -467,8 +467,9 @@ osg::Drawable* GlassBoundingBox::_makeNumber     ( float number, const osg::Vec3
   char name[50];
   sprintf(name, "%0.3f", number);
   osg::ref_ptr< osgText::Text > text ( new osgText::Text );
-  //osgText::Font* arial = osgText::readFontFile( OsgTools::Font::fontfile( "fudd" ) );
-  text->setFont( OsgTools::Font::defaultFont());
+
+  osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
+  text->setFont( font.get() );
   text->setColor( color );
   text->setCharacterSize( size );
   text->setPosition ( pos );
@@ -490,8 +491,9 @@ osg::Drawable* GlassBoundingBox::_makeNumber     ( float number, const osg::Vec3
 osg::Drawable* GlassBoundingBox::_makeNumber     ( const std::string& name, const osg::Vec3& pos, const osg::Vec4& color, float size )
 {
   osg::ref_ptr< osgText::Text > text ( new osgText::Text );
-//  osgText::Font* arial = osgText::readFontFile( OsgTools::Font::fontfile( "fudd" ) );
-  text->setFont( OsgTools::Font::defaultFont() );
+
+  osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
+  text->setFont( font.get() );
   text->setColor( color );
   text->setCharacterSize( size );
   text->setPosition ( pos );

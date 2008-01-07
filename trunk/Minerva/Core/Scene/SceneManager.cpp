@@ -80,7 +80,8 @@ _legendPosition ( LEGEND_BOTTOM_RIGHT )
     ss->setAttributeAndModes ( light.get(), osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
   }
 
-  _dateText->setFont( OsgTools::Font::defaultFont() );
+  osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
+  _dateText->setFont( font.get() );
   _dateText->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
   _dateText->setText ( "" );
   _dateText->setColor( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );

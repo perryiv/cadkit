@@ -549,7 +549,9 @@ osg::Node * WRFDocument::_buildProxyGeometry ()
   gbb ( group.get(), true, false, false );
 
   osg::ref_ptr< osgText::Text > text ( new osgText::Text );
-  text->setFont( OsgTools::Font::defaultFont() );
+
+  osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
+  text->setFont( font.get()  );
   text->setColor( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
   text->setCharacterSize( 50 );
   text->setCharacterSizeMode ( osgText::Text::SCREEN_COORDS );

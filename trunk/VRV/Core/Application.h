@@ -91,6 +91,7 @@
 
 namespace osg
 {
+  class DeleteHandler;
   class FrameStamp;
   class MatrixTransform;
   class Node;
@@ -685,6 +686,7 @@ private:
   MatTransPtr                            _auxiliary;
   bool                                   _allowIntersections;
   IntersectListeners                     _intersectListeners;
+  osg::DeleteHandler *                   _deleteHandler;
 };
 
 }

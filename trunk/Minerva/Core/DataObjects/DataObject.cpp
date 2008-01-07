@@ -410,7 +410,10 @@ osg::Node* DataObject::_buildLabel()
   if ( this->showLabel () )
   {
     osg::ref_ptr < osgText::Text > text ( new osgText::Text );
-    text->setFont( OsgTools::Font::defaultFont() );
+
+    osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
+    text->setFont( font.get() );
+
     text->setColor( this->labelColor() );
     text->setPosition ( this->labelPosition() );
     text->setAutoRotateToScreen( true );

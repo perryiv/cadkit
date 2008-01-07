@@ -2029,7 +2029,7 @@ void Viewer::_setDisplayListsGeode ( osg::Geode *geode )
 
 void Viewer::numRenderPasses ( unsigned int num )
 {
-  _renderer->numRenderPasses( num );
+  _renderer->setNumRenderPasses( num );
 }
 
 
@@ -2041,7 +2041,7 @@ void Viewer::numRenderPasses ( unsigned int num )
 
 unsigned int Viewer::numRenderPasses ( ) const
 {
-  return _renderer->numRenderPasses();
+  return _renderer->getNumRenderPasses();
 }
 
 

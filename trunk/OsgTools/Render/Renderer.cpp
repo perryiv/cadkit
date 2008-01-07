@@ -221,7 +221,7 @@ void Renderer::render()
   this->viewer()->getCullVisitor()->setClearNode ( _clearNode.get() );
 
   // See if we are supposed to use multiple passes.
-  if ( this->numRenderPasses() > 1 )
+  if ( this->getNumRenderPasses() > 1 )
     this->_multiPassRender();
   else
     this->_singlePassRender();
@@ -280,7 +280,7 @@ void Renderer::_multiPassRender()
     const osg::Matrixd &proj = _sceneView->getProjectionMatrix();
 
     // Loop through the passes...
-    for ( unsigned int i = 0; i < this->numRenderPasses(); ++i )
+    for ( unsigned int i = 0; i < this->getNumRenderPasses(); ++i )
     {
       // Set the proper projection matrix.
       OsgTools::Jitter::instance().perspective ( _numPasses, i, *vp, proj, matrix );
@@ -293,7 +293,7 @@ void Renderer::_multiPassRender()
       Detail::checkForErrors( 2681461970u );
 
       // Accumulate the pixels from the frame buffer.
-      float value ( 1.0f / static_cast < float > ( this->numRenderPasses() ) );
+      float value ( 1.0f / static_cast < float > ( this->getNumRenderPasses() ) );
       ::glAccum ( GL_ACCUM, value );
 
       // Check for errors.
@@ -316,8 +316,8 @@ void Renderer::_multiPassRender()
   {
     Usul::Errors::Stack::instance().push ( e.what() );
     std::ostringstream message;
-    message << "Error 2156758683: Standard exception caught when attempting to render with " << this->numRenderPasses() << " passes";
-    this->numRenderPasses ( 1 );
+    message << "Error 2156758683: Standard exception caught when attempting to render with " << this->getNumRenderPasses() << " passes";
+    this->setNumRenderPasses ( 1 );
     throw std::runtime_error ( message.str() );
   }
 
@@ -325,8 +325,8 @@ void Renderer::_multiPassRender()
   catch ( ... )
   {
     std::ostringstream message;
-    message << "Error 3880806891: Unknown exception caught when attempting to render with " << this->numRenderPasses() << " passes";
-    this->numRenderPasses ( 1 );
+    message << "Error 3880806891: Unknown exception caught when attempting to render with " << this->getNumRenderPasses() << " passes";
+    this->setNumRenderPasses ( 1 );
     throw std::runtime_error ( message.str() );
   }
 }
@@ -623,7 +623,7 @@ double Renderer::timeAverage ( const std::string &name ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Renderer::numRenderPasses ( unsigned int num )
+void Renderer::setNumRenderPasses ( unsigned int num )
 {
   if ( 1 == num || OsgTools::Jitter::instance().available ( num ) )
     _numPasses = num;

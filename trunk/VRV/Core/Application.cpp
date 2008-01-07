@@ -54,6 +54,7 @@
 #include "Usul/Print/Matrix.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Convert.h"
+#include "Usul/Scope/Caller.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/System/DateTime.h"
 #include "Usul/System/Host.h"
@@ -501,7 +502,7 @@ void Application::contextInit()
   renderer->uniqueID( uniqueContextId );
 
   // Hook up database pager.
-  if ( _databasePage.valid() )
+  if ( _databasePager.valid() )
   {
     renderer->viewer()->getCullVisitor()->setDatabaseRequestHandler( _databasePager.get() );
     renderer->viewer()->getUpdateVisitor()->setDatabaseRequestHandler( _databasePager.get() );
@@ -664,13 +665,13 @@ void Application::draw()
   Renderer* renderer ( *(_renderer) );
 
   // Drawing is about to happen.
-  this->_preDraw ( renderer );
+  Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction ( this, &Application::_preDraw ), renderer, "3501390015" );
 
   // Draw.
-  this->_draw ( renderer );
+  Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction ( this, &Application::_draw ), renderer, "1173048910" );
 
   // Drawing has finished.
-  this->_postDraw ( renderer );
+  Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction ( this, &Application::_postDraw ), renderer, "2286306551" );
 }
 
 
@@ -683,6 +684,19 @@ void Application::draw()
 void Application::_draw ( OsgTools::Render::Renderer *renderer )
 {
   USUL_TRACE_SCOPE;
+
+  Menu::RefPtr menu ( this->menu() );
+
+  // Only use one pass if the menu is shown.
+  const unsigned int currentPasses ( renderer->getNumRenderPasses() );
+  const unsigned int passesForFrame  ( menu.valid() && menu->menu()->expanded() ? 1 : currentPasses );
+
+  typedef OsgTools::Render::Renderer Renderer;
+
+  // Scope the number of rendering passes.
+  Usul::Scope::Caller::RefPtr scopedRenderPasses ( Usul::Scope::makeCaller ( 
+      Usul::Adaptors::bind1 ( passesForFrame, Usul::Adaptors::memberFunction ( renderer, &Renderer::setNumRenderPasses ) ), 
+      Usul::Adaptors::bind1 ( currentPasses, Usul::Adaptors::memberFunction ( renderer, &Renderer::setNumRenderPasses ) ) ) );
 
   vrj::GlDrawManager* mgr ( vrj::GlDrawManager::instance() );
   USUL_ASSERT ( 0x0 != mgr );
@@ -1805,7 +1819,7 @@ void Application::renderingPasses ( unsigned int num )
 
   for( Renderers::iterator iter = _renderers.begin(); iter != _renderers.end(); ++iter )
   {
-    (*iter)->numRenderPasses ( num );
+    (*iter)->setNumRenderPasses ( num );
   }
 }
 
@@ -1822,7 +1836,7 @@ unsigned int Application::renderingPasses ( ) const
   Guard guard ( this->mutex() );
 
   if ( false == _renderers.empty () )
-    return _renderers.front()->numRenderPasses ();
+    return _renderers.front()->getNumRenderPasses ();
   
   return 0;
 }

@@ -98,8 +98,8 @@ public:
   void                  nearFar ( double &n, double &f ) const;
   
   // Set/get the number of rendering passes. Unavailable numbers have no effect.
-  void                  numRenderPasses ( unsigned int );
-  unsigned int          numRenderPasses() const { return _numPasses; }
+  void                  setNumRenderPasses ( unsigned int );
+  unsigned int          getNumRenderPasses() const { return _numPasses; }
 
   // Render.  Assumes the context is already current.
   void                  render();

@@ -298,6 +298,10 @@
 				Name="Interfaces"
 				>
 				<File
+					RelativePath="..\Interfaces\IAuxiliaryScene.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Interfaces\IModelAdd.h"
 					>
 				</File>
@@ -447,6 +451,18 @@
 				</File>
 				<File
 					RelativePath="..\Commands\Navigator.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Functors"
+				>
+				<File
+					RelativePath="..\Functors\Intersect.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Functors\Intersect.h"
 					>
 				</File>
 			</Filter>

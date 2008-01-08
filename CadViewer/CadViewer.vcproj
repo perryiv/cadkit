@@ -254,34 +254,6 @@
 				Name="Functors"
 				>
 				<Filter
-					Name="Pick"
-					>
-					<File
-						RelativePath="Pick\Intersect.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Pick\Intersect.h"
-						>
-					</File>
-					<File
-						RelativePath="Pick\Seek.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Pick\Seek.h"
-						>
-					</File>
-					<File
-						RelativePath="Pick\Select.cpp"
-						>
-					</File>
-					<File
-						RelativePath="Pick\Select.h"
-						>
-					</File>
-				</Filter>
-				<Filter
 					Name="Tool"
 					>
 					<File
@@ -333,10 +305,6 @@
 			<Filter
 				Name="Interfaces"
 				>
-				<File
-					RelativePath="Interfaces\IAuxiliaryScene.h"
-					>
-				</File>
 				<File
 					RelativePath="Interfaces\IMaterialStack.h"
 					>

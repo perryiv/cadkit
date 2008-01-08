@@ -427,6 +427,8 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IButtonReleaseSubject*> ( this );
   case Usul::Interfaces::IGroup::IID:
     return static_cast<Usul::Interfaces::IGroup*> ( this );
+  case Usul::Interfaces::IRotationCenterDouble::IID:
+    return static_cast<Usul::Interfaces::IRotationCenterDouble*> ( this );
   default:
     return 0x0;
   }

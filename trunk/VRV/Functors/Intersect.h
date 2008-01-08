@@ -59,6 +59,13 @@ public:
 
   // Clone this functor.
   BaseFunctor*          clone();
+
+  // Clear scene.
+  void                  clearScene();
+
+  // Get/Set the draw ray flag.
+  void                  drawRay( bool b );
+  bool                  isDrawRay() const;
 protected:
 
   typedef osg::NodePath Path;
@@ -75,7 +82,7 @@ protected:
 
   float                 _farClippingDistance() const;
 
-  bool                  _intersect ( osg::Node *scene, osgUtil::Hit & hit );
+  bool                  _intersect ( osg::Node *scene, osgUtil::Hit & hit, const osg::Vec3& start, const osg::Vec3& end );
 
   void                  _rayBounds ( osg::Vec3& start, osg::Vec3& end );
 
@@ -90,6 +97,7 @@ private:
   USUL_VALID_REF_POINTER ( osg::Group ) _rayBranch;
   osgUtil::Hit _hit;
   bool _hasHit;
+  bool _drawRay;
 };
 
 

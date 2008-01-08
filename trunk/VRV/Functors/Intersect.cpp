@@ -59,7 +59,8 @@ Intersect::Intersect (
   _clipDist  ( unknown ),
   _rayBranch ( new osg::Group ),
   _hit       (),
-  _hasHit    ( false )
+  _hasHit    ( false ),
+  _drawRay   ( false )
 {
 }
 
@@ -78,7 +79,8 @@ Intersect::Intersect ( const Intersect &cb ) :
   _clipDist  ( cb._clipDist ),
   _rayBranch ( cb._rayBranch ),
   _hit       ( cb._hit ),
-  _hasHit    ( cb._hasHit )
+  _hasHit    ( cb._hasHit ),
+  _drawRay   ( cb._drawRay )
 {
 }
 
@@ -102,15 +104,11 @@ Intersect::~Intersect()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Intersect::_intersect ( osg::Node *scene, osgUtil::Hit& hit )
+bool Intersect::_intersect ( osg::Node *scene, osgUtil::Hit& hit, const osg::Vec3& start, const osg::Vec3& end )
 {
   // Handle bad input.
   if ( 0x0 == scene )
     return false;
-
-  // Determine the start and end of the ray.
-  osg::Vec3 start, end;
-  this->_rayBounds ( start, end );
 
   // Make the line segment.
   osg::ref_ptr < osg::LineSegment > segment ( new osg::LineSegment );
@@ -154,7 +152,7 @@ void Intersect::_rayBounds ( osg::Vec3& start, osg::Vec3& end )
 
   Usul::Interfaces::IWorldInfo::QueryPtr wi ( this->caller() );
 
-  float zFar ( wi.valid() ? wi->worldRadius() : this->_farClippingDistance() );
+  float zFar ( wi.valid() ? wi->worldRadius() * 2 : this->_farClippingDistance() );
   end = start + ( dir * zFar );
 
 #if 0
@@ -243,8 +241,7 @@ float Intersect::_farClippingDistance() const
 void Intersect::operator()()
 {
   // Remove what we have.
-  OsgTools::Group::removeAllChildren ( _rayBranch.get() );
-  OsgTools::Group::removeAllOccurances ( _rayBranch.get(), this->_auxiliaryScene() );
+  this->clearScene();
 
   // Query for needed interfaces.
   VRV::Interfaces::INavigationScene::QueryPtr ns ( this->caller() );
@@ -252,58 +249,31 @@ void Intersect::operator()()
   // Return if we don't have the needed interface.
   if ( false == ns.valid() )
     return;
-  
-#if 0
+
   // Determine the start and end of the ray.
   osg::Vec3 start, end;
   this->_rayBounds ( start, end );
 
-  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
-  osg::ref_ptr<osg::Geometry> geom ( new osg::Geometry );
-  osg::ref_ptr<osg::Vec3Array> p ( new osg::Vec3Array );
-
-  p->resize ( 2 );
-  (*p)[0] = start;
-  (*p)[1] = end;
-
-  geom->setVertexArray ( p.get() );
-  geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINES, 0, 2 ) );
-
-  osg::ref_ptr<osg::Vec4Array> c ( new osg::Vec4Array );
-  c->resize ( 2 );
-  (*c)[0] = osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 );
-  (*c)[1] = osg::Vec4 ( 0.0, 1.0, 0.0, 1.0 );
-
-  geom->setColorArray ( c.get() );
-  geom->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
-
-  osg::ref_ptr<osg::LineWidth> lw ( new osg::LineWidth );
-  lw->setWidth ( 2 );
-
-  osg::ref_ptr<osg::StateSet> state = geom->getOrCreateStateSet();
-  state->setAttribute ( lw.get() );
-  state->setMode ( GL_LIGHTING, osg::StateAttribute::OFF );
-
-  geode->addDrawable ( geom.get() );
-
-#if 0
-  // Make the ray.
-  OsgTools::Ray ray;
-  ray.thickness ( 2.0f );
-  Usul::Math::Vec4f c ( 1.0, 0.0, 0.0, 1.0 );
-  ray.color ( osg::Vec4 ( c[0], c[1], c[2], c[3] ) );
-  ray.start ( start );
-  ray.end ( end );
-#endif
-
-  _rayBranch->addChild ( geode.get() );
-#endif
+  // Draw the ray if we should.
+  if ( this->isDrawRay() )
+  {
+    // Make the ray.
+    OsgTools::Ray ray;
+    ray.thickness ( 2.0f );
+    Usul::Math::Vec4f c ( 1.0, 0.0, 0.0, 1.0 );
+    ray.color ( osg::Vec4 ( c[0], c[1], c[2], c[3] ) );
+    ray.start ( start );
+    ray.end ( end );
+    
+    _rayBranch->addChild ( ray() );
+  }
 
   // Reset our state.
   _hasHit = false;
 
+  // Intersect.
   osgUtil::Hit hit;
-  if ( this->_intersect ( ns->navigationScene(), hit ) )
+  if ( this->_intersect ( ns->navigationScene(), hit, start, end ) )
   {
     // Set our internal members.
     _hasHit = true;
@@ -386,3 +356,42 @@ osgUtil::Hit Intersect::lastHit() const
   return _hit;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Intersect::clearScene()
+{
+  // Remove what we have.
+  OsgTools::Group::removeAllChildren ( _rayBranch.get() );
+  OsgTools::Group::removeAllOccurances ( _rayBranch.get(), this->_auxiliaryScene() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the draw ray flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Intersect::drawRay( bool b )
+{
+  Guard guard ( this );
+  _drawRay = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the draw ray flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Intersect::isDrawRay() const
+{
+  Guard guard ( this );
+  return _drawRay;
+}

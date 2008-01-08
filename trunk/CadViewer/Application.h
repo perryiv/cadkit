@@ -52,10 +52,6 @@ public:
   // Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  // Get/set the center of rotation.
-  const osg::Vec3 &             rotationCenter() const { return _rotCenter; }
-  void                          rotationCenter ( const osg::Vec3 & );
-
   // Is this the application or main thread?
   static bool                   isAppThread();
   static bool                   isMainThread();
@@ -141,7 +137,6 @@ protected:
   static ThreadId   _mainThread;
   MatTransPtr       _gridBranch;
   FunctorPtr        _sceneTool;
-  osg::Vec3         _rotCenter;
   TextPtr           _pickText;
   TextPtr           _navText;
   TextPtr           _frameText;

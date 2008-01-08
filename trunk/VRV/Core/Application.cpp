@@ -154,7 +154,8 @@ Application::Application() :
   _intersector       ( 0x0 ),
   _auxiliary         ( new osg::MatrixTransform ),
   _allowIntersections ( true ),
-  _deleteHandler     ( new OsgTools::Utilities::DeleteHandler )
+  _deleteHandler     ( new OsgTools::Utilities::DeleteHandler ),
+  _rotCenter         ( 0, 0, 0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -4242,20 +4243,27 @@ void Application::_intersect()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  if ( _intersector.valid() && _allowIntersections )
+  if ( _intersector.valid() )
   {
-    (*_intersector)();
-    if ( _intersector->hasHit() )
-    {
-      osgUtil::Hit hit (_intersector->lastHit () );
+    // Always clear the scene.
+    _intersector->clearScene();
 
-      Usul::Interfaces::IUnknown::QueryPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-      for ( IntersectListeners::iterator i = _intersectListeners.begin(); i != _intersectListeners.end(); ++i )
+    // Intersect if we should.
+    if ( _allowIntersections )
+    {
+      (*_intersector)();
+      if ( _intersector->hasHit() )
       {
-        IIntersectListener::RefPtr listener ( *i );
-        if ( true == listener.valid() )
+        osgUtil::Hit hit (_intersector->lastHit () );
+
+        Usul::Interfaces::IUnknown::QueryPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+        for ( IntersectListeners::iterator i = _intersectListeners.begin(); i != _intersectListeners.end(); ++i )
         {
-          listener->intersectNotify ( 0.0, 0.0, hit, me.get() );
+          IIntersectListener::RefPtr listener ( *i );
+          if ( true == listener.valid() )
+          {
+            listener->intersectNotify ( 0.0, 0.0, hit, me.get() );
+          }
         }
       }
     }
@@ -4573,4 +4581,32 @@ bool Application::hasGroup ( const std::string& name )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _sceneManager->groupHas ( name );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the center of rotation (IRotationCenter).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::Vector Application::rotationCenter() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _rotCenter;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the center of rotation (IRotationCenter).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::rotationCenter ( const Vector &v )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _rotCenter = v;
 }

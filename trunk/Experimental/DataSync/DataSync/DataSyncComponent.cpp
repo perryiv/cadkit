@@ -17,6 +17,7 @@
 
 #include "Usul/Components/Factory.h"
 #include "Usul/App/Application.h"
+#include "Usul/Strings/Format.h"
 
 #include <algorithm>
 
@@ -54,6 +55,7 @@ DataSyncComponent::~DataSyncComponent()
 
 Usul::Interfaces::IUnknown *DataSyncComponent::queryInterface ( unsigned long iid )
 {
+  std::cout << Usul::Strings::format ("Calling queryInterface in DataSyncComponent for iid# ", iid ) << std::endl;
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
@@ -78,7 +80,8 @@ Usul::Interfaces::IUnknown *DataSyncComponent::queryInterface ( unsigned long ii
 void DataSyncComponent::setDataFlag( const std::string &machine, bool value )
 {
   //USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  std::cout << Usul::Strings::format ("Setting ", machine, " to ", value ) << std::endl;
+  //Guard guard ( this->mutex() );
   SharedBoolMap::iterator iter ( _sharedBoolMap.find ( machine ) );
   if ( iter != _sharedBoolMap.end() )
   {
@@ -97,7 +100,8 @@ void DataSyncComponent::setDataFlag( const std::string &machine, bool value )
 bool DataSyncComponent::queryDataState()
 {
   //USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  //Guard guard ( this->mutex() );
+  std::cout << Usul::Strings::format ( "Querying data state in DataSync Plugin..." ) << std::endl;
   for( SharedBoolMap::iterator iter = _sharedBoolMap.begin(); iter != _sharedBoolMap.end(); ++iter )
   {
     if( false == iter->second->data )
@@ -118,7 +122,8 @@ bool DataSyncComponent::queryDataState()
 void DataSyncComponent::resetData()
 {
   //USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  //Guard guard ( this->mutex() );
+  std::cout << Usul::Strings::format ( "Resetting all values to false in DataSync Plugin" ) << std::endl;
   for( SharedBoolMap::iterator iter = _sharedBoolMap.begin(); iter != _sharedBoolMap.end(); ++iter )
   {
    iter->second->data = false;
@@ -130,20 +135,30 @@ void DataSyncComponent::initialize( Usul::Interfaces::IUnknown *caller )
 {
   //Guard guard ( this->mutex() );
 
+  // Debug information
+  std::cout << "Initializing DataSync Plugin..." << std::endl;
+
   // Read config file.
    XmlTree::Document::RefPtr document ( new XmlTree::Document );
    
    std::string file = Usul::App::Application::instance().configFile( "machines" );
    document->load ( file );
 
+   // Debug information
+   std::cout << "Reading DataSync Plugin config file..." << std::endl;
+
    this->_readConfigFile( *document, caller, 0x0 );
 
    for( unsigned int i = 0; i < _machines.size(); ++i )
    {
+     // Debug information
+     std::cout << "Adding machine " << _machines.at( i ).first << "..." << std::endl;
+
      vpr::GUID guid ( _machines.at( i ).second );
+     
      _sharedBoolMap[_machines.at( i ).first].init( guid, _machines.at( i ).first );
    }
-  
+   std::cout << Usul::Strings::format ( "Initialization complete in DataSync Plugin" ) << std::endl;
 }
 
 

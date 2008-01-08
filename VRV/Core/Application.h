@@ -321,73 +321,77 @@ public:
   /// Set/Get the allow intersections state
   void                    allowIntersections ( bool b );
   bool                    isAllowIntersections() const;
+
+  /// Set/Get the seek mode.
+  void                    seekMode  ( bool b );
+  bool                    isSeekMode() const;
 protected:
 
   /// VR Juggler methods.
-  virtual void            _init();
-  virtual void            _preFrame();
-  virtual void            _latePreFrame();
-  virtual void            _postFrame();
+  virtual void                  _init();
+  virtual void                  _preFrame();
+  virtual void                  _latePreFrame();
+  virtual void                  _postFrame();
 
   // Draw functions.
-  virtual void            _preDraw  ( OsgTools::Render::Renderer *renderer );
-  void                    _draw     ( OsgTools::Render::Renderer *renderer );
-  virtual void            _postDraw ( OsgTools::Render::Renderer *renderer );
+  virtual void                  _preDraw  ( OsgTools::Render::Renderer *renderer );
+  void                          _draw     ( OsgTools::Render::Renderer *renderer );
+  virtual void                  _postDraw ( OsgTools::Render::Renderer *renderer );
 
   /// Set the viewport.
-  virtual void            _setViewport ( osg::Viewport*, vrj::GlDrawManager* );
+  virtual void                  _setViewport ( osg::Viewport*, vrj::GlDrawManager* );
 
-  void                    _construct();
+  void                          _construct();
 
   // Is this the head node?
-  bool                    _isHeadNode() const;
+  bool                          _isHeadNode() const;
 
   // Load VR Juggler config files.
-  void                    _loadConfigFiles ( const std::vector < std::string > &configs );
-  void                    _loadSimConfigs  ( const std::string& dir );
-  void                    _loadSimConfigs();
+  void                          _loadConfigFiles ( const std::vector < std::string > &configs );
+  void                          _loadSimConfigs  ( const std::string& dir );
+  void                          _loadSimConfigs();
 
   // Load the file(s).
-  void                    _loadModelFiles  ( const Filenames& filenames );
+  void                          _loadModelFiles  ( const Filenames& filenames );
 
   // Set the near and far clipping planes based on the scene.
-  void                    _setNearAndFarClippingPlanes();
+  void                          _setNearAndFarClippingPlanes();
 
   // Set/Get the navigation matrix.
-  void                    _navigationMatrix ( const osg::Matrixd& m );
-  const osg::Matrixd&     _navigationMatrix () const;
+  void                          _navigationMatrix ( const osg::Matrixd& m );
+  const osg::Matrixd&           _navigationMatrix () const;
 
   // Get the scene root.
-  osg::Group*             _sceneRoot();
-  const osg::Group*       _sceneRoot() const;
+  osg::Group*                   _sceneRoot();
+  const osg::Group*             _sceneRoot() const;
 
   // Read the user's preferences.
-  void                    _readUserPreferences();
+  void                          _readUserPreferences();
 
   // Read the user's functor config file.
-  void                    _readFunctorFile ();
+  void                          _readFunctorFile ();
 
   /// Increase/Decrease speed.
-  void                    _increaseTranslateSpeed ( double amount );
-  void                    _decreaseTranslateSpeed ( double amount );
+  void                          _increaseTranslateSpeed ( double amount );
+  void                          _decreaseTranslateSpeed ( double amount );
 
   /// Update notify.
-  void                    _updateNotify ();
-  virtual bool            _allowNotify () const;
+  void                          _updateNotify ();
+  virtual bool                  _allowNotify () const;
 
   /// Process commands.
-  void                    _processCommands ();
+  void                          _processCommands ();
 
   /// Navigate.
-  virtual void            _navigate ();
+  virtual void                  _navigate ();
 
-  void                    _initStatusBar();
-  void                    _initLight();
+  void                          _initStatusBar();
+  void                          _initLight();
 
-  void                    _updateStatusBar ( const std::string &text );
+  void                          _updateStatusBar ( const std::string &text );
 
   // Parse the command-line arguments.
-  void                    _parseCommandLine();
+  void                          _parseCommandLine();
 
   // Set the current "camera" position as "home".
   void                          _setHome();
@@ -413,6 +417,7 @@ protected:
   bool                          _handleMenuEvent ( unsigned long id );
   bool                          _handleIntersectionEvent ( unsigned long id );
   bool                          _handleNavigationEvent ( unsigned long id );
+  bool                          _handleSeekEvent ( unsigned long id );
 
   // Intersect.
   void                          _intersect();
@@ -440,17 +445,17 @@ protected:
   std::string                   _screenShotDirectory() const;
 
   /// Get/set the clipping distances (VRV::Interfaces::IClippingDistanceFloat).
-  virtual void            getClippingDistances ( float &nearDist, float &farDist ) const;
-  virtual void            setClippingDistances ( float nearDist, float farDist );
+  virtual void                  getClippingDistances ( float &nearDist, float &farDist ) const;
+  virtual void                  setClippingDistances ( float nearDist, float farDist );
 
   /// VRV::Interfaces::IModelAdd
-  virtual void            addModel ( osg::Node *model, const std::string& filename );
+  virtual void                  addModel ( osg::Node *model, const std::string& filename );
 
   /// Get the duration of the last frame in seconds (VRV::Interfaces::IFrameInfo).
-  virtual double          frameTime() const;
+  virtual double                frameTime() const;
 
-  /// Get the radius of the "world" (VRV::Interfaces::IWorldInfo).
-  virtual double          worldRadius() const;
+  /// Get the radius of the "world" (Usul::Interfaces::IWorldInfo).
+  virtual double                worldRadius() const;
 
   ///  VRV::Interfaces::INavigationScene
   /// Get the navigation scene.
@@ -641,6 +646,11 @@ private:
   typedef Usul::Interfaces::IIntersectListener             IIntersectListener;
   typedef std::vector<IIntersectListener::RefPtr>          IntersectListeners;
 
+  enum Flags
+  {
+    SEEK_MODE = 0x00000001
+  };
+
   // Data members.
   mutable Mutex                          _mutex;
   GroupPtr                               _root;
@@ -696,6 +706,7 @@ private:
   IntersectListeners                     _intersectListeners;
   osg::DeleteHandler *                   _deleteHandler;
   Vector                                 _rotCenter;
+  unsigned int                           _flags;
 };
 
 }

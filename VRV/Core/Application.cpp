@@ -24,6 +24,7 @@
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
+#include "Usul/Bits/Bits.h"
 #include "Usul/Commands/GenericCommand.h"
 #include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/CommandLine/Arguments.h"
@@ -42,6 +43,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Functors/Interaction/Navigate/Direction.h"
 #include "Usul/Functors/Interaction/Wand/WandRotation.h"
+#include "Usul/Interfaces/IAnimatePath.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IPluginInitialize.h"
 #include "Usul/Jobs/Manager.h"
@@ -50,6 +52,7 @@
 #include "Usul/Trace/Trace.h"
 #include "Usul/Math/Constants.h"
 #include "Usul/Math/Matrix44.h"
+#include "Usul/Math/MinMax.h"
 #include "Usul/Predicates/Tolerance.h"
 #include "Usul/Print/Matrix.h"
 #include "Usul/Registry/Database.h"
@@ -155,7 +158,8 @@ Application::Application() :
   _auxiliary         ( new osg::MatrixTransform ),
   _allowIntersections ( true ),
   _deleteHandler     ( new OsgTools::Utilities::DeleteHandler ),
-  _rotCenter         ( 0, 0, 0 )
+  _rotCenter         ( 0, 0, 0 ),
+  _flags             ( 0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -427,8 +431,8 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IButtonReleaseSubject*> ( this );
   case Usul::Interfaces::IGroup::IID:
     return static_cast<Usul::Interfaces::IGroup*> ( this );
-  case Usul::Interfaces::IRotationCenterDouble::IID:
-    return static_cast<Usul::Interfaces::IRotationCenterDouble*> ( this );
+  case IRotationCenter::IID:
+    return static_cast<IRotationCenter*> ( this );
   default:
     return 0x0;
   }
@@ -2531,6 +2535,10 @@ bool Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
     // Handle the navigation mode.
     if ( this->_handleNavigationEvent( id ) )
       return false;
+
+    // Handle seek mode.
+    if ( this->_handleSeekEvent ( id ) )
+      return false;
   }
 
   return true;
@@ -3384,15 +3392,15 @@ void Application::_initFileMenu     ( MenuKit::Menu* menu )
     MenuKit::Menu::RefPtr exportMenu ( new MenuKit::Menu ( "Export", MenuKit::Menu::VERTICAL ) );
     menu->append ( exportMenu.get() );
 
-    exportMenu->append ( new Button ( new BasicCommand ( "Image", ExecuteFunctor ( this, &Application::exportNextFrame ) ) ) );
-    exportMenu->append ( new Button ( new BasicCommand ( "Models ASCII", ExecuteFunctor ( this, &Application::exportWorld ) ) ) );
-    exportMenu->append ( new Button ( new BasicCommand ( "Models Binary", ExecuteFunctor ( this, &Application::exportWorldBinary ) ) ) );
-    exportMenu->append ( new Button ( new BasicCommand ( "Scene ASCII", ExecuteFunctor ( this, &Application::exportScene ) ) ) );
-    exportMenu->append ( new Button ( new BasicCommand ( "Scene Binary", ExecuteFunctor ( this, &Application::exportSceneBinary ) ) ) );
+    exportMenu->append ( new Button ( new BasicCommand ( "Image", Usul::Adaptors::memberFunction<void> ( this, &Application::exportNextFrame ) ) ) );
+    exportMenu->append ( new Button ( new BasicCommand ( "Models ASCII", Usul::Adaptors::memberFunction<void> ( this, &Application::exportWorld ) ) ) );
+    exportMenu->append ( new Button ( new BasicCommand ( "Models Binary", Usul::Adaptors::memberFunction<void> ( this, &Application::exportWorldBinary ) ) ) );
+    exportMenu->append ( new Button ( new BasicCommand ( "Scene ASCII", Usul::Adaptors::memberFunction<void> ( this, &Application::exportScene ) ) ) );
+    exportMenu->append ( new Button ( new BasicCommand ( "Scene Binary", Usul::Adaptors::memberFunction<void> ( this, &Application::exportSceneBinary ) ) ) );
   }
 
   menu->addSeparator();
-  menu->append ( new Button ( new BasicCommand ( "Exit", ExecuteFunctor ( this, &Application::quit ) ) ) );
+  menu->append ( new Button ( new BasicCommand ( "Exit", Usul::Adaptors::memberFunction<void> ( this, &Application::quit ) ) ) );
 }
 
 
@@ -3433,9 +3441,14 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
   typedef MenuKit::RadioButton  RadioButton;
 
   menu->append ( new ToggleButton ( new CheckCommand ( "Frame Dump", BoolFunctor ( this, &Application::frameDump ), CheckFunctor ( this, &Application::frameDump ) ) ) );
-  menu->append ( new Button       ( new BasicCommand ( "Reset Clipping", ExecuteFunctor ( this, &Application::_setNearAndFarClippingPlanes ) ) ) );
-  menu->append ( new Button       ( new BasicCommand ( "Set Home", ExecuteFunctor ( this, &Application::_setHome ) ) ) );
-  menu->append ( new Button       ( new BasicCommand ( "View All", ExecuteFunctor ( this, &Application::viewScene ) ) ) );
+  menu->append ( new Button       ( new BasicCommand ( "Reset Clipping", Usul::Adaptors::memberFunction<void> ( this, &Application::_setNearAndFarClippingPlanes ) ) ) );
+  menu->append ( new Button       ( new BasicCommand ( "Set Home", Usul::Adaptors::memberFunction<void> ( this, &Application::_setHome ) ) ) );
+  menu->append ( new Button       ( new BasicCommand ( "View All", Usul::Adaptors::memberFunction<void> ( this, &Application::viewScene ) ) ) );
+  menu->append ( new ToggleButton ( 
+                                   Usul::Commands::genericToggleCommand ( "Seek", 
+                                   Usul::Adaptors::memberFunction<void> ( this, &Application::seekMode ), 
+                                   Usul::Adaptors::memberFunction<bool> ( this, &Application::isSeekMode ) ) ) );
+
   menu->append ( new ToggleButton ( new CheckCommand ( "Compute Near Far", BoolFunctor ( this, &Application::computeNearFar ), CheckFunctor ( this, &Application::computeNearFar ) ) ) );
   menu->addSeparator();
 
@@ -3533,10 +3546,10 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
   
   menu->append ( new ToggleButton ( new CheckCommand ( "Time Based", BoolFunctor ( this, &Application::timeBased ), CheckFunctor ( this, &Application::timeBased ) ) ) );
 
-  menu->append ( new Button       ( new BasicCommand ( "Translate Speed x 10", ExecuteFunctor ( this, &Application::_increaseSpeedTen ) ) ) );
-  menu->append ( new Button       ( new BasicCommand ( "Translate Speed x 2", ExecuteFunctor ( this, &Application::_increaseSpeed ) ) ) );
-  menu->append ( new Button       ( new BasicCommand ( "Translate Speed / 2", ExecuteFunctor ( this, &Application::_decreaseSpeed ) ) ) );
-  menu->append ( new Button       ( new BasicCommand ( "Translate Speed / 10", ExecuteFunctor ( this, &Application::_decreaseSpeedTen ) ) ) );
+  menu->append ( new Button       ( new BasicCommand ( "Translate Speed x 10", Usul::Adaptors::memberFunction<void> ( this, &Application::_increaseSpeedTen ) ) ) );
+  menu->append ( new Button       ( new BasicCommand ( "Translate Speed x 2", Usul::Adaptors::memberFunction<void> ( this, &Application::_increaseSpeed ) ) ) );
+  menu->append ( new Button       ( new BasicCommand ( "Translate Speed / 2", Usul::Adaptors::memberFunction<void> ( this, &Application::_decreaseSpeed ) ) ) );
+  menu->append ( new Button       ( new BasicCommand ( "Translate Speed / 10", Usul::Adaptors::memberFunction<void> ( this, &Application::_decreaseSpeedTen ) ) ) );
 }
 
 
@@ -3573,7 +3586,7 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
 
   menu->append ( new MenuKit::Separator );
 
-  menu->append ( new Button ( new BasicCommand ( "Reinitialize", ExecuteFunctor ( this, &Application::reinitialize ) ) ) );
+  menu->append ( new Button ( new BasicCommand ( "Reinitialize", Usul::Adaptors::memberFunction<void> ( this, &Application::reinitialize ) ) ) );
 }
 
 
@@ -4173,37 +4186,97 @@ bool Application::_handleIntersectionEvent( unsigned long id )
     this->_intersect();
     return true;
   }
-
-  if(!_intersector) return false;
-
-  
-  else if ( COMMAND_HIDE_SELECTED == id )
-  {
-    this->_hideSelected ( MenuKit::MESSAGE_SELECTED, NULL );
-    return true;
-  }
-  
-  else if ( COMMAND_UNSELECT_VISIBLE == id )
-  {
-    this->_unselectVisible ( MenuKit::MESSAGE_SELECTED, NULL );
-    return true;
-  }
-  
-  else if ( COMMAND_SHOW_ALL == id )
-  {
-    this->_showAll ( MenuKit::MESSAGE_SELECTED, NULL );
-    return true;
-  }
-
-  // Process released states.
-  if ( COMMAND_SELECT == id )
-  {
-    this->_select();
-    this->_updateSceneTool();
-    return true;
-  }
 #endif
+
   // We didn't handle the event.
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Handle seek event.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_handleSeekEvent ( unsigned long id )
+{
+  Guard guard ( this );
+
+  // Return if we aren't in seek mode.
+  if ( false == this->isSeekMode() )
+    return false;
+
+  // Return if we don't have an intersector.
+  if ( false == _intersector.valid() )
+    return false;
+
+  // If we should seek...
+  if ( BUTTON_TRIGGER == id )
+  {
+    // Intersect now if we haven't been intersecting...
+    if ( false == this->isAllowIntersections() )
+    {
+      (*_intersector)();
+      _intersector->clearScene();
+
+      // Return if we didn't hit anything.
+      if ( false == _intersector->hasHit() )
+        return false;
+    }
+
+    // Get the hit.
+    osgUtil::Hit hit ( _intersector->lastHit() );
+
+    // Get the matrix.
+    osg::Matrix m1 ( this->getViewMatrix() );
+
+    osg::Vec3 center ( hit.getWorldIntersectPoint() *osg::Matrix::inverse( m1 ) );
+    Vector vector ( static_cast<Vector::value_type> ( center[0] ), static_cast<Vector::value_type> ( center[1] ), static_cast<Vector::value_type> ( center[2] ) );
+    this->rotationCenter ( vector );
+
+    // Get the eye position.
+    osg::Vec3 eye, c, up;
+    m1.inverse( m1 ).getLookAt ( eye, c, up );
+
+    // Get the length.
+    double distance ( this->worldRadius() * 0.05 );
+
+    // Get the normal where we intersected.
+    osg::Vec3 normal ( hit.getWorldIntersectNormal() /* * osg::Matrix::inverse( m1 ) */ );
+
+    // Calculate the new eye position.
+    osg::Vec3 eye2 ( center + ( normal * distance ) );
+   
+    // Make the new matrix.
+    osg::Matrix m2;
+    m2.makeLookAt ( eye2, center, up );
+
+    // Find interface to animate, if one exists.
+    typedef Usul::Interfaces::IAnimatePath IAnimatePath;
+    IAnimatePath::QueryPtr animate ( Usul::Components::Manager::instance().getInterface ( IAnimatePath::IID ) );
+
+    // Use the animation interface if we found a valid one.
+    if ( true == animate.valid() )
+    {
+      // Prepare path.
+      IAnimatePath::PackedMatrices matrices;
+      matrices.push_back ( IAnimatePath::PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
+      matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
+
+      // Get step size.
+      const double step ( 0.05 ); //Reg::instance()[Sections::VIEWER_SETTINGS][Keys::SEEK_STEP_SIZE].get<double> ( 0.05, true ) );
+
+      // Animate through the path.
+      animate->animatePath ( matrices, step );
+    }
+
+    // Turn off seek mode.  TODO: This should be an option.
+    this->seekMode ( false );
+
+    return true;
+  }
+
   return false;
 }
 
@@ -4611,4 +4684,32 @@ void Application::rotationCenter ( const Vector &v )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _rotCenter = v;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the seek mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::seekMode  ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _flags = Usul::Bits::set<unsigned int,unsigned int> ( _flags, Application::SEEK_MODE,  b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the seek mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::isSeekMode() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return Usul::Bits::has<unsigned int, unsigned int> ( _flags, Application::SEEK_MODE );
 }

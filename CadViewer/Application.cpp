@@ -114,7 +114,6 @@ Application::Application ( ) :
   BaseClass       ( ),
   _gridBranch     ( new osg::MatrixTransform ),
   _sceneTool      ( 0x0 ),
-  _rotCenter      ( 0, 0, 0 ),
   _pickText       ( new OsgTools::Text ),
   _navText        ( new OsgTools::Text ),
   _frameText      ( new OsgTools::Text ),
@@ -653,19 +652,6 @@ void Application::_update ( OsgTools::Text &t, const std::string &s )
   // Dump text to stdout if this is the message-text or the pick-text.
   if ( &t == _pickText.get() || &t == _msgText.get() )
     std::cout << s << std::endl;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the center of rotation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::rotationCenter ( const osg::Vec3 &rc )
-{
-  ErrorChecker ( 1071208595, isAppThread(), CV::NOT_APP_THREAD );
-  _rotCenter = rc; // TODO, hook this up.
 }
 
 

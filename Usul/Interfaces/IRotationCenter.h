@@ -13,14 +13,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CV_INTERFACE_ROTATION_CENTER_H_
-#define _CV_INTERFACE_ROTATION_CENTER_H_
+#ifndef _USUL_INTERFACE_ROTATION_CENTER_H_
+#define _USUL_INTERFACE_ROTATION_CENTER_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Math/Vector3.h"
 
 
-namespace CV {
+namespace Usul {
 namespace Interfaces {
 
 
@@ -39,7 +39,7 @@ struct IRotationCenter : public Usul::Interfaces::IUnknown
   enum { IID = iid };
 
   // Get/set the wand's offset.
-  virtual void              rotationCenter ( Vector &v ) const = 0;
+  virtual Vector            rotationCenter () const = 0;
   virtual void              rotationCenter ( const Vector &v ) = 0;
 };
 
@@ -49,7 +49,7 @@ typedef IRotationCenter<2460453746u,double> IRotationCenterDouble;
 
 
 }; // namespace Interfaces
-}; // namespace CV
+}; // namespace Usul
 
 
-#endif // _CV_INTERFACE_WAND_STATE_H_
+#endif // _USUL_INTERFACE_WAND_STATE_H_

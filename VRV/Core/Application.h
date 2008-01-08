@@ -27,39 +27,40 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Commands/GenericCommand.h"
 #include "Usul/Commands/GenericCheckCommand.h"
-#include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/ISaveFileDialog.h"
-#include "Usul/Interfaces/IUpdateSubject.h"
-#include "Usul/Interfaces/IUpdateListener.h"
-#include "Usul/Interfaces/ICommand.h"
-#include "Usul/Interfaces/ICommandQueueAdd.h"
 #include "Usul/Interfaces/IActiveDocumentListener.h"
+#include "Usul/Interfaces/IBackgroundColor.h"
 #include "Usul/Interfaces/IButtonPressListener.h"
 #include "Usul/Interfaces/IButtonReleaseListener.h"
 #include "Usul/Interfaces/IButtonPressSubject.h"
 #include "Usul/Interfaces/IButtonReleaseSubject.h"
+#include "Usul/Interfaces/IClippingDistance.h"
+#include "Usul/Interfaces/ICamera.h"
+#include "Usul/Interfaces/ICommand.h"
+#include "Usul/Interfaces/ICommandQueueAdd.h"
+#include "Usul/Interfaces/IFrameInfo.h"
 #include "Usul/Interfaces/IFrameStamp.h"
+#include "Usul/Interfaces/IGroup.h"
 #include "Usul/Interfaces/IIntersectNotify.h"
 #include "Usul/Interfaces/IIntersectListener.h"
-#include "Usul/Interfaces/IViewMatrix.h"
-#include "Usul/Interfaces/IMatrixMultiply.h"
 #include "Usul/Interfaces/IJoystick.h"
-#include "Usul/Interfaces/IWandState.h"
-#include "Usul/Interfaces/ITranslationSpeed.h"
-#include "Usul/Interfaces/IFrameInfo.h"
-#include "Usul/Interfaces/IWorldInfo.h"
-#include "Usul/Interfaces/ICamera.h"
-#include "Usul/Interfaces/IPolygonMode.h"
-#include "Usul/Interfaces/IShadeModel.h"
+#include "Usul/Interfaces/IMatrixMultiply.h"
 #include "Usul/Interfaces/INavigationFunctor.h"
-#include "Usul/Interfaces/IBackgroundColor.h"
+#include "Usul/Interfaces/ITranslationSpeed.h"
+#include "Usul/Interfaces/IPolygonMode.h"
 #include "Usul/Interfaces/IRenderingPasses.h"
+#include "Usul/Interfaces/IRotationCenter.h"
+#include "Usul/Interfaces/IShadeModel.h"
 #include "Usul/Interfaces/ITextMatrix.h"
+#include "Usul/Interfaces/IUpdateSubject.h"
+#include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/IViewport.h"
 #include "Usul/Interfaces/IView.h"
-#include "Usul/Interfaces/IGroup.h"
+#include "Usul/Interfaces/IViewMatrix.h"
+#include "Usul/Interfaces/IWandState.h"
+#include "Usul/Interfaces/IWorldInfo.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Queue.h"
@@ -138,7 +139,8 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public Usul::Interfaces::IIntersectNotify,
                                public Usul::Interfaces::IButtonPressSubject,
                                public Usul::Interfaces::IButtonReleaseSubject,
-                               public Usul::Interfaces::IGroup
+                               public Usul::Interfaces::IGroup,
+                               public Usul::Interfaces::IRotationCenterDouble
 {
 public:
   // Typedefs.
@@ -163,6 +165,8 @@ public:
   typedef IPolygonMode::Mode                   PolygonMode;
   typedef Usul::Interfaces::IShadeModel        IShadeModel;
   typedef IShadeModel::Mode                    ShadeModel;
+  typedef Usul::Interfaces::IRotationCenterDouble IRotationCenter;
+  typedef IRotationCenter::Vector                 Vector;
 
   typedef Usul::Functors::Interaction::Common::BaseFunctor   Navigator;
   typedef Usul::Functors::Interaction::Input::AnalogInput    AnalogInput;
@@ -593,6 +597,10 @@ protected:
   virtual void                  removeGroup ( const std::string& );
   virtual bool                  hasGroup    ( const std::string& );
 
+  // Get/set the center of rotation (IRotationCenter).
+  Vector                        rotationCenter() const;
+  void                          rotationCenter ( const Vector & );
+
   /// No copying.
   Application ( const Application& );
   Application& operator = (const Application&);
@@ -687,6 +695,7 @@ private:
   bool                                   _allowIntersections;
   IntersectListeners                     _intersectListeners;
   osg::DeleteHandler *                   _deleteHandler;
+  Vector                                 _rotCenter;
 };
 
 }

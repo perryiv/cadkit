@@ -312,7 +312,14 @@ void Intersect::operator()()
     mat->setDiffuse ( osg::Material::FRONT_AND_BACK, color );
     mat->setAmbient ( osg::Material::FRONT_AND_BACK, color );
     OsgTools::State::StateSet::setMaterial ( geode.get(), mat.get() );
-    geode->getOrCreateStateSet()->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+
+    osg::ref_ptr < osg::StateSet > ss ( geode->getOrCreateStateSet() );
+
+    ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+    ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+
+    // Set the render bin.
+    ss->setRenderBinDetails( 100, "RenderBin" );
 
     _rayBranch->addChild ( autoTransform.get() );
   }

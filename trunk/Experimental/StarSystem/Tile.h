@@ -42,6 +42,7 @@ class ossimEllipsoid;
 
 namespace StarSystem {
 
+  class RasterLayer;
 
 class STAR_SYSTEM_EXPORT Tile : public osg::Group
 {
@@ -80,6 +81,7 @@ public:
   typedef Usul::Math::Vec2ui MeshSize;
   typedef std::vector < Tile::RefPtr > Tiles;
   typedef std::pair < bool, unsigned long > JobID;
+  typedef osg::ref_ptr<osg::Image> ImagePtr;
 
   // Constructors.
   Tile ( unsigned int level = 0, 
@@ -94,6 +96,9 @@ public:
 
   // Clear the scene.
   void                      clear();
+  
+  // Build raster.
+  static ImagePtr           buildRaster ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, RasterLayer* raster, Usul::Jobs::Job::RefPtr );
 
   // Compute the bounding sphere.
   virtual osg::BoundingSphere    computeBound() const;

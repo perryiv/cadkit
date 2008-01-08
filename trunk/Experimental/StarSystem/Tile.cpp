@@ -586,15 +586,15 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level, const Extents& extents, cons
   // The texture coordinates to use.
   Usul::Math::Vec4d tCoords ( 0.0, 1.0, 0.0, 1.0 );
   
-  RasterLayer::RefPtr raster ( body->rasterData() );
-  osg::ref_ptr < osg::Image > image ( 0x0 );
+  // Width and height for the image.
+  const unsigned int width ( 512 );
+  const unsigned int height ( 512 );
   
-  if ( raster.valid() )
-  {
-    const unsigned int width ( 512 );
-    const unsigned int height ( 512 );
-    image = raster->texture ( extents, width, height, level, job );
-  }
+  // Raster data.
+  RasterLayer::RefPtr raster ( body->rasterData() );
+  
+  // Build the texture for the tile.
+  osg::ref_ptr < osg::Image > image ( Tile::buildRaster ( extents, width, height, level, raster.get(), job ) );
   
   // If we didn't get an image, use our image.
   if ( false == image.valid() )
@@ -605,14 +605,11 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level, const Extents& extents, cons
     tCoords.set ( texCoords[0], texCoords[1], texCoords[2], texCoords[3] );
   }
   
-  osg::ref_ptr < osg::Image > elevation ( 0x0 );
+  // Elevation data.
   RasterLayer::RefPtr elevationData ( body->elevationData() );
   
-  if ( elevationData.valid() )
-  {
-    MeshSize size ( this->meshSize() );
-    elevation = elevationData->texture ( extents, size[0], size[1], level, job );
-  }
+  // Get the data for our elevation.
+  osg::ref_ptr < osg::Image > elevation ( Tile::buildRaster ( extents, size[0], size[1], level, elevationData.get(), job ) );
   
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
@@ -623,7 +620,37 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level, const Extents& extents, cons
   tile->updateMesh();
   tile->updateTexture();
   
+  // Have we been cancelled?
+  if ( job.valid() && true == job->canceled() )
+    job->cancel();
+  
   return tile;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build texture for this tile.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Tile::ImagePtr Tile::buildRaster ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, RasterLayer* raster, Usul::Jobs::Job::RefPtr job )
+{
+  // Have we been cancelled?
+  if ( job.valid() && true == job->canceled() )
+    job->cancel();
+  
+  osg::ref_ptr < osg::Image > image ( 0x0 );
+  
+  // // Build the image.
+  if ( 0x0 != raster )
+    image = raster->texture ( extents, width, height, level, job );
+  
+  // Have we been cancelled?
+  if ( job.valid() && true == job->canceled() )
+    job->cancel();
+  
+  return image;
 }
 
 
@@ -850,13 +877,18 @@ void Tile::clear()
   // Cancel job if it's valid.
   if ( true == job.first )
   {
-    _body->textureRequestCancel ( job.second );
+    Guard guard ( this );
+    if ( 0x0 != _body )
+      _body->textureRequestCancel ( job.second );
   }
 
-  if ( _tileJob.valid() )
   {
-    _tileJob->cancel();
-    _tileJob = 0x0;
+    Guard guard ( this );
+    if ( _tileJob.valid() )
+    {
+      _tileJob->cancel();
+      _tileJob = 0x0;
+    }
   }
 
   this->dirty ( false, Tile::ALL, false );
@@ -1059,7 +1091,6 @@ void Tile::textureData ( osg::Texture2D* texture, const Usul::Math::Vec4d& coord
   // Set the texture coordinates.
   this->texCoords ( coords );
   
-#if 1
   // Set children data.
   {
     Guard guard ( this );
@@ -1071,7 +1102,6 @@ void Tile::textureData ( osg::Texture2D* texture, const Usul::Math::Vec4d& coord
     if ( _children[UPPER_LEFT].valid()  && this->image() == _children[UPPER_LEFT]->image()  ) _children[UPPER_LEFT]->textureData  ( texture, ul );
     if ( _children[UPPER_RIGHT].valid() && this->image() == _children[UPPER_RIGHT]->image() ) _children[UPPER_RIGHT]->textureData ( texture, ur );
   }
-#endif
 
   // Set our image.
   this->image ( texture->getImage() );

@@ -151,7 +151,7 @@ void Body::addTile ( const Extents &extents )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-
+  
   // Make the tile.
   const Usul::Math::Vec4d textureCoords ( 0.0, 1.0, 0.0, 1.0 );
   const MeshSize meshSize ( this->meshSize ( extents ) );

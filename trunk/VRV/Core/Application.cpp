@@ -338,7 +338,7 @@ void Application::cleanup()
     if ( false == names.empty() )
     {
       // Delete the directory.
-      Usul::Functions::safeCall ( Usul::Adaptors::bind1 ( directory, Usul::File::remove ), "2725212336" );
+      Usul::File::remove ( directory );
     }
   }
 

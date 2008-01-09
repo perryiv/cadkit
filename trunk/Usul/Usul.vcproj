@@ -496,6 +496,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Exceptions\IO.h"
+					>
+				</File>
+				<File
 					RelativePath="Exceptions\Thrower.h"
 					>
 				</File>
@@ -1700,6 +1704,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Math\Functions.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Math\Interpolate.h"
 					>
 				</File>
@@ -1721,10 +1729,6 @@
 				</File>
 				<File
 					RelativePath=".\Math\Transpose.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Math\UMath.h"
 					>
 				</File>
 				<File
@@ -2238,7 +2242,15 @@
 				Name="IO"
 				>
 				<File
-					RelativePath=".\Io\Reader.h"
+					RelativePath=".\IO\BinaryReader.h"
+					>
+				</File>
+				<File
+					RelativePath=".\IO\BinaryWriter.h"
+					>
+				</File>
+				<File
+					RelativePath=".\IO\Matrix44.h"
 					>
 				</File>
 				<File
@@ -2250,7 +2262,23 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Io\Writer.h"
+					RelativePath=".\IO\TextReader.h"
+					>
+				</File>
+				<File
+					RelativePath=".\IO\TextWriter.h"
+					>
+				</File>
+				<File
+					RelativePath=".\IO\Vector2.h"
+					>
+				</File>
+				<File
+					RelativePath=".\IO\Vector3.h"
+					>
+				</File>
+				<File
+					RelativePath=".\IO\Vector4.h"
 					>
 				</File>
 			</Filter>
@@ -2915,6 +2943,34 @@
 				</File>
 				<File
 					RelativePath=".\Memory\Pool.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Convert"
+				>
+				<File
+					RelativePath=".\Convert\Convert.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Convert\Generic.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Convert\Matrix44.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Convert\Vector2.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Convert\Vector3.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Convert\Vector4.h"
 					>
 				</File>
 			</Filter>

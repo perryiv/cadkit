@@ -1224,6 +1224,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Convert"
+				>
+				<File
+					RelativePath=".\Convert\Matrix.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Convert\MatrixTransform.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

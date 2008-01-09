@@ -36,7 +36,7 @@
 #include "Usul/File/Slash.h"
 #include "Usul/Print/Matrix.h"
 #include "Usul/Math/Matrix44.h"
-#include "Usul/Math/UMath.h"
+#include "Usul/Math/Functions.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/System/Directory.h"
 

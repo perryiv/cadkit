@@ -22,7 +22,7 @@
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Policies/Update.h"
-#include "Usul/IO/Writer.h"
+#include "Usul/IO/BinaryWriter.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -56,9 +56,9 @@ TriangleWriterTDF::~TriangleWriterTDF()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define WRITE_SCALAR(exp) Usul::IO::WriteLittleEndian::write  ( file.stream(), (exp) )
-#define WRITE_VEC3(exp)   Usul::IO::WriteLittleEndian::write3 ( file.stream(), (exp) )
-#define WRITE_VEC4(exp)   Usul::IO::WriteLittleEndian::write4 ( file.stream(), (exp) )
+#define WRITE_SCALAR(exp) Usul::IO::Binary::WriteLittleEndian::write  ( file.stream(), (exp) )
+#define WRITE_VEC3(exp)   Usul::IO::Binary::WriteLittleEndian::write3 ( file.stream(), (exp) )
+#define WRITE_VEC4(exp)   Usul::IO::Binary::WriteLittleEndian::write4 ( file.stream(), (exp) )
 #define WRITE_STRING(exp) file.stream().write ( (exp).c_str(), (exp).length() )
 
 

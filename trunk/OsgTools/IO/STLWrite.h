@@ -12,7 +12,7 @@
 
 #include "Usul/MPL/SameType.h"
 #include "Usul/Types/Types.h"
-#include "Usul/IO/Writer.h"
+#include "Usul/IO/BinaryWriter.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Resources/ProgressBar.h"
@@ -66,10 +66,10 @@ struct BinaryWriter
     USUL_ASSERT_SAME_TYPE ( Usul::Types::Float32, float );
 
     // Write the normal and vertices.
-    Usul::IO::WriteLittleEndian::write3 ( _out, normal );
-    Usul::IO::WriteLittleEndian::write3 ( _out, v1 );
-    Usul::IO::WriteLittleEndian::write3 ( _out, v2 );
-    Usul::IO::WriteLittleEndian::write3 ( _out, v3 );
+    Usul::IO::Binary::WriteLittleEndian::write3 ( _out, normal );
+    Usul::IO::Binary::WriteLittleEndian::write3 ( _out, v1 );
+    Usul::IO::Binary::WriteLittleEndian::write3 ( _out, v2 );
+    Usul::IO::Binary::WriteLittleEndian::write3 ( _out, v3 );
 
     // Write spacers to bring record size to 50 bytes.
     _out.write ( "\0", 1 );

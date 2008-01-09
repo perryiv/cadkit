@@ -18,7 +18,7 @@
 
 #include "Usul/File/Stats.h"
 #include "Usul/Policies/Update.h"
-#include "Usul/IO/Reader.h"
+#include "Usul/IO/BinaryReader.h"
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/Resources/TextWindow.h"
 #include "Usul/Math/Vector3.h"
@@ -215,8 +215,8 @@ void TriangleReaderTDF::_readHeader ( std::ifstream &in )
   {
     FileFormat::Header::VersionNumberType major = 0;
     FileFormat::Header::VersionNumberType minor = 0;
-    Usul::IO::ReadLittleEndian::read ( in, major );
-    Usul::IO::ReadLittleEndian::read ( in, minor );
+    Usul::IO::Binary::ReadLittleEndian::read ( in, major );
+    Usul::IO::Binary::ReadLittleEndian::read ( in, minor );
     if ( FileFormat::Header::VERSION_MAJOR != major || FileFormat::Header::VERSION_MINOR != minor )
       Usul::Exceptions::Thrower<std::runtime_error> 
         ( "Error 1810383068: Unsupported TDF version '", major, '.', minor, "' in file: ", _file.first );

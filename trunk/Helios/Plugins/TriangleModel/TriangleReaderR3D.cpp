@@ -18,7 +18,7 @@
 #include "Usul/File/Stats.h"
 #include "Usul/File/Contents.h"
 #include "Usul/Policies/Update.h"
-#include "Usul/IO/Reader.h"
+#include "Usul/IO/BinaryReader.h"
 #include "Usul/Types/Types.h"
 #include "Usul/Errors/Assert.h"
 
@@ -115,7 +115,7 @@ void TriangleReaderR3D::operator()()
   // Start reading the vertices.
   for ( unsigned int i = 0; i < numPoints; ++i )
   {
-    Usul::IO::ReadBigEndian::read ( in, x, y, z );
+    Usul::IO::Binary::ReadBigEndian::read ( in, x, y, z );
     pool.at(i).set ( x, y, z );
   }
 
@@ -136,7 +136,7 @@ void TriangleReaderR3D::operator()()
   {
     // Read how many indices are in this strip.
     Usul::Types::Uint32 numIndices ( 0 );
-    Usul::IO::ReadBigEndian::read ( in, numIndices );
+    Usul::IO::Binary::ReadBigEndian::read ( in, numIndices );
     strips.at(j).resize ( numIndices );
     numTriangles += ( numIndices - 2 );
 
@@ -145,7 +145,7 @@ void TriangleReaderR3D::operator()()
     {
       // Read the index.
       Usul::Types::Uint32 index ( 0 );
-      Usul::IO::ReadBigEndian::read ( in, index );
+      Usul::IO::Binary::ReadBigEndian::read ( in, index );
       strips.at(j).at(k) = index;
     }
 

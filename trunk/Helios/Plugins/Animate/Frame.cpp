@@ -14,8 +14,12 @@
 
 using namespace Animate;
 
-SERIALIZE_XML_DECLARE_MATRIX_4_4_WRAPPER(osg::Matrix);
 USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "MatrixFrame", Frame );
+
+USUL_IO_TEXT_DEFINE_READER_TYPE_MATRIX_4_4 ( osg::Matrixd );
+USUL_IO_TEXT_DEFINE_WRITER_TYPE_MATRIX_4_4 ( osg::Matrixd );
+SERIALIZE_XML_DECLARE_MATRIX_4_4_WRAPPER ( osg::Matrix );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

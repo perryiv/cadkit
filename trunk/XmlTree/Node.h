@@ -20,7 +20,6 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
-#include "Usul/Strings/Convert.h"
 
 #include <string>
 #include <map>
@@ -106,7 +105,7 @@ private:
 
 template < class T > inline Node::Node ( const std::string &name, T value ) : BaseClass(),
   _name       ( name ),
-  _value      ( Usul::Strings::toString ( value ) ),
+  _value      ( Usul::Convert::Type<T,std::string>::convert ( value ) ),
   _attributes (),
   _children   ()
 {

@@ -100,8 +100,10 @@ void Hud::updateScene ( unsigned int width, unsigned int height )
   text->setText ( out );
   text->setPosition ( osg::Vec3 ( 5.0, 7.5, 0.0 ) );
 
+#ifndef _MSC_VER
   osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
   text->setFont ( font.get() );
+#endif
 
   text->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
   text->setCharacterSize( 15 );

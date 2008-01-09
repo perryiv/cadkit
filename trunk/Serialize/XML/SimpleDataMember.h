@@ -20,6 +20,8 @@
 #include "Serialize/XML/MemberBase.h"
 #include "Serialize/XML/TypeWrapper.h"
 
+#include "Usul/Convert/Convert.h"
+
 
 namespace Serialize {
 namespace XML {

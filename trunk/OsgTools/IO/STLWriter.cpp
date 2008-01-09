@@ -71,7 +71,7 @@ void STLWriter::writeBinary( const osg::Node &node )
   std::string header ( _header );
   header.resize ( 80, ' ' );
   file.stream().write ( header.c_str(), header.length() );
-  Usul::IO::WriteLittleEndian::write ( file.stream(), numFacets );
+  Usul::IO::Binary::WriteLittleEndian::write ( file.stream(), numFacets );
 
   osg::ref_ptr< osg::Node > copy ( dynamic_cast < osg::Node* > ( this->_copyScene( node ) ) );
 

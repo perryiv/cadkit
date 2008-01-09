@@ -10,7 +10,7 @@
 #ifndef __USUL_LOOPS_DIRECTION_H__
 #define __USUL_LOOPS_DIRECTION_H__
 
-#include "Usul/Math/UMath.h"
+#include "Usul/Math/Functions.h"
 
 namespace Usul {
 namespace Loops {

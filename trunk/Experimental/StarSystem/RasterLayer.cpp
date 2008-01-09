@@ -21,6 +21,8 @@ using namespace StarSystem;
 //
 /////////////////////////////////////////////////////////////////////////////
 
+USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_4 ( RasterLayer::Extents );
+USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_4 ( RasterLayer::Extents );
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( RasterLayer::Extents );
 
 

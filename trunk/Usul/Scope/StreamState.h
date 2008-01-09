@@ -104,28 +104,55 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set/reset the output stream for maximum precision.
+//  Set/reset the stream for maximum precision. General case does nothing.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class T > struct MaxPrecision
+template < class T > struct MaxFloatPrecision
 {
-  MaxPrecision ( std::ostream &out ) :
-    _precision ( out, std::numeric_limits<T>::digits10 )
+  MaxFloatPrecision ( std::ostream & )
   {
   }
-
-  ~MaxPrecision()
+  ~MaxFloatPrecision()
   {
   }
-
-private:
-
-  MaxPrecision ( const MaxPrecision & );
-  MaxPrecision &operator = ( const MaxPrecision & );
-
-  Precision _precision;
 };
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macro to define helper class to set/reset the stream to maximum precision.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define USUL_SCOPE_STREAM_DEFINE_MAX_FLOAT_PRECISION(the_type) \
+template <> struct MaxFloatPrecision < the_type > \
+{ \
+  MaxFloatPrecision ( std::ostream &out ) : \
+    _flags ( out, std::ios_base::fixed, std::ios_base::floatfield ), \
+    _precision ( out, std::numeric_limits<the_type>::digits10 ) \
+  { \
+  } \
+  ~MaxFloatPrecision() \
+  { \
+  } \
+private: \
+  MaxFloatPrecision ( const MaxFloatPrecision & ); \
+  MaxFloatPrecision &operator = ( const MaxFloatPrecision & ); \
+  Flags _flags; \
+  Precision _precision; \
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Define helper classes for known float types.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+USUL_SCOPE_STREAM_DEFINE_MAX_FLOAT_PRECISION ( float );
+USUL_SCOPE_STREAM_DEFINE_MAX_FLOAT_PRECISION ( double );
+USUL_SCOPE_STREAM_DEFINE_MAX_FLOAT_PRECISION ( long double );
 
 
 } // namespace Stream

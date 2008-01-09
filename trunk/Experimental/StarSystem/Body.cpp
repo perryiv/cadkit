@@ -19,6 +19,7 @@
 #include "StarSystem/Tile.h"
 #include "StarSystem/Visitor.h"
 
+#include "OsgTools/Convert/MatrixTransform.h"
 #include "OsgTools/Group.h"
 #include "OsgTools/Visitor.h"
 
@@ -46,28 +47,7 @@ STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( Body );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SERIALIZE_XML_DECLARE_MATRIX_4_4_WRAPPER ( osg::Matrixd );
-typedef StarSystem::Body::MatrixTransformPtr MatrixTransformPtr;
-inline std::ostream &operator << ( std::ostream &out, const MatrixTransformPtr &m )
-{
-  if ( true == m.valid() )
-  {
-    out << '\n' << m->getMatrix();
-  }
-  return out;
-}
-inline std::istream &operator >> ( std::istream &in, MatrixTransformPtr &m )
-{
-  osg::Matrixd matrix;
-  in >> matrix;
-  if ( false == m.valid() )
-  {
-    m = new osg::MatrixTransform;
-  }
-  m->setMatrix ( matrix );
-  return in;
-}
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( MatrixTransformPtr );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( osg::ref_ptr<osg::MatrixTransform> );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -200,7 +180,7 @@ void Body::center ( const Vec3d &c )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  _transform->setMatrix ( osg::Matrix::translate ( c[0], c[1], c[2] ) );
+  _transform->setMatrix ( osg::Matrixd::translate ( c[0], c[1], c[2] ) );
 }
 
 

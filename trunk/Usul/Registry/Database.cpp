@@ -18,6 +18,8 @@
 #include "Usul/Registry/Visitor.h"
 #include "Usul/Trace/Trace.h"
 
+#include <algorithm>
+
 using namespace Usul::Registry;
 
 

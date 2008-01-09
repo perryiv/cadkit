@@ -17,7 +17,7 @@
 #ifndef __USUL_ALGORITHMS_CYLINDER_H__
 #define __USUL_ALGORITHMS_CYLINDER_H__
 
-#include "Usul/Math/UMath.h"
+#include "Usul/Math/Functions.h"
 
 namespace Usul {
 namespace Algorithms {

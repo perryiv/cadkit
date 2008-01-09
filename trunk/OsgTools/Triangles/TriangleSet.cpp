@@ -610,10 +610,10 @@ SharedVertex* TriangleSet::addSharedVertex ( const osg::Vec3f &v, bool look )
   // but not with the default std::less comparison predicate.
   else
   {
-    std::cout << "Warning 1435177723: Failed to find existing shared-vertex for "
-              << '(' << v[0] << ',' << v[1] << ',' << v[2] << ')'
-              << ", however, when attempting to insert a new shared-vertex, "
-              << "an existing one was returned" << std::endl;
+    std::cout << Usul::Strings::format 
+      ( "Warning 1435177723: Failed to find existing shared-vertex for (", 
+        v[0], ',', v[1], ',', v[2], 
+        "), however, when attempting to insert a new shared-vertex, an existing one was returned" ) << std::endl;
 
     // Re-assign the shared-vertex to the one returned.
     sv = result.first->second;

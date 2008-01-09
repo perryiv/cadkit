@@ -11,7 +11,7 @@
 
 #include "Usul/File/Stats.h"
 #include "Usul/Endian/Endian.h"
-#include "Usul/IO/Reader.h"
+#include "Usul/IO/BinaryReader.h"
 
 #include <fstream>
 #include <algorithm>
@@ -85,13 +85,13 @@ const Usul::Types::Uint32 VERSION = 1;
         // If the file data is in little endian...
         if( littleEndian )
         {
-          Usul::IO::ReadLittleEndian::read ( in, t );
+          Usul::IO::Binary::ReadLittleEndian::read ( in, t );
         }
 
         // If the file data is in big endian...
         else
         {
-          Usul::IO::ReadBigEndian::read ( in, t );
+          Usul::IO::Binary::ReadBigEndian::read ( in, t );
         }
 
         // Return the value we read.

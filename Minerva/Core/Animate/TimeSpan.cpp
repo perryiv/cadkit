@@ -15,7 +15,9 @@
 using namespace Minerva::Core::Animate;
 
 USUL_FACTORY_REGISTER_CREATOR ( TimeSpan );
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER( Minerva::Core::Animate::Date );
+
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Minerva::Core::Animate::Date );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

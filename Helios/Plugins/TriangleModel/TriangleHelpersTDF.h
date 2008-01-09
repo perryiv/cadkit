@@ -21,7 +21,7 @@
 #include "Usul/Math/Vector3.h"
 #include "Usul/Endian/Endian.h"
 #include "Usul/Cast/Cast.h"
-#include "Usul/IO/Reader.h"
+#include "Usul/IO/BinaryReader.h"
 
 #include "osg/Vec3f"
 #include "osg/Vec4f"
@@ -145,7 +145,7 @@ template < class T > struct Read
   {
     // Read the number.
     T t ( 0 );
-    Usul::IO::ReadLittleEndian::read ( in, t );
+    Usul::IO::Binary::ReadLittleEndian::read ( in, t );
 
     // Make sure it is non-zero.
     if ( zeroIsError && 0 == t )

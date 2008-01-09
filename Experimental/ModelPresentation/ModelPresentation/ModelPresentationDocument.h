@@ -199,7 +199,7 @@ private:
   MpdModels                   _models;
   MpdSets                     _sets;
   MpdTimeSets                 _timeSets;
-  UpdatePolicyPtr             _update;
+  UpdatePolicyPtr             _update;
   bool                        _useTimeLine;
   bool                        _useModels;
   bool                        _isAnimating;

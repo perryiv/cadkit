@@ -20,16 +20,16 @@
 #include "XmlTree/Node.h"
 #include "XmlTree/ReplaceIllegalCharacters.h"
 
+#include "Usul/Convert/Convert.h"
+#include "Usul/Convert/Vector2.h"
+#include "Usul/Convert/Vector3.h"
+#include "Usul/Convert/Vector4.h"
+#include "Usul/Convert/Matrix44.h"
 #include "Usul/Factory/ObjectFactory.h"
 #include "Usul/Interfaces/ISerialize.h"
-#include "Usul/Math/Vector4.h"
-#include "Usul/Math/Vector3.h"
-#include "Usul/Math/Vector2.h"
 #include "Usul/Pointers/Pointers.h"
-#include "Usul/Scope/StreamState.h"
 #include "Usul/Types/Types.h"
 
-#include <iomanip>
 #include <sstream>
 
 namespace Serialize {
@@ -252,18 +252,13 @@ template <> struct TypeWrapper < TheType >\
   }\
   static void serialize ( const TheType &value, XmlTree::Node &node )\
   {\
-    std::ostringstream out;\
-    Usul::Scope::Stream::Flags flags ( out, std::ios_base::fixed, std::ios_base::floatfield );\
-    out.precision ( std::numeric_limits<TheType>::digits10 );\
-    out << value;\
-    node.value ( out.str() );\
+    node.value ( Usul::Convert::Type<TheType,std::string>::convert ( value ) );\
   }\
   static void set ( const std::string &s, TheType &value )\
   {\
     if ( false == s.empty() )\
     {\
-      std::istringstream in ( s );\
-      in >> value;\
+      value = Usul::Convert::Type<std::string,TheType>::convert ( s );\
     }\
   }\
 };\
@@ -273,7 +268,7 @@ template <> struct TypeWrapper < TheType >\
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Specializations built-in types.
+//  Specializations for built-in types.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -292,17 +287,64 @@ SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( float );
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( double );
 
 
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Declare known vector and matrix types.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Math::Vec2d );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Math::Vec2f );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Math::Vec2ui );
+
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Math::Vec3d );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Math::Vec3f );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Math::Vec3ui );
+
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Math::Vec4d );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Math::Vec4f );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Math::Vec4ui );
+
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Math::Matrix44d );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Math::Matrix44f );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macros to declare all plumbing for unknown vector and matrix types.
+//  Use for osg::Vec3, osg::Matrix4, etc.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER(the_type)\
+  USUL_CONVERT_DEFINE_STRING_CONVERTER(the_type);\
+  SERIALIZE_XML_DECLARE_TYPE_WRAPPER(the_type);
+
+#define SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER(the_type)\
+  USUL_CONVERT_DEFINE_STRING_CONVERTER(the_type);\
+  SERIALIZE_XML_DECLARE_TYPE_WRAPPER(the_type);
+
+#define SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER(the_type)\
+  USUL_CONVERT_DEFINE_STRING_CONVERTER(the_type);\
+  SERIALIZE_XML_DECLARE_TYPE_WRAPPER(the_type);
+
+#define SERIALIZE_XML_DECLARE_MATRIX_4_4_WRAPPER(the_type)\
+  USUL_CONVERT_DEFINE_STRING_CONVERTER(the_type);\
+  SERIALIZE_XML_DECLARE_TYPE_WRAPPER(the_type);
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Macros to declare stream operators for simple vector types.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#if 0
+
 #define SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_4(the_type)\
 inline std::ostream &operator << ( std::ostream &out, const the_type &v )\
 {\
-  Usul::Scope::Stream::Flags flags ( out, std::ios_base::fixed, std::ios_base::floatfield );\
-  Usul::Scope::Stream::MaxPrecision<the_type::value_type> precision ( out );\
+  Usul::Scope::Stream::MaxFloatPrecision<the_type::value_type> precision ( out );\
   out << v[0] << ' ' << v[1] << ' ' << v[2] << ' ' << v[3];\
   return out;\
 }\
@@ -315,8 +357,7 @@ inline std::istream &operator >> ( std::istream &in, the_type &v )\
 #define SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_3(the_type)\
 inline std::ostream &operator << ( std::ostream &out, const the_type &v )\
 {\
-  Usul::Scope::Stream::Flags flags ( out, std::ios_base::fixed, std::ios_base::floatfield );\
-  Usul::Scope::Stream::MaxPrecision<the_type::value_type> precision ( out );\
+  Usul::Scope::Stream::MaxFloatPrecision<the_type::value_type> precision ( out );\
   out << v[0] << ' ' << v[1] << ' ' << v[2];\
   return out;\
 }\
@@ -329,8 +370,7 @@ inline std::istream &operator >> ( std::istream &in, the_type &v )\
 #define SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_2(the_type)\
 inline std::ostream &operator << ( std::ostream &out, const the_type &v )\
 {\
-  Usul::Scope::Stream::Flags flags ( out, std::ios_base::fixed, std::ios_base::floatfield );\
-  Usul::Scope::Stream::MaxPrecision<the_type::value_type> precision ( out );\
+  Usul::Scope::Stream::MaxFloatPrecision<the_type::value_type> precision ( out );\
   out << v[0] << ' ' << v[1];\
   return out;\
 }\
@@ -343,44 +383,6 @@ inline std::istream &operator >> ( std::istream &in, the_type &v )\
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Macros to declare all plumbing for simple vector types.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER(the_type)\
-  SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_4(the_type);\
-  SERIALIZE_XML_DECLARE_TYPE_WRAPPER(the_type);
-
-#define SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER(the_type)\
-  SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_3(the_type);\
-  SERIALIZE_XML_DECLARE_TYPE_WRAPPER(the_type);
-
-#define SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER(the_type)\
-  SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_VECTOR_2(the_type);\
-  SERIALIZE_XML_DECLARE_TYPE_WRAPPER(the_type);
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Declare vector types.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Usul::Math::Vec4d );
-SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Usul::Math::Vec4f );
-SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Usul::Math::Vec4ui );
-
-SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( Usul::Math::Vec3d );
-SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( Usul::Math::Vec3f );
-SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( Usul::Math::Vec3ui );
-
-SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2d );
-SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2f );
-SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2ui );
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Macros to declare stream operators for 4 by 4 matrix.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -388,21 +390,20 @@ SERIALIZE_XML_DECLARE_VECTOR_2_WRAPPER ( Usul::Math::Vec2ui );
 #define SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_MATRIX_4_4(the_type)\
 inline std::ostream &operator << ( std::ostream &out, const the_type &m )\
 {\
-  Usul::Scope::Stream::Flags flags ( out, std::ios_base::fixed, std::ios_base::floatfield );\
-  Usul::Scope::Stream::MaxPrecision<the_type::value_type> precision ( out );\
+  Usul::Scope::Stream::MaxFloatPrecision<the_type::value_type> precision ( out );\
 \
   out << m( 0, 0 ) << ' ';\
   out << m( 1, 0 ) << ' ';\
   out << m( 2, 0 ) << ' ';\
-  out << m( 3, 0 ) << std::endl;\
+  out << m( 3, 0 ) << ' ';\
   out << m( 0, 1 ) << ' ';\
   out << m( 1, 1 ) << ' ';\
   out << m( 2, 1 ) << ' ';\
-  out << m( 3, 1 ) << std::endl;\
+  out << m( 3, 1 ) << ' ';\
   out << m( 0, 2 ) << ' ';\
   out << m( 1, 2 ) << ' ';\
   out << m( 2, 2 ) << ' ';\
-  out << m( 3, 2 ) << std::endl;\
+  out << m( 3, 2 ) << ' ';\
   out << m( 0, 3 ) << ' ';\
   out << m( 1, 3 ) << ' ';\
   out << m( 2, 3 ) << ' ';\
@@ -428,5 +429,8 @@ inline std::istream &operator >> ( std::istream &in, the_type &m )\
 #define SERIALIZE_XML_DECLARE_MATRIX_4_4_WRAPPER(the_type)\
   SERIALIZE_XML_DEFINE_STREAM_FUNCTIONS_MATRIX_4_4(the_type);\
   SERIALIZE_XML_DECLARE_TYPE_WRAPPER(the_type);
+
+#endif
+
 
 #endif // _SERIALIZE_XML_SET_VALUE_H_

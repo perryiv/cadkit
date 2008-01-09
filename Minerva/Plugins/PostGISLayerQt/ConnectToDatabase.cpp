@@ -35,14 +35,14 @@ namespace Detail
 
 namespace Usul
 {
-  namespace Registry
+  namespace Convert
   {
-
-    template <> struct Convert < ConnectToDatabase::SavedConnections >
+    template <> struct Type < ConnectToDatabase::SavedConnections, std::string >
     {
       typedef ConnectToDatabase::SavedConnections SavedConnections;
       typedef std::vector< std::string > Strings;
-      static std::string to ( const SavedConnections &sc )
+
+      static std::string convert ( const SavedConnections &sc )
       {
         std::ostringstream out;
 
@@ -55,7 +55,13 @@ namespace Usul
         }
         return out.str();
       }
-      static void from ( const std::string &s, SavedConnections &sc )
+    };
+    template <> struct Type < std::string, ConnectToDatabase::SavedConnections >
+    {
+      typedef ConnectToDatabase::SavedConnections SavedConnections;
+      typedef std::vector< std::string > Strings;
+
+      static void convert ( const std::string &s, SavedConnections &sc )
       {
         if ( true == s.empty() )
           return;

@@ -19,6 +19,7 @@
 
 #include "Minerva/Core/Export.h"
 
+#include "Usul/Convert/Generic.h"
 #include "Usul/Trace/Trace.h"
 
 #include <string>
@@ -91,5 +92,49 @@ private:
 
 std::ostream& operator<<( std::ostream& out, const Minerva::Core::Animate::Date& date );
 std::istream& operator>> ( std::istream& in, Minerva::Core::Animate::Date& date );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  String conversion.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Usul
+{ 
+  namespace Convert
+  {
+    template <> struct Type < Minerva::Core::Animate::Date, std::string >
+    {
+      typedef Type < Minerva::Core::Animate::Date, std::string > ThisType;
+      static void convert ( const Minerva::Core::Animate::Date &from, std::string &to )
+      {
+        to = from.toString();
+      }
+      static std::string convert ( const Minerva::Core::Animate::Date &from )
+      {
+        std::string to;
+        ThisType::convert ( from, to );
+        return to;
+      }
+    };
+    template <> struct Type < std::string, Minerva::Core::Animate::Date >
+    {
+      typedef Type < std::string, Minerva::Core::Animate::Date > ThisType;
+      static void convert ( const std::string &from, Minerva::Core::Animate::Date &to )
+      {
+        std::istringstream in ( from );
+        in >> to;
+      }
+      static Minerva::Core::Animate::Date convert ( const std::string &from )
+      {
+        Minerva::Core::Animate::Date to;
+        ThisType::convert ( from, to );
+        return to;
+      }
+    };
+  }
+}
+
 
 #endif // __MINERVA_CORE_ANIMATE_DATE_H__

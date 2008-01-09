@@ -20,8 +20,8 @@
 
 #include "Usul/File/Stats.h"
 #include "Usul/File/Temp.h"
-#include "Usul/IO/Reader.h"
-#include "Usul/IO/Writer.h"
+#include "Usul/IO/BinaryReader.h"
+#include "Usul/IO/BinaryWriter.h"
 #include "Usul/Math/Vector4.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector2.h"
@@ -153,10 +153,10 @@ namespace Helper
   template < class Stream, class Vertex, class Normal > 
   inline void writeTriangle ( Stream &stream, const Vertex &v0, const Vertex &v1, const Vertex &v2, const Normal &n )
   {
-    Usul::IO::WriteSystemEndian::write3 ( stream, v0 );
-    Usul::IO::WriteSystemEndian::write3 ( stream, v1 );
-    Usul::IO::WriteSystemEndian::write3 ( stream, v2 );
-    Usul::IO::WriteSystemEndian::write3 ( stream, n  );
+    Usul::IO::Binary::WriteSystemEndian::write3 ( stream, v0 );
+    Usul::IO::Binary::WriteSystemEndian::write3 ( stream, v1 );
+    Usul::IO::Binary::WriteSystemEndian::write3 ( stream, v2 );
+    Usul::IO::Binary::WriteSystemEndian::write3 ( stream, n  );
   }
 }
 
@@ -172,10 +172,10 @@ namespace Helper
   template < class Stream, class Vertex, class Normal > 
   inline void readTriangle ( Stream &stream, Vertex &v0, Vertex &v1, Vertex &v2, Normal &n )
   {
-    Usul::IO::ReadSystemEndian::read3 ( stream, v0 );
-    Usul::IO::ReadSystemEndian::read3 ( stream, v1 );
-    Usul::IO::ReadSystemEndian::read3 ( stream, v2 );
-    Usul::IO::ReadSystemEndian::read3 ( stream, n  );
+    Usul::IO::Binary::ReadSystemEndian::read3 ( stream, v0 );
+    Usul::IO::Binary::ReadSystemEndian::read3 ( stream, v1 );
+    Usul::IO::Binary::ReadSystemEndian::read3 ( stream, v2 );
+    Usul::IO::Binary::ReadSystemEndian::read3 ( stream, n  );
   }
 }
 
@@ -381,7 +381,7 @@ void TriangleReaderArcAsciiGrid::_read()
         // Read triangle.
         Helper::readTriangle ( in2, v0, v1, v2, n );
       }
-      catch ( const Usul::IO::Exceptions::UnexpectedEndOfFile & )
+      catch ( const Usul::Exceptions::IO::UnexpectedEndOfFile & )
       {
         std::cout << Usul::Strings::format ( "Error 3718606332: Unexpected end of file reached while parsing: ", validTriangles.name(), ". Proceeding with the triangles already added." ) << std::endl;
         break;

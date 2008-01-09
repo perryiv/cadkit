@@ -28,6 +28,7 @@ USUL_FACTORY_REGISTER_CREATOR ( PointTimeLayer );
 
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER( Minerva::Core::Animate::Date );
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.

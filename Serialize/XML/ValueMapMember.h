@@ -19,6 +19,10 @@
 
 #include "Serialize/XML/MemberBase.h"
 
+#include "Usul/Convert/Convert.h"
+
+#include <map>
+
 
 namespace Serialize {
 namespace XML {
@@ -58,7 +62,7 @@ public:
 
       // Add value
       {
-        XmlTree::Node::ValidRefPtr value ( new XmlTree::Node ( "value" ) );
+        XmlTree::Node::ValidRefPtr value ( new XmlTree::Node ( "value", i->second ) );
         element->children().push_back ( value.get() );
       }
     }
@@ -67,7 +71,7 @@ public:
   virtual void deserialize ( const XmlTree::Node &node )
   {
     typedef typename XmlTree::Node::Children::const_iterator Itr;
-    typedef typename T::value_type ValueType;
+    typedef typename T::mapped_type MappedType;
 
     if ( this->name() != node.name() )
       return;
@@ -89,7 +93,7 @@ public:
           const std::string keyString ( elementKey->value() );
           if ( false == keyString.empty() )
           {
-            _value[keyString] = elementValue->value();
+            _value[keyString] = Usul::Convert::Type<std::string,MappedType>::convert ( elementValue->value() );
           }
         }
       }

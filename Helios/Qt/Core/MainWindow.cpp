@@ -55,6 +55,7 @@
 #include "Usul/Interfaces/IDocumentCreate.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/Registry/Convert.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Qt.h"
 #include "Usul/Resources/TextWindow.h"

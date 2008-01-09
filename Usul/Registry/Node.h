@@ -17,7 +17,7 @@
 #define _USUL_REGISTRY_NODE_CLASS_H_
 
 #include "Usul/Base/Object.h"
-#include "Usul/Registry/Convert.h"
+#include "Usul/Convert/Convert.h"
 #include "Usul/Trace/Trace.h"
 
 #include <map>
@@ -113,7 +113,7 @@ private:
 template < class T > void Node::set ( const T &t )
 {
   USUL_TRACE_SCOPE;
-  this->set ( Usul::Registry::Convert<T>::to ( t ) );
+  this->set ( Usul::Convert::Type<T,std::string>::convert ( t ) );
 }
 
 
@@ -132,7 +132,7 @@ template < class T > T Node::get ( const T &defaultValue ) const
     return defaultValue;
 
   T v = defaultValue;
-  Usul::Registry::Convert<T>::from ( _value, v );
+  Usul::Convert::Type<std::string,T>::convert ( _value, v );
   return v;
 }
 

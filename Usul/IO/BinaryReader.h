@@ -17,6 +17,7 @@
 #define _USUL_IO_BINARY_READER_H_
 
 #include "Usul/Endian/Endian.h"
+#include "Usul/Exceptions/IO.h"
 #include "Usul/Cast/Cast.h"
 
 #include <stdexcept>
@@ -25,24 +26,7 @@
 
 namespace Usul {
 namespace IO {
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Exception class for unexpected end-of-file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Exceptions
-{
-  struct UnexpectedEndOfFile : public std::runtime_error
-  {
-    typedef std::runtime_error BaseClass;
-    UnexpectedEndOfFile ( const std::string &message ) : BaseClass ( message )
-    {
-    }
-  };
-}
+namespace Binary {
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -58,7 +42,7 @@ template < class EndianPolicy_ > struct Reader
   template < class Stream, class T > static void read ( Stream &stream, T &t )
   {
     if ( EOF == stream.peek() )
-      throw Usul::IO::Exceptions::UnexpectedEndOfFile ( "Error 1496689971: Unexpected end of file reached" );
+      throw Usul::Exceptions::IO::UnexpectedEndOfFile ( "Error 1496689971: Unexpected end of file reached" );
     stream.read ( USUL_UNSAFE_CAST ( char *, &t ), sizeof ( T ) );
     EndianPolicy::convert ( t );
   }
@@ -82,15 +66,15 @@ template < class EndianPolicy_ > struct Reader
   }
   template < class Stream, class T > static void read2 ( Stream &stream, T &t )
   {
-    Usul::IO::Reader<EndianPolicy>::read ( stream, t[0], t[1] );
+    Usul::IO::Binary::Reader<EndianPolicy>::read ( stream, t[0], t[1] );
   }
   template < class Stream, class T > static void read3 ( Stream &stream, T &t )
   {
-    Usul::IO::Reader<EndianPolicy>::read ( stream, t[0], t[1], t[2] );
+    Usul::IO::Binary::Reader<EndianPolicy>::read ( stream, t[0], t[1], t[2] );
   }
   template < class Stream, class T > static void read4 ( Stream &stream, T &t )
   {
-    Usul::IO::Reader<EndianPolicy>::read ( stream, t[0], t[1], t[2], t[3] );
+    Usul::IO::Binary::Reader<EndianPolicy>::read ( stream, t[0], t[1], t[2], t[3] );
   }
 };
 
@@ -106,6 +90,7 @@ typedef Reader < Usul::Endian::FromLittleToSystem > ReadLittleEndian;
 typedef Reader < Usul::Endian::FromSystemToSystem > ReadSystemEndian;
 
 
+} // namespace Binary
 } // namespace IO
 } // namespace Usul
 

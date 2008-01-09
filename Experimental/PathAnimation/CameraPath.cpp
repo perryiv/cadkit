@@ -14,7 +14,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "PathAnimation/CameraPath.h"
-
 #include "Serialize/XML/Deserialize.h"
 #include "Serialize/XML/Serialize.h"
 
@@ -23,8 +22,12 @@
 #include "Usul/Strings/Case.h"
 #include "Usul/Trace/Trace.h"
 
-SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER(CameraPath::Triplet);
-USUL_FACTORY_REGISTER_CREATOR(CameraPath);
+USUL_FACTORY_REGISTER_CREATOR ( CameraPath );
+
+USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_3 ( CameraPath::Triplet );
+USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_3 ( CameraPath::Triplet );
+SERIALIZE_XML_DECLARE_VECTOR_3_WRAPPER ( CameraPath::Triplet );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -257,7 +260,10 @@ CameraPath::Filters CameraPath::filtersSave() const
 
 void CameraPath::read ( const std::string &file, Unknown *caller, Unknown *progress )
 {
-  Serialize::XML::deserialize ( file, *this );
+  XmlTree::XercesLife life;
+  XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
+  document->load ( file );
+  this->deserialize ( *document );
 }
 
 
@@ -269,7 +275,7 @@ void CameraPath::read ( const std::string &file, Unknown *caller, Unknown *progr
 
 void CameraPath::write ( const std::string &file, Unknown *caller, Unknown *progress  ) const
 {
-  Serialize::XML::serialize ( "CameraPath", *this, file );
+  Serialize::XML::serialize ( *this, file );
 }
 
 

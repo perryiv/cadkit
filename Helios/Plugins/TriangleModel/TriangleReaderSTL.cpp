@@ -18,7 +18,7 @@
 #include "Usul/File/Stats.h"
 #include "Usul/File/Contents.h"
 #include "Usul/Policies/Update.h"
-#include "Usul/IO/Reader.h"
+#include "Usul/IO/BinaryReader.h"
 #include "Usul/Types/Types.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/System/Clock.h"
@@ -266,7 +266,7 @@ void TriangleReaderSTL::_readBinary()
 
   // Get the total number of triangles.
   Usul::Types::Uint32 numTriangles ( 0 );
-  Usul::IO::ReadLittleEndian::read ( in, numTriangles );
+  Usul::IO::Binary::ReadLittleEndian::read ( in, numTriangles );
 
   // Reserve space in the document.
   _document->setStatusBar ( "Reserving space for new triangles..." );

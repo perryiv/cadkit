@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(QTDIR)\include;$(OSG_INC_DIR);$(BOOST_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental;$(QTDIR)\include;$(OSG_INC_DIR);$(BOOST_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_LAYER_MANAGER;"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -147,7 +147,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(QTDIR)\include;$(OSG_INC_DIR);$(BOOST_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental;$(QTDIR)\include;$(OSG_INC_DIR);$(BOOST_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_LAYER_MANAGER;"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -226,6 +226,36 @@
 				<File
 					RelativePath=".\CompileGuard.h"
 					>
+				</File>
+				<File
+					RelativePath=".\Favorites.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Favorites.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_Favorites.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\Favorites.ui -o .\ui_Favorites.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\Favorites.h&quot; -o &quot;.\GeneratedFiles\moc_Favorites.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\Favorites.ui;$(QTDIR)\bin\moc.exe;.\Favorites.h"
+							Outputs=".\ui_Favorites.h;.\GeneratedFiles\moc_Favorites.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_Favorites.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\Favorites.ui -o .\ui_Favorites.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\Favorites.h&quot; -o &quot;.\GeneratedFiles\moc_Favorites.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\Favorites.ui;$(QTDIR)\bin\moc.exe;.\Favorites.h"
+							Outputs=".\ui_Favorites.h;.\GeneratedFiles\moc_Favorites.cpp"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath=".\LayerManagerComponent.cpp"
@@ -308,10 +338,14 @@
 				Name="GeneratedFiles"
 				>
 				<File
+					RelativePath=".\generatedfiles\moc_Favorites.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\generatedfiles\moc_LayersTree.cpp"
 					>
 				</File>
-                        <File
+				<File
 					RelativePath=".\GeneratedFiles\moc_PropertiesAction.cpp"
 					>
 				</File>

@@ -11,7 +11,7 @@
 #include "Magrathea/Navigator.h"
 
 #include "Usul/Math/MinMax.h"
-#include "Usul/Math/UMath.h"
+#include "Usul/Math/Functions.h"
 #include "Usul/Math/Angle.h"
 
 #include "osgUtil/IntersectVisitor"

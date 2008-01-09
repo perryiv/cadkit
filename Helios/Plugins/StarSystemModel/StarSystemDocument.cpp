@@ -577,6 +577,10 @@ Usul::Jobs::Manager *StarSystemDocument::_getJobManager()
 //
 //  Make the system.
 //
+//  http://nssdc.gsfc.nasa.gov/planetary/factsheet/index.html
+//  http://www6.uniovi.es/solar/eng/sun.htm
+//  http://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 void StarSystemDocument::_makeSystem()
@@ -595,28 +599,83 @@ void StarSystemDocument::_makeSystem()
   // Make the system.
   _system = new StarSystem::System ( this->_getJobManager() );
 
-  // Make the land model.
+  // For use with the land model.
   typedef StarSystem::LandModelEllipsoid Land;
-  Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
+  const Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
 
-  Land::RefPtr land ( new Land ( radii ) );
+  // Make the sun.
+  {
+    // See http://www6.uniovi.es/solar/eng/sun.htm for sun's radius.
+    Land::RefPtr land ( new Land ( radii * 108.97 ) );
 
-  // Make a good split distance.
-  const double splitDistance ( land->size() * 3 );
+    // Make a good split distance.
+    const double splitDistance ( land->size() * 3 );
 
-  // Size of the mesh.
-  Body::MeshSize meshSize ( 17, 17 );
+    // Size of the mesh.
+    Body::MeshSize meshSize ( 17, 17 );
 
-  // Add the body.
-  Body::RefPtr body ( new Body ( land, this->_getJobManager(), meshSize, splitDistance ) );
-  body->useSkirts ( true );
-  _system->body ( body.get() );
+    // Add the body.
+    Body::RefPtr body ( new Body ( land, this->_getJobManager(), meshSize, splitDistance ) );
+    body->useSkirts ( true );
+    _system->body ( body.get() );
 
-  // Add tiles to the body.
-  body->addTile ( Extents ( -180, -90,    0,   90 ) );
-  body->addTile ( Extents (    0, -90,  180,   90 ) );
+    // Add tiles to the body.
+    body->addTile ( Extents ( -180, -90,    0,   90 ) );
+    body->addTile ( Extents (    0, -90,  180,   90 ) );
+  }
 
-#if 1
+  // Make earth.
+  {
+    Land::RefPtr land ( new Land ( radii ) );
+    Body::RefPtr body ( new Body ( land, this->_getJobManager(), Body::MeshSize ( 17, 17 ), land->size() * 3 ) );
+    body->useSkirts ( true );
+    body->addTile ( Extents ( -180, -90,    0,   90 ) );
+    body->addTile ( Extents (    0, -90,  180,   90 ) );
+    body->center ( Body::Vec3d ( 149.6e9, 0, 0 ) );
+    _system->satellites()->add ( body.get() );
+
+    const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
+    typedef StarSystem::RasterLayerWms::Options Options;
+    Options options;
+    options[Usul::Network::Names::LAYERS]  = "BMNG,global_mosaic";
+    options[Usul::Network::Names::STYLES]  = "Jul,visual";
+    options[Usul::Network::Names::SRS]     = "EPSG:4326";
+    options[Usul::Network::Names::REQUEST] = "GetMap";
+    options[Usul::Network::Names::FORMAT]  = "image/jpeg";
+    typedef StarSystem::Body::Extents Extents;
+    typedef Extents::Vertex Vertex;
+    const Extents maxExtents ( Vertex ( -180, -90 ), Vertex ( 180, 90 ) );
+    StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
+    body->rasterAppend ( layer.get() );
+  }
+
+  // Make mars.
+  {
+    // See http://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html for mar's radius.
+    Land::RefPtr land ( new Land ( radii * 0.532 ) );
+    Body::RefPtr body ( new Body ( land, this->_getJobManager(), Body::MeshSize ( 17, 17 ), land->size() * 3 ) );
+    body->useSkirts ( true );
+    body->addTile ( Extents ( -180, -90,    0,   90 ) );
+    body->addTile ( Extents (    0, -90,  180,   90 ) );
+    body->center ( Body::Vec3d ( 227.9e9, 0, 0 ) );
+    _system->satellites()->add ( body.get() );
+
+    const std::string url ( "http://onmars.jpl.nasa.gov/wms.cgi" );
+    typedef StarSystem::RasterLayerWms::Options Options;
+    Options options;
+    options[Usul::Network::Names::LAYERS]  = "mola";
+    options[Usul::Network::Names::STYLES]  = "color";
+    options[Usul::Network::Names::SRS]     = "EPSG:4326";
+    options[Usul::Network::Names::REQUEST] = "GetMap";
+    options[Usul::Network::Names::FORMAT]  = "image/jpeg";
+    typedef StarSystem::Body::Extents Extents;
+    typedef Extents::Vertex Vertex;
+    const Extents maxExtents ( Vertex ( -180, -90 ), Vertex ( 180, 90 ) );
+    StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
+    body->rasterAppend ( layer.get() );
+  }
+
+#if 0
 
   {
     const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );

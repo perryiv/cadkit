@@ -39,6 +39,8 @@ using namespace Minerva::Core::Layers;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Layer, Layer::BaseClass );
 
+USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_2 ( osg::Vec4 );
+USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_2 ( osg::Vec4 );
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 
 

@@ -22,11 +22,12 @@
 
 namespace Usul {
 namespace IO {
+namespace Binary {
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  For reading binary data and converting to the system's byte order.
+//  For writing binary data and converting to the system's byte order.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -60,15 +61,15 @@ template < class EndianPolicy_ > struct Writer
   }
   template < class Stream, class T > static void write2 ( Stream &stream, const T &t )
   {
-    Usul::IO::Writer<EndianPolicy>::write ( stream, t[0], t[1] );
+    Usul::IO::Binary::Writer<EndianPolicy>::write ( stream, t[0], t[1] );
   }
   template < class Stream, class T > static void write3 ( Stream &stream, const T &t )
   {
-    Usul::IO::Writer<EndianPolicy>::write ( stream, t[0], t[1], t[2] );
+    Usul::IO::Binary::Writer<EndianPolicy>::write ( stream, t[0], t[1], t[2] );
   }
   template < class Stream, class T > static void write4 ( Stream &stream, const T &t )
   {
-    Usul::IO::Writer<EndianPolicy>::write ( stream, t[0], t[1], t[2], t[3] );
+    Usul::IO::Binary::Writer<EndianPolicy>::write ( stream, t[0], t[1], t[2], t[3] );
   }
 };
 
@@ -84,6 +85,7 @@ typedef Writer < Usul::Endian::FromSystemToLittle > WriteLittleEndian;
 typedef Writer < Usul::Endian::FromSystemToSystem > WriteSystemEndian;
 
 
+} // namespace Binary
 } // namespace IO
 } // namespace Usul
 

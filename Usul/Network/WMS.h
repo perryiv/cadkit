@@ -74,9 +74,18 @@ public:
   template < class Itr > WMS ( const std::string &url, const std::string &file, Itr first, Itr last ) :
     _url ( url ),
     _file ( file ),
-    _options ( first, last )
+    _options()
   {
+    // Assign defaults first.
     this->defaults();
+
+    // Now set given options.
+    for ( Itr i = first; i != last; ++i )
+    {
+      const std::string name  ( i->first  );
+      const std::string value ( i->second );
+      _options[name] = value;
+    }
   }
 
 
@@ -250,8 +259,8 @@ public:
     this->set ( Names::SRS,     "EPSG:4326"  );
     this->set ( Names::STYLES,  ""  );
 
-    this->set<unsigned long> ( Names::WIDTH,  800 );
-    this->set<unsigned long> ( Names::HEIGHT, 600 );
+    this->set<unsigned long> ( Names::WIDTH,  1024 );
+    this->set<unsigned long> ( Names::HEIGHT, 1024 );
   }
 
 
@@ -279,7 +288,9 @@ public:
     url << _url;
     for ( Options::const_iterator i = _options.begin(); i != _options.end(); ++i )
     {
-      url << ( ( _options.begin() == i ) ? '?' : '&' ) << i->first << '=' << i->second;
+      const std::string name  ( i->first  );
+      const std::string value ( i->second );
+      url << ( ( _options.begin() == i ) ? '?' : '&' ) << name << '=' << value;
     }
     return url.str();
   }

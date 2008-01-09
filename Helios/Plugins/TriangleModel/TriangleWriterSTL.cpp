@@ -106,7 +106,7 @@ void TriangleWriterSTL::operator()()
     std::string header ( "solid " + _file );
     header.resize ( 80, ' ' );
     file.stream().write ( header.c_str(), header.length() );
-    Usul::IO::WriteLittleEndian::write ( file.stream(), numTriangles );
+    Usul::IO::Binary::WriteLittleEndian::write ( file.stream(), numTriangles );
 
     // Write the triangles in binary.
     typedef OsgTools::IO::BinaryWriter < osg::Vec3f > BinaryWriter;

@@ -71,6 +71,8 @@
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WRFDocument, WRFDocument::BaseClass );
 USUL_FACTORY_REGISTER_CREATOR ( WRFDocument );
 
+USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_2 ( osg::Vec3 );
+USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_2 ( osg::Vec3 );
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec3 );
 
 ///////////////////////////////////////////////////////////////////////////////

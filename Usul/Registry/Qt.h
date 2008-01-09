@@ -22,10 +22,12 @@
 #include "QtCore/QString"
 #include "QtCore/QStringList"
 
+#include "Usul/Convert/Generic.h"
+
 #include <sstream>
 
 
-namespace Usul { namespace Registry {
+namespace Usul { namespace Convert {
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -34,15 +36,26 @@ namespace Usul { namespace Registry {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template <> struct Convert < QRect >
+template <> struct Type < QRect, std::string >
 {
-  static std::string to ( const QRect &r )
+  typedef Type < QRect, std::string > ThisType;
+  static void convert ( const QRect &r, std::string &s )
   {
     std::ostringstream os;
     os << r.left() << ' ' << r.right() << ' ' << r.top() << ' ' << r.bottom();
-    return os.str();
+    s = os.str();
   }
-  static void from ( const std::string &s, QRect &r )
+  static std::string convert ( const QRect &from )
+  {
+    std::string to;
+    ThisType::convert ( from, to );
+    return to;
+  }
+};
+template <> struct Type < std::string, QRect >
+{
+  typedef Type < std::string, QRect > ThisType;
+  static void convert ( const std::string &s, QRect &r )
   {
     std::istringstream in ( s );
     int left ( 0 ), right ( 0 ), top ( 0 ), bottom ( 0 );
@@ -51,6 +64,12 @@ template <> struct Convert < QRect >
     r.setRight  ( right );
     r.setTop    ( top );
     r.setBottom ( bottom );
+  }
+  static QRect convert ( const std::string &from )
+  {
+    QRect to;
+    ThisType::convert ( from, to );
+    return to;
   }
 };
 
@@ -61,9 +80,10 @@ template <> struct Convert < QRect >
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template <> struct Convert < QStringList >
+template <> struct Type < QStringList, std::string >
 {
-  static std::string to ( const QStringList &sl )
+  typedef Type < QStringList, std::string > ThisType;
+  static std::string convert ( const QStringList &sl )
   {
     if ( true == sl.isEmpty() )
       return "";
@@ -76,7 +96,11 @@ template <> struct Convert < QStringList >
 
     return out.str();
   }
-  static void from ( const std::string &s, QStringList &sl )
+};
+template <> struct Type < std::string, QStringList >
+{
+  typedef Type < std::string, QStringList > ThisType;
+  static void convert ( const std::string &s, QStringList &sl )
   {
     sl.clear();
 
@@ -95,11 +119,12 @@ template <> struct Convert < QStringList >
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template <> struct Convert < QByteArray >
+template <> struct Type < QByteArray, std::string >
 {
+  typedef Type < QByteArray, std::string > ThisType;
   typedef int IntegerType;
 
-  static std::string to ( const QByteArray &ba )
+  static std::string convert ( const QByteArray &ba )
   {
     std::ostringstream out;
     const IntegerType numElements ( static_cast < IntegerType > ( ba.size() ) );
@@ -114,7 +139,13 @@ template <> struct Convert < QByteArray >
     }
     return out.str();
   }
-  static void from ( const std::string &s, QByteArray &ba )
+};
+template <> struct Type < std::string, QByteArray >
+{
+  typedef Type < std::string, QByteArray > ThisType;
+  typedef int IntegerType;
+
+  static void convert ( const std::string &s, QByteArray &ba )
   {
     ba.clear();
 

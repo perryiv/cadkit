@@ -40,12 +40,6 @@
 
 using namespace OsgTools::Triangles;
 
-std::ostream& operator<< ( std::ostream& os, const osg::Vec3& v )
-{
-  os << v.x() << " " << v.y() << " " << v.z();
-
-  return os;
-}
 
 namespace Detail
 {

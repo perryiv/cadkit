@@ -11,8 +11,6 @@
 #ifndef __SERIALIZE_XML_STANDARD_STRING_H__
 #define __SERIALIZE_XML_STANDARD_STRING_H__
 
-//#include "Serialize/XML/BuiltInType.h"
-
 #include "XmlTree/Node.h"
 #include "XmlTree/ReplaceIllegalCharacters.h"
 

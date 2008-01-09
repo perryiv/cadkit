@@ -11,6 +11,8 @@
 #include "Helios/Plugins/VolumeModel/RawReaderWriter.h"
 #include "Helios/Plugins/VolumeModel/VolumeDocument.h"
 
+#include "Usul/Convert/Vector3.h"
+#include "Usul/Convert/Vector4.h"
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/System/Directory.h"
@@ -72,7 +74,7 @@ void RawReaderWriter::read ( const std::string &name, VolumeDocument &doc, Unkno
   if ( file.size() > 0 && size.size() > 0 )
   {
     _filename = file.front()->value ();
-    Usul::Registry::Convert < Usul::Math::Vec3ui >::from ( size.front()->value(), _size );
+    Usul::Convert::Type < std::string, Usul::Math::Vec3ui >::convert ( size.front()->value(), _size );
 
     //std::string directory ( Usul::File::directory ( _filename, false ) );
     //Usul::System::Directory::ScopedCwd cwd ( directory );
@@ -118,8 +120,8 @@ void RawReaderWriter::_addTransferFunction ( VolumeDocument& doc, XmlTree::Node&
 
   {
     XmlTree::Node::Attributes a ( node.attributes () );
-    Usul::Registry::Convert < unsigned int >::from( a["size"], size );
-    Usul::Registry::Convert < std::string >::from ( a["name"], name );
+    Usul::Convert::Type < std::string, unsigned int >::convert ( a["size"], size );
+    Usul::Convert::Type < std::string, std::string  >::convert ( a["name"], name );
   }
 
   // Typedefs.
@@ -140,8 +142,8 @@ void RawReaderWriter::_addTransferFunction ( VolumeDocument& doc, XmlTree::Node&
     Usul::Math::Vec4ui color;
 
     XmlTree::Node::Attributes a ( (*iter)->attributes () );
-    Usul::Registry::Convert< unsigned int >::from ( a["value"], value );
-    Usul::Registry::Convert< Usul::Math::Vec4ui >::from ( a["color"], color );
+    Usul::Convert::Type < std::string, unsigned int       >::convert ( a["value"], value );
+    Usul::Convert::Type < std::string, Usul::Math::Vec4ui >::convert ( a["color"], color );
 
     //colors.at ( value ).set ( color [0], color[1], color[2], color[3] );
     Color c ( color [0], color[1], color[2], color[3] );

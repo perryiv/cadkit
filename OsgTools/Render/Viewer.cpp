@@ -47,11 +47,12 @@
 #include "OsgTools/Callbacks/HiddenLines.h"
 #include "OsgTools/Font.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Checker.h"
 #include "Usul/Components/Manager.h"
-#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Convert/Convert.h"
 #include "Usul/Math/Constants.h"
-#include "Usul/Math/UMath.h"
+#include "Usul/Math/Functions.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Registry/Constants.h"
 
@@ -65,7 +66,6 @@
 #include "Usul/Interfaces/IRenderListener.h"
 
 #include "Usul/Registry/Constants.h"
-#include "Usul/Registry/Convert.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/ReportErrors.h"
@@ -81,6 +81,13 @@
 #include "Usul/Math/Absolute.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Trace/Trace.h"
+
+#include "osgUtil/CullVisitor"
+#include "osgUtil/UpdateVisitor"
+#include "osgUtil/IntersectVisitor"
+
+#include "osgDB/WriteFile"
+#include "osgDB/ReadFile"
 
 #include "osg/MatrixTransform"
 #include "osg/NodeVisitor"
@@ -99,16 +106,8 @@
 #include "osg/Stencil"
 #include "osg/AutoTransform"
 #include "osg/Version"
-
 #include "osg/GL"
 #include "osg/GLU"
-
-#include "osgUtil/CullVisitor"
-#include "osgUtil/UpdateVisitor"
-#include "osgUtil/IntersectVisitor"
-
-#include "osgDB/WriteFile"
-#include "osgDB/ReadFile"
 
 #include <limits>
 
@@ -126,19 +125,13 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Viewer, Viewer::BaseClass );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace Usul
-{
-  namespace Registry
-  {
-    USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_4 ( osg::Vec4f );
-    USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_4 ( osg::Vec4d );
-    USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_3 ( osg::Vec3f );
-    USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_3 ( osg::Vec3d );
-    USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_2 ( osg::Vec2f );
-    USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_2 ( osg::Vec2d );
-    USUL_REGISTRY_DEFINE_CONVERTER_VECTOR_4 ( osg::Quat );
-  }
-}
+USUL_CONVERT_DEFINE_STRING_CONVERTER_VECTOR_4 ( osg::Vec4f );
+USUL_CONVERT_DEFINE_STRING_CONVERTER_VECTOR_4 ( osg::Vec4d );
+USUL_CONVERT_DEFINE_STRING_CONVERTER_VECTOR_3 ( osg::Vec3f );
+USUL_CONVERT_DEFINE_STRING_CONVERTER_VECTOR_3 ( osg::Vec3d );
+USUL_CONVERT_DEFINE_STRING_CONVERTER_VECTOR_2 ( osg::Vec2f );
+USUL_CONVERT_DEFINE_STRING_CONVERTER_VECTOR_2 ( osg::Vec2d );
+USUL_CONVERT_DEFINE_STRING_CONVERTER_VECTOR_4 ( osg::Quat );
 
 
 ///////////////////////////////////////////////////////////////////////////////

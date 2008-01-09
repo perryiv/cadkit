@@ -17,7 +17,7 @@
 #include "TriangleReaderOFF.h"
 
 #include "Usul/Policies/Update.h"
-#include "Usul/IO/Reader.h"
+#include "Usul/IO/BinaryReader.h"
 #include "Usul/Types/Types.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/System/Clock.h"

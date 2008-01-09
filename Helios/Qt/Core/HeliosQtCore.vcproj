@@ -323,10 +323,6 @@
 				RelativePath=".\GeneratedFiles\moc_ProgressBarDock.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\GeneratedFiles\moc_SplashScreen.cpp"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

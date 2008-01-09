@@ -168,6 +168,12 @@ void LoadDocument::LoadJob::_loadModel( const std::string& filename )
     document->open ( filename, _caller.get(), _secondProgressBar.get() );
   }
 
+  Usul::Interfaces::IView::QueryPtr view ( _caller );
+
+  // Set the view.
+  if ( view.valid() )
+    document->addView ( view );
+
   // Get the node.
   Usul::Interfaces::IBuildScene::Options options;
   osg::ref_ptr < osg::Node > model ( buildScene->buildScene ( options ) );

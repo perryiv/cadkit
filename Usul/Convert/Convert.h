@@ -20,6 +20,7 @@
 #include "Usul/Convert/Generic.h"
 #include "Usul/IO/TextReader.h"
 #include "Usul/IO/TextWriter.h"
+#include "Usul/Types/Types.h"
 
 #include <algorithm>
 #include <sstream>
@@ -180,6 +181,8 @@ USUL_CONVERT_DEFINE_STRING_CONVERTER ( short );
 USUL_CONVERT_DEFINE_STRING_CONVERTER ( int );
 USUL_CONVERT_DEFINE_STRING_CONVERTER ( long );
 
+#if 0
+// This won't compile with gcc...
 USUL_CONVERT_DEFINE_STRING_CONVERTER ( unsigned char );
 USUL_CONVERT_DEFINE_STRING_CONVERTER ( unsigned short );
 USUL_CONVERT_DEFINE_STRING_CONVERTER ( unsigned int );
@@ -189,6 +192,16 @@ USUL_CONVERT_DEFINE_STRING_CONVERTER ( unsigned long long );
 USUL_CONVERT_DEFINE_STRING_CONVERTER ( float );
 USUL_CONVERT_DEFINE_STRING_CONVERTER ( double );
 USUL_CONVERT_DEFINE_STRING_CONVERTER ( long double );
+#else
 
+USUL_CONVERT_DEFINE_STRING_CONVERTER ( Usul::Types::Uint8 );
+USUL_CONVERT_DEFINE_STRING_CONVERTER ( Usul::Types::Uint16 );
+USUL_CONVERT_DEFINE_STRING_CONVERTER ( Usul::Types::Uint32 );
+USUL_CONVERT_DEFINE_STRING_CONVERTER ( Usul::Types::Uint64 );
+
+USUL_CONVERT_DEFINE_STRING_CONVERTER ( Usul::Types::Float32 );
+USUL_CONVERT_DEFINE_STRING_CONVERTER ( Usul::Types::Float64 );
+
+#endif
 
 #endif // _USUL_CONVERT_COMMON_CONVERSIONS_H_

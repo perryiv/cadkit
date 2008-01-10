@@ -14,7 +14,7 @@
 #include "Minerva/Document/MinervaDocument.h"
 #include "Minerva/Core/Visitor.h"
 
-#include <iosfwd>
+#include <fstream>
 
 namespace Minerva {
 namespace Document {

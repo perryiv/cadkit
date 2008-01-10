@@ -8,20 +8,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Magrathea/KwlLayer.h"
+#include "Minerva/Plugins/OssimLayerQt//ImageTextureLayer.h"
 
 #include "Usul/Functions/GUID.h"
-#include "Usul/System/Directory.h"
-#include "Usul/File/Path.h"
 #include "Usul/Factory/RegisterCreator.h"
 
-#include "ossim/base/ossimKeywordlist.h"
-#include "ossimPlanet/ossimPlanetTextureLayerRegistry.h"
 
-using namespace Magrathea;
-
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( KwlLayer, KwlLayer::BaseClass );
-USUL_FACTORY_REGISTER_CREATOR ( KwlLayer );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ImageTextureLayer, ImageTextureLayer::BaseClass );
+USUL_FACTORY_REGISTER_CREATOR ( ImageTextureLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -29,14 +23,16 @@ USUL_FACTORY_REGISTER_CREATOR ( KwlLayer );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KwlLayer::KwlLayer() : BaseClass(),
+ImageTextureLayer::ImageTextureLayer( ) : BaseClass(),
 _guid ( Usul::Functions::GUID::generate() ),
-_filename (),
-_layer ( 0x0 ),
+_filename ( ),
+_name(),
+_ossimTextureLayer ( new ossimPlanetOssimImageLayer ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
   SERIALIZE_XML_ADD_MEMBER ( _guid );
   SERIALIZE_XML_ADD_MEMBER ( _filename );
+  SERIALIZE_XML_ADD_MEMBER ( _name );
 }
 
 
@@ -46,100 +42,28 @@ SERIALIZE_XML_INITIALIZER_LIST
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KwlLayer::KwlLayer( const std::string & filename ) : BaseClass(),
+ImageTextureLayer::ImageTextureLayer( const std::string& filename ) : BaseClass(),
 _guid ( Usul::Functions::GUID::generate() ),
 _filename ( filename ),
-_layer ( 0x0 )
+_name ( filename ),
+_ossimTextureLayer ( new ossimPlanetOssimImageLayer )
 {
-  this->open();
+  _ossimTextureLayer->openImage ( filename.c_str() );
 
   SERIALIZE_XML_ADD_MEMBER ( _guid );
   SERIALIZE_XML_ADD_MEMBER ( _filename );
+  SERIALIZE_XML_ADD_MEMBER ( _name );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Destructor.
+//  Destructor..
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KwlLayer::~KwlLayer()
+ImageTextureLayer::~ImageTextureLayer()
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Open.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void KwlLayer::open ( )
-{
-  // Get the directory the file lives in.
-  std::string directory ( Usul::File::directory( _filename, false ) );
-  
-  // Get the current working directory.
-  std::string cwd ( Usul::System::Directory::cwd () );
-
-  // Set the new current working directory.
-  Usul::System::Directory::cwd ( directory );
-
-  // Open the kwl.
-  ossimKeywordlist kwl( _filename.c_str() );
-  _layer = ossimPlanetTextureLayerRegistry::instance()->createLayer( kwl.toString() );
-
-  // Restore the old current working directory.
-  Usul::System::Directory::cwd( directory );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the filename.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void KwlLayer::filename ( const std::string& filename )
-{
-  _filename = filename;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the filename.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const std::string& KwlLayer::filename () const
-{
-  return _filename;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the guid.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string KwlLayer::guid() const
-{
-  return _guid;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the ossimPlanet layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-ossimPlanetTextureLayer* KwlLayer::ossimPlanetLayer()
-{
-  return _layer.get();
 }
 
 
@@ -149,7 +73,7 @@ ossimPlanetTextureLayer* KwlLayer::ossimPlanetLayer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* KwlLayer::queryInterface(unsigned long iid)
+Usul::Interfaces::IUnknown* ImageTextureLayer::queryInterface(unsigned long iid)
 {
   switch ( iid )
   {
@@ -158,8 +82,6 @@ Usul::Interfaces::IUnknown* KwlLayer::queryInterface(unsigned long iid)
     return static_cast < Usul::Interfaces::ILayer * > ( this );
   case Usul::Interfaces::IOssimPlanetLayer::IID:
     return static_cast < Usul::Interfaces::IOssimPlanetLayer * > ( this );
-  case Usul::Interfaces::ILayerExtents::IID:
-    return static_cast < Usul::Interfaces::ILayerExtents* > ( this );
   case Usul::Interfaces::ISerialize::IID:
     return static_cast < Usul::Interfaces::ISerialize* > ( this );
   default:
@@ -170,14 +92,51 @@ Usul::Interfaces::IUnknown* KwlLayer::queryInterface(unsigned long iid)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the error code.
+//  Return the state code.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ossimPlanetTextureLayerStateCode KwlLayer::getStateCode() const
+ossimPlanetTextureLayerStateCode ImageTextureLayer::getStateCode() const
 {
-  return _layer->getStateCode();
+  return _ossimTextureLayer->getStateCode();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the ossimPlanetTexutureLayer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ossimPlanetTextureLayer* ImageTextureLayer::ossimPlanetLayer()
+{
+  return _ossimTextureLayer.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the guid.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string ImageTextureLayer::guid() const
+{
+  return _guid;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the filename.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& ImageTextureLayer::filename() const
+{
+  return _filename;
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -186,7 +145,7 @@ ossimPlanetTextureLayerStateCode KwlLayer::getStateCode() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void KwlLayer::showLayer( bool b )
+void ImageTextureLayer::showLayer( bool b )
 {
 }
 
@@ -197,21 +156,9 @@ void KwlLayer::showLayer( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool KwlLayer::showLayer() const
+bool ImageTextureLayer::showLayer() const
 {
   return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the layer extents.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void KwlLayer::layerExtents ( double &lat, double &lon, double& height ) const
-{
-  _layer->getCenterLatLonLength( lat, lon, height );
 }
 
 
@@ -221,9 +168,21 @@ void KwlLayer::layerExtents ( double &lat, double &lon, double& height ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string KwlLayer::name() const
+std::string  ImageTextureLayer::name() const
 {
-  return this->filename();
+  return _name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ImageTextureLayer::name ( const std::string& name )
+{
+  _name = name;
 }
 
 
@@ -233,9 +192,10 @@ std::string KwlLayer::name() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void KwlLayer::deserialize ( const XmlTree::Node& node )
+void ImageTextureLayer::deserialize ( const XmlTree::Node& node )
 {
   _dataMemberMap.deserialize( node );
   
-  this->open();
+  _ossimTextureLayer->openImage ( _filename.c_str() );
 }
+

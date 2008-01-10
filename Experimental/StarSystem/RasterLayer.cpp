@@ -10,6 +10,8 @@
 
 #include "StarSystem/RasterLayer.h"
 
+#include "Usul/Functions/GUID.h"
+
 #include "osg/Image"
 
 using namespace StarSystem;
@@ -25,6 +27,7 @@ USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_4 ( RasterLayer::Extents );
 USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_4 ( RasterLayer::Extents );
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( RasterLayer::Extents );
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS(RasterLayer, RasterLayer::BaseClass);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -36,6 +39,9 @@ RasterLayer::RasterLayer() :
   BaseClass(),
   _extents(),
   _alphas ( LessColor ( EqualPredicate() ) ),
+  _guid ( Usul::Functions::GUID::generate() ),
+  _name (),
+  _shown ( true ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   // Serialization glue.
@@ -121,4 +127,90 @@ osg::Image* RasterLayer::_createBlankImage( unsigned int width, unsigned int hei
   ::memset ( result->data(), 0, result->getImageSizeInBytes() );
 
   return result.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for an interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* RasterLayer::queryInterface( unsigned long iid )
+{
+  switch (iid)
+  {
+    case Usul::Interfaces::IUnknown::IID:
+    case Usul::Interfaces::IRasterLayer::IID:
+      return static_cast<Usul::Interfaces::IRasterLayer*>(this);
+    case Usul::Interfaces::ILayer::IID:
+      return static_cast<Usul::Interfaces::ILayer*>(this);
+    default:
+      return 0x0;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the guid for the layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayer::guid() const
+{
+  Guard guard ( this );
+  return _guid;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayer::name() const
+{
+  Guard guard ( this );
+  return _name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayer::name( const std::string& name )
+{
+  Guard guard ( this );
+  _name = name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set show layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayer::showLayer ( bool b )
+{
+  Guard guard ( this );
+  _shown = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get show layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool RasterLayer::showLayer() const
+{
+  Guard guard ( this );
+  return _shown;
 }

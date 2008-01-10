@@ -19,8 +19,6 @@
 #include "osg/ref_ptr"
 #include "osg/Image"
 
-#include "osgDB/WriteFile"
-
 using namespace StarSystem;
 
 USUL_FACTORY_REGISTER_CREATOR ( RasterGroup );
@@ -101,7 +99,7 @@ void RasterGroup::_updateExtents ( const RasterLayer& layer  )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RasterGroup::ImagePtr RasterGroup::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *job )
+osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *job )
 {
   USUL_TRACE_SCOPE;
   //Guard guard ( this );
@@ -157,21 +155,8 @@ RasterGroup::ImagePtr RasterGroup::texture ( const Extents& extents, unsigned in
     }
   }
 
-#if 0
-  Extents::Vertex min ( extents.minimum() );
-  Extents::Vertex max ( extents.maximum() );
-
-  std::ostringstream os;
-  os << "C:/adam/temp/debug/level_" << level << "/";
-  
-  Usul::File::make ( os.str() );
-
-  os << min[0] << "_" << min[1] << "_" << max[0] << "_" << max[1] << "_" << width << "_" << height << ".bmp";
-  osgDB::writeImageFile ( *result, os.str() );
-#endif
-
   // Return the result.
-  return result;
+  return result.release();
 }
 
 

@@ -1,3 +1,12 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2005, Mike Jackson
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #import "OSGView.h"
 
 #include "osgUtil/UpdateVisitor"
@@ -32,9 +41,16 @@
 
 @implementation OSGView
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 - (id)initWithFrame:(NSRect)frame
 {
-  NSLog(@"OSGView initWithFrame:(NSRect)frame");
+  // Pixel format attributes...
   NSOpenGLPixelFormatAttribute attribs[] =
 	{
 		NSOpenGLPFAAccelerated,
@@ -47,16 +63,19 @@
     (NSOpenGLPixelFormatAttribute)nil
 	};
   
+  // Create the pixel format.
   NSOpenGLPixelFormat *pixFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:attribs];
- 
-  if ( self = [super initWithFrame:frame pixelFormat:pixFormat] ) {
+
+  // Initalize our base class with the frame and pixel format.
+  if ( self = [super initWithFrame:frame pixelFormat:pixFormat] )
+  {
     _osgInitialized = NO;
     _viewer = 0x0;
     _animationTimer = 0x0;
     _spinTimer = 0x0;
     _runModelFlyin = YES;
     renderLock = [[NSLock alloc] init];
-    // Set up the ProgressBar/Status Text Bridge
+    
     const GLint swapInterval = 1;
     [[self openGLContext]
         setValues: &swapInterval
@@ -66,9 +85,13 @@
   return self; 
 }
 
-// -----------------------------------------------------------------------------
-//    Clean up Memory
-// -----------------------------------------------------------------------------
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clean up Memory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 -(void)dealloc
 {  
   [self cleanUpOSG];
@@ -76,52 +99,71 @@
   [super dealloc];
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the viewer and unreference objects.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 - (void) cleanUpOSG
 {
-  // Clear the viewer and  Unref viewer.
-  if (_viewer.valid() ) { _viewer->clear(); }
-  _viewer = 0x0;
-
+  // Clear the viewer.
+  if (_viewer.valid() )
+    _viewer->clear();
   
-  // Decrement the Smart Pointer for the Document
+  // Unreference.
+  _viewer = 0x0;
   _iDocument = 0x0;
 }
 
-// -----------------------------------------------------------------------------
-//  Set the Condition of the RenderLock
-// -----------------------------------------------------------------------------
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the render lock.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 - (NSLock *) renderLock
 {
   return renderLock;
 }
 
-// -----------------------------------------------------------------------------
-//    Get OSG up and running
-// -----------------------------------------------------------------------------
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialze the viewer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 - (BOOL) initializeOSG
 {
-  //Create our Viewer Class
+  // Create the interface to the context.
   Usul::Interfaces::IOpenGLContext::ValidRefPtr context ( new Helios::Cocoa::Views::CocoaGLContext( [self openGLContext] ) );
   
   // Instantiate new bridge class
   Helios::Cocoa::Views::ViewerBridge::ValidRefPtr _bridge ( new Helios::Cocoa::Views::ViewerBridge(self) );
   
+  // Create the viewer.
   _viewer = new OsgTools::Render::Viewer( _iDocument.get(), context , _bridge->queryInterface(Usul::Interfaces::IUnknown::IID) );
   _viewer->create();
   Usul::Shared::Preferences::instance().setBool ( Usul::Registry::Keys::DISPLAY_LISTS, true );
   _viewer->useDisplayLists( true );
 
-  
+  // Build the scene.
   Usul::Interfaces::IBuildScene::ValidQueryPtr buildScene ( _iDocument );
   _viewer->scene ( buildScene->buildScene ( Usul::Documents::Document::Options(), 0x0 ) );
     
-  if ( _viewer.get() ) {
+  if ( _viewer.valid() )
+  {
     _osgInitialized = YES;
    // glEnable (GL_MULTISAMPLE_ARB);
    // glHint (GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
     _viewer->axesShown( false );
     return YES;
-  } else {
+  }
+  else
+  {
     _osgInitialized = NO;
     return NO;
   }
@@ -162,29 +204,33 @@
 // -----------------------------------------------------------------------------
 - (void) drawRect: (NSRect) bounds
 {
-//  NSLog(@"  drawRect....");
-  if ( [renderLock tryLock] ) {
-  //  NSLog(@"...got Lock");
+  if ( [renderLock tryLock] )
+  {
     /// Make sure we have a view to draw into.
     if ( [[self openGLContext] view] == NULL )
     {  
       [[self openGLContext] setView:self];
     }
     
-    if (_osgInitialized) {
-      if ( _viewer.get() ) {
-        if ( _runModelFlyin ) {
+    if ( _osgInitialized && _viewer.valid() )
+    {
+        if ( _runModelFlyin )
+        {
           [self fitModel:NULL];
           _runModelFlyin = NO;
         }
+        
+        // Draw.
         _viewer->render();
         [[self openGLContext] flushBuffer];
-      }
-    }  else {
+    }
+    else
+    {
+      // Feedback...
       NSLog (@"OSG was NOT initialized.. NO rendering will take place." );
     }
+    
     [renderLock unlock];
-  //  NSLog(@"    renderLock unlocked");
   }
 }
 
@@ -193,12 +239,11 @@
 // -----------------------------------------------------------------------------
 - (void)reshape
 {
- // NSLog(@"OsgView reshape");
-  if ( _viewer.get() ) {
-      _viewer.get()->resize (  (int) [self bounds].size.width, (int) [self bounds].size.height );
+  if ( _viewer.get() )
+  {
+    _viewer.get()->resize (  (int) [self bounds].size.width, (int) [self bounds].size.height );
     [self setNeedsDisplay:YES];
   }
-  
 }
 
 
@@ -409,9 +454,10 @@
   [self mouseDragged:theEvent];
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//    Handle Keyboard Events
+//  Key has been pressed.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -500,7 +546,13 @@
   }
 }
 
-// -----------------------------------------------------------------------------
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Key has been released.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 - (void)keyUp:(NSEvent *)theEvent
 {
   const char* theCode = [[theEvent characters] cString];
@@ -516,7 +568,15 @@
   }
 }
 
-- (BOOL) validateMenuItem:(NSMenuItem *)menuItem {
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Not sure what this is doing...
+//
+///////////////////////////////////////////////////////////////////////////////
+
+- (BOOL) validateMenuItem:(NSMenuItem *)menuItem
+{
   if ([menuItem action] == @selector(toggleLights:)) {
     return YES;
   } else if ([menuItem action] == @selector(enableSurfaceRender:)) {
@@ -745,7 +805,7 @@
   NSColor *color =  [[NSColorPanel sharedColorPanel] color];
   const osg::Vec4 c  ( [color redComponent], [color greenComponent], 
                         [color blueComponent], 1.0 );
-  _viewer->backgroundColor( c );
+  _viewer->backgroundColor( c, OsgTools::Render::Viewer::Corners::ALL );
   [self setNeedsDisplay:YES];
 }
 

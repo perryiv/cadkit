@@ -14,8 +14,7 @@
 #include "Usul/Interfaces/IComputeTriangleNormals.h"
 #include "Usul/Components/Manager.h"
 
-#include "Magrathea/Project.h"
-#include "Magrathea/Subdivide.h"
+//#include "Magrathea/Subdivide.h"
 
 #include "osg/Group"
 #include "osg/Geode"
@@ -98,6 +97,7 @@ void Polygon::_buildLatLongPoints()
 
 osg::Node* Polygon::buildPolygonData()
 {
+#if 0
   // Typedefs.
   typedef Usul::Interfaces::IComputeTriangleNormals   ComputeNormals;
   typedef ComputeNormals::Vertices                    Vertices;
@@ -151,6 +151,9 @@ osg::Node* Polygon::buildPolygonData()
   group->addChild ( geode.get() );
 
   return group.release();
+#else
+  return 0x0;
+#endif
 }
 
 

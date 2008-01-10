@@ -14,19 +14,22 @@
 #include "Minerva/Document/Export.h"
 #include "Minerva/Document/CommandSender.h"
 #include "Minerva/Document/CommandReceiver.h"
+#include "Minerva/Document/Planet.h"
+#include "Minerva/Config.h"
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Policies/Update.h"
 #include "Usul/Jobs/Job.h"
 
 #include "Usul/Interfaces/IBuildScene.h"
-#include "Usul/Interfaces/IMatrixManipulator.h"
-#include "Usul/Interfaces/ILayer.h"
-#include "Usul/Interfaces/IUpdateListener.h"
-#include "Usul/Interfaces/ILayerList.h"
-#include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/ICommandExecuteListener.h"
+#include "Usul/Interfaces/IElevationDatabase.h"
+#include "Usul/Interfaces/ILayer.h"
+#include "Usul/Interfaces/ILayerList.h"
+#include "Usul/Interfaces/IMatrixManipulator.h"
+#include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
+#include "Usul/Interfaces/IUpdateListener.h"
 
 #include "Minerva/Core/Animate/Settings.h"
 #include "Minerva/Core/Animate/TimeSpan.h"
@@ -38,20 +41,14 @@
 #include "Minerva/Interfaces/IRemoveLayer.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 
-#include "Magrathea/Planet.h"
-
 #include "MenuKit/Menu.h"
 
 #include "Serialize/XML/Macros.h"
-
-#define USE_STAR_SYSTEM 0
 
 #if USE_STAR_SYSTEM
 #include "Usul/Jobs/Manager.h"
 #include "StarSystem/System.h"
 #endif
-
-class ossimPlanetTextureLayer;
 
 namespace Usul { namespace Interfaces { struct ICommand; } }
 
@@ -71,7 +68,8 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::ILayerList,
                                                 public Usul::Interfaces::IMenuAdd,
                                                 public Usul::Interfaces::ICommandExecuteListener,
-                                                public Usul::Interfaces::IPlanetCoordinates
+                                                public Usul::Interfaces::IPlanetCoordinates,
+                                                public Usul::Interfaces::IElevationDatabase
 {
 public:
   /// Useful typedefs.
@@ -127,38 +125,19 @@ public:
 
   void                        viewLayerExtents ( Usul::Interfaces::IUnknown * layer );
 
-  void                        setLayerOperation( const std::string&, int val, Usul::Interfaces::IUnknown * layer );
-
   /// Animation methods.
   void                                     timestepType( IAnimationControl::TimestepType type );
   IAnimationControl::TimestepType          timestepType( ) const;
-  
-  void                                     startAnimationCommand();
-  void                                     stopAnimationCommand();
-  void                                     pauseAnimationCommand();
-  void                                     animationSpeedCommand ( double value );
-
-  void                                     addLayerCommand ( Usul::Interfaces::ILayer * layer );
-  void                                     removeLayerCommand ( Usul::Interfaces::ILayer * layer );
-  void                                     modifyLayerCommand ( Usul::Interfaces::ILayer * layer );
-  void                                     showLayerCommand ( Usul::Interfaces::ILayer * layer );
-  void                                     hideLayerCommand ( Usul::Interfaces::ILayer * layer );
-
-  void                                     resize ( unsigned int width, unsigned int height );
-
-  bool                                     elevationEnabled() const;
-  void                                     elevationEnabled( bool val );
-
-  bool                                     hudEnabled() const;
-  void                                     hudEnabled( bool val );
 
   bool                                     isShowLegend() const;
   void                                     showLegend( bool b );
 
+#if USE_STAR_SYSTEM == 0
   /// Get/Set the split metric.
   void                                     splitMetric ( double );
   bool                                     isSplitMetric ( double ) const;
-
+#endif
+  
   /// Get/Set the percentage of screen the legend uses.
   void                                     percentScreenWidth ( float );
   float                                    percentScreenWidth();
@@ -236,6 +215,9 @@ protected:
 
   /// Find first and last date.
   void                                     _findFirstLastDate();
+  
+  /// Make the planet.
+  void                                     _makePlanet();
 
   /// Minerva::Interfaces::IAddLayer
   virtual void                             addLayer ( Usul::Interfaces::ILayer * layer );
@@ -259,20 +241,19 @@ protected:
   virtual void                             commandExecuteNotify ( Usul::Commands::Command* command );
 
   /// Convert to planet coordinates.
-  virtual void convertToPlanetEllipsoid ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
-  virtual void convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
-  virtual void convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const;
+  virtual void                             convertToPlanetEllipsoid ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
+  virtual void                             convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
+  virtual void                             convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const;
 
+  // Get the elevation at a lat, lon (IElevationDatabase).
+  virtual double                           elevationAtLatLong ( double lat, double lon ) const;
+  
 private:
 
   Layers _layers;
   Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
-#if USE_STAR_SYSTEM
-  StarSystem::System::RefPtr _system;
-  Usul::Jobs::Manager *_manager;
-#else
-  osg::ref_ptr < Magrathea::Planet > _planet;
-#endif
+
+  Planet::RefPtr _planet;
 
   /// Command members.
   bool _commandsSend;

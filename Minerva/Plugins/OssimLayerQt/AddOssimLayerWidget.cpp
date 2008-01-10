@@ -10,15 +10,14 @@
 
 #include "Minerva/Plugins/OssimLayerQt/CompileGuard.h"
 #include "Minerva/Plugins/OssimLayerQt/AddOssimLayerWidget.h"
+#include "Minerva/Plugins/OssimLayerQt/ImageTextureLayer.h"
+#include "Minerva/Plugins/OssimLayerQt/KwlLayer.h"
 
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
 #include "Usul/Registry/Database.h"
 
 #include "Minerva/Interfaces/IAddLayer.h"
-
-#include "Magrathea/ImageTextureLayer.h"
-#include "Magrathea/KwlLayer.h"
 
 #include "QtGui/QFileDialog"
 #include "QtGui/QVBoxLayout"
@@ -129,12 +128,12 @@ void AddOssimLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
 
       if ( "kwl" == ext )
       {
-        Usul::Interfaces::ILayer::RefPtr layer ( new Magrathea::KwlLayer ( filename ) );
+        Usul::Interfaces::ILayer::RefPtr layer ( new KwlLayer ( filename ) );
         al->addLayer ( layer );
       }
       else
       {
-        Usul::Interfaces::ILayer::RefPtr layer ( new Magrathea::ImageTextureLayer ( filename ) );
+        Usul::Interfaces::ILayer::RefPtr layer ( new ImageTextureLayer ( filename ) );
         al->addLayer ( layer );
       }
     }

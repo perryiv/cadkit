@@ -8,12 +8,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Magrathea/WmsLayer.h"
+#include "Minerva/Plugins/WmsLayerQt/WmsLayer.h"
 
 #include "Usul/Functions/GUID.h"
 #include "Usul/Factory/RegisterCreator.h"
-
-using namespace Magrathea;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WmsLayer, WmsLayer::BaseClass );
 USUL_FACTORY_REGISTER_CREATOR ( WmsLayer );
@@ -215,8 +213,6 @@ Usul::Interfaces::IUnknown* WmsLayer::queryInterface(unsigned long iid)
     return static_cast < Usul::Interfaces::ILayer * > ( this );
   case Usul::Interfaces::IOssimPlanetLayer::IID:
     return static_cast < Usul::Interfaces::IOssimPlanetLayer * > ( this );
-  case Usul::Interfaces::ILayerExtents::IID:
-    return static_cast < Usul::Interfaces::ILayerExtents* > ( this );
   case Usul::Interfaces::ISerialize::IID:
     return static_cast < Usul::Interfaces::ISerialize* > ( this );
   default:

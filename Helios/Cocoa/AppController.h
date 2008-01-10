@@ -4,8 +4,9 @@
 
 @interface AppController : NSObject
 {
+  NSMutableArray *_bundles;
 }
 
 -(void)loadAllBundles;
--(NSMutableArray *) allBundles;
+-(NSMutableArray *) allBundlePaths;
 @end

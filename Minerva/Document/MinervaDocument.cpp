@@ -32,14 +32,12 @@
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Case.h"
-#include "Usul/Interfaces/IOssimPlanetLayer.h"
 #include "Usul/Interfaces/ILayerExtents.h"
-#include "Usul/Interfaces/IClonable.h"
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/ITemporalData.h"
-#include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IClippingDistance.h"
+#include "Usul/Interfaces/IVectorLayer.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/System/Host.h"
@@ -47,20 +45,6 @@
 #include "MenuKit/Button.h"
 #include "MenuKit/ToggleButton.h"
 #include "MenuKit/RadioButton.h"
-
-#if USE_STAR_SYSTEM
-#include "Usul/Network/Names.h"
-
-#include "StarSystem/BuildScene.h"
-#include "StarSystem/Extents.h"
-#include "StarSystem/LandModelEllipsoid.h"
-#include "StarSystem/LandModelFlat.h"
-#include "StarSystem/RasterLayerOssim.h"
-#include "StarSystem/RasterLayerWms.h"
-#include "StarSystem/ElevationLayerDem.h"
-#include "StarSystem/SplitCallbacks.h"
-
-#endif
 
 #include "osgText/Text"
 
@@ -82,12 +66,7 @@ USUL_IMPLEMENT_TYPE_ID ( MinervaDocument );
 MinervaDocument::MinervaDocument() : BaseClass( "Minerva Document" ),
 _layers(),
 _sceneManager ( new Minerva::Core::Scene::SceneManager ),
-#if USE_STAR_SYSTEM
-_system ( 0x0 ),
-_manager ( 0x0 ),
-#else
-_planet ( new Magrathea::Planet ),
-#endif
+_planet ( 0x0 ),
 _commandsSend ( false ),
 _commandsReceive ( false ),
 _sessionName(),
@@ -107,104 +86,6 @@ _animationSpeed ( 0.1f ),
 _timeSpanMenu ( new MenuKit::Menu ( "Time Spans" ) ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
-#if USE_STAR_SYSTEM
-  // Only make it once.
-  if ( 0x0 == _manager )
-  {
-    _manager = new Usul::Jobs::Manager ( 1, true );
-  }
-
-  // Only make it once.
-  //if ( true == _system.valid() )
-  //  return;
-
-  // Local typedefs to shorten the lines.
-  typedef StarSystem::Body Body;
-  typedef Body::Extents Extents;
-
-  // Make the system.
-  _system = new StarSystem::System ( _manager );
-
-#if 1
-  // Make the land model.
-  typedef StarSystem::LandModelEllipsoid Land;
-  Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
-  Land::RefPtr land ( new Land ( radii ) );
-#else
-  //StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 32612 ) ); // UTM 12 WGS 84
-  //StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 32212 ) ); // UTM 12 WGS 72
-  StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 26712 ) ); // UTM 12 NAD 27
-  //StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 26912 ) ); // UTM 12 NAD 83
-#endif
-  
-  // Make a good split distance.
-  const double splitDistance ( land->size() * 3 );
-
-  // Size of the mesh.
-  Body::MeshSize meshSize ( 17, 17 );
-
-  // Add the body.
-  Body::RefPtr body ( new Body ( land, _manager, meshSize, splitDistance ) );
-  body->useSkirts ( true );
-
-#if 0
-  body->splitCallback ( new StarSystem::Callbacks::SplitToLevel ( 2 ) );
-
-  static int i ( 0 );
-
-  if ( i >= 1 )
-  {
-  StarSystem::ElevationLayerDem::RefPtr dem ( new StarSystem::ElevationLayerDem );
-  dem->open ( "/Users/adam/data/terrain/maricopa_dem/mari_int.dem" );
-  //dem->open ( "c:/adam/data/terrain/maricopa_dem/mari_int.dem" );
-  body->elevationAppend ( dem );
-  
-  //StarSystem::RasterLayerOssim::RefPtr layer ( new StarSystem::RasterLayerOssim );
-  //layer->open ( "/Users/adam/data/terrain/maricopa_dem/mari_int.dem" );
-  //body->rasterAppend ( layer );
-  }
-  ++i;
-#endif
-  
-  _system->body ( body.get() );
-
-#if 1
-  // Add tiles to the body.
-  body->addTile ( Extents ( -180, -90,    0,   90 ) );
-  body->addTile ( Extents (    0, -90,  180,   90 ) );
-#endif
-  const osg::Vec2d mn ( -113.33, 32.49 );
-  const osg::Vec2d mx ( -111.04, 34.05 );
-  
-  //const osg::Vec2d mn ( -112.0, 33.0 );
-  //const osg::Vec2d mx ( -111.5, 33.5 );
-  
-  body->addTile ( Extents ( mn, mx ) );
-#if 1
-
-  {
-    const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
-
-    typedef StarSystem::RasterLayerWms::Options Options;
-    Options options;
-    options[Usul::Network::Names::LAYERS]  = "BMNG,global_mosaic";
-    options[Usul::Network::Names::STYLES]  = "Jul,visual";
-    options[Usul::Network::Names::SRS]     = "EPSG:4326";
-    options[Usul::Network::Names::REQUEST] = "GetMap";
-    options[Usul::Network::Names::FORMAT]  = "image/jpeg";
-
-    typedef StarSystem::Body::Extents Extents;
-    typedef Extents::Vertex Vertex;
-    const Extents maxExtents ( Vertex ( -180, -90 ), Vertex ( 180, 90 ) );
-
-    StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
-    _system->body()->rasterAppend ( layer.get() );
-  }
-
-#endif
-#else
-  _planet->root()->addChild( _sceneManager->root() );
-#endif
   SERIALIZE_XML_ADD_MEMBER ( _layers );
   SERIALIZE_XML_ADD_MEMBER ( _commandsSend );
   SERIALIZE_XML_ADD_MEMBER ( _commandsReceive );
@@ -212,9 +93,10 @@ SERIALIZE_XML_INITIALIZER_LIST
   SERIALIZE_XML_ADD_MEMBER ( _connection );
   SERIALIZE_XML_ADD_MEMBER ( _timeSpans );
 
+  
 #ifndef _MSC_VER
 #ifndef __APPLE__
-  //this->elevationEnabled ( false );
+
   this->showLegend ( false );
 
     
@@ -228,6 +110,7 @@ SERIALIZE_XML_INITIALIZER_LIST
   }
 #endif
 #endif
+
 }
 
 
@@ -246,26 +129,7 @@ MinervaDocument::~MinervaDocument()
   _sender = 0x0;
   _receiver = 0x0;
 
-#if USE_STAR_SYSTEM
-  // Delete the star-system.
-  _system = 0x0;
-
-  // Clean up job manager.
-  if ( 0x0 != _manager )
-  {
-    // Remove all queued jobs and cancel running jobs.
-    _manager->cancel();
-
-    // Wait for remaining jobs to finish.
-    _manager->wait();
-
-    // Delete the manager.
-    delete _manager; _manager = 0x0;
-  }
-#else
   _planet = 0x0;
-#endif
-
 }
 
 
@@ -301,6 +165,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::ICommandExecuteListener * > ( this );
   case Usul::Interfaces::IPlanetCoordinates::IID:
     return static_cast < Usul::Interfaces::IPlanetCoordinates* > ( this );
+  case Usul::Interfaces::IElevationDatabase::IID:
+    return static_cast < Usul::Interfaces::IElevationDatabase * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -341,7 +207,7 @@ bool MinervaDocument::canInsert ( const std::string &file ) const
 bool MinervaDocument::canOpen ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "minerva" || ext == "kwl" );
+  return ( ext == "minerva" );
 }
 
 
@@ -423,18 +289,14 @@ MinervaDocument::Filters MinervaDocument::filtersSave()   const
 
 void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unknown *progress )
 {
+  this->_makePlanet();
+  
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
 
   if( "minerva" == ext )
   {
     MinervaReader reader ( filename, caller, this );
     reader();
-  }
-  if( "kwl" == ext )
-  {
-#if USE_STAR_SYSTEM == 0
-    _planet->readKWL( filename );
-#endif
   }
 }
 
@@ -484,19 +346,11 @@ void MinervaDocument::clear ( Unknown *caller )
 
 osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unknown *caller )
 {
-#if USE_STAR_SYSTEM
-  osg::ref_ptr<osg::Group> group ( new osg::Group );
-  if ( _system.valid() )
-  {
-    StarSystem::BuildScene::RefPtr builder ( new StarSystem::BuildScene ( options, caller ) );
-    _system->accept ( *builder );
-    group->addChild ( builder->scene() );
-  }
+  this->_makePlanet();
+  
+  osg::ref_ptr<osg::Group> group ( _planet->buildScene() );
   group->addChild ( _sceneManager->root() );
   return group.release();
-#else
-  return _planet->root();
-#endif
 }
 
 
@@ -508,7 +362,7 @@ osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unk
 
 void MinervaDocument::viewLayerExtents ( Usul::Interfaces::IUnknown * layer )
 {
-#if USE_STAR_SYSTEM == 0
+#if 0
   Usul::Interfaces::ILayerExtents::QueryPtr extents ( layer );
   if ( extents.valid() )
   {
@@ -516,66 +370,6 @@ void MinervaDocument::viewLayerExtents ( Usul::Interfaces::IUnknown * layer )
 
     extents->layerExtents( lat, lon, height );
     _planet->gotoLocation ( lat, lon, height );
-  }
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the layer operation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::setLayerOperation( const std::string& optype, int val, Usul::Interfaces::IUnknown * layer )
-{
-#if USE_STAR_SYSTEM == 0
-  Usul::Interfaces::IOssimPlanetLayer::QueryPtr ossim ( layer );
-
-  if( ossim.valid() )
-  {
-    osg::ref_ptr < ossimPlanetTextureLayer > texture ( ossim->ossimPlanetLayer() );
-
-    if( texture.valid() )
-    { 
-      if( !_planet->hasLayerOperation( texture.get() ) )
-      {
-        _planet->addLayerOperation( texture.get() );
-        _planet->removeLayer( texture.get() );
-      }             
-
-      if( optype == "Opacity"  )
-      {            
-        float oVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
-        _planet->opacity( oVal );   
-      }
-      else if( optype == "Top" )
-      {
-        _planet->top();
-      }
-      else if( optype == "Reference" )
-      {
-        _planet->reference();
-      }
-      else if( optype == "AbsoluteDifference" )
-      {
-        _planet->absoluteDifference();
-      }
-      else if( optype == "FalseColorReplacement" )
-      {
-        _planet->falseColorReplacement();
-      }
-      else if( optype == "HorizontalSwipe" )
-      {
-        float hVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
-        _planet->horizontalSwipe( hVal );
-      }
-      else if( optype == "VerticalSwipe" )
-      {
-        float vVal = static_cast< float >( ( static_cast< float >( val ) ) / ( 100.0f ) );
-        _planet->verticalSwipe( vVal );
-      }
-    }
   }
 #endif
 }
@@ -604,130 +398,6 @@ Minerva::Interfaces::IAnimationControl::TimestepType MinervaDocument::timestepTy
 {
   Guard guard ( this->mutex () );
   return static_cast < Minerva::Interfaces::IAnimationControl::TimestepType > ( _animateSettings->timestepType() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create and execute StopAnimation command.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::animationSpeedCommand( double value )
-{
-  Minerva::Core::Commands::AnimationSpeed::RefPtr command ( new Minerva::Core::Commands::AnimationSpeed ( value ) );
-  this->_executeCommand ( command.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create and execute StartAnimation command.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::startAnimationCommand()
-{
-  Minerva::Core::Commands::StartAnimation::RefPtr command ( new Minerva::Core::Commands::StartAnimation );
-  this->_executeCommand ( command.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create and execute StopAnimation command.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::stopAnimationCommand()
-{
-  Minerva::Core::Commands::StopAnimation::RefPtr command ( new Minerva::Core::Commands::StopAnimation );
-  this->_executeCommand ( command.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create and execute PauseAnimation command.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::pauseAnimationCommand()
-{
-  Minerva::Core::Commands::PauseAnimation::RefPtr command ( new Minerva::Core::Commands::PauseAnimation );
-  this->_executeCommand ( command.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Resize.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::resize ( unsigned int w, unsigned int h )
-{
-  _sceneManager->resize( w, h );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is elevation enabled?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool MinervaDocument::elevationEnabled() const
-{
-#if USE_STAR_SYSTEM
-  return true;
-#else
-  return _planet->elevationEnabled();
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the elevation enabled flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::elevationEnabled( bool val )
-{
-#if USE_STAR_SYSTEM == 0
-  _planet->elevationEnabled( val );
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is the hud enabled?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool MinervaDocument::hudEnabled() const
-{
-#if USE_STAR_SYSTEM
-  return false;
-#else
-  return _planet->hudEnabled();
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the hud enabled flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::hudEnabled( bool val )
-{
-#if USE_STAR_SYSTEM == 0
-  _planet->hudEnabled ( val );
-#endif
 }
 
 
@@ -787,11 +457,7 @@ float MinervaDocument::percentScreenWidth()
 
 osgGA::MatrixManipulator * MinervaDocument::getMatrixManipulator ()
 {
-#if USE_STAR_SYSTEM
   return 0x0;
-#else
-  return _planet->manipulator();
-#endif
 }
 
 
@@ -825,14 +491,10 @@ void MinervaDocument::_connectToDistributedSession()
 
 void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
 {
-  Usul::Interfaces::IOssimPlanetLayer::QueryPtr ossim ( layer );
-  if( ossim.valid() )
-  {
-#if USE_STAR_SYSTEM == 0
-    _planet->removeLayer( ossim->ossimPlanetLayer() );
-#endif
-  }
-  else
+  _planet->removeLayer ( layer );
+  
+  Usul::Interfaces::IVectorLayer::QueryPtr vector ( layer );
+  if( vector.valid() )
   {
     _sceneManager->removeLayer( layer->guid() );
     _sceneManager->dirty ( true );
@@ -898,14 +560,10 @@ void MinervaDocument::_addLayer ( Usul::Interfaces::ILayer * layer )
 
   try
   {
-    Usul::Interfaces::IOssimPlanetLayer::QueryPtr ossim ( layer );
-    if( ossim.valid() )
-    {
-#if USE_STAR_SYSTEM == 0
-      _planet->addLayer( ossim->ossimPlanetLayer() );
-#endif
-    }
-    else
+    _planet->addLayer ( layer );
+    
+    Usul::Interfaces::IVectorLayer::QueryPtr vector ( layer );
+    if( vector.valid() )
     {
       if ( _sceneManager.valid () )
       {
@@ -922,86 +580,6 @@ void MinervaDocument::_addLayer ( Usul::Interfaces::ILayer * layer )
   {
     std::cout << "Error 4156147184: Unknown exception caught while trying to add a layer." << std::endl;
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add a layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::addLayerCommand ( Usul::Interfaces::ILayer * layer )
-{
-  USUL_TRACE_SCOPE;
-
-  Minerva::Core::Commands::AddLayer::RefPtr command ( new Minerva::Core::Commands::AddLayer ( layer ) );
-  this->_executeCommand ( command.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove a layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::removeLayerCommand ( Usul::Interfaces::ILayer * layer )
-{
-  USUL_TRACE_SCOPE;
-
-  Minerva::Core::Commands::RemoveLayer::RefPtr command ( new Minerva::Core::Commands::RemoveLayer ( layer ) );
-  this->_executeCommand ( command.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Modify a layer.  Does a remove and then an add.  This isn't the most
-//  efficient way of doing things, but it ensures that the scene reflects 
-//  the state of the layer.  This is especially true on the VR side.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::modifyLayerCommand ( Usul::Interfaces::ILayer * layer )
-{
-  USUL_TRACE_SCOPE;
-
-  // Remove.
-  this->removeLayerCommand ( layer );
-
-  // Add.
-  this->addLayerCommand ( layer );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Show the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::showLayerCommand ( Usul::Interfaces::ILayer * layer )
-{
-  USUL_TRACE_SCOPE;
-
-  Minerva::Core::Commands::ShowLayer::RefPtr command ( new Minerva::Core::Commands::ShowLayer ( layer ) );
-  this->_executeCommand ( command.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Hide the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::hideLayerCommand ( Usul::Interfaces::ILayer * layer )
-{
-  USUL_TRACE_SCOPE;
-
-  Minerva::Core::Commands::HideLayer::RefPtr command ( new Minerva::Core::Commands::HideLayer ( layer ) );
-  this->_executeCommand ( command.get() );
 }
 
 
@@ -1201,11 +779,9 @@ bool MinervaDocument::showPastEvents () const
 void MinervaDocument::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-#if USE_STAR_SYSTEM
-  _system->preRender ( caller );
-#else
+
   _planet->preRender ( caller );
-#endif
+
   BaseClass::preRenderNotify ( caller );
 }
 
@@ -1219,11 +795,9 @@ void MinervaDocument::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
 void MinervaDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-#if USE_STAR_SYSTEM
-  _system->postRender ( caller );
-#else
+
   _planet->postRender ( caller );
-#endif
+
   BaseClass::postRenderNotify ( caller );
 }
 
@@ -1247,10 +821,8 @@ void MinervaDocument::addView ( Usul::Interfaces::IView *view )
     cd->setClippingDistances ( 0.001, 15 );
 #endif
   
-#if USE_STAR_SYSTEM == 0
   // Initalize the OSG visitors.
   _planet->initVisitors ( view );
-#endif
 }
 
 
@@ -1630,6 +1202,7 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   this->_buildTimeSpanMenu();
   m->append ( _timeSpanMenu.get() );
 
+#if USE_STAR_SYSTEM == 0
   MenuKit::Menu::RefPtr split ( new MenuKit::Menu ( "Split Metric" ) );
   split->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "1", 
                                                                           Usul::Adaptors::bind1<void> ( 1.0, Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::splitMetric ) ), 
@@ -1648,7 +1221,8 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
                                                                           Usul::Adaptors::bind1<bool> ( 9.0, Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isSplitMetric ) ) ) ) );
 
   m->append ( split.get() );
-
+#endif
+  
   m->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Show Legend", 
                                                                           Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::showLegend ), 
                                                                           Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isShowLegend ) ) ) );
@@ -1740,6 +1314,7 @@ void MinervaDocument::_findFirstLastDate()
 }
 
 
+#if USE_STAR_SYSTEM == 0
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the split metric.
@@ -1748,9 +1323,7 @@ void MinervaDocument::_findFirstLastDate()
 
 void MinervaDocument::splitMetric ( double value )
 {
-#if USE_STAR_SYSTEM == 0
   _planet->splitMetric ( value );
-#endif
 }
 
 
@@ -1762,12 +1335,9 @@ void MinervaDocument::splitMetric ( double value )
 
 bool MinervaDocument::isSplitMetric ( double value ) const
 {
-#if USE_STAR_SYSTEM
-  return false;
-#else
   return value == _planet->splitMetric();
-#endif
 }
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1785,25 +1355,7 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
     _sceneManager->dirty ( false );
   }
 
-  Usul::Interfaces::ITextMatrix::QueryPtr tm ( caller );
-  if ( tm.valid() )
-  {
-    std::ostringstream os;
-#if USE_STAR_SYSTEM
-    const unsigned int queued    ( ( 0x0 == _manager ) ? 0 : _manager->numJobsQueued() );
-    const unsigned int executing ( ( 0x0 == _manager ) ? 0 : _manager->numJobsExecuting() );
-    const unsigned int total     ( queued + executing );
-
-    const std::string out ( ( total > 0 ) ? ( Usul::Strings::format ( "Queued: ", queued, ", Running: ", executing ) ) : "" );
-    os << out;
-#else
-    const unsigned int requests  ( _planet->databasePager()->getFileRequestListSize()   );
-
-    os << ( ( requests > 0 ) ? Usul::Strings::format ( "Requests: ", requests ) : "" );
-#endif
-    std::string text ( os.str() );
-    tm->setText ( 15, 15, text, osg::Vec4f ( 1.0, 1.0, 1.0, 1.0 ) );
-  }
+  _planet->updateScene( caller );
 }
 
 
@@ -1826,16 +1378,7 @@ void MinervaDocument::convertToPlanetEllipsoid ( const Usul::Math::Vec3d& orgina
 
 void MinervaDocument::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
 {
-#if USE_STAR_SYSTEM
-  osg::Vec3f out;
-  _system->body()->latLonHeightToXYZ ( orginal[1], orginal[0], orginal[2], out );
-#else
-  const osg::Vec3d in ( orginal[1], orginal[0], orginal[2] );
-  osg::Vec3d out;
-
-  _planet->landModel()->forward( in, out );
-#endif
-  planetPoint.set ( out[0], out[1], out[2] );
+  _planet->convertToPlanet ( orginal, planetPoint );
 }
 
 
@@ -1847,14 +1390,33 @@ void MinervaDocument::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::
 
 void MinervaDocument::convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const
 {
-#if USE_STAR_SYSTEM
-  _system->body()->xyzToLatLonHeight ( osg::Vec3f ( planetPoint[0], planetPoint[1], planetPoint[2] ), latLonPoint[1], latLonPoint[0], latLonPoint[2] );
-#else
-  const osg::Vec3d in ( planetPoint[0], planetPoint[1], planetPoint[2] );
-  osg::Vec3d out;
+  _planet->convertFromPlanet ( planetPoint, latLonPoint );
+}
 
-  _planet->landModel()->inverse( in, out );
 
-  latLonPoint.set ( out[1], out[0], out[2] );
-#endif
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the elevation at a lat, lon (IElevationDatabase).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double MinervaDocument::elevationAtLatLong ( double lat, double lon ) const
+{
+  return _planet->elevationAtLatLong( lat, lon );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make the planet.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_makePlanet()
+{
+  // Only make it once.
+  if ( _planet.valid() )
+    return;
+  
+  _planet = new Planet;
 }

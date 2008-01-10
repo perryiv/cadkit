@@ -19,6 +19,7 @@
 #include "XmlTree/Export.h"
 
 #include "Usul/Base/Referenced.h"
+#include "Usul/Convert/Convert.h"
 #include "Usul/Pointers/Pointers.h"
 
 #include <string>

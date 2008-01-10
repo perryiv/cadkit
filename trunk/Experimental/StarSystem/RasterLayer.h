@@ -17,6 +17,8 @@
 #include "Serialize/XML/Macros.h"
 
 #include "Usul/Base/Object.h"
+#include "Usul/Interfaces/ILayer.h"
+#include "Usul/Interfaces/IRasterLayer.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Predicates/LessVector.h"
 
@@ -34,7 +36,9 @@ namespace Usul { namespace Jobs { class Job; } }
 namespace StarSystem {
 
 
-class STAR_SYSTEM_EXPORT RasterLayer : public Usul::Base::Object
+class STAR_SYSTEM_EXPORT RasterLayer : public Usul::Base::Object,
+  public Usul::Interfaces::ILayer,
+  public Usul::Interfaces::IRasterLayer
 {
 public:
 
@@ -47,6 +51,8 @@ public:
   typedef osg::ref_ptr < osg::Image > ImagePtr;
 
   USUL_DECLARE_REF_POINTERS ( RasterLayer );
+  
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   RasterLayer();
 
@@ -61,7 +67,18 @@ public:
   Extents               extents () const;
 
   /// Get the texture.
-  virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * ) = 0;
+  virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * ) = 0;
+  
+  /// Get the guid for the layer.
+  virtual std::string   guid() const;
+  
+  /// Get/Set the name.
+  virtual std::string   name() const;
+  virtual void          name( const std::string& );
+  
+  /// Get/Set show layer
+  virtual void          showLayer ( bool b );
+  virtual bool          showLayer() const;
 
 protected:
 
@@ -73,6 +90,9 @@ private:
 
   Extents _extents;
   Alphas _alphas;
+  std::string _guid;
+  std::string _name;
+  bool _shown;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS ( RasterLayer );

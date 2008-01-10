@@ -12,6 +12,7 @@
 #define __ADD_WMS_LAYER_WIDGET_H__
 
 #include "Minerva/Plugins/WmsLayerQt/CompileGuard.h"
+#include "Minerva/Plugins/WmsLayerQt/ui_WmsWidget.h"
 
 #include "QtGui/QWidget"
 
@@ -23,7 +24,8 @@ class QButtonGroup;
 
 namespace Usul { namespace Interfaces { struct IUnknown; } }
 
-class AddWmsLayerWidget : public QWidget
+class AddWmsLayerWidget : public QWidget,
+                          private Ui::WmsWidget
 {
   Q_OBJECT;
 public:
@@ -35,12 +37,9 @@ public:
   void apply ( Usul::Interfaces::IUnknown * caller );
 
 protected slots:
-  void _browseDirectory ();
+  void on_browseDirectory_clicked();
 
 private:
-  QLineEdit *_name;
-  QLineEdit *_server;
-  QLineEdit *_cacheDirectory;
   QButtonGroup *_imageTypes;
 };
 

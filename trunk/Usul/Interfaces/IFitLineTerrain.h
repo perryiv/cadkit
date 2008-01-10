@@ -32,7 +32,7 @@ struct IFitLineTerrain : public Usul::Interfaces::IUnknown
   typedef Usul::Math::Vec3d                Vertex;
   typedef std::vector < Vertex >           Vertices;
 
-  virtual void resample ( const Vertices& input, Vertices& output, unsigned int maximumDepth ) = 0;
+  virtual void resample ( const Vertices& input, Vertices& output, unsigned int maximumDepth, Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
 
 }; // struct IFitLineTerrain
 

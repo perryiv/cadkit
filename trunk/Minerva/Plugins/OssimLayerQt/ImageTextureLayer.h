@@ -11,8 +11,6 @@
 #ifndef __MAGRATHEA_IMAGE_TEXTURE_LAYER_H__
 #define __MAGRATHEA_IMAGE_TEXTURE_LAYER_H__
 
-#include "Magrathea/Export.h"
-
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/ILayer.h"
@@ -24,12 +22,10 @@
 
 #include "ossimPlanet/ossimPlanetOssimImageLayer.h"
 
-namespace Magrathea {
 
-class MAGRATHEA_EXPORT ImageTextureLayer : public Usul::Base::Referenced,
+class ImageTextureLayer : public Usul::Base::Referenced,
                                            public Usul::Interfaces::ILayer,
                                            public Usul::Interfaces::IOssimPlanetLayer,
-                                           public Usul::Interfaces::ILayerExtents,
                                            public Usul::Interfaces::ISerialize
 {
 public:
@@ -45,8 +41,9 @@ public:
 
   const std::string&                       filename() const;
 
-  /// Get the name.
+  /// Get/Set the name.
   virtual std::string                      name() const;
+  virtual void                             name ( const std::string& name );
 
   /// Get/Set show layer
   virtual void                             showLayer( bool b );
@@ -59,11 +56,10 @@ protected:
 
   virtual ossimPlanetTextureLayer*         ossimPlanetLayer();
 
-  virtual void                             layerExtents ( double &lat, double &lon, double& height ) const;
-
 private:
   std::string _guid;
   std::string _filename;
+  std::string _name;
   osg::ref_ptr < ossimPlanetOssimImageLayer > _ossimTextureLayer;
 
   SERIALIZE_XML_DEFINE_MAP;
@@ -73,6 +69,5 @@ private:
   SERIALIZE_XML_ADD_MEMBER_FUNCTION
 };
 
-}
 
 #endif // __MAGRATHEA_IMAGE_TEXTURE_LAYER_H__

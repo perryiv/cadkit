@@ -151,7 +151,7 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * )
+osg::Image* RasterLayerWms::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * )
 {
   USUL_TRACE_SCOPE;
 
@@ -209,7 +209,7 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
   }
 
   // Return image, which may be null.
-  return image;
+  return image.release();
 }
 
 

@@ -35,7 +35,7 @@ public:
   void                  open ( const std::string& );
 
   /// Get the texture
-  virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * );
+  virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * );
 
   /// Deserialize.
   virtual void          deserialize ( const XmlTree::Node &node );

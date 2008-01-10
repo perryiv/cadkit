@@ -4,7 +4,7 @@
 //  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Created by: Adam Kubach
+//  Author: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -24,10 +24,14 @@ struct ILayerExtents : public Usul::Interfaces::IUnknown
 
   /// Id for this interface.
   enum { IID = 3529785747u };
-
+  
   /// Get the extents.
-  virtual void               layerExtents ( double &lat, double &lon, double& height ) const = 0;
-
+  virtual double             minLon() const = 0;
+  virtual double             minLat() const = 0;
+  
+  virtual double             maxLon() const = 0;
+  virtual double             maxLat() const = 0;
+  
 }; // struct ILayerExtents
 
 

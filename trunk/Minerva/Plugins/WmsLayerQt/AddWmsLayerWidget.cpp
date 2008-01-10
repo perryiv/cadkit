@@ -10,10 +10,9 @@
 
 #include "Minerva/Plugins/WmsLayerQt/CompileGuard.h"
 #include "Minerva/Plugins/WmsLayerQt/AddWmsLayerWidget.h"
+#include "Minerva/Plugins/WmsLayerQt/WmsLayer.h"
 
 #include "Minerva/Interfaces/IAddLayer.h"
-
-#include "Magrathea/WmsLayer.h"
 
 #include "Usul/Documents/Manager.h"
 
@@ -36,65 +35,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
-_name ( 0x0 ),
-_server ( 0x0 ),
-_cacheDirectory ( 0x0 ),
 _imageTypes ( 0x0 )
 {  
-  QVBoxLayout *topLayout ( new QVBoxLayout );
-  this->setLayout ( topLayout );
- 
-  // The name field.
-  {
-    QHBoxLayout *layout0 ( new QHBoxLayout );
-    _name = new QLineEdit ( this );
-    layout0->addWidget ( new QLabel ( "Name:" ) );
-    layout0->addWidget ( _name );
-    topLayout->addLayout ( layout0 );
-  }
+  this->setupUi ( this );
 
-  // The server field.
-  {
-    QHBoxLayout *layout0 ( new QHBoxLayout );
-    QLabel *serverLabel ( new QLabel ( "Server:" ) );
-    _server = new QLineEdit ( this );
-    layout0->addWidget ( serverLabel );
-    layout0->addWidget ( _server );
-    topLayout->addLayout ( layout0 );
-  }
-
-  // The cache field.
-  {
-    QHBoxLayout *layout1 ( new QHBoxLayout );
-
-    QLabel *cacheLabel  ( new QLabel ( "Cache Directory:" ) );
-    layout1->addWidget ( cacheLabel );
-
-    _cacheDirectory = new QLineEdit ( this );
-    layout1->addWidget ( _cacheDirectory );
-
-    QPushButton *button ( new QPushButton ( "Browse" ) );
-
-    connect ( button, SIGNAL ( clicked() ), this, SLOT ( _browseDirectory () ) );
-    layout1->addWidget ( button );
-
-    topLayout->addLayout ( layout1 );
-  }
-  
   _imageTypes = new QButtonGroup;
-  QRadioButton *jpeg ( new QRadioButton ( "image/jpeg" ) );
-  jpeg->setChecked ( true );
-  QRadioButton *png  ( new QRadioButton ( "image/png" ) );
 
-  _imageTypes->addButton ( jpeg );
-  _imageTypes->addButton ( png );
-
-  QVBoxLayout *layout2 ( new QVBoxLayout );
-  layout2->addWidget ( jpeg );
-  layout2->addWidget ( png );
-
-  topLayout->addLayout ( layout2 );
-  topLayout->addStretch();
+  _imageTypes->addButton ( _jpegButton );
+  _imageTypes->addButton ( _pngButton );
 }
 
 
@@ -128,7 +76,7 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
   // Make sure we have a server and cache directory.
   if ( false == server.empty () && false == cacheDirectory.empty () )
   {
-    Magrathea::WmsLayer::RefPtr layer ( new Magrathea::WmsLayer );
+    WmsLayer::RefPtr layer ( new WmsLayer );
     layer->server ( server );
     layer->cacheDirectory ( cacheDirectory );
 
@@ -153,7 +101,7 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddWmsLayerWidget::_browseDirectory ()
+void AddWmsLayerWidget::on_browseDirectory_clicked ()
 {
   QString dir ( QFileDialog::getExistingDirectory ( this, tr ( "Cache Directory" ),
                                                     _cacheDirectory->text(),

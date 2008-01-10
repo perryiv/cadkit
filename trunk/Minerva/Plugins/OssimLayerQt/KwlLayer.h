@@ -8,28 +8,23 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MAGRATHEA_KWL_LAYER_H__
-#define __MAGRATHEA_KWL_LAYER_H__
-
-#include "Magrathea/Export.h"
+#ifndef __MINERVA_KWL_LAYER_H__
+#define __MINERVA_KWL_LAYER_H__
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IOssimPlanetLayer.h"
-#include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ISerialize.h"
 
 #include "Serialize/XML/Macros.h"
 
 #include "ossimPlanet/ossimPlanetTextureLayer.h"
 
-namespace Magrathea {
 
-class MAGRATHEA_EXPORT KwlLayer : public Usul::Base::Referenced,
+class KwlLayer : public Usul::Base::Referenced,
                                   public Usul::Interfaces::ILayer,
                                   public Usul::Interfaces::IOssimPlanetLayer,
-                                  public Usul::Interfaces::ILayerExtents,
                                   public Usul::Interfaces::ISerialize
 {
 public:
@@ -49,8 +44,9 @@ public:
   void                               filename ( const std::string& filename );
   const std::string&                 filename () const;
 
-  /// Get the name.
+  /// Get/Set the name.
   virtual std::string                name() const;
+  virtual void                       name( const std::string& );
 
   /// Get/Set show layer
   virtual void                       showLayer( bool b );
@@ -77,6 +73,5 @@ private:
   SERIALIZE_XML_ADD_MEMBER_FUNCTION
 };
 
-}
 
-#endif // __MAGRATHEA_KWL_LAYER_H__
+#endif // __MINERVA_KWL_LAYER_H__

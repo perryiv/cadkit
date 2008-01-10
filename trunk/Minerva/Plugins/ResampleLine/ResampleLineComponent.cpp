@@ -15,10 +15,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Plugins/ResampleLine/ResampleLineComponent.h"
+#include "Minerva/Plugins/ResampleLine/Resample.h"
 
 #include "Usul/Components/Factory.h"
-
-#include "Magrathea/Resample.h"
 
 USUL_DECLARE_COMPONENT_FACTORY ( ResampleLineComponent );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ResampleLineComponent, ResampleLineComponent::BaseClass );
@@ -67,7 +66,6 @@ Usul::Interfaces::IUnknown *ResampleLineComponent::queryInterface ( unsigned lon
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Usul::Interfaces::IPlugin implementation
@@ -80,7 +78,13 @@ std::string ResampleLineComponent::getPluginName() const
 }
 
 
-void ResampleLineComponent::resample ( const Vertices& input, Vertices& output, unsigned int maximumDepth )
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Resample line to fit over terrain.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ResampleLineComponent::resample ( const Vertices& input, Vertices& output, unsigned int maximumDepth, Usul::Interfaces::IUnknown *caller )
 {
-  Magrathea::resample( input, output, maximumDepth );
+  Detail::resample( input, output, maximumDepth, caller );
 }

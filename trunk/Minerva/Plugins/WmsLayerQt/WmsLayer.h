@@ -11,25 +11,20 @@
 #ifndef __MAGRATHEA_WMS_LAYER_H__
 #define __MAGRATHEA_WMS_LAYER_H__
 
-#include "Magrathea/Export.h"
-
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IOssimPlanetLayer.h"
-#include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ISerialize.h"
 
 #include "Serialize/XML/Macros.h"
 
 #include "ossimPlanet/ossimPlanetWmsImageLayer.h"
 
-namespace Magrathea {
 
-class MAGRATHEA_EXPORT WmsLayer : public Usul::Base::Referenced,
+class WmsLayer : public Usul::Base::Referenced,
                                   public Usul::Interfaces::ILayer,
                                   public Usul::Interfaces::IOssimPlanetLayer,
-                                  public Usul::Interfaces::ILayerExtents,
                                   public Usul::Interfaces::ISerialize
 {
 public:
@@ -90,6 +85,5 @@ private:
   SERIALIZE_XML_ADD_MEMBER_FUNCTION
 };
 
-}
 
 #endif // __MAGRATHEA_WMS_LAYER_H__

@@ -43,7 +43,7 @@ public:
 
   void                            append ( RasterLayer* layer );
 
-  virtual ImagePtr                texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * );
+  virtual osg::Image*             texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * );
 
 protected:
 

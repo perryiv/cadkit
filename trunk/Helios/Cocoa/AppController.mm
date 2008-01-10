@@ -1,4 +1,11 @@
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2005, Mike Jackson
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
 
 #import "AppController.h"
 #import "Foundation/NSPathUtilities.h"
@@ -6,13 +13,12 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/App/Controller.h"
 #include "Usul/Threads/Mutex.h"
+#include "Usul/Threads/Manager.h"
+
 #include "Threads/OpenThreads/Mutex.h"
-
-
-
+#include "Threads/OpenThreads/Thread.h"
 
 @implementation AppController
-
 
 
 // -----------------------------------------------------------------------------
@@ -40,11 +46,20 @@
   return ( doc != nil);
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The application has finished loading.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 - (void)applicationWillFinishLaunching:(NSNotification *)aNotification
 {
   NSLog (@"applicationWillFinishLaunching");
-  //Set the Thread Mutex...
+  
+  // Set for multi threading.
   Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
+  Usul::Threads::Manager::instance().factory ( &Threads::OT::newOpenThreadsThread );
 
   [self loadAllBundles];
   
@@ -58,6 +73,7 @@
   
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Load all the bundles
@@ -67,47 +83,60 @@
 
 -(void) loadAllBundles
 {
-    NSMutableArray *instances;                                         // 1
-    NSMutableArray *bundlePaths;
-    NSEnumerator *pathEnum;
-    NSString *currPath;
-    NSBundle *currBundle;
-    Class currPrincipalClass;
-    id currInstance;
+  //NSBundle *currBundle;
+  //Class currPrincipalClass;
+  //id currInstance;
 
-    bundlePaths = [NSMutableArray array];
+  NSMutableArray *bundlePaths = [NSMutableArray array];
 
-    if(!instances)
+  // Initalize the list of bundles
+  if( nil == _bundles)
+  {
+    _bundles = [[NSMutableArray alloc] init];
+  }
+
+  // Get all the bundle paths.  The filenames will end in .bundle
+  [bundlePaths addObjectsFromArray:[self allBundlePaths]];
+
+  // Enumerator to loop over every path.
+  NSEnumerator *pathEnum = [bundlePaths objectEnumerator];
+  
+  NSString *currPath = nil;
+
+  // For each path...
+  while(currPath = [pathEnum nextObject])
+  {
+    // Get the bundle.
+    NSBundle *bundle = [NSBundle bundleWithPath:currPath];
+    
+    // Make sure it's valid.
+    if ( nil != bundle )
     {
-        instances = [[NSMutableArray alloc] init];
+      // Load the bundle.
+      [bundle load];
+      [_bundles addObject:bundle];
     }
+    
+    #if 0
+    currBundle = [NSBundle bundleWithPath:currPath];               // 3
 
-    [bundlePaths addObjectsFromArray:[self allBundles]];               // 2
-
-    pathEnum = [bundlePaths objectEnumerator];
-
-    while(currPath = [pathEnum nextObject])
+    if(currBundle)
     {
-
-        currBundle = [NSBundle bundleWithPath:currPath];               // 3
-
-        if(currBundle)
+      currPrincipalClass = [currBundle principalClass];          // 4
+      if(currPrincipalClass)
+      {
+        currInstance = [[currPrincipalClass alloc] init];      // 5
+        if(currInstance)
         {
-            currPrincipalClass = [currBundle principalClass];          // 4
-            if(currPrincipalClass)
-            {
-                currInstance = [[currPrincipalClass alloc] init];      // 5
-                if(currInstance)
-
-                {
-                    [instances addObject:[currInstance autorelease]];
-                }
-            }
+          [instances addObject:[currInstance autorelease]];
         }
+      }
     }
+    #endif
+  }
 }
 
--(NSMutableArray *) allBundles
+-(NSMutableArray *) allBundlePaths
 {
   NSArray *librarySearchPaths;
   NSEnumerator *searchPathEnum;
@@ -136,22 +165,23 @@
 
   while(currPath = [searchPathEnum nextObject])
   {
-     NSDirectoryEnumerator *bundleEnum;
-     NSString *currBundlePath;
+    NSDirectoryEnumerator *bundleEnum;
+    NSString *currBundlePath;
 
-     bundleEnum = [[NSFileManager defaultManager]
+    bundleEnum = [[NSFileManager defaultManager]
            enumeratorAtPath:currPath];
 
-     if(bundleEnum)
-     {
-       while(currBundlePath = [bundleEnum nextObject])
-       {
-         if([[currBundlePath pathExtension] isEqualToString:ext])
-          {
-            [allBundles addObject:[currPath
-                           stringByAppendingPathComponent:currBundlePath]];
-          }
-       }
+    if(bundleEnum)
+    {
+      while(currBundlePath = [bundleEnum nextObject])
+      {
+        if([[currBundlePath pathExtension] isEqualToString:ext])
+        {
+          [allBundles addObject:[currPath
+                      stringByAppendingPathComponent:currBundlePath]];
+          
+        }
+      }
     }
   }
 

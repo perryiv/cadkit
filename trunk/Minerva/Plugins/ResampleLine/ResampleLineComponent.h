@@ -46,7 +46,7 @@ public:
   
 protected:
 
-  virtual void resample ( const Vertices& input, Vertices& output, unsigned int maximumDepth );
+  virtual void resample ( const Vertices& input, Vertices& output, unsigned int maximumDepth, Usul::Interfaces::IUnknown *caller = 0x0 );
 
   /// Return name of plugin.
   virtual std::string           getPluginName() const;
@@ -58,6 +58,5 @@ protected:
   /// Use reference counting.
   virtual ~ResampleLineComponent();
 };
-
 
 #endif // _RESAMPLE_LINE_H_

@@ -8,19 +8,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MAGRATHEA_RESAMPLE_H__
-#define __MAGRATHEA_RESAMPLE_H__
+#ifndef __MINERVA_RESAMPLE_H__
+#define __MINERVA_RESAMPLE_H__
 
 #include "Usul/Math/Absolute.h"
-
-#include "ossim/base/ossimConstants.h"
-#include "ossim/base/ossimGpt.h"
-#include "ossim/base/ossimGeoidManager.h"
-#include "ossim/elevation/ossimElevManager.h"
+#include "Usul/Interfaces/IElevationDatabase.h"
 
 #include <algorithm>
 
-namespace Magrathea
+namespace Detail
 {
   template < typename Point >
   struct ParametricPoint
@@ -39,7 +35,7 @@ namespace Magrathea
 
 
   template < typename Point, typename ParmetricPoints >
-  void bisect ( Point &point0, Point &point2, ParmetricPoints& answer, unsigned int depth, unsigned int maximumDepth )
+  void bisect ( Point &point0, Point &point2, ParmetricPoints& answer, unsigned int depth, unsigned int maximumDepth, Usul::Interfaces::IUnknown *caller )
   {
     if( depth > maximumDepth )
       return;
@@ -51,35 +47,28 @@ namespace Magrathea
     double height1 ( ( point0.p[2] + point2.p[2] ) * 0.50 );
 
     // Calculate the height of the mid-point.
-    
-    ossimGpt p1 ( lat1, lon1 );
-    double deltaH(  ossimElevManager::instance()->getHeightAboveMSL( p1 ) );
-    if( ossim::isnan (deltaH))
-    {
-      deltaH = 0.0;
-    }
-
-    p1.height( deltaH + ossimGeoidManager::instance()->offsetFromEllipsoid( p1 ) );
+    Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
+    const double height ( ( elevation.valid() ) ? elevation->elevationAtLatLong ( lat1, lon1 ) : 0.0 );
 
     /// one cm resolution
-    double errorFactor ( 0.01 );
+    const double errorFactor ( 0.01 );
 
-    if( Usul::Math::absolute ( p1.height() - height1 ) < errorFactor )
+    if( Usul::Math::absolute ( height - height1 ) < errorFactor )
       return;
 
     Point midPoint;
-    midPoint.p = typename Point::PointType ( p1.lon, p1.lat, p1.hgt );
+    midPoint.p = typename Point::PointType ( lon1, lat1, height );
     midPoint.u = u1;
 
     answer.push_back ( midPoint );
 
     ++depth;
-    bisect ( point0, midPoint, answer, depth + 1, maximumDepth );
-    bisect ( midPoint, point2, answer, depth + 1, maximumDepth );
+    bisect ( point0, midPoint, answer, depth + 1, maximumDepth, caller );
+    bisect ( midPoint, point2, answer, depth + 1, maximumDepth, caller );
   }
 
   template < typename Points >
-  void resample ( const Points& input, Points& output, unsigned int maximumDepth = 5 )
+  void resample ( const Points& input, Points& output, unsigned int maximumDepth, Usul::Interfaces::IUnknown *caller )
   {
     // Return if no input.
     if( input.empty() )
@@ -122,7 +111,7 @@ namespace Magrathea
       unsigned int depth ( 0 );
 
       // bisect.
-      bisect ( point0, point1, points, depth, 5 );
+      bisect ( point0, point1, points, depth, maximumDepth, caller );
     }
 
     std::sort ( points.begin(), points.end() );
@@ -140,4 +129,4 @@ namespace Magrathea
 }
 
 
-#endif //__MAGRATHEA_RESAMPLE_H__
+#endif //__MINERVA_RESAMPLE_H__

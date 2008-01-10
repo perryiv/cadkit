@@ -20,6 +20,8 @@
 
 #include <algorithm>
 
+USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_4 ( osg::Vec4 );
+USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_4 ( osg::Vec4 );
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 
 using namespace Minerva::Core::Layers;

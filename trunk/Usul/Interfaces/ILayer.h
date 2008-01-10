@@ -30,8 +30,9 @@ struct ILayer : public Usul::Interfaces::IUnknown
   /// Return by copy incase a guid is hard coded.
   virtual std::string                 guid() const = 0;
 
-  /// Get the name.
+  /// Get/Set the name.
   virtual std::string                 name() const = 0;
+  virtual void                        name( const std::string& ) = 0;
 
   /// Get/Set show layer
   virtual void                        showLayer ( bool b ) = 0;

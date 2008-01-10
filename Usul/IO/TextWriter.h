@@ -25,6 +25,7 @@ namespace Usul {
 namespace IO {
 namespace Text {
 
+struct Writer;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -40,7 +41,23 @@ namespace Helper
   };
 }
 
-
+  
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Text writer class that uses maximum floating point precision.
+//
+///////////////////////////////////////////////////////////////////////////////
+  
+struct Writer
+{
+  template < class T > static void write ( std::ostream &out, const T &t )
+  {
+    Usul::Scope::Stream::MaxFloatPrecision<T> precision ( out );
+    Helper::WriterType<T>::write ( out, t );
+  }
+};
+  
+  
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Write a scalar.
@@ -139,22 +156,6 @@ namespace Helper
     Writer::write ( out, m ( 3, 3 ) );
   }
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Text writer class that uses maximum floating point precision.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-struct Writer
-{
-  template < class T > static void write ( std::ostream &out, const T &t )
-  {
-    Usul::Scope::Stream::MaxFloatPrecision<T> precision ( out );
-    Helper::WriterType<T>::write ( out, t );
-  }
-};
 
 
 } // namespace Text

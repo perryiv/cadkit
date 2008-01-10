@@ -53,7 +53,6 @@ protected:
   /// Project to lat/lon with elevation using given spatial reference id.
   virtual void                  projectToSpherical ( const Usul::Math::Vec3d& orginal, unsigned int srid, Usul::Math::Vec3d& latLonPoint ) const;
 
-  virtual void                  convertToPlanetEllipsoid ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
   virtual void                  convertToPlanet   ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
   virtual void                  convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const;
 

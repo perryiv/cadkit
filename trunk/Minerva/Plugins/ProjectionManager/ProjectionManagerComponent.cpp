@@ -155,28 +155,6 @@ void ProjectionManagerComponent::projectToSpherical ( const Usul::Math::Vec3d& o
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Project to planet coordinates.  Values are not normalized.
-//  Note: Longitude is x and latidute is y.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ProjectionManagerComponent::convertToPlanetEllipsoid ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
-{
-  ossimEcefPoint ecef;
-  ossimGpt dummy;
-  ecef = dummy;
-
-  ossimGpt gpt ( orginal[1], orginal[0], orginal[2] );
-
-  ecef = gpt;
-  planetPoint[0] = ecef.x();
-  planetPoint[1] = ecef.y();
-  planetPoint[2] = ecef.z();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Project to planet coordinates.  Values are normalized.
 //  Note: Longitude is x and latidute is y.
 //
@@ -187,15 +165,14 @@ void ProjectionManagerComponent::convertToPlanet ( const Usul::Math::Vec3d& orgi
   ossimEcefPoint ecef;
   ossimGpt dummy;
   ecef = dummy;
-  double normalizationFactor = ecef.getMagnitude();
 
   ossimGpt gpt ( orginal[1], orginal[0], orginal[2] );
 
   // Transform to ossimPlanet coordinates
   ecef = gpt;
-  planetPoint[0] = ecef.x()/normalizationFactor;
-  planetPoint[1] = ecef.y()/normalizationFactor;
-  planetPoint[2] = ecef.z()/normalizationFactor;
+  planetPoint[0] = ecef.x();
+  planetPoint[1] = ecef.y();
+  planetPoint[2] = ecef.z();
 }
 
 
@@ -210,9 +187,8 @@ void ProjectionManagerComponent::convertFromPlanet ( const Usul::Math::Vec3d& pl
   ossimEcefPoint ecef;
   ossimGpt dummy;
   ecef = dummy;
-  double normalizationFactor = ecef.getMagnitude();
 
-  ecef = ossimEcefPoint( planetPoint [ 0 ] * normalizationFactor, planetPoint [ 1 ] * normalizationFactor, planetPoint [ 2 ] * normalizationFactor );
+  ecef = ossimEcefPoint( planetPoint [ 0 ], planetPoint [ 1 ], planetPoint [ 2 ] );
 
   ossimGpt gpt ( ecef );
 

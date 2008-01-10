@@ -1365,17 +1365,6 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::convertToPlanetEllipsoid ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Convert to planet coordinates.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void MinervaDocument::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
 {
   _planet->convertToPlanet ( orginal, planetPoint );

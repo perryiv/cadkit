@@ -1,4 +1,3 @@
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2007, Arizona State University
@@ -241,7 +240,6 @@ protected:
   virtual void                             commandExecuteNotify ( Usul::Commands::Command* command );
 
   /// Convert to planet coordinates.
-  virtual void                             convertToPlanetEllipsoid ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
   virtual void                             convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
   virtual void                             convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const;
 

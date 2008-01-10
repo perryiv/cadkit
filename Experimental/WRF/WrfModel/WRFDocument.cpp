@@ -1286,7 +1286,7 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
 
     double height ( (_z * _cellSize [ 2 ] ) / 2.0 );
 
-    pc->convertToPlanetEllipsoid ( Usul::Math::Vec3d ( center [ 1 ], center [ 0 ], height ), translate );
+    pc->convertToPlanet ( Usul::Math::Vec3d ( center [ 1 ], center [ 0 ], height ), translate );
 
     // Matrix to translate the proper location.
     const osg::Matrix T ( osg::Matrix::translate ( translate [ 0 ], translate [ 1 ], translate [ 2 ] ) );
@@ -1303,7 +1303,7 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
 
     // Calculate the north vector.
     Usul::Math::Vec3d v1;
-    pc->convertToPlanetEllipsoid ( Usul::Math::Vec3d ( center [ 1 ], center [ 0 ] + 0.1, height ), v1 );
+    pc->convertToPlanet ( Usul::Math::Vec3d ( center [ 1 ], center [ 0 ] + 0.1, height ), v1 );
     Usul::Math::Vec3d diff ( v1 - translate );
     diff.normalize();
 

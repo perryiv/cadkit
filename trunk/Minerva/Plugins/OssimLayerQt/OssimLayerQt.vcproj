@@ -79,11 +79,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib"
+				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib ossimd.lib ossimPlanetd.lib osgd.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/OssimLayerQt.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(QTDIR)/lib"
+				AdditionalLibraryDirectories="$(QTDIR)/lib;$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR);$(OSG_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug\OssimLayerQtd.pdb"
@@ -178,11 +178,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib"
+				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib ossim.lib ossimPlanet.lib osg.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/OssimLayerQt.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(QTDIR)/lib"
+				AdditionalLibraryDirectories="$(QTDIR)/lib;$(OSSIM_LIB_DIR);$(OSSIM_PLANET_LIB_DIR);$(OSG_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
 				ProgramDatabaseFile=".\Release\OssimLayerQt.pdb"
 				ImportLibrary=".\Release\OssimLayerQt.lib"
@@ -254,6 +254,22 @@
 				</File>
 				<File
 					RelativePath=".\CompileGuard.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ImageTextureLayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ImageTextureLayer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\KwlLayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\KwlLayer.h"
 					>
 				</File>
 				<File

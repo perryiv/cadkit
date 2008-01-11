@@ -1931,46 +1931,6 @@ void Application::_readUserPreferences()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Increase speed.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_increaseTranslateSpeed ( double amount )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex () );
-  _translationSpeed *= amount;
-
-  // Get the section for the document.
-  Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ this->_documentSection () ] );
-
-  // Set the translation speed.
-  node[ VRV::Constants::Keys::TRANSLATION_SPEED ].set < float > ( _translationSpeed );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Decrease speed.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_decreaseTranslateSpeed ( double amount )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex () );
-  _translationSpeed /= amount;
-
-  // Get the section for the document.
-  Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ this->_documentSection () ] );
-
-  // Set the translation speed.
-  node[ VRV::Constants::Keys::TRANSLATION_SPEED ].set < float > ( _translationSpeed );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the buttons.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2339,6 +2299,26 @@ float Application::translationSpeed () const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
   return this->timeBased () ? _translationSpeed : _translationSpeed / 10000;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the translation speed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::translationSpeed ( float speed )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  _translationSpeed = speed;
+
+  // Get the section for the document.
+  Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ this->_documentSection () ] );
+
+  // Set the translation speed.
+  node[ VRV::Constants::Keys::TRANSLATION_SPEED ].set < float > ( _translationSpeed );
 }
 
 
@@ -2948,6 +2928,7 @@ void Application::_readFunctorFile ()
   factory.add ( new Usul::Factory::TypeCreator<JoystickVertical>   ( "vertical joystick"   ) );
   factory.add ( new Usul::Factory::TypeCreator<WandPitch>          ( "wand pitch"          ) );
   factory.add ( new Usul::Factory::TypeCreator<WandYaw>            ( "wand yaw"            ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandRoll>           ( "wand roll"           ) );
 
   factory.add ( new Usul::Factory::TypeCreator<IdentityMatrix>     ( "identity matrix"     ) );
   factory.add ( new Usul::Factory::TypeCreator<InverseMatrix>      ( "inverse matrix"      ) );
@@ -3783,7 +3764,7 @@ void Application::_statusBarVis ( MenuKit::Message m, MenuKit::Item *item )
 
 void Application::_increaseSpeed ( )
 {
-  this->_increaseTranslateSpeed ( 2.0 );
+  this->translationSpeed ( this->translationSpeed () * 2.0 );
 }
 
 
@@ -3795,7 +3776,7 @@ void Application::_increaseSpeed ( )
 
 void Application::_decreaseSpeed ( )
 {
-  this->_decreaseTranslateSpeed ( 2.0 );
+  this->translationSpeed ( this->translationSpeed () / 2.0 );
 }
 
 
@@ -3807,7 +3788,7 @@ void Application::_decreaseSpeed ( )
 
 void Application::_increaseSpeedTen  ( )
 {
-  this->_increaseTranslateSpeed ( 10.0 );
+  this->translationSpeed ( this->translationSpeed () * 10.0 );
 }
 
 
@@ -3819,7 +3800,7 @@ void Application::_increaseSpeedTen  ( )
 
 void Application::_decreaseSpeedTen ( )
 {
-  this->_decreaseTranslateSpeed ( 10.0 );
+  this->translationSpeed ( this->translationSpeed () / 10.0 );
 }
 
 
@@ -4335,6 +4316,14 @@ bool Application::_handleNavigationEvent( unsigned long id )
   // Turn off all navigation.
   case BUTTON_RED:
     this->navigator ( 0x0 );
+    break;
+  // Increase speed.
+  case BUTTON_GREEN:
+    this->translationSpeed ( this->translationSpeed() * 2.0 );
+    break;
+  // Decrease speed.
+  case BUTTON_YELLOW:
+    this->translationSpeed ( this->translationSpeed() / 2.0 );
     break;
 
   default :

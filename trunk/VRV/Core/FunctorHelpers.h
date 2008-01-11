@@ -15,6 +15,7 @@
 #include "Usul/Functors/Interaction/Input/JoystickVertical.h"
 #include "Usul/Functors/Interaction/Input/WandPitch.h"
 #include "Usul/Functors/Interaction/Input/WandYaw.h"
+#include "Usul/Functors/Interaction/Input/WandRoll.h"
 #include "Usul/Functors/Interaction/Matrix/IdentityMatrix.h"
 #include "Usul/Functors/Interaction/Matrix/InverseMatrix.h"
 #include "Usul/Functors/Interaction/Matrix/MatrixPair.h"
@@ -42,6 +43,7 @@ namespace Core {
   typedef Usul::Functors::Interaction::Input::JoystickVertical JoystickVertical;
   typedef Usul::Functors::Interaction::Input::WandPitch WandPitch;
   typedef Usul::Functors::Interaction::Input::WandYaw WandYaw;
+  typedef Usul::Functors::Interaction::Input::WandRoll WandRoll;
 
   // Matrices.
   typedef Usul::Functors::Interaction::Matrix::IdentityMatrix IdentityMatrix;

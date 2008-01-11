@@ -16,6 +16,7 @@ ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 # ------------ Set Include Folders ----------------------
 
 INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
+                     "${CADKIT_INC_DIR}/Experimental"
                      "${PROJECT_SOURCE_DIR}/../"
                      ${OSG_INC_DIR}
                      ${OSSIM_INC_DIR}

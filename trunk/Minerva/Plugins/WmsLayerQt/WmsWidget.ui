@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>699</width>
-    <height>687</height>
+    <width>701</width>
+    <height>762</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -119,6 +119,17 @@
       <widget class="QPushButton" name="browseDirectory" >
        <property name="text" >
         <string>Browse...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <item>
+      <widget class="QCheckBox" name="_makeDefaultDirectory" >
+       <property name="text" >
+        <string>Make default cache directory</string>
        </property>
       </widget>
      </item>

@@ -55,6 +55,10 @@ _options()
   _imageTypes->addButton ( _pngButton );
   
   _optionsWidget->setLayout ( new QVBoxLayout );
+  
+#if USE_STAR_SYSTEM
+  _cacheDirectory->setText( StarSystem::RasterLayerWms::defaultCacheDirectory().c_str() );
+#endif
 }
 
 
@@ -91,7 +95,7 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
   std::string format ( 0x0 != button ? button->text().toStdString() : "image/jpeg" );
   
   // Make sure we have a server and cache directory.
-  if ( false == server.empty () )
+  if ( false == server.empty () && false == cacheDirectory.empty() )
   {
 #if USE_STAR_SYSTEM
     StarSystem::RasterLayerWms::Extents extents ( -180, -90, 180, 90 );
@@ -116,14 +120,17 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
 #else
     WmsLayer::RefPtr layer ( new WmsLayer );
     layer->server ( server );
-    layer->cacheDirectory ( cacheDirectory );
+    
 
     // Set the image type.
     layer->imageType ( format );
 
 #endif
+    // Set the cache directory.
+    layer->cacheDirectory ( cacheDirectory, Qt::Checked == _makeDefaultDirectory->checkState() );
+    
     // Set the name.
-    layer->name ( name );
+    layer->name ( false == name.empty() ? name : server );
     
     al->addLayer ( layer.get () );
 

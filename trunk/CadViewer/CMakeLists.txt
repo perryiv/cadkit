@@ -37,7 +37,6 @@ ${CADKIT_INC_DIR}/Experimental/StarSystem
 ${CADKIT_INC_DIR}/Helios/Plugins/StarSystemModel
 
 # ---- Minerva -------
-${CADKIT_INC_DIR}/Magrathea
 ${CADKIT_INC_DIR}/Minerva/Core
 ${CADKIT_INC_DIR}/Minerva/Document
 # ---- Minerva Plug-ins -------

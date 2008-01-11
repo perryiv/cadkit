@@ -27,6 +27,7 @@ namespace VRV
       const std::string MENU_SHOW_HIDE     ( "menu_show_hide" );
       const std::string TRANSLATION_SPEED  ( "translation_speed" );
       const std::string NAVIGATION_FUNCTOR ( "navigation_functor" );
+      const std::string SEEK_STEP_SIZE     ( "seek_step_size" );
     }
   }
 }

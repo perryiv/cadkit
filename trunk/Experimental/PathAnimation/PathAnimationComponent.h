@@ -60,7 +60,8 @@ public:
   virtual void                  activeViewChanged ( IUnknown *oldView, IUnknown *newView );
 
   // Usul::Interfaces::IAnimatePath.
-  virtual void                  animatePath ( const IAnimatePath::PackedMatrices &, double step = Usul::Interfaces::AnimatePath::DEFAULT_STEP_SIZE );
+  virtual void                  animatePath ( const IAnimatePath::PackedMatrices & );
+  virtual void                  animatePath ( const IAnimatePath::PackedMatrices &, double step );
 
   // Usul::Interfaces::IPlugin
   virtual std::string           getPluginName() const { return "Path Animation"; }
@@ -96,6 +97,7 @@ protected:
   bool                          _isDegree ( unsigned int ) const;
   bool                          _isPlaying() const;
   bool                          _isPaused() const;
+  bool                          _isStepSize( double step ) const;
 
   void                          _newPath();
   void                          _openPath ( Usul::Interfaces::IUnknown::QueryPtr );
@@ -111,6 +113,7 @@ protected:
   void                          _setCameraPosition ( unsigned int );
   void                          _setCurrentPath ( CameraPath::RefPtr );
   void                          _setDegree ( unsigned int );
+  void                          _setStepSize ( double step );
   void                          _stopPlaying();
 
 private:
@@ -130,6 +133,7 @@ private:
   std::string _movieFilename;
   Usul::Interfaces::IUnknown::QueryPtr _movieWriter;
   Usul::Interfaces::IUnknown::QueryPtr _caller;
+  double _stepSize;
 };
 
 

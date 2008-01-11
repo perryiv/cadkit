@@ -33,6 +33,7 @@
 #include "Usul/Registry/Constants.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Threads/Safe.h"
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
@@ -67,7 +68,8 @@ PathAnimationComponent::PathAnimationComponent() :
   _writeMovie ( false ),
   _movieFilename (),
   _movieWriter (),
-  _caller ()
+  _caller (),
+  _stepSize ( Usul::Interfaces::AnimatePath::DEFAULT_STEP_SIZE )
 {
   USUL_TRACE_SCOPE;
 
@@ -180,6 +182,30 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   sub->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "3", Usul::Adaptors::bind1<void> ( 3, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_setDegree ) ), Usul::Adaptors::bind1<bool> ( 3, Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_isDegree ) ) ) ) );
   sub->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "4", Usul::Adaptors::bind1<void> ( 4, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_setDegree ) ), Usul::Adaptors::bind1<bool> ( 4, Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_isDegree ) ) ) ) );
   menu->append ( sub.get() );
+
+  typedef std::vector<double> Doubles;
+  Doubles stepSizes;
+  stepSizes.push_back ( 0.001 );
+  stepSizes.push_back ( 0.005 );
+  stepSizes.push_back ( 0.01 );
+  stepSizes.push_back ( 0.05 );
+  stepSizes.push_back ( 0.10 );
+  stepSizes.push_back ( 0.20 );
+
+  MenuKit::Menu::RefPtr steps ( new MenuKit::Menu ( "Step Size" ) );
+  for ( Doubles::const_iterator iter = stepSizes.begin(); iter != stepSizes.end(); ++iter )
+  {
+    double s ( *iter );
+    steps->append ( new RadioButton ( 
+                                     Usul::Commands::genericCheckCommand ( 
+                                     Usul::Strings::format ( s ), 
+                                     Usul::Adaptors::bind1<void> ( s, 
+                                                                   Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_setStepSize ) ), 
+                                     Usul::Adaptors::bind1<bool> ( s, 
+                                                                   Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_isStepSize ) ) ) ) );
+  }
+
+  menu->append ( steps );
 
   // Add menu for existing paths.
   menu->addSeparator();
@@ -502,7 +528,7 @@ void PathAnimationComponent::_playForward()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  this->_playPathForward ( _currentPath.get(), Usul::Interfaces::AnimatePath::DEFAULT_STEP_SIZE );
+  this->_playPathForward ( _currentPath.get(), _stepSize );
 }
 
 
@@ -516,7 +542,7 @@ void PathAnimationComponent::_playBackward()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  this->_playPathBackward ( _currentPath.get(), Usul::Interfaces::AnimatePath::DEFAULT_STEP_SIZE );
+  this->_playPathBackward ( _currentPath.get(), _stepSize );
 }
 
 
@@ -694,6 +720,21 @@ void PathAnimationComponent::updateNotify ( IUnknown *caller )
       _movieFilename.clear();
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Animate through the given path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &matrices )
+{
+  USUL_TRACE_SCOPE;
+
+  // Redirect with our current step size.
+  this->animatePath ( matrices, Usul::Threads::Safe::get( this->mutex(), _stepSize ) );
 }
 
 
@@ -1096,4 +1137,32 @@ void PathAnimationComponent::_setCameraPosition ( unsigned int num )
 
   // Animate through the path.
   this->animatePath ( matrices );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the given number the current step size?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PathAnimationComponent::_isStepSize( double step ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return step == _stepSize;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the step size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_setStepSize ( double step )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _stepSize = step;
 }

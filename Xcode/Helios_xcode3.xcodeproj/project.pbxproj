@@ -1675,6 +1675,20 @@
 			remoteGlobalIDString = 66EF17680D15190B00B4B1AA /* Minerva */;
 			remoteInfo = Minerva;
 		};
+		66B2866D0D38204F003BDAF3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66EF1A1A0D16438E00B4B1AA /* StarSystem */;
+			remoteInfo = StarSystem;
+		};
+		66B286730D382053003BDAF3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43FED6F1092452E100EBB610 /* Usul */;
+			remoteInfo = Usul;
+		};
 		66C8FAA10D11FF60003F6A58 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -8194,6 +8208,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				66B286740D382053003BDAF3 /* PBXTargetDependency */,
+				66B2866E0D38204F003BDAF3 /* PBXTargetDependency */,
 			);
 			name = OssimLayerQt;
 			productName = OssimLayerQt;
@@ -9885,6 +9901,16 @@
 			isa = PBXTargetDependency;
 			target = 66EF17680D15190B00B4B1AA /* Minerva */;
 			targetProxy = 66B286280D37EDC6003BDAF3 /* PBXContainerItemProxy */;
+		};
+		66B2866E0D38204F003BDAF3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66EF1A1A0D16438E00B4B1AA /* StarSystem */;
+			targetProxy = 66B2866D0D38204F003BDAF3 /* PBXContainerItemProxy */;
+		};
+		66B286740D382053003BDAF3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43FED6F1092452E100EBB610 /* Usul */;
+			targetProxy = 66B286730D382053003BDAF3 /* PBXContainerItemProxy */;
 		};
 		66C8FAA20D11FF60003F6A58 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

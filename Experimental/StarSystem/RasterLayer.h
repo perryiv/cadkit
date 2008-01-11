@@ -17,6 +17,7 @@
 #include "Serialize/XML/Macros.h"
 
 #include "Usul/Base/Object.h"
+#include "Usul/Interfaces/IClonable.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/IRasterAlphas.h"
@@ -39,6 +40,7 @@ namespace StarSystem {
 
 
 class STAR_SYSTEM_EXPORT RasterLayer : public Usul::Base::Object,
+  public Usul::Interfaces::IClonable,
   public Usul::Interfaces::ILayer,
   public Usul::Interfaces::ILayerExtents,
   public Usul::Interfaces::IRasterAlphas,
@@ -50,12 +52,16 @@ public:
   typedef Usul::Base::Object BaseClass;
   typedef StarSystem::Extents < osg::Vec2d > Extents;
   typedef osg::ref_ptr < osg::Image > ImagePtr;
+  typedef Usul::Interfaces::IUnknown IUnknown;
 
   USUL_DECLARE_QUERY_POINTERS ( RasterLayer );
   
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   RasterLayer();
+  
+  // Clone this layer.
+  virtual IUnknown*     clone() const = 0;
 
   // Add an alpha value.
   void                  alpha ( unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha );
@@ -84,6 +90,9 @@ public:
 protected:
 
   virtual ~RasterLayer();
+  
+  RasterLayer ( const RasterLayer& );
+  RasterLayer& operator= ( const RasterLayer& );
 
   virtual osg::Image *  _createBlankImage ( unsigned int width, unsigned int height ) const;
 

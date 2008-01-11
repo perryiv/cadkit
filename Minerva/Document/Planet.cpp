@@ -198,6 +198,7 @@ void Planet::_init()
   body->addTile ( Extents ( -180, -90,    0,   90 ) );
   body->addTile ( Extents (    0, -90,  180,   90 ) );
   
+#if 0
   {
     const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
     
@@ -216,6 +217,7 @@ void Planet::_init()
     StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
     body->rasterAppend ( layer.get() );
   }
+#endif
   
   _system->body ( body.get() );
   

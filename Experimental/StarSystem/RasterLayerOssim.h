@@ -31,6 +31,8 @@ public:
   USUL_DECLARE_REF_POINTERS ( RasterLayerOssim );
 
   RasterLayerOssim();
+  
+  virtual IUnknown*     clone() const;
 
   void                  open ( const std::string& );
 
@@ -43,6 +45,9 @@ public:
 protected:
   virtual ~RasterLayerOssim();
 
+  RasterLayerOssim ( const RasterLayerOssim& );
+  RasterLayerOssim& operator= ( const RasterLayerOssim& );
+  
   virtual void          _convert ( const ossimImageData& data, osg::Image& image );
   void                  _updateExtents();
 

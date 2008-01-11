@@ -42,11 +42,45 @@ USUL_FACTORY_REGISTER_CREATOR ( ElevationLayerDem );
 
 ElevationLayerDem::ElevationLayerDem() : 
   BaseClass(),
+  _filename (),
   _loaded ( false ),
   _grid( 0x0 ),
   _projection ( 0x0 )
 {
   USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copy Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ElevationLayerDem::ElevationLayerDem ( const ElevationLayerDem& rhs ) :
+  BaseClass ( rhs ),
+  _filename (),
+  _loaded ( false ),
+  _grid( 0x0 ),
+  _projection ( 0x0 )
+{
+  this->open( rhs._filename );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Assignment.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ElevationLayerDem& ElevationLayerDem::operator= ( const ElevationLayerDem& rhs )
+{
+  BaseClass::operator= ( rhs );
+  
+  this->open ( rhs._filename );
+  
+  return *this;
 }
 
 
@@ -72,6 +106,19 @@ ElevationLayerDem::~ElevationLayerDem()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Clone.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* ElevationLayerDem::clone() const
+{
+  Usul::Interfaces::IUnknown::QueryPtr clone ( new ElevationLayerDem ( *this ) );
+  return clone.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Open the grid.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -85,6 +132,7 @@ void ElevationLayerDem::open( const std::string& filename )
       return;
     
     Guard guard ( this );
+    _filename = filename;
     _grid = new ossimDemGrid;
     _grid->read(in, false);
   }

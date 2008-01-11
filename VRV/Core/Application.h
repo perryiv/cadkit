@@ -328,6 +328,10 @@ public:
   /// Set/Get the seek mode.
   void                    seekMode  ( bool b );
   bool                    isSeekMode() const;
+  
+  /// VRV::Interfaces::ITranslationSpeed.
+  virtual float                 translationSpeed () const;
+  void                          translationSpeed ( float speed );
 protected:
 
   /// VR Juggler methods.
@@ -373,10 +377,6 @@ protected:
 
   // Read the user's functor config file.
   void                          _readFunctorFile ();
-
-  /// Increase/Decrease speed.
-  void                          _increaseTranslateSpeed ( double amount );
-  void                          _decreaseTranslateSpeed ( double amount );
 
   /// Update notify.
   void                          _updateNotify ();
@@ -509,9 +509,6 @@ protected:
   // Get/set the wand's offset (VRV::Interfaces::IWandStateFloat).
   virtual void                  wandOffset ( Usul::Math::Vec3f &v ) const;
   virtual void                  wandOffset ( const Usul::Math::Vec3f &v );
-
-  /// VRV::Interfaces::ITranslationSpeed.
-  virtual float                 translationSpeed () const;
 
   /// Usul::Interfaces::ICommandQueueAdd
   virtual void                  addCommand ( Usul::Interfaces::ICommand* command );

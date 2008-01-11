@@ -100,6 +100,7 @@ SET (SOURCES
 ./Functors/Interaction/Matrix/IdentityMatrix.cpp
 ./Functors/Interaction/Matrix/MatrixFunctor.cpp
 ./Functors/Interaction/Input/WandYaw.cpp
+./Functors/Interaction/Input/WandRoll.cpp
 ./Functors/Interaction/Input/JoystickVertical.cpp
 ./Functors/Interaction/Input/JoystickHorizontal.cpp
 ./Functors/Interaction/Input/AnalogInput.cpp

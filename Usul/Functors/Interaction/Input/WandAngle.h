@@ -34,6 +34,7 @@ public:
   typedef AnalogInput BaseClass;
   typedef BaseClass::Unknown Unknown;
   typedef Usul::Interfaces::IWandStateFloat IWandState;
+  typedef IWandState::Vector Vector;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( WandAngle );
@@ -51,7 +52,7 @@ protected:
 
   virtual ~WandAngle();
 
-  float                 _calculateValue ( unsigned int zero, unsigned int sign );
+  float                 _calculateValue ( unsigned int zero, unsigned int sign, const Vector& dir = Vector ( 0.0f, 0.0f, -1.0f )  );
 
 private:
 

@@ -71,7 +71,7 @@ WandAngle::~WandAngle()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float WandAngle::_calculateValue ( unsigned int zero, unsigned int sign )
+float WandAngle::_calculateValue ( unsigned int zero, unsigned int sign, const Vector& dir )
 {
   USUL_TRACE_SCOPE;
   float value ( 0.0f );
@@ -87,14 +87,14 @@ float WandAngle::_calculateValue ( unsigned int zero, unsigned int sign )
     //std::cout << "---------------------------------------------------";
     //Usul::Print::matrix ( "", matrix.get(), std::cout );
     //std::cout << std::endl;
-    IWandState::Vector nz ( 0.0f, 0.0f, -1.0f );
-    IWandState::Vector localDir ( nz );
+    //IWandState::Vector nz ( 0.0f, 0.0f, -1.0f );
+    IWandState::Vector localDir ( dir );
     IWandState::Vector globalDir = matrix * localDir;
 
     // Lose the specified coordinate.
     globalDir[zero] = 0.0f;
 
-    value = globalDir.angle ( nz );
+    value = globalDir.angle ( dir );
     value *= Usul::Math::RAD_TO_DEG;
     value = Usul::Math::absolute ( value );
     value *= ( ( globalDir[sign] < 0.0f ) ? -1.0f : 1.0f );

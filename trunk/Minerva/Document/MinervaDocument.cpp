@@ -1179,10 +1179,10 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   m->append ( new ToggleButton ( new Minerva::Core::Commands::ShowPastEvents ( me ) ) );
 
   MenuKit::Menu::RefPtr speed ( new MenuKit::Menu ( "Speed" ) );
-  speed->append ( new ToggleButton ( new Minerva::Core::Commands::AnimationSpeed ( 0.1, me ) ) );
-  speed->append ( new ToggleButton ( new Minerva::Core::Commands::AnimationSpeed ( 0.5, me ) ) );
-  speed->append ( new ToggleButton ( new Minerva::Core::Commands::AnimationSpeed ( 1.0, me ) ) );
-  speed->append ( new ToggleButton ( new Minerva::Core::Commands::AnimationSpeed ( 2.0, me ) ) );
+  speed->append ( new RadioButton ( new Minerva::Core::Commands::AnimationSpeed ( 0.1, me ) ) );
+  speed->append ( new RadioButton ( new Minerva::Core::Commands::AnimationSpeed ( 0.5, me ) ) );
+  speed->append ( new RadioButton ( new Minerva::Core::Commands::AnimationSpeed ( 1.0, me ) ) );
+  speed->append ( new RadioButton ( new Minerva::Core::Commands::AnimationSpeed ( 2.0, me ) ) );
   m->append ( speed );
 
   MenuKit::Menu::RefPtr type ( new MenuKit::Menu ( "Timestep" ) );

@@ -26,6 +26,7 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
 		     ${CADKIT_INC_DIR}
+         "${CADKIT_INC_DIR}/Experimental"
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
 		     ${WMS_INC_DIR}
@@ -50,7 +51,7 @@ SET (SOURCES
 ADD_LIBRARY( MinervaDocument SHARED ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( MinervaDocument Usul OsgTools Magrathea SerializeXML XmlTree Minerva )
+LINK_CADKIT( MinervaDocument Usul OsgTools StarSystem SerializeXML XmlTree Minerva )
 TARGET_LINK_LIBRARIES( MinervaDocument
 	${Boost_LIBRARIES}
 	${PQXX_LIB}

@@ -41,6 +41,14 @@ public:
   /// Get the texture
   virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * );
 
+  /// Get/Set the default cache directory.
+  static void           defaultCacheDirectory ( const std::string& );
+  static std::string    defaultCacheDirectory ();
+  
+  /// Get/Set the cache directory.
+  void                  cacheDirectory ( const std::string& dir, bool makeDefault = false );
+  std::string           cacheDirectory () const;
+  
 protected:
 
   virtual ~RasterLayerWms();

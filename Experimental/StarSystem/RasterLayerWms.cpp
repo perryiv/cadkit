@@ -263,3 +263,65 @@ std::string RasterLayerWms::_directory ( unsigned int width, unsigned int height
   std::replace ( dir.begin(), dir.end(), '\\', '/' );
   return dir;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the default cache directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayerWms::defaultCacheDirectory ( const std::string& dir )
+{
+  Usul::Registry::Database::instance()[Detail::WMS_CACHE_DIR] = dir;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the default cache directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayerWms::defaultCacheDirectory ()
+{
+  return Usul::Registry::Database::instance()[Detail::WMS_CACHE_DIR].get<std::string> ( Usul::File::Temp::directory ( false ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the cache directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayerWms::cacheDirectory ( const std::string& dir, bool makeDefault )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  
+  // Only set the directory if it's not empty.
+  if ( false == dir.empty() )
+  {
+    // Set the directory.
+    _dir = dir;
+    
+    // Make it the default if we should.
+    if ( makeDefault )
+      RasterLayerWms::defaultCacheDirectory ( _dir );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the cache directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayerWms::cacheDirectory () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _dir;
+}

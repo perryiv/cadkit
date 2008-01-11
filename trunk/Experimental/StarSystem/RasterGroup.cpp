@@ -62,7 +62,7 @@ RasterGroup::~RasterGroup()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RasterGroup::append ( RasterLayer* layer )
+void RasterGroup::append ( IRasterLayer* layer )
 {
   USUL_TRACE_SCOPE;
 
@@ -70,8 +70,35 @@ void RasterGroup::append ( RasterLayer* layer )
   {
     Guard guard ( this );
     _layers.push_back ( layer );
-    this->_updateExtents ( *layer );
+    this->_updateExtents ( layer );
 
+    // Clear the cache because some or all of the images are now incorrect.
+    _cache.clear();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterGroup::remove ( IRasterLayer* layer )
+{
+  USUL_TRACE_SCOPE;
+  
+  if ( 0x0 != layer )
+  {
+    Guard guard ( this );
+    
+    // Remove the layer.
+    _layers.erase ( 
+                   std::remove_if ( _layers.begin(), 
+                                    _layers.end(), 
+                                    Usul::Interfaces::IRasterLayer::QueryPtr::IsEqual ( layer ) ),
+                   _layers.end() );
+    
     // Clear the cache because some or all of the images are now incorrect.
     _cache.clear();
   }
@@ -84,11 +111,21 @@ void RasterGroup::append ( RasterLayer* layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RasterGroup::_updateExtents ( const RasterLayer& layer  )
+void RasterGroup::_updateExtents ( IRasterLayer* layer  )
 {
   USUL_TRACE_SCOPE;
+  
   Extents e ( this->extents() );
-  e.expand ( layer.extents() );
+  
+  Usul::Interfaces::ILayerExtents::QueryPtr le ( layer );
+  
+  const double minLon ( le.valid() ? le->minLon() : -180.0 );
+  const double minLat ( le.valid() ? le->minLat() :  -90.0 );
+  const double maxLon ( le.valid() ? le->maxLon() :  180.0 );
+  const double maxLat ( le.valid() ? le->maxLat() :   90.0 );
+  
+  e.expand ( Extents ( minLon, minLat, maxLon, maxLat ) );
+  
   this->extents ( e );
 }
 
@@ -131,7 +168,16 @@ osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, u
     Layers::value_type layer ( *iter );
     if ( true == layer.valid() )
     {
-      if ( extents.intersects ( layer->extents() ) )
+      Usul::Interfaces::ILayerExtents::QueryPtr le ( layer );
+      
+      const double minLon ( le.valid() ? le->minLon() : -180.0 );
+      const double minLat ( le.valid() ? le->minLat() :  -90.0 );
+      const double maxLon ( le.valid() ? le->maxLon() :  180.0 );
+      const double maxLat ( le.valid() ? le->maxLat() :   90.0 );
+      
+      Extents e ( minLon, minLat, maxLon, maxLat );
+      
+      if ( extents.intersects ( e ) )
       {
         // Get the image for the layer.
         osg::ref_ptr < osg::Image > image ( layer->texture ( extents, width, height, level, job ) );
@@ -144,9 +190,16 @@ osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, u
             // We always make an image and composite to handle formats other than GL_RGBA.
             result = this->_createBlankImage( width, height );
           }
+          
+          // See if it has raster alpha data.
+          Usul::Interfaces::IRasterAlphas::QueryPtr ra ( layer );
 
+          bool valid ( ra.valid() );
+          
+          Alphas alphas ( valid ? ra->alphas() : Alphas ( LessColor ( EqualPredicate() ) ) );
+          
           // Composite the images.
-          this->_compositeImages ( *result, *image, layer->alphas(), job );
+          this->_compositeImages ( *result, *image, alphas, job );
 
           // Cache the result.
           this->_cacheAdd ( extents, width, height, result.get() );

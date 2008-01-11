@@ -25,10 +25,11 @@ struct ILayerExtents : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3529785747u };
   
-  /// Get the extents.
+  /// Get the min latitude and min longitude.
   virtual double             minLon() const = 0;
   virtual double             minLat() const = 0;
   
+  /// Get the max latitude and max longitude.
   virtual double             maxLon() const = 0;
   virtual double             maxLat() const = 0;
   

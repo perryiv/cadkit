@@ -13,6 +13,7 @@
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/ICullSceneVisitor.h"
 #include "Usul/Interfaces/IFrameStamp.h"
+#include "Usul/Interfaces/IRasterLayer.h"
 #include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IUpdateSceneVisitor.h"
 #include "Usul/Trace/Trace.h"
@@ -34,6 +35,8 @@
 #include "StarSystem/RasterLayerWms.h"
 #include "StarSystem/ElevationLayerDem.h"
 #include "StarSystem/SplitCallbacks.h"
+
+#include "osg/CoordinateSystemNode"
 
 #else
 
@@ -99,7 +102,7 @@ Planet::Planet() :
   BaseClass(),
 #if USE_STAR_SYSTEM
   _system ( 0x0 ),
-  _manager ( new Usul::Jobs::Manager ( 5, true ) ),
+  _manager ( new Usul::Jobs::Manager ( 5, true ) )
 #else
   _planet            ( 0x0 ),
   _databasePager     ( new osgDB::DatabasePager() )
@@ -241,8 +244,6 @@ void Planet::_init()
   _planet->setEnableHudFlag( hudEnabled );
   _planet->land()->resetGraph();
   
-  _planet->land()->resetGraph();
-  
   _databasePager->setExpiryDelay(0);
   _databasePager->setAcceptNewDatabaseRequests( true );
   _databasePager->setDatabasePagerThreadPause( false );
@@ -258,7 +259,11 @@ void Planet::_init()
 
 void Planet::addLayer( Usul::Interfaces::ILayer *layer  )
 {
-#if USE_STAR_SYSTEM == 0
+#if USE_STAR_SYSTEM
+  Usul::Interfaces::IRasterLayer::QueryPtr rl ( layer );
+  if ( rl.valid() )
+    _system->body()->rasterAppend ( rl.get() );
+#else
   Usul::Interfaces::IOssimPlanetLayer::QueryPtr ossim ( layer );
   if( ossim.valid() )
   {
@@ -280,7 +285,11 @@ void Planet::addLayer( Usul::Interfaces::ILayer *layer  )
 
 void Planet::removeLayer( Usul::Interfaces::ILayer *layer )
 {
-#if USE_STAR_SYSTEM == 0
+#if USE_STAR_SYSTEM
+  Usul::Interfaces::IRasterLayer::QueryPtr rl ( layer );
+  if ( rl.valid() )
+    _system->body()->rasterRemove ( rl.get() );
+#else
   Usul::Interfaces::IOssimPlanetLayer::QueryPtr ossim ( layer );
   if( ossim.valid() )
   {
@@ -296,29 +305,17 @@ void Planet::removeLayer( Usul::Interfaces::ILayer *layer )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Reset the graph.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Planet::reset()
-{  
-  _planet->land()->resetGraph(); 
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the scene root.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Group* Planet::buildScene() const
+osg::Group* Planet::buildScene()
 {
 #if USE_STAR_SYSTEM
   osg::ref_ptr<osg::Group> group ( new osg::Group );
   if ( _system.valid() )
   {
-    StarSystem::BuildScene::RefPtr builder ( new StarSystem::BuildScene ( options, caller ) );
+    StarSystem::BuildScene::RefPtr builder ( new StarSystem::BuildScene );
     _system->accept ( *builder );
     group->addChild ( builder->scene() );
   }
@@ -326,56 +323,6 @@ osg::Group* Planet::buildScene() const
 #else
   return _planet;
 #endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is elevation enabled?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Planet::elevationEnabled() const
-{ 
-  return _planet->land()->getElevationEnabledFlag(); 
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set elevation enabled.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Planet::elevationEnabled( bool val ) 
-{ 
-  _planet->land()->setElevationEnabledFlag( val ); 
-  reset(); 
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is the HUD enabled?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Planet::hudEnabled() const
-{ 
-  return  _planet->getEnableHudFlag();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the hud enabled flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Planet::hudEnabled( bool val ) 
-{ 
-  _planet->setEnableHudFlag( val );
-  reset(); 
 }
 
 
@@ -471,8 +418,10 @@ void Planet::initVisitors ( Usul::Interfaces::IUnknown *caller )
 
 void Planet::splitMetric ( double value )
 {
+#if USE_STAR_SYSTEM == 0
   _planet->land()->setSplitMetricRatio ( value );
-  this->reset();
+  _planet->land()->resetGraph();
+#endif
 }
 
 
@@ -484,7 +433,11 @@ void Planet::splitMetric ( double value )
 
 double Planet::splitMetric () const
 {
+#if USE_STAR_SYSTEM
+  return 0.0;
+#else
   return _planet->land()->getSplitMetricRatio();
+#endif
 }
 
 

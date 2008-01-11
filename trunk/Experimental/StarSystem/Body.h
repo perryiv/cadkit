@@ -101,7 +101,10 @@ public:
   virtual void              postRender ( Usul::Interfaces::IUnknown *caller );
 
   // Append raster data.
-  void                      rasterAppend ( RasterLayer * );
+  void                      rasterAppend ( Usul::Interfaces::IRasterLayer * );
+  
+  // Remove raster layer
+  void                      rasterRemove ( Usul::Interfaces::IRasterLayer * );
   
   // Get the raster data.
   RasterLayer::RefPtr       rasterData();

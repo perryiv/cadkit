@@ -26,6 +26,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
@@ -213,7 +214,7 @@ Body::Vec3d Body::center() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Body::rasterAppend ( RasterLayer * layer )
+void Body::rasterAppend ( Usul::Interfaces::IRasterLayer * layer )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -222,9 +223,51 @@ void Body::rasterAppend ( RasterLayer * layer )
   {
     // Append the layer to the existing group.
     _rasters->append ( layer );
+    
+    Usul::Interfaces::ILayerExtents::QueryPtr le ( layer );
+    
+    const double minLon ( le.valid() ? le->minLon() : -180.0 );
+    const double minLat ( le.valid() ? le->minLat() :  -90.0 );
+    const double maxLon ( le.valid() ? le->maxLon() :  180.0 );
+    const double maxLat ( le.valid() ? le->maxLat() :   90.0 );
+    
+    Extents e ( minLon, minLat, maxLon, maxLat );
 
     // Dirty the tiles.
-    DirtyTiles dirty ( true, Tile::TEXTURE, layer->extents() );
+    DirtyTiles dirty ( true, Tile::TEXTURE, e );
+    osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
+    _transform->accept ( *visitor );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove raster layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::rasterRemove ( Usul::Interfaces::IRasterLayer *layer )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  
+  if ( ( true == _rasters.valid() ) && ( 0x0 != layer ) )
+  {
+    // Append the layer to the existing group.
+    _rasters->remove ( layer );
+    
+    Usul::Interfaces::ILayerExtents::QueryPtr le ( layer );
+    
+    const double minLon ( le.valid() ? le->minLon() : -180.0 );
+    const double minLat ( le.valid() ? le->minLat() :  -90.0 );
+    const double maxLon ( le.valid() ? le->maxLon() :  180.0 );
+    const double maxLat ( le.valid() ? le->maxLat() :   90.0 );
+    
+    Extents e ( minLon, minLat, maxLon, maxLat );
+    
+    // Dirty the tiles.
+    DirtyTiles dirty ( true, Tile::TEXTURE, e );
     osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
     _transform->accept ( *visitor );
   }

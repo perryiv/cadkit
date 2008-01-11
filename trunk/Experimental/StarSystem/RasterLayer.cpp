@@ -142,9 +142,15 @@ Usul::Interfaces::IUnknown* RasterLayer::queryInterface( unsigned long iid )
   {
     case Usul::Interfaces::IUnknown::IID:
     case Usul::Interfaces::IRasterLayer::IID:
-      return static_cast<Usul::Interfaces::IRasterLayer*>(this);
+      return static_cast<Usul::Interfaces::IRasterLayer*> ( this );
     case Usul::Interfaces::ILayer::IID:
-      return static_cast<Usul::Interfaces::ILayer*>(this);
+      return static_cast<Usul::Interfaces::ILayer*> ( this );
+    case Usul::Interfaces::ILayerExtents::IID:
+      return static_cast<Usul::Interfaces::ILayerExtents*> ( this );
+    case Usul::Interfaces::ISerialize::IID:
+      return static_cast<Usul::Interfaces::ISerialize*> ( this );
+    case Usul::Interfaces::IRasterAlphas::IID:
+      return static_cast<Usul::Interfaces::IRasterAlphas*> ( this );
     default:
       return 0x0;
   }
@@ -213,4 +219,56 @@ bool RasterLayer::showLayer() const
 {
   Guard guard ( this );
   return _shown;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get the min longitude (ILayerExtents).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double RasterLayer::minLon() const
+{
+  Guard guard ( this );
+  return _extents.minLon();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get the min latitude (ILayerExtents).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double RasterLayer::minLat() const
+{
+  Guard guard ( this );
+  return _extents.minLat();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get the max longitude (ILayerExtents).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double RasterLayer::maxLon() const
+{
+  Guard guard ( this );
+  return _extents.maxLon();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get the max latitude (ILayerExtents).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double RasterLayer::maxLat() const
+{
+  Guard guard ( this );
+  return _extents.maxLat();
 }

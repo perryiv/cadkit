@@ -15,7 +15,6 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IOssimPlanetLayer.h"
-#include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ISerialize.h"
 
 #include "Serialize/XML/Macros.h"
@@ -24,9 +23,9 @@
 
 
 class ImageTextureLayer : public Usul::Base::Referenced,
-                                           public Usul::Interfaces::ILayer,
-                                           public Usul::Interfaces::IOssimPlanetLayer,
-                                           public Usul::Interfaces::ISerialize
+                          public Usul::Interfaces::ILayer,
+                          public Usul::Interfaces::IOssimPlanetLayer,
+                          public Usul::Interfaces::ISerialize
 {
 public:
   typedef Usul::Base::Referenced BaseClass;

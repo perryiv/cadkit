@@ -8,10 +8,17 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "Minerva/Config.h"
+
 #include "Minerva/Plugins/OssimLayerQt/CompileGuard.h"
 #include "Minerva/Plugins/OssimLayerQt/AddOssimLayerWidget.h"
+
+#if USE_STAR_SYSTEM
+#include "StarSystem/RasterLayerOssim.h"
+#else
 #include "Minerva/Plugins/OssimLayerQt/ImageTextureLayer.h"
 #include "Minerva/Plugins/OssimLayerQt/KwlLayer.h"
+#endif
 
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
@@ -124,6 +131,13 @@ void AddOssimLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
     if( 0x0 != item )
     {
       std::string filename ( item->text ().toStdString () );
+      
+#if USE_STAR_SYSTEM
+      StarSystem::RasterLayerOssim::RefPtr layer ( new StarSystem::RasterLayerOssim );
+      layer->open ( filename );
+      
+      al->addLayer ( Usul::Interfaces::ILayer::QueryPtr ( layer ) );
+#else
       std::string ext ( Usul::File::extension ( filename ) );
 
       if ( "kwl" == ext )
@@ -136,6 +150,7 @@ void AddOssimLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
         Usul::Interfaces::ILayer::RefPtr layer ( new ImageTextureLayer ( filename ) );
         al->addLayer ( layer );
       }
+#endif
     }
   }
 }

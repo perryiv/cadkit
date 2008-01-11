@@ -51,6 +51,8 @@
 #include "Usul/Interfaces/ITranslationSpeed.h"
 #include "Usul/Interfaces/IPolygonMode.h"
 #include "Usul/Interfaces/IRenderingPasses.h"
+#include "Usul/Interfaces/IRenderListener.h"
+#include "Usul/Interfaces/IRenderNotify.h"
 #include "Usul/Interfaces/IRotationCenter.h"
 #include "Usul/Interfaces/IShadeModel.h"
 #include "Usul/Interfaces/ITextMatrix.h"
@@ -140,7 +142,8 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public Usul::Interfaces::IButtonPressSubject,
                                public Usul::Interfaces::IButtonReleaseSubject,
                                public Usul::Interfaces::IGroup,
-                               public Usul::Interfaces::IRotationCenterDouble
+                               public Usul::Interfaces::IRotationCenterFloat,
+                               public Usul::Interfaces::IRenderNotify
 {
 public:
   // Typedefs.
@@ -165,7 +168,7 @@ public:
   typedef IPolygonMode::Mode                   PolygonMode;
   typedef Usul::Interfaces::IShadeModel        IShadeModel;
   typedef IShadeModel::Mode                    ShadeModel;
-  typedef Usul::Interfaces::IRotationCenterDouble IRotationCenter;
+  typedef Usul::Interfaces::IRotationCenterFloat  IRotationCenter;
   typedef IRotationCenter::Vector                 Vector;
 
   typedef Usul::Functors::Interaction::Common::BaseFunctor   Navigator;
@@ -444,6 +447,13 @@ protected:
   /// Get the screen shot directory.
   std::string                   _screenShotDirectory() const;
 
+  // Notify of rendering.
+  void                          _preRenderNotify();
+  void                          _postRenderNotify();
+
+  // Animate between two matrices.
+  void                          _animate( const osg::Matrix& m1, const osg::Matrix& m2 );
+
   /// Get/set the clipping distances (VRV::Interfaces::IClippingDistanceFloat).
   virtual void                  getClippingDistances ( float &nearDist, float &farDist ) const;
   virtual void                  setClippingDistances ( float nearDist, float farDist );
@@ -502,10 +512,6 @@ protected:
 
   /// VRV::Interfaces::ITranslationSpeed.
   virtual float                 translationSpeed () const;
-
-  /// Add/Remove a update listener.
-  virtual void                  addUpdateListener    ( Usul::Interfaces::IUnknown *caller = 0x0 );
-  virtual void                  removeUpdateListener ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   /// Usul::Interfaces::ICommandQueueAdd
   virtual void                  addCommand ( Usul::Interfaces::ICommand* command );
@@ -570,32 +576,25 @@ protected:
   virtual const osg::Group *    auxiliaryScene() const;
   virtual osg::Group *          auxiliaryScene();
 
-  // Add the listener (IIntersectListener).
+  // Add the listener.
   virtual void                  addIntersectListener ( Usul::Interfaces::IUnknown *listener );
-
-  // Remove all intersect listeners.
-  virtual void                  clearIntersectListeners();
-
-  // Remove the listener (IIntersectListener).
-  virtual void                  removeIntersectListener ( Usul::Interfaces::IUnknown *caller );
-
-  // Add the listener (IButtonPressSubject).
   virtual void                  addButtonPressListener ( Usul::Interfaces::IUnknown * );
-
-  // Remove all listeners (IButtonPressSubject).
-  virtual void                  clearButtonPressListeners();
-
-  // Remove the listener (IButtonPressSubject).
-  virtual void                  removeButtonPressListener ( Usul::Interfaces::IUnknown * );
-
-  // Add the listener (IButtonReleaseSubject).
   virtual void                  addButtonReleaseListener ( Usul::Interfaces::IUnknown * );
+  virtual void                  addRenderListener ( IUnknown *listener );
+  virtual void                  addUpdateListener ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
-  // Remove all listeners (IButtonReleaseSubject).
+  // Remove all listeners.
+  virtual void                  clearIntersectListeners();
+  virtual void                  clearButtonPressListeners();
   virtual void                  clearButtonReleaseListeners();
-
-  // Remove the listener (IButtonReleaseSubject).
+  virtual void                  clearRenderListeners();
+    
+  // Remove the listener.
+  virtual void                  removeIntersectListener ( Usul::Interfaces::IUnknown *caller );
+  virtual void                  removeButtonPressListener ( Usul::Interfaces::IUnknown * );
   virtual void                  removeButtonReleaseListener ( Usul::Interfaces::IUnknown * );
+  virtual void                  removeRenderListener ( IUnknown *caller );
+  virtual void                  removeUpdateListener ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   // IGroup.
   virtual osg::Group*           getGroup    ( const std::string& );
@@ -645,6 +644,8 @@ private:
   typedef BaseFunctor::RefPtr                              FunctorPtr;
   typedef Usul::Interfaces::IIntersectListener             IIntersectListener;
   typedef std::vector<IIntersectListener::RefPtr>          IntersectListeners;
+  typedef Usul::Interfaces::IRenderListener                IRenderListener;
+  typedef std::vector<IRenderListener::RefPtr>             RenderListeners;
 
   enum Flags
   {
@@ -707,6 +708,7 @@ private:
   osg::DeleteHandler *                   _deleteHandler;
   Vector                                 _rotCenter;
   unsigned int                           _flags;
+  RenderListeners                        _renderListeners;
 };
 
 }

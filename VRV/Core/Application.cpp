@@ -34,6 +34,7 @@
 #include "Usul/Commands/RenderingPasses.h"
 #include "Usul/Commands/ShadeModel.h"
 #include "Usul/Components/Manager.h"
+#include "Usul/Convert/Matrix44.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/File/Find.h"
@@ -96,6 +97,9 @@
 #include <fstream>
 
 using namespace VRV::Core;
+namespace Sections = VRV::Constants::Sections;
+namespace Keys = VRV::Constants::Keys;
+typedef Usul::Registry::Database Reg;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -159,7 +163,8 @@ Application::Application() :
   _allowIntersections ( true ),
   _deleteHandler     ( new OsgTools::Utilities::DeleteHandler ),
   _rotCenter         ( 0, 0, 0 ),
-  _flags             ( 0 )
+  _flags             ( 0 ),
+  _renderListeners   ()
 {
   USUL_TRACE_SCOPE;
 
@@ -318,6 +323,9 @@ void Application::cleanup()
   // Clear all intersect listeners.
   this->clearIntersectListeners();
 
+  // Clear all render listeners.
+  this->clearRenderListeners();
+
   // Clear the navigator.
   this->navigator ( 0x0 );
 
@@ -433,6 +441,8 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IGroup*> ( this );
   case IRotationCenter::IID:
     return static_cast<IRotationCenter*> ( this );
+  case Usul::Interfaces::IRenderNotify::IID:
+    return static_cast<Usul::Interfaces::IRenderNotify*> ( this );
   default:
     return 0x0;
   }
@@ -732,6 +742,10 @@ void Application::_draw ( OsgTools::Render::Renderer *renderer )
 
   // Update.  This needs to be moved into the Preframe.
   renderer->update();
+
+  Usul::Scope::Caller::RefPtr preAndPostCall ( Usul::Scope::makeCaller ( 
+      Usul::Adaptors::memberFunction ( this, &Application::_preRenderNotify ), 
+      Usul::Adaptors::memberFunction ( this, &Application::_postRenderNotify ) ) );
 
   // Do the drawing.
   renderer->render();
@@ -2413,6 +2427,19 @@ void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Us
     Guard guard ( this );
     this->navigator ( _favoriteFunctors[navigatorName] );
   }
+
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( newDoc );
+  if ( true == unknown.valid() )
+  {
+    // Add the document as a render listener.
+    this->addRenderListener ( unknown.get() );
+
+    // Add the document as an update listener.
+    this->addUpdateListener ( unknown.get() );
+
+    // Add the document as an intersect listener.
+    this->addIntersectListener ( unknown.get() );
+  }
 }
 
 
@@ -2569,9 +2596,27 @@ void Application::_navigate()
 {
   USUL_TRACE_SCOPE;
 
+#if 0
+  Vector t ( this->rotationCenter() );
+
+  osg::Matrix vm ( this->getViewMatrix() );
+  osg::Vec3 translation ( vm.getTrans() );
+
+  t += Vector ( translation[0], translation[1], translation[2] );
+
+  Matrix44f m;
+  m.makeTranslation ( -t );
+
+  this->postMultiply ( m );
+#endif
+
   // Tell the navigator to execute.
   if ( _navigator.valid() )
     (*_navigator)();
+#if 0
+  m.makeTranslation ( t );
+  this->postMultiply ( m );
+#endif
 }
 
 
@@ -3056,28 +3101,35 @@ Application::FavoriteIterator Application::favoritesEnd ()
 
 void Application::camera ( CameraOption option )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
   // Get the bounding sphere.
   const osg::BoundingSphere& bs ( this->models()->getBound() );
+
+  osg::Matrix m1 ( this->getViewMatrix() );
+  osg::Matrix m2 ( _home );
 
   // Go to camera position.
   switch ( option )
   {
   case RESET:
-    this->_navigationMatrix ( _home );
+    {
+      m2 = _home;
+      this->rotationCenter ( Vector ( 0.0, 0.0, 0.0 ) );
+    }
     break;
   case FRONT:
     {
-      osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius())-bs.center() ) );
-      this->_navigationMatrix ( trans );
+      m2 = osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius())-bs.center() );;
     }
     break;
   case BACK:
     {
-      const osg::BoundingSphere& bs = this->models()->getBound();
       osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI , osg::Y_AXIS ) );
       osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
       osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-      this->_navigationMatrix ( zero*rot*trans );
+      m2 = osg::Matrix ( zero*rot*trans );
     }
     break;
   case LEFT: 
@@ -3085,7 +3137,7 @@ void Application::camera ( CameraOption option )
       osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI_2 , osg::Y_AXIS ) );
       osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
       osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-      this->_navigationMatrix ( zero*rot*trans );
+      m2 = osg::Matrix ( zero*rot*trans );
     }
     break;
   case RIGHT:
@@ -3093,7 +3145,7 @@ void Application::camera ( CameraOption option )
       osg::Matrix rot  ( osg::Matrix::rotate   ( -osg::PI_2 , osg::Y_AXIS ) );
       osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
       osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-      this->_navigationMatrix ( zero*rot*trans );
+      m2 = osg::Matrix ( zero*rot*trans );
     }
     break;
   case TOP:
@@ -3101,7 +3153,7 @@ void Application::camera ( CameraOption option )
       osg::Matrix rot  ( osg::Matrix::rotate   ( osg::PI_2 , osg::X_AXIS ) );
       osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
       osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-      this->_navigationMatrix ( zero*rot*trans );
+      m2 = osg::Matrix ( zero*rot*trans );
     }
     break;
   case BOTTOM:
@@ -3109,12 +3161,13 @@ void Application::camera ( CameraOption option )
       osg::Matrix rot  ( osg::Matrix::rotate   ( -osg::PI_2 , osg::X_AXIS ) );
       osg::Matrix zero ( osg::Matrix::translate( -(bs.center()) ) );
       osg::Matrix trans( osg::Matrix::translate( osg::Vec3(0.0,0.0,-2.0*bs.radius()) ) );
-      this->_navigationMatrix ( zero*rot*trans );
+      m2 = osg::Matrix ( zero*rot*trans );
     }
     break;
   };
 
   this->_setNearAndFarClippingPlanes();
+  this->_animate ( m1, m2 );
 }
 
 
@@ -4231,9 +4284,13 @@ bool Application::_handleSeekEvent ( unsigned long id )
     // Get the matrix.
     osg::Matrix m1 ( this->getViewMatrix() );
 
+    {
+      osg::Vec3 center ( hit.getWorldIntersectPoint() );
+      Vector vector ( static_cast<Vector::value_type> ( center[0] ), static_cast<Vector::value_type> ( center[1] ), static_cast<Vector::value_type> ( center[2] ) );
+      this->rotationCenter ( vector );
+    }
+
     osg::Vec3 center ( hit.getWorldIntersectPoint() *osg::Matrix::inverse( m1 ) );
-    Vector vector ( static_cast<Vector::value_type> ( center[0] ), static_cast<Vector::value_type> ( center[1] ), static_cast<Vector::value_type> ( center[2] ) );
-    this->rotationCenter ( vector );
 
     // Get the eye position.
     osg::Vec3 eye, c, up;
@@ -4252,27 +4309,8 @@ bool Application::_handleSeekEvent ( unsigned long id )
     osg::Matrix m2;
     m2.makeLookAt ( eye2, center, up );
 
-    // Find interface to animate, if one exists.
-    typedef Usul::Interfaces::IAnimatePath IAnimatePath;
-    IAnimatePath::QueryPtr animate ( Usul::Components::Manager::instance().getInterface ( IAnimatePath::IID ) );
-
-    // Use the animation interface if we found a valid one.
-    if ( true == animate.valid() )
-    {
-      // Prepare path.
-      IAnimatePath::PackedMatrices matrices;
-      matrices.push_back ( IAnimatePath::PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
-      matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
-
-      // Get step size.
-      const double step ( 0.05 ); //Reg::instance()[Sections::VIEWER_SETTINGS][Keys::SEEK_STEP_SIZE].get<double> ( 0.05, true ) );
-
-      // Animate through the path.
-      animate->animatePath ( matrices, step );
-    }
-
-    // Turn off seek mode.  TODO: This should be an option.
-    this->seekMode ( false );
+    // Animate.
+    this->_animate ( m1, m2 );
 
     return true;
   }
@@ -4509,6 +4547,76 @@ void Application::removeIntersectListener ( Usul::Interfaces::IUnknown *caller )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Add the listener (IRenderListener).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::addRenderListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Helper::addListener ( _renderListeners, caller, this->mutex() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove all render listeners (IIntersectListener).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::clearRenderListeners()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _renderListeners.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener (IRenderListener).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::removeRenderListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Helper::removeListener ( _renderListeners, caller, this->mutex() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Rendering is about to begin.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_preRenderNotify()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Usul::Interfaces::IUnknown::QueryPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  std::for_each ( _renderListeners.begin(), _renderListeners.end(), std::bind2nd ( std::mem_fun ( &IRenderListener::preRenderNotify ), me.get() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Rendering is about to end.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_postRenderNotify()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Usul::Interfaces::IUnknown::QueryPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  std::for_each ( _renderListeners.begin(), _renderListeners.end(), std::bind2nd ( std::mem_fun ( &IRenderListener::postRenderNotify ), me.get() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Add the listener (IButtonPressSubject).
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -4712,4 +4820,32 @@ bool Application::isSeekMode() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return Usul::Bits::has<unsigned int, unsigned int> ( _flags, Application::SEEK_MODE );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Animate between two matrices.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_animate( const osg::Matrix& m1, const osg::Matrix& m2 )
+{
+  // Find interface to animate, if one exists.
+  typedef Usul::Interfaces::IAnimatePath IAnimatePath;
+  IAnimatePath::QueryPtr animate ( Usul::Components::Manager::instance().getInterface ( IAnimatePath::IID ) );
+
+  // Use the animation interface if we found a valid one.
+  if ( true == animate.valid() )
+  {
+    // Prepare path.
+    IAnimatePath::PackedMatrices matrices;
+    matrices.push_back ( IAnimatePath::PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
+    matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
+
+    // Animate through the path.
+    animate->animatePath ( matrices );
+  }
+  else
+    this->setViewMatrix ( m2 );
 }

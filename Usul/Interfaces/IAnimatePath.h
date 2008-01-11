@@ -34,7 +34,8 @@ struct IAnimatePath : public Usul::Interfaces::IUnknown
   enum { IID = 4103645503u };
 
   // Set an animation path from a vector of matrices.
-  virtual void                animatePath ( const PackedMatrices &, double step = Usul::Interfaces::AnimatePath::DEFAULT_STEP_SIZE ) = 0;
+  virtual void                animatePath ( const PackedMatrices & ) = 0;
+  virtual void                animatePath ( const PackedMatrices &, double step ) = 0;
 };
 
 

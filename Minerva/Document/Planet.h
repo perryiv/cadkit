@@ -50,7 +50,7 @@ public:
   void                                            addLayer    ( Usul::Interfaces::ILayer *layer );  
   void                                            removeLayer ( Usul::Interfaces::ILayer *layer );
 
-  osg::Group*                                     buildScene() const;
+  osg::Group*                                     buildScene();
   
   /// Convert to planet coordinates.
   virtual void                                    convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
@@ -58,12 +58,6 @@ public:
   
   // Get the elevation at a lat, lon (IElevationDatabase).
   virtual double                                  elevationAtLatLong ( double lat, double lon ) const;
-
-  bool                                            elevationEnabled() const;
-  void                                            elevationEnabled( bool );
-
-  bool                                            hudEnabled() const;
-  void                                            hudEnabled( bool );
 
   /// Get/Set the split metric.
   void                                            splitMetric ( double );
@@ -75,8 +69,6 @@ public:
   
   // Initialize the cull and update visitors of the caller.
   void                                            initVisitors ( Usul::Interfaces::IUnknown *caller );
-
-  void                                            reset();
 
   // Update the scene.
   void                                            updateScene ( Usul::Interfaces::IUnknown *caller );

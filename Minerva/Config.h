@@ -12,6 +12,6 @@
 #define __MINERVA_CONFIG_H__
 
 // Should we use star system?
-#define USE_STAR_SYSTEM 0
+#define USE_STAR_SYSTEM 1
 
 #endif // __MINERVA_CONFIG_H__

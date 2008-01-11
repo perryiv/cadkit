@@ -48,13 +48,7 @@
      </property>
      <layout class="QVBoxLayout" >
       <item>
-       <widget class="QStackedWidget" name="_optionsStackedWidget" >
-        <property name="currentIndex" >
-         <number>1</number>
-        </property>
-        <widget class="QWidget" name="page" />
-        <widget class="QWidget" name="page_2" />
-       </widget>
+       <widget class="QWidget" native="1" name="_optionsWidget" />
       </item>
       <item>
        <layout class="QHBoxLayout" >

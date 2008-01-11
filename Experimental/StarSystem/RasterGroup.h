@@ -29,7 +29,8 @@ class STAR_SYSTEM_EXPORT RasterGroup : public RasterLayer
 public:
 
   typedef RasterLayer BaseClass;
-  typedef std::vector < RasterLayer::RefPtr > Layers;
+  typedef Usul::Interfaces::IRasterLayer IRasterLayer;
+  typedef std::vector < IRasterLayer::QueryPtr > Layers;
   typedef osg::ref_ptr < osg::Image > ImagePtr;
   typedef std::pair < unsigned int, unsigned int > KeySize;
   typedef std::pair < Extents::value_type, Extents::value_type > KeyRange;
@@ -41,7 +42,8 @@ public:
 
   RasterGroup();
 
-  void                            append ( RasterLayer* layer );
+  void                            append ( IRasterLayer* layer );
+  void                            remove ( IRasterLayer* layer );
 
   virtual osg::Image*             texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * );
 
@@ -49,7 +51,7 @@ protected:
 
   virtual ~RasterGroup();
 
-  void                            _updateExtents ( const RasterLayer& layer );
+  void                            _updateExtents ( IRasterLayer* layer );
 
   void                            _cacheAdd ( const Extents& extents, unsigned int width, unsigned int height, osg::Image *image );
   osg::Image *                    _cacheFind ( const Extents& extents, unsigned int width, unsigned int height ) const;

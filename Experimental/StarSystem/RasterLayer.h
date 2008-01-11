@@ -18,9 +18,11 @@
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/ILayer.h"
+#include "Usul/Interfaces/ILayerExtents.h"
+#include "Usul/Interfaces/IRasterAlphas.h"
 #include "Usul/Interfaces/IRasterLayer.h"
+#include "Usul/Interfaces/ISerialize.h"
 #include "Usul/Math/Vector3.h"
-#include "Usul/Predicates/LessVector.h"
 
 #include "osg/Vec2d"
 #include "osg/Image"
@@ -38,19 +40,18 @@ namespace StarSystem {
 
 class STAR_SYSTEM_EXPORT RasterLayer : public Usul::Base::Object,
   public Usul::Interfaces::ILayer,
-  public Usul::Interfaces::IRasterLayer
+  public Usul::Interfaces::ILayerExtents,
+  public Usul::Interfaces::IRasterAlphas,
+  public Usul::Interfaces::IRasterLayer,
+  public Usul::Interfaces::ISerialize
 {
 public:
 
   typedef Usul::Base::Object BaseClass;
   typedef StarSystem::Extents < osg::Vec2d > Extents;
-  typedef Usul::Math::Vec3uc Color;
-  typedef std::equal_to < unsigned char > EqualPredicate;
-  typedef Usul::Predicates::LessVector < EqualPredicate, 3 > LessColor;
-  typedef std::map < Usul::Math::Vec3uc, unsigned char, LessColor > Alphas;
   typedef osg::ref_ptr < osg::Image > ImagePtr;
 
-  USUL_DECLARE_REF_POINTERS ( RasterLayer );
+  USUL_DECLARE_QUERY_POINTERS ( RasterLayer );
   
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -86,6 +87,14 @@ protected:
 
   virtual osg::Image *  _createBlankImage ( unsigned int width, unsigned int height ) const;
 
+  /// Get the min latitude and min longitude (ILayerExtents).
+  virtual double        minLon() const;
+  virtual double        minLat() const;
+ 
+  /// Get the max latitude and max longitude (ILayerExtents).
+  virtual double        maxLon() const;
+  virtual double        maxLat() const;
+  
 private:
 
   Extents _extents;

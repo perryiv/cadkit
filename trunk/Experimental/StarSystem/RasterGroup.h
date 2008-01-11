@@ -41,6 +41,9 @@ public:
   USUL_DECLARE_REF_POINTERS ( RasterGroup );
 
   RasterGroup();
+  
+  // Clone.
+  virtual IUnknown*               clone() const;
 
   void                            append ( IRasterLayer* layer );
   void                            remove ( IRasterLayer* layer );
@@ -50,6 +53,9 @@ public:
 protected:
 
   virtual ~RasterGroup();
+  
+  RasterGroup ( const RasterGroup& );
+  RasterGroup& operator= ( const RasterGroup& );
 
   void                            _updateExtents ( IRasterLayer* layer );
 

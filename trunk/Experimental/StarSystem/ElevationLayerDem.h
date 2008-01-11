@@ -30,6 +30,9 @@ public:
 
   ElevationLayerDem();
   
+  /// Clone.
+  virtual IUnknown*     clone() const;
+  
   /// Open the dem.
   void                  open ( const std::string& filename );
 
@@ -41,10 +44,14 @@ public:
   
 protected:
   virtual ~ElevationLayerDem();
+  
+  ElevationLayerDem ( const ElevationLayerDem& );
+  ElevationLayerDem& operator= ( const ElevationLayerDem& );
 
   virtual osg::Image*   _createBlankImage ( unsigned int width, unsigned int height ) const;
   
 private:
+  std::string _filename;
   bool _loaded;
   ossimDemGrid *_grid;
   ossimProjection *_projection;

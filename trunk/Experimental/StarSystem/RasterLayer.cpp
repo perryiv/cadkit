@@ -52,6 +52,42 @@ RasterLayer::RasterLayer() :
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Copy Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterLayer::RasterLayer ( const RasterLayer& rhs ) : BaseClass ( rhs ),
+_extents ( rhs._extents ),
+_alphas ( rhs._alphas ),
+_guid ( rhs._guid ),
+_name ( rhs._name ),
+_shown ( rhs._shown ),
+_dataMemberMap( rhs._dataMemberMap )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Assignment.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterLayer& RasterLayer::operator= ( const RasterLayer& rhs )
+{
+  _extents = rhs._extents;
+  _alphas = rhs._alphas;
+  _guid = rhs._guid;
+  _name = rhs._name;
+  _shown = rhs._shown;
+  //_dataMemberMap = rhs._dataMemberMap;
+  
+  return *this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -151,6 +187,8 @@ Usul::Interfaces::IUnknown* RasterLayer::queryInterface( unsigned long iid )
       return static_cast<Usul::Interfaces::ISerialize*> ( this );
     case Usul::Interfaces::IRasterAlphas::IID:
       return static_cast<Usul::Interfaces::IRasterAlphas*> ( this );
+    case Usul::Interfaces::IClonable::IID:
+      return static_cast<Usul::Interfaces::IClonable*> ( this );
     default:
       return 0x0;
   }

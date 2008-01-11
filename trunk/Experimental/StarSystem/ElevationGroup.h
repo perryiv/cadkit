@@ -27,11 +27,17 @@ public:
   USUL_DECLARE_REF_POINTERS ( ElevationGroup );
 
   ElevationGroup();
+  
+  /// Clone.
+  virtual IUnknown*     clone() const;
 
 protected:
 
   virtual ~ElevationGroup();
 
+  ElevationGroup ( const ElevationGroup& );
+  ElevationGroup& operator= ( const ElevationGroup& );
+  
   virtual osg::Image *            _createBlankImage ( unsigned int width, unsigned int height ) const;
   virtual void                    _compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, Usul::Jobs::Job * );
 

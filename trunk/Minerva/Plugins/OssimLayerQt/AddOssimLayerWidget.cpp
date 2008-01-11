@@ -135,6 +135,7 @@ void AddOssimLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
 #if USE_STAR_SYSTEM
       StarSystem::RasterLayerOssim::RefPtr layer ( new StarSystem::RasterLayerOssim );
       layer->open ( filename );
+      layer->name ( filename );
       
       al->addLayer ( Usul::Interfaces::ILayer::QueryPtr ( layer ) );
 #else

@@ -17,6 +17,10 @@
 
 #include "Usul/Components/Factory.h"
 #include "Usul/App/Application.h"
+#include "Usul/System/Host.h"
+#include "Usul/File/Make.h"
+#include "Usul/File/Remove.h"
+#include "Usul/Predicates/FileExists.h"
 #include "Usul/Strings/Format.h"
 
 #include <algorithm>
@@ -55,7 +59,6 @@ DataSyncComponent::~DataSyncComponent()
 
 Usul::Interfaces::IUnknown *DataSyncComponent::queryInterface ( unsigned long iid )
 {
-  std::cout << Usul::Strings::format ("Calling queryInterface in DataSyncComponent for iid# ", iid ) << std::endl;
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
@@ -80,14 +83,31 @@ Usul::Interfaces::IUnknown *DataSyncComponent::queryInterface ( unsigned long ii
 void DataSyncComponent::setDataFlag( const std::string &machine, bool value )
 {
   //USUL_TRACE_SCOPE;
-  std::cout << Usul::Strings::format ("Setting ", machine, " to ", value ) << std::endl;
-  //Guard guard ( this->mutex() );
+  Guard guard ( this->mutex() );
+#if 0
   SharedBoolMap::iterator iter ( _sharedBoolMap.find ( machine ) );
   if ( iter != _sharedBoolMap.end() )
   {
     if(  (*iter).second.isLocal () )
       (*iter).second->data = value;
   }
+#else
+  if( true == value )
+  {
+    if( machine == Usul::System::Host::name() )
+    {
+      std::string filename = Usul::Strings::format( machine, ".lock" );
+      if( false == Usul::Predicates::FileExists::test( filename ) )
+      {
+        Usul::File::make( filename );
+      }
+    }
+    else
+    {
+      std::cout << "Lock File already exists!" << std::endl;
+    }
+  }
+#endif
 }
 
 
@@ -100,8 +120,8 @@ void DataSyncComponent::setDataFlag( const std::string &machine, bool value )
 bool DataSyncComponent::queryDataState()
 {
   //USUL_TRACE_SCOPE;
-  //Guard guard ( this->mutex() );
-  std::cout << Usul::Strings::format ( "Querying data state in DataSync Plugin..." ) << std::endl;
+  Guard guard ( this->mutex() );
+#if 0
   for( SharedBoolMap::iterator iter = _sharedBoolMap.begin(); iter != _sharedBoolMap.end(); ++iter )
   {
     if( false == iter->second->data )
@@ -109,6 +129,14 @@ bool DataSyncComponent::queryDataState()
       return false;
     }
   }
+#else
+  for( MachineList::const_iterator iter = _machines.begin(); iter != _machines.end(); ++iter )
+  {
+    std::string filename( Usul::Strings::format( *iter, ".lock" ) ); 
+    if( false == Usul::Predicates::FileExists::test( filename ) )
+      return false;
+  }
+#endif
   return true;
 }
 
@@ -122,43 +150,38 @@ bool DataSyncComponent::queryDataState()
 void DataSyncComponent::resetData()
 {
   //USUL_TRACE_SCOPE;
-  //Guard guard ( this->mutex() );
-  std::cout << Usul::Strings::format ( "Resetting all values to false in DataSync Plugin" ) << std::endl;
+  Guard guard ( this->mutex() );
+#if 0
   for( SharedBoolMap::iterator iter = _sharedBoolMap.begin(); iter != _sharedBoolMap.end(); ++iter )
   {
    iter->second->data = false;
   }
+#else
+  for( MachineList::const_iterator iter = _machines.begin(); iter != _machines.end(); ++iter )
+  {
+    std::string filename( Usul::Strings::format( *iter, ".lock" ) ); 
+    if( true == Usul::Predicates::FileExists::test( filename ) )
+      Usul::File::remove( filename );
+  }
+#endif
 }
 
 
 void DataSyncComponent::initialize( Usul::Interfaces::IUnknown *caller )
 {
-  //Guard guard ( this->mutex() );
-
-  // Debug information
-  std::cout << "Initializing DataSync Plugin..." << std::endl;
-
+  Guard guard ( this->mutex() );
+#if 1
   // Read config file.
    XmlTree::Document::RefPtr document ( new XmlTree::Document );
    
    std::string file = Usul::App::Application::instance().configFile( "machines" );
    document->load ( file );
 
-   // Debug information
-   std::cout << "Reading DataSync Plugin config file..." << std::endl;
-
    this->_readConfigFile( *document, caller, 0x0 );
 
-   for( unsigned int i = 0; i < _machines.size(); ++i )
-   {
-     // Debug information
-     std::cout << "Adding machine " << _machines.at( i ).first << "..." << std::endl;
-
-     vpr::GUID guid ( _machines.at( i ).second );
-     
-     _sharedBoolMap[_machines.at( i ).first].init( guid, _machines.at( i ).first );
-   }
-   std::cout << Usul::Strings::format ( "Initialization complete in DataSync Plugin" ) << std::endl;
+   
+#else
+#endif
 }
 
 
@@ -170,7 +193,7 @@ void DataSyncComponent::initialize( Usul::Interfaces::IUnknown *caller )
 
 void DataSyncComponent::_readConfigFile( XmlTree::Node &node, Unknown *caller, Unknown *progress )
 {
-  //Guard guard ( this->mutex() );
+  Guard guard ( this->mutex() );
   typedef XmlTree::Document::Attributes Attributes;
   typedef XmlTree::Document::Children Children;
 
@@ -202,30 +225,17 @@ void DataSyncComponent::_readConfigFile( XmlTree::Node &node, Unknown *caller, U
 
 void DataSyncComponent::_parseMachine( XmlTree::Node &node, Unknown *caller, Unknown *progress )
 { 
-  //Guard guard ( this->mutex() );
-
+  Guard guard ( this->mutex() );
   typedef XmlTree::Document::Attributes Attributes;
   typedef XmlTree::Document::Children Children;
   Attributes& attributes ( node.attributes() );
 
-  Machine m;
-  m.first = "";
-  m.second = "";
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
-    
     if ( "name" == iter->first )
     {
-      m.first = iter->second;
-    }
-    if ( "guid" == iter->first )
-    {
-      m.second = iter->second;
-    }
-       
+      _machines.push_back( iter->second );
+    }    
   }
-  if( m.first != "" && m.second != "" )
-    _machines.push_back( m );
- 
 }
 

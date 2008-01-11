@@ -26,8 +26,8 @@
 
 #include "XmlTree/Document.h"
 
-#include "VRV/Core/SharedBoolean.h"
-#include "plugins/ApplicationDataManager/UserData.h"
+//#include "VRV/Core/SharedBoolean.h"
+//#include "plugins/ApplicationDataManager/UserData.h"
 
 #include <string>
 #include <map>
@@ -46,10 +46,11 @@ public:
   typedef Usul::Base::Object BaseClass;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef Usul::Documents::Document Document;
-  typedef VRV::Core::SharedBoolean SharedBoolean;
+//  typedef VRV::Core::SharedBoolean SharedBoolean;
   typedef std::pair< std::string, std::string > Machine;
   typedef std::vector< Machine > Machines;
-  typedef std::map< std::string, cluster::UserData< SharedBoolean > > SharedBoolMap;
+  typedef std::vector< std::string > MachineList;
+  //typedef std::map< std::string, cluster::UserData< SharedBoolean > > SharedBoolMap;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( DataSyncComponent );
@@ -89,9 +90,9 @@ protected:
 
 
 private:
-  SharedBoolMap                 _sharedBoolMap;
-  Machines                      _machines;
-
+  //SharedBoolMap                 _sharedBoolMap;
+  //Machines                      _machines;
+  MachineList                     _machines;
 
 
 };

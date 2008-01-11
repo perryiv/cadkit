@@ -131,11 +131,19 @@ void Body::addTile ( const Extents &extents )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
+
+  // Parameters for the tile.
+  const unsigned int level  ( 0 );
+  const unsigned int width  ( 512 );
+  const unsigned int height ( 512 );
+
+  // Make the image for the tile.
+  osg::ref_ptr< osg::Image > image ( Tile::buildRaster ( extents, width, height, level, this->rasterData(), 0x0 ) );
   
   // Make the tile.
   const Usul::Math::Vec4d textureCoords ( 0.0, 1.0, 0.0, 1.0 );
   const MeshSize meshSize ( this->meshSize ( extents ) );
-  osg::ref_ptr<Tile> tile ( new Tile ( 0, extents, meshSize, textureCoords, _splitDistance, this ) );
+  osg::ref_ptr<Tile> tile ( new Tile ( level, extents, meshSize, textureCoords, _splitDistance, this, image.get() ) );
 
   // Add tile to the trnsform.
   _transform->addChild ( tile.get() );

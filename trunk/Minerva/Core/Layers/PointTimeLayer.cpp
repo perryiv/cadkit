@@ -486,35 +486,9 @@ Usul::Interfaces::IUnknown* PointTimeLayer::queryInterface( unsigned long iid )
   //case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::ITemporalData::IID:
     return static_cast < Usul::Interfaces::ITemporalData* > ( this );
-  case Minerva::Core::IPointTimeLayerRawPointer::IID:
-    return static_cast < Minerva::Core::IPointTimeLayerRawPointer * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the point time layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-PointTimeLayer* PointTimeLayer::getRawPointer()
-{
-  return this;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the point time layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const PointTimeLayer* PointTimeLayer::getRawPointer() const
-{
-  return this;
 }
 
 

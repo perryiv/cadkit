@@ -13,7 +13,6 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/PointLayer.h"
-#include "Minerva/Core/Interfaces.h"
 #include "Minerva/Core/Animate/Date.h"
 
 #include "Usul/Interfaces/IPointLayer.h"
@@ -26,8 +25,7 @@ namespace Core {
 namespace Layers {
 
 class MINERVA_EXPORT PointTimeLayer : public Minerva::Core::Layers::PointLayer,
-                                      public Usul::Interfaces::ITemporalData,
-                                      public Minerva::Core::IPointTimeLayerRawPointer
+                                      public Usul::Interfaces::ITemporalData
 {
 public:
   typedef Minerva::Core::Layers::PointLayer BaseClass;
@@ -79,9 +77,6 @@ protected:
   std::string             _whereClause() const;
 
   void _registerMembers();
-
-  virtual PointTimeLayer*         getRawPointer();
-  virtual const PointTimeLayer*   getRawPointer() const;
 
   /// Clone the this layer.
   virtual Usul::Interfaces::IUnknown*          clone() const;

@@ -270,33 +270,7 @@ Usul::Interfaces::IUnknown* LineLayer::queryInterface( unsigned long iid )
   //case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::ILineLayer::IID:
     return static_cast < Usul::Interfaces::ILineLayer* > ( this );
-  case Minerva::Core::ILineLayerRawPointer::IID:
-    return static_cast < Minerva::Core::ILineLayerRawPointer* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the line layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-LineLayer* LineLayer::getRawPointer()
-{
-  return this;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the line layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const LineLayer* LineLayer::getRawPointer() const
-{
-  return this;
 }

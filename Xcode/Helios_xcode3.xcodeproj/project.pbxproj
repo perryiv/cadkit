@@ -1005,7 +1005,6 @@
 		66EF18020D15193000B4B1AA /* GradientColorFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17A40D15193000B4B1AA /* GradientColorFunctor.h */; };
 		66EF18030D15193000B4B1AA /* SingleColorFunctor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF17A50D15193000B4B1AA /* SingleColorFunctor.cpp */; };
 		66EF18040D15193000B4B1AA /* SingleColorFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17A60D15193000B4B1AA /* SingleColorFunctor.h */; };
-		66EF18050D15193000B4B1AA /* Interfaces.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17A70D15193000B4B1AA /* Interfaces.h */; };
 		66EF18060D15193000B4B1AA /* Layer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF17A90D15193000B4B1AA /* Layer.cpp */; };
 		66EF18070D15193000B4B1AA /* Layer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17AA0D15193000B4B1AA /* Layer.h */; };
 		66EF18080D15193000B4B1AA /* LineLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF17AB0D15193000B4B1AA /* LineLayer.cpp */; };
@@ -3629,7 +3628,6 @@
 		66EF17A40D15193000B4B1AA /* GradientColorFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GradientColorFunctor.h; sourceTree = "<group>"; };
 		66EF17A50D15193000B4B1AA /* SingleColorFunctor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SingleColorFunctor.cpp; sourceTree = "<group>"; };
 		66EF17A60D15193000B4B1AA /* SingleColorFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SingleColorFunctor.h; sourceTree = "<group>"; };
-		66EF17A70D15193000B4B1AA /* Interfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Interfaces.h; sourceTree = "<group>"; };
 		66EF17A90D15193000B4B1AA /* Layer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Layer.cpp; sourceTree = "<group>"; };
 		66EF17AA0D15193000B4B1AA /* Layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Layer.h; sourceTree = "<group>"; };
 		66EF17AB0D15193000B4B1AA /* LineLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LineLayer.cpp; sourceTree = "<group>"; };
@@ -6784,7 +6782,6 @@
 				66EF17990D15193000B4B1AA /* DB */,
 				66EF17A00D15193000B4B1AA /* Export.h */,
 				66EF17A10D15193000B4B1AA /* Functors */,
-				66EF17A70D15193000B4B1AA /* Interfaces.h */,
 				66EF17A80D15193000B4B1AA /* Layers */,
 				66EF17B90D15193000B4B1AA /* postGIS */,
 				66EF17C80D15193000B4B1AA /* Scene */,
@@ -7638,7 +7635,6 @@
 				66EF18000D15193000B4B1AA /* BaseColorFunctor.h in Headers */,
 				66EF18020D15193000B4B1AA /* GradientColorFunctor.h in Headers */,
 				66EF18040D15193000B4B1AA /* SingleColorFunctor.h in Headers */,
-				66EF18050D15193000B4B1AA /* Interfaces.h in Headers */,
 				66EF18070D15193000B4B1AA /* Layer.h in Headers */,
 				66EF18090D15193000B4B1AA /* LineLayer.h in Headers */,
 				66EF180D0D15193000B4B1AA /* PointLayer.h in Headers */,

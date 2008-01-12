@@ -13,7 +13,6 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/Layer.h"
-#include "Minerva/Core/Interfaces.h"
 
 #include "Usul/Interfaces/IPointLayer.h"
 
@@ -22,8 +21,7 @@ namespace Core {
 namespace Layers {
 
 class MINERVA_EXPORT PointLayer : public Minerva::Core::Layers::Layer,
-                                  public Usul::Interfaces::IPointLayer,
-                                  public Minerva::Core::IPointLayerRawPointer
+                                  public Usul::Interfaces::IPointLayer
 {
 public:
   typedef Minerva::Core::Layers::Layer BaseClass;
@@ -82,9 +80,6 @@ protected:
   void _registerMembers();
 
   void _stack ();
-
-  virtual PointLayer*         getRawPointer();
-  virtual const PointLayer*   getRawPointer() const;
 
   /// Clone the this layer.
   virtual Usul::Interfaces::IUnknown*              clone() const;

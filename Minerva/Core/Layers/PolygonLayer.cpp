@@ -388,33 +388,7 @@ Usul::Interfaces::IUnknown* PolygonLayer::queryInterface( unsigned long iid )
   //case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IPolygonLayer::IID:
     return static_cast < Usul::Interfaces::IPolygonLayer* > ( this );
-  case Minerva::Core::IPolygonLayerRawPointer::IID:
-    return static_cast < Minerva::Core::IPolygonLayerRawPointer* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the raw pointer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-PolygonLayer* PolygonLayer::getRawPointer()
-{
-  return this;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the raw pointer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const PolygonLayer* PolygonLayer::getRawPointer() const
-{
-  return this;
 }

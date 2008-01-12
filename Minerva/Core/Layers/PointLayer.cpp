@@ -405,35 +405,9 @@ Usul::Interfaces::IUnknown* PointLayer::queryInterface( unsigned long iid )
   //case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IPointLayer::IID:
     return static_cast < Usul::Interfaces::IPointLayer* > ( this );
-  case Minerva::Core::IPointLayerRawPointer::IID:
-    return static_cast < Minerva::Core::IPointLayerRawPointer* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the point layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-PointLayer* PointLayer::getRawPointer()
-{
-  return this;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the point layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const PointLayer* PointLayer::getRawPointer() const
-{
-  return this;
 }
 
 

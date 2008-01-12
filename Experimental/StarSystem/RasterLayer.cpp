@@ -46,6 +46,9 @@ RasterLayer::RasterLayer() :
 {
   // Serialization glue.
   this->_addMember ( "extents", _extents );
+  this->_addMember ( "guid", _guid );
+  this->_addMember ( "name", _name );
+  this->_addMember ( "shown", _shown );
   //this->_addMember ( "alphas", _alphas );
 }
 

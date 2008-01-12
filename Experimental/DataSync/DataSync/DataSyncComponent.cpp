@@ -48,6 +48,7 @@ DataSyncComponent::DataSyncComponent() : BaseClass()
 
 DataSyncComponent::~DataSyncComponent()
 {
+  this->resetData();
 }
 
 

@@ -64,9 +64,6 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _elevation ( new ElevationGroup ),
   _manager ( manager ),
   _textureJobs (),
-  _frame ( false ),
-  _texturesPerFrame ( 0 ),
-  _maxTexturesPerFrame ( 10 ),
   _maxLevel ( 50 ),
   _cacheTiles ( false ),
   _splitDistance ( splitDistance ),
@@ -82,7 +79,6 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   this->_addMember ( "land_model", _landModel );
   this->_addMember ( "raster_group", _rasters );
   this->_addMember ( "elevation_group", _elevation );
-  this->_addMember ( "max_textures_per_frame", _maxTexturesPerFrame );
   this->_addMember ( "max_level", _maxLevel );
   this->_addMember ( "cache_tiles", _cacheTiles );
   this->_addMember ( "split_distance", _splitDistance );
@@ -354,10 +350,6 @@ void Body::preRender ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   BaseClass::preRender ( caller );
-
-  Guard guard ( this );
-  _frame = true;
-  _texturesPerFrame = 0;
 }
 
 
@@ -371,9 +363,6 @@ void Body::postRender ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   BaseClass::postRender ( caller );
-
-  Guard guard ( this );
-  _frame = false;
 }
 
 
@@ -442,14 +431,13 @@ osg::Texture2D* Body::texture ( unsigned long id )
   TextureJobs::iterator iter = _textureJobs.find ( id );
   osg::ref_ptr < osg::Texture2D > texture ( 0x0 );
 
-  if ( iter != _textureJobs.end() && _frame && _texturesPerFrame < _maxTexturesPerFrame )
+  if ( iter != _textureJobs.end() )
   {
     CutImageJob::RefPtr job ( iter->second );
     if ( job->isDone() && false == job->canceled() )
     {
       texture = job->texture();
       _textureJobs.erase ( iter );
-      ++_texturesPerFrame;
     }
   }
 

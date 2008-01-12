@@ -160,9 +160,6 @@ private:
   ElevationGroup::RefPtr _elevation;
   Usul::Jobs::Manager *_manager;
   TextureJobs _textureJobs;
-  bool _frame;
-  unsigned int _texturesPerFrame;
-  unsigned int _maxTexturesPerFrame;
   unsigned int _maxLevel;
   bool _cacheTiles;
   double _splitDistance;

@@ -31,7 +31,7 @@ struct IDataSync : public Usul::Interfaces::IUnknown
   virtual bool                  queryDataState() = 0;
 
   // reset data
-  virtual void                  resetData() = 0;
+  virtual void                  resetData( const std::string &machine ) = 0;
 
 }; //struct IDataSync
 

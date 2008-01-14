@@ -67,7 +67,7 @@ public:
   /// Usul::Interfaces::IDataSync
   virtual void                  setDataFlag( const std::string &machine, bool value );
   virtual bool                  queryDataState();
-  virtual void                  resetData();
+  virtual void                  resetData( const std::string &machine );
   
   /// Usul::Interfaces::IPluginInitialize
   virtual void                  initialize( Usul::Interfaces::IUnknown *caller );

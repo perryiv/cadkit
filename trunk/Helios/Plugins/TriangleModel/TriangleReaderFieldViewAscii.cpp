@@ -157,7 +157,8 @@ void TriangleReaderFieldViewAscii::_read( const std::string & filename )
     _vertices.push_back( p );
     _mirrorVertices.push_back( m );
     
-    _colorRange[0] = s;
+    //_colorRange[0] = s;
+    _colorRange[0] = 11.323;
     _colorRange[1] = s;
 
   //assuming number of columns is 4
@@ -176,6 +177,7 @@ void TriangleReaderFieldViewAscii::_read( const std::string & filename )
 
     Usul::Math::Vec3d p( x, y, z );
     Usul::Math::Vec3d m( x, y, z * -1 );
+
     _values.push_back( s );
     _vertices.push_back( p );
     _mirrorVertices.push_back( m );
@@ -187,6 +189,7 @@ void TriangleReaderFieldViewAscii::_read( const std::string & filename )
     this->_incrementProgress ( update() );
 
   }
+  std::cout << "Color range is from " << _colorRange[0] << " to " <<_colorRange[1] << std::endl;
   //Skip the word GEOMETRY
   in.getline ( buffer, bufSize );
 
@@ -234,6 +237,7 @@ void TriangleReaderFieldViewAscii::_read( const std::string & filename )
 void TriangleReaderFieldViewAscii::_createMirroredTriangle( unsigned int i, osg::Vec4Array * colors )
 {
   #if 1
+  double maxRange = _colorRange[1] - _colorRange[0];
   typedef TriangleDocument::Triangle* (TriangleDocument::*Function) ( SharedVertex *, SharedVertex *, SharedVertex *, const osg::Vec3f &, bool, bool );
   typedef Usul::Adaptors::MemberFunction < void, TriangleDocument*, Function > MemFun;
 
@@ -247,7 +251,10 @@ void TriangleReaderFieldViewAscii::_createMirroredTriangle( unsigned int i, osg:
     SharedVertex *sv0 ( _document->addSharedVertex ( v0, true ) );
     
     // Color for vertex 1
-    Color4 c0 = this->_getInterpolatedColorValue( _values.at( i ) / _colorRange[1] );
+    double value0 = _values.at( i ) - _colorRange[0];
+    //Color4 c0 = this->_getInterpolatedColorValue( _values.at( i ) / _colorRange[1] );
+    Color4 c0 = this->_getInterpolatedColorValue( value0 / maxRange );
+    
     colors->at( sv0->index() ) = osg::Vec4d( c0[0] / 255, c0[1] / 255, c0[2] / 255, c0[3] );
 
     // vertex 2
@@ -257,7 +264,10 @@ void TriangleReaderFieldViewAscii::_createMirroredTriangle( unsigned int i, osg:
     SharedVertex *sv1 ( _document->addSharedVertex ( v1, true ) );
 
     // Color for vertex 2
-    Color4 c1 = this->_getInterpolatedColorValue( _values.at( i + 1 ) / _colorRange[1] );
+    double value1 = _values.at( i + 1 ) - _colorRange[0];
+    //Color4 c1 = this->_getInterpolatedColorValue( _values.at( i + 1 ) / _colorRange[1] );
+    Color4 c1 = this->_getInterpolatedColorValue( value1 / maxRange );
+    
     colors->at ( sv1->index() ) = osg::Vec4d( c1[0] / 255, c1[1] / 255, c1[2] / 255, c1[3] );
 
     // vertex 3
@@ -267,7 +277,10 @@ void TriangleReaderFieldViewAscii::_createMirroredTriangle( unsigned int i, osg:
     SharedVertex *sv2 ( _document->addSharedVertex ( v2, true ) );
 
     // Color for vertex 3
-    Color4 c2 = this->_getInterpolatedColorValue( _values.at( i + 2 ) / _colorRange[1] );
+    double value2 = _values.at( i + 2 ) - _colorRange[0];
+    //Color4 c2 = this->_getInterpolatedColorValue( _values.at( i + 2 ) / _colorRange[1] );
+    Color4 c2 = this->_getInterpolatedColorValue( value2 / maxRange );
+    
     colors->at ( sv2->index() ) = osg::Vec4d( c2[0] / 255 , c2[1] / 255 , c2[2] / 255, c2[3] );
 
     // ( p2 - p1 ) ^ ( p0 - p1 )
@@ -305,6 +318,7 @@ void TriangleReaderFieldViewAscii::_createTriangeSet()
   _progress.second = _values.size() / 3;
   Usul::Policies::TimeBased update ( 1000 ); // Every second.
 #if 1
+  double maxRange = _colorRange[1] - _colorRange[0];
   for( unsigned int i = 0; i < _vertices.size(); i += 3 )
   {
    
@@ -316,7 +330,9 @@ void TriangleReaderFieldViewAscii::_createTriangeSet()
     SharedVertex *sv2 ( _document->addSharedVertex ( v2, true ) );
     
     // Color for vertex 1
-    Color4 c0 = this->_getInterpolatedColorValue( _values.at( i ) / _colorRange[1] );
+    double value0 = _values.at( i ) - _colorRange[0];
+    //Color4 c0 = this->_getInterpolatedColorValue( _values.at( i ) / _colorRange[1] );
+    Color4 c0 = this->_getInterpolatedColorValue( value0 / maxRange );
     colors->at( sv2->index() ) = osg::Vec4d( c0[0] / 255, c0[1] / 255, c0[2] / 255, c0[3] );
 
     // vertex 2
@@ -326,7 +342,9 @@ void TriangleReaderFieldViewAscii::_createTriangeSet()
     SharedVertex *sv1 ( _document->addSharedVertex ( v1, true ) );
 
     // Color for vertex 2
-    Color4 c1 = this->_getInterpolatedColorValue( _values.at( i + 1 ) / _colorRange[1] );
+    double value1 = _values.at( i + 1 ) - _colorRange[0];
+    //Color4 c1 = this->_getInterpolatedColorValue( _values.at( i + 1 ) / _colorRange[1] );
+    Color4 c1 = this->_getInterpolatedColorValue( value1 / maxRange );
     colors->at ( sv1->index() ) = osg::Vec4d( c1[0] / 255, c1[1] / 255, c1[2] / 255, c1[3] );
 
     // vertex 3
@@ -336,7 +354,9 @@ void TriangleReaderFieldViewAscii::_createTriangeSet()
     SharedVertex *sv0 ( _document->addSharedVertex ( v0, true ) );
 
     // Color for vertex 3
-    Color4 c2 = this->_getInterpolatedColorValue( _values.at( i + 2 ) / _colorRange[1] );
+    double value2 = _values.at( i + 2 ) - _colorRange[0];
+    //Color4 c2 = this->_getInterpolatedColorValue( _values.at( i + 2 ) / _colorRange[1] );
+    Color4 c2 = this->_getInterpolatedColorValue( value2 / maxRange );
     colors->at ( sv0->index() ) = osg::Vec4d( c2[0] / 255 , c2[1] / 255 , c2[2] / 255, c2[3] );
 
     // ( p2 - p1 ) ^ ( p0 - p1 )

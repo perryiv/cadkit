@@ -48,7 +48,7 @@ DataSyncComponent::DataSyncComponent() : BaseClass()
 
 DataSyncComponent::~DataSyncComponent()
 {
-  this->resetData();
+  //this->resetData();
 }
 
 
@@ -85,6 +85,7 @@ void DataSyncComponent::setDataFlag( const std::string &machine, bool value )
 {
   //USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+  std::cout << "Machine: " << Usul::System::Host::name() << " is calling setDataFlag for machine " << machine << std::endl;
 #if 0
   SharedBoolMap::iterator iter ( _sharedBoolMap.find ( machine ) );
   if ( iter != _sharedBoolMap.end() )
@@ -134,10 +135,16 @@ bool DataSyncComponent::queryDataState()
   for( MachineList::const_iterator iter = _machines.begin(); iter != _machines.end(); ++iter )
   {
     std::string filename( Usul::Strings::format( *iter, ".lock" ) ); 
-    if( false == Usul::Predicates::FileExists::test( filename ) )
+    std::cout << "Checking lock file for machine: " << filename << std::endl;
+    if( true == Usul::Predicates::FileExists::test( filename ) )
+    {
+      std::cout << "Lockfile FOUND found for machine: " << filename << std::endl;
       return false;
+    }
+    std::cout << "Lockfile NOT for machine: " << filename << std::endl;
   }
 #endif
+  std::cout << "All lockfiles NOT found.  Ok to draw." << std::endl;
   return true;
 }
 
@@ -148,19 +155,22 @@ bool DataSyncComponent::queryDataState()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DataSyncComponent::resetData()
+void DataSyncComponent::resetData(  const std::string &machine )
 {
   //USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+  std::cout << "Machine: " << Usul::System::Host::name() << " is calling resetData for machine " << machine << std::endl;
+
 #if 0
   for( SharedBoolMap::iterator iter = _sharedBoolMap.begin(); iter != _sharedBoolMap.end(); ++iter )
   {
    iter->second->data = false;
   }
 #else
-  for( MachineList::const_iterator iter = _machines.begin(); iter != _machines.end(); ++iter )
+  if( machine == Usul::System::Host::name() )
   {
-    std::string filename( Usul::Strings::format( *iter, ".lock" ) ); 
+    std::string filename( Usul::Strings::format( machine, ".lock" ) ); 
+    std::cout << Usul::System::Host::name() << " is removing lockfile: " << filename << std::endl;
     if( true == Usul::Predicates::FileExists::test( filename ) )
       Usul::File::remove( filename );
   }

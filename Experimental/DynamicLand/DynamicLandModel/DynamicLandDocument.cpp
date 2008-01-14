@@ -204,7 +204,7 @@ bool DynamicLandDocument::incrementFilePosition ()
       }
 
       ++_currFileNum;
-      std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
+      std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::endl;
       return true;
     }
     else
@@ -253,7 +253,7 @@ bool DynamicLandDocument::decrementFilePosition ()
         //Usul::Jobs::Manager::instance().add ( job.get() );
       }
       --_currFileNum;
-      std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
+      std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::endl;
       return true;
     }
     else
@@ -564,6 +564,10 @@ osg::Node* DynamicLandDocument::LoadDataJob::_buildScene( Usul::Documents::Docum
  
   }
 #endif
+  // Get needed interfaces.
+  IDataSync::QueryPtr dataSync ( Usul::Components::Manager::instance().getInterface ( IDataSync::IID ) );
+
+  dataSync->resetData( Usul::System::Host::name() );
   return group.release();
 }
 
@@ -638,7 +642,8 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   IDataSync::QueryPtr dataSync ( Usul::Components::Manager::instance().getInterface ( IDataSync::IID ) );
   
   // check to see if it is time to update the animation frame
-  if( true == _animationDelay() && true == this->_updateAnimationFrame() )
+  if( true == _animationDelay() && 
+      true == this->_updateAnimationFrame() )
   {    
       this->incrementFilePosition();
       this->loadCurrentFile( true );
@@ -646,17 +651,15 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
    }
   
   // update the animation frame
-  
- 
   if( true == this->isValid( this->currentFilePosition() ) &&
       false == this->isLoading( this->currentFilePosition() ) &&
       true == this->loadCurrentFile() &&
-      true == dataSync->queryDataState() )
+      true == dataSync->queryDataState()  )
   {
     // current time step is ready to be shown
     this->_loadNextTimeStep();
     this->_currentFileLoaded( this->currentFilePosition() );
-    dataSync->resetData();
+    
   }
   
   // Search for files matching our criteria
@@ -675,6 +678,7 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
 void DynamicLandDocument::_loadJobs( Usul::Interfaces::IUnknown *caller )
 {
+#if 0
   if( this->numFiles() > 0 )
   {
     //Load files...
@@ -735,7 +739,36 @@ void DynamicLandDocument::_loadJobs( Usul::Interfaces::IUnknown *caller )
       }
     }
   }
- 
+
+  
+#else // Load current file only.
+  if( this->numFiles() > 0 )
+  {
+    unsigned int index = this->currentFilePosition();
+    if( false == this->isValid( index ) &&
+          false == this->isLoading( index ) &&
+          false == this->isLoaded( index ) )
+    {
+      // Get needed interfaces.
+      IDataSync::QueryPtr dataSync ( Usul::Components::Manager::instance().getInterface ( IDataSync::IID ) );
+      
+      dataSync->setDataFlag( Usul::System::Host::name(), true );
+      
+      // Get the file name
+      std::string filename = this->getFilenameAtIndex( index );
+      // strip the extension from the map file name
+      std::string root = filename.substr( 0, filename.size() - 4 );
+      this->isLoading( index, true );
+      #if 1 // with progress bars
+        LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, caller, index ) );
+      #else // without progress bars
+        LoadDataJob::RefPtr job ( new LoadDataJob ( this, root, 0x0, index ) );
+      #endif
+      this->_getJobManager()->addJob ( job.get() );
+      
+    }
+  }
+#endif
 }
 
 
@@ -829,7 +862,7 @@ void DynamicLandDocument::_findFiles()
        std::swap( files, _files );
       
        std::cout << "\nNumber of files loaded: " << _files.size() << std::endl;
-       std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::flush;
+       std::cout << "\rCurrently at file: " << _files.at( _currFileNum ) << std::endl;
       }
     }
     
@@ -1454,7 +1487,7 @@ void DynamicLandDocument::setTimeStepFrame( unsigned int i, osg::Group * group )
 
    // Get needed interfaces.
   IDataSync::QueryPtr dataSync ( Usul::Components::Manager::instance().getInterface ( IDataSync::IID ) );
-  dataSync->setDataFlag( Usul::System::Host::name(), true );
+  
   //_timeStepPool.at( i ).group = dynamic_cast<osg::Group *> ( group->clone ( osg::CopyOp::DEEP_COPY_ALL ) );
 }
 

@@ -1098,7 +1098,8 @@ osg::Node* ModelPresentationDocument::_loadFile( const std::string& filename, Un
       try
       {
         Usul::System::Directory::ScopedCwd cwd ( _workingDir );
-        this->_openDocument ( filename, info.document.get(), caller, progress );
+        
+        this->_openDocument ( Usul::File::fullPath( filename ), info.document.get(), caller, progress );
 
         // Disable Memory pools
         {
@@ -1196,7 +1197,7 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
         try
         {
           Usul::System::Directory::ScopedCwd cwd ( _workingDir );
-          this->_openDocument ( filename, info.document.get(), caller, progress );
+          this->_openDocument ( Usul::File::fullPath( filename ), info.document.get(), caller, progress );
 
           // Disable Memory pools
           {

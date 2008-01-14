@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>123</height>
+    <height>157</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -66,9 +66,9 @@
    <item>
     <layout class="QHBoxLayout" >
      <item>
-      <widget class="QCheckBox" name="checkBox_6" >
+      <widget class="QCheckBox" name="_rasterize" >
        <property name="enabled" >
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="text" >
         <string>Rasterize</string>

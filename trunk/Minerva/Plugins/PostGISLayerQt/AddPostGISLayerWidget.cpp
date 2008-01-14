@@ -11,6 +11,7 @@
 #include "Minerva/Plugins/PostGISLayerQt/AddPostGISLayerWidget.h"
 #include "Minerva/Plugins/PostGISLayerQt/DatabasePage.h"
 #include "Minerva/Plugins/PostGISLayerQt/PropertyPage.h"
+#include "Minerva/Plugins/PostGISLayerQt/RasterPolygonLayer.h"
 
 #include "Minerva/Core/Commands/AddLayer.h"
 
@@ -78,7 +79,25 @@ AddPostGISLayerWidget::~AddPostGISLayerWidget()
 
 void AddPostGISLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
 {
-  Usul::Interfaces::ILayer::QueryPtr layer ( 0x0 != _databasePage ? _databasePage->layer() : 0x0 );
+  bool rasterize ( false );
+  
+  if ( 0x0 != _propertyPage )
+  {
+    rasterize = _propertyPage->rasterize();
+  }
+  
+  // Return now if we don't have a database page.
+  if ( 0x0 == _databasePage )
+    return;
+  
+  Usul::Interfaces::ILayer::QueryPtr layer ( _databasePage->layer() );
+  
+  if ( rasterize )
+  {
+    layer = Usul::Interfaces::ILayer::QueryPtr ( new RasterPolygonLayer ( _databasePage->layer() ) );
+  }
+  
+  // Add the layer.
   Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( caller, layer.get() ) );
   addLayer->execute ( Usul::Documents::Manager::instance().activeDocument() );
 }

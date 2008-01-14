@@ -18,6 +18,8 @@
 
 namespace QtTools { class ColorButton; }
 
+class QComboBox;
+
 class GradientColorWidget : public QWidget
 {
   Q_OBJECT;
@@ -32,12 +34,14 @@ public:
 protected slots:
   void _minColorChanged ();
   void _maxColorChanged ();
+  void _columnChanged ( int );
 
 private:
   Layer::RefPtr _layer;
   GradientColor::RefPtr _gradientColor;
   QtTools::ColorButton *_minColorButton;
   QtTools::ColorButton *_maxColorButton;
+  QComboBox *_columns;
 };
 
 

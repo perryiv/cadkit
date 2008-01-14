@@ -26,6 +26,7 @@ public:
 
   PolygonWidget ( PolygonLayer* layer, QWidget* parent = 0x0 );
 
+  bool rasterize() const;
 protected slots:
   void _drawBorderChanged ( int state );
   void _drawInteriorChanged ( int state );

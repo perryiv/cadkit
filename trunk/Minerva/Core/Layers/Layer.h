@@ -27,6 +27,7 @@
 #include "Usul/Interfaces/IAddRowLegend.h"
 #include "Usul/Interfaces/ISerialize.h"
 #include "Usul/Interfaces/IClonable.h"
+#include "Usul/Math/Vector2.h"
 
 #include "Serialize/XML/Macros.h"
 
@@ -98,7 +99,8 @@ public:
   /// Get/Set the connection.
   void                        connection ( DB::Connection *connection );
   DB::Connection*             connection ();
-
+  const DB::Connection*       connection () const;
+  
   /// Get/Set the tablename.
   void                        tablename( const std::string& table );
   const std::string&          tablename() const;
@@ -206,6 +208,15 @@ public:
   /// Get/Set the alpha value.
   void                        alpha ( float a );
   float                       alpha () const;
+  
+  /// Get the extents.
+  void                        extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const;
+  
+  /// Get the Spatial Reference id (srid).
+  int                         srid() const;
+  
+  /// Get the projection as "Well Known Text".
+  std::string                 projectionWKT() const;
 
 protected:
 

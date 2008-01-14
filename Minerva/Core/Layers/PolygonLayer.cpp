@@ -36,7 +36,6 @@ USUL_FACTORY_REGISTER_CREATOR ( PolygonLayer );
 ///////////////////////////////////////////////////////////////////////////////
 
 PolygonLayer::PolygonLayer() : BaseClass(), 
-_format(),
 _showInterior( true ),
 _showBorder( false ),
 _borderColor( 0.0, 0.0, 0.0, 1.0 ),
@@ -55,7 +54,6 @@ _borderWidth ( 1.0f )
 ///////////////////////////////////////////////////////////////////////////////
 
 PolygonLayer::PolygonLayer ( const PolygonLayer& layer ) : BaseClass ( layer ),
-_format ( layer._format ),
 _showInterior( layer._showInterior ),
 _showBorder ( layer._showBorder ),
 _borderColor ( layer._borderColor ),
@@ -73,7 +71,6 @@ _borderWidth ( layer._borderWidth )
 
 void PolygonLayer::_registerMembers()
 {
-  SERIALIZE_XML_ADD_MEMBER ( _format );
   SERIALIZE_XML_ADD_MEMBER ( _showInterior );
   SERIALIZE_XML_ADD_MEMBER ( _showBorder );
   SERIALIZE_XML_ADD_MEMBER ( _borderColor );
@@ -244,30 +241,6 @@ void PolygonLayer::modify( Usul::Interfaces::IUnknown *caller )
   //    progress->updateProgressBar( num );
   //  }
   //}
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the format string.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void PolygonLayer::format( const std::string& format )
-{
-  _format = format;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the format string.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const std::string& PolygonLayer::format() const
-{
-  return _format;
 }
 
 

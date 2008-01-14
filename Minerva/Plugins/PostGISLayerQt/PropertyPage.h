@@ -38,6 +38,7 @@ public:
   PropertyPage ( Layer *layer, QWidget *parent = 0x0 );
   virtual ~PropertyPage ();
 
+  bool rasterize() const;
 protected:
   void _initDrawingTab();
   void _initTimeTab();

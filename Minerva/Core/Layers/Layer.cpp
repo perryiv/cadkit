@@ -11,9 +11,10 @@
 #include "Minerva/Core/Layers/Layer.h"
 #include "Minerva/Core/Visitor.h"
 
+#include "Usul/Components/Manager.h"
+#include "Usul/Convert/Vector2.h"
 #include "Usul/Functions/GUID.h"
 #include "Usul/Functions/ToString.h"
-#include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IGeometryCenter.h"
 #include "Usul/Interfaces/IProjectCoordinates.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
@@ -21,6 +22,8 @@
 #include "Usul/Bits/Bits.h"
 #include "Usul/Math/NaN.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Strings/Format.h"
+#include "Usul/Strings/Split.h"
 
 #include "OsgTools/Legend/Text.h"
 #include "OsgTools/Legend/LegendObject.h"
@@ -29,6 +32,10 @@
 #include "osg/MatrixTransform"
 
 #include "osgText/Text"
+
+#include "pqxx/pqxx"
+
+#include "boost/algorithm/string/erase.hpp"
 
 #include <algorithm>
 #include <functional>
@@ -51,32 +58,32 @@ SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 ///////////////////////////////////////////////////////////////////////////////
 
 Layer::Layer() : BaseClass(),
-_guid ( Usul::Functions::GUID::generate() ),
-_name( "Layer" ),
-_primaryKeyColumn( "id" ),
-_tablename(),
-_labelColumn(),
-_query(),
-_renderBin ( 0 ),
-_xOffset ( 0.0 ),
-_yOffset ( 0.0 ),
-_zOffset ( 0.0 ),
-_dataObjects(),
-_connection(),
-_colorFunctor( 0x0 ),
-_legendText( "" ),
-_showInLegend ( true ),
-_showLabel ( false ),
-_shown ( true ),
-_labelColor( 1.0, 1.0, 1.0, 1.0 ),
-_labelZOffset( 1000.0 ),
-_labelSize ( 25.0f ),
-_colorColumn(),
-_customQuery ( false ),
-_legendFlags ( 0x0 ),
-_minMax ( std::numeric_limits< double >::max(), std::numeric_limits< double >::min() ),
-_alpha ( 1.0f ),
-SERIALIZE_XML_INITIALIZER_LIST
+  _guid ( Usul::Functions::GUID::generate() ),
+  _name( "Layer" ),
+  _primaryKeyColumn( "id" ),
+  _tablename(),
+  _labelColumn(),
+  _query(),
+  _renderBin ( 0 ),
+  _xOffset ( 0.0 ),
+  _yOffset ( 0.0 ),
+  _zOffset ( 0.0 ),
+  _dataObjects(),
+  _connection(),
+  _colorFunctor( 0x0 ),
+  _legendText( "" ),
+  _showInLegend ( true ),
+  _showLabel ( false ),
+  _shown ( true ),
+  _labelColor( 1.0, 1.0, 1.0, 1.0 ),
+  _labelZOffset( 1000.0 ),
+  _labelSize ( 25.0f ),
+  _colorColumn(),
+  _customQuery ( false ),
+  _legendFlags ( 0 ),
+  _minMax ( std::numeric_limits< double >::max(), std::numeric_limits< double >::min() ),
+  _alpha ( 1.0f ),
+  SERIALIZE_XML_INITIALIZER_LIST
 {
   USUL_TRACE_SCOPE;
 
@@ -219,6 +226,19 @@ Minerva::Core::DB::Connection* Layer::connection ()
 {
   Guard guard ( this->mutex() );
   return _connection;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the connection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Minerva::Core::DB::Connection* Layer::connection () const
+{
+  Guard guard ( this->mutex() );
+  return _connection.get();
 }
 
 
@@ -1157,4 +1177,185 @@ bool Layer::showInLegend () const
 {
   Guard guard( this->mutex() );
   return _showInLegend;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse the box.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  void parseBox ( const std::string& text, Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight )
+  {
+    std::string box ( text );
+    
+    boost::algorithm::erase_first ( box, "BOX(" );
+    boost::algorithm::erase_first ( box, ")" );
+    
+    std::vector<std::string> split;
+    Usul::Strings::split ( box, ",", false, split );
+    
+    if ( 2 == split.size() )
+    {
+      lowerLeft  = Usul::Convert::Type<std::string, Usul::Math::Vec2d>::convert ( split[0] );
+      upperRight = Usul::Convert::Type<std::string, Usul::Math::Vec2d>::convert ( split[1] );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const
+{
+  // Get the connection.
+  Minerva::Core::DB::Connection::RefPtr connection ( const_cast <Minerva::Core::DB::Connection*> ( this->connection() ) );
+  
+  if ( false == connection.valid() )
+    return;
+  
+  // Tablename.
+  std::string tablename ( this->tablename() );
+  
+  // Build the query.
+  std::string query ( Usul::Strings::format ( "SELECT box2d(geom) FROM ", tablename ) );
+  
+  // Execute the query.
+  pqxx::result result ( connection->executeQuery ( query ) );
+  
+  // Return if we didn't get any results.
+  if ( result.empty() )
+    return;
+  
+  lowerLeft.set  ( std::numeric_limits<double>::max(), std::numeric_limits<double>::max() );
+  upperRight.set ( std::numeric_limits<double>::min(), std::numeric_limits<double>::min() );
+  
+  // Loop through the results.
+  for ( pqxx::result::const_iterator iter = result.begin(); iter != result.end(); ++iter )
+  {
+    Usul::Math::Vec2d ll, ur;
+    
+    Detail::parseBox ( (*iter)[0].as<std::string>(), ll, ur );
+    
+    if ( ll[0] < lowerLeft[0] )
+      lowerLeft[0] = ll[0];
+    if ( ll[1] < lowerLeft[1] )
+      lowerLeft[1] = ll[1];
+    
+    if ( ur[0] > upperRight[0] )
+      upperRight[0] = ur[0];
+    if ( ur[1] > upperRight[1] )
+      upperRight[1] = ur[1];
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  PostGIS metadata tables.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  const std::string GEOMETRY_COLUMNS ( "geometry_columns" );
+  const std::string SPATIAL_REF_SYS  ( "spatial_ref_sys" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Split the text into a schema and table.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail 
+{
+  void split ( const std::string& text, std::string& schema, std::string& table )
+  {
+    // See if there is a schema specified.
+    std::string::size_type pos ( text.find_first_of ( '.' ) );
+    
+    // Trim the table if we should.
+    if( std::string::npos != pos )
+    {
+      schema = text.substr ( 0, pos );
+      table = text.substr ( pos + 1, text.length() - pos );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the Spatial Reference id (srid).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int Layer::srid() const
+{
+  // Get the connection.
+  Minerva::Core::DB::Connection::RefPtr connection ( const_cast <Minerva::Core::DB::Connection*> ( this->connection() ) );
+  
+  if ( false == connection.valid() )
+    return -1;
+  
+  // Get the schema and table name.
+  std::string schema ( "public" ), table ( this->tablename() );
+  Detail::split ( this->tablename(), schema, table );
+  
+  // Build the query.
+  std::string query ( Usul::Strings::format ( "SELECT srid FROM ", Detail::GEOMETRY_COLUMNS, " WHERE f_table_name='", table, "' AND f_table_schema='", schema, "'" ) );
+  
+  // Execute the query.
+  pqxx::result result ( connection->executeQuery ( query ) );
+  
+  // Return if we didn't get any results.
+  if ( result.empty() )
+    return -1;
+  
+  // Return the result.
+  return result[0]["srid"].as < int > ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the projection as "Well Known Text".
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Layer::projectionWKT() const
+{
+  // Get the connection.
+  Minerva::Core::DB::Connection::RefPtr connection ( const_cast <Minerva::Core::DB::Connection*> ( this->connection() ) );
+  
+  if ( false == connection.valid() )
+    return std::string();
+  
+  // Get the srid.
+  int srid ( this->srid() );
+  
+  // Get the tablename.
+  std::string tablename ( this->tablename() );
+  
+  // Build the query.
+  std::string query ( Usul::Strings::format ( "SELECT srtext FROM ", Detail::SPATIAL_REF_SYS, " WHERE srid=", srid ) );
+  
+  // Execute the query.
+  pqxx::result result ( connection->executeQuery ( query ) );
+  
+  // Return if we didn't get any results.
+  if ( result.empty() )
+    return std::string();
+  
+  // Return the result.
+  return result[0]["srtext"].as < std::string > ();
 }

@@ -89,3 +89,15 @@ void PolygonWidget::_borderColorChanged ()
   if ( _layer.valid() )
     _layer->borderColor ( QtTools::Color< osg::Vec4 >::convert ( _borderColor->color() ) );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Should the polygon data be rasterized?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PolygonWidget::rasterize() const
+{
+  return Qt::Checked == _rasterize->checkState();
+}

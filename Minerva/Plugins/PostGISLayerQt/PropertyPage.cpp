@@ -242,7 +242,7 @@ void PropertyPage::_initLabelProperties()
   // Slots and signals for labels.
   QObject::connect ( _labelShown,   SIGNAL ( stateChanged ( int )        ), this, SLOT ( _labelShownChanged   ( int ) ) );
   QObject::connect ( _labelColor,   SIGNAL ( colorChanged ( )            ), this, SLOT ( _labelColorChanged   ( )     ) );
-  QObject::connect ( _labelColumn,  SIGNAL ( currentIndexChanged ( )     ), this, SLOT ( _labelColumnChanged  ( int ) ) );
+  QObject::connect ( _labelColumn,  SIGNAL ( currentIndexChanged ( int ) ), this, SLOT ( _labelColumnChanged  ( int ) ) );
   QObject::connect ( _labelSize,    SIGNAL ( valueChanged ( int )        ), this, SLOT ( _labelSizeChanged    ( int ) ) );
   QObject::connect ( _labelZOffset, SIGNAL ( valueChanged ( int )        ), this, SLOT ( _labelZOffsetChanged ( int ) ) );
 }
@@ -528,4 +528,21 @@ void PropertyPage::_zOffsetChanged ( double value )
 {
   if ( _layer.valid() )
     _layer->zOffset ( value );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Rasterize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PropertyPage::rasterize() const
+{
+  bool rasterize ( false );
+  
+  if ( const PolygonWidget *pw = dynamic_cast<const PolygonWidget*> ( _primitiveWidget ) )
+    rasterize = pw->rasterize();
+  
+  return rasterize;
 }

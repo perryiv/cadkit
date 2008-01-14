@@ -39,10 +39,6 @@ public:
 
   virtual void            modify( Usul::Interfaces::IUnknown *caller = 0x0 );
 
-  /// Get/Set the format string
-  void                    format( const std::string& format );
-  const std::string&      format() const;
-
   /// Get/Set the show interior flag.
   void                    showInterior( bool b );
   bool                    showInterior() const;

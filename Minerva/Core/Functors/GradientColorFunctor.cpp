@@ -177,13 +177,17 @@ double GradientColorFunctor::maxValue () const
 osg::Vec4 GradientColorFunctor::operator() ( double value ) const
 {
   osg::Vec4 color ( 0.0, 0.0, 0.0, 1.0 );
-
-  osg::Vec4::value_type param ( static_cast < osg::Vec4::value_type > ( ( value - _minValue ) / ( _maxValue - _minValue ) ) );
-
-  color.x() = _minColor.x() + ( param * (  _maxColor.x() - _minColor.x() ) );
-  color.y() = _minColor.y() + ( param * (  _maxColor.y() - _minColor.y() ) );
-  color.z() = _minColor.z() + ( param * (  _maxColor.z() - _minColor.z() ) );
   
+  const osg::Vec4::value_type denom ( _maxValue - _minValue );
+
+  if ( 0x0 != denom )
+  {
+    const osg::Vec4::value_type param ( static_cast < osg::Vec4::value_type > ( ( value - _minValue ) / denom ) );
+
+    color.x() = _minColor.x() + ( param * (  _maxColor.x() - _minColor.x() ) );
+    color.y() = _minColor.y() + ( param * (  _maxColor.y() - _minColor.y() ) );
+    color.z() = _minColor.z() + ( param * (  _maxColor.z() - _minColor.z() ) );
+  }
   return color;
 }
 

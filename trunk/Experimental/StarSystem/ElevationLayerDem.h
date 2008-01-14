@@ -42,6 +42,8 @@ public:
   // Get the value at the lat, lon location.  May return null pixel value.
   double                value ( double lon, double lat ) const;
   
+  /// Deserialize.
+  virtual void          deserialize ( const XmlTree::Node &node );
 protected:
   virtual ~ElevationLayerDem();
   
@@ -56,7 +58,9 @@ private:
   ossimDemGrid *_grid;
   ossimProjection *_projection;
 
-  SERIALIZE_XML_DEFINE_MEMBERS ( ElevationLayerDem );
+  SERIALIZE_XML_CLASS_NAME( RasterLayerOssim ) 
+  SERIALIZE_XML_SERIALIZE_FUNCTION 
+  SERIALIZE_XML_ADD_MEMBER_FUNCTION
 };
 
 

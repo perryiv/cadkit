@@ -320,9 +320,11 @@ void RasterLayerOssim::_updateExtents()
 
 void RasterLayerOssim::deserialize ( const XmlTree::Node &node )
 {
-   USUL_TRACE_SCOPE;
-   _dataMemberMap.deserialize ( node );
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  
+  _dataMemberMap.deserialize ( node );
 
-   // Open ourselfs.
-   this->open ( _filename );
+  // Open ourselfs.
+  this->open ( _filename );
 }

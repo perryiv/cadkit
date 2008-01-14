@@ -48,6 +48,8 @@ ElevationLayerDem::ElevationLayerDem() :
   _projection ( 0x0 )
 {
   USUL_TRACE_SCOPE;
+  
+  this->_addMember ( "filename", _filename );
 }
 
 
@@ -332,4 +334,22 @@ double ElevationLayerDem::value ( double lon, double lat ) const
   const double v ( y - static_cast < double > ( j ) );
   
   return Usul::Math::Interpolate<double>::bilinear ( u, v, a, b, c, d );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize.
+//
+///////////////////////////////////////////////////////////////////////////////
+    
+void ElevationLayerDem::deserialize ( const XmlTree::Node &node )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  _dataMemberMap.deserialize ( node );
+      
+  // Open ourselfs.
+  this->open ( _filename );
 }

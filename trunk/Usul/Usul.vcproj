@@ -602,6 +602,14 @@
 							>
 						</File>
 						<File
+							RelativePath=".\Functors\Interaction\Input\WandRoll.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Functors\Interaction\Input\WandRoll.h"
+							>
+						</File>
+						<File
 							RelativePath=".\Functors\Interaction\Input\WandYaw.cpp"
 							>
 						</File>

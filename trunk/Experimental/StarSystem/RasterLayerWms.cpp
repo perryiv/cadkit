@@ -198,17 +198,17 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* RasterLayerWms::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * )
+RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
 
   std::string url ( Usul::Threads::Safe::get ( this->mutex(), _url ) );
   if ( true == url.empty() )
-    return 0x0;
+    return ImagePtr ( 0x0 );
 
   Options options ( Usul::Threads::Safe::get ( this->mutex(), _options ) );
   if ( true == options.empty() )
-    return 0x0;
+    return ImagePtr ( 0x0 );
 
   // Add options.
   options[Usul::Network::Names::BBOX] = Usul::Strings::format ( extents.minimum()[0], ',', extents.minimum()[1], ',', extents.maximum()[0], ',', extents.maximum()[1] );
@@ -224,18 +224,19 @@ osg::Image* RasterLayerWms::texture ( const Extents& extents, unsigned int width
   Usul::Network::WMS wms ( url, file, options.begin(), options.end() );
   file = Usul::Strings::format ( file, '.', wms.extension() );
 
-  // Get the use network.
+  // Get the use-network flag.
   const bool useNetwork ( Usul::Threads::Safe::get ( this->mutex(), _useNetwork ) );
 
   // Pull it down if it does not exist...
   if ( false == Usul::Predicates::FileExists::test ( file ) && useNetwork )
   {
     std::ostream *stream ( 0x0 );
-    Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( &wms, &Usul::Network::WMS::download ), 5, stream, "2052060829" );
+    Usul::Interfaces::IUnknown::RefPtr caller ( 0x0 );
+    Usul::Functions::safeCallV1V2V3 ( Usul::Adaptors::memberFunction ( &wms, &Usul::Network::WMS::download ), 5, stream, caller.get(), "2052060829" );
   }
 
   // Initialize.
-  osg::ref_ptr<osg::Image> image ( 0x0 );
+  ImagePtr image ( 0x0 );
 
   // Load the file iff it exists and it's non-zero size.
   if ( ( true == Usul::Predicates::FileExists::test ( file ) ) && ( Usul::File::size ( file ) > 0 ) )
@@ -256,7 +257,7 @@ osg::Image* RasterLayerWms::texture ( const Extents& extents, unsigned int width
   }
 
   // Return image, which may be null.
-  return image.release();
+  return image;
 }
 
 

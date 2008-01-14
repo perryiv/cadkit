@@ -1361,7 +1361,7 @@ void WRFDocument::_buildDefaultTransferFunctions ()
     grayscale.at ( i ) [ 3 ] = alpha;
 
     float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
-    Usul::Functions::hsvToRgb ( r, g, b, 300 - ( value * 300 ), 1.0f, 1.0f );
+    Usul::Functions::Color::hsvToRgb ( r, g, b, 300 - ( value * 300 ), 1.0f, 1.0f );
     hsv.at ( i ) [ 0 ] = static_cast < unsigned char > ( r * 255 );
     hsv.at ( i ) [ 1 ] = static_cast < unsigned char > ( g * 255 );
     hsv.at ( i ) [ 2 ] = static_cast < unsigned char > ( b * 255 );

@@ -16,8 +16,6 @@
 #ifndef _USUL_SET_FOR_THIS_SCOPE_H_
 #define _USUL_SET_FOR_THIS_SCOPE_H_
 
-#include "Usul/Adaptors/MemberFunction.h"
-
 
 namespace Usul {
 namespace Scope {

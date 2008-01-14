@@ -29,7 +29,7 @@ using namespace StarSystem;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CutImageJob::CutImageJob ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, RasterLayer *raster ) : 
+CutImageJob::CutImageJob ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, RasterLayer *raster, Usul::Interfaces::IUnknown *caller ) : 
   BaseClass ( 0x0, false ),
   _extents ( extents ),
   _width   ( width ),
@@ -37,7 +37,8 @@ CutImageJob::CutImageJob ( const Extents &extents, unsigned int width, unsigned 
   _level   ( level ),
   _raster  ( raster ),
   _image   ( 0x0 ),
-  _texture ( 0x0 )
+  _texture ( 0x0 ),
+  _caller  ( caller )
 {
   USUL_TRACE_SCOPE;
   this->priority ( -1 * static_cast<int> ( level ) );
@@ -83,7 +84,7 @@ void CutImageJob::_started()
   const unsigned int height ( Usul::Threads::Safe::get ( this->mutex(), _height ) );
 
   // Request the image.
-  osg::ref_ptr<osg::Image> image ( raster->texture ( _extents, width, height, _level, this ) );
+  osg::ref_ptr<osg::Image> image ( raster->texture ( _extents, width, height, _level, this, _caller ) );
 
   // Have we been cancelled?
   if ( true == this->canceled() )

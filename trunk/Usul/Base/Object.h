@@ -72,6 +72,9 @@ protected:
   // Use reference counting.
   virtual ~Object();
 
+  // Reference to the name. Use wisely.
+  std::string &             _getName() { return _name; }
+
 private:
 
   void                      _destroy();

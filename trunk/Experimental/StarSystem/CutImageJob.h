@@ -20,6 +20,7 @@
 #include "StarSystem/Extents.h"
 
 #include "Usul/Jobs/Job.h"
+#include "Usul/Interfaces/IUnknown.h"
 
 #include "osg/Texture2D"
 #include "osg/Image"
@@ -40,11 +41,12 @@ public:
   typedef osg::ref_ptr < osg::Image > ImagePtr;
   typedef osg::ref_ptr < osg::Texture2D > TexturePtr;
   typedef StarSystem::Extents < osg::Vec2d > Extents;
+  typedef Usul::Interfaces::IUnknown Unknown;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( CutImageJob );
 
-  CutImageJob ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, RasterLayer *layer );
+  CutImageJob ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, RasterLayer *layer, Unknown *caller );
 
   ImagePtr          image();
 
@@ -65,6 +67,7 @@ private:
   RasterLayer *_raster;
   ImagePtr _image;
   TexturePtr _texture;
+  Unknown::QueryPtr _caller;
 };
 
 

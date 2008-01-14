@@ -72,6 +72,7 @@ public:
   {
     typedef typename XmlTree::Node::Children::const_iterator Itr;
     typedef typename T::mapped_type MappedType;
+    typedef typename T::key_type KeyType;
 
     if ( this->name() != node.name() )
       return;
@@ -93,7 +94,8 @@ public:
           const std::string keyString ( elementKey->value() );
           if ( false == keyString.empty() )
           {
-            _value[keyString] = Usul::Convert::Type<std::string,MappedType>::convert ( elementValue->value() );
+            const KeyType key ( Usul::Convert::Type<std::string,KeyType>::convert ( keyString ) );
+            _value[key] = Usul::Convert::Type<std::string,MappedType>::convert ( elementValue->value() );
           }
         }
       }

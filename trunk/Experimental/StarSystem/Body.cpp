@@ -342,7 +342,7 @@ void Body::jobManager ( Usul::Jobs::Manager *manager )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Notification that a renderer just rendered.
+//  Notification that a renderer is about to render.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -355,7 +355,7 @@ void Body::preRender ( Usul::Interfaces::IUnknown *caller )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Notification that a renderer is about to render.
+//  Notification that a renderer just rendered.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -383,7 +383,8 @@ unsigned long Body::textureRequest ( const Extents &extents, unsigned int level 
     throw std::runtime_error ( "Error 3925869673: Job manager is null" );
   }
 
-  CutImageJob::RefPtr job ( new CutImageJob ( extents, 512, 512, level, _rasters.get() ) );
+  Usul::Interfaces::IUnknown::RefPtr caller ( 0x0 );
+  CutImageJob::RefPtr job ( new CutImageJob ( extents, 512, 512, level, _rasters.get(), caller ) );
   _manager->addJob ( job );
   _textureJobs.insert ( TextureJobs::value_type ( job->id(), job ) );
 

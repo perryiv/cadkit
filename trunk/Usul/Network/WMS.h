@@ -17,6 +17,7 @@
 #ifndef _USUL_NETWORK_WMS_H_
 #define _USUL_NETWORK_WMS_H_
 
+#include "Usul/Convert/Convert.h"
 #include "Usul/File/Remove.h"
 #include "Usul/Network/Curl.h"
 #include "Usul/Network/Names.h"
@@ -135,13 +136,20 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void download ( unsigned int maxNumAttempts = 10, std::ostream *out = 0x0 )
+  void download ( unsigned int maxNumAttempts = 10, std::ostream *out = 0x0, Usul::Interfaces::IUnknown *caller = 0x0 )
   {
     // Get file name.
     const std::string file ( Usul::Strings::format ( _file, '.', this->extension() ) );
 
     // Get the full url.
     const std::string url ( this->fullUrl() );
+
+    // Estimate the size of the download assuming no compression and 4 color 
+    // channels, which should be more than the actual file size.
+    typedef Usul::Convert::Type<std::string,Usul::Types::Uint32> Converter;
+    unsigned long width  ( Converter::convert ( _options[Usul::Network::Names::WIDTH]  ) );
+    unsigned long height ( Converter::convert ( _options[Usul::Network::Names::HEIGHT] ) );
+    const unsigned long totalSize ( width * height * 4 );
 
     // Used below.
     const std::string xml ( "<?xml" );
@@ -152,7 +160,7 @@ public:
       WMS_OUTPUT << Usul::Strings::format ( "Attempt: ", i, ", file: ", file, ", url = ", url, '\n' ) << std::flush;
 
       // Use curl to download the file.
-      Usul::Network::Curl curl ( url, file );
+      Usul::Network::Curl curl ( url, file, totalSize, caller );
       curl.download ( 0x0 );
 
       // Check for file existance.

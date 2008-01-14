@@ -89,13 +89,12 @@ Usul::Interfaces::IUnknown* ElevationGroup::clone() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image * ElevationGroup::_createBlankImage ( unsigned int width, unsigned int height ) const
+ElevationGroup::ImagePtr ElevationGroup::_createBlankImage ( unsigned int width, unsigned int height ) const
 {
-  osg::ref_ptr < osg::Image > result ( new osg::Image );
+  ImagePtr result ( new osg::Image );
   result->allocateImage ( width, height, 1, GL_LUMINANCE, GL_FLOAT );
   ::memset ( result->data(), 0, result->getImageSizeInBytes() );
-
-  return result.release();
+  return result;
 }
 
 

@@ -42,7 +42,7 @@ class ossimEllipsoid;
 
 namespace StarSystem {
 
-  class RasterLayer;
+class RasterLayer;
 
 class STAR_SYSTEM_EXPORT Tile : public osg::Group
 {
@@ -120,7 +120,7 @@ public:
 
   // Get/Set the image.
   void                      image ( osg::Image* );
-  osg::Image*               image ();
+  ImagePtr                  image();
 
   // Return level of this tile. Zero is the top.
   unsigned int              level() const;

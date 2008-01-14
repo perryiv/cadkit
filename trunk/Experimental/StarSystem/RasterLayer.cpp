@@ -10,6 +10,7 @@
 
 #include "StarSystem/RasterLayer.h"
 
+#include "Usul/Functions/Color.h"
 #include "Usul/Functions/GUID.h"
 
 #include "osg/Image"
@@ -38,18 +39,17 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS(RasterLayer, RasterLayer::BaseClass);
 RasterLayer::RasterLayer() : 
   BaseClass(),
   _extents(),
-  _alphas ( LessColor ( EqualPredicate() ) ),
+  _alphas(),
   _guid ( Usul::Functions::GUID::generate() ),
-  _name (),
   _shown ( true ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   // Serialization glue.
   this->_addMember ( "extents", _extents );
   this->_addMember ( "guid", _guid );
-  this->_addMember ( "name", _name );
+  this->_addMember ( "name", this->_getName() );
   this->_addMember ( "shown", _shown );
-  //this->_addMember ( "alphas", _alphas );
+  this->_addMember ( new Serialize::XML::ValueMapMember<Alphas> ( "alphas", _alphas ) );
 }
 
 
@@ -63,7 +63,6 @@ RasterLayer::RasterLayer ( const RasterLayer& rhs ) : BaseClass ( rhs ),
 _extents ( rhs._extents ),
 _alphas ( rhs._alphas ),
 _guid ( rhs._guid ),
-_name ( rhs._name ),
 _shown ( rhs._shown ),
 _dataMemberMap( rhs._dataMemberMap )
 {
@@ -81,9 +80,7 @@ RasterLayer& RasterLayer::operator= ( const RasterLayer& rhs )
   _extents = rhs._extents;
   _alphas = rhs._alphas;
   _guid = rhs._guid;
-  _name = rhs._name;
   _shown = rhs._shown;
-  //_dataMemberMap = rhs._dataMemberMap;
   
   return *this;
 }
@@ -135,7 +132,7 @@ RasterLayer::Extents RasterLayer::extents() const
 void RasterLayer::alpha ( unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha )
 {
   Guard guard ( this );
-  Color color ( red, green, blue );
+  Color color ( Usul::Functions::Color::pack ( red, green, blue, 0 ) );
   _alphas[color] = alpha;
 }
 
@@ -159,13 +156,13 @@ RasterLayer::Alphas RasterLayer::alphas() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* RasterLayer::_createBlankImage( unsigned int width, unsigned int height ) const
+RasterLayer::ImagePtr RasterLayer::_createBlankImage( unsigned int width, unsigned int height ) const
 {
-  osg::ref_ptr < osg::Image > result ( new osg::Image );
+  ImagePtr result ( new osg::Image );
   result->allocateImage ( width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE );
   ::memset ( result->data(), 0, result->getImageSizeInBytes() );
 
-  return result.release();
+  return result;
 }
 
 
@@ -219,8 +216,7 @@ std::string RasterLayer::guid() const
 
 std::string RasterLayer::name() const
 {
-  Guard guard ( this );
-  return _name;
+  return BaseClass::name();
 }
 
 
@@ -230,10 +226,9 @@ std::string RasterLayer::name() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RasterLayer::name( const std::string& name )
+void RasterLayer::name( const std::string& s )
 {
-  Guard guard ( this );
-  _name = name;
+  BaseClass::name ( s );
 }
 
 

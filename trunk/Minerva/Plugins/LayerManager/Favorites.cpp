@@ -188,10 +188,14 @@ void Favorites::_saveState()
 
 void Favorites::_restoreState()
 {
-  XmlTree::XercesLife life;
-  XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
-  document->load ( this->_filename() );
-  this->deserialize ( *document );
+  const std::string file ( this->_filename() );
+  if ( true == Usul::Predicates::FileExists::test ( file ) )
+  {
+    XmlTree::XercesLife life;
+    XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
+    document->load ( file );
+    this->deserialize ( *document );
+  }
 }
 
 

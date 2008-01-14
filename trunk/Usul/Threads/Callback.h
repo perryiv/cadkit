@@ -39,6 +39,9 @@ public:
   // Useful typedefs.
   typedef Usul::Base::Referenced BaseClass;
 
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( Callback );
+
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Callback );
 
@@ -67,6 +70,10 @@ public:
 
   // Useful typedefs.
   typedef Callback BaseClass;
+  typedef FunctionCallback<Function> ThisType;
+
+  // Type information.
+  USUL_IMPLEMENT_INLINE_TYPE_ID ( ThisType );
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( FunctionCallback );
@@ -108,6 +115,10 @@ public:
 
   // Useful typedefs.
   typedef Callback BaseClass;
+  typedef FunctionCallback<Function> ThisType;
+
+  // Type information.
+  USUL_IMPLEMENT_INLINE_TYPE_ID ( ThisType );
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( VoidFunctionCallback );

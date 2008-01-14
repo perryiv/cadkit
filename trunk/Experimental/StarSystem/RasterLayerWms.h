@@ -42,7 +42,7 @@ public:
   virtual IUnknown*     clone() const;
   
   /// Get the texture
-  virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * );
+  virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
 
   /// Get/Set the default cache directory.
   static void           defaultCacheDirectory ( const std::string& );

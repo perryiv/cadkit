@@ -76,6 +76,10 @@ protected:\
   template < class T > void _addMember ( const std::string &name, T &value )\
   {\
     _dataMemberMap.addMember ( name, value );\
+  }\
+  void _addMember ( Serialize::XML::MemberBase *member )\
+  {\
+    _dataMemberMap.addMember ( member );\
   }
 
 

@@ -634,19 +634,42 @@ void StarSystemDocument::_makeSystem()
     body->center ( Body::Vec3d ( 149.6e9, 0, 0 ) );
     _system->satellites()->add ( body.get() );
 
-    const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
-    typedef StarSystem::RasterLayerWms::Options Options;
-    Options options;
-    options[Usul::Network::Names::LAYERS]  = "BMNG,global_mosaic";
-    options[Usul::Network::Names::STYLES]  = "Jul,visual";
-    options[Usul::Network::Names::SRS]     = "EPSG:4326";
-    options[Usul::Network::Names::REQUEST] = "GetMap";
-    options[Usul::Network::Names::FORMAT]  = "image/jpeg";
-    typedef StarSystem::Body::Extents Extents;
-    typedef Extents::Vertex Vertex;
-    const Extents maxExtents ( Vertex ( -180, -90 ), Vertex ( 180, 90 ) );
-    StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
-    body->rasterAppend ( layer.get() );
+    {
+      const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
+      typedef StarSystem::RasterLayerWms::Options Options;
+      Options options;
+      options[Usul::Network::Names::LAYERS]  = "BMNG,global_mosaic";
+      options[Usul::Network::Names::STYLES]  = "Jul,visual";
+      options[Usul::Network::Names::SRS]     = "EPSG:4326";
+      options[Usul::Network::Names::REQUEST] = "GetMap";
+      options[Usul::Network::Names::FORMAT]  = "image/jpeg";
+      typedef StarSystem::Body::Extents Extents;
+      typedef Extents::Vertex Vertex;
+      const Extents maxExtents ( Vertex ( -180, -90 ), Vertex ( 180, 90 ) );
+      StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
+      body->rasterAppend ( layer.get() );
+    }
+
+    {
+      const std::string url ( "http://129.219.93.216:8080/wmsconnector/com.esri.wms.Esrimap" );
+      typedef StarSystem::RasterLayerWms::Options Options;
+      Options options;
+      options[Usul::Network::Names::LAYERS]      = "imagery";
+      options[Usul::Network::Names::SRS]         = "EPSG:4326";
+      options[Usul::Network::Names::REQUEST]     = "GetMap";
+      options[Usul::Network::Names::FORMAT]      = "image/jpeg";
+      options[Usul::Network::Names::VERSION]     = "1.1.1";
+      options["transparent"]                     = "true";
+      options["service"]                         = "wms";
+      options["ServiceName"]                     = "arizona";
+      typedef StarSystem::Body::Extents Extents;
+      typedef Extents::Vertex Vertex;
+      const Extents maxExtents ( Vertex ( -115.0261211891, 31.2774721445 ), Vertex ( -108.9149437491, 37.0170157412 ) );
+      StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
+      layer->alpha ( 255, 255, 255,   0 );
+      layer->alpha (   0,   0,   0,   0 );
+      body->rasterAppend ( layer.get() );
+    }
   }
 
   // Make mars.
@@ -674,29 +697,6 @@ void StarSystemDocument::_makeSystem()
     StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
     body->rasterAppend ( layer.get() );
   }
-
-#if 0
-
-  {
-    const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
-
-    typedef StarSystem::RasterLayerWms::Options Options;
-    Options options;
-    options[Usul::Network::Names::LAYERS]  = "BMNG,global_mosaic";
-    options[Usul::Network::Names::STYLES]  = "Jul,visual";
-    options[Usul::Network::Names::SRS]     = "EPSG:4326";
-    options[Usul::Network::Names::REQUEST] = "GetMap";
-    options[Usul::Network::Names::FORMAT]  = "image/jpeg";
-
-    typedef StarSystem::Body::Extents Extents;
-    typedef Extents::Vertex Vertex;
-    const Extents maxExtents ( Vertex ( -180, -90 ), Vertex ( 180, 90 ) );
-
-    StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
-    _system->body()->rasterAppend ( layer.get() );
-  }
-
-#endif
 
   StarSystem::Scale::RefPtr scale ( new StarSystem::Scale ( 1.0 / osg::WGS_84_RADIUS_EQUATOR ) );
   _system->accept ( *scale );

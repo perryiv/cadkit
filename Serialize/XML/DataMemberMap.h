@@ -57,53 +57,51 @@ public:
 
   template < class T > void addMember ( const std::string &name, T &value )
   {
-    this->_addMember ( new Serialize::XML::SimpleDataMember<T> ( name, value ) );
+    this->addMember ( new Serialize::XML::SimpleDataMember<T> ( name, value ) );
   }
 
   // Need to be by reference so that the client can change it after this class it made.
   template < class T, class C > void addMember ( const std::string &name, Usul::Pointers::QueryPointer<T,C> &value )
   {
     typedef Usul::Pointers::QueryPointer<T,C> PointerType;
-    this->_addMember ( new Serialize::XML::QueryPointerMember<PointerType> ( name, value ) );
+    this->addMember ( new Serialize::XML::QueryPointerMember<PointerType> ( name, value ) );
   }
 
   // Need to be by reference so that the client can change it after this class it made.
   template < class T, class C > void addMember ( const std::string &name, Usul::Pointers::SmartPointer<T,C> &value )
   {
     typedef Usul::Pointers::SmartPointer<T,C> PointerType;
-    this->_addMember ( new Serialize::XML::SmartPointerMember<PointerType> ( name, value ) );
+    this->addMember ( new Serialize::XML::SmartPointerMember<PointerType> ( name, value ) );
   }
 
   template < class K, class V, class C > void addMember ( const std::string &name, std::map<K,V,C> &value )
   {
     typedef std::map<K,V,C> MapType;
-    this->_addMember ( new Serialize::XML::PointerMapMember<MapType> ( name, value ) );
+    this->addMember ( new Serialize::XML::PointerMapMember<MapType> ( name, value ) );
   }
 
   void addMember ( const std::string &name, std::map<std::string,std::string> &value )
   {
     typedef std::map<std::string,std::string> MapType;
-    this->_addMember ( new Serialize::XML::ValueMapMember<MapType> ( name, value ) );
+    this->addMember ( new Serialize::XML::ValueMapMember<MapType> ( name, value ) );
   }
 
   template < class T > void addMember ( const std::string &name, std::vector<T> &value )
   {
     typedef std::vector<T> VectorType;
-    this->_addMember ( new Serialize::XML::SequenceMember<VectorType> ( name, value ) );
+    this->addMember ( new Serialize::XML::SequenceMember<VectorType> ( name, value ) );
   }
 
   template < class T > void addMember ( const std::string &name, std::list<T> &value )
   {
     typedef std::list<T> ListType;
-    this->_addMember ( new Serialize::XML::SequenceMember<ListType> ( name, value ) );
+    this->addMember ( new Serialize::XML::SequenceMember<ListType> ( name, value ) );
   }
+
+  void        addMember ( Serialize::XML::MemberBase *member );
 
   void        serialize ( XmlTree::Node &parent ) const;
   void        deserialize ( const XmlTree::Node &node );
-
-protected:
-
-  void        _addMember ( Serialize::XML::MemberBase *member );
 
 private:
 

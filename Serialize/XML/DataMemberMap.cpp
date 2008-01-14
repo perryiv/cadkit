@@ -110,7 +110,7 @@ void DataMemberMap::deserialize ( const XmlTree::Node &node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DataMemberMap::_addMember ( Serialize::XML::MemberBase *member )
+void DataMemberMap::addMember ( Serialize::XML::MemberBase *member )
 {
   if ( 0x0 != member )
   {

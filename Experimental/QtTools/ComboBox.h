@@ -15,8 +15,12 @@
 
 #include "QtGui/QComboBox"
 
+#include <algorithm>
+
+
 namespace QtTools {
 namespace ComboBox {
+
 
 template < class StringList >
 inline void populate ( QComboBox& comboBox, const StringList& strings, const typename StringList::value_type& selected = "" )
@@ -29,6 +33,7 @@ inline void populate ( QComboBox& comboBox, const StringList& strings, const typ
   int index ( iter != sl.end() ? std::distance ( sl.begin(), iter ) : -1 );
   comboBox.setCurrentIndex ( index );
 }
+
 
 }
 }

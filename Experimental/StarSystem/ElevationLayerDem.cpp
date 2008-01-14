@@ -179,12 +179,12 @@ void ElevationLayerDem::open( const std::string& filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* ElevationLayerDem::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * job )
+ElevationLayerDem::ImagePtr ElevationLayerDem::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *job, IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   
   // Make the result.
-  osg::ref_ptr < osg::Image > result ( this->_createBlankImage( width, height ) );
+  ImagePtr result ( this->_createBlankImage ( width, height ) );
   
   Guard guard ( this );
 
@@ -234,7 +234,7 @@ osg::Image* ElevationLayerDem::texture ( const Extents& extents, unsigned int wi
   }
   
   // Return our result.
-  return result.release();
+  return result;
 }
 
 
@@ -244,13 +244,12 @@ osg::Image* ElevationLayerDem::texture ( const Extents& extents, unsigned int wi
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* ElevationLayerDem::_createBlankImage( unsigned int width, unsigned int height ) const
+ElevationLayerDem::ImagePtr ElevationLayerDem::_createBlankImage ( unsigned int width, unsigned int height ) const
 {
-  osg::ref_ptr < osg::Image > result ( new osg::Image );
+  ImagePtr result ( new osg::Image );
   result->allocateImage ( width, height, 1, GL_LUMINANCE, GL_FLOAT );
   ::memset ( result->data(), 0, result->getImageSizeInBytes() );
-
-  return result.release();
+  return result;
 }
 
 

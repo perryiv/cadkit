@@ -233,10 +233,11 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Load contents of file and build the document. Note: in Xerces there is 
-//  a "node" for all sections of the document, including the new-line and 
-//  white-space between a closing tag at the end of one line, and an opening 
-//  tag and the beginning of the next line.
+//  Load contents of file and build the document. 
+//  
+//  Note: in Xerces there is a "node" for all sections of the document, 
+//  including the new-line and white-space between a closing tag at the end 
+//  of one line, and an opening tag and the beginning of the next line.
 //
 //  We skip these empty nodes and grab the elements (groups) and text-nodes 
 //  that have strings.

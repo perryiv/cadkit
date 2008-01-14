@@ -37,7 +37,7 @@ public:
   void                  open ( const std::string& filename );
 
   /// Get the texture
-  virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * );
+  virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
 
   // Get the value at the lat, lon location.  May return null pixel value.
   double                value ( double lon, double lat ) const;
@@ -48,7 +48,7 @@ protected:
   ElevationLayerDem ( const ElevationLayerDem& );
   ElevationLayerDem& operator= ( const ElevationLayerDem& );
 
-  virtual osg::Image*   _createBlankImage ( unsigned int width, unsigned int height ) const;
+  virtual ImagePtr      _createBlankImage ( unsigned int width, unsigned int height ) const;
   
 private:
   std::string _filename;

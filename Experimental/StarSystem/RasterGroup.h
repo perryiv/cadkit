@@ -48,7 +48,7 @@ public:
   void                            append ( IRasterLayer* layer );
   void                            remove ( IRasterLayer* layer );
 
-  virtual osg::Image*             texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * );
+  virtual ImagePtr                texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
 
 protected:
 
@@ -60,7 +60,7 @@ protected:
   void                            _updateExtents ( IRasterLayer* layer );
 
   void                            _cacheAdd ( const Extents& extents, unsigned int width, unsigned int height, osg::Image *image );
-  osg::Image *                    _cacheFind ( const Extents& extents, unsigned int width, unsigned int height ) const;
+  ImagePtr                        _cacheFind ( const Extents& extents, unsigned int width, unsigned int height ) const;
 
   virtual void                    _compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, Usul::Jobs::Job * );
 

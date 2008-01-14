@@ -14,7 +14,11 @@
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Math/Vector2.h"
 
-namespace osg { class Image; class Vec2d; }
+#include "osg/Image"
+#include "osg/ref_ptr"
+#include "osg/Vec2d"
+
+
 namespace Usul { namespace Jobs { class Job; } }
 namespace StarSystem { template < class VertexType> class Extents; }
 
@@ -31,11 +35,11 @@ struct IRasterLayer : public Usul::Interfaces::IUnknown
   enum { IID = 3791329730u };
   
   typedef StarSystem::Extents < osg::Vec2d > Extents;
+  typedef osg::ref_ptr<osg::Image> ImagePtr;
   
   /// Get the texture.
-  virtual osg::Image*      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * ) = 0;
-  
-}; // struct IRasterLayer
+  virtual ImagePtr        texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, Usul::Interfaces::IUnknown *caller ) = 0;
+};
     
     
 } // end namespace Interfaces

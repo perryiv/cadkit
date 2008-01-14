@@ -12,6 +12,7 @@
 
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Make.h"
+#include "Usul/Functions/Color.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
@@ -181,7 +182,7 @@ void RasterGroup::_updateExtents ( IRasterLayer* layer  )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *job )
+RasterGroup::ImagePtr RasterGroup::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *job, IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   //Guard guard ( this );
@@ -191,16 +192,16 @@ osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, u
     job->cancel();
 
   // See if it's in the cache.
-  osg::ref_ptr < osg::Image > result ( this->_cacheFind ( extents, width, height ) );
+  ImagePtr result ( this->_cacheFind ( extents, width, height ) );
   if ( true == result.valid() )
-    return result.release();
+    return result;
 
   // Get copy of the layers.
   Layers layers ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
 
   // If there are no layers...
   if ( true == layers.empty() )
-    return 0x0;
+    return ImagePtr ( 0x0 );
 
   // Loop through each layer.
   for ( Layers::iterator iter = layers.begin(); iter != layers.end(); ++iter )
@@ -225,7 +226,7 @@ osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, u
       if ( extents.intersects ( e ) )
       {
         // Get the image for the layer.
-        osg::ref_ptr < osg::Image > image ( layer->texture ( extents, width, height, level, job ) );
+        osg::ref_ptr < osg::Image > image ( layer->texture ( extents, width, height, level, job, caller ) );
 
         if ( image.valid() )
         {
@@ -239,9 +240,8 @@ osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, u
           // See if it has raster alpha data.
           Usul::Interfaces::IRasterAlphas::QueryPtr ra ( layer );
 
-          bool valid ( ra.valid() );
-          
-          Alphas alphas ( valid ? ra->alphas() : Alphas ( LessColor ( EqualPredicate() ) ) );
+          // Copy the alphas.
+          Alphas alphas ( ( true == ra.valid() ) ? ra->alphas() : Alphas() );
           
           // Composite the images.
           this->_compositeImages ( *result, *image, alphas, job );
@@ -254,7 +254,7 @@ osg::Image* RasterGroup::texture ( const Extents& extents, unsigned int width, u
   }
 
   // Return the result.
-  return result.release();
+  return result;
 }
 
 
@@ -308,7 +308,7 @@ void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image
     // Is the color in the alpha table?
     if ( false == alphaMapEmpty )
     {
-      iter = alphas.find ( Color ( r, g, b ) );
+      iter = alphas.find ( Usul::Functions::Color::pack ( r, g, b, 0 ) );
       hasExtraAlpha = ( alphas.end() != iter );
     }
 
@@ -322,7 +322,7 @@ void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image
     else
     {
       // Get correct alpha.
-      const unsigned char useThisAlpha ( ( hasExtraAlpha ) ? iter->second : src[3] );
+      const unsigned char useThisAlpha ( ( hasExtraAlpha ) ? ( static_cast < unsigned char > ( iter->second ) ) : ( src[3] ) );
 
       // Normalize between zero and one.
       const float a ( static_cast < float > ( useThisAlpha ) / 255.5f );
@@ -366,7 +366,7 @@ void RasterGroup::_cacheAdd ( const Extents& extents, unsigned int width, unsign
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image *RasterGroup::_cacheFind ( const Extents& extents, unsigned int width, unsigned int height ) const
+RasterGroup::ImagePtr RasterGroup::_cacheFind ( const Extents& extents, unsigned int width, unsigned int height ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

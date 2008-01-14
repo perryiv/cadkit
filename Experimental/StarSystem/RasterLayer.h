@@ -53,6 +53,7 @@ public:
   typedef StarSystem::Extents < osg::Vec2d > Extents;
   typedef osg::ref_ptr < osg::Image > ImagePtr;
   typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef Usul::Interfaces::IRasterAlphas::Alphas Alphas;
 
   USUL_DECLARE_QUERY_POINTERS ( RasterLayer );
   
@@ -74,15 +75,15 @@ public:
   Extents               extents () const;
 
   /// Get the texture.
-  virtual osg::Image*   texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * ) = 0;
-  
+  virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller ) = 0;
+
   /// Get the guid for the layer.
   virtual std::string   guid() const;
-  
+
   /// Get/Set the name.
   virtual std::string   name() const;
   virtual void          name( const std::string& );
-  
+
   /// Get/Set show layer
   virtual void          showLayer ( bool b );
   virtual bool          showLayer() const;
@@ -94,7 +95,7 @@ protected:
   RasterLayer ( const RasterLayer& );
   RasterLayer& operator= ( const RasterLayer& );
 
-  virtual osg::Image *  _createBlankImage ( unsigned int width, unsigned int height ) const;
+  virtual ImagePtr      _createBlankImage ( unsigned int width, unsigned int height ) const;
 
   /// Get the min latitude and min longitude (ILayerExtents).
   virtual double        minLon() const;
@@ -109,7 +110,6 @@ private:
   Extents _extents;
   Alphas _alphas;
   std::string _guid;
-  std::string _name;
   bool _shown;
 
   SERIALIZE_XML_DEFINE_MAP;

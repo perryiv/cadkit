@@ -7,13 +7,23 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Functions to for colors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #ifndef __USUL_FUNCTIONS_COLOR_H__
 #define __USUL_FUNCTIONS_COLOR_H__
 
 #include "Usul/Math/MinMax.h"
+#include "Usul/Types/Types.h"
+
 
 namespace Usul {
 namespace Functions {
+namespace Color {
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -21,8 +31,7 @@ namespace Functions {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class Real >
-void rgbToHsv ( Real& h, Real& s, Real& v, Real r, Real g, Real b )
+template < class Real > inline void rgbToHsv ( Real& h, Real& s, Real& v, Real r, Real g, Real b )
 {
   v = Usul::Math::maximum ( r, g, b );
   Real t ( Usul::Math::minimum (r, g, b ) );
@@ -56,8 +65,7 @@ void rgbToHsv ( Real& h, Real& s, Real& v, Real r, Real g, Real b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class Real >
-void hsvToRgb ( Real& r, Real& g, Real& b, Real h, Real s, Real v )
+template < class Real > inline void hsvToRgb ( Real& r, Real& g, Real& b, Real h, Real s, Real v )
 { 
   if( s == 0.0 )
   {
@@ -88,6 +96,47 @@ void hsvToRgb ( Real& r, Real& g, Real& b, Real h, Real s, Real v )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Pack the colors into a 32-bit unsigned integer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline Usul::Types::Uint32 pack ( unsigned char r, unsigned char g, unsigned char b, unsigned char a )
+{
+  return Usul::Types::Uint32 ( ( r << 24 ) | ( g << 16 ) | ( b << 8 ) | a );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Pack the colors into a 32-bit unsigned integer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class T > inline Usul::Types::Uint32 pack ( T red, T green, T blue, T alpha, T maxValue = 1 )
+{
+  const unsigned char r ( static_cast < unsigned char > ( ( static_cast < double > ( red   ) / maxValue ) * 255 ) );
+  const unsigned char g ( static_cast < unsigned char > ( ( static_cast < double > ( green ) / maxValue ) * 255 ) );
+  const unsigned char b ( static_cast < unsigned char > ( ( static_cast < double > ( blue  ) / maxValue ) * 255 ) );
+  const unsigned char a ( static_cast < unsigned char > ( ( static_cast < double > ( alpha ) / maxValue ) * 255 ) );
+  return Usul::Functions::Color::pack ( r, b, b, a );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Unpack the colors from the 32-bit unsigned integer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class ColorType > inline ColorType unpack ( Usul::Types::Uint32 c )
+{
+  return ColorType ( ( c & 0xFF000000 ), ( c & 0x00FF0000 ), ( c & 0x0000FF00 ), ( c & 0x000000FF ) );
+}
+
+
+} // namespace Color
 } // namespace Functions
 } // namespace Usul
 

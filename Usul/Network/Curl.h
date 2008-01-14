@@ -18,7 +18,9 @@
 #ifndef _USUL_NETWORK_CURL_H_
 #define _USUL_NETWORK_CURL_H_
 
+#include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Math/MinMax.h"
+#include "Usul/Scope/Reset.h"
 #include "Usul/Strings/Format.h"
 
 #include "curl/curl.h"
@@ -28,7 +30,7 @@
 #include <limits>
 #include <vector>
 
-#define CURL_OUTPUT if ( 0x0 != out ) (*out)
+#define CURL_OUTPUT if ( 0x0 != _output ) (*_output)
 const unsigned int CURL_ERROR_BUFFER_SIZE ( 2 * CURL_ERROR_SIZE );
 
 
@@ -42,14 +44,27 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
+  //  Typedefs.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  typedef std::pair < std::string, std::ofstream * > File;
+  typedef Usul::Interfaces::IUnknown Unknown;
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
   //  Constructor.
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  Curl ( const std::string &url, const std::string &file ) :
+  Curl ( const std::string &url, const std::string &file, unsigned long totalSize = 0, Unknown *caller = 0x0 ) :
     _url  ( url ),
-    _file ( file ),
-    _error ( CURL_ERROR_BUFFER_SIZE, '\0' )
+    _file ( file, 0x0 ),
+    _error ( CURL_ERROR_BUFFER_SIZE, '\0' ),
+    _totalSize ( 0 ),
+    _caller ( caller ),
+    _output ( 0x0 )
   {
   }
 
@@ -63,7 +78,10 @@ public:
   Curl ( const Curl &curl ) :
     _url  ( curl._url ),
     _file ( curl._file ),
-    _error ( CURL_ERROR_BUFFER_SIZE, '\0' )
+    _error ( CURL_ERROR_BUFFER_SIZE, '\0' ),
+    _totalSize ( curl._totalSize ),
+    _caller ( curl._caller ),
+    _output ( 0x0 )
   {
   }
 
@@ -78,6 +96,9 @@ public:
   {
     _url  = curl._url;
     _file = curl._file;
+    _totalSize = curl._totalSize;
+    _caller = curl._caller;
+    _output = 0x0;
     return *this;
   }
 
@@ -95,7 +116,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Nested class to initialize the clean up the curl library.
+  //  Nested class to initialize and clean up the curl library.
   //
   /////////////////////////////////////////////////////////////////////////////
 
@@ -120,23 +141,32 @@ public:
 
   void download ( std::ostream *out = 0x0 )
   {
-    CURL_OUTPUT << "Downloading '" << _url << "' to file '" << _file << " ... " << std::endl;
+    // Make sure this is set and unset.
+    Usul::Scope::Reset<std::ostream*> scopedOutputStream ( _output, out, 0x0 );
+
+    CURL_OUTPUT << "Downloading '" << _url << "' to file '" << _file.first << " ... " << std::endl;
 
     // Get handle.
     Curl::Handle handle;
 
     // Open file.
-    std::ofstream file ( _file.c_str(), std::ofstream::binary | std::ofstream::out );
-    if ( false == file.is_open() )
+    std::ofstream stream ( _file.first.c_str(), std::ofstream::binary | std::ofstream::out );
+    if ( false == stream.is_open() )
     {
-      throw std::runtime_error ( "Error 2742979881: Failed to open file '" + _file + "' for writing" );
+      throw std::runtime_error ( "Error 2742979881: Failed to open file '" + _file.first + "' for writing" );
     }
+
+    // Make sure this is set and unset.
+    Usul::Scope::Reset<File::second_type> scopedFileHandle ( _file.second, &stream, 0x0 );
 
     // Set properties.
     this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_ERRORBUFFER, &_error[0] ) );
     this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_URL, _url.c_str() ) );
-    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_WRITEDATA, &file ) );
+    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_WRITEDATA, this ) );
     this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_WRITEFUNCTION, &Curl::_writeDataCB ) );
+    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_PROGRESSDATA, this ) );
+    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_PROGRESSFUNCTION, &Curl::_progressCB ) );
+    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_NOPROGRESS, false ) );
     this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_NOSIGNAL, true ) );
 
     // Get the data.
@@ -185,7 +215,20 @@ private:
 
   static size_t _writeDataCB ( void *buffer, size_t sizeOfOne, size_t numElements, void *userData )
   {
-    std::ofstream *file ( reinterpret_cast<std::ofstream *> ( userData ) );
+    Curl *me ( reinterpret_cast<Curl *> ( userData ) );
+    return ( ( 0x0 == me ) ? 0 : me->_writeData ( buffer, sizeOfOne, numElements ) );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Called during a download.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  size_t _writeData ( void *buffer, size_t sizeOfOne, size_t numElements )
+  {
+    std::ofstream *file ( _file.second );
     if ( 0x0 == file )
     {
       return 0;
@@ -216,6 +259,54 @@ private:
 
   /////////////////////////////////////////////////////////////////////////////
   //
+  //  Called during a download to indicate progress.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  static int _progressCB ( void *userData, double thisDownload, double totalDownloaded, double thisUpload, double totalUploaded )
+  {
+    Curl *me ( reinterpret_cast<Curl *> ( userData ) );
+    return ( ( 0x0 == me ) ? 0 : me->_progress ( thisDownload, totalDownloaded, thisUpload, totalUploaded ) );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Called during a download to indicate progress.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  int _progress ( double thisDownload, double totalDownloaded, double thisUpload, double totalUploaded )
+  {
+    if ( thisDownload > 0 )
+    {
+      CURL_OUTPUT << Usul::Strings::format ( "Download: ", totalDownloaded, " of ", thisDownload, " bytes" );
+      Usul::Interfaces::IProgressBar::QueryPtr progress ( _caller );
+      if ( true == progress.valid() )
+      {
+        const double value ( thisDownload / _totalSize );
+        progress->updateProgressBar ( static_cast < unsigned int > ( value ) );
+      }
+    }
+
+    if ( thisUpload > 0 )
+    {
+      CURL_OUTPUT << Usul::Strings::format ( "Uploaded: ", thisUpload, " of ", totalUploaded, " bytes" ) << std::endl;
+      Usul::Interfaces::IProgressBar::QueryPtr progress ( _caller );
+      if ( true == progress.valid() )
+      {
+        const double value ( thisDownload / _totalSize );
+        progress->updateProgressBar ( static_cast < unsigned int > ( value ) );
+      }
+    }
+
+    // Keeps things going. Non-zero return results in CURLE_ABORTED_BY_CALLBACK.
+    return 0;
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
   //  Check return code.
   //
   /////////////////////////////////////////////////////////////////////////////
@@ -225,7 +316,10 @@ private:
     if ( 0 != code )
     {
       const std::string error ( &_error[0] );
-      const std::string message ( "Error 1884185898: " + ( ( error.empty() ) ? Usul::Strings::format ( "curl error code = ", code ) : error ) );
+      const std::string message ( Usul::Strings::format ( 
+        "Error 1884185898: ", 
+        ( ( error.empty() ) ? Usul::Strings::format ( "curl error code = ", code ) : error ), 
+        ", URL = ", _url ) );
       throw std::runtime_error ( message );
     }
   }
@@ -238,8 +332,11 @@ private:
   /////////////////////////////////////////////////////////////////////////////
 
   std::string _url;
-  std::string _file;
+  File _file;
   std::vector<char> _error;
+  unsigned long _totalSize;
+  Unknown::QueryPtr _caller;
+  std::ostream *_output;
 };
 
 

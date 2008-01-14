@@ -186,13 +186,13 @@ void RasterLayerOssim::open ( const std::string& filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* RasterLayerOssim::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * )
+RasterLayerOssim::ImagePtr RasterLayerOssim::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
   // Create the answer.
-  osg::ref_ptr < osg::Image > result ( this->_createBlankImage( width, height ) );
+  ImagePtr result ( this->_createBlankImage ( width, height ) );
 
   if ( 0x0 != _projection && 0x0 != _viewInterface && 0x0 != _renderer )
   {
@@ -215,7 +215,7 @@ osg::Image* RasterLayerOssim::texture ( const Extents& extents, unsigned int wid
       this->_convert ( *data, *result );
   }
 
-  return result.release();
+  return result;
 }
 
 

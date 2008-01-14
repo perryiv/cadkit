@@ -641,10 +641,10 @@ Tile::ImagePtr Tile::buildRaster ( const Extents &extents, unsigned int width, u
     job->cancel();
   
   osg::ref_ptr < osg::Image > image ( 0x0 );
-  
-  // // Build the image.
+
+  // Build the image.
   if ( 0x0 != raster )
-    image = raster->texture ( extents, width, height, level, job );
+    image = raster->texture ( extents, width, height, level, job, 0x0 );
   
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
@@ -1013,7 +1013,8 @@ void Tile::_launchElevationRequest()
   if ( ( 0x0 != _body ) && ( 0x0 != _body->jobManager() ) )
   {
     MeshSize size ( this->meshSize() );
-    _elevationJob = new CutImageJob ( this->extents(), size[0], size[1], this->level(), _body->elevationData() );
+    Usul::Interfaces::IUnknown::RefPtr caller ( 0x0 );
+    _elevationJob = new CutImageJob ( this->extents(), size[0], size[1], this->level(), _body->elevationData(), caller );
     _body->jobManager()->addJob ( _elevationJob.get() );
   }
 }
@@ -1039,11 +1040,11 @@ void Tile::image ( osg::Image* image )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* Tile::image()
+Tile::ImagePtr Tile::image()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _image.get();
+  return _image;
 }
 
 

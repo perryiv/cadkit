@@ -91,8 +91,8 @@ DynamicLandDocument::DynamicLandDocument() :
   _currentDocument ( 0x0 ),
   _newDocument ( 0x0 ),
   _terrain ( new osg::Group ),
-  _fileQueryDelay ( 1000 ),
-  _animationDelay ( 2000 ),
+  _fileQueryDelay ( 2 ),
+  _animationDelay ( 2 ),
   _currFileNum ( 0 ),
   _currFileLoaded ( -1 ),
   _numFilesInDirectory ( 0 ), 
@@ -567,7 +567,7 @@ osg::Node* DynamicLandDocument::LoadDataJob::_buildScene( Usul::Documents::Docum
   // Get needed interfaces.
   IDataSync::QueryPtr dataSync ( Usul::Components::Manager::instance().getInterface ( IDataSync::IID ) );
 
-  dataSync->resetData( Usul::System::Host::name() );
+  dataSync->resetData( Usul::System::Host::name(), this->_filename );
   return group.release();
 }
 
@@ -654,7 +654,7 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   if( true == this->isValid( this->currentFilePosition() ) &&
       false == this->isLoading( this->currentFilePosition() ) &&
       true == this->loadCurrentFile() &&
-      true == dataSync->queryDataState()  )
+      true == dataSync->queryDataState( this->getFilenameAtIndex( this->currentFilePosition() ) )  )
   {
     // current time step is ready to be shown
     this->_loadNextTimeStep();
@@ -749,13 +749,15 @@ void DynamicLandDocument::_loadJobs( Usul::Interfaces::IUnknown *caller )
           false == this->isLoading( index ) &&
           false == this->isLoaded( index ) )
     {
+      // Get the file name
+      std::string filename = this->getFilenameAtIndex( index );
+
       // Get needed interfaces.
       IDataSync::QueryPtr dataSync ( Usul::Components::Manager::instance().getInterface ( IDataSync::IID ) );
       
-      dataSync->setDataFlag( Usul::System::Host::name(), true );
+      dataSync->setDataFlag( Usul::System::Host::name(), filename, true );
       
-      // Get the file name
-      std::string filename = this->getFilenameAtIndex( index );
+
       // strip the extension from the map file name
       std::string root = filename.substr( 0, filename.size() - 4 );
       this->isLoading( index, true );

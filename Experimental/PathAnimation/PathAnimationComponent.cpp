@@ -413,6 +413,7 @@ void PathAnimationComponent::_setCurrentPath ( CameraPath::RefPtr path )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _currentPath = path;
+  this->_buildCameraMenu();
 }
 
 

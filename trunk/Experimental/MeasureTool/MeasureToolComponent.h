@@ -25,6 +25,9 @@
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IActiveViewListener.h"
 #include "Usul/Interfaces/IButtonPressListener.h"
+#include "Usul/Interfaces/IArcGenReaderWriter.h"
+#include "Usul/Documents/Document.h"
+#include "Usul/Documents/Manager.h"
 
 #include "osg/Group"
 #include "osg/Vec3"
@@ -77,17 +80,22 @@ protected:
   // Called when button is released.
   virtual bool      buttonPressNotify ( Usul::Interfaces::IUnknown * );
 
+  bool              enableExportButton() const;
+
   // Do not copy.
   MeasureToolComponent ( const MeasureToolComponent & );
   MeasureToolComponent &operator = ( const MeasureToolComponent & );
+
+
 
   /// Use reference counting.
   virtual ~MeasureToolComponent();
 
 private:
-  void              _updateMeasurement( Usul::Interfaces::IUnknown *caller ) const;
+  void              _updateMeasurement( Usul::Interfaces::IUnknown *caller );
   void              _clear();
   void              _exportToArcGen( Usul::Interfaces::IUnknown *caller );
+
 
   bool _measure;
   bool _appendPosition;

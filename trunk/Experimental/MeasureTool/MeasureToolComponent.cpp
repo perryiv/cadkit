@@ -27,7 +27,6 @@
 #include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IGroup.h"
 #include "Usul/Interfaces/IViewMatrix.h"
-#include "Usul/Interfaces/IArcGenReaderWriter.h"
 #include "Usul/Strings/Format.h"
 
 #include "VRV/Interfaces/INavigationScene.h"
@@ -297,7 +296,8 @@ void MeasureToolComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnknow
   measure->append ( new Button ( Usul::Commands::genericCommand ( "Clear", Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_clear ), Usul::Commands::TrueFunctor() ) ) );
   
   // Menu Function to export the measurement points to an Arc Gen file
-  measure->append ( new Button ( Usul::Commands::genericCommand ( "Export", Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_exportToArcGen ), Usul::Adaptors::memberFunction<bool> ( this, &MeasureToolComponent::enableExportButton ) ) ) );
+  //measure->append ( new Button ( Usul::Commands::genericCommand ( "Export", Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_exportToArcGen, caller ), Usul::Adaptors::memberFunction<bool> ( this, &MeasureToolComponent::enableExportButton ) ) ) );
+//measure->append ( new Button ( Usul::Commands::genericCommand ( "Export", Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_exportToArcGen ), Usul::Commands::TrueFunctor() ) ) );
   
   menu->append ( measure );
 }
@@ -310,7 +310,7 @@ void MeasureToolComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnknow
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool MeasureToolCommonent::enableExportButton() const
+bool MeasureToolComponent::enableExportButton() const
 {
   return true;
 }
@@ -374,7 +374,7 @@ bool MeasureToolComponent::buttonPressNotify ( Usul::Interfaces::IUnknown * call
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MeasureToolComponent::_updateMeasurement( Usul::Interfaces::IUnknown *caller ) const
+void MeasureToolComponent::_updateMeasurement( Usul::Interfaces::IUnknown *caller )
 {
   Guard guard ( this->mutex() );
 
@@ -396,7 +396,7 @@ void MeasureToolComponent::_updateMeasurement( Usul::Interfaces::IUnknown *calle
     tm->setText ( 15, 15, Usul::Strings::format (  "Distance: ", distance ), osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
   }
 
-  // set the internal measurement distance
+  // Set the internal measurement distance
   _measurement = distance;
 
 }
@@ -441,7 +441,7 @@ void MeasureToolComponent::_exportToArcGen( Usul::Interfaces::IUnknown *caller )
     throw std::runtime_error ( "Error 1845732421: Failed to find a matching document for file: " + filename );
 
   // See if it can write the file.
-  if ( false == info.document->canWrite ( filename ) )
+  if ( false == info.document->canSave ( filename ) )
     throw std::runtime_error ( "Error 4094644228: " + filename + " can't write to the specified extension .gen" );
 
   // Get the interface.
@@ -451,9 +451,9 @@ void MeasureToolComponent::_exportToArcGen( Usul::Interfaces::IUnknown *caller )
 
   // set the measurement and positions in the ArcGen reader/writer
   writer->measurement( _measurement );
-  writer->positions( _positions );
+//  writer->positions( _positions );
 
   // Tell the ArcGenRW to write the output file
-  info.document->save ( filename );
+  info.document->write ( filename, caller );
 
 }

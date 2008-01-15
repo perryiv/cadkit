@@ -14,6 +14,8 @@
 
 namespace osg { class Vec3d; }
 
+#include <vector>
+
 namespace Usul {
 namespace Interfaces {
 

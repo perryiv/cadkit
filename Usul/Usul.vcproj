@@ -776,6 +776,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IArcGenReaderWriter.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IAssembly.h"
 					>
 				</File>

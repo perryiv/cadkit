@@ -350,7 +350,10 @@ void ArcGenReaderWriterDocument::_writePolylineZ( const std::string &filename, U
     Vec3d latLon( 0, 0, 0 );
 
     // Conver the planet point into lat/lon
-    planetCoordinates->convertFromPlanet( Vec3d( v.x(), v.y(), v.z() ), latLon );
+    planetCoordinates->convertFromPlanet( Vec3d( static_cast< double > ( v.x() ), 
+                                                 static_cast< double > ( v.y() ), 
+                                                 static_cast< double > ( v.z() ) ), 
+                                          latLon );
 
     // Write the coordinate to the gen file
     outfile << Usul::Strings::format( latLon[0], ",", latLon[1] ) << std::endl;

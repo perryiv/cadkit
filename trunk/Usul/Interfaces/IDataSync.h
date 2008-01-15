@@ -25,13 +25,13 @@ struct IDataSync : public Usul::Interfaces::IUnknown
   enum { IID = 1478280416u };
 
   // set a data flag
-  virtual void                  setDataFlag( const std::string &machine, bool value ) = 0;
+  virtual void                  setDataFlag( const std::string &machine, const std::string &filename, bool value ) = 0;
 
   // query data state
-  virtual bool                  queryDataState() = 0;
+  virtual bool                  queryDataState( const std::string &filename ) = 0;
 
   // reset data
-  virtual void                  resetData( const std::string &machine ) = 0;
+  virtual void                  resetData( const std::string &machine, const std::string &filename ) = 0;
 
 }; //struct IDataSync
 

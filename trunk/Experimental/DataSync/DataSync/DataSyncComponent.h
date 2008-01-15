@@ -50,6 +50,7 @@ public:
   typedef std::pair< std::string, std::string > Machine;
   typedef std::vector< Machine > Machines;
   typedef std::vector< std::string > MachineList;
+  typedef std::vector< std::string > Files;
   //typedef std::map< std::string, cluster::UserData< SharedBoolean > > SharedBoolMap;
 
   /// Smart-pointer definitions.
@@ -65,9 +66,9 @@ public:
   virtual std::string           getPluginName() const { return "Multi Process Data Synchronization"; }
 
   /// Usul::Interfaces::IDataSync
-  virtual void                  setDataFlag( const std::string &machine, bool value );
-  virtual bool                  queryDataState();
-  virtual void                  resetData( const std::string &machine );
+  virtual void                  setDataFlag( const std::string &machine, const std::string &filename, bool value );
+  virtual bool                  queryDataState( const std::string &filename );
+  virtual void                  resetData( const std::string &machine, const std::string &filename );
   
   /// Usul::Interfaces::IPluginInitialize
   virtual void                  initialize( Usul::Interfaces::IUnknown *caller );
@@ -86,6 +87,7 @@ protected:
 
   void                          _readConfigFile( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   void                          _parseMachine( XmlTree::Node &node, Unknown *caller, Unknown *progress );
+  void                          _clear();
 
 
 

@@ -198,8 +198,8 @@ private:
   osg::ref_ptr< osg::Group >      _terrain;
 
   // Update variables
-  Usul::Policies::TimeBased       _fileQueryDelay;
-  Usul::Policies::TimeBased       _animationDelay;
+  Usul::Policies::NumberBased     _fileQueryDelay;
+  Usul::Policies::NumberBased     _animationDelay;
   unsigned int                    _currFileNum;
   int                             _currFileLoaded;
   unsigned int                    _numFilesInDirectory; 

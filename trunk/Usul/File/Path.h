@@ -136,8 +136,18 @@ inline std::string base ( const std::string &path )
 
   // Subtract them off.
   std::string base ( path );
-  base.erase ( base.size() - ext.size() - 1 );
-  base.erase ( 0, dir.size() );
+
+  // If there is an extension...
+  if ( false == ext.empty() )
+  {
+    base.erase ( base.size() - ext.size() - 1 );
+  }
+
+  // If there is a directory...
+  if ( false == dir.empty() )
+  {
+    base.erase ( 0, dir.size() );
+  }
 
   // Return the base name.
   return base;

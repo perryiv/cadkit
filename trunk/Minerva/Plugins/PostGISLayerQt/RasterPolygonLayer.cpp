@@ -11,6 +11,7 @@
 #include "RasterPolygonLayer.h"
 
 #include "Usul/Adaptors/Random.h"
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Format.h"
 
@@ -24,6 +25,8 @@
 //#include "ogr_srs_api.h"
 //#include "cpl_string.h"
 #include "cpl_error.h"
+
+USUL_FACTORY_REGISTER_CREATOR ( RasterPolygonLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -66,6 +69,44 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Push/Pop error handler.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct PushPopErrorHandler
+  {
+    PushPopErrorHandler()
+    {
+      CPLPushErrorHandler( Detail::errorHandler );
+    }
+    ~PushPopErrorHandler()
+    {
+      CPLPopErrorHandler();
+    }
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Default Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterPolygonLayer::RasterPolygonLayer () : 
+BaseClass(),
+_layer ( 0x0 ),
+_temp (),
+_data ( 0x0 )
+{
+  this->_addMember ( "Layer", _layer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -76,6 +117,8 @@ RasterPolygonLayer::RasterPolygonLayer ( Layer* layer ) :
   _temp (),
   _data ( 0x0 )
 {
+  this->_addMember ( "Layer", _layer );
+  
   this->_init();
 }
 
@@ -121,6 +164,9 @@ RasterPolygonLayer& RasterPolygonLayer::operator= ( const RasterPolygonLayer& rh
 
 RasterPolygonLayer::~RasterPolygonLayer()
 {
+  // Make sure it's closed.
+  if ( 0x0 != _data )
+    GDALClose( _data );
 }
 
 
@@ -133,8 +179,8 @@ RasterPolygonLayer::~RasterPolygonLayer()
 void RasterPolygonLayer::_init()
 {
   // Set an error handler.
-  CPLSetErrorHandler ( Detail::errorHandler );
-  
+  Detail::PushPopErrorHandler handler;
+
   // Return now if we don't have a valid layer to work with.
   if ( false == _layer.valid() )
     return;
@@ -298,12 +344,12 @@ void RasterPolygonLayer::_init()
   // Clean up geometries.
   for ( Geometries::iterator iter = geometries.begin(); iter != geometries.end(); ++iter )
     delete *iter;
-  
+#if 0
   OGRSpatialReference src ( _data->GetProjectionRef() ), dst;
   dst.SetWellKnownGeogCS( "EPSG:4326" );
   
   OGRCoordinateTransformation *transform ( OGRCreateCoordinateTransformation( &src, &dst ) );
-#if 0
+  
   if ( 0x0 != transform )
   {
     transform->Transform ( 2, &ll[0], &ll[1] );
@@ -311,11 +357,12 @@ void RasterPolygonLayer::_init()
     Extents extents ( Extents::Vertex ( ll[0], ll[1] ), Extents::Vertex ( ur[0], ur[1] ) );
     this->extents ( extents );
   }
-#endif
+#else
   
-  GDALClose( _data );
+  GDALClose( _data ); _data = 0x0;
   
   this->open ( name );
+#endif
 }
 
 
@@ -357,4 +404,22 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::texture ( const Extents& extent
 #else
   return BaseClass::texture ( extents, width, height, level, job, caller );
 #endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterPolygonLayer::deserialize ( const XmlTree::Node &node )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  
+  _dataMemberMap.deserialize ( node );
+  
+  // Open ourselfs.
+  this->_init ();
 }

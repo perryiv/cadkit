@@ -20,6 +20,12 @@
 
 class GDALDataset;
 
+namespace Usul {
+  namespace Factory {
+    template < class T > class TypeCreator;
+  }
+}
+
 class RasterPolygonLayer : public StarSystem::RasterLayerOssim
 {
 public:
@@ -35,7 +41,11 @@ public:
   /// Get the texture.
   virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
   
+  /// Deserialize.
+  virtual void          deserialize ( const XmlTree::Node &node );
 protected:
+  
+  RasterPolygonLayer();
   virtual ~RasterPolygonLayer();
   
   RasterPolygonLayer ( const RasterPolygonLayer& );
@@ -44,9 +54,15 @@ protected:
   void _init();
   
 private:
+  friend class Usul::Factory::TypeCreator<RasterPolygonLayer>;
+  
   PolygonLayer::RefPtr _layer;
   Usul::File::Temp _temp;
   GDALDataset *_data;
+  
+  SERIALIZE_XML_CLASS_NAME( RasterPolygonLayer ) 
+  SERIALIZE_XML_SERIALIZE_FUNCTION 
+  SERIALIZE_XML_ADD_MEMBER_FUNCTION
 };
 
 

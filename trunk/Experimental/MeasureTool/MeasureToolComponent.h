@@ -41,9 +41,12 @@ class MeasureToolComponent : public Usul::Base::Object,
 public:
 
   /// Typedefs.
-  typedef Usul::Base::Object                   BaseClass;
-  typedef Usul::Interfaces::IUnknown           Unknown;
-  typedef std::vector <osg::Vec3>              Positions;
+  typedef Usul::Base::Object                           BaseClass;
+  typedef Usul::Interfaces::IUnknown                   Unknown;
+  typedef std::vector <osg::Vec3>                      Positions;
+  typedef Usul::Documents::Manager                     DocManager;
+  typedef DocManager::DocumentInfo                     Info;
+  typedef Usul::Interfaces::IArcGenReaderWriter        IArcGenReaderWriter;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( MeasureToolComponent );
@@ -84,12 +87,15 @@ protected:
 private:
   void              _updateMeasurement( Usul::Interfaces::IUnknown *caller ) const;
   void              _clear();
+  void              _exportToArcGen( Usul::Interfaces::IUnknown *caller );
 
   bool _measure;
   bool _appendPosition;
   Positions _positions;
   Usul::Interfaces::IUnknown::QueryPtr _view;
   osg::ref_ptr<osg::Group> _root;
+
+  double _measurement;
 };
 
 

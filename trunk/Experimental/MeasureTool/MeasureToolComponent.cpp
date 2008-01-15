@@ -27,6 +27,7 @@
 #include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IGroup.h"
 #include "Usul/Interfaces/IViewMatrix.h"
+#include "Usul/Interfaces/IArcGenReaderWriter.h"
 #include "Usul/Strings/Format.h"
 
 #include "VRV/Interfaces/INavigationScene.h"
@@ -294,9 +295,26 @@ void MeasureToolComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnknow
 
   measure->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "On", Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::measureOn ), Usul::Adaptors::memberFunction<bool> ( this, &MeasureToolComponent::isMeasureOn ) ) ) );
   measure->append ( new Button ( Usul::Commands::genericCommand ( "Clear", Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_clear ), Usul::Commands::TrueFunctor() ) ) );
-
+  
+  // Menu Function to export the measurement points to an Arc Gen file
+  measure->append ( new Button ( Usul::Commands::genericCommand ( "Export", Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_exportToArcGen ), Usul::Adaptors::memberFunction<bool> ( this, &MeasureToolComponent::enableExportButton ) ) ) );
+  
   menu->append ( measure );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query the state to decide whether or not to enable/disable the export
+//  menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MeasureToolCommonent::enableExportButton() const
+{
+  return true;
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -377,6 +395,10 @@ void MeasureToolComponent::_updateMeasurement( Usul::Interfaces::IUnknown *calle
   {
     tm->setText ( 15, 15, Usul::Strings::format (  "Distance: ", distance ), osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
   }
+
+  // set the internal measurement distance
+  _measurement = distance;
+
 }
 
 
@@ -398,4 +420,40 @@ void MeasureToolComponent::_clear()
   }
 
   OsgTools::Group::removeAllChildren ( _root.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export to an Arc Gen format file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MeasureToolComponent::_exportToArcGen( Usul::Interfaces::IUnknown *caller )
+{
+  Guard guard ( this->mutex() );
+
+  // This will create a new document.
+  const std::string filename ( "output.gen" );
+  Info info ( DocManager::instance().find ( filename, caller ) );
+
+  if ( false == info.document.valid() )
+    throw std::runtime_error ( "Error 1845732421: Failed to find a matching document for file: " + filename );
+
+  // See if it can write the file.
+  if ( false == info.document->canWrite ( filename ) )
+    throw std::runtime_error ( "Error 4094644228: " + filename + " can't write to the specified extension .gen" );
+
+  // Get the interface.
+  Usul::Interfaces::IArcGenReaderWriter::QueryPtr writer ( info.document );
+  if ( false == writer.valid() )
+    throw std::runtime_error ( "Error 3075911574: Invalid document for file: " + filename );
+
+  // set the measurement and positions in the ArcGen reader/writer
+  writer->measurement( _measurement );
+  writer->positions( _positions );
+
+  // Tell the ArcGenRW to write the output file
+  info.document->save ( filename );
+
 }

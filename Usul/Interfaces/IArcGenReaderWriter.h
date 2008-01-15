@@ -12,7 +12,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class Vec3d; }
+namespace osg { class Vec3f; typedef Vec3f Vec3; }
 
 #include <vector>
 
@@ -28,7 +28,7 @@ struct IArcGenReaderWriter : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1605155574u };
 
-  typedef std::vector< osg::Vec3d > Positions;
+  typedef std::vector< osg::Vec3 > Positions;
 
   // set the positions vector
   virtual void             positions( Positions p ) = 0;

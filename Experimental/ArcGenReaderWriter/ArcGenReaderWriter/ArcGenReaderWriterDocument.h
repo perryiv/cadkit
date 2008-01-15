@@ -90,7 +90,7 @@ public:
   typedef Usul::Math::Vec3d Vec3d;
   typedef Usul::Math::Vec3f Vec3f;
   typedef std::vector< unsigned int > Vertices;
-  typedef std::vector< osg::Vec3d > Positions;
+  typedef std::vector< osg::Vec3 > Positions;
 
  
   /// Smart-pointer definitions.

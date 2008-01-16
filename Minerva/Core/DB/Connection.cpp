@@ -16,6 +16,7 @@
 #include "Usul/Threads/Thread.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/System/Sleep.h"
 #include "Usul/Factory/RegisterCreator.h"
 
@@ -199,6 +200,30 @@ void Connection::connect()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Build a connection string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Connection::connectionString() const
+{
+#ifndef _MSC_VER
+  std::string host ( Usul::System::Host::name() );
+  if( boost::algorithm::find_first ( host, "viz" ) )
+    (const_cast<Connection*>(this))->_host = "cinema";
+#endif
+
+  // Connection parameters.
+  std::string hostname ( Usul::Strings::format (     "host=", this->hostname() ) );
+  std::string database ( Usul::Strings::format (   "dbname=", this->database() ) );
+  std::string username ( Usul::Strings::format (     "user=", this->username() ) );
+  std::string password ( Usul::Strings::format ( "password=", this->password() ) );
+    
+  return Usul::Strings::format ( hostname, " ", username, " ", password, " ", database );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Create a connection.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -207,6 +232,7 @@ Connection::ConnectionType* Connection::_createConnection()
 {
   std::ostringstream os;
 
+#if 0
 #ifndef _MSC_VER
   std::string host ( Usul::System::Host::name() );
   if( boost::algorithm::find_first ( host, "viz" ) )
@@ -217,8 +243,8 @@ Connection::ConnectionType* Connection::_createConnection()
     << "user=" << _user << " "
     << "password=" << _password << " "
     << "host=" << _host;
-
-  return new ConnectionType( os.str().c_str() );
+#endif
+  return new ConnectionType( this->connectionString() /*os.str().c_str()*/ );
 }
 
 

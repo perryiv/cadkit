@@ -328,3 +328,17 @@ void RasterLayerOssim::deserialize ( const XmlTree::Node &node )
   // Open ourselfs.
   this->open ( _filename );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the filename.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayerOssim::filename() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _filename;
+}

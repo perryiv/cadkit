@@ -30,7 +30,7 @@ USUL_IMPLEMENT_TYPE_ID ( AnalogInput );
 AnalogInput::AnalogInput ( Unknown *caller, const std::string &name ) : 
   BaseClass ( caller, name ),
   _value ( 0 ),
-  _range ( -1.0f, 1.0f )
+  _range ( -1, 1 )
 {
   USUL_TRACE_SCOPE;
 }

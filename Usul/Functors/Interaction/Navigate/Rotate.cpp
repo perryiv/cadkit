@@ -33,7 +33,7 @@ Rotate::Rotate (
   const std::string &name,
   Direction *dir, 
   AnalogInput *ai,
-  float speed ) : 
+  double speed ) : 
   BaseClass ( caller, name, dir, ai, speed )
 {
   USUL_TRACE_SCOPE;
@@ -75,13 +75,13 @@ void Rotate::operator()()
   USUL_TRACE_SCOPE;
 
   // The stick value is just a unit-less scalar in the range [-1,1].
-  const float stick ( this->_analog() ); // no units
+  const double stick ( this->_analog() ); // no units
 
   // This is the number of seconds since the last time we were here.
-  const float interval ( this->_frameTime() ); // seconds
+  const double interval ( this->_frameTime() ); // seconds
 
   // Get the speed.
-  const float speed ( this->maxAngularSpeed() );
+  const double speed ( this->maxAngularSpeed() );
 
   // The angle to rotate should be in units of radians.
   //
@@ -89,10 +89,10 @@ void Rotate::operator()()
   // radians = --------  -------  -------  -------
   //           no-units  seconds     1     degrees
   //
-  float radians = stick * speed * interval * Usul::Math::DEG_TO_RAD; // radians
+  const double radians = stick * speed * interval * Usul::Math::DEG_TO_RAD; // radians
 
   // Get the direction vector.
-  const Direction::Vector &axis = this->_direction();
+  const Direction::Vector axis ( this->_direction() );
 
   // Rotate about the axis. Note: post-multiplying will rotate about where 
   // the wand is at. Pre-multiplying will rotate about the global origin.
@@ -108,7 +108,7 @@ void Rotate::operator()()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Rotate::maxAngularSpeed ( float s )
+void Rotate::maxAngularSpeed ( double s )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -126,4 +126,3 @@ Usul::Functors::Interaction::Common::BaseFunctor* Rotate::clone()
 {
   return new Rotate ( *this );
 }
-

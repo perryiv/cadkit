@@ -33,7 +33,7 @@ public:
   // Useful typedef(s).
   typedef Usul::Functors::Interaction::Common::BaseFunctor BaseClass;
   typedef BaseClass::Unknown Unknown;
-  typedef Usul::Math::Vec2f Vec2;
+  typedef Usul::Math::Vec2d Vec2;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( AnalogInput );
@@ -49,7 +49,7 @@ public:
   void                  range ( const Vec2 & );
 
   // Get the analog input.
-  float                 value() const { return _value; }
+  double                value() const { return _value; }
 
 protected:
 
@@ -57,7 +57,7 @@ protected:
   AnalogInput ( const AnalogInput &a );
   virtual ~AnalogInput();
 
-  float _value;
+  double _value;
   Vec2 _range;
 };
 

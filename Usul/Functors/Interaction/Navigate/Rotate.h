@@ -44,7 +44,7 @@ public:
     const std::string &name = "",
     Direction *dir = 0x0, 
     AnalogInput *ai = 0x0, 
-    float speed = 0.1f ); // degrees / second
+    double speed = 0.1 ); // degrees / second
   Rotate ( const Rotate &cb );
 
   // Rotate.
@@ -54,8 +54,8 @@ public:
   virtual BaseFunctor*  clone ();
 
   // Set the maximum degrees/second.
-  void                  maxAngularSpeed ( float s );
-  float                 maxAngularSpeed() const { return this->speed(); }
+  void                  maxAngularSpeed ( double s );
+  double                maxAngularSpeed() const { return this->speed(); }
 
 protected:
 

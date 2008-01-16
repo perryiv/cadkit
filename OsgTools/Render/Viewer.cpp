@@ -2032,7 +2032,7 @@ void Viewer::numRenderPasses ( unsigned int num )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Viewer::numRenderPasses ( ) const
+unsigned int Viewer::numRenderPasses() const
 {
   return _renderer->getNumRenderPasses();
 }
@@ -2056,7 +2056,7 @@ void Viewer::renderingPasses ( unsigned int num )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Viewer::renderingPasses ( ) const
+unsigned int Viewer::renderingPasses() const
 {
   return this->numRenderPasses();
 }
@@ -3557,12 +3557,14 @@ void Viewer::_handleNavigation ( EventAdapter *ea )
     {
       // If button release, render using the proper number of passes
       if ( EventAdapter::RELEASE == type )
+      {
         this->render();
+      }
 
       // If it's anything else, render using 1 render pass.  Reset to proper value.
       else
       {
-        unsigned int oldValue ( this->numRenderPasses() );
+        const unsigned int passes ( this->numRenderPasses() );
         
         try
         {
@@ -3573,11 +3575,11 @@ void Viewer::_handleNavigation ( EventAdapter *ea )
         // Catch any exceptions and reset the number of rendering passes.
         catch ( ... )
         {
-          this->numRenderPasses ( oldValue );
+          this->numRenderPasses ( passes );
           throw;
         }
 
-        this->numRenderPasses ( oldValue );
+        this->numRenderPasses ( passes );
       }
     }
   }

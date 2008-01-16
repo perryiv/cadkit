@@ -21,6 +21,8 @@
 
 using namespace StarSystem;
 
+USUL_IMPLEMENT_TYPE_ID ( BuildTiles );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -28,13 +30,15 @@ using namespace StarSystem;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BuildTiles::BuildTiles ( Tile::RefPtr tile ) : BaseClass (),
-_tile ( tile )
+BuildTiles::BuildTiles ( Tile::RefPtr tile ) : BaseClass(),
+  _tile ( tile.get() )
 {
   USUL_TRACE_SCOPE;
-  
+
   if ( _tile.valid() )
+  {
     this->priority ( -1 * static_cast<int> ( _tile->level() ) );
+  }
 }
 
 

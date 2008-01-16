@@ -52,8 +52,8 @@ public:
   void                  direction ( Direction * );
 
   // Set/get the speed.
-  float                 speed() const;
-  void                  speed ( float );
+  double                speed() const;
+  void                  speed ( double );
 
   // Set the caller.
   virtual void          caller ( Unknown* caller );
@@ -72,25 +72,25 @@ protected:
     const std::string &name,
     Direction *dir,
     AnalogInput *ai,
-    float speed );
+    double speed );
   Transform ( const Transform &cb );
   virtual ~Transform();
 
   // Get the analog input.
-  float                 _analog();
+  double                _analog();
 
   // Get the current direction.
   Vector                _direction();
 
   // Get the amount of time the last frame took.
-  float                 _frameTime() const;
+  double                _frameTime() const;
 
   // Post or pre-multiply the current matrix.
   void                  _postMult ( const Matrix & );
   void                  _preMult  ( const Matrix & );
 
   // Get the radius of the "world".
-  float                 _worldRadius() const;
+  double                _worldRadius() const;
 
 private:
 
@@ -99,7 +99,7 @@ private:
   FrameInfo::QueryPtr _fi;
   WorldInfo::QueryPtr _wi;
   MatrixMultiply::QueryPtr _mm;
-  float _speed;
+  double _speed;
 };
 
 

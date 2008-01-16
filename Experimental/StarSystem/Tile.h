@@ -31,6 +31,7 @@
 #include "osg/Group"
 #include "osg/Image"
 #include "osg/Texture2D"
+#include "osg/observer_ptr"
 
 #include <typeinfo>
 
@@ -82,6 +83,9 @@ public:
   typedef std::vector < Tile::RefPtr > Tiles;
   typedef std::pair < bool, unsigned long > JobID;
   typedef osg::ref_ptr<osg::Image> ImagePtr;
+  typedef osg::BoundingSphere BSphere;
+  typedef osg::observer_ptr < Tile > WeakPtr;
+  typedef osg::ref_ptr<osg::Node> NodePtr;
 
   // Constructors.
   Tile ( unsigned int level = 0, 
@@ -101,7 +105,7 @@ public:
   static ImagePtr           buildRaster ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, RasterLayer* raster, Usul::Jobs::Job::RefPtr );
 
   // Compute the bounding sphere.
-  virtual osg::BoundingSphere    computeBound() const;
+  virtual BSphere           computeBound() const;
 
   // Set/get the flag that says we're dirty.
   bool                      dirty() const;
@@ -162,6 +166,8 @@ protected:
   // Use reference counting.
   virtual ~Tile();
 
+  NodePtr                   _buildBorderLine();
+
   void                      _cull ( osgUtil::CullVisitor &cv );
 
   // Build skirts.
@@ -201,6 +207,7 @@ private:
   CutImageJob::RefPtr _elevationJob;
   Usul::Jobs::Job::RefPtr _tileJob;
   osg::BoundingSphere _boundingSphere;
+  osg::ref_ptr<osg::Group> _borders;
 };
 
 

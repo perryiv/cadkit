@@ -32,7 +32,7 @@ Translate::Translate (
   const std::string &name,
   Direction *dir, 
   AnalogInput *ai,
-  float speed ) : 
+  double speed ) : 
   BaseClass ( caller, name, dir, ai, speed ),
   _translateSpeed ( caller )
 {
@@ -74,16 +74,16 @@ void Translate::operator()()
   USUL_TRACE_SCOPE;
 
   // The stick value is just a unit-less scalar in the range [-1,1].
-  float stick ( this->_analog() ); // no units
+  const double stick ( this->_analog() ); // no units
 
   // We need the world's radius in order to calculate the "relative speed".
-  float radius ( this->_worldRadius() ); // feet
+  const double radius ( this->_worldRadius() ); // feet
 
   // This is the number of seconds since the last time we were here.
-  float interval ( this->_frameTime() ); // seconds
+  const double interval ( this->_frameTime() ); // seconds
 
   // Get the current speed.
-  float speed ( this->currentSpeed() );
+  const double speed ( this->currentSpeed() );
 
   // The distance to translate should be in units of feet.
   //
@@ -91,7 +91,7 @@ void Translate::operator()()
   // feet =  ----  --------  --------  -------
   //          1    no-units  seconds      1
   //
-  float dist ( radius * stick * - speed * interval ); // feet
+  const double dist ( radius * stick * - speed * interval ); // feet
 
   // Get the direction vector.
   Direction::Vector dir ( this->_direction() );
@@ -113,7 +113,7 @@ void Translate::operator()()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Translate::maxRelativeSpeed ( float s )
+void Translate::maxRelativeSpeed ( double s )
 {
   USUL_TRACE_SCOPE;
   this->speed ( s );
@@ -126,7 +126,7 @@ void Translate::maxRelativeSpeed ( float s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Translate::currentSpeed() const
+double Translate::currentSpeed() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );

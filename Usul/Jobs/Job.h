@@ -16,7 +16,7 @@
 #ifndef _USUL_JOBS_JOB_CLASS_H_
 #define _USUL_JOBS_JOB_CLASS_H_
 
-#include "Usul/Base/Object.h"
+#include "Usul/Base/Observed.h"
 #include "Usul/Threads/Callback.h"
 #include "Usul/Threads/Thread.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
@@ -31,17 +31,21 @@ namespace Usul {
 namespace Jobs {
 
 
-class USUL_EXPORT Job : public Usul::Base::Object
+class USUL_EXPORT Job : public Usul::Base::Observed
 {
 public:
 
   // Useful typedefs.
-  typedef Usul::Base::Object BaseClass;
+  typedef Usul::Base::Observed BaseClass;
   typedef Usul::Threads::Callback Callback;
   typedef Usul::Threads::Thread Thread;
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef Usul::Interfaces::IProgressBar ProgressBar;
   typedef Usul::Interfaces::IStatusBar StatusBar;
+  typedef Usul::Pointers::WeakPointer < Job > WeakPtr;
+
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( Job );
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Job );

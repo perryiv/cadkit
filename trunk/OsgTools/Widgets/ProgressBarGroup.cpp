@@ -75,14 +75,14 @@ private:
 ProgressBarGroup::ProgressBarGroup() : BaseClass(),
   _bars         (),
   _defaultProgressBarSize ( 1.9f, 0.03f ),
-  _position     (  0.0f, 0.0, -3.0f ),
+  _position     (  0.0f, 0.0, 0.0f ),
   _dirty    ( true ),
   _isRelativeToAbsolute ( true ),
   _root     ( new osg::Group ),
   _padding  ( 0.0f ),
   _numBars ( 0 )
 {
-  _root->setUpdateCallback( new ProgressBarGroupCallback ( this ) ); 
+  //_root->setUpdateCallback( new ProgressBarGroupCallback ( this ) ); 
 }
 
 
@@ -135,6 +135,7 @@ Usul::Math::Vec3f  ProgressBarGroup::position () const
 
 OsgTools::Widgets::ProgressBarGroup::Bars ProgressBarGroup::getBars()
 {
+  Guard guard ( this->mutex() );
   return _bars;
 }
 
@@ -230,6 +231,7 @@ void ProgressBarGroup::_setDirty ( bool d )
 
 int ProgressBarGroup::getNumBars()
 {
+  Guard guard ( this->mutex() );
   return _bars.size();
 }
 
@@ -299,6 +301,8 @@ osg::Node * ProgressBarGroup::buildScene()
   else
   {*/
     Guard guard ( this->mutex() );
+
+    // Remove what we have.
     _root->removeChildren ( 0, _root->getNumChildren() ); 
 
     osg::ref_ptr< osg::MatrixTransform > matrix ( new osg::MatrixTransform() );
@@ -308,11 +312,7 @@ osg::Node * ProgressBarGroup::buildScene()
       matrix->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
 
     // Get a copy of the bars.
-    Bars bars;
-    {
-      Guard guard ( this->mutex() );
-      bars = _bars;
-    }
+    Bars bars ( _bars );
 
     osg::Vec3 currentPosition ( _padding, _padding, 0.0 );
 
@@ -352,3 +352,27 @@ void ProgressBarGroup::_addProgressBar ( ProgressBar * pbar )
   _bars.push_back ( pbar );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the default size of a progress bar;
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarGroup::defaultProgressBarSize ( const Usul::Math::Vec2f& size )
+{
+  Guard guard ( this );
+  _defaultProgressBarSize = size;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the default size of a progress bar;
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec2f ProgressBarGroup::defaultProgressBarSize () const
+{
+  Guard guard ( this );
+  return _defaultProgressBarSize;
+}

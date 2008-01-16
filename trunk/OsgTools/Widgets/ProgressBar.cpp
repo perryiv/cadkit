@@ -154,6 +154,8 @@ namespace Detail
 
     geometry.addPrimitiveSet ( new osg::DrawArrays( osg::PrimitiveSet::QUADS, 0, 4 ) );
 
+    geode->getOrCreateStateSet()->setRenderBinDetails ( render_level, "RenderBin" );
+
     geode->addDrawable ( &geometry );
 
     return geode.release();
@@ -302,7 +304,7 @@ void ProgressBar::setTotalProgressBar ( unsigned int value )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  _range.set ( 0, double ( value ) );
+  _range.set ( 0, static_cast<double> ( value ) );
   _layout();
 }
 
@@ -317,7 +319,7 @@ void ProgressBar::updateProgressBar ( unsigned int value )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  this->value ( double ( value ) );
+  this->value ( static_cast<double> ( value ) );
   
 }
 
@@ -685,11 +687,11 @@ void ProgressBar::_setupAnimation( float cur, float end, float step )
 
 void ProgressBar::_layout()
 {
-  _borderPos = Usul::Math::Vec3f ( 0, 0, -0.0002f );
+  _borderPos = Usul::Math::Vec3f ( 0, 0, 0.0f );
   
   _barBorderPos = Usul::Math::Vec3f( this->_borderPos[0] + this->_padding[0],
                                      this->_borderPos[1] + this->_padding[0],
-                                     -0.0001f);
+                                     0.0f );
 
   _barPos = Usul::Math::Vec3f ( this->_barBorderPos[0] + this->_padding[1],
                                 this->_barBorderPos[1] + this->_padding[1],
@@ -701,11 +703,11 @@ void ProgressBar::_layout()
   _size = Usul::Math::Vec2f ( ( this->_barBorderLH[0] + this->_padding[0] * 2 ),
                               ( this->_barBorderLH[1] + this->_padding[0] * 2 ) * 2 );
 
-  _labelPos   = ( Usul::Math::Vec3f ( this->_barBorderPos[0], this->_borderPos[1] + this->_size[1] * .75, 0.0005f) );
+  _labelPos   = ( Usul::Math::Vec3f ( this->_barBorderPos[0], this->_borderPos[1] + this->_size[1] * .75, 0.0f ) );
 
   _percentPos = ( Usul::Math::Vec3f ( this->_barPos[0] + ( this->_barLH[0] * 0.45f ) ,
                                       this->_barPos[1] + ( this->_barLH[1] * 0.25f ) ,
-                                      0.0005f) );
+                                      0.0f ) );
  //std::ostringstream os;
  //  os << "pos: " << _pos[0] << " " << _pos[1] << ","
  //  << "borPos: " << _borderPos[0] << " " << _borderPos[1] << ","
@@ -809,19 +811,12 @@ osg::Node * ProgressBar::_buildScene()
 
     // build scene..
     
-    
+    anim->getOrCreateStateSet()->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+
     //this->_layout();
     {
       osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
-      anim->addChild (  ( Detail::buildThreadSafeQuad( 1003,
-                                               "icons/bar.tga",
-                                               osg::Vec2f ( _barPos[0], _barPos[1] + _barLH[1] ),
-                                               osg::Vec2f ( _barPos[0] + _barSize, _barPos[1] ),
-                                               0.0f, *geometry ) ) );
-    }
-    {
-      osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
-      anim->addChild ( (  Detail::buildThreadSafeQuad( 1002,
+      anim->addChild ( (  Detail::buildThreadSafeQuad( 1000,
                                                  "icons/background.tga",
                                                  osg::Vec2f ( _barPos[0] + _barSize, _barPos[1] + _barLH[1] ),
                                                  osg::Vec2f( _barPos[0] + _barLH[0], _barPos[1] ),
@@ -830,6 +825,14 @@ osg::Node * ProgressBar::_buildScene()
     {
       osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
       anim->addChild ( ( Detail::buildThreadSafeQuad( 1001,
+                                        "icons/border.tga",
+                                        osg::Vec2f ( _borderPos[0], _borderPos[1] + _size[1] ),
+                                        osg::Vec2f ( _borderPos[0] + _size[0], _borderPos[1] ),
+                                        _borderPos[2], *geometry ) ) );
+    }
+    {
+      osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
+      anim->addChild ( ( Detail::buildThreadSafeQuad( 1003,
                                            "icons/barborder.tga",
                                            osg::Vec2f ( _barBorderPos[0], _barBorderPos[1] + _barBorderLH[1] ),
                                            osg::Vec2f( _barBorderPos[0] + _barBorderLH[0], _barBorderPos[1] ),
@@ -837,12 +840,13 @@ osg::Node * ProgressBar::_buildScene()
     }
     {
       osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
-      anim->addChild ( ( Detail::buildThreadSafeQuad( 1000,
-                                        "icons/border.tga",
-                                        osg::Vec2f ( _borderPos[0], _borderPos[1] + _size[1] ),
-                                        osg::Vec2f ( _borderPos[0] + _size[0], _borderPos[1] ),
-                                        _borderPos[2], *geometry ) ) );
+      anim->addChild (  ( Detail::buildThreadSafeQuad( 1004,
+                                               "icons/bar.tga",
+                                               osg::Vec2f ( _barPos[0], _barPos[1] + _barLH[1] ),
+                                               osg::Vec2f ( _barPos[0] + _barSize, _barPos[1] ),
+                                               0.0f, *geometry ) ) );
     }
+
 
     osg::Vec4f white ( osg::Vec4f ( 1.0f, 1.0f, 1.0f, 1.0f ) );
     //osg::Vec4f black ( osg::Vec4f ( 0.0f, 0.0f, 0.0f, 1.0f ) );
@@ -856,6 +860,7 @@ osg::Node * ProgressBar::_buildScene()
                               white,
                               0.024 ) 
                           );
+      geode->getOrCreateStateSet()->setRenderBinDetails ( 1005, "RenderBin" );
       anim->addChild ( geode.get() );
     }
 
@@ -868,6 +873,7 @@ osg::Node * ProgressBar::_buildScene()
                               white,
                               0.024 ) 
                           );
+      geode->getOrCreateStateSet()->setRenderBinDetails ( 1006, "RenderBin" );
       anim->addChild ( geode.get() );
     }
     

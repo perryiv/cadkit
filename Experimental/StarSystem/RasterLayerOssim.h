@@ -42,6 +42,9 @@ public:
   /// Deserialize.
   virtual void          deserialize ( const XmlTree::Node &node );
 
+  /// Get filename.
+  std::string           filename() const;
+
 protected:
   virtual ~RasterLayerOssim();
 

@@ -36,8 +36,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CFD_VIZ_DOCUMENT_H_
-#define _CFD_VIZ_DOCUMENT_H_
+#ifndef _ARC_GEN_READER_WRITER_DOCUMENT_H_
+#define _ARC_GEN_READER_WRITER_DOCUMENT_H_
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IAnimatePath.h"
@@ -164,4 +164,4 @@ private:
 
 
 
-#endif // _CFD_VIZ_DOCUMENT_H_
+#endif // _ARC_GEN_READER_WRITER_DOCUMENT_H_

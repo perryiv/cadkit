@@ -116,6 +116,8 @@ Usul::Interfaces::IUnknown *ArcGenReaderWriterDocument::queryInterface ( unsigne
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast < Usul::Interfaces::IUpdateListener* > ( this );
+   case Usul::Interfaces::IArcGenReaderWriter::IID:
+    return static_cast < Usul::Interfaces::IArcGenReaderWriter* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }

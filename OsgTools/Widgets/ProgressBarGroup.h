@@ -59,6 +59,9 @@ public:
   void                                    position ( const Usul::Math::Vec3f& position );
   Usul::Math::Vec3f                       position () const;
 
+  void                                    defaultProgressBarSize ( const Usul::Math::Vec2f& size );
+  Usul::Math::Vec2f                       defaultProgressBarSize () const;
+
 protected:
 	
   virtual                                 ~ProgressBarGroup();

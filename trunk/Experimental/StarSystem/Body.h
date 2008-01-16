@@ -54,6 +54,7 @@ public:
   typedef Usul::Math::Vec2ui MeshSize;
   typedef StarSystem::Callbacks::SplitCallback SplitCallback;
   typedef osg::ref_ptr<osg::MatrixTransform> MatrixTransformPtr;
+  typedef Usul::Pointers::WeakPointer < Body > WeakPtr;
 
   // Helper macro for repeated code.
   STAR_SYSTEM_DEFINE_NODE_CLASS ( Body );

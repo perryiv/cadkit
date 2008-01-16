@@ -25,6 +25,7 @@
 #include "StarSystem/RasterLayer.h"
 #include "StarSystem/BuildTiles.h"
 
+#include "OsgTools/Group.h"
 #include "OsgTools/Mesh.h"
 #include "OsgTools/State/StateSet.h"
 
@@ -38,11 +39,11 @@
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
 
-#include "ossim/base/ossimEllipsoid.h"
-
 #include "osgUtil/CullVisitor"
 
 #include "osg/Geode"
+#include "osg/Geometry"
+#include "osg/PolygonOffset"
 #include "osg/Material"
 #include "osg/Texture2D"
 
@@ -78,7 +79,8 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _jobId ( false, 0 ),
   _elevationJob ( 0x0 ),
   _tileJob ( 0x0 ),
-  _boundingSphere()
+  _boundingSphere(),
+  _borders ( new osg::Group )
 {
   USUL_TRACE_SCOPE;
 
@@ -122,7 +124,8 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _jobId ( false, 0 ),
   _elevationJob ( tile._elevationJob ),
   _tileJob ( tile._tileJob ),
-  _boundingSphere ( tile._boundingSphere )
+  _boundingSphere ( tile._boundingSphere ),
+  _borders ( new osg::Group )
 {
   USUL_TRACE_SCOPE;
 
@@ -142,6 +145,26 @@ Tile::~Tile()
 {
   USUL_TRACE_SCOPE;
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Tile::_destroy ), "2021499927" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destroy
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_destroy()
+{
+  USUL_TRACE_SCOPE;
+
+  // Cancel the job.
+  this->clear();
+
+  _body = 0x0; // Don't delete!
+  delete _mesh; _mesh = 0x0;
+  delete _mutex; _mutex = 0x0;
+  _borders = 0x0;
 }
 
 
@@ -170,15 +193,14 @@ void Tile::updateMesh()
   // Shortcuts.
   const Extents::Vertex &mn ( _extents.minimum() );
   const Extents::Vertex &mx ( _extents.maximum() );
-
   const double deltaU ( _texCoords[1] - _texCoords[0] );
   const double deltaV ( _texCoords[3] - _texCoords[2] );
-  
+  OsgTools::Mesh &mesh ( *_mesh );
+
   // Clear the bounding sphere.
   _boundingSphere.init();
 
   // Add internal geometry.
-  OsgTools::Mesh &mesh ( *_mesh );
   for ( int i = mesh.rows() - 1; i >= 0; --i )
   {
     const double u ( 1.0 - static_cast<double> ( i ) / ( mesh.rows() - 1 ) );
@@ -212,7 +234,7 @@ void Tile::updateMesh()
         // Assign texture coordinate.  Lower left corner should be (0,0).
         const double s ( ( _texCoords[0] + ( u * deltaU ) ) );
         const double t ( ( _texCoords[2] + ( v * deltaV ) ) );
-        mesh.texCoord ( i, j ).set ( s , t );
+        mesh.texCoord ( i, j ).set ( s, t );
       }
     }
   }
@@ -231,14 +253,17 @@ void Tile::updateMesh()
     const double offset ( Usul::Math::maximum<double> ( ( 5000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
 
     // Add skirts to group.
-    //group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], mesh.rows() - 1,    offset ) ); // Left skirt.
+    group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], mesh.rows() - 1,    offset ) ); // Left skirt.
     group->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], 0,                  offset ) ); // Right skirt.
     group->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], 0,                  offset ) ); // Bottom skirt.
-    //group->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], mesh.columns() - 1, offset ) ); // Top skirt.
+    group->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], mesh.columns() - 1, offset ) ); // Top skirt.
   }
-  
+
   // Make the ground.
   group->addChild ( mesh() );
+
+  // Add the place-holder for the border.
+  group->addChild ( _borders.get() );
 
   // Add the group to us.
   this->addChild ( group.get() );
@@ -271,25 +296,6 @@ void Tile::updateTexture()
     // Texture no longer dirty.
     this->dirty ( false, Tile::TEXTURE, false );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Destroy
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Tile::_destroy()
-{
-  USUL_TRACE_SCOPE;
-
-  // Cancel the job.
-  this->clear();
-
-  _body = 0x0; // Don't delete!
-  delete _mesh; _mesh = 0x0;
-  delete _mutex; _mutex = 0x0;
 }
 
 
@@ -418,6 +424,9 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   {    
     this->updateTexture();
 
+    // Turn off the borders.
+    OsgTools::Group::removeAllChildren ( _borders.get() );
+
     // Remove high level of detail.
     if ( numChildren > 1 )
     {
@@ -437,7 +446,11 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
         _children[UPPER_RIGHT] = 0x0;
 
         // Clear the tile job.
-        if ( _tileJob.valid() ) _tileJob->cancel(); _tileJob = 0x0;
+        if ( _tileJob.valid() )
+        {
+          _tileJob->cancel();
+          _tileJob = 0x0;
+        }
       }
     }
   }
@@ -465,6 +478,10 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
         
           // Add the job to the job manager.
           _body->jobManager()->addJob ( _tileJob.get() );
+
+          // Show the border.
+          OsgTools::Group::removeAllChildren ( _borders.get() );
+          _borders->addChild ( this->_buildBorderLine().get() );
         }
       }
 
@@ -477,6 +494,9 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
         group->addChild ( _children[UPPER_RIGHT] );
         this->addChild ( group.get() );
         _tileJob = 0x0;
+
+        // Turn off the borders.
+        OsgTools::Group::removeAllChildren ( _borders.get() );
       }
     }
   }
@@ -651,6 +671,140 @@ Tile::ImagePtr Tile::buildRaster ( const Extents &extents, unsigned int width, u
     job->cancel();
   
   return image;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the line-segment for the border.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Tile::NodePtr Tile::_buildBorderLine()
+{
+  // Make geode to hold the geometry.
+  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+
+  // If we have a mesh...
+  if ( 0x0 != _mesh )
+  {
+    // Shortcut.
+    OsgTools::Mesh &mesh ( *_mesh );
+
+    // Make the colors.
+    osg::Vec4f color ( 1.0f, 0.0f, 0.0f, 1.0f );
+    osg::ref_ptr<osg::Vec4Array> horizColors ( new osg::Vec4Array );
+    osg::ref_ptr<osg::Vec4Array> vertColors  ( new osg::Vec4Array );
+    horizColors->resize ( mesh.columns(), color );
+    vertColors->resize  ( mesh.rows(),    color );
+
+    // Make the vertices.
+    osg::ref_ptr<osg::Vec3Array> top    ( new osg::Vec3Array );
+    osg::ref_ptr<osg::Vec3Array> bottom ( new osg::Vec3Array );
+    osg::ref_ptr<osg::Vec3Array> left   ( new osg::Vec3Array );
+    osg::ref_ptr<osg::Vec3Array> right  ( new osg::Vec3Array );
+
+    // Make space.
+    top->reserve    ( mesh.columns() );
+    bottom->reserve ( mesh.columns() );
+    left->reserve   ( mesh.rows() );
+    right->reserve  ( mesh.rows() );
+
+    // Loop through the columns.
+    for ( unsigned int j = 0; j < mesh.columns(); ++j )
+    {
+      top->push_back    ( mesh.point (               0, j ) );
+      bottom->push_back ( mesh.point ( mesh.rows() - 1, j ) );
+    }
+
+    // Loop through the rows.
+    for ( unsigned int i = 0; i < mesh.rows(); ++i )
+    {
+      left->push_back  ( mesh.point ( i, 0 ) );
+      right->push_back ( mesh.point ( i, mesh.columns() - 1 ) );
+    }
+
+    // Top
+    {
+      // Make the geometry.
+      osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
+
+      // Add geometry properties.
+      geometry->setVertexArray ( top.get() );
+      geometry->setColorArray ( horizColors.get() );
+      geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+      geometry->setNormalArray ( 0x0 );
+      geometry->setNormalBinding ( osg::Geometry::BIND_OFF );
+      geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, geometry->getVertexArray()->getNumElements() ) );
+
+      // Add geometry to geode.
+      geode->addDrawable ( geometry.get() );
+    }
+
+    // Bottom
+    {
+      // Make the geometry.
+      osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
+
+      // Add geometry properties.
+      geometry->setVertexArray ( bottom.get() );
+      geometry->setColorArray ( horizColors.get() );
+      geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+      geometry->setNormalArray ( 0x0 );
+      geometry->setNormalBinding ( osg::Geometry::BIND_OFF );
+      geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, geometry->getVertexArray()->getNumElements() ) );
+
+      // Add geometry to geode.
+      geode->addDrawable ( geometry.get() );
+    }
+
+    // Left
+    {
+      // Make the geometry.
+      osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
+
+      // Add geometry properties.
+      geometry->setVertexArray ( left.get() );
+      geometry->setColorArray ( vertColors.get() );
+      geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+      geometry->setNormalArray ( 0x0 );
+      geometry->setNormalBinding ( osg::Geometry::BIND_OFF );
+      geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, geometry->getVertexArray()->getNumElements() ) );
+
+      // Add geometry to geode.
+      geode->addDrawable ( geometry.get() );
+    }
+
+    // Right
+    {
+      // Make the geometry.
+      osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
+
+      // Add geometry properties.
+      geometry->setVertexArray ( right.get() );
+      geometry->setColorArray ( vertColors.get() );
+      geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+      geometry->setNormalArray ( 0x0 );
+      geometry->setNormalBinding ( osg::Geometry::BIND_OFF );
+      geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, geometry->getVertexArray()->getNumElements() ) );
+
+      // Add geometry to geode.
+      geode->addDrawable ( geometry.get() );
+    }
+  }
+
+  // Set properties.
+  OsgTools::State::StateSet::setLineWidth ( geode.get(), 3.0f );
+  OsgTools::State::StateSet::setPolygonsTextures ( geode->getOrCreateStateSet(), false );
+
+  // Need an offset.
+  osg::ref_ptr<osg::PolygonOffset> offset ( new osg::PolygonOffset );
+  offset->setFactor ( -1.0f );
+  offset->setUnits  ( -1.0f );
+  geode->getOrCreateStateSet()->setAttributeAndModes ( offset.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+
+  // Return new geode.
+  return NodePtr ( geode.get() );
 }
 
 

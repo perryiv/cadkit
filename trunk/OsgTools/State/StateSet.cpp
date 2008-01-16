@@ -428,14 +428,12 @@ void StateSet::setPolygonsTextures ( osg::StateSet* ss, bool on )
 
   if ( on ) // Turn on textures.
   {
-    std::cout << "turning on textures" << std::endl;
-    ss->setTextureMode(0,GL_TEXTURE_2D,osg::StateAttribute::INHERIT|osg::StateAttribute::ON);
+    ss->setTextureMode ( 0, GL_TEXTURE_2D, osg::StateAttribute::INHERIT | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
   }
 
   else
   {
-    std::cout << "turning off textures" << std::endl;
-    ss->setTextureMode(0,GL_TEXTURE_2D,osg::StateAttribute::OVERRIDE|osg::StateAttribute::OFF);
+    ss->setTextureMode( 0, GL_TEXTURE_2D, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::OFF );
   }
 }
 
@@ -453,18 +451,14 @@ bool StateSet::getPolygonsTextures ( osg::StateSet* ss )
 
   osg::StateAttribute::GLModeValue texture_value = ss->getTextureMode(0,GL_TEXTURE_2D);
 
-  std::cout << "get: value=" << std::endl;
-
   // If 2D textures are turned on...
   if ( texture_value == ( osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE ) )
   {
-    std::cout << "should return false" << std::endl;
     return false;
   }
 
   else
   {
-    std::cout << "should return true" << std::endl;
     return true;
   }
 }

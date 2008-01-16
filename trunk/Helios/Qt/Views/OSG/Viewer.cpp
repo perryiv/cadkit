@@ -372,6 +372,21 @@ void Viewer::focusInEvent ( QFocusEvent * event )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Window has lost the focus.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::focusOutEvent ( QFocusEvent * event )
+{
+  USUL_TRACE_SCOPE;
+
+  // Call the base class first.
+  BaseClass::focusInEvent ( event );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Is the current thread the thread we were created in.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -424,7 +439,7 @@ void Viewer::_initPlacement()
   if ( QWidget* parent = dynamic_cast < QWidget* > ( this->parent() ) )
   {
     // Shortcuts.
-    double percent ( 0.6 );
+    double percent ( 0.8 );
     int width  ( parent->width() );
     int height ( parent->height() );
     int w ( static_cast <int> ( percent * width ) );
@@ -505,7 +520,7 @@ void Viewer::mousePressEvent ( QMouseEvent * event )
   float x ( event->x() );
   float y ( this->height() - event->y() );
 
-   // Set the event type.
+  // Set the event type.
   typedef OsgTools::Render::EventAdapter EventAdapter;
   EventAdapter::Ptr ea ( viewer->eventAdaptor ( x, y, left, middle, right, EventAdapter::PUSH ) );
   viewer->buttonPress ( ea.get() );
@@ -848,22 +863,30 @@ Viewer::Mutex &Viewer::mutex() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::renderLoop ( bool b )
+void Viewer::renderLoop ( bool state )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  if ( 0x0 != _timerRenderLoop )
+  // Do nothing if it's already the same.
+  if ( state == this->renderLoop() )
+    return;
+
+  // Handle bad state.
+  if ( 0x0 == _timerRenderLoop )
+    return;
+
+  // Stop running timer.
+  _timerRenderLoop->stop();
+
+  // If we're supposed to start...
+  if ( true == state )
   {
-    _timerRenderLoop->stop();
+    // Attach the callback.
+    this->connect ( _timerRenderLoop, SIGNAL ( timeout() ), this, SLOT ( _onTimeoutRenderLoop() ) );
 
-    if ( b )
-    {
-      this->connect ( _timerRenderLoop, SIGNAL ( timeout() ), this, SLOT ( _onTimeoutRenderLoop() ) );
-
-      // Set the timer to go off every 15 milliseconds.
-      _timerRenderLoop->start ( static_cast<int> ( 15 ) );
-    }
+    // Set the timer to go off every 15 milliseconds.
+    _timerRenderLoop->start ( static_cast<int> ( 15 ) );
   }
 }
 
@@ -878,7 +901,6 @@ bool Viewer::renderLoop() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-
   return ( 0x0 != _timerRenderLoop ? _timerRenderLoop->isActive() : false );
 }
 

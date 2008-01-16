@@ -43,6 +43,9 @@ public:
   typedef StarSystem::Extents < osg::Vec2d > Extents;
   typedef Usul::Interfaces::IUnknown Unknown;
 
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( CutImageJob );
+
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( CutImageJob );
 

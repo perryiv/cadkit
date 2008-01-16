@@ -22,25 +22,38 @@
 
 #include "Usul/Jobs/Job.h"
 
+
 namespace StarSystem {
   
+
 class STAR_SYSTEM_EXPORT BuildTiles : public Usul::Jobs::Job
 {
 public:
+
   typedef Usul::Jobs::Job BaseClass;
+  typedef Usul::Pointers::WeakPointer < BuildTiles > WeakPtr;
+
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( BuildTiles );
+
+  // Smart-pointer definitions.
+  USUL_DECLARE_REF_POINTERS ( BuildTiles );
   
   BuildTiles ( Tile::RefPtr tile );
   
 protected:
+
   virtual ~BuildTiles();
   
   virtual void _started();
   
 private:
-  Tile::RefPtr _tile;
+
+  Tile::WeakPtr _tile;
 };
 
   
 }
+
 
 #endif // __STAR_SYSTEM_BUILD_TILES_H__

@@ -71,10 +71,10 @@ WandAngle::~WandAngle()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float WandAngle::_calculateValue ( unsigned int zero, unsigned int sign, const Vector& dir )
+double WandAngle::_calculateValue ( unsigned int zero, unsigned int sign, const Vector& dir )
 {
   USUL_TRACE_SCOPE;
-  float value ( 0.0f );
+  double value ( 0.0 );
 
   if ( true == _wand.valid() )
   {
@@ -92,15 +92,15 @@ float WandAngle::_calculateValue ( unsigned int zero, unsigned int sign, const V
     IWandState::Vector globalDir = matrix * localDir;
 
     // Lose the specified coordinate.
-    globalDir[zero] = 0.0f;
+    globalDir[zero] = 0;
 
     value = globalDir.angle ( dir );
     value *= Usul::Math::RAD_TO_DEG;
     value = Usul::Math::absolute ( value );
-    value *= ( ( globalDir[sign] < 0.0f ) ? -1.0f : 1.0f );
-    value = Usul::Math::clamp ( value, -90.0f, 90.0f );
-    value += 90.0f;  // [0,180]
-    value /= 180.0f; // [0,1];
+    value *= ( ( globalDir[sign] < 0 ) ? -1 : 1 );
+    value = Usul::Math::clamp ( value, -90.0, 90.0 );
+    value += 90;  // [0,180]
+    value /= 180; // [0,1];
     value *= ( _range[1] - _range[0] );
     value = _range[0] + value; // [ _range[0], _range[1] ]
 

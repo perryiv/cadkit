@@ -52,7 +52,7 @@ protected:
 
   virtual ~WandAngle();
 
-  float                 _calculateValue ( unsigned int zero, unsigned int sign, const Vector& dir = Vector ( 0.0f, 0.0f, -1.0f )  );
+  double                _calculateValue ( unsigned int zero, unsigned int sign, const Vector& dir = Vector ( 0, 0, -1 )  );
 
 private:
 

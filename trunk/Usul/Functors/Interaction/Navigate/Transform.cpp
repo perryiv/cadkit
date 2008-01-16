@@ -32,7 +32,7 @@ Transform::Transform (
   const std::string &name, 
   Direction *dir, 
   AnalogInput *ai,
-  float speed ) : 
+  double speed ) : 
   BaseClass ( caller, name ),
   _dir   ( dir ),
   _ai    ( ai ),
@@ -82,7 +82,7 @@ Transform::~Transform()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Transform::_analog()
+double Transform::_analog()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -124,11 +124,11 @@ Direction::Vector Transform::_direction()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Transform::_frameTime() const
+double Transform::_frameTime() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return ( ( true == _fi.valid() ) ? static_cast < float > ( _fi->frameTime() ) : 0.0f );
+  return ( ( true == _fi.valid() ) ? _fi->frameTime() : 0 );
 }
 
 
@@ -138,11 +138,11 @@ float Transform::_frameTime() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Transform::_worldRadius() const
+double Transform::_worldRadius() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return ( ( true == _wi.valid() ) ? static_cast < float > ( _wi->worldRadius() ) : 1.0f );
+  return ( ( true == _wi.valid() ) ? _wi->worldRadius() : 1 );
 }
 
 
@@ -188,7 +188,7 @@ void Transform::_preMult ( const Matrix &M )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Transform::speed() const
+double Transform::speed() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -202,7 +202,7 @@ float Transform::speed() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Transform::speed ( float s )
+void Transform::speed ( double s )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -257,4 +257,3 @@ void Transform::caller ( Unknown* caller )
   _wi = caller;
   _mm = caller;
 }
-

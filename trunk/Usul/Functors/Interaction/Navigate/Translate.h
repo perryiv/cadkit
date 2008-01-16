@@ -46,7 +46,7 @@ public:
     const std::string &name = "", 
     Direction *dir = 0x0, 
     AnalogInput *ai = 0x0,
-    float speed = 0.1f ); // percentage-of-world-radius / seconds
+    double speed = 0.1 ); // percentage-of-world-radius / seconds
   Translate ( const Translate &cb );
 
   // Translate.
@@ -57,11 +57,11 @@ public:
 
   // Set/get the maximum relative speed. The units are 
   // percentage-of-world-radius / seconds.
-  void                  maxRelativeSpeed ( float s );
-  float                 maxRelativeSpeed() const { return this->speed(); }
+  void                  maxRelativeSpeed ( double s );
+  double                maxRelativeSpeed() const { return this->speed(); }
 
   // Get the current speed.
-  float                 currentSpeed() const;
+  double                currentSpeed() const;
 
   // Set the caller.
   virtual void          caller ( Unknown* caller );

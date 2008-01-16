@@ -105,9 +105,10 @@ InstanceManager::~InstanceManager()
     // If we have objects...
     if ( false == _objects.empty() )
     {
-#if _MSC_VER
+      #if _MSC_VER
       USUL_ASSERT ( 0 ); // FYI
-#endif
+      #endif
+
       Helper::print ( Usul::Strings::format ( "Error 3951994349: ", _objects.size(), " referenced items remain:\n" ) );
       while ( false == _objects.empty() )
       {

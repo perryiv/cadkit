@@ -98,11 +98,11 @@ namespace Helper
       return v;
     }
   };
-  template <> struct FromString < Usul::Math::Vec3f >
+  template <> struct FromString < Usul::Math::Vec3d >
   {
-    static Usul::Math::Vec3f convert ( const std::string &s, const Usul::Math::Vec3f &defaultValue )
+    static Usul::Math::Vec3d convert ( const std::string &s, const Usul::Math::Vec3d &defaultValue )
     {
-      Usul::Math::Vec3f v ( defaultValue );
+      Usul::Math::Vec3d v ( defaultValue );
       std::istringstream in ( s );
       in >> v[0] >> v[1] >> v[2];
       return v;

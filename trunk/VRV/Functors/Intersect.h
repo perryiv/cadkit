@@ -71,7 +71,7 @@ protected:
   typedef osg::NodePath Path;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef VRV::Interfaces::IAuxiliaryScene AuxiliaryScene;
-  typedef Usul::Interfaces::IWandStateFloat WandState;
+  typedef Usul::Interfaces::IWandStateDouble WandState;
   typedef Usul::Interfaces::IClippingDistance ClippingDistance;
 
   Intersect ( const Intersect &cb );

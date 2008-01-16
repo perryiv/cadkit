@@ -39,6 +39,9 @@ ${CADKIT_INC_DIR}/Helios/Plugins/StarSystemModel
 # ---- Minerva -------
 ${CADKIT_INC_DIR}/Minerva/Core
 ${CADKIT_INC_DIR}/Minerva/Document
+
+${CADKIT_INC_DIR}/Minerva/Layers/GDAL
+
 # ---- Minerva Plug-ins -------
 ${CADKIT_INC_DIR}/Minerva/Plugins/ProjectionManager
 ${CADKIT_INC_DIR}/Minerva/Plugins/ComputeNormals

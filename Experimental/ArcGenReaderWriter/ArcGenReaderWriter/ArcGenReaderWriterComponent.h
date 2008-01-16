@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _RAY_CAST_VOL_VIZ_COMPONENT_CLASS_H_
-#define _RAY_CAST_VOL_VIZ_COMPONENT_CLASS_H_
+#ifndef _ARC_GEN_READER_WRITER_COMPONENT_CLASS_H_
+#define _ARC_GEN_READER_WRITER_COMPONENT_CLASS_H_
 
 #include "CompileGuard.h"
 
@@ -48,7 +48,7 @@ public:
   ArcGenReaderWriterComponent();
 
   /// Usul::Interfaces::IPlugin
-  virtual std::string           getPluginName() const { return "Ray Cast Volume Visualization"; }
+  virtual std::string           getPluginName() const { return "Arc Gen Reader Writer"; }
 
   /// Usul::Interfaces::IDocumentCreate
   virtual Document *            createDocument ( Unknown *caller = 0x0 );
@@ -66,4 +66,4 @@ protected:
 };
 
 
-#endif // _RAY_CAST_VOL_VIZ_COMPONENT_CLASS_H_
+#endif // _ARC_GEN_READER_WRITER_COMPONENT_CLASS_H__

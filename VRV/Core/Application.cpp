@@ -35,6 +35,7 @@
 #include "Usul/Commands/ShadeModel.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Convert/Matrix44.h"
+#include "Usul/Convert/Vector4.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/File/Find.h"
@@ -152,7 +153,7 @@ Application::Application() :
   _transformFunctors (),
   _favoriteFunctors  (),
   _translationSpeed  ( 1.0f ),
-  _home              ( osg::Matrixf::identity() ),
+  _home              ( osg::Matrixd::identity() ),
   _timeBased         ( true ),
   _colorMap          (),
   _count             ( 0 ),
@@ -165,7 +166,9 @@ Application::Application() :
   _flags             ( 0 ),
   _updateListeners   (),
   _renderListeners   (),
-  _intersectListeners ()
+  _intersectListeners (),
+  _buttonMap          (),
+  _buttonToAssign     ( 0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -1820,6 +1823,9 @@ void Application::backgroundColor( const Usul::Math::Vec4f& color )
   {
     (*iter)->backgroundColor ( c, OsgTools::Render::Renderer::Corners::ALL );
   }
+
+  // Set the background color.
+  Usul::Registry::Database::instance()[this->_documentSection()][VRV::Constants::Keys::BACKGROUND_COLOR] = color;
 }
 
 
@@ -2395,7 +2401,7 @@ void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Us
   this->computeNearFar ( autoNearFar );
 
   // Get the home position from the registry.
-  Usul::Math::Matrix44f m ( node [ VRV::Constants::Keys::HOME_POSITION ].get < Usul::Math::Matrix44f > ( Usul::Math::Matrix44f () ) );
+  Usul::Math::Matrix44d m ( node [ VRV::Constants::Keys::HOME_POSITION ].get < Usul::Math::Matrix44d > ( Usul::Math::Matrix44d () ) );
   OsgTools::Convert::matrix ( m, _home );
   this->_navigationMatrix ( _home );
 
@@ -2417,6 +2423,10 @@ void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Us
     Guard guard ( this );
     this->navigator ( _favoriteFunctors[navigatorName] );
   }
+
+  // Get the background color.
+  Usul::Math::Vec4f color ( node[VRV::Constants::Keys::BACKGROUND_COLOR].get<Usul::Math::Vec4f> ( this->backgroundColor() ) );
+  this->backgroundColor ( color );
 
   Usul::Interfaces::IUnknown::QueryPtr unknown ( newDoc );
   if ( true == unknown.valid() )
@@ -2529,6 +2539,21 @@ bool Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
     case VRV::BUTTON5: std::cout << VRV::BUTTON5 << " Button 5 pressed (TRIGGER)"  << std::endl; break;
     }
 
+    // See if we should execute a user specified command.
+    {
+      Guard guard ( this );
+      ButtonMap::iterator iter ( _buttonMap.find ( id ) );
+      if ( _buttonMap.end() != iter )
+      {
+        CommandPtr command ( iter->second );
+        if ( command.valid() )
+        {
+          command->execute ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+          return false;
+        }
+      }
+    }
+
     // Let the menu process first.
     bool menuHandled ( this->_handleMenuEvent( id ) );
 
@@ -2589,20 +2614,21 @@ void Application::_navigate()
 #if 0
   Vector t ( this->rotationCenter() );
 
-  osg::Matrix vm ( this->getViewMatrix() );
-  osg::Vec3 translation ( vm.getTrans() );
+  //osg::Matrix vm ( this->getViewMatrix() );
+  //osg::Vec3 translation ( vm.getTrans() );
 
-  t += Vector ( translation[0], translation[1], translation[2] );
+  //t += Vector ( translation[0], translation[1], translation[2] );
 
-  Matrix44f m;
+  Usul::Math::Matrix44d m;
   m.makeTranslation ( -t );
 
-  this->postMultiply ( m );
+  this->preMultiply ( m );
 #endif
 
   // Tell the navigator to execute.
   if ( _navigator.valid() )
     (*_navigator)();
+
 #if 0
   m.makeTranslation ( t );
   this->postMultiply ( m );
@@ -3173,7 +3199,7 @@ void Application::_setHome()
   Guard guard ( this->mutex() );
   _home = this->_navigationMatrix();
 
-  Usul::Math::Matrix44f m;
+  Usul::Math::Matrix44d m;
   OsgTools::Convert::matrix ( _home, m );
   Usul::Registry::Database::instance()[ this->_documentSection () ][ VRV::Constants::Keys::HOME_POSITION ] = m;
 }
@@ -3615,6 +3641,33 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
   // Create a sub-menu for background color
   MenuKit::Menu::RefPtr background ( new MenuKit::Menu ( "Background Color", MenuKit::Menu::VERTICAL ) );
   menu->append ( background.get() );
+
+  // Create a sub-menu for buttons.
+  {
+    MenuKit::Menu::RefPtr buttons ( new MenuKit::Menu ( "Buttons" ) );
+
+    MenuKit::Menu::RefPtr assign ( new MenuKit::Menu ( "Assign" ) );
+    assign->append ( new Button ( Usul::Commands::genericCommand ( "Red Button", 
+                     Usul::Adaptors::bind1<void> ( VRV::BUTTON_RED, 
+                     Usul::Adaptors::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
+    assign->append ( new Button ( Usul::Commands::genericCommand ( "Yellow Button", 
+                     Usul::Adaptors::bind1<void> ( VRV::BUTTON_YELLOW, 
+                     Usul::Adaptors::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
+    assign->append ( new Button ( Usul::Commands::genericCommand ( "Green Button", 
+                     Usul::Adaptors::bind1<void> ( VRV::BUTTON_GREEN, 
+                     Usul::Adaptors::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
+    assign->append ( new Button ( Usul::Commands::genericCommand ( "Blue Button", 
+                     Usul::Adaptors::bind1<void> ( VRV::BUTTON_BLUE, 
+                     Usul::Adaptors::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );;
+    
+    
+    buttons->append ( assign );
+
+    buttons->append ( new Button ( new BasicCommand ( "Clear button assignments", Usul::Adaptors::memberFunction<void> ( this, &Application::_clearAssignedButtonCommands ) ) ) );
+
+
+    menu->append ( buttons );
+  }
 
   // Add a button for each of our colors.
   typedef VRV::Commands::BackgroundColor BackgroundColor;
@@ -4186,7 +4239,34 @@ bool Application::_handleMenuEvent( unsigned long id )
   switch ( id )
   {
     case BUTTON_TRIGGER:
-      menu->selectFocused();
+      {
+        if ( this->_isAssignNextMenuSelection() )
+        {
+          MenuKit::Behavior::RefPtr behavior ( menu->behavior() );
+
+          if ( behavior.valid() )
+          {
+            MenuKit::Item::RefPtr item ( behavior->focus() );
+            if ( MenuKit::Button *button = dynamic_cast < MenuKit::Button* > ( item.get() ) )
+            {
+              Guard guard ( this );
+              _buttonMap[_buttonToAssign] = button->command();
+              
+              // We don't want to set the next one too.
+              _flags = Usul::Bits::set<unsigned int,unsigned int> ( _flags, Application::ASSIGN_NEXT_COMMAND, false );
+              _buttonToAssign = 0;
+
+              // Hide the menu.
+              behavior->close ( behavior->root() );
+
+              // No more focused item.
+              behavior->focus ( 0x0 );
+            }
+          }
+        }
+        else
+          menu->selectFocused();
+      }
       break;
 
     case BUTTON_RED:
@@ -4848,4 +4928,49 @@ void Application::_animate( const osg::Matrix& m1, const osg::Matrix& m2 )
   }
   else
     this->setViewMatrix ( m2 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set assign button command.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_assignNextMenuSelection ( unsigned long button )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  _flags = Usul::Bits::set<unsigned int,unsigned int> ( _flags, Application::ASSIGN_NEXT_COMMAND, true );
+
+  _buttonToAssign = button;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get assign button command.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_isAssignNextMenuSelection ( )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return Usul::Bits::has<unsigned int, unsigned int> ( _flags, Application::ASSIGN_NEXT_COMMAND );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear our assigned buttons.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_clearAssignedButtonCommands()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _buttonMap.clear();
 }

@@ -33,7 +33,7 @@ public:
   // Useful typedef(s).
   typedef Usul::Functors::Interaction::Common::BaseFunctor BaseClass;
   typedef BaseClass::Unknown Unknown;
-  typedef Usul::Math::Vec3f Vector;
+  typedef Usul::Math::Vec3d Vector;
   typedef Usul::Functors::Interaction::Matrix::MatrixFunctor MatrixFunctor;
 
   // Type information.

@@ -33,8 +33,8 @@ public:
   // Useful typedef(s).
   typedef Usul::Functors::Interaction::Matrix::MatrixFunctor BaseClass;
   typedef BaseClass::Unknown Unknown;
-  typedef Usul::Interfaces::IWandStateFloat WandState;
-  typedef Usul::Math::Matrix44f Matrix;
+  typedef Usul::Interfaces::IWandStateDouble WandState;
+  typedef Usul::Math::Matrix44d Matrix;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( WandMatrix );

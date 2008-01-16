@@ -32,7 +32,7 @@ public:
   // Useful typedef(s).
   typedef Usul::Functors::Interaction::Wand::WandMatrix BaseClass;
   typedef BaseClass::Unknown Unknown;
-  typedef Usul::Math::Matrix44f Matrix;
+  typedef Usul::Math::Matrix44d Matrix;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( WandPosition );

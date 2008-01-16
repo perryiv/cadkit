@@ -21,6 +21,7 @@
 #include "Usul/Threads/RecursiveMutex.h"
 
 #include "Usul/Components/Manager.h"
+#include "Usul/DLL/Loader.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
@@ -50,6 +51,9 @@ public:
   // Add a single plugin file name.
   void                      addPlugin ( const std::string &file );
 
+  // Add a library to load.
+  void                      addLibrary ( const std::string &file );
+
   // Get the mutex.
   Mutex &                   mutex() const { return _mutex; }
 
@@ -75,14 +79,17 @@ protected:
 
   void                      _addPlugins ( Node &node );
   void                      _addPlugin  ( Node &node );
+  void                      _addLibrary ( Node &node );
   void                      _addPlugin  ( PluginInfo &plugin );
 	
 private:
 
-  typedef std::vector < PluginInfo > Plugins;
+  typedef std::vector<PluginInfo> Plugins;
+  typedef std::vector<std::string> Libraries;
 	
   std::string     _directory;
   Plugins         _plugins;
+  Libraries       _libraries;
   mutable Mutex   _mutex;
 };
 
@@ -97,6 +104,7 @@ template < class Document >
 inline Loader< Document >::Loader() : 
   _directory(),
   _plugins(),
+  _libraries(),
   _mutex()
 {
   USUL_TRACE_SCOPE;
@@ -159,6 +167,8 @@ inline void Loader< Document >::_addPlugins ( Node &parent )
     {
       this->_addPlugin ( *node );
     }
+    if ( "library" == node->name() )
+      this->_addLibrary ( *node );
     else if ( "directory" == node->name() )
     {
       _directory = node->value();
@@ -211,6 +221,31 @@ inline void Loader< Document >::_addPlugin ( Node &node )
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Document >
+inline void Loader< Document >::_addLibrary ( Node &node )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  typedef typename Document::Attributes Attributes;
+  Attributes& attributes ( node.attributes() );
+
+  for ( typename Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+  {
+    if ( "file" == iter->first )
+    {
+      this->addLibrary ( iter->second );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a plugin.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Document >
 inline void Loader< Document >::_addPlugin ( PluginInfo &plugin )
 {
   USUL_TRACE_SCOPE;
@@ -241,6 +276,36 @@ inline void Loader< Document >::addPlugin ( const std::string &file )
   plugin.load = true;
 
   this->_addPlugin ( plugin );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a plugin.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Document >
+inline void Loader< Document >::addLibrary ( const std::string &file )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  std::string name ( file );
+
+#if _DEBUG
+  name += 'd';
+#endif
+
+#ifdef _MSC_VER
+  name += ".dll";
+#elif _APPLE_
+  name += ".dylib";
+#else
+  name += ".so";
+#endif
+
+  _libraries.push_back ( name );
 }
 
 
@@ -290,6 +355,19 @@ inline void Loader< Document >::load ( Usul::Interfaces::IUnknown *caller )
     // Update progress.
     if ( progress.valid() )
       progress->updateProgressBar ( ++number );
+  }
+
+  // Load the libraries.
+  for ( typename Libraries::const_iterator iter = _libraries.begin(); iter != _libraries.end(); ++iter )
+  {
+    // Get the name.
+    std::string name ( *iter );
+
+    // Let the user know what library we are loading.
+    status ( "Loading " + name + "...", true );
+
+    // Load.
+    Usul::DLL::Loader::load ( name );
   }
 }
 

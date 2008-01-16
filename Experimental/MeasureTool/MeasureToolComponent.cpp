@@ -16,6 +16,7 @@
 
 #include "MeasureTool/MeasureToolComponent.h"
 
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Commands/GenericCommand.h"
 #include "Usul/Commands/GenericCheckCommand.h"
@@ -293,10 +294,14 @@ void MeasureToolComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnknow
   MenuKit::Menu::RefPtr measure ( new MenuKit::Menu ( "Measurement" ) );
 
   measure->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "On", Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::measureOn ), Usul::Adaptors::memberFunction<bool> ( this, &MeasureToolComponent::isMeasureOn ) ) ) );
+
   measure->append ( new Button ( Usul::Commands::genericCommand ( "Clear", Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_clear ), Usul::Commands::TrueFunctor() ) ) );
   
   // Menu Function to export the measurement points to an Arc Gen file
-  //measure->append ( new Button ( Usul::Commands::genericCommand ( "Export", Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_exportToArcGen, caller ), Usul::Adaptors::memberFunction<bool> ( this, &MeasureToolComponent::enableExportButton ) ) ) );
+  measure->append ( new Button ( Usul::Commands::genericCommand ( "Export", 
+      Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_exportToArcGen ) ),
+      Usul::Adaptors::memberFunction<bool> ( this, &MeasureToolComponent::enableExportButton ) ) ) );
+
 //measure->append ( new Button ( Usul::Commands::genericCommand ( "Export", Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_exportToArcGen ), Usul::Commands::TrueFunctor() ) ) );
   
   menu->append ( measure );
@@ -433,6 +438,10 @@ void MeasureToolComponent::_exportToArcGen( Usul::Interfaces::IUnknown *caller )
 {
   Guard guard ( this->mutex() );
 
+  // debugging. Remove when fixed
+  std::cout << "Calling _exportToArcGen " << std::endl;
+
+
   // This will create a new document.
   const std::string filename ( "output.gen" );
   Info info ( DocManager::instance().find ( filename, caller ) );
@@ -450,10 +459,18 @@ void MeasureToolComponent::_exportToArcGen( Usul::Interfaces::IUnknown *caller )
     throw std::runtime_error ( "Error 3075911574: Invalid document for file: " + filename );
 
   // set the measurement and positions in the ArcGen reader/writer
+
+  // debugging. Remove when fixed
+  std::cout << "Calling writer->measurement " << std::endl;
   writer->measurement( _measurement );
-//  writer->positions( _positions );
+
+  // debugging. Remove when fixed
+  std::cout << "Calling writer->positions " << std::endl;
+  writer->positions( _positions );
 
   // Tell the ArcGenRW to write the output file
-  info.document->write ( filename, caller );
+  // debugging. Remove when fixed
+  std::cout << "Calling info.document->write " << std::endl;
+  info.document->write ( filename );
 
 }

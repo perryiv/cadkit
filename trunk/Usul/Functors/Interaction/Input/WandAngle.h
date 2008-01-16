@@ -33,7 +33,7 @@ public:
   // Useful typedef(s).
   typedef AnalogInput BaseClass;
   typedef BaseClass::Unknown Unknown;
-  typedef Usul::Interfaces::IWandStateFloat IWandState;
+  typedef Usul::Interfaces::IWandStateDouble IWandState;
   typedef IWandState::Vector Vector;
 
   // Type information.

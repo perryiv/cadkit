@@ -62,10 +62,10 @@ protected:
 
   typedef BaseClass::Unknown Unknown;
   typedef Direction::Vector Vector;
-  typedef Usul::Math::Matrix44f Matrix;
+  typedef Usul::Math::Matrix44d Matrix;
   typedef Usul::Interfaces::IFrameInfo FrameInfo;
   typedef Usul::Interfaces::IWorldInfo WorldInfo;
-  typedef Usul::Interfaces::IMatrixMultiplyFloat MatrixMultiply;
+  typedef Usul::Interfaces::IMatrixMultiplyDouble MatrixMultiply;
 
   Transform (
     Unknown *caller, 

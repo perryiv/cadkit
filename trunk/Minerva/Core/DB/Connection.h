@@ -53,6 +53,9 @@ public:
 
   Connection();
 
+  /// Build connection string for postgres.
+  std::string          connectionString() const;
+
   /// Get the name of the connection
   std::string          name() const;
 

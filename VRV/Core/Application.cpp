@@ -139,7 +139,6 @@ Application::Application() :
   _analogTrim        ( 0, 0 ),
   _wandOffset        ( 0, -1.6, -0.67 ), // feet (used to be z=-4)
   _databasePager     ( 0x0 ),
-  _updateListeners   ( ),
   _commandQueue      ( ),
   _frameDump         (),
   _navigator         ( 0x0 ),
@@ -164,7 +163,9 @@ Application::Application() :
   _deleteHandler     ( new OsgTools::Utilities::DeleteHandler ),
   _rotCenter         ( 0, 0, 0 ),
   _flags             ( 0 ),
-  _renderListeners   ()
+  _updateListeners   (),
+  _renderListeners   (),
+  _intersectListeners ()
 {
   USUL_TRACE_SCOPE;
 
@@ -268,7 +269,7 @@ void Application::_construct()
   typedef Usul::Functors::Interaction::Wand::WandRotation MF;
 
   Usul::Interfaces::IUnknown::QueryPtr unknown ( this );
-  Usul::Math::Vec3f dir ( 0, 0, -1 );
+  Usul::Math::Vec3d dir ( 0, 0, -1 );
   MF::ValidRefPtr mf ( new MF ( unknown ) );
   Dir::ValidRefPtr df ( new Dir ( unknown, "", dir, mf.get() ) );
 
@@ -383,12 +384,12 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < VRV::Interfaces::IModelsScene * > ( this );
   case VRV::Interfaces::INavigationScene::IID:
     return static_cast < VRV::Interfaces::INavigationScene* > ( this );
-  case Usul::Interfaces::IMatrixMultiplyFloat::IID:
-    return static_cast < Usul::Interfaces::IMatrixMultiplyFloat * > ( this );
+  case Usul::Interfaces::IMatrixMultiplyDouble::IID:
+    return static_cast < Usul::Interfaces::IMatrixMultiplyDouble * > ( this );
   case Usul::Interfaces::IJoystickFloat::IID:
     return static_cast< Usul::Interfaces::IJoystickFloat * > ( this );
-  case Usul::Interfaces::IWandStateFloat::IID:
-    return static_cast< Usul::Interfaces::IWandStateFloat * > ( this );
+  case Usul::Interfaces::IWandStateDouble::IID:
+    return static_cast< Usul::Interfaces::IWandStateDouble * > ( this );
   case Usul::Interfaces::ITranslationSpeed::IID:
     return static_cast < Usul::Interfaces::ITranslationSpeed * > ( this );
   case Usul::Interfaces::IProgressBarFactory::IID:
@@ -743,6 +744,7 @@ void Application::_draw ( OsgTools::Render::Renderer *renderer )
   // Update.  This needs to be moved into the Preframe.
   renderer->update();
 
+  // Notify the listeners.
   Usul::Scope::Caller::RefPtr preAndPostCall ( Usul::Scope::makeCaller ( 
       Usul::Adaptors::memberFunction ( this, &Application::_preRenderNotify ), 
       Usul::Adaptors::memberFunction ( this, &Application::_postRenderNotify ) ) );
@@ -1043,10 +1045,17 @@ void Application::_init()
 #endif
 
   // Add the progress bars to the scene.
+#if 1
   osg::ref_ptr < osg::Group > group ( _sceneManager->groupGet ( "ProgressBarGroup" ) );
   _progressBars->position ( Usul::Math::Vec3f ( -0.95, -0.7, -3.0 ) );
-  //_progressBars->position ( Usul::Math::Vec3f ( 100, 50, 1.0 ) );
-  //group->addChild ( _progressBars->buildScene() );
+  _progressBars->defaultProgressBarSize ( Usul::Math::Vec2f ( 1.9f, 0.015f ) );
+#else
+  osg::ref_ptr < osg::Group > group ( _sceneManager->projectionGroupGet ( "ProgressBarGroup" ) );
+  _progressBars->position ( Usul::Math::Vec3f ( 100, 50, 1.0 ) );
+  _progressBars->defaultProgressBarSize ( Usul::Math::Vec2f ( 1350, 20 ) );
+#endif
+
+  group->addChild ( _progressBars->buildScene() );
 
   // Initialize the button group by adding the individual buttons.
   _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON0, "VJButton0" ) );
@@ -1131,11 +1140,12 @@ void Application::_preFrame()
   // Write out the navigation matrix.
   if ( _sharedMatrix.isLocal () )
   {
-    _sharedMatrix->matrix ( _navBranch->getMatrix () );
+    _sharedMatrix->data ( _navBranch->getMatrix () );
   }
 
   // Update the progress bars.
-  //_progressBars->buildScene();
+  _progressBars->removeFinishedProgressBars();
+  _progressBars->buildScene();
 
   // Purge any threads that may be finished.
   Usul::Threads::Manager::instance().purge();
@@ -1178,7 +1188,7 @@ void Application::_latePreFrame()
   }
 
   // Set the navigation matrix.
-  _navBranch->setMatrix ( _sharedMatrix->matrix () );
+  _navBranch->setMatrix ( _sharedMatrix->data() );
 
   // Notify that it's ok to update.
   this->_updateNotify();
@@ -1691,10 +1701,10 @@ osg::Group *Application::modelsScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::postMultiply ( const Matrix44f &m )
+void Application::postMultiply ( const Matrix &m )
 {
   Guard guard ( this->mutex() );
-  _navBranch->postMult ( osg::Matrixf ( m.get() ) );
+  _navBranch->postMult ( osg::Matrixd ( m.get() ) );
 }
 
 
@@ -1704,10 +1714,10 @@ void Application::postMultiply ( const Matrix44f &m )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::preMultiply ( const Matrix44f &m )
+void Application::preMultiply ( const Matrix &m )
 {
   Guard guard ( this->mutex() );
-  _navBranch->preMult ( osg::Matrixf ( m.get() ) );
+  _navBranch->preMult ( osg::Matrixd ( m.get() ) );
 }
 
 
@@ -2038,13 +2048,13 @@ float Application::joystickVertical() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::wandPosition ( Usul::Math::Vec3f &p ) const
+void Application::wandPosition ( Usul::Math::Vec3d &p ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
   // Get the wand's offset.
-  Usul::Math::Vec3f offset;
+  Usul::Math::Vec3d offset;
   this->wandOffset ( offset );
 
   // Set the vector from the wand's position plus the offset.
@@ -2060,7 +2070,7 @@ void Application::wandPosition ( Usul::Math::Vec3f &p ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::wandMatrix ( Matrix44f &W ) const
+void Application::wandMatrix ( Matrix &W ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -2069,11 +2079,11 @@ void Application::wandMatrix ( Matrix44f &W ) const
   W.set ( this->tracker()->matrix().getData() );
 
   // Get the wand's offset.
-  Usul::Math::Vec3f offset;
+  Usul::Math::Vec3d offset;
   this->wandOffset ( offset );
 
   // Translate by our wand's offset.
-  Matrix44f T;
+  Matrix T;
   T.makeTranslation ( offset );
   W = T * W;
 }
@@ -2085,7 +2095,7 @@ void Application::wandMatrix ( Matrix44f &W ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::wandOffset ( Usul::Math::Vec3f &v ) const
+void Application::wandOffset ( Usul::Math::Vec3d &v ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -2099,7 +2109,7 @@ void Application::wandOffset ( Usul::Math::Vec3f &v ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::wandOffset ( const Usul::Math::Vec3f &v )
+void Application::wandOffset ( const Usul::Math::Vec3d &v )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -2113,7 +2123,7 @@ void Application::wandOffset ( const Usul::Math::Vec3f &v )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::wandRotation ( Matrix44f &W ) const
+void Application::wandRotation ( Matrix &W ) const
 {
   USUL_TRACE_SCOPE;
 
@@ -4271,7 +4281,7 @@ bool Application::_handleSeekEvent ( unsigned long id )
       this->rotationCenter ( vector );
     }
 
-    osg::Vec3 center ( hit.getWorldIntersectPoint() *osg::Matrix::inverse( m1 ) );
+    osg::Vec3 center ( hit.getWorldIntersectPoint() * osg::Matrix::inverse( m1 ) );
 
     // Get the eye position.
     osg::Vec3 eye, c, up;
@@ -4281,7 +4291,8 @@ bool Application::_handleSeekEvent ( unsigned long id )
     double distance ( this->worldRadius() * 0.05 );
 
     // Get the normal where we intersected.
-    osg::Vec3 normal ( hit.getWorldIntersectNormal() /* * osg::Matrix::inverse( m1 ) */ );
+    osg::Vec3 normal ( hit.getWorldIntersectNormal() );
+    std::cout << "Normal: " << normal[0] << " " << normal[1] << " " << normal[2] << std::endl;
 
     // Calculate the new eye position.
     osg::Vec3 eye2 ( center + ( normal * distance ) );

@@ -24,7 +24,6 @@
 //#include "CadViewer/Functors/ToolPair.h"
 
 //#include "CadViewer/Pick/Select.h"
-//#include "CadViewer/Pick/Seek.h"
 
 #include "Usul/Bits/Bits.h"
 #include "Usul/Components/Manager.h"
@@ -53,7 +52,6 @@ namespace CV
   const unsigned long COMMAND_SHOW_ALL         = VRV::BUTTON_RED;  
 
   const unsigned long TOOL_SCALE      = VRV::BUTTON_GREEN;
-  const unsigned long NAVIGATE_NO_NAV = VRV::BUTTON_RED;
 };
 
 
@@ -459,28 +457,6 @@ void Application::_select()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Seek to the intersected polygon, if any.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_seek()
-{
-  ErrorChecker ( 1071204677, isAppThread(), CV::NOT_APP_THREAD );
-#if 0
-  // See if we have a seeker...
-  typedef CV::Pick::Seek Seek;
-  Seek::RefPtr seeker ( dynamic_cast < Seek * > ( _intersector.get() ) );
-  if ( seeker.valid() )
-  {
-    // Tell the seeker to seek.
-    seeker->seek();
-  }
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Unselect the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -499,29 +475,6 @@ void Application::_unselect()
   }
 #endif
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the seek-intersector.
-//
-///////////////////////////////////////////////////////////////////////////////
-#if 0
-void Application::_setSeeker()
-{
-  ErrorChecker ( 1071204678, isAppThread(), CV::NOT_APP_THREAD );
-
-  // Make a new selector.
-  CV::Functors::Direction::Vector nz ( 0, 0, -1 );
-  Unknown::ValidRefPtr unknown ( this->_thisUnknown() );
-  CV::Functors::MatrixFunctor::ValidRefPtr wm ( new CV::Functors::WandRotation ( unknown ) );
-  CV::Functors::Direction::ValidRefPtr nwz ( new CV::Functors::Direction ( unknown, nz, wm.get() ) );
-  CV::Pick::Seek::ValidRefPtr seek ( new CV::Pick::Seek ( unknown, nwz.get(), INTERSECT_SEEK ) );
-
-  // Call the other one.
-  this->_setIntersector ( seek );
-}
-#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////

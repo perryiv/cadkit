@@ -99,9 +99,6 @@ protected:
   // Called by the kernel after the frame.
   void                          _postFrame();
 
-  // Seek to the intersected point, if any.
-  void                          _seek();
-
   // Select/unselect the intersected node, if any.
   void                          _select();
   void                          _unselect();

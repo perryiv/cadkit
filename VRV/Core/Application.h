@@ -14,7 +14,6 @@
 #include "VRV/Export.h"
 #include "VRV/Prefs/Settings.h"
 #include "VRV/Core/SharedData.h"
-#include "VRV/Core/SharedMatrix.h"
 #include "VRV/Devices/JoystickDevice.h"
 #include "VRV/Devices/ButtonGroup.h"
 #include "VRV/Devices/TrackerDevice.h"
@@ -115,9 +114,9 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public Usul::Interfaces::IClippingDistance,
                                public Usul::Interfaces::IFrameInfo,
                                public Usul::Interfaces::IWorldInfo,
-                               public Usul::Interfaces::IMatrixMultiplyFloat,
+                               public Usul::Interfaces::IMatrixMultiplyDouble,
                                public Usul::Interfaces::IJoystickFloat,
-                               public Usul::Interfaces::IWandStateFloat,
+                               public Usul::Interfaces::IWandStateDouble,
                                public Usul::Interfaces::ITranslationSpeed,
                                public Usul::Interfaces::IProgressBarFactory,
                                public Usul::Interfaces::IUpdateSubject,
@@ -154,7 +153,7 @@ public:
   typedef Usul::Threads::RecursiveMutex        Mutex;
   typedef Usul::Threads::Guard<Mutex>          Guard;
   typedef OsgTools::Widgets::ProgressBarGroup  ProgressBars;
-  typedef Usul::Math::Matrix44f                Matrix44f;
+  typedef Usul::Math::Matrix44d                Matrix;
   typedef std::vector < std::string >          Filenames;
   typedef VRV::Prefs::Settings                 Preferences;
   typedef VRV::Devices::ButtonGroup            Buttons;
@@ -388,9 +387,6 @@ protected:
   /// Navigate.
   virtual void                  _navigate ();
 
-  void                          _initStatusBar();
-  void                          _initLight();
-
   void                          _updateStatusBar ( const std::string &text );
 
   // Parse the command-line arguments.
@@ -400,6 +396,8 @@ protected:
   void                          _setHome();
 
   // Initialize.
+  void                          _initStatusBar();
+  void                          _initLight();
   void                          _initMenu();
 
   // Initialize the menus.
@@ -484,10 +482,10 @@ protected:
   /////////////////////////////////////////////////////////////////////////////
 
   // Post-multiply the component's matrix by the given matrix.
-  virtual void                  postMultiply ( const Matrix44f &M );
+  virtual void                  postMultiply ( const Matrix &M );
 
   // Pre-multiply the component's matrix by the given matrix.
-  virtual void                  preMultiply ( const Matrix44f &M );
+  virtual void                  preMultiply ( const Matrix &M );
 
   /// Usul::Interfaces::IProgressBarFactory
   virtual Usul::Interfaces::IUnknown*   createProgressBar();
@@ -498,17 +496,17 @@ protected:
   virtual float                 joystickVertical()   const;
 
   // Get the wand's position (VRV::Interfaces::IWandStateFloat).
-  virtual void                  wandPosition ( Usul::Math::Vec3f &p ) const;
+  virtual void                  wandPosition ( Usul::Math::Vec3d &p ) const;
 
   // Get the wand's rotation matrix (VRV::Interfaces::IWandStateFloat).
-  virtual void                  wandRotation ( Matrix44f &R ) const;
+  virtual void                  wandRotation ( Matrix &R ) const;
 
   // Get the wand's matrix (VRV::Interfaces::IWandStateFloat).
-  virtual void                  wandMatrix ( Matrix44f &M ) const;
+  virtual void                  wandMatrix ( Matrix &M ) const;
 
   // Get/set the wand's offset (VRV::Interfaces::IWandStateFloat).
-  virtual void                  wandOffset ( Usul::Math::Vec3f &v ) const;
-  virtual void                  wandOffset ( const Usul::Math::Vec3f &v );
+  virtual void                  wandOffset ( Usul::Math::Vec3d &v ) const;
+  virtual void                  wandOffset ( const Usul::Math::Vec3d &v );
 
   /// Usul::Interfaces::ICommandQueueAdd
   virtual void                  addCommand ( Usul::Interfaces::ICommand* command );
@@ -637,6 +635,7 @@ private:
   typedef std::map<std::string, Usul::Math::Vec4f >        ColorMap;
   typedef VRV::Core::SharedData<double>                    SharedDouble;
   typedef VRV::Core::SharedData<std::string>               SharedString;
+  typedef VRV::Core::SharedData<osg::Matrixd>              SharedMatrix;
   typedef Usul::Functors::Interaction::Common::BaseFunctor BaseFunctor;
   typedef BaseFunctor::RefPtr                              FunctorPtr;
   typedef Usul::Interfaces::IIntersectListener             IIntersectListener;
@@ -677,9 +676,8 @@ private:
   TrackerPtr                             _tracker;
   JoystickPtr                            _joystick;
   Usul::Math::Vec2f                      _analogTrim;
-  Usul::Math::Vec3f                      _wandOffset;
+  Usul::Math::Vec3d                      _wandOffset;
   osg::ref_ptr < osgDB::DatabasePager >  _databasePager;
-  UpdateListeners                        _updateListeners;
   CommandQueue                           _commandQueue;
   OsgTools::Render::FrameDump            _frameDump;
   Navigator::RefPtr                      _navigator;
@@ -701,11 +699,12 @@ private:
   VRV::Functors::Intersect::RefPtr       _intersector;
   MatTransPtr                            _auxiliary;
   bool                                   _allowIntersections;
-  IntersectListeners                     _intersectListeners;
   osg::DeleteHandler *                   _deleteHandler;
   Vector                                 _rotCenter;
   unsigned int                           _flags;
+  UpdateListeners                        _updateListeners;
   RenderListeners                        _renderListeners;
+  IntersectListeners                     _intersectListeners;
 };
 
 }

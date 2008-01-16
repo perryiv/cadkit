@@ -15,6 +15,8 @@
 #include "vpr/IO/ObjectReader.h"
 #include "vpr/IO/ObjectWriter.h"
 
+#include "osg/Matrixd"
+
 #include "vector"
 
 namespace VRV {
@@ -183,6 +185,30 @@ struct ReaderWriter<std::string>
   static void write ( vpr::ObjectWriter *writer, std::string value )
   {
     writer->writeString ( value );
+  }
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read/Write an osg::Matrixd.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<>
+struct ReaderWriter<osg::Matrixd>
+{
+  static void read ( vpr::ObjectReader *reader, osg::Matrixd &matrix )
+  {
+    osg::Matrixd::value_type *ptr ( matrix.ptr() );
+    for ( unsigned int i = 0; i < 16; ++i )
+      reader->readDouble( ptr[i] );
+  }
+  static void write ( vpr::ObjectWriter *writer, osg::Matrixd matrix )
+  {
+    const osg::Matrixd::value_type *ptr ( matrix.ptr() );
+    for ( unsigned int i = 0; i < 16; ++i )
+      writer->writeDouble( ptr[i] );
   }
 };
 

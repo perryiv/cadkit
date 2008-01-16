@@ -30,7 +30,6 @@ INCLUDE_DIRECTORIES(
 #List the Sources
 SET (SOURCES
   ./Core/Application.cpp
-  ./Core/SharedMatrix.cpp
   ./Commands/BackgroundColor.cpp
   ./Commands/Camera.cpp
   ./Commands/LoadDocument.cpp

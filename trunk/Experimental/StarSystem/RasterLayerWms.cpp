@@ -67,7 +67,7 @@ RasterLayerWms::RasterLayerWms ( const Extents &maxExtents, const std::string &u
   BaseClass(),
   _url     ( url ),
   _options ( options ),
-  _dir     ( Usul::Registry::Database::instance()[Detail::WMS_CACHE_DIR].get<std::string> ( Usul::File::Temp::directory ( false ) ) ),
+  _dir     ( RasterLayerWms::defaultCacheDirectory() ),
   _useNetwork ( true )
 {
   USUL_TRACE_SCOPE;
@@ -171,7 +171,6 @@ namespace Helper
   {
     std::ostringstream out;
 
-    const int digits ( std::numeric_limits<double>::digits10 );
     const double positive ( Usul::Math::absolute ( value ) );
 
     const unsigned long integer ( static_cast < unsigned long > ( positive ) );

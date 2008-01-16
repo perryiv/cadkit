@@ -28,6 +28,7 @@ namespace VRV
       const std::string TRANSLATION_SPEED  ( "translation_speed" );
       const std::string NAVIGATION_FUNCTOR ( "navigation_functor" );
       const std::string SEEK_STEP_SIZE     ( "seek_step_size" );
+      const std::string BACKGROUND_COLOR   ( "background_color" );
     }
   }
 }

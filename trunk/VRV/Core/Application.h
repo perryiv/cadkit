@@ -452,6 +452,13 @@ protected:
   // Animate between two matrices.
   void                          _animate( const osg::Matrix& m1, const osg::Matrix& m2 );
 
+  /// Get/Set assign button command.
+  void                          _assignNextMenuSelection ( unsigned long button );
+  bool                          _isAssignNextMenuSelection ( );
+
+  /// Clear our assigned buttons.
+  void                          _clearAssignedButtonCommands();
+
   /// Get/set the clipping distances (VRV::Interfaces::IClippingDistanceFloat).
   virtual void                  getClippingDistances ( float &nearDist, float &farDist ) const;
   virtual void                  setClippingDistances ( float nearDist, float farDist );
@@ -642,10 +649,12 @@ private:
   typedef std::vector<IIntersectListener::RefPtr>          IntersectListeners;
   typedef Usul::Interfaces::IRenderListener                IRenderListener;
   typedef std::vector<IRenderListener::RefPtr>             RenderListeners;
+  typedef std::map<unsigned long, CommandPtr>              ButtonMap;
 
   enum Flags
   {
-    SEEK_MODE = 0x00000001
+    SEEK_MODE           = 0x00000001,
+    ASSIGN_NEXT_COMMAND = 0x00000002
   };
 
   // Data members.
@@ -691,7 +700,7 @@ private:
   TransformFunctors                      _transformFunctors;
   FavoriteFunctors                       _favoriteFunctors;
   float                                  _translationSpeed;
-  osg::Matrixf                           _home;
+  osg::Matrixd                           _home;
   bool                                   _timeBased;
   ColorMap                               _colorMap;
   unsigned int                           _count;
@@ -705,6 +714,8 @@ private:
   UpdateListeners                        _updateListeners;
   RenderListeners                        _renderListeners;
   IntersectListeners                     _intersectListeners;
+  ButtonMap                              _buttonMap;
+  ButtonMap::key_type                    _buttonToAssign;
 };
 
 }

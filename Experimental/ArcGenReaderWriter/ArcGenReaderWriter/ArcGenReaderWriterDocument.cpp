@@ -344,6 +344,7 @@ void ArcGenReaderWriterDocument::_writePolylineZ( const std::string &filename, U
 
   // Get needed interfaces.
   IPlanetCoordinates::QueryPtr planetCoordinates ( Usul::Components::Manager::instance().getInterface ( IPlanetCoordinates::IID ) );
+  IPlanetCoordinates::QueryPtr planetExists ( Usul::Documents::Manager::instance().activeDocument() );
 
   if( false == planetCoordinates.valid() )
     throw std::runtime_error ( "Error 1633616291: Failed to find a valid document for Usul::Interfaces::IPlanetCoordinates " );
@@ -361,15 +362,23 @@ void ArcGenReaderWriterDocument::_writePolylineZ( const std::string &filename, U
     osg::Vec3d v = *iter;
     Vec3d latLon( 0, 0, 0 );
 
-    // Conver the planet point into lat/lon
+    // Convert the planet point into lat/lon
     
     Vec3d from ( static_cast< double > ( v.x() ), 
                  static_cast< double > ( v.y() ), 
                  static_cast< double > ( v.z() ) );
     
-    std::cout << Usul::Strings::format( "Calling convertFromPlanet with: x = ", from[0], "y = ", from[1], "z = ", from[2] );
-
-    planetCoordinates->convertFromPlanet( from, latLon );
+    if( true == planetExists.valid() )
+    {
+      std::cout << "Planet detected.  Converting coordinates... " << std::endl;
+      std::cout << Usul::Strings::format( "Calling convertFromPlanet with: x = ", from[0], "y = ", from[1], "z = ", from[2] );
+      planetCoordinates->convertFromPlanet( from, latLon );
+    }
+    else
+    {
+      std::cout << "Planet not detected.  Using original coordinate values... " << std::endl;
+      latLon = from;
+    }
 
     // Write the coordinate to the gen file
     outfile << Usul::Strings::format( latLon[0], ",", latLon[1] ) << std::endl;

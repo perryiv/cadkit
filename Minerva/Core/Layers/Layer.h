@@ -217,6 +217,7 @@ public:
   
   /// Get the projection as "Well Known Text".
   std::string                 projectionWKT() const;
+  std::string                 projectionWKT( int srid ) const;
 
 protected:
 

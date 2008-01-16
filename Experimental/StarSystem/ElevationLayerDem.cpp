@@ -292,7 +292,12 @@ namespace Detail
 }
 
 
-// Get the value at the lat, lon location.  May return null pixel value.
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the value at the lat, lon location.  May return null pixel value.
+//
+///////////////////////////////////////////////////////////////////////////////
+    
 double ElevationLayerDem::value ( double lon, double lat ) const
 {
   USUL_TRACE_SCOPE;

@@ -1334,15 +1334,27 @@ int Layer::srid() const
 
 std::string Layer::projectionWKT() const
 {
+  // Get the srid.
+  int srid ( this->srid() );
+  
+  return this->projectionWKT ( srid );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the projection as "Well Known Text".
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Layer::projectionWKT( int srid ) const
+{
   // Get the connection.
   Minerva::Core::DB::Connection::RefPtr connection ( const_cast <Minerva::Core::DB::Connection*> ( this->connection() ) );
   
   if ( false == connection.valid() )
     return std::string();
-  
-  // Get the srid.
-  int srid ( this->srid() );
-  
+
   // Get the tablename.
   std::string tablename ( this->tablename() );
   

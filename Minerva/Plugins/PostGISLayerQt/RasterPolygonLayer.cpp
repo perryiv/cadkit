@@ -11,19 +11,30 @@
 #include "RasterPolygonLayer.h"
 
 #include "Usul/Adaptors/Random.h"
+#include "Usul/App/Application.h"
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/File/Make.h"
 #include "Usul/File/Path.h"
+#include "Usul/File/Remove.h"
+#include "Usul/Math/Absolute.h"
+#include "Usul/Predicates/FileExists.h"
+#include "Usul/Scope/RemoveFile.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/Threads/Safe.h"
+#include "Usul/Trace/Trace.h"
+
+#include "boost/algorithm/string/trim.hpp"
+#include "boost/algorithm/string/replace.hpp"
+
+#include "osgDB/ReadFile"
+#include "osgDB/WriteFile"
 
 #include "gdal.h"
 #include "gdal_priv.h"
 #include "gdal_alg.h"
-//#include "cpl_conv.h"
 #include "ogr_api.h"
 #include "ogr_geometry.h"
 #include "ogrsf_frmts.h"
-//#include "ogr_srs_api.h"
-//#include "cpl_string.h"
 #include "cpl_error.h"
 
 USUL_FACTORY_REGISTER_CREATOR ( RasterPolygonLayer );
@@ -96,10 +107,12 @@ namespace Detail
 ///////////////////////////////////////////////////////////////////////////////
 
 RasterPolygonLayer::RasterPolygonLayer () : 
-BaseClass(),
-_layer ( 0x0 ),
-_temp (),
-_data ( 0x0 )
+  BaseClass(),
+  _layer ( 0x0 ),
+  _dir ( Usul::File::Temp::directory ( false ) ),
+  _srid ( -1 ),
+  _projectionText(),
+  _latLonProjectionText()
 {
   this->_addMember ( "Layer", _layer );
 }
@@ -114,8 +127,10 @@ _data ( 0x0 )
 RasterPolygonLayer::RasterPolygonLayer ( Layer* layer ) : 
   BaseClass(),
   _layer ( dynamic_cast<PolygonLayer*> ( layer ) ),
-  _temp (),
-  _data ( 0x0 )
+  _dir ( Usul::File::Temp::directory ( false ) ),
+  _srid ( -1 ),
+  _projectionText(),
+  _latLonProjectionText()
 {
   this->_addMember ( "Layer", _layer );
   
@@ -132,8 +147,10 @@ RasterPolygonLayer::RasterPolygonLayer ( Layer* layer ) :
 RasterPolygonLayer::RasterPolygonLayer ( const RasterPolygonLayer& rhs ) :
   BaseClass ( rhs ),
   _layer ( rhs._layer ),
-  _temp(),
-  _data ( 0x0 )
+  _dir ( rhs._dir ),
+  _srid ( rhs._srid ),
+  _projectionText( rhs._projectionText ),
+  _latLonProjectionText ( rhs._latLonProjectionText )
 {
   this->_init();
 }
@@ -149,6 +166,8 @@ RasterPolygonLayer& RasterPolygonLayer::operator= ( const RasterPolygonLayer& rh
 {
   BaseClass::operator= ( rhs );
   _layer = rhs._layer;
+  _dir = rhs._dir;
+  _latLonProjectionText = rhs._latLonProjectionText;
   
   this->_init();
   
@@ -164,9 +183,6 @@ RasterPolygonLayer& RasterPolygonLayer::operator= ( const RasterPolygonLayer& rh
 
 RasterPolygonLayer::~RasterPolygonLayer()
 {
-  // Make sure it's closed.
-  if ( 0x0 != _data )
-    GDALClose( _data );
 }
 
 
@@ -180,6 +196,8 @@ void RasterPolygonLayer::_init()
 {
   // Set an error handler.
   Detail::PushPopErrorHandler handler;
+  
+  Guard guard ( this );
 
   // Return now if we don't have a valid layer to work with.
   if ( false == _layer.valid() )
@@ -188,181 +206,31 @@ void RasterPolygonLayer::_init()
   // Set the name.
   this->name ( _layer->name() );
   
-  // Make a geotiff.
-  std::string format ( "GTiff" );
+  // Get the srid.
+  _srid = _layer->srid();
   
-  // Find a drive for geotiff.
-  GDALDriver *driver ( GetGDALDriverManager()->GetDriverByName( format.c_str() ) );
-  
-  // Return now if we didn't find a driver.
-  if ( 0x0 == driver )
-    return;
-  
-  char **options  ( 0x0 );
-  
-  const unsigned int width ( 2048 );
-  const unsigned int height ( 2048 );
-  const unsigned int channels ( 4 );
+  // Get the projection text.
+  _projectionText = _layer->projectionWKT( _srid );
   
   // Get the extents of the layer.
   Usul::Math::Vec2d ll, ur;
   _layer->extents ( ll, ur );
   
-  // Filename.
-  std::string name ( Usul::Strings::format ( Usul::File::base ( _temp.name() ), ".tif" ).c_str() );
+  // Get the well known text for lat lon projection.
+  _latLonProjectionText = _layer->projectionWKT ( 4326 );
   
-  // Create the file.
-  _data = driver->Create( name.c_str(), width, height, channels, GDT_Byte, options );
-  
-  if ( 0x0 == _data )
-    return;
-  
-  std::vector<char> bytes ( width * height * channels, 0 );
-  _data->RasterIO( GF_Write, 0, 0, width, height, &bytes[0], width, height, GDT_Byte, 3, 0x0, 0, 0, 0 );
-  
-  const double xLength ( ur[0] - ll[0] );
-  const double yLength ( ur[1] - ll[1] );
-  
-  const double xResolution  ( xLength / width );
-  const double yResolution  ( yLength / height );
-  
-  std::vector<double> geoTransform ( 6 );
-
-  geoTransform[0] = ll[0];          // top left x
-  geoTransform[1] = xResolution;    // w-e pixel resolution
-  geoTransform[2] = 0;              // rotation, 0 if image is "north up"
-  geoTransform[3] = ur[1];          // top left y
-  geoTransform[4] = 0;              // rotation, 0 if image is "north up"
-  geoTransform[5] = -yResolution;   // n-s pixel resolution
-
-  _data->SetGeoTransform( &geoTransform[0] );
-  
-  _data->SetProjection( _layer->projectionWKT().c_str() );
-  
-  // Typedefs.
-  typedef std::vector<OGRGeometry*> Geometries;
-  typedef std::vector<int> Bands;
-  typedef std::vector<double> BurnValues;
-  
-  // Bands to burn.
-  Bands bands;
-  
-  // Fill in the values.
-  for ( unsigned int i = 0; i < channels; ++i )
-  {
-    // GDAL band index starts at 1.
-    bands.push_back ( i + 1 );
-  }
-  
-  // Geometries to burn.
-  Geometries geometries;
-  
-  // Values to burn.
-  BurnValues burnValues;
-  
-  // Fill in the geometries.
-  {
-    // Get the connection.
-    Minerva::Core::DB::Connection::RefPtr connection ( _layer->connection() );
-    
-    // Return if no connection.
-    if ( false == connection.valid() )
-      return;
-    
-    const std::string driverName ( "PostgreSQL" );
-    OGRSFDriver *driver ( OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( driverName.c_str() ) );
-    
-    // Return if we didn't find a driver.
-    if ( 0x0 == driver )
-      return;
-    
-    // Connection parameters.
-    std::string hostname ( Usul::Strings::format (     "host=", connection->hostname() ) );
-    std::string database ( Usul::Strings::format (   "dbname=", connection->database() ) );
-    std::string username ( Usul::Strings::format (     "user=", connection->username() ) );
-    std::string password ( Usul::Strings::format ( "password=", connection->password() ) );
-    
-    std::string name ( Usul::Strings::format ( "PG:", hostname, " ", username, " ", password, " ", database ) );
-    
-    // Get the data source.
-    OGRDataSource *data ( driver->CreateDataSource( name.c_str(), 0x0 ) );
-    
-    // Return if no data.
-    if ( 0x0 == data )
-    {
-      //std::cout << ::CPLGetLastErrorMsg() << std::endl;
-      return;
-    }
-    
-    // Make a layer.
-    OGRLayer *layer ( data->ExecuteSQL( Usul::Strings::format ( "SELECT * FROM ", _layer->tablename() ).c_str() /*_layer->query().c_str()*/, 0x0, 0x0 ) );
-    
-    if ( 0x0 == layer )
-      return;
-    
-    OGRFeature* feature ( 0x0 );
-    
-    // Get the color functor.
-    typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;
-    ColorFunctor::RefPtr functor ( _layer->colorFunctor() );
-    
-    // Get the column for the color.
-    const std::string column ( _layer->colorColumn() );
-    
-    //Usul::Adaptors::Random<double> random ( 0, 255 );
-    
-    while ( 0x0 != ( feature = layer->GetNextFeature() ) )
-    {
-      // Add the geometry.
-      OGRGeometry *geometry ( feature->GetGeometryRef()->clone() );
-      geometries.push_back ( geometry );
-      
-      // Get the index of the column
-      const int index ( feature->GetFieldIndex ( column.c_str() ) );
-      
-      const double value ( index > 0 ? feature->GetFieldAsDouble ( index ) : 0.0 );
-      
-      // Burn color.
-      const osg::Vec4 color ( functor.valid() ? (*functor) ( value ) : osg::Vec4 ( 0.0, 0.0, 0.0, 0.0 ) );
-      
-      // Add the burn values.
-      burnValues.push_back ( color[0] * 255 );
-      burnValues.push_back ( color[1] * 255 );
-      burnValues.push_back ( color[2] * 255 );
-      burnValues.push_back ( 200 );
-      
-      OGRFeature::DestroyFeature( feature );
-    }
-  }
-  
-  // Burn the raster.
-  ::GDALRasterizeGeometries( _data, bands.size(), &bands[0], 
-                             geometries.size(), (void**) &geometries[0], 
-                             0x0, 0x0, &burnValues[0], 0x0,
-                             GDALTermProgress, 0x0 );
-  
-  // Clean up geometries.
-  for ( Geometries::iterator iter = geometries.begin(); iter != geometries.end(); ++iter )
-    delete *iter;
-#if 0
-  OGRSpatialReference src ( _data->GetProjectionRef() ), dst;
-  dst.SetWellKnownGeogCS( "EPSG:4326" );
-  
+  // Make the transform.
+  OGRSpatialReference src ( _projectionText.c_str() ), dst ( _latLonProjectionText.c_str() );
   OGRCoordinateTransformation *transform ( OGRCreateCoordinateTransformation( &src, &dst ) );
   
+  // Set the extents.
   if ( 0x0 != transform )
   {
-    transform->Transform ( 2, &ll[0], &ll[1] );
-    transform->Transform ( 2, &ur[0], &ur[1] );
+    transform->Transform ( 1, &ll[0], &ll[1] );
+    transform->Transform ( 1, &ur[0], &ur[1] );
     Extents extents ( Extents::Vertex ( ll[0], ll[1] ), Extents::Vertex ( ur[0], ur[1] ) );
     this->extents ( extents );
   }
-#else
-  
-  GDALClose( _data ); _data = 0x0;
-  
-  this->open ( name );
-#endif
 }
 
 
@@ -387,23 +255,310 @@ Usul::Interfaces::IUnknown* RasterPolygonLayer::clone() const
 
 RasterPolygonLayer::ImagePtr RasterPolygonLayer::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * job, IUnknown *caller )
 {
-#if 0
+  // Make the directory and base file name.
+  const std::string baseDir ( this->_directory ( width, height, level ) );
+  Usul::File::make ( baseDir );
+  std::string file ( Usul::Strings::format ( baseDir, this->_baseFileName ( extents ), ".tif" ) );  
+  
+  // Initialize.
+  ImagePtr image ( 0x0 );
+  
+  // Pull it down if it does not exist...
+  //if ( false == Usul::Predicates::FileExists::test ( file ) )
+  {
+    // Rasterize.
+    image = this->_rasterize ( file, extents, width, height, level );
+    
+    // Cache the file.
+    //if ( image.valid() )
+    //{
+    //  image->flipVertical();
+    //  osgDB::writeImageFile ( *image, file );
+    //}
+  }
+  //else
+  {
+    // Read from cache.
+    //image = osgDB::readImageFile ( file );
+  }
+
+  if ( image.valid() )
+    image->flipVertical();
+  
+  return image;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert Gdal data to osg::image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  void convert ( osg::Image* image, GDALDataset *data )
+  {
+    if ( 0x0 != image && 0x0 != data )
+    {
+      const int bands ( data->GetRasterCount() );
+      if ( bands >= 1 )
+      {
+        const int width ( data->GetRasterXSize() );
+        const int height ( data->GetRasterYSize() );
+        
+        if ( width > 0 && height > 0 )
+        {
+          // Loop through the bands.
+          for ( int i = 1; i <= bands; ++i )
+          {
+            GDALRasterBand* band ( data->GetRasterBand ( i ) );
+            if ( 0x0 != band )
+            {
+              std::vector<unsigned char> bytes ( width * height, 0 );
+              band->RasterIO( GF_Read, 0, 0, width, height, &bytes[0], width, height, GDT_Byte, 0, 0 );
+              
+              unsigned char* data ( image->data() );
+              const int size ( width * height );
+              const int offset ( i - 1 );
+              for ( int i = 0; i < size; ++i )
+              {
+                *(data + offset) = bytes.at ( i );
+                data += bands;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Rasterize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string& filename, const Extents& extents, unsigned int width, unsigned int height, unsigned int level )
+{
+  // Typedefs.
+  typedef std::vector<OGRGeometry*> Geometries;
+  typedef std::vector<int> Bands;
+  typedef std::vector<double> BurnValues;
+  
+  ImagePtr image ( this->_createBlankImage( width, height ) );
+  
+  // How many channels do we want.
+  const unsigned int channels ( 4 );
+  
   Guard guard ( this );
   
-
-  if ( 0x0 == _data )
+#if 1
+  if ( Usul::Predicates::FileExists::test ( filename ) )
+  {
+    GDALDataset *data ( static_cast <GDALDataset*> ( GDALOpen( filename.c_str(), GA_ReadOnly ) ) );
+    Detail::convert ( image.get(), data );
+    //if ( 0x0 != data )
+    //  data->RasterIO( GF_Read, 0, 0, data->GetRasterXSize(), data->GetRasterYSize(), image->data(), data->GetRasterXSize(), data->GetRasterYSize(), GDT_Byte, channels, 0x0, 0, 0, 0 );
+    return image;
+  }
+#endif
+  
+  // Make a geotiff.
+  std::string format ( "GTiff" );
+  
+  // Find a drive for geotiff.
+  GDALDriver *driver ( GetGDALDriverManager()->GetDriverByName( format.c_str() ) );
+  
+  // Return now if we didn't find a driver.
+  if ( 0x0 == driver )
     return 0x0;
   
-  std::vector<double> geoTransform ( 6 );
-  _data->GetGeoTransform( &geoTransform[0] );
+#if 0
+  Usul::File::Temp temp;
+  std::string file ( Usul::Strings::format ( /*Usul::File::directory ( temp.name(), true ),*/ Usul::File::base ( temp.name() ), ".tif" ) );
   
-  OGRSpatialReference src ( _data->GetProjectionRef() ), dst;
-  dst.SetWellKnownGeogCS( "EPSG:4326" );
-
-  return 0x0;
+  Usul::Scope::RemoveFile remove ( file );
 #else
-  return BaseClass::texture ( extents, width, height, level, job, caller );
+  std::string file ( filename );
 #endif
+  
+  // Create the file.
+  GDALDataset *data ( driver->Create( file.c_str(), width, height, channels, GDT_Byte, 0x0 ) );
+  
+  if ( 0x0 == data )
+    return 0x0;
+  
+  std::vector<char> bytes ( width * height * channels, 0 );
+  data->RasterIO( GF_Write, 0, 0, width, height, &bytes[0], width, height, GDT_Byte, channels, 0x0, 0, 0, 0 );
+  
+  // Get the extents lower left and upper right.
+  Extents::Vertex ll ( extents.minimum() );
+  Extents::Vertex ur ( extents.maximum() );
+  
+  // Make the transform.
+  OGRSpatialReference dst ( _projectionText.c_str() ), src ( _latLonProjectionText.c_str() );
+  OGRCoordinateTransformation *transform ( OGRCreateCoordinateTransformation( &src, &dst ) );
+  
+  // Set the extents.
+  if ( 0x0 != transform )
+  {
+    transform->Transform ( 1, &ll[0], &ll[1] );
+    transform->Transform ( 1, &ur[0], &ur[1] );
+  }
+  
+  // Get the length in x and y.
+  const double xLength ( ur[0] - ll[0] );
+  const double yLength ( ur[1] - ll[1] );
+  
+  // Figure out the degrees per pixel.
+  const double xResolution  ( xLength / width );
+  const double yResolution  ( yLength / height );
+  
+  std::vector<double> geoTransform ( 6 );
+  
+  geoTransform[0] = ll[0];          // top left x
+  geoTransform[1] = xResolution;    // w-e pixel resolution
+  geoTransform[2] = 0;              // rotation, 0 if image is "north up"
+  geoTransform[3] = ur[1];          // top left y
+  geoTransform[4] = 0;              // rotation, 0 if image is "north up"
+  geoTransform[5] = -yResolution;   // n-s pixel resolution
+  
+  data->SetGeoTransform( &geoTransform[0] );
+  
+  data->SetProjection( Usul::Threads::Safe::get ( this->mutex(), _projectionText ).c_str() );
+  
+  // Bands to burn.
+  Bands bands;
+  
+  // Fill in the values.
+  for ( unsigned int i = 0; i < channels; ++i )
+  {
+    // GDAL band index starts at 1.
+    bands.push_back ( i + 1 );
+  }
+  
+  // Geometries to burn.
+  Geometries geometries;
+  
+  // Values to burn.
+  BurnValues burnValues;
+  
+  // Fill in the geometries.
+  {
+    // Get the connection.
+    Minerva::Core::DB::Connection::RefPtr connection ( _layer->connection() );
+    
+    // Return if no connection.
+    if ( false == connection.valid() )
+      return 0x0;
+    
+    const std::string driverName ( "PostgreSQL" );
+    OGRSFDriver *driver ( OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( driverName.c_str() ) );
+    
+    // Return if we didn't find a driver.
+    if ( 0x0 == driver )
+      return 0x0;
+    
+    // Connection parameters.
+    std::string hostname ( Usul::Strings::format (     "host=", connection->hostname() ) );
+    std::string database ( Usul::Strings::format (   "dbname=", connection->database() ) );
+    std::string username ( Usul::Strings::format (     "user=", connection->username() ) );
+    std::string password ( Usul::Strings::format ( "password=", connection->password() ) );
+    
+    std::string name ( Usul::Strings::format ( "PG:", hostname, " ", username, " ", password, " ", database ) );
+    
+    // Get the data source.
+    OGRDataSource *vectorData ( driver->CreateDataSource( name.c_str(), 0x0 ) );
+    
+    // Return if no data.
+    if ( 0x0 == vectorData )
+      return 0x0;
+    
+    std::string geometryString ( Usul::Strings::format ( "GeometryFromText( 'POLYGON((", ll[0], " ", ll[1], ", ",
+                                                                                         ur[0], " ", ll[1], ", ",
+                                                                                         ur[0], " ", ur[1], ", ",
+                                                                                         ll[0], " ", ur[1], ", ",
+                                                                                         ll[0], " ", ll[1], "))',", _srid, " )" ) );
+    
+    std::string query ( Usul::Strings::format ( "SELECT * " /*asBinary( intersection(", geometryString, ", geom ) ) as geom, ", _layer->colorColumn()*/ , " FROM ", _layer->tablename(), " WHERE ", geometryString, "&& geom" ) );
+    
+    //std::cout << query << std::endl;
+    
+    // Make a layer.
+    OGRLayer *layer ( vectorData->ExecuteSQL( query.c_str(), 0x0, 0x0 ) );
+    
+    if ( 0x0 == layer )
+      return 0x0;
+    
+    OGRFeature* feature ( 0x0 );
+    
+    // Get the color functor.
+    typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;
+    ColorFunctor::RefPtr functor ( _layer->colorFunctor() );
+    
+    // Get the column for the color.
+    const std::string column ( _layer->colorColumn() );
+    
+    // Random numbers.
+    Usul::Adaptors::Random<double> random ( 0.0, 255.0 );
+    
+    // Get all geometries.
+    while ( 0x0 != ( feature = layer->GetNextFeature() ) )
+    {
+      // Get the index of the column
+      const int index ( feature->GetFieldIndex ( column.c_str() ) );
+      
+      const double value ( index > 0 ? feature->GetFieldAsDouble ( index ) : 0.0 );
+      
+      // Burn color.
+      const osg::Vec4 color ( functor.valid() ? (*functor) ( value ) : osg::Vec4 ( random(), random(), random(), 255 ) );
+      
+      // Add the burn values.
+      burnValues.push_back ( color[0] * 255 );
+      burnValues.push_back ( color[1] * 255 );
+      burnValues.push_back ( color[2] * 255 );
+      burnValues.push_back ( 200 );
+      
+      // Add the geometry.
+      //OGRGeometry *geometry ( feature->StealGeometry() );
+      OGRGeometry *geometry ( feature->GetGeometryRef() );
+      
+      if ( 0x0 != geometry )
+        geometries.push_back ( geometry->clone() );
+      
+      // Cleanup.
+      OGRFeature::DestroyFeature( feature );
+    }
+  }
+  
+  // Set an error handler.
+  Detail::PushPopErrorHandler handler;
+  
+  // Burn the raster.
+  if ( CE_None == ::GDALRasterizeGeometries( data, bands.size(), &bands[0], 
+                            geometries.size(), (void**) &geometries[0], 
+                            0x0, 0x0, &burnValues[0], 0x0,
+                            GDALTermProgress, 0x0 ) )
+  {
+  
+    data->FlushCache();
+  
+    //if ( CE_None != data->RasterIO( GF_Read, 0, 0, data->GetRasterXSize(), data->GetRasterYSize(), image->data(), data->GetRasterXSize(), data->GetRasterYSize(), GDT_Byte, channels, 0x0, 0, 0, 0 ) )
+    //  std::cout << "Warning: error reading data to " << filename << std::endl;
+    Detail::convert ( image.get(), data );
+  }
+  
+  // Clean up geometries.
+  for ( Geometries::iterator iter = geometries.begin(); iter != geometries.end(); ++iter )
+    delete *iter;
+  
+  GDALClose( data ); data = 0x0;
+  //remove.remove ( false );
+
+  return image;
 }
 
 
@@ -422,4 +577,92 @@ void RasterPolygonLayer::deserialize ( const XmlTree::Node &node )
   
   // Open ourselfs.
   this->_init ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the string for the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  std::string makeString ( unsigned int value )
+  {
+    std::ostringstream out;
+    out << std::setw ( 3 ) << std::setfill ( '0' ) << value;
+    return out.str();
+  }
+  std::string makeString ( double value )
+  {
+    std::ostringstream out;
+    
+    const double positive ( Usul::Math::absolute ( value ) );
+    
+    const unsigned long integer ( static_cast < unsigned long > ( positive ) );
+    const double decimal ( positive - static_cast < double > ( integer ) );
+    
+    const unsigned int bufSize ( 2047 );
+    char buffer[bufSize + 1];
+    ::sprintf ( buffer, "%0.15f", decimal );
+    
+    std::string temp ( buffer );
+    boost::replace_first ( temp, "0.", " " );
+    boost::trim_left ( temp );
+    
+    out << ( ( value >= 0 ) ? 'P' : 'N' ) << std::setfill ( '0' ) << std::setw ( 3 ) << integer << '_' << temp;
+    return out.str();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the base file name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterPolygonLayer::_baseFileName ( Extents extents ) const
+{
+  USUL_TRACE_SCOPE;
+  
+  std::string file ( Usul::Strings::format ( 
+                                            Helper::makeString ( extents.minimum()[0] ), '_', 
+                                            Helper::makeString ( extents.minimum()[1] ), '_', 
+                                            Helper::makeString ( extents.maximum()[0] ), '_', 
+                                            Helper::makeString ( extents.maximum()[1] ) ) );
+  std::replace ( file.begin(), file.end(), '.', '-' );
+  
+  return file;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterPolygonLayer::_directory ( unsigned int width, unsigned int height, unsigned int level ) const
+{
+  USUL_TRACE_SCOPE;
+  
+  std::string name ( this->name() );
+  boost::trim_left ( name );
+  std::replace ( name.begin(), name.end(), ' ', '_' );
+  std::replace ( name.begin(), name.end(), ':', '_' );
+  std::replace ( name.begin(), name.end(), '/', '_' );
+  std::replace ( name.begin(), name.end(), '&', '_' );
+  std::replace ( name.begin(), name.end(), '?', '_' );
+  std::replace ( name.begin(), name.end(), '.', '_' );
+  
+  const std::string resolution ( Usul::Strings::format ( 'W', width, '_', 'H', height ) );
+  const std::string levelString ( Usul::Strings::format ( 'L', Helper::makeString ( level ) ) );
+  
+  std::string dir ( Usul::Strings::format ( Usul::Threads::Safe::get ( this->mutex(), _dir ), '/', 
+                                           Usul::App::Application::instance().program(), '/',
+                                           name, '/', resolution, '/', levelString, '/' ) );
+  std::replace ( dir.begin(), dir.end(), '\\', '/' );
+  return dir;
 }

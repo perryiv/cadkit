@@ -26,10 +26,10 @@ namespace Usul {
   }
 }
 
-class RasterPolygonLayer : public StarSystem::RasterLayerOssim
+class RasterPolygonLayer : public StarSystem::RasterLayer
 {
 public:
-  typedef StarSystem::RasterLayerOssim BaseClass;
+  typedef StarSystem::RasterLayer BaseClass;
   typedef Minerva::Core::Layers::Layer Layer;
   typedef Minerva::Core::Layers::PolygonLayer PolygonLayer;
   
@@ -53,12 +53,21 @@ protected:
   
   void _init();
   
+  /// Rasterize.
+  ImagePtr              _rasterize ( const std::string& filename, const Extents& extents, unsigned int width, unsigned int height, unsigned int level );
+  
+  /// Cache functions.
+  std::string           _baseFileName ( Extents extents ) const;
+  std::string           _directory ( unsigned int width, unsigned int height, unsigned int level ) const;
+  
 private:
   friend class Usul::Factory::TypeCreator<RasterPolygonLayer>;
   
   PolygonLayer::RefPtr _layer;
-  Usul::File::Temp _temp;
-  GDALDataset *_data;
+  std::string _dir;
+  int _srid;
+  std::string _projectionText;
+  std::string _latLonProjectionText;
   
   SERIALIZE_XML_CLASS_NAME( RasterPolygonLayer ) 
   SERIALIZE_XML_SERIALIZE_FUNCTION 

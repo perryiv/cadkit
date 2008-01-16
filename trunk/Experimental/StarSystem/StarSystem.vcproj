@@ -270,6 +270,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ElevationLayerArcAscii.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ElevationLayerArcAscii.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ElevationLayerDem.cpp"
 				>
 			</File>

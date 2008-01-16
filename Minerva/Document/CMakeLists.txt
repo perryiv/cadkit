@@ -45,6 +45,7 @@ SET (SOURCES
 ./MinervaWriter.cpp
 ./MinervaReader.cpp
 ./CommandReceiver.cpp
+./Planet.cpp
 )
 
 # Create a Shared Library

@@ -258,32 +258,32 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::texture ( const Extents& extent
   // Make the directory and base file name.
   const std::string baseDir ( this->_directory ( width, height, level ) );
   Usul::File::make ( baseDir );
-  std::string file ( Usul::Strings::format ( baseDir, this->_baseFileName ( extents ), ".tif" ) );  
+  std::string file ( Usul::Strings::format ( baseDir, this->_baseFileName ( extents ), ".png" ) );  
   
   // Initialize.
   ImagePtr image ( 0x0 );
   
   // Pull it down if it does not exist...
-  //if ( false == Usul::Predicates::FileExists::test ( file ) )
+  if ( false == Usul::Predicates::FileExists::test ( file ) )
   {
     // Rasterize.
     image = this->_rasterize ( file, extents, width, height, level );
     
     // Cache the file.
-    //if ( image.valid() )
-    //{
-    //  image->flipVertical();
-    //  osgDB::writeImageFile ( *image, file );
-    //}
+    if ( image.valid() )
+    {
+      image->flipVertical();
+      osgDB::writeImageFile ( *image, file );
+    }
   }
-  //else
+  else
   {
     // Read from cache.
-    //image = osgDB::readImageFile ( file );
+    image = osgDB::readImageFile ( file );
   }
 
-  if ( image.valid() )
-    image->flipVertical();
+  //if ( image.valid() )
+  //  image->flipVertical();
   
   return image;
 }
@@ -355,7 +355,7 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
   
   Guard guard ( this );
   
-#if 1
+#if 0
   if ( Usul::Predicates::FileExists::test ( filename ) )
   {
     GDALDataset *data ( static_cast <GDALDataset*> ( GDALOpen( filename.c_str(), GA_ReadOnly ) ) );
@@ -376,9 +376,9 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
   if ( 0x0 == driver )
     return 0x0;
   
-#if 0
-  Usul::File::Temp temp;
-  std::string file ( Usul::Strings::format ( /*Usul::File::directory ( temp.name(), true ),*/ Usul::File::base ( temp.name() ), ".tif" ) );
+#if 1
+
+  std::string file ( Usul::Strings::format ( Usul::File::directory ( filename, true ), Usul::File::base ( filename ), ".tif" ) );
   
   Usul::Scope::RemoveFile remove ( file );
 #else

@@ -58,6 +58,18 @@ void Scale::visit ( Body &body )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
+  // Get the current scale amount.
+  const double old ( body.scale() );
+
+  // Set the scale.
+  body.scale ( _scale );
+
+  // Split distance multiplier.
+  const double mutliplier ( old > _scale ? _scale : 1.0 / old );
+  
+  // Set the new split distance.
+  body.splitDistance ( body.splitDistance() * mutliplier, false );
+
   // Call the base class's function.
   BaseClass::visit ( body );
 }

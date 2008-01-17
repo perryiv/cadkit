@@ -316,6 +316,15 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     this->_launchImageRequest();
   }
 
+  if ( Usul::Bits::has ( _flags, Tile::CHILDREN ) )
+  {
+    // Clear all the children.
+    this->_clearChildren();
+    this->dirty ( false, Tile::CHILDREN, false );
+
+    this->dirtyBound();
+  }
+
   // If it's a cull visitor...
   if ( osg::NodeVisitor::CULL_VISITOR == nv.getVisitorType() )
   {
@@ -432,25 +441,8 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
     {
       if ( false == _body->cacheTiles() )
       {
-        this->removeChild ( 1, numChildren - 1 );
-
         // Clear all the children.
-        if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->clear();
-        if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->clear();
-        if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->clear();
-        if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->clear();
-
-        _children[LOWER_LEFT]  = 0x0;
-        _children[LOWER_RIGHT] = 0x0;
-        _children[UPPER_LEFT]  = 0x0;
-        _children[UPPER_RIGHT] = 0x0;
-
-        // Clear the tile job.
-        if ( _tileJob.valid() )
-        {
-          _tileJob->cancel();
-          _tileJob = 0x0;
-        }
+        this->_clearChildren();
       }
     }
   }
@@ -1310,4 +1302,37 @@ osg::BoundingSphere Tile::computeBound() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _boundingSphere;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear children.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_clearChildren()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  this->removeChild ( 1, this->getNumChildren() - 1 );
+
+  // Clear all the children.
+  if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->clear();
+  if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->clear();
+  if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->clear();
+  if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->clear();
+
+  _children[LOWER_LEFT]  = 0x0;
+  _children[LOWER_RIGHT] = 0x0;
+  _children[UPPER_LEFT]  = 0x0;
+  _children[UPPER_RIGHT] = 0x0;
+
+  // Clear the tile job.
+  if ( _tileJob.valid() )
+  {
+    _tileJob->cancel();
+    _tileJob = 0x0;
+  }
 }

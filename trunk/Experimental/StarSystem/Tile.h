@@ -70,6 +70,7 @@ public:
     VERTICES   = 0x01,
     TEX_COORDS = 0x02,
     TEXTURE    = 0x04,
+    CHILDREN   = 0x08,
     ALL        = VERTICES | TEX_COORDS | TEXTURE
   };
 
@@ -169,6 +170,9 @@ protected:
   NodePtr                   _buildBorderLine();
 
   void                      _cull ( osgUtil::CullVisitor &cv );
+
+  /// Clear children.
+  void                      _clearChildren();
 
   // Build skirts.
   osg::Node*                _buildLonSkirt ( double lon, double u, unsigned int i, double offset );

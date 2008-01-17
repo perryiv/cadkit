@@ -293,8 +293,15 @@ RasterLayer::RefPtr Body::rasterData()
 void Body::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
   if ( true == _landModel.valid() )
+  {
     _landModel->latLonHeightToXYZ ( lat, lon, elevation, point );
+
+    // Scale
+    point *= _scale;
+  }
 }
 
 
@@ -307,8 +314,19 @@ void Body::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Ve
 void Body::xyzToLatLonHeight ( const osg::Vec3& point, double& lat, double& lon, double& elevation ) const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
   if ( true == _landModel.valid() )
-    _landModel->xyzToLatLonHeight ( point, lat, lon, elevation );
+  {
+    // Make a copy.
+    osg::Vec3f p ( point );
+
+    // Restore scale
+    p /= _scale;
+
+    _landModel->xyzToLatLonHeight ( p, lat, lon, elevation );
+    
+  }
 }
 
 
@@ -637,6 +655,27 @@ StarSystem::Callbacks::SplitCallback::RefPtr Body::splitCallback() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+void Body::scale( double s )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _scale = s;
+
+  // Dirty the tiles.
+  DirtyTiles dirty ( true, Tile::VERTICES | Tile::CHILDREN, Extents( -180, -90, 180, 90 ) );
+  osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
+  _transform->accept ( *visitor );
+
+  _transform->dirtyBound();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 double Body::scale() const
 {
   USUL_TRACE_SCOPE;
@@ -715,4 +754,40 @@ void Body::deserialize ( const XmlTree::Node &node )
     const Tiles::value_type e ( *i );
     this->addTile ( Tile::Extents ( e[0], e[1], e[2], e[3] ) );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the split distance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::splitDistance ( double d, bool dirty )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _splitDistance = d;
+
+  if ( dirty )
+  {
+    // Dirty the tiles.
+    DirtyTiles dirty ( true, Tile::VERTICES | Tile::CHILDREN, Extents( -180, -90, 180, 90 ) );
+    osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
+    _transform->accept ( *visitor );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the split distance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Body::splitDistance() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _splitDistance;
 }

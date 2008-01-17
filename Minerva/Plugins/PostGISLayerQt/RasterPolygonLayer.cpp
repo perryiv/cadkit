@@ -112,7 +112,10 @@ RasterPolygonLayer::RasterPolygonLayer () :
   _dir ( Usul::File::Temp::directory ( false ) ),
   _srid ( -1 ),
   _projectionText(),
-  _latLonProjectionText()
+  _latLonProjectionText(),
+  _initialized ( false ),
+  _geometries(),
+  _burnValues()
 {
   this->_addMember ( "Layer", _layer );
 }
@@ -130,11 +133,12 @@ RasterPolygonLayer::RasterPolygonLayer ( Layer* layer ) :
   _dir ( Usul::File::Temp::directory ( false ) ),
   _srid ( -1 ),
   _projectionText(),
-  _latLonProjectionText()
+  _latLonProjectionText(),
+  _initialized ( false ),
+  _geometries(),
+  _burnValues()
 {
   this->_addMember ( "Layer", _layer );
-  
-  this->_init();
 }
 
 
@@ -150,9 +154,11 @@ RasterPolygonLayer::RasterPolygonLayer ( const RasterPolygonLayer& rhs ) :
   _dir ( rhs._dir ),
   _srid ( rhs._srid ),
   _projectionText( rhs._projectionText ),
-  _latLonProjectionText ( rhs._latLonProjectionText )
+  _latLonProjectionText ( rhs._latLonProjectionText ),
+  _initialized ( false ),
+  _geometries(),
+  _burnValues()
 {
-  this->_init();
 }
 
 
@@ -168,8 +174,7 @@ RasterPolygonLayer& RasterPolygonLayer::operator= ( const RasterPolygonLayer& rh
   _layer = rhs._layer;
   _dir = rhs._dir;
   _latLonProjectionText = rhs._latLonProjectionText;
-  
-  this->_init();
+  _initialized = false;
   
   return *this;
 }
@@ -183,6 +188,10 @@ RasterPolygonLayer& RasterPolygonLayer::operator= ( const RasterPolygonLayer& rh
 
 RasterPolygonLayer::~RasterPolygonLayer()
 {
+  // Clean up geometries.
+  for ( Geometries::iterator iter = _geometries.begin(); iter != _geometries.end(); ++iter )
+    delete *iter;
+
 }
 
 
@@ -194,6 +203,12 @@ RasterPolygonLayer::~RasterPolygonLayer()
 
 void RasterPolygonLayer::_init()
 {
+  bool initialized ( Usul::Threads::Safe::get( this->mutex(), _initialized ) );
+
+  // Return if we are already initialized.
+  if ( true == initialized )
+    return;
+
   // Set an error handler.
   Detail::PushPopErrorHandler handler;
   
@@ -231,6 +246,112 @@ void RasterPolygonLayer::_init()
     Extents extents ( Extents::Vertex ( ll[0], ll[1] ), Extents::Vertex ( ur[0], ur[1] ) );
     this->extents ( extents );
   }
+
+  this->_initGeometries();
+
+  // We are initialized.
+  Usul::Threads::Safe::set( this->mutex(), true, _initialized );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the geometries from the server..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterPolygonLayer::_initGeometries()
+{
+  // Set an error handler.
+  Detail::PushPopErrorHandler handler;
+
+  Guard guard ( this );
+
+  // Return if no layer.
+  if ( false == _layer.valid() )
+    return;
+
+  // Get the connection.
+  Minerva::Core::DB::Connection::RefPtr connection ( _layer->connection() );
+    
+  // Return if no connection.
+  if ( false == connection.valid() )
+    return;
+    
+  const std::string driverName ( "PostgreSQL" );
+  OGRSFDriver *driver ( OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( driverName.c_str() ) );
+    
+  // Return if we didn't find a driver.
+  if ( 0x0 == driver )
+    return;
+
+  std::string name ( Usul::Strings::format ( "PG:", connection->connectionString() ) );
+    
+  // Get the data source.
+  OGRDataSource *vectorData ( driver->CreateDataSource( name.c_str(), 0x0 ) );
+    
+  // Return if no data.
+  if ( 0x0 == vectorData )
+    return;
+   
+#if 0 
+    std::string geometryString ( Usul::Strings::format ( "GeometryFromText( 'POLYGON((", ll[0], " ", ll[1], ", ",
+                                                                                         ur[0], " ", ll[1], ", ",
+                                                                                         ur[0], " ", ur[1], ", ",
+                                                                                         ll[0], " ", ur[1], ", ",
+                                                                                         ll[0], " ", ll[1], "))',", _srid, " )" ) );
+    
+    std::string query ( Usul::Strings::format ( "SELECT * " /*asBinary( intersection(", geometryString, ", geom ) ) as geom, ", _layer->colorColumn()*/ , " FROM ", _layer->tablename(), " WHERE ", geometryString, "&& geom" ) );
+#else
+    std::string query ( Usul::Strings::format ( "SELECT * ", " FROM ", _layer->tablename() ) );
+#endif
+    //std::cout << query << std::endl;
+    
+    // Make a layer.
+    OGRLayer *layer ( vectorData->ExecuteSQL( query.c_str(), 0x0, 0x0 ) );
+    
+    if ( 0x0 == layer )
+      return;
+    
+    OGRFeature* feature ( 0x0 );
+    
+    // Get the color functor.
+    typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;
+    ColorFunctor::RefPtr functor ( _layer->colorFunctor() );
+    
+    // Get the column for the color.
+    const std::string column ( _layer->colorColumn() );
+    
+    // Random numbers.
+    Usul::Adaptors::Random<double> random ( 0.0, 255.0 );
+    
+    // Get all geometries.
+    while ( 0x0 != ( feature = layer->GetNextFeature() ) )
+    {
+      // Get the index of the column
+      const int index ( feature->GetFieldIndex ( column.c_str() ) );
+      
+      const double value ( index > 0 ? feature->GetFieldAsDouble ( index ) : 0.0 );
+      
+      // Burn color.
+      const osg::Vec4 color ( functor.valid() ? (*functor) ( value ) : osg::Vec4 ( random(), random(), random(), 255 ) );
+      
+      // Add the burn values.
+      _burnValues.push_back ( color[0] * 255 );
+      _burnValues.push_back ( color[1] * 255 );
+      _burnValues.push_back ( color[2] * 255 );
+      _burnValues.push_back ( 200 );
+      
+      // Add the geometry.
+      //OGRGeometry *geometry ( feature->StealGeometry() );
+      OGRGeometry *geometry ( feature->GetGeometryRef() );
+      
+      if ( 0x0 != geometry )
+        _geometries.push_back ( geometry->clone() );
+      
+      // Cleanup.
+      OGRFeature::DestroyFeature( feature );
+    }
 }
 
 
@@ -255,6 +376,9 @@ Usul::Interfaces::IUnknown* RasterPolygonLayer::clone() const
 
 RasterPolygonLayer::ImagePtr RasterPolygonLayer::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * job, IUnknown *caller )
 {
+  // Make sure we are initialized.
+  this->_init();
+
   // Make the directory and base file name.
   const std::string baseDir ( this->_directory ( width, height, level ) );
   Usul::File::make ( baseDir );
@@ -281,9 +405,6 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::texture ( const Extents& extent
     // Read from cache.
     image = osgDB::readImageFile ( file );
   }
-
-  //if ( image.valid() )
-  //  image->flipVertical();
   
   return image;
 }
@@ -316,15 +437,20 @@ namespace Detail
             if ( 0x0 != band )
             {
               std::vector<unsigned char> bytes ( width * height, 0 );
-              band->RasterIO( GF_Read, 0, 0, width, height, &bytes[0], width, height, GDT_Byte, 0, 0 );
-              
-              unsigned char* data ( image->data() );
-              const int size ( width * height );
-              const int offset ( i - 1 );
-              for ( int i = 0; i < size; ++i )
+              if ( CE_None == band->RasterIO( GF_Read, 0, 0, width, height, &bytes[0], width, height, GDT_Byte, 0, 0 ) )
               {
-                *(data + offset) = bytes.at ( i );
-                data += bands;
+                if ( width == image->s() && height == image->t() )
+                {
+              
+                  unsigned char* data ( image->data() );
+                  const int size ( width * height );
+                  const int offset ( i - 1 );
+                  for ( int i = 0; i < size; ++i )
+                  {
+                    *(data + offset) = bytes.at ( i );
+                    data += bands;
+                  }
+                }
               }
             }
           }
@@ -344,9 +470,7 @@ namespace Detail
 RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string& filename, const Extents& extents, unsigned int width, unsigned int height, unsigned int level )
 {
   // Typedefs.
-  typedef std::vector<OGRGeometry*> Geometries;
   typedef std::vector<int> Bands;
-  typedef std::vector<double> BurnValues;
   
   ImagePtr image ( this->_createBlankImage( width, height ) );
   
@@ -439,124 +563,20 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
     // GDAL band index starts at 1.
     bands.push_back ( i + 1 );
   }
-  
-  // Geometries to burn.
-  Geometries geometries;
-  
-  // Values to burn.
-  BurnValues burnValues;
-  
-  // Fill in the geometries.
-  {
-    // Get the connection.
-    Minerva::Core::DB::Connection::RefPtr connection ( _layer->connection() );
     
-    // Return if no connection.
-    if ( false == connection.valid() )
-      return 0x0;
-    
-    const std::string driverName ( "PostgreSQL" );
-    OGRSFDriver *driver ( OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( driverName.c_str() ) );
-    
-    // Return if we didn't find a driver.
-    if ( 0x0 == driver )
-      return 0x0;
-    
-    // Connection parameters.
-    std::string hostname ( Usul::Strings::format (     "host=", connection->hostname() ) );
-    std::string database ( Usul::Strings::format (   "dbname=", connection->database() ) );
-    std::string username ( Usul::Strings::format (     "user=", connection->username() ) );
-    std::string password ( Usul::Strings::format ( "password=", connection->password() ) );
-    
-    std::string name ( Usul::Strings::format ( "PG:", hostname, " ", username, " ", password, " ", database ) );
-    
-    // Get the data source.
-    OGRDataSource *vectorData ( driver->CreateDataSource( name.c_str(), 0x0 ) );
-    
-    // Return if no data.
-    if ( 0x0 == vectorData )
-      return 0x0;
-    
-    std::string geometryString ( Usul::Strings::format ( "GeometryFromText( 'POLYGON((", ll[0], " ", ll[1], ", ",
-                                                                                         ur[0], " ", ll[1], ", ",
-                                                                                         ur[0], " ", ur[1], ", ",
-                                                                                         ll[0], " ", ur[1], ", ",
-                                                                                         ll[0], " ", ll[1], "))',", _srid, " )" ) );
-    
-    std::string query ( Usul::Strings::format ( "SELECT * " /*asBinary( intersection(", geometryString, ", geom ) ) as geom, ", _layer->colorColumn()*/ , " FROM ", _layer->tablename(), " WHERE ", geometryString, "&& geom" ) );
-    
-    //std::cout << query << std::endl;
-    
-    // Make a layer.
-    OGRLayer *layer ( vectorData->ExecuteSQL( query.c_str(), 0x0, 0x0 ) );
-    
-    if ( 0x0 == layer )
-      return 0x0;
-    
-    OGRFeature* feature ( 0x0 );
-    
-    // Get the color functor.
-    typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;
-    ColorFunctor::RefPtr functor ( _layer->colorFunctor() );
-    
-    // Get the column for the color.
-    const std::string column ( _layer->colorColumn() );
-    
-    // Random numbers.
-    Usul::Adaptors::Random<double> random ( 0.0, 255.0 );
-    
-    // Get all geometries.
-    while ( 0x0 != ( feature = layer->GetNextFeature() ) )
-    {
-      // Get the index of the column
-      const int index ( feature->GetFieldIndex ( column.c_str() ) );
-      
-      const double value ( index > 0 ? feature->GetFieldAsDouble ( index ) : 0.0 );
-      
-      // Burn color.
-      const osg::Vec4 color ( functor.valid() ? (*functor) ( value ) : osg::Vec4 ( random(), random(), random(), 255 ) );
-      
-      // Add the burn values.
-      burnValues.push_back ( color[0] * 255 );
-      burnValues.push_back ( color[1] * 255 );
-      burnValues.push_back ( color[2] * 255 );
-      burnValues.push_back ( 200 );
-      
-      // Add the geometry.
-      //OGRGeometry *geometry ( feature->StealGeometry() );
-      OGRGeometry *geometry ( feature->GetGeometryRef() );
-      
-      if ( 0x0 != geometry )
-        geometries.push_back ( geometry->clone() );
-      
-      // Cleanup.
-      OGRFeature::DestroyFeature( feature );
-    }
-  }
-  
   // Set an error handler.
   Detail::PushPopErrorHandler handler;
   
   // Burn the raster.
   if ( CE_None == ::GDALRasterizeGeometries( data, bands.size(), &bands[0], 
-                            geometries.size(), (void**) &geometries[0], 
-                            0x0, 0x0, &burnValues[0], 0x0,
+                            _geometries.size(), (void**) &_geometries[0], 
+                            0x0, 0x0, &_burnValues[0], 0x0,
                             GDALTermProgress, 0x0 ) )
   {
-  
-    data->FlushCache();
-  
-    //if ( CE_None != data->RasterIO( GF_Read, 0, 0, data->GetRasterXSize(), data->GetRasterYSize(), image->data(), data->GetRasterXSize(), data->GetRasterYSize(), GDT_Byte, channels, 0x0, 0, 0, 0 ) )
-    //  std::cout << "Warning: error reading data to " << filename << std::endl;
     Detail::convert ( image.get(), data );
   }
   
-  // Clean up geometries.
-  for ( Geometries::iterator iter = geometries.begin(); iter != geometries.end(); ++iter )
-    delete *iter;
-  
   GDALClose( data ); data = 0x0;
-  //remove.remove ( false );
 
   return image;
 }
@@ -574,9 +594,6 @@ void RasterPolygonLayer::deserialize ( const XmlTree::Node &node )
   Guard guard ( this );
   
   _dataMemberMap.deserialize ( node );
-  
-  // Open ourselfs.
-  this->_init ();
 }
 
 

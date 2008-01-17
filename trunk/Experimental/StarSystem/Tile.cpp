@@ -358,7 +358,8 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     
     // Only update here if the vertices are invalid.
     // This will ensure proper splitting.
-    this->updateMesh();
+    if ( this->verticesDirty() )
+      this->updateMesh();
     
     //cv->setComputeNearFarMode ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
     

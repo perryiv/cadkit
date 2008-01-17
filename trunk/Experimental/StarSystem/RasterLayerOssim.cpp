@@ -192,27 +192,34 @@ RasterLayerOssim::ImagePtr RasterLayerOssim::texture ( const Extents& extents, u
   Guard guard ( this );
 
   // Create the answer.
-  ImagePtr result ( this->_createBlankImage ( width, height ) );
+  ImagePtr result ( 0x0 );
 
-  if ( 0x0 != _projection && 0x0 != _viewInterface && 0x0 != _renderer )
+  // Check state.
+  if ( ( 0x0 == _projection ) || ( 0x0 == _viewInterface ) || ( 0x0 == _renderer ) )
+    return result;
+
+  ossimIrect requestRect ( 0, 0, width - 1, height - 1 );
+
+  const double deltaX ( extents.maximum()[0] - extents.minimum()[0] );
+  const double deltaY ( extents.maximum()[1] - extents.minimum()[1] );
+   
+  const double deltaLat ( deltaY / height );
+  const double deltaLon ( deltaX / width );
+
+  _projection->setDecimalDegreesPerPixel ( ossimDpt ( deltaLon, deltaLat ) );
+
+  _projection->setUlGpt ( ossimGpt ( extents.maximum()[1], extents.minimum()[0] ) ); // Max lat and min lon.
+  _viewInterface->setView ( _projection, false );
+  ossimRefPtr<ossimImageData> data ( _renderer->getTile ( requestRect ) );
+
+  // Check state and create image.
+  if ( ( true == data.valid() ) || 
+       ( 0x0 != data->getBuf() ) || 
+       ( OSSIM_EMPTY != data->getDataObjectStatus() ) ||
+       ( OSSIM_UINT8 == data->getScalarType() ) )
   {
-    ossimIrect requestRect(0, 0, width - 1, height - 1 );
-
-    const double deltaX ( extents.maximum()[0] - extents.minimum()[0] );
-    const double deltaY ( extents.maximum()[1] - extents.minimum()[1] );
-     
-    const double deltaLat ( deltaY / height );
-    const double deltaLon ( deltaX / width );
-
-    _projection->setDecimalDegreesPerPixel ( ossimDpt ( deltaLon, deltaLat ) );
-
-    _projection->setUlGpt ( ossimGpt ( extents.maximum()[1], extents.minimum()[0] ) ); // Max lat and min lon.
-    _viewInterface->setView ( _projection, false );
-    ossimRefPtr<ossimImageData> data ( _renderer->getTile ( requestRect ) );
-
-    // Convert to osg image.
-    if ( data.valid() && data->getBuf() && ( data->getDataObjectStatus() != OSSIM_EMPTY ) )
-      this->_convert ( *data, *result );
+    result = this->_createBlankImage ( width, height );
+    this->_convert ( *data, *result );
   }
 
   return result;
@@ -231,11 +238,15 @@ void RasterLayerOssim::_convert ( const ossimImageData& data, osg::Image& image 
 
   // Only handle 8 byte pixels for now.
   if ( OSSIM_UINT8 != data.getScalarType() && data.getSize() > 0 )
-    return;
+    throw std::invalid_argument ( "Error 3651784054: invalid image passed to convert" );
 
   const unsigned int width ( data.getWidth() );
   const unsigned int height ( data.getHeight() );
   const unsigned int size ( width * height );
+
+  // Check sizes.
+  if ( ( width != image.s() ) || ( height != image.t() ) )
+    throw std::invalid_argument ( "Error 3651784054: image sizes are not equal" );
 
   unsigned char *buffer ( image.data() );
 

@@ -27,8 +27,11 @@
 #include "Serialize/XML/Serialize.h"
 #include "Serialize/XML/Deserialize.h"
 
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Random.h"
+#include "Usul/Commands/GenericCommand.h"
+#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Factory/ObjectFactory.h"
 #include "Usul/Factory/TypeCreator.h"
@@ -41,6 +44,11 @@
 #include "Usul/Strings/Case.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
+
+#include "MenuKit/Menu.h"
+#include "MenuKit/Button.h"
+#include "MenuKit/ToggleButton.h"
+#include "MenuKit/RadioButton.h"
 
 #include "osg/MatrixTransform"
 #include "osg/CoordinateSystemNode"
@@ -127,6 +135,8 @@ Usul::Interfaces::IUnknown *StarSystemDocument::queryInterface ( unsigned long i
     return static_cast < Usul::Interfaces::IDatabasePager* > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast < Usul::Interfaces::IUpdateListener* > ( this );
+  case Usul::Interfaces::IMenuAdd::IID:
+    return static_cast < Usul::Interfaces::IMenuAdd* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -770,3 +780,62 @@ void StarSystemDocument::_makeSystem()
     //const osg::Vec2d mx (  180,  90 );
 
 #endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add to the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StarSystemDocument::menuAdd ( MenuKit::Menu& menuBar, Usul::Interfaces::IUnknown* caller )
+{
+  typedef MenuKit::Button Button;
+  typedef MenuKit::ToggleButton ToggleButton;
+  typedef MenuKit::RadioButton RadioButton;
+
+  // Build the menu.
+  MenuKit::Menu::RefPtr m ( menuBar.find ( "StarSystem", true ) );
+
+  MenuKit::Menu::RefPtr scale ( new MenuKit::Menu ( "Scale" ) );
+  scale->append ( new RadioButton ( 
+                Usul::Commands::genericCheckCommand ( "1.0", 
+                Usul::Adaptors::bind1<void> ( 1.0, 
+                                              Usul::Adaptors::memberFunction<void> ( this, &StarSystemDocument::scale ) ), 
+                Usul::Adaptors::bind1<bool> ( 1.0, 
+                                              Usul::Adaptors::memberFunction<bool> ( this, &StarSystemDocument::isScale ) ) ) ) );
+  scale->append ( new RadioButton ( 
+                Usul::Commands::genericCheckCommand ( "1.0 / 1000.0", 
+                Usul::Adaptors::bind1<void> ( 1.0 / 1000.0, 
+                                              Usul::Adaptors::memberFunction<void> ( this, &StarSystemDocument::scale ) ), 
+                Usul::Adaptors::bind1<bool> ( 1.0 / 1000.0, 
+                                              Usul::Adaptors::memberFunction<bool> ( this, &StarSystemDocument::isScale ) ) ) ) );
+  scale->append ( new RadioButton ( 
+                Usul::Commands::genericCheckCommand ( "1.0 / Earth radius", 
+                Usul::Adaptors::bind1<void> ( 1.0 / osg::WGS_84_RADIUS_EQUATOR, 
+                                              Usul::Adaptors::memberFunction<void> ( this, &StarSystemDocument::scale ) ), 
+                Usul::Adaptors::bind1<bool> ( 1.0 / osg::WGS_84_RADIUS_EQUATOR, 
+                                              Usul::Adaptors::memberFunction<bool> ( this, &StarSystemDocument::isScale ) ) ) ) );
+
+
+  m->append ( scale );
+}
+
+// Get/Set the scale.
+void StarSystemDocument::scale ( double scale )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  _scale = scale;
+
+  StarSystem::Scale::RefPtr visitor ( new StarSystem::Scale ( scale ) );
+  _system->accept ( *visitor );
+}
+
+double StarSystemDocument::isScale ( double scale )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _scale == scale;
+}

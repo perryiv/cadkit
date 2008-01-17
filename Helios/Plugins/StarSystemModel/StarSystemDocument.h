@@ -20,6 +20,7 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IDatabasePager.h"
 #include "Usul/Interfaces/IUpdateListener.h"
+#include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Jobs/Manager.h"
 
 #include "StarSystem/System.h"
@@ -36,7 +37,8 @@ namespace osgDB { class DatabasePager; }
 class StarSystemDocument : public Usul::Documents::Document,
                            public Usul::Interfaces::IBuildScene,
                            public Usul::Interfaces::IDatabasePager,
-                           public Usul::Interfaces::IUpdateListener
+                           public Usul::Interfaces::IUpdateListener,
+                           public Usul::Interfaces::IMenuAdd
 {
 public:
 
@@ -90,6 +92,9 @@ public:
   // Write the document to given file name.
   virtual void                write ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
 
+  // Get/Set the scale.
+  void                        scale ( double );
+  double                      isScale ( double );
 protected:
 
   // Do not copy.
@@ -102,6 +107,8 @@ protected:
   /// Update (Usul::Interfaces::IUpdateListener).
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 
+  /// Add to the menu.
+  virtual void                menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown* caller = 0x0 );
 private:
 
   void                        _destroy();

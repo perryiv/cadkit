@@ -110,7 +110,8 @@ public:
   // Get the raster data.
   RasterLayer::RefPtr       rasterData();
 
-  // Get the scale for the system.
+  // Get/Set the scale for the system.
+  void                      scale( double );
   double                    scale() const;
 
   // Get the scene.
@@ -126,6 +127,10 @@ public:
   // Set/get the callback used for tile splitting. Returns the existing callback.
   SplitCallback::RefPtr     splitCallback() const;
   void                      splitCallback ( SplitCallback * );
+
+  /// Get/Set the split distance.
+  void                      splitDistance ( double distance, bool dirty = true );
+  double                    splitDistance() const;
 
   // Request texture.
   unsigned long             textureRequest ( const Extents &extents, unsigned int level );

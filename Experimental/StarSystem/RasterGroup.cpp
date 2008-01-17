@@ -211,11 +211,14 @@ RasterGroup::ImagePtr RasterGroup::texture ( const Extents& extents, unsigned in
       job->cancel();
 
     // Get the layer.
-    Layers::value_type layer ( *iter );
-    if ( true == layer.valid() )
+    Layers::value_type raster ( *iter );
+    if ( true == raster.valid() )
     {
+      // Query for needed interfaces.
+      Usul::Interfaces::ILayer::QueryPtr layer ( raster );
       Usul::Interfaces::ILayerExtents::QueryPtr le ( layer );
       
+      // Get the extents.
       const double minLon ( le.valid() ? le->minLon() : -180.0 );
       const double minLat ( le.valid() ? le->minLat() :  -90.0 );
       const double maxLon ( le.valid() ? le->maxLon() :  180.0 );
@@ -223,10 +226,13 @@ RasterGroup::ImagePtr RasterGroup::texture ( const Extents& extents, unsigned in
       
       Extents e ( minLon, minLat, maxLon, maxLat );
       
-      if ( extents.intersects ( e ) )
+      // Should the layer be shown?
+      const bool shown ( layer.valid() ? layer->showLayer() : true );
+      
+      if ( shown && extents.intersects ( e ) )
       {
         // Get the image for the layer.
-        osg::ref_ptr < osg::Image > image ( layer->texture ( extents, width, height, level, job, caller ) );
+        osg::ref_ptr < osg::Image > image ( raster->texture ( extents, width, height, level, job, caller ) );
 
         if ( image.valid() )
         {

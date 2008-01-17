@@ -139,6 +139,9 @@ RasterPolygonLayer::RasterPolygonLayer ( Layer* layer ) :
   _burnValues()
 {
   this->_addMember ( "Layer", _layer );
+  
+  if ( _layer.valid() )
+    this->name ( _layer->name() );
 }
 
 
@@ -191,7 +194,6 @@ RasterPolygonLayer::~RasterPolygonLayer()
   // Clean up geometries.
   for ( Geometries::iterator iter = _geometries.begin(); iter != _geometries.end(); ++iter )
     delete *iter;
-
 }
 
 
@@ -293,65 +295,55 @@ void RasterPolygonLayer::_initGeometries()
   // Return if no data.
   if ( 0x0 == vectorData )
     return;
-   
-#if 0 
-    std::string geometryString ( Usul::Strings::format ( "GeometryFromText( 'POLYGON((", ll[0], " ", ll[1], ", ",
-                                                                                         ur[0], " ", ll[1], ", ",
-                                                                                         ur[0], " ", ur[1], ", ",
-                                                                                         ll[0], " ", ur[1], ", ",
-                                                                                         ll[0], " ", ll[1], "))',", _srid, " )" ) );
+
+  // Make the query.
+  std::string query ( Usul::Strings::format ( "SELECT * ", " FROM ", _layer->tablename() ) );
+  
+  // Make a layer.
+  OGRLayer *layer ( vectorData->ExecuteSQL( query.c_str(), 0x0, 0x0 ) );
+  
+  if ( 0x0 == layer )
+    return;
+  
+  OGRFeature* feature ( 0x0 );
+  
+  // Get the color functor.
+  typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;
+  ColorFunctor::RefPtr functor ( _layer->colorFunctor() );
+  
+  // Get the column for the color.
+  const std::string column ( _layer->colorColumn() );
+  
+  // Random numbers.
+  Usul::Adaptors::Random<double> random ( 0.0, 255.0 );
+  
+  // Get all geometries.
+  while ( 0x0 != ( feature = layer->GetNextFeature() ) )
+  {
+    // Get the index of the column
+    const int index ( feature->GetFieldIndex ( column.c_str() ) );
     
-    std::string query ( Usul::Strings::format ( "SELECT * " /*asBinary( intersection(", geometryString, ", geom ) ) as geom, ", _layer->colorColumn()*/ , " FROM ", _layer->tablename(), " WHERE ", geometryString, "&& geom" ) );
-#else
-    std::string query ( Usul::Strings::format ( "SELECT * ", " FROM ", _layer->tablename() ) );
-#endif
-    //std::cout << query << std::endl;
+    const double value ( index > 0 ? feature->GetFieldAsDouble ( index ) : 0.0 );
     
-    // Make a layer.
-    OGRLayer *layer ( vectorData->ExecuteSQL( query.c_str(), 0x0, 0x0 ) );
+    // Burn color.
+    const osg::Vec4 color ( functor.valid() ? (*functor) ( value ) : osg::Vec4 ( random(), random(), random(), 255 ) );
     
-    if ( 0x0 == layer )
-      return;
+    // Add the burn values.
+    _burnValues.push_back ( color[0] * 255 );
+    _burnValues.push_back ( color[1] * 255 );
+    _burnValues.push_back ( color[2] * 255 );
+    _burnValues.push_back ( 200 );
     
-    OGRFeature* feature ( 0x0 );
+    // Add the geometry.
+    //OGRGeometry *geometry ( feature->StealGeometry() );
+    OGRGeometry *geometry ( feature->GetGeometryRef() );
     
-    // Get the color functor.
-    typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;
-    ColorFunctor::RefPtr functor ( _layer->colorFunctor() );
+    if ( 0x0 != geometry )
+      _geometries.push_back ( geometry->clone() );
     
-    // Get the column for the color.
-    const std::string column ( _layer->colorColumn() );
-    
-    // Random numbers.
-    Usul::Adaptors::Random<double> random ( 0.0, 255.0 );
-    
-    // Get all geometries.
-    while ( 0x0 != ( feature = layer->GetNextFeature() ) )
-    {
-      // Get the index of the column
-      const int index ( feature->GetFieldIndex ( column.c_str() ) );
-      
-      const double value ( index > 0 ? feature->GetFieldAsDouble ( index ) : 0.0 );
-      
-      // Burn color.
-      const osg::Vec4 color ( functor.valid() ? (*functor) ( value ) : osg::Vec4 ( random(), random(), random(), 255 ) );
-      
-      // Add the burn values.
-      _burnValues.push_back ( color[0] * 255 );
-      _burnValues.push_back ( color[1] * 255 );
-      _burnValues.push_back ( color[2] * 255 );
-      _burnValues.push_back ( 200 );
-      
-      // Add the geometry.
-      //OGRGeometry *geometry ( feature->StealGeometry() );
-      OGRGeometry *geometry ( feature->GetGeometryRef() );
-      
-      if ( 0x0 != geometry )
-        _geometries.push_back ( geometry->clone() );
-      
-      // Cleanup.
-      OGRFeature::DestroyFeature( feature );
-    }
+    // Cleanup.
+    OGRFeature::DestroyFeature( feature );
+  }
 }
 
 
@@ -441,7 +433,6 @@ namespace Detail
               {
                 if ( width == image->s() && height == image->t() )
                 {
-              
                   unsigned char* data ( image->data() );
                   const int size ( width * height );
                   const int offset ( i - 1 );
@@ -479,17 +470,6 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
   
   Guard guard ( this );
   
-#if 0
-  if ( Usul::Predicates::FileExists::test ( filename ) )
-  {
-    GDALDataset *data ( static_cast <GDALDataset*> ( GDALOpen( filename.c_str(), GA_ReadOnly ) ) );
-    Detail::convert ( image.get(), data );
-    //if ( 0x0 != data )
-    //  data->RasterIO( GF_Read, 0, 0, data->GetRasterXSize(), data->GetRasterYSize(), image->data(), data->GetRasterXSize(), data->GetRasterYSize(), GDT_Byte, channels, 0x0, 0, 0, 0 );
-    return image;
-  }
-#endif
-  
   // Make a geotiff.
   std::string format ( "GTiff" );
   
@@ -501,9 +481,7 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
     return 0x0;
   
 #if 1
-
   std::string file ( Usul::Strings::format ( Usul::File::directory ( filename, true ), Usul::File::base ( filename ), ".tif" ) );
-  
   Usul::Scope::RemoveFile remove ( file );
 #else
   std::string file ( filename );

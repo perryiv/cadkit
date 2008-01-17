@@ -36,6 +36,7 @@
 #include "osg/Geode"           // <cmath> which fauls up <math.h> in 
 #include "osg/Geometry"        // "Standard/SlTemplateSupport.h"
 #include "osgDB/WriteFile"
+#include "osgUtil/Optimizer"
 
 #include <limits>
 
@@ -271,6 +272,10 @@ bool DbOsgDatabase::writeData ( const std::string &filename )
   SL_PRINT3 ( "In DbOsgDatabase::writeData(), this = %X, filename = %s\n", this, filename.c_str() );
   SL_ASSERT ( filename.size() );
   SL_ASSERT ( NULL != this->_getRoot() );
+  
+  // Perform optimization using environment variable settings.
+  osgUtil::Optimizer optimizer;
+  optimizer.optimize((osg::Node *) this->_getRoot());
 
   // Write the root to file. Note: OpenSceneGraph will write binary or ascii 
   // depending on the extension.

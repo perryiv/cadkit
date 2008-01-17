@@ -10,9 +10,6 @@
 
 #include "Minerva/Core/postGIS/Geometry.h"
 
-#include "Usul/Components/Manager.h"
-#include "Usul/Interfaces/IProjectCoordinates.h"
-
 using namespace Minerva::Core::postGIS;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Geometry, Geometry::BaseClass );

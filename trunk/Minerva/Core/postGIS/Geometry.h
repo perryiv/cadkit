@@ -25,8 +25,6 @@ namespace osg { class Geometry; class Node; }
 
 #include <vector>
 
-#include "ossim/base/ossimGpt.h"
-
 namespace Minerva {
 namespace Core {
 namespace postGIS {

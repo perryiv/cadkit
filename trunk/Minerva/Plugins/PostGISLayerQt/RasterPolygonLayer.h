@@ -19,6 +19,7 @@
 #include "Usul/File/Temp.h"
 
 class GDALDataset;
+class OGRGeometry;
 
 namespace Usul {
   namespace Factory {
@@ -52,6 +53,7 @@ protected:
   RasterPolygonLayer& operator= ( const RasterPolygonLayer& );
   
   void _init();
+  void _initGeometries();
   
   /// Rasterize.
   ImagePtr              _rasterize ( const std::string& filename, const Extents& extents, unsigned int width, unsigned int height, unsigned int level );
@@ -62,12 +64,18 @@ protected:
   
 private:
   friend class Usul::Factory::TypeCreator<RasterPolygonLayer>;
+
+  typedef std::vector<OGRGeometry*> Geometries;
+  typedef std::vector<double> BurnValues;
   
   PolygonLayer::RefPtr _layer;
   std::string _dir;
   int _srid;
   std::string _projectionText;
   std::string _latLonProjectionText;
+  bool _initialized;
+  Geometries _geometries;
+  BurnValues _burnValues;
   
   SERIALIZE_XML_CLASS_NAME( RasterPolygonLayer ) 
   SERIALIZE_XML_SERIALIZE_FUNCTION 

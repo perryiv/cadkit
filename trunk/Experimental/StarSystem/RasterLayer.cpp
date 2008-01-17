@@ -38,7 +38,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS(RasterLayer, RasterLayer::BaseClass);
 
 RasterLayer::RasterLayer() : 
   BaseClass(),
-  _extents(),
+  _extents( -180.0, -90.0, 180.0, 90.0 ),
   _alphas(),
   _guid ( Usul::Functions::GUID::generate() ),
   _shown ( true ),

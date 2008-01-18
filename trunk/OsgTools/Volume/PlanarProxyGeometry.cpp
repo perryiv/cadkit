@@ -220,11 +220,11 @@ namespace Detail
     _state ( state )
     {
       _state.pushStateSet ( ss );
-      ::glEnableClientState ( GL_VERTEX_ARRAY );
+      //::glEnableClientState ( GL_VERTEX_ARRAY );
     }
     ~PushPopStateSet ()
     {
-      ::glDisableClientState ( GL_VERTEX_ARRAY );
+      //::glDisableClientState ( GL_VERTEX_ARRAY );
       _state.popStateSet();
     }
 
@@ -347,7 +347,7 @@ void PlanarProxyGeometry::_drawImplementation( osg::State& state ) const
 		else if ( ( lmb[ 9 ] >= 0.0 ) && ( lmb[ 9 ] < 1.0 ) ) intersection[ 5 ] = vecStart[ 9 ] + vecDir[ 9 ]  * lmb[ 9 ];
 		else intersection[ 5 ] = vecStart[ 11 ]+ vecDir[ 11 ] * lmb[ 11 ];
 
-# if 0
+# if 1
     ::glBegin ( GL_TRIANGLE_FAN );
    
     for( unsigned int k = 0; k < 6; ++k )
@@ -366,8 +366,8 @@ void PlanarProxyGeometry::_drawImplementation( osg::State& state ) const
 #endif
     
     //state.setVertexPointer ( 3, GL_FLOAT, 0, &intersection.front() );
-    ::glVertexPointer ( 3, GL_FLOAT, 0, &intersection.front() );
-    ::glDrawElements ( GL_TRIANGLE_FAN, 6, GL_UNSIGNED_SHORT, &_indices.front() );
+    //::glVertexPointer ( 3, GL_FLOAT, 0, &intersection.front() );
+    //::glDrawElements ( GL_TRIANGLE_FAN, 6, GL_UNSIGNED_SHORT, &_indices.front() );
     
   }
 

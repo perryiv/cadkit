@@ -13,12 +13,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _DYNAMIC_LAND_DELEGATE_DELEGATE_COMPILE_GUARD_H_
-#define _DYNAMIC_LAND_DELEGATE_DELEGATE_COMPILE_GUARD_H_
+#ifndef _MODEL_PRESENTATION_DELEGATE_DELEGATE_COMPILE_GUARD_H_
+#define _MODEL_PRESENTATION_DELEGATE_DELEGATE_COMPILE_GUARD_H_
 
-#ifndef _COMPILING_DYNAMIC_LAND_DELEGATE_DELEGATE
+#ifndef _COMPILING_MODEL_PRESENTATION_DELEGATE_DELEGATE
 # error "This header file is only used for compiling the library."
 # error "It should not be included in client code."
 #endif
 
-#endif // _DYNAMIC_LAND_DELEGATE_DELEGATE_COMPILE_GUARD_H_
+#endif // _MODEL_PRESENTATION_DELEGATE_DELEGATE_COMPILE_GUARD_H_

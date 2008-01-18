@@ -271,6 +271,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\MpdDynamicModel.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdDynamicModel.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MpdFirstTimestep.cpp"
 					>
 				</File>

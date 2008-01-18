@@ -213,9 +213,9 @@ RasterLayerOssim::ImagePtr RasterLayerOssim::texture ( const Extents& extents, u
   ossimRefPtr<ossimImageData> data ( _renderer->getTile ( requestRect ) );
 
   // Check state and create image.
-  if ( ( true == data.valid() ) || 
-       ( 0x0 != data->getBuf() ) || 
-       ( OSSIM_EMPTY != data->getDataObjectStatus() ) ||
+  if ( ( true == data.valid() ) && 
+       ( 0x0 != data->getBuf() ) && 
+       ( OSSIM_EMPTY != data->getDataObjectStatus() ) &&
        ( OSSIM_UINT8 == data->getScalarType() ) )
   {
     result = this->_createBlankImage ( width, height );
@@ -245,7 +245,7 @@ void RasterLayerOssim::_convert ( const ossimImageData& data, osg::Image& image 
   const unsigned int size ( width * height );
 
   // Check sizes.
-  if ( ( width != image.s() ) || ( height != image.t() ) )
+  if ( ( static_cast<int> ( width ) != image.s() ) || ( static_cast<int> ( height ) != image.t() ) )
     throw std::invalid_argument ( "Error 3651784054: image sizes are not equal" );
 
   unsigned char *buffer ( image.data() );

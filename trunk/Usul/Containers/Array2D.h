@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_CONTAINERS_IMAGES_MATRIX_H__
-#define __USUL_CONTAINERS_IMAGES_MATRIX_H__
+#ifndef __USUL_CONTAINERS_ARRAY_TWO_D_H__
+#define __USUL_CONTAINERS_ARRAY_TWO_D_H__
 
 #include <vector>
 
@@ -68,5 +68,5 @@ private:
   }
 }
 
-#endif // __OSG_TOOLS_IMAGES_MATRIX_H__
+#endif // __USUL_CONTAINERS_ARRAY_TWO_D_H__
 

@@ -32,6 +32,7 @@
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Math/Angle.h"
 #include "Usul/Math/MinMax.h"
+#include "Usul/Network/Names.h"
 #include "Usul/Predicates/CloseFloat.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Strings/Case.h"
@@ -53,12 +54,22 @@
 #include "MenuKit/RadioButton.h"
 #include "MenuKit/ToggleButton.h"
 
+#include "StarSystem/BuildScene.h"
+#include "StarSystem/Extents.h"
+#include "StarSystem/LandModelEllipsoid.h"
+#include "StarSystem/LandModelFlat.h"
+#include "StarSystem/RasterLayerOssim.h"
+#include "StarSystem/RasterLayerWms.h"
+#include "StarSystem/ElevationLayerDem.h"
+#include "StarSystem/SplitCallbacks.h"
+
 #include "osgText/Text"
 #include "osg/Geode"
 #include "osg/Geometry"
 #include "osg/Material"
 #include "osg/LightModel"
 #include "osg/Texture2D"
+#include "osg/CoordinateSystemNode"
 
 #include "osgDB/ReadFile"
 
@@ -114,9 +125,13 @@ WRFDocument::WRFDocument() :
   _lowerLeft ( 0.0, 0.0 ),
   _upperRight ( 0.0, 0.0 ),
   _transferFunctions (),
-  _databasePager ( new osgDB::DatabasePager ),
+  _system ( 0x0 ),
+  _manager ( new Usul::Jobs::Manager ( 5, true ) ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
+  // Make the system.
+  _system = new StarSystem::System ( _manager );
+  
   this->_addMember ( "filename", _filename );
   this->_addMember ( "num_timesteps", _timesteps );
   this->_addMember ( "num_channels", _channels );
@@ -132,6 +147,7 @@ WRFDocument::WRFDocument() :
   this->_addMember ( "lower_left", _lowerLeft );
   this->_addMember ( "upper_right", _upperRight );
   this->_addMember ( "cell_size", _cellSize );
+  this->_addMember ( "star_system", _system );
 }
 
 
@@ -143,6 +159,21 @@ WRFDocument::WRFDocument() :
 
 WRFDocument::~WRFDocument()
 {
+  // Delete the star-system.
+  _system = 0x0;
+  
+  // Clean up job manager.
+  if ( 0x0 != _manager )
+  {
+    // Remove all queued jobs and cancel running jobs.
+    _manager->cancel();
+    
+    // Wait for remaining jobs to finish.
+    _manager->wait();
+    
+    // Delete the manager.
+    delete _manager; _manager = 0x0;
+  }
 }
 
 
@@ -1267,14 +1298,56 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
   // Build the transfer function.
   _volumeNode->transferFunction ( _transferFunctions.at ( 0 ).get() );
 
-  // Look for needed interfaces.
-  Usul::Interfaces::IPlanetNode::QueryPtr pn ( Usul::Components::Manager::instance ().getInterface ( Usul::Interfaces::IPlanetNode::IID  ) );
-  Usul::Interfaces::IPlanetCoordinates::QueryPtr pc ( Usul::Components::Manager::instance ().getInterface ( Usul::Interfaces::IPlanetCoordinates::IID ) );
-
-  if ( pn.valid () )
-  {  
-    _planet = pn->planetNode ( _filename );
+  // Local typedefs to shorten the lines.
+  typedef StarSystem::Body Body;
+  typedef Body::Extents Extents;
+  
+  // Make the land model.
+  typedef StarSystem::LandModelEllipsoid Land;
+  Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
+  Land::RefPtr land ( new Land ( radii ) );
+  
+  // Make a good split distance.
+  const double splitDistance ( land->size() * 3 );
+  
+  // Size of the mesh.
+  Body::MeshSize meshSize ( 17, 17 );
+  
+  // Add the body.
+  Body::RefPtr body ( new Body ( land, _manager, meshSize, splitDistance ) );
+  body->useSkirts ( true );
+  
+  // Add tiles to the body.
+  body->addTile ( Extents ( -180, -90,    0,   90 ) );
+  body->addTile ( Extents (    0, -90,  180,   90 ) );
+  
+  {
+    const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
+    
+    typedef StarSystem::RasterLayerWms::Options Options;
+    Options options;
+    options[Usul::Network::Names::LAYERS]  = "BMNG,global_mosaic";
+    options[Usul::Network::Names::STYLES]  = "Jul,visual";
+    options[Usul::Network::Names::SRS]     = "EPSG:4326";
+    options[Usul::Network::Names::REQUEST] = "GetMap";
+    options[Usul::Network::Names::FORMAT]  = "image/jpeg";
+    
+    typedef StarSystem::Body::Extents Extents;
+    typedef Extents::Vertex Vertex;
+    const Extents maxExtents ( Vertex ( -180, -90 ), Vertex ( 180, 90 ) );
+    
+    StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
+    body->rasterAppend ( layer.get() );
   }
+  
+  _system->body ( body.get() );
+  
+  StarSystem::BuildScene::RefPtr builder ( new StarSystem::BuildScene );
+  _system->accept ( *builder );
+  _planet = builder->scene();
+  
+  // Look for needed interfaces.
+  Usul::Interfaces::IPlanetCoordinates::QueryPtr pc ( Usul::Components::Manager::instance ().getInterface ( Usul::Interfaces::IPlanetCoordinates::IID ) );
 
   if ( pc.valid () )
   {
@@ -1420,14 +1493,6 @@ bool WRFDocument::isTransferFunction ( unsigned int i ) const
 void WRFDocument::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-
-  Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
-  if ( ( true == fs.valid() ) && ( 0x0 != fs->frameStamp() ) )
-  {
-    _databasePager->signalBeginFrame ( fs->frameStamp() );
-    _databasePager->updateSceneGraph ( fs->frameStamp()->getReferenceTime() );
-  }
-
   BaseClass::preRenderNotify ( caller );
 }
 
@@ -1441,9 +1506,6 @@ void WRFDocument::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
 void WRFDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
- 
-  _databasePager->signalEndFrame();
-
   BaseClass::postRenderNotify ( caller );
 }
 
@@ -1459,30 +1521,4 @@ void WRFDocument::addView ( Usul::Interfaces::IView *view )
   USUL_TRACE_SCOPE;
 
   BaseClass::addView ( view );
-
-  // Set cull visitor's database pager.
-  {
-    Usul::Interfaces::ICullSceneVisitor::QueryPtr getVisitor ( view );
-    if ( true == getVisitor.valid() )
-    {
-      osg::ref_ptr<osgUtil::CullVisitor> visitor ( getVisitor->getCullSceneVisitor ( 0x0 ) );
-      if ( true == visitor.valid() )
-      {
-        visitor->setDatabaseRequestHandler ( _databasePager.get() );
-      }
-    }
-  }
-
-  // Set update visitor's database pager.
-  {
-    Usul::Interfaces::IUpdateSceneVisitor::QueryPtr getVisitor ( view );
-    if ( true == getVisitor.valid() )
-    {
-      osg::ref_ptr<osg::NodeVisitor> visitor ( getVisitor->getUpdateSceneVisitor ( 0x0 ) );
-      if ( true == visitor.valid() )
-      {
-        visitor->setDatabaseRequestHandler ( _databasePager.get() );
-      }
-    }
-  }
 }

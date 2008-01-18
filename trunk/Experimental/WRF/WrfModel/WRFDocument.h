@@ -22,6 +22,7 @@
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Jobs/Job.h"
+#include "Usul/Jobs/Manager.h"
 
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ITimestepAnimation.h"
@@ -31,14 +32,15 @@
 
 #include "Serialize/XML/Macros.h"
 
+#include "StarSystem/System.h"
+#include "StarSystem/Body.h"
+
 #include "OsgTools/Volume/Texture3DVolume.h"
 #include "OsgTools/Volume/TransferFunction.h"
 
 #include "osg/BoundingBox"
 #include "osg/MatrixTransform"
 #include "osg/Image"
-
-#include "osgDB/DatabasePager"
 
 #include <string>
 #include <vector>
@@ -234,8 +236,9 @@ private:
   Usul::Math::Vec2d _upperRight;
   unsigned int _currentTransferFunction;
   TransferFunctions _transferFunctions;
-  osg::ref_ptr< osgDB::DatabasePager > _databasePager;
-
+  StarSystem::System::RefPtr _system;
+  Usul::Jobs::Manager *      _manager;
+  
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME ( WRFDocument );
   SERIALIZE_XML_SERIALIZE_FUNCTION;

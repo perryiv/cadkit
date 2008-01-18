@@ -1492,10 +1492,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\ISetTool.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IShadeModel.h"
 					>
 				</File>
@@ -1569,14 +1565,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\ITimeVaryingData.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ITool.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IToolLifeTime.h"
 					>
 				</File>
 				<File

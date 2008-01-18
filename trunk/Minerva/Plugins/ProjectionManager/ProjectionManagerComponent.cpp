@@ -95,17 +95,9 @@ namespace Detail
 
   void projectFromGpt( const ossimGpt& gpt, Usul::Math::Vec3d& latLonPoint )
   {
-    double deltaH ( ossimElevManager::instance()->getHeightAboveEllipsoid( gpt ) );
-
-    if( ossim::isnan (deltaH))
-      deltaH = ossimGeoidManager::instance()->offsetFromEllipsoid( gpt );
-
-    if( ossim::isnan (deltaH))
-      deltaH = 0.0;
-
     latLonPoint[0] = gpt.lon;
     latLonPoint[1] = gpt.lat;
-    latLonPoint[2] = deltaH;
+    latLonPoint[2] = 0.0;
   }
 }
 

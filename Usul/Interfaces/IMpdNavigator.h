@@ -60,6 +60,10 @@ struct IMpdNavigator : public Usul::Interfaces::IUnknown
   // get the visibility state of a given model
   virtual bool              timelineModelState( unsigned int i ) = 0;  
 
+  // dynamic model access
+  virtual void              dynamicModelState( unsigned int index, bool state ) = 0;
+  virtual bool              dynamicModelState( unsigned int i ) = 0;  
+
 
 }; //struct IVertices
 

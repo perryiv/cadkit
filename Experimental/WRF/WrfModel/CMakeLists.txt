@@ -15,7 +15,7 @@ ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR} )
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${CADKIT_INC_DIR}/Experimental" "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR} )
 
 # Set the sources to compile.
 set (SOURCES
@@ -33,7 +33,7 @@ ADD_LIBRARY(${PLUGIN_NAME} SHARED ${SOURCES} )
 CADKIT_PLUGIN()
 
 # Link the Library with Cadkit Libraries.
-LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools XmlTree SerializeXML )
+LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools XmlTree SerializeXML StarSystem )
 
 # Link the Library	
 TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} 

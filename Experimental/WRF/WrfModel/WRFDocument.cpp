@@ -58,9 +58,8 @@
 #include "StarSystem/Extents.h"
 #include "StarSystem/LandModelEllipsoid.h"
 #include "StarSystem/LandModelFlat.h"
-#include "StarSystem/RasterLayerOssim.h"
 #include "StarSystem/RasterLayerWms.h"
-#include "StarSystem/ElevationLayerDem.h"
+#include "StarSystem/SetJobManager.h"
 #include "StarSystem/SplitCallbacks.h"
 
 #include "osgText/Text"
@@ -82,8 +81,8 @@
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WRFDocument, WRFDocument::BaseClass );
 USUL_FACTORY_REGISTER_CREATOR ( WRFDocument );
 
-USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_2 ( osg::Vec3 );
-USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_2 ( osg::Vec3 );
+USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_3 ( osg::Vec3 );
+USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_3 ( osg::Vec3 );
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec3 );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -398,7 +397,7 @@ void WRFDocument::_buildScene()
     // Build proxy geometry.
     _volumeTransform->addChild ( this->_buildProxyGeometry() );
   }
-  
+  #if 1
   // We have the data ...
   else
   {
@@ -436,7 +435,9 @@ void WRFDocument::_buildScene()
     _volumeTransform->addChild ( _volumeNode.get() );
     //_volumeTransform->addChild ( this->_buildVectorField ( _currentTimestep, 0, 1 ) );
   }
-
+#else
+  _volumeTransform->addChild ( this->_buildProxyGeometry() );
+#endif
   // No longer dirty
   this->dirty ( false );
 }
@@ -555,6 +556,8 @@ void WRFDocument::_initBoundingBox ()
   double xLength ( _x * _cellSize [ 0 ] );
   double yLength ( _y * _cellSize [ 1 ] );
   double zLength ( _z * _cellSize [ 2 ] );
+
+  std::cout << "Z: " << _z << " Z Cell size: " << _cellSize [ 2 ] << std::endl;
 
   float xHalf ( static_cast < float > ( xLength ) / 2.0f );
   float yHalf ( static_cast < float > ( yLength ) / 2.0f );
@@ -1298,68 +1301,78 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
   // Build the transfer function.
   _volumeNode->transferFunction ( _transferFunctions.at ( 0 ).get() );
 
-  // Local typedefs to shorten the lines.
-  typedef StarSystem::Body Body;
-  typedef Body::Extents Extents;
-  
-  // Make the land model.
-  typedef StarSystem::LandModelEllipsoid Land;
-  Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
-  Land::RefPtr land ( new Land ( radii ) );
-  
-  // Make a good split distance.
-  const double splitDistance ( land->size() * 3 );
-  
-  // Size of the mesh.
-  Body::MeshSize meshSize ( 17, 17 );
-  
-  // Add the body.
-  Body::RefPtr body ( new Body ( land, _manager, meshSize, splitDistance ) );
-  body->useSkirts ( true );
-  
-  // Add tiles to the body.
-  body->addTile ( Extents ( -180, -90,    0,   90 ) );
-  body->addTile ( Extents (    0, -90,  180,   90 ) );
-  
+  if ( 0x0 == _system->body() )
   {
-    const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
+    std::cout << "Adding body..." << std::endl;
+
+    // Local typedefs to shorten the lines.
+    typedef StarSystem::Body Body;
+    typedef Body::Extents Extents;
+  
+    // Make the land model.
+    typedef StarSystem::LandModelEllipsoid Land;
+    Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
+    Land::RefPtr land ( new Land ( radii ) );
+  
+    // Make a good split distance.
+    const double splitDistance ( land->size() * 3 );
+  
+    // Size of the mesh.
+    Body::MeshSize meshSize ( 17, 17 );
+  
+    // Add the body.
+    Body::RefPtr body ( new Body ( land, _manager, meshSize, splitDistance ) );
+    body->useSkirts ( true );
+  
+    // Add tiles to the body.
+    body->addTile ( Extents ( -180, -90,    0,   90 ) );
+    body->addTile ( Extents (    0, -90,  180,   90 ) );
+  
+    {
+      const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
     
-    typedef StarSystem::RasterLayerWms::Options Options;
-    Options options;
-    options[Usul::Network::Names::LAYERS]  = "BMNG,global_mosaic";
-    options[Usul::Network::Names::STYLES]  = "Jul,visual";
-    options[Usul::Network::Names::SRS]     = "EPSG:4326";
-    options[Usul::Network::Names::REQUEST] = "GetMap";
-    options[Usul::Network::Names::FORMAT]  = "image/jpeg";
+      typedef StarSystem::RasterLayerWms::Options Options;
+      Options options;
+      options[Usul::Network::Names::LAYERS]  = "BMNG,global_mosaic";
+      options[Usul::Network::Names::STYLES]  = "Jul,visual";
+      options[Usul::Network::Names::SRS]     = "EPSG:4326";
+      options[Usul::Network::Names::REQUEST] = "GetMap";
+      options[Usul::Network::Names::FORMAT]  = "image/jpeg";
     
-    typedef StarSystem::Body::Extents Extents;
-    typedef Extents::Vertex Vertex;
-    const Extents maxExtents ( Vertex ( -180, -90 ), Vertex ( 180, 90 ) );
+      typedef StarSystem::Body::Extents Extents;
+      typedef Extents::Vertex Vertex;
+      const Extents maxExtents ( Vertex ( -180, -90 ), Vertex ( 180, 90 ) );
     
-    StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
-    body->rasterAppend ( layer.get() );
+      StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
+      body->rasterAppend ( layer.get() );
+    }
+  
+    _system->body ( body.get() );
   }
-  
-  _system->body ( body.get() );
-  
+
+  // Set the job manager.
+  StarSystem::SetJobManager::RefPtr setter ( new StarSystem::SetJobManager ( _manager ) );
+  _system->accept ( *setter );
+
   StarSystem::BuildScene::RefPtr builder ( new StarSystem::BuildScene );
   _system->accept ( *builder );
-  _planet = builder->scene();
-  
-  // Look for needed interfaces.
-  Usul::Interfaces::IPlanetCoordinates::QueryPtr pc ( Usul::Components::Manager::instance ().getInterface ( Usul::Interfaces::IPlanetCoordinates::IID ) );
 
-  if ( pc.valid () )
+#if 1
+  _planet = builder->scene();
+#else
+  _planet = new osg::Group;
+#endif
+
   {
     // Lat long center of the bounding box.
     const Usul::Math::Vec2d center ( ( _lowerLeft + _upperRight ) * 0.5  );
     //center /= 2.0;
 
-    Usul::Math::Vec3d translate;
+    osg::Vec3f translate;
 
     double height ( (_z * _cellSize [ 2 ] ) / 2.0 );
 
-    pc->convertToPlanet ( Usul::Math::Vec3d ( center [ 1 ], center [ 0 ], height ), translate );
+    _system->body()->latLonHeightToXYZ ( center [ 0 ], center [ 1 ], height, translate );
 
     // Matrix to translate the proper location.
     const osg::Matrix T ( osg::Matrix::translate ( translate [ 0 ], translate [ 1 ], translate [ 2 ] ) );
@@ -1375,9 +1388,9 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
     bbUp.normalize();
 
     // Calculate the north vector.
-    Usul::Math::Vec3d v1;
-    pc->convertToPlanet ( Usul::Math::Vec3d ( center [ 1 ], center [ 0 ] + 0.1, height ), v1 );
-    Usul::Math::Vec3d diff ( v1 - translate );
+    osg::Vec3 v1;
+    _system->body()->latLonHeightToXYZ ( center [ 0 ] + 0.1, center [ 1 ], height, v1 );
+    osg::Vec3 diff ( v1 - translate );
     diff.normalize();
 
     const osg::Vec3 north ( diff[0], diff[1], diff[2] );

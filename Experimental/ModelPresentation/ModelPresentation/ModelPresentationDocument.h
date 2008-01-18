@@ -23,6 +23,7 @@
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/IMpdNavigator.h"
 #include "Usul/Interfaces/IMenuAdd.h"
+#include "Usul/Interfaces/IDataSync.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Math/Vector2.h"
@@ -79,15 +80,38 @@ public:
     std::string name;
     std::string menuName;
   };
+  struct MpdDynamicGroup
+  {
+    std::string filename;
+    bool valid;
+  };
+  struct MpdDynamicSet
+  {
+    osg::ref_ptr< osg::Switch > models;
+    std::vector< MpdDynamicGroup > groups;
+    std::vector< std::string > modelNames;
+    unsigned int currentTime;
+    unsigned int endTime;
+    std::string menuName;
+    std::string name;
+    std::string directory;
+    std::string extension;
+    std::string prefix;
+    bool visible;    
+  };
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
   typedef Usul::Documents::Document Document;
   typedef Usul::Documents::Document::RefPtr DocumentPtr;
   typedef Usul::Documents::Manager DocManager;
   typedef DocManager::DocumentInfo Info;
+  typedef Usul::Interfaces::IDataSync IDataSync;
   typedef Usul::Policies::NumberBased UpdatePolicy;
   typedef std::auto_ptr< UpdatePolicy > UpdatePolicyPtr;
   typedef osg::Matrixf Matrixf;
+  typedef XmlTree::Document::Attributes Attributes;
+  typedef XmlTree::Document::Children Children;
+  typedef std::vector < std::string > Files;
 
   typedef std::vector< osg::ref_ptr< osg::Switch > > MpdScene;
   typedef osg::ref_ptr< osg::Group > GroupPtr;
@@ -98,6 +122,7 @@ public:
   typedef std::map< std::string, osg::Matrixd > Locations;
   typedef std::vector< std::string > LocationNames;
   typedef std::vector< MpdTimeSet > MpdTimeSets;
+  typedef std::vector< MpdDynamicSet > MpdDynamicSets;
 
   typedef Usul::Interfaces::IAnimatePath IAnimatePath;
   typedef std::vector < osg::Matrixd > MatrixVec;
@@ -153,6 +178,8 @@ public:
   bool              timelineModelState( unsigned int i );  
   bool              isAnimating();
   void              isAnimating( bool value );
+  void              dynamicModelState( unsigned int index, bool state );
+  bool              dynamicModelState( unsigned int i );
 
 protected:
 
@@ -171,9 +198,15 @@ protected:
   osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdSet & set );
   osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int &currentTime, MpdTimeSet &timeset );
   osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller, Unknown *progress );
+  void                        _parseDynamic( XmlTree::Node &node, Unknown *caller, Unknown *progress ); 
   osg::Node*                  _loadFile( const std::string& filename, Unknown *caller, Unknown *progress );
   osg::Node*                  _loadDirectory( const std::string& dir, Unknown *caller, Unknown *progress );
   MatrixVec                   _getInterpolationMatrices ( const osg::Matrixd &m1, const osg::Matrixd &m2 ) const;
+  void                        _findFiles( unsigned int index, Usul::Interfaces::IUnknown *caller );
+  void                        _loadNewDynamicFiles( std::string filename, unsigned int index, Usul::Interfaces::IUnknown *caller );
+  void                        _parseNewFiles( Files files, unsigned int index, Usul::Interfaces::IUnknown *caller );
+  void                        _validateDynamicSets();
+
 
   /// Usul::Interfaces::IUpdateListener
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
@@ -184,6 +217,8 @@ protected:
   void                        _incrementTimeStep();
   
   void                        _setMatrix( osg::Matrix * matrix, const std::string& values, const std::string& type );
+
+  void                        _dynamicModelState  ( bool state, unsigned int index );
 
   //Usul::Interfaces::IMenuAdd
   void                        menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
@@ -199,9 +234,11 @@ private:
   MpdModels                   _models;
   MpdSets                     _sets;
   MpdTimeSets                 _timeSets;
+  MpdDynamicSets              _dynamicSets;
   UpdatePolicyPtr             _update;
   bool                        _useTimeLine;
   bool                        _useModels;
+  bool                        _useDynamic;
   bool                        _isAnimating;
   bool                        _showTools;
   bool                        _userSpecifiedEndTime;

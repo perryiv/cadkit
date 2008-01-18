@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _DYNAMIC_LAND_DELEGATE_MODEL_COMPONENT_CLASS_H_
-#define _DYNAMIC_LAND_DELEGATE_MODEL_COMPONENT_CLASS_H_
+#ifndef _MODEL_PRESENTATION_DELEGATE_COMPONENT_CLASS_H_
+#define _MODEL_PRESENTATION_DELEGATE_COMPONENT_CLASS_H_
 
 #include "CompileGuard.h"
 
@@ -45,7 +45,7 @@ public:
   ModelPresentationDelegateComponent();
 
   /// Usul::Interfaces::IPlugin
-  virtual std::string         getPluginName() const { return "Dynamic Land Delegate"; }
+  virtual std::string         getPluginName() const { return "Model Presentation Delegate"; }
 
   /// Usul::Interfaces::IGUIDelegate
   virtual bool                doesHandle( const std::string& token ) const;
@@ -64,4 +64,4 @@ protected:
 };
 
 
-#endif // _DYNAMIC_LAND_DELEGATE_MODEL_COMPONENT_CLASS_H_
+#endif // _MODEL_PRESENTATION_DELEGATE_COMPONENT_CLASS_H_

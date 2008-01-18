@@ -821,7 +821,13 @@ void StarSystemDocument::menuAdd ( MenuKit::Menu& menuBar, Usul::Interfaces::IUn
   m->append ( scale );
 }
 
-// Get/Set the scale.
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void StarSystemDocument::scale ( double scale )
 {
   USUL_TRACE_SCOPE;
@@ -833,7 +839,14 @@ void StarSystemDocument::scale ( double scale )
   _system->accept ( *visitor );
 }
 
-double StarSystemDocument::isScale ( double scale )
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the scale the current value?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool StarSystemDocument::isScale ( double scale ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

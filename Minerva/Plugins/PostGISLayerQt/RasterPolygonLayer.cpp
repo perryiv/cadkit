@@ -90,7 +90,7 @@ namespace Detail
   {
     PushPopErrorHandler()
     {
-      CPLPushErrorHandler( Detail::errorHandler );
+      CPLPushErrorHandler( (CPLErrorHandler) Detail::errorHandler );
     }
     ~PushPopErrorHandler()
     {

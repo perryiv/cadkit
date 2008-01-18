@@ -94,7 +94,7 @@ public:
 
   // Get/Set the scale.
   void                        scale ( double );
-  double                      isScale ( double );
+  bool                        isScale ( double ) const;
 protected:
 
   // Do not copy.

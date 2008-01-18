@@ -79,11 +79,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib gdal_iD.lib"
+				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib gdalD.lib osgd.lib osgDBd.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/PostGISLayerQt.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(QTDIR)/lib;$(BOOST_LIB_DIR);$(GDAL_LIB_DIR)"
+				AdditionalLibraryDirectories="$(QTDIR)/lib;$(BOOST_LIB_DIR);$(GDAL_LIB_DIR);$(OSG_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug\PostGISLayerQtd.pdb"
@@ -178,11 +178,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib gdal_i.lib"
+				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib gdal.lib osg.lib osgDB.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/PostGISLayerQt.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(QTDIR)/lib;$(BOOST_LIB_DIR);$(GDAL_LIB_DIR)"
+				AdditionalLibraryDirectories="$(QTDIR)/lib;$(BOOST_LIB_DIR);$(GDAL_LIB_DIR);$(OSG_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
 				ProgramDatabaseFile=".\Release\PostGISLayerQt.pdb"
 				ImportLibrary=".\Release\PostGISLayerQt.lib"
@@ -353,6 +353,14 @@
 							Outputs=".\ui_LayerProperties.h;.\GeneratedFiles\moc_PropertyPage.cpp"
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\RasterPolygonLayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\RasterPolygonLayer.h"
+					>
 				</File>
 				<Filter
 					Name="Color"

@@ -980,6 +980,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IDrtCommands.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IExportImage.h"
 					>
 				</File>

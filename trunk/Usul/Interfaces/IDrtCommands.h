@@ -30,6 +30,8 @@ struct IDrtCommands : public Usul::Interfaces::IUnknown
   // get the animation state
   virtual bool              animating () = 0;
 
+  virtual void				startOver () = 0;
+
   virtual void				agentShow ( bool state )  = 0;
   virtual bool				agentShow () = 0;
 

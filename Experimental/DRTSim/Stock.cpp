@@ -788,6 +788,14 @@ void Stock::resume ()
 }
 
 
+void Stock::startOver ()
+{
+	osg::Sequence::SequenceMode mode = osg::Sequence::START;
+
+	_stockSequence->setMode( mode );
+
+}
+
 
 ////////////// Utility
 

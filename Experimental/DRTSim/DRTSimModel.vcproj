@@ -279,6 +279,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\DrtStartOver.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DrtStartOver.h"
+					>
+				</File>
+				<File
 					RelativePath=".\DrtStockShow.cpp"
 					>
 				</File>
@@ -312,6 +320,10 @@
 				</File>
 				<File
 					RelativePath=".\Area.h"
+					>
+				</File>
+				<File
+					RelativePath=".\IDrtCommands.h"
 					>
 				</File>
 				<File

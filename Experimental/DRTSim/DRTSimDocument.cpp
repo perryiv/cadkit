@@ -16,6 +16,7 @@
 #include "DrtStockShow.h"
 #include "DrtSporeShow.h"
 #include "DrtTransShow.h"
+#include "DrtStartOver.h"
 
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Interfaces/IViewMatrix.h"
@@ -35,7 +36,7 @@
 #include "Usul/File/Slash.h"
 #include "Usul/Print/Matrix.h"
 #include "Usul/Math/Matrix44.h"
-#include "Usul/Math/UMath.h"
+#include "Usul/Math/Functions.h"
 #include "Usul/Math/MinMax.h"
 
 #include "OsgTools/DisplayLists.h"
@@ -511,6 +512,7 @@ void DRTSimDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown *
 
   MenuKit::Menu::RefPtr commands ( new MenuKit::Menu ( "Commands", MenuKit::Menu::VERTICAL ) );
   commands->append( new ToggleButton ( new DrtAnimation( me.get() ) ) );
+  commands->append( new Button ( new DrtStartOver( me.get() ) ) );
   commands->append( new ToggleButton ( new DrtAgentShow( me.get() ) ) );
   commands->append( new ToggleButton ( new DrtSporeShow( me.get() ) ) );
   commands->append( new ToggleButton ( new DrtStockShow( me.get() ) ) );
@@ -715,11 +717,26 @@ bool		DRTSimDocument::animating ()
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-// same for others
-//
-///////////////////////////////////////////////////////////////////////////////
+
+void		DRTSimDocument::startOver ()
+{
+	Guard guard ( this->mutex() );
+	//_isStartOver = state;
+
+	// Put animation toggle implementation here:
+	_agent.startOver ();
+	_stock.startOver ();
+	_trans.startOver ();
+	_spore.startOver ();
+
+}
+
+// get the animation state
+//bool		DRTSimDocument::startOver ()
+//{
+//  Guard guard ( this->mutex() );
+//  return _isStartOver;
+//}
 
 
 void		DRTSimDocument::agentShow ( bool state )

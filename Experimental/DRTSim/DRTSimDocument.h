@@ -150,6 +150,8 @@ protected:
   virtual bool              animating ();
 
   // same for other animation
+  virtual void				startOver ();
+
   virtual void              agentShow ( bool state );
   virtual bool              agentShow ();
 
@@ -192,6 +194,7 @@ private:
 
   // Menu variables
   bool				_isAnimating;
+  bool				_isStartOver;
   bool				_isAgentOn;
   bool				_isSporeOn;
   bool				_isStockOn;

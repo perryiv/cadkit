@@ -500,6 +500,15 @@ void Agent::resume ()
 }
 
 
+void Agent::startOver ()
+{
+	osg::Sequence::SequenceMode mode = osg::Sequence::START;
+
+	_agentSequence->setMode( mode );
+	_agentStepSequence->setMode( mode );
+}
+
+
 ////////////// Utility
 
 const std::string	Agent::_intToString(const int &num)

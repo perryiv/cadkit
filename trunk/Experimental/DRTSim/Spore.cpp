@@ -315,6 +315,15 @@ void Spore::resume ()
 }
 
 
+void Spore::startOver ()
+{
+	osg::Sequence::SequenceMode mode = osg::Sequence::START;
+
+	_sporeSequence->setMode ( mode );
+
+}
+
+
 ////////////// Utility
 
 osgText::Text*		Spore::_createText( const osg::Vec3& pos, const osg::Vec4& layoutColor, const float& characterSize, const std::string& str)

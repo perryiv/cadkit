@@ -46,6 +46,7 @@ public:
 	bool	shown () const;
 
 	void	resume ();
+	void    startOver ();
 
 
 	osg::Geode*		createAgentColorCodeBar ( );

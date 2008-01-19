@@ -69,6 +69,7 @@ public:
 	bool	shown () const;
 
 	void	resume ();
+	void	startOver ();
 
 	Stock( void );
 	~Stock( void );

@@ -456,6 +456,14 @@ void Transhipment::resume ()
 }
 
 
+void Transhipment::startOver ()
+{
+	osg::Sequence::SequenceMode mode = osg::Sequence::START;
+
+	_tranSequence->setMode( mode );
+
+}
+
 ////////////// Utility
 
 

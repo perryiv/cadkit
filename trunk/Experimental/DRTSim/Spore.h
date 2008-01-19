@@ -52,6 +52,7 @@ public:
 	bool	shown () const;
 
 	void	resume ();
+	void	startOver ();
 
 
 	Spore(void):

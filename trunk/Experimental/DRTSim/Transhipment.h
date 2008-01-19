@@ -53,6 +53,7 @@ public:
 	bool	shown () const;
 
 	void	resume ();
+	void	startOver ();
 
 
 	Transhipment(void) :

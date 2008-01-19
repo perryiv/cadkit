@@ -1592,6 +1592,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\ITriangulateGrid.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\ITriangulateLoop.h"
 					>
 				</File>

@@ -283,15 +283,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: WRF Model", "..\..\Ex
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Planet", "..\..\Experimental\Planet\Planet.vcproj", "{D6A2AB50-DE03-405D-BCDC-F75B283DB9CA}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Minerva LayerManager", "..\..\Minerva\Plugins\LayerManager\LayerManager.vcproj", "{F450B90B-6E40-4369-8E9F-996C6301AB13}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
@@ -632,10 +623,6 @@ Global
 		{C6A9E05B-C03A-4445-AC47-32290F1191DD}.Debug|Win32.Build.0 = Debug|Win32
 		{C6A9E05B-C03A-4445-AC47-32290F1191DD}.Release|Win32.ActiveCfg = Release|Win32
 		{C6A9E05B-C03A-4445-AC47-32290F1191DD}.Release|Win32.Build.0 = Release|Win32
-		{D6A2AB50-DE03-405D-BCDC-F75B283DB9CA}.Debug|Win32.ActiveCfg = Debug|Win32
-		{D6A2AB50-DE03-405D-BCDC-F75B283DB9CA}.Debug|Win32.Build.0 = Debug|Win32
-		{D6A2AB50-DE03-405D-BCDC-F75B283DB9CA}.Release|Win32.ActiveCfg = Release|Win32
-		{D6A2AB50-DE03-405D-BCDC-F75B283DB9CA}.Release|Win32.Build.0 = Release|Win32
 		{F450B90B-6E40-4369-8E9F-996C6301AB13}.Debug|Win32.ActiveCfg = Debug|Win32
 		{F450B90B-6E40-4369-8E9F-996C6301AB13}.Debug|Win32.Build.0 = Debug|Win32
 		{F450B90B-6E40-4369-8E9F-996C6301AB13}.Release|Win32.ActiveCfg = Release|Win32

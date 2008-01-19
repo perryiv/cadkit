@@ -126,7 +126,7 @@ OsgTools::Triangles::TriangleSet*  TriangulateGridComponent::triangulateGrid ( c
       if ( bIsValid && cIsValid && dIsValid )
       {
         osg::Vec3 t0 ( v3 - v2 );
-        osg::Vec3 t1 ( v2 - v3 );
+        osg::Vec3 t1 ( v1 - v2 );
 
         osg::Vec3 normal ( t0 ^ t1 );
         normal.normalize();

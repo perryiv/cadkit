@@ -37,22 +37,22 @@ public:
 
   T& at ( unsigned int r, unsigned int c )
   {
-    return _array.at( r * _r + c );
+    return _array.at( this->_index( r, c) );
   }
 
   const T& at ( unsigned int r, unsigned int c ) const
   {
-    return _array.at( r * _r + c );
+    return _array.at( this->_index( r, c) );
   }
 
   T& operator () ( unsigned int r, unsigned int c )
   {
-    return _array.at( r * _r + c );
+    return _array.at( this->_index( r, c) );
   }
 
   const T& operator () ( unsigned int r, unsigned int c ) const
   {
-    return _array.at( r * _r + c );
+    return _array.at( this->_index( r, c) );
   }
 
   unsigned int rows () const { return _r; }
@@ -60,6 +60,11 @@ public:
   unsigned int columns () const { return _c; }
 
 private:
+  typename Array::size_type _index( unsigned int r, unsigned int c ) const
+  {
+    return ( ( r * _c ) + c );
+  }
+  
   unsigned int _r;
   unsigned int _c;
   std::vector < T > _array;

@@ -86,9 +86,9 @@ OsgTools::Triangles::TriangleSet*  TriangulateGridComponent::triangulateGrid ( c
   const unsigned int columns ( grid.columns() );
   
   // Walk the grid.
-  for ( unsigned int i = 0; i < rows; ++i )
+  for ( unsigned int i = 0; i < rows - 1; ++i )
   {
-    for ( unsigned int j = 0; j < columns; ++j )
+    for ( unsigned int j = 0; j < columns - 1 ; ++j )
     {
       // Get the values of the square.
       const ValueType a ( grid.at ( i,     j     ) );
@@ -97,10 +97,10 @@ OsgTools::Triangles::TriangleSet*  TriangulateGridComponent::triangulateGrid ( c
       const ValueType d ( grid.at ( i + 1, j + 1 ) );
 
       // Check which corners are valid.
-      const bool aIsValid ( close ( a, noDataValue ) );
-      const bool bIsValid ( close ( b, noDataValue ) );
-      const bool cIsValid ( close ( c, noDataValue ) );
-      const bool dIsValid ( close ( d, noDataValue ) );
+      const bool aIsValid ( !close ( a, noDataValue ) );
+      const bool bIsValid ( !close ( b, noDataValue ) );
+      const bool cIsValid ( !close ( c, noDataValue ) );
+      const bool dIsValid ( !close ( d, noDataValue ) );
 
       const osg::Vec3::value_type startX ( j * resolution[0] );
       const osg::Vec3::value_type startY ( i * resolution[1] );
@@ -119,7 +119,7 @@ OsgTools::Triangles::TriangleSet*  TriangulateGridComponent::triangulateGrid ( c
         osg::Vec3 normal ( t0 ^ t1 );
         normal.normalize();
 
-        triangleSet->addTriangle ( v0, v1, v2, normal, false, false );
+        triangleSet->addTriangle ( v0, v1, v2, normal, false, true );
       }
 
       // See if we should add a triangle for these 3 corners.
@@ -131,7 +131,7 @@ OsgTools::Triangles::TriangleSet*  TriangulateGridComponent::triangulateGrid ( c
         osg::Vec3 normal ( t0 ^ t1 );
         normal.normalize();
 
-        triangleSet->addTriangle ( v1, v2, v3, normal, false, false );
+        triangleSet->addTriangle ( v1, v2, v3, normal * -1, false, true );
       }
     }
   }

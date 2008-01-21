@@ -748,6 +748,24 @@ void StateSet::setMaterialRandom ( osg::Node *node )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get a default material.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Material *StateSet::getMaterialDefault()
+{
+  osg::ref_ptr<osg::Material> mat ( new osg::Material );
+  mat->setAmbient   ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 1.0f, 1.0f, 1.0f, 1.0f ) );
+  mat->setDiffuse   ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 1.0f, 1.0f, 1.0f, 1.0f ) );
+  mat->setEmission  ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.0f, 0.0f, 0.0f, 1.0f ) );
+  mat->setSpecular  ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.2f, 0.2f, 0.2f, 1.0f ) );
+  mat->setShininess ( osg::Material::FRONT_AND_BACK, 100 );
+  return mat.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set a default material.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -758,14 +776,8 @@ void StateSet::setMaterialDefault ( osg::Node *node )
   if ( 0x0 == node )
     return;
 
-  osg::ref_ptr<osg::Material> mat ( new osg::Material );
-  mat->setAmbient   ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 1.0f, 1.0f, 1.0f, 1.0f ) );
-  mat->setDiffuse   ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 1.0f, 1.0f, 1.0f, 1.0f ) );
-  mat->setEmission  ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.0f, 0.0f, 0.0f, 1.0f ) );
-  mat->setSpecular  ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.2f, 0.2f, 0.2f, 1.0f ) );
-  mat->setShininess ( osg::Material::FRONT_AND_BACK, 100 );
-
-  StateSet::setMaterial ( node, mat.get() );
+  // Pass through for backward compatability.
+  StateSet::setMaterial ( node, OsgTools::State::StateSet::getMaterialDefault() );
 }
 
 

@@ -474,7 +474,7 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
   std::string format ( "GTiff" );
   
   // Find a drive for geotiff.
-  GDALDriver *driver ( GetGDALDriverManager()->GetDriverByName( format.c_str() ) );
+  GDALDriver *driver ( GetGDALDriverManager()->GetDriverByName ( format.c_str() ) );
   
   // Return now if we didn't find a driver.
   if ( 0x0 == driver )
@@ -494,7 +494,7 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
     return 0x0;
   
   std::vector<char> bytes ( width * height * channels, 0 );
-  data->RasterIO( GF_Write, 0, 0, width, height, &bytes[0], width, height, GDT_Byte, channels, 0x0, 0, 0, 0 );
+  data->RasterIO ( GF_Write, 0, 0, width, height, &bytes[0], width, height, GDT_Byte, channels, 0x0, 0, 0, 0 );
   
   // Get the extents lower left and upper right.
   Extents::Vertex ll ( extents.minimum() );
@@ -502,7 +502,7 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
   
   // Make the transform.
   OGRSpatialReference dst ( _projectionText.c_str() ), src ( _latLonProjectionText.c_str() );
-  OGRCoordinateTransformation *transform ( OGRCreateCoordinateTransformation( &src, &dst ) );
+  OGRCoordinateTransformation *transform ( OGRCreateCoordinateTransformation ( &src, &dst ) );
   
   // Set the extents.
   if ( 0x0 != transform )
@@ -528,9 +528,9 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
   geoTransform[4] = 0;              // rotation, 0 if image is "north up"
   geoTransform[5] = -yResolution;   // n-s pixel resolution
   
-  data->SetGeoTransform( &geoTransform[0] );
+  data->SetGeoTransform ( &geoTransform[0] );
   
-  data->SetProjection( Usul::Threads::Safe::get ( this->mutex(), _projectionText ).c_str() );
+  data->SetProjection ( Usul::Threads::Safe::get ( this->mutex(), _projectionText ).c_str() );
   
   // Bands to burn.
   Bands bands;
@@ -546,15 +546,14 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
   Detail::PushPopErrorHandler handler;
   
   // Burn the raster.
-  if ( CE_None == ::GDALRasterizeGeometries( data, bands.size(), &bands[0], 
-                            _geometries.size(), (void**) &_geometries[0], 
-                            0x0, 0x0, &_burnValues[0], 0x0,
-                            GDALTermProgress, 0x0 ) )
+  if ( CE_None == ::GDALRasterizeGeometries ( 
+    data, bands.size(), &bands[0], _geometries.size(), (void**) &_geometries[0], 
+    0x0, 0x0, &_burnValues[0], 0x0, GDALTermProgress, 0x0 ) )
   {
     Detail::convert ( image.get(), data );
   }
   
-  GDALClose( data ); data = 0x0;
+  GDALClose ( data ); data = 0x0;
 
   return image;
 }

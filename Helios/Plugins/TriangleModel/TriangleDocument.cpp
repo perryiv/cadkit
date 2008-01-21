@@ -890,7 +890,7 @@ void TriangleDocument::smoothModel ( )
 
   if ( plugin.valid() )
   {
-    plugin->smoothTriangles( _triangles.get() );
+    plugin->smoothTriangles( _triangles.get(), 50 );
     this->modified( true );
   }
 }

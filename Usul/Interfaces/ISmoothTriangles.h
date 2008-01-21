@@ -37,7 +37,7 @@ struct ISmoothTriangles : public Usul::Interfaces::IUnknown
   virtual void smoothTriangles ( osg::Array *vertices, osg::DrawElementsUInt *indices,
                                  osg::Array *normalsT, osg::Array *normalsV, unsigned int numIterations ) = 0;
 
-  virtual void smoothTriangles ( OsgTools::Triangles::TriangleSet* ) = 0;
+  virtual void smoothTriangles ( OsgTools::Triangles::TriangleSet*, unsigned int numIteration ) = 0;
 
 }; // class ISmoothTriangles
 

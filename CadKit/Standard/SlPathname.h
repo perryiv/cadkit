@@ -68,7 +68,7 @@ public:
   bool                  isSamePath ( const SlPathname<String> &pathname );
 
   void                  setDrive     ( const String &drive )     { _drive = drive; }
-  void                  setDirectory ( const String &directory ) { _dir = directory; }
+  void                  setDirectory ( const String &directory );
   void                  setFilename  ( const String &filename )  { _file = filename; }
   void                  setExtension ( const String &extension ) { _ext = extension; }
   void                  setPathname  ( const String &pathname );
@@ -175,7 +175,7 @@ template<class String> inline void SlPathname<String>::setPathname ( const Strin
     // Assign it.
     _drive = drive;
 
-    // Pop the drive and colin off the begining of the string.
+    // Pop the drive and colon off the begining of the string.
     pathname.erase ( pathname.begin() );
     pathname.erase ( pathname.begin() );
   }
@@ -255,6 +255,35 @@ template<class String> inline void SlPathname<String>::setPathname ( const Strin
   // Set the directory and filename.
   _dir = dir;
   _file = file;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<class String> inline void SlPathname<String>::setDirectory ( const String &directory )
+{
+  String drive, temp;
+  String dirname = directory;
+
+  CadKit::splitAtFirst ( directory, static_cast<String::value_type>(':'), drive, temp );
+
+  // See if we have a drive at the beginning.
+  if ( drive.size() )
+  {
+    // Assign it.
+    _drive = drive;
+
+    // Pop the drive and colon off the begining of the string.
+    dirname.erase ( dirname.begin() );
+    dirname.erase ( dirname.begin() );
+  }
+  
+  SL_ASSERT ( false == dirname.empty() );
+  _dir = dirname;
 }
 
 

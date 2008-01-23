@@ -23,6 +23,7 @@
 #include "StarSystem/RasterLayerWms.h"
 #include "StarSystem/Scale.h"
 #include "StarSystem/SetJobManager.h"
+#include "StarSystem/ClampNearFar.h"
 
 #include "Serialize/XML/Serialize.h"
 #include "Serialize/XML/Deserialize.h"
@@ -416,75 +417,6 @@ void StarSystemDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
 }
 
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Class to ensure that clipping values are sane.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail 
-{
-    
-  struct ClampProjection : public osg::CullSettings::ClampProjectionMatrixCallback
-  {
-    typedef osg::CullSettings::ClampProjectionMatrixCallback BaseClass;
-    
-    ClampProjection ( osgUtil::CullVisitor &cv ) : BaseClass(), _cv ( cv )
-    {
-    }
-    
-    virtual bool clampProjectionMatrixImplementation ( osg::Matrixf &projection, double &zNear, double &zFar ) const
-    {
-      return this->_common ( projection, zNear, zFar );
-    }
-    
-    virtual bool clampProjectionMatrixImplementation ( osg::Matrixd &projection, double &zNear, double &zFar ) const
-    {
-      return this->_common ( projection, zNear, zFar );
-    }
-    
-  protected:
-    
-    template < class Matrix > bool _common ( Matrix &projection, double &zNear, double &zFar ) const
-    {
-      //std::cout << "Clamping projection." << std::endl;
-
-      if ( zNear <= 0 )
-      {
-        zNear = 10;
-      }
-      //else
-      //  zNear = zNear * 0.50;
-      
-      //zFar = zFar * 0.90;
-#if 1
-      typedef typename Matrix::value_type value_type;
-      
-      value_type trans_near_plane = (-zNear*projection(2,2)+projection(3,2))/(-zNear*projection(2,3)+projection(3,3));
-      value_type trans_far_plane = (-zFar*projection(2,2)+projection(3,2))/(-zFar*projection(2,3)+projection(3,3));
-      
-      value_type ratio = fabs(2.0/(trans_near_plane-trans_far_plane));
-      value_type center = -(trans_near_plane+trans_far_plane)/2.0;
-      
-      projection.postMult(osg::Matrix(1.0f,0.0f,0.0f,0.0f,
-                                      0.0f,1.0f,0.0f,0.0f,
-                                      0.0f,0.0f,ratio,0.0f,
-                                      0.0f,0.0f,center*ratio,1.0f));
-      
-      return true;
-#else
-      // Ask cull-visitor to clamp the projection matrix.
-      return _cv.clampProjectionMatrixImplementation ( projection, zNear, zFar );
-#endif
-    }
-    
-    osgUtil::CullVisitor &_cv;
-  };
-  
-} // namespace Detail
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Add a view to this document.
@@ -520,9 +452,8 @@ void StarSystemDocument::addView ( Usul::Interfaces::IView *view )
   if ( csv.valid() )
   {
     osg::ref_ptr<osgUtil::CullVisitor> cv ( csv->getCullSceneVisitor( 0x0 ) );
-    cv->setClampProjectionMatrixCallback ( new Detail::ClampProjection ( *cv ) );
+    cv->setClampProjectionMatrixCallback ( new StarSystem::ClampNearFar ( *cv ) );
     cv->setInheritanceMask ( Usul::Bits::remove ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
-    //cv->setNearFarRatio ( 0.0000000000000001 );
   }
 #endif
 }

@@ -246,6 +246,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ClampNearFar.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CutImageJob.cpp"
 				>
 			</File>

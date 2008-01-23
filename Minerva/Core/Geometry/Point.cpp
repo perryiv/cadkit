@@ -86,7 +86,7 @@ osg::Vec3f Point::geometryCenter ( unsigned int& srid )
 osg::Vec3f Point::geometryCenter ( const osg::Vec3f& offset, unsigned int& srid )
 {
   srid = this->srid();
-  osg::Vec3f center ( _point[0] + _offset[0], _point[1] + _offset[1], _offset[2] );
+  osg::Vec3f center ( static_cast<osg::Vec3f::value_type> ( _point[0] + _offset[0] ), static_cast<osg::Vec3f::value_type> ( _point[1] + _offset[1] ), static_cast<osg::Vec3f::value_type> ( _offset[2] ) );
   return center;
 }
 

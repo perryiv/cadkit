@@ -63,8 +63,8 @@ MpdJob::~MpdJob()
   USUL_TRACE_SCOPE;
 
   // clean up circular references
-  _document.release();
-  _caller.release();
+  _document = 0x0;
+  _caller = 0x0;
 }
 
 

@@ -53,6 +53,7 @@
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/GUI/IAddDockWindow.h"
 #include "Usul/Interfaces/IDocumentCreate.h"
+#include "Usul/Interfaces/IPluginInitialize.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Registry/Convert.h"
@@ -1640,9 +1641,36 @@ void MainWindow::initPlugins()
 
     CadKit::Helios::Commands::NewDocument::RefPtr command ( new CadKit::Helios::Commands::NewDocument ( me, (*iter).get(), name ) );
     _newDocumentMenu->append ( new MenuKit::Button ( command.get() ) );
+
+
   }
+         // Initialize plugins that need to.
+#if 1
+  typedef Usul::Interfaces::IPluginInitialize  IPluginInitialize;
+  // Get needed interfaces.
+  unknowns = PluginManager::instance().getInterfaces ( IPluginInitialize::IID );
+  for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
+  {
+    try
+    {
+      IPluginInitialize::ValidQueryPtr pluginInit ( (*iter).get() );
+      pluginInit->initialize ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+    }
+    catch ( const std::exception &e )
+    {
+      std::cout << "Error 4126728500: Standard exception caught while trying to initialize plugin: " << e.what() << std::endl;
+    }
+    catch ( ... )
+    {
+      std::cout << "Error 1505504842: Unknown exception caught while trying to initialize plugin.";
+    }
+  }
+#endif
 
 }
+  
+
+
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -14,8 +14,6 @@
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Math/Vector3.h"
 
-namespace osg { class Geometry; }
-
 namespace Usul {
 namespace Interfaces {
 

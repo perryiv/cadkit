@@ -12,13 +12,13 @@
 #define __MINERVA_POSTGIS_POINT_GEOMETRY_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Core/postGIS/Geometry.h"
+#include "Minerva/Core/Geometry/Geometry.h"
 
 #include "Usul/Interfaces/IPointData.h"
 
 namespace Minerva {
 namespace Core {
-namespace postGIS {
+namespace Geometry {
 
 
 class MINERVA_EXPORT Point : public Geometry,

@@ -8,15 +8,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/postGIS/Point.h"
+#include "Minerva/Core/Geometry/Line.h"
 
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IProjectCoordinates.h"
 
-using namespace Minerva::Core::postGIS;
+using namespace Minerva::Core::Geometry;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Point, Point::BaseClass );
-
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Line, Line::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -24,7 +23,9 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Point, Point::BaseClass );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Point::Point() : BaseClass()
+Line::Line() : BaseClass(),
+_line (),
+_latLongPoints ()
 {
 }
 
@@ -35,59 +36,65 @@ Point::Point() : BaseClass()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Point::~Point()
+Line::~Line()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the point
+//  Convert to lat long points.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Math::Vec3d Point::pointData( )
+void Line::_convertToLatLong ( const Vertices& vertices, Vertices& latLongPoints )
 {
-  Usul::Math::Vec3d point;
-
   Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
 
-  if( project.valid() )
+  if ( project.valid() )
   {
-    point.set( _point[0] + _offset[0], _point[1] + _offset[1], _offset[2] );
+    latLongPoints.reserve ( vertices.size() );
+    for( Vertices::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter )
+    {
+#if 1
+      Usul::Math::Vec3d point;
+      project->projectToSpherical( *iter, this->srid(), point );     
+      latLongPoints.push_back( point );
+#else
+      latLongPoints.push_back( *iter );
+#endif
+    }
+  }
+}
 
-    Usul::Math::Vec3d latLongPoint;
-    project->projectToSpherical( point, _srid, latLongPoint );
-    return latLongPoint;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the lat long points.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Line::_buildLatLongPoints()
+{
+  _latLongPoints.clear ();
+  this->_convertToLatLong( _line, _latLongPoints );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the line data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Line::Vertices& Line::lineData ()
+{
+  if( _latLongPoints.empty() )
+  {
+    this->_convertToLatLong ( _line, _latLongPoints );
   }
 
-  return _point;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the center of the geometry.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Vec3f Point::geometryCenter ( unsigned int& srid )
-{
-  return Point::geometryCenter( this->spatialOffset(), srid );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the center of the geometry.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Vec3f Point::geometryCenter ( const osg::Vec3f& offset, unsigned int& srid )
-{
-  srid = this->srid();
-  osg::Vec3f center ( _point[0] + _offset[0], _point[1] + _offset[1], _offset[2] );
-  return center;
+  return _latLongPoints;
 }
 
 
@@ -97,37 +104,36 @@ osg::Vec3f Point::geometryCenter ( const osg::Vec3f& offset, unsigned int& srid 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* Point::queryInterface( unsigned long iid )
+Usul::Interfaces::IUnknown* Line::queryInterface( unsigned long iid )
 {
   switch ( iid )
   {
-  case Usul::Interfaces::IPointData::IID:
-    return static_cast < Usul::Interfaces::IPointData* > ( this );
+  case Usul::Interfaces::ILineData::IID:
+    return static_cast < Usul::Interfaces::ILineData* > ( this );
   default:
-    return BaseClass::queryInterface ( iid );
+    return BaseClass::queryInterface( iid );
   }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the point.
+//  Set the line data.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Point::point( const Usul::Math::Vec3d& p )
+void Line::line( const Vertices& data )
 {
-  _point = p;
+  _line = data;
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the point.
+//  Get the line data.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Usul::Math::Vec3d Point::point() const
+const Line::Vertices& Line::line() const
 {
-  return _point;
+  return _line;
 }

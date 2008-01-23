@@ -12,7 +12,7 @@
 #define __MINERVA_CORE_VISITOR_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/Core/Layers/Vector.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
@@ -27,12 +27,13 @@ namespace Minerva
       class DataObject;
       class Line;
       class Point;
-      class PointTime;
       class Polygon;
     }
 
     namespace Layers 
     {
+      class VectorGroup;
+      class Layer;
       class LineLayer;
       class PointLayer;
       class PointTimeLayer;
@@ -46,6 +47,7 @@ namespace Minerva
       // Typedefs.
       typedef Usul::Base::Referenced                  BaseClass;
       typedef Minerva::Core::DataObjects::DataObject  DataObject;
+      typedef Minerva::Core::Layers::Vector           Vector;
       typedef Minerva::Core::Layers::Layer            Layer;
 
       USUL_DECLARE_REF_POINTERS ( Visitor );
@@ -68,19 +70,24 @@ namespace Minerva
         this->visit ( USUL_UNSAFE_CAST ( DataObject&, point ) );
       }
 
-      virtual void visit ( Minerva::Core::DataObjects::PointTime &pointTime )
-      {
-        this->visit ( USUL_UNSAFE_CAST ( DataObject&, pointTime ) );
-      }
-
       virtual void visit ( Minerva::Core::DataObjects::Polygon &polygon )
       {
         this->visit ( USUL_UNSAFE_CAST ( DataObject&, polygon ) );
       }
 
+      virtual void visit ( Minerva::Core::Layers::Vector& vector )
+      {
+        vector.traverse ( *this );
+      }
+      
+      virtual void visit ( Minerva::Core::Layers::VectorGroup& group )
+      {
+        this->visit ( USUL_UNSAFE_CAST ( Vector&, group ) );
+      }
+      
       virtual void visit ( Minerva::Core::Layers::Layer& layer )
       {
-        layer.traverse ( *this );
+        this->visit ( USUL_UNSAFE_CAST ( Vector&, layer ) );
       }
 
       virtual void visit ( Minerva::Core::Layers::LineLayer& lineLayer )

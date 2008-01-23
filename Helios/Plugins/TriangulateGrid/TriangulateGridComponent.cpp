@@ -132,9 +132,9 @@ OsgTools::Triangles::TriangleSet* TriangulateGridComponent::triangulateGrid ( co
         normal.normalize();
 
         // Get the shared vertices.
-        SharedVertexPtr sv0 ( ( true == sv[ia].valid() ) ? sv[ia] : triangleSet->addSharedVertex ( v0, false ) );
-        SharedVertexPtr sv1 ( ( true == sv[ib].valid() ) ? sv[ib] : triangleSet->addSharedVertex ( v1, false ) );
-        SharedVertexPtr sv2 ( ( true == sv[ic].valid() ) ? sv[ic] : triangleSet->addSharedVertex ( v2, false ) );
+        SharedVertexPtr sv0 ( ( true == sv[ia].valid() ) ? sv[ia].get() : triangleSet->addSharedVertex ( v0, false ) );
+        SharedVertexPtr sv1 ( ( true == sv[ib].valid() ) ? sv[ib].get() : triangleSet->addSharedVertex ( v1, false ) );
+        SharedVertexPtr sv2 ( ( true == sv[ic].valid() ) ? sv[ic].get() : triangleSet->addSharedVertex ( v2, false ) );
 
         // Add the triangle.
         triangleSet->addTriangle ( sv0, sv1, sv2, normal, false );
@@ -154,9 +154,9 @@ OsgTools::Triangles::TriangleSet* TriangulateGridComponent::triangulateGrid ( co
         normal.normalize();
 
         // Get the shared vertices.
-        SharedVertexPtr sv1 ( ( true == sv[ib].valid() ) ? sv[ib] : triangleSet->addSharedVertex ( v1, false ) );
-        SharedVertexPtr sv2 ( ( true == sv[ic].valid() ) ? sv[ic] : triangleSet->addSharedVertex ( v2, false ) );
-        SharedVertexPtr sv3 ( ( true == sv[id].valid() ) ? sv[id] : triangleSet->addSharedVertex ( v3, false ) );
+        SharedVertexPtr sv1 ( ( true == sv[ib].valid() ) ? sv[ib].get() : triangleSet->addSharedVertex ( v1, false ) );
+        SharedVertexPtr sv2 ( ( true == sv[ic].valid() ) ? sv[ic].get() : triangleSet->addSharedVertex ( v2, false ) );
+        SharedVertexPtr sv3 ( ( true == sv[id].valid() ) ? sv[id].get() : triangleSet->addSharedVertex ( v3, false ) );
 
         // Add the triangle. Note the order of vertices.
         triangleSet->addTriangle ( sv1, sv3, sv2, normal, false );

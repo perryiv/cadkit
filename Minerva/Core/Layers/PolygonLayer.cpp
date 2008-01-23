@@ -18,6 +18,8 @@
 
 #include "osg/Group"
 
+#include "pqxx/pqxx"
+
 #include <algorithm>
 
 USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_4 ( osg::Vec4 );
@@ -165,8 +167,7 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::I
         data->showInterior ( this->showInterior() );
         data->geometry ( unknown.get() );
         data->color( this->_color ( iter ) );
-        data->tableName ( dataTable );
-        data->rowId ( id );
+        data->objectId ( Usul::Strings::format ( id ) );
 
         /// Set the label.
         this->_setDataObjectMembers( data.get(), caller );
@@ -174,7 +175,7 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::I
         // Pre build the scene.
         data->preBuildScene( caller );
 
-        this->_addDataObject( data.get() );
+        this->addDataObject( data.get() );
       }
     }
     catch ( const std::exception& e )
@@ -206,41 +207,8 @@ void PolygonLayer::modify( Usul::Interfaces::IUnknown *caller )
 {
   // For now get what we have, clear and then rebuild.
   // Need a way to tell if the query has changed.  Then I think this can be handled better.
-  DataObjects &dataObjects ( this->_getDataObjects() );
-  dataObjects.clear();
-
+  this->clearDataObjects();
   this->buildDataObjects ( caller, 0x0 );
-
-  // Guard this section of code.
-  //Guard guard ( _mutex);
-
-  //this->legendObject()->icon( this->colorFunctor()->icon() );
-
-  //Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
-
-  //DataObjects &dataObjects ( this->_getDataObjects() );
-
-  //if( progress.valid() )
-  //  progress->setTotalProgressBar( dataObjects.size() );
-
-  //for ( DataObjects::iterator iter = dataObjects.begin(); iter != dataObjects.end(); ++iter )
-  //{
-  //  // Update the render bin.
-  //  (*iter)->renderBin( this->renderBin() );
-
-  //  std::ostringstream query;
-  //  query << "SELECT " << this->colorColumn() << " FROM " << this->tablename() << " WHERE id=" << (*iter)->rowId();
-  //  pqxx::result result ( this->connection()->executeQuery ( query.str() ) );
-
-  //  if( !result.empty() )
-  //    (*iter)->color ( this->_color( result.begin() ) );
-
-  //  if( progress.valid() )
-  //  {
-  //    unsigned int num ( iter - dataObjects.begin() );
-  //    progress->updateProgressBar( num );
-  //  }
-  //}
 }
 
 

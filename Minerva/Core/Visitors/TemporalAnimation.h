@@ -29,7 +29,7 @@ public:
 
   TemporalAnimation ( const Date& first, const Date& last );
 
-  virtual void visit ( Minerva::Core::DataObjects::PointTime &pointTime );
+  virtual void visit ( Minerva::Core::DataObjects::DataObject &object );
 
 protected:
   /// Do not use.

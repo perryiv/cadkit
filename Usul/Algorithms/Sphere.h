@@ -365,8 +365,13 @@ protected:
       points.push_back ( Point ( _centerX + _radius * bnx, _centerX + _radius * bny, _centerX + _radius * bnz ) );
 
       // Set the normal.
+#ifndef _MSC_VER // Need to figure out why the negation is needed.
+      normals.push_back ( Normal ( _normalLength * tnx, _normalLength * tny, _normalLength * tnz ) * -1 );
+      normals.push_back ( Normal ( _normalLength * bnx, _normalLength * bny, _normalLength * bnz ) * -1 ); 
+#else
       normals.push_back ( Normal ( _normalLength * tnx, _normalLength * tny, _normalLength * tnz ) );
-      normals.push_back ( Normal ( _normalLength * bnx, _normalLength * bny, _normalLength * bnz ) );
+      normals.push_back ( Normal ( _normalLength * bnx, _normalLength * bny, _normalLength * bnz ) ); 
+#endif
     }
   }
 

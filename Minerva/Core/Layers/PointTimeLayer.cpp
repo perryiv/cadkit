@@ -9,8 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Layers/PointTimeLayer.h"
-#include "Minerva/Core/DataObjects/PointTime.h"
-#include "Minerva/Core/postGIS/Point.h"
+#include "Minerva/Core/DataObjects/Point.h"
 #include "Minerva/Core/postGIS/Factory.h"
 #include "Minerva/Core/Visitor.h"
 
@@ -20,6 +19,8 @@
 
 #include "osg/Group"
 #include "osg/MatrixTransform"
+
+#include "pqxx/pqxx"
 
 using namespace Minerva::Core::Layers;
 
@@ -197,15 +198,16 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul:
 
           if( unknown.valid() )
           {
-            Minerva::Core::DataObjects::PointTime::RefPtr data ( new Minerva::Core::DataObjects::PointTime( firstDate, lastDate ) );
+            Minerva::Core::DataObjects::Point::RefPtr data ( new Minerva::Core::DataObjects::Point );
+            data->firstDate ( DataObject::Date ( firstDate ) );
+            data->firstDate ( DataObject::Date ( lastDate ) );
             data->geometry( unknown.get () );
             data->color ( this->_color ( i ) );
             data->size ( size );
             data->primitiveId ( primitiveID );
             data->renderBin ( renderBin );
-            data->connection ( this->connection() );
-            data->tableName ( tableName );
-            data->rowId ( id );
+            data->dataSource ( Usul::Interfaces::IUnknown::QueryPtr ( this->connection() ) );
+            data->objectId ( Usul::Strings::format ( id ) );
             data->quality ( quality );
             data->autotransform ( autotransform );
             data->secondarySize ( secondarySize );
@@ -220,7 +222,7 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul:
             data->preBuildScene ( caller );
 
             // Also add to the vector of data objects.  This allows for faster updating.
-            this->_addDataObject( data.get() );
+            this->addDataObject( data.get() );
           }
         }
         if( progress.valid() )
@@ -250,14 +252,8 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul:
 
 void PointTimeLayer::modify( Usul::Interfaces::IUnknown *caller )
 {
-  // Guard this section of code.
-  Guard guard( this->mutex() );
-
-  // Get the data objects.
-  DataObjects &dataObjects ( this->_getDataObjects() );
-
   // Clear what we have...
-  dataObjects.clear();
+  this->clearDataObjects();
 
   // For now rebuild the data objects.
   // In the future need to check if the query has changed, and then go get new data objects.

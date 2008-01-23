@@ -16,6 +16,8 @@
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 
+#include "pqxx/pqxx"
+
 using namespace Minerva::Core::Layers;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( LineLayer, LineLayer::BaseClass );
@@ -172,8 +174,7 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Inte
       data->color ( this->_color ( iter ) );
       data->width( lineWidth );
       data->geometry( unknown.get() );
-      data->tableName ( dataTable );
-      data->rowId ( id );
+      data->objectId ( Usul::Strings::format ( id ) );
 
       // Set the label.
       this->_setDataObjectMembers( data.get(), caller );
@@ -182,7 +183,7 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Inte
       data->preBuildScene( caller );
 
       // Add the data object.
-      this->_addDataObject( data.get() );
+      this->addDataObject( data.get() );
     }
 
     // Update progress.
@@ -205,55 +206,8 @@ void LineLayer::modify( Usul::Interfaces::IUnknown *caller )
 {
   // For now get what we have, clear and then rebuild.
   // Need a way to tell if the query has changed.  Then I think this can be handled better.
-  DataObjects &dataObjects ( this->_getDataObjects() );
-  dataObjects.clear();
-
+  this->clearDataObjects();
   this->buildDataObjects ( caller, 0x0 );
-
-  //// Lock the mutex.
-  //Guard guard( _mutex );
-
-  //this->legendObject()->icon ( this->colorFunctor()->icon() );
-
-  //// Query for the progress bar.
-  //Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
-
-  ///// Get the data objects.
-  //DataObjects &dataObjects ( this->_getDataObjects() );
-
-  //if( progress.valid() )
-  //  progress->setTotalProgressBar( dataObjects.size() );
-
-  //for ( DataObjects::iterator iter = dataObjects.begin(); iter != dataObjects.end(); ++iter )
-  //{
-  //  Minerva::DataObjects::Line::RefPtr data ( dynamic_cast < Minerva::DataObjects::Line* > ( iter->get() ) );
-  //  data->color ( (*this->colorFunctor()) ( 0.0 ) );
-  //  data->width( _lineWidth );
-  //  data->renderBin( this->renderBin() );
-  //  data->geometry()->zOffset( this->zOffset() );
-
-  //  // Clear the label.
-  //  data->label( "" );
-
-  //  // If we have a column to use for a label.
-  //  if( this->showLabel() && !this->labelColumn().empty() )
-  //  {
-  //    std::string value ( this->connection()->getColumnDataString( this->tablename(), data->rowId(), this->labelColumn() ) );
-
-  //    data->label( value );
-  //    data->labelColor( this->labelColor() );
-
-  //    osg::Vec3 center ( data->geometry()->getCenter( 0.0, 0.0, this->labelZOffset() ) );
-  //    data->labelPosition( center );
-  //  }
-
-  //  // Update progress
-  //  if( progress.valid() )
-  //  {
-  //    unsigned int num ( iter - dataObjects.begin() );
-  //    progress->updateProgressBar( num );
-  //  }
-  //}
 }
 
 

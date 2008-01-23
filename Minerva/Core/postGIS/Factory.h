@@ -12,7 +12,7 @@
 #define __MINERVA_POSTGIS_FACTORY_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Core/postGIS/Geometry.h"
+#include "Minerva/Core/Geometry/Geometry.h"
 
 namespace Minerva {
 namespace Core {
@@ -23,6 +23,7 @@ class Geometry;
 class MINERVA_EXPORT Factory
 {
 public:
+  typedef Minerva::Core::Geometry::Geometry Geometry;
   typedef std::vector < Geometry::RefPtr > Geometries;
 
   static Factory& instance();

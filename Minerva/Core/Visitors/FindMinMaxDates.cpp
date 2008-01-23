@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Visitors/FindMinMaxDates.h"
-#include "Minerva/Core/DataObjects/PointTime.h"
+#include "Minerva/Core/DataObjects/DataObject.h"
 
 using namespace Minerva::Core::Visitors;
 
@@ -45,10 +45,10 @@ FindMinMaxDates::~FindMinMaxDates()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FindMinMaxDates::visit ( Minerva::Core::DataObjects::PointTime &pointTime )
+void FindMinMaxDates::visit ( Minerva::Core::DataObjects::DataObject &object )
 {
-  Date first ( pointTime.firstDate () );
-  Date last ( pointTime.lastDate () );
+  Date first ( object.firstDate () );
+  Date last ( object.lastDate () );
 
   const Date min ( boost::date_time::min_date_time );
   const Date max ( boost::date_time::max_date_time );

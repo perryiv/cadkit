@@ -18,7 +18,7 @@
 #define __DATA_OBJECT_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Core/DB/Connection.h"
+#include "Minerva/Core/Animate/Date.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
@@ -40,20 +40,33 @@ namespace DataObjects {
 class MINERVA_EXPORT DataObject : public Usul::Base::Object
 {
 public:
-  typedef Usul::Base::Object          BaseClass;
-  typedef Usul::Interfaces::IUnknown  Unknown;
+  typedef Usul::Base::Object           BaseClass;
+  typedef Usul::Interfaces::IUnknown   Unknown;
+  typedef Minerva::Core::Animate::Date Date;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( DataObject );
 
   /// Constructor.
   DataObject();
+  
+  // Altitude Mode.
+  enum AltitudeMode
+  {
+    CLAMP_TO_GROUND,
+    RELATIVE_TO_GROUND,
+    ABSOLUTE
+  };
 
   /// Get the shape factory.
   static OsgTools::ShapeFactory* shapeFactory();
 
   /// Accept the visitor.
   virtual void          accept ( Minerva::Core::Visitor& visitor );
+  
+  /// Get/Set the altitude mode.
+  void                  altitudeMode ( AltitudeMode mode );
+  AltitudeMode          altitudeMode () const;
 
   /// Build the scene branch for the data object.
   virtual osg::Node*    buildScene( Usul::Interfaces::IUnknown* caller = 0x0 );
@@ -96,13 +109,9 @@ public:
   unsigned int          renderBin() const;
   void                  renderBin ( unsigned int );
 
-  /// Get/Set table name
-  void                  tableName ( const std::string& name );
-  const std::string &   tableName () const;
-
-  /// Get/Set row id.
-  void                  rowId( int id );
-  int                   rowId() const;
+  /// Get/Set id.
+  void                  objectId ( const std::string& );
+  const std::string&    objectId() const;
 
   /// Is the data object transparent?
   bool                  transparent() const;
@@ -111,11 +120,19 @@ public:
   void                  visibility ( bool b );
   bool                  visibility ( ) const;
 
-  /// Get/Set the database connection.
-  void                                  connection( Minerva::Core::DB::Connection* );
-  Minerva::Core::DB::Connection *       connection();
-  const Minerva::Core::DB::Connection * connection() const;
+  /// Get/Set the data source.
+  void                  dataSource( Unknown* );
+  Unknown *             dataSource();
+  const Unknown *       dataSource() const;
 
+  /// Get/Set the first date.
+  const Date&           firstDate() const;
+  void                  firstDate ( const Date& );
+  
+  /// Get/Set the last date.
+  const Date&           lastDate() const;
+  void                  lastDate( const Date& );
+  
 protected:
 
   /// Use reference counting.
@@ -130,17 +147,19 @@ private:
   bool         _dirty;
   unsigned int _renderBin;
   osg::Vec4    _color;
-  std::string  _tableName;
-  int          _rowId;
+  std::string  _objectId;
   std::string  _label;
   osg::Vec3    _labelPosition;
   osg::Vec4    _labelColor;
   float        _labelSize;
   bool         _showLabel;
   Unknown::QueryPtr _geometry;
-  Minerva::Core::DB::Connection::RefPtr _connection;
+  Unknown::QueryPtr _dataSource;
   osg::ref_ptr < osg::Node > _root;
   osg::ref_ptr < osg::Node > _preBuiltScene;
+  Minerva::Core::Animate::Date _firstDate;
+  Minerva::Core::Animate::Date _lastDate;
+  AltitudeMode _altitudeMode;
 
   /// Shape Factory to share across all Data Objects.
   static OsgTools::ShapeFactory::Ptr _sf;

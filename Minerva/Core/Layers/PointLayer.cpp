@@ -9,7 +9,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Layers/PointLayer.h"
-#include "Minerva/Core/postGIS/Geometry.h"
 #include "Minerva/Core/postGIS/Factory.h"
 #include "Minerva/Core/DataObjects/Point.h"
 #include "Minerva/Core/Visitor.h"
@@ -17,6 +16,8 @@
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/IOffset.h"
+
+#include "pqxx/pqxx"
 
 #include <map>
 
@@ -174,8 +175,7 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Int
         data->size ( this->size() );
         data->primitiveId ( this->primitiveID() );
         data->quality ( this->quality() );
-        data->tableName ( dataTable );
-        data->rowId ( id );
+        data->objectId ( Usul::Strings::format ( id ) );
         data->autotransform ( this->autotransform () );
         data->secondarySize ( this->secondarySize() );
 
@@ -192,7 +192,7 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Int
         // Pre build the scene.
         data->preBuildScene( caller );
 
-        this->_addDataObject( data.get() );
+        this->addDataObject( data.get() );
       }
     }
     catch ( const std::exception& e )
@@ -210,62 +210,6 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Int
       progress->updateProgressBar( num );
     }
   }
-
-  /// Stack the points.
-  this->_stack();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Stack the points.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void PointLayer::_stack()
-{
-  if( _stackPoints )
-  {
-    typedef osg::Vec3 Key;
-    typedef Layer::DataObjects Value;
-    typedef std::map< Key, Value > Map;
-
-    Map map;
-
-    DataObjects &dataObjects ( this->_getDataObjects() );
-
-    unsigned int srid ( 0 );
-
-    for( Layer::DataObjects::iterator iter = dataObjects.begin(); iter != dataObjects.end(); ++iter )
-    {
-      Usul::Interfaces::IGeometryCenter::QueryPtr geometryCenter ( (*iter)->geometry() );
-
-      if( geometryCenter.valid () )
-      {
-        map[ geometryCenter->geometryCenter( srid ) ].push_back ( *iter );
-      }
-    }
-
-    for( Map::iterator iter = map.begin(); iter != map.end(); ++iter )
-    {
-      if( iter->second.size() > 1 )
-      {
-        Value& value ( iter->second );
-
-        for( unsigned int i = 1; i < value.size(); ++i )
-        {
-          Usul::Interfaces::IOffset::QueryPtr offset ( value.at( i )->geometry() );
-
-          if( offset.valid () )
-          {
-            const osg::Vec3& o ( offset->spatialOffset() );
-            offset->spatialOffset ( osg::Vec3f ( o.x(), o.y(), o.z() + ( i * 20 ) ) );
-            value.at( i )->dirty( true );
-          }
-        }
-      }
-    }
-  }
 }
 
 
@@ -279,20 +223,8 @@ void PointLayer::modify( Usul::Interfaces::IUnknown *caller )
 {
   // For now get what we have, clear and then rebuild.
   // Need a way to tell if the query has changed.  Then I think this can be handled better.
-  DataObjects &dataObjects ( this->_getDataObjects() );
-  dataObjects.clear();
-
+  this->clearDataObjects();
   this->buildDataObjects ( caller, 0x0 );
-/*
-  DataObjects &dataObjects ( this->_getDataObjects() );
-
-  for ( DataObjects::iterator iter = dataObjects.begin(); iter != dataObjects.end(); ++iter )
-  {
-    Minerva::DataObjects::Point::RefPtr data ( dynamic_cast < Minerva::DataObjects::Point* > ( iter->get() ) );
-    data->size ( this->size() );
-    data->primitiveId ( this->primitiveID() );
-    data->renderBin( this->renderBin() );
-  }*/
 }
 
 

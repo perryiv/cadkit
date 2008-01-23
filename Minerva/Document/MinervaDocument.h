@@ -42,12 +42,12 @@
 
 #include "MenuKit/Menu.h"
 
+#include "OsgTools/Legend/Legend.h"
+
 #include "Serialize/XML/Macros.h"
 
-#if USE_STAR_SYSTEM
-#include "Usul/Jobs/Manager.h"
-#include "StarSystem/System.h"
-#endif
+#include "osg/Camera"
+#include "osgText/Text"
 
 namespace Usul { namespace Interfaces { struct ICommand; } }
 
@@ -128,18 +128,11 @@ public:
   void                                     timestepType( IAnimationControl::TimestepType type );
   IAnimationControl::TimestepType          timestepType( ) const;
 
-  bool                                     isShowLegend() const;
-  void                                     showLegend( bool b );
-
 #if USE_STAR_SYSTEM == 0
   /// Get/Set the split metric.
   void                                     splitMetric ( double );
   bool                                     isSplitMetric ( double ) const;
 #endif
-  
-  /// Get/Set the percentage of screen the legend uses.
-  void                                     percentScreenWidth ( float );
-  float                                    percentScreenWidth();
 
   Layers&                                  layers();
   const Layers&                            layers() const;
@@ -185,6 +178,39 @@ public:
   /// Set the current time span.
   void                                     currentTimeSpan ( TimeSpan::RefPtr span );
   bool                                     isCurrentTimeSpan ( TimeSpan::RefPtr span ) const;
+  
+  enum LegendPosition
+  {
+    LEGEND_TOP_LEFT,
+    LEGEND_TOP_RIGHT,
+    LEGEND_BOTTOM_RIGHT,
+    LEGEND_BOTTOM_LEFT
+  };
+  
+  /// Get/Set the legend position.
+  void                                     legendPosition ( LegendPosition position );
+  LegendPosition                           legendPosition ( ) const;
+  
+  /// Toggle the legend on and off.
+  bool                                     isShowLegend() const;
+  void                                     showLegend( bool b );
+  
+  /// Legend width in percentage of screen width.
+  void                                     legendWidth( float p );
+  float                                    legendWidth( ) const;
+  
+  /// Height of each item showing in the legend.
+  void                                     legendHeightPerItem( unsigned int height );
+  unsigned int                             legendHeightPerItem() const;
+  
+  /// Legend padding from the sides of the screen.  Value in pixels.
+  void                                     legendPadding( const osg::Vec2& padding );
+  const osg::Vec2&                         legendPadding() const;
+  
+  /// Get/Set the dirty flag.
+  void                                     dirty( bool );
+  bool                                     dirty() const;
+  
 protected:
   virtual ~MinervaDocument();
 
@@ -208,6 +234,9 @@ protected:
 
   /// Build the scene.
   void                                     _buildScene ( Usul::Interfaces::IUnknown *caller );
+  void                                     _buildLegend( Usul::Interfaces::IUnknown *caller );
+  
+  void                                     _setLegendPosition ( unsigned int legendWidth );
 
   /// Build time span menu.
   void                                     _buildTimeSpanMenu();
@@ -247,9 +276,15 @@ protected:
   virtual double                           elevationAtLatLong ( double lat, double lon ) const;
   
 private:
+  
+  bool _dirty;
 
   Layers _layers;
   Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
+  
+  osg::ref_ptr < osg::Group >      _root;
+  osg::ref_ptr < osg::Camera >     _camera;
+  osg::ref_ptr < osgText::Text >   _dateText;
 
   Planet::RefPtr _planet;
 
@@ -273,6 +308,18 @@ private:
   double _lastTime;
   double _animationSpeed;
   MenuKit::Menu::RefPtr _timeSpanMenu;
+  
+  /// Legend members.
+  OsgTools::Legend::Legend::RefPtr _legend;
+  bool _showLegend;
+  float _legendWidth;
+  unsigned int _legendHeightPerItem;
+  osg::Vec2 _legendPadding;
+  LegendPosition _legendPosition;
+  
+  /// Screen size members.
+  unsigned int _width;
+  unsigned int _height;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME( MinervaDocument );

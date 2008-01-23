@@ -9,6 +9,7 @@
 
 #include "Minerva/Document/Planet.h"
 
+#include "Usul/Bits/Bits.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/ICullSceneVisitor.h"
@@ -35,6 +36,7 @@
 #include "StarSystem/RasterLayerWms.h"
 #include "StarSystem/ElevationLayerDem.h"
 #include "StarSystem/SplitCallbacks.h"
+#include "StarSystem/ClampNearFar.h"
 
 #include "osg/CoordinateSystemNode"
 
@@ -407,7 +409,14 @@ void Planet::initVisitors ( Usul::Interfaces::IUnknown *caller )
       }
     }
   }
-  
+#else
+  Usul::Interfaces::ICullSceneVisitor::QueryPtr csv ( caller );
+  if ( csv.valid() )
+  {
+    osg::ref_ptr<osgUtil::CullVisitor> cv ( csv->getCullSceneVisitor( 0x0 ) );
+    cv->setClampProjectionMatrixCallback ( new StarSystem::ClampNearFar ( *cv ) );
+    cv->setInheritanceMask ( Usul::Bits::remove ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
+  }
 #endif
 }
 

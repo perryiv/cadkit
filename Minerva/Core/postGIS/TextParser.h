@@ -21,13 +21,15 @@
 
 namespace Minerva {
 namespace Core {
+  
+  namespace Geometry { class Geometry; }
+  
 namespace postGIS {
-
-class Geometry;
 
 class MINERVA_EXPORT TextParser
 {
 public:
+  typedef Minerva::Core::Geometry::Geometry Geometry;
   TextParser();
   ~TextParser();
 

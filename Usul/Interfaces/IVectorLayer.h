@@ -27,9 +27,6 @@ struct IVectorLayer : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2501255927u };
 
-  /// Build the scene.
-  virtual void                buildScene( osg::Group* parent ) = 0;
-
   /// Build the data objects.
   virtual void                buildVectorData  ( Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 ) = 0;
 

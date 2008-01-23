@@ -299,7 +299,7 @@ inline void Loader< Document >::addLibrary ( const std::string &file )
 
 #ifdef _MSC_VER
   name += ".dll";
-#elif _APPLE_
+#elif __APPLE__
   name += ".dylib";
 #else
   name += ".so";
@@ -367,7 +367,18 @@ inline void Loader< Document >::load ( Usul::Interfaces::IUnknown *caller )
     status ( "Loading " + name + "...", true );
 
     // Load.
-    Usul::DLL::Loader::load ( name );
+    try
+    {
+      Usul::DLL::Loader::load ( name );
+    }
+    catch ( const std::exception &e )
+    {
+      std::cout << "Error 2012373085: Standard exception caught while trying to load library " << name << ": " << e.what() << std::endl;
+    }
+    catch ( ... )
+    {
+      std::cout << "Error 1001727732: Unknown exception caught while trying to load library " << name << "." << std::endl;
+    }
   }
 }
 

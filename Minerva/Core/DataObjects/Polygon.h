@@ -39,6 +39,10 @@ public:
 
   /// Accept the visitor.
   virtual void          accept ( Minerva::Core::Visitor& visitor );
+  
+  /// Get/Set extrude flag.
+  void                  extrude ( bool b );
+  bool                  extrude() const;
 
   /// Get/Set draw border flag.
   void                  showBorder( bool b );
@@ -55,10 +59,11 @@ protected:
   /// Build the scene branch for the data object.
   virtual osg::Node*    _preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 );
 
-  osg::Node*            _buildPolygons();
+  osg::Node*            _buildPolygons( Usul::Interfaces::IUnknown* caller );
 
 private:
 
+  bool _extrude;
   bool _showBorder;
   bool _showInterior;
 };

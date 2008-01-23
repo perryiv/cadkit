@@ -66,7 +66,7 @@ public:
   virtual std::string           getPluginName() const { return "Multi Process Data Synchronization"; }
 
   /// Usul::Interfaces::IDataSync
-  virtual void                  setDataFlag( const std::string &machine, const std::string &filename, bool value );
+  virtual void                  setDataFlag( const std::string &machine, const std::string &filename );
   virtual bool                  queryDataState( const std::string &filename );
   virtual void                  resetData( const std::string &machine, const std::string &filename );
   

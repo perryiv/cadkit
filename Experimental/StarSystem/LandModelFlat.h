@@ -47,6 +47,9 @@ public:
   virtual void        latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const;
   virtual void        xyzToLatLonHeight ( const osg::Vec3f& point, double& lat, double& lon, double& elevation ) const;
 
+  // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
+  virtual osg::Matrixd planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const;
+  
   // Return the appropriate mesh size.
   virtual MeshSize    meshSize ( const Extents &extents, const MeshSize &ms );
 

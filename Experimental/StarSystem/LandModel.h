@@ -23,6 +23,7 @@
 #include "osg/Vec3f"
 #include "osg/Vec2d"
 
+namespace osg { class Matrixd; }
 
 namespace StarSystem {
 
@@ -52,6 +53,9 @@ public:
   virtual void        latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const = 0;
   virtual void        xyzToLatLonHeight ( const osg::Vec3f& point, double& lat, double& lon, double& elevation ) const = 0;
 
+  // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
+  virtual osg::Matrixd planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const = 0;
+  
   // Return the appropriate mesh size.
   virtual MeshSize    meshSize ( const Extents &extents, const MeshSize &ms ) = 0;
 

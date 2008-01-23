@@ -21,6 +21,8 @@
 #include "ossim/projection/ossimProjectionFactoryRegistry.h"
 #include "ossim/projection/ossimProjection.h"
 
+#include "osg/Matrixd"
+
 using namespace StarSystem;
 
 USUL_FACTORY_REGISTER_CREATOR ( LandModelFlat );
@@ -218,4 +220,19 @@ void LandModelFlat::deserialize ( const XmlTree::Node &node )
 
   // Initialize locals and members from the the node.
   m.deserialize ( node );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Matrix to place items on the planet (i.e. local coordinates to world coordinates).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Matrixd LandModelFlat::planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const
+{
+  osg::Vec3f p;
+  this->latLonHeightToXYZ ( lat, lon, elevation, p );
+
+  return osg::Matrixd::rotate ( osg::DegreesToRadians ( heading ), osg::Vec3f ( 0.0, 0.0, 1.0 ) ) * osg::Matrixd::translate ( p );
 }

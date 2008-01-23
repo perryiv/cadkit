@@ -220,14 +220,8 @@ void Body::rasterAppend ( Usul::Interfaces::IRasterLayer * layer )
     // Append the layer to the existing group.
     _rasters->append ( layer );
     
-    Usul::Interfaces::ILayerExtents::QueryPtr le ( layer );
-    
-    const double minLon ( le.valid() ? le->minLon() : -180.0 );
-    const double minLat ( le.valid() ? le->minLat() :  -90.0 );
-    const double maxLon ( le.valid() ? le->maxLon() :  180.0 );
-    const double maxLat ( le.valid() ? le->maxLat() :   90.0 );
-    
-    Extents e ( minLon, minLat, maxLon, maxLat );
+    // Get the extents.
+    Extents e ( this->_buildExtents( layer ) );
 
     // Dirty the tiles.
     DirtyTiles dirty ( true, Tile::TEXTURE, e );
@@ -253,14 +247,8 @@ void Body::rasterRemove ( Usul::Interfaces::IRasterLayer *layer )
     // Append the layer to the existing group.
     _rasters->remove ( layer );
     
-    Usul::Interfaces::ILayerExtents::QueryPtr le ( layer );
-    
-    const double minLon ( le.valid() ? le->minLon() : -180.0 );
-    const double minLat ( le.valid() ? le->minLat() :  -90.0 );
-    const double maxLon ( le.valid() ? le->maxLon() :  180.0 );
-    const double maxLat ( le.valid() ? le->maxLat() :   90.0 );
-    
-    Extents e ( minLon, minLat, maxLon, maxLat );
+    // Get the extents.
+    Extents e ( this->_buildExtents( layer ) );
     
     // Dirty the tiles.
     DirtyTiles dirty ( true, Tile::TEXTURE, e );
@@ -325,7 +313,6 @@ void Body::xyzToLatLonHeight ( const osg::Vec3& point, double& lat, double& lon,
     p /= _scale;
 
     _landModel->xyzToLatLonHeight ( p, lat, lon, elevation );
-    
   }
 }
 
@@ -575,7 +562,7 @@ bool Body::useSkirts() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Body::elevationAppend ( RasterLayer * layer )
+void Body::elevationAppend ( Usul::Interfaces::IRasterLayer * layer )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -584,9 +571,12 @@ void Body::elevationAppend ( RasterLayer * layer )
   {
     // Append the layer to the existing group.
     _elevation->append ( layer );
+    
+    // Get the extents.
+    Extents e ( this->_buildExtents( layer ) );
 
     // Dirty the tiles.
-    DirtyTiles dirty ( true, Tile::VERTICES, layer->extents() );
+    DirtyTiles dirty ( true, Tile::VERTICES, e );
     osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
     _transform->accept ( *visitor );
   }
@@ -790,4 +780,23 @@ double Body::splitDistance() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _splitDistance;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the extents of the unknown.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Body::Extents Body::_buildExtents ( Usul::Interfaces::IUnknown* unknown )
+{
+  Usul::Interfaces::ILayerExtents::QueryPtr le ( unknown );
+  
+  const double minLon ( le.valid() ? le->minLon() : -180.0 );
+  const double minLat ( le.valid() ? le->minLat() :  -90.0 );
+  const double maxLon ( le.valid() ? le->maxLon() :  180.0 );
+  const double maxLat ( le.valid() ? le->maxLat() :   90.0 );
+  
+  return Extents ( minLon, minLat, maxLon, maxLat );
 }

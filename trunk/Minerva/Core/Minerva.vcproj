@@ -265,14 +265,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\DataObjects\PointTime.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\DataObjects\PointTime.h"
-						>
-					</File>
-					<File
 						RelativePath=".\DataObjects\Polygon.cpp"
 						>
 					</File>
@@ -348,6 +340,22 @@
 						RelativePath=".\Layers\PolygonLayer.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Layers\Vector.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\Vector.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\VectorGroup.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\VectorGroup.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Scene"
@@ -402,92 +410,6 @@
 					</File>
 					<File
 						RelativePath=".\postGIS\Factory.h"
-						>
-					</File>
-					<File
-						RelativePath=".\postGIS\Geometry.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\postGIS\Geometry.h"
-						>
-					</File>
-					<File
-						RelativePath=".\postGIS\Line.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath=".\postGIS\Line.h"
-						>
-					</File>
-					<File
-						RelativePath=".\postGIS\Point.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath=".\postGIS\Point.h"
-						>
-					</File>
-					<File
-						RelativePath=".\postGIS\Polygon.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath=".\postGIS\Polygon.h"
 						>
 					</File>
 					<File
@@ -603,6 +525,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Visitors\StackPoints.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Visitors\StackPoints.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Visitors\TemporalAnimation.cpp"
 						>
 					</File>
@@ -636,6 +566,126 @@
 					</File>
 					<File
 						RelativePath=".\Animate\TimeSpan.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Geometry"
+					>
+					<File
+						RelativePath=".\Geometry\Geometry.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\Geometry\Geometry.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Geometry\Line.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)2.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)2.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\Geometry\Line.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Geometry\Point.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)2.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)2.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\Geometry\Point.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Geometry\Polygon.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)2.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)2.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\Geometry\Polygon.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Factory"
+					>
+					<File
+						RelativePath=".\Factory\Readers.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Factory\Readers.h"
 						>
 					</File>
 				</Filter>

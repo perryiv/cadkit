@@ -82,7 +82,7 @@ osg::Vec3f  Geometry::geometryCenter ( const osg::Vec3f& offset, unsigned int& s
       Usul::Types::Float64 x ( r[0][0].as< float > () );
       Usul::Types::Float64 y ( r[0][1].as< float > () );
 
-      center.set( offset.x() + x, offset.y() + y, offset.z() );
+      center.set( static_cast<osg::Vec3f::value_type> ( offset.x() + x ), static_cast<osg::Vec3f::value_type> ( offset.y() + y ), offset.z() );
     }
   }
 

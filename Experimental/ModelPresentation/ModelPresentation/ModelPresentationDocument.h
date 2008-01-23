@@ -17,6 +17,8 @@
 #ifndef _MODEL_PRESENTATION_DOCUMENT_H_
 #define _MODEL_PRESENTATION_DOCUMENT_H_
 
+#include "MpdDefinitions.h"
+
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IAnimatePath.h"
 #include "Usul/Interfaces/IBuildScene.h"
@@ -25,6 +27,7 @@
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IDataSync.h"
 #include "Usul/Jobs/Job.h"
+#include "Usul/Jobs/Manager.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Policies/Update.h"
@@ -46,65 +49,14 @@ class ModelPresentationDocument : public Usul::Documents::Document,
                                   public Usul::Interfaces::IMenuAdd
 {
 public:
-  // Structs
-  struct MpdSet
-  {
-    unsigned int index;
-    std::string name;
-    std::string menuName;
-    std::vector< std::string > groupNames;
-  };
-  struct MpdGroup
-  {
-    unsigned int setIndex;
-    osg::ref_ptr< osg::Group > group;
-  };
-  struct MpdModel
-  {
-     unsigned int setIndex;
-     unsigned int groupIndex;
-     osg::ref_ptr< osg::Group > model;
-  };
-  struct MpdTimeGroup
-  {
-    unsigned int startTime;
-    unsigned int endTime;
-  };
-  struct MpdTimeSet
-  {
-    osg::ref_ptr< osg::Switch > timeline;
-    unsigned int currentTime;
-    unsigned int endTime;
-    std::vector< MpdTimeGroup > groups;
-    bool visible;
-    std::string name;
-    std::string menuName;
-  };
-  struct MpdDynamicGroup
-  {
-    std::string filename;
-    bool valid;
-  };
-  struct MpdDynamicSet
-  {
-    osg::ref_ptr< osg::Switch > models;
-    std::vector< MpdDynamicGroup > groups;
-    std::vector< std::string > modelNames;
-    unsigned int currentTime;
-    unsigned int endTime;
-    std::string menuName;
-    std::string name;
-    std::string directory;
-    std::string extension;
-    std::string prefix;
-    bool visible;    
-  };
+ 
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
   typedef Usul::Documents::Document Document;
   typedef Usul::Documents::Document::RefPtr DocumentPtr;
   typedef Usul::Documents::Manager DocManager;
   typedef DocManager::DocumentInfo Info;
+  typedef Usul::Jobs::Manager JobManager;
   typedef Usul::Interfaces::IDataSync IDataSync;
   typedef Usul::Policies::NumberBased UpdatePolicy;
   typedef std::auto_ptr< UpdatePolicy > UpdatePolicyPtr;
@@ -116,13 +68,14 @@ public:
   typedef std::vector< osg::ref_ptr< osg::Switch > > MpdScene;
   typedef osg::ref_ptr< osg::Group > GroupPtr;
   typedef std::vector < std::string > Files;
-  typedef std::vector< MpdGroup > MpdGroups;
-  typedef std::vector< MpdModel > MpdModels;
-  typedef std::vector< MpdSet > MpdSets;
+  typedef std::vector< MpdDefinitions::MpdGroup > MpdGroups;
+  typedef std::vector< MpdDefinitions::MpdModel > MpdModels;
+  typedef std::vector< MpdDefinitions::MpdSet > MpdSets;
   typedef std::map< std::string, osg::Matrixd > Locations;
   typedef std::vector< std::string > LocationNames;
-  typedef std::vector< MpdTimeSet > MpdTimeSets;
-  typedef std::vector< MpdDynamicSet > MpdDynamicSets;
+  typedef std::vector< MpdDefinitions::MpdTimeSet > MpdTimeSets;
+  typedef MpdDefinitions::MpdDynamicSets MpdDynamicSets;
+  
 
   typedef Usul::Interfaces::IAnimatePath IAnimatePath;
   typedef std::vector < osg::Matrixd > MatrixVec;
@@ -180,6 +133,12 @@ public:
   void              isAnimating( bool value );
   void              dynamicModelState( unsigned int index, bool state );
   bool              dynamicModelState( unsigned int i );
+  void              validateDynamicSets();
+  void              updateGlobalEndtime();
+
+  void              findFiles( unsigned int index, Usul::Interfaces::IUnknown *caller );
+
+
 
 protected:
 
@@ -195,17 +154,17 @@ protected:
   void                        _parseTimeSet( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   void                        _parseLocation( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   void                        _parseMatrix( XmlTree::Node &node, Unknown *caller, Unknown *progress, const std::string& name );
-  osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdSet & set );
-  osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int &currentTime, MpdTimeSet &timeset );
+  osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSet & set );
+  osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int &currentTime, MpdDefinitions::MpdTimeSet &timeset );
   osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   void                        _parseDynamic( XmlTree::Node &node, Unknown *caller, Unknown *progress ); 
   osg::Node*                  _loadFile( const std::string& filename, Unknown *caller, Unknown *progress );
   osg::Node*                  _loadDirectory( const std::string& dir, Unknown *caller, Unknown *progress );
   MatrixVec                   _getInterpolationMatrices ( const osg::Matrixd &m1, const osg::Matrixd &m2 ) const;
-  void                        _findFiles( unsigned int index, Usul::Interfaces::IUnknown *caller );
   void                        _loadNewDynamicFiles( std::string filename, unsigned int index, Usul::Interfaces::IUnknown *caller );
   void                        _parseNewFiles( Files files, unsigned int index, Usul::Interfaces::IUnknown *caller );
-  void                        _validateDynamicSets();
+  bool                        _dynamic();
+  
 
 
   /// Usul::Interfaces::IUpdateListener
@@ -236,6 +195,7 @@ private:
   MpdTimeSets                 _timeSets;
   MpdDynamicSets              _dynamicSets;
   UpdatePolicyPtr             _update;
+  UpdatePolicyPtr             _checkFileSystem;
   bool                        _useTimeLine;
   bool                        _useModels;
   bool                        _useDynamic;
@@ -248,6 +208,8 @@ private:
 
   std::string                 _workingDir;
   unsigned int                _globalTimelineEnd;
+
+  JobManager                  _jobManager;
   
 };
 

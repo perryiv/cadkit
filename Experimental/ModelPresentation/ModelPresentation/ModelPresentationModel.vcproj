@@ -250,6 +250,18 @@
 					RelativePath=".\ModelPresentationFactory.h"
 					>
 				</File>
+				<File
+					RelativePath=".\MpdDefinitions.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdJob.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdJob.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

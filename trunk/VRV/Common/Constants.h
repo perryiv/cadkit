@@ -29,6 +29,11 @@ namespace VRV
       const std::string NAVIGATION_FUNCTOR ( "navigation_functor" );
       const std::string SEEK_STEP_SIZE     ( "seek_step_size" );
       const std::string BACKGROUND_COLOR   ( "background_color" );
+      const std::string BACKGROUND_CORNERS ( "background_corners" );
+      const std::string TOP_LEFT           ( "top_left" );
+      const std::string TOP_RIGHT          ( "top_right" );
+      const std::string BOTTOM_LEFT        ( "bottom_left" );
+      const std::string BOTTOM_RIGHT       ( "bottom_right" );
     }
   }
 }

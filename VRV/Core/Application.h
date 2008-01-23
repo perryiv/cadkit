@@ -206,7 +206,13 @@ public:
 
   /// Get/Set the background color.
   virtual void                backgroundColor ( const Usul::Math::Vec4f& color );
+  virtual void                backgroundColor ( const osg::Vec4f& color, unsigned int corner );
   virtual Usul::Math::Vec4f   backgroundColor () const;
+
+  /// Get/Set the background corner.
+  void                    setBackgroundCorners ( unsigned int corner );
+  unsigned int            getBackgroundCorners() const;
+  bool                    isBackgroundCorners( unsigned int corner ) const;
 
   /// Get/Set the framestamp ( Usul::Interfaces::IFrameStamp ).
   osg::FrameStamp*        frameStamp();
@@ -314,8 +320,9 @@ public:
   void                    viewScene ();
 
   /// Get/Set near far mode.
-  void                    computeNearFar ( bool b );
-  bool                    computeNearFar () const;
+  void                    setComputeNearFar ( bool b );
+  bool                    getComputeNearFar () const;
+  bool                    isComputeNearFar ( bool b ) const;
 
   /// Reread the preference files and reinitialiaze.
   void                    reinitialize();
@@ -331,6 +338,11 @@ public:
   /// VRV::Interfaces::ITranslationSpeed.
   virtual float                 translationSpeed () const;
   void                          translationSpeed ( float speed );
+
+    /// Save/Restore state.
+  void                          saveState() const;
+  void                          restoreState();
+
 protected:
 
   /// VR Juggler methods.

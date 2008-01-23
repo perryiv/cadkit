@@ -80,6 +80,8 @@
 #include "OsgTools/ShapeFactory.h"
 #include "OsgTools/Utilities/DeleteHandler.h"
 
+#include "Serialize/XML/TypeWrapper.h"
+
 #include "osgDB/WriteFile"
 
 #include "osg/MatrixTransform"
@@ -96,6 +98,10 @@
 
 #include <stdexcept>
 #include <fstream>
+
+USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_4 ( osg::Vec4 );
+USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_4 ( osg::Vec4 );
+SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 
 using namespace VRV::Core;
 namespace Sections = VRV::Constants::Sections;
@@ -554,6 +560,7 @@ void Application::contextInit()
   // Set the background color.
   osg::Vec4 color;
   OsgTools::Convert::vector ( _backgroundColor, color, 4 );
+  renderer->backgroundCorners ( OsgTools::Render::Renderer::Corners::ALL );
   renderer->backgroundColor ( color, OsgTools::Render::Renderer::Corners::ALL );
 
   // Set the renderer for this context.
@@ -1243,6 +1250,9 @@ void Application::_postFrame()
 
   if ( 0x0 != _deleteHandler )
     _deleteHandler->flushAll();
+
+  // Make sure.
+  this->_setNearAndFarClippingPlanes();
 }
 
 
@@ -1821,11 +1831,43 @@ void Application::backgroundColor( const Usul::Math::Vec4f& color )
 
   for( Renderers::iterator iter = _renderers.begin(); iter != _renderers.end(); ++iter )
   {
-    (*iter)->backgroundColor ( c, OsgTools::Render::Renderer::Corners::ALL );
+    (*iter)->backgroundColor ( c );
   }
 
+  typedef OsgTools::Render::Renderer::Corners Corners;
+
+  OsgTools::Render::Renderer::RefPtr renderer ( ( false == _renderers.empty() ) ? _renderers.front() : 0x0 );
+
+  osg::Vec4 black ( 0.0, 0.0, 0.0, 1.0 );
+  osg::Vec4 topLeft     ( ( renderer.valid() ) ? renderer->backgroundColor( Corners::TOP_LEFT ) : black );
+  osg::Vec4 topRight    ( ( renderer.valid() ) ? renderer->backgroundColor( Corners::TOP_RIGHT ) : black );
+  osg::Vec4 bottomLeft  ( ( renderer.valid() ) ? renderer->backgroundColor( Corners::BOTTOM_LEFT ) : black );
+  osg::Vec4 bottomRight ( ( renderer.valid() ) ? renderer->backgroundColor( Corners::BOTTOM_RIGHT ) : black );
+
   // Set the background color.
-  Usul::Registry::Database::instance()[this->_documentSection()][VRV::Constants::Keys::BACKGROUND_COLOR] = color;
+  Usul::Registry::Database::instance()[this->_documentSection()][Keys::BACKGROUND_COLOR][Keys::TOP_LEFT] = topLeft;
+  Usul::Registry::Database::instance()[this->_documentSection()][Keys::BACKGROUND_COLOR][Keys::TOP_RIGHT] = topRight;
+  Usul::Registry::Database::instance()[this->_documentSection()][Keys::BACKGROUND_COLOR][Keys::BOTTOM_LEFT] = bottomLeft;
+  Usul::Registry::Database::instance()[this->_documentSection()][Keys::BACKGROUND_COLOR][Keys::BOTTOM_RIGHT] = bottomRight;
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the backgroup color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::backgroundColor( const osg::Vec4f& color, unsigned int corner )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for( Renderers::iterator iter = _renderers.begin(); iter != _renderers.end(); ++iter )
+  {
+    (*iter)->backgroundColor ( color, corner );
+  }
 }
 
 
@@ -1840,6 +1882,53 @@ Usul::Math::Vec4f Application::backgroundColor() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _backgroundColor;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the backgroup corner.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::setBackgroundCorners ( unsigned int corner )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for( Renderers::iterator iter = _renderers.begin(); iter != _renderers.end(); ++iter )
+  {
+    (*iter)->backgroundCorners ( corner );
+  }
+
+  // Save the corner.
+  Usul::Registry::Database::instance()[this->_documentSection()][Keys::BACKGROUND_CORNERS] = corner;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the backgroup corner.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Application::getBackgroundCorners() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return ( false == _renderers.empty() ? _renderers.front()->backgroundCorners() : 0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the given corner the current one?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::isBackgroundCorners( unsigned int corner ) const
+{
+  return corner == this->getBackgroundCorners();
 }
 
 
@@ -2388,45 +2477,11 @@ void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Us
   if ( 0x0 == newDoc )
     return;
 
-  // Get the tag name from the document for the registry.
-  Usul::Interfaces::IDocument::QueryPtr document ( newDoc );
-  std::string documentSection ( document.valid() ? document->registryTagName() : "Document" );
+  // Restore the state.
+  this->restoreState();
 
-  // Get the section for the document.
-  Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ documentSection ] );
-
-  // Turn on computing of the near and far plane if we should.
-  bool defaultAutoNearFar ( false );
-  bool autoNearFar ( node [ VRV::Constants::Keys::AUTO_NEAR_FAR ].get < bool > ( defaultAutoNearFar ) );
-  this->computeNearFar ( autoNearFar );
-
-  // Get the home position from the registry.
-  Usul::Math::Matrix44d m ( node [ VRV::Constants::Keys::HOME_POSITION ].get < Usul::Math::Matrix44d > ( Usul::Math::Matrix44d () ) );
-  OsgTools::Convert::matrix ( m, _home );
-  this->_navigationMatrix ( _home );
-
-  // Set the menu show hide state.
-  bool menuShowHide ( node[ VRV::Constants::Keys::MENU_SHOW_HIDE ].get < bool > ( false ) );
-  this->menuSceneShowHide ( menuShowHide );
-
-  // Get the translation speed.
-  float speed ( node[ VRV::Constants::Keys::TRANSLATION_SPEED ].get < float > ( this->translationSpeed() ) );
-  Usul::Threads::Safe::set ( this->mutex(), speed, _translationSpeed );
-
-  Navigator::RefPtr functor ( this->navigator() );
-  std::string name ( functor.valid() ? functor->name() : "" );
-
-  // Get the navigator.
-  std::string navigatorName ( node[ VRV::Constants::Keys::NAVIGATION_FUNCTOR ].get < std::string > ( name ) );
-
-  {
-    Guard guard ( this );
-    this->navigator ( _favoriteFunctors[navigatorName] );
-  }
-
-  // Get the background color.
-  Usul::Math::Vec4f color ( node[VRV::Constants::Keys::BACKGROUND_COLOR].get<Usul::Math::Vec4f> ( this->backgroundColor() ) );
-  this->backgroundColor ( color );
+  // Make sure.
+  this->_setNearAndFarClippingPlanes();
 
   Usul::Interfaces::IUnknown::QueryPtr unknown ( newDoc );
   if ( true == unknown.valid() )
@@ -3519,7 +3574,22 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
                                    Usul::Adaptors::memberFunction<void> ( this, &Application::seekMode ), 
                                    Usul::Adaptors::memberFunction<bool> ( this, &Application::isSeekMode ) ) ) );
 
-  menu->append ( new ToggleButton ( new CheckCommand ( "Compute Near Far", BoolFunctor ( this, &Application::computeNearFar ), CheckFunctor ( this, &Application::computeNearFar ) ) ) );
+  MenuKit::Menu::RefPtr nearFar ( new MenuKit::Menu ( "Compute Near Far" ) );
+  menu->append ( nearFar );
+
+  nearFar->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "On", 
+                        Usul::Adaptors::bind1<void> ( true, 
+                                                      Usul::Adaptors::memberFunction<void> ( this, &Application::setComputeNearFar ) ), 
+                        Usul::Adaptors::bind1<bool> ( true,
+                                                      Usul::Adaptors::memberFunction<bool> ( this, &Application::isComputeNearFar ) ) ) ) );
+
+  nearFar->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "Off", 
+                        Usul::Adaptors::bind1<void> ( false, 
+                                                      Usul::Adaptors::memberFunction<void> ( this, &Application::setComputeNearFar ) ), 
+                        Usul::Adaptors::bind1<bool> ( false, 
+                                                      Usul::Adaptors::memberFunction<bool> ( this, &Application::isComputeNearFar ) ) ) ) );
+
+
   menu->addSeparator();
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
@@ -3635,12 +3705,44 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
 
   typedef MenuKit::Button       Button;
   typedef MenuKit::ToggleButton ToggleButton;
+  typedef MenuKit::RadioButton  RadioButton;
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   // Create a sub-menu for background color
-  MenuKit::Menu::RefPtr background ( new MenuKit::Menu ( "Background Color", MenuKit::Menu::VERTICAL ) );
+  MenuKit::Menu::RefPtr background ( new MenuKit::Menu ( "Background", MenuKit::Menu::VERTICAL ) );
   menu->append ( background.get() );
+
+  MenuKit::Menu::RefPtr colors ( new MenuKit::Menu ( "Colors" ) );
+  background->append ( colors );
+
+  // Add a button for each of our colors.
+  typedef VRV::Commands::BackgroundColor BackgroundColor;
+  for ( ColorMap::const_iterator iter = _colorMap.begin(); iter != _colorMap.end(); ++iter )
+    colors->append ( new Button ( new BackgroundColor ( iter->first, iter->second, me ) ) );
+
+  MenuKit::Menu::RefPtr corners ( new MenuKit::Menu ( "Corners" ) );
+  typedef OsgTools::Render::Renderer::Corners Corners;
+  corners->append ( new RadioButton ( 
+                    Usul::Commands::genericCheckCommand ( "All", 
+                                    Usul::Adaptors::bind1<void> ( static_cast<unsigned int> ( Corners::ALL ), 
+                                                          Usul::Adaptors::memberFunction<void> ( this, &Application::setBackgroundCorners ) ), 
+                                    Usul::Adaptors::bind1<bool> ( static_cast<unsigned int> ( Corners::ALL ), 
+                                                          Usul::Adaptors::memberFunction<bool> ( this, &Application::isBackgroundCorners ) ) ) ) );
+  corners->append ( new RadioButton ( 
+                    Usul::Commands::genericCheckCommand ( "Top", 
+                                    Usul::Adaptors::bind1<void> ( static_cast<unsigned int> ( Corners::TOP ), 
+                                                          Usul::Adaptors::memberFunction<void> ( this, &Application::setBackgroundCorners ) ), 
+                                    Usul::Adaptors::bind1<bool> ( static_cast<unsigned int> (Corners::TOP ), 
+                                                          Usul::Adaptors::memberFunction<bool> ( this, &Application::isBackgroundCorners ) ) ) ) );
+  corners->append ( new RadioButton ( 
+                    Usul::Commands::genericCheckCommand ( "Bottom", 
+                                    Usul::Adaptors::bind1<void> ( static_cast<unsigned int> ( Corners::BOTTOM ), 
+                                                          Usul::Adaptors::memberFunction<void> ( this, &Application::setBackgroundCorners ) ), 
+                                    Usul::Adaptors::bind1<bool> ( static_cast<unsigned int> ( Corners::BOTTOM ), 
+                                                          Usul::Adaptors::memberFunction<bool> ( this, &Application::isBackgroundCorners ) ) ) ) );
+
+  background->append ( corners.get() );
 
   // Create a sub-menu for buttons.
   {
@@ -3668,11 +3770,6 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
 
     menu->append ( buttons );
   }
-
-  // Add a button for each of our colors.
-  typedef VRV::Commands::BackgroundColor BackgroundColor;
-  for ( ColorMap::const_iterator iter = _colorMap.begin(); iter != _colorMap.end(); ++iter )
-    background->append ( new Button ( new BackgroundColor ( iter->first, iter->second, me ) ) );
 
   menu->append ( new Button       ( new BasicCommand ( "Calibrate Joystick", ExecuteFunctor ( this, &Application::analogTrim ) ) ) );
   menu->append ( new ToggleButton ( new CheckCommand ( "Hide Scene", BoolFunctor ( this, &Application::menuSceneShowHide ), CheckFunctor ( this, &Application::menuSceneShowHide ) ) ) );
@@ -3921,7 +4018,7 @@ std::string Application::_counter ( unsigned int num ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::computeNearFar ( bool b )
+void Application::setComputeNearFar ( bool b )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -3942,7 +4039,7 @@ void Application::computeNearFar ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Application::computeNearFar () const
+bool Application::getComputeNearFar () const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -3951,6 +4048,18 @@ bool Application::computeNearFar () const
     return osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES ==_renderers.front()->viewer()->getComputeNearFarMode ();
   
   return false;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get near far mode..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::isComputeNearFar ( bool b ) const
+{
+  USUL_TRACE_SCOPE;
+  return b == this->getComputeNearFar();
 }
 
 
@@ -4063,7 +4172,7 @@ void Application::_initLight()
 std::string Application::_documentSection () const
 {
   // Get the active document.
-  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument () );
   return ( document.valid() ? document->registryTagName() : "Document" );
 }
 
@@ -4973,4 +5082,74 @@ void Application::_clearAssignedButtonCommands()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _buttonMap.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Save our state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::saveState() const
+{
+  // Get the section for the document.
+  Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ this->_documentSection() ] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Restore our state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::restoreState()
+{
+  // Get the section for the document.
+  Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ this->_documentSection() ] );
+
+  // Turn on computing of the near and far plane if we should.
+  bool defaultAutoNearFar ( false );
+  bool autoNearFar ( node [ VRV::Constants::Keys::AUTO_NEAR_FAR ].get < bool > ( defaultAutoNearFar ) );
+  this->setComputeNearFar ( autoNearFar );
+
+  // Get the home position from the registry.
+  Usul::Math::Matrix44d m ( node [ VRV::Constants::Keys::HOME_POSITION ].get < Usul::Math::Matrix44d > ( Usul::Math::Matrix44d () ) );
+  OsgTools::Convert::matrix ( m, _home );
+  this->_navigationMatrix ( _home );
+
+  // Set the menu show hide state.
+  bool menuShowHide ( node[ VRV::Constants::Keys::MENU_SHOW_HIDE ].get < bool > ( false ) );
+  this->menuSceneShowHide ( menuShowHide );
+
+  // Get the translation speed.
+  float speed ( node[ VRV::Constants::Keys::TRANSLATION_SPEED ].get < float > ( this->translationSpeed() ) );
+  Usul::Threads::Safe::set ( this->mutex(), speed, _translationSpeed );
+
+  Navigator::RefPtr functor ( this->navigator() );
+  std::string name ( functor.valid() ? functor->name() : "" );
+
+  // Get the navigator.
+  std::string navigatorName ( node[ VRV::Constants::Keys::NAVIGATION_FUNCTOR ].get < std::string > ( name ) );
+
+  {
+    Guard guard ( this );
+    this->navigator ( _favoriteFunctors[navigatorName] );
+  }
+
+  typedef OsgTools::Render::Renderer::Corners Corners;
+  osg::Vec4 black ( 0.0, 0.0, 0.0, 1.0 );
+
+  // Set the background color.
+  this->backgroundColor ( node[Keys::BACKGROUND_COLOR][Keys::TOP_LEFT].get<osg::Vec4f> ( black ), Corners::TOP_LEFT );
+  this->backgroundColor ( node[Keys::BACKGROUND_COLOR][Keys::TOP_RIGHT].get<osg::Vec4f> ( black ), Corners::TOP_RIGHT );
+  this->backgroundColor ( node[Keys::BACKGROUND_COLOR][Keys::BOTTOM_LEFT].get<osg::Vec4f> ( black ) ,Corners::BOTTOM_LEFT );
+  this->backgroundColor ( node[Keys::BACKGROUND_COLOR][Keys::BOTTOM_RIGHT].get<osg::Vec4f> ( black ), Corners::BOTTOM_RIGHT );
+
+  // Save the corner.
+  this->setBackgroundCorners ( node[Keys::BACKGROUND_CORNERS].get<unsigned int> ( Corners::ALL ) );
+
+  //Usul::Math::Vec4f color ( node[VRV::Constants::Keys::BACKGROUND_COLOR].get<Usul::Math::Vec4f> ( this->backgroundColor() ) );
+  //this->backgroundColor ( color );
 }

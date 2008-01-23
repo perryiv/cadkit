@@ -18,6 +18,7 @@
 #include "Experimental/ModelPresentation/ModelPresentation/MpdTools.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdTimelineModel.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdDynamicModel.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdJob.h"
 
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Interfaces/IViewMatrix.h"
@@ -80,12 +81,14 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _sceneTree ( 0x0 ),
   _sets ( 0x0 ),
   _update( UpdatePolicyPtr( new UpdatePolicy( 10 ) ) ),
+  _checkFileSystem( UpdatePolicyPtr( new UpdatePolicy( 2 ) ) ),
   _useTimeLine( false ),
   _useModels( false ),
   _isAnimating( false ),
   _showTools ( false ),
   _userSpecifiedEndTime( false ),
-  _globalTimelineEnd( 0 )
+  _globalTimelineEnd( 0 ),
+  _jobManager( 1, true )
 {
   USUL_TRACE_SCOPE;
 
@@ -391,15 +394,20 @@ void ModelPresentationDocument::_checkTimeSteps()
       if( true == _dynamicSets.at( i ).visible )
       {
         //Set the next dynamic set to be show
-        if( _dynamicSets.at( i ).currentTime < _dynamicSets.at( i ).endTime )
+        if( _dynamicSets.at( i ).currentTime <= _dynamicSets.at( i ).endTime )
         {
           // If the model at current position is valid then set the visibility mask
           if( true == _dynamicSets.at( i ).groups.at( _dynamicSets.at( i ).currentTime ).valid )
           {
             if( _dynamicSets.at( i ).currentTime == 0 )
             {
-              _dynamicSets.at( i ).models->setValue( _dynamicSets.at( i ).endTime - 1, false );
+              _dynamicSets.at( i ).models->setValue( _dynamicSets.at( i ).endTime, false );
               _dynamicSets.at( i ).models->setValue( _dynamicSets.at( i ).currentTime, true );
+            }
+            else if( _dynamicSets.at( i ).currentTime == _dynamicSets.at( i ).endTime )
+            {
+              _dynamicSets.at( i ).models->setValue( _dynamicSets.at( i ).endTime - 1, false );
+              _dynamicSets.at( i ).models->setValue( _dynamicSets.at( i ).endTime, true );
             }
             else
             {
@@ -408,9 +416,12 @@ void ModelPresentationDocument::_checkTimeSteps()
             }
           }
 
-          if( _dynamicSets.at( i ).currentTime == _dynamicSets.at( i ).endTime )
+        }
+        else
+        { 
+          for( unsigned int j = 0; j < _dynamicSets.at( i ).models->getNumChildren(); ++j )
           {
-            _dynamicSets.at( i ).models->setValue( _dynamicSets.at( i ).endTime - 1, false );
+            _dynamicSets.at( i ).models->setValue( j, false );
           }
 
         }
@@ -435,13 +446,27 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
   USUL_TRACE_SCOPE;
 
   // If we have a dynamic structure loaded check the file system for new files
-  if( true == _useDynamic )
+  if( true == this->_dynamic() && (*_checkFileSystem)() )
   {
+    // Get needed interfaces.
+    IDataSync::QueryPtr dataSync ( Usul::Components::Manager::instance().getInterface ( IDataSync::IID ) );
+    std::string hostname = Usul::System::Host::name();
     for( unsigned int index = 0; index < _dynamicSets.size(); ++index )
     {
-      this->_findFiles( index, caller );
-      this->_validateDynamicSets();
+      std::string lockfile = Usul::Strings::format( "MpdJobLoadingLock", index );
+      if( true == dataSync->queryDataState( lockfile ) )
+      {
+        // make sure no other threads are spawned to search this directory while we are searching/loading
+        dataSync->setDataFlag( hostname, lockfile );
+
+        MpdJob::RefPtr job ( new MpdJob ( this, caller, index, lockfile, _workingDir, _dynamicSets ) );
+        {
+          _jobManager.addJob( job.get() );
+        }
+      }
     }
+    
+    this->validateDynamicSets();
   }
 
   // If we are animating handle this time step
@@ -524,7 +549,7 @@ void ModelPresentationDocument::nextStep ()
     {
       if( true == _useTimeLine )
       {
-        if( _timeSets.at( i ).currentTime == _timeSets.at( i ).endTime )
+        if( _timeSets.at( i ).currentTime == _globalTimelineEnd )
           _timeSets.at( i ).currentTime = 0;
         else
           _timeSets.at( i ).currentTime ++;
@@ -538,7 +563,7 @@ void ModelPresentationDocument::nextStep ()
   {
    if( true == _useDynamic )
     {
-       if( _dynamicSets.at( i ).currentTime == _dynamicSets.at( i ).endTime )
+       if( _dynamicSets.at( i ).currentTime == _globalTimelineEnd )
         _dynamicSets.at( i ).currentTime = 0;
       else
         _dynamicSets.at( i ).currentTime ++;
@@ -918,7 +943,7 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller,
   
   Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
-  MpdSet set;
+  MpdDefinitions::MpdSet set;
   set.index = 0;
   set.name = "Set";
   set.menuName = "Models";
@@ -970,7 +995,7 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdSet & set )
+osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSet & set )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -1026,7 +1051,7 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
 
   Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
-  MpdTimeSet timeset;
+  MpdDefinitions::MpdTimeSet timeset;
   timeset.currentTime = 0;
   timeset.endTime = 0;
   timeset.timeline = new osg::Switch;
@@ -1109,7 +1134,7 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int &currentTime, MpdTimeSet &timeset )
+osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int &currentTime, MpdDefinitions::MpdTimeSet &timeset )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -1118,7 +1143,7 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
   Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
   
-  MpdTimeGroup timeGroup;
+  MpdDefinitions::MpdTimeGroup timeGroup;
   timeGroup.startTime = currentTime;
   timeGroup.endTime = currentTime + 1;
   
@@ -1176,7 +1201,7 @@ void ModelPresentationDocument::_parseDynamic( XmlTree::Node &node, Unknown *cal
   osg::ref_ptr< osg::Group > group ( new osg::Group );
 
   // Create a new MpdDynamicSet
-  MpdDynamicSet dset;
+  MpdDefinitions::MpdDynamicSet dset;
   dset.currentTime = 0;
   dset.directory = ".";
   dset.endTime = 0;
@@ -1637,6 +1662,18 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
     
   }
 
+
+  // Add the Dynamic Menu
+  if( true == _useDynamic )
+  {
+    for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
+    {
+      const std::string menuName ( _dynamicSets.at( i ).menuName );
+      MenuKit::Menu::RefPtr dynamicMenu ( menu.find ( menuName, true ) );
+    
+      dynamicMenu->append ( new ToggleButton ( new MpdDynamicModel ( me.get(), _dynamicSets.at( i ).name, i ) ) );
+    }
+  }
   // Activate the timeline animation controls if either a dynamic or a timeline is added
   if( true == _useDynamic || true == _useTimeLine )
   {
@@ -1649,20 +1686,6 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
     TimelineMenu->append ( new ToggleButton ( new MpdAnimation( me.get() ) ) );
 
     menu.append ( TimelineMenu );
-  }
-  // Add the Dynamic Menu
-  if( true == _useDynamic )
-  {
-    for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
-    {
-      const std::string menuName ( _dynamicSets.at( i ).menuName );
-      MenuKit::Menu::RefPtr dynamicMenu ( menu.find ( menuName, true ) );
-    
-      dynamicMenu->append ( new ToggleButton ( new MpdDynamicModel ( me.get(), _dynamicSets.at( i ).name, i ) ) );
-     
-    }
-    
-
   }
   if( _locationNames.size() > 0 )
   {
@@ -1788,7 +1811,7 @@ void ModelPresentationDocument::_incrementTimeStep()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::_findFiles( unsigned int index, Usul::Interfaces::IUnknown *caller )
+void ModelPresentationDocument::findFiles( unsigned int index, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   //Guard guard ( this );  
@@ -1844,6 +1867,7 @@ void ModelPresentationDocument::_findFiles( unsigned int index, Usul::Interfaces
       
 
        this->_parseNewFiles( files, index, caller );
+       Guard guard ( this );
        if( files.size() > _dynamicSets.at( index ).modelNames.size() )
        {
         _dynamicSets.at( index ).modelNames = files;
@@ -1866,7 +1890,7 @@ void ModelPresentationDocument::_findFiles( unsigned int index, Usul::Interfaces
 void ModelPresentationDocument::_parseNewFiles( Files files, unsigned int index, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-  //Guard guard ( this ); 
+  Guard guard ( this ); 
 
   // Find all the files that are new
   Files b = _dynamicSets.at( index ).modelNames;
@@ -1896,9 +1920,9 @@ void ModelPresentationDocument::_parseNewFiles( Files files, unsigned int index,
 void ModelPresentationDocument::_loadNewDynamicFiles( std::string filename, unsigned int index, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-  //Guard guard ( this ); 
+  Guard guard ( this ); 
 
-  MpdDynamicGroup group;
+  MpdDefinitions::MpdDynamicGroup group;
   group.filename = filename;
   group.valid = false;
   osg::ref_ptr< osg::Group > node = new osg::Group;
@@ -1912,7 +1936,7 @@ void ModelPresentationDocument::_loadNewDynamicFiles( std::string filename, unsi
   std::string lockfile = Usul::File::base( filename );
 
   // lock here
-  dataSync->setDataFlag( hostname, lockfile, true );
+  dataSync->setDataFlag( hostname, lockfile );
   
   // load the new model
   node->addChild( this->_loadFile( filename, caller, 0x0 ) );
@@ -1921,14 +1945,14 @@ void ModelPresentationDocument::_loadNewDynamicFiles( std::string filename, unsi
   _dynamicSets.at( index ).endTime++;
   _globalTimelineEnd = Usul::Math::maximum( _globalTimelineEnd, _dynamicSets.at( index ).endTime - 1 );
 
-  // unlock here
-  dataSync->resetData( hostname, lockfile );
-
   // rebuild the scene
   OsgTools::Triangles::TriangleSet::Options opt;
   opt[ "normals" ] = "per-vertex";
   opt[ "colors" ]  = "per-vertex";
   this->buildScene( opt, 0x0 );
+
+  // unlock here
+  dataSync->resetData( hostname, lockfile );
 
 }
 
@@ -1939,7 +1963,7 @@ void ModelPresentationDocument::_loadNewDynamicFiles( std::string filename, unsi
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::_validateDynamicSets()
+void ModelPresentationDocument::validateDynamicSets()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this ); 
@@ -1952,9 +1976,10 @@ void ModelPresentationDocument::_validateDynamicSets()
     for( unsigned int i = 0; i < (*iter).groups.size(); ++i )
     {
       std::string lockfile = Usul::File::base( (*iter).groups.at( i ).filename );
-      if( dataSync->queryDataState( lockfile ) )
+      if( true == dataSync->queryDataState( lockfile ) )
       {
         (*iter).groups.at( i ).valid = true;
+
       }
     }
   }
@@ -1973,8 +1998,9 @@ void ModelPresentationDocument::dynamicModelState  ( unsigned int index, bool st
   Guard guard ( this ); 
 
   _dynamicSets.at( index ).visible = state;
-  unsigned int currentPosition = _dynamicSets.at( index ).currentTime;
-  _dynamicSets.at( index ).models->setValue( currentPosition, state );
+ // unsigned int currentPosition = _dynamicSets.at( index ).currentTime;
+ // _dynamicSets.at( index ).models->setValue( currentPosition, state );
+  this->_checkTimeSteps();
 
 }
 
@@ -1994,4 +2020,51 @@ bool ModelPresentationDocument::dynamicModelState  ( unsigned int index )
   
 
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Return whether or not we have loaded a dynamic set
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ModelPresentationDocument::_dynamic()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  return _useDynamic;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Update the global end time for animation
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::updateGlobalEndtime()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  if( true == this->_dynamic() )
+  {
+    for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
+    {
+      _globalTimelineEnd = Usul::Math::maximum( _dynamicSets.at( i ).endTime, _globalTimelineEnd );
+    }
+  }
+
+  if( true == this->isAnimating() )
+  {
+    for( unsigned int i = 0; i < _timeSets.size(); ++i )
+    {
+       _globalTimelineEnd = Usul::Math::maximum( _timeSets.at( i ).endTime, _globalTimelineEnd );
+
+    }
+  }
+ 
+}
+
 

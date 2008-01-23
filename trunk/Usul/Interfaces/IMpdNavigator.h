@@ -15,7 +15,6 @@
 namespace Usul {
 namespace Interfaces {
 
-
 struct IMpdNavigator : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
@@ -64,7 +63,14 @@ struct IMpdNavigator : public Usul::Interfaces::IUnknown
   virtual void              dynamicModelState( unsigned int index, bool state ) = 0;
   virtual bool              dynamicModelState( unsigned int i ) = 0;  
 
+  // Job File loading
+  virtual void              findFiles( unsigned int index, Usul::Interfaces::IUnknown *caller ) = 0;
+  virtual void              validateDynamicSets() = 0;
 
+  // Update the global animation end time
+  virtual void              updateGlobalEndtime() = 0;
+
+  
 }; //struct IVertices
 
 

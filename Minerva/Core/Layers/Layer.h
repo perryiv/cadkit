@@ -214,7 +214,7 @@ protected:
   virtual void                modifyVectorData ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   /// Usul::Interfaces::IAddRowLegend
-  virtual void                                             addLegendRow ( OsgTools::Legend::LegendObject* row );
+  virtual void                addLegendRow ( OsgTools::Legend::LegendObject* row );
 
 private:
 

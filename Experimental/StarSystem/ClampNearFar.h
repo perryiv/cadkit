@@ -16,14 +16,12 @@
 #ifndef _STAR_SYSTEM_CLAMP_NEAR_FAR_H_
 #define _STAR_SYSTEM_CLAMP_NEAR_FAR_H_
 
-#include "StarSystem/Export.h"
-
 #include "osgUtil/CullVisitor"
 
 namespace StarSystem 
 {
   
-  struct STAR_SYSTEM_EXPORT ClampNearFar : public osg::CullSettings::ClampProjectionMatrixCallback
+  struct ClampNearFar : public osg::CullSettings::ClampProjectionMatrixCallback
   {
     typedef osg::CullSettings::ClampProjectionMatrixCallback BaseClass;
     

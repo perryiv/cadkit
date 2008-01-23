@@ -132,7 +132,7 @@ void ClipPlanesComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
     QMainWindow * main ( mainWindow->mainWindow() );
 
     // Build the docking window.
-    _dock = new QDockWidget ( QObject::tr ( "Clip Planes" ), main );
+    _dock = new QDockWidget ( QObject::tr ( "Cross Section Tool" ), main );
     _dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
 
     // Create the widget
